@@ -18,5 +18,3 @@ load_jenkins_vars
 load_mvn_settings_gpg_key
 install_deps
 mvn_build
-#buildImages "rc"
-#pushImagesOnQuay "rc"
