@@ -226,7 +226,7 @@ releaseProject() {
     git tag "${tag}" || die_with "Failed to create tag ${tag}! Release has been deployed, however"
     git push --tags ||  die_with "Failed to push tags. Please do this manually"
     git checkout ${tag}
-    buildImages  ${tag}
-    tagLatestImages ${tag}
-    pushImagesOnQuay ${tag} pushLatest
+    #buildImages  ${tag}
+    #tagLatestImages ${tag}
+    #pushImagesOnQuay ${tag} pushLatest
 }

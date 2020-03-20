@@ -19,6 +19,6 @@ load_mvn_settings_gpg_key
 install_deps
 mvn_build
 mvn_deploy
-buildImages "nightly"
-pushImagesOnQuay "nightly"
+#buildImages "nightly"
+#pushImagesOnQuay "nightly"
 
