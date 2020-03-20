@@ -1,11 +1,6 @@
 apiVersion: 1.0.0
 metadata:
   name: dashboard-in-che
-projects:
-  - name: che
-    source:
-      type: git
-      location: 'https://github.com/eclipse/che.git'
 components:
   - alias: typescript-plugin
     type: chePlugin
