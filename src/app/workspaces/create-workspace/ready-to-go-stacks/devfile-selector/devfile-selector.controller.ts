@@ -49,29 +49,15 @@ export class DevfileSelectorController {
   }
 
   loadDevfiles(): void {
-    let location = this.cheWorkspace.getWorkspaceSettings().cheWorkspaceDevfileRegistryUrl;
-    const urls = location.split(" ");
-    let promises = [];
-
-    for (const url of urls) {
-      promises.push(this.devfileRegistry.fetchDevfiles(url).then((data: Array<IDevfileMetaData>) => {
-        if (data && data.length > 0) {
-          data.forEach((devfile)=> {
-            // Set the origin url as the location
-            devfile.location = url;
-            if (!devfile.icon.startsWith('http')) {
-              devfile.icon = url + devfile.icon;
-            }
-            this.devfiles.push(devfile);
-          });
+    this.cheWorkspace.fetchWorkspaceSettings()
+      .then(settings => settings.cheWorkspaceDevfileRegistryUrl)
+      .then(urls => this.devfileRegistry.fetchDevfiles(urls))
+      .then(devfiles => {
+        this.devfiles = devfiles;
+        if (this.devfiles && this.devfiles.length > 0) {
+          this.devfileOnClick(this.devfiles[0]);
         }
-      }));
-    }
-    Promise.all(promises).then(() => {
-      if (this.devfiles && this.devfiles.length > 0) {
-        this.devfileOnClick(this.devfiles[0]);
-      }
-    });
+      });
   }
 
   devfileOnClick(devfile: any): void {

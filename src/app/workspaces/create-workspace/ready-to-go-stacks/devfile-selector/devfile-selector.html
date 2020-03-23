@@ -45,9 +45,9 @@
                     <div class="devfile-selector-item-icon">
                       <img img-src="{{devfile.icon}}"
                         img-src-onload="devfileSelectorController.iconOnLoad(devfile.icon, $result)"
-                        ng-show="devfileSelectorController.showIcon(devfile.icon)===true">
+                        ng-show="devfile.icon && devfileSelectorController.showIcon(devfile.icon)===true">
                       <div class="chefont cheico-type-blank"
-                        ng-show="devfileSelectorController.showIcon(devfile.icon)===false"></div>
+                        ng-show="!!devfile.icon===false || devfileSelectorController.showIcon(devfile.icon)===false"></div>
                     </div>
                   </div>
                   <!-- Name -->

@@ -14,6 +14,9 @@
 <div class="pf-c-card pf-m-hoverable pf-m-compact pf-m-selectable get-started-template" tabindex="-1">
   <div class="pf-c-card__head">
     <img ng-if="devfile.icon" src="{{devfile.icon}}"/>
+    <div ng-if="!devfile.icon" class="blank-icon">
+      <div class="chefont cheico-type-blank"></div>
+    </div>
   </div>
   <div class="pf-c-card__header pf-c-title pf-m-md">
     <b>{{devfile.displayName}}</b>
