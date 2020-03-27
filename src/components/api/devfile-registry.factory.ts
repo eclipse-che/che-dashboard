@@ -168,7 +168,7 @@ export class DevfileRegistry {
 
   private updateIconUrl(devfile: IDevfileMetaData, url: string): IDevfileMetaData {
     if (devfile.icon && !devfile.icon.startsWith('http')) {
-      devfile.icon = url + devfile.icon;
+      devfile.icon = new URL(devfile.icon, url).href;
     }
     return devfile;
   }
