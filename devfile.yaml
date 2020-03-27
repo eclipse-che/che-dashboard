@@ -1,6 +1,6 @@
 apiVersion: 1.0.0
 metadata:
-  name: dashboard-in-che
+  name: che-dashboard
 components:
   - alias: typescript-plugin
     type: chePlugin
@@ -18,21 +18,27 @@ components:
     mountSources: true
     memoryLimit: 3Gi
 commands:
-  - name: dashboard_build
+  - name: '[UD] install dependencies'
     actions:
       - type: exec
         component: dash-dev
-        command: cd /projects/che/dashboard && yarn && yarn build
-        workdir: /projects/che/dashboard
-  - name: dashboard_test
+        command: yarn
+        workdir: /projects/che-dashboard
+  - name: '[UD] build'
     actions:
       - type: exec
         component: dash-dev
-        command: cd /projects/che/dashboard && yarn test
-        workdir: /projects/che/dashboard
-  - name: dashboard_dev_server
+        command: yarn build
+        workdir: /projects/che-dashboard
+  - name: '[UD] test'
     actions:
       - type: exec
         component: dash-dev
-        command: cd /projects/che/dashboard && node_modules/.bin/gulp serve --server=${CHE_API_EXTERNAL%????}
-        workdir: /projects/che/dashboard
+        command: yarn test
+        workdir: /projects/che-dashboard
+  - name: '[UD] start dev-server'
+    actions:
+      - type: exec
+        component: dash-dev
+        command: npx gulp serve --server=${CHE_API_EXTERNAL%????}
+        workdir: /projects/che-dashboard
