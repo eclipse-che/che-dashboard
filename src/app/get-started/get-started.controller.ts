@@ -151,19 +151,19 @@ export class GetStartedController {
       this.$log.error(message);
       return;
     }
-    return this.devfileRegistry.fetchDevfiles(this.devfileRegistryUrl).then((devfiles: Array<IDevfileMetaData>) => {
-      this.devfiles = devfiles.map(devfile => {
-        if (!devfile.icon.startsWith('http')) {
-          devfile.icon = this.devfileRegistryUrl + devfile.icon;
-        }
-        return devfile;
+
+    this.isLoading = true;
+    return this.devfileRegistry.fetchDevfiles(this.devfileRegistryUrl)
+      .then(devfiles => {
+        this.devfiles = devfiles;
+        this.toolbarProps.devfiles = devfiles;
+      }, error => {
+        const message = 'Failed to load devfiles meta list.';
+        this.cheNotification.showError(message);
+        this.$log.error(message, error);
+      }).finally(() => {
+        this.isLoading = false;
       });
-      this.toolbarProps.devfiles = this.devfiles;
-    }, (error: any) => {
-      const message = 'Failed to load devfiles meta list.';
-      this.cheNotification.showError(message);
-      this.$log.error(message, error);
-    });
   }
 
 }

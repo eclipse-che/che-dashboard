@@ -64,8 +64,8 @@ export class StacksConfig {
                 if (!devfileMetaData) {
                   return $q.reject();
                 }
-                return devfileRegistry.fetchDevfile(location, selfLink).then(() => {
-                  const devfileContent = devfileRegistry.getDevfile(location, selfLink);
+                return devfileRegistry.fetchDevfile(devfileMetaData.location, selfLink).then(() => {
+                  const devfileContent = devfileRegistry.getDevfile(devfileMetaData.location, selfLink);
                   return <IStackInitData>{ devfileMetaData, devfileContent };
                 });
               });

@@ -55,10 +55,19 @@ export class RegistryCheckingService {
     const REGISTRY_CERTIFICATE_ERROR = `Unable to load plugins and/or devfiles. Your ${this.cheBranding.getName()} may be using a self-signed certificate. To resolve this issue, try to import the servers CA certificate into your browser, as described in <a href="${this.cheBranding.getDocs().certificate}" target="_blank">docs</a>. After importing the certificate, refresh the page.`;
 
     this.cheWorkspace.fetchWorkspaceSettings()
-      .then(settings => [
-        `${settings.cheWorkspaceDevfileRegistryUrl}/devfiles/index.json`,
-        `${settings.cheWorkspacePluginRegistryUrl}/plugins/`
-      ])
+      .then(settings => {
+        const urls = [];
+        if (settings.cheWorkspacePluginRegistryUrl) {
+          urls.push(`${settings.cheWorkspacePluginRegistryUrl}/plugins/`);
+        }
+        if (settings.cheWorkspaceDevfileRegistryUrl) {
+          // space separated list
+          settings.cheWorkspaceDevfileRegistryUrl
+            .split(' ')
+            .forEach(url => urls.push(`${url}/devfiles/index.json`));
+        }
+        return urls;
+      })
       .then(locations => this.$q.all(
         locations.map(location => this.checkPossibleCertificateIssue(location))
       ))

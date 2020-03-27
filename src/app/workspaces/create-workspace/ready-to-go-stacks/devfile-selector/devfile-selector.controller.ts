@@ -41,6 +41,7 @@ export class DevfileSelectorController {
     this.devfileRegistry = devfileRegistry;
     this.cheWorkspace = cheWorkspace;
     this.devfileOrderBy = 'displayName';
+    this.devfiles = [];
   }
 
   $onInit(): void {
@@ -48,19 +49,15 @@ export class DevfileSelectorController {
   }
 
   loadDevfiles(): void {
-    let location = this.cheWorkspace.getWorkspaceSettings().cheWorkspaceDevfileRegistryUrl;
-    this.devfileRegistry.fetchDevfiles(location).then((data: Array<IDevfileMetaData>) => {
-      this.devfiles = data.map(devfile => {
-        if (!devfile.icon.startsWith('http')) {
-          devfile.icon = location + devfile.icon;
+    this.cheWorkspace.fetchWorkspaceSettings()
+      .then(settings => settings.cheWorkspaceDevfileRegistryUrl)
+      .then(urls => this.devfileRegistry.fetchDevfiles(urls))
+      .then(devfiles => {
+        this.devfiles = devfiles;
+        if (this.devfiles && this.devfiles.length > 0) {
+          this.devfileOnClick(this.devfiles[0]);
         }
-        return devfile;
       });
-
-      if (this.devfiles && this.devfiles.length > 0) {
-        this.devfileOnClick(this.devfiles[0]);
-      }
-    });
   }
 
   devfileOnClick(devfile: any): void {

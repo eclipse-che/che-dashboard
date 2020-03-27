@@ -10,7 +10,7 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 'use strict';
-import {CheWorkspace} from '../../../components/api/workspace/che-workspace.factory';
+import { CheWorkspace } from '../../../components/api/workspace/che-workspace.factory';
 import {DevfileRegistry, IDevfileMetaData} from '../../../components/api/devfile-registry.factory';
 import {CheNotification} from '../../../components/notification/che-notification.factory';
 
@@ -38,11 +38,11 @@ export class ListStacksController {
   private cheListHelper: che.widget.ICheListHelper;
   private $log: ng.ILogService;
   private cheNotification: CheNotification;
+  private cheWorkspace: CheWorkspace;
 
   private orderBy: string;
   private searchBy: string;
   private searchStr: string;
-  private devfileRegistryUrl: string;
   private isLoading: boolean;
 
   /**
@@ -59,8 +59,7 @@ export class ListStacksController {
     this.devfileRegistry = devfileRegistry;
     this.$log = $log;
     this.cheNotification = cheNotification;
-
-    this.devfileRegistryUrl = cheWorkspace.getWorkspaceSettings().cheWorkspaceDevfileRegistryUrl;
+    this.cheWorkspace = cheWorkspace;
 
     const helperId = 'devfiles-meta-list';
     this.cheListHelper = cheListHelperFactory.getHelper(helperId);
@@ -82,20 +81,24 @@ export class ListStacksController {
 
   loadDevfiles(): void {
     this.isLoading = true;
-    this.devfileRegistry.fetchDevfiles(this.devfileRegistryUrl).then((data: Array<IDevfileMetaData>) => {
-      this.cheListHelper.setList(data.map(devfileMetaData => {
-        if (!devfileMetaData.icon.startsWith('http')) {
-          devfileMetaData.icon = this.devfileRegistryUrl + devfileMetaData.icon;
+    this.cheWorkspace.fetchWorkspaceSettings()
+      .then(settings => {
+        const urls = settings.cheWorkspaceDevfileRegistryUrl;
+
+        if (!urls) {
+          throw new Error('"cheWorkspaceDevfileRegistryUrl" is not set.');
         }
-        return devfileMetaData;
-      }), 'displayName');
-    }, (error: any) => {
-      const message = 'Failed to load devfiles meta list.';
-      this.cheNotification.showError(message);
-      this.$log.error(message, error);
-    }).finally(() => {
-      this.isLoading = false;
-    });
+        return urls;
+      })
+      .then(urls => this.devfileRegistry.fetchDevfiles(urls))
+      .then(
+        devfiles => this.cheListHelper.setList(devfiles, 'displayName'),
+        error => {
+          const message = 'Failed to load devfiles meta list.';
+          this.cheNotification.showError(message);
+          this.$log.error(message, error);
+        }
+      ).finally(() => this.isLoading = false);
   }
 
   onSearchChanged(searchStr: string): void {

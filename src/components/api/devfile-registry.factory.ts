@@ -10,8 +10,8 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 'use strict';
-import {CheKeycloak} from './che-keycloak.factory';
-import {IChangeMemoryUnit} from '../filter/change-memory-unit/change-memory-unit.filter';
+import { CheKeycloak } from './che-keycloak.factory';
+import { IChangeMemoryUnit } from '../filter/change-memory-unit/change-memory-unit.filter';
 
 export interface IDevfileMetaData {
   displayName: string;
@@ -20,6 +20,7 @@ export interface IDevfileMetaData {
   icon: string;
   links: any;
   tags: Array<string>;
+  location: string;
 }
 
 enum MemoryUnit { 'B', 'Ki', 'Mi', 'Gi' }
@@ -31,14 +32,16 @@ const DEFAULT_JWTPROXY_MEMORY_LIMIT = '128Mi';// default value for che.server.se
  * @author Ann Shumilova
  */
 export class DevfileRegistry {
-  static $inject = ['$http', '$filter', 'cheKeycloak'];
-
-  /**
-   * Angular Http service.
-   */
-  private $http: ng.IHttpService;
+  static $inject = [
+    '$filter',
+    '$http',
+    '$q',
+    'cheKeycloak',
+  ];
 
   private $filter: ng.IFilterService;
+  private $http: ng.IHttpService;
+  private $q: ng.IQService;
 
   private devfilesMap: Map<string, che.IWorkspaceDevfile>;
 
@@ -51,9 +54,15 @@ export class DevfileRegistry {
   /**
    * Default constructor that is using resource
    */
-  constructor($http: ng.IHttpService, $filter: ng.IFilterService, cheKeycloak: CheKeycloak) {
-    this.$http = $http;
+  constructor(
+    $filter: ng.IFilterService,
+    $http: ng.IHttpService,
+    $q: ng.IQService,
+    cheKeycloak: CheKeycloak,
+  ) {
     this.$filter = $filter;
+    this.$http = $http;
+    this.$q = $q;
 
     this.devfilesMap = new Map<string, che.IWorkspaceDevfile>();
     this.isKeycloackPresent = cheKeycloak.isPresent();
@@ -62,24 +71,18 @@ export class DevfileRegistry {
     this.headers = { 'Authorization': undefined };
   }
 
-  fetchDevfiles(location: string): ng.IPromise<Array<IDevfileMetaData>> {
-    let promise = this.$http({
-      'method': 'GET',
-      'url': `${location}/devfiles/index.json`,
-      'headers': this.headers
-    });
-
-    return promise.then((result: any) => {
-      return result.data.map((devfileMetaData: IDevfileMetaData) => {
-        let globalMemoryLimitNumber = this.getMemoryLimit(devfileMetaData.globalMemoryLimit);
-        // TODO remove this after fixing https://github.com/eclipse/che/issues/11424
-        if (this.isKeycloackPresent) {
-          globalMemoryLimitNumber += this.jwtproxyMemoryLimitNumber;
-        }
-        devfileMetaData.globalMemoryLimit = this.$filter<IChangeMemoryUnit>('changeMemoryUnit')(globalMemoryLimitNumber, ['B','GB']);
-        return devfileMetaData;
-      });
-    });
+  /**
+   * Fetches devfiles from given registries.
+   * @param urls space separated list of urls
+   */
+  fetchDevfiles(urls: string): ng.IPromise<Array<IDevfileMetaData>> {
+    const devfilesArraysPromises = urls.split(' ').map(url => this._fetchDevfiles(url));
+    return this.$q.all(devfilesArraysPromises)
+      .then(devfilesArrays =>
+        devfilesArrays.reduce((devfiles, devfilesArray) => {
+          return devfiles.concat(devfilesArray);
+        }, [])
+      );
   }
 
   fetchDevfile(location: string, link: string): ng.IPromise<che.IWorkspaceDevfile> {
@@ -100,30 +103,23 @@ export class DevfileRegistry {
   }
 
   selfLinkToDevfileId(selfLink: string): string {
-      const regExpExecArray = /^\/devfiles\/([A-Za-z0-9_\-]+)\/devfile.yaml$/i.exec(selfLink);
-      if (regExpExecArray !== null) {
-         return regExpExecArray[1];
-      }
+    const regExpExecArray = /^\/devfiles\/([A-Za-z0-9_\-]+)\/devfile.yaml$/i.exec(selfLink);
+    if (regExpExecArray !== null) {
+      return regExpExecArray[1];
+    }
 
-      return selfLink;
+    return selfLink;
   }
 
   devfileIdToSelfLink(devfileId: string): string {
-      if (/^[A-Za-z0-9_\-]+$/i.test(devfileId)) {
-        return `/devfiles/${devfileId}/devfile.yaml`;
-      }
-
-      return devfileId;
-  }
-
-  private devfileYamlToJson(yaml: string): che.IWorkspaceDevfile {
-    try {
-      return jsyaml.load(yaml);
-    } catch (e) {
+    if (/^[A-Za-z0-9_\-]+$/i.test(devfileId)) {
+      return `/devfiles/${devfileId}/devfile.yaml`;
     }
+
+    return devfileId;
   }
 
-   /**
+  /**
    * Returns memory limit.
    * @param {string} memoryLimit
    * @returns {number}
@@ -144,4 +140,51 @@ export class DevfileRegistry {
 
     return parseInt(memoryLimitNumber, 10) * Math.pow(1024, power);
   }
+
+  private devfileYamlToJson(yaml: string): che.IWorkspaceDevfile {
+    try {
+      return jsyaml.load(yaml);
+    } catch (e) { }
+  }
+
+  private _fetchDevfiles(location: string): ng.IPromise<Array<IDevfileMetaData>> {
+    let promise = this.$http({
+      'method': 'GET',
+      'url': `${location}/devfiles/index.json`,
+      'headers': this.headers
+    });
+
+    return promise.then((result: any) => {
+      return result.data
+        .map(devfile => {
+          // set the origin url as the location
+          devfile.location = location;
+          return devfile;
+        })
+        .map(devfile => this.updateIconUrl(devfile, location))
+        .map(devfile => this.updateMemoryLimit(devfile));
+    });
+  }
+
+  private updateIconUrl(devfile: IDevfileMetaData, url: string): IDevfileMetaData {
+    if (devfile.icon && !devfile.icon.startsWith('http')) {
+      devfile.icon = new URL(devfile.icon, url).href;
+    }
+    return devfile;
+  }
+
+  private updateMemoryLimit(devfile: IDevfileMetaData): IDevfileMetaData {
+    let globalMemoryLimitNumber = this.getMemoryLimit(devfile.globalMemoryLimit);
+    if (globalMemoryLimitNumber === -1) {
+      return devfile;
+    }
+
+    // TODO remove this after fixing https://github.com/eclipse/che/issues/11424
+    if (this.isKeycloackPresent) {
+      globalMemoryLimitNumber += this.jwtproxyMemoryLimitNumber;
+    }
+    devfile.globalMemoryLimit = this.$filter<IChangeMemoryUnit>('changeMemoryUnit')(globalMemoryLimitNumber, ['B', 'GB']);
+    return devfile;
+  }
+
 }
