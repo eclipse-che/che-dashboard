@@ -637,6 +637,10 @@ export class CheWorkspace {
       workspace.runtime = workspaceDetails.runtime;
     }
     this.workspacesById.set(workspace.id, workspace);
+    if (this.workspaceIds.indexOf(workspace.id) === -1) {
+      this.workspaceIds.push(workspace.id);
+    }
+
     // publish change
     if (this.observables.has(workspace.id)) {
       this.observables.get(workspace.id).publish(workspace);
