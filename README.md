@@ -1,3 +1,7 @@
+[![Master Build Status](https://ci.centos.org/buildStatus/icon?subject=master&job=devtools-che-dashboard-che-build-master)](https://ci.centos.org/job/devtools-che-dashboard-che-build-master/)
+[![Nightly Build Status](https://ci.centos.org/buildStatus/icon?subject=nightly&job=devtools-che-dashboard-che-nightly)](https://ci.centos.org/job/devtools-che-dashboard-che-nightly/)
+[![Release Build Status](https://ci.centos.org/buildStatus/icon?subject=release&job=devtools-che-dashboard-che-release)](https://ci.centos.org/job/devtools-che-dashboard-che-release/)
+
 ## About Eclipse Che
 
 Eclipse Che is a next generation Eclipse IDE and open source alternative to IntelliJ. This repository is licensed under the Eclipse Public License 2.0. Visit [Eclipse Che's Web site](https://eclipse.org/che) for feature information or the main [Che assembly repository](https://github.com/codenvy/che) for a description of all participating repositories.
