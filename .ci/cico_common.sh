@@ -104,7 +104,7 @@ mvn_deploy() {
 gitHttps2ssh(){
     #git remote set-url origin git@github.com:$(git remote get-url origin | sed 's/https:\/\/github.com\///' | sed 's/git@github.com://')
     #git version 1.8.3 not support get-url sub-command so hardcode url
-    git remote set-url origin git@github.com:eclipse/che
+    git remote set-url origin git@github.com:eclipse/che-dashboard
 }
 
 
