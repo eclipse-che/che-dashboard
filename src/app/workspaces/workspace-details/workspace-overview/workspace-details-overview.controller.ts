@@ -33,6 +33,7 @@ export class WorkspaceDetailsOverviewController {
 
   static $inject = [
     '$location',
+    '$mdDialog',
     '$q',
     '$route',
     '$scope',
@@ -55,6 +56,7 @@ export class WorkspaceDetailsOverviewController {
   enabledKubernetesNamespaceSelector: boolean = false;
 
   private $location: ng.ILocationService;
+  private $mdDialog: ng.material.IDialogService;
   private $q: ng.IQService;
   private $route: ng.route.IRouteService;
   private $scope: ng.IScope;
@@ -78,12 +80,14 @@ export class WorkspaceDetailsOverviewController {
   private isEphemeralMode: boolean;
   private attributes: che.IWorkspaceConfigAttributes;
   private attributesCopy: che.IWorkspaceConfigAttributes;
+  private workspaceDeletePromise: ng.IPromise<void>;
 
   /**
    * Default constructor that is using resource
    */
   constructor(
     $location: ng.ILocationService,
+    $mdDialog: ng.material.IDialogService,
     $q: ng.IQService,
     $route: ng.route.IRouteService,
     $scope: ng.IScope,
@@ -97,6 +101,7 @@ export class WorkspaceDetailsOverviewController {
     workspaceDetailsService: WorkspaceDetailsService,
   ) {
     this.$location = $location;
+    this.$mdDialog = $mdDialog;
     this.$q = $q;
     this.$route = $route;
     this.$scope = $scope;
@@ -312,8 +317,10 @@ export class WorkspaceDetailsOverviewController {
    * Removes current workspace.
    */
   deleteWorkspace(): void {
-    const content = 'Would you like to delete workspace \'' + this.cheWorkspace.getWorkspaceDataManager().getName(this.workspaceDetails) + '\'?';
-    this.confirmDialogService.showConfirmDialog('Delete workspace', content, { resolve: 'Delete' }).then(() => {
+    if (this.workspaceDeletePromise !== undefined) {
+      return;
+    }
+    this.workspaceDeletePromise = this.showConfirmDialog().then(() => {
       if ([RUNNING, STARTING].indexOf(this.getWorkspaceStatus()) !== -1) {
         this.cheWorkspace.stopWorkspace(this.workspaceDetails.id);
       }
@@ -324,6 +331,8 @@ export class WorkspaceDetailsOverviewController {
           this.cheNotification.showError('Delete workspace failed.', error);
         });
       });
+    }).finally(() => {
+      delete this.workspaceDeletePromise;
     });
   }
 
@@ -436,6 +445,49 @@ export class WorkspaceDetailsOverviewController {
       if (currentNamespace) {
         this.infrastructureNamespace = currentNamespace.attributes.displayName || currentNamespace.name;
       }
+    });
+  }
+
+  private showConfirmDialog(): ng.IPromise<any> {
+    const title = 'Delete workspace';
+    const content = 'Would you like to delete workspace \'' + this.cheWorkspace.getWorkspaceDataManager().getName(this.workspaceDetails) + '\'?';
+    const buttons = {
+      resolve: 'Delete',
+      reject: 'Close'
+    };
+    return this.$mdDialog.show({
+      clickOutsideToClose: true,
+      controller: ['$scope', ($scope) => {
+        $scope.buttons = buttons;
+        $scope.content = content;
+        $scope.title = title;
+        $scope.hide = () => {
+          this.$mdDialog.hide();
+        };
+        $scope.cancel = () => {
+          this.$mdDialog.cancel();
+        };
+      }],
+      template: `
+<che-popup title="{{title}}" on-close="cancel()">
+  <div class="che-confirm-dialog-notification" ng-init="enableButton=false">
+    <div>{{content}}</div>
+    <br/>
+    <input type="checkbox" id="enable-button" ng-model="enableButton">&nbsp;<label for="enable-button">I understand, this operation cannot be reverted.</label>
+    <div layout="row" flex layout-align="end end">
+      <che-button-danger ng-if="buttons.resolve"
+                          che-button-title="{{buttons.resolve}}"
+                          id="ok-dialog-button"
+                          ng-disabled="enableButton===false"
+                          ng-click="hide()">
+      </che-button-danger>
+      <che-button-notice che-button-title="{{buttons.reject}}"
+                         id="cancel-dialog-button"
+                         ng-click="cancel()">
+      </che-button-notice>
+    </div>
+  </div>
+</che-popup>`,
     });
   }
 
