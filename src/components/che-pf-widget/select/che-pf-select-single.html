@@ -1,0 +1,51 @@
+<!--
+
+    Copyright (c) 2015-2018 Red Hat, Inc.
+    This program and the accompanying materials are made
+    available under the terms of the Eclipse Public License 2.0
+    which is available at https://www.eclipse.org/legal/epl-2.0/
+
+    SPDX-License-Identifier: EPL-2.0
+
+    Contributors:
+      Red Hat, Inc. - initial API and implementation
+
+-->
+
+<div class="pf-c-select"
+  ng-class="{'pf-m-expanded': expanded}">
+
+  <span id="{{labelId}}" hidden>{{ctrl.config.placeholder}}</span>
+
+  <button class="pf-c-select__toggle"
+    type="button"
+    id="{{toggleId}}"
+    aria-haspopup="true"
+    aria-labelledby="{{labelId}} {{toggleId}}"
+    ng-attr-aria-expanded="{{expanded ? 'true' : 'false'}}"
+    ng-disabled="ctrl.config.disabled"
+    ng-click="toggleItemsList()">
+
+    <div class="pf-c-select__toggle-wrapper">
+      <span class="pf-c-select__toggle-text">{{ctrl.getItemName(ctrl.selectedItem) || ctrl.config.placeholder}}</span>
+    </div>
+
+    <i class="fas fa-caret-down pf-c-select__toggle-arrow" aria-hidden="true"></i>
+  </button>
+
+  <ul class="pf-c-select__menu"
+    aria-labelledby="select-single-expanded-label"
+    ng-show="expanded">
+
+    <li ng-repeat="item in ctrl.items">
+      <button type="button"
+        class="pf-c-select__menu-item"
+        aria-pressed="false"
+        ng-click="selectItem(item)">
+        {{ctrl.getItemName(item)}}
+      </button>
+    </li>
+
+  </ul>
+
+</div>
