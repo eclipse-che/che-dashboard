@@ -15,13 +15,21 @@
     * ------------------------------------------------------------------------------------------ */
 'use strict';
 
+import { editor } from 'monaco-editor-core';
+
 const UI_MONACO_CONFIG = {
+  value: '',
   wordWrap: 'on',
   lineNumbers: 'on',
   matchBrackets: true,
   autoClosingBrackets: 'always',
   readOnly: false
 };
+
+interface IEditor {
+  getValue(): string,
+  getModel(): any
+}
 
 /**
  * Binds a Monaco widget to a div element.
@@ -58,11 +66,14 @@ export class UiMonaco implements ng.IDirective {
     }
 
     const Monaco = (window as any).Monaco;
-    const uiMonaco: string = ($attrs as any).uiMonaco;
+    const uiMonaco = $scope.$eval(($attrs as any).uiMonaco);
+    const {decorationPattern} = uiMonaco;
+    if (decorationPattern) {
+      delete uiMonaco.decorationPattern;
+    }
     const monacoOptions = angular.extend(
-      {value: ''},
       UI_MONACO_CONFIG,
-      $scope.$eval(uiMonaco),
+      uiMonaco,
       {
         model: Monaco.editor.createModel('',  'yaml'),
         automaticLayout: true
@@ -71,13 +82,19 @@ export class UiMonaco implements ng.IDirective {
     const editor = Monaco.editor.create(element, monacoOptions);
     (window as any).MonacoEditor = editor;
 
-    editor.layout({ height: '300' });
-
     editor.getModel().updateOptions({ tabSize: 2 });
 
     const monacoDefaults = Object.keys(UI_MONACO_CONFIG);
     this.configOptionsWatcher(editor, monacoDefaults, uiMonaco, $scope);
     this.configNgModelLink(editor, $ctrl, $scope);
+
+    if (decorationPattern) {
+      const decorationRegExp = new RegExp(decorationPattern, 'img');
+      let oldDecorations: string[] = []; // Array containing previous decorations identifiers.
+      editor.getModel().onDidChangeContent(() => {
+        oldDecorations = editor.deltaDecorations(oldDecorations, this.getDecorations(editor, decorationRegExp));
+      });
+    }
 
     // allow access to the Monaco instance through a broadcasted event
     // eg: $broadcast('Monaco', function(cm){...});
@@ -89,11 +106,19 @@ export class UiMonaco implements ng.IDirective {
       }
     });
 
+    const handleResize = () => {
+      const layout = {height: element.offsetHeight, width: element.offsetWidth};
+      editor.layout(layout);
+    };
+    handleResize();
+    window.addEventListener('resize', handleResize);
+
     $scope.$on('$destroy', () => {
-        if (editor) {
-          editor.getModel().dispose();
-          editor.dispose();
-        }
+      if (editor) {
+        editor.getModel().dispose();
+        editor.dispose();
+      }
+      window.removeEventListener('resize', handleResize);
     });
 
     // onLoad callback
@@ -104,6 +129,30 @@ export class UiMonaco implements ng.IDirective {
       });
       monacoOptions.onLoad(editor);
     }
+  }
+
+  private getDecorations(editor: IEditor, decorationRegExp: RegExp): editor.IModelDecoration[] {
+    const decorations: editor.IModelDecoration[] = [];
+    const model = editor.getModel();
+    const value = editor.getValue();
+    let match = decorationRegExp.exec(value);
+    while (match) {
+      const startPosition = model.getPositionAt(match.index);
+      const endPosition = model.getPositionAt(match.index + match[0].length);
+      decorations.push({
+        range: {
+          startLineNumber: startPosition.lineNumber,
+          startColumn: startPosition.column,
+          endLineNumber: endPosition.lineNumber,
+          endColumn: endPosition.column,
+        },
+        options: {
+          inlineClassName: 'devfile-editor-decoration'
+        }
+      } as editor.IModelDecoration);
+      match = decorationRegExp.exec(value);
+    }
+    return decorations;
   }
 
   private configOptionsWatcher(editor: any, monacoDefaults: string[], uiMonacoAttr: string, scope: ng.IScope): void {
@@ -151,10 +200,10 @@ export class UiMonaco implements ng.IDirective {
       editor.setValue(safeViewValue);
     };
 
-    editor.onDidChangeModelContent(function () {
-        var newValue = editor.getValue();
+    editor.onDidChangeModelContent(() => {
+        const newValue = editor.getValue();
         if (newValue !== ngModel.$viewValue) {
-            scope.$evalAsync(function () {
+            scope.$evalAsync(() => {
                 ngModel.$setViewValue(newValue);
             });
         }

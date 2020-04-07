@@ -116,9 +116,10 @@
       <che-label-container che-label-name="Workspace">
         <ng-form name="workspaceDevfileForm">
           <workspace-devfile-editor
+            ng-init="workspaceDetailsController.setForm(workspaceDetailsController.tab.Devfile, workspaceDevfileForm)"
             is-active="isDevfileActive"
             workspace-devfile="workspaceDetailsController.workspaceDetails.devfile"
-            workspace-devfile-on-change="workspaceDetailsController.onWorkspaceChanged()"></workspace-devfile-editor>
+            workspace-devfile-on-change="workspaceDetailsController.onWorkspaceChanged(editorState)"></workspace-devfile-editor>
           </ng-form>
         </che-label-container>
       </md-tab-body>

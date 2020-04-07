@@ -39,6 +39,7 @@ export class CheEditor implements ng.IDirective {
     editorContent: '=',
     editorState: '=?',
     editorMode: '@?',
+    editorDecorationPattern: '@?',
     editorReadOnly: '=?',
     validator: '&?',
     onContentChange: '&?'
@@ -65,8 +66,8 @@ export class CheEditor implements ng.IDirective {
         $element.removeAttr(attr);
       });
       additionalElement += `<div class="custom-checks">
-                             <che-input ${additionalAttr} 
-                                      type="hidden" 
+                             <che-input ${additionalAttr}
+                                      type="hidden"
                                       che-form="cheEditorController.editorForm"
                                       ng-model-options="{ allowInvalid: true }"
                                       ng-model="cheEditorController.editorContent">

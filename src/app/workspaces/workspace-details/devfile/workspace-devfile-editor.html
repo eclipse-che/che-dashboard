@@ -1,12 +1,10 @@
 <div layout="column" class="config-import">
   <div class="config-editor">
     <che-editor editor-content="workspaceDevfileEditorController.devfileYaml"
-                editor-state="editorState"
-                on-content-change="workspaceDevfileEditorController.onChange()"
+                on-content-change="workspaceDevfileEditorController.onChange(editorState)"
                 editor-mode="text/x-yaml"
                 editor-read-only="!!workspaceDevfileEditorController.editorReadOnly"
                 validator="workspaceDevfileEditorController.workspaceDevfileValidation()"
-                editor-state="workspaceDevfileEditorController.editorState"
                 required>
       <div ng-message="required">Devfile is required.</div>
     </che-editor>
