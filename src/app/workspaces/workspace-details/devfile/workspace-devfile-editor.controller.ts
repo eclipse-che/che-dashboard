@@ -38,18 +38,6 @@ export class WorkspaceDevfileEditorController {
   private workspaceDevfile: che.IWorkspaceDevfile;
   private workspaceDevfileOnChange: Function;
   private devfileDocsUrl: string;
-
-  private editorOptions: {
-    wordWrap: string,
-    lineNumbers: string,
-    matchBrackets: boolean,
-    mode: string,
-    onLoad: Function
-  };
-  private editorState: che.IValidation = {
-    isValid: true,
-    errors: []
-  };
   private devfileYaml: string;
   private saveTimeoutPromise: ng.IPromise<any>;
   private cheAPI: CheAPI;
@@ -58,7 +46,11 @@ export class WorkspaceDevfileEditorController {
   /**
    * Default constructor that is using resource
    */
-  constructor($log: ng.ILogService, $scope: ng.IScope, $timeout: ng.ITimeoutService, cheBranding: CheBranding, cheAPI: CheAPI) {
+  constructor($log: ng.ILogService,
+              $scope: ng.IScope,
+              $timeout: ng.ITimeoutService,
+              cheBranding: CheBranding,
+              cheAPI: CheAPI) {
     this.$log = $log;
     this.$scope = $scope;
     this.$timeout = $timeout;
@@ -140,7 +132,7 @@ export class WorkspaceDevfileEditorController {
   /**
    * Callback when editor content is changed.
    */
-  onChange(): void {
+  onChange(editorState: che.IValidation): void {
     if (!this.isActive) {
       return;
     }
@@ -149,11 +141,13 @@ export class WorkspaceDevfileEditorController {
       this.$timeout.cancel(this.saveTimeoutPromise);
     }
 
-    this.saveTimeoutPromise = this.$timeout(() => {
-      if (!this.editorState.isValid) {
-        return;
-      }
+    if (!editorState.isValid) {
+      const devfile = this.workspaceDevfile;
+      this.workspaceDevfileOnChange({ devfile, editorState });
+      return;
+    }
 
+    this.saveTimeoutPromise = this.$timeout(() => {
       const devfile = jsyaml.safeLoad(this.devfileYaml);
       Object.keys(this.workspaceDevfile).forEach((key: string) => {
         if (!devfile[key]) {
@@ -161,7 +155,7 @@ export class WorkspaceDevfileEditorController {
         }
       });
       angular.extend(this.workspaceDevfile, devfile);
-      this.workspaceDevfileOnChange({ devfile });
+      this.workspaceDevfileOnChange({ devfile, editorState });
     }, 500);
   }
 

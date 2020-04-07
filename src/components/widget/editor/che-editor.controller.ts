@@ -11,7 +11,10 @@
  */
 'use strict';
 
-import { CheAPI } from '../../api/che-api.factory';
+require('regenerator-runtime');
+
+const MODEL_URI = 'inmemory://model.yaml';
+const MONACO_URI = monaco.Uri.parse(MODEL_URI);
 
 interface IEditor {
   render: Function;
@@ -44,6 +47,20 @@ export class CheEditorController {
   $timeout: ng.ITimeoutService;
 
   setEditorValue: (content: string) => void;
+
+  private editorForm: ng.IFormController;
+  private editorState: IEditorState;
+  private onContentChange: Function;
+  private editorMode: string;
+  private editorDecorationPattern: string;
+  /**
+   * Custom validator callback.
+   */
+  private validator: Function;
+  /**
+   * Is editor read only.
+   */
+  private editorReadOnly: boolean;
   /**
    * Editor options object.
    */
@@ -52,37 +69,9 @@ export class CheEditorController {
     readOnly?: boolean;
     wordWrap?: string;
     lineNumbers?: string;
+    decorationPattern?: string;
     onLoad: Function;
   };
-
-  /**
-   * Editor form controller.
-   */
-  private editorForm: ng.IFormController;
-  /**
-   * Editor state object.
-   */
-  private editorState: IEditorState;
-  /**
-   * Custom validator callback.
-   */
-  private validator: Function;
-  /**
-   * On content change callback.
-   */
-  private onContentChange: Function;
-  /**
-   * Is editor read only.
-   */
-  private editorReadOnly: boolean;
-  /**
-   * Editor mode.
-   */
-  private editorMode: string;
-  /**
-   * Cursor position.
-   */
-  private cursorPos: ICursorPos = { line: 0, column: 0 };
 
   /**
    * Default constructor that is using resource injection
@@ -104,54 +93,50 @@ export class CheEditorController {
           doc.setValue(content);
         };
         doc.onDidChangeContent(() => {
-          this.$timeout(() => {
-            this.editorState.errors.length = 0;
-            if (angular.isFunction(this.validator)) {
-              try {
-                const customValidatorState: IEditorState = this.validator();
-                if (customValidatorState && angular.isArray(customValidatorState.errors)) {
-                  customValidatorState.errors.forEach((error: string) => {
-                    this.editorState.errors.push(error);
-                  });
-                }
-              } catch (error) {
-                this.editorState.errors.push(error.toString());
+          this.editorState.errors.length = 0;
+          if (angular.isFunction(this.validator)) {
+            try {
+              const customValidatorState: IEditorState = this.validator();
+              if (customValidatorState && angular.isArray(customValidatorState.errors)) {
+                customValidatorState.errors.forEach((error: string) => {
+                  this.editorState.errors.push(error);
+                });
               }
+            } catch (error) {
+              this.editorState.errors.push(error.toString());
             }
-            this.editorState.isValid = this.editorState.errors.length === 0;
-            if (angular.isFunction(this.onContentChange)) {
-              this.onContentChange({ editorState: this.editorState });
-            }
-
-            this.editorForm.$setValidity('custom-validator', this.editorState.isValid, null);
-          }, 500);
+          }
+          this.updateState();
+          this.languageServerValidation(editor);
         });
-        this.YAMLValidation();
       }
     };
+    if (this.editorDecorationPattern) {
+      this.editorOptions.decorationPattern = this.editorDecorationPattern;
+    }
   }
 
-  YAMLValidation() {
-    require('regenerator-runtime');
-    const MODEL_URI = 'inmemory://model.yaml';
-    const MONACO_URI = monaco.Uri.parse(MODEL_URI);
-
-    const p2m = new (window as any).monacoConversion.ProtocolToMonacoConverter();
-
-    function createDocument(model) {
-      return (window as any).yamlLanguageServer.TextDocument.create(
-        MODEL_URI,
-        model.getModeId(),
-        model.getVersionId(),
-        model.getValue()
-      );
+  private updateState(): void {
+    this.editorState.isValid = this.editorState.errors.length === 0;
+    this.editorForm.$setValidity('custom-validator', this.editorState.isValid, null);
+    if (angular.isFunction(this.onContentChange)) {
+      this.onContentChange({editorState: this.editorState});
     }
+  }
 
+  private languageServerValidation(editor: IEditor): void {
+    const model = editor.getModel();
     const yamlService = (window as any).yamlService;
+    const p2m = new (window as any).monacoConversion.ProtocolToMonacoConverter();
     const pendingValidationRequests = new Map();
-
-    const getModel = () => monaco.editor.getModels()[0];
-
+    const cleanDiagnostics = () =>
+      monaco.editor.setModelMarkers(monaco.editor.getModel(MONACO_URI), 'default', []);
+    const createDocument = model => (window as any).yamlLanguageServer.TextDocument.create(
+      MODEL_URI,
+      model.getModeId(),
+      model.getVersionId(),
+      model.getValue()
+    );
     const cleanPendingValidation = (document) => {
       const request = pendingValidationRequests.get(document.uri);
       if (request !== undefined) {
@@ -159,39 +144,26 @@ export class CheEditorController {
         pendingValidationRequests.delete(document.uri);
       }
     };
-
-    const cleanDiagnostics = () =>
-      monaco.editor.setModelMarkers(monaco.editor.getModel(MONACO_URI), 'default', []);
-
     const doValidate = (document) => {
       if (document.getText().length === 0) {
         cleanDiagnostics();
         return;
       }
-      yamlService.doValidation(document, false).then((diagnostics) => {
+      return yamlService.doValidation(document, false).then((diagnostics) => {
         const markers = p2m.asDiagnostics(diagnostics);
-        monaco.editor.setModelMarkers(getModel(), 'default', markers);
+        const errorMessage = markers && markers[0] ? (markers[0] as any).message : '';
+        if (errorMessage) {
+          this.editorState.errors.push(`Error. ${errorMessage}`);
+          if (this.editorState.isValid) {
+            this.updateState();
+          }
+        }
+        monaco.editor.setModelMarkers(model, 'default', markers);
       });
     };
 
-    getModel().onDidChangeContent(() => {
-      const document = createDocument(getModel());
-      cleanPendingValidation(document);
-      pendingValidationRequests.set(
-        document.uri,
-        setTimeout(() => {
-          pendingValidationRequests.delete(document.uri);
-          doValidate(document);
-        })
-      );
-    });
-  }
-
-  /**
-   * Returns validation state of the editor content.
-   * @returns {boolean}
-   */
-  isEditorValid(): boolean {
-    return this.editorState && this.editorState.isValid;
+    const document = createDocument(model);
+    cleanPendingValidation(document);
+    doValidate(document);
   }
 }

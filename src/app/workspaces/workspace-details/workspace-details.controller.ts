@@ -361,9 +361,6 @@ export class WorkspaceDetailsController {
     // 'cancel' button
     this.editOverlayConfig.cancelButton.disabled = !workspaceIsModified;
 
-    // message content
-    this.editOverlayConfig.message.content = this.getOverlayMessage();
-
     // message visibility
     this.editOverlayConfig.message.visible = !this.isSupported
       || this.failedTabs.length > 0
@@ -389,7 +386,7 @@ export class WorkspaceDetailsController {
     }, 500);
   }
 
-  onWorkspaceChanged(): void {
+  onWorkspaceChanged(editorState?: che.IValidation): void {
     let { isModified, needRestart } = this.isModifiedDevfile();
 
     if (this.getWorkspaceStatus() === WorkspaceStatus[WorkspaceStatus.STARTING]
@@ -400,7 +397,11 @@ export class WorkspaceDetailsController {
     }
 
     if (isModified || needRestart) {
-      this.workspaceDetailsService.setModified(this.workspaceId, { isSaved: isModified === false, needRestart });
+      this.workspaceDetailsService.setModified(this.workspaceId, {
+        isSaved: isModified === false,
+        needRestart: needRestart,
+        hasError: editorState && !editorState.isValid
+      });
     } else {
       this.workspaceDetailsService.removeModified(this.workspaceId);
     }

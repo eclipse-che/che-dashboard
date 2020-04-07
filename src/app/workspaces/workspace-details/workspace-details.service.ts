@@ -182,12 +182,9 @@ export class WorkspaceDetailsService {
     this.ideSvc = ideSvc;
     this.pluginRegistry = pluginRegistry;
     this.workspaceDetailsProjectsService = workspaceDetailsProjectsService;
-
     this.observable =  new Observable<any>();
-
     this.pages = [];
     this.sections = [];
-    this.observable = new Observable();
 
     cheService.fetchServices().finally(() => {
       const sharingEnabled = this.cheDashboardConfigurationService.enabledFeature(TogglableFeature.WORKSPACE_SHARING);
@@ -365,7 +362,7 @@ export class WorkspaceDetailsService {
   /**
    * Keep a workspace as one that is modified and may need restarting to apply changes.
    */
-  setModified(id: string, attrs: { isSaved?: boolean, needRestart?: boolean }): void {
+  setModified(id: string, attrs: { isSaved?: boolean, needRestart?: boolean, hasError?: boolean }): void {
     this.modifiedWorkspaces.set(id, attrs);
   }
 

@@ -72,7 +72,7 @@ export class CheEditModeOverlayController {
    * @param url
    */
   private extractPathname(url: string): string {
-      return url.slice(url.indexOf('#') + 1, url.indexOf('?') !== -1 ? url.indexOf('?') : url.length);
+    return url.slice(url.indexOf('#') + 1, url.length);
   }
 
 }
