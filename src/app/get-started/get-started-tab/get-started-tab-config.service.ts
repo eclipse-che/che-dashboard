@@ -10,9 +10,11 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import { CheDashboardConfigurationService } from '../../components/branding/che-dashboard-configuration.service';
+import { CheDashboardConfigurationService } from '../../../components/branding/che-dashboard-configuration.service';
 
-export class GetStartedConfigService {
+// todo move to get-started folder
+
+export class GetStartedTabConfigService {
 
   static $inject = [
     'cheDashboardConfigurationService'

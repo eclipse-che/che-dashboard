@@ -19,7 +19,7 @@
  */
 export class SampleCardDirective implements ng.IDirective {
   restrict = 'E';
-  templateUrl = 'app/get-started/sample-card/sample-card.html';
+  templateUrl = 'app/get-started/get-started-tab/sample-card/sample-card.html';
   replace = true;
 
   scope = {
