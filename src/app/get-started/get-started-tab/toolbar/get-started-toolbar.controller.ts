@@ -11,9 +11,9 @@
  */
 'use strict';
 
-import { IDevfileMetaData } from '../../../components/api/devfile-registry.factory';
-import { IChePfTextInputProperties } from '../../../components/che-pf-widget/text-input/che-pf-text-input.directive';
-import { IChePfSwitchProperties } from '../../../components/che-pf-widget/switch/che-pf-switch.directive';
+import { IDevfileMetaData } from '../../../../components/api/devfile-registry.factory';
+import { IChePfTextInputProperties } from '../../../../components/che-pf-widget/text-input/che-pf-text-input.directive';
+import { IChePfSwitchProperties } from '../../../../components/che-pf-widget/switch/che-pf-switch.directive';
 import { IGetStartedToolbarComponentInputBindings, IGetStartedToolbarComponentBindings } from './get-started-toolbar.component';
 
 type OnChangeObject = {

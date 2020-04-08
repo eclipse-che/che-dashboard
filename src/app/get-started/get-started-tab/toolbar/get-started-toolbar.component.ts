@@ -12,7 +12,7 @@
 'use strict';
 
 import { GetStartedToolbarController } from './get-started-toolbar.controller';
-import { IDevfileMetaData } from '../../../components/api/devfile-registry.factory';
+import { IDevfileMetaData } from '../../../../components/api/devfile-registry.factory';
 
 export interface IGetStartedToolbarBindingProperties {
   devfiles: IDevfileMetaData[];
@@ -36,7 +36,7 @@ interface IGetStartedToolbarComponentScopeBindings {
 
 export class GetStartedToolbarComponent implements ng.IComponentOptions, IGetStartedToolbarComponentScopeBindings {
 
-  templateUrl = 'app/get-started/toolbar/get-started-toolbar.html';
+  templateUrl = 'app/get-started/get-started-tab/toolbar/get-started-toolbar.html';
   controller = GetStartedToolbarController;
   controllerAs = 'getStartedToolbarController';
 

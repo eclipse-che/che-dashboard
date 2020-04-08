@@ -11,27 +11,36 @@
  */
 'use strict';
 
-import { CreateWorkspaceSvc } from '../workspaces/create-workspace/create-workspace.service';
-import { CheWorkspace } from '../../components/api/workspace/che-workspace.factory';
-import { DevfileRegistry, IDevfileMetaData } from '../../components/api/devfile-registry.factory';
-import { CheNotification } from '../../components/notification/che-notification.factory';
-import { IChePfSecondaryButtonProperties } from '../../components/che-pf-widget/button/che-pf-secondary-button.directive';
+import { CreateWorkspaceSvc } from '../../workspaces/create-workspace/create-workspace.service';
+import { CheWorkspace } from '../../../components/api/workspace/che-workspace.factory';
+import { DevfileRegistry, IDevfileMetaData } from '../../../components/api/devfile-registry.factory';
+import { CheNotification } from '../../../components/notification/che-notification.factory';
+import { IChePfSecondaryButtonProperties } from '../../../components/che-pf-widget/button/che-pf-secondary-button.directive';
 import { IGetStartedToolbarBindingProperties } from './toolbar/get-started-toolbar.component';
 
+enum TABS {
+  GET_STARTED = 'Get Started',
+  CUSTOM_WORKSPACE = 'Custom Workspace'
+}
+
+enum MASTHEADS {
+  GET_STARTED = 'Get Started',
+  CUSTOM_WORKSPACE = 'Custom Workspace'
+}
+
+// todo rename to GettingStartedController
 
 /**
  * @ngdoc controller
- * @name get.started.controller:GetStartedController
+ * @name get.started.tab.controller:GetStartedTabController
  * @description This class is handling the controller for the Get Started page with template list
  * @author Oleksii Orel
  * @author Oleksii Kurinnyi
  */
-export class GetStartedController {
+export class GetStartedTabController {
 
   static $inject = [
-    '$filter',
     '$log',
-    '$q',
     'cheNotification',
     'cheWorkspace',
     'createWorkspaceSvc',
@@ -42,40 +51,36 @@ export class GetStartedController {
   toolbarProps: IGetStartedToolbarBindingProperties;
   createButton: IChePfSecondaryButtonProperties;
   filteredDevfiles: Array<IDevfileMetaData> = [];
+  tabs: typeof TABS = TABS;
 
-  $filter: ng.IFilterService;
-  $log: ng.ILogService;
-  $q: ng.IQService;
-  cheNotification: CheNotification;
-  createWorkspaceSvc: CreateWorkspaceSvc;
-  devfileRegistry: DevfileRegistry;
+  // injected services
+  private $log: ng.ILogService;
+  private cheNotification: CheNotification;
+  private createWorkspaceSvc: CreateWorkspaceSvc;
+  private devfileRegistry: DevfileRegistry;
 
   private isLoading: boolean = false;
   private isCreating: boolean = false;
   private devfileRegistryUrl: string;
-
-  private devfiles: Array<IDevfileMetaData> = [];
   private ephemeralMode: boolean;
 
   /**
    * Default constructor that is using resource
    */
   constructor(
-    $filter: ng.IFilterService,
     $log: ng.ILogService,
-    $q: ng.IQService,
     cheNotification: CheNotification,
     cheWorkspace: CheWorkspace,
     createWorkspaceSvc: CreateWorkspaceSvc,
     devfileRegistry: DevfileRegistry,
     $location: ng.ILocationService
   ) {
-    this.$filter = $filter;
     this.$log = $log;
-    this.$q = $q;
     this.cheNotification = cheNotification;
     this.createWorkspaceSvc = createWorkspaceSvc;
     this.devfileRegistry = devfileRegistry;
+
+    console.log('>>> this.tabs', this.tabs);
 
     this.toolbarProps = {
       devfiles: [],
@@ -155,7 +160,6 @@ export class GetStartedController {
     this.isLoading = true;
     return this.devfileRegistry.fetchDevfiles(this.devfileRegistryUrl)
       .then(devfiles => {
-        this.devfiles = devfiles;
         this.toolbarProps.devfiles = devfiles;
       }, error => {
         const message = 'Failed to load devfiles meta list.';

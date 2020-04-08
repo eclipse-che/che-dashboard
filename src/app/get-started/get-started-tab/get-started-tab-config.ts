@@ -11,40 +11,29 @@
  */
 'use strict';
 
-import { GetStartedController } from './get-started.controller';
-import { GetStartedConfigService } from './get-started-config.service';
+import { GetStartedTabController } from './get-started-tab.controller';
+import { GetStartedTabDirective } from './get-started-tab.directive';
+import { GetStartedTabConfigService } from './get-started-tab-config.service';
 import { GetStartedToolbarComponent } from './toolbar/get-started-toolbar.component';
 import { GetStartedToolbarController } from './toolbar/get-started-toolbar.controller';
 import { SampleCardDirective } from './sample-card/sample-card.directive';
+
+// todo GettingStartedConfig
 
 /**
  * @name getStarted:GetStartedConfig
  * @description This class is used for configuring all get started devfiles.
  * @author Oleksii Orel
  */
-export class GetStartedConfig {
+export class GetStartedTabConfig {
 
   constructor(register: che.IRegisterService) {
     register.directive('sampleCard', SampleCardDirective);
-    register.controller('GetStartedController', GetStartedController);
+    register.controller('GetStartedTabController', GetStartedTabController);
+    register.directive('getStartedTab', GetStartedTabDirective);
     register.controller('GetStartedToolbarController', GetStartedToolbarController);
     register.component('getStartedToolbar', GetStartedToolbarComponent);
 
-    register.service('getStartedConfigService', GetStartedConfigService);
-
-    // config routes
-    register.app.config(['$routeProvider', ($routeProvider: any) => {
-      $routeProvider.accessWhen('/getstarted', {
-        title: 'Get Started',
-        templateUrl: 'app/get-started/get-started.html',
-        controller: 'GetStartedController',
-        controllerAs: 'getStartedController',
-        resolve: {
-          initData: ['getStartedConfigService', (svc: GetStartedConfigService) => {
-            return svc.allowGetStartedRoutes();
-          }]
-        }
-      });
-    }]);
+    register.service('getStartedTabConfigService', GetStartedTabConfigService);
   }
 }
