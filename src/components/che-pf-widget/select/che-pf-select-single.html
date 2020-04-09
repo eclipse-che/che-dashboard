@@ -43,6 +43,9 @@
         aria-pressed="false"
         ng-click="selectItem(item)">
         {{ctrl.getItemName(item)}}
+        <i class="fas fa-check pf-c-select__menu-item-icon"
+          aria-hidden="true"
+          ng-if="ctrl.isSelected(item)"></i>
       </button>
     </li>
 

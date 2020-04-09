@@ -464,7 +464,7 @@ export class CheFactory {
     });
   }
 
-  fetchDevfile(url: string): ng.IPromise<void> {
+  fetchDevfile(url: string): ng.IPromise<che.IWorkspaceDevfile> {
     return this.remoteFactoryAPI.getFactoryParameters({}, {url}).$promise.then((res: che.IFactory) => {
       if (!res || !res.devfile) {
         return this.$q.reject({data: {message: 'The specified link does not contain a valid Devfile.'}});

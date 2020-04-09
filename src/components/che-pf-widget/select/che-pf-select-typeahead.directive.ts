@@ -15,8 +15,8 @@ import { RandomSvc } from '../../utils/random.service';
 import { ChePfSelectController } from './che-pf-select.controller';
 
 export type IChePfSelectItemName = string;
-export type IChePfSelectItemValue = string;
-export type IChePfSelectItem = IChePfSelectItemValue | [IChePfSelectItemName, IChePfSelectItemValue];
+export type IChePfSelectItemValue = any;
+export type IChePfSelectItem = IChePfSelectItemName | [IChePfSelectItemName, IChePfSelectItemValue];
 
 interface IChePfSelectBase {
   config: {
@@ -28,15 +28,16 @@ interface IChePfSelectBase {
     placeholder: string;
   };
   value?: IChePfSelectItem;
+  onClear?: () => void;
   onSelect: Function;
 }
 
-export interface IChePfSelectProperties extends IChePfSelectBase {
-  onSelect: ($value?: string) => void;
+export interface IChePfSelectProperties<T> extends IChePfSelectBase {
+  onSelect: ($value: T) => void;
 }
 
 export interface IChePfSelectBindings extends IChePfSelectBase {
-  onSelect: (eventObj?: { $value: string }) => void;
+  onSelect: (eventObj: { $value: any }) => void;
 }
 
 interface IChePfSelectDirectiveScope {
@@ -88,6 +89,7 @@ export class ChePfSelectTypeahead implements ng.IDirective, IChePfSelectDirectiv
   scope = {
     config: '=',
     value: '=?',
+    onClear: '&',
     onSelect: '&',
   };
 
@@ -118,7 +120,21 @@ export class ChePfSelectTypeahead implements ng.IDirective, IChePfSelectDirectiv
     $scope.toggleId = this.randomSvc.getRandString({ prefix: this.toggleId });
     ctrl.config.id = $scope.toggleId;
 
-    const menuItemsList = element.find('.pf-c-select__menu');
+    $scope.$watch(() => ctrl.value, (newItem, oldItem) => {
+      if (newItem && ctrl.getItemValue(newItem) === ctrl.getItemValue(ctrl.selectedItem)) {
+        return;
+      }
+      if (newItem && ctrl.config.items.indexOf(newItem) !== -1) {
+        $scope.selectItem(newItem);
+        return;
+      }
+      if (!newItem && !oldItem) {
+        return;
+      }
+      if (!newItem) {
+        $scope.clearTypeahead();
+      }
+    });
 
     // handles clicks outside of the component
     // to collapse the items list
