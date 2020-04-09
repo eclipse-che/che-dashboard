@@ -21,7 +21,7 @@ import { IChePfButtonDirectiveScope } from './che-pf-button';
  *
  * @usage
  * <che-pf-secondary-button
- *   title="$ctrl.secondaryButton.title"
+ *   title="{{$ctrl.secondaryButton.title}}"
  *   on-click="$ctrl.secondaryButton.onClick()">
  * </che-pf-secondary-button>
  *
