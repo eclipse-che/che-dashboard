@@ -1,0 +1,90 @@
+<!--
+
+    Copyright (c) 2015-2018 Red Hat, Inc.
+    This program and the accompanying materials are made
+    available under the terms of the Eclipse Public License 2.0
+    which is available at https://www.eclipse.org/legal/epl-2.0/
+
+    SPDX-License-Identifier: EPL-2.0
+
+    Contributors:
+      Red Hat, Inc. - initial API and implementation
+
+-->
+
+<div class="pf-c-select"
+  ng-class="{'pf-m-expanded': expanded}">
+
+  <span id="{{labelId}}" hidden>{{typeahead || ctrl.getItemName(ctrl.selectedItem) || ctrl.config.placeholder}}</span>
+
+  <div class="pf-c-select__toggle pf-m-typeahead"
+    ng-class="{'pf-m-disabled': ctrl.config.disabled}">
+
+    <div class="pf-c-select__toggle-wrapper">
+
+      <!-- Typeahead Input Field -->
+      <input class="pf-c-form-control pf-c-select__toggle-typeahead"
+        type="text"
+        id="{{typeaheadId}}"
+        aria-label="Type to filter"
+        ng-model="typeahead"
+        ng-click="expandItemsList()"
+        ng-change="onTypeahead(typeahead)"
+        ng-attr-placeholder="{{ctrl.config.placeholder}}" ng-disabled="ctrl.config.disabled"/>
+
+    </div>
+
+    <!-- Times Icon Button -->
+    <button class="pf-c-button pf-m-plain pf-c-select__toggle-clear"
+      type="button"
+      aria-label="Clear all"
+      ng-click="clearTypeahead()"
+      ng-show="typeahead || ctrl.selectedItem"
+      ng-disabled="ctrl.config.disabled">
+      <i class="fas fa-times-circle" aria-hidden="true"></i>
+    </button>
+
+    <!-- Caret Down Button -->
+    <button class="pf-c-button pf-m-plain pf-c-select__toggle-button"
+      type="button"
+      id="{{toggleId}}"
+      aria-haspopup="true"
+      aria-labelledby="{{labelId}} {{toggleId}}"
+      aria-label="Select"
+      ng-attr-aria-expanded="{{expanded}}"
+      ng-click="toggleItemsList()"
+      ng-disabled="ctrl.config.disabled">
+      <i class="fas fa-caret-down pf-c-select__toggle-arrow" aria-hidden="true"></i>
+    </button>
+
+  </div>
+
+  <!-- Menu Items List -->
+  <ul class="pf-c-select__menu"
+    aria-labelledby="{{labelId}}"
+    ng-show="expanded">
+
+    <!-- Menu Items -->
+    <li ng-repeat="item in ctrl.items | filter:filterBy as results">
+      <button type="button"
+        class="pf-c-select__menu-item"
+        aria-pressed="false"
+        ng-click="selectItem(item)">
+
+        <span ng-bind-html="highlight(ctrl.getItemName(item))"></span>
+
+        <i class="fas fa-check pf-c-select__menu-item-icon"
+          aria-hidden="true"
+          ng-if="ctrl.isSelected(item)"></i>
+      </button>
+    </li>
+
+    <!-- Menu Item for Nothing found -->
+    <li ng-if="results.length===0 && ctrl.emptyState">
+      <button class="pf-c-select__menu-item pf-m-disabled">
+        {{ctrl.getItemName(ctrl.emptyState)}}
+      </button>
+    </li>
+  </ul>
+
+</div>

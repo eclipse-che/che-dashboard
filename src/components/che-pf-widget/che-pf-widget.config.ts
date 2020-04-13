@@ -16,6 +16,9 @@ import { ChePfMastheadDirective } from './masthead/che-pf-masthead.directive';
 import { ChePfPageMainAreaDirective } from './page-main-area/che-pf-page-main-area.directive';
 import { ChePfPageMainSectionDirective } from './page-main-section/che-pf-page-main-section.directive';
 import { ChePfSecondaryButtonDirective } from './button/che-pf-secondary-button.directive';
+import { ChePfSelectTypeahead } from './select/che-pf-select-typeahead.directive';
+import { ChePfSelectSingle } from './select/che-pf-select-single.directive';
+import { ChePfSelectController } from './select/che-pf-select.controller';
 import { ChePfSwitchDirective } from './switch/che-pf-switch.directive';
 import { ChePfTextInputDirective } from './text-input/che-pf-text-input.directive';
 
@@ -26,6 +29,9 @@ export class ChePfWidgetConfig {
     register.directive('chePfPageMainArea', ChePfPageMainAreaDirective);
     register.directive('chePfPageMainSection', ChePfPageMainSectionDirective);
     register.directive('chePfSecondaryButton', ChePfSecondaryButtonDirective);
+    register.directive('chePfSelectTypeahead', ChePfSelectTypeahead);
+    register.directive('chePfSelectSingle', ChePfSelectSingle);
+    register.controller('ChePfSelectController', ChePfSelectController);
     register.directive('chePfSwitch', ChePfSwitchDirective);
     register.directive('chePfTextInput', ChePfTextInputDirective);
   }
