@@ -15,7 +15,7 @@ import { CreateWorkspaceSvc } from '../../workspaces/create-workspace/create-wor
 import { CheWorkspace } from '../../../components/api/workspace/che-workspace.factory';
 import { DevfileRegistry, IDevfileMetaData } from '../../../components/api/devfile-registry.factory';
 import { CheNotification } from '../../../components/notification/che-notification.factory';
-import { IChePfSecondaryButtonProperties } from '../../../components/che-pf-widget/button/che-pf-secondary-button.directive';
+import { IChePfButtonProperties } from '../../../components/che-pf-widget/button/che-pf-button';
 import { IGetStartedToolbarBindingProperties } from './toolbar/get-started-toolbar.component';
 
 enum TABS {
@@ -49,7 +49,7 @@ export class GetStartedTabController {
   ];
 
   toolbarProps: IGetStartedToolbarBindingProperties;
-  createButton: IChePfSecondaryButtonProperties;
+  createButton: IChePfButtonProperties;
   filteredDevfiles: Array<IDevfileMetaData> = [];
   tabs: typeof TABS = TABS;
 
