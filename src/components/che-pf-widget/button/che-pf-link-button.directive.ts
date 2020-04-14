@@ -16,22 +16,22 @@ import { IChePfButtonDirectiveScope } from './che-pf-button';
 /**
  * @ngdoc directive
  *
- * @description defines a secondary type button.
+ * @description defines a link type button.
  * Documentation: https://www.patternfly.org/v4/documentation/core/components/button#documentation
  *
  * @usage
- * <che-pf-secondary-button
- *   title="$ctrl.secondaryButton.title"
- *   on-click="$ctrl.secondaryButton.onClick()">
- * </che-pf-secondary-button>
+ * <che-pf-link-button
+ *   title="{{$ctrl.linkButton.title}}"
+ *   on-click="$ctrl.linkButton.onClick()">
+ * </che-pf-link-button>
  *
  * @author Oleksii Kurinnyi
  */
-export class ChePfSecondaryButtonDirective implements ng.IDirective, IChePfButtonDirectiveScope {
+export class ChePfLinkButtonDirective implements ng.IDirective, IChePfButtonDirectiveScope {
 
   restrict = 'E';
   replace = true;
-  templateUrl = 'components/che-pf-widget/button/che-pf-secondary-button.html';
+  templateUrl = 'components/che-pf-widget/button/che-pf-link-button.html';
 
   scope = {
     title: '@',
