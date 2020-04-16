@@ -29,7 +29,7 @@
     "factory": "/docs/factories-getting-started.html",
     "organization": "/docs/organizations.html",
     "converting": "/docs/che-7/converting-a-che-6-workspace-to-a-che-7-devfile/",
-    "certificate": "/docs/che-7/setup-che-in-tls-mode-with-self-signed-certificate/",
+    "certificate": "/docs/che-7/installing-che-in-tls-mode-with-self-signed-certificates/",
     "general": "/docs/che-7"
   }
 }
