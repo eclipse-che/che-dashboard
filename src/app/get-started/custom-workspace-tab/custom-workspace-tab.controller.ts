@@ -17,6 +17,7 @@ import { IInfrastructureNamespaceRowBindingProperties } from './infrastructure-n
 import { IWorkspaceNameRowBindingProperties } from './workspace-name-row/workspace-name-row.component';
 import { ITemporaryStorageRowBindingProperties } from './temporary-storage-row/temporary-storage-row.component';
 import { IDevfileSelectRowBindingProperties } from './devfile-select-row/devfile-select-row.component';
+import { IDevfileEditorRowBindingProperties } from './devfile-editor-row/devfile-editor-row.component';
 
 export class CustomWorkspaceTabController implements ng.IController {
 
@@ -30,6 +31,7 @@ export class CustomWorkspaceTabController implements ng.IController {
   workspaceNameProperties: IWorkspaceNameRowBindingProperties;
   temporaryStorageProperties: ITemporaryStorageRowBindingProperties;
   devfileSelectProperties: IDevfileSelectRowBindingProperties;
+  devfileEditorProperties: IDevfileEditorRowBindingProperties;
 
   // injected services
   private createWorkspaceSvc: CreateWorkspaceSvc;
@@ -37,8 +39,10 @@ export class CustomWorkspaceTabController implements ng.IController {
   private namespace: string;
   private workspaceName: string;
   private temporaryStorage: boolean;
+  private temporaryStorageDefault: boolean;
   private stackName: string;
   private devfile: che.IWorkspaceDevfile;
+  private editorState: che.IValidation;
 
   constructor(
     createWorkspaceSvc: CreateWorkspaceSvc,
@@ -53,6 +57,7 @@ export class CustomWorkspaceTabController implements ng.IController {
       onSelect: name => {
         this.namespace = name;
         this.updateDevfile();
+        this.updateProperties();
       },
     };
     this.workspaceNameProperties = {
@@ -61,12 +66,15 @@ export class CustomWorkspaceTabController implements ng.IController {
       onChange: name => {
         this.workspaceName = name;
         this.updateDevfile();
+        this.updateProperties();
       },
     };
     this.temporaryStorageProperties = {
-      onChange: temporary => {
+      onChange: (temporary, defaultValue) => {
         this.temporaryStorage = temporary;
+        this.temporaryStorageDefault = defaultValue;
         this.updateDevfile();
+        this.updateProperties();
       },
     };
     this.devfileSelectProperties = {
@@ -74,6 +82,16 @@ export class CustomWorkspaceTabController implements ng.IController {
         this.devfile = devfile;
         this.stackName = stackName;
         this.updateDevfile();
+        this.updateProperties();
+      },
+    };
+    this.devfileEditorProperties = {
+      onChange: (devfile, editorState) => {
+        this.editorState = editorState;
+        if (editorState.isValid) {
+          this.devfile = devfile;
+          this.updateProperties();
+        }
       },
     };
   }
@@ -81,7 +99,9 @@ export class CustomWorkspaceTabController implements ng.IController {
   $onInit(): void { }
 
   get createButtonDisabled(): boolean {
-    return !(this.namespace && this.workspaceName && this.devfile);
+    const hasGenerateName = this.devfile && this.devfile.metadata && this.devfile.metadata.generateName;
+    const isDevfileValid = this.devfile && this.editorState && this.editorState.isValid;
+    return !(this.namespace && (this.workspaceName || hasGenerateName) && isDevfileValid);
   }
 
   private updateDevfile(): void {
@@ -89,17 +109,21 @@ export class CustomWorkspaceTabController implements ng.IController {
       return;
     }
 
-    if (this.temporaryStorage) {
+    if (this.temporaryStorage === this.temporaryStorageDefault) {
+        if (this.devfile.attributes && this.devfile.attributes.persistVolumes) {
+          delete this.devfile.attributes.persistVolumes;
+          if (Object.keys(this.devfile.attributes).length === 0) {
+            delete this.devfile.attributes;
+          }
+        }
+    } else {
       if (!this.devfile.attributes) {
         this.devfile.attributes = {};
       }
-      this.devfile.attributes.persistVolumes = 'false';
-    } else {
-      if (this.devfile.attributes && this.devfile.attributes.persistVolumes) {
-        delete this.devfile.attributes.persistVolumes;
-        if (Object.keys(this.devfile.attributes).length === 0) {
-          delete this.devfile.attributes;
-        }
+      if (this.temporaryStorage) {
+        this.devfile.attributes.persistVolumes = 'false';
+      } else {
+        this.devfile.attributes.persistVolumes = 'true';
       }
     }
     if (this.workspaceName) {
@@ -107,6 +131,9 @@ export class CustomWorkspaceTabController implements ng.IController {
         this.devfile.metadata = {}
       }
       this.devfile.metadata.name = this.workspaceName;
+      if (this.devfile.metadata.generateName) {
+        delete this.devfile.metadata.generateName;
+      }
     } else {
       if (this.devfile.metadata && this.devfile.metadata.name) {
         delete this.devfile.metadata.name;
@@ -115,6 +142,26 @@ export class CustomWorkspaceTabController implements ng.IController {
         }
       }
     }
+  }
+
+  private updateProperties(): void {
+    if (!this.devfile) {
+      return;
+    }
+    if (this.devfile.attributes && this.devfile.attributes.persistVolumes) {
+      this.temporaryStorageProperties.temporary = this.devfile.attributes.persistVolumes === 'false';
+    } else {
+      this.temporaryStorageProperties.temporary = undefined;
+    }
+    if (this.devfile.metadata && this.devfile.metadata.name) {
+      this.workspaceNameProperties.name = this.devfile.metadata.name;
+    }
+
+
+    if (this.devfile.metadata) {
+      this.workspaceNameProperties.generateName = this.devfile.metadata.generateName;
+    }
+    this.devfileEditorProperties.devfile = this.devfile;
   }
 
   private createWorkspace(): ng.IPromise<che.IWorkspace> {

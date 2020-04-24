@@ -68,15 +68,15 @@ export class WorkspaceNameRowController implements ng.IController, IWorkspaceNam
     }
 
     // name isn't required if `generateName` is provided
-    if (onChangesObj.generateName.currentValue) {
+    if (onChangesObj.generateName && onChangesObj.generateName.currentValue) {
       this.required = false;
     } else {
       this.required = true;
     }
 
     // update placehoder to suggest user if they need to provide a workspace name or it will be generated
-    if (onChangesObj.generateName.currentValue) {
-      this.workspaceNameInput.config.placeHolder = onChangesObj.generateName.currentValue + '[\\w]{4}';
+    if (onChangesObj.generateName && onChangesObj.generateName.currentValue) {
+      this.workspaceNameInput.config.placeHolder = `will be auto-generated with the prefix '${onChangesObj.generateName.currentValue}'`;
     } else {
       this.workspaceNameInput.config.placeHolder = DEFAULT_PLACEHOLDER;
     }

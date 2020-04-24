@@ -14,11 +14,13 @@
 import { TemporaryStorageRowController } from './temporary-storage-row.controller';
 
 export interface ITemporaryStorageRowBindingProperties {
-  onChange: ($temporary: boolean) => void;
+  temporary?: boolean;
+  onChange: ($temporary: boolean, $default: boolean) => void;
 }
 
 export interface ITemporaryStorageRowComponentBindings {
-  onChange: (eventObj: { $temporary: boolean}) => void;
+  temporary?: boolean;
+  onChange: (eventObj: { $temporary: boolean, $default: boolean }) => void;
 }
 
 interface ITemporaryStorageRowComponentScopeBindings {
@@ -33,6 +35,7 @@ export class TemporaryStorageRowComponent implements ng.IComponentOptions, ITemp
 
   bindings = {
     onChange: '&',
+    temporary: '<?'
   };
 
 }

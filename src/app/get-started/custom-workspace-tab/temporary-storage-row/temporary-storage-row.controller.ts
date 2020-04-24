@@ -15,24 +15,27 @@ import { ITemporaryStorageRowComponentBindings } from './temporary-storage-row.c
 import { CheWorkspace } from '../../../../components/api/workspace/che-workspace.factory';
 import { IChePfSwitchProperties } from '../../../../components/che-pf-widget/switch/che-pf-switch.directive';
 
-export class TemporaryStorageRowController implements ITemporaryStorageRowComponentBindings {
+type OnChangesObject = {
+  [key in keyof ITemporaryStorageRowComponentBindings]: ng.IChangesObject<ITemporaryStorageRowComponentBindings[key]>;
+};
+
+export class TemporaryStorageRowController implements ng.IController, ITemporaryStorageRowComponentBindings {
 
   static $inject = [
     'cheWorkspace',
   ];
 
   // component bindings
-  onChange: (eventObj: { $temporary: boolean }) => void;
-
+  temporary?: boolean;
+  onChange: (eventObj: { $temporary: boolean, $default: boolean }) => void;
+  // init promise
+  initPromise: ng.IPromise<string>;
   // template fields
   temporaryStorageSwitch: IChePfSwitchProperties;
-
   // injected services
   private cheWorkspace: CheWorkspace;
 
-  constructor(
-    cheWorkspace: CheWorkspace,
-  ) {
+  constructor(cheWorkspace: CheWorkspace) {
     this.cheWorkspace = cheWorkspace;
 
     this.temporaryStorageSwitch = {
@@ -46,17 +49,35 @@ export class TemporaryStorageRowController implements ITemporaryStorageRowCompon
   }
 
   $onInit(): void {
-    this.cheWorkspace.fetchWorkspaceSettings()
+    this.initPromise = this.cheWorkspace.fetchWorkspaceSettings()
       .then(settings => this.updateTemporaryStorage(settings['che.workspace.persist_volumes.default']));
   }
 
-  private updateTemporaryStorage(persistVolumesDefault: string): void {
-    const temporary = persistVolumesDefault === 'false';
-    this.temporaryStorageSwitch.value = temporary;
+  $onChanges(onChangesObj: OnChangesObject): void {
+    if (!onChangesObj.temporary) {
+      return;
+    }
+    this.initPromise.then((persistVolumesDefault: string) => {
+      if (onChangesObj.temporary.currentValue === undefined && persistVolumesDefault) {
+        this.temporaryStorageSwitch.value = persistVolumesDefault === 'false';
+        return;
+      }
+      this.temporaryStorageSwitch.value = onChangesObj.temporary.currentValue;
+    });
   }
 
-  private onChanged(temporary: boolean): void {
-    this.onChange({ '$temporary': temporary });
+  private updateTemporaryStorage(persistVolumesDefault: string): string {
+    if (this.temporary === undefined) {
+      this.temporaryStorageSwitch.value = persistVolumesDefault === 'false';
+    } else {
+      this.temporaryStorageSwitch.value = this.temporary;
+    }
+    return persistVolumesDefault;
+  }
+
+  private async onChanged(temporary: boolean): Promise<void> {
+    const persistVolumeDefault = await this.initPromise;
+    this.onChange({'$temporary': temporary, $default: persistVolumeDefault === 'false'});
   }
 
 }
