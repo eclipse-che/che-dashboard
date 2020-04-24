@@ -17,6 +17,7 @@ import { DevfileSelectRowComponent } from './devfile-select-row/devfile-select-r
 import { InfrastructureNamespaceRowComponent } from './infrastructure-namespace-row/infrastructure-namespace-row.component';
 import { TemporaryStorageRowComponent } from './temporary-storage-row/temporary-storage-row.component';
 import { WorkspaceNameRowComponent } from './workspace-name-row/workspace-name-row.component';
+import { DevfileEditorRowComponent } from './devfile-editor-row/devfile-editor-row.component';
 
 export class CustomWorkspaceTabConfig {
 
@@ -25,6 +26,7 @@ export class CustomWorkspaceTabConfig {
     register.component('infrastructureNamespaceRow', InfrastructureNamespaceRowComponent);
     register.component('temporaryStorageRow', TemporaryStorageRowComponent);
     register.component('workspaceNameRow', WorkspaceNameRowComponent);
+    register.component('devfileEditorRow', DevfileEditorRowComponent);
     register.controller('CustomWorkspaceTabController', CustomWorkspaceTabController);
     register.directive('customWorkspaceTab', CustomWorkspaceTabDirective);
   }

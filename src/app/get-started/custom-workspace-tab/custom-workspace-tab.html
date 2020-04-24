@@ -17,23 +17,23 @@
   <form class="pf-c-form pf-m-horizontal">
 
     <!-- Infrastructure Namespaces -->
-    <infrastructure-namespace-row on-select="customWorkspaceTabController.infrastructureNamespaceProperties.onSelect()"></infrastructure-namespace-row>
+    <infrastructure-namespace-row on-select="customWorkspaceTabController.infrastructureNamespaceProperties.onSelect($name)"></infrastructure-namespace-row>
 
     <!-- Workspace Name -->
-    <workspace-name-row generate-name="customWorkspaceTabController.workspaceNameProperties.defaultName"
+    <workspace-name-row generate-name="customWorkspaceTabController.workspaceNameProperties.generateName"
       name="customWorkspaceTabController.workspaceNameProperties.name"
       on-change="customWorkspaceTabController.workspaceNameProperties.onChange($name)"></workspace-name-row>
 
     <!-- Temporary Storage -->
-    <temporary-storage-row on-change="customWorkspaceTabController.temporaryStorageProperties.onChange($temporary)"></temporary-storage-row>
-
+    <temporary-storage-row temporary="customWorkspaceTabController.temporaryStorageProperties.temporary"
+      on-change="customWorkspaceTabController.temporaryStorageProperties.onChange($temporary, $default)"></temporary-storage-row>
   </form>
-
   <!-- Devfile -->
   <devfile-select-row on-load="customWorkspaceTabController.devfileSelectProperties.onLoad($devfile, $stackName)"></devfile-select-row>
 
-  <!-- Devfile editor will be here -->
-  devfile: {{customWorkspaceTabController.devfile | json}}<br/>
+  <!-- Devfile editor -->
+  <devfile-editor-row devfile="customWorkspaceTabController.devfileEditorProperties.devfile"
+                      on-change="customWorkspaceTabController.devfileEditorProperties.onChange($devfile, $editorState)"></devfile-editor-row>
 
   <che-pf-primary-button
     title="{{customWorkspaceTabController.createButton.title}}"

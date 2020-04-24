@@ -37,6 +37,7 @@ export class WorkspaceDevfileEditor {
     this.scope = {
       isActive: '=?',
       editorReadOnly: '=?',
+      decorationPattern: '@?',
       workspaceDevfile: '=',
       workspaceDevfileOnChange: '&'
     };

@@ -341,7 +341,7 @@ declare namespace che {
   }
 
   export interface IWorkspaceConfigAttributes {
-    persistVolumes?: 'false'; // explicitly indicates turning the ephemeral mode on
+    persistVolumes?: 'false' | 'true'; // explicitly indicates turning the ephemeral mode on
     editor?: string;
     plugins?: string;
   }
