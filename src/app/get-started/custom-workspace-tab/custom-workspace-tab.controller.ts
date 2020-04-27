@@ -51,7 +51,9 @@ export class CustomWorkspaceTabController implements ng.IController {
 
     this.createButton = {
       title: 'Create & Open',
-      onClick: () => this.createWorkspace(),
+      onClick: () => this.createWorkspace().then((workspace: che.IWorkspace) => {
+        this.createWorkspaceSvc.redirectToIDE(workspace);
+      }),
     };
     this.infrastructureNamespaceProperties = {
       onSelect: name => {

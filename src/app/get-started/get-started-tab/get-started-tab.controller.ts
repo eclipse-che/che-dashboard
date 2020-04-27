@@ -80,8 +80,6 @@ export class GetStartedTabController {
     this.createWorkspaceSvc = createWorkspaceSvc;
     this.devfileRegistry = devfileRegistry;
 
-    console.log('>>> this.tabs', this.tabs);
-
     this.toolbarProps = {
       devfiles: [],
       ephemeralMode: false,
