@@ -27,7 +27,6 @@ const CONFIGURABLE_MENU: ConfigurableMenu = {
 
 export const MENU_ITEM = angular.extend({
   account: '#/account',
-  dashboard: '#/',
   usermanagement: '#/admin/usermanagement',
   workspaces: '#/workspaces',
 }, CONFIGURABLE_MENU);

@@ -54,7 +54,7 @@ export class TemporaryStorageRowController implements ng.IController, ITemporary
   }
 
   $onChanges(onChangesObj: OnChangesObject): void {
-    if (!onChangesObj.temporary) {
+    if (!onChangesObj.temporary || !this.initPromise) {
       return;
     }
     this.initPromise.then((persistVolumesDefault: string) => {

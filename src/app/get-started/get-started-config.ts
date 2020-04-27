@@ -15,6 +15,8 @@ import { GetStartedController } from './get-started.controller';
 import { GetStartedTabConfigService } from './get-started-tab/get-started-tab-config.service';
 import { GetStartedTabConfig } from './get-started-tab/get-started-tab-config';
 import { CustomWorkspaceTabConfig } from './custom-workspace-tab/custom-workspace-tab-config';
+import { CheWorkspace } from '../../components/api/workspace/che-workspace.factory';
+import { MENU_ITEM } from '../navbar/navbar.controller';
 
 export class GetStartedConfig {
 
@@ -35,6 +37,21 @@ export class GetStartedConfig {
         resolve: {
           initData: ['getStartedTabConfigService', (svc: GetStartedTabConfigService) => {
             return svc.allowGetStartedRoutes();
+          }]
+        }
+      });
+
+      $routeProvider.accessWhen('/', {
+        resolve: {
+          initData: ['$window', 'cheWorkspace', ($window: ng.IWindowService, cheWorkspace: CheWorkspace) => {
+            let url = '/getstarted';
+            cheWorkspace.fetchWorkspaces().then(() => {
+              if (cheWorkspace.getWorkspaces().length > 0) {
+                url = '/workspaces';
+              }
+            }).finally(() => {
+              $window.open(`#${url}`, '_self');
+            })
           }]
         }
       });

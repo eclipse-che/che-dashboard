@@ -43,12 +43,10 @@ export class GetStartedController {
   }
 
   onSelectTab(tabIndex: number): void {
-    console.log('>>> tab selected:', tabIndex);
     this.selectedTabIndex = tabIndex;
   }
 
   initTabs(): void {
-    console.log('>>> initTabs');
     this.tabs = {
       [this.GET_STARTED]: 0,
       [this.CUSTOM_WORKSPACE]: 1

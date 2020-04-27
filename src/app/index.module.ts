@@ -18,7 +18,6 @@ import {AdminsConfig} from './admin/admin-config';
 import {AdministrationConfig} from './administration/administration-config';
 import {CheColorsConfig} from './colors/che-color.constant';
 import {CheOutputColorsConfig} from './colors/che-output-colors.constant';
-import {DashboardConfig} from './dashboard/dashboard-config';
 // switch to a config
 import {IdeConfig} from './ide/ide-config';
 import {NavbarConfig} from './navbar/navbar-config';
@@ -550,7 +549,6 @@ new IdeConfig(instanceRegister);
 
 new NavbarConfig(instanceRegister);
 new WorkspacesConfig(instanceRegister);
-new DashboardConfig(instanceRegister);
 new StacksConfig(instanceRegister);
 new GetStartedConfig(instanceRegister);
 new FactoryConfig(instanceRegister);
