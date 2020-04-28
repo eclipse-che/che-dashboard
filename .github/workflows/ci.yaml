@@ -16,7 +16,7 @@ jobs:
   docker-build:
     runs-on: ubuntu-latest
     env:
-      DOCKER_IMAGE: skabashn/che-dashboard
+      DOCKER_IMAGE: eclipse/che-dashboard
     steps:
     - uses: actions/checkout@v2
       name: Checkout che-dashboard source code
