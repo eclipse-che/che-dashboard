@@ -43,7 +43,7 @@ jobs:
     - name: "Docker build"
       run: |
         docker image prune -a -f
-        docker build . -t quay.io/${DOCKER_IMAGE}:latest
+        docker build . -f Dockerfile.apache -t quay.io/${DOCKER_IMAGE}:latest
     - name: "Docker Login"
       run:  docker login -u "${{ secrets.QUAY_USERNAME }}" -p "${{ secrets.QUAY_TOKEN }}" quay.io
     - name: "Push Docker image (latest)"

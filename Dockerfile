@@ -8,11 +8,24 @@
 # Contributors:
 #   Red Hat, Inc. - initial API and implementation
 
-FROM docker.io/httpd:2.4.43-alpine AS registry
+# This is a Dockerfile allowing to build dashboard by using a docker container.
+# Build step: $ docker build -t eclipse-che-dashboard .
+# It builds an archive file that can be used by doing later
+#  $ docker run --rm eclipse-che-dashboard | tar -C target/ -zxf -
+FROM node:8.16.0
 
-RUN sed -i 's|    AllowOverride None|    AllowOverride All|' /usr/local/apache2/conf/httpd.conf && \
-    sed -i 's|Listen 80|Listen 8080|' /usr/local/apache2/conf/httpd.conf && \
-    mkdir -p /var/www && ln -s /usr/local/apache2/htdocs /var/www/html && \
-    chmod -R g+rwX /usr/local/apache2 && \
-    echo "ServerName localhost" >> /usr/local/apache2/conf/httpd.conf
-COPY target/dist /usr/local/apache2/htdocs/
+RUN apt-get update \
+    && apt-get install -y git \
+    && apt-get -y clean \
+    && rm -rf /var/lib/apt/lists/*
+
+COPY package.json /dashboard/
+COPY yarn.lock /dashboard/
+WORKDIR /dashboard
+RUN yarn install --ignore-optional
+COPY . /dashboard/
+
+RUN yarn build && yarn test
+RUN cd /dashboard/target/ && tar zcf /tmp/dashboard.tar.gz dist/
+
+CMD zcat /tmp/dashboard.tar.gz
