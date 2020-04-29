@@ -15,4 +15,5 @@ RUN sed -i 's|    AllowOverride None|    AllowOverride All|' /usr/local/apache2/
     mkdir -p /var/www && ln -s /usr/local/apache2/htdocs /var/www/html && \
     chmod -R g+rwX /usr/local/apache2 && \
     echo "ServerName localhost" >> /usr/local/apache2/conf/httpd.conf
-COPY target/dist /usr/local/apache2/htdocs/
+COPY target/dist /usr/local/apache2/htdocs/dashboard
+RUN sed 's/<![CDATA[<base href="\/">]]/<![CDATA[<base href="\/dashboard">]]/g'  /usr/local/apache2/htdocs/dashboard/index.html
