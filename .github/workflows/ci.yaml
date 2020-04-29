@@ -46,7 +46,7 @@ jobs:
         docker build . -f Dockerfile.apache -t quay.io/${DOCKER_IMAGE}:next
     - name: "Docker Login"
       run:  docker login -u "${{ secrets.QUAY_USERNAME }}" -p "${{ secrets.QUAY_TOKEN }}" quay.io
-    - name: "Push Docker image (latest)"
+    - name: "Push Docker image (next)"
       run: docker push quay.io/${DOCKER_IMAGE}:next
     - name: "Docker Logout"
       run: docker logout
