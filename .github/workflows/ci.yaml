@@ -37,7 +37,7 @@ jobs:
     - name: Install
       run: yarn install --ignore-optional
     - name: Build
-      run: yarn build -t eclipse-che-dashboard
+      run: yarn build
     - name: Test
       run: yarn test
     - name: "Docker build"
