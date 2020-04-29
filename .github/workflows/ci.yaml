@@ -47,6 +47,6 @@ jobs:
     - name: "Docker Login"
       run:  docker login -u "${{ secrets.QUAY_USERNAME }}" -p "${{ secrets.QUAY_TOKEN }}" quay.io
     - name: "Push Docker image (latest)"
-      run: docker push quay.io/${DOCKER_IMAGE}:latest
+      run: docker push quay.io/${DOCKER_IMAGE}:next
     - name: "Docker Logout"
       run: docker logout
