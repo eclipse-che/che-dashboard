@@ -10,12 +10,16 @@
 
 FROM docker.io/node:8.16.2 as builder
 
+RUN if [ "$(uname -m)" = "s390x" ]; then apt-get update; apt-get install -y phantomjs; fi
+
 COPY package.json /dashboard/
 COPY yarn.lock /dashboard/
 WORKDIR /dashboard
-RUN yarn install --ignore-optional
+RUN if [ "$(uname -m)" = "s390x" ]; then export QT_QPA_PLATFORM=offscreen; fi \ 
+    && yarn install --ignore-optional
 COPY . /dashboard/
-RUN yarn build && yarn test
+RUN if [ "$(uname -m)" = "s390x" ]; then yarn build; else \
+    yarn build && yarn test; fi
 
 FROM docker.io/httpd:2.4.43-alpine
 RUN sed -i 's|    AllowOverride None|    AllowOverride All|' /usr/local/apache2/conf/httpd.conf && \
