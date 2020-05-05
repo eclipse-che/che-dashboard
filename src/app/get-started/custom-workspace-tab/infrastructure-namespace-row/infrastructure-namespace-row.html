@@ -14,7 +14,9 @@
 
 <div class="pf-c-form__group">
   <label class="pf-c-form__label" for="{{customWorkspaceTabController.namespaceSelect.config.id}}">
-    <span class="pf-c-form__label-text">Namespace</span>
+    <span class="pf-c-form__label-text">Namespace</span>&nbsp;
+    <span uib-tooltip="{{ctrl.infrastructureNamespaceHint}}"
+          tooltip-append-to-body="true"><i class="fa fa-question-circle" aria-hidden="true"></i></span>
   </label>
   <div class="pf-c-form__horizontal-group">
     <!-- One Namespace -->

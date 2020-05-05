@@ -42,11 +42,11 @@ interface IChePfPageMainSectionDirectiveScope {
 export class ChePfPageMainSectionDirective implements ng.IDirective, IChePfPageMainSectionDirectiveScope {
 
   scope = {
-    light: '='
+    light: '=?'
   };
 
   transclude = true;
   replace = true;
 
-  template = `<section class="pf-c-page__main-section" ng-class="{'pf-m-light': light}" ng-transclude></section>`;
+  template = `<section class="pf-c-page__main-section" ng-class="light ? 'pf-m-light' : 'pf-m-dark'" ng-transclude></section>`;
 }

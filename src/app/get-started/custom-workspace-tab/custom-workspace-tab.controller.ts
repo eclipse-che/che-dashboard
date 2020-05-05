@@ -43,6 +43,7 @@ export class CustomWorkspaceTabController implements ng.IController {
   private stackName: string;
   private devfile: che.IWorkspaceDevfile;
   private editorState: che.IValidation;
+  private devfileInputsForm: ng.IFormController;
 
   constructor(
     createWorkspaceSvc: CreateWorkspaceSvc,
@@ -67,6 +68,9 @@ export class CustomWorkspaceTabController implements ng.IController {
       name: '',
       onChange: name => {
         this.workspaceName = name;
+        if (!this.devfile) {
+          this.devfile = this.minDevfile;
+        }
         this.updateDevfile();
         this.updateProperties();
       },
@@ -75,13 +79,26 @@ export class CustomWorkspaceTabController implements ng.IController {
       onChange: (temporary, defaultValue) => {
         this.temporaryStorage = temporary;
         this.temporaryStorageDefault = defaultValue;
+        if (!this.devfile) {
+          this.devfile = this.minDevfile;
+        }
         this.updateDevfile();
         this.updateProperties();
       },
     };
     this.devfileSelectProperties = {
+      onError: () => {
+        delete this.devfile;
+        this.updateProperties();
+      },
+      onClear: () => {
+        delete this.devfile;
+        this.updateProperties();
+      },
       onLoad: (devfile, stackName) => {
-        this.devfile = devfile;
+        this.devfile = Object['fromEntries'](Object.keys(devfile)
+          .sort((a, b) => a !== b ? a > b ? -1 : 1 : 0)
+          .map(key => [key, devfile[key]]));
         this.stackName = stackName;
         this.updateDevfile();
         this.updateProperties();
@@ -98,12 +115,27 @@ export class CustomWorkspaceTabController implements ng.IController {
     };
   }
 
-  $onInit(): void { }
+  $onInit(): void {
+    this.devfile = this.minDevfile;
+    this.updateProperties();
+  }
 
   get createButtonDisabled(): boolean {
+    if (!this.devfile || !this.editorState) {
+      return true;
+    }
     const hasGenerateName = this.devfile && this.devfile.metadata && this.devfile.metadata.generateName;
-    const isDevfileValid = this.devfile && this.editorState && this.editorState.isValid;
+    const isDevfileValid = this.devfileInputsForm.$valid && this.editorState.isValid;
     return !(this.namespace && (this.workspaceName || hasGenerateName) && isDevfileValid);
+  }
+
+  private get minDevfile(): che.IWorkspaceDevfile {
+    return {
+      metadata: {
+        generateName: 'wksp-custom-'
+      },
+      apiVersion: '1.0.0'
+    };
   }
 
   private updateDevfile(): void {
@@ -148,6 +180,10 @@ export class CustomWorkspaceTabController implements ng.IController {
 
   private updateProperties(): void {
     if (!this.devfile) {
+      this.workspaceNameProperties.name = '';
+      this.workspaceNameProperties.generateName = '';
+      delete this.stackName;
+      delete this.devfileEditorProperties.devfile;
       return;
     }
     if (this.devfile.attributes && this.devfile.attributes.persistVolumes) {
@@ -159,16 +195,15 @@ export class CustomWorkspaceTabController implements ng.IController {
       this.workspaceNameProperties.name = this.devfile.metadata.name;
     }
 
-
     if (this.devfile.metadata) {
       this.workspaceNameProperties.generateName = this.devfile.metadata.generateName;
     }
-    this.devfileEditorProperties.devfile = this.devfile;
+    this.devfileEditorProperties.devfile = angular.copy(this.devfile);
   }
 
   private createWorkspace(): ng.IPromise<che.IWorkspace> {
     const attributes = { stackName: this.stackName };
-    return this.createWorkspaceSvc.createWorkspaceFromDevfile(this.namespace, this.devfile, attributes, false);
+    return this.createWorkspaceSvc.createWorkspaceFromDevfile(this.namespace, this.devfile, attributes, true);
   }
 
 }

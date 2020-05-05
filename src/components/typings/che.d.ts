@@ -348,7 +348,7 @@ declare namespace che {
 
   export interface IWorkspaceDevfile {
     apiVersion: string;
-    components: Array<any>;
+    components?: Array<any>;
     projects?: Array <any>;
     commands?: Array <any>;
     attributes?: che.IWorkspaceConfigAttributes;

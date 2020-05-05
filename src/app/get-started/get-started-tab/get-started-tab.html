@@ -31,10 +31,6 @@
   </div>
 </che-pf-page-main-section>
 
-<div class="progress-line">
-  <md-progress-linear ng-show="getStartedTabController.isCreating" md-mode="indeterminate"></md-progress-linear>
-</div>
-
 <che-pf-page-main-section>
   <!-- samples gallery -->
   <div class="pf-l-gallery pf-m-gutter"
@@ -62,7 +58,7 @@
 
   <!-- empty state -->
   <div class="pf-l-bullseye"
-    ng-hide="getStartedTabController.isLoading || getStartedTabController.filteredDevfiles.length">
+    ng-if="!getStartedTabController.isLoading && getStartedTabController.filteredDevfiles.length === 0">
     <div class="pf-l-bullseye__item">
       <div class="pf-c-empty-state">
         <i class="fas fa-cubes pf-c-empty-state__icon" aria-hidden="true"></i>

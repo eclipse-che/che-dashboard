@@ -4,7 +4,7 @@
                    che-on-search-change="listTeamWorkspacesController.onSearchChanged(str)"
                    che-hide-search="listTeamWorkspacesController.workspaces.length === 0"
                    che-add-button-title="Add Workspace"
-                   che-add-button-href="#/create-workspace?namespace={{listTeamWorkspacesController.team.qualifiedName}}"
+                   che-add-button-href="{{listTeamWorkspacesController.workspaceCreationLink}}"
                    che-delete-button-title="Delete"
                    che-on-delete="listTeamWorkspacesController.deleteSelectedWorkspaces()"
                    che-hide-delete="listTeamWorkspacesController.cheListHelper.isNoItemSelected"

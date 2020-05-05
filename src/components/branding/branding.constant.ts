@@ -94,7 +94,7 @@ export const BRANDING_DEFAULT: IBranding = {
       'Blank'
     ],
     defaultStack: 'java-mysql',
-    creationLink: '#/create-workspace'
+    creationLink: '#/getstarted?tab=Custom%20Workspace'
   },
   cli: {
     configName: 'che.env',

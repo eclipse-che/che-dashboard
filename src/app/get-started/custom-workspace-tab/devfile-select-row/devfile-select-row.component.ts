@@ -15,10 +15,14 @@ import { DevfileSelectRowController } from './devfile-select-row.controller';
 
 export interface IDevfileSelectRowBindingProperties {
   onLoad: ($devfile: che.IWorkspaceDevfile, $stackName: string) => void;
+  onClear: () => void;
+  onError: ($error: string) => void;
 }
 
 export interface IDevfileSelectRowComponentBindings {
   onLoad: (eventObj: { $devfile: che.IWorkspaceDevfile, $stackName: string }) => void;
+  onClear: () => void;
+  onError: (eventObj: { $error: string }) => void;
 }
 
 interface IDevfileSelectRowComponentScopeBindings {
@@ -33,6 +37,8 @@ export class DevfileSelectRowComponent implements ng.IComponentOptions, IDevfile
 
   bindings = {
     onLoad: '&',
+    onClear: '&',
+    onError: '&'
   };
 
 }

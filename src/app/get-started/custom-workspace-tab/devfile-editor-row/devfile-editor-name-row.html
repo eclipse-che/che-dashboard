@@ -14,10 +14,18 @@
 
 <div class="pf-c-form__group">
   <div class="pf-c-form__horizontal-group">
-    <workspace-devfile-editor
-      is-active="true"
-      decoration-pattern ="location[ \t]*(.*)[ \t]*$"
-      workspace-devfile="ctrl.devfile"
-      workspace-devfile-on-change="ctrl.onChanged(editorState)"></workspace-devfile-editor>
+      <div class="devfile-editor-row">
+        <div class="docs-link">
+          <a ng-href="{{ctrl.devfileDocsUrl}}" target="_blank">Devfile Documentation</a>
+        </div>
+        <che-editor editor-content="ctrl.devfileYaml"
+                    on-content-change="ctrl.onChanged(editorState, value)"
+                    editor-mode="text/x-yaml"
+                    editor-decoration-pattern="location[ \t]*(.*)[ \t]*$"
+                    editor-read-only="false"
+                    required>
+          <div ng-message="required">Devfile is required.</div>
+        </che-editor>
+      </div>
   </div>
 </div>

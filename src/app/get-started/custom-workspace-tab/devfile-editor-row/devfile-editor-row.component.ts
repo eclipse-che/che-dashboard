@@ -37,7 +37,7 @@ export class DevfileEditorRowComponent implements ng.IComponentOptions, IDevfile
   controllerAs = 'ctrl';
 
   bindings = {
-    devfile: '<',
+    devfile: '<?',
     onChange: '&',
   };
 

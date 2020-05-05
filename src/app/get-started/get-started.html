@@ -14,30 +14,35 @@
 
 <che-pf-page-main-area>
 
-  <che-pf-page-main-section class="get-started-header-section pf-u-box-shadow-sm-bottom" light="true">
+  <che-pf-page-main-section class="get-started-header-section pf-m-no-fill pf-u-pb-0" light="true">
+    <che-pf-masthead ng-show="getStartedController.selectedTabIndex === 0"
+                     title="Getting Started with {{branding.name}}"></che-pf-masthead>
+    <che-pf-masthead ng-show="getStartedController.selectedTabIndex === 1"
+                     title="Create Custom Workspace"></che-pf-masthead>
+  </che-pf-page-main-section>
 
-    <che-pf-masthead title="Getting Started with {{branding.name}}"></che-pf-masthead>
-
-    <md-tabs md-dynamic-height md-stretch-tabs="auto" md-selected="getStartedController.selectedTabIndex"
-      class="create-workspace-content">
+  <che-pf-page-main-section class="pf-m-no-padding get-started-body-section">
+    <md-tabs md-dynamic-height md-stretch-tabs="never" md-selected="getStartedController.selectedTabIndex"
 
       <!-- Samples -->
-      <md-tab md-on-select="getStartedController.onSelectTab(getStartedController.tabs[getStartedController.GET_STARTED])">
+      <md-tab md-on-select="getStartedController.onSelectTab(); isGetStartedSelected = true;"
+              md-on-deselect="isGetStartedSelected = false;">
         <md-tab-label>
-          <span class="che-tab-label-title">{{getStartedController.GET_STARTED}}</span>
+          <span class="che-tab-label-title">Get Started</span>
         </md-tab-label>
         <md-tab-body>
-          <get-started-tab></get-started-tab>
+          <get-started-tab ng-if="isGetStartedSelected" flex></get-started-tab>
         </md-tab-body>
       </md-tab>
 
       <!-- Custom Workspace -->
-      <md-tab md-on-select="getStartedController.onSelectTab(getStartedController.tabs[getStartedController.CUSTOM_WORKSPACE])">
+      <md-tab md-on-select="getStartedController.onSelectTab(); isCustomWorkspaceSelected = true;"
+              md-on-deselect="isCustomWorkspaceSelected = false;">
         <md-tab-label>
-          <span class="che-tab-label-title">{{getStartedController.CUSTOM_WORKSPACE}}</span>
+          <span class="che-tab-label-title">Custom Workspace</span>
         </md-tab-label>
         <md-tab-body>
-          <custom-workspace-tab></custom-workspace-tab>
+          <custom-workspace-tab ng-show="isCustomWorkspaceSelected" flex></custom-workspace-tab>
         </md-tab-body>
       </md-tab>
 

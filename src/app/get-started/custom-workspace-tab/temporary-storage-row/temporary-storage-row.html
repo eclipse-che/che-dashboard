@@ -14,7 +14,9 @@
 
 <div class="pf-c-form__group">
   <label class="pf-c-form__label" for="{{ctrl.temporaryStorageSwitch.config.id}}">
-    <span class="pf-c-form__label-text">Temporary Storage</span>
+    <span class="pf-c-form__label-text">Temporary Storage</span>&nbsp;
+    <span uib-tooltip="Temporary Storage allows for faster I/O but may have limited storage and is not persistent."
+          tooltip-append-to-body="true"><i class="fa fa-question-circle" aria-hidden="true"></i></span>
   </label>
   <div class="pf-c-form__horizontal-group">
     <che-pf-switch value="ctrl.temporaryStorageSwitch.value"

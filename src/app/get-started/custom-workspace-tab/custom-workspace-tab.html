@@ -14,7 +14,7 @@
 
 <che-pf-page-main-section class="custom-workspace-tab pf-u-box-shadow-sm-bottom" light="true">
 
-  <form class="pf-c-form pf-m-horizontal">
+  <ng-form name="customWorkspaceTabController.devfileInputsForm" class="pf-c-form pf-m-horizontal">
 
     <!-- Infrastructure Namespaces -->
     <infrastructure-namespace-row on-select="customWorkspaceTabController.infrastructureNamespaceProperties.onSelect($name)"></infrastructure-namespace-row>
@@ -27,9 +27,11 @@
     <!-- Temporary Storage -->
     <temporary-storage-row temporary="customWorkspaceTabController.temporaryStorageProperties.temporary"
       on-change="customWorkspaceTabController.temporaryStorageProperties.onChange($temporary, $default)"></temporary-storage-row>
-  </form>
+  </ng-form>
   <!-- Devfile -->
-  <devfile-select-row on-load="customWorkspaceTabController.devfileSelectProperties.onLoad($devfile, $stackName)"></devfile-select-row>
+  <devfile-select-row on-load="customWorkspaceTabController.devfileSelectProperties.onLoad($devfile, $stackName)"
+                      on-error="customWorkspaceTabController.devfileSelectProperties.onError()"
+                      on-clear="customWorkspaceTabController.devfileSelectProperties.onClear()"></devfile-select-row>
 
   <!-- Devfile editor -->
   <devfile-editor-row devfile="customWorkspaceTabController.devfileEditorProperties.devfile"

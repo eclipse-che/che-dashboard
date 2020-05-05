@@ -11,47 +11,59 @@
  */
 'use strict';
 
+enum TABS {
+  'Get Started',
+  'Custom Workspace'
+}
+
 /**
  * @ngdoc controller
  * @name get.started.controller:GetStartedController
  * @description This class is handling the controller for the Get Started page
  * @author Oleksii Kurinnyi
+ * @author Oleksii Orel
  */
 export class GetStartedController {
 
   static $inject = [
+    '$scope',
     '$location'
   ];
 
-  TABS: string[];
-  GET_STARTED = 'Get Started';
-  CUSTOM_WORKSPACE = 'Custom Workspace';
-
-  tabs: { [key: string]: string | number };
+  tabs = TABS;
   selectedTabIndex = 0;
-  mastheadTitles: { [tabId: number]: string };
 
   // injected services
+  private $location: ng.ILocationService
 
   /**
    * Default constructor that is using resource
    */
   constructor(
+    $scope: ng.IScope,
     $location: ng.ILocationService
   ) {
-    this.initTabs();
+    this.$location = $location;
+
+    const updateSelectedTab = () => {
+      const tab = $location.search().tab;
+      if (tab) {
+        const tabIndex = this.tabs[tab];
+        if (typeof tabIndex === 'number') {
+          this.selectedTabIndex = tabIndex;
+          return;
+        }
+      }
+      $location.search({'tab': TABS[0]});
+    }
+
+    updateSelectedTab();
+    $scope.$on('$locationChangeSuccess', () => {
+      updateSelectedTab();
+    });
   }
 
-  onSelectTab(tabIndex: number): void {
-    this.selectedTabIndex = tabIndex;
+  onSelectTab(): void {
+    this.$location.search({'tab': TABS[this.selectedTabIndex]});
   }
-
-  initTabs(): void {
-    this.tabs = {
-      [this.GET_STARTED]: 0,
-      [this.CUSTOM_WORKSPACE]: 1
-    };
-    this.selectedTabIndex = 1;
-  }
-
 }

@@ -34,6 +34,16 @@
 
     </div>
 
+    <!-- Times Icon Button -->
+    <button class="pf-c-button pf-m-plain pf-c-select__toggle-clear"
+      type="button"
+      aria-label="Clear all"
+      ng-click="clearTypeahead()"
+      ng-show="typeahead || ctrl.selectedItem"
+      ng-disabled="ctrl.config.disabled">
+      <i class="fas fa-times-circle" aria-hidden="true"></i>
+    </button>
+
     <!-- Caret Down Button -->
     <button class="pf-c-button pf-m-plain pf-c-select__toggle-button"
       type="button"
