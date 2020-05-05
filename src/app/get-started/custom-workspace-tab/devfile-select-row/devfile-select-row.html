@@ -17,7 +17,7 @@
   <div class="pf-c-form__group">
     <label class="pf-c-form__label" for="vertical-align-labels-vertical-form-name">
       <span class="pf-c-form__label-text">Devfile</span>
-      <span class="pf-c-form__label-required" aria-hidden="true">&#42;</span>
+      <span class="pf-c-form__label-required" uib-tooltip="Required field" aria-hidden="true">&#42;</span>
     </label>
 
     <p class="pf-c-form__helper-text" id="help-text-simple-form-name-helper" aria-live="polite">Select a devfile from
@@ -30,7 +30,8 @@
     <div class="pf-l-flex">
       <div class="pf-l-flex__item">
         <che-pf-select-typeahead config="ctrl.devfileSelect.config" value="ctrl.devfileSelect.value"
-          on-select="ctrl.devfileSelect.onSelect($value)"></che-pf-select-typeahead>
+                                 on-select="ctrl.devfileSelect.onSelect($value)"
+                                 on-clear="ctrl.onClear()"></che-pf-select-typeahead>
         </che-pf-select-typeahead>
       </div>
       <div class="pf-l-flex__item">or</div>
@@ -40,8 +41,11 @@
 
       <!-- Devfile URL -->
       <div class="pf-l-flex__item">
-        <che-pf-text-input type="url" value="ctrl.devfileUrlInput.value" config="ctrl.devfileUrlInput.config"
+        <che-pf-text-input value="ctrl.devfileUrlInput.value" config="ctrl.devfileUrlInput.config"
           on-change="ctrl.devfileUrlInput.onChange($value)" aria-describedby="devfile-url-helper"></che-pf-text-input>
+        <!-- Error Message -->
+        <p class="pf-c-form__helper-text pf-m-error" id="devfile-url-helper" aria-live="polite"
+           ng-show="ctrl.errorMessage">{{ctrl.errorMessage}}</p>
       </div>
 
       <!-- Load Devfile Button -->
@@ -50,12 +54,6 @@
           ng-disabled="ctrl.devfileLoadButtonDisabled"></che-pf-secondary-button>
       </div>
 
-    </div>
-
-    <!-- Error Message -->
-    <div class="pf-l-flex">
-      <p class="pf-c-form__helper-text pf-m-error" id="devfile-url-helper" aria-live="polite"
-        ng-show="ctrl.errorMessage">{{ctrl.errorMessage}}</p>
     </div>
 
   </div>

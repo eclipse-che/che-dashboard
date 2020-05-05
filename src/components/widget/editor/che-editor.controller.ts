@@ -11,13 +11,15 @@
  */
 'use strict';
 
+declare const require: Function;
 require('regenerator-runtime');
 
 const MODEL_URI = 'inmemory://model.yaml';
-const MONACO_URI = monaco.Uri.parse(MODEL_URI);
+const MONACO_URI = (monaco.Uri as any).parse(MODEL_URI);
 
 interface IEditor {
   render: Function;
+  getValue: () => string;
   onDidBlurEditorWidget: Function;
   getModel(): any;
   getCursor(): ICursorPos;
@@ -106,7 +108,7 @@ export class CheEditorController {
               this.editorState.errors.push(error.toString());
             }
           }
-          this.updateState();
+          this.updateState(editor.getValue());
           this.languageServerValidation(editor);
         });
       }
@@ -116,11 +118,11 @@ export class CheEditorController {
     }
   }
 
-  private updateState(): void {
+  private updateState(value: string): void {
     this.editorState.isValid = this.editorState.errors.length === 0;
     this.editorForm.$setValidity('custom-validator', this.editorState.isValid, null);
     if (angular.isFunction(this.onContentChange)) {
-      this.onContentChange({editorState: this.editorState});
+      this.onContentChange({editorState: this.editorState, value});
     }
   }
 
@@ -151,11 +153,18 @@ export class CheEditorController {
       }
       return yamlService.doValidation(document, false).then((diagnostics) => {
         const markers = p2m.asDiagnostics(diagnostics);
-        const errorMessage = markers && markers[0] ? (markers[0] as any).message : '';
+        let errorMessage = '';
+        if (markers && markers[0]) {
+          const {message, startLineNumber, startColumn} = (markers[0] as any);
+          if (startLineNumber && startColumn) {
+            errorMessage += `line[${startLineNumber}] column[${startColumn}]: `
+          }
+          errorMessage += `Error. ${message}`;
+        }
         if (errorMessage) {
-          this.editorState.errors.push(`Error. ${errorMessage}`);
+          this.editorState.errors.push(errorMessage);
           if (this.editorState.isValid) {
-            this.updateState();
+            this.updateState(editor.getValue());
           }
         }
         monaco.editor.setModelMarkers(model, 'default', markers);

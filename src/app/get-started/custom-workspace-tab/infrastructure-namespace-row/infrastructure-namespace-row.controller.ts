@@ -29,6 +29,7 @@ export class InfrastructureNamespaceRowController implements IInfrastructureName
   namespacesNumber: number = 0;
   namespaceInput: IChePfTextInputProperties;
   namespaceSelect: IChePfSelectProperties<string>;
+  infrastructureNamespaceHint: string;
 
   // injected services
   private cheKubernetesNamespace: CheKubernetesNamespace;
@@ -83,6 +84,9 @@ export class InfrastructureNamespaceRowController implements IInfrastructureName
     }
 
     this.namespacesNumber = kubernetesNamespaces.length;
+
+    this.infrastructureNamespaceHint = this.cheKubernetesNamespace.getHintDescription();
+
     this.onSelected(defaultNamespace);
   }
 

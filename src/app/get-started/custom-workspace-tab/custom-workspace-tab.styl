@@ -5,4 +5,14 @@
 
   .custom-workspace-tab-devfile
     .pf-c-select, input
-      width 300px
+      width 330px
+    .pf-c-select__menu
+      max-height 450px
+      overflow-y auto
+      max-width 100%
+
+  @-moz-document url-prefix()
+    .pf-c-form__label
+      white-space nowrap
+      & + .pf-c-form__horizontal-group
+        margin-left 15px

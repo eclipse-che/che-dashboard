@@ -20,7 +20,7 @@ import { CheWorkspace } from '../../../../components/api/workspace/che-workspace
 import { CheNotification } from '../../../../components/notification/che-notification.factory';
 import { CheFactory } from '../../../../components/api/che-factory.factory';
 
-const ERROR_TYPE_MISMATCH = 'The URL should start with "http://" or "https://".';
+const ERROR_TYPE_MISMATCH = 'The URL is not valid';
 
 export class DevfileSelectRowController implements IDevfileSelectRowComponentBindings {
 
@@ -36,6 +36,8 @@ export class DevfileSelectRowController implements IDevfileSelectRowComponentBin
 
   // component bindings
   onLoad: (eventObj: { $devfile: che.IWorkspaceDevfile, $stackName: string }) => void;
+  onError: (eventObj: { $error: string }) => void;
+  onClear: () => void;
 
   // template fields
   devfileSelect: IChePfSelectProperties<IDevfileMetaData>;
@@ -75,7 +77,7 @@ export class DevfileSelectRowController implements IDevfileSelectRowComponentBin
       config: {
         name: 'devfileUrl',
         placeHolder: 'URL of devfile',
-        pattern: 'https?://.*',
+        pattern: 'http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\\(\\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+',
       },
       value: '',
       onChange: url => this.onDevfileUrlChanged(url),
@@ -87,7 +89,12 @@ export class DevfileSelectRowController implements IDevfileSelectRowComponentBin
         delete this.devfileSelect.value;
 
         this.loadDevfile(this.devfileUrl)
-          .then(devfile => this.onFetched(devfile, ''));
+          .then(devfile => this.onFetched(devfile, this.devfileUrl))
+          .catch(() => {
+            const error = 'Load devfile failed.';
+            this.errorMessage = error;
+            this.onError({ $error: error });
+          });
       },
     };
     this.devfileSelect = {
@@ -99,7 +106,7 @@ export class DevfileSelectRowController implements IDevfileSelectRowComponentBin
         // clear devfile-url
         this.devfileUrlInput.value = '';
         this.devfileUrl = '';
-
+        delete this.errorMessage;
         const stackName = devfileMetaData.displayName;
         this.fetchDevfile(devfileMetaData)
           .then(devfile => this.onFetched(devfile, stackName));

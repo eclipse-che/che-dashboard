@@ -44,7 +44,7 @@ export class GetStartedConfig {
       $routeProvider.accessWhen('/', {
         resolve: {
           initData: ['$window', 'cheWorkspace', ($window: ng.IWindowService, cheWorkspace: CheWorkspace) => {
-            let url = '/getstarted';
+            let url = '/getstarted?tab=Get%20Started';
             cheWorkspace.fetchWorkspaces().then(() => {
               if (cheWorkspace.getWorkspaces().length > 0) {
                 url = '/workspaces';

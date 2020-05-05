@@ -1,16 +1,13 @@
 <div layout="column" class="config-import">
   <div class="config-editor">
-    <div>
-      <a ng-href="{{workspaceDevfileEditorController.devfileDocsUrl}}" target="_blank">Devfile Documentation</a>
-    </div>
     <che-editor editor-content="workspaceDevfileEditorController.devfileYaml"
                 on-content-change="workspaceDevfileEditorController.onChange(editorState)"
                 editor-mode="text/x-yaml"
-                editor-decoration-pattern="{{workspaceDevfileEditorController.decorationPattern}}"
                 editor-read-only="!!workspaceDevfileEditorController.editorReadOnly"
                 validator="workspaceDevfileEditorController.workspaceDevfileValidation()"
                 required>
       <div ng-message="required">Devfile is required.</div>
     </che-editor>
   </div>
+  <a ng-href="{{workspaceDevfileEditorController.devfileDocsUrl}}" target="_blank">Docs: Devfile Structure</a>
 </div>

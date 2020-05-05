@@ -17,18 +17,8 @@ import { DevfileRegistry, IDevfileMetaData } from '../../../components/api/devfi
 import { CheNotification } from '../../../components/notification/che-notification.factory';
 import { IChePfButtonProperties } from '../../../components/che-pf-widget/button/che-pf-button';
 import { IGetStartedToolbarBindingProperties } from './toolbar/get-started-toolbar.component';
+import { CheBranding } from '../../../components/branding/che-branding';
 
-enum TABS {
-  GET_STARTED = 'Get Started',
-  CUSTOM_WORKSPACE = 'Custom Workspace'
-}
-
-enum MASTHEADS {
-  GET_STARTED = 'Get Started',
-  CUSTOM_WORKSPACE = 'Custom Workspace'
-}
-
-// todo rename to GettingStartedController
 
 /**
  * @ngdoc controller
@@ -43,19 +33,19 @@ export class GetStartedTabController {
     '$log',
     'cheNotification',
     'cheWorkspace',
+    'cheBranding',
     'createWorkspaceSvc',
-    'devfileRegistry',
-    '$location'
+    'devfileRegistry'
   ];
 
   toolbarProps: IGetStartedToolbarBindingProperties;
   createButton: IChePfButtonProperties;
   filteredDevfiles: Array<IDevfileMetaData> = [];
-  tabs: typeof TABS = TABS;
 
   // injected services
   private $log: ng.ILogService;
   private cheNotification: CheNotification;
+  private cheBranding: CheBranding;
   private createWorkspaceSvc: CreateWorkspaceSvc;
   private devfileRegistry: DevfileRegistry;
 
@@ -71,12 +61,13 @@ export class GetStartedTabController {
     $log: ng.ILogService,
     cheNotification: CheNotification,
     cheWorkspace: CheWorkspace,
+    cheBranding: CheBranding,
     createWorkspaceSvc: CreateWorkspaceSvc,
-    devfileRegistry: DevfileRegistry,
-    $location: ng.ILocationService
+    devfileRegistry: DevfileRegistry
   ) {
     this.$log = $log;
     this.cheNotification = cheNotification;
+    this.cheBranding = cheBranding;
     this.createWorkspaceSvc = createWorkspaceSvc;
     this.devfileRegistry = devfileRegistry;
 
@@ -85,10 +76,6 @@ export class GetStartedTabController {
       ephemeralMode: false,
       onFilterChange: filtered => this.onFilterChange(filtered),
       onEphemeralModeChange: mode => this.onEphemeralModeChange(mode),
-    };
-    this.createButton = {
-      title: 'Create a Custom Workspace',
-      onClick: () => $location.path('/create-workspace').search({tab: 'IMPORT_DEVFILE'}),
     };
 
     this.isLoading = true;

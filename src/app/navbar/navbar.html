@@ -29,6 +29,20 @@
       <div class="admin-navbar-menu">
         <section class="left-sidebar-menu" layout="column" layout-align="center center">
           <md-list layout="column">
+            <!-- Workspaces -->
+            <md-list-item ng-if="navbarController.showMenuItem('workspaces')"
+                          flex class="navbar-subsection-item">
+              <md-button nav-bar-selected flex che-reload-href href="{{navbarController.menuItemUrl.workspaces}}"
+                         layout-align="left">
+                <div class="navbar-item" layout="row" layout-align="start center" id="workspaces-item">
+                  <md-icon md-font-icon="navbar-icon chefont cheico-workspace"></md-icon>
+                  <span>Workspaces</span>
+                  <span class="navbar-number" ng-show="navbarController.workspacesNumber">
+                    &nbsp;({{navbarController.workspacesNumber}})
+                  </span>
+                </div>
+              </md-button>
+            </md-list-item>
             <!-- Get Started -->
             <md-list-item ng-if="navbarController.showMenuItem('getstarted')"
               flex class="navbar-subsection-item">
@@ -38,20 +52,6 @@
                 <div class="navbar-item" layout="row" layout-align="start center">
                   <md-icon md-font-icon="navbar-icon fa fa-plus" aria-label="Get Started"></md-icon>
                   <span>Get Started</span>
-                </div>
-              </md-button>
-            </md-list-item>
-            <!-- Workspaces -->
-            <md-list-item ng-if="navbarController.showMenuItem('workspaces')"
-              flex class="navbar-subsection-item">
-              <md-button nav-bar-selected flex che-reload-href href="{{navbarController.menuItemUrl.workspaces}}"
-                         layout-align="left">
-                <div class="navbar-item" layout="row" layout-align="start center" id="workspaces-item">
-                  <md-icon md-font-icon="navbar-icon chefont cheico-workspace"></md-icon>
-                  <span>Workspaces</span>
-                  <span class="navbar-number" ng-show="navbarController.workspacesNumber">
-                    &nbsp;({{navbarController.workspacesNumber}})
-                  </span>
                 </div>
               </md-button>
             </md-list-item>

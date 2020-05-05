@@ -18,6 +18,7 @@ import {RouteHistory} from '../../../components/routing/route-history.service';
 import {CheJsonRpcApi} from '../../../components/api/json-rpc/che-json-rpc-api.factory';
 import {CheJsonRpcMasterApi} from '../../../components/api/json-rpc/che-json-rpc-master-api';
 import {WorkspaceDataManager} from '../../../components/api/workspace/workspace-data-manager';
+import {CheBranding} from '../../../components/branding/che-branding';
 
 const STARTING = WorkspaceStatus[WorkspaceStatus.STARTING];
 const RUNNING = WorkspaceStatus[WorkspaceStatus.RUNNING];
@@ -41,6 +42,7 @@ export class LoadFactoryController {
     'cheJsonRpcApi',
     'cheNotification',
     'cheWorkspace',
+    'cheBranding',
     'loadFactoryService',
     'lodash',
     'routeHistory',
@@ -54,6 +56,7 @@ export class LoadFactoryController {
   private cheAPI: CheAPI;
   private cheNotification: CheNotification;
   private cheWorkspace: CheWorkspace;
+  private cheBranding: CheBranding;
   private loadFactoryService: LoadFactoryService;
   private lodash: any;
   private routeHistory: RouteHistory;
@@ -81,6 +84,7 @@ export class LoadFactoryController {
     cheJsonRpcApi: CheJsonRpcApi,
     cheNotification: CheNotification,
     cheWorkspace: CheWorkspace,
+    cheBranding: CheBranding,
     loadFactoryService: LoadFactoryService,
     lodash: any,
     routeHistory: RouteHistory,
@@ -93,6 +97,7 @@ export class LoadFactoryController {
     this.cheAPI = cheAPI;
     this.cheNotification = cheNotification;
     this.cheWorkspace = cheWorkspace;
+    this.cheBranding = cheBranding;
     this.loadFactoryService = loadFactoryService;
     this.lodash = lodash;
     this.routeHistory = routeHistory;
@@ -643,7 +648,8 @@ export class LoadFactoryController {
    * Redirects to create workspace flow.
    */
   redirectToCreateWorkspace(): void {
-    this.$location.path('/create-workspace').search({});
+    this.restoreMenuAndFooter();
+    this.$location.path(this.cheBranding.getWorkspace().creationLink);
   }
 
   /**

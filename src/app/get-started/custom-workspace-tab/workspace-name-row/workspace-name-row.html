@@ -17,8 +17,9 @@
   <label class="pf-c-form__label" for="{{ctrl.workspaceNameInput.config.id}}">
     <span class="pf-c-form__label-text">Workspace Name</span>
     <span class="pf-c-form__label-required"
-      aria-hidden="true"
-      ng-show="ctrl.required">&#42;</span>
+          uib-tooltip="Required field"
+          aria-hidden="true"
+          ng-show="ctrl.required">&#42;</span>
   </label>
 
   <div class="pf-c-form__horizontal-group">
