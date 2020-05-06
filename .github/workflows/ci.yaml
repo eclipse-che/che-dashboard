@@ -36,10 +36,6 @@ jobs:
           ${{ runner.os }}-yarn-
     - name: Install
       run: yarn install --ignore-optional
-    - name: Build
-      run: yarn build
-    - name: Test
-      run: yarn test
     - name: "Docker build"
       run: |
         docker image prune -a -f
