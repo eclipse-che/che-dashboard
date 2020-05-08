@@ -141,7 +141,7 @@ function getApis(keycloak: any): Promise<void> {
         if (xhr.status === 200) {
           resolve();
         } else {
-          reject(xhr.responseText ? xhr.responseText : '<div class="error-header"><span>Unknown error</span><a href="/"><i class="fa fa-times"></i></a></div>');
+          reject(xhr.responseText ? xhr.responseText : '<div class="header"><span>Unknown error</span></div>');
         }
       };
     });
