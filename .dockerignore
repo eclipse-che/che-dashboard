@@ -1,5 +1,5 @@
 Dockerfile
-Dockerfile.apache
+apache.Dockerfile
 node_modules
 bower_components
 pom.xml
