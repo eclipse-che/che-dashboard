@@ -16,17 +16,22 @@ jobs:
   docker-build:
     runs-on: ubuntu-latest
     env:
-      DOCKER_IMAGE: eclipse/che-dashboard
+      IMAGE_FULL: quay.io/eclipse/che-dashboard:next
+      CACHE_IMAGE_FULL: docker.io/??????/che-dashboard:cache
     steps:
     - uses: actions/checkout@v2
       name: Checkout che-dashboard source code
-    - name: "Docker build"
-      run: |
-        docker image prune -a -f
-        docker build . -f Dockerfile.apache -t quay.io/${DOCKER_IMAGE}:next
-    - name: "Docker Login"
+    - name: Docker Buildx
+      uses: crazy-max/ghaction-docker-buildx@v1.4.0
+      with:
+        version: v0.3.1
+    - name: "Docker prepare"
+      run: docker image prune -a -f
+    - name: "Docker Quay.io Login"
       run:  docker login -u "${{ secrets.QUAY_USERNAME }}" -p "${{ secrets.QUAY_TOKEN }}" quay.io
-    - name: "Push Docker image (next)"
-      run: docker push quay.io/${DOCKER_IMAGE}:next
+    - name: "Docker docker.io Login"
+      run:  docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" -p "${{ secrets.DOCKERHUB_TOKEN }}" docker.io
+    - name: "Docker build"
+      run: docker buildx build --platform linux/amd64,linux/s390x --cache-from="type=registry,ref=${CACHE_IMAGE_FULL}" --cache-to="type=registry,ref=${CACHE_IMAGE_FULL},mode=max" -t ${IMAGE_FULL}  -f Dockerfile.apache --push .
     - name: "Docker Logout"
       run: docker logout
