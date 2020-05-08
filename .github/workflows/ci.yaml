@@ -17,7 +17,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       IMAGE_FULL: quay.io/eclipse/che-dashboard:next
-      CACHE_IMAGE_FULL: docker.io/??????/che-dashboard:cache
+      CACHE_IMAGE_FULL: docker.io/cheincubator/che-dashboard:cache
     steps:
     - uses: actions/checkout@v2
       name: Checkout che-dashboard source code
@@ -32,6 +32,6 @@ jobs:
     - name: "Docker docker.io Login"
       run:  docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" -p "${{ secrets.DOCKERHUB_TOKEN }}" docker.io
     - name: "Docker build"
-      run: docker buildx build --platform linux/amd64,linux/s390x --cache-from="type=registry,ref=${CACHE_IMAGE_FULL}" --cache-to="type=registry,ref=${CACHE_IMAGE_FULL},mode=max" -t ${IMAGE_FULL}  -f Dockerfile.apache --push .
+      run: docker buildx build --platform linux/amd64 --cache-from="type=registry,ref=${CACHE_IMAGE_FULL}" --cache-to="type=registry,ref=${CACHE_IMAGE_FULL},mode=max" -t ${IMAGE_FULL}  -f Dockerfile.apache --push .
     - name: "Docker Logout"
       run: docker logout
