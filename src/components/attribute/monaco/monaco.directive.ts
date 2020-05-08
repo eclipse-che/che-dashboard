@@ -23,7 +23,8 @@ const UI_MONACO_CONFIG = {
   lineNumbers: 'on',
   matchBrackets: true,
   autoClosingBrackets: 'always',
-  readOnly: false
+  readOnly: false,
+  scrollBeyondLastLine: false
 };
 
 interface IEditor {
@@ -197,7 +198,9 @@ export class UiMonaco implements ng.IDirective {
     // this takes care of the synchronizing the monaco element with the underlying model.
     ngModel.$render = () => {
       const safeViewValue = ngModel.$viewValue || '';
+      const position = editor.getPosition();
       editor.setValue(safeViewValue);
+      editor.setPosition(position);
     };
 
     editor.onDidChangeModelContent(() => {

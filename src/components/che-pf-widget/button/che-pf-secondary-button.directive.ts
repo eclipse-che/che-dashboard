@@ -11,16 +11,7 @@
  */
 'use strict';
 
-export interface IChePfSecondaryButtonProperties {
-  title: string;
-  onClick: () => void;
-}
-
-interface IChePfSecondaryButtonBindings extends IChePfSecondaryButtonProperties { }
-
-interface IChePfSecondaryButtonDirectiveScope {
-  scope: { [key in keyof IChePfSecondaryButtonBindings]: string };
-}
+import { IChePfButtonDirectiveScope } from './che-pf-button';
 
 /**
  * @ngdoc directive
@@ -30,13 +21,13 @@ interface IChePfSecondaryButtonDirectiveScope {
  *
  * @usage
  * <che-pf-secondary-button
- *   title="$ctrl.secondaryButton.title"
+ *   title="{{$ctrl.secondaryButton.title}}"
  *   on-click="$ctrl.secondaryButton.onClick()">
  * </che-pf-secondary-button>
  *
  * @author Oleksii Kurinnyi
  */
-export class ChePfSecondaryButtonDirective implements ng.IDirective, IChePfSecondaryButtonDirectiveScope {
+export class ChePfSecondaryButtonDirective implements ng.IDirective, IChePfButtonDirectiveScope {
 
   restrict = 'E';
   replace = true;

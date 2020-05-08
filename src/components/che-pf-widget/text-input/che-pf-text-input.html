@@ -1,4 +1,4 @@
-<div class="pf-c-form__group">
+<div>
   <label ng-if="config.labelName"
     class="pf-c-form__label"
     for="{{config.id}}">
@@ -11,6 +11,7 @@
     type="text"
     id="{{config.id}}"
     name="{{config.name}}"
+    ng-model-options="{ allowInvalid: true, updateOn: 'default blur', debounce: { 'default': 200, 'blur': 0 } }"
     ng-model="value"
     ng-change="onChange({$value: value})"
     ng-attr-pattern={{config.pattern}}

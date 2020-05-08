@@ -1,0 +1,70 @@
+<!--
+
+    Copyright (c) 2015-2018 Red Hat, Inc.
+    This program and the accompanying materials are made
+    available under the terms of the Eclipse Public License 2.0
+    which is available at https://www.eclipse.org/legal/epl-2.0/
+
+    SPDX-License-Identifier: EPL-2.0
+
+    Contributors:
+      Red Hat, Inc. - initial API and implementation
+
+-->
+
+<che-pf-page-main-section class="get-started-header-section pf-u-box-shadow-sm-bottom" light="true">
+
+  <div class="pf-c-content pf-u-pl-md">
+
+    <h4>Select a Sample</h4>
+    <small>Select a sample to create your first workspace.</small>
+
+    <!-- toolbar -->
+    <get-started-toolbar
+      devfiles="getStartedTabController.toolbarProps.devfiles"
+      ephemeral-mode="getStartedTabController.toolbarProps.ephemeralMode"
+      on-filter-change="getStartedTabController.toolbarProps.onFilterChange($filtered)"
+      on-ephemeral-mode-change="getStartedTabController.toolbarProps.onEphemeralModeChange($ephemeralMode)"></get-started-toolbar>
+    <!-- toolbar end -->
+
+    </div>
+  </div>
+</che-pf-page-main-section>
+
+<che-pf-page-main-section>
+  <!-- samples gallery -->
+  <div class="pf-l-gallery pf-m-gutter"
+    ng-hide="getStartedTabController.isLoading">
+    <sample-card
+      ng-repeat="devfile in getStartedTabController.filteredDevfiles"
+      devfile="devfile"
+      ng-click="getStartedTabController.createWorkspace(devfile)">
+    </sample-card>
+  </div>
+  <!-- samples gallery end -->
+
+  <!-- spinner -->
+  <div class="pf-l-bullseye"
+    ng-show="getStartedTabController.isLoading">
+    <div class="pf-l-bullseye__item">
+      <span class="pf-c-spinner pf-m-xl" role="progressbar" aria-valuetext="Loading...">
+        <span class="pf-c-spinner__clipper"></span>
+        <span class="pf-c-spinner__lead-ball"></span>
+        <span class="pf-c-spinner__tail-ball"></span>
+      </span>
+    </div>
+  </div>
+  <!-- spinner end -->
+
+  <!-- empty state -->
+  <div class="pf-l-bullseye"
+    ng-if="!getStartedTabController.isLoading && getStartedTabController.filteredDevfiles.length === 0">
+    <div class="pf-l-bullseye__item">
+      <div class="pf-c-empty-state">
+        <i class="fas fa-cubes pf-c-empty-state__icon" aria-hidden="true"></i>
+        <h1 class="pf-c-title pf-m-lg">There are no samples</h1>
+      </div>
+    </div>
+  </div>
+
+</che-pf-page-main-section>

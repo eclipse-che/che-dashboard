@@ -28,6 +28,7 @@ export class ChePfSelectController implements IChePfSelectBindings {
     placeholder: string;
   };
   value?: IChePfSelectItem;
+  onClear: () => void;
   onSelect: (eventObj?: {$value: string}) => void;
 
   // injected services
@@ -42,8 +43,8 @@ export class ChePfSelectController implements IChePfSelectBindings {
   $onInit(): void {
     const defaultItem = this.config.default;
     if (defaultItem && this.config.items.indexOf(defaultItem) !== -1) {
-      this.selected = this.config.default;
-      this.$scope.typeahead = this.getItemName(this.selected);
+      this.$scope.typeahead = this.getItemName(this.config.default);
+      this.selectItem(this.config.default);
     }
   }
 
@@ -76,12 +77,13 @@ export class ChePfSelectController implements IChePfSelectBindings {
   selectItem(item: IChePfSelectItem): void {
     const value = this.getItemValue(item);
     this.selected = item;
+    this.value = item;
     this.onSelect({ $value: value });
   }
 
   clearSelectedItem(): void {
     delete this.selected;
-    this.onSelect();
+    this.onClear();
   }
 
   isSelected(item: IChePfSelectItem): boolean {

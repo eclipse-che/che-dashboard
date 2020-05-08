@@ -13,7 +13,6 @@
 
 import {FactoryDetailsConfig} from './factory-details/factory-details-config';
 import {CreateFactoryConfig} from './create-factory/create-factory-config';
-import {LastFactoriesConfig} from './last-factories/last-factories-config';
 import {ListFactoriesController} from './list-factories/list-factories.controller';
 import {FactoryItemController} from './list-factories/factory-item/factory-item.controller';
 import {CheFactoryItem} from './list-factories/factory-item/factory-item.directive';
@@ -71,7 +70,6 @@ export class FactoryConfig {
     /* tslint:disable */
     new FactoryDetailsConfig(register);
     new CreateFactoryConfig(register);
-    new LastFactoriesConfig(register);
     /* tslint:enable */
   }
 }

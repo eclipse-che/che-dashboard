@@ -42,7 +42,7 @@ interface IChePfPageMainSectionDirectiveScope {
 export class ChePfPageMainSectionDirective implements ng.IDirective, IChePfPageMainSectionDirectiveScope {
 
   scope = {
-    light: '='
+    light: '=?'
   };
 
   transclude = true;

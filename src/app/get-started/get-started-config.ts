@@ -12,25 +12,20 @@
 'use strict';
 
 import { GetStartedController } from './get-started.controller';
-import { GetStartedConfigService } from './get-started-config.service';
-import { GetStartedToolbarComponent } from './toolbar/get-started-toolbar.component';
-import { GetStartedToolbarController } from './toolbar/get-started-toolbar.controller';
-import { SampleCardDirective } from './sample-card/sample-card.directive';
+import { GetStartedTabConfigService } from './get-started-tab/get-started-tab-config.service';
+import { GetStartedTabConfig } from './get-started-tab/get-started-tab-config';
+import { CustomWorkspaceTabConfig } from './custom-workspace-tab/custom-workspace-tab-config';
+import { CheWorkspace } from '../../components/api/workspace/che-workspace.factory';
+import { MENU_ITEM } from '../navbar/navbar.controller';
 
-/**
- * @name getStarted:GetStartedConfig
- * @description This class is used for configuring all get started devfiles.
- * @author Oleksii Orel
- */
 export class GetStartedConfig {
 
   constructor(register: che.IRegisterService) {
-    register.directive('sampleCard', SampleCardDirective);
-    register.controller('GetStartedController', GetStartedController);
-    register.controller('GetStartedToolbarController', GetStartedToolbarController);
-    register.component('getStartedToolbar', GetStartedToolbarComponent);
 
-    register.service('getStartedConfigService', GetStartedConfigService);
+    new GetStartedTabConfig(register); // tslint:disable-line
+    new CustomWorkspaceTabConfig(register); // tslint:disable-line
+
+    register.controller('GetStartedController', GetStartedController);
 
     // config routes
     register.app.config(['$routeProvider', ($routeProvider: any) => {
@@ -40,8 +35,23 @@ export class GetStartedConfig {
         controller: 'GetStartedController',
         controllerAs: 'getStartedController',
         resolve: {
-          initData: ['getStartedConfigService', (svc: GetStartedConfigService) => {
+          initData: ['getStartedTabConfigService', (svc: GetStartedTabConfigService) => {
             return svc.allowGetStartedRoutes();
+          }]
+        }
+      });
+
+      $routeProvider.accessWhen('/', {
+        resolve: {
+          initData: ['$window', 'cheWorkspace', ($window: ng.IWindowService, cheWorkspace: CheWorkspace) => {
+            let url = '/getstarted?tab=Get%20Started';
+            cheWorkspace.fetchWorkspaces().then(() => {
+              if (cheWorkspace.getWorkspaces().length > 0) {
+                url = '/workspaces';
+              }
+            }).finally(() => {
+              $window.open(`#${url}`, '_self');
+            })
           }]
         }
       });

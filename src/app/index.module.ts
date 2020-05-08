@@ -18,7 +18,6 @@ import {AdminsConfig} from './admin/admin-config';
 import {AdministrationConfig} from './administration/administration-config';
 import {CheColorsConfig} from './colors/che-color.constant';
 import {CheOutputColorsConfig} from './colors/che-output-colors.constant';
-import {DashboardConfig} from './dashboard/dashboard-config';
 // switch to a config
 import {IdeConfig} from './ide/ide-config';
 import {NavbarConfig} from './navbar/navbar-config';
@@ -142,7 +141,7 @@ function getApis(keycloak: any): Promise<void> {
         if (xhr.status === 200) {
           resolve();
         } else {
-          reject(xhr.responseText ? xhr.responseText : '<div class="error-header"><span>Unknown error</span><a href="/"><i class="fa fa-times"></i></a></div>');
+          reject(xhr.responseText ? xhr.responseText : '<div class="header"><span>Unknown error</span></div>');
         }
       };
     });
@@ -550,7 +549,6 @@ new IdeConfig(instanceRegister);
 
 new NavbarConfig(instanceRegister);
 new WorkspacesConfig(instanceRegister);
-new DashboardConfig(instanceRegister);
 new StacksConfig(instanceRegister);
 new GetStartedConfig(instanceRegister);
 new FactoryConfig(instanceRegister);

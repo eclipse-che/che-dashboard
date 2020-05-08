@@ -11,159 +11,59 @@
  */
 'use strict';
 
-import { CreateWorkspaceSvc } from '../workspaces/create-workspace/create-workspace.service';
-import { CheWorkspace } from '../../components/api/workspace/che-workspace.factory';
-import { DevfileRegistry, IDevfileMetaData } from '../../components/api/devfile-registry.factory';
-import { CheNotification } from '../../components/notification/che-notification.factory';
-import { IChePfSecondaryButtonProperties } from '../../components/che-pf-widget/button/che-pf-secondary-button.directive';
-import { IGetStartedToolbarBindingProperties } from './toolbar/get-started-toolbar.component';
-
+enum TABS {
+  'Get Started',
+  'Custom Workspace'
+}
 
 /**
  * @ngdoc controller
  * @name get.started.controller:GetStartedController
- * @description This class is handling the controller for the Get Started page with template list
- * @author Oleksii Orel
+ * @description This class is handling the controller for the Get Started page
  * @author Oleksii Kurinnyi
+ * @author Oleksii Orel
  */
 export class GetStartedController {
 
   static $inject = [
-    '$filter',
-    '$log',
-    '$q',
-    'cheNotification',
-    'cheWorkspace',
-    'createWorkspaceSvc',
-    'devfileRegistry',
+    '$scope',
     '$location'
   ];
 
-  toolbarProps: IGetStartedToolbarBindingProperties;
-  createButton: IChePfSecondaryButtonProperties;
-  filteredDevfiles: Array<IDevfileMetaData> = [];
+  tabs = TABS;
+  selectedTabIndex = 0;
 
-  $filter: ng.IFilterService;
-  $log: ng.ILogService;
-  $q: ng.IQService;
-  cheNotification: CheNotification;
-  createWorkspaceSvc: CreateWorkspaceSvc;
-  devfileRegistry: DevfileRegistry;
-
-  private isLoading: boolean = false;
-  private isCreating: boolean = false;
-  private devfileRegistryUrl: string;
-
-  private devfiles: Array<IDevfileMetaData> = [];
-  private ephemeralMode: boolean;
+  // injected services
+  private $location: ng.ILocationService
 
   /**
    * Default constructor that is using resource
    */
   constructor(
-    $filter: ng.IFilterService,
-    $log: ng.ILogService,
-    $q: ng.IQService,
-    cheNotification: CheNotification,
-    cheWorkspace: CheWorkspace,
-    createWorkspaceSvc: CreateWorkspaceSvc,
-    devfileRegistry: DevfileRegistry,
+    $scope: ng.IScope,
     $location: ng.ILocationService
   ) {
-    this.$filter = $filter;
-    this.$log = $log;
-    this.$q = $q;
-    this.cheNotification = cheNotification;
-    this.createWorkspaceSvc = createWorkspaceSvc;
-    this.devfileRegistry = devfileRegistry;
+    this.$location = $location;
 
-    this.toolbarProps = {
-      devfiles: [],
-      ephemeralMode: false,
-      onFilterChange: filtered => this.onFilterChange(filtered),
-      onEphemeralModeChange: mode => this.onEphemeralModeChange(mode),
-    };
-    this.createButton = {
-      title: 'Create a Custom Workspace',
-      onClick: () => $location.path('/create-workspace').search({tab: 'IMPORT_DEVFILE'}),
-    };
+    const updateSelectedTab = () => {
+      const tab = $location.search().tab;
+      if (tab) {
+        const tabIndex = this.tabs[tab];
+        if (typeof tabIndex === 'number') {
+          this.selectedTabIndex = tabIndex;
+          return;
+        }
+      }
+      $location.search({'tab': TABS[0]});
+    }
 
-    this.isLoading = true;
-    cheWorkspace.fetchWorkspaceSettings().then(() => {
-      const workspaceSettings = cheWorkspace.getWorkspaceSettings();
-      this.devfileRegistryUrl = workspaceSettings && workspaceSettings.cheWorkspaceDevfileRegistryUrl;
-      this.ephemeralMode = workspaceSettings['che.workspace.persist_volumes.default'] === 'false';
-      this.toolbarProps.ephemeralMode = this.ephemeralMode;
-      return this.init();
-    }).finally(() => {
-      this.isLoading = false;
+    updateSelectedTab();
+    $scope.$on('$locationChangeSuccess', () => {
+      updateSelectedTab();
     });
   }
 
-  isCreateButtonDisabled(): boolean {
-    return this.isCreating;
+  onSelectTab(): void {
+    this.$location.search({'tab': TABS[this.selectedTabIndex]});
   }
-
-  onFilterChange(filteredDevfiles: IDevfileMetaData[]): void {
-    this.filteredDevfiles = filteredDevfiles;
-  }
-
-  onEphemeralModeChange(mode: boolean): void {
-    this.ephemeralMode = mode;
-  }
-
-  createWorkspace(devfileMetaData: IDevfileMetaData): void {
-    if (this.isCreating) {
-      return;
-    }
-    if (!devfileMetaData || !devfileMetaData.links || !devfileMetaData.links.self) {
-      const message = 'There is no selected Template.';
-      this.cheNotification.showError(message);
-      this.$log.error(message);
-      return;
-    }
-    this.isCreating = true;
-    const selfLink = devfileMetaData.links.self;
-    this.devfileRegistry.fetchDevfile(this.devfileRegistryUrl, selfLink)
-      .then(() => {
-        const devfile = this.devfileRegistry.getDevfile(this.devfileRegistryUrl, selfLink);
-        if (this.ephemeralMode) {
-          if (!devfile.attributes) {
-            devfile.attributes = {};
-          }
-          devfile.attributes.persistVolumes = 'false';
-        }
-        const attributes = {stackName: devfileMetaData.displayName};
-        return this.createWorkspaceSvc.createWorkspaceFromDevfile(undefined, devfile, attributes, true);
-      })
-      .then(workspace => {
-        return this.createWorkspaceSvc.redirectToIDE(workspace);
-      })
-      .finally(() => {
-        this.isCreating = false;
-      });
-  }
-
-  private init(): ng.IPromise<void> {
-    if (!this.devfileRegistryUrl) {
-      const message = 'Failed to load the devfile registry URL.';
-      this.cheNotification.showError(message);
-      this.$log.error(message);
-      return;
-    }
-
-    this.isLoading = true;
-    return this.devfileRegistry.fetchDevfiles(this.devfileRegistryUrl)
-      .then(devfiles => {
-        this.devfiles = devfiles;
-        this.toolbarProps.devfiles = devfiles;
-      }, error => {
-        const message = 'Failed to load devfiles meta list.';
-        this.cheNotification.showError(message);
-        this.$log.error(message, error);
-      }).finally(() => {
-        this.isLoading = false;
-      });
-  }
-
 }

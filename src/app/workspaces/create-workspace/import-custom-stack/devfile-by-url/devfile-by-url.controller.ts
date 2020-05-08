@@ -55,7 +55,7 @@ export class DevfileByUrlController {
     }
   }
 
-  isUrlValid(url: string): ng.IPromise<void> {
+  isUrlValid(url: string): ng.IPromise<any> {
     return this.cheFactory.fetchDevfile(url);
   }
 }

@@ -21,6 +21,7 @@ export interface IChePfSwitchProperties extends IChePfInputProperties {
     messageOn?: string;
     messageOff?: string;
   };
+  value?: boolean;
   onChange: ($value: boolean) => void;
 }
 

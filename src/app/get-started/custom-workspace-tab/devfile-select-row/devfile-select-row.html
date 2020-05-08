@@ -1,0 +1,61 @@
+<!--
+
+    Copyright (c) 2015-2018 Red Hat, Inc.
+    This program and the accompanying materials are made
+    available under the terms of the Eclipse Public License 2.0
+    which is available at https://www.eclipse.org/legal/epl-2.0/
+
+    SPDX-License-Identifier: EPL-2.0
+
+    Contributors:
+      Red Hat, Inc. - initial API and implementation
+
+-->
+
+<form class="pf-c-form custom-workspace-devfile-label">
+
+  <div class="pf-c-form__group">
+    <label class="pf-c-form__label" for="vertical-align-labels-vertical-form-name">
+      <span class="pf-c-form__label-text">Devfile</span>
+      <span class="pf-c-form__label-required" uib-tooltip="Required field" aria-hidden="true">&#42;</span>
+    </label>
+
+    <p class="pf-c-form__helper-text" id="help-text-simple-form-name-helper" aria-live="polite">Select a devfile from
+      a templates or enter devfile URL</p>
+  </div>
+
+  <div class="pf-l-flex pf-m-column pf-m-row-on-xl custom-workspace-tab-devfile">
+
+    <!-- Devfiles List -->
+    <div class="pf-l-flex">
+      <div class="pf-l-flex__item">
+        <che-pf-select-typeahead config="ctrl.devfileSelect.config" value="ctrl.devfileSelect.value"
+                                 on-select="ctrl.devfileSelect.onSelect($value)"
+                                 on-clear="ctrl.onClear()"></che-pf-select-typeahead>
+        </che-pf-select-typeahead>
+      </div>
+      <div class="pf-l-flex__item">or</div>
+    </div>
+
+    <div class="pf-l-flex pf-m-column pf-m-row-on-md">
+
+      <!-- Devfile URL -->
+      <div class="pf-l-flex__item">
+        <che-pf-text-input value="ctrl.devfileUrlInput.value" config="ctrl.devfileUrlInput.config"
+          on-change="ctrl.devfileUrlInput.onChange($value)" aria-describedby="devfile-url-helper"></che-pf-text-input>
+        <!-- Error Message -->
+        <p class="pf-c-form__helper-text pf-m-error" id="devfile-url-helper" aria-live="polite"
+           ng-show="ctrl.errorMessage">{{ctrl.errorMessage}}</p>
+      </div>
+
+      <!-- Load Devfile Button -->
+      <div class="pf-l-flex__item">
+        <che-pf-secondary-button title="{{ctrl.devfileLoadButton.title}}" on-click="ctrl.devfileLoadButton.onClick()"
+          ng-disabled="ctrl.devfileLoadButtonDisabled"></che-pf-secondary-button>
+      </div>
+
+    </div>
+
+  </div>
+
+</form>

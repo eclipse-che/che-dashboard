@@ -66,11 +66,20 @@ export class WorkspaceDevfileEditorController {
     $scope.$watch(() => {
       return this.workspaceDevfile;
     }, () => {
-      let devfile: che.IWorkspaceDevfile;
+      let devfile: che.IWorkspaceDevfile | {};
       try {
-        devfile = jsyaml.safeLoad(this.devfileYaml);
+        if(this.devfileYaml) {
+          devfile = jsyaml.safeLoad(this.devfileYaml);
+        }
       } catch (e) {
         return;
+      }
+
+      if (!devfile && !this.workspaceDevfile) {
+        return;
+      }
+      if (!devfile) {
+        devfile = {};
       }
 
       if (angular.equals(devfile, this.workspaceDevfile) === false) {
@@ -96,7 +105,9 @@ export class WorkspaceDevfileEditorController {
     };
 
     try {
-      jsyaml.safeLoad(this.devfileYaml);
+      if(this.devfileYaml) {
+        jsyaml.safeLoad(this.devfileYaml);
+      }
     } catch (e) {
       if (e && e.name === 'YAMLException') {
         validation.errors = [e.message];
@@ -111,7 +122,7 @@ export class WorkspaceDevfileEditorController {
   }
 
   $onInit(): void {
-    this.devfileYaml = jsyaml.safeDump(this.workspaceDevfile);
+    this.devfileYaml = this.workspaceDevfile ? jsyaml.safeDump(this.workspaceDevfile) : '';
     this.devfileDocsUrl = this.cheBranding.getDocs().devfile;
     const yamlService = (window as any).yamlService;
     this.cheAPI.getDevfile().fetchDevfileSchema().then(jsonSchema => {
@@ -148,13 +159,17 @@ export class WorkspaceDevfileEditorController {
     }
 
     this.saveTimeoutPromise = this.$timeout(() => {
-      const devfile = jsyaml.safeLoad(this.devfileYaml);
-      Object.keys(this.workspaceDevfile).forEach((key: string) => {
-        if (!devfile[key]) {
-          delete this.workspaceDevfile[key];
-        }
-      });
-      angular.extend(this.workspaceDevfile, devfile);
+      const devfile = this.devfileYaml ? jsyaml.safeLoad(this.devfileYaml) : {};
+      if(angular.isObject(this.workspaceDevfile)){
+        Object.keys(this.workspaceDevfile).forEach((key: string) => {
+          if (!devfile[key]) {
+            delete this.workspaceDevfile[key];
+          }
+        });
+        angular.extend(this.workspaceDevfile, devfile);
+      } else {
+        this.workspaceDevfile = devfile;
+      }
       this.workspaceDevfileOnChange({ devfile, editorState });
     }, 500);
   }
