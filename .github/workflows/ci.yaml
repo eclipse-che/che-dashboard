@@ -32,6 +32,6 @@ jobs:
     - name: "Docker docker.io Login"
       run:  docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" -p "${{ secrets.DOCKERHUB_PASSWORD }}" docker.io
     - name: "Docker build"
-      run: docker buildx build --platform linux/amd64 --cache-from="type=registry,ref=${CACHE_IMAGE_FULL}" --cache-to="type=registry,ref=${CACHE_IMAGE_FULL},mode=max" -t ${IMAGE_FULL}  -f Dockerfile.apache --push .
+      run: docker buildx build --platform linux/amd64 --cache-from="type=registry,ref=${CACHE_IMAGE_FULL}" --cache-to="type=registry,ref=${CACHE_IMAGE_FULL},mode=max" -t ${IMAGE_FULL}  -f apache.Dockerfile --push .
     - name: "Docker Logout"
       run: docker logout
