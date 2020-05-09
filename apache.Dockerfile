@@ -15,7 +15,7 @@ COPY yarn.lock /dashboard/
 WORKDIR /dashboard
 RUN yarn install --ignore-optional
 COPY . /dashboard/
-RUN yarn build && yarn test
+RUN yarn build
 
 FROM docker.io/httpd:2.4.43-alpine
 RUN sed -i 's|    AllowOverride None|    AllowOverride All|' /usr/local/apache2/conf/httpd.conf && \
