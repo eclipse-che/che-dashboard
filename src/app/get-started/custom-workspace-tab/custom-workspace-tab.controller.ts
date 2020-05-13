@@ -192,6 +192,7 @@ export class CustomWorkspaceTabController implements ng.IController {
       this.temporaryStorageProperties.temporary = undefined;
     }
     if (this.devfile.metadata && this.devfile.metadata.name) {
+      this.workspaceName = this.devfile.metadata.name;
       this.workspaceNameProperties.name = this.devfile.metadata.name;
     }
 
@@ -202,8 +203,8 @@ export class CustomWorkspaceTabController implements ng.IController {
   }
 
   private createWorkspace(): ng.IPromise<che.IWorkspace> {
-    const attributes = { stackName: this.stackName };
-    return this.createWorkspaceSvc.createWorkspaceFromDevfile(this.namespace, this.devfile, attributes, true);
+    const stackName = this.stackName || '';
+    return this.createWorkspaceSvc.createWorkspaceFromDevfile(this.namespace, this.devfile, {stackName}, true);
   }
 
 }
