@@ -18,6 +18,7 @@ import {ResourcesService} from './resources-service/resources-service';
 import { ResourceFetcherService } from './resource-fetcher/resource-fetcher.service';
 import { GlobalWarningBannerService } from './global-warning-banner.service';
 import { RegistryCheckingService } from './registry-checking.service';
+import { DetectSupportedBrowserService } from './browser-detect';
 
 export class ServiceConfig {
 
@@ -30,5 +31,6 @@ export class ServiceConfig {
     register.service('resourceFetcherService', ResourceFetcherService);
     register.service('globalWarningBannerService', GlobalWarningBannerService);
     register.service('registryCheckingService', RegistryCheckingService);
+    register.service('detectSupportedBrowserService', DetectSupportedBrowserService);
   }
 }
