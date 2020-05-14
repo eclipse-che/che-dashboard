@@ -11,7 +11,7 @@
  */
 'use strict';
 
-import { GlobalWarningBannerService } from '../../../target/dist/components/service/global-warning-banner.service';
+import { GlobalWarningBannerService } from './global-warning-banner.service';
 
 const UNSUPPORTED_BROWSER_WARNING = `You're using a web browser we don't support. Please consider using Chrome or Firefox instead.`;
 
@@ -29,6 +29,11 @@ export class DetectSupportedBrowserService {
     }
   }
 
+  get isOpera(): boolean {
+    // @ts-ignore
+    return (!!window.opr && !!opr.addons) || !!window.opera || navigator.userAgent.indexOf(' OPR/') >= 0;
+  }
+
   get isChrome(): boolean {
     // @ts-ignore
     return !!window.chrome && (!!window.chrome.webstore || !!window.chrome.runtime);
@@ -40,7 +45,7 @@ export class DetectSupportedBrowserService {
   }
 
   get isSupported(): boolean {
-    return this.isChrome || this.isFirefox;
+    return (this.isChrome && !this.isOpera) || this.isFirefox;
   }
 
 }
