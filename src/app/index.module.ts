@@ -36,6 +36,7 @@ import {ProfileConfig} from './profile/profile-config';
 import {ResourceFetcherService} from '../components/service/resource-fetcher/resource-fetcher.service';
 import {CheBranding} from '../components/branding/che-branding';
 import { RegistryCheckingService } from '../components/service/registry-checking.service';
+import { DetectSupportedBrowserService } from '../components/service/browser-detect';
 
 // init module
 const initModule = angular.module('userDashboard', ['ngAnimate', 'ngCookies', 'ngTouch', 'ngSanitize', 'ngResource', 'ngRoute',
@@ -307,6 +308,7 @@ initModule.run([
   '$routeParams',
   '$timeout',
   'cheUIElementsInjectorService',
+  'detectSupportedBrowserService',
   'registryCheckingService',
   'resourceFetcherService',
   'routeHistory',
@@ -319,6 +321,7 @@ initModule.run([
     $routeParams: ng.route.IRouteParamsService,
     $timeout: ng.ITimeoutService,
     cheUIElementsInjectorService: CheUIElementsInjectorService,
+    detectSupportedBrowserService: DetectSupportedBrowserService,
     registryCheckingService: RegistryCheckingService,
     resourceFetcherService: ResourceFetcherService,
     routeHistory: RouteHistory,
@@ -335,6 +338,7 @@ initModule.run([
     registryCheckingService;
     resourceFetcherService;
     routeHistory;
+    detectSupportedBrowserService;
     /* tslint:enable */
 
     $rootScope.$on('$viewContentLoaded', () => {
