@@ -8,14 +8,14 @@
 # Contributors:
 #   Red Hat, Inc. - initial API and implementation
 
-FROM docker.io/node:8.16.2-alpine as builder
+FROM docker.io/node:8.16.2 as builder
 
 COPY package.json /dashboard/
 COPY yarn.lock /dashboard/
 WORKDIR /dashboard
 RUN yarn install --ignore-optional
 COPY . /dashboard/
-RUN yarn build
+RUN yarn build && yarn test
 
 FROM docker.io/httpd:2.4.43-alpine
 RUN sed -i 's|    AllowOverride None|    AllowOverride All|' /usr/local/apache2/conf/httpd.conf && \
