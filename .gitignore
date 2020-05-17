@@ -6,8 +6,8 @@ src/app/colors/template/
 src/app/proxy/proxy-settings.constant.js
 src/app/proxy/proxy-settings.constant.ts
 src/app/proxy/template/
+yarn-error.log
 node_modules/
-bower_components/
 .sass-cache/
 .tmp/
 tmp

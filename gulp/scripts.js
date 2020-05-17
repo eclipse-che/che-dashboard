@@ -17,10 +17,9 @@ var gulp = require('gulp');
 var conf = require('./conf');
 var bootstrap = require('bootstrap-styl');
 
-var browserSync = require('browser-sync');
 var webpackstream = require('webpack-stream');
 var webpack = require('webpack');
-var glob = require("glob")
+var glob = require('glob');
 
 var $ = require('gulp-load-plugins')();
 
@@ -93,7 +92,7 @@ function webpackWrapper(watch, test, callback) {
     },
     entry: {
       index: [path.resolve(__dirname, '..', 'src', 'index.ts')],
-      "editor.worker": 'monaco-editor-core/esm/vs/editor/editor.worker.js'
+      'editor.worker': 'monaco-editor-core/esm/vs/editor/editor.worker.js'
     },
     plugins: [
       new webpack.IgnorePlugin(/prettier/)

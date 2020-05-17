@@ -2871,6 +2871,11 @@ emojis-list@^2.0.0:
   resolved "https://registry.yarnpkg.com/emojis-list/-/emojis-list-2.1.0.tgz#4daa4d9db00f9819880c79fa457ae5b09a1fd389"
   integrity sha1-TapNnbAPmBmIDHn6RXrlsJof04k=
 
+emojis-list@^3.0.0:
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/emojis-list/-/emojis-list-3.0.0.tgz#5570662046ad29e2e916e71aae260abdff4f6a78"
+  integrity sha512-/kyM18EfinwXZbno9FyUGeFh87KC8HRQBQGildHZbEuRyWFOmv1U10o9BBp8XVZDVNNuQKyIGIu5ZYAAXJ0V2Q==
+
 enabled@1.0.x:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/enabled/-/enabled-1.0.2.tgz#965f6513d2c2d1c5f4652b64a2e3396467fc2f93"
@@ -6433,6 +6438,15 @@ loader-utils@^1.0.0, loader-utils@^1.0.2, loader-utils@^1.0.3, loader-utils@^1.1
     emojis-list "^2.0.0"
     json5 "^1.0.1"
 
+loader-utils@^1.2.3:
+  version "1.4.0"
+  resolved "https://registry.yarnpkg.com/loader-utils/-/loader-utils-1.4.0.tgz#c579b5e34cb34b1a74edc6c1fb36bfa371d5a613"
+  integrity sha512-qH0WSMBtn/oHuwjy/NucEgbx5dbxxnxup9s4PVXJUDHZBQY+s0NWA9rJf53RBnQZxfch7euUui7hpoAPvALZdA==
+  dependencies:
+    big.js "^5.2.2"
+    emojis-list "^3.0.0"
+    json5 "^1.0.1"
+
 localtunnel@^1.7.0:
   version "1.9.2"
   resolved "https://registry.yarnpkg.com/localtunnel/-/localtunnel-1.9.2.tgz#0012fcabc29cf964c130a01858768aa2bb65b5af"
@@ -7345,10 +7359,17 @@ moment@*:
   resolved "https://registry.yarnpkg.com/moment/-/moment-2.9.0.tgz#77ec1175fa294f42627f10c8e6de6302c036f6d5"
   integrity sha1-d+wRdfopT0JifxDI5t5jAsA29tU=
 
-monaco-editor-core@0.14.6:
-  version "0.14.6"
-  resolved "https://registry.yarnpkg.com/monaco-editor-core/-/monaco-editor-core-0.14.6.tgz#25fae6a2e7c7da6eb2a3bba653a283627dc624e4"
-  integrity sha512-B7ZFmTO/4L+ff07Qmxt2TB0/nux80dVyah5AQaeuWCAD3H5wuaGOszAWBZEU6hEalSYTXv+O9bnTxnjXZG6tuw==
+monaco-editor-core@0.20.0:
+  version "0.20.0"
+  resolved "https://registry.yarnpkg.com/monaco-editor-core/-/monaco-editor-core-0.20.0.tgz#d5ce01307d298dbca6ab9194812812b32b50433f"
+  integrity sha512-4mdmfEejTvRZzrEIn70jqqNl3g15vnkRdTkJ8uMK4jiljntlwhiSc5vknZOLt1QM8za16C3tDrSl2mTL9ma2Sg==
+
+monaco-editor-webpack-plugin@^1.9.0:
+  version "1.9.0"
+  resolved "https://registry.yarnpkg.com/monaco-editor-webpack-plugin/-/monaco-editor-webpack-plugin-1.9.0.tgz#5b547281b9f404057dc5d8c5722390df9ac90be6"
+  integrity sha512-tOiiToc94E1sb50BgZ8q8WK/bxus77SRrwCqIpAB5er3cpX78SULbEBY4YPOB8kDolOzKRt30WIHG/D6gz69Ww==
+  dependencies:
+    loader-utils "^1.2.3"
 
 monaco-languageclient@0.9.0:
   version "0.9.0"

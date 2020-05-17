@@ -76,8 +76,7 @@ export class UiMonaco implements ng.IDirective {
       UI_MONACO_CONFIG,
       uiMonaco,
       {
-        model: Monaco.editor.createModel('',  'yaml'),
-        automaticLayout: true
+        model: Monaco.editor.createModel('',  'yaml')
       });
 
     const editor = Monaco.editor.create(element, monacoOptions);
@@ -111,8 +110,21 @@ export class UiMonaco implements ng.IDirective {
       const layout = {height: element.offsetHeight, width: element.offsetWidth};
       editor.layout(layout);
     };
-    handleResize();
+
     window.addEventListener('resize', handleResize);
+
+    if (!element.offsetHeight || !element.offsetWidth) {
+      const layoutWatcher = $scope.$watch(() => element.offsetHeight && element.offsetWidth,
+        value => {
+          if (value) {
+            handleResize();
+            // unregister watcher
+            layoutWatcher();
+          }
+        });
+    } else {
+      handleResize();
+    }
 
     $scope.$on('$destroy', () => {
       if (editor) {
