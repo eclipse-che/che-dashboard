@@ -16,7 +16,8 @@ import { GetStartedTabConfigService } from './get-started-tab/get-started-tab-co
 import { GetStartedTabConfig } from './get-started-tab/get-started-tab-config';
 import { CustomWorkspaceTabConfig } from './custom-workspace-tab/custom-workspace-tab-config';
 import { CheWorkspace } from '../../components/api/workspace/che-workspace.factory';
-import { MENU_ITEM } from '../navbar/navbar.controller';
+
+export const GET_STARTED = '/getstarted';
 
 export class GetStartedConfig {
 
@@ -29,7 +30,7 @@ export class GetStartedConfig {
 
     // config routes
     register.app.config(['$routeProvider', ($routeProvider: any) => {
-      $routeProvider.accessWhen('/getstarted', {
+      $routeProvider.accessWhen(GET_STARTED, {
         title: 'Get Started',
         templateUrl: 'app/get-started/get-started.html',
         controller: 'GetStartedController',
@@ -44,7 +45,7 @@ export class GetStartedConfig {
       $routeProvider.accessWhen('/', {
         resolve: {
           initData: ['$window', 'cheWorkspace', ($window: ng.IWindowService, cheWorkspace: CheWorkspace) => {
-            let url = '/getstarted?tab=Get%20Started';
+            let url = `${GET_STARTED}?tab=getStarted`;
             cheWorkspace.fetchWorkspaces().then(() => {
               if (cheWorkspace.getWorkspaces().length > 0) {
                 url = '/workspaces';
