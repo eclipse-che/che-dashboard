@@ -11,9 +11,11 @@
  */
 'use strict';
 
+import { GET_STARTED } from './get-started-config';
+
 enum TABS {
-  'Get Started',
-  'Custom Workspace'
+  'getStarted',
+  'customWorkspace'
 }
 
 /**
@@ -49,17 +51,17 @@ export class GetStartedController {
       const tab = $location.search().tab;
       if (tab) {
         const tabIndex = this.tabs[tab];
-        if (typeof tabIndex === 'number') {
-          this.selectedTabIndex = tabIndex;
-          return;
-        }
+        this.selectedTabIndex = typeof tabIndex === 'number' ? tabIndex : 0;
+        return;
       }
-      $location.search({'tab': TABS[0]});
+      this.selectedTabIndex = 0;
     }
 
     updateSelectedTab();
     $scope.$on('$locationChangeSuccess', () => {
-      updateSelectedTab();
+      if ($location.path() === GET_STARTED) {
+        updateSelectedTab();
+      }
     });
   }
 

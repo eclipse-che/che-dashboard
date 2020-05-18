@@ -229,7 +229,7 @@ export class CheNavBarController {
    * Opens user profile in new browser page.
    */
   private gotoProfile(): void {
-    this.$location.path('/account');
+    this.$location.path('/account').search({});
   }
 
   /**
