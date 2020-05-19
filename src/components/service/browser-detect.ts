@@ -13,7 +13,7 @@
 
 import { GlobalWarningBannerService } from './global-warning-banner.service';
 
-const UNSUPPORTED_BROWSER_WARNING = `You're using a web browser we don't support. Please consider using Chrome or Firefox instead.`;
+const UNSUPPORTED_BROWSER_WARNING = `You're using a web browser we don't support. Consider using Chrome or Firefox instead.`;
 
 export class DetectSupportedBrowserService {
 
