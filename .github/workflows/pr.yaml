@@ -1,0 +1,33 @@
+#
+# Copyright (c) 2020 Red Hat, Inc.
+# This program and the accompanying materials are made
+# available under the terms of the Eclipse Public License 2.0
+# which is available at https://www.eclipse.org/legal/epl-2.0/
+#
+# SPDX-License-Identifier: EPL-2.0
+#
+name: CI
+# Trigger the workflow on push
+on:
+  push:
+  pull_request:
+    branches: [ master ]
+jobs:
+  docker-build:
+    runs-on: ubuntu-latest
+    env:
+      IMAGE_FULL: quay.io/eclipse/che-dashboard:next
+      CACHE_IMAGE_FULL: docker.io/cheincubator/che-dashboard:cache
+    steps:
+    - uses: actions/checkout@v2
+      name: Checkout che-dashboard source code
+    - name: Docker Buildx
+      uses: crazy-max/ghaction-docker-buildx@v1.4.0
+      with:
+        version: v0.3.1
+    - name: "Docker prepare"
+      run: docker image prune -a -f
+    - name: "Docker build"
+      run: docker buildx build --platform linux/amd64 --cache-from="type=registry,ref=${CACHE_IMAGE_FULL}" -t ${IMAGE_FULL}  -f apache.Dockerfile .
+    - name: "Docker Logout"
+      run: docker logout
