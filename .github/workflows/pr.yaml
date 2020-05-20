@@ -28,4 +28,4 @@ jobs:
     - name: "Docker prepare"
       run: docker image prune -a -f
     - name: "Docker build"
-      run: docker buildx build --platform linux/amd64 --cache-from="type=registry,ref=${CACHE_IMAGE_FULL}" -t ${IMAGE_FULL}  -f apache.Dockerfile .
+      run: docker buildx build --platform linux/amd64 -t ${IMAGE_FULL}  -f apache.Dockerfile .
