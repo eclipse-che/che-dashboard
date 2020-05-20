@@ -22,9 +22,9 @@ jobs:
     - uses: actions/checkout@v2
       name: Checkout che-dashboard source code
     - name: Docker Buildx
-      uses: crazy-max/ghaction-docker-buildx@v1.4.0
+      uses: crazy-max/ghaction-docker-buildx@v1.6.1
       with:
-        version: v0.3.1
+        buildx-version: v0.4.1
     - name: "Docker prepare"
       run: docker image prune -a -f
     - name: "Docker Quay.io Login"
