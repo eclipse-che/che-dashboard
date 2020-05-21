@@ -30,6 +30,8 @@ jobs:
       uses: crazy-max/ghaction-docker-buildx@v1.6.1
       with:
         buildx-version: v0.4.1
+    - name: "Docker prepare"
+      run: docker image prune -a -f
     - name: "Docker build without cache"
       if: ${{ matrix.layerscaching == false}}
       run: docker buildx build --platform ${{ matrix.platform}} -t ${IMAGE_FULL}  -f apache.Dockerfile .
