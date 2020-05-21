@@ -43,7 +43,7 @@ jobs:
     - name: "Docker build with cache"
       if: ${{ matrix.layerscaching == true}}
       uses: nick-invision/retry@v1
-        with:
-          timeout_minutes: 10
-          max_attempts: 3
-          command: docker buildx build --platform ${{ matrix.platform}} --cache-from="type=registry,ref=${CACHE_IMAGE_FULL}" -t ${IMAGE_FULL}  -f apache.Dockerfile .
+      with:
+        timeout_minutes: 10
+        max_attempts: 3
+        command: docker buildx build --platform ${{ matrix.platform}} --cache-from="type=registry,ref=${CACHE_IMAGE_FULL}" -t ${IMAGE_FULL}  -f apache.Dockerfile .
