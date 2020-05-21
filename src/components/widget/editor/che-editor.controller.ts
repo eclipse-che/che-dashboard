@@ -151,13 +151,13 @@ export class CheEditorController {
         cleanDiagnostics();
         return;
       }
-      return yamlService.doValidation(document, false).then((diagnostics) => {
+      yamlService.doValidation(document, false).then((diagnostics) => {
         const markers = p2m.asDiagnostics(diagnostics);
         let errorMessage = '';
         if (markers && markers[0]) {
           const {message, startLineNumber, startColumn} = (markers[0] as any);
           if (startLineNumber && startColumn) {
-            errorMessage += `line[${startLineNumber}] column[${startColumn}]: `
+            errorMessage += `[${startLineNumber}:${startColumn}]:`
           }
           errorMessage += `Error. ${message}`;
         }

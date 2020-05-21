@@ -76,7 +76,6 @@
     "lodash": "4.17.15",
     "merge-stream": "^1.0.1",
     "minimist": "^1.2.0",
-    "monaco-editor-webpack-plugin": "^1.9.0",
     "ng-annotate-loader": "^0.6.1",
     "ngtemplate-loader": "^2.0.1",
     "phantomjs-prebuilt": "2.1.14",
@@ -137,6 +136,6 @@
     "ng-lodash": "0.2.3",
     "umd-compat-loader": "2.1.1",
     "vscode-languageserver-types": "3.10.0",
-    "yaml-language-server": "0.5.8"
+    "yaml-language-server": "0.8.0"
   }
 }

@@ -14,6 +14,8 @@
 import { IDevfileEditorRowComponentBindings } from './devfile-editor-row.component';
 import { CheDevfile } from '../../../../components/api/che-devfile.factory';
 import { CheBranding } from '../../../../components/branding/che-branding';
+import { CheWorkspace } from '../../../../components/api/workspace/che-workspace.factory';
+import { IPlugin, PluginRegistry } from '../../../../components/api/plugin-registry.factory';
 
 type OnChangesObject = {
   [key in keyof IDevfileEditorRowComponentBindings]: ng.IChangesObject<IDevfileEditorRowComponentBindings[key]>;
@@ -24,7 +26,9 @@ export class DevfileEditorRowController implements ng.IController, IDevfileEdito
   static $inject = [
     '$timeout',
     'cheDevfile',
-    'cheBranding'
+    'cheBranding',
+    'cheWorkspace',
+    'pluginRegistry',
   ];
 
   // component bindings
@@ -39,22 +43,49 @@ export class DevfileEditorRowController implements ng.IController, IDevfileEdito
   private $timeout: ng.ITimeoutService;
   private cheDevfile: CheDevfile;
   private cheBranding: CheBranding;
+  private cheWorkspace: CheWorkspace;
+  private pluginRegistry: PluginRegistry;
 
   constructor(
     $timeout: ng.ITimeoutService,
     cheDevfile: CheDevfile,
     cheBranding: CheBranding,
+    cheWorkspace: CheWorkspace,
+    pluginRegistry: PluginRegistry
   ) {
     this.$timeout = $timeout;
     this.cheDevfile = cheDevfile;
     this.cheBranding = cheBranding;
+    this.cheWorkspace = cheWorkspace;
+    this.pluginRegistry = pluginRegistry;
   }
 
   $onInit(): void {
     this.devfileDocsUrl = this.cheBranding.getDocs().devfile;
     this.devfileYaml = this.devfile ? jsyaml.safeDump(this.devfile) : '';
     const yamlService = (window as any).yamlService;
-    this.cheDevfile.fetchDevfileSchema().then(jsonSchema => {
+    this.cheDevfile.fetchDevfileSchema().then(async jsonSchema => {
+      if (jsonSchema &&  jsonSchema.properties &&  jsonSchema.properties.components) {
+        jsonSchema.additionalProperties = true;
+        if (!jsonSchema.properties.components.defaultSnippets) {
+          jsonSchema.properties.components.defaultSnippets = [];
+        }
+        const workspaceSettings = await this.cheWorkspace.fetchWorkspaceSettings();
+        const result = await this.pluginRegistry.fetchPlugins(workspaceSettings.cheWorkspacePluginRegistryUrl);
+        const type = 'chePlugin';
+        const pluginsId: string[] = [];
+        result.filter(item => item.type !== PluginRegistry.EDITOR_TYPE).forEach((item: IPlugin) => {
+          const id = `${item.publisher}/${item.name}/latest`;
+          if (pluginsId.indexOf(id) === -1) {
+            pluginsId.push(id);
+            jsonSchema.properties.components.defaultSnippets.push({
+              'label': item.displayName,
+              'description': item.description,
+              'body': {id, type}
+            });
+          }
+        });
+      }
       const schemas = [{
         uri: 'inmemory:yaml',
         fileMatch: ['*'],

@@ -32,7 +32,7 @@ function webpackWrapper(watch, test, callback) {
       noParse: [/jsonlint/],
       loaders: [
         {
-          test: /node_modules[\\\\|\/](vscode-languageserver-types|vscode-uri|jsonc-parser|vscode-json-languageservice)/,
+          test: /node_modules[\\\\|\/](vscode-languageserver-textdocument|vscode-languageserver-types|vscode-uri|jsonc-parser|vscode-json-languageservice)/,
           loader: 'umd-compat-loader'
         },
         {
