@@ -11,6 +11,8 @@
  */
 'use strict';
 
+import { CheDashboardConfigurationService } from '../../../components/branding/che-dashboard-configuration.service';
+
 /**
  * @ngdoc controller
  * @name teams.navbar.controller:NavbarTeamsController
@@ -19,22 +21,33 @@
  */
 export class NavbarTeamsController {
 
-  static $inject = ['cheTeam'];
+  static $inject = [
+    'cheDashboardConfigurationService',
+    'cheTeam',
+  ];
 
   /**
    * Team API interaction.
    */
   private cheTeam: che.api.ICheTeam;
 
+  private cheDashboardConfigurationService: CheDashboardConfigurationService;
+
   /**
    * Default constructor
    */
-  constructor(cheTeam: che.api.ICheTeam) {
+  constructor(
+    cheDashboardConfigurationService: CheDashboardConfigurationService,
+    cheTeam: che.api.ICheTeam,
+  ) {
+    this.cheDashboardConfigurationService = cheDashboardConfigurationService;
     this.cheTeam = cheTeam;
   }
 
   $onInit(): void {
-    this.fetchTeams();
+    if (this.cheDashboardConfigurationService.allowedMenuItem('organizations')) {
+      this.fetchTeams();
+    }
   }
 
   /**

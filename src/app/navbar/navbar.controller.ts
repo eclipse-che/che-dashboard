@@ -161,18 +161,20 @@ export class CheNavBarController {
    * Update data.
    */
   updateData(): void {
-    const organization = this.cheAPI.getOrganization();
-    organization.fetchOrganizations().then(() => {
-      this.organizations = organization.getOrganizations();
-      const user = this.cheAPI.getUser().getUser();
-      organization.fetchOrganizationByName(user.name)
-        .catch(() => {
-          // fetch unhandled rejection
-        })
-        .finally(() => {
-          this.hasPersonalAccount = angular.isDefined(organization.getOrganizationByName(user.name));
-        });
-    });
+    if (this.showOrganizationsItem()) {
+      const organization = this.cheAPI.getOrganization();
+      organization.fetchOrganizations().then(() => {
+        this.organizations = organization.getOrganizations();
+        const user = this.cheAPI.getUser().getUser();
+        organization.fetchOrganizationByName(user.name)
+          .catch(() => {
+            // fetch unhandled rejection
+          })
+          .finally(() => {
+            this.hasPersonalAccount = angular.isDefined(organization.getOrganizationByName(user.name));
+          });
+      });
+    }
   }
 
   /**
@@ -221,8 +223,16 @@ export class CheNavBarController {
     return rootOrganizations.length;
   }
 
-  showMenuItem(menuItem: che.ConfigurableMenuItem | string): boolean {
+  showMenuItem(menuItem: che.ConfigurableMenuItem): boolean {
     return this.cheDashboardConfigurationService.allowedMenuItem(menuItem);
+  }
+
+  showOrganizationsItem(): boolean {
+    return this.showMenuItem('organizations');
+  }
+
+  showAdministrationSection(): boolean {
+    return this.showOrganizationsItem() && (this.userServices.hasInstallationManagerService || this.userServices.hasAdminUserService);
   }
 
   /**
