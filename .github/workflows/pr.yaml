@@ -32,5 +32,3 @@ jobs:
       run: docker image prune -a -f
     - name: "Docker build"
       run: docker buildx build --platform ${{ matrix.platform}} -t ${IMAGE_FULL}  -f apache.Dockerfile .
-    - name: "Docker Logout"
-      run: docker logout
