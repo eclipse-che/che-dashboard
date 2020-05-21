@@ -13,7 +13,7 @@
 
 import { GlobalWarningBannerService } from './global-warning-banner.service';
 
-const UNSUPPORTED_BROWSER_WARNING = `You're using a web browser we don't support. Please consider using Chrome or Firefox instead.`;
+const UNSUPPORTED_BROWSER_WARNING = `You're using a web browser we don't support. Consider using Chrome or Firefox instead.`;
 
 export class DetectSupportedBrowserService {
 
@@ -36,7 +36,7 @@ export class DetectSupportedBrowserService {
 
   get isChrome(): boolean {
     // @ts-ignore
-    return !!window.chrome && (!!window.chrome.webstore || !!window.chrome.runtime);
+    return !!window.chrome && (!!window.chrome.runtime || (navigator.userAgent.indexOf(' OPR/') === -1 && navigator.userAgent.indexOf(' Edge/')));
   }
 
   get isFirefox(): boolean {
