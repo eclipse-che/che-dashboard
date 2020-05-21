@@ -157,12 +157,7 @@ export class CheTeam implements che.api.ICheTeam {
       }
     });
 
-    return defer.promise.then(() => {
-      this.fetchTeamsDefer.resolve();
-    }, (error: any) => {
-      this.fetchTeamsDefer.reject();
-      return this.$q.reject(error);
-    });
+    return defer.promise;
   }
 
   /**

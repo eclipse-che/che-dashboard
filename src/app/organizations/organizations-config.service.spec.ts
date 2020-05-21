@@ -14,6 +14,7 @@ import { CheAPIBuilder } from '../../components/api/builder/che-api-builder.fact
 import { CheHttpBackend } from '../../components/api/test/che-http-backend';
 import { OrganizationsConfigServiceMock } from './organizations-config.service.mock';
 import { CheBranding } from '../../components/branding/che-branding';
+import { CheDashboardConfigurationService } from '../../components/branding/che-dashboard-configuration.service';
 
 /* tslint:disable:no-empty */
 describe('OrganizationsConfig >', () => {
@@ -47,12 +48,16 @@ describe('OrganizationsConfig >', () => {
     _$route_: ng.route.IRouteService,
     _$rootScope_: ng.IRootScopeService,
     _cheHttpBackend_: CheHttpBackend,
-    _cheAPIBuilder_: CheAPIBuilder
+    _cheAPIBuilder_: CheAPIBuilder,
+    cheDashboardConfigurationService: CheDashboardConfigurationService,
   ) => {
     $injector = _$injector_;
     $route = _$route_;
     $rootScope = _$rootScope_;
     $httpBackend = _cheHttpBackend_.getHttpBackend();
+
+    // enable all menu items and routes if any
+    cheDashboardConfigurationService.allowedMenuItem = () => true;
 
     setPath = path => {
       _$location_.path(path);
