@@ -34,7 +34,16 @@ jobs:
       run: docker image prune -a -f
     - name: "Docker build without cache"
       if: ${{ matrix.layerscaching == false}}
-      run: docker buildx build --platform ${{ matrix.platform}} -t ${IMAGE_FULL}  -f apache.Dockerfile .
+      uses: nick-invision/retry@v1
+      with:
+        timeout_minutes: 10
+        max_attempts: 3
+        command: docker buildx build --platform ${{ matrix.platform}} -t ${IMAGE_FULL}  -f apache.Dockerfile .
+      run:
     - name: "Docker build with cache"
       if: ${{ matrix.layerscaching == true}}
-      run: docker buildx build --platform ${{ matrix.platform}} --cache-from="type=registry,ref=${CACHE_IMAGE_FULL}" -t ${IMAGE_FULL}  -f apache.Dockerfile .
+      uses: nick-invision/retry@v1
+        with:
+          timeout_minutes: 10
+          max_attempts: 3
+          command: docker buildx build --platform ${{ matrix.platform}} --cache-from="type=registry,ref=${CACHE_IMAGE_FULL}" -t ${IMAGE_FULL}  -f apache.Dockerfile .
