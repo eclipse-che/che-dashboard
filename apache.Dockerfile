@@ -9,7 +9,8 @@
 #   Red Hat, Inc. - initial API and implementation
 
 FROM docker.io/node:8.16.2 as builder
-
+ARG TARGETPLATFORM
+ARG BUILDPLATFORM
 RUN echo "I'm building for $TARGETPLATFORM on $BUILDPLATFORM"
 COPY package.json /dashboard/
 COPY yarn.lock /dashboard/
