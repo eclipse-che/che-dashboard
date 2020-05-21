@@ -39,7 +39,6 @@ jobs:
         timeout_minutes: 10
         max_attempts: 3
         command: docker buildx build --platform ${{ matrix.platform}} -t ${IMAGE_FULL}  -f apache.Dockerfile .
-      run:
     - name: "Docker build with cache"
       if: ${{ matrix.layerscaching == true}}
       uses: nick-invision/retry@v1
