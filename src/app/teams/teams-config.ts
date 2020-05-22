@@ -36,6 +36,7 @@ import {ListTeams} from './list/list-teams.directive';
 import {ListTeamsController} from './list/list-teams.controller';
 import {TeamItem} from './list/team-item/team-item.directive';
 import {TeamItemController} from './list/team-item/team-item.controller';
+import { OrganizationsConfigService } from '../organizations/organizations-config.service';
 
 /**
  * The configuration of teams, defines controllers, directives and routing.
@@ -75,36 +76,44 @@ export class TeamsConfig {
     register.controller('TeamDetailsController', TeamDetailsController);
     register.service('teamDetailsService', TeamDetailsService);
 
-    let checkPersonalTeam = ($q: ng.IQService, cheTeam: che.api.ICheTeam) => {
+    let checkPersonalTeam = ($q: ng.IQService, cheTeam: che.api.ICheTeam, organizationsConfigService: OrganizationsConfigService) => {
       var defer = $q.defer();
-      cheTeam.fetchTeams().then(() => {
-        if (cheTeam.getPersonalAccount()) {
-          defer.resolve();
-        } else {
-          defer.reject();
-        }
-      }, (error: any) => {
-        if (error.status === 304) {
+      organizationsConfigService.allowOrganizationsRoutes().then(() => {
+        cheTeam.fetchTeams().then(() => {
           if (cheTeam.getPersonalAccount()) {
             defer.resolve();
           } else {
             defer.reject();
           }
-        }
+        }, (error: any) => {
+          if (error.status === 304) {
+            if (cheTeam.getPersonalAccount()) {
+              defer.resolve();
+            } else {
+              defer.reject();
+            }
+          }
+        });
+      }, () => {
+        defer.reject();
       });
       return defer.promise;
     };
 
-    let checkTeamDetails = ($q: ng.IQService, teamDetailsService: TeamDetailsService, $route: ng.route.IRouteService) => {
+    let checkTeamDetails = ($q: ng.IQService, teamDetailsService: TeamDetailsService, $route: ng.route.IRouteService, organizationsConfigService: OrganizationsConfigService) => {
       let defer = $q.defer();
-      let teamName = $route.current.params.teamName;
-      teamDetailsService.fetchTeamDetailsByName(teamName).then(() => {
-        teamDetailsService.fetchOwnerByTeamName(teamName).finally(() => {
-          defer.resolve();
-        });
-      }, (error: any) => {
+      organizationsConfigService.allowOrganizationsRoutes().then(() => {
+        let teamName = $route.current.params.teamName;
+        teamDetailsService.fetchTeamDetailsByName(teamName).then(() => {
+          teamDetailsService.fetchOwnerByTeamName(teamName).finally(() => {
+            defer.resolve();
+          });
+        }, (error: any) => {
           // resolve it to show 'team not found page' in case with error
           defer.resolve();
+        });
+      }, () => {
+        defer.reject();
       });
 
       return defer.promise;
@@ -119,8 +128,8 @@ export class TeamsConfig {
       controller: 'TeamDetailsController',
       controllerAs: 'teamDetailsController',
       resolve: {
-        checkPersonal: ['$q', 'cheTeam', checkPersonalTeam],
-        checkTeamDetails: ['$q', 'teamDetailsService', '$route', checkTeamDetails]
+        checkPersonal: ['$q', 'cheTeam', 'organizationsConfigService', checkPersonalTeam],
+        checkTeamDetails: ['$q', 'teamDetailsService', '$route', 'organizationsConfigService', checkTeamDetails]
       }
     };
 

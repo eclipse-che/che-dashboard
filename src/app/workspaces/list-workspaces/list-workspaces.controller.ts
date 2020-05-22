@@ -16,6 +16,7 @@ import { CheWorkspace } from '../../../components/api/workspace/che-workspace.fa
 import { CheNamespaceRegistry } from '../../../components/api/namespace/che-namespace-registry.factory';
 import { ConfirmDialogService } from '../../../components/service/confirm-dialog/confirm-dialog.service';
 import { CheBranding } from '../../../components/branding/che-branding';
+import { CheDashboardConfigurationService } from '../../../components/branding/che-dashboard-configuration.service';
 
 /**
  * @ngdoc controller
@@ -25,17 +26,33 @@ import { CheBranding } from '../../../components/branding/che-branding';
  */
 export class ListWorkspacesCtrl {
 
-  static $inject = ['$log', '$mdDialog', '$q', 'lodash', 'cheAPI', 'cheNotification', 'cheBranding', 'cheWorkspace', 'cheNamespaceRegistry',
-    'confirmDialogService', '$scope', 'cheListHelperFactory'];
+  static $inject = [
+    '$log',
+    '$mdDialog',
+    '$q',
+    '$scope',
+    'cheAPI',
+    'cheBranding',
+    'cheDashboardConfigurationService',
+    'cheListHelperFactory',
+    'cheNamespaceRegistry',
+    'cheNotification',
+    'cheWorkspace',
+    'confirmDialogService',
+    'lodash',
+  ];
 
-  $q: ng.IQService;
   $log: ng.ILogService;
-  lodash: any;
   $mdDialog: ng.material.IDialogService;
+  $q: ng.IQService;
   cheAPI: CheAPI;
+  cheDashboardConfigurationService: CheDashboardConfigurationService;
+  cheListHelper: che.widget.ICheListHelper;
+  cheNamespaceRegistry: CheNamespaceRegistry;
   cheNotification: CheNotification;
   cheWorkspace: CheWorkspace;
-  cheListHelper: che.widget.ICheListHelper;
+  confirmDialogService: ConfirmDialogService;
+  lodash: any;
 
   state: string;
   isInfoLoading: boolean;
@@ -51,26 +68,35 @@ export class ListWorkspacesCtrl {
   onFilterChanged: Function;
   onSearchChanged: Function;
 
-  cheNamespaceRegistry: CheNamespaceRegistry;
-  private confirmDialogService: ConfirmDialogService;
   private ALL_NAMESPACES: string = 'All Teams';
 
   /**
    * Default constructor that is using resource
    */
-  constructor($log: ng.ILogService, $mdDialog: ng.material.IDialogService, $q: ng.IQService, lodash: any,
-    cheAPI: CheAPI, cheNotification: CheNotification, cheBranding: CheBranding,
-    cheWorkspace: CheWorkspace, cheNamespaceRegistry: CheNamespaceRegistry,
-    confirmDialogService: ConfirmDialogService, $scope: ng.IScope, cheListHelperFactory: che.widget.ICheListHelperFactory) {
-    this.cheAPI = cheAPI;
-    this.$q = $q;
+  constructor(
+    $log: ng.ILogService,
+    $mdDialog: ng.material.IDialogService,
+    $q: ng.IQService,
+    $scope: ng.IScope,
+    cheAPI: CheAPI,
+    cheBranding: CheBranding,
+    cheDashboardConfigurationService: CheDashboardConfigurationService,
+    cheListHelperFactory: che.widget.ICheListHelperFactory,
+    cheNamespaceRegistry: CheNamespaceRegistry,
+    cheNotification: CheNotification,
+    cheWorkspace: CheWorkspace,
+    confirmDialogService: ConfirmDialogService,
+    lodash: any,
+  ) {
     this.$log = $log;
-    this.lodash = lodash;
     this.$mdDialog = $mdDialog;
+    this.$q = $q;
+    this.cheAPI = cheAPI;
+    this.cheNamespaceRegistry = cheNamespaceRegistry;
     this.cheNotification = cheNotification;
     this.cheWorkspace = cheWorkspace;
-    this.cheNamespaceRegistry = cheNamespaceRegistry;
     this.confirmDialogService = confirmDialogService;
+    this.lodash = lodash;
 
     this.workspaceCreationLink = cheBranding.getWorkspace().creationLink;
 
@@ -92,9 +118,12 @@ export class ListWorkspacesCtrl {
 
     this.fetchUserWorkspaces();
 
-    this.cheNamespaceRegistry.fetchNamespaces().then(() => {
-      this.namespaceLabels = this.getNamespaceLabelsList();
-    });
+    // this hides namespace selector if organizations are disabled
+    if (cheDashboardConfigurationService.allowedMenuItem('organizations')) {
+      this.cheNamespaceRegistry.fetchNamespaces().then(() => {
+        this.namespaceLabels = this.getNamespaceLabelsList();
+      });
+    }
 
     // callback when search value is changed
     this.onSearchChanged = (str: string) => {

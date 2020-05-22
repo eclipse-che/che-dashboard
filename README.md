@@ -258,13 +258,9 @@ For example,
 }
 ```
 
-In the case of disabling the `"factories"`, `load factory` routing won't be disabled because it is using for creating a new workspace from the devfile URL.
+**Note**: Menu entries also may be disabled by default in [branding.constant.ts](https://github.com/eclipse/che-dashboard/blob/master/src/components/branding/branding.constant.ts#L112-L122). In order to force enable such entries they need to be listed in `"configuration.menu.enabled"` field.
 
-For example,
-
-```
-https://che.openshift.io/f?url=https://raw.githubusercontent.com/eclipse/che/master/devfile.yaml 
-```
+In the case of disabling the `"factories"`, `load factory` routing won't be disabled because it is used for creating a new workspace from the devfile URL. For example, `https://che.openshift.io/f?url=https://raw.githubusercontent.com/eclipse/che/master/devfile.yaml` .
 
 The `"configuration.prefetch"` section allows to define resources that UD should pre-fetch. This section consists of following optional fields:
 

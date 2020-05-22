@@ -187,7 +187,8 @@ export class WorkspaceDetailsService {
     this.sections = [];
 
     cheService.fetchServices().finally(() => {
-      const sharingEnabled = this.cheDashboardConfigurationService.enabledFeature(TogglableFeature.WORKSPACE_SHARING);
+      const sharingEnabled = this.cheDashboardConfigurationService.allowedMenuItem('organizations')
+        && this.cheDashboardConfigurationService.enabledFeature(TogglableFeature.WORKSPACE_SHARING);
       const permissionServiceAvailable = cheService.isServiceAvailable(chePermissions.getPermissionsServicePath());
       if (sharingEnabled && permissionServiceAvailable) {
         this.addPage('Share', '<share-workspace></share-workspace>', 'icon-ic_folder_shared_24px');

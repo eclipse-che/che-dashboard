@@ -60,6 +60,7 @@ export type IBrandingFooter = {
 export type IBrandingConfiguration = {
   menu: {
     disabled: che.ConfigurableMenuItem[];
+    enabled?: che.ConfigurableMenuItem[];
   },
   prefetch: {
     cheCDN?: string;
@@ -111,7 +112,9 @@ export const BRANDING_DEFAULT: IBranding = {
   },
   configuration: {
     menu: {
-      disabled: []
+      disabled: [
+        "organizations"
+      ],
     },
     features: {
       disabled: []

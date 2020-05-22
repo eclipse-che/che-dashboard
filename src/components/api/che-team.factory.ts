@@ -11,8 +11,9 @@
  */
 'use strict';
 
-import {CheTeamRoles} from './che-team-roles';
-import {CheTeamEventsManager} from './che-team-events-manager.factory';
+import { CheTeamEventsManager } from './che-team-events-manager.factory';
+import { CheTeamRoles } from './che-team-roles';
+import { CheDashboardConfigurationService } from '../branding/che-dashboard-configuration.service';
 
 interface ITeamsResource<T> extends ng.resource.IResourceClass<T> {
   findTeam(data: { teamName: string }): ng.resource.IResource<T>;
@@ -25,7 +26,18 @@ interface ITeamsResource<T> extends ng.resource.IResourceClass<T> {
  */
 export class CheTeam implements che.api.ICheTeam {
 
-  static $inject = ['$resource', '$q', 'lodash', 'cheNamespaceRegistry', 'cheUser', 'cheOrganization', 'cheTeamEventsManager', 'cheResourcesDistribution', 'resourcesService'];
+  static $inject = [
+    '$q',
+    '$resource',
+    'cheDashboardConfigurationService',
+    'cheNamespaceRegistry',
+    'cheOrganization',
+    'cheResourcesDistribution',
+    'cheTeamEventsManager',
+    'cheUser',
+    'lodash',
+    'resourcesService',
+  ];
 
   /**
    * Angular Resource service.
@@ -70,24 +82,34 @@ export class CheTeam implements che.api.ICheTeam {
    */
   private cheResourcesDistribution: che.api.ICheResourcesDistribution;
 
+  private cheDashboardConfigurationService: CheDashboardConfigurationService;
+
   private resourceLimits: che.resource.ICheResourceLimits;
 
   /**
    * Default constructor that is using resource
    */
-  constructor($resource: ng.resource.IResourceService,
-              $q: ng.IQService, lodash: any, cheNamespaceRegistry: any, cheUser: any,
-              cheOrganization: che.api.ICheOrganization, cheTeamEventsManager: CheTeamEventsManager, cheResourcesDistribution: che.api.ICheResourcesDistribution,
-              resourcesService: che.service.IResourcesService) {
-    this.$resource = $resource;
+  constructor(
+    $q: ng.IQService,
+    $resource: ng.resource.IResourceService,
+    cheDashboardConfigurationService: CheDashboardConfigurationService,
+    cheNamespaceRegistry: any,
+    cheOrganization: che.api.ICheOrganization,
+    cheResourcesDistribution: che.api.ICheResourcesDistribution,
+    cheTeamEventsManager: CheTeamEventsManager,
+    cheUser: any,
+    lodash: any,
+    resourcesService: che.service.IResourcesService,
+  ) {
     this.$q = $q;
-    this.lodash = lodash;
+    this.$resource = $resource;
     this.cheNamespaceRegistry = cheNamespaceRegistry;
-    this.cheUser = cheUser;
-    this.teamEventsManager = cheTeamEventsManager;
     this.cheOrganization = cheOrganization;
     this.cheResourcesDistribution = cheResourcesDistribution;
+    this.cheUser = cheUser;
+    this.lodash = lodash;
     this.resourceLimits = resourcesService.getResourceLimits();
+    this.teamEventsManager = cheTeamEventsManager;
 
     this.remoteTeamAPI = <ITeamsResource<any>>$resource('/api/organization', {}, {
       findTeam: {method: 'GET', url: '/api/organization/find?name=:teamName'}
@@ -109,7 +131,9 @@ export class CheTeam implements che.api.ICheTeam {
       this.fetchTeams();
     });
 
-    this.fetchTeams(); // this resolves `cheNamespaceRegistry.fetchNamespaces()` as well
+    if (cheDashboardConfigurationService.allowedMenuItem('organizations')) {
+      this.fetchTeams(); // this resolves `cheNamespaceRegistry.fetchNamespaces()` as well
+    }
   }
 
   /**
@@ -133,12 +157,7 @@ export class CheTeam implements che.api.ICheTeam {
       }
     });
 
-    return defer.promise.then(() => {
-      this.fetchTeamsDefer.resolve();
-    }, (error: any) => {
-      this.fetchTeamsDefer.reject();
-      return this.$q.reject(error);
-    });
+    return defer.promise;
   }
 
   /**

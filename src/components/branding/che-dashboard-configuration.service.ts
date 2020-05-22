@@ -41,9 +41,9 @@ export class CheDashboardConfigurationService {
     this.cheBranding = cheBranding;
   }
 
-  allowedMenuItem(menuItem: che.ConfigurableMenuItem | string): boolean {
-    const disabledItems = this.cheBranding.getConfiguration().menu.disabled;
-    return (disabledItems as string[]).indexOf(menuItem) === -1;
+  allowedMenuItem(menuItem: che.ConfigurableMenuItem): boolean {
+    const disabledItems = this.getDisabledItems();
+    return (disabledItems).indexOf(menuItem) === -1;
   }
 
   allowRoutes(menuItem: che.ConfigurableMenuItem): ng.IPromise<void> {
@@ -96,6 +96,15 @@ export class CheDashboardConfigurationService {
       };
     }
     return links;
+  }
+
+  private getDisabledItems(): che.ConfigurableMenuItem[] {
+    const menu = this.cheBranding.getConfiguration().menu;
+    const disabled = menu.disabled || [];
+    const forceEnabled = menu.enabled || [];
+
+    const disabledItems = disabled.filter(item => forceEnabled.indexOf(item) === -1);
+    return disabledItems;
   }
 
 }
