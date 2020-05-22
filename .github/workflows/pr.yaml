@@ -17,9 +17,6 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
-      matrix:
-        platform: [linux/amd64, linux/s390x]
-        layerscaching: [true, false]
     env:
       IMAGE_FULL: quay.io/eclipse/che-dashboard:next
       CACHE_IMAGE_FULL: docker.io/cheincubator/che-dashboard:cache
@@ -32,17 +29,9 @@ jobs:
         buildx-version: v0.4.1
     - name: "Docker prepare"
       run: docker image prune -a -f
-    - name: "Docker build without cache"
-      if: ${{ matrix.layerscaching == false}}
-      uses: nick-invision/retry@v1
-      with:
-        timeout_minutes: 100
-        max_attempts: 5
-        command: docker buildx build --platform ${{ matrix.platform}} -t ${IMAGE_FULL}  -f apache.Dockerfile .
     - name: "Docker build with cache"
-      if: ${{ matrix.layerscaching == true}}
       uses: nick-invision/retry@v1
       with:
         timeout_minutes: 100
         max_attempts: 5
-        command: docker buildx build --platform ${{ matrix.platform}} --cache-from="type=registry,ref=${CACHE_IMAGE_FULL}" -t ${IMAGE_FULL}  -f apache.Dockerfile .
+        command: docker buildx build --platform linux/amd64 --cache-from="type=registry,ref=${CACHE_IMAGE_FULL}" -t ${IMAGE_FULL}  -f apache.Dockerfile .
