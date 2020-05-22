@@ -1,9 +1,21 @@
 .che-monaco-editor
   height calc(100% - 20px)
+
   *[ng-messages]
-    line-height 20px
+    height 20px
     color $error-color
+    position relative
+
+    & > div
+      white-space nowrap
+      overflow hidden
+      text-overflow ellipsis
+      position absolute
+      left 0
+      right 0
+
     *:not(:first-child)
       display none
+
   .che-input-desktop
     margin-top 0
