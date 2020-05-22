@@ -36,11 +36,6 @@ function webpackWrapper(watch, test, callback) {
           loader: 'umd-compat-loader'
         },
         {
-          test: /\.min\.js\.map$/,
-          include: /node_modules\/angular-websocket\/dist/,
-          loader: 'file-loader'
-        },
-        {
           test: /\.ts$/,
           exclude: /node_modules/,
           loaders: ['babel-loader', 'awesome-typescript-loader']
@@ -69,7 +64,7 @@ function webpackWrapper(watch, test, callback) {
           ]
         },
         {
-          test: /\.(svg|woff|woff2|ttf|eot|ico)$/,
+          test: /\.(map|svg|woff|woff2|ttf|eot|ico)$/,
           loader: 'file-loader'
         }, {
           test: /\.html$/,
