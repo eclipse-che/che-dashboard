@@ -9,9 +9,8 @@
 name: PR
 # Trigger the workflow on push
 on:
-  push:
-    branches:
-      - master
+  pull_request:
+    branches: [ master ]
 jobs:
   docker-build:
     runs-on: ubuntu-18.04
