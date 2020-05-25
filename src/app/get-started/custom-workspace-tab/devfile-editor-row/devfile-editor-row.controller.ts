@@ -74,9 +74,9 @@ export class DevfileEditorRowController implements ng.IController, IDevfileEdito
         const result = await this.pluginRegistry.fetchPlugins(workspaceSettings.cheWorkspacePluginRegistryUrl);
         const type = 'chePlugin';
         const pluginsId: string[] = [];
-        result.filter(item => item.type !== PluginRegistry.EDITOR_TYPE).forEach((item: IPlugin) => {
+        result.forEach((item: IPlugin) => {
           const id = `${item.publisher}/${item.name}/latest`;
-          if (pluginsId.indexOf(id) === -1) {
+          if (item.type !== PluginRegistry.EDITOR_TYPE && pluginsId.indexOf(id) === -1) {
             pluginsId.push(id);
             jsonSchema.properties.components.defaultSnippets.push({
               'label': item.displayName,
@@ -89,7 +89,7 @@ export class DevfileEditorRowController implements ng.IController, IDevfileEdito
         });
         if (jsonSchema.properties.components.items.properties) {
           if (!jsonSchema.properties.components.items.properties.id) {
-            jsonSchema.properties.components.items.properties.id = {type: 'string', description: 'Plugin\'s id.'};
+            jsonSchema.properties.components.items.properties.id = {type: 'string', description: 'Plugin\'s/Editor\'s id.'};
           }
           jsonSchema.properties.components.items.properties.id.examples = pluginsId;
           jsonSchema.properties.components.items.properties.id.enum = pluginsId

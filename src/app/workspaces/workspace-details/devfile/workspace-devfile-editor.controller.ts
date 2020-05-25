@@ -13,6 +13,7 @@
 
 import { CheBranding } from '../../../../components/branding/che-branding';
 import { CheAPI } from '../../../../components/api/che-api.factory';
+import { IPlugin, PluginRegistry } from '../../../../components/api/plugin-registry.factory';
 
 /**
  * @ngdoc controller
@@ -27,7 +28,8 @@ export class WorkspaceDevfileEditorController {
     '$scope',
     '$timeout',
     'cheBranding',
-    'cheAPI'
+    'cheAPI',
+    'pluginRegistry'
   ];
   private $log: ng.ILogService;
   private $scope: ng.IScope;
@@ -41,7 +43,7 @@ export class WorkspaceDevfileEditorController {
   private devfileYaml: string;
   private saveTimeoutPromise: ng.IPromise<any>;
   private cheAPI: CheAPI;
-
+  private pluginRegistry: PluginRegistry;
 
   /**
    * Default constructor that is using resource
@@ -50,12 +52,14 @@ export class WorkspaceDevfileEditorController {
               $scope: ng.IScope,
               $timeout: ng.ITimeoutService,
               cheBranding: CheBranding,
-              cheAPI: CheAPI) {
+              cheAPI: CheAPI,
+              pluginRegistry: PluginRegistry) {
     this.$log = $log;
     this.$scope = $scope;
     this.$timeout = $timeout;
     this.cheBranding = cheBranding;
     this.cheAPI = cheAPI;
+    this.pluginRegistry = pluginRegistry;
 
     this.$scope.$on('edit-workspace-details', (event: ng.IAngularEvent, attrs: { status: string }) => {
       if (attrs.status === 'cancelled') {
@@ -125,7 +129,38 @@ export class WorkspaceDevfileEditorController {
     this.devfileYaml = this.workspaceDevfile ? jsyaml.safeDump(this.workspaceDevfile) : '';
     this.devfileDocsUrl = this.cheBranding.getDocs().devfile;
     const yamlService = (window as any).yamlService;
-    this.cheAPI.getDevfile().fetchDevfileSchema().then(jsonSchema => {
+    this.cheAPI.getDevfile().fetchDevfileSchema().then(async jsonSchema => {
+      // TODO WorkspaceDevfileEditor should be replaced by DevfileEditorRowComponent
+      if (jsonSchema &&  jsonSchema.properties &&  jsonSchema.properties.components) {
+        jsonSchema.additionalProperties = true;
+        if (!jsonSchema.properties.components.defaultSnippets) {
+          jsonSchema.properties.components.defaultSnippets = [];
+        }
+        const workspaceSettings = await this.cheAPI.getWorkspace().fetchWorkspaceSettings();
+        const result = await this.pluginRegistry.fetchPlugins(workspaceSettings.cheWorkspacePluginRegistryUrl);
+        const type = 'chePlugin';
+        const pluginsId: string[] = [];
+        result.forEach((item: IPlugin) => {
+          const id = `${item.publisher}/${item.name}/latest`;
+          if (item.type !== PluginRegistry.EDITOR_TYPE && pluginsId.indexOf(id) === -1) {
+            pluginsId.push(id);
+            jsonSchema.properties.components.defaultSnippets.push({
+              'label': item.displayName,
+              'description': item.description,
+              'body': {id, type}
+            });
+          } else {
+            pluginsId.push(item.id);
+          }
+        });
+        if (jsonSchema.properties.components.items.properties) {
+          if (!jsonSchema.properties.components.items.properties.id) {
+            jsonSchema.properties.components.items.properties.id = {type: 'string', description: 'Plugin\'s/Editor\'s id.'};
+          }
+          jsonSchema.properties.components.items.properties.id.examples = pluginsId;
+          jsonSchema.properties.components.items.properties.id.enum = pluginsId
+        }
+      }
       const schemas = [{
         uri: 'inmemory:yaml',
         fileMatch: ['*'],
