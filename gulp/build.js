@@ -113,7 +113,7 @@ gulp.task('fonts', function () {
 });
 
 gulp.task('codiconFonts', function () {
-  return gulp.src(conf.paths.modules + '/monaco-editor/dev/vs/base/browser/ui/codiconLabel/codicon/*')
+  return gulp.src(conf.paths.modules + '/monaco-editor-core/esm/vs/base/browser/ui/codiconLabel/codicon/*')
     .pipe($.filter('**/*.{eot,svg,ttf,otf,woff,woff2}'))
     .pipe($.flatten())
     .pipe(gulp.dest(conf.paths.dist + '/styles'));
