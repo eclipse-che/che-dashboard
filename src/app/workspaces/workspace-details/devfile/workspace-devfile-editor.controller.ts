@@ -137,7 +137,6 @@ export class WorkspaceDevfileEditorController {
           const components = jsonSchema &&  jsonSchema.properties ? jsonSchema.properties.components : undefined;
           if (components) {
             jsonSchema.additionalProperties = true;
-            const components = jsonSchema.properties.components;
             if (!components.defaultSnippets) {
               components.defaultSnippets = [];
             }
