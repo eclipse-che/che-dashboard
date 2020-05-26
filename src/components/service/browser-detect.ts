@@ -36,7 +36,7 @@ export class DetectSupportedBrowserService {
 
   get isChrome(): boolean {
     // @ts-ignore
-    return !!window.chrome && (!!window.chrome.runtime || (navigator.userAgent.indexOf(' OPR/') === -1 && navigator.userAgent.indexOf(' Edge/')));
+    return !!window.chrome && (!!window.chrome.runtime || (navigator.userAgent.indexOf(' OPR/') === -1 && navigator.userAgent.indexOf(' Edge/') === -1));
   }
 
   get isFirefox(): boolean {
