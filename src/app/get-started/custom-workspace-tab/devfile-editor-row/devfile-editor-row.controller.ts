@@ -97,7 +97,6 @@ export class DevfileEditorRowController implements ng.IController, IDevfileEdito
                 };
               }
               components.items.properties.id.examples = pluginsId;
-              components.items.properties.id.enum = pluginsId
             }
           }
           const schemas = [{uri: 'inmemory:yaml', fileMatch: ['*'], schema: jsonSchema}];

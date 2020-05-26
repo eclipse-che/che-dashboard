@@ -162,7 +162,6 @@ export class WorkspaceDevfileEditorController {
                 };
               }
               components.items.properties.id.examples = pluginsId;
-              components.items.properties.id.enum = pluginsId
             }
           }
           const schemas = [{uri: 'inmemory:yaml', fileMatch: ['*'], schema: jsonSchema}];
