@@ -14,6 +14,7 @@
 import { CheBranding } from '../../../../components/branding/che-branding';
 import { CheAPI } from '../../../../components/api/che-api.factory';
 import { IPlugin, PluginRegistry } from '../../../../components/api/plugin-registry.factory';
+import { PLUGIN_TYPE } from '../../../../components/api/workspace/workspace-data-manager';
 
 /**
  * @ngdoc controller
@@ -129,50 +130,47 @@ export class WorkspaceDevfileEditorController {
     this.devfileYaml = this.workspaceDevfile ? jsyaml.safeDump(this.workspaceDevfile) : '';
     this.devfileDocsUrl = this.cheBranding.getDocs().devfile;
     const yamlService = (window as any).yamlService;
-    this.cheAPI.getDevfile().fetchDevfileSchema().then(async jsonSchema => {
-      // TODO WorkspaceDevfileEditor should be replaced by DevfileEditorRowComponent
-      if (jsonSchema &&  jsonSchema.properties &&  jsonSchema.properties.components) {
-        jsonSchema.additionalProperties = true;
-        if (!jsonSchema.properties.components.defaultSnippets) {
-          jsonSchema.properties.components.defaultSnippets = [];
-        }
-        const workspaceSettings = await this.cheAPI.getWorkspace().fetchWorkspaceSettings();
-        const result = await this.pluginRegistry.fetchPlugins(workspaceSettings.cheWorkspacePluginRegistryUrl);
-        const type = 'chePlugin';
-        const pluginsId: string[] = [];
-        result.forEach((item: IPlugin) => {
-          const id = `${item.publisher}/${item.name}/latest`;
-          if (item.type !== PluginRegistry.EDITOR_TYPE && pluginsId.indexOf(id) === -1) {
-            pluginsId.push(id);
-            jsonSchema.properties.components.defaultSnippets.push({
-              'label': item.displayName,
-              'description': item.description,
-              'body': {id, type}
+    // TODO should be replaced by DevfileEditorRowComponent(https://github.com/eclipse/che/issues/17007)
+    this.cheAPI.getWorkspace().fetchWorkspaceSettings().then(workspaceSettings =>
+      this.pluginRegistry.fetchPlugins(workspaceSettings.cheWorkspacePluginRegistryUrl).then(items => {
+        this.cheAPI.getDevfile().fetchDevfileSchema().then(jsonSchema => {
+          const components = jsonSchema &&  jsonSchema.properties ? jsonSchema.properties.components : undefined;
+          if (components) {
+            jsonSchema.additionalProperties = true;
+            const components = jsonSchema.properties.components;
+            if (!components.defaultSnippets) {
+              components.defaultSnippets = [];
+            }
+            const pluginsId: string[] = [];
+            items.forEach((item: IPlugin) => {
+              const id = `${item.publisher}/${item.name}/latest`;
+              if (pluginsId.indexOf(id) === -1 && item.type !== PluginRegistry.EDITOR_TYPE) {
+                pluginsId.push(id);
+                components.defaultSnippets.push({
+                  label: item.displayName,
+                  description: item.description,
+                  body: {id: id, type: PLUGIN_TYPE}
+                });
+              } else {
+                pluginsId.push(item.id);
+              }
             });
-          } else {
-            pluginsId.push(item.id);
+            if (components.items && components.items.properties) {
+              if (!components.items.properties.id) {
+                components.items.properties.id = {
+                  type: 'string',
+                  description: 'Plugin\'s/Editor\'s id.'
+                };
+              }
+              components.items.properties.id.examples = pluginsId;
+              components.items.properties.id.enum = pluginsId
+            }
           }
+          const schemas = [{uri: 'inmemory:yaml', fileMatch: ['*'], schema: jsonSchema}];
+          yamlService.configure({validate: true, schemas, hover: true, completion: true});
         });
-        if (jsonSchema.properties.components.items.properties) {
-          if (!jsonSchema.properties.components.items.properties.id) {
-            jsonSchema.properties.components.items.properties.id = {type: 'string', description: 'Plugin\'s/Editor\'s id.'};
-          }
-          jsonSchema.properties.components.items.properties.id.examples = pluginsId;
-          jsonSchema.properties.components.items.properties.id.enum = pluginsId
-        }
-      }
-      const schemas = [{
-        uri: 'inmemory:yaml',
-        fileMatch: ['*'],
-        schema: jsonSchema
-      }];
-      yamlService.configure({
-        validate: true,
-        schemas,
-        hover: true,
-        completion: true,
-      });
-    });
+      })
+    );
   }
 
   /**

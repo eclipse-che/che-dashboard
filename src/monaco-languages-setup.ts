@@ -16,7 +16,7 @@ const yamlService = (window as any).yamlService;
 const m2p = new (window as any).monacoConversion.MonacoToProtocolConverter();
 const p2m = new (window as any).monacoConversion.ProtocolToMonacoConverter();
 
-const createDocument = model => {
+function createDocument(model) {
   return (window as any).yamlLanguageServer.TextDocument.create(
     MODEL_URI,
     model.getModeId(),
@@ -25,7 +25,7 @@ const createDocument = model => {
   );
 }
 
-const registerYAMLCompletion = () => {
+function registerYAMLCompletion() {
   monaco.languages.registerCompletionItemProvider(LANGUAGE_ID, {
     provideCompletionItems(model, position) {
       const document = createDocument(model);
@@ -59,7 +59,7 @@ const registerYAMLCompletion = () => {
   });
 }
 
-const registerYAMLDocumentSymbols = () => {
+function registerYAMLDocumentSymbols() {
   monaco.languages.registerDocumentSymbolProvider(LANGUAGE_ID, {
     provideDocumentSymbols(model) {
       const document = createDocument(model);
@@ -68,7 +68,7 @@ const registerYAMLDocumentSymbols = () => {
   });
 }
 
-const registerYAMLHover = () => {
+function registerYAMLHover() {
   monaco.languages.registerHoverProvider(LANGUAGE_ID, {
     provideHover(model, position) {
       const doc = createDocument(model);
