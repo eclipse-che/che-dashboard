@@ -17,10 +17,9 @@ var gulp = require('gulp');
 var conf = require('./conf');
 var bootstrap = require('bootstrap-styl');
 
-var browserSync = require('browser-sync');
 var webpackstream = require('webpack-stream');
 var webpack = require('webpack');
-var glob = require("glob")
+var glob = require('glob');
 
 var $ = require('gulp-load-plugins')();
 
@@ -33,13 +32,8 @@ function webpackWrapper(watch, test, callback) {
       noParse: [/jsonlint/],
       loaders: [
         {
-          test: /node_modules[\\\\|\/](vscode-languageserver-types|vscode-uri|jsonc-parser|vscode-json-languageservice)/,
+          test: /node_modules[\\\\|\/](vscode-languageserver-textdocument|vscode-languageserver-types|vscode-uri|jsonc-parser|vscode-json-languageservice)/,
           loader: 'umd-compat-loader'
-        },
-        {
-          test: /\.min\.js\.map$/,
-          include: /node_modules\/angular-websocket\/dist/,
-          loader: 'file-loader'
         },
         {
           test: /\.ts$/,
@@ -70,7 +64,7 @@ function webpackWrapper(watch, test, callback) {
           ]
         },
         {
-          test: /\.(svg|woff|woff2|ttf|eot|ico)$/,
+          test: /\.(map|svg|woff|woff2|ttf|eot|ico)$/,
           loader: 'file-loader'
         }, {
           test: /\.html$/,
@@ -93,7 +87,7 @@ function webpackWrapper(watch, test, callback) {
     },
     entry: {
       index: [path.resolve(__dirname, '..', 'src', 'index.ts')],
-      "editor.worker": 'monaco-editor-core/esm/vs/editor/editor.worker.js'
+      'editor.worker': 'monaco-editor-core/esm/vs/editor/editor.worker.js'
     },
     plugins: [
       new webpack.IgnorePlugin(/prettier/)

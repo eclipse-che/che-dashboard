@@ -13,6 +13,8 @@
 
 import { CheBranding } from '../../../../components/branding/che-branding';
 import { CheAPI } from '../../../../components/api/che-api.factory';
+import { IPlugin, PluginRegistry } from '../../../../components/api/plugin-registry.factory';
+import { PLUGIN_TYPE } from '../../../../components/api/workspace/workspace-data-manager';
 
 /**
  * @ngdoc controller
@@ -27,7 +29,8 @@ export class WorkspaceDevfileEditorController {
     '$scope',
     '$timeout',
     'cheBranding',
-    'cheAPI'
+    'cheAPI',
+    'pluginRegistry'
   ];
   private $log: ng.ILogService;
   private $scope: ng.IScope;
@@ -41,7 +44,7 @@ export class WorkspaceDevfileEditorController {
   private devfileYaml: string;
   private saveTimeoutPromise: ng.IPromise<any>;
   private cheAPI: CheAPI;
-
+  private pluginRegistry: PluginRegistry;
 
   /**
    * Default constructor that is using resource
@@ -50,12 +53,14 @@ export class WorkspaceDevfileEditorController {
               $scope: ng.IScope,
               $timeout: ng.ITimeoutService,
               cheBranding: CheBranding,
-              cheAPI: CheAPI) {
+              cheAPI: CheAPI,
+              pluginRegistry: PluginRegistry) {
     this.$log = $log;
     this.$scope = $scope;
     this.$timeout = $timeout;
     this.cheBranding = cheBranding;
     this.cheAPI = cheAPI;
+    this.pluginRegistry = pluginRegistry;
 
     this.$scope.$on('edit-workspace-details', (event: ng.IAngularEvent, attrs: { status: string }) => {
       if (attrs.status === 'cancelled') {
@@ -125,19 +130,45 @@ export class WorkspaceDevfileEditorController {
     this.devfileYaml = this.workspaceDevfile ? jsyaml.safeDump(this.workspaceDevfile) : '';
     this.devfileDocsUrl = this.cheBranding.getDocs().devfile;
     const yamlService = (window as any).yamlService;
-    this.cheAPI.getDevfile().fetchDevfileSchema().then(jsonSchema => {
-      const schemas = [{
-        uri: 'inmemory:yaml',
-        fileMatch: ['*'],
-        schema: jsonSchema
-      }];
-      yamlService.configure({
-        validate: true,
-        schemas,
-        hover: true,
-        completion: true,
-      });
-    });
+    // TODO should be replaced by DevfileEditorRowComponent(https://github.com/eclipse/che/issues/17007)
+    this.cheAPI.getWorkspace().fetchWorkspaceSettings().then(workspaceSettings =>
+      this.pluginRegistry.fetchPlugins(workspaceSettings.cheWorkspacePluginRegistryUrl).then(items => {
+        this.cheAPI.getDevfile().fetchDevfileSchema().then(jsonSchema => {
+          const components = jsonSchema &&  jsonSchema.properties ? jsonSchema.properties.components : undefined;
+          if (components) {
+            jsonSchema.additionalProperties = true;
+            if (!components.defaultSnippets) {
+              components.defaultSnippets = [];
+            }
+            const pluginsId: string[] = [];
+            items.forEach((item: IPlugin) => {
+              const id = `${item.publisher}/${item.name}/latest`;
+              if (pluginsId.indexOf(id) === -1 && item.type !== PluginRegistry.EDITOR_TYPE) {
+                pluginsId.push(id);
+                components.defaultSnippets.push({
+                  label: item.displayName,
+                  description: item.description,
+                  body: {id: id, type: PLUGIN_TYPE}
+                });
+              } else {
+                pluginsId.push(item.id);
+              }
+            });
+            if (components.items && components.items.properties) {
+              if (!components.items.properties.id) {
+                components.items.properties.id = {
+                  type: 'string',
+                  description: 'Plugin\'s/Editor\'s id.'
+                };
+              }
+              components.items.properties.id.examples = pluginsId;
+            }
+          }
+          const schemas = [{uri: 'inmemory:yaml', fileMatch: ['*'], schema: jsonSchema}];
+          yamlService.configure({validate: true, schemas, hover: true, completion: true});
+        });
+      })
+    );
   }
 
   /**

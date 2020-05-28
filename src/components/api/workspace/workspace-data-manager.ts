@@ -11,9 +11,8 @@
  */
 'use strict';
 
-const PLUGIN_SEPARATOR = ',';
-const EDITOR_TYPE = 'cheEditor';
-const PLUGIN_TYPE = 'chePlugin';
+export const EDITOR_TYPE = 'cheEditor';
+export const PLUGIN_TYPE = 'chePlugin';
 
 
 /**
