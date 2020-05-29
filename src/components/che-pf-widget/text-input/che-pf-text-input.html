@@ -15,5 +15,7 @@
     ng-model="value"
     ng-change="onChange({$value: value})"
     ng-attr-pattern={{config.pattern}}
+    ng-attr-minlength={{config.minLength}}
+    ng-attr-maxlength={{config.maxLength}}
     ng-attr-placeholder="{{config.placeHolder}}" />
 </div>
