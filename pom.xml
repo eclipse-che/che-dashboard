@@ -21,7 +21,11 @@
     </parent>
     <groupId>org.eclipse.che.dashboard</groupId>
     <artifactId>che-dashboard-war</artifactId>
+<<<<<<< HEAD
     <version>7.15.0-SNAPSHOT</version>
+=======
+    <version>7.14.1-SNAPSHOT</version>
+>>>>>>> 572db37fad9dd988a359f1dcf29452a08c88bc92
     <packaging>war</packaging>
     <name>Che Dashboard :: Web App</name>
     <inceptionYear>2015</inceptionYear>
