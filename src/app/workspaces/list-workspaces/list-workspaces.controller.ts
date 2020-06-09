@@ -15,7 +15,6 @@ import { CheNotification } from '../../../components/notification/che-notificati
 import { CheWorkspace } from '../../../components/api/workspace/che-workspace.factory';
 import { CheNamespaceRegistry } from '../../../components/api/namespace/che-namespace-registry.factory';
 import { ConfirmDialogService } from '../../../components/service/confirm-dialog/confirm-dialog.service';
-import { CheBranding } from '../../../components/branding/che-branding';
 import { CheDashboardConfigurationService } from '../../../components/branding/che-dashboard-configuration.service';
 
 /**
@@ -32,7 +31,6 @@ export class ListWorkspacesCtrl {
     '$q',
     '$scope',
     'cheAPI',
-    'cheBranding',
     'cheDashboardConfigurationService',
     'cheListHelperFactory',
     'cheNamespaceRegistry',
@@ -57,7 +55,6 @@ export class ListWorkspacesCtrl {
   state: string;
   isInfoLoading: boolean;
   userWorkspaces: che.IWorkspace[];
-  workspaceCreationLink: string;
 
   workspacesById: Map<string, che.IWorkspace>;
   workspaceUsedResources: Map<string, string>;
@@ -79,7 +76,6 @@ export class ListWorkspacesCtrl {
     $q: ng.IQService,
     $scope: ng.IScope,
     cheAPI: CheAPI,
-    cheBranding: CheBranding,
     cheDashboardConfigurationService: CheDashboardConfigurationService,
     cheListHelperFactory: che.widget.ICheListHelperFactory,
     cheNamespaceRegistry: CheNamespaceRegistry,
@@ -97,8 +93,6 @@ export class ListWorkspacesCtrl {
     this.cheWorkspace = cheWorkspace;
     this.confirmDialogService = confirmDialogService;
     this.lodash = lodash;
-
-    this.workspaceCreationLink = cheBranding.getWorkspace().creationLink;
 
     const helperId = 'list-workspaces';
     this.cheListHelper = cheListHelperFactory.getHelper(helperId);

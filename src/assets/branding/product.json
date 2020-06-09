@@ -16,8 +16,7 @@
       "Java-MySQL",
       "Blank"
     ],
-    "defaultStack": "java-mysql",
-    "creationLink": "#/getstarted?tab=customWorkspace"
+    "defaultStack": "java-mysql"
   },
   "cli": {
     "configName": "che.env",
