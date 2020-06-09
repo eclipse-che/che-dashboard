@@ -11,7 +11,6 @@
  */
 'use strict';
 import {TeamDetailsService} from '../team-details.service';
-import {CheBranding} from '../../../../components/branding/che-branding';
 /**
  * @ngdoc controller
  * @name teams.workspaces:ListTeamWorkspacesController
@@ -21,7 +20,7 @@ import {CheBranding} from '../../../../components/branding/che-branding';
 export class ListTeamWorkspacesController {
 
   static $inject = ['cheTeam', 'chePermissions', 'cheUser', 'cheWorkspace', 'cheNotification', 'lodash', '$mdDialog', '$q', 'teamDetailsService',
-'$scope', 'cheListHelperFactory', 'cheBranding'];
+'$scope', 'cheListHelperFactory'];
 
   /**
    * Team API interaction.
@@ -78,17 +77,12 @@ export class ListTeamWorkspacesController {
    */
   private cheListHelper: che.widget.ICheListHelper;
 
-  private cheBranding: CheBranding;
-
-  private workspaceCreationLink: string;
-
   /**
    * Default constructor that is using resource
    */
   constructor(cheTeam: che.api.ICheTeam, chePermissions: che.api.IChePermissions, cheUser: any, cheWorkspace: any,
               cheNotification: any, lodash: any, $mdDialog: angular.material.IDialogService, $q: ng.IQService,
-              teamDetailsService: TeamDetailsService, $scope: ng.IScope, cheListHelperFactory: che.widget.ICheListHelperFactory,
-              cheBranding: CheBranding) {
+              teamDetailsService: TeamDetailsService, $scope: ng.IScope, cheListHelperFactory: che.widget.ICheListHelperFactory) {
     this.cheTeam = cheTeam;
     this.cheWorkspace = cheWorkspace;
     this.cheNotification = cheNotification;
@@ -98,7 +92,6 @@ export class ListTeamWorkspacesController {
     this.$q = $q;
     this.lodash = lodash;
     this.teamDetailsService = teamDetailsService;
-    this.cheBranding = cheBranding
 
     this.workspaces = [];
     this.isLoading = true;
@@ -114,9 +107,6 @@ export class ListTeamWorkspacesController {
   $onInit(): void {
     this.team = this.teamDetailsService.getTeam();
     this.fetchPermissions();
-    this.cheBranding.ready.then(() => {
-      this.workspaceCreationLink = this.cheBranding.getWorkspace().creationLink;
-    });
   }
 
   /**
