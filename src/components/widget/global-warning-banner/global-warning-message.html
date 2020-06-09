@@ -12,10 +12,9 @@
 
 -->
 
-<che-description class="global-warning-banner">
-  <global-warning-message
-    ng-repeat="message in messages"
-    message="{{message}}"
-    on-close="onClose({message: message})">
-  </global-warning-message>
-</che-description>
+<div layout="row" flex="100" class="che--hover global-warning-message">
+  <div flex="100" ng-bind-html="message"></div>
+  <div flex>
+    <i class="fa fa-times" aria-hidden="true" ng-click="onClose({message: message})"></i>
+  </div>
+</div>

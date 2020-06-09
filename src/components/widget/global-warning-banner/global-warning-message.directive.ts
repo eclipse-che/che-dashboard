@@ -12,17 +12,18 @@
 'use strict';
 
 /**
- * Defines a directive for displaying the banner with a warning message.
+ * Defines a directive for displaying a warning message within a banner at the top of the page.
  * @author Oleksii Kurinnyi
  */
-export class GlobalWarningBannerDirective {
+export class GlobalWarningMessageDirective implements ng.IDirective {
 
+  replace: boolean = false;
   restrict: string = 'E';
-  templateUrl: string = 'components/widget/global-warning-banner/global-warning-banner.html';
+  templateUrl: string = 'components/widget/global-warning-banner/global-warning-message.html';
 
   scope = {
-    'messages': '=',
-    'onClose': '&',
+    'message': '@',
+    'onClose': '&'
   };
 
 }
