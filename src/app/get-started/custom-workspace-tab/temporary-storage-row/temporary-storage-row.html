@@ -19,8 +19,17 @@
           tooltip-append-to-body="true"><i class="fa fa-question-circle" aria-hidden="true"></i></span>
   </label>
   <div class="pf-c-form__horizontal-group">
-    <che-pf-switch value="ctrl.temporaryStorageSwitch.value"
-      config="ctrl.temporaryStorageSwitch.config"
-      on-change="ctrl.temporaryStorageSwitch.onChange($value)"></che-pf-switch>
+      <!-- Devfiles List -->
+  <div class="pf-l-flex">
+    <div class="pf-l-flex__item">
+      <che-pf-select-single config="ctrl.storageSelect.config" value="ctrl.storageSelect.value"
+                               on-select="ctrl.storageSelect.onSelect($value)"
+                               on-clear="ctrl.onClear()">
+      </che-pf-select-single>
+    </div>
+    <div class="pf-l-flex__item">or</div>
   </div>
+  </div>
+ 
+
 </div>

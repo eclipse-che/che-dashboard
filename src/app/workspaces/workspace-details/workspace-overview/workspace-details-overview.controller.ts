@@ -10,14 +10,15 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 'use strict';
-import {CheWorkspace, WorkspaceStatus} from '../../../../components/api/workspace/che-workspace.factory';
-import {CheNotification} from '../../../../components/notification/che-notification.factory';
-import {ConfirmDialogService} from '../../../../components/service/confirm-dialog/confirm-dialog.service';
-import {NamespaceSelectorSvc} from '../../create-workspace/ready-to-go-stacks/namespace-selector/namespace-selector.service';
-import {WorkspaceDetailsService} from '../workspace-details.service';
+import { CheWorkspace, WorkspaceStatus } from '../../../../components/api/workspace/che-workspace.factory';
+import { CheNotification } from '../../../../components/notification/che-notification.factory';
+import { ConfirmDialogService } from '../../../../components/service/confirm-dialog/confirm-dialog.service';
+import { NamespaceSelectorSvc } from '../../create-workspace/ready-to-go-stacks/namespace-selector/namespace-selector.service';
+import { WorkspaceDetailsService } from '../workspace-details.service';
 import { CheKubernetesNamespace } from '../../../../components/api/che-kubernetes-namespace.factory';
 import { CheDashboardConfigurationService } from '../../../../components/branding/che-dashboard-configuration.service';
 import { TogglableFeature } from '../../../../components/branding/branding.constant';
+import { STORAGE_TYPE } from '../../../../components/api/storage-type';
 
 const STARTING = WorkspaceStatus[WorkspaceStatus.STARTING];
 const RUNNING = WorkspaceStatus[WorkspaceStatus.RUNNING];
@@ -79,6 +80,7 @@ export class WorkspaceDetailsOverviewController {
   private isLoading: boolean;
   private isEphemeralMode: boolean;
   private attributes: che.IWorkspaceConfigAttributes;
+  private storageType: { label: any; id?: number; };
   private attributesCopy: che.IWorkspaceConfigAttributes;
   private workspaceDeletePromise: ng.IPromise<void>;
 
@@ -142,10 +144,28 @@ export class WorkspaceDetailsOverviewController {
     this.attributes = this.cheWorkspace.getWorkspaceDataManager().getAttributes(this.workspaceDetails);
     this.name = this.cheWorkspace.getWorkspaceDataManager().getName(this.workspaceDetails);
     this.isEphemeralMode = this.attributes && this.attributes.persistVolumes ? !JSON.parse(this.attributes.persistVolumes) : false;
+    this.storageType = this.getStorageType();
     this.attributesCopy = angular.copy(this.cheWorkspace.getWorkspaceDataManager().getAttributes(this.workspaceDetails));
 
     this.updateInfrastructureNamespace();
   }
+
+  getStorageType() {
+    if (!this.attributes) {
+      return STORAGE_TYPE.PERSISTANT;
+    }
+    if (this.attributes.persistVolumes as string === 'true') {
+      return STORAGE_TYPE.PERSISTANT;
+    }
+    if (this.attributes.persistVolumes as string === 'false') 
+       if (this.attributes.asyncPersist as string === 'true') {
+        return STORAGE_TYPE.ASYNCHRONUS;
+      }
+      else {
+        return STORAGE_TYPE.EPHEMERAL;
+      }
+  }
+
 
   /**
    * Returns namespace by its ID
@@ -156,7 +176,7 @@ export class WorkspaceDetailsOverviewController {
   getNamespace(namespaceId: string): che.INamespace | { label: string, location: string } {
     const namespaces = this.getNamespaces();
     if (!namespaces || namespaces.length === 0) {
-      return {label: '', location: ''};
+      return { label: '', location: '' };
     }
     return this.getNamespaces().find((namespace: any) => {
       return namespace.id === namespaceId;
@@ -356,6 +376,49 @@ export class WorkspaceDetailsOverviewController {
           }
         }
       }
+    }
+    this.cheWorkspace.getWorkspaceDataManager().setAttributes(this.workspaceDetails, this.attributes);
+    this.onChange();
+  }
+
+  getSupportedStorageTypes() {
+    return [STORAGE_TYPE.PERSISTANT, STORAGE_TYPE.EPHEMERAL, STORAGE_TYPE.ASYNCHRONUS]
+  }
+
+  updateStorageType() {
+    switch (this.storageType.id) {
+        case STORAGE_TYPE.PERSISTANT.id: {
+          if (!this.attributesCopy) {
+            this.attributes = undefined;
+          } else {
+            if ((this.attributesCopy.persistVolumes as string) === 'true') {
+              (this.attributes.persistVolumes as string) = 'true';
+              delete this.attributes.asyncPersist;
+            } else {
+              delete this.attributes.persistVolumes;
+              delete this.attributes.asyncPersist;
+              if (Object.keys(this.attributes).length === 0) {
+                this.attributes = undefined;
+              }
+            }
+          }
+          break;
+        } 
+        case STORAGE_TYPE.EPHEMERAL.id: {
+          this.attributes = this.attributes || {};
+          this.attributes.persistVolumes = 'false';
+          delete this.attributes.asyncPersist;
+          break;
+        }
+        case STORAGE_TYPE.ASYNCHRONUS.id: {
+          this.attributes = this.attributes || {};
+          this.attributes.persistVolumes = 'false';
+          this.attributes.asyncPersist = 'true';
+          break;
+        }
+        default: {
+          break;
+        }
     }
     this.cheWorkspace.getWorkspaceDataManager().setAttributes(this.workspaceDetails, this.attributes);
     this.onChange();

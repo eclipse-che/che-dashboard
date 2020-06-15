@@ -343,6 +343,7 @@ declare namespace che {
 
   export interface IWorkspaceConfigAttributes {
     persistVolumes?: 'false' | 'true'; // explicitly indicates turning the ephemeral mode on
+    asyncPersist?:'false' | 'true'; // explicitly indicates turning the asynchronus storage mode on
     editor?: string;
     plugins?: string;
   }

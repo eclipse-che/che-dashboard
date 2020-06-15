@@ -14,6 +14,8 @@
 import { ITemporaryStorageRowComponentBindings } from './temporary-storage-row.component';
 import { CheWorkspace } from '../../../../components/api/workspace/che-workspace.factory';
 import { IChePfSwitchProperties } from '../../../../components/che-pf-widget/switch/che-pf-switch.directive';
+import { IChePfSelectProperties, IChePfSelectItem } from '../../../../components/che-pf-widget/select/che-pf-select-typeahead.directive';
+import { STORAGE_TYPE } from '../../../../components/api/storage-type';
 
 type OnChangesObject = {
   [key in keyof ITemporaryStorageRowComponentBindings]: ng.IChangesObject<ITemporaryStorageRowComponentBindings[key]>;
@@ -26,58 +28,65 @@ export class TemporaryStorageRowController implements ng.IController, ITemporary
   ];
 
   // component bindings
-  temporary?: boolean;
-  onChange: (eventObj: { $temporary: boolean, $default: boolean }) => void;
+  storageType?: string
+  onChangeStorageType: (eventObj: { $storageType: string; $default: boolean; }) => void;
   // init promise
   initPromise: ng.IPromise<string>;
   // template fields
   temporaryStorageSwitch: IChePfSwitchProperties;
+  storageSelect: IChePfSelectProperties<string>;
   // injected services
   private cheWorkspace: CheWorkspace;
 
   constructor(cheWorkspace: CheWorkspace) {
     this.cheWorkspace = cheWorkspace;
-
-    this.temporaryStorageSwitch = {
+    this.storageSelect = {
       config: {
-        name: 'temporaryStorage',
+        items: [STORAGE_TYPE.PERSISTANT.label, STORAGE_TYPE.EPHEMERAL.label, STORAGE_TYPE.ASYNCHRONUS.label],
+        placeholder: 'Select a storgae template'
       },
-      onChange: value => {
-        this.onChanged(value);
-      }
+      value: STORAGE_TYPE.EPHEMERAL.label,
+      onSelect: value => {
+        console.log(value)
+        this.onSelected(value)
+      },
     };
   }
 
   $onInit(): void {
     this.initPromise = this.cheWorkspace.fetchWorkspaceSettings()
-      .then(settings => this.updateTemporaryStorage(settings['che.workspace.persist_volumes.default']));
+      .then(settings => {
+        return this.updateStorageType(settings['che.workspace.persist_volumes.default']);
+      });
   }
 
   $onChanges(onChangesObj: OnChangesObject): void {
-    if (!onChangesObj.temporary || !this.initPromise) {
-      return;
-    }
     this.initPromise.then((persistVolumesDefault: string) => {
-      if (onChangesObj.temporary.currentValue === undefined && persistVolumesDefault) {
-        this.temporaryStorageSwitch.value = persistVolumesDefault === 'false';
-        return;
+      if (onChangesObj.storageType.currentValue === undefined && persistVolumesDefault) {
+        if (persistVolumesDefault === 'false') {
+          this.storageSelect.value = STORAGE_TYPE.EPHEMERAL.label;
+          return;
+        }
       }
-      this.temporaryStorageSwitch.value = onChangesObj.temporary.currentValue;
+      this.storageSelect.value = onChangesObj.storageType.currentValue;
     });
   }
 
-  private updateTemporaryStorage(persistVolumesDefault: string): string {
-    if (this.temporary === undefined) {
-      this.temporaryStorageSwitch.value = persistVolumesDefault === 'false';
+  private updateStorageType(persistVolumesDefault: string): string {
+    if (this.storageType === undefined) {
+      if (persistVolumesDefault === 'false') {
+        this.storageSelect.value = STORAGE_TYPE.EPHEMERAL.label;
+      } else {
+        this.storageSelect.value = STORAGE_TYPE.PERSISTANT.label;
+      }
     } else {
-      this.temporaryStorageSwitch.value = this.temporary;
+      this.storageSelect.value = this.storageType;
     }
     return persistVolumesDefault;
   }
 
-  private async onChanged(temporary: boolean): Promise<void> {
+  private async  onSelected(value: string) {
     const persistVolumeDefault = await this.initPromise;
-    this.onChange({'$temporary': temporary, $default: persistVolumeDefault === 'false'});
+    this.onChangeStorageType({ '$storageType': value, '$default': persistVolumeDefault === 'false' });
   }
-
 }

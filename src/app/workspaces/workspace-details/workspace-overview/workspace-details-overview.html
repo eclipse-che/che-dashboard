@@ -57,12 +57,14 @@
         class="fa fa-arrow-circle-right"></div>
     </div>
   </che-label-container>
-  <!-- Ephemeral mode -->
-  <che-label-container che-label-name="Temporary Storage" che-label-description="Temporary Storage allows for faster I/O. It may have limited storage for certain configurations and is not persistent.">
-      <md-switch ng-model="workspaceDetailsOverviewController.isEphemeralMode"
-        ng-change="workspaceDetailsOverviewController.onEphemeralModeChange()"
-        aria-label="Enables Temporary Storage.">
-      </md-switch>
+  <!-- Storage mode -->
+  <che-label-container che-label-name="Storage Type" che-label-description="Temporary Storage allows for faster I/O. It may have limited storage for certain configurations and is not persistent.">
+      <div flex="15">
+        <select class="che-version-dropdown" ng-model="workspaceDetailsOverviewController.storageType"
+                ng-change="workspaceDetailsOverviewController.updateStorageType(item)"
+                ng-options="item as item.label for item in workspaceDetailsOverviewController.getSupportedStorageTypes() track by item.id">
+        </select>
+      </div>
   </che-label-container>
   <!-- Export workspace -->
   <che-label-container che-label-name="Export">
