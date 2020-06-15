@@ -12,7 +12,7 @@
 'use strict';
 
 export const STORAGE_TYPE = {
-    "PERSISTANT": { id: 1, label: 'Peristant', description: 'Persistant bla-bla' }, 
-    "EPHEMERAL": { id: 2, label: 'Ephemeral', description: 'Ephemeral bla-bla'},
-    "ASYNCHRONUS": { id: 3, label: 'Asynchronus', description: 'Asynchronus bla-bla' }
+    'PERSISTANT': { id: 1, label: 'Peristant', description: 'Persistant bla-bla' }, 
+    'EPHEMERAL': { id: 2, label: 'Ephemeral', description: 'Ephemeral bla-bla'},
+    'ASYNCHRONUS': { id: 3, label: 'Asynchronus', description: 'Asynchronus bla-bla' }
   }

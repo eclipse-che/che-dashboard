@@ -171,7 +171,7 @@ export class CustomWorkspaceTabController implements ng.IController {
           this.devfile.attributes = {};
         }   
         this.devfile.attributes.persistVolumes = 'false';   
-        this.devfile.attributes.asyncPersist = "true";
+        this.devfile.attributes.asyncPersist = 'true';
         break 
     }
 
@@ -204,13 +204,13 @@ export class CustomWorkspaceTabController implements ng.IController {
     if (this.devfile.attributes && this.devfile.attributes.persistVolumes) {
       const val = (this.devfile.attributes.persistVolumes === 'false');
       if (val) {
-        if (this.devfile.attributes.asyncPersist === "true") {
+        if (this.devfile.attributes.asyncPersist === 'true') {
           this.temporaryStorageProperties.storageType = STORAGE_TYPE.ASYNCHRONUS.label;
         }  else {
           this.temporaryStorageProperties.storageType = STORAGE_TYPE.EPHEMERAL.label;
         }
       } else {
-        //this.temporaryStorageProperties.storageType = "Peristant";
+        //this.temporaryStorageProperties.storageType = 'Peristant';
       }
     } else {
       this.temporaryStorageProperties.storageType = undefined;
