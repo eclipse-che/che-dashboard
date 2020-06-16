@@ -80,7 +80,8 @@ export class WorkspaceDetailsOverviewController {
   private isLoading: boolean;
   private isEphemeralMode: boolean;
   private attributes: che.IWorkspaceConfigAttributes;
-  private storageType: { label: any; id?: number; };
+  private storageType: { label: any; id: number; description:string};
+  private storageToolTip: string;
   private attributesCopy: che.IWorkspaceConfigAttributes;
   private workspaceDeletePromise: ng.IPromise<void>;
 
@@ -145,6 +146,7 @@ export class WorkspaceDetailsOverviewController {
     this.name = this.cheWorkspace.getWorkspaceDataManager().getName(this.workspaceDetails);
     this.isEphemeralMode = this.attributes && this.attributes.persistVolumes ? !JSON.parse(this.attributes.persistVolumes) : false;
     this.storageType = this.getStorageType();
+    this.storageToolTip = this.storageType.description;
     this.attributesCopy = angular.copy(this.cheWorkspace.getWorkspaceDataManager().getAttributes(this.workspaceDetails));
 
     this.updateInfrastructureNamespace();
@@ -152,7 +154,7 @@ export class WorkspaceDetailsOverviewController {
 
   getStorageType() {
     if (!this.attributes) {
-      return STORAGE_TYPE.PERSISTANT;
+      return STORAGE_TYPE.EPHEMERAL;
     }
     if (this.attributes.persistVolumes as string === 'true') {
       return STORAGE_TYPE.PERSISTANT;
@@ -388,6 +390,7 @@ export class WorkspaceDetailsOverviewController {
   updateStorageType() {
     switch (this.storageType.id) {
         case STORAGE_TYPE.PERSISTANT.id: {
+          this.storageToolTip = STORAGE_TYPE.PERSISTANT.description;
           if (!this.attributesCopy) {
             this.attributes = undefined;
           } else {
@@ -405,12 +408,14 @@ export class WorkspaceDetailsOverviewController {
           break;
         } 
         case STORAGE_TYPE.EPHEMERAL.id: {
+          this.storageToolTip = STORAGE_TYPE.EPHEMERAL.description;
           this.attributes = this.attributes || {};
           this.attributes.persistVolumes = 'false';
           delete this.attributes.asyncPersist;
           break;
         }
         case STORAGE_TYPE.ASYNCHRONUS.id: {
+          this.storageToolTip = STORAGE_TYPE.ASYNCHRONUS.description;
           this.attributes = this.attributes || {};
           this.attributes.persistVolumes = 'false';
           this.attributes.asyncPersist = 'true';

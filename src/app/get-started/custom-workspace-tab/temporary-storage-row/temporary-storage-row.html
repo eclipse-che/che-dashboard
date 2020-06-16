@@ -14,22 +14,18 @@
 
 <div class="pf-c-form__group">
   <label class="pf-c-form__label" for="{{ctrl.temporaryStorageSwitch.config.id}}">
-    <span class="pf-c-form__label-text">Temporary Storage</span>&nbsp;
+    <span class="pf-c-form__label-text">Storage Type</span>&nbsp;
     <span uib-tooltip="Temporary Storage allows for faster I/O but may have limited storage and is not persistent."
           tooltip-append-to-body="true"><i class="fa fa-question-circle" aria-hidden="true"></i></span>
   </label>
   <div class="pf-c-form__horizontal-group">
-      <!-- Devfiles List -->
   <div class="pf-l-flex">
     <div class="pf-l-flex__item">
       <che-pf-select-single config="ctrl.storageSelect.config" value="ctrl.storageSelect.value"
-                               on-select="ctrl.storageSelect.onSelect($value)"
-                               on-clear="ctrl.onClear()">
+                               on-select="ctrl.storageSelect.onSelect($value)">
       </che-pf-select-single>
     </div>
-    <div class="pf-l-flex__item">or</div>
+    <div class="pf-l-flex__item">{{ctrl.storageToolTip}}</div>
   </div>
   </div>
- 
-
 </div>
