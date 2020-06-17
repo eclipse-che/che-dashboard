@@ -30,7 +30,7 @@ export class TemporaryStorageRowController implements ng.IController, ITemporary
   // component bindings
   storageType?: string
   onChangeStorageType: (eventObj: { $storageType: string; $default: boolean; }) => void;
-  storageToolTip?: string
+  storageDescription?: string
   // init promise
   initPromise: ng.IPromise<string>;
   // template fields
@@ -70,7 +70,7 @@ export class TemporaryStorageRowController implements ng.IController, ITemporary
         }
       }
       this.storageSelect.value = onChangesObj.storageType.currentValue;
-      this.storageToolTip
+      this.storageDescription
     });
   }
 
@@ -92,15 +92,15 @@ export class TemporaryStorageRowController implements ng.IController, ITemporary
     switch (value) {
       case STORAGE_TYPE.EPHEMERAL.label: 
         console.log("1------>>>>> " + value);
-        this.storageToolTip = STORAGE_TYPE.EPHEMERAL.description;
+        this.storageDescription = STORAGE_TYPE.EPHEMERAL.description;
         break;
       case STORAGE_TYPE.PERSISTANT.label:
         console.log("2------>>>>> " + value);
-        this.storageToolTip = STORAGE_TYPE.PERSISTANT.description;
+        this.storageDescription = STORAGE_TYPE.PERSISTANT.description;
         break;
       case STORAGE_TYPE.ASYNCHRONUS.label:
         console.log("3------>>>>> " + value);
-        this.storageToolTip = STORAGE_TYPE.ASYNCHRONUS.description;
+        this.storageDescription = STORAGE_TYPE.ASYNCHRONUS.description;
         break;    
     }
     this.onChangeStorageType({ '$storageType': value, '$default': persistVolumeDefault === 'false' });

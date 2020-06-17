@@ -66,7 +66,7 @@
                 ng-options="item as item.label for item in workspaceDetailsOverviewController.getSupportedStorageTypes() track by item.id">
         </select>
       </div>
-      <div flex>{{workspaceDetailsOverviewController.storageToolTip}}</div>
+      <div flex class="storage-type-description">{{workspaceDetailsOverviewController.storageDescription}}</div>
     </div>
   </che-label-container>
   <!-- Export workspace -->
