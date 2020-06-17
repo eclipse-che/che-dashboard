@@ -44,7 +44,7 @@ export class TemporaryStorageRowController implements ng.IController, ITemporary
     this.storageSelect = {
       config: {
         items: [STORAGE_TYPE.PERSISTANT.label, STORAGE_TYPE.EPHEMERAL.label, STORAGE_TYPE.ASYNCHRONUS.label],
-        placeholder: 'Select a storgae template'
+        placeholder: 'Select a storage template'
       },
       value: STORAGE_TYPE.EPHEMERAL.label,
       onSelect: value => {
@@ -90,7 +90,7 @@ export class TemporaryStorageRowController implements ng.IController, ITemporary
   private async  onSelected(value: string) {
     const persistVolumeDefault = await this.initPromise;
     switch (value) {
-      case STORAGE_TYPE.EPHEMERAL.label: 
+      case STORAGE_TYPE.EPHEMERAL.label:
         this.storageDescription = STORAGE_TYPE.EPHEMERAL.description;
         break;
       case STORAGE_TYPE.PERSISTANT.label:
@@ -98,7 +98,7 @@ export class TemporaryStorageRowController implements ng.IController, ITemporary
         break;
       case STORAGE_TYPE.ASYNCHRONUS.label:
         this.storageDescription = STORAGE_TYPE.ASYNCHRONUS.description;
-        break;    
+        break;
     }
     this.onChangeStorageType({ '$storageType': value, '$default': persistVolumeDefault === 'false' });
   }
