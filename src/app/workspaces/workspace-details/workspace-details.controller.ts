@@ -17,6 +17,7 @@ import { WorkspacesService } from '../workspaces.service';
 import { ICheEditModeOverlayConfig } from '../../../components/widget/edit-mode-overlay/che-edit-mode-overlay.directive';
 import { CheBranding } from '../../../components/branding/che-branding';
 import { WorkspaceDataManager } from '../../../components/api/workspace/workspace-data-manager';
+import { IDevfileEditorBindingProperties } from '../../../components/widget/devfile-editor/devfile-editor.component';
 
 export interface IInitData {
   namespaceId: string;
@@ -24,13 +25,14 @@ export interface IInitData {
   workspaceDetails: che.IWorkspace;
 }
 
+const DEVFILE_TAB = 'Devfile';
+
 /**
  * @ngdoc controller
  * @name workspaces.workspace.details.controller:WorkspaceDetailsController
  * @description This class is handling the controller for workspace to create and edit.
  * @author Ann Shumilova
  * @author Oleksii Kurinnyi
- * @author Oleksii Orel
  */
 export class WorkspaceDetailsController {
 
@@ -78,6 +80,7 @@ export class WorkspaceDetailsController {
   private TAB: Array<string>;
   private cheBranding: CheBranding;
   private workspaceDataManager: WorkspaceDataManager;
+  private devfileEditorProperties: IDevfileEditorBindingProperties;
 
   /**
    * There is selected deprecated editor when it's <code>true</code>.
@@ -127,6 +130,13 @@ export class WorkspaceDetailsController {
     this.workspaceName = initData.workspaceName;
     this.workspaceId = initData.workspaceDetails.id;
 
+    this.devfileEditorProperties = {
+      onChange: (devfile, editorState) => {
+        this.workspaceDetails.devfile = devfile;
+        this.onWorkspaceChanged(editorState);
+      },
+    };
+
     const action = (newWorkspaceDetails: che.IWorkspace) => {
       if (this.initialWorkspaceDetails.devfile && angular.equals(newWorkspaceDetails.devfile, this.initialWorkspaceDetails.devfile)) {
         return;
@@ -139,7 +149,7 @@ export class WorkspaceDetailsController {
           this.$location.path(`workspace/${this.workspaceDetails.namespace}/${newName}`);
           return;
         }
-        this.workspaceDetails = angular.copy(newWorkspaceDetails);
+        this.setWorkspaceDetails(newWorkspaceDetails);
       }
       this.checkEditMode();
       this.updateDeprecatedInfo();
@@ -147,9 +157,9 @@ export class WorkspaceDetailsController {
     this.cheWorkspace.subscribeOnWorkspaceChange(initData.workspaceDetails.id, action);
 
     this.initialWorkspaceDetails = angular.copy(initData.workspaceDetails);
-    this.workspaceDetails = angular.copy(initData.workspaceDetails);
+    this.setWorkspaceDetails(initData.workspaceDetails);
     this.updateDeprecatedInfo();
-    this.TAB = ['Overview', 'Projects', 'Plugins', 'Editors', 'Devfile'];
+    this.TAB = ['Overview', 'Projects', 'Plugins', 'Editors', DEVFILE_TAB];
     this.updateTabs();
 
     this.updateSelectedTab(this.$location.search().tab);
@@ -204,6 +214,20 @@ export class WorkspaceDetailsController {
         return this.$q.when();
       }
     };
+  }
+
+  /**
+   * @param workspaceDetails workspace details
+   * @param force force update workspace devfile editor content
+   */
+  private setWorkspaceDetails(workspaceDetails: che.IWorkspace, force: boolean = false): void {
+    if (!workspaceDetails) {
+      return;
+    }
+    this.workspaceDetails = angular.copy(workspaceDetails);
+    if (force || !this.devfileEditorProperties.devfile || this.tab[DEVFILE_TAB] !== this.selectedTabIndex.toString()) {
+      this.devfileEditorProperties.devfile = this.workspaceDetails.devfile;
+    }
   }
 
   $onInit(): void {
@@ -387,6 +411,15 @@ export class WorkspaceDetailsController {
   }
 
   onWorkspaceChanged(editorState?: che.IValidation): void {
+    if (editorState && !editorState.isValid) {
+      this.workspaceDetailsService.setModified(this.workspaceId, {
+        isSaved: false,
+        needRestart: false,
+        hasError: true
+      });
+      this.updateEditModeOverlayConfig(true);
+      return;
+    }
     let { isModified, needRestart } = this.isModifiedDevfile();
 
     if (this.getWorkspaceStatus() === WorkspaceStatus[WorkspaceStatus.STARTING]
@@ -486,7 +519,7 @@ export class WorkspaceDetailsController {
    */
   cancelConfigChanges(): void {
     this.workspaceDetailsService.removeModified(this.workspaceId);
-    this.workspaceDetails = angular.copy(this.initialWorkspaceDetails);
+    this.setWorkspaceDetails(this.initialWorkspaceDetails, true);
     this.onWorkspaceChanged();
     this.$scope.$broadcast('edit-workspace-details', { status: 'cancelled' });
   }

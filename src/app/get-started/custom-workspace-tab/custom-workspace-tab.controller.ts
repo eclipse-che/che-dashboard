@@ -17,7 +17,7 @@ import { IInfrastructureNamespaceRowBindingProperties } from './infrastructure-n
 import { IWorkspaceNameRowBindingProperties } from './workspace-name-row/workspace-name-row.component';
 import { ITemporaryStorageRowBindingProperties } from './temporary-storage-row/temporary-storage-row.component';
 import { IDevfileSelectRowBindingProperties } from './devfile-select-row/devfile-select-row.component';
-import { IDevfileEditorRowBindingProperties } from './devfile-editor-row/devfile-editor-row.component';
+import { IDevfileEditorBindingProperties } from '../../../components/widget/devfile-editor/devfile-editor.component';
 
 export class CustomWorkspaceTabController implements ng.IController {
 
@@ -31,7 +31,7 @@ export class CustomWorkspaceTabController implements ng.IController {
   workspaceNameProperties: IWorkspaceNameRowBindingProperties;
   temporaryStorageProperties: ITemporaryStorageRowBindingProperties;
   devfileSelectProperties: IDevfileSelectRowBindingProperties;
-  devfileEditorProperties: IDevfileEditorRowBindingProperties;
+  devfileEditorProperties: IDevfileEditorBindingProperties;
 
   // injected services
   private createWorkspaceSvc: CreateWorkspaceSvc;

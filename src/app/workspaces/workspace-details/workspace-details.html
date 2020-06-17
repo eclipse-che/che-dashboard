@@ -105,8 +105,7 @@
 
     <!-- Devfile tab -->
     <md-tab ng-if="workspaceDetailsController.workspaceDetails.devfile"
-            md-on-select="workspaceDetailsController.onSelectTab(workspaceDetailsController.tab.Devfile); isDevfileActive = true"
-            md-on-deselect="isDevfileActive = false">
+            md-on-select="workspaceDetailsController.onSelectTab(workspaceDetailsController.tab.Devfile)">
     <md-tab-label>
       <i ng-show="workspaceDetailsController.checkFormsNotValid(workspaceDetailsController.tab.Devfile)"
         class="error-state fa fa-exclamation-circle" aria-hidden="true"></i>
@@ -115,11 +114,9 @@
     <md-tab-body>
       <che-label-container che-label-name="Workspace">
         <ng-form name="workspaceDevfileForm">
-          <workspace-devfile-editor
-            ng-init="workspaceDetailsController.setForm(workspaceDetailsController.tab.Devfile, workspaceDevfileForm)"
-            is-active="isDevfileActive"
-            workspace-devfile="workspaceDetailsController.workspaceDetails.devfile"
-            workspace-devfile-on-change="workspaceDetailsController.onWorkspaceChanged(editorState)"></workspace-devfile-editor>
+          <devfile-editor ng-init="workspaceDetailsController.setForm(workspaceDetailsController.tab.Devfile, workspaceDevfileForm)"
+                              devfile="workspaceDetailsController.devfileEditorProperties.devfile"
+                              on-change="workspaceDetailsController.devfileEditorProperties.onChange($devfile, $editorState)"></devfile-editor>
           </ng-form>
         </che-label-container>
       </md-tab-body>

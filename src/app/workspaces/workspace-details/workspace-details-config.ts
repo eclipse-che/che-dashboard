@@ -22,8 +22,6 @@ import {WorkspaceDetailsService} from './workspace-details.service';
 import {ExportWorkspaceDialogController} from './export-workspace/dialog/export-workspace-dialog.controller';
 import {ExportWorkspaceController} from './export-workspace/export-workspace.controller';
 import {ExportWorkspace} from './export-workspace/export-workspace.directive';
-import {WorkspaceDevfileEditorController} from './devfile/workspace-devfile-editor.controller';
-import {WorkspaceDevfileEditor} from './devfile/workspace-devfile-editor.directive';
 import {CheWorkspaceStatusButton} from './status-button/workspace-status-button.directive';
 import {WorkspaceDetailsOverviewController} from './workspace-overview/workspace-details-overview.controller';
 import {WorkspaceDetailsOverview} from './workspace-overview/workspace-details-overview.directive';
@@ -61,8 +59,6 @@ export class WorkspaceDetailsConfig {
     register.controller('ExportWorkspaceDialogController', ExportWorkspaceDialogController);
     register.controller('ExportWorkspaceController', ExportWorkspaceController);
     register.directive('exportWorkspace', ExportWorkspace);
-    register.controller('WorkspaceDevfileEditorController', WorkspaceDevfileEditorController);
-    register.directive('workspaceDevfileEditor', WorkspaceDevfileEditor);
     register.directive('workspaceStatusButton', CheWorkspaceStatusButton);
     register.controller('WorkspaceDetailsOverviewController', WorkspaceDetailsOverviewController);
     register.directive('workspaceDetailsOverview', WorkspaceDetailsOverview);
