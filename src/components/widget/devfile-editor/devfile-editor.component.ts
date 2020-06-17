@@ -11,29 +11,29 @@
  */
 'use strict';
 
-import { DevfileEditorRowController } from './devfile-editor-row.controller';
+import { DevfileEditorController } from './devfile-editor.controller';
 
-export interface IDevfileEditorRowBindingProperties {
+export interface IDevfileEditorBindingProperties {
   devfile?: che.IWorkspaceDevfile;
   onChange: ($devfile: che.IWorkspaceDevfile, $editorState: che.IValidation) => void;
 }
 
-interface IDevfileEditorRowComponentInputBindings {
+interface IDevfileEditorComponentInputBindings {
   devfile: che.IWorkspaceDevfile;
 }
-export interface IDevfileEditorRowComponentBindings extends IDevfileEditorRowComponentInputBindings {
+export interface IDevfileEditorComponentBindings extends IDevfileEditorComponentInputBindings {
   onChange: (eventObj: { $devfile: che.IWorkspaceDevfile, $editorState: che.IValidation }) => void;
 }
 
-interface IDevfileEditorRowComponentScopeBindings {
-  bindings: { [key in keyof IDevfileEditorRowComponentBindings]: string };
+interface IDevfileEditorComponentScopeBindings {
+  bindings: { [key in keyof IDevfileEditorComponentBindings]: string };
 }
 
-export class DevfileEditorRowComponent implements ng.IComponentOptions, IDevfileEditorRowComponentScopeBindings {
+export class DevfileEditorComponent implements ng.IComponentOptions, IDevfileEditorComponentScopeBindings {
 
-  templateUrl = 'app/get-started/custom-workspace-tab/devfile-editor-row/devfile-editor-name-row.html';
+  templateUrl = 'components/widget/devfile-editor/devfile-editor-name.html';
 
-  controller = DevfileEditorRowController;
+  controller = DevfileEditorController;
   controllerAs = 'ctrl';
 
   bindings = {
