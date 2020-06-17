@@ -80,7 +80,6 @@ export class CustomWorkspaceTabController implements ng.IController {
        onChangeStorageType: (storageType, defaultValue) => {
           this.storageType = storageType;
           this.temporaryStorageDefault = defaultValue;
-          // this.defaultStorageType = defaultValue;
           if (!this.devfile) {
             this.devfile = this.minDevfile;
           }
@@ -209,9 +208,7 @@ export class CustomWorkspaceTabController implements ng.IController {
         }  else {
           this.temporaryStorageProperties.storageType = STORAGE_TYPE.EPHEMERAL.label;
         }
-      } else {
-        //this.temporaryStorageProperties.storageType = 'Peristant';
-      }
+      } 
     } else {
       this.temporaryStorageProperties.storageType = undefined;
     }

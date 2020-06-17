@@ -91,15 +91,12 @@ export class TemporaryStorageRowController implements ng.IController, ITemporary
     const persistVolumeDefault = await this.initPromise;
     switch (value) {
       case STORAGE_TYPE.EPHEMERAL.label: 
-        console.log("1------>>>>> " + value);
         this.storageDescription = STORAGE_TYPE.EPHEMERAL.description;
         break;
       case STORAGE_TYPE.PERSISTANT.label:
-        console.log("2------>>>>> " + value);
         this.storageDescription = STORAGE_TYPE.PERSISTANT.description;
         break;
       case STORAGE_TYPE.ASYNCHRONUS.label:
-        console.log("3------>>>>> " + value);
         this.storageDescription = STORAGE_TYPE.ASYNCHRONUS.description;
         break;    
     }
