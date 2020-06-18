@@ -91,7 +91,7 @@ export class GetStartedTabController {
       if (this.ephemeralMode) {
         this.storageType = STORAGE_TYPE.EPHEMERAL.label;
       } else {
-        this.storageType = STORAGE_TYPE.PERSISTANT.label;
+        this.storageType = STORAGE_TYPE.PERSISTENT.label;
       }
       this.toolbarProps.ephemeralMode = this.ephemeralMode;
       this.toolbarProps.storageType = this.storageType;
@@ -141,7 +141,7 @@ export class GetStartedTabController {
           }
           devfile.attributes.persistVolumes = 'false';
         }
-        if (this.storageType === STORAGE_TYPE.ASYNCHRONUS.label) {
+        if (this.storageType === STORAGE_TYPE.ASYNCHRONOUS.label) {
           console.log('=======>>>> 1111' + this.storageType);
           if (!devfile.attributes) {
             devfile.attributes = {};

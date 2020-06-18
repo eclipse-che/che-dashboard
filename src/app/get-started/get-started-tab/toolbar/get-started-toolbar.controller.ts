@@ -70,7 +70,7 @@ export class GetStartedToolbarController implements IGetStartedToolbarComponentB
 
     this.storageSelect = {
       config: {
-        items: [STORAGE_TYPE.PERSISTANT.label, STORAGE_TYPE.EPHEMERAL.label, STORAGE_TYPE.ASYNCHRONUS.label],
+        items: [STORAGE_TYPE.PERSISTENT.label, STORAGE_TYPE.EPHEMERAL.label, STORAGE_TYPE.ASYNCHRONOUS.label],
         placeholder: 'Select a storage template'
       },
       value: STORAGE_TYPE.EPHEMERAL.label,
@@ -116,11 +116,11 @@ export class GetStartedToolbarController implements IGetStartedToolbarComponentB
         this.storageType = value;
         this.storageDescription = STORAGE_TYPE.EPHEMERAL.description;
         break;
-      case STORAGE_TYPE.PERSISTANT.label:
-        this.storageDescription = STORAGE_TYPE.PERSISTANT.description;
+      case STORAGE_TYPE.PERSISTENT.label:
+        this.storageDescription = STORAGE_TYPE.PERSISTENT.description;
         break;
-      case STORAGE_TYPE.ASYNCHRONUS.label:
-        this.storageDescription = STORAGE_TYPE.ASYNCHRONUS.description;
+      case STORAGE_TYPE.ASYNCHRONOUS.label:
+        this.storageDescription = STORAGE_TYPE.ASYNCHRONOUS.description;
         break;
     }
     this.onStorageTypeChange({ '$storageType': value});

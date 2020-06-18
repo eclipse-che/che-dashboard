@@ -1,34 +1,42 @@
-<div class="get-started-toolbar pf-l-split pf-m-gutter">
-  <div class="pf-l-split__item">
-    <!-- filter field -->
-    <che-pf-text-input value="getStartedToolbarController.filterInput.value"
-      config="getStartedToolbarController.filterInput.config"
-      on-change="getStartedToolbarController.filterInput.onChange($value)"></che-pf-text-input>
-    <!-- filter field end -->
-  </div>
-  <div class="pf-l-split__item pf-m-fill"></div>
-  <div class="pf-l-split__item">
-    <div class="pf-l-level pf-m-gutter">
-      <div class="pf-l-level__item">
-        <!-- temporary storage toggle -->
-      <che-pf-select-single config="getStartedToolbarController.storageSelect.config" 
-                             value="getStartedToolbarController.storageSelect.value"
-                             on-select="getStartedToolbarController.storageSelect.onSelect($value)">
-    </che-pf-select-single>
-    <small>
-      <div class="pf-l-flex__item">{{getStartedToolbarController.storageDescription}}</div>
-    </small>
-      </div>
+<div>
+
+  <div class="get-started-toolbar pf-l-split pf-m-gutter">
+    <div class="pf-l-split__item">
+      <!-- filter field -->
+      <che-pf-text-input value="getStartedToolbarController.filterInput.value"
+        config="getStartedToolbarController.filterInput.config"
+        on-change="getStartedToolbarController.filterInput.onChange($value)"></che-pf-text-input>
+      <!-- filter field end -->
     </div>
-    <!-- temporary storage toggle end -->
-  </div>
-      <div class="pf-l-level__item">
-        <!-- filter results number -->
-        <ng-pluralize count="getStartedToolbarController.filterResultsCount" when="{'one': '1 item',
-              'other': '{} items'}">
+    <div class="pf-l-split__item">
+      <!-- filter results number -->
+      <div class="result-count">
+        <ng-pluralize count="getStartedToolbarController.filterResultsCount"
+          when="{'one': '1 item', 'other': '{} items'}">
         </ng-pluralize>
-        <!-- filter results number end -->
+      </div>
+      <!-- filter results number end -->
+    </div>
+    <div class="pf-l-split__item pf-m-fill"></div>
+    <div class="pf-l-split__item">
+      <div class="pf-c-form__group">
+        <div class="pf-c-form__horizontal-group">
+          <che-pf-select-single config="getStartedToolbarController.storageSelect.config"
+            value="getStartedToolbarController.storageSelect.value"
+            on-select="getStartedToolbarController.storageSelect.onSelect($value)">
+          </che-pf-select-single>
+        </div>
       </div>
     </div>
   </div>
+
+  <div class="pf-l-grid">
+    <div class="pf-l-grid__item pf-m-7-col"></div>
+    <div class="pf-l-grid__item pf-m-5-col">
+      <small>
+        <div class="pf-l-flex__item">{{getStartedToolbarController.storageDescription}}</div>
+      </small>
+    </div>
+  </div>
+
 </div>

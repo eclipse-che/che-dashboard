@@ -157,11 +157,11 @@ export class WorkspaceDetailsOverviewController {
       return STORAGE_TYPE.EPHEMERAL;
     }
     if (this.attributes.persistVolumes as string === 'true') {
-      return STORAGE_TYPE.PERSISTANT;
+      return STORAGE_TYPE.PERSISTENT;
     }
-    if (this.attributes.persistVolumes as string === 'false') 
+    if (this.attributes.persistVolumes as string === 'false')
        if (this.attributes.asyncPersist as string === 'true') {
-        return STORAGE_TYPE.ASYNCHRONUS;
+        return STORAGE_TYPE.ASYNCHRONOUS;
       }
       else {
         return STORAGE_TYPE.EPHEMERAL;
@@ -384,13 +384,13 @@ export class WorkspaceDetailsOverviewController {
   }
 
   getSupportedStorageTypes() {
-    return [STORAGE_TYPE.PERSISTANT, STORAGE_TYPE.EPHEMERAL, STORAGE_TYPE.ASYNCHRONUS]
+    return [STORAGE_TYPE.PERSISTENT, STORAGE_TYPE.EPHEMERAL, STORAGE_TYPE.ASYNCHRONOUS]
   }
 
   updateStorageType() {
     switch (this.storageType.id) {
-        case STORAGE_TYPE.PERSISTANT.id: {
-          this.storageDescription = STORAGE_TYPE.PERSISTANT.description;
+        case STORAGE_TYPE.PERSISTENT.id: {
+          this.storageDescription = STORAGE_TYPE.PERSISTENT.description;
           if (!this.attributesCopy) {
             this.attributes = undefined;
           } else {
@@ -406,7 +406,7 @@ export class WorkspaceDetailsOverviewController {
             }
           }
           break;
-        } 
+        }
         case STORAGE_TYPE.EPHEMERAL.id: {
           this.storageDescription = STORAGE_TYPE.EPHEMERAL.description;
           this.attributes = this.attributes || {};
@@ -414,8 +414,8 @@ export class WorkspaceDetailsOverviewController {
           delete this.attributes.asyncPersist;
           break;
         }
-        case STORAGE_TYPE.ASYNCHRONUS.id: {
-          this.storageDescription = STORAGE_TYPE.ASYNCHRONUS.description;
+        case STORAGE_TYPE.ASYNCHRONOUS.id: {
+          this.storageDescription = STORAGE_TYPE.ASYNCHRONOUS.description;
           this.attributes = this.attributes || {};
           this.attributes.persistVolumes = 'false';
           this.attributes.asyncPersist = 'true';

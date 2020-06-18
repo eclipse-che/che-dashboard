@@ -144,7 +144,7 @@ export class CustomWorkspaceTabController implements ng.IController {
       return;
     }
     switch (this.storageType) {
-      case STORAGE_TYPE.PERSISTANT.label:
+      case STORAGE_TYPE.PERSISTENT.label:
         if (!this.devfile.attributes) {
           this.devfile.attributes = {};
         }
@@ -165,13 +165,13 @@ export class CustomWorkspaceTabController implements ng.IController {
           delete this.devfile.attributes.asyncPersist;
         }
         break;
-      case STORAGE_TYPE.ASYNCHRONUS.label: 
+      case STORAGE_TYPE.ASYNCHRONOUS.label:
         if (!this.devfile.attributes) {
           this.devfile.attributes = {};
-        }   
-        this.devfile.attributes.persistVolumes = 'false';   
+        }
+        this.devfile.attributes.persistVolumes = 'false';
         this.devfile.attributes.asyncPersist = 'true';
-        break 
+        break
     }
 
     if (this.workspaceName) {
@@ -204,11 +204,11 @@ export class CustomWorkspaceTabController implements ng.IController {
       const val = (this.devfile.attributes.persistVolumes === 'false');
       if (val) {
         if (this.devfile.attributes.asyncPersist === 'true') {
-          this.temporaryStorageProperties.storageType = STORAGE_TYPE.ASYNCHRONUS.label;
+          this.temporaryStorageProperties.storageType = STORAGE_TYPE.ASYNCHRONOUS.label;
         }  else {
           this.temporaryStorageProperties.storageType = STORAGE_TYPE.EPHEMERAL.label;
         }
-      } 
+      }
     } else {
       this.temporaryStorageProperties.storageType = undefined;
     }
