@@ -1,6 +1,6 @@
-<div>
+<div class="get-started-toolbar">
 
-  <div class="get-started-toolbar pf-l-split pf-m-gutter">
+  <div class="pf-l-split pf-m-gutter">
     <div class="pf-l-split__item">
       <!-- filter field -->
       <che-pf-text-input value="getStartedToolbarController.filterInput.value"
@@ -20,22 +20,21 @@
     <div class="pf-l-split__item pf-m-fill"></div>
     <div class="pf-l-split__item">
       <div class="pf-c-form__group">
-        <div class="pf-c-form__horizontal-group">
-          <che-pf-select-single config="getStartedToolbarController.storageSelect.config"
-            value="getStartedToolbarController.storageSelect.value"
-            on-select="getStartedToolbarController.storageSelect.onSelect($value)">
-          </che-pf-select-single>
-        </div>
+        <che-pf-select-single config="getStartedToolbarController.storageSelect.config"
+          value="getStartedToolbarController.storageSelect.value"
+          on-select="getStartedToolbarController.storageSelect.onSelect($value)">
+        </che-pf-select-single>
       </div>
     </div>
   </div>
 
-  <div class="pf-l-grid">
-    <div class="pf-l-grid__item pf-m-7-col"></div>
-    <div class="pf-l-grid__item pf-m-5-col">
-      <small>
-        <div class="pf-l-flex__item">{{getStartedToolbarController.storageDescription}}</div>
-      </small>
+  <div class="pf-l-flex">
+    <div class="pf-l-flex__item pf-m-align-right">
+      <div class="pf-c-content">
+        <small class="storage-type-description">
+          {{getStartedToolbarController.storageDescription}}
+        </small>
+      </div>
     </div>
   </div>
 
