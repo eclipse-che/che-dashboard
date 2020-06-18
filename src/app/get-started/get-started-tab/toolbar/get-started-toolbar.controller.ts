@@ -15,6 +15,8 @@ import { IDevfileMetaData } from '../../../../components/api/devfile-registry.fa
 import { IChePfTextInputProperties } from '../../../../components/che-pf-widget/text-input/che-pf-text-input.directive';
 import { IChePfSwitchProperties } from '../../../../components/che-pf-widget/switch/che-pf-switch.directive';
 import { IGetStartedToolbarComponentInputBindings, IGetStartedToolbarComponentBindings } from './get-started-toolbar.component';
+import { IChePfSelectProperties } from '../../../../components/che-pf-widget/select/che-pf-select-typeahead.directive';
+import { STORAGE_TYPE } from '../../../../components/api/storage-type';
 
 type OnChangeObject = {
   [key in keyof IGetStartedToolbarComponentInputBindings]: ng.IChangesObject<IGetStartedToolbarComponentInputBindings[key]>;
@@ -31,10 +33,14 @@ export class GetStartedToolbarController implements IGetStartedToolbarComponentB
   devfiles: IDevfileMetaData[];
   onFilterChange: (eventObj: {$filtered: IDevfileMetaData[]}) => void;
   onEphemeralModeChange: (eventObj: {$ephemeralMode: boolean}) => void;
+  storageType: string
+  onChangeStorageType: (eventObj: { $storageType: string }) => void;
+  private storageDescription: string;
 
   filterInput: IChePfTextInputProperties;
   filterResultsCount: number;
   tmpStorage: IChePfSwitchProperties;
+  storageSelect: IChePfSelectProperties<string>;
   filteredDevfiles: Array<IDevfileMetaData> = [];
   selectedDevfile: IDevfileMetaData | undefined;
 
@@ -61,7 +67,20 @@ export class GetStartedToolbarController implements IGetStartedToolbarComponentB
       onChange: mode => this.changeEphemeralMode(mode)
 
     };
+
+    this.storageSelect = {
+      config: {
+        items: [STORAGE_TYPE.PERSISTANT.label, STORAGE_TYPE.EPHEMERAL.label, STORAGE_TYPE.ASYNCHRONUS.label],
+        placeholder: 'Select a storage template'
+      },
+      value: STORAGE_TYPE.EPHEMERAL.label,
+      onSelect: value => {
+        console.log(value)
+        this.onSelected(value)
+      },
+    };
   }
+  onStorageTypeChange: (eventObj: { $storageType: string; }) => void;
 
   $onChanges(onChangesObj: OnChangeObject): void {
     if (onChangesObj.devfiles && onChangesObj.devfiles.currentValue) {
@@ -87,6 +106,24 @@ export class GetStartedToolbarController implements IGetStartedToolbarComponentB
 
   private changeEphemeralMode(mode: boolean): void {
     this.onEphemeralModeChange({ $ephemeralMode: mode });
+  }
+
+
+  private async  onSelected(value: string) {
+    this.storageType = value;
+    switch (value) {
+      case STORAGE_TYPE.EPHEMERAL.label:
+        this.storageType = value;
+        this.storageDescription = STORAGE_TYPE.EPHEMERAL.description;
+        break;
+      case STORAGE_TYPE.PERSISTANT.label:
+        this.storageDescription = STORAGE_TYPE.PERSISTANT.description;
+        break;
+      case STORAGE_TYPE.ASYNCHRONUS.label:
+        this.storageDescription = STORAGE_TYPE.ASYNCHRONUS.description;
+        break;
+    }
+    this.onStorageTypeChange({ '$storageType': value});
   }
 
 }

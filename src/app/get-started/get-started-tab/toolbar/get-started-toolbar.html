@@ -11,20 +11,17 @@
     <div class="pf-l-level pf-m-gutter">
       <div class="pf-l-level__item">
         <!-- temporary storage toggle -->
-        <che-pf-switch value="getStartedToolbarController.ephemeralMode"
-          config="getStartedToolbarController.tmpStorage.config"
-          on-change="getStartedToolbarController.tmpStorage.onChange($value)">
-        </che-pf-switch>
-        <span class="temporary-storage-label" ng-class="{'disabled-state': !getStartedToolbarController.ephemeralMode}">
-          Temporary Storage
-        </span>
-        <span class="temporary-storage-tooltip"
-          uib-tooltip-html="'Temporary Storage allows for faster I/O but may have limited storage and is not persistent.'"
-          tooltip-trigger="mouseenter" tabindex="-1" tooltip-append-to-body="true">
-          <i class="fa fa-question-circle" aria-hidden="true"></i>
-        </span>
-        <!-- temporary storage toggle end -->
+      <che-pf-select-single config="getStartedToolbarController.storageSelect.config" 
+                             value="getStartedToolbarController.storageSelect.value"
+                             on-select="getStartedToolbarController.storageSelect.onSelect($value)">
+    </che-pf-select-single>
+    <small>
+      <div class="pf-l-flex__item">{{getStartedToolbarController.storageDescription}}</div>
+    </small>
       </div>
+    </div>
+    <!-- temporary storage toggle end -->
+  </div>
       <div class="pf-l-level__item">
         <!-- filter results number -->
         <ng-pluralize count="getStartedToolbarController.filterResultsCount" when="{'one': '1 item',

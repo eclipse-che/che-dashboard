@@ -148,7 +148,7 @@ export class CustomWorkspaceTabController implements ng.IController {
         if (!this.devfile.attributes) {
           this.devfile.attributes = {};
         }
-        this.devfile.attributes.persistVolumes = 'true';
+        delete this.devfile.attributes.persistVolumes;
         delete this.devfile.attributes.asyncPersist;
         break;
       case STORAGE_TYPE.EPHEMERAL.label:
