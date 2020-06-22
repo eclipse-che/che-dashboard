@@ -20,9 +20,9 @@ import { WorkspaceDataManager } from '../../../components/api/workspace/workspac
 import { IDevfileEditorBindingProperties } from '../../../components/widget/devfile-editor/devfile-editor.component';
 
 export interface IInitData {
-  namespaceId: string;
-  workspaceName: string;
-  workspaceDetails: che.IWorkspace;
+  getNamespaceId: () => string;
+  getWorkspaceName: () => string;
+  getWorkspaceDetails: () => che.IWorkspace | undefined;
 }
 
 const DEVFILE_TAB = 'Devfile';
@@ -120,32 +120,49 @@ export class WorkspaceDetailsController {
     this.pluginRegistry = cheWorkspace.getWorkspaceSettings() != null ? cheWorkspace.getWorkspaceSettings().cheWorkspacePluginRegistryUrl : null;
     this.workspaceDataManager = this.cheWorkspace.getWorkspaceDataManager();
 
-    if (!initData.workspaceDetails) {
-      cheNotification.showError(`There is no workspace with name ${initData.workspaceName}`);
-      $location.path('/workspaces').search({});
-      return;
-    }
-
-    this.namespaceId = initData.namespaceId;
-    this.workspaceName = initData.workspaceName;
-    this.workspaceId = initData.workspaceDetails.id;
+    this.TAB = ['Overview', 'Projects', 'Plugins', 'Editors', DEVFILE_TAB];
+    this.updateTabs();
 
     this.devfileEditorProperties = {
       onChange: (devfile, editorState) => {
-        this.workspaceDetails.devfile = devfile;
+        if (this.workspaceDetails) {
+          this.workspaceDetails.devfile = devfile;
+        }
         this.onWorkspaceChanged(editorState);
       },
     };
 
-    const action = (newWorkspaceDetails: che.IWorkspace) => {
-      if (this.initialWorkspaceDetails.devfile && angular.equals(newWorkspaceDetails.devfile, this.initialWorkspaceDetails.devfile)) {
-        return;
+    const init = () => {
+      const workspaceDetails = initData.getWorkspaceDetails();
+      if (workspaceDetails) {
+        this.workspaceName = this.workspaceDataManager.getName(workspaceDetails);
+        this.workspaceId = workspaceDetails.id;
+        this.initialWorkspaceDetails = angular.copy(workspaceDetails);
+        this.setWorkspaceDetails(workspaceDetails);
+        this.updateDeprecatedInfo();
+        this.namespaceId = initData.getNamespaceId();
+      } else {
+        cheNotification.showError(`There is no workspace with name ${initData.getWorkspaceName()}`);
+        $location.path('/workspaces').search({});
       }
+    };
+    init();
 
-      this.initialWorkspaceDetails = angular.copy(newWorkspaceDetails);
+    this.updateSelectedTab($location.search().tab);
+    const searchDeRegistrationFn = $scope.$watch(() => {
+      return $location.search().tab;
+    }, (tab: string) => {
+      if (angular.isDefined(tab)) {
+        this.updateSelectedTab(tab);
+      }
+    }, true);
+
+    const action = (newWorkspaceDetails: che.IWorkspace) => {
       if (this.workspaceDetailsService.isWorkspaceModified(this.workspaceId)) {
+        this.initialWorkspaceDetails = angular.copy(newWorkspaceDetails);
         const newName = this.workspaceDataManager.getName(newWorkspaceDetails);
         if (this.workspaceName !== newName) {
+          this.workspaceName = newName;
           this.$location.path(`workspace/${this.workspaceDetails.namespace}/${newName}`);
           return;
         }
@@ -154,22 +171,23 @@ export class WorkspaceDetailsController {
       this.checkEditMode();
       this.updateDeprecatedInfo();
     };
-    this.cheWorkspace.subscribeOnWorkspaceChange(initData.workspaceDetails.id, action);
+    this.cheWorkspace.subscribeOnWorkspaceChange(this.workspaceDetails.id, action);
 
-    this.initialWorkspaceDetails = angular.copy(initData.workspaceDetails);
-    this.setWorkspaceDetails(initData.workspaceDetails);
-    this.updateDeprecatedInfo();
-    this.TAB = ['Overview', 'Projects', 'Plugins', 'Editors', DEVFILE_TAB];
-    this.updateTabs();
-
-    this.updateSelectedTab(this.$location.search().tab);
-    const searchDeRegistrationFn = $scope.$watch(() => {
-      return $location.search().tab;
-    }, (tab: string) => {
-      if (angular.isDefined(tab)) {
-        this.updateSelectedTab(tab);
+    $scope.$on('$locationChangeSuccess', () => {
+      if (!$location.path().startsWith('/workspace/')) {
+        return;
       }
-    }, true);
+      if (this.workspaceName !== initData.getWorkspaceName()) {
+        const workspaceId = this.workspaceId;
+        init();
+        if (workspaceId !== this.workspaceId) {
+          this.cheWorkspace.unsubscribeOnWorkspaceChange(workspaceId, action);
+          this.cheWorkspace.subscribeOnWorkspaceChange(this.workspaceId, action);
+          this.setWorkspaceDetails(initData.getWorkspaceDetails(), true);
+        }
+      }
+    });
+
     const failedTabsDeregistrationFn = $scope.$watch(() => {
       return this.checkForFailedTabs();
     }, () => {
@@ -278,6 +296,9 @@ export class WorkspaceDetailsController {
   updateSelectedTab(tab: string): void {
     const tabIndex = parseInt(this.tab[tab], 10);
     this.selectedTabIndex = isNaN(tabIndex) ? 0 : tabIndex;
+    if (tab === DEVFILE_TAB && this.workspaceDetails) {
+      this.setWorkspaceDetails(this.workspaceDetails, true);
+    }
   }
 
   /**
@@ -522,6 +543,7 @@ export class WorkspaceDetailsController {
     this.setWorkspaceDetails(this.initialWorkspaceDetails, true);
     this.onWorkspaceChanged();
     this.$scope.$broadcast('edit-workspace-details', { status: 'cancelled' });
+
   }
 
   runWorkspace(): ng.IPromise<void> {

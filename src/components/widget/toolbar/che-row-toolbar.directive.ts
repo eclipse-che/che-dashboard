@@ -38,7 +38,7 @@ export class CheRowToolbar {
   scope = {
     linkTitle: '@',
     linkHref: '@',
-    cheTitle: '@'
+    cheTitle: '='
   };
 }
 

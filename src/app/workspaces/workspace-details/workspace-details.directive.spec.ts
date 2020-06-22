@@ -94,9 +94,9 @@ describe(`WorkspaceDetailsController >`, () => {
       })
       .service('initData', function() {
         return {
-          namespaceId: workspace.namespace,
-          workspaceName: workspace.devfile.metadata.name,
-          workspaceDetails: workspace
+          getNamespaceId: () => workspace.namespace,
+          getWorkspaceName: () => workspace.devfile.metadata.name,
+          getWorkspaceDetails: () => workspace
         };
       })
       .service('workspacesService', function() {
@@ -424,6 +424,7 @@ describe(`WorkspaceDetailsController >`, () => {
               newWorkspace = angular.copy((controller as any).workspaceDetails);
 
               getSaveButton().click();
+              $timeout.flush();
               $scope.$digest();
             });
 
@@ -494,6 +495,7 @@ describe(`WorkspaceDetailsController >`, () => {
             beforeEach(() => {
               newWorkspace = angular.copy((controller as any).workspaceDetails);
               getSaveButton().click();
+              $timeout.flush();
               $scope.$digest();
             });
 
@@ -605,6 +607,7 @@ describe(`WorkspaceDetailsController >`, () => {
               newWorkspace = angular.copy((controller as any).workspaceDetails);
 
               getSaveButton().click();
+              $timeout.flush();
               $scope.$digest();
             });
 
@@ -672,6 +675,7 @@ describe(`WorkspaceDetailsController >`, () => {
               newWorkspace = angular.copy((controller as any).workspaceDetails);
 
               getSaveButton().click();
+              $timeout.flush();
               $scope.$digest();
             });
 
