@@ -2,7 +2,7 @@
                  ng-show="workspaceDetailsController.hasWarningMessage===true">
   <span  ng-bind-html="workspaceDetailsController.warningMessage"></span>
 </che-description>
-<che-row-toolbar che-title="{{workspaceDetailsController.workspaceName}}" link-href="#/workspaces"
+<che-row-toolbar che-title="workspaceDetailsController.workspaceName" link-href="#/workspaces"
   link-title="Workspaces" class="workspace-details-toolbar">
   <div layout="row" layout-align="start center" class="toolbar-info">
     <!-- is environment supported -->

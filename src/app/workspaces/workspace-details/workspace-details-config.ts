@@ -70,22 +70,24 @@ export class WorkspaceDetailsConfig {
           title: (params: any) => {
             return params.workspaceName;
           },
+          reloadOnUrl: false,
           reloadOnSearch: false,
           templateUrl: 'app/workspaces/workspace-details/workspace-details.html',
           controller: 'WorkspaceDetailsController',
           controllerAs: 'workspaceDetailsController',
           resolve: {
             initData: ['$q', '$route', 'cheWorkspace', ($q: ng.IQService, $route: ng.route.IRouteService, cheWorkspace: CheWorkspace) => {
-              const {namespace, workspaceName} = $route.current.params;
-              const getName = (workspace: che.IWorkspace) => {
-                if (workspace.config) {
-                  return workspace.config.name;
-                }
-                return workspace.devfile.metadata.name;
-              };
-              return cheWorkspace.fetchWorkspaceDetails(`${namespace}/${workspaceName}`).then(() => {
-                const workspaceDetails = cheWorkspace.getWorkspaceByName(namespace, workspaceName);
-                return { namespaceId: namespace, workspaceName: workspaceName, workspaceDetails: workspaceDetails };
+              return cheWorkspace.fetchWorkspaces().then(() => {
+                const getWorkspaceDetails = () => {
+                  return cheWorkspace.getWorkspaceByName($route.current.params.namespace, $route.current.params.workspaceName);
+                };
+                const getNamespaceId = () => {
+                  return $route.current.params.namespace;
+                };
+                const getWorkspaceName = () => {
+                  return $route.current.params.workspaceName;
+                };
+                return {getNamespaceId, getWorkspaceName, getWorkspaceDetails}
               });
             }]
           }
