@@ -196,18 +196,13 @@ const keycloakAuth = {
 initModule.constant('keycloakAuth', keycloakAuth);
 
 angular.element(document).ready(() => {
-  const promise = fetch('/api/keycloak/settings')
-    .then((response: Response) => {
-      if (response.ok) {
-        return response.json();
-      }
-      return Promise.reject(response.statusText);
-    })
-    .catch(error => {
-      const errorMessage = `Can't get keycloak settings: ` + error;
+  const promise = new Promise((resolve, reject: IRejectFn) => {
+    angular.element.get('/api/keycloak/settings').then(resolve, error => {
+      const errorMessage = `Can't get Keycloak settings: ` + error.statusText;
       console.warn(errorMessage);
-      return Promise.reject(errorMessage);
+      reject(errorMessage);
     });
+  });
 
   let hasSSO = false;
   promise.then((keycloakSettings: any) => {
