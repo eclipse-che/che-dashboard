@@ -17,21 +17,17 @@ import { IDevfileMetaData } from '../../../../components/api/devfile-registry.fa
 export interface IGetStartedToolbarBindingProperties {
   devfiles: IDevfileMetaData[];
   ephemeralMode: boolean;
-  storageType: string;
   onFilterChange: ($filtered: IDevfileMetaData[]) => void;
   onEphemeralModeChange: ($ephemeralMode: boolean) => void;
-  onStorageTypeChange: ($storageType: string) => void;
 }
 
 export interface IGetStartedToolbarComponentInputBindings {
   devfiles: IDevfileMetaData[];
   ephemeralMode: boolean;
-  storageType: string;
 }
 export interface IGetStartedToolbarComponentBindings extends IGetStartedToolbarComponentInputBindings {
   onFilterChange: (eventObj: { $filtered: IDevfileMetaData[] }) => void;
   onEphemeralModeChange: (eventObj: { $ephemeralMode: boolean }) => void;
-  onStorageTypeChange: (eventObj: { $storageType: string }) => void;
 }
 
 interface IGetStartedToolbarComponentScopeBindings {
@@ -47,10 +43,8 @@ export class GetStartedToolbarComponent implements ng.IComponentOptions, IGetSta
   bindings = {
     devfiles: '<',
     ephemeralMode: '<',
-    storageType: '<',
     onFilterChange: '&',
-    onEphemeralModeChange: '&',
-    onStorageTypeChange: '&'
+    onEphemeralModeChange: '&'
   };
 
 }

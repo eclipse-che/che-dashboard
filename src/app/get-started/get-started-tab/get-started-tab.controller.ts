@@ -77,10 +77,8 @@ export class GetStartedTabController {
     this.toolbarProps = {
       devfiles: [],
       ephemeralMode: false,
-      storageType: STORAGE_TYPE.EPHEMERAL.label,
       onFilterChange: filtered => this.onFilterChange(filtered),
       onEphemeralModeChange: mode => this.onEphemeralModeChange(mode),
-      onStorageTypeChange: type => this.onStorageTypeChange(type)
     };
 
     this.isLoading = true;
@@ -94,7 +92,6 @@ export class GetStartedTabController {
         this.storageType = STORAGE_TYPE.PERSISTENT.label;
       }
       this.toolbarProps.ephemeralMode = this.ephemeralMode;
-      this.toolbarProps.storageType = this.storageType;
       return this.init();
     }).finally(() => {
       this.isLoading = false;
