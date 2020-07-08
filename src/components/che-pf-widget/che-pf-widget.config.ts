@@ -23,6 +23,7 @@ import { ChePfSelectSingle } from './select/che-pf-select-single.directive';
 import { ChePfSelectController } from './select/che-pf-select.controller';
 import { ChePfSwitchDirective } from './switch/che-pf-switch.directive';
 import { ChePfTextInputDirective } from './text-input/che-pf-text-input.directive';
+import { ChePfPopoverDirective } from './popover/che-pf-popover.directive';
 
 export class ChePfWidgetConfig {
 
@@ -38,6 +39,7 @@ export class ChePfWidgetConfig {
     register.controller('ChePfSelectController', ChePfSelectController);
     register.directive('chePfSwitch', ChePfSwitchDirective);
     register.directive('chePfTextInput', ChePfTextInputDirective);
+    register.directive('chePfPopover', ChePfPopoverDirective);
   }
 
 }
