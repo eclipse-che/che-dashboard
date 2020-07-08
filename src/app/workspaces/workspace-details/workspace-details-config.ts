@@ -22,8 +22,6 @@ import {WorkspaceDetailsService} from './workspace-details.service';
 import {ExportWorkspaceDialogController} from './export-workspace/dialog/export-workspace-dialog.controller';
 import {ExportWorkspaceController} from './export-workspace/export-workspace.controller';
 import {ExportWorkspace} from './export-workspace/export-workspace.directive';
-import {WorkspaceDevfileEditorController} from './devfile/workspace-devfile-editor.controller';
-import {WorkspaceDevfileEditor} from './devfile/workspace-devfile-editor.directive';
 import {CheWorkspaceStatusButton} from './status-button/workspace-status-button.directive';
 import {WorkspaceDetailsOverviewController} from './workspace-overview/workspace-details-overview.controller';
 import {WorkspaceDetailsOverview} from './workspace-overview/workspace-details-overview.directive';
@@ -61,8 +59,6 @@ export class WorkspaceDetailsConfig {
     register.controller('ExportWorkspaceDialogController', ExportWorkspaceDialogController);
     register.controller('ExportWorkspaceController', ExportWorkspaceController);
     register.directive('exportWorkspace', ExportWorkspace);
-    register.controller('WorkspaceDevfileEditorController', WorkspaceDevfileEditorController);
-    register.directive('workspaceDevfileEditor', WorkspaceDevfileEditor);
     register.directive('workspaceStatusButton', CheWorkspaceStatusButton);
     register.controller('WorkspaceDetailsOverviewController', WorkspaceDetailsOverviewController);
     register.directive('workspaceDetailsOverview', WorkspaceDetailsOverview);
@@ -74,22 +70,24 @@ export class WorkspaceDetailsConfig {
           title: (params: any) => {
             return params.workspaceName;
           },
+          reloadOnUrl: false,
           reloadOnSearch: false,
           templateUrl: 'app/workspaces/workspace-details/workspace-details.html',
           controller: 'WorkspaceDetailsController',
           controllerAs: 'workspaceDetailsController',
           resolve: {
             initData: ['$q', '$route', 'cheWorkspace', ($q: ng.IQService, $route: ng.route.IRouteService, cheWorkspace: CheWorkspace) => {
-              const {namespace, workspaceName} = $route.current.params;
-              const getName = (workspace: che.IWorkspace) => {
-                if (workspace.config) {
-                  return workspace.config.name;
-                }
-                return workspace.devfile.metadata.name;
-              };
-              return cheWorkspace.fetchWorkspaceDetails(`${namespace}/${workspaceName}`).then(() => {
-                const workspaceDetails = cheWorkspace.getWorkspaceByName(namespace, workspaceName);
-                return { namespaceId: namespace, workspaceName: workspaceName, workspaceDetails: workspaceDetails };
+              return cheWorkspace.fetchWorkspaces().then(() => {
+                const getWorkspaceDetails = () => {
+                  return cheWorkspace.getWorkspaceByName($route.current.params.namespace, $route.current.params.workspaceName);
+                };
+                const getNamespaceId = () => {
+                  return $route.current.params.namespace;
+                };
+                const getWorkspaceName = () => {
+                  return $route.current.params.workspaceName;
+                };
+                return {getNamespaceId, getWorkspaceName, getWorkspaceDetails}
               });
             }]
           }

@@ -50,7 +50,7 @@ export class CheEditModeOverlayController {
 
       event.preventDefault();
 
-      if (typeof this.config.onChangesDiscard !== 'function') {
+      if (!this.config || typeof this.config.onChangesDiscard !== 'function') {
         return;
       }
       return this.discardUnsavedChangesDialog().then(() => {

@@ -11,18 +11,18 @@
  */
 'use strict';
 
-import { IDevfileEditorRowComponentBindings } from './devfile-editor-row.component';
-import { CheDevfile } from '../../../../components/api/che-devfile.factory';
-import { CheBranding } from '../../../../components/branding/che-branding';
-import { CheWorkspace } from '../../../../components/api/workspace/che-workspace.factory';
-import { IPlugin, PluginRegistry } from '../../../../components/api/plugin-registry.factory';
-import { PLUGIN_TYPE } from '../../../../components/api/workspace/workspace-data-manager';
+import { IDevfileEditorComponentBindings } from './devfile-editor.component';
+import { CheDevfile } from '../../api/che-devfile.factory';
+import { CheBranding } from '../../branding/che-branding';
+import { CheWorkspace } from '../../api/workspace/che-workspace.factory';
+import { IPlugin, PluginRegistry } from '../../api/plugin-registry.factory';
+import { PLUGIN_TYPE } from '../../api/workspace/workspace-data-manager';
 
 type OnChangesObject = {
-  [key in keyof IDevfileEditorRowComponentBindings]: ng.IChangesObject<IDevfileEditorRowComponentBindings[key]>;
+  [key in keyof IDevfileEditorComponentBindings]: ng.IChangesObject<IDevfileEditorComponentBindings[key]>;
 };
 
-export class DevfileEditorRowController implements ng.IController, IDevfileEditorRowComponentBindings {
+export class DevfileEditorController implements ng.IController, IDevfileEditorComponentBindings {
 
   static $inject = [
     '$timeout',

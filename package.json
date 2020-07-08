@@ -98,7 +98,7 @@
   },
   "engines": {
     "yarn": "^1.13.0",
-    "node": ">=0.10.0"
+    "node": "^8 || ^10"
   },
   "scripts": {
     "build": "gulp build",

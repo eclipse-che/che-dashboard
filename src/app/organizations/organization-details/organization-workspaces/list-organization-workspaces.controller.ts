@@ -14,7 +14,6 @@ import {CheNotification} from '../../../../components/notification/che-notificat
 import {CheUser} from '../../../../components/api/che-user.factory';
 import {CheWorkspace} from '../../../../components/api/workspace/che-workspace.factory';
 import {WorkspacesService} from '../../../workspaces/workspaces.service';
-import {CheBranding} from '../../../../components/branding/che-branding';
 
 /**
  * @ngdoc controller
@@ -25,7 +24,7 @@ import {CheBranding} from '../../../../components/branding/che-branding';
 export class ListOrganizationWorkspacesController {
 
   static $inject = ['cheTeam', 'chePermissions', 'cheUser', 'cheWorkspace', 'cheNotification', 'lodash', '$mdDialog', '$q',
-    '$scope', 'cheListHelperFactory', '$location', 'workspacesService', 'cheBranding'];
+    '$scope', 'cheListHelperFactory', '$location', 'workspacesService'];
 
   /**
    * Team API interaction.
@@ -86,17 +85,13 @@ export class ListOrganizationWorkspacesController {
    */
   private workspacesService: WorkspacesService;
 
-  private cheBranding: CheBranding;
-
-  private workspaceCreationLink: string;
-
   /**
    * Default constructor that is using resource
    */
   constructor(cheTeam: che.api.ICheTeam, chePermissions: che.api.IChePermissions, cheUser: CheUser, cheWorkspace: CheWorkspace,
               cheNotification: CheNotification, lodash: any, $mdDialog: angular.material.IDialogService, $q: ng.IQService,
               $scope: ng.IScope, cheListHelperFactory: che.widget.ICheListHelperFactory, $location: ng.ILocationService,
-              workspacesService: WorkspacesService, cheBranding: CheBranding) {
+              workspacesService: WorkspacesService) {
     this.cheTeam = cheTeam;
     this.cheWorkspace = cheWorkspace;
     this.cheNotification = cheNotification;
@@ -107,7 +102,6 @@ export class ListOrganizationWorkspacesController {
     this.lodash = lodash;
     this.workspacesService = workspacesService;
     this.$location = $location;
-    this.cheBranding = cheBranding;
 
     this.workspaces = [];
     this.isLoading = false;
@@ -122,9 +116,6 @@ export class ListOrganizationWorkspacesController {
 
   $onInit(): void {
     this.fetchPermissions();
-    this.cheBranding.ready.then(() => {
-      this.workspaceCreationLink = this.cheBranding.getWorkspace().creationLink;
-    });
   }
 
   /**

@@ -12,7 +12,6 @@
 'use strict';
 import { CheWorkspace } from '../../../components/api/workspace/che-workspace.factory';
 import IdeSvc from '../../../app/ide/ide.service';
-import { CheBranding } from '../../../components/branding/che-branding';
 import { WorkspacesService } from '../../workspaces/workspaces.service';
 import { CheNotification } from '../../../components/notification/che-notification.factory';
 import { WorkspaceDetailsService } from '../../workspaces/workspace-details/workspace-details.service';
@@ -31,7 +30,6 @@ export class NavbarRecentWorkspacesController {
   static $inject = [
     'ideSvc',
     'cheWorkspace',
-    'cheBranding',
     '$window',
     '$log',
     '$scope',
@@ -54,10 +52,8 @@ export class NavbarRecentWorkspacesController {
   $window: ng.IWindowService;
   $rootScope: ng.IRootScopeService;
   dropdownItems: Object;
-  workspaceCreationLink: string;
   workspacesService: WorkspacesService;
   cheNotification: CheNotification;
-  cheBranding: CheBranding;
   workspaceDetailsService: WorkspaceDetailsService;
 
   /**
@@ -66,7 +62,6 @@ export class NavbarRecentWorkspacesController {
   constructor(
     ideSvc: IdeSvc,
     cheWorkspace: CheWorkspace,
-    cheBranding: CheBranding,
     $window: ng.IWindowService,
     $log: ng.ILogService,
     $scope: ng.IScope,
@@ -82,7 +77,6 @@ export class NavbarRecentWorkspacesController {
     this.$rootScope = $rootScope;
     this.workspacesService = workspacesService;
     this.cheNotification = cheNotification;
-    this.cheBranding = cheBranding;
     this.workspaceDetailsService = workspaceDetailsService;
 
     // workspace updated time map by id
@@ -111,8 +105,6 @@ export class NavbarRecentWorkspacesController {
   }
 
   $onInit(): void {
-    this.workspaceCreationLink = this.cheBranding.getWorkspace().creationLink;
-
     this.cheWorkspace.fetchWorkspaces().then(() => {
       this.workspaces = this.cheWorkspace.getWorkspaces();
     });
