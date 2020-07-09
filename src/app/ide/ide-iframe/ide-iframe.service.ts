@@ -107,6 +107,11 @@ class IdeIFrameSvc {
         return;
       }
 
+      if (msg.startsWith('open-workspace:')) {
+        this.openWorkspace(msg);
+        return;
+      }
+
     }, false);
   }
 
@@ -172,6 +177,11 @@ class IdeIFrameSvc {
     }).catch((err: any) => {
       console.error('Unable to stop workspace:', err);
     });
+  }
+
+  private openWorkspace(message: string): void {
+    const [actionName, workspaceId] = message.split(':');
+    this.ideSvc.openIde(workspaceId, false);
   }
 
   /**
