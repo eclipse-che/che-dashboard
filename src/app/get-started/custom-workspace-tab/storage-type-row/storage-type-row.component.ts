@@ -11,27 +11,27 @@
  */
 'use strict';
 
-import { TemporaryStorageRowController } from './temporary-storage-row.controller';
+import { StorageTypeRowController } from './storage-type-row.controller';
 import { StorageType } from '../../../../components/api/storage-type';
 
-export interface ITemporaryStorageRowBindingProperties {
+export interface IStorageTypeRowBindingProperties {
   storageType?: StorageType;
   onChangeStorageType: ($storageType: StorageType, $default: StorageType) => void;
 }
 
-export interface ITemporaryStorageRowComponentBindings {
+export interface IStorageTypeRowComponentBindings {
   storageType?: StorageType;
   onChangeStorageType: (eventObj: { $storageType: StorageType, $default: StorageType }) => void;
 }
 
-interface ITemporaryStorageRowComponentScopeBindings {
-  bindings: { [key in keyof ITemporaryStorageRowComponentBindings]: string };
+interface IStorageTypeRowComponentScopeBindings {
+  bindings: { [key in keyof IStorageTypeRowComponentBindings]: string };
 }
 
-export class TemporaryStorageRowComponent implements ng.IComponentOptions, ITemporaryStorageRowComponentScopeBindings {
+export class StorageTypeRowComponent implements ng.IComponentOptions, IStorageTypeRowComponentScopeBindings {
 
-  templateUrl = 'app/get-started/custom-workspace-tab/temporary-storage-row/temporary-storage-row.html';
-  controller = TemporaryStorageRowController;
+  templateUrl = 'app/get-started/custom-workspace-tab/storage-type-row/storage-type-row.html';
+  controller = StorageTypeRowController;
   controllerAs = 'ctrl';
 
   bindings = {

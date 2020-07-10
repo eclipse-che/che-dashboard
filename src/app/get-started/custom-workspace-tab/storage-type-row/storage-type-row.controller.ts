@@ -11,17 +11,17 @@
  */
 'use strict';
 
-import { ITemporaryStorageRowComponentBindings } from './temporary-storage-row.component';
+import { IStorageTypeRowComponentBindings } from './storage-type-row.component';
 import { CheWorkspace } from '../../../../components/api/workspace/che-workspace.factory';
 import { StorageType } from '../../../../components/api/storage-type';
 import { IChePfSelectProperties } from '../../../../components/che-pf-widget/select/che-pf-select-typeahead.directive';
 import { ChePfModalService } from '../../../../components/che-pf-widget/modal/che-pf-modal.service';
 
 type OnChangesObject = {
-  [key in keyof ITemporaryStorageRowComponentBindings]: ng.IChangesObject<ITemporaryStorageRowComponentBindings[key]>;
+  [key in keyof IStorageTypeRowComponentBindings]: ng.IChangesObject<IStorageTypeRowComponentBindings[key]>;
 };
 
-export class TemporaryStorageRowController implements ng.IController, ITemporaryStorageRowComponentBindings {
+export class StorageTypeRowController implements ng.IController, IStorageTypeRowComponentBindings {
 
   static $inject = [
     'chePfModalService',

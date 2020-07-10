@@ -15,7 +15,7 @@ import { IChePfButtonProperties } from '../../../components/che-pf-widget/button
 import { CreateWorkspaceSvc } from '../../workspaces/create-workspace/create-workspace.service';
 import { IInfrastructureNamespaceRowBindingProperties } from './infrastructure-namespace-row/infrastructure-namespace-row.component';
 import { IWorkspaceNameRowBindingProperties } from './workspace-name-row/workspace-name-row.component';
-import { ITemporaryStorageRowBindingProperties } from './temporary-storage-row/temporary-storage-row.component';
+import { IStorageTypeRowBindingProperties } from './storage-type-row/storage-type-row.component';
 import { IDevfileSelectRowBindingProperties } from './devfile-select-row/devfile-select-row.component';
 import { StorageType } from '../../../components/api/storage-type';
 import { IDevfileEditorBindingProperties } from '../../../components/widget/devfile-editor/devfile-editor.component';
@@ -30,7 +30,7 @@ export class CustomWorkspaceTabController implements ng.IController {
   createButton: IChePfButtonProperties;
   infrastructureNamespaceProperties: IInfrastructureNamespaceRowBindingProperties;
   workspaceNameProperties: IWorkspaceNameRowBindingProperties;
-  temporaryStorageProperties: ITemporaryStorageRowBindingProperties;
+  temporaryStorageProperties: IStorageTypeRowBindingProperties;
   devfileSelectProperties: IDevfileSelectRowBindingProperties;
   devfileEditorProperties: IDevfileEditorBindingProperties;
 
