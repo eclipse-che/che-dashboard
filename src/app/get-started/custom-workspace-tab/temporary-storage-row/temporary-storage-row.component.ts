@@ -12,15 +12,16 @@
 'use strict';
 
 import { TemporaryStorageRowController } from './temporary-storage-row.controller';
+import { StorageType } from '../../../../components/api/storage-type';
 
 export interface ITemporaryStorageRowBindingProperties {
-  storageType?: string;
-  onChangeStorageType: ($storageType: string, $default: boolean) => void;
+  storageType?: StorageType;
+  onChangeStorageType: ($storageType: StorageType, $default: StorageType) => void;
 }
 
 export interface ITemporaryStorageRowComponentBindings {
-  storageType?: string;
-  onChangeStorageType: (eventObj: { $storageType: string, $default: boolean }) => void;
+  storageType?: StorageType;
+  onChangeStorageType: (eventObj: { $storageType: StorageType, $default: StorageType }) => void;
 }
 
 interface ITemporaryStorageRowComponentScopeBindings {
@@ -34,7 +35,7 @@ export class TemporaryStorageRowComponent implements ng.IComponentOptions, ITemp
   controllerAs = 'ctrl';
 
   bindings = {
-    storageType : '<?',
+    storageType : '<',
     onChangeStorageType: '&'
   };
 

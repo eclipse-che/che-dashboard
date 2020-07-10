@@ -24,6 +24,8 @@ import { ChePfSelectController } from './select/che-pf-select.controller';
 import { ChePfSwitchDirective } from './switch/che-pf-switch.directive';
 import { ChePfTextInputDirective } from './text-input/che-pf-text-input.directive';
 import { ChePfPopoverDirective } from './popover/che-pf-popover.directive';
+import { ChePfModalService } from './modal/che-pf-modal.service';
+import { ChePfModalController } from './modal/che-pf-modal.controller';
 
 export class ChePfWidgetConfig {
 
@@ -40,6 +42,9 @@ export class ChePfWidgetConfig {
     register.directive('chePfSwitch', ChePfSwitchDirective);
     register.directive('chePfTextInput', ChePfTextInputDirective);
     register.directive('chePfPopover', ChePfPopoverDirective);
+
+    register.service('chePfModalService', ChePfModalService);
+    register.controller('ChePfModalController', ChePfModalController);
   }
 
 }

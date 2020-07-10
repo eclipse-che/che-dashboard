@@ -84,7 +84,7 @@ export class ChePfPopoverDirective implements ng.IDirective<IChePfPopoverScope>,
       const popover = $element.find('.pf-c-popover');
 
       if ($scope.visible === false) {
-        popover.removeClass('visible');
+        popover.hide()
         return;
       }
 
@@ -93,7 +93,7 @@ export class ChePfPopoverDirective implements ng.IDirective<IChePfPopoverScope>,
       popover.css('bottom', `${shiftFromBottom}px`);
       popover.css('left', `${shiftFromLeft}px`);
 
-      popover.addClass('visible');
+      popover.show();
     };
   }
 

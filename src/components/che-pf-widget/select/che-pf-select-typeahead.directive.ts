@@ -117,8 +117,10 @@ export class ChePfSelectTypeahead implements ng.IDirective, IChePfSelectDirectiv
     // set IDs
     $scope.labelId = this.randomSvc.getRandString({ prefix: this.labelId });
     $scope.typeaheadId = this.randomSvc.getRandString({ prefix: this.typeaheadId });
-    $scope.toggleId = this.randomSvc.getRandString({ prefix: this.toggleId });
-    ctrl.config.id = $scope.toggleId;
+    if (!ctrl.config.id) {
+      ctrl.config.id = this.randomSvc.getRandString({ prefix: this.toggleId });
+    }
+    $scope.toggleId = ctrl.config.id;
 
     $scope.$watch(() => ctrl.value, (newItem, oldItem) => {
       if (newItem && ctrl.getItemValue(newItem) === ctrl.getItemValue(ctrl.selectedItem)) {
@@ -142,7 +144,8 @@ export class ChePfSelectTypeahead implements ng.IDirective, IChePfSelectDirectiv
     // and restore last selected item
     const outsideClickHandler = (eventTarget => {
       const closestPfSelect = angular.element(eventTarget.target).closest('.pf-c-select');
-      if (closestPfSelect.length === 0) {
+      const closestPfSelectLabel = angular.element(eventTarget.target).closest(`label[for="${$scope.toggleId}"]`);
+      if (closestPfSelect.length === 0 && closestPfSelectLabel.length === 0) {
         $scope.filterBy = '';
         $scope.typeahead = ctrl.getItemName(ctrl.selectedItem);
         $scope.collapseItemsList();

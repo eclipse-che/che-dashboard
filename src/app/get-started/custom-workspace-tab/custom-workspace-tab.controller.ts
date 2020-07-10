@@ -17,7 +17,7 @@ import { IInfrastructureNamespaceRowBindingProperties } from './infrastructure-n
 import { IWorkspaceNameRowBindingProperties } from './workspace-name-row/workspace-name-row.component';
 import { ITemporaryStorageRowBindingProperties } from './temporary-storage-row/temporary-storage-row.component';
 import { IDevfileSelectRowBindingProperties } from './devfile-select-row/devfile-select-row.component';
-import { STORAGE_TYPE } from '../../../components/api/storage-type';
+import { StorageType } from '../../../components/api/storage-type';
 import { IDevfileEditorBindingProperties } from '../../../components/widget/devfile-editor/devfile-editor.component';
 
 export class CustomWorkspaceTabController implements ng.IController {
@@ -39,8 +39,8 @@ export class CustomWorkspaceTabController implements ng.IController {
 
   private namespace: string;
   private workspaceName: string;
-  private storageType: string;
-  private temporaryStorageDefault: boolean;
+  private storageType: StorageType;
+  private defaultStorageType: StorageType;
   private stackName: string;
   private devfile: che.IWorkspaceDevfile;
   private editorState: che.IValidation;
@@ -77,14 +77,14 @@ export class CustomWorkspaceTabController implements ng.IController {
       },
     };
     this.temporaryStorageProperties = {
-       onChangeStorageType: (storageType, defaultValue) => {
-          this.storageType = storageType;
-          this.temporaryStorageDefault = defaultValue;
-          if (!this.devfile) {
-            this.devfile = this.minDevfile;
-          }
-          this.updateDevfile();
-          this.updateProperties(true);
+      onChangeStorageType: (storageType, defaultStorageType) => {
+        this.storageType = storageType;
+        this.defaultStorageType = defaultStorageType;
+        if (!this.devfile) {
+          this.devfile = this.minDevfile;
+        }
+        this.updateDevfile();
+        this.updateProperties(true);
       }
     };
     this.devfileSelectProperties = {
@@ -144,28 +144,23 @@ export class CustomWorkspaceTabController implements ng.IController {
       return;
     }
     switch (this.storageType) {
-      case STORAGE_TYPE.PERSISTENT.label:
+      case StorageType.PERSISTENT:
+        if (this.devfile.attributes) {
+          delete this.devfile.attributes.persistVolumes;
+          delete this.devfile.attributes.asyncPersist;
+          if (Object.keys(this.devfile.attributes).length === 0) {
+            delete this.devfile.attributes;
+          }
+        }
+        break;
+      case StorageType.EPHEMERAL:
         if (!this.devfile.attributes) {
           this.devfile.attributes = {};
         }
-        delete this.devfile.attributes.persistVolumes;
+        this.devfile.attributes.persistVolumes = 'false';
         delete this.devfile.attributes.asyncPersist;
         break;
-      case STORAGE_TYPE.EPHEMERAL.label:
-        if (this.temporaryStorageDefault) {
-          if (this.devfile.attributes && this.devfile.attributes.persistVolumes) {
-            delete this.devfile.attributes.persistVolumes;
-            delete this.devfile.attributes.asyncPersist;
-            if (Object.keys(this.devfile.attributes).length === 0) {
-              delete this.devfile.attributes;
-            }
-          }
-        } else {
-          this.devfile.attributes.persistVolumes = 'false';
-          delete this.devfile.attributes.asyncPersist;
-        }
-        break;
-      case STORAGE_TYPE.ASYNCHRONOUS.label:
+      case StorageType.ASYNCHRONOUS:
         if (!this.devfile.attributes) {
           this.devfile.attributes = {};
         }
@@ -204,9 +199,9 @@ export class CustomWorkspaceTabController implements ng.IController {
       const val = (this.devfile.attributes.persistVolumes === 'false');
       if (val) {
         if (this.devfile.attributes.asyncPersist === 'true') {
-          this.temporaryStorageProperties.storageType = STORAGE_TYPE.ASYNCHRONOUS.label;
-        }  else {
-          this.temporaryStorageProperties.storageType = STORAGE_TYPE.EPHEMERAL.label;
+          this.temporaryStorageProperties.storageType = StorageType.ASYNCHRONOUS;
+        } else {
+          this.temporaryStorageProperties.storageType = StorageType.EPHEMERAL;
         }
       }
     } else {
@@ -220,6 +215,7 @@ export class CustomWorkspaceTabController implements ng.IController {
     if (this.devfile.metadata) {
       this.workspaceNameProperties.generateName = this.devfile.metadata.generateName;
     }
+
     if (forceEditorUpdate) {
       this.devfileEditorProperties.devfile = angular.copy(this.devfile);
     }
@@ -227,7 +223,7 @@ export class CustomWorkspaceTabController implements ng.IController {
 
   private createWorkspace(): ng.IPromise<che.IWorkspace> {
     const stackName = this.stackName || '';
-    return this.createWorkspaceSvc.createWorkspaceFromDevfile(this.namespace, this.devfile, {stackName}, true);
+    return this.createWorkspaceSvc.createWorkspaceFromDevfile(this.namespace, this.devfile, { stackName }, true);
   }
 
 }
