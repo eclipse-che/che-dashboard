@@ -23,6 +23,10 @@ var serverOptions = {
 
 var options = minimist(process.argv.slice(2), serverOptions);
 
+if (options.server.endsWith('/')) {
+  options.server = options.server.substr(0, options.server.length - 1);
+}
+
 var patterns = ['/api', '/ext', '/ws', '/datasource', '/java-ca', '/im', '/che', '/admin', '/workspace-loader'];
 
 var proxies = [];
