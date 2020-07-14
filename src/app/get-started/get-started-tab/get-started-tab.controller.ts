@@ -17,8 +17,7 @@ import { DevfileRegistry, IDevfileMetaData } from '../../../components/api/devfi
 import { CheNotification } from '../../../components/notification/che-notification.factory';
 import { IChePfButtonProperties } from '../../../components/che-pf-widget/button/che-pf-button';
 import { IGetStartedToolbarBindingProperties } from './toolbar/get-started-toolbar.component';
-import { CheBranding } from '../../../components/branding/che-branding';
-import { STORAGE_TYPE } from '../../../components/api/storage-type';
+import { StorageType } from '../../../components/api/storage-type';
 
 
 /**
@@ -34,7 +33,6 @@ export class GetStartedTabController {
     '$log',
     'cheNotification',
     'cheWorkspace',
-    'cheBranding',
     'createWorkspaceSvc',
     'devfileRegistry'
   ];
@@ -46,7 +44,6 @@ export class GetStartedTabController {
   // injected services
   private $log: ng.ILogService;
   private cheNotification: CheNotification;
-  private cheBranding: CheBranding;
   private createWorkspaceSvc: CreateWorkspaceSvc;
   private devfileRegistry: DevfileRegistry;
 
@@ -55,7 +52,6 @@ export class GetStartedTabController {
   private devfileRegistryUrl: string;
   private ephemeralMode: boolean;
   private storageType: string;
-  private storageDescription: string;
 
   /**
    * Default constructor that is using resource
@@ -64,13 +60,11 @@ export class GetStartedTabController {
     $log: ng.ILogService,
     cheNotification: CheNotification,
     cheWorkspace: CheWorkspace,
-    cheBranding: CheBranding,
     createWorkspaceSvc: CreateWorkspaceSvc,
     devfileRegistry: DevfileRegistry
   ) {
     this.$log = $log;
     this.cheNotification = cheNotification;
-    this.cheBranding = cheBranding;
     this.createWorkspaceSvc = createWorkspaceSvc;
     this.devfileRegistry = devfileRegistry;
 
@@ -87,9 +81,9 @@ export class GetStartedTabController {
       this.devfileRegistryUrl = workspaceSettings && workspaceSettings.cheWorkspaceDevfileRegistryUrl;
       this.ephemeralMode = workspaceSettings['che.workspace.persist_volumes.default'] === 'false';
       if (this.ephemeralMode) {
-        this.storageType = STORAGE_TYPE.EPHEMERAL.label;
+        this.storageType = StorageType.EPHEMERAL;
       } else {
-        this.storageType = STORAGE_TYPE.PERSISTENT.label;
+        this.storageType = StorageType.PERSISTENT;
       }
       this.toolbarProps.ephemeralMode = this.ephemeralMode;
       return this.init();
@@ -112,7 +106,6 @@ export class GetStartedTabController {
 
   onStorageTypeChange(type: string): void {
     this.storageType = type;
-    this.storageDescription = type;
   }
 
   createWorkspace(devfileMetaData: IDevfileMetaData): void {
@@ -130,16 +123,13 @@ export class GetStartedTabController {
     this.devfileRegistry.fetchDevfile(this.devfileRegistryUrl, selfLink)
       .then(() => {
         const devfile = this.devfileRegistry.getDevfile(this.devfileRegistryUrl, selfLink);
-        console.log('=======>>>>' + this.storageType);
-        if (this.storageType === STORAGE_TYPE.EPHEMERAL.label) {
-          console.log('=======>>>> 0000' + this.storageType);
+        if (this.storageType === StorageType.EPHEMERAL) {
           if (!devfile.attributes) {
             devfile.attributes = {};
           }
           devfile.attributes.persistVolumes = 'false';
         }
-        if (this.storageType === STORAGE_TYPE.ASYNCHRONOUS.label) {
-          console.log('=======>>>> 1111' + this.storageType);
+        if (this.storageType === StorageType.ASYNCHRONOUS) {
           if (!devfile.attributes) {
             devfile.attributes = {};
           }

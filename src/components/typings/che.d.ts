@@ -209,7 +209,7 @@ declare namespace che {
     }
 
     export interface IRoute extends ng.route.IRoute {
-      title?: string | {(...args: any[]) : string};
+      title?: string | { (...args: any[]): string };
     }
 
     export interface IRouteProvider extends ng.route.IRouteProvider {
@@ -336,14 +336,14 @@ declare namespace che {
     environments: {
       [envName: string]: any;
     };
-    projects?: Array <any>;
-    commands?: Array <any>;
+    projects?: Array<any>;
+    commands?: Array<any>;
     attributes?: IWorkspaceConfigAttributes;
   }
 
   export interface IWorkspaceConfigAttributes {
     persistVolumes?: 'false' | 'true'; // explicitly indicates turning the ephemeral mode on
-    asyncPersist?:'false' | 'true'; // explicitly indicates turning the asynchronus storage mode on
+    asyncPersist?: 'false' | 'true'; // explicitly indicates turning the asynchronous storage mode on
     editor?: string;
     plugins?: string;
   }
@@ -351,8 +351,8 @@ declare namespace che {
   export interface IWorkspaceDevfile {
     apiVersion: string;
     components?: Array<any>;
-    projects?: Array <any>;
-    commands?: Array <any>;
+    projects?: Array<any>;
+    commands?: Array<any>;
     attributes?: che.IWorkspaceConfigAttributes;
     metadata: {
       name?: string;
@@ -452,9 +452,9 @@ declare namespace che {
   }
 
   export interface IProfileAttributes {
-      firstName?: string;
-      lastName?: string;
-      [propName: string]: string | number;
+    firstName?: string;
+    lastName?: string;
+    [propName: string]: string | number;
   }
 
   export interface IProfile extends ng.resource.IResource<any> {
