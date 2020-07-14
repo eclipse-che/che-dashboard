@@ -18,7 +18,7 @@ import { WorkspaceDetailsService } from '../workspace-details.service';
 import { CheKubernetesNamespace } from '../../../../components/api/che-kubernetes-namespace.factory';
 import { CheDashboardConfigurationService } from '../../../../components/branding/che-dashboard-configuration.service';
 import { TogglableFeature } from '../../../../components/branding/branding.constant';
-import { STORAGE_TYPE } from '../../../../components/api/storage-type';
+import { StorageType } from '../../../../components/api/storage-type';
 
 const STARTING = WorkspaceStatus[WorkspaceStatus.STARTING];
 const RUNNING = WorkspaceStatus[WorkspaceStatus.RUNNING];
@@ -55,6 +55,8 @@ export class WorkspaceDetailsOverviewController {
    */
   infrastructureNamespace: string;
   enabledKubernetesNamespaceSelector: boolean = false;
+  storageTypeOptions: Array<{ name: string }>;
+  storageType: string;
 
   private $location: ng.ILocationService;
   private $mdDialog: ng.material.IDialogService;
@@ -80,8 +82,6 @@ export class WorkspaceDetailsOverviewController {
   private isLoading: boolean;
   private isEphemeralMode: boolean;
   private attributes: che.IWorkspaceConfigAttributes;
-  private storageType: { label: any; id: number; description:string};
-  private storageDescription: string;
   private attributesCopy: che.IWorkspaceConfigAttributes;
   private workspaceDeletePromise: ng.IPromise<void>;
 
@@ -138,6 +138,8 @@ export class WorkspaceDetailsOverviewController {
 
     this.enabledKubernetesNamespaceSelector = this.cheDashboardConfigurationService.enabledFeature(TogglableFeature.KUBERNETES_NAMESPACE_SELECTOR);
 
+    this.storageTypeOptions = StorageType.getAllowedTypes().map(type => ({ name: type }));
+
     this.init();
   }
 
@@ -145,29 +147,20 @@ export class WorkspaceDetailsOverviewController {
     this.attributes = this.cheWorkspace.getWorkspaceDataManager().getAttributes(this.workspaceDetails);
     this.name = this.cheWorkspace.getWorkspaceDataManager().getName(this.workspaceDetails);
     this.isEphemeralMode = this.attributes && this.attributes.persistVolumes ? !JSON.parse(this.attributes.persistVolumes) : false;
-    this.storageType = this.getStorageType();
-    this.storageDescription = this.storageType.description;
     this.attributesCopy = angular.copy(this.cheWorkspace.getWorkspaceDataManager().getAttributes(this.workspaceDetails));
+
+    if (!this.attributes || this.attributes.persistVolumes === 'true') {
+      this.storageType = StorageType.PERSISTENT;
+    } else {
+      if (this.attributes.asyncPersist === 'true') {
+        this.storageType = StorageType.ASYNCHRONOUS;
+      } else {
+        this.storageType = StorageType.EPHEMERAL;
+      }
+    }
 
     this.updateInfrastructureNamespace();
   }
-
-  getStorageType() {
-    if (!this.attributes) {
-      return STORAGE_TYPE.EPHEMERAL;
-    }
-    if (this.attributes.persistVolumes as string === 'true') {
-      return STORAGE_TYPE.PERSISTENT;
-    }
-    if (this.attributes.persistVolumes as string === 'false')
-       if (this.attributes.asyncPersist as string === 'true') {
-        return STORAGE_TYPE.ASYNCHRONOUS;
-      }
-      else {
-        return STORAGE_TYPE.EPHEMERAL;
-      }
-  }
-
 
   /**
    * Returns namespace by its ID
@@ -383,47 +376,66 @@ export class WorkspaceDetailsOverviewController {
     this.onChange();
   }
 
-  getSupportedStorageTypes() {
-    return [STORAGE_TYPE.PERSISTENT, STORAGE_TYPE.EPHEMERAL, STORAGE_TYPE.ASYNCHRONOUS]
+  showStorageTypeDescription(): ng.IPromise<void> {
+    const title = 'Storage Types';
+    const content = StorageType.getAllDescriptions();
+    return this.$mdDialog.show({
+      clickOutsideToClose: true,
+      controller: ['$scope', ($scope) => {
+        $scope.hide = () => {
+          this.$mdDialog.hide();
+        };
+        $scope.cancel = () => {
+          this.$mdDialog.cancel();
+        };
+      }],
+      template: `
+        <che-popup title="${title}" on-close="cancel()">
+          <div class="che-confirm-dialog-notification" ng-init="enableButton=false">
+            <div>${content}</div>
+            <div layout="row" flex layout-align="end end">
+              <che-button-notice che-button-title="Close"
+                id="cancel-dialog-button"
+                ng-click="cancel()">
+              </che-button-notice>
+            </div>
+          </div>
+        </che-popup>
+      `,
+    });
   }
 
-  updateStorageType() {
-    switch (this.storageType.id) {
-        case STORAGE_TYPE.PERSISTENT.id: {
-          this.storageDescription = STORAGE_TYPE.PERSISTENT.description;
-          if (!this.attributesCopy) {
-            this.attributes = undefined;
+  onStorageTypeChanged(type: StorageType): void {
+    switch (type) {
+      case StorageType.PERSISTENT: {
+        if (!this.attributesCopy) {
+          delete this.attributes;
+        } else {
+          if (this.attributesCopy.persistVolumes === 'true') {
+            this.attributes.persistVolumes = 'true';
+            delete this.attributes.asyncPersist;
           } else {
-            if ((this.attributesCopy.persistVolumes as string) === 'true') {
-              (this.attributes.persistVolumes as string) = 'true';
-              delete this.attributes.asyncPersist;
-            } else {
-              delete this.attributes.persistVolumes;
-              delete this.attributes.asyncPersist;
-              if (Object.keys(this.attributes).length === 0) {
-                this.attributes = undefined;
-              }
+            delete this.attributes.persistVolumes;
+            delete this.attributes.asyncPersist;
+            if (Object.keys(this.attributes).length === 0) {
+              delete this.attributes;
             }
           }
-          break;
         }
-        case STORAGE_TYPE.EPHEMERAL.id: {
-          this.storageDescription = STORAGE_TYPE.EPHEMERAL.description;
-          this.attributes = this.attributes || {};
-          this.attributes.persistVolumes = 'false';
-          delete this.attributes.asyncPersist;
-          break;
-        }
-        case STORAGE_TYPE.ASYNCHRONOUS.id: {
-          this.storageDescription = STORAGE_TYPE.ASYNCHRONOUS.description;
-          this.attributes = this.attributes || {};
-          this.attributes.persistVolumes = 'false';
-          this.attributes.asyncPersist = 'true';
-          break;
-        }
-        default: {
-          break;
-        }
+        break;
+      }
+      case StorageType.EPHEMERAL: {
+        this.attributes = this.attributes || {};
+        this.attributes.persistVolumes = 'false';
+        delete this.attributes.asyncPersist;
+        break;
+      }
+      case StorageType.ASYNCHRONOUS: {
+        this.attributes = this.attributes || {};
+        this.attributes.persistVolumes = 'false';
+        this.attributes.asyncPersist = 'true';
+        break;
+      }
     }
     this.cheWorkspace.getWorkspaceDataManager().setAttributes(this.workspaceDetails, this.attributes);
     this.onChange();

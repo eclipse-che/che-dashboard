@@ -11,12 +11,6 @@
  */
 'use strict';
 
-export const STORAGE_TYPE = {
-  'PERSISTENT': { id: 1, label: 'Persistent', description: 'Persistent Storage slow I/O but persistent.' },
-  'EPHEMERAL': { id: 2, label: 'Ephemeral', description: 'Ephemeral Storage allows for faster I/O but may have limited storage and is not persistent.' },
-  'ASYNCHRONOUS': { id: 3, label: 'Asynchronous', description: 'Experimental feature: Asynchronous storage is combination of Ephemeral and Persistent storage. Allows for faster I/O and keep your changes, will backup on stop and restore on start workspace.' }
-}
-
 export enum StorageType {
   'ASYNCHRONOUS' = 'Asynchronous',
   'EPHEMERAL' = 'Ephemeral',
@@ -24,6 +18,11 @@ export enum StorageType {
 }
 
 export namespace StorageType {
+  // temporary func that returns allowed storage types
+  // should be removed in favour of an API method as soon as it is implemented
+  export function getAllowedTypes(): StorageType[] {
+    return [StorageType.EPHEMERAL, StorageType.PERSISTENT];
+  }
   export function getTypeDescription(type: StorageType): string {
     switch (type) {
       case StorageType.ASYNCHRONOUS:

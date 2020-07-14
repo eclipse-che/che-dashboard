@@ -58,15 +58,20 @@
     </div>
   </che-label-container>
   <!-- Storage type -->
-  <che-label-container che-label-name="Storage Type" che-label-description="Temporary Storage allows for faster I/O but may have limited storage and is not persistent.">
+  <che-label-container che-label-name="Storage Type">
     <div layout="row">
-      <div flex="15">
-        <select class="che-version-dropdown" ng-model="workspaceDetailsOverviewController.storageType"
-                ng-change="workspaceDetailsOverviewController.updateStorageType()"
-                ng-options="item as item.label for item in workspaceDetailsOverviewController.getSupportedStorageTypes() track by item.id">
-        </select>
+      <div flex="40">
+        <che-select
+          che-value="workspaceDetailsOverviewController.storageType"
+          che-on-select="workspaceDetailsOverviewController.onStorageTypeChanged($value)"
+          che-option-values="workspaceDetailsOverviewController.storageTypeOptions"></che-select>
+        </che-select>
       </div>
-      <div flex class="storage-type-description">{{workspaceDetailsOverviewController.storageDescription}}</div>
+      <div flex class="learn-more-button">
+        <a ng-click="workspaceDetailsOverviewController.showStorageTypeDescription();">
+          Learn more about storage type
+        </a>
+      </div>
     </div>
   </che-label-container>
   <!-- Export workspace -->
