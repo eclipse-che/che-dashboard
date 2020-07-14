@@ -59,13 +59,7 @@ export class StorageTypeRowController implements ng.IController, IStorageTypeRow
   $onInit(): void {
     this.initPromise = this.cheWorkspace.fetchWorkspaceSettings().then(settings => this.updateStorageType(settings));
 
-    const items = [
-      StorageType.PERSISTENT,
-      StorageType.EPHEMERAL,
-    ];
-    if (this.allowedAsync) {
-      items.push(StorageType.ASYNCHRONOUS);
-    }
+    const items = StorageType.getAllowedTypes();
 
     this.storageSelect = {
       config: {
