@@ -73,7 +73,7 @@
     "karma-ng-html2js-preprocessor": "~0.1.2",
     "karma-phantomjs-launcher": "~1.0.4",
     "karma-webpack": "^2.0.9",
-    "lodash": "4.17.15",
+    "lodash": "4.17.19",
     "merge-stream": "^1.0.1",
     "minimist": "^1.2.0",
     "ng-annotate-loader": "^0.6.1",
