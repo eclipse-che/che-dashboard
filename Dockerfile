@@ -17,6 +17,7 @@ FROM node:8.16.0
 
 RUN apt-get update \
     && apt-get install -y git curl \
+    && if [ "$(uname -m)" = "s390x" ]; then apt-get install -y phantomjs; fi \
     && apt-get -y clean \
     && rm -rf /var/lib/apt/lists/*
 
@@ -30,11 +31,12 @@ RUN if [ "$(uname -m)" = "ppc64le" ]; then \
 COPY package.json /dashboard/
 COPY yarn.lock /dashboard/
 WORKDIR /dashboard
-RUN yarn install --ignore-optional
+RUN if [ "$(uname -m)" = "s390x" ]; then export QT_QPA_PLATFORM=offscreen; fi \
+    && yarn install --ignore-optional
 
 COPY . /dashboard/
 
-RUN if [ "$(uname -m)" = "ppc64le" ]; then yarn build; else \
+RUN if [ "$(uname -m)" = "ppc64le" ] || [ "$(uname -m)" = "s390x" ]; then yarn build; else \
     yarn build && yarn test; fi
 RUN cd /dashboard/target/ && tar zcf /tmp/dashboard.tar.gz dist/
 
