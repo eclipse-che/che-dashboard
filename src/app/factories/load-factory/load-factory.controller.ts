@@ -649,7 +649,7 @@ export class LoadFactoryController {
    */
   redirectToCreateWorkspace(): void {
     this.restoreMenuAndFooter();
-    this.$location.path(this.cheBranding.getWorkspace().creationLink);
+    this.$location.path('#/getstarted').search('tab', 'customWorkspace');
   }
 
   /**

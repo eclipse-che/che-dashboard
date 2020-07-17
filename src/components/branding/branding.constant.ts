@@ -47,8 +47,7 @@ export type IBrandingDocs = {
 
 export type IBrandingWorkspace = {
   priorityStacks: Array<string>,
-  defaultStack: string,
-  creationLink: string
+  defaultStack: string
 }
 
 export type IBrandingFooter = {
@@ -94,8 +93,7 @@ export const BRANDING_DEFAULT: IBranding = {
       'Java-MySQL',
       'Blank'
     ],
-    defaultStack: 'java-mysql',
-    creationLink: '#/getstarted?tab=customWorkspace'
+    defaultStack: 'java-mysql'
   },
   cli: {
     configName: 'che.env',

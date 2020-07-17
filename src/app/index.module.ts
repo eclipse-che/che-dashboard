@@ -70,34 +70,40 @@ function buildKeycloakConfig(keycloakSettings: any): any {
 interface IResolveFn<T> {
   (value?: T | PromiseLike<T>): void;
 }
-
-interface IRejectFn<T> {
-  (reason?: any): void;
+interface IRejectFn {
+  (reason: string): void;
 }
 
 function keycloakLoad(keycloakSettings: any) {
-  return new Promise((resolve: IResolveFn<any>, reject: IRejectFn<any>) => {
+  return new Promise((resolve: IResolveFn<any>, reject: IRejectFn) => {
     const script = document.createElement('script');
     script.async = true;
     script.src = keycloakSettings['che.keycloak.js_adapter_url'];
     script.addEventListener('load', resolve);
     script.addEventListener('error', () => {
       return cheBranding.ready.then(() => {
-        reject(`<div class="header"><i class="fa fa-warning"></i><p>Certificate Error</p></div>
-   <div class="body"><p>Your ${cheBranding.getProductName()} server may be using a self-signed certificate.
-     To resolve this issue, try to import the servers CA certificate into your browser, as described
-   <a href="${cheBranding.getDocs().certificate}" target="_blank">here</a>.</p>
-   <p>After importing the certificate, refresh your browser.</p>
-   <p><a href="/">Refresh Now</a></p></div>`);
+        console.error('Keycloak adapter loading error.');
+        reject(`
+          <div class="header"><i class="fa fa-warning"></i><p>Certificate Error</p></div>
+          <div class="body">
+            <p>Your ${cheBranding.getProductName()} server may be using a self-signed certificate. To resolve this issue, try to import the servers CA certificate into your browser, as described <a href="${cheBranding.getDocs().certificate}" target="_blank">here</a>.</p>
+            <p>After importing the certificate, refresh your browser.</p>
+            <p><a href="/">Refresh Now</a></p>
+          </div>
+        `);
       });
     });
-    script.addEventListener('abort', () => reject('Script loading aborted.'));
+    script.addEventListener('abort', () => {
+      const errorMessage = 'Keycloak adapter loading aborted.';
+      console.error(errorMessage);
+      reject(errorMessage);
+    });
     document.head.appendChild(script);
   });
 }
 
 function keycloakInit(keycloakConfig: any, initOptions: any) {
-  return new Promise((resolve: IResolveFn<any>, reject: IRejectFn<any>) => {
+  return new Promise((resolve: IResolveFn<any>, reject: IRejectFn) => {
     const keycloak = Keycloak(keycloakConfig);
     window.sessionStorage.setItem('oidcDashboardRedirectUrl', location.href);
     keycloak.init({
@@ -108,19 +114,30 @@ function keycloakInit(keycloakConfig: any, initOptions: any) {
       redirectUri: initOptions['redirectUrl']
     }).success(() => {
       resolve(keycloak);
-    }).error((error: any) => {
-      reject(error);
+    }).error((e: {error: string, error_description: string}) => {
+      console.error(`Keycloak initialization failed. ${e.error}: ${e.error_description}`);
+      reject(`
+        <div class="header">
+          <i class="fa fa-warning"></i>
+          <p>SSO Error</p>
+        </div>
+        <div class="body">
+          <p>We are experiencing some technical difficulties from our SSO:</p>
+          <p><code>${e.error}: ${e.error_description}</code></p>
+          <p>Please try <kbd>Shift</kbd>+<kbd>Refresh</kbd></p>
+        </div>
+      `);
     });
   });
 }
 function setAuthorizationHeader(xhr: XMLHttpRequest, keycloak: any): Promise<any> {
-  return new Promise((resolve: IResolveFn<any>, reject: IRejectFn<any>) => {
+  return new Promise((resolve: IResolveFn<any>, reject: IRejectFn) => {
     if (keycloak && keycloak.token) {
       keycloak.updateToken(5).success(() => {
         xhr.setRequestHeader('Authorization', 'Bearer ' + keycloak.token);
         resolve(xhr);
       }).error(() => {
-        console.log('Failed to refresh token');
+        console.warn('Failed to refresh token');
         window.sessionStorage.setItem('oidcDashboardRedirectUrl', location.href);
         keycloak.login();
         reject('Authorization is needed.');
@@ -135,16 +152,21 @@ function getApis(keycloak: any): Promise<void> {
   const request = new XMLHttpRequest();
   request.open('GET', '/api/');
   return setAuthorizationHeader(request, keycloak).then((xhr: XMLHttpRequest) => {
-    return new Promise<void>((resolve: IResolveFn<void>, reject: IRejectFn<void>) => {
-      xhr.send();
+    return new Promise<void>((resolve: IResolveFn<void>, reject: IRejectFn) => {
       xhr.onreadystatechange = () => {
         if (xhr.readyState !== 4) { return; }
         if (xhr.status === 200) {
           resolve();
         } else {
-          reject(xhr.responseText ? xhr.responseText : '<div class="header"><span>Unknown error</span></div>');
+          console.error(`Can't get "/api/"` + xhr.responseText ? ': ' + xhr.responseText : '.');
+          reject(
+            xhr.responseText
+              ? xhr.responseText
+              : '<div class="header"><span>Unknown error</span></div>'
+          );
         }
       };
+      xhr.send();
     });
   });
 }
@@ -174,11 +196,21 @@ const keycloakAuth = {
 initModule.constant('keycloakAuth', keycloakAuth);
 
 angular.element(document).ready(() => {
-  const promise = new Promise((resolve: IResolveFn<any>, reject: IRejectFn<any>) => {
-    angular.element.get('/api/keycloak/settings').then(resolve, reject);
+  const promise = new Promise((resolve, reject: IRejectFn) => {
+    angular.element.get('/api/keycloak/settings').then(resolve, error => {
+      const errorMessage = `Can't get Keycloak settings: ` + error.statusText;
+      console.warn(errorMessage);
+      reject(errorMessage);
+    });
   });
-  let hasCertificateError = false;
+
+  let hasSSO = false;
   promise.then((keycloakSettings: any) => {
+    if (!keycloakSettings['che.keycloak.js_adapter_url']) {
+      return;
+    }
+    hasSSO = true;
+
     keycloakAuth.config = buildKeycloakConfig(keycloakSettings);
 
     // load Keycloak
@@ -193,11 +225,6 @@ angular.element(document).ready(() => {
         redirectUrl: keycloakSettings['che.keycloak.redirect_url.dashboard']
       };
       return keycloakInit(keycloakAuth.config, initOptions);
-    }).catch((error: any) => {
-      if (keycloakSettings['che.keycloak.js_adapter_url']) {
-        hasCertificateError = true;
-      }
-      return Promise.reject(error);
     }).then((keycloak: any) => {
       keycloakAuth.isPresent = true;
       keycloakAuth.keycloak = keycloak;
@@ -205,11 +232,10 @@ angular.element(document).ready(() => {
       window['_keycloak'] = keycloak;
       /* tslint:enable */
     });
-  }).catch((error: any) => {
-    if (hasCertificateError) {
-      return Promise.reject(error);
+  }).catch((errorMessage: string) => {
+    if (hasSSO) {
+      return Promise.reject(errorMessage);
     }
-    console.error('Keycloak initialization failed with error: ', error);
   }).then(() => {
     const keycloak = (window as any)._keycloak;
     // try to reach the API
@@ -219,12 +245,12 @@ angular.element(document).ready(() => {
     cheBranding.ready.then(() => {
       (angular as any).resumeBootstrap();
     });
-  }).catch((error: string) => {
-    console.error(`Can't GET "/api". ${error ? 'Error: ' : ''}`, error);
-    if (!hasCertificateError) {
-      error = `${error}<div>Click <a href="/">here</a> to reload page.</div>`
+  }).catch((errorMessage: string) => {
+    if (hasSSO) {
+      showErrorMessage(errorMessage);
+    } else {
+      showErrorMessage(`${errorMessage}<div>Click <a href="/">here</a> to reload page.</div>`);
     }
-    showErrorMessage(error);
   });
 });
 

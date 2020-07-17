@@ -17,7 +17,7 @@ import { IInfrastructureNamespaceRowBindingProperties } from './infrastructure-n
 import { IWorkspaceNameRowBindingProperties } from './workspace-name-row/workspace-name-row.component';
 import { ITemporaryStorageRowBindingProperties } from './temporary-storage-row/temporary-storage-row.component';
 import { IDevfileSelectRowBindingProperties } from './devfile-select-row/devfile-select-row.component';
-import { IDevfileEditorRowBindingProperties } from './devfile-editor-row/devfile-editor-row.component';
+import { IDevfileEditorBindingProperties } from '../../../components/widget/devfile-editor/devfile-editor.component';
 
 export class CustomWorkspaceTabController implements ng.IController {
 
@@ -31,7 +31,7 @@ export class CustomWorkspaceTabController implements ng.IController {
   workspaceNameProperties: IWorkspaceNameRowBindingProperties;
   temporaryStorageProperties: ITemporaryStorageRowBindingProperties;
   devfileSelectProperties: IDevfileSelectRowBindingProperties;
-  devfileEditorProperties: IDevfileEditorRowBindingProperties;
+  devfileEditorProperties: IDevfileEditorBindingProperties;
 
   // injected services
   private createWorkspaceSvc: CreateWorkspaceSvc;
@@ -60,7 +60,7 @@ export class CustomWorkspaceTabController implements ng.IController {
       onSelect: name => {
         this.namespace = name;
         this.updateDevfile();
-        this.updateProperties();
+        this.updateProperties(true);
       },
     };
     this.workspaceNameProperties = {
@@ -72,7 +72,7 @@ export class CustomWorkspaceTabController implements ng.IController {
           this.devfile = this.minDevfile;
         }
         this.updateDevfile();
-        this.updateProperties();
+        this.updateProperties(true);
       },
     };
     this.temporaryStorageProperties = {
@@ -83,17 +83,17 @@ export class CustomWorkspaceTabController implements ng.IController {
           this.devfile = this.minDevfile;
         }
         this.updateDevfile();
-        this.updateProperties();
+        this.updateProperties(true);
       },
     };
     this.devfileSelectProperties = {
       onError: () => {
         delete this.devfile;
-        this.updateProperties();
+        this.updateProperties(true);
       },
       onClear: () => {
         delete this.devfile;
-        this.updateProperties();
+        this.updateProperties(true);
       },
       onLoad: (devfile, stackName) => {
         this.devfile = Object['fromEntries'](Object.keys(devfile)
@@ -101,7 +101,7 @@ export class CustomWorkspaceTabController implements ng.IController {
           .map(key => [key, devfile[key]]));
         this.stackName = stackName;
         this.updateDevfile();
-        this.updateProperties();
+        this.updateProperties(true);
       },
     };
     this.devfileEditorProperties = {
@@ -109,7 +109,7 @@ export class CustomWorkspaceTabController implements ng.IController {
         this.editorState = editorState;
         if (editorState.isValid) {
           this.devfile = devfile;
-          this.updateProperties();
+          this.updateProperties(false);
         }
       },
     };
@@ -117,7 +117,7 @@ export class CustomWorkspaceTabController implements ng.IController {
 
   $onInit(): void {
     this.devfile = this.minDevfile;
-    this.updateProperties();
+    this.updateProperties(true);
   }
 
   get createButtonDisabled(): boolean {
@@ -178,7 +178,7 @@ export class CustomWorkspaceTabController implements ng.IController {
     }
   }
 
-  private updateProperties(): void {
+  private updateProperties(forceEditorUpdate: boolean): void {
     if (!this.devfile) {
       this.workspaceNameProperties.name = '';
       this.workspaceNameProperties.generateName = '';
@@ -199,7 +199,9 @@ export class CustomWorkspaceTabController implements ng.IController {
     if (this.devfile.metadata) {
       this.workspaceNameProperties.generateName = this.devfile.metadata.generateName;
     }
-    this.devfileEditorProperties.devfile = angular.copy(this.devfile);
+    if (forceEditorUpdate) {
+      this.devfileEditorProperties.devfile = angular.copy(this.devfile);
+    }
   }
 
   private createWorkspace(): ng.IPromise<che.IWorkspace> {

@@ -34,8 +34,8 @@
                       on-clear="customWorkspaceTabController.devfileSelectProperties.onClear()"></devfile-select-row>
 
   <!-- Devfile editor -->
-  <devfile-editor-row devfile="customWorkspaceTabController.devfileEditorProperties.devfile"
-                      on-change="customWorkspaceTabController.devfileEditorProperties.onChange($devfile, $editorState)"></devfile-editor-row>
+  <devfile-editor devfile="customWorkspaceTabController.devfileEditorProperties.devfile"
+                      on-change="customWorkspaceTabController.devfileEditorProperties.onChange($devfile, $editorState)"></devfile-editor>
 
   <che-pf-primary-button
     title="{{customWorkspaceTabController.createButton.title}}"

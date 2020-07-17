@@ -21,6 +21,8 @@ export interface IChePfTextInputProperties extends IChePfInputProperties {
     pattern?: string;
     placeHolder?: string;
     labelName?: string;
+    minLength?: number;
+    maxLength?: number;
   };
   onChange: ($value: string) => void;
 }
@@ -32,6 +34,8 @@ interface IChePfTextInputDirectiveBindings extends IChePfInputBindings {
     pattern?: string;
     placeHolder?: string;
     labelName?: string;
+    minLength?: string;
+    maxLength?: string;
   };
   onChange: (eventObj: { $value: string }) => void;
 }

@@ -112,6 +112,13 @@ gulp.task('fonts', function () {
     .pipe(gulp.dest(conf.paths.dist + '/fonts/'));
 });
 
+gulp.task('codiconFonts', function () {
+  return gulp.src(conf.paths.modules + '/monaco-editor-core/esm/vs/base/browser/ui/codiconLabel/codicon/*')
+    .pipe($.filter('**/*.{eot,svg,ttf,otf,woff,woff2}'))
+    .pipe($.flatten())
+    .pipe(gulp.dest(conf.paths.dist + '/styles'));
+});
+
 gulp.task('patternflyWebfonts', function () {
   return gulp.src(conf.paths.modules + '/@patternfly/patternfly/assets/fonts/webfonts/*')
     .pipe($.filter('**/*.{eot,svg,ttf,otf,woff,woff2}'))
@@ -177,4 +184,4 @@ gulp.task('clean', function () {
 });
 
 
-gulp.task('build', ['html', 'images', 'htmlassets', 'brandingassets', 'patternflyWebfonts', 'fonts', 'other']);
+gulp.task('build', ['html', 'images', 'htmlassets', 'brandingassets', 'patternflyWebfonts', 'codiconFonts', 'fonts', 'other']);

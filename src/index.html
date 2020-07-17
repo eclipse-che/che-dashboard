@@ -23,6 +23,7 @@
 
     <!-- build:css({.tmp/serve,src}) styles/app.css -->
     <link rel="stylesheet" type="text/css" href="../node_modules/font-awesome/css/font-awesome.css">
+    <link rel="stylesheet" type="text/css" href="../node_modules/monaco-editor-core/esm/vs/base/browser/ui/codiconLabel/codicon/codicon.css">
     <link rel="stylesheet" type="text/css" href="assets/styles/material-design.css">
     <link rel="stylesheet" type="text/css" href="assets/styles/che-font.css">
     <link rel="stylesheet" type="text/css" href="assets/styles/font.css">
@@ -53,7 +54,7 @@
   </md-sidenav>
   <div layout="column" flex>
     <!-- global warning banner -->
-    <global-warning-banner messages="globalWarningBannerHtml" ng-show="showGlobalWarningBanner"></global-warning-banner>
+    <global-warning-banner messages="globalWarningMessages" on-close="closeGlobalWarningMessage(message)" ng-show="showGlobalWarningBanner"></global-warning-banner>
     <!-- main page -->
     <div class="main-page ide-show" layout="column" flex>
       <div id="main-content" role="main" ng-view layout="column" flex ng-show="waitingLoaded && !showIDE"></div>

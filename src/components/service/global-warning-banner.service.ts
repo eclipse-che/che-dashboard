@@ -11,6 +11,8 @@
  */
 'use strict';
 
+const STORAGE_KEY = 'ud_hidden_warnings';
+
 /**
  * This service handles warning messages to show them in a banner.
  * @author Oleksii Kurinnyi
@@ -23,6 +25,7 @@ export class GlobalWarningBannerService {
 
   private $rootScope: che.IRootScopeService;
 
+  private hiddenMessages: string[];
   private messages: string[];
 
   constructor(
@@ -30,15 +33,20 @@ export class GlobalWarningBannerService {
   ) {
     this.$rootScope = $rootScope;
 
-    this.$rootScope.globalWarningBannerHtml = '';
+    this.$rootScope.globalWarningMessages = [];
+    this.messages = this.$rootScope.globalWarningMessages;
     this.$rootScope.showGlobalWarningBanner = false;
-    this.messages = [];
+    this.$rootScope.closeGlobalWarningMessage = (message: string) => this.clearMessage(message);
+
+    this.readHiddenMessages();
   }
 
   addMessage(message: string): void {
+    if (this.hiddenMessages.indexOf(message) !== -1) {
+      return;
+    }
     this.messages.push(message);
 
-    this.updateBannerHtml();
     this.showBanner();
   }
 
@@ -49,7 +57,9 @@ export class GlobalWarningBannerService {
     }
     this.messages.splice(index, 1);
 
-    this.updateBannerHtml();
+    this.hiddenMessages.push(message);
+    this.saveHiddenMessages();
+
     if (this.messages.length === 0) {
       this.hideBanner();
     }
@@ -58,14 +68,7 @@ export class GlobalWarningBannerService {
   clearAllMessages(): void {
     this.messages.length = 0;
 
-    this.updateBannerHtml();
     this.hideBanner();
-  }
-
-  private updateBannerHtml(): void {
-    this.$rootScope.globalWarningBannerHtml = this.messages
-      .map(message => `<p>${message}</p>`)
-      .join('');
   }
 
   private showBanner(): void {
@@ -74,6 +77,16 @@ export class GlobalWarningBannerService {
 
   private hideBanner(): void {
     this.$rootScope.showGlobalWarningBanner = false;
+  }
+
+  private saveHiddenMessages(): void {
+    const hiddenMessages = angular.toJson(this.hiddenMessages);
+    window.sessionStorage.setItem(STORAGE_KEY, hiddenMessages)
+  }
+
+  private readHiddenMessages(): void {
+    const hiddenMessages = window.sessionStorage.getItem(STORAGE_KEY) || '[]';
+    this.hiddenMessages = angular.fromJson(hiddenMessages);
   }
 
 }
