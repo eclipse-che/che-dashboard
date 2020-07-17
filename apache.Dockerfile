@@ -31,6 +31,7 @@ WORKDIR /dashboard
 RUN if [ "$(uname -m)" = "s390x" ]; then export QT_QPA_PLATFORM=offscreen; fi \ 
     && yarn install --ignore-optional
 COPY . /dashboard/
+
 RUN if [ "$(uname -m)" = "ppc64le" ] || [ "$(uname -m)" = "s390x" ]; then yarn build; else \
     yarn build && yarn test; fi
 
