@@ -13,6 +13,8 @@
 import {CheJsonRpcApiClient} from './che-json-rpc-api-service';
 import {ICommunicationClient} from './json-rpc-client';
 import {CheKeycloak} from '../che-keycloak.factory';
+import { GlobalWarningBannerService } from '../../service/global-warning-banner.service';
+import { CheBranding } from '../../../components/branding/che-branding';
 
 enum MasterChannels {
   ENVIRONMENT_OUTPUT = <any>'runtime/log',
@@ -42,16 +44,18 @@ export class CheJsonRpcMasterApi {
   private $timeout: ng.ITimeoutService;
   private $interval: ng.IIntervalService;
   private $q: ng.IQService;
+  private globalWarningBannerService: GlobalWarningBannerService;
   private cheKeycloak: CheKeycloak;
   private cheJsonRpcApi: CheJsonRpcApiClient;
   private clientId: string;
   private checkingInterval: ng.IPromise<any>;
   private reconnectionAttemptTimeout: ng.IPromise<any>;
+  private branding: CheBranding;
 
-  private maxReconnectionAttempts = 100;
+  private maxReconnectionAttempts = 5;
   private reconnectionAttemptNumber = 0;
-  private reconnectionDelay = 30000;
-  private checkingDelay = 10000;
+  private reconnectionDelay = 10000;
+  private checkingDelay = 5000;
   private fetchingClientIdTimeout = 5000;
 
   constructor(
@@ -61,18 +65,22 @@ export class CheJsonRpcMasterApi {
     $timeout: ng.ITimeoutService,
     $interval: ng.IIntervalService,
     $q: ng.IQService,
+    globalWarningBannerService: GlobalWarningBannerService,
     cheKeycloak: CheKeycloak
   ) {
     this.$log = $log;
     this.$timeout = $timeout;
     this.$interval = $interval;
     this.$q = $q;
+    this.globalWarningBannerService = globalWarningBannerService;
     this.cheKeycloak = cheKeycloak;
 
     client.addListener('open', () => this.onConnectionOpen(entrypoint));
     client.addListener('close', () => this.onConnectionClose(entrypoint));
 
     this.cheJsonRpcApi = new CheJsonRpcApiClient(client);
+    this.branding = CheBranding.get();
+
     this.connect(entrypoint);
   }
 
@@ -126,8 +134,13 @@ export class CheJsonRpcMasterApi {
   }
 
   reconnect(entrypoint: string): void {
-    this.$log.warn('WebSocket connection is closed.');
-    if (this.reconnectionAttemptNumber === this.maxReconnectionAttempts) {
+    if (this.reconnectionAttemptNumber < this.maxReconnectionAttempts) {
+      this.$log.warn('WebSocket connection is closed.');
+    } else {
+      this.globalWarningBannerService.addMessage(`WebSocket connections "${entrypoint}" are failing due to network restrictions.
+       Workspaces may not be usable. Please refer to the
+       <a href="${this.branding.getDocs().webSocketTroubleshooting}" target="_blank">Network Troubleshooting</a>
+       section of the ${this.branding.getName()} User Guide.`);
       this.$log.warn('The maximum number of attempts to reconnect WebSocket has been reached.');
 
       if (this.checkingInterval) {
@@ -215,7 +228,6 @@ export class CheJsonRpcMasterApi {
    * Un-subscribes the pointed callback from the environment output.
    *
    * @param workspaceId workspace's id
-   * @param machineName machine's name
    * @param callback callback to process event
    */
   unSubscribeEnvironmentOutput(workspaceId: string, callback: Function): void {
@@ -330,7 +342,7 @@ export class CheJsonRpcMasterApi {
   /**
    * Fetch client's id and strores it.
    *
-   * @returns {IPromise<TResult>}
+   * @returns {IPromise<void>}
    */
   fetchClientId(): ng.IPromise<void> {
     return this.cheJsonRpcApi.request('websocketIdService/getId').then((data: any) => {

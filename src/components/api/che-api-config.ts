@@ -14,7 +14,6 @@
 import {CheAPI} from './che-api.factory';
 import {CheWorkspace} from './workspace/che-workspace.factory';
 import {CheFactory} from './che-factory.factory';
-import {CheWebsocket} from './che-websocket.factory';
 import {CheProfile} from './che-profile.factory';
 import {ChePreferences} from './che-preferences.factory';
 import {CheService} from './che-service.factory';
@@ -49,7 +48,6 @@ export class ApiConfig {
     register.factory('cheFactory', CheFactory);
     register.factory('cheProfile', CheProfile);
     register.factory('chePreferences', ChePreferences);
-    register.factory('cheWebsocket', CheWebsocket);
     register.factory('cheHttpBackendProvider', CheHttpBackendProviderFactory);
     register.factory('cheHttpBackend', CheHttpBackendFactory);
     register.factory('cheAPIBuilder', CheAPIBuilder);
