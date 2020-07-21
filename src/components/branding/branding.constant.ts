@@ -44,6 +44,7 @@ export type IBrandingDocs = {
   certificate: string,
   faq?: string,
   storageTypes: string,
+  webSocketTroubleshooting: string,
 }
 
 export type IBrandingWorkspace = {
@@ -109,6 +110,7 @@ export const BRANDING_DEFAULT: IBranding = {
     certificate: 'https://www.eclipse.org/che/docs/che-7/installing-che-in-tls-mode-with-self-signed-certificates/#using-che-with-tls_installing-che-in-tls-mode-with-self-signed-certificates',
     general: 'https://www.eclipse.org/che/docs/che-7',
     storageTypes: "https://www.eclipse.org/che/docs/che-7/using-different-type-of-storage/",
+    webSocketTroubleshooting: 'https://www.eclipse.org/che/docs/che-7/troubleshooting-network-problems/#troubleshooting%20websocket-secure-connections_troubleshooting-network-problems',
   },
   configuration: {
     menu: {

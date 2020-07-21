@@ -15,6 +15,7 @@ import {CheJsonRpcMasterApi} from './che-json-rpc-master-api';
 import {WebsocketClient} from './websocket-client';
 import {CheJsonRpcWsagentApi} from './che-json-rpc-wsagent-api';
 import {CheKeycloak} from '../che-keycloak.factory';
+import { GlobalWarningBannerService } from '../../service/global-warning-banner.service';
 
 /**
  * This class manages the api connection through JSON RPC.
@@ -23,7 +24,7 @@ import {CheKeycloak} from '../che-keycloak.factory';
  */
 export class CheJsonRpcApi {
 
-  static $inject = ['$q', '$websocket', '$log', '$timeout', '$interval', 'cheKeycloak'];
+  static $inject = ['$q', '$websocket', '$log', '$timeout', '$interval', 'globalWarningBannerService', 'cheKeycloak'];
 
   private $q: ng.IQService;
   private $websocket: any;
@@ -31,6 +32,7 @@ export class CheJsonRpcApi {
   private jsonRpcApiConnection: Map<string, CheJsonRpcMasterApi>;
   private $timeout: ng.ITimeoutService;
   private $interval: ng.IIntervalService;
+  private globalWarningBannerService: GlobalWarningBannerService;
   private cheKeycloak: CheKeycloak;
 
   /**
@@ -42,6 +44,7 @@ export class CheJsonRpcApi {
     $log: ng.ILogService,
     $timeout: ng.ITimeoutService,
     $interval: ng.IIntervalService,
+    globalWarningBannerService: GlobalWarningBannerService,
     cheKeycloak: CheKeycloak
   ) {
     this.$q = $q;
@@ -50,6 +53,7 @@ export class CheJsonRpcApi {
     this.$timeout = $timeout;
     this.$interval = $interval;
     this.jsonRpcApiConnection = new Map<string, CheJsonRpcMasterApi>();
+    this.globalWarningBannerService = globalWarningBannerService;
     this.cheKeycloak = cheKeycloak;
   }
 
@@ -58,7 +62,16 @@ export class CheJsonRpcApi {
       return this.jsonRpcApiConnection.get(entrypoint);
     } else {
       const websocketClient = new WebsocketClient(this.$websocket, this.$q);
-      const cheJsonRpcMasterApi: CheJsonRpcMasterApi = new CheJsonRpcMasterApi(websocketClient, entrypoint, this.$log, this.$timeout, this.$interval, this.$q, this.cheKeycloak);
+      const cheJsonRpcMasterApi: CheJsonRpcMasterApi = new CheJsonRpcMasterApi(
+        websocketClient,
+        entrypoint,
+        this.$log,
+        this.$timeout,
+        this.$interval,
+        this.$q,
+        this.globalWarningBannerService,
+        this.cheKeycloak
+      );
       this.jsonRpcApiConnection.set(entrypoint, cheJsonRpcMasterApi);
       return cheJsonRpcMasterApi;
     }
