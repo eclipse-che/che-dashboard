@@ -31,7 +31,7 @@ jobs:
     - name: "Docker build with cache"
       uses: nick-invision/retry@v1
       with:
-        timeout_minutes: 100
+        timeout_minutes: 40
         max_attempts: 5
         retry_wait_seconds: 60
-        command: docker buildx build --platform linux/amd64,linux/s390x --cache-from="type=registry,ref=${CACHE_IMAGE_FULL}" -t ${IMAGE_FULL}  -f apache.Dockerfile .
+        command: docker buildx build --platform linux/amd64,linux/s390x --cache-from="type=registry,ref=${CACHE_IMAGE_FULL}" --cache-to="type=registry,ref=${CACHE_IMAGE_FULL},mode=max" -t ${IMAGE_FULL}  -f apache.Dockerfile .
