@@ -18,7 +18,7 @@ import { WorkspaceDetailsService } from '../workspace-details.service';
 import { CheKubernetesNamespace } from '../../../../components/api/che-kubernetes-namespace.factory';
 import { CheDashboardConfigurationService } from '../../../../components/branding/che-dashboard-configuration.service';
 import { TogglableFeature } from '../../../../components/branding/branding.constant';
-import { StorageType } from '../../../../components/api/storage-type';
+import { StorageTypeService, StorageType } from '../../../../components/service/storage-type.service';
 
 const STARTING = WorkspaceStatus[WorkspaceStatus.STARTING];
 const RUNNING = WorkspaceStatus[WorkspaceStatus.RUNNING];
@@ -45,6 +45,7 @@ export class WorkspaceDetailsOverviewController {
     'cheWorkspace',
     'confirmDialogService',
     'namespaceSelectorSvc',
+    'storageTypeService',
     'workspaceDetailsService',
   ];
 
@@ -70,6 +71,7 @@ export class WorkspaceDetailsOverviewController {
   private cheWorkspace: CheWorkspace;
   private confirmDialogService: ConfirmDialogService;
   private namespaceSelectorSvc: NamespaceSelectorSvc;
+  private storageTypeService: StorageTypeService;
   private workspaceDetailsService: WorkspaceDetailsService;
 
   private workspaceDetails: che.IWorkspace;
@@ -101,6 +103,7 @@ export class WorkspaceDetailsOverviewController {
     cheWorkspace: CheWorkspace,
     confirmDialogService: ConfirmDialogService,
     namespaceSelectorSvc: NamespaceSelectorSvc,
+    storageTypeService: StorageTypeService,
     workspaceDetailsService: WorkspaceDetailsService,
   ) {
     this.$location = $location;
@@ -115,7 +118,12 @@ export class WorkspaceDetailsOverviewController {
     this.cheWorkspace = cheWorkspace;
     this.confirmDialogService = confirmDialogService;
     this.namespaceSelectorSvc = namespaceSelectorSvc;
+    this.storageTypeService = storageTypeService;
     this.workspaceDetailsService = workspaceDetailsService;
+
+    this.storageTypeService.ready.then(() => {
+      this.storageTypeOptions = this.storageTypeService.getAvailableTypes().map(type => ({ name: StorageType[type] }));
+    });
   }
 
   $onInit(): void {
@@ -138,8 +146,6 @@ export class WorkspaceDetailsOverviewController {
 
     this.enabledKubernetesNamespaceSelector = this.cheDashboardConfigurationService.enabledFeature(TogglableFeature.KUBERNETES_NAMESPACE_SELECTOR);
 
-    this.storageTypeOptions = StorageType.getAllowedTypes().map(type => ({ name: type }));
-
     this.init();
   }
 
@@ -150,12 +156,12 @@ export class WorkspaceDetailsOverviewController {
     this.attributesCopy = angular.copy(this.cheWorkspace.getWorkspaceDataManager().getAttributes(this.workspaceDetails));
 
     if (!this.attributes || this.attributes.persistVolumes === 'true') {
-      this.storageType = StorageType.PERSISTENT;
+      this.storageType = StorageType.persistent;
     } else {
       if (this.attributes.asyncPersist === 'true') {
-        this.storageType = StorageType.ASYNCHRONOUS;
+        this.storageType = StorageType.async;
       } else {
-        this.storageType = StorageType.EPHEMERAL;
+        this.storageType = StorageType.ephemeral;
       }
     }
 
@@ -378,7 +384,8 @@ export class WorkspaceDetailsOverviewController {
 
   showStorageTypeDescription(): ng.IPromise<void> {
     const title = 'Storage Types';
-    const content = StorageType.getAllDescriptions();
+    const availableTypes = this.storageTypeService.getAvailableTypes();
+    const content = this.storageTypeService.getHtmlDescriptions(availableTypes);
     return this.$mdDialog.show({
       clickOutsideToClose: true,
       controller: ['$scope', ($scope) => {
@@ -407,7 +414,7 @@ export class WorkspaceDetailsOverviewController {
 
   onStorageTypeChanged(type: StorageType): void {
     switch (type) {
-      case StorageType.PERSISTENT: {
+      case StorageType.persistent: {
         if (!this.attributesCopy) {
           delete this.attributes;
         } else {
@@ -424,13 +431,13 @@ export class WorkspaceDetailsOverviewController {
         }
         break;
       }
-      case StorageType.EPHEMERAL: {
+      case StorageType.ephemeral: {
         this.attributes = this.attributes || {};
         this.attributes.persistVolumes = 'false';
         delete this.attributes.asyncPersist;
         break;
       }
-      case StorageType.ASYNCHRONOUS: {
+      case StorageType.async: {
         this.attributes = this.attributes || {};
         this.attributes.persistVolumes = 'false';
         this.attributes.asyncPersist = 'true';

@@ -17,7 +17,7 @@ import { DevfileRegistry, IDevfileMetaData } from '../../../components/api/devfi
 import { CheNotification } from '../../../components/notification/che-notification.factory';
 import { IChePfButtonProperties } from '../../../components/che-pf-widget/button/che-pf-button';
 import { IGetStartedToolbarBindingProperties } from './toolbar/get-started-toolbar.component';
-import { StorageType } from '../../../components/api/storage-type';
+import { StorageType } from '../../../components/service/storage-type.service';
 
 
 /**
@@ -51,7 +51,7 @@ export class GetStartedTabController {
   private isCreating: boolean = false;
   private devfileRegistryUrl: string;
   private ephemeralMode: boolean;
-  private storageType: string;
+  private storageType: StorageType;
 
   /**
    * Default constructor that is using resource
@@ -72,7 +72,7 @@ export class GetStartedTabController {
       devfiles: [],
       ephemeralMode: false,
       onFilterChange: filtered => this.onFilterChange(filtered),
-      onEphemeralModeChange: mode => this.onEphemeralModeChange(mode),
+      onStorageTypeChange: type => this.onStorageTypeChange(type),
     };
 
     this.isLoading = true;
@@ -81,9 +81,9 @@ export class GetStartedTabController {
       this.devfileRegistryUrl = workspaceSettings && workspaceSettings.cheWorkspaceDevfileRegistryUrl;
       this.ephemeralMode = workspaceSettings['che.workspace.persist_volumes.default'] === 'false';
       if (this.ephemeralMode) {
-        this.storageType = StorageType.EPHEMERAL;
+        this.storageType = StorageType.ephemeral;
       } else {
-        this.storageType = StorageType.PERSISTENT;
+        this.storageType = StorageType.persistent;
       }
       this.toolbarProps.ephemeralMode = this.ephemeralMode;
       return this.init();
@@ -100,11 +100,7 @@ export class GetStartedTabController {
     this.filteredDevfiles = filteredDevfiles;
   }
 
-  onEphemeralModeChange(mode: boolean): void {
-    this.ephemeralMode = mode;
-  }
-
-  onStorageTypeChange(type: string): void {
+  onStorageTypeChange(type: StorageType): void {
     this.storageType = type;
   }
 
@@ -123,13 +119,20 @@ export class GetStartedTabController {
     this.devfileRegistry.fetchDevfile(this.devfileRegistryUrl, selfLink)
       .then(() => {
         const devfile = this.devfileRegistry.getDevfile(this.devfileRegistryUrl, selfLink);
-        if (this.storageType === StorageType.EPHEMERAL) {
+        if (this.storageType === StorageType.persistent) {
+          if (devfile.attributes) {
+            delete devfile.attributes.persistVolumes;
+            delete devfile.attributes.asyncPersist;
+            if (Object.keys(devfile.attributes).length === 0) {
+              delete devfile.attributes;
+            }
+          }
+        } else if (this.storageType === StorageType.ephemeral) {
           if (!devfile.attributes) {
             devfile.attributes = {};
           }
           devfile.attributes.persistVolumes = 'false';
-        }
-        if (this.storageType === StorageType.ASYNCHRONOUS) {
+        } else if (this.storageType === StorageType.async) {
           if (!devfile.attributes) {
             devfile.attributes = {};
           }

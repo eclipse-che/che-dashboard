@@ -12,16 +12,16 @@
 'use strict';
 
 import { StorageTypeRowController } from './storage-type-row.controller';
-import { StorageType } from '../../../../components/api/storage-type';
+import { StorageType } from '../../../../components/service/storage-type.service';
 
 export interface IStorageTypeRowBindingProperties {
   storageType?: StorageType;
-  onChangeStorageType: ($storageType: StorageType, $default: StorageType) => void;
+  onChangeStorageType: ($storageType: StorageType) => void;
 }
 
 export interface IStorageTypeRowComponentBindings {
   storageType?: StorageType;
-  onChangeStorageType: (eventObj: { $storageType: StorageType, $default: StorageType }) => void;
+  onChangeStorageType: (eventObj: { $storageType: StorageType }) => void;
 }
 
 interface IStorageTypeRowComponentScopeBindings {

@@ -12,10 +12,9 @@
 'use strict';
 
 import { IStorageTypeRowComponentBindings } from './storage-type-row.component';
-import { CheWorkspace } from '../../../../components/api/workspace/che-workspace.factory';
-import { StorageType } from '../../../../components/api/storage-type';
 import { IChePfSelectProperties } from '../../../../components/che-pf-widget/select/che-pf-select-typeahead.directive';
 import { ChePfModalService } from '../../../../components/che-pf-widget/modal/che-pf-modal.service';
+import { StorageTypeService, StorageType } from '../../../../components/service/storage-type.service';
 
 type OnChangesObject = {
   [key in keyof IStorageTypeRowComponentBindings]: ng.IChangesObject<IStorageTypeRowComponentBindings[key]>;
@@ -25,16 +24,14 @@ export class StorageTypeRowController implements ng.IController, IStorageTypeRow
 
   static $inject = [
     'chePfModalService',
-    'cheWorkspace',
+    'storageTypeService',
   ];
 
   // component bindings
-  storageType?: StorageType;
-  onChangeStorageType: (eventObj: { '$storageType': StorageType; '$default': StorageType; }) => void;
+  isReady: boolean = false;
+  onChangeStorageType: (eventObj: { '$storageType': StorageType; }) => void;
 
   // used in template
-  // debug
-  allowedAsync = false;
   selectorId = 'storage-type-selector';
 
   // template fields
@@ -43,34 +40,37 @@ export class StorageTypeRowController implements ng.IController, IStorageTypeRow
 
   // injected services
   private chePfModalService: ChePfModalService;
-  private cheWorkspace: CheWorkspace;
+  private storageTypeService: StorageTypeService;
 
   private initPromise: ng.IPromise<void>;
-  private defaultStorageType: StorageType;
+  private preferredStorageType: StorageType;
 
   constructor(
     chePfModalService: ChePfModalService,
-    cheWorkspace: CheWorkspace,
+    storageTypeService: StorageTypeService,
   ) {
     this.chePfModalService = chePfModalService;
-    this.cheWorkspace = cheWorkspace;
+    this.storageTypeService = storageTypeService;
   }
 
   $onInit(): void {
-    this.initPromise = this.cheWorkspace.fetchWorkspaceSettings().then(settings => this.updateStorageType(settings));
-
-    const items = StorageType.getAllowedTypes();
-
-    this.storageSelect = {
-      config: {
-        id: this.selectorId,
-        items,
-        placeholder: 'Select a storage template'
-      },
-      value: this.storageType,
-      onSelect: storageType => this.onStorageTypeChanged(storageType),
-    };
     this.descriptionButtonTitle = 'Learn more about storage types';
+
+    this.initPromise = this.storageTypeService.ready
+      .then(() => {
+        const items = this.storageTypeService.getAvailableTypes()
+          .map(type => StorageType[type]);
+        this.storageSelect = {
+          config: {
+            id: this.selectorId,
+            items,
+            placeholder: 'Select a storage template'
+          },
+          value: this.storageTypeService.getPreferredType(),
+          onSelect: storageType => this.onStorageTypeChanged(storageType),
+        };
+        this.isReady = true;
+      });
   }
 
   $onChanges(onChangesObj: OnChangesObject): void {
@@ -79,7 +79,7 @@ export class StorageTypeRowController implements ng.IController, IStorageTypeRow
     }
     this.initPromise.then(() => {
       if (onChangesObj.storageType.currentValue === undefined) {
-        this.storageSelect.value = this.defaultStorageType;
+        this.storageSelect.value = this.preferredStorageType;
         return;
       }
       this.storageSelect.value = onChangesObj.storageType.currentValue;
@@ -87,24 +87,13 @@ export class StorageTypeRowController implements ng.IController, IStorageTypeRow
   }
 
   showStorageTypeModal(): ng.IPromise<void> {
-    const content = StorageType.getAllDescriptions();
+    const storageTypes = this.storageTypeService.getAvailableTypes();
+    const content = this.storageTypeService.getHtmlDescriptions(storageTypes);
     return this.chePfModalService.showModal(content);
   }
 
   onStorageTypeChanged(storageType: StorageType): void {
-    this.onChangeStorageType({ '$storageType': storageType, '$default': this.defaultStorageType })
-  }
-
-  private updateStorageType(settings: che.IWorkspaceSettings): void {
-    const persistVolumesDefault = settings['che.workspace.persist_volumes.default'];
-
-    this.defaultStorageType = persistVolumesDefault === 'true'
-      ? this.defaultStorageType = StorageType.PERSISTENT
-      : this.defaultStorageType = StorageType.EPHEMERAL;
-
-    if (this.storageType === undefined) {
-      this.storageSelect.value = this.defaultStorageType;
-    }
+    this.onChangeStorageType({ '$storageType': storageType })
   }
 
 }

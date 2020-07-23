@@ -314,7 +314,8 @@ declare namespace che {
   export interface IWorkspaceSettings {
     cheWorkspaceDevfileRegistryUrl?: string;
     cheWorkspacePluginRegistryUrl: string;
-    'che.workspace.persist_volumes.default': 'false' | 'true';
+    'che.workspace.storage.available_types': string;
+    'che.workspace.storage.preferred_type': string;
     supportedRecipeTypes: string;
   }
 

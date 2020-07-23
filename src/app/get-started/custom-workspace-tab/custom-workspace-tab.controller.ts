@@ -17,8 +17,8 @@ import { IInfrastructureNamespaceRowBindingProperties } from './infrastructure-n
 import { IWorkspaceNameRowBindingProperties } from './workspace-name-row/workspace-name-row.component';
 import { IStorageTypeRowBindingProperties } from './storage-type-row/storage-type-row.component';
 import { IDevfileSelectRowBindingProperties } from './devfile-select-row/devfile-select-row.component';
-import { StorageType } from '../../../components/api/storage-type';
 import { IDevfileEditorBindingProperties } from '../../../components/widget/devfile-editor/devfile-editor.component';
+import { StorageType } from '../../../components/service/storage-type.service';
 
 export class CustomWorkspaceTabController implements ng.IController {
 
@@ -30,7 +30,7 @@ export class CustomWorkspaceTabController implements ng.IController {
   createButton: IChePfButtonProperties;
   infrastructureNamespaceProperties: IInfrastructureNamespaceRowBindingProperties;
   workspaceNameProperties: IWorkspaceNameRowBindingProperties;
-  temporaryStorageProperties: IStorageTypeRowBindingProperties;
+  storageTypeProperties: IStorageTypeRowBindingProperties;
   devfileSelectProperties: IDevfileSelectRowBindingProperties;
   devfileEditorProperties: IDevfileEditorBindingProperties;
 
@@ -40,7 +40,6 @@ export class CustomWorkspaceTabController implements ng.IController {
   private namespace: string;
   private workspaceName: string;
   private storageType: StorageType;
-  private defaultStorageType: StorageType;
   private stackName: string;
   private devfile: che.IWorkspaceDevfile;
   private editorState: che.IValidation;
@@ -76,10 +75,9 @@ export class CustomWorkspaceTabController implements ng.IController {
         this.updateProperties(true);
       },
     };
-    this.temporaryStorageProperties = {
-      onChangeStorageType: (storageType, defaultStorageType) => {
+    this.storageTypeProperties = {
+      onChangeStorageType: (storageType) => {
         this.storageType = storageType;
-        this.defaultStorageType = defaultStorageType;
         if (!this.devfile) {
           this.devfile = this.minDevfile;
         }
@@ -144,7 +142,7 @@ export class CustomWorkspaceTabController implements ng.IController {
       return;
     }
     switch (this.storageType) {
-      case StorageType.PERSISTENT:
+      case StorageType.persistent:
         if (this.devfile.attributes) {
           delete this.devfile.attributes.persistVolumes;
           delete this.devfile.attributes.asyncPersist;
@@ -153,14 +151,14 @@ export class CustomWorkspaceTabController implements ng.IController {
           }
         }
         break;
-      case StorageType.EPHEMERAL:
+      case StorageType.ephemeral:
         if (!this.devfile.attributes) {
           this.devfile.attributes = {};
         }
         this.devfile.attributes.persistVolumes = 'false';
         delete this.devfile.attributes.asyncPersist;
         break;
-      case StorageType.ASYNCHRONOUS:
+      case StorageType.async:
         if (!this.devfile.attributes) {
           this.devfile.attributes = {};
         }
@@ -199,13 +197,13 @@ export class CustomWorkspaceTabController implements ng.IController {
       const val = (this.devfile.attributes.persistVolumes === 'false');
       if (val) {
         if (this.devfile.attributes.asyncPersist === 'true') {
-          this.temporaryStorageProperties.storageType = StorageType.ASYNCHRONOUS;
+          this.storageTypeProperties.storageType = StorageType.async;
         } else {
-          this.temporaryStorageProperties.storageType = StorageType.EPHEMERAL;
+          this.storageTypeProperties.storageType = StorageType.ephemeral;
         }
       }
     } else {
-      this.temporaryStorageProperties.storageType = undefined;
+      this.storageTypeProperties.storageType = undefined;
     }
     if (this.devfile.metadata && this.devfile.metadata.name) {
       this.workspaceName = this.devfile.metadata.name;

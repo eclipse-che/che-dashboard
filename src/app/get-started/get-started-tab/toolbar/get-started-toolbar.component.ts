@@ -13,12 +13,13 @@
 
 import { GetStartedToolbarController } from './get-started-toolbar.controller';
 import { IDevfileMetaData } from '../../../../components/api/devfile-registry.factory';
+import { StorageType } from '../../../../components/service/storage-type.service';
 
 export interface IGetStartedToolbarBindingProperties {
   devfiles: IDevfileMetaData[];
   ephemeralMode: boolean;
   onFilterChange: ($filtered: IDevfileMetaData[]) => void;
-  onEphemeralModeChange: ($ephemeralMode: boolean) => void;
+  onStorageTypeChange: ($storageType: StorageType) => void;
 }
 
 export interface IGetStartedToolbarComponentInputBindings {
@@ -27,7 +28,7 @@ export interface IGetStartedToolbarComponentInputBindings {
 }
 export interface IGetStartedToolbarComponentBindings extends IGetStartedToolbarComponentInputBindings {
   onFilterChange: (eventObj: { $filtered: IDevfileMetaData[] }) => void;
-  onEphemeralModeChange: (eventObj: { $ephemeralMode: boolean }) => void;
+  onStorageTypeChange: (eventObj: { $storageType: StorageType }) => void;
 }
 
 interface IGetStartedToolbarComponentScopeBindings {
@@ -44,7 +45,7 @@ export class GetStartedToolbarComponent implements ng.IComponentOptions, IGetSta
     devfiles: '<',
     ephemeralMode: '<',
     onFilterChange: '&',
-    onEphemeralModeChange: '&'
+    onStorageTypeChange: '&'
   };
 
 }

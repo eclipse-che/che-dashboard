@@ -61,11 +61,12 @@
   <che-label-container che-label-name="Storage Type">
     <div layout="row">
       <div flex="40">
-        <che-select
-          che-value="workspaceDetailsOverviewController.storageType"
-          che-on-select="workspaceDetailsOverviewController.onStorageTypeChanged($value)"
-          che-option-values="workspaceDetailsOverviewController.storageTypeOptions"></che-select>
-        </che-select>
+        <div ng-if="workspaceDetailsOverviewController.storageTypeOptions">
+          <che-select          che-value="workspaceDetailsOverviewController.storageType"
+            che-on-select="workspaceDetailsOverviewController.onStorageTypeChanged($value)"
+            che-option-values="workspaceDetailsOverviewController.storageTypeOptions"></che-select>
+          </che-select>
+        </div>
       </div>
       <div flex class="learn-more-button">
         <a ng-click="workspaceDetailsOverviewController.showStorageTypeDescription();">
