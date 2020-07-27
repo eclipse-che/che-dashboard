@@ -18,7 +18,7 @@ var proxy = require('proxy-middleware');
 
 var serverOptions = {
   string: 'server',
-  default: {server: 'http://localhost:8080'}
+  default: {server: 'https://che.openshift.io'}
 };
 
 var options = minimist(process.argv.slice(2), serverOptions);
