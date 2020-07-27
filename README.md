@@ -35,7 +35,7 @@ yarn serve
 
 It will launch the dev server and then the project can be tested on http://localhost:3000.
 
-By default https://che.openthift.io is used as a remote server, so make sure that Che is running locally.
+By default https://che.openthift.io is used as a remote server.
 
 The argument `--server <url>` may allow to use another server.
 
