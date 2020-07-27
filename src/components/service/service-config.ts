@@ -19,6 +19,7 @@ import { ResourceFetcherService } from './resource-fetcher/resource-fetcher.serv
 import { GlobalWarningBannerService } from './global-warning-banner.service';
 import { RegistryCheckingService } from './registry-checking.service';
 import { DetectSupportedBrowserService } from './browser-detect';
+import { StorageTypeService } from './storage-type.service';
 
 export class ServiceConfig {
 
@@ -32,5 +33,6 @@ export class ServiceConfig {
     register.service('globalWarningBannerService', GlobalWarningBannerService);
     register.service('registryCheckingService', RegistryCheckingService);
     register.service('detectSupportedBrowserService', DetectSupportedBrowserService);
+    register.service('storageTypeService', StorageTypeService);
   }
 }

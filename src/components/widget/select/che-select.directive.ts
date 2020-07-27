@@ -40,34 +40,21 @@ export class CheSelect {
       placeHolder: '@chePlaceHolder',
       optionValues: '=cheOptionValues',
       myName: '=cheName',
-      myForm: '=cheForm'
+      myForm: '=cheForm',
+      onSelect: '&?cheOnSelect'
     };
   }
 
   template($element: ng.IAugmentedJQuery, $attrs: ICheSelectAttributes): string {
     return `<div class="che-select desktop-untouched">
-      <!-- Mobile version -->
-      <md-input-container class="che-select-mobile" hide-gt-xs>
-        <label ng-if="labelName">{{value ? labelName : placeHolder}}</label>
-        <md-select ng-model="value"
-                   name="${$attrs.cheName}"
-                   md-container-class="che-custom-dropdown"
-                   placeholder="{{placeHolder}}">
-          <md-option ng-value="optionValue.id ? optionValue.id : optionValue.name"
-                     ng-repeat="optionValue in optionValues">{{optionValue.name}}
-          </md-option>
-        </md-select>
-        <!-- display error messages for the form -->
-        <div ng-messages="myForm.${$attrs.cheName}.$error"></div>
-      </md-input-container>
-
-      <!-- Desktop version -->
       <div class="che-select-desktop" hide-xs layout="column" flex>
         <div layout="row" flex layout-align="start start">
           <label flex="15" ng-if="labelName">{{labelName}}: </label>
 
           <div layout="column" class="che-select-container" flex="{{labelName ? 85 : 'none'}}">
             <md-select ng-model="value"
+                       ng-change="onSelect({ $value: value })"
+                       ng-model-options="{trackBy: '$value.id'}"
                        name="desk${$attrs.cheName}"
                        md-container-class="che-custom-dropdown"
                        placeholder="{{placeHolder}}">

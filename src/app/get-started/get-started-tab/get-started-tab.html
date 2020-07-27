@@ -14,20 +14,22 @@
 
 <che-pf-page-main-section class="get-started-header-section pf-u-box-shadow-sm-bottom" light="true">
 
-  <div class="pf-c-content pf-u-pl-md">
+  <div class="pf-u-pl-md">
 
-    <h4>Select a Sample</h4>
-    <small>Select a sample to create your first workspace.</small>
+    <div class="pf-c-content pf-u-pb-md">
+      <h4>Select a Sample</h4>
+      <small>Select a sample to create your first workspace.</small>
+    </div>
 
     <!-- toolbar -->
-    <get-started-toolbar
-      devfiles="getStartedTabController.toolbarProps.devfiles"
+    <get-started-toolbar devfiles="getStartedTabController.toolbarProps.devfiles"
       ephemeral-mode="getStartedTabController.toolbarProps.ephemeralMode"
+      storage-typr="getStartedTabController.toolbarProps.storageType"
       on-filter-change="getStartedTabController.toolbarProps.onFilterChange($filtered)"
-      on-ephemeral-mode-change="getStartedTabController.toolbarProps.onEphemeralModeChange($ephemeralMode)"></get-started-toolbar>
+      on-storage-type-change="getStartedTabController.toolbarProps.onStorageTypeChange($storageType)">
+    </get-started-toolbar>
     <!-- toolbar end -->
 
-    </div>
   </div>
 </che-pf-page-main-section>
 

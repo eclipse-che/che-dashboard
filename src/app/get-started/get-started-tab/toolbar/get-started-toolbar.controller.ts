@@ -15,6 +15,7 @@ import { IDevfileMetaData } from '../../../../components/api/devfile-registry.fa
 import { IChePfTextInputProperties } from '../../../../components/che-pf-widget/text-input/che-pf-text-input.directive';
 import { IChePfSwitchProperties } from '../../../../components/che-pf-widget/switch/che-pf-switch.directive';
 import { IGetStartedToolbarComponentInputBindings, IGetStartedToolbarComponentBindings } from './get-started-toolbar.component';
+import { StorageType } from '../../../../components/service/storage-type.service';
 
 type OnChangeObject = {
   [key in keyof IGetStartedToolbarComponentInputBindings]: ng.IChangesObject<IGetStartedToolbarComponentInputBindings[key]>;
@@ -30,7 +31,7 @@ export class GetStartedToolbarController implements IGetStartedToolbarComponentB
   ephemeralMode: boolean;
   devfiles: IDevfileMetaData[];
   onFilterChange: (eventObj: {$filtered: IDevfileMetaData[]}) => void;
-  onEphemeralModeChange: (eventObj: {$ephemeralMode: boolean}) => void;
+  onStorageTypeChange: (eventObj: {$storageType: StorageType}) => void;
 
   filterInput: IChePfTextInputProperties;
   filterResultsCount: number;
@@ -58,7 +59,7 @@ export class GetStartedToolbarController implements IGetStartedToolbarComponentB
       config: {
         name: 'temporary-storage-switch'
       },
-      onChange: mode => this.changeEphemeralMode(mode)
+      onChange: ephemeralOn => this.storageTypeChange(ephemeralOn)
 
     };
   }
@@ -85,8 +86,9 @@ export class GetStartedToolbarController implements IGetStartedToolbarComponentB
     this.onFilterChange({$filtered: this.filteredDevfiles});
   }
 
-  private changeEphemeralMode(mode: boolean): void {
-    this.onEphemeralModeChange({ $ephemeralMode: mode });
+  private storageTypeChange(ephemeralOn: boolean): void {
+    const storageType = ephemeralOn ? StorageType.ephemeral : StorageType.persistent;
+    this.onStorageTypeChange({ $storageType: storageType });
   }
 
 }

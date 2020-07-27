@@ -1,0 +1,35 @@
+<!--
+
+    Copyright (c) 2015-2018 Red Hat, Inc.
+    This program and the accompanying materials are made
+    available under the terms of the Eclipse Public License 2.0
+    which is available at https://www.eclipse.org/legal/epl-2.0/
+
+    SPDX-License-Identifier: EPL-2.0
+
+    Contributors:
+      Red Hat, Inc. - initial API and implementation
+
+-->
+
+<div class="storage-type-row pf-c-form__group">
+  <label class="pf-c-form__label" for="{{ctrl.selectorId}}">
+    <span class="pf-c-form__label-text">Storage Type</span>&nbsp;
+  </label>
+
+  <div class="pf-l-flex">
+    <div class="pf-l-flex-item">
+      <div ng-if="ctrl.isReady"
+        class="pf-c-form__horizontal-group">
+        <che-pf-select-single class="storage-type-selector" config="ctrl.storageSelect.config"
+          value="ctrl.storageSelect.value" on-select="ctrl.storageSelect.onSelect($value)">
+        </che-pf-select-single>
+      </div>
+    </div>
+    <div class="pf-l-flex-item">
+      <che-pf-link-button title="{{ctrl.descriptionButtonTitle}}" ng-click="ctrl.showStorageTypeModal()">
+      </che-pf-link-button>
+    </div>
+  </div>
+
+</div>

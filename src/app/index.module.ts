@@ -37,6 +37,7 @@ import {ResourceFetcherService} from '../components/service/resource-fetcher/res
 import {CheBranding} from '../components/branding/che-branding';
 import { RegistryCheckingService } from '../components/service/registry-checking.service';
 import { DetectSupportedBrowserService } from '../components/service/browser-detect';
+import { StorageTypeService } from '../components/service/storage-type.service';
 
 // init module
 const initModule = angular.module('userDashboard', ['ngAnimate', 'ngCookies', 'ngTouch', 'ngSanitize', 'ngResource', 'ngRoute',
@@ -339,6 +340,7 @@ initModule.run([
   'resourceFetcherService',
   'routeHistory',
   'routingRedirect',
+  'storageTypeService',
   'workspaceDetailsService',
   (
     $location: ng.ILocationService,
@@ -352,6 +354,7 @@ initModule.run([
     resourceFetcherService: ResourceFetcherService,
     routeHistory: RouteHistory,
     routingRedirect: RoutingRedirect,
+    storageTypeService: StorageTypeService,
   ) => {
     $rootScope.hideLoader = false;
     $rootScope.waitingLoaded = false;
@@ -365,6 +368,7 @@ initModule.run([
     resourceFetcherService;
     routeHistory;
     detectSupportedBrowserService;
+    storageTypeService;
     /* tslint:enable */
 
     $rootScope.$on('$viewContentLoaded', () => {

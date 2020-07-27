@@ -10,14 +10,15 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 'use strict';
-import {CheWorkspace, WorkspaceStatus} from '../../../../components/api/workspace/che-workspace.factory';
-import {CheNotification} from '../../../../components/notification/che-notification.factory';
-import {ConfirmDialogService} from '../../../../components/service/confirm-dialog/confirm-dialog.service';
-import {NamespaceSelectorSvc} from '../../create-workspace/ready-to-go-stacks/namespace-selector/namespace-selector.service';
-import {WorkspaceDetailsService} from '../workspace-details.service';
+import { CheWorkspace, WorkspaceStatus } from '../../../../components/api/workspace/che-workspace.factory';
+import { CheNotification } from '../../../../components/notification/che-notification.factory';
+import { ConfirmDialogService } from '../../../../components/service/confirm-dialog/confirm-dialog.service';
+import { NamespaceSelectorSvc } from '../../create-workspace/ready-to-go-stacks/namespace-selector/namespace-selector.service';
+import { WorkspaceDetailsService } from '../workspace-details.service';
 import { CheKubernetesNamespace } from '../../../../components/api/che-kubernetes-namespace.factory';
 import { CheDashboardConfigurationService } from '../../../../components/branding/che-dashboard-configuration.service';
 import { TogglableFeature } from '../../../../components/branding/branding.constant';
+import { StorageTypeService, StorageType } from '../../../../components/service/storage-type.service';
 
 const STARTING = WorkspaceStatus[WorkspaceStatus.STARTING];
 const RUNNING = WorkspaceStatus[WorkspaceStatus.RUNNING];
@@ -44,6 +45,7 @@ export class WorkspaceDetailsOverviewController {
     'cheWorkspace',
     'confirmDialogService',
     'namespaceSelectorSvc',
+    'storageTypeService',
     'workspaceDetailsService',
   ];
 
@@ -54,6 +56,8 @@ export class WorkspaceDetailsOverviewController {
    */
   infrastructureNamespace: string;
   enabledKubernetesNamespaceSelector: boolean = false;
+  storageTypeOptions: Array<{ name: string }>;
+  storageType: string;
 
   private $location: ng.ILocationService;
   private $mdDialog: ng.material.IDialogService;
@@ -67,6 +71,7 @@ export class WorkspaceDetailsOverviewController {
   private cheWorkspace: CheWorkspace;
   private confirmDialogService: ConfirmDialogService;
   private namespaceSelectorSvc: NamespaceSelectorSvc;
+  private storageTypeService: StorageTypeService;
   private workspaceDetailsService: WorkspaceDetailsService;
 
   private workspaceDetails: che.IWorkspace;
@@ -98,6 +103,7 @@ export class WorkspaceDetailsOverviewController {
     cheWorkspace: CheWorkspace,
     confirmDialogService: ConfirmDialogService,
     namespaceSelectorSvc: NamespaceSelectorSvc,
+    storageTypeService: StorageTypeService,
     workspaceDetailsService: WorkspaceDetailsService,
   ) {
     this.$location = $location;
@@ -112,7 +118,12 @@ export class WorkspaceDetailsOverviewController {
     this.cheWorkspace = cheWorkspace;
     this.confirmDialogService = confirmDialogService;
     this.namespaceSelectorSvc = namespaceSelectorSvc;
+    this.storageTypeService = storageTypeService;
     this.workspaceDetailsService = workspaceDetailsService;
+
+    this.storageTypeService.ready.then(() => {
+      this.storageTypeOptions = this.storageTypeService.getAvailableTypes().map(type => ({ name: StorageType[type] }));
+    });
   }
 
   $onInit(): void {
@@ -144,6 +155,16 @@ export class WorkspaceDetailsOverviewController {
     this.isEphemeralMode = this.attributes && this.attributes.persistVolumes ? !JSON.parse(this.attributes.persistVolumes) : false;
     this.attributesCopy = angular.copy(this.cheWorkspace.getWorkspaceDataManager().getAttributes(this.workspaceDetails));
 
+    if (!this.attributes || this.attributes.persistVolumes === 'true') {
+      this.storageType = StorageType.persistent;
+    } else {
+      if (this.attributes.asyncPersist === 'true') {
+        this.storageType = StorageType.async;
+      } else {
+        this.storageType = StorageType.ephemeral;
+      }
+    }
+
     this.updateInfrastructureNamespace();
   }
 
@@ -156,7 +177,7 @@ export class WorkspaceDetailsOverviewController {
   getNamespace(namespaceId: string): che.INamespace | { label: string, location: string } {
     const namespaces = this.getNamespaces();
     if (!namespaces || namespaces.length === 0) {
-      return {label: '', location: ''};
+      return { label: '', location: '' };
     }
     return this.getNamespaces().find((namespace: any) => {
       return namespace.id === namespaceId;
@@ -355,6 +376,72 @@ export class WorkspaceDetailsOverviewController {
             this.attributes = undefined;
           }
         }
+      }
+    }
+    this.cheWorkspace.getWorkspaceDataManager().setAttributes(this.workspaceDetails, this.attributes);
+    this.onChange();
+  }
+
+  showStorageTypeDescription(): ng.IPromise<void> {
+    const title = 'Storage Types';
+    const availableTypes = this.storageTypeService.getAvailableTypes();
+    const content = this.storageTypeService.getHtmlDescriptions(availableTypes);
+    return this.$mdDialog.show({
+      clickOutsideToClose: true,
+      controller: ['$scope', ($scope) => {
+        $scope.hide = () => {
+          this.$mdDialog.hide();
+        };
+        $scope.cancel = () => {
+          this.$mdDialog.cancel();
+        };
+      }],
+      template: `
+        <che-popup title="${title}" on-close="cancel()">
+          <div class="che-confirm-dialog-notification" ng-init="enableButton=false">
+            <div>${content}</div>
+            <div layout="row" flex layout-align="end end">
+              <che-button-notice che-button-title="Close"
+                id="cancel-dialog-button"
+                ng-click="cancel()">
+              </che-button-notice>
+            </div>
+          </div>
+        </che-popup>
+      `,
+    });
+  }
+
+  onStorageTypeChanged(type: StorageType): void {
+    switch (type) {
+      case StorageType.persistent: {
+        if (!this.attributesCopy) {
+          delete this.attributes;
+        } else {
+          if (this.attributesCopy.persistVolumes === 'true') {
+            this.attributes.persistVolumes = 'true';
+            delete this.attributes.asyncPersist;
+          } else {
+            delete this.attributes.persistVolumes;
+            delete this.attributes.asyncPersist;
+            if (Object.keys(this.attributes).length === 0) {
+              delete this.attributes;
+            }
+          }
+        }
+        break;
+      }
+      case StorageType.ephemeral: {
+        this.attributes = this.attributes || {};
+        this.attributes.persistVolumes = 'false';
+        delete this.attributes.asyncPersist;
+        break;
+      }
+      case StorageType.async: {
+        this.attributes = this.attributes || {};
+        this.attributes.persistVolumes = 'false';
+        this.attributes.asyncPersist = 'true';
+        break;
       }
     }
     this.cheWorkspace.getWorkspaceDataManager().setAttributes(this.workspaceDetails, this.attributes);

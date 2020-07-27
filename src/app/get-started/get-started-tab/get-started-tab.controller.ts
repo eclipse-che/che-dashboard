@@ -17,7 +17,7 @@ import { DevfileRegistry, IDevfileMetaData } from '../../../components/api/devfi
 import { CheNotification } from '../../../components/notification/che-notification.factory';
 import { IChePfButtonProperties } from '../../../components/che-pf-widget/button/che-pf-button';
 import { IGetStartedToolbarBindingProperties } from './toolbar/get-started-toolbar.component';
-import { CheBranding } from '../../../components/branding/che-branding';
+import { StorageType } from '../../../components/service/storage-type.service';
 
 
 /**
@@ -33,7 +33,6 @@ export class GetStartedTabController {
     '$log',
     'cheNotification',
     'cheWorkspace',
-    'cheBranding',
     'createWorkspaceSvc',
     'devfileRegistry'
   ];
@@ -45,7 +44,6 @@ export class GetStartedTabController {
   // injected services
   private $log: ng.ILogService;
   private cheNotification: CheNotification;
-  private cheBranding: CheBranding;
   private createWorkspaceSvc: CreateWorkspaceSvc;
   private devfileRegistry: DevfileRegistry;
 
@@ -53,6 +51,7 @@ export class GetStartedTabController {
   private isCreating: boolean = false;
   private devfileRegistryUrl: string;
   private ephemeralMode: boolean;
+  private storageType: StorageType;
 
   /**
    * Default constructor that is using resource
@@ -61,13 +60,11 @@ export class GetStartedTabController {
     $log: ng.ILogService,
     cheNotification: CheNotification,
     cheWorkspace: CheWorkspace,
-    cheBranding: CheBranding,
     createWorkspaceSvc: CreateWorkspaceSvc,
     devfileRegistry: DevfileRegistry
   ) {
     this.$log = $log;
     this.cheNotification = cheNotification;
-    this.cheBranding = cheBranding;
     this.createWorkspaceSvc = createWorkspaceSvc;
     this.devfileRegistry = devfileRegistry;
 
@@ -75,7 +72,7 @@ export class GetStartedTabController {
       devfiles: [],
       ephemeralMode: false,
       onFilterChange: filtered => this.onFilterChange(filtered),
-      onEphemeralModeChange: mode => this.onEphemeralModeChange(mode),
+      onStorageTypeChange: type => this.onStorageTypeChange(type),
     };
 
     this.isLoading = true;
@@ -83,6 +80,11 @@ export class GetStartedTabController {
       const workspaceSettings = cheWorkspace.getWorkspaceSettings();
       this.devfileRegistryUrl = workspaceSettings && workspaceSettings.cheWorkspaceDevfileRegistryUrl;
       this.ephemeralMode = workspaceSettings['che.workspace.persist_volumes.default'] === 'false';
+      if (this.ephemeralMode) {
+        this.storageType = StorageType.ephemeral;
+      } else {
+        this.storageType = StorageType.persistent;
+      }
       this.toolbarProps.ephemeralMode = this.ephemeralMode;
       return this.init();
     }).finally(() => {
@@ -98,8 +100,8 @@ export class GetStartedTabController {
     this.filteredDevfiles = filteredDevfiles;
   }
 
-  onEphemeralModeChange(mode: boolean): void {
-    this.ephemeralMode = mode;
+  onStorageTypeChange(type: StorageType): void {
+    this.storageType = type;
   }
 
   createWorkspace(devfileMetaData: IDevfileMetaData): void {
@@ -117,13 +119,27 @@ export class GetStartedTabController {
     this.devfileRegistry.fetchDevfile(this.devfileRegistryUrl, selfLink)
       .then(() => {
         const devfile = this.devfileRegistry.getDevfile(this.devfileRegistryUrl, selfLink);
-        if (this.ephemeralMode) {
+        if (this.storageType === StorageType.persistent) {
+          if (devfile.attributes) {
+            delete devfile.attributes.persistVolumes;
+            delete devfile.attributes.asyncPersist;
+            if (Object.keys(devfile.attributes).length === 0) {
+              delete devfile.attributes;
+            }
+          }
+        } else if (this.storageType === StorageType.ephemeral) {
           if (!devfile.attributes) {
             devfile.attributes = {};
           }
           devfile.attributes.persistVolumes = 'false';
+        } else if (this.storageType === StorageType.async) {
+          if (!devfile.attributes) {
+            devfile.attributes = {};
+          }
+          devfile.attributes.persistVolumes = 'false';
+          devfile.attributes.asyncPersist = 'true';
         }
-        const attributes = {stackName: devfileMetaData.displayName};
+        const attributes = { stackName: devfileMetaData.displayName };
         return this.createWorkspaceSvc.createWorkspaceFromDevfile(undefined, devfile, attributes, true);
       })
       .then(workspace => {

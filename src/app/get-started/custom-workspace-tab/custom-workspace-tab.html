@@ -24,9 +24,10 @@
       name="customWorkspaceTabController.workspaceNameProperties.name"
       on-change="customWorkspaceTabController.workspaceNameProperties.onChange($name)"></workspace-name-row>
 
-    <!-- Temporary Storage -->
-    <temporary-storage-row temporary="customWorkspaceTabController.temporaryStorageProperties.temporary"
-      on-change="customWorkspaceTabController.temporaryStorageProperties.onChange($temporary, $default)"></temporary-storage-row>
+    <!--  Storage Type -->
+    <storage-type-row storage-type="customWorkspaceTabController.storageTypeProperties.storageType"
+      on-change-storage-type="customWorkspaceTabController.storageTypeProperties.onChangeStorageType($storageType, $default)"
+      ></storage-type-row>
   </ng-form>
   <!-- Devfile -->
   <devfile-select-row on-load="customWorkspaceTabController.devfileSelectProperties.onLoad($devfile, $stackName)"
