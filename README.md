@@ -1,6 +1,4 @@
-[![Master Build Status](https://ci.centos.org/buildStatus/icon?subject=master&job=devtools-che-dashboard-che-build-master)](https://ci.centos.org/job/devtools-che-dashboard-che-build-master/)
-[![Nightly Build Status](https://ci.centos.org/buildStatus/icon?subject=nightly&job=devtools-che-dashboard-che-nightly)](https://ci.centos.org/job/devtools-che-dashboard-che-nightly/)
-[![Release Build Status](https://ci.centos.org/buildStatus/icon?subject=release&job=devtools-che-dashboard-che-release)](https://ci.centos.org/job/devtools-che-dashboard-che-release/)
+![CI](https://github.com/eclipse/che-dashboard/workflows/CI/badge.svg)
 
 ## About Eclipse Che
 
