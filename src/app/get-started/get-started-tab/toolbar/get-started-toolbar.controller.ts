@@ -32,8 +32,8 @@ export class GetStartedToolbarController implements IGetStartedToolbarComponentB
   // component bindings
   ephemeralMode: boolean;
   devfiles: IDevfileMetaData[];
-  onFilterChange: (eventObj: {$filtered: IDevfileMetaData[]}) => void;
-  onStorageTypeChange: (eventObj: {$storageType: StorageType}) => void;
+  onFilterChange: (eventObj: { $filtered: IDevfileMetaData[] }) => void;
+  onStorageTypeChange: (eventObj: { $storageType: StorageType }) => void;
 
   filterInput: IChePfTextInputProperties;
   filterResultsCount: number;
@@ -93,7 +93,7 @@ export class GetStartedToolbarController implements IGetStartedToolbarComponentB
     }
     this.filterResultsCount = this.filteredDevfiles.length;
 
-    this.onFilterChange({$filtered: this.filteredDevfiles});
+    this.onFilterChange({ $filtered: this.filteredDevfiles });
   }
 
   private storageTypeChange(ephemeralOn: boolean): void {
