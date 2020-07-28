@@ -1,109 +1,77 @@
-[![Master Build Status](https://ci.centos.org/buildStatus/icon?subject=master&job=devtools-che-dashboard-che-build-master)](https://ci.centos.org/job/devtools-che-dashboard-che-build-master/)
-[![Nightly Build Status](https://ci.centos.org/buildStatus/icon?subject=nightly&job=devtools-che-dashboard-che-nightly)](https://ci.centos.org/job/devtools-che-dashboard-che-nightly/)
-[![Release Build Status](https://ci.centos.org/buildStatus/icon?subject=release&job=devtools-che-dashboard-che-release)](https://ci.centos.org/job/devtools-che-dashboard-che-release/)
+![CI](https://github.com/eclipse/che-dashboard/workflows/CI/badge.svg)
 
 ## About Eclipse Che
 
-Eclipse Che is a next generation Eclipse IDE. This repository is licensed under the Eclipse Public License 2.0. Visit [Eclipse Che's Web site](https://eclipse.org/che) for feature information or the main [Che assembly repository](https://github.com/codenvy/che) for a description of all participating repositories.
+Eclipse Che is a next generation Eclipse IDE. This repository is licensed under the Eclipse Public License 2.0. Visit [Eclipse Che's Web site](https://eclipse.org/che/) for feature information or the main [Che assembly repository](https://github.com/eclipse/che) for a description of all participating repositories.
 
-Che Dashboard
-
-==============
+# Eclipse Che Dashboard
 
 ## Requirements
 
-- Docker
+- Python `v2.7.x`(`v3.x.x`currently not supported)
+- Node.js `v8.x.x` or `v10.x.x`
+- yarn `v1.13.0` or higher
 
 ## Quick start
 
 ```sh
-cd che/dashboard
-mvn clean install
+git clone https://github.com/eclipse/che-dashboard.git \
+  && cd che-dashboard \
+  && yarn \
+  && yarn serve
 ```
-
-note: by default it will build dashboard using a docker image.
-If all required tools are installed locally, the native profile can be used instead of the docker build by following command:
-
-```sh
-$ mvn -Pnative clean install
-```
-
-Required tools for native build:
-
-- Python `v2.7.x`(`v3.x.x`currently not supported)
-- Node.js `v8.x.x` or `v9.x.x`
-- yarn `v1.13.0` or higher
-- gulp
 
 Installation instructions for Node.js can be found on the following [link](https://docs.npmjs.com/getting-started/installing-node).
 
 ## Running
 
-In order to run the project, the serve command is used
+In order to run the project, the `serve` command is used
 
 ```sh
-$ gulp serve
+yarn serve
 ```
 
-It will launch the server and then the project can be tested on http://localhost:3000
+It will launch the dev server and then the project can be tested on http://localhost:3000.
 
-By default it will use http://localhost:8080 as a remote server, so make sure that Che is running locally. More details about how to do that can be found on the following [link](https://github.com/eclipse/che/wiki/Development-Workflow#build-and-run---tomcat)  
+By default https://che.openthift.io is used as a remote server.
 
-The argument `--server <url>` may allow to use another server. (url is for example http://my-server.com)
+The argument `--server <url>` may allow to use another server.
+
+Following command provides the 'minified/optimised' version of the application:
 
 ```sh
-$ gulp serve:dist
+yarn serve:dist
 ```
 
-This command will provide the 'minified/optimised' version of the application
-
-This is a good check for testing if the final rendering is OK
+This is a good check for testing if the final rendering is OK.
 
 ## Tests
 
-The application contains both unit tests and e2e tests (end-to-end)
-
-Unit tests
+The application contains unit tests.
 
 ```sh
-$ gulp test
-```
-
-e2e tests
-
-```sh
-$ gulp protractor
-```
-
-Both tests
-
-```sh
-$ gulp alltests
+yarn test
 ```
 
 Note: before pushing contribution, these tests should always work
 
 # Architecture design
 
-## Ecmascript 2015/es6
+## Typescript
 
-This new version is using the new feature of Javascript language with a transpiler named babel (previously 6to5)
-
-So application is written with the new language but the resulting build is Javascript v5 compliant
-
-Among new features, Class, arrow functions, etc
+The application is written with the [typescript](https://github.com/microsoft/TypeScript) but the resulting build is Javascript v5 compliant.
 
 ## Styling/css
 
 [Stylus](https://github.com/LearnBoost/stylus) is used for produced the final CSS.
 
-Variables, simple syntax, etc is then provided
+Variables, simple syntax, etc is then provided.
 
 ## Code convention
 
 ### indent
 
-There is a .editorconfig file that is indicating the current identation which is
+There is a `.editorconfig` file that is indicating the current identation which is
 
 ```
 indent_style = space
@@ -112,11 +80,11 @@ indent_size = 2
 
 ### syntax
 
-The syntax is checked by jshint (through .jshintrc file)
+The syntax is checked by `jshint` (through [.jshintrc](./.jshintrc) file)
 
-Also when launching gulp serve command, there is a report on each file that may have invalid data
+Also when launching `yarn serve` command, there is a report on each file that may have invalid data.
 
-For example use single quote `'hello'`, no `"double quote"`, use `===` and `!===` and not `==` or `!=`
+For example use single quote `'hello'`, no `"double quote"`, use `===` and `!===` and not `==` or `!=`.
 
 ### name of the files
 
@@ -129,16 +97,6 @@ Templates: `[name].html`
 Factories: `[name].factory.ts`
 
 Unit test: `[name].spec.ts` (for `my-example.factory.ts` will be named `my-example.spec.ts`)
-
-#### About e2e tests
-
-If a 'project' page needs to be tested:
-
-`project.po.ts` will contain the Page Object pattern (all methods allowing to get HTML elements on the page)
-
-`project.spec.ts` will have the e2e test
-
-`project.mock.ts` will provide some mock for the test
 
 ## source tree
 
@@ -161,7 +119,7 @@ As classes are available, the controller will be designed as es6 classes.
 
 All injection required will be done through the constructor by adding also the  static `$inject = ['$toBeInjected'];` line.
 
-Also properties are bound with this. scope (so avoid to use $scope in injection as this will be more aligned with AngularJS 2.0 where scope will disappear)
+Also properties are bound with `this.` scope (so avoid to use $scope in injection as this will be more aligned with AngularJS 2.0 where scope will disappear)
 
 example
 
@@ -210,19 +168,17 @@ And then, when there is a need to interact with code of a controller, the `contr
  <div>Selected book is {{myCtrl.selectedBook}}</div>
 ```
 
-Note that as if scope was using, the values are always prefixed
+Note that as if scope was using, the values are always prefixed.
 
 ## Directives
 
-The whole idea is to be able to reuse some 'widgets' when designing HTML pages
+The whole idea is to be able to reuse some 'widgets' when designing HTML pages.
 
 So instead that each page make the design/css for all buttons, inputs, it should be defined in some widget components.
 
-The components are located in the `src/components/widget` folder
+The components are located in the `src/components/widget` folder.
 
 It includes toggle buttons, selector, etc.
-
-A demo page is also provided to browse them: localhost:5000/#/demo-components
 
 ## API of Che
 
@@ -233,7 +189,7 @@ By injecting 'cheAPI' inside a controller, all operations can be called.
 
 for example `cheAPI.getWorkspace().getWorkspaces()` for getting the array of the current workspaces of the user
 
-Mocks are also provided for the Che API, allowing to emulate a real backend for unit tests or e2e tests
+Mocks are also provided for the Che API, allowing to emulate a real backend for unit tests.
 
 ## Configurability
 
