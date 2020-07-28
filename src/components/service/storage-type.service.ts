@@ -12,7 +12,7 @@
 'use strict';
 
 import { CheWorkspace } from '../api/workspace/che-workspace.factory';
-import ng = require('angular');
+import { CheBranding } from '../branding/che-branding';
 
 export enum StorageType {
   'async' = 'Asynchronous',
@@ -23,16 +23,21 @@ export enum StorageType {
 export class StorageTypeService {
 
   static $inject = [
+    'cheBranding',
     'cheWorkspace',
   ];
 
-  private readyPromise: ng.IPromise<void>;
+  private cheBranding: CheBranding;
   private cheWorkspace: CheWorkspace;
+
+  private readyPromise: ng.IPromise<void>;
   private settings: che.IWorkspaceSettings;
 
   constructor(
+    cheBranding: CheBranding,
     cheWorkspace: CheWorkspace,
   ) {
+    this.cheBranding = cheBranding;
     this.cheWorkspace = cheWorkspace;
 
     this.readyPromise = this.cheWorkspace.fetchWorkspaceSettings()
@@ -97,6 +102,9 @@ export class StorageTypeService {
           </p>`
         : ''
         }
+        <p>
+          <a target="_blank" href="${this.cheBranding.getDocs().storageTypes}">Open documentation page</a>
+        </p>
       </div>
     `;
   }

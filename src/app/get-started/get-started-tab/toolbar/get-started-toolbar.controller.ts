@@ -16,6 +16,7 @@ import { IChePfTextInputProperties } from '../../../../components/che-pf-widget/
 import { IChePfSwitchProperties } from '../../../../components/che-pf-widget/switch/che-pf-switch.directive';
 import { IGetStartedToolbarComponentInputBindings, IGetStartedToolbarComponentBindings } from './get-started-toolbar.component';
 import { StorageType } from '../../../../components/service/storage-type.service';
+import { CheBranding } from '../../../../components/branding/che-branding';
 
 type OnChangeObject = {
   [key in keyof IGetStartedToolbarComponentInputBindings]: ng.IChangesObject<IGetStartedToolbarComponentInputBindings[key]>;
@@ -24,7 +25,8 @@ type OnChangeObject = {
 export class GetStartedToolbarController implements IGetStartedToolbarComponentBindings {
 
   static $inject = [
-    '$filter'
+    '$filter',
+    'cheBranding',
   ];
 
   // component bindings
@@ -38,14 +40,18 @@ export class GetStartedToolbarController implements IGetStartedToolbarComponentB
   tmpStorage: IChePfSwitchProperties;
   filteredDevfiles: Array<IDevfileMetaData> = [];
   selectedDevfile: IDevfileMetaData | undefined;
+  tooltipContent: string;
 
   // injected services
   private $filter: ng.IFilterService;
+  private cheBranding: CheBranding;
 
   constructor(
     $filter: ng.IFilterService,
+    cheBranding: CheBranding,
   ) {
     this.$filter = $filter;
+    this.cheBranding = cheBranding;
 
     this.filterInput = {
       config: {
@@ -60,8 +66,12 @@ export class GetStartedToolbarController implements IGetStartedToolbarComponentB
         name: 'temporary-storage-switch'
       },
       onChange: ephemeralOn => this.storageTypeChange(ephemeralOn)
-
     };
+
+    this.tooltipContent = `Temporary Storage allows for faster I/O but may have
+      limited storage and is not persistent.
+      <br/>
+      <a target="_blank" href="${this.cheBranding.getDocs().storageTypes}">Open documentation page</a>`;
   }
 
   $onChanges(onChangesObj: OnChangeObject): void {
