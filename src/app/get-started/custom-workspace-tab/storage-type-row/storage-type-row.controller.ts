@@ -44,6 +44,8 @@ export class StorageTypeRowController implements ng.IController, IStorageTypeRow
 
   private initPromise: ng.IPromise<void>;
   private preferredStorageType: StorageType;
+  // indicates that next onChange event should be skipped
+  private skipNextChange: boolean;
 
   constructor(
     chePfModalService: ChePfModalService,
@@ -60,13 +62,15 @@ export class StorageTypeRowController implements ng.IController, IStorageTypeRow
       .then(() => {
         const items = this.storageTypeService.getAvailableTypes()
           .map(type => StorageType[type]);
+        this.preferredStorageType = StorageType[this.storageTypeService.getPreferredType()];
         this.storageSelect = {
           config: {
             id: this.selectorId,
+            default: this.preferredStorageType,
             items,
             placeholder: 'Select a storage template'
           },
-          value: this.storageTypeService.getPreferredType(),
+          value: this.preferredStorageType,
           onSelect: storageType => this.onStorageTypeChanged(storageType),
         };
         this.isReady = true;
@@ -82,6 +86,7 @@ export class StorageTypeRowController implements ng.IController, IStorageTypeRow
         this.storageSelect.value = this.preferredStorageType;
         return;
       }
+      this.skipNextChange = true;
       this.storageSelect.value = onChangesObj.storageType.currentValue;
     });
   }
@@ -93,6 +98,10 @@ export class StorageTypeRowController implements ng.IController, IStorageTypeRow
   }
 
   onStorageTypeChanged(storageType: StorageType): void {
+    if (this.skipNextChange) {
+      this.skipNextChange = false;
+      return;
+    }
     this.onChangeStorageType({ '$storageType': storageType })
   }
 
