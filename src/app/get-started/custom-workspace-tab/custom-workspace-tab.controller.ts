@@ -193,18 +193,21 @@ export class CustomWorkspaceTabController implements ng.IController {
       delete this.devfileEditorProperties.devfile;
       return;
     }
-    if (this.devfile.attributes && this.devfile.attributes.persistVolumes) {
-      const val = (this.devfile.attributes.persistVolumes === 'false');
-      if (val) {
-        if (this.devfile.attributes.asyncPersist === 'true') {
-          this.storageTypeProperties.storageType = StorageType.async;
-        } else {
-          this.storageTypeProperties.storageType = StorageType.ephemeral;
-        }
+
+    // storage type
+    const isNotPersist = this.devfile.attributes && this.devfile.attributes.persistVolumes === 'false';
+    if (isNotPersist) {
+      const isAsync = this.devfile.attributes.asyncPersist === 'true';
+      if (isAsync) {
+        this.storageTypeProperties.storageType = StorageType.async;
+      } else {
+        this.storageTypeProperties.storageType = StorageType.ephemeral;
       }
     } else {
-      this.storageTypeProperties.storageType = undefined;
+      this.storageTypeProperties.storageType = StorageType.persistent;
     }
+
+    // workspace name
     if (this.devfile.metadata && this.devfile.metadata.name) {
       this.workspaceName = this.devfile.metadata.name;
       this.workspaceNameProperties.name = this.devfile.metadata.name;
