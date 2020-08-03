@@ -19,7 +19,7 @@ import { ResourceFetcherService } from './resource-fetcher/resource-fetcher.serv
 import { GlobalWarningBannerService } from './global-warning-banner.service';
 import { RegistryCheckingService } from './registry-checking.service';
 import { DetectSupportedBrowserService } from './browser-detect';
-import { StorageTypeService } from './storage-type.service';
+import { StorageTypeService } from './storage-type/storage-type.service';
 
 export class ServiceConfig {
 

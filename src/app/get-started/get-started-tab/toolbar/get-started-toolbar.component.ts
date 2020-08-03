@@ -13,7 +13,7 @@
 
 import { GetStartedToolbarController } from './get-started-toolbar.controller';
 import { IDevfileMetaData } from '../../../../components/api/devfile-registry.factory';
-import { StorageType } from '../../../../components/service/storage-type.service';
+import { StorageType } from '../../../../components/service/storage-type/storage-type.service';
 
 export interface IGetStartedToolbarBindingProperties {
   devfiles: IDevfileMetaData[];

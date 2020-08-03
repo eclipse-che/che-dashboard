@@ -14,7 +14,7 @@
 import { IStorageTypeRowComponentBindings } from './storage-type-row.component';
 import { IChePfSelectProperties } from '../../../../components/che-pf-widget/select/che-pf-select-typeahead.directive';
 import { ChePfModalService } from '../../../../components/che-pf-widget/modal/che-pf-modal.service';
-import { StorageTypeService, StorageType } from '../../../../components/service/storage-type.service';
+import { StorageTypeService, StorageType } from '../../../../components/service/storage-type/storage-type.service';
 
 type OnChangesObject = {
   [key in keyof IStorageTypeRowComponentBindings]: ng.IChangesObject<IStorageTypeRowComponentBindings[key]>;

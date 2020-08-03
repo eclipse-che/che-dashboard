@@ -17,7 +17,7 @@ import { DevfileRegistry, IDevfileMetaData } from '../../../components/api/devfi
 import { CheNotification } from '../../../components/notification/che-notification.factory';
 import { IChePfButtonProperties } from '../../../components/che-pf-widget/button/che-pf-button';
 import { IGetStartedToolbarBindingProperties } from './toolbar/get-started-toolbar.component';
-import { StorageType } from '../../../components/service/storage-type.service';
+import { StorageType } from '../../../components/service/storage-type/storage-type.service';
 
 
 /**

@@ -15,7 +15,7 @@ import { IDevfileMetaData } from '../../../../components/api/devfile-registry.fa
 import { IChePfTextInputProperties } from '../../../../components/che-pf-widget/text-input/che-pf-text-input.directive';
 import { IChePfSwitchProperties } from '../../../../components/che-pf-widget/switch/che-pf-switch.directive';
 import { IGetStartedToolbarComponentInputBindings, IGetStartedToolbarComponentBindings } from './get-started-toolbar.component';
-import { StorageType } from '../../../../components/service/storage-type.service';
+import { StorageType } from '../../../../components/service/storage-type/storage-type.service';
 import { CheBranding } from '../../../../components/branding/che-branding';
 
 type OnChangeObject = {
