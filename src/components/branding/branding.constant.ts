@@ -43,6 +43,7 @@ export type IBrandingDocs = {
   converting: string,
   certificate: string,
   faq?: string,
+  storageTypes: string,
 }
 
 export type IBrandingWorkspace = {
@@ -106,7 +107,8 @@ export const BRANDING_DEFAULT: IBranding = {
     organization: 'https://www.eclipse.org/che/docs/organizations.html',
     converting: 'https://www.eclipse.org/che/docs/che-7/converting-a-che-6-workspace-to-a-che-7-devfile/',
     certificate: 'https://www.eclipse.org/che/docs/che-7/installing-che-in-tls-mode-with-self-signed-certificates/#using-che-with-tls_installing-che-in-tls-mode-with-self-signed-certificates',
-    general: 'https://www.eclipse.org/che/docs/che-7'
+    general: 'https://www.eclipse.org/che/docs/che-7',
+    storageTypes: "https://www.eclipse.org/che/docs/che-7/using-different-type-of-storage/",
   },
   configuration: {
     menu: {
