@@ -12,7 +12,7 @@
 'use strict';
 
 import { StorageTypeRowController } from './storage-type-row.controller';
-import { StorageType } from '../../../../components/service/storage-type.service';
+import { StorageType } from '../../../../components/service/storage-type/storage-type.service';
 
 export interface IStorageTypeRowBindingProperties {
   storageType?: StorageType;

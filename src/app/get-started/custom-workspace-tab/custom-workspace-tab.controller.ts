@@ -18,7 +18,7 @@ import { IWorkspaceNameRowBindingProperties } from './workspace-name-row/workspa
 import { IStorageTypeRowBindingProperties } from './storage-type-row/storage-type-row.component';
 import { IDevfileSelectRowBindingProperties } from './devfile-select-row/devfile-select-row.component';
 import { IDevfileEditorBindingProperties } from '../../../components/widget/devfile-editor/devfile-editor.component';
-import { StorageType } from '../../../components/service/storage-type.service';
+import { StorageType } from '../../../components/service/storage-type/storage-type.service';
 
 export class CustomWorkspaceTabController implements ng.IController {
 

@@ -11,8 +11,8 @@
  */
 'use strict';
 
-import { CheWorkspace } from '../api/workspace/che-workspace.factory';
-import { CheBranding } from '../branding/che-branding';
+import { CheWorkspace } from '../../api/workspace/che-workspace.factory';
+import { CheBranding } from '../../branding/che-branding';
 
 export enum StorageType {
   'async' = 'Asynchronous',
@@ -94,7 +94,7 @@ export class StorageTypeService {
         }
         ${ showAsync
         ? `<p>
-            <span style= "font-size: 0.8em; color: #F37943" > Experimental feature </span><br/>
+            <span class="experimental-storage-type"> Experimental feature </span><br/>
             <b>Asynchronous Storage </b>
             is combination of Ephemeral and Persistent storages.It allows for
             faster I / O and keeps your changes, it does backup the workspace on
