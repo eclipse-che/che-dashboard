@@ -27,10 +27,11 @@
                      che-add-button-title="Add Workspace"
                      che-add-button-href="#/getstarted?tab=customWorkspace"
                      che-delete-button-title="Delete"
+                     che-delete-button-disable="listWorkspacesCtrl.cheListHelper.isNoItemSelected"
                      che-on-delete="listWorkspacesCtrl.deleteSelectedWorkspaces()"
                      che-filter-values="listWorkspacesCtrl.namespaceLabels"
                      che-on-filter-changed="listWorkspacesCtrl.onFilterChanged"
-                     che-hide-delete="listWorkspacesCtrl.cheListHelper.isNoItemSelected"
+                     che-hide-delete="listWorkspacesCtrl.userWorkspaces.length === 0"
                      che-hide-header="listWorkspacesCtrl.cheListHelper.visibleItemsNumber === 0">
       <div flex="100"
            layout="row"
