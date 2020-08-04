@@ -37,16 +37,8 @@ export class LoadFactoryService {
    */
   constructor (workspacesService: WorkspacesService) {
     this.workspacesService = workspacesService;
-    this.loadFactoryInProgress = false;
-    this.currentProgressStep = 0;
 
-    this.loadingSteps = [
-      {text: 'Loading factory', inProgressText: '', logs: '', hasError: false},
-      {text: 'Looking for devfile', inProgressText: '', logs: '', hasError: false},
-      {text: 'Initializing workspace', inProgressText: 'Provision workspace and associating it with the existing user', logs: '', hasError: false},
-      {text: 'Starting workspace runtime', inProgressText: 'Retrieving the stack\'s image and launching it', logs: '', hasError: false},
-      {text: 'Open IDE', inProgressText: '', logs: '', hasError: false}
-    ];
+    this.resetLoadProgress();
   }
 
   /**
@@ -102,13 +94,16 @@ export class LoadFactoryService {
    * Reset the loading progress.
    */
   resetLoadProgress(): void {
-    this.loadingSteps.forEach((step: FactoryLoadingStep) => {
-      step.logs = '';
-    step.hasError = false;
-  });
-  this.currentProgressStep = 0;
+    this.loadFactoryInProgress = false;
+    this.currentProgressStep = 0;
 
-  this.loadFactoryInProgress = false;
+    this.loadingSteps = [
+      {text: 'Loading factory', inProgressText: '', logs: '', hasError: false},
+      {text: 'Looking for devfile', inProgressText: '', logs: '', hasError: false},
+      {text: 'Initializing workspace', inProgressText: 'Provision workspace and associating it with the existing user', logs: '', hasError: false},
+      {text: 'Starting workspace runtime', inProgressText: 'Retrieving the stack\'s image and launching it', logs: '', hasError: false},
+      {text: 'Open IDE', inProgressText: '', logs: '', hasError: false}
+    ];
   }
 
   /**
