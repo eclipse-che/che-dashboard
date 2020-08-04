@@ -360,7 +360,8 @@ export class LoadFactoryController {
 
       const attrs = {factoryurl: `${url}${params}`};
       this.cheAPI.getWorkspace().createWorkspaceFromDevfile(undefined, undefined, devfile, attrs)
-        .then((workspace: che.IWorkspace) => defer.resolve(workspace));
+        .then((workspace: che.IWorkspace) => defer.resolve(workspace))
+        .catch(error => defer.reject(error));
     }
     defer.promise.then((workspace: che.IWorkspace) => {
       this.$timeout(() => {
