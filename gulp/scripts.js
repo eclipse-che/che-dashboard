@@ -42,7 +42,7 @@ function webpackWrapper(watch, test, callback) {
         },
         {
           test: /\.js$/,
-          include: /node_modules\/(monaco-editor-core|monaco-languages|vscode-languageserver|vscode-languageserver-types|yaml-language-server)/,
+          include: /node_modules\/(monaco-languageclient|vscode-jsonrpc|monaco-editor-core|monaco-languages|vscode-languageserver|vscode-languageserver-types|yaml-language-server)/,
           loaders: ['babel-loader']
         },
         {

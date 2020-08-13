@@ -7360,25 +7360,25 @@ moment@*:
   resolved "https://registry.yarnpkg.com/moment/-/moment-2.9.0.tgz#77ec1175fa294f42627f10c8e6de6302c036f6d5"
   integrity sha1-d+wRdfopT0JifxDI5t5jAsA29tU=
 
-monaco-editor-core@0.20.0:
+monaco-editor-core@~0.20.0:
   version "0.20.0"
   resolved "https://registry.yarnpkg.com/monaco-editor-core/-/monaco-editor-core-0.20.0.tgz#d5ce01307d298dbca6ab9194812812b32b50433f"
   integrity sha512-4mdmfEejTvRZzrEIn70jqqNl3g15vnkRdTkJ8uMK4jiljntlwhiSc5vknZOLt1QM8za16C3tDrSl2mTL9ma2Sg==
 
-monaco-languageclient@0.9.0:
-  version "0.9.0"
-  resolved "https://registry.yarnpkg.com/monaco-languageclient/-/monaco-languageclient-0.9.0.tgz#4b65684e277edab07625e76eb3d3d93e8f2130fa"
-  integrity sha512-N8IdHUnV8Sq2nfm3dSZ0SpILmGhqrTvdXkL0BFfJvV2vcKYVVQ36AXJNqCRImmovkeNUHLyQMeHTqOwvMMVxCQ==
+monaco-languageclient@~0.13.0:
+  version "0.13.0"
+  resolved "https://registry.yarnpkg.com/monaco-languageclient/-/monaco-languageclient-0.13.0.tgz#59b68b42fb7633171502d6557f597c2752f6c266"
+  integrity sha512-aCwd33dTitwV5QwY56rpYHwzEGXei8TZ+yvZcvP3gEMd6Mizr8m3pOuoknDi2SUfLuNAHS6+ulvLgZlNQB5awg==
   dependencies:
     glob-to-regexp "^0.3.0"
-    vscode-base-languageclient "4.4.0"
-    vscode-jsonrpc "^3.6.2"
-    vscode-uri "^1.0.5"
+    vscode-jsonrpc "^5.0.0"
+    vscode-languageclient "^6.0.0"
+    vscode-uri "^2.1.1"
 
-monaco-languages@1.8.0:
-  version "1.8.0"
-  resolved "https://registry.yarnpkg.com/monaco-languages/-/monaco-languages-1.8.0.tgz#aeacf40b0f8d0130c4b43c6c143b55f86e6b909d"
-  integrity sha512-vC/lqNgSslQT3vSlNOpyT34ELK0eoNbA/rHUvTUjQemIiR1GpRMKhuwB21BqzWk+0MjZuJydGSCQMCebBge7jg==
+monaco-languages@~1.10.0:
+  version "1.10.0"
+  resolved "https://registry.yarnpkg.com/monaco-languages/-/monaco-languages-1.10.0.tgz#1e1b0f2b02c8c311b9db1ddb83f5c654f2f92fe1"
+  integrity sha512-ARAws17Xh0K4WsZYkJY6CqHn9EYdYN8CjzK6w/jgXIwU0owzCdUWxzu+FNJ/LeDLcKxL/YK3phcwGFj9IqX2yw==
 
 move-concurrently@^1.0.1:
   version "1.0.1"
@@ -9462,7 +9462,7 @@ semver@^4.1.0, semver@~4.3.3:
   resolved "https://registry.yarnpkg.com/semver/-/semver-4.3.6.tgz#300bc6e0e86374f7ba61068b5b1ecd57fc6532da"
   integrity sha1-MAvG4OhjdPe6YQaLWx7NV/xlMto=
 
-semver@^6.0.0:
+semver@^6.0.0, semver@^6.3.0:
   version "6.3.0"
   resolved "https://registry.yarnpkg.com/semver/-/semver-6.3.0.tgz#ee0a64c8af5e8ceea67687b133761e1becbd1d3d"
   integrity sha512-b39TBaTSfV6yBrapU89p5fKekE2m/NwnDocOVruQFS1/veMgdzuPcnOM34M6CwxW8jH/lxEa5rBoDeUwu5HHTw==
@@ -11006,13 +11006,6 @@ void-elements@^2.0.0:
   resolved "https://registry.yarnpkg.com/void-elements/-/void-elements-2.0.1.tgz#c066afb582bb1cb4128d60ea92392e94d5e9dbec"
   integrity sha1-wGavtYK7HLQSjWDqkjkulNXp2+w=
 
-vscode-base-languageclient@4.4.0:
-  version "4.4.0"
-  resolved "https://registry.yarnpkg.com/vscode-base-languageclient/-/vscode-base-languageclient-4.4.0.tgz#07098fe42a986e8b65e47960de5ccf656aefe8d0"
-  integrity sha512-FUlMRslHaVCZZ4pSmLqa7p04yuB5hUSgqFAx5W4uINB9RfKgoTyy6eUphuhIsdBzgME1gyLe212Z8thmNNCy1A==
-  dependencies:
-    vscode-languageserver-protocol "^3.10.0"
-
 vscode-json-languageservice@^3.3.0:
   version "3.6.0"
   resolved "https://registry.yarnpkg.com/vscode-json-languageservice/-/vscode-json-languageservice-3.6.0.tgz#133a1e2c3a3dffe38564a1ba948516805c3c1869"
@@ -11024,20 +11017,23 @@ vscode-json-languageservice@^3.3.0:
     vscode-nls "^4.1.2"
     vscode-uri "^2.1.1"
 
-vscode-jsonrpc@^3.6.2:
-  version "3.6.2"
-  resolved "https://registry.yarnpkg.com/vscode-jsonrpc/-/vscode-jsonrpc-3.6.2.tgz#3b5eef691159a15556ecc500e9a8a0dd143470c8"
-  integrity sha512-T24Jb5V48e4VgYliUXMnZ379ItbrXgOimweKaJshD84z+8q7ZOZjJan0MeDe+Ugb+uqERDVV8SBmemaGMSMugA==
-
 vscode-jsonrpc@^4.0.0:
   version "4.0.0"
   resolved "https://registry.yarnpkg.com/vscode-jsonrpc/-/vscode-jsonrpc-4.0.0.tgz#a7bf74ef3254d0a0c272fab15c82128e378b3be9"
   integrity sha512-perEnXQdQOJMTDFNv+UF3h1Y0z4iSiaN9jIlb0OqIYgosPCZGYh/MCUlkFtV2668PL69lRDO32hmvL2yiidUYg==
 
-vscode-jsonrpc@^5.0.1:
+vscode-jsonrpc@^5.0.0, vscode-jsonrpc@^5.0.1:
   version "5.0.1"
   resolved "https://registry.yarnpkg.com/vscode-jsonrpc/-/vscode-jsonrpc-5.0.1.tgz#9bab9c330d89f43fc8c1e8702b5c36e058a01794"
   integrity sha512-JvONPptw3GAQGXlVV2utDcHx0BiY34FupW/kI6mZ5x06ER5DdPG/tXWMVHjTNULF5uKPOUUD0SaXg5QaubJL0A==
+
+vscode-languageclient@^6.0.0:
+  version "6.1.3"
+  resolved "https://registry.yarnpkg.com/vscode-languageclient/-/vscode-languageclient-6.1.3.tgz#c979c5bb5855714a0307e998c18ca827c1b3953a"
+  integrity sha512-YciJxk08iU5LmWu7j5dUt9/1OLjokKET6rME3cI4BRpiF6HZlusm2ZwPt0MYJ0lV5y43sZsQHhyon2xBg4ZJVA==
+  dependencies:
+    semver "^6.3.0"
+    vscode-languageserver-protocol "^3.15.3"
 
 vscode-languageserver-protocol@3.14.1:
   version "3.14.1"
@@ -11047,10 +11043,10 @@ vscode-languageserver-protocol@3.14.1:
     vscode-jsonrpc "^4.0.0"
     vscode-languageserver-types "3.14.0"
 
-vscode-languageserver-protocol@^3.10.0:
-  version "3.15.2"
-  resolved "https://registry.yarnpkg.com/vscode-languageserver-protocol/-/vscode-languageserver-protocol-3.15.2.tgz#e52c62923140b2655ad2472f6f29cfb83bacf5b8"
-  integrity sha512-GdL05JKOgZ76RDg3suiGCl9enESM7iQgGw4x93ibTh4sldvZmakHmTeZ4iUApPPGKf6O3OVBtrsksBXnHYaxNg==
+vscode-languageserver-protocol@^3.15.3:
+  version "3.15.3"
+  resolved "https://registry.yarnpkg.com/vscode-languageserver-protocol/-/vscode-languageserver-protocol-3.15.3.tgz#3fa9a0702d742cf7883cb6182a6212fcd0a1d8bb"
+  integrity sha512-zrMuwHOAQRhjDSnflWdJG+O2ztMWss8GqUUB8dXLR/FPenwkiBNkMIJJYfSN6sgskvsF0rHAoBowNQfbyZnnvw==
   dependencies:
     vscode-jsonrpc "^5.0.1"
     vscode-languageserver-types "3.15.1"
@@ -11093,7 +11089,7 @@ vscode-nls@^4.1.2:
   resolved "https://registry.yarnpkg.com/vscode-nls/-/vscode-nls-4.1.2.tgz#ca8bf8bb82a0987b32801f9fddfdd2fb9fd3c167"
   integrity sha512-7bOHxPsfyuCqmP+hZXscLhiHwe7CSuFE4hyhbs22xPIhQ4jv99FcR4eBzfYYVLP356HNFpdvz63FFb/xw6T4Iw==
 
-vscode-uri@^1.0.5, vscode-uri@^1.0.6:
+vscode-uri@^1.0.6:
   version "1.0.8"
   resolved "https://registry.yarnpkg.com/vscode-uri/-/vscode-uri-1.0.8.tgz#9769aaececae4026fb6e22359cb38946580ded59"
   integrity sha512-obtSWTlbJ+a+TFRYGaUumtVwb+InIUVI0Lu0VBUAPmj2cU5JutEXg3xUE0c2J5Tcy7h2DEKVJBFi+Y9ZSFzzPQ==
