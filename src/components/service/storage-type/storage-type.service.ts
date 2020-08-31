@@ -15,9 +15,9 @@ import { CheWorkspace } from '../../api/workspace/che-workspace.factory';
 import { CheBranding } from '../../branding/che-branding';
 
 export enum StorageType {
-  'async' = 'Asynchronous',
-  'ephemeral' = 'Ephemeral',
-  'persistent' = 'Persistent',
+  async = 'Asynchronous',
+  ephemeral = 'Ephemeral',
+  persistent = 'Persistent',
 }
 
 export class StorageTypeService {
