@@ -28,7 +28,7 @@ export class StorageTypeRowController implements ng.IController, IStorageTypeRow
   ];
 
   // component bindings
-  isReady: boolean = false;
+  storageType?: StorageType;
   onChangeStorageType: (eventObj: { '$storageType': StorageType; }) => void;
 
   // used in template
@@ -53,6 +53,18 @@ export class StorageTypeRowController implements ng.IController, IStorageTypeRow
   ) {
     this.chePfModalService = chePfModalService;
     this.storageTypeService = storageTypeService;
+
+    this.storageSelect = {
+      config: {
+        id: this.selectorId,
+        default: this.storageType || StorageType.persistent,
+        items: [StorageType.persistent],
+        placeholder: 'Select a storage template',
+        disabled: true,
+      },
+      value: this.preferredStorageType,
+      onSelect: storageType => this.onStorageTypeChanged(storageType),
+    };
   }
 
   $onInit(): void {
@@ -62,18 +74,11 @@ export class StorageTypeRowController implements ng.IController, IStorageTypeRow
       .then(() => {
         const items = this.storageTypeService.getAvailableTypes()
           .map(type => StorageType[type]);
-        this.preferredStorageType = StorageType[this.storageTypeService.getPreferredType()];
-        this.storageSelect = {
-          config: {
-            id: this.selectorId,
-            default: this.preferredStorageType,
-            items,
-            placeholder: 'Select a storage template'
-          },
-          value: this.preferredStorageType,
-          onSelect: storageType => this.onStorageTypeChanged(storageType),
-        };
-        this.isReady = true;
+        this.preferredStorageType = this.storageTypeService.getPreferredType();
+
+        this.storageSelect.config.default = this.preferredStorageType;
+        this.storageSelect.config.disabled = items.length === 1;
+        this.storageSelect.config.items = items;
       });
   }
 
@@ -84,6 +89,9 @@ export class StorageTypeRowController implements ng.IController, IStorageTypeRow
     this.initPromise.then(() => {
       if (onChangesObj.storageType.currentValue === undefined) {
         this.storageSelect.value = this.preferredStorageType;
+        return;
+      }
+      if (onChangesObj.storageType.currentValue === this.storageSelect.value) {
         return;
       }
       this.skipNextChange = true;
