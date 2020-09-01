@@ -74,7 +74,7 @@ export class StorageTypeRowController implements ng.IController, IStorageTypeRow
       .then(() => {
         const items = this.storageTypeService.getAvailableTypes()
           .map(type => StorageType[type]);
-        this.preferredStorageType = StorageType[this.storageTypeService.getPreferredType()];
+        this.preferredStorageType = this.storageTypeService.getPreferredType();
 
         this.storageSelect.config.default = this.preferredStorageType;
         this.storageSelect.config.disabled = items.length === 1;

@@ -82,7 +82,7 @@ export class GetStartedToolbarController implements IGetStartedToolbarComponentB
     }
     if (onChangesObj.storageType && onChangesObj.storageType.currentValue) {
       const storageType = onChangesObj.storageType.currentValue;
-      this.ephemeralMode = StorageType[storageType] !== StorageType.persistent;
+      this.ephemeralMode = storageType !== StorageType.persistent;
     }
     if (onChangesObj.storageTypeDisabled) {
       this.tmpStorage.config.disabled = !!onChangesObj.storageTypeDisabled.currentValue;

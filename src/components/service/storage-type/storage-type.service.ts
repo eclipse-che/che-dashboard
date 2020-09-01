@@ -56,7 +56,7 @@ export class StorageTypeService {
   }
 
   getPreferredType(): StorageType {
-    return this.settings['che.workspace.storage.preferred_type'] as StorageType;
+    return StorageType[this.settings['che.workspace.storage.preferred_type']];
   }
 
   getTextDescription(type: StorageType): string {

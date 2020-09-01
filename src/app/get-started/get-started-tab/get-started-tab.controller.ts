@@ -86,6 +86,7 @@ export class GetStartedTabController {
 
       return this.storageTypeService.ready;
     }).then(() => {
+      this.storageType = this.storageTypeService.getPreferredType();
       this.toolbarProps.storageType = this.storageTypeService.getPreferredType();
       this.toolbarProps.storageTypeDisabled = this.storageTypeService.getAvailableTypes().length === 1;
 
