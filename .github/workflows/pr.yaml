@@ -17,21 +17,29 @@ jobs:
     strategy:
       fail-fast: false
     env:
-      IMAGE_FULL: quay.io/eclipse/che-dashboard:next
-      CACHE_IMAGE_FULL: docker.io/cheincubator/che-dashboard:cache
+      MY_ENV: env-value
     steps:
-    - uses: actions/checkout@v2
-      name: Checkout che-dashboard source code
-    - name: Docker Buildx
-      uses: crazy-max/ghaction-docker-buildx@v1.6.2
-      with:
-        buildx-version: v0.4.1
-    - name: "Docker prepare"
-      run: docker image prune -a -f
-    - name: "Docker build with cache"
-      uses: nick-invision/retry@v1
-      with:
-        timeout_minutes: 100
-        max_attempts: 5
-        retry_wait_seconds: 60
-        command: docker buildx build --platform linux/amd64,linux/s390x --cache-from="type=registry,ref=${CACHE_IMAGE_FULL}" -t ${IMAGE_FULL}  -f apache.Dockerfile .
+      - name: 'echo MY_ENV'
+        id: my-env
+        run: |
+          echo ::set-output name=my-env::$MY_ENV
+      - name: 'GH script comment 1'
+        uses: actions/github-script@v3
+        with:
+          script: |
+            console.log(${{steps.my-env.outputs.my-env}});
+      - name: 'GH script comment 2'
+        uses: actions/github-script@v3
+        with:
+          script: |
+            console.log(${{env.MY_ENV}});
+      - name: 'GH script comment 3'
+        uses: actions/github-script@v3
+        with:
+          script: |
+            console.log(${MY_ENV});
+      - name: 'GH script comment 4'
+        uses: actions/github-script@v3
+        with:
+          script: |
+            console.log(${{MY_ENV}});
