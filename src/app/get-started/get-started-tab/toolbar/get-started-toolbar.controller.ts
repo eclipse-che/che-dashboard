@@ -30,11 +30,13 @@ export class GetStartedToolbarController implements IGetStartedToolbarComponentB
   ];
 
   // component bindings
-  ephemeralMode: boolean;
+  storageType: StorageType;
+  storageTypeDisabled: boolean;
   devfiles: IDevfileMetaData[];
   onFilterChange: (eventObj: { $filtered: IDevfileMetaData[] }) => void;
   onStorageTypeChange: (eventObj: { $storageType: StorageType }) => void;
 
+  ephemeralMode: boolean;
   filterInput: IChePfTextInputProperties;
   filterResultsCount: number;
   tmpStorage: IChePfSwitchProperties;
@@ -77,6 +79,13 @@ export class GetStartedToolbarController implements IGetStartedToolbarComponentB
   $onChanges(onChangesObj: OnChangeObject): void {
     if (onChangesObj.devfiles && onChangesObj.devfiles.currentValue) {
       this.filterDevfiles();
+    }
+    if (onChangesObj.storageType && onChangesObj.storageType.currentValue) {
+      const storageType = onChangesObj.storageType.currentValue;
+      this.ephemeralMode = storageType !== StorageType.persistent;
+    }
+    if (onChangesObj.storageTypeDisabled) {
+      this.tmpStorage.config.disabled = !!onChangesObj.storageTypeDisabled.currentValue;
     }
   }
 

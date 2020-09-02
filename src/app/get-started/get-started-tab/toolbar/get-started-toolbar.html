@@ -16,7 +16,7 @@
           on-change="getStartedToolbarController.tmpStorage.onChange($value)">
         </che-pf-switch>
         <span class="temporary-storage-label" ng-class="{'disabled-state': !getStartedToolbarController.ephemeralMode}">
-          Temporary Storage
+          Temporary Storage {{getStartedToolbarController.ephemeralMode ? 'On' : 'Off'}}
         </span>
         <span class="temporary-storage-tooltip"
           uib-tooltip-html="'{{getStartedToolbarController.tooltipContent}}'"

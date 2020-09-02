@@ -2,11 +2,12 @@
   <input class="pf-c-switch__input"
     ng-model="value"
     ng-change="onChange({ $value: value })"
+    ng-disabled="config.disabled"
     type="checkbox"
     id="{{config.id}}"
     aria-labelledby="switch-with-label-1-on"
     name="{{config.name}}"
-    checked />
+  />
   <span class="pf-c-switch__toggle"></span>
   <span class="pf-c-switch__label pf-m-on"
     ng-if="config.messageOn"
