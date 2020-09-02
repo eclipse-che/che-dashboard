@@ -17,7 +17,7 @@ import { DevfileRegistry, IDevfileMetaData } from '../../../components/api/devfi
 import { CheNotification } from '../../../components/notification/che-notification.factory';
 import { IChePfButtonProperties } from '../../../components/che-pf-widget/button/che-pf-button';
 import { IGetStartedToolbarBindingProperties } from './toolbar/get-started-toolbar.component';
-import { StorageType } from '../../../components/service/storage-type/storage-type.service';
+import { StorageType, StorageTypeService } from '../../../components/service/storage-type/storage-type.service';
 
 
 /**
@@ -34,7 +34,8 @@ export class GetStartedTabController {
     'cheNotification',
     'cheWorkspace',
     'createWorkspaceSvc',
-    'devfileRegistry'
+    'devfileRegistry',
+    'storageTypeService',
   ];
 
   toolbarProps: IGetStartedToolbarBindingProperties;
@@ -46,11 +47,11 @@ export class GetStartedTabController {
   private cheNotification: CheNotification;
   private createWorkspaceSvc: CreateWorkspaceSvc;
   private devfileRegistry: DevfileRegistry;
+  private storageTypeService: StorageTypeService;
 
   private isLoading: boolean = false;
   private isCreating: boolean = false;
   private devfileRegistryUrl: string;
-  private ephemeralMode: boolean;
   private storageType: StorageType;
 
   /**
@@ -61,16 +62,19 @@ export class GetStartedTabController {
     cheNotification: CheNotification,
     cheWorkspace: CheWorkspace,
     createWorkspaceSvc: CreateWorkspaceSvc,
-    devfileRegistry: DevfileRegistry
+    devfileRegistry: DevfileRegistry,
+    storageTypeService: StorageTypeService,
   ) {
     this.$log = $log;
     this.cheNotification = cheNotification;
     this.createWorkspaceSvc = createWorkspaceSvc;
     this.devfileRegistry = devfileRegistry;
+    this.storageTypeService = storageTypeService;
 
     this.toolbarProps = {
       devfiles: [],
-      ephemeralMode: false,
+      storageType: StorageType.persistent,
+      storageTypeDisabled: true,
       onFilterChange: filtered => this.onFilterChange(filtered),
       onStorageTypeChange: type => this.onStorageTypeChange(type),
     };
@@ -79,13 +83,13 @@ export class GetStartedTabController {
     cheWorkspace.fetchWorkspaceSettings().then(() => {
       const workspaceSettings = cheWorkspace.getWorkspaceSettings();
       this.devfileRegistryUrl = workspaceSettings && workspaceSettings.cheWorkspaceDevfileRegistryUrl;
-      this.ephemeralMode = workspaceSettings['che.workspace.persist_volumes.default'] === 'false';
-      if (this.ephemeralMode) {
-        this.storageType = StorageType.ephemeral;
-      } else {
-        this.storageType = StorageType.persistent;
-      }
-      this.toolbarProps.ephemeralMode = this.ephemeralMode;
+
+      return this.storageTypeService.ready;
+    }).then(() => {
+      this.storageType = this.storageTypeService.getPreferredType();
+      this.toolbarProps.storageType = this.storageTypeService.getPreferredType();
+      this.toolbarProps.storageTypeDisabled = this.storageTypeService.getAvailableTypes().length === 1;
+
       return this.init();
     }).finally(() => {
       this.isLoading = false;

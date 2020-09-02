@@ -17,14 +17,16 @@ import { StorageType } from '../../../../components/service/storage-type/storage
 
 export interface IGetStartedToolbarBindingProperties {
   devfiles: IDevfileMetaData[];
-  ephemeralMode: boolean;
+  storageType: StorageType;
+  storageTypeDisabled: boolean;
   onFilterChange: ($filtered: IDevfileMetaData[]) => void;
   onStorageTypeChange: ($storageType: StorageType) => void;
 }
 
 export interface IGetStartedToolbarComponentInputBindings {
   devfiles: IDevfileMetaData[];
-  ephemeralMode: boolean;
+  storageType: StorageType;
+  storageTypeDisabled: boolean;
 }
 export interface IGetStartedToolbarComponentBindings extends IGetStartedToolbarComponentInputBindings {
   onFilterChange: (eventObj: { $filtered: IDevfileMetaData[] }) => void;
@@ -43,7 +45,8 @@ export class GetStartedToolbarComponent implements ng.IComponentOptions, IGetSta
 
   bindings = {
     devfiles: '<',
-    ephemeralMode: '<',
+    storageType: '<',
+    storageTypeDisabled: '<',
     onFilterChange: '&',
     onStorageTypeChange: '&'
   };

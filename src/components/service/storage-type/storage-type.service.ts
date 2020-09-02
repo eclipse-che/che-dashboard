@@ -15,9 +15,9 @@ import { CheWorkspace } from '../../api/workspace/che-workspace.factory';
 import { CheBranding } from '../../branding/che-branding';
 
 export enum StorageType {
-  'async' = 'Asynchronous',
-  'ephemeral' = 'Ephemeral',
-  'persistent' = 'Persistent',
+  async = 'Asynchronous',
+  ephemeral = 'Ephemeral',
+  persistent = 'Persistent',
 }
 
 export class StorageTypeService {
@@ -56,7 +56,7 @@ export class StorageTypeService {
   }
 
   getPreferredType(): StorageType {
-    return this.settings['che.workspace.storage.preferred_type'] as StorageType;
+    return StorageType[this.settings['che.workspace.storage.preferred_type']];
   }
 
   getTextDescription(type: StorageType): string {

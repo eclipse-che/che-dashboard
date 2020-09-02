@@ -20,6 +20,7 @@ export interface IChePfSwitchProperties extends IChePfInputProperties {
     name: string;
     messageOn?: string;
     messageOff?: string;
+    disabled?: boolean;
   };
   value?: boolean;
   onChange: ($value: boolean) => void;
@@ -31,6 +32,7 @@ interface IChePfSwitchBindings extends IChePfInputBindings {
     name: string;
     messageOn?: string;
     messageOff?: string;
+    disabled?: boolean;
   };
   onChange: (eventObj: { $value: boolean }) => void;
 }
