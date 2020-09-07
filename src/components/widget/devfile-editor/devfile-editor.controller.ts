@@ -119,7 +119,9 @@ export class DevfileEditorController implements ng.IController, IDevfileEditorCo
       return;
     }
     if (onChangesObj.devfile.currentValue) {
-      this.devfileYaml = jsyaml.safeDump(onChangesObj.devfile.currentValue);
+      this.devfileYaml = jsyaml.safeDump(onChangesObj.devfile.currentValue, {
+        lineWidth: 9999,
+      });
     } else {
       this.devfileYaml = '';
     }
