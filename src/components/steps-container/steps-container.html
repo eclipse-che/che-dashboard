@@ -6,7 +6,7 @@
                  ng-class="{'che-accordion-active': ($index === currentStep),
                             'che-accordion-error': allSteps[$index].hasError}">
     <div class="che-accordion-title">
-      <span>{{allSteps[$index].text}}{{$index < currentStep ? ' ... completed' : ''}}</span>
+      <span ng-bind-html="allSteps[$index].text + ($index < currentStep ? ' ... completed' : '')"></span>
     </div>
     <div class="che-accordion-body"
          ng-class="{'steps-container-output-empty': (allSteps[$index].logs.length === 0)}">
