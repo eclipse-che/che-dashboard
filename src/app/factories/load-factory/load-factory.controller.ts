@@ -256,9 +256,10 @@ export class LoadFactoryController {
    * @param error error to be handled
    */
   handleError(error: any): void {
-    if (error && error.data.message) {
-      this.getLoadingSteps()[this.getCurrentProgressStep()].logs = error.data.message;
-      this.cheNotification.showError(error.data.message);
+    if (error) {
+      const errorMessage = error.data && error.data.message ? error.data.message : error.toString();
+      this.getLoadingSteps()[this.getCurrentProgressStep()].logs = errorMessage;
+      this.cheNotification.showError(errorMessage);
     }
     this.getLoadingSteps()[this.getCurrentProgressStep()].hasError = true;
   }

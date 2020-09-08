@@ -123,9 +123,13 @@ export class CheNavBarController {
       this.workspacesNumber = workspaces.length;
     });
 
-    this.cheAPI.getFactory().fetchFactories().then(() => {
-      this.pageFactories = this.cheAPI.getFactory().getPageFactories();
-    });
+    if (this.cheDashboardConfigurationService.allowedMenuItem('factories')) {
+      this.cheAPI.getFactory().fetchFactories().then(() => {
+        this.pageFactories = this.cheAPI.getFactory().getPageFactories();
+      }).catch(() => {
+        // fetch unhandled rejection
+      });
+    }
 
     this.isPermissionServiceAvailable = false;
     this.resolvePermissionServiceAvailability().then((isAvailable: boolean) => {
