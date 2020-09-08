@@ -36,8 +36,8 @@ export class DevfileEditorController implements ng.IController, IDevfileEditorCo
   devfile: che.IWorkspaceDevfile;
   onChange: (eventObj: { $devfile: che.IWorkspaceDevfile, '$editorState': che.IValidation }) => void;
 
-  private devfileYaml: string;
-  private devfileDocsUrl: string;
+  devfileYaml: string;
+  devfileDocsUrl: string;
   private timeoutPromise: ng.IPromise<any>;
 
   // injected services
@@ -63,7 +63,9 @@ export class DevfileEditorController implements ng.IController, IDevfileEditorCo
 
   $onInit(): void {
     this.devfileDocsUrl = this.cheBranding.getDocs().devfile;
-    this.devfileYaml = this.devfile ? jsyaml.safeDump(this.devfile) : '';
+    this.devfileYaml = this.devfile ? jsyaml.safeDump(this.devfile, {
+      lineWidth: 9999,
+    }) : '';
     const yamlService = (window as any).yamlService;
 
     this.cheWorkspace.fetchWorkspaceSettings().then(workspaceSettings =>
@@ -117,13 +119,15 @@ export class DevfileEditorController implements ng.IController, IDevfileEditorCo
       return;
     }
     if (onChangesObj.devfile.currentValue) {
-      this.devfileYaml = jsyaml.safeDump(onChangesObj.devfile.currentValue);
+      this.devfileYaml = jsyaml.safeDump(onChangesObj.devfile.currentValue, {
+        lineWidth: 9999,
+      });
     } else {
       this.devfileYaml = '';
     }
   }
 
-  private onChanged(editorState: che.IValidation, value: string): void {
+  onChanged(editorState: che.IValidation, value: string): void {
     if (!editorState.isValid) {
       return;
     }
