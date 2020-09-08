@@ -36,13 +36,14 @@ export class LoadFactoryController {
     '$mdDialog',
     '$q',
     '$route',
+    '$sanitize',
     '$timeout',
     '$window',
     'cheAPI',
+    'cheBranding',
     'cheJsonRpcApi',
     'cheNotification',
     'cheWorkspace',
-    'cheBranding',
     'loadFactoryService',
     'lodash',
     'routeHistory',
@@ -51,6 +52,7 @@ export class LoadFactoryController {
   private $location: ng.ILocationService;
   private $mdDialog: ng.material.IDialogService;
   private $q: ng.IQService;
+  private $sanitize: ng.sanitize.ISanitizeService;
   private $timeout: ng.ITimeoutService;
   private $window: ng.IWindowService;
   private cheAPI: CheAPI;
@@ -78,13 +80,14 @@ export class LoadFactoryController {
     $mdDialog: ng.material.IDialogService,
     $q: ng.IQService,
     $route: ng.route.IRouteService,
+    $sanitize: ng.sanitize.ISanitizeService,
     $timeout: ng.ITimeoutService,
     $window: ng.IWindowService,
     cheAPI: CheAPI,
+    cheBranding: CheBranding,
     cheJsonRpcApi: CheJsonRpcApi,
     cheNotification: CheNotification,
     cheWorkspace: CheWorkspace,
-    cheBranding: CheBranding,
     loadFactoryService: LoadFactoryService,
     lodash: any,
     routeHistory: RouteHistory,
@@ -92,12 +95,13 @@ export class LoadFactoryController {
     this.$location = $location;
     this.$mdDialog = $mdDialog;
     this.$q = $q;
+    this.$sanitize = $sanitize;
     this.$timeout = $timeout;
     this.$window = $window;
     this.cheAPI = cheAPI;
+    this.cheBranding = cheBranding;
     this.cheNotification = cheNotification;
     this.cheWorkspace = cheWorkspace;
-    this.cheBranding = cheBranding;
     this.loadFactoryService = loadFactoryService;
     this.lodash = lodash;
     this.routeHistory = routeHistory;
@@ -181,9 +185,10 @@ export class LoadFactoryController {
    */
   processFactorySource(): void {
     if (this.factory.source) {
+      const sanitized = this.$sanitize(this.factory.source);
       let sourceString = this.factory.source === 'repo' ?
-                   ': devfile.yaml not found in repository root. Default environment will be applied' :
-                   ': found ' + this.factory.source + ', applying it';
+                   ': <span class="load-factory-source">devfile.yaml</span> not found in repository root. Default environment will be applied' :
+                   ': found <span class="load-factory-source">' + sanitized + '</span>, applying it';
       this.getLoadingSteps()[this.getCurrentProgressStep()].text += sourceString;
     }
     this.fetchWorkspaces();
