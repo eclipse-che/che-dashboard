@@ -39,6 +39,7 @@ export class DevfileEditorController implements ng.IController, IDevfileEditorCo
   devfileYaml: string;
   devfileDocsUrl: string;
   private timeoutPromise: ng.IPromise<any>;
+  private sortKeys: (key1: keyof che.IWorkspaceDevfile, key2: keyof che.IWorkspaceDevfile) => -1 | 0 | 1;
 
   // injected services
   private $timeout: ng.ITimeoutService;
@@ -59,12 +60,35 @@ export class DevfileEditorController implements ng.IController, IDevfileEditorCo
     this.cheBranding = cheBranding;
     this.cheWorkspace = cheWorkspace;
     this.pluginRegistry = pluginRegistry;
+
+    const sortOrder: Array<keyof che.IWorkspaceDevfile> = ['apiVersion', 'metadata', 'attributes', 'projects', 'components', 'commands'];
+    this.sortKeys = (key1, key2) => {
+      const index1 = sortOrder.indexOf(key1);
+      const index2 = sortOrder.indexOf(key2);
+      if (index1 === -1 && index2 === -1) {
+        return 0;
+      }
+      if (index1 === -1) {
+        return 1;
+      }
+      if (index2 === -1) {
+        return -1;
+      }
+      if (index1 < index2) {
+        return -1;
+      }
+      if (index1 > index2) {
+        return 1;
+      }
+      return 0;
+    };
   }
 
   $onInit(): void {
     this.devfileDocsUrl = this.cheBranding.getDocs().devfile;
     this.devfileYaml = this.devfile ? jsyaml.safeDump(this.devfile, {
       lineWidth: 9999,
+      sortKeys: this.sortKeys
     }) : '';
     const yamlService = (window as any).yamlService;
 
@@ -121,6 +145,7 @@ export class DevfileEditorController implements ng.IController, IDevfileEditorCo
     if (onChangesObj.devfile.currentValue) {
       this.devfileYaml = jsyaml.safeDump(onChangesObj.devfile.currentValue, {
         lineWidth: 9999,
+        sortKeys: this.sortKeys
       });
     } else {
       this.devfileYaml = '';
