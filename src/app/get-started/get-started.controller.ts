@@ -29,6 +29,7 @@ export class GetStartedController {
 
   static $inject = [
     '$scope',
+    '$timeout',
     '$location'
   ];
 
@@ -43,26 +44,42 @@ export class GetStartedController {
    */
   constructor(
     $scope: ng.IScope,
+    $timeout: ng.ITimeoutService,
     $location: ng.ILocationService
   ) {
     this.$location = $location;
 
     const updateSelectedTab = () => {
       const tab = $location.search().tab;
-      if (tab) {
-        const tabIndex = this.tabs[tab];
-        this.selectedTabIndex = typeof tabIndex === 'number' ? tabIndex : 0;
+      if (!tab) {
+        if(this.selectedTabIndex !== 0) {
+          this.selectedTabIndex = 0;
+        }
         return;
       }
-      this.selectedTabIndex = 0;
+      const tabIndex = this.tabs[tab];
+      const selectedTabIndex = typeof tabIndex === 'number' ? tabIndex : 0;
+      if (selectedTabIndex === this.selectedTabIndex) {
+        return;
+      }
+      this.selectedTabIndex = selectedTabIndex;
+    }
+    updateSelectedTab();
+
+    let timeoutPromise: ng.IPromise<any>;
+    const onLocationChange = () => {
+      if ($location.path() !== GET_STARTED) {
+        return;
+      }
+      if (timeoutPromise) {
+        $timeout.cancel(timeoutPromise);
+      }
+      timeoutPromise = $timeout(() => {
+        updateSelectedTab();
+      }, 100);
     }
 
-    updateSelectedTab();
-    $scope.$on('$locationChangeSuccess', () => {
-      if ($location.path() === GET_STARTED) {
-        updateSelectedTab();
-      }
-    });
+    $scope.$on('$locationChangeSuccess', onLocationChange);
   }
 
   onSelectTab(): void {
