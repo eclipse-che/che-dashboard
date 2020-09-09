@@ -76,7 +76,7 @@ export class GetStartedController {
       }
       timeoutPromise = $timeout(() => {
         updateSelectedTab();
-      });
+      }, 100);
     }
 
     $scope.$on('$locationChangeSuccess', onLocationChange);
