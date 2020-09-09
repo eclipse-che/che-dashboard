@@ -31,6 +31,7 @@ export class GetStartedConfig {
     // config routes
     register.app.config(['$routeProvider', ($routeProvider: any) => {
       $routeProvider.accessWhen(GET_STARTED, {
+        reloadOnSearch: false,
         title: 'Get Started',
         templateUrl: 'app/get-started/get-started.html',
         controller: 'GetStartedController',

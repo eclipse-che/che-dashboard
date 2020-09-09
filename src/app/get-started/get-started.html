@@ -25,24 +25,22 @@
     <md-tabs md-dynamic-height md-stretch-tabs="never" md-selected="getStartedController.selectedTabIndex"
 
       <!-- Samples -->
-      <md-tab md-on-select="getStartedController.onSelectTab(); isGetStartedSelected = true;"
-              md-on-deselect="isGetStartedSelected = false;">
+      <md-tab md-on-select="getStartedController.onSelectTab()">
         <md-tab-label>
           <span class="che-tab-label-title">Get Started</span>
         </md-tab-label>
         <md-tab-body>
-          <get-started-tab ng-if="isGetStartedSelected" flex></get-started-tab>
+          <get-started-tab flex></get-started-tab>
         </md-tab-body>
       </md-tab>
 
       <!-- Custom Workspace -->
-      <md-tab md-on-select="getStartedController.onSelectTab(); isCustomWorkspaceSelected = true;"
-              md-on-deselect="isCustomWorkspaceSelected = false;">
+      <md-tab md-on-select="getStartedController.onSelectTab()">
         <md-tab-label>
           <span class="che-tab-label-title">Custom Workspace</span>
         </md-tab-label>
         <md-tab-body>
-          <custom-workspace-tab ng-show="isCustomWorkspaceSelected" flex></custom-workspace-tab>
+          <custom-workspace-tab flex></custom-workspace-tab>
         </md-tab-body>
       </md-tab>
 
