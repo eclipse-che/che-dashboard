@@ -461,6 +461,11 @@ export class CheFactory {
     return this.remoteFactoryAPI.getFactoryParameters({}, parameters).$promise.then((factory: che.IFactory) => {
       factory.name = factory.name ? factory.name : '';
       return this.$q.when(factory);
+    }).catch((response: ng.IHttpResponse<any>) => {
+      const code = response.status ? response.status + ' ' : '';
+      const errorMessage = `Failed to fetch devfile due to "${code} ${response.statusText}" returned by "${response.config.url}"`;
+      console.error(errorMessage, response);
+      return this.$q.reject(errorMessage);
     });
   }
 
