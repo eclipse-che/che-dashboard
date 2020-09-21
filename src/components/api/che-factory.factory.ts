@@ -462,8 +462,13 @@ export class CheFactory {
       factory.name = factory.name ? factory.name : '';
       return this.$q.when(factory);
     }).catch((response: ng.IHttpResponse<any>) => {
-      const code = response.status ? response.status + ' ' : '';
-      const errorMessage = `Failed to fetch devfile due to "${code} ${response.statusText}" returned by "${response.config.url}"`;
+      let errorMessage: string;
+      if (response.status === -1 || (!response.status && !response.statusText)) {
+        errorMessage = `Failed to fetch the devfile due to network issues while requesting "${response.config.url}".`;
+      } else {
+        const delimiter = response.status && response.statusText ? ' ' : '';
+        errorMessage = `Failed to fetch the devfile due to "${response.status}${delimiter}${response.statusText}" returned by "${response.config.url}"`;
+      }
       console.error(errorMessage, response);
       return this.$q.reject(errorMessage);
     });
