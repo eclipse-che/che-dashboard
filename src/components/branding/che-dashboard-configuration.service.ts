@@ -11,7 +11,7 @@
  */
 'use strict';
 
-import { TogglableFeature } from './branding.constant';
+import { TogglableFeature } from './branding';
 import { CheBranding } from './che-branding';
 
 export type FooterLink = {

@@ -16,7 +16,7 @@ import {
   IBrandingDocs,
   IBrandingFooter,
   IBrandingWorkspace
-} from './branding.constant';
+} from './branding';
 import * as _ from 'lodash';
 
 const BRANDING_SERVICE_SYMBOL = Symbol('CheBranding');
