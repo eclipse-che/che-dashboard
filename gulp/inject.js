@@ -39,6 +39,6 @@ function inject() {
     .pipe(gulp.dest(path.join(conf.paths.tmp, '/serve')));
 }
 
-gulp.task('inject', ['outputcolors', 'proxySettings', 'scripts', 'styles'], inject);
+gulp.task('inject', ['outputcolors', 'proxySettings', 'branding', 'scripts', 'styles'], inject);
 
-gulp.task('inject:watch', ['outputcolors', 'proxySettings', 'scripts:watch', 'styles'], inject);
+gulp.task('inject:watch', ['outputcolors', 'proxySettings', 'branding', 'scripts:watch', 'styles'], inject);

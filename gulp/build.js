@@ -165,6 +165,19 @@ gulp.task('proxySettings', ['proxySettingsTemplate'], function () {
     .pipe(gulp.dest('src/app/proxy'));
 });
 
+gulp.task('brandingTemplate', function () {
+  return gulp.src(path.join(__dirname, '../src/components/branding/branding.constant.ts.template'))
+    .pipe($.replace('%CONTENT%', fs.readFileSync(path.join(__dirname, '../src/components/branding/branding.json'))))
+    .pipe($.replace('\"', '\''))
+    .pipe(gulp.dest(path.join(__dirname, '../src/components/branding/template')));
+});
+
+gulp.task('branding', ['brandingTemplate'], function () {
+  return gulp.src(path.join(__dirname, '../src/components/branding/template/branding.constant.ts.template'))
+    .pipe($.rename('branding.constant.ts'))
+    .pipe(gulp.dest(path.join(__dirname, '../src/components/branding')));
+});
+
 
 gulp.task('other', function () {
   var fileFilter = $.filter(function (file) {
