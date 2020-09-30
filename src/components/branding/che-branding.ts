@@ -10,14 +10,16 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 'use strict';
+
+import * as _ from 'lodash';
 import {
-  BRANDING_DEFAULT,
+  IBranding,
   IBrandingConfiguration,
   IBrandingDocs,
   IBrandingFooter,
   IBrandingWorkspace
 } from './branding';
-import * as _ from 'lodash';
+import { jsonBranding } from './branding.constant';
 
 const BRANDING_SERVICE_SYMBOL = Symbol('CheBranding');
 const ASSET_PREFIX = 'assets/branding/';
@@ -27,7 +29,7 @@ const ASSET_PREFIX = 'assets/branding/';
  * @author Oleksii Orel
  */
 export class CheBranding {
-  private branding = BRANDING_DEFAULT;
+  private branding: IBranding;
   private readonly readyPromise: Promise<void>;
 
   static get(): CheBranding {
@@ -36,6 +38,8 @@ export class CheBranding {
   }
 
   protected constructor() {
+    this.branding = JSON.parse(jsonBranding);
+
     const global = window as any; // tslint:disable-line
     global[BRANDING_SERVICE_SYMBOL] = this;
 
@@ -52,7 +56,7 @@ export class CheBranding {
   private updateData(): Promise<void> {
     return angular.element.get(`${ASSET_PREFIX}product.json`).then(branding => {
       if (branding) {
-        this.branding = _.merge(BRANDING_DEFAULT, branding);
+        this.branding = _.merge(JSON.parse(jsonBranding), branding);
       }
     }).catch(error => {
       console.error(`Can't GET "${ASSET_PREFIX}product.json". ${error ? 'Error: ' : ''}`, error);
