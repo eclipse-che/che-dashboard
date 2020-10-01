@@ -54,12 +54,19 @@ export class CheBranding {
    * Update branding data.
    */
   private updateData(): Promise<void> {
-    return angular.element.get(`${ASSET_PREFIX}product.json`).then(branding => {
+    return angular.element.getJSON(`${ASSET_PREFIX}product.json`).then(branding => {
       if (branding) {
         this.branding = _.merge(JSON.parse(jsonBranding), branding);
       }
-    }).catch(error => {
-      console.error(`Can't GET "${ASSET_PREFIX}product.json". ${error ? 'Error: ' : ''}`, error);
+    }).catch((resp: JQuery.jqXHR) => {
+      let message: string;
+      if (resp.status === 200) {
+        message = `"${ASSET_PREFIX}product.json" is not a JSON file.`
+      } else {
+        message = `Can't GET "${ASSET_PREFIX}product.json".`;
+      }
+      console.error(message, ' Response:', resp);
+      return Promise.reject(message);
     });
   }
 
