@@ -86,7 +86,7 @@ angular.element(() => {
           <div class="header"><i class="fa fa-warning"></i><p>Resource Loading Error</p></div>
           <div class="body">
             <p>${errorMessage}</p>
-            <p>Please try <kbd>Shift</kbd>+<kbd>Refresh</kbd></p>
+            <p>Please try <kbd>Shift</kbd>+<kbd>Refresh</kbd> or contact cluster admin if it didn't help.</p>
           </div>
         `;
       return Promise.reject({ message });
