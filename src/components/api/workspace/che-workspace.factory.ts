@@ -431,7 +431,7 @@ export class CheWorkspace {
     let workspace = this.workspacesById.get(workspaceId);
     let isEphemeral = workspace && workspace.devfile && workspace.devfile.attributes && workspace.devfile.attributes.persistVolumes ? !JSON.parse(workspace.devfile.attributes.persistVolumes) : false;
     if (isEphemeral) {
-      this.cheNotification.showWarning('Your are starting an ephemeral workspace. All changes to the source code will be lost when the workspace is stopped unless they are pushed to a source code repository.');
+      this.cheNotification.showWarning('You are starting an ephemeral workspace. All changes to the source code will be lost when the workspace is stopped unless they are pushed to a remote code repository.');
     }
   }
 
