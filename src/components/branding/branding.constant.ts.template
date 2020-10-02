@@ -11,4 +11,8 @@
  */
 'use strict';
 
+/**
+ * Generated content. Any changes will be lost after project build.
+ */
+
 export const jsonBranding = JSON.stringify(%CONTENT%);

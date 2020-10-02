@@ -71,6 +71,13 @@ function showErrorMessage(error: Error) {
   document.querySelector('.main-page-loader').appendChild(backdrop);
 }
 
+const keycloakAuth = {
+  isPresent: false,
+  keycloak: null,
+  config: null
+};
+initModule.constant('keycloakAuth', keycloakAuth);
+
 angular.element(() => {
   const keycloakSetupPromise = keycloakSetup(cheBranding);
   const brandingReadyPromise = cheBranding.ready
@@ -85,8 +92,8 @@ angular.element(() => {
       return Promise.reject({ message });
     });
 
-  Promise.all([brandingReadyPromise, keycloakSetupPromise]).then(([cheBranding, keycloakAuth]) => {
-    initModule.constant('keycloakAuth', keycloakAuth);
+  Promise.all([brandingReadyPromise, keycloakSetupPromise]).then(([_cheBranding, _keycloakAuth]) => {
+    Object.assign(keycloakAuth, _keycloakAuth);
     (angular as any).resumeBootstrap();
   }).catch(error => {
     showErrorMessage(error);

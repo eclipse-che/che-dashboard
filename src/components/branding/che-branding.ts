@@ -58,7 +58,7 @@ export class CheBranding {
       if (branding) {
         this.branding = _.merge(JSON.parse(jsonBranding), branding);
       }
-    }).catch((resp: JQuery.jqXHR) => {
+    }).catch((resp: any) => {
       let message: string;
       if (resp.status === 200) {
         message = `"${ASSET_PREFIX}product.json" is not a JSON file.`
