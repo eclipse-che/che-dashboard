@@ -3,7 +3,7 @@ src/app/colors/codenvy-color.constant.ts
 src/app/colors/template/
 src/app/proxy/proxy-settings.constant.ts
 src/app/proxy/template/
-# src/components/branding/branding.constant.ts
+src/components/branding/branding.constant.ts
 src/components/branding/template/
 yarn-error.log
 node_modules/
