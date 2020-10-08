@@ -21,22 +21,29 @@ export interface IKeycloakAuth {
   config: any;
 }
 
-type KeycloakSettingsFields =
-  'che.keycloak.oidc_provider' |
-  'che.keycloak.auth_server_url' |
-  'che.keycloak.client_id' |
-  'che.keycloak.js_adapter_url' |
-  'che.keycloak.jwks.endpoint' |
-  'che.keycloak.logout.endpoint' |
-  'che.keycloak.password.endpoint' |
-  'che.keycloak.profile.endpoint' |
-  'che.keycloak.realm' |
-  'che.keycloak.token.endpoint' |
-  'che.keycloak.use_nonce' |
-  'che.keycloak.userinfo.endpoint' |
-  'che.keycloak.username_claim' |
-  'che.keycloak.redirect_url.dashboard';
-type KeycloakSettingsMap = Map<KeycloakSettingsFields, string>;
+const keycloakSettingsFields = [
+  'che.keycloak.oidc_provider',
+  'che.keycloak.auth_server_url',
+  'che.keycloak.client_id',
+  'che.keycloak.js_adapter_url',
+  'che.keycloak.jwks.endpoint',
+  'che.keycloak.logout.endpoint',
+  'che.keycloak.password.endpoint',
+  'che.keycloak.profile.endpoint',
+  'che.keycloak.realm',
+  'che.keycloak.token.endpoint',
+  'che.keycloak.use_nonce',
+  'che.keycloak.userinfo.endpoint',
+  'che.keycloak.username_claim',
+  'che.keycloak.redirect_url.dashboard'] as const;
+type KeycloakSettingsField = typeof keycloakSettingsFields[number];
+
+function isOfTypeKeycloakSettingsField (settingField: string): settingField is KeycloakSettingsField {
+  console.log((keycloakSettingsFields as readonly string[]).indexOf(settingField))
+  return (keycloakSettingsFields as readonly string[]).indexOf(settingField) >= 0;
+}
+
+type KeycloakSettingsMap = Map<KeycloakSettingsField, string>;
 
 export async function keycloakSetup(cheBranding: CheBranding): Promise<IKeycloakAuth> {
   const keycloakAuth = {
@@ -48,10 +55,17 @@ export async function keycloakSetup(cheBranding: CheBranding): Promise<IKeycloak
   let hasSSO = false;
 
   // load keycloak settings
-  let keycloakSettings: KeycloakSettingsMap;
+  let keycloakSettings: KeycloakSettingsMap = new Map();
   try {
     const settings = await angular.element.get('/api/keycloak/settings');
-    keycloakSettings = new Map(settings);
+
+    for (const key of Object.keys(settings)) {
+      if (isOfTypeKeycloakSettingsField(key)) {
+          keycloakSettings.set(key, settings[key])
+      } else {
+        console.warn('Skip keycloak settings field: ', key);
+      }
+    }
   } catch (e) {
     const errorMessage = `Can't get Keycloak settings: ` + e.statusText;
     console.warn(errorMessage);
@@ -98,14 +112,14 @@ function buildKeycloakConfig(keycloakSettings: KeycloakSettingsMap): any {
   const theOidcProvider = keycloakSettings.get('che.keycloak.oidc_provider');
   if (!theOidcProvider) {
     return {
-      oidcProvider: theOidcProvider,
-      clientId: keycloakSettings.get('che.keycloak.client_id')
+      url: keycloakSettings.get('che.keycloak.auth_server_url'),
+      realm: keycloakSettings.get('che.keycloak.realm'),
+      clientId: keycloakSettings.get('che.keycloak.client_id')  
     };
   }
 
   return {
-    url: keycloakSettings.get('che.keycloak.auth_server_url'),
-    realm: keycloakSettings.get('che.keycloak.realm'),
+    oidcProvider: theOidcProvider,
     clientId: keycloakSettings.get('che.keycloak.client_id')
   };
 }
