@@ -39,7 +39,6 @@ const keycloakSettingsFields = [
 type KeycloakSettingsField = typeof keycloakSettingsFields[number];
 
 function isOfTypeKeycloakSettingsField (settingField: string): settingField is KeycloakSettingsField {
-  console.log((keycloakSettingsFields as readonly string[]).indexOf(settingField))
   return (keycloakSettingsFields as readonly string[]).indexOf(settingField) >= 0;
 }
 
