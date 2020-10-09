@@ -31,8 +31,7 @@
     "certificate": "https://www.eclipse.org/che/docs/che-7/importing-certificates-to-browsers/",
     "general": "https://www.eclipse.org/che/docs/che-7",
     "storageTypes": "https://www.eclipse.org/che/docs/che-7/configuring-storage-types/",
-    "webSocketTroubleshooting": "https://www.eclipse.org/che/docs/che-7/troubleshooting-network-problems/#troubleshooting-websocket-secure-connections_troubleshooting-network-problems",
-    "faq": "https://www.eclipse.org/che/docs/che-7"
+    "webSocketTroubleshooting": "https://www.eclipse.org/che/docs/che-7/troubleshooting-network-problems/#troubleshooting-websocket-secure-connections_troubleshooting-network-problems"
   },
   "configuration": {
     "menu": {
