@@ -40,6 +40,9 @@ import { DetectSupportedBrowserService } from '../components/service/browser-det
 import { StorageTypeService } from '../components/service/storage-type/storage-type.service';
 import { keycloakSetup } from './keycloak-setup';
 
+// development mode
+const DEV = false;
+
 // init module
 const initModule = angular.module('userDashboard', ['ngAnimate', 'ngCookies', 'ngTouch', 'ngSanitize', 'ngResource', 'ngRoute',
   'angular-websocket', 'ui.bootstrap', 'ngMaterial', 'ngMessages', 'angularMoment', 'angular.filter',
@@ -79,7 +82,7 @@ const keycloakAuth = {
 initModule.constant('keycloakAuth', keycloakAuth);
 
 angular.element(() => {
-  const keycloakSetupPromise = keycloakSetup(cheBranding);
+  const keycloakSetupPromise = keycloakSetup(cheBranding, DEV);
   const brandingReadyPromise = cheBranding.ready
     .catch(errorMessage => {
       const message = `
@@ -149,8 +152,6 @@ initModule.config(['$routeProvider', ($routeProvider: che.route.IRouteProvider) 
 
 
 }]);
-
-const DEV = false;
 
 // configs
 initModule.config(['$routeProvider', ($routeProvider: che.route.IRouteProvider) => {
