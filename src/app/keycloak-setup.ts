@@ -66,7 +66,12 @@ export async function keycloakSetup(cheBranding: CheBranding): Promise<IKeycloak
       }
     }
   } catch (e) {
-    const errorMessage = `Can't get Keycloak settings: ` + e.statusText;
+    if (e.status == 404) {
+      //keycloak is not configured. Running in Single User mode
+      return;
+    }
+
+    const errorMessage = `Can't get Keycloak settings: ` + e.status  + ' ' + e.statusText;
     console.warn(errorMessage);
     throw new Error(errorMessage);
   }
