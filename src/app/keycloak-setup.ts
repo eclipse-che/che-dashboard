@@ -44,7 +44,7 @@ function isOfTypeKeycloakSettingsField (settingField: string): settingField is K
 
 type KeycloakSettingsMap = Map<KeycloakSettingsField, string>;
 
-export async function keycloakSetup(cheBranding: CheBranding): Promise<IKeycloakAuth> {
+export async function keycloakSetup(cheBranding: CheBranding, isDevMode?: boolean): Promise<IKeycloakAuth> {
   const keycloakAuth = {
     isPresent: false,
     keycloak: null,
@@ -66,7 +66,7 @@ export async function keycloakSetup(cheBranding: CheBranding): Promise<IKeycloak
       }
     }
   } catch (e) {
-    if (e.status == 404) {
+    if (e.status == 404 || (isDevMode && e.status == 0)) {
       //keycloak is not configured. Running in Single User mode
       return;
     }
@@ -118,7 +118,7 @@ function buildKeycloakConfig(keycloakSettings: KeycloakSettingsMap): any {
     return {
       url: keycloakSettings.get('che.keycloak.auth_server_url'),
       realm: keycloakSettings.get('che.keycloak.realm'),
-      clientId: keycloakSettings.get('che.keycloak.client_id')  
+      clientId: keycloakSettings.get('che.keycloak.client_id')
     };
   }
 
