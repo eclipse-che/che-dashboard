@@ -42,9 +42,9 @@ export const jsonBranding = JSON.stringify({
   'docs': {
     'devfile': 'https://www.eclipse.org/che/docs/che-7/making-a-workspace-portable-using-a-devfile/',
     'workspace': 'https://www.eclipse.org/che/docs/che-7/workspaces-overview/',
-    'factory': 'https://www.eclipse.org/che/docs/factories-getting-started.html',
-    'organization': 'https://www.eclipse.org/che/docs/organizations.html',
-    'converting': 'https://www.eclipse.org/che/docs/che-7/converting-a-che-6-workspace-to-a-che-7-devfile/',
+    'factory': 'https://www.eclipse.org/che/docs/che-7',
+    'organization': 'https://www.eclipse.org/che/docs/che-7',
+    'converting': 'https://www.eclipse.org/che/docs/che-7',
     'certificate': 'https://www.eclipse.org/che/docs/che-7/importing-certificates-to-browsers/',
     'general': 'https://www.eclipse.org/che/docs/che-7',
     'storageTypes': 'https://www.eclipse.org/che/docs/che-7/configuring-storage-types/',
