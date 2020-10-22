@@ -1,0 +1,54 @@
+{
+  "title": "Eclipse Che",
+  "name": "Eclipse Che",
+  "logoFile": "che-logo.svg",
+  "logoTextFile": "che-logo-text.svg",
+  "favicon": "favicon.ico",
+  "loader": "loader.svg",
+  "websocketContext": "/api/websocket",
+  "helpPath": "https://www.eclipse.org/che/",
+  "helpTitle": "Community",
+  "supportEmail": "che-dev@eclipse.org",
+  "oauthDocs": "Configure OAuth in the che.properties file.",
+  "workspace": {
+    "priorityStacks": [
+      "Java",
+      "Java-MySQL",
+      "Blank"
+    ],
+    "defaultStack": "java-mysql"
+  },
+  "cli": {
+    "configName": "che.env",
+    "name": "CHE"
+  },
+  "docs": {
+    "devfile": "https://www.eclipse.org/che/docs/che-7/making-a-workspace-portable-using-a-devfile/",
+    "workspace": "https://www.eclipse.org/che/docs/che-7/workspaces-overview/",
+    "factory": "https://www.eclipse.org/che/docs/che-7",
+    "organization": "https://www.eclipse.org/che/docs/che-7",
+    "converting": "https://www.eclipse.org/che/docs/che-7",
+    "certificate": "https://www.eclipse.org/che/docs/che-7/importing-certificates-to-browsers/",
+    "general": "https://www.eclipse.org/che/docs/che-7",
+    "storageTypes": "https://www.eclipse.org/che/docs/che-7/configuring-storage-types/",
+    "webSocketTroubleshooting": "https://www.eclipse.org/che/docs/che-7/troubleshooting-network-problems/#troubleshooting-websocket-secure-connections_troubleshooting-network-problems"
+  },
+  "configuration": {
+    "menu": {
+      "disabled": [
+        "organizations"
+      ]
+    },
+    "features": {
+      "disabled": []
+    },
+    "prefetch": {
+      "resources": []
+    }
+  },
+  "footer": {
+    "content": "",
+    "links": [],
+    "email": ""
+  }
+}

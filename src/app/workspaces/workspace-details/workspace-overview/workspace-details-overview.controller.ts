@@ -17,7 +17,7 @@ import { NamespaceSelectorSvc } from '../../create-workspace/ready-to-go-stacks/
 import { WorkspaceDetailsService } from '../workspace-details.service';
 import { CheKubernetesNamespace } from '../../../../components/api/che-kubernetes-namespace.factory';
 import { CheDashboardConfigurationService } from '../../../../components/branding/che-dashboard-configuration.service';
-import { TogglableFeature } from '../../../../components/branding/branding.constant';
+import { TogglableFeature } from '../../../../components/branding/branding';
 import { StorageTypeService, StorageType } from '../../../../components/service/storage-type/storage-type.service';
 
 const STARTING = WorkspaceStatus[WorkspaceStatus.STARTING];

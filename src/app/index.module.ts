@@ -38,6 +38,10 @@ import {CheBranding} from '../components/branding/che-branding';
 import { RegistryCheckingService } from '../components/service/registry-checking.service';
 import { DetectSupportedBrowserService } from '../components/service/browser-detect';
 import { StorageTypeService } from '../components/service/storage-type/storage-type.service';
+import { keycloakSetup } from './keycloak-setup';
+
+// development mode
+const DEV = false;
 
 // init module
 const initModule = angular.module('userDashboard', ['ngAnimate', 'ngCookies', 'ngTouch', 'ngSanitize', 'ngResource', 'ngRoute',
@@ -50,143 +54,24 @@ initModule.constant('cheBranding', cheBranding);
 
 window.name = 'NG_DEFER_BOOTSTRAP!';
 
-declare const Keycloak: Function;
+function showErrorMessage(error: Error) {
+  const footerLogo = document.createElement('img');
+  footerLogo.src = cheBranding.getProductLogo();
+  footerLogo.className = "footer-logo";
 
-function buildKeycloakConfig(keycloakSettings: any): any {
-  const theOidcProvider = keycloakSettings['che.keycloak.oidc_provider'];
-  if (!theOidcProvider) {
-    return {
-      url: keycloakSettings['che.keycloak.auth_server_url'],
-      realm: keycloakSettings['che.keycloak.realm'],
-      clientId: keycloakSettings['che.keycloak.client_id']
-    };
-  } else {
-    return {
-      oidcProvider: theOidcProvider,
-      clientId: keycloakSettings['che.keycloak.client_id']
-    };
-  }
-}
+  const errorMessage = document.createElement('div');
+  errorMessage.innerHTML = error.message;
 
-interface IResolveFn<T> {
-  (value?: T | PromiseLike<T>): void;
-}
-interface IRejectFn {
-  (reason: string): void;
-}
+  const messageArea = document.createElement('div');
+  messageArea.className = 'prebootstrap-error-container';
+  messageArea.appendChild(errorMessage);
 
-function keycloakLoad(keycloakSettings: any) {
-  return new Promise((resolve: IResolveFn<any>, reject: IRejectFn) => {
-    const script = document.createElement('script');
-    script.async = true;
-    script.src = keycloakSettings['che.keycloak.js_adapter_url'];
-    script.addEventListener('load', resolve);
-    script.addEventListener('error', () => {
-      return cheBranding.ready.then(() => {
-        console.error('Keycloak adapter loading error.');
-        reject(`
-          <div class="header"><i class="fa fa-warning"></i><p>Certificate Error</p></div>
-          <div class="body">
-            <p>Your ${cheBranding.getProductName()} server may be using a self-signed certificate. To resolve this issue, try to import the servers CA certificate into your browser, as described <a href="${cheBranding.getDocs().certificate}" target="_blank">here</a>.</p>
-            <p>After importing the certificate, refresh your browser.</p>
-            <p><a href="/">Refresh Now</a></p>
-          </div>
-        `);
-      });
-    });
-    script.addEventListener('abort', () => {
-      const errorMessage = 'Keycloak adapter loading aborted.';
-      console.error(errorMessage);
-      reject(errorMessage);
-    });
-    document.head.appendChild(script);
-  });
-}
+  const backdrop = document.createElement('div');
+  backdrop.className = 'prebootstrap-error-backdrop';
+  backdrop.appendChild(messageArea);
+  backdrop.appendChild(footerLogo);
 
-function keycloakInit(keycloakConfig: any, initOptions: any) {
-  return new Promise((resolve: IResolveFn<any>, reject: IRejectFn) => {
-    const keycloak = Keycloak(keycloakConfig);
-    window.sessionStorage.setItem('oidcDashboardRedirectUrl', location.href);
-    keycloak.init({
-      onLoad: 'login-required',
-      checkLoginIframe: false,
-      useNonce: initOptions['useNonce'],
-      scope: 'email profile',
-      redirectUri: initOptions['redirectUrl']
-    }).success(() => {
-      resolve(keycloak);
-    }).error((e: {error: string, error_description: string}) => {
-      console.error(`Keycloak initialization failed. ${e.error}: ${e.error_description}`);
-      reject(`
-        <div class="header">
-          <i class="fa fa-warning"></i>
-          <p>SSO Error</p>
-        </div>
-        <div class="body">
-          <p>We are experiencing some technical difficulties from our SSO:</p>
-          <p><code>${e.error}: ${e.error_description}</code></p>
-          <p>Please try <kbd>Shift</kbd>+<kbd>Refresh</kbd></p>
-        </div>
-      `);
-    });
-  });
-}
-function setAuthorizationHeader(xhr: XMLHttpRequest, keycloak: any): Promise<any> {
-  return new Promise((resolve: IResolveFn<any>, reject: IRejectFn) => {
-    if (keycloak && keycloak.token) {
-      keycloak.updateToken(5).success(() => {
-        xhr.setRequestHeader('Authorization', 'Bearer ' + keycloak.token);
-        resolve(xhr);
-      }).error(() => {
-        console.warn('Failed to refresh token');
-        window.sessionStorage.setItem('oidcDashboardRedirectUrl', location.href);
-        keycloak.login();
-        reject('Authorization is needed.');
-      });
-      return;
-    }
-
-    resolve(xhr);
-  });
-}
-function getApis(keycloak: any): Promise<void> {
-  const request = new XMLHttpRequest();
-  request.open('GET', '/api/');
-  return setAuthorizationHeader(request, keycloak).then((xhr: XMLHttpRequest) => {
-    return new Promise<void>((resolve: IResolveFn<void>, reject: IRejectFn) => {
-      xhr.onreadystatechange = () => {
-        if (xhr.readyState !== 4) { return; }
-        if (xhr.status === 200) {
-          resolve();
-        } else {
-          console.error(`Can't get "/api/"` + xhr.responseText ? ': ' + xhr.responseText : '.');
-          reject(
-            xhr.responseText
-              ? xhr.responseText
-              : '<div class="header"><span>Unknown error</span></div>'
-          );
-        }
-      };
-      xhr.send();
-    });
-  });
-}
-function showErrorMessage(message: string) {
-  cheBranding.ready.then(() => {
-    const backdrop = document.createElement('div');
-    backdrop.className = 'keycloak-error-backdrop';
-    const messageArea = document.createElement('div');
-    messageArea.className = 'keycloak-error';
-    const footerLogo = document.createElement('img');
-    footerLogo.src = cheBranding.getProductLogo();
-    footerLogo.className="footer-logo";
-    backdrop.appendChild(messageArea);
-    backdrop.appendChild(footerLogo);
-    const errorMessage = document.createElement('div');
-    messageArea.appendChild(errorMessage);
-    errorMessage.innerHTML = message;
-    document.querySelector('.main-page-loader').appendChild(backdrop);
-  });
+  document.querySelector('.main-page-loader').appendChild(backdrop);
 }
 
 const keycloakAuth = {
@@ -196,62 +81,25 @@ const keycloakAuth = {
 };
 initModule.constant('keycloakAuth', keycloakAuth);
 
-angular.element(document).ready(() => {
-  const promise = new Promise((resolve, reject: IRejectFn) => {
-    angular.element.get('/api/keycloak/settings').then(resolve, error => {
-      const errorMessage = `Can't get Keycloak settings: ` + error.statusText;
-      console.warn(errorMessage);
-      reject(errorMessage);
+angular.element(() => {
+  const keycloakSetupPromise = keycloakSetup(cheBranding, DEV);
+  const brandingReadyPromise = cheBranding.ready
+    .catch(errorMessage => {
+      const message = `
+          <div class="header"><i class="fa fa-warning"></i><p>Resource Loading Error</p></div>
+          <div class="body">
+            <p>${errorMessage}</p>
+            <p>Please try <kbd>Shift</kbd>+<kbd>Refresh</kbd> or contact cluster admin if it didn't help.</p>
+          </div>
+        `;
+      return Promise.reject({ message });
     });
-  });
 
-  let hasSSO = false;
-  promise.then((keycloakSettings: any) => {
-    if (!keycloakSettings['che.keycloak.js_adapter_url']) {
-      return;
-    }
-    hasSSO = true;
-
-    keycloakAuth.config = buildKeycloakConfig(keycloakSettings);
-
-    // load Keycloak
-    return keycloakLoad(keycloakSettings).then(() => {
-      // init Keycloak
-      let theUseNonce = false;
-      if (typeof keycloakSettings['che.keycloak.use_nonce'] === 'string') {
-        theUseNonce = keycloakSettings['che.keycloak.use_nonce'].toLowerCase() === 'true';
-      }
-      const initOptions = {
-        useNonce: theUseNonce,
-        redirectUrl: keycloakSettings['che.keycloak.redirect_url.dashboard']
-      };
-      return keycloakInit(keycloakAuth.config, initOptions);
-    }).then((keycloak: any) => {
-      keycloakAuth.isPresent = true;
-      keycloakAuth.keycloak = keycloak;
-      /* tslint:disable */
-      window['_keycloak'] = keycloak;
-      /* tslint:enable */
-    });
-  }).catch((errorMessage: string) => {
-    if (hasSSO) {
-      return Promise.reject(errorMessage);
-    }
-  }).then(() => {
-    const keycloak = (window as any)._keycloak;
-    // try to reach the API
-    // to check if user is authorized to do that
-    return getApis(keycloak);
-  }).then(() => {
-    cheBranding.ready.then(() => {
-      (angular as any).resumeBootstrap();
-    });
-  }).catch((errorMessage: string) => {
-    if (hasSSO) {
-      showErrorMessage(errorMessage);
-    } else {
-      showErrorMessage(`${errorMessage}<div>Click <a href="/">here</a> to reload page.</div>`);
-    }
+  Promise.all([brandingReadyPromise, keycloakSetupPromise]).then(([_cheBranding, _keycloakAuth]) => {
+    Object.assign(keycloakAuth, _keycloakAuth);
+    (angular as any).resumeBootstrap();
+  }).catch(error => {
+    showErrorMessage(error);
   });
 });
 
@@ -304,8 +152,6 @@ initModule.config(['$routeProvider', ($routeProvider: che.route.IRouteProvider) 
 
 
 }]);
-
-const DEV = false;
 
 // configs
 initModule.config(['$routeProvider', ($routeProvider: che.route.IRouteProvider) => {

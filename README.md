@@ -8,7 +8,7 @@ Eclipse Che is a next generation Eclipse IDE. This repository is licensed under 
 
 ## Requirements
 
-- Python `v2.7.x`(`v3.x.x`currently not supported)
+- Python `v2.7.x` (`v3.x.x` currently not supported)
 - Node.js `v8.x.x` or `v10.x.x`
 - yarn `v1.13.0` or higher
 
@@ -191,13 +191,17 @@ for example `cheAPI.getWorkspace().getWorkspaces()` for getting the array of the
 
 Mocks are also provided for the Che API, allowing to emulate a real backend for unit tests.
 
+## Branding
+
+Default branding data for the User Dashboard is located in [branding.json](/src/components/branding/branding.json). It can be updated without re-building the project in [product.json](/src/assets/branding/product.json). [product.json](/src/assets/branding/product.json) should contain only values that should overwrite default ones.
+
 ## Configurability
 
-Configurations for User Dashboard could be applied in [product.json](/src/assets/branding/product.json) in `"configuration"` section.
+Configuration defaults for the User Dashboard could be applied in [branding.json](/src/components/branding/branding.json) (or updated in [product.json](/src/assets/branding/product.json)) in `"configuration"` section.
 
 Adding the `"configuration.menu.disabled"` field allows Che Admins to list menu entries they want to hide in the left navigation bar, along with the corresponding routes which will be disabled.
 
-Available values are `"administration"`, `"factories"`,  `"getstarted"`, `"organizations"`, `"stacks"`.
+Available values are `"administration"`, `"factories"`, `"getstarted"`, `"organizations"`, `"stacks"`.
 
 For example,
 
@@ -214,7 +218,7 @@ For example,
 }
 ```
 
-**Note**: Menu entries also may be disabled by default in [branding.constant.ts](https://github.com/eclipse/che-dashboard/blob/master/src/components/branding/branding.constant.ts#L112-L122). In order to force enable such entries they need to be listed in `"configuration.menu.enabled"` field.
+**Note**: In order to force enable such entries they need to be listed in `"configuration.menu.enabled"` field.
 
 In the case of disabling the `"factories"`, `load factory` routing won't be disabled because it is used for creating a new workspace from the devfile URL. For example, `https://che.openshift.io/f?url=https://raw.githubusercontent.com/eclipse/che/master/devfile.yaml` .
 

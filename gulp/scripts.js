@@ -135,15 +135,15 @@ function webpackWrapper(watch, test, callback) {
     .pipe(gulp.dest(path.join(conf.paths.tmp, '/serve/app')));
 }
 
-gulp.task('scripts', ['colors', 'proxySettings'], function () {
+gulp.task('scripts', ['colors', 'proxySettings', 'branding'], function () {
   return webpackWrapper(false, false);
 });
 
-gulp.task('scripts:watch', ['colors', 'proxySettings'], function (callback) {
+gulp.task('scripts:watch', ['colors', 'proxySettings', 'branding'], function (callback) {
   return webpackWrapper(true, false, callback);
 });
 
-gulp.task('scripts:test', ['colors', 'outputcolors', 'proxySettings'], function () {
+gulp.task('scripts:test', ['colors', 'outputcolors', 'branding', 'proxySettings'], function () {
   return webpackWrapper(false, true);
 });
 
