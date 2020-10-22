@@ -5,7 +5,7 @@ on:
     # Inputs the workflow accepts.
     inputs:
       version:
-        description: 'version'
+        description: 'The version that is going to be released. Should be in format 7.x.y'
         required: true
 jobs:
   build:
