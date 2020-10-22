@@ -26,4 +26,4 @@ jobs:
           git config --global user.email "mkuznets@redhat.com"
           export GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }}
           docker login quay.io --username ${{ secrets.QUAY_USERNAME }} --password ${{ secrets.QUAY_PASSWORD }}
-          /bin/bash make-release.sh make-release.sh --repo git@github.com:mkuznyetsov/che-dashboard --version ${{ github.event.inputs.version }} --trigger-release
+          /bin/bash make-release.sh --repo git@github.com:eclipse/che-dashboard --version ${{ github.event.inputs.version }} --trigger-release
