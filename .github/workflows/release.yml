@@ -1,0 +1,23 @@
+name: Release Che Dashboard
+
+on:
+  workflow_dispatch:
+    # Inputs the workflow accepts.
+    inputs:
+      version:
+        description: 'The version that is going to be released. Should be in format 7.x.y'
+        required: true
+jobs:
+  build:
+    name: Create Release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Create Release
+        run: |
+          git config --global user.name "Mykhailo Kuznietsov"
+          git config --global user.email "mkuznets@redhat.com"
+          export GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }}
+          docker login quay.io --username ${{ secrets.QUAY_USERNAME }} --password ${{ secrets.QUAY_PASSWORD }}
+          /bin/bash make-release.sh --repo git@github.com:eclipse/che-dashboard --version ${{ github.event.inputs.version }} --trigger-release
