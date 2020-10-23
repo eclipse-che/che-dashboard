@@ -356,15 +356,18 @@ export class LoadFactoryController {
       // set devfile attributes
       let url = '';
       let params = '';
+      let attrs: { [key: string]: string } = {};
       for (const key in this.routeParams) {
         if (key === 'url') {
           url = this.routeParams[key];
         } else {
+          if (key !== 'policies.create') {
+            attrs[key] = this.routeParams[key];
+          }
           params += `${!params ? '?' : '&'}${key}=${this.routeParams[key]}`;
         }
       }
-
-      const attrs = {factoryurl: `${url}${params}`};
+      attrs.factoryurl = `${url}${params}`;
       this.cheAPI.getWorkspace().createWorkspaceFromDevfile(undefined, undefined, devfile, attrs)
         .then((workspace: che.IWorkspace) => defer.resolve(workspace))
         .catch(error => defer.reject(error));
