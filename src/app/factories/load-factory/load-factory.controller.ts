@@ -24,6 +24,7 @@ const STARTING = WorkspaceStatus[WorkspaceStatus.STARTING];
 const RUNNING = WorkspaceStatus[WorkspaceStatus.RUNNING];
 
 const WS_AGENT_STEP: number = 4;
+const WS_ATTRIBUTES_TO_SAVE: string[] = ['workspaceDeploymentLabels', 'workspaceDeploymentAnnotations'];
 
 /**
  * This class is handling the controller for the factory loading.
@@ -356,15 +357,18 @@ export class LoadFactoryController {
       // set devfile attributes
       let url = '';
       let params = '';
+      let attrs: { [key: string]: string } = {};
       for (const key in this.routeParams) {
         if (key === 'url') {
           url = this.routeParams[key];
         } else {
+          if (WS_ATTRIBUTES_TO_SAVE.indexOf(key) !== -1) {
+            attrs[key] = this.routeParams[key];
+          }
           params += `${!params ? '?' : '&'}${key}=${this.routeParams[key]}`;
         }
       }
-
-      const attrs = {factoryurl: `${url}${params}`};
+      attrs.factoryurl = `${url}${params}`;
       this.cheAPI.getWorkspace().createWorkspaceFromDevfile(undefined, undefined, devfile, attrs)
         .then((workspace: che.IWorkspace) => defer.resolve(workspace))
         .catch(error => defer.reject(error));
