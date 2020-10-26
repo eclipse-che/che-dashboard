@@ -24,6 +24,7 @@ const STARTING = WorkspaceStatus[WorkspaceStatus.STARTING];
 const RUNNING = WorkspaceStatus[WorkspaceStatus.RUNNING];
 
 const WS_AGENT_STEP: number = 4;
+const WS_ATTRIBUTES_TO_SAVE: string[] = ['workspaceDeploymentLabels', 'workspaceDeploymentAnnotations'];
 
 /**
  * This class is handling the controller for the factory loading.
@@ -361,7 +362,7 @@ export class LoadFactoryController {
         if (key === 'url') {
           url = this.routeParams[key];
         } else {
-          if (key !== 'policies.create') {
+          if (WS_ATTRIBUTES_TO_SAVE.indexOf(key) !== -1) {
             attrs[key] = this.routeParams[key];
           }
           params += `${!params ? '?' : '&'}${key}=${this.routeParams[key]}`;
