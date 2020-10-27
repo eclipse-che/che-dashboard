@@ -30,7 +30,7 @@ bump_version () {
 
   if [[ ${NOCOMMIT} -eq 0 ]]; then
     COMMIT_MSG="[release] Bump to ${NEXT_VERSION} in ${BUMP_BRANCH}"
-    git commit -s -m "${COMMIT_MSG}" VERSION
+    git commit -asm "${COMMIT_MSG}"
     git pull origin "${BUMP_BRANCH}"
 
     PUSH_TRY="$(git push origin "${BUMP_BRANCH}")"
@@ -84,6 +84,8 @@ if [[ "${BASEBRANCH}" != "${BRANCH}" ]]; then
   git fetch origin "${BRANCH}:${BRANCH}"
   git checkout "${BRANCH}"
 fi
+
+set -e
 
 # change VERSION file
 npm --no-git-tag-version version ${VERSION}
