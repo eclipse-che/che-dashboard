@@ -88,7 +88,7 @@ fi
 set -e
 
 # change VERSION file
-npm --no-git-tag-version version ${VERSION}
+npm --no-git-tag-version version --allow-same-version ${VERSION}
 
 # commit change into branch
 if [[ ${NOCOMMIT} -eq 0 ]]; then
@@ -100,7 +100,6 @@ fi
 
 if [[ $TRIGGER_RELEASE -eq 1 ]]; then
   # push new branch to release branch to trigger CI build
-  git fetch origin "${BRANCH}:${BRANCH}"
   git checkout "${BRANCH}"
   docker build -t "${QUAY_REPO}" -f apache.Dockerfile .
   docker push "${QUAY_REPO}"
@@ -112,7 +111,6 @@ if [[ $TRIGGER_RELEASE -eq 1 ]]; then
 fi
 
 # now update ${BASEBRANCH} to the new snapshot version
-git fetch origin "${BASEBRANCH}":"${BASEBRANCH}"
 git checkout "${BASEBRANCH}"
 
 # change VERSION file + commit change into ${BASEBRANCH} branch
