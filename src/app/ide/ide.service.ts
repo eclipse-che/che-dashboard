@@ -182,7 +182,7 @@ class IdeSvc {
     }
 
     // iframe element for IDE application:
-    let iframeElement = '<iframe class=\"ide-page-frame\" id=\"ide-application-iframe\" ng-src=\"{{ideIframeLink}}\" ></iframe>';
+    let iframeElement = '<iframe class=\"ide-page-frame\" id=\"ide-application-iframe\" allow=\"fullscreen *\" ng-src=\"{{ideIframeLink}}\" ></iframe>';
     this.cheUIElementsInjectorService.injectAdditionalElement(iframeParent, iframeElement);
 
     let defer = this.$q.defer();
