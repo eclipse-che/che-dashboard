@@ -322,9 +322,9 @@ export class ShareWorkspaceController {
           this.cheNotification.showError('Delete failed.');
         } else {
           if (numberToDelete === 1) {
-            this.cheNotification.showInfo(currentUserEmail + 'has been removed.');
+            this.cheNotification.showSuccess(currentUserEmail + 'has been removed.');
           } else {
-            this.cheNotification.showInfo('Selected numbers have been removed.');
+            this.cheNotification.showSuccess('Selected numbers have been removed.');
           }
         }
       });

@@ -374,7 +374,7 @@ export class ListTeamMembersController {
     }).finally(() => {
       this.isLoading = false;
       if (unregistered.length > 0) {
-        this.cheNotification.showInfo('User' + (unregistered.length > 1 ? 's ' : ' ') + unregistered.join(', ')
+        this.cheNotification.showSuccess('User' + (unregistered.length > 1 ? 's ' : ' ') + unregistered.join(', ')
           + (unregistered.length > 1 ? ' are' : ' is') + ' not registered in the system. The email invitations were sent.');
       }
     });

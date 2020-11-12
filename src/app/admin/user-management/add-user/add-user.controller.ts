@@ -10,6 +10,7 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 'use strict';
+import { CheNotification } from '../../../../components/notification/che-notification.factory';
 import {AdminsUserManagementCtrl} from '../user-management.controller';
 
 /**
@@ -22,7 +23,7 @@ export class AdminsAddUserController {
 
   private $mdDialog: ng.material.IDialogService;
   private lodash: any;
-  private cheNotification: any;
+  private cheNotification: CheNotification;
   private cheUser: any;
   private callbackController: AdminsUserManagementCtrl;
   private newUserName: string;
@@ -101,7 +102,7 @@ export class AdminsAddUserController {
   private finish(): void {
     this.$mdDialog.hide();
     this.callbackController.updateUsers();
-    this.cheNotification.showInfo('User successfully created.');
+    this.cheNotification.showSuccess('User successfully created.');
   }
 
   /**

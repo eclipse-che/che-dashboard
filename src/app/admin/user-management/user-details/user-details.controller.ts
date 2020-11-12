@@ -215,7 +215,7 @@ export class AdminUserDetailsController {
     let promise = this.cheProfile.setAttributes(this.profileAttributes, this.userId);
 
     promise.then(() => {
-      this.cheNotification.showInfo('Profile successfully updated.');
+      this.cheNotification.showSuccess('Profile successfully updated.');
       this.updateData();
     }, (error: any) => {
         this.profileAttributes = angular.copy(this.profile.attributes);

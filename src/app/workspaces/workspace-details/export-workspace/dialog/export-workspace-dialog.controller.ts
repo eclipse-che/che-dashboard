@@ -194,7 +194,7 @@ export class ExportWorkspaceDialogController {
    */
   finishWorkspaceExporting(remoteWorkspace: che.IWorkspace) {
     this.exportInCloudSteps += 'Export of workspace ' + this.workspaceDataManager.getName(remoteWorkspace) + 'finished <br>';
-    this.cheNotification.showInfo('Successfully exported the workspace to ' + this.workspaceDataManager.getName(remoteWorkspace) + ' on ' + this.privateCloudUrl);
+    this.cheNotification.showSuccess('Successfully exported the workspace to ' + this.workspaceDataManager.getName(remoteWorkspace) + ' on ' + this.privateCloudUrl);
     this.hide();
   }
 

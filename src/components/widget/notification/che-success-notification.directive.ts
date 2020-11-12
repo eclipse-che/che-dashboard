@@ -11,19 +11,19 @@
  */
 'use strict';
 
-interface ICheInfoNotificationAttributes extends ng.IAttributes {
-  cheInfoText: string;
+interface ICheSuccessNotificationAttributes extends ng.IAttributes {
+  cheSuccessText: string;
 }
 
-interface ICheInfoNotificationScope extends ng.IScope {
+interface ICheSuccessNotificationScope extends ng.IScope {
   hideNotification: () => void;
 }
 
 /**
- * Defines a directive for info notification.
+ * Defines a directive for success notification.
  * @author Oleksii Orel
  */
-export class CheInfoNotification implements ng.IDirective {
+export class CheSuccessNotification implements ng.IDirective {
 
   restrict = 'E';
   replace = true;
@@ -31,24 +31,24 @@ export class CheInfoNotification implements ng.IDirective {
   scope = {};
 
   /**
-   * Template for the info notification.
+   * Template for the success notification.
    * @param $element
    * @param $attrs
    * @returns {string} the template
    */
-  template($element: ng.IAugmentedJQuery, $attrs: ICheInfoNotificationAttributes): string {
-    let infoText = $attrs.cheInfoText || '';
+  template($element: ng.IAugmentedJQuery, $attrs: ICheSuccessNotificationAttributes): string {
+    let successText = $attrs.cheSuccessText || '';
     return '<md-toast class="che-notification-info" layout="row" flex layout-align="start start">' +
-      '<i class="che-notification-info-icon fa fa-check fa-2x"></i>' +
+      '<i class="che-notification-success-icon fa fa-check fa-2x"></i>' +
       '<div flex="90" layout="column" layout-align="start start">' +
-      '<span flex class="che-notification-info-title"><b>Success</b></span>' +
-      '<span flex class="che-notification-message">' + infoText + '</span>' +
+      '<span flex class="che-notification-success-title"><b>Success</b></span>' +
+      '<span flex class="che-notification-message">' + successText + '</span>' +
       '</div>' +
       '<i class="che-notification-close-icon fa fa-times" ng-click="hideNotification()"/>' +
       '</md-toast>';
   }
 
-  link($scope: ICheInfoNotificationScope, $element: ng.IAugmentedJQuery) {
+  link($scope: ICheSuccessNotificationScope, $element: ng.IAugmentedJQuery) {
     $scope.hideNotification = () => {
       $element.addClass('hide-notification');
     };

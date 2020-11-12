@@ -142,9 +142,9 @@ export class DockerRegistryListController {
           this.cheNotification.showError('Delete failed.');
         } else {
           if (numberToDelete === 1) {
-            this.cheNotification.showInfo(currentRegistryAddress + ' has been removed.');
+            this.cheNotification.showSuccess(currentRegistryAddress + ' has been removed.');
           } else {
-            this.cheNotification.showInfo('Selected registries have been removed.');
+            this.cheNotification.showSuccess('Selected registries have been removed.');
           }
         }
       });

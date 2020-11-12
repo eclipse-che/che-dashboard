@@ -139,19 +139,19 @@ export class DemoComponentsController {
       },
       applyButton: {
         action: () => {
-          this.cheNotification.showInfo(`Button 'Apply' was clicked.`);
+          this.cheNotification.showSuccess(`Button 'Apply' was clicked.`);
         },
         disabled: false
       },
       saveButton: {
         action: () => {
-          this.cheNotification.showInfo(`Button 'Save' was clicked.`);
+          this.cheNotification.showSuccess(`Button 'Save' was clicked.`);
         },
         disabled: false
       },
       cancelButton: {
         action: () => {
-          this.cheNotification.showInfo(`Button 'Cancel' was clicked.`);
+          this.cheNotification.showSuccess(`Button 'Cancel' was clicked.`);
         },
         disabled: false
       }

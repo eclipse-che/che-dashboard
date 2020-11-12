@@ -126,8 +126,8 @@ describe(`WorkspaceDetailsController >`, () => {
         };
       })
       .service('cheNotification', function () {
-        this.showInfo = (message: string): void => {
-          console.log('cheNotification.info: ', message);
+        this.showSuccess = (message: string): void => {
+          console.log('cheNotification.success: ', message);
         };
       })
       .service('ideSvc', function () {
