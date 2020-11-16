@@ -15,6 +15,7 @@ import {CheUIElementsInjectorService} from '../service/injector/che-ui-elements-
 const NOTIFICATION_CONTAINER_ELEMENT_ID = 'che-notification-container';
 const ERROR_NOTIFICATION_DISPLAY_TIME = 10000;
 const SUCCESS_NOTIFICATION_DISPLAY_TIME = 5000;
+const INFO_NOTIFICATION_DISPLAY_TIME = 5000;
 const MAX_NOTIFICATION_COUNT = 10;
 
 /**
@@ -137,6 +138,24 @@ export class CheNotification {
       hideNotificationElement.remove();
     }
     this._removeNotificationContainer();
+  }
+
+  showInfo(text: string, options?: { delay?: number, title?: string}): void {
+    const delay = options && options.delay ? options.delay : INFO_NOTIFICATION_DISPLAY_TIME;
+
+    const notificationId = this._getNextNotificationId();
+    const jqInfoNotificationElement = angular.element('<che-info-notification/>');
+
+    jqInfoNotificationElement.attr('che-info-title', options && options.title);
+    jqInfoNotificationElement.attr('che-info-text', text);
+    jqInfoNotificationElement.attr('id', notificationId);
+
+    this._addNotification(jqInfoNotificationElement);
+
+    const timeoutPromise = this.$timeout(() => {
+      this._removeNotification(jqInfoNotificationElement);
+    }, delay);
+    this.timeoutPromiseMap.set(notificationId, timeoutPromise);
   }
 
   showSuccess(text: string): void {
