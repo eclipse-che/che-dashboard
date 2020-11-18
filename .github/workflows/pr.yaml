@@ -125,5 +125,5 @@ jobs:
         with:
           script: |
             const { issue: { number: issue_number }, repo: { owner, repo }  } = context;
-            const imageCheServer = '${{ ${ORGANIZATION}/che-server:${IMAGE_VERSION} }}';
+            const imageCheServer = '${{env.ORGANIZATION}}/che-server:${{env.IMAGE_VERSION}}';
             github.issues.createComment({ issue_number, owner, repo, body: 'Docker image build succeeded: **' + imageCheServer + '**' });
