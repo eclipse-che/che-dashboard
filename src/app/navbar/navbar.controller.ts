@@ -10,7 +10,6 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 'use strict';
-import { link } from 'angular-route';
 import { CheAPI } from '../../components/api/che-api.factory';
 import { CheKeycloak } from '../../components/api/che-keycloak.factory';
 import { CheService } from '../../components/api/che-service.factory';
@@ -58,6 +57,7 @@ export class CheNavBarController {
       }
     },
     {
+      // default item name, it's updated in the constructor
       name: 'Copy Login Command',
       onclick: () => {
         this.copyLoginCommand();
@@ -117,6 +117,9 @@ export class CheNavBarController {
     this.cheNotification = cheNotification;
     this.chePermissions = chePermissions;
     this.cheService = cheService;
+
+    // update the default menu item name with a CLI tool name
+    this.accountItems[1].name = `Copy ${cheDashboardConfigurationService.getCliTool()} Login Command`;
 
     const handler = (workspaces: Array<che.IWorkspace>) => {
       this.workspacesNumber = workspaces.length;

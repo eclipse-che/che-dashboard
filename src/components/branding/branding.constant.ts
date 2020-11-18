@@ -61,7 +61,8 @@ export const jsonBranding = JSON.stringify({
     },
     'prefetch': {
       'resources': []
-    }
+    },
+    'cheCliTool': 'chectl'
   },
   'footer': {
     'content': '',

@@ -195,7 +195,7 @@ Mocks are also provided for the Che API, allowing to emulate a real backend for 
 
 Default branding data for the User Dashboard is located in [branding.json](/src/components/branding/branding.json). It can be updated without re-building the project in [product.json](/src/assets/branding/product.json). [product.json](/src/assets/branding/product.json) should contain only values that should overwrite default ones.
 
-## Configurability
+### Configurability
 
 Configuration defaults for the User Dashboard could be applied in [branding.json](/src/components/branding/branding.json) (or updated in [product.json](/src/assets/branding/product.json)) in `"configuration"` section.
 
@@ -253,6 +253,18 @@ For example, this config disables kubernetes namespace selector:
     "features": {
       "disabled": ["kubernetesNamespaceSelector"]
     }
+  }
+}
+```
+
+Field `"configuration.cheCliTool"` should contain the name of a CLI tool that is recommended to be used to work with Che Server from the terminal. Possible values are `"chectl"` (default), `"crwctl"`.
+
+Example:
+
+```json
+{
+  "configuration": {
+    "cheCliTool": "chectl"
   }
 }
 ```

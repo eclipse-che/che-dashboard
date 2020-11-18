@@ -58,6 +58,8 @@ export type IBrandingFooter = {
   email: { title: string, address: string, subject: string } | null
 }
 
+export type CheCliTool = 'chectl' | 'crwctl';
+
 export type IBrandingConfiguration = {
   menu: {
     disabled: che.ConfigurableMenuItem[];
@@ -69,7 +71,8 @@ export type IBrandingConfiguration = {
   },
   features: {
     disabled: TogglableFeature[];
-  }
+  },
+  cheCliTool: CheCliTool;
 }
 
 export enum TogglableFeature {
