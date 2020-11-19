@@ -230,9 +230,9 @@ export class ListWorkspacesCtrl {
           this.cheNotification.showError('Delete failed.');
         } else {
           if (numberToDelete === 1) {
-            this.cheNotification.showInfo(workspaceName + ' has been removed.');
+            this.cheNotification.showSuccess(workspaceName + ' has been removed.');
           } else {
-            this.cheNotification.showInfo('Selected workspaces have been removed.');
+            this.cheNotification.showSuccess('Selected workspaces have been removed.');
           }
         }
       });

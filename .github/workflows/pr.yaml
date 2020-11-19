@@ -49,10 +49,6 @@ jobs:
         name: 'Docker Prepare'
         run: docker image prune -a -f
       -
-        name: 'Prepare Image Name'
-        run: |
-          echo "::set-env name=IMAGE_DASHBOARD::${ORGANIZATION}/che-dashboard:${IMAGE_VERSION}"
-      -
         name: 'Docker docker.io Login'
         run: |
           docker login -u "${{ secrets.DOCKERHUB_MAXURA_USERNAME }}" -p "${{ secrets.DOCKERHUB_MAXURA_PASSWORD }}" docker.io
@@ -65,7 +61,7 @@ jobs:
           max_attempts: 5
           retry_wait_seconds: 60
           command: |
-            cd ${GITHUB_WORKSPACE}/${DIR_DASHBOARD} && docker buildx build --cache-from "type=local,src=/tmp/.buildx-cache" --cache-to "type=local,dest=/tmp/.buildx-cache" --platform linux/amd64,linux/s390x --push --tag ${IMAGE_DASHBOARD} --file apache.Dockerfile .
+            cd ${GITHUB_WORKSPACE}/${DIR_DASHBOARD} && docker buildx build --cache-from "type=local,src=/tmp/.buildx-cache" --cache-to "type=local,dest=/tmp/.buildx-cache" --platform linux/amd64,linux/s390x --push --tag ${ORGANIZATION}/che-dashboard:${IMAGE_VERSION} --file apache.Dockerfile .
       -
         name: 'Docker Logout'
         run: |
@@ -102,10 +98,6 @@ jobs:
         run: |
           cd ${GITHUB_WORKSPACE}/${DIR_CHE} && mvn clean install -DskipTests
       -
-        name: 'Prepare Image Name'
-        run: |
-          echo "::set-env name=IMAGE_CHE_SERVER::${ORGANIZATION}/che-server:${IMAGE_VERSION}"
-      -
         name: 'Docker Build'
         uses: nick-invision/retry@v1
         env:
@@ -123,7 +115,7 @@ jobs:
       -
         name: 'Docker Push'
         run: |
-          docker push ${IMAGE_CHE_SERVER}
+          docker push ${ORGANIZATION}/che-server:${IMAGE_VERSION}
       -
         name: 'Docker Logout'
         run: docker logout
@@ -133,5 +125,5 @@ jobs:
         with:
           script: |
             const { issue: { number: issue_number }, repo: { owner, repo }  } = context;
-            const imageCheServer = '${{ env.IMAGE_CHE_SERVER }}';
+            const imageCheServer = '${{env.ORGANIZATION}}/che-server:${{env.IMAGE_VERSION}}';
             github.issues.createComment({ issue_number, owner, repo, body: 'Docker image build succeeded: **' + imageCheServer + '**' });

@@ -71,6 +71,10 @@ export class CheKeycloak {
     return deferred.promise;
   }
 
+  get refreshToken(): string {
+    return this.keycloak.refreshToken;
+  }
+
   isPresent(): boolean {
     return this.keycloak !== null;
   }

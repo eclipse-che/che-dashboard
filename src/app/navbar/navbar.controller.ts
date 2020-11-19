@@ -10,12 +10,13 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 'use strict';
-import {CheAPI} from '../../components/api/che-api.factory';
-import {CheKeycloak} from '../../components/api/che-keycloak.factory';
-import {CheService} from '../../components/api/che-service.factory';
+import { CheAPI } from '../../components/api/che-api.factory';
+import { CheKeycloak } from '../../components/api/che-keycloak.factory';
+import { CheService } from '../../components/api/che-service.factory';
 import { CheDashboardConfigurationService } from '../../components/branding/che-dashboard-configuration.service';
+import { CheNotification } from '../../components/notification/che-notification.factory';
 
-type ConfigurableMenu = { [key in che.ConfigurableMenuItem ]: string };
+type ConfigurableMenu = { [key in che.ConfigurableMenuItem]: string };
 
 const CONFIGURABLE_MENU: ConfigurableMenu = {
   administration: '#/administration',
@@ -34,11 +35,14 @@ export const MENU_ITEM = angular.extend({
 export class CheNavBarController {
 
   static $inject = [
+    '$document',
     '$location',
     '$scope',
+    '$window',
     'cheAPI',
     'cheDashboardConfigurationService',
     'cheKeycloak',
+    'cheNotification',
     'chePermissions',
     'cheService',
   ];
@@ -53,6 +57,13 @@ export class CheNavBarController {
       }
     },
     {
+      // default item name, it's updated in the constructor
+      name: 'Copy Login Command',
+      onclick: () => {
+        this.copyLoginCommand();
+      }
+    },
+    {
       name: 'Logout',
       onclick: () => {
         this.logout();
@@ -60,11 +71,14 @@ export class CheNavBarController {
     }
   ];
 
+  private $document: ng.IDocumentService;
   private $location: ng.ILocationService;
   private $scope: ng.IScope;
+  private $window: ng.IWindowService;
   private cheAPI: CheAPI;
   private cheDashboardConfigurationService: CheDashboardConfigurationService;
   private cheKeycloak: CheKeycloak;
+  private cheNotification: CheNotification;
   private chePermissions: che.api.IChePermissions;
   private cheService: CheService;
 
@@ -82,21 +96,30 @@ export class CheNavBarController {
    * Default constructor
    */
   constructor(
+    $document: ng.IDocumentService,
     $location: ng.ILocationService,
     $scope: ng.IScope,
+    $window: ng.IWindowService,
     cheAPI: CheAPI,
     cheDashboardConfigurationService: CheDashboardConfigurationService,
     cheKeycloak: CheKeycloak,
+    cheNotification: CheNotification,
     chePermissions: che.api.IChePermissions,
     cheService: CheService,
   ) {
+    this.$document = $document;
     this.$location = $location;
     this.$scope = $scope;
+    this.$window = $window;
     this.cheAPI = cheAPI;
     this.cheDashboardConfigurationService = cheDashboardConfigurationService;
     this.cheKeycloak = cheKeycloak;
+    this.cheNotification = cheNotification;
     this.chePermissions = chePermissions;
     this.cheService = cheService;
+
+    // update the default menu item name with a CLI tool name
+    this.accountItems[1].name = `Copy ${cheDashboardConfigurationService.getCliTool()} Login Command`;
 
     const handler = (workspaces: Array<che.IWorkspace>) => {
       this.workspacesNumber = workspaces.length;
@@ -186,7 +209,7 @@ export class CheNavBarController {
    * @return {string}
    */
   getUserName(): string {
-    const {attributes, email} = this.profile;
+    const { attributes, email } = this.profile;
     const fullName = this.cheAPI.getProfile().getFullName(attributes).trim();
 
     return fullName ? fullName : email;
@@ -244,6 +267,64 @@ export class CheNavBarController {
    */
   private gotoProfile(): void {
     this.$location.path('/account').search({});
+  }
+
+  /**
+   * Copies login command in clipboard.
+   */
+  private copyLoginCommand(): void {
+    const loginCommand = this.getLoginCommand();
+    try {
+      const copyToClipboardEl = this.$window.document.createElement('span');
+      const bodyEl = this.$document.find('body');
+      copyToClipboardEl.appendChild(document.createTextNode(loginCommand));
+      copyToClipboardEl.id = 'copy-to-clipboard';
+      angular.element(bodyEl.append(copyToClipboardEl));
+
+      const range = this.$window.document.createRange();
+      range.selectNode(copyToClipboardEl);
+      this.$window.getSelection().removeAllRanges();
+      this.$window.getSelection().addRange(range);
+
+      this.$window.document.execCommand('copy');
+      this.$window.getSelection().removeAllRanges();
+      copyToClipboardEl.remove();
+
+      this.cheNotification.showSuccess('The login command copied to clipboard.');
+    } catch (e) {
+      console.error('Failed to put login to clipboard. Error: ', e);
+
+      this.cheNotification.showWarning('Failed to put login command to clipboard.');
+
+      const messageId = 'refresh-token-message';
+      const linkButtonId = 'refresh-token-show-button';
+      const tokenBoxId = 'refresh-token-box';
+      const hiddenCssClass = 'refresh-token--hidden';
+      this.cheNotification.showInfo(`
+        <script>
+          $('#${linkButtonId}').on('click', (e) => {
+            e.preventDefault();
+            // show token box
+            const tokenBoxEl = document.querySelector('#${tokenBoxId}');
+            tokenBoxEl.classList.remove('${hiddenCssClass}');
+            // hide info message
+            const messageEl = document.querySelector('#${messageId}');
+            messageEl.classList.add('${hiddenCssClass}');
+            return false;
+          });
+        </script>
+        <div>
+          <div id="${messageId}"><a id="${linkButtonId}">Click here</a> to see the login command and copy it manually.</div>
+          <pre id="${tokenBoxId}" class="${hiddenCssClass}">${loginCommand}</pre>
+        </div>
+        `, { title: 'Login command', delay: 20000 });
+    }
+  }
+
+  private getLoginCommand(): string {
+    const host = this.$window.location.host;
+    const token = this.cheKeycloak.refreshToken;
+    return `chectl auth:login ${host} -t ${token}`;
   }
 
   /**

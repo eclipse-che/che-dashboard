@@ -14,8 +14,8 @@
 const EC = protractor.ExpectedConditions;
 const asyncTimeout = 10000;
 
-const CheInfoNotification = function () {
-  this.notificationElements = $$('.che-notification-info');
+const CheSuccessNotification = function () {
+  this.notificationElements = $$('.che-notification-success');
 
   this.getNotificationElements = () => {
     return this.notificationElements;
@@ -66,5 +66,5 @@ const CheErrorNotification = function () {
 
 };
 
-module.exports.info = new CheInfoNotification();
+module.exports.info = new CheSuccessNotification();
 module.exports.error = new CheErrorNotification();

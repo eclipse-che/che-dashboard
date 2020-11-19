@@ -14,6 +14,7 @@ import {CheUIElementsInjectorService} from '../service/injector/che-ui-elements-
 
 const NOTIFICATION_CONTAINER_ELEMENT_ID = 'che-notification-container';
 const ERROR_NOTIFICATION_DISPLAY_TIME = 10000;
+const SUCCESS_NOTIFICATION_DISPLAY_TIME = 5000;
 const INFO_NOTIFICATION_DISPLAY_TIME = 5000;
 const MAX_NOTIFICATION_COUNT = 10;
 
@@ -139,10 +140,13 @@ export class CheNotification {
     this._removeNotificationContainer();
   }
 
-  showInfo(text: string): void {
+  showInfo(text: string, options?: { delay?: number, title?: string}): void {
+    const delay = options && options.delay ? options.delay : INFO_NOTIFICATION_DISPLAY_TIME;
+
     const notificationId = this._getNextNotificationId();
     const jqInfoNotificationElement = angular.element('<che-info-notification/>');
 
+    jqInfoNotificationElement.attr('che-info-title', options && options.title);
     jqInfoNotificationElement.attr('che-info-text', text);
     jqInfoNotificationElement.attr('id', notificationId);
 
@@ -150,7 +154,22 @@ export class CheNotification {
 
     const timeoutPromise = this.$timeout(() => {
       this._removeNotification(jqInfoNotificationElement);
-    }, INFO_NOTIFICATION_DISPLAY_TIME);
+    }, delay);
+    this.timeoutPromiseMap.set(notificationId, timeoutPromise);
+  }
+
+  showSuccess(text: string): void {
+    const notificationId = this._getNextNotificationId();
+    const jqSuccessNotificationElement = angular.element('<che-success-notification/>');
+
+    jqSuccessNotificationElement.attr('che-success-text', text);
+    jqSuccessNotificationElement.attr('id', notificationId);
+
+    this._addNotification(jqSuccessNotificationElement);
+
+    const timeoutPromise = this.$timeout(() => {
+      this._removeNotification(jqSuccessNotificationElement);
+    }, SUCCESS_NOTIFICATION_DISPLAY_TIME);
     this.timeoutPromiseMap.set(notificationId, timeoutPromise);
   }
 
@@ -186,7 +205,7 @@ export class CheNotification {
 
     const timeoutPromise = this.$timeout(() => {
       this._removeNotification(jqInfoNotificationElement);
-    }, INFO_NOTIFICATION_DISPLAY_TIME);
+    }, SUCCESS_NOTIFICATION_DISPLAY_TIME);
     this.timeoutPromiseMap.set(notificationId, timeoutPromise);
   }
 }

@@ -89,7 +89,7 @@ export class FactoryFromFileCtrl {
       reader.onload = function () {
         try {
           ctrl.factoryContent = $filter('json')(angular.fromJson(reader.result.toString()), 2);
-          ctrl.cheNotification.showInfo('Successfully loaded file\'s configuration ' + uploadedFileName + '.');
+          ctrl.cheNotification.showSuccess('Successfully loaded file\'s configuration ' + uploadedFileName + '.');
         } catch (e) {
           // invalid JSON
           ctrl.factoryContent = null;

@@ -11,7 +11,7 @@
  */
 'use strict';
 
-import { TogglableFeature } from './branding';
+import { CheCliTool, TogglableFeature } from './branding';
 import { CheBranding } from './che-branding';
 
 export type FooterLink = {
@@ -96,6 +96,10 @@ export class CheDashboardConfigurationService {
       };
     }
     return links;
+  }
+
+  getCliTool(): CheCliTool {
+    return this.cheBranding.getConfiguration().cheCliTool || 'chectl';
   }
 
   private getDisabledItems(): che.ConfigurableMenuItem[] {

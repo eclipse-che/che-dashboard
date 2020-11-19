@@ -209,9 +209,9 @@ export class AdminsUserManagementCtrl {
           this.cheNotification.showError('Delete failed.');
         } else {
           if (numberToDelete === 1) {
-            this.cheNotification.showInfo('Selected user has been removed.');
+            this.cheNotification.showSuccess('Selected user has been removed.');
           } else {
-            this.cheNotification.showInfo('Selected users have been removed.');
+            this.cheNotification.showSuccess('Selected users have been removed.');
           }
         }
       });

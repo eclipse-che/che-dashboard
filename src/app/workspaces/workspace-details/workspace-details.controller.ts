@@ -482,7 +482,7 @@ export class WorkspaceDetailsController {
     this.workspaceDetailsService.applyChanges(this.workspaceDetails)
       .then(() => {
         this.workspaceDetailsService.removeModified(this.workspaceId);
-        this.cheNotification.showInfo('Workspace updated.');
+        this.cheNotification.showSuccess('Workspace updated.');
         this.$scope.$broadcast('edit-workspace-details', { status: 'saved' });
       })
       .catch((error: any) => {
@@ -520,7 +520,7 @@ export class WorkspaceDetailsController {
 
         let message = 'Workspace updated.';
         message += notifyRestart ? '<br/>To apply changes in running workspace - need to restart it.' : '';
-        this.cheNotification.showInfo(message);
+        this.cheNotification.showSuccess(message);
 
         this.$scope.$broadcast('edit-workspace-details', { status: 'saved' });
       })

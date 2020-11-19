@@ -12,6 +12,7 @@
 'use strict';
 
 interface ICheInfoNotificationAttributes extends ng.IAttributes {
+  cheInfoTitle: string;
   cheInfoText: string;
 }
 
@@ -21,7 +22,7 @@ interface ICheInfoNotificationScope extends ng.IScope {
 
 /**
  * Defines a directive for info notification.
- * @author Oleksii Orel
+ * @author Oleksii Kurinnyi
  */
 export class CheInfoNotification implements ng.IDirective {
 
@@ -37,15 +38,19 @@ export class CheInfoNotification implements ng.IDirective {
    * @returns {string} the template
    */
   template($element: ng.IAugmentedJQuery, $attrs: ICheInfoNotificationAttributes): string {
+    let infoTitle = $attrs.cheInfoTitle || 'Info';
     let infoText = $attrs.cheInfoText || '';
-    return '<md-toast class="che-notification-info" layout="row" flex layout-align="start start">' +
-      '<i class="che-notification-info-icon fa fa-check fa-2x"></i>' +
-      '<div flex="90" layout="column" layout-align="start start">' +
-      '<span flex class="che-notification-info-title"><b>Success</b></span>' +
-      '<span flex class="che-notification-message">' + infoText + '</span>' +
-      '</div>' +
-      '<i class="che-notification-close-icon fa fa-times" ng-click="hideNotification()"/>' +
-      '</md-toast>';
+    return `
+<md-toast class="che-notification-info" layout="row" flex layout-align="start start">
+  <i class="che-notification-info-icon fa fa-info fa-2x"></i>
+  <div flex="90" layout="column" layout-align="start start">
+    <span flex class="che-notification-info-title">
+      <b>${infoTitle}</b>
+    </span>
+    <span flex class="che-notification-message">${infoText}</span>
+  </div>
+  <i class="che-notification-close-icon fa fa-times" ng-click="hideNotification()"/>
+</md-toast>`;
   }
 
   link($scope: ICheInfoNotificationScope, $element: ng.IAugmentedJQuery) {

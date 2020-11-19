@@ -249,7 +249,7 @@ export class FactoryInformationController {
 
     promise.then((factory: che.IFactory) => {
       this.factory = factory;
-      this.cheNotification.showInfo('Factory information successfully updated.');
+      this.cheNotification.showSuccess('Factory information successfully updated.');
     }, (error: any) => {
       this.cheNotification.showError(error.data.message ? error.data.message : 'Update factory failed.');
       this.$log.log(error);
@@ -283,7 +283,7 @@ export class FactoryInformationController {
 
     promise.then((factory: che.IFactory) => {
       this.factory = factory;
-      this.cheNotification.showInfo('Factory information successfully updated.');
+      this.cheNotification.showSuccess('Factory information successfully updated.');
     }, (error: any) => {
       this.factoryContent = this.$filter('json')(this.copyOriginFactory, 2);
       this.cheNotification.showError(error.data.message ? error.data.message : 'Update factory failed.');

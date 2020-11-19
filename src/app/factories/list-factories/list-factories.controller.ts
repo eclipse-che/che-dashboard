@@ -150,7 +150,7 @@ export class ListFactoriesController {
         if (isError) {
           this.cheNotification.showError('Delete failed.');
         } else {
-          this.cheNotification.showInfo('Selected ' + (numberToDelete === 1 ? 'factory' : 'factories') + ' has been removed.');
+          this.cheNotification.showSuccess('Selected ' + (numberToDelete === 1 ? 'factory' : 'factories') + ' has been removed.');
         }
       });
     });
