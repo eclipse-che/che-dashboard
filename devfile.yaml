@@ -4,7 +4,7 @@ metadata:
 components:
   - alias: typescript-plugin
     type: chePlugin
-    id: che-incubator/typescript/1.30.2
+    id: che-incubator/typescript/latest
   - alias: dash-dev
     type: dockerimage
     image: 'quay.io/eclipse/che-dashboard-dev:nightly'
