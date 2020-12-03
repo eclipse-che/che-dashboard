@@ -59,8 +59,8 @@ bump_version () {
 
 usage ()
 {
-  echo "Usage: $0 --repo [GIT REPO TO EDIT] --version [VERSION TO RELEASE] [--trigger-release]"
-  echo "Example: $0 --repo git@github.com:eclipse/che-subproject --version 7.7.0 --trigger-release"; echo
+  echo "Usage: $0 --version [VERSION TO RELEASE] [--trigger-release]"
+  echo "Example: $0 --version 7.7.0 --trigger-release"; echo
 }
 
 if [[ ! ${VERSION} ]]; then
