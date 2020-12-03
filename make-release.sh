@@ -1,4 +1,13 @@
 #!/bin/bash
+#
+# Copyright (c) 2020 Red Hat, Inc.
+# This program and the accompanying materials are made
+# available under the terms of the Eclipse Public License 2.0
+# which is available at https://www.eclipse.org/legal/epl-2.0/
+#
+# SPDX-License-Identifier: EPL-2.0
+#
+
 # Release process automation script. 
 # Used to create branch/tag, update VERSION files 
 # and and trigger release by force pushing changes to the release branch 
@@ -10,7 +19,6 @@ NOCOMMIT=0
 while [[ "$#" -gt 0 ]]; do
   case $1 in
     '-t'|'--trigger-release') TRIGGER_RELEASE=1; NOCOMMIT=0; shift 0;;
-    '-r'|'--repo') REPO="$2"; shift 1;;
     '-v'|'--version') VERSION="$2"; shift 1;;
     '-n'|'--no-commit') NOCOMMIT=1; TRIGGER_RELEASE=0; shift 0;;
   esac
@@ -23,10 +31,10 @@ bump_version () {
   NEXT_VERSION=$1
   BUMP_BRANCH=$2
 
-  git checkout ${BUMP_BRANCH}
+  git checkout "${BUMP_BRANCH}"
 
   echo "Updating project version to ${NEXT_VERSION}"
-  npm --no-git-tag-version version ${NEXT_VERSION}
+  npm --no-git-tag-version version "${NEXT_VERSION}"
 
   if [[ ${NOCOMMIT} -eq 0 ]]; then
     COMMIT_MSG="[release] Bump to ${NEXT_VERSION} in ${BUMP_BRANCH}"
@@ -46,7 +54,7 @@ bump_version () {
       hub pull-request -f -m "${lastCommitComment}" -b "${BUMP_BRANCH}" -h "${PR_BRANCH}"
     fi 
   fi
-  git checkout ${CURRENT_BRANCH}
+  git checkout "${CURRENT_BRANCH}"
 }
 
 usage ()
@@ -55,7 +63,7 @@ usage ()
   echo "Example: $0 --repo git@github.com:eclipse/che-subproject --version 7.7.0 --trigger-release"; echo
 }
 
-if [[ ! ${VERSION} ]] || [[ ! ${REPO} ]]; then
+if [[ ! ${VERSION} ]]; then
   usage
   exit 1
 fi
@@ -87,7 +95,7 @@ fi
 set -e
 
 # change VERSION file
-npm --no-git-tag-version version --allow-same-version ${VERSION}
+npm --no-git-tag-version version --allow-same-version "${VERSION}"
 
 # commit change into branch
 if [[ ${NOCOMMIT} -eq 0 ]]; then
@@ -117,9 +125,9 @@ if [[ "${BASEBRANCH}" != "${BRANCH}" ]]; then
   # bump the y digit, if it is a major release
   [[ $BRANCH =~ ^([0-9]+)\.([0-9]+)\.x ]] && BASE=${BASH_REMATCH[1]}; NEXT=${BASH_REMATCH[2]}; (( NEXT=NEXT+1 )) # for BRANCH=7.10.x, get BASE=7, NEXT=11
   NEXT_VERSION_Y="${BASE}.${NEXT}.0-SNAPSHOT"
-  bump_version ${NEXT_VERSION_Y} ${BASEBRANCH}
+  bump_version "${NEXT_VERSION_Y}" "${BASEBRANCH}"
 fi
 # bump the z digit
 [[ $VERSION =~ ^([0-9]+)\.([0-9]+)\.([0-9]+) ]] && BASE="${BASH_REMATCH[1]}.${BASH_REMATCH[2]}"; NEXT="${BASH_REMATCH[3]}"; (( NEXT=NEXT+1 )) # for VERSION=7.7.1, get BASE=7.7, NEXT=2
 NEXT_VERSION_Z="${BASE}.${NEXT}-SNAPSHOT"
-bump_version ${NEXT_VERSION_Z} ${BRANCH}
+bump_version "${NEXT_VERSION_Z}" "${BRANCH}"
