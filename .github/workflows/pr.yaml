@@ -13,6 +13,8 @@ name: PR-FORK
 on:
   pull_request_target:
     branches: [master]
+    types: [opened, edited, synchronize, reopened]
+
 
 env:
   DIR_DASHBOARD: che-dashboard
