@@ -29,10 +29,18 @@ jobs:
         buildx-version: v0.4.1
     - name: "Docker prepare"
       run: docker image prune -a -f
-    - name: "Docker Quay.io Login"
-      run:  docker login -u "${{ secrets.QUAY_USERNAME }}" -p "${{ secrets.QUAY_PASSWORD }}" quay.io
-    - name: "Docker docker.io Login"
-      run:  docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" -p "${{ secrets.DOCKERHUB_PASSWORD }}" docker.io
+    - name: 'Docker quay.io Login'
+      uses: docker/login-action@v1
+      with:
+        registry: quay.io
+        username: ${{ secrets.QUAY_USERNAME }}
+        password: ${{ secrets.QUAY_PASSWORD }}
+    - name: 'Docker docker.io Login'
+      uses: docker/login-action@v1
+      with:
+        registry: docker.io
+        username: ${{ secrets.DOCKERHUB_USERNAME }}
+        password: ${{ secrets.DOCKERHUB_PASSWORD }}
     - name: "Docker build with cache"
       uses: nick-invision/retry@v1
       with:
