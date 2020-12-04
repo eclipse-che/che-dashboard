@@ -6,39 +6,39 @@
 #
 # SPDX-License-Identifier: EPL-2.0
 #
-name: CI
-# Trigger the workflow on push
-on:
-  push:
-    branches:
-      - master
-jobs:
-  docker-build:
-    runs-on: ubuntu-18.04
-    strategy:
-      fail-fast: false
-    env:
-      IMAGE_FULL: quay.io/eclipse/che-dashboard:next
-      CACHE_IMAGE_FULL: docker.io/cheincubator/che-dashboard:cache
-    steps:
-    - uses: actions/checkout@v2
-      name: Checkout che-dashboard source code
-    - name: Docker Buildx
-      uses: crazy-max/ghaction-docker-buildx@v1.6.2
-      with:
-        buildx-version: v0.4.1
-    - name: "Docker prepare"
-      run: docker image prune -a -f
-    - name: "Docker Quay.io Login"
-      run:  docker login -u "${{ secrets.QUAY_USERNAME }}" -p "${{ secrets.QUAY_PASSWORD }}" quay.io
-    - name: "Docker docker.io Login"
-      run:  docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" -p "${{ secrets.DOCKERHUB_PASSWORD }}" docker.io
-    - name: "Docker build with cache"
-      uses: nick-invision/retry@v1
-      with:
-        timeout_minutes: 40
-        max_attempts: 5
-        retry_wait_seconds: 60
-        command: docker buildx build --platform linux/amd64,linux/s390x --cache-from="type=registry,ref=${CACHE_IMAGE_FULL}" --cache-to="type=registry,ref=${CACHE_IMAGE_FULL},mode=max" -t ${IMAGE_FULL}  -f apache.Dockerfile --push .
-    - name: "Docker Logout"
-      run: docker logout
+# name: CI
+# # Trigger the workflow on push
+# on:
+#   push:
+#     branches:
+#       - master
+# jobs:
+#   docker-build:
+#     runs-on: ubuntu-18.04
+#     strategy:
+#       fail-fast: false
+#     env:
+#       IMAGE_FULL: quay.io/eclipse/che-dashboard:next
+#       CACHE_IMAGE_FULL: docker.io/cheincubator/che-dashboard:cache
+#     steps:
+#     - uses: actions/checkout@v2
+#       name: Checkout che-dashboard source code
+#     - name: Docker Buildx
+#       uses: crazy-max/ghaction-docker-buildx@v1.6.2
+#       with:
+#         buildx-version: v0.4.1
+#     - name: "Docker prepare"
+#       run: docker image prune -a -f
+#     - name: "Docker Quay.io Login"
+#       run:  docker login -u "${{ secrets.QUAY_USERNAME }}" -p "${{ secrets.QUAY_PASSWORD }}" quay.io
+#     - name: "Docker docker.io Login"
+#       run:  docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" -p "${{ secrets.DOCKERHUB_PASSWORD }}" docker.io
+#     - name: "Docker build with cache"
+#       uses: nick-invision/retry@v1
+#       with:
+#         timeout_minutes: 40
+#         max_attempts: 5
+#         retry_wait_seconds: 60
+#         command: docker buildx build --platform linux/amd64,linux/s390x --cache-from="type=registry,ref=${CACHE_IMAGE_FULL}" --cache-to="type=registry,ref=${CACHE_IMAGE_FULL},mode=max" -t ${IMAGE_FULL}  -f apache.Dockerfile --push .
+#     - name: "Docker Logout"
+#       run: docker logout
