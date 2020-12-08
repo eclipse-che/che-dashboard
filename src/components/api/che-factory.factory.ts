@@ -464,10 +464,16 @@ export class CheFactory {
     }).catch((response: ng.IHttpResponse<any>) => {
       let errorMessage: string;
       if (response.status === -1 || (!response.status && !response.statusText)) {
+        // request is interrupted, there is even no response
         errorMessage = `Failed to fetch the devfile due to network issues while requesting "${response.config.url}".`;
+      } else if (response.data && response.data.message) {
+        // Che Server error that should be self-descriptive
+        errorMessage = response.data.message;
       } else {
+        // The error is not from Che Server, so response may be in html format that we're not able to handle.
+        // Displaying just a response code and URL.
         const delimiter = response.status && response.statusText ? ' ' : '';
-        errorMessage = `Failed to fetch the devfile due to "${response.status}${delimiter}${response.statusText}" returned by "${response.config.url}"`;
+        errorMessage = `Failed to fetch the devfile due to "${response.status}${delimiter}${response.statusText}" returned by "${response.config.url}. See browser logs for more details"`;
       }
       console.error(errorMessage, response);
       return this.$q.reject(errorMessage);
