@@ -1,6 +1,6 @@
 {
   "name": "che-dashboard",
-  "version": "7.23.1",
+  "version": "7.23.2-SNAPSHOT",
   "private": "true",
   "repository": {
     "type": "git",
