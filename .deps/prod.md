@@ -31,6 +31,7 @@
 | [`core-js@2.6.11`](https://github.com/zloirock/core-js.git) | MIT | clearlydefined |
 | [`create-react-context@0.3.0`](https://github.com/thejameskyle/create-react-context) | MIT | clearlydefined |
 | [`csstype@2.6.10`](https://github.com/frenic/csstype) | MIT | clearlydefined |
+| [`date-fns@2.16.1`](https://github.com/date-fns/date-fns) | MIT | clearlydefined |
 | [`debug@3.1.0`](git://github.com/visionmedia/debug.git) | MIT | [CQ17757](https://dev.eclipse.org/ipzilla/show_bug.cgi?id=17757) |
 | [`deep-equal@1.1.1`](http://github.com/substack/node-deep-equal.git) | MIT | clearlydefined |
 | [`define-properties@1.1.3`](git://github.com/ljharb/define-properties.git) | MIT | clearlydefined |
@@ -61,6 +62,7 @@
 | [`http-proxy-agent@2.1.0`](git://github.com/TooTallNate/node-http-proxy-agent.git) | MIT | [CQ18717](https://dev.eclipse.org/ipzilla/show_bug.cgi?id=18717) |
 | [`https-proxy-agent@2.2.4`](git://github.com/TooTallNate/node-https-proxy-agent.git) | MIT | [CQ18717](https://dev.eclipse.org/ipzilla/show_bug.cgi?id=18717) |
 | [`inherits@2.0.4`](git://github.com/isaacs/inherits) | ISC | [CQ14871](https://dev.eclipse.org/ipzilla/show_bug.cgi?id=14871) |
+| [`inversify-inject-decorators@3.1.0`](git+https://github.com/inversify/inversify-inject-decorators.git) | MIT | clearlydefined |
 | [`inversify-react@0.4.3`](https://github.com/Kukkimonsuta/inversify-react.git) | Apache-2.0 | clearlydefined |
 | [`inversify@5.0.1`](https://github.com/inversify/InversifyJS.git) | MIT | clearlydefined |
 | [`is-arguments@1.0.4`](git://github.com/ljharb/is-arguments.git) | MIT | clearlydefined |

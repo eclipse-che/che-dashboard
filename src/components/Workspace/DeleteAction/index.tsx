@@ -49,6 +49,9 @@ type State = {
   warningInfoCheck?: boolean;
 };
 
+/**
+ * @deprecated Use [WorkspaceActions](src/containers/WorkspaceActions/index.tsx) instead
+ */
 export class WorkspaceDeleteAction extends React.PureComponent<Props, State> {
   static shouldDelete: string[] = [];
 

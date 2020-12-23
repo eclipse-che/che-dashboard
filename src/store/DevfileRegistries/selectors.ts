@@ -12,6 +12,7 @@
 
 import { createSelector } from 'reselect';
 import { AppState } from '../';
+import match from '../../services/helpers/filter';
 
 const selectState = (state: AppState) => state.devfileRegistries;
 
@@ -25,26 +26,19 @@ export const selectFilterValue = createSelector(
   state => state.filter
 );
 
-const selectFilterTokens = createSelector(
-  selectFilterValue,
-  value =>
-    value.toLowerCase().split(/\s+/)
-);
-
 export const selectMetadataFiltered = createSelector(
   selectState,
-  selectFilterTokens,
+  selectFilterValue,
   selectMetadata,
-  (state, filterTokens, metadata) => {
-    if (filterTokens.length === 0) {
+  (state, filterValue, metadata) => {
+    if (!filterValue) {
       return metadata;
     }
-    return metadata.filter(meta => matches(meta, filterTokens));
+    return metadata.filter(meta => matches(meta, filterValue));
   }
 );
-const matches = (meta: che.DevfileMetaData, values: string[]): boolean => {
-  return values.every(value =>
-    meta.displayName.toLowerCase().split(/\s+/).some(word => word.startsWith(value))
-    || meta.description?.toLowerCase().split(/\s+/).some(word => word.startsWith(value))
-  );
-};
+
+function matches(meta: che.DevfileMetaData, filterValue: string): boolean {
+  return match(meta.displayName, filterValue)
+    || match(meta.description || '', filterValue);
+}

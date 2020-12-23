@@ -30,7 +30,7 @@ import Header from '../../components/Header';
 import WorkspaceLogs from '../../components/LogsTab';
 import { LoadIdeSteps } from '../../containers/IdeLoader';
 import { delay } from '../../services/helpers/delay';
-import { IdeLoaderTabs, WorkspaceStatus } from '../../services/helpers/types';
+import { IdeLoaderTab, WorkspaceStatus } from '../../services/helpers/types';
 
 import workspaceStatusLabelStyles from '../../components/WorkspaceStatusLabel/index.module.css';
 import './IdeLoader.styl';
@@ -42,7 +42,7 @@ type Props = {
   currentStep: LoadIdeSteps,
   workspaceName: string;
   workspaceId: string;
-  preselectedTabKey?: IdeLoaderTabs
+  preselectedTabKey?: IdeLoaderTab
   ideUrl?: string;
   callbacks?: {
     showAlert?: (alertOptions: AlertOptions) => void
@@ -54,7 +54,7 @@ type State = {
   workspaceId: string;
   loaderVisible: boolean;
   alertVisible: boolean;
-  activeTabKey: IdeLoaderTabs;
+  activeTabKey: IdeLoaderTab;
   currentRequestError: string;
   currentAlertVariant?: AlertVariant;
   alertActionLinks?: React.ReactFragment;
@@ -70,7 +70,7 @@ export type AlertOptions = {
 };
 
 class IdeLoader extends React.PureComponent<Props, State> {
-  private loaderTimer;
+  private loaderTimer: number;
   private readonly hideAlert: () => void;
   private readonly handleTabClick: (event: React.MouseEvent<HTMLElement, MouseEvent>, tabIndex: React.ReactText) => void;
   public showAlert: (options: AlertOptions) => void;
@@ -85,15 +85,15 @@ class IdeLoader extends React.PureComponent<Props, State> {
       loaderVisible: false,
       currentRequestError: '',
       workspaceId: this.props.workspaceId,
-      activeTabKey: this.props.preselectedTabKey ? this.props.preselectedTabKey : IdeLoaderTabs.Progress,
+      activeTabKey: this.props.preselectedTabKey ? this.props.preselectedTabKey : IdeLoaderTab.Progress,
     };
 
     this.wizardRef = React.createRef();
 
     // Toggle currently active tab
     this.handleTabClick = (event: React.MouseEvent<HTMLElement, MouseEvent>, tabIndex: React.ReactText): void => {
-      this.setState({ activeTabKey: tabIndex as IdeLoaderTabs });
-      if (this.state.activeTabKey === IdeLoaderTabs.Progress) {
+      this.setState({ activeTabKey: tabIndex as IdeLoaderTab });
+      if (this.state.activeTabKey === IdeLoaderTab.Progress) {
         this.setState({ alertVisible: false });
       }
     };
@@ -101,7 +101,7 @@ class IdeLoader extends React.PureComponent<Props, State> {
     let showAlertTimer;
     this.showAlert = (alertOptions: AlertOptions): void => {
       this.setState({ currentRequestError: alertOptions.title, currentAlertVariant: alertOptions.alertVariant, alertActionLinks: alertOptions?.alertActionLinks, alertBody: alertOptions?.body });
-      if (this.state.activeTabKey === IdeLoaderTabs.Progress) {
+      if (this.state.activeTabKey === IdeLoaderTab.Progress) {
         return;
       }
       this.setState({ alertVisible: true });
@@ -179,7 +179,7 @@ class IdeLoader extends React.PureComponent<Props, State> {
         if (this.loaderTimer) {
           clearTimeout(this.loaderTimer);
         }
-        this.loaderTimer = setTimeout(() => {
+        this.loaderTimer = window.setTimeout(() => {
           // todo improve this temporary solution for the debugging session
           if (window.location.origin.includes('://localhost')) {
             window.location.href = ideUrl;
@@ -324,7 +324,7 @@ class IdeLoader extends React.PureComponent<Props, State> {
         <PageSection variant={SECTION_THEME} className="ide-loader-page" isFilled={true}>
           <Tabs activeKey={this.state.activeTabKey} onSelect={this.handleTabClick} inset={{ default: 'insetLg' }}
             id="ide-loader-page-tabs">
-            <Tab eventKey={IdeLoaderTabs.Progress} title={IdeLoaderTabs[IdeLoaderTabs.Progress]}
+            <Tab eventKey={IdeLoaderTab.Progress} title={IdeLoaderTab[IdeLoaderTab.Progress]}
               id="ide-loader-page-wizard-tab">
               <PageSection>
                 {(this.state.currentRequestError) && (
@@ -349,7 +349,7 @@ class IdeLoader extends React.PureComponent<Props, State> {
                 />
               </PageSection>
             </Tab>
-            <Tab eventKey={IdeLoaderTabs.Logs} title={IdeLoaderTabs[IdeLoaderTabs.Logs]}
+            <Tab eventKey={IdeLoaderTab.Logs} title={IdeLoaderTab[IdeLoaderTab.Logs]}
               id="ide-loader-page-logs-tab">
               <WorkspaceLogs workspaceId={workspaceId} />
             </Tab>

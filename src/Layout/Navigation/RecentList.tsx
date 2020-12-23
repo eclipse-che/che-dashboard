@@ -23,10 +23,12 @@ import NavigationMainItem from './MainItem';
 import { ROUTE } from '../../route.enum';
 
 import styles from './index.module.css';
+import { buildGettingStartedPath } from '../../services/helpers/location';
 
 function buildCreateWorkspaceItem(): React.ReactElement {
+  const createWorkspacePath = buildGettingStartedPath('custom-workspace');
   const item: NavigationItemObject = {
-    to: ROUTE.TAB_CUSTOM_WORKSPACE,
+    to: createWorkspacePath,
     label: 'Create Workspace',
     icon: <PlusIcon className={styles.mainItemIcon} />,
   };
@@ -43,7 +45,7 @@ function buildRecentWorkspacesItems(workspaces: Array<che.Workspace>, activePath
     const workspaceName = workspace.devfile.metadata.name!;
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     const namespace = workspace.namespace!;
-    const navigateTo = ROUTE.IDE
+    const navigateTo = ROUTE.IDE_LOADER
       .replace(':namespace', namespace)
       .replace(':workspaceName', workspaceName);
     const item: NavigationRecentItemObject = {

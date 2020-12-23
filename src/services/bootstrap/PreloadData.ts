@@ -94,7 +94,7 @@ export class PreloadData {
 
   private async updateInfrastructureNamespaces(): Promise<void> {
     const { requestNamespaces } = InfrastructureNamespaceStore.actionCreators;
-    await requestNamespaces()(this.store.dispatch, this.store.getState);
+    await requestNamespaces()(this.store.dispatch, this.store.getState, undefined);
   }
 
   private async updateWorkspaceSettings(): Promise<che.WorkspaceSettings> {

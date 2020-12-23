@@ -26,7 +26,7 @@ module.exports = {
   },
   globals: {
     'ts-jest': {
-      'tsConfig': 'tsconfig.test.json'
+      'tsconfig': 'tsconfig.test.json'
     }
   },
   maxWorkers: 4,
@@ -50,10 +50,10 @@ module.exports = {
   ],
   coverageThreshold: {
     global: {
-      statements: 29,
-      branches: 18,
-      functions: 24,
-      lines: 29,
+      statements: 49,
+      branches: 33,
+      functions: 48,
+      lines: 49,
     }
   },
 }

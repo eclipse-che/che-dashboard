@@ -18,7 +18,7 @@ import { delay } from '../services/helpers/delay';
 import { AppState } from '../store';
 import * as FactoryResolverStore from '../store/FactoryResolver';
 import * as WorkspaceStore from '../store/Workspaces';
-import FactoryLoaderPage from '../pages/FactoryLoader';
+import FactoryLoader from '../pages/FactoryLoader';
 import { selectAllWorkspaces, selectWorkspaceById } from '../store/Workspaces/selectors';
 import { WorkspaceStatus } from '../services/helpers/types';
 
@@ -47,8 +47,8 @@ type State = {
   hasError: boolean;
 };
 
-export class FactoryLoader extends React.PureComponent<Props, State> {
-  private loadFactoryPageCallbacks: { showAlert?: (variant: AlertVariant, title: string) => void } = {};
+export class FactoryLoaderContainer extends React.PureComponent<Props, State> {
+  private factoryLoaderCallbacks: { showAlert?: (variant: AlertVariant, title: string) => void } = {};
   private factoryResolver: FactoryResolverStore.State;
 
   constructor(props: Props) {
@@ -67,8 +67,8 @@ export class FactoryLoader extends React.PureComponent<Props, State> {
     if (alertVariant === AlertVariant.danger) {
       this.setState({ hasError: true });
     }
-    if (this.loadFactoryPageCallbacks.showAlert) {
-      this.loadFactoryPageCallbacks.showAlert(alertVariant, message);
+    if (this.factoryLoaderCallbacks.showAlert) {
+      this.factoryLoaderCallbacks.showAlert(alertVariant, message);
     } else {
       console.error(message);
     }
@@ -118,8 +118,7 @@ export class FactoryLoader extends React.PureComponent<Props, State> {
     }
     if (!search) {
       this.showAlert(
-        `Repository/Devfile URL is missing. Please specify it via url query param:
-         ${window.location.origin}${window.location.pathname}#/load-factory?url= .`,
+        `Repository/Devfile URL is missing. Please specify it via url query param: ${window.location.origin}${window.location.pathname}#/load-factory?url= .`,
       );
       return;
     } else {
@@ -147,8 +146,7 @@ export class FactoryLoader extends React.PureComponent<Props, State> {
     this.setState({ currentStep: LoadFactorySteps.CREATE_WORKSPACE });
     if (!location) {
       this.showAlert(
-        `Repository/Devfile URL is missing. Please specify it via url query param:
-         ${window.location.origin}${window.location.pathname}#/load-factory?url= .`,
+        `Repository/Devfile URL is missing. Please specify it via url query param: ${window.location.origin}${window.location.pathname}#/load-factory?url= .`,
       );
       return;
     }
@@ -216,13 +214,13 @@ export class FactoryLoader extends React.PureComponent<Props, State> {
     const workspaceId = workspace ? workspace.id : '';
 
     return (
-      <FactoryLoaderPage
+      <FactoryLoader
         currentStep={currentStep}
         hasError={hasError}
         devfileLocationInfo={devfileLocationInfo}
         workspaceId={workspaceId}
         workspaceName={workspaceName}
-        callbacks={this.loadFactoryPageCallbacks}
+        callbacks={this.factoryLoaderCallbacks}
       />
     );
   }
@@ -244,4 +242,4 @@ const connector = connect(
 );
 
 type MappedProps = ConnectedProps<typeof connector>;
-export default connector(FactoryLoader);
+export default connector(FactoryLoaderContainer);

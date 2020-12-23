@@ -10,6 +10,7 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
+import 'reflect-metadata';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';

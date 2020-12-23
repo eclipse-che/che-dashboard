@@ -13,11 +13,12 @@
 export enum ROUTE {
   HOME = '/',
   GET_STARTED = '/get-started',
-  TAB_GET_STARTED = '/get-started?tab=get-started',
-  TAB_CUSTOM_WORKSPACE = '/get-started?tab=custom-workspace',
+  GET_STARTED_TAB = '/get-started?tab=:tabId',
   WORKSPACES = '/workspaces',
   ADMINISTRATION = '/administration',
-  WORKSPACE_DETAILS = '/workspace/:namespace/:workspaceName/',
-  IDE = '/ide/:namespace/:workspaceName',
+  WORKSPACE_DETAILS = '/workspace/:namespace/:workspaceName',
+  WORKSPACE_DETAILS_TAB = '/workspace/:namespace/:workspaceName?tab=:tabId',
+  IDE_LOADER = '/ide/:namespace/:workspaceName',
+  IDE_LOADER_TAB = '/ide/:namespace/:workspaceName?tab=:tabId',
   LOAD_FACTORY = '/load-factory'
 }

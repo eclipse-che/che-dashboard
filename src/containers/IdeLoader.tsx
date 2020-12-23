@@ -16,9 +16,9 @@ import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { RouteComponentProps } from 'react-router';
 import { container } from '../inversify.config';
-import IdeLoaderPage, { AlertOptions } from '../pages/IdeLoader';
+import IdeLoader, { AlertOptions } from '../pages/IdeLoader';
 import { Debounce } from '../services/helpers/debounce';
-import { IdeLoaderTabs, WorkspaceStatus } from '../services/helpers/types';
+import { IdeLoaderTab, WorkspaceStatus } from '../services/helpers/types';
 import { AppState } from '../store';
 import * as WorkspaceStore from '../store/Workspaces';
 import { selectAllWorkspaces, selectLogs, selectWorkspaceById } from '../store/Workspaces/selectors';
@@ -39,12 +39,12 @@ type State = {
   workspaceName: string;
   workspaceId?: string;
   currentStep: LoadIdeSteps;
-  preselectedTabKey?: IdeLoaderTabs;
+  preselectedTabKey?: IdeLoaderTab;
   ideUrl?: string;
   hasError?: boolean;
 };
 
-class IdeLoader extends React.PureComponent<Props, State> {
+class IdeLoaderContainer extends React.PureComponent<Props, State> {
   private debounce: Debounce;
   private readonly loadFactoryPageCallbacks: {
     showAlert?: (alertOptions: AlertOptions) => void
@@ -84,18 +84,18 @@ class IdeLoader extends React.PureComponent<Props, State> {
     return params.workspaceName.split('?')[0];
   }
 
-  private get preselectedTabKey(): IdeLoaderTabs {
+  private get preselectedTabKey(): IdeLoaderTab {
     const { match: { params } } = this.props;
     const search = params.workspaceName.split('?')[1];
     if (!search) {
-      return IdeLoaderTabs.Progress;
+      return IdeLoaderTab.Progress;
     }
     const searchParam = new URLSearchParams(search);
     const tab = searchParam.get('tab');
     if (tab) {
-      return IdeLoaderTabs[tab];
+      return IdeLoaderTab[tab];
     }
-    return IdeLoaderTabs.Progress;
+    return IdeLoaderTab.Progress;
   }
 
   public showAlert(alertOptions: string | AlertOptions): void {
@@ -301,7 +301,7 @@ class IdeLoader extends React.PureComponent<Props, State> {
     const { currentStep, hasError, ideUrl, workspaceId, workspaceName, preselectedTabKey } = this.state;
 
     return (
-      <IdeLoaderPage
+      <IdeLoader
         currentStep={currentStep}
         workspaceId={workspaceId || ''}
         preselectedTabKey={preselectedTabKey}
@@ -326,4 +326,4 @@ const connector = connect(
   WorkspaceStore.actionCreators,
 );
 type MappedProps = ConnectedProps<typeof connector> | any;
-export default connector(IdeLoader);
+export default connector(IdeLoaderContainer);

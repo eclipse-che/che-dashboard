@@ -13,7 +13,7 @@
 import { Action, Reducer } from 'redux';
 import { container } from '../inversify.config';
 import { CheWorkspaceClient } from '../services/cheWorkspaceClient';
-import { AppThunkAction, AppState } from './';
+import { AppThunk } from './';
 
 const WorkspaceClient = container.get(CheWorkspaceClient);
 
@@ -34,20 +34,13 @@ interface ReceiveNamespacesAction {
 type KnownAction = RequestNamespacesAction
   | ReceiveNamespacesAction;
 
-// todo proper type instead of 'any'
 export type ActionCreators = {
-  requestNamespaces: () => any;
+  requestNamespaces: () => AppThunk<KnownAction, Promise<Array<che.KubernetesNamespace>>>;
 };
 
 export const actionCreators: ActionCreators = {
 
-  requestNamespaces: (): AppThunkAction<KnownAction> => async (dispatch, getState): Promise<Array<che.KubernetesNamespace>> => {
-    const appState: AppState = getState();
-    if (!appState || !appState.infrastructureNamespace) {
-      // todo throw a nice error
-      throw Error('something unexpected happened');
-    }
-
+  requestNamespaces: (): AppThunk<KnownAction, Promise<Array<che.KubernetesNamespace>>> => async (dispatch): Promise<Array<che.KubernetesNamespace>> => {
     dispatch({ type: 'REQUEST_NAMESPACES' });
 
     try {

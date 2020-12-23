@@ -28,22 +28,18 @@ import { container } from '../../inversify.config';
 import { AppAlerts } from '../../services/alerts/appAlerts';
 import * as WorkspaceStore from '../../store/Workspaces';
 import { AppState } from '../../store';
-import { AlertItem } from '../../services/helpers/types';
+import { AlertItem, GettingStartedTab } from '../../services/helpers/types';
 import { ROUTE } from '../../route.enum';
 
 const SamplesListTab = React.lazy(() => import('./GetStartedTab'));
 const CustomWorkspaceTab = React.lazy(() => import('./CustomWorkspaceTab'));
 
-const GET_STARTED_TAB_KEY = 'get-started';
-const CUSTOM_WORKSPACE_TAB_KEY = 'custom-workspace';
-
-type Props = {
+type Props = MappedProps & {
   history: History;
 }
-  & MappedProps;
 
 type State = {
-  activeTabKey: string;
+  activeTabKey: GettingStartedTab;
 }
 
 export class GetStarted extends React.PureComponent<Props, State> {
@@ -70,24 +66,24 @@ export class GetStarted extends React.PureComponent<Props, State> {
 
   private getTitle(): string {
     const productName = this.props.branding.data.name;
-    const titles = {
-      [GET_STARTED_TAB_KEY]: `Getting Started with ${productName}`,
-      [CUSTOM_WORKSPACE_TAB_KEY]: 'Create Custom Workspace',
+    const titles: { [key in GettingStartedTab]: string } = {
+      'get-started': `Getting Started with ${productName}`,
+      'custom-workspace': 'Create Custom Workspace',
     };
     return titles[this.state.activeTabKey];
   }
 
-  private getActiveTabKey(): string {
+  private getActiveTabKey(): GettingStartedTab {
     const { pathname, search } = this.props.history.location;
 
     if (search) {
       const searchParam = new URLSearchParams(search.substring(1));
-      if (pathname === ROUTE.GET_STARTED && searchParam.get('tab') === CUSTOM_WORKSPACE_TAB_KEY) {
-        return CUSTOM_WORKSPACE_TAB_KEY;
+      if (pathname === ROUTE.GET_STARTED && searchParam.get('tab') as GettingStartedTab === 'custom-workspace') {
+        return 'custom-workspace';
       }
     }
 
-    return GET_STARTED_TAB_KEY;
+    return 'get-started';
   }
 
   private async createWorkspace(
@@ -158,13 +154,15 @@ export class GetStarted extends React.PureComponent<Props, State> {
     this.props.history.push(`${ROUTE.GET_STARTED}?tab=${activeTabKey}`);
 
     this.setState({
-      activeTabKey: activeTabKey as string,
+      activeTabKey: activeTabKey as GettingStartedTab,
     });
   }
 
   render(): React.ReactNode {
     const { activeTabKey } = this.state;
     const title = this.getTitle();
+    const getStartedTab: GettingStartedTab = 'get-started';
+    const customWorkspaceTab: GettingStartedTab = 'custom-workspace';
 
     return (
       <React.Fragment>
@@ -180,7 +178,10 @@ export class GetStarted extends React.PureComponent<Props, State> {
           <Tabs
             activeKey={activeTabKey}
             onSelect={(event, tabKey) => this.handleTabClick(event, tabKey)}>
-            <Tab eventKey={GET_STARTED_TAB_KEY} title="Get Started">
+            <Tab
+              eventKey={getStartedTab}
+              title="Get Started"
+            >
               <Suspense fallback={Fallback}>
                 <SamplesListTab
                   onDevfile={(devfileContent: string, stackName: string) => {
@@ -189,7 +190,7 @@ export class GetStarted extends React.PureComponent<Props, State> {
                 />
               </Suspense>
             </Tab>
-            <Tab eventKey={CUSTOM_WORKSPACE_TAB_KEY} title="Custom Workspace">
+            <Tab eventKey={customWorkspaceTab} title="Custom Workspace">
               <Suspense fallback={Fallback}>
                 <CustomWorkspaceTab
                   onDevfile={(devfile: che.WorkspaceDevfile, infrastructureNamespace?: string) => {
