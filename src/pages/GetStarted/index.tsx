@@ -24,7 +24,7 @@ import {
 } from '@patternfly/react-core';
 import Fallback from '../../components/Fallback';
 import Head from '../../components/Head';
-import { container } from '../../inversify.config';
+import { lazyInject } from '../../inversify.config';
 import { AppAlerts } from '../../services/alerts/appAlerts';
 import * as WorkspaceStore from '../../store/Workspaces';
 import { AppState } from '../../store';
@@ -43,6 +43,8 @@ type State = {
 }
 
 export class GetStarted extends React.PureComponent<Props, State> {
+
+  @lazyInject(AppAlerts)
   private readonly appAlerts: AppAlerts;
 
   constructor(props: Props) {
@@ -53,8 +55,6 @@ export class GetStarted extends React.PureComponent<Props, State> {
     this.state = {
       activeTabKey,
     };
-
-    this.appAlerts = container.get(AppAlerts);
   }
 
   public componentDidUpdate(): void {

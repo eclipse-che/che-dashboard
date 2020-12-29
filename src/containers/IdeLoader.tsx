@@ -15,7 +15,7 @@ import { History } from 'history';
 import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { RouteComponentProps } from 'react-router';
-import { container } from '../inversify.config';
+import { lazyInject } from '../inversify.config';
 import IdeLoader, { AlertOptions } from '../pages/IdeLoader';
 import { Debounce } from '../services/helpers/debounce';
 import { IdeLoaderTab, WorkspaceStatus } from '../services/helpers/types';
@@ -45,7 +45,10 @@ type State = {
 };
 
 class IdeLoaderContainer extends React.PureComponent<Props, State> {
-  private debounce: Debounce;
+
+  @lazyInject(Debounce)
+  private readonly debounce: Debounce;
+
   private readonly loadFactoryPageCallbacks: {
     showAlert?: (alertOptions: AlertOptions) => void
   };
@@ -73,7 +76,6 @@ class IdeLoaderContainer extends React.PureComponent<Props, State> {
       preselectedTabKey: this.preselectedTabKey,
     };
 
-    this.debounce = container.get(Debounce);
     this.debounce.subscribe(async () => {
       await this.initWorkspace();
     });

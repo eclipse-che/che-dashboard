@@ -11,7 +11,7 @@
  */
 
 import { Store } from 'redux';
-import { container } from '../../inversify.config';
+import { lazyInject } from '../../inversify.config';
 import { KeycloakSetupService } from '../keycloak/setup';
 import { AppState } from '../../store';
 import * as BrandingStore from '../../store/Branding';
@@ -28,16 +28,20 @@ import { CheWorkspaceClient } from '../cheWorkspaceClient';
  * @author Oleksii Orel
  */
 export class PreloadData {
-  private keycloakSetup: KeycloakSetupService;
-  private keycloakAuth: KeycloakAuthService;
+
+  @lazyInject(KeycloakSetupService)
+  private readonly keycloakSetup: KeycloakSetupService;
+
+  @lazyInject(KeycloakAuthService)
+  private readonly keycloakAuth: KeycloakAuthService;
+
+  @lazyInject(CheWorkspaceClient)
+  private readonly cheWorkspaceClient: CheWorkspaceClient;
+
   private store: Store<AppState>;
-  private cheWorkspaceClient: CheWorkspaceClient;
 
   constructor(store: Store<AppState>) {
     this.store = store;
-    this.keycloakSetup = container.get(KeycloakSetupService);
-    this.keycloakAuth = container.get(KeycloakAuthService);
-    this.cheWorkspaceClient = container.get(CheWorkspaceClient);
   }
 
   async init(): Promise<void> {

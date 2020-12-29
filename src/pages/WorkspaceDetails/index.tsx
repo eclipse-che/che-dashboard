@@ -32,7 +32,7 @@ import Header from './Header';
 import CheProgress from '../../components/Progress';
 import { AppState } from '../../store';
 import { HeaderActionSelect } from './Header/Actions';
-import { container } from '../../inversify.config';
+import { lazyInject } from '../../inversify.config';
 import { AppAlerts } from '../../services/alerts/appAlerts';
 import OverviewTab, { OverviewTab as Overview } from './OverviewTab';
 import EditorTab, { EditorTab as Editor } from './DevfileTab';
@@ -56,6 +56,10 @@ type State = {
 };
 
 export class WorkspaceDetails extends React.PureComponent<Props, State> {
+
+  @lazyInject(AppAlerts)
+  private readonly appAlerts: AppAlerts;
+
   private static activeTabKey?: WorkspaceDetailsTab;
   private alert: { variant?: AlertVariant; title?: string } = {};
   public showAlert: (variant: AlertVariant, title: string) => void;
@@ -103,11 +107,10 @@ export class WorkspaceDetails extends React.PureComponent<Props, State> {
       WorkspaceDetails.activeTabKey = tabIndex as WorkspaceDetailsTab;
     };
 
-    const appAlerts = container.get(AppAlerts);
     this.showAlert = (variant: AlertVariant, title: string): void => {
       this.alert = { variant, title };
       const key = `wrks-details-${(('0000' + (Math.random() * Math.pow(36, 4) << 0).toString(36)).slice(-4))}`;
-      appAlerts.showAlert({
+      this.appAlerts.showAlert({
         key,
         title,
         variant,

@@ -12,7 +12,7 @@
 
 import { Alert, AlertActionCloseButton, AlertGroup, AlertVariant } from '@patternfly/react-core';
 import React from 'react';
-import { container } from '../../inversify.config';
+import { lazyInject } from '../../inversify.config';
 import { AppAlerts } from '../../services/alerts/appAlerts';
 import { AlertItem } from '../../services/helpers/types';
 
@@ -23,7 +23,10 @@ type State = {
 };
 
 class AppAlertGroup extends React.PureComponent<Props, State> {
+
+  @lazyInject(AppAlerts)
   private readonly appAlerts: AppAlerts;
+
   private readonly showAlertHandler: (alerts: AlertItem[]) => void;
 
   constructor(props: Props) {
@@ -32,7 +35,6 @@ class AppAlertGroup extends React.PureComponent<Props, State> {
     this.state = {
       alerts: [],
     };
-    this.appAlerts = container.get(AppAlerts);
     this.showAlertHandler = (alerts: AlertItem[]) => {
       this.setState({ alerts });
     };
