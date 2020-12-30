@@ -22,7 +22,6 @@ import { Logger } from '../utils/Logger';
 export class Dashboard {
   private static readonly GET_STARTED_BUTTON_TEXT = 'Get Started Page'
   private static readonly WORKSPACES_BUTTON_TEXT = 'Workspaces'
-  private static readonly ADMINISTRATION_BUTTON_TEXT = 'Administration'
   private static readonly CREATE_WORKSPACE_BUTTON_TEXT = 'Create Workspace'
 
   constructor(@inject(CLASSES.DriverHelper) private readonly driverHelper: DriverHelper) { }
@@ -39,7 +38,6 @@ export class Dashboard {
 
     await this.waitDashboardButton(Dashboard.GET_STARTED_BUTTON_TEXT, timeout);
     await this.waitDashboardButton(Dashboard.WORKSPACES_BUTTON_TEXT, timeout);
-    await this.waitDashboardButton(Dashboard.ADMINISTRATION_BUTTON_TEXT, timeout);
     await this.waitDashboardButton(Dashboard.CREATE_WORKSPACE_BUTTON_TEXT, timeout);
   }
 

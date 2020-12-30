@@ -14,14 +14,14 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { NavItem } from '@patternfly/react-core';
 import { NavigationRecentItemObject } from '.';
+import isActive from './isActive';
 import WorkspaceIndicator from '../../components/Workspace/Indicator';
 
 function NavigationRecentItem(props: { item: NavigationRecentItemObject, activePath: string }): React.ReactElement {
-  const isActive = props.item.to === props.activePath;
   return (
     <NavItem
       itemId={props.item.to}
-      isActive={isActive}
+      isActive={isActive(props.item.to, props.activePath)}
     >
       <Link to={props.item.to}>
         <span className="workspace-name">

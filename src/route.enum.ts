@@ -15,7 +15,6 @@ export enum ROUTE {
   GET_STARTED = '/get-started',
   GET_STARTED_TAB = '/get-started?tab=:tabId',
   WORKSPACES = '/workspaces',
-  ADMINISTRATION = '/administration',
   WORKSPACE_DETAILS = '/workspace/:namespace/:workspaceName',
   WORKSPACE_DETAILS_TAB = '/workspace/:namespace/:workspaceName?tab=:tabId',
   IDE_LOADER = '/ide/:namespace/:workspaceName',

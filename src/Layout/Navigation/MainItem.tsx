@@ -15,16 +15,15 @@ import { Link } from 'react-router-dom';
 import { NavItem } from '@patternfly/react-core';
 
 import { NavigationItemObject } from '.';
+import isActive from './isActive';
 
 import styles from './index.module.css';
 
 function NavigationMainItem(props: { item: NavigationItemObject, children: React.ReactNode, activePath?: string }): React.ReactElement {
-  const isActive = props.item.to === props.activePath;
-
   return (
     <NavItem
       itemId={props.item.to}
-      isActive={isActive}
+      isActive={isActive(props.item.to, props.activePath)}
     >
       <Link
         to={props.item.to}
