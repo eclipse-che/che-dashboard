@@ -16,6 +16,8 @@ import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { RouteComponentProps } from 'react-router';
 import WorkspaceDetails, { WorkspaceDetails as Details } from '../pages/WorkspaceDetails';
+import { ROUTE } from '../route.enum';
+import { toHref } from '../services/helpers/location';
 import { IdeLoaderTab, WorkspaceAction, WorkspaceDetailsTab } from '../services/helpers/types';
 
 import { AppState } from '../store';
@@ -76,9 +78,12 @@ class WorkspaceDetailsContainer extends React.PureComponent<Props> {
   }
 
   render() {
+    const workspacesLink = toHref(this.props.history, ROUTE.WORKSPACES);
+
     return (
       <WorkspaceDetails
         ref={this.workspaceDetailsPageRef}
+        workspacesLink={workspacesLink}
         onSave={(workspace: che.Workspace) => this.onSave(workspace)}
         onAction={(action => this.onAction(action))}
       />

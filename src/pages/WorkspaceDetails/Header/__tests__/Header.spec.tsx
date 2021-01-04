@@ -47,8 +47,13 @@ function createComponent(
   workspaceName: string,
   workspaceId: string,
 ): React.ReactElement {
+  const workspacesLink = '/workspaces';
   return (
-    <Header workspaceName={workspaceName} status={WorkspaceStatus[workspaceStatus]}>
+    <Header
+      workspacesLink={workspacesLink}
+      workspaceName={workspaceName}
+      status={WorkspaceStatus[workspaceStatus]}
+    >
       <HeaderActionSelect
         onAction={jest.fn()}
         workspaceId={workspaceId}

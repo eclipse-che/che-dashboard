@@ -13,18 +13,18 @@
 import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import {
-  PageSection,
-  PageSectionVariants,
-  Tabs,
-  Tab,
   Alert,
   AlertActionCloseButton,
+  AlertVariant,
+  Button,
   Modal,
   ModalVariant,
-  AlertVariant,
-  TextContent,
+  PageSection,
+  PageSectionVariants,
+  Tab,
+  Tabs,
   Text,
-  Button,
+  TextContent,
 } from '@patternfly/react-core';
 import Head from '../../components/Head';
 import { WorkspaceAction, WorkspaceDetailsTab, WorkspaceStatus } from '../../services/helpers/types';
@@ -44,6 +44,7 @@ export const SECTION_THEME = PageSectionVariants.light;
 
 type Props =
   {
+    workspacesLink: string;
     onSave: (workspace: che.Workspace) => Promise<void>;
     onAction: (action: WorkspaceAction) => void;
   } & MappedProps;
@@ -140,7 +141,7 @@ export class WorkspaceDetails extends React.PureComponent<Props, State> {
   }
 
   public render(): React.ReactElement {
-    const { workspace, onAction } = this.props;
+    const { workspace, onAction, workspacesLink } = this.props;
 
     if (!workspace) {
       return <div>Workspace not found.</div>;
@@ -151,7 +152,11 @@ export class WorkspaceDetails extends React.PureComponent<Props, State> {
     return (
       <React.Fragment>
         <Head pageName={workspaceName} />
-        <Header workspaceName={workspaceName} status={workspace.status}>
+        <Header
+          workspacesLink={workspacesLink}
+          workspaceName={workspaceName}
+          status={workspace.status}
+        >
           <HeaderActionSelect
             onAction={onAction}
             workspaceId={workspace.id}
