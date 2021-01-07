@@ -14,6 +14,9 @@ import { AxiosInstance } from 'axios';
 import { injectable } from 'inversify';
 import WorkspaceClient, { IWorkspaceMasterApi, IRemoteAPI } from '@eclipse-che/workspace-client';
 import { KeycloakAuthService } from '../keycloak/auth';
+import { EventEmitter } from 'events';
+
+export type WebSocketsFailedCallback = () => void;
 
 /**
  * This class manages the api connection.
@@ -26,6 +29,9 @@ export class CheWorkspaceClient {
   private websocketContext: string;
   private _restApiClient: IRemoteAPI;
   private _jsonRpcMasterApi: IWorkspaceMasterApi;
+  private _failingWebSockets: string[];
+  private webSocketEventEmitter: EventEmitter;
+  private webSocketEventName = 'websocketChanged';
 
   /**
    * Default constructor that is using resource.
@@ -33,6 +39,8 @@ export class CheWorkspaceClient {
   constructor() {
     this.baseUrl = '/api';
     this.websocketContext = '/api/websocket';
+    this._failingWebSockets = [];
+    this.webSocketEventEmitter = new EventEmitter();
 
     this.originLocation = new URL(window.location.href).origin;
 
@@ -132,8 +140,28 @@ export class CheWorkspaceClient {
       jsonRpcApiLocation += `?token=${this.token}`;
     }
     this._jsonRpcMasterApi = WorkspaceClient.getJsonRpcApi(jsonRpcApiLocation);
+    this._jsonRpcMasterApi.onDidWebSocketStatusChange((websockets: string[]) => {
+      this._failingWebSockets = [];
+      for (const websocket of websockets) {
+        const trimmedWebSocketId = websocket.substring(0, websocket.indexOf('?'));
+        this._failingWebSockets.push(trimmedWebSocketId);
+      }
+      this.webSocketEventEmitter.emit(this.webSocketEventName);
+    });
     await this._jsonRpcMasterApi.connect(jsonRpcApiLocation);
     const clientId = this._jsonRpcMasterApi.getClientId();
     console.log('WebSocket connection clientId', clientId);
+  }
+
+  onWebSocketFailed(callback: WebSocketsFailedCallback) {
+    this.webSocketEventEmitter.on(this.webSocketEventName, callback);
+  }
+
+  removeWebSocketFailedListener() {
+    this.webSocketEventEmitter.removeAllListeners(this.webSocketEventName);
+  }
+
+  get failingWebSockets(): string[] {
+    return Array.from(this._failingWebSockets);
   }
 }
