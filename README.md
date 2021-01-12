@@ -6,6 +6,8 @@ Eclipse Che is a next generation Eclipse IDE. This repository is licensed under 
 
 ## Requirements
 
+
+
 - Node.js `v10.x.x` and later.
 - yarn `v1.20.0` or higher.
 
