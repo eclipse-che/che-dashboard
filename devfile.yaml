@@ -1,0 +1,40 @@
+apiVersion: 1.0.0
+metadata:
+  name: dashboard-next
+attributes:
+  persistVolumes: 'false'
+components:
+  - id: che-incubator/typescript/1.30.2
+    type: chePlugin
+    alias: typescript-plugin
+  - mountSources: true
+    endpoints:
+      - name: ud-dev-server
+        port: 3000
+        attributes:
+          public: 'true'
+          protocol: http
+          path: /
+    memoryLimit: 3Gi
+    type: dockerimage
+    alias: ud-dev
+    image: 'okurinnyi/che-dashboard-dev:nightly'
+commands:
+  - name: '[UD] compile'
+    actions:
+      - workdir: /projects/che-dashboard-next
+        type: exec
+        command: yarn && yarn compile
+        component: ud-dev
+  - name: '[UD] test'
+    actions:
+      - workdir: /projects/che-dashboard-next
+        type: exec
+        command: yarn && yarn test
+        component: ud-dev
+  - name: '[UD] start [API Backend che.openshift.io]'
+    actions:
+      - workdir: /projects/che-dashboard-next
+        type: exec
+        command: yarn && yarn start
+        component: ud-dev

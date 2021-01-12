@@ -1,0 +1,19 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Workspace delete component should render delete widget disabled correctly 1`] = `
+<span
+  data-testid="delete-workspace-test-id"
+  onClick={[Function]}
+>
+  Delete Workspace
+</span>
+`;
+
+exports[`Workspace delete component should render delete widget enabled correctly 1`] = `
+<span
+  data-testid="delete-workspace-test-id"
+  onClick={[Function]}
+>
+  Delete Workspace
+</span>
+`;
