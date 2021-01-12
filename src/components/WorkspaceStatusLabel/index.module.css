@@ -1,0 +1,32 @@
+.label {
+  margin-left: 10px;
+  padding-right: 18px;
+  font-weight: normal;
+  font-size: 20px;
+  opacity: 0.8;
+}
+
+.label svg {
+  margin-right: 2px;
+}
+
+svg.rotate {
+  width: 17px;
+}
+
+.rotate {
+  animation-name: spinnerRotate;
+  animation-duration: 1s;
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
+}
+
+@keyframes spinnerRotate {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}

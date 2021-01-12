@@ -1,25 +1,14 @@
-src/app/colors/che-output-colors.constant.ts
-src/app/colors/codenvy-color.constant.ts
-src/app/colors/template/
-src/app/proxy/proxy-settings.constant.ts
-src/app/proxy/template/
-src/components/branding/branding.constant.ts
-src/components/branding/template/
-yarn-error.log
 node_modules/
-.sass-cache/
-.tmp/
-tmp
-coverage
-dist/
+yarn-error.log
+.deps/tmp/
 
+build/
+
+.theia/
 .idea/
-*.iml
-docs
-/.settings/
-/.project
-/.tern-project
 
-target/
-uE001-README.MD
-/typings/
+tests/e2e/dist/
+tests/e2e/node_modules/
+tests/e2e/report/
+
+coverage

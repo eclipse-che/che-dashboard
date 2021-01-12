@@ -12,7 +12,7 @@ name: PR
 # Trigger the workflow on push
 on:
   pull_request:
-    branches: [master]
+    branches: [main-react]
 
 env:
   DIR_DASHBOARD: che-dashboard
@@ -130,3 +130,24 @@ jobs:
             const { issue: { number: issue_number }, repo: { owner, repo }  } = context;
             const imageCheServer = '${{env.ORGANIZATION}}/che-server:${{env.IMAGE_VERSION}}';
             github.issues.createComment({ issue_number, owner, repo, body: 'Docker image build succeeded: **' + imageCheServer + '**' });
+
+  test-coverage-diff:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [14.x]
+    steps:
+    - name: Checkout che-dashboard-next source code
+      uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v1
+      with:
+        node-version: ${{ matrix.node-version }}
+    - name: Install dependencies
+      run: yarn
+    - name: Jest Coverage Diff
+      uses: anuraag016/Jest-Coverage-Diff@1.0
+      with:
+        fullCoverageDiff: false
