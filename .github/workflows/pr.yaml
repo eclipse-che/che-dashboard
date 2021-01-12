@@ -22,7 +22,27 @@ env:
 
 jobs:
 
-  che-dashboard-build:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [10.x, 12.x, 14.x]
+    steps:
+    - name: Checkout che-dashboard-next source code
+      uses: actions/checkout@v2
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v1
+      with:
+        node-version: ${{ matrix.node-version }}
+    - name: Install dependencies
+      run: yarn
+    - name: Build
+      run: yarn compile
+    - name: Run unit tests
+      run: yarn test --runInBand
+
+  docker-build:
+    needs: build
     runs-on: ubuntu-18.04
     strategy:
       fail-fast: false
@@ -68,7 +88,7 @@ jobs:
           docker logout
 
   che-server-build:
-    needs: che-dashboard-build
+    needs: docker-build
     runs-on: ubuntu-18.04
     strategy:
       fail-fast: false
@@ -132,6 +152,7 @@ jobs:
             github.issues.createComment({ issue_number, owner, repo, body: 'Docker image build succeeded: **' + imageCheServer + '**' });
 
   test-coverage-diff:
+    needs: build
     runs-on: ubuntu-latest
     strategy:
       matrix:
