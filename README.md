@@ -7,6 +7,8 @@ Eclipse Che is a next generation Eclipse IDE. This repository is licensed under 
 
 
 
+
+
 # Eclipse Che Dashboard
 
 ## Requirements
