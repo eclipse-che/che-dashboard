@@ -13,13 +13,13 @@ ARG CHE_DASHBOARD_VERSION=next
 
 FROM docker.io/node:10.20.1 as builder
 
-COPY package.json /dashboard-next/
-COPY yarn.lock /dashboard-next/
-WORKDIR /dashboard-next
+COPY package.json /dashboard/
+COPY yarn.lock /dashboard/
+WORKDIR /dashboard
 RUN yarn --network-timeout 600000 && yarn install --ignore-optional
-COPY . /dashboard-next/
+COPY . /dashboard/
 RUN yarn compile
 
 FROM ${CHE_DASHBOARD_IMAGE}:${CHE_DASHBOARD_VERSION}
-RUN mkdir -p /usr/local/apache2/htdocs/dashboard/next
-COPY --from=builder /dashboard-next/build /usr/local/apache2/htdocs/dashboard/next
+RUN mkdir -p /usr/local/apache2/htdocs/dashboard
+COPY --from=builder /dashboard/build /usr/local/apache2/htdocs/dashboard
