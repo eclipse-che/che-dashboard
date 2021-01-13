@@ -21,5 +21,5 @@ COPY . /dashboard/
 RUN yarn compile
 
 FROM ${CHE_DASHBOARD_IMAGE}:${CHE_DASHBOARD_VERSION}
-RUN mkdir -p /usr/local/apache2/htdocs/dashboard
-COPY --from=builder /dashboard/build /usr/local/apache2/htdocs/dashboard
+RUN mkdir -p /usr/local/apache2/htdocs/dashboard/next
+COPY --from=builder /dashboard/build /usr/local/apache2/htdocs/dashboard/next
