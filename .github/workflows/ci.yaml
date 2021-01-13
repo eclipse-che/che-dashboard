@@ -11,15 +11,15 @@ name: CI
 on:
   push:
     branches:
-      - master
+      - main-react
 jobs:
   docker-build:
     runs-on: ubuntu-18.04
     strategy:
       fail-fast: false
     env:
-      IMAGE_FULL: quay.io/eclipse/che-dashboard:next
-      CACHE_IMAGE_FULL: docker.io/cheincubator/che-dashboard:cache
+      IMAGE_FULL: quay.io/eclipse/che-dashboard:next-react
+      CACHE_IMAGE_FULL: docker.io/cheincubator/che-dashboard:cache-react
     steps:
     - uses: actions/checkout@v2
       name: Checkout che-dashboard source code
