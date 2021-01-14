@@ -11,7 +11,7 @@
 ARG CHE_DASHBOARD_IMAGE=quay.io/eclipse/che-dashboard
 ARG CHE_DASHBOARD_VERSION=next
 
-FROM docker.io/node:12.20.1 as builder
+FROM docker.io/node:12 as builder
 
 COPY package.json /dashboard/
 COPY yarn.lock /dashboard/

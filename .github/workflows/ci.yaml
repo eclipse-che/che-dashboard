@@ -6,47 +6,56 @@
 #
 # SPDX-License-Identifier: EPL-2.0
 #
-name: CI
-# Trigger the workflow on push
+
+name: CI:main-react
+
 on:
   push:
     branches:
       - main-react
+
 jobs:
   docker-build:
     runs-on: ubuntu-18.04
     strategy:
       fail-fast: false
+      matrix:
+        platform: [linux/amd64, linux/arm64v8, linux/ppc64le, linux/s390x]
     env:
       IMAGE_FULL: quay.io/eclipse/che-dashboard:next-react
       CACHE_IMAGE_FULL: docker.io/cheincubator/che-dashboard:cache-react
     steps:
-    - uses: actions/checkout@v2
-      name: Checkout che-dashboard source code
-    - name: Docker Buildx
-      uses: crazy-max/ghaction-docker-buildx@v1.6.2
-      with:
-        buildx-version: v0.4.1
-    - name: "Docker prepare"
-      run: docker image prune -a -f
-    - name: 'Docker quay.io Login'
-      uses: docker/login-action@v1
-      with:
-        registry: quay.io
-        username: ${{ secrets.QUAY_USERNAME }}
-        password: ${{ secrets.QUAY_PASSWORD }}
-    - name: 'Docker docker.io Login'
-      uses: docker/login-action@v1
-      with:
-        registry: docker.io
-        username: ${{ secrets.DOCKERHUB_USERNAME }}
-        password: ${{ secrets.DOCKERHUB_PASSWORD }}
-    - name: "Docker build with cache"
-      uses: nick-invision/retry@v1
-      with:
-        timeout_minutes: 40
-        max_attempts: 5
-        retry_wait_seconds: 60
-        command: docker buildx build --platform linux/amd64,linux/s390x --cache-from="type=registry,ref=${CACHE_IMAGE_FULL}" --cache-to="type=registry,ref=${CACHE_IMAGE_FULL},mode=max" -t ${IMAGE_FULL}  -f apache.Dockerfile --push .
-    - name: "Docker Logout"
-      run: docker logout
+      -
+        name: "Checkout Che Dashboard source code"
+        uses: actions/checkout@v2
+      -
+        name: "Set up QEMU"
+        uses: docker/setup-qemu-action@v1
+      -
+        name: "Set up Docker Buildx ${{ matrix.platform }}"
+        uses: docker/setup-buildx-action@v1
+      -
+        name: "Docker quay.io Login"
+        uses: docker/login-action@v1
+        with:
+          registry: quay.io
+          username: ${{ secrets.QUAY_USERNAME }}
+          password: ${{ secrets.QUAY_PASSWORD }}
+      -
+        name: "Docker docker.io Login"
+        uses: docker/login-action@v1
+        with:
+          registry: docker.io
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_PASSWORD }}
+      -
+        name: "Build and push ${{ matrix.platform }}"
+        uses: docker/build-push-action@v2
+        with:
+          cache-from: type=registry,ref=${{ env.CACHE_IMAGE_FULL }}
+          cache-to: type=registry,ref=${{ env.CACHE_IMAGE_FULL }},mode=max
+          context: .
+          file: ./apache.Dockerfile
+          platforms: ${{ matrix.platform }}
+          push: true
+          tags: ${{ env.IMAGE_FULL }}
