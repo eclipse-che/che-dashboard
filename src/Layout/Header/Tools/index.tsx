@@ -28,7 +28,7 @@ import {
   PageHeaderToolsItem,
 } from '@patternfly/react-core';
 import { connect, ConnectedProps } from 'react-redux';
-import { container } from '../../../inversify.config';
+import { lazyInject } from '../../../inversify.config';
 import { AppAlerts } from '../../../services/alerts/appAlerts';
 import { AlertItem } from '../../../services/helpers/types';
 import { KeycloakAuthService } from '../../../services/keycloak/auth';
@@ -55,7 +55,9 @@ type State = {
 };
 export class HeaderTools extends React.PureComponent<Props, State> {
 
+  @lazyInject(AppAlerts)
   private readonly appAlerts: AppAlerts;
+
   constructor(props: Props) {
     super(props);
 
@@ -64,8 +66,6 @@ export class HeaderTools extends React.PureComponent<Props, State> {
       isInfoDropdownOpen: false,
       isModalOpen: false,
     };
-
-    this.appAlerts = container.get(AppAlerts);
   }
 
   private onUsernameSelect(): void {

@@ -30,8 +30,8 @@ jest.mock('gravatar-url', () => {
 jest.mock('../../../../store/InfrastructureNamespace', () => {
   return {
     actionCreators: {
-      requestNamespaces: (): AppThunk<Action, Promise<void>> => async (dispatch): Promise<void> => {
-        return Promise.resolve();
+      requestNamespaces: (): AppThunk<Action, Promise<che.KubernetesNamespace[]>> => async (): Promise<che.KubernetesNamespace[]> => {
+        return Promise.resolve([]);
       }
     } as InfrastructureNamespaceStore.ActionCreators,
   };

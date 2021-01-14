@@ -15,11 +15,11 @@ import { Route } from 'react-router';
 
 import { ROUTE } from './route.enum';
 
-const GetStarted = React.lazy(() => import('./pages/GetStarted'));
-const WorkspacesList = React.lazy(() => import('./containers/WorkspacesList'));
-const WorkspaceDetails = React.lazy(() => import('./containers/WorkspaceDetails'));
-const IdeLoader = React.lazy(() => import('./containers/IdeLoader'));
-const FactoryLoader = React.lazy(() => import('./containers/FactoryLoader'));
+const GetStartedPage = React.lazy(() => import('./pages/GetStarted'));
+const WorkspacesListContainer = React.lazy(() => import('./containers/WorkspacesList'));
+const WorkspaceDetailsContainer = React.lazy(() => import('./containers/WorkspaceDetails'));
+const IdeLoaderContainer = React.lazy(() => import('./containers/IdeLoader'));
+const FactoryLoaderContainer = React.lazy(() => import('./containers/FactoryLoader'));
 
 export interface RouteItem {
   to: ROUTE;
@@ -27,12 +27,12 @@ export interface RouteItem {
 }
 
 const items: RouteItem[] = [
-  { to: ROUTE.GET_STARTED, component: GetStarted },
-  { to: ROUTE.HOME, component: GetStarted },
-  { to: ROUTE.WORKSPACES, component: WorkspacesList },
-  { to: ROUTE.WORKSPACE_DETAILS, component: WorkspaceDetails },
-  { to: ROUTE.IDE, component: IdeLoader },
-  { to: ROUTE.LOAD_FACTORY, component: FactoryLoader },
+  { to: ROUTE.GET_STARTED, component: GetStartedPage },
+  { to: ROUTE.HOME, component: GetStartedPage },
+  { to: ROUTE.WORKSPACES, component: WorkspacesListContainer },
+  { to: ROUTE.WORKSPACE_DETAILS, component: WorkspaceDetailsContainer },
+  { to: ROUTE.IDE_LOADER, component: IdeLoaderContainer },
+  { to: ROUTE.LOAD_FACTORY, component: FactoryLoaderContainer },
 ];
 
 function Routes(): React.ReactElement {

@@ -15,27 +15,21 @@ import { History } from 'history';
 import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { RouteComponentProps } from 'react-router';
-import WorkspaceDetailsPage, { WorkspaceDetails as Details, WorkspaceDetailsTabs } from '../pages/WorkspaceDetails';
-import { IdeLoaderTabs } from '../services/helpers/types';
+import WorkspaceDetails, { WorkspaceDetails as Details } from '../pages/WorkspaceDetails';
+import { ROUTE } from '../route.enum';
+import { toHref } from '../services/helpers/location';
+import { IdeLoaderTab, WorkspaceAction, WorkspaceDetailsTab } from '../services/helpers/types';
 
 import { AppState } from '../store';
 import * as WorkspacesStore from '../store/Workspaces';
 import { selectAllWorkspaces, selectIsLoading } from '../store/Workspaces/selectors';
-
-export enum Actions {
-  OPEN = 'Open',
-  OPEN_IN_VERBOSE_MODE = 'Open in verbose mode',
-  START_IN_BACKGROUND = 'Start in background',
-  STOP_WORKSPACE = 'Stop Workspace',
-  DELETE_WORKSPACE = 'Delete Workspace',
-}
 
 type Props =
   MappedProps
   & { history: History }
   & RouteComponentProps<{ namespace: string; workspaceName: string }>; // incoming parameters
 
-class WorkspaceDetails extends React.PureComponent<Props> {
+class WorkspaceDetailsContainer extends React.PureComponent<Props> {
   workspaceDetailsPageRef: React.RefObject<Details>;
   private showAlert: (title: string, variant?: AlertVariant) => void;
 
@@ -84,16 +78,19 @@ class WorkspaceDetails extends React.PureComponent<Props> {
   }
 
   render() {
+    const workspacesLink = toHref(this.props.history, ROUTE.WORKSPACES);
+
     return (
-      <WorkspaceDetailsPage
+      <WorkspaceDetails
         ref={this.workspaceDetailsPageRef}
+        workspacesLink={workspacesLink}
         onSave={(workspace: che.Workspace) => this.onSave(workspace)}
         onAction={(action => this.onAction(action))}
       />
     );
   }
 
-  async onAction(action: Actions): Promise<void> {
+  async onAction(action: WorkspaceAction): Promise<void> {
     const namespace = this.props.match.params.namespace;
     const workspaceName = this.props.match.params.workspaceName;
     const workspace = this.props.allWorkspaces?.find(workspace =>
@@ -105,31 +102,31 @@ class WorkspaceDetails extends React.PureComponent<Props> {
     }
 
     switch (action) {
-      case Actions.OPEN:
+      case WorkspaceAction.OPEN_IDE:
         this.props.history.replace({ pathname: `/ide/${namespace}/${workspaceName}` });
         break;
-      case Actions.OPEN_IN_VERBOSE_MODE:
+      case WorkspaceAction.START_DEBUG_AND_OPEN_LOGS:
         try {
           await this.props.startWorkspace(workspace.id, { 'debug-workspace-start': true });
           this.props.history.replace({
-            pathname: `/ide/${namespace}/${workspaceName}?tab=${IdeLoaderTabs[IdeLoaderTabs.Logs]}`
+            pathname: `/ide/${namespace}/${workspaceName}?tab=${IdeLoaderTab[IdeLoaderTab.Logs]}`
           });
         } catch (e) {
-          this.showAlert(`Unable to ${Actions.OPEN_IN_VERBOSE_MODE.toLowerCase()}. ${e}`);
+          this.showAlert(`Unable to ${WorkspaceAction.START_DEBUG_AND_OPEN_LOGS.toLowerCase()}. ${e}`);
         }
         break;
-      case Actions.START_IN_BACKGROUND:
+      case WorkspaceAction.START_IN_BACKGROUND:
         try {
           await this.props.startWorkspace(workspace.id);
         } catch (e) {
-          this.showAlert(`Unable to ${Actions.START_IN_BACKGROUND.toLowerCase()}. ${e}`);
+          this.showAlert(`Unable to ${WorkspaceAction.START_IN_BACKGROUND.toLowerCase()}. ${e}`);
         }
         break;
-      case Actions.STOP_WORKSPACE:
+      case WorkspaceAction.STOP_WORKSPACE:
         try {
           await this.props.stopWorkspace(workspace.id);
         } catch (e) {
-          this.showAlert(`Unable to ${Actions.STOP_WORKSPACE.toLowerCase()}. ${e}`);
+          this.showAlert(`Unable to ${WorkspaceAction.STOP_WORKSPACE.toLowerCase()}. ${e}`);
         }
         break;
     }
@@ -146,7 +143,7 @@ class WorkspaceDetails extends React.PureComponent<Props> {
       this.props.history.replace({ pathname });
       this.props.setWorkspaceId(newWorkspaceObj.id);
     } catch (e) {
-      if (this.workspaceDetailsPageRef.current?.state.activeTabKey === WorkspaceDetailsTabs.Devfile) {
+      if (this.workspaceDetailsPageRef.current?.state.activeTabKey === WorkspaceDetailsTab.Devfile) {
         throw new Error(e.toString().replace(/^Error: /gi, ''));
       }
       this.showAlert('Failed to update workspace data');
@@ -166,4 +163,4 @@ const connector = connect(
 );
 
 type MappedProps = ConnectedProps<typeof connector>;
-export default connector(WorkspaceDetails);
+export default connector(WorkspaceDetailsContainer);

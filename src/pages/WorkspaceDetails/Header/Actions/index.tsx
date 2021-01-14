@@ -14,8 +14,7 @@ import { Dropdown, DropdownItem, DropdownToggle } from '@patternfly/react-core';
 import { CaretDownIcon } from '@patternfly/react-icons';
 import React from 'react';
 import WorkspaceDeleteAction, { WorkspaceDeleteAction as DeleteAction } from '../../../../components/Workspace/DeleteAction';
-import { Actions } from '../../../../containers/WorkspaceDetails';
-import { WorkspaceStatus } from '../../../../services/helpers/types';
+import { WorkspaceAction, WorkspaceStatus } from '../../../../services/helpers/types';
 
 import './Actions.styl';
 
@@ -23,7 +22,7 @@ type Props = {
   workspaceId: string;
   workspaceName: string;
   status: string | undefined;
-  onAction: (action: Actions) => void;
+  onAction: (action: WorkspaceAction) => void;
 };
 
 type State = {
@@ -52,7 +51,7 @@ export class HeaderActionSelect extends React.PureComponent<Props, State> {
     this.setState({ isExpanded });
   }
 
-  private handleSelect(selected: Actions): void {
+  private handleSelect(selected: WorkspaceAction): void {
     this.setState({
       isExpanded: false,
     });
@@ -60,7 +59,7 @@ export class HeaderActionSelect extends React.PureComponent<Props, State> {
   }
 
   private onDelete(): void {
-    this.handleSelect(Actions.DELETE_WORKSPACE);
+    this.handleSelect(WorkspaceAction.DELETE_WORKSPACE);
     this.setState({ isExpanded: true });
     this.workspaceDeleteRef.current?.onClick();
   }
@@ -77,29 +76,29 @@ export class HeaderActionSelect extends React.PureComponent<Props, State> {
 
     return [
       (<DropdownItem
-        key={`action-${Actions.OPEN}`}
-        onClick={() => this.handleSelect(Actions.OPEN)}>
-        <div>{Actions.OPEN}</div>
+        key={`action-${WorkspaceAction.OPEN_IDE}`}
+        onClick={() => this.handleSelect(WorkspaceAction.OPEN_IDE)}>
+        <div>{WorkspaceAction.OPEN_IDE}</div>
       </DropdownItem>),
       (<DropdownItem
-        key={`action-${Actions.OPEN_IN_VERBOSE_MODE}`}
-        onClick={() => this.handleSelect(Actions.OPEN_IN_VERBOSE_MODE)}>
-        <div>{Actions.OPEN_IN_VERBOSE_MODE}</div>
+        key={`action-${WorkspaceAction.START_DEBUG_AND_OPEN_LOGS}`}
+        onClick={() => this.handleSelect(WorkspaceAction.START_DEBUG_AND_OPEN_LOGS)}>
+        <div>{WorkspaceAction.START_DEBUG_AND_OPEN_LOGS}</div>
       </DropdownItem>),
       (<DropdownItem
-        key={`action-${Actions.START_IN_BACKGROUND}`}
+        key={`action-${WorkspaceAction.START_IN_BACKGROUND}`}
         isDisabled={status !== WorkspaceStatus[WorkspaceStatus.STOPPED]}
-        onClick={() => this.handleSelect(Actions.START_IN_BACKGROUND)}>
-        <div>{Actions.START_IN_BACKGROUND}</div>
+        onClick={() => this.handleSelect(WorkspaceAction.START_IN_BACKGROUND)}>
+        <div>{WorkspaceAction.START_IN_BACKGROUND}</div>
       </DropdownItem>),
       (<DropdownItem
-        key={`action-${Actions.STOP_WORKSPACE}`}
+        key={`action-${WorkspaceAction.STOP_WORKSPACE}`}
         isDisabled={status === WorkspaceStatus[WorkspaceStatus.STOPPED]}
-        onClick={() => this.handleSelect(Actions.STOP_WORKSPACE)}>
-        <div>{Actions.STOP_WORKSPACE}</div>
+        onClick={() => this.handleSelect(WorkspaceAction.STOP_WORKSPACE)}>
+        <div>{WorkspaceAction.STOP_WORKSPACE}</div>
       </DropdownItem>),
       (<DropdownItem
-        key={`action-${Actions.DELETE_WORKSPACE}`}
+        key={`action-${WorkspaceAction.DELETE_WORKSPACE}`}
         isDisabled={status === WorkspaceStatus[WorkspaceStatus.STARTING] || status === WorkspaceStatus[WorkspaceStatus.STOPPING]}
         onClick={() => this.onDelete()}>
         <WorkspaceDeleteAction
@@ -108,7 +107,7 @@ export class HeaderActionSelect extends React.PureComponent<Props, State> {
           ref={this.workspaceDeleteRef}
           onModalStatusChange={isModalOpen => this.onModalStatusChange(isModalOpen)}
           status={status ? WorkspaceStatus[status] : WorkspaceStatus.STOPPED}>
-          {Actions.DELETE_WORKSPACE}
+          {WorkspaceAction.DELETE_WORKSPACE}
         </WorkspaceDeleteAction>
       </DropdownItem>),
     ];

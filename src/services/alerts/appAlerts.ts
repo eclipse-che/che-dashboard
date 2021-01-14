@@ -10,6 +10,7 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
+import 'reflect-metadata';
 import { injectable } from 'inversify';
 import { AlertItem } from '../helpers/types';
 
@@ -30,15 +31,15 @@ export class AppAlerts {
     });
   }
 
-  public removeAlert = (key: string): void => {
+  public removeAlert(key: string): void {
     this.alerts = this.alerts.filter(al => al.key !== key);
     this.onChange();
-  };
+  }
 
-  public showAlert = (alert: AlertItem): void => {
+  public showAlert(alert: AlertItem): void {
     this.alerts.push(alert);
     this.onChange();
-  };
+  }
 
   /**
    * Subscribe on the show alert event.

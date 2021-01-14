@@ -35,7 +35,26 @@ export enum WorkspaceStatus {
   ERROR,
 }
 
-export enum IdeLoaderTabs {
+export type GettingStartedTab = 'get-started'
+  | 'custom-workspace';
+
+export enum IdeLoaderTab {
   Progress = 0,
   Logs = 1,
+}
+
+export enum WorkspaceDetailsTab {
+  Overview = 0,
+  Devfile = 4,
+  Logs = 5
+}
+
+export enum WorkspaceAction {
+  OPEN_IDE = 'Open',
+  START_DEBUG_AND_OPEN_LOGS = 'Open in verbose mode',
+  START_IN_BACKGROUND = 'Start in background',
+  STOP_WORKSPACE = 'Stop Workspace',
+  DELETE_WORKSPACE = 'Delete Workspace',
+  ADD_PROJECT = 'Add Project',
+  ADD_CUSTOM_WORKSPACE = 'Add Workspace',
 }

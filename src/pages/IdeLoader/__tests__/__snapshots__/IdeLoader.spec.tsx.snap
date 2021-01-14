@@ -25,7 +25,7 @@ Array [
               <svg
                 aria-hidden={true}
                 aria-labelledby={null}
-                fill="blue"
+                fill="currentColor"
                 height="1em"
                 role="img"
                 style={
@@ -414,7 +414,7 @@ Array [
               <svg
                 aria-hidden={true}
                 aria-labelledby={null}
-                fill="red"
+                fill="currentColor"
                 height="1em"
                 role="img"
                 style={
@@ -803,7 +803,7 @@ Array [
               <svg
                 aria-hidden={true}
                 aria-labelledby={null}
-                fill="blue"
+                fill="currentColor"
                 height="1em"
                 role="img"
                 style={
@@ -1228,7 +1228,7 @@ Array [
               <svg
                 aria-hidden={true}
                 aria-labelledby={null}
-                fill="red"
+                fill="currentColor"
                 height="1em"
                 role="img"
                 style={
@@ -1665,7 +1665,7 @@ Array [
               <svg
                 aria-hidden={true}
                 aria-labelledby={null}
-                fill="blue"
+                fill="currentColor"
                 height="1em"
                 role="img"
                 style={
@@ -2072,7 +2072,7 @@ Array [
               <svg
                 aria-hidden={true}
                 aria-labelledby={null}
-                fill="red"
+                fill="currentColor"
                 height="1em"
                 role="img"
                 style={

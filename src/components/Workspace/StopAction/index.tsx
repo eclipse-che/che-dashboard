@@ -14,7 +14,7 @@ import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { Tooltip } from '@patternfly/react-core';
 import { StopIcon } from '@patternfly/react-icons';
-import { container } from '../../../inversify.config';
+import { lazyInject } from '../../../inversify.config';
 import { Debounce } from '../../../services/helpers/debounce';
 import * as WorkspaceStore from '../../../store/Workspaces';
 
@@ -30,12 +30,13 @@ type State = {
 }
 
 class WorkspaceStopAction extends React.PureComponent<Props, State> {
-  private debounce: Debounce;
+
+  @lazyInject(Debounce)
+  private readonly debounce: Debounce;
 
   constructor(props: Props) {
     super(props);
 
-    this.debounce = container.get(Debounce);
     this.debounce.subscribe(isDebounceDelay => {
       this.setState({ isDebounceDelay });
     });

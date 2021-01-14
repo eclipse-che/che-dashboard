@@ -12,7 +12,7 @@
 
 import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
-import { History } from 'history';
+import { History, Location, UnregisterCallback } from 'history';
 import { Nav } from '@patternfly/react-core';
 
 import { ThemeVariant } from '../themeVariant';
@@ -20,7 +20,9 @@ import { AppState } from '../../store';
 import NavigationMainList from './MainList';
 import NavigationRecentList from './RecentList';
 import * as WorkspacesStore from '../../store/Workspaces';
-import { selectRecentWorkspaces } from '../../store/Workspaces/selectors';
+import { selectAllWorkspaces, selectRecentWorkspaces } from '../../store/Workspaces/selectors';
+import { ROUTE } from '../../route.enum';
+import { buildGettingStartedPath, buildWorkspacesPath } from '../../services/helpers/location';
 
 export interface NavigationItemObject {
   to: string,
@@ -46,11 +48,20 @@ type State = {
 
 export class Navigation extends React.PureComponent<Props, State> {
 
+  private readonly unregisterFn: UnregisterCallback;
+
   constructor(props: Props) {
     super(props);
 
-    const activePath = this.props.history.location.pathname.split('&')[0];
-
+    let activePath = this.props.history.location.pathname.split('&')[0];
+    if (activePath === ROUTE.HOME) {
+      const workspacesNumber = this.props.allWorkspaces.length;
+      if (workspacesNumber === 0) {
+        activePath = buildGettingStartedPath('get-started');
+      } else {
+        activePath = buildWorkspacesPath();
+      }
+    }
     if (this.props.history.location.pathname !== activePath) {
       this.props.history.replace(activePath);
     }
@@ -58,10 +69,27 @@ export class Navigation extends React.PureComponent<Props, State> {
     this.state = {
       activePath,
     };
+
+    this.unregisterFn = this.props.history.listen((location: Location) => {
+      this.setActivePath(location.pathname);
+    });
   }
 
-  private onNavSelect(selected: any): void {
-    this.setState({ activePath: selected.itemId });
+  private handleNavSelect(selected: {
+    groupId: React.ReactText;
+    itemId: React.ReactText;
+    to: string;
+    event: React.FormEvent<HTMLInputElement>;
+  }): void {
+    this.setState({ activePath: selected.itemId as string });
+  }
+
+  private setActivePath(path: string): void {
+    this.setState({ activePath: path });
+  }
+
+  public componentWillUnmount(): void {
+    this.unregisterFn();
   }
 
   public render(): React.ReactElement {
@@ -73,7 +101,7 @@ export class Navigation extends React.PureComponent<Props, State> {
     return (
       <Nav
         aria-label='Navigation'
-        onSelect={selected => this.onNavSelect(selected)}
+        onSelect={selected => this.handleNavSelect(selected)}
         theme={theme}
       >
         <NavigationMainList activePath={activePath} />
@@ -86,6 +114,7 @@ export class Navigation extends React.PureComponent<Props, State> {
 
 const mapStateToProps = (state: AppState) => ({
   recentWorkspaces: selectRecentWorkspaces(state),
+  allWorkspaces: selectAllWorkspaces(state),
 });
 const connector = connect(
   mapStateToProps,

@@ -24,7 +24,7 @@ exports[`The header component for IDE-loader and Factory-loader pages should ren
             <svg
               aria-hidden={true}
               aria-labelledby={null}
-              fill="blue"
+              fill="currentColor"
               height="1em"
               role="img"
               style={
@@ -73,7 +73,7 @@ exports[`The header component for IDE-loader and Factory-loader pages should ren
             <svg
               aria-hidden={true}
               aria-labelledby={null}
-              fill="red"
+              fill="currentColor"
               height="1em"
               role="img"
               style={

@@ -13,9 +13,8 @@
 import 'reflect-metadata';
 import 'keycloak-js';
 import axios from 'axios';
-import { injectable } from 'inversify';
+import { inject, injectable } from 'inversify';
 import { KeycloakInstance } from 'keycloak-js';
-import { container } from '../../inversify.config';
 import { IssuesReporterService } from '../bootstrap/issuesReporter';
 import { KeycloakAuthService } from './auth';
 import isDocumentReady from '../helpers/document';
@@ -56,12 +55,10 @@ type KeycloakConfig = Keycloak.KeycloakConfig | {
 @injectable()
 export class KeycloakSetupService {
 
-  private user: che.User | undefined;
-  private issuesReporterService: IssuesReporterService;
+  @inject(IssuesReporterService)
+  private readonly issuesReporterService: IssuesReporterService;
 
-  constructor() {
-    this.issuesReporterService = container.get(IssuesReporterService);
-  }
+  private user: che.User | undefined;
 
   async start(): Promise<void> {
     await this.doInitialization();

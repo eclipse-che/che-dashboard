@@ -12,15 +12,15 @@
 
 import React from 'react';
 import { Provider } from 'react-redux';
+import { AlertActionLink } from '@patternfly/react-core';
 import { RenderResult, render, screen } from '@testing-library/react';
 import { ROUTE } from '../../route.enum';
 import { getMockRouterProps } from '../../services/__mocks__/router';
 import { createFakeStore } from '../../store/__mocks__/store';
 import { createFakeWorkspace } from '../../store/__mocks__/workspace';
 import { WorkspaceStatus } from '../../services/helpers/types';
-import IdeLoader, { LoadIdeSteps } from '../IdeLoader';
+import IdeLoaderContainer, { LoadIdeSteps } from '../IdeLoader';
 import { AlertOptions } from '../../pages/IdeLoader';
-import { AlertActionLink } from '@patternfly/react-core';
 
 jest.mock('../../store/Workspaces/index', () => {
   return { actionCreators: {} };
@@ -103,10 +103,10 @@ describe('IDE Loader container', () => {
     startWorkspace: jest.Mock,
     requestWorkspace: jest.Mock,
   ): RenderResult => {
-    const { history, location, match } = getMockRouterProps(ROUTE.IDE, { namespace, workspaceName });
+    const { history, location, match } = getMockRouterProps(ROUTE.IDE_LOADER, { namespace, workspaceName });
     return render(
       <Provider store={store}>
-        <IdeLoader match={match}
+        <IdeLoaderContainer match={match}
           history={history}
           location={location}
           requestWorkspace={async (id: string) => requestWorkspace(id)}

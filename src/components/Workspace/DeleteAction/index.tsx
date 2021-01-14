@@ -24,7 +24,7 @@ import getDefaultDeleteButton from './defaultDeleteButton';
 import ExclamationTriangleIcon from '@patternfly/react-icons/dist/js/icons/exclamation-triangle-icon';
 import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
-import { container } from '../../../inversify.config';
+import { lazyInject } from '../../../inversify.config';
 import { AppAlerts } from '../../../services/alerts/appAlerts';
 import { Debounce } from '../../../services/helpers/debounce';
 import { WorkspaceStatus } from '../../../services/helpers/types';
@@ -49,10 +49,17 @@ type State = {
   warningInfoCheck?: boolean;
 };
 
+/**
+ * @deprecated Use [WorkspaceActions](src/containers/WorkspaceActions/index.tsx) instead
+ */
 export class WorkspaceDeleteAction extends React.PureComponent<Props, State> {
+
   static shouldDelete: string[] = [];
 
+  @lazyInject(Debounce)
   private readonly debounce: Debounce;
+
+  @lazyInject(AppAlerts)
   private readonly appAlerts: AppAlerts;
 
   constructor(props: Props) {
@@ -62,9 +69,6 @@ export class WorkspaceDeleteAction extends React.PureComponent<Props, State> {
       isDebounceDelay: false,
     };
 
-    this.appAlerts = container.get(AppAlerts);
-
-    this.debounce = container.get(Debounce);
     this.debounce.subscribe(isDebounceDelay => {
       this.setState({ isDebounceDelay });
     });

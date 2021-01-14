@@ -1,13 +1,5 @@
-.label {
-  margin-left: 10px;
-  padding-right: 18px;
-  font-weight: normal;
-  font-size: 20px;
-  opacity: 0.8;
-}
-
-.label svg {
-  margin-right: 2px;
+.stoppedLabel > span {
+  padding-right: 4px;
 }
 
 svg.rotate {

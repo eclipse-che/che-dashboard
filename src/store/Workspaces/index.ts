@@ -121,6 +121,7 @@ type KnownAction =
   | DeleteWorkspaceLogsAction;
 
 export type ResourceQueryParams = {
+  'debug-workspace-start': boolean;
   [propName: string]: string | boolean | undefined;
 }
 export type ActionCreators = {
@@ -298,7 +299,24 @@ export const actionCreators: ActionCreators = {
       dispatch({ type: 'DELETE_WORKSPACE', workspaceId });
     } catch (e) {
       dispatch({ type: 'RECEIVE_ERROR' });
-      throw new Error(`Failed to delete the workspace, ID: ${workspaceId}, ` + e.message);
+
+      const errorMessage = e?.message || '';
+      const code = e?.response?.status || '';
+      const statusText = e?.response?.statusText || '';
+      const responseMessage = e?.response?.data?.message || '';
+
+      let message: string;
+      if (responseMessage) {
+        message = responseMessage;
+      } else if (errorMessage) {
+        message = errorMessage;
+      } else if (code && statusText) {
+        message = `Response code ${code}, ${statusText}.`;
+      } else {
+        message = 'Unknown error.';
+      }
+
+      throw new Error(`Failed to delete the workspace, ID: ${workspaceId}. ` + message);
     }
   },
 

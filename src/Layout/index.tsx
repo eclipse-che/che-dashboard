@@ -19,13 +19,11 @@ import Header from './Header';
 import Sidebar from './Sidebar';
 import { ThemeVariant } from './themeVariant';
 import { AppState } from '../store';
-import { container } from '../inversify.config';
+import { lazyInject } from '../inversify.config';
 import { KeycloakAuthService } from '../services/keycloak/auth';
 import { IssuesReporterService } from '../services/bootstrap/issuesReporter';
 import { ErrorReporter } from './ErrorReporter';
 import { IssueComponent } from './ErrorReporter/Issue';
-
-const issuesReporterService = container.get(IssuesReporterService);
 
 const THEME_KEY = 'theme';
 const IS_MANAGED_SIDEBAR = false;
@@ -44,6 +42,12 @@ type State = {
 
 export class Layout extends React.PureComponent<Props, State> {
 
+  @lazyInject(IssuesReporterService)
+  private readonly issuesReporterService: IssuesReporterService;
+
+  @lazyInject(KeycloakAuthService)
+  private readonly keycloakAuthService: KeycloakAuthService;
+
   constructor(props: Props) {
     super(props);
 
@@ -57,8 +61,7 @@ export class Layout extends React.PureComponent<Props, State> {
   }
 
   private logout(): void {
-    const keycloakAuthService = container.get(KeycloakAuthService);
-    keycloakAuthService.logout();
+    this.keycloakAuthService.logout();
   }
 
   private toggleNav(): void {
@@ -104,8 +107,8 @@ export class Layout extends React.PureComponent<Props, State> {
 
   public render(): React.ReactElement {
     /* check for startup issues */
-    if (issuesReporterService.hasIssue) {
-      const issue = issuesReporterService.reportIssue();
+    if (this.issuesReporterService.hasIssue) {
+      const issue = this.issuesReporterService.reportIssue();
       const brandingData = this.props.brandingStore.data;
       if (issue) {
         return (

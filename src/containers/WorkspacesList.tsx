@@ -13,24 +13,19 @@
 import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { History } from 'history';
-
 import { AppState } from '../store';
+import { selectAllWorkspaces, selectIsLoading, } from '../store/Workspaces/selectors';
 import * as WorkspacesStore from '../store/Workspaces';
-import {
-  selectIsLoading,
-  selectAllWorkspaces,
-} from '../store/Workspaces/selectors';
-import WorkspacesListPage from '../pages/WorkspacesList';
+import Fallback from '../components/Fallback';
+import WorkspacesList from '../pages/WorkspacesList';
+import WorkspaceActionsProvider from './WorkspaceActions';
+import { WorkspaceActionsConsumer } from './WorkspaceActions/context';
 
 type Props =
   MappedProps
   & { history: History };
 
-export class WorkspacesList extends React.PureComponent<Props> {
-
-  constructor(props: Props) {
-    super(props);
-  }
+export class WorkspacesListContainer extends React.PureComponent<Props> {
 
   public componentDidMount(): void {
     const { allWorkspaces } = this.props;
@@ -40,19 +35,41 @@ export class WorkspacesList extends React.PureComponent<Props> {
   }
 
   render() {
+    const { branding, history, allWorkspaces, isLoading } = this.props;
+
+    if (isLoading) {
+      return Fallback;
+    }
+
     return (
-      <WorkspacesListPage
-        history={this.props.history}
-      />
+      <WorkspaceActionsProvider>
+        <WorkspaceActionsConsumer>
+          {context => (
+            <WorkspacesList
+              branding={branding.data}
+              history={history}
+              workspaces={allWorkspaces}
+              onAction={(action, id) => context.handleAction(action, id)}
+              showConfirmation={wantDelete => context.showConfirmation(wantDelete)}
+              isDeleted={context.isDeleted}
+            >
+            </WorkspacesList>
+          )}
+        </WorkspaceActionsConsumer>
+      </WorkspaceActionsProvider>
     );
   }
 
 }
 
-const mapStateToProps = (state: AppState) => ({
-  isLoading: selectIsLoading(state),
-  allWorkspaces: selectAllWorkspaces(state),
-});
+const mapStateToProps = (state: AppState) => {
+  const { branding } = state;
+  return {
+    branding,
+    allWorkspaces: selectAllWorkspaces(state),
+    isLoading: selectIsLoading(state),
+  };
+};
 
 const connector = connect(
   mapStateToProps,
@@ -60,4 +77,4 @@ const connector = connect(
 );
 
 type MappedProps = ConnectedProps<typeof connector>;
-export default connector(WorkspacesList);
+export default connector(WorkspacesListContainer);

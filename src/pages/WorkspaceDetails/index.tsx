@@ -13,27 +13,26 @@
 import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import {
-  PageSection,
-  PageSectionVariants,
-  Tabs,
-  Tab,
   Alert,
   AlertActionCloseButton,
+  AlertVariant,
+  Button,
   Modal,
   ModalVariant,
-  AlertVariant,
-  TextContent,
+  PageSection,
+  PageSectionVariants,
+  Tab,
+  Tabs,
   Text,
-  Button,
+  TextContent,
 } from '@patternfly/react-core';
 import Head from '../../components/Head';
-import { Actions } from '../../containers/WorkspaceDetails';
-import { WorkspaceStatus } from '../../services/helpers/types';
+import { WorkspaceAction, WorkspaceDetailsTab, WorkspaceStatus } from '../../services/helpers/types';
 import Header from './Header';
 import CheProgress from '../../components/Progress';
 import { AppState } from '../../store';
 import { HeaderActionSelect } from './Header/Actions';
-import { container } from '../../inversify.config';
+import { lazyInject } from '../../inversify.config';
 import { AppAlerts } from '../../services/alerts/appAlerts';
 import OverviewTab, { OverviewTab as Overview } from './OverviewTab';
 import EditorTab, { EditorTab as Editor } from './DevfileTab';
@@ -43,27 +42,26 @@ import './WorkspaceDetails.styl';
 
 export const SECTION_THEME = PageSectionVariants.light;
 
-export enum WorkspaceDetailsTabs {
-  Overview = 0,
-  Devfile = 4,
-  Logs = 5
-}
-
 type Props =
   {
+    workspacesLink: string;
     onSave: (workspace: che.Workspace) => Promise<void>;
-    onAction: (action: Actions) => void;
+    onAction: (action: WorkspaceAction) => void;
   } & MappedProps;
 
 type State = {
-  activeTabKey?: WorkspaceDetailsTabs;
-  clickedTabIndex?: WorkspaceDetailsTabs;
+  activeTabKey?: WorkspaceDetailsTab;
+  clickedTabIndex?: WorkspaceDetailsTab;
   hasWarningMessage?: boolean;
   hasDiscardChangesMessage?: boolean;
 };
 
 export class WorkspaceDetails extends React.PureComponent<Props, State> {
-  private static activeTabKey?: WorkspaceDetailsTabs;
+
+  @lazyInject(AppAlerts)
+  private readonly appAlerts: AppAlerts;
+
+  private static activeTabKey?: WorkspaceDetailsTab;
   private alert: { variant?: AlertVariant; title?: string } = {};
   public showAlert: (variant: AlertVariant, title: string) => void;
   private readonly handleTabClick: (event: React.MouseEvent<HTMLElement, MouseEvent>, tabIndex: React.ReactText) => void;
@@ -71,7 +69,7 @@ export class WorkspaceDetails extends React.PureComponent<Props, State> {
   private readonly editorTabPageRef: React.RefObject<Editor>;
   private readonly overviewTabPageRef: React.RefObject<Overview>;
 
-  constructor(props) {
+  constructor(props: Props) {
     super(props);
 
     this.editorTabPageRef = React.createRef<Editor>();
@@ -85,8 +83,8 @@ export class WorkspaceDetails extends React.PureComponent<Props, State> {
 
     // Toggle currently active tab
     this.handleTabClick = (event: React.MouseEvent<HTMLElement, MouseEvent>, tabIndex: React.ReactText): void => {
-      if ((this.state.activeTabKey === WorkspaceDetailsTabs.Devfile && this.editorTabPageRef.current?.state.hasChanges) ||
-        (this.state.activeTabKey === WorkspaceDetailsTabs.Overview && this.overviewTabPageRef.current?.hasChanges) ||
+      if ((this.state.activeTabKey === WorkspaceDetailsTab.Devfile && this.editorTabPageRef.current?.state.hasChanges) ||
+        (this.state.activeTabKey === WorkspaceDetailsTab.Overview && this.overviewTabPageRef.current?.hasChanges) ||
         this.props.isLoading) {
         const focusedElement = (
           document.hasFocus() &&
@@ -98,23 +96,22 @@ export class WorkspaceDetails extends React.PureComponent<Props, State> {
           (focusedElement as HTMLBaseElement).blur();
         }
         if (!this.props.isLoading) {
-          this.setState({ hasDiscardChangesMessage: true, clickedTabIndex: tabIndex as WorkspaceDetailsTabs });
+          this.setState({ hasDiscardChangesMessage: true, clickedTabIndex: tabIndex as WorkspaceDetailsTab });
         }
         return;
       }
       this.setState({
         hasDiscardChangesMessage: false,
-        clickedTabIndex: tabIndex as WorkspaceDetailsTabs,
-        activeTabKey: tabIndex as WorkspaceDetailsTabs
+        clickedTabIndex: tabIndex as WorkspaceDetailsTab,
+        activeTabKey: tabIndex as WorkspaceDetailsTab
       });
-      WorkspaceDetails.activeTabKey = tabIndex as WorkspaceDetailsTabs;
+      WorkspaceDetails.activeTabKey = tabIndex as WorkspaceDetailsTab;
     };
 
-    const appAlerts = container.get(AppAlerts);
     this.showAlert = (variant: AlertVariant, title: string): void => {
       this.alert = { variant, title };
       const key = `wrks-details-${(('0000' + (Math.random() * Math.pow(36, 4) << 0).toString(36)).slice(-4))}`;
-      appAlerts.showAlert({
+      this.appAlerts.showAlert({
         key,
         title,
         variant,
@@ -129,9 +126,9 @@ export class WorkspaceDetails extends React.PureComponent<Props, State> {
   }
 
   private handleDiscardChanges(): void {
-    if (this.state.activeTabKey === WorkspaceDetailsTabs.Devfile) {
+    if (this.state.activeTabKey === WorkspaceDetailsTab.Devfile) {
       this.editorTabPageRef.current?.cancelChanges();
-    } else if (this.state.activeTabKey === WorkspaceDetailsTabs.Overview) {
+    } else if (this.state.activeTabKey === WorkspaceDetailsTab.Overview) {
       this.overviewTabPageRef.current?.cancelChanges();
     }
 
@@ -144,7 +141,7 @@ export class WorkspaceDetails extends React.PureComponent<Props, State> {
   }
 
   public render(): React.ReactElement {
-    const { workspace, onAction } = this.props;
+    const { workspace, onAction, workspacesLink } = this.props;
 
     if (!workspace) {
       return <div>Workspace not found.</div>;
@@ -155,7 +152,11 @@ export class WorkspaceDetails extends React.PureComponent<Props, State> {
     return (
       <React.Fragment>
         <Head pageName={workspaceName} />
-        <Header workspaceName={workspaceName} status={workspace.status}>
+        <Header
+          workspacesLink={workspacesLink}
+          workspaceName={workspaceName}
+          status={workspace.status}
+        >
           <HeaderActionSelect
             onAction={onAction}
             workspaceId={workspace.id}
@@ -173,7 +174,7 @@ export class WorkspaceDetails extends React.PureComponent<Props, State> {
               } />
           )}
           <Tabs activeKey={this.state.activeTabKey} onSelect={this.handleTabClick}>
-            <Tab eventKey={WorkspaceDetailsTabs.Overview} title={WorkspaceDetailsTabs[WorkspaceDetailsTabs.Overview]}>
+            <Tab eventKey={WorkspaceDetailsTab.Overview} title={WorkspaceDetailsTab[WorkspaceDetailsTab.Overview]}>
               <CheProgress isLoading={this.props.isLoading} />
               <OverviewTab
                 ref={this.overviewTabPageRef}
@@ -181,7 +182,7 @@ export class WorkspaceDetails extends React.PureComponent<Props, State> {
                 onSave={workspace => this.onSave(workspace)}
               />
             </Tab>
-            <Tab eventKey={WorkspaceDetailsTabs.Devfile} title={WorkspaceDetailsTabs[WorkspaceDetailsTabs.Devfile]}>
+            <Tab eventKey={WorkspaceDetailsTab.Devfile} title={WorkspaceDetailsTab[WorkspaceDetailsTab.Devfile]}>
               <CheProgress isLoading={this.props.isLoading} />
               <EditorTab
                 ref={this.editorTabPageRef}
