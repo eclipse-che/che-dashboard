@@ -16,7 +16,6 @@ export type BrandingData = {
   productVersion?: string;
   logoTextFile: string;
   logoFile: string;
-  websocketContext: string;
   helpPath: string;
   helpTitle: string;
   supportEmail: string;
@@ -52,7 +51,6 @@ export const BRANDING_DEFAULT: BrandingData = {
   // in case customization is needed these files should be defined in
   // favicon: '/assets/branding/favicon.ico',
   // loader: '/assets/branding/loader.svg',
-  websocketContext: '/api/websocket',
   helpPath: 'https://www.eclipse.org/che/',
   helpTitle: 'Community',
   supportEmail: 'che-dev@eclipse.org',
