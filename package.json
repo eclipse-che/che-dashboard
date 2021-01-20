@@ -18,7 +18,7 @@
   "homepage": "https://github.com/che-incubator/che-dashboard-next#readme",
   "engines": {
     "yarn": ">=1.20.0",
-    "node": ">=10.20.1"
+    "node": ">=12"
   },
   "scripts": {
     "compile": "webpack --config webpack.config.prod.js",

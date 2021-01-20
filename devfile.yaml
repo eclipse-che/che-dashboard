@@ -19,7 +19,7 @@ components:
     memoryLimit: 2Gi
     type: dockerimage
     alias: dashboard-dev
-    image: 'docker.io/node:10.22.1'
+    image: 'docker.io/node:12'
   - id: vscode/typescript-language-features/latest
     type: chePlugin
 commands:
