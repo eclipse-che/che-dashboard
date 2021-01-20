@@ -6,7 +6,7 @@
 | `@eclipse-che/api@7.18.1` | EPL-2.0 | N/A |
 | [`@eclipse-che/workspace-client@0.0.1-1608729566`](https://github.com/eclipse/che-workspace-client) | EPL-2.0 | N/A |
 | [`@patternfly/patternfly@4.10.31`](https://github.com/patternfly/patternfly.git) | MIT | [CQ22346](https://dev.eclipse.org/ipzilla/show_bug.cgi?id=22346) |
-| [`@patternfly/react-core@4.18.5`](https://github.com/patternfly/patternfly-react.git) | MIT | [CQ22347](https://dev.eclipse.org/ipzilla/show_bug.cgi?id=22347) |
+| [`@patternfly/react-core@4.84.4`](https://github.com/patternfly/patternfly-react.git) | MIT | https://dev.eclipse.org/ipzilla/show_bug.cgi?id=22936 |
 | [`@patternfly/react-icons@4.3.5`](https://github.com/patternfly/patternfly-react.git) | MIT | clearlydefined |
 | `@patternfly/react-styles@4.3.4` | MIT | clearlydefined |
 | [`@patternfly/react-table@4.5.7`](https://github.com/patternfly/patternfly-react.git) | MIT | clearlydefined |
@@ -48,7 +48,7 @@
 | [`fast-json-stable-stringify@2.1.0`](git://github.com/epoberezkin/fast-json-stable-stringify.git) | MIT | clearlydefined |
 | [`faye-websocket@0.11.3`](git://github.com/faye/faye-websocket-node.git) | Apache-2.0 | clearlydefined |
 | `file-selector@0.1.12` | MIT | [CQ22350](https://dev.eclipse.org/ipzilla/show_bug.cgi?id=22350) |
-| [`focus-trap@4.0.2`](git+https://github.com/davidtheclark/focus-trap.git) | MIT | clearlydefined |
+| [`focus-trap@6.2.2`](git+https://github.com/focus-trap/focus-trap.git) | MIT | clearlydefined |
 | [`follow-redirects@1.5.10`](git@github.com:follow-redirects/follow-redirects.git) | MIT | clearlydefined |
 | [`function-bind@1.1.1`](git://github.com/Raynos/function-bind.git) | MIT | [CQ16925](https://dev.eclipse.org/ipzilla/show_bug.cgi?id=16925) |
 | [`glob-to-regexp@0.3.0`](https://github.com/fitzgen/glob-to-regexp.git) | BSD | [CQ18717](https://dev.eclipse.org/ipzilla/show_bug.cgi?id=18717) |
@@ -144,7 +144,7 @@
 | [`string.prototype.trimright@2.1.2`](git://github.com/es-shims/String.prototype.trimRight.git) | MIT | clearlydefined |
 | [`string.prototype.trimstart@1.0.1`](git://github.com/es-shims/String.prototype.trimStart.git) | MIT | clearlydefined |
 | [`symbol-observable@1.2.0`](https://github.com/blesh/symbol-observable.git) | MIT | clearlydefined |
-| [`tabbable@3.1.2`](git+https://github.com/davidtheclark/tabbable.git) | MIT | clearlydefined |
+| [`tabbable@5.1.5`](git+https://github.com/focus-trap/tabbable.git) | MIT | clearlydefined |
 | [`tiny-invariant@1.1.0`](https://github.com/alexreardon/tiny-invariant.git) | MIT | clearlydefined |
 | [`tiny-warning@1.0.3`](https://github.com/alexreardon/tiny-warning.git) | MIT | clearlydefined |
 | [`tippy.js@5.1.2`](git+https://github.com/atomiks/tippyjs.git) | MIT | clearlydefined |

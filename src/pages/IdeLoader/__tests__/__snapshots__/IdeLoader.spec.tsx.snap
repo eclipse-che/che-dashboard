@@ -53,7 +53,7 @@ Array [
   >
     <div
       className="pf-c-tabs pf-m-inset-lg"
-      data-ouia-component-id={0}
+      data-ouia-component-id="OUIA-Generated-Tabs-1"
       data-ouia-component-type="PF4/Tabs"
       data-ouia-safe={true}
       id="ide-loader-page-tabs"
@@ -82,7 +82,6 @@ Array [
         >
           <path
             d="M31.7 239l136-136c9.4-9.4 24.6-9.4 33.9 0l22.6 22.6c9.4 9.4 9.4 24.6 0 33.9L127.9 256l96.4 96.4c9.4 9.4 9.4 24.6 0 33.9L201.7 409c-9.4 9.4-24.6 9.4-33.9 0l-136-136c-9.5-9.4-9.5-24.6-.1-34z"
-            transform=""
           />
         </svg>
       </button>
@@ -96,6 +95,8 @@ Array [
           <button
             aria-controls="pf-tab-section-0-ide-loader-page-wizard-tab"
             className="pf-c-tabs__link"
+            data-ouia-component-type="PF4/TabButton"
+            data-ouia-safe={true}
             id="pf-tab-0-ide-loader-page-wizard-tab"
             onClick={[Function]}
           >
@@ -108,6 +109,8 @@ Array [
           <button
             aria-controls="pf-tab-section-1-ide-loader-page-logs-tab"
             className="pf-c-tabs__link"
+            data-ouia-component-type="PF4/TabButton"
+            data-ouia-safe={true}
             id="pf-tab-1-ide-loader-page-logs-tab"
             onClick={[Function]}
           >
@@ -138,7 +141,6 @@ Array [
         >
           <path
             d="M224.3 273l-136 136c-9.4 9.4-24.6 9.4-33.9 0l-22.6-22.6c-9.4-9.4-9.4-24.6 0-33.9l96.4-96.4-96.4-96.4c-9.4-9.4-9.4-24.6 0-33.9L54.3 103c9.4-9.4 24.6-9.4 33.9 0l136 136c9.5 9.4 9.5 24.6.1 34z"
-            transform=""
           />
         </svg>
       </button>
@@ -146,6 +148,8 @@ Array [
     <section
       aria-labelledby="pf-tab-0-ide-loader-page-wizard-tab"
       className="pf-c-tab-content"
+      data-ouia-component-type="PF4/TabContent"
+      data-ouia-safe={true}
       hidden={false}
       id="pf-tab-section-0-ide-loader-page-wizard-tab"
       role="tabpanel"
@@ -163,7 +167,6 @@ Array [
             }
           }
         >
-          
           <button
             aria-expanded={false}
             aria-label="Wizard Toggle"
@@ -228,7 +231,6 @@ Array [
               >
                 <path
                   d="M31.3 192h257.3c17.8 0 26.7 21.5 14.1 34.1L174.1 354.8c-7.8 7.8-20.5 7.8-28.3 0L17.2 226.1C4.6 213.5 13.5 192 31.3 192z"
-                  transform=""
                 />
               </svg>
             </span>
@@ -240,7 +242,8 @@ Array [
               className="pf-c-wizard__inner-wrap"
             >
               <nav
-                aria-label="Steps"
+                aria-label={null}
+                aria-labelledby={null}
                 className="pf-c-wizard__nav"
               >
                 <ol
@@ -249,10 +252,11 @@ Array [
                   <li
                     className="pf-c-wizard__nav-item"
                   >
-                    <a
+                    <button
                       aria-current="page"
-                      aria-disabled={false}
+                      aria-disabled={null}
                       className="pf-c-wizard__nav-link pf-m-current"
+                      disabled={false}
                       onClick={[Function]}
                     >
                       <svg
@@ -280,17 +284,17 @@ Array [
                       >
                         Initializing
                       </span>
-                    </a>
+                    </button>
                   </li>
                   <li
                     className="pf-c-wizard__nav-item"
                   >
-                    <a
+                    <button
                       aria-current={false}
                       aria-disabled={true}
                       className="pf-c-wizard__nav-link pf-m-disabled"
+                      disabled={true}
                       onClick={[Function]}
-                      tabIndex={-1}
                     >
                       
                       <span
@@ -298,17 +302,17 @@ Array [
                       >
                         Waiting for workspace to start
                       </span>
-                    </a>
+                    </button>
                   </li>
                   <li
                     className="pf-c-wizard__nav-item"
                   >
-                    <a
+                    <button
                       aria-current={false}
                       aria-disabled={true}
                       className="pf-c-wizard__nav-link pf-m-disabled"
+                      disabled={true}
                       onClick={[Function]}
-                      tabIndex={-1}
                     >
                       
                       <span
@@ -316,17 +320,19 @@ Array [
                       >
                         Open IDE
                       </span>
-                    </a>
+                    </button>
                   </li>
                 </ol>
               </nav>
-              <main
+              <div
+                aria-label={null}
+                aria-labelledby={null}
                 className="pf-c-wizard__main"
               >
                 <div
                   className="pf-c-wizard__main-body"
                 />
-              </main>
+              </div>
             </div>
             <span />
           </div>
@@ -336,6 +342,8 @@ Array [
     <section
       aria-labelledby="pf-tab-1-ide-loader-page-logs-tab"
       className="pf-c-tab-content"
+      data-ouia-component-type="PF4/TabContent"
+      data-ouia-safe={true}
       hidden={true}
       id="pf-tab-section-1-ide-loader-page-logs-tab"
       role="tabpanel"
@@ -442,7 +450,7 @@ Array [
   >
     <div
       className="pf-c-tabs pf-m-inset-lg"
-      data-ouia-component-id={1}
+      data-ouia-component-id="OUIA-Generated-Tabs-2"
       data-ouia-component-type="PF4/Tabs"
       data-ouia-safe={true}
       id="ide-loader-page-tabs"
@@ -471,7 +479,6 @@ Array [
         >
           <path
             d="M31.7 239l136-136c9.4-9.4 24.6-9.4 33.9 0l22.6 22.6c9.4 9.4 9.4 24.6 0 33.9L127.9 256l96.4 96.4c9.4 9.4 9.4 24.6 0 33.9L201.7 409c-9.4 9.4-24.6 9.4-33.9 0l-136-136c-9.5-9.4-9.5-24.6-.1-34z"
-            transform=""
           />
         </svg>
       </button>
@@ -485,6 +492,8 @@ Array [
           <button
             aria-controls="pf-tab-section-0-ide-loader-page-wizard-tab"
             className="pf-c-tabs__link"
+            data-ouia-component-type="PF4/TabButton"
+            data-ouia-safe={true}
             id="pf-tab-0-ide-loader-page-wizard-tab"
             onClick={[Function]}
           >
@@ -497,6 +506,8 @@ Array [
           <button
             aria-controls="pf-tab-section-1-ide-loader-page-logs-tab"
             className="pf-c-tabs__link"
+            data-ouia-component-type="PF4/TabButton"
+            data-ouia-safe={true}
             id="pf-tab-1-ide-loader-page-logs-tab"
             onClick={[Function]}
           >
@@ -527,7 +538,6 @@ Array [
         >
           <path
             d="M224.3 273l-136 136c-9.4 9.4-24.6 9.4-33.9 0l-22.6-22.6c-9.4-9.4-9.4-24.6 0-33.9l96.4-96.4-96.4-96.4c-9.4-9.4-9.4-24.6 0-33.9L54.3 103c9.4-9.4 24.6-9.4 33.9 0l136 136c9.5 9.4 9.5 24.6.1 34z"
-            transform=""
           />
         </svg>
       </button>
@@ -535,6 +545,8 @@ Array [
     <section
       aria-labelledby="pf-tab-0-ide-loader-page-wizard-tab"
       className="pf-c-tab-content"
+      data-ouia-component-type="PF4/TabContent"
+      data-ouia-safe={true}
       hidden={false}
       id="pf-tab-section-0-ide-loader-page-wizard-tab"
       role="tabpanel"
@@ -552,7 +564,6 @@ Array [
             }
           }
         >
-          
           <button
             aria-expanded={false}
             aria-label="Wizard Toggle"
@@ -617,7 +628,6 @@ Array [
               >
                 <path
                   d="M31.3 192h257.3c17.8 0 26.7 21.5 14.1 34.1L174.1 354.8c-7.8 7.8-20.5 7.8-28.3 0L17.2 226.1C4.6 213.5 13.5 192 31.3 192z"
-                  transform=""
                 />
               </svg>
             </span>
@@ -629,7 +639,8 @@ Array [
               className="pf-c-wizard__inner-wrap"
             >
               <nav
-                aria-label="Steps"
+                aria-label={null}
+                aria-labelledby={null}
                 className="pf-c-wizard__nav"
               >
                 <ol
@@ -638,10 +649,11 @@ Array [
                   <li
                     className="pf-c-wizard__nav-item"
                   >
-                    <a
+                    <button
                       aria-current="page"
-                      aria-disabled={false}
+                      aria-disabled={null}
                       className="pf-c-wizard__nav-link pf-m-current"
+                      disabled={false}
                       onClick={[Function]}
                     >
                       <svg
@@ -669,17 +681,17 @@ Array [
                       >
                         Initializing
                       </span>
-                    </a>
+                    </button>
                   </li>
                   <li
                     className="pf-c-wizard__nav-item"
                   >
-                    <a
+                    <button
                       aria-current={false}
                       aria-disabled={true}
                       className="pf-c-wizard__nav-link pf-m-disabled"
+                      disabled={true}
                       onClick={[Function]}
-                      tabIndex={-1}
                     >
                       
                       <span
@@ -687,17 +699,17 @@ Array [
                       >
                         Waiting for workspace to start
                       </span>
-                    </a>
+                    </button>
                   </li>
                   <li
                     className="pf-c-wizard__nav-item"
                   >
-                    <a
+                    <button
                       aria-current={false}
                       aria-disabled={true}
                       className="pf-c-wizard__nav-link pf-m-disabled"
+                      disabled={true}
                       onClick={[Function]}
-                      tabIndex={-1}
                     >
                       
                       <span
@@ -705,17 +717,19 @@ Array [
                       >
                         Open IDE
                       </span>
-                    </a>
+                    </button>
                   </li>
                 </ol>
               </nav>
-              <main
+              <div
+                aria-label={null}
+                aria-labelledby={null}
                 className="pf-c-wizard__main"
               >
                 <div
                   className="pf-c-wizard__main-body"
                 />
-              </main>
+              </div>
             </div>
             <span />
           </div>
@@ -725,6 +739,8 @@ Array [
     <section
       aria-labelledby="pf-tab-1-ide-loader-page-logs-tab"
       className="pf-c-tab-content"
+      data-ouia-component-type="PF4/TabContent"
+      data-ouia-safe={true}
       hidden={true}
       id="pf-tab-section-1-ide-loader-page-logs-tab"
       role="tabpanel"
@@ -831,7 +847,7 @@ Array [
   >
     <div
       className="pf-c-tabs pf-m-inset-lg"
-      data-ouia-component-id={4}
+      data-ouia-component-id="OUIA-Generated-Tabs-5"
       data-ouia-component-type="PF4/Tabs"
       data-ouia-safe={true}
       id="ide-loader-page-tabs"
@@ -860,7 +876,6 @@ Array [
         >
           <path
             d="M31.7 239l136-136c9.4-9.4 24.6-9.4 33.9 0l22.6 22.6c9.4 9.4 9.4 24.6 0 33.9L127.9 256l96.4 96.4c9.4 9.4 9.4 24.6 0 33.9L201.7 409c-9.4 9.4-24.6 9.4-33.9 0l-136-136c-9.5-9.4-9.5-24.6-.1-34z"
-            transform=""
           />
         </svg>
       </button>
@@ -874,6 +889,8 @@ Array [
           <button
             aria-controls="pf-tab-section-0-ide-loader-page-wizard-tab"
             className="pf-c-tabs__link"
+            data-ouia-component-type="PF4/TabButton"
+            data-ouia-safe={true}
             id="pf-tab-0-ide-loader-page-wizard-tab"
             onClick={[Function]}
           >
@@ -886,6 +903,8 @@ Array [
           <button
             aria-controls="pf-tab-section-1-ide-loader-page-logs-tab"
             className="pf-c-tabs__link"
+            data-ouia-component-type="PF4/TabButton"
+            data-ouia-safe={true}
             id="pf-tab-1-ide-loader-page-logs-tab"
             onClick={[Function]}
           >
@@ -916,7 +935,6 @@ Array [
         >
           <path
             d="M224.3 273l-136 136c-9.4 9.4-24.6 9.4-33.9 0l-22.6-22.6c-9.4-9.4-9.4-24.6 0-33.9l96.4-96.4-96.4-96.4c-9.4-9.4-9.4-24.6 0-33.9L54.3 103c9.4-9.4 24.6-9.4 33.9 0l136 136c9.5 9.4 9.5 24.6.1 34z"
-            transform=""
           />
         </svg>
       </button>
@@ -924,6 +942,8 @@ Array [
     <section
       aria-labelledby="pf-tab-0-ide-loader-page-wizard-tab"
       className="pf-c-tab-content"
+      data-ouia-component-type="PF4/TabContent"
+      data-ouia-safe={true}
       hidden={false}
       id="pf-tab-section-0-ide-loader-page-wizard-tab"
       role="tabpanel"
@@ -941,7 +961,6 @@ Array [
             }
           }
         >
-          
           <button
             aria-expanded={false}
             aria-label="Wizard Toggle"
@@ -1006,7 +1025,6 @@ Array [
               >
                 <path
                   d="M31.3 192h257.3c17.8 0 26.7 21.5 14.1 34.1L174.1 354.8c-7.8 7.8-20.5 7.8-28.3 0L17.2 226.1C4.6 213.5 13.5 192 31.3 192z"
-                  transform=""
                 />
               </svg>
             </span>
@@ -1018,7 +1036,8 @@ Array [
               className="pf-c-wizard__inner-wrap"
             >
               <nav
-                aria-label="Steps"
+                aria-label={null}
+                aria-labelledby={null}
                 className="pf-c-wizard__nav"
               >
                 <ol
@@ -1027,10 +1046,11 @@ Array [
                   <li
                     className="pf-c-wizard__nav-item"
                   >
-                    <a
+                    <button
                       aria-current={false}
-                      aria-disabled={false}
+                      aria-disabled={null}
                       className="pf-c-wizard__nav-link"
+                      disabled={false}
                       onClick={[Function]}
                     >
                       <svg
@@ -1058,15 +1078,16 @@ Array [
                       >
                         Initializing
                       </span>
-                    </a>
+                    </button>
                   </li>
                   <li
                     className="pf-c-wizard__nav-item"
                   >
-                    <a
+                    <button
                       aria-current={false}
-                      aria-disabled={false}
+                      aria-disabled={null}
                       className="pf-c-wizard__nav-link"
+                      disabled={false}
                       onClick={[Function]}
                     >
                       <svg
@@ -1094,15 +1115,16 @@ Array [
                       >
                         Waiting for workspace to start
                       </span>
-                    </a>
+                    </button>
                   </li>
                   <li
                     className="pf-c-wizard__nav-item"
                   >
-                    <a
+                    <button
                       aria-current="page"
-                      aria-disabled={false}
+                      aria-disabled={null}
                       className="pf-c-wizard__nav-link pf-m-current"
+                      disabled={false}
                       onClick={[Function]}
                     >
                       <svg
@@ -1130,17 +1152,19 @@ Array [
                       >
                         Open IDE
                       </span>
-                    </a>
+                    </button>
                   </li>
                 </ol>
               </nav>
-              <main
+              <div
+                aria-label={null}
+                aria-labelledby={null}
                 className="pf-c-wizard__main"
               >
                 <div
                   className="pf-c-wizard__main-body"
                 />
-              </main>
+              </div>
             </div>
             <span />
           </div>
@@ -1150,6 +1174,8 @@ Array [
     <section
       aria-labelledby="pf-tab-1-ide-loader-page-logs-tab"
       className="pf-c-tab-content"
+      data-ouia-component-type="PF4/TabContent"
+      data-ouia-safe={true}
       hidden={true}
       id="pf-tab-section-1-ide-loader-page-logs-tab"
       role="tabpanel"
@@ -1256,7 +1282,7 @@ Array [
   >
     <div
       className="pf-c-tabs pf-m-inset-lg"
-      data-ouia-component-id={5}
+      data-ouia-component-id="OUIA-Generated-Tabs-6"
       data-ouia-component-type="PF4/Tabs"
       data-ouia-safe={true}
       id="ide-loader-page-tabs"
@@ -1285,7 +1311,6 @@ Array [
         >
           <path
             d="M31.7 239l136-136c9.4-9.4 24.6-9.4 33.9 0l22.6 22.6c9.4 9.4 9.4 24.6 0 33.9L127.9 256l96.4 96.4c9.4 9.4 9.4 24.6 0 33.9L201.7 409c-9.4 9.4-24.6 9.4-33.9 0l-136-136c-9.5-9.4-9.5-24.6-.1-34z"
-            transform=""
           />
         </svg>
       </button>
@@ -1299,6 +1324,8 @@ Array [
           <button
             aria-controls="pf-tab-section-0-ide-loader-page-wizard-tab"
             className="pf-c-tabs__link"
+            data-ouia-component-type="PF4/TabButton"
+            data-ouia-safe={true}
             id="pf-tab-0-ide-loader-page-wizard-tab"
             onClick={[Function]}
           >
@@ -1311,6 +1338,8 @@ Array [
           <button
             aria-controls="pf-tab-section-1-ide-loader-page-logs-tab"
             className="pf-c-tabs__link"
+            data-ouia-component-type="PF4/TabButton"
+            data-ouia-safe={true}
             id="pf-tab-1-ide-loader-page-logs-tab"
             onClick={[Function]}
           >
@@ -1341,7 +1370,6 @@ Array [
         >
           <path
             d="M224.3 273l-136 136c-9.4 9.4-24.6 9.4-33.9 0l-22.6-22.6c-9.4-9.4-9.4-24.6 0-33.9l96.4-96.4-96.4-96.4c-9.4-9.4-9.4-24.6 0-33.9L54.3 103c9.4-9.4 24.6-9.4 33.9 0l136 136c9.5 9.4 9.5 24.6.1 34z"
-            transform=""
           />
         </svg>
       </button>
@@ -1349,6 +1377,8 @@ Array [
     <section
       aria-labelledby="pf-tab-0-ide-loader-page-wizard-tab"
       className="pf-c-tab-content"
+      data-ouia-component-type="PF4/TabContent"
+      data-ouia-safe={true}
       hidden={false}
       id="pf-tab-section-0-ide-loader-page-wizard-tab"
       role="tabpanel"
@@ -1366,7 +1396,6 @@ Array [
             }
           }
         >
-          
           <button
             aria-expanded={false}
             aria-label="Wizard Toggle"
@@ -1431,7 +1460,6 @@ Array [
               >
                 <path
                   d="M31.3 192h257.3c17.8 0 26.7 21.5 14.1 34.1L174.1 354.8c-7.8 7.8-20.5 7.8-28.3 0L17.2 226.1C4.6 213.5 13.5 192 31.3 192z"
-                  transform=""
                 />
               </svg>
             </span>
@@ -1443,7 +1471,8 @@ Array [
               className="pf-c-wizard__inner-wrap"
             >
               <nav
-                aria-label="Steps"
+                aria-label={null}
+                aria-labelledby={null}
                 className="pf-c-wizard__nav"
               >
                 <ol
@@ -1452,10 +1481,11 @@ Array [
                   <li
                     className="pf-c-wizard__nav-item"
                   >
-                    <a
+                    <button
                       aria-current={false}
-                      aria-disabled={false}
+                      aria-disabled={null}
                       className="pf-c-wizard__nav-link"
+                      disabled={false}
                       onClick={[Function]}
                     >
                       <svg
@@ -1483,15 +1513,16 @@ Array [
                       >
                         Initializing
                       </span>
-                    </a>
+                    </button>
                   </li>
                   <li
                     className="pf-c-wizard__nav-item"
                   >
-                    <a
+                    <button
                       aria-current={false}
-                      aria-disabled={false}
+                      aria-disabled={null}
                       className="pf-c-wizard__nav-link"
+                      disabled={false}
                       onClick={[Function]}
                     >
                       <svg
@@ -1519,15 +1550,16 @@ Array [
                       >
                         Waiting for workspace to start
                       </span>
-                    </a>
+                    </button>
                   </li>
                   <li
                     className="pf-c-wizard__nav-item"
                   >
-                    <a
+                    <button
                       aria-current="page"
-                      aria-disabled={false}
+                      aria-disabled={null}
                       className="pf-c-wizard__nav-link pf-m-current"
+                      disabled={false}
                       onClick={[Function]}
                     >
                       <svg
@@ -1555,17 +1587,19 @@ Array [
                       >
                         Open IDE
                       </span>
-                    </a>
+                    </button>
                   </li>
                 </ol>
               </nav>
-              <main
+              <div
+                aria-label={null}
+                aria-labelledby={null}
                 className="pf-c-wizard__main"
               >
                 <div
                   className="pf-c-wizard__main-body"
                 />
-              </main>
+              </div>
             </div>
             <span />
           </div>
@@ -1575,6 +1609,8 @@ Array [
     <section
       aria-labelledby="pf-tab-1-ide-loader-page-logs-tab"
       className="pf-c-tab-content"
+      data-ouia-component-type="PF4/TabContent"
+      data-ouia-safe={true}
       hidden={true}
       id="pf-tab-section-1-ide-loader-page-logs-tab"
       role="tabpanel"
@@ -1693,7 +1729,7 @@ Array [
   >
     <div
       className="pf-c-tabs pf-m-inset-lg"
-      data-ouia-component-id={2}
+      data-ouia-component-id="OUIA-Generated-Tabs-3"
       data-ouia-component-type="PF4/Tabs"
       data-ouia-safe={true}
       id="ide-loader-page-tabs"
@@ -1722,7 +1758,6 @@ Array [
         >
           <path
             d="M31.7 239l136-136c9.4-9.4 24.6-9.4 33.9 0l22.6 22.6c9.4 9.4 9.4 24.6 0 33.9L127.9 256l96.4 96.4c9.4 9.4 9.4 24.6 0 33.9L201.7 409c-9.4 9.4-24.6 9.4-33.9 0l-136-136c-9.5-9.4-9.5-24.6-.1-34z"
-            transform=""
           />
         </svg>
       </button>
@@ -1736,6 +1771,8 @@ Array [
           <button
             aria-controls="pf-tab-section-0-ide-loader-page-wizard-tab"
             className="pf-c-tabs__link"
+            data-ouia-component-type="PF4/TabButton"
+            data-ouia-safe={true}
             id="pf-tab-0-ide-loader-page-wizard-tab"
             onClick={[Function]}
           >
@@ -1748,6 +1785,8 @@ Array [
           <button
             aria-controls="pf-tab-section-1-ide-loader-page-logs-tab"
             className="pf-c-tabs__link"
+            data-ouia-component-type="PF4/TabButton"
+            data-ouia-safe={true}
             id="pf-tab-1-ide-loader-page-logs-tab"
             onClick={[Function]}
           >
@@ -1778,7 +1817,6 @@ Array [
         >
           <path
             d="M224.3 273l-136 136c-9.4 9.4-24.6 9.4-33.9 0l-22.6-22.6c-9.4-9.4-9.4-24.6 0-33.9l96.4-96.4-96.4-96.4c-9.4-9.4-9.4-24.6 0-33.9L54.3 103c9.4-9.4 24.6-9.4 33.9 0l136 136c9.5 9.4 9.5 24.6.1 34z"
-            transform=""
           />
         </svg>
       </button>
@@ -1786,6 +1824,8 @@ Array [
     <section
       aria-labelledby="pf-tab-0-ide-loader-page-wizard-tab"
       className="pf-c-tab-content"
+      data-ouia-component-type="PF4/TabContent"
+      data-ouia-safe={true}
       hidden={false}
       id="pf-tab-section-0-ide-loader-page-wizard-tab"
       role="tabpanel"
@@ -1803,7 +1843,6 @@ Array [
             }
           }
         >
-          
           <button
             aria-expanded={false}
             aria-label="Wizard Toggle"
@@ -1868,7 +1907,6 @@ Array [
               >
                 <path
                   d="M31.3 192h257.3c17.8 0 26.7 21.5 14.1 34.1L174.1 354.8c-7.8 7.8-20.5 7.8-28.3 0L17.2 226.1C4.6 213.5 13.5 192 31.3 192z"
-                  transform=""
                 />
               </svg>
             </span>
@@ -1880,7 +1918,8 @@ Array [
               className="pf-c-wizard__inner-wrap"
             >
               <nav
-                aria-label="Steps"
+                aria-label={null}
+                aria-labelledby={null}
                 className="pf-c-wizard__nav"
               >
                 <ol
@@ -1889,10 +1928,11 @@ Array [
                   <li
                     className="pf-c-wizard__nav-item"
                   >
-                    <a
+                    <button
                       aria-current={false}
-                      aria-disabled={false}
+                      aria-disabled={null}
                       className="pf-c-wizard__nav-link"
+                      disabled={false}
                       onClick={[Function]}
                     >
                       <svg
@@ -1920,15 +1960,16 @@ Array [
                       >
                         Initializing
                       </span>
-                    </a>
+                    </button>
                   </li>
                   <li
                     className="pf-c-wizard__nav-item"
                   >
-                    <a
+                    <button
                       aria-current="page"
-                      aria-disabled={false}
+                      aria-disabled={null}
                       className="pf-c-wizard__nav-link pf-m-current"
+                      disabled={false}
                       onClick={[Function]}
                     >
                       <svg
@@ -1956,17 +1997,17 @@ Array [
                       >
                         Waiting for workspace to start
                       </span>
-                    </a>
+                    </button>
                   </li>
                   <li
                     className="pf-c-wizard__nav-item"
                   >
-                    <a
+                    <button
                       aria-current={false}
                       aria-disabled={true}
                       className="pf-c-wizard__nav-link pf-m-disabled"
+                      disabled={true}
                       onClick={[Function]}
-                      tabIndex={-1}
                     >
                       
                       <span
@@ -1974,17 +2015,19 @@ Array [
                       >
                         Open IDE
                       </span>
-                    </a>
+                    </button>
                   </li>
                 </ol>
               </nav>
-              <main
+              <div
+                aria-label={null}
+                aria-labelledby={null}
                 className="pf-c-wizard__main"
               >
                 <div
                   className="pf-c-wizard__main-body"
                 />
-              </main>
+              </div>
             </div>
             <span />
           </div>
@@ -1994,6 +2037,8 @@ Array [
     <section
       aria-labelledby="pf-tab-1-ide-loader-page-logs-tab"
       className="pf-c-tab-content"
+      data-ouia-component-type="PF4/TabContent"
+      data-ouia-safe={true}
       hidden={true}
       id="pf-tab-section-1-ide-loader-page-logs-tab"
       role="tabpanel"
@@ -2100,7 +2145,7 @@ Array [
   >
     <div
       className="pf-c-tabs pf-m-inset-lg"
-      data-ouia-component-id={3}
+      data-ouia-component-id="OUIA-Generated-Tabs-4"
       data-ouia-component-type="PF4/Tabs"
       data-ouia-safe={true}
       id="ide-loader-page-tabs"
@@ -2129,7 +2174,6 @@ Array [
         >
           <path
             d="M31.7 239l136-136c9.4-9.4 24.6-9.4 33.9 0l22.6 22.6c9.4 9.4 9.4 24.6 0 33.9L127.9 256l96.4 96.4c9.4 9.4 9.4 24.6 0 33.9L201.7 409c-9.4 9.4-24.6 9.4-33.9 0l-136-136c-9.5-9.4-9.5-24.6-.1-34z"
-            transform=""
           />
         </svg>
       </button>
@@ -2143,6 +2187,8 @@ Array [
           <button
             aria-controls="pf-tab-section-0-ide-loader-page-wizard-tab"
             className="pf-c-tabs__link"
+            data-ouia-component-type="PF4/TabButton"
+            data-ouia-safe={true}
             id="pf-tab-0-ide-loader-page-wizard-tab"
             onClick={[Function]}
           >
@@ -2155,6 +2201,8 @@ Array [
           <button
             aria-controls="pf-tab-section-1-ide-loader-page-logs-tab"
             className="pf-c-tabs__link"
+            data-ouia-component-type="PF4/TabButton"
+            data-ouia-safe={true}
             id="pf-tab-1-ide-loader-page-logs-tab"
             onClick={[Function]}
           >
@@ -2185,7 +2233,6 @@ Array [
         >
           <path
             d="M224.3 273l-136 136c-9.4 9.4-24.6 9.4-33.9 0l-22.6-22.6c-9.4-9.4-9.4-24.6 0-33.9l96.4-96.4-96.4-96.4c-9.4-9.4-9.4-24.6 0-33.9L54.3 103c9.4-9.4 24.6-9.4 33.9 0l136 136c9.5 9.4 9.5 24.6.1 34z"
-            transform=""
           />
         </svg>
       </button>
@@ -2193,6 +2240,8 @@ Array [
     <section
       aria-labelledby="pf-tab-0-ide-loader-page-wizard-tab"
       className="pf-c-tab-content"
+      data-ouia-component-type="PF4/TabContent"
+      data-ouia-safe={true}
       hidden={false}
       id="pf-tab-section-0-ide-loader-page-wizard-tab"
       role="tabpanel"
@@ -2210,7 +2259,6 @@ Array [
             }
           }
         >
-          
           <button
             aria-expanded={false}
             aria-label="Wizard Toggle"
@@ -2275,7 +2323,6 @@ Array [
               >
                 <path
                   d="M31.3 192h257.3c17.8 0 26.7 21.5 14.1 34.1L174.1 354.8c-7.8 7.8-20.5 7.8-28.3 0L17.2 226.1C4.6 213.5 13.5 192 31.3 192z"
-                  transform=""
                 />
               </svg>
             </span>
@@ -2287,7 +2334,8 @@ Array [
               className="pf-c-wizard__inner-wrap"
             >
               <nav
-                aria-label="Steps"
+                aria-label={null}
+                aria-labelledby={null}
                 className="pf-c-wizard__nav"
               >
                 <ol
@@ -2296,10 +2344,11 @@ Array [
                   <li
                     className="pf-c-wizard__nav-item"
                   >
-                    <a
+                    <button
                       aria-current={false}
-                      aria-disabled={false}
+                      aria-disabled={null}
                       className="pf-c-wizard__nav-link"
+                      disabled={false}
                       onClick={[Function]}
                     >
                       <svg
@@ -2327,15 +2376,16 @@ Array [
                       >
                         Initializing
                       </span>
-                    </a>
+                    </button>
                   </li>
                   <li
                     className="pf-c-wizard__nav-item"
                   >
-                    <a
+                    <button
                       aria-current="page"
-                      aria-disabled={false}
+                      aria-disabled={null}
                       className="pf-c-wizard__nav-link pf-m-current"
+                      disabled={false}
                       onClick={[Function]}
                     >
                       <svg
@@ -2363,17 +2413,17 @@ Array [
                       >
                         Waiting for workspace to start
                       </span>
-                    </a>
+                    </button>
                   </li>
                   <li
                     className="pf-c-wizard__nav-item"
                   >
-                    <a
+                    <button
                       aria-current={false}
                       aria-disabled={true}
                       className="pf-c-wizard__nav-link pf-m-disabled"
+                      disabled={true}
                       onClick={[Function]}
-                      tabIndex={-1}
                     >
                       
                       <span
@@ -2381,17 +2431,19 @@ Array [
                       >
                         Open IDE
                       </span>
-                    </a>
+                    </button>
                   </li>
                 </ol>
               </nav>
-              <main
+              <div
+                aria-label={null}
+                aria-labelledby={null}
                 className="pf-c-wizard__main"
               >
                 <div
                   className="pf-c-wizard__main-body"
                 />
-              </main>
+              </div>
             </div>
             <span />
           </div>
@@ -2401,6 +2453,8 @@ Array [
     <section
       aria-labelledby="pf-tab-1-ide-loader-page-logs-tab"
       className="pf-c-tab-content"
+      data-ouia-component-type="PF4/TabContent"
+      data-ouia-safe={true}
       hidden={true}
       id="pf-tab-section-1-ide-loader-page-logs-tab"
       role="tabpanel"

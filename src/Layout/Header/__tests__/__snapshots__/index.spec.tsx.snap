@@ -11,18 +11,18 @@ exports[`Page header should correctly render the component 1`] = `
       className="pf-c-page__header-brand-toggle"
     >
       <button
-        aria-controls="page-sidebar"
-        aria-disabled={null}
+        aria-controls={null}
+        aria-disabled={false}
         aria-expanded="true"
         aria-label="Global navigation"
         className="pf-c-button pf-m-plain"
-        data-ouia-component-id={null}
+        data-ouia-component-id="OUIA-Generated-Button-plain-1"
         data-ouia-component-type="PF4/Button"
         data-ouia-safe={true}
         disabled={false}
         id="nav-toggle"
         onClick={[Function]}
-        tabIndex={null}
+        role={null}
         type="button"
       >
         <svg
@@ -41,7 +41,6 @@ exports[`Page header should correctly render the component 1`] = `
         >
           <path
             d="M16 132h416c8.837 0 16-7.163 16-16V76c0-8.837-7.163-16-16-16H16C7.163 60 0 67.163 0 76v40c0 8.837 7.163 16 16 16zm0 160h416c8.837 0 16-7.163 16-16v-40c0-8.837-7.163-16-16-16H16c-8.837 0-16 7.163-16 16v40c0 8.837 7.163 16 16 16zm0 160h416c8.837 0 16-7.163 16-16v-40c0-8.837-7.163-16-16-16H16c-8.837 0-16 7.163-16 16v40c0 8.837 7.163 16 16 16z"
-            transform=""
           />
         </svg>
       </button>

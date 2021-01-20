@@ -10,6 +10,7 @@ exports[`Progress component should render progress with loading correctly 1`] = 
       aria-hidden="true"
       className="pf-c-progress__description"
       id="che-progress-ind-description"
+      onMouseEnter={null}
     >
       
     </div>
