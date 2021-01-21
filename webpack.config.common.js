@@ -120,6 +120,7 @@ module.exports = {
     module: 'empty'
   },
   plugins: [
+    new webpack.IgnorePlugin(/prettier/),
     new HtmlWebpackPlugin({
       template: './index.html'
     }),
