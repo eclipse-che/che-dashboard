@@ -1,8 +1,8 @@
 {
   "name": "che-dashboard",
-  "version": "5.0.0",
+  "version": "7.26.0-SNAPSHOT",
   "description": "Dashboard for Eclipse CHE",
-  "private": true,
+  "private": "true",
   "workspaces": [
     "che-dashboard-e2e"
   ],
