@@ -149,6 +149,7 @@ function createFakeStore(workspaces: che.Workspace[]): Store {
     devfileRegistries: {} as any,
     user: {} as any,
     infrastructureNamespace: {} as any,
+    userPreferences: {} as any,
   };
   const middleware = [thunk];
   const mockStore = createMockStore(middleware);

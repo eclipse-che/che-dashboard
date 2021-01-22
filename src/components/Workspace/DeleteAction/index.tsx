@@ -21,7 +21,6 @@ import {
   TextContent,
 } from '@patternfly/react-core';
 import getDefaultDeleteButton from './defaultDeleteButton';
-import ExclamationTriangleIcon from '@patternfly/react-icons/dist/js/icons/exclamation-triangle-icon';
 import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { lazyInject } from '../../../inversify.config';
@@ -191,10 +190,8 @@ export class WorkspaceDeleteAction extends React.PureComponent<Props, State> {
 
     return (
       <Modal
-        header={(
-          <span className={styles.infoModalHeader}>
-            <ExclamationTriangleIcon />Delete Workspace
-          </span>)}
+        title="Delete Workspace"
+        titleIconVariant="warning"
         variant={ModalVariant.small}
         isOpen={isInfoOpen}
         onClose={() => this.setInfoModalStatus(false)}

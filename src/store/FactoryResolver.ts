@@ -33,7 +33,11 @@ interface RequestFactoryResolverAction {
 
 interface ReceiveFactoryResolverAction {
   type: 'RECEIVE_FACTORY_RESOLVER';
-  resolver: { location?: string; devfile?: api.che.workspace.devfile.Devfile; }
+  resolver: {
+    location?: string;
+    source?: string;
+    devfile?: api.che.workspace.devfile.Devfile;
+  }
 }
 
 type KnownAction = RequestFactoryResolverAction

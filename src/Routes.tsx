@@ -20,6 +20,7 @@ const WorkspacesListContainer = React.lazy(() => import('./containers/Workspaces
 const WorkspaceDetailsContainer = React.lazy(() => import('./containers/WorkspaceDetails'));
 const IdeLoaderContainer = React.lazy(() => import('./containers/IdeLoader'));
 const FactoryLoaderContainer = React.lazy(() => import('./containers/FactoryLoader'));
+const UserPreferences = React.lazy(() => import('./pages/UserPreferences'));
 
 export interface RouteItem {
   to: ROUTE;
@@ -33,6 +34,7 @@ const items: RouteItem[] = [
   { to: ROUTE.WORKSPACE_DETAILS, component: WorkspaceDetailsContainer },
   { to: ROUTE.IDE_LOADER, component: IdeLoaderContainer },
   { to: ROUTE.LOAD_FACTORY, component: FactoryLoaderContainer },
+  { to: ROUTE.USER_PREFERENCES, component: UserPreferences },
 ];
 
 function Routes(): React.ReactElement {

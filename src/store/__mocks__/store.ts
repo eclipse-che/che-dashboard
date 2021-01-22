@@ -52,5 +52,6 @@ export const createFakeStore = (
     devfileRegistries: {} as any,
     user: {} as any,
     infrastructureNamespace: {} as any,
+    userPreferences: {} as any,
   } as AppState);
 };

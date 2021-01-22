@@ -17,6 +17,7 @@ import { AppState } from '../../store';
 import * as BrandingStore from '../../store/Branding';
 import * as UserStore from '../../store/User';
 import * as WorkspacesStore from '../../store/Workspaces';
+import * as UserPreferencesStore from '../../store/UserPreferences';
 import * as DevfileRegistriesStore from '../../store/DevfileRegistries';
 import * as InfrastructureNamespaceStore from '../../store/InfrastructureNamespace';
 import * as Plugins from '../../store/Plugins';
@@ -59,6 +60,7 @@ export class PreloadData {
     await this.updatePlugins(settings);
     await this.updateRegistriesMetadata(settings);
     await this.updateDevfileSchema();
+    await this.updateUserPreferences();
   }
 
   private async updateBranding(): Promise<void> {
@@ -116,6 +118,11 @@ export class PreloadData {
   private async updateDevfileSchema(): Promise<void> {
     const { requestJsonSchema } = DevfileRegistriesStore.actionCreators;
     return requestJsonSchema()(this.store.dispatch, this.store.getState, undefined);
+  }
+
+  private async updateUserPreferences(): Promise<void> {
+    const { requestUserPreferences } = UserPreferencesStore.actionCreators;
+    return requestUserPreferences(undefined)(this.store.dispatch, this.store.getState, undefined);
   }
 
   private async updateKeycloakUserInfo(): Promise<void> {

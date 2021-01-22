@@ -133,6 +133,7 @@ export class Layout extends React.PureComponent<Props, State> {
       <Page
         header={
           <Header
+            history={history}
             isVisible={isHeaderVisible}
             helpPath={helpPath}
             logoUrl={logoUrl}
