@@ -16,7 +16,7 @@ components:
       - tail
       - '-f'
       - /dev/null
-    memoryLimit: 2Gi
+    memoryLimit: 3Gi
     type: dockerimage
     alias: dashboard-dev
     image: 'docker.io/node:12'
