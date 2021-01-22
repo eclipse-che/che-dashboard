@@ -1,5 +1,4 @@
 ![CI](https://github.com/eclipse/che-dashboard/workflows/CI/badge.svg)
-![CI:main-react](https://github.com/eclipse/che-dashboard/workflows/CI:main-react/badge.svg?branch=main-react)
 
 ## About Eclipse Che
 
