@@ -8,14 +8,13 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/che-incubator/che-dashboard-next.git"
+    "url": "git://github.com/eclipse/che-dashboard.git"
   },
-  "author": "Oleksii Orel (oorel@redhat.com)",
   "license": "EPL-2.0",
   "bugs": {
-    "url": "https://github.com/che-incubator/che-dashboard-next/issues"
+    "url": "https://github.com/eclipse/che-dashboard/issues"
   },
-  "homepage": "https://github.com/che-incubator/che-dashboard-next#readme",
+  "homepage": "https://github.com/eclipse/che-dashboard",
   "engines": {
     "yarn": ">=1.20.0",
     "node": ">=12"
