@@ -38,15 +38,15 @@ import './IdeLoader.styl';
 export const SECTION_THEME = PageSectionVariants.light;
 
 type Props = {
-  hasError: boolean,
   currentStep: LoadIdeSteps,
-  workspaceName: string;
-  workspaceId: string;
-  preselectedTabKey?: IdeLoaderTab
+  hasError: boolean,
   ideUrl?: string;
+  preselectedTabKey?: IdeLoaderTab
+  workspaceId: string;
+  workspaceName: string;
   callbacks?: {
     showAlert?: (alertOptions: AlertOptions) => void
-  }
+  };
 };
 
 type State = {
@@ -75,7 +75,7 @@ class IdeLoader extends React.PureComponent<Props, State> {
 
   private readonly wizardRef: RefObject<any>;
 
-  constructor(props) {
+  constructor(props: Props) {
     super(props);
 
     this.state = {

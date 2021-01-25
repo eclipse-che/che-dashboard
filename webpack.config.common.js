@@ -129,6 +129,8 @@ module.exports = {
       },
     }),
     new CleanWebpackPlugin(),
-    new webpack.DefinePlugin({ __isBrowser__: "true" }),
+    new webpack.DefinePlugin({
+      __isBrowser__: "true"
+    }),
   ],
 };

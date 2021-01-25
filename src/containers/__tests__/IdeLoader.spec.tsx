@@ -11,6 +11,7 @@
  */
 
 import React from 'react';
+import { Action } from 'redux';
 import { Provider } from 'react-redux';
 import { AlertActionLink } from '@patternfly/react-core';
 import { RenderResult, render, screen } from '@testing-library/react';
@@ -21,13 +22,24 @@ import { createFakeWorkspace } from '../../store/__mocks__/workspace';
 import { WorkspaceStatus } from '../../services/helpers/types';
 import IdeLoaderContainer, { LoadIdeSteps } from '../IdeLoader';
 import { AlertOptions } from '../../pages/IdeLoader';
+import { AppThunk } from '../../store';
+import { ActionCreators } from '../../store/Workspaces';
+
+const showAlertMock = jest.fn();
+const requestWorkspaceMock = jest.fn().mockResolvedValue(undefined);
+const startWorkspaceMock = jest.fn().mockResolvedValue(undefined);
 
 jest.mock('../../store/Workspaces/index', () => {
-  return { actionCreators: {} };
+  return {
+    actionCreators: {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      requestWorkspace: (id: string): AppThunk<Action, Promise<void>> => async (): Promise<void> => { requestWorkspaceMock(); },
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      startWorkspace: (id: string): AppThunk<Action, Promise<void>> => async (): Promise<void> => { startWorkspaceMock(); }
+      ,
+    } as ActionCreators,
+  };
 });
-
-let showAlert = jest.fn();
-
 jest.mock('../../pages/IdeLoader', () => {
   return function DummyWizard(props: {
     hasError: boolean,
@@ -40,7 +52,7 @@ jest.mock('../../pages/IdeLoader', () => {
     }
   }): React.ReactElement {
     if (props.callbacks) {
-      props.callbacks.showAlert = showAlert;
+      props.callbacks.showAlert = showAlertMock;
     }
     return (<div>Dummy Wizard
       <div data-testid="ide-loader-has-error">{props.hasError.toString()}</div>
@@ -100,41 +112,35 @@ describe('IDE Loader container', () => {
   const renderComponent = (
     namespace: string,
     workspaceName: string,
-    startWorkspace: jest.Mock,
-    requestWorkspace: jest.Mock,
   ): RenderResult => {
     const { history, location, match } = getMockRouterProps(ROUTE.IDE_LOADER, { namespace, workspaceName });
     return render(
       <Provider store={store}>
-        <IdeLoaderContainer match={match}
+        <IdeLoaderContainer
+          match={match}
           history={history}
           location={location}
-          requestWorkspace={async (id: string) => requestWorkspace(id)}
-          startWorkspace={async (id: string) => startWorkspace(id)} />
+        />
       </Provider>,
     );
   };
 
-  beforeEach(() => {
-    showAlert = jest.fn();
+  afterEach(() => {
+    jest.resetAllMocks();
   });
 
   it('should show an error if something wrong', () => {
     const namespace = 'admin3';
     const workspaceName = 'name-wksp-4';
 
-    const requestWorkspace = jest.fn();
-    const startWorkspace = jest.fn();
-
     renderComponent(
       namespace,
       workspaceName,
-      startWorkspace,
-      requestWorkspace);
+    );
 
-    expect(startWorkspace).not.toBeCalled();
-    expect(requestWorkspace).not.toBeCalled();
-    expect(showAlert).toBeCalledWith(expect.objectContaining({
+    expect(startWorkspaceMock).not.toBeCalled();
+    expect(requestWorkspaceMock).not.toBeCalled();
+    expect(showAlertMock).toBeCalledWith(expect.objectContaining({
       alertVariant: 'danger',
       title: 'Failed to find the target workspace.'
     }));
@@ -150,22 +156,18 @@ describe('IDE Loader container', () => {
     const namespace = 'admin3';
     const workspaceName = 'name-wksp-3';
 
-    const requestWorkspace = jest.fn();
-    const startWorkspace = jest.fn();
-
     renderComponent(
       namespace,
       workspaceName,
-      startWorkspace,
-      requestWorkspace);
+    );
 
-    expect(startWorkspace).not.toBeCalled();
-    expect(requestWorkspace).not.toBeCalled();
+    expect(startWorkspaceMock).not.toBeCalled();
+    expect(requestWorkspaceMock).not.toBeCalled();
 
-    expect(showAlert).toBeCalledTimes(1);
+    expect(showAlertMock).toBeCalledTimes(1);
 
     const errorAlerts = <React.Fragment><AlertActionLink onClick={() => jest.fn()}>Open in Verbose mode</AlertActionLink><AlertActionLink onClick={() => jest.fn()}>Open Logs</AlertActionLink></React.Fragment>;
-    const firstCalledArgs = showAlert.mock.calls[0][0];
+    const firstCalledArgs = showAlertMock.mock.calls[0][0];
     expect(firstCalledArgs.title).toEqual('Workspace name-wksp-3 failed to start');
     expect(firstCalledArgs.alertVariant).toEqual('danger');
     expect(JSON.stringify(firstCalledArgs.alertActionLinks)).toEqual(JSON.stringify(errorAlerts));
@@ -182,17 +184,13 @@ describe('IDE Loader container', () => {
     const workspaceId = 'id-wksp-1';
     const workspaceName = 'name-wksp-1';
 
-    const requestWorkspace = jest.fn();
-    const startWorkspace = jest.fn();
-
     renderComponent(
       namespace,
       workspaceName,
-      startWorkspace,
-      requestWorkspace);
+    );
 
-    expect(startWorkspace).toHaveBeenCalledTimes(1);
-    expect(requestWorkspace).not.toBeCalled();
+    expect(startWorkspaceMock).toHaveBeenCalledTimes(1);
+    expect(requestWorkspaceMock).not.toBeCalled();
 
     const elementHasError = screen.getByTestId('ide-loader-has-error');
     expect(elementHasError.innerHTML).toEqual('false');
@@ -215,17 +213,13 @@ describe('IDE Loader container', () => {
     const namespace = 'admin2';
     const workspaceName = 'name-wksp-2';
 
-    const requestWorkspace = jest.fn();
-    const startWorkspace = jest.fn();
-
     renderComponent(
       namespace,
       workspaceName,
-      startWorkspace,
-      requestWorkspace);
+    );
 
-    expect(startWorkspace).not.toBeCalled();
-    expect(requestWorkspace).not.toBeCalled();
+    expect(startWorkspaceMock).not.toBeCalled();
+    expect(requestWorkspaceMock).not.toBeCalled();
 
     const elementHasError = screen.getByTestId('ide-loader-has-error');
     expect(elementHasError.innerHTML).toEqual('false');
