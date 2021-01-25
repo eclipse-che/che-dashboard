@@ -10,7 +10,7 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import { AxiosInstance } from 'axios';
+import { AxiosInstance, AxiosRequestConfig } from 'axios';
 import { injectable } from 'inversify';
 import WorkspaceClient, { IWorkspaceMasterApi, IRemoteAPI } from '@eclipse-che/workspace-client';
 import { KeycloakAuthService } from '../keycloak/auth';
@@ -26,7 +26,6 @@ export class CheWorkspaceClient {
   private readonly axios: AxiosInstance;
   private originLocation: string;
   private baseUrl: string;
-  private websocketContext: string;
   private _restApiClient: IRemoteAPI;
   private _jsonRpcMasterApi: IWorkspaceMasterApi;
   private _failingWebSockets: string[];
@@ -38,7 +37,6 @@ export class CheWorkspaceClient {
    */
   constructor() {
     this.baseUrl = '/api';
-    this.websocketContext = '/api/websocket';
     this._failingWebSockets = [];
     this.webSocketEventEmitter = new EventEmitter();
 
@@ -67,18 +65,7 @@ export class CheWorkspaceClient {
       if (keycloak && keycloak.updateToken && !isUpdated) {
         updateTimer();
         try {
-          await new Promise((resolve, reject) => {
-            keycloak.updateToken(5).success((refreshed: boolean) => {
-              if (refreshed && keycloak.token) {
-                const header = 'Authorization';
-                this.axios.defaults.headers.common[header] = `Bearer ${keycloak.token}`;
-                request.headers.common[header] = `Bearer ${keycloak.token}`;
-              }
-              resolve(keycloak);
-            }).error((error: any) => {
-              reject(new Error(error));
-            });
-          });
+          await this.refreshToken(request);
         } catch (e) {
           console.error('Failed to update token.', e);
           window.sessionStorage.setItem('oidcDashboardRedirectUrl', location.href);
@@ -116,10 +103,6 @@ export class CheWorkspaceClient {
     return this.baseUrl;
   }
 
-  getWebsocketContext(): string {
-    return this.websocketContext;
-  }
-
   setBaseUrl(baseUrl: string): void {
     this.baseUrl = baseUrl;
   }
@@ -131,15 +114,9 @@ export class CheWorkspaceClient {
   }
 
   async updateJsonRpcMasterApi(): Promise<void> {
-    let jsonRpcApiLocation = this.originLocation.replace('http', 'ws') + '/api/websocket';
-    // connect
-    if (this.token) {
-      const header = 'Authorization';
-      this.axios.defaults.headers.common[header] = `Bearer ${this.token}`;
-
-      jsonRpcApiLocation += `?token=${this.token}`;
-    }
-    this._jsonRpcMasterApi = WorkspaceClient.getJsonRpcApi(jsonRpcApiLocation);
+    const jsonRpcApiLocation = this.originLocation.replace('http', 'ws');
+    const tokenRefresher = () => this.refreshToken();
+    this._jsonRpcMasterApi = WorkspaceClient.getJsonRpcApi(jsonRpcApiLocation, tokenRefresher);
     this._jsonRpcMasterApi.onDidWebSocketStatusChange((websockets: string[]) => {
       this._failingWebSockets = [];
       for (const websocket of websockets) {
@@ -148,7 +125,7 @@ export class CheWorkspaceClient {
       }
       this.webSocketEventEmitter.emit(this.webSocketEventName);
     });
-    await this._jsonRpcMasterApi.connect(jsonRpcApiLocation);
+    await this._jsonRpcMasterApi.connect();
     const clientId = this._jsonRpcMasterApi.getClientId();
     console.log('WebSocket connection clientId', clientId);
   }
@@ -163,5 +140,29 @@ export class CheWorkspaceClient {
 
   get failingWebSockets(): string[] {
     return Array.from(this._failingWebSockets);
+  }
+
+  private refreshToken(request?: AxiosRequestConfig): Promise<string | Error> {
+    const { keycloak } = KeycloakAuthService;
+    if (keycloak) {
+      return new Promise((resolve, reject) => {
+        keycloak.updateToken(5).success((refreshed: boolean) => {
+          if (refreshed && keycloak.token) {
+            const header = 'Authorization';
+            this.axios.defaults.headers.common[header] = `Bearer ${keycloak.token}`;
+            if (request) {
+              request.headers.common[header] = `Bearer ${keycloak.token}`;
+            }
+          }
+          resolve(keycloak.token as string);
+        }).error((error: any) => {
+          reject(new Error(error));
+        });
+      });
+    }
+    if (!this.token) {
+      return Promise.reject(new Error('Unable to resolve token'));
+    }
+    return Promise.resolve(this.token);
   }
 }
