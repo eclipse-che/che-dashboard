@@ -21,6 +21,11 @@ export type BrandingData = {
   supportEmail: string;
   docs: BrandingDocs;
   configuration: BrandingConfiguration;
+  header?: BrandingHeader;
+}
+
+export type BrandingHeader = {
+  warning: string;
 }
 
 export type BrandingDocs = {

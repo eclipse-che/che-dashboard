@@ -24,7 +24,7 @@ import { KeycloakAuthService } from '../services/keycloak/auth';
 import { IssuesReporterService } from '../services/bootstrap/issuesReporter';
 import { ErrorReporter } from './ErrorReporter';
 import { IssueComponent } from './ErrorReporter/Issue';
-import WebSocketBannerAlert from '../components/WebSocketBannerAlert';
+import { BannerAlert } from '../components/BannerAlert';
 
 const THEME_KEY = 'theme';
 const IS_MANAGED_SIDEBAR = false;
@@ -153,7 +153,7 @@ export class Layout extends React.PureComponent<Props, State> {
         }
         isManagedSidebar={IS_MANAGED_SIDEBAR}
       >
-        <WebSocketBannerAlert />
+        <BannerAlert />
         {this.props.children}
       </Page>
     );

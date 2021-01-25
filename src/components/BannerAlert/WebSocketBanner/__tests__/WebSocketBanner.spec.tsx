@@ -11,12 +11,12 @@
  */
 
 import React from 'react';
-import { container } from '../../../inversify.config';
-import WebSocketBannerAlert from '../';
-import { CheWorkspaceClient } from '../../../services/cheWorkspaceClient';
+import { container } from '../../../../inversify.config';
+import WebSocketBanner from '..';
+import { CheWorkspaceClient } from '../../../../services/cheWorkspaceClient';
 import { Provider } from 'react-redux';
-import { FakeStoreBuilder } from '../../../store/__mocks__/storeBuilder';
-import { BrandingData } from '../../../services/bootstrap/branding.constant';
+import { FakeStoreBuilder } from '../../../../store/__mocks__/storeBuilder';
+import { BrandingData } from '../../../../services/bootstrap/branding.constant';
 import { render, RenderResult } from '@testing-library/react';
 
 const failingWebSocketName = 'Failing websocket';
@@ -32,10 +32,10 @@ const store = new FakeStoreBuilder().withBranding({
   }
 } as BrandingData).build();
 
-describe('WebSocketBannerAlert component', () => {
+describe('WebSocketBanner component', () => {
   it('should show error message when error found before mounting', () => {
     container.rebind(CheWorkspaceClient).to(mockCheWorkspaceClient).inSingletonScope();
-    const component = renderComponent(<WebSocketBannerAlert />);
+    const component = renderComponent(<WebSocketBanner />);
     container.rebind(CheWorkspaceClient).to(CheWorkspaceClient).inSingletonScope();
     expect(component.getAllByText(failingMessage, {
       exact: false
@@ -45,7 +45,7 @@ describe('WebSocketBannerAlert component', () => {
   it('should show error message when error found after mounting', () => {
     const comp = (
       <Provider store={store}>
-        <WebSocketBannerAlert />
+        <WebSocketBanner />
       </Provider>
     );
     const component = renderComponent(comp);
@@ -61,7 +61,7 @@ describe('WebSocketBannerAlert component', () => {
   });
 
   it('should not show error message if none is present', () => {
-    const component = renderComponent(<WebSocketBannerAlert />);
+    const component = renderComponent(<WebSocketBanner />);
     expect(component.queryAllByText(failingMessage, {
       exact: false
     })).toEqual([]);
