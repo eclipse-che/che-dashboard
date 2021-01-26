@@ -467,9 +467,9 @@
   integrity sha512-KnnnDpnxxK0TBgR0Ux3oOYCvmCv6d4cRA+1j9wiLkaJighCqgCUaxnHWXEfolYbRq1+o/sfsxN+BxRDuF+H8wQ==
 
 "@eclipse-che/workspace-client@^0.0.1-1608729566":
-  version "0.0.1-1610629049"
-  resolved "https://registry.yarnpkg.com/@eclipse-che/workspace-client/-/workspace-client-0.0.1-1610629049.tgz#fd34b7b3f22bc969570c391cd4683c05782c2c9f"
-  integrity sha512-GF/1b3F/BsrqeF+BZ1QXZrEpQFLoiztD6QTQw0rcGBIr04K6IL+QpI+i3z6MbaI59yWvxEkhA/VL2oFTprEyyA==
+  version "0.0.1-1611344228"
+  resolved "https://registry.yarnpkg.com/@eclipse-che/workspace-client/-/workspace-client-0.0.1-1611344228.tgz#983eb6ca71717ee665dff001006ab07815734e4a"
+  integrity sha512-Ru658debzMS+JZfiZC3Jr5y3DQSK0JAp6/dq81PmZm07UPwg0FdFiOH6lN/lr8yYJTu+Hl0+4rOhCS3SSwvJPA==
   dependencies:
     "@eclipse-che/api" "^7.0.0-beta-4.0"
     axios "0.20.0"
