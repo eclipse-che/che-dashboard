@@ -710,7 +710,7 @@
   dependencies:
     mkdirp "^1.0.4"
 
-"@patternfly/patternfly@4.10.31", "@patternfly/patternfly@^4.10.31":
+"@patternfly/patternfly@4.10.31":
   version "4.10.31"
   resolved "https://registry.yarnpkg.com/@patternfly/patternfly/-/patternfly-4.10.31.tgz#742852b69d90bb2efe304130f7226d2e356306cf"
   integrity sha512-UxdZ/apWRowXYZ5qPz5LPfXwyB4YGpomrCJPX7c36+Zg8jFpYyVqgVYainL8Yf/GrChtC2LKyoHg7UUTtMtp4A==

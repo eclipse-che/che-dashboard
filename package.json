@@ -37,7 +37,6 @@
   },
   "dependencies": {
     "@eclipse-che/workspace-client": "^0.0.1-1608729566",
-    "@patternfly/patternfly": "^4.10.31",
     "@patternfly/react-core": "~4.84.4",
     "@patternfly/react-icons": "^4.3.5",
     "@patternfly/react-table": "^4.5.7",
