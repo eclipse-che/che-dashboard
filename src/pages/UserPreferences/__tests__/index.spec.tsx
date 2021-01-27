@@ -23,9 +23,9 @@ import { FakeRegistryBuilder } from '../__tests__/__mocks__/registryRowBuilder';
 import { FakeStoreBuilder } from '../../../store/__mocks__/storeBuilder';
 
 describe('User Preferences', () => {
-  const requestUserPreferences = jest.fn();
-  const replaceUserPreferences = jest.fn();
-  const updateContainerRegistries = jest.fn();
+  const mockRequestUserPreferences = jest.fn();
+  const mockReplaceUserPreferences = jest.fn();
+  const mockUpdateContainerRegistries = jest.fn();
 
   const history = createHashHistory();
 
@@ -41,9 +41,9 @@ describe('User Preferences', () => {
           preferences={preferences}
           registries={registries}
           isLoading={isLoading}
-          requestUserPreferences={requestUserPreferences}
-          replaceUserPreferences={replaceUserPreferences}
-          updateContainerRegistries={updateContainerRegistries}
+          requestUserPreferences={mockRequestUserPreferences}
+          replaceUserPreferences={mockReplaceUserPreferences}
+          updateContainerRegistries={mockUpdateContainerRegistries}
         />
       </Provider>
     );
@@ -99,7 +99,7 @@ describe('User Preferences', () => {
     expect(editButton).toBeEnabled();
 
     userEvent.click(editButton);
-    expect(updateContainerRegistries).toBeCalledWith([{
+    expect(mockUpdateContainerRegistries).toBeCalledWith([{
       url: 'http://tst',
       username: '',
       password: 'qwe',
@@ -129,7 +129,7 @@ describe('User Preferences', () => {
     expect(deleteButton).toBeEnabled();
 
     userEvent.click(deleteButton);
-    expect(updateContainerRegistries).toBeCalledWith([]);
+    expect(mockUpdateContainerRegistries).toBeCalledWith([]);
   });
 
 });
