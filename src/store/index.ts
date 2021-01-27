@@ -18,6 +18,7 @@ import * as WorkspacesStore from './Workspaces';
 import * as DevfileRegistriesStore from './DevfileRegistries';
 import * as InfrastructureNamespaceStore from './InfrastructureNamespace';
 import * as BrandingStore from './Branding';
+import * as UserPreferences from './UserPreferences';
 import userReducer, { UserState } from './User';
 
 // the top-level state object
@@ -29,6 +30,7 @@ export interface AppState {
   workspaces: WorkspacesStore.State;
   plugins: Plugins.State;
   factoryResolver: FactoryResolver.State;
+  userPreferences: UserPreferences.State;
 }
 
 export const reducers = {
@@ -39,6 +41,7 @@ export const reducers = {
   infrastructureNamespace: InfrastructureNamespaceStore.reducer,
   plugins: Plugins.reducer,
   factoryResolver: FactoryResolver.reducer,
+  userPreferences: UserPreferences.reducer,
 };
 
 // this type can be used as a hint on action creators so that its 'dispatch' and 'getState' params are

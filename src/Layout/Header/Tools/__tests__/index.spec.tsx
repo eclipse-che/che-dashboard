@@ -10,6 +10,7 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
+import { createHashHistory } from 'history';
 import React from 'react';
 import { Provider } from 'react-redux';
 import renderer from 'react-test-renderer';
@@ -48,6 +49,7 @@ describe('Page header tools', () => {
   const name = 'John Doe';
   const helpTitle = 'Help';
   const store = createStore(productCli, helpTitle);
+  const history = createHashHistory();
   const user = {
     id: 'test-id',
     name: name,
@@ -58,6 +60,7 @@ describe('Page header tools', () => {
   const component = (
     <Provider store={store}>
       <HeaderTools
+        history={history}
         user={user}
         logout={mockLogout}
         changeTheme={mockChangeTheme}
@@ -81,7 +84,7 @@ describe('Page header tools', () => {
     fireEvent.click(menuButton);
 
     const items = screen.getAllByRole('menuitem');
-    expect(items.length).toEqual(2);
+    expect(items.length).toEqual(3);
   });
 
   it('should fire the logout event', () => {

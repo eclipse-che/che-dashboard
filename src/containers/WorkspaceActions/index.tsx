@@ -21,9 +21,7 @@ import {
   Text,
   TextContent,
   TextVariants,
-  Title,
 } from '@patternfly/react-core';
-import { ExclamationTriangleIcon } from '@patternfly/react-icons';
 import {
   buildDetailsPath,
   buildIdeLoaderPath,
@@ -218,20 +216,6 @@ export class WorkspaceActionsProvider extends React.Component<Props, State> {
       </TextContent>
     );
 
-    const header = (
-      <Title headingLevel="h2">
-        <ExclamationTriangleIcon
-          color="orange"
-          style={{
-            marginBottom: '-0.2rem',
-            marginRight: '0.5rem',
-            fontSize: '24px',
-          }}
-        />
-        Delete Workspace
-      </Title>
-    );
-
     const footer = (
       <React.Fragment>
         <Button
@@ -254,7 +238,8 @@ export class WorkspaceActionsProvider extends React.Component<Props, State> {
 
     return (
       <Modal
-        header={header}
+        title="Delete Workspace"
+        titleIconVariant="warning"
         variant={ModalVariant.small}
         isOpen={isOpen}
         onClose={() => this.handleOnClose()}

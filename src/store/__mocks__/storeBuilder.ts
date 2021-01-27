@@ -16,6 +16,7 @@ import { BrandingData } from '../../services/bootstrap/branding.constant';
 import { FactoryResolver } from '../../services/helpers/types';
 import { AppState } from '..';
 import { State as DevfileRegistriesState } from '../DevfileRegistries/index';
+import { ContainerCredentials, RegistryRow } from '../UserPreferences/types';
 import { State as WorkspacesState } from '../Workspaces/index';
 import { State as BrandingState } from '../Branding';
 import { State as FactoryResolverState } from '../FactoryResolver';
@@ -64,7 +65,22 @@ export class FakeStoreBuilder {
       isLoading: false,
       namespaces: [],
     } as InfrastructureNamespaceState,
+    userPreferences: {
+      isLoading: false,
+      preferences: {}
+    },
   };
+
+  public withUserPreferences(registries: RegistryRow[], isLoading = false): FakeStoreBuilder {
+    const newContainerCredentials: ContainerCredentials = {};
+    registries.forEach(item => {
+      const { url, username, password } = item;
+      newContainerCredentials[url] = { username, password };
+    });
+    this.state.userPreferences.preferences = { dockerCredentials: btoa(JSON.stringify(newContainerCredentials)) };
+    this.state.branding.isLoading = isLoading;
+    return this;
+  }
 
   public withBranding(branding: BrandingData, isLoading = false): FakeStoreBuilder {
     this.state.branding.data = Object.assign({}, branding);

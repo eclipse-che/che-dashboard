@@ -290,7 +290,7 @@ export default class WorkspacesList extends React.PureComponent<Props, State> {
         this.showAlert(message, AlertVariant.warning);
       }
     } catch (e) {
-      const message = 'Bulk workspaces deletion failed due to ${e}.';
+      const message = `Bulk workspaces deletion failed due to ${e}.`;
       console.error(message);
       this.showAlert(message, AlertVariant.danger);
     }

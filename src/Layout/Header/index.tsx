@@ -10,6 +10,7 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
+import { History } from 'history';
 import React from 'react';
 import {
   Brand,
@@ -23,6 +24,7 @@ import { ThemeVariant } from '../themeVariant';
 import * as styles from './index.module.css';
 
 type Props = {
+  history: History;
   isVisible: boolean;
   helpPath: string;
   logoUrl: string;
@@ -71,6 +73,7 @@ export default class Header extends React.PureComponent<Props, State> {
         onNavToggle={() => this.toggleNav()}
         headerTools={
           <HeaderTools
+            history={this.props.history}
             user={this.props.user}
             logout={() => this.props.logout()}
             changeTheme={theme => this.props.changeTheme(theme)}
