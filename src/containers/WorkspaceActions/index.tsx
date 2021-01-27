@@ -21,9 +21,7 @@ import {
   Text,
   TextContent,
   TextVariants,
-  Title,
 } from '@patternfly/react-core';
-import { ExclamationTriangleIcon } from '@patternfly/react-icons';
 import {
   buildDetailsPath,
   buildIdeLoaderPath,
