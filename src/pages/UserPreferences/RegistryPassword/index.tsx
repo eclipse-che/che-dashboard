@@ -20,14 +20,14 @@ const ERROR_MAX_LENGTH = `The password is too long. The maximum length is ${MAX_
 
 type Props = {
   password?: string;
-  onChange?: (password: string, validated: ValidatedOptions) => void;
+  onChange?: (password: string, valid: ValidatedOptions) => void;
 };
 
 type State = {
   password: string;
   isHidden: boolean;
   errorMessage?: string;
-  validated: ValidatedOptions;
+  valid: ValidatedOptions;
 };
 
 export class RegistryPasswordFormGroup extends React.PureComponent<Props, State> {
@@ -36,10 +36,10 @@ export class RegistryPasswordFormGroup extends React.PureComponent<Props, State>
     super(props);
 
     const password = this.props.password || '';
-    const validated = ValidatedOptions.default;
+    const valid = ValidatedOptions.default;
     const isHidden = true;
 
-    this.state = { password, validated, isHidden };
+    this.state = { password, valid, isHidden };
   }
 
   public componentDidUpdate(prevProps: Props): void {
@@ -54,34 +54,34 @@ export class RegistryPasswordFormGroup extends React.PureComponent<Props, State>
       return;
     }
     const { onChange } = this.props;
-    const { errorMessage, validated } = this.validate(password);
+    const { errorMessage, valid } = this.validate(password);
 
-    this.setState({ password, validated, errorMessage });
+    this.setState({ password, valid, errorMessage });
     if (onChange) {
-      onChange(password, validated);
+      onChange(password, valid);
     }
   }
 
-  private validate(password: string): { validated: ValidatedOptions; errorMessage?: string; } {
+  private validate(password: string): { valid: ValidatedOptions; errorMessage?: string; } {
     if (password.length === 0) {
       return {
         errorMessage: ERROR_REQUIRED_VALUE,
-        validated: ValidatedOptions.error,
+        valid: ValidatedOptions.error,
       };
     } else if (password.length > MAX_LENGTH) {
       return {
         errorMessage: ERROR_MAX_LENGTH,
-        validated: ValidatedOptions.error,
+        valid: ValidatedOptions.error,
       };
     }
 
     return {
-      validated: ValidatedOptions.success,
+      valid: ValidatedOptions.success,
     };
   }
 
   public render(): React.ReactElement {
-    const { password, errorMessage, validated, isHidden } = this.state;
+    const { password, errorMessage, valid, isHidden } = this.state;
 
     return (
       <FormGroup
@@ -91,7 +91,7 @@ export class RegistryPasswordFormGroup extends React.PureComponent<Props, State>
         helperTextInvalid={errorMessage}
         isRequired={true}
         helperTextInvalidIcon={<ExclamationCircleIcon />}
-        validated={validated}
+        validated={valid}
       >
         <InputGroupText>
           <TextInput
@@ -100,7 +100,7 @@ export class RegistryPasswordFormGroup extends React.PureComponent<Props, State>
             placeholder="Enter a password"
             type={isHidden ? 'password' : 'text'}
             value={password}
-            validated={validated}
+            validated={valid}
             onChange={_password => this.onChange(_password)}
           />
           <Button variant="control" aria-label="show" onClick={() => this.setState({ isHidden: !isHidden })}>

@@ -18,13 +18,13 @@ const ERROR_MAX_LENGTH = `The username is too long. The maximum length is ${MAX_
 
 type Props = {
   username?: string;
-  onChange?: (username: string, validated: ValidatedOptions) => void;
+  onChange?: (username: string, valid: ValidatedOptions) => void;
 };
 
 type State = {
   errorMessage?: string;
   username: string;
-  validated: ValidatedOptions;
+  valid: ValidatedOptions;
 };
 
 export class RegistryUsernameFormGroup extends React.PureComponent<Props, State> {
@@ -33,9 +33,9 @@ export class RegistryUsernameFormGroup extends React.PureComponent<Props, State>
     super(props);
 
     const username = this.props.username || '';
-    const validated = ValidatedOptions.default;
+    const valid = ValidatedOptions.default;
 
-    this.state = { username, validated };
+    this.state = { username, valid };
   }
 
   public componentDidUpdate(prevProps: Props): void {
@@ -50,30 +50,30 @@ export class RegistryUsernameFormGroup extends React.PureComponent<Props, State>
       return;
     }
     const { onChange } = this.props;
-    const { errorMessage, validated } = this.validate(username);
+    const { errorMessage, valid } = this.validate(username);
 
-    this.setState({ username, validated, errorMessage });
+    this.setState({ username, valid, errorMessage });
     if (onChange) {
-      onChange(username, validated);
+      onChange(username, valid);
     }
   }
 
-  private validate(username: string): { validated: ValidatedOptions; errorMessage?: string; } {
+  private validate(username: string): { valid: ValidatedOptions; errorMessage?: string; } {
     if (username.length > MAX_LENGTH) {
       return {
         errorMessage: ERROR_MAX_LENGTH,
-        validated: ValidatedOptions.error,
+        valid: ValidatedOptions.error,
       };
     }
 
     return {
       errorMessage: undefined,
-      validated: ValidatedOptions.success,
+      valid: ValidatedOptions.success,
     };
   }
 
   public render(): React.ReactElement {
-    const { username, errorMessage, validated } = this.state;
+    const { username, errorMessage, valid } = this.state;
 
     return (
       <FormGroup
@@ -81,13 +81,13 @@ export class RegistryUsernameFormGroup extends React.PureComponent<Props, State>
         label="Username"
         fieldId="id-username-helper"
         helperTextInvalid={errorMessage}
-        validated={validated}
+        validated={valid}
       >
         <TextInput
           aria-label="Username input"
           placeholder="Enter a username"
           value={username}
-          validated={validated}
+          validated={valid}
           onChange={_username => this.onChange(_username)}
         />
       </FormGroup>

@@ -22,13 +22,13 @@ const ERROR_PATTERN_MISMATCH = 'The URL is not valid.';
 
 type Props = {
   url: string;
-  onChange?: (url: string, validated: ValidatedOptions) => void;
+  onChange?: (url: string, valid: ValidatedOptions) => void;
 };
 
 type State = {
   errorMessage?: string;
   url: string;
-  validated: ValidatedOptions;
+  valid: ValidatedOptions;
 };
 
 export class RegistryUrlFormGroup extends React.PureComponent<Props, State> {
@@ -37,9 +37,9 @@ export class RegistryUrlFormGroup extends React.PureComponent<Props, State> {
     super(props);
 
     const url = this.props.url;
-    const validated = ValidatedOptions.default;
+    const valid = ValidatedOptions.default;
 
-    this.state = { url, validated };
+    this.state = { url, valid };
   }
 
   public componentDidUpdate(prevProps: Props): void {
@@ -54,41 +54,41 @@ export class RegistryUrlFormGroup extends React.PureComponent<Props, State> {
       return;
     }
     const { onChange } = this.props;
-    const { errorMessage, validated } = this.validate(url);
+    const { errorMessage, valid } = this.validate(url);
 
-    this.setState({ url, validated, errorMessage });
+    this.setState({ url, valid, errorMessage });
     if (onChange) {
-      onChange(url, validated);
+      onChange(url, valid);
     }
   }
 
-  private validate(url: string): { validated: ValidatedOptions; errorMessage?: string; } {
+  private validate(url: string): { valid: ValidatedOptions; errorMessage?: string; } {
     if (url.length === 0) {
       return {
         errorMessage: ERROR_REQUIRED_VALUE,
-        validated: ValidatedOptions.error,
+        valid: ValidatedOptions.error,
       };
     } else if (url.length > MAX_LENGTH) {
       return {
         errorMessage: ERROR_MAX_LENGTH,
-        validated: ValidatedOptions.error,
+        valid: ValidatedOptions.error,
       };
     }
     if (!new RegExp(PATTERN).test(url)) {
       return {
         errorMessage: ERROR_PATTERN_MISMATCH,
-        validated: ValidatedOptions.error,
+        valid: ValidatedOptions.error,
       };
     }
 
     return {
       errorMessage: undefined,
-      validated: ValidatedOptions.success,
+      valid: ValidatedOptions.success,
     };
   }
 
   public render(): React.ReactElement {
-    const { url, errorMessage, validated } = this.state;
+    const { url, errorMessage, valid } = this.state;
 
     return (
       <FormGroup
@@ -98,7 +98,7 @@ export class RegistryUrlFormGroup extends React.PureComponent<Props, State> {
         helperTextInvalid={errorMessage}
         isRequired={true}
         helperTextInvalidIcon={<ExclamationCircleIcon />}
-        validated={validated}
+        validated={valid}
       >
         <InputGroupText>
           <TextInput
@@ -106,12 +106,12 @@ export class RegistryUrlFormGroup extends React.PureComponent<Props, State> {
             placeholder="Enter a registry"
             type="url"
             value={url}
-            validated={validated}
+            validated={valid}
             onChange={_url => this.onChange(_url)}
           />
           <Button
             variant="link"
-            isDisabled={!url || validated === ValidatedOptions.error}
+            isDisabled={!url || valid === ValidatedOptions.error}
             aria-label="open registry">
             <a
               href={url}

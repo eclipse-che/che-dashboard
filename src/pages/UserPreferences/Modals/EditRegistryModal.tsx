@@ -33,7 +33,7 @@ type Props = {
 }
 type State = {
   editRegistry: RegistryRow;
-  urlValidated: ValidatedOptions;
+  urlValid: ValidatedOptions;
   usernameValid: ValidatedOptions;
   passwordValid: ValidatedOptions;
 }
@@ -47,7 +47,7 @@ export default class EditRegistryModal extends React.PureComponent<Props, State>
 
     this.state = {
       editRegistry: registry,
-      urlValidated: ValidatedOptions.default,
+      urlValid: ValidatedOptions.default,
       usernameValid: ValidatedOptions.default,
       passwordValid: ValidatedOptions.default,
     };
@@ -58,7 +58,7 @@ export default class EditRegistryModal extends React.PureComponent<Props, State>
     if (isOpen !== prevProps.isOpen || registry.url !== prevProps.registry.url) {
       this.setState({
         editRegistry: registry,
-        urlValidated: ValidatedOptions.default,
+        urlValid: ValidatedOptions.default,
         usernameValid: ValidatedOptions.default,
         passwordValid: ValidatedOptions.default,
       });
@@ -71,44 +71,44 @@ export default class EditRegistryModal extends React.PureComponent<Props, State>
     onChange(editRegistry);
   }
 
-  private handleUrlChange(url: string, validated: ValidatedOptions): void {
-    const { editRegistry, urlValidated } = this.state;
+  private handleUrlChange(url: string, valid: ValidatedOptions): void {
+    const { editRegistry, urlValid } = this.state;
     if (editRegistry.url !== url) {
       this.setState({
         editRegistry: Object.assign({}, editRegistry, { url }),
-        urlValidated: validated,
+        urlValid: valid,
       });
-    } else if (urlValidated !== validated) {
+    } else if (urlValid !== valid) {
       this.setState({
-        urlValidated: validated,
+        urlValid: valid,
       });
     }
   }
 
-  private handleUsernameChange(username: string, validated: ValidatedOptions): void {
+  private handleUsernameChange(username: string, valid: ValidatedOptions): void {
     const { editRegistry, usernameValid } = this.state;
     if (editRegistry.username !== username) {
       this.setState({
         editRegistry: Object.assign({}, editRegistry, { username }),
-        usernameValid: validated,
+        usernameValid: valid,
       });
-    } else if (usernameValid !== validated) {
+    } else if (usernameValid !== valid) {
       this.setState({
-        usernameValid: validated,
+        usernameValid: valid,
       });
     }
   }
 
-  private handlePasswordChange(password: string, validated: ValidatedOptions): void {
+  private handlePasswordChange(password: string, valid: ValidatedOptions): void {
     const { editRegistry, passwordValid } = this.state;
     if (editRegistry.password !== password) {
       this.setState({
         editRegistry: Object.assign({}, editRegistry, { password }),
-        passwordValid: validated,
+        passwordValid: valid,
       });
-    } else if (passwordValid !== validated) {
+    } else if (passwordValid !== valid) {
       this.setState({
-        passwordValid: validated,
+        passwordValid: valid,
       });
     }
   }
@@ -126,8 +126,8 @@ export default class EditRegistryModal extends React.PureComponent<Props, State>
   }
 
   private get isUrlValid(): boolean {
-    const { urlValidated, editRegistry: { url } } = this.state;
-    return urlValidated !== ValidatedOptions.error && url.length > 0;
+    const { urlValid, editRegistry: { url } } = this.state;
+    return urlValid !== ValidatedOptions.error && url.length > 0;
   }
 
   private get isUsernameValid(): boolean {
@@ -176,15 +176,15 @@ export default class EditRegistryModal extends React.PureComponent<Props, State>
         <Form isHorizontal onSubmit={e => e.preventDefault()}>
           <RegistryUrlFormGroup
             url={editRegistry.url}
-            onChange={(url: string, validated: ValidatedOptions) => this.handleUrlChange(url, validated)}
+            onChange={(url: string, valid: ValidatedOptions) => this.handleUrlChange(url, valid)}
           />
           <RegistryUsernameFormGroup
             username={editRegistry.username}
-            onChange={(username: string, validated: ValidatedOptions) => this.handleUsernameChange(username, validated)}
+            onChange={(username: string, valid: ValidatedOptions) => this.handleUsernameChange(username, valid)}
           />
           <RegistryPasswordFormGroup
             password={editRegistry.password}
-            onChange={(password: string, validated: ValidatedOptions) => this.handlePasswordChange(password, validated)}
+            onChange={(password: string, valid: ValidatedOptions) => this.handlePasswordChange(password, valid)}
           />
         </Form>
       </Modal>
