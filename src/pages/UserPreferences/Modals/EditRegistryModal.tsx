@@ -34,8 +34,8 @@ type Props = {
 type State = {
   editRegistry: RegistryRow;
   urlValidated: ValidatedOptions;
-  usernameValidated: ValidatedOptions;
-  passwordValidated: ValidatedOptions;
+  usernameValid: ValidatedOptions;
+  passwordValid: ValidatedOptions;
 }
 
 export default class EditRegistryModal extends React.PureComponent<Props, State> {
@@ -48,8 +48,8 @@ export default class EditRegistryModal extends React.PureComponent<Props, State>
     this.state = {
       editRegistry: registry,
       urlValidated: ValidatedOptions.default,
-      usernameValidated: ValidatedOptions.default,
-      passwordValidated: ValidatedOptions.default,
+      usernameValid: ValidatedOptions.default,
+      passwordValid: ValidatedOptions.default,
     };
   }
 
@@ -59,8 +59,8 @@ export default class EditRegistryModal extends React.PureComponent<Props, State>
       this.setState({
         editRegistry: registry,
         urlValidated: ValidatedOptions.default,
-        usernameValidated: ValidatedOptions.default,
-        passwordValidated: ValidatedOptions.default,
+        usernameValid: ValidatedOptions.default,
+        passwordValid: ValidatedOptions.default,
       });
     }
   }
@@ -86,29 +86,29 @@ export default class EditRegistryModal extends React.PureComponent<Props, State>
   }
 
   private handleUsernameChange(username: string, validated: ValidatedOptions): void {
-    const { editRegistry, usernameValidated } = this.state;
+    const { editRegistry, usernameValid } = this.state;
     if (editRegistry.username !== username) {
       this.setState({
         editRegistry: Object.assign({}, editRegistry, { username }),
-        usernameValidated: validated,
+        usernameValid: validated,
       });
-    } else if (usernameValidated !== validated) {
+    } else if (usernameValid !== validated) {
       this.setState({
-        usernameValidated: validated,
+        usernameValid: validated,
       });
     }
   }
 
   private handlePasswordChange(password: string, validated: ValidatedOptions): void {
-    const { editRegistry, passwordValidated } = this.state;
+    const { editRegistry, passwordValid } = this.state;
     if (editRegistry.password !== password) {
       this.setState({
         editRegistry: Object.assign({}, editRegistry, { password }),
-        passwordValidated: validated,
+        passwordValid: validated,
       });
-    } else if (passwordValidated !== validated) {
+    } else if (passwordValid !== validated) {
       this.setState({
-        passwordValidated: validated,
+        passwordValid: validated,
       });
     }
   }
@@ -131,12 +131,12 @@ export default class EditRegistryModal extends React.PureComponent<Props, State>
   }
 
   private get isUsernameValid(): boolean {
-    return this.state.usernameValidated !== ValidatedOptions.error;
+    return this.state.usernameValid !== ValidatedOptions.error;
   }
 
   private get isPasswordValid(): boolean {
-    const { passwordValidated, editRegistry: { password } } = this.state;
-    return passwordValidated !== ValidatedOptions.error && (password !== undefined && password.length > 0);
+    const { passwordValid, editRegistry: { password } } = this.state;
+    return passwordValid !== ValidatedOptions.error && (password !== undefined && password.length > 0);
   }
 
   private getRegistryModalFooter(): React.ReactNode {

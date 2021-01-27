@@ -40,7 +40,7 @@ describe('Edit Registry Modal', () => {
     jest.clearAllMocks();
   });
 
-  it('should correctly render the close modal component', () => {
+  it('should correctly render the closed modal component', () => {
     const registry = new FakeRegistryBuilder().build();
     const component = getComponent(false, false, registry);
 

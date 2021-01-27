@@ -40,7 +40,7 @@ describe('Delete Registries Modal', () => {
     jest.clearAllMocks();
   });
 
-  it('should correctly render the close modal component', () => {
+  it('should correctly render the closed modal component', () => {
     const component = getComponent(false, []);
 
     const json = renderer.create(component).toJSON();
