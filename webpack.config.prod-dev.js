@@ -46,14 +46,6 @@ module.exports = env => {
             origin: proxyTarget
           },
         },
-        '/workspace-loader': {
-          target: proxyTarget,
-          secure: false,
-          changeOrigin: true,
-          headers: {
-            origin: proxyTarget
-          }
-        },
       },
     }
   };

@@ -21,6 +21,12 @@ const common = require('./webpack.config.common');
 
 module.exports = env => {
   const proxyTarget = env && env.server ? env.server : 'https://che.openshift.io/';
+  const headers = {
+    origin: proxyTarget,
+  };
+  if (env && env.token) {
+    headers['Authorization'] = `Bearer ${env.token}`;
+  }
 
   return merge(common, {
     mode: 'development',
@@ -50,6 +56,9 @@ module.exports = env => {
       ]
     },
     plugins: [
+      new webpack.DefinePlugin({
+        'process.env.ENV': JSON.stringify('development'),
+      }),
       new webpack.HotModuleReplacementPlugin(),
       new CleanTerminalPlugin(),
       new HardSourceWebpackPlugin(),
@@ -60,6 +69,9 @@ module.exports = env => {
         lintDirtyModulesOnly: true,
       }),
     ],
+    output: {
+      chunkFilename: undefined,
+    },
     optimization: {
       minimize: false,
       removeAvailableModules: false,
@@ -84,30 +96,13 @@ module.exports = env => {
           ws: true,
           secure: false,
           changeOrigin: true,
-          headers: {
-            origin: proxyTarget
-          }
+          headers: headers
         },
         '/api': {
           target: proxyTarget,
           secure: false,
           changeOrigin: true,
-          headers: {
-            origin: proxyTarget
-          },
-        },
-        '/dashboard': {
-          target: proxyTarget,
-          secure: false,
-          changeOrigin: true,
-          headers: {
-            origin: proxyTarget
-          },
-          bypass(req) {
-            if (req.url === '/dashboard/assets/branding/loader.svg') {
-              return '/assets/branding/loader.svg';
-            }
-          },
+          headers: headers,
         },
       },
     },
