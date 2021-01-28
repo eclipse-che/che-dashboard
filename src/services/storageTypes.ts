@@ -20,6 +20,10 @@ export enum StorageTypeTitle {
 
 export function toTitle(type: che.WorkspaceStorageType): string {
   if (!StorageTypeTitle[type]) {
+    if (process.env.ENV === 'development') {
+      console.error(`Unknown storage type: "${type}"`);
+      return 'unknown';
+    }
     throw new Error(`Unknown storage type: "${type}"`);
   }
   return StorageTypeTitle[type];
@@ -39,7 +43,10 @@ export function fromTitle(title: string): che.WorkspaceStorageType {
 }
 
 export function getAvailable(settings: che.WorkspaceSettings): che.WorkspaceStorageType[] {
-  const availableTypes = settings['che.workspace.storage.available_types'] || DEFAULT_AVAILABLE_TYPES;
+  if (!settings || !settings['che.workspace.storage.available_types']) {
+    return DEFAULT_AVAILABLE_TYPES.split(',') as che.WorkspaceStorageType[];
+  }
+  const availableTypes = settings['che.workspace.storage.available_types'];
   return availableTypes.split(',') as che.WorkspaceStorageType[];
 }
 

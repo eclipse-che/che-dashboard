@@ -19,7 +19,7 @@ components:
     memoryLimit: 3Gi
     type: dockerimage
     alias: dashboard-dev
-    image: 'docker.io/node:12'
+    image: 'docker.io/node:12.20.1'
   - id: vscode/typescript-language-features/latest
     type: chePlugin
 commands:
@@ -27,29 +27,29 @@ commands:
     actions:
       - workdir: /projects/che-dashboard
         type: exec
-        command: yarn install --ignore-optional --non-interactive
+        command: yarn install
         component: dashboard-dev
   - name: '[UD] compile'
     actions:
       - workdir: /projects/che-dashboard
         type: exec
-        command: yarn install --ignore-optional --non-interactive && yarn compile
+        command: yarn install --non-interactive && yarn compile
         component: dashboard-dev
   - name: '[UD] test'
     actions:
       - workdir: /projects/che-dashboard
         type: exec
-        command: yarn install --ignore-optional --non-interactive && yarn test
+        command: yarn install --non-interactive && yarn test
         component: dashboard-dev
   - name: '[UD] start'
     actions:
       - workdir: /projects/che-dashboard
         type: exec
-        command: 'yarn install --ignore-optional --non-interactive && yarn start --env.server=${CHE_API_EXTERNAL%????}'
+        command: 'yarn install --non-interactive && yarn start --env.server=${CHE_API_INTERNAL%????} --env.token=${CHE_MACHINE_TOKEN}'
         component: dashboard-dev
   - name: '[UD] start [API Backend che.openshift.io]'
     actions:
       - workdir: /projects/che-dashboard
         type: exec
-        command: yarn install --ignore-optional --non-interactive && yarn start
+        command: yarn install --non-interactive && yarn start
         component: dashboard-dev

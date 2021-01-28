@@ -58,6 +58,7 @@ export class KeycloakSetupService {
   @inject(IssuesReporterService)
   private readonly issuesReporterService: IssuesReporterService;
 
+  private isDevelopment = process.env.ENV === 'development';
   private user: che.User | undefined;
 
   async start(): Promise<void> {
@@ -69,6 +70,16 @@ export class KeycloakSetupService {
       const result = await this.testApiAttainability<che.User>(endpoint);
       this.user = result;
     } catch (e) {
+      if (this.isDevelopment) {
+        console.error('Failed to get response to API endpoint: \n' + e);
+        this.user = {
+          email: 'johndoe@test.com',
+          id: 'john-doe-id',
+          name: 'John Doe',
+          links: []
+        };
+        return;
+      }
       throw new Error('Failed to get response to API endpoint: \n' + e);
     }
   }
@@ -124,6 +135,10 @@ export class KeycloakSetupService {
       return settings;
     } catch (e) {
       if (e.response.status === 404) {
+        return;
+      }
+      if (this.isDevelopment) {
+        console.error(`Can't get Keycloak settings: ${e.response.status} ${e.response.statusText}`);
         return;
       }
 
