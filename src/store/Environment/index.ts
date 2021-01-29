@@ -17,8 +17,6 @@ export interface State {
   development: boolean;
 }
 
-type EnvironmentMode = 'development' | 'production';
-
 interface SetDevelopmentModeAction {
   type: 'SET_MODE';
   development: boolean;
@@ -31,11 +29,14 @@ export type ActionCreators = {
 export const actionCreators: ActionCreators = {
 
   defineEnvironmentMode: (): AppThunk<SetDevelopmentModeAction, void> => (dispatch): void => {
-    const development = process.env.ENV === 'development';
-    dispatch({
-      type: 'SET_MODE',
-      development,
-    });
+    try {
+      dispatch({
+        type: 'SET_MODE',
+        development: isDevelopment(),
+      });
+    } catch (e) {
+      // noop
+    }
   }
 
 };
@@ -58,3 +59,11 @@ export const reducer: Reducer<State> = (state: State | undefined, incomingAction
   return state;
 
 };
+
+export function isDevelopment(): boolean {
+  try {
+    return process.env.ENVIRONMENT === 'development';
+  } catch (e) {
+    return false;
+  }
+}

@@ -158,7 +158,15 @@ class IdeLoaderContainer extends React.PureComponent<Props, State> {
       workspace.namespace === params.namespace
       && workspace.devfile.metadata.name === this.workspaceName);
     if (!workspace) {
-      // todo
+      const alertOptions = {
+        title: `Workspace "${this.workspaceName}" is not found.`,
+        alertVariant: AlertVariant.danger,
+      };
+      if (this.loadFactoryPageCallbacks.showAlert) {
+        this.loadFactoryPageCallbacks.showAlert(alertOptions);
+      } else {
+        console.error(alertOptions.title);
+      }
       this.setState({
         hasError: true,
       });

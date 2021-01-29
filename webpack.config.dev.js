@@ -57,7 +57,7 @@ module.exports = env => {
     },
     plugins: [
       new webpack.DefinePlugin({
-        DEVELOPMENT: JSON.stringify(true),
+        'process.env.ENVIRONMENT': JSON.stringify('development'),
       }),
       new webpack.HotModuleReplacementPlugin(),
       new CleanTerminalPlugin(),
