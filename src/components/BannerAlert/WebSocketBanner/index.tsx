@@ -13,9 +13,9 @@
 import { Banner } from '@patternfly/react-core';
 import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
-import { container } from '../../inversify.config';
-import { CheWorkspaceClient } from '../../services/cheWorkspaceClient';
-import { AppState } from '../../store';
+import { container } from '../../../inversify.config';
+import { CheWorkspaceClient } from '../../../services/cheWorkspaceClient';
+import { AppState } from '../../../store';
 
 type Props = MappedProps & {};
 
@@ -23,7 +23,7 @@ type State = {
   erroringWebSockets: string[];
 };
 
-class WebSocketBannerAlert extends React.PureComponent<Props, State> {
+class WebSocketBanner extends React.PureComponent<Props, State> {
   private readonly cheWorkspaceClient: CheWorkspaceClient;
 
   constructor(props: Props) {
@@ -72,4 +72,4 @@ const mapStateToProps = (state: AppState) => ({
 const connector = connect(mapStateToProps);
 
 type MappedProps = ConnectedProps<typeof connector>;
-export default connector(WebSocketBannerAlert);
+export default connector(WebSocketBanner);
