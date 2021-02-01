@@ -81,7 +81,7 @@ jobs:
         platform: [linux/amd64]
         default: [true]
         include:
-          - platform: linux/arm64v8
+          - platform: linux/arm64
             default: false
           - platform: linux/ppc64le
             default: false

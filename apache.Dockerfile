@@ -7,7 +7,8 @@
 #
 # Contributors:
 #   Red Hat, Inc. - initial API and implementation
-FROM docker.io/node:12.20.1 as builder
+
+FROM docker.io/node:12.20.1-alpine3.12 as builder
 
 COPY package.json /dashboard/
 COPY yarn.lock /dashboard/
