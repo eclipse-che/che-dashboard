@@ -22,6 +22,7 @@ import { State as BrandingState } from '../Branding';
 import { State as FactoryResolverState } from '../FactoryResolver';
 import { State as InfrastructureNamespaceState } from '../InfrastructureNamespace';
 import { State as PluginsState } from '../Plugins';
+import { State as EnvironmentState } from '../Environment';
 import { UserState as UserState } from '../User';
 import mockThunk from './thunk';
 
@@ -65,6 +66,9 @@ export class FakeStoreBuilder {
       isLoading: false,
       namespaces: [],
     } as InfrastructureNamespaceState,
+    environment: {
+      development: false,
+    } as EnvironmentState,
     userPreferences: {
       isLoading: false,
       preferences: {}

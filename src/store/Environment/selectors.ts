@@ -10,6 +10,12 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-export const delay = (ms = 500) => {
-  return new Promise<void>(resolve => setTimeout(resolve, ms));
-};
+import { createSelector } from 'reselect';
+import { AppState } from '../';
+
+const selectState = (state: AppState) => state.environment;
+
+export const selectIsDevelopment = createSelector(
+  selectState,
+  state => state.development,
+);

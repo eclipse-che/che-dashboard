@@ -15,12 +15,13 @@ import { lazyInject } from '../../inversify.config';
 import { KeycloakSetupService } from '../keycloak/setup';
 import { AppState } from '../../store';
 import * as BrandingStore from '../../store/Branding';
-import * as UserStore from '../../store/User';
-import * as WorkspacesStore from '../../store/Workspaces';
-import * as UserPreferencesStore from '../../store/UserPreferences';
 import * as DevfileRegistriesStore from '../../store/DevfileRegistries';
+import * as EnvironmentStore from '../../store/Environment';
 import * as InfrastructureNamespaceStore from '../../store/InfrastructureNamespace';
 import * as Plugins from '../../store/Plugins';
+import * as UserPreferencesStore from '../../store/UserPreferences';
+import * as UserStore from '../../store/User';
+import * as WorkspacesStore from '../../store/Workspaces';
 import { KeycloakAuthService } from '../keycloak/auth';
 import { CheWorkspaceClient } from '../cheWorkspaceClient';
 
@@ -46,6 +47,8 @@ export class PreloadData {
   }
 
   async init(): Promise<void> {
+    this.defineEnvironment();
+
     await this.updateUser();
     await this.updateKeycloakUserInfo();
     await this.updateBranding();
@@ -61,6 +64,10 @@ export class PreloadData {
     await this.updateRegistriesMetadata(settings);
     await this.updateDevfileSchema();
     await this.updateUserPreferences();
+  }
+
+  private defineEnvironment(): void {
+    EnvironmentStore.actionCreators.defineEnvironmentMode()(this.store.dispatch, this.store.getState, undefined);
   }
 
   private async updateBranding(): Promise<void> {

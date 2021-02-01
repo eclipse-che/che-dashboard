@@ -38,21 +38,20 @@ import './IdeLoader.styl';
 export const SECTION_THEME = PageSectionVariants.light;
 
 type Props = {
-  hasError: boolean,
   currentStep: LoadIdeSteps,
-  workspaceName: string;
-  workspaceId: string;
-  preselectedTabKey?: IdeLoaderTab
+  hasError: boolean,
   ideUrl?: string;
+  preselectedTabKey?: IdeLoaderTab
+  workspaceId: string;
+  workspaceName: string;
   callbacks?: {
     showAlert?: (alertOptions: AlertOptions) => void
-  }
+  };
 };
 
 type State = {
   ideUrl?: string;
   workspaceId: string;
-  loaderVisible: boolean;
   alertVisible: boolean;
   activeTabKey: IdeLoaderTab;
   currentRequestError: string;
@@ -70,19 +69,17 @@ export type AlertOptions = {
 };
 
 class IdeLoader extends React.PureComponent<Props, State> {
-  private loaderTimer: number;
   private readonly hideAlert: () => void;
   private readonly handleTabClick: (event: React.MouseEvent<HTMLElement, MouseEvent>, tabIndex: React.ReactText) => void;
   public showAlert: (options: AlertOptions) => void;
 
   private readonly wizardRef: RefObject<any>;
 
-  constructor(props) {
+  constructor(props: Props) {
     super(props);
 
     this.state = {
       alertVisible: false,
-      loaderVisible: false,
       currentRequestError: '',
       workspaceId: this.props.workspaceId,
       activeTabKey: this.props.preselectedTabKey ? this.props.preselectedTabKey : IdeLoaderTab.Progress,
@@ -97,8 +94,9 @@ class IdeLoader extends React.PureComponent<Props, State> {
         this.setState({ alertVisible: false });
       }
     };
+
     // Init showAlert
-    let showAlertTimer;
+    let showAlertTimer: number;
     this.showAlert = (alertOptions: AlertOptions): void => {
       this.setState({ currentRequestError: alertOptions.title, currentAlertVariant: alertOptions.alertVariant, alertActionLinks: alertOptions?.alertActionLinks, alertBody: alertOptions?.body });
       if (this.state.activeTabKey === IdeLoaderTab.Progress) {
@@ -108,7 +106,7 @@ class IdeLoader extends React.PureComponent<Props, State> {
       if (showAlertTimer) {
         clearTimeout(showAlertTimer);
       }
-      showAlertTimer = setTimeout(() => {
+      showAlertTimer = window.setTimeout(() => {
         this.setState({ alertVisible: false });
       }, alertOptions.alertVariant === AlertVariant.success ? 2000 : 10000);
     };
@@ -121,32 +119,13 @@ class IdeLoader extends React.PureComponent<Props, State> {
     }
   }
 
-  private async handleMessage(event: MessageEvent): Promise<void> {
-    const { data } = event;
-    if (data === 'hide-navbar' && this.state.loaderVisible) {
-      if (this.loaderTimer) {
-        clearTimeout(this.loaderTimer);
-      }
-      await delay(150);
-      this.setState({ loaderVisible: false });
-    }
-  }
-
   public componentDidMount(): void {
-    window.addEventListener('message', event => this.handleMessage(event), false);
     if (this.props.ideUrl) {
       this.setState({ ideUrl: this.props.ideUrl });
     }
     if (this.props.workspaceId) {
       this.setState({ workspaceId: this.props.workspaceId });
     }
-  }
-
-  public componentWillUnmount(): void {
-    if (this.loaderTimer) {
-      clearTimeout(this.loaderTimer);
-    }
-    window.removeEventListener('message', event => this.handleMessage(event), false);
   }
 
   public async componentDidUpdate(): Promise<void> {
@@ -165,55 +144,21 @@ class IdeLoader extends React.PureComponent<Props, State> {
       this.setState({
         workspaceId,
         alertVisible: false,
-        loaderVisible: false,
       });
-      if (this.loaderTimer) {
-        clearTimeout(this.loaderTimer);
-      }
     }
 
     if (this.state.ideUrl !== ideUrl) {
       this.setState({ ideUrl });
       if (ideUrl) {
-        this.setState({ loaderVisible: true });
-        if (this.loaderTimer) {
-          clearTimeout(this.loaderTimer);
-        }
-        this.loaderTimer = window.setTimeout(() => {
-          // todo improve this temporary solution for the debugging session
-          if (window.location.origin.includes('://localhost')) {
-            window.location.href = ideUrl;
-          }
-          if (this.state.loaderVisible) {
-            this.setState({ loaderVisible: false });
-          }
-        }, 60000);
         await this.updateIdeIframe(ideUrl, 10);
       }
     }
   }
 
   private async updateIdeIframe(url: string, repeat?: number): Promise<void> {
-    const element = document.getElementById('ide-iframe');
-    if (element && element['contentWindow']) {
-      const keycloak = window['_keycloak'] ? JSON.stringify(window['_keycloak']) : '';
-      if (!keycloak) {
-        element['src'] = url;
-        return;
-      }
-      const doc = element['contentWindow'].document;
-      doc.open();
-      doc.write(`<!DOCTYPE html>
-                 <html lang="en">
-                 <head><meta charset="UTF-8"></head>
-                 <body>
-                   <script>
-                     window._keycloak = JSON.parse('${keycloak}');
-                     window.location.href = '${url}';
-                   </script>
-                 </body>
-                 </html>`);
-      doc.close();
+    const iframeElement = document.getElementById('ide-iframe');
+    if (iframeElement) {
+      iframeElement['src'] = url;
     } else if (repeat) {
       await delay(500);
       return this.updateIdeIframe(url, --repeat);
@@ -290,18 +235,11 @@ class IdeLoader extends React.PureComponent<Props, State> {
 
   public render(): React.ReactElement {
     const { workspaceName, workspaceId, ideUrl, hasError, currentStep } = this.props;
-    const { alertVisible, loaderVisible, currentAlertVariant, currentRequestError, alertActionLinks } = this.state;
+    const { alertVisible, currentAlertVariant, currentRequestError, alertActionLinks } = this.state;
 
     if (ideUrl) {
       return (
         <div className="ide-iframe-page">
-          {loaderVisible && (
-            <div className="main-page-loader">
-              <div className="ide-page-loader-content">
-                <img src="./assets/branding/loader.svg" />
-              </div>
-            </div>
-          )}
           <iframe id="ide-iframe" src="./static/loader.html" allow="fullscreen *" />
         </div>
       );

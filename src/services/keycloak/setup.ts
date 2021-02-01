@@ -18,6 +18,7 @@ import { KeycloakInstance } from 'keycloak-js';
 import { IssuesReporterService } from '../bootstrap/issuesReporter';
 import { KeycloakAuthService } from './auth';
 import isDocumentReady from '../helpers/document';
+import { isDevelopment } from '../../store/Environment';
 
 const keycloakSettingsFields = [
   'che.keycloak.oidc_provider',
@@ -58,8 +59,12 @@ export class KeycloakSetupService {
   @inject(IssuesReporterService)
   private readonly issuesReporterService: IssuesReporterService;
 
-  private isDevelopment = process.env.ENV === 'development';
+  private isDevelopment: boolean;
   private user: che.User | undefined;
+
+  constructor() {
+    this.isDevelopment = isDevelopment();
+  }
 
   async start(): Promise<void> {
     await this.doInitialization();
