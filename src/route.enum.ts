@@ -20,6 +20,7 @@ export enum ROUTE {
   IDE_LOADER = '/ide/:namespace/:workspaceName',
   IDE_LOADER_TAB = '/ide/:namespace/:workspaceName?tab=:tabId',
   LOAD_FACTORY = '/load-factory',
+  LOAD_FACTORY_URL = '/load-factory?url=:url',
   USER_PREFERENCES = '/user-preferences',
   USER_ACCOUNT = '/user-account',
 }

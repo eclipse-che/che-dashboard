@@ -113,13 +113,11 @@ describe('IDE Loader container', () => {
     namespace: string,
     workspaceName: string,
   ): RenderResult => {
-    const { history, location, match } = getMockRouterProps(ROUTE.IDE_LOADER, { namespace, workspaceName });
+    const props = getMockRouterProps(ROUTE.IDE_LOADER, { namespace, workspaceName });
     return render(
       <Provider store={store}>
         <IdeLoaderContainer
-          match={match}
-          history={history}
-          location={location}
+          {...props}
         />
       </Provider>,
     );

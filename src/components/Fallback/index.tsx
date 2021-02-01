@@ -15,7 +15,11 @@ import React from 'react';
 
 const Fallback = (
   <div style={{ height: '100%', textAlign: 'center', opacity: '0.5' }}>
-    <Spinner size={spinnerSize.xl} style={{ top: 'calc(50% - 18px)' }} />
+    <Spinner
+      data-testid="fallback-spinner"
+      size={spinnerSize.xl}
+      style={{ top: 'calc(50% - 18px)' }}
+    />
   </div>
 );
 

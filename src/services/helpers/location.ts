@@ -33,6 +33,14 @@ export function buildIdeLoaderPath(workspace: che.Workspace, tab?: IdeLoaderTab)
     .replace(':tabId', tabId);
 }
 
+export function buildFactoryLoaderPath(url?: string): string {
+  if (!url) {
+    return ROUTE.LOAD_FACTORY;
+  }
+  url = encodeURIComponent(url);
+  return ROUTE.LOAD_FACTORY_URL.replace(':url', url);
+}
+
 export function buildWorkspacesPath(): string {
   return ROUTE.WORKSPACES;
 }
@@ -61,7 +69,6 @@ export function buildDetailsPath(workspace: che.Workspace, tab?: WorkspaceDetail
     .replace(':namespace', namespace)
     .replace(':workspaceName', name)
     .replace(':tabId', tabId);
-
 }
 
 export function toHref(history: History, path: string): string {
