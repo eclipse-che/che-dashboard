@@ -22,7 +22,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        platform: [linux/amd64, linux/arm64v8, linux/ppc64le, linux/s390x]
+        platform: [linux/amd64, linux/arm64, linux/ppc64le, linux/s390x]
     env:
       IMAGE_FULL: quay.io/eclipse/che-dashboard:next
       CACHE_IMAGE_FULL: docker.io/cheincubator/che-dashboard:cache
