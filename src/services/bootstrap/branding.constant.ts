@@ -40,6 +40,12 @@ export type BrandingDocs = {
 
 export type BrandingConfiguration = {
   cheCliTool: string;
+  prefetch?: PrefetchConfiguration;
+}
+
+export type PrefetchConfiguration = {
+  cheCDN?: string;
+  resources: string[]; 
 }
 
 export enum TogglableFeature {

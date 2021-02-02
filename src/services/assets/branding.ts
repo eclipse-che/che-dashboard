@@ -11,11 +11,12 @@
  */
 
 import axios from 'axios';
+import { BrandingData } from '../bootstrap/branding.constant';
 
-export async function fetchBranding(url: string): Promise<any> {
+export async function fetchBranding(url: string): Promise<BrandingData> {
 
   try {
-    const response = await axios.get<any>(url);
+    const response = await axios.get<BrandingData>(url);
     return response.data;
   } catch (e) {
     throw new Error(`Failed to fetch branding data by URL: ${url}`);

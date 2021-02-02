@@ -24,6 +24,7 @@ import * as UserStore from '../../store/User';
 import * as WorkspacesStore from '../../store/Workspaces';
 import { KeycloakAuthService } from '../keycloak/auth';
 import { CheWorkspaceClient } from '../cheWorkspaceClient';
+import { ResourceFetcherService } from '../resource-fetcher';
 
 /**
  * This class prepares all init data.
@@ -51,7 +52,9 @@ export class PreloadData {
 
     await this.updateUser();
     await this.updateKeycloakUserInfo();
+
     await this.updateBranding();
+    new ResourceFetcherService().prefetchResources(this.store.getState());
 
     this.updateRestApiClient();
     this.updateJsonRpcMasterApi();
