@@ -29,7 +29,7 @@ class WarningBannerAlert extends React.PureComponent<Props, State> {
 
     return (
       <Banner className="pf-u-text-align-center" variant="warning">
-        {warningMessage}
+        <div dangerouslySetInnerHTML={{ __html: warningMessage }}></div>
       </Banner>
     );
   }
