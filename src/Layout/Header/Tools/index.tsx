@@ -199,11 +199,11 @@ export class HeaderTools extends React.PureComponent<Props, State> {
     return [
       (
         <DropdownItem
-          key='copy-login-command'
+          key='user-account'
           component='button'
-          onClick={async () => await this.onCopyLoginCommand()}
+          onClick={() => this.props.history.push(ROUTE.USER_ACCOUNT)}
         >
-          {`Copy ${this.getCliTool()} login command`}
+          Account
         </DropdownItem>
       ),
       (
@@ -213,6 +213,15 @@ export class HeaderTools extends React.PureComponent<Props, State> {
           onClick={() => this.props.history.push(ROUTE.USER_PREFERENCES)}
         >
           User Preferences
+        </DropdownItem>
+      ),
+      (
+        <DropdownItem
+          key='copy-login-command'
+          component='button'
+          onClick={async () => await this.onCopyLoginCommand()}
+        >
+          {`Copy ${this.getCliTool()} login command`}
         </DropdownItem>
       ),
       (
@@ -320,7 +329,7 @@ export class HeaderTools extends React.PureComponent<Props, State> {
       isModalOpen,
     } = this.state;
 
-    const userEmail = this.props.user?.email || '';
+    const userEmail = this.props.user && this.props.user.email ? this.props.user.email : '';
     const imageUrl = gravatarUrl(userEmail, { default: 'retro' });
     const avatar = <Avatar src={imageUrl} alt='Avatar image' />;
 

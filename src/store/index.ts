@@ -20,14 +20,16 @@ import * as InfrastructureNamespaceStore from './InfrastructureNamespace';
 import * as Plugins from './Plugins';
 import * as UserPreferences from './UserPreferences';
 import * as WorkspacesStore from './Workspaces';
-import userReducer, { UserState } from './User';
+import * as UserStore from './User';
+import * as UserProfileStore from './UserProfile';
 
 // the top-level state object
 export interface AppState {
   branding: BrandingStore.State;
   devfileRegistries: DevfileRegistriesStore.State;
   infrastructureNamespace: InfrastructureNamespaceStore.State;
-  user: UserState;
+  user: UserStore.State;
+  userProfile: UserProfileStore.State;
   workspaces: WorkspacesStore.State;
   plugins: Plugins.State;
   factoryResolver: FactoryResolver.State;
@@ -39,7 +41,8 @@ export const reducers = {
   workspaces: WorkspacesStore.reducer,
   devfileRegistries: DevfileRegistriesStore.reducer,
   branding: BrandingStore.reducer,
-  user: userReducer,
+  user: UserStore.reducer,
+  userProfile: UserProfileStore.reducer,
   infrastructureNamespace: InfrastructureNamespaceStore.reducer,
   plugins: Plugins.reducer,
   factoryResolver: FactoryResolver.reducer,

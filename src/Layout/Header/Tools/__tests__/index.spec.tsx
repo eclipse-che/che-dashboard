@@ -84,7 +84,7 @@ describe('Page header tools', () => {
     fireEvent.click(menuButton);
 
     const items = screen.getAllByRole('menuitem');
-    expect(items.length).toEqual(3);
+    expect(items.length).toEqual(4);
   });
 
   it('should fire the logout event', () => {

@@ -1,0 +1,332 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`UserAccount page should correctly render the component which contains profile data 1`] = `
+<section
+  className="pf-c-page__main-section pf-m-light pf-m-fill"
+>
+  <div
+    className="pf-l-flex pf-m-column"
+  >
+    <div
+      className="pf-m-spacer-sm"
+    >
+      <h1
+        className="pf-c-title pf-m-2xl"
+      >
+        Account
+      </h1>
+    </div>
+    <div
+      className="pf-m-spacer-lg"
+    >
+      <p
+        className=""
+        data-pf-content={true}
+      >
+        This is where you can view and edit your account information for Eclipse Che.
+      </p>
+    </div>
+  </div>
+  <div
+    className="pf-l-flex pf-m-column"
+    style={
+      Object {
+        "maxWidth": "550px",
+      }
+    }
+  >
+    <div
+      className="pf-l-flex pf-m-column"
+    >
+      <div
+        className="pf-m-spacer-sm"
+      >
+        <h4
+          className="pf-c-title pf-m-md"
+        >
+          Login
+        </h4>
+        <input
+          aria-invalid={false}
+          aria-label="readonly-profile-login"
+          className="pf-c-form-control"
+          disabled={true}
+          onBlur={[Function]}
+          onChange={[Function]}
+          onFocus={[Function]}
+          readOnly={false}
+          required={false}
+          type="text"
+          value="Johnny"
+        />
+      </div>
+    </div>
+    <div
+      className="pf-l-flex pf-m-column"
+    >
+      <div
+        className="pf-m-spacer-sm"
+      >
+        <h4
+          className="pf-c-title pf-m-md"
+        >
+          Email
+        </h4>
+        <input
+          aria-invalid={false}
+          aria-label="readonly-profile-email"
+          className="pf-c-form-control"
+          disabled={true}
+          onBlur={[Function]}
+          onChange={[Function]}
+          onFocus={[Function]}
+          readOnly={false}
+          required={false}
+          type="text"
+          value="johndoe@test.com"
+        />
+      </div>
+    </div>
+    <div
+      className="pf-l-flex pf-m-column"
+    >
+      <div
+        className="pf-m-spacer-sm"
+      >
+        <h4
+          className="pf-c-title pf-m-md"
+        >
+          First Name
+        </h4>
+        <input
+          aria-invalid={false}
+          aria-label="readonly-profile-first-name"
+          className="pf-c-form-control"
+          disabled={true}
+          onBlur={[Function]}
+          onChange={[Function]}
+          onFocus={[Function]}
+          readOnly={false}
+          required={false}
+          type="text"
+          value="John"
+        />
+      </div>
+    </div>
+    <div
+      className="pf-l-flex pf-m-column"
+    >
+      <div
+        className="pf-m-spacer-lg"
+      >
+        <h4
+          className="pf-c-title pf-m-md"
+        >
+          Last Name
+        </h4>
+        <input
+          aria-invalid={false}
+          aria-label="readonly-profile-last-name"
+          className="pf-c-form-control"
+          disabled={true}
+          onBlur={[Function]}
+          onChange={[Function]}
+          onFocus={[Function]}
+          readOnly={false}
+          required={false}
+          type="text"
+          value="Doe"
+        />
+      </div>
+    </div>
+    <div
+      className="pf-l-flex"
+    >
+      <div
+        className=""
+      >
+        <button
+          aria-disabled={true}
+          aria-label="edit-account-info"
+          className="pf-c-button pf-m-primary pf-m-disabled"
+          data-ouia-component-id="OUIA-Generated-Button-primary-4"
+          data-ouia-component-type="PF4/Button"
+          data-ouia-safe={true}
+          disabled={true}
+          onClick={[Function]}
+          role={null}
+          tabIndex={null}
+          type="button"
+        >
+          Edit
+        </button>
+      </div>
+    </div>
+  </div>
+</section>
+`;
+
+exports[`UserAccount page should correctly render the component without profile data 1`] = `
+<section
+  className="pf-c-page__main-section pf-m-light pf-m-fill"
+>
+  <div
+    className="pf-l-flex pf-m-column"
+  >
+    <div
+      className="pf-m-spacer-sm"
+    >
+      <h1
+        className="pf-c-title pf-m-2xl"
+      >
+        Account
+      </h1>
+    </div>
+    <div
+      className="pf-m-spacer-lg"
+    >
+      <p
+        className=""
+        data-pf-content={true}
+      >
+        This is where you can view and edit your account information for Eclipse Che.
+      </p>
+    </div>
+  </div>
+  <div
+    className="pf-l-flex pf-m-column"
+    style={
+      Object {
+        "maxWidth": "550px",
+      }
+    }
+  >
+    <div
+      className="pf-l-flex pf-m-column"
+    >
+      <div
+        className="pf-m-spacer-sm"
+      >
+        <h4
+          className="pf-c-title pf-m-md"
+        >
+          Login
+        </h4>
+        <input
+          aria-invalid={false}
+          aria-label="readonly-profile-login"
+          className="pf-c-form-control"
+          disabled={true}
+          onBlur={[Function]}
+          onChange={[Function]}
+          onFocus={[Function]}
+          readOnly={false}
+          required={false}
+          type="text"
+          value=""
+        />
+      </div>
+    </div>
+    <div
+      className="pf-l-flex pf-m-column"
+    >
+      <div
+        className="pf-m-spacer-sm"
+      >
+        <h4
+          className="pf-c-title pf-m-md"
+        >
+          Email
+        </h4>
+        <input
+          aria-invalid={false}
+          aria-label="readonly-profile-email"
+          className="pf-c-form-control"
+          disabled={true}
+          onBlur={[Function]}
+          onChange={[Function]}
+          onFocus={[Function]}
+          readOnly={false}
+          required={false}
+          type="text"
+        />
+      </div>
+    </div>
+    <div
+      className="pf-l-flex pf-m-column"
+    >
+      <div
+        className="pf-m-spacer-sm"
+      >
+        <h4
+          className="pf-c-title pf-m-md"
+        >
+          First Name
+        </h4>
+        <input
+          aria-invalid={false}
+          aria-label="readonly-profile-first-name"
+          className="pf-c-form-control"
+          disabled={true}
+          onBlur={[Function]}
+          onChange={[Function]}
+          onFocus={[Function]}
+          readOnly={false}
+          required={false}
+          type="text"
+          value=""
+        />
+      </div>
+    </div>
+    <div
+      className="pf-l-flex pf-m-column"
+    >
+      <div
+        className="pf-m-spacer-lg"
+      >
+        <h4
+          className="pf-c-title pf-m-md"
+        >
+          Last Name
+        </h4>
+        <input
+          aria-invalid={false}
+          aria-label="readonly-profile-last-name"
+          className="pf-c-form-control"
+          disabled={true}
+          onBlur={[Function]}
+          onChange={[Function]}
+          onFocus={[Function]}
+          readOnly={false}
+          required={false}
+          type="text"
+          value=""
+        />
+      </div>
+    </div>
+    <div
+      className="pf-l-flex"
+    >
+      <div
+        className=""
+      >
+        <button
+          aria-disabled={true}
+          aria-label="edit-account-info"
+          className="pf-c-button pf-m-primary pf-m-disabled"
+          data-ouia-component-id="OUIA-Generated-Button-primary-2"
+          data-ouia-component-type="PF4/Button"
+          data-ouia-safe={true}
+          disabled={true}
+          onClick={[Function]}
+          role={null}
+          tabIndex={null}
+          type="button"
+        >
+          Edit
+        </button>
+      </div>
+    </div>
+  </div>
+</section>
+`;

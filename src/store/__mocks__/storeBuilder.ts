@@ -23,7 +23,8 @@ import { State as FactoryResolverState } from '../FactoryResolver';
 import { State as InfrastructureNamespaceState } from '../InfrastructureNamespace';
 import { State as PluginsState } from '../Plugins';
 import { State as EnvironmentState } from '../Environment';
-import { UserState as UserState } from '../User';
+import { State as UserState } from '../User';
+import { State as UserProfileState } from '../UserProfile';
 import mockThunk from './thunk';
 
 export class FakeStoreBuilder {
@@ -59,9 +60,13 @@ export class FakeStoreBuilder {
       schema: {},
     } as DevfileRegistriesState,
     user: {
-      isLogged: true,
+      isLoading: false,
       user: {},
     } as UserState,
+    userProfile: {
+      isLoading: false,
+      profile: {},
+    } as UserProfileState,
     infrastructureNamespace: {
       isLoading: false,
       namespaces: [],
@@ -110,9 +115,13 @@ export class FakeStoreBuilder {
     return this;
   }
 
-  public withUser(user: che.User, isLogged = true): FakeStoreBuilder {
+  public withUser(user: che.User): FakeStoreBuilder {
     this.state.user.user = Object.assign({}, user);
-    this.state.user.isLogged = isLogged;
+    return this;
+  }
+
+  public withUserProfile(profile: api.che.user.Profile): FakeStoreBuilder {
+    this.state.userProfile.profile = Object.assign({}, profile);
     return this;
   }
 

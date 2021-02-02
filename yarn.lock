@@ -466,10 +466,10 @@
   resolved "https://registry.yarnpkg.com/@eclipse-che/api/-/api-7.18.1.tgz#1beae9ebe694e4b58d0edfefcde07995ce6cd0b2"
   integrity sha512-KnnnDpnxxK0TBgR0Ux3oOYCvmCv6d4cRA+1j9wiLkaJighCqgCUaxnHWXEfolYbRq1+o/sfsxN+BxRDuF+H8wQ==
 
-"@eclipse-che/workspace-client@^0.0.1-1608729566":
-  version "0.0.1-1611344228"
-  resolved "https://registry.yarnpkg.com/@eclipse-che/workspace-client/-/workspace-client-0.0.1-1611344228.tgz#983eb6ca71717ee665dff001006ab07815734e4a"
-  integrity sha512-Ru658debzMS+JZfiZC3Jr5y3DQSK0JAp6/dq81PmZm07UPwg0FdFiOH6lN/lr8yYJTu+Hl0+4rOhCS3SSwvJPA==
+"@eclipse-che/workspace-client@^0.0.1-1612278649":
+  version "0.0.1-1612278649"
+  resolved "https://registry.yarnpkg.com/@eclipse-che/workspace-client/-/workspace-client-0.0.1-1612278649.tgz#083b19d4665a9aa93c7449526946749cc4bd6b9e"
+  integrity sha512-8IrJHIpNYprlngbVcYQ6WHKeVxxdhFx0jxu5LGZ9chqDFwDjGTOgkDCfGvIsqZT/MBrNXdM6Fy4H79QrbpIXqg==
   dependencies:
     "@eclipse-che/api" "^7.0.0-beta-4.0"
     axios "0.20.0"
