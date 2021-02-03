@@ -23,7 +23,7 @@ exports[`UserAccount page should correctly render the component which contains p
         className=""
         data-pf-content={true}
       >
-        This is where you can view and edit your account information for Eclipse Che.
+        This is where you can view and edit your account information for test.
       </p>
     </div>
   </div>
@@ -189,7 +189,7 @@ exports[`UserAccount page should correctly render the component without profile 
         className=""
         data-pf-content={true}
       >
-        This is where you can view and edit your account information for Eclipse Che.
+        This is where you can view and edit your account information for test.
       </p>
     </div>
   </div>

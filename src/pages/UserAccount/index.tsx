@@ -18,6 +18,7 @@ import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import Head from '../../components/Head';
 import { lazyInject } from '../../inversify.config';
+import { GettingStartedTab } from '../../services/helpers/types';
 import { KeycloakAuthService } from '../../services/keycloak/auth';
 import { AppState } from '../../store';
 
@@ -60,6 +61,7 @@ export class UserAccount extends React.PureComponent<Props, State> {
   }
 
   render(): React.ReactNode {
+    const productName = this.props.branding.data.name;
     const { firstName, lastName, email, login, profileUrl } = this.state;
 
     return (
@@ -72,7 +74,7 @@ export class UserAccount extends React.PureComponent<Props, State> {
             </FlexItem>
             <FlexItem spacer={{ default: 'spacerLg' }}>
               <Text component={TextVariants.p}>
-                This is where you can view and edit your account information for Eclipse Che.
+                {`This is where you can view and edit your account information for ${productName}.`}
               </Text>
             </FlexItem>
           </Flex>
@@ -145,6 +147,7 @@ export class UserAccount extends React.PureComponent<Props, State> {
 
 const mapStateToProps = (state: AppState) => ({
   userProfile: state.userProfile,
+  branding: state.branding,
 });
 
 const connector = connect(

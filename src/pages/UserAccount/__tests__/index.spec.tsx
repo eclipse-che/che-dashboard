@@ -18,6 +18,7 @@ import renderer from 'react-test-renderer';
 import { Store } from 'redux';
 import { UserAccount } from '../';
 import { FakeStoreBuilder } from '../../../store/__mocks__/storeBuilder';
+import { BrandingData } from '../../../services/bootstrap/branding.constant';
 
 describe('UserAccount page', () => {
 
@@ -25,12 +26,14 @@ describe('UserAccount page', () => {
 
   const getComponent = (store: Store): React.ReactElement => {
     const state = store.getState();
+    const branding = state.branding;
     const userProfile = state.userProfile;
 
     return (
       <Provider store={store}>
         <UserAccount
           history={history}
+          branding={branding}
           userProfile={userProfile}
           dispatch={jest.fn()}
         />
@@ -39,7 +42,10 @@ describe('UserAccount page', () => {
   };
 
   it('should correctly render the component without profile data', () => {
-    const component = getComponent(new FakeStoreBuilder().build());
+    const store = new FakeStoreBuilder().withBranding({
+      name: 'test',
+    } as BrandingData).build();
+    const component = getComponent(store);
     render(component);
 
     const editAccountButton = screen.queryByLabelText('edit-account-info');
@@ -52,15 +58,21 @@ describe('UserAccount page', () => {
   });
 
   it('should correctly render the component which contains profile data', () => {
-    const component = getComponent(new FakeStoreBuilder().withUserProfile({
-      attributes: {
-        firstName: 'John',
-        lastName: 'Doe',
-        preferred_username: 'Johnny',
-      },
-      email: 'johndoe@test.com',
-      userId: 'john-doe-id',
-    }).build());
+    const store = new FakeStoreBuilder()
+      .withBranding({
+        name: 'test'
+      } as BrandingData)
+      .withUserProfile({
+        attributes: {
+          firstName: 'John',
+          lastName: 'Doe',
+          preferred_username: 'Johnny',
+        },
+        email: 'johndoe@test.com',
+        userId: 'john-doe-id',
+      })
+      .build();
+    const component = getComponent(store);
     render(component);
 
     const editAccountButton = screen.getByLabelText('edit-account-info');

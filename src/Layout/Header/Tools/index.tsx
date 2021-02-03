@@ -108,6 +108,31 @@ export class HeaderTools extends React.PureComponent<Props, State> {
     return this.props.branding.data.configuration.cheCliTool;
   }
 
+  private getUsername(): string {
+    const { userProfile: { profile }, user } = this.props;
+
+    let username = '';
+
+    if (profile && profile.attributes) {
+      if (profile.attributes.firstName) {
+        username += profile.attributes.firstName;
+      }
+      if (profile.attributes.lastName) {
+        username += ' ' + profile.attributes.lastName;
+      }
+    }
+    if (!username && user && user.name) {
+      username += user.name;
+    }
+
+    return username;
+  }
+
+  private getEmail(): string {
+    const { userProfile: { profile } } = this.props;
+    return profile ? profile.email : '';
+  }
+
   private getLoginCommand(): string {
     const { keycloak, sso } = KeycloakAuthService;
     let loginCommand = this.getCliTool() + ` auth:login ${this.getHost()}`;
@@ -237,11 +262,12 @@ export class HeaderTools extends React.PureComponent<Props, State> {
   }
 
   private buildUserToggleButton(): React.ReactElement {
+    const username = this.getUsername();
     return (
       <DropdownToggle
         onToggle={(isOpen) => this.onUsernameButtonToggle(isOpen)}
       >
-        {this.props.user?.name}
+        {username}
       </DropdownToggle>
     );
   }
@@ -329,8 +355,9 @@ export class HeaderTools extends React.PureComponent<Props, State> {
       isModalOpen,
     } = this.state;
 
-    const userEmail = this.props.user && this.props.user.email ? this.props.user.email : '';
-    const imageUrl = gravatarUrl(userEmail, { default: 'retro' });
+    const userEmail = this.getEmail();
+    const username = this.getUsername();
+    const imageUrl = userEmail ? gravatarUrl(userEmail, { default: 'retro' }) : '';
     const avatar = <Avatar src={imageUrl} alt='Avatar image' />;
 
     const userToggleButton = this.buildUserToggleButton();
@@ -367,7 +394,7 @@ export class HeaderTools extends React.PureComponent<Props, State> {
         <AboutModal
           isOpen={isModalOpen}
           closeAboutModal={() => this.closeAboutModal()}
-          username={this.props.user?.name}
+          username={username}
           logo={branding.logoFile}
           productName={branding.name}
           productVersion={branding.productVersion}
@@ -378,6 +405,7 @@ export class HeaderTools extends React.PureComponent<Props, State> {
 }
 
 const mapStateToProps = (state: AppState) => ({
+  userProfile: state.userProfile,
   branding: state.branding,
 });
 
