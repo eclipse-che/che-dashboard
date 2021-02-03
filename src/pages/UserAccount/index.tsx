@@ -11,14 +11,14 @@
  */
 
 import {
-  Flex, Button, Title, FlexItem, PageSection, Text, TextInput, ButtonVariant, PageSectionVariants, TextVariants,
+  Button, Title, PageSection, Text, TextInput, Form, FormGroup, ActionGroup, StackItem, Stack,
+  ButtonVariant, PageSectionVariants, TextVariants,
 } from '@patternfly/react-core';
 import { History } from 'history';
 import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import Head from '../../components/Head';
 import { lazyInject } from '../../inversify.config';
-import { GettingStartedTab } from '../../services/helpers/types';
 import { KeycloakAuthService } from '../../services/keycloak/auth';
 import { AppState } from '../../store';
 
@@ -68,77 +68,67 @@ export class UserAccount extends React.PureComponent<Props, State> {
       <React.Fragment>
         <Head pageName="User Account" />
         <PageSection variant={PageSectionVariants.light} isFilled={true}>
-          <Flex direction={{ default: 'column' }}>
-            <FlexItem spacer={{ default: 'spacerSm' }}>
+          <Stack hasGutter>
+            <StackItem>
               <Title headingLevel="h1">Account</Title>
-            </FlexItem>
-            <FlexItem spacer={{ default: 'spacerLg' }}>
               <Text component={TextVariants.p}>
                 {`This is where you can view and edit your account information for ${productName}.`}
               </Text>
-            </FlexItem>
-          </Flex>
-          <Flex direction={{ default: 'column' }} style={{ maxWidth: '550px' }}>
-            <Flex direction={{ default: 'column' }}>
-              <FlexItem spacer={{ default: 'spacerSm' }}>
-                <Title headingLevel="h4" size="md">
-                  Login
-                </Title>
-                <TextInput
-                  aria-label="readonly-profile-login"
-                  value={login}
-                  isDisabled
-                />
-              </FlexItem>
-            </Flex>
-            <Flex direction={{ default: 'column' }}>
-              <FlexItem spacer={{ default: 'spacerSm' }}>
-                <Title headingLevel="h4" size="md">
-                  Email
-                </Title>
-                <TextInput
-                  aria-label="readonly-profile-email"
-                  value={email}
-                  isDisabled
-                />
-              </FlexItem>
-            </Flex>
-            <Flex direction={{ default: 'column' }}>
-              <FlexItem spacer={{ default: 'spacerSm' }}>
-                <Title headingLevel="h4" size="md">
-                  First Name
-                </Title>
-                <TextInput
-                  aria-label="readonly-profile-first-name"
-                  value={firstName}
-                  isDisabled
-                />
-              </FlexItem>
-            </Flex>
-            <Flex direction={{ default: 'column' }}>
-              <FlexItem spacer={{ default: 'spacerLg' }}>
-                <Title headingLevel="h4" size="md">
-                  Last Name
-                </Title>
-                <TextInput
-                  aria-label="readonly-profile-last-name"
-                  value={lastName}
-                  isDisabled
-                />
-              </FlexItem>
-            </Flex>
-            <Flex>
-              <FlexItem>
-                <Button
-                  variant={ButtonVariant.primary}
-                  onClick={() => this.onEdit()}
-                  isDisabled={!profileUrl}
-                  aria-label="edit-account-info">
-                  Edit
-                </Button>
-              </FlexItem>
-            </Flex>
-          </Flex>
+            </StackItem>
+            <StackItem isFilled>
+              <Form isWidthLimited>
+                <FormGroup
+                  label="Login"
+                  fieldId="form-group-login"
+                >
+                  <TextInput
+                    aria-label="readonly login"
+                    value={login}
+                    isDisabled
+                  />
+                </FormGroup>
+                <FormGroup
+                  label="Email"
+                  fieldId="form-group-email"
+                >
+                  <TextInput
+                    aria-label="readonly email"
+                    value={email}
+                    isDisabled
+                  />
+                </FormGroup>
+                <FormGroup
+                  label="First Name"
+                  fieldId="form-group-first-name"
+                >
+                  <TextInput
+                    aria-label="readonly first name"
+                    value={firstName}
+                    isDisabled
+                  />
+                </FormGroup>
+                <FormGroup
+                  label="Last Name"
+                  fieldId="form-group-last-name"
+                >
+                  <TextInput
+                    aria-label="readonly last name"
+                    value={lastName}
+                    isDisabled
+                  />
+                </FormGroup>
+                <ActionGroup>
+                  <Button
+                    variant={ButtonVariant.primary}
+                    onClick={() => this.onEdit()}
+                    isDisabled={!profileUrl}
+                    aria-label="edit account info">
+                    Edit
+                  </Button>
+                </ActionGroup>
+              </Form>
+            </StackItem>
+          </Stack>
         </PageSection>
       </React.Fragment>
     );

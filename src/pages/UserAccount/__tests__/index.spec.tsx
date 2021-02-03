@@ -48,7 +48,7 @@ describe('UserAccount page', () => {
     const component = getComponent(store);
     render(component);
 
-    const editAccountButton = screen.queryByLabelText('edit-account-info');
+    const editAccountButton = screen.queryByLabelText('edit account info');
     expect(editAccountButton).toBeTruthy();
     expect(editAccountButton).toBeDisabled();
 
@@ -60,7 +60,7 @@ describe('UserAccount page', () => {
   it('should correctly render the component which contains profile data', () => {
     const store = new FakeStoreBuilder()
       .withBranding({
-        name: 'test'
+        name: 'Product name'
       } as BrandingData)
       .withUserProfile({
         attributes: {
@@ -75,7 +75,7 @@ describe('UserAccount page', () => {
     const component = getComponent(store);
     render(component);
 
-    const editAccountButton = screen.getByLabelText('edit-account-info');
+    const editAccountButton = screen.getByLabelText('edit account info');
     expect(editAccountButton).toBeDisabled();
 
     const json = renderer.create(component).toJSON();

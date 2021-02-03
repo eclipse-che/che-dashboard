@@ -99,7 +99,7 @@
 | [`original@1.0.2`](https://github.com/unshiftio/original) | MIT | clearlydefined |
 | [`path-to-regexp@1.8.0`](https://github.com/pillarjs/path-to-regexp.git) | MIT | clearlydefined |
 | [`popper.js@1.16.1`](git+https://github.com/FezVrasta/popper.js.git) | MIT | [CQ22353](https://dev.eclipse.org/ipzilla/show_bug.cgi?id=22353) |
-| [`prettier@2.0.5`](https://github.com/prettier/prettier.git) | MIT |  |
+| [`prettier@2.0.5`](https://github.com/prettier/prettier.git) | MIT | clearlydefined |
 | [`private@0.1.8`](git://github.com/benjamn/private.git) | MIT | [CQ18717](https://dev.eclipse.org/ipzilla/show_bug.cgi?id=18717) |
 | [`prop-types-extra@1.1.1`](git+https://github.com/react-bootstrap/prop-types-extra.git) | MIT | [CQ22354](https://dev.eclipse.org/ipzilla/show_bug.cgi?id=22354) |
 | [`prop-types@15.7.2`](https://github.com/facebook/prop-types.git) | MIT | clearlydefined |
