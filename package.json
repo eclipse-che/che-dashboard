@@ -41,7 +41,7 @@
     "@patternfly/react-icons": "^4.3.5",
     "@patternfly/react-table": "^4.5.7",
     "@types/react-helmet": "^6.1.0",
-    "axios": "^0.19.2",
+    "axios": "^0.21.1",
     "connected-react-router": "^6.7.0",
     "date-fns": "^2.16.1",
     "detect-browser": "^5.2.0",
