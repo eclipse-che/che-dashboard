@@ -18,28 +18,33 @@ import { BrandingData } from '../../../../services/bootstrap/branding.constant';
 import { render, RenderResult } from '@testing-library/react';
 import { Store } from 'redux';
 
-const scheduledMaintenance = 'Scheduled maintenance';
-const store = new FakeStoreBuilder().withBranding({
-  header: {
-    warning: scheduledMaintenance
-  }
-} as BrandingData).build();
+const scheduledMaintenance = 'Scheduled maintenance.';
 
 describe('WarningBanner component', () => {
-  it('should show header warning message when', () => {
-    const component = renderComponent(<WarningBanner />, store);
+  it('should show header warning message when warning option is set', () => {
+    const component = renderComponent(<WarningBanner />, storeBuilder(scheduledMaintenance));
     expect(component.queryAllByText(scheduledMaintenance, {
       exact: false
     }).length).toEqual(1);
   });
 
-  it('should not show header warning message when no header was present', () => {
+  it('should not show header warning message when no warning option is present', () => {
     const component = renderComponent(<WarningBanner />, new FakeStoreBuilder().build());
     expect(component.queryAllByText(scheduledMaintenance, {
       exact: false
     })).toEqual([]);
   });
 
+  it('warning message is sanitized', () => {
+    const sanitizingMessage = 'Scheduled maintenance. <a href="foo">foo</a> has more <b>info</b>';
+    const sanitizedMessage = 'Scheduled maintenance. <a href="foo">foo</a> has more info';
+    const component = renderComponent(<WarningBanner />, storeBuilder(sanitizingMessage));
+    const elements = component.queryAllByText(scheduledMaintenance, {
+      exact: false
+    });
+    expect(elements.length).toEqual(1);
+    expect(elements[0].innerHTML).toEqual(sanitizedMessage);
+  });
 });
 
 function renderComponent(
@@ -51,4 +56,12 @@ function renderComponent(
       {component}
     </Provider>
   );
+}
+
+function storeBuilder(message: string): Store {
+  return new FakeStoreBuilder().withBranding({
+    header: {
+      warning: message
+    }
+  } as BrandingData).build();
 }

@@ -71,6 +71,7 @@
     "redux-thunk": "^2.3.0",
     "reflect-metadata": "^0.1.13",
     "reselect": "^4.0.0",
+    "sanitize-html": "^2.3.2",
     "sockjs-client": "^1.4.0",
     "umd-compat-loader": "2.1.1",
     "yaml-language-server": "^0.13.0"
