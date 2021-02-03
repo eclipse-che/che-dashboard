@@ -19,6 +19,7 @@ import * as DevfileRegistriesStore from '../../store/DevfileRegistries';
 import * as EnvironmentStore from '../../store/Environment';
 import * as InfrastructureNamespaceStore from '../../store/InfrastructureNamespace';
 import * as Plugins from '../../store/Plugins';
+import * as UserProfileStore from '../../store/UserProfile';
 import * as UserPreferencesStore from '../../store/UserPreferences';
 import * as UserStore from '../../store/User';
 import * as WorkspacesStore from '../../store/Workspaces';
@@ -51,8 +52,7 @@ export class PreloadData {
     this.defineEnvironment();
 
     await this.updateUser();
-    await this.updateKeycloakUserInfo();
-
+    await this.updateUserProfile();
     await this.updateBranding();
     new ResourceFetcherService().prefetchResources(this.store.getState());
 
@@ -70,7 +70,8 @@ export class PreloadData {
   }
 
   private defineEnvironment(): void {
-    EnvironmentStore.actionCreators.defineEnvironmentMode()(this.store.dispatch, this.store.getState, undefined);
+    const { defineEnvironmentMode } = EnvironmentStore.actionCreators;
+    defineEnvironmentMode()(this.store.dispatch, this.store.getState, undefined);
   }
 
   private async updateBranding(): Promise<void> {
@@ -86,16 +87,15 @@ export class PreloadData {
     return this.cheWorkspaceClient.updateJsonRpcMasterApi();
   }
 
-  private setUser(): void {
-    const user = this.keycloakSetup.getUser();
-    if (user) {
-      this.store.dispatch(UserStore.setUser(user));
-    }
-  }
-
   private async updateUser(): Promise<void> {
     await this.keycloakSetup.start();
-    this.setUser();
+    const { requestUser, setUser } = UserStore.actionCreators;
+    const user = this.keycloakSetup.getUser();
+    if (user) {
+      setUser(user)(this.store.dispatch, this.store.getState, undefined);
+      return;
+    }
+    await requestUser()(this.store.dispatch, this.store.getState, undefined);
   }
 
   private async updateWorkspaces(): Promise<void> {
@@ -135,14 +135,8 @@ export class PreloadData {
     return requestUserPreferences(undefined)(this.store.dispatch, this.store.getState, undefined);
   }
 
-  private async updateKeycloakUserInfo(): Promise<void> {
-    if (!KeycloakAuthService.sso) {
-      return;
-    }
-    const userInfo = await this.keycloakAuth.fetchUserInfo();
-    const user = Object.assign({}, this.keycloakSetup.getUser(), userInfo);
-    if (user) {
-      this.store.dispatch(UserStore.setUser(user));
-    }
+  private async updateUserProfile(): Promise<void> {
+    const { requestUserProfile } = UserProfileStore.actionCreators;
+    return requestUserProfile()(this.store.dispatch, this.store.getState, undefined);
   }
 }

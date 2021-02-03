@@ -21,4 +21,5 @@ export enum ROUTE {
   IDE_LOADER_TAB = '/ide/:namespace/:workspaceName?tab=:tabId',
   LOAD_FACTORY = '/load-factory',
   USER_PREFERENCES = '/user-preferences',
+  USER_ACCOUNT = '/user-account',
 }

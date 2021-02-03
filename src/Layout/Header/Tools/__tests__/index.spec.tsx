@@ -48,7 +48,7 @@ describe('Page header tools', () => {
   const email = 'johndoe@example.com';
   const name = 'John Doe';
   const helpTitle = 'Help';
-  const store = createStore(productCli, helpTitle);
+  const store = createStore(productCli, helpTitle, name, email);
   const history = createHashHistory();
   const user = {
     id: 'test-id',
@@ -84,7 +84,7 @@ describe('Page header tools', () => {
     fireEvent.click(menuButton);
 
     const items = screen.getAllByRole('menuitem');
-    expect(items.length).toEqual(3);
+    expect(items.length).toEqual(4);
   });
 
   it('should fire the logout event', () => {
@@ -172,8 +172,14 @@ describe('Page header tools', () => {
 
 });
 
-function createStore(cheCliTool: string, helpTitle: string): Store {
+function createStore(cheCliTool: string, helpTitle: string, name: string, email: string): Store {
   return new FakeStoreBuilder()
+    .withUserProfile({
+      attributes: {
+        preferred_username: name,
+      },
+      email
+    } as api.che.user.Profile)
     .withBranding({
       helpTitle: helpTitle,
       configuration: {

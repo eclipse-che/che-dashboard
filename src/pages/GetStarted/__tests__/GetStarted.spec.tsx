@@ -81,6 +81,7 @@ function createFakeStore(): Store {
     } as any,
     devfileRegistries: {} as any,
     user: {} as any,
+    userProfile: {} as any,
     infrastructureNamespace: {} as any,
     environment: {} as any,
     userPreferences: {} as any,

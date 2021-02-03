@@ -21,55 +21,41 @@ import { CheWorkspaceClient } from '../services/cheWorkspaceClient';
 const WorkspaceClient = container.get(CheWorkspaceClient);
 
 export interface State {
-  user: che.User | undefined;
+  profile: api.che.user.Profile | undefined;
   isLoading: boolean;
 }
 
-interface RequestUserAction {
-  type: 'REQUEST_USER';
+interface RequestUserProfileAction {
+  type: 'REQUEST_USER_PROFILE';
 }
 
-interface ReceiveUserAction {
-  type: 'RECEIVE_USER';
-  user: che.User;
+interface ReceiveUserProfileAction {
+  type: 'RECEIVE_USER_PROFILE';
+  profile: api.che.user.Profile | undefined;
 }
 
-interface SetUserAction {
-  type: 'SET_USER';
-  user: che.User;
-}
-
-type KnownAction = RequestUserAction
-  | ReceiveUserAction | SetUserAction;
+type KnownAction = RequestUserProfileAction
+  | ReceiveUserProfileAction;
 
 export type ActionCreators = {
-  requestUser: () => AppThunk<KnownAction, Promise<void>>;
-  setUser: (user: che.User) => AppThunk<SetUserAction>;
+  requestUserProfile: () => AppThunk<KnownAction, Promise<void>>;
 };
 
 export const actionCreators: ActionCreators = {
-  requestUser: (): AppThunk<KnownAction, Promise<void>> => async (dispatch): Promise<void> => {
-    dispatch({ type: 'REQUEST_USER' });
+  requestUserProfile: (): AppThunk<KnownAction, Promise<void>> => async (dispatch): Promise<void> => {
+    dispatch({ type: 'REQUEST_USER_PROFILE' });
 
     try {
-      const data = await WorkspaceClient.restApiClient.getCurrentUser();
-      dispatch({ type: 'RECEIVE_USER', user: <che.User>data });
-      return;
+      const data = await WorkspaceClient.restApiClient.getCurrentUserProfile();
+      dispatch({ type: 'RECEIVE_USER_PROFILE', profile: <api.che.user.Profile>data });
     } catch (e) {
-      throw new Error(e.message ? e.message : 'Failed to request user');
+      throw new Error(e.message ? e.message : 'Failed to request userProfile');
     }
-  },
-
-  setUser: (user: che.User): AppThunk<SetUserAction> => dispatch => {
-    dispatch({
-      type: 'SET_USER',
-      user: user,
-    });
   },
 };
 
 const unloadedState: State = {
-  user: undefined,
+  profile: undefined,
   isLoading: false,
 };
 
@@ -80,19 +66,14 @@ export const reducer: Reducer<State> = (state: State | undefined, incomingAction
 
   const action = incomingAction as KnownAction;
   switch (action.type) {
-    case 'REQUEST_USER':
+    case 'REQUEST_USER_PROFILE':
       return createState(state, {
         isLoading: true,
       });
-    case 'RECEIVE_USER':
+    case 'RECEIVE_USER_PROFILE':
       return createState(state, {
         isLoading: false,
-        user: action.user,
-      });
-    case 'SET_USER':
-      return createState(state, {
-        isLoading: false,
-        user: action.user,
+        profile: action.profile,
       });
     default:
       return state;
