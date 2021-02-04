@@ -11,7 +11,10 @@ if [ ! -f $DASH_LICENSES ]; then
     exit 1
 fi
 
-node dash-licenses/yarn/index.js | java -jar $DASH_LICENSES -
 echo "The DEPENDENCIES file is being generated..."
+node dash-licenses/yarn/index.js | java -jar $DASH_LICENSES -summary DEPENDENCIES -
+echo "Done."
+
+echo "The dev.md and prod.md files are being generated..."
 node ./bump-deps.js
 echo "Done."
