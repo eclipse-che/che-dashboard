@@ -14,6 +14,7 @@ import { Banner } from '@patternfly/react-core';
 import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { AppState } from '../../../store';
+import sanitizeHtml from 'sanitize-html';
 
 type Props = MappedProps & {};
 
@@ -27,9 +28,17 @@ class WarningBannerAlert extends React.PureComponent<Props, State> {
       return null;
     }
 
+    const warningMessageHTML = sanitizeHtml(warningMessage, {
+      allowedTags: ['a'],
+      allowedAttributes: {
+        'a': ['href', 'target']
+      },
+      allowedSchemes: ['http', 'https']
+    });
+
     return (
       <Banner className="pf-u-text-align-center" variant="warning">
-        {warningMessage}
+        <div dangerouslySetInnerHTML={{ __html: warningMessageHTML }}></div>
       </Banner>
     );
   }
