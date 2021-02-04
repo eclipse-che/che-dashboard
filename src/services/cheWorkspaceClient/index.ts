@@ -18,6 +18,8 @@ import { EventEmitter } from 'events';
 
 export type WebSocketsFailedCallback = () => void;
 
+const VALIDITY_TIME = 5;
+
 /**
  * This class manages the api connection.
  */
@@ -50,6 +52,10 @@ export class CheWorkspaceClient {
     if (this.axios.defaults.headers.common === undefined) {
       this.axios.defaults.headers.common = {};
     }
+
+    if (!KeycloakAuthService.sso) {
+      return;
+    }
     let isUpdated: boolean;
     const updateTimer = () => {
       if (!isUpdated) {
@@ -61,21 +67,39 @@ export class CheWorkspaceClient {
     };
     updateTimer();
     this.axios.interceptors.request.use(async request => {
-      const { keycloak } = KeycloakAuthService;
-      if (keycloak && keycloak.updateToken && !isUpdated) {
+      if (!isUpdated) {
         updateTimer();
-        try {
-          await this.refreshToken(request);
-        } catch (e) {
-          console.error('Failed to update token.', e);
-          window.sessionStorage.setItem('oidcDashboardRedirectUrl', location.href);
-          if (keycloak.login) {
-            keycloak.login();
-          }
-        }
+        await this.handleRefreshToken(VALIDITY_TIME, request);
       }
       return request;
     });
+
+    window.addEventListener('message', (event: MessageEvent) => {
+      if (event.data.startsWith('update-token:')) {
+        const receivedValue = parseInt(event.data.split(':')[1], 10);
+        const validityTime = Number.isNaN(receivedValue) ? VALIDITY_TIME : Math.ceil(receivedValue / 1000);
+        this.handleRefreshToken(validityTime);
+      }
+    }, false);
+  }
+
+  private async handleRefreshToken(minValidity: number, request?: AxiosRequestConfig): Promise<void> {
+    try {
+      await this.refreshToken(minValidity, request);
+    } catch (e) {
+      console.error('Failed to refresh token.', e);
+      this.redirectedToKeycloakLogin();
+    }
+  }
+
+  private redirectedToKeycloakLogin(): void {
+    const { sessionStorage, location: { href } } = window;
+    const { keycloak } = KeycloakAuthService;
+
+    sessionStorage.setItem('oidcDashboardRedirectUrl', href);
+    if (keycloak && keycloak.login) {
+      keycloak.login();
+    }
   }
 
   private get token(): string | undefined {
@@ -115,7 +139,7 @@ export class CheWorkspaceClient {
 
   async updateJsonRpcMasterApi(): Promise<void> {
     const jsonRpcApiLocation = this.originLocation.replace('http', 'ws');
-    const tokenRefresher = () => this.refreshToken();
+    const tokenRefresher = () => this.refreshToken(VALIDITY_TIME);
     this._jsonRpcMasterApi = WorkspaceClient.getJsonRpcApi(jsonRpcApiLocation, tokenRefresher);
     this._jsonRpcMasterApi.onDidWebSocketStatusChange((websockets: string[]) => {
       this._failingWebSockets = [];
@@ -142,11 +166,11 @@ export class CheWorkspaceClient {
     return Array.from(this._failingWebSockets);
   }
 
-  private refreshToken(request?: AxiosRequestConfig): Promise<string | Error> {
+  private refreshToken(minValidity: number, request?: AxiosRequestConfig): Promise<string | Error> {
     const { keycloak } = KeycloakAuthService;
     if (keycloak) {
       return new Promise((resolve, reject) => {
-        keycloak.updateToken(5).success((refreshed: boolean) => {
+        keycloak.updateToken(minValidity).success((refreshed: boolean) => {
           if (refreshed && keycloak.token) {
             const header = 'Authorization';
             this.axios.defaults.headers.common[header] = `Bearer ${keycloak.token}`;
