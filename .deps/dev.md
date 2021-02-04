@@ -273,7 +273,6 @@
 | [`collection-visit@1.0.0`](https://github.com/jonschlinkert/collection-visit.git) | MIT | [CQ18717](https://dev.eclipse.org/ipzilla/show_bug.cgi?id=18717) |
 | [`color-convert@2.0.1`](https://github.com/Qix-/color-convert.git) | MIT | clearlydefined |
 | [`color-name@1.1.4`](git@github.com:colorjs/color-name.git) | MIT | [CQ17757](https://dev.eclipse.org/ipzilla/show_bug.cgi?id=17757) |
-| [`colorette@1.2.1`](https://github.com/jorgebucaran/colorette.git) | MIT | clearlydefined |
 | [`combined-stream@1.0.8`](git://github.com/felixge/node-combined-stream.git) | MIT | [CQ17757](https://dev.eclipse.org/ipzilla/show_bug.cgi?id=17757) |
 | [`commander@2.20.3`](https://github.com/tj/commander.js.git) | MIT | clearlydefined |
 | [`commandpost@1.4.0`](https://github.com/vvakame/commandpost.git) | MIT | clearlydefined |
@@ -323,7 +322,6 @@
 | [`decode-uri-component@0.2.0`](https://github.com/SamVerschueren/decode-uri-component.git) | MIT | [CQ18717](https://dev.eclipse.org/ipzilla/show_bug.cgi?id=18717) |
 | [`dedent@0.7.0`](git://github.com/dmnd/dedent.git) | MIT | clearlydefined |
 | [`deep-is@0.1.3`](http://github.com/thlorenz/deep-is.git) | MIT | clearlydefined |
-| [`deepmerge@4.2.2`](git://github.com/TehShrike/deepmerge.git) | MIT | clearlydefined |
 | [`default-gateway@4.2.0`](https://github.com/silverwind/default-gateway.git) | BSD-2-Clause | [CQ22386](https://dev.eclipse.org/ipzilla/show_bug.cgi?id=22386) |
 | [`define-property@0.2.5`](https://github.com/jonschlinkert/define-property.git) | MIT | [CQ17757](https://dev.eclipse.org/ipzilla/show_bug.cgi?id=17757) |
 | [`del@4.1.1`](https://github.com/sindresorhus/del.git) | MIT | clearlydefined |
@@ -348,7 +346,6 @@
 | [`domain-browser@1.2.0`](https://github.com/bevry/domain-browser.git) | MIT | [CQ16925](https://dev.eclipse.org/ipzilla/show_bug.cgi?id=16925) |
 | [`domelementtype@1.3.1`](git://github.com/fb55/domelementtype.git) | BSD-2-Clause | [CQ18717](https://dev.eclipse.org/ipzilla/show_bug.cgi?id=18717) |
 | [`domexception@2.0.1`](https://github.com/jsdom/domexception.git) | MIT | clearlydefined |
-| [`domhandler@2.4.2`](git://github.com/fb55/DomHandler.git) | BSD-2-Clause | [CQ18717](https://dev.eclipse.org/ipzilla/show_bug.cgi?id=18717) |
 | [`domutils@1.7.0`](git://github.com/FB55/domutils.git) | BSD-2-Clause | [CQ18717](https://dev.eclipse.org/ipzilla/show_bug.cgi?id=18717) |
 | [`dot-case@3.0.3`](git://github.com/blakeembrey/change-case.git) | MIT | clearlydefined |
 | [`dot-prop@5.2.0`](https://github.com/sindresorhus/dot-prop.git) | MIT | clearlydefined |
@@ -363,7 +360,6 @@
 | [`end-of-stream@1.4.4`](git://github.com/mafintosh/end-of-stream.git) | MIT | [CQ20878](https://dev.eclipse.org/ipzilla/show_bug.cgi?id=20878) |
 | [`enhanced-resolve@4.1.1`](git://github.com/webpack/enhanced-resolve.git) | MIT | [CQ18717](https://dev.eclipse.org/ipzilla/show_bug.cgi?id=18717) |
 | [`enquirer@2.3.5`](https://github.com/enquirer/enquirer.git) | MIT | clearlydefined |
-| [`entities@1.1.2`](git://github.com/fb55/entities.git) | BSD-2-Clause | [CQ18717](https://dev.eclipse.org/ipzilla/show_bug.cgi?id=18717) |
 | [`errno@0.1.7`](https://github.com/rvagg/node-errno.git) | MIT | [CQ16925](https://dev.eclipse.org/ipzilla/show_bug.cgi?id=16925) |
 | [`error-ex@1.3.2`](https://github.com/qix-/node-error-ex.git) | MIT | [CQ16925](https://dev.eclipse.org/ipzilla/show_bug.cgi?id=16925) |
 | [`escalade@3.0.2`](https://github.com/lukeed/escalade.git) | MIT | clearlydefined |
@@ -859,7 +855,6 @@
 | [`source-map-resolve@0.5.3`](https://github.com/lydell/source-map-resolve.git) | MIT | [CQ18717](https://dev.eclipse.org/ipzilla/show_bug.cgi?id=18717) |
 | [`source-map-support@0.5.19`](https://github.com/evanw/node-source-map-support) | MIT | clearlydefined |
 | [`source-map-url@0.4.0`](https://github.com/lydell/source-map-url.git) | MIT | [CQ18717](https://dev.eclipse.org/ipzilla/show_bug.cgi?id=18717) |
-| [`source-map@0.6.1`](http://github.com/mozilla/source-map.git) | BSD-3-Clause | [CQ18717](https://dev.eclipse.org/ipzilla/show_bug.cgi?id=18717) |
 | [`spdx-correct@3.1.1`](https://github.com/jslicense/spdx-correct.js.git) | Apache-2.0 | emo_ip_team |
 | [`spdx-exceptions@2.3.0`](https://github.com/kemitchell/spdx-exceptions.json.git) | CC-BY-3.0 | clearlydefined |
 | [`spdx-expression-parse@3.0.1`](https://github.com/jslicense/spdx-expression-parse.js.git) | MIT | emo_ip_team |
