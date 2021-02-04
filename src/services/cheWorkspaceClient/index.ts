@@ -53,33 +53,34 @@ export class CheWorkspaceClient {
       this.axios.defaults.headers.common = {};
     }
 
-    if (KeycloakAuthService.sso) {
-      let isUpdated: boolean;
-      const updateTimer = () => {
-        if (!isUpdated) {
-          isUpdated = true;
-          setTimeout(() => {
-            isUpdated = false;
-          }, 30000);
-        }
-      };
-      updateTimer();
-      this.axios.interceptors.request.use(async request => {
-        if (!isUpdated) {
-          updateTimer();
-          await this.handleRefreshToken(VALIDITY_TIME, request);
-        }
-        return request;
-      });
-
-      window.addEventListener('message', (event: MessageEvent) => {
-        if (event.data.startsWith('update-token:')) {
-          const receivedValue = parseInt(event.data.split(':')[1], 10);
-          const validityTime = Number.isNaN(receivedValue) ? VALIDITY_TIME : Math.ceil(receivedValue / 1000);
-          this.handleRefreshToken(validityTime);
-        }
-      }, false);
+    if (!KeycloakAuthService.sso) {
+      return;
     }
+    let isUpdated: boolean;
+    const updateTimer = () => {
+      if (!isUpdated) {
+        isUpdated = true;
+        setTimeout(() => {
+          isUpdated = false;
+        }, 30000);
+      }
+    };
+    updateTimer();
+    this.axios.interceptors.request.use(async request => {
+      if (!isUpdated) {
+        updateTimer();
+        await this.handleRefreshToken(VALIDITY_TIME, request);
+      }
+      return request;
+    });
+
+    window.addEventListener('message', (event: MessageEvent) => {
+      if (event.data.startsWith('update-token:')) {
+        const receivedValue = parseInt(event.data.split(':')[1], 10);
+        const validityTime = Number.isNaN(receivedValue) ? VALIDITY_TIME : Math.ceil(receivedValue / 1000);
+        this.handleRefreshToken(validityTime);
+      }
+    }, false);
   }
 
   private async handleRefreshToken(minValidity: number, request?: AxiosRequestConfig): Promise<void> {
