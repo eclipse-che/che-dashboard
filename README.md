@@ -79,7 +79,7 @@ Example:
 }
 ```
 
-Field `"header.warning"` allows you to display a message at the top of the dashboard. You can use HTML to configure the field but only a tags and href, target properties are accepted. It's undefined by default.
+Field `"header.warning"` allows you to display a message at the top of the dashboard. You can use HTML to configure the field but only the '\<a>' tag and 'href', 'target' properties are accepted. It's undefined by default.
 
 Example:
 
