@@ -79,6 +79,18 @@ Example:
 }
 ```
 
+Field `"header.warning"` allows you to display a message at the top of the dashboard. You can use HTML to configure the field but only the '\<a>' tag and 'href', 'target' properties are accepted. It's undefined by default.
+
+Example:
+
+```json
+{
+  "header": {
+    "warning": "Server upgrades are happening at 1:00 PM. To learn more visit <a href='foo' target='_blank'>foo</a>"
+  }
+}
+```
+
 ## License
 
 Che is open sourced under the Eclipse Public License 2.0.
