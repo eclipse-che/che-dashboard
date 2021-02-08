@@ -15,7 +15,7 @@ import React from 'react';
 import { Redirect, Route, RouteComponentProps, Switch } from 'react-router';
 
 import { ROUTE } from '../route.enum';
-import { buildFactoryLoaderPath } from '../services/helpers/location';
+import { buildFactoryLoaderPath, sanitizeLocation } from '../services/helpers/location';
 
 const GetStartedPage = React.lazy(() => import('../pages/GetStarted'));
 const WorkspacesListContainer = React.lazy(() => import('../containers/WorkspacesList'));
@@ -73,34 +73,13 @@ function Routes(): React.ReactElement {
 
 function redirectToFactoryLoader(props: RouteComponentProps): React.ReactElement {
   const location = props.location;
-  const newFactoryUrl = clearLocation(location);
-  const factoryLoaderPath = buildFactoryLoaderPath(newFactoryUrl);
-  return <Redirect to={factoryLoaderPath} />;
-}
-
-const oauthParams = ['state', 'session_state', 'code'];
-/**
- * Removes oauth params
- */
-function clearLocation(location: Location): string {
-  // clear search params if exists
-  const searchParams = new window.URLSearchParams(location.search);
-  oauthParams.forEach(param => searchParams.delete(param));
-
-  // clear pathname
   if (location.pathname.startsWith('/')) {
     location.pathname = location.pathname.substring(1);
   }
-  oauthParams.forEach(param => {
-    const re = new RegExp('&' + param + '=[^&]+', 'i');
-    const newPathname = location.pathname.replace(re, '');
-    location.pathname = newPathname;
-  });
-
-  const url = new window.URL(location.pathname);
-  url.search = searchParams.toString();
-
-  return url.toString();
+  const newLocation = sanitizeLocation(location);
+  const factoryUrl = newLocation.pathname + newLocation.search;
+  const factoryLoaderPath = buildFactoryLoaderPath(factoryUrl);
+  return <Redirect to={factoryLoaderPath} />;
 }
 
 Routes.displayName = 'RoutesComponent';
