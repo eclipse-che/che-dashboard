@@ -57,14 +57,15 @@ exports[`Registry Url Input should correctly render the component 1`] = `
           value="https://ttt"
         />
         <button
-          aria-disabled={false}
+          aria-disabled={true}
           aria-label="open registry"
-          className="pf-c-button pf-m-link"
+          className="pf-c-button pf-m-link pf-m-disabled"
           data-ouia-component-id="OUIA-Generated-Button-link-2"
           data-ouia-component-type="PF4/Button"
           data-ouia-safe={true}
-          disabled={false}
+          disabled={true}
           role={null}
+          tabIndex={null}
           type="button"
         >
           <a

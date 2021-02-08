@@ -18,7 +18,6 @@ const MAX_LENGTH = 256;
 const PATTERN = '^http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\\(\\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+$';
 const ERROR_REQUIRED_VALUE = 'A value is required.';
 const ERROR_MAX_LENGTH = `The url is too long. The maximum length is ${MAX_LENGTH} characters.`;
-const ERROR_PATTERN_MISMATCH = 'The URL is not valid.';
 
 type Props = {
   url: string;
@@ -29,6 +28,7 @@ type State = {
   errorMessage?: string;
   url: string;
   valid: ValidatedOptions;
+  isUrl?: boolean;
 };
 
 export class RegistryUrlFormGroup extends React.PureComponent<Props, State> {
@@ -45,7 +45,8 @@ export class RegistryUrlFormGroup extends React.PureComponent<Props, State> {
   public componentDidUpdate(prevProps: Props): void {
     const { url } = this.props;
     if (prevProps.url !== url) {
-      this.setState({ url });
+      const isUrl = new RegExp(PATTERN).test(url);
+      this.setState({ url, isUrl });
     }
   }
 
@@ -74,12 +75,6 @@ export class RegistryUrlFormGroup extends React.PureComponent<Props, State> {
         valid: ValidatedOptions.error,
       };
     }
-    if (!new RegExp(PATTERN).test(url)) {
-      return {
-        errorMessage: ERROR_PATTERN_MISMATCH,
-        valid: ValidatedOptions.error,
-      };
-    }
 
     return {
       errorMessage: undefined,
@@ -88,7 +83,7 @@ export class RegistryUrlFormGroup extends React.PureComponent<Props, State> {
   }
 
   public render(): React.ReactElement {
-    const { url, errorMessage, valid } = this.state;
+    const { url, isUrl, errorMessage, valid } = this.state;
 
     return (
       <FormGroup
@@ -111,7 +106,7 @@ export class RegistryUrlFormGroup extends React.PureComponent<Props, State> {
           />
           <Button
             variant="link"
-            isDisabled={!url || valid === ValidatedOptions.error}
+            isDisabled={!url || !isUrl}
             aria-label="open registry">
             <a
               href={url}

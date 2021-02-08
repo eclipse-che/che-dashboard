@@ -129,8 +129,17 @@ export class UserPreferences extends React.PureComponent<Props, State> {
   private buildRegistryRow(registry: RegistryRow): React.ReactNode[] {
     const { url, username } = registry;
 
+    if (/^http[s]?:\/\/.*/.test(url)) {
+      return [
+        <span key="host">
+          <a href={url} target="_blank" rel="noreferrer">{url}</a>
+        </span>,
+        <span key="username">{username}</span>,
+      ];
+    }
+
     return [
-      <span key="host"><a href={url} target="_blank" rel="noreferrer">{url}</a></span>,
+      <span key="host">{url}</span>,
       <span key="username">{username}</span>,
     ];
   }
