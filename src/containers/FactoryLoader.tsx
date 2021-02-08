@@ -22,6 +22,7 @@ import FactoryLoader from '../pages/FactoryLoader';
 import { selectAllWorkspaces, selectWorkspaceById } from '../store/Workspaces/selectors';
 import { WorkspaceStatus } from '../services/helpers/types';
 import { sanitizeLocation } from '../services/helpers/location';
+import { merge } from 'lodash';
 
 const WS_ATTRIBUTES_TO_SAVE: string[] = ['workspaceDeploymentLabels', 'workspaceDeploymentAnnotations'];
 
@@ -49,6 +50,7 @@ type State = {
 export class FactoryLoaderContainer extends React.PureComponent<Props, State> {
   private factoryLoaderCallbacks: { showAlert?: (variant: AlertVariant, title: string) => void } = {};
   private factoryResolver: FactoryResolverStore.State;
+  private overrideDevfileObject: Partial<che.WorkspaceDevfile> = {};
 
   constructor(props: Props) {
     super(props);
@@ -60,6 +62,37 @@ export class FactoryLoaderContainer extends React.PureComponent<Props, State> {
       hasError: false,
       search,
     };
+  }
+
+  private resetOverrideParams(): void {
+    this.overrideDevfileObject = {};
+  }
+
+  private updateOverrideParams(key: string, val: string): void {
+    if (key.startsWith('override.')) {
+      const overrideKeys: string[] = [];
+      const pattern = new RegExp('([^.=]+)', 'g');
+      let regExpExecArray: RegExpExecArray | null = null;
+      while ((regExpExecArray = pattern.exec(key)) !== null) {
+        overrideKeys.push(regExpExecArray[0]);
+      }
+      if (overrideKeys.length > 0) {
+        let currentVal = this.overrideDevfileObject;
+        for (let index = 1; index < overrideKeys.length; index++) {
+          currentVal[overrideKeys[index]] = index === overrideKeys.length - 1 ? val : {};
+          currentVal = currentVal[overrideKeys[index]];
+        }
+      }
+    }
+  }
+
+  private getTargetDevfile(): api.che.workspace.devfile.Devfile | undefined {
+    const devfile = this.factoryResolver.resolver.devfile;
+    if (!devfile) {
+      return undefined;
+    }
+
+    return merge(devfile, this.overrideDevfileObject);
   }
 
   public showAlert(message: string, alertVariant: AlertVariant = AlertVariant.danger): void {
@@ -131,6 +164,7 @@ export class FactoryLoaderContainer extends React.PureComponent<Props, State> {
     this.setState({ currentStep: LoadFactorySteps.CREATE_WORKSPACE });
 
     const searchParam = new window.URLSearchParams(location.search);
+    this.resetOverrideParams();
     const factoryLink = searchParam.get('url');
     searchParam.delete('url');
     if (!factoryLink) {
@@ -147,6 +181,7 @@ export class FactoryLoaderContainer extends React.PureComponent<Props, State> {
       if (WS_ATTRIBUTES_TO_SAVE.indexOf(key) !== -1) {
         attrs[key] = val;
       }
+      this.updateOverrideParams(key, val);
       factoryUrl.searchParams.append(key, val);
     });
 
@@ -176,7 +211,7 @@ export class FactoryLoaderContainer extends React.PureComponent<Props, State> {
       `${searchParam.get('url')}` :
       `\`${source}\` in github repo ${factoryLink}`;
     this.setState({ currentStep: LoadFactorySteps.LOOKING_FOR_DEVFILE, devfileLocationInfo });
-    const devfile = this.factoryResolver.resolver.devfile;
+    const devfile = this.getTargetDevfile();
     this.setState({ currentStep: LoadFactorySteps.APPLYING_DEVFILE });
     await delay();
 
