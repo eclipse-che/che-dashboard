@@ -18,7 +18,7 @@ import { RouteComponentProps } from 'react-router';
 import WorkspaceDetails, { WorkspaceDetails as Details } from '../pages/WorkspaceDetails';
 import { ROUTE } from '../route.enum';
 import { toHref } from '../services/helpers/location';
-import { IdeLoaderTab, WorkspaceAction, WorkspaceDetailsTab } from '../services/helpers/types';
+import { WorkspaceDetailsTab } from '../services/helpers/types';
 
 import { AppState } from '../store';
 import * as WorkspacesStore from '../store/Workspaces';
@@ -85,51 +85,9 @@ class WorkspaceDetailsContainer extends React.PureComponent<Props> {
         ref={this.workspaceDetailsPageRef}
         workspacesLink={workspacesLink}
         onSave={(workspace: che.Workspace) => this.onSave(workspace)}
-        onAction={(action => this.onAction(action))}
+        history={this.props.history}
       />
     );
-  }
-
-  async onAction(action: WorkspaceAction): Promise<void> {
-    const namespace = this.props.match.params.namespace;
-    const workspaceName = this.props.match.params.workspaceName;
-    const workspace = this.props.allWorkspaces?.find(workspace =>
-      workspace.namespace === namespace && workspace.devfile.metadata.name === workspaceName);
-
-    if (!workspace) {
-      this.showAlert('Unable to find the workspace');
-      return;
-    }
-
-    switch (action) {
-      case WorkspaceAction.OPEN_IDE:
-        this.props.history.replace({ pathname: `/ide/${namespace}/${workspaceName}` });
-        break;
-      case WorkspaceAction.START_DEBUG_AND_OPEN_LOGS:
-        try {
-          await this.props.startWorkspace(workspace.id, { 'debug-workspace-start': true });
-          this.props.history.replace({
-            pathname: `/ide/${namespace}/${workspaceName}?tab=${IdeLoaderTab[IdeLoaderTab.Logs]}`
-          });
-        } catch (e) {
-          this.showAlert(`Unable to ${WorkspaceAction.START_DEBUG_AND_OPEN_LOGS.toLowerCase()}. ${e}`);
-        }
-        break;
-      case WorkspaceAction.START_IN_BACKGROUND:
-        try {
-          await this.props.startWorkspace(workspace.id);
-        } catch (e) {
-          this.showAlert(`Unable to ${WorkspaceAction.START_IN_BACKGROUND.toLowerCase()}. ${e}`);
-        }
-        break;
-      case WorkspaceAction.STOP_WORKSPACE:
-        try {
-          await this.props.stopWorkspace(workspace.id);
-        } catch (e) {
-          this.showAlert(`Unable to ${WorkspaceAction.STOP_WORKSPACE.toLowerCase()}. ${e}`);
-        }
-        break;
-    }
   }
 
   async onSave(newWorkspaceObj: che.Workspace): Promise<void> {

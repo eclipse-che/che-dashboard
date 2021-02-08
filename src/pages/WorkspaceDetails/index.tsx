@@ -27,7 +27,7 @@ import {
   TextContent,
 } from '@patternfly/react-core';
 import Head from '../../components/Head';
-import { WorkspaceAction, WorkspaceDetailsTab, WorkspaceStatus } from '../../services/helpers/types';
+import { WorkspaceDetailsTab, WorkspaceStatus } from '../../services/helpers/types';
 import Header from './Header';
 import CheProgress from '../../components/Progress';
 import { AppState } from '../../store';
@@ -37,6 +37,7 @@ import { AppAlerts } from '../../services/alerts/appAlerts';
 import OverviewTab, { OverviewTab as Overview } from './OverviewTab';
 import EditorTab, { EditorTab as Editor } from './DevfileTab';
 import { selectIsLoading, selectWorkspaceById } from '../../store/Workspaces/selectors';
+import { History } from 'history';
 
 import './WorkspaceDetails.styl';
 
@@ -46,7 +47,7 @@ type Props =
   {
     workspacesLink: string;
     onSave: (workspace: che.Workspace) => Promise<void>;
-    onAction: (action: WorkspaceAction) => void;
+    history: History;
   } & MappedProps;
 
 type State = {
@@ -141,7 +142,7 @@ export class WorkspaceDetails extends React.PureComponent<Props, State> {
   }
 
   public render(): React.ReactElement {
-    const { workspace, onAction, workspacesLink } = this.props;
+    const { workspace, workspacesLink } = this.props;
 
     if (!workspace) {
       return <div>Workspace not found.</div>;
@@ -158,10 +159,10 @@ export class WorkspaceDetails extends React.PureComponent<Props, State> {
           status={workspace.status}
         >
           <HeaderActionSelect
-            onAction={onAction}
             workspaceId={workspace.id}
             workspaceName={workspaceName}
-            status={workspace.status} />
+            status={workspace.status}
+            history={this.props.history} />
         </Header>
         <PageSection variant={SECTION_THEME} className='workspace-details-tabs'>
           {(this.state.hasWarningMessage) && (

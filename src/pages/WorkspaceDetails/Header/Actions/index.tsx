@@ -10,19 +10,24 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import { Dropdown, DropdownItem, DropdownToggle } from '@patternfly/react-core';
+import { AlertVariant, Dropdown, DropdownItem, DropdownToggle } from '@patternfly/react-core';
 import { CaretDownIcon } from '@patternfly/react-icons';
 import React from 'react';
-import WorkspaceDeleteAction, { WorkspaceDeleteAction as DeleteAction } from '../../../../components/Workspace/DeleteAction';
+import WorkspaceActionsProvider from '../../../../containers/WorkspaceActions';
 import { WorkspaceAction, WorkspaceStatus } from '../../../../services/helpers/types';
+import { History } from 'history';
 
 import './Actions.styl';
+import { ActionContextType, WorkspaceActionsConsumer } from '../../../../containers/WorkspaceActions/context';
+import { lazyInject } from '../../../../inversify.config';
+import { AppAlerts } from '../../../../services/alerts/appAlerts';
+import getRandomString from '../../../../services/helpers/random';
 
 type Props = {
   workspaceId: string;
   workspaceName: string;
   status: string | undefined;
-  onAction: (action: WorkspaceAction) => void;
+  history: History;
 };
 
 type State = {
@@ -31,7 +36,9 @@ type State = {
 }
 
 export class HeaderActionSelect extends React.PureComponent<Props, State> {
-  private readonly workspaceDeleteRef: React.RefObject<DeleteAction>;
+
+  @lazyInject(AppAlerts)
+  private appAlerts: AppAlerts;
 
   constructor(props: Props) {
     super(props);
@@ -40,8 +47,6 @@ export class HeaderActionSelect extends React.PureComponent<Props, State> {
       isExpanded: false,
       isModalOpen: false,
     };
-
-    this.workspaceDeleteRef = React.createRef<DeleteAction>();
   }
 
   private handleToggle(isExpanded: boolean): void {
@@ -51,64 +56,69 @@ export class HeaderActionSelect extends React.PureComponent<Props, State> {
     this.setState({ isExpanded });
   }
 
-  private handleSelect(selected: WorkspaceAction): void {
+  private async handleSelect(selected: WorkspaceAction, context: ActionContextType): Promise<void> {
     this.setState({
       isExpanded: false,
     });
-    this.props.onAction(selected);
-  }
-
-  private onDelete(): void {
-    this.handleSelect(WorkspaceAction.DELETE_WORKSPACE);
-    this.setState({ isExpanded: true });
-    this.workspaceDeleteRef.current?.onClick();
-  }
-
-  private onModalStatusChange(isModalOpen: boolean): void {
-    this.setState({ isModalOpen });
-    if (!isModalOpen && this.state.isExpanded) {
-      this.setState({ isExpanded: false });
+    try {
+      if (selected === WorkspaceAction.DELETE_WORKSPACE) {
+        try {
+          await context.showConfirmation([this.props.workspaceName]);
+        } catch (e) {
+          return;
+        }
+      }
+      const nextPath = await context.handleAction(selected, this.props.workspaceId);
+      if (!nextPath) {
+        return;
+      }
+      this.props.history.push(nextPath);
+    } catch (e) {
+      const message = `Unable to ${selected.toLocaleLowerCase()} ${this.props.workspaceName}. ` + e.toString().replace('Error: ', '');
+      this.showAlert(message);
+      console.warn(message);
     }
   }
 
-  private getDropdownItems(): React.ReactNode[] {
-    const { workspaceId, status, workspaceName } = this.props;
+  private showAlert(message: string): void {
+    this.appAlerts.showAlert({
+      key: 'workspace-details-' + getRandomString(4),
+      title: message,
+      variant: AlertVariant.warning,
+    });
+  }
+
+  private getDropdownItems(context: ActionContextType): React.ReactNode[] {
+    const { status } = this.props;
 
     return [
       (<DropdownItem
         key={`action-${WorkspaceAction.OPEN_IDE}`}
-        onClick={() => this.handleSelect(WorkspaceAction.OPEN_IDE)}>
+        onClick={async () => this.handleSelect(WorkspaceAction.OPEN_IDE, context)}>
         <div>{WorkspaceAction.OPEN_IDE}</div>
       </DropdownItem>),
       (<DropdownItem
         key={`action-${WorkspaceAction.START_DEBUG_AND_OPEN_LOGS}`}
-        onClick={() => this.handleSelect(WorkspaceAction.START_DEBUG_AND_OPEN_LOGS)}>
+        onClick={async () => this.handleSelect(WorkspaceAction.START_DEBUG_AND_OPEN_LOGS, context)}>
         <div>{WorkspaceAction.START_DEBUG_AND_OPEN_LOGS}</div>
       </DropdownItem>),
       (<DropdownItem
         key={`action-${WorkspaceAction.START_IN_BACKGROUND}`}
         isDisabled={status !== WorkspaceStatus[WorkspaceStatus.STOPPED]}
-        onClick={() => this.handleSelect(WorkspaceAction.START_IN_BACKGROUND)}>
+        onClick={async () => this.handleSelect(WorkspaceAction.START_IN_BACKGROUND, context)}>
         <div>{WorkspaceAction.START_IN_BACKGROUND}</div>
       </DropdownItem>),
       (<DropdownItem
         key={`action-${WorkspaceAction.STOP_WORKSPACE}`}
         isDisabled={status === WorkspaceStatus[WorkspaceStatus.STOPPED]}
-        onClick={() => this.handleSelect(WorkspaceAction.STOP_WORKSPACE)}>
+        onClick={async () => this.handleSelect(WorkspaceAction.STOP_WORKSPACE, context)}>
         <div>{WorkspaceAction.STOP_WORKSPACE}</div>
       </DropdownItem>),
       (<DropdownItem
         key={`action-${WorkspaceAction.DELETE_WORKSPACE}`}
         isDisabled={status === WorkspaceStatus[WorkspaceStatus.STARTING] || status === WorkspaceStatus[WorkspaceStatus.STOPPING]}
-        onClick={() => this.onDelete()}>
-        <WorkspaceDeleteAction
-          workspaceName={workspaceName}
-          workspaceId={workspaceId}
-          ref={this.workspaceDeleteRef}
-          onModalStatusChange={isModalOpen => this.onModalStatusChange(isModalOpen)}
-          status={status ? WorkspaceStatus[status] : WorkspaceStatus.STOPPED}>
-          {WorkspaceAction.DELETE_WORKSPACE}
-        </WorkspaceDeleteAction>
+        onClick={async () => this.handleSelect(WorkspaceAction.DELETE_WORKSPACE, context)}>
+        <div>{WorkspaceAction.DELETE_WORKSPACE}</div>
       </DropdownItem>),
     ];
   }
@@ -118,21 +128,27 @@ export class HeaderActionSelect extends React.PureComponent<Props, State> {
     const { isExpanded } = this.state;
 
     return (
-      <Dropdown
-        className="workspace-action-selector"
-        toggle={(
-          <DropdownToggle
-            data-testid={`${workspaceId}-action-dropdown`}
-            onToggle={isExpanded => this.handleToggle(isExpanded)}
-            toggleIndicator={CaretDownIcon}
-            isPrimary>
-            Actions
-          </DropdownToggle>
-        )}
-        isOpen={isExpanded}
-        position="right"
-        dropdownItems={this.getDropdownItems()}
-      />
+      <WorkspaceActionsProvider>
+        <WorkspaceActionsConsumer>
+          {context => (
+            <Dropdown
+              className="workspace-action-selector"
+              toggle={(
+                <DropdownToggle
+                  data-testid={`${workspaceId}-action-dropdown`}
+                  onToggle={isExpanded => this.handleToggle(isExpanded)}
+                  toggleIndicator={CaretDownIcon}
+                  isPrimary>
+                  Actions
+                </DropdownToggle>
+              )}
+              isOpen={isExpanded}
+              position="right"
+              dropdownItems={this.getDropdownItems(context)}
+            />
+          )}
+        </WorkspaceActionsConsumer>
+      </WorkspaceActionsProvider>
     );
   }
 }
