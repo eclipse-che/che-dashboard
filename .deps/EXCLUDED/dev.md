@@ -15,7 +15,7 @@ This file contains a manual contribution to .deps/dev.md and it's needed because
 | `jsdom@16.2.2` | [CQ22386](https://dev.eclipse.org/ipzilla/show_bug.cgi?id=22386) |
 | `loglevel@1.6.8` | [CQ22386](https://dev.eclipse.org/ipzilla/show_bug.cgi?id=22386) |
 | `multi-stage-sourcemap@0.2.1` | [CQ22386](https://dev.eclipse.org/ipzilla/show_bug.cgi?id=22386) |
-| `node-forge@0.9.0` | [CQ22386](https://dev.eclipse.org/ipzilla/show_bug.cgi?id=22386) |
+| `node-forge@0.10.0` | [CQ22386](https://dev.eclipse.org/ipzilla/show_bug.cgi?id=22386) |
 | `node-notifier@7.0.1` | [CQ22386](https://dev.eclipse.org/ipzilla/show_bug.cgi?id=22386) |
 | `pirates@4.0.1` | [CQ22386](https://dev.eclipse.org/ipzilla/show_bug.cgi?id=22386) |
 | `select-hose@2.0.0` | [CQ22386](https://dev.eclipse.org/ipzilla/show_bug.cgi?id=22386) |
@@ -30,3 +30,4 @@ This file contains a manual contribution to .deps/dev.md and it's needed because
 | `remark-stringify@8.1.0` | [CQ22418](https://dev.eclipse.org/ipzilla/show_bug.cgi?id=22418) |
 | `trim@0.0.1` | [CQ22418](https://dev.eclipse.org/ipzilla/show_bug.cgi?id=22418) |
 | `x-is-string@0.1.0` | [CQ22418](https://dev.eclipse.org/ipzilla/show_bug.cgi?id=22418) |
+| `react-shallow-renderer@16.14.1` | [CQ22928](https://dev.eclipse.org/ipzilla/show_bug.cgi?id=22928) |
