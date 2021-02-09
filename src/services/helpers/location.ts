@@ -10,7 +10,7 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import { History, LocationDescriptorObject } from 'history';
+import { History, Location, LocationDescriptorObject } from 'history';
 import { ROUTE } from '../../route.enum';
 import { GettingStartedTab, IdeLoaderTab, WorkspaceDetailsTab } from './types';
 
@@ -31,6 +31,14 @@ export function buildIdeLoaderPath(workspace: che.Workspace, tab?: IdeLoaderTab)
     .replace(':namespace', namespace)
     .replace(':workspaceName', name)
     .replace(':tabId', tabId);
+}
+
+export function buildFactoryLoaderPath(url?: string): string {
+  if (!url) {
+    return ROUTE.LOAD_FACTORY;
+  }
+  url = encodeURIComponent(url);
+  return ROUTE.LOAD_FACTORY_URL.replace(':url', url);
 }
 
 export function buildWorkspacesPath(): string {
@@ -61,7 +69,6 @@ export function buildDetailsPath(workspace: che.Workspace, tab?: WorkspaceDetail
     .replace(':namespace', namespace)
     .replace(':workspaceName', name)
     .replace(':tabId', tabId);
-
 }
 
 export function toHref(history: History, path: string): string {
@@ -69,4 +76,27 @@ export function toHref(history: History, path: string): string {
     pathname: path,
   };
   return history.createHref(location);
+}
+
+const oauthParams = ['state', 'session_state', 'code'];
+/**
+ * Removes oauth params.
+ */
+export function sanitizeLocation(location: Location, removeParams: string[] = []): Location {
+  const toRemove = [...oauthParams, ...removeParams];
+  // clear search params
+  if (location.search) {
+    const searchParams = new window.URLSearchParams(location.search);
+    toRemove.forEach(param => searchParams.delete(param));
+    location.search = '?' + searchParams.toString();
+  }
+
+  // clear pathname
+  toRemove.forEach(param => {
+    const re = new RegExp('&' + param + '=[^&]+', 'i');
+    const newPathname = location.pathname.replace(re, '');
+    location.pathname = newPathname;
+  });
+
+  return location;
 }

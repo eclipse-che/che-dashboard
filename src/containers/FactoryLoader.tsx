@@ -21,10 +21,9 @@ import * as WorkspaceStore from '../store/Workspaces';
 import FactoryLoader from '../pages/FactoryLoader';
 import { selectAllWorkspaces, selectWorkspaceById } from '../store/Workspaces/selectors';
 import { WorkspaceStatus } from '../services/helpers/types';
+import { sanitizeLocation } from '../services/helpers/location';
 
 const WS_ATTRIBUTES_TO_SAVE: string[] = ['workspaceDeploymentLabels', 'workspaceDeploymentAnnotations'];
-// todo remove it after investigation why does it happens sometimes
-const SUPPRESSION_ATTRIBUTES: string[] = ['state', 'session_state', 'code'];
 
 type Props =
   MappedProps
@@ -112,48 +111,55 @@ export class FactoryLoaderContainer extends React.PureComponent<Props, State> {
   }
 
   private async createWorkspaceFromFactory(): Promise<void> {
-    const { search } = this.props.history.location;
+    const { location: dirtyLocation } = this.props.history;
+    const location = sanitizeLocation(dirtyLocation);
     if (this.props.workspace) {
       this.props.clearWorkspaceId();
     }
-    if (!search) {
+    if (!location.search) {
       this.showAlert(
         `Repository/Devfile URL is missing. Please specify it via url query param: ${window.location.origin}${window.location.pathname}#/load-factory?url= .`,
       );
       return;
     } else {
-      this.setState({ search, hasError: false });
+      this.setState({
+        search: location.search,
+        hasError: false,
+      });
     }
-    const searchParam = new URLSearchParams(search.substring(1));
 
-    // set devfile attributes
-    const attrs: { [key: string]: string } = {};
-    let location = '';
-    let params = '';
-    searchParam.forEach((val: string, key: string) => {
-      if (key === 'url') {
-        location = val;
-      } else {
-        if (WS_ATTRIBUTES_TO_SAVE.indexOf(key) !== -1) {
-          attrs[key] = val;
-        }
-        if (SUPPRESSION_ATTRIBUTES.indexOf(key) === -1) {
-          params += `${!params ? '?' : '&'}${key}=${val}`;
-        }
-      }
-    });
-    attrs.stackName = `${location}${params}`;
     this.setState({ currentStep: LoadFactorySteps.CREATE_WORKSPACE });
-    if (!location) {
+
+    const searchParam = new window.URLSearchParams(location.search);
+    const factoryLink = searchParam.get('url');
+    searchParam.delete('url');
+    if (!factoryLink) {
       this.showAlert(
         `Repository/Devfile URL is missing. Please specify it via url query param: ${window.location.origin}${window.location.pathname}#/load-factory?url= .`,
       );
       return;
     }
-    this.setState({ currentStep: LoadFactorySteps.LOOKING_FOR_DEVFILE, location });
+
+    // set devfile attributes
+    const attrs: { [key: string]: string } = {};
+    const factoryUrl = new window.URL(factoryLink);
+    searchParam.forEach((val: string, key: string) => {
+      if (WS_ATTRIBUTES_TO_SAVE.indexOf(key) !== -1) {
+        attrs[key] = val;
+      }
+      factoryUrl.searchParams.append(key, val);
+    });
+
+    attrs.stackName = factoryUrl.toString();
+
+    this.setState({
+      currentStep: LoadFactorySteps.LOOKING_FOR_DEVFILE,
+      location: factoryLink,
+    });
     await delay();
+
     try {
-      await this.props.requestFactoryResolver(location);
+      await this.props.requestFactoryResolver(factoryLink);
     } catch (e) {
       this.showAlert('Failed to resolve a devfile.');
       return;
@@ -161,14 +167,14 @@ export class FactoryLoaderContainer extends React.PureComponent<Props, State> {
     if (!this.factoryResolver
       || !this.factoryResolver.resolver
       || !this.factoryResolver.resolver.devfile
-      || this.factoryResolver.resolver.location !== location) {
+      || this.factoryResolver.resolver.location !== factoryLink) {
       this.showAlert('Failed to resolve a devfile.');
       return;
     }
     const { source } = this.factoryResolver.resolver;
     const devfileLocationInfo = !source || source === 'repo' ?
       `${searchParam.get('url')}` :
-      `\`${source}\` in github repo ${location}`;
+      `\`${source}\` in github repo ${factoryLink}`;
     this.setState({ currentStep: LoadFactorySteps.LOOKING_FOR_DEVFILE, devfileLocationInfo });
     const devfile = this.factoryResolver.resolver.devfile;
     this.setState({ currentStep: LoadFactorySteps.APPLYING_DEVFILE });
