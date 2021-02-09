@@ -75,16 +75,16 @@ export class KeycloakSetupService {
       const result = await this.testApiAttainability<che.User>(endpoint);
       this.user = result;
     } catch (e) {
-      if (this.isDevelopment) {
-        console.error('Failed to get response to API endpoint: \n' + e);
-        this.user = {
-          email: 'johndoe@test.com',
-          id: 'john-doe-id',
-          name: 'John Doe',
-          links: []
-        };
-        return;
-      }
+      // if (this.isDevelopment) {
+      //   console.error('Failed to get response to API endpoint: \n' + e);
+      //   this.user = {
+      //     email: 'johndoe@test.com',
+      //     id: 'john-doe-id',
+      //     name: 'John Doe',
+      //     links: []
+      //   };
+      //   return;
+      // }
       throw new Error('Failed to get response to API endpoint: \n' + e);
     }
   }
@@ -142,10 +142,10 @@ export class KeycloakSetupService {
       if (e.response.status === 404) {
         return;
       }
-      if (this.isDevelopment) {
-        console.error(`Can't get Keycloak settings: ${e.response.status} ${e.response.statusText}`);
-        return;
-      }
+      // if (this.isDevelopment) {
+      //   console.error(`Can't get Keycloak settings: ${e.response.status} ${e.response.statusText}`);
+      //   return;
+      // }
 
       throw new Error(`Can't get Keycloak settings: ${e.response.status} ${e.response.statusText}`);
     }

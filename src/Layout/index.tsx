@@ -25,6 +25,7 @@ import { IssuesReporterService } from '../services/bootstrap/issuesReporter';
 import { ErrorReporter } from './ErrorReporter';
 import { IssueComponent } from './ErrorReporter/Issue';
 import { BannerAlert } from '../components/BannerAlert';
+import { ErrorBoundary } from './ErrorBoundary';
 
 const THEME_KEY = 'theme';
 const IS_MANAGED_SIDEBAR = false;
@@ -154,8 +155,10 @@ export class Layout extends React.PureComponent<Props, State> {
         }
         isManagedSidebar={IS_MANAGED_SIDEBAR}
       >
-        <BannerAlert />
-        {this.props.children}
+        <ErrorBoundary>
+          <BannerAlert />
+          {this.props.children}
+        </ErrorBoundary>
       </Page>
     );
   }
