@@ -92,6 +92,7 @@
 | [`@types/js-yaml@3.12.4`](https://github.com/DefinitelyTyped/DefinitelyTyped.git) | MIT | clearlydefined |
 | [`@types/json-schema@7.0.4`](https://github.com/DefinitelyTyped/DefinitelyTyped.git) | MIT | clearlydefined |
 | [`@types/less@3.0.1`](https://github.com/DefinitelyTyped/DefinitelyTyped.git) | MIT | clearlydefined |
+| [`@types/lodash@4.14.168`](https://github.com/DefinitelyTyped/DefinitelyTyped.git) | MIT | [CQ18717](https://dev.eclipse.org/ipzilla/show_bug.cgi?id=18717) |
 | [`@types/mime@2.0.2`](https://github.com/DefinitelyTyped/DefinitelyTyped.git) | MIT | [CQ18717](https://dev.eclipse.org/ipzilla/show_bug.cgi?id=18717) |
 | [`@types/minimatch@3.0.3`](https://www.github.com/DefinitelyTyped/DefinitelyTyped.git) | MIT | [CQ18717](https://dev.eclipse.org/ipzilla/show_bug.cgi?id=18717) |
 | [`@types/minimist@1.2.0`](https://www.github.com/DefinitelyTyped/DefinitelyTyped.git) | MIT | emo_ip_team |
@@ -354,7 +355,7 @@
 | [`editorconfig@0.15.3`](git://github.com/editorconfig/editorconfig-core-js.git) | MIT | [CQ18717](https://dev.eclipse.org/ipzilla/show_bug.cgi?id=18717) |
 | [`ee-first@1.1.1`](https://github.com/jonathanong/ee-first.git) | MIT | [CQ16925](https://dev.eclipse.org/ipzilla/show_bug.cgi?id=16925) |
 | [`electron-to-chromium@1.3.498`](https://github.com/kilian/electron-to-chromium/) | ISC | [CQ18717](https://dev.eclipse.org/ipzilla/show_bug.cgi?id=18717) |
-| [`elliptic@6.5.2`](git@github.com:indutny/elliptic) | MIT | clearlydefined |
+| [`elliptic@6.5.4`](git@github.com:indutny/elliptic) | MIT | clearlydefined |
 | [`emoji-regex@7.0.3`](https://github.com/mathiasbynens/emoji-regex.git) | MIT | clearlydefined |
 | [`encodeurl@1.0.2`](https://github.com/pillarjs/encodeurl.git) | MIT | [CQ16925](https://dev.eclipse.org/ipzilla/show_bug.cgi?id=16925) |
 | [`end-of-stream@1.4.4`](git://github.com/mafintosh/end-of-stream.git) | MIT | [CQ20878](https://dev.eclipse.org/ipzilla/show_bug.cgi?id=20878) |
@@ -488,7 +489,7 @@
 | [`indexes-of@1.0.1`](git://github.com/dominictarr/indexes-of.git) | MIT | [CQ18717](https://dev.eclipse.org/ipzilla/show_bug.cgi?id=18717) |
 | [`infer-owner@1.0.4`](https://github.com/npm/infer-owner) | ISC | clearlydefined |
 | [`inflight@1.0.6`](https://github.com/npm/inflight.git) | ISC | [CQ16925](https://dev.eclipse.org/ipzilla/show_bug.cgi?id=16925) |
-| [`ini@1.3.5`](git://github.com/isaacs/ini.git) | ISC | [CQ16925](https://dev.eclipse.org/ipzilla/show_bug.cgi?id=16925) |
+| [`ini@1.3.8`](git://github.com/isaacs/ini.git) | ISC | [CQ16925](https://dev.eclipse.org/ipzilla/show_bug.cgi?id=16925) |
 | [`inquirer@7.1.0`](https://github.com/SBoudrias/Inquirer.js.git) | MIT | clearlydefined |
 | [`internal-ip@4.3.0`](https://github.com/sindresorhus/internal-ip.git) | MIT | clearlydefined |
 | [`internal-slot@1.0.2`](git+https://github.com/ljharb/internal-slot.git) | MIT | clearlydefined |
@@ -659,7 +660,7 @@
 | [`neo-async@2.6.1`](git@github.com:suguru03/neo-async.git) | MIT | clearlydefined |
 | [`nice-try@1.0.5`](https://github.com/electerious/nice-try.git) | MIT | [CQ18717](https://dev.eclipse.org/ipzilla/show_bug.cgi?id=18717) |
 | [`no-case@3.0.3`](git://github.com/blakeembrey/change-case.git) | MIT | clearlydefined |
-| [`node-forge@0.9.0`](https://github.com/digitalbazaar/forge) | (BSD-3-Clause OR GPL-2.0) | [CQ22386](https://dev.eclipse.org/ipzilla/show_bug.cgi?id=22386) |
+| [`node-forge@0.10.0`](https://github.com/digitalbazaar/forge) | (BSD-3-Clause OR GPL-2.0) | [CQ22386](https://dev.eclipse.org/ipzilla/show_bug.cgi?id=22386) |
 | [`node-int64@0.4.0`](https://github.com/broofa/node-int64) | MIT | clearlydefined |
 | [`node-libs-browser@2.2.1`](git+https://github.com/webpack/node-libs-browser.git) | MIT | clearlydefined |
 | [`node-modules-regexp@1.0.0`](https://github.com/jamestalmage/node-modules-regexp.git) | MIT | clearlydefined |
@@ -776,7 +777,7 @@
 | [`randomfill@1.0.4`](https://github.com/crypto-browserify/randomfill.git) | MIT | [CQ16925](https://dev.eclipse.org/ipzilla/show_bug.cgi?id=16925) |
 | [`range-parser@1.2.1`](https://github.com/jshttp/range-parser.git) | MIT | [CQ16925](https://dev.eclipse.org/ipzilla/show_bug.cgi?id=16925) |
 | [`raw-body@2.4.0`](https://github.com/stream-utils/raw-body.git) | MIT | clearlydefined |
-| [`react-shallow-renderer@16.14.1`](https://github.com/NMinhNguyen/react-shallow-renderer.git) | MIT |  |
+| [`react-shallow-renderer@16.14.1`](https://github.com/NMinhNguyen/react-shallow-renderer.git) | MIT | [CQ22928](https://dev.eclipse.org/ipzilla/show_bug.cgi?id=22928) |
 | [`react-test-renderer@17.0.1`](https://github.com/facebook/react.git) | MIT | clearlydefined |
 | [`read-pkg-up@7.0.1`](https://github.com/sindresorhus/read-pkg-up.git) | MIT | clearlydefined |
 | [`read-pkg@5.2.0`](https://github.com/sindresorhus/read-pkg.git) | MIT | clearlydefined |

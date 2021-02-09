@@ -184,7 +184,7 @@
 | [`vscode-uri@2.1.2`](git+https://github.com/Microsoft/vscode-uri.git) | MIT | clearlydefined |
 | [`warning@4.0.3`](https://github.com/BerkeleyTrue/warning.git) | MIT | [CQ22359](https://dev.eclipse.org/ipzilla/show_bug.cgi?id=22359) |
 | [`websocket-driver@0.7.4`](git://github.com/faye/websocket-driver-node.git) | Apache-2.0 | clearlydefined |
-| [`websocket-extensions@0.1.3`](git://github.com/faye/websocket-extensions-node.git) | MIT | clearlydefined |
+| [`websocket-extensions@0.1.4`](git://github.com/faye/websocket-extensions-node.git) | Apache-2.0 | clearlydefined |
 | [`websocket@1.0.23`](https://github.com/theturtle32/WebSocket-Node.git) | Apache-2.0 | [CQ22360](https://dev.eclipse.org/ipzilla/show_bug.cgi?id=22360) |
 | [`xtend@4.0.2`](git://github.com/Raynos/xtend.git) | MIT | [CQ16925](https://dev.eclipse.org/ipzilla/show_bug.cgi?id=16925) |
 | [`yaeti@0.0.4`](https://github.com/ibc/yaeti.git) | MIT | clearlydefined |
