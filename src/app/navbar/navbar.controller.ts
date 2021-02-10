@@ -324,7 +324,8 @@ export class CheNavBarController {
   private getLoginCommand(): string {
     const host = this.$window.location.host;
     const token = this.cheKeycloak.refreshToken;
-    return `chectl auth:login ${host} -t ${token}`;
+    const cheCli = this.cheDashboardConfigurationService.getCliTool();
+    return `${cheCli} auth:login ${host} -t ${token}`;
   }
 
   /**
