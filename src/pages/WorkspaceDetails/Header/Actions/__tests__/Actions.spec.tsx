@@ -10,112 +10,136 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import { render, RenderResult, screen } from '@testing-library/react';
+import { render, RenderResult, screen, waitFor } from '@testing-library/react';
+import { createHashHistory, History } from 'history';
 import React from 'react';
+import { Provider } from 'react-redux';
 import { HeaderActionSelect } from '../';
 import { WorkspaceAction, WorkspaceStatus } from '../../../../../services/helpers/types';
+import { AppThunk } from '../../../../../store';
+import { ActionCreators, ResourceQueryParams } from '../../../../../store/Workspaces';
+import { FakeStoreBuilder } from '../../../../../store/__mocks__/storeBuilder';
 
-jest.mock('../../../../../components/Workspace/DeleteAction', () => {
-  const FakeWorkspaceDeleteAction = React.forwardRef((props, ref) => (
-    <button ref={ref as any}></button>
-  ));
-  FakeWorkspaceDeleteAction.displayName = 'WorkspaceDeleteAction';
-
-  return FakeWorkspaceDeleteAction;
+jest.mock('../../../../../store/Workspaces/index', () => {
+  return {
+    actionCreators: {
+      startWorkspace: (workspaceId: string, params?: ResourceQueryParams): AppThunk<any, Promise<void>> => async (): Promise<void> => {
+        return Promise.resolve();
+      },
+      stopWorkspace: (workspaceId: string): AppThunk<any, Promise<void>> => async (): Promise<void> => {
+        return Promise.resolve();
+      }
+    } as ActionCreators,
+  };
 });
 
-describe('Workspace WorkspaceAction widget', () => {
-  const workspaceName = 'test-workspace-name';
-  const workspaceId = 'test-workspace-id';
-  const workspaceStatus = WorkspaceStatus.STOPPED;
+const workspaceName = 'test-workspace-name';
+const workspaceId = 'test-workspace-id';
+const workspaceStoppedStatus = WorkspaceStatus.STOPPED;
+const store = new FakeStoreBuilder().withWorkspaces({
+  workspaceId,
+  workspaceName,
+  workspaces: [{
+    id: workspaceId,
+    namespace: 'test',
+    status: WorkspaceStatus[workspaceStoppedStatus],
+    devfile: {
+      apiVersion: 'v1',
+      components: [],
+      metadata: {
+        name: workspaceName,
+      }
+    }
+  }]
+}).build();
 
-  it('should call the callback with OPEN action', () => {
+describe('Workspace WorkspaceAction widget', () => {
+  it('should call the callback with OPEN action', async () => {
     const action = WorkspaceAction.OPEN_IDE;
-    const onAction = jest.fn();
-    const component = createComponent(workspaceStatus, workspaceName, workspaceId, onAction);
+    const history = createHashHistory();
+    const component = createComponent(workspaceStoppedStatus, workspaceName, workspaceId, history);
 
     renderComponent(component);
 
     const actionDropdown = screen.getByTestId(`${workspaceId}-action-dropdown`);
     actionDropdown.click();
 
-    expect(onAction).not.toBeCalled();
+    expect(history.location.pathname).toBe('/');
 
     const targetAction = screen.getByText(action);
     targetAction.click();
 
-    expect(onAction).toBeCalledWith(action);
+    await waitFor(() => expect(history.location.pathname).toBe('/ide/test/test-workspace-name'));
   });
 
-  it('should call the callback with OPEN_IN_VERBOSE_MODE action', () => {
+  it('should call the callback with OPEN_IN_VERBOSE_MODE action', async () => {
     const action = WorkspaceAction.START_DEBUG_AND_OPEN_LOGS;
-    const onAction = jest.fn();
-    const component = createComponent(workspaceStatus, workspaceName, workspaceId, onAction);
+    const history = createHashHistory();
+    const component = createComponent(workspaceStoppedStatus, workspaceName, workspaceId, history);
 
     renderComponent(component);
 
     const actionDropdown = screen.getByTestId(`${workspaceId}-action-dropdown`);
     actionDropdown.click();
 
-    expect(onAction).not.toBeCalled();
+    expect(history.location.pathname).toBe('/');
 
     const targetAction = screen.getByText(action);
     targetAction.click();
 
-    expect(onAction).toBeCalledWith(action);
+    await waitFor(() => expect(history.location.pathname).toBe('/ide/test/test-workspace-name'));
   });
 
   it('should call the callback with START_IN_BACKGROUND action', () => {
     const action = WorkspaceAction.START_IN_BACKGROUND;
-    const onAction = jest.fn();
-    const component = createComponent(workspaceStatus, workspaceName, workspaceId, onAction);
+    const history = createHashHistory();
+    const component = createComponent(workspaceStoppedStatus, workspaceName, workspaceId, history);
 
     renderComponent(component);
 
     const actionDropdown = screen.getByTestId(`${workspaceId}-action-dropdown`);
     actionDropdown.click();
 
-    expect(onAction).not.toBeCalled();
+    expect(history.location.pathname).toBe('/');
 
     const targetAction = screen.getByText(action);
     targetAction.click();
 
-    expect(onAction).toBeCalledWith(action);
+    expect(history.location.pathname).toBe('/');
   });
 
   it('shouldn\'t call the callback with STOP_WORKSPACE action if disabled', () => {
     const action = WorkspaceAction.STOP_WORKSPACE;
-    const onAction = jest.fn();
-
-    renderComponent(createComponent(workspaceStatus, workspaceName, workspaceId, onAction));
+    const history = createHashHistory();
+    renderComponent(createComponent(workspaceStoppedStatus, workspaceName, workspaceId, history));
 
     const actionDropdown = screen.getByTestId(`${workspaceId}-action-dropdown`);
     actionDropdown.click();
 
-    expect(onAction).not.toBeCalled();
+    expect(history.location.pathname).toBe('/');
 
     const targetAction = screen.getByText(action);
     targetAction.click();
 
-    expect(onAction).not.toBeCalledWith(action);
+    expect(history.location.pathname).toBe('/');
   });
 
   it('should call the callback with STOP_WORKSPACE action', () => {
     const action = WorkspaceAction.STOP_WORKSPACE;
     const workspaceStatus = WorkspaceStatus.RUNNING;
-    const onAction = jest.fn();
+    const history = createHashHistory();
 
-    renderComponent(createComponent(workspaceStatus, workspaceName, workspaceId, onAction));
+    renderComponent(createComponent(workspaceStatus, workspaceName, workspaceId, history));
 
     const actionDropdown = screen.getByTestId(`${workspaceId}-action-dropdown`);
     actionDropdown.click();
 
-    expect(onAction).not.toBeCalled();
+    expect(history.location.pathname).toBe('/');
 
     const targetAction = screen.getByText(action);
     targetAction.click();
 
-    expect(onAction).toBeCalledWith(action);
+    expect(history.location.pathname).toBe('/');
   });
 });
 
@@ -123,13 +147,13 @@ function createComponent(
   workspaceStatus: WorkspaceStatus,
   workspaceName: string,
   workspaceId: string,
-  onAction: jest.Mock,
+  history: History
 ): React.ReactElement {
   return (
     <HeaderActionSelect
-      onAction={onAction}
       workspaceId={workspaceId}
       workspaceName={workspaceName}
+      history={history}
       status={WorkspaceStatus[workspaceStatus]} />
   );
 }
@@ -137,5 +161,9 @@ function createComponent(
 function renderComponent(
   component: React.ReactElement
 ): RenderResult {
-  return render(component);
+  return render(
+    <Provider store={store}>
+      {component}
+    </Provider>
+  );
 }
