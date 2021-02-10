@@ -10,8 +10,6 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import { isDevelopment } from '../store/Environment';
-
 const DEFAULT_AVAILABLE_TYPES = '';
 
 export enum StorageTypeTitle {
@@ -22,10 +20,6 @@ export enum StorageTypeTitle {
 
 export function toTitle(type: che.WorkspaceStorageType): string {
   if (!StorageTypeTitle[type]) {
-    if (isDevelopment()) {
-      console.error(`Unknown storage type: "${type}"`);
-      return 'unknown';
-    }
     throw new Error(`Unknown storage type: "${type}"`);
   }
   return StorageTypeTitle[type];
