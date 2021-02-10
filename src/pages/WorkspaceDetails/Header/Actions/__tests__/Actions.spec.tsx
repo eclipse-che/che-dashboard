@@ -69,8 +69,7 @@ describe('Workspace WorkspaceAction widget', () => {
     const targetAction = screen.getByText(action);
     targetAction.click();
 
-    await waitFor(() => history.location.pathname === '/ide/test/test-workspace-name');
-    expect(history.location.pathname).toBe('/ide/test/test-workspace-name');
+    await waitFor(() => expect(history.location.pathname).toBe('/ide/test/test-workspace-name'));
   });
 
   it('should call the callback with OPEN_IN_VERBOSE_MODE action', async () => {
@@ -88,8 +87,7 @@ describe('Workspace WorkspaceAction widget', () => {
     const targetAction = screen.getByText(action);
     targetAction.click();
 
-    await waitFor(() => history.location.pathname === '/ide/test/test-workspace-name');
-    expect(history.location.pathname).toBe('/ide/test/test-workspace-name');
+    await waitFor(() => expect(history.location.pathname).toBe('/ide/test/test-workspace-name'));
   });
 
   it('should call the callback with START_IN_BACKGROUND action', () => {
