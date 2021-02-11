@@ -89,8 +89,7 @@ class IdeLoaderContainer extends React.PureComponent<Props, State> {
   }
 
   private get preselectedTabKey(): IdeLoaderTab {
-    const { match: { params } } = this.props;
-    const search = params.workspaceName.split('?')[1];
+    const { history: { location: { search } } } = this.props;
     if (!search) {
       return IdeLoaderTab.Progress;
     }
