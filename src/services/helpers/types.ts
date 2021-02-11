@@ -23,7 +23,8 @@ export interface AlertItem {
 export interface FactoryResolver {
   v: string;
   source: string;
-  devfile: api.che.workspace.devfile.Devfile
+  devfile: api.che.workspace.devfile.Devfile;
+  location?: string;
 }
 
 export enum WorkspaceStatus {

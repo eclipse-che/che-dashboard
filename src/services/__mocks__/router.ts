@@ -18,6 +18,8 @@ const generateUrl = <Params>(path: string, params: Params): string => {
   for (const param in params) {
     if (params[param]) {
       resultPath = resultPath.replace(`:${param}`, `${params[param]}`);
+    } else {
+      resultPath = resultPath.replace(`:${param}`, '');
     }
   }
   return resultPath;
@@ -30,6 +32,7 @@ export function getMockRouterProps<Params>(path: string, params: Params): RouteC
   const match: routerMatch<Params> = { isExact, path, url, params };
   const history = createMemoryHistory();
   const location = createLocation(match.url);
+  history.location = location;
 
   return {
     history,

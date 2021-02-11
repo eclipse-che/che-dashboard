@@ -14,7 +14,8 @@ import React from 'react';
 import renderer, { ReactTestRenderer } from 'react-test-renderer';
 import { Provider } from 'react-redux';
 import DevfileEditor from '../';
-import { createFakeStore } from '../../../store/__mocks__/store';
+import { BrandingData } from '../../../services/bootstrap/branding.constant';
+import { FakeStoreBuilder } from '../../../store/__mocks__/storeBuilder';
 import { createFakeWorkspace } from '../../../store/__mocks__/workspace';
 import { languages, editor } from 'monaco-editor-core/esm/vs/editor/editor.main';
 
@@ -44,7 +45,13 @@ function renderComponent(
   onChange: (devfile: che.WorkspaceDevfile, isValid: boolean) => void
 ): ReactTestRenderer {
   const workspace = createFakeWorkspace(workspaceId, workspaceName);
-  const store = createFakeStore([workspace]);
+  const store = new FakeStoreBuilder().withWorkspaces({
+    workspaces: [workspace],
+  }).withBranding({
+    docs: {
+      devfile: 'devfile/documentation/link',
+    },
+  } as BrandingData).build();
   return renderer.create(
     <Provider store={store}>
       <DevfileEditor
