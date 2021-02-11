@@ -10,7 +10,7 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-const DEFAULT_AVAILABLE_TYPES = '';
+import { isDevelopment } from '../store/Environment';
 
 export enum StorageTypeTitle {
   async = 'Asynchronous',
@@ -40,7 +40,11 @@ export function fromTitle(title: string): che.WorkspaceStorageType {
 
 export function getAvailable(settings: che.WorkspaceSettings): che.WorkspaceStorageType[] {
   if (!settings || !settings['che.workspace.storage.available_types']) {
-    return DEFAULT_AVAILABLE_TYPES.split(',') as che.WorkspaceStorageType[];
+    if (isDevelopment()) {
+      // running Dashboard in Che in dev mode needs for storage types to be stubbed
+      return ['persistent'];
+    }
+    throw new Error('Unable to get available storage types');
   }
   const availableTypes = settings['che.workspace.storage.available_types'];
   return availableTypes.split(',') as che.WorkspaceStorageType[];
