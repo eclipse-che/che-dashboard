@@ -12,8 +12,6 @@
 
 import { isDevelopment } from '../store/Environment';
 
-const DEFAULT_AVAILABLE_TYPES = '';
-
 export enum StorageTypeTitle {
   async = 'Asynchronous',
   ephemeral = 'Ephemeral',
@@ -22,10 +20,6 @@ export enum StorageTypeTitle {
 
 export function toTitle(type: che.WorkspaceStorageType): string {
   if (!StorageTypeTitle[type]) {
-    if (isDevelopment()) {
-      console.error(`Unknown storage type: "${type}"`);
-      return 'unknown';
-    }
     throw new Error(`Unknown storage type: "${type}"`);
   }
   return StorageTypeTitle[type];
@@ -46,7 +40,11 @@ export function fromTitle(title: string): che.WorkspaceStorageType {
 
 export function getAvailable(settings: che.WorkspaceSettings): che.WorkspaceStorageType[] {
   if (!settings || !settings['che.workspace.storage.available_types']) {
-    return DEFAULT_AVAILABLE_TYPES.split(',') as che.WorkspaceStorageType[];
+    if (isDevelopment()) {
+      // running Dashboard in Che in dev mode needs for storage types to be stubbed
+      return ['persistent'];
+    }
+    throw new Error('Unable to get available storage types');
   }
   const availableTypes = settings['che.workspace.storage.available_types'];
   return availableTypes.split(',') as che.WorkspaceStorageType[];

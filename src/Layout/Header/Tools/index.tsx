@@ -358,12 +358,7 @@ export class HeaderTools extends React.PureComponent<Props, State> {
     const userEmail = this.getEmail();
     const username = this.getUsername();
     const imageUrl = userEmail ? gravatarUrl(userEmail, { default: 'retro' }) : '';
-    const avatar = <Avatar src={imageUrl} alt='Avatar image' />;
-
-    const userToggleButton = this.buildUserToggleButton();
-    const userDropdownItems = this.buildUserDropdownItems();
-
-    const infoDropdownItems = this.buildInfoDropdownItems();
+    const isUserAuthenticated = !!userEmail;
 
     const branding = this.props.branding.data;
     return (
@@ -374,22 +369,24 @@ export class HeaderTools extends React.PureComponent<Props, State> {
               <ApplicationLauncher
                 onToggle={() => this.onInfoDropdownToggle()}
                 isOpen={isInfoDropdownOpen}
-                items={infoDropdownItems}
+                items={this.buildInfoDropdownItems()}
                 aria-label='info button'
                 position='right'
                 toggleIcon={<QuestionCircleIcon alt='' />}
               />
-              <Dropdown
-                isPlain
-                position='right'
-                onSelect={() => this.onUsernameSelect()}
-                isOpen={isUsernameDropdownOpen}
-                toggle={userToggleButton}
-                dropdownItems={userDropdownItems}
-              />
+              {isUserAuthenticated &&
+                <Dropdown
+                  isPlain
+                  position='right'
+                  onSelect={() => this.onUsernameSelect()}
+                  isOpen={isUsernameDropdownOpen}
+                  toggle={this.buildUserToggleButton()}
+                  dropdownItems={this.buildUserDropdownItems()}
+                />}
             </PageHeaderToolsItem>
           </PageHeaderToolsGroup>
-          {avatar}
+          {isUserAuthenticated &&
+            <Avatar src={imageUrl} alt='Avatar image' />}
         </PageHeaderTools>
         <AboutModal
           isOpen={isModalOpen}
