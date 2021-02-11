@@ -323,7 +323,12 @@ export class DevfileEditor extends React.PureComponent<Props, State> {
         const document = createDocument(model);
         return yamlService.doComplete(document, m2p.asPosition(position.lineNumber, position.column), true)
           .then(list => {
-            const completionResult = p2m.asCompletionResult(list, {} as monaco.IRange);
+            const completionResult = p2m.asCompletionResult(list, {
+              startColumn: position.column,
+              startLineNumber: position.lineNumber,
+              endColumn: position.column,
+              endLineNumber: position.lineNumber
+            } as monaco.IRange);
             if (!completionResult || !completionResult.suggestions) {
               return completionResult;
             }
