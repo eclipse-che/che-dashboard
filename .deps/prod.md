@@ -4,7 +4,7 @@
 | --- | --- | --- |
 | [`@babel/runtime@7.10.2`](https://github.com/babel/babel.git) | MIT | clearlydefined |
 | `@eclipse-che/api@7.18.1` | EPL-2.0 | N/A |
-| [`@eclipse-che/workspace-client@0.0.1-1612278649`](https://github.com/eclipse/che-workspace-client) | EPL-2.0 | N/A |
+| [`@eclipse-che/workspace-client@0.0.1-1613117389`](https://github.com/eclipse/che-workspace-client) | EPL-2.0 | N/A |
 | [`@patternfly/patternfly@4.10.31`](https://github.com/patternfly/patternfly.git) | MIT | [CQ22346](https://dev.eclipse.org/ipzilla/show_bug.cgi?id=22346) |
 | [`@patternfly/react-core@4.84.4`](https://github.com/patternfly/patternfly-react.git) | MIT | https://dev.eclipse.org/ipzilla/show_bug.cgi?id=22936 |
 | [`@patternfly/react-icons@4.3.5`](https://github.com/patternfly/patternfly-react.git) | MIT | clearlydefined |
