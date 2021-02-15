@@ -10,10 +10,14 @@
 
 FROM docker.io/node:12.20.1-alpine3.12 as builder
 
+RUN if ! [ type "yarn" &> /dev/null ]; then \
+        apk add yarn --no-cache; \
+    fi
+
 COPY package.json /dashboard/
 COPY yarn.lock /dashboard/
 WORKDIR /dashboard
-RUN yarn --network-timeout 600000 && yarn install
+RUN yarn install --network-timeout 600000
 COPY . /dashboard/
 RUN yarn compile
 
