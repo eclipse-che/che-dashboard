@@ -41,7 +41,7 @@
     "@patternfly/react-icons": "^4.3.5",
     "@patternfly/react-table": "^4.5.7",
     "@types/react-helmet": "^6.1.0",
-    "axios": "^0.19.2",
+    "axios": "^0.21.1",
     "connected-react-router": "^6.7.0",
     "date-fns": "^2.16.1",
     "detect-browser": "^5.2.0",
@@ -104,6 +104,7 @@
     "@types/reactstrap": "^8.4.2",
     "@types/redux-mock-store": "^1.0.2",
     "@types/reselect": "^2.2.0",
+    "@types/sanitize-html": "^1.27.1",
     "@types/vscode": "^1.45.1",
     "@types/webpack": "^4.41.17",
     "@types/webpack-dev-server": "^3.11.0",
@@ -148,7 +149,8 @@
     "webpack-merge": "^4.2.2"
   },
   "resolutions": {
-    "prettier": "2.0.5",
+    "axios": "^0.21.1",
+    "prettier": "^2.2.1",
     "websocket-extensions": "^0.1.4",
     "node-forge": "^0.10.0",
     "elliptic": "^6.5.3",
