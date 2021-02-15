@@ -164,7 +164,7 @@ export class FakeStoreBuilder {
       this.state.workspaces.workspaces = Object.assign([], options.workspaces);
     }
     if (options.workspacesLogs) {
-      this.state.workspaces.workspacesLogs = new Map(options.workspaceLogs);
+      this.state.workspaces.workspacesLogs = new Map(options.workspacesLogs);
     }
     if (options.namespace) {
       this.state.workspaces.namespace = options.namespace;
