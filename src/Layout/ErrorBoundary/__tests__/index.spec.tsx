@@ -14,12 +14,12 @@ import React from 'react';
 import renderer from 'react-test-renderer';
 import { ErrorBoundary } from '..';
 
-class GoodComponent extends React.PureComponent<{}, any> {
+class GoodComponent extends React.Component {
   render() {
     return <span>component</span>;
   }
 }
-class BadComponent extends React.PureComponent<{}, any> {
+class BadComponent extends React.Component {
   render() {
     throw new Error('Uncaught exception');
     return <span>component</span>;
