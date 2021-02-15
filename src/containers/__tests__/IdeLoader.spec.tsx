@@ -17,7 +17,7 @@ import { AlertActionLink } from '@patternfly/react-core';
 import { RenderResult, render, screen } from '@testing-library/react';
 import { ROUTE } from '../../route.enum';
 import { getMockRouterProps } from '../../services/__mocks__/router';
-import { createFakeStore } from '../../store/__mocks__/store';
+import { FakeStoreBuilder } from '../../store/__mocks__/storeBuilder';
 import { createFakeWorkspace } from '../../store/__mocks__/workspace';
 import { WorkspaceStatus } from '../../services/helpers/types';
 import IdeLoaderContainer, { LoadIdeSteps } from '../IdeLoader';
@@ -88,26 +88,28 @@ describe('IDE Loader container', () => {
     activeEnv: 'default',
   };
 
-  const store = createFakeStore([
-    createFakeWorkspace(
-      'id-wksp-1',
-      'name-wksp-1',
-      'admin1',
-    ),
-    createFakeWorkspace(
-      'id-wksp-2',
-      'name-wksp-2',
-      'admin2',
-      WorkspaceStatus[WorkspaceStatus.RUNNING],
-      runtime
-    ),
-    createFakeWorkspace(
-      'id-wksp-3',
-      'name-wksp-3',
-      'admin3',
-      WorkspaceStatus[WorkspaceStatus.ERROR]
-    ),
-  ]);
+  const store = new FakeStoreBuilder().withWorkspaces({
+    workspaces: [
+      createFakeWorkspace(
+        'id-wksp-1',
+        'name-wksp-1',
+        'admin1',
+      ),
+      createFakeWorkspace(
+        'id-wksp-2',
+        'name-wksp-2',
+        'admin2',
+        WorkspaceStatus[WorkspaceStatus.RUNNING],
+        runtime
+      ),
+      createFakeWorkspace(
+        'id-wksp-3',
+        'name-wksp-3',
+        'admin3',
+        WorkspaceStatus[WorkspaceStatus.ERROR]
+      ),
+    ],
+  }).build();
 
   const renderComponent = (
     namespace: string,

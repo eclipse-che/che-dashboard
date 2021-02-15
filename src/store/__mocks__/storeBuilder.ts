@@ -42,7 +42,7 @@ export class FakeStoreBuilder {
       isLoading: false,
       settings: {} as any,
       workspaces: [],
-      workspacesLogs: {} as Map<string, string[]>,
+      workspacesLogs: new Map<string, string[]>(),
       namespace: '',
       workspaceName: '',
       workspaceId: '',
@@ -164,7 +164,7 @@ export class FakeStoreBuilder {
       this.state.workspaces.workspaces = Object.assign([], options.workspaces);
     }
     if (options.workspacesLogs) {
-      this.state.workspaces.workspacesLogs = Object.assign({}, options.workspacesLogs);
+      this.state.workspaces.workspacesLogs = new Map(options.workspacesLogs);
     }
     if (options.namespace) {
       this.state.workspaces.namespace = options.namespace;

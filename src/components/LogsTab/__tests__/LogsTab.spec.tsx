@@ -15,7 +15,7 @@ import { Provider } from 'react-redux';
 import renderer, { ReactTestRenderer } from 'react-test-renderer';
 import { Store } from 'redux';
 import LogsTab from '../';
-import { createFakeStore } from '../../../store/__mocks__/store';
+import { FakeStoreBuilder } from '../../../store/__mocks__/storeBuilder';
 import { createFakeWorkspace, createFakeWorkspaceLogs } from '../../../store/__mocks__/workspace';
 import { WorkspaceStatus } from '../../../services/helpers/types';
 
@@ -38,7 +38,9 @@ describe('The LogsTab component', () => {
 
   it('should render empty state widget correctly', () => {
     const workspace = createFakeWorkspace(workspaceId, workspaceName);
-    const store = createFakeStore([workspace]);
+    const store = new FakeStoreBuilder().withWorkspaces({
+      workspaces: [workspace],
+    }).build();
 
     const component = renderComponent(store, workspaceId);
 
@@ -48,7 +50,9 @@ describe('The LogsTab component', () => {
   it('should render workspace-logs widget without logs correctly', () => {
     const workspace = createFakeWorkspace(workspaceId, workspaceName, namespace, status, runtime);
 
-    const store = createFakeStore([workspace]);
+    const store = new FakeStoreBuilder().withWorkspaces({
+      workspaces: [workspace],
+    }).build();
 
     const component = renderComponent(store, workspaceId);
 
@@ -63,7 +67,10 @@ describe('The LogsTab component', () => {
       'Created container remote-runtime-injectorvpj',
       'Started container remote-runtime-injectorvpj',
     ]);
-    const store = createFakeStore([workspace], workspacesLogs);
+    const store = new FakeStoreBuilder().withWorkspaces({
+      workspaces: [workspace],
+      workspacesLogs: workspacesLogs
+    }).build();
 
     const component = renderComponent(store, workspaceId);
 

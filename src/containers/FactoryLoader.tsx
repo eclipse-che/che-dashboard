@@ -238,10 +238,10 @@ export class FactoryLoaderContainer extends React.PureComponent<Props, State> {
     await delay();
     if (this.state.currentStep !== LoadFactorySteps.START_WORKSPACE) {
       this.setState({ currentStep: LoadFactorySteps.START_WORKSPACE });
-      const workspaceName = workspace.devfile.metadata.name;
       try {
         await this.props.startWorkspace(`${workspace.id}`);
       } catch (e) {
+        const workspaceName = workspace.devfile.metadata.name;
         this.showAlert(`Workspace ${workspaceName} failed to start. ${e.message ? e.message : ''}`);
         return;
       }

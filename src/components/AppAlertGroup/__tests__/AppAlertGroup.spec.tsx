@@ -19,8 +19,6 @@ import { AppAlerts } from '../../../services/alerts/appAlerts';
 
 const appAlerts = container.get(AppAlerts);
 
-jest.useFakeTimers();
-
 describe('AppAlertGroup component', () => {
 
   const showAlert = (title: string): void => {
@@ -34,11 +32,17 @@ describe('AppAlertGroup component', () => {
   };
 
   beforeEach(() => {
-    const component = (<AppAlertGroup />);
-    renderComponent(component);
+    jest.useFakeTimers();
+  });
+
+  afterEach(() => {
+    jest.runOnlyPendingTimers();
+    jest.useRealTimers();
   });
 
   it('should show the alert and hide with a close button', () => {
+    renderComponent(<AppAlertGroup />);
+
     const title = 'test 1 message';
     showAlert(title);
 
@@ -51,13 +55,15 @@ describe('AppAlertGroup component', () => {
   });
 
   it('should show the alert and hide after timeout', () => {
+    renderComponent(<AppAlertGroup />);
+
     const title = 'test 2 message';
     showAlert(title);
 
     expect(screen.queryAllByText(title).length).toEqual(1);
 
-    // Fast-forward until all timers have been executed
-    jest.runAllTimers();
+    // Fast-forward until pending timers have been executed
+    jest.runOnlyPendingTimers();
 
     expect(screen.queryAllByText(title).length).toEqual(0);
   });

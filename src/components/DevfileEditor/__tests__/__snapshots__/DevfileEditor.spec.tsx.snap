@@ -15,7 +15,7 @@ exports[`The DevfileEditor component should initialize the component correctly 1
     
   </div>
   <a
-    href="https://www.test.docs/che"
+    href="devfile/documentation/link"
     rel="noopener noreferrer"
     target="_blank"
   >
