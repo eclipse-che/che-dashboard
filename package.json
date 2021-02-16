@@ -2,10 +2,7 @@
   "name": "che-dashboard",
   "version": "7.27.0-SNAPSHOT",
   "description": "Dashboard for Eclipse CHE",
-  "private": "true",
-  "workspaces": [
-    "che-dashboard-e2e"
-  ],
+  "private": true,
   "repository": {
     "type": "git",
     "url": "git://github.com/eclipse/che-dashboard.git"

@@ -26,6 +26,7 @@
 | [`big.js@5.2.2`](https://github.com/MikeMcl/big.js.git) | MIT | clearlydefined |
 | [`blueimp-md5@2.16.0`](git://github.com/blueimp/JavaScript-MD5.git) | MIT | clearlydefined |
 | [`classnames@2.2.6`](https://github.com/JedWatson/classnames.git) | MIT | [CQ18717](https://dev.eclipse.org/ipzilla/show_bug.cgi?id=18717) |
+| [`colorette@1.2.1`](https://github.com/jorgebucaran/colorette.git) | MIT | clearlydefined |
 | [`connected-react-router@6.8.0`](https://github.com/supasate/connected-react-router.git) | MIT | clearlydefined |
 | [`copy-to-clipboard@3.3.1`](git+https://github.com/sudodoki/copy-to-clipboard) | MIT | clearlydefined |
 | [`core-js@2.6.11`](https://github.com/zloirock/core-js.git) | MIT | clearlydefined |
@@ -34,14 +35,21 @@
 | [`date-fns@2.16.1`](https://github.com/date-fns/date-fns) | MIT | clearlydefined |
 | [`debug@3.2.6`](git://github.com/visionmedia/debug.git) | MIT | [CQ17757](https://dev.eclipse.org/ipzilla/show_bug.cgi?id=17757) |
 | [`deep-equal@1.1.1`](http://github.com/substack/node-deep-equal.git) | MIT | clearlydefined |
+| [`deepmerge@4.2.2`](git://github.com/TehShrike/deepmerge.git) | MIT | clearlydefined |
 | [`define-properties@1.1.3`](git://github.com/ljharb/define-properties.git) | MIT | clearlydefined |
 | [`detect-browser@5.2.0`](https://github.com/DamonOehlman/detect-browser.git) | MIT | clearlydefined |
 | [`dom-helpers@3.4.0`](https://github.com/jquense/dom-helpers.git) | MIT | [CQ22349](https://dev.eclipse.org/ipzilla/show_bug.cgi?id=22349) |
+| [`dom-serializer@1.2.0`](git://github.com/cheeriojs/dom-renderer.git) | MIT | clearlydefined |
+| [`domelementtype@2.0.1`](git://github.com/fb55/domelementtype.git) | BSD-2-Clause | clearlydefined |
+| [`domhandler@4.0.0`](git://github.com/fb55/domhandler.git) | BSD-2-Clause | clearlydefined |
+| [`domutils@2.4.4`](git://github.com/fb55/domutils.git) | BSD-2-Clause | clearlydefined |
 | [`emojis-list@3.0.0`](git+https://github.com/kikobeats/emojis-list.git) | MIT | clearlydefined |
+| [`entities@2.0.2`](git://github.com/fb55/entities.git) | BSD-2-Clause | clearlydefined |
 | [`es-abstract@1.17.5`](git://github.com/ljharb/es-abstract.git) | MIT | clearlydefined |
 | [`es-to-primitive@1.2.1`](git://github.com/ljharb/es-to-primitive.git) | MIT | clearlydefined |
 | [`es6-promise@4.2.8`](git://github.com/stefanpenner/es6-promise.git) | MIT | [CQ18717](https://dev.eclipse.org/ipzilla/show_bug.cgi?id=18717) |
 | [`es6-promisify@5.0.0`](https://github.com/digitaldesignlabs/es6-promisify.git) | MIT | [CQ18717](https://dev.eclipse.org/ipzilla/show_bug.cgi?id=18717) |
+| [`escape-string-regexp@4.0.0`](https://github.com/sindresorhus/escape-string-regexp.git) | MIT | clearlydefined |
 | [`esprima@4.0.1`](https://github.com/jquery/esprima.git) | BSD-2-Clause | [CQ18717](https://dev.eclipse.org/ipzilla/show_bug.cgi?id=18717) |
 | [`eventsource@1.0.7`](git://github.com/EventSource/eventsource.git) | MIT | clearlydefined |
 | [`fast-deep-equal@3.1.1`](git+https://github.com/epoberezkin/fast-deep-equal.git) | MIT | clearlydefined |
@@ -58,6 +66,7 @@
 | [`has@1.0.3`](git://github.com/tarruda/has.git) | MIT | [CQ16925](https://dev.eclipse.org/ipzilla/show_bug.cgi?id=16925) |
 | [`history@4.10.1`](https://github.com/ReactTraining/history.git) | MIT | clearlydefined |
 | [`hoist-non-react-statics@3.3.2`](git://github.com/mridgway/hoist-non-react-statics.git) | BSD-3-Clause | clearlydefined |
+| [`htmlparser2@6.0.0`](git://github.com/fb55/htmlparser2.git) | MIT | clearlydefined |
 | [`http-parser-js@0.5.2`](git://github.com/creationix/http-parser-js.git) | MIT | clearlydefined |
 | [`http-proxy-agent@2.1.0`](git://github.com/TooTallNate/node-http-proxy-agent.git) | MIT | [CQ18717](https://dev.eclipse.org/ipzilla/show_bug.cgi?id=18717) |
 | [`https-proxy-agent@2.2.4`](git://github.com/TooTallNate/node-https-proxy-agent.git) | MIT | [CQ18717](https://dev.eclipse.org/ipzilla/show_bug.cgi?id=18717) |
@@ -68,6 +77,7 @@
 | [`is-arguments@1.0.4`](git://github.com/ljharb/is-arguments.git) | MIT | clearlydefined |
 | [`is-callable@1.1.5`](git://github.com/ljharb/is-callable.git) | MIT | clearlydefined |
 | [`is-date-object@1.0.2`](git://github.com/ljharb/is-date-object.git) | MIT | clearlydefined |
+| [`is-plain-object@5.0.0`](https://github.com/jonschlinkert/is-plain-object.git) | MIT | clearlydefined |
 | [`is-regex@1.0.5`](git://github.com/ljharb/is-regex.git) | MIT | clearlydefined |
 | [`is-symbol@1.0.3`](git://github.com/inspect-js/is-symbol.git) | MIT | clearlydefined |
 | [`is-typedarray@1.0.0`](git://github.com/hughsk/is-typedarray.git) | MIT | [CQ16925](https://dev.eclipse.org/ipzilla/show_bug.cgi?id=16925) |
@@ -79,6 +89,7 @@
 | [`json3@3.3.3`](git://github.com/bestiejs/json3.git) | MIT | [CQ16925](https://dev.eclipse.org/ipzilla/show_bug.cgi?id=16925) |
 | [`json5@1.0.1`](git+https://github.com/json5/json5.git) | MIT | [CQ22351](https://dev.eclipse.org/ipzilla/show_bug.cgi?id=22351) |
 | [`jsonc-parser@2.2.1`](https://github.com/microsoft/node-jsonc-parser) | MIT | clearlydefined |
+| [`klona@2.0.4`](https://github.com/lukeed/klona.git) | MIT | clearlydefined |
 | [`loader-utils@1.4.0`](https://github.com/webpack/loader-utils.git) | MIT | clearlydefined |
 | [`lodash@4.17.20`](https://github.com/lodash/lodash.git) | MIT | [CQ22829](https://dev.eclipse.org/ipzilla/show_bug.cgi?id=22829) |
 | [`loose-envify@1.4.0`](git://github.com/zertosh/loose-envify.git) | MIT | [CQ18717](https://dev.eclipse.org/ipzilla/show_bug.cgi?id=18717) |
@@ -90,6 +101,7 @@
 | [`monaco-languages@1.10.0`](https://github.com/Microsoft/monaco-languages) | MIT | clearlydefined |
 | [`ms@2.0.0`](https://github.com/zeit/ms.git) | MIT | [CQ16925](https://dev.eclipse.org/ipzilla/show_bug.cgi?id=16925) |
 | [`nan@2.14.2`](git://github.com/nodejs/nan.git) | MIT | [CQ22352](https://dev.eclipse.org/ipzilla/show_bug.cgi?id=22352) |
+| [`nanoid@3.1.20`](https://github.com/ai/nanoid.git) | MIT | clearlydefined |
 | [`null-loader@4.0.1`](https://github.com/webpack-contrib/null-loader.git) | MIT | clearlydefined |
 | [`object-assign@4.1.1`](https://github.com/sindresorhus/object-assign.git) | MIT | [CQ16925](https://dev.eclipse.org/ipzilla/show_bug.cgi?id=16925) |
 | [`object-inspect@1.7.0`](git://github.com/substack/object-inspect.git) | MIT | clearlydefined |
@@ -97,8 +109,10 @@
 | [`object-keys@1.1.1`](git://github.com/ljharb/object-keys.git) | MIT | clearlydefined |
 | [`object.assign@4.1.0`](git://github.com/ljharb/object.assign.git) | MIT | clearlydefined |
 | [`original@1.0.2`](https://github.com/unshiftio/original) | MIT | clearlydefined |
+| [`parse-srcset@1.0.2`](git+https://github.com/albell/parse-srcset.git) | MIT | clearlydefined |
 | [`path-to-regexp@1.8.0`](https://github.com/pillarjs/path-to-regexp.git) | MIT | clearlydefined |
 | [`popper.js@1.16.1`](git+https://github.com/FezVrasta/popper.js.git) | MIT | [CQ22353](https://dev.eclipse.org/ipzilla/show_bug.cgi?id=22353) |
+| [`postcss@8.2.4`](https://github.com/postcss/postcss.git) | MIT | clearlydefined |
 | [`prettier@2.2.1`](https://github.com/prettier/prettier.git) | MIT | [CQ23020](https://dev.eclipse.org/ipzilla/show_bug.cgi?id=23020) |
 | [`private@0.1.8`](git://github.com/benjamn/private.git) | MIT | [CQ18717](https://dev.eclipse.org/ipzilla/show_bug.cgi?id=18717) |
 | [`prop-types-extra@1.1.1`](git+https://github.com/react-bootstrap/prop-types-extra.git) | MIT | [CQ22354](https://dev.eclipse.org/ipzilla/show_bug.cgi?id=22354) |
@@ -133,11 +147,12 @@
 | [`reselect@4.0.0`](https://github.com/reduxjs/reselect.git) | MIT | clearlydefined |
 | [`resolve-pathname@3.0.0`](https://github.com/mjackson/resolve-pathname.git) | MIT | clearlydefined |
 | [`safe-buffer@5.2.1`](git://github.com/feross/safe-buffer.git) | MIT | clearlydefined |
+| [`sanitize-html@2.3.2`](https://github.com/apostrophecms/sanitize-html.git) | MIT | clearlydefined |
 | [`scheduler@0.19.1`](https://github.com/facebook/react.git) | MIT | clearlydefined |
 | [`schema-utils@3.0.0`](https://github.com/webpack/schema-utils.git) | MIT | clearlydefined |
 | [`semver@6.3.0`](https://github.com/npm/node-semver) | ISC | clearlydefined |
 | [`sockjs-client@1.4.0`](https://github.com/sockjs/sockjs-client.git) | MIT | clearlydefined |
-| [`source-map@0.5.7`](http://github.com/mozilla/source-map.git) | BSD-3-Clause | [CQ16925](https://dev.eclipse.org/ipzilla/show_bug.cgi?id=16925) |
+| [`source-map@0.6.1`](http://github.com/mozilla/source-map.git) | BSD-3-Clause | [CQ18717](https://dev.eclipse.org/ipzilla/show_bug.cgi?id=18717) |
 | [`sprintf-js@1.0.3`](https://github.com/alexei/sprintf.js.git) | BSD-3-Clause | [CQ18717](https://dev.eclipse.org/ipzilla/show_bug.cgi?id=18717) |
 | [`string.prototype.trimend@1.0.1`](git://github.com/es-shims/String.prototype.trimEnd.git) | MIT | clearlydefined |
 | [`string.prototype.trimleft@2.1.2`](git://github.com/es-shims/String.prototype.trimLeft.git) | MIT | clearlydefined |
