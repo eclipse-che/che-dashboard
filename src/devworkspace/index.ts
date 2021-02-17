@@ -54,7 +54,7 @@ export function convertDevWorkspaceV2ToV1(devworkspace: any): che.Workspace {
  * @param devworkspaceCustomResourceOrDevfile The devworkspace or devfile you want to check
  */
 export function isDevWorkspace(devworkspaceCustomResourceOrDevfile: che.Workspace | api.che.workspace.devfile.Devfile): boolean {
-  return (devworkspaceCustomResourceOrDevfile as any).kind === 'DevWorkspace' || (devworkspaceCustomResourceOrDevfile as any).schemaVersion;
+  return (devworkspaceCustomResourceOrDevfile as any).kind === 'DevWorkspace' || (devworkspaceCustomResourceOrDevfile as any).schemaVersion !== undefined;
 }
 
 /**
