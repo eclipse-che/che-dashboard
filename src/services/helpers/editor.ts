@@ -10,10 +10,12 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
+import { IDevWorkspaceDevfile } from '@eclipse-che/devworkspace-client';
 import { safeDump } from 'js-yaml';
 
-const sortOrder: Array<keyof che.WorkspaceDevfile> = [
+const sortOrder: Array<keyof che.WorkspaceDevfile | keyof IDevWorkspaceDevfile> = [
   'apiVersion',
+  'schemaVersion',
   'metadata',
   'attributes',
   'projects',
