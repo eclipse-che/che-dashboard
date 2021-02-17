@@ -120,7 +120,7 @@ export function buildRow(
   /* projects list */
   const workspaceProjects = workspace.devfile.projects || [];
   const projects = workspaceProjects
-    .map(project => project.source.location || project.name)
+    .map(project => project.source?.location || project.name)
     .join(', \n') || '-';
 
   /* Open IDE link */
