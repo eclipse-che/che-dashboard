@@ -12,8 +12,7 @@ name: CI:multiarch
 on:
   workflow_dispatch:
     inputs: {}
-  # push:
-  pull_request:
+  push:
     branches:
       - master
 
