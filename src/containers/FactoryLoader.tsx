@@ -21,10 +21,14 @@ import * as WorkspaceStore from '../store/Workspaces';
 import FactoryLoader from '../pages/FactoryLoader';
 import { selectAllWorkspaces, selectWorkspaceById } from '../store/Workspaces/selectors';
 import { WorkspaceStatus } from '../services/helpers/types';
-import { sanitizeLocation } from '../services/helpers/location';
+import { buildIdeLoaderPath, sanitizeLocation } from '../services/helpers/location';
 import { merge } from 'lodash';
 
-const WS_ATTRIBUTES_TO_SAVE: string[] = ['workspaceDeploymentLabels', 'workspaceDeploymentAnnotations'];
+const WS_ATTRIBUTES_TO_SAVE: string[] = ['workspaceDeploymentLabels', 'workspaceDeploymentAnnotations', 'policies.create'];
+
+const DEFAULT_CREATE_POLICY = 'perclick';
+
+type CreatePolicy = 'perclick' | 'peruser';
 
 type Props =
   MappedProps
@@ -45,6 +49,7 @@ type State = {
   devfileLocationInfo?: string;
   currentStep: LoadFactorySteps;
   hasError: boolean;
+  createPolicy: CreatePolicy;
 };
 
 export class FactoryLoaderContainer extends React.PureComponent<Props, State> {
@@ -60,6 +65,7 @@ export class FactoryLoaderContainer extends React.PureComponent<Props, State> {
     this.state = {
       currentStep: LoadFactorySteps.INITIALIZING,
       hasError: false,
+      createPolicy: DEFAULT_CREATE_POLICY,
       search,
     };
   }
@@ -126,14 +132,7 @@ export class FactoryLoaderContainer extends React.PureComponent<Props, State> {
 
     if (this.state.currentStep === LoadFactorySteps.START_WORKSPACE &&
       workspace && WorkspaceStatus[workspace.status] === WorkspaceStatus.RUNNING) {
-      this.setState({ currentStep: LoadFactorySteps.OPEN_IDE });
-      try {
-        await this.props.requestWorkspace(workspace.id);
-      } catch (e) {
-        this.showAlert(`Getting workspace detail data failed. ${e}`);
-      }
-      await delay();
-      history.push(`/ide/${workspace.namespace}/${workspace.devfile.metadata.name}`);
+      await this.openIde();
     }
 
     if (workspace &&
@@ -141,6 +140,25 @@ export class FactoryLoaderContainer extends React.PureComponent<Props, State> {
       this.state.currentStep === LoadFactorySteps.START_WORKSPACE) {
       this.showAlert('Unknown workspace error.');
     }
+  }
+
+  private async openIde(): Promise<void> {
+    const { history, workspace } = this.props;
+    if (!workspace || WorkspaceStatus[workspace.status] !== WorkspaceStatus.RUNNING) {
+      return;
+    }
+    this.setState({ currentStep: LoadFactorySteps.OPEN_IDE });
+    try {
+      await this.props.requestWorkspace(workspace.id);
+    } catch (e) {
+      this.showAlert(`Getting workspace detail data failed. ${e}`);
+    }
+    await delay();
+    history.push(buildIdeLoaderPath(workspace));
+  }
+
+  private getCreatePolicy(attrs: { [key: string]: string }): CreatePolicy {
+    return attrs['policies.create'] as CreatePolicy || DEFAULT_CREATE_POLICY;
   }
 
   private async createWorkspaceFromFactory(): Promise<void> {
@@ -184,12 +202,13 @@ export class FactoryLoaderContainer extends React.PureComponent<Props, State> {
       this.updateOverrideParams(key, val);
       factoryUrl.searchParams.append(key, val);
     });
-
     attrs.stackName = factoryUrl.toString();
+    const createPolicy = this.getCreatePolicy(attrs);
 
     this.setState({
       currentStep: LoadFactorySteps.LOOKING_FOR_DEVFILE,
       location: factoryLink,
+      createPolicy
     });
     await delay();
 
@@ -215,12 +234,25 @@ export class FactoryLoaderContainer extends React.PureComponent<Props, State> {
     this.setState({ currentStep: LoadFactorySteps.APPLYING_DEVFILE });
     await delay();
 
-    let workspace: che.Workspace | null = null;
-    try {
-      workspace = await this.props.createWorkspaceFromDevfile(devfile, undefined, undefined, attrs) as any;
-    } catch (e) {
-      this.showAlert(`Failed to create a workspace. ${e}`);
+    let workspace: che.Workspace | undefined;
+    if (this.state.createPolicy === 'peruser') {
+      workspace = this.props.allWorkspaces.find(workspace => {
+        return workspace.attributes && workspace.attributes.stackName === attrs.stackName;
+      });
+    }
+    if (workspace && WorkspaceStatus[workspace.status] === WorkspaceStatus.RUNNING) {
+      this.props.setWorkspaceId(workspace.id);
+      this.setState({ currentStep: LoadFactorySteps.START_WORKSPACE });
+      await this.openIde();
       return;
+    }
+    if (!workspace) {
+      try {
+        workspace = await this.props.createWorkspaceFromDevfile(devfile, undefined, undefined, attrs);
+      } catch (e) {
+        this.showAlert(`Failed to create a workspace. ${e}`);
+        return;
+      }
     }
     if (!workspace) {
       this.showAlert('Failed to create a workspace.');
@@ -236,10 +268,12 @@ export class FactoryLoaderContainer extends React.PureComponent<Props, State> {
         'when the workspace is stopped unless they are pushed to a remote code repository.', AlertVariant.warning);
     }
     await delay();
-    if (this.state.currentStep !== LoadFactorySteps.START_WORKSPACE) {
+    if (this.state.currentStep !== LoadFactorySteps.START_WORKSPACE
+      && this.state.currentStep !== LoadFactorySteps.OPEN_IDE) {
       this.setState({ currentStep: LoadFactorySteps.START_WORKSPACE });
       try {
         await this.props.startWorkspace(`${workspace.id}`);
+        await this.openIde();
       } catch (e) {
         const workspaceName = workspace.devfile.metadata.name;
         this.showAlert(`Workspace ${workspaceName} failed to start. ${e.message ? e.message : ''}`);

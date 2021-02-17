@@ -30,6 +30,7 @@ const requestWorkspaceMock = jest.fn().mockResolvedValue(undefined);
 const startWorkspaceMock = jest.fn().mockResolvedValue(undefined);
 const requestFactoryResolverMock = jest.fn().mockResolvedValue(undefined);
 const setWorkspaceIdMock = jest.fn().mockResolvedValue(undefined);
+const clearWorkspaceIdMock = jest.fn().mockResolvedValue(undefined);
 
 jest.mock('../../store/Workspaces/index', () => {
   return {
@@ -48,6 +49,9 @@ jest.mock('../../store/Workspaces/index', () => {
         },
       setWorkspaceId: (id) => async (): Promise<void> => {
         setWorkspaceIdMock(id);
+      },
+      clearWorkspaceId: () => async (): Promise<void> => {
+        clearWorkspaceIdMock();
       },
     },
   };
@@ -88,21 +92,25 @@ jest.mock('../../pages/FactoryLoader', () => {
 });
 
 describe('Factory Loader container', () => {
-  const location = 'http://test-location/';
+  const location = 'http://test-location';
   const workspace = createFakeWorkspaceWithRuntime('id-wksp-test');
+  if (workspace.attributes) {
+    workspace.attributes.stackName = 'http://test-location/?policies.create=peruser';
+  }
   const store = new FakeStoreBuilder().withWorkspaces({
-    workspaces: [workspace]
+    workspaces: [workspace],
+    workspaceId: workspace.id
   }).withFactoryResolver({
     v: '4.0',
     source: 'devfile.yaml',
     devfile: workspace.devfile as api.che.workspace.devfile.Devfile,
-    location,
+    location: location,
   }).build();
 
   const renderComponent = (
-    location: string
+    url: string,
   ): RenderResult => {
-    const props = getMockRouterProps(ROUTE.LOAD_FACTORY_URL, { url: location });
+    const props = getMockRouterProps(ROUTE.LOAD_FACTORY_URL, { url });
     return render(
       <Provider store={store}>
         <FactoryLoaderContainer
@@ -122,10 +130,12 @@ describe('Factory Loader container', () => {
     jest.useRealTimers();
   });
 
-  it('should resolve the factory, create and start a new workspace', async () => {
+  it('should resolve the factory, create a new workspace, start the workspace and open IDE', async () => {
     renderComponent(location);
 
     const elementCurrentStep = screen.getByTestId('factory-loader-current-step');
+
+    await waitFor(() => expect(clearWorkspaceIdMock).toHaveBeenCalled());
     expect(LoadFactorySteps[elementCurrentStep.innerHTML]).toEqual(LoadFactorySteps[LoadFactorySteps.LOOKING_FOR_DEVFILE]);
 
     jest.runOnlyPendingTimers();
@@ -134,7 +144,7 @@ describe('Factory Loader container', () => {
 
     jest.runOnlyPendingTimers();
     await waitFor(() =>
-      expect(createWorkspaceFromDevfileMock).toHaveBeenCalledWith(workspace.devfile, undefined, undefined, { stackName: location }));
+      expect(createWorkspaceFromDevfileMock).toHaveBeenCalledWith(workspace.devfile, undefined, undefined, { stackName: location + '/' }));
 
     jest.runOnlyPendingTimers();
     expect(setWorkspaceIdMock).toHaveBeenCalledWith(workspace.id);
@@ -143,10 +153,11 @@ describe('Factory Loader container', () => {
       'You\'re starting an ephemeral workspace. All changes to the source code will be lost ' +
       'when the workspace is stopped unless they are pushed to a remote code repository.'
     );
+    await waitFor(() => expect(startWorkspaceMock).toHaveBeenCalledWith(workspace.id));
 
     jest.runOnlyPendingTimers();
-    await waitFor(() => expect(startWorkspaceMock).toHaveBeenCalledWith(workspace.id));
-    expect(LoadFactorySteps[elementCurrentStep.innerHTML]).toEqual(LoadFactorySteps[LoadFactorySteps.START_WORKSPACE]);
+    await waitFor(() => expect(requestWorkspaceMock).toHaveBeenCalledWith(workspace.id));
+    expect(LoadFactorySteps[elementCurrentStep.innerHTML]).toEqual(LoadFactorySteps[LoadFactorySteps.OPEN_IDE]);
   });
 
   it('should resolve the factory, create a new workspace with param overriding', async () => {
@@ -171,10 +182,29 @@ describe('Factory Loader container', () => {
         { stackName: 'http://test-location/?override.metadata.generateName=testPrefix' }));
   });
 
+  it('should resolve the factory with \'policies.create=peruser\'', async () => {
+    const newLocation = `${location}&policies.create=peruser`;
+    renderComponent(newLocation);
+
+    const elementCurrentStep = screen.getByTestId('factory-loader-current-step');
+    expect(LoadFactorySteps[elementCurrentStep.innerHTML]).toEqual(LoadFactorySteps[LoadFactorySteps.LOOKING_FOR_DEVFILE]);
+
+    jest.runOnlyPendingTimers();
+    await waitFor(() => expect(requestFactoryResolverMock).toHaveBeenCalledWith(location));
+    expect(LoadFactorySteps[elementCurrentStep.innerHTML]).toEqual(LoadFactorySteps[LoadFactorySteps.APPLYING_DEVFILE]);
+
+    jest.runOnlyPendingTimers();
+    expect(createWorkspaceFromDevfileMock).not.toHaveBeenCalled();
+    expect(startWorkspaceMock).not.toHaveBeenCalled();
+
+    jest.runOnlyPendingTimers();
+    await waitFor(() => expect(requestWorkspaceMock).toHaveBeenCalledWith(workspace.id));
+    expect(LoadFactorySteps[elementCurrentStep.innerHTML]).toEqual(LoadFactorySteps[LoadFactorySteps.OPEN_IDE]);
+  });
+
   it('should show an error if something wrong with Repository/Devfile URL', async () => {
     const message = 'Repository/Devfile URL is missing. Please specify it via url query param: ' +
       window.location.origin + window.location.pathname + '#/load-factory?url= .';
-
     renderComponent('');
 
     expect(requestFactoryResolverMock).not.toBeCalled();
