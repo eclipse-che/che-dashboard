@@ -13,7 +13,7 @@
 import React from 'react';
 import { container } from '../../../../inversify.config';
 import WebSocketBanner from '..';
-import { CheWorkspaceClient } from '../../../../services/cheWorkspaceClient';
+import { CheWorkspaceClient } from '../../../../services/workspace-client/cheWorkspaceClient';
 import { Provider } from 'react-redux';
 import { FakeStoreBuilder } from '../../../../store/__mocks__/storeBuilder';
 import { BrandingData } from '../../../../services/bootstrap/branding.constant';
