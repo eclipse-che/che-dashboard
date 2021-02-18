@@ -21,18 +21,32 @@ import 'monaco-editor-core/esm/vs/base/browser/ui/codiconLabel/codicon/codicon.c
 import configureStore from './store/configureStore';
 import App from './App';
 import { PreloadData } from './services/bootstrap/PreloadData';
+import { container } from './inversify.config';
+import { KeycloakSetupService } from './services/keycloak/setup';
 
 import './overrides.styl';
 
-const history = createHashHistory();
-// get the application-wide store instance, with state from the server where available
-const store = configureStore(history);
+startApp();
 
-const ROOT = document.querySelector('.ui-container');
-// preload app data
-new PreloadData(store).init()
-  .then(() => console.log('UD: preload data complete successfully.'))
-  .catch(error => console.error('UD: preload data failed.', error))
-  .finally(() => {
-    ReactDOM.render(<Provider store={store}><App history={history} /></Provider>, ROOT);
-  });
+async function startApp(): Promise<void> {
+  const keycloakSetupService = container.get(KeycloakSetupService);
+  try {
+    await keycloakSetupService.start();
+  } catch (error) {
+    console.error('Keycloak initialization failed. ', error);
+  }
+
+  const history = createHashHistory();
+  const store = configureStore(history);
+
+  const ROOT = document.querySelector('.ui-container');
+  try {
+    // preload app data
+    await new PreloadData(store).init();
+    console.log('UD: preload data complete successfully.');
+  } catch (error) {
+    console.error('UD: preload data failed.', error);
+  }
+
+  ReactDOM.render(<Provider store={store}><App history={history} /></Provider>, ROOT);
+}

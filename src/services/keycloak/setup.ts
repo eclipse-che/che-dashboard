@@ -61,13 +61,18 @@ export class KeycloakSetupService {
 
   private isDevelopment: boolean;
   private user: che.User | undefined;
+  private _ready: Promise<void>;
+  private resolveReadyPromise: Function;
 
   constructor() {
     this.isDevelopment = isDevelopment();
+
+    this._ready = new Promise<void>(resolve => this.resolveReadyPromise = resolve);
   }
 
   async start(): Promise<void> {
     await this.doInitialization();
+    this.resolveReadyPromise();
 
     /* test API */
     try {
@@ -77,6 +82,10 @@ export class KeycloakSetupService {
     } catch (e) {
       throw new Error('Failed to get response to API endpoint: \n' + e);
     }
+  }
+
+  public get ready(): Promise<void> {
+    return this._ready;
   }
 
   private async doInitialization(): Promise<void> {
