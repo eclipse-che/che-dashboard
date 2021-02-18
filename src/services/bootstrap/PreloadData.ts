@@ -23,7 +23,6 @@ import * as UserProfileStore from '../../store/UserProfile';
 import * as UserPreferencesStore from '../../store/UserPreferences';
 import * as UserStore from '../../store/User';
 import * as WorkspacesStore from '../../store/Workspaces';
-import { KeycloakAuthService } from '../keycloak/auth';
 import { CheWorkspaceClient } from '../cheWorkspaceClient';
 import { ResourceFetcherService } from '../resource-fetcher';
 
@@ -35,9 +34,6 @@ export class PreloadData {
 
   @lazyInject(KeycloakSetupService)
   private readonly keycloakSetup: KeycloakSetupService;
-
-  @lazyInject(KeycloakAuthService)
-  private readonly keycloakAuth: KeycloakAuthService;
 
   @lazyInject(CheWorkspaceClient)
   private readonly cheWorkspaceClient: CheWorkspaceClient;
@@ -88,7 +84,6 @@ export class PreloadData {
   }
 
   private async updateUser(): Promise<void> {
-    await this.keycloakSetup.start();
     const { requestUser, setUser } = UserStore.actionCreators;
     const user = this.keycloakSetup.getUser();
     if (user) {
