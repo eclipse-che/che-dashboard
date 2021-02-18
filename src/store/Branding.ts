@@ -12,7 +12,7 @@
 
 import { Action, Reducer } from 'redux';
 import { fetchBranding } from '../services/assets/branding';
-import { AppThunkAction, AppState } from '.';
+import { AppThunk } from '.';
 import { merge } from 'lodash';
 import { BRANDING_DEFAULT, BrandingData } from '../services/bootstrap/branding.constant';
 import { container } from '../inversify.config';
@@ -36,27 +36,21 @@ export interface ReceivedBrandingAction {
   data: BrandingData;
 }
 
-type KnownActions =
+type KnownAction =
   RequestBrandingAction
   | ReceivedBrandingAction;
 
 export type ActionCreators = {
-  requestBranding: () => any;
+  requestBranding: () => AppThunk<KnownAction, Promise<void>>;
 };
 
 const cheWorkspaceClient = container.get(CheWorkspaceClient);
 
 export const actionCreators: ActionCreators = {
 
-  requestBranding: (): AppThunkAction<KnownActions> =>
-    async (dispatch, getState): Promise<any> => {
-      const appState: AppState = getState();
-      if (!appState || !appState.branding) {
-        // todo throw a nice error
-        throw Error('something unexpected happened.');
-      }
-
-      const url = `${ASSET_PREFIX}product.json?id=` + Math.floor((Math.random() * 100) + 1);
+  requestBranding: (): AppThunk<KnownAction, Promise<void>> =>
+    async (dispatch, getState): Promise<void> => {
+      const url = `${ASSET_PREFIX}product.json`;
 
       dispatch({
         type: 'REQUEST_BRANDING',
@@ -66,7 +60,6 @@ export const actionCreators: ActionCreators = {
       try {
         const receivedBranding = await fetchBranding(url);
         const branding = getBrandingData(receivedBranding);
-
         const productVersion = await cheWorkspaceClient.restApiClient.getApiInfo();
 
         // Use the products version if specified in product.json, otherwise use the default version given by che server
@@ -77,7 +70,6 @@ export const actionCreators: ActionCreators = {
           isLoading: false,
           data: branding,
         });
-        return branding;
       } catch (e) {
         throw new Error(`Failed to request branding data by URL: ${url}`);
       }
@@ -95,7 +87,7 @@ export const reducer: Reducer<State> = (state: State | undefined, incomingAction
     return unloadedState;
   }
 
-  const action = incomingAction as KnownActions;
+  const action = incomingAction as KnownAction;
   switch (action.type) {
     case 'REQUEST_BRANDING':
       return Object.assign({}, state, {

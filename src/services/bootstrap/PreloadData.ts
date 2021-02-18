@@ -20,18 +20,21 @@ import * as EnvironmentStore from '../../store/Environment';
 import * as InfrastructureNamespaceStore from '../../store/InfrastructureNamespace';
 import * as Plugins from '../../store/Plugins';
 import * as UserProfileStore from '../../store/UserProfile';
-import * as UserPreferencesStore from '../../store/UserPreferences';
 import * as UserStore from '../../store/User';
 import * as WorkspacesStore from '../../store/Workspaces';
 import { KeycloakAuthService } from '../keycloak/auth';
 import { CheWorkspaceClient } from '../cheWorkspaceClient';
 import { ResourceFetcherService } from '../resource-fetcher';
+import { IssuesReporterService } from './issuesReporter';
 
 /**
  * This class prepares all init data.
  * @author Oleksii Orel
  */
 export class PreloadData {
+
+  @lazyInject(IssuesReporterService)
+  private readonly issuesReporterService: IssuesReporterService;
 
   @lazyInject(KeycloakSetupService)
   private readonly keycloakSetup: KeycloakSetupService;
@@ -52,21 +55,20 @@ export class PreloadData {
     this.defineEnvironment();
 
     await this.updateUser();
-    await this.updateUserProfile();
-    await this.updateBranding();
+    await this.updateJsonRpcMasterApi();
+
     new ResourceFetcherService().prefetchResources(this.store.getState());
 
-    this.updateRestApiClient();
-    this.updateJsonRpcMasterApi();
-
-    this.updateWorkspaces();
-    this.updateInfrastructureNamespaces();
-
     const settings = await this.updateWorkspaceSettings();
-    await this.updatePlugins(settings);
-    await this.updateRegistriesMetadata(settings);
-    await this.updateDevfileSchema();
-    await this.updateUserPreferences();
+    await Promise.all([
+      this.updateBranding(),
+      this.updateWorkspaces(),
+      this.updateInfrastructureNamespaces(),
+      this.updateUserProfile(),
+      this.updatePlugins(settings),
+      this.updateRegistriesMetadata(settings),
+      this.updateDevfileSchema(),
+    ]);
   }
 
   private defineEnvironment(): void {
@@ -76,11 +78,11 @@ export class PreloadData {
 
   private async updateBranding(): Promise<void> {
     const { requestBranding } = BrandingStore.actionCreators;
-    await requestBranding()(this.store.dispatch, this.store.getState);
-  }
-
-  private updateRestApiClient(): void {
-    return this.cheWorkspaceClient.updateRestApiClient();
+    try {
+      await requestBranding()(this.store.dispatch, this.store.getState, undefined);
+    } catch (e) {
+      this.issuesReporterService.registerIssue('unknown', new Error(e));
+    }
   }
 
   private async updateJsonRpcMasterApi(): Promise<void> {
@@ -128,11 +130,6 @@ export class PreloadData {
   private async updateDevfileSchema(): Promise<void> {
     const { requestJsonSchema } = DevfileRegistriesStore.actionCreators;
     return requestJsonSchema()(this.store.dispatch, this.store.getState, undefined);
-  }
-
-  private async updateUserPreferences(): Promise<void> {
-    const { requestUserPreferences } = UserPreferencesStore.actionCreators;
-    return requestUserPreferences(undefined)(this.store.dispatch, this.store.getState, undefined);
   }
 
   private async updateUserProfile(): Promise<void> {
