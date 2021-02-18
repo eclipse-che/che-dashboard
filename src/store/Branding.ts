@@ -12,7 +12,7 @@
 
 import { Action, Reducer } from 'redux';
 import { fetchBranding } from '../services/assets/branding';
-import { AppState, AppThunk } from '.';
+import { AppThunk } from '.';
 import { merge } from 'lodash';
 import { BRANDING_DEFAULT, BrandingData } from '../services/bootstrap/branding.constant';
 import { container } from '../inversify.config';
@@ -50,12 +50,6 @@ export const actionCreators: ActionCreators = {
 
   requestBranding: (): AppThunk<KnownAction, Promise<void>> =>
     async (dispatch, getState): Promise<void> => {
-      const appState: AppState = getState();
-      if (!appState || !appState.branding) {
-        // todo throw a nice error
-        throw Error('something unexpected happened.');
-      }
-
       const url = `${ASSET_PREFIX}product.json`;
 
       dispatch({
@@ -66,7 +60,6 @@ export const actionCreators: ActionCreators = {
       try {
         const receivedBranding = await fetchBranding(url);
         const branding = getBrandingData(receivedBranding);
-
         const productVersion = await cheWorkspaceClient.restApiClient.getApiInfo();
 
         // Use the products version if specified in product.json, otherwise use the default version given by che server
