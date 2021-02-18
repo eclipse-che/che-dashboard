@@ -62,7 +62,6 @@ export class CheWorkspaceClient {
       }
 
       this.axios.interceptors.request.use(async config => {
-        console.log('>>> interceptor');
         await this.handleRefreshToken(VALIDITY_TIME, config);
         return config;
       });
