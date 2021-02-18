@@ -25,12 +25,16 @@ import * as WorkspacesStore from '../../store/Workspaces';
 import { KeycloakAuthService } from '../keycloak/auth';
 import { CheWorkspaceClient } from '../cheWorkspaceClient';
 import { ResourceFetcherService } from '../resource-fetcher';
+import { IssuesReporterService } from './issuesReporter';
 
 /**
  * This class prepares all init data.
  * @author Oleksii Orel
  */
 export class PreloadData {
+
+  @lazyInject(IssuesReporterService)
+  private readonly issuesReporterService: IssuesReporterService;
 
   @lazyInject(KeycloakSetupService)
   private readonly keycloakSetup: KeycloakSetupService;
@@ -74,7 +78,11 @@ export class PreloadData {
 
   private async updateBranding(): Promise<void> {
     const { requestBranding } = BrandingStore.actionCreators;
-    await requestBranding()(this.store.dispatch, this.store.getState);
+    try {
+      await requestBranding()(this.store.dispatch, this.store.getState, undefined);
+    } catch (e) {
+      this.issuesReporterService.registerIssue('unknown', new Error(e));
+    }
   }
 
   private async updateJsonRpcMasterApi(): Promise<void> {
