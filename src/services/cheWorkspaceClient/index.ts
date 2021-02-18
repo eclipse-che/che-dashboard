@@ -116,10 +116,6 @@ export class CheWorkspaceClient {
   }
 
   get jsonRpcMasterApi(): IWorkspaceMasterApi {
-    // Lazy initialization of restApiClient
-    if (!this._jsonRpcMasterApi) {
-      this.updateJsonRpcMasterApi();
-    }
     return this._jsonRpcMasterApi;
   }
 

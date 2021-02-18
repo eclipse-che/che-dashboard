@@ -52,21 +52,25 @@ export class PreloadData {
     this.defineEnvironment();
 
     await this.updateUser();
-    await this.updateUserProfile();
-    await this.updateBranding();
-    new ResourceFetcherService().prefetchResources(this.store.getState());
-
-    this.updateRestApiClient();
-    this.updateJsonRpcMasterApi();
-
-    this.updateWorkspaces();
-    this.updateInfrastructureNamespaces();
+    await this.updateJsonRpcMasterApi();
 
     const settings = await this.updateWorkspaceSettings();
-    await this.updatePlugins(settings);
-    await this.updateRegistriesMetadata(settings);
-    await this.updateDevfileSchema();
-    await this.updateUserPreferences();
+
+    await Promise.all([
+      Promise.all([
+        this.updateBranding(),
+        this.updateWorkspaces(),
+        this.updateInfrastructureNamespaces(),
+        this.updateUserProfile(),
+      ]),
+      Promise.all([
+        this.updatePlugins(settings),
+        this.updateRegistriesMetadata(settings),
+        this.updateDevfileSchema(),
+      ])
+    ]);
+
+    new ResourceFetcherService().prefetchResources(this.store.getState());
   }
 
   private defineEnvironment(): void {
@@ -77,10 +81,6 @@ export class PreloadData {
   private async updateBranding(): Promise<void> {
     const { requestBranding } = BrandingStore.actionCreators;
     await requestBranding()(this.store.dispatch, this.store.getState);
-  }
-
-  private updateRestApiClient(): void {
-    return this.cheWorkspaceClient.updateRestApiClient();
   }
 
   private async updateJsonRpcMasterApi(): Promise<void> {
@@ -128,11 +128,6 @@ export class PreloadData {
   private async updateDevfileSchema(): Promise<void> {
     const { requestJsonSchema } = DevfileRegistriesStore.actionCreators;
     return requestJsonSchema()(this.store.dispatch, this.store.getState, undefined);
-  }
-
-  private async updateUserPreferences(): Promise<void> {
-    const { requestUserPreferences } = UserPreferencesStore.actionCreators;
-    return requestUserPreferences(undefined)(this.store.dispatch, this.store.getState, undefined);
   }
 
   private async updateUserProfile(): Promise<void> {

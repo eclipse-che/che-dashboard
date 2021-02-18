@@ -28,9 +28,9 @@ type Props =
 export class WorkspacesListContainer extends React.PureComponent<Props> {
 
   public componentDidMount(): void {
-    const { allWorkspaces } = this.props;
-    if (!allWorkspaces || allWorkspaces.length === 0) {
-      this.props.requestWorkspaces();
+    const { isLoading, requestWorkspaces } = this.props;
+    if (!isLoading) {
+      requestWorkspaces();
     }
   }
 

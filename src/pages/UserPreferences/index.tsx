@@ -100,6 +100,13 @@ export class UserPreferences extends React.PureComponent<Props, State> {
     }
   }
 
+  public componentDidMount(): void {
+    const { preferences, isLoading, requestUserPreferences } = this.props;
+    if (!isLoading && !preferences.dockerCredentials) {
+      requestUserPreferences(undefined);
+    }
+  }
+
   public componentDidUpdate(prevProps: Props, prevState: State): void {
     if (prevProps.preferences.dockerCredentials !== this.props.preferences.dockerCredentials) {
       const registries = this.props.registries;

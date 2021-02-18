@@ -52,10 +52,6 @@ class WorkspaceDetailsContainer extends React.PureComponent<Props> {
   }
 
   public componentDidMount(): void {
-    const { allWorkspaces } = this.props;
-    if (!allWorkspaces || allWorkspaces.length === 0) {
-      this.props.requestWorkspaces();
-    }
     const showAlert = this.workspaceDetailsPageRef.current?.showAlert;
     this.showAlert = (title: string, variant?: AlertVariant) => {
       if (showAlert) {
