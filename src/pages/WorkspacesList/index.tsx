@@ -378,13 +378,18 @@ export default class WorkspacesList extends React.PureComponent<Props, State> {
     /* Update checkboxes states if workspaces list changes */
     if (prevProps.workspaces.length !== this.props.workspaces.length) {
       const selected: string[] = [];
+      const filtered: string[] = [];
       this.props.workspaces.forEach(workspace => {
         if (this.state.selected.indexOf(workspace.id) !== -1) {
           selected.push(workspace.id);
         }
+        if (this.state.filtered.indexOf(workspace.id) !== -1) {
+          filtered.push(workspace.id);
+        }
       });
       const isSelectedAll = selected.length !== 0 && selected.length === this.props.workspaces.length;
       this.setState({
+        filtered,
         isSelectedAll,
         selected,
       });

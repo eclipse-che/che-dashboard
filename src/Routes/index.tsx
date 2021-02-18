@@ -10,7 +10,6 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import { Location } from 'history';
 import React from 'react';
 import { Redirect, Route, RouteComponentProps, Switch } from 'react-router';
 

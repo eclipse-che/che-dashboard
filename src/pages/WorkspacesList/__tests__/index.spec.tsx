@@ -34,7 +34,7 @@ const brandingData = {
 let workspaces: che.Workspace[];
 let isDeleted: string[];
 
-const mockOnAction = jest.fn().mockResolvedValue(undefined);
+let mockOnAction = jest.fn().mockResolvedValue(undefined);
 let mockShowConfirmation = jest.fn().mockResolvedValue(undefined);
 
 describe('Workspaces List Page', () => {
@@ -187,6 +187,43 @@ describe('Workspaces List Page', () => {
 
       await waitFor(() => expect(mockOnAction).toHaveBeenCalledTimes(1));
       expect(mockOnAction).toHaveBeenCalledWith(WorkspaceAction.DELETE_WORKSPACE, workspaces[0].devfile.metadata.name);
+    });
+
+    it('should expose correct number of workspaces to delete https://github.com/eclipse/che/issues/19057', async () => {
+      let wantToDelete: string[] = [];
+      mockOnAction = jest.fn()
+        .mockImplementation((action: string, workspaceName: string) => {
+          workspaces = workspaces.filter(workspace => workspace.devfile.metadata.name !== workspaceName);
+          wantToDelete = workspaces.map(workspace => workspace.devfile.metadata.name!);
+          return Promise.resolve();
+        });
+      const { rerender } = renderComponent();
+
+      /* delete one workspace */
+
+      const actionButtons = screen.getAllByRole('button', { name: /actions/i });
+      // click the kebab button on the first workspace row
+      userEvent.click(actionButtons[0]);
+
+      const deleteAction = screen.getByRole('button', { name: /delete workspace/i });
+      userEvent.click(deleteAction);
+
+      // wait for the workspace is deleted
+      await waitFor(() => expect(mockOnAction).toHaveBeenCalled());
+
+      mockShowConfirmation.mockClear();
+      rerender(getComponent());
+
+      /* select all and delete the rest of workspaces */
+
+      const selectAllCheckbox = screen.getByRole('checkbox', { name: /select all workspaces/i });
+      userEvent.click(selectAllCheckbox);
+
+      const deleteSelectedButton = screen.getByRole('button', { name: /delete selected workspaces/i });
+      expect(deleteSelectedButton).toBeEnabled();
+      userEvent.click(deleteSelectedButton);
+
+      expect(mockShowConfirmation).toHaveBeenCalledWith(wantToDelete);
     });
 
   });
