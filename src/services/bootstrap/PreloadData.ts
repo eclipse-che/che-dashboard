@@ -20,7 +20,6 @@ import * as EnvironmentStore from '../../store/Environment';
 import * as InfrastructureNamespaceStore from '../../store/InfrastructureNamespace';
 import * as Plugins from '../../store/Plugins';
 import * as UserProfileStore from '../../store/UserProfile';
-import * as UserPreferencesStore from '../../store/UserPreferences';
 import * as UserStore from '../../store/User';
 import * as WorkspacesStore from '../../store/Workspaces';
 import { KeycloakAuthService } from '../keycloak/auth';
@@ -54,23 +53,18 @@ export class PreloadData {
     await this.updateUser();
     await this.updateJsonRpcMasterApi();
 
-    const settings = await this.updateWorkspaceSettings();
-
-    await Promise.all([
-      Promise.all([
-        this.updateBranding(),
-        this.updateWorkspaces(),
-        this.updateInfrastructureNamespaces(),
-        this.updateUserProfile(),
-      ]),
-      Promise.all([
-        this.updatePlugins(settings),
-        this.updateRegistriesMetadata(settings),
-        this.updateDevfileSchema(),
-      ])
-    ]);
-
     new ResourceFetcherService().prefetchResources(this.store.getState());
+
+    const settings = await this.updateWorkspaceSettings();
+    await Promise.all([
+      this.updateBranding(),
+      this.updateWorkspaces(),
+      this.updateInfrastructureNamespaces(),
+      this.updateUserProfile(),
+      this.updatePlugins(settings),
+      this.updateRegistriesMetadata(settings),
+      this.updateDevfileSchema(),
+    ]);
   }
 
   private defineEnvironment(): void {
