@@ -14,7 +14,7 @@ import React from 'react';
 import { Action } from 'redux';
 import { Provider } from 'react-redux';
 import { AlertActionLink } from '@patternfly/react-core';
-import { RenderResult, render, screen } from '@testing-library/react';
+import { RenderResult, render, screen, waitFor } from '@testing-library/react';
 import { ROUTE } from '../../route.enum';
 import { getMockRouterProps } from '../../services/__mocks__/router';
 import { FakeStoreBuilder } from '../../store/__mocks__/storeBuilder';
@@ -35,8 +35,10 @@ jest.mock('../../store/Workspaces/index', () => {
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       requestWorkspace: (id: string): AppThunk<Action, Promise<void>> => async (): Promise<void> => { requestWorkspaceMock(); },
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      startWorkspace: (id: string): AppThunk<Action, Promise<void>> => async (): Promise<void> => { startWorkspaceMock(); }
-      ,
+      startWorkspace: (id: string): AppThunk<Action, Promise<void>> => async (): Promise<void> => { startWorkspaceMock(); },
+      requestWorkspaces: (): AppThunk<Action, Promise<void>> => async (): Promise<void> => {
+        return Promise.resolve();
+      },
     } as ActionCreators,
   };
 });
@@ -129,9 +131,9 @@ describe('IDE Loader container', () => {
     jest.resetAllMocks();
   });
 
-  it('should show an error if something wrong', () => {
+  it('should show an error if something wrong', async () => {
     const namespace = 'admin3';
-    const workspaceName = 'name-wksp-4';
+    const workspaceName = 'name-wksp-46';
 
     renderComponent(
       namespace,
@@ -140,10 +142,11 @@ describe('IDE Loader container', () => {
 
     expect(startWorkspaceMock).not.toBeCalled();
     expect(requestWorkspaceMock).not.toBeCalled();
-    expect(showAlertMock).toBeCalledWith(expect.objectContaining({
+
+    await waitFor(() => expect(showAlertMock).toBeCalledWith(expect.objectContaining({
       alertVariant: 'danger',
       title: 'Failed to find the target workspace.'
-    }));
+    })));
 
     const elementHasError = screen.getByTestId('ide-loader-has-error');
     expect(elementHasError.innerHTML).toEqual('true');
