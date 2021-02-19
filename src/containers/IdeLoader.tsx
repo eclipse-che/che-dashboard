@@ -129,9 +129,9 @@ class IdeLoaderContainer extends React.PureComponent<Props, State> {
       workspace.namespace === this.state.namespace && workspace.devfile.metadata.name === this.state.workspaceName);
     if (!isLoading && !workspace) {
       await requestWorkspaces();
+      workspace = allWorkspaces.find(workspace =>
+        workspace.namespace === this.state.namespace && workspace.devfile.metadata.name === this.state.workspaceName);
     }
-    workspace = allWorkspaces.find(workspace =>
-      workspace.namespace === this.state.namespace && workspace.devfile.metadata.name === this.state.workspaceName);
     if (workspace && workspace.runtime && workspace.status === WorkspaceStatus[WorkspaceStatus.RUNNING]) {
       return await this.updateIdeUrl(workspace.runtime);
     } else if (workspace && workspace.status == WorkspaceStatus[WorkspaceStatus.ERROR]) {

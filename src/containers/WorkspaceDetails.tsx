@@ -47,11 +47,13 @@ class WorkspaceDetailsContainer extends React.PureComponent<Props> {
 
   private async init(): Promise<void> {
     const { match: { params }, allWorkspaces, isLoading, requestWorkspaces, setWorkspaceId } = this.props;
-    if (!isLoading && allWorkspaces.length === 0) {
-      await requestWorkspaces();
-    }
-    const workspace = allWorkspaces?.find(workspace =>
+    let workspace = allWorkspaces?.find(workspace =>
       workspace.namespace === params.namespace && workspace.devfile.metadata.name === params.workspaceName);
+    if (!isLoading && !workspace) {
+      await requestWorkspaces();
+      workspace = allWorkspaces?.find(workspace =>
+        workspace.namespace === params.namespace && workspace.devfile.metadata.name === params.workspaceName);
+    }
     if (workspace) {
       setWorkspaceId(workspace.id);
     }
