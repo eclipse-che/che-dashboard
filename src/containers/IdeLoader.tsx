@@ -23,7 +23,7 @@ import { IdeLoaderTab, WorkspaceStatus } from '../services/helpers/types';
 import { AppState } from '../store';
 import { selectIsDevelopment } from '../store/Environment/selectors';
 import * as WorkspaceStore from '../store/Workspaces';
-import { selectAllWorkspaces, selectLogs, selectWorkspaceById } from '../store/Workspaces/selectors';
+import { selectAllWorkspaces, selectIsLoading, selectLogs, selectWorkspaceById } from '../store/Workspaces/selectors';
 
 type Props =
   MappedProps
@@ -124,7 +124,10 @@ class IdeLoaderContainer extends React.PureComponent<Props, State> {
   }
 
   public async componentDidMount(): Promise<void> {
-    const { allWorkspaces } = this.props;
+    const { isLoading, requestWorkspaces, allWorkspaces } = this.props;
+    if (!isLoading && allWorkspaces.length === 0) {
+      await requestWorkspaces();
+    }
     const workspace = allWorkspaces.find(workspace =>
       workspace.namespace === this.state.namespace && workspace.devfile.metadata.name === this.state.workspaceName);
     if (workspace && workspace.runtime && workspace.status === WorkspaceStatus[WorkspaceStatus.RUNNING]) {
@@ -352,6 +355,7 @@ class IdeLoaderContainer extends React.PureComponent<Props, State> {
 const mapStateToProps = (state: AppState) => ({
   workspace: selectWorkspaceById(state),
   allWorkspaces: selectAllWorkspaces(state),
+  isLoading: selectIsLoading(state),
   workspacesLogs: selectLogs(state),
   isDevelopment: selectIsDevelopment(state),
 });

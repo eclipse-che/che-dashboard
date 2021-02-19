@@ -43,15 +43,22 @@ class WorkspaceDetailsContainer extends React.PureComponent<Props> {
       const pathname = `/workspace/${namespace}/${workspaceName}`;
       this.props.history.replace({ pathname });
     }
+  }
 
-    const workspace = this.props.allWorkspaces?.find(workspace =>
-      workspace.namespace === namespace && workspace.devfile.metadata.name === workspaceName);
+  private async init(): Promise<void> {
+    const { match: { params }, allWorkspaces, isLoading, requestWorkspaces, setWorkspaceId } = this.props;
+    if (!isLoading && allWorkspaces.length === 0) {
+      await requestWorkspaces();
+    }
+    const workspace = allWorkspaces?.find(workspace =>
+      workspace.namespace === params.namespace && workspace.devfile.metadata.name === params.workspaceName);
     if (workspace) {
-      this.props.setWorkspaceId(workspace.id);
+      setWorkspaceId(workspace.id);
     }
   }
 
   public componentDidMount(): void {
+    this.init();
     const showAlert = this.workspaceDetailsPageRef.current?.showAlert;
     this.showAlert = (title: string, variant?: AlertVariant) => {
       if (showAlert) {

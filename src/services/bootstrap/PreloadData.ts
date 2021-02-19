@@ -57,12 +57,12 @@ export class PreloadData {
     await this.updateUser();
     await this.updateJsonRpcMasterApi();
 
+    this.updateWorkspaces();
     new ResourceFetcherService().prefetchResources(this.store.getState());
 
     const settings = await this.updateWorkspaceSettings();
     await Promise.all([
       this.updateBranding(),
-      this.updateWorkspaces(),
       this.updateInfrastructureNamespaces(),
       this.updateUserProfile(),
       this.updatePlugins(settings),
