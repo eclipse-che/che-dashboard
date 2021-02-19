@@ -125,10 +125,12 @@ class IdeLoaderContainer extends React.PureComponent<Props, State> {
 
   public async componentDidMount(): Promise<void> {
     const { isLoading, requestWorkspaces, allWorkspaces } = this.props;
-    if (!isLoading && allWorkspaces.length === 0) {
+    let workspace = allWorkspaces.find(workspace =>
+      workspace.namespace === this.state.namespace && workspace.devfile.metadata.name === this.state.workspaceName);
+    if (!isLoading && !workspace) {
       await requestWorkspaces();
     }
-    const workspace = allWorkspaces.find(workspace =>
+    workspace = allWorkspaces.find(workspace =>
       workspace.namespace === this.state.namespace && workspace.devfile.metadata.name === this.state.workspaceName);
     if (workspace && workspace.runtime && workspace.status === WorkspaceStatus[WorkspaceStatus.RUNNING]) {
       return await this.updateIdeUrl(workspace.runtime);
