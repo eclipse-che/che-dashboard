@@ -44,7 +44,7 @@ export enum LoadFactorySteps {
 }
 
 type State = {
-  search: string;
+  search?: string;
   location?: string;
   devfileLocationInfo?: string;
   currentStep: LoadFactorySteps;
@@ -157,44 +157,56 @@ export class FactoryLoaderContainer extends React.PureComponent<Props, State> {
     history.push(buildIdeLoaderPath(workspace));
   }
 
-  private getCreatePolicy(attrs: { [key: string]: string }): CreatePolicy {
-    return attrs['policies.create'] as CreatePolicy || DEFAULT_CREATE_POLICY;
+  private isCreatePolicy(val: string): val is CreatePolicy {
+    return val && (val as CreatePolicy) === 'perclick' || (val as CreatePolicy) === 'peruser';
   }
 
-  private async createWorkspaceFromFactory(): Promise<void> {
-    const { location: dirtyLocation } = this.props.history;
-    const location = sanitizeLocation(dirtyLocation);
+  private getCreatePolicy(attrs: { [key: string]: string }): CreatePolicy | undefined {
+    const policy = attrs['policies.create'] || DEFAULT_CREATE_POLICY;
+    if (this.isCreatePolicy(policy)) {
+      return policy;
+    }
+    this.showAlert(`Unsupported create policy 'policies.create=${policy}'`);
+    return undefined;
+  }
+
+  private clearOldData(): void {
     if (this.props.workspace) {
       this.props.clearWorkspaceId();
     }
-    if (!location.search) {
-      this.showAlert(
-        `Repository/Devfile URL is missing. Please specify it via url query param: ${window.location.origin}${window.location.pathname}#/load-factory?url= .`,
-      );
-      return;
-    } else {
-      this.setState({
-        search: location.search,
-        hasError: false,
-      });
-    }
-
-    this.setState({ currentStep: LoadFactorySteps.CREATE_WORKSPACE });
-
-    const searchParam = new window.URLSearchParams(location.search);
     this.resetOverrideParams();
-    const factoryLink = searchParam.get('url');
-    searchParam.delete('url');
-    if (!factoryLink) {
+    this.setState({ hasError: false });
+  }
+
+  private getSearchParam(): string | undefined {
+    const { location: dirtyLocation } = this.props.history;
+    const { search } = sanitizeLocation(dirtyLocation);
+    if (!search) {
       this.showAlert(
         `Repository/Devfile URL is missing. Please specify it via url query param: ${window.location.origin}${window.location.pathname}#/load-factory?url= .`,
       );
-      return;
     }
+    return search;
+  }
 
+  private getLocation(search: string): string | null {
+    const searchParam = new window.URLSearchParams(search);
+    const location = searchParam.get('url');
+    searchParam.delete('url');
+    if (!location) {
+      this.showAlert(
+        `Repository/Devfile URL is missing. Please specify it via url query param: ${window.location.origin}${window.location.pathname}#/load-factory?url= .`,
+      );
+    }
+    return location;
+  }
+
+  private getAttributes(location: string, search: string): { [key: string]: string } {
+    const searchParam = new window.URLSearchParams(search);
+    searchParam.delete('url');
     // set devfile attributes
     const attrs: { [key: string]: string } = {};
-    const factoryUrl = new window.URL(factoryLink);
+    const factoryUrl = new window.URL(location);
     searchParam.forEach((val: string, key: string) => {
       if (WS_ATTRIBUTES_TO_SAVE.indexOf(key) !== -1) {
         attrs[key] = val;
@@ -203,60 +215,51 @@ export class FactoryLoaderContainer extends React.PureComponent<Props, State> {
       factoryUrl.searchParams.append(key, val);
     });
     attrs.stackName = factoryUrl.toString();
-    const createPolicy = this.getCreatePolicy(attrs);
 
-    this.setState({
-      currentStep: LoadFactorySteps.LOOKING_FOR_DEVFILE,
-      location: factoryLink,
-      createPolicy
-    });
-    await delay();
+    return attrs;
+  }
 
+  private async resolveDevfile(location: string): Promise<api.che.workspace.devfile.Devfile | undefined> {
     try {
-      await this.props.requestFactoryResolver(factoryLink);
+      await this.props.requestFactoryResolver(location);
     } catch (e) {
       this.showAlert('Failed to resolve a devfile.');
-      return;
+      return undefined;
     }
     if (!this.factoryResolver
       || !this.factoryResolver.resolver
       || !this.factoryResolver.resolver.devfile
-      || this.factoryResolver.resolver.location !== factoryLink) {
+      || this.factoryResolver.resolver.location !== location) {
       this.showAlert('Failed to resolve a devfile.');
-      return;
+      return undefined;
     }
     const { source } = this.factoryResolver.resolver;
+    const searchParam = new window.URLSearchParams(this.state.search);
     const devfileLocationInfo = !source || source === 'repo' ?
       `${searchParam.get('url')}` :
-      `\`${source}\` in github repo ${factoryLink}`;
-    this.setState({ currentStep: LoadFactorySteps.LOOKING_FOR_DEVFILE, devfileLocationInfo });
-    const devfile = this.getTargetDevfile();
-    this.setState({ currentStep: LoadFactorySteps.APPLYING_DEVFILE });
-    await delay();
+      `\`${source}\` in github repo ${location}`;
+    this.setState({ devfileLocationInfo });
+    return this.getTargetDevfile();
+  }
 
+  private async resolveWorkspace(devfile: api.che.workspace.devfile.Devfile, attrs: { [key: string]: string }): Promise<che.Workspace | undefined> {
     let workspace: che.Workspace | undefined;
     if (this.state.createPolicy === 'peruser') {
       workspace = this.props.allWorkspaces.find(workspace => {
         return workspace.attributes && workspace.attributes.stackName === attrs.stackName;
       });
     }
-    if (workspace && WorkspaceStatus[workspace.status] === WorkspaceStatus.RUNNING) {
-      this.props.setWorkspaceId(workspace.id);
-      this.setState({ currentStep: LoadFactorySteps.START_WORKSPACE });
-      await this.openIde();
-      return;
-    }
     if (!workspace) {
       try {
         workspace = await this.props.createWorkspaceFromDevfile(devfile, undefined, undefined, attrs);
       } catch (e) {
         this.showAlert(`Failed to create a workspace. ${e}`);
-        return;
+        return undefined;
       }
     }
     if (!workspace) {
       this.showAlert('Failed to create a workspace.');
-      return;
+      return undefined;
     }
     this.props.setWorkspaceId(workspace.id);
     // check if it ephemeral
@@ -267,19 +270,71 @@ export class FactoryLoaderContainer extends React.PureComponent<Props, State> {
       this.showAlert('You\'re starting an ephemeral workspace. All changes to the source code will be lost ' +
         'when the workspace is stopped unless they are pushed to a remote code repository.', AlertVariant.warning);
     }
-    await delay();
+
+    return workspace;
+  }
+
+  private async startWorkspace(workspace: che.Workspace): Promise<void> {
     if (this.state.currentStep !== LoadFactorySteps.START_WORKSPACE
       && this.state.currentStep !== LoadFactorySteps.OPEN_IDE) {
       this.setState({ currentStep: LoadFactorySteps.START_WORKSPACE });
-      try {
-        await this.props.startWorkspace(`${workspace.id}`);
-        await this.openIde();
-      } catch (e) {
-        const workspaceName = workspace.devfile.metadata.name;
-        this.showAlert(`Workspace ${workspaceName} failed to start. ${e.message ? e.message : ''}`);
+      if (WorkspaceStatus[workspace.status] === WorkspaceStatus.RUNNING) {
         return;
+      } else {
+        try {
+          await this.props.startWorkspace(`${workspace.id}`);
+        } catch (e) {
+          const workspaceName = workspace.devfile.metadata.name;
+          this.showAlert(`Workspace ${workspaceName} failed to start. ${e.message ? e.message : ''}`);
+          return;
+        }
       }
     }
+  }
+
+  private async createWorkspaceFromFactory(): Promise<void> {
+    this.clearOldData();
+
+    const search = this.getSearchParam();
+
+    if (!search) {
+      return;
+    }
+    this.setState({ search, currentStep: LoadFactorySteps.CREATE_WORKSPACE });
+
+    const location = this.getLocation(search);
+
+    if (!location) {
+      return;
+    }
+
+    const attrs = this.getAttributes(location, search);
+    const createPolicy = this.getCreatePolicy(attrs);
+
+    if (!createPolicy) {
+      return;
+    }
+    this.setState({ location, createPolicy, currentStep: LoadFactorySteps.LOOKING_FOR_DEVFILE });
+
+    await delay();
+
+    const devfile = await this.resolveDevfile(location);
+
+    if (!devfile) {
+      return;
+    }
+    this.setState({ currentStep: LoadFactorySteps.APPLYING_DEVFILE });
+
+    await delay();
+
+    const workspace = await this.resolveWorkspace(devfile, attrs);
+
+    if (!workspace) {
+      return;
+    }
+    await this.startWorkspace(workspace);
+
+    await this.openIde();
   }
 
   render() {
