@@ -16,7 +16,7 @@ This file contains a manual contribution to .deps/dev.md and it's needed because
 | `loglevel@1.6.8` | [CQ22386](https://dev.eclipse.org/ipzilla/show_bug.cgi?id=22386) |
 | `multi-stage-sourcemap@0.2.1` | [CQ22386](https://dev.eclipse.org/ipzilla/show_bug.cgi?id=22386) |
 | `node-forge@0.10.0` | [CQ22386](https://dev.eclipse.org/ipzilla/show_bug.cgi?id=22386) |
-| `node-notifier@7.0.1` | [CQ22386](https://dev.eclipse.org/ipzilla/show_bug.cgi?id=22386) |
+| `node-notifier@8.0.1` | [CQ22386](https://dev.eclipse.org/ipzilla/show_bug.cgi?id=22386) |
 | `pirates@4.0.1` | [CQ22386](https://dev.eclipse.org/ipzilla/show_bug.cgi?id=22386) |
 | `select-hose@2.0.0` | [CQ22386](https://dev.eclipse.org/ipzilla/show_bug.cgi?id=22386) |
 | `sshpk@1.16.1` | [CQ22386](https://dev.eclipse.org/ipzilla/show_bug.cgi?id=22386) |
