@@ -11,10 +11,11 @@
  */
 
 import { AxiosInstance, AxiosRequestConfig } from 'axios';
-import { injectable } from 'inversify';
+import { inject, injectable } from 'inversify';
 import WorkspaceClient, { IWorkspaceMasterApi, IRemoteAPI } from '@eclipse-che/workspace-client';
 import { KeycloakAuthService } from '../keycloak/auth';
 import { EventEmitter } from 'events';
+import { KeycloakSetupService } from '../keycloak/setup';
 
 export type WebSocketsFailedCallback = () => void;
 
@@ -37,7 +38,9 @@ export class CheWorkspaceClient {
   /**
    * Default constructor that is using resource.
    */
-  constructor() {
+  constructor(
+    @inject(KeycloakSetupService) private keycloakSetupService: KeycloakSetupService,
+  ) {
     this.baseUrl = '/api';
     this._failingWebSockets = [];
     this.webSocketEventEmitter = new EventEmitter();
@@ -53,39 +56,29 @@ export class CheWorkspaceClient {
       this.axios.defaults.headers.common = {};
     }
 
-    if (!KeycloakAuthService.sso) {
-      return;
-    }
-    let isUpdated: boolean;
-    const updateTimer = () => {
-      if (!isUpdated) {
-        isUpdated = true;
-        setTimeout(() => {
-          isUpdated = false;
-        }, 30000);
+    this.keycloakSetupService.ready.then(() => {
+      if (!KeycloakAuthService.sso) {
+        return;
       }
-    };
-    updateTimer();
-    this.axios.interceptors.request.use(async request => {
-      if (!isUpdated) {
-        updateTimer();
-        await this.handleRefreshToken(VALIDITY_TIME, request);
-      }
-      return request;
-    });
 
-    window.addEventListener('message', (event: MessageEvent) => {
-      if (event.data.startsWith('update-token:')) {
-        const receivedValue = parseInt(event.data.split(':')[1], 10);
-        const validityTime = Number.isNaN(receivedValue) ? VALIDITY_TIME : Math.ceil(receivedValue / 1000);
-        this.handleRefreshToken(validityTime);
-      }
-    }, false);
+      this.axios.interceptors.request.use(async config => {
+        await this.handleRefreshToken(VALIDITY_TIME, config);
+        return config;
+      });
+
+      window.addEventListener('message', (event: MessageEvent) => {
+        if (event.data.startsWith('update-token:')) {
+          const receivedValue = parseInt(event.data.split(':')[1], 10);
+          const validityTime = Number.isNaN(receivedValue) ? VALIDITY_TIME : Math.ceil(receivedValue / 1000);
+          this.handleRefreshToken(validityTime);
+        }
+      }, false);
+    });
   }
 
-  private async handleRefreshToken(minValidity: number, request?: AxiosRequestConfig): Promise<void> {
+  private async handleRefreshToken(minValidity: number, config?: AxiosRequestConfig): Promise<void> {
     try {
-      await this.refreshToken(minValidity, request);
+      await this.refreshToken(minValidity, config);
     } catch (e) {
       console.error('Failed to refresh token.', e);
       this.redirectedToKeycloakLogin();
@@ -162,7 +155,7 @@ export class CheWorkspaceClient {
     return Array.from(this._failingWebSockets);
   }
 
-  private refreshToken(minValidity: number, request?: AxiosRequestConfig): Promise<string | Error> {
+  private refreshToken(minValidity: number, config?: AxiosRequestConfig): Promise<string | Error> {
     const { keycloak } = KeycloakAuthService;
     if (keycloak) {
       return new Promise((resolve, reject) => {
@@ -170,8 +163,8 @@ export class CheWorkspaceClient {
           if (refreshed && keycloak.token) {
             const header = 'Authorization';
             this.axios.defaults.headers.common[header] = `Bearer ${keycloak.token}`;
-            if (request) {
-              request.headers.common[header] = `Bearer ${keycloak.token}`;
+            if (config) {
+              config.headers.common[header] = `Bearer ${keycloak.token}`;
             }
           }
           resolve(keycloak.token as string);
