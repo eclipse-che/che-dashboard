@@ -37,7 +37,7 @@ export class DevWorkspaceClient extends WorkspaceClient {
   constructor() {
     super();
     this.axios.defaults.baseURL = '/api/unsupported/k8s';
-    this.devworkspaceClient = DevWorkspaceClientLibrary.getApi(this.axios);
+    this.devworkspaceClient = DevWorkspaceClientLibrary.getRestApi(this.axios).workspaceApi;
     this.previousItems = new Map();
   }
 
