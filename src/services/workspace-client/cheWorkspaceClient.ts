@@ -10,10 +10,11 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import { injectable } from 'inversify';
+import { inject, injectable } from 'inversify';
 import { default as WorkspaceClientLib, IWorkspaceMasterApi, IRemoteAPI } from '@eclipse-che/workspace-client';
 import { EventEmitter } from 'events';
 import { WorkspaceClient } from '.';
+import { KeycloakSetupService } from '../keycloak/setup';
 
 export type WebSocketsFailedCallback = () => void;
 
@@ -36,8 +37,8 @@ export class CheWorkspaceClient extends WorkspaceClient {
   /**
    * Default constructor that is using resource.
    */
-  constructor() {
-    super();
+  constructor(@inject(KeycloakSetupService) keycloakSetupService: KeycloakSetupService) {
+    super(keycloakSetupService);
     this.baseUrl = '/api';
     this._failingWebSockets = [];
     this.webSocketEventEmitter = new EventEmitter();

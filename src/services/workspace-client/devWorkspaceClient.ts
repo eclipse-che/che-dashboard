@@ -10,13 +10,14 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import { injectable } from 'inversify';
-import { convertDevWorkspaceV2ToV1, isDeleting, isWebTerminal } from '../../devworkspace';
+import { inject, injectable } from 'inversify';
+import { convertDevWorkspaceV2ToV1, isDeleting, isWebTerminal } from '../helpers/devworkspace';
 import { WorkspaceClient } from './';
 import { DevWorkspaceClient as DevWorkspaceClientLibrary, IDevWorkspaceApi, IDevWorkspaceDevfile } from '@eclipse-che/devworkspace-client';
 import { WorkspaceStatus } from '../helpers/types';
+import { KeycloakSetupService } from '../keycloak/setup';
 
-interface IStatusUpdate {
+export interface IStatusUpdate {
   error?: string;
   status?: string;
   prevStatus?: string;
@@ -34,8 +35,8 @@ export class DevWorkspaceClient extends WorkspaceClient {
   private _defaultEditor?: string;
   private _defaultPlugins?: string[];
 
-  constructor() {
-    super();
+  constructor(@inject(KeycloakSetupService) keycloakSetupService: KeycloakSetupService) {
+    super(keycloakSetupService);
     this.axios.defaults.baseURL = '/api/unsupported/k8s';
     this.devworkspaceClient = DevWorkspaceClientLibrary.getRestApi(this.axios).workspaceApi;
     this.previousItems = new Map();
@@ -129,7 +130,7 @@ export class DevWorkspaceClient extends WorkspaceClient {
         status: status,
         prevStatus: prevStatus?.status,
       };
-      this.previousItems.get(namespace)?.set(workspaceId, newUpdate);
+      prevWorkspace.set(workspaceId, newUpdate);
       return newUpdate;
     } else {
       // there is not a previous update

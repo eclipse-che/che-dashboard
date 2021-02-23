@@ -11,7 +11,7 @@
  */
 
 import { AxiosInstance, AxiosRequestConfig } from 'axios';
-import { inject, injectable } from 'inversify';
+import { injectable } from 'inversify';
 import { KeycloakSetupService } from '../keycloak/setup';
 import { KeycloakAuthService } from '../keycloak/auth';
 import { default as WorkspaceClientLib } from '@eclipse-che/workspace-client';
@@ -25,9 +25,8 @@ export type WebSocketsFailedCallback = () => void;
 @injectable()
 export abstract class WorkspaceClient {
   protected readonly axios: AxiosInstance;
-  private tokenInterceptorsEnabled = false;
 
-  constructor(@inject(KeycloakSetupService) private keycloakSetupService: KeycloakSetupService) {
+  constructor(private keycloakSetupService: KeycloakSetupService) {
     // todo change this temporary solution after adding the proper method to workspace-client https://github.com/eclipse/che/issues/18311
     this.axios = (WorkspaceClientLib as any).createAxiosInstance({ loggingEnabled: false });
     if (this.axios.defaults.headers === undefined) {
@@ -48,7 +47,7 @@ export abstract class WorkspaceClient {
       });
 
       window.addEventListener('message', (event: MessageEvent) => {
-        if (event.data.startsWith('update-token:')) {
+        if (typeof event.data === 'string' && event.data.startsWith('update-token:')) {
           const receivedValue = parseInt(event.data.split(':')[1], 10);
           const validityTime = Number.isNaN(receivedValue) ? VALIDITY_TIME : Math.ceil(receivedValue / 1000);
           this.handleRefreshToken(validityTime);
