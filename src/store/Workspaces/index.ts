@@ -18,8 +18,8 @@ import { container } from '../../inversify.config';
 import { CheWorkspaceClient } from '../../services/workspace-client/cheWorkspaceClient';
 import { WorkspaceStatus } from '../../services/helpers/types';
 import { createState } from '../helpers';
-import { isDevWorkspace } from '../../devworkspace';
-import { DevWorkspaceClient } from '../../services/workspace-client/devWorkspaceClient';
+import { isDevWorkspace } from '../../services/helpers/devworkspace';
+import { DevWorkspaceClient, IStatusUpdate } from '../../services/workspace-client/devWorkspaceClient';
 import { IDevWorkspaceDevfile } from '@eclipse-che/devworkspace-client';
 
 const cheWorkspaceClient = container.get(CheWorkspaceClient);
@@ -129,7 +129,7 @@ export type ResourceQueryParams = {
   [propName: string]: string | boolean | undefined;
 }
 export type ActionCreators = {
-  updateDevWorkspaceStatus: (workspace: che.Workspace, message: any) => AppThunk<KnownAction, Promise<void>>;
+  updateDevWorkspaceStatus: (workspace: che.Workspace, message: IStatusUpdate) => AppThunk<KnownAction, Promise<void>>;
   requestWorkspaces: () => AppThunk<KnownAction, Promise<void>>;
   requestWorkspace: (workspace: che.Workspace) => AppThunk<KnownAction, Promise<void>>;
   startWorkspace: (workspace: che.Workspace, params?: ResourceQueryParams) => AppThunk<KnownAction, Promise<void>>;
@@ -234,7 +234,7 @@ function unSubscribeToEnvironmentOutput(workspaceId: string): void {
 // They don't directly mutate state, but they can have external side-effects (such as loading data).
 export const actionCreators: ActionCreators = {
 
-  updateDevWorkspaceStatus: (workspace: che.Workspace, message: any): AppThunk<KnownAction, Promise<void>> => async (dispatch): Promise<void> => {
+  updateDevWorkspaceStatus: (workspace: che.Workspace, message: IStatusUpdate): AppThunk<KnownAction, Promise<void>> => async (dispatch): Promise<void> => {
     onStatusUpdateReceived(workspace, dispatch, message);
   },
 
@@ -269,15 +269,15 @@ export const actionCreators: ActionCreators = {
 
   },
 
-  requestWorkspace: (cheWorkspace: any): AppThunk<KnownAction, Promise<void>> => async (dispatch): Promise<void> => {
+  requestWorkspace: (cheWorkspace: che.Workspace): AppThunk<KnownAction, Promise<void>> => async (dispatch): Promise<void> => {
     dispatch({ type: 'REQUEST_WORKSPACES' });
 
     try {
       let workspace: any;
       const isDevWorkspaceEnabled = await devWorkspaceClient.isEnabled();
       if (isDevWorkspaceEnabled && isDevWorkspace(cheWorkspace)) {
-        const namespace = cheWorkspace.metadata.namespace;
-        const name = cheWorkspace.metadata.name;
+        const namespace = cheWorkspace.namespace as string;
+        const name = cheWorkspace.devfile.metadata.name;
         workspace = await devWorkspaceClient.getWorkspaceByName(namespace, name);
       } else {
         workspace = await cheWorkspaceClient.restApiClient.getById<che.Workspace>(cheWorkspace.id);
@@ -333,12 +333,12 @@ export const actionCreators: ActionCreators = {
     }
   },
 
-  deleteWorkspace: (workspace: any): AppThunk<KnownAction, Promise<void>> => async (dispatch): Promise<void> => {
+  deleteWorkspace: (workspace: che.Workspace): AppThunk<KnownAction, Promise<void>> => async (dispatch): Promise<void> => {
     try {
       const isDevWorkspaceEnabled = await devWorkspaceClient.isEnabled();
       if (isDevWorkspaceEnabled && isDevWorkspace(workspace)) {
-        const namespace = workspace.metadata.namespace;
-        const name = workspace.metadata.name;
+        const namespace = workspace.namespace as string;
+        const name = workspace.devfile.metadata.name;
         await devWorkspaceClient.delete(namespace, name);
         dispatch({ type: 'DELETE_WORKSPACE', workspaceId: workspace.id });
       } else {
