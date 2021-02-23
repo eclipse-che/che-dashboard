@@ -285,7 +285,7 @@ export class FactoryLoaderContainer extends React.PureComponent<Props, State> {
         if (WorkspaceStatus[workspace.status] === WorkspaceStatus.STOPPED) {
           await this.props.startWorkspace(workspace);
           this.setState({ currentStep: LoadFactorySteps.START_WORKSPACE });
-        } else if (WorkspaceStatus[workspace.status] === WorkspaceStatus.RUNNING) {
+        } else if (WorkspaceStatus[workspace.status] === WorkspaceStatus.RUNNING || WorkspaceStatus[workspace.status] === WorkspaceStatus.STARTING) {
           this.setState({ currentStep: LoadFactorySteps.START_WORKSPACE });
         }
       } catch (e) {
