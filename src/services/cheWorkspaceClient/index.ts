@@ -170,7 +170,7 @@ export class CheWorkspaceClient {
             config.headers.common[header] = `Bearer ${keycloak.token}`;
           }
         }
-        resolve(keycloak.token);
+        resolve(keycloak.token as string);
       }).error(error => {
         reject(error);
       });

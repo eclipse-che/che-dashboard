@@ -122,8 +122,8 @@ describe('Factory Loader container', () => {
 
     jest.runOnlyPendingTimers();
     expect(showAlertMock).not.toHaveBeenCalled();
-    await waitFor(() => expect(requestWorkspaceMock).toHaveBeenCalledWith(workspace.id));
-    await waitFor(() => expect(startWorkspaceMock).toHaveBeenCalledWith(workspace.id));
+    await waitFor(() => expect(requestWorkspaceMock).toHaveBeenCalledWith(workspace));
+    await waitFor(() => expect(startWorkspaceMock).toHaveBeenCalledWith(workspace));
     expect(LoadFactorySteps[elementCurrentStep.innerHTML]).toEqual(LoadFactorySteps[LoadFactorySteps.START_WORKSPACE]);
   });
 
@@ -153,11 +153,11 @@ describe('Factory Loader container', () => {
       'when the workspace is stopped unless they are pushed to a remote code repository.'
     );
     expect(setWorkspaceIdMock).toHaveBeenCalledWith(workspace.id);
-    await waitFor(() => expect(requestWorkspaceMock).toHaveBeenCalledWith(workspace.id));
+    await waitFor(() => expect(requestWorkspaceMock).toHaveBeenCalledWith(workspace));
     await waitFor(() => expect(startWorkspaceMock).not.toHaveBeenCalled());
 
     jest.runOnlyPendingTimers();
-    await waitFor(() => expect(requestWorkspaceMock).toHaveBeenCalledWith(workspace.id));
+    await waitFor(() => expect(requestWorkspaceMock).toHaveBeenCalledWith(workspace));
     expect(LoadFactorySteps[elementCurrentStep.innerHTML]).toEqual(LoadFactorySteps[LoadFactorySteps.OPEN_IDE]);
   });
 
@@ -204,7 +204,7 @@ describe('Factory Loader container', () => {
     expect(createWorkspaceFromDevfileMock).not.toHaveBeenCalled();
 
     jest.runOnlyPendingTimers();
-    await waitFor(() => expect(requestWorkspaceMock).toHaveBeenCalledWith(workspace.id));
+    await waitFor(() => expect(requestWorkspaceMock).toHaveBeenCalledWith(workspace));
     expect(LoadFactorySteps[elementCurrentStep.innerHTML]).toEqual(LoadFactorySteps[LoadFactorySteps.OPEN_IDE]);
   });
 
