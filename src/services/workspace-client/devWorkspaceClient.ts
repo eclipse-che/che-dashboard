@@ -16,6 +16,7 @@ import { WorkspaceClient } from './';
 import { DevWorkspaceClient as DevWorkspaceClientLibrary, IDevWorkspaceApi, IDevWorkspaceDevfile } from '@eclipse-che/devworkspace-client';
 import { WorkspaceStatus } from '../helpers/types';
 import { KeycloakSetupService } from '../keycloak/setup';
+import { delay } from '../helpers/delay';
 
 export interface IStatusUpdate {
   error?: string;
@@ -34,12 +35,14 @@ export class DevWorkspaceClient extends WorkspaceClient {
   private previousItems: Map<string, Map<string, IStatusUpdate>>;
   private _defaultEditor?: string;
   private _defaultPlugins?: string[];
+  private maxStatusAttempts: number;
 
   constructor(@inject(KeycloakSetupService) keycloakSetupService: KeycloakSetupService) {
     super(keycloakSetupService);
     this.axios.defaults.baseURL = '/api/unsupported/k8s';
     this.devworkspaceClient = DevWorkspaceClientLibrary.getRestApi(this.axios).workspaceApi;
     this.previousItems = new Map();
+    this.maxStatusAttempts = 10;
   }
 
   isEnabled(): Promise<boolean> {
@@ -58,7 +61,16 @@ export class DevWorkspaceClient extends WorkspaceClient {
   }
 
   async getWorkspaceByName(namespace: string, workspaceName: string): Promise<che.Workspace> {
-    const workspace = await this.devworkspaceClient.getWorkspaceByName(namespace, workspaceName);
+    let workspace = await this.devworkspaceClient.getWorkspaceByName(namespace, workspaceName);
+    let attempted = 0;
+    while ((!workspace.status || !workspace.status.phase || !workspace.status.ideUrl) && attempted < this.maxStatusAttempts) {
+      workspace = await this.devworkspaceClient.getWorkspaceByName(namespace, workspaceName);
+      attempted += 1;
+      await delay();
+    }
+    if (!workspace.status || !workspace.status.phase || !workspace.status.ideUrl) {
+      throw new Error(`Could not retrieve devworkspace status information from ${workspaceName} in namespace ${namespace}`);
+    }
     return convertDevWorkspaceV2ToV1(workspace);
   }
 
