@@ -261,7 +261,6 @@ export class FactoryLoaderContainer extends React.PureComponent<Props, State> {
       this.showAlert('Failed to create a workspace.');
       return undefined;
     }
-    this.props.setWorkspaceId(workspace.id);
     // check if it ephemeral
     if (workspace.devfile.attributes &&
       workspace.devfile.attributes.persistVolumes === 'false' &&
@@ -274,20 +273,23 @@ export class FactoryLoaderContainer extends React.PureComponent<Props, State> {
     return workspace;
   }
 
-  private async startWorkspace(workspace: che.Workspace): Promise<void> {
+  private async startWorkspace(): Promise<void> {
+    const workspace = this.props.workspace;
+    if (!workspace) {
+      return;
+    }
     if (this.state.currentStep !== LoadFactorySteps.START_WORKSPACE
       && this.state.currentStep !== LoadFactorySteps.OPEN_IDE) {
-      this.setState({ currentStep: LoadFactorySteps.START_WORKSPACE });
-      if (WorkspaceStatus[workspace.status] === WorkspaceStatus.RUNNING) {
-        return;
-      } else {
-        try {
-          await this.props.startWorkspace(`${workspace.id}`);
-        } catch (e) {
-          const workspaceName = workspace.devfile.metadata.name;
-          this.showAlert(`Workspace ${workspaceName} failed to start. ${e.message ? e.message : ''}`);
-          return;
+      try {
+        await this.props.requestWorkspace(workspace.id);
+        if (WorkspaceStatus[workspace.status] === WorkspaceStatus.STOPPED) {
+          await this.props.startWorkspace(workspace.id);
+          this.setState({ currentStep: LoadFactorySteps.START_WORKSPACE });
+        } else if (WorkspaceStatus[workspace.status] === WorkspaceStatus.RUNNING) {
+          this.setState({ currentStep: LoadFactorySteps.START_WORKSPACE });
         }
+      } catch (e) {
+        this.showAlert(`Getting workspace detail data failed. ${e}`);
       }
     }
   }
@@ -332,7 +334,10 @@ export class FactoryLoaderContainer extends React.PureComponent<Props, State> {
     if (!workspace) {
       return;
     }
-    await this.startWorkspace(workspace);
+
+    this.props.setWorkspaceId(workspace.id);
+
+    await this.startWorkspace();
 
     await this.openIde();
   }

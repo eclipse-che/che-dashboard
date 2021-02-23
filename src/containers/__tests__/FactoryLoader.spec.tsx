@@ -101,7 +101,33 @@ describe('Factory Loader container', () => {
     jest.useRealTimers();
   });
 
-  it('should resolve the factory, create a new workspace, start the workspace and open IDE', async () => {
+  it('should resolve the factory, create and start a new workspace', async () => {
+    const location = 'http://test-location';
+    const workspace = createFakeWorkspace('wrksp-test-id', 'wrksp-test-name');
+
+    renderComponent(location, workspace);
+
+    const elementCurrentStep = screen.getByTestId('factory-loader-current-step');
+
+    await waitFor(() => expect(clearWorkspaceIdMock).toHaveBeenCalled());
+    expect(LoadFactorySteps[elementCurrentStep.innerHTML]).toEqual(LoadFactorySteps[LoadFactorySteps.LOOKING_FOR_DEVFILE]);
+
+    jest.runOnlyPendingTimers();
+    await waitFor(() => expect(requestFactoryResolverMock).toHaveBeenCalledWith(location));
+    expect(LoadFactorySteps[elementCurrentStep.innerHTML]).toEqual(LoadFactorySteps[LoadFactorySteps.APPLYING_DEVFILE]);
+
+    jest.runOnlyPendingTimers();
+    await waitFor(() =>
+      expect(createWorkspaceFromDevfileMock).toHaveBeenCalledWith(workspace.devfile, undefined, undefined, { stackName: location + '/' }));
+
+    jest.runOnlyPendingTimers();
+    expect(showAlertMock).not.toHaveBeenCalled();
+    await waitFor(() => expect(requestWorkspaceMock).toHaveBeenCalledWith(workspace.id));
+    await waitFor(() => expect(startWorkspaceMock).toHaveBeenCalledWith(workspace.id));
+    expect(LoadFactorySteps[elementCurrentStep.innerHTML]).toEqual(LoadFactorySteps[LoadFactorySteps.START_WORKSPACE]);
+  });
+
+  it('should resolve the factory, create a new workspace and open IDE', async () => {
     const location = 'http://test-location';
     const workspace = createFakeWorkspaceWithRuntime('id-wksp-test');
 
@@ -121,13 +147,14 @@ describe('Factory Loader container', () => {
       expect(createWorkspaceFromDevfileMock).toHaveBeenCalledWith(workspace.devfile, undefined, undefined, { stackName: location + '/' }));
 
     jest.runOnlyPendingTimers();
-    expect(setWorkspaceIdMock).toHaveBeenCalledWith(workspace.id);
     expect(showAlertMock).toBeCalledWith(
       AlertVariant.warning,
       'You\'re starting an ephemeral workspace. All changes to the source code will be lost ' +
       'when the workspace is stopped unless they are pushed to a remote code repository.'
     );
-    await waitFor(() => expect(startWorkspaceMock).toHaveBeenCalledWith(workspace.id));
+    expect(setWorkspaceIdMock).toHaveBeenCalledWith(workspace.id);
+    await waitFor(() => expect(requestWorkspaceMock).toHaveBeenCalledWith(workspace.id));
+    await waitFor(() => expect(startWorkspaceMock).not.toHaveBeenCalled());
 
     jest.runOnlyPendingTimers();
     await waitFor(() => expect(requestWorkspaceMock).toHaveBeenCalledWith(workspace.id));
