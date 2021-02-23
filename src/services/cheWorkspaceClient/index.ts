@@ -155,27 +155,27 @@ export class CheWorkspaceClient {
     return Array.from(this._failingWebSockets);
   }
 
-  private refreshToken(minValidity: number, config?: AxiosRequestConfig): Promise<string | Error> {
-    const { keycloak } = KeycloakAuthService;
-    if (keycloak) {
-      return new Promise((resolve, reject) => {
-        keycloak.updateToken(minValidity).success((refreshed: boolean) => {
-          if (refreshed && keycloak.token) {
-            const header = 'Authorization';
-            this.axios.defaults.headers.common[header] = `Bearer ${keycloak.token}`;
-            if (config) {
-              config.headers.common[header] = `Bearer ${keycloak.token}`;
-            }
+  private async refreshToken(minValidity: number, config?: AxiosRequestConfig): Promise<string> {
+    const { keycloak, sso } = KeycloakAuthService;
+    if (!sso || !keycloak) {
+      return '';
+    }
+
+    const token = await new Promise<string>((resolve, reject) => {
+      keycloak.updateToken(minValidity).success((refreshed: boolean) => {
+        if (refreshed && keycloak.token) {
+          const header = 'Authorization';
+          this.axios.defaults.headers.common[header] = `Bearer ${keycloak.token}`;
+          if (config) {
+            config.headers.common[header] = `Bearer ${keycloak.token}`;
           }
-          resolve(keycloak.token as string);
-        }).error((error: any) => {
-          reject(new Error(error));
-        });
+        }
+        resolve(keycloak.token);
+      }).error(error => {
+        reject(error);
       });
-    }
-    if (!this.token) {
-      return Promise.reject(new Error('Unable to resolve token'));
-    }
-    return Promise.resolve(this.token);
+    });
+
+    return token;
   }
 }
