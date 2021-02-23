@@ -92,19 +92,19 @@ export class WorkspaceActionsProvider extends React.Component<Props, State> {
         }
       case WorkspaceAction.START_DEBUG_AND_OPEN_LOGS:
         {
-          await this.props.startWorkspace(workspace.id, {
+          await this.props.startWorkspace(workspace, {
             'debug-workspace-start': true
           });
           return buildIdeLoaderPath(workspace, IdeLoaderTab.Logs);
         }
       case WorkspaceAction.START_IN_BACKGROUND:
         {
-          await this.props.startWorkspace(workspace.id);
+          await this.props.startWorkspace(workspace);
         }
         break;
       case WorkspaceAction.STOP_WORKSPACE:
         {
-          await this.props.stopWorkspace(workspace.id);
+          await this.props.stopWorkspace(workspace);
         }
         break;
       case WorkspaceAction.ADD_PROJECT:
@@ -122,7 +122,7 @@ export class WorkspaceActionsProvider extends React.Component<Props, State> {
           });
 
           try {
-            await this.props.deleteWorkspace(workspace.id);
+            await this.props.deleteWorkspace(workspace);
             this.deleting.delete(id);
             this.setState({
               isDeleted: Array.from(this.deleting),
