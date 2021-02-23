@@ -22,9 +22,10 @@ import * as Plugins from '../../store/Plugins';
 import * as UserProfileStore from '../../store/UserProfile';
 import * as UserStore from '../../store/User';
 import * as WorkspacesStore from '../../store/Workspaces';
-import { CheWorkspaceClient } from '../cheWorkspaceClient';
 import { ResourceFetcherService } from '../resource-fetcher';
 import { IssuesReporterService } from './issuesReporter';
+import { CheWorkspaceClient } from '../workspace-client/cheWorkspaceClient';
+import { DevWorkspaceClient } from '../workspace-client/devWorkspaceClient';
 
 /**
  * This class prepares all init data.
@@ -41,6 +42,9 @@ export class PreloadData {
   @lazyInject(CheWorkspaceClient)
   private readonly cheWorkspaceClient: CheWorkspaceClient;
 
+  @lazyInject(DevWorkspaceClient)
+  private readonly devWorkspaceClient: DevWorkspaceClient;
+
   private store: Store<AppState>;
 
   constructor(store: Store<AppState>) {
@@ -56,6 +60,15 @@ export class PreloadData {
     this.updateWorkspaces();
     new ResourceFetcherService().prefetchResources(this.store.getState());
 
+    const isDevWorkspaceEnabled = await this.devWorkspaceClient.isEnabled();
+    if (isDevWorkspaceEnabled) {
+      const defaultNamespace = await this.cheWorkspaceClient.getDefaultNamespace();
+      const namespaceInitialized = await this.initializeNamespace(defaultNamespace);
+      if (namespaceInitialized) {
+        this.watchNamespaces(defaultNamespace);
+      }
+    }
+
     const settings = await this.updateWorkspaceSettings();
     await Promise.all([
       this.updateBranding(),
@@ -64,6 +77,7 @@ export class PreloadData {
       this.updatePlugins(settings),
       this.updateRegistriesMetadata(settings),
       this.updateDevfileSchema(),
+      this.updateDefaultComponents()
     ]);
   }
 
@@ -83,6 +97,15 @@ export class PreloadData {
 
   private async updateJsonRpcMasterApi(): Promise<void> {
     return this.cheWorkspaceClient.updateJsonRpcMasterApi();
+  }
+
+  private async initializeNamespace(namespace: string): Promise<boolean> {
+    return this.devWorkspaceClient.initializeNamespace(namespace);
+  }
+
+  private async watchNamespaces(namespace: string): Promise<void> {
+    const { updateDevWorkspaceStatus } = WorkspacesStore.actionCreators;
+    return this.devWorkspaceClient.subscribeToNamespace(namespace, updateDevWorkspaceStatus, this.store.dispatch);
   }
 
   private async updateUser(): Promise<void> {
@@ -120,6 +143,12 @@ export class PreloadData {
   private async updateRegistriesMetadata(settings: che.WorkspaceSettings): Promise<void> {
     const { requestRegistriesMetadata } = DevfileRegistriesStore.actionCreators;
     await requestRegistriesMetadata(settings.cheWorkspaceDevfileRegistryUrl || '')(this.store.dispatch, this.store.getState, undefined);
+  }
+
+  private updateDefaultComponents(): void {
+    // These are just temporary until we the devworkspace registry is available and we can potentially reference by id
+    this.devWorkspaceClient.defaultEditor = 'theia-next'; // settings['che.factory.default_editor'] || 'theia-next';
+    this.devWorkspaceClient.defaultPlugins = ['machine-exec']; // settings['che.factory.default_plugins'] || 'machine-exec';
   }
 
   private async updateDevfileSchema(): Promise<void> {

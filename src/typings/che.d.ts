@@ -23,7 +23,7 @@ declare namespace che {
     status: string;
     namespace?: string;
     attributes?: WorkspaceAttributes;
-    devfile: WorkspaceDevfile;
+    devfile: WorkspaceDevfile | IDevWorkspaceDevfile;
     runtime?: WorkspaceRuntime;
     isLocked?: boolean;
     usedResources?: string;
@@ -37,6 +37,8 @@ declare namespace che {
     'che.workspace.storage.available_types': string;
     'che.workspace.storage.preferred_type': WorkspaceStorageType;
     supportedRecipeTypes: string;
+    'che.factory.default_plugins': string;
+    'che.factory.default_editor': string;
   }
 
   export interface Plugin {

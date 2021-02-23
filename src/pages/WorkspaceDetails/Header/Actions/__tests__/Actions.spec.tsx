@@ -23,10 +23,10 @@ import { FakeStoreBuilder } from '../../../../../store/__mocks__/storeBuilder';
 jest.mock('../../../../../store/Workspaces/index', () => {
   return {
     actionCreators: {
-      startWorkspace: (workspaceId: string, params?: ResourceQueryParams): AppThunk<any, Promise<void>> => async (): Promise<void> => {
+      startWorkspace: (workspace: che.Workspace, params?: ResourceQueryParams): AppThunk<any, Promise<void>> => async (): Promise<void> => {
         return Promise.resolve();
       },
-      stopWorkspace: (workspaceId: string): AppThunk<any, Promise<void>> => async (): Promise<void> => {
+      stopWorkspace: (workspace: che.Workspace): AppThunk<any, Promise<void>> => async (): Promise<void> => {
         return Promise.resolve();
       }
     } as ActionCreators,

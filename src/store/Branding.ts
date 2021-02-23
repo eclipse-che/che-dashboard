@@ -16,7 +16,7 @@ import { AppThunk } from '.';
 import { merge } from 'lodash';
 import { BRANDING_DEFAULT, BrandingData } from '../services/bootstrap/branding.constant';
 import { container } from '../inversify.config';
-import { CheWorkspaceClient } from '../services/cheWorkspaceClient';
+import { CheWorkspaceClient } from '../services/workspace-client/cheWorkspaceClient';
 
 const ASSET_PREFIX = './assets/branding/';
 
