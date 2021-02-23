@@ -16,7 +16,7 @@ import { createState } from '../helpers';
 import { Action, Reducer } from 'redux';
 import { AppThunk } from '../';
 import { container } from '../../inversify.config';
-import { CheWorkspaceClient } from '../../services/cheWorkspaceClient';
+import { CheWorkspaceClient } from '../../services/workspace-client/cheWorkspaceClient';
 import { ContainerCredentials, RegistryRow } from './types';
 
 const WorkspaceClient = container.get(CheWorkspaceClient);

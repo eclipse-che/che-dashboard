@@ -14,7 +14,7 @@ import { Action, Reducer } from 'redux';
 import { FactoryResolver } from '../services/helpers/types';
 import { AppThunk } from './';
 import { container } from '../inversify.config';
-import { CheWorkspaceClient } from '../services/cheWorkspaceClient';
+import { CheWorkspaceClient } from '../services/workspace-client/cheWorkspaceClient';
 
 const WorkspaceClient = container.get(CheWorkspaceClient);
 

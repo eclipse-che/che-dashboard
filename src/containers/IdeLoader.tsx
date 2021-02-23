@@ -224,7 +224,7 @@ class IdeLoaderContainer extends React.PureComponent<Props, State> {
 
   private async verboseModeHandler(workspace: che.Workspace) {
     try {
-      await this.props.startWorkspace(workspace.id, { 'debug-workspace-start': true });
+      await this.props.startWorkspace(workspace, { 'debug-workspace-start': true });
       this.props.deleteWorkspaceLogs(workspace.id);
       this.setState({
         currentStep: LoadIdeSteps.INITIALIZING,
@@ -280,16 +280,16 @@ class IdeLoaderContainer extends React.PureComponent<Props, State> {
     this.setState({ currentStep: LoadIdeSteps.OPEN_IDE, ideUrl });
   }
 
-  private async openIDE(workspaceId: string): Promise<void> {
+  private async openIDE(cheWorkspace: che.Workspace): Promise<void> {
     this.setState({ currentStep: LoadIdeSteps.OPEN_IDE });
     try {
-      await this.props.requestWorkspace(workspaceId);
+      await this.props.requestWorkspace(cheWorkspace);
     } catch (e) {
       this.showAlert(`Getting workspace detail data failed. ${e}`);
       return;
     }
     const workspace = this.props.allWorkspaces.find(workspace =>
-      workspace.id === workspaceId);
+      workspace.id === cheWorkspace.id);
     if (workspace && workspace.runtime) {
       await this.updateIdeUrl(workspace.runtime);
     }
@@ -318,7 +318,7 @@ class IdeLoaderContainer extends React.PureComponent<Props, State> {
       this.setState({ workspaceId: workspace.id });
       if ((workspace.runtime || this.state.currentStep === LoadIdeSteps.START_WORKSPACE) &&
         workspace.status === WorkspaceStatus[WorkspaceStatus.RUNNING]) {
-        return this.openIDE(workspace.id);
+        return this.openIDE(workspace);
       }
     } else {
       if (this.props.workspace) {
@@ -331,7 +331,7 @@ class IdeLoaderContainer extends React.PureComponent<Props, State> {
       this.setState({ currentStep: LoadIdeSteps.START_WORKSPACE });
       if (workspace.status === WorkspaceStatus[WorkspaceStatus.STOPPED] && (this.state.hasError !== true)) {
         try {
-          await this.props.startWorkspace(`${workspace.id}`);
+          await this.props.startWorkspace(workspace);
         } catch (e) {
           this.showAlert(`Workspace ${this.state.workspaceName} failed to start. ${e}`);
           return;

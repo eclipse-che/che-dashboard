@@ -35,9 +35,9 @@ jest.mock('../../store/Workspaces/index', () => {
   return {
     actionCreators: {
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      requestWorkspace: (id: string): AppThunk<Action, Promise<void>> => async (): Promise<void> => { requestWorkspaceMock(); },
+      requestWorkspace: (workspace: che.Workspace): AppThunk<Action, Promise<void>> => async (): Promise<void> => { requestWorkspaceMock(); },
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      startWorkspace: (id: string): AppThunk<Action, Promise<void>> => async (): Promise<void> => { startWorkspaceMock(); },
+      startWorkspace: (workspace: che.Workspace): AppThunk<Action, Promise<void>> => async (): Promise<void> => { startWorkspaceMock(); },
       requestWorkspaces: (): AppThunk<Action, Promise<void>> => async (): Promise<void> => {
         return Promise.resolve();
       },
