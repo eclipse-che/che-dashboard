@@ -120,15 +120,17 @@ export class CustomWorkspaceTab extends React.PureComponent<Props, State> {
       return;
     }
     this.setState({ devfile });
-    const storageType = attributesToType(devfile.attributes);
-    if (storageType !== this.state.storageType) {
-      this.setState({ storageType });
+    if (devfile?.attributes) {
+      const storageType = attributesToType(devfile.attributes);
+      if (storageType !== this.state.storageType) {
+        this.setState({ storageType });
+      }
     }
-    const workspaceName = devfile.metadata.name || '';
+    const workspaceName = devfile?.metadata?.name || '';
     if (workspaceName !== this.state.workspaceName) {
       this.setState({ workspaceName });
     }
-    const generateName = devfile.metadata.generateName;
+    const generateName = devfile?.metadata?.generateName;
     if (generateName !== this.state.generateName) {
       this.setState({ generateName });
     }

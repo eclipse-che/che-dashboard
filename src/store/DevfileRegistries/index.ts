@@ -15,9 +15,11 @@ import { AppThunk } from '..';
 import { fetchRegistriesMetadata, fetchDevfile } from '../../services/registry/devfiles';
 import { createState } from '../helpers';
 import { container } from '../../inversify.config';
-import { CheWorkspaceClient } from '../../services/cheWorkspaceClient';
+import { CheWorkspaceClient } from '../../services/workspace-client/cheWorkspaceClient';
+import { DevWorkspaceClient } from '../../services/workspace-client/devWorkspaceClient';
 
 const WorkspaceClient = container.get(CheWorkspaceClient);
+const devWorkspaceClient = container.get(DevWorkspaceClient);
 
 // This state defines the type of data maintained in the Redux store.
 export interface State {
@@ -120,7 +122,24 @@ export const actionCreators: ActionCreators = {
   requestJsonSchema: (): AppThunk<KnownAction, any> => async (dispatch): Promise<any> => {
     dispatch({ type: 'REQUEST_SCHEMA' });
     try {
-      const schema = await WorkspaceClient.restApiClient.getDevfileSchema();
+      const schemav1 = await WorkspaceClient.restApiClient.getDevfileSchema('1.0.0');
+
+      let schema = schemav1;
+      const isDevWorkspaceEnabled = await devWorkspaceClient.isEnabled();
+      if (isDevWorkspaceEnabled) {
+        // This makes $ref resolve against the first schema, otherwise the yaml language server will report errors
+        const patchedJSONString = JSON.stringify(schemav1).replaceAll('#/definitions', '#/oneOf/0/definitions');
+        const parsedSchemaV1 = JSON.parse(patchedJSONString);
+
+        const schemav2 = await WorkspaceClient.restApiClient.getDevfileSchema('2.0.0');
+        schema = {
+          oneOf: [
+            parsedSchemaV1,
+            schemav2
+          ]
+        };
+      }
+
       dispatch({ type: 'RECEIVE_SCHEMA', schema });
       return schema;
     } catch (e) {
