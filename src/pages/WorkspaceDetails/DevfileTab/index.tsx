@@ -23,6 +23,7 @@ import DevfileEditor, { DevfileEditor as Editor } from '../../../components/Devf
 import EditorTools from './EditorTools';
 
 import './DevfileTab.styl';
+import { isDevWorkspace } from '../../../services/helpers/devworkspace';
 
 type Props = {
   onSave: (workspace: che.Workspace) => Promise<void>;
@@ -124,6 +125,7 @@ export class EditorTab extends React.PureComponent<Props, State> {
             onChange={(devfile, isValid) => {
               this.onDevfileChange(devfile, isValid);
             }}
+            isReadonly={isDevWorkspace(originDevfile)}
           />
           <Button onClick={() => this.cancelChanges()} variant="secondary" className="cancle-button"
             isDisabled={!this.state.hasChanges && this.state.isDevfileValid}>
