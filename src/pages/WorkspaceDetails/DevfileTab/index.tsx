@@ -23,7 +23,7 @@ import DevfileEditor, { DevfileEditor as Editor } from '../../../components/Devf
 import EditorTools from './EditorTools';
 
 import './DevfileTab.styl';
-import { isDevWorkspace } from '../../../devworkspace';
+import { isDevWorkspace } from '../../../services/helpers/devworkspace';
 
 type Props = {
   onSave: (workspace: che.Workspace) => Promise<void>;

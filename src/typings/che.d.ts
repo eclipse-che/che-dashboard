@@ -23,7 +23,7 @@ declare namespace che {
     status: string;
     namespace?: string;
     attributes?: WorkspaceAttributes;
-    devfile: WorkspaceDevfile;
+    devfile: WorkspaceDevfile | IDevWorkspaceDevfile;
     runtime?: WorkspaceRuntime;
     isLocked?: boolean;
     usedResources?: string;
