@@ -45,6 +45,7 @@ type Props =
     devfile: che.WorkspaceDevfile;
     decorationPattern?: string;
     onChange: (devfile: che.WorkspaceDevfile, isValid: boolean) => void;
+    isReadonly?: boolean;
   };
 type State = {
   errorMessage: string;
@@ -100,7 +101,7 @@ export class DevfileEditor extends React.PureComponent<Props, State> {
     }
     const jsonSchema = this.props.devfileRegistries.schema || {};
     const items = this.props.plugins.plugins;
-    const components = jsonSchema && jsonSchema.properties ? jsonSchema.properties.components : undefined;
+    const components = jsonSchema && jsonSchema.oneOf && jsonSchema.oneOf.length > 0 && jsonSchema.oneOf[0].properties ? jsonSchema.oneOf[0].properties.components : undefined;
     if (components) {
       const mountSources = components.items.properties.mountSources;
       // mount sources is specific only for some of component types but always appears
@@ -168,6 +169,7 @@ export class DevfileEditor extends React.PureComponent<Props, State> {
     const element = $('.devfile-editor .monaco').get(0);
     if (element) {
       const value = stringify(this.props.devfile);
+      MONACO_CONFIG.readOnly = this.props.isReadonly !== undefined ? this.props.isReadonly : false;
       this.editor = monaco.editor.create(element, Object.assign(
         { value },
         MONACO_CONFIG,
@@ -224,10 +226,15 @@ export class DevfileEditor extends React.PureComponent<Props, State> {
     const href = this.props.branding.data.docs.devfile;
     const { errorMessage } = this.state;
 
+    let message = errorMessage;
+    if (this.props.isReadonly !== undefined && this.props.isReadonly === true) {
+      message = 'DevWorkspace editor support has not been enabled. Editor is in Readonly mode.';
+    }
+
     return (
       <div className='devfile-editor'>
         <div className='monaco'>&nbsp;</div>
-        <div className='error'>{errorMessage}</div>
+        <div className='error'>{message}</div>
         <a target='_blank' rel='noopener noreferrer' href={href}>Devfile Documentation</a>
       </div>
     );
