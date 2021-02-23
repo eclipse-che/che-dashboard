@@ -189,14 +189,14 @@ export class FactoryLoaderContainer extends React.PureComponent<Props, State> {
     return search;
   }
 
-  private getLocation(search: string): string | null {
+  private getLocation(search: string): string | undefined {
     const searchParam = new window.URLSearchParams(search);
     const location = searchParam.get('url');
-    searchParam.delete('url');
     if (!location) {
       this.showAlert(
         `Repository/Devfile URL is missing. Please specify it via url query param: ${window.location.origin}${window.location.pathname}#/load-factory?url= .`,
       );
+      return;
     }
     return location;
   }
