@@ -38,6 +38,7 @@ export class DevWorkspaceClient extends WorkspaceClient {
   private _defaultPlugins?: string[];
   private client: RestApi;
   private maxStatusAttempts: number;
+  private initializing: Promise<void>;
 
   constructor(@inject(KeycloakSetupService) keycloakSetupService: KeycloakSetupService) {
     super(keycloakSetupService);
@@ -53,6 +54,7 @@ export class DevWorkspaceClient extends WorkspaceClient {
   }
 
   async getAllWorkspaces(defaultNamespace: string): Promise<che.Workspace[]> {
+    await this.initializing;
     const workspaces = await this.workspaceApi.listInNamespace(defaultNamespace);
     const availableWorkspaces: che.Workspace[] = [];
     for (const workspace of workspaces) {
@@ -101,7 +103,12 @@ export class DevWorkspaceClient extends WorkspaceClient {
    */
   async initializeNamespace(namespace: string): Promise<boolean> {
     try {
-      await this.workspaceApi.initializeNamespace(namespace);
+      this.initializing = new Promise((resolve, reject) => {
+        this.workspaceApi.initializeNamespace(namespace).then(_ => {
+          resolve(undefined);
+        });
+      });
+      await this.initializing;
     } catch (e) {
       console.error(e);
       return false;
