@@ -146,7 +146,7 @@ export class PreloadData {
   }
 
   private updateDefaultComponents(): void {
-    // These are just temporary until we the devworkspace registry is available and we can potentially reference by id
+    // These are just temporary until we create devworkspace templates on the dashboard side
     this.devWorkspaceClient.defaultEditor = 'theia-next'; // settings['che.factory.default_editor'] || 'theia-next';
     this.devWorkspaceClient.defaultPlugins = ['machine-exec']; // settings['che.factory.default_plugins'] || 'machine-exec';
   }

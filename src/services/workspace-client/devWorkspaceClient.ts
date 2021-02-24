@@ -13,10 +13,11 @@
 import { inject, injectable } from 'inversify';
 import { convertDevWorkspaceV2ToV1, isDeleting, isWebTerminal } from '../helpers/devworkspace';
 import { WorkspaceClient } from './';
-import { DevWorkspaceClient as DevWorkspaceClientLibrary, IDevWorkspaceApi, IDevWorkspaceDevfile } from '@eclipse-che/devworkspace-client';
-import { WorkspaceStatus } from '../helpers/types';
+import { DevWorkspaceClient as DevWorkspaceClientLibrary, IDevWorkspaceApi, IDevWorkspaceDevfile, IDevWorkspace } from '@eclipse-che/devworkspace-client';
+import { DevWorkspaceStatus, WorkspaceStatus } from '../helpers/types';
 import { KeycloakSetupService } from '../keycloak/setup';
 import { delay } from '../helpers/delay';
+import { RestApi } from '@eclipse-che/devworkspace-client/dist/browser';
 
 export interface IStatusUpdate {
   error?: string;
@@ -31,26 +32,28 @@ export interface IStatusUpdate {
 @injectable()
 export class DevWorkspaceClient extends WorkspaceClient {
 
-  private devworkspaceClient: IDevWorkspaceApi;
+  private workspaceApi: IDevWorkspaceApi;
   private previousItems: Map<string, Map<string, IStatusUpdate>>;
   private _defaultEditor?: string;
   private _defaultPlugins?: string[];
+  private client: RestApi;
   private maxStatusAttempts: number;
 
   constructor(@inject(KeycloakSetupService) keycloakSetupService: KeycloakSetupService) {
     super(keycloakSetupService);
     this.axios.defaults.baseURL = '/api/unsupported/k8s';
-    this.devworkspaceClient = DevWorkspaceClientLibrary.getRestApi(this.axios).workspaceApi;
+    this.client = DevWorkspaceClientLibrary.getRestApi(this.axios);
+    this.workspaceApi = this.client.workspaceApi;
     this.previousItems = new Map();
     this.maxStatusAttempts = 10;
   }
 
   isEnabled(): Promise<boolean> {
-    return this.devworkspaceClient.isApiEnabled();
+    return this.client.isDevWorkspaceApiEnabled();
   }
 
   async getAllWorkspaces(defaultNamespace: string): Promise<che.Workspace[]> {
-    const workspaces = await this.devworkspaceClient.getAllWorkspaces(defaultNamespace);
+    const workspaces = await this.workspaceApi.listInNamespace(defaultNamespace);
     const availableWorkspaces: che.Workspace[] = [];
     for (const workspace of workspaces) {
       if (!isDeleting(workspace) && !isWebTerminal(workspace)) {
@@ -61,13 +64,15 @@ export class DevWorkspaceClient extends WorkspaceClient {
   }
 
   async getWorkspaceByName(namespace: string, workspaceName: string): Promise<che.Workspace> {
-    let workspace = await this.devworkspaceClient.getWorkspaceByName(namespace, workspaceName);
+    let workspace = await this.workspaceApi.getByName(namespace, workspaceName);
     let attempted = 0;
     while ((!workspace.status || !workspace.status.phase || !workspace.status.ideUrl) && attempted < this.maxStatusAttempts) {
-      workspace = await this.devworkspaceClient.getWorkspaceByName(namespace, workspaceName);
+      workspace = await this.workspaceApi.getByName(namespace, workspaceName);
+      this.checkForDevWorkspaceError(workspace);
       attempted += 1;
       await delay();
     }
+    this.checkForDevWorkspaceError(workspace);
     if (!workspace.status || !workspace.status.phase || !workspace.status.ideUrl) {
       throw new Error(`Could not retrieve devworkspace status information from ${workspaceName} in namespace ${namespace}`);
     }
@@ -75,16 +80,17 @@ export class DevWorkspaceClient extends WorkspaceClient {
   }
 
   async create(devfile: IDevWorkspaceDevfile): Promise<che.Workspace> {
-    const createdWorkspace = await this.devworkspaceClient.create(devfile, this._defaultEditor, this._defaultPlugins);
+    const createdWorkspace = await this.workspaceApi.create(devfile, this._defaultEditor, this._defaultPlugins);
     return convertDevWorkspaceV2ToV1(createdWorkspace);
   }
 
   delete(namespace: string, name: string): void {
-    this.devworkspaceClient.delete(namespace, name);
+    this.workspaceApi.delete(namespace, name);
   }
 
   async changeWorkspaceStatus(namespace: string, name: string, started: boolean): Promise<che.Workspace> {
-    const changedWorkspace = await this.devworkspaceClient.changeWorkspaceStatus(namespace, name, started);
+    const changedWorkspace = await this.workspaceApi.changeStatus(namespace, name, started);
+    this.checkForDevWorkspaceError(changedWorkspace);
     return convertDevWorkspaceV2ToV1(changedWorkspace);
   }
 
@@ -95,7 +101,7 @@ export class DevWorkspaceClient extends WorkspaceClient {
    */
   async initializeNamespace(namespace: string): Promise<boolean> {
     try {
-      await this.devworkspaceClient.initializeNamespace(namespace);
+      await this.workspaceApi.initializeNamespace(namespace);
     } catch (e) {
       console.error(e);
       return false;
@@ -165,5 +171,16 @@ export class DevWorkspaceClient extends WorkspaceClient {
 
   set defaultPlugins(plugins: string[]) {
     this._defaultPlugins = plugins;
+  }
+
+  checkForDevWorkspaceError(devworkspace: IDevWorkspace) {
+    const currentPhase = devworkspace.status?.phase;
+    if (currentPhase && currentPhase.toUpperCase() === DevWorkspaceStatus[DevWorkspaceStatus.FAILED]) {
+      const message = devworkspace.status.message;
+      if (message) {
+        throw new Error(devworkspace.status.message);
+      }
+      throw new Error('Unknown error occured when trying to process the devworkspace');
+    }
   }
 }

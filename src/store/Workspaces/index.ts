@@ -257,7 +257,7 @@ export const actionCreators: ActionCreators = {
       });
 
       // Only subscribe to v1 workspaces
-      workspaces.forEach((workspace: any) => {
+      workspaces.forEach((workspace: che.Workspace) => {
         subscribeToStatusChange(workspace, dispatch);
       });
 
