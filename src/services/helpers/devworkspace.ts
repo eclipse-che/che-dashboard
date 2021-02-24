@@ -11,6 +11,7 @@
  */
 
 import { devWorkspaceToDevfile, IDevWorkspace, IDevWorkspaceDevfile } from '@eclipse-che/devworkspace-client';
+import { DevWorkspaceStatus, WorkspaceStatus } from './types';
 
 /**
  * Convert a devworkspace to something that the natively dashboard understands
@@ -29,8 +30,16 @@ export function convertDevWorkspaceV2ToV1(devworkspace: IDevWorkspace): che.Work
   if (devworkspace.status?.workspaceId) {
     convertedWorkspace.id = devworkspace.status?.workspaceId;
   }
-  if (devworkspace.status?.phase && devworkspace.status?.ideUrl) {
-    const status = devworkspace.status.phase.toUpperCase();
+  let status = devworkspace.status?.phase;
+  if (status) {
+    status = status.toUpperCase();
+    if (status === DevWorkspaceStatus[DevWorkspaceStatus.FAILED]) {
+      status = WorkspaceStatus[WorkspaceStatus.ERROR];
+    }
+    convertedWorkspace.status = status;
+  }
+
+  if (status && devworkspace.status?.ideUrl) {
     convertedWorkspace.runtime = {
       status,
       activeEnv: '',
@@ -50,7 +59,6 @@ export function convertDevWorkspaceV2ToV1(devworkspace: IDevWorkspace): che.Work
         }
       }
     };
-    convertedWorkspace.status = status;
   }
   return convertedWorkspace;
 }

@@ -36,6 +36,10 @@ export enum WorkspaceStatus {
   ERROR,
 }
 
+export enum DevWorkspaceStatus {
+  FAILED = 1,
+}
+
 export type GettingStartedTab = 'get-started'
   | 'custom-workspace';
 
