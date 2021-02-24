@@ -15,24 +15,37 @@ import axios from 'axios';
 // create new instance of `axios` to avoid adding an authorization header
 const axiosInstance = axios.create();
 
-function resolveIconUrl(metadata: che.DevfileMetaData, url: string): string {
+function createURL(url: string, baseUrl: string): URL {
+
+  // todo Remove it after fixing all source links https://github.com/eclipse/che/issues/19140
+  if (/^\/(\w+)/.test(url)) {
+    return new URL(`.${url}`, baseUrl);
+  }
+
+  return new URL(url, baseUrl);
+}
+
+function resolveIconUrl(metadata: che.DevfileMetaData, baseUrl: string): string {
   if (!metadata.icon || metadata.icon.startsWith('http')) {
     return metadata.icon;
   }
-  return new URL(metadata.icon, url).href;
+
+  return createURL(metadata.icon, baseUrl).href;
 }
 
-function resolveLinkSelf(metadata: che.DevfileMetaData, url: string): string {
+function resolveLinkSelf(metadata: che.DevfileMetaData, baseUrl: string): string {
   if (metadata.links.self.startsWith('http')) {
     return metadata.links.self;
   }
-  return new URL(metadata.links.self, url).href;
+
+  return createURL(metadata.links.self, baseUrl).href;
 }
 
 export async function fetchMetadata(registryUrl: string): Promise<che.DevfileMetaData[]> {
 
   try {
-    const response = await axiosInstance.get<che.DevfileMetaData[]>(registryUrl);
+    const registryIndexUrl = new URL('devfiles/index.json', registryUrl);
+    const response = await axiosInstance.get<che.DevfileMetaData[]>(registryIndexUrl.href);
 
     return response.data.map(meta => {
       meta.icon = resolveIconUrl(meta, registryUrl);
@@ -53,9 +66,7 @@ export async function fetchRegistriesMetadata(registryUrls: string): Promise<che
 
   try {
     const metadataPromises = urls.map(registryUrl => {
-      registryUrl = registryUrl[registryUrl.length - 1] === '/' ? registryUrl : registryUrl + '/';
-      const registryIndexUrl = new URL('devfiles/index.json', registryUrl);
-      return registryIndexUrl.href;
+      return registryUrl[registryUrl.length - 1] === '/' ? registryUrl : registryUrl + '/';
     }).map(async url => {
       try {
         return await fetchMetadata(url);
