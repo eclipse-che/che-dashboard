@@ -466,10 +466,10 @@
   resolved "https://registry.yarnpkg.com/@eclipse-che/api/-/api-7.18.1.tgz#1beae9ebe694e4b58d0edfefcde07995ce6cd0b2"
   integrity sha512-KnnnDpnxxK0TBgR0Ux3oOYCvmCv6d4cRA+1j9wiLkaJighCqgCUaxnHWXEfolYbRq1+o/sfsxN+BxRDuF+H8wQ==
 
-"@eclipse-che/devworkspace-client@^0.0.1-1614091834":
-  version "0.0.1-1614091834"
-  resolved "https://registry.yarnpkg.com/@eclipse-che/devworkspace-client/-/devworkspace-client-0.0.1-1614091834.tgz#7b787317838504265b4411a175c7bf0c2d71dc83"
-  integrity sha512-zQIbQdnuCJi8y3RGR5i1pYqBnjj+p4M4m8JJ0ZMMXJ3InhFGyyvJ9cF7wf42MajZfv4Ki/jKoL50BgEGJrzQqA==
+"@eclipse-che/devworkspace-client@^0.0.1-1614204387":
+  version "0.0.1-1614204387"
+  resolved "https://registry.yarnpkg.com/@eclipse-che/devworkspace-client/-/devworkspace-client-0.0.1-1614204387.tgz#0e48348c0fa545826dc73ba99d9eb3be0105b25b"
+  integrity sha512-KWhLAeT/Z+/mXbkkcIU/3A/gqADxPYO6nGpAcai49W7qZL5xVE75G4lxBfIerS857PB5NTU8EgdIFCtKGyLdWg==
   dependencies:
     "@kubernetes/client-node" "^0.14.0"
     axios "^0.21.1"
