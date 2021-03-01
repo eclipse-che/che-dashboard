@@ -74,6 +74,7 @@ class WorkspaceStatusLabel extends React.PureComponent<Props> {
         color = 'green';
         return (
           <Label
+            className={styles.defaultLabel}
             color={color}
             icon={<ResourcesFullIcon />}
           >
@@ -84,6 +85,7 @@ class WorkspaceStatusLabel extends React.PureComponent<Props> {
         color = 'red';
         return (
           <Label
+            className={styles.defaultLabel}
             color={color}
             icon={<ExclamationCircleIcon />}
           >
@@ -94,6 +96,7 @@ class WorkspaceStatusLabel extends React.PureComponent<Props> {
         color = 'orange';
         return (
           <Label
+            className={styles.defaultLabel}
             color={color}
             icon={<PauseCircleIcon />}
           >
@@ -104,6 +107,7 @@ class WorkspaceStatusLabel extends React.PureComponent<Props> {
         color = 'blue';
         return (
           <Label
+            className={styles.defaultLabel}
             color={color}
             icon={<InProgressIcon className={styles.rotate} />}
           >

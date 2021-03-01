@@ -31,7 +31,7 @@ describe('The Ide Loader page  component', () => {
   it('should render INITIALIZING step correctly', () => {
     const currentStep = LoadIdeSteps.INITIALIZING;
     const hasError = false;
-    const component = renderComponent(store, currentStep, workspaceName, workspaceId, hasError);
+    const component = renderComponent(store, currentStep, workspaceName, workspaceId, hasError, workspace.status);
 
     expect(component.toJSON()).toMatchSnapshot();
   });
@@ -39,7 +39,7 @@ describe('The Ide Loader page  component', () => {
   it('should render INITIALIZING step with an error correctly', () => {
     const currentStep = LoadIdeSteps.INITIALIZING;
     const hasError = true;
-    const component = renderComponent(store, currentStep, workspaceName, workspaceId, hasError);
+    const component = renderComponent(store, currentStep, workspaceName, workspaceId, hasError, workspace.status);
 
     expect(component.toJSON()).toMatchSnapshot();
   });
@@ -47,7 +47,7 @@ describe('The Ide Loader page  component', () => {
   it('should render START_WORKSPACE step correctly', () => {
     const currentStep = LoadIdeSteps.START_WORKSPACE;
     const hasError = false;
-    const component = renderComponent(store, currentStep, workspaceName, workspaceId, hasError);
+    const component = renderComponent(store, currentStep, workspaceName, workspaceId, hasError, workspace.status);
 
     expect(component.toJSON()).toMatchSnapshot();
   });
@@ -55,7 +55,7 @@ describe('The Ide Loader page  component', () => {
   it('should render START_WORKSPACE step with an error correctly', () => {
     const currentStep = LoadIdeSteps.START_WORKSPACE;
     const hasError = true;
-    const component = renderComponent(store, currentStep, workspaceName, workspaceId, hasError);
+    const component = renderComponent(store, currentStep, workspaceName, workspaceId, hasError, workspace.status);
 
     expect(component.toJSON()).toMatchSnapshot();
   });
@@ -63,7 +63,7 @@ describe('The Ide Loader page  component', () => {
   it('should render OPEN_IDE step correctly', () => {
     const currentStep = LoadIdeSteps.OPEN_IDE;
     const hasError = false;
-    const component = renderComponent(store, currentStep, workspaceName, workspaceId, hasError);
+    const component = renderComponent(store, currentStep, workspaceName, workspaceId, hasError, workspace.status);
 
     expect(component.toJSON()).toMatchSnapshot();
   });
@@ -71,7 +71,7 @@ describe('The Ide Loader page  component', () => {
   it('should render OPEN_IDE step with an error correctly', () => {
     const currentStep = LoadIdeSteps.OPEN_IDE;
     const hasError = true;
-    const component = renderComponent(store, currentStep, workspaceName, workspaceId, hasError);
+    const component = renderComponent(store, currentStep, workspaceName, workspaceId, hasError, workspace.status);
 
     expect(component.toJSON()).toMatchSnapshot();
   });
@@ -80,7 +80,7 @@ describe('The Ide Loader page  component', () => {
     const currentStep = LoadIdeSteps.OPEN_IDE;
     const hasError = false;
     const ideUrl = 'https://server-test-4400.192.168.99.100.nip.io';
-    const component = renderComponent(store, currentStep, workspaceName, workspaceId, hasError, ideUrl);
+    const component = renderComponent(store, currentStep, workspaceName, workspaceId, hasError, workspace.status, ideUrl);
 
     expect(component.toJSON()).toMatchSnapshot();
   });
@@ -93,6 +93,7 @@ function renderComponent(
   workspaceName: string,
   workspaceId: string,
   hasError: boolean,
+  workspaceStatus: string | undefined,
   ideUrl?: string,
 ): ReactTestRenderer {
   return renderer.create(
@@ -102,6 +103,7 @@ function renderComponent(
         workspaceName={workspaceName}
         workspaceId={workspaceId}
         hasError={hasError}
+        status={workspaceStatus}
         ideUrl={ideUrl}
       />
     </Provider>,

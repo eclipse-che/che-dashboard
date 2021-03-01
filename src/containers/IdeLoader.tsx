@@ -314,12 +314,16 @@ class IdeLoaderContainer extends React.PureComponent<Props, State> {
       return;
     }
     if (workspace) {
+      this.props.setWorkspaceId(workspace.id);
       this.setState({ workspaceId: workspace.id });
       if ((workspace.runtime || this.state.currentStep === LoadIdeSteps.START_WORKSPACE) &&
         workspace.status === WorkspaceStatus[WorkspaceStatus.RUNNING]) {
         return this.openIDE(workspace.id);
       }
     } else {
+      if (this.props.workspace) {
+        this.props.clearWorkspaceId();
+      }
       this.showAlert('Failed to find the target workspace.');
       return;
     }
@@ -338,6 +342,7 @@ class IdeLoaderContainer extends React.PureComponent<Props, State> {
 
   render() {
     const { currentStep, hasError, ideUrl, workspaceId, workspaceName, preselectedTabKey } = this.state;
+    const { workspace } = this.props;
 
     return (
       <IdeLoader
@@ -346,6 +351,7 @@ class IdeLoaderContainer extends React.PureComponent<Props, State> {
         preselectedTabKey={preselectedTabKey}
         ideUrl={ideUrl}
         hasError={hasError}
+        status={workspace ? workspace.status : undefined}
         workspaceName={workspaceName || ''}
         callbacks={this.loadFactoryPageCallbacks}
       />

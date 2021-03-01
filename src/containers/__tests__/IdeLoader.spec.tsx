@@ -28,6 +28,8 @@ import { ActionCreators } from '../../store/Workspaces';
 const showAlertMock = jest.fn();
 const requestWorkspaceMock = jest.fn().mockResolvedValue(undefined);
 const startWorkspaceMock = jest.fn().mockResolvedValue(undefined);
+const setWorkspaceIdMock = jest.fn();
+const clearWorkspaceIdMock = jest.fn();
 
 jest.mock('../../store/Workspaces/index', () => {
   return {
@@ -39,12 +41,16 @@ jest.mock('../../store/Workspaces/index', () => {
       requestWorkspaces: (): AppThunk<Action, Promise<void>> => async (): Promise<void> => {
         return Promise.resolve();
       },
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      setWorkspaceId: (id: string): AppThunk<Action, void> => (): void => setWorkspaceIdMock(),
+      clearWorkspaceId: (): AppThunk<Action, void> => (): void => clearWorkspaceIdMock()
     } as ActionCreators,
   };
 });
 jest.mock('../../pages/IdeLoader', () => {
   return function DummyWizard(props: {
     hasError: boolean,
+    status: string | undefined,
     currentStep: LoadIdeSteps,
     workspaceName: string;
     workspaceId: string;
@@ -62,6 +68,7 @@ jest.mock('../../pages/IdeLoader', () => {
       <div data-testid="ide-loader-workspace-name">{props.workspaceName}</div>
       <div data-testid="ide-loader-workspace-id">{props.workspaceId}</div>
       <div data-testid="ide-loader-workspace-ide-url">{props.ideUrl}</div>
+      <div data-testid="ide-loader-workspace-status">{props.status}</div>
     </div>);
   };
 });
@@ -177,6 +184,8 @@ describe('IDE Loader container', () => {
 
     const elementHasError = screen.getByTestId('ide-loader-has-error');
     expect(elementHasError.innerHTML).toEqual('true');
+
+    expect(setWorkspaceIdMock).toBeCalled();
 
     const elementCurrentStep = screen.getByTestId('ide-loader-current-step');
     expect(LoadIdeSteps[elementCurrentStep.innerHTML]).toEqual(LoadIdeSteps[LoadIdeSteps.START_WORKSPACE]);
