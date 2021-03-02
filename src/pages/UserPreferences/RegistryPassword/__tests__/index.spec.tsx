@@ -98,8 +98,8 @@ describe('Registry Password Input', () => {
 
       const input = screen.getByTestId('registry-password-input');
 
-      const message = 'The password is too long. The maximum length is 100 characters.';
-      const allowedPassword = 'a'.repeat(100);
+      const message = 'The password is too long. The maximum length is 10000 characters.';
+      const allowedPassword = 'a'.repeat(10000);
       let label: HTMLElement | null;
 
       userEvent.clear(input);
@@ -108,7 +108,7 @@ describe('Registry Password Input', () => {
       label = screen.queryByText(message);
       expect(label).toBeFalsy();
 
-      const disallowedPassword = 'a'.repeat(101);
+      const disallowedPassword = 'a'.repeat(10001);
 
       userEvent.clear(input);
       userEvent.type(input, disallowedPassword);

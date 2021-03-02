@@ -14,7 +14,7 @@ import React from 'react';
 import { EyeIcon, EyeSlashIcon, ExclamationCircleIcon } from '@patternfly/react-icons';
 import { Button, FormGroup, InputGroupText, TextInput, ValidatedOptions } from '@patternfly/react-core';
 
-const MAX_LENGTH = 100;
+const MAX_LENGTH = 10000;
 const ERROR_REQUIRED_VALUE = 'A value is required.';
 const ERROR_MAX_LENGTH = `The password is too long. The maximum length is ${MAX_LENGTH} characters.`;
 
