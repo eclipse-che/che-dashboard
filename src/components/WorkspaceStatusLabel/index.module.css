@@ -4,7 +4,8 @@
 
 .defaultLabel,
 .stoppedLabel {
-  margin-left: 5px;
+  margin-left: 10px;
+  text-transform: capitalize;
   vertical-align: middle;
 }
 

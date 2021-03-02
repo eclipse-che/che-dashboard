@@ -16,21 +16,30 @@ import { Store } from 'redux';
 import { Provider } from 'react-redux';
 import IdeLoaderTabs from '../';
 import { LoadIdeSteps } from '../../../containers/IdeLoader';
+import { WorkspaceStatus } from '../../../services/helpers/types';
 import { FakeStoreBuilder } from '../../../store/__mocks__/storeBuilder';
 import { createFakeWorkspace } from '../../../store/__mocks__/workspace';
 
+jest.mock('../../../services/helpers/tools', () => {
+  return {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    getBlobUrl: (logs: string): string => '',
+  };
+});
+
 const workspaceName = 'wksp-test';
 const workspaceId = 'testWorkspaceId';
-const workspace = createFakeWorkspace(workspaceId, workspaceName);
-const store = new FakeStoreBuilder().withWorkspaces({
-  workspaces: [workspace],
-}).build();
 
 describe('The Ide Loader page  component', () => {
 
   it('should render INITIALIZING step correctly', () => {
     const currentStep = LoadIdeSteps.INITIALIZING;
     const hasError = false;
+    const workspace = createFakeWorkspace(workspaceId, workspaceName);
+    const store = new FakeStoreBuilder().withWorkspaces({
+      workspaces: [workspace],
+    }).build();
+
     const component = renderComponent(store, currentStep, workspaceName, workspaceId, hasError, workspace.status);
 
     expect(component.toJSON()).toMatchSnapshot();
@@ -39,6 +48,11 @@ describe('The Ide Loader page  component', () => {
   it('should render INITIALIZING step with an error correctly', () => {
     const currentStep = LoadIdeSteps.INITIALIZING;
     const hasError = true;
+    const workspace = createFakeWorkspace(workspaceId, workspaceName, undefined, WorkspaceStatus[WorkspaceStatus.ERROR]);
+    const store = new FakeStoreBuilder().withWorkspaces({
+      workspaces: [workspace],
+    }).build();
+
     const component = renderComponent(store, currentStep, workspaceName, workspaceId, hasError, workspace.status);
 
     expect(component.toJSON()).toMatchSnapshot();
@@ -46,41 +60,74 @@ describe('The Ide Loader page  component', () => {
 
   it('should render START_WORKSPACE step correctly', () => {
     const currentStep = LoadIdeSteps.START_WORKSPACE;
-    const hasError = false;
-    const component = renderComponent(store, currentStep, workspaceName, workspaceId, hasError, workspace.status);
+
+    const workspace = createFakeWorkspace(workspaceId, workspaceName, undefined, WorkspaceStatus[WorkspaceStatus.STARTING]);
+    const store = new FakeStoreBuilder().withWorkspaces({
+      workspaces: [workspace],
+    }).build();
+
+    const component = renderComponent(store, currentStep, workspaceName, workspaceId, false, workspace.status);
 
     expect(component.toJSON()).toMatchSnapshot();
   });
 
   it('should render START_WORKSPACE step with an error correctly', () => {
     const currentStep = LoadIdeSteps.START_WORKSPACE;
-    const hasError = true;
-    const component = renderComponent(store, currentStep, workspaceName, workspaceId, hasError, workspace.status);
+
+    const workspace = createFakeWorkspace(workspaceId, workspaceName);
+    const store = new FakeStoreBuilder().withWorkspaces({
+      workspaces: [workspace],
+    }).build();
+
+    const component = renderComponent(store, currentStep, workspaceName, workspaceId, true, WorkspaceStatus[WorkspaceStatus.ERROR]);
 
     expect(component.toJSON()).toMatchSnapshot();
   });
 
   it('should render OPEN_IDE step correctly', () => {
     const currentStep = LoadIdeSteps.OPEN_IDE;
-    const hasError = false;
-    const component = renderComponent(store, currentStep, workspaceName, workspaceId, hasError, workspace.status);
+
+    const runtime: che.WorkspaceRuntime = {
+      machines: {},
+      status: WorkspaceStatus[WorkspaceStatus.RUNNING],
+      activeEnv: 'default',
+    };
+    const workspace = createFakeWorkspace(workspaceId, workspaceName, undefined, WorkspaceStatus[WorkspaceStatus.RUNNING], runtime);
+    const store = new FakeStoreBuilder().withWorkspaces({
+      workspaces: [workspace],
+    }).build();
+
+    const component = renderComponent(store, currentStep, workspaceName, workspaceId, false, workspace.status);
 
     expect(component.toJSON()).toMatchSnapshot();
   });
 
   it('should render OPEN_IDE step with an error correctly', () => {
     const currentStep = LoadIdeSteps.OPEN_IDE;
-    const hasError = true;
-    const component = renderComponent(store, currentStep, workspaceName, workspaceId, hasError, workspace.status);
+
+    const workspace = createFakeWorkspace(workspaceId, workspaceName);
+    const store = new FakeStoreBuilder().withWorkspaces({
+      workspaces: [workspace],
+    }).build();
+    const component = renderComponent(store, currentStep, workspaceName, workspaceId, true, WorkspaceStatus[WorkspaceStatus.ERROR]);
 
     expect(component.toJSON()).toMatchSnapshot();
   });
 
   it('should render Open IDE in the iframe correctly', () => {
     const currentStep = LoadIdeSteps.OPEN_IDE;
-    const hasError = false;
     const ideUrl = 'https://server-test-4400.192.168.99.100.nip.io';
-    const component = renderComponent(store, currentStep, workspaceName, workspaceId, hasError, workspace.status, ideUrl);
+
+    const runtime: che.WorkspaceRuntime = {
+      machines: {},
+      status: WorkspaceStatus[WorkspaceStatus.RUNNING],
+      activeEnv: 'default',
+    };
+    const workspace = createFakeWorkspace(workspaceId, workspaceName, undefined, WorkspaceStatus[WorkspaceStatus.RUNNING], runtime);
+    const store = new FakeStoreBuilder().withWorkspaces({
+      workspaces: [workspace],
+    }).build();
+    const component = renderComponent(store, currentStep, workspaceName, workspaceId, false, workspace.status, ideUrl);
 
     expect(component.toJSON()).toMatchSnapshot();
   });
