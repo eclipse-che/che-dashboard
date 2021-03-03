@@ -119,14 +119,16 @@ export const actionCreators: ActionCreators = {
     }
   },
 
-  requestJsonSchema: (): AppThunk<KnownAction, any> => async (dispatch): Promise<any> => {
+  requestJsonSchema: (): AppThunk<KnownAction, any> => async (dispatch, getState): Promise<any> => {
     dispatch({ type: 'REQUEST_SCHEMA' });
     try {
+      const state = getState();
+      const cheDevworkspaceEnabled = state.workspaces.settings['che.devworkspaces.enabled'] === 'true';
       const schemav1 = await WorkspaceClient.restApiClient.getDevfileSchema('1.0.0');
 
       let schema = schemav1;
       const isDevWorkspaceEnabled = await devWorkspaceClient.isEnabled();
-      if (isDevWorkspaceEnabled) {
+      if (cheDevworkspaceEnabled && isDevWorkspaceEnabled) {
         // This makes $ref resolve against the first schema, otherwise the yaml language server will report errors
         const patchedJSONString = JSON.stringify(schemav1).replaceAll('#/definitions', '#/oneOf/0/definitions');
         const parsedSchemaV1 = JSON.parse(patchedJSONString);

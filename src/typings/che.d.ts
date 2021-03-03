@@ -39,6 +39,7 @@ declare namespace che {
     supportedRecipeTypes: string;
     'che.factory.default_plugins': string;
     'che.factory.default_editor': string;
+    'che.devworkspaces.enabled': 'true' | 'false';
   }
 
   export interface Plugin {
