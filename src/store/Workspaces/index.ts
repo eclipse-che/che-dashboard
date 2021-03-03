@@ -238,15 +238,17 @@ export const actionCreators: ActionCreators = {
     onStatusUpdateReceived(workspace, dispatch, message);
   },
 
-  requestWorkspaces: (): AppThunk<KnownAction, Promise<void>> => async (dispatch): Promise<void> => {
+  requestWorkspaces: (): AppThunk<KnownAction, Promise<void>> => async (dispatch, getState): Promise<void> => {
     dispatch({ type: 'REQUEST_WORKSPACES' });
 
     try {
+      const state = getState();
+      const cheDevworkspaceEnabled = state.workspaces.settings['che.devworkspaces.enabled'] === 'true';
       const workspaces = await cheWorkspaceClient.restApiClient.getAll<che.Workspace>();
       const defaultNamespace = await cheWorkspaceClient.getDefaultNamespace();
       const isDevWorkspaceEnabled = await devWorkspaceClient.isEnabled();
       let allWorkspaces = workspaces;
-      if (isDevWorkspaceEnabled) {
+      if (cheDevworkspaceEnabled && isDevWorkspaceEnabled) {
         const devworkspaces = await devWorkspaceClient.getAllWorkspaces(defaultNamespace);
         allWorkspaces = allWorkspaces.concat(devworkspaces);
       }
@@ -269,13 +271,15 @@ export const actionCreators: ActionCreators = {
 
   },
 
-  requestWorkspace: (cheWorkspace: che.Workspace): AppThunk<KnownAction, Promise<void>> => async (dispatch): Promise<void> => {
+  requestWorkspace: (cheWorkspace: che.Workspace): AppThunk<KnownAction, Promise<void>> => async (dispatch, getState): Promise<void> => {
     dispatch({ type: 'REQUEST_WORKSPACES' });
 
     try {
-      let workspace: any;
+      const state = getState();
+      const cheDevworkspaceEnabled = state.workspaces.settings['che.devworkspaces.enabled'] === 'true';
+      let workspace: che.Workspace;
       const isDevWorkspaceEnabled = await devWorkspaceClient.isEnabled();
-      if (isDevWorkspaceEnabled && isDevWorkspace(cheWorkspace)) {
+      if (cheDevworkspaceEnabled && isDevWorkspaceEnabled && isDevWorkspace(cheWorkspace)) {
         const namespace = cheWorkspace.namespace as string;
         const name = cheWorkspace.devfile.metadata.name;
         workspace = await devWorkspaceClient.getWorkspaceByName(namespace, name);
@@ -295,6 +299,12 @@ export const actionCreators: ActionCreators = {
 
     try {
       const settings = await cheWorkspaceClient.restApiClient.getSettings<che.WorkspaceSettings>();
+
+      // todo remove when server returns property https://github.com/eclipse/che/issues/19160#issuecomment-788753847
+      if (settings['che.devworkspaces.enabled'] === undefined) {
+        settings['che.devworkspaces.enabled'] = 'false';
+      }
+
       dispatch({ type: 'RECEIVE_SETTINGS', settings });
     } catch (e) {
       dispatch({ type: 'RECEIVE_ERROR' });
@@ -302,11 +312,13 @@ export const actionCreators: ActionCreators = {
     }
   },
 
-  startWorkspace: (cheWorkspace: che.Workspace, params?: ResourceQueryParams): AppThunk<KnownAction, Promise<void>> => async (dispatch): Promise<void> => {
+  startWorkspace: (cheWorkspace: che.Workspace, params?: ResourceQueryParams): AppThunk<KnownAction, Promise<void>> => async (dispatch, getState): Promise<void> => {
     try {
+      const state = getState();
+      const cheDevworkspaceEnabled = state.workspaces.settings['che.devworkspaces.enabled'] === 'true';
       let workspace: che.Workspace;
       const isDevWorkspaceEnabled = await devWorkspaceClient.isEnabled();
-      if (isDevWorkspaceEnabled && isDevWorkspace(cheWorkspace)) {
+      if (cheDevworkspaceEnabled && isDevWorkspaceEnabled && isDevWorkspace(cheWorkspace)) {
         workspace = await devWorkspaceClient.changeWorkspaceStatus(cheWorkspace.namespace as string, cheWorkspace.devfile.metadata.name as string, true);
       } else {
         workspace = await cheWorkspaceClient.restApiClient.start<che.Workspace>(cheWorkspace.id, params);
@@ -319,10 +331,12 @@ export const actionCreators: ActionCreators = {
     }
   },
 
-  stopWorkspace: (workspace: che.Workspace): AppThunk<KnownAction, Promise<void>> => async (dispatch): Promise<void> => {
+  stopWorkspace: (workspace: che.Workspace): AppThunk<KnownAction, Promise<void>> => async (dispatch, getState): Promise<void> => {
     try {
+      const state = getState();
+      const cheDevworkspaceEnabled = state.workspaces.settings['che.devworkspaces.enabled'] === 'true';
       const isDevWorkspaceEnabled = await devWorkspaceClient.isEnabled();
-      if (isDevWorkspaceEnabled && isDevWorkspace(workspace)) {
+      if (cheDevworkspaceEnabled && isDevWorkspaceEnabled && isDevWorkspace(workspace)) {
         devWorkspaceClient.changeWorkspaceStatus(workspace.namespace as string, workspace.devfile.metadata.name as string, false);
       } else {
         cheWorkspaceClient.restApiClient.stop(workspace.id);
@@ -333,10 +347,12 @@ export const actionCreators: ActionCreators = {
     }
   },
 
-  deleteWorkspace: (workspace: che.Workspace): AppThunk<KnownAction, Promise<void>> => async (dispatch): Promise<void> => {
+  deleteWorkspace: (workspace: che.Workspace): AppThunk<KnownAction, Promise<void>> => async (dispatch, getState): Promise<void> => {
     try {
+      const state = getState();
+      const cheDevworkspaceEnabled = state.workspaces.settings['che.devworkspaces.enabled'] === 'true';
       const isDevWorkspaceEnabled = await devWorkspaceClient.isEnabled();
-      if (isDevWorkspaceEnabled && isDevWorkspace(workspace)) {
+      if (cheDevworkspaceEnabled && isDevWorkspaceEnabled && isDevWorkspace(workspace)) {
         const namespace = workspace.namespace as string;
         const name = workspace.devfile.metadata.name;
         await devWorkspaceClient.delete(namespace, name);
@@ -390,10 +406,12 @@ export const actionCreators: ActionCreators = {
   ): AppThunk<KnownAction, Promise<che.Workspace>> => async (dispatch, getState): Promise<che.Workspace> => {
     dispatch({ type: 'REQUEST_WORKSPACES' });
     try {
+      const state = getState();
+      const cheDevworkspaceEnabled = state.workspaces.settings['che.devworkspaces.enabled'] === 'true';
       const param = { attributes, namespace, infrastructureNamespace };
-      let workspace;
+      let workspace: che.Workspace;
       const isDevWorkspaceEnabled = await devWorkspaceClient.isEnabled();
-      if (isDevWorkspaceEnabled && isDevWorkspace(devfile)) {
+      if (cheDevworkspaceEnabled && isDevWorkspaceEnabled && isDevWorkspace(devfile)) {
         // If the devworkspace doesn't have a namespace then we assign it to the default kubernetesNamespace
         const devWorkspaceDevfile = devfile as IDevWorkspaceDevfile;
         if (!devWorkspaceDevfile.metadata.namespace) {
@@ -401,7 +419,6 @@ export const actionCreators: ActionCreators = {
           devWorkspaceDevfile.metadata.namespace = defaultNamespace;
         }
 
-        const state = getState();
         const dwPlugins = state.dwPlugins.plugins;
         workspace = await devWorkspaceClient.create(devWorkspaceDevfile, dwPlugins);
       } else {
