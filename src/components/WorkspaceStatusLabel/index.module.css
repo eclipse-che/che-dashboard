@@ -2,8 +2,7 @@
   padding-right: 4px;
 }
 
-.defaultLabel,
-.stoppedLabel {
+.statusLabel {
   margin-left: 10px;
   text-transform: capitalize;
   vertical-align: middle;

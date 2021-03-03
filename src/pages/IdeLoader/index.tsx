@@ -30,7 +30,7 @@ import Header from '../../components/Header';
 import WorkspaceLogs from '../../components/LogsTab';
 import { LoadIdeSteps } from '../../containers/IdeLoader';
 import { delay } from '../../services/helpers/delay';
-import { IdeLoaderTab, WorkspaceStatus } from '../../services/helpers/types';
+import { IdeLoaderTab } from '../../services/helpers/types';
 
 import workspaceStatusLabelStyles from '../../components/WorkspaceStatusLabel/index.module.css';
 import './IdeLoader.styl';
