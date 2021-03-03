@@ -387,7 +387,7 @@ export const actionCreators: ActionCreators = {
     namespace: string | undefined,
     infrastructureNamespace: string | undefined,
     attributes: { [key: string]: string } = {},
-  ): AppThunk<KnownAction, Promise<che.Workspace>> => async (dispatch): Promise<che.Workspace> => {
+  ): AppThunk<KnownAction, Promise<che.Workspace>> => async (dispatch, getState): Promise<che.Workspace> => {
     dispatch({ type: 'REQUEST_WORKSPACES' });
     try {
       const param = { attributes, namespace, infrastructureNamespace };
@@ -400,7 +400,10 @@ export const actionCreators: ActionCreators = {
           const defaultNamespace = await cheWorkspaceClient.getDefaultNamespace();
           devWorkspaceDevfile.metadata.namespace = defaultNamespace;
         }
-        workspace = await devWorkspaceClient.create(devWorkspaceDevfile);
+
+        const state = getState();
+        const dwPlugins = state.dwPlugins.plugins;
+        workspace = await devWorkspaceClient.create(devWorkspaceDevfile, dwPlugins);
       } else {
         workspace = await cheWorkspaceClient.restApiClient.create<che.Workspace>(devfile, param);
 

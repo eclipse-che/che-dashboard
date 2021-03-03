@@ -19,6 +19,7 @@ import * as DevfileRegistriesStore from '../../store/DevfileRegistries';
 import * as EnvironmentStore from '../../store/Environment';
 import * as InfrastructureNamespaceStore from '../../store/InfrastructureNamespace';
 import * as Plugins from '../../store/Plugins';
+import * as DwPlugins from '../../store/DevWorkspacePlugins';
 import * as UserProfileStore from '../../store/UserProfile';
 import * as UserStore from '../../store/User';
 import * as WorkspacesStore from '../../store/Workspaces';
@@ -77,6 +78,7 @@ export class PreloadData {
       this.updateInfrastructureNamespaces(),
       this.updateUserProfile(),
       this.updatePlugins(settings),
+      this.updateDwPlugins(settings),
       this.updateRegistriesMetadata(settings),
       this.updateDevfileSchema(),
       this.updateDefaultComponents()
@@ -128,6 +130,18 @@ export class PreloadData {
   private async updatePlugins(settings: che.WorkspaceSettings): Promise<void> {
     const { requestPlugins } = Plugins.actionCreators;
     await requestPlugins(settings.cheWorkspacePluginRegistryUrl || '')(this.store.dispatch, this.store.getState);
+  }
+
+  private async updateDwPlugins(settings: che.WorkspaceSettings): Promise<void> {
+    const { requestDwDevfiles } = DwPlugins.actionCreators;
+
+    return Promise.all([
+      requestDwDevfiles(`${settings.cheWorkspaceDevfileRegistryUrl}/plugins/${settings['che.factory.default_editor']}/devfile.yaml`)(this.store.dispatch, this.store.getState, undefined),
+      requestDwDevfiles(`${settings.cheWorkspaceDevfileRegistryUrl}/plugins/${settings['che.factory.default_plugins']}/devfile.yaml`)(this.store.dispatch, this.store.getState, undefined)
+    ])
+      .then(() => {
+        // noop
+      });
   }
 
   private async updateInfrastructureNamespaces(): Promise<void> {

@@ -78,6 +78,10 @@ export class FakeStoreBuilder {
       isLoading: false,
       preferences: {}
     },
+    dwPlugins: {
+      isLoading: false,
+      plugins: [],
+    },
   };
 
   public withUserPreferences(registries: RegistryRow[], isLoading = false): FakeStoreBuilder {

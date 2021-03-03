@@ -85,6 +85,7 @@ function createFakeStore(): Store {
     infrastructureNamespace: {} as any,
     environment: {} as any,
     userPreferences: {} as any,
+    dwPlugins: {} as any,
   };
   const middleware = [thunk];
   const mockStore = createMockStore(middleware);
