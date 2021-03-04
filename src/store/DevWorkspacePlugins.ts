@@ -10,13 +10,15 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
+import { IDevWorkspaceDevfile } from '@eclipse-che/devworkspace-client';
+import { safeLoad } from 'js-yaml';
 import { Action, Reducer } from 'redux';
 import { AppThunk } from '.';
 import { fetchDevfile } from '../services/registry/devfiles';
 
 export interface State {
   isLoading: boolean;
-  plugins: string[];
+  plugins: IDevWorkspaceDevfile[];
 }
 
 interface RequestDwPluginAction {
@@ -25,7 +27,7 @@ interface RequestDwPluginAction {
 
 interface ReceiveDwPluginAction {
   type: 'RECEIVE_DW_PLUGIN';
-  plugin: string;
+  plugin: IDevWorkspaceDevfile;
 }
 
 export type ActionCreators = {
@@ -38,7 +40,8 @@ export const actionCreators: ActionCreators = {
     dispatch({ type: 'REQUEST_DW_PLUGIN' });
 
     try {
-      const plugin = await fetchDevfile(url);
+      const pluginContent = await fetchDevfile(url);
+      const plugin = safeLoad(pluginContent);
       dispatch({
         type: 'RECEIVE_DW_PLUGIN',
         plugin,
@@ -73,5 +76,7 @@ export const reducer: Reducer<State> = (state: State | undefined, incomingAction
             ? state.plugins
             : state.plugins.push(action.plugin)
       } as State);
+    default:
+      return state;
   }
 };
