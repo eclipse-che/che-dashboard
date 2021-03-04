@@ -74,7 +74,7 @@ export const reducer: Reducer<State> = (state: State | undefined, incomingAction
         plugins:
           state.plugins.includes(action.plugin)
             ? state.plugins
-            : state.plugins.push(action.plugin)
+            : state.plugins.concat([action.plugin])
       } as State);
     default:
       return state;
