@@ -13,7 +13,7 @@
 import { inject, injectable } from 'inversify';
 import { convertDevWorkspaceV2ToV1, isDeleting, isWebTerminal } from '../helpers/devworkspace';
 import { WorkspaceClient } from './';
-import { DevWorkspaceClient as DevWorkspaceClientLibrary, IDevWorkspaceApi, IDevWorkspaceDevfile, IDevWorkspace, IDevWorkspaceTemplateApi, IDevWorkspaceTemplate } from '@eclipse-che/devworkspace-client';
+import { DevWorkspaceClient as DevWorkspaceClientLibrary, IDevWorkspaceApi, IDevWorkspaceDevfile, IDevWorkspace, IDevWorkspaceTemplateApi, IDevWorkspaceTemplate, devWorkspaceApiGroup, devworkspaceSingularSubresource } from '@eclipse-che/devworkspace-client';
 import { DevWorkspaceStatus, WorkspaceStatus } from '../helpers/types';
 import { KeycloakSetupService } from '../keycloak/setup';
 import { delay } from '../helpers/delay';
@@ -86,21 +86,32 @@ export class DevWorkspaceClient extends WorkspaceClient {
       devfile.components = [];
     }
 
+    const createdWorkspace = await this.workspaceApi.create(devfile, false);
+    const namespace = createdWorkspace.metadata.namespace;
+
     for (const pluginDevfile of pluginsDevfile) {
       // todo handle error in a proper way
+      const pluginName = pluginDevfile.metadata.name.replaceAll(' ', '-').toLowerCase();
+      const workspaceId = createdWorkspace.status.workspaceId;
       const theiaDWT = await this.dwtApi.create(<IDevWorkspaceTemplate>{
         kind: 'DevWorkspaceTemplate',
         apiVersion: 'workspace.devfile.io/v1alpha2',
         metadata: {
-          // todo Add workspace ID
-          name: pluginDevfile.metadata.name,
-          namespace: devfile.metadata.namespace,
+          name: `${pluginName}-${workspaceId}`,
+          namespace,
+          ownerReferences: [
+            {
+              apiVersion: devWorkspaceApiGroup,
+              kind: devworkspaceSingularSubresource,
+              name: createdWorkspace.metadata.name,
+              uid: createdWorkspace.metadata.uid
+            }
+          ]
         },
         spec: pluginDevfile
-        // todo set owner ref
       });
 
-      devfile.components.push({
+      createdWorkspace.spec.template.components.push({
         name: theiaDWT.metadata.name,
         plugin: {
           kubernetes: {
@@ -111,8 +122,10 @@ export class DevWorkspaceClient extends WorkspaceClient {
       });
     }
 
-    const createdWorkspace = await this.workspaceApi.create(devfile);
-    return convertDevWorkspaceV2ToV1(createdWorkspace);
+    createdWorkspace.spec.started = true;
+    const updatedWorkspace = await this.workspaceApi.update(createdWorkspace);
+
+    return convertDevWorkspaceV2ToV1(updatedWorkspace);
   }
 
   delete(namespace: string, name: string): void {
