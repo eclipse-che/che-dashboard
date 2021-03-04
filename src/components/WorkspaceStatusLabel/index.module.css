@@ -2,6 +2,11 @@
   padding-right: 4px;
 }
 
+.statusLabel {
+  text-transform: capitalize;
+  vertical-align: middle;
+}
+
 svg.rotate {
   width: 17px;
 }

@@ -11,7 +11,15 @@
  */
 
 import React from 'react';
-import { PageSection, PageSectionVariants, Text, TextContent, TextVariants } from '@patternfly/react-core';
+import {
+  Flex,
+  FlexItem,
+  PageSection,
+  PageSectionVariants,
+  Text,
+  TextContent,
+  TextVariants
+} from '@patternfly/react-core';
 import WorkspaceStatusLabel from '../WorkspaceStatusLabel';
 
 const SECTION_THEME = PageSectionVariants.light;
@@ -28,13 +36,22 @@ class Header extends React.PureComponent<Props> {
 
     return (
       <PageSection variant={SECTION_THEME}>
-        <TextContent>
-          <Text component={TextVariants.h1}>
-            {title}{status && (
+        <Flex>
+          <FlexItem
+            alignSelf={{ default: 'alignSelfCenter' }}
+          >
+            <TextContent>
+              <Text component={TextVariants.h1}>
+                {title}
+              </Text>
+            </TextContent>
+          </FlexItem>
+          {status && (
+            <FlexItem>
               <WorkspaceStatusLabel status={status} />
-            )}
-          </Text>
-        </TextContent>
+            </FlexItem>
+          )}
+        </Flex>
       </PageSection>
     );
   }

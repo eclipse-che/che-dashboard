@@ -5,13 +5,25 @@ exports[`The header component for IDE-loader and Factory-loader pages should ren
   className="pf-c-page__main-section pf-m-light"
 >
   <div
-    className="pf-c-content"
+    className="pf-l-flex"
   >
-    <h1
-      className=""
-      data-pf-content={true}
+    <div
+      className="pf-m-align-self-center"
     >
-      Start workspace
+      <div
+        className="pf-c-content"
+      >
+        <h1
+          className=""
+          data-pf-content={true}
+        >
+          Start workspace
+        </h1>
+      </div>
+    </div>
+    <div
+      className=""
+    >
       <span
         className="pf-c-label pf-m-blue"
       >
@@ -44,7 +56,7 @@ exports[`The header component for IDE-loader and Factory-loader pages should ren
           Starting
         </span>
       </span>
-    </h1>
+    </div>
   </div>
 </section>
 `;
@@ -54,13 +66,25 @@ exports[`The header component for IDE-loader and Factory-loader pages should ren
   className="pf-c-page__main-section pf-m-light"
 >
   <div
-    className="pf-c-content"
+    className="pf-l-flex"
   >
-    <h1
-      className=""
-      data-pf-content={true}
+    <div
+      className="pf-m-align-self-center"
     >
-      Workspace error
+      <div
+        className="pf-c-content"
+      >
+        <h1
+          className=""
+          data-pf-content={true}
+        >
+          Workspace error
+        </h1>
+      </div>
+    </div>
+    <div
+      className=""
+    >
       <span
         className="pf-c-label pf-m-red"
       >
@@ -93,7 +117,7 @@ exports[`The header component for IDE-loader and Factory-loader pages should ren
           Error
         </span>
       </span>
-    </h1>
+    </div>
   </div>
 </section>
 `;

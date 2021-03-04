@@ -107,7 +107,7 @@ exports[`The workspace status label component should render RUNNING status corre
 
 exports[`The workspace status label component should render STOPPED status correctly 1`] = `
 <span
-  className="pf-c-label"
+  className="pf-c-label undefined undefined"
 >
   <span
     className="pf-c-label__content"
