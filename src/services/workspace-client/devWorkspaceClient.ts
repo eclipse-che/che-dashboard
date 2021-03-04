@@ -13,7 +13,7 @@
 import { inject, injectable } from 'inversify';
 import { convertDevWorkspaceV2ToV1, isDeleting, isWebTerminal } from '../helpers/devworkspace';
 import { WorkspaceClient } from './';
-import { DevWorkspaceClient as DevWorkspaceClientLibrary, IDevWorkspaceApi, IDevWorkspaceDevfile, IDevWorkspace } from '@eclipse-che/devworkspace-client';
+import { DevWorkspaceClient as DevWorkspaceClientLibrary, IDevWorkspaceApi, IDevWorkspaceDevfile, IDevWorkspace, IDevWorkspaceTemplateApi, IDevWorkspaceTemplate } from '@eclipse-che/devworkspace-client';
 import { DevWorkspaceStatus, WorkspaceStatus } from '../helpers/types';
 import { KeycloakSetupService } from '../keycloak/setup';
 import { delay } from '../helpers/delay';
@@ -33,9 +33,8 @@ export interface IStatusUpdate {
 export class DevWorkspaceClient extends WorkspaceClient {
 
   private workspaceApi: IDevWorkspaceApi;
+  private dwtApi: IDevWorkspaceTemplateApi;
   private previousItems: Map<string, Map<string, IStatusUpdate>>;
-  private _defaultEditor?: string;
-  private _defaultPlugins?: string[];
   private client: RestApi;
   private maxStatusAttempts: number;
   private initializing: Promise<void>;
@@ -45,6 +44,7 @@ export class DevWorkspaceClient extends WorkspaceClient {
     this.axios.defaults.baseURL = '/api/unsupported/k8s';
     this.client = DevWorkspaceClientLibrary.getRestApi(this.axios);
     this.workspaceApi = this.client.workspaceApi;
+    this.dwtApi = this.client.templateApi;
     this.previousItems = new Map();
     this.maxStatusAttempts = 10;
   }
@@ -81,8 +81,37 @@ export class DevWorkspaceClient extends WorkspaceClient {
     return convertDevWorkspaceV2ToV1(workspace);
   }
 
-  async create(devfile: IDevWorkspaceDevfile): Promise<che.Workspace> {
-    const createdWorkspace = await this.workspaceApi.create(devfile, this._defaultEditor, this._defaultPlugins);
+  async create(devfile: IDevWorkspaceDevfile, pluginsDevfile: IDevWorkspaceDevfile[]): Promise<che.Workspace> {
+    if (!devfile.components) {
+      devfile.components = [];
+    }
+
+    for (const pluginDevfile of pluginsDevfile) {
+      // todo handle error in a proper way
+      const theiaDWT = await this.dwtApi.create(<IDevWorkspaceTemplate>{
+        kind: 'DevWorkspaceTemplate',
+        apiVersion: 'workspace.devfile.io/v1alpha2',
+        metadata: {
+          // todo Add workspace ID
+          name: pluginDevfile.metadata.name,
+          namespace: devfile.metadata.namespace,
+        },
+        spec: pluginDevfile
+        // todo set owner ref
+      });
+
+      devfile.components.push({
+        name: theiaDWT.metadata.name,
+        plugin: {
+          kubernetes: {
+            name: theiaDWT.metadata.name,
+            namespace: theiaDWT.metadata.namespace
+          }
+        }
+      });
+    }
+
+    const createdWorkspace = await this.workspaceApi.create(devfile);
     return convertDevWorkspaceV2ToV1(createdWorkspace);
   }
 
@@ -170,14 +199,6 @@ export class DevWorkspaceClient extends WorkspaceClient {
       this.previousItems.set(namespace, newStatusMap);
       return newStatus;
     }
-  }
-
-  set defaultEditor(editor: string) {
-    this._defaultEditor = editor;
-  }
-
-  set defaultPlugins(plugins: string[]) {
-    this._defaultPlugins = plugins;
   }
 
   checkForDevWorkspaceError(devworkspace: IDevWorkspace) {

@@ -80,7 +80,6 @@ export class PreloadData {
       this.updateDwPlugins(settings),
       this.updateRegistriesMetadata(settings),
       this.updateDevfileSchema(),
-      this.updateDefaultComponents()
     ]);
   }
 
@@ -135,8 +134,8 @@ export class PreloadData {
     const { requestDwDevfiles } = DwPlugins.actionCreators;
 
     return Promise.all([
-      requestDwDevfiles(`${settings.cheWorkspaceDevfileRegistryUrl}/plugins/${settings['che.factory.default_editor']}/devfile.yaml`)(this.store.dispatch, this.store.getState, undefined),
-      requestDwDevfiles(`${settings.cheWorkspaceDevfileRegistryUrl}/plugins/${settings['che.factory.default_plugins']}/devfile.yaml`)(this.store.dispatch, this.store.getState, undefined)
+      requestDwDevfiles(`${settings.cheWorkspacePluginRegistryUrl}/plugins/${settings['che.factory.default_editor']}/devfile.yaml`)(this.store.dispatch, this.store.getState, undefined),
+      requestDwDevfiles(`${settings.cheWorkspacePluginRegistryUrl}/plugins/${settings['che.factory.default_plugins']}/devfile.yaml`)(this.store.dispatch, this.store.getState, undefined)
     ])
       .then(() => {
         // noop
@@ -158,12 +157,6 @@ export class PreloadData {
   private async updateRegistriesMetadata(settings: che.WorkspaceSettings): Promise<void> {
     const { requestRegistriesMetadata } = DevfileRegistriesStore.actionCreators;
     await requestRegistriesMetadata(settings.cheWorkspaceDevfileRegistryUrl || '')(this.store.dispatch, this.store.getState, undefined);
-  }
-
-  private updateDefaultComponents(): void {
-    // These are just temporary until we create devworkspace templates on the dashboard side
-    this.devWorkspaceClient.defaultEditor = 'theia-next'; // settings['che.factory.default_editor'] || 'theia-next';
-    this.devWorkspaceClient.defaultPlugins = ['machine-exec']; // settings['che.factory.default_plugins'] || 'machine-exec';
   }
 
   private async updateDevfileSchema(): Promise<void> {
