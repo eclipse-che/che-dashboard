@@ -6,13 +6,25 @@ Array [
     className="pf-c-page__main-section pf-m-light"
   >
     <div
-      className="pf-c-content"
+      className="pf-l-flex"
     >
-      <h1
-        className=""
-        data-pf-content={true}
+      <div
+        className="pf-m-align-self-center"
       >
-        Starting workspace wksp-test
+        <div
+          className="pf-c-content"
+        >
+          <h1
+            className=""
+            data-pf-content={true}
+          >
+            Starting workspace wksp-test
+          </h1>
+        </div>
+      </div>
+      <div
+        className=""
+      >
         <span
           className="pf-c-label pf-m-blue"
         >
@@ -45,7 +57,7 @@ Array [
             Starting
           </span>
         </span>
-      </h1>
+      </div>
     </div>
   </section>,
   <section
@@ -566,13 +578,25 @@ Array [
     className="pf-c-page__main-section pf-m-light"
   >
     <div
-      className="pf-c-content"
+      className="pf-l-flex"
     >
-      <h1
-        className=""
-        data-pf-content={true}
+      <div
+        className="pf-m-align-self-center"
       >
-        Starting workspace wksp-test
+        <div
+          className="pf-c-content"
+        >
+          <h1
+            className=""
+            data-pf-content={true}
+          >
+            Starting workspace wksp-test
+          </h1>
+        </div>
+      </div>
+      <div
+        className=""
+      >
         <span
           className="pf-c-label pf-m-red"
         >
@@ -605,7 +629,7 @@ Array [
             Error
           </span>
         </span>
-      </h1>
+      </div>
     </div>
   </section>,
   <section
@@ -1126,13 +1150,25 @@ Array [
     className="pf-c-page__main-section pf-m-light"
   >
     <div
-      className="pf-c-content"
+      className="pf-l-flex"
     >
-      <h1
-        className=""
-        data-pf-content={true}
+      <div
+        className="pf-m-align-self-center"
       >
-        Starting workspace wksp-test
+        <div
+          className="pf-c-content"
+        >
+          <h1
+            className=""
+            data-pf-content={true}
+          >
+            Starting workspace wksp-test
+          </h1>
+        </div>
+      </div>
+      <div
+        className=""
+      >
         <span
           className="pf-c-label pf-m-blue"
         >
@@ -1165,7 +1201,7 @@ Array [
             Starting
           </span>
         </span>
-      </h1>
+      </div>
     </div>
   </section>,
   <section
@@ -1581,13 +1617,25 @@ Array [
     className="pf-c-page__main-section pf-m-light"
   >
     <div
-      className="pf-c-content"
+      className="pf-l-flex"
     >
-      <h1
-        className=""
-        data-pf-content={true}
+      <div
+        className="pf-m-align-self-center"
       >
-        Starting workspace wksp-test
+        <div
+          className="pf-c-content"
+        >
+          <h1
+            className=""
+            data-pf-content={true}
+          >
+            Starting workspace wksp-test
+          </h1>
+        </div>
+      </div>
+      <div
+        className=""
+      >
         <span
           className="pf-c-label pf-m-red"
         >
@@ -1620,7 +1668,7 @@ Array [
             Error
           </span>
         </span>
-      </h1>
+      </div>
     </div>
   </section>,
   <section
@@ -2036,13 +2084,25 @@ Array [
     className="pf-c-page__main-section pf-m-light"
   >
     <div
-      className="pf-c-content"
+      className="pf-l-flex"
     >
-      <h1
-        className=""
-        data-pf-content={true}
+      <div
+        className="pf-m-align-self-center"
       >
-        Starting workspace wksp-test
+        <div
+          className="pf-c-content"
+        >
+          <h1
+            className=""
+            data-pf-content={true}
+          >
+            Starting workspace wksp-test
+          </h1>
+        </div>
+      </div>
+      <div
+        className=""
+      >
         <span
           className="pf-c-label pf-m-red"
         >
@@ -2075,7 +2135,7 @@ Array [
             Error
           </span>
         </span>
-      </h1>
+      </div>
     </div>
   </section>,
   <section
@@ -2577,13 +2637,25 @@ Array [
     className="pf-c-page__main-section pf-m-light"
   >
     <div
-      className="pf-c-content"
+      className="pf-l-flex"
     >
-      <h1
-        className=""
-        data-pf-content={true}
+      <div
+        className="pf-m-align-self-center"
       >
-        Starting workspace wksp-test
+        <div
+          className="pf-c-content"
+        >
+          <h1
+            className=""
+            data-pf-content={true}
+          >
+            Starting workspace wksp-test
+          </h1>
+        </div>
+      </div>
+      <div
+        className=""
+      >
         <span
           className="pf-c-label pf-m-blue"
         >
@@ -2616,7 +2688,7 @@ Array [
             Starting
           </span>
         </span>
-      </h1>
+      </div>
     </div>
   </section>,
   <section
@@ -3118,13 +3190,25 @@ Array [
     className="pf-c-page__main-section pf-m-light"
   >
     <div
-      className="pf-c-content"
+      className="pf-l-flex"
     >
-      <h1
-        className=""
-        data-pf-content={true}
+      <div
+        className="pf-m-align-self-center"
       >
-        Starting workspace wksp-test
+        <div
+          className="pf-c-content"
+        >
+          <h1
+            className=""
+            data-pf-content={true}
+          >
+            Starting workspace wksp-test
+          </h1>
+        </div>
+      </div>
+      <div
+        className=""
+      >
         <span
           className="pf-c-label pf-m-blue"
         >
@@ -3157,7 +3241,7 @@ Array [
             Starting
           </span>
         </span>
-      </h1>
+      </div>
     </div>
   </section>,
   <section
@@ -3659,13 +3743,25 @@ Array [
     className="pf-c-page__main-section pf-m-light"
   >
     <div
-      className="pf-c-content"
+      className="pf-l-flex"
     >
-      <h1
-        className=""
-        data-pf-content={true}
+      <div
+        className="pf-m-align-self-center"
       >
-        Starting workspace wksp-test
+        <div
+          className="pf-c-content"
+        >
+          <h1
+            className=""
+            data-pf-content={true}
+          >
+            Starting workspace wksp-test
+          </h1>
+        </div>
+      </div>
+      <div
+        className=""
+      >
         <span
           className="pf-c-label pf-m-blue"
         >
@@ -3698,7 +3794,7 @@ Array [
             Starting
           </span>
         </span>
-      </h1>
+      </div>
     </div>
   </section>,
   <section
@@ -4209,13 +4305,25 @@ Array [
     className="pf-c-page__main-section pf-m-light"
   >
     <div
-      className="pf-c-content"
+      className="pf-l-flex"
     >
-      <h1
-        className=""
-        data-pf-content={true}
+      <div
+        className="pf-m-align-self-center"
       >
-        Starting workspace wksp-test
+        <div
+          className="pf-c-content"
+        >
+          <h1
+            className=""
+            data-pf-content={true}
+          >
+            Starting workspace wksp-test
+          </h1>
+        </div>
+      </div>
+      <div
+        className=""
+      >
         <span
           className="pf-c-label pf-m-blue"
         >
@@ -4248,7 +4356,7 @@ Array [
             Starting
           </span>
         </span>
-      </h1>
+      </div>
     </div>
   </section>,
   <section
@@ -4740,13 +4848,25 @@ Array [
     className="pf-c-page__main-section pf-m-light"
   >
     <div
-      className="pf-c-content"
+      className="pf-l-flex"
     >
-      <h1
-        className=""
-        data-pf-content={true}
+      <div
+        className="pf-m-align-self-center"
       >
-        Starting workspace wksp-test
+        <div
+          className="pf-c-content"
+        >
+          <h1
+            className=""
+            data-pf-content={true}
+          >
+            Starting workspace wksp-test
+          </h1>
+        </div>
+      </div>
+      <div
+        className=""
+      >
         <span
           className="pf-c-label pf-m-red"
         >
@@ -4779,7 +4899,7 @@ Array [
             Error
           </span>
         </span>
-      </h1>
+      </div>
     </div>
   </section>,
   <section
