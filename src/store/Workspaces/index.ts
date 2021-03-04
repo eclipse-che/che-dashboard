@@ -203,6 +203,9 @@ function unSubscribeToStatusChange(workspaceId: string): void {
 }
 
 function subscribeToEnvironmentOutput(workspaceId: string, dispatch: ThunkDispatch<State, undefined, UpdateWorkspacesLogsAction | DeleteWorkspaceLogsAction>): void {
+  if (subscribedEnvironmentOutputCallbacks.has(workspaceId)) {
+    return;
+  }
   const callback: EnvironmentOutputMessageHandler = message => {
     if (message.runtimeId?.workspaceId === workspaceId && message.text) {
       const workspacesLogs = new Map<string, string[]>();
@@ -252,7 +255,7 @@ export const actionCreators: ActionCreators = {
         allWorkspaces = allWorkspaces.concat(devworkspaces);
       }
 
-      // Unsubscribe
+      // Unsubscribe status change
       subscribedWorkspaceStatusCallbacks.forEach((workspaceStatusCallback: WorkspaceStatusMessageHandler, workspaceId: string) => {
         unSubscribeToStatusChange(workspaceId);
       });
@@ -260,6 +263,18 @@ export const actionCreators: ActionCreators = {
       // Only subscribe to v1 workspaces
       workspaces.forEach((workspace: che.Workspace) => {
         subscribeToStatusChange(workspace, dispatch);
+      // Unsubscribe environment output
+      subscribedEnvironmentOutputCallbacks.forEach((environmentOutputCallback: EnvironmentOutputMessageHandler, workspaceId: string) => {
+        unSubscribeToEnvironmentOutput(workspaceId);
+      });
+
+      // Subscribe
+      workspaces.forEach(workspace => {
+        subscribeToStatusChange(workspace.id, dispatch);
+
+        if (WorkspaceStatus[WorkspaceStatus.STARTING] === workspace.status) {
+          subscribeToEnvironmentOutput(workspace.id, dispatch);
+        }
       });
 
       dispatch({ type: 'RECEIVE_WORKSPACES', workspaces: allWorkspaces });
@@ -283,6 +298,11 @@ export const actionCreators: ActionCreators = {
         workspace = await devWorkspaceClient.getWorkspaceByName(namespace, name);
       } else {
         workspace = await cheWorkspaceClient.restApiClient.getById<che.Workspace>(cheWorkspace.id);
+      }
+      if (workspace.status === WorkspaceStatus[WorkspaceStatus.STARTING]) {
+        subscribeToEnvironmentOutput(cheWorkspace.id, dispatch);
+      } else {
+        unSubscribeToEnvironmentOutput(cheWorkspace.id);
       }
       dispatch({ type: 'UPDATE_WORKSPACE', workspace });
     } catch (e) {
