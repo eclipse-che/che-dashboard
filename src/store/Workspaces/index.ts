@@ -209,7 +209,7 @@ function subscribeToEnvironmentOutput(workspaceId: string, dispatch: ThunkDispat
   const callback: EnvironmentOutputMessageHandler = message => {
     if (message.runtimeId?.workspaceId === workspaceId && message.text) {
       const workspacesLogs = new Map<string, string[]>();
-      workspacesLogs.set(workspaceId, [`${message.text}`]);
+      workspacesLogs.set(workspaceId, message.text.split(new RegExp('\\r\\n|\\r|\\n')));
       dispatch({
         type: 'UPDATE_WORKSPACES_LOGS',
         workspacesLogs,
