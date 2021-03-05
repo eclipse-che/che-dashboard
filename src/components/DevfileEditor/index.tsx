@@ -152,6 +152,9 @@ export class DevfileEditor extends React.PureComponent<Props, State> {
   }
 
   private handleMessage(event: MessageEvent): void {
+    if (typeof event.data !== 'string') {
+      return;
+    }
     const { data } = event;
     if ((data === 'show-navbar' || data === 'hide-navbar' || data === 'toggle-navbar') && this.handleResize) {
       this.handleResize();

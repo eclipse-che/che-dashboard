@@ -79,6 +79,9 @@ export class Layout extends React.PureComponent<Props, State> {
   }
 
   private handleMessage(event: MessageEvent): void {
+    if (typeof event.data !== 'string') {
+      return;
+    }
     if (event.data === 'show-navbar') {
       this.setState({
         isSidebarVisible: true,
