@@ -67,6 +67,9 @@ export class CheWorkspaceClient {
       });
 
       window.addEventListener('message', (event: MessageEvent) => {
+        if (typeof event.data !== 'string') {
+          return;
+        }
         if (event.data.startsWith('update-token:')) {
           const receivedValue = parseInt(event.data.split(':')[1], 10);
           const validityTime = Number.isNaN(receivedValue) ? VALIDITY_TIME : Math.ceil(receivedValue / 1000);

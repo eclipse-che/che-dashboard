@@ -299,6 +299,9 @@ export const actionCreators: ActionCreators = {
       } else {
         workspace = await cheWorkspaceClient.restApiClient.getById<che.Workspace>(cheWorkspace.id);
       }
+      if (!subscribedWorkspaceStatusCallbacks.has(workspace.id)) {
+        subscribeToStatusChange(workspace.id, dispatch);
+      }
       if (workspace.status === WorkspaceStatus[WorkspaceStatus.STARTING]) {
         subscribeToEnvironmentOutput(cheWorkspace.id, dispatch);
       } else {
@@ -356,6 +359,7 @@ export const actionCreators: ActionCreators = {
         devWorkspaceClient.changeWorkspaceStatus(workspace.namespace as string, workspace.devfile.metadata.name as string, false);
       } else {
         cheWorkspaceClient.restApiClient.stop(workspace.id);
+        unSubscribeToEnvironmentOutput(workspace.id);
       }
     } catch (e) {
       dispatch({ type: 'RECEIVE_ERROR' });
