@@ -116,14 +116,12 @@ export class GetStarted extends React.PureComponent<Props, State> {
       await this.props.startWorkspace(workspace);
       this.props.history.push(`/ide/${workspace.namespace}/${workspaceName}`);
     } catch (error) {
-      const errorMessage = `Workspace ${workspaceName} failed to start`;
       this.showAlert({
         key: 'start-workspace-failed',
         variant: AlertVariant.warning,
-        title: errorMessage + '.',
+        title: `Workspace ${workspaceName} failed to start. ${error}`,
       });
-
-      throw new Error(errorMessage + ', \n' + error);
+      throw new Error(error);
     }
   }
 
