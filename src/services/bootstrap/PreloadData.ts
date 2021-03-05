@@ -62,8 +62,7 @@ export class PreloadData {
 
     const settings = await this.updateWorkspaceSettings();
 
-    const isDevWorkspaceEnabled = await this.devWorkspaceClient.isEnabled();
-    if (settings['che.devworkspaces.enabled'] && isDevWorkspaceEnabled) {
+    if (settings['che.devworkspaces.enabled'] === 'true') {
       const defaultNamespace = await this.cheWorkspaceClient.getDefaultNamespace();
       const namespaceInitialized = await this.initializeNamespace(defaultNamespace);
       if (namespaceInitialized) {
