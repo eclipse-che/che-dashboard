@@ -99,6 +99,7 @@ export class HeaderActionSelect extends React.PureComponent<Props, State> {
       </DropdownItem>),
       (<DropdownItem
         key={`action-${WorkspaceAction.START_DEBUG_AND_OPEN_LOGS}`}
+        isDisabled={status !== WorkspaceStatus[WorkspaceStatus.STOPPED]}
         onClick={async () => this.handleSelect(WorkspaceAction.START_DEBUG_AND_OPEN_LOGS, context)}>
         <div>{WorkspaceAction.START_DEBUG_AND_OPEN_LOGS}</div>
       </DropdownItem>),

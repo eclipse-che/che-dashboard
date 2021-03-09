@@ -188,6 +188,9 @@ function subscribeToStatusChange(
   workspace: che.Workspace,
   dispatch: ThunkDispatch<State, undefined, UpdateWorkspaceStatusAction | UpdateWorkspacesLogsAction | DeleteWorkspaceLogsAction>): void {
 
+  if (subscribedWorkspaceStatusCallbacks.has(workspace.id)) {
+    return;
+  }
   const callback = (message: any) => onStatusUpdateReceived(workspace, dispatch, message);
   cheWorkspaceClient.jsonRpcMasterApi.subscribeWorkspaceStatus(workspace.id, callback);
   subscribedWorkspaceStatusCallbacks.set(workspace.id, callback);
@@ -255,9 +258,13 @@ export const actionCreators: ActionCreators = {
         allWorkspaces = allWorkspaces.concat(devworkspaces);
       }
 
+      const workspaceIds = workspaces.map(workspace => workspace.id);
+
       // Unsubscribe status change
       subscribedWorkspaceStatusCallbacks.forEach((workspaceStatusCallback: WorkspaceStatusMessageHandler, workspaceId: string) => {
-        unSubscribeToStatusChange(workspaceId);
+        if (workspaceIds.indexOf(workspaceId) === -1) {
+          unSubscribeToStatusChange(workspaceId);
+        }
       });
 
       // Only subscribe to v1 workspaces
@@ -265,7 +272,9 @@ export const actionCreators: ActionCreators = {
         subscribeToStatusChange(workspace, dispatch);
       // Unsubscribe environment output
       subscribedEnvironmentOutputCallbacks.forEach((environmentOutputCallback: EnvironmentOutputMessageHandler, workspaceId: string) => {
-        unSubscribeToEnvironmentOutput(workspaceId);
+        if (workspaceIds.indexOf(workspaceId) === -1) {
+          unSubscribeToEnvironmentOutput(workspaceId);
+        }
       });
 
       // Subscribe
@@ -342,6 +351,7 @@ export const actionCreators: ActionCreators = {
         workspace = await devWorkspaceClient.changeWorkspaceStatus(cheWorkspace.namespace as string, cheWorkspace.devfile.metadata.name as string, true);
       } else {
         workspace = await cheWorkspaceClient.restApiClient.start<che.Workspace>(cheWorkspace.id, params);
+        dispatch({ type: 'DELETE_WORKSPACE_LOGS', workspace.id });
         subscribeToEnvironmentOutput(cheWorkspace.id, dispatch);
       }
       dispatch({ type: 'UPDATE_WORKSPACE', workspace });
@@ -507,7 +517,7 @@ const mapMerge = (originMap: Map<string, string[]>, additionalMap: Map<string, s
   const res = new Map<string, string[]>();
   originMap.forEach((val: string[], key: string) => {
     const merge = (val: string[], newVal: string[] | undefined): string[] => {
-      if (!newVal || (val.length > 0 && newVal.length === 1 && val[val.length - 1] === newVal[0])) {
+      if (!newVal || (val.length > 0 && newVal.length === 1)) {
         return val;
       }
       return val.concat(newVal);
