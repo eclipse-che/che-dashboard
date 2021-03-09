@@ -23,11 +23,14 @@ import { selectAllWorkspaces, selectWorkspaceById } from '../store/Workspaces/se
 import { WorkspaceStatus } from '../services/helpers/types';
 import { buildIdeLoaderPath, sanitizeLocation } from '../services/helpers/location';
 import { merge } from 'lodash';
+import { lazyInject } from '../inversify.config';
+import { KeycloakAuthService } from '../services/keycloak/auth';
+import { getEnvironment, isDevEnvironment } from '../services/helpers/environment';
+import { isOAuthResponse } from '../store/FactoryResolver';
 
 const WS_ATTRIBUTES_TO_SAVE: string[] = ['workspaceDeploymentLabels', 'workspaceDeploymentAnnotations', 'policies.create'];
 
 const DEFAULT_CREATE_POLICY = 'perclick';
-
 type CreatePolicy = 'perclick' | 'peruser';
 
 type Props =
@@ -56,6 +59,9 @@ export class FactoryLoaderContainer extends React.PureComponent<Props, State> {
   private factoryLoaderCallbacks: { showAlert?: (variant: AlertVariant, title: string) => void } = {};
   private factoryResolver: FactoryResolverStore.State;
   private overrideDevfileObject: Partial<che.WorkspaceDevfile> = {};
+
+  @lazyInject(KeycloakAuthService)
+  private readonly keycloakAuthService: KeycloakAuthService;
 
   constructor(props: Props) {
     super(props);
@@ -223,15 +229,16 @@ export class FactoryLoaderContainer extends React.PureComponent<Props, State> {
     try {
       await this.props.requestFactoryResolver(location);
     } catch (e) {
-      this.showAlert('Failed to resolve a devfile.');
-      return undefined;
+      if (!isOAuthResponse(e)) {
+        this.showAlert('Failed to resolve a devfile.');
+        return;
+      }
+      this.resolvePrivateDevfile(e.attributes.oauth_authentication_url, location);
+      return;
     }
-    if (!this.factoryResolver
-      || !this.factoryResolver.resolver
-      || !this.factoryResolver.resolver.devfile
-      || this.factoryResolver.resolver.location !== location) {
+    if (this.factoryResolver.resolver?.location !== location) {
       this.showAlert('Failed to resolve a devfile.');
-      return undefined;
+      return;
     }
     const { source } = this.factoryResolver.resolver;
     const searchParam = new window.URLSearchParams(this.state.search);
@@ -240,6 +247,42 @@ export class FactoryLoaderContainer extends React.PureComponent<Props, State> {
       `\`${source}\` in github repo ${location}`;
     this.setState({ devfileLocationInfo });
     return this.getTargetDevfile();
+  }
+
+  private resolvePrivateDevfile(oauthUrl: string, location: string): void {
+    try {
+      // looking for a pre-created infrastructure namespace
+      const namespaces = this.props.infrastructureNamespaces.namespaces;
+      if (namespaces.length === 1) {
+        if (!namespaces[0].attributes.phase) {
+          throw new Error('Failed to accept the factory URL. The infrastructure namespace is required to be created. Please create a regular workspace to workaround the issue and open factory URL again.');
+        }
+      }
+
+      const env = getEnvironment();
+      // build redirect URL
+      let redirectHost = window.location.protocol + '//' + window.location.host;
+      if (isDevEnvironment(env)) {
+        redirectHost = env.server;
+      }
+      const redirectUrl = new URL('/f', redirectHost);
+      redirectUrl.searchParams.set('url', location);
+
+      const oauthUrlTmp = new window.URL(oauthUrl);
+      if (KeycloakAuthService.keycloak) {
+        oauthUrlTmp.searchParams.set('token', KeycloakAuthService.keycloak.token as string);
+      }
+      const fullOauthUrl = oauthUrlTmp.toString() + '&redirect_after_login=' + redirectUrl.toString();
+
+      if (isDevEnvironment(env)) {
+        window.open(fullOauthUrl);
+      } else {
+        window.location.href = fullOauthUrl;
+      }
+    } catch (e) {
+      this.showAlert('Failed to open authentication page.');
+      throw e;
+    }
   }
 
   private async resolveWorkspace(devfile: api.che.workspace.devfile.Devfile, attrs: { [key: string]: string }): Promise<che.Workspace | undefined> {
@@ -366,6 +409,7 @@ const mapStateToProps = (state: AppState) => ({
   factoryResolver: state.factoryResolver,
   workspace: selectWorkspaceById(state),
   allWorkspaces: selectAllWorkspaces(state),
+  infrastructureNamespaces: state.infrastructureNamespace,
 });
 
 const connector = connect(
