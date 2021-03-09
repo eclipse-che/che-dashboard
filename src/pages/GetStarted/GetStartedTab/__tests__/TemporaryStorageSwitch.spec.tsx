@@ -90,7 +90,6 @@ function createFakeStore(metadata?: che.DevfileMetaData[]): Store {
     user: {} as any,
     userProfile: {} as any,
     infrastructureNamespace: {} as any,
-    environment: {} as any,
     userPreferences: {} as any,
     dwPlugins: {} as any,
   };

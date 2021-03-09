@@ -14,7 +14,6 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const stylus_plugin = require('poststylus');
 const stylusLoader = require('stylus-loader');
-const webpack = require('webpack');
 
 const path = require('path');
 
@@ -129,8 +128,5 @@ module.exports = {
       },
     }),
     new CleanWebpackPlugin(),
-    new webpack.DefinePlugin({
-      __isBrowser__: "true"
-    }),
   ],
 };

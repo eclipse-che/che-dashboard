@@ -10,7 +10,7 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import { isDevelopment } from '../store/Environment';
+import { getEnvironment, isDevEnvironment } from './helpers/environment';
 
 export enum StorageTypeTitle {
   async = 'Asynchronous',
@@ -40,7 +40,8 @@ export function fromTitle(title: string): che.WorkspaceStorageType {
 
 export function getAvailable(settings: che.WorkspaceSettings): che.WorkspaceStorageType[] {
   if (!settings || !settings['che.workspace.storage.available_types']) {
-    if (isDevelopment()) {
+    const env = getEnvironment();
+    if (isDevEnvironment(env)) {
       // running Dashboard in Che in dev mode needs for storage types to be stubbed
       return ['persistent'];
     }
