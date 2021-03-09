@@ -11,7 +11,6 @@
  */
 
 import axios from 'axios';
-import { waitFor } from '@testing-library/react';
 import { FakeStoreBuilder } from '../../../store/__mocks__/storeBuilder';
 import { BrandingData } from '../../bootstrap/branding.constant';
 import { ResourceFetcherService } from '..';

@@ -59,6 +59,7 @@ const dummyDevfile = {
 jest.mock('../../../../store/DevfileRegistries', () => {
   return {
     actionCreators: {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       requestDevfile: (location: string): AppThunk<Action, Promise<string>> => async (): Promise<string> => {
         return Promise.resolve(JSON.stringify(dummyDevfile));
       },
@@ -73,6 +74,7 @@ jest.mock('../../../../store/DevfileRegistries', () => {
 jest.mock('../../../../store/FactoryResolver.ts', () => {
   return {
     actionCreators: {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       requestFactoryResolver: (location: string): AppThunk<Action, Promise<void>> => async (dispatch): Promise<void> => {
         return Promise.resolve();
       }
