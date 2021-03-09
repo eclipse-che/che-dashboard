@@ -23,16 +23,11 @@ RUN mkdir -p /usr/local/apache-maven /usr/local/apache-maven/ref \
   && rm -f /tmp/apache-maven.tar.gz \
   && ln -s /usr/local/apache-maven/bin/mvn /usr/bin/mvn
 
-ENV NODE_VERSION=v12.20.1
-ENV NODE_DISTRO=linux-x64
-ENV NODE_BASE_URL=https://nodejs.org/dist/latest-v12.x
+ENV NODE_VERSION=12.x
 
-RUN curl -fsSL ${NODE_BASE_URL}/node-${NODE_VERSION}-${NODE_DISTRO}.tar.gz -o node-${NODE_VERSION}-${NODE_DISTRO}.tar.gz \
-  && mkdir -p /usr/local/lib/nodejs \
-  && tar -xzf node-${NODE_VERSION}-${NODE_DISTRO}.tar.gz -C /usr/local/lib/nodejs \
-  && rm node-${NODE_VERSION}-${NODE_DISTRO}.tar.gz
+RUN curl -sL https://rpm.nodesource.com/setup_${NODE_VERSION} | bash -
 
-ENV PATH=/usr/local/lib/nodejs/node-${NODE_VERSION}-${NODE_DISTRO}/bin/:$PATH
+RUN microdnf install -y nodejs
 
 RUN npm install yarn -g
 
