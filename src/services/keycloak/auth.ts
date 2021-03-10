@@ -22,6 +22,8 @@ export type IKeycloakUserInfo = {
   sub: string;
 };
 
+const MAX_VALIDITY_TIME_SEC = 3600;
+
 /**
  * This class is handling interactions with Keycloak
  */
@@ -48,6 +50,10 @@ export class KeycloakAuthService {
     });
 
     return defer.promise;
+  }
+
+  async forceUpdateToken(): Promise<void> {
+    return this.updateToken(MAX_VALIDITY_TIME_SEC);
   }
 
   async updateToken(minValidity: number): Promise<void> {
