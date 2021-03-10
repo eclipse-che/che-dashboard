@@ -68,15 +68,14 @@ export class PreloadData {
       if (namespaceInitialized) {
         this.watchNamespaces(defaultNamespace);
       }
+      this.updateDwPlugins(settings);
     }
     this.updateWorkspaces();
-
     await Promise.all([
       this.updateBranding(),
       this.updateInfrastructureNamespaces(),
       this.updateUserProfile(),
       this.updatePlugins(settings),
-      this.updateDwPlugins(settings),
       this.updateRegistriesMetadata(settings),
       this.updateDevfileSchema(),
     ]);

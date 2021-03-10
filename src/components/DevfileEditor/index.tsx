@@ -151,16 +151,6 @@ export class DevfileEditor extends React.PureComponent<Props, State> {
     doc.setValue(stringify(devfile));
   }
 
-  private handleMessage(event: MessageEvent): void {
-    if (typeof event.data !== 'string') {
-      return;
-    }
-    const { data } = event;
-    if ((data === 'show-navbar' || data === 'hide-navbar' || data === 'toggle-navbar') && this.handleResize) {
-      this.handleResize();
-    }
-  }
-
   public componentDidUpdate(): void {
     if (this.handleResize) {
       this.handleResize();
@@ -192,12 +182,6 @@ export class DevfileEditor extends React.PureComponent<Props, State> {
       window.addEventListener('resize', handleResize);
       this.toDispose.push({
         dispose: () => {
-          if (doc) {
-            doc.dispose();
-          }
-          if (this.editor) {
-            this.editor.dispose();
-          }
           window.removeEventListener('resize', handleResize);
         },
       });
@@ -216,13 +200,27 @@ export class DevfileEditor extends React.PureComponent<Props, State> {
       // init language server validation
       this.initLanguageServerValidation(this.editor);
     }
-    window.addEventListener('message', event => this.handleMessage(event), false);
+
+    const handleMessage = (event: MessageEvent): void => {
+      if (typeof event.data !== 'string') {
+        return;
+      }
+      const { data } = event;
+      if ((data === 'show-navbar' || data === 'hide-navbar' || data === 'toggle-navbar') && this.handleResize) {
+        this.handleResize();
+      }
+    };
+    window.addEventListener('message', handleMessage, false);
+    this.toDispose.push({
+      dispose: () => {
+        window.removeEventListener('message', handleMessage, false);
+      },
+    });
   }
 
   // This method is called when the component is removed from the document
   public componentWillUnmount(): void {
     this.toDispose.dispose();
-    window.removeEventListener('message', event => this.handleMessage(event), false);
   }
 
   public render(): React.ReactElement {

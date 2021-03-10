@@ -12,18 +12,21 @@
 
 import axios from 'axios';
 
-export async function validateMachineToken(workspaceId: string, machineToken?: string): Promise<void> {
+export async function validateMachineToken(workspaceId: string, machineToken: string): Promise<void> {
+  if (!machineToken) {
+    throw new Error('Failed to validate machine token');
+  }
   try {
     await axios({
       method: 'GET',
       url: `/api/workspace/${workspaceId}`,
       headers: {
-        'Authorization': machineToken ? `Bearer ${machineToken}` : undefined
+        'Authorization': `Bearer ${machineToken}`
       }
     });
   } catch (e) {
     if (e.status !== 304) {
-      throw new Error('Failed to fetch factory resolver, ' + e);
+      throw new Error('Failed to validate machine token, ' + e);
     }
   }
 }

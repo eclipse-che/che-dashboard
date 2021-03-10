@@ -26,6 +26,7 @@ import * as WorkspaceStore from '../store/Workspaces';
 import { selectAllWorkspaces, selectIsLoading, selectLogs, selectWorkspaceById } from '../store/Workspaces/selectors';
 import { validateMachineToken } from '../services/validate-token';
 import { buildWorkspacesPath } from '../services/helpers/location';
+import { DisposableCollection } from '../services/helpers/disposable';
 
 type Props =
   MappedProps
@@ -56,6 +57,7 @@ class IdeLoaderContainer extends React.PureComponent<Props, State> {
   private readonly loadFactoryPageCallbacks: {
     showAlert?: (alertOptions: AlertOptions) => void
   };
+  private readonly toDispose = new DisposableCollection();
 
   constructor(props: Props) {
     super(props);
@@ -76,12 +78,18 @@ class IdeLoaderContainer extends React.PureComponent<Props, State> {
       currentStep: LoadIdeSteps.INITIALIZING,
       namespace,
       workspaceName,
-      hasError: workspace ? workspace?.status === WorkspaceStatus[WorkspaceStatus.ERROR] : false,
+      hasError: workspace?.status === WorkspaceStatus[WorkspaceStatus.ERROR],
       preselectedTabKey: this.preselectedTabKey,
     };
 
-    this.debounce.subscribe(async () => {
+    const callback = async () => {
       await this.initWorkspace();
+    };
+    this.debounce.subscribe(callback);
+    this.toDispose.push({
+      dispose: () => {
+        this.debounce.unsubscribe(callback);
+      },
     });
   }
 
@@ -121,41 +129,8 @@ class IdeLoaderContainer extends React.PureComponent<Props, State> {
     }
   }
 
-  private async handleMessage(event: MessageEvent): Promise<void> {
-    if (typeof event.data !== 'string') {
-      return;
-    }
-    if (event.data === 'show-workspaces') {
-      const pathname = buildWorkspacesPath();
-      this.props.history.replace({ pathname });
-      window.postMessage('show-navbar', '*');
-    } else if (event.data.startsWith('restart-workspace:')) {
-      const { allWorkspaces, match: { params } } = this.props;
-      const workspace = allWorkspaces.find(workspace =>
-        workspace.namespace === params.namespace && workspace.devfile.metadata.name === this.workspaceName);
-      if (!workspace) {
-        return;
-      }
-      const res = event.data.split(':');
-      if (workspace.id !== res[1]) {
-        return;
-      }
-      try {
-        await validateMachineToken(workspace.id, res[2]);
-        await this.props.stopWorkspace(workspace.id);
-        await this.props.requestWorkspace(workspace.id);
-      } catch (error) {
-        console.error('Machine token validation failed. ', error);
-      }
-    }
-  }
-
   public async componentWillUnmount(): Promise<void> {
-    this.debounce.unsubscribeAll();
-    window.removeEventListener(
-      'message',
-      event => this.handleMessage(event)
-    );
+    this.toDispose.dispose();
   }
 
   public async componentDidMount(): Promise<void> {
@@ -173,11 +148,42 @@ class IdeLoaderContainer extends React.PureComponent<Props, State> {
       this.showErrorAlert(workspace);
     }
     this.debounce.setDelay(1000);
-    window.addEventListener(
-      'message',
-      event => this.handleMessage(event),
-      false
-    );
+
+    const handleMessage = async (event: MessageEvent): Promise<void> => {
+      if (typeof event.data !== 'string') {
+        return;
+      }
+      if (event.data === 'show-workspaces') {
+        const pathname = buildWorkspacesPath();
+        this.props.history.push({ pathname });
+        window.postMessage('show-navbar', '*');
+      } else if (event.data.startsWith('restart-workspace:')) {
+        const { allWorkspaces, match: { params } } = this.props;
+        const workspace = allWorkspaces.find(workspace =>
+          workspace.namespace === params.namespace && workspace.devfile.metadata.name === this.workspaceName);
+        if (!workspace) {
+          return;
+        }
+        const [, workspaceId, machineToken] = event.data.split(':');
+        if (workspace.id !== workspaceId) {
+          return;
+        }
+        try {
+          await validateMachineToken(workspace.id, machineToken);
+          await this.props.stopWorkspace(workspace);
+          await this.props.requestWorkspace(workspace);
+          window.postMessage('show-navbar', '*');
+        } catch (error) {
+          console.error('Machine token validation failed. ', error);
+        }
+      }
+    };
+    window.addEventListener('message', handleMessage, false);
+    this.toDispose.push({
+      dispose: () => {
+        window.removeEventListener('message', handleMessage);
+      },
+    });
   }
 
   private showErrorAlert(workspace: che.Workspace) {
@@ -233,7 +239,7 @@ class IdeLoaderContainer extends React.PureComponent<Props, State> {
         workspaceId: workspace.id,
       });
     } else if (currentStep === LoadIdeSteps.OPEN_IDE && workspace.status === WorkspaceStatus[WorkspaceStatus.STOPPED]) {
-      this.setState({ currentStep: LoadIdeSteps.INITIALIZING });
+      this.setState({ currentStep: LoadIdeSteps.INITIALIZING, ideUrl: undefined });
     }
     this.debounce.setDelay(1000);
   }
@@ -346,7 +352,7 @@ class IdeLoaderContainer extends React.PureComponent<Props, State> {
     if (namespace !== params.namespace || workspaceName !== this.workspaceName) {
       this.setState({
         currentStep: LoadIdeSteps.INITIALIZING,
-        hasError: workspace && workspace?.status === WorkspaceStatus[WorkspaceStatus.ERROR] ? true : false,
+        hasError: workspace?.status === WorkspaceStatus[WorkspaceStatus.ERROR],
         ideUrl: '',
         namespace: params.namespace,
         workspaceName: this.workspaceName,
