@@ -4,8 +4,8 @@
 | --- | --- | --- |
 | [`@babel/runtime@7.10.2`](https://github.com/babel/babel.git) | MIT | clearlydefined |
 | `@eclipse-che/api@7.18.1` | EPL-2.0 | N/A |
-| [`@eclipse-che/devworkspace-client@0.0.1-1615287725`](https://github.com/che-incubator/devworkspace-client) | EPL-2.0 |  |
-| [`@eclipse-che/workspace-client@0.0.1-1613484098`](https://github.com/eclipse/che-workspace-client) | EPL-2.0 |  |
+| [`@eclipse-che/devworkspace-client@0.0.1-1614934724`](https://github.com/che-incubator/devworkspace-client) | EPL-2.0 | N/A |
+| [`@eclipse-che/workspace-client@0.0.1-1615287725`](https://github.com/eclipse/che-workspace-client) | EPL-2.0 | N/A |
 | [`@kubernetes/client-node@0.14.0`](https://github.com/kubernetes-client/javascript.git) | Apache-2.0 | clearlydefined |
 | [`@panva/asn1.js@1.0.0`](https://github.com/panva/asn1.js.git) | MIT | clearlydefined |
 | [`@patternfly/patternfly@4.10.31`](https://github.com/patternfly/patternfly.git) | MIT | [CQ22346](https://dev.eclipse.org/ipzilla/show_bug.cgi?id=22346) |

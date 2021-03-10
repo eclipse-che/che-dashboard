@@ -268,8 +268,7 @@ export const actionCreators: ActionCreators = {
       });
 
       // Only subscribe to v1 workspaces
-      workspaces.forEach((workspace: che.Workspace) => {
-        subscribeToStatusChange(workspace, dispatch);
+      workspaces.forEach(workspace => subscribeToStatusChange(workspace, dispatch));
       // Unsubscribe environment output
       subscribedEnvironmentOutputCallbacks.forEach((environmentOutputCallback: EnvironmentOutputMessageHandler, workspaceId: string) => {
         if (workspaceIds.indexOf(workspaceId) === -1) {
@@ -279,7 +278,7 @@ export const actionCreators: ActionCreators = {
 
       // Subscribe
       workspaces.forEach(workspace => {
-        subscribeToStatusChange(workspace.id, dispatch);
+        subscribeToStatusChange(workspace, dispatch);
 
         if (WorkspaceStatus[WorkspaceStatus.STARTING] === workspace.status) {
           subscribeToEnvironmentOutput(workspace.id, dispatch);
@@ -309,7 +308,7 @@ export const actionCreators: ActionCreators = {
         workspace = await cheWorkspaceClient.restApiClient.getById<che.Workspace>(cheWorkspace.id);
       }
       if (!subscribedWorkspaceStatusCallbacks.has(workspace.id)) {
-        subscribeToStatusChange(workspace.id, dispatch);
+        subscribeToStatusChange(workspace, dispatch);
       }
       if (workspace.status === WorkspaceStatus[WorkspaceStatus.STARTING]) {
         subscribeToEnvironmentOutput(cheWorkspace.id, dispatch);
@@ -351,7 +350,7 @@ export const actionCreators: ActionCreators = {
         workspace = await devWorkspaceClient.changeWorkspaceStatus(cheWorkspace.namespace as string, cheWorkspace.devfile.metadata.name as string, true);
       } else {
         workspace = await cheWorkspaceClient.restApiClient.start<che.Workspace>(cheWorkspace.id, params);
-        dispatch({ type: 'DELETE_WORKSPACE_LOGS', workspace.id });
+        dispatch({ type: 'DELETE_WORKSPACE_LOGS', workspaceId: workspace.id });
         subscribeToEnvironmentOutput(cheWorkspace.id, dispatch);
       }
       dispatch({ type: 'UPDATE_WORKSPACE', workspace });
@@ -510,14 +509,14 @@ const unloadedState: State = {
   recentNumber: 5,
 };
 
-const mapMerge = (originMap: Map<string, string[]>, additionalMap: Map<string, string[]>): Map<string, string[]> => {
+export const mapMerge = (originMap: Map<string, string[]>, additionalMap: Map<string, string[]>): Map<string, string[]> => {
   if (!originMap.size) {
     return additionalMap;
   }
   const res = new Map<string, string[]>();
   originMap.forEach((val: string[], key: string) => {
     const merge = (val: string[], newVal: string[] | undefined): string[] => {
-      if (!newVal || (val.length > 0 && newVal.length === 1)) {
+      if (!newVal) {
         return val;
       }
       return val.concat(newVal);
@@ -533,9 +532,6 @@ const mapMerge = (originMap: Map<string, string[]>, additionalMap: Map<string, s
 };
 
 const mapDeleteKey = (originMap: Map<string, string[]>, key: string): Map<string, string[]> => {
-  if (!originMap.size) {
-    return originMap;
-  }
   const res = new Map<string, string[]>(originMap.entries());
   res.delete(key);
   return res;

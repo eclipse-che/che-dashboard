@@ -474,10 +474,10 @@
     "@kubernetes/client-node" "^0.14.0"
     axios "^0.21.1"
 
-"@eclipse-che/workspace-client@^0.0.1-1613484098":
-  version "0.0.1-1613484098"
-  resolved "https://registry.yarnpkg.com/@eclipse-che/workspace-client/-/workspace-client-0.0.1-1613484098.tgz#b2bf602bd8a1f81e26e8e9af3af7f85c3952720f"
-  integrity sha512-lzCVdwoXjMfkdAIBLiJ2LDxIgU7w/f7LWD0OdWDwVaN7XkJhEYngwnVFUyvDKMs5J6HgHLNBorEKLwW817SCmw==
+"@eclipse-che/workspace-client@^0.0.1-1615287725":
+  version "0.0.1-1615287725"
+  resolved "https://registry.yarnpkg.com/@eclipse-che/workspace-client/-/workspace-client-0.0.1-1615287725.tgz#901acb589ea9a8f795c39dd02b8229f22b9310ed"
+  integrity sha512-Pa+55Gt4H02gjzYrxOB7azRn8vlqLAhJu0IScG51nTAAO3zWPJ+DeXmOiM2khgyO0Tv/5LHQZtqlbsn19Ekpmg==
   dependencies:
     "@eclipse-che/api" "^7.0.0-beta-4.0"
     axios "^0.21.1"

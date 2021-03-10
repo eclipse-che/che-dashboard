@@ -26,6 +26,7 @@ import { ErrorReporter } from './ErrorReporter';
 import { IssueComponent } from './ErrorReporter/Issue';
 import { BannerAlert } from '../components/BannerAlert';
 import { ErrorBoundary } from './ErrorBoundary';
+import { DisposableCollection } from '../services/helpers/disposable';
 
 const THEME_KEY = 'theme';
 const IS_MANAGED_SIDEBAR = false;
@@ -49,6 +50,8 @@ export class Layout extends React.PureComponent<Props, State> {
 
   @lazyInject(KeycloakAuthService)
   private readonly keycloakAuthService: KeycloakAuthService;
+
+  private readonly toDispose = new DisposableCollection();
 
   constructor(props: Props) {
     super(props);
@@ -78,36 +81,33 @@ export class Layout extends React.PureComponent<Props, State> {
     window.sessionStorage.setItem(THEME_KEY, theme);
   }
 
-  private handleMessage(event: MessageEvent): void {
-    if (typeof event.data !== 'string') {
-      return;
-    }
-    if (event.data === 'show-navbar') {
-      this.setState({
-        isSidebarVisible: true,
-        isHeaderVisible: true,
-      });
-    } else if (event.data === 'hide-navbar') {
-      this.setState({
-        isSidebarVisible: false,
-        isHeaderVisible: false,
-      });
-    }
-  }
-
   public componentDidMount(): void {
-    window.addEventListener(
-      'message',
-      event => this.handleMessage(event),
-      false
-    );
+    const handleMessage = (event: MessageEvent): void => {
+      if (typeof event.data !== 'string') {
+        return;
+      }
+      if (event.data === 'show-navbar') {
+        this.setState({
+          isSidebarVisible: true,
+          isHeaderVisible: true,
+        });
+      } else if (event.data === 'hide-navbar') {
+        this.setState({
+          isSidebarVisible: false,
+          isHeaderVisible: false,
+        });
+      }
+    };
+    window.addEventListener('message', handleMessage, false);
+    this.toDispose.push({
+      dispose: () => {
+        window.removeEventListener('message', handleMessage);
+      },
+    });
   }
 
   public componentWillUnmount(): void {
-    window.removeEventListener(
-      'message',
-      event => this.handleMessage(event)
-    );
+    this.toDispose.dispose();
   }
 
   public render(): React.ReactElement {
