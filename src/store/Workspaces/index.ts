@@ -21,9 +21,11 @@ import { createState } from '../helpers';
 import { isDevWorkspace } from '../../services/helpers/devworkspace';
 import { DevWorkspaceClient, IStatusUpdate } from '../../services/workspace-client/devWorkspaceClient';
 import { IDevWorkspaceDevfile } from '@eclipse-che/devworkspace-client';
+import { KeycloakAuthService } from '../../services/keycloak/auth';
 
 const cheWorkspaceClient = container.get(CheWorkspaceClient);
 const devWorkspaceClient = container.get(DevWorkspaceClient);
+const keycloakAuthService = container.get(KeycloakAuthService);
 
 // This state defines the type of data maintained in the Redux store.
 export interface State {
@@ -318,6 +320,7 @@ export const actionCreators: ActionCreators = {
       if (cheDevworkspaceEnabled && isDevWorkspace(cheWorkspace)) {
         workspace = await devWorkspaceClient.changeWorkspaceStatus(cheWorkspace.namespace as string, cheWorkspace.devfile.metadata.name as string, true);
       } else {
+        await keycloakAuthService.forceUpdateToken();
         workspace = await cheWorkspaceClient.restApiClient.start<che.Workspace>(cheWorkspace.id, params);
         subscribeToEnvironmentOutput(cheWorkspace.id, dispatch);
       }
