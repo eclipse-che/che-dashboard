@@ -24,6 +24,9 @@ import { AppState } from '../store';
 import { selectIsDevelopment } from '../store/Environment/selectors';
 import * as WorkspaceStore from '../store/Workspaces';
 import { selectAllWorkspaces, selectIsLoading, selectLogs, selectWorkspaceById } from '../store/Workspaces/selectors';
+import { validateMachineToken } from '../services/validate-token';
+import { buildWorkspacesPath } from '../services/helpers/location';
+import { DisposableCollection } from '../services/helpers/disposable';
 
 type Props =
   MappedProps
@@ -54,6 +57,7 @@ class IdeLoaderContainer extends React.PureComponent<Props, State> {
   private readonly loadFactoryPageCallbacks: {
     showAlert?: (alertOptions: AlertOptions) => void
   };
+  private readonly toDispose = new DisposableCollection();
 
   constructor(props: Props) {
     super(props);
@@ -78,8 +82,14 @@ class IdeLoaderContainer extends React.PureComponent<Props, State> {
       preselectedTabKey: this.preselectedTabKey,
     };
 
-    this.debounce.subscribe(async () => {
+    const callback = async () => {
       await this.initWorkspace();
+    };
+    this.debounce.subscribe(callback);
+    this.toDispose.push({
+      dispose: () => {
+        this.debounce.unsubscribe(callback);
+      },
     });
   }
 
@@ -120,7 +130,7 @@ class IdeLoaderContainer extends React.PureComponent<Props, State> {
   }
 
   public async componentWillUnmount(): Promise<void> {
-    this.debounce.unsubscribeAll();
+    this.toDispose.dispose();
   }
 
   public async componentDidMount(): Promise<void> {
@@ -138,6 +148,42 @@ class IdeLoaderContainer extends React.PureComponent<Props, State> {
       this.showErrorAlert(workspace);
     }
     this.debounce.setDelay(1000);
+
+    const handleMessage = async (event: MessageEvent): Promise<void> => {
+      if (typeof event.data !== 'string') {
+        return;
+      }
+      if (event.data === 'show-workspaces') {
+        const pathname = buildWorkspacesPath();
+        this.props.history.push({ pathname });
+        window.postMessage('show-navbar', '*');
+      } else if (event.data.startsWith('restart-workspace:')) {
+        const { allWorkspaces, match: { params } } = this.props;
+        const workspace = allWorkspaces.find(workspace =>
+          workspace.namespace === params.namespace && workspace.devfile.metadata.name === this.workspaceName);
+        if (!workspace) {
+          return;
+        }
+        const [, workspaceId, machineToken] = event.data.split(':');
+        if (workspace.id !== workspaceId) {
+          return;
+        }
+        try {
+          await validateMachineToken(workspace.id, machineToken);
+          await this.props.stopWorkspace(workspace);
+          await this.props.requestWorkspace(workspace);
+          window.postMessage('show-navbar', '*');
+        } catch (error) {
+          console.error('Machine token validation failed. ', error);
+        }
+      }
+    };
+    window.addEventListener('message', handleMessage, false);
+    this.toDispose.push({
+      dispose: () => {
+        window.removeEventListener('message', handleMessage);
+      },
+    });
   }
 
   private showErrorAlert(workspace: che.Workspace) {
@@ -153,7 +199,7 @@ class IdeLoaderContainer extends React.PureComponent<Props, State> {
 
   public async componentDidUpdate(prevProps: Props, prevState: State): Promise<void> {
     const { allWorkspaces, match: { params } } = this.props;
-    const { hasError } = this.state;
+    const { hasError, currentStep } = this.state;
     const workspace = allWorkspaces.find(workspace =>
       workspace.namespace === params.namespace
       && workspace.devfile.metadata.name === this.workspaceName);
@@ -192,6 +238,8 @@ class IdeLoaderContainer extends React.PureComponent<Props, State> {
         currentStep: LoadIdeSteps.INITIALIZING,
         workspaceId: workspace.id,
       });
+    } else if (currentStep === LoadIdeSteps.OPEN_IDE && workspace.status === WorkspaceStatus[WorkspaceStatus.STOPPED]) {
+      this.setState({ currentStep: LoadIdeSteps.INITIALIZING, ideUrl: undefined });
     }
     this.debounce.setDelay(1000);
   }
@@ -304,7 +352,7 @@ class IdeLoaderContainer extends React.PureComponent<Props, State> {
     if (namespace !== params.namespace || workspaceName !== this.workspaceName) {
       this.setState({
         currentStep: LoadIdeSteps.INITIALIZING,
-        hasError: workspace?.status === WorkspaceStatus[WorkspaceStatus.ERROR] ? true : false,
+        hasError: workspace?.status === WorkspaceStatus[WorkspaceStatus.ERROR],
         ideUrl: '',
         namespace: params.namespace,
         workspaceName: this.workspaceName,
@@ -314,18 +362,22 @@ class IdeLoaderContainer extends React.PureComponent<Props, State> {
       return;
     }
     if (workspace) {
+      this.props.setWorkspaceId(workspace.id);
       this.setState({ workspaceId: workspace.id });
       if ((workspace.runtime || this.state.currentStep === LoadIdeSteps.START_WORKSPACE) &&
         workspace.status === WorkspaceStatus[WorkspaceStatus.RUNNING]) {
         return this.openIDE(workspace);
       }
     } else {
+      if (this.props.workspace) {
+        this.props.clearWorkspaceId();
+      }
       this.showAlert('Failed to find the target workspace.');
       return;
     }
     if (this.state.currentStep === LoadIdeSteps.INITIALIZING) {
       this.setState({ currentStep: LoadIdeSteps.START_WORKSPACE });
-      if (workspace.status === WorkspaceStatus[WorkspaceStatus.STOPPED] && (this.state.hasError !== true)) {
+      if (workspace.status === WorkspaceStatus[WorkspaceStatus.STOPPED] && !this.state.hasError) {
         try {
           await this.props.startWorkspace(workspace);
         } catch (e) {
@@ -338,6 +390,7 @@ class IdeLoaderContainer extends React.PureComponent<Props, State> {
 
   render() {
     const { currentStep, hasError, ideUrl, workspaceId, workspaceName, preselectedTabKey } = this.state;
+    const { workspace } = this.props;
 
     return (
       <IdeLoader
@@ -346,6 +399,7 @@ class IdeLoaderContainer extends React.PureComponent<Props, State> {
         preselectedTabKey={preselectedTabKey}
         ideUrl={ideUrl}
         hasError={hasError}
+        status={workspace?.status}
         workspaceName={workspaceName || ''}
         callbacks={this.loadFactoryPageCallbacks}
       />

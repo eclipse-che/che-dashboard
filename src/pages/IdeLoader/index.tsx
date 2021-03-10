@@ -30,7 +30,7 @@ import Header from '../../components/Header';
 import WorkspaceLogs from '../../components/LogsTab';
 import { LoadIdeSteps } from '../../containers/IdeLoader';
 import { delay } from '../../services/helpers/delay';
-import { IdeLoaderTab, WorkspaceStatus } from '../../services/helpers/types';
+import { IdeLoaderTab } from '../../services/helpers/types';
 
 import workspaceStatusLabelStyles from '../../components/WorkspaceStatusLabel/index.module.css';
 import './IdeLoader.styl';
@@ -38,10 +38,11 @@ import './IdeLoader.styl';
 export const SECTION_THEME = PageSectionVariants.light;
 
 type Props = {
-  currentStep: LoadIdeSteps,
-  hasError: boolean,
+  currentStep: LoadIdeSteps;
+  hasError: boolean;
   ideUrl?: string;
-  preselectedTabKey?: IdeLoaderTab
+  preselectedTabKey?: IdeLoaderTab;
+  status: string | undefined;
   workspaceId: string;
   workspaceName: string;
   callbacks?: {
@@ -234,7 +235,7 @@ class IdeLoader extends React.PureComponent<Props, State> {
   }
 
   public render(): React.ReactElement {
-    const { workspaceName, workspaceId, ideUrl, hasError, currentStep } = this.props;
+    const { workspaceName, workspaceId, ideUrl, status, currentStep } = this.props;
     const { alertVisible, currentAlertVariant, currentRequestError, alertActionLinks } = this.state;
 
     if (ideUrl) {
@@ -258,7 +259,7 @@ class IdeLoader extends React.PureComponent<Props, State> {
           </AlertGroup>
         )}
         <Header title={`Starting workspace ${workspaceName}`}
-          status={WorkspaceStatus[hasError ? WorkspaceStatus.ERROR : WorkspaceStatus.STARTING]} />
+          status={status} />
         <PageSection variant={SECTION_THEME} className="ide-loader-page" isFilled={true}>
           <Tabs activeKey={this.state.activeTabKey} onSelect={this.handleTabClick} inset={{ default: 'insetLg' }}
             id="ide-loader-page-tabs">
