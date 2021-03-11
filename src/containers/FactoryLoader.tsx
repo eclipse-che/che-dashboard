@@ -229,11 +229,12 @@ export class FactoryLoaderContainer extends React.PureComponent<Props, State> {
     try {
       await this.props.requestFactoryResolver(location);
     } catch (e) {
-      if (!isOAuthResponse(e)) {
-        this.showAlert('Failed to resolve a devfile.');
+      if (isOAuthResponse(e)) {
+        this.resolvePrivateDevfile(e.attributes.oauth_authentication_url, location);
         return;
       }
-      this.resolvePrivateDevfile(e.attributes.oauth_authentication_url, location);
+
+      this.showAlert('Failed to resolve a devfile. ' + (e.message || ''));
       return;
     }
     if (this.factoryResolver.resolver?.location !== location) {
