@@ -255,7 +255,8 @@ export class FactoryLoaderContainer extends React.PureComponent<Props, State> {
       const namespaces = this.props.infrastructureNamespaces.namespaces;
       if (namespaces.length === 1) {
         if (!namespaces[0].attributes.phase) {
-          throw new Error('Failed to accept the factory URL. The infrastructure namespace is required to be created. Please create a regular workspace to workaround the issue and open factory URL again.');
+          this.showAlert('Failed to accept the factory URL. The infrastructure namespace is required to be created. Please create a regular workspace to workaround the issue and open factory URL again.');
+          return;
         }
       }
 
