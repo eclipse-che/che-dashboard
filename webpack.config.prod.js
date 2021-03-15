@@ -40,6 +40,10 @@ module.exports = merge(common, {
     ],
   },
   plugins: [
+    new webpack.DefinePlugin({
+      __isBrowser__: "true",
+      'process.env.ENVIRONMENT': JSON.stringify('production'),
+    }),
     new webpack.ProgressPlugin(),
     new CopyPlugin({
       patterns: [

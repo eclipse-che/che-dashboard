@@ -11,12 +11,31 @@
  */
 
 import { Action, Reducer } from 'redux';
+import { RequestError } from '@eclipse-che/workspace-client';
+import { AxiosResponse } from 'axios';
 import { FactoryResolver } from '../services/helpers/types';
-import { AppThunk } from './';
 import { container } from '../inversify.config';
 import { CheWorkspaceClient } from '../services/workspace-client/cheWorkspaceClient';
+import { AppThunk } from './';
 
 const WorkspaceClient = container.get(CheWorkspaceClient);
+
+export type OAuthResponse = {
+  attributes: {
+    oauth_provider: string;
+    oauth_version: string;
+    oauth_authentication_url: string;
+  },
+  errorCode: number;
+  message: string;
+}
+
+export function isOAuthResponse(response: any): response is OAuthResponse {
+  if (response?.attributes?.oauth_provider && response?.attributes?.oauth_authentication_url) {
+    return true;
+  }
+  return false;
+}
 
 export interface State {
   isLoading: boolean;
@@ -59,6 +78,13 @@ export const actionCreators: ActionCreators = {
       dispatch({ type: 'RECEIVE_FACTORY_RESOLVER', resolver: { location: location, devfile: data.devfile, source: data.source } });
       return;
     } catch (e) {
+      const error = e as RequestError;
+      const response = error.response as AxiosResponse;
+      const responseData = response.data;
+      if (response.status === 401 && isOAuthResponse(responseData)) {
+        throw responseData;
+        return;
+      }
       throw new Error(e.message ? e.message : 'Failed to request factory resolver');
     }
   },

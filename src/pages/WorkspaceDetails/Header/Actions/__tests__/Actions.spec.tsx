@@ -23,9 +23,11 @@ import { FakeStoreBuilder } from '../../../../../store/__mocks__/storeBuilder';
 jest.mock('../../../../../store/Workspaces/index', () => {
   return {
     actionCreators: {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       startWorkspace: (workspace: che.Workspace, params?: ResourceQueryParams): AppThunk<any, Promise<void>> => async (): Promise<void> => {
         return Promise.resolve();
       },
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       stopWorkspace: (workspace: che.Workspace): AppThunk<any, Promise<void>> => async (): Promise<void> => {
         return Promise.resolve();
       }

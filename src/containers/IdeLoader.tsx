@@ -21,7 +21,7 @@ import { Debounce } from '../services/helpers/debounce';
 import { delay } from '../services/helpers/delay';
 import { IdeLoaderTab, WorkspaceStatus } from '../services/helpers/types';
 import { AppState } from '../store';
-import { selectIsDevelopment } from '../store/Environment/selectors';
+import { getEnvironment, isDevEnvironment } from '../services/helpers/environment';
 import * as WorkspaceStore from '../store/Workspaces';
 import { selectAllWorkspaces, selectIsLoading, selectLogs, selectWorkspaceById } from '../store/Workspaces/selectors';
 import { validateMachineToken } from '../services/validate-token';
@@ -57,10 +57,14 @@ class IdeLoaderContainer extends React.PureComponent<Props, State> {
   private readonly loadFactoryPageCallbacks: {
     showAlert?: (alertOptions: AlertOptions) => void
   };
+  private isDevEnvironment: boolean;
   private readonly toDispose = new DisposableCollection();
 
   constructor(props: Props) {
     super(props);
+
+    const env = getEnvironment();
+    this.isDevEnvironment = isDevEnvironment(env);
 
     this.loadFactoryPageCallbacks = {};
     const { match: { params }, history } = this.props;
@@ -315,7 +319,7 @@ class IdeLoaderContainer extends React.PureComponent<Props, State> {
       this.showAlert('Don\'t know what to open, IDE url is not defined.');
       return;
     }
-    if (this.props.isDevelopment) {
+    if (this.isDevEnvironment) {
       // workaround to open IDE in iframe while serving dashboard locally
       try {
         const windowRef = window.open(ideUrl);
@@ -413,7 +417,6 @@ const mapStateToProps = (state: AppState) => ({
   allWorkspaces: selectAllWorkspaces(state),
   isLoading: selectIsLoading(state),
   workspacesLogs: selectLogs(state),
-  isDevelopment: selectIsDevelopment(state),
 });
 
 const connector = connect(

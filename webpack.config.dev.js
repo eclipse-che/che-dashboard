@@ -20,7 +20,10 @@ const StylelintPlugin = require('stylelint-webpack-plugin');
 const common = require('./webpack.config.common');
 
 module.exports = env => {
-  const proxyTarget = env && env.server ? env.server : 'https://che.openshift.io/';
+  const proxyTarget = env && env.server;
+  if (!proxyTarget) {
+    throw new Error('Che server URL is not set. Argument "--env.server=" is mandatory in development mode.');
+  }
   const headers = {
     origin: proxyTarget,
   };
@@ -57,7 +60,9 @@ module.exports = env => {
     },
     plugins: [
       new webpack.DefinePlugin({
+        __isBrowser__: "true",
         'process.env.ENVIRONMENT': JSON.stringify('development'),
+        'process.env.SERVER': JSON.stringify(env.server),
       }),
       new webpack.HotModuleReplacementPlugin(),
       new CleanTerminalPlugin(),
