@@ -22,7 +22,10 @@ import CheProgress from '../../../components/Progress';
 import { SamplesListHeader } from './SamplesListHeader';
 import SamplesListToolbar from './SamplesListToolbar';
 import SamplesListGallery from './SamplesListGallery';
-import { selectIsLoading, selectSettings } from '../../../store/Workspaces/selectors';
+import { selectIsLoading, selectPreferredStorageType, selectSettings } from '../../../store/Workspaces/selectors';
+import { load } from 'js-yaml';
+import { updateDevfile } from '../../../services/storageTypes';
+import stringify from '../../../services/helpers/editor';
 
 // At runtime, Redux will merge together...
 type Props = {
@@ -30,7 +33,8 @@ type Props = {
 }
   & MappedProps;
 type State = {
-  temporary: boolean;
+  temporary?: boolean;
+  persistVolumesDefault: string;
 };
 
 export class SamplesListTab extends React.PureComponent<Props, State> {
@@ -38,8 +42,11 @@ export class SamplesListTab extends React.PureComponent<Props, State> {
   constructor(props: Props) {
     super(props);
 
+    const persistVolumesDefault = this.props.preferredStorageType === 'ephemeral' ? 'false'
+      : this.props.settings['che.workspace.persist_volumes.default'];
+
     this.state = {
-      temporary: false,
+      persistVolumesDefault
     };
 
   }
@@ -49,12 +56,20 @@ export class SamplesListTab extends React.PureComponent<Props, State> {
   }
 
   private handleSampleCardClick(devfileContent: string, stackName: string): Promise<void> {
-    return this.props.onDevfile(devfileContent, stackName);
+    let devfile = load(devfileContent);
+
+    if (this.state.temporary === undefined) {
+      devfile = updateDevfile(devfile, this.props.preferredStorageType);
+    } else if (this.props.preferredStorageType === 'async') {
+      devfile = updateDevfile(devfile, this.state.temporary ? 'ephemeral' : this.props.preferredStorageType);
+    } else {
+      devfile = updateDevfile(devfile, this.state.temporary ? 'ephemeral' : 'persistent');
+    }
+    return this.props.onDevfile(stringify(devfile), stackName);
   }
 
   public render(): React.ReactElement {
     const isLoading = this.props.isLoading;
-    const persistVolumesDefault = this.props.settings['che.workspace.persist_volumes.default'];
 
     return (
       <React.Fragment>
@@ -62,7 +77,7 @@ export class SamplesListTab extends React.PureComponent<Props, State> {
           variant={PageSectionVariants.light}>
           <SamplesListHeader />
           <SamplesListToolbar
-            persistVolumesDefault={persistVolumesDefault}
+            persistVolumesDefault={this.state.persistVolumesDefault}
             onTemporaryStorageChange={temporary => this.handleTemporaryStorageChange(temporary)} />
         </PageSection>
         <CheProgress isLoading={isLoading} />
@@ -77,6 +92,7 @@ export class SamplesListTab extends React.PureComponent<Props, State> {
 const mapStateToProps = (state: AppState) => ({
   isLoading: selectIsLoading(state),
   settings: selectSettings(state),
+  preferredStorageType: selectPreferredStorageType(state),
 });
 
 const connector = connect(

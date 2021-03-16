@@ -20,7 +20,7 @@ import { FakeStoreBuilder } from '../../../../store/__mocks__/storeBuilder';
 import * as FactoryResolverStore from '../../../../store/FactoryResolver';
 import * as DevfileRegistriesStore from '../../../../store/DevfileRegistries';
 import { AppThunk } from '../../../../store';
-import { toTitle } from '../../../../services/storageTypes';
+import { toTitle, updateDevfile } from '../../../../services/storageTypes';
 
 import CustomWorkspaceTab from '../';
 import { FactoryResolver } from '../../../../services/helpers/types';
@@ -268,14 +268,16 @@ describe('Custom Workspace Tab', () => {
   describe('devfile editor', () => {
 
     it('should handle updating a devfile content', async () => {
-      const store = createStore();
+      const defaultStorageType = 'ephemeral';
+      const store = createStore({ defaultStorageType });
       const mockOnDevfile = jest.fn();
       renderComponent(store, mockOnDevfile);
 
       const editorTextbox = screen.getByTestId('dummy-editor');
       expect(editorTextbox).toBeInTheDocument();
 
-      expect(editorTextbox).toHaveValue(JSON.stringify(initialDevfile));
+      const devfile = updateDevfile(initialDevfile, defaultStorageType);
+      expect(editorTextbox).toHaveValue(JSON.stringify(devfile));
 
       /* change devfile content in editor */
       fireEvent.change(editorTextbox, { target: { value: '' } });
