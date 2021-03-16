@@ -19,7 +19,7 @@ import StorageTypeFormGroup from './StorageType';
 import { WorkspaceNameFormGroup } from './WorkspaceName';
 import DevfileSelectorFormGroup from './DevfileSelector';
 import InfrastructureNamespaceFormGroup from './InfrastructureNamespace';
-import { selectSettings } from '../../../store/Workspaces/selectors';
+import { selectPreferredStorageType, selectSettings } from '../../../store/Workspaces/selectors';
 import { attributesToType, updateDevfile } from '../../../services/storageTypes';
 
 type Props = MappedProps
@@ -56,12 +56,8 @@ export class CustomWorkspaceTab extends React.PureComponent<Props, State> {
         generateName: generateName ? generateName : 'wksp-'
       },
     } as che.WorkspaceDevfile;
-    if (this.props.settings['che.workspace.persist_volumes.default'] === 'false') {
-      devfile.attributes = {
-        persistVolumes: 'false'
-      };
-    }
-    return devfile;
+
+    return updateDevfile(devfile, this.props.preferredStorageType);
   }
 
   private handleInfrastructureNamespaceChange(namespace: che.KubernetesNamespace): void {
@@ -99,7 +95,18 @@ export class CustomWorkspaceTab extends React.PureComponent<Props, State> {
   }
 
   private handleNewDevfile(devfileContent?: che.WorkspaceDevfile): void {
-    const devfile = devfileContent ? devfileContent : this.buildInitialDevfile();
+    let devfile: che.WorkspaceDevfile;
+    if (!devfileContent) {
+      devfile = this.buildInitialDevfile();
+    } else if (
+      devfileContent?.attributes?.persistVolumes === undefined &&
+      devfileContent?.attributes?.asyncPersist === undefined &&
+      this.props.preferredStorageType
+    ) {
+      devfile = updateDevfile(devfileContent, this.props.preferredStorageType);
+    } else {
+      devfile = devfileContent;
+    }
     const { storageType, workspaceName } = this.state;
 
     if (workspaceName) {
@@ -203,6 +210,7 @@ export class CustomWorkspaceTab extends React.PureComponent<Props, State> {
 
 const mapStateToProps = (state: AppState) => ({
   settings: selectSettings(state),
+  preferredStorageType: selectPreferredStorageType(state),
 });
 
 const connector = connect(

@@ -36,8 +36,8 @@ jest.mock('../../store/Workspaces/index', () => {
       requestWorkspace: (id) => async (): Promise<void> => {
         requestWorkspaceMock(id);
       },
-      startWorkspace: (id) => async (): Promise<void> => {
-        startWorkspaceMock(id);
+      startWorkspace: workspace => async (): Promise<void> => {
+        startWorkspaceMock(workspace);
       },
       createWorkspaceFromDevfile: (devfile, namespace, infrastructureNamespace, attributes) =>
         async (): Promise<che.Workspace> => {

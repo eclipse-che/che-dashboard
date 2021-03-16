@@ -63,6 +63,10 @@ export class DevfileSelect extends React.PureComponent<Props, State> {
         return meta.displayName;
       },
       compareTo: value => {
+        if (typeof value !== 'string' || !meta.displayName) {
+          return false;
+        }
+
         return meta.displayName.toLowerCase()
           .includes(value.toLowerCase());
       }

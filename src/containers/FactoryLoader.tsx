@@ -19,7 +19,7 @@ import { AppState } from '../store';
 import * as FactoryResolverStore from '../store/FactoryResolver';
 import * as WorkspaceStore from '../store/Workspaces';
 import FactoryLoader from '../pages/FactoryLoader';
-import { selectAllWorkspaces, selectWorkspaceById } from '../store/Workspaces/selectors';
+import { selectAllWorkspaces, selectPreferredStorageType, selectWorkspaceById } from '../store/Workspaces/selectors';
 import { WorkspaceStatus } from '../services/helpers/types';
 import { buildIdeLoaderPath, sanitizeLocation } from '../services/helpers/location';
 import { merge } from 'lodash';
@@ -27,6 +27,7 @@ import { lazyInject } from '../inversify.config';
 import { KeycloakAuthService } from '../services/keycloak/auth';
 import { getEnvironment, isDevEnvironment } from '../services/helpers/environment';
 import { isOAuthResponse } from '../store/FactoryResolver';
+import { updateDevfile } from '../services/storageTypes';
 
 const WS_ATTRIBUTES_TO_SAVE: string[] = ['workspaceDeploymentLabels', 'workspaceDeploymentAnnotations', 'policies.create'];
 
@@ -99,9 +100,17 @@ export class FactoryLoaderContainer extends React.PureComponent<Props, State> {
   }
 
   private getTargetDevfile(): api.che.workspace.devfile.Devfile | undefined {
-    const devfile = this.factoryResolver.resolver.devfile;
+    let devfile = this.factoryResolver.resolver.devfile;
     if (!devfile) {
       return undefined;
+    }
+
+    if (
+      devfile?.attributes?.persistVolumes === undefined &&
+      devfile?.attributes?.asyncPersist === undefined &&
+      this.props.preferredStorageType
+    ) {
+      devfile = updateDevfile(devfile, this.props.preferredStorageType);
     }
 
     return merge(devfile, this.overrideDevfileObject);
@@ -412,6 +421,7 @@ const mapStateToProps = (state: AppState) => ({
   workspace: selectWorkspaceById(state),
   allWorkspaces: selectAllWorkspaces(state),
   infrastructureNamespaces: state.infrastructureNamespace,
+  preferredStorageType: selectPreferredStorageType(state),
 });
 
 const connector = connect(
