@@ -19,6 +19,12 @@ import { LoadFactorySteps } from '../../../containers/FactoryLoader';
 import { FakeStoreBuilder } from '../../../store/__mocks__/storeBuilder';
 import { createFakeWorkspace } from '../../../store/__mocks__/workspace';
 
+jest.mock('react-tooltip', () => {
+  return function DummyTooltip(): React.ReactElement {
+    return (<div>Dummy Tooltip</div>);
+  };
+});
+
 const workspaceName = 'wksp-test';
 const workspaceId = 'testWorkspaceId';
 const workspace = createFakeWorkspace(workspaceId, workspaceName);

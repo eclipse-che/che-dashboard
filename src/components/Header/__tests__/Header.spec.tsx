@@ -15,6 +15,12 @@ import renderer from 'react-test-renderer';
 import Header from '../';
 import { WorkspaceStatus } from '../../../services/helpers/types';
 
+jest.mock('react-tooltip', () => {
+  return function DummyTooltip(): React.ReactElement {
+    return (<div>Dummy Tooltip</div>);
+  };
+});
+
 describe('The header component for IDE-loader and Factory-loader pages', () => {
 
   it('should render start workspace correctly', () => {

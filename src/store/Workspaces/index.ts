@@ -371,7 +371,6 @@ export const actionCreators: ActionCreators = {
         devWorkspaceClient.changeWorkspaceStatus(workspace.namespace as string, workspace.devfile.metadata.name as string, false);
       } else {
         cheWorkspaceClient.restApiClient.stop(workspace.id);
-        unSubscribeToEnvironmentOutput(workspace.id);
       }
     } catch (e) {
       dispatch({ type: 'RECEIVE_ERROR' });

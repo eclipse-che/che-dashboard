@@ -66,6 +66,7 @@ export default class Header extends React.PureComponent<Props, State> {
 
     return (
       <PageHeader
+        style={{ zIndex: 'inherit' }}
         className={className}
         logo={logo}
         logoProps={{ href: this.props.helpPath, target: '_blank' }}

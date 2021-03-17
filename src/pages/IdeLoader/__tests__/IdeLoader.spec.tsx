@@ -27,6 +27,12 @@ jest.mock('../../../services/helpers/tools', () => {
   };
 });
 
+jest.mock('react-tooltip', () => {
+  return function DummyTooltip(): React.ReactElement {
+    return (<div>Dummy Tooltip</div>);
+  };
+});
+
 const workspaceName = 'wksp-test';
 const workspaceId = 'testWorkspaceId';
 

@@ -17,6 +17,12 @@ import { MemoryRouter } from 'react-router';
 import NavigationRecentItem from '../RecentItem';
 import { NavigationRecentItemObject } from '..';
 
+jest.mock('react-tooltip', () => {
+  return function DummyTooltip(): React.ReactElement {
+    return (<div>Dummy Tooltip</div>);
+  };
+});
+
 describe('Navigation Item', () => {
 
   let activeItem = '';
