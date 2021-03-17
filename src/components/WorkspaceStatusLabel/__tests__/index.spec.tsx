@@ -15,6 +15,12 @@ import renderer from 'react-test-renderer';
 import WorkspaceStatusLabel from '..';
 import { WorkspaceStatus } from '../../../services/helpers/types';
 
+jest.mock('react-tooltip', () => {
+  return function DummyTooltip(): React.ReactElement {
+    return (<div>Dummy Tooltip</div>);
+  };
+});
+
 describe('The workspace status label component', () => {
 
   it('should render default status correctly', () => {

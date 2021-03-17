@@ -25,6 +25,12 @@ jest.mock('../../../components/Head', () => () => {
   return <span>Dummy Head Component</span>;
 });
 
+jest.mock('react-tooltip', () => {
+  return function DummyTooltip(): React.ReactElement {
+    return (<div>Dummy Tooltip</div>);
+  };
+});
+
 const brandingData = {
   docs: {
     workspace: 'workspaces/documentation/link',

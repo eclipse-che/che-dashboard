@@ -22,6 +22,12 @@ import { Store } from 'redux';
 import NavigationRecentList from '../RecentList';
 import { AppState } from '../../../store';
 
+jest.mock('react-tooltip', () => {
+  return function DummyTooltip(): React.ReactElement {
+    return (<div>Dummy Tooltip</div>);
+  };
+});
+
 describe('Navigation Recent List', () => {
 
   const workspaces: che.Workspace[] = [

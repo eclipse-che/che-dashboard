@@ -27,6 +27,7 @@ Array [
       >
         <span
           className="pf-c-label pf-m-blue"
+          data-tip=""
         >
           <span
             className="pf-c-label__content"
@@ -57,6 +58,9 @@ Array [
             Starting
           </span>
         </span>
+        <div>
+          Dummy Tooltip
+        </div>
       </div>
     </div>
   </section>,
@@ -599,6 +603,7 @@ Array [
       >
         <span
           className="pf-c-label pf-m-red"
+          data-tip=""
         >
           <span
             className="pf-c-label__content"
@@ -629,6 +634,9 @@ Array [
             Error
           </span>
         </span>
+        <div>
+          Dummy Tooltip
+        </div>
       </div>
     </div>
   </section>,
@@ -1171,6 +1179,7 @@ Array [
       >
         <span
           className="pf-c-label pf-m-blue"
+          data-tip=""
         >
           <span
             className="pf-c-label__content"
@@ -1201,6 +1210,9 @@ Array [
             Starting
           </span>
         </span>
+        <div>
+          Dummy Tooltip
+        </div>
       </div>
     </div>
   </section>,
@@ -1638,6 +1650,7 @@ Array [
       >
         <span
           className="pf-c-label pf-m-red"
+          data-tip=""
         >
           <span
             className="pf-c-label__content"
@@ -1668,6 +1681,9 @@ Array [
             Error
           </span>
         </span>
+        <div>
+          Dummy Tooltip
+        </div>
       </div>
     </div>
   </section>,
@@ -2105,6 +2121,7 @@ Array [
       >
         <span
           className="pf-c-label pf-m-red"
+          data-tip=""
         >
           <span
             className="pf-c-label__content"
@@ -2135,6 +2152,9 @@ Array [
             Error
           </span>
         </span>
+        <div>
+          Dummy Tooltip
+        </div>
       </div>
     </div>
   </section>,
@@ -2658,6 +2678,7 @@ Array [
       >
         <span
           className="pf-c-label pf-m-blue"
+          data-tip=""
         >
           <span
             className="pf-c-label__content"
@@ -2688,6 +2709,9 @@ Array [
             Starting
           </span>
         </span>
+        <div>
+          Dummy Tooltip
+        </div>
       </div>
     </div>
   </section>,
@@ -3211,6 +3235,7 @@ Array [
       >
         <span
           className="pf-c-label pf-m-blue"
+          data-tip=""
         >
           <span
             className="pf-c-label__content"
@@ -3241,6 +3266,9 @@ Array [
             Starting
           </span>
         </span>
+        <div>
+          Dummy Tooltip
+        </div>
       </div>
     </div>
   </section>,
@@ -3764,6 +3792,7 @@ Array [
       >
         <span
           className="pf-c-label pf-m-blue"
+          data-tip=""
         >
           <span
             className="pf-c-label__content"
@@ -3794,6 +3823,9 @@ Array [
             Starting
           </span>
         </span>
+        <div>
+          Dummy Tooltip
+        </div>
       </div>
     </div>
   </section>,
@@ -4326,6 +4358,7 @@ Array [
       >
         <span
           className="pf-c-label pf-m-blue"
+          data-tip=""
         >
           <span
             className="pf-c-label__content"
@@ -4356,6 +4389,9 @@ Array [
             Starting
           </span>
         </span>
+        <div>
+          Dummy Tooltip
+        </div>
       </div>
     </div>
   </section>,
@@ -4869,6 +4905,7 @@ Array [
       >
         <span
           className="pf-c-label pf-m-red"
+          data-tip=""
         >
           <span
             className="pf-c-label__content"
@@ -4899,6 +4936,9 @@ Array [
             Error
           </span>
         </span>
+        <div>
+          Dummy Tooltip
+        </div>
       </div>
     </div>
   </section>,

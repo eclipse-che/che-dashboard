@@ -239,6 +239,7 @@
 | [`react-router-dom@5.2.0`](https://github.com/ReactTraining/react-router.git) | MIT | clearlydefined |
 | [`react-router@5.2.0`](https://github.com/ReactTraining/react-router.git) | MIT | clearlydefined |
 | [`react-side-effect@2.1.1`](https://github.com/gaearon/react-side-effect.git) | MIT | clearlydefined |
+| [`react-tooltip@4.2.15`](https://github.com/wwayne/react-tooltip) | MIT | clearlydefined |
 | [`react-transition-group@2.9.0`](https://github.com/reactjs/react-transition-group.git) | BSD-3-Clause | [CQ22356](https://dev.eclipse.org/ipzilla/show_bug.cgi?id=22356) |
 | [`react@16.13.1`](https://github.com/facebook/react.git) | MIT | clearlydefined |
 | [`reactstrap@8.4.1`](git+ssh://git@github.com/reactstrap/reactstrap.git) | MIT | clearlydefined |

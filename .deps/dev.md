@@ -110,6 +110,7 @@
 | [`@types/react-router-dom@5.1.5`](https://github.com/DefinitelyTyped/DefinitelyTyped.git) | MIT | clearlydefined |
 | [`@types/react-router@5.1.7`](https://github.com/DefinitelyTyped/DefinitelyTyped.git) | MIT | clearlydefined |
 | [`@types/react-test-renderer@16.9.3`](https://github.com/DefinitelyTyped/DefinitelyTyped.git) | MIT | clearlydefined |
+| [`@types/react-tooltip@4.2.4`](https://github.com/wwayne/react-tooltip) | MIT | clearlydefined |
 | [`@types/reactstrap@8.4.2`](https://github.com/DefinitelyTyped/DefinitelyTyped.git) | MIT | clearlydefined |
 | [`@types/redux-mock-store@1.0.2`](https://github.com/DefinitelyTyped/DefinitelyTyped.git) | MIT | clearlydefined |
 | [`@types/reselect@2.2.0`](https://github.com/rackt/reselect) | MIT | clearlydefined |
