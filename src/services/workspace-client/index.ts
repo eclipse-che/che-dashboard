@@ -85,8 +85,10 @@ export abstract class WorkspaceClient {
     if (keycloak) {
       return new Promise((resolve, reject) => {
         keycloak.updateToken(minValidity).success((refreshed: boolean) => {
-          if (refreshed && keycloak.token) {
-            const header = 'Authorization';
+          const header = 'Authorization';
+          if (!this.axios.defaults.headers.common[header]
+            || (config && !config.headers.common[header])
+            || refreshed) {
             this.axios.defaults.headers.common[header] = `Bearer ${keycloak.token}`;
             if (config) {
               config.headers.common[header] = `Bearer ${keycloak.token}`;
