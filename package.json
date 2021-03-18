@@ -28,7 +28,9 @@
     "serve:prod": "webpack-dev-server --color --disable-host-check --config webpack.config.prod-dev.js",
     "test": "jest",
     "test:coverage": "jest --coverage",
-    "test:watch": "jest --watch"
+    "test:watch": "jest --watch",
+    "dash-licenses:check": "docker run -ti -v $(pwd):/workspace/project quay.io/che-incubator/dash-licenses:next --check",
+    "dash-licenses:update": "docker run -ti -v $(pwd):/workspace/project quay.io/che-incubator/dash-licenses:next:next"
   },
   "dependencies": {
     "@eclipse-che/devworkspace-client": "^0.0.1-1614934724",
