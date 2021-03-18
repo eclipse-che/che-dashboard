@@ -28,9 +28,7 @@
     "serve:prod": "webpack-dev-server --color --disable-host-check --config webpack.config.prod-dev.js",
     "test": "jest",
     "test:coverage": "jest --coverage",
-    "test:watch": "jest --watch",
-    "licenseCheck:prepare": "license-tool/build.sh",
-    "licenseCheck:run": "license-tool/run.sh"
+    "test:watch": "jest --watch"
   },
   "dependencies": {
     "@eclipse-che/devworkspace-client": "^0.0.1-1614934724",
