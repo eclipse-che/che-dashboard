@@ -59,6 +59,15 @@ class WorkspaceStatusLabel extends React.PureComponent<Props> {
 
     let color: ColorType;
 
+    const tooltip = (
+      <ReactTooltip
+        getContent={() => (status)}
+        backgroundColor="black"
+        textColor="white"
+        effect="solid"
+      />
+    );
+
     switch (status) {
       case WorkspaceStatus[WorkspaceStatus.STOPPED]:
         color = 'grey';
@@ -70,11 +79,7 @@ class WorkspaceStatusLabel extends React.PureComponent<Props> {
               color={color}
               icon={<StoppedIcon />}
             >Stopped</Label>
-            <ReactTooltip
-              getContent={() => (WorkspaceStatus[WorkspaceStatus.STOPPED])}
-              backgroundColor="black"
-              textColor="white"
-              effect="solid" />
+            {tooltip}
           </>
         );
       case WorkspaceStatus[WorkspaceStatus.RUNNING]:
@@ -87,11 +92,7 @@ class WorkspaceStatusLabel extends React.PureComponent<Props> {
               color={color}
               icon={<ResourcesFullIcon />}
             >Running</Label>
-            <ReactTooltip
-              getContent={() => (WorkspaceStatus[WorkspaceStatus.RUNNING])}
-              backgroundColor="black"
-              textColor="white"
-              effect="solid" />
+            {tooltip}
           </>
         );
       case WorkspaceStatus[WorkspaceStatus.ERROR]:
@@ -104,11 +105,7 @@ class WorkspaceStatusLabel extends React.PureComponent<Props> {
               color={color}
               icon={<ExclamationCircleIcon />}
             >Error</Label>
-            <ReactTooltip
-              getContent={() => (WorkspaceStatus[WorkspaceStatus.ERROR])}
-              backgroundColor="black"
-              textColor="white"
-              effect="solid" />
+            {tooltip}
           </>
         );
       case WorkspaceStatus[WorkspaceStatus.PAUSED]:
@@ -121,11 +118,7 @@ class WorkspaceStatusLabel extends React.PureComponent<Props> {
               color={color}
               icon={<PauseCircleIcon />}
             >Paused</Label>
-            <ReactTooltip
-              getContent={() => (WorkspaceStatus[WorkspaceStatus.PAUSED])}
-              backgroundColor="black"
-              textColor="white"
-              effect="solid" />
+            {tooltip}
           </>
         );
       case WorkspaceStatus[WorkspaceStatus.STARTING]:
@@ -138,11 +131,7 @@ class WorkspaceStatusLabel extends React.PureComponent<Props> {
               color={color}
               icon={<InProgressIcon className={styles.rotate} />}
             >Starting</Label>
-            <ReactTooltip
-              getContent={() => (WorkspaceStatus[WorkspaceStatus.STARTING])}
-              backgroundColor="black"
-              textColor="white"
-              effect="solid" />
+            {tooltip}
           </>
         );
       default:
@@ -150,12 +139,12 @@ class WorkspaceStatusLabel extends React.PureComponent<Props> {
         return (
           <>
             <Label
-              data-tip={status}
+              data-tip=""
               className={styles.statusLabel}
               color={color}
               icon={<InProgressIcon className={styles.rotate} />}
             >{`${status}`.toLocaleLowerCase()}</Label>
-            <ReactTooltip backgroundColor="black" textColor="white" effect="solid" />
+            {tooltip}
           </>
         );
     }
