@@ -173,6 +173,7 @@ exports[`The workspace status label component should render default status corre
 Array [
   <span
     className="pf-c-label"
+    data-tip=""
   >
     <span
       className="pf-c-label__content"
