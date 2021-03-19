@@ -69,7 +69,7 @@ declare namespace che {
     [propName: string]: string | number | undefined;
   }
 
-  export interface WorkspaceConfigAttributes {
+  export interface WorkspaceDevfileAttributes {
     persistVolumes?: 'false' | 'true';
     asyncPersist?: 'false' | 'true';
     editor?: string;
@@ -81,7 +81,7 @@ declare namespace che {
     components: Array<any>;
     projects?: Array<any>;
     commands?: Array<any>;
-    attributes?: che.WorkspaceConfigAttributes;
+    attributes?: che.WorkspaceDevfileAttributes;
     metadata: {
       name?: string;
       generateName?: string;

@@ -208,6 +208,80 @@ describe('Factory Loader container', () => {
     expect(LoadFactorySteps[elementCurrentStep.innerHTML]).toEqual(LoadFactorySteps[LoadFactorySteps.OPEN_IDE]);
   });
 
+  it('should resolve the factory with  the preferred storage type \'persistent\'', async () => {
+    const location = 'http://test-location';
+    const preferredStorageType = 'persistent';
+    const workspace = createFakeWorkspaceWithRuntime('test-wksp-id', 'test-stack-name', 'test-wksp-name', {});
+
+    renderComponent(location, workspace, preferredStorageType);
+
+    const elementCurrentStep = screen.getByTestId('factory-loader-current-step');
+    expect(LoadFactorySteps[elementCurrentStep.innerHTML]).toEqual(LoadFactorySteps[LoadFactorySteps.LOOKING_FOR_DEVFILE]);
+
+    jest.runOnlyPendingTimers();
+    await waitFor(() => expect(requestFactoryResolverMock).toHaveBeenCalledWith(location.split('&')[0]));
+    expect(LoadFactorySteps[elementCurrentStep.innerHTML]).toEqual(LoadFactorySteps[LoadFactorySteps.APPLYING_DEVFILE]);
+
+    jest.runOnlyPendingTimers();
+    await waitFor(() =>
+      expect(createWorkspaceFromDevfileMock).toHaveBeenCalledWith(
+        {
+          apiVersion: '1.0.0',
+          metadata: {
+            name: 'test-wksp-name',
+          },
+        }, undefined, undefined, { stackName: location + '/' }));
+  });
+
+  it('should resolve the factory with  the preferred storage type \'ephemeral\'', async () => {
+    const location = 'http://test-location';
+    const preferredStorageType = 'ephemeral';
+    const workspace = createFakeWorkspaceWithRuntime('test-wksp-id', 'test-stack-name', 'test-wksp-name', {});
+
+    renderComponent(location, workspace, preferredStorageType);
+
+    const elementCurrentStep = screen.getByTestId('factory-loader-current-step');
+    expect(LoadFactorySteps[elementCurrentStep.innerHTML]).toEqual(LoadFactorySteps[LoadFactorySteps.LOOKING_FOR_DEVFILE]);
+
+    jest.runOnlyPendingTimers();
+    await waitFor(() => expect(requestFactoryResolverMock).toHaveBeenCalledWith(location.split('&')[0]));
+    expect(LoadFactorySteps[elementCurrentStep.innerHTML]).toEqual(LoadFactorySteps[LoadFactorySteps.APPLYING_DEVFILE]);
+
+    jest.runOnlyPendingTimers();
+    await waitFor(() =>
+      expect(createWorkspaceFromDevfileMock).toHaveBeenCalledWith(
+        expect.objectContaining({
+          attributes: {
+            persistVolumes: 'false',
+          },
+        }), undefined, undefined, { stackName: location + '/' }));
+  });
+
+  it('should resolve the factory with  the preferred storage type \'async\'', async () => {
+    const location = 'http://test-location';
+    const preferredStorageType = 'async';
+    const workspace = createFakeWorkspaceWithRuntime('test-wksp-id', 'test-stack-name', 'test-wksp-name', {});
+
+    renderComponent(location, workspace, preferredStorageType);
+
+    const elementCurrentStep = screen.getByTestId('factory-loader-current-step');
+    expect(LoadFactorySteps[elementCurrentStep.innerHTML]).toEqual(LoadFactorySteps[LoadFactorySteps.LOOKING_FOR_DEVFILE]);
+
+    jest.runOnlyPendingTimers();
+    await waitFor(() => expect(requestFactoryResolverMock).toHaveBeenCalledWith(location.split('&')[0]));
+    expect(LoadFactorySteps[elementCurrentStep.innerHTML]).toEqual(LoadFactorySteps[LoadFactorySteps.APPLYING_DEVFILE]);
+
+    jest.runOnlyPendingTimers();
+    await waitFor(() =>
+      expect(createWorkspaceFromDevfileMock).toHaveBeenCalledWith(
+        expect.objectContaining({
+          attributes: {
+            persistVolumes: 'false',
+            asyncPersist: 'true',
+          },
+        }), undefined, undefined, { stackName: location + '/' }));
+  });
+
   it('should show an error if something wrong with Repository/Devfile URL', async () => {
     const message = 'Repository/Devfile URL is missing. Please specify it via url query param: ' +
       window.location.origin + window.location.pathname + '#/load-factory?url= .';
@@ -226,9 +300,12 @@ describe('Factory Loader container', () => {
 
 function renderComponent(
   url: string,
-  workspace: che.Workspace
+  workspace: che.Workspace,
+  preferredStorageType?: che.WorkspaceStorageType
 ): RenderResult {
+  const settings = preferredStorageType ? { 'che.workspace.storage.preferred_type': preferredStorageType } : {};
   const store = new FakeStoreBuilder().withWorkspaces({
+    settings: settings as che.WorkspaceSettings,
     workspaces: [workspace],
     workspaceId: workspace.id
   }).withFactoryResolver({
@@ -248,7 +325,12 @@ function renderComponent(
   );
 }
 
-function createFakeWorkspaceWithRuntime(workspaceId: string, stackName = '', workspaceName = 'name-wksp-2'): che.Workspace {
+function createFakeWorkspaceWithRuntime(
+  workspaceId: string,
+  stackName = '',
+  workspaceName = 'name-wksp-2',
+  attributes: che.WorkspaceDevfileAttributes = { persistVolumes: 'false' }
+): che.Workspace {
   const workspace = createFakeWorkspace(
     workspaceId,
     workspaceName,
@@ -276,7 +358,7 @@ function createFakeWorkspaceWithRuntime(workspaceId: string, stackName = '', wor
       activeEnv: 'default',
     }
   );
-  workspace.devfile.attributes = { persistVolumes: 'false' };
+  workspace.devfile.attributes = attributes;
   if (!workspace.attributes) {
     workspace.attributes = {
       infrastructureNamespace: '',
