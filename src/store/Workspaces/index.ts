@@ -181,9 +181,6 @@ function onStatusUpdateReceived(
       status,
     });
   }
-  if (!isDevWorkspace(workspace) && WorkspaceStatus[WorkspaceStatus.STARTING] !== status) {
-    unSubscribeToEnvironmentOutput(workspace.id);
-  }
 }
 
 function subscribeToStatusChange(
@@ -196,15 +193,6 @@ function subscribeToStatusChange(
   const callback = (message: any) => onStatusUpdateReceived(workspace, dispatch, message);
   cheWorkspaceClient.jsonRpcMasterApi.subscribeWorkspaceStatus(workspace.id, callback);
   subscribedWorkspaceStatusCallbacks.set(workspace.id, callback);
-}
-
-function unSubscribeToStatusChange(workspaceId: string): void {
-  const callback = subscribedWorkspaceStatusCallbacks.get(workspaceId);
-  if (!callback) {
-    return;
-  }
-  cheWorkspaceClient.jsonRpcMasterApi.unSubscribeWorkspaceStatus(workspaceId, callback);
-  subscribedWorkspaceStatusCallbacks.delete(workspaceId);
 }
 
 function subscribeToEnvironmentOutput(workspaceId: string, dispatch: ThunkDispatch<State, undefined, UpdateWorkspacesLogsAction | DeleteWorkspaceLogsAction>): void {
@@ -229,15 +217,6 @@ function subscribeToEnvironmentOutput(workspaceId: string, dispatch: ThunkDispat
   subscribedEnvironmentOutputCallbacks.set(workspaceId, callback);
 }
 
-function unSubscribeToEnvironmentOutput(workspaceId: string): void {
-  const callback = subscribedEnvironmentOutputCallbacks.get(workspaceId);
-  if (!callback) {
-    return;
-  }
-  cheWorkspaceClient.jsonRpcMasterApi.unSubscribeEnvironmentOutput(workspaceId, callback);
-  subscribedEnvironmentOutputCallbacks.delete(workspaceId);
-}
-
 // ACTION CREATORS - These are functions exposed to UI components that will trigger a state transition.
 // They don't directly mutate state, but they can have external side-effects (such as loading data).
 export const actionCreators: ActionCreators = {
@@ -260,23 +239,8 @@ export const actionCreators: ActionCreators = {
         allWorkspaces = allWorkspaces.concat(devworkspaces);
       }
 
-      const workspaceIds = workspaces.map(workspace => workspace.id);
-
-      // Unsubscribe status change
-      subscribedWorkspaceStatusCallbacks.forEach((workspaceStatusCallback: WorkspaceStatusMessageHandler, workspaceId: string) => {
-        if (workspaceIds.indexOf(workspaceId) === -1) {
-          unSubscribeToStatusChange(workspaceId);
-        }
-      });
-
       // Only subscribe to v1 workspaces
       workspaces.forEach(workspace => subscribeToStatusChange(workspace, dispatch));
-      // Unsubscribe environment output
-      subscribedEnvironmentOutputCallbacks.forEach((environmentOutputCallback: EnvironmentOutputMessageHandler, workspaceId: string) => {
-        if (workspaceIds.indexOf(workspaceId) === -1) {
-          unSubscribeToEnvironmentOutput(workspaceId);
-        }
-      });
 
       // Subscribe
       workspaces.forEach(workspace => {
@@ -314,8 +278,6 @@ export const actionCreators: ActionCreators = {
       }
       if (workspace.status === WorkspaceStatus[WorkspaceStatus.STARTING]) {
         subscribeToEnvironmentOutput(cheWorkspace.id, dispatch);
-      } else {
-        unSubscribeToEnvironmentOutput(cheWorkspace.id);
       }
       dispatch({ type: 'UPDATE_WORKSPACE', workspace });
     } catch (e) {
