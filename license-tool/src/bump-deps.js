@@ -26,7 +26,7 @@ function parseExcludedFileData(fileData, depsMap) {
 
 // update depsMap
 function parseDependenciesFileData(fileData, depsMap) {
-  const pattern = /^npm\/npmjs\/(-\/)?([^,]+)\/([0-9.]+), ([^,]+)?, approved, (\w+)$/gm;
+  const pattern = /^npm\/npmjs\/(-\/)?([^,]+)\/([^,]+), ([^,]+)?, approved, (\w+)$/gm;
 
   let unusedQuantity = 0;
   let result;
