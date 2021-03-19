@@ -40,7 +40,7 @@ export class DevfileBuilder {
     return this;
   }
 
-  public withAttributes(attributes: che.WorkspaceConfigAttributes): DevfileBuilder {
+  public withAttributes(attributes: che.WorkspaceDevfileAttributes): DevfileBuilder {
     this.devfile.attributes = Object.assign({}, attributes);
     return this;
   }

@@ -105,6 +105,7 @@ export class FactoryLoaderContainer extends React.PureComponent<Props, State> {
       return undefined;
     }
 
+    devfile = merge(devfile, this.overrideDevfileObject);
     if (
       devfile?.attributes?.persistVolumes === undefined &&
       devfile?.attributes?.asyncPersist === undefined &&
@@ -113,7 +114,7 @@ export class FactoryLoaderContainer extends React.PureComponent<Props, State> {
       devfile = updateDevfile(devfile, this.props.preferredStorageType);
     }
 
-    return merge(devfile, this.overrideDevfileObject);
+    return devfile;
   }
 
   public showAlert(message: string, alertVariant: AlertVariant = AlertVariant.danger): void {

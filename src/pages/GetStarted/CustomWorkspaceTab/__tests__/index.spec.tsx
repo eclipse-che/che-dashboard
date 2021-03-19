@@ -170,7 +170,7 @@ describe('Custom Workspace Tab', () => {
       });
       const mockOnDevfile = jest.fn((devfile: che.WorkspaceDevfile, namespace: che.KubernetesNamespace) => {
         expect(namespace).toEqual(defaultInfrastructureNamespace);
-        const expectedAttributes: che.WorkspaceConfigAttributes = {
+        const expectedAttributes: che.WorkspaceDevfileAttributes = {
           asyncPersist: 'true',
           persistVolumes: 'false',
         };

@@ -54,7 +54,7 @@ describe('Storage Types Service', () => {
 
     describe('setting the "ephemeral" storage', () => {
 
-      const expectedAttr: che.WorkspaceConfigAttributes = {
+      const expectedAttr: che.WorkspaceDevfileAttributes = {
         persistVolumes: 'false',
       };
 
@@ -91,7 +91,7 @@ describe('Storage Types Service', () => {
 
     describe('setting the "async" storage', () => {
 
-      const expectedAttr: che.WorkspaceConfigAttributes = {
+      const expectedAttr: che.WorkspaceDevfileAttributes = {
         persistVolumes: 'false',
         asyncPersist: 'true',
       };
