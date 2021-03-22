@@ -17,8 +17,6 @@ import { FakeStoreBuilder } from '../../../../store/__mocks__/storeBuilder';
 import { SamplesListTab } from '../';
 import { selectIsLoading, selectPreferredStorageType, selectSettings } from '../../../../store/Workspaces/selectors';
 import { BrandingData } from '../../../../services/bootstrap/branding.constant';
-import stringify from '../../../../services/helpers/editor';
-import { updateDevfile } from '../../../../services/storageTypes';
 
 const onDevfileMock: (devfileContent: string, stackName: string) => Promise<void> = jest.fn().mockResolvedValue(undefined);
 
@@ -88,7 +86,6 @@ describe('Samples list tab', () => {
 
   it('should correctly apply the preferred storage type \'persistent\'', () => {
     const preferredStorageType = 'persistent';
-    let targetDevfile = updateDevfile(testDevfile, preferredStorageType);
     renderComponent(preferredStorageType);
 
     const switchInput = screen.getByRole('checkbox') as HTMLInputElement;
@@ -98,26 +95,27 @@ describe('Samples list tab', () => {
     expect(onDevfileMock).not.toBeCalled();
 
     sampleItem.click();
-    expect(onDevfileMock).toHaveBeenCalledWith(stringify(targetDevfile), testStackName);
+    expect(onDevfileMock).toHaveBeenCalledWith(expect.not.stringContaining('persistVolumes:'), testStackName);
+    expect(onDevfileMock).toHaveBeenCalledWith(expect.not.stringContaining('asyncPersist:'), testStackName);
+    (onDevfileMock as jest.Mock).mockClear();
 
     switchInput.click();
     expect(switchInput.checked).toBeTruthy();
-    targetDevfile = updateDevfile(testDevfile, 'ephemeral');
 
     sampleItem.click();
-    expect(onDevfileMock).toHaveBeenCalledWith(stringify(targetDevfile), testStackName);
+    expect(onDevfileMock).toHaveBeenCalledWith(expect.stringContaining('persistVolumes: \'false\''), testStackName);
+    (onDevfileMock as jest.Mock).mockClear();
 
     switchInput.click();
     expect(switchInput.checked).toBeFalsy();
-    targetDevfile = updateDevfile(testDevfile, preferredStorageType);
 
     sampleItem.click();
-    expect(onDevfileMock).toHaveBeenCalledWith(stringify(targetDevfile), testStackName);
+    expect(onDevfileMock).toHaveBeenCalledWith(expect.not.stringContaining('persistVolumes:'), testStackName);
+    expect(onDevfileMock).toHaveBeenCalledWith(expect.not.stringContaining('asyncPersist:'), testStackName);
   });
 
   it('should correctly apply the preferred storage type \'ephemeral\'', () => {
     const preferredStorageType = 'ephemeral';
-    let targetDevfile = updateDevfile(testDevfile, preferredStorageType);
     renderComponent(preferredStorageType);
 
     const switchInput = screen.getByRole('checkbox') as HTMLInputElement;
@@ -127,26 +125,28 @@ describe('Samples list tab', () => {
     expect(onDevfileMock).not.toBeCalled();
 
     sampleItem.click();
-    expect(onDevfileMock).toHaveBeenCalledWith(stringify(targetDevfile), testStackName);
+    expect(onDevfileMock).toHaveBeenCalledWith(expect.stringContaining('persistVolumes: \'false\''), testStackName);
+    expect(onDevfileMock).toHaveBeenCalledWith(expect.not.stringContaining('asyncPersist:'), testStackName);
+    (onDevfileMock as jest.Mock).mockClear();
 
     switchInput.click();
     expect(switchInput.checked).toBeFalsy();
-    targetDevfile = updateDevfile(testDevfile, 'persistent');
 
     sampleItem.click();
-    expect(onDevfileMock).toHaveBeenCalledWith(stringify(targetDevfile), testStackName);
+    expect(onDevfileMock).toHaveBeenCalledWith(expect.not.stringContaining('persistVolumes:'), testStackName);
+    expect(onDevfileMock).toHaveBeenCalledWith(expect.not.stringContaining('asyncPersist:'), testStackName);
+    (onDevfileMock as jest.Mock).mockClear();
 
     switchInput.click();
     expect(switchInput.checked).toBeTruthy();
-    targetDevfile = updateDevfile(testDevfile, 'ephemeral');
 
     sampleItem.click();
-    expect(onDevfileMock).toHaveBeenCalledWith(stringify(targetDevfile), testStackName);
+    expect(onDevfileMock).toHaveBeenCalledWith(expect.stringContaining('persistVolumes: \'false\''), testStackName);
+    expect(onDevfileMock).toHaveBeenCalledWith(expect.not.stringContaining('asyncPersist:'), testStackName);
   });
 
   it('should correctly apply the preferred storage type \'async\'', () => {
     const preferredStorageType = 'async';
-    let targetDevfile = updateDevfile(testDevfile, preferredStorageType);
     renderComponent(preferredStorageType);
 
     const switchInput = screen.getByRole('checkbox') as HTMLInputElement;
@@ -156,21 +156,24 @@ describe('Samples list tab', () => {
     expect(onDevfileMock).not.toBeCalled();
 
     sampleItem.click();
-    expect(onDevfileMock).toHaveBeenCalledWith(stringify(targetDevfile), testStackName);
+    expect(onDevfileMock).toHaveBeenCalledWith(expect.stringContaining('persistVolumes: \'false\''), testStackName);
+    expect(onDevfileMock).toHaveBeenCalledWith(expect.stringContaining('asyncPersist: \'true\''), testStackName);
+    (onDevfileMock as jest.Mock).mockClear();
 
     switchInput.click();
     expect(switchInput.checked).toBeTruthy();
-    targetDevfile = updateDevfile(testDevfile, 'ephemeral');
 
     sampleItem.click();
-    expect(onDevfileMock).toHaveBeenCalledWith(stringify(targetDevfile), testStackName);
+    expect(onDevfileMock).toHaveBeenCalledWith(expect.stringContaining('persistVolumes: \'false\''), testStackName);
+    expect(onDevfileMock).toHaveBeenCalledWith(expect.not.stringContaining('asyncPersist:'), testStackName);
+    (onDevfileMock as jest.Mock).mockClear();
 
     switchInput.click();
     expect(switchInput.checked).toBeFalsy();
-    targetDevfile = updateDevfile(testDevfile, preferredStorageType);
 
     sampleItem.click();
-    expect(onDevfileMock).toHaveBeenCalledWith(stringify(targetDevfile), testStackName);
+    expect(onDevfileMock).toHaveBeenCalledWith(expect.stringContaining('persistVolumes: \'false\''), testStackName);
+    expect(onDevfileMock).toHaveBeenCalledWith(expect.stringContaining('asyncPersist: \'true\''), testStackName);
   });
 });
 
