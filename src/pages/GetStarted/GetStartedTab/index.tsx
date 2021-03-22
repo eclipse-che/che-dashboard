@@ -17,7 +17,6 @@ import {
   PageSectionVariants,
 } from '@patternfly/react-core';
 import { AppState } from '../../../store';
-import * as WorkspacesStore from '../../../store/Workspaces';
 import CheProgress from '../../../components/Progress';
 import { SamplesListHeader } from './SamplesListHeader';
 import SamplesListToolbar from './SamplesListToolbar';
@@ -96,8 +95,7 @@ const mapStateToProps = (state: AppState) => ({
 });
 
 const connector = connect(
-  mapStateToProps,
-  WorkspacesStore.actionCreators
+  mapStateToProps
 );
 type MappedProps = ConnectedProps<typeof connector>;
 export default connector(SamplesListTab);
