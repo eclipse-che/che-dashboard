@@ -800,7 +800,7 @@
 | [`spdy@4.0.2`](git://github.com/indutny/node-spdy.git) | MIT | clearlydefined |
 | [`specificity@0.4.1`](https://github.com/keeganstreet/specificity.git) | MIT | clearlydefined |
 | [`split-string@3.1.0`](https://github.com/jonschlinkert/split-string.git) | MIT | [CQ18717](https://dev.eclipse.org/ipzilla/show_bug.cgi?id=18717) |
-| [`ssri@8.0.0`](https://github.com/npm/ssri) | ISC | clearlydefined |
+| [`ssri@8.0.1`](https://github.com/npm/ssri) | ISC | clearlydefined |
 | [`stack-utils@2.0.2`](https://github.com/tapjs/stack-utils.git) | MIT | clearlydefined |
 | [`state-toggle@1.0.3`](https://github.com/wooorm/state-toggle.git) | MIT | clearlydefined |
 | [`static-extend@0.1.2`](https://github.com/jonschlinkert/static-extend.git) | MIT | [CQ18717](https://dev.eclipse.org/ipzilla/show_bug.cgi?id=18717) |
