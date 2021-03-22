@@ -20,7 +20,7 @@ import { FakeStoreBuilder } from '../../../../store/__mocks__/storeBuilder';
 import * as FactoryResolverStore from '../../../../store/FactoryResolver';
 import * as DevfileRegistriesStore from '../../../../store/DevfileRegistries';
 import { AppThunk } from '../../../../store';
-import { toTitle, updateDevfile } from '../../../../services/storageTypes';
+import { toTitle } from '../../../../services/storageTypes';
 
 import CustomWorkspaceTab from '../';
 import { FactoryResolver } from '../../../../services/helpers/types';
@@ -267,8 +267,35 @@ describe('Custom Workspace Tab', () => {
 
   describe('devfile editor', () => {
 
-    it('should handle updating a devfile content', async () => {
+    it('should correctly apply the preferred storage type \'persistent\'', () => {
+      const defaultStorageType = 'persistent';
+      renderComponent(createStore({ defaultStorageType }), jest.fn());
+
+      const editorTextbox = screen.getByTestId('dummy-editor') as HTMLInputElement;
+      expect(editorTextbox.value).not.toContain('"persistVolumes":');
+      expect(editorTextbox.value).not.toContain('"asyncPersist":');
+    });
+
+    it('should correctly apply the preferred storage type \'ephemeral\'', () => {
       const defaultStorageType = 'ephemeral';
+      renderComponent(createStore({ defaultStorageType }), jest.fn());
+
+      const editorTextbox = screen.getByTestId('dummy-editor') as HTMLInputElement;
+      expect(editorTextbox.value).toContain('"persistVolumes":"false"');
+      expect(editorTextbox.value).not.toContain('"asyncPersist":');
+    });
+
+    it('should correctly apply the preferred storage type \'async\'', () => {
+      const defaultStorageType = 'async';
+      renderComponent(createStore({ defaultStorageType }), jest.fn());
+
+      const editorTextbox = screen.getByTestId('dummy-editor') as HTMLInputElement;
+      expect(editorTextbox.value).toContain('"persistVolumes":"false"');
+      expect(editorTextbox.value).toContain('"asyncPersist":"true"');
+    });
+
+    it('should handle updating a devfile content', async () => {
+      const defaultStorageType = 'persistent';
       const store = createStore({ defaultStorageType });
       const mockOnDevfile = jest.fn();
       renderComponent(store, mockOnDevfile);
@@ -276,8 +303,7 @@ describe('Custom Workspace Tab', () => {
       const editorTextbox = screen.getByTestId('dummy-editor');
       expect(editorTextbox).toBeInTheDocument();
 
-      const devfile = updateDevfile(initialDevfile, defaultStorageType);
-      expect(editorTextbox).toHaveValue(JSON.stringify(devfile));
+      expect(editorTextbox).toHaveValue(JSON.stringify(initialDevfile));
 
       /* change devfile content in editor */
       fireEvent.change(editorTextbox, { target: { value: '' } });
