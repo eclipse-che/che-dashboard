@@ -31,7 +31,6 @@ type AboutModalProps = {
 type AboutModalItemsProps = {
   username: string | undefined;
   productVersion: string | undefined;
-  productName: string | undefined;
   browserVersion: string | null | undefined;
   browserOS: string | null | undefined;
   browserName: string | null | undefined;
@@ -40,7 +39,6 @@ type AboutModalItemsProps = {
 const AboutModalItems: React.FC<AboutModalItemsProps> = (
   props: AboutModalItemsProps
 ) => {
-  const productName = props.productName;
   const productVersion = props.productVersion;
   const username = props.username;
   const browserVersion = props.browserVersion;
@@ -123,7 +121,6 @@ export class AboutModal extends React.PureComponent<AboutModalProps> {
           browserOS={browserOS}
           browserVersion={browserVersion}
           browserName={browserName}
-          productName={productName}
         />
       </PatternflyAboutModal>
     );

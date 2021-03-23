@@ -57,7 +57,7 @@ describe('About modal', () => {
 
   it('should display product version', () => {
     const { getByText } = render(component);
-    expect(getByText(/Che version/i)).not.toBeNull();
+    expect(getByText(/Version/i)).not.toBeNull();
     expect(getByText(/0.0.1/i)).not.toBeNull();
   });
 
