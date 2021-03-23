@@ -11,7 +11,7 @@
  */
 
 import React from 'react';
-import { render, screen } from '@testing-library/react';
+import { render } from '@testing-library/react';
 import { AboutModal } from '../about-modal';
 
 jest.mock('../../../../../node_modules/detect-browser/index.js', () => {
@@ -55,7 +55,7 @@ describe('About modal', () => {
     expect(getByText('test-user')).not.toBeNull();
   });
 
-  fit('should display product version', () => {
+  it('should display product version', () => {
     const { getByText } = render(component);
     expect(getByText('Version')).not.toBeNull();
     expect(getByText('0.0.1')).not.toBeNull();
