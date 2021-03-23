@@ -29,12 +29,6 @@ export abstract class WorkspaceClient {
   constructor(private keycloakSetupService: KeycloakSetupService) {
     // todo change this temporary solution after adding the proper method to workspace-client https://github.com/eclipse/che/issues/18311
     this.axios = (WorkspaceClientLib as any).createAxiosInstance({ loggingEnabled: false });
-    if (this.axios.defaults.headers === undefined) {
-      this.axios.defaults.headers = {};
-    }
-    if (this.axios.defaults.headers.common === undefined) {
-      this.axios.defaults.headers.common = {};
-    }
 
     this.keycloakSetupService.ready.then(() => {
       if (!KeycloakAuthService.sso) {
@@ -86,10 +80,7 @@ export abstract class WorkspaceClient {
       return new Promise((resolve, reject) => {
         keycloak.updateToken(minValidity).success((refreshed: boolean) => {
           const header = 'Authorization';
-          if (!this.axios.defaults.headers.common[header]
-            || (config && !config.headers.common[header])
-            || refreshed) {
-            this.axios.defaults.headers.common[header] = `Bearer ${keycloak.token}`;
+          if (refreshed || (config && !config.headers.common[header])) {
             if (config) {
               config.headers.common[header] = `Bearer ${keycloak.token}`;
             }
