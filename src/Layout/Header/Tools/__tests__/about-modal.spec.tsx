@@ -70,7 +70,7 @@ describe('About modal', () => {
   it('should display browser os', () => {
     const { getByText } = render(component);
     expect(getByText('Browser OS')).not.toBeNull();
-    expect(getByText('Linux')).not.toBeNull();
+    expect(getByText(/linux/i)).not.toBeNull();
   });
 
   it('should display browser name', () => {
