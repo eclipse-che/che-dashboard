@@ -68,8 +68,7 @@ export class CheWorkspaceClient extends WorkspaceClient {
 
   updateRestApiClient(): void {
     const baseUrl = this.baseUrl;
-    const headers = this.token ? { Authorization: `Bearer ${this.token}` } : {};
-    this._restApiClient = WorkspaceClientLib.getRestApi({ baseUrl, headers });
+    this._restApiClient = WorkspaceClientLib.getRestApi({ baseUrl });
   }
 
   async updateJsonRpcMasterApi(): Promise<void> {
