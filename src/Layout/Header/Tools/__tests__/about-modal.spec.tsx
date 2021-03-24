@@ -51,31 +51,31 @@ describe('About modal', () => {
 
   it('should display username', () => {
     const { getByText } = render(component);
-    expect(getByText(/username/i)).not.toBeNull();
-    expect(getByText(/test-user/i)).not.toBeNull();
+    expect(getByText('Username')).not.toBeNull();
+    expect(getByText('test-user')).not.toBeNull();
   });
 
   it('should display product version', () => {
     const { getByText } = render(component);
-    expect(getByText(/Che version/i)).not.toBeNull();
-    expect(getByText(/0.0.1/i)).not.toBeNull();
+    expect(getByText('Version')).not.toBeNull();
+    expect(getByText('0.0.1')).not.toBeNull();
   });
 
   it('should display browser version', () => {
     const { getByText } = render(component);
-    expect(getByText(/Browser version/i)).not.toBeNull();
-    expect(getByText(/1.0.0/i)).not.toBeNull();
+    expect(getByText('Browser Version')).not.toBeNull();
+    expect(getByText('1.0.0')).not.toBeNull();
   });
 
   it('should display browser os', () => {
     const { getByText } = render(component);
-    expect(getByText(/Browser OS/i)).not.toBeNull();
-    expect(getByText(/Linux/i)).not.toBeNull();
+    expect(getByText('Browser OS')).not.toBeNull();
+    expect(getByText(/linux/i)).not.toBeNull();
   });
 
   it('should display browser name', () => {
     const { getByText } = render(component);
-    expect(getByText(/Browser Name/i)).not.toBeNull();
+    expect(getByText('Browser Name')).not.toBeNull();
     expect(getByText(/chrome/i)).not.toBeNull();
   });
 });
