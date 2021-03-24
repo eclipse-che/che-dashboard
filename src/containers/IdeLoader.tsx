@@ -176,6 +176,7 @@ class IdeLoaderContainer extends React.PureComponent<Props, State> {
           await validateMachineToken(workspace.id, machineToken);
           await this.props.stopWorkspace(workspace);
           await this.props.requestWorkspace(workspace);
+          this.setState({ currentStep: LoadIdeSteps.INITIALIZING });
           window.postMessage('show-navbar', '*');
         } catch (error) {
           console.error('Machine token validation failed. ', error);
@@ -242,8 +243,6 @@ class IdeLoaderContainer extends React.PureComponent<Props, State> {
         currentStep: LoadIdeSteps.INITIALIZING,
         workspaceId: workspace.id,
       });
-    } else if (currentStep === LoadIdeSteps.OPEN_IDE && workspace.status === WorkspaceStatus[WorkspaceStatus.STOPPED]) {
-      this.setState({ currentStep: LoadIdeSteps.INITIALIZING, ideUrl: undefined });
     }
     this.debounce.setDelay(1000);
   }
