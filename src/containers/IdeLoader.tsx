@@ -204,7 +204,7 @@ class IdeLoaderContainer extends React.PureComponent<Props, State> {
 
   public async componentDidUpdate(prevProps: Props, prevState: State): Promise<void> {
     const { allWorkspaces, match: { params } } = this.props;
-    const { hasError, currentStep } = this.state;
+    const { hasError } = this.state;
     const workspace = allWorkspaces.find(workspace =>
       workspace.namespace === params.namespace
       && workspace.devfile.metadata.name === this.workspaceName);
