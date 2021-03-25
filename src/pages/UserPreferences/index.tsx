@@ -233,7 +233,7 @@ export class UserPreferences extends React.PureComponent<Props, State> {
       this.showAlert({
         key: 'edit-registry-fail',
         variant: AlertVariant.danger,
-        title: `Unable to ${isEditMode ? 'saved' : 'added'} the registry. ${e}`,
+        title: `Unable to ${isEditMode ? 'save' : 'add'} the registry. ${e}`,
       });
     }
   }
