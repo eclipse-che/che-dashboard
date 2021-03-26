@@ -93,15 +93,16 @@ export class DevWorkspaceClient extends WorkspaceClient {
       // todo handle error in a proper way
       const pluginName = pluginDevfile.metadata.name.replaceAll(' ', '-').toLowerCase();
       const workspaceId = createdWorkspace.status.workspaceId;
+      const devfileGroupVersion = 'workspace.devfile.io/v1alpha2';
       const theiaDWT = await this.dwtApi.create(<IDevWorkspaceTemplate>{
         kind: 'DevWorkspaceTemplate',
-        apiVersion: 'workspace.devfile.io/v1alpha2',
+        apiVersion: devfileGroupVersion,
         metadata: {
           name: `${pluginName}-${workspaceId}`,
           namespace,
           ownerReferences: [
             {
-              apiVersion: devWorkspaceApiGroup,
+              apiVersion: devfileGroupVersion,
               kind: devworkspaceSingularSubresource,
               name: createdWorkspace.metadata.name,
               uid: createdWorkspace.metadata.uid
