@@ -15,6 +15,7 @@ import { default as WorkspaceClientLib, IWorkspaceMasterApi, IRemoteAPI } from '
 import { EventEmitter } from 'events';
 import { WorkspaceClient } from '.';
 import { KeycloakSetupService } from '../keycloak/setup';
+import { KeycloakAuthService } from '../keycloak/auth';
 
 export type WebSocketsFailedCallback = () => void;
 
@@ -73,7 +74,7 @@ export class CheWorkspaceClient extends WorkspaceClient {
 
   async updateJsonRpcMasterApi(): Promise<void> {
     const jsonRpcApiLocation = this.originLocation.replace('http', 'ws');
-    const tokenRefresher = () => this.refreshToken(VALIDITY_TIME);
+    const tokenRefresher = KeycloakAuthService.sso ? () => this.refreshToken(VALIDITY_TIME) : undefined;
     this._jsonRpcMasterApi = WorkspaceClientLib.getJsonRpcApi(jsonRpcApiLocation, tokenRefresher);
     this._jsonRpcMasterApi.onDidWebSocketStatusChange((websockets: string[]) => {
       this._failingWebSockets = [];
