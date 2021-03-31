@@ -13,7 +13,7 @@
 import { inject, injectable } from 'inversify';
 import { convertDevWorkspaceV2ToV1, isDeleting, isWebTerminal } from '../helpers/devworkspace';
 import { WorkspaceClient } from './';
-import { DevWorkspaceClient as DevWorkspaceClientLibrary, IDevWorkspaceApi, IDevWorkspaceDevfile, IDevWorkspace, IDevWorkspaceTemplateApi, IDevWorkspaceTemplate, devWorkspaceApiGroup, devworkspaceSingularSubresource } from '@eclipse-che/devworkspace-client';
+import { DevWorkspaceClient as DevWorkspaceClientLibrary, IDevWorkspaceApi, IDevWorkspaceDevfile, IDevWorkspace, IDevWorkspaceTemplateApi, IDevWorkspaceTemplate, devWorkspaceApiGroup, devworkspaceSingularSubresource, devworkspaceVersion } from '@eclipse-che/devworkspace-client';
 import { DevWorkspaceStatus, WorkspaceStatus } from '../helpers/types';
 import { KeycloakSetupService } from '../keycloak/setup';
 import { delay } from '../helpers/delay';
@@ -93,15 +93,16 @@ export class DevWorkspaceClient extends WorkspaceClient {
       // todo handle error in a proper way
       const pluginName = pluginDevfile.metadata.name.replaceAll(' ', '-').toLowerCase();
       const workspaceId = createdWorkspace.status.workspaceId;
+      const devfileGroupVersion = `${devWorkspaceApiGroup}/${devworkspaceVersion}`;
       const theiaDWT = await this.dwtApi.create(<IDevWorkspaceTemplate>{
         kind: 'DevWorkspaceTemplate',
-        apiVersion: 'workspace.devfile.io/v1alpha2',
+        apiVersion: devfileGroupVersion,
         metadata: {
           name: `${pluginName}-${workspaceId}`,
           namespace,
           ownerReferences: [
             {
-              apiVersion: devWorkspaceApiGroup,
+              apiVersion: devfileGroupVersion,
               kind: devworkspaceSingularSubresource,
               name: createdWorkspace.metadata.name,
               uid: createdWorkspace.metadata.uid
