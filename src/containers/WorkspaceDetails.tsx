@@ -77,6 +77,9 @@ class WorkspaceDetailsContainer extends React.PureComponent<Props> {
 
     const workspace = this.props.allWorkspaces?.find(workspace =>
       workspace.namespace === namespace && workspace.devfile.metadata.name === workspaceName);
+    if (workspace) {
+      this.props.setWorkspaceId(workspace.id);
+    }
     if (!workspace && !this.props.isLoading) {
       this.props.history.replace({ pathname: '/workspaces' });
     }

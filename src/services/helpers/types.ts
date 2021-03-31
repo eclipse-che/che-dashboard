@@ -62,4 +62,6 @@ export enum WorkspaceAction {
   DELETE_WORKSPACE = 'Delete Workspace',
   ADD_PROJECT = 'Add Project',
   ADD_CUSTOM_WORKSPACE = 'Add Workspace',
+  RESTART_WORKSPACE = 'Restart Workspace',
+  EDIT_WORKSPACE = 'Edit Workspace',
 }

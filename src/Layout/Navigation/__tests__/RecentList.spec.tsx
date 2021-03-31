@@ -21,6 +21,7 @@ import { Store } from 'redux';
 
 import NavigationRecentList from '../RecentList';
 import { AppState } from '../../../store';
+import { createHashHistory } from 'history';
 
 jest.mock('react-tooltip', () => {
   return function DummyTooltip(): React.ReactElement {
@@ -67,6 +68,7 @@ describe('Navigation Recent List', () => {
   ];
 
   function renderComponent(store: Store, workspaces: che.Workspace[]): RenderResult {
+    const history = createHashHistory();
     return render(
       <Provider store={store}>
         <MemoryRouter>
@@ -74,7 +76,7 @@ describe('Navigation Recent List', () => {
             onSelect={() => jest.fn()}
             theme="light"
           >
-            <NavigationRecentList workspaces={workspaces} activePath="" />
+            <NavigationRecentList workspaces={workspaces} activePath="" history={history} />
           </Nav>
         </MemoryRouter>
       </Provider>
@@ -85,26 +87,26 @@ describe('Navigation Recent List', () => {
     const store = createFakeStore(workspaces);
     renderComponent(store, workspaces);
 
-    const navLinks = screen.getAllByRole('link');
-    expect(navLinks.length).toEqual(workspaces.length + 1);
+    const itemLabels = screen.getAllByTestId('recent-workspace-item');
+    expect(itemLabels.length).toEqual(workspaces.length);
   });
 
   it('should have correct navigation item labels', () => {
     const store = createFakeStore(workspaces);
     renderComponent(store, workspaces);
 
-    const navLinks = screen.getAllByRole('link');
+    const itemLabels = screen.getAllByTestId('recent-workspace-item');
 
-    expect(navLinks[0]).toHaveTextContent('Create Workspace');
-    expect(navLinks[1]).toHaveTextContent('wksp-1');
-    expect(navLinks[2]).toHaveTextContent('wksp-2');
-    expect(navLinks[3]).toHaveTextContent('wksp-3');
+    expect(itemLabels[0]).toHaveTextContent('wksp-1');
+    expect(itemLabels[1]).toHaveTextContent('wksp-2');
+    expect(itemLabels[2]).toHaveTextContent('wksp-3');
   });
 
   it('should correctly handle workspaces order', () => {
     const store = createFakeStore(workspaces);
     const { rerender } = renderComponent(store, workspaces);
 
+    const history = createHashHistory();
     // change workspaces order
     [workspaces[0], workspaces[2]] = [workspaces[2], workspaces[0]];
     rerender(
@@ -114,18 +116,17 @@ describe('Navigation Recent List', () => {
             onSelect={() => jest.fn()}
             theme="light"
           >
-            <NavigationRecentList workspaces={workspaces} activePath="" />
+            <NavigationRecentList workspaces={workspaces} activePath="" history={history} />
           </Nav>
         </MemoryRouter>
       </Provider>
     );
 
-    const navLinks = screen.getAllByRole('link');
+    const itemLabels = screen.getAllByTestId('recent-workspace-item');
 
-    expect(navLinks[0]).toHaveTextContent('Create Workspace');
-    expect(navLinks[1]).toHaveTextContent('wksp-3');
-    expect(navLinks[2]).toHaveTextContent('wksp-2');
-    expect(navLinks[3]).toHaveTextContent('wksp-1');
+    expect(itemLabels[0]).toHaveTextContent('wksp-3');
+    expect(itemLabels[1]).toHaveTextContent('wksp-2');
+    expect(itemLabels[2]).toHaveTextContent('wksp-1');
   });
 
 });

@@ -33,6 +33,7 @@ export interface NavigationRecentItemObject {
   to: string,
   label: string,
   status: string;
+  workspaceId: string;
 }
 
 type Props =
@@ -93,7 +94,7 @@ export class Navigation extends React.PureComponent<Props, State> {
   }
 
   public render(): React.ReactElement {
-    const { theme, recentWorkspaces } = this.props;
+    const { theme, recentWorkspaces, history } = this.props;
     const { activePath } = this.state;
 
     const recent = recentWorkspaces || [];
@@ -105,7 +106,7 @@ export class Navigation extends React.PureComponent<Props, State> {
         theme={theme}
       >
         <NavigationMainList activePath={activePath} />
-        <NavigationRecentList workspaces={recent} activePath={activePath} />
+        <NavigationRecentList workspaces={recent} activePath={activePath} history={history} />
       </Nav>
     );
   }
