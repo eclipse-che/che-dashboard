@@ -11,26 +11,36 @@
  */
 
 import React from 'react';
-import { Link } from 'react-router-dom';
 import { NavItem } from '@patternfly/react-core';
 import { NavigationRecentItemObject } from '.';
-import isActive from './isActive';
+import getActivity from './isActive';
 import WorkspaceIndicator from '../../components/Workspace/Indicator';
+import { History } from 'history';
+import styles from './index.module.css';
+import NavigationItemWorkspaceActions from './RecentItemWorkspaceActions';
 
-function NavigationRecentItem(props: { item: NavigationRecentItemObject, activePath: string }): React.ReactElement {
+function NavigationRecentItem(props: {
+  item: NavigationRecentItemObject,
+  activePath: string,
+  history: History,
+  isDefaultExpanded?: boolean,
+}): React.ReactElement {
   return (
     <NavItem
+      data-testid={props.item.to}
       itemId={props.item.to}
-      isActive={isActive(props.item.to, props.activePath)}
+      isActive={getActivity(props.item.to, props.activePath)}
+      className={styles.navItem}
+      preventDefault={true}
+      onClick={() => props.history.push(props.item.to)}
     >
-      <Link to={props.item.to}>
-        <span className="workspace-name">
-          <WorkspaceIndicator status={props.item.status} />
-          {props.item.label}
-        </span>
-      </Link>
+      <span data-testid="recent-workspace-item"><WorkspaceIndicator
+        status={props.item.status} />{props.item.label}</span>
+      <NavigationItemWorkspaceActions item={props.item} history={props.history}
+        isDefaultExpanded={props.isDefaultExpanded} />
     </NavItem>
   );
 }
+
 NavigationRecentItem.displayName = 'NavigationRecentItemComponent';
 export default NavigationRecentItem;

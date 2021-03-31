@@ -16,10 +16,17 @@ import { MemoryRouter } from 'react-router';
 
 import NavigationRecentItem from '../RecentItem';
 import { NavigationRecentItemObject } from '..';
+import { createHashHistory } from 'history';
+import { Store } from 'redux';
+import { AppState } from '../../../store';
+import thunk from 'redux-thunk';
+import createMockStore from 'redux-mock-store';
+import { Provider } from 'react-redux';
+import { FakeStoreBuilder } from '../../../store/__mocks__/storeBuilder';
 
-jest.mock('react-tooltip', () => {
-  return function DummyTooltip(): React.ReactElement {
-    return (<div>Dummy Tooltip</div>);
+jest.mock('../../../components/Workspace/Indicator', () => {
+  return function DummyWorkspaceIndicator(): React.ReactElement {
+    return (<div>Dummy Workspace Indicator</div>);
   };
 });
 
@@ -30,20 +37,29 @@ describe('Navigation Item', () => {
     status: '',
     label: 'workspace',
     to: '/namespace/workspace',
+    workspaceId: 'test-wrks-id'
   };
 
+  afterEach(() => {
+    jest.resetAllMocks();
+  });
+
   function renderComponent(): RenderResult {
+    const store = createFakeStore();
+    const history = createHashHistory();
     return render(
-      <MemoryRouter>
-        <NavigationRecentItem item={item} activePath={activeItem} />
-      </MemoryRouter>
+      <Provider store={store}>
+        <MemoryRouter>
+          <NavigationRecentItem item={item} activePath={activeItem} history={history} />
+        </MemoryRouter>
+      </Provider>,
     );
   }
 
   it('should have correct label', () => {
     renderComponent();
 
-    const link = screen.getByRole('link');
+    const link = screen.getByTestId(item.to);
     expect(link).toHaveTextContent('workspace');
   });
 
@@ -58,7 +74,7 @@ describe('Navigation Item', () => {
     it('should render not active navigation item', () => {
       renderComponent();
 
-      const link = screen.getByRole('link');
+      const link = screen.getByTestId(item.to);
       expect(link).not.toHaveAttribute('aria-current');
     });
 
@@ -66,7 +82,7 @@ describe('Navigation Item', () => {
       activeItem = '/namespace/workspace';
       renderComponent();
 
-      const link = screen.getByRole('link');
+      const link = screen.getByTestId(item.to);
       expect(link).toHaveAttribute('aria-current');
     });
 
@@ -75,16 +91,60 @@ describe('Navigation Item', () => {
       const { rerender } = renderComponent();
 
       activeItem = '/namespace/workspace';
+      const store = createFakeStore();
+      const history = createHashHistory();
       rerender(
-        <MemoryRouter>
-          <NavigationRecentItem item={item} activePath={activeItem} />
-        </MemoryRouter>
+        <Provider store={store}>
+          <MemoryRouter>
+            <NavigationRecentItem item={item} activePath={activeItem} history={history} />
+          </MemoryRouter>
+        </Provider>,
       );
 
-      const link = screen.getByRole('link');
+      const link = screen.getByTestId(item.to);
       expect(link).toHaveAttribute('aria-current');
     });
 
   });
 
 });
+
+function createFakeStore(): Store {
+  const initialState: AppState = {
+    factoryResolver: {
+      isLoading: false,
+      resolver: {},
+    },
+    plugins: {
+      isLoading: false,
+      plugins: [],
+    },
+    workspaces: {} as any,
+    branding: {} as any,
+    devfileRegistries: {
+      isLoading: false,
+      schema: {},
+      metadata: [],
+      devfiles: {},
+      filter: ''
+    },
+    user: {} as any,
+    userProfile: {} as any,
+    infrastructureNamespace: {} as any,
+    userPreferences: {} as any,
+    dwPlugins: {} as any,
+  };
+  const middleware = [thunk];
+  const mockStore = createMockStore(middleware);
+  return mockStore(initialState);
+}
+
+function buildElement(item: NavigationRecentItemObject, activeItem = '', isDefaultExpanded = false): JSX.Element {
+  const store = new FakeStoreBuilder().build();
+  const history = createHashHistory();
+  return (<Provider store={store}>
+    <MemoryRouter>
+      <NavigationRecentItem isDefaultExpanded={isDefaultExpanded} item={item} activePath={activeItem} history={history} />
+    </MemoryRouter>
+  </Provider>);
+}
