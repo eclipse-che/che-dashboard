@@ -13,6 +13,7 @@
 import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import {
+  AlertVariant,
   Button,
   ButtonVariant,
   Checkbox,
@@ -37,6 +38,10 @@ import { AppState } from '../../store';
 import { selectAllWorkspaces } from '../../store/Workspaces/selectors';
 import * as WorkspacesStore from '../../store/Workspaces';
 import { WorkspaceActionsContext } from './context';
+import { lazyInject } from '../../inversify.config';
+import { AppAlerts } from '../../services/alerts/appAlerts';
+import getRandomString from '../../services/helpers/random';
+import { LoadIdeSteps } from '../IdeLoader';
 
 type Deferred = {
   resolve: () => void;
@@ -55,18 +60,51 @@ type State = {
 };
 
 export class WorkspaceActionsProvider extends React.Component<Props, State> {
+  private awaitToRestart: string[];
+
+  @lazyInject(AppAlerts)
+  private appAlerts: AppAlerts;
 
   private deleting: Set<string> = new Set();
 
   constructor(props: Props) {
     super(props);
 
+    this.awaitToRestart = [];
+
     this.state = {
       isDeleted: [],
       wantDelete: [],
       isOpen: false,
-      isConfirmed: false,
+      isConfirmed: false
     };
+  }
+
+  private showAlert(message: string): void {
+    this.appAlerts.showAlert({
+      key: 'navbar-item-' + getRandomString(4),
+      title: message,
+      variant: AlertVariant.warning,
+    });
+  }
+
+  public async componentDidUpdate(): Promise<void> {
+    const allWorkspaces = this.props.allWorkspaces;
+    if (this.awaitToRestart.length > 0 && allWorkspaces?.length > 0) {
+      for (const workspace of allWorkspaces) {
+        const workspaceIndex = this.awaitToRestart.indexOf(workspace.id);
+        if (workspaceIndex !== -1 &&
+          (workspace.status === WorkspaceStatus[WorkspaceStatus.STOPPED] ||
+            workspace.status === WorkspaceStatus[WorkspaceStatus.ERROR])) {
+          this.awaitToRestart.splice(workspaceIndex, 1);
+          try {
+            await this.props.startWorkspace(workspace);
+          } catch (e) {
+            this.showAlert(`Unable to start the workspace ${workspace.devfile.metadata.name}. ${e}`);
+          }
+        }
+      }
+    }
   }
 
   /**
@@ -89,6 +127,10 @@ export class WorkspaceActionsProvider extends React.Component<Props, State> {
       case WorkspaceAction.OPEN_IDE:
         {
           return buildIdeLoaderPath(workspace);
+        }
+      case WorkspaceAction.EDIT_WORKSPACE:
+        {
+          return buildDetailsPath(workspace, WorkspaceDetailsTab.Devfile);
         }
       case WorkspaceAction.START_DEBUG_AND_OPEN_LOGS:
         {
@@ -135,6 +177,12 @@ export class WorkspaceActionsProvider extends React.Component<Props, State> {
             });
             console.error(`Action failed: "${action}", ID: "${id}", e: ${e}.`);
           }
+        }
+        break;
+      case WorkspaceAction.RESTART_WORKSPACE:
+        {
+          await this.props.stopWorkspace(workspace);
+          this.awaitToRestart.push(workspace.id);
         }
         break;
       default:

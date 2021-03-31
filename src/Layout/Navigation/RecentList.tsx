@@ -24,6 +24,7 @@ import { ROUTE } from '../../route.enum';
 
 import styles from './index.module.css';
 import { buildGettingStartedPath } from '../../services/helpers/location';
+import { History } from 'history';
 
 function buildCreateWorkspaceItem(): React.ReactElement {
   const createWorkspacePath = buildGettingStartedPath('custom-workspace');
@@ -39,7 +40,7 @@ function buildCreateWorkspaceItem(): React.ReactElement {
   );
 }
 
-function buildRecentWorkspacesItems(workspaces: Array<che.Workspace>, activePath: string): Array<React.ReactElement> {
+function buildRecentWorkspacesItems(workspaces: Array<che.Workspace>, activePath: string, history: History): Array<React.ReactElement> {
   return workspaces.map(workspace => {
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     const workspaceName = workspace.devfile.metadata.name!;
@@ -52,14 +53,15 @@ function buildRecentWorkspacesItems(workspaces: Array<che.Workspace>, activePath
       to: navigateTo,
       label: workspaceName,
       status: workspace.status,
+      workspaceId: workspace.id
     };
-    return <NavigationRecentItem key={item.to} item={item} activePath={activePath} />;
+    return <NavigationRecentItem key={item.to} item={item} activePath={activePath} history={history} />;
   });
 }
 
-function NavigationRecentList(props: { workspaces: Array<che.Workspace>, activePath: string }): React.ReactElement {
+function NavigationRecentList(props: { workspaces: Array<che.Workspace>, activePath: string, history: History }): React.ReactElement {
   const createWorkspaceItem = buildCreateWorkspaceItem();
-  const recentWorkspaceItems = buildRecentWorkspacesItems(props.workspaces, props.activePath);
+  const recentWorkspaceItems = buildRecentWorkspacesItems(props.workspaces, props.activePath, props.history);
   return (
     <NavList>
       <NavGroup title="RECENT WORKSPACES">

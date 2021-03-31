@@ -244,7 +244,19 @@ class IdeLoaderContainer extends React.PureComponent<Props, State> {
         workspaceId: workspace.id,
       });
     }
+    this.checkOnStoppingStatus(workspace);
     this.debounce.setDelay(1000);
+  }
+
+  private checkOnStoppingStatus(workspace?: che.Workspace): void {
+    if (!workspace) {
+      return;
+    }
+    if (workspace.status === WorkspaceStatus[WorkspaceStatus.STOPPING]) {
+      this.setState({
+        currentStep: LoadIdeSteps.START_WORKSPACE
+      });
+    }
   }
 
   private findErrorLogs(wsLogs: string[]): string[] {
@@ -380,7 +392,8 @@ class IdeLoaderContainer extends React.PureComponent<Props, State> {
     }
     if (this.state.currentStep === LoadIdeSteps.INITIALIZING) {
       this.setState({ currentStep: LoadIdeSteps.START_WORKSPACE });
-      if (workspace.status === WorkspaceStatus[WorkspaceStatus.STOPPED] && !this.state.hasError) {
+      await this.props.requestWorkspace(workspace);
+      if (this.props.workspace?.status === WorkspaceStatus[WorkspaceStatus.STOPPED]) {
         try {
           await this.props.startWorkspace(workspace);
         } catch (e) {

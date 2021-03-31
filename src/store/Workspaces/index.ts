@@ -170,7 +170,9 @@ function onStatusUpdateReceived(
       type: 'UPDATE_WORKSPACES_LOGS',
       workspacesLogs,
     });
-    status = WorkspaceStatus[WorkspaceStatus.ERROR];
+    // ignore an error if start interrupted by owner
+    const re = /^Runtime start for identity 'workspace: (?:[^,\s]+), environment: (?:[^,\s]+), ownerId: (?:[^,\s]+)' is interrupted$/;
+    status = re.test(message.error) ? message.status : WorkspaceStatus[WorkspaceStatus.ERROR];
   } else {
     status = message.status;
   }
@@ -240,9 +242,6 @@ export const actionCreators: ActionCreators = {
       }
 
       // Only subscribe to v1 workspaces
-      workspaces.forEach(workspace => subscribeToStatusChange(workspace, dispatch));
-
-      // Subscribe
       workspaces.forEach(workspace => {
         subscribeToStatusChange(workspace, dispatch);
 
