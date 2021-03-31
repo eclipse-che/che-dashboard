@@ -98,6 +98,7 @@ describe('IDE Loader container', () => {
   };
 
   const store = new FakeStoreBuilder().withWorkspaces({
+    workspaceId: 'id-wksp-1',
     workspaces: [
       createFakeWorkspace(
         'id-wksp-1',
@@ -171,8 +172,8 @@ describe('IDE Loader container', () => {
       workspaceName,
     );
 
+    expect(requestWorkspaceMock).toBeCalled();
     expect(startWorkspaceMock).not.toBeCalled();
-    expect(requestWorkspaceMock).not.toBeCalled();
 
     expect(showAlertMock).toBeCalledTimes(1);
 
@@ -191,7 +192,7 @@ describe('IDE Loader container', () => {
     expect(LoadIdeSteps[elementCurrentStep.innerHTML]).toEqual(LoadIdeSteps[LoadIdeSteps.START_WORKSPACE]);
   });
 
-  it('should have correct WORKSPACE START and waiting for the workspace runtime', () => {
+  it('should have correct WORKSPACE START and waiting for the workspace runtime', async () => {
     const namespace = 'admin1';
     const workspaceId = 'id-wksp-1';
     const workspaceName = 'name-wksp-1';
@@ -201,8 +202,11 @@ describe('IDE Loader container', () => {
       workspaceName,
     );
 
-    expect(startWorkspaceMock).toHaveBeenCalledTimes(1);
-    expect(requestWorkspaceMock).not.toBeCalled();
+    expect(requestWorkspaceMock).toBeCalled();
+
+    await waitFor(() => {
+      expect(startWorkspaceMock).toHaveBeenCalledTimes(1);
+    });
 
     const elementHasError = screen.getByTestId('ide-loader-has-error');
     expect(elementHasError.innerHTML).toEqual('false');

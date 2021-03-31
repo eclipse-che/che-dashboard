@@ -62,7 +62,6 @@ export class WorkspaceDetails extends React.PureComponent<Props, State> {
   @lazyInject(AppAlerts)
   private readonly appAlerts: AppAlerts;
 
-  private static activeTabKey?: WorkspaceDetailsTab;
   private alert: { variant?: AlertVariant; title?: string } = {};
   public showAlert: (variant: AlertVariant, title: string) => void;
   private readonly handleTabClick: (event: React.MouseEvent<HTMLElement, MouseEvent>, tabIndex: React.ReactText) => void;
@@ -77,13 +76,17 @@ export class WorkspaceDetails extends React.PureComponent<Props, State> {
     this.overviewTabPageRef = React.createRef<Overview>();
 
     this.state = {
-      activeTabKey: WorkspaceDetails.activeTabKey ? WorkspaceDetails.activeTabKey : 0,
+      activeTabKey: this.getActiveTabKey(),
       hasWarningMessage: false,
       hasDiscardChangesMessage: false,
     };
 
     // Toggle currently active tab
     this.handleTabClick = (event: React.MouseEvent<HTMLElement, MouseEvent>, tabIndex: React.ReactText): void => {
+      const searchParams = new window.URLSearchParams(this.props.history.location.search);
+      searchParams.set('tab', WorkspaceDetailsTab[tabIndex]);
+      this.props.history.location.search = searchParams.toString();
+      this.props.history.push(this.props.history.location);
       if ((this.state.activeTabKey === WorkspaceDetailsTab.Devfile && this.editorTabPageRef.current?.state.hasChanges) ||
         (this.state.activeTabKey === WorkspaceDetailsTab.Overview && this.overviewTabPageRef.current?.hasChanges) ||
         this.props.isLoading) {
@@ -106,7 +109,6 @@ export class WorkspaceDetails extends React.PureComponent<Props, State> {
         clickedTabIndex: tabIndex as WorkspaceDetailsTab,
         activeTabKey: tabIndex as WorkspaceDetailsTab
       });
-      WorkspaceDetails.activeTabKey = tabIndex as WorkspaceDetailsTab;
     };
 
     this.showAlert = (variant: AlertVariant, title: string): void => {
@@ -120,7 +122,24 @@ export class WorkspaceDetails extends React.PureComponent<Props, State> {
     };
   }
 
-  public componentDidUpdate(): void {
+  private getActiveTabKey(): WorkspaceDetailsTab {
+    const { search } = this.props.history.location;
+
+    if (search) {
+      const searchParam = new URLSearchParams(search.substring(1));
+      if (searchParam.has('tab') && searchParam.get('tab') === WorkspaceDetailsTab[WorkspaceDetailsTab.Devfile]) {
+        return WorkspaceDetailsTab.Devfile;
+      }
+    }
+
+    return WorkspaceDetailsTab.Overview;
+  }
+
+  public componentDidUpdate(prevProps: Props): void {
+    const activeTabKey = this.getActiveTabKey();
+    if (this.state.activeTabKey !== activeTabKey) {
+      this.setState({ activeTabKey });
+    }
     if (this.props.workspace && (WorkspaceStatus[this.props.workspace?.status] === WorkspaceStatus.STOPPED)) {
       this.setState({ hasWarningMessage: false });
     }

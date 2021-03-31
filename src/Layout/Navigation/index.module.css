@@ -17,3 +17,32 @@
 .mainItemIcon {
   margin-right: 10px;
 }
+
+.navItem {
+  white-space: nowrap;
+}
+
+.navItem > span {
+  width: calc(100% - 12px);
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.navItem > div {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  color: inherit;
+}
+
+.navItem > div button {
+  color: inherit !important;
+}
+
+.navItem > div:not([class*="expanded"]) {
+  display: none;
+}
+
+.navItem:hover > div {
+  display: block;
+}
