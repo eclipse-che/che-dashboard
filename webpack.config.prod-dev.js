@@ -13,7 +13,7 @@
 const path = require('path');
 
 module.exports = env => {
-  const proxyTarget = env && env.server ? env.server : 'https://che.openshift.io/';
+  const proxyTarget = env && env.server ? env.server : 'https://codeready-codeready-workspaces-operator.apps.sandbox.x8i5.p1.openshiftapps.com';
 
   return {
     entry: path.join(__dirname, 'build/client.js'),

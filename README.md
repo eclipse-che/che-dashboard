@@ -32,18 +32,44 @@ yarn
 
 and start dev-server:
 
+The start command requires to specify a remote Eclipse Che server like:
 ```sh
-yarn start
+yarn start --env.server=https://che-che.192.168.99.100.nip.io
 ```
 
 The development server serves the project on [http://localhost:3000](http://localhost:3000).
-By default it proxies all API requests to [che.openshift.io](https://che.openshift.io). You can change this behavior providing your own proxy target url and port using the following command as an example:
+
+note: To use CodeReady Workspaces(based on Che) Hosted by Red Hat instance at https://workspaces.openshift.com, use the fully qualified host name of the cluster.
+URL is looking like https://codeready-codeready-workspaces-operator.apps.sandbox.x8i5.p1.openshiftapps.com
 
 ```sh
-yarn start --env.server=https://che-che.192.168.99.100.nip.io  --port=3333
+yarn start --env.server=https://codeready-codeready-workspaces-operator.apps.sandbox.x8i5.p1.openshiftapps.com
 ```
+To specify a different port, add `--port=3333`
+
+For redirect/authentication issues, please validate settings of Valid Redirect URIs and Web Origins on keycloak for `che-public` client.
+Valid Redirect URIs requires `http://localhost:3000/*` and Web Origins requires `http://localhost:3000` (using default port number)
 
 For better debugging experience you need to have React and Redux Developer Tools installed in your browser.
+
+### Production
+
+To launch the production mode, the command is
+
+```sh
+yarn serve:prod
+```
+
+it requires a compilation
+```sh
+yarn compile
+```
+
+To provide a custom remote server:
+```sh
+yarn serve:prod --env.server=https://codeready-codeready-workspaces-operator.apps.sandbox.x8i5.p1.openshiftapps.com
+```
+
 
 ## License tool
 
