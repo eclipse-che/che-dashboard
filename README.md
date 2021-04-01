@@ -39,7 +39,7 @@ yarn start --env.server=https://che-che.192.168.99.100.nip.io
 
 The development server serves the project on [http://localhost:3000](http://localhost:3000).
 
-note: To use Eclise Che Hosted by Red Hat instance at https://workspaces.openshift.com, use the fully qualified host name of the cluster.
+note: To use CodeReady Workspaces(based on Che) Hosted by Red Hat instance at https://workspaces.openshift.com, use the fully qualified host name of the cluster.
 URL is looking like https://codeready-codeready-workspaces-operator.apps.sandbox.x8i5.p1.openshiftapps.com
 
 ```sh
