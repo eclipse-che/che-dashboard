@@ -44,7 +44,7 @@ describe('Navigation Main List', () => {
 
     const navLinks = screen.getAllByRole('link');
 
-    expect(navLinks[0]).toHaveTextContent('Get Started Page');
+    expect(navLinks[0]).toHaveTextContent('Get Started');
     expect(navLinks[1]).toHaveTextContent('Workspaces');
   });
 
