@@ -24,7 +24,7 @@ import { ROUTE } from '../../route.enum';
 import styles from './index.module.css';
 
 const items: NavigationItemObject[] = [
-  { to: ROUTE.GET_STARTED, label: 'Get Started Page', icon: <PlusIcon className={styles.mainItemIcon} /> },
+  { to: ROUTE.GET_STARTED, label: 'Get Started', icon: <PlusIcon className={styles.mainItemIcon} /> },
   { to: ROUTE.WORKSPACES, label: 'Workspaces', icon: <CubesIcon className={styles.mainItemIcon} /> },
 ];
 
