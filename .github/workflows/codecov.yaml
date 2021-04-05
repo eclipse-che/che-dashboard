@@ -1,0 +1,43 @@
+#
+# Copyright (c) 2020 Red Hat, Inc.
+# This program and the accompanying materials are made
+# available under the terms of the Eclipse Public License 2.0
+# which is available at https://www.eclipse.org/legal/epl-2.0/
+#
+# SPDX-License-Identifier: EPL-2.0
+#
+
+name: CODECOV
+
+on:
+  push:
+    branches: 
+      - master
+  pull_request:
+    branches:
+      - master
+
+jobs:
+
+  coverage-report:
+    runs-on: ubuntu-latest
+    steps:
+      -
+        name: "Checkout Che Dashboard source code"
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      -
+        name: "Use Node.js"
+        uses: actions/setup-node@v1
+        with:
+          node-version: 14.x
+      -
+        name: "Install dependencies"
+        run: yarn
+      -
+        name: "Run unit tests"
+        run: yarn test --runInBand --coverage
+      -
+        name: "Build Codecov report"
+        uses: codecov/codecov-action@v1
