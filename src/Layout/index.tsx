@@ -132,7 +132,6 @@ export class Layout extends React.PureComponent<Props, State> {
 
     const user = this.props.userStore.user;
     const logoUrl = this.props.brandingStore.data.logoFile;
-    const helpPath = this.props.brandingStore.data.helpPath;
 
     return (
       <Page
@@ -140,7 +139,6 @@ export class Layout extends React.PureComponent<Props, State> {
           <Header
             history={history}
             isVisible={isHeaderVisible}
-            helpPath={helpPath}
             logoUrl={logoUrl}
             user={user}
             logout={() => this.logout()}
