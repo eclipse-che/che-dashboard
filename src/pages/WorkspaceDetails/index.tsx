@@ -135,7 +135,7 @@ export class WorkspaceDetails extends React.PureComponent<Props, State> {
     return WorkspaceDetailsTab.Overview;
   }
 
-  public componentDidUpdate(prevProps: Props): void {
+  public componentDidUpdate(): void {
     const activeTabKey = this.getActiveTabKey();
     if (this.state.activeTabKey !== activeTabKey) {
       this.setState({ activeTabKey });
