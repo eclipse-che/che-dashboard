@@ -171,7 +171,7 @@ function onStatusUpdateReceived(
       workspacesLogs,
     });
     // ignore an error if start interrupted by owner
-    const re = /^Runtime start for identity 'workspace: (?:[^,\s]+), environment: (?:[^,\s]+), ownerId: (?:[^,\s]+)' is interrupted$/;
+    const re = /^Runtime start for identity 'workspace: (?:[\d\w]+), environment: (?:[\w\d]+), ownerId: (?:[-\d\w]+)' is interrupted$/;
     status = re.test(message.error) ? message.status : WorkspaceStatus[WorkspaceStatus.ERROR];
   } else {
     status = message.status;
