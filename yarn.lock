@@ -466,13 +466,15 @@
   resolved "https://registry.yarnpkg.com/@eclipse-che/api/-/api-7.18.1.tgz#1beae9ebe694e4b58d0edfefcde07995ce6cd0b2"
   integrity sha512-KnnnDpnxxK0TBgR0Ux3oOYCvmCv6d4cRA+1j9wiLkaJighCqgCUaxnHWXEfolYbRq1+o/sfsxN+BxRDuF+H8wQ==
 
-"@eclipse-che/devworkspace-client@^0.0.1-1614934724":
-  version "0.0.1-1614934724"
-  resolved "https://registry.yarnpkg.com/@eclipse-che/devworkspace-client/-/devworkspace-client-0.0.1-1614934724.tgz#ca1f2590e0c649d24abdb64b976f7328f1c8b709"
-  integrity sha512-/YC88f/0pjjUH68C8hnnppuQNL+vo1zFbJLHvUpFMLx5uyoI6qOZ/b51uGMZpPqZiGiGpo52ja28fZawE/UsgQ==
+"@eclipse-che/devworkspace-client@^0.0.1-1617871695":
+  version "0.0.1-1617871695"
+  resolved "https://registry.yarnpkg.com/@eclipse-che/devworkspace-client/-/devworkspace-client-0.0.1-1617871695.tgz#1c523db6e192beb9fb6acfd53aed0d11fc6a91f3"
+  integrity sha512-zZXGKyWJW5MzOvUu1nsy535pXd5DuJoV0zg/fhycJfDDipdeYtTQSoHDVy0+xuSkT81PdxAGayP1R/dzHPnWMw==
   dependencies:
     "@kubernetes/client-node" "^0.14.0"
     axios "^0.21.1"
+    inversify "^5.0.5"
+    reflect-metadata "^0.1.13"
 
 "@eclipse-che/workspace-client@^0.0.1-1615287725":
   version "0.0.1-1615287725"
@@ -5421,6 +5423,11 @@ inversify@^5.0.1:
   version "5.0.1"
   resolved "https://registry.yarnpkg.com/inversify/-/inversify-5.0.1.tgz#500d709b1434896ce5a0d58915c4a4210e34fb6e"
   integrity sha512-Ieh06s48WnEYGcqHepdsJUIJUXpwH5o5vodAX+DK2JA/gjy4EbEcQZxw+uFfzysmKjiLXGYwNG3qDZsKVMcINQ==
+
+inversify@^5.0.5:
+  version "5.0.5"
+  resolved "https://registry.yarnpkg.com/inversify/-/inversify-5.0.5.tgz#bd1f8e6d8e0f739331acd8ba9bc954635aae0bbf"
+  integrity sha512-60QsfPz8NAU/GZqXu8hJ+BhNf/C/c+Hp0eDc6XMIJTxBiP36AQyyQKpBkOVTLWBFDQWYVHpbbEuIsHu9dLuJDA==
 
 invert-kv@^2.0.0:
   version "2.0.0"

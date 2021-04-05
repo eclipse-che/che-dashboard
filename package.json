@@ -33,7 +33,7 @@
     "licenseCheck:run": "license-tool/run.sh"
   },
   "dependencies": {
-    "@eclipse-che/devworkspace-client": "^0.0.1-1614934724",
+    "@eclipse-che/devworkspace-client": "^0.0.1-1617871695",
     "@eclipse-che/workspace-client": "^0.0.1-1615287725",
     "@patternfly/react-core": "~4.84.4",
     "@patternfly/react-icons": "^4.3.5",
