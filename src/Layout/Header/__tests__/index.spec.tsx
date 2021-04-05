@@ -38,7 +38,6 @@ describe('Page header', () => {
     email: 'johndoe@example.com',
     name: 'John Doe',
   } as che.User;
-  const helpPath = 'docs/troubleshooting/location';
   const logoUrl = 'branding/logo';
   const isHeaderVisible = true;
   const history = createHashHistory();
@@ -46,7 +45,6 @@ describe('Page header', () => {
   const component = (<Header
     history={history}
     isVisible={isHeaderVisible}
-    helpPath={helpPath}
     logoUrl={logoUrl}
     user={user}
     logout={mockLogout}
