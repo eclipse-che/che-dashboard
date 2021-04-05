@@ -1,4 +1,5 @@
 ![CI](https://github.com/eclipse/che-dashboard/workflows/CI/badge.svg)
+[![codecov](https://codecov.io/gh/eclipse/che-dashboard/branch/master/graph/badge.svg?token=1GDWT7GV9E)](https://codecov.io/gh/eclipse/che-dashboard)
 
 ## About Eclipse Che
 
