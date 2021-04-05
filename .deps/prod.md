@@ -4,7 +4,7 @@
 | --- | --- | --- |
 | [`@babel/runtime@7.10.2`](https://github.com/babel/babel.git) | MIT | clearlydefined |
 | `@eclipse-che/api@7.18.1` | EPL-2.0 | N/A |
-| [`@eclipse-che/devworkspace-client@0.0.1-1614934724`](https://github.com/che-incubator/devworkspace-client) | EPL-2.0 | N/A |
+| [`@eclipse-che/devworkspace-client@0.0.1-1617871695`](https://github.com/che-incubator/devworkspace-client) | EPL-2.0 | N/A |
 | [`@eclipse-che/workspace-client@0.0.1-1615287725`](https://github.com/eclipse/che-workspace-client) | EPL-2.0 | N/A |
 | [`@kubernetes/client-node@0.14.0`](https://github.com/kubernetes-client/javascript.git) | Apache-2.0 | clearlydefined |
 | [`@panva/asn1.js@1.0.0`](https://github.com/panva/asn1.js.git) | MIT | clearlydefined |
@@ -129,7 +129,7 @@
 | [`http-parser-js@0.5.2`](git://github.com/creationix/http-parser-js.git) | MIT | clearlydefined |
 | [`http-proxy-agent@2.1.0`](git://github.com/TooTallNate/node-http-proxy-agent.git) | MIT | [CQ18717](https://dev.eclipse.org/ipzilla/show_bug.cgi?id=18717) |
 | [`http-signature@1.2.0`](git://github.com/joyent/node-http-signature.git) | MIT | [CQ16925](https://dev.eclipse.org/ipzilla/show_bug.cgi?id=16925) |
-| [`http2-wrapper@1.0.0-beta.5.2`](git+https://github.com/szmarczak/http2-wrapper.git) | MIT | clearlydefined |
+| [`http2-wrapper@1.0.0-beta.5.2`](git+https://github.com/szmarczak/http2-wrapper.git) | MIT | [CQ23110](https://dev.eclipse.org/ipzilla/show_bug.cgi?id=23110) |
 | [`https-proxy-agent@2.2.4`](git://github.com/TooTallNate/node-https-proxy-agent.git) | MIT | [CQ18717](https://dev.eclipse.org/ipzilla/show_bug.cgi?id=18717) |
 | [`indent-string@4.0.0`](https://github.com/sindresorhus/indent-string.git) | MIT | clearlydefined |
 | [`inflight@1.0.6`](https://github.com/npm/inflight.git) | ISC | [CQ16925](https://dev.eclipse.org/ipzilla/show_bug.cgi?id=16925) |
@@ -151,7 +151,7 @@
 | [`isexe@2.0.0`](git+https://github.com/isaacs/isexe.git) | ISC | [CQ17757](https://dev.eclipse.org/ipzilla/show_bug.cgi?id=17757) |
 | [`isomorphic-ws@4.0.1`](git+https://github.com/heineiuo/isomorphic-ws.git) | MIT | clearlydefined |
 | [`isstream@0.1.2`](https://github.com/rvagg/isstream.git) | MIT | [CQ16925](https://dev.eclipse.org/ipzilla/show_bug.cgi?id=16925) |
-| [`jose@2.0.4`](https://github.com/panva/jose.git) | MIT |  |
+| [`jose@2.0.4`](https://github.com/panva/jose.git) | MIT | clearlydefined |
 | [`jquery@3.5.1`](https://github.com/jquery/jquery.git) | MIT | clearlydefined |
 | [`js-tokens@4.0.0`](https://github.com/lydell/js-tokens.git) | MIT | [CQ18717](https://dev.eclipse.org/ipzilla/show_bug.cgi?id=18717) |
 | [`js-yaml@3.14.0`](https://github.com/nodeca/js-yaml.git) | MIT | clearlydefined |

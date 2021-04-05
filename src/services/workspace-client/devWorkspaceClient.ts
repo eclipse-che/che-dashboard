@@ -13,7 +13,7 @@
 import { inject, injectable } from 'inversify';
 import { convertDevWorkspaceV2ToV1, isDeleting, isWebTerminal } from '../helpers/devworkspace';
 import { WorkspaceClient } from './';
-import { DevWorkspaceClient as DevWorkspaceClientLibrary, IDevWorkspaceApi, IDevWorkspaceDevfile, IDevWorkspace, IDevWorkspaceTemplateApi, IDevWorkspaceTemplate, devWorkspaceApiGroup, devworkspaceSingularSubresource, devworkspaceVersion } from '@eclipse-che/devworkspace-client';
+import { RestApi as DevWorkspaceRestApi, IDevWorkspaceApi, IDevWorkspaceDevfile, IDevWorkspace, IDevWorkspaceTemplateApi, IDevWorkspaceTemplate, devWorkspaceApiGroup, devworkspaceSingularSubresource, devworkspaceVersion, ICheApi } from '@eclipse-che/devworkspace-client';
 import { DevWorkspaceStatus, WorkspaceStatus } from '../helpers/types';
 import { KeycloakSetupService } from '../keycloak/setup';
 import { delay } from '../helpers/delay';
@@ -32,8 +32,9 @@ export interface IStatusUpdate {
 @injectable()
 export class DevWorkspaceClient extends WorkspaceClient {
 
-  private workspaceApi: IDevWorkspaceApi;
+  private dwApi: IDevWorkspaceApi;
   private dwtApi: IDevWorkspaceTemplateApi;
+  private dwCheApi: ICheApi;
   private previousItems: Map<string, Map<string, IStatusUpdate>>;
   private client: RestApi;
   private maxStatusAttempts: number;
@@ -42,8 +43,9 @@ export class DevWorkspaceClient extends WorkspaceClient {
   constructor(@inject(KeycloakSetupService) keycloakSetupService: KeycloakSetupService) {
     super(keycloakSetupService);
     this.axios.defaults.baseURL = '/api/unsupported/k8s';
-    this.client = DevWorkspaceClientLibrary.getRestApi(this.axios);
-    this.workspaceApi = this.client.workspaceApi;
+    this.client = new DevWorkspaceRestApi(this.axios);
+    this.dwCheApi = this.client.cheApi;
+    this.dwApi = this.client.devworkspaceApi;
     this.dwtApi = this.client.templateApi;
     this.previousItems = new Map();
     this.maxStatusAttempts = 10;
@@ -55,7 +57,7 @@ export class DevWorkspaceClient extends WorkspaceClient {
 
   async getAllWorkspaces(defaultNamespace: string): Promise<che.Workspace[]> {
     await this.initializing;
-    const workspaces = await this.workspaceApi.listInNamespace(defaultNamespace);
+    const workspaces = await this.dwApi.listInNamespace(defaultNamespace);
     const availableWorkspaces: che.Workspace[] = [];
     for (const workspace of workspaces) {
       if (!isDeleting(workspace) && !isWebTerminal(workspace)) {
@@ -66,10 +68,10 @@ export class DevWorkspaceClient extends WorkspaceClient {
   }
 
   async getWorkspaceByName(namespace: string, workspaceName: string): Promise<che.Workspace> {
-    let workspace = await this.workspaceApi.getByName(namespace, workspaceName);
+    let workspace = await this.dwApi.getByName(namespace, workspaceName);
     let attempted = 0;
     while ((!workspace.status || !workspace.status.phase || !workspace.status.ideUrl) && attempted < this.maxStatusAttempts) {
-      workspace = await this.workspaceApi.getByName(namespace, workspaceName);
+      workspace = await this.dwApi.getByName(namespace, workspaceName);
       this.checkForDevWorkspaceError(workspace);
       attempted += 1;
       await delay();
@@ -86,13 +88,13 @@ export class DevWorkspaceClient extends WorkspaceClient {
       devfile.components = [];
     }
 
-    const createdWorkspace = await this.workspaceApi.create(devfile, false);
+    const createdWorkspace = await this.dwApi.create(devfile, 'che', false);
     const namespace = createdWorkspace.metadata.namespace;
 
     for (const pluginDevfile of pluginsDevfile) {
       // todo handle error in a proper way
       const pluginName = pluginDevfile.metadata.name.replaceAll(' ', '-').toLowerCase();
-      const workspaceId = createdWorkspace.status.workspaceId;
+      const workspaceId = createdWorkspace.status.devworkspaceId;
       const devfileGroupVersion = `${devWorkspaceApiGroup}/${devworkspaceVersion}`;
       const theiaDWT = await this.dwtApi.create(<IDevWorkspaceTemplate>{
         kind: 'DevWorkspaceTemplate',
@@ -124,17 +126,17 @@ export class DevWorkspaceClient extends WorkspaceClient {
     }
 
     createdWorkspace.spec.started = true;
-    const updatedWorkspace = await this.workspaceApi.update(createdWorkspace);
+    const updatedWorkspace = await this.dwApi.update(createdWorkspace);
 
     return convertDevWorkspaceV2ToV1(updatedWorkspace);
   }
 
   delete(namespace: string, name: string): void {
-    this.workspaceApi.delete(namespace, name);
+    this.dwApi.delete(namespace, name);
   }
 
   async changeWorkspaceStatus(namespace: string, name: string, started: boolean): Promise<che.Workspace> {
-    const changedWorkspace = await this.workspaceApi.changeStatus(namespace, name, started);
+    const changedWorkspace = await this.dwApi.changeStatus(namespace, name, started);
     this.checkForDevWorkspaceError(changedWorkspace);
     return convertDevWorkspaceV2ToV1(changedWorkspace);
   }
@@ -147,7 +149,7 @@ export class DevWorkspaceClient extends WorkspaceClient {
   async initializeNamespace(namespace: string): Promise<boolean> {
     try {
       this.initializing = new Promise((resolve, reject) => {
-        this.workspaceApi.initializeNamespace(namespace).then(_ => {
+        this.dwCheApi.initializeNamespace(namespace).then(_ => {
           resolve(undefined);
         });
       });

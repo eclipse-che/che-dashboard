@@ -27,8 +27,8 @@ export function convertDevWorkspaceV2ToV1(devworkspace: IDevWorkspace): che.Work
     infrastructureNamespace: namespace,
     created: epochCreatedTimestamp.toString(),
   };
-  if (devworkspace.status?.workspaceId) {
-    convertedWorkspace.id = devworkspace.status?.workspaceId;
+  if (devworkspace.status?.devworkspaceId) {
+    convertedWorkspace.id = devworkspace.status?.devworkspaceId;
   }
   let status = devworkspace.status?.phase;
   if (status) {
