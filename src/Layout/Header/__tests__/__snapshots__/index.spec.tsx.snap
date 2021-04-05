@@ -52,8 +52,6 @@ exports[`Page header should correctly render the component 1`] = `
     </div>
     <a
       className="pf-c-page__header-brand-link"
-      href="docs/troubleshooting/location"
-      target="_blank"
     >
       <img
         alt="Logo"
