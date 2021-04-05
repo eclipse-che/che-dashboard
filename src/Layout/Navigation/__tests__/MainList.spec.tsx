@@ -18,7 +18,7 @@ import { Nav } from '@patternfly/react-core';
 import NavigationMainList from '../MainList';
 import { FakeStoreBuilder } from '../../../store/__mocks__/storeBuilder';
 import { Provider } from 'react-redux';
-import { createFakeWorkspace } from '../../../store/__mocks__/workspace';
+import { createFakeCheWorkspace } from '../../../store/__mocks__/workspace';
 
 describe('Navigation Main List', () => {
 
@@ -39,12 +39,12 @@ describe('Navigation Main List', () => {
   });
 
   it('should have correct navigation item workspaces quantity', () => {
-    let workspaces = [0, 1, 2, 3, 4].map(i => createFakeWorkspace('works-' + i, 'works-' + i));
+    let workspaces = [0, 1, 2, 3, 4].map(i => createFakeCheWorkspace('works-' + i, 'works-' + i));
     const { rerender } = render(buildElement(workspaces));
 
     expect(screen.queryByRole('link', { name: 'Workspaces (5)' })).toBeInTheDocument();
 
-    workspaces = [0, 1, 2].map(i => createFakeWorkspace('works-' + i, 'works-' + i));
+    workspaces = [0, 1, 2].map(i => createFakeCheWorkspace('works-' + i, 'works-' + i));
     rerender(buildElement(workspaces));
 
     expect(screen.queryByRole('link', { name: 'Workspaces (3)' })).toBeInTheDocument();
@@ -53,7 +53,7 @@ describe('Navigation Main List', () => {
 });
 
 function buildElement(workspaces: che.Workspace[] = []): JSX.Element {
-  const store = new FakeStoreBuilder().withWorkspaces({ workspaces }).build();
+  const store = new FakeStoreBuilder().withCheWorkspaces({ workspaces }).build();
   return (<Provider store={store}>
     <MemoryRouter>
       <Nav

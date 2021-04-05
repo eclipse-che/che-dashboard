@@ -152,7 +152,7 @@ function buildStore(storageType: string) {
 
   const store = new FakeStoreBuilder()
     .withBranding(branding)
-    .withWorkspaces({ settings })
+    .withCheWorkspaces({ settings })
     .build();
   return store;
 }

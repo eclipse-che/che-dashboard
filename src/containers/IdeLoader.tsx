@@ -27,6 +27,7 @@ import { selectAllWorkspaces, selectIsLoading, selectLogs, selectWorkspaceById }
 import { validateMachineToken } from '../services/validate-token';
 import { buildWorkspacesPath } from '../services/helpers/location';
 import { DisposableCollection } from '../services/helpers/disposable';
+import { Workspace } from '../services/helpers/workspaceAdapter';
 
 type Props =
   MappedProps
@@ -77,7 +78,7 @@ class IdeLoaderContainer extends React.PureComponent<Props, State> {
     }
 
     const workspace = this.props.allWorkspaces.find(workspace =>
-      workspace.namespace === params.namespace && workspace.devfile.metadata.name === this.workspaceName);
+      workspace.namespace === params.namespace && workspace.name === this.workspaceName);
     this.state = {
       currentStep: LoadIdeSteps.INITIALIZING,
       namespace,
@@ -140,14 +141,14 @@ class IdeLoaderContainer extends React.PureComponent<Props, State> {
   public async componentDidMount(): Promise<void> {
     const { isLoading, requestWorkspaces, allWorkspaces } = this.props;
     let workspace = allWorkspaces.find(workspace =>
-      workspace.namespace === this.state.namespace && workspace.devfile.metadata.name === this.state.workspaceName);
+      workspace.namespace === this.state.namespace && workspace.name === this.state.workspaceName);
     if (!isLoading && !workspace) {
       await requestWorkspaces();
       workspace = allWorkspaces.find(workspace =>
-        workspace.namespace === this.state.namespace && workspace.devfile.metadata.name === this.state.workspaceName);
+        workspace.namespace === this.state.namespace && workspace.name === this.state.workspaceName);
     }
-    if (workspace && workspace.runtime && workspace.status === WorkspaceStatus[WorkspaceStatus.RUNNING]) {
-      return await this.updateIdeUrl(workspace.runtime);
+    if (workspace && workspace.ideUrl && workspace.status === WorkspaceStatus[WorkspaceStatus.RUNNING]) {
+      return await this.updateIdeUrl(workspace.ideUrl);
     } else if (workspace && workspace.status == WorkspaceStatus[WorkspaceStatus.ERROR]) {
       this.showErrorAlert(workspace);
     }
@@ -164,7 +165,7 @@ class IdeLoaderContainer extends React.PureComponent<Props, State> {
       } else if (event.data.startsWith('restart-workspace:')) {
         const { allWorkspaces, match: { params } } = this.props;
         const workspace = allWorkspaces.find(workspace =>
-          workspace.namespace === params.namespace && workspace.devfile.metadata.name === this.workspaceName);
+          workspace.namespace === params.namespace && workspace.name === this.workspaceName);
         if (!workspace) {
           return;
         }
@@ -191,7 +192,7 @@ class IdeLoaderContainer extends React.PureComponent<Props, State> {
     });
   }
 
-  private showErrorAlert(workspace: che.Workspace) {
+  private showErrorAlert(workspace: Workspace) {
     const wsLogs = this.props.workspacesLogs.get(workspace.id) || [];
     const alertActionLinks = this.errorActionLinks(workspace);
     this.showAlert({
@@ -207,7 +208,7 @@ class IdeLoaderContainer extends React.PureComponent<Props, State> {
     const { hasError } = this.state;
     const workspace = allWorkspaces.find(workspace =>
       workspace.namespace === params.namespace
-      && workspace.devfile.metadata.name === this.workspaceName);
+      && workspace.name === this.workspaceName);
     if (!workspace) {
       const alertOptions = {
         title: `Workspace "${this.workspaceName}" is not found.`,
@@ -248,7 +249,7 @@ class IdeLoaderContainer extends React.PureComponent<Props, State> {
     this.debounce.setDelay(1000);
   }
 
-  private checkOnStoppingStatus(workspace?: che.Workspace): void {
+  private checkOnStoppingStatus(workspace?: Workspace): void {
     if (!workspace) {
       return;
     }
@@ -271,7 +272,7 @@ class IdeLoaderContainer extends React.PureComponent<Props, State> {
     return errorLogs;
   }
 
-  private errorActionLinks(workspace: che.Workspace): React.ReactFragment {
+  private errorActionLinks(workspace: Workspace): React.ReactFragment {
     return (
       <React.Fragment>
         <AlertActionLink onClick={async () => {
@@ -285,7 +286,7 @@ class IdeLoaderContainer extends React.PureComponent<Props, State> {
     );
   }
 
-  private async verboseModeHandler(workspace: che.Workspace) {
+  private async verboseModeHandler(workspace: Workspace) {
     try {
       await this.props.startWorkspace(workspace, { 'debug-workspace-start': true });
       this.props.deleteWorkspaceLogs(workspace.id);
@@ -313,23 +314,7 @@ class IdeLoaderContainer extends React.PureComponent<Props, State> {
     }
   }
 
-  private async updateIdeUrl(runtime: api.che.workspace.Runtime): Promise<void> {
-    let ideUrl = '';
-    const machines = runtime.machines || {};
-    for (const machineName of Object.keys(machines)) {
-      const servers = machines[machineName].servers || {};
-      for (const serverId of Object.keys(servers)) {
-        const attributes = (servers[serverId] as any).attributes;
-        if (attributes && attributes['type'] === 'ide') {
-          ideUrl = servers[serverId].url;
-          break;
-        }
-      }
-    }
-    if (!ideUrl) {
-      this.showAlert('Don\'t know what to open, IDE url is not defined.');
-      return;
-    }
+  private async updateIdeUrl(ideUrl: string): Promise<void> {
     if (this.isDevEnvironment) {
       // workaround to open IDE in iframe while serving dashboard locally
       try {
@@ -343,7 +328,7 @@ class IdeLoaderContainer extends React.PureComponent<Props, State> {
     this.setState({ currentStep: LoadIdeSteps.OPEN_IDE, ideUrl });
   }
 
-  private async openIDE(cheWorkspace: che.Workspace): Promise<void> {
+  private async openIDE(cheWorkspace: Workspace): Promise<void> {
     this.setState({ currentStep: LoadIdeSteps.OPEN_IDE });
     try {
       await this.props.requestWorkspace(cheWorkspace);
@@ -353,8 +338,8 @@ class IdeLoaderContainer extends React.PureComponent<Props, State> {
     }
     const workspace = this.props.allWorkspaces.find(workspace =>
       workspace.id === cheWorkspace.id);
-    if (workspace && workspace.runtime) {
-      await this.updateIdeUrl(workspace.runtime);
+    if (workspace && workspace.ideUrl) {
+      await this.updateIdeUrl(workspace.ideUrl);
     }
   }
 
@@ -363,7 +348,7 @@ class IdeLoaderContainer extends React.PureComponent<Props, State> {
     const { namespace, workspaceName } = this.state;
 
     const workspace = allWorkspaces.find(workspace =>
-      workspace.namespace === params.namespace && workspace.devfile.metadata.name === this.workspaceName);
+      workspace.namespace === params.namespace && workspace.name === this.workspaceName);
     if (namespace !== params.namespace || workspaceName !== this.workspaceName) {
       this.setState({
         currentStep: LoadIdeSteps.INITIALIZING,
@@ -379,7 +364,7 @@ class IdeLoaderContainer extends React.PureComponent<Props, State> {
     if (workspace) {
       this.props.setWorkspaceId(workspace.id);
       this.setState({ workspaceId: workspace.id });
-      if ((workspace.runtime || this.state.currentStep === LoadIdeSteps.START_WORKSPACE) &&
+      if ((workspace.ideUrl || this.state.currentStep === LoadIdeSteps.START_WORKSPACE) &&
         workspace.status === WorkspaceStatus[WorkspaceStatus.RUNNING]) {
         return this.openIDE(workspace);
       }

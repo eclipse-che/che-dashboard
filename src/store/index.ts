@@ -19,6 +19,8 @@ import * as InfrastructureNamespaceStore from './InfrastructureNamespace';
 import * as Plugins from './Plugins';
 import * as UserPreferences from './UserPreferences';
 import * as WorkspacesStore from './Workspaces';
+import * as CheWorkspacesStore from './Workspaces/cheWorkspaces';
+import * as DevWorkspacesStore from './Workspaces/devWorkspaces';
 import * as UserStore from './User';
 import * as UserProfileStore from './UserProfile';
 import * as DwPlugins from './DevWorkspacePlugins';
@@ -31,6 +33,8 @@ export interface AppState {
   user: UserStore.State;
   userProfile: UserProfileStore.State;
   workspaces: WorkspacesStore.State;
+  cheWorkspaces: CheWorkspacesStore.State;
+  devWorkspaces: DevWorkspacesStore.State;
   plugins: Plugins.State;
   factoryResolver: FactoryResolver.State;
   userPreferences: UserPreferences.State;
@@ -39,6 +43,8 @@ export interface AppState {
 
 export const reducers = {
   workspaces: WorkspacesStore.reducer,
+  cheWorkspaces: CheWorkspacesStore.reducer,
+  devWorkspaces: DevWorkspacesStore.reducer,
   devfileRegistries: DevfileRegistriesStore.reducer,
   branding: BrandingStore.reducer,
   user: UserStore.reducer,

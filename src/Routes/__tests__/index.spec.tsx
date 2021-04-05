@@ -27,6 +27,7 @@ import {
   buildWorkspacesPath,
 } from '../../services/helpers/location';
 import { IdeLoaderTab, WorkspaceDetailsTab } from '../../services/helpers/types';
+import { convertWorkspace, Workspace } from '../../services/helpers/workspaceAdapter';
 
 jest.mock('../../pages/GetStarted', () => {
   return function GetStarted() {
@@ -141,17 +142,17 @@ describe('Routes', () => {
 
   describe('Workspace Details route', () => {
 
-    let workspace: che.Workspace;
+    let workspace: Workspace;
 
     beforeEach(() => {
-      workspace = {
+      workspace = convertWorkspace({
         namespace: 'namespace',
         devfile: {
           metadata: {
             name: 'name',
           },
         },
-      } as che.Workspace;
+      } as che.Workspace);
     });
 
     it('should handle "/workspace/namespace/name"', async () => {
@@ -194,17 +195,17 @@ describe('Routes', () => {
 
   describe('IDE Loader route', () => {
 
-    let workspace: che.Workspace;
+    let workspace: Workspace;
 
     beforeEach(() => {
-      workspace = {
+      workspace = convertWorkspace({
         namespace: 'namespace',
         devfile: {
           metadata: {
             name: 'name',
           },
         },
-      } as che.Workspace;
+      } as che.Workspace);
     });
 
     it('should handle "/ide/namespace/name"', async () => {

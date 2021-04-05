@@ -358,7 +358,7 @@ function createStore(opts: {
         storageTypes: 'https://che-docs/storage-types'
       }
     } as any)
-    .withWorkspaces({
+    .withCheWorkspaces({
       settings: {
         'che.workspace.storage.available_types': 'async,ephemeral,persistent',
         'che.workspace.storage.preferred_type': opts.defaultStorageType ? opts.defaultStorageType : 'ephemeral'

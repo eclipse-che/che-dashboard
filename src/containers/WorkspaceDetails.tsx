@@ -19,6 +19,7 @@ import WorkspaceDetails, { WorkspaceDetails as Details } from '../pages/Workspac
 import { ROUTE } from '../route.enum';
 import { toHref } from '../services/helpers/location';
 import { WorkspaceDetailsTab } from '../services/helpers/types';
+import { Workspace } from '../services/helpers/workspaceAdapter';
 
 import { AppState } from '../store';
 import * as WorkspacesStore from '../store/Workspaces';
@@ -47,12 +48,12 @@ class WorkspaceDetailsContainer extends React.PureComponent<Props> {
 
   private async init(): Promise<void> {
     const { match: { params }, allWorkspaces, isLoading, requestWorkspaces, setWorkspaceId } = this.props;
-    let workspace = allWorkspaces?.find(workspace =>
-      workspace.namespace === params.namespace && workspace.devfile.metadata.name === params.workspaceName);
+    let workspace = allWorkspaces.find(workspace =>
+      workspace.namespace === params.namespace && workspace.name === params.workspaceName);
     if (!isLoading && !workspace) {
       await requestWorkspaces();
       workspace = allWorkspaces?.find(workspace =>
-        workspace.namespace === params.namespace && workspace.devfile.metadata.name === params.workspaceName);
+        workspace.namespace === params.namespace && workspace.name === params.workspaceName);
     }
     if (workspace) {
       setWorkspaceId(workspace.id);
@@ -76,7 +77,7 @@ class WorkspaceDetailsContainer extends React.PureComponent<Props> {
     const workspaceName = this.props.match.params.workspaceName;
 
     const workspace = this.props.allWorkspaces?.find(workspace =>
-      workspace.namespace === namespace && workspace.devfile.metadata.name === workspaceName);
+      workspace.namespace === namespace && workspace.name === workspaceName);
     if (workspace) {
       this.props.setWorkspaceId(workspace.id);
     }
@@ -92,15 +93,15 @@ class WorkspaceDetailsContainer extends React.PureComponent<Props> {
       <WorkspaceDetails
         ref={this.workspaceDetailsPageRef}
         workspacesLink={workspacesLink}
-        onSave={(workspace: che.Workspace) => this.onSave(workspace)}
+        onSave={(workspace: Workspace) => this.onSave(workspace)}
         history={this.props.history}
       />
     );
   }
 
-  async onSave(newWorkspaceObj: che.Workspace): Promise<void> {
+  async onSave(newWorkspaceObj: Workspace): Promise<void> {
     const namespace = newWorkspaceObj.namespace;
-    const workspaceName = newWorkspaceObj.devfile.metadata.name;
+    const workspaceName = newWorkspaceObj.name;
 
     try {
       await this.props.updateWorkspace(newWorkspaceObj);

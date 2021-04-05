@@ -16,7 +16,7 @@ import { Provider } from 'react-redux';
 import DevfileEditor from '../';
 import { BrandingData } from '../../../services/bootstrap/branding.constant';
 import { FakeStoreBuilder } from '../../../store/__mocks__/storeBuilder';
-import { createFakeWorkspace } from '../../../store/__mocks__/workspace';
+import { createFakeCheWorkspace } from '../../../store/__mocks__/workspace';
 import { languages, editor } from 'monaco-editor-core/esm/vs/editor/editor.main';
 
 jest.mock('../../../../node_modules/monaco-editor-core/esm/vs/editor/editor.main', () => {
@@ -44,8 +44,8 @@ function renderComponent(
   decorationPattern: string,
   onChange: (devfile: che.WorkspaceDevfile, isValid: boolean) => void
 ): ReactTestRenderer {
-  const workspace = createFakeWorkspace(workspaceId, workspaceName);
-  const store = new FakeStoreBuilder().withWorkspaces({
+  const workspace = createFakeCheWorkspace(workspaceId, workspaceName);
+  const store = new FakeStoreBuilder().withCheWorkspaces({
     workspaces: [workspace],
   }).withBranding({
     docs: {

@@ -17,10 +17,11 @@ import { RenderResult, render, screen, waitFor } from '@testing-library/react';
 import { ROUTE } from '../../route.enum';
 import { getMockRouterProps } from '../../services/__mocks__/router';
 import { FakeStoreBuilder } from '../../store/__mocks__/storeBuilder';
-import { createFakeWorkspace } from '../../store/__mocks__/workspace';
+import { createFakeCheWorkspace } from '../../store/__mocks__/workspace';
 import { WorkspaceStatus } from '../../services/helpers/types';
 import FactoryLoaderContainer, { LoadFactorySteps } from '../FactoryLoader';
 import { AlertOptions } from '../../pages/IdeLoader';
+import { convertWorkspace, Workspace } from '../../services/helpers/workspaceAdapter';
 
 const showAlertMock = jest.fn();
 const createWorkspaceFromDevfileMock = jest.fn().mockResolvedValue(undefined);
@@ -30,6 +31,7 @@ const requestFactoryResolverMock = jest.fn().mockResolvedValue(undefined);
 const setWorkspaceIdMock = jest.fn().mockResolvedValue(undefined);
 const clearWorkspaceIdMock = jest.fn().mockResolvedValue(undefined);
 
+let workspaceFromDevfile: Workspace;
 jest.mock('../../store/Workspaces/index', () => {
   return {
     actionCreators: {
@@ -40,12 +42,12 @@ jest.mock('../../store/Workspaces/index', () => {
         startWorkspaceMock(workspace);
       },
       createWorkspaceFromDevfile: (devfile, namespace, infrastructureNamespace, attributes) =>
-        async (): Promise<che.Workspace> => {
+        async (): Promise<Workspace> => {
           createWorkspaceFromDevfileMock(devfile, namespace, infrastructureNamespace, attributes);
           jest.runOnlyPendingTimers();
-          return { id: 'id-wksp-test', attributes, namespace, devfile, temporary: false, status: 'STOPPED' };
+          return convertWorkspace({ id: 'id-wksp-test', attributes, namespace, devfile, temporary: false, status: 'STOPPED' });
         },
-      setWorkspaceId: (id) => async (): Promise<void> => {
+      setWorkspaceId: (id: string) => async (): Promise<void> => {
         setWorkspaceIdMock(id);
       },
       clearWorkspaceId: () => async (): Promise<void> => {
@@ -103,7 +105,8 @@ describe('Factory Loader container', () => {
 
   it('should resolve the factory, create and start a new workspace', async () => {
     const location = 'http://test-location';
-    const workspace = createFakeWorkspace('wrksp-test-id', 'wrksp-test-name');
+    const workspace = createFakeCheWorkspace('wrksp-test-id', 'wrksp-test-name');
+    workspaceFromDevfile = convertWorkspace(workspace);
 
     renderComponent(location, workspace);
 
@@ -122,14 +125,15 @@ describe('Factory Loader container', () => {
 
     jest.runOnlyPendingTimers();
     expect(showAlertMock).not.toHaveBeenCalled();
-    await waitFor(() => expect(requestWorkspaceMock).toHaveBeenCalledWith(workspace));
-    await waitFor(() => expect(startWorkspaceMock).toHaveBeenCalledWith(workspace));
+    await waitFor(() => expect(requestWorkspaceMock).toHaveBeenCalledWith(workspaceFromDevfile));
+    await waitFor(() => expect(startWorkspaceMock).toHaveBeenCalledWith(workspaceFromDevfile));
     expect(LoadFactorySteps[elementCurrentStep.innerHTML]).toEqual(LoadFactorySteps[LoadFactorySteps.START_WORKSPACE]);
   });
 
   it('should resolve the factory, create a new workspace and open IDE', async () => {
     const location = 'http://test-location';
     const workspace = createFakeWorkspaceWithRuntime('id-wksp-test');
+    workspaceFromDevfile = convertWorkspace(workspace);
 
     renderComponent(location, workspace);
 
@@ -153,11 +157,11 @@ describe('Factory Loader container', () => {
       'when the workspace is stopped unless they are pushed to a remote code repository.'
     );
     expect(setWorkspaceIdMock).toHaveBeenCalledWith(workspace.id);
-    await waitFor(() => expect(requestWorkspaceMock).toHaveBeenCalledWith(workspace));
+    await waitFor(() => expect(requestWorkspaceMock).toHaveBeenCalledWith(workspaceFromDevfile));
     await waitFor(() => expect(startWorkspaceMock).not.toHaveBeenCalled());
 
     jest.runOnlyPendingTimers();
-    await waitFor(() => expect(requestWorkspaceMock).toHaveBeenCalledWith(workspace));
+    await waitFor(() => expect(requestWorkspaceMock).toHaveBeenCalledWith(workspaceFromDevfile));
     expect(LoadFactorySteps[elementCurrentStep.innerHTML]).toEqual(LoadFactorySteps[LoadFactorySteps.OPEN_IDE]);
   });
 
@@ -190,6 +194,7 @@ describe('Factory Loader container', () => {
   it('should resolve the factory with \'policies.create=peruser\'', async () => {
     const location = 'http://test-location&policies.create=peruser';
     const workspace = createFakeWorkspaceWithRuntime('id-wksp-test', 'http://test-location/?policies.create=peruser');
+    workspaceFromDevfile = convertWorkspace(workspace);
 
     renderComponent(location, workspace);
 
@@ -204,7 +209,7 @@ describe('Factory Loader container', () => {
     expect(createWorkspaceFromDevfileMock).not.toHaveBeenCalled();
 
     jest.runOnlyPendingTimers();
-    await waitFor(() => expect(requestWorkspaceMock).toHaveBeenCalledWith(workspace));
+    await waitFor(() => expect(requestWorkspaceMock).toHaveBeenCalledWith(workspaceFromDevfile));
     expect(LoadFactorySteps[elementCurrentStep.innerHTML]).toEqual(LoadFactorySteps[LoadFactorySteps.OPEN_IDE]);
   });
 
@@ -304,16 +309,21 @@ function renderComponent(
   preferredStorageType?: che.WorkspaceStorageType
 ): RenderResult {
   const settings = preferredStorageType ? { 'che.workspace.storage.preferred_type': preferredStorageType } : {};
-  const store = new FakeStoreBuilder().withWorkspaces({
-    settings: settings as che.WorkspaceSettings,
-    workspaces: [workspace],
-    workspaceId: workspace.id
-  }).withFactoryResolver({
-    v: '4.0',
-    source: 'devfile.yaml',
-    devfile: workspace.devfile as api.che.workspace.devfile.Devfile,
-    location: url.split('&')[0],
-  }).build();
+  const store = new FakeStoreBuilder()
+    .withCheWorkspaces({
+      settings: settings as che.WorkspaceSettings,
+      workspaces: [workspace],
+    })
+    .withWorkspaces({
+      workspaceId: workspace.id
+    })
+    .withFactoryResolver({
+      v: '4.0',
+      source: 'devfile.yaml',
+      devfile: workspace.devfile as api.che.workspace.devfile.Devfile,
+      location: url.split('&')[0],
+    })
+    .build();
   const props = getMockRouterProps(ROUTE.LOAD_FACTORY_URL, { url });
 
   return render(
@@ -331,7 +341,7 @@ function createFakeWorkspaceWithRuntime(
   workspaceName = 'name-wksp-2',
   attributes: che.WorkspaceDevfileAttributes = { persistVolumes: 'false' }
 ): che.Workspace {
-  const workspace = createFakeWorkspace(
+  const workspace = createFakeCheWorkspace(
     workspaceId,
     workspaceName,
     'namespace',

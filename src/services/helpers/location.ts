@@ -13,23 +13,21 @@
 import { History, Location, LocationDescriptorObject } from 'history';
 import { ROUTE } from '../../route.enum';
 import { GettingStartedTab, IdeLoaderTab, WorkspaceDetailsTab } from './types';
+import { Workspace } from './workspaceAdapter';
 
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 
-export function buildIdeLoaderPath(workspace: che.Workspace, tab?: IdeLoaderTab): string {
-  const name = workspace.devfile.metadata.name!;
-  const namespace = workspace.namespace!;
-
+export function buildIdeLoaderPath(workspace: Workspace, tab?: IdeLoaderTab): string {
   if (!tab) {
     return ROUTE.IDE_LOADER
-      .replace(':namespace', namespace)
-      .replace(':workspaceName', name);
+      .replace(':namespace', workspace.namespace)
+      .replace(':workspaceName', workspace.name);
   }
 
   const tabId = IdeLoaderTab[tab];
   return ROUTE.IDE_LOADER_TAB
-    .replace(':namespace', namespace)
-    .replace(':workspaceName', name)
+    .replace(':namespace', workspace.namespace)
+    .replace(':workspaceName', workspace.name)
     .replace(':tabId', tabId);
 }
 
@@ -54,20 +52,17 @@ export function buildGettingStartedPath(tab?: GettingStartedTab): string {
     .replace(':tabId', tab);
 }
 
-export function buildDetailsPath(workspace: che.Workspace, tab?: WorkspaceDetailsTab): string {
-  const name = workspace.devfile.metadata.name!;
-  const namespace = workspace.namespace!;
-
+export function buildDetailsPath(workspace: Workspace, tab?: WorkspaceDetailsTab): string {
   if (!tab) {
     return ROUTE.WORKSPACE_DETAILS
-      .replace(':namespace', namespace)
-      .replace(':workspaceName', name);
+      .replace(':namespace', workspace.namespace)
+      .replace(':workspaceName', workspace.name);
   }
 
   const tabId = WorkspaceDetailsTab[tab];
   return ROUTE.WORKSPACE_DETAILS_TAB
-    .replace(':namespace', namespace)
-    .replace(':workspaceName', name)
+    .replace(':namespace', workspace.namespace)
+    .replace(':workspaceName', workspace.name)
     .replace(':tabId', tabId);
 }
 

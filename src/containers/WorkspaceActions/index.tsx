@@ -118,7 +118,7 @@ export class WorkspaceActionsProvider extends React.Component<Props, State> {
     }
 
     if (this.deleting.has(id)) {
-      console.warn(`Workspace "${workspace.devfile.metadata.name}" is being deleted.`);
+      console.warn(`Workspace "${workspace.name}" is being deleted.`);
       return;
     }
 

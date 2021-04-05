@@ -25,6 +25,7 @@ import { State as PluginsState } from '../Plugins';
 import { State as UserState } from '../User';
 import { State as UserProfileState } from '../UserProfile';
 import mockThunk from './thunk';
+import { IDevWorkspace } from '@eclipse-che/devworkspace-client';
 
 export class FakeStoreBuilder {
 
@@ -39,14 +40,22 @@ export class FakeStoreBuilder {
     } as PluginsState,
     workspaces: {
       isLoading: false,
-      settings: {} as any,
-      workspaces: [],
-      workspacesLogs: new Map<string, string[]>(),
       namespace: '',
       workspaceName: '',
       workspaceId: '',
       recentNumber: 5,
     } as WorkspacesState,
+    cheWorkspaces: {
+      isLoading: false,
+      settings: {} as any,
+      workspaces: [],
+      workspacesLogs: new Map<string, string[]>(),
+    },
+    devWorkspaces: {
+      isLoading: false,
+      workspaces: [],
+      workspacesLogs: new Map<string, string[]>(),
+    },
     branding: {
       isLoading: false,
       data: {},
@@ -145,11 +154,46 @@ export class FakeStoreBuilder {
     return this;
   }
 
-  public withWorkspaces(
+  public withCheWorkspaces(
     options: {
       settings?: che.WorkspaceSettings,
       workspaces?: che.Workspace[],
       workspacesLogs?: Map<string, string[]>,
+    },
+    isLoading = false
+  ): FakeStoreBuilder {
+    if (options.settings) {
+      this.state.cheWorkspaces.settings = Object.assign({}, options.settings);
+    }
+    if (options.workspaces) {
+      this.state.cheWorkspaces.workspaces = Object.assign([], options.workspaces);
+    }
+    if (options.workspacesLogs) {
+      this.state.cheWorkspaces.workspacesLogs = new Map(options.workspacesLogs);
+    }
+    this.state.cheWorkspaces.isLoading = isLoading;
+    return this;
+  }
+
+  public withDevWorkspaces(
+    options: {
+      workspaces?: IDevWorkspace[],
+      workspacesLogs?: Map<string, string[]>,
+    },
+    isLoading = false
+  ): FakeStoreBuilder {
+    if (options.workspaces) {
+      this.state.devWorkspaces.workspaces = Object.assign([], options.workspaces);
+    }
+    if (options.workspacesLogs) {
+      this.state.devWorkspaces.workspacesLogs = new Map(options.workspacesLogs);
+    }
+    this.state.devWorkspaces.isLoading = isLoading;
+    return this;
+  }
+
+  public withWorkspaces(
+    options: {
       namespace?: string,
       workspaceName?: string,
       workspaceId?: string,
@@ -157,15 +201,6 @@ export class FakeStoreBuilder {
     },
     isLoading = false
   ): FakeStoreBuilder {
-    if (options.settings) {
-      this.state.workspaces.settings = Object.assign({}, options.settings);
-    }
-    if (options.workspaces) {
-      this.state.workspaces.workspaces = Object.assign([], options.workspaces);
-    }
-    if (options.workspacesLogs) {
-      this.state.workspaces.workspacesLogs = new Map(options.workspacesLogs);
-    }
     if (options.namespace) {
       this.state.workspaces.namespace = options.namespace;
     }

@@ -11,8 +11,6 @@
  */
 
 import React from 'react';
-import createMockStore from 'redux-mock-store';
-import thunk from 'redux-thunk';
 import { MemoryRouter } from 'react-router';
 import { Nav } from '@patternfly/react-core';
 import { Provider } from 'react-redux';
@@ -20,7 +18,9 @@ import { RenderResult, render, screen } from '@testing-library/react';
 import { Store } from 'redux';
 
 import NavigationRecentList from '../RecentList';
-import { AppState } from '../../../store';
+import { convertWorkspace, Workspace } from '../../../services/helpers/workspaceAdapter';
+import { WorkspaceStatus } from '../../../services/helpers/types';
+import { FakeStoreBuilder } from '../../../store/__mocks__/storeBuilder';
 import { createHashHistory } from 'history';
 
 jest.mock('react-tooltip', () => {
@@ -29,45 +29,49 @@ jest.mock('react-tooltip', () => {
   };
 });
 
+const cheWorkspaces: che.Workspace[] = [
+  {
+    id: 'wksp-1',
+    devfile: {
+      metadata: {
+        name: 'wksp-1'
+      }
+    },
+    status: WorkspaceStatus[WorkspaceStatus.STOPPED],
+    attributes: {
+      updated: 1,
+    } as any,
+  } as che.Workspace,
+  {
+    id: 'wksp-2',
+    devfile: {
+      metadata: {
+        name: 'wksp-2'
+      }
+    },
+    status: WorkspaceStatus[WorkspaceStatus.STOPPED],
+    attributes: {
+      updated: 2,
+    } as any,
+  } as che.Workspace,
+  {
+    id: 'wksp-3',
+    devfile: {
+      metadata: {
+        name: 'wksp-3'
+      }
+    },
+    status: WorkspaceStatus[WorkspaceStatus.STOPPED],
+    attributes: {
+      updated: 3,
+    } as any,
+  } as che.Workspace,
+];
+const workspaces = cheWorkspaces.map(workspace => convertWorkspace(workspace));
+
 describe('Navigation Recent List', () => {
 
-  const workspaces: che.Workspace[] = [
-    {
-      id: 'wksp-1',
-      devfile: {
-        metadata: {
-          name: 'wksp-1'
-        }
-      },
-      attributes: {
-        updated: 1,
-      } as any,
-    } as che.Workspace,
-    {
-      id: 'wksp-2',
-      devfile: {
-        metadata: {
-          name: 'wksp-2'
-        }
-      },
-      attributes: {
-        updated: 2,
-      } as any,
-    } as che.Workspace,
-    {
-      id: 'wksp-3',
-      devfile: {
-        metadata: {
-          name: 'wksp-3'
-        }
-      },
-      attributes: {
-        updated: 3,
-      } as any,
-    } as che.Workspace,
-  ];
-
-  function renderComponent(store: Store, workspaces: che.Workspace[]): RenderResult {
+  function renderComponent(store: Store, workspaces: Workspace[]): RenderResult {
     const history = createHashHistory();
     return render(
       <Provider store={store}>
@@ -84,7 +88,7 @@ describe('Navigation Recent List', () => {
   }
 
   it('should have correct number of main navigation items', () => {
-    const store = createFakeStore(workspaces);
+    const store = createFakeStore();
     renderComponent(store, workspaces);
 
     const itemLabels = screen.getAllByTestId('recent-workspace-item');
@@ -92,7 +96,7 @@ describe('Navigation Recent List', () => {
   });
 
   it('should have correct navigation item labels', () => {
-    const store = createFakeStore(workspaces);
+    const store = createFakeStore();
     renderComponent(store, workspaces);
 
     const itemLabels = screen.getAllByTestId('recent-workspace-item');
@@ -103,7 +107,7 @@ describe('Navigation Recent List', () => {
   });
 
   it('should correctly handle workspaces order', () => {
-    const store = createFakeStore(workspaces);
+    const store = createFakeStore();
     const { rerender } = renderComponent(store, workspaces);
 
     const history = createHashHistory();
@@ -131,36 +135,8 @@ describe('Navigation Recent List', () => {
 
 });
 
-function createFakeStore(workspaces: che.Workspace[]): Store {
-  const initialState: AppState = {
-    factoryResolver: {
-      isLoading: false,
-      resolver: {},
-    },
-    plugins: {
-      isLoading: false,
-      plugins: [],
-    },
-    workspaces: {
-      isLoading: false,
-      settings: {} as any,
-      workspaces,
-      workspacesLogs: new Map<string, string[]>(),
-
-      namespace: '',
-      workspaceName: '',
-      workspaceId: '',
-      recentNumber: 5,
-    },
-    branding: {} as any,
-    devfileRegistries: {} as any,
-    user: {} as any,
-    userProfile: {} as any,
-    infrastructureNamespace: {} as any,
-    userPreferences: {} as any,
-    dwPlugins: {} as any,
-  };
-  const middleware = [thunk];
-  const mockStore = createMockStore(middleware);
-  return mockStore(initialState);
+function createFakeStore(): Store {
+  return new FakeStoreBuilder()
+    .withCheWorkspaces({ workspaces: cheWorkspaces })
+    .build();
 }

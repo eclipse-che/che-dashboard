@@ -23,7 +23,7 @@ declare namespace che {
     status: string;
     namespace?: string;
     attributes?: WorkspaceAttributes;
-    devfile: WorkspaceDevfile | IDevWorkspaceDevfile;
+    devfile: WorkspaceDevfile;
     runtime?: WorkspaceRuntime;
     isLocked?: boolean;
     usedResources?: string;
@@ -74,6 +74,7 @@ declare namespace che {
     asyncPersist?: 'false' | 'true';
     editor?: string;
     plugins?: string;
+    [key: string]: string;
   }
 
   export interface WorkspaceDevfile {
