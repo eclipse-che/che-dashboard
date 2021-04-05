@@ -26,7 +26,6 @@ import * as styles from './index.module.css';
 type Props = {
   history: History;
   isVisible: boolean;
-  helpPath: string;
   logoUrl: string;
   user: User | undefined;
   logout: () => void;
@@ -69,7 +68,6 @@ export default class Header extends React.PureComponent<Props, State> {
         style={{ zIndex: 'inherit' }}
         className={className}
         logo={logo}
-        logoProps={{ href: this.props.helpPath, target: '_blank' }}
         showNavToggle={true}
         onNavToggle={() => this.toggleNav()}
         headerTools={
