@@ -113,7 +113,6 @@ export class GetStarted extends React.PureComponent<Props, State> {
 
     // force start for the new workspace
     try {
-      await this.props.startWorkspace(workspace);
       this.props.history.push(`/ide/${workspace.namespace}/${workspaceName}`);
     } catch (error) {
       this.showAlert({
