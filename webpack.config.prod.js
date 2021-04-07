@@ -12,6 +12,7 @@
 
 const CopyPlugin = require('copy-webpack-plugin');
 const StylelintPlugin = require('stylelint-webpack-plugin');
+const CleanTerminalPlugin = require('clean-terminal-webpack-plugin');
 const merge = require('webpack-merge');
 const path = require('path');
 const webpack = require('webpack');
@@ -56,6 +57,7 @@ module.exports = merge(common, {
       files: '**/*.css',
       fix: true,
     }),
+    new CleanTerminalPlugin(),
   ],
   output: {
     publicPath: './',
