@@ -216,7 +216,7 @@
 | [`performance-now@2.1.0`](git://github.com/braveg1rl/performance-now.git) | MIT | [CQ16925](https://dev.eclipse.org/ipzilla/show_bug.cgi?id=16925) |
 | [`popper.js@1.16.1`](git+https://github.com/FezVrasta/popper.js.git) | MIT | [CQ22353](https://dev.eclipse.org/ipzilla/show_bug.cgi?id=22353) |
 | [`postcss@8.2.4`](https://github.com/postcss/postcss.git) | MIT | clearlydefined |
-| [`prettier@2.2.1`](https://github.com/prettier/prettier.git) | MIT | [CQ23020](https://dev.eclipse.org/ipzilla/show_bug.cgi?id=23020) |
+| [`prettier@2.0.5`](https://github.com/prettier/prettier.git) | MIT | clearlydefined |
 | [`private@0.1.8`](git://github.com/benjamn/private.git) | MIT | [CQ18717](https://dev.eclipse.org/ipzilla/show_bug.cgi?id=18717) |
 | [`prop-types-extra@1.1.1`](git+https://github.com/react-bootstrap/prop-types-extra.git) | MIT | [CQ22354](https://dev.eclipse.org/ipzilla/show_bug.cgi?id=22354) |
 | [`prop-types@15.7.2`](https://github.com/facebook/prop-types.git) | MIT | clearlydefined |
@@ -301,7 +301,7 @@
 | [`underscore@1.12.0`](git://github.com/jashkenas/underscore.git) | MIT | clearlydefined |
 | [`uri-js@4.2.2`](http://github.com/garycourt/uri-js) | BSD-2-Clause | [CQ18717](https://dev.eclipse.org/ipzilla/show_bug.cgi?id=18717) |
 | [`url-parse@1.4.7`](https://github.com/unshiftio/url-parse.git) | MIT | clearlydefined |
-| [`uuid@3.4.0`](https://github.com/uuidjs/uuid.git) | MIT | clearlydefined |
+| [`uuid@7.0.3`](https://github.com/uuidjs/uuid.git) | MIT | #57 |
 | [`value-equal@1.0.1`](https://github.com/mjackson/value-equal.git) | MIT | clearlydefined |
 | [`verror@1.10.0`](git://github.com/davepacheco/node-verror.git) | MIT | [CQ16925](https://dev.eclipse.org/ipzilla/show_bug.cgi?id=16925) |
 | [`vscode-json-languageservice@3.10.0`](https://github.com/Microsoft/vscode-json-languageservice) | MIT | clearlydefined |
