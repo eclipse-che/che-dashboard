@@ -101,7 +101,8 @@ export class DevfileEditor extends React.PureComponent<Props, State> {
     }
     const jsonSchema = this.props.devfileRegistries.schema || {};
     const items = this.props.plugins.plugins;
-    const components = jsonSchema && jsonSchema.oneOf && jsonSchema.oneOf.length > 0 && jsonSchema.oneOf[0].properties ? jsonSchema.oneOf[0].properties.components : undefined;
+    const properties = jsonSchema?.oneOf && jsonSchema.oneOf[0] ? jsonSchema.oneOf[0].properties : jsonSchema.properties;
+    const components = properties ? properties.components : undefined;
     if (components) {
       const mountSources = components.items.properties.mountSources;
       // mount sources is specific only for some of component types but always appears
