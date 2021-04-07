@@ -12,20 +12,13 @@
 
 import React from 'react';
 import { NavList } from '@patternfly/react-core';
-import {
-  CubesIcon,
-  PlusIcon,
-} from '@patternfly/react-icons';
-
 import NavigationMainItem from './MainItem';
 import { NavigationItemObject } from '.';
 import { ROUTE } from '../../route.enum';
 
-import styles from './index.module.css';
-
 const items: NavigationItemObject[] = [
-  { to: ROUTE.GET_STARTED, label: 'Get Started', icon: <PlusIcon className={styles.mainItemIcon} /> },
-  { to: ROUTE.WORKSPACES, label: 'Workspaces', icon: <CubesIcon className={styles.mainItemIcon} /> },
+  { to: ROUTE.GET_STARTED, label: 'Create Workspace' },
+  { to: ROUTE.WORKSPACES, label: 'Workspaces' },
 ];
 
 function NavigationMainList(props: { activePath: string }): React.ReactElement {
@@ -36,7 +29,7 @@ function NavigationMainList(props: { activePath: string }): React.ReactElement {
         item={item}
         activePath={props.activePath}
       >
-        {item.icon}
+        {item.icon && (item.icon)}
       </NavigationMainItem>
     );
   });

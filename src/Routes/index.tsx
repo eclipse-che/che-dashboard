@@ -16,7 +16,7 @@ import { Redirect, Route, RouteComponentProps, Switch } from 'react-router';
 import { ROUTE } from '../route.enum';
 import { buildFactoryLoaderPath, sanitizeLocation } from '../services/helpers/location';
 
-const GetStartedPage = React.lazy(() => import('../pages/GetStarted'));
+const CreateWorkspace = React.lazy(() => import('../pages/GetStarted'));
 const WorkspacesListContainer = React.lazy(() => import('../containers/WorkspacesList'));
 const WorkspaceDetailsContainer = React.lazy(() => import('../containers/WorkspaceDetails'));
 const IdeLoaderContainer = React.lazy(() => import('../containers/IdeLoader'));
@@ -30,8 +30,8 @@ export interface RouteItem {
 }
 
 const items: RouteItem[] = [
-  { to: ROUTE.GET_STARTED, component: GetStartedPage },
-  { to: ROUTE.HOME, component: GetStartedPage },
+  { to: ROUTE.GET_STARTED, component: CreateWorkspace },
+  { to: ROUTE.HOME, component: CreateWorkspace },
   { to: ROUTE.WORKSPACES, component: WorkspacesListContainer },
   { to: ROUTE.WORKSPACE_DETAILS, component: WorkspaceDetailsContainer },
   { to: ROUTE.IDE_LOADER, component: IdeLoaderContainer },

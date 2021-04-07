@@ -22,6 +22,10 @@
   white-space: nowrap;
 }
 
+.navItem [class*="nav__link"] {
+  padding-left: 45px;
+}
+
 .navItem > span {
   width: calc(100% - 12px);
   overflow: hidden;

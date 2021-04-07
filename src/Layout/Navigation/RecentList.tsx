@@ -15,30 +15,12 @@ import {
   NavGroup,
   NavList,
 } from '@patternfly/react-core';
-import { PlusIcon } from '@patternfly/react-icons';
 
 import NavigationRecentItem from './RecentItem';
-import { NavigationItemObject, NavigationRecentItemObject } from '.';
-import NavigationMainItem from './MainItem';
+import { NavigationRecentItemObject } from '.';
 import { ROUTE } from '../../route.enum';
 
-import styles from './index.module.css';
-import { buildGettingStartedPath } from '../../services/helpers/location';
 import { History } from 'history';
-
-function buildCreateWorkspaceItem(): React.ReactElement {
-  const createWorkspacePath = buildGettingStartedPath('custom-workspace');
-  const item: NavigationItemObject = {
-    to: createWorkspacePath,
-    label: 'Create Workspace',
-    icon: <PlusIcon className={styles.mainItemIcon} />,
-  };
-  return (
-    <NavigationMainItem item={item}>
-      {item.icon}
-    </NavigationMainItem>
-  );
-}
 
 function buildRecentWorkspacesItems(workspaces: Array<che.Workspace>, activePath: string, history: History): Array<React.ReactElement> {
   return workspaces.map(workspace => {
@@ -60,12 +42,10 @@ function buildRecentWorkspacesItems(workspaces: Array<che.Workspace>, activePath
 }
 
 function NavigationRecentList(props: { workspaces: Array<che.Workspace>, activePath: string, history: History }): React.ReactElement {
-  const createWorkspaceItem = buildCreateWorkspaceItem();
   const recentWorkspaceItems = buildRecentWorkspacesItems(props.workspaces, props.activePath, props.history);
   return (
     <NavList>
-      <NavGroup title="RECENT WORKSPACES">
-        {createWorkspaceItem}
+      <NavGroup title="RECENT WORKSPACES" style={{ marginTop: '25px' }}>
         {recentWorkspaceItems}
       </NavGroup>
     </NavList>
