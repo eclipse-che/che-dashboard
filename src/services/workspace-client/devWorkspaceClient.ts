@@ -80,8 +80,6 @@ export class DevWorkspaceClient extends WorkspaceClient {
       throw new Error(`Could not retrieve devworkspace status information from ${workspaceName} in namespace ${namespace}`);
     } else if (workspaceStatus.phase.toUpperCase() === DevWorkspaceStatus[DevWorkspaceStatus.RUNNING] && !workspaceStatus?.ideUrl) {
       throw new Error('Could not retrieve ideUrl for the running workspace');
-    } else if (workspaceStatus.message === 'Waiting for workspace routing objects') {
-      throw new Error(workspaceStatus.message);
     }
     return convertDevWorkspaceV2ToV1(workspace);
   }
