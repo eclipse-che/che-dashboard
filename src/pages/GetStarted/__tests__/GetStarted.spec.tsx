@@ -81,7 +81,6 @@ describe('Get Started page', () => {
     devfileButton.click();
 
     expect(createWorkspaceFromDevfileMock).toHaveBeenCalledWith(dummyDevfile, undefined, undefined, { stackName: 'dummyStackName' });
-    await waitFor(() => expect(startWorkspaceMock).toHaveBeenCalled());
   });
 
   it('should have correct masthead when Get Started tab is active', () => {
