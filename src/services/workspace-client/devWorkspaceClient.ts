@@ -77,8 +77,11 @@ export class DevWorkspaceClient extends WorkspaceClient {
       await delay();
     }
     this.checkForDevWorkspaceError(workspace);
-    if (!workspace.status || !workspace.status.phase || !workspace.status.ideUrl) {
+    const workspaceStatus = workspace.status;
+    if (!workspaceStatus || !workspaceStatus.phase) {
       throw new Error(`Could not retrieve devworkspace status information from ${workspaceName} in namespace ${namespace}`);
+    } else if (workspaceStatus.phase.toUpperCase() === DevWorkspaceStatus[DevWorkspaceStatus.RUNNING] && !workspaceStatus?.ideUrl) {
+      throw new Error('Could not retrieve ideUrl for the running workspace');
     }
     return convertDevWorkspaceV2ToV1(workspace);
   }
