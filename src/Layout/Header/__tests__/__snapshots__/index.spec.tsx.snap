@@ -50,7 +50,7 @@ exports[`Page header should correctly render the component 1`] = `
         </svg>
       </button>
     </div>
-    <a
+    <div
       className="pf-c-page__header-brand-link"
     >
       <img
@@ -58,7 +58,7 @@ exports[`Page header should correctly render the component 1`] = `
         className="pf-c-brand"
         src="branding/logo"
       />
-    </a>
+    </div>
   </div>
   <button
     onClick={[Function]}

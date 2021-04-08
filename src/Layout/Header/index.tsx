@@ -67,6 +67,7 @@ export default class Header extends React.PureComponent<Props, State> {
       <PageHeader
         style={{ zIndex: 'inherit' }}
         className={className}
+        logoComponent="div"
         logo={logo}
         showNavToggle={true}
         onNavToggle={() => this.toggleNav()}

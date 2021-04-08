@@ -17,6 +17,8 @@ import { MemoryRouter } from 'react-router';
 
 import NavigationMainItem from '../MainItem';
 import { NavigationItemObject } from '..';
+import { FakeStoreBuilder } from '../../../store/__mocks__/storeBuilder';
+import { Provider } from 'react-redux';
 
 describe('Navigation Item', () => {
 
@@ -27,16 +29,17 @@ describe('Navigation Item', () => {
     to: '/home',
   };
 
-  function renderComponent(): RenderResult {
+  function renderComponent(workspaces: che.Workspace[] = []): RenderResult {
+    const store = new FakeStoreBuilder().withWorkspaces({ workspaces }).build();
     return render(
-      <MemoryRouter>
-        <NavigationMainItem
-          item={item}
-          activePath={activeItem}
-        >
-          {item.icon}
-        </NavigationMainItem>
-      </MemoryRouter>
+      <Provider store={store}>
+        <MemoryRouter>
+          <NavigationMainItem
+            item={item}
+            activePath={activeItem}
+          />
+        </MemoryRouter>
+      </Provider>,
     );
   }
 
@@ -69,15 +72,16 @@ describe('Navigation Item', () => {
       const { rerender } = renderComponent();
 
       activeItem = '/home';
+      const store = new FakeStoreBuilder().build();
       rerender(
-        <MemoryRouter>
-          <NavigationMainItem
-            item={item}
-            activePath={activeItem}
-          >
-            {item.icon}
-          </NavigationMainItem>
-        </MemoryRouter>
+        <Provider store={store}>
+          <MemoryRouter>
+            <NavigationMainItem
+              item={item}
+              activePath={activeItem}
+            />
+          </MemoryRouter>
+        </Provider>,
       );
 
       const link = screen.getByRole('link');

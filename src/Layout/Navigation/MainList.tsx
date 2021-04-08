@@ -15,29 +15,55 @@ import { NavList } from '@patternfly/react-core';
 import NavigationMainItem from './MainItem';
 import { NavigationItemObject } from '.';
 import { ROUTE } from '../../route.enum';
+import { AppState } from '../../store';
+import { connect, ConnectedProps } from 'react-redux';
+import { selectAllWorkspacesNumber } from '../../store/Workspaces/selectors';
 
-const items: NavigationItemObject[] = [
-  { to: ROUTE.GET_STARTED, label: 'Create Workspace' },
-  { to: ROUTE.WORKSPACES, label: 'Workspaces' },
-];
+type Props =
+  MappedProps
+  & {
+    activePath: string,
+  };
 
-function NavigationMainList(props: { activePath: string }): React.ReactElement {
-  const navItems = items.map(item => {
+export class NavigationMainList extends React.PureComponent<Props> {
+
+  private get items(): NavigationItemObject[] {
+    const { allWorkspacesNumber } = this.props;
+
+    return [
+      { to: ROUTE.GET_STARTED, label: 'Create Workspace' },
+      { to: ROUTE.WORKSPACES, label: `Workspaces (${allWorkspacesNumber})` },
+    ];
+  }
+
+  public render(): React.ReactElement {
+    const { activePath } = this.props;
+
+    const navItems = this.items.map(item => {
+      return (
+        <NavigationMainItem
+          key={item.label}
+          item={item}
+          activePath={activePath}
+        />
+      );
+    });
+
     return (
-      <NavigationMainItem
-        key={item.label}
-        item={item}
-        activePath={props.activePath}
-      >
-        {item.icon && (item.icon)}
-      </NavigationMainItem>
+      <NavList>
+        {navItems}
+      </NavList>
     );
-  });
-  return (
-    <NavList>
-      {navItems}
-    </NavList>
-  );
+  }
 }
-NavigationMainList.displayName = 'NavigationMainListComponent';
-export default NavigationMainList;
+
+const mapStateToProps = (state: AppState) => ({
+  allWorkspacesNumber: selectAllWorkspacesNumber(state),
+});
+
+const connector = connect(
+  mapStateToProps,
+);
+
+type MappedProps = ConnectedProps<typeof connector>
+export default connector(NavigationMainList);
