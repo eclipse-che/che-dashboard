@@ -42,12 +42,12 @@ describe('Navigation Main List', () => {
     let workspaces = [0, 1, 2, 3, 4].map(i => createFakeWorkspace('works-' + i, 'works-' + i));
     const { rerender } = render(buildElement(workspaces));
 
-    expect(screen.getAllByRole('link')[1]).toHaveTextContent('Workspaces (5)');
+    expect(screen.queryByRole('link', { name: 'Workspaces (5)' })).toBeInTheDocument();
 
     workspaces = [0, 1, 2].map(i => createFakeWorkspace('works-' + i, 'works-' + i));
     rerender(buildElement(workspaces));
 
-    expect(screen.getAllByRole('link')[1]).toHaveTextContent('Workspaces (3)');
+    expect(screen.queryByRole('link', { name: 'Workspaces (3)' })).toBeInTheDocument();
   });
 
 });
