@@ -14,12 +14,12 @@
   align-items: center;
 }
 
-.mainItemIcon {
-  margin-right: 10px;
-}
-
 .navItem {
   white-space: nowrap;
+}
+
+.navItem [class*="nav__link"] {
+  padding-left: 45px;
 }
 
 .navItem > span {

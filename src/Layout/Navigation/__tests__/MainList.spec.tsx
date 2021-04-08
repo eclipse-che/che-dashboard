@@ -11,41 +11,57 @@
  */
 
 import React from 'react';
-import { RenderResult, render, screen } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router';
 import { Nav } from '@patternfly/react-core';
 
 import NavigationMainList from '../MainList';
+import { FakeStoreBuilder } from '../../../store/__mocks__/storeBuilder';
+import { Provider } from 'react-redux';
+import { createFakeWorkspace } from '../../../store/__mocks__/workspace';
 
 describe('Navigation Main List', () => {
 
-  function renderComponent(): RenderResult {
-    return render(
-      <MemoryRouter>
-        <Nav
-          onSelect={() => jest.fn()}
-          theme="light"
-        >
-          <NavigationMainList activePath="" />
-        </Nav>
-      </MemoryRouter>
-    );
-  }
-
   it('should have correct number of main navigation items', () => {
-    renderComponent();
+    render(buildElement());
 
     const navLinks = screen.getAllByRole('link');
     expect(navLinks.length).toEqual(2);
   });
 
   it('should have correct navigation item labels', () => {
-    renderComponent();
+    render(buildElement());
 
     const navLinks = screen.getAllByRole('link');
 
-    expect(navLinks[0]).toHaveTextContent('Get Started');
-    expect(navLinks[1]).toHaveTextContent('Workspaces');
+    expect(navLinks[0]).toHaveTextContent('Create Workspace');
+    expect(navLinks[1]).toHaveTextContent('Workspaces (0)');
+  });
+
+  it('should have correct navigation item workspaces quantity', () => {
+    let workspaces = [0, 1, 2, 3, 4].map(i => createFakeWorkspace('works-' + i, 'works-' + i));
+    const { rerender } = render(buildElement(workspaces));
+
+    expect(screen.queryByRole('link', { name: 'Workspaces (5)' })).toBeInTheDocument();
+
+    workspaces = [0, 1, 2].map(i => createFakeWorkspace('works-' + i, 'works-' + i));
+    rerender(buildElement(workspaces));
+
+    expect(screen.queryByRole('link', { name: 'Workspaces (3)' })).toBeInTheDocument();
   });
 
 });
+
+function buildElement(workspaces: che.Workspace[] = []): JSX.Element {
+  const store = new FakeStoreBuilder().withWorkspaces({ workspaces }).build();
+  return (<Provider store={store}>
+    <MemoryRouter>
+      <Nav
+        onSelect={() => jest.fn()}
+        theme="light"
+      >
+        <NavigationMainList activePath="" />
+      </Nav>
+    </MemoryRouter>
+  </Provider>);
+}

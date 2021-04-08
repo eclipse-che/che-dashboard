@@ -19,7 +19,7 @@ import isActive from './isActive';
 
 import styles from './index.module.css';
 
-function NavigationMainItem(props: { item: NavigationItemObject, children: React.ReactNode, activePath?: string }): React.ReactElement {
+function NavigationMainItem(props: { item: NavigationItemObject, activePath?: string }): React.ReactElement {
   return (
     <NavItem
       itemId={props.item.to}
@@ -29,7 +29,6 @@ function NavigationMainItem(props: { item: NavigationItemObject, children: React
         to={props.item.to}
         className={styles.mainItem}
       >
-        {props.children}
         {props.item.label}
       </Link>
     </NavItem>

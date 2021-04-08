@@ -27,7 +27,7 @@ import { buildGettingStartedPath, buildWorkspacesPath } from '../../services/hel
 export interface NavigationItemObject {
   to: string,
   label: string,
-  icon: React.ReactElement;
+  icon?: React.ReactElement;
 }
 export interface NavigationRecentItemObject {
   to: string,

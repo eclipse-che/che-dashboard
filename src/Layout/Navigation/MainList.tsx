@@ -12,39 +12,58 @@
 
 import React from 'react';
 import { NavList } from '@patternfly/react-core';
-import {
-  CubesIcon,
-  PlusIcon,
-} from '@patternfly/react-icons';
-
 import NavigationMainItem from './MainItem';
 import { NavigationItemObject } from '.';
 import { ROUTE } from '../../route.enum';
+import { AppState } from '../../store';
+import { connect, ConnectedProps } from 'react-redux';
+import { selectAllWorkspacesNumber } from '../../store/Workspaces/selectors';
 
-import styles from './index.module.css';
+type Props =
+  MappedProps
+  & {
+    activePath: string,
+  };
 
-const items: NavigationItemObject[] = [
-  { to: ROUTE.GET_STARTED, label: 'Get Started', icon: <PlusIcon className={styles.mainItemIcon} /> },
-  { to: ROUTE.WORKSPACES, label: 'Workspaces', icon: <CubesIcon className={styles.mainItemIcon} /> },
-];
+export class NavigationMainList extends React.PureComponent<Props> {
 
-function NavigationMainList(props: { activePath: string }): React.ReactElement {
-  const navItems = items.map(item => {
+  private get items(): NavigationItemObject[] {
+    const { allWorkspacesNumber } = this.props;
+
+    return [
+      { to: ROUTE.GET_STARTED, label: 'Create Workspace' },
+      { to: ROUTE.WORKSPACES, label: `Workspaces (${allWorkspacesNumber})` },
+    ];
+  }
+
+  public render(): React.ReactElement {
+    const { activePath } = this.props;
+
+    const navItems = this.items.map(item => {
+      return (
+        <NavigationMainItem
+          key={item.label}
+          item={item}
+          activePath={activePath}
+        />
+      );
+    });
+
     return (
-      <NavigationMainItem
-        key={item.label}
-        item={item}
-        activePath={props.activePath}
-      >
-        {item.icon}
-      </NavigationMainItem>
+      <NavList>
+        {navItems}
+      </NavList>
     );
-  });
-  return (
-    <NavList>
-      {navItems}
-    </NavList>
-  );
+  }
 }
-NavigationMainList.displayName = 'NavigationMainListComponent';
-export default NavigationMainList;
+
+const mapStateToProps = (state: AppState) => ({
+  allWorkspacesNumber: selectAllWorkspacesNumber(state),
+});
+
+const connector = connect(
+  mapStateToProps,
+);
+
+type MappedProps = ConnectedProps<typeof connector>
+export default connector(NavigationMainList);

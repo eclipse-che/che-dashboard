@@ -145,3 +145,9 @@ export const selectRecentWorkspaces = createSelector(
     return workspacesSortedByTime.slice(0, recentNumber);
   }
 );
+export const selectAllWorkspacesNumber = createSelector(
+  selectAllWorkspaces,
+  allWorkspaces => {
+    return allWorkspaces.length;
+  }
+);

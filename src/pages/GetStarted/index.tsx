@@ -163,7 +163,7 @@ export class GetStarted extends React.PureComponent<Props, State> {
 
     return (
       <React.Fragment>
-        <Head pageName="Get Started" />
+        <Head pageName="Create Workspace" />
         <PageSection variant={PageSectionVariants.light}>
           <Title headingLevel={'h1'}>{title}</Title>
         </PageSection>
