@@ -166,6 +166,7 @@ export const actionCreators: ActionCreators = {
   stopWorkspace: (workspace: IDevWorkspace): AppThunk<KnownAction, Promise<void>> => async (dispatch): Promise<void> => {
     try {
       devWorkspaceClient.changeWorkspaceStatus(workspace.metadata.namespace, workspace.metadata.name, false);
+      dispatch({ type: 'DEV_DELETE_WORKSPACE_LOGS', workspaceId: workspace.status.devworkspaceId });
     } catch (e) {
       dispatch({ type: 'DEV_RECEIVE_ERROR' });
       throw new Error(`Failed to stop the workspace, ID: ${workspace.status.devworkspaceId}, ` + e.message);
@@ -177,10 +178,12 @@ export const actionCreators: ActionCreators = {
       const namespace = workspace.metadata.namespace;
       const name = workspace.metadata.name;
       await devWorkspaceClient.delete(namespace, name);
+      const workspaceId = workspace.status.devworkspaceId;
       dispatch({
         type: 'DEV_DELETE_WORKSPACE',
-        workspaceId: workspace.status.devworkspaceId,
+        workspaceId,
       });
+      dispatch({ type: 'DEV_DELETE_WORKSPACE_LOGS', workspaceId });
     } catch (e) {
       dispatch({ type: 'DEV_RECEIVE_ERROR' });
 
@@ -318,20 +321,35 @@ export const reducer: Reducer<State> = (state: State | undefined, action: KnownA
 function onStatusUpdateReceived(
   workspace: IDevWorkspace,
   dispatch: ThunkDispatch<State, undefined, KnownAction>,
-  message: any) {
-  let status: string;
-  if (message.error) {
+  statusUpdate: IStatusUpdate) {
+  let status: string | undefined;
+  if (statusUpdate.error) {
     const workspacesLogs = new Map<string, string[]>();
-    workspacesLogs.set(workspace.status.devworkspaceId, [`Error: Failed to run the workspace: "${message.error}"`]);
+    workspacesLogs.set(workspace.status.devworkspaceId, [`Error: Failed to run the workspace: "${statusUpdate.error}"`]);
     dispatch({
       type: 'DEV_UPDATE_WORKSPACES_LOGS',
       workspacesLogs,
     });
     status = WorkspaceStatus[WorkspaceStatus.ERROR];
   } else {
-    status = message.status;
+    if (statusUpdate.message) {
+      const workspacesLogs = new Map<string, string[]>();
+
+      /**
+       * Don't add in messages with no workspaces id or with stopped or stopping messages. The stopped and stopping messages
+       * only appear because we initially create a stopped devworkspace, add in devworkspace templates, and then start the devworkspace
+       */
+      if (workspace.status.devworkspaceId !== '' && workspace.status.message !== 'Stopped' && workspace.status.message !== 'Stopping') {
+        workspacesLogs.set(workspace.status.devworkspaceId, [statusUpdate.message]);
+        dispatch({
+          type: 'DEV_UPDATE_WORKSPACES_LOGS',
+          workspacesLogs,
+        });
+      }
+    }
+    status = statusUpdate.status;
   }
-  if (WorkspaceStatus[status]) {
+  if (status && WorkspaceStatus[status]) {
     dispatch({
       type: 'DEV_UPDATE_WORKSPACE_STATUS',
       workspaceId: workspace.status.devworkspaceId,

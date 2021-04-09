@@ -25,6 +25,7 @@ import { AppState, AppThunk } from '../../store';
 
 export interface IStatusUpdate {
   error?: string;
+  message?: string;
   status?: string;
   prevStatus?: string;
   workspaceId: string;
@@ -43,6 +44,7 @@ export class DevWorkspaceClient extends WorkspaceClient {
   private client: RestApi;
   private maxStatusAttempts: number;
   private initializing: Promise<void>;
+  private lastDevWorkspaceLog: Map<string, string>;
 
   constructor(@inject(KeycloakSetupService) keycloakSetupService: KeycloakSetupService) {
     super(keycloakSetupService);
@@ -53,6 +55,7 @@ export class DevWorkspaceClient extends WorkspaceClient {
     this.dwtApi = this.client.templateApi;
     this.previousItems = new Map();
     this.maxStatusAttempts = 10;
+    this.lastDevWorkspaceLog = new Map();
   }
 
   isEnabled(): Promise<boolean> {
@@ -148,6 +151,9 @@ export class DevWorkspaceClient extends WorkspaceClient {
 
   async changeWorkspaceStatus(namespace: string, name: string, started: boolean): Promise<IDevWorkspace> {
     const changedWorkspace = await this.dwApi.changeStatus(namespace, name, started);
+    if (started === false && changedWorkspace.status?.devworkspaceId) {
+      this.lastDevWorkspaceLog.delete(changedWorkspace.status.devworkspaceId);
+    }
     this.checkForDevWorkspaceError(changedWorkspace);
     return changedWorkspace;
   }
@@ -178,6 +184,18 @@ export class DevWorkspaceClient extends WorkspaceClient {
       const devworkspaces = await this.getAllWorkspaces(defaultNamespace);
       devworkspaces.forEach((devworkspace: IDevWorkspace) => {
         const statusUpdate = this.createStatusUpdate(devworkspace);
+
+        const message = devworkspace.status.message;
+        if (message) {
+          const workspaceId = devworkspace.status.devworkspaceId;
+          const lastMessage = this.lastDevWorkspaceLog.get(workspaceId);
+
+          // Only add new messages we haven't seen before
+          if (lastMessage !== message) {
+            statusUpdate.message = message;
+            this.lastDevWorkspaceLog.set(workspaceId, message);
+          }
+        }
         callback(devworkspace, statusUpdate)(dispatch, getState, undefined);
       });
     }, 1000);
