@@ -241,7 +241,7 @@
 | [`react-side-effect@2.1.1`](https://github.com/gaearon/react-side-effect.git) | MIT | clearlydefined |
 | [`react-tooltip@4.2.15`](https://github.com/wwayne/react-tooltip) | MIT | clearlydefined |
 | [`react-transition-group@2.9.0`](https://github.com/reactjs/react-transition-group.git) | BSD-3-Clause | [CQ22356](https://dev.eclipse.org/ipzilla/show_bug.cgi?id=22356) |
-| [`react@16.13.1`](https://github.com/facebook/react.git) | MIT | clearlydefined |
+| [`react@16.14.0`](git+https://github.com/facebook/react.git) | MIT | clearlydefined |
 | [`reactstrap@8.4.1`](git+ssh://git@github.com/reactstrap/reactstrap.git) | MIT | clearlydefined |
 | [`recast@0.11.23`](git://github.com/benjamn/recast.git) | MIT | [CQ18717](https://dev.eclipse.org/ipzilla/show_bug.cgi?id=18717) |
 | [`rechoir@0.6.2`](git://github.com/tkellen/node-rechoir.git) | MIT | [CQ18717](https://dev.eclipse.org/ipzilla/show_bug.cgi?id=18717) |
