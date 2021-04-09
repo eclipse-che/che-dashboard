@@ -327,7 +327,7 @@ export class FactoryLoaderContainer extends React.PureComponent<Props, State> {
     }
     // check if it ephemeral
     // not implemented for dev workspaces yet
-    if (workspace.storageType === 'ephemeral') {
+    if (isWorkspaceV1(workspace.ref) && workspace.storageType === 'ephemeral') {
       this.showAlert('You\'re starting an ephemeral workspace. All changes to the source code will be lost ' +
         'when the workspace is stopped unless they are pushed to a remote code repository.', AlertVariant.warning);
     }
