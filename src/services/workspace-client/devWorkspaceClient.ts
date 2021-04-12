@@ -159,17 +159,12 @@ export class DevWorkspaceClient extends WorkspaceClient {
    */
   async initializeNamespace(namespace: string): Promise<boolean> {
     try {
-      this.initializing = new Promise((resolve, reject) => {
-        this.dwCheApi.initializeNamespace(namespace).then(_ => {
-          resolve(undefined);
-        });
-      });
-      await this.initializing;
+      await this.dwCheApi.initializeNamespace(namespace);
+      return true;
     } catch (e) {
       console.error(e);
       return false;
     }
-    return true;
   }
 
   subscribeToNamespace(

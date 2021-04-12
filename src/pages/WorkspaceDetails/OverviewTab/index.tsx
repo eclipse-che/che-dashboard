@@ -11,7 +11,7 @@
  */
 
 import React from 'react';
-import { Form, FormGroup, PageSection, PageSectionVariants } from '@patternfly/react-core';
+import { Form, PageSection, PageSectionVariants } from '@patternfly/react-core';
 import StorageTypeFormGroup from './StorageType';
 import { WorkspaceNameFormGroup } from './WorkspaceName';
 import InfrastructureNamespaceFormGroup from './InfrastructureNamespace';
