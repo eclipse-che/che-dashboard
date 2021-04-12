@@ -19,9 +19,9 @@ import { Store } from 'redux';
 
 import NavigationRecentList from '../RecentList';
 import { convertWorkspace, Workspace } from '../../../services/helpers/workspaceAdapter';
-import { WorkspaceStatus } from '../../../services/helpers/types';
 import { FakeStoreBuilder } from '../../../store/__mocks__/storeBuilder';
 import { createHashHistory } from 'history';
+import { createFakeCheWorkspace } from '../../../store/__mocks__/workspace';
 
 jest.mock('react-tooltip', () => {
   return function DummyTooltip(): React.ReactElement {
@@ -29,44 +29,7 @@ jest.mock('react-tooltip', () => {
   };
 });
 
-const cheWorkspaces: che.Workspace[] = [
-  {
-    id: 'wksp-1',
-    devfile: {
-      metadata: {
-        name: 'wksp-1'
-      }
-    },
-    status: WorkspaceStatus[WorkspaceStatus.STOPPED],
-    attributes: {
-      updated: 1,
-    } as any,
-  } as che.Workspace,
-  {
-    id: 'wksp-2',
-    devfile: {
-      metadata: {
-        name: 'wksp-2'
-      }
-    },
-    status: WorkspaceStatus[WorkspaceStatus.STOPPED],
-    attributes: {
-      updated: 2,
-    } as any,
-  } as che.Workspace,
-  {
-    id: 'wksp-3',
-    devfile: {
-      metadata: {
-        name: 'wksp-3'
-      }
-    },
-    status: WorkspaceStatus[WorkspaceStatus.STOPPED],
-    attributes: {
-      updated: 3,
-    } as any,
-  } as che.Workspace,
-];
+const cheWorkspaces = [1, 2, 3].map(i => createFakeCheWorkspace('wksp-' + i, 'wksp-' + i));
 const workspaces = cheWorkspaces.map(workspace => convertWorkspace(workspace));
 
 describe('Navigation Recent List', () => {

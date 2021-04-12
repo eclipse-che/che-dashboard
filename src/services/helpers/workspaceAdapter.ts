@@ -38,7 +38,7 @@ export interface Workspace {
 }
 
 export class WorkspaceAdapter<T extends che.Workspace | IDevWorkspace> implements Workspace {
-  private workspace: T;
+  private readonly workspace: T;
 
   constructor(workspace: T) {
     if (isWorkspaceV1(workspace) || isWorkspaceV2(workspace)) {
@@ -220,9 +220,7 @@ export function isWorkspaceV1(workspace: any): workspace is che.Workspace {
 }
 
 export function isWorkspaceV2(workspace: che.Workspace | IDevWorkspace): workspace is IDevWorkspace {
-  return !!(
-    (workspace as IDevWorkspace).kind === 'DevWorkspace'
-  );
+  return (workspace as IDevWorkspace).kind === 'DevWorkspace';
 }
 
 export function isDevfileV1(devfile: che.WorkspaceDevfile | IDevWorkspaceDevfile): devfile is che.WorkspaceDevfile {
@@ -230,7 +228,5 @@ export function isDevfileV1(devfile: che.WorkspaceDevfile | IDevWorkspaceDevfile
 }
 
 export function isDevfileV2(devfile: che.WorkspaceDevfile | IDevWorkspaceDevfile): devfile is IDevWorkspaceDevfile {
-  return !!(
-    (devfile as IDevWorkspaceDevfile).schemaVersion !== undefined
-  );
+  return (devfile as IDevWorkspaceDevfile).schemaVersion !== undefined;
 }
