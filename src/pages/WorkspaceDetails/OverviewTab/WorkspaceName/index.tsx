@@ -14,7 +14,8 @@ import { Button, FormGroup, InputGroup, TextInput, ValidatedOptions } from '@pat
 import { CheckIcon, ExclamationCircleIcon, PencilAltIcon, TimesIcon } from '@patternfly/react-icons';
 import React from 'react';
 
-import styles from './index.module.css';
+import overviewStyles from '../index.module.css';
+import workspaceNameStyles from './index.module.css';
 
 const MIN_LENGTH = 3;
 const MAX_LENGTH = 100;
@@ -26,6 +27,7 @@ const ERROR_PATTERN_MISMATCH = 'The name can contain digits, latin letters, unde
 
 type Props = {
   name: string;
+  readonly: boolean;
   onSave: (name: string) => void;
   onChange?: (name: string) => void;
   callbacks?: { cancelChanges?: () => void }
@@ -147,6 +149,7 @@ export class WorkspaceNameFormGroup extends React.PureComponent<Props, State> {
   }
 
   public render(): React.ReactElement {
+    const { readonly } = this.props;
     const { name, errorMessage, validated, isEditMode } = this.state;
     const isSaveButtonDisable = this.state.validated === ValidatedOptions.error || !this.state.hasChanges;
     const fieldId = 'workspace-name';
@@ -160,17 +163,25 @@ export class WorkspaceNameFormGroup extends React.PureComponent<Props, State> {
         helperTextInvalidIcon={<ExclamationCircleIcon />}
         validated={validated}
       >
-        {(!isEditMode) && (
-          <span className={styles.name}>
+        {(readonly) && (
+          <span className={overviewStyles.readonly}>
             {name}
-            <Button data-testid="handle-edit-mode-toggle" variant="plain"
-              onClick={() => this.handleEditModeToggle()}>
+          </span>
+        )}
+        {(!readonly && !isEditMode) && (
+          <span className={overviewStyles.editable}>
+            {name}
+            <Button
+              data-testid="overview-name-edit-toggle"
+              variant="plain"
+              onClick={() => this.handleEditModeToggle()}
+            >
               <PencilAltIcon />
             </Button>
           </span>
         )}
         {(isEditMode) && (
-          <InputGroup className={styles.nameInput}>
+          <InputGroup className={workspaceNameStyles.nameInput}>
             <TextInput
               value={name}
               isRequired
@@ -184,11 +195,19 @@ export class WorkspaceNameFormGroup extends React.PureComponent<Props, State> {
               maxLength={MAX_LENGTH}
               placeholder="Enter a workspace name"
             />
-            <Button variant="link" data-testid="handle-on-save" isDisabled={isSaveButtonDisable}
-              onClick={() => this.handleSave()}>
+            <Button
+              variant="link"
+              data-testid="handle-on-save"
+              isDisabled={isSaveButtonDisable}
+              onClick={() => this.handleSave()}
+            >
               <CheckIcon />
             </Button>
-            <Button variant="plain" data-testid="handle-on-cancel" onClick={() => this.handleCancel()}>
+            <Button
+              variant="plain"
+              data-testid="handle-on-cancel"
+              onClick={() => this.handleCancel()}
+            >
               <TimesIcon />
             </Button>
           </InputGroup>

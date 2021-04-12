@@ -10,13 +10,8 @@
 *   Red Hat, Inc. - initial API and implementation
 */
 
-.storageTypeSelector {
-  max-width: 350px;
-  margin-right: 10px;
-}
-
 .experimentalStorageType {
-  color: #f37943;
+  color: var(--pf-global--palette--orange-300);
   font-size: 0.8em;
 }
 
@@ -28,17 +23,6 @@
 
 button.labelIcon {
   color: inherit;
-}
-
-.storageType {
-  position: relative;
-  top: 2px;
-  color: #3083d6;
-}
-
-.storageType button {
-  bottom: 1px;
-  margin-left: 3px;
 }
 
 .warningAlert h4 {

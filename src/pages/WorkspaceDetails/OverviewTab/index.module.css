@@ -10,7 +10,13 @@
 *   Red Hat, Inc. - initial API and implementation
 */
 
-.kubernetesNamespace {
-  padding-top: 5px;
-  line-height: 30px;
+.editable {
+  position: relative;
+  top: 2px;
+  color: var(--pf-global--link--Color);
+}
+
+.readonly {
+  display: inline-block;
+  padding-top: 8px;
 }

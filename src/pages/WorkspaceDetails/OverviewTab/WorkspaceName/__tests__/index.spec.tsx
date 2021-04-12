@@ -22,6 +22,7 @@ describe('Overview Tab Workspace Name Input', () => {
     return render(
       <WorkspaceNameFormGroup
         name={name}
+        readonly={false}
         onSave={mockOnSave}
       />
     );
@@ -34,7 +35,7 @@ describe('Overview Tab Workspace Name Input', () => {
   it('should show default placeholder', () => {
     renderInput('new-workspace');
 
-    screen.getByTestId('handle-edit-mode-toggle').click();
+    screen.getByTestId('overview-name-edit-toggle').click();
 
     const placeholder = screen.getByPlaceholderText('Enter a workspace name');
     expect(placeholder).toBeTruthy();
@@ -43,7 +44,7 @@ describe('Overview Tab Workspace Name Input', () => {
   it('should show placeholder with generated name', () => {
     renderInput('');
 
-    screen.getByTestId('handle-edit-mode-toggle').click();
+    screen.getByTestId('overview-name-edit-toggle').click();
 
     const textbox = screen.getByRole('textbox');
     expect(textbox).toBeTruthy();
@@ -55,16 +56,28 @@ describe('Overview Tab Workspace Name Input', () => {
   it('should correctly render the component', () => {
     renderInput('new-workspace');
 
-    screen.getByTestId('handle-edit-mode-toggle').click();
+    screen.getByTestId('overview-name-edit-toggle').click();
 
     const input = screen.getByRole('textbox');
     expect(input).toHaveValue('new-workspace');
   });
 
+  it('should make form readonly', () => {
+    render(
+      <WorkspaceNameFormGroup
+        name='wksp-name'
+        readonly={true}
+        onSave={mockOnSave}
+      />
+    );
+
+    expect(screen.queryByTestId('overview-name-edit-toggle')).not.toBeInTheDocument();
+  });
+
   it('should correctly re-render the component', () => {
     const { rerender } = renderInput('name');
 
-    screen.getByTestId('handle-edit-mode-toggle').click();
+    screen.getByTestId('overview-name-edit-toggle').click();
 
     const input = screen.getByRole('textbox');
     expect(input).toHaveValue('name');
@@ -72,6 +85,7 @@ describe('Overview Tab Workspace Name Input', () => {
     rerender(
       (<WorkspaceNameFormGroup
         name={'new-name'}
+        readonly={false}
         onSave={mockOnSave}
       />)
     );
@@ -82,7 +96,7 @@ describe('Overview Tab Workspace Name Input', () => {
   it('should fire onChange event', () => {
     renderInput('');
 
-    screen.getByTestId('handle-edit-mode-toggle').click();
+    screen.getByTestId('overview-name-edit-toggle').click();
 
     const input = screen.getByRole('textbox');
 
@@ -99,7 +113,7 @@ describe('Overview Tab Workspace Name Input', () => {
     beforeEach(() => {
       renderInput('new-workspace');
 
-      screen.getByTestId('handle-edit-mode-toggle').click();
+      screen.getByTestId('overview-name-edit-toggle').click();
 
       textbox = screen.getByRole('textbox') as HTMLInputElement;
     });

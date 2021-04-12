@@ -13,7 +13,7 @@
 import React from 'react';
 import { FormGroup } from '@patternfly/react-core';
 
-import styles from './index.module.css';
+import overviewStyles from './index.module.css';
 
 type Props = {
   namespace: string;
@@ -24,7 +24,7 @@ class InfrastructureNamespaceFormGroup extends React.PureComponent<Props> {
   public render(): React.ReactElement {
     return (
       <FormGroup label="Kubernetes Namespace" fieldId="infrastructure-namespace">
-        <div className={styles.kubernetesNamespace}>
+        <div className={overviewStyles.readonly}>
           {this.props.namespace}
         </div>
       </FormGroup>

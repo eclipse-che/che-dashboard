@@ -29,11 +29,13 @@ import { OutlinedQuestionCircleIcon, PencilAltIcon } from '@patternfly/react-ico
 import { selectAvailableStorageTypes, selectPreferredStorageType } from '../../../../store/Workspaces/selectors';
 import * as storageTypeService from '../../../../services/storageTypes';
 
+import overviewStyles from '../index.module.css';
 import styles from './index.module.css';
 
 type Props =
   MappedProps
   & {
+    readonly: boolean;
     storageType?: che.WorkspaceStorageType;
     onSave?: (storageType: che.WorkspaceStorageType) => void;
   };
@@ -189,6 +191,7 @@ export class StorageTypeFormGroup extends React.PureComponent<Props, State> {
   }
 
   public render(): React.ReactNode {
+    const { readonly } = this.props;
     const { selected, isInfoOpen } = this.state;
 
     return (
@@ -196,20 +199,38 @@ export class StorageTypeFormGroup extends React.PureComponent<Props, State> {
         label="Storage Type"
         fieldId="storage-type"
         labelIcon={
-          <Button variant="plain" onClick={() => this.handleInfoToggle()} className={styles.labelIcon}>
+          <Button
+            variant="plain"
+            onClick={() => this.handleInfoToggle()}
+            className={styles.labelIcon}
+          >
             <OutlinedQuestionCircleIcon />
           </Button>
         }>
-        <span className={styles.storageType}>
-          {selected}
-          <Button variant="plain" onClick={() => this.handleEditToggle(true)}>
-            <PencilAltIcon />
-          </Button>
-        </span>
+        {readonly && (
+          <span className={overviewStyles.readonly}>
+            {selected}
+          </span>
+        )}
+        {!readonly && (
+          <span className={overviewStyles.editable}>
+            {selected}
+            <Button
+              data-testid="overview-storage-edit-toggle"
+              variant="plain"
+              onClick={() => this.handleEditToggle(true)}
+            >
+              <PencilAltIcon />
+            </Button>
+          </span>
+        )}
         {this.getSelectorModal()}
-        <Modal title="Storage Type info" variant={ModalVariant.small} isOpen={isInfoOpen} onClose={() => {
-          this.handleInfoToggle();
-        }}>
+        <Modal
+          title="Storage Type info"
+          variant={ModalVariant.small}
+          isOpen={isInfoOpen}
+          onClose={() => { this.handleInfoToggle(); }}
+        >
           {this.getInfoModalContent()}
         </Modal>
       </FormGroup>

@@ -15,7 +15,8 @@ import { Form, FormGroup, PageSection, PageSectionVariants } from '@patternfly/r
 import StorageTypeFormGroup from './StorageType';
 import { WorkspaceNameFormGroup } from './WorkspaceName';
 import InfrastructureNamespaceFormGroup from './InfrastructureNamespace';
-import { Workspace } from '../../../services/helpers/workspaceAdapter';
+import ProjectsFormGroup from './Projects';
+import { isWorkspaceV2, Workspace } from '../../../services/helpers/workspaceAdapter';
 import { IDevWorkspaceDevfile } from '@eclipse-che/devworkspace-client';
 
 type Props = {
@@ -75,6 +76,7 @@ export class OverviewTab extends React.Component<Props, State> {
     const workspaceName = this.props.workspace.name;
     const namespace = this.state.infrastructureNamespace;
     const projects = this.props.workspace.projects;
+    const readonly = isWorkspaceV2(this.props.workspace.ref);
 
     return (
       <React.Fragment>
@@ -84,6 +86,7 @@ export class OverviewTab extends React.Component<Props, State> {
           <Form isHorizontal onSubmit={e => e.preventDefault()}>
             <WorkspaceNameFormGroup
               name={workspaceName}
+              readonly={readonly}
               onSave={_workspaceName => this.handleWorkspaceNameSave(_workspaceName)}
               onChange={_workspaceName => {
                 this.isWorkspaceNameChanged = workspaceName !== _workspaceName;
@@ -92,12 +95,11 @@ export class OverviewTab extends React.Component<Props, State> {
             />
             <InfrastructureNamespaceFormGroup namespace={namespace} />
             <StorageTypeFormGroup
+              readonly={readonly}
               storageType={storageType}
               onSave={_storageType => this.handleStorageSave(_storageType)}
             />
-            <FormGroup label="Projects" fieldId="projects">
-              <div style={{ paddingTop: '5px', lineHeight: '30px' }}>{projects.join(', ')}</div>
-            </FormGroup>
+            <ProjectsFormGroup projects={projects} />
           </Form>
         </PageSection>
       </React.Fragment>
