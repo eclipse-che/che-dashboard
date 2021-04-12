@@ -33,11 +33,11 @@ declare namespace che {
 
   export interface WorkspaceSettings {
     cheWorkspaceDevfileRegistryUrl?: string;
-    cheWorkspacePluginRegistryUrl: string;
+    cheWorkspacePluginRegistryUrl?: string;
     'che.workspace.storage.available_types': string;
     'che.workspace.storage.preferred_type': WorkspaceStorageType;
     supportedRecipeTypes: string;
-    'che.factory.default_plugins': string;
+    'che.factory.default_plugins'?: string;
     'che.factory.default_editor': string;
     'che.devworkspaces.enabled': 'true' | 'false';
   }
