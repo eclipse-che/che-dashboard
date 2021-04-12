@@ -27,7 +27,7 @@ import { selectAllWorkspaces, selectIsLoading, selectLogs, selectWorkspaceById }
 import { validateMachineToken } from '../services/validate-token';
 import { buildWorkspacesPath } from '../services/helpers/location';
 import { DisposableCollection } from '../services/helpers/disposable';
-import { Workspace } from '../services/helpers/workspaceAdapter';
+import { Workspace } from '../services/workspaceAdapter';
 
 type Props =
   MappedProps

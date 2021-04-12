@@ -20,7 +20,7 @@ import WorkspacesList from '..';
 import { BrandingData } from '../../../services/bootstrap/branding.constant';
 import { createFakeCheWorkspace } from '../../../store/__mocks__/workspace';
 import { WorkspaceAction, WorkspaceStatus } from '../../../services/helpers/types';
-import { convertWorkspace, Workspace } from '../../../services/helpers/workspaceAdapter';
+import { convertWorkspace, Workspace } from '../../../services/workspaceAdapter';
 
 jest.mock('../../../components/Head', () => () => {
   return <span>Dummy Head Component</span>;

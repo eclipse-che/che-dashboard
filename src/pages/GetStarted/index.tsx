@@ -30,7 +30,7 @@ import * as WorkspaceStore from '../../store/Workspaces';
 import { AppState } from '../../store';
 import { AlertItem, GettingStartedTab } from '../../services/helpers/types';
 import { ROUTE } from '../../route.enum';
-import { Workspace } from '../../services/helpers/workspaceAdapter';
+import { Workspace } from '../../services/workspaceAdapter';
 
 const SamplesListTab = React.lazy(() => import('./GetStartedTab'));
 const CustomWorkspaceTab = React.lazy(() => import('./CustomWorkspaceTab'));

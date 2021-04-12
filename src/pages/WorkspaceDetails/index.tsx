@@ -40,7 +40,7 @@ import { selectIsLoading, selectWorkspaceById } from '../../store/Workspaces/sel
 import { History } from 'history';
 
 import './WorkspaceDetails.styl';
-import { Workspace } from '../../services/helpers/workspaceAdapter';
+import { Workspace } from '../../services/workspaceAdapter';
 
 export const SECTION_THEME = PageSectionVariants.light;
 

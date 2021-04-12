@@ -29,7 +29,7 @@ import { getEnvironment, isDevEnvironment } from '../services/helpers/environmen
 import { isOAuthResponse } from '../store/FactoryResolver';
 import { updateDevfile } from '../services/storageTypes';
 import { IDevWorkspaceDevfile } from '@eclipse-che/devworkspace-client';
-import { isWorkspaceV1, Workspace } from '../services/helpers/workspaceAdapter';
+import { isWorkspaceV1, Workspace } from '../services/workspaceAdapter';
 
 const WS_ATTRIBUTES_TO_SAVE: string[] = ['workspaceDeploymentLabels', 'workspaceDeploymentAnnotations', 'policies.create'];
 

@@ -21,7 +21,7 @@ import {
 } from '@patternfly/react-core';
 import DevfileEditor, { DevfileEditor as Editor } from '../../../components/DevfileEditor';
 import EditorTools from './EditorTools';
-import { isDevfileV2, Workspace } from '../../../services/helpers/workspaceAdapter';
+import { isDevfileV2, Workspace } from '../../../services/workspaceAdapter';
 import { IDevWorkspaceDevfile } from '@eclipse-che/devworkspace-client';
 
 import './DevfileTab.styl';

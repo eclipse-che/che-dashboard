@@ -12,7 +12,7 @@
 
 import { createSelector } from 'reselect';
 import { AppState } from '../';
-import { convertWorkspace, Workspace } from '../../services/helpers/workspaceAdapter';
+import { convertWorkspace, Workspace } from '../../services/workspaceAdapter';
 import * as storageTypesService from '../../services/storageTypes';
 
 const selectState = (state: AppState) => state.workspaces;

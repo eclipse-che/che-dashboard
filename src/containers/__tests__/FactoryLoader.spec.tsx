@@ -21,7 +21,7 @@ import { createFakeCheWorkspace } from '../../store/__mocks__/workspace';
 import { WorkspaceStatus } from '../../services/helpers/types';
 import FactoryLoaderContainer, { LoadFactorySteps } from '../FactoryLoader';
 import { AlertOptions } from '../../pages/IdeLoader';
-import { convertWorkspace, Workspace } from '../../services/helpers/workspaceAdapter';
+import { convertWorkspace, Workspace } from '../../services/workspaceAdapter';
 
 const showAlertMock = jest.fn();
 const createWorkspaceFromDevfileMock = jest.fn().mockResolvedValue(undefined);

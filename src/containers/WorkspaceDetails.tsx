@@ -19,7 +19,7 @@ import WorkspaceDetails, { WorkspaceDetails as Details } from '../pages/Workspac
 import { ROUTE } from '../route.enum';
 import { toHref } from '../services/helpers/location';
 import { WorkspaceDetailsTab } from '../services/helpers/types';
-import { Workspace } from '../services/helpers/workspaceAdapter';
+import { Workspace } from '../services/workspaceAdapter';
 
 import { AppState } from '../store';
 import * as WorkspacesStore from '../store/Workspaces';

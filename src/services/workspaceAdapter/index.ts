@@ -17,7 +17,7 @@ import {
   IDevWorkspaceDevfile,
 } from '@eclipse-che/devworkspace-client';
 import { attributesToType, typeToAttributes } from '../storageTypes';
-import { DevWorkspaceStatus, WorkspaceStatus } from './types';
+import { DevWorkspaceStatus, WorkspaceStatus } from '../helpers/types';
 
 const ROUTING_CLASS = 'che';
 
@@ -215,8 +215,10 @@ export function convertWorkspace<T extends che.Workspace | IDevWorkspace>(worksp
   return new WorkspaceAdapter(workspace);
 }
 
-export function isWorkspaceV1(workspace: any): workspace is che.Workspace {
-  return !isWorkspaceV2(workspace);
+export function isWorkspaceV1(workspace: che.Workspace | IDevWorkspace): workspace is che.Workspace {
+  return (workspace as che.Workspace).id !== undefined
+    && (workspace as che.Workspace).devfile !== undefined
+    && (workspace as che.Workspace).status !== undefined;
 }
 
 export function isWorkspaceV2(workspace: che.Workspace | IDevWorkspace): workspace is IDevWorkspace {

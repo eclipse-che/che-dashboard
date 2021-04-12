@@ -16,7 +16,7 @@ import StorageTypeFormGroup from './StorageType';
 import { WorkspaceNameFormGroup } from './WorkspaceName';
 import InfrastructureNamespaceFormGroup from './InfrastructureNamespace';
 import ProjectsFormGroup from './Projects';
-import { isWorkspaceV2, Workspace } from '../../../services/helpers/workspaceAdapter';
+import { isWorkspaceV2, Workspace } from '../../../services/workspaceAdapter';
 import { IDevWorkspaceDevfile } from '@eclipse-che/devworkspace-client';
 
 type Props = {

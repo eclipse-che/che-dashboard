@@ -27,7 +27,7 @@ import {
   buildWorkspacesPath,
 } from '../../services/helpers/location';
 import { IdeLoaderTab, WorkspaceDetailsTab } from '../../services/helpers/types';
-import { convertWorkspace, Workspace } from '../../services/helpers/workspaceAdapter';
+import { convertWorkspace, Workspace } from '../../services/workspaceAdapter';
 
 jest.mock('../../pages/GetStarted', () => {
   return function GetStarted() {

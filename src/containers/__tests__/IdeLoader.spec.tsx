@@ -24,7 +24,7 @@ import IdeLoaderContainer, { LoadIdeSteps } from '../IdeLoader';
 import { AlertOptions } from '../../pages/IdeLoader';
 import { AppThunk } from '../../store';
 import { ActionCreators } from '../../store/Workspaces';
-import { Workspace } from '../../services/helpers/workspaceAdapter';
+import { Workspace } from '../../services/workspaceAdapter';
 
 const showAlertMock = jest.fn();
 const requestWorkspaceMock = jest.fn().mockResolvedValue(undefined);
