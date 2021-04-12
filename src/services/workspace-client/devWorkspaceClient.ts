@@ -139,7 +139,7 @@ export class DevWorkspaceClient extends WorkspaceClient {
   }
 
   async update(workspace: IDevWorkspace): Promise<IDevWorkspace> {
-    return this.workspaceApi.update(workspace);
+    return this.dwApi.update(workspace);
   }
 
   async delete(namespace: string, name: string): Promise<void> {
@@ -195,7 +195,7 @@ export class DevWorkspaceClient extends WorkspaceClient {
    */
   private createStatusUpdate(devworkspace: IDevWorkspace): IStatusUpdate {
     const namespace = devworkspace.metadata.namespace;
-    const workspaceId = devworkspace.status.workspaceId;
+    const workspaceId = devworkspace.status.devworkspaceId;
     // Starting devworkspaces don't have status defined
     const status = typeof devworkspace.status.phase === 'string'
       ? devworkspace.status.phase.toUpperCase()

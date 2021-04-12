@@ -19,6 +19,8 @@ import {
 import { attributesToType, typeToAttributes } from '../storageTypes';
 import { DevWorkspaceStatus, WorkspaceStatus } from './types';
 
+const ROUTING_CLASS = 'che';
+
 export interface Workspace {
   readonly ref: che.Workspace | IDevWorkspace;
 
@@ -55,7 +57,7 @@ export class WorkspaceAdapter<T extends che.Workspace | IDevWorkspace> implement
     if (isWorkspaceV1(this.workspace)) {
       return this.workspace.id;
     } else {
-      return (this.workspace as IDevWorkspace).status.workspaceId;
+      return (this.workspace as IDevWorkspace).status.devworkspaceId;
     }
   }
 
@@ -71,7 +73,7 @@ export class WorkspaceAdapter<T extends che.Workspace | IDevWorkspace> implement
     if (isWorkspaceV1(this.workspace)) {
       this.workspace.devfile.metadata.name = name;
     } else {
-      throw new Error('Not implemented.');
+      console.error('Not implemented: set name of the devworkspace.');
     }
   }
 
@@ -162,7 +164,8 @@ export class WorkspaceAdapter<T extends che.Workspace | IDevWorkspace> implement
     if (isWorkspaceV1(this.workspace)) {
       return attributesToType(this.workspace.devfile.attributes);
     } else {
-      throw new Error('not implemented.');
+      console.error('Not implemented: get storage type of the devworkspace.');
+      return attributesToType(undefined);
     }
   }
 
@@ -171,7 +174,7 @@ export class WorkspaceAdapter<T extends che.Workspace | IDevWorkspace> implement
       const attributes = typeToAttributes(type);
       Object.assign(this.workspace.devfile.attributes, attributes);
     } else {
-      throw new Error('not implemented.');
+      console.error('Not implemented: set storage type of the devworkspace.');
     }
   }
 
@@ -187,7 +190,11 @@ export class WorkspaceAdapter<T extends che.Workspace | IDevWorkspace> implement
     if (isWorkspaceV1(this.workspace)) {
       this.workspace.devfile = devfile as che.WorkspaceDevfile;
     } else {
-      (this.workspace as IDevWorkspace) = devfileToDevWorkspace(devfile as IDevWorkspaceDevfile, this.status === WorkspaceStatus[WorkspaceStatus.RUNNING]);
+      (this.workspace as IDevWorkspace) = devfileToDevWorkspace(
+        devfile as IDevWorkspaceDevfile,
+        ROUTING_CLASS,
+        this.status === WorkspaceStatus[WorkspaceStatus.RUNNING]
+      );
     }
   }
 

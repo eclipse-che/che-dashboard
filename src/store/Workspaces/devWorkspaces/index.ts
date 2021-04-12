@@ -168,7 +168,7 @@ export const actionCreators: ActionCreators = {
       devWorkspaceClient.changeWorkspaceStatus(workspace.metadata.namespace, workspace.metadata.name, false);
     } catch (e) {
       dispatch({ type: 'DEV_RECEIVE_ERROR' });
-      throw new Error(`Failed to stop the workspace, ID: ${workspace.status.workspaceId}, ` + e.message);
+      throw new Error(`Failed to stop the workspace, ID: ${workspace.status.devworkspaceId}, ` + e.message);
     }
   },
 
@@ -179,7 +179,7 @@ export const actionCreators: ActionCreators = {
       await devWorkspaceClient.delete(namespace, name);
       dispatch({
         type: 'DEV_DELETE_WORKSPACE',
-        workspaceId: workspace.status.workspaceId,
+        workspaceId: workspace.status.devworkspaceId,
       });
     } catch (e) {
       dispatch({ type: 'DEV_RECEIVE_ERROR' });
@@ -200,7 +200,7 @@ export const actionCreators: ActionCreators = {
         message = 'Unknown error.';
       }
 
-      throw new Error(`Failed to delete the workspace, ID: ${workspace.status.workspaceId}. ` + message);
+      throw new Error(`Failed to delete the workspace, ID: ${workspace.status.devworkspaceId}. ` + message);
     }
   },
 
@@ -281,12 +281,12 @@ export const reducer: Reducer<State> = (state: State | undefined, action: KnownA
     case 'DEV_UPDATE_WORKSPACE':
       return createState(state, {
         isLoading: false,
-        workspaces: state.workspaces.map(workspace => workspace.status.workspaceId === action.workspace.status.workspaceId ? action.workspace : workspace),
+        workspaces: state.workspaces.map(workspace => workspace.status.devworkspaceId === action.workspace.status.devworkspaceId ? action.workspace : workspace),
       });
     case 'DEV_UPDATE_WORKSPACE_STATUS':
       return createState(state, {
         workspaces: state.workspaces.map(workspace => {
-          if (workspace.status.workspaceId === action.workspaceId) {
+          if (workspace.status.devworkspaceId === action.workspaceId) {
             workspace.status.phase = action.status;
           }
           return workspace;
@@ -299,7 +299,7 @@ export const reducer: Reducer<State> = (state: State | undefined, action: KnownA
     case 'DEV_DELETE_WORKSPACE':
       return createState(state, {
         isLoading: false,
-        workspaces: state.workspaces.filter(workspace => workspace.status.workspaceId !== action.workspaceId),
+        workspaces: state.workspaces.filter(workspace => workspace.status.devworkspaceId !== action.workspaceId),
       });
     case 'DEV_UPDATE_WORKSPACES_LOGS':
       return createState(state, {
@@ -322,7 +322,7 @@ function onStatusUpdateReceived(
   let status: string;
   if (message.error) {
     const workspacesLogs = new Map<string, string[]>();
-    workspacesLogs.set(workspace.status.workspaceId, [`Error: Failed to run the workspace: "${message.error}"`]);
+    workspacesLogs.set(workspace.status.devworkspaceId, [`Error: Failed to run the workspace: "${message.error}"`]);
     dispatch({
       type: 'DEV_UPDATE_WORKSPACES_LOGS',
       workspacesLogs,
@@ -334,7 +334,7 @@ function onStatusUpdateReceived(
   if (WorkspaceStatus[status]) {
     dispatch({
       type: 'DEV_UPDATE_WORKSPACE_STATUS',
-      workspaceId: workspace.status.workspaceId,
+      workspaceId: workspace.status.devworkspaceId,
       status,
     });
   }

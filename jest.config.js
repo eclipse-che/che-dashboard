@@ -56,4 +56,5 @@ module.exports = {
       lines: 50,
     }
   },
+  setupFiles: ['./src/inversify.config.ts'],
 }
