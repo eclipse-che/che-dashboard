@@ -32,6 +32,9 @@ jest.mock('react-tooltip', () => {
   };
 });
 
+// mute the outputs
+console.log = jest.fn();
+
 const brandingData = {
   docs: {
     workspace: 'workspaces/documentation/link',
@@ -239,6 +242,9 @@ describe('Workspaces List Page', () => {
   describe('Table', () => {
 
     it('should handle workspaces that are being deleted', () => {
+      // mute the outputs
+      console.error = jest.fn();
+
       const { rerender } = renderComponent();
 
       const checkboxes = screen.getAllByRole('checkbox', { name: '' });

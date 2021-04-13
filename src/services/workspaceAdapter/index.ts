@@ -98,10 +98,11 @@ export class WorkspaceAdapter<T extends che.Workspace | IDevWorkspace> implement
       return parseInt(this.workspace.attributes?.created || '', 10) || 0;
     } else {
       const reference = this.workspace as IDevWorkspace;
-      if (!reference.metadata.creationTimestamp) {
+      const timestamp = parseInt(reference.metadata.creationTimestamp || '0', 10);
+      if (!timestamp) {
         return 0;
       }
-      return new Date(reference.metadata.creationTimestamp).valueOf();
+      return new Date(timestamp).valueOf();
     }
   }
 
@@ -109,11 +110,7 @@ export class WorkspaceAdapter<T extends che.Workspace | IDevWorkspace> implement
     if (isWorkspaceV1(this.workspace)) {
       return parseInt(this.workspace.attributes?.updated || '', 10) || 0;
     } else {
-      const reference = this.workspace as IDevWorkspace;
-      if (!reference.metadata.creationTimestamp) {
-        return 0;
-      }
-      return new Date(reference.metadata.creationTimestamp).valueOf();
+      return this.created;
     }
   }
 

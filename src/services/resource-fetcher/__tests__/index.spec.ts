@@ -19,6 +19,9 @@ jest.mock('axios');
 const mockedAxios = axios as jest.Mocked<typeof axios>;
 mockedAxios.get = jest.fn();
 
+// mute the outputs
+console.log = jest.fn();
+
 describe('Resource fetcher', () => {
 
   afterEach(() => {
