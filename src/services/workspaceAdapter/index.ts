@@ -120,8 +120,7 @@ export class WorkspaceAdapter<T extends che.Workspace | IDevWorkspace> implement
     } else {
       let status = (this.workspace as IDevWorkspace).status?.phase;
       if (status) {
-        status = status.toUpperCase();
-        if (status === DevWorkspaceStatus[DevWorkspaceStatus.FAILED]) {
+        if (status === DevWorkspaceStatus.FAILED) {
           status = WorkspaceStatus[WorkspaceStatus.ERROR];
         }
       }

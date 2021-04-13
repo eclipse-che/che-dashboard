@@ -87,7 +87,7 @@ export class DevWorkspaceClient extends WorkspaceClient {
     const workspaceStatus = workspace.status;
     if (!workspaceStatus || !workspaceStatus.phase) {
       throw new Error(`Could not retrieve devworkspace status information from ${workspaceName} in namespace ${namespace}`);
-    } else if (workspaceStatus.phase.toUpperCase() === DevWorkspaceStatus[DevWorkspaceStatus.RUNNING] && !workspaceStatus?.ideUrl) {
+    } else if (workspaceStatus.phase === DevWorkspaceStatus.RUNNING && !workspaceStatus?.ideUrl) {
       throw new Error('Could not retrieve ideUrl for the running workspace');
     }
     return workspace;
@@ -241,7 +241,7 @@ export class DevWorkspaceClient extends WorkspaceClient {
 
   checkForDevWorkspaceError(devworkspace: IDevWorkspace) {
     const currentPhase = devworkspace.status?.phase;
-    if (currentPhase && currentPhase.toUpperCase() === DevWorkspaceStatus[DevWorkspaceStatus.FAILED]) {
+    if (currentPhase && currentPhase === DevWorkspaceStatus.FAILED) {
       const message = devworkspace.status.message;
       if (message) {
         throw new Error(devworkspace.status.message);

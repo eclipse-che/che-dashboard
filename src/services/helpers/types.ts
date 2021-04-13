@@ -37,8 +37,10 @@ export enum WorkspaceStatus {
 }
 
 export enum DevWorkspaceStatus {
-  FAILED = 1,
-  RUNNING = 2
+  FAILED = 'Failed',
+  RUNNING = 'Running',
+  STOPPED = 'Stopped',
+  STOPPING = 'Stopping'
 }
 
 export type GettingStartedTab = 'get-started'
