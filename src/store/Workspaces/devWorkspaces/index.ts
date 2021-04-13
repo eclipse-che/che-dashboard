@@ -15,7 +15,7 @@ import * as api from '@eclipse-che/api';
 import { ThunkDispatch } from 'redux-thunk';
 import { AppThunk } from '../..';
 import { container } from '../../../inversify.config';
-import { WorkspaceStatus } from '../../../services/helpers/types';
+import { DevWorkspaceStatus, WorkspaceStatus } from '../../../services/helpers/types';
 import { createState } from '../../helpers';
 import { DevWorkspaceClient, IStatusUpdate } from '../../../services/workspace-client/devWorkspaceClient';
 import { CheWorkspaceClient } from '../../../services/workspace-client/cheWorkspaceClient';
@@ -339,7 +339,7 @@ function onStatusUpdateReceived(
        * Don't add in messages with no workspaces id or with stopped or stopping messages. The stopped and stopping messages
        * only appear because we initially create a stopped devworkspace, add in devworkspace templates, and then start the devworkspace
        */
-      if (workspace.status.devworkspaceId !== '' && workspace.status.message !== 'Stopped' && workspace.status.message !== 'Stopping') {
+      if (workspace.status.devworkspaceId !== '' && workspace.status.message !== DevWorkspaceStatus.STOPPED && workspace.status.message !== DevWorkspaceStatus.STOPPING) {
         workspacesLogs.set(workspace.status.devworkspaceId, [statusUpdate.message]);
         dispatch({
           type: 'DEV_UPDATE_WORKSPACES_LOGS',
