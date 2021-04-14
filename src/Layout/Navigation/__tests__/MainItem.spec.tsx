@@ -30,7 +30,7 @@ describe('Navigation Item', () => {
   };
 
   function renderComponent(workspaces: che.Workspace[] = []): RenderResult {
-    const store = new FakeStoreBuilder().withWorkspaces({ workspaces }).build();
+    const store = new FakeStoreBuilder().withCheWorkspaces({ workspaces }).build();
     return render(
       <Provider store={store}>
         <MemoryRouter>

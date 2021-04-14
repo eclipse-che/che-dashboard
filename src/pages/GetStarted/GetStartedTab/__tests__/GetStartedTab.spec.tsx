@@ -54,7 +54,7 @@ describe('Samples list tab', () => {
         storageTypes: 'https://dummy.location'
       }
     } as BrandingData;
-    const store = new FakeStoreBuilder().withWorkspaces({
+    const store = new FakeStoreBuilder().withCheWorkspaces({
       settings: { 'che.workspace.storage.preferred_type': preferredStorageType } as che.WorkspaceSettings,
       workspaces: [],
     }).withBranding(brandingData).build();

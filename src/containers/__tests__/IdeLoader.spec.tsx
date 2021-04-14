@@ -18,12 +18,13 @@ import { RenderResult, render, screen, waitFor } from '@testing-library/react';
 import { ROUTE } from '../../route.enum';
 import { getMockRouterProps } from '../../services/__mocks__/router';
 import { FakeStoreBuilder } from '../../store/__mocks__/storeBuilder';
-import { createFakeWorkspace } from '../../store/__mocks__/workspace';
+import { createFakeCheWorkspace } from '../../store/__mocks__/workspace';
 import { WorkspaceStatus } from '../../services/helpers/types';
 import IdeLoaderContainer, { LoadIdeSteps } from '../IdeLoader';
 import { AlertOptions } from '../../pages/IdeLoader';
 import { AppThunk } from '../../store';
 import { ActionCreators } from '../../store/Workspaces';
+import { Workspace } from '../../services/workspaceAdapter';
 
 const showAlertMock = jest.fn();
 const requestWorkspaceMock = jest.fn().mockResolvedValue(undefined);
@@ -35,9 +36,9 @@ jest.mock('../../store/Workspaces/index', () => {
   return {
     actionCreators: {
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      requestWorkspace: (workspace: che.Workspace): AppThunk<Action, Promise<void>> => async (): Promise<void> => { requestWorkspaceMock(); },
+      requestWorkspace: (workspace: Workspace): AppThunk<Action, Promise<void>> => async (): Promise<void> => { requestWorkspaceMock(); },
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      startWorkspace: (workspace: che.Workspace): AppThunk<Action, Promise<void>> => async (): Promise<void> => { startWorkspaceMock(); },
+      startWorkspace: (workspace: Workspace): AppThunk<Action, Promise<void>> => async (): Promise<void> => { startWorkspaceMock(); },
       requestWorkspaces: (): AppThunk<Action, Promise<void>> => async (): Promise<void> => {
         return Promise.resolve();
       },
@@ -47,6 +48,7 @@ jest.mock('../../store/Workspaces/index', () => {
     } as ActionCreators,
   };
 });
+
 jest.mock('../../pages/IdeLoader', () => {
   return function DummyWizard(props: {
     hasError: boolean,
@@ -97,29 +99,33 @@ describe('IDE Loader container', () => {
     activeEnv: 'default',
   };
 
-  const store = new FakeStoreBuilder().withWorkspaces({
-    workspaceId: 'id-wksp-1',
-    workspaces: [
-      createFakeWorkspace(
-        'id-wksp-1',
-        'name-wksp-1',
-        'admin1',
-      ),
-      createFakeWorkspace(
-        'id-wksp-2',
-        'name-wksp-2',
-        'admin2',
-        WorkspaceStatus[WorkspaceStatus.RUNNING],
-        runtime
-      ),
-      createFakeWorkspace(
-        'id-wksp-3',
-        'name-wksp-3',
-        'admin3',
-        WorkspaceStatus[WorkspaceStatus.ERROR]
-      ),
-    ],
-  }).build();
+  const store = new FakeStoreBuilder()
+    .withWorkspaces({
+      workspaceId: 'id-wksp-1',
+    })
+    .withCheWorkspaces({
+      workspaces: [
+        createFakeCheWorkspace(
+          'id-wksp-1',
+          'name-wksp-1',
+          'admin1',
+        ),
+        createFakeCheWorkspace(
+          'id-wksp-2',
+          'name-wksp-2',
+          'admin2',
+          WorkspaceStatus[WorkspaceStatus.RUNNING],
+          runtime
+        ),
+        createFakeCheWorkspace(
+          'id-wksp-3',
+          'name-wksp-3',
+          'admin3',
+          WorkspaceStatus[WorkspaceStatus.ERROR]
+        ),
+      ],
+    })
+    .build();
 
   const renderComponent = (
     namespace: string,

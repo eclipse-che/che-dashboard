@@ -21,6 +21,7 @@ import { initDefaultEditorTheme } from '../../services/monacoThemeRegister';
 import { safeLoad } from 'js-yaml';
 import stringify, { language, conf } from '../../services/helpers/editor';
 import $ from 'jquery';
+import { IDevWorkspaceDevfile } from '@eclipse-che/devworkspace-client';
 
 import './DevfileEditor.styl';
 
@@ -42,7 +43,7 @@ const MONACO_CONFIG: IEditorConstructionOptions = {
 type Props =
   MappedProps
   & {
-    devfile: che.WorkspaceDevfile;
+    devfile: che.WorkspaceDevfile | IDevWorkspaceDevfile;
     decorationPattern?: string;
     onChange: (devfile: che.WorkspaceDevfile, isValid: boolean) => void;
     isReadonly?: boolean;
@@ -143,7 +144,7 @@ export class DevfileEditor extends React.PureComponent<Props, State> {
     this.yamlService.configure({ validate: true, schemas, hover: true, completion: true });
   }
 
-  public updateContent(devfile: che.WorkspaceDevfile): void {
+  public updateContent(devfile: che.WorkspaceDevfile | IDevWorkspaceDevfile): void {
     if (!this.editor) {
       return;
     }

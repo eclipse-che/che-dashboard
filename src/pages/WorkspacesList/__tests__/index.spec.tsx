@@ -18,8 +18,9 @@ import { render, screen, RenderResult, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import WorkspacesList from '..';
 import { BrandingData } from '../../../services/bootstrap/branding.constant';
-import { createFakeWorkspace } from '../../../store/__mocks__/workspace';
+import { createFakeCheWorkspace } from '../../../store/__mocks__/workspace';
 import { WorkspaceAction, WorkspaceStatus } from '../../../services/helpers/types';
+import { convertWorkspace, Workspace } from '../../../services/workspaceAdapter';
 
 jest.mock('../../../components/Head', () => () => {
   return <span>Dummy Head Component</span>;
@@ -31,13 +32,16 @@ jest.mock('react-tooltip', () => {
   };
 });
 
+// mute the outputs
+console.log = jest.fn();
+
 const brandingData = {
   docs: {
     workspace: 'workspaces/documentation/link',
   },
 } as BrandingData;
 
-let workspaces: che.Workspace[];
+let workspaces: Workspace[];
 let isDeleted: string[];
 
 let mockOnAction = jest.fn().mockResolvedValue(undefined);
@@ -46,8 +50,9 @@ let mockShowConfirmation = jest.fn().mockResolvedValue(undefined);
 describe('Workspaces List Page', () => {
 
   beforeEach(() => {
-    workspaces = [0, 1, 2, 3, 4].map(i =>
-      createFakeWorkspace('workspace-' + i, 'workspace-' + i));
+    workspaces = [0, 1, 2, 3, 4]
+      .map(i => createFakeCheWorkspace('workspace-' + i, 'workspace-' + i))
+      .map(workspace => convertWorkspace(workspace));
     isDeleted = [];
   });
 
@@ -237,6 +242,9 @@ describe('Workspaces List Page', () => {
   describe('Table', () => {
 
     it('should handle workspaces that are being deleted', () => {
+      // mute the outputs
+      console.error = jest.fn();
+
       const { rerender } = renderComponent();
 
       const checkboxes = screen.getAllByRole('checkbox', { name: '' });
@@ -318,7 +326,9 @@ describe('Workspaces List Page', () => {
         status: WorkspaceStatus[WorkspaceStatus.RUNNING],
         activeEnv: 'default',
       };
-      workspaces[0] = createFakeWorkspace('workspace-' + 0, 'workspace-' + 0, undefined, WorkspaceStatus[WorkspaceStatus.RUNNING], runtime);
+      workspaces[0] = convertWorkspace(
+        createFakeCheWorkspace('workspace-' + 0, 'workspace-' + 0, undefined, WorkspaceStatus[WorkspaceStatus.RUNNING], runtime)
+      );
 
       renderComponent();
 

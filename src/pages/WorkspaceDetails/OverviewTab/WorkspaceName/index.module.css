@@ -10,17 +10,6 @@
 *   Red Hat, Inc. - initial API and implementation
 */
 
-.name {
-  position: relative;
-  top: 2px;
-  color: #3083d6;
-}
-
-.name button {
-  bottom: 1px;
-  margin-left: 3px;
-}
-
 .nameInput {
   max-width: 450px;
 }

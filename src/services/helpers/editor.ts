@@ -49,11 +49,11 @@ function sortKeys(key1: keyof che.WorkspaceDevfile, key2: keyof che.WorkspaceDev
 /**
  * Provides a devfile stringify function.
  */
-export default function stringify(devfile: che.WorkspaceDevfile | undefined): string {
+export default function stringify(devfile: che.WorkspaceDevfile | IDevWorkspaceDevfile): string {
   if (!devfile) {
     return '';
   }
-  return safeDump(devfile as che.WorkspaceDevfile, { lineWidth, sortKeys });
+  return safeDump(devfile, { lineWidth, sortKeys });
 }
 
 /**

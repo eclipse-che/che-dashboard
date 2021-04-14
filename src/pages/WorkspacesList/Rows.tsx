@@ -16,6 +16,8 @@ import { IRow, SortByDirection } from '@patternfly/react-table';
 import WorkspaceIndicator from '../../components/Workspace/Indicator';
 import { formatDate, formatRelativeDate } from '../../services/helpers/date';
 import { buildDetailsPath, toHref, buildIdeLoaderPath } from '../../services/helpers/location';
+import { isWorkspaceV1, Workspace } from '../../services/workspaceAdapter';
+import { IDevWorkspaceDevfile } from '@eclipse-che/devworkspace-client';
 
 export interface RowData extends IRow {
   props: {
@@ -25,7 +27,7 @@ export interface RowData extends IRow {
 
 export function buildRows(
   history: History,
-  workspaces: che.Workspace[],
+  workspaces: Workspace[],
   deleted: string[],
   filtered: string[],
   selected: string[],
@@ -37,13 +39,13 @@ export function buildRows(
     .filter(workspace => filtered.includes(workspace.id))
     .sort((workspaceA, workspaceB) => {
       if (sortBy.index === 1) {
-        const nameA = workspaceA.devfile.metadata.name || '';
-        const nameB = workspaceB.devfile.metadata.name || '';
+        const nameA = workspaceA.name || '';
+        const nameB = workspaceB.name || '';
         return sort(nameA, nameB, sortBy.direction);
       }
       if (sortBy.index === 2) {
-        const updatedA = workspaceA.attributes?.updated || workspaceA.attributes?.created || 0;
-        const updatedB = workspaceB.attributes?.updated || workspaceB.attributes?.created || 0;
+        const updatedA = workspaceA.updated || workspaceA.created || 0;
+        const updatedB = workspaceB.updated || workspaceB.created || 0;
         return sort(updatedA, updatedB, sortBy.direction);
       }
       return 0;
@@ -77,17 +79,14 @@ function sort(a: string | number, b: string | number, direction: SortByDirection
 }
 
 export function buildRow(
-  workspace: che.Workspace,
+  workspace: Workspace,
   isSelected: boolean,
   isDeleted: boolean,
   linkToDetails: string,
   linkToIde: string
 ): RowData {
-  if (!workspace.devfile.metadata.name) {
+  if (!workspace.name) {
     throw new Error('Empty workspace name.');
-  }
-  if (!workspace.attributes) {
-    throw new Error('Empty workspace attributes');
   }
   if (!workspace.namespace) {
     throw new Error('Empty namespace');
@@ -99,13 +98,12 @@ export function buildRow(
   const details = (
     <span>
       {statusIndicator}
-      <a href={linkToDetails}>{workspace.devfile.metadata.name}</a>
+      <a href={linkToDetails}>{workspace.name}</a>
     </span>
   );
 
   /* last modified time */
-  const { created, updated } = workspace.attributes;
-  const lastModifiedMs = parseInt(updated ? updated : created, 10);
+  const lastModifiedMs = workspace.updated ? workspace.updated : workspace.created;
   let lastModifiedDate = '';
   if (lastModifiedMs) {
     const nowMs = Date.now();
@@ -118,10 +116,21 @@ export function buildRow(
   }
 
   /* projects list */
-  const workspaceProjects = workspace.devfile.projects || [];
-  const projects = workspaceProjects
-    .map(project => project.source?.location || project.name)
-    .join(', \n') || '-';
+  const projects: string[] = [];
+  if (isWorkspaceV1(workspace.ref)) {
+    const devfile = workspace.devfile as che.WorkspaceDevfile;
+    (devfile.projects || [])
+      .map(project => project.name || project.source?.location)
+      .filter((projectName?: string) => projectName)
+      .forEach((projectName: string) => projects.push(projectName));
+  } else {
+    const devfile = workspace.devfile as IDevWorkspaceDevfile;
+    (devfile.projects || [])
+      .map(project => project.name || project.git?.remotes?.origin)
+      .filter((projectName?: string) => projectName)
+      .forEach((projectName: string) => projects.push(projectName));
+  }
+  const projectsList = projects.join(', \n') || '-';
 
   /* Open IDE link */
   let open: React.ReactElement | string;
@@ -142,7 +151,7 @@ export function buildRow(
         key: 'last-modified-time'
       },
       {
-        title: projects,
+        title: projectsList,
         key: 'projects-list'
       },
       {

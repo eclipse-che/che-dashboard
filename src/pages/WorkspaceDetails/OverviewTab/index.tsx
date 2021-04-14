@@ -11,20 +11,22 @@
  */
 
 import React from 'react';
-import { Form, FormGroup, PageSection, PageSectionVariants } from '@patternfly/react-core';
+import { Form, PageSection, PageSectionVariants } from '@patternfly/react-core';
 import StorageTypeFormGroup from './StorageType';
 import { WorkspaceNameFormGroup } from './WorkspaceName';
 import InfrastructureNamespaceFormGroup from './InfrastructureNamespace';
-import { updateDevfile } from '../../../services/storageTypes';
+import ProjectsFormGroup from './Projects';
+import { convertWorkspace, isWorkspaceV2, Workspace } from '../../../services/workspaceAdapter';
+import { IDevWorkspaceDevfile } from '@eclipse-che/devworkspace-client';
 
 type Props = {
-  onSave: (workspace: che.Workspace) => Promise<void>;
-  workspace: che.Workspace;
+  onSave: (workspace: Workspace) => Promise<void>;
+  workspace: Workspace;
 };
 
 export type State = {
   storageType: che.WorkspaceStorageType;
-  namespace: string;
+  infrastructureNamespace: string;
   workspaceName: string;
 };
 
@@ -36,11 +38,15 @@ export class OverviewTab extends React.Component<Props, State> {
     super(props);
 
     const { workspace } = this.props;
-    const storageType = this.getStorageType(workspace.devfile);
-    const workspaceName = workspace.devfile.metadata.name ? workspace.devfile.metadata.name : '';
-    const namespace = workspace.attributes && workspace.attributes.infrastructureNamespace ? workspace.attributes.infrastructureNamespace : '';
+    const storageType = workspace.storageType;
+    const workspaceName = workspace.name;
+    const infrastructureNamespace = workspace.infrastructureNamespace;
 
-    this.state = { storageType, workspaceName, namespace };
+    this.state = {
+      storageType,
+      workspaceName,
+      infrastructureNamespace,
+    };
   }
 
   public get hasChanges() {
@@ -54,37 +60,23 @@ export class OverviewTab extends React.Component<Props, State> {
   }
 
   private async handleWorkspaceNameSave(workspaceName: string): Promise<void> {
-    const newDevfile = Object.assign({}, this.props.workspace.devfile);
-    newDevfile.metadata.name = workspaceName;
     this.setState({ workspaceName });
-    await this.onSave(newDevfile);
+    this.props.workspace.name = workspaceName;
+    await this.onSave(this.props.workspace.devfile);
   }
 
   private async handleStorageSave(storageType: che.WorkspaceStorageType): Promise<void> {
-    const newDevfile = updateDevfile(this.props.workspace.devfile, storageType);
     this.setState({ storageType });
-    await this.onSave(newDevfile);
-  }
-
-  private getStorageType(devfile: che.WorkspaceDevfile): che.WorkspaceStorageType {
-    if (devfile.attributes && devfile.attributes.persistVolumes === 'false') {
-      const isAsync = devfile.attributes && devfile.attributes.asyncPersist === 'true';
-      if (isAsync) {
-        return 'async';
-      } else {
-        return 'ephemeral';
-      }
-    } else {
-      return 'persistent';
-    }
+    this.props.workspace.storageType = storageType;
+    await this.onSave(this.props.workspace.devfile);
   }
 
   public render(): React.ReactElement {
-    const devfile = this.props.workspace.devfile;
-    const storageType = this.getStorageType(devfile);
-    const workspaceName = devfile.metadata.name ? devfile.metadata.name : '';
-    const namespace = this.state.namespace;
-    const projects = devfile.projects ? devfile.projects.map(project => project.name) : [];
+    const storageType = this.props.workspace.storageType;
+    const workspaceName = this.props.workspace.name;
+    const namespace = this.state.infrastructureNamespace;
+    const projects = this.props.workspace.projects;
+    const readonly = isWorkspaceV2(this.props.workspace.ref);
 
     return (
       <React.Fragment>
@@ -94,6 +86,7 @@ export class OverviewTab extends React.Component<Props, State> {
           <Form isHorizontal onSubmit={e => e.preventDefault()}>
             <WorkspaceNameFormGroup
               name={workspaceName}
+              readonly={readonly}
               onSave={_workspaceName => this.handleWorkspaceNameSave(_workspaceName)}
               onChange={_workspaceName => {
                 this.isWorkspaceNameChanged = workspaceName !== _workspaceName;
@@ -102,23 +95,21 @@ export class OverviewTab extends React.Component<Props, State> {
             />
             <InfrastructureNamespaceFormGroup namespace={namespace} />
             <StorageTypeFormGroup
+              readonly={readonly}
               storageType={storageType}
               onSave={_storageType => this.handleStorageSave(_storageType)}
             />
-            <FormGroup label="Projects" fieldId="projects">
-              <div style={{ paddingTop: '5px', lineHeight: '30px' }}>{projects.join(', ')}</div>
-            </FormGroup>
+            <ProjectsFormGroup projects={projects} />
           </Form>
         </PageSection>
       </React.Fragment>
     );
   }
 
-  private async onSave(devfile: che.WorkspaceDevfile): Promise<void> {
-    const newWorkspaceObj = Object.assign({}, this.props.workspace);
-    newWorkspaceObj.devfile = devfile;
-
-    await this.props.onSave(newWorkspaceObj);
+  private async onSave(devfile: che.WorkspaceDevfile | IDevWorkspaceDevfile): Promise<void> {
+    const workspaceCopy = convertWorkspace(this.props.workspace.ref);
+    workspaceCopy.devfile = devfile;
+    await this.props.onSave(workspaceCopy);
   }
 
 }

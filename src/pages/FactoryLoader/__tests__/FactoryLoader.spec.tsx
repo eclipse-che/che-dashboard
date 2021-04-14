@@ -17,7 +17,7 @@ import { Provider } from 'react-redux';
 import FactoryLoaderTabs from '../';
 import { LoadFactorySteps } from '../../../containers/FactoryLoader';
 import { FakeStoreBuilder } from '../../../store/__mocks__/storeBuilder';
-import { createFakeWorkspace } from '../../../store/__mocks__/workspace';
+import { createFakeCheWorkspace } from '../../../store/__mocks__/workspace';
 
 jest.mock('react-tooltip', () => {
   return function DummyTooltip(): React.ReactElement {
@@ -27,8 +27,8 @@ jest.mock('react-tooltip', () => {
 
 const workspaceName = 'wksp-test';
 const workspaceId = 'testWorkspaceId';
-const workspace = createFakeWorkspace(workspaceId, workspaceName);
-const store = new FakeStoreBuilder().withWorkspaces({
+const workspace = createFakeCheWorkspace(workspaceId, workspaceName);
+const store = new FakeStoreBuilder().withCheWorkspaces({
   workspaces: [workspace],
 }).build();
 

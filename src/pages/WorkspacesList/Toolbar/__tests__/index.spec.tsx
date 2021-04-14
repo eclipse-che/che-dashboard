@@ -16,9 +16,10 @@ import React from 'react';
 import { render, screen, RenderResult, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import WorkspacesListToolbar from '..';
-import { createFakeWorkspace } from '../../../../store/__mocks__/workspace';
+import { createFakeCheWorkspace } from '../../../../store/__mocks__/workspace';
+import { convertWorkspace, Workspace } from '../../../../services/workspaceAdapter';
 
-let workspaces: che.Workspace[];
+let workspaces: Workspace[];
 let isSelectedAll: boolean;
 let isEnabledDelete: boolean;
 const mockOnAddWorkspace = jest.fn();
@@ -41,8 +42,9 @@ describe('Workspaces List Toolbar', () => {
   }
 
   beforeEach(() => {
-    workspaces = [0, 1, 2, 3, 4].map(i =>
-      createFakeWorkspace('workspace-' + i, 'workspace-' + i));
+    workspaces = [0, 1, 2, 3, 4]
+      .map(i => createFakeCheWorkspace('workspace-' + i, 'workspace-' + i))
+      .map(workspace => convertWorkspace(workspace));
     isSelectedAll = false;
     isEnabledDelete = false;
   });

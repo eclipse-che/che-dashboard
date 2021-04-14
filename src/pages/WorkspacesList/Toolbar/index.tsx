@@ -16,14 +16,15 @@ import { EllipsisVIcon, PlusCircleIcon, SearchIcon } from '@patternfly/react-ico
 import match from '../../../services/helpers/filter';
 
 import * as styles from './index.module.css';
+import { Workspace } from '../../../services/workspaceAdapter';
 
 type Props = {
   selectedAll: boolean;
-  workspaces: che.Workspace[],
+  workspaces: Workspace[],
   enabledDelete: boolean;
   onAddWorkspace: () => void;
   onBulkDelete: () => Promise<void>;
-  onFilter: (filtered: che.Workspace[]) => void;
+  onFilter: (filtered: Workspace[]) => void;
   onToggleSelectAll: (checked: boolean) => void;
 };
 type State = {
@@ -79,9 +80,9 @@ export default class WorkspacesListToolbar extends React.PureComponent<Props, St
     });
   }
 
-  private filterWorkspaces(filterValue: string): che.Workspace[] {
+  private filterWorkspaces(filterValue: string): Workspace[] {
     return this.props.workspaces.filter(workspace =>
-      match(workspace.devfile.metadata.name || '', filterValue));
+      match(workspace.name || '', filterValue));
   }
 
   private handleFilterApply(): void {

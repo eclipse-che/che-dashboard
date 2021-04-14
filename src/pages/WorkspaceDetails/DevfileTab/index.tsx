@@ -21,17 +21,18 @@ import {
 } from '@patternfly/react-core';
 import DevfileEditor, { DevfileEditor as Editor } from '../../../components/DevfileEditor';
 import EditorTools from './EditorTools';
+import { convertWorkspace, isDevfileV2, Workspace } from '../../../services/workspaceAdapter';
+import { IDevWorkspaceDevfile } from '@eclipse-che/devworkspace-client';
 
 import './DevfileTab.styl';
-import { isDevWorkspace } from '../../../services/helpers/devworkspace';
 
 type Props = {
-  onSave: (workspace: che.Workspace) => Promise<void>;
-  workspace: che.Workspace;
+  onSave: (workspace: Workspace) => Promise<void>;
+  workspace: Workspace;
 };
 
 type State = {
-  devfile: che.WorkspaceDevfile;
+  devfile: che.WorkspaceDevfile | IDevWorkspaceDevfile;
   hasChanges: boolean;
   hasRequestErrors: boolean;
   currentRequestError: string;
@@ -41,7 +42,7 @@ type State = {
 };
 
 export class EditorTab extends React.PureComponent<Props, State> {
-  private originDevfile: che.WorkspaceDevfile | undefined;
+  private originDevfile: che.WorkspaceDevfile | IDevWorkspaceDevfile;
   private readonly devfileEditorRef: React.RefObject<Editor>;
 
   cancelChanges: () => void;
@@ -50,7 +51,7 @@ export class EditorTab extends React.PureComponent<Props, State> {
     super(props);
 
     this.state = {
-      devfile: Object.assign({}, this.props.workspace?.devfile),
+      devfile: Object.assign({}, this.props.workspace.devfile),
       hasChanges: false,
       isDevfileValid: true,
       hasRequestErrors: false,
@@ -59,7 +60,7 @@ export class EditorTab extends React.PureComponent<Props, State> {
     };
 
     this.cancelChanges = (): void => {
-      this.updateEditor(this.props.workspace?.devfile);
+      this.updateEditor(this.props.workspace.devfile);
       this.setState({
         hasChanges: false,
         hasRequestErrors: false,
@@ -71,8 +72,8 @@ export class EditorTab extends React.PureComponent<Props, State> {
   }
 
   private init(): void {
-    const devfile = Object.assign({}, this.props.workspace?.devfile as che.WorkspaceDevfile);
-    if (devfile && (!this.originDevfile || !this.isEqualObject(devfile, this.originDevfile))) {
+    const devfile = Object.assign({}, this.props.workspace.devfile);
+    if (devfile && (!this.originDevfile || !this.areEqual(devfile, this.originDevfile))) {
       this.originDevfile = devfile;
       this.updateEditor(devfile);
       this.setState({
@@ -92,7 +93,7 @@ export class EditorTab extends React.PureComponent<Props, State> {
   }
 
   public render(): React.ReactElement {
-    const originDevfile = this.props.workspace?.devfile as che.WorkspaceDevfile;
+    const originDevfile = this.props.workspace.devfile;
     const { devfile } = this.state;
 
     return (
@@ -125,7 +126,7 @@ export class EditorTab extends React.PureComponent<Props, State> {
             onChange={(devfile, isValid) => {
               this.onDevfileChange(devfile, isValid);
             }}
-            isReadonly={isDevWorkspace(originDevfile)}
+            isReadonly={isDevfileV2(originDevfile)}
           />
           <Button onClick={() => this.cancelChanges()} variant="secondary" className="cancle-button"
             isDisabled={!this.state.hasChanges && this.state.isDevfileValid}>
@@ -140,7 +141,7 @@ export class EditorTab extends React.PureComponent<Props, State> {
     );
   }
 
-  private updateEditor(devfile: che.WorkspaceDevfile | undefined): void {
+  private updateEditor(devfile: che.WorkspaceDevfile | IDevWorkspaceDevfile): void {
     if (!devfile) {
       return;
     }
@@ -154,7 +155,7 @@ export class EditorTab extends React.PureComponent<Props, State> {
       this.setState({ hasChanges: false });
       return;
     }
-    if (this.isEqualObject(this.props.workspace.devfile as che.WorkspaceDevfile, devfile)) {
+    if (this.areEqual(this.props.workspace.devfile as che.WorkspaceDevfile, devfile)) {
       this.setState({ hasChanges: false });
       return;
     }
@@ -170,16 +171,11 @@ export class EditorTab extends React.PureComponent<Props, State> {
     if (!devfile) {
       return;
     }
-    const newWorkspaceObj = Object.assign({}, this.props.workspace);
-    newWorkspaceObj.devfile = devfile;
+    const workspaceCopy = convertWorkspace(this.props.workspace.ref);
+    workspaceCopy.devfile = devfile;
     this.setState({ hasChanges: false });
     try {
-      await this.props.onSave(newWorkspaceObj);
-      this.setState({
-        hasChanges: false,
-        hasRequestErrors: false,
-        currentRequestError: '',
-      });
+      await this.props.onSave(workspaceCopy);
     } catch (e) {
       const errorMessage = e.toString().replace(/^Error: /gi, '');
       this.setState({
@@ -190,15 +186,15 @@ export class EditorTab extends React.PureComponent<Props, State> {
     }
   }
 
-  private sortObject(obj: che.WorkspaceDevfile): che.WorkspaceDevfile {
-    return Object.keys(obj).sort().reduce((result: che.WorkspaceDevfile, key: string) => {
+  private sortKeysInObject(obj: che.WorkspaceDevfile | IDevWorkspaceDevfile): che.WorkspaceDevfile | IDevWorkspaceDevfile {
+    return Object.keys(obj).sort().reduce((result: che.WorkspaceDevfile | IDevWorkspaceDevfile, key: string) => {
       result[key] = obj[key];
       return result;
-    }, {} as che.WorkspaceDevfile);
+    }, {} as che.WorkspaceDevfile | IDevWorkspaceDevfile);
   }
 
-  private isEqualObject(a: che.WorkspaceDevfile, b: che.WorkspaceDevfile): boolean {
-    return JSON.stringify(this.sortObject(a)) == JSON.stringify(this.sortObject(b as che.WorkspaceDevfile));
+  private areEqual(a: che.WorkspaceDevfile | IDevWorkspaceDevfile, b: che.WorkspaceDevfile | IDevWorkspaceDevfile): boolean {
+    return JSON.stringify(this.sortKeysInObject(a)) == JSON.stringify(this.sortKeysInObject(b as che.WorkspaceDevfile));
   }
 }
 

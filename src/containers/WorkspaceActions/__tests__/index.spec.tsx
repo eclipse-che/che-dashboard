@@ -19,15 +19,16 @@ import WorkspaceActionsProvider from '../';
 import { WorkspaceAction } from '../../../services/helpers/types';
 import { ActionContextType, WorkspaceActionsConsumer } from '../context';
 import { FakeStoreBuilder } from '../../../store/__mocks__/storeBuilder';
-import { createFakeWorkspace } from '../../../store/__mocks__/workspace';
+import { createFakeCheWorkspace } from '../../../store/__mocks__/workspace';
 import { ActionCreators } from '../../../store/Workspaces';
 import { AppThunk } from '../../../store';
+import { Workspace } from '../../../services/workspaceAdapter';
 
 jest.mock('../../../store/Workspaces/index', () => {
   return {
     actionCreators: {
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      deleteWorkspace: (workspace: che.Workspace): AppThunk<Action, Promise<void>> => async (): Promise<void> => {
+      deleteWorkspace: (workspace: Workspace): AppThunk<Action, Promise<void>> => async (): Promise<void> => {
         return Promise.resolve();
       },
     } as ActionCreators,
@@ -272,9 +273,9 @@ describe('Workspace Actions', () => {
 });
 
 function createFakeStore(): Store {
-  const workspaces = [0, 1, 2, 3, 4].map(i => createFakeWorkspace('workspace-' + i, 'workspace-' + i));
+  const workspaces = [0, 1, 2, 3, 4].map(i => createFakeCheWorkspace('workspace-' + i, 'workspace-' + i));
   return new FakeStoreBuilder()
-    .withWorkspaces({
+    .withCheWorkspaces({
       workspaces,
     })
     .build();

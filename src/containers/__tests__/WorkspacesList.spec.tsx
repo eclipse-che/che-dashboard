@@ -20,10 +20,10 @@ import { Action, Store } from 'redux';
 import { ActionCreators } from '../../store/Workspaces';
 import WorkspacesList from '../WorkspacesList';
 import { FakeStoreBuilder } from '../../store/__mocks__/storeBuilder';
-import { createFakeWorkspace } from '../../store/__mocks__/workspace';
+import { createFakeCheWorkspace } from '../../store/__mocks__/workspace';
 
 let isLoadingResult = false;
-let workspaces = [0, 1, 2, 3, 4].map(i => createFakeWorkspace('workspace-' + i, 'workspace-' + i));
+let workspaces = [0, 1, 2, 3, 4].map(i => createFakeCheWorkspace('workspace-' + i, 'workspace-' + i));
 
 jest.mock('../../store/Workspaces/index', () => {
   return {
@@ -91,7 +91,7 @@ function renderComponent(workspaces: che.Workspace[]): RenderResult {
 
 function createFakeStore(workspaces: che.Workspace[]): Store {
   return new FakeStoreBuilder()
-    .withWorkspaces({
+    .withCheWorkspaces({
       workspaces,
     })
     .build();

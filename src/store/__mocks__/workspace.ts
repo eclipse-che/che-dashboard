@@ -12,7 +12,10 @@
 
 import { WorkspaceStatus } from '../../services/helpers/types';
 
-export const createFakeWorkspace = (
+/**
+ * @deprecated use CheWorkspaceBuilder instead
+ */
+export const createFakeCheWorkspace = (
   workspaceId: string,
   workspaceName: string,
   namespace = 'admin',

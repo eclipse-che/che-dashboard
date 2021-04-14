@@ -12,14 +12,13 @@
 
 import React from 'react';
 import { Store } from 'redux';
-import thunk from 'redux-thunk';
-import createMockStore from 'redux-mock-store';
 import { render, screen, RenderResult, fireEvent } from '@testing-library/react';
 import mockAxios from 'axios';
 import SamplesListGallery from '../SamplesListGallery';
 import { Provider } from 'react-redux';
-import { AppState } from '../../../../store';
 import mockMetadata from '../../__tests__/devfileMetadata.json';
+import { FakeStoreBuilder } from '../../../../store/__mocks__/storeBuilder';
+import { BrandingData } from '../../../../services/bootstrap/branding.constant';
 
 describe('Samples List Gallery', () => {
 
@@ -46,7 +45,6 @@ describe('Samples List Gallery', () => {
   it('should handle "onCardClick" event', async () => {
 
     let resolveFn: {
-      (): void;
       (value?: unknown): void;
     };
     const onCardClickedPromise = new Promise(resolve => resolveFn = resolve);
@@ -80,39 +78,14 @@ describe('Samples List Gallery', () => {
 });
 
 function createFakeStore(metadata?: che.DevfileMetaData[]): Store {
-  const initialState: AppState = {
-    factoryResolver: {
-      isLoading: false,
-      resolver: {},
-    },
-    plugins: {
-      isLoading: false,
-      plugins: [],
-    },
-    workspaces: {} as any,
-    branding: {
-      data: {
-        docs: {
-          storageTypes: 'https://docs.location'
-        }
+  return new FakeStoreBuilder()
+    .withBranding({
+      docs: {
+        storageTypes: 'https://docs.location'
       }
-    } as any,
-    devfileRegistries: {
-      devfiles: {},
-      filter: '',
-      isLoading: false,
-      metadata: metadata || [],
-      schema: {},
-    },
-    user: {} as any,
-    userProfile: {} as any,
-    infrastructureNamespace: {} as any,
-    userPreferences: {} as any,
-    dwPlugins: {} as any,
-  };
-  const middleware = [thunk];
-  const mockStore = createMockStore(middleware);
-  return mockStore(initialState);
+    } as BrandingData)
+    .withDevfileRegistries({ metadata: metadata || [] })
+    .build();
 }
 
 function createFakeStoreWithoutMetadata(): Store {

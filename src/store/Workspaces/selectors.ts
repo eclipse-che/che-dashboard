@@ -12,9 +12,12 @@
 
 import { createSelector } from 'reselect';
 import { AppState } from '../';
+import { convertWorkspace, Workspace } from '../../services/workspaceAdapter';
 import * as storageTypesService from '../../services/storageTypes';
 
 const selectState = (state: AppState) => state.workspaces;
+const selectCheWorkspacesState = (state: AppState) => state.cheWorkspaces;
+const selectDevWorkspacesState = (state: AppState) => state.devWorkspaces;
 
 export const selectIsLoading = createSelector(
   selectState,
@@ -22,8 +25,8 @@ export const selectIsLoading = createSelector(
 );
 
 export const selectSettings = createSelector(
-  selectState,
-  state => state.settings,
+  selectCheWorkspacesState,
+  cheWorkspacesState => cheWorkspacesState.settings,
 );
 
 export const selectAvailableStorageTypes = createSelector(
@@ -37,14 +40,21 @@ export const selectPreferredStorageType = createSelector(
 );
 
 export const selectLogs = createSelector(
-  selectState,
-  state => state.workspacesLogs,
+  selectCheWorkspacesState,
+  selectDevWorkspacesState,
+  (cheWorkspacesState, devWorkspacesState) => {
+    return new Map([...cheWorkspacesState.workspacesLogs, ...devWorkspacesState.workspacesLogs]);
+  },
 );
 
 export const selectAllWorkspaces = createSelector(
-  selectState,
-  state => {
-    return state.workspaces;
+  selectCheWorkspacesState,
+  selectDevWorkspacesState,
+  (cheWorkspacesState, devWorkspacesState) => {
+    return [
+      ...cheWorkspacesState.workspaces,
+      ...devWorkspacesState.workspaces,
+    ].map(workspace => convertWorkspace(workspace));
   }
 );
 
@@ -56,7 +66,7 @@ export const selectWorkspaceByQualifiedName = createSelector(
       return null;
     }
     return allWorkspaces.find(workspace =>
-      workspace.namespace === state.namespace && workspace.devfile.metadata.name === state.workspaceName);
+      workspace.namespace === state.namespace && workspace.name === state.workspaceName);
   }
 );
 
@@ -80,27 +90,23 @@ export const selectAllWorkspacesByName = createSelector(
     return allWorkspaces.sort(sortByNamespaceNameFn);
   }
 );
-const sortByNamespaceNameFn = (workspaceA: che.Workspace, workspaceB: che.Workspace): -1 | 0 | 1 => {
+const sortByNamespaceNameFn = (workspaceA: Workspace, workspaceB: Workspace): -1 | 0 | 1 => {
   return sortByNamespaceFn(workspaceA, workspaceB)
     || sortByNameFn(workspaceA, workspaceB);
 };
-const sortByNamespaceFn = (workspaceA: che.Workspace, workspaceB: che.Workspace): -1 | 0 | 1 => {
-  const namespaceA = workspaceA.namespace || '';
-  const namespaceB = workspaceB.namespace || '';
-  if (namespaceA > namespaceB) {
+const sortByNamespaceFn = (workspaceA: Workspace, workspaceB: Workspace): -1 | 0 | 1 => {
+  if (workspaceA.namespace > workspaceB.namespace) {
     return 1;
-  } else if (namespaceA < namespaceB) {
+  } else if (workspaceA.namespace < workspaceB.namespace) {
     return -1;
   } else {
     return 0;
   }
 };
-const sortByNameFn = (workspaceA: che.Workspace, workspaceB: che.Workspace): -1 | 0 | 1 => {
-  const nameA = workspaceA.devfile.metadata.name || '';
-  const nameB = workspaceB.devfile.metadata.name || '';
-  if (nameA > nameB) {
+const sortByNameFn = (workspaceA: Workspace, workspaceB: Workspace): -1 | 0 | 1 => {
+  if (workspaceA.name > workspaceB.name) {
     return 1;
-  } else if (nameA < nameB) {
+  } else if (workspaceA.name < workspaceB.name) {
     return -1;
   } else {
     return 0;
@@ -116,11 +122,9 @@ export const selectAllWorkspacesSortedByTime = createSelector(
     return allWorkspaces.sort(sortByUpdatedTimeFn);
   }
 );
-const sortByUpdatedTimeFn = (workspaceA: che.Workspace, workspaceB: che.Workspace): -1 | 0 | 1 => {
-  const timeA = (workspaceA.attributes
-    && (workspaceA.attributes.updated || workspaceA.attributes.created)) || 0;
-  const timeB = (workspaceB.attributes
-    && (workspaceB.attributes.updated || workspaceB.attributes.created)) || 0;
+const sortByUpdatedTimeFn = (workspaceA: Workspace, workspaceB: Workspace): -1 | 0 | 1 => {
+  const timeA = workspaceA.updated || workspaceA.created || 0;
+  const timeB = workspaceB.updated || workspaceB.created || 0;
   if (timeA > timeB) {
     return -1;
   } else if (timeA < timeB) {

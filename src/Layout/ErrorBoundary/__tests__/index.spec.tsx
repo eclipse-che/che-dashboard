@@ -43,6 +43,9 @@ describe('Error boundary', () => {
   });
 
   it('should catch an error thrown inside a component', () => {
+    // mute the outputs
+    console.error = jest.fn();
+
     const badComponent = <BadComponent />;
     const errorBoundary = wrapComponent(badComponent);
     expect(renderer.create(errorBoundary).toJSON()).toMatchSnapshot();

@@ -40,13 +40,14 @@ import { selectIsLoading, selectWorkspaceById } from '../../store/Workspaces/sel
 import { History } from 'history';
 
 import './WorkspaceDetails.styl';
+import { Workspace } from '../../services/workspaceAdapter';
 
 export const SECTION_THEME = PageSectionVariants.light;
 
 type Props =
   {
     workspacesLink: string;
-    onSave: (workspace: che.Workspace) => Promise<void>;
+    onSave: (workspace: Workspace) => Promise<void>;
     history: History;
   } & MappedProps;
 
@@ -167,7 +168,7 @@ export class WorkspaceDetails extends React.PureComponent<Props, State> {
       return <div>Workspace not found.</div>;
     }
 
-    const workspaceName = workspace.devfile.metadata.name ? workspace.devfile.metadata.name : '';
+    const workspaceName = workspace.name;
 
     return (
       <React.Fragment>
@@ -236,7 +237,7 @@ export class WorkspaceDetails extends React.PureComponent<Props, State> {
     );
   }
 
-  private async onSave(workspace: che.Workspace): Promise<void> {
+  private async onSave(workspace: Workspace): Promise<void> {
     if (this.props.workspace && (WorkspaceStatus[this.props.workspace.status] !== WorkspaceStatus.STOPPED)) {
       this.setState({ hasWarningMessage: true });
     }

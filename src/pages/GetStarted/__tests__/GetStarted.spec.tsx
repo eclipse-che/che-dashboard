@@ -14,11 +14,11 @@ import { createHashHistory } from 'history';
 import { Provider } from 'react-redux';
 import { render, screen, waitFor } from '@testing-library/react';
 import { Store } from 'redux';
-import createMockStore from 'redux-mock-store';
 import React from 'react';
-import thunk from 'redux-thunk';
-import { AppState } from '../../../store';
 import GetStarted from '..';
+import { FakeStoreBuilder } from '../../../store/__mocks__/storeBuilder';
+import { BrandingData } from '../../../services/bootstrap/branding.constant';
+import { convertWorkspace, Workspace } from '../../../services/workspaceAdapter';
 
 const createWorkspaceFromDevfileMock = jest.fn().mockResolvedValue(undefined);
 const startWorkspaceMock = jest.fn().mockResolvedValue(undefined);
@@ -34,9 +34,9 @@ jest.mock('../../../store/Workspaces/index', () => {
   return {
     actionCreators: {
       createWorkspaceFromDevfile: (devfile, namespace, infrastructureNamespace, attributes) =>
-        async (): Promise<che.Workspace> => {
+        async (): Promise<Workspace> => {
           createWorkspaceFromDevfileMock(devfile, namespace, infrastructureNamespace, attributes);
-          return { id: 'id-wksp-test', attributes, namespace, devfile: dummyDevfile, temporary: false, status: 'STOPPED' };
+          return convertWorkspace({ id: 'id-wksp-test', attributes, namespace, devfile: dummyDevfile, temporary: false, status: 'STOPPED' });
         },
       startWorkspace: workspace => async (): Promise<void> => {
         startWorkspaceMock(workspace);
@@ -116,32 +116,9 @@ function renderGetStartedPage(): void {
 }
 
 function createFakeStore(): Store {
-  const initialState: AppState = {
-    factoryResolver: {
-      isLoading: false,
-      resolver: {},
-    },
-    plugins: {
-      isLoading: false,
-      plugins: [],
-    },
-    workspaces: {
-      workspaces: [],
-      settings: {}
-    } as any,
-    branding: {
-      data: {
-        name: 'test'
-      },
-    } as any,
-    devfileRegistries: {} as any,
-    user: {} as any,
-    userProfile: {} as any,
-    infrastructureNamespace: {} as any,
-    userPreferences: {} as any,
-    dwPlugins: {} as any,
-  };
-  const middleware = [thunk];
-  const mockStore = createMockStore(middleware);
-  return mockStore(initialState);
+  return new FakeStoreBuilder()
+    .withBranding({
+      name: 'test'
+    } as BrandingData)
+    .build();
 }

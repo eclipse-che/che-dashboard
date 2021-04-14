@@ -30,6 +30,7 @@ import * as WorkspaceStore from '../../store/Workspaces';
 import { AppState } from '../../store';
 import { AlertItem, GettingStartedTab } from '../../services/helpers/types';
 import { ROUTE } from '../../route.enum';
+import { Workspace } from '../../services/workspaceAdapter';
 
 const SamplesListTab = React.lazy(() => import('./GetStartedTab'));
 const CustomWorkspaceTab = React.lazy(() => import('./CustomWorkspaceTab'));
@@ -92,7 +93,7 @@ export class GetStarted extends React.PureComponent<Props, State> {
     infrastructureNamespace: string | undefined,
   ): Promise<void> {
     const attr = stackName ? { stackName } : {};
-    let workspace: che.Workspace;
+    let workspace: Workspace;
     try {
       workspace = await this.props.createWorkspaceFromDevfile(devfile, undefined, infrastructureNamespace, attr);
     } catch (e) {

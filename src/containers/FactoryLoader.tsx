@@ -28,6 +28,8 @@ import { KeycloakAuthService } from '../services/keycloak/auth';
 import { getEnvironment, isDevEnvironment } from '../services/helpers/environment';
 import { isOAuthResponse } from '../store/FactoryResolver';
 import { updateDevfile } from '../services/storageTypes';
+import { IDevWorkspaceDevfile } from '@eclipse-che/devworkspace-client';
+import { isWorkspaceV1, Workspace } from '../services/workspaceAdapter';
 
 const WS_ATTRIBUTES_TO_SAVE: string[] = ['workspaceDeploymentLabels', 'workspaceDeploymentAnnotations', 'policies.create'];
 
@@ -59,7 +61,7 @@ type State = {
 export class FactoryLoaderContainer extends React.PureComponent<Props, State> {
   private factoryLoaderCallbacks: { showAlert?: (variant: AlertVariant, title: string) => void } = {};
   private factoryResolver: FactoryResolverStore.State;
-  private overrideDevfileObject: Partial<che.WorkspaceDevfile> = {};
+  private overrideDevfileObject: Partial<che.WorkspaceDevfile | IDevWorkspaceDevfile> = {};
 
   @lazyInject(KeycloakAuthService)
   private readonly keycloakAuthService: KeycloakAuthService;
@@ -297,11 +299,18 @@ export class FactoryLoaderContainer extends React.PureComponent<Props, State> {
     }
   }
 
-  private async resolveWorkspace(devfile: api.che.workspace.devfile.Devfile, attrs: { [key: string]: string }): Promise<che.Workspace | undefined> {
-    let workspace: che.Workspace | undefined;
+  private async resolveWorkspace(devfile: api.che.workspace.devfile.Devfile, attrs: { [key: string]: string }): Promise<Workspace | undefined> {
+    let workspace: Workspace | undefined;
     if (this.state.createPolicy === 'peruser') {
       workspace = this.props.allWorkspaces.find(workspace => {
-        return workspace.attributes && workspace.attributes.stackName === attrs.stackName;
+        if (isWorkspaceV1(workspace.ref)) {
+          // looking for the stack name attribute in Che workspace
+          return workspace.ref.attributes && workspace.ref.attributes.stackName === attrs.stackName;
+        }
+        else {
+          // ignore createPolicy for dev workspaces
+          return false;
+        }
       });
     }
     if (!workspace) {
@@ -309,18 +318,16 @@ export class FactoryLoaderContainer extends React.PureComponent<Props, State> {
         workspace = await this.props.createWorkspaceFromDevfile(devfile, undefined, undefined, attrs);
       } catch (e) {
         this.showAlert(`Failed to create a workspace. ${e}`);
-        return undefined;
+        return;
       }
     }
     if (!workspace) {
       this.showAlert('Failed to create a workspace.');
-      return undefined;
+      return;
     }
     // check if it ephemeral
-    if (workspace.devfile.attributes &&
-      workspace.devfile.attributes.persistVolumes === 'false' &&
-      workspace.devfile.attributes.asyncPersist !== 'true'
-    ) {
+    // not implemented for dev workspaces yet
+    if (workspace.storageType === 'ephemeral') {
       this.showAlert('You\'re starting an ephemeral workspace. All changes to the source code will be lost ' +
         'when the workspace is stopped unless they are pushed to a remote code repository.', AlertVariant.warning);
     }
@@ -400,7 +407,7 @@ export class FactoryLoaderContainer extends React.PureComponent<Props, State> {
   render() {
     const { workspace } = this.props;
     const { currentStep, devfileLocationInfo, hasError } = this.state;
-    const workspaceName = workspace && workspace.devfile.metadata.name ? workspace.devfile.metadata.name : '';
+    const workspaceName = workspace ? workspace.name : '';
     const workspaceId = workspace ? workspace.id : '';
 
     return (

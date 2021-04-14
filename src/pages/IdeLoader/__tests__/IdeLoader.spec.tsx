@@ -18,7 +18,7 @@ import IdeLoaderTabs from '../';
 import { LoadIdeSteps } from '../../../containers/IdeLoader';
 import { WorkspaceStatus } from '../../../services/helpers/types';
 import { FakeStoreBuilder } from '../../../store/__mocks__/storeBuilder';
-import { createFakeWorkspace } from '../../../store/__mocks__/workspace';
+import { createFakeCheWorkspace } from '../../../store/__mocks__/workspace';
 
 jest.mock('../../../services/helpers/tools', () => {
   return {
@@ -41,8 +41,8 @@ describe('The Ide Loader page  component', () => {
   it('should render INITIALIZING step correctly', () => {
     const currentStep = LoadIdeSteps.INITIALIZING;
     const hasError = false;
-    const workspace = createFakeWorkspace(workspaceId, workspaceName);
-    const store = new FakeStoreBuilder().withWorkspaces({
+    const workspace = createFakeCheWorkspace(workspaceId, workspaceName);
+    const store = new FakeStoreBuilder().withCheWorkspaces({
       workspaces: [workspace],
     }).build();
 
@@ -54,8 +54,8 @@ describe('The Ide Loader page  component', () => {
   it('should render INITIALIZING step with an error correctly', () => {
     const currentStep = LoadIdeSteps.INITIALIZING;
     const hasError = true;
-    const workspace = createFakeWorkspace(workspaceId, workspaceName, undefined, WorkspaceStatus[WorkspaceStatus.ERROR]);
-    const store = new FakeStoreBuilder().withWorkspaces({
+    const workspace = createFakeCheWorkspace(workspaceId, workspaceName, undefined, WorkspaceStatus[WorkspaceStatus.ERROR]);
+    const store = new FakeStoreBuilder().withCheWorkspaces({
       workspaces: [workspace],
     }).build();
 
@@ -67,8 +67,8 @@ describe('The Ide Loader page  component', () => {
   it('should render START_WORKSPACE step correctly', () => {
     const currentStep = LoadIdeSteps.START_WORKSPACE;
 
-    const workspace = createFakeWorkspace(workspaceId, workspaceName, undefined, WorkspaceStatus[WorkspaceStatus.STARTING]);
-    const store = new FakeStoreBuilder().withWorkspaces({
+    const workspace = createFakeCheWorkspace(workspaceId, workspaceName, undefined, WorkspaceStatus[WorkspaceStatus.STARTING]);
+    const store = new FakeStoreBuilder().withCheWorkspaces({
       workspaces: [workspace],
     }).build();
 
@@ -80,8 +80,8 @@ describe('The Ide Loader page  component', () => {
   it('should render START_WORKSPACE step with an error correctly', () => {
     const currentStep = LoadIdeSteps.START_WORKSPACE;
 
-    const workspace = createFakeWorkspace(workspaceId, workspaceName);
-    const store = new FakeStoreBuilder().withWorkspaces({
+    const workspace = createFakeCheWorkspace(workspaceId, workspaceName);
+    const store = new FakeStoreBuilder().withCheWorkspaces({
       workspaces: [workspace],
     }).build();
 
@@ -98,8 +98,8 @@ describe('The Ide Loader page  component', () => {
       status: WorkspaceStatus[WorkspaceStatus.RUNNING],
       activeEnv: 'default',
     };
-    const workspace = createFakeWorkspace(workspaceId, workspaceName, undefined, WorkspaceStatus[WorkspaceStatus.RUNNING], runtime);
-    const store = new FakeStoreBuilder().withWorkspaces({
+    const workspace = createFakeCheWorkspace(workspaceId, workspaceName, undefined, WorkspaceStatus[WorkspaceStatus.RUNNING], runtime);
+    const store = new FakeStoreBuilder().withCheWorkspaces({
       workspaces: [workspace],
     }).build();
 
@@ -111,8 +111,8 @@ describe('The Ide Loader page  component', () => {
   it('should render OPEN_IDE step with an error correctly', () => {
     const currentStep = LoadIdeSteps.OPEN_IDE;
 
-    const workspace = createFakeWorkspace(workspaceId, workspaceName);
-    const store = new FakeStoreBuilder().withWorkspaces({
+    const workspace = createFakeCheWorkspace(workspaceId, workspaceName);
+    const store = new FakeStoreBuilder().withCheWorkspaces({
       workspaces: [workspace],
     }).build();
     const component = renderComponent(store, currentStep, workspaceName, workspaceId, true, WorkspaceStatus[WorkspaceStatus.ERROR]);
@@ -129,8 +129,8 @@ describe('The Ide Loader page  component', () => {
       status: WorkspaceStatus[WorkspaceStatus.RUNNING],
       activeEnv: 'default',
     };
-    const workspace = createFakeWorkspace(workspaceId, workspaceName, undefined, WorkspaceStatus[WorkspaceStatus.RUNNING], runtime);
-    const store = new FakeStoreBuilder().withWorkspaces({
+    const workspace = createFakeCheWorkspace(workspaceId, workspaceName, undefined, WorkspaceStatus[WorkspaceStatus.RUNNING], runtime);
+    const store = new FakeStoreBuilder().withCheWorkspaces({
       workspaces: [workspace],
     }).build();
     const component = renderComponent(store, currentStep, workspaceName, workspaceId, false, workspace.status, ideUrl);

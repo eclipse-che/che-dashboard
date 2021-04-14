@@ -46,13 +46,14 @@ import { lazyInject } from '../../inversify.config';
 import NoWorkspacesEmptyState from './EmptyState/NoWorkspaces';
 import NothingFoundEmptyState from './EmptyState/NothingFound';
 import { buildRows, RowData } from './Rows';
+import { Workspace } from '../../services/workspaceAdapter';
 
 import * as styles from './index.module.css';
 
 type Props = {
   branding: BrandingData;
   history: History;
-  workspaces: che.Workspace[];
+  workspaces: Workspace[];
   isDeleted: string[];
   onAction: (action: WorkspaceAction, id: string) => Promise<string | void>;
   showConfirmation: (wantDelete: string[]) => Promise<void>;
@@ -203,7 +204,7 @@ export default class WorkspacesList extends React.PureComponent<Props, State> {
       if (action === WorkspaceAction.DELETE_WORKSPACE) {
         // show confirmation window
         const workspace = this.props.workspaces.find(workspace => id === workspace.id);
-        const workspaceName = workspace?.devfile.metadata.name || id;
+        const workspaceName = workspace?.name || id;
         try {
           await this.props.showConfirmation([workspaceName]);
         } catch (e) {
@@ -218,7 +219,7 @@ export default class WorkspacesList extends React.PureComponent<Props, State> {
       this.props.history.push(nextPath);
     } catch (e) {
       const workspace = this.props.workspaces.find(workspace => id === workspace.id);
-      const workspaceName = workspace?.devfile.metadata.name ? ` "${workspace?.devfile.metadata.name}"` : '';
+      const workspaceName = workspace?.name ? ` "${workspace?.name}"` : '';
       const message = `Unable to ${action.toLocaleLowerCase()}${workspaceName}. ` + e.toString().replace('Error: ', '');
       this.showAlert(message);
       console.warn(message);
@@ -233,7 +234,7 @@ export default class WorkspacesList extends React.PureComponent<Props, State> {
     try {
       const wantDelete = selected.map(id => {
         const workspace = workspaces.find(workspace => id === workspace.id);
-        return workspace?.devfile.metadata.name || id;
+        return workspace?.name || id;
       });
       await this.props.showConfirmation(wantDelete);
     } catch (e) {
@@ -246,7 +247,7 @@ export default class WorkspacesList extends React.PureComponent<Props, State> {
         return id;
       } catch (e) {
         const workspace = this.props.workspaces.find(workspace => id === workspace.id);
-        const workspaceName = workspace?.devfile.metadata.name ? ` "${workspace?.devfile.metadata.name}"` : '';
+        const workspaceName = workspace?.name ? ` "${workspace?.name}"` : '';
         const message = `Unable to delete workspace${workspaceName}. ` + e.toString().replace('Error: ', '');
         this.showAlert(message);
         console.warn(message);
@@ -296,7 +297,7 @@ export default class WorkspacesList extends React.PureComponent<Props, State> {
     }
   }
 
-  private handleFilter(filtered: che.Workspace[]): void {
+  private handleFilter(filtered: Workspace[]): void {
     const selected = filtered
       .map(workspace => workspace.id)
       .filter(id => this.state.selected.includes(id));

@@ -11,15 +11,14 @@
  */
 
 import React from 'react';
-import thunk from 'redux-thunk';
-import createMockStore from 'redux-mock-store';
 import { RenderResult, render, screen, fireEvent } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import { Store } from 'redux';
-import { AppState } from '../../../../store';
 import SamplesListToolbar from '../SamplesListToolbar';
 import mockMetadata from '../../__tests__/devfileMetadata.json';
 import * as DevfileRegistriesStore from '../../../../store/DevfileRegistries';
+import { FakeStoreBuilder } from '../../../../store/__mocks__/storeBuilder';
+import { BrandingData } from '../../../../services/bootstrap/branding.constant';
 
 describe('Samples List Toolbar', () => {
 
@@ -64,38 +63,13 @@ describe('Samples List Toolbar', () => {
 });
 
 function createFakeStore(metadata?: che.DevfileMetaData[]): Store {
-  const initialState: AppState = {
-    factoryResolver: {
-      isLoading: false,
-      resolver: {},
-    },
-    plugins: {
-      isLoading: false,
-      plugins: [],
-    },
-    workspaces: {} as any,
-    branding: {
-      data: {
-        docs: {
-          storageTypes: 'https://docs.location'
-        }
+  return new FakeStoreBuilder()
+    .withBranding({
+      docs: {
+        storageTypes: 'https://docs.location'
       }
-    } as any,
-    devfileRegistries: {
-      metadata: metadata || [],
-      isLoading: false,
-      devfiles: {},
-      schema: '',
-      filter: ''
-    },
-    user: {} as any,
-    userProfile: {} as any,
-    infrastructureNamespace: {} as any,
-    userPreferences: {} as any,
-    dwPlugins: {} as any,
-  };
-  const middleware = [thunk];
-  const mockStore = createMockStore(middleware);
-  return mockStore(initialState);
+    } as BrandingData)
+    .withDevfileRegistries({ metadata: metadata || [] })
+    .build();
 }
 

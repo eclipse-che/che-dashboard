@@ -16,6 +16,7 @@ import React from 'react';
 import { Provider } from 'react-redux';
 import { HeaderActionSelect } from '../';
 import { WorkspaceAction, WorkspaceStatus } from '../../../../../services/helpers/types';
+import { Workspace } from '../../../../../services/workspaceAdapter';
 import { AppThunk } from '../../../../../store';
 import { ActionCreators, ResourceQueryParams } from '../../../../../store/Workspaces';
 import { FakeStoreBuilder } from '../../../../../store/__mocks__/storeBuilder';
@@ -24,11 +25,11 @@ jest.mock('../../../../../store/Workspaces/index', () => {
   return {
     actionCreators: {
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      startWorkspace: (workspace: che.Workspace, params?: ResourceQueryParams): AppThunk<any, Promise<void>> => async (): Promise<void> => {
+      startWorkspace: (workspace: Workspace, params?: ResourceQueryParams): AppThunk<any, Promise<void>> => async (): Promise<void> => {
         return Promise.resolve();
       },
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      stopWorkspace: (workspace: che.Workspace): AppThunk<any, Promise<void>> => async (): Promise<void> => {
+      stopWorkspace: (workspace: Workspace): AppThunk<any, Promise<void>> => async (): Promise<void> => {
         return Promise.resolve();
       }
     } as ActionCreators,
@@ -38,22 +39,25 @@ jest.mock('../../../../../store/Workspaces/index', () => {
 const workspaceName = 'test-workspace-name';
 const workspaceId = 'test-workspace-id';
 const workspaceStoppedStatus = WorkspaceStatus.STOPPED;
-const store = new FakeStoreBuilder().withWorkspaces({
-  workspaceId,
-  workspaceName,
-  workspaces: [{
-    id: workspaceId,
-    namespace: 'test',
-    status: WorkspaceStatus[workspaceStoppedStatus],
-    devfile: {
-      apiVersion: 'v1',
-      components: [],
-      metadata: {
-        name: workspaceName,
+const store = new FakeStoreBuilder()
+  .withWorkspaces({
+    workspaceId,
+    workspaceName,
+  })
+  .withCheWorkspaces({
+    workspaces: [{
+      id: workspaceId,
+      namespace: 'test',
+      status: WorkspaceStatus[workspaceStoppedStatus],
+      devfile: {
+        apiVersion: 'v1',
+        components: [],
+        metadata: {
+          name: workspaceName,
+        }
       }
-    }
-  }]
-}).build();
+    }]
+  }).build();
 
 describe('Workspace WorkspaceAction widget', () => {
   it('should call the callback with OPEN action', async () => {
