@@ -932,7 +932,7 @@
 | [`xml-name-validator@3.0.0`](https://github.com/jsdom/xml-name-validator.git) | Apache-2.0 | clearlydefined |
 | [`xmlchars@2.2.0`](https://github.com/lddubeau/xmlchars.git) | MIT | clearlydefined |
 | [`xregexp@4.3.0`](https://github.com/slevithan/xregexp.git) | MIT | clearlydefined |
-| [`y18n@4.0.0`](git@github.com:yargs/y18n.git) | ISC | [CQ18717](https://dev.eclipse.org/ipzilla/show_bug.cgi?id=18717) |
+| [`y18n@4.0.1`](git@github.com:yargs/y18n.git) | ISC | [CQ18717](https://dev.eclipse.org/ipzilla/show_bug.cgi?id=18717) |
 | [`yaml@1.10.0`](https://github.com/eemeli/yaml.git) | ISC | clearlydefined |
 | [`yargs-parser@18.1.3`](https://github.com/yargs/yargs-parser.git) | ISC | clearlydefined |
 | [`yargs@15.3.1`](https://github.com/yargs/yargs.git) | MIT | clearlydefined |
