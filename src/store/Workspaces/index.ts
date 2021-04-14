@@ -241,6 +241,7 @@ export const actionCreators: ActionCreators = {
       } else {
         await dispatch(CheWorkspacesStore.actionCreators.updateWorkspace(workspace.ref as che.Workspace));
       }
+      dispatch({ type: 'UPDATE_WORKSPACE' });
     } catch (e) {
       dispatch({ type: 'RECEIVE_ERROR' });
       const message = e.response && e.response.data && e.response.data.message ? e.response.data.message : e.message;

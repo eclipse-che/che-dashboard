@@ -31,13 +31,16 @@ type Props =
   & RouteComponentProps<{ namespace: string; workspaceName: string }>; // incoming parameters
 
 class WorkspaceDetailsContainer extends React.PureComponent<Props> {
-  workspaceDetailsPageRef: React.RefObject<Details>;
+  private workspacesLink: string;
+  private workspaceDetailsPageRef: React.RefObject<Details>;
   private showAlert: (title: string, variant?: AlertVariant) => void;
 
   constructor(props: Props) {
     super(props);
 
+    this.workspacesLink = toHref(this.props.history, ROUTE.WORKSPACES);
     this.workspaceDetailsPageRef = React.createRef<Details>();
+
     const namespace = this.props.match.params.namespace;
     const workspaceName = (this.props.match.params.workspaceName.split('&'))[0];
     if (workspaceName !== this.props.match.params.workspaceName) {
@@ -87,12 +90,10 @@ class WorkspaceDetailsContainer extends React.PureComponent<Props> {
   }
 
   render() {
-    const workspacesLink = toHref(this.props.history, ROUTE.WORKSPACES);
-
     return (
       <WorkspaceDetails
         ref={this.workspaceDetailsPageRef}
-        workspacesLink={workspacesLink}
+        workspacesLink={this.workspacesLink}
         onSave={(workspace: Workspace) => this.onSave(workspace)}
         history={this.props.history}
       />

@@ -16,7 +16,7 @@ import StorageTypeFormGroup from './StorageType';
 import { WorkspaceNameFormGroup } from './WorkspaceName';
 import InfrastructureNamespaceFormGroup from './InfrastructureNamespace';
 import ProjectsFormGroup from './Projects';
-import { isWorkspaceV2, Workspace } from '../../../services/workspaceAdapter';
+import { convertWorkspace, isWorkspaceV2, Workspace } from '../../../services/workspaceAdapter';
 import { IDevWorkspaceDevfile } from '@eclipse-che/devworkspace-client';
 
 type Props = {
@@ -107,7 +107,7 @@ export class OverviewTab extends React.Component<Props, State> {
   }
 
   private async onSave(devfile: che.WorkspaceDevfile | IDevWorkspaceDevfile): Promise<void> {
-    const workspaceCopy = Object.assign({}, this.props.workspace);
+    const workspaceCopy = convertWorkspace(this.props.workspace.ref);
     workspaceCopy.devfile = devfile;
     await this.props.onSave(workspaceCopy);
   }

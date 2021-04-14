@@ -21,7 +21,7 @@ import {
 } from '@patternfly/react-core';
 import DevfileEditor, { DevfileEditor as Editor } from '../../../components/DevfileEditor';
 import EditorTools from './EditorTools';
-import { isDevfileV2, Workspace } from '../../../services/workspaceAdapter';
+import { convertWorkspace, isDevfileV2, Workspace } from '../../../services/workspaceAdapter';
 import { IDevWorkspaceDevfile } from '@eclipse-che/devworkspace-client';
 
 import './DevfileTab.styl';
@@ -171,16 +171,11 @@ export class EditorTab extends React.PureComponent<Props, State> {
     if (!devfile) {
       return;
     }
-    const newWorkspaceObj = Object.assign({}, this.props.workspace);
-    newWorkspaceObj.devfile = devfile;
+    const workspaceCopy = convertWorkspace(this.props.workspace.ref);
+    workspaceCopy.devfile = devfile;
     this.setState({ hasChanges: false });
     try {
-      await this.props.onSave(newWorkspaceObj);
-      this.setState({
-        hasChanges: false,
-        hasRequestErrors: false,
-        currentRequestError: '',
-      });
+      await this.props.onSave(workspaceCopy);
     } catch (e) {
       const errorMessage = e.toString().replace(/^Error: /gi, '');
       this.setState({

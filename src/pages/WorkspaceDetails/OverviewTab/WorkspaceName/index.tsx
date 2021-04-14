@@ -28,7 +28,7 @@ const ERROR_PATTERN_MISMATCH = 'The name can contain digits, latin letters, unde
 type Props = {
   name: string;
   readonly: boolean;
-  onSave: (name: string) => void;
+  onSave: (name: string) => Promise<void>;
   onChange?: (name: string) => void;
   callbacks?: { cancelChanges?: () => void }
 };
@@ -37,8 +37,8 @@ type State = {
   errorMessage?: string;
   name?: string;
   validated?: ValidatedOptions;
-  isEditMode?: boolean;
-  hasChanges?: boolean;
+  isEditMode: boolean;
+  hasChanges: boolean;
 };
 
 export class WorkspaceNameFormGroup extends React.PureComponent<Props, State> {
@@ -50,6 +50,7 @@ export class WorkspaceNameFormGroup extends React.PureComponent<Props, State> {
       name: this.props.name,
       validated: ValidatedOptions.default,
       isEditMode: false,
+      hasChanges: false,
     };
 
     if (this.props.callbacks && !this.props.callbacks.cancelChanges) {
@@ -76,7 +77,7 @@ export class WorkspaceNameFormGroup extends React.PureComponent<Props, State> {
   }
 
   private handleChange(name: string): void {
-    const hasChanges = name !== this.props.name;
+    const hasChanges = name !== this.state.name;
     this.setState({
       name,
       hasChanges,
@@ -124,14 +125,6 @@ export class WorkspaceNameFormGroup extends React.PureComponent<Props, State> {
   private async handleSave(): Promise<void> {
     if (this.state.validated !== ValidatedOptions.error) {
       await this.props.onSave(this.state.name as string);
-      this.setState({
-        validated: ValidatedOptions.default,
-        hasChanges: false,
-      });
-    }
-    this.handleEditModeToggle();
-    if (this.props.onChange) {
-      this.props.onChange(this.props.name);
     }
   }
 
