@@ -258,7 +258,6 @@ export const actionCreators: ActionCreators = {
     dispatch({ type: 'REQUEST_WORKSPACES' });
     try {
       const state = getState();
-      const param = { attributes, namespace, infrastructureNamespace };
 
       const cheDevworkspaceEnabled = state.cheWorkspaces.settings['che.devworkspaces.enabled'] === 'true';
       if (cheDevworkspaceEnabled && isDevfileV2(devfile)) {
@@ -266,8 +265,7 @@ export const actionCreators: ActionCreators = {
         dispatch({ type: 'ADD_WORKSPACE' });
         return convertWorkspace(devWorkspace);
       } else {
-        const cheWorkspace = await cheWorkspaceClient.restApiClient.create<che.Workspace>(devfile, param);
-
+        const cheWorkspace = await dispatch(CheWorkspacesStore.actionCreators.createWorkspaceFromDevfile(devfile as che.WorkspaceDevfile, namespace, infrastructureNamespace, attributes));
         dispatch({
           type: 'ADD_WORKSPACE',
         });
