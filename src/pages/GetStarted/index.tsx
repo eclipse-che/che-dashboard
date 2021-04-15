@@ -105,7 +105,7 @@ export class GetStarted extends React.PureComponent<Props, State> {
       throw new Error(e.message);
     }
 
-    const workspaceName = workspace.devfile.metadata.name;
+    const workspaceName = workspace.name;
     this.showAlert({
       key: 'new-workspace-success',
       variant: AlertVariant.success,
