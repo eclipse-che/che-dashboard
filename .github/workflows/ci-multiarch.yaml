@@ -14,7 +14,7 @@ on:
     inputs: {}
   push:
     branches:
-      - master
+      - main
 
 env:
   IMAGE: quay.io/eclipse/che-dashboard
