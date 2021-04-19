@@ -24,7 +24,7 @@ import EditorTools from './EditorTools';
 import { convertWorkspace, isDevfileV2, Workspace } from '../../../services/workspaceAdapter';
 import { IDevWorkspaceDevfile } from '@eclipse-che/devworkspace-client';
 
-import './DevfileTab.styl';
+import './EditorTab.styl';
 
 type Props = {
   onSave: (workspace: Workspace) => Promise<void>;

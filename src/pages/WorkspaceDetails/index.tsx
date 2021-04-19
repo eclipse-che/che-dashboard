@@ -35,7 +35,7 @@ import { HeaderActionSelect } from './Header/Actions';
 import { lazyInject } from '../../inversify.config';
 import { AppAlerts } from '../../services/alerts/appAlerts';
 import OverviewTab, { OverviewTab as Overview } from './OverviewTab';
-import EditorTab, { EditorTab as Editor } from './DevfileTab';
+import EditorTab, { EditorTab as Editor } from './EditorTab';
 import { selectIsLoading, selectWorkspaceById } from '../../store/Workspaces/selectors';
 import { History } from 'history';
 
@@ -220,10 +220,10 @@ export class WorkspaceDetails extends React.PureComponent<Props, State> {
             actions={[
               <Button key="confirm" variant="primary" onClick={() => this.handleDiscardChanges()}>
                 Discard Changes
-                   </Button>,
+              </Button>,
               <Button key="cancel" variant="secondary" onClick={() => this.handleCancelChanges()}>
                 Cancel
-                   </Button>,
+              </Button>,
             ]}
           >
             <TextContent>
