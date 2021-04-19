@@ -123,8 +123,17 @@ export class WorkspaceNameFormGroup extends React.PureComponent<Props, State> {
   }
 
   private async handleSave(): Promise<void> {
-    if (this.state.validated !== ValidatedOptions.error) {
-      await this.props.onSave(this.state.name as string);
+    if (this.state.validated === ValidatedOptions.error) {
+      return;
+    }
+    await this.props.onSave(this.state.name as string);
+    this.setState({
+      validated: ValidatedOptions.default,
+      hasChanges: false,
+    });
+    this.handleEditModeToggle();
+    if (this.props.onChange) {
+      this.props.onChange(this.props.name);
     }
   }
 

@@ -23,14 +23,14 @@ import { Workspace } from '../services/workspaceAdapter';
 
 import { AppState } from '../store';
 import * as WorkspacesStore from '../store/Workspaces';
-import { selectAllWorkspaces, selectIsLoading } from '../store/Workspaces/selectors';
+import { selectAllWorkspaces, selectIsLoading, selectWorkspaceById } from '../store/Workspaces/selectors';
 
 type Props =
   MappedProps
   & { history: History }
   & RouteComponentProps<{ namespace: string; workspaceName: string }>; // incoming parameters
 
-class WorkspaceDetailsContainer extends React.PureComponent<Props> {
+class WorkspaceDetailsContainer extends React.Component<Props> {
   private workspacesLink: string;
   private workspaceDetailsPageRef: React.RefObject<Details>;
   private showAlert: (title: string, variant?: AlertVariant) => void;
@@ -73,6 +73,10 @@ class WorkspaceDetailsContainer extends React.PureComponent<Props> {
         console.error(title);
       }
     };
+  }
+
+  public shouldComponentUpdate(nextProps: Props): boolean {
+    return this.props.workspace?.id !== nextProps.workspace?.id;
   }
 
   public componentDidUpdate(): void {
@@ -123,6 +127,7 @@ class WorkspaceDetailsContainer extends React.PureComponent<Props> {
 const mapStateToProps = (state: AppState) => ({
   isLoading: selectIsLoading(state),
   allWorkspaces: selectAllWorkspaces(state),
+  workspace: selectWorkspaceById(state),
 });
 
 const connector = connect(
