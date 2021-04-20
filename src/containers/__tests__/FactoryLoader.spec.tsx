@@ -60,8 +60,14 @@ jest.mock('../../store/Workspaces/index', () => {
 jest.mock('../../store/FactoryResolver', () => {
   return {
     actionCreators: {
-      requestFactoryResolver: location => async (): Promise<void> => {
-        requestFactoryResolverMock(location);
+      requestFactoryResolver: (location: string, overrideParams?: {
+        [params: string]: string
+      }) => async (): Promise<void> => {
+        if (!overrideParams) {
+          requestFactoryResolverMock(location);
+        } else {
+          requestFactoryResolverMock(location, overrideParams);
+        }
       }
     }
   };
@@ -174,7 +180,10 @@ describe('Factory Loader container', () => {
     expect(LoadFactorySteps[elementCurrentStep.innerHTML]).toEqual(LoadFactorySteps[LoadFactorySteps.LOOKING_FOR_DEVFILE]);
 
     jest.runOnlyPendingTimers();
-    await waitFor(() => expect(requestFactoryResolverMock).toHaveBeenCalledWith(location.split('&')[0]));
+    await waitFor(() => expect(requestFactoryResolverMock).toHaveBeenCalledWith(
+      location.split('&')[0], {
+      'override.metadata.generateName': 'testPrefix'
+    }));
     expect(LoadFactorySteps[elementCurrentStep.innerHTML]).toEqual(LoadFactorySteps[LoadFactorySteps.APPLYING_DEVFILE]);
 
     jest.runOnlyPendingTimers();
@@ -184,7 +193,6 @@ describe('Factory Loader container', () => {
           apiVersion: '1.0.0',
           metadata: {
             name: 'name-wksp-2',
-            generateName: 'testPrefix'
           },
           attributes: { persistVolumes: 'false' }
         }, undefined, undefined,

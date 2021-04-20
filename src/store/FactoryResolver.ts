@@ -63,15 +63,15 @@ type KnownAction = RequestFactoryResolverAction
   | ReceiveFactoryResolverAction;
 
 export type ActionCreators = {
-  requestFactoryResolver: (location: string) => AppThunk<KnownAction, Promise<void>>;
+  requestFactoryResolver: (location: string, overrideParams?: { [params: string]: string }) => AppThunk<KnownAction, Promise<void>>;
 };
 
 export const actionCreators: ActionCreators = {
-  requestFactoryResolver: (location: string): AppThunk<KnownAction, Promise<void>> => async (dispatch): Promise<void> => {
+  requestFactoryResolver: (location: string, overrideParams?: { [params: string]: string }): AppThunk<KnownAction, Promise<void>> => async (dispatch): Promise<void> => {
     dispatch({ type: 'REQUEST_FACTORY_RESOLVER' });
 
     try {
-      const data = await WorkspaceClient.restApiClient.getFactoryResolver<FactoryResolver>(location);
+      const data = await WorkspaceClient.restApiClient.getFactoryResolver<FactoryResolver>(location, overrideParams);
       if (!data.devfile) {
         throw new Error('The specified link does not contain a valid Devfile.');
       }
