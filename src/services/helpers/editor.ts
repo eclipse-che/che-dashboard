@@ -12,6 +12,7 @@
 
 import { IDevWorkspaceDevfile } from '@eclipse-che/devworkspace-client';
 import { safeDump } from 'js-yaml';
+import { LanguageConfiguration, IMonarchLanguage } from 'monaco-editor-core/esm/vs/editor/editor.main';
 
 const sortOrder: Array<keyof che.WorkspaceDevfile | keyof IDevWorkspaceDevfile> = [
   'apiVersion',
@@ -71,7 +72,7 @@ export const conf = {
     close: '"',
   }, { open: '\'', close: '\'' }],
   folding: { offSide: true },
-};
+} as LanguageConfiguration;
 
 /**
  * Provides the language support.
@@ -172,4 +173,4 @@ export const language = {
     tagHandle: [[/![^ ]*/, 'tag']],
     anchor: [[/[&*][^ ]+/, 'namespace']],
   },
-};
+} as IMonarchLanguage;

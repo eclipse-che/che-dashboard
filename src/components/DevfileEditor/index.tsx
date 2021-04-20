@@ -15,7 +15,7 @@ import { connect, ConnectedProps } from 'react-redux';
 import { AppState } from '../../store';
 import { DisposableCollection } from '../../services/helpers/disposable';
 import { ProtocolToMonacoConverter, MonacoToProtocolConverter } from 'monaco-languageclient/lib/monaco-converter';
-import { languages, IEditorConstructionOptions } from 'monaco-editor-core/esm/vs/editor/editor.main';
+import { languages, editor, Position, IRange } from 'monaco-editor-core/esm/vs/editor/editor.main';
 import { TextDocument, getLanguageService } from 'yaml-language-server';
 import { initDefaultEditorTheme } from '../../services/monacoThemeRegister';
 import { safeLoad } from 'js-yaml';
@@ -33,11 +33,12 @@ interface Editor {
 
 const LANGUAGE_ID = 'yaml';
 const YAML_SERVICE = 'yamlService';
-const MONACO_CONFIG: IEditorConstructionOptions = {
+const MONACO_CONFIG = {
   language: 'yaml',
   wordWrap: 'on',
   lineNumbers: 'on',
   scrollBeyondLastLine: false,
+  readOnly: false
 };
 
 type Props =
@@ -165,7 +166,7 @@ export class DevfileEditor extends React.PureComponent<Props, State> {
     if (element) {
       const value = stringify(this.props.devfile);
       MONACO_CONFIG.readOnly = this.props.isReadonly !== undefined ? this.props.isReadonly : false;
-      this.editor = monaco.editor.create(element, Object.assign(
+      this.editor = editor.create(element, Object.assign(
         { value },
         MONACO_CONFIG,
       ));
@@ -230,7 +231,7 @@ export class DevfileEditor extends React.PureComponent<Props, State> {
     const { errorMessage } = this.state;
 
     let message = errorMessage;
-    if (this.props.isReadonly !== undefined && this.props.isReadonly === true) {
+    if (this.props.isReadonly) {
       message = 'DevWorkspace editor support has not been enabled. Editor is in Readonly mode.';
     }
 
@@ -243,8 +244,8 @@ export class DevfileEditor extends React.PureComponent<Props, State> {
     );
   }
 
-  private getDecorations(): monaco.editor.IModelDecoration[] {
-    const decorations: monaco.editor.IModelDecoration[] = [];
+  private getDecorations(): editor.IModelDecoration[] {
+    const decorations: editor.IModelDecoration[] = [];
     if (this.props.decorationPattern) {
       const decorationRegExp = new RegExp(this.props.decorationPattern, 'img');
       const model = this.editor.getModel();
@@ -263,7 +264,7 @@ export class DevfileEditor extends React.PureComponent<Props, State> {
           options: {
             inlineClassName: 'devfile-editor-decoration',
           },
-        } as monaco.editor.IModelDecoration);
+        });
         match = decorationRegExp.exec(value);
       }
     }
@@ -329,7 +330,7 @@ export class DevfileEditor extends React.PureComponent<Props, State> {
     };
 
     languages.registerCompletionItemProvider(LANGUAGE_ID, {
-      provideCompletionItems(model: monaco.editor.ITextModel, position: monaco.Position) {
+      provideCompletionItems(model: editor.ITextModel, position: Position) {
         const document = createDocument(model);
         return yamlService.doComplete(document, m2p.asPosition(position.lineNumber, position.column), true)
           .then(list => {
@@ -337,13 +338,13 @@ export class DevfileEditor extends React.PureComponent<Props, State> {
               startColumn: position.column,
               startLineNumber: position.lineNumber,
               endColumn: position.column,
-              endLineNumber: position.lineNumber
-            } as monaco.IRange);
+              endLineNumber: position.lineNumber,
+            } as IRange);
             if (!completionResult || !completionResult.suggestions) {
               return completionResult;
             }
             // convert completionResult into suggestions
-            const defaultInsertTextRules = monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet;
+            const defaultInsertTextRules = languages.CompletionItemInsertTextRule.InsertAsSnippet;
             const suggestions = completionResult.suggestions.map(suggestion => {
               return Object.assign(suggestion, {
                 insertTextRules: suggestion.insertTextRules ? suggestion.insertTextRules : defaultInsertTextRules,
@@ -353,7 +354,7 @@ export class DevfileEditor extends React.PureComponent<Props, State> {
             return { suggestions };
           });
       },
-      async resolveCompletionItem(model: monaco.editor.ITextModel, range: monaco.IRange, item: monaco.languages.CompletionItem) {
+      async resolveCompletionItem(model, range, item) {
         return yamlService.doResolve(m2p.asCompletionItem(item))
           .then(result => p2m.asCompletionItem(result, range));
       },
@@ -371,9 +372,9 @@ export class DevfileEditor extends React.PureComponent<Props, State> {
     });
   }
 
-  private initLanguageServerValidation(editor: Editor): void {
-    const model = editor.getModel();
-    let validationTimer: number;
+  private initLanguageServerValidation(_editor: Editor): void {
+    const model = _editor.getModel();
+    let validationTimer;
 
     model.onDidChangeContent(() => {
       const document = this.createDocument(model);
@@ -383,9 +384,9 @@ export class DevfileEditor extends React.PureComponent<Props, State> {
       }
       validationTimer = setTimeout(() => {
         this.yamlService.doValidation(document, false).then(diagnostics => {
-          const markers = this.p2m.asDiagnostics(diagnostics) as monaco.editor.IMarkerData[] | undefined;
+          const markers = this.p2m.asDiagnostics(diagnostics) as any;
           let errorMessage = '';
-          if (markers !== undefined && markers.length > 0) {
+          if (Array.isArray(markers) && markers.length > 0) {
             const { message, startLineNumber, startColumn } = markers[0];
             if (startLineNumber && startColumn) {
               errorMessage += `line[${startLineNumber}] column[${startColumn}]: `;
@@ -394,9 +395,9 @@ export class DevfileEditor extends React.PureComponent<Props, State> {
           }
           if (errorMessage) {
             this.setState({ errorMessage: `Error. ${errorMessage}` });
-            this.onChange(editor.getValue(), false);
+            this.onChange(_editor.getValue(), false);
           }
-          monaco.editor.setModelMarkers(model, 'default', markers ? markers : []);
+          editor.setModelMarkers(model, 'default', markers ? markers : []);
         });
       });
     });

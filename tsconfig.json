@@ -12,8 +12,6 @@
     "target": "ES2018",
     "lib": ["ES2018", "dom"],
     "skipLibCheck": true,
-    "types": ["reflect-metadata", "jest", "@testing-library/jest-dom"],
-    "typeRoots": ["node_modules/@types", "./src/typings", "node_modules/@eclipse-che"],
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
     "strictPropertyInitialization": false,
