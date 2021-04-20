@@ -22,13 +22,11 @@ import FactoryLoader from '../pages/FactoryLoader';
 import { selectAllWorkspaces, selectPreferredStorageType, selectWorkspaceById } from '../store/Workspaces/selectors';
 import { WorkspaceStatus } from '../services/helpers/types';
 import { buildIdeLoaderPath, sanitizeLocation } from '../services/helpers/location';
-import { merge } from 'lodash';
 import { lazyInject } from '../inversify.config';
 import { KeycloakAuthService } from '../services/keycloak/auth';
 import { getEnvironment, isDevEnvironment } from '../services/helpers/environment';
 import { isOAuthResponse } from '../store/FactoryResolver';
 import { updateDevfile } from '../services/storageTypes';
-import { IDevWorkspaceDevfile } from '@eclipse-che/devworkspace-client';
 import { isWorkspaceV1, Workspace } from '../services/workspaceAdapter';
 
 const WS_ATTRIBUTES_TO_SAVE: string[] = ['workspaceDeploymentLabels', 'workspaceDeploymentAnnotations', 'policies.create'];
@@ -61,7 +59,9 @@ type State = {
 export class FactoryLoaderContainer extends React.PureComponent<Props, State> {
   private factoryLoaderCallbacks: { showAlert?: (variant: AlertVariant, title: string) => void } = {};
   private factoryResolver: FactoryResolverStore.State;
-  private overrideDevfileObject: Partial<che.WorkspaceDevfile | IDevWorkspaceDevfile> = {};
+  private overrideDevfileObject: {
+    [params: string]: string
+  } = {};
 
   @lazyInject(KeycloakAuthService)
   private readonly keycloakAuthService: KeycloakAuthService;
@@ -84,21 +84,7 @@ export class FactoryLoaderContainer extends React.PureComponent<Props, State> {
   }
 
   private updateOverrideParams(key: string, val: string): void {
-    if (key.startsWith('override.')) {
-      const overrideKeys: string[] = [];
-      const pattern = new RegExp('([^.=]+)', 'g');
-      let regExpExecArray: RegExpExecArray | null = null;
-      while ((regExpExecArray = pattern.exec(key)) !== null) {
-        overrideKeys.push(regExpExecArray[0]);
-      }
-      if (overrideKeys.length > 0) {
-        let currentVal = this.overrideDevfileObject;
-        for (let index = 1; index < overrideKeys.length; index++) {
-          currentVal[overrideKeys[index]] = index === overrideKeys.length - 1 ? val : {};
-          currentVal = currentVal[overrideKeys[index]];
-        }
-      }
-    }
+    this.overrideDevfileObject[key] = val;
   }
 
   private getTargetDevfile(): api.che.workspace.devfile.Devfile | undefined {
@@ -107,7 +93,6 @@ export class FactoryLoaderContainer extends React.PureComponent<Props, State> {
       return undefined;
     }
 
-    devfile = merge(devfile, this.overrideDevfileObject);
     if (
       devfile?.attributes?.persistVolumes === undefined &&
       devfile?.attributes?.asyncPersist === undefined &&
@@ -229,7 +214,9 @@ export class FactoryLoaderContainer extends React.PureComponent<Props, State> {
       if (WS_ATTRIBUTES_TO_SAVE.indexOf(key) !== -1) {
         attrs[key] = val;
       }
-      this.updateOverrideParams(key, val);
+      if (key.startsWith('override.')) {
+        this.updateOverrideParams(key, val);
+      }
       factoryUrl.searchParams.append(key, val);
     });
     attrs.stackName = factoryUrl.toString();
@@ -238,8 +225,9 @@ export class FactoryLoaderContainer extends React.PureComponent<Props, State> {
   }
 
   private async resolveDevfile(location: string): Promise<api.che.workspace.devfile.Devfile | undefined> {
+    const override = Object.entries(this.overrideDevfileObject).length ? this.overrideDevfileObject : undefined;
     try {
-      await this.props.requestFactoryResolver(location);
+      await this.props.requestFactoryResolver(location, override);
     } catch (e) {
       if (isOAuthResponse(e)) {
         this.resolvePrivateDevfile(e.attributes.oauth_authentication_url, location);
