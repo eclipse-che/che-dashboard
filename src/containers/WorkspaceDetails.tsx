@@ -97,18 +97,18 @@ class WorkspaceDetailsContainer extends React.Component<Props> {
       <WorkspaceDetails
         ref={this.workspaceDetailsPageRef}
         workspacesLink={this.workspacesLink}
-        onSave={(workspace: Workspace) => this.onSave(workspace)}
+        onSave={(workspace: Workspace, activeTab?: WorkspaceDetailsTab) => this.onSave(workspace, activeTab)}
         history={this.props.history}
       />
     );
   }
 
-  async onSave(changedWorkspace: Workspace): Promise<void> {
+  async onSave(changedWorkspace: Workspace, activeTab?: WorkspaceDetailsTab): Promise<void> {
     try {
       await this.props.updateWorkspace(changedWorkspace);
       this.showAlert('Workspace has been updated', AlertVariant.success);
 
-      const location = buildDetailsLocation(changedWorkspace);
+      const location = buildDetailsLocation(changedWorkspace, activeTab);
       this.props.setWorkspaceId(changedWorkspace.id);
       this.props.history.replace(location);
     } catch (e) {
