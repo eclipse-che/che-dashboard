@@ -28,9 +28,7 @@
     "serve:prod": "webpack-dev-server --color --disable-host-check --config webpack.config.prod-dev.js",
     "test": "jest",
     "test:coverage": "jest --coverage",
-    "test:watch": "jest --watch",
-    "licenseCheck:prepare": "license-tool/build.sh",
-    "licenseCheck:run": "license-tool/run.sh"
+    "test:watch": "jest --watch"
   },
   "dependencies": {
     "@eclipse-che/devworkspace-client": "^0.0.1-1617871695",
@@ -73,6 +71,7 @@
     "sanitize-html": "2.3.2",
     "sockjs-client": "^1.4.0",
     "umd-compat-loader": "2.1.1",
+    "vscode-languageserver-protocol": "^3.15.3",
     "yaml-language-server": "^0.13.0"
   },
   "devDependencies": {
@@ -105,6 +104,7 @@
     "@types/redux-mock-store": "^1.0.2",
     "@types/reselect": "^2.2.0",
     "@types/sanitize-html": "^1.27.1",
+    "@types/testing-library__jest-dom": "^5.9.5",
     "@types/vscode": "^1.45.1",
     "@types/webpack": "^4.41.17",
     "@types/webpack-dev-server": "^3.11.0",
@@ -126,6 +126,7 @@
     "jest": "^26.0.1",
     "keycloak-js": "^10.0.2",
     "lint-staged": "^10.2.8",
+    "pnp-webpack-plugin": "^1.6.4",
     "poststylus": "^1.0.0",
     "react-test-renderer": "^16.14.0",
     "redux-mock-store": "^1.5.4",
@@ -149,6 +150,7 @@
     "webpack-merge": "^4.2.2"
   },
   "resolutions": {
-    "node-forge": "^0.10.0"
+    "node-forge": "^0.10.0",
+    "vscode-languageserver-protocol": "3.15.3"
   }
 }

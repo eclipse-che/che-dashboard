@@ -14,7 +14,7 @@ import React from 'react';
 import { render } from '@testing-library/react';
 import { AboutModal } from '../about-modal';
 
-jest.mock('../../../../../node_modules/detect-browser/index.js', () => {
+jest.mock('detect-browser/index.js', () => {
   return {
     detect: () => {
       return {

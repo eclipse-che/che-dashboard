@@ -16,8 +16,10 @@ RUN if ! [ type "yarn" &> /dev/null ]; then \
 
 COPY package.json /dashboard/
 COPY yarn.lock /dashboard/
+COPY .yarn/releases/yarn-*.cjs /dashboard/.yarn/releases/
+COPY .yarnrc.yml /dashboard/
 WORKDIR /dashboard
-RUN yarn install --network-timeout 600000
+RUN yarn install
 COPY . /dashboard/
 RUN yarn compile
 

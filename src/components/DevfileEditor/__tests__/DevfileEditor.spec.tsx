@@ -17,10 +17,34 @@ import DevfileEditor from '../';
 import { BrandingData } from '../../../services/bootstrap/branding.constant';
 import { FakeStoreBuilder } from '../../../store/__mocks__/storeBuilder';
 import { createFakeCheWorkspace } from '../../../store/__mocks__/workspace';
-import { languages, editor } from 'monaco-editor-core/esm/vs/editor/editor.main';
 
-jest.mock('../../../../node_modules/monaco-editor-core/esm/vs/editor/editor.main', () => {
-  return () => ({ languages, editor });
+jest.mock('monaco-editor-core/esm/vs/editor/editor.main', () => {
+  return {
+    LanguageConfiguration: typeof {},
+    IMonarchLanguage: typeof {},
+    Position: typeof {},
+    IRange: typeof {},
+    languages: {
+      registerCompletionItemProvider: jest.fn(),
+      registerDocumentSymbolProvider: jest.fn(),
+      registerHoverProvider: jest.fn(),
+      register: jest.fn(),
+      setMonarchTokensProvider: jest.fn(),
+      setLanguageConfiguration: jest.fn(),
+      CompletionItemInsertTextRule: {
+        InsertAsSnippet: jest.fn()
+      }
+    },
+    editor: {
+      IModelDecoration: typeof [],
+      create: jest.fn(),
+      getModel: jest.fn(),
+      getValue: jest.fn(),
+      setModelMarkers: jest.fn(),
+      defineTheme: jest.fn(),
+      setTheme: jest.fn()
+    }
+  };
 });
 
 describe('The DevfileEditor component', () => {
