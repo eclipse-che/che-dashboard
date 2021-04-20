@@ -10,66 +10,82 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import { History, Location, LocationDescriptorObject } from 'history';
+import { History, Location } from 'history';
 import { ROUTE } from '../../route.enum';
 import { GettingStartedTab, IdeLoaderTab, WorkspaceDetailsTab } from './types';
 import { Workspace } from '../workspaceAdapter';
 
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 
-export function buildIdeLoaderPath(workspace: Workspace, tab?: IdeLoaderTab): string {
+export function buildIdeLoaderLocation(workspace: Workspace, tab?: IdeLoaderTab): Location {
+  let pathAndQuery: string;
   if (!tab) {
-    return ROUTE.IDE_LOADER
+    pathAndQuery = ROUTE.IDE_LOADER
       .replace(':namespace', workspace.namespace)
       .replace(':workspaceName', workspace.name);
+  } else {
+    const tabId = IdeLoaderTab[tab];
+    pathAndQuery = ROUTE.IDE_LOADER_TAB
+      .replace(':namespace', workspace.namespace)
+      .replace(':workspaceName', workspace.name)
+      .replace(':tabId', tabId);
   }
-
-  const tabId = IdeLoaderTab[tab];
-  return ROUTE.IDE_LOADER_TAB
-    .replace(':namespace', workspace.namespace)
-    .replace(':workspaceName', workspace.name)
-    .replace(':tabId', tabId);
+  return _buildLocationObject(pathAndQuery);
 }
 
-export function buildFactoryLoaderPath(url?: string): string {
+export function buildFactoryLoaderLocation(url?: string): Location {
+  let pathAndQuery: string;
   if (!url) {
-    return ROUTE.LOAD_FACTORY;
+    pathAndQuery = ROUTE.LOAD_FACTORY;
+  } else {
+    url = encodeURIComponent(url);
+    pathAndQuery = ROUTE.LOAD_FACTORY_URL.replace(':url', url);
   }
-  url = encodeURIComponent(url);
-  return ROUTE.LOAD_FACTORY_URL.replace(':url', url);
+  return _buildLocationObject(pathAndQuery);
 }
 
-export function buildWorkspacesPath(): string {
-  return ROUTE.WORKSPACES;
+export function buildWorkspacesLocation(): Location {
+  return _buildLocationObject(ROUTE.WORKSPACES);
 }
 
-export function buildGettingStartedPath(tab?: GettingStartedTab): string {
+export function buildGettingStartedLocation(tab?: GettingStartedTab): Location {
+  let pathAndQuery: string;
   if (!tab) {
-    return ROUTE.GET_STARTED;
+    pathAndQuery = ROUTE.GET_STARTED;
+  } else {
+    pathAndQuery = ROUTE.GET_STARTED_TAB
+      .replace(':tabId', tab);
   }
-
-  return ROUTE.GET_STARTED_TAB
-    .replace(':tabId', tab);
+  return _buildLocationObject(pathAndQuery);
 }
 
-export function buildDetailsPath(workspace: Workspace, tab?: WorkspaceDetailsTab): string {
+export function buildDetailsLocation(workspace: Workspace, tab?: WorkspaceDetailsTab): Location {
+  let pathAndQuery: string;
   if (!tab) {
-    return ROUTE.WORKSPACE_DETAILS
+    pathAndQuery = ROUTE.WORKSPACE_DETAILS
       .replace(':namespace', workspace.namespace)
       .replace(':workspaceName', workspace.name);
+  } else {
+    const tabId = WorkspaceDetailsTab[tab];
+    pathAndQuery = ROUTE.WORKSPACE_DETAILS_TAB
+      .replace(':namespace', workspace.namespace)
+      .replace(':workspaceName', workspace.name)
+      .replace(':tabId', tabId);
   }
-
-  const tabId = WorkspaceDetailsTab[tab];
-  return ROUTE.WORKSPACE_DETAILS_TAB
-    .replace(':namespace', workspace.namespace)
-    .replace(':workspaceName', workspace.name)
-    .replace(':tabId', tabId);
+  return _buildLocationObject(pathAndQuery);
 }
 
-export function toHref(history: History, path: string): string {
-  const location: LocationDescriptorObject = {
-    pathname: path,
+function _buildLocationObject(pathAndQuery: string): Location {
+  const tmpUrl = new URL(pathAndQuery, window.location.origin);
+  return {
+    pathname: tmpUrl.pathname,
+    search: tmpUrl.search,
+    hash: tmpUrl.hash,
+    state: undefined
   };
+}
+
+export function toHref(history: History, location: Location): string {
   return history.createHref(location);
 }
 

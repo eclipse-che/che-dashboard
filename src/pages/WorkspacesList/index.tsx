@@ -25,7 +25,7 @@ import {
   TableVariant,
   Visibility,
 } from '@patternfly/react-table';
-import { History } from 'history';
+import { History, Location } from 'history';
 import {
   AlertVariant,
   Divider,
@@ -38,7 +38,7 @@ import { ExternalLinkAltIcon } from '@patternfly/react-icons';
 import { BrandingData } from '../../services/bootstrap/branding.constant';
 import { WorkspaceAction, WorkspaceStatus } from '../../services/helpers/types';
 import Head from '../../components/Head';
-import { buildGettingStartedPath } from '../../services/helpers/location';
+import { buildGettingStartedLocation } from '../../services/helpers/location';
 import { AppAlerts } from '../../services/alerts/appAlerts';
 import getRandomString from '../../services/helpers/random';
 import WorkspacesListToolbar from './Toolbar';
@@ -55,7 +55,7 @@ type Props = {
   history: History;
   workspaces: Workspace[];
   isDeleted: string[];
-  onAction: (action: WorkspaceAction, id: string) => Promise<string | void>;
+  onAction: (action: WorkspaceAction, id: string) => Promise<Location | void>;
   showConfirmation: (wantDelete: string[]) => Promise<void>;
 };
 type State = {
@@ -362,8 +362,8 @@ export default class WorkspacesList extends React.PureComponent<Props, State> {
   }
 
   private handleAddWorkspace(): void {
-    const path = buildGettingStartedPath('custom-workspace');
-    this.props.history.push(path);
+    const location = buildGettingStartedLocation('custom-workspace');
+    this.props.history.push(location);
   }
 
   private handleSort(event: React.MouseEvent, index: number, direction: SortByDirection): void {

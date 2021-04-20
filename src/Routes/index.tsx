@@ -14,7 +14,7 @@ import React from 'react';
 import { Redirect, Route, RouteComponentProps, Switch } from 'react-router';
 
 import { ROUTE } from '../route.enum';
-import { buildFactoryLoaderPath, sanitizeLocation } from '../services/helpers/location';
+import { buildFactoryLoaderLocation, sanitizeLocation } from '../services/helpers/location';
 
 const CreateWorkspace = React.lazy(() => import('../pages/GetStarted'));
 const WorkspacesListContainer = React.lazy(() => import('../containers/WorkspacesList'));
@@ -77,8 +77,8 @@ function redirectToFactoryLoader(props: RouteComponentProps): React.ReactElement
   }
   const newLocation = sanitizeLocation(location);
   const factoryUrl = newLocation.pathname + newLocation.search;
-  const factoryLoaderPath = buildFactoryLoaderPath(factoryUrl);
-  return <Redirect to={factoryLoaderPath} />;
+  const factoryLoaderLocation = buildFactoryLoaderLocation(factoryUrl);
+  return <Redirect to={factoryLoaderLocation} />;
 }
 
 Routes.displayName = 'RoutesComponent';

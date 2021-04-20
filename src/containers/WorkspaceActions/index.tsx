@@ -11,6 +11,7 @@
  */
 
 import React from 'react';
+import { Location } from 'history';
 import { connect, ConnectedProps } from 'react-redux';
 import {
   AlertVariant,
@@ -24,9 +25,9 @@ import {
   TextVariants,
 } from '@patternfly/react-core';
 import {
-  buildDetailsPath,
-  buildIdeLoaderPath,
-  buildWorkspacesPath,
+  buildDetailsLocation,
+  buildIdeLoaderLocation,
+  buildWorkspacesLocation,
 } from '../../services/helpers/location';
 import {
   IdeLoaderTab,
@@ -109,7 +110,7 @@ export class WorkspaceActionsProvider extends React.Component<Props, State> {
   /**
    * Performs an action on the given workspace
    */
-  private async handleAction(action: WorkspaceAction, id: string): Promise<string | void> {
+  private async handleAction(action: WorkspaceAction, id: string): Promise<Location | void> {
     const workspace = this.props.allWorkspaces.find(workspace => id === workspace.id);
 
     if (!workspace) {
@@ -125,18 +126,18 @@ export class WorkspaceActionsProvider extends React.Component<Props, State> {
     switch (action) {
       case WorkspaceAction.OPEN_IDE:
         {
-          return buildIdeLoaderPath(workspace);
+          return buildIdeLoaderLocation(workspace);
         }
       case WorkspaceAction.EDIT_WORKSPACE:
         {
-          return buildDetailsPath(workspace, WorkspaceDetailsTab.Devfile);
+          return buildDetailsLocation(workspace, WorkspaceDetailsTab.Devfile);
         }
       case WorkspaceAction.START_DEBUG_AND_OPEN_LOGS:
         {
           await this.props.startWorkspace(workspace, {
             'debug-workspace-start': true
           });
-          return buildIdeLoaderPath(workspace, IdeLoaderTab.Logs);
+          return buildIdeLoaderLocation(workspace, IdeLoaderTab.Logs);
         }
       case WorkspaceAction.START_IN_BACKGROUND:
         {
@@ -149,7 +150,7 @@ export class WorkspaceActionsProvider extends React.Component<Props, State> {
         }
         break;
       case WorkspaceAction.ADD_PROJECT:
-        return buildDetailsPath(workspace, WorkspaceDetailsTab.Devfile);
+        return buildDetailsLocation(workspace, WorkspaceDetailsTab.Devfile);
       case WorkspaceAction.DELETE_WORKSPACE:
         {
           if (WorkspaceStatus[workspace.status] !== WorkspaceStatus.STOPPED
@@ -168,7 +169,7 @@ export class WorkspaceActionsProvider extends React.Component<Props, State> {
             this.setState({
               isDeleted: Array.from(this.deleting),
             });
-            return buildWorkspacesPath();
+            return buildWorkspacesLocation();
           } catch (e) {
             this.deleting.delete(id);
             this.setState({
