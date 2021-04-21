@@ -14,6 +14,7 @@ import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { Page } from '@patternfly/react-core';
 import { History } from 'history';
+import { matchPath } from 'react-router';
 
 import Header from './Header';
 import Sidebar from './Sidebar';
@@ -27,6 +28,7 @@ import { IssueComponent } from './ErrorReporter/Issue';
 import { BannerAlert } from '../components/BannerAlert';
 import { ErrorBoundary } from './ErrorBoundary';
 import { DisposableCollection } from '../services/helpers/disposable';
+import { ROUTE } from '../route.enum';
 
 const THEME_KEY = 'theme';
 const IS_MANAGED_SIDEBAR = false;
@@ -81,9 +83,26 @@ export class Layout extends React.PureComponent<Props, State> {
     window.sessionStorage.setItem(THEME_KEY, theme);
   }
 
+  /**
+   * Returns `true` if current location matches the IDE page path.
+   */
+  private testIdePath(): boolean {
+    const currentPath = this.props.history.location.pathname;
+    const match = matchPath(currentPath, {
+      path: ROUTE.IDE_LOADER,
+      exact: true,
+      strict: false,
+    });
+    return match !== null;
+  }
+
   public componentDidMount(): void {
     const handleMessage = (event: MessageEvent): void => {
       if (typeof event.data !== 'string') {
+        return;
+      }
+
+      if (this.testIdePath() === false) {
         return;
       }
       if (event.data === 'show-navbar') {
