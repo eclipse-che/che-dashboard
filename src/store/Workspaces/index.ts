@@ -12,15 +12,11 @@
 
 import { Reducer } from 'redux';
 import { AppThunk } from '../';
-import { container } from '../../inversify.config';
-import { CheWorkspaceClient } from '../../services/workspace-client/cheWorkspaceClient';
 import { createState } from '../helpers';
 import { IDevWorkspaceDevfile } from '@eclipse-che/devworkspace-client';
 import { convertWorkspace, isWorkspaceV2, isDevfileV2, Workspace } from '../../services/workspaceAdapter';
 import * as CheWorkspacesStore from './cheWorkspaces';
 import * as DevWorkspacesStore from './devWorkspaces';
-
-const cheWorkspaceClient = container.get(CheWorkspaceClient);
 
 // This state defines the type of data maintained in the Redux store.
 export interface State {
