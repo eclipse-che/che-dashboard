@@ -135,7 +135,6 @@ function onStatusUpdateReceived(
     // ignore an error if start interrupted by owner
     const re = /^Runtime start for identity 'workspace: (?:[\d\w]+), environment: (?:[\w\d]+), ownerId: (?:[-\d\w]+)' is interrupted$/;
     status = re.test(message.error) ? message.status : WorkspaceStatus[WorkspaceStatus.ERROR];
-  
   } else {
     status = message.status;
   }
@@ -190,6 +189,11 @@ export const actionCreators: ActionCreators = {
     try {
       const workspaces = await cheWorkspaceClient.restApiClient.getAll<che.Workspace>();
 
+      dispatch({
+        type: 'CHE_RECEIVE_DEV_WORKSPACES',
+        workspaces,
+      });
+
       // Subscribe
       workspaces.forEach(workspace => {
         subscribeToStatusChange(workspace, dispatch);
@@ -197,11 +201,6 @@ export const actionCreators: ActionCreators = {
         if (WorkspaceStatus[WorkspaceStatus.STARTING] === workspace.status) {
           subscribeToEnvironmentOutput(workspace.id, dispatch);
         }
-      });
-
-      dispatch({
-        type: 'CHE_RECEIVE_DEV_WORKSPACES',
-        workspaces,
       });
     } catch (e) {
       dispatch({ type: 'CHE_RECEIVE_ERROR' });
