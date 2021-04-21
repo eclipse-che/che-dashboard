@@ -102,19 +102,18 @@ export class Layout extends React.PureComponent<Props, State> {
         return;
       }
 
-      if (this.testIdePath() === false) {
-        return;
-      }
       if (event.data === 'show-navbar') {
         this.setState({
           isSidebarVisible: true,
           isHeaderVisible: true,
         });
       } else if (event.data === 'hide-navbar') {
-        this.setState({
-          isSidebarVisible: false,
-          isHeaderVisible: false,
-        });
+        if (this.testIdePath()) {
+          this.setState({
+            isSidebarVisible: false,
+            isHeaderVisible: false,
+          });
+        }
       }
     };
     window.addEventListener('message', handleMessage, false);
