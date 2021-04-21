@@ -47,7 +47,7 @@ export const SECTION_THEME = PageSectionVariants.light;
 type Props =
   {
     workspacesLink: string;
-    onSave: (workspace: Workspace) => Promise<void>;
+    onSave: (workspace: Workspace, activeTab: WorkspaceDetailsTab | undefined) => Promise<void>;
     history: History;
   } & MappedProps;
 
@@ -241,7 +241,7 @@ export class WorkspaceDetails extends React.PureComponent<Props, State> {
     if (this.props.workspace && (WorkspaceStatus[this.props.workspace.status] !== WorkspaceStatus.STOPPED)) {
       this.setState({ hasWarningMessage: true });
     }
-    await this.props.onSave(workspace);
+    await this.props.onSave(workspace, this.state.activeTabKey);
     this.editorTabPageRef.current?.cancelChanges();
   }
 

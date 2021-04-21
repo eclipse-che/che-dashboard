@@ -15,7 +15,7 @@ import { History } from 'history';
 import { IRow, SortByDirection } from '@patternfly/react-table';
 import WorkspaceIndicator from '../../components/Workspace/Indicator';
 import { formatDate, formatRelativeDate } from '../../services/helpers/date';
-import { buildDetailsPath, toHref, buildIdeLoaderPath } from '../../services/helpers/location';
+import { buildDetailsLocation, toHref, buildIdeLoaderLocation } from '../../services/helpers/location';
 import { isWorkspaceV1, Workspace } from '../../services/workspaceAdapter';
 import { IDevWorkspaceDevfile } from '@eclipse-che/devworkspace-client';
 
@@ -54,11 +54,11 @@ export function buildRows(
       const isSelected = selected.includes(workspace.id);
       const deleting = deleted.includes(workspace.id);
 
-      const pathToDetails = buildDetailsPath(workspace);
-      const linkToDetails = toHref(history, pathToDetails);
+      const locationToDetails = buildDetailsLocation(workspace);
+      const linkToDetails = toHref(history, locationToDetails);
 
-      const pathToIde = buildIdeLoaderPath(workspace);
-      const linkToIde = toHref(history, pathToIde);
+      const locationToIde = buildIdeLoaderLocation(workspace);
+      const linkToIde = toHref(history, locationToIde);
 
       try {
         rows.push(buildRow(workspace, isSelected, deleting, linkToDetails, linkToIde));

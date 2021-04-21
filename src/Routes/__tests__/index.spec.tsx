@@ -20,11 +20,11 @@ import { FakeStoreBuilder } from '../../store/__mocks__/storeBuilder';
 import Fallback from '../../components/Fallback';
 import { ROUTE } from '../../route.enum';
 import {
-  buildDetailsPath,
-  buildFactoryLoaderPath,
-  buildGettingStartedPath,
-  buildIdeLoaderPath,
-  buildWorkspacesPath,
+  buildDetailsLocation,
+  buildFactoryLoaderLocation,
+  buildGettingStartedLocation,
+  buildIdeLoaderLocation,
+  buildWorkspacesLocation,
 } from '../../services/helpers/location';
 import { IdeLoaderTab, WorkspaceDetailsTab } from '../../services/helpers/types';
 import { convertWorkspace, Workspace } from '../../services/workspaceAdapter';
@@ -75,11 +75,11 @@ describe('Routes', () => {
     jest.clearAllMocks();
   });
 
-  function getComponent(path: string): React.ReactElement {
+  function getComponent(locationOrPath: Location | string): React.ReactElement {
     const store = new FakeStoreBuilder().build();
     return (
       <Provider store={store}>
-        <MemoryRouter initialEntries={[`${path}`]}>
+        <MemoryRouter initialEntries={[locationOrPath]}>
           <Suspense fallback={Fallback}>
             <Routes />
           </Suspense>
@@ -100,8 +100,8 @@ describe('Routes', () => {
     });
 
     it('should handle "/get-started"', async () => {
-      const path = buildGettingStartedPath();
-      render(getComponent(path));
+      const location = buildGettingStartedLocation();
+      render(getComponent(location));
 
       await waitFor(() => expect(screen.queryByTestId('fallback-spinner')).not.toBeInTheDocument());
 
@@ -109,8 +109,8 @@ describe('Routes', () => {
     });
 
     it('should handle "/get-started?tab=get-started"', async () => {
-      const path = buildGettingStartedPath('get-started');
-      render(getComponent(path));
+      const location = buildGettingStartedLocation('get-started');
+      render(getComponent(location));
 
       await waitFor(() => expect(screen.queryByTestId('fallback-spinner')).not.toBeInTheDocument());
 
@@ -118,8 +118,8 @@ describe('Routes', () => {
     });
 
     it('should handle "/get-started?tab=custom-workspace"', async () => {
-      const path = buildGettingStartedPath('custom-workspace');
-      render(getComponent(path));
+      const location = buildGettingStartedLocation('custom-workspace');
+      render(getComponent(location));
 
       await waitFor(() => expect(screen.queryByTestId('fallback-spinner')).not.toBeInTheDocument());
 
@@ -131,8 +131,8 @@ describe('Routes', () => {
   describe('Workspaces List route', () => {
 
     it('should handle "/workspaces"', async () => {
-      const path = buildWorkspacesPath();
-      render(getComponent(path));
+      const location = buildWorkspacesLocation();
+      render(getComponent(location));
 
       await waitFor(() => expect(screen.queryByTestId('fallback-spinner')).not.toBeInTheDocument());
 
@@ -154,8 +154,8 @@ describe('Routes', () => {
     });
 
     it('should handle "/workspace/namespace/name"', async () => {
-      const path = buildDetailsPath(workspace);
-      render(getComponent(path));
+      const location = buildDetailsLocation(workspace);
+      render(getComponent(location));
 
       await waitFor(() => expect(screen.queryByTestId('fallback-spinner')).not.toBeInTheDocument());
 
@@ -163,8 +163,8 @@ describe('Routes', () => {
     });
 
     it('should handle "/workspace/namespace/name?tab=Overview"', async () => {
-      const path = buildDetailsPath(workspace, WorkspaceDetailsTab.Overview);
-      render(getComponent(path));
+      const location = buildDetailsLocation(workspace, WorkspaceDetailsTab.Overview);
+      render(getComponent(location));
 
       await waitFor(() => expect(screen.queryByTestId('fallback-spinner')).not.toBeInTheDocument());
 
@@ -172,8 +172,8 @@ describe('Routes', () => {
     });
 
     it('should handle "/workspace/namespace/name?tab=Devfile"', async () => {
-      const path = buildDetailsPath(workspace, WorkspaceDetailsTab.Devfile);
-      render(getComponent(path));
+      const location = buildDetailsLocation(workspace, WorkspaceDetailsTab.Devfile);
+      render(getComponent(location));
 
       await waitFor(() => expect(screen.queryByTestId('fallback-spinner')).not.toBeInTheDocument());
 
@@ -181,8 +181,8 @@ describe('Routes', () => {
     });
 
     it('should handle "/workspace/namespace/name?tab=Logs"', async () => {
-      const path = buildDetailsPath(workspace, WorkspaceDetailsTab.Logs);
-      render(getComponent(path));
+      const location = buildDetailsLocation(workspace, WorkspaceDetailsTab.Logs);
+      render(getComponent(location));
 
       await waitFor(() => expect(screen.queryByTestId('fallback-spinner')).not.toBeInTheDocument());
 
@@ -204,8 +204,8 @@ describe('Routes', () => {
     });
 
     it('should handle "/ide/namespace/name"', async () => {
-      const path = buildIdeLoaderPath(workspace);
-      render(getComponent(path));
+      const location = buildIdeLoaderLocation(workspace);
+      render(getComponent(location));
 
       await waitFor(() => expect(screen.queryByTestId('fallback-spinner')).not.toBeInTheDocument());
 
@@ -213,7 +213,7 @@ describe('Routes', () => {
     });
 
     it('should handle "/ide/namespace/name?tab=Progress"', async () => {
-      const path = buildIdeLoaderPath(workspace, IdeLoaderTab.Progress);
+      const path = buildIdeLoaderLocation(workspace, IdeLoaderTab.Progress);
       render(getComponent(path));
 
       await waitFor(() => expect(screen.queryByTestId('fallback-spinner')).not.toBeInTheDocument());
@@ -222,8 +222,8 @@ describe('Routes', () => {
     });
 
     it('should handle "/ide/namespace/name?tab=Logs"', async () => {
-      const path = buildIdeLoaderPath(workspace, IdeLoaderTab.Logs);
-      render(getComponent(path));
+      const location = buildIdeLoaderLocation(workspace, IdeLoaderTab.Logs);
+      render(getComponent(location));
 
       await waitFor(() => expect(screen.queryByTestId('fallback-spinner')).not.toBeInTheDocument());
 
@@ -236,8 +236,8 @@ describe('Routes', () => {
 
     it('should handle "/factory-loader?url=http://example.com"', async () => {
       const factoryUrl = 'http://example.com/factory';
-      const path = buildFactoryLoaderPath(factoryUrl);
-      render(getComponent(path));
+      const location = buildFactoryLoaderLocation(factoryUrl);
+      render(getComponent(location));
 
       await waitFor(() => expect(screen.queryByTestId('fallback-spinner')).not.toBeInTheDocument());
 

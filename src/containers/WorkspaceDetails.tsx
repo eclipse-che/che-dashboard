@@ -16,8 +16,7 @@ import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { RouteComponentProps } from 'react-router';
 import WorkspaceDetails, { WorkspaceDetails as Details } from '../pages/WorkspaceDetails';
-import { ROUTE } from '../route.enum';
-import { toHref } from '../services/helpers/location';
+import { buildDetailsLocation, toHref, buildWorkspacesLocation } from '../services/helpers/location';
 import { WorkspaceDetailsTab } from '../services/helpers/types';
 import { Workspace } from '../services/workspaceAdapter';
 
@@ -38,7 +37,7 @@ class WorkspaceDetailsContainer extends React.Component<Props> {
   constructor(props: Props) {
     super(props);
 
-    this.workspacesLink = toHref(this.props.history, ROUTE.WORKSPACES);
+    this.workspacesLink = toHref(this.props.history, buildWorkspacesLocation());
     this.workspaceDetailsPageRef = React.createRef<Details>();
 
     const namespace = this.props.match.params.namespace;
@@ -98,22 +97,20 @@ class WorkspaceDetailsContainer extends React.Component<Props> {
       <WorkspaceDetails
         ref={this.workspaceDetailsPageRef}
         workspacesLink={this.workspacesLink}
-        onSave={(workspace: Workspace) => this.onSave(workspace)}
+        onSave={(workspace: Workspace, activeTab?: WorkspaceDetailsTab) => this.onSave(workspace, activeTab)}
         history={this.props.history}
       />
     );
   }
 
-  async onSave(newWorkspaceObj: Workspace): Promise<void> {
-    const namespace = newWorkspaceObj.namespace;
-    const workspaceName = newWorkspaceObj.name;
-
+  async onSave(changedWorkspace: Workspace, activeTab?: WorkspaceDetailsTab): Promise<void> {
     try {
-      await this.props.updateWorkspace(newWorkspaceObj);
+      await this.props.updateWorkspace(changedWorkspace);
       this.showAlert('Workspace has been updated', AlertVariant.success);
-      const pathname = `/workspace/${namespace}/${workspaceName}`;
-      this.props.history.replace({ pathname });
-      this.props.setWorkspaceId(newWorkspaceObj.id);
+
+      const location = buildDetailsLocation(changedWorkspace, activeTab);
+      this.props.setWorkspaceId(changedWorkspace.id);
+      this.props.history.replace(location);
     } catch (e) {
       if (this.workspaceDetailsPageRef.current?.state.activeTabKey === WorkspaceDetailsTab.Devfile) {
         throw new Error(e.toString().replace(/^Error: /gi, ''));

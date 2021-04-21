@@ -21,7 +21,7 @@ import * as WorkspaceStore from '../store/Workspaces';
 import FactoryLoader from '../pages/FactoryLoader';
 import { selectAllWorkspaces, selectPreferredStorageType, selectWorkspaceById } from '../store/Workspaces/selectors';
 import { WorkspaceStatus } from '../services/helpers/types';
-import { buildIdeLoaderPath, sanitizeLocation } from '../services/helpers/location';
+import { buildIdeLoaderLocation, sanitizeLocation } from '../services/helpers/location';
 import { lazyInject } from '../inversify.config';
 import { KeycloakAuthService } from '../services/keycloak/auth';
 import { getEnvironment, isDevEnvironment } from '../services/helpers/environment';
@@ -157,7 +157,7 @@ export class FactoryLoaderContainer extends React.PureComponent<Props, State> {
       this.showAlert(`Getting workspace detail data failed. ${e}`);
     }
     await delay();
-    history.push(buildIdeLoaderPath(workspace));
+    history.push(buildIdeLoaderLocation(workspace));
   }
 
   private isCreatePolicy(val: string): val is CreatePolicy {

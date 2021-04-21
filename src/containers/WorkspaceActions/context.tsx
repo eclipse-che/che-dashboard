@@ -11,10 +11,11 @@
  */
 
 import React from 'react';
+import { Location } from 'history';
 import { WorkspaceAction } from '../../services/helpers/types';
 
 export type ActionContextType = {
-  handleAction: (action: WorkspaceAction, id: string) => Promise<string | void>;
+  handleAction: (action: WorkspaceAction, id: string) => Promise<Location | void>;
   showConfirmation: (wantDelete: string[]) => Promise<void>;
   /**
    * list of workspace IDs being deleted

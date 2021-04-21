@@ -22,7 +22,7 @@ import NavigationRecentList from './RecentList';
 import * as WorkspacesStore from '../../store/Workspaces';
 import { selectAllWorkspaces, selectRecentWorkspaces } from '../../store/Workspaces/selectors';
 import { ROUTE } from '../../route.enum';
-import { buildGettingStartedPath, buildWorkspacesPath } from '../../services/helpers/location';
+import { buildGettingStartedLocation, buildWorkspacesLocation, sanitizeLocation } from '../../services/helpers/location';
 
 export interface NavigationItemObject {
   to: string,
@@ -44,7 +44,7 @@ type Props =
   };
 
 type State = {
-  activePath: string;
+  activeLocation: Location;
 };
 
 export class Navigation extends React.PureComponent<Props, State> {
@@ -54,21 +54,23 @@ export class Navigation extends React.PureComponent<Props, State> {
   constructor(props: Props) {
     super(props);
 
-    let activePath = this.props.history.location.pathname.split('&')[0];
-    if (activePath === ROUTE.HOME) {
+    const activeLocation = sanitizeLocation(this.props.history.location);
+    let newLocation: Location | undefined;
+
+    if (activeLocation.pathname === ROUTE.HOME) {
       const workspacesNumber = this.props.allWorkspaces.length;
       if (workspacesNumber === 0) {
-        activePath = buildGettingStartedPath('get-started');
+        newLocation = buildGettingStartedLocation('get-started');
       } else {
-        activePath = buildWorkspacesPath();
+        newLocation = buildWorkspacesLocation();
       }
     }
-    if (this.props.history.location.pathname !== activePath) {
-      this.props.history.replace(activePath);
+    if (newLocation) {
+      this.props.history.replace(newLocation);
     }
 
     this.state = {
-      activePath,
+      activeLocation: newLocation || activeLocation,
     };
 
     this.unregisterFn = this.props.history.listen((location: Location) => {
@@ -82,11 +84,21 @@ export class Navigation extends React.PureComponent<Props, State> {
     to: string;
     event: React.FormEvent<HTMLInputElement>;
   }): void {
-    this.setState({ activePath: selected.itemId as string });
+    const activeLocation = {
+      pathname: selected.itemId as string,
+    } as Location;
+    this.setState({
+      activeLocation,
+    });
   }
 
   private setActivePath(path: string): void {
-    this.setState({ activePath: path });
+    const activeLocation = {
+      pathname: path,
+    } as Location;
+    this.setState({
+      activeLocation,
+    });
   }
 
   public componentWillUnmount(): void {
@@ -95,7 +107,7 @@ export class Navigation extends React.PureComponent<Props, State> {
 
   public render(): React.ReactElement {
     const { theme, recentWorkspaces, history } = this.props;
-    const { activePath } = this.state;
+    const { activeLocation } = this.state;
 
     const recent = recentWorkspaces || [];
 
@@ -105,8 +117,14 @@ export class Navigation extends React.PureComponent<Props, State> {
         onSelect={selected => this.handleNavSelect(selected)}
         theme={theme}
       >
-        <NavigationMainList activePath={activePath} />
-        <NavigationRecentList workspaces={recent} activePath={activePath} history={history} />
+        <NavigationMainList
+          activePath={activeLocation.pathname}
+        />
+        <NavigationRecentList
+          workspaces={recent}
+          activePath={activeLocation.pathname}
+          history={history}
+        />
       </Nav>
     );
   }

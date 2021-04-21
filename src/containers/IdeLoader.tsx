@@ -25,7 +25,7 @@ import { getEnvironment, isDevEnvironment } from '../services/helpers/environmen
 import * as WorkspaceStore from '../store/Workspaces';
 import { selectAllWorkspaces, selectIsLoading, selectLogs, selectWorkspaceById } from '../store/Workspaces/selectors';
 import { validateMachineToken } from '../services/validate-token';
-import { buildWorkspacesPath } from '../services/helpers/location';
+import { buildWorkspacesLocation } from '../services/helpers/location';
 import { DisposableCollection } from '../services/helpers/disposable';
 import { Workspace } from '../services/workspaceAdapter';
 
@@ -159,8 +159,8 @@ class IdeLoaderContainer extends React.PureComponent<Props, State> {
         return;
       }
       if (event.data === 'show-workspaces') {
-        const pathname = buildWorkspacesPath();
-        this.props.history.push({ pathname });
+        const location = buildWorkspacesLocation();
+        this.props.history.push(location);
         window.postMessage('show-navbar', '*');
       } else if (event.data.startsWith('restart-workspace:')) {
         const { allWorkspaces, match: { params } } = this.props;
