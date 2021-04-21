@@ -25,7 +25,7 @@ module.exports = {
   output: {
     path: path.join(__dirname, 'build'),
     publicPath: '/',
-    filename: 'client.js',
+    filename: 'client.[hash].js',
     chunkFilename: '[name].[chunkhash].js',
   },
   optimization: {
