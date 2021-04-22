@@ -11,12 +11,15 @@
  */
 
 const path = require('path');
+const merge = require('webpack-merge');
+
+const prod = require('./webpack.config.prod');
 
 module.exports = env => {
   const proxyTarget = env && env.server ? env.server : 'https://codeready-codeready-workspaces-operator.apps.sandbox.x8i5.p1.openshiftapps.com';
 
-  return {
-    entry: path.join(__dirname, 'build/client.js'),
+  return merge(prod, {
+    mode: 'production',
     devServer: {
       contentBase: [
         path.join(__dirname, 'build'),
@@ -28,6 +31,7 @@ module.exports = env => {
       open: false,
       port: 3000,
       stats: 'normal',
+      writeToDisk: true,
       proxy: {
         '/api/websocket': {
           target: proxyTarget,
@@ -47,6 +51,10 @@ module.exports = env => {
           },
         },
       },
-    }
-  };
+    },
+    watchOptions: {
+      aggregateTimeout: 2000,
+      ignored: /node_modules/,
+    },
+  });
 };
