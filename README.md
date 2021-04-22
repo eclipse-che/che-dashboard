@@ -14,6 +14,7 @@ Eclipse Che is a next generation Eclipse IDE. This repository is licensed under 
 
 **Note**:
 Below you can find installation instructions
+
 - [Node.js](https://docs.npmjs.com/getting-started/installing-node)
 - [yarn](https://yarnpkg.com/lang/en/docs/install/)
 
@@ -34,6 +35,7 @@ yarn
 and start dev-server:
 
 The start command requires to specify a remote Eclipse Che server like:
+
 ```sh
 yarn start --env.server=https://che-che.192.168.99.100.nip.io
 ```
@@ -46,6 +48,7 @@ URL is looking like https://codeready-codeready-workspaces-operator.apps.sandbox
 ```sh
 yarn start --env.server=https://codeready-codeready-workspaces-operator.apps.sandbox.x8i5.p1.openshiftapps.com
 ```
+
 To specify a different port, add `--port=3333`
 
 For redirect/authentication issues, please validate settings of Valid Redirect URIs and Web Origins on keycloak for `che-public` client.
@@ -58,19 +61,14 @@ For better debugging experience you need to have React and Redux Developer Tools
 To launch the production mode, the command is
 
 ```sh
-yarn serve:prod
-```
-
-it requires a compilation
-```sh
-yarn compile
+yarn start:prod
 ```
 
 To provide a custom remote server:
-```sh
-yarn serve:prod --env.server=https://codeready-codeready-workspaces-operator.apps.sandbox.x8i5.p1.openshiftapps.com
-```
 
+```sh
+yarn start:prod --env.server=https://codeready-codeready-workspaces-operator.apps.sandbox.x8i5.p1.openshiftapps.com
+```
 
 ## License tool
 
