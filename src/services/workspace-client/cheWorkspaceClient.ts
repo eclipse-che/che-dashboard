@@ -74,7 +74,12 @@ export class CheWorkspaceClient extends WorkspaceClient {
 
   async updateJsonRpcMasterApi(): Promise<void> {
     const jsonRpcApiLocation = this.originLocation.replace('http', 'ws');
-    const tokenRefresher = KeycloakAuthService.sso ? () => this.refreshToken(VALIDITY_TIME) : undefined;
+    const tokenRefresher = () => {
+      if (!KeycloakAuthService.sso) {
+        return Promise.resolve('');
+      }
+      return this.refreshToken(VALIDITY_TIME);
+    };
     this._jsonRpcMasterApi = WorkspaceClientLib.getJsonRpcApi(jsonRpcApiLocation, tokenRefresher);
     this._jsonRpcMasterApi.onDidWebSocketStatusChange((websockets: string[]) => {
       this._failingWebSockets = [];
