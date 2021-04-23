@@ -229,15 +229,10 @@ export class DevfileEditor extends React.PureComponent<Props, State> {
     const href = this.props.branding.data.docs.devfile;
     const { errorMessage } = this.state;
 
-    let message = errorMessage;
-    if (this.props.isReadonly) {
-      message = 'DevWorkspace editor support has not been enabled. Editor is in Readonly mode.';
-    }
-
     return (
       <div className='devfile-editor'>
         <div className='monaco'>&nbsp;</div>
-        <div className='error'>{message}</div>
+        <div className='error'>{errorMessage}</div>
         <a target='_blank' rel='noopener noreferrer' href={href}>Devfile Documentation</a>
       </div>
     );
