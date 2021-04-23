@@ -165,7 +165,6 @@ export class DevfileEditor extends React.PureComponent<Props, State> {
     const element = $('.devfile-editor .monaco').get(0);
     if (element) {
       const value = stringify(this.props.devfile);
-      MONACO_CONFIG.readOnly = this.props.isReadonly !== undefined ? this.props.isReadonly : false;
       this.editor = editor.create(element, Object.assign(
         { value },
         MONACO_CONFIG,

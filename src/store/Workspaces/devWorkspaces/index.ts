@@ -11,13 +11,12 @@
  */
 
 import { Action, Reducer } from 'redux';
-import * as api from '@eclipse-che/api';
 import { ThunkDispatch } from 'redux-thunk';
 import { AppThunk } from '../..';
 import { container } from '../../../inversify.config';
 import { DevWorkspaceStatus, WorkspaceStatus } from '../../../services/helpers/types';
 import { createState } from '../../helpers';
-import { DevWorkspaceClient, IStatusUpdate } from '../../../services/workspace-client/devWorkspaceClient';
+import { DevWorkspaceClient, DEVWORKSPACE_NEXT_START_ANNOTATION, IStatusUpdate } from '../../../services/workspace-client/devWorkspaceClient';
 import { CheWorkspaceClient } from '../../../services/workspace-client/cheWorkspaceClient';
 import { IDevWorkspace, IDevWorkspaceDevfile } from '@eclipse-che/devworkspace-client';
 import { deleteLogs, mergeLogs } from '../logs';
@@ -104,9 +103,6 @@ export type ActionCreators = {
   deleteWorkspaceLogs: (workspaceId: string) => AppThunk<DeleteWorkspaceLogsAction, void>;
 };
 
-type WorkspaceStatusMessageHandler = (message: api.che.workspace.event.WorkspaceStatusEvent) => void;
-type EnvironmentOutputMessageHandler = (message: api.che.workspace.event.RuntimeLogEvent) => void;
-
 export const actionCreators: ActionCreators = {
 
   updateDevWorkspaceStatus: (workspace: IDevWorkspace, message: IStatusUpdate): AppThunk<KnownAction, void> => (dispatch): void => {
@@ -149,13 +145,25 @@ export const actionCreators: ActionCreators = {
     }
   },
 
-  startWorkspace: (workspace: IDevWorkspace): AppThunk<KnownAction, Promise<void>> => async (dispatch): Promise<void> => {
+  startWorkspace: (workspace: IDevWorkspace): AppThunk<KnownAction, Promise<void>> => async (dispatch, getState): Promise<void> => {
     dispatch({ type: 'DEV_REQUEST_WORKSPACES' });
     try {
-      const update = await devWorkspaceClient.changeWorkspaceStatus(workspace.metadata.namespace, workspace.metadata.name, true);
+      let updatedWorkspace: IDevWorkspace;
+      if (workspace.metadata.annotations && workspace.metadata.annotations[DEVWORKSPACE_NEXT_START_ANNOTATION]) {
+        // If the workspace has DEVWORKSPACE_NEXT_START_ANNOTATION then update the devworkspace with the DEVWORKSPACE_NEXT_START_ANNOTATION annoation value and then start the devworkspace
+        const state = getState();
+        const plugins = state.dwPlugins.plugins;
+        const storedDevWorkspace = JSON.parse(workspace.metadata.annotations[DEVWORKSPACE_NEXT_START_ANNOTATION]) as IDevWorkspace;
+        delete workspace.metadata.annotations[DEVWORKSPACE_NEXT_START_ANNOTATION];
+        workspace.spec.template = storedDevWorkspace.spec.template;
+        workspace.spec.started = true;
+        updatedWorkspace = await devWorkspaceClient.update(workspace, plugins);
+      } else {
+        updatedWorkspace = await devWorkspaceClient.changeWorkspaceStatus(workspace.metadata.namespace, workspace.metadata.name, true);
+      }
       dispatch({
         type: 'DEV_UPDATE_WORKSPACE',
-        workspace: update,
+        workspace: updatedWorkspace,
       });
     } catch (e) {
       dispatch({ type: 'DEV_RECEIVE_ERROR' });
@@ -207,11 +215,13 @@ export const actionCreators: ActionCreators = {
     }
   },
 
-  updateWorkspace: (workspace: IDevWorkspace): AppThunk<KnownAction, Promise<void>> => async (dispatch): Promise<void> => {
+  updateWorkspace: (workspace: IDevWorkspace): AppThunk<KnownAction, Promise<void>> => async (dispatch, getState): Promise<void> => {
     dispatch({ type: 'DEV_REQUEST_WORKSPACES' });
 
     try {
-      const updated = await devWorkspaceClient.update(workspace);
+      const state = getState();
+      const plugins = state.dwPlugins.plugins;
+      const updated = await devWorkspaceClient.update(workspace, plugins);
       dispatch({
         type: 'DEV_UPDATE_WORKSPACE',
         workspace: updated,

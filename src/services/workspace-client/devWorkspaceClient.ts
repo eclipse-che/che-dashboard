@@ -13,7 +13,7 @@
 import { inject, injectable } from 'inversify';
 import { isDeleting, isWebTerminal } from '../helpers/devworkspace';
 import { WorkspaceClient } from './';
-import { RestApi as DevWorkspaceRestApi, IDevWorkspaceApi, IDevWorkspaceDevfile, IDevWorkspace, IDevWorkspaceTemplateApi, IDevWorkspaceTemplate, devWorkspaceApiGroup, devworkspaceSingularSubresource, devworkspaceVersion, ICheApi } from '@eclipse-che/devworkspace-client';
+import { RestApi as DevWorkspaceRestApi, IDevWorkspaceApi, IDevWorkspaceDevfile, IDevWorkspace, IDevWorkspaceTemplateApi, IDevWorkspaceTemplate, devWorkspaceApiGroup, devworkspaceSingularSubresource, devworkspaceVersion, ICheApi, Patch } from '@eclipse-che/devworkspace-client';
 import { DevWorkspaceStatus, WorkspaceStatus } from '../helpers/types';
 import { KeycloakSetupService } from '../keycloak/setup';
 import { delay } from '../helpers/delay';
@@ -30,6 +30,8 @@ export interface IStatusUpdate {
   prevStatus?: string;
   workspaceId: string;
 }
+
+export const DEVWORKSPACE_NEXT_START_ANNOTATION = 'che.eclipse.org/dashboard-next-run';
 
 /**
  * This class manages the connection between the frontend and the devworkspace typescript library
@@ -103,14 +105,14 @@ export class DevWorkspaceClient extends WorkspaceClient {
 
     for (const pluginDevfile of pluginsDevfile) {
       // TODO handle error in a proper way
-      const pluginName = pluginDevfile.metadata.name.replaceAll(' ', '-').toLowerCase();
       const workspaceId = createdWorkspace.status.devworkspaceId;
+      const pluginName = this.normalizePluginName(pluginDevfile.metadata.name, workspaceId);
       const devfileGroupVersion = `${devWorkspaceApiGroup}/${devworkspaceVersion}`;
       const theiaDWT = await this.dwtApi.create(<IDevWorkspaceTemplate>{
         kind: 'DevWorkspaceTemplate',
         apiVersion: devfileGroupVersion,
         metadata: {
-          name: `${pluginName}-${workspaceId}`,
+          name: pluginName,
           namespace,
           ownerReferences: [
             {
@@ -124,15 +126,7 @@ export class DevWorkspaceClient extends WorkspaceClient {
         spec: pluginDevfile
       });
 
-      createdWorkspace.spec.template.components.push({
-        name: theiaDWT.metadata.name,
-        plugin: {
-          kubernetes: {
-            name: theiaDWT.metadata.name,
-            namespace: theiaDWT.metadata.namespace
-          }
-        }
-      });
+      this.addPlugin(createdWorkspace, pluginName, theiaDWT.metadata.namespace);
     }
 
     createdWorkspace.spec.started = true;
@@ -141,8 +135,81 @@ export class DevWorkspaceClient extends WorkspaceClient {
     return updatedWorkspace;
   }
 
-  async update(workspace: IDevWorkspace): Promise<IDevWorkspace> {
-    return this.dwApi.update(workspace);
+  /**
+   * Update a devworkspace.
+   * If the workspace you want to update has the DEVWORKSPACE_NEXT_START_ANNOTATION then 
+   * patch the cluster object with the value of DEVWORKSPACE_NEXT_START_ANNOTATION and don't restart the devworkspace.
+   * 
+   * If the workspace does not specify DEVWORKSPACE_NEXT_START_ANNOTATION then
+   * update the spec of the devworkspace and remove DEVWORKSPACE_NEXT_START_ANNOTATION if it exists.
+   * 
+   * @param workspace The DevWorkspace you want to update
+   * @param plugins The plugins you want to inject into the devworkspace
+   */
+  async update(workspace: IDevWorkspace, plugins: IDevWorkspaceDevfile[]): Promise<IDevWorkspace> {
+    // Take the devworkspace with no plugins and then inject them
+    for (const plugin of plugins) {
+      const pluginName = this.normalizePluginName(plugin.metadata.name, workspace.status.devworkspaceId);
+      this.addPlugin(workspace, pluginName, workspace.metadata.namespace);
+    }
+
+    const namespace = workspace.metadata.namespace;
+    const name = workspace.metadata.name;
+
+    const patch = [] as Patch[];
+
+    if (workspace.metadata.annotations && workspace.metadata.annotations[DEVWORKSPACE_NEXT_START_ANNOTATION]) {
+
+      /**
+       * This is the case when you are annotating a devworkspace and will restart it later
+       */
+      patch.push(
+        {
+          op: 'add',
+          path: '/metadata/annotations',
+          value: {
+            [DEVWORKSPACE_NEXT_START_ANNOTATION]: workspace.metadata.annotations[DEVWORKSPACE_NEXT_START_ANNOTATION]
+          }
+        },
+
+      );
+    } else {
+      /**
+       * This is the case when you are updating a devworkspace normally
+       */
+      patch.push(
+        {
+          op: 'replace',
+          path: '/spec',
+          value: workspace.spec,
+        }
+      );
+      const onClusterWorkspace = await this.getWorkspaceByName(namespace, name);
+
+      // If the workspace currently has DEVWORKSPACE_NEXT_START_ANNOTATION then delete it since we are starting a devworkspace normally
+      if (onClusterWorkspace.metadata.annotations && onClusterWorkspace.metadata.annotations[DEVWORKSPACE_NEXT_START_ANNOTATION]) {
+        // We have to escape the slash when removing the annotation and ~1 is used as the escape character https://tools.ietf.org/html/rfc6902#appendix-A.14
+        const escapedAnnotation = DEVWORKSPACE_NEXT_START_ANNOTATION.replace('/', '~1');
+        patch.push(
+          {
+            op: 'remove',
+            path: `/metadata/annotations/${escapedAnnotation}`,
+          }
+        );
+      }
+    }
+
+    return this.dwApi.patch(namespace, name, patch);
+  }
+
+  /**
+   * Created a normalize plugin name, which is a plugin name with all spaces replaced
+   * to dashes and a workspaceId appended at the end
+   * @param pluginName The name of the plugin
+   * @param workspaceId The id of the workspace
+   */
+  private normalizePluginName(pluginName: string, workspaceId: string): string {
+    return `${pluginName.replaceAll(' ', '-').toLowerCase()}-${workspaceId}`;
   }
 
   async delete(namespace: string, name: string): Promise<void> {
@@ -156,6 +223,23 @@ export class DevWorkspaceClient extends WorkspaceClient {
     }
     this.checkForDevWorkspaceError(changedWorkspace);
     return changedWorkspace;
+  }
+
+  /**
+   * Add the plugin to the workspace
+   * @param workspace A devworkspace
+   * @param plugin A devworkspacetemplate
+   */
+  private addPlugin(workspace: IDevWorkspace, pluginName: string, namespace: string) {
+    workspace.spec.template.components!.push({
+      name: pluginName,
+      plugin: {
+        kubernetes: {
+          name: pluginName,
+          namespace
+        }
+      }
+    });
   }
 
   /**

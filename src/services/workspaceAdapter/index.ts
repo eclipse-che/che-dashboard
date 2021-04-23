@@ -18,6 +18,7 @@ import {
 } from '@eclipse-che/devworkspace-client';
 import { attributesToType, typeToAttributes } from '../storageTypes';
 import { DevWorkspaceStatus, WorkspaceStatus } from '../helpers/types';
+import { DEVWORKSPACE_NEXT_START_ANNOTATION } from '../workspace-client/devWorkspaceClient';
 
 const ROUTING_CLASS = 'che';
 
@@ -178,7 +179,12 @@ export class WorkspaceAdapter<T extends che.Workspace | IDevWorkspace> implement
     if (isWorkspaceV1(this.workspace)) {
       return this.workspace.devfile as T extends che.Workspace ? che.WorkspaceDevfile : IDevWorkspaceDevfile;
     } else {
-      return devWorkspaceToDevfile((this.workspace as IDevWorkspace)) as T extends che.Workspace ? che.WorkspaceDevfile : IDevWorkspaceDevfile;
+      const currentWorkspace = this.workspace as IDevWorkspace;
+      if (currentWorkspace.metadata.annotations && currentWorkspace.metadata.annotations[DEVWORKSPACE_NEXT_START_ANNOTATION]) {
+        return devWorkspaceToDevfile(JSON.parse(currentWorkspace.metadata.annotations[DEVWORKSPACE_NEXT_START_ANNOTATION]));
+      } else {
+        return devWorkspaceToDevfile(currentWorkspace) as T extends che.Workspace ? che.WorkspaceDevfile : IDevWorkspaceDevfile;
+      }
     }
   }
 
