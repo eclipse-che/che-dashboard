@@ -13,7 +13,7 @@
 import { Reducer } from 'redux';
 import { AppThunk } from '../';
 import { createState } from '../helpers';
-import { IDevWorkspaceDevfile } from '@eclipse-che/devworkspace-client';
+import { IDevWorkspace, IDevWorkspaceDevfile } from '@eclipse-che/devworkspace-client';
 import { convertWorkspace, isWorkspaceV2, isDevfileV2, Workspace } from '../../services/workspaceAdapter';
 import * as CheWorkspacesStore from './cheWorkspaces';
 import * as DevWorkspacesStore from './devWorkspaces';
@@ -232,8 +232,8 @@ export const actionCreators: ActionCreators = {
     try {
       const state = getState();
       const cheDevworkspaceEnabled = state.cheWorkspaces.settings['che.devworkspaces.enabled'] === 'true';
-      if (cheDevworkspaceEnabled && isWorkspaceV2(workspace.ref)) {
-        await dispatch(DevWorkspacesStore.actionCreators.updateWorkspace(workspace.ref));
+      if (cheDevworkspaceEnabled) {
+        await dispatch(DevWorkspacesStore.actionCreators.updateWorkspace(workspace.ref as IDevWorkspace));
       } else {
         await dispatch(CheWorkspacesStore.actionCreators.updateWorkspace(workspace.ref as che.Workspace));
       }

@@ -40,7 +40,7 @@ import { selectIsLoading, selectWorkspaceById } from '../../store/Workspaces/sel
 import { History } from 'history';
 
 import './WorkspaceDetails.styl';
-import { Workspace } from '../../services/workspaceAdapter';
+import { isWorkspaceV1, Workspace } from '../../services/workspaceAdapter';
 
 export const SECTION_THEME = PageSectionVariants.light;
 
@@ -208,7 +208,10 @@ export class WorkspaceDetails extends React.PureComponent<Props, State> {
               <EditorTab
                 ref={this.editorTabPageRef}
                 workspace={workspace}
-                onSave={workspace => this.onSave(workspace)} />
+                onSave={workspace => this.onSave(workspace)}
+                hasDevWorkspaceWarning={() => this.setState({
+                  hasWarningMessage: true
+                })} />
             </Tab>
             {/* <Tab eventKey={WorkspaceDetailsTabs.Logs} title={WorkspaceDetailsTabs[WorkspaceDetailsTabs.Logs]}>*/}
             {/*  <LogsTab workspaceId={workspace.id} />*/}
@@ -238,7 +241,7 @@ export class WorkspaceDetails extends React.PureComponent<Props, State> {
   }
 
   private async onSave(workspace: Workspace): Promise<void> {
-    if (this.props.workspace && (WorkspaceStatus[this.props.workspace.status] !== WorkspaceStatus.STOPPED)) {
+    if (this.props.workspace && (WorkspaceStatus[this.props.workspace.status] !== WorkspaceStatus.STOPPED) && isWorkspaceV1((this.props.workspace as Workspace).ref)) {
       this.setState({ hasWarningMessage: true });
     }
     await this.props.onSave(workspace, this.state.activeTabKey);
