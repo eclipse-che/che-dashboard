@@ -642,15 +642,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@eclipse-che/devworkspace-client@npm:^0.0.1-1617871695":
-  version: 0.0.1-1617871695
-  resolution: "@eclipse-che/devworkspace-client@npm:0.0.1-1617871695"
+"@eclipse-che/devworkspace-client@npm:^0.0.1-1619438984":
+  version: 0.0.1-1619438984
+  resolution: "@eclipse-che/devworkspace-client@npm:0.0.1-1619438984"
   dependencies:
     "@kubernetes/client-node": ^0.14.0
     axios: ^0.21.1
     inversify: ^5.0.5
     reflect-metadata: ^0.1.13
-  checksum: 8f8bd417ff1c963d8db896493283940f6c44632e40937a01604dc5e11faa0f04f44ccfb8f54821dc3a5fe632e5e20f1651c1e9705f52556cec9ccecf332af0b9
+  checksum: 532f9da3b7416fda54569186d1dd981d769ecf4180c101850556a3aaf0fe5a2069e02f6bb5b7abec43b2457c68a8bc4ae35b5f555c68a9bbfa0464b4c8480c76
   languageName: node
   linkType: hard
 
@@ -3647,7 +3647,7 @@ __metadata:
   resolution: "che-dashboard@workspace:."
   dependencies:
     "@eclipse-che/api": ^7.18.1
-    "@eclipse-che/devworkspace-client": ^0.0.1-1617871695
+    "@eclipse-che/devworkspace-client": ^0.0.1-1619438984
     "@eclipse-che/workspace-client": ^0.0.1-1618916247
     "@patternfly/react-core": ~4.84.4
     "@patternfly/react-icons": ^4.3.5
