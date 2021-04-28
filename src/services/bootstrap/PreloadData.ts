@@ -123,13 +123,17 @@ export class PreloadData {
   private async updateDwPlugins(settings: che.WorkspaceSettings): Promise<void> {
     const { requestDwDevfiles } = DwPlugins.actionCreators;
 
-    return Promise.all([
+    const promises: Array<Promise<void>> = [];
+    promises.push(
       requestDwDevfiles(`${settings.cheWorkspacePluginRegistryUrl}/plugins/${settings['che.factory.default_editor']}/devfile.yaml`)(this.store.dispatch, this.store.getState, undefined),
-      requestDwDevfiles(`${settings.cheWorkspacePluginRegistryUrl}/plugins/${settings['che.factory.default_plugins']}/devfile.yaml`)(this.store.dispatch, this.store.getState, undefined)
-    ])
-      .then(() => {
-        // noop
-      });
+    );
+    if (settings['che.factory.default_plugins']) {
+      promises.push(
+        requestDwDevfiles(`${settings.cheWorkspacePluginRegistryUrl}/plugins/${settings['che.factory.default_plugins']}/devfile.yaml`)(this.store.dispatch, this.store.getState, undefined)
+      );
+    }
+
+    await Promise.all(promises);
   }
 
   private async updateInfrastructureNamespaces(): Promise<void> {
