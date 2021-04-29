@@ -36,7 +36,7 @@ import './EditorTab.styl';
 type Props = {
   onSave: (workspace: Workspace) => Promise<void>;
   workspace: Workspace;
-  hasDevWorkspaceWarning: () => void;
+  onDevWorkspaceWarning: () => void;
 };
 
 type State = {
@@ -192,7 +192,7 @@ export class EditorTab extends React.PureComponent<Props, State> {
         [DEVWORKSPACE_NEXT_START_ANNOTATION]: JSON.stringify((convertedDevWorkspace.ref as IDevWorkspace)),
       };
       convertedDevWorkspace.ref.status = devworkspace.status;
-      this.props.hasDevWorkspaceWarning();
+      this.props.onDevWorkspaceWarning();
       this.props.onSave(convertedDevWorkspace);
       this.setState({
         showDevfileV2ConfirmationModal: false
