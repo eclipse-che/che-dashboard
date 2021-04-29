@@ -23,7 +23,7 @@ module.exports = {
     client: path.join(__dirname, 'src/index.tsx'),
   },
   output: {
-    path: path.join(__dirname, 'build'),
+    path: path.join(__dirname, 'lib'),
     publicPath: '/',
     filename: 'client.[hash].js',
     chunkFilename: '[name].[chunkhash].js',

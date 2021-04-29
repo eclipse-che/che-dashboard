@@ -3,7 +3,7 @@
   "search.exclude": {
     "**/.yarn": true,
     "**/.pnp.*": true,
-    "**/build": true,
+    "**/lib": true,
     "**/coverage": true
   },
   "eslint.nodePath": ".yarn/sdks",
