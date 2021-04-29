@@ -30,5 +30,5 @@ RUN sed -i 's|    AllowOverride None|    AllowOverride All|' /usr/local/apache2/
     chmod -R g+rwX /usr/local/apache2 && \
     echo "ServerName localhost" >> /usr/local/apache2/conf/httpd.conf
 
-COPY --from=builder /dashboard/build /usr/local/apache2/htdocs/dashboard
+COPY --from=builder /dashboard/lib /usr/local/apache2/htdocs/dashboard
 RUN sed -i -r -e 's#<base href="/">#<base href="/dashboard/"#g'  /usr/local/apache2/htdocs/dashboard/index.html

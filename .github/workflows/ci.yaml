@@ -50,6 +50,6 @@ jobs:
           cache-from: type=registry,ref=${{ env.CACHE_IMAGE_FULL }}
           cache-to: type=registry,ref=${{ env.CACHE_IMAGE_FULL }},mode=max
           context: .
-          file: ./apache.Dockerfile
+          file: ./build/dockerfiles/Dockerfile
           push: true
           tags: ${{ env.IMAGE_FULL }}

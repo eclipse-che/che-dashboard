@@ -122,7 +122,7 @@ jobs:
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache
           context: ./${{ env.DIR_DASHBOARD }}
-          file: ./${{ env.DIR_DASHBOARD }}/apache.Dockerfile
+          file: ./${{ env.DIR_DASHBOARD }}/build/dockerfiles/Dockerfile
           platforms: ${{ matrix.platform }}
           push: ${{ matrix.default == true }}
           tags: ${{ env.ORGANIZATION }}/che-dashboard:${{ env.IMAGE_VERSION }}
