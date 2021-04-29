@@ -209,7 +209,7 @@ export class WorkspaceDetails extends React.PureComponent<Props, State> {
                 ref={this.editorTabPageRef}
                 workspace={workspace}
                 onSave={workspace => this.onSave(workspace)}
-                hasDevWorkspaceWarning={() => this.setState({
+                onDevWorkspaceWarning={() => this.setState({
                   hasWarningMessage: true
                 })} />
             </Tab>

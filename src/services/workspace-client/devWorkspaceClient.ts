@@ -156,7 +156,7 @@ export class DevWorkspaceClient extends WorkspaceClient {
     const namespace = workspace.metadata.namespace;
     const name = workspace.metadata.name;
 
-    const patch = [] as Patch[];
+    const patch: Patch[] = [];
 
     if (workspace.metadata.annotations && workspace.metadata.annotations[DEVWORKSPACE_NEXT_START_ANNOTATION]) {
 
