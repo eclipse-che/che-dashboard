@@ -31,7 +31,7 @@ export interface IStatusUpdate {
   workspaceId: string;
 }
 
-export const DEVWORKSPACE_NEXT_START_ANNOTATION = 'che.eclipse.org/dashboard-next-run';
+export const DEVWORKSPACE_NEXT_START_ANNOTATION = 'che.eclipse.org/next-start-cfg';
 
 /**
  * This class manages the connection between the frontend and the devworkspace typescript library
