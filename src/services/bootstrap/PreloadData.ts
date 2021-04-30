@@ -129,11 +129,6 @@ export class PreloadData {
     promises.push(
       requestDwDevfiles(`${settings.cheWorkspacePluginRegistryUrl}/plugins/${settings['che.factory.default_editor']}/devfile.yaml`)(this.store.dispatch, this.store.getState, undefined),
     );
-    if (settings['che.factory.default_plugins']) {
-      promises.push(
-        requestDwDevfiles(`${settings.cheWorkspacePluginRegistryUrl}/plugins/${settings['che.factory.default_plugins']}/devfile.yaml`)(this.store.dispatch, this.store.getState, undefined)
-      );
-    }
 
     await Promise.all(promises);
   }
