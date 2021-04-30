@@ -199,6 +199,39 @@ describe('Factory Loader container', () => {
         { stackName: 'http://test-location/?override.metadata.generateName=testPrefix' }));
   });
 
+  it('should show a target error with \'error_code=invalid_request\'', () => {
+    const location = 'http://test-location&error_code=invalid_request';
+    const workspace = createFakeWorkspaceWithRuntime('id-wksp-test');
+    workspaceFromDevfile = convertWorkspace(workspace);
+
+    renderComponent(location, workspace);
+
+    const elementCurrentStep = screen.getByTestId('factory-loader-current-step');
+    expect(LoadFactorySteps[elementCurrentStep.innerHTML]).toEqual(LoadFactorySteps[LoadFactorySteps.INITIALIZING]);
+
+    expect(showAlertMock).toHaveBeenCalledWith(expect.objectContaining({
+      alertVariant: 'danger',
+      title: 'Could not resolve devfile from private repository because authentication request is missing a parameter,' +
+        ' contains an invalid parameter, includes a parameter more than once, or is otherwise invalid.',
+    }));
+  });
+
+  it('should show a target error with \'error_code=access_denied\'', () => {
+    const location = 'http://test-location&error_code=access_denied';
+    const workspace = createFakeWorkspaceWithRuntime('id-wksp-test');
+    workspaceFromDevfile = convertWorkspace(workspace);
+
+    renderComponent(location, workspace);
+
+    const elementCurrentStep = screen.getByTestId('factory-loader-current-step');
+    expect(LoadFactorySteps[elementCurrentStep.innerHTML]).toEqual(LoadFactorySteps[LoadFactorySteps.INITIALIZING]);
+
+    expect(showAlertMock).toHaveBeenCalledWith(expect.objectContaining({
+      alertVariant: 'danger',
+      title: 'Could not resolve devfile from private repository because the user or authorization server denied the authentication request.',
+    }));
+  });
+
   it('should resolve the factory with \'policies.create=peruser\'', async () => {
     const location = 'http://test-location&policies.create=peruser';
     const workspace = createFakeWorkspaceWithRuntime('id-wksp-test', 'http://test-location/?policies.create=peruser');

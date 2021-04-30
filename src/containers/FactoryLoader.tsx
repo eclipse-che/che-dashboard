@@ -396,21 +396,23 @@ export class FactoryLoaderContainer extends React.PureComponent<Props, State> {
     }
 
     const errorCode = this.getErrorCode(search);
-    if (errorCode === ErrorCodes.ACCESS_DENIED) {
-      this.showAlert({
-        alertActionLinks: this.errorActionLinks(),
-        title: 'Could not resolve devfile from private repository because the user or authorization server denied the authentication request.',
-        alertVariant: AlertVariant.danger
-      });
-      return;
-    } else if (errorCode === ErrorCodes.INVALID_REQUEST) {
-      const alertActionLinks = this.errorActionLinks();
+    if (errorCode === ErrorCodes.INVALID_REQUEST) {
       this.showAlert({
         alertActionLinks: this.errorActionLinks(),
         title: 'Could not resolve devfile from private repository because authentication request is missing' +
           ' a parameter, contains an invalid parameter, includes a parameter more than once, or is otherwise invalid.',
-        alertVariant: AlertVariant.danger
+        alertVariant: AlertVariant.danger,
       });
+      return;
+    }
+    if (errorCode === ErrorCodes.ACCESS_DENIED) {
+      if (!this.state.hasError) {
+        this.showAlert({
+          alertActionLinks: this.errorActionLinks(),
+          title: 'Could not resolve devfile from private repository because the user or authorization server denied the authentication request.',
+          alertVariant: AlertVariant.danger,
+        });
+      }
       return;
     }
 
