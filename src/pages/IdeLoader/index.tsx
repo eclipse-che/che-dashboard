@@ -255,6 +255,7 @@ class IdeLoader extends React.PureComponent<Props, State> {
               variant={currentAlertVariant}
               title={currentRequestError}
               actionClose={<AlertActionCloseButton onClose={this.hideAlert} />}
+              actionLinks={alertActionLinks}
             />
           </AlertGroup>
         )}

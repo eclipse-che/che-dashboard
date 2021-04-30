@@ -137,12 +137,12 @@ export class DevWorkspaceClient extends WorkspaceClient {
 
   /**
    * Update a devworkspace.
-   * If the workspace you want to update has the DEVWORKSPACE_NEXT_START_ANNOTATION then 
+   * If the workspace you want to update has the DEVWORKSPACE_NEXT_START_ANNOTATION then
    * patch the cluster object with the value of DEVWORKSPACE_NEXT_START_ANNOTATION and don't restart the devworkspace.
-   * 
+   *
    * If the workspace does not specify DEVWORKSPACE_NEXT_START_ANNOTATION then
    * update the spec of the devworkspace and remove DEVWORKSPACE_NEXT_START_ANNOTATION if it exists.
-   * 
+   *
    * @param workspace The DevWorkspace you want to update
    * @param plugins The plugins you want to inject into the devworkspace
    */

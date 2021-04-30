@@ -286,7 +286,7 @@ class IdeLoaderContainer extends React.PureComponent<Props, State> {
     );
   }
 
-  private async verboseModeHandler(workspace: Workspace) {
+  private async verboseModeHandler(workspace: Workspace): Promise<void> {
     try {
       await this.props.startWorkspace(workspace, { 'debug-workspace-start': true });
       this.props.deleteWorkspaceLogs(workspace.id);

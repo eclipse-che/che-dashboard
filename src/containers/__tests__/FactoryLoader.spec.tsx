@@ -157,11 +157,11 @@ describe('Factory Loader container', () => {
       expect(createWorkspaceFromDevfileMock).toHaveBeenCalledWith(workspace.devfile, undefined, undefined, { stackName: location + '/' }));
 
     jest.runOnlyPendingTimers();
-    expect(showAlertMock).toBeCalledWith(
-      AlertVariant.warning,
-      'You\'re starting an ephemeral workspace. All changes to the source code will be lost ' +
-      'when the workspace is stopped unless they are pushed to a remote code repository.'
-    );
+    expect(showAlertMock).toBeCalledWith({
+      alertVariant: AlertVariant.warning,
+      title: 'You\'re starting an ephemeral workspace. All changes to the source code will be lost ' +
+        'when the workspace is stopped unless they are pushed to a remote code repository.'
+    });
     expect(setWorkspaceIdMock).toHaveBeenCalledWith(workspace.id);
     await waitFor(() => expect(requestWorkspaceMock).toHaveBeenCalledWith(workspaceFromDevfile));
     await waitFor(() => expect(startWorkspaceMock).not.toHaveBeenCalled());
@@ -302,7 +302,7 @@ describe('Factory Loader container', () => {
     renderComponent('', workspace);
 
     expect(requestFactoryResolverMock).not.toBeCalled();
-    await waitFor(() => expect(showAlertMock).toBeCalledWith(AlertVariant.danger, message));
+    await waitFor(() => expect(showAlertMock).toBeCalledWith({ alertVariant: AlertVariant.danger, title: message }));
     const elementHasError = screen.getByTestId('factory-loader-has-error');
     expect(elementHasError.innerHTML).toEqual('true');
 
