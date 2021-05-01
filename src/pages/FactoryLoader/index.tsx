@@ -40,6 +40,13 @@ export enum LoadFactoryTabs {
   Logs = 1,
 }
 
+export type AlertOptions = {
+  title: string;
+  timeDelay?: number;
+  alertActionLinks?: React.ReactFragment;
+  alertVariant: AlertVariant;
+};
+
 type Props = {
   hasError: boolean,
   currentStep: LoadFactorySteps,
@@ -47,7 +54,7 @@ type Props = {
   workspaceId: string;
   devfileLocationInfo?: string;
   callbacks?: {
-    showAlert?: (variant: AlertVariant, title: string) => void
+    showAlert?: (options: AlertOptions) => void
   }
 };
 
@@ -56,10 +63,11 @@ type State = {
   activeTabKey: LoadFactoryTabs;
   currentRequestError: string;
   currentAlertVariant?: AlertVariant;
+  alertActionLinks?: React.ReactFragment;
 };
 
 class FactoryLoader extends React.PureComponent<Props, State> {
-  public showAlert: (variant: AlertVariant, title: string, timeDelay?: number) => void;
+  public showAlert: (options: AlertOptions) => void;
   private readonly hideAlert: () => void;
   private readonly handleTabClick: (event: React.MouseEvent<HTMLElement, MouseEvent>, tabIndex: React.ReactText) => void;
 
@@ -84,9 +92,9 @@ class FactoryLoader extends React.PureComponent<Props, State> {
       }
     };
     // Init showAlert
-    let showAlertTimer;
-    this.showAlert = (variant: AlertVariant, title: string): void => {
-      this.setState({ currentRequestError: title, currentAlertVariant: variant });
+    let showAlertTimer: number;
+    this.showAlert = (alertOptions: AlertOptions): void => {
+      this.setState({ currentRequestError: alertOptions.title, currentAlertVariant: alertOptions.alertVariant, alertActionLinks: alertOptions?.alertActionLinks });
       if (this.state.activeTabKey === LoadFactoryTabs.Progress) {
         return;
       }
@@ -94,15 +102,15 @@ class FactoryLoader extends React.PureComponent<Props, State> {
       if (showAlertTimer) {
         clearTimeout(showAlertTimer);
       }
-      showAlertTimer = setTimeout(() => {
+      showAlertTimer = window.setTimeout(() => {
         this.setState({ alertVisible: false });
-      }, variant === AlertVariant.success ? 2000 : 10000);
+      }, alertOptions.alertVariant === AlertVariant.success ? 2000 : 10000);
     };
     this.hideAlert = (): void => this.setState({ alertVisible: false });
     // Prepare showAlert as a callback
     if (this.props.callbacks && !this.props.callbacks.showAlert) {
-      this.props.callbacks.showAlert = (variant: AlertVariant, title: string) => {
-        this.showAlert(variant, title);
+      this.props.callbacks.showAlert = (alertOptions: AlertOptions) => {
+        this.showAlert(alertOptions);
       };
     }
   }
@@ -206,7 +214,7 @@ class FactoryLoader extends React.PureComponent<Props, State> {
 
   public render(): React.ReactElement {
     const { workspaceName, workspaceId, hasError, currentStep } = this.props;
-    const { alertVisible, currentRequestError, currentAlertVariant } = this.state;
+    const { alertVisible, currentRequestError, currentAlertVariant, alertActionLinks } = this.state;
 
     return (
       <React.Fragment>
@@ -217,6 +225,7 @@ class FactoryLoader extends React.PureComponent<Props, State> {
               variant={currentAlertVariant}
               title={currentRequestError}
               actionClose={<AlertActionCloseButton onClose={this.hideAlert} />}
+              actionLinks={alertActionLinks}
             />
           </AlertGroup>
         )}
@@ -235,6 +244,7 @@ class FactoryLoader extends React.PureComponent<Props, State> {
                     title={currentRequestError}
                     actionClose={<AlertActionCloseButton
                       onClose={() => this.setState({ currentRequestError: '' })} />}
+                    actionLinks={alertActionLinks}
                   />
                 )}
                 <Wizard

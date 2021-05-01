@@ -10,7 +10,7 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import { AlertVariant } from '@patternfly/react-core';
+import { AlertActionLink, AlertVariant } from '@patternfly/react-core';
 import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { History } from 'history';
@@ -28,15 +28,17 @@ import { getEnvironment, isDevEnvironment } from '../services/helpers/environmen
 import { isOAuthResponse } from '../store/FactoryResolver';
 import { updateDevfile } from '../services/storageTypes';
 import { isWorkspaceV1, Workspace } from '../services/workspaceAdapter';
+import { AlertOptions } from '../pages/FactoryLoader';
 
 const WS_ATTRIBUTES_TO_SAVE: string[] = ['workspaceDeploymentLabels', 'workspaceDeploymentAnnotations', 'policies.create'];
 
 const DEFAULT_CREATE_POLICY = 'perclick';
 type CreatePolicy = 'perclick' | 'peruser';
 
-type Props =
-  MappedProps
-  & { history: History };
+enum ErrorCodes {
+  INVALID_REQUEST = 'invalid_request',
+  ACCESS_DENIED = 'access_denied'
+}
 
 export enum LoadFactorySteps {
   INITIALIZING = 0,
@@ -46,6 +48,10 @@ export enum LoadFactorySteps {
   START_WORKSPACE,
   OPEN_IDE
 }
+
+type Props =
+  MappedProps
+  & { history: History };
 
 type State = {
   search?: string;
@@ -57,7 +63,7 @@ type State = {
 };
 
 export class FactoryLoaderContainer extends React.PureComponent<Props, State> {
-  private factoryLoaderCallbacks: { showAlert?: (variant: AlertVariant, title: string) => void } = {};
+  private factoryLoaderCallbacks: { showAlert?: (options: AlertOptions) => void } = {};
   private factoryResolver: FactoryResolverStore.State;
   private overrideDevfileObject: {
     [params: string]: string
@@ -104,14 +110,21 @@ export class FactoryLoaderContainer extends React.PureComponent<Props, State> {
     return devfile;
   }
 
-  public showAlert(message: string, alertVariant: AlertVariant = AlertVariant.danger): void {
-    if (alertVariant === AlertVariant.danger) {
+  public showAlert(alertOptions: string | AlertOptions): void {
+    if (typeof alertOptions == 'string') {
+      const currentAlertOptions = alertOptions;
+      alertOptions = {
+        title: currentAlertOptions,
+        alertVariant: AlertVariant.danger
+      } as AlertOptions;
+    }
+    if (alertOptions.alertVariant === AlertVariant.danger) {
       this.setState({ hasError: true });
     }
     if (this.factoryLoaderCallbacks.showAlert) {
-      this.factoryLoaderCallbacks.showAlert(alertVariant, message);
+      this.factoryLoaderCallbacks.showAlert(alertOptions);
     } else {
-      console.error(message);
+      console.error(alertOptions.title);
     }
   }
 
@@ -190,6 +203,15 @@ export class FactoryLoaderContainer extends React.PureComponent<Props, State> {
       );
     }
     return search;
+  }
+
+  private getErrorCode(search: string): string | undefined {
+    const searchParam = new window.URLSearchParams(search);
+    const errorCode = searchParam.get('error_code');
+    if (!errorCode) {
+      return;
+    }
+    return errorCode;
   }
 
   private getLocation(search: string): string | undefined {
@@ -316,11 +338,31 @@ export class FactoryLoaderContainer extends React.PureComponent<Props, State> {
     // check if it ephemeral
     // not implemented for dev workspaces yet
     if (isWorkspaceV1(workspace.ref) && workspace.storageType === 'ephemeral') {
-      this.showAlert('You\'re starting an ephemeral workspace. All changes to the source code will be lost ' +
-        'when the workspace is stopped unless they are pushed to a remote code repository.', AlertVariant.warning);
+      this.showAlert({
+        title: 'You\'re starting an ephemeral workspace. All changes to the source code will be lost ' +
+          'when the workspace is stopped unless they are pushed to a remote code repository.',
+        alertVariant: AlertVariant.warning
+      });
     }
 
     return workspace;
+  }
+
+  private tryAgainHandler(): void {
+    const searchParams = new window.URLSearchParams(this.props.history.location.search);
+    searchParams.delete('error_code');
+    this.props.history.location.search = searchParams.toString();
+    this.props.history.push(this.props.history.location);
+  }
+
+  private errorActionLinks(): React.ReactFragment {
+    return (
+      <React.Fragment>
+        <AlertActionLink onClick={() => {
+          this.tryAgainHandler();
+        }}>Click to try again</AlertActionLink>
+      </React.Fragment>
+    );
   }
 
   private async startWorkspace(): Promise<void> {
@@ -352,6 +394,28 @@ export class FactoryLoaderContainer extends React.PureComponent<Props, State> {
     if (!search) {
       return;
     }
+
+    const errorCode = this.getErrorCode(search);
+    if (errorCode === ErrorCodes.INVALID_REQUEST) {
+      this.showAlert({
+        alertActionLinks: this.errorActionLinks(),
+        title: 'Could not resolve devfile from private repository because authentication request is missing' +
+          ' a parameter, contains an invalid parameter, includes a parameter more than once, or is otherwise invalid.',
+        alertVariant: AlertVariant.danger,
+      });
+      return;
+    }
+    if (errorCode === ErrorCodes.ACCESS_DENIED) {
+      if (!this.state.hasError) {
+        this.showAlert({
+          alertActionLinks: this.errorActionLinks(),
+          title: 'Could not resolve devfile from private repository because the user or authorization server denied the authentication request.',
+          alertVariant: AlertVariant.danger,
+        });
+      }
+      return;
+    }
+
     this.setState({ search, currentStep: LoadFactorySteps.CREATE_WORKSPACE });
 
     const location = this.getLocation(search);

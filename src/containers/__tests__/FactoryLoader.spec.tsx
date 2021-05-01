@@ -157,11 +157,11 @@ describe('Factory Loader container', () => {
       expect(createWorkspaceFromDevfileMock).toHaveBeenCalledWith(workspace.devfile, undefined, undefined, { stackName: location + '/' }));
 
     jest.runOnlyPendingTimers();
-    expect(showAlertMock).toBeCalledWith(
-      AlertVariant.warning,
-      'You\'re starting an ephemeral workspace. All changes to the source code will be lost ' +
-      'when the workspace is stopped unless they are pushed to a remote code repository.'
-    );
+    expect(showAlertMock).toBeCalledWith({
+      alertVariant: AlertVariant.warning,
+      title: 'You\'re starting an ephemeral workspace. All changes to the source code will be lost ' +
+        'when the workspace is stopped unless they are pushed to a remote code repository.'
+    });
     expect(setWorkspaceIdMock).toHaveBeenCalledWith(workspace.id);
     await waitFor(() => expect(requestWorkspaceMock).toHaveBeenCalledWith(workspaceFromDevfile));
     await waitFor(() => expect(startWorkspaceMock).not.toHaveBeenCalled());
@@ -197,6 +197,39 @@ describe('Factory Loader container', () => {
           attributes: { persistVolumes: 'false' }
         }, undefined, undefined,
         { stackName: 'http://test-location/?override.metadata.generateName=testPrefix' }));
+  });
+
+  it('should show a target error with \'error_code=invalid_request\'', () => {
+    const location = 'http://test-location&error_code=invalid_request';
+    const workspace = createFakeWorkspaceWithRuntime('id-wksp-test');
+    workspaceFromDevfile = convertWorkspace(workspace);
+
+    renderComponent(location, workspace);
+
+    const elementCurrentStep = screen.getByTestId('factory-loader-current-step');
+    expect(LoadFactorySteps[elementCurrentStep.innerHTML]).toEqual(LoadFactorySteps[LoadFactorySteps.INITIALIZING]);
+
+    expect(showAlertMock).toHaveBeenCalledWith(expect.objectContaining({
+      alertVariant: 'danger',
+      title: 'Could not resolve devfile from private repository because authentication request is missing a parameter,' +
+        ' contains an invalid parameter, includes a parameter more than once, or is otherwise invalid.',
+    }));
+  });
+
+  it('should show a target error with \'error_code=access_denied\'', () => {
+    const location = 'http://test-location&error_code=access_denied';
+    const workspace = createFakeWorkspaceWithRuntime('id-wksp-test');
+    workspaceFromDevfile = convertWorkspace(workspace);
+
+    renderComponent(location, workspace);
+
+    const elementCurrentStep = screen.getByTestId('factory-loader-current-step');
+    expect(LoadFactorySteps[elementCurrentStep.innerHTML]).toEqual(LoadFactorySteps[LoadFactorySteps.INITIALIZING]);
+
+    expect(showAlertMock).toHaveBeenCalledWith(expect.objectContaining({
+      alertVariant: 'danger',
+      title: 'Could not resolve devfile from private repository because the user or authorization server denied the authentication request.',
+    }));
   });
 
   it('should resolve the factory with \'policies.create=peruser\'', async () => {
@@ -302,7 +335,7 @@ describe('Factory Loader container', () => {
     renderComponent('', workspace);
 
     expect(requestFactoryResolverMock).not.toBeCalled();
-    await waitFor(() => expect(showAlertMock).toBeCalledWith(AlertVariant.danger, message));
+    await waitFor(() => expect(showAlertMock).toBeCalledWith({ alertVariant: AlertVariant.danger, title: message }));
     const elementHasError = screen.getByTestId('factory-loader-has-error');
     expect(elementHasError.innerHTML).toEqual('true');
 
