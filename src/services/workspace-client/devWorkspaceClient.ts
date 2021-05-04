@@ -81,7 +81,7 @@ export class DevWorkspaceClient extends WorkspaceClient {
   async getWorkspaceByName(namespace: string, workspaceName: string): Promise<IDevWorkspace> {
     let workspace = await this.dwApi.getByName(namespace, workspaceName);
     let attempted = 0;
-    while ((!workspace.status || !workspace.status.phase || !workspace.status.ideUrl) && attempted < this.maxStatusAttempts) {
+    while ((!workspace.status || !workspace.status.phase || !workspace.status.mainUrl) && attempted < this.maxStatusAttempts) {
       workspace = await this.dwApi.getByName(namespace, workspaceName);
       this.checkForDevWorkspaceError(workspace);
       attempted += 1;
@@ -91,8 +91,8 @@ export class DevWorkspaceClient extends WorkspaceClient {
     const workspaceStatus = workspace.status;
     if (!workspaceStatus || !workspaceStatus.phase) {
       throw new Error(`Could not retrieve devworkspace status information from ${workspaceName} in namespace ${namespace}`);
-    } else if (workspaceStatus.phase === DevWorkspaceStatus.RUNNING && !workspaceStatus?.ideUrl) {
-      throw new Error('Could not retrieve ideUrl for the running workspace');
+    } else if (workspaceStatus.phase === DevWorkspaceStatus.RUNNING && !workspaceStatus?.mainUrl) {
+      throw new Error('Could not retrieve mainUrl for the running workspace');
     }
     return workspace;
   }

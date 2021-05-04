@@ -30,7 +30,7 @@ export class DevWorkspaceBuilder {
     },
     status: {
       devworkspaceId: getRandomString(4),
-      ideUrl: '',
+      mainUrl: '',
       phase: 'STOPPED',
     }
   }
@@ -56,7 +56,7 @@ export class DevWorkspaceBuilder {
   }
 
   withIdeUrl(ideUrl: string): DevWorkspaceBuilder {
-    this.workspace.status.ideUrl = ideUrl;
+    this.workspace.status.mainUrl = ideUrl;
     return this;
   }
 
