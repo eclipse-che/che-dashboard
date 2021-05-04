@@ -184,7 +184,7 @@ export class WorkspaceAdapter<T extends che.Workspace | IDevWorkspace> implement
         }
       }
     } else {
-      return (this.workspace as IDevWorkspace).status.ideUrl;
+      return (this.workspace as IDevWorkspace).status.mainUrl;
     }
   }
 
