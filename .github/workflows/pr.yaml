@@ -85,8 +85,6 @@ jobs:
             default: false
           - platform: linux/ppc64le
             default: false
-          - platform: linux/s390x
-            default: false
     steps:
       -
         name: "Checkout Che Dashboard source code"

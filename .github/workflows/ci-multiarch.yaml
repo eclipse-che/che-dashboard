@@ -28,12 +28,11 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        arch: [amd64,arm64,ppc64le,s390x]
+        arch: [amd64,arm64,ppc64le]
     outputs:
       amd64: ${{ steps.result.outputs.amd64 }}
       arm64: ${{ steps.result.outputs.arm64 }}
       ppc64le: ${{ steps.result.outputs.ppc64le }}
-      s390x: ${{ steps.result.outputs.s390x }}
     steps:
       -
         name: "Checkout Che Dashboard source code"
@@ -102,10 +101,6 @@ jobs:
           PPC64LE_VERSION="${{ needs['build-images'].outputs.ppc64le }}"
           if [ -n "$PPC64LE_VERSION" ]; then
             AMEND+=" --amend ${{ env.IMAGE }}:$PPC64LE_VERSION";
-          fi
-          S390X_VERSION="${{ needs['build-images'].outputs.s390x }}"
-          if [ -n "$S390X_VERSION" ]; then
-            AMEND+=" --amend ${{ env.IMAGE }}:$S390X_VERSION";
           fi
           if [ -z "$AMEND" ]; then
             echo "[!] The job 'build-images' didn't provide any outputs. Can't create the manifest list."
