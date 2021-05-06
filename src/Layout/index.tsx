@@ -12,7 +12,7 @@
 
 import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
-import { Page } from '@patternfly/react-core';
+import { Page, AlertVariant } from '@patternfly/react-core';
 import { History } from 'history';
 import { matchPath } from 'react-router';
 
@@ -21,6 +21,7 @@ import Sidebar from './Sidebar';
 import { ThemeVariant } from './themeVariant';
 import { AppState } from '../store';
 import { lazyInject } from '../inversify.config';
+import { AppAlerts } from '../services/alerts/appAlerts';
 import { KeycloakAuthService } from '../services/keycloak/auth';
 import { IssuesReporterService } from '../services/bootstrap/issuesReporter';
 import { ErrorReporter } from './ErrorReporter';
@@ -29,6 +30,7 @@ import { BannerAlert } from '../components/BannerAlert';
 import { ErrorBoundary } from './ErrorBoundary';
 import { DisposableCollection } from '../services/helpers/disposable';
 import { ROUTE } from '../route.enum';
+import { selectRegistriesErrors } from '../store/DevfileRegistries/selectors';
 
 const THEME_KEY = 'theme';
 const IS_MANAGED_SIDEBAR = false;
@@ -46,6 +48,9 @@ type State = {
 };
 
 export class Layout extends React.PureComponent<Props, State> {
+
+  @lazyInject(AppAlerts)
+  private readonly appAlerts: AppAlerts;
 
   @lazyInject(IssuesReporterService)
   private readonly issuesReporterService: IssuesReporterService;
@@ -97,6 +102,15 @@ export class Layout extends React.PureComponent<Props, State> {
   }
 
   public componentDidMount(): void {
+    this.listenToIframeMessages();
+    this.reportPreloadErrors();
+  }
+
+  public componentWillUnmount(): void {
+    this.toDispose.dispose();
+  }
+
+  private listenToIframeMessages() {
     const handleMessage = (event: MessageEvent): void => {
       if (typeof event.data !== 'string') {
         return;
@@ -107,7 +121,8 @@ export class Layout extends React.PureComponent<Props, State> {
           isSidebarVisible: true,
           isHeaderVisible: true,
         });
-      } else if (event.data === 'hide-navbar') {
+      }
+      else if (event.data === 'hide-navbar') {
         const isHeaderVisible = !this.testIdePath() || document.getElementById('ide-iframe') === null;
         this.setState({
           isSidebarVisible: false,
@@ -123,8 +138,17 @@ export class Layout extends React.PureComponent<Props, State> {
     });
   }
 
-  public componentWillUnmount(): void {
-    this.toDispose.dispose();
+  private reportPreloadErrors(): void {
+    if (this.props.registriesErrors.length === 0) {
+      return;
+    }
+    this.props.registriesErrors.forEach(error => {
+      this.appAlerts.showAlert({
+        key: 'registry-error-' + error.url,
+        title: error.errorMessage,
+        variant: AlertVariant.danger,
+      });
+    });
   }
 
   public render(): React.ReactElement {
@@ -186,6 +210,7 @@ export class Layout extends React.PureComponent<Props, State> {
 const mapStateToProps = (state: AppState) => ({
   brandingStore: state.branding,
   userStore: state.user,
+  registriesErrors: selectRegistriesErrors(state),
 });
 
 const connector = connect(

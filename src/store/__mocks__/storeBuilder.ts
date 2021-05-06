@@ -64,7 +64,7 @@ export class FakeStoreBuilder {
       isLoading: false,
       devfiles: {},
       filter: '',
-      metadata: [],
+      registries: {},
       schema: {},
     } as DevfileRegistriesState,
     user: {
@@ -137,15 +137,15 @@ export class FakeStoreBuilder {
   public withDevfileRegistries(
     options: {
       devfiles?: { [location: string]: { content: string, error: string } },
-      metadata?: che.DevfileMetaData[],
+      registries?: { [location: string]: { metadata?: che.DevfileMetaData[], error?: string } },
       schema?: any,
     }, isLoading = false
   ): FakeStoreBuilder {
     if (options.devfiles) {
       this.state.devfileRegistries.devfiles = Object.assign({}, options.devfiles);
     }
-    if (options.metadata) {
-      this.state.devfileRegistries.metadata = Object.assign([], options.metadata);
+    if (options.registries) {
+      this.state.devfileRegistries.registries = Object.assign({}, options.registries);
     }
     if (options.schema) {
       this.state.devfileRegistries.schema = Object.assign({}, options.schema);

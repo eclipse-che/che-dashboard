@@ -75,7 +75,7 @@ export class PreloadData {
       this.updateInfrastructureNamespaces(),
       this.updateUserProfile(),
       this.updatePlugins(settings),
-      this.updateRegistriesMetadata(settings),
+      this.getRegistriesMetadata(settings),
       this.updateDevfileSchema(),
     ]);
   }
@@ -146,7 +146,7 @@ export class PreloadData {
     return this.store.getState().cheWorkspaces.settings;
   }
 
-  private async updateRegistriesMetadata(settings: che.WorkspaceSettings): Promise<void> {
+  private async getRegistriesMetadata(settings: che.WorkspaceSettings): Promise<void> {
     const { requestRegistriesMetadata } = DevfileRegistriesStore.actionCreators;
     await requestRegistriesMetadata(settings.cheWorkspaceDevfileRegistryUrl || '')(this.store.dispatch, this.store.getState, undefined);
   }

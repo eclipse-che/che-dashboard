@@ -12,7 +12,7 @@
 
 import { Action, Reducer } from 'redux';
 import { AppThunk } from '..';
-import { fetchRegistriesMetadata, fetchDevfile } from '../../services/registry/devfiles';
+import { fetchRegistryMetadata, fetchDevfile } from '../../services/registry/devfiles';
 import { createState } from '../helpers';
 import { container } from '../../inversify.config';
 import { CheWorkspaceClient } from '../../services/workspace-client/cheWorkspaceClient';
@@ -23,11 +23,16 @@ const WorkspaceClient = container.get(CheWorkspaceClient);
 export interface State {
   isLoading: boolean;
   schema: any;
-  metadata: che.DevfileMetaData[];
+  registries: {
+    [location: string]: {
+      metadata?: che.DevfileMetaData[];
+      error?: string;
+    };
+  };
   devfiles: {
     [location: string]: {
-      content: string;
-      error: string;
+      content?: string;
+      error?: string;
     };
   };
 
@@ -35,13 +40,20 @@ export interface State {
   filter: string;
 }
 
-interface RequestMetadataAction {
-  type: 'REQUEST_METADATA';
+interface RequestRegistryMetadataAction {
+  type: 'REQUEST_REGISTRY_METADATA';
 }
 
-interface ReceiveMetadataAction {
-  type: 'RECEIVE_METADATA';
+interface ReceiveRegistryMetadataAction {
+  type: 'RECEIVE_REGISTRY_METADATA';
+  url: string;
   metadata: che.DevfileMetaData[];
+}
+
+interface ReceiveRegistryErrorAction {
+  type: 'RECEIVE_REGISTRY_ERROR';
+  url: string;
+  error: string;
 }
 
 interface RequestDevfileAction {
@@ -72,8 +84,9 @@ interface ClearFilterValue extends Action {
   type: 'CLEAR_FILTER',
 }
 
-type KnownAction = RequestMetadataAction
-  | ReceiveMetadataAction
+type KnownAction = RequestRegistryMetadataAction
+  | ReceiveRegistryMetadataAction
+  | ReceiveRegistryErrorAction
   | RequestDevfileAction
   | ReceiveDevfileAction
   | RequestSchemaAction
@@ -82,7 +95,7 @@ type KnownAction = RequestMetadataAction
   | ClearFilterValue;
 
 export type ActionCreators = {
-  requestRegistriesMetadata: (location: string) => AppThunk<KnownAction, Promise<che.DevfileMetaData[]>>;
+  requestRegistriesMetadata: (location: string) => AppThunk<KnownAction, Promise<void>>;
   requestDevfile: (Location: string) => AppThunk<KnownAction, Promise<string>>;
   requestJsonSchema: () => AppThunk<KnownAction, any>;
 
@@ -95,15 +108,33 @@ export const actionCreators: ActionCreators = {
   /**
    * Request devfile metadata from available registries. `registryUrls` is space-separated list of urls.
    */
-  requestRegistriesMetadata: (registryUrls: string): AppThunk<KnownAction, Promise<che.DevfileMetaData[]>> => async (dispatch): Promise<che.DevfileMetaData[]> => {
-    dispatch({ type: 'REQUEST_METADATA' });
-    try {
-      const metadata = await fetchRegistriesMetadata(registryUrls);
-      dispatch({ type: 'RECEIVE_METADATA', metadata });
-      return metadata;
-    } catch (e) {
-      throw new Error(`Failed to request registries metadata from URLs: ${registryUrls}, \n` + e);
-    }
+  requestRegistriesMetadata: (registryUrls: string): AppThunk<KnownAction, Promise<void>> => async (dispatch): Promise<void> => {
+    dispatch({ type: 'REQUEST_REGISTRY_METADATA' });
+    const promises = registryUrls
+      .split(' ')
+      .map(async url => {
+        try {
+          const metadata = await fetchRegistryMetadata(url);
+          dispatch({
+            type: 'RECEIVE_REGISTRY_METADATA',
+            url,
+            metadata,
+          });
+        } catch (error) {
+          dispatch({
+            type: 'RECEIVE_REGISTRY_ERROR',
+            url,
+            error,
+          });
+          throw error;
+        }
+      });
+    const results = await Promise.allSettled(promises);
+    results.forEach(result => {
+      if (result.status === 'rejected') {
+        throw result.reason;
+      }
+    });
   },
 
   requestDevfile: (url: string): AppThunk<KnownAction, Promise<string>> => async (dispatch): Promise<string> => {
@@ -158,7 +189,7 @@ export const actionCreators: ActionCreators = {
 
 const unloadedState: State = {
   isLoading: false,
-  metadata: [],
+  registries: {},
   devfiles: {},
   schema: undefined,
 
@@ -172,16 +203,30 @@ export const reducer: Reducer<State> = (state: State | undefined, incomingAction
 
   const action = incomingAction as KnownAction;
   switch (action.type) {
-    case 'REQUEST_METADATA':
+    case 'REQUEST_REGISTRY_METADATA':
     case 'REQUEST_SCHEMA':
     case 'REQUEST_DEVFILE':
       return createState(state, {
         isLoading: true,
+        registries: {},
       });
-    case 'RECEIVE_METADATA':
+    case 'RECEIVE_REGISTRY_METADATA':
       return createState(state, {
         isLoading: false,
-        metadata: action.metadata,
+        registries: {
+          [action.url]: {
+            metadata: action.metadata,
+          },
+        },
+      });
+    case 'RECEIVE_REGISTRY_ERROR':
+      return createState(state, {
+        isLoading: false,
+        registries: {
+          [action.url]: {
+            error: action.error,
+          },
+        },
       });
     case 'RECEIVE_DEVFILE':
       return createState(state, {
