@@ -21,7 +21,7 @@ Below you can find installation instructions
 ## Quick start
 
 ```sh
-docker build . -f apache.Dockerfile -t quay.io/che-incubator/che-dashboard-next:next
+docker build . -f build/dockerfiles/Dockerfile -t quay.io/che-incubator/che-dashboard-next:next
 ```
 
 ## Running
