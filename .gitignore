@@ -12,7 +12,7 @@ yarn-error.log
 
 .deps/tmp/
 
-build/
+lib/
 
 .theia/
 .idea/

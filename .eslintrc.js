@@ -26,7 +26,7 @@ module.exports = {
     '.github/',
     '.vscode/',
     'assets/',
-    'build/',
+    'lib/',
     '*.js',
   ],
   parser: '@typescript-eslint/parser',

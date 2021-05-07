@@ -22,7 +22,7 @@ module.exports = env => {
     mode: 'production',
     devServer: {
       contentBase: [
-        path.join(__dirname, 'build'),
+        path.join(__dirname, 'lib'),
       ],
       clientLogLevel: 'debug',
       contentBasePublicPath: '/',

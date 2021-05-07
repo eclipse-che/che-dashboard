@@ -5,7 +5,7 @@
     "jsx": "react",
     "module": "esnext",
     "noImplicitAny": false,
-    "outDir": "./build/",
+    "outDir": "./lib/",
     "preserveConstEnums": true,
     "removeComments": true,
     "sourceMap": true,
