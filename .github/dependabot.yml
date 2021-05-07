@@ -6,4 +6,4 @@ updates:
     directory: "/build/dockerfiles"
     # Check for updates once a week
     schedule:
-      interval: "daily"
+      interval: "weekly"
