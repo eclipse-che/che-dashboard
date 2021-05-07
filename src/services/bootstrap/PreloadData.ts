@@ -54,7 +54,7 @@ export class PreloadData {
   }
 
   async init(): Promise<void> {
-    await this.updateUser();
+    await this.getCurrentUser();
     await this.updateJsonRpcMasterApi();
 
     new ResourceFetcherService().prefetchResources(this.store.getState());
@@ -103,13 +103,8 @@ export class PreloadData {
     return this.devWorkspaceClient.subscribeToNamespace(namespace, callbacks, this.store.dispatch, this.store.getState);
   }
 
-  private async updateUser(): Promise<void> {
-    const { requestUser, setUser } = UserStore.actionCreators;
-    const user = this.keycloakSetup.getUser();
-    if (user) {
-      setUser(user)(this.store.dispatch, this.store.getState, undefined);
-      return;
-    }
+  private async getCurrentUser(): Promise<void> {
+    const { requestUser } = UserStore.actionCreators;
     await requestUser()(this.store.dispatch, this.store.getState, undefined);
   }
 

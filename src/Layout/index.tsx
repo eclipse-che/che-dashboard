@@ -31,6 +31,7 @@ import { ErrorBoundary } from './ErrorBoundary';
 import { DisposableCollection } from '../services/helpers/disposable';
 import { ROUTE } from '../route.enum';
 import { selectRegistriesErrors } from '../store/DevfileRegistries/selectors';
+import { selectUserError, selectUser } from '../store/User/selectors';
 
 const THEME_KEY = 'theme';
 const IS_MANAGED_SIDEBAR = false;
@@ -139,16 +140,24 @@ export class Layout extends React.PureComponent<Props, State> {
   }
 
   private reportPreloadErrors(): void {
-    if (this.props.registriesErrors.length === 0) {
-      return;
+    // devfile registries
+    if (this.props.registriesErrors.length > 0) {
+      this.props.registriesErrors.forEach(error => {
+        this.appAlerts.showAlert({
+          key: 'registry-error-' + error.url,
+          title: error.errorMessage,
+          variant: AlertVariant.danger,
+        });
+      });
     }
-    this.props.registriesErrors.forEach(error => {
+    // user
+    if (this.props.userError) {
       this.appAlerts.showAlert({
-        key: 'registry-error-' + error.url,
-        title: error.errorMessage,
+        key: 'user-error',
+        title: this.props.userError,
         variant: AlertVariant.danger,
       });
-    });
+    }
   }
 
   public render(): React.ReactElement {
@@ -169,9 +178,8 @@ export class Layout extends React.PureComponent<Props, State> {
     }
 
     const { isHeaderVisible, isSidebarVisible, theme } = this.state;
-    const { history } = this.props;
+    const { history, user } = this.props;
 
-    const user = this.props.userStore.user;
     const logoUrl = this.props.brandingStore.data.logoFile;
 
     return (
@@ -209,7 +217,8 @@ export class Layout extends React.PureComponent<Props, State> {
 
 const mapStateToProps = (state: AppState) => ({
   brandingStore: state.branding,
-  userStore: state.user,
+  user: selectUser(state),
+  userError: selectUserError(state),
   registriesErrors: selectRegistriesErrors(state),
 });
 
