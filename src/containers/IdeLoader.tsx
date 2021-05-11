@@ -134,7 +134,7 @@ class IdeLoaderContainer extends React.PureComponent<Props, State> {
     }
   }
 
-  private async handleEventMessage(event: MessageEvent): Promise<void> {
+  private async handleIframeMessage(event: MessageEvent): Promise<void> {
     if (typeof event.data !== 'string') {
       return;
     }
@@ -185,7 +185,7 @@ class IdeLoaderContainer extends React.PureComponent<Props, State> {
     }
     this.debounce.setDelay(1000);
 
-    const listener = this.handleEventMessage;
+    const listener = this.handleIframeMessage;
     window.addEventListener('message', listener, false);
     this.toDispose.push({
       dispose: () => {
