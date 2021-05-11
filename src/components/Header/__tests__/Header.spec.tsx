@@ -26,7 +26,7 @@ describe('The header component for IDE-loader and Factory-loader pages', () => {
   it('should render start workspace correctly', () => {
     const element = (<Header
       title="Start workspace"
-      status={WorkspaceStatus[WorkspaceStatus.STARTING]}
+      status={WorkspaceStatus.STARTING}
     />);
 
     expect(renderer.create(element).toJSON()).toMatchSnapshot();
@@ -35,7 +35,7 @@ describe('The header component for IDE-loader and Factory-loader pages', () => {
   it('should render workspace error correctly', () => {
     const element = (<Header
       title="Workspace error"
-      status={WorkspaceStatus[WorkspaceStatus.ERROR]}
+      status={WorkspaceStatus.ERROR}
     />);
 
     expect(renderer.create(element).toJSON()).toMatchSnapshot();

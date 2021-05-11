@@ -11,10 +11,10 @@
  */
 
 import { inject, injectable } from 'inversify';
-import { isDeleting, isWebTerminal } from '../helpers/devworkspace';
+import { isWebTerminal } from '../helpers/devworkspace';
 import { WorkspaceClient } from './';
 import { RestApi as DevWorkspaceRestApi, IDevWorkspaceApi, IDevWorkspaceDevfile, IDevWorkspace, IDevWorkspaceTemplateApi, IDevWorkspaceTemplate, devWorkspaceApiGroup, devworkspaceSingularSubresource, devworkspaceVersion, ICheApi, Patch } from '@eclipse-che/devworkspace-client';
-import { DevWorkspaceStatus, WorkspaceStatus } from '../helpers/types';
+import { DevWorkspaceStatus } from '../helpers/types';
 import { KeycloakSetupService } from '../keycloak/setup';
 import { delay } from '../helpers/delay';
 import { RestApi } from '@eclipse-che/devworkspace-client/dist/browser';
@@ -44,9 +44,10 @@ export class DevWorkspaceClient extends WorkspaceClient {
   private dwCheApi: ICheApi;
   private previousItems: Map<string, Map<string, IStatusUpdate>>;
   private client: RestApi;
-  private maxStatusAttempts: number;
+  private readonly maxStatusAttempts: number;
   private initializing: Promise<void>;
   private lastDevWorkspaceLog: Map<string, string>;
+  private devWorkspacesIds: string[];
 
   constructor(@inject(KeycloakSetupService) keycloakSetupService: KeycloakSetupService) {
     super(keycloakSetupService);
@@ -58,6 +59,7 @@ export class DevWorkspaceClient extends WorkspaceClient {
     this.previousItems = new Map();
     this.maxStatusAttempts = 10;
     this.lastDevWorkspaceLog = new Map();
+    this.devWorkspacesIds = [];
   }
 
   isEnabled(): Promise<boolean> {
@@ -69,7 +71,7 @@ export class DevWorkspaceClient extends WorkspaceClient {
     const workspaces = await this.dwApi.listInNamespace(defaultNamespace);
     const availableWorkspaces: IDevWorkspace[] = [];
     for (const workspace of workspaces) {
-      if (!isDeleting(workspace) && !isWebTerminal(workspace)) {
+      if (!isWebTerminal(workspace)) {
         availableWorkspaces.push(workspace);
       }
     }
@@ -218,7 +220,7 @@ export class DevWorkspaceClient extends WorkspaceClient {
 
   async changeWorkspaceStatus(namespace: string, name: string, started: boolean): Promise<IDevWorkspace> {
     const changedWorkspace = await this.dwApi.changeStatus(namespace, name, started);
-    if (started === false && changedWorkspace.status?.devworkspaceId) {
+    if (!started && changedWorkspace.status?.devworkspaceId) {
       this.lastDevWorkspaceLog.delete(changedWorkspace.status.devworkspaceId);
     }
     this.checkForDevWorkspaceError(changedWorkspace);
@@ -228,7 +230,7 @@ export class DevWorkspaceClient extends WorkspaceClient {
   /**
    * Add the plugin to the workspace
    * @param workspace A devworkspace
-   * @param plugin A devworkspacetemplate
+   * @param pluginName The name of the plugin
    */
   private addPlugin(workspace: IDevWorkspace, pluginName: string, namespace: string) {
     workspace.spec.template.components!.push({
@@ -259,7 +261,10 @@ export class DevWorkspaceClient extends WorkspaceClient {
 
   subscribeToNamespace(
     defaultNamespace: string,
-    callback: (workspace: IDevWorkspace, message: IStatusUpdate) => AppThunk<Action, void>,
+    callbacks: {
+      updateDevWorkspaceStatus: (workspace: IDevWorkspace, message: IStatusUpdate) => AppThunk<Action, void>,
+      updateDeletedDevWorkspaces: (deletedWorkspacesIds: string[]) => AppThunk<Action, void>,
+    },
     dispatch: ThunkDispatch<State, undefined, Action>,
     getState: () => AppState,
   ): void {
@@ -280,9 +285,21 @@ export class DevWorkspaceClient extends WorkspaceClient {
             this.lastDevWorkspaceLog.set(workspaceId, message);
           }
         }
-        callback(devworkspace, statusUpdate)(dispatch, getState, undefined);
+        callbacks.updateDevWorkspaceStatus(devworkspace, statusUpdate)(dispatch, getState, undefined);
       });
-    }, 1000);
+
+      const deletedWorkspacesId: string[] = [];
+      const devWorkspacesIds = devworkspaces.map(workspace => workspace.status.devworkspaceId);
+      this.devWorkspacesIds.forEach(id => {
+        if (devWorkspacesIds.indexOf(id) === -1) {
+          deletedWorkspacesId.push(id);
+        }
+      });
+      this.devWorkspacesIds = devWorkspacesIds;
+      if (deletedWorkspacesId.length) {
+        callbacks.updateDeletedDevWorkspaces(deletedWorkspacesId)(dispatch, getState, undefined);
+      }
+    }, 3000);
   }
 
   /**
@@ -295,8 +312,8 @@ export class DevWorkspaceClient extends WorkspaceClient {
     const workspaceId = devworkspace.status.devworkspaceId;
     // Starting devworkspaces don't have status defined
     const status = typeof devworkspace.status.phase === 'string'
-      ? devworkspace.status.phase.toUpperCase()
-      : WorkspaceStatus[WorkspaceStatus.STARTING];
+      ? devworkspace.status.phase
+      : DevWorkspaceStatus.STARTING;
 
     const prevWorkspace = this.previousItems.get(namespace);
     if (prevWorkspace) {

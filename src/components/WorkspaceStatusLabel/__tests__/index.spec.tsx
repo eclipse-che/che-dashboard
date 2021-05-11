@@ -33,7 +33,7 @@ describe('The workspace status label component', () => {
 
   it('should render STOPPED status correctly', () => {
     const element = (<WorkspaceStatusLabel
-      status={WorkspaceStatus[WorkspaceStatus.STOPPED]}
+      status={WorkspaceStatus.STOPPED}
     />);
 
     expect(renderer.create(element).toJSON()).toMatchSnapshot();
@@ -41,7 +41,7 @@ describe('The workspace status label component', () => {
 
   it('should render RUNNING status correctly', () => {
     const element = (<WorkspaceStatusLabel
-      status={WorkspaceStatus[WorkspaceStatus.RUNNING]}
+      status={WorkspaceStatus.RUNNING}
     />);
 
     expect(renderer.create(element).toJSON()).toMatchSnapshot();
@@ -49,15 +49,7 @@ describe('The workspace status label component', () => {
 
   it('should render ERROR status correctly', () => {
     const element = (<WorkspaceStatusLabel
-      status={WorkspaceStatus[WorkspaceStatus.ERROR]}
-    />);
-
-    expect(renderer.create(element).toJSON()).toMatchSnapshot();
-  });
-
-  it('should render PAUSE status correctly', () => {
-    const element = (<WorkspaceStatusLabel
-      status={WorkspaceStatus[WorkspaceStatus.PAUSED]}
+      status={WorkspaceStatus.ERROR}
     />);
 
     expect(renderer.create(element).toJSON()).toMatchSnapshot();

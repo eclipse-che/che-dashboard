@@ -386,7 +386,7 @@ function createFakeWorkspaceWithRuntime(
     workspaceId,
     workspaceName,
     'namespace',
-    WorkspaceStatus[WorkspaceStatus.RUNNING],
+    WorkspaceStatus.RUNNING,
     {
       machines: {
         'theia-factory-test': {
@@ -395,17 +395,17 @@ function createFakeWorkspaceWithRuntime(
           },
           servers: {
             theia: {
-              status: WorkspaceStatus[WorkspaceStatus.RUNNING],
+              status: WorkspaceStatus.RUNNING,
               attributes: {
                 type: 'ide',
               },
               url: 'https://dummy-editora-server',
             },
           },
-          status: WorkspaceStatus[WorkspaceStatus.RUNNING],
+          status: WorkspaceStatus.RUNNING,
         },
       },
-      status: WorkspaceStatus[WorkspaceStatus.RUNNING],
+      status: WorkspaceStatus.RUNNING,
       activeEnv: 'default',
     }
   );

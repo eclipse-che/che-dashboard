@@ -230,7 +230,7 @@ class FactoryLoader extends React.PureComponent<Props, State> {
           </AlertGroup>
         )}
         <Header title={`Starting workspace ${workspaceName}`}
-          status={hasError ? WorkspaceStatus[WorkspaceStatus.ERROR] : WorkspaceStatus[WorkspaceStatus.STARTING]} />
+          status={hasError ? WorkspaceStatus.ERROR : WorkspaceStatus.STARTING} />
         <PageSection variant={SECTION_THEME} className="load-factory-page" isFilled={true}>
           <Tabs activeKey={this.state.activeTabKey} onSelect={this.handleTabClick} inset={{ default: 'insetLg' }}
             id="factory-loader-page-tabs">
