@@ -22,6 +22,8 @@ import { safeLoad } from 'js-yaml';
 import stringify, { language, conf } from '../../services/helpers/editor';
 import $ from 'jquery';
 import { IDevWorkspaceDevfile } from '@eclipse-che/devworkspace-client';
+import { selectDevfileSchema } from '../../store/DevfileRegistries/selectors';
+import { selectPlugins } from '../../store/Plugins/chePlugins/selectors';
 
 import './DevfileEditor.styl';
 
@@ -101,8 +103,8 @@ export class DevfileEditor extends React.PureComponent<Props, State> {
       // register language server providers
       this.registerLanguageServerProviders(languages);
     }
-    const jsonSchema = this.props.devfileRegistries.schema || {};
-    const items = this.props.plugins.plugins;
+    const jsonSchema = this.props.devfileSchema || {};
+    const items = this.props.plugins;
     const properties = jsonSchema?.oneOf && jsonSchema.oneOf[0] ? jsonSchema.oneOf[0].properties : jsonSchema.properties;
     const components = properties ? properties.components : undefined;
     if (components) {
@@ -400,8 +402,8 @@ export class DevfileEditor extends React.PureComponent<Props, State> {
 
 const mapStateToProps = (state: AppState) => ({
   branding: state.branding,
-  devfileRegistries: state.devfileRegistries,
-  plugins: state.plugins,
+  devfileSchema: selectDevfileSchema(state),
+  plugins: selectPlugins(state),
 });
 
 const connector = connect(

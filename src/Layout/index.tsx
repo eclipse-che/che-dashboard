@@ -30,7 +30,7 @@ import { BannerAlert } from '../components/BannerAlert';
 import { ErrorBoundary } from './ErrorBoundary';
 import { DisposableCollection } from '../services/helpers/disposable';
 import { ROUTE } from '../route.enum';
-import { selectRegistriesErrors } from '../store/DevfileRegistries/selectors';
+import { selectRegistriesErrors, selectDevfileSchemaError } from '../store/DevfileRegistries/selectors';
 import { selectUserError, selectUser } from '../store/User/selectors';
 import { selectPluginsError } from '../store/Plugins/chePlugins/selectors';
 import { selectDwPluginsError } from '../store/Plugins/devWorkspacePlugins/selectors';
@@ -185,6 +185,14 @@ export class Layout extends React.PureComponent<Props, State> {
         variant: AlertVariant.danger,
       });
     }
+    // devfile schema error
+    if (this.props.devfileSchemaError) {
+      this.appAlerts.showAlert({
+        key: 'devfile-schema-error',
+        title: this.props.devfileSchemaError,
+        variant: AlertVariant.danger,
+      });
+    }
   }
 
   public render(): React.ReactElement {
@@ -250,6 +258,7 @@ const mapStateToProps = (state: AppState) => ({
   pluginsError: selectPluginsError(state),
   dwPluginsError: selectDwPluginsError(state),
   infrastructureNamespacesError: selectInfrastructureNamespacesError(state),
+  devfileSchemaError: selectDevfileSchemaError(state),
 });
 
 const connector = connect(

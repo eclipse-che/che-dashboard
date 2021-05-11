@@ -68,3 +68,13 @@ function mergeRegistriesMetadata(registriesMetadata: Array<Array<che.DevfileMeta
     return mergedMetadata.concat(registryMetadata);
   }, []);
 }
+
+export const selectDevfileSchema = createSelector(
+  selectState,
+  state => state.schema.schema,
+);
+
+export const selectDevfileSchemaError = createSelector(
+  selectState,
+  state => state.schema.error,
+);

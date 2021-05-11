@@ -16,13 +16,17 @@ import { fetchRegistryMetadata, fetchDevfile } from '../../services/registry/dev
 import { createState } from '../helpers';
 import { container } from '../../inversify.config';
 import { CheWorkspaceClient } from '../../services/workspace-client/cheWorkspaceClient';
+import { getErrorMessage } from '../../services/helpers/getErrorMessage';
 
 const WorkspaceClient = container.get(CheWorkspaceClient);
 
 // This state defines the type of data maintained in the Redux store.
 export interface State {
   isLoading: boolean;
-  schema: any;
+  schema: {
+    schema?: any;
+    error?: string;
+  };
   registries: {
     [location: string]: {
       metadata?: che.DevfileMetaData[];
@@ -75,6 +79,11 @@ interface ReceiveSchemaAction {
   schema: any;
 }
 
+interface ReceiveSchemaErrorAction {
+  type: 'RECEIVE_SCHEMA_ERROR';
+  error: string;
+}
+
 interface SetFilterValue extends Action {
   type: 'SET_FILTER',
   value: string;
@@ -91,6 +100,7 @@ type KnownAction = RequestRegistryMetadataAction
   | ReceiveDevfileAction
   | RequestSchemaAction
   | ReceiveSchemaAction
+  | ReceiveSchemaErrorAction
   | SetFilterValue
   | ClearFilterValue;
 
@@ -170,10 +180,18 @@ export const actionCreators: ActionCreators = {
         };
       }
 
-      dispatch({ type: 'RECEIVE_SCHEMA', schema });
+      dispatch({
+        type: 'RECEIVE_SCHEMA',
+        schema,
+      });
       return schema;
     } catch (e) {
-      throw new Error('Failed to request devfile JSON schema, \n' + e);
+      const errorMessage = 'Failed to request devfile JSON schema, reason: ' + getErrorMessage(e);
+      dispatch({
+        type: 'RECEIVE_SCHEMA_ERROR',
+        error: errorMessage,
+      });
+      throw errorMessage;
     }
   },
 
@@ -191,7 +209,7 @@ const unloadedState: State = {
   isLoading: false,
   registries: {},
   devfiles: {},
-  schema: undefined,
+  schema: {},
 
   filter: '',
 };
@@ -240,7 +258,16 @@ export const reducer: Reducer<State> = (state: State | undefined, incomingAction
     case 'RECEIVE_SCHEMA':
       return createState(state, {
         isLoading: false,
-        schema: action.schema,
+        schema: {
+          schema: action.schema,
+        },
+      });
+    case 'RECEIVE_SCHEMA_ERROR':
+      return createState(state, {
+        isLoading: false,
+        schema: {
+          error: action.error,
+        },
       });
     case 'SET_FILTER': {
       return createState(state, {

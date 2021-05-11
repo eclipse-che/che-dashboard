@@ -76,7 +76,7 @@ export class PreloadData {
       this.updateUserProfile(),
       this.getPlugins(settings),
       this.getRegistriesMetadata(settings),
-      this.updateDevfileSchema(),
+      this.getDevfileSchema(),
     ]);
   }
 
@@ -146,7 +146,7 @@ export class PreloadData {
     await requestRegistriesMetadata(settings.cheWorkspaceDevfileRegistryUrl || '')(this.store.dispatch, this.store.getState, undefined);
   }
 
-  private async updateDevfileSchema(): Promise<void> {
+  private async getDevfileSchema(): Promise<void> {
     const { requestJsonSchema } = DevfileRegistriesStore.actionCreators;
     return requestJsonSchema()(this.store.dispatch, this.store.getState, undefined);
   }
