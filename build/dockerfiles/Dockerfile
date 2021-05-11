@@ -8,7 +8,7 @@
 # Contributors:
 #   Red Hat, Inc. - initial API and implementation
 
-FROM docker.io/node:12.20.1-alpine3.12 as builder
+FROM docker.io/node:16.1.0-alpine3.12 as builder
 
 RUN if ! [ type "yarn" &> /dev/null ]; then \
         apk add yarn --no-cache; \
