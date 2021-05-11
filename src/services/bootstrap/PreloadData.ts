@@ -17,8 +17,8 @@ import { AppState } from '../../store';
 import * as BrandingStore from '../../store/Branding';
 import * as DevfileRegistriesStore from '../../store/DevfileRegistries';
 import * as InfrastructureNamespaceStore from '../../store/InfrastructureNamespace';
-import * as DwPlugins from '../../store/DevWorkspacePlugins';
 import * as Plugins from '../../store/Plugins/chePlugins';
+import * as DwPlugins from '../../store/Plugins/devWorkspacePlugins';
 import * as UserProfileStore from '../../store/UserProfile';
 import * as UserStore from '../../store/User';
 import * as WorkspacesStore from '../../store/Workspaces';
@@ -67,7 +67,7 @@ export class PreloadData {
       if (namespaceInitialized) {
         this.watchNamespaces(defaultNamespace);
       }
-      this.updateDwPlugins(settings);
+      this.getDwPlugins(settings);
     }
     this.updateWorkspaces();
     await Promise.all([
@@ -118,7 +118,7 @@ export class PreloadData {
     await requestPlugins(settings.cheWorkspacePluginRegistryUrl || '')(this.store.dispatch, this.store.getState, undefined);
   }
 
-  private async updateDwPlugins(settings: che.WorkspaceSettings): Promise<void> {
+  private async getDwPlugins(settings: che.WorkspaceSettings): Promise<void> {
     const { requestDwDevfiles } = DwPlugins.actionCreators;
 
     const promises: Array<Promise<void>> = [];

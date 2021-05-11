@@ -33,6 +33,7 @@ import { ROUTE } from '../route.enum';
 import { selectRegistriesErrors } from '../store/DevfileRegistries/selectors';
 import { selectUserError, selectUser } from '../store/User/selectors';
 import { selectPluginsError } from '../store/Plugins/chePlugins/selectors';
+import { selectDwPluginsError } from '../store/Plugins/devWorkspacePlugins/selectors';
 
 const THEME_KEY = 'theme';
 const IS_MANAGED_SIDEBAR = false;
@@ -167,6 +168,14 @@ export class Layout extends React.PureComponent<Props, State> {
         variant: AlertVariant.danger,
       });
     }
+    // devWorkspace plugins
+    if (this.props.dwPluginsError) {
+      this.appAlerts.showAlert({
+        key: 'dw-plugins-error',
+        title: this.props.dwPluginsError,
+        variant: AlertVariant.danger,
+      });
+    }
   }
 
   public render(): React.ReactElement {
@@ -230,6 +239,7 @@ const mapStateToProps = (state: AppState) => ({
   userError: selectUserError(state),
   registriesErrors: selectRegistriesErrors(state),
   pluginsError: selectPluginsError(state),
+  dwPluginsError: selectDwPluginsError(state),
 });
 
 const connector = connect(

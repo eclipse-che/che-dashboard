@@ -23,7 +23,7 @@ import * as CheWorkspacesStore from './Workspaces/cheWorkspaces';
 import * as DevWorkspacesStore from './Workspaces/devWorkspaces';
 import * as UserStore from './User';
 import * as UserProfileStore from './UserProfile';
-import * as DwPlugins from './DevWorkspacePlugins';
+import * as DwPlugins from './Plugins/devWorkspacePlugins';
 
 // the top-level state object
 export interface AppState {
