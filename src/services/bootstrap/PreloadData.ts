@@ -73,7 +73,7 @@ export class PreloadData {
     await Promise.all([
       this.updateBranding(),
       this.getInfrastructureNamespaces(),
-      this.updateUserProfile(),
+      this.getUserProfile(),
       this.getPlugins(settings),
       this.getRegistriesMetadata(settings),
       this.getDevfileSchema(),
@@ -151,7 +151,7 @@ export class PreloadData {
     return requestJsonSchema()(this.store.dispatch, this.store.getState, undefined);
   }
 
-  private async updateUserProfile(): Promise<void> {
+  private async getUserProfile(): Promise<void> {
     const { requestUserProfile } = UserProfileStore.actionCreators;
     return requestUserProfile()(this.store.dispatch, this.store.getState, undefined);
   }

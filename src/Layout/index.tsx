@@ -35,6 +35,7 @@ import { selectUserError, selectUser } from '../store/User/selectors';
 import { selectPluginsError } from '../store/Plugins/chePlugins/selectors';
 import { selectDwPluginsError } from '../store/Plugins/devWorkspacePlugins/selectors';
 import { selectInfrastructureNamespacesError } from '../store/InfrastructureNamespaces/selectors';
+import { selectUserProfileError } from '../store/UserProfile/selectors';
 
 const THEME_KEY = 'theme';
 const IS_MANAGED_SIDEBAR = false;
@@ -193,6 +194,14 @@ export class Layout extends React.PureComponent<Props, State> {
         variant: AlertVariant.danger,
       });
     }
+    // user profile error
+    if (this.props.userProfileError) {
+      this.appAlerts.showAlert({
+        key: 'user-profile-error',
+        title: this.props.userProfileError,
+        variant: AlertVariant.danger,
+      });
+    }
   }
 
   public render(): React.ReactElement {
@@ -259,6 +268,7 @@ const mapStateToProps = (state: AppState) => ({
   dwPluginsError: selectDwPluginsError(state),
   infrastructureNamespacesError: selectInfrastructureNamespacesError(state),
   devfileSchemaError: selectDevfileSchemaError(state),
+  userProfileError: selectUserProfileError(state),
 });
 
 const connector = connect(
