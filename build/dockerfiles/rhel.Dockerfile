@@ -24,7 +24,7 @@ COPY . /dashboard/
 RUN /dashboard/.yarn/releases/yarn-*.cjs compile
 
 # https://access.redhat.com/containers/?tab=support#/registry.access.redhat.com/ubi8/ubi
-FROM registry.access.redhat.com/rhscl/httpd-24-rhel7:2.4-114
+FROM registry.access.redhat.com/rhscl/httpd-24-rhel7:2.4-143
 
 # DOWNSTREAM: use RHEL8/httpd
 # https://access.redhat.com/containers/?tab=tags#/registry.access.redhat.com/rhel8/httpd-24
