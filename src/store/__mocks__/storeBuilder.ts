@@ -20,7 +20,7 @@ import { ContainerCredentials, RegistryRow } from '../UserPreferences/types';
 import { State as WorkspacesState } from '../Workspaces/index';
 import { State as BrandingState } from '../Branding';
 import { State as FactoryResolverState } from '../FactoryResolver';
-import { State as InfrastructureNamespaceState } from '../InfrastructureNamespace';
+import { State as InfrastructureNamespaceState } from '../InfrastructureNamespaces';
 import { State as PluginsState } from '../Plugins/chePlugins';
 import { State as UserState } from '../User';
 import { State as UserProfileState } from '../UserProfile';
@@ -75,7 +75,7 @@ export class FakeStoreBuilder {
       isLoading: false,
       profile: {},
     } as UserProfileState,
-    infrastructureNamespace: {
+    infrastructureNamespaces: {
       isLoading: false,
       namespaces: [],
     } as InfrastructureNamespaceState,
@@ -113,8 +113,8 @@ export class FakeStoreBuilder {
   }
 
   public withInfrastructureNamespace(namespaces: che.KubernetesNamespace[], isLoading = false): FakeStoreBuilder {
-    this.state.infrastructureNamespace.namespaces = Object.assign([], namespaces);
-    this.state.infrastructureNamespace.isLoading = isLoading;
+    this.state.infrastructureNamespaces.namespaces = Object.assign([], namespaces);
+    this.state.infrastructureNamespaces.isLoading = isLoading;
     return this;
   }
 

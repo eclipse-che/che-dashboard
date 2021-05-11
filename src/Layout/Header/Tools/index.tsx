@@ -35,7 +35,7 @@ import { AppAlerts } from '../../../services/alerts/appAlerts';
 import { AlertItem } from '../../../services/helpers/types';
 import { KeycloakAuthService } from '../../../services/keycloak/auth';
 import { AppState } from '../../../store';
-import * as InfrastructureNamespaceStore from '../../../store/InfrastructureNamespace';
+import * as InfrastructureNamespacesStore from '../../../store/InfrastructureNamespaces';
 import { ThemeVariant } from '../../themeVariant';
 import { QuestionCircleIcon } from '@patternfly/react-icons';
 import { AboutModal } from './about-modal';
@@ -408,7 +408,7 @@ const mapStateToProps = (state: AppState) => ({
 
 const connector = connect(
   mapStateToProps,
-  InfrastructureNamespaceStore.actionCreators,
+  InfrastructureNamespacesStore.actionCreators,
 );
 
 type MappedProps = ConnectedProps<typeof connector>;

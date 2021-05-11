@@ -479,7 +479,7 @@ const mapStateToProps = (state: AppState) => ({
   factoryResolver: state.factoryResolver,
   workspace: selectWorkspaceById(state),
   allWorkspaces: selectAllWorkspaces(state),
-  infrastructureNamespaces: state.infrastructureNamespace,
+  infrastructureNamespaces: state.infrastructureNamespaces,
   preferredStorageType: selectPreferredStorageType(state),
 });
 

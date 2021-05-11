@@ -33,7 +33,7 @@ export class InfrastructureNamespaceFormGroup extends React.PureComponent<Props>
   constructor(props: Props) {
     super(props);
 
-    this.namespaces = this.props.infrastructureNamespace.namespaces;
+    this.namespaces = this.props.infrastructureNamespaces.namespaces;
   }
 
   private buildInfrastructureNamespaces(): React.ReactNode {
@@ -94,7 +94,7 @@ export class InfrastructureNamespaceFormGroup extends React.PureComponent<Props>
 }
 
 const mapStateToProps = (state: AppState) => ({
-  infrastructureNamespace: state.infrastructureNamespace,
+  infrastructureNamespaces: state.infrastructureNamespaces,
 });
 
 const connector = connect(

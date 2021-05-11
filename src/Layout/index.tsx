@@ -34,6 +34,7 @@ import { selectRegistriesErrors } from '../store/DevfileRegistries/selectors';
 import { selectUserError, selectUser } from '../store/User/selectors';
 import { selectPluginsError } from '../store/Plugins/chePlugins/selectors';
 import { selectDwPluginsError } from '../store/Plugins/devWorkspacePlugins/selectors';
+import { selectInfrastructureNamespacesError } from '../store/InfrastructureNamespaces/selectors';
 
 const THEME_KEY = 'theme';
 const IS_MANAGED_SIDEBAR = false;
@@ -176,6 +177,14 @@ export class Layout extends React.PureComponent<Props, State> {
         variant: AlertVariant.danger,
       });
     }
+    // infrastructure namespace error
+    if (this.props.infrastructureNamespacesError) {
+      this.appAlerts.showAlert({
+        key: 'infrastructure-namespaces-error',
+        title: this.props.infrastructureNamespacesError,
+        variant: AlertVariant.danger,
+      });
+    }
   }
 
   public render(): React.ReactElement {
@@ -240,6 +249,7 @@ const mapStateToProps = (state: AppState) => ({
   registriesErrors: selectRegistriesErrors(state),
   pluginsError: selectPluginsError(state),
   dwPluginsError: selectDwPluginsError(state),
+  infrastructureNamespacesError: selectInfrastructureNamespacesError(state),
 });
 
 const connector = connect(

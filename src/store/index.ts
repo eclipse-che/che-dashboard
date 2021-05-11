@@ -15,7 +15,7 @@ import { ThunkAction } from 'redux-thunk';
 import * as BrandingStore from './Branding';
 import * as DevfileRegistriesStore from './DevfileRegistries';
 import * as FactoryResolver from './FactoryResolver';
-import * as InfrastructureNamespaceStore from './InfrastructureNamespace';
+import * as InfrastructureNamespacesStore from './InfrastructureNamespaces';
 import * as Plugins from './Plugins/chePlugins';
 import * as UserPreferences from './UserPreferences';
 import * as WorkspacesStore from './Workspaces';
@@ -29,7 +29,7 @@ import * as DwPlugins from './Plugins/devWorkspacePlugins';
 export interface AppState {
   branding: BrandingStore.State;
   devfileRegistries: DevfileRegistriesStore.State;
-  infrastructureNamespace: InfrastructureNamespaceStore.State;
+  infrastructureNamespaces: InfrastructureNamespacesStore.State;
   user: UserStore.State;
   userProfile: UserProfileStore.State;
   workspaces: WorkspacesStore.State;
@@ -49,7 +49,7 @@ export const reducers = {
   branding: BrandingStore.reducer,
   user: UserStore.reducer,
   userProfile: UserProfileStore.reducer,
-  infrastructureNamespace: InfrastructureNamespaceStore.reducer,
+  infrastructureNamespaces: InfrastructureNamespacesStore.reducer,
   plugins: Plugins.reducer,
   factoryResolver: FactoryResolver.reducer,
   userPreferences: UserPreferences.reducer,

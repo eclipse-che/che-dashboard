@@ -16,7 +16,7 @@ import { KeycloakSetupService } from '../keycloak/setup';
 import { AppState } from '../../store';
 import * as BrandingStore from '../../store/Branding';
 import * as DevfileRegistriesStore from '../../store/DevfileRegistries';
-import * as InfrastructureNamespaceStore from '../../store/InfrastructureNamespace';
+import * as InfrastructureNamespacesStore from '../../store/InfrastructureNamespaces';
 import * as Plugins from '../../store/Plugins/chePlugins';
 import * as DwPlugins from '../../store/Plugins/devWorkspacePlugins';
 import * as UserProfileStore from '../../store/UserProfile';
@@ -72,7 +72,7 @@ export class PreloadData {
     this.updateWorkspaces();
     await Promise.all([
       this.updateBranding(),
-      this.updateInfrastructureNamespaces(),
+      this.getInfrastructureNamespaces(),
       this.updateUserProfile(),
       this.getPlugins(settings),
       this.getRegistriesMetadata(settings),
@@ -129,8 +129,8 @@ export class PreloadData {
     await Promise.all(promises);
   }
 
-  private async updateInfrastructureNamespaces(): Promise<void> {
-    const { requestNamespaces } = InfrastructureNamespaceStore.actionCreators;
+  private async getInfrastructureNamespaces(): Promise<void> {
+    const { requestNamespaces } = InfrastructureNamespacesStore.actionCreators;
     await requestNamespaces()(this.store.dispatch, this.store.getState, undefined);
   }
 
