@@ -21,7 +21,7 @@ import { State as WorkspacesState } from '../Workspaces/index';
 import { State as BrandingState } from '../Branding';
 import { State as FactoryResolverState } from '../FactoryResolver';
 import { State as InfrastructureNamespaceState } from '../InfrastructureNamespace';
-import { State as PluginsState } from '../Plugins';
+import { State as PluginsState } from '../Plugins/chePlugins';
 import { State as UserState } from '../User';
 import { State as UserProfileState } from '../UserProfile';
 import mockThunk from './thunk';

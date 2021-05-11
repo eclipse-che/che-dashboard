@@ -32,6 +32,7 @@ import { DisposableCollection } from '../services/helpers/disposable';
 import { ROUTE } from '../route.enum';
 import { selectRegistriesErrors } from '../store/DevfileRegistries/selectors';
 import { selectUserError, selectUser } from '../store/User/selectors';
+import { selectPluginsError } from '../store/Plugins/chePlugins/selectors';
 
 const THEME_KEY = 'theme';
 const IS_MANAGED_SIDEBAR = false;
@@ -158,6 +159,14 @@ export class Layout extends React.PureComponent<Props, State> {
         variant: AlertVariant.danger,
       });
     }
+    // plugins
+    if (this.props.pluginsError) {
+      this.appAlerts.showAlert({
+        key: 'plugins-error',
+        title: this.props.pluginsError,
+        variant: AlertVariant.danger,
+      });
+    }
   }
 
   public render(): React.ReactElement {
@@ -220,6 +229,7 @@ const mapStateToProps = (state: AppState) => ({
   user: selectUser(state),
   userError: selectUserError(state),
   registriesErrors: selectRegistriesErrors(state),
+  pluginsError: selectPluginsError(state),
 });
 
 const connector = connect(

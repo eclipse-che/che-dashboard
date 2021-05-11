@@ -16,7 +16,7 @@ import * as BrandingStore from './Branding';
 import * as DevfileRegistriesStore from './DevfileRegistries';
 import * as FactoryResolver from './FactoryResolver';
 import * as InfrastructureNamespaceStore from './InfrastructureNamespace';
-import * as Plugins from './Plugins';
+import * as Plugins from './Plugins/chePlugins';
 import * as UserPreferences from './UserPreferences';
 import * as WorkspacesStore from './Workspaces';
 import * as CheWorkspacesStore from './Workspaces/cheWorkspaces';

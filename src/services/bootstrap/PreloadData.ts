@@ -17,8 +17,8 @@ import { AppState } from '../../store';
 import * as BrandingStore from '../../store/Branding';
 import * as DevfileRegistriesStore from '../../store/DevfileRegistries';
 import * as InfrastructureNamespaceStore from '../../store/InfrastructureNamespace';
-import * as Plugins from '../../store/Plugins';
 import * as DwPlugins from '../../store/DevWorkspacePlugins';
+import * as Plugins from '../../store/Plugins/chePlugins';
 import * as UserProfileStore from '../../store/UserProfile';
 import * as UserStore from '../../store/User';
 import * as WorkspacesStore from '../../store/Workspaces';
@@ -74,7 +74,7 @@ export class PreloadData {
       this.updateBranding(),
       this.updateInfrastructureNamespaces(),
       this.updateUserProfile(),
-      this.updatePlugins(settings),
+      this.getPlugins(settings),
       this.getRegistriesMetadata(settings),
       this.updateDevfileSchema(),
     ]);
@@ -113,9 +113,9 @@ export class PreloadData {
     await requestWorkspaces()(this.store.dispatch, this.store.getState, undefined);
   }
 
-  private async updatePlugins(settings: che.WorkspaceSettings): Promise<void> {
+  private async getPlugins(settings: che.WorkspaceSettings): Promise<void> {
     const { requestPlugins } = Plugins.actionCreators;
-    await requestPlugins(settings.cheWorkspacePluginRegistryUrl || '')(this.store.dispatch, this.store.getState);
+    await requestPlugins(settings.cheWorkspacePluginRegistryUrl || '')(this.store.dispatch, this.store.getState, undefined);
   }
 
   private async updateDwPlugins(settings: che.WorkspaceSettings): Promise<void> {
