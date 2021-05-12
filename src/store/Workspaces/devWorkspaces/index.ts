@@ -20,8 +20,6 @@ import { DevWorkspaceClient, DEVWORKSPACE_NEXT_START_ANNOTATION, IStatusUpdate }
 import { CheWorkspaceClient } from '../../../services/workspace-client/cheWorkspaceClient';
 import { IDevWorkspace, IDevWorkspaceDevfile } from '@eclipse-che/devworkspace-client';
 import { deleteLogs, mergeLogs } from '../logs';
-import { che } from '@eclipse-che/api';
-import workspace = che.workspace;
 
 const cheWorkspaceClient = container.get(CheWorkspaceClient);
 const devWorkspaceClient = container.get(DevWorkspaceClient);
