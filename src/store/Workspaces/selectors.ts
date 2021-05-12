@@ -13,7 +13,6 @@
 import { createSelector } from 'reselect';
 import { AppState } from '../';
 import { convertWorkspace, Workspace } from '../../services/workspaceAdapter';
-import * as storageTypesService from '../../services/storageTypes';
 
 const selectState = (state: AppState) => state.workspaces;
 const selectCheWorkspacesState = (state: AppState) => state.cheWorkspaces;
@@ -22,21 +21,6 @@ const selectDevWorkspacesState = (state: AppState) => state.devWorkspaces;
 export const selectIsLoading = createSelector(
   selectState,
   state => state.isLoading,
-);
-
-export const selectSettings = createSelector(
-  selectCheWorkspacesState,
-  cheWorkspacesState => cheWorkspacesState.settings,
-);
-
-export const selectAvailableStorageTypes = createSelector(
-  selectSettings,
-  settings => storageTypesService.getAvailable(settings)
-);
-
-export const selectPreferredStorageType = createSelector(
-  selectSettings,
-  settings => storageTypesService.getPreferred(settings)
 );
 
 export const selectLogs = createSelector(

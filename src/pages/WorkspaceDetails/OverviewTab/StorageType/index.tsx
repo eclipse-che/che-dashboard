@@ -26,7 +26,7 @@ import {
 import { AppState } from '../../../../store';
 import { connect, ConnectedProps } from 'react-redux';
 import { OutlinedQuestionCircleIcon, PencilAltIcon } from '@patternfly/react-icons';
-import { selectAvailableStorageTypes, selectPreferredStorageType } from '../../../../store/Workspaces/selectors';
+import { selectAvailableStorageTypes, selectPreferredStorageType } from '../../../../store/Workspaces/Settings/selectors';
 import * as storageTypeService from '../../../../services/storageTypes';
 
 import overviewStyles from '../index.module.css';

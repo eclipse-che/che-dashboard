@@ -23,7 +23,8 @@ import * as CheWorkspacesStore from './Workspaces/cheWorkspaces';
 import * as DevWorkspacesStore from './Workspaces/devWorkspaces';
 import * as UserStore from './User';
 import * as UserProfileStore from './UserProfile';
-import * as DwPlugins from './Plugins/devWorkspacePlugins';
+import * as DwPluginsStore from './Plugins/devWorkspacePlugins';
+import * as WorkspacesSettingsStore from './Workspaces/Settings';
 
 // the top-level state object
 export interface AppState {
@@ -38,7 +39,8 @@ export interface AppState {
   plugins: Plugins.State;
   factoryResolver: FactoryResolver.State;
   userPreferences: UserPreferences.State;
-  dwPlugins: DwPlugins.State;
+  dwPlugins: DwPluginsStore.State;
+  workspacesSettings: WorkspacesSettingsStore.State,
 }
 
 export const reducers = {
@@ -53,7 +55,8 @@ export const reducers = {
   plugins: Plugins.reducer,
   factoryResolver: FactoryResolver.reducer,
   userPreferences: UserPreferences.reducer,
-  dwPlugins: DwPlugins.reducer,
+  dwPlugins: DwPluginsStore.reducer,
+  workspacesSettings: WorkspacesSettingsStore.reducer,
 };
 
 // this type can be used as a hint on action creators so that its 'dispatch' and 'getState' params are

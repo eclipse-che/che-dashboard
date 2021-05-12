@@ -26,7 +26,6 @@ const keycloakAuthService = container.get(KeycloakAuthService);
 
 export interface State {
   isLoading: boolean;
-  settings: che.WorkspaceSettings;
   workspaces: che.Workspace[];
   // runtime logs
   workspacesLogs: Map<string, string[]>;
@@ -76,11 +75,6 @@ interface AddWorkspaceAction {
   workspace: che.Workspace;
 }
 
-interface ReceiveSettingsAction {
-  type: 'CHE_RECEIVE_SETTINGS';
-  settings: che.WorkspaceSettings;
-}
-
 type KnownAction =
   RequestWorkspacesAction
   | ReceiveErrorAction
@@ -88,7 +82,6 @@ type KnownAction =
   | UpdateWorkspaceAction
   | DeleteWorkspaceAction
   | AddWorkspaceAction
-  | ReceiveSettingsAction
   | UpdateWorkspaceStatusAction
   | UpdateWorkspacesLogsAction
   | DeleteWorkspaceLogsAction;
@@ -111,7 +104,6 @@ export type ActionCreators = {
     infrastructureNamespace: string | undefined,
     attributes: { [key: string]: string } | {},
   ) => AppThunk<KnownAction, Promise<che.Workspace>>;
-  requestSettings: () => AppThunk<KnownAction, Promise<void>>;
   deleteWorkspaceLogs: (workspaceId: string) => AppThunk<DeleteWorkspaceLogsAction, void>;
 };
 
@@ -231,18 +223,6 @@ export const actionCreators: ActionCreators = {
     }
   },
 
-  requestSettings: (): AppThunk<KnownAction, Promise<void>> => async (dispatch): Promise<void> => {
-    dispatch({ type: 'CHE_REQUEST_WORKSPACES' });
-
-    try {
-      const settings = await cheWorkspaceClient.restApiClient.getSettings<che.WorkspaceSettings>();
-      dispatch({ type: 'CHE_RECEIVE_SETTINGS', settings });
-    } catch (e) {
-      dispatch({ type: 'CHE_RECEIVE_ERROR' });
-      throw new Error('Failed to fetch settings, \n' + e);
-    }
-  },
-
   startWorkspace: (workspace: che.Workspace, params?: ResourceQueryParams): AppThunk<KnownAction, Promise<void>> => async (dispatch): Promise<void> => {
     try {
       await keycloakAuthService.forceUpdateToken();
@@ -334,7 +314,6 @@ export const actionCreators: ActionCreators = {
 
 const unloadedState: State = {
   workspaces: [],
-  settings: {} as che.WorkspaceSettings,
   isLoading: false,
 
   workspacesLogs: new Map<string, string[]>(),
@@ -381,11 +360,6 @@ export const reducer: Reducer<State> = (state: State | undefined, action: KnownA
       return createState(state, {
         isLoading: false,
         workspaces: state.workspaces.filter(workspace => workspace.id !== action.workspaceId),
-      });
-    case 'CHE_RECEIVE_SETTINGS':
-      return createState(state, {
-        isLoading: false,
-        settings: action.settings,
       });
     case 'CHE_UPDATE_WORKSPACES_LOGS':
       return createState(state, {

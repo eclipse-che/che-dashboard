@@ -25,7 +25,7 @@ import {
 } from '@patternfly/react-core';
 import { connect, ConnectedProps } from 'react-redux';
 import { AppState } from '../../../../store';
-import { selectAvailableStorageTypes, selectPreferredStorageType } from '../../../../store/Workspaces/selectors';
+import { selectAvailableStorageTypes, selectPreferredStorageType } from '../../../../store/Workspaces/Settings/selectors';
 import * as storageTypeService from '../../../../services/storageTypes';
 
 import styles from './index.module.css';

@@ -47,7 +47,6 @@ export class FakeStoreBuilder {
     } as WorkspacesState,
     cheWorkspaces: {
       isLoading: false,
-      settings: {} as any,
       workspaces: [],
       workspacesLogs: new Map<string, string[]>(),
     },
@@ -55,6 +54,10 @@ export class FakeStoreBuilder {
       isLoading: false,
       workspaces: [],
       workspacesLogs: new Map<string, string[]>(),
+    },
+    workspacesSettings: {
+      isLoading: false,
+      settings: {} as che.WorkspaceSettings,
     },
     branding: {
       isLoading: false,
@@ -154,17 +157,22 @@ export class FakeStoreBuilder {
     return this;
   }
 
+  public withWorkspacesSettings(
+    settings: che.WorkspaceSettings,
+    isLoading = false,
+  ): FakeStoreBuilder {
+    this.state.workspacesSettings.settings = Object.assign({}, settings);
+    this.state.workspacesSettings.isLoading = isLoading;
+    return this;
+  }
+
   public withCheWorkspaces(
     options: {
-      settings?: che.WorkspaceSettings,
       workspaces?: che.Workspace[],
       workspacesLogs?: Map<string, string[]>,
     },
     isLoading = false
   ): FakeStoreBuilder {
-    if (options.settings) {
-      this.state.cheWorkspaces.settings = Object.assign({}, options.settings);
-    }
     if (options.workspaces) {
       this.state.cheWorkspaces.workspaces = Object.assign([], options.workspaces);
     }

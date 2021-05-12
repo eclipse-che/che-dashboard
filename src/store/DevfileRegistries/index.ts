@@ -165,7 +165,7 @@ export const actionCreators: ActionCreators = {
       const schemav1 = await WorkspaceClient.restApiClient.getDevfileSchema('1.0.0');
       let schema = schemav1;
 
-      const cheDevworkspaceEnabled = state.cheWorkspaces.settings['che.devworkspaces.enabled'] === 'true';
+      const cheDevworkspaceEnabled = state.workspacesSettings.settings['che.devworkspaces.enabled'] === 'true';
       if (cheDevworkspaceEnabled) {
         // This makes $ref resolve against the first schema, otherwise the yaml language server will report errors
         const patchedJSONString = JSON.stringify(schemav1).replaceAll('#/definitions', '#/oneOf/0/definitions');

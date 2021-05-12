@@ -22,8 +22,8 @@ import * as DwPlugins from '../../store/Plugins/devWorkspacePlugins';
 import * as UserProfileStore from '../../store/UserProfile';
 import * as UserStore from '../../store/User';
 import * as WorkspacesStore from '../../store/Workspaces';
-import * as CheWorkspacesStore from '../../store/Workspaces/cheWorkspaces';
 import * as DevWorkspacesStore from '../../store/Workspaces/devWorkspaces';
+import * as WorkspacesSettingsStore from '../../store/Workspaces/Settings';
 import { ResourceFetcherService } from '../resource-fetcher';
 import { IssuesReporterService } from './issuesReporter';
 import { CheWorkspaceClient } from '../workspace-client/cheWorkspaceClient';
@@ -59,7 +59,7 @@ export class PreloadData {
 
     new ResourceFetcherService().prefetchResources(this.store.getState());
 
-    const settings = await this.updateWorkspaceSettings();
+    const settings = await this.getWorkspaceSettings();
 
     if (settings['che.devworkspaces.enabled'] === 'true') {
       const defaultNamespace = await this.cheWorkspaceClient.getDefaultNamespace();
@@ -134,11 +134,11 @@ export class PreloadData {
     await requestNamespaces()(this.store.dispatch, this.store.getState, undefined);
   }
 
-  private async updateWorkspaceSettings(): Promise<che.WorkspaceSettings> {
-    const { requestSettings } = CheWorkspacesStore.actionCreators;
+  private async getWorkspaceSettings(): Promise<che.WorkspaceSettings> {
+    const { requestSettings } = WorkspacesSettingsStore.actionCreators;
     await requestSettings()(this.store.dispatch, this.store.getState, undefined);
 
-    return this.store.getState().cheWorkspaces.settings;
+    return this.store.getState().workspacesSettings.settings;
   }
 
   private async getRegistriesMetadata(settings: che.WorkspaceSettings): Promise<void> {
