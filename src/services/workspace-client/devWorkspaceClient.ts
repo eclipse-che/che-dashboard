@@ -264,6 +264,7 @@ export class DevWorkspaceClient extends WorkspaceClient {
     callbacks: {
       updateDevWorkspaceStatus: (workspace: IDevWorkspace, message: IStatusUpdate) => AppThunk<Action, void>,
       updateDeletedDevWorkspaces: (deletedWorkspacesIds: string[]) => AppThunk<Action, void>,
+      updateAddedDevWorkspaces: (workspace: IDevWorkspace[]) => AppThunk<Action, void>,
     },
     dispatch: ThunkDispatch<State, undefined, Action>,
     getState: () => AppState,
@@ -288,17 +289,27 @@ export class DevWorkspaceClient extends WorkspaceClient {
         callbacks.updateDevWorkspaceStatus(devworkspace, statusUpdate)(dispatch, getState, undefined);
       });
 
+      const devWorkspacesIds: string[] = [];
+      const addedDevWorkspaces: IDevWorkspace[] = [];
+      devworkspaces.forEach(workspace => {
+        devWorkspacesIds.push(workspace.status.devworkspaceId);
+        if (this.devWorkspacesIds.indexOf(workspace.status.devworkspaceId) === -1) {
+          addedDevWorkspaces.push(workspace);
+        }
+      });
+      if (addedDevWorkspaces.length) {
+        callbacks.updateAddedDevWorkspaces(addedDevWorkspaces)(dispatch, getState, undefined);
+      }
       const deletedWorkspacesId: string[] = [];
-      const devWorkspacesIds = devworkspaces.map(workspace => workspace.status.devworkspaceId);
       this.devWorkspacesIds.forEach(id => {
         if (devWorkspacesIds.indexOf(id) === -1) {
           deletedWorkspacesId.push(id);
         }
       });
-      this.devWorkspacesIds = devWorkspacesIds;
       if (deletedWorkspacesId.length) {
         callbacks.updateDeletedDevWorkspaces(deletedWorkspacesId)(dispatch, getState, undefined);
       }
+      this.devWorkspacesIds = devWorkspacesIds;
     }, 3000);
   }
 

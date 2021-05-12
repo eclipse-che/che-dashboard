@@ -98,8 +98,8 @@ export class PreloadData {
   }
 
   private async watchNamespaces(namespace: string): Promise<void> {
-    const { updateDevWorkspaceStatus, updateDeletedDevWorkspaces } = DevWorkspacesStore.actionCreators;
-    const callbacks = { updateDevWorkspaceStatus, updateDeletedDevWorkspaces };
+    const { updateDevWorkspaceStatus, updateDeletedDevWorkspaces, updateAddedDevWorkspaces } = DevWorkspacesStore.actionCreators;
+    const callbacks = { updateDevWorkspaceStatus, updateDeletedDevWorkspaces, updateAddedDevWorkspaces };
     return this.devWorkspaceClient.subscribeToNamespace(namespace, callbacks, this.store.dispatch, this.store.getState);
   }
 

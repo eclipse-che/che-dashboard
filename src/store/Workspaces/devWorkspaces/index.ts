@@ -99,6 +99,7 @@ export type ResourceQueryParams = {
   [propName: string]: string | boolean | undefined;
 }
 export type ActionCreators = {
+  updateAddedDevWorkspaces: (workspace: IDevWorkspace[]) => AppThunk<KnownAction, void>;
   updateDeletedDevWorkspaces: (deletedWorkspacesIds: string[]) => AppThunk<KnownAction, void>;
   updateDevWorkspaceStatus: (workspace: IDevWorkspace, message: IStatusUpdate) => AppThunk<KnownAction, void>;
   requestWorkspaces: () => AppThunk<KnownAction, Promise<void>>;
@@ -113,6 +114,15 @@ export type ActionCreators = {
 };
 
 export const actionCreators: ActionCreators = {
+
+  updateAddedDevWorkspaces: (workspaces: IDevWorkspace[]): AppThunk<KnownAction, void> => (dispatch): void => {
+    workspaces.forEach(workspace => {
+      dispatch({
+        type: 'ADD_DEVWORKSPACE',
+        workspace,
+      });
+    });
+  },
 
   updateDeletedDevWorkspaces: (deletedWorkspacesIds: string[]): AppThunk<KnownAction, void> => (dispatch): void => {
     deletedWorkspacesIds.forEach(workspaceId => {
