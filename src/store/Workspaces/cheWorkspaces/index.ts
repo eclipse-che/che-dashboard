@@ -134,7 +134,7 @@ function onStatusUpdateReceived(
     });
     // ignore an error if start interrupted by owner
     const re = /^Runtime start for identity 'workspace: (?:[\d\w]+), environment: (?:[\w\d]+), ownerId: (?:[-\d\w]+)' is interrupted$/;
-    status = re.test(message.error) ? message.status : WorkspaceStatus[WorkspaceStatus.ERROR];
+    status = re.test(message.error) ? message.status : WorkspaceStatus.ERROR;
   } else {
     status = message.status;
   }
@@ -198,7 +198,7 @@ export const actionCreators: ActionCreators = {
       workspaces.forEach(workspace => {
         subscribeToStatusChange(workspace, dispatch);
 
-        if (WorkspaceStatus[WorkspaceStatus.STARTING] === workspace.status) {
+        if (WorkspaceStatus.STARTING === workspace.status) {
           subscribeToEnvironmentOutput(workspace.id, dispatch);
         }
       });
@@ -217,7 +217,7 @@ export const actionCreators: ActionCreators = {
       if (!subscribedWorkspaceStatusCallbacks.has(update.id)) {
         subscribeToStatusChange(update, dispatch);
       }
-      if (update.status === WorkspaceStatus[WorkspaceStatus.STARTING]) {
+      if (update.status === WorkspaceStatus.STARTING) {
         subscribeToEnvironmentOutput(workspace.id, dispatch);
       }
       dispatch({
@@ -256,8 +256,7 @@ export const actionCreators: ActionCreators = {
       });
     } catch (e) {
       dispatch({ type: 'CHE_RECEIVE_ERROR' });
-      const message = e.response?.data?.message ? e.response.data.message : e.message;
-      throw message;
+      throw e.response?.data?.message ? e.response.data.message : e.message;
     }
   },
 

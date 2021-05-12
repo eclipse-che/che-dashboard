@@ -19,10 +19,10 @@ export const createFakeCheWorkspace = (
   workspaceId: string,
   workspaceName: string,
   namespace = 'admin',
-  status = WorkspaceStatus[WorkspaceStatus.STOPPED],
+  status = WorkspaceStatus.STOPPED,
   runtime?: che.WorkspaceRuntime,
 ): che.Workspace => {
-  if (runtime && WorkspaceStatus[status] === WorkspaceStatus.STOPPED) {
+  if (runtime && status === WorkspaceStatus.STOPPED) {
     throw new Error('Failed creating a stub workspace. Workspace runtime object is only combined with "RUNNING" status');
   }
   return {

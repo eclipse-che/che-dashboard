@@ -29,10 +29,10 @@ describe('The LogsTab component', () => {
   const namespace = 'admin';
   const workspaceId = 'workspace-test-id';
   const workspaceName = 'workspace-test-name';
-  const status = WorkspaceStatus[WorkspaceStatus.RUNNING];
+  const status = WorkspaceStatus.RUNNING;
   const runtime: che.WorkspaceRuntime = {
     machines: {},
-    status: WorkspaceStatus[WorkspaceStatus.RUNNING],
+    status: WorkspaceStatus.RUNNING,
     activeEnv: 'default',
   };
 

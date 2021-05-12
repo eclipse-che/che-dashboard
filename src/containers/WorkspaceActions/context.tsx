@@ -17,10 +17,7 @@ import { WorkspaceAction } from '../../services/helpers/types';
 export type ActionContextType = {
   handleAction: (action: WorkspaceAction, id: string) => Promise<Location | void>;
   showConfirmation: (wantDelete: string[]) => Promise<void>;
-  /**
-   * list of workspace IDs being deleted
-   */
-  isDeleted: string[];
+  toDelete: string[];
 };
 
 const defaultValue: ActionContextType = {
@@ -32,7 +29,7 @@ const defaultValue: ActionContextType = {
     console.warn('Workspace actions context is not created yet');
     return Promise.resolve();
   },
-  isDeleted: [],
+  toDelete: [],
 };
 
 export const WorkspaceActionsContext = React.createContext<ActionContextType>(defaultValue);

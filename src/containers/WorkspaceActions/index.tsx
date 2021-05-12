@@ -32,8 +32,7 @@ import {
 import {
   IdeLoaderTab,
   WorkspaceAction,
-  WorkspaceDetailsTab,
-  WorkspaceStatus,
+  WorkspaceDetailsTab
 } from '../../services/helpers/types';
 import { AppState } from '../../store';
 import { selectAllWorkspaces } from '../../store/Workspaces/selectors';
@@ -42,6 +41,7 @@ import { WorkspaceActionsContext } from './context';
 import { lazyInject } from '../../inversify.config';
 import { AppAlerts } from '../../services/alerts/appAlerts';
 import getRandomString from '../../services/helpers/random';
+import { isWorkspaceV1 } from '../../services/workspaceAdapter';
 
 type Deferred = {
   resolve: () => void;
@@ -52,7 +52,7 @@ type Props = MappedProps & {
   children: React.ReactElement;
 };
 type State = {
-  isDeleted: string[];
+  toDelete: string[];
   wantDelete: string[];
   isOpen: boolean;
   isConfirmed: boolean;
@@ -73,7 +73,7 @@ export class WorkspaceActionsProvider extends React.Component<Props, State> {
     this.awaitToRestart = [];
 
     this.state = {
-      isDeleted: [],
+      toDelete: [],
       wantDelete: [],
       isOpen: false,
       isConfirmed: false
@@ -94,8 +94,7 @@ export class WorkspaceActionsProvider extends React.Component<Props, State> {
       for (const workspace of allWorkspaces) {
         const workspaceIndex = this.awaitToRestart.indexOf(workspace.id);
         if (workspaceIndex !== -1 &&
-          (workspace.status === WorkspaceStatus[WorkspaceStatus.STOPPED] ||
-            workspace.status === WorkspaceStatus[WorkspaceStatus.ERROR])) {
+          (workspace.isStopped || workspace.hasError)) {
           this.awaitToRestart.splice(workspaceIndex, 1);
           try {
             await this.props.startWorkspace(workspace);
@@ -153,27 +152,26 @@ export class WorkspaceActionsProvider extends React.Component<Props, State> {
         return buildDetailsLocation(workspace, WorkspaceDetailsTab.Devfile);
       case WorkspaceAction.DELETE_WORKSPACE:
         {
-          if (WorkspaceStatus[workspace.status] !== WorkspaceStatus.STOPPED
-            && WorkspaceStatus[workspace.status] !== WorkspaceStatus.ERROR) {
+          if (isWorkspaceV1(workspace.ref) && !(workspace.isStopped || workspace.hasError)) {
             throw new Error('Only STOPPED workspaces can be deleted.');
           }
 
           this.deleting.add(id);
           this.setState({
-            isDeleted: Array.from(this.deleting),
+            toDelete: Array.from(this.deleting),
           });
 
           try {
             await this.props.deleteWorkspace(workspace);
             this.deleting.delete(id);
             this.setState({
-              isDeleted: Array.from(this.deleting),
+              toDelete: Array.from(this.deleting),
             });
             return buildWorkspacesLocation();
           } catch (e) {
             this.deleting.delete(id);
             this.setState({
-              isDeleted: Array.from(this.deleting),
+              toDelete: Array.from(this.deleting),
             });
             console.error(`Action failed: "${action}", ID: "${id}", e: ${e}.`);
           }
@@ -300,7 +298,7 @@ export class WorkspaceActionsProvider extends React.Component<Props, State> {
   }
 
   public render(): React.ReactElement {
-    const { isDeleted } = this.state;
+    const { toDelete } = this.state;
 
     const confirmationWindow = this.buildConfirmationWindow();
 
@@ -309,7 +307,7 @@ export class WorkspaceActionsProvider extends React.Component<Props, State> {
         value={{
           handleAction: (action, id) => this.handleAction(action, id),
           showConfirmation: (wantDelete: string[]) => this.showConfirmation(wantDelete),
-          isDeleted,
+          toDelete,
         }}
       >
         {this.props.children}

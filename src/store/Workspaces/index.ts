@@ -175,7 +175,7 @@ export const actionCreators: ActionCreators = {
       dispatch({ type: 'UPDATE_WORKSPACE' });
     } catch (e) {
       dispatch({ type: 'RECEIVE_ERROR' });
-      throw e.message;
+      throw e;
     }
   },
 
@@ -200,7 +200,7 @@ export const actionCreators: ActionCreators = {
       const state = getState();
       const cheDevworkspaceEnabled = state.cheWorkspaces.settings['che.devworkspaces.enabled'] === 'true';
       if (cheDevworkspaceEnabled && isWorkspaceV2(workspace.ref)) {
-        await dispatch(DevWorkspacesStore.actionCreators.deleteWorkspace(workspace.ref));
+        await dispatch(DevWorkspacesStore.actionCreators.terminateWorkspace(workspace.ref));
       } else {
         await dispatch(CheWorkspacesStore.actionCreators.deleteWorkspace(workspace.ref as che.Workspace));
       }

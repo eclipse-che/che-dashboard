@@ -160,7 +160,7 @@ function createComponent(
       workspaceId={workspaceId}
       workspaceName={workspaceName}
       history={history}
-      status={WorkspaceStatus[workspaceStatus]} />
+      status={workspaceStatus} />
   );
 }
 

@@ -28,17 +28,17 @@ export const CHE_RUNTIME_STUB: che.WorkspaceRuntime = {
       },
       servers: {
         theia: {
-          status: WorkspaceStatus[WorkspaceStatus.RUNNING],
+          status: WorkspaceStatus.RUNNING,
           attributes: {
             type: 'ide',
           },
           url: 'url/ide/' + getRandomString(4),
         },
       },
-      status: WorkspaceStatus[WorkspaceStatus.RUNNING],
+      status: WorkspaceStatus.RUNNING,
     },
   },
-  status: WorkspaceStatus[WorkspaceStatus.RUNNING],
+  status: WorkspaceStatus.RUNNING,
   activeEnv: 'default',
 };
 
@@ -46,7 +46,7 @@ export class CheWorkspaceBuilder {
 
   private workspace: che.Workspace = {
     id: getRandomString(4),
-    status: WorkspaceStatus[WorkspaceStatus.STOPPED],
+    status: WorkspaceStatus.STOPPED,
     devfile: CHE_DEVFILE_STUB,
   };
 
@@ -87,7 +87,7 @@ export class CheWorkspaceBuilder {
 
   withRuntime(runtime: che.WorkspaceRuntime): CheWorkspaceBuilder {
     this.workspace.runtime = runtime;
-    this.workspace.status = WorkspaceStatus[WorkspaceStatus.RUNNING];
+    this.workspace.status = WorkspaceStatus.RUNNING;
     return this;
   }
 

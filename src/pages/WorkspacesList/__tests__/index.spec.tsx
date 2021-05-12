@@ -323,11 +323,11 @@ describe('Workspaces List Page', () => {
     it('should handle "Stop Workspace" action', () => {
       const runtime: che.WorkspaceRuntime = {
         machines: {},
-        status: WorkspaceStatus[WorkspaceStatus.RUNNING],
+        status: WorkspaceStatus.RUNNING,
         activeEnv: 'default',
       };
       workspaces[0] = convertWorkspace(
-        createFakeCheWorkspace('workspace-' + 0, 'workspace-' + 0, undefined, WorkspaceStatus[WorkspaceStatus.RUNNING], runtime)
+        createFakeCheWorkspace('workspace-' + 0, 'workspace-' + 0, undefined, WorkspaceStatus.RUNNING, runtime)
       );
 
       renderComponent();
@@ -399,7 +399,7 @@ function getComponent(): React.ReactElement {
       workspaces={workspaces}
       onAction={mockOnAction}
       showConfirmation={mockShowConfirmation}
-      isDeleted={isDeleted}
+      toDelete={isDeleted}
     >
     </WorkspacesList>
   );

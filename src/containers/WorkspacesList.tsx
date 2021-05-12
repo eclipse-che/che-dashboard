@@ -51,7 +51,7 @@ export class WorkspacesListContainer extends React.PureComponent<Props> {
               workspaces={allWorkspaces}
               onAction={(action, id) => context.handleAction(action, id)}
               showConfirmation={wantDelete => context.showConfirmation(wantDelete)}
-              isDeleted={context.isDeleted}
+              toDelete={context.toDelete}
             >
             </WorkspacesList>
           )}

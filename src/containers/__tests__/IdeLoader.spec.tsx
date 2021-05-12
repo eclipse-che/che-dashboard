@@ -85,17 +85,17 @@ describe('IDE Loader container', () => {
         },
         servers: {
           theia: {
-            status: WorkspaceStatus[WorkspaceStatus.RUNNING],
+            status: WorkspaceStatus.RUNNING,
             attributes: {
               type: 'ide',
             },
             url: 'https://server-test-4402.192.168.99.100.nip.io',
           },
         },
-        status: WorkspaceStatus[WorkspaceStatus.RUNNING],
+        status: WorkspaceStatus.RUNNING,
       },
     },
-    status: WorkspaceStatus[WorkspaceStatus.RUNNING],
+    status: WorkspaceStatus.RUNNING,
     activeEnv: 'default',
   };
 
@@ -114,14 +114,14 @@ describe('IDE Loader container', () => {
           'id-wksp-2',
           'name-wksp-2',
           'admin2',
-          WorkspaceStatus[WorkspaceStatus.RUNNING],
+          WorkspaceStatus.RUNNING,
           runtime
         ),
         createFakeCheWorkspace(
           'id-wksp-3',
           'name-wksp-3',
           'admin3',
-          WorkspaceStatus[WorkspaceStatus.ERROR]
+          WorkspaceStatus.ERROR
         ),
       ],
     })

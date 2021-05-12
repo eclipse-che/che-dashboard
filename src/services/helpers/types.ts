@@ -28,16 +28,17 @@ export interface FactoryResolver {
 }
 
 export enum WorkspaceStatus {
-  RUNNING = 1,
-  STOPPING,
-  STOPPED,
-  STARTING,
-  PAUSED,
-  ERROR,
+  RUNNING = 'RUNNING',
+  STOPPING = 'STOPPING',
+  STOPPED = 'STOPPED',
+  STARTING = 'STARTING',
+  ERROR = 'ERROR',
 }
 
 export enum DevWorkspaceStatus {
   FAILED = 'Failed',
+  STARTING = 'Starting',
+  TERMINATING = 'Terminating',
   RUNNING = 'Running',
   STOPPED = 'Stopped',
   STOPPING = 'Stopping'

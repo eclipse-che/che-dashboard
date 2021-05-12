@@ -54,7 +54,7 @@ describe('The Ide Loader page  component', () => {
   it('should render INITIALIZING step with an error correctly', () => {
     const currentStep = LoadIdeSteps.INITIALIZING;
     const hasError = true;
-    const workspace = createFakeCheWorkspace(workspaceId, workspaceName, undefined, WorkspaceStatus[WorkspaceStatus.ERROR]);
+    const workspace = createFakeCheWorkspace(workspaceId, workspaceName, undefined, WorkspaceStatus.ERROR);
     const store = new FakeStoreBuilder().withCheWorkspaces({
       workspaces: [workspace],
     }).build();
@@ -67,7 +67,7 @@ describe('The Ide Loader page  component', () => {
   it('should render START_WORKSPACE step correctly', () => {
     const currentStep = LoadIdeSteps.START_WORKSPACE;
 
-    const workspace = createFakeCheWorkspace(workspaceId, workspaceName, undefined, WorkspaceStatus[WorkspaceStatus.STARTING]);
+    const workspace = createFakeCheWorkspace(workspaceId, workspaceName, undefined, WorkspaceStatus.STARTING);
     const store = new FakeStoreBuilder().withCheWorkspaces({
       workspaces: [workspace],
     }).build();
@@ -85,7 +85,7 @@ describe('The Ide Loader page  component', () => {
       workspaces: [workspace],
     }).build();
 
-    const component = renderComponent(store, currentStep, workspaceName, workspaceId, true, WorkspaceStatus[WorkspaceStatus.ERROR]);
+    const component = renderComponent(store, currentStep, workspaceName, workspaceId, true, WorkspaceStatus.ERROR);
 
     expect(component.toJSON()).toMatchSnapshot();
   });
@@ -95,10 +95,10 @@ describe('The Ide Loader page  component', () => {
 
     const runtime: che.WorkspaceRuntime = {
       machines: {},
-      status: WorkspaceStatus[WorkspaceStatus.RUNNING],
+      status: WorkspaceStatus.RUNNING,
       activeEnv: 'default',
     };
-    const workspace = createFakeCheWorkspace(workspaceId, workspaceName, undefined, WorkspaceStatus[WorkspaceStatus.RUNNING], runtime);
+    const workspace = createFakeCheWorkspace(workspaceId, workspaceName, undefined, WorkspaceStatus.RUNNING, runtime);
     const store = new FakeStoreBuilder().withCheWorkspaces({
       workspaces: [workspace],
     }).build();
@@ -115,7 +115,7 @@ describe('The Ide Loader page  component', () => {
     const store = new FakeStoreBuilder().withCheWorkspaces({
       workspaces: [workspace],
     }).build();
-    const component = renderComponent(store, currentStep, workspaceName, workspaceId, true, WorkspaceStatus[WorkspaceStatus.ERROR]);
+    const component = renderComponent(store, currentStep, workspaceName, workspaceId, true, WorkspaceStatus.ERROR);
 
     expect(component.toJSON()).toMatchSnapshot();
   });
@@ -126,10 +126,10 @@ describe('The Ide Loader page  component', () => {
 
     const runtime: che.WorkspaceRuntime = {
       machines: {},
-      status: WorkspaceStatus[WorkspaceStatus.RUNNING],
+      status: WorkspaceStatus.RUNNING,
       activeEnv: 'default',
     };
-    const workspace = createFakeCheWorkspace(workspaceId, workspaceName, undefined, WorkspaceStatus[WorkspaceStatus.RUNNING], runtime);
+    const workspace = createFakeCheWorkspace(workspaceId, workspaceName, undefined, WorkspaceStatus.RUNNING, runtime);
     const store = new FakeStoreBuilder().withCheWorkspaces({
       workspaces: [workspace],
     }).build();

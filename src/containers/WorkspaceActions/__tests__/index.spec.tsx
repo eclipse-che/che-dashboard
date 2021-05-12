@@ -101,7 +101,7 @@ describe('Workspace Actions', () => {
                   </button>
                   <input
                     data-testid={valueInputId}
-                    defaultValue={context.isDeleted.join(',')}
+                    defaultValue={context.toDelete.join(',')}
                   />
                 </>
               )}
@@ -178,7 +178,7 @@ describe('Workspace Actions', () => {
                   </button>
                   <input
                     data-testid={valueInputId}
-                    defaultValue={context.isDeleted.join(',')}
+                    defaultValue={context.toDelete.join(',')}
                   />
                 </>
               )}
