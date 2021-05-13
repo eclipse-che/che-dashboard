@@ -71,7 +71,7 @@ export class PreloadData {
     }
     this.getWorkspaces();
     await Promise.all([
-      this.updateBranding(),
+      this.getBranding(),
       this.getInfrastructureNamespaces(),
       this.getUserProfile(),
       this.getPlugins(settings),
@@ -80,7 +80,7 @@ export class PreloadData {
     ]);
   }
 
-  private async updateBranding(): Promise<void> {
+  private async getBranding(): Promise<void> {
     const { requestBranding } = BrandingStore.actionCreators;
     try {
       await requestBranding()(this.store.dispatch, this.store.getState, undefined);

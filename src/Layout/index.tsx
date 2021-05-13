@@ -38,6 +38,7 @@ import { selectInfrastructureNamespacesError } from '../store/InfrastructureName
 import { selectUserProfileError } from '../store/UserProfile/selectors';
 import { selectWorkspacesSettingsError } from '../store/Workspaces/Settings/selectors';
 import { selectWorkspacesError } from '../store/Workspaces/selectors';
+import { selectBranding } from '../store/Branding/selectors';
 
 const THEME_KEY = 'theme';
 const IS_MANAGED_SIDEBAR = false;
@@ -226,7 +227,7 @@ export class Layout extends React.PureComponent<Props, State> {
     /* check for startup issues */
     if (this.issuesReporterService.hasIssue) {
       const issue = this.issuesReporterService.reportIssue();
-      const brandingData = this.props.brandingStore.data;
+      const brandingData = this.props.branding;
       if (issue) {
         return (
           <ErrorReporter>
@@ -242,7 +243,7 @@ export class Layout extends React.PureComponent<Props, State> {
     const { isHeaderVisible, isSidebarVisible, theme } = this.state;
     const { history, user } = this.props;
 
-    const logoUrl = this.props.brandingStore.data.logoFile;
+    const logoUrl = this.props.branding.logoFile;
 
     return (
       <Page
@@ -278,7 +279,7 @@ export class Layout extends React.PureComponent<Props, State> {
 }
 
 const mapStateToProps = (state: AppState) => ({
-  brandingStore: state.branding,
+  branding: selectBranding(state),
   user: selectUser(state),
   userError: selectUserError(state),
   registriesErrors: selectRegistriesErrors(state),
