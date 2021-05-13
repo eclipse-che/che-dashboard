@@ -136,7 +136,11 @@ export class PreloadData {
 
   private async getWorkspaceSettings(): Promise<che.WorkspaceSettings> {
     const { requestSettings } = WorkspacesSettingsStore.actionCreators;
-    await requestSettings()(this.store.dispatch, this.store.getState, undefined);
+    try {
+      await requestSettings()(this.store.dispatch, this.store.getState, undefined);
+    } catch (e) {
+      // noop
+    }
 
     return this.store.getState().workspacesSettings.settings;
   }
