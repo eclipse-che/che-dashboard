@@ -69,7 +69,7 @@ export class PreloadData {
       }
       this.getDwPlugins(settings);
     }
-    this.updateWorkspaces();
+    this.getWorkspaces();
     await Promise.all([
       this.updateBranding(),
       this.getInfrastructureNamespaces(),
@@ -108,7 +108,7 @@ export class PreloadData {
     await requestUser()(this.store.dispatch, this.store.getState, undefined);
   }
 
-  private async updateWorkspaces(): Promise<void> {
+  private async getWorkspaces(): Promise<void> {
     const { requestWorkspaces } = WorkspacesStore.actionCreators;
     await requestWorkspaces()(this.store.dispatch, this.store.getState, undefined);
   }

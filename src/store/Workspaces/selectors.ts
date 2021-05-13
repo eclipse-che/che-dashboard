@@ -13,6 +13,8 @@
 import { createSelector } from 'reselect';
 import { AppState } from '../';
 import { convertWorkspace, Workspace } from '../../services/workspaceAdapter';
+import { selectCheWorkspacesError } from './cheWorkspaces/selectors';
+import { selectDevWorkspacesError } from './devWorkspaces/selectors';
 
 const selectState = (state: AppState) => state.workspaces;
 const selectCheWorkspacesState = (state: AppState) => state.cheWorkspaces;
@@ -137,5 +139,16 @@ export const selectAllWorkspacesNumber = createSelector(
   selectAllWorkspaces,
   allWorkspaces => {
     return allWorkspaces.length;
+  }
+);
+
+export const selectWorkspacesError = createSelector(
+  selectCheWorkspacesError,
+  selectDevWorkspacesError,
+  (cheWorkspacesError, devWorkspacesError) => {
+    if (devWorkspacesError) {
+      return devWorkspacesError;
+    }
+    return cheWorkspacesError;
   }
 );

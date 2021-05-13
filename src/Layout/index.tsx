@@ -37,6 +37,7 @@ import { selectDwPluginsError } from '../store/Plugins/devWorkspacePlugins/selec
 import { selectInfrastructureNamespacesError } from '../store/InfrastructureNamespaces/selectors';
 import { selectUserProfileError } from '../store/UserProfile/selectors';
 import { selectWorkspacesSettingsError } from '../store/Workspaces/Settings/selectors';
+import { selectWorkspacesError } from '../store/Workspaces/selectors';
 
 const THEME_KEY = 'theme';
 const IS_MANAGED_SIDEBAR = false;
@@ -145,6 +146,14 @@ export class Layout extends React.PureComponent<Props, State> {
   }
 
   private reportPreloadErrors(): void {
+    // workspaces errors
+    if (this.props.workspacesError) {
+      this.appAlerts.showAlert({
+        key: 'workspaces-error',
+        title: this.props.workspacesError,
+        variant: AlertVariant.danger,
+      });
+    }
     // devfile registries
     if (this.props.registriesErrors.length > 0) {
       this.props.registriesErrors.forEach(error => {
@@ -279,6 +288,7 @@ const mapStateToProps = (state: AppState) => ({
   devfileSchemaError: selectDevfileSchemaError(state),
   userProfileError: selectUserProfileError(state),
   workspacesSettingsError: selectWorkspacesSettingsError(state),
+  workspacesError: selectWorkspacesError(state),
 });
 
 const connector = connect(
