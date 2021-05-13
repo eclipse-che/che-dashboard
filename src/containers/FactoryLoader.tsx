@@ -20,7 +20,6 @@ import * as FactoryResolverStore from '../store/FactoryResolver';
 import * as WorkspaceStore from '../store/Workspaces';
 import FactoryLoader from '../pages/FactoryLoader';
 import { selectAllWorkspaces, selectPreferredStorageType, selectWorkspaceById } from '../store/Workspaces/selectors';
-import { WorkspaceStatus } from '../services/helpers/types';
 import { buildIdeLoaderLocation, sanitizeLocation } from '../services/helpers/location';
 import { lazyInject } from '../inversify.config';
 import { KeycloakAuthService } from '../services/keycloak/auth';
@@ -147,12 +146,12 @@ export class FactoryLoaderContainer extends React.PureComponent<Props, State> {
     }
 
     if (this.state.currentStep === LoadFactorySteps.START_WORKSPACE &&
-      workspace && WorkspaceStatus[workspace.status] === WorkspaceStatus.RUNNING) {
+      workspace && workspace.isRunning) {
       await this.openIde();
     }
 
     if (workspace &&
-      WorkspaceStatus[workspace.status] === WorkspaceStatus.ERROR &&
+      workspace.hasError &&
       this.state.currentStep === LoadFactorySteps.START_WORKSPACE) {
       this.showAlert('Unknown workspace error.');
     }
@@ -160,7 +159,7 @@ export class FactoryLoaderContainer extends React.PureComponent<Props, State> {
 
   private async openIde(): Promise<void> {
     const { history, workspace } = this.props;
-    if (!workspace || WorkspaceStatus[workspace.status] !== WorkspaceStatus.RUNNING) {
+    if (!workspace || !workspace.isRunning) {
       return;
     }
     this.setState({ currentStep: LoadFactorySteps.OPEN_IDE });
@@ -374,10 +373,10 @@ export class FactoryLoaderContainer extends React.PureComponent<Props, State> {
       && this.state.currentStep !== LoadFactorySteps.OPEN_IDE) {
       try {
         await this.props.requestWorkspace(workspace);
-        if (WorkspaceStatus[workspace.status] === WorkspaceStatus.STOPPED) {
+        if (workspace.isStopped) {
           await this.props.startWorkspace(workspace);
           this.setState({ currentStep: LoadFactorySteps.START_WORKSPACE });
-        } else if (WorkspaceStatus[workspace.status] === WorkspaceStatus.RUNNING || WorkspaceStatus[workspace.status] === WorkspaceStatus.STARTING) {
+        } else if (workspace.isRunning || workspace.isStarting) {
           this.setState({ currentStep: LoadFactorySteps.START_WORKSPACE });
         }
       } catch (e) {
