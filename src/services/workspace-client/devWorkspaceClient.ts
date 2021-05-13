@@ -104,6 +104,7 @@ export class DevWorkspaceClient extends WorkspaceClient {
 
     const createdWorkspace = await this.dwApi.create(devfile, 'che', false);
     const namespace = createdWorkspace.metadata.namespace;
+    const name = createdWorkspace.metadata.name;
 
     for (const pluginDevfile of pluginsDevfile) {
       // TODO handle error in a proper way
@@ -132,9 +133,14 @@ export class DevWorkspaceClient extends WorkspaceClient {
     }
 
     createdWorkspace.spec.started = true;
-    const updatedWorkspace = await this.dwApi.update(createdWorkspace);
-
-    return updatedWorkspace;
+    const patch = [
+      {
+        op: 'replace',
+        path: '/spec',
+        value: createdWorkspace.spec,
+      }
+    ];
+    return this.dwApi.patch(namespace, name, patch);
   }
 
   /**
