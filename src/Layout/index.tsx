@@ -12,16 +12,16 @@
 
 import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
-import { Page, AlertVariant } from '@patternfly/react-core';
+import { Page } from '@patternfly/react-core';
 import { History } from 'history';
 import { matchPath } from 'react-router';
 
 import Header from './Header';
 import Sidebar from './Sidebar';
+import PreloadIssuesAlert from './PreloadIssuesAlert';
 import { ThemeVariant } from './themeVariant';
 import { AppState } from '../store';
 import { lazyInject } from '../inversify.config';
-import { AppAlerts } from '../services/alerts/appAlerts';
 import { KeycloakAuthService } from '../services/keycloak/auth';
 import { IssuesReporterService } from '../services/bootstrap/issuesReporter';
 import { ErrorReporter } from './ErrorReporter';
@@ -30,14 +30,7 @@ import { BannerAlert } from '../components/BannerAlert';
 import { ErrorBoundary } from './ErrorBoundary';
 import { DisposableCollection } from '../services/helpers/disposable';
 import { ROUTE } from '../route.enum';
-import { selectRegistriesErrors, selectDevfileSchemaError } from '../store/DevfileRegistries/selectors';
-import { selectUserError, selectUser } from '../store/User/selectors';
-import { selectPluginsError } from '../store/Plugins/chePlugins/selectors';
-import { selectDwPluginsError } from '../store/Plugins/devWorkspacePlugins/selectors';
-import { selectInfrastructureNamespacesError } from '../store/InfrastructureNamespaces/selectors';
-import { selectUserProfileError } from '../store/UserProfile/selectors';
-import { selectWorkspacesSettingsError } from '../store/Workspaces/Settings/selectors';
-import { selectWorkspacesError } from '../store/Workspaces/selectors';
+import { selectUser } from '../store/User/selectors';
 import { selectBranding } from '../store/Branding/selectors';
 
 const THEME_KEY = 'theme';
@@ -56,9 +49,6 @@ type State = {
 };
 
 export class Layout extends React.PureComponent<Props, State> {
-
-  @lazyInject(AppAlerts)
-  private readonly appAlerts: AppAlerts;
 
   @lazyInject(IssuesReporterService)
   private readonly issuesReporterService: IssuesReporterService;
@@ -111,7 +101,6 @@ export class Layout extends React.PureComponent<Props, State> {
 
   public componentDidMount(): void {
     this.listenToIframeMessages();
-    this.reportPreloadErrors();
   }
 
   public componentWillUnmount(): void {
@@ -144,83 +133,6 @@ export class Layout extends React.PureComponent<Props, State> {
         window.removeEventListener('message', handleMessage);
       },
     });
-  }
-
-  private reportPreloadErrors(): void {
-    // workspaces errors
-    if (this.props.workspacesError) {
-      this.appAlerts.showAlert({
-        key: 'workspaces-error',
-        title: this.props.workspacesError,
-        variant: AlertVariant.danger,
-      });
-    }
-    // devfile registries
-    if (this.props.registriesErrors.length > 0) {
-      this.props.registriesErrors.forEach(error => {
-        this.appAlerts.showAlert({
-          key: 'registry-error-' + error.url,
-          title: error.errorMessage,
-          variant: AlertVariant.danger,
-        });
-      });
-    }
-    // user
-    if (this.props.userError) {
-      this.appAlerts.showAlert({
-        key: 'user-error',
-        title: this.props.userError,
-        variant: AlertVariant.danger,
-      });
-    }
-    // plugins
-    if (this.props.pluginsError) {
-      this.appAlerts.showAlert({
-        key: 'plugins-error',
-        title: this.props.pluginsError,
-        variant: AlertVariant.danger,
-      });
-    }
-    // devWorkspace plugins
-    if (this.props.dwPluginsError) {
-      this.appAlerts.showAlert({
-        key: 'dw-plugins-error',
-        title: this.props.dwPluginsError,
-        variant: AlertVariant.danger,
-      });
-    }
-    // infrastructure namespace error
-    if (this.props.infrastructureNamespacesError) {
-      this.appAlerts.showAlert({
-        key: 'infrastructure-namespaces-error',
-        title: this.props.infrastructureNamespacesError,
-        variant: AlertVariant.danger,
-      });
-    }
-    // devfile schema error
-    if (this.props.devfileSchemaError) {
-      this.appAlerts.showAlert({
-        key: 'devfile-schema-error',
-        title: this.props.devfileSchemaError,
-        variant: AlertVariant.danger,
-      });
-    }
-    // user profile error
-    if (this.props.userProfileError) {
-      this.appAlerts.showAlert({
-        key: 'user-profile-error',
-        title: this.props.userProfileError,
-        variant: AlertVariant.danger,
-      });
-    }
-    // workspaces settings error
-    if (this.props.workspacesSettingsError) {
-      this.appAlerts.showAlert({
-        key: 'workspace-settings-error',
-        title: this.props.workspacesSettingsError,
-        variant: AlertVariant.danger,
-      });
-    }
   }
 
   public render(): React.ReactElement {
@@ -269,6 +181,7 @@ export class Layout extends React.PureComponent<Props, State> {
         isManagedSidebar={IS_MANAGED_SIDEBAR}
       >
         <ErrorBoundary>
+          <PreloadIssuesAlert />
           <BannerAlert />
           {this.props.children}
         </ErrorBoundary>
@@ -281,15 +194,6 @@ export class Layout extends React.PureComponent<Props, State> {
 const mapStateToProps = (state: AppState) => ({
   branding: selectBranding(state),
   user: selectUser(state),
-  userError: selectUserError(state),
-  registriesErrors: selectRegistriesErrors(state),
-  pluginsError: selectPluginsError(state),
-  dwPluginsError: selectDwPluginsError(state),
-  infrastructureNamespacesError: selectInfrastructureNamespacesError(state),
-  devfileSchemaError: selectDevfileSchemaError(state),
-  userProfileError: selectUserProfileError(state),
-  workspacesSettingsError: selectWorkspacesSettingsError(state),
-  workspacesError: selectWorkspacesError(state),
 });
 
 const connector = connect(
