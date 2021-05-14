@@ -45,32 +45,6 @@ jobs:
         name: "Run unit tests"
         run: yarn test --runInBand
 
-  test-coverage-diff:
-    needs: build-and-test
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        node-version: [14.x]
-    steps:
-      -
-        name: "Checkout che-dashboard source code"
-        uses: actions/checkout@v2
-        with:
-          fetch-depth: 0
-      -
-        name: "Use Node.js ${{ matrix.node-version }}"
-        uses: actions/setup-node@v1
-        with:
-          node-version: ${{ matrix.node-version }}
-      -
-        name: "Install dependencies"
-        run: yarn
-      -
-        name: "Jest Coverage Diff"
-        uses: anuraag016/Jest-Coverage-Diff@1.0
-        with:
-          fullCoverageDiff: false
-
   docker-build:
     needs: build-and-test
     runs-on: ubuntu-18.04
