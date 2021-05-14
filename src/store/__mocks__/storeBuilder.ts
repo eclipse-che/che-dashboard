@@ -103,9 +103,10 @@ export class FakeStoreBuilder {
     return this;
   }
 
-  public withBranding(branding: BrandingData, isLoading = false): FakeStoreBuilder {
+  public withBranding(branding: BrandingData, isLoading = false, error?: string): FakeStoreBuilder {
     this.state.branding.data = Object.assign({}, branding);
     this.state.branding.isLoading = isLoading;
+    this.state.branding.error = error;
     return this;
   }
 
@@ -115,25 +116,29 @@ export class FakeStoreBuilder {
     return this;
   }
 
-  public withInfrastructureNamespace(namespaces: che.KubernetesNamespace[], isLoading = false): FakeStoreBuilder {
+  public withInfrastructureNamespace(namespaces: che.KubernetesNamespace[], isLoading = false, error?: string): FakeStoreBuilder {
     this.state.infrastructureNamespaces.namespaces = Object.assign([], namespaces);
     this.state.infrastructureNamespaces.isLoading = isLoading;
+    this.state.infrastructureNamespaces.error = error;
     return this;
   }
 
-  public withPlugins(plugins: che.Plugin[], isLoading = false): FakeStoreBuilder {
+  public withPlugins(plugins: che.Plugin[], isLoading = false, error?: string): FakeStoreBuilder {
     this.state.plugins.plugins = Object.assign([], plugins);
     this.state.plugins.isLoading = isLoading;
+    this.state.plugins.error = error;
     return this;
   }
 
-  public withUser(user: che.User): FakeStoreBuilder {
+  public withUser(user: che.User, error?: string): FakeStoreBuilder {
     this.state.user.user = Object.assign({}, user);
+    this.state.user.error = error;
     return this;
   }
 
-  public withUserProfile(profile: api.che.user.Profile): FakeStoreBuilder {
+  public withUserProfile(profile: api.che.user.Profile, error?: string): FakeStoreBuilder {
     this.state.userProfile.profile = Object.assign({}, profile);
+    this.state.userProfile.error = error;
     return this;
   }
 
@@ -142,7 +147,7 @@ export class FakeStoreBuilder {
       devfiles?: { [location: string]: { content: string, error: string } },
       registries?: { [location: string]: { metadata?: che.DevfileMetaData[], error?: string } },
       schema?: any,
-    }, isLoading = false
+    }, isLoading = false,
   ): FakeStoreBuilder {
     if (options.devfiles) {
       this.state.devfileRegistries.devfiles = Object.assign({}, options.devfiles);
@@ -160,9 +165,11 @@ export class FakeStoreBuilder {
   public withWorkspacesSettings(
     settings: che.WorkspaceSettings,
     isLoading = false,
+    error?: string,
   ): FakeStoreBuilder {
     this.state.workspacesSettings.settings = Object.assign({}, settings);
     this.state.workspacesSettings.isLoading = isLoading;
+    this.state.workspacesSettings.error = error;
     return this;
   }
 
@@ -171,7 +178,8 @@ export class FakeStoreBuilder {
       workspaces?: che.Workspace[],
       workspacesLogs?: Map<string, string[]>,
     },
-    isLoading = false
+    isLoading = false,
+    error?: string,
   ): FakeStoreBuilder {
     if (options.workspaces) {
       this.state.cheWorkspaces.workspaces = Object.assign([], options.workspaces);
@@ -180,6 +188,7 @@ export class FakeStoreBuilder {
       this.state.cheWorkspaces.workspacesLogs = new Map(options.workspacesLogs);
     }
     this.state.cheWorkspaces.isLoading = isLoading;
+    this.state.cheWorkspaces.error = error;
     return this;
   }
 
@@ -188,7 +197,8 @@ export class FakeStoreBuilder {
       workspaces?: IDevWorkspace[],
       workspacesLogs?: Map<string, string[]>,
     },
-    isLoading = false
+    isLoading = false,
+    error?: string,
   ): FakeStoreBuilder {
     if (options.workspaces) {
       this.state.devWorkspaces.workspaces = Object.assign([], options.workspaces);
@@ -197,6 +207,7 @@ export class FakeStoreBuilder {
       this.state.devWorkspaces.workspacesLogs = new Map(options.workspacesLogs);
     }
     this.state.devWorkspaces.isLoading = isLoading;
+    this.state.devWorkspaces.error = error;
     return this;
   }
 

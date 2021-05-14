@@ -12,18 +12,18 @@
 
 import React from 'react';
 import { ConnectedProps, connect } from 'react-redux';
-import { AppState } from '../store';
-import { selectRegistriesErrors, selectDevfileSchemaError } from '../store/DevfileRegistries/selectors';
-import { selectPluginsError } from '../store/Plugins/chePlugins/selectors';
-import { selectDwPluginsError } from '../store/Plugins/devWorkspacePlugins/selectors';
-import { selectInfrastructureNamespacesError } from '../store/InfrastructureNamespaces/selectors';
-import { selectUserProfileError } from '../store/UserProfile/selectors';
-import { selectWorkspacesSettingsError } from '../store/Workspaces/Settings/selectors';
-import { selectWorkspacesError } from '../store/Workspaces/selectors';
-import { selectUserError } from '../store/User/selectors';
+import { AppState } from '../../store';
+import { selectRegistriesErrors, selectDevfileSchemaError } from '../../store/DevfileRegistries/selectors';
+import { selectPluginsError } from '../../store/Plugins/chePlugins/selectors';
+import { selectDwPluginsError } from '../../store/Plugins/devWorkspacePlugins/selectors';
+import { selectInfrastructureNamespacesError } from '../../store/InfrastructureNamespaces/selectors';
+import { selectUserProfileError } from '../../store/UserProfile/selectors';
+import { selectWorkspacesSettingsError } from '../../store/Workspaces/Settings/selectors';
+import { selectWorkspacesError } from '../../store/Workspaces/selectors';
+import { selectUserError } from '../../store/User/selectors';
 import { AlertVariant } from '@patternfly/react-core';
-import { lazyInject } from '../inversify.config';
-import { AppAlerts } from '../services/alerts/appAlerts';
+import { lazyInject } from '../../inversify.config';
+import { AppAlerts } from '../../services/alerts/appAlerts';
 
 type Props = MappedProps;
 
