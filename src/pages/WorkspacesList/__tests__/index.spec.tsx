@@ -294,7 +294,7 @@ describe('Workspaces List Page', () => {
       expect(actionButtons[0]).toBeDisabled();
     });
 
-    it('should handle "Open in Verbose Mode" action', () => {
+    it('should handle "Open in Verbose mode" action', () => {
       renderComponent();
 
       const actionButtons = screen.getAllByRole('button', { name: /actions/i });
