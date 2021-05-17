@@ -12,10 +12,7 @@
 
 import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
-import {
-  PageSection,
-  PageSectionVariants,
-} from '@patternfly/react-core';
+import { Flex, FlexItem, Form, PageSection, PageSectionVariants } from '@patternfly/react-core';
 import { AppState } from '../../../store';
 import CheProgress from '../../../components/Progress';
 import { SamplesListHeader } from './SamplesListHeader';
@@ -25,6 +22,7 @@ import { selectIsLoading, selectPreferredStorageType, selectSettings } from '../
 import { load } from 'js-yaml';
 import { updateDevfile } from '../../../services/storageTypes';
 import stringify from '../../../services/helpers/editor';
+import ImportFromGit from './ImportFromGit';
 
 // At runtime, Redux will merge together...
 type Props = {
@@ -67,23 +65,48 @@ export class SamplesListTab extends React.PureComponent<Props, State> {
     return this.props.onDevfile(stringify(devfile), stackName);
   }
 
+  private handleDevfileResolver(devfile: che.WorkspaceDevfile, stackName: string): Promise<void> {
+    const updatedDevfile = updateDevfile(devfile, this.props.preferredStorageType);
+    const devfileContent = stringify(updatedDevfile);
+
+    return this.props.onDevfile(devfileContent, stackName);
+  }
+
   public render(): React.ReactElement {
     const isLoading = this.props.isLoading;
 
     return (
-      <React.Fragment>
-        <PageSection
-          variant={PageSectionVariants.light}>
-          <SamplesListHeader />
-          <SamplesListToolbar
-            persistVolumesDefault={this.state.persistVolumesDefault}
-            onTemporaryStorageChange={temporary => this.handleTemporaryStorageChange(temporary)} />
-        </PageSection>
+      <>
         <CheProgress isLoading={isLoading} />
-        <PageSection variant={PageSectionVariants.default} style={{ background: '#f0f0f0' }}>
-          <SamplesListGallery onCardClick={(devfileContent, stackName) => this.handleSampleCardClick(devfileContent, stackName)} />
+        <PageSection
+          variant={PageSectionVariants.default}
+          style={{ background: '#f0f0f0' }}
+        >
+          <PageSection variant={PageSectionVariants.light}>
+            <Form>
+              <ImportFromGit
+                onDevfileResolve={(devfile, location) => this.handleDevfileResolver(devfile, location)}
+              />
+            </Form>
+          </PageSection>
+          <PageSection
+            variant={PageSectionVariants.light}
+            style={{ marginTop: 'var(--pf-c-page__main-section--PaddingTop)' }}
+          >
+            <Flex direction={{ default: 'column' }}>
+              <FlexItem spacer={{ default: 'spacerLg' }}>
+                <SamplesListHeader />
+              </FlexItem>
+              <FlexItem grow={{ default: 'grow' }} spacer={{ default: 'spacerLg' }}>
+                <SamplesListToolbar persistVolumesDefault={this.state.persistVolumesDefault}
+                  onTemporaryStorageChange={temporary => this.handleTemporaryStorageChange(temporary)} />
+              </FlexItem>
+            </Flex>
+            <SamplesListGallery
+              onCardClick={(devfileContent, stackName) => this.handleSampleCardClick(devfileContent, stackName)} />
+          </PageSection>
         </PageSection>
-      </React.Fragment>
+      </>
     );
   }
 }
