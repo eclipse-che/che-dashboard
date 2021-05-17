@@ -34,6 +34,7 @@ export class SampleCard extends React.PureComponent<SampleCardProps> {
 
     return (
       <Card
+        isFlat
         isHoverable
         isCompact
         isSelectable

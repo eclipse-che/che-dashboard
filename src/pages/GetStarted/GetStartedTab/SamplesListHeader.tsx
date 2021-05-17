@@ -14,7 +14,7 @@ import React from 'react';
 import { Text, TextContent, TextVariants } from '@patternfly/react-core';
 
 const TITLE = 'Select a Sample';
-const DESCRIPTION = 'Select a sample to create your first workspace';
+const DESCRIPTION = 'Select a sample to create your first workspace.';
 
 export class SamplesListHeader extends React.PureComponent {
   constructor(props) {

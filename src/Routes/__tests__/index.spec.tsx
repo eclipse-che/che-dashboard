@@ -32,7 +32,7 @@ import { CheWorkspaceBuilder } from '../../store/__mocks__/cheWorkspaceBuilder';
 
 jest.mock('../../pages/GetStarted', () => {
   return function GetStarted() {
-    return (<span>Get Started</span>);
+    return (<span>Quick Add</span>);
   };
 });
 jest.mock('../../containers/WorkspacesList.tsx', () => {
@@ -88,7 +88,7 @@ describe('Routes', () => {
     );
   }
 
-  describe('Get Started route', () => {
+  describe('Quick Add route', () => {
 
     it('should handle "/"', async () => {
       const path = ROUTE.HOME;
@@ -96,7 +96,7 @@ describe('Routes', () => {
 
       await waitFor(() => expect(screen.queryByTestId('fallback-spinner')).not.toBeInTheDocument());
 
-      expect(screen.queryByText('Get Started')).toBeTruthy();
+      expect(screen.queryByText('Quick Add')).toBeTruthy();
     });
 
     it('should handle "/get-started"', async () => {
@@ -105,7 +105,7 @@ describe('Routes', () => {
 
       await waitFor(() => expect(screen.queryByTestId('fallback-spinner')).not.toBeInTheDocument());
 
-      expect(screen.queryByText('Get Started')).toBeTruthy();
+      expect(screen.queryByText('Quick Add')).toBeTruthy();
     });
 
     it('should handle "/get-started?tab=get-started"', async () => {
@@ -114,7 +114,7 @@ describe('Routes', () => {
 
       await waitFor(() => expect(screen.queryByTestId('fallback-spinner')).not.toBeInTheDocument());
 
-      expect(screen.queryByText('Get Started')).toBeTruthy();
+      expect(screen.queryByText('Quick Add')).toBeTruthy();
     });
 
     it('should handle "/get-started?tab=custom-workspace"', async () => {
@@ -123,7 +123,7 @@ describe('Routes', () => {
 
       await waitFor(() => expect(screen.queryByTestId('fallback-spinner')).not.toBeInTheDocument());
 
-      expect(screen.queryByText('Get Started')).toBeTruthy();
+      expect(screen.queryByText('Quick Add')).toBeTruthy();
     });
 
   });
