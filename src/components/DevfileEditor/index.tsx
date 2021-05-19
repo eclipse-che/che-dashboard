@@ -24,6 +24,7 @@ import $ from 'jquery';
 import { IDevWorkspaceDevfile } from '@eclipse-che/devworkspace-client';
 import { selectDevfileSchema } from '../../store/DevfileRegistries/selectors';
 import { selectPlugins } from '../../store/Plugins/chePlugins/selectors';
+import { selectBranding } from '../../store/Branding/selectors';
 
 import './DevfileEditor.styl';
 
@@ -228,7 +229,7 @@ export class DevfileEditor extends React.PureComponent<Props, State> {
   }
 
   public render(): React.ReactElement {
-    const href = this.props.branding.data.docs.devfile;
+    const href = this.props.branding.docs.devfile;
     const { errorMessage } = this.state;
 
     return (
@@ -401,7 +402,7 @@ export class DevfileEditor extends React.PureComponent<Props, State> {
 }
 
 const mapStateToProps = (state: AppState) => ({
-  branding: state.branding,
+  branding: selectBranding(state),
   devfileSchema: selectDevfileSchema(state),
   plugins: selectPlugins(state),
 });

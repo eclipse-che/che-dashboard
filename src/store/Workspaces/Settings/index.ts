@@ -82,6 +82,7 @@ export const reducer: Reducer<State> = (state: State | undefined, action: KnownA
     case 'REQUEST_WORKSPACE_SETTINGS':
       return createState(state, {
         isLoading: true,
+        error: undefined,
       });
     case 'RECEIVE_WORKSPACE_SETTINGS':
       return createState(state, {

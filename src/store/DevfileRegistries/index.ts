@@ -222,11 +222,18 @@ export const reducer: Reducer<State> = (state: State | undefined, incomingAction
   const action = incomingAction as KnownAction;
   switch (action.type) {
     case 'REQUEST_REGISTRY_METADATA':
-    case 'REQUEST_SCHEMA':
-    case 'REQUEST_DEVFILE':
       return createState(state, {
         isLoading: true,
         registries: {},
+      });
+    case 'REQUEST_SCHEMA':
+      return createState(state, {
+        isLoading: true,
+        schema: {},
+      });
+    case 'REQUEST_DEVFILE':
+      return createState(state, {
+        isLoading: true,
       });
     case 'RECEIVE_REGISTRY_METADATA':
       return createState(state, {

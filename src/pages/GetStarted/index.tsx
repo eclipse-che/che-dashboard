@@ -31,6 +31,7 @@ import { AppState } from '../../store';
 import { AlertItem, GettingStartedTab } from '../../services/helpers/types';
 import { ROUTE } from '../../route.enum';
 import { Workspace } from '../../services/workspaceAdapter';
+import { selectBranding } from '../../store/Branding/selectors';
 
 const SamplesListTab = React.lazy(() => import('./GetStartedTab'));
 const CustomWorkspaceTab = React.lazy(() => import('./CustomWorkspaceTab'));
@@ -205,7 +206,7 @@ export class GetStarted extends React.PureComponent<Props, State> {
 }
 
 const mapStateToProps = (state: AppState) => ({
-  branding: state.branding,
+  branding: selectBranding(state),
 });
 
 const connector = connect(

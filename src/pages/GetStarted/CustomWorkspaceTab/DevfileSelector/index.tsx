@@ -178,7 +178,6 @@ export class DevfileSelectorFormGroup extends React.PureComponent<Props, State> 
 }
 
 const mapStateToProps = (state: AppState) => ({
-  devfileRegistries: state.devfileRegistries,
   registriesMetadata: selectRegistriesMetadata(state),
   factoryResolver: state.factoryResolver,
 });

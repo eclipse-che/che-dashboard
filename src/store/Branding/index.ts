@@ -102,6 +102,7 @@ export const reducer: Reducer<State> = (state: State | undefined, incomingAction
     case 'REQUEST_BRANDING':
       return createState(state, {
         isLoading: true,
+        error: undefined,
       });
     case 'RECEIVED_BRANDING':
       return createState(state, {

@@ -39,6 +39,8 @@ import * as InfrastructureNamespacesStore from '../../../store/InfrastructureNam
 import { ThemeVariant } from '../../themeVariant';
 import { QuestionCircleIcon } from '@patternfly/react-icons';
 import { AboutModal } from './about-modal';
+import { selectBranding } from '../../../store/Branding/selectors';
+import { selectUserProfile } from '../../../store/UserProfile/selectors';
 
 import './HeaderTools.styl';
 
@@ -105,20 +107,20 @@ export class HeaderTools extends React.PureComponent<Props, State> {
   }
 
   private getCliTool(): string {
-    return this.props.branding.data.configuration.cheCliTool;
+    return this.props.branding.configuration.cheCliTool;
   }
 
   private getUsername(): string {
-    const { userProfile: { profile }, user } = this.props;
+    const { userProfile, user } = this.props;
 
     let username = '';
 
-    if (profile && profile.attributes) {
-      if (profile.attributes.firstName) {
-        username += profile.attributes.firstName;
+    if (userProfile && userProfile.attributes) {
+      if (userProfile.attributes.firstName) {
+        username += userProfile.attributes.firstName;
       }
-      if (profile.attributes.lastName) {
-        username += ' ' + profile.attributes.lastName;
+      if (userProfile.attributes.lastName) {
+        username += ' ' + userProfile.attributes.lastName;
       }
     }
     if (!username && user && user.name) {
@@ -129,8 +131,8 @@ export class HeaderTools extends React.PureComponent<Props, State> {
   }
 
   private getEmail(): string {
-    const { userProfile: { profile } } = this.props;
-    return profile ? profile.email : '';
+    const { userProfile } = this.props;
+    return userProfile ? userProfile.email : '';
   }
 
   private getLoginCommand(): string {
@@ -280,7 +282,7 @@ export class HeaderTools extends React.PureComponent<Props, State> {
   }
 
   private buildInfoDropdownItems(): React.ReactNode[] {
-    const branding = this.props.branding.data;
+    const branding = this.props.branding;
     const makeAWish = 'mailto:' + branding.supportEmail + '?subject=Wishes%20for%20';
     const faq = branding.docs.faq;
     const generalDocs = branding.docs.general;
@@ -360,7 +362,7 @@ export class HeaderTools extends React.PureComponent<Props, State> {
     const imageUrl = userEmail ? gravatarUrl(userEmail, { default: 'retro' }) : '';
     const isUserAuthenticated = !!userEmail;
 
-    const branding = this.props.branding.data;
+    const branding = this.props.branding;
     return (
       <>
         <PageHeaderTools>
@@ -402,8 +404,8 @@ export class HeaderTools extends React.PureComponent<Props, State> {
 }
 
 const mapStateToProps = (state: AppState) => ({
-  userProfile: state.userProfile,
-  branding: state.branding,
+  userProfile: selectUserProfile(state),
+  branding: selectBranding(state),
 });
 
 const connector = connect(

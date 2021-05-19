@@ -85,6 +85,7 @@ export const reducer: Reducer<State> = (state: State | undefined, incomingAction
     case 'REQUEST_USER_PROFILE':
       return createState(state, {
         isLoading: true,
+        error: undefined,
       });
     case 'RECEIVE_USER_PROFILE':
       return createState(state, {
