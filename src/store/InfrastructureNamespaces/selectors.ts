@@ -11,19 +11,16 @@
  */
 
 import { createSelector } from 'reselect';
-import { AppState } from '../..';
+import { AppState } from '..';
 
-const selectState = (state: AppState) => state.cheWorkspaces;
-export const selectDevWorkspacesState = selectState;
+const selectState = (state: AppState) => state.infrastructureNamespaces;
 
-export const selectAllDevWorkspaces = createSelector(
+export const selectInfrastructureNamespaces = createSelector(
   selectState,
-  state => {
-    return state.workspaces;
-  }
+  state => state.namespaces,
 );
 
-export const selectDevWorkspacesError = createSelector(
+export const selectInfrastructureNamespacesError = createSelector(
   selectState,
   state => state.error,
 );

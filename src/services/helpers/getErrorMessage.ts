@@ -10,13 +10,14 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import _ from 'lodash';
+import axios, { AxiosError } from 'axios';
 
-/**
- * Creates a new state object.
- * @param state a store state, e.g workspaces, plugins.
- * @param partial a slice of a store state
- */
-export function createState<T>(state: T, partial: Partial<T>): T {
-  return _.merge({}, state, partial);
+export function getErrorMessage(error: Error | any): string {
+  if (error.message) {
+    return error.message;
+  }
+  if (axios.isAxiosError(error)) {
+    return (error as AxiosError).response?.data;
+  }
+  return error.toString();
 }

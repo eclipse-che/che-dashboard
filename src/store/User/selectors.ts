@@ -11,19 +11,16 @@
  */
 
 import { createSelector } from 'reselect';
-import { AppState } from '../..';
+import { AppState } from '../';
 
-const selectState = (state: AppState) => state.cheWorkspaces;
-export const selectDevWorkspacesState = selectState;
+const selectState = (state: AppState) => state.user;
 
-export const selectAllDevWorkspaces = createSelector(
+export const selectUser = createSelector(
   selectState,
-  state => {
-    return state.workspaces;
-  }
+  state => state.user,
 );
 
-export const selectDevWorkspacesError = createSelector(
+export const selectUserError = createSelector(
   selectState,
   state => state.error,
 );

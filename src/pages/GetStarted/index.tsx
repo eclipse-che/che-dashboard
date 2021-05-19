@@ -31,6 +31,8 @@ import { AppState } from '../../store';
 import { AlertItem, GettingStartedTab } from '../../services/helpers/types';
 import { ROUTE } from '../../route.enum';
 import { Workspace } from '../../services/workspaceAdapter';
+import { selectBranding } from '../../store/Branding/selectors';
+import { selectRegistriesErrors } from '../../store/DevfileRegistries/selectors';
 
 const SamplesListTab = React.lazy(() => import('./GetStartedTab'));
 const CustomWorkspaceTab = React.lazy(() => import('./CustomWorkspaceTab'));
@@ -58,11 +60,34 @@ export class GetStarted extends React.PureComponent<Props, State> {
     };
   }
 
+  public componentDidMount(): void {
+    if (this.props.registriesErrors.length) {
+      this.showErrors();
+    }
+  }
+
   public componentDidUpdate(): void {
     const activeTabKey = this.getActiveTabKey();
     if (this.state.activeTabKey !== activeTabKey) {
       this.setState({ activeTabKey });
     }
+
+    if (this.props.registriesErrors.length) {
+      this.showErrors();
+    }
+  }
+
+  private showErrors(): void {
+    const { registriesErrors } = this.props;
+    registriesErrors.forEach(error => {
+      const key = 'registry-error-' + error.url;
+      this.appAlerts.removeAlert(key);
+      this.appAlerts.showAlert({
+        key,
+        title: error.errorMessage,
+        variant: AlertVariant.danger,
+      });
+    });
   }
 
   private getTitle(): string {
@@ -205,7 +230,8 @@ export class GetStarted extends React.PureComponent<Props, State> {
 }
 
 const mapStateToProps = (state: AppState) => ({
-  branding: state.branding,
+  branding: selectBranding(state),
+  registriesErrors: selectRegistriesErrors(state),
 });
 
 const connector = connect(
