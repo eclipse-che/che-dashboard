@@ -54,33 +54,32 @@ export class PreloadData {
   }
 
   async init(): Promise<void> {
-    await this.getCurrentUser();
     await this.updateJsonRpcMasterApi();
 
     new ResourceFetcherService().prefetchResources(this.store.getState());
 
-    const settings = await this.getWorkspaceSettings();
+    const settings = await this.fetchWorkspaceSettings();
 
-    if (settings['che.devworkspaces.enabled'] === 'true') {
-      const defaultNamespace = await this.cheWorkspaceClient.getDefaultNamespace();
-      const namespaceInitialized = await this.initializeNamespace(defaultNamespace);
-      if (namespaceInitialized) {
-        this.watchNamespaces(defaultNamespace);
-      }
-      this.getDwPlugins(settings);
-    }
-    this.getWorkspaces();
-    await Promise.all([
-      this.getBranding(),
-      this.getInfrastructureNamespaces(),
-      this.getUserProfile(),
-      this.getPlugins(settings),
-      this.getRegistriesMetadata(settings),
-      this.getDevfileSchema(),
+    const results = await Promise.allSettled([
+      this.fetchCurrentUser(),
+      this.fetchBranding(),
+      this.fetchInfrastructureNamespaces(),
+      this.fetchUserProfile(),
+      this.fetchPlugins(settings),
+      this.fetchDwPlugins(settings),
+      this.fetchRegistriesMetadata(settings),
+      this.fetchDevfileSchema(),
+      this.fetchWorkspaces(),
     ]);
+    const errors = results
+      .filter(result => result.status === 'rejected')
+      .map(result => (result as PromiseRejectedResult).reason.toString());
+    if (errors.length > 0) {
+      throw errors;
+    }
   }
 
-  private async getBranding(): Promise<void> {
+  private async fetchBranding(): Promise<void> {
     const { requestBranding } = BrandingStore.actionCreators;
     try {
       await requestBranding()(this.store.dispatch, this.store.getState, undefined);
@@ -103,38 +102,42 @@ export class PreloadData {
     return this.devWorkspaceClient.subscribeToNamespace(namespace, callbacks, this.store.dispatch, this.store.getState);
   }
 
-  private async getCurrentUser(): Promise<void> {
+  private async fetchCurrentUser(): Promise<void> {
     const { requestUser } = UserStore.actionCreators;
     await requestUser()(this.store.dispatch, this.store.getState, undefined);
   }
 
-  private async getWorkspaces(): Promise<void> {
+  private async fetchWorkspaces(): Promise<void> {
     const { requestWorkspaces } = WorkspacesStore.actionCreators;
     await requestWorkspaces()(this.store.dispatch, this.store.getState, undefined);
   }
 
-  private async getPlugins(settings: che.WorkspaceSettings): Promise<void> {
+  private async fetchPlugins(settings: che.WorkspaceSettings): Promise<void> {
     const { requestPlugins } = Plugins.actionCreators;
     await requestPlugins(settings.cheWorkspacePluginRegistryUrl || '')(this.store.dispatch, this.store.getState, undefined);
   }
 
-  private async getDwPlugins(settings: che.WorkspaceSettings): Promise<void> {
+  private async fetchDwPlugins(settings: che.WorkspaceSettings): Promise<void> {
+    if (settings['che.devworkspaces.enabled'] !== 'true') {
+      return;
+    }
+
+    const defaultNamespace = await this.cheWorkspaceClient.getDefaultNamespace();
+    const namespaceInitialized = await this.initializeNamespace(defaultNamespace);
+    if (namespaceInitialized) {
+      this.watchNamespaces(defaultNamespace);
+    }
+
     const { requestDwDevfiles } = DwPlugins.actionCreators;
-
-    const promises: Array<Promise<void>> = [];
-    promises.push(
-      requestDwDevfiles(`${settings.cheWorkspacePluginRegistryUrl}/plugins/${settings['che.factory.default_editor']}/devfile.yaml`)(this.store.dispatch, this.store.getState, undefined),
-    );
-
-    await Promise.all(promises);
+    await requestDwDevfiles(`${settings.cheWorkspacePluginRegistryUrl}/plugins/${settings['che.factory.default_editor']}/devfile.yaml`)(this.store.dispatch, this.store.getState, undefined);
   }
 
-  private async getInfrastructureNamespaces(): Promise<void> {
+  private async fetchInfrastructureNamespaces(): Promise<void> {
     const { requestNamespaces } = InfrastructureNamespacesStore.actionCreators;
     await requestNamespaces()(this.store.dispatch, this.store.getState, undefined);
   }
 
-  private async getWorkspaceSettings(): Promise<che.WorkspaceSettings> {
+  private async fetchWorkspaceSettings(): Promise<che.WorkspaceSettings> {
     const { requestSettings } = WorkspacesSettingsStore.actionCreators;
     try {
       await requestSettings()(this.store.dispatch, this.store.getState, undefined);
@@ -145,17 +148,17 @@ export class PreloadData {
     return this.store.getState().workspacesSettings.settings;
   }
 
-  private async getRegistriesMetadata(settings: che.WorkspaceSettings): Promise<void> {
+  private async fetchRegistriesMetadata(settings: che.WorkspaceSettings): Promise<void> {
     const { requestRegistriesMetadata } = DevfileRegistriesStore.actionCreators;
     await requestRegistriesMetadata(settings.cheWorkspaceDevfileRegistryUrl || '')(this.store.dispatch, this.store.getState, undefined);
   }
 
-  private async getDevfileSchema(): Promise<void> {
+  private async fetchDevfileSchema(): Promise<void> {
     const { requestJsonSchema } = DevfileRegistriesStore.actionCreators;
     return requestJsonSchema()(this.store.dispatch, this.store.getState, undefined);
   }
 
-  private async getUserProfile(): Promise<void> {
+  private async fetchUserProfile(): Promise<void> {
     const { requestUserProfile } = UserProfileStore.actionCreators;
     return requestUserProfile()(this.store.dispatch, this.store.getState, undefined);
   }
