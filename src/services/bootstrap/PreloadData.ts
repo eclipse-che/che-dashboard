@@ -54,6 +54,7 @@ export class PreloadData {
   }
 
   async init(): Promise<void> {
+    await this.fetchBranding();
     await this.updateJsonRpcMasterApi();
 
     new ResourceFetcherService().prefetchResources(this.store.getState());
@@ -62,7 +63,6 @@ export class PreloadData {
 
     const results = await Promise.allSettled([
       this.fetchCurrentUser(),
-      this.fetchBranding(),
       this.fetchInfrastructureNamespaces(),
       this.fetchUserProfile(),
       this.fetchPlugins(settings),
