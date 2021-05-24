@@ -100,7 +100,7 @@ describe('Quick Add page', () => {
     const customWorkspaceTabButton = screen.getByRole('button', { name: 'Custom Workspace' });
     customWorkspaceTabButton.click();
 
-    expect(masthead.textContent?.startsWith('Create Custom Workspace'));
+    expect(masthead.textContent?.startsWith('Custom Workspace'));
   });
 
 });

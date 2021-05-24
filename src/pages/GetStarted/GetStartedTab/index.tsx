@@ -83,7 +83,7 @@ export class SamplesListTab extends React.PureComponent<Props, State> {
           style={{ background: '#f0f0f0' }}
         >
           <PageSection variant={PageSectionVariants.light}>
-            <Form>
+            <Form onSubmit={e => e.preventDefault()}>
               <ImportFromGit
                 onDevfileResolve={(devfile, location) => this.handleDevfileResolver(devfile, location)}
               />

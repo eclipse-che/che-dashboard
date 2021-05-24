@@ -12,7 +12,7 @@
 
 import { History, Location } from 'history';
 import { ROUTE } from '../../route.enum';
-import { GettingStartedTab, IdeLoaderTab, WorkspaceDetailsTab } from './types';
+import { CreateWorkspaceTab, IdeLoaderTab, WorkspaceDetailsTab } from './types';
 import { Workspace } from '../workspaceAdapter';
 
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
@@ -48,7 +48,7 @@ export function buildWorkspacesLocation(): Location {
   return _buildLocationObject(ROUTE.WORKSPACES);
 }
 
-export function buildGettingStartedLocation(tab?: GettingStartedTab): Location {
+export function buildGettingStartedLocation(tab?: CreateWorkspaceTab): Location {
   let pathAndQuery: string;
   if (!tab) {
     pathAndQuery = ROUTE.GET_STARTED;
