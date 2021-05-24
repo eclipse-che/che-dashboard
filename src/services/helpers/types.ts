@@ -53,9 +53,9 @@ export enum IdeLoaderTab {
 }
 
 export enum WorkspaceDetailsTab {
-  Overview = 0,
-  Devfile = 4,
-  Logs = 5
+  OVERVIEW = 'Overview',
+  DEVFILE = 'Devfile',
+  LOGS = 'Logs',
 }
 
 export enum WorkspaceAction {

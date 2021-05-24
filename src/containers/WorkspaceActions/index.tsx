@@ -129,7 +129,7 @@ export class WorkspaceActionsProvider extends React.Component<Props, State> {
         }
       case WorkspaceAction.EDIT_WORKSPACE:
         {
-          return buildDetailsLocation(workspace, WorkspaceDetailsTab.Devfile);
+          return buildDetailsLocation(workspace, WorkspaceDetailsTab.DEVFILE);
         }
       case WorkspaceAction.START_DEBUG_AND_OPEN_LOGS:
         {
@@ -149,7 +149,7 @@ export class WorkspaceActionsProvider extends React.Component<Props, State> {
         }
         break;
       case WorkspaceAction.ADD_PROJECT:
-        return buildDetailsLocation(workspace, WorkspaceDetailsTab.Devfile);
+        return buildDetailsLocation(workspace, WorkspaceDetailsTab.DEVFILE);
       case WorkspaceAction.DELETE_WORKSPACE:
         {
           if (isWorkspaceV1(workspace.ref) && !(workspace.isStopped || workspace.hasError)) {

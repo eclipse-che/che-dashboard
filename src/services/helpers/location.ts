@@ -66,11 +66,10 @@ export function buildDetailsLocation(workspace: Workspace, tab?: WorkspaceDetail
       .replace(':namespace', workspace.namespace)
       .replace(':workspaceName', workspace.name);
   } else {
-    const tabId = WorkspaceDetailsTab[tab];
     pathAndQuery = ROUTE.WORKSPACE_DETAILS_TAB
       .replace(':namespace', workspace.namespace)
       .replace(':workspaceName', workspace.name)
-      .replace(':tabId', tabId);
+      .replace(':tabId', tab);
   }
   return _buildLocationObject(pathAndQuery);
 }

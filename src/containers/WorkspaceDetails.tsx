@@ -112,7 +112,7 @@ class WorkspaceDetailsContainer extends React.Component<Props> {
       this.props.setWorkspaceId(changedWorkspace.id);
       this.props.history.replace(location);
     } catch (e) {
-      if (this.workspaceDetailsPageRef.current?.state.activeTabKey === WorkspaceDetailsTab.Devfile) {
+      if (this.workspaceDetailsPageRef.current?.state.activeTabKey === WorkspaceDetailsTab.DEVFILE) {
         throw new Error(e.toString().replace(/^Error: /gi, ''));
       }
       this.showAlert('Failed to update workspace data');
