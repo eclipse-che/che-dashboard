@@ -19,6 +19,7 @@ import {
   AlertVariant,
   Flex,
   FlexItem,
+  Form,
   FormGroup,
   Text,
   TextContent,
@@ -40,7 +41,7 @@ type State = {
   alerts: AlertItem[];
 };
 
-export class DevfileSelectorFormGroup extends React.PureComponent<Props, State> {
+export class DevfileSelector extends React.PureComponent<Props, State> {
   private factoryResolver: FactoryResolverStore.State;
   private readonly devfileLocationRef: React.RefObject<GitRepoLocationInput>;
 
@@ -89,7 +90,7 @@ export class DevfileSelectorFormGroup extends React.PureComponent<Props, State> 
     const { alerts, isLoading } = this.state;
 
     return (
-      <>
+      <Form>
         <AlertGroup isToast>
           {alerts.map(({ title, variant, key }) => (
             <Alert
@@ -125,7 +126,7 @@ export class DevfileSelectorFormGroup extends React.PureComponent<Props, State> 
             </FlexItem>
           </Flex>
         </FormGroup>
-      </>
+      </Form>
     );
   }
 
@@ -144,4 +145,4 @@ const connector = connect(
 );
 
 type MappedProps = ConnectedProps<typeof connector>;
-export default connector(DevfileSelectorFormGroup);
+export default connector(DevfileSelector);

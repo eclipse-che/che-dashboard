@@ -44,7 +44,7 @@ export enum DevWorkspaceStatus {
   STOPPING = 'Stopping'
 }
 
-export type GettingStartedTab = 'get-started'
+export type CreateWorkspaceTab = 'quick-add'
   | 'custom-workspace';
 
 export enum IdeLoaderTab {

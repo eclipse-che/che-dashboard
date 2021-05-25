@@ -18,6 +18,7 @@ import {
   ValidatedOptions,
   Flex,
   FlexItem,
+  Form,
   FormGroup,
   Text,
   TextVariants,
@@ -91,7 +92,10 @@ export class GitRepoLocationInput extends React.PureComponent<Props, State> {
     const buttonDisabled = location === '' || validated === ValidatedOptions.error || this.props.isLoading;
 
     return (
-      <React.Fragment>
+      <Form onSubmit={e => {
+        e.preventDefault();
+        this.handleClick();
+      }}>
         <FormGroup
           fieldId={fieldId}
           validated={validated}
@@ -125,7 +129,7 @@ export class GitRepoLocationInput extends React.PureComponent<Props, State> {
             </FlexItem>
           </Flex>
         </FormGroup>
-      </React.Fragment>
+      </Form>
     );
   }
 

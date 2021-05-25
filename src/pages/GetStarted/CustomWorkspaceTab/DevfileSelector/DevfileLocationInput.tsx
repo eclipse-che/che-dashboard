@@ -116,7 +116,7 @@ export class DevfileLocationInput extends React.PureComponent<Props, State> {
                 type='url'
                 aria-label="URL of devfile"
                 validated={validated}
-
+                placeholder="Enter devfile URL"
                 onChange={(value, event) => this.handleChange(value, event)}
                 value={location}
               />

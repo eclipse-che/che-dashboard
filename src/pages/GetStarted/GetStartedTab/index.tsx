@@ -12,7 +12,7 @@
 
 import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
-import { Flex, FlexItem, Form, PageSection, PageSectionVariants } from '@patternfly/react-core';
+import { Flex, FlexItem, PageSection, PageSectionVariants } from '@patternfly/react-core';
 import { AppState } from '../../../store';
 import CheProgress from '../../../components/Progress';
 import { SamplesListHeader } from './SamplesListHeader';
@@ -84,11 +84,9 @@ export class SamplesListTab extends React.PureComponent<Props, State> {
           style={{ background: '#f0f0f0' }}
         >
           <PageSection variant={PageSectionVariants.light}>
-            <Form>
-              <ImportFromGit
-                onDevfileResolve={(devfile, location) => this.handleDevfileResolver(devfile, location)}
-              />
-            </Form>
+            <ImportFromGit
+              onDevfileResolve={(devfile, location) => this.handleDevfileResolver(devfile, location)}
+            />
           </PageSection>
           <PageSection
             variant={PageSectionVariants.light}
