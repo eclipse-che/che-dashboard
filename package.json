@@ -1,6 +1,6 @@
 {
   "name": "che-dashboard",
-  "version": "7.31.0",
+  "version": "7.31.1-SNAPSHOT",
   "description": "Dashboard for Eclipse CHE",
   "private": true,
   "repository": {
