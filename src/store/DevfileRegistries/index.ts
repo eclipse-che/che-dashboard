@@ -171,11 +171,15 @@ export const actionCreators: ActionCreators = {
         const patchedJSONString = JSON.stringify(schemav1).replaceAll('#/definitions', '#/oneOf/0/definitions');
         const parsedSchemaV1 = JSON.parse(patchedJSONString);
 
-        const schemav2 = await WorkspaceClient.restApiClient.getDevfileSchema('2.0.0');
+        const schemav200 = await WorkspaceClient.restApiClient.getDevfileSchema('2.0.0');
+        const schemav210 = await WorkspaceClient.restApiClient.getDevfileSchema('2.1.0');
+        const schemav220alpha = await WorkspaceClient.restApiClient.getDevfileSchema('2.2.0-alpha');
         schema = {
           oneOf: [
             parsedSchemaV1,
-            schemav2
+            schemav200,
+            schemav210,
+            schemav220alpha
           ]
         };
       }
