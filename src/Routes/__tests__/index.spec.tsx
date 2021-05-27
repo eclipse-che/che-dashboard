@@ -163,7 +163,7 @@ describe('Routes', () => {
     });
 
     it('should handle "/workspace/namespace/name?tab=Overview"', async () => {
-      const location = buildDetailsLocation(workspace, WorkspaceDetailsTab.Overview);
+      const location = buildDetailsLocation(workspace, WorkspaceDetailsTab.OVERVIEW);
       render(getComponent(location));
 
       await waitFor(() => expect(screen.queryByTestId('fallback-spinner')).not.toBeInTheDocument());
@@ -172,7 +172,7 @@ describe('Routes', () => {
     });
 
     it('should handle "/workspace/namespace/name?tab=Devfile"', async () => {
-      const location = buildDetailsLocation(workspace, WorkspaceDetailsTab.Devfile);
+      const location = buildDetailsLocation(workspace, WorkspaceDetailsTab.DEVFILE);
       render(getComponent(location));
 
       await waitFor(() => expect(screen.queryByTestId('fallback-spinner')).not.toBeInTheDocument());
@@ -181,7 +181,7 @@ describe('Routes', () => {
     });
 
     it('should handle "/workspace/namespace/name?tab=Logs"', async () => {
-      const location = buildDetailsLocation(workspace, WorkspaceDetailsTab.Logs);
+      const location = buildDetailsLocation(workspace, WorkspaceDetailsTab.LOGS);
       render(getComponent(location));
 
       await waitFor(() => expect(screen.queryByTestId('fallback-spinner')).not.toBeInTheDocument());
