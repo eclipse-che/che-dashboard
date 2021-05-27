@@ -21,6 +21,7 @@ import DevfileSelectorFormGroup from './DevfileSelector';
 import InfrastructureNamespaceFormGroup from './InfrastructureNamespace';
 import { selectPreferredStorageType, selectWorkspacesSettings } from '../../../store/Workspaces/Settings/selectors';
 import { attributesToType, updateDevfile } from '../../../services/storageTypes';
+import { safeLoad } from 'js-yaml';
 
 type Props = MappedProps
   & {
@@ -123,8 +124,15 @@ export class CustomWorkspaceTab extends React.PureComponent<Props, State> {
     }
   }
 
-  private handleDevfileChange(devfile: che.WorkspaceDevfile, isValid: boolean): void {
+  private handleDevfileChange(newValue: string, isValid: boolean): void {
     if (!isValid) {
+      return;
+    }
+    let devfile: che.WorkspaceDevfile;
+    try {
+      devfile = safeLoad(newValue);
+    } catch (e) {
+      console.error('Devfile parse error', e);
       return;
     }
     this.setState({ devfile, isCreated: false });
@@ -203,7 +211,7 @@ export class CustomWorkspaceTab extends React.PureComponent<Props, State> {
             ref={this.devfileEditorRef}
             devfile={devfile}
             decorationPattern='location[ \t]*(.*)[ \t]*$'
-            onChange={(devfile, isValid) => this.handleDevfileChange(devfile, isValid)}
+            onChange={(newValue, isValid) => this.handleDevfileChange(newValue, isValid)}
           />
         </PageSection>
         <PageSection variant={PageSectionVariants.light}>

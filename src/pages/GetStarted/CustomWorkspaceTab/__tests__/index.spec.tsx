@@ -36,7 +36,7 @@ jest.mock('../../../../components/DevfileEditor', () => {
       if (!value) {
         onChange(value, false);
       } else {
-        onChange(JSON.parse(value), true);
+        onChange(value, true);
       }
     }
     const input = (<input

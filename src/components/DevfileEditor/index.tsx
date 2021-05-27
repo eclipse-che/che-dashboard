@@ -18,7 +18,6 @@ import { ProtocolToMonacoConverter, MonacoToProtocolConverter } from 'monaco-lan
 import { languages, editor, Position, IRange } from 'monaco-editor-core/esm/vs/editor/editor.main';
 import { TextDocument, getLanguageService } from 'yaml-language-server';
 import { initDefaultEditorTheme } from '../../services/monacoThemeRegister';
-import { safeLoad } from 'js-yaml';
 import stringify, { language, conf } from '../../services/helpers/editor';
 import $ from 'jquery';
 import { IDevWorkspaceDevfile } from '@eclipse-che/devworkspace-client';
@@ -49,7 +48,7 @@ type Props =
   & {
     devfile: che.WorkspaceDevfile | IDevWorkspaceDevfile;
     decorationPattern?: string;
-    onChange: (devfile: che.WorkspaceDevfile, isValid: boolean) => void;
+    onChange: (newValue: string, isValid: boolean) => void;
     isReadonly?: boolean;
   };
 type State = {
@@ -273,15 +272,7 @@ export class DevfileEditor extends React.PureComponent<Props, State> {
       this.skipNextOnChange = false;
       return;
     }
-
-    let devfile: che.WorkspaceDevfile;
-    try {
-      devfile = safeLoad(newValue);
-    } catch (e) {
-      console.error('DevfileEditor parse error', e);
-      return;
-    }
-    this.props.onChange(devfile, isValid);
+    this.props.onChange(newValue, isValid);
   }
 
   private registerLanguageServerProviders(languages: any): void {
