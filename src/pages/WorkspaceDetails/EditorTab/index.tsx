@@ -266,6 +266,13 @@ export class EditorTab extends React.PureComponent<Props, State> {
       return;
     }
     const workspaceCopy = convertWorkspace(this.props.workspace.ref);
+    if (!devfile.metadata) {
+      devfile.metadata = {};
+    }
+    if (!devfile.metadata.name) {
+      devfile.metadata.name = workspaceCopy.name;
+    }
+
     workspaceCopy.devfile = devfile;
     this.setState({ hasChanges: false });
     try {
