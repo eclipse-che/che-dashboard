@@ -18,7 +18,6 @@ import { ProtocolToMonacoConverter, MonacoToProtocolConverter } from 'monaco-lan
 import { languages, editor, Position, IRange } from 'monaco-editor-core/esm/vs/editor/editor.main';
 import { TextDocument, getLanguageService } from 'yaml-language-server';
 import { initDefaultEditorTheme } from '../../services/monacoThemeRegister';
-import { safeLoad } from 'js-yaml';
 import stringify, { language, conf } from '../../services/helpers/editor';
 import $ from 'jquery';
 import { IDevWorkspaceDevfile } from '@eclipse-che/devworkspace-client';
