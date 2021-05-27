@@ -32,6 +32,7 @@ import { container } from '../../../inversify.config';
 import * as lodash from 'lodash';
 
 import './EditorTab.styl';
+import { safeLoad } from 'js-yaml';
 
 type Props = {
   onSave: (workspace: Workspace) => Promise<void>;
@@ -155,9 +156,7 @@ export class EditorTab extends React.PureComponent<Props, State> {
             ref={this.devfileEditorRef}
             devfile={originDevfile}
             decorationPattern="location[ \t]*(.*)[ \t]*$"
-            onChange={(devfile, isValid) => {
-              this.onDevfileChange(devfile, isValid);
-            }}
+            onChange={(newValue, isValid) => this.onDevfileChange(newValue, isValid)}
             isReadonly={isDevfileV2(originDevfile)}
           />
           <Button onClick={() => this.cancelChanges()} variant="secondary" className="cancle-button"
@@ -214,10 +213,17 @@ export class EditorTab extends React.PureComponent<Props, State> {
     this.setState({ isDevfileValid: true });
   }
 
-  private onDevfileChange(devfile: che.WorkspaceDevfile, isValid: boolean): void {
+  private onDevfileChange(newValue: string, isValid: boolean): void {
     this.setState({ isDevfileValid: isValid });
     if (!isValid) {
       this.setState({ hasChanges: false });
+      return;
+    }
+    let devfile: che.WorkspaceDevfile;
+    try {
+      devfile = safeLoad(newValue);
+    } catch (e) {
+      console.error('Devfile parse error', e);
       return;
     }
     if (this.areEqual(this.props.workspace.devfile as che.WorkspaceDevfile, devfile)) {
