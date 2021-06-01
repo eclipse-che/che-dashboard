@@ -18,7 +18,8 @@ import {
   ValidatedOptions,
   Flex,
   FlexItem,
-  FormGroup,
+  Form,
+  FormGroup
 } from '@patternfly/react-core';
 import { ExclamationCircleIcon } from '@patternfly/react-icons';
 
@@ -99,7 +100,12 @@ export class DevfileLocationInput extends React.PureComponent<Props, State> {
     const fieldId = 'devfile-url';
     const buttonDisabled = location === '' || validated === ValidatedOptions.error || this.props.isLoading;
     return (
-      <React.Fragment>
+      <Form onSubmit={e => {
+        e.preventDefault();
+        if (!buttonDisabled) {
+          this.handleClick();
+        }
+      }}>
         <FormGroup
           fieldId={fieldId}
           validated={validated}
@@ -133,7 +139,7 @@ export class DevfileLocationInput extends React.PureComponent<Props, State> {
             </FlexItem>
           </Flex>
         </FormGroup>
-      </React.Fragment>
+      </Form>
     );
   }
 
