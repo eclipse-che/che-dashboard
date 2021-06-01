@@ -94,7 +94,9 @@ export class GitRepoLocationInput extends React.PureComponent<Props, State> {
     return (
       <Form onSubmit={e => {
         e.preventDefault();
-        this.handleClick();
+        if (!buttonDisabled) {
+          this.handleClick();
+        }
       }}>
         <FormGroup
           fieldId={fieldId}
