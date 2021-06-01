@@ -10,13 +10,11 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import _ from 'lodash';
-
 /**
  * Creates a new state object.
  * @param state a store state, e.g workspaces, plugins.
  * @param partial a slice of a store state
  */
 export function createState<T>(state: T, partial: Partial<T>): T {
-  return _.merge({}, state, partial);
+  return Object.assign({}, state, partial);
 }
