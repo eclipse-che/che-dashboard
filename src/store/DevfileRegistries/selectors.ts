@@ -14,14 +14,21 @@ import { createSelector } from 'reselect';
 import { AppState } from '../';
 import match from '../../services/helpers/filter';
 
-const selectState = (state: AppState) => state.devfileRegistries;
+const selectState = (state: AppState) => ({ devfileRegistries: state.devfileRegistries, workspacesSettings: state.workspacesSettings });
 
 export const selectRegistriesMetadata = createSelector(
   selectState,
   state => {
-    const registriesMetadata = Object.values(state.registries)
+    const registriesMetadata = Object.values(state.devfileRegistries.registries)
       .map(registryMetadata => registryMetadata.metadata || []);
-    return mergeRegistriesMetadata(registriesMetadata);
+    const metadata = mergeRegistriesMetadata(registriesMetadata);
+    const cheDevworkspaceEnabled = state.workspacesSettings.settings['che.devworkspaces.enabled'] === 'true';
+    if (cheDevworkspaceEnabled) {
+      return filterDevfileV2Metadata(metadata);
+    } else {
+      return metadata;
+    }
+
   }
 );
 
@@ -29,7 +36,7 @@ export const selectRegistriesErrors = createSelector(
   selectState,
   state => {
     const errors: Array<{ url: string, errorMessage: string }> = [];
-    for (const [url, value] of Object.entries(state.registries)) {
+    for (const [url, value] of Object.entries(state.devfileRegistries.registries)) {
       if (value.error) {
         errors.push({
           url,
@@ -43,7 +50,7 @@ export const selectRegistriesErrors = createSelector(
 
 export const selectFilterValue = createSelector(
   selectState,
-  state => state.filter
+  state => state.devfileRegistries.filter
 );
 
 export const selectMetadataFiltered = createSelector(
@@ -69,12 +76,16 @@ function mergeRegistriesMetadata(registriesMetadata: Array<Array<che.DevfileMeta
   }, []);
 }
 
+function filterDevfileV2Metadata(metadata: Array<che.DevfileMetaData>): Array<che.DevfileMetaData> {
+  return metadata.filter(metadata => metadata.links?.v2);
+}
+
 export const selectDevfileSchema = createSelector(
   selectState,
-  state => state.schema.schema,
+  state => state.devfileRegistries.schema.schema,
 );
 
 export const selectDevfileSchemaError = createSelector(
   selectState,
-  state => state.schema.error,
+  state => state.devfileRegistries.schema.error,
 );
