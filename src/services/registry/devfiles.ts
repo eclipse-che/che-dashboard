@@ -34,12 +34,17 @@ function resolveIconUrl(metadata: che.DevfileMetaData, baseUrl: string): string 
   return createURL(metadata.icon, baseUrl).href;
 }
 
-function resolveLinkSelf(metadata: che.DevfileMetaData, baseUrl: string): string {
-  if (metadata.links.self.startsWith('http')) {
-    return metadata.links.self;
-  }
-
-  return createURL(metadata.links.self, baseUrl).href;
+function resolveLinks(metadata: che.DevfileMetaData, baseUrl: string): any {
+  const resolvedLinks = {};
+  const linkNames = Object.keys(metadata.links);
+  linkNames.map(linkName => {
+    let updatedLink = metadata.links[linkName];
+    if (!updatedLink.startsWith('http')) {
+      updatedLink = createURL(updatedLink, baseUrl).href;
+    }
+    resolvedLinks[linkName] = updatedLink;
+  });
+  return resolvedLinks;
 }
 
 export async function fetchRegistryMetadata(registryUrl: string): Promise<che.DevfileMetaData[]> {
@@ -51,7 +56,7 @@ export async function fetchRegistryMetadata(registryUrl: string): Promise<che.De
 
     return response.data.map(meta => {
       meta.icon = resolveIconUrl(meta, registryUrl);
-      meta.links.self = resolveLinkSelf(meta, registryUrl);
+      meta.links = resolveLinks(meta, registryUrl);
       return meta;
     });
   } catch (e) {
