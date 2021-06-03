@@ -32,6 +32,9 @@ import * as DevfileRegistriesStore from '../../../store/DevfileRegistries';
 import { SampleCard } from './SampleCard';
 import { AlertItem } from '../../../services/helpers/types';
 import { selectMetadataFiltered } from '../../../store/DevfileRegistries/selectors';
+import { selectWorkspacesSettings } from '../../../store/Workspaces/Settings/selectors';
+import * as FactoryResolverStore from '../../../store/FactoryResolver';
+import stringify from '../../../services/helpers/editor';
 
 type Props =
   MappedProps
@@ -85,8 +88,17 @@ export class SamplesListGallery extends React.PureComponent<Props, State> {
 
   private async fetchDevfile(meta: che.DevfileMetaData): Promise<void> {
     try {
-      const devfile = await this.props.requestDevfile(meta.links.self) as string;
-      this.props.onCardClick(devfile, meta.displayName);
+      const cheDevworkspaceEnabled = this.props.workspacesSettings['che.devworkspaces.enabled'] === 'true';
+      let devfileContent;
+      if (cheDevworkspaceEnabled) {
+        const link = meta.links.v2;
+        await this.props.requestFactoryResolver(link);
+        const { devfile } = this.props.factoryResolver.resolver;
+        devfileContent = stringify(devfile);
+      } else {
+        devfileContent = await this.props.requestDevfile(meta.links.self) as string;
+      }
+      this.props.onCardClick(devfileContent, meta.displayName);
     } catch (e) {
       console.warn('Failed to load devfile.', e);
 
@@ -134,12 +146,15 @@ export class SamplesListGallery extends React.PureComponent<Props, State> {
 
 const mapStateToProps = (state: AppState) => ({
   metadataFiltered: selectMetadataFiltered(state),
+  workspacesSettings: selectWorkspacesSettings(state),
+  factoryResolver: state.factoryResolver,
 });
 
 const connector = connect(
   mapStateToProps,
   {
     ...DevfileRegistriesStore.actionCreators,
+    ...FactoryResolverStore.actionCreators,
   }
 );
 
