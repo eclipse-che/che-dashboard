@@ -115,14 +115,6 @@ declare namespace che {
     attributes: { [propName: string]: string };
   }
 
-  export interface ProjectSource {
-    location: string;
-    parameters?: {
-      [paramName: string]: any;
-    };
-    type?: string;
-  }
-
   export interface ProfileAttributes {
     firstName?: string;
     lastName?: string;

@@ -25,7 +25,7 @@ export interface FactoryResolver {
   source: string;
   devfile: api.che.workspace.devfile.Devfile;
   location?: string;
-  scm_info: {
+  scm_info?: {
     clone_url: string;
     scm_provider: string;
     branch?: string;
