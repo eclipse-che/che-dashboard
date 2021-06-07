@@ -48,6 +48,8 @@ export class DevWorkspaceClient extends WorkspaceClient {
   private initializing: Promise<void>;
   private lastDevWorkspaceLog: Map<string, string>;
   private devWorkspacesIds: string[];
+  private pluginRegistryUrlName: string;
+  private dashboardUrlName: string;
 
   constructor(@inject(KeycloakSetupService) keycloakSetupService: KeycloakSetupService) {
     super(keycloakSetupService);
@@ -60,6 +62,8 @@ export class DevWorkspaceClient extends WorkspaceClient {
     this.maxStatusAttempts = 10;
     this.lastDevWorkspaceLog = new Map();
     this.devWorkspacesIds = [];
+    this.pluginRegistryUrlName = 'PLUGIN_REGISTRY_URL';
+    this.dashboardUrlName = 'DASHBOARD_URL';
   }
 
   isEnabled(): Promise<boolean> {
@@ -97,7 +101,7 @@ export class DevWorkspaceClient extends WorkspaceClient {
     return workspace;
   }
 
-  async create(devfile: IDevWorkspaceDevfile, pluginsDevfile: IDevWorkspaceDevfile[]): Promise<IDevWorkspace> {
+  async create(devfile: IDevWorkspaceDevfile, pluginsDevfile: IDevWorkspaceDevfile[], pluginRegistryUrl: string | undefined): Promise<IDevWorkspace> {
     if (!devfile.components) {
       devfile.components = [];
     }
@@ -111,6 +115,24 @@ export class DevWorkspaceClient extends WorkspaceClient {
       const workspaceId = createdWorkspace.status.devworkspaceId;
       const pluginName = this.normalizePluginName(pluginDevfile.metadata.name, workspaceId);
       const devfileGroupVersion = `${devWorkspaceApiGroup}/${devworkspaceVersion}`;
+
+      // propagate the plugin registry and dashboard urls to the containers in the initial devworkspace templates
+      for (const component of pluginDevfile.components) {
+        const container = component.container;
+        if (container) {
+          if (!container.env) {
+            container.env = [];
+          }
+          container.env.push(...[{
+            name: this.dashboardUrlName,
+            value: window.location.origin,
+          }, {
+            name: this.pluginRegistryUrlName,
+            value: pluginRegistryUrl
+          }]);
+        }
+      }
+
       const theiaDWT = await this.dwtApi.create(<IDevWorkspaceTemplate>{
         kind: 'DevWorkspaceTemplate',
         apiVersion: devfileGroupVersion,

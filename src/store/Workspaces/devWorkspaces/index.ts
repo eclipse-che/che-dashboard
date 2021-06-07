@@ -298,8 +298,9 @@ export const actionCreators: ActionCreators = {
         devWorkspaceDevfile.metadata.namespace = defaultNamespace;
       }
 
+      const pluginRegistryUrl = state.workspacesSettings.settings.cheWorkspacePluginRegistryUrl;
       const dwPlugins = state.dwPlugins.plugins;
-      const workspace = await devWorkspaceClient.create(devWorkspaceDevfile, dwPlugins);
+      const workspace = await devWorkspaceClient.create(devWorkspaceDevfile, dwPlugins, pluginRegistryUrl);
 
       dispatch({
         type: 'ADD_DEVWORKSPACE',
