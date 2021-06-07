@@ -17,6 +17,7 @@ import { FactoryResolver } from '../services/helpers/types';
 import { container } from '../inversify.config';
 import { CheWorkspaceClient } from '../services/workspace-client/cheWorkspaceClient';
 import { AppThunk } from './';
+import { getDevfile } from './helpers';
 import { getErrorMessage } from '../services/helpers/getErrorMessage';
 
 const WorkspaceClient = container.get(CheWorkspaceClient);
