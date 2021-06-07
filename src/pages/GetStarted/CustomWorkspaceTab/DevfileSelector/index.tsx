@@ -34,6 +34,7 @@ import { AlertItem } from '../../../../services/helpers/types';
 import { selectRegistriesMetadata } from '../../../../store/DevfileRegistries/selectors';
 
 import styles from './index.module.css';
+import { getErrorMessage } from '../../../../services/helpers/getErrorMessage';
 
 type Props =
   MappedProps
@@ -108,7 +109,7 @@ export class DevfileSelectorFormGroup extends React.PureComponent<Props, State> 
       this.devfileLocationRef.current?.invalidateInput();
       this.showAlert({
         key: 'load-factory-resolver-failed',
-        title: `Failed to resolve or load the devfile. ${e}`,
+        title: `Failed to resolve or load the devfile. ${getErrorMessage(e)}`,
         variant: AlertVariant.danger,
       });
     }
