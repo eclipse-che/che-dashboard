@@ -40,6 +40,13 @@ export function getDevfile(data: FactoryResolver): api.che.workspace.devfile.Dev
   let devfile = data.devfile;
 
   if (isDevfileV2(devfile)) {
+    // temporary solution for fix che-server serialisation bug with empty volume
+    const components = devfile.components.map(component => {
+      if (Object.keys(component).length === 1 && component.name) {
+        component.volume = {};
+      }
+      return component;
+    }) || [];
     devfile = Object.assign(devfile, { components });
     // add a default project
     const projects: ProjectV2Source[] = [];
