@@ -30,6 +30,7 @@ import * as DevfileRegistriesStore from '../../../../store/DevfileRegistries';
 import * as FactoryResolverStore from '../../../../store/FactoryResolver';
 import { GitRepoLocationInput } from './GitRepoLocationInput';
 import { AlertItem } from '../../../../services/helpers/types';
+import { getErrorMessage } from '../../../../services/helpers/getErrorMessage';
 
 type Props =
   MappedProps
@@ -71,7 +72,7 @@ export class DevfileSelector extends React.PureComponent<Props, State> {
       this.devfileLocationRef.current?.invalidateInput();
       this.showAlert({
         key: 'load-devfile-resolver-failed',
-        title: `Failed to resolve or load the devfile. ${e}`,
+        title: `Failed to resolve or load the devfile. ${getErrorMessage(e)}`,
         variant: AlertVariant.danger,
       });
     }

@@ -17,6 +17,8 @@ import { FactoryResolver } from '../services/helpers/types';
 import { container } from '../inversify.config';
 import { CheWorkspaceClient } from '../services/workspace-client/cheWorkspaceClient';
 import { AppThunk } from './';
+import { getErrorMessage } from '../services/helpers/getErrorMessage';
+
 const WorkspaceClient = container.get(CheWorkspaceClient);
 
 export type OAuthResponse = {
@@ -128,7 +130,7 @@ export const actionCreators: ActionCreators = {
         throw responseData;
         return;
       }
-      throw new Error(e.message ? e.message : 'Failed to request factory resolver');
+      throw new Error(getErrorMessage(e, 'Failed to request factory resolver'));
     }
   },
 

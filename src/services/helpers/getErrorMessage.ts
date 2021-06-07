@@ -12,7 +12,10 @@
 
 import axios, { AxiosError } from 'axios';
 
-export function getErrorMessage(error: Error | any): string {
+export function getErrorMessage(error: Error | any, defaultMessage = ''): string {
+  if (!error) {
+    return defaultMessage;
+  }
   if (error.message) {
     return error.message;
   }
