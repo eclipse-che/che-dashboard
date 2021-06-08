@@ -48,8 +48,8 @@ export class DevWorkspaceClient extends WorkspaceClient {
   private initializing: Promise<void>;
   private lastDevWorkspaceLog: Map<string, string>;
   private devWorkspacesIds: string[];
-  private pluginRegistryUrlName: string;
-  private dashboardUrlName: string;
+  private pluginRegistryUrlEnvName: string;
+  private dashboardUrlEnvName: string;
 
   constructor(@inject(KeycloakSetupService) keycloakSetupService: KeycloakSetupService) {
     super(keycloakSetupService);
@@ -62,8 +62,8 @@ export class DevWorkspaceClient extends WorkspaceClient {
     this.maxStatusAttempts = 10;
     this.lastDevWorkspaceLog = new Map();
     this.devWorkspacesIds = [];
-    this.pluginRegistryUrlName = 'PLUGIN_REGISTRY_URL';
-    this.dashboardUrlName = 'DASHBOARD_URL';
+    this.pluginRegistryUrlEnvName = 'CHE_PLUGIN_REGISTRY_URL';
+    this.dashboardUrlEnvName = 'CHE_DASHBOARD_URL';
   }
 
   isEnabled(): Promise<boolean> {
@@ -124,10 +124,10 @@ export class DevWorkspaceClient extends WorkspaceClient {
             container.env = [];
           }
           container.env.push(...[{
-            name: this.dashboardUrlName,
+            name: this.dashboardUrlEnvName,
             value: window.location.origin,
           }, {
-            name: this.pluginRegistryUrlName,
+            name: this.pluginRegistryUrlEnvName,
             value: pluginRegistryUrl
           }]);
         }
