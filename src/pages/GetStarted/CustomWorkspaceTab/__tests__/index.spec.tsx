@@ -129,7 +129,7 @@ describe('Custom Workspace Tab', () => {
 
     clickOnCreateAndOpenButton();
 
-    expect(mockOnDevfile).toHaveBeenCalledWith(initialDevfile, defaultInfrastructureNamespace);
+    expect(mockOnDevfile).toHaveBeenCalledWith({ devfile: initialDevfile, generateName: 'wksp-', isCreated: false, storageType: 'persistent', workspaceName: '' }, defaultInfrastructureNamespace);
   });
 
   describe('workspace name field', () => {
@@ -222,8 +222,9 @@ describe('Custom Workspace Tab', () => {
 
       clickOnCreateAndOpenButton();
 
+      expect(mockOnDevfile.mock.calls[0][0].devfile).toEqual(expect.objectContaining(dummyDevfile));
       expect(mockOnDevfile).toHaveBeenCalledWith(
-        expect.objectContaining(dummyDevfile),
+        expect.anything(),
         defaultInfrastructureNamespace
       );
     });
@@ -257,8 +258,9 @@ describe('Custom Workspace Tab', () => {
 
       clickOnCreateAndOpenButton();
 
+      expect(mockOnDevfile.mock.calls[0][0].devfile).toEqual(expect.objectContaining(dummyCustomDevfile));
       expect(mockOnDevfile).toHaveBeenCalledWith(
-        expect.objectContaining(dummyCustomDevfile),
+        expect.anything(),
         defaultInfrastructureNamespace
       );
     });
@@ -325,8 +327,9 @@ describe('Custom Workspace Tab', () => {
 
       clickOnCreateAndOpenButton();
 
+      expect(mockOnDevfile.mock.calls[0][0].devfile).toEqual(expect.objectContaining(newDevfile));
       expect(mockOnDevfile).toHaveBeenCalledWith(
-        expect.objectContaining(newDevfile),
+        expect.anything(),
         defaultInfrastructureNamespace
       );
     });

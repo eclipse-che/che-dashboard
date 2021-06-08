@@ -22,7 +22,10 @@ import { ThunkDispatch } from 'redux-thunk';
 import { State } from '../../store/Workspaces/devWorkspaces';
 import { Action } from 'redux';
 import { AppState, AppThunk } from '../../store';
-
+import { V1alpha2DevWorkspace, V1alpha2DevWorkspaceTemplate, V1alpha2DevWorkspaceSpecTemplate } from '@devfile/api';
+import { InversifyBinding } from '@eclipse-che/che-theia-devworkspace-handler/lib/inversify/inversify-binding';
+import { CheTheiaPluginsDevfileResolver } from '@eclipse-che/che-theia-devworkspace-handler/lib/devfile/che-theia-plugins-devfile-resolver';
+import { SidecarPolicy } from '@eclipse-che/che-theia-devworkspace-handler/lib/api/devfile-context';
 export interface IStatusUpdate {
   error?: string;
   message?: string;
@@ -101,7 +104,9 @@ export class DevWorkspaceClient extends WorkspaceClient {
     return workspace;
   }
 
-  async create(devfile: IDevWorkspaceDevfile, pluginsDevfile: IDevWorkspaceDevfile[], pluginRegistryUrl: string | undefined): Promise<IDevWorkspace> {
+  async create(devfile: IDevWorkspaceDevfile, pluginsDevfile: IDevWorkspaceDevfile[], pluginRegistryUrl: string | undefined, optionalFilesContent: {
+    [fileName: string]: string
+  },): Promise<IDevWorkspace> {
     if (!devfile.components) {
       devfile.components = [];
     }
@@ -109,10 +114,11 @@ export class DevWorkspaceClient extends WorkspaceClient {
     const createdWorkspace = await this.dwApi.create(devfile, 'che', false);
     const namespace = createdWorkspace.metadata.namespace;
     const name = createdWorkspace.metadata.name;
+    const workspaceId = createdWorkspace.status.devworkspaceId;
 
+    const devWorkspaceTemplates: V1alpha2DevWorkspaceTemplate[] = [];
     for (const pluginDevfile of pluginsDevfile) {
       // TODO handle error in a proper way
-      const workspaceId = createdWorkspace.status.devworkspaceId;
       const pluginName = this.normalizePluginName(pluginDevfile.metadata.name, workspaceId);
       const devfileGroupVersion = `${devWorkspaceApiGroup}/${devworkspaceVersion}`;
 
@@ -133,7 +139,7 @@ export class DevWorkspaceClient extends WorkspaceClient {
         }
       }
 
-      const theiaDWT = await this.dwtApi.create(<IDevWorkspaceTemplate>{
+      const theiaDWT = {
         kind: 'DevWorkspaceTemplate',
         apiVersion: devfileGroupVersion,
         metadata: {
@@ -149,10 +155,54 @@ export class DevWorkspaceClient extends WorkspaceClient {
           ]
         },
         spec: pluginDevfile
-      });
-
-      this.addPlugin(createdWorkspace, pluginName, theiaDWT.metadata.namespace);
+      };
+      devWorkspaceTemplates.push(theiaDWT);
     }
+
+    const devWorkspace: V1alpha2DevWorkspace = createdWorkspace;
+    // call theia library to insert all the logic
+    const inversifyBindings = new InversifyBinding();
+    const container = await inversifyBindings.initBindings({
+      pluginRegistryUrl: pluginRegistryUrl || '',
+      axiosInstance: this.axios,
+      insertTemplates: false,
+    });
+    const cheTheiaPluginsContent = optionalFilesContent['.che/che-theia-plugins.yaml'];
+    const vscodeExtensionsJsonContent = optionalFilesContent['.vscode/extensions.json'];
+    const cheTheiaPluginsDevfileResolver = container.get(CheTheiaPluginsDevfileResolver);
+
+    let sidecarPolicy: SidecarPolicy;
+    const devfileCheTheiaSidecarPolicy = (devfile as V1alpha2DevWorkspaceSpecTemplate).attributes?.['che-theia.eclipse.org/sidecar-policy'];
+    if (devfileCheTheiaSidecarPolicy === 'USE_DEV_CONTAINER') {
+      sidecarPolicy = SidecarPolicy.USE_DEV_CONTAINER;
+    } else {
+      sidecarPolicy = SidecarPolicy.MERGE_IMAGE;
+    }
+    console.debug('Loading devfile', devfile, 'with optional .che/che-theia-plugins.yaml', cheTheiaPluginsContent, 'and .vscode/extensions.json', vscodeExtensionsJsonContent, 'with sidecar policy', sidecarPolicy);
+    // call library to update devWorkspace and add optional templates
+    await cheTheiaPluginsDevfileResolver.handle({
+      devfile,
+      cheTheiaPluginsContent,
+      vscodeExtensionsJsonContent,
+      devWorkspace,
+      devWorkspaceTemplates,
+      sidecarPolicy,
+      suffix: workspaceId,
+    });
+
+    await Promise.all(devWorkspaceTemplates.map(async template => {
+      // if no namespace, update it
+      if (!template.metadata?.['namespace']) {
+        const templateMetadata: { namespace?: string } = template.metadata || {};
+        if (!templateMetadata.namespace) {
+          templateMetadata.namespace = namespace;
+        }
+        template.metadata = templateMetadata;
+      }
+      const theiaDWT = await this.dwtApi.create(<IDevWorkspaceTemplate>template);
+      const pluginName = theiaDWT.metadata.name;
+      this.addPlugin(createdWorkspace, pluginName, theiaDWT.metadata.namespace);
+    }));
 
     createdWorkspace.spec.started = true;
     const patch = [

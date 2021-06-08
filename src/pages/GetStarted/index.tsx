@@ -33,6 +33,7 @@ import { ROUTE } from '../../route.enum';
 import { Workspace } from '../../services/workspaceAdapter';
 import { selectBranding } from '../../store/Branding/selectors';
 import { selectRegistriesErrors } from '../../store/DevfileRegistries/selectors';
+import { ResolverState } from '../../store/FactoryResolver';
 
 const SamplesListTab = React.lazy(() => import('./GetStartedTab'));
 const CustomWorkspaceTab = React.lazy(() => import('./CustomWorkspaceTab'));
@@ -115,11 +116,14 @@ export class GetStarted extends React.PureComponent<Props, State> {
     devfile: api.che.workspace.devfile.Devfile,
     stackName: string | undefined,
     infrastructureNamespace: string | undefined,
+    optionalFilesContent: {
+      [fileName: string]: string
+    }
   ): Promise<void> {
     const attr = stackName ? { stackName } : {};
     let workspace: Workspace;
     try {
-      workspace = await this.props.createWorkspaceFromDevfile(devfile, undefined, infrastructureNamespace, attr);
+      workspace = await this.props.createWorkspaceFromDevfile(devfile, undefined, infrastructureNamespace, attr, optionalFilesContent);
     } catch (e) {
       this.showAlert({
         key: 'new-workspace-failed',
@@ -149,14 +153,16 @@ export class GetStarted extends React.PureComponent<Props, State> {
     }
   }
 
-  private handleDevfile(devfile: che.WorkspaceDevfile, attrs: { stackName?: string, infrastructureNamespace?: string }): Promise<void> {
-    return this.createWorkspace(devfile, attrs.stackName, attrs.infrastructureNamespace);
+  private handleDevfile(resolverState: ResolverState, attrs: { stackName?: string, infrastructureNamespace?: string }): Promise<void> {
+    return this.createWorkspace(resolverState.devfile, attrs.stackName, attrs.infrastructureNamespace, resolverState.optionalFilesContent || {});
   }
 
-  private handleDevfileContent(devfileContent: string, attrs: { stackName?: string, infrastructureNamespace?: string }): Promise<void> {
+  private handleDevfileContent(devfileContent: string, attrs: { stackName?: string, infrastructureNamespace?: string }, optionalFilesContent: {
+    [fileName: string]: string
+  }): Promise<void> {
     try {
       const devfile = load(devfileContent);
-      return this.createWorkspace(devfile, attrs.stackName, attrs.infrastructureNamespace);
+      return this.createWorkspace(devfile, attrs.stackName, attrs.infrastructureNamespace, optionalFilesContent);
     } catch (e) {
       const errorMessage = 'Failed to parse the devfile';
       this.showAlert({
@@ -207,8 +213,8 @@ export class GetStarted extends React.PureComponent<Props, State> {
             >
               <Suspense fallback={Fallback}>
                 <SamplesListTab
-                  onDevfile={(devfileContent: string, stackName: string) => {
-                    return this.handleDevfileContent(devfileContent, { stackName });
+                  onDevfile={(devfileContent: string, stackName: string, optionalFilesContent) => {
+                    return this.handleDevfileContent(devfileContent, { stackName }, optionalFilesContent);
                   }}
                 />
               </Suspense>
@@ -216,8 +222,8 @@ export class GetStarted extends React.PureComponent<Props, State> {
             <Tab eventKey={customWorkspaceTab} title="Custom Workspace">
               <Suspense fallback={Fallback}>
                 <CustomWorkspaceTab
-                  onDevfile={(devfile: che.WorkspaceDevfile, infrastructureNamespace?: string) => {
-                    return this.handleDevfile(devfile, { infrastructureNamespace });
+                  onDevfile={(resolverState, infrastructureNamespace?: string) => {
+                    return this.handleDevfile(resolverState, { infrastructureNamespace });
                   }}
                 />
               </Suspense>

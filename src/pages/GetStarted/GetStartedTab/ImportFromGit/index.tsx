@@ -34,7 +34,7 @@ import { AlertItem } from '../../../../services/helpers/types';
 type Props =
   MappedProps
   & {
-    onDevfileResolve: (devfile: che.WorkspaceDevfile, location: string) => void;
+    onDevfileResolve: (resolverState: FactoryResolverStore.ResolverState, location: string) => void;
   };
 type State = {
   isLoading: boolean;
@@ -64,7 +64,7 @@ export class DevfileSelector extends React.PureComponent<Props, State> {
       this.setState({ isLoading: true });
       await this.props.requestFactoryResolver(location);
       const { resolver } = this.factoryResolver;
-      this.props.onDevfileResolve(resolver.devfile as che.WorkspaceDevfile, location);
+      this.props.onDevfileResolve(resolver, location);
       this.setState({ isLoading: false });
     } catch (e) {
       this.setState({ isLoading: false });

@@ -22,10 +22,11 @@ import InfrastructureNamespaceFormGroup from './InfrastructureNamespace';
 import { selectPreferredStorageType, selectWorkspacesSettings } from '../../../store/Workspaces/Settings/selectors';
 import { attributesToType, updateDevfile } from '../../../services/storageTypes';
 import { safeLoad } from 'js-yaml';
+import { ResolverState } from '../../../store/FactoryResolver';
 
 type Props = MappedProps
   & {
-    onDevfile: (devfile: che.WorkspaceDevfile, InfrastructureNamespace: string | undefined) => Promise<void>;
+    onDevfile: (resolverState: ResolverState, InfrastructureNamespace: string | undefined) => Promise<void>;
   };
 type State = {
   storageType: che.WorkspaceStorageType;
@@ -162,7 +163,7 @@ export class CustomWorkspaceTab extends React.PureComponent<Props, State> {
       isCreated: true
     });
     try {
-      await this.props.onDevfile(this.state.devfile, this.state.namespace?.name);
+      await this.props.onDevfile(this.state, this.state.namespace?.name);
     } catch (e) {
       this.setState({
         isCreated: false,

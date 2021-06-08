@@ -12,12 +12,11 @@
 
 import { Action, Reducer } from 'redux';
 import { RequestError } from '@eclipse-che/workspace-client';
-import { AxiosResponse } from 'axios';
+import axios, { AxiosResponse } from 'axios';
 import { FactoryResolver } from '../services/helpers/types';
 import { container } from '../inversify.config';
 import { CheWorkspaceClient } from '../services/workspace-client/cheWorkspaceClient';
 import { AppThunk } from './';
-
 const WorkspaceClient = container.get(CheWorkspaceClient);
 
 export type OAuthResponse = {
@@ -36,14 +35,23 @@ export function isOAuthResponse(response: any): response is OAuthResponse {
   }
   return false;
 }
+export interface ResolverState {
+  location?: string;
+  source?: string;
+  devfile?: api.che.workspace.devfile.Devfile;
+  scm_info?: {
+    clone_url: string;
+    scm_provider: string;
+    branch?: string;
+  };
+  optionalFilesContent?: {
+    [fileName: string]: string
+  };
+}
 
 export interface State {
   isLoading: boolean;
-  resolver: {
-    location?: string;
-    source?: string;
-    devfile?: api.che.workspace.devfile.Devfile;
-  }
+  resolver: ResolverState
 }
 
 interface RequestFactoryResolverAction {
@@ -56,6 +64,14 @@ interface ReceiveFactoryResolverAction {
     location?: string;
     source?: string;
     devfile?: api.che.workspace.devfile.Devfile;
+    scm_info: {
+      clone_url: string;
+      scm_provider: string;
+      branch?: string;
+    };
+    optionalFileContent?: {
+      [fileName: string]: string
+    };
   }
 }
 
@@ -66,6 +82,31 @@ export type ActionCreators = {
   requestFactoryResolver: (location: string, overrideParams?: { [params: string]: string }) => AppThunk<KnownAction, Promise<void>>;
 };
 
+export async function grabLink(links: api.che.core.rest.Link, filename: string): Promise<string | undefined> {
+  // handle servers not yet providing links
+  if (!links || links.length === 0) {
+    return undefined;
+  }
+  // grab the one matching
+  const foundLink = links.find(link => link.href.includes(`file=${filename}`));
+  if (!foundLink) {
+    return undefined;
+  }
+
+  // remove first part of the link until /api (to avoid the full links and use only relative links)
+  const href = foundLink.href.substring(foundLink.href.indexOf('/api/scm'));
+  try {
+    const response = await axios.get<string>(href, { responseType: 'text' });
+    return response.data;
+  } catch (error) {
+    // content may not be there
+    if (error.response.status == 404) {
+      return undefined;
+    }
+    throw error;
+  }
+}
+
 export const actionCreators: ActionCreators = {
   requestFactoryResolver: (location: string, overrideParams?: { [params: string]: string }): AppThunk<KnownAction, Promise<void>> => async (dispatch): Promise<void> => {
     dispatch({ type: 'REQUEST_FACTORY_RESOLVER' });
@@ -75,7 +116,21 @@ export const actionCreators: ActionCreators = {
       if (!data.devfile) {
         throw new Error('The specified link does not contain a valid Devfile.');
       }
-      dispatch({ type: 'RECEIVE_FACTORY_RESOLVER', resolver: { location: location, devfile: data.devfile, source: data.source } });
+      // now, grab content of optional files if they're there
+      const optionalFilesContent = {};
+      const vscodeExtensionsJson = await grabLink(data.links, '.vscode/extensions.json');
+      if (vscodeExtensionsJson) {
+        optionalFilesContent['.vscode/extensions.json'] = vscodeExtensionsJson;
+      }
+      const cheTheiaPlugins = await grabLink(data.links, '.che/che-theia-plugins.yaml');
+      if (cheTheiaPlugins) {
+        optionalFilesContent['.che/che-theia-plugins.yaml'] = cheTheiaPlugins;
+      }
+      const cheEditor = await grabLink(data.links, 'che editor file');
+      if (cheEditor) {
+        optionalFilesContent['.che/che-editor.yaml'] = cheEditor;
+      }
+      dispatch({ type: 'RECEIVE_FACTORY_RESOLVER', resolver: { location: location, devfile: data.devfile, source: data.source, scm_info: data.scm_info, optionalFilesContent } });
       return;
     } catch (e) {
       const error = e as RequestError;

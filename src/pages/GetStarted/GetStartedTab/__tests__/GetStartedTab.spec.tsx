@@ -101,23 +101,23 @@ describe('Samples list tab', () => {
     expect(onDevfileMock).not.toBeCalled();
 
     sampleItem.click();
-    expect(onDevfileMock).toHaveBeenCalledWith(expect.not.stringContaining('persistVolumes:'), testStackName);
-    expect(onDevfileMock).toHaveBeenCalledWith(expect.not.stringContaining('asyncPersist:'), testStackName);
+    expect(onDevfileMock).toHaveBeenCalledWith(expect.not.stringContaining('persistVolumes:'), testStackName, undefined);
+    expect(onDevfileMock).toHaveBeenCalledWith(expect.not.stringContaining('asyncPersist:'), testStackName, undefined);
     (onDevfileMock as jest.Mock).mockClear();
 
     switchInput.click();
     expect(switchInput.checked).toBeTruthy();
 
     sampleItem.click();
-    expect(onDevfileMock).toHaveBeenCalledWith(expect.stringContaining('persistVolumes: \'false\''), testStackName);
+    expect(onDevfileMock).toHaveBeenCalledWith(expect.stringContaining('persistVolumes: \'false\''), testStackName, undefined);
     (onDevfileMock as jest.Mock).mockClear();
 
     switchInput.click();
     expect(switchInput.checked).toBeFalsy();
 
     sampleItem.click();
-    expect(onDevfileMock).toHaveBeenCalledWith(expect.not.stringContaining('persistVolumes:'), testStackName);
-    expect(onDevfileMock).toHaveBeenCalledWith(expect.not.stringContaining('asyncPersist:'), testStackName);
+    expect(onDevfileMock).toHaveBeenCalledWith(expect.not.stringContaining('persistVolumes:'), testStackName, undefined);
+    expect(onDevfileMock).toHaveBeenCalledWith(expect.not.stringContaining('asyncPersist:'), testStackName, undefined);
   });
 
   it('should correctly apply the preferred storage type \'ephemeral\'', () => {
@@ -131,24 +131,24 @@ describe('Samples list tab', () => {
     expect(onDevfileMock).not.toBeCalled();
 
     sampleItem.click();
-    expect(onDevfileMock).toHaveBeenCalledWith(expect.stringContaining('persistVolumes: \'false\''), testStackName);
-    expect(onDevfileMock).toHaveBeenCalledWith(expect.not.stringContaining('asyncPersist:'), testStackName);
+    expect(onDevfileMock).toHaveBeenCalledWith(expect.stringContaining('persistVolumes: \'false\''), testStackName, undefined);
+    expect(onDevfileMock).toHaveBeenCalledWith(expect.not.stringContaining('asyncPersist:'), testStackName, undefined);
     (onDevfileMock as jest.Mock).mockClear();
 
     switchInput.click();
     expect(switchInput.checked).toBeFalsy();
 
     sampleItem.click();
-    expect(onDevfileMock).toHaveBeenCalledWith(expect.not.stringContaining('persistVolumes:'), testStackName);
-    expect(onDevfileMock).toHaveBeenCalledWith(expect.not.stringContaining('asyncPersist:'), testStackName);
+    expect(onDevfileMock).toHaveBeenCalledWith(expect.not.stringContaining('persistVolumes:'), testStackName, undefined);
+    expect(onDevfileMock).toHaveBeenCalledWith(expect.not.stringContaining('asyncPersist:'), testStackName, undefined);
     (onDevfileMock as jest.Mock).mockClear();
 
     switchInput.click();
     expect(switchInput.checked).toBeTruthy();
 
     sampleItem.click();
-    expect(onDevfileMock).toHaveBeenCalledWith(expect.stringContaining('persistVolumes: \'false\''), testStackName);
-    expect(onDevfileMock).toHaveBeenCalledWith(expect.not.stringContaining('asyncPersist:'), testStackName);
+    expect(onDevfileMock).toHaveBeenCalledWith(expect.stringContaining('persistVolumes: \'false\''), testStackName, undefined);
+    expect(onDevfileMock).toHaveBeenCalledWith(expect.not.stringContaining('asyncPersist:'), testStackName, undefined);
   });
 
   it('should correctly apply the preferred storage type \'async\'', () => {
@@ -162,24 +162,24 @@ describe('Samples list tab', () => {
     expect(onDevfileMock).not.toBeCalled();
 
     sampleItem.click();
-    expect(onDevfileMock).toHaveBeenCalledWith(expect.stringContaining('persistVolumes: \'false\''), testStackName);
-    expect(onDevfileMock).toHaveBeenCalledWith(expect.stringContaining('asyncPersist: \'true\''), testStackName);
+    expect(onDevfileMock).toHaveBeenCalledWith(expect.stringContaining('persistVolumes: \'false\''), testStackName, undefined);
+    expect(onDevfileMock).toHaveBeenCalledWith(expect.stringContaining('asyncPersist: \'true\''), testStackName, undefined);
     (onDevfileMock as jest.Mock).mockClear();
 
     switchInput.click();
     expect(switchInput.checked).toBeTruthy();
 
     sampleItem.click();
-    expect(onDevfileMock).toHaveBeenCalledWith(expect.stringContaining('persistVolumes: \'false\''), testStackName);
-    expect(onDevfileMock).toHaveBeenCalledWith(expect.not.stringContaining('asyncPersist:'), testStackName);
+    expect(onDevfileMock).toHaveBeenCalledWith(expect.stringContaining('persistVolumes: \'false\''), testStackName, undefined);
+    expect(onDevfileMock).toHaveBeenCalledWith(expect.not.stringContaining('asyncPersist:'), testStackName, undefined);
     (onDevfileMock as jest.Mock).mockClear();
 
     switchInput.click();
     expect(switchInput.checked).toBeFalsy();
 
     sampleItem.click();
-    expect(onDevfileMock).toHaveBeenCalledWith(expect.stringContaining('persistVolumes: \'false\''), testStackName);
-    expect(onDevfileMock).toHaveBeenCalledWith(expect.stringContaining('asyncPersist: \'true\''), testStackName);
+    expect(onDevfileMock).toHaveBeenCalledWith(expect.stringContaining('persistVolumes: \'false\''), testStackName, undefined);
+    expect(onDevfileMock).toHaveBeenCalledWith(expect.stringContaining('asyncPersist: \'true\''), testStackName, undefined);
   });
 });
 

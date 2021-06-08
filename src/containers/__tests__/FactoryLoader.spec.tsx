@@ -363,6 +363,11 @@ function renderComponent(
       source: 'devfile.yaml',
       devfile: workspace.devfile as api.che.workspace.devfile.Devfile,
       location: url.split('&')[0],
+      scm_info: {
+        clone_url: 'http://github.com/clone-url',
+        scm_provider: 'github'
+      },
+      links: []
     })
     .build();
   const props = getMockRouterProps(ROUTE.LOAD_FACTORY_URL, { url });
