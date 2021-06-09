@@ -116,11 +116,11 @@ export class DevWorkspaceClient extends WorkspaceClient {
     const name = createdWorkspace.metadata.name;
     const workspaceId = createdWorkspace.status.devworkspaceId;
 
+    const devfileGroupVersion = `${devWorkspaceApiGroup}/${devworkspaceVersion}`;
     const devWorkspaceTemplates: V1alpha2DevWorkspaceTemplate[] = [];
     for (const pluginDevfile of pluginsDevfile) {
       // TODO handle error in a proper way
       const pluginName = this.normalizePluginName(pluginDevfile.metadata.name, workspaceId);
-      const devfileGroupVersion = `${devWorkspaceApiGroup}/${devworkspaceVersion}`;
 
       // propagate the plugin registry and dashboard urls to the containers in the initial devworkspace templates
       for (const component of pluginDevfile.components) {
@@ -145,14 +145,6 @@ export class DevWorkspaceClient extends WorkspaceClient {
         metadata: {
           name: pluginName,
           namespace,
-          ownerReferences: [
-            {
-              apiVersion: devfileGroupVersion,
-              kind: devworkspaceSingularSubresource,
-              name: createdWorkspace.metadata.name,
-              uid: createdWorkspace.metadata.uid
-            }
-          ]
         },
         spec: pluginDevfile
       };
@@ -191,17 +183,26 @@ export class DevWorkspaceClient extends WorkspaceClient {
     });
 
     await Promise.all(devWorkspaceTemplates.map(async template => {
-      // if no namespace, update it
-      if (!template.metadata?.['namespace']) {
-        const templateMetadata: { namespace?: string } = template.metadata || {};
-        if (!templateMetadata.namespace) {
-          templateMetadata.namespace = namespace;
-        }
-        template.metadata = templateMetadata;
+      if (!template.metadata) {
+        template.metadata = {};
       }
-      const theiaDWT = await this.dwtApi.create(<IDevWorkspaceTemplate>template);
-      const pluginName = theiaDWT.metadata.name;
-      this.addPlugin(createdWorkspace, pluginName, theiaDWT.metadata.namespace);
+
+      // if no namespace, update it
+      if (!(template.metadata as any).namespace) {
+        (template.metadata as any).namespace = namespace;
+      }
+
+      (template.metadata as any).ownerReferences = [
+        {
+          apiVersion: devfileGroupVersion,
+          kind: devworkspaceSingularSubresource,
+          name: createdWorkspace.metadata.name,
+          uid: createdWorkspace.metadata.uid
+        }
+      ];
+
+      const pluginDWT = await this.dwtApi.create(<IDevWorkspaceTemplate>template);
+      this.addPlugin(createdWorkspace, pluginDWT.metadata.name, pluginDWT.metadata.namespace);
     }));
 
     createdWorkspace.spec.started = true;
