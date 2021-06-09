@@ -187,11 +187,10 @@ export class DevWorkspaceClient extends WorkspaceClient {
         template.metadata = {};
       }
 
-      // if no namespace, update it
-      if (!(template.metadata as any).namespace) {
-        (template.metadata as any).namespace = namespace;
-      }
+      // Update the namespace
+      (template.metadata as any).namespace = namespace;
 
+      // Update owner reference (to allow automatic cleanup)
       (template.metadata as any).ownerReferences = [
         {
           apiVersion: devfileGroupVersion,
