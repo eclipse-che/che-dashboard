@@ -108,7 +108,7 @@ export type ActionCreators = {
     namespace: string | undefined,
     infrastructureNamespace: string | undefined,
     attributes: { [key: string]: string } | {},
-    optionalFilesContent: {
+    optionalFilesContent?: {
       [fileName: string]: string
     }
   ) => AppThunk<KnownAction, Promise<Workspace>>;
@@ -253,7 +253,7 @@ export const actionCreators: ActionCreators = {
     namespace: string | undefined,
     infrastructureNamespace: string | undefined,
     attributes: { [key: string]: string } = {},
-    optionalFilesContent: {
+    optionalFilesContent?: {
       [fileName: string]: string
     }
   ): AppThunk<KnownAction, Promise<Workspace>> => async (dispatch, getState): Promise<Workspace> => {
@@ -264,7 +264,7 @@ export const actionCreators: ActionCreators = {
       const cheDevworkspaceEnabled = state.workspacesSettings.settings['che.devworkspaces.enabled'] === 'true';
       if (cheDevworkspaceEnabled && isDevfileV2(devfile)) {
         const pluginRegistryUrl = state.workspacesSettings.settings['cheWorkspacePluginRegistryUrl'];
-        const devWorkspace = await dispatch(DevWorkspacesStore.actionCreators.createWorkspaceFromDevfile(devfile, optionalFilesContent, pluginRegistryUrl));
+        const devWorkspace = await dispatch(DevWorkspacesStore.actionCreators.createWorkspaceFromDevfile(devfile, optionalFilesContent || {}, pluginRegistryUrl));
         dispatch({ type: 'ADD_WORKSPACE' });
         return convertWorkspace(devWorkspace);
       } else {

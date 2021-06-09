@@ -116,7 +116,7 @@ export class GetStarted extends React.PureComponent<Props, State> {
     devfile: api.che.workspace.devfile.Devfile,
     stackName: string | undefined,
     infrastructureNamespace: string | undefined,
-    optionalFilesContent: {
+    optionalFilesContent?: {
       [fileName: string]: string
     }
   ): Promise<void> {
@@ -157,7 +157,7 @@ export class GetStarted extends React.PureComponent<Props, State> {
     return this.createWorkspace(resolverState.devfile, attrs.stackName, attrs.infrastructureNamespace, resolverState.optionalFilesContent || {});
   }
 
-  private handleDevfileContent(devfileContent: string, attrs: { stackName?: string, infrastructureNamespace?: string }, optionalFilesContent: {
+  private handleDevfileContent(devfileContent: string, attrs: { stackName?: string, infrastructureNamespace?: string }, optionalFilesContent?: {
     [fileName: string]: string
   }): Promise<void> {
     try {
