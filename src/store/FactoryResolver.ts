@@ -60,19 +60,7 @@ interface RequestFactoryResolverAction {
 
 interface ReceiveFactoryResolverAction {
   type: 'RECEIVE_FACTORY_RESOLVER';
-  resolver: {
-    location?: string;
-    source?: string;
-    devfile?: api.che.workspace.devfile.Devfile;
-    scm_info: {
-      clone_url: string;
-      scm_provider: string;
-      branch?: string;
-    };
-    optionalFileContent?: {
-      [fileName: string]: string
-    };
-  }
+  resolver: ResolverState & Required<Pick<ResolverState, 'scm_info'>>;
 }
 
 type KnownAction = RequestFactoryResolverAction
