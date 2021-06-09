@@ -28,7 +28,7 @@ import { ResolverState } from '../../../store/FactoryResolver';
 
 // At runtime, Redux will merge together...
 type Props = {
-  onDevfile: (devfileContent: string, stackName: string, optionalFilesContent: {
+  onDevfile: (devfileContent: string, stackName: string, optionalFilesContent?: {
     [fileName: string]: string
   }) => Promise<void>;
 }
@@ -56,7 +56,7 @@ export class SamplesListTab extends React.PureComponent<Props, State> {
     this.setState({ temporary });
   }
 
-  private handleSampleCardClick(devfileContent: string, stackName: string, optionalFilesContent: { [fileName: string]: string }): Promise<void> {
+  private handleSampleCardClick(devfileContent: string, stackName: string, optionalFilesContent?: { [fileName: string]: string }): Promise<void> {
     let devfile = load(devfileContent);
 
     if (this.state.temporary === undefined) {

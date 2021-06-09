@@ -39,7 +39,7 @@ import stringify from '../../../services/helpers/editor';
 type Props =
   MappedProps
   & {
-    onCardClick: (devfileContent: string, stackName: string, optionalFilesContent: {
+    onCardClick: (devfileContent: string, stackName: string, optionalFilesContent?: {
       [fileName: string]: string
     }) => void;
   };
