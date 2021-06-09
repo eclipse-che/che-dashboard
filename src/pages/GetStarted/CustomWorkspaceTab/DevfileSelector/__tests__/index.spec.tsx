@@ -24,7 +24,7 @@ import { AppThunk } from '../../../../../store';
 // mute the outputs
 console.error = jest.fn();
 
-jest.mock('../../../../../store/FactoryResolver.ts', () => {
+jest.mock('../../../../../store/FactoryResolver/index.ts', () => {
   return {
     actionCreators: {
       requestFactoryResolver: (location: string): AppThunk<Action, Promise<void>> => async (): Promise<void> => {

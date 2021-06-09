@@ -20,8 +20,6 @@ import mockMetadata from '../../__tests__/devfileMetadata.json';
 import { FakeStoreBuilder } from '../../../../store/__mocks__/storeBuilder';
 import { BrandingData } from '../../../../services/bootstrap/branding.constant';
 import { WorkspaceSettings } from 'che';
-import * as FactoryResolverStore from '../../../../store/FactoryResolver';
-import { AppThunk } from '../../../../store';
 
 const requestFactoryResolverMock = jest.fn().mockResolvedValue(undefined);
 
