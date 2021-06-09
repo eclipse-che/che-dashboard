@@ -42,7 +42,7 @@ type State = {
   alerts: AlertItem[];
 };
 
-export class DevfileSelector extends React.PureComponent<Props, State> {
+export class ImportFromGit extends React.PureComponent<Props, State> {
   private factoryResolver: FactoryResolverStore.State;
   private readonly devfileLocationRef: React.RefObject<GitRepoLocationInput>;
 
@@ -72,7 +72,7 @@ export class DevfileSelector extends React.PureComponent<Props, State> {
       this.devfileLocationRef.current?.invalidateInput();
       this.showAlert({
         key: 'load-devfile-resolver-failed',
-        title: `Failed to resolve or load the devfile. ${getErrorMessage(e)}`,
+        title: getErrorMessage(e),
         variant: AlertVariant.danger,
       });
     }
@@ -146,4 +146,4 @@ const connector = connect(
 );
 
 type MappedProps = ConnectedProps<typeof connector>;
-export default connector(DevfileSelector);
+export default connector(ImportFromGit);

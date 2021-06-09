@@ -71,7 +71,7 @@ jest.mock('../../../../store/DevfileRegistries', () => {
   };
 });
 
-jest.mock('../../../../store/FactoryResolver.ts', () => {
+jest.mock('../../../../store/FactoryResolver/index.ts', () => {
   return {
     actionCreators: {
       // eslint-disable-next-line @typescript-eslint/no-unused-vars

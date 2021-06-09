@@ -13,12 +13,13 @@
 import { Action, Reducer } from 'redux';
 import { RequestError } from '@eclipse-che/workspace-client';
 import axios, { AxiosResponse } from 'axios';
-import { FactoryResolver } from '../services/helpers/types';
-import { container } from '../inversify.config';
-import { CheWorkspaceClient } from '../services/workspace-client/cheWorkspaceClient';
-import { AppThunk } from './';
-import { getDevfile } from './helpers';
-import { getErrorMessage } from '../services/helpers/getErrorMessage';
+import { FactoryResolver } from '../../services/helpers/types';
+import { container } from '../../inversify.config';
+import { CheWorkspaceClient } from '../../services/workspace-client/cheWorkspaceClient';
+import { AppThunk } from '../index';
+import { createState } from '../helpers';
+import { getErrorMessage } from '../../services/helpers/getErrorMessage';
+import { getDevfile } from './getDevfile';
 
 const WorkspaceClient = container.get(CheWorkspaceClient);
 
@@ -54,7 +55,8 @@ export interface ResolverState {
 
 export interface State {
   isLoading: boolean;
-  resolver: ResolverState
+  resolver: ResolverState;
+  error?: string;
 }
 
 interface RequestFactoryResolverAction {
@@ -63,11 +65,15 @@ interface RequestFactoryResolverAction {
 
 interface ReceiveFactoryResolverAction {
   type: 'RECEIVE_FACTORY_RESOLVER';
-  resolver: ResolverState & Required<Pick<ResolverState, 'scm_info'>>;
+  resolver: ResolverState;
 }
 
-type KnownAction = RequestFactoryResolverAction
-  | ReceiveFactoryResolverAction;
+interface ReceiveFactoryResolverErrorAction {
+  type: 'RECEIVE_FACTORY_RESOLVER_ERROR';
+  error: string;
+}
+
+type KnownAction = RequestFactoryResolverAction | ReceiveFactoryResolverAction | ReceiveFactoryResolverErrorAction;
 
 export type ActionCreators = {
   requestFactoryResolver: (location: string, overrideParams?: { [params: string]: string }) => AppThunk<KnownAction, Promise<void>>;
@@ -105,7 +111,7 @@ export const actionCreators: ActionCreators = {
     try {
       const data = await WorkspaceClient.restApiClient.getFactoryResolver<FactoryResolver>(location, overrideParams);
       if (!data.devfile) {
-        throw new Error('The specified link does not contain a valid Devfile.');
+        throw 'The specified link does not contain a valid Devfile.';
       }
       // now, grab content of optional files if they're there
       const optionalFilesContent = {};
@@ -121,7 +127,12 @@ export const actionCreators: ActionCreators = {
       if (cheEditor) {
         optionalFilesContent['.che/che-editor.yaml'] = cheEditor;
       }
-      dispatch({ type: 'RECEIVE_FACTORY_RESOLVER', resolver: { location: location, devfile: data.devfile, source: data.source, scm_info: data.scm_info, optionalFilesContent } });
+      const devfile = getDevfile(data);
+      const { source, scm_info } = data;
+      dispatch({
+        type: 'RECEIVE_FACTORY_RESOLVER',
+        resolver: { location, devfile, source, scm_info, optionalFilesContent }
+      });
       return;
     } catch (e) {
       const error = e as RequestError;
@@ -129,9 +140,13 @@ export const actionCreators: ActionCreators = {
       const responseData = response.data;
       if (response.status === 401 && isOAuthResponse(responseData)) {
         throw responseData;
-        return;
       }
-      throw new Error(getErrorMessage(e, 'Failed to request factory resolver'));
+      const errorMessage = 'Failed to request factory resolver: ' + getErrorMessage(e);
+      dispatch({
+        type: 'RECEIVE_FACTORY_RESOLVER_ERROR',
+        error: errorMessage,
+      });
+      throw errorMessage;
     }
   },
 
@@ -150,12 +165,19 @@ export const reducer: Reducer<State> = (state: State | undefined, incomingAction
   const action = incomingAction as KnownAction;
   switch (action.type) {
     case 'REQUEST_FACTORY_RESOLVER':
-      return Object.assign({}, state, {
+      return createState(state, {
         isLoading: true,
+        error: undefined,
       });
     case 'RECEIVE_FACTORY_RESOLVER':
-      return Object.assign({}, state, {
+      return createState(state, {
+        isLoading: false,
         resolver: action.resolver,
+      });
+    case 'RECEIVE_FACTORY_RESOLVER_ERROR':
+      return createState(state, {
+        isLoading: false,
+        error: action.error,
       });
     default:
       return state;

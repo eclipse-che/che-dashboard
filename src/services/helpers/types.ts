@@ -22,16 +22,26 @@ export interface AlertItem {
 
 export interface FactoryResolver {
   v: string;
-  source: string;
+  source?: string;
   devfile: api.che.workspace.devfile.Devfile;
   location?: string;
-  scm_info?: {
-    clone_url: string;
-    scm_provider: string;
-    branch?: string;
-  };
+  scm_info?: FactoryResolverScmInfo;
   links: api.che.core.rest.Link[];
 }
+
+export type FactoryResolverScmInfo = {
+  'clone_url': string;
+  'scm_provider': string;
+  'branch'?: string;
+};
+
+export type DevfileV2ProjectSource = {
+  name: string;
+  git: {
+    remotes: { origin: string };
+    checkoutFrom?: { revision: string };
+  }
+};
 
 export enum WorkspaceStatus {
   RUNNING = 'RUNNING',
