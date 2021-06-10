@@ -129,7 +129,7 @@ describe('Custom Workspace Tab', () => {
 
     clickOnCreateAndOpenButton();
 
-    expect(mockOnDevfile).toHaveBeenCalledWith({ devfile: initialDevfile, generateName: 'wksp-', isCreated: false, storageType: 'persistent', workspaceName: '' }, defaultInfrastructureNamespace);
+    expect(mockOnDevfile).toHaveBeenCalledWith(initialDevfile, defaultInfrastructureNamespace, undefined);
   });
 
   describe('workspace name field', () => {
@@ -222,10 +222,11 @@ describe('Custom Workspace Tab', () => {
 
       clickOnCreateAndOpenButton();
 
-      expect(mockOnDevfile.mock.calls[0][0].devfile).toEqual(expect.objectContaining(dummyDevfile));
+      expect(mockOnDevfile.mock.calls[0][0]).toEqual(expect.objectContaining(dummyDevfile));
       expect(mockOnDevfile).toHaveBeenCalledWith(
         expect.anything(),
-        defaultInfrastructureNamespace
+        defaultInfrastructureNamespace,
+        undefined,
       );
     });
 
@@ -258,10 +259,11 @@ describe('Custom Workspace Tab', () => {
 
       clickOnCreateAndOpenButton();
 
-      expect(mockOnDevfile.mock.calls[0][0].devfile).toEqual(expect.objectContaining(dummyCustomDevfile));
+      expect(mockOnDevfile.mock.calls[0][0]).toEqual(expect.objectContaining(dummyCustomDevfile));
       expect(mockOnDevfile).toHaveBeenCalledWith(
         expect.anything(),
-        defaultInfrastructureNamespace
+        defaultInfrastructureNamespace,
+        undefined,
       );
     });
 
@@ -327,10 +329,11 @@ describe('Custom Workspace Tab', () => {
 
       clickOnCreateAndOpenButton();
 
-      expect(mockOnDevfile.mock.calls[0][0].devfile).toEqual(expect.objectContaining(newDevfile));
+      expect(mockOnDevfile.mock.calls[0][0]).toEqual(expect.objectContaining(newDevfile));
       expect(mockOnDevfile).toHaveBeenCalledWith(
         expect.anything(),
-        defaultInfrastructureNamespace
+        defaultInfrastructureNamespace,
+        undefined
       );
     });
 
