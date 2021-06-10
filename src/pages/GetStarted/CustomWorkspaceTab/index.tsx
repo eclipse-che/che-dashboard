@@ -22,11 +22,14 @@ import InfrastructureNamespaceFormGroup from './InfrastructureNamespace';
 import { selectPreferredStorageType, selectWorkspacesSettings } from '../../../store/Workspaces/Settings/selectors';
 import { attributesToType, updateDevfile } from '../../../services/storageTypes';
 import { safeLoad } from 'js-yaml';
-import { ResolverState } from '../../../store/FactoryResolver';
 
 type Props = MappedProps
   & {
-    onDevfile: (resolverState: ResolverState, InfrastructureNamespace: string | undefined) => Promise<void>;
+    onDevfile: (
+      devfile: api.che.workspace.devfile.Devfile,
+      InfrastructureNamespace: string | undefined,
+      optionalFilesContent: { [fileName: string]: string } | undefined,
+    ) => Promise<void>;
   };
 type State = {
   storageType: che.WorkspaceStorageType;
@@ -163,7 +166,12 @@ export class CustomWorkspaceTab extends React.PureComponent<Props, State> {
       isCreated: true
     });
     try {
-      await this.props.onDevfile(this.state, this.state.namespace?.name);
+      const { devfile } = this.state;
+      /* For the time being `optionalFilesContent` is `undefined`.
+      Later, if we want to load related files (editor.yaml, che-theia-plugins.yaml) we need to expose 
+      such an information to a user, so they are able to review and apply their custom setting if needed.
+      Note: `optionalFilesContent` is supported by factory flow, or create from sample where user input is not allowed. */
+      await this.props.onDevfile(devfile, this.state.namespace?.name, undefined);
     } catch (e) {
       this.setState({
         isCreated: false,

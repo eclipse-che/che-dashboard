@@ -33,7 +33,6 @@ import { ROUTE } from '../../route.enum';
 import { Workspace } from '../../services/workspaceAdapter';
 import { selectBranding } from '../../store/Branding/selectors';
 import { selectRegistriesErrors } from '../../store/DevfileRegistries/selectors';
-import { ResolverState } from '../../store/FactoryResolver';
 
 const SamplesListTab = React.lazy(() => import('./GetStartedTab'));
 const CustomWorkspaceTab = React.lazy(() => import('./CustomWorkspaceTab'));
@@ -153,8 +152,12 @@ export class GetStarted extends React.PureComponent<Props, State> {
     }
   }
 
-  private handleDevfile(resolverState: ResolverState, attrs: { stackName?: string, infrastructureNamespace?: string }): Promise<void> {
-    return this.createWorkspace(resolverState.devfile, attrs.stackName, attrs.infrastructureNamespace, resolverState.optionalFilesContent || {});
+  private handleDevfile(
+    devfile: api.che.workspace.devfile.Devfile,
+    attrs: { stackName?: string, infrastructureNamespace?: string },
+    optionalFilesContent: { [fileName: string]: string } | undefined,
+  ): Promise<void> {
+    return this.createWorkspace(devfile, attrs.stackName, attrs.infrastructureNamespace, optionalFilesContent || {});
   }
 
   private handleDevfileContent(devfileContent: string, attrs: { stackName?: string, infrastructureNamespace?: string }, optionalFilesContent?: {
@@ -222,8 +225,8 @@ export class GetStarted extends React.PureComponent<Props, State> {
             <Tab eventKey={customWorkspaceTab} title="Custom Workspace">
               <Suspense fallback={Fallback}>
                 <CustomWorkspaceTab
-                  onDevfile={(resolverState, infrastructureNamespace?: string) => {
-                    return this.handleDevfile(resolverState, { infrastructureNamespace });
+                  onDevfile={(devfile, infrastructureNamespace, optionalFilesContent) => {
+                    return this.handleDevfile(devfile, { infrastructureNamespace }, optionalFilesContent);
                   }}
                 />
               </Suspense>
