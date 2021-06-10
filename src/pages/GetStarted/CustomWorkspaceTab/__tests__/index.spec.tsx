@@ -129,7 +129,7 @@ describe('Custom Workspace Tab', () => {
 
     clickOnCreateAndOpenButton();
 
-    expect(mockOnDevfile).toHaveBeenCalledWith(initialDevfile, defaultInfrastructureNamespace);
+    expect(mockOnDevfile).toHaveBeenCalledWith(initialDevfile, defaultInfrastructureNamespace, undefined);
   });
 
   describe('workspace name field', () => {
@@ -222,9 +222,11 @@ describe('Custom Workspace Tab', () => {
 
       clickOnCreateAndOpenButton();
 
+      expect(mockOnDevfile.mock.calls[0][0]).toEqual(expect.objectContaining(dummyDevfile));
       expect(mockOnDevfile).toHaveBeenCalledWith(
-        expect.objectContaining(dummyDevfile),
-        defaultInfrastructureNamespace
+        expect.anything(),
+        defaultInfrastructureNamespace,
+        undefined,
       );
     });
 
@@ -257,9 +259,11 @@ describe('Custom Workspace Tab', () => {
 
       clickOnCreateAndOpenButton();
 
+      expect(mockOnDevfile.mock.calls[0][0]).toEqual(expect.objectContaining(dummyCustomDevfile));
       expect(mockOnDevfile).toHaveBeenCalledWith(
-        expect.objectContaining(dummyCustomDevfile),
-        defaultInfrastructureNamespace
+        expect.anything(),
+        defaultInfrastructureNamespace,
+        undefined,
       );
     });
 
@@ -325,9 +329,11 @@ describe('Custom Workspace Tab', () => {
 
       clickOnCreateAndOpenButton();
 
+      expect(mockOnDevfile.mock.calls[0][0]).toEqual(expect.objectContaining(newDevfile));
       expect(mockOnDevfile).toHaveBeenCalledWith(
-        expect.objectContaining(newDevfile),
-        defaultInfrastructureNamespace
+        expect.anything(),
+        defaultInfrastructureNamespace,
+        undefined
       );
     });
 

@@ -108,6 +108,9 @@ export type ActionCreators = {
     namespace: string | undefined,
     infrastructureNamespace: string | undefined,
     attributes: { [key: string]: string } | {},
+    optionalFilesContent?: {
+      [fileName: string]: string
+    }
   ) => AppThunk<KnownAction, Promise<Workspace>>;
 
   setWorkspaceQualifiedName: (namespace: string, workspaceName: string) => AppThunk<SetWorkspaceQualifiedName>;
@@ -250,6 +253,9 @@ export const actionCreators: ActionCreators = {
     namespace: string | undefined,
     infrastructureNamespace: string | undefined,
     attributes: { [key: string]: string } = {},
+    optionalFilesContent?: {
+      [fileName: string]: string
+    }
   ): AppThunk<KnownAction, Promise<Workspace>> => async (dispatch, getState): Promise<Workspace> => {
     dispatch({ type: 'REQUEST_WORKSPACES' });
     try {
@@ -257,7 +263,8 @@ export const actionCreators: ActionCreators = {
 
       const cheDevworkspaceEnabled = state.workspacesSettings.settings['che.devworkspaces.enabled'] === 'true';
       if (cheDevworkspaceEnabled && isDevfileV2(devfile)) {
-        const devWorkspace = await dispatch(DevWorkspacesStore.actionCreators.createWorkspaceFromDevfile(devfile));
+        const pluginRegistryUrl = state.workspacesSettings.settings['cheWorkspacePluginRegistryUrl'];
+        const devWorkspace = await dispatch(DevWorkspacesStore.actionCreators.createWorkspaceFromDevfile(devfile, optionalFilesContent || {}, pluginRegistryUrl));
         dispatch({ type: 'ADD_WORKSPACE' });
         return convertWorkspace(devWorkspace);
       } else {

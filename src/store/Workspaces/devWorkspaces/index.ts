@@ -111,7 +111,11 @@ export type ActionCreators = {
   stopWorkspace: (workspace: IDevWorkspace) => AppThunk<KnownAction, Promise<void>>;
   terminateWorkspace: (workspace: IDevWorkspace) => AppThunk<KnownAction, Promise<void>>;
   updateWorkspace: (workspace: IDevWorkspace) => AppThunk<KnownAction, Promise<void>>;
-  createWorkspaceFromDevfile: (devfile: IDevWorkspaceDevfile) => AppThunk<KnownAction, Promise<IDevWorkspace>>;
+  createWorkspaceFromDevfile: (devfile: IDevWorkspaceDevfile, optionalFilesContent: {
+    [fileName: string]: string
+  },
+    pluginRegistryUrl: string | undefined,
+  ) => AppThunk<KnownAction, Promise<IDevWorkspace>>;
 
   deleteWorkspaceLogs: (workspaceId: string) => AppThunk<DeleteWorkspaceLogsAction, void>;
 };
@@ -286,7 +290,11 @@ export const actionCreators: ActionCreators = {
     }
   },
 
-  createWorkspaceFromDevfile: (devfile: IDevWorkspaceDevfile): AppThunk<KnownAction, Promise<IDevWorkspace>> => async (dispatch, getState): Promise<IDevWorkspace> => {
+  createWorkspaceFromDevfile: (devfile: IDevWorkspaceDevfile, optionalFilesContent: {
+    [fileName: string]: string
+  },
+    pluginRegistryUrl: string | undefined,
+  ): AppThunk<KnownAction, Promise<IDevWorkspace>> => async (dispatch, getState): Promise<IDevWorkspace> => {
     dispatch({ type: 'REQUEST_DEVWORKSPACE' });
     try {
       const state = getState();
@@ -298,9 +306,8 @@ export const actionCreators: ActionCreators = {
         devWorkspaceDevfile.metadata.namespace = defaultNamespace;
       }
 
-      const pluginRegistryUrl = state.workspacesSettings.settings.cheWorkspacePluginRegistryUrl;
       const dwPlugins = state.dwPlugins.plugins;
-      const workspace = await devWorkspaceClient.create(devWorkspaceDevfile, dwPlugins, pluginRegistryUrl);
+      const workspace = await devWorkspaceClient.create(devWorkspaceDevfile, dwPlugins, pluginRegistryUrl, optionalFilesContent);
 
       dispatch({
         type: 'ADD_DEVWORKSPACE',

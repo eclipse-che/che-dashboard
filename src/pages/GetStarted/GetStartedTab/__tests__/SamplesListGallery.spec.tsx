@@ -168,6 +168,11 @@ function createFakeStore(metadata?: che.DevfileMetaData[], devWorkspaceEnabled?:
       source: 'devfile.yaml',
       devfile: {},
       location: 'http://fake-location',
+      scm_info: {
+        clone_url: 'http://github.com/clone-url',
+        scm_provider: 'github'
+      },
+      links: []
     })
     .withDevfileRegistries({ registries })
     .build();

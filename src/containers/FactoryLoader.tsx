@@ -326,7 +326,7 @@ export class FactoryLoaderContainer extends React.PureComponent<Props, State> {
     }
     if (!workspace) {
       try {
-        workspace = await this.props.createWorkspaceFromDevfile(devfile, undefined, undefined, attrs);
+        workspace = await this.props.createWorkspaceFromDevfile(devfile, undefined, undefined, attrs, this.factoryResolver.resolver.optionalFilesContent || {});
       } catch (e) {
         this.showAlert(`Failed to create a workspace. ${e}`);
         return;

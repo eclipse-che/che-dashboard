@@ -24,10 +24,13 @@ import { load } from 'js-yaml';
 import { updateDevfile } from '../../../services/storageTypes';
 import stringify from '../../../services/helpers/editor';
 import ImportFromGit from './ImportFromGit';
+import { ResolverState } from '../../../store/FactoryResolver';
 
 // At runtime, Redux will merge together...
 type Props = {
-  onDevfile: (devfileContent: string, stackName: string) => Promise<void>;
+  onDevfile: (devfileContent: string, stackName: string, optionalFilesContent?: {
+    [fileName: string]: string
+  }) => Promise<void>;
 }
   & MappedProps;
 type State = {
@@ -53,7 +56,7 @@ export class SamplesListTab extends React.PureComponent<Props, State> {
     this.setState({ temporary });
   }
 
-  private handleSampleCardClick(devfileContent: string, stackName: string): Promise<void> {
+  private handleSampleCardClick(devfileContent: string, stackName: string, optionalFilesContent?: { [fileName: string]: string }): Promise<void> {
     let devfile = load(devfileContent);
 
     if (this.state.temporary === undefined) {
@@ -63,14 +66,15 @@ export class SamplesListTab extends React.PureComponent<Props, State> {
     } else {
       devfile = updateDevfile(devfile, this.state.temporary ? 'ephemeral' : 'persistent');
     }
-    return this.props.onDevfile(stringify(devfile), stackName);
+    return this.props.onDevfile(stringify(devfile), stackName, optionalFilesContent);
   }
 
-  private handleDevfileResolver(devfile: che.WorkspaceDevfile, stackName: string): Promise<void> {
+  private handleDevfileResolver(resolverState: ResolverState, stackName: string): Promise<void> {
+    const devfile: che.WorkspaceDevfile = resolverState.devfile;
     const updatedDevfile = updateDevfile(devfile, this.props.preferredStorageType);
     const devfileContent = stringify(updatedDevfile);
 
-    return this.props.onDevfile(devfileContent, stackName);
+    return this.props.onDevfile(devfileContent, stackName, resolverState.optionalFilesContent || {});
   }
 
   public render(): React.ReactElement {
@@ -85,7 +89,7 @@ export class SamplesListTab extends React.PureComponent<Props, State> {
         >
           <PageSection variant={PageSectionVariants.light}>
             <ImportFromGit
-              onDevfileResolve={(devfile, location) => this.handleDevfileResolver(devfile, location)}
+              onDevfileResolve={(resolverState, location) => this.handleDevfileResolver(resolverState, location)}
             />
           </PageSection>
           <PageSection
@@ -102,7 +106,7 @@ export class SamplesListTab extends React.PureComponent<Props, State> {
               </FlexItem>
             </Flex>
             <SamplesListGallery
-              onCardClick={(devfileContent, stackName) => this.handleSampleCardClick(devfileContent, stackName)} />
+              onCardClick={(devfileContent, stackName, optionalFilesContent) => this.handleSampleCardClick(devfileContent, stackName, optionalFilesContent)} />
           </PageSection>
         </PageSection>
       </>

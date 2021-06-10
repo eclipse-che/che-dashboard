@@ -39,7 +39,9 @@ import stringify from '../../../services/helpers/editor';
 type Props =
   MappedProps
   & {
-    onCardClick: (devfileContent: string, stackName: string) => void;
+    onCardClick: (devfileContent: string, stackName: string, optionalFilesContent?: {
+      [fileName: string]: string
+    }) => void;
   };
 type State = {
   alerts: AlertItem[];
@@ -90,15 +92,17 @@ export class SamplesListGallery extends React.PureComponent<Props, State> {
     try {
       const cheDevworkspaceEnabled = this.props.workspacesSettings['che.devworkspaces.enabled'] === 'true';
       let devfileContent;
+      let optionalFilesContent;
       if (cheDevworkspaceEnabled) {
         const link = meta.links.v2;
         await this.props.requestFactoryResolver(link);
-        const { devfile } = this.props.factoryResolver.resolver;
-        devfileContent = stringify(devfile);
+        const resolver = this.props.factoryResolver.resolver;
+        devfileContent = stringify(resolver.devfile);
+        optionalFilesContent = resolver.optionalFilesContent;
       } else {
         devfileContent = await this.props.requestDevfile(meta.links.self) as string;
       }
-      this.props.onCardClick(devfileContent, meta.displayName);
+      this.props.onCardClick(devfileContent, meta.displayName, optionalFilesContent);
     } catch (e) {
       console.warn('Failed to load devfile.', e);
 
