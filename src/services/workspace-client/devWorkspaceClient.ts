@@ -311,7 +311,10 @@ export class DevWorkspaceClient extends WorkspaceClient {
    * @param pluginName The name of the plugin
    */
   private addPlugin(workspace: IDevWorkspace, pluginName: string, namespace: string) {
-    workspace.spec.template.components!.push({
+    if (!workspace.spec.template.components) {
+      workspace.spec.template.components = [];
+    }
+    workspace.spec.template.components.push({
       name: pluginName,
       plugin: {
         kubernetes: {
