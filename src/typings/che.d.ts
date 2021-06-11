@@ -153,6 +153,7 @@ declare namespace che {
     displayName: string;
     description?: string;
     globalMemoryLimit: string;
+    registry?: string;
     icon: string;
     links: any;
     tags: Array<string>;

@@ -14,6 +14,7 @@ import { getDevfile } from '../../FactoryResolver/getDevfile';
 import { FactoryResolverBuilder } from '../../__mocks__/factoryResolverBuilder';
 
 describe('Get a devfile from factory resolver object', () => {
+  const dummyLocation = 'http://dummy/test.com/project-demo';
 
   it('should return a devfile V1 as is', () => {
     const devfile = {
@@ -24,7 +25,7 @@ describe('Get a devfile from factory resolver object', () => {
     };
     const factoryResolver = new FactoryResolverBuilder().withDevfile(devfile).build();
 
-    const targetDevfile = getDevfile(factoryResolver);
+    const targetDevfile = getDevfile(factoryResolver, dummyLocation);
 
     expect(targetDevfile).toEqual(devfile);
   });
@@ -33,7 +34,7 @@ describe('Get a devfile from factory resolver object', () => {
     const devfile = getV2Devfile();
     const factoryResolver = new FactoryResolverBuilder().withDevfile(devfile).build();
 
-    const targetDevfile = getDevfile(factoryResolver);
+    const targetDevfile = getDevfile(factoryResolver, dummyLocation);
 
     expect(targetDevfile).toEqual(devfile);
   });
@@ -43,12 +44,12 @@ describe('Get a devfile from factory resolver object', () => {
     const factoryResolver = new FactoryResolverBuilder()
       .withDevfile(devfile)
       .withScmInfo({
-        'clone_url': 'http://dummy/test.com/project-demo',
+        'clone_url': dummyLocation,
         'scm_provider': 'github',
       })
       .build();
 
-    const targetDevfile = getDevfile(factoryResolver);
+    const targetDevfile = getDevfile(factoryResolver, dummyLocation);
 
     expect(targetDevfile).toEqual(expect.objectContaining({
       projects: [{

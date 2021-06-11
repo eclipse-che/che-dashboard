@@ -19,7 +19,6 @@ import {
   AlertVariant,
   Flex,
   FlexItem,
-  Form,
   FormGroup,
   Text,
   TextContent,
@@ -91,7 +90,7 @@ export class ImportFromGit extends React.PureComponent<Props, State> {
     const { alerts, isLoading } = this.state;
 
     return (
-      <Form>
+      <>
         <AlertGroup isToast>
           {alerts.map(({ title, variant, key }) => (
             <Alert
@@ -114,7 +113,7 @@ export class ImportFromGit extends React.PureComponent<Props, State> {
               <TextContent>
                 <Text component={TextVariants.h5}>
                   Git Repo URL
-                  <span style={{ color: 'var(--pf-c-form__label-required--Color)' }}>&nbsp;*</span>
+                  <span className="label-required">&nbsp;*</span>
                 </Text>
               </TextContent>
             </FlexItem>
@@ -127,7 +126,7 @@ export class ImportFromGit extends React.PureComponent<Props, State> {
             </FlexItem>
           </Flex>
         </FormGroup>
-      </Form>
+      </>
     );
   }
 

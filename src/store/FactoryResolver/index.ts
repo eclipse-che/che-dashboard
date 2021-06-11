@@ -127,7 +127,7 @@ export const actionCreators: ActionCreators = {
       if (cheEditor) {
         optionalFilesContent['.che/che-editor.yaml'] = cheEditor;
       }
-      const devfile = getDevfile(data);
+      const devfile = getDevfile(data, location);
       const { source, scm_info } = data;
       dispatch({
         type: 'RECEIVE_FACTORY_RESOLVER',

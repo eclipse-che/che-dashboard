@@ -13,12 +13,14 @@
 import { FactoryResolver, DevfileV2ProjectSource } from '../../services/helpers/types';
 import { isDevfileV2 } from '../../services/workspaceAdapter';
 import { getProjectName } from '../../services/helpers/getProjectName';
+import { safeDump } from 'js-yaml';
 
 /**
  * Returns a devfile from the FactoryResolver object.
  * @param data a FactoryResolver object.
+ * @param location a source location.
  */
-export function getDevfile(data: FactoryResolver): api.che.workspace.devfile.Devfile {
+export function getDevfile(data: FactoryResolver, location: string): api.che.workspace.devfile.Devfile {
   let devfile = data.devfile;
 
   if (isDevfileV2(devfile)) {
@@ -44,6 +46,34 @@ export function getDevfile(data: FactoryResolver): api.che.workspace.devfile.Dev
       projects.push(project);
       devfile = Object.assign({ projects }, devfile);
     }
+    // provide metadata about the origin of the devfile with DevWorkspace
+    let devfileSource = '';
+    if (data.source && scmInfo) {
+      if (scmInfo.branch) {
+        devfileSource = safeDump({
+          scm: {
+            repo: scmInfo['clone_url'],
+            revision: scmInfo.branch,
+            fileName: data.source,
+          },
+        });
+      } else {
+        devfileSource = safeDump({
+          scm: {
+            repo: scmInfo['clone_url'],
+            fileName: data.source,
+          },
+        });
+      }
+    } else if (location) {
+      devfileSource = safeDump({ url: location });
+    }
+    const metadata = devfile.metadata;
+    if (!metadata.attributes) {
+      metadata.attributes = {};
+    }
+    metadata.attributes['dw.metadata.annotations'] = { 'che.eclipse.org/devfile-source': devfileSource };
+    devfile = Object.assign({}, devfile, { metadata });
   }
 
   return devfile;
