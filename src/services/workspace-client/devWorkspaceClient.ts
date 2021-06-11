@@ -181,6 +181,7 @@ export class DevWorkspaceClient extends WorkspaceClient {
       sidecarPolicy,
       suffix: workspaceId,
     });
+    console.debug('Devfile updated to', devfile, ' and templates updated to', devWorkspaceTemplates);
 
     await Promise.all(devWorkspaceTemplates.map(async template => {
       if (!template.metadata) {
