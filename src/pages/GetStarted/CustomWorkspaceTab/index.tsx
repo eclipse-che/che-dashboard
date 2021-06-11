@@ -22,6 +22,7 @@ import InfrastructureNamespaceFormGroup from './InfrastructureNamespace';
 import { selectPreferredStorageType, selectWorkspacesSettings } from '../../../store/Workspaces/Settings/selectors';
 import { attributesToType, updateDevfile } from '../../../services/storageTypes';
 import { safeLoad } from 'js-yaml';
+import { updateDevfileMetadata } from '../updateDevfileMetadata';
 
 type Props = MappedProps
   & {
@@ -139,6 +140,7 @@ export class CustomWorkspaceTab extends React.PureComponent<Props, State> {
       console.error('Devfile parse error', e);
       return;
     }
+    devfile = updateDevfileMetadata(devfile);
     this.setState({ devfile, isCreated: false });
     if (devfile?.attributes) {
       const storageType = attributesToType(devfile.attributes);
@@ -168,7 +170,7 @@ export class CustomWorkspaceTab extends React.PureComponent<Props, State> {
     try {
       const { devfile } = this.state;
       /* For the time being `optionalFilesContent` is `undefined`.
-      Later, if we want to load related files (editor.yaml, che-theia-plugins.yaml) we need to expose 
+      Later, if we want to load related files (editor.yaml, che-theia-plugins.yaml) we need to expose
       such an information to a user, so they are able to review and apply their custom setting if needed.
       Note: `optionalFilesContent` is supported by factory flow, or create from sample where user input is not allowed. */
       await this.props.onDevfile(devfile, this.state.namespace?.name, undefined);
@@ -182,7 +184,7 @@ export class CustomWorkspaceTab extends React.PureComponent<Props, State> {
   public render(): React.ReactElement {
     const { devfile, storageType, generateName, workspaceName, isCreated } = this.state;
     return (
-      <React.Fragment>
+      <>
         <PageSection
           variant={PageSectionVariants.light}
         >
@@ -205,12 +207,10 @@ export class CustomWorkspaceTab extends React.PureComponent<Props, State> {
           isFilled
           variant={PageSectionVariants.light}
         >
-          <Form>
-            <DevfileSelectorFormGroup
-              onDevfile={devfile => this.handleNewDevfile(devfile)}
-              onClear={() => this.handleNewDevfile()}
-            />
-          </Form>
+          <DevfileSelectorFormGroup
+            onDevfile={devfile => this.handleNewDevfile(devfile)}
+            onClear={() => this.handleNewDevfile()}
+          />
         </PageSection>
         <PageSection
           className="workspace-details-editor"
@@ -219,7 +219,7 @@ export class CustomWorkspaceTab extends React.PureComponent<Props, State> {
           <DevfileEditor
             ref={this.devfileEditorRef}
             devfile={devfile}
-            decorationPattern='location[ \t]*(.*)[ \t]*$'
+            decorationPattern="location[ \t]*(.*)[ \t]*$"
             onChange={(newValue, isValid) => this.handleDevfileChange(newValue, isValid)}
           />
         </PageSection>
@@ -232,7 +232,7 @@ export class CustomWorkspaceTab extends React.PureComponent<Props, State> {
             Create & Open
           </Button>
         </PageSection>
-      </React.Fragment>
+      </>
     );
   }
 }

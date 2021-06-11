@@ -35,6 +35,7 @@ import { selectMetadataFiltered } from '../../../store/DevfileRegistries/selecto
 import { selectWorkspacesSettings } from '../../../store/Workspaces/Settings/selectors';
 import * as FactoryResolverStore from '../../../store/FactoryResolver';
 import stringify from '../../../services/helpers/editor';
+import { updateDevfileMetadata } from '../updateDevfileMetadata';
 
 type Props =
   MappedProps
@@ -97,7 +98,7 @@ export class SamplesListGallery extends React.PureComponent<Props, State> {
         const link = meta.links.v2;
         await this.props.requestFactoryResolver(link);
         const resolver = this.props.factoryResolver.resolver;
-        devfileContent = stringify(resolver.devfile);
+        devfileContent = stringify(updateDevfileMetadata(resolver.devfile, meta));
         optionalFilesContent = resolver.optionalFilesContent;
       } else {
         devfileContent = await this.props.requestDevfile(meta.links.self) as string;

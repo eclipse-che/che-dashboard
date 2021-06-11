@@ -21,7 +21,10 @@ export const selectRegistriesMetadata = createSelector(
   selectState,
   selectWorkspacesSettingsState,
   (devfileRegistriesState, workspacesSettingsState) => {
-    const registriesMetadata = Object.values(devfileRegistriesState.registries).map(registryMetadata => registryMetadata.metadata || []);
+    const registriesMetadata = Object.keys(devfileRegistriesState.registries).map(registry => {
+      const metadata = devfileRegistriesState.registries[registry].metadata || [];
+      return metadata.map(meta => Object.assign({ registry }, meta));
+    });
     const metadata = mergeRegistriesMetadata(registriesMetadata);
     const cheDevworkspaceEnabled = workspacesSettingsState.settings['che.devworkspaces.enabled'] === 'true';
     if (cheDevworkspaceEnabled) {
