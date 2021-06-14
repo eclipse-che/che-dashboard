@@ -19,7 +19,7 @@ export function updateDevfileMetadata(devfile: api.che.workspace.devfile.Devfile
     const devfileSource = safeDump(meta ? {
       sample: {
         registry: meta.registry,
-        name: meta.displayName,
+        displayName: meta.displayName,
         location: meta.links?.v2,
       },
     } : {

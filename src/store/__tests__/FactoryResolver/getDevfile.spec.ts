@@ -12,9 +12,10 @@
 
 import { getDevfile } from '../../FactoryResolver/getDevfile';
 import { FactoryResolverBuilder } from '../../__mocks__/factoryResolverBuilder';
+import { safeDump } from 'js-yaml';
 
 describe('Get a devfile from factory resolver object', () => {
-  const dummyLocation = 'http://dummy/test.com/project-demo';
+  const location = 'http://dummy/test.com/project-demo';
 
   it('should return a devfile V1 as is', () => {
     const devfile = {
@@ -25,7 +26,7 @@ describe('Get a devfile from factory resolver object', () => {
     };
     const factoryResolver = new FactoryResolverBuilder().withDevfile(devfile).build();
 
-    const targetDevfile = getDevfile(factoryResolver, dummyLocation);
+    const targetDevfile = getDevfile(factoryResolver, location);
 
     expect(targetDevfile).toEqual(devfile);
   });
@@ -34,7 +35,7 @@ describe('Get a devfile from factory resolver object', () => {
     const devfile = getV2Devfile();
     const factoryResolver = new FactoryResolverBuilder().withDevfile(devfile).build();
 
-    const targetDevfile = getDevfile(factoryResolver, dummyLocation);
+    const targetDevfile = getDevfile(factoryResolver, location);
 
     expect(targetDevfile).toEqual(devfile);
   });
@@ -44,12 +45,12 @@ describe('Get a devfile from factory resolver object', () => {
     const factoryResolver = new FactoryResolverBuilder()
       .withDevfile(devfile)
       .withScmInfo({
-        'clone_url': dummyLocation,
+        'clone_url': location,
         'scm_provider': 'github',
       })
       .build();
 
-    const targetDevfile = getDevfile(factoryResolver, dummyLocation);
+    const targetDevfile = getDevfile(factoryResolver, location);
 
     expect(targetDevfile).toEqual(expect.objectContaining({
       projects: [{
@@ -64,6 +65,77 @@ describe('Get a devfile from factory resolver object', () => {
     }));
   });
 
+  it('should return a devfile V2 with a scm meta with a source', () => {
+    const devfile = getV2Devfile();
+    const factoryResolver = new FactoryResolverBuilder()
+      .withDevfile(devfile)
+      .withSource('devfile.yaml')
+      .withScmInfo({
+        'clone_url': location,
+        'scm_provider': 'github',
+      })
+      .build();
+    const attributes = {
+      'dw.metadata.annotations': {
+        'che.eclipse.org/devfile-source': safeDump({
+          scm: {
+            repo: factoryResolver?.scm_info?.clone_url,
+            fileName: factoryResolver?.source,
+          },
+        }),
+      },
+    };
+
+    const targetDevfile = getDevfile(factoryResolver, location);
+
+    expect(targetDevfile.metadata.attributes).toEqual(attributes);
+  });
+
+  it('should return a devfile V2 with a scm meta with a source and revision', () => {
+    const devfile = getV2Devfile();
+    const factoryResolver = new FactoryResolverBuilder()
+      .withDevfile(devfile)
+      .withSource('devfile.yaml')
+      .withScmInfo({
+        'clone_url': location,
+        'scm_provider': 'github',
+        branch: 'devfile2'
+      })
+      .build();
+    const attributes = {
+      'dw.metadata.annotations': {
+        'che.eclipse.org/devfile-source': safeDump({
+          scm: {
+            repo: factoryResolver?.scm_info?.clone_url,
+            revision: factoryResolver?.scm_info?.branch,
+            fileName: factoryResolver?.source,
+          },
+        }),
+      },
+    };
+
+    const targetDevfile = getDevfile(factoryResolver, location);
+
+    expect(targetDevfile.metadata.attributes).toEqual(attributes);
+  });
+
+  it('should return a devfile V2 with a scm meta with an URL', () => {
+    const devfile = getV2Devfile();
+    const factoryResolver = new FactoryResolverBuilder()
+      .withDevfile(devfile)
+      .build();
+    const attributes = {
+      'dw.metadata.annotations': {
+        'che.eclipse.org/devfile-source': safeDump({
+          url: { location }
+        }),
+      },
+    };
+
+    const targetDevfile = getDevfile(factoryResolver, location);
+
+    expect(targetDevfile.metadata.attributes).toEqual(attributes);
+  });
 });
 
 function getV2Devfile(): api.che.workspace.devfile.Devfile {

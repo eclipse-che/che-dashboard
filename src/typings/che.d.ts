@@ -152,7 +152,7 @@ declare namespace che {
   export interface DevfileMetaData {
     displayName: string;
     description?: string;
-    globalMemoryLimit: string;
+    globalMemoryLimit?: string;
     registry?: string;
     icon: string;
     links: any;
