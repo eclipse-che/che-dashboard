@@ -173,7 +173,7 @@ export const actionCreators: ActionCreators = {
 
         const schemav200 = await WorkspaceClient.restApiClient.getDevfileSchema('2.0.0');
         const schemav210 = await WorkspaceClient.restApiClient.getDevfileSchema('2.1.0');
-        const schemav220alpha = await WorkspaceClient.restApiClient.getDevfileSchema('2.2.0-alpha');
+        const schemav220alpha = await WorkspaceClient.restApiClient.getDevfileSchema('2.2.0');
         schema = {
           oneOf: [
             parsedSchemaV1,
