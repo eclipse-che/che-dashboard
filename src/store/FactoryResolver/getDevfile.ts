@@ -66,7 +66,7 @@ export function getDevfile(data: FactoryResolver, location: string): api.che.wor
         });
       }
     } else if (location) {
-      devfileSource = safeDump({ url: location });
+      devfileSource = safeDump({ url: { location } });
     }
     const metadata = devfile.metadata;
     if (!metadata.attributes) {
