@@ -159,12 +159,20 @@ export class EditorTab extends React.PureComponent<Props, State> {
             onChange={(newValue, isValid) => this.onDevfileChange(newValue, isValid)}
             isReadonly={isDevfileV2(originDevfile)}
           />
-          <Button onClick={() => this.cancelChanges()} variant="secondary" className="cancle-button"
-            isDisabled={!this.state.hasChanges && this.state.isDevfileValid}>
+          <Button
+            onClick={() => this.cancelChanges()}
+            variant="secondary"
+            className="cancel-button"
+            isDisabled={!this.state.hasChanges && this.state.isDevfileValid}
+          >
             Cancel
           </Button>
-          <Button onClick={async () => await this.onSave()} variant="primary" className="save-button"
-            isDisabled={!this.state.hasChanges || !this.state.isDevfileValid}>
+          <Button
+            onClick={() => this.onSave()}
+            variant="primary"
+            className="save-button"
+            isDisabled={!this.state.hasChanges || !this.state.isDevfileValid}
+          >
             Save
           </Button>
         </TextContent>
