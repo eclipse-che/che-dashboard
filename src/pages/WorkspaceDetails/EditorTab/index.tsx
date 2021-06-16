@@ -24,7 +24,7 @@ import {
 } from '@patternfly/react-core';
 import DevfileEditor, { DevfileEditor as Editor } from '../../../components/DevfileEditor';
 import EditorTools from './EditorTools';
-import { convertWorkspace, isDevfileV2, isWorkspaceV1, isWorkspaceV2, Workspace } from '../../../services/workspaceAdapter';
+import { convertWorkspace, isWorkspaceV1, isWorkspaceV2, Workspace } from '../../../services/workspaceAdapter';
 import { IDevWorkspace, IDevWorkspaceDevfile } from '@eclipse-che/devworkspace-client';
 import { DevWorkspaceStatus } from '../../../services/helpers/types';
 import { DevWorkspaceClient, DEVWORKSPACE_NEXT_START_ANNOTATION } from '../../../services/workspace-client/devWorkspaceClient';
@@ -157,7 +157,6 @@ export class EditorTab extends React.PureComponent<Props, State> {
             devfile={originDevfile}
             decorationPattern="location[ \t]*(.*)[ \t]*$"
             onChange={(newValue, isValid) => this.onDevfileChange(newValue, isValid)}
-            isReadonly={isDevfileV2(originDevfile)}
           />
           <Button
             onClick={() => this.cancelChanges()}

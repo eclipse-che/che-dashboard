@@ -15,6 +15,7 @@ import { connect, ConnectedProps } from 'react-redux';
 import { AppState } from '../../store';
 import { DisposableCollection } from '../../services/helpers/disposable';
 import { ProtocolToMonacoConverter, MonacoToProtocolConverter } from 'monaco-languageclient/lib/monaco-converter';
+import { editor as MonacoEditor } from 'monaco-editor-core';
 import { languages, editor, Position, IRange } from 'monaco-editor-core/esm/vs/editor/editor.main';
 import { TextDocument, getLanguageService } from 'yaml-language-server';
 import { initDefaultEditorTheme } from '../../services/monacoThemeRegister';
@@ -27,10 +28,8 @@ import { selectBranding } from '../../store/Branding/selectors';
 
 import './DevfileEditor.styl';
 
-interface Editor {
-  getValue(): string;
-
-  getModel(): any;
+interface Editor extends MonacoEditor.IStandaloneCodeEditor {
+  getModel(): MonacoEditor.ITextModel;
 }
 
 const LANGUAGE_ID = 'yaml';
@@ -59,7 +58,7 @@ export class DevfileEditor extends React.PureComponent<Props, State> {
   public static EDITOR_THEME: string | undefined;
   private readonly toDispose = new DisposableCollection();
   private handleResize: () => void;
-  private editor: any;
+  private editor: Editor;
   private readonly yamlService: any;
   private m2p = new MonacoToProtocolConverter();
   private p2m = new ProtocolToMonacoConverter();
@@ -169,7 +168,10 @@ export class DevfileEditor extends React.PureComponent<Props, State> {
       const value = stringify(this.props.devfile);
       this.editor = editor.create(element, Object.assign(
         { value },
-        MONACO_CONFIG,
+        {
+          ...MONACO_CONFIG,
+          readOnly: this.props.isReadonly,
+        }
       ));
       const doc = this.editor.getModel();
       doc.updateOptions({ tabSize: 2 });
@@ -362,7 +364,7 @@ export class DevfileEditor extends React.PureComponent<Props, State> {
 
   private initLanguageServerValidation(_editor: Editor): void {
     const model = _editor.getModel();
-    let validationTimer;
+    let validationTimer: number;
 
     model.onDidChangeContent(() => {
       const document = this.createDocument(model);
