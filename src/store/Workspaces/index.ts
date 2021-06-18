@@ -100,6 +100,7 @@ export type ActionCreators = {
   requestWorkspaces: () => AppThunk<KnownAction, Promise<void>>;
   requestWorkspace: (workspace: Workspace) => AppThunk<KnownAction, Promise<void>>;
   startWorkspace: (workspace: Workspace, params?: ResourceQueryParams) => AppThunk<KnownAction, Promise<void>>;
+  restartWorkspace: (workspace: Workspace) => AppThunk<KnownAction, Promise<void>>;
   stopWorkspace: (workspace: Workspace) => AppThunk<KnownAction, Promise<void>>;
   deleteWorkspace: (workspace: Workspace) => AppThunk<KnownAction, Promise<void>>;
   updateWorkspace: (workspace: Workspace) => AppThunk<KnownAction, Promise<void>>;
@@ -176,6 +177,21 @@ export const actionCreators: ActionCreators = {
         await dispatch(CheWorkspacesStore.actionCreators.startWorkspace(workspace as che.Workspace, params));
       }
       dispatch({ type: 'UPDATE_WORKSPACE' });
+    } catch (e) {
+      dispatch({ type: 'RECEIVE_ERROR' });
+      throw e;
+    }
+  },
+
+  restartWorkspace: (workspace: Workspace): AppThunk<KnownAction, Promise<void>> => async (dispatch, getState): Promise<void> => {
+    try {
+      const state = getState();
+      const cheDevworkspaceEnabled = state.workspacesSettings.settings['che.devworkspaces.enabled'] === 'true';
+      if (cheDevworkspaceEnabled && isWorkspaceV2(workspace.ref)) {
+        await dispatch(DevWorkspacesStore.actionCreators.restartWorkspace(workspace.ref));
+      } else {
+        await dispatch(CheWorkspacesStore.actionCreators.restartWorkspace(workspace.ref as che.Workspace));
+      }
     } catch (e) {
       dispatch({ type: 'RECEIVE_ERROR' });
       throw e;
