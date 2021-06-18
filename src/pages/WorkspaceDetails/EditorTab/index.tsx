@@ -28,7 +28,7 @@ import * as lodash from 'lodash';
 import { safeLoad } from 'js-yaml';
 import DevfileEditor, { DevfileEditor as Editor } from '../../../components/DevfileEditor';
 import EditorTools from './EditorTools';
-import { convertWorkspace, isWorkspaceV1, isWorkspaceV2, Workspace } from '../../../services/workspaceAdapter';
+import { convertWorkspace, isWorkspaceV1, isWorkspaceV2, Workspace, isDevfileV2 } from '../../../services/workspaceAdapter';
 import { IDevWorkspace, IDevWorkspaceDevfile } from '@eclipse-che/devworkspace-client';
 import { DevWorkspaceStatus } from '../../../services/helpers/types';
 import { DevWorkspaceClient, DEVWORKSPACE_NEXT_START_ANNOTATION } from '../../../services/workspace-client/devWorkspaceClient';
@@ -290,6 +290,9 @@ export class EditorTab extends React.PureComponent<Props, State> {
     }
     if (!devfile.metadata.name) {
       devfile.metadata.name = workspaceCopy.name;
+    }
+    if (isDevfileV2(devfile) && !devfile.metadata.namespace) {
+      devfile.metadata.namespace = workspaceCopy.namespace;
     }
 
     workspaceCopy.devfile = devfile;

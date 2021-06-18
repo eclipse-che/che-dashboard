@@ -17,7 +17,7 @@ import { render, screen, waitFor, fireEvent } from '@testing-library/react';
 import renderer from 'react-test-renderer';
 import userEvent from '@testing-library/user-event';
 import { dump } from 'js-yaml';
-import { IDevWorkspace } from '@eclipse-che/devworkspace-client';
+import { IDevWorkspace, IDevWorkspaceDevfile } from '@eclipse-che/devworkspace-client';
 import EditorTab from '..';
 import { Workspace, convertWorkspace } from '../../../../services/workspaceAdapter';
 import { CheWorkspaceBuilder } from '../../../../store/__mocks__/cheWorkspaceBuilder';
@@ -58,122 +58,165 @@ describe('Editor Tab', () => {
     jest.resetAllMocks();
   });
 
-  it('should render the component', () => {
-    const workspace = new CheWorkspaceBuilder()
-      .withName('editor-test-workspace')
-      .build();
-    const store = new FakeStoreBuilder()
-      .withCheWorkspaces({
-        workspaces: [workspace]
-      })
-      .build();
+  describe('Che workspaces', () => {
 
-    const component = getComponent(
-      store, convertWorkspace(workspace)
-    );
-    const json = renderer.create(component).toJSON();
-    expect(json).toMatchSnapshot();
-  });
-
-  it('should restore name for the Che workspace', async () => {
     const workspaceName = 'test-workspace';
-    const workspace = new CheWorkspaceBuilder()
-      .withName(workspaceName)
-      .build();
-    const store = new FakeStoreBuilder()
-      .withCheWorkspaces({
-        workspaces: [workspace]
-      })
-      .build();
-    const component = getComponent(
-      store, convertWorkspace(workspace)
-    );
+    let workspace: Workspace;
+    let component: React.ReactElement;
 
-    render(component);
+    beforeEach(() => {
+      const cheWorkspace = new CheWorkspaceBuilder()
+        .withName(workspaceName)
+        .build();
+      const store = new FakeStoreBuilder()
+        .withCheWorkspaces({
+          workspaces: [cheWorkspace]
+        })
+        .build();
+      workspace = convertWorkspace(cheWorkspace);
+      component = getComponent(store, workspace);
 
-    // copy the workspace devfile, remove 'name' field and paste new devfile into the editor
-    const noNameDevfile = JSON.parse(JSON.stringify(workspace.devfile));
-    delete noNameDevfile.metadata.name;
-    const noNameDevfileContent = dump(noNameDevfile);
-
-    const editor = screen.getByRole('textbox');
-    fireEvent.input(editor, {
-      target: {
-        value: noNameDevfileContent,
-      },
     });
 
-    const saveButton = screen.getByRole('button', { name: 'Save' });
+    it('should render the component', () => {
+      const json = renderer.create(component).toJSON();
+      expect(json).toMatchSnapshot();
+    });
 
-    await waitFor(() => expect(saveButton).toBeEnabled());
-    userEvent.click(saveButton);
+    it('should restore name', async () => {
+      render(component);
 
-    await waitFor(() => expect(mockOnSave).toHaveBeenCalled());
-    expect(mockOnSave).toHaveBeenCalledWith(expect.objectContaining({
-      workspace: expect.objectContaining({
-        devfile: expect.objectContaining({
-          metadata: {
-            name: workspaceName,
-          },
+      // copy the workspace devfile, remove 'name' field and paste new devfile into the editor
+      const noNameDevfile = JSON.parse(JSON.stringify(workspace.devfile));
+      delete noNameDevfile.metadata.name;
+      const noNameDevfileContent = dump(noNameDevfile);
+
+      const editor = screen.getByRole('textbox');
+      fireEvent.input(editor, {
+        target: {
+          value: noNameDevfileContent,
+        },
+      });
+
+      const saveButton = screen.getByRole('button', { name: 'Save' });
+
+      await waitFor(() => expect(saveButton).toBeEnabled());
+      userEvent.click(saveButton);
+
+      await waitFor(() => expect(mockOnSave).toHaveBeenCalled());
+      expect(mockOnSave).toHaveBeenCalledWith(expect.objectContaining({
+        workspace: expect.objectContaining({
+          devfile: expect.objectContaining({
+            metadata: {
+              name: workspaceName,
+            },
+          }),
         }),
-      }),
-    }));
+      }));
+
+    });
 
   });
 
-  it('should restore name for the dev workspace', async () => {
+  describe('devworkspaces', () => {
     const workspaceName = 'test-workspace';
-    const devWorkspace = new DevWorkspaceBuilder()
-      .withName(workspaceName)
-      .withNamespace('test-ns')
-      .build();
+    const namespace = 'test-ns';
+    let workspace: Workspace;
+    let component: React.ReactElement;
 
-    const devWorkspaceCopy = JSON.parse(JSON.stringify(devWorkspace));
-    // mock devWorkspaceClient method to be able to save the devfile
-    class MockDevWorkspaceClient extends DevWorkspaceClient {
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      async getWorkspaceByName(namespace: string, workspaceName: string): Promise<IDevWorkspace> {
-        return devWorkspaceCopy;
+    beforeEach(() => {
+      const devWorkspace = new DevWorkspaceBuilder()
+        .withName(workspaceName)
+        .withNamespace(namespace)
+        .build();
+
+      const devWorkspaceCopy = JSON.parse(JSON.stringify(devWorkspace));
+      // mock devWorkspaceClient method to be able to save the devfile
+      class MockDevWorkspaceClient extends DevWorkspaceClient {
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        async getWorkspaceByName(namespace: string, workspaceName: string): Promise<IDevWorkspace> {
+          return devWorkspaceCopy;
+        }
       }
-    }
-    container.rebind(DevWorkspaceClient).to(MockDevWorkspaceClient).inSingletonScope();
+      container.rebind(DevWorkspaceClient).to(MockDevWorkspaceClient).inSingletonScope();
 
-    const store = new FakeStoreBuilder()
-      .withDevWorkspaces({
-        workspaces: [devWorkspace]
-      })
-      .build();
-    const workspace = convertWorkspace(devWorkspace);
-    const component = getComponent(store, workspace);
-
-    render(component);
-
-    // copy the workspace devfile, remove 'name' field and paste new devfile into the editor
-    const noNameDevfile = JSON.parse(JSON.stringify(workspace.devfile));
-    delete noNameDevfile.metadata.name;
-    const noNameDevfileContent = dump(noNameDevfile);
-
-    const editor = screen.getByRole('textbox');
-    fireEvent.input(editor, {
-      target: {
-        value: noNameDevfileContent,
-      },
+      const store = new FakeStoreBuilder()
+        .withDevWorkspaces({
+          workspaces: [devWorkspace]
+        })
+        .build();
+      workspace = convertWorkspace(devWorkspace);
+      component = getComponent(store, workspace);
     });
 
-    const saveButton = screen.getByRole('button', { name: 'Save' });
+    it('should render the component', () => {
+      const json = renderer.create(component).toJSON();
+      expect(json).toMatchSnapshot();
+    });
 
-    await waitFor(() => expect(saveButton).toBeEnabled());
-    userEvent.click(saveButton);
+    it('should restore name', async () => {
+      render(component);
 
-    await waitFor(() => expect(mockOnSave).toHaveBeenCalled());
-    expect(mockOnSave).toHaveBeenCalledWith(expect.objectContaining({
-      workspace: expect.objectContaining({
-        kind: 'DevWorkspace',
-        metadata: expect.objectContaining({
-          name: workspaceName,
-        }),
-      } as IDevWorkspace),
-    }));
+      // copy the workspace devfile, remove 'name' field and paste new devfile into the editor
+      const noNameDevfile = JSON.parse(JSON.stringify(workspace.devfile)) as IDevWorkspaceDevfile;
+      delete noNameDevfile.metadata.name;
+      const noNameDevfileContent = dump(noNameDevfile);
+
+      const editor = screen.getByRole('textbox');
+      fireEvent.input(editor, {
+        target: {
+          value: noNameDevfileContent,
+        },
+      });
+
+      const saveButton = screen.getByRole('button', { name: 'Save' });
+
+      await waitFor(() => expect(saveButton).toBeEnabled());
+      userEvent.click(saveButton);
+
+      await waitFor(() => expect(mockOnSave).toHaveBeenCalled());
+      expect(mockOnSave).toHaveBeenCalledWith(expect.objectContaining({
+        workspace: expect.objectContaining({
+          kind: 'DevWorkspace',
+          metadata: expect.objectContaining({
+            name: workspaceName,
+          }),
+        } as IDevWorkspace),
+      }));
+
+    });
+
+    it('should restore namespace', async () => {
+      render(component);
+
+      // copy the workspace devfile, remove 'name' field and paste new devfile into the editor
+      const noNamespaceDevfile = JSON.parse(JSON.stringify(workspace.devfile)) as IDevWorkspaceDevfile;
+      delete noNamespaceDevfile.metadata.namespace;
+      const noNamespaceDevfileContent = dump(noNamespaceDevfile);
+
+      const editor = screen.getByRole('textbox');
+      fireEvent.input(editor, {
+        target: {
+          value: noNamespaceDevfileContent,
+        },
+      });
+
+      const saveButton = screen.getByRole('button', { name: 'Save' });
+
+      await waitFor(() => expect(saveButton).toBeEnabled());
+      userEvent.click(saveButton);
+
+      await waitFor(() => expect(mockOnSave).toHaveBeenCalled());
+      expect(mockOnSave).toHaveBeenCalledWith(expect.objectContaining({
+        workspace: expect.objectContaining({
+          kind: 'DevWorkspace',
+          metadata: expect.objectContaining({
+            namespace,
+          }),
+        } as IDevWorkspace),
+      }));
+
+    });
 
   });
 

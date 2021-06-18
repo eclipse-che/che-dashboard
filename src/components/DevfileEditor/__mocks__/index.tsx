@@ -11,14 +11,14 @@
  */
 
 import React, { ChangeEvent, ClipboardEvent } from 'react';
-import { safeLoad, safeDump } from 'js-yaml';
+import { safeDump } from 'js-yaml';
 import { IDevWorkspaceDevfile } from '@eclipse-che/devworkspace-client';
 import stringify from '../../../services/helpers/editor';
 
 type Props = {
   devfile: che.WorkspaceDevfile | IDevWorkspaceDevfile;
   decorationPattern?: string;
-  onChange: (devfile: che.WorkspaceDevfile, isValid: boolean) => void;
+  onChange: (newValue: string, isValid: boolean) => void;
   isReadonly?: boolean;
 };
 type State = {
@@ -83,14 +83,7 @@ export default class DevfileEditor extends React.PureComponent<Props, State> {
   }
 
   private onChange(newValue: string, isValid: boolean): void {
-    let devfile: che.WorkspaceDevfile;
-    try {
-      devfile = safeLoad(newValue) || {};
-    } catch (e) {
-      console.error('DevfileEditor parse error', e);
-      return;
-    }
-    this.props.onChange(devfile, isValid);
+    this.props.onChange(newValue, isValid);
   }
 
 }
