@@ -21,18 +21,20 @@ import {
   AlertGroup,
   Modal,
   ModalVariant,
+  Flex,
+  FlexItem,
 } from '@patternfly/react-core';
+import * as lodash from 'lodash';
+import { safeLoad } from 'js-yaml';
 import DevfileEditor, { DevfileEditor as Editor } from '../../../components/DevfileEditor';
 import EditorTools from './EditorTools';
-import { convertWorkspace, isDevfileV2, isWorkspaceV1, isWorkspaceV2, Workspace } from '../../../services/workspaceAdapter';
+import { convertWorkspace, isWorkspaceV1, isWorkspaceV2, Workspace, isDevfileV2 } from '../../../services/workspaceAdapter';
 import { IDevWorkspace, IDevWorkspaceDevfile } from '@eclipse-che/devworkspace-client';
 import { DevWorkspaceStatus } from '../../../services/helpers/types';
 import { DevWorkspaceClient, DEVWORKSPACE_NEXT_START_ANNOTATION } from '../../../services/workspace-client/devWorkspaceClient';
 import { container } from '../../../inversify.config';
-import * as lodash from 'lodash';
 
-import './EditorTab.styl';
-import { safeLoad } from 'js-yaml';
+import styles from './index.module.css';
 
 type Props = {
   onSave: (workspace: Workspace) => Promise<void>;
@@ -139,7 +141,7 @@ export class EditorTab extends React.PureComponent<Props, State> {
           </Modal>
         )}
         <TextContent
-          className={`workspace-details${this.state.isExpanded ? '-expanded' : ''}`}>
+          className={this.state.isExpanded ? styles.editorTabExpanded : styles.editorTab}>
           {(this.state.currentRequestError && this.state.isExpanded) && (
             <AlertGroup isToast>
               <Alert
@@ -149,24 +151,41 @@ export class EditorTab extends React.PureComponent<Props, State> {
               />
             </AlertGroup>
           )}
-          <EditorTools devfile={devfile as che.WorkspaceDevfile} handleExpand={isExpanded => {
-            this.setState({ isExpanded });
-          }} />
+          <EditorTools
+            devfile={devfile as che.WorkspaceDevfile}
+            handleExpand={isExpanded => {
+              this.setState({ isExpanded });
+            }}
+          />
           <DevfileEditor
             ref={this.devfileEditorRef}
             devfile={originDevfile}
             decorationPattern="location[ \t]*(.*)[ \t]*$"
             onChange={(newValue, isValid) => this.onDevfileChange(newValue, isValid)}
-            isReadonly={isDevfileV2(originDevfile)}
           />
-          <Button onClick={() => this.cancelChanges()} variant="secondary" className="cancle-button"
-            isDisabled={!this.state.hasChanges && this.state.isDevfileValid}>
-            Cancel
-          </Button>
-          <Button onClick={async () => await this.onSave()} variant="primary" className="save-button"
-            isDisabled={!this.state.hasChanges || !this.state.isDevfileValid}>
-            Save
-          </Button>
+          <Flex direction={{ default: 'column' }}>
+            <FlexItem
+              align={{ default: 'alignRight' }}
+              className={styles.buttonsGroup}
+            >
+              <Button
+                onClick={() => this.onSave()}
+                variant="primary"
+                className={styles.saveButton}
+                isDisabled={!this.state.hasChanges || !this.state.isDevfileValid}
+              >
+                Save
+              </Button>
+              <Button
+                onClick={() => this.cancelChanges()}
+                variant="secondary"
+                className={styles.cancelButton}
+                isDisabled={!this.state.hasChanges && this.state.isDevfileValid}
+              >
+                Cancel
+              </Button>
+            </FlexItem>
+          </Flex>
         </TextContent>
       </React.Fragment>
     );
@@ -266,6 +285,16 @@ export class EditorTab extends React.PureComponent<Props, State> {
       return;
     }
     const workspaceCopy = convertWorkspace(this.props.workspace.ref);
+    if (!devfile.metadata) {
+      devfile.metadata = {};
+    }
+    if (!devfile.metadata.name) {
+      devfile.metadata.name = workspaceCopy.name;
+    }
+    if (isDevfileV2(devfile) && !devfile.metadata.namespace) {
+      devfile.metadata.namespace = workspaceCopy.namespace;
+    }
+
     workspaceCopy.devfile = devfile;
     this.setState({ hasChanges: false });
     try {
