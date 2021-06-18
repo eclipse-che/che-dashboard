@@ -18,7 +18,7 @@ import { BrandingData } from '../../../services/bootstrap/branding.constant';
 import { FakeStoreBuilder } from '../../../store/__mocks__/storeBuilder';
 import { createFakeCheWorkspace } from '../../../store/__mocks__/workspace';
 
-jest.mock('monaco-editor-core/esm/vs/editor/editor.main', () => {
+jest.mock('monaco-editor-core', () => {
   return {
     LanguageConfiguration: typeof {},
     IMonarchLanguage: typeof {},
