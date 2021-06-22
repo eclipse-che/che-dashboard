@@ -10,17 +10,29 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import axios, { AxiosError } from 'axios';
+import { AxiosResponse } from 'axios';
 
-export function getErrorMessage(error: Error): string {
+export function getErrorMessage(error: Error | AxiosResponse): string {
   if (!error) {
     return '';
   }
-  if (error.message) {
+  if (isError(error) && error.message) {
     return error.message;
   }
-  if (axios.isAxiosError(error)) {
-    return (error as AxiosError).response?.data;
+  if (isAxiosResponse(error)) {
+    if (error.data.message && typeof error.data.message === 'string') {
+      return error.data.message;
+    } else {
+      return JSON.stringify(error.data);
+    }
   }
-  return error.toString();
+  return JSON.stringify(error);
+}
+
+function isError(error: Error | any): error is Error {
+  return error.message !== undefined;
+}
+
+function isAxiosResponse(response: AxiosResponse | any): response is AxiosResponse {
+  return response.status !== undefined && response.data !== undefined;
 }

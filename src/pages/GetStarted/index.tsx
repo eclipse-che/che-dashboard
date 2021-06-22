@@ -127,9 +127,9 @@ export class GetStarted extends React.PureComponent<Props, State> {
       this.showAlert({
         key: 'new-workspace-failed',
         variant: AlertVariant.danger,
-        title: e.message
+        title: e,
       });
-      throw new Error(e.message);
+      throw e;
     }
 
     const workspaceName = workspace.name;
