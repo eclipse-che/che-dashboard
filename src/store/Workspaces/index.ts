@@ -139,7 +139,7 @@ export const actionCreators: ActionCreators = {
       dispatch({ type: 'RECEIVE_WORKSPACES' });
     } catch (e) {
       dispatch({ type: 'RECEIVE_ERROR' });
-      throw e.message;
+      throw e;
     }
   },
 
@@ -157,7 +157,7 @@ export const actionCreators: ActionCreators = {
       dispatch({ type: 'UPDATE_WORKSPACE' });
     } catch (e) {
       dispatch({ type: 'RECEIVE_ERROR' });
-      throw e.message;
+      throw e;
     }
   },
 
@@ -191,7 +191,7 @@ export const actionCreators: ActionCreators = {
       }
     } catch (e) {
       dispatch({ type: 'RECEIVE_ERROR' });
-      throw new Error(`Failed to stop the workspace, ID: ${workspace.id}, ` + e.message);
+      throw e;
     }
   },
 
@@ -206,24 +206,7 @@ export const actionCreators: ActionCreators = {
       }
     } catch (e) {
       dispatch({ type: 'RECEIVE_ERROR' });
-
-      const errorMessage = e?.message || '';
-      const code = e?.response?.status || '';
-      const statusText = e?.response?.statusText || '';
-      const responseMessage = e?.response?.data?.message || '';
-
-      let message: string;
-      if (responseMessage) {
-        message = responseMessage;
-      } else if (errorMessage) {
-        message = errorMessage;
-      } else if (code && statusText) {
-        message = `Response code ${code}, ${statusText}.`;
-      } else {
-        message = 'Unknown error.';
-      }
-
-      throw new Error(`Failed to delete the workspace, ID: ${workspace.id}. ` + message);
+      throw e;
     }
   },
 
@@ -240,8 +223,7 @@ export const actionCreators: ActionCreators = {
       dispatch({ type: 'UPDATE_WORKSPACE' });
     } catch (e) {
       dispatch({ type: 'RECEIVE_ERROR' });
-      const message = e.response && e.response.data && e.response.data.message ? e.response.data.message : e.message;
-      throw new Error(`Failed to update. ${message}`);
+      throw e;
     }
   },
 
@@ -269,7 +251,7 @@ export const actionCreators: ActionCreators = {
       }
     } catch (e) {
       dispatch({ type: 'RECEIVE_ERROR' });
-      throw new Error('Failed to create a new workspace from the devfile: \n' + e.message);
+      throw e;
     }
   },
 

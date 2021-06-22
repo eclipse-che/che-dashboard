@@ -91,7 +91,7 @@ export class GetStarted extends React.PureComponent<Props, State> {
   }
 
   private getTitle(): string {
-    const productName = this.props.branding.data.name;
+    const productName = this.props.branding.name;
     const titles: { [key in GettingStartedTab]: string } = {
       'get-started': `Getting Started with ${productName}`,
       'custom-workspace': 'Create Custom Workspace',
@@ -125,9 +125,9 @@ export class GetStarted extends React.PureComponent<Props, State> {
       this.showAlert({
         key: 'new-workspace-failed',
         variant: AlertVariant.danger,
-        title: e.message
+        title: e,
       });
-      throw new Error(e.message);
+      throw e;
     }
 
     const workspaceName = workspace.name;
