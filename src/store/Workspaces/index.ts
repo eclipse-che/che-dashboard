@@ -17,6 +17,7 @@ import { IDevWorkspace, IDevWorkspaceDevfile } from '@eclipse-che/devworkspace-c
 import { convertWorkspace, isWorkspaceV2, isDevfileV2, Workspace } from '../../services/workspaceAdapter';
 import * as CheWorkspacesStore from './cheWorkspaces';
 import * as DevWorkspacesStore from './devWorkspaces';
+import { getErrorMessage } from '../../services/helpers/getErrorMessage';
 
 // This state defines the type of data maintained in the Redux store.
 export interface State {
@@ -175,7 +176,7 @@ export const actionCreators: ActionCreators = {
       dispatch({ type: 'UPDATE_WORKSPACE' });
     } catch (e) {
       dispatch({ type: 'RECEIVE_ERROR' });
-      throw e.message;
+      throw getErrorMessage(e);
     }
   },
 
