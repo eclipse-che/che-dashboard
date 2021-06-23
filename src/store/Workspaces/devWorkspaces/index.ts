@@ -147,10 +147,6 @@ export const actionCreators: ActionCreators = {
       });
     } catch (e) {
       const errorMessage = `Failed to fetch the workspace with ID: ${workspace.status.devworkspaceId}, reason: ` + getErrorMessage(e);
-      dispatch({
-        type: 'DEV_RECEIVE_ERROR',
-        error: errorMessage,
-      });
       throw errorMessage;
     }
   },
@@ -176,11 +172,7 @@ export const actionCreators: ActionCreators = {
         workspace: updatedWorkspace,
       });
     } catch (e) {
-      const errorMessage = `Failed to start the workspace with ID: ${workspace.status.devworkspaceId}, reason: ` + getErrorMessage(e);
-      dispatch({
-        type: 'DEV_RECEIVE_ERROR',
-        error: errorMessage,
-      });
+      const errorMessage = getErrorMessage(e);
       throw errorMessage;
     }
   },
@@ -191,10 +183,6 @@ export const actionCreators: ActionCreators = {
       dispatch({ type: 'DEV_DELETE_WORKSPACE_LOGS', workspaceId: workspace.status.devworkspaceId });
     } catch (e) {
       const errorMessage = `Failed to stop the workspace with ID: ${workspace.status.devworkspaceId}, reason: ` + getErrorMessage(e);
-      dispatch({
-        type: 'DEV_RECEIVE_ERROR',
-        error: errorMessage,
-      });
       throw errorMessage;
     }
   },
@@ -211,28 +199,7 @@ export const actionCreators: ActionCreators = {
       });
       dispatch({ type: 'DEV_DELETE_WORKSPACE_LOGS', workspaceId });
     } catch (e) {
-      const errorMessage = e?.message || '';
-      const code = e?.response?.status || '';
-      const statusText = e?.response?.statusText || '';
-      const responseMessage = e?.response?.data?.message || '';
-
-      let message: string;
-      if (responseMessage) {
-        message = responseMessage;
-      } else if (errorMessage) {
-        message = errorMessage;
-      } else if (code && statusText) {
-        message = `Response code ${code}, ${statusText}.`;
-      } else {
-        message = 'Unknown error.';
-      }
-
-      const resMessage = `Failed to delete the workspace with ID: ${workspace.status.devworkspaceId}, reason: ` + message;
-      dispatch({
-        type: 'DEV_RECEIVE_ERROR',
-        error: resMessage,
-      });
-
+      const resMessage = `Failed to delete the workspace with ID: ${workspace.status.devworkspaceId}, reason: ` + getErrorMessage(e);
       throw resMessage;
     }
   },
@@ -250,10 +217,6 @@ export const actionCreators: ActionCreators = {
       });
     } catch (e) {
       const errorMessage = `Failed to update the workspace with ID: ${workspace.status.devworkspaceId}, reason: ` + getErrorMessage(e);
-      dispatch({
-        type: 'DEV_RECEIVE_ERROR',
-        error: errorMessage,
-      });
       throw errorMessage;
     }
   },
@@ -280,10 +243,6 @@ export const actionCreators: ActionCreators = {
       return workspace;
     } catch (e) {
       const errorMessage = 'Failed to create a new workspace from the devfile, reason: ' + getErrorMessage(e);
-      dispatch({
-        type: 'DEV_RECEIVE_ERROR',
-        error: errorMessage,
-      });
       throw errorMessage;
     }
   },

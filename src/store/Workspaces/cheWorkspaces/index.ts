@@ -224,10 +224,6 @@ export const actionCreators: ActionCreators = {
       });
     } catch (e) {
       const errorMessage = `Failed to fetch the workspace with ID: ${workspace.id}, reason: ` + getErrorMessage(e);
-      dispatch({
-        type: 'CHE_RECEIVE_ERROR',
-        error: errorMessage,
-      });
       throw errorMessage;
     }
   },
@@ -244,11 +240,7 @@ export const actionCreators: ActionCreators = {
         workspace: update,
       });
     } catch (e) {
-      const errorMessage = `Failed to start the workspace with ID: ${workspace.id}, reason: ` + getErrorMessage(e);
-      dispatch({
-        type: 'CHE_RECEIVE_ERROR',
-        error: errorMessage,
-      });
+      const errorMessage = getErrorMessage(e);
       throw errorMessage;
     }
   },
@@ -258,10 +250,6 @@ export const actionCreators: ActionCreators = {
       await cheWorkspaceClient.restApiClient.stop(workspace.id);
     } catch (e) {
       const errorMessage = `Failed to stop the workspace with ID: ${workspace.id}, reason: ` + getErrorMessage(e);
-      dispatch({
-        type: 'CHE_RECEIVE_ERROR',
-        error: errorMessage,
-      });
       throw errorMessage;
     }
   },
@@ -279,10 +267,6 @@ export const actionCreators: ActionCreators = {
       });
     } catch (e) {
       const errorMessage = `Failed to delete the workspace with ID: ${workspace.id}, reason: ` + getErrorMessage(e);
-      dispatch({
-        type: 'CHE_RECEIVE_ERROR',
-        error: errorMessage,
-      });
       throw errorMessage;
     }
   },
@@ -298,10 +282,6 @@ export const actionCreators: ActionCreators = {
       });
     } catch (e) {
       const errorMessage = `Failed to update the workspace with ID: ${workspace.id}, reason: ` + getErrorMessage(e);
-      dispatch({
-        type: 'CHE_RECEIVE_ERROR',
-        error: errorMessage,
-      });
       throw errorMessage;
     }
   },
@@ -327,10 +307,6 @@ export const actionCreators: ActionCreators = {
       return workspace;
     } catch (e) {
       const errorMessage = 'Failed to create a new workspace from the devfile, reason: ' + getErrorMessage(e);
-      dispatch({
-        type: 'CHE_RECEIVE_ERROR',
-        error: errorMessage,
-      });
       throw errorMessage;
     }
   },
