@@ -224,6 +224,10 @@ export const actionCreators: ActionCreators = {
       });
     } catch (e) {
       const errorMessage = `Failed to fetch the workspace with ID: ${workspace.id}, reason: ` + getErrorMessage(e);
+      dispatch({
+        type: 'CHE_RECEIVE_ERROR',
+        error: errorMessage,
+      });
       throw errorMessage;
     }
   },

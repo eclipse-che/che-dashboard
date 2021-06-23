@@ -147,6 +147,10 @@ export const actionCreators: ActionCreators = {
       });
     } catch (e) {
       const errorMessage = `Failed to fetch the workspace with ID: ${workspace.status.devworkspaceId}, reason: ` + getErrorMessage(e);
+      dispatch({
+        type: 'DEV_RECEIVE_ERROR',
+        error: errorMessage,
+      });
       throw errorMessage;
     }
   },
