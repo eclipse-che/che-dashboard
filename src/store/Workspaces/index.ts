@@ -14,7 +14,13 @@ import { Reducer } from 'redux';
 import { AppThunk } from '../';
 import { createState } from '../helpers';
 import { IDevWorkspace, IDevWorkspaceDevfile } from '@eclipse-che/devworkspace-client';
-import { convertWorkspace, isWorkspaceV2, isDevfileV2, Workspace } from '../../services/workspaceAdapter';
+import {
+  convertWorkspace,
+  isWorkspaceV2,
+  isDevfileV2,
+  Workspace,
+  isWorkspaceV1,
+} from '../../services/workspaceAdapter';
 import * as CheWorkspacesStore from './cheWorkspaces';
 import * as DevWorkspacesStore from './devWorkspaces';
 
@@ -213,15 +219,13 @@ export const actionCreators: ActionCreators = {
     }
   },
 
-  updateWorkspace: (workspace: Workspace): AppThunk<KnownAction, Promise<void>> => async (dispatch, getState): Promise<void> => {
+  updateWorkspace: (workspace: Workspace): AppThunk<KnownAction, Promise<void>> => async (dispatch): Promise<void> => {
     dispatch({ type: 'REQUEST_WORKSPACES' });
     try {
-      const state = getState();
-      const cheDevworkspaceEnabled = state.workspacesSettings.settings['che.devworkspaces.enabled'] === 'true';
-      if (cheDevworkspaceEnabled) {
-        await dispatch(DevWorkspacesStore.actionCreators.updateWorkspace(workspace.ref as IDevWorkspace));
-      } else {
+      if (isWorkspaceV1(workspace.ref)) {
         await dispatch(CheWorkspacesStore.actionCreators.updateWorkspace(workspace.ref as che.Workspace));
+      } else {
+        await dispatch(DevWorkspacesStore.actionCreators.updateWorkspace(workspace.ref as IDevWorkspace));
       }
       dispatch({ type: 'UPDATE_WORKSPACE' });
     } catch (e) {
