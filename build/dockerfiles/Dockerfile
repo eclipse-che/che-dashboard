@@ -23,7 +23,7 @@ RUN yarn install
 COPY . /dashboard/
 RUN yarn compile
 
-FROM docker.io/httpd:2.4.43-alpine
+FROM docker.io/httpd:2.4.48-alpine
 RUN sed -i 's|    AllowOverride None|    AllowOverride All|' /usr/local/apache2/conf/httpd.conf && \
     sed -i 's|Listen 80|Listen 8080|' /usr/local/apache2/conf/httpd.conf && \
     mkdir -p /var/www && ln -s /usr/local/apache2/htdocs /var/www/html && \
