@@ -21,6 +21,16 @@ env:
 
 jobs:
 
+  dash-licenses:
+    runs-on: ubuntu-18.04
+    steps:
+      -
+        name: "Checkout Che Dashboard source code"
+        uses: actions/checkout@v2
+      -
+        name: "Check dependencies usage restrictions"
+        run: yarn license:check
+
   build-and-test:
     runs-on: ubuntu-latest
     strategy:
