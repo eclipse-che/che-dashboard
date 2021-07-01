@@ -27,6 +27,10 @@ jobs:
       -
         name: "Checkout Che Dashboard source code"
         uses: actions/checkout@v2
+      - name: "Use Node 12"
+        uses: actions/setup-node@v1
+        with:
+          node-version: 12
       -
         name: "Check dependencies usage restrictions"
         run: yarn license:check
