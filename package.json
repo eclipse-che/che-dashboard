@@ -9,6 +9,9 @@
     "yarn": ">=2.4.1",
     "node": ">=12"
   },
+  "scripts": {
+    "build": "lerna run build"
+  },
   "devDependencies": {
     "eslint": "^7.2.0",
     "lerna": "^4.0.0",
