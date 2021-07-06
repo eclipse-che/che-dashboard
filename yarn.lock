@@ -440,7 +440,20 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@devfile/api@npm:^0.0.1-1622573075, @devfile/api@npm:latest":
+"@devfile/api@npm:0.0.1-1622573075":
+  version: 0.0.1-1622573075
+  resolution: "@devfile/api@npm:0.0.1-1622573075"
+  dependencies:
+    "@types/bluebird": 3.5.21
+    "@types/request": "*"
+    bluebird: ^3.5.0
+    request: ^2.81.0
+    rewire: ^3.0.2
+  checksum: 2dea59594fd17554c8ecced1529afceb9344ad6b8ca68903c7b2c4da1bf9b6ae757488e318f34732a7f6981740e69902c9d945a4114eacad5967690b85259fab
+  languageName: node
+  linkType: hard
+
+"@devfile/api@npm:latest":
   version: 0.0.1-1625511332
   resolution: "@devfile/api@npm:0.0.1-1625511332"
   dependencies:
@@ -460,9 +473,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@eclipse-che/che-theia-devworkspace-handler@npm:^0.0.1-1623136422":
-  version: 0.0.1-1625218832
-  resolution: "@eclipse-che/che-theia-devworkspace-handler@npm:0.0.1-1625218832"
+"@eclipse-che/che-theia-devworkspace-handler@npm:0.0.1-1623136422":
+  version: 0.0.1-1623136422
+  resolution: "@eclipse-che/che-theia-devworkspace-handler@npm:0.0.1-1623136422"
   dependencies:
     "@devfile/api": latest
     axios: 0.21.1
@@ -470,7 +483,7 @@ __metadata:
     js-yaml: ^4.0.0
     jsonc-parser: ^3.0.0
     reflect-metadata: ^0.1.13
-  checksum: cdd37ccb9fdc1ebacf4eea3c6a817fbd36577c00d3ce8a40b5254e3b7fbcbb39129c3feec8ef39cc262dee303faca732e53f7b951efaa1c0aa37a7c6ce96bfcd
+  checksum: 0f4a2c47d6f015bc2b904d828e220509f55ec9f15848bcf75962373a1dc4dbf2e2057e59e5aa23f2f262f3710658728292220a804ba2403c7223de188c897b9f
   languageName: node
   linkType: hard
 
@@ -504,11 +517,11 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@eclipse-che/dashboard-frontend@workspace:packages/dashboard-frontend"
   dependencies:
-    "@devfile/api": ^0.0.1-1622573075
+    "@devfile/api": 0.0.1-1622573075
     "@eclipse-che/api": ^7.18.1
-    "@eclipse-che/che-theia-devworkspace-handler": ^0.0.1-1623136422
-    "@eclipse-che/devworkspace-client": ^0.0.1-1624633214
-    "@eclipse-che/workspace-client": ^0.0.1-1622804813
+    "@eclipse-che/che-theia-devworkspace-handler": 0.0.1-1623136422
+    "@eclipse-che/devworkspace-client": 0.0.1-1624633214
+    "@eclipse-che/workspace-client": 0.0.1-1622804813
     "@patternfly/react-core": 4.120.0
     "@patternfly/react-icons": ^4.3.5
     "@patternfly/react-table": ^4.5.7
@@ -656,7 +669,19 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@eclipse-che/devworkspace-client@npm:^0.0.1-1618334569, @eclipse-che/devworkspace-client@npm:^0.0.1-1624633214":
+"@eclipse-che/devworkspace-client@npm:0.0.1-1624633214":
+  version: 0.0.1-1624633214
+  resolution: "@eclipse-che/devworkspace-client@npm:0.0.1-1624633214"
+  dependencies:
+    "@kubernetes/client-node": ^0.14.0
+    axios: ^0.21.1
+    inversify: ^5.0.5
+    reflect-metadata: ^0.1.13
+  checksum: bbb5fb41e10365b79c72b711090bcf698b5423324c1772ab73343aff0c62b3662fe69e14c91b4ee61344346e68127ee31ee7a77411efd336791365b250dc614e
+  languageName: node
+  linkType: hard
+
+"@eclipse-che/devworkspace-client@npm:^0.0.1-1618334569":
   version: 0.0.1-1625495079
   resolution: "@eclipse-che/devworkspace-client@npm:0.0.1-1625495079"
   dependencies:
@@ -668,16 +693,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@eclipse-che/workspace-client@npm:^0.0.1-1622804813":
-  version: 0.0.1-1625140858
-  resolution: "@eclipse-che/workspace-client@npm:0.0.1-1625140858"
+"@eclipse-che/workspace-client@npm:0.0.1-1622804813":
+  version: 0.0.1-1622804813
+  resolution: "@eclipse-che/workspace-client@npm:0.0.1-1622804813"
   dependencies:
     "@eclipse-che/api": ^7.0.0-beta-4.0
     axios: ^0.21.1
     qs: ^6.9.4
     tunnel: 0.0.6
     websocket: 1.0.23
-  checksum: 24bd49985648086586d6e920e2a69ab23ab456bde098bca69801ffb57627bd306444b977920ef8bd72ed535fc748876a073d0cc6c1b0bc8ce9b9147e969e424b
+  checksum: af999ae0963645f78be00ec315a82957fca14fb3d583d821f3a4f7e8e77c12117fbfdac0596e97118906d482ed32aa8a1f3b2d067ebf6e998fc30487f2e11635
   languageName: node
   linkType: hard
 
