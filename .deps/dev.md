@@ -201,7 +201,7 @@
 | [`@types/reselect@2.2.0`](https://github.com/rackt/reselect) | MIT | clearlydefined |
 | [`@types/rimraf@3.0.0`](https://github.com/DefinitelyTyped/DefinitelyTyped.git) | MIT | clearlydefined |
 | [`@types/sanitize-html@1.27.2`](https://github.com/DefinitelyTyped/DefinitelyTyped.git) | MIT | clearlydefined |
-| [`@types/serve-static@1.13.9`](https://github.com/DefinitelyTyped/DefinitelyTyped.git) | MIT | [CQ18717](https://dev.eclipse.org/ipzilla/show_bug.cgi?id=18717) |
+| [`@types/serve-static@1.13.10`](https://github.com/DefinitelyTyped/DefinitelyTyped.git) | MIT | [CQ18717](https://dev.eclipse.org/ipzilla/show_bug.cgi?id=18717) |
 | [`@types/sizzle@2.3.3`](https://github.com/DefinitelyTyped/DefinitelyTyped.git) | MIT | clearlydefined |
 | [`@types/source-list-map@0.1.2`](https://www.github.com/DefinitelyTyped/DefinitelyTyped.git) | MIT | clearlydefined |
 | [`@types/stack-utils@2.0.1`](https://github.com/DefinitelyTyped/DefinitelyTyped.git) | MIT | clearlydefined |
@@ -885,7 +885,7 @@
 | [`postcss-scss@2.1.1`](https://github.com/postcss/postcss-scss.git) | MIT | clearlydefined |
 | [`postcss-selector-parser@6.0.6`](https://github.com/postcss/postcss-selector-parser.git) | MIT | clearlydefined |
 | [`postcss-sorting@5.0.1`](https://github.com/hudochenkov/postcss-sorting.git) | MIT | clearlydefined |
-| [`postcss-syntax@0.36.2`](git+https://github.com/gucong3000/postcss-syntax.git) | MIT |  |
+| [`postcss-syntax@0.36.2`](git+https://github.com/gucong3000/postcss-syntax.git) | MIT | [CQ22418](https://dev.eclipse.org/ipzilla/show_bug.cgi?id=22418) |
 | [`postcss-value-parser@4.1.0`](https://github.com/TrySound/postcss-value-parser.git) | MIT | clearlydefined |
 | [`postcss@7.0.36`](https://github.com/postcss/postcss.git) | MIT | clearlydefined |
 | [`poststylus@1.0.1`](https://github.com/seaneking/poststylus.git) | MIT | clearlydefined |
@@ -1150,7 +1150,7 @@
 | [`write-json-file@4.3.0`](https://github.com/sindresorhus/write-json-file.git) | MIT | clearlydefined |
 | [`write-pkg@4.0.0`](https://github.com/sindresorhus/write-pkg.git) | MIT | clearlydefined |
 | [`write@1.0.3`](https://github.com/jonschlinkert/write.git) | MIT | clearlydefined |
-| [`x-is-string@0.1.0`](git://github.com/Matt-Esch/x-is-string.git) | MIT |  |
+| [`x-is-string@0.1.0`](git://github.com/Matt-Esch/x-is-string.git) | MIT | [CQ22418](https://dev.eclipse.org/ipzilla/show_bug.cgi?id=22418) |
 | [`xml-name-validator@3.0.0`](https://github.com/jsdom/xml-name-validator.git) | Apache-2.0 | clearlydefined |
 | [`xmlchars@2.2.0`](https://github.com/lddubeau/xmlchars.git) | MIT | clearlydefined |
 | [`xtend@4.0.2`](git://github.com/Raynos/xtend.git) | MIT | [CQ16925](https://dev.eclipse.org/ipzilla/show_bug.cgi?id=16925) |

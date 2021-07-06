@@ -6,11 +6,11 @@
 | [`@devfile/api@0.0.1-1622573075`](https://github.com/devfile/api.git) | EPL-2.0 | clearlydefined |
 | `@eclipse-che/api@7.32.2` | EPL-2.0 | clearlydefined |
 | [`@eclipse-che/che-theia-devworkspace-handler@0.0.1-1623136422`](git+https://github.com/eclipse-che/che-theia.git) | EPL-2.0 | clearlydefined |
-| [`@eclipse-che/dashboard-backend@7.33.0-SNAPSHOT`](https://github.com/che-incubator/dashboard-backend) | EPL-2.0 |  |
-| [`@eclipse-che/dashboard-frontend@7.33.0-SNAPSHOT`](git://github.com/eclipse/che-dashboard.git) | EPL-2.0 |  |
-| [`@eclipse-che/dashboard-static-server@7.33.0-SNAPSHOT`](git://github.com/eclipse/che-dashboard.git) | EPL-2.0 |  |
+| [`@eclipse-che/dashboard-backend@7.33.0-SNAPSHOT`](https://github.com/che-incubator/dashboard-backend) | EPL-2.0 | N/A |
+| [`@eclipse-che/dashboard-frontend@7.33.0-SNAPSHOT`](git://github.com/eclipse/che-dashboard.git) | EPL-2.0 | N/A |
+| [`@eclipse-che/dashboard-static-server@7.33.0-SNAPSHOT`](git://github.com/eclipse/che-dashboard.git) | EPL-2.0 | N/A |
 | [`@eclipse-che/devworkspace-client@0.0.1-1624633214`](https://github.com/che-incubator/devworkspace-client) | EPL-2.0 | clearlydefined |
-| [`@eclipse-che/workspace-client@0.0.1-1622804813`](https://github.com/eclipse/che-workspace-client) | EPL-2.0 |  |
+| [`@eclipse-che/workspace-client@0.0.1-1622804813`](https://github.com/eclipse/che-workspace-client) | EPL-2.0 | N/A |
 | [`@fastify/ajv-compiler@1.1.0`](git+https://github.com/fastify/ajv-compiler.git) | MIT | clearlydefined |
 | [`@kubernetes/client-node@0.14.3`](https://github.com/kubernetes-client/javascript.git) | Apache-2.0 | clearlydefined |
 | [`@panva/asn1.js@1.0.0`](https://github.com/panva/asn1.js.git) | MIT | clearlydefined |
@@ -35,7 +35,7 @@
 | [`@types/react@17.0.13`](https://github.com/DefinitelyTyped/DefinitelyTyped.git) | MIT | clearlydefined |
 | [`@types/request@2.48.5`](https://github.com/DefinitelyTyped/DefinitelyTyped.git) | MIT | clearlydefined |
 | [`@types/responselike@1.0.0`](https://github.com/DefinitelyTyped/DefinitelyTyped.git) | MIT | clearlydefined |
-| [`@types/scheduler@0.16.1`](https://github.com/DefinitelyTyped/DefinitelyTyped.git) | MIT | clearlydefined |
+| [`@types/scheduler@0.16.2`](https://github.com/DefinitelyTyped/DefinitelyTyped.git) | MIT | clearlydefined |
 | [`@types/stream-buffers@3.0.4`](https://github.com/DefinitelyTyped/DefinitelyTyped.git) | MIT | clearlydefined |
 | [`@types/tar@4.0.5`](https://github.com/DefinitelyTyped/DefinitelyTyped.git) | MIT | [CQ18717](https://dev.eclipse.org/ipzilla/show_bug.cgi?id=18717) |
 | [`@types/tough-cookie@4.0.1`](https://github.com/DefinitelyTyped/DefinitelyTyped.git) | MIT | clearlydefined |
