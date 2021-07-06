@@ -7,7 +7,7 @@
   "scripts": {
     "build": "rimraf lib && webpack-cli --mode development --config webpack.config.js",
     "prepare": "yarn run build",
-    "test": "jest"
+    "test": "jest --passWithNoTests"
   },
   "contributors": [
     {

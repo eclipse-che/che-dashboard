@@ -52,7 +52,7 @@ describe('Infrastructure Namespace', () => {
     renderComponent(namespaces);
 
     // click on toggle button to expand the list of options
-    const toggleButton = screen.getByRole('button', { name: namespaces[0].name });
+    const toggleButton = screen.getByRole('button', { name: 'Namespace' });
     expect(toggleButton).toBeVisible();
     fireEvent.click(toggleButton);
   });
@@ -63,7 +63,7 @@ describe('Infrastructure Namespace', () => {
     renderComponent(namespaces);
 
     // click on toggle button to expand the list of options
-    const toggleButton = screen.getByRole('button', { name: namespaces[0].name });
+    const toggleButton = screen.getByRole('button', { name: 'Namespace' });
     fireEvent.click(toggleButton);
 
     const options = screen.getAllByRole('option');
@@ -79,7 +79,7 @@ describe('Infrastructure Namespace', () => {
     renderComponent(namespaces);
 
     // click on toggle button to expand the list of options
-    const toggleButton = screen.getByRole('button', { name: namespaces[0].name });
+    const toggleButton = screen.getByRole('button', { name: 'Namespace' });
     fireEvent.click(toggleButton);
 
     const options = screen.getAllByRole('option');

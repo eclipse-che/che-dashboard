@@ -10,6 +10,8 @@ exports[`Error boundary should catch an error thrown inside a component 1`] = `
     data-ouia-component-id="OUIA-Generated-Alert-danger-1"
     data-ouia-component-type="PF4/Alert"
     data-ouia-safe={true}
+    onMouseEnter={[Function]}
+    onMouseLeave={[Function]}
   >
     <div
       className="pf-c-alert__icon"

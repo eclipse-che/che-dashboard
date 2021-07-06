@@ -12,7 +12,9 @@
   "scripts": {
     "build": "lerna run build",
     "license:check": "docker run --rm -t -v ${PWD}/:/workspace/project quay.io/che-incubator/dash-licenses:next --check",
-    "license:generate": "docker run --rm -t -v ${PWD}/:/workspace/project quay.io/che-incubator/dash-licenses:next"
+    "license:generate": "docker run --rm -t -v ${PWD}/:/workspace/project quay.io/che-incubator/dash-licenses:next",
+    "test": "lerna run test -- $@",
+    "test:coverage": "lerna run test -- --runInBand -- --coverage"
   },
   "devDependencies": {
     "eslint": "^7.2.0",

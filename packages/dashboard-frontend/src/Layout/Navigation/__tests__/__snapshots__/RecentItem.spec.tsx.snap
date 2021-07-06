@@ -12,6 +12,7 @@ exports[`Navigation Item should render navigation item for ERROR workspace corre
     className="pf-c-nav__link"
     data-testid="/namespace/workspace"
     onClick={[Function]}
+    tabIndex={null}
   >
     <span
       data-testid="recent-workspace-item"
@@ -141,6 +142,7 @@ exports[`Navigation Item should render navigation item for RUNNING workspace cor
     className="pf-c-nav__link"
     data-testid="/namespace/workspace"
     onClick={[Function]}
+    tabIndex={null}
   >
     <span
       data-testid="recent-workspace-item"
@@ -270,6 +272,7 @@ exports[`Navigation Item should render navigation item for STARTING workspace co
     className="pf-c-nav__link"
     data-testid="/namespace/workspace"
     onClick={[Function]}
+    tabIndex={null}
   >
     <span
       data-testid="recent-workspace-item"
@@ -399,6 +402,7 @@ exports[`Navigation Item should render navigation item for STOPPED workspace cor
     className="pf-c-nav__link"
     data-testid="/namespace/workspace"
     onClick={[Function]}
+    tabIndex={null}
   >
     <span
       data-testid="recent-workspace-item"
@@ -528,6 +532,7 @@ exports[`Navigation Item should render navigation item for STOPPING workspace co
     className="pf-c-nav__link"
     data-testid="/namespace/workspace"
     onClick={[Function]}
+    tabIndex={null}
   >
     <span
       data-testid="recent-workspace-item"
