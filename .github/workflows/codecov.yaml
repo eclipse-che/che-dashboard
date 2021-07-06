@@ -37,7 +37,7 @@ jobs:
         run: yarn
       -
         name: "Run unit tests"
-        run: yarn test --runInBand --coverage
+        run: yarn test:coverage
       -
         name: "Build Codecov report"
         uses: codecov/codecov-action@v1
