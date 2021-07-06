@@ -44,7 +44,7 @@ ENV STATIC_SERVER_LIB=/dashboard/packages/static-server/lib
 COPY --from=builder ${STATIC_SERVER_LIB}/server.js /server.js
 COPY --from=builder ${FRONTEND_LIB} /public
 
-COPY build/dockerfiles/node.entrypoint.sh /entrypoint.sh
+COPY build/dockerfiles/entrypoint.sh /entrypoint.sh
 
 EXPOSE 80
 EXPOSE 443
