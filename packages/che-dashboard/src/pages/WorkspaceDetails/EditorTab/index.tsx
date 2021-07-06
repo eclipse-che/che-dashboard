@@ -240,7 +240,7 @@ export class EditorTab extends React.PureComponent<Props, State> {
     }
     let devfile: che.WorkspaceDevfile;
     try {
-      devfile = safeLoad(newValue);
+      devfile = safeLoad(newValue) as che.WorkspaceDevfile;
     } catch (e) {
       console.error('Devfile parse error', e);
       return;

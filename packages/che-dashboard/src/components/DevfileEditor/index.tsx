@@ -322,7 +322,7 @@ export class DevfileEditor extends React.PureComponent<Props, State> {
         const document = createDocument(model);
         return yamlService.doComplete(document, m2p.asPosition(position.lineNumber, position.column), true)
           .then(list => {
-            const completionResult = p2m.asCompletionResult(list, {
+            const completionResult = p2m.asCompletionResult(list as any, {
               startColumn: position.column,
               startLineNumber: position.lineNumber,
               endColumn: position.column,
@@ -344,7 +344,7 @@ export class DevfileEditor extends React.PureComponent<Props, State> {
       },
       async resolveCompletionItem(model, range, item) {
         return (yamlService as any).doResolve(m2p.asCompletionItem(item))
-          .then((result: CompletionItem) => p2m.asCompletionItem(result, range));
+          .then((result: CompletionItem) => p2m.asCompletionItem(result as any, range));
       },
     } as any);
     languages.registerDocumentSymbolProvider(LANGUAGE_ID, {
@@ -374,7 +374,7 @@ export class DevfileEditor extends React.PureComponent<Props, State> {
       if (validationTimer) {
         clearTimeout(validationTimer);
       }
-      validationTimer = setTimeout(() => {
+      validationTimer = window.setTimeout(() => {
         this.yamlService.doValidation(document, false).then(diagnostics => {
           const markers = this.p2m.asDiagnostics(diagnostics) as any;
           let errorMessage = '';

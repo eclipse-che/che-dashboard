@@ -52,7 +52,7 @@ export const actionCreators: ActionCreators = {
 
     try {
       const pluginContent = await fetchDevfile(url);
-      const plugin = safeLoad(pluginContent);
+      const plugin = safeLoad(pluginContent) as IDevWorkspaceDevfile;
       dispatch({
         type: 'RECEIVE_DW_PLUGIN',
         plugin,

@@ -1,7 +1,7 @@
 {
   "name": "che-dashboard",
   "version": "7.33.0-SNAPSHOT",
-  "description": "Dashboard for Eclipse CHE",
+  "description": "Dashboard frontend for Eclipse Che",
   "private": true,
   "repository": {
     "type": "git",
@@ -17,8 +17,8 @@
     "node": ">=12"
   },
   "scripts": {
-    "compile": "webpack --config webpack.config.prod.js",
-    "compile:source-map": "yarn run compile --devtool source-map",
+    "build": "webpack --config webpack.config.prod.js",
+    "build:source-map": "yarn run compile --devtool source-map",
     "start": "webpack-dev-server --progress --color --config webpack.config.dev.js",
     "start:prod": "webpack-dev-server --color --disable-host-check --config webpack.config.prod-dev.js",
     "format": "tsfmt -r --useTsfmt tsfmt.json",
@@ -37,7 +37,7 @@
     "@eclipse-che/che-theia-devworkspace-handler": "^0.0.1-1623136422",
     "@eclipse-che/devworkspace-client": "^0.0.1-1624633214",
     "@eclipse-che/workspace-client": "^0.0.1-1622804813",
-    "@patternfly/react-core": "~4.84.4",
+    "@patternfly/react-core": "4.120.0",
     "@patternfly/react-icons": "^4.3.5",
     "@patternfly/react-table": "^4.5.7",
     "axios": "^0.21.1",
@@ -150,9 +150,5 @@
     "webpack-cli": "^3.3.11",
     "webpack-dev-server": "^3.11.0",
     "webpack-merge": "^4.2.2"
-  },
-  "resolutions": {
-    "node-forge": "^0.10.0",
-    "vscode-languageserver-protocol": "3.15.3"
   }
 }
