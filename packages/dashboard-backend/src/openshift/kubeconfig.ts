@@ -9,9 +9,8 @@
  ***********************************************************************/
 
 import axios from 'axios';
-import { Cluster, User } from '@kubernetes/client-node';
+import { KubeConfig, Cluster, User } from '@kubernetes/client-node';
 import { IDevWorkspaceClientApi } from '@eclipse-che/devworkspace-client';
-import * as k8s from '@eclipse-che/devworkspace-client/node_modules/@kubernetes/client-node'
 
 const keycloakAuthPath = '/auth/realms/che/broker/openshift-v4/token';
 
@@ -75,7 +74,7 @@ export async function authenticateOpenShift(nodeApi: IDevWorkspaceClientApi, key
     const openShiftToken = await keycloakToOpenShiftToken(keycloakToken);
 
     // Create new kubeconfig and authenticate as the user
-    const kc = new k8s.KubeConfig();
+    const kc = new KubeConfig();
     kc.loadFromClusterAndUser(createCluster(), createUser(openShiftToken));
     
     // Use the newly authenticated user
