@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 #
 # Copyright (c) 2021 Red Hat, Inc.
 # This program and the accompanying materials are made
@@ -8,16 +8,9 @@
 # SPDX-License-Identifier: EPL-2.0
 #
 
-if ! whoami &> /dev/null; then
-  if [ -w /etc/passwd ]; then
-    echo "${USER_NAME:-jboss}:x:$(id -u):0:${USER_NAME:-jboss} user:${HOME}:/sbin/nologin" >> /etc/passwd
-  fi
-fi
-
-set -x
-
-# start static server
+set -e
 echo 'Starting static server...'
 start_server="node /server.js --publicFolder /public"
 $start_server &
 wait
+echo 'Static server stopped.'

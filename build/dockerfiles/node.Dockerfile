@@ -8,11 +8,11 @@
 # Contributors:
 #   Red Hat, Inc. - initial API and implementation
 
-# https://access.redhat.com/containers/?tab=tags#/registry.access.redhat.com/ubi8/nodejs-12
-FROM registry.access.redhat.com/ubi8/nodejs-12:1-77.1618436962 as builder
-USER 0
-RUN yum -y -q --nobest update && \
-    yum -y -q clean all && rm -rf /var/cache/yum
+FROM docker.io/node:12.20.1-alpine3.12 as builder
+
+RUN if ! [ type "yarn" &> /dev/null ]; then \
+        apk add yarn --no-cache; \
+    fi
 
 COPY package.json /dashboard/
 COPY yarn.lock /dashboard/
@@ -31,21 +31,11 @@ ENV STATIC_SERVER=packages/static-server
 COPY ${STATIC_SERVER}/package.json /dashboard/${STATIC_SERVER}/
 
 WORKDIR /dashboard
-RUN /dashboard/.yarn/releases/yarn-*.cjs install
+RUN yarn install
 COPY packages/ /dashboard/packages
-RUN /dashboard/.yarn/releases/yarn-*.cjs build
+RUN yarn build
 
-# https://access.redhat.com/containers/?tab=tags#/registry.access.redhat.com/ubi8/httpd-24
-FROM registry.access.redhat.com/ubi8/httpd-24:1-141 AS registry
-USER 0
-
-# latest httpd container doesn't include ssl cert, so generate one
-RUN chmod +x /usr/share/container-scripts/httpd/pre-init/40-ssl-certs.sh && \
-    /usr/share/container-scripts/httpd/pre-init/40-ssl-certs.sh
-RUN \
-    yum -y -q --nobest update && \
-    yum -y -q clean all && rm -rf /var/cache/yum && \
-    echo "Installed Packages" && rpm -qa | sort -V && echo "End Of Installed Packages"
+FROM docker.io/node:12.20.1-alpine3.12
 
 ENV FRONTEND_LIB=/dashboard/packages/dashboard-frontend/lib
 ENV BACKEND_LIB=/dashboard/packages/dashboard-backend/lib
@@ -54,7 +44,10 @@ ENV STATIC_SERVER_LIB=/dashboard/packages/static-server/lib
 COPY --from=builder ${STATIC_SERVER_LIB}/server.js /server.js
 COPY --from=builder ${FRONTEND_LIB} /public
 
-COPY build/dockerfiles/rhel.entrypoint.sh /usr/local/bin
-CMD ["/usr/local/bin/rhel.entrypoint.sh"]
+COPY build/dockerfiles/node.entrypoint.sh /entrypoint.sh
 
-## Append Brew metadata
+EXPOSE 80
+EXPOSE 443
+
+ENTRYPOINT [ "/entrypoint.sh" ]
+CMD [ "sh" ]
