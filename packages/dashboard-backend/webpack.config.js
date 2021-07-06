@@ -1,9 +1,8 @@
 const path = require('path');
 const webpack = require('webpack');
-const PnpPlugin = require('pnp-webpack-plugin');
 const nodeExternals = require('webpack-node-externals');
 
-var server = {
+const config = {
     entry: path.join(__dirname, 'src/index.ts'),
     devtool: 'source-map',
     module: {
@@ -20,12 +19,9 @@ var server = {
         ]
     },
     resolve: {
-        plugins: [PnpPlugin],
         extensions: ['.ts', '.js'],
     },
-    resolveLoader: {
-        plugins: [PnpPlugin.moduleLoader(module)],
-    },
+    resolveLoader: {},
     plugins: [
         new webpack.ProgressPlugin(),
     ],
@@ -40,5 +36,16 @@ var server = {
     },
 };
 
+module.exports = (env = {}) => {
+  if (env.yarnV1 === 'true') {
+    console.log('\nStart building the package assuming that yarn v1 will be used...\n');
+  } else {
+    console.log('\nStart building the package assuming that yarn v2 will be used...\n');
 
-module.exports = [server];
+    const PnpPlugin = require('pnp-webpack-plugin');
+    config.resolve.plugins = [PnpPlugin];
+    config.resolveLoader.plugins = [PnpPlugin.moduleLoader(module)];
+  }
+
+  return config;
+};

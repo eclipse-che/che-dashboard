@@ -19,7 +19,7 @@ const webpack = require('webpack');
 
 const common = require('./webpack.config.common.js');
 
-module.exports = merge(common, {
+const config = {
   mode: 'production',
   module: {
     rules: [
@@ -62,4 +62,8 @@ module.exports = merge(common, {
   output: {
     publicPath: './',
   },
-});
+};
+
+module.exports = (env = {}) => {
+  return merge(common(env), config);
+};

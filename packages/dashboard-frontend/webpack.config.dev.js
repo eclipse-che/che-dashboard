@@ -19,19 +19,19 @@ const StylelintPlugin = require('stylelint-webpack-plugin');
 
 const common = require('./webpack.config.common');
 
-module.exports = env => {
-  const proxyTarget = env && env.server;
+module.exports = (env = {}) => {
+  const proxyTarget = env.server;
   if (!proxyTarget) {
     throw new Error('Che server URL is not set. Argument "--env.server=" is mandatory in development mode.');
   }
   const headers = {
     origin: proxyTarget,
   };
-  if (env && env.token) {
+  if (env.token) {
     headers['Authorization'] = `Bearer ${env.token}`;
   }
 
-  return merge(common, {
+  return merge(common(env), {
     mode: 'development',
     module: {
       rules: [

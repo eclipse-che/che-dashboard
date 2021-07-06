@@ -10,15 +10,13 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-const PnpPlugin = require('pnp-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const stylus_plugin = require('poststylus');
 const stylusLoader = require('stylus-loader');
-
 const path = require('path');
 
-module.exports = {
+const config = {
   entry: {
     client: path.join(__dirname, 'src/index.tsx'),
   },
@@ -112,12 +110,9 @@ module.exports = {
     ]
   },
   resolve: {
-    plugins: [PnpPlugin],
     extensions: ['.js', '.ts', '.tsx']
   },
-  resolveLoader: {
-    plugins: [PnpPlugin.moduleLoader(module)],
-  },
+  resolveLoader: {},
   node: {
     fs: 'empty',
     net: 'empty',
@@ -134,4 +129,18 @@ module.exports = {
     }),
     new CleanWebpackPlugin(),
   ],
+};
+
+module.exports = (env = {}) => {
+  if (env.yarnV1 === 'true') {
+    console.log('\nStart building the package assuming that yarn v1 will be used...\n');
+  } else {
+    console.log('\nStart building the package assuming that yarn v2 will be used...\n');
+
+    const PnpPlugin = require('pnp-webpack-plugin');
+    config.resolve.plugins = [PnpPlugin];
+    config.resolveLoader.plugins = [PnpPlugin.moduleLoader(module)];
+  }
+
+  return config;
 };

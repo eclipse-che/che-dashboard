@@ -18,7 +18,7 @@ const prod = require('./webpack.config.prod');
 module.exports = env => {
   const proxyTarget = env && env.server ? env.server : 'https://codeready-codeready-workspaces-operator.apps.sandbox.x8i5.p1.openshiftapps.com';
 
-  return merge(prod, {
+  return merge(prod(env), {
     mode: 'production',
     devServer: {
       contentBase: [
