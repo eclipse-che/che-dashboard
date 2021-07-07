@@ -22,15 +22,11 @@ SCRIPT_DIR=$(dirname $(readlink -f "$0"))
 source "${SCRIPT_DIR}"/common.sh
 
 # Catch the finish of the job and write logs in artifacts.
-# Catch the finish of the job and write logs in artifacts.
 function Catch_Finish() {
     # grab devworkspace-controller namespace events after running e2e
     bumpPodsInfo "devworkspace-controller"
     bumpPodsInfo "devworkspace-che"
     bumpPodsInfo "admin-che"
-    oc get devworkspaces -n "admin-che" -o=yaml > $ARTIFACT_DIR/devworkspaces.yaml
-    /tmp/chectl/bin/chectl server:logs --chenamespace=${NAMESPACE} --directory=${ARTIFACT_DIR} --telemetry=off
-}
 trap 'Catch_Finish $?' EXIT SIGINT
 
 # ENV used by PROW ci
@@ -55,8 +51,7 @@ EOL
   cat /tmp/che-cr-patch.yaml
 
   echo "----------------------------------"
-
-  /tmp/chectl/bin/chectl server:deploy --che-operator-cr-patch-yaml=/tmp/che-cr-patch.yaml -p openshift --batch --telemetry=off --installer=operator
+/tmp/chectl/bin/chectl server:deploy --che-operator-cr-patch-yaml=/tmp/che-cr-patch.yaml -p openshift --batch --telemetry=off --installer=operator
 }
 
 startHappyPathTest() {
