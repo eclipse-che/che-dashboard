@@ -34,7 +34,7 @@ bump_version () {
   git checkout "${BUMP_BRANCH}"
 
   echo "Updating project version to ${NEXT_VERSION}"
-  update_pkgs_versions
+  update_pkgs_versions $NEXT_VERSION
 
   if [[ ${NOCOMMIT} -eq 0 ]]; then
     COMMIT_MSG="[release] Bump to ${NEXT_VERSION} in ${BUMP_BRANCH}"
@@ -58,13 +58,19 @@ bump_version () {
 }
 
 function update_pkgs_versions() {
-  lerna version --no-git-tag-version -y "${VERSION}"
-  sed ./.deps/EXCLUDED/prod.md -ir \
-    -e "s/@eclipse-che\/dashboard-backend@.*\`/@eclipse-che\/dashboard-backend@$VERSION\`/" \
-    -e "s/@eclipse-che\/dashboard-frontend@.*\`/@eclipse-che\/dashboard-frontend@$VERSION\`/" \
-    -e "s/@eclipse-che\/dashboard-static-server@.*\`/@eclipse-che\/dashboard-static-server@$VERSION\`/"
+  local VER=$1
+  # update root `package.json` version
+  npm --no-git-tag-version version --allow-same-version "${VER}"
+  # update each package version
+  lerna version --no-git-tag-version -y "${VER}"
+  # update excluded dependencies vesion
+  sed -i '' -r \
+    -e "s/@eclipse-che\/dashboard-backend@.*\`/@eclipse-che\/dashboard-backend@$VER\`/" \
+    -e "s/@eclipse-che\/dashboard-frontend@.*\`/@eclipse-che\/dashboard-frontend@$VER\`/" \
+    -e "s/@eclipse-che\/dashboard-static-server@.*\`/@eclipse-che\/dashboard-static-server@$VER\`/" \
+    .deps/EXCLUDED/prod.md
   # we don't have all deps resolved. So, do no fail in case of failure
-  yarn license:generate || true
+  # yarn license:generate || true
 }
 
 usage ()
@@ -102,7 +108,7 @@ fi
 
 set -e
 
-update-pkgs-version
+update_pkgs_versions $VERSION
 
 # commit change into branch
 if [[ ${NOCOMMIT} -eq 0 ]]; then
