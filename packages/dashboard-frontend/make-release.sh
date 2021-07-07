@@ -34,7 +34,7 @@ bump_version () {
   git checkout "${BUMP_BRANCH}"
 
   echo "Updating project version to ${NEXT_VERSION}"
-  npm --no-git-tag-version version "${NEXT_VERSION}"
+  update_pkgs_versions
 
   if [[ ${NOCOMMIT} -eq 0 ]]; then
     COMMIT_MSG="[release] Bump to ${NEXT_VERSION} in ${BUMP_BRANCH}"
@@ -55,6 +55,16 @@ bump_version () {
     fi
   fi
   git checkout "${CURRENT_BRANCH}"
+}
+
+function update_pkgs_versions() {
+  lerna version --no-git-tag-version -y "${VERSION}"
+  sed ./.deps/EXCLUDED/prod.md -ir \
+    -e "s/@eclipse-che\/dashboard-backend@.*\`/@eclipse-che\/dashboard-backend@$VERSION\`/" \
+    -e "s/@eclipse-che\/dashboard-frontend@.*\`/@eclipse-che\/dashboard-frontend@$VERSION\`/" \
+    -e "s/@eclipse-che\/dashboard-static-server@.*\`/@eclipse-che\/dashboard-static-server@$VERSION\`/"
+  # we don't have all deps resolved. So, do no fail in case of failure
+  yarn license:generate || true
 }
 
 usage ()
@@ -92,8 +102,7 @@ fi
 
 set -e
 
-# change VERSION file
-npm --no-git-tag-version version --allow-same-version "${VERSION}"
+update-pkgs-version
 
 # commit change into branch
 if [[ ${NOCOMMIT} -eq 0 ]]; then
