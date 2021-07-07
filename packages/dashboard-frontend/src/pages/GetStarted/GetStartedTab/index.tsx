@@ -39,6 +39,7 @@ type State = {
 };
 
 export class SamplesListTab extends React.PureComponent<Props, State> {
+  private isLoading: boolean;
 
   constructor(props: Props) {
     super(props);
@@ -49,14 +50,17 @@ export class SamplesListTab extends React.PureComponent<Props, State> {
     this.state = {
       persistVolumesDefault
     };
-
+    this.isLoading = false;
   }
 
   private handleTemporaryStorageChange(temporary: boolean): void {
     this.setState({ temporary });
   }
 
-  private handleSampleCardClick(devfileContent: string, stackName: string, optionalFilesContent?: { [fileName: string]: string }): Promise<void> {
+  private async handleSampleCardClick(devfileContent: string, stackName: string, optionalFilesContent?: { [fileName: string]: string }): Promise<void> {
+    if (this.isLoading) {
+      return;
+    }
     let devfile = load(devfileContent);
 
     if (this.state.temporary === undefined) {
@@ -66,7 +70,13 @@ export class SamplesListTab extends React.PureComponent<Props, State> {
     } else {
       devfile = updateDevfile(devfile, this.state.temporary ? 'ephemeral' : 'persistent');
     }
-    return this.props.onDevfile(stringify(devfile), stackName, optionalFilesContent);
+    this.isLoading = true;
+    try {
+      await this.props.onDevfile(stringify(devfile), stackName, optionalFilesContent);
+    } catch (e) {
+      console.warn(e);
+    }
+    this.isLoading = false;
   }
 
   private handleDevfileResolver(resolverState: ResolverState, stackName: string): Promise<void> {

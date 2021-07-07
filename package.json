@@ -12,6 +12,7 @@
   },
   "scripts": {
     "build": "lerna run build",
+    "frontend:start": "yarn workspace @eclipse-che/dashboard-frontend start $@",
     "license:check": "docker run --rm -t -v ${PWD}/:/workspace/project quay.io/che-incubator/dash-licenses:next --check",
     "license:generate": "docker run --rm -t -v ${PWD}/:/workspace/project quay.io/che-incubator/dash-licenses:next",
     "test": "lerna run test -- $@",

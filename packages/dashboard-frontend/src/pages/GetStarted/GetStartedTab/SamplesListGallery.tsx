@@ -49,6 +49,7 @@ type State = {
 };
 
 export class SamplesListGallery extends React.PureComponent<Props, State> {
+  private isLoading: boolean;
 
   constructor(props: Props) {
     super(props);
@@ -56,6 +57,7 @@ export class SamplesListGallery extends React.PureComponent<Props, State> {
     this.state = {
       alerts: [],
     };
+    this.isLoading = false;
   }
 
   private removeAlert(key: string): void {
@@ -90,6 +92,10 @@ export class SamplesListGallery extends React.PureComponent<Props, State> {
   }
 
   private async fetchDevfile(meta: che.DevfileMetaData): Promise<void> {
+    if (this.isLoading) {
+      return;
+    }
+    this.isLoading = true;
     try {
       const cheDevworkspaceEnabled = this.props.workspacesSettings['che.devworkspaces.enabled'] === 'true';
       let devfileContent;
@@ -114,6 +120,7 @@ export class SamplesListGallery extends React.PureComponent<Props, State> {
       }];
       this.setState({ alerts });
     }
+    this.isLoading = false;
   }
 
   private buildCardsList(metadata: che.DevfileMetaData[] = []): React.ReactElement[] {
