@@ -12,7 +12,7 @@ set -e
 set -x
 
 # Evaluate default and prepare artifacts directory
-export ARTIFACT_DIR=${ARTIFACT_DIR:-"/tmp/dwo-e2e-artifacts"}
+export ARTIFACT_DIR=${ARTIFACT_DIR:-"/tmp/dashboard-artifacts"}
 mkdir -p "${ARTIFACT_DIR}"
 
 function bumpPodsInfo() {
