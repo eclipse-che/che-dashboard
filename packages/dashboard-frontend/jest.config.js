@@ -10,13 +10,12 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
+const base = require('../../jest.config.base');
+
 module.exports = {
-  roots: ['src'],
-  transform: {
-    '^.+\\.tsx?$': 'ts-jest'
-  },
-  testRegex: '(/src/.+\\.(test|spec))\\.tsx?$',
-  moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node'],
+  ...base,
+  name: 'dashboard-frontend',
+  displayName: 'Dashboard Frontend',
   moduleNameMapper: {
     '\\.(css|less|sass|scss|styl)$': '<rootDir>/__mocks__/styleMock.js',
     '\\.(gif|ttf|eot|svg)$': '<rootDir>/__mocks__/fileMock.js',
@@ -27,11 +26,10 @@ module.exports = {
       tsconfig: 'tsconfig.test.json',
     }
   },
-  maxWorkers: 4,
   setupFilesAfterEnv: ['./jest.setup.ts'],
-  collectCoverage: false,
+  setupFiles: ['./src/inversify.config.ts'],
   collectCoverageFrom: [
-    'src/**/*.{ts,tsx}',
+    ...base.collectCoverageFrom,
 
     '!src/**/*.d.{ts,tsx}',
     '!src/**/*.config.ts',
@@ -39,12 +37,6 @@ module.exports = {
     '!src/index.tsx',
     '!src/App.tsx',
     '!src/Routes.tsx',
-  ],
-  coverageDirectory: './coverage',
-  coverageReporters: [
-    'html',
-    'lcov',
-    'text-summary',
   ],
   coverageThreshold: {
     global: {
@@ -54,5 +46,4 @@ module.exports = {
       lines: 50,
     }
   },
-  setupFiles: ['./src/inversify.config.ts'],
 }

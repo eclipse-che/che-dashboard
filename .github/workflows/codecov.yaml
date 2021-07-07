@@ -41,3 +41,5 @@ jobs:
       -
         name: "Build Codecov report"
         uses: codecov/codecov-action@v1
+        with:
+          files: ./packages/dashboard-frontend/coverage/lcov.info,./packages/dashboard-backend/coverage/lcov.info
