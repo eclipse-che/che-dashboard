@@ -17,18 +17,37 @@ RUN if ! [ type "yarn" &> /dev/null ]; then \
 COPY package.json /dashboard/
 COPY yarn.lock /dashboard/
 COPY .yarn/releases/yarn-*.cjs /dashboard/.yarn/releases/
+COPY .yarn/plugins/@yarnpkg/plugin-*.cjs /dashboard/.yarn/plugins/@yarnpkg/
 COPY .yarnrc.yml /dashboard/
+COPY lerna.json /dashboard/
+
+ENV FRONTEND=packages/dashboard-frontend
+COPY ${FRONTEND}/package.json /dashboard/${FRONTEND}/
+
+ENV BACKEND=packages/dashboard-backend
+COPY ${BACKEND}/package.json /dashboard/${BACKEND}/
+
+ENV STATIC_SERVER=packages/static-server
+COPY ${STATIC_SERVER}/package.json /dashboard/${STATIC_SERVER}/
+
 WORKDIR /dashboard
 RUN yarn install
-COPY . /dashboard/
-RUN yarn compile
+COPY packages/ /dashboard/packages
+RUN yarn build
 
-FROM docker.io/httpd:2.4.43-alpine
-RUN sed -i 's|    AllowOverride None|    AllowOverride All|' /usr/local/apache2/conf/httpd.conf && \
-    sed -i 's|Listen 80|Listen 8080|' /usr/local/apache2/conf/httpd.conf && \
-    mkdir -p /var/www && ln -s /usr/local/apache2/htdocs /var/www/html && \
-    chmod -R g+rwX /usr/local/apache2 && \
-    echo "ServerName localhost" >> /usr/local/apache2/conf/httpd.conf
+FROM docker.io/node:12.20.1-alpine3.12
 
-COPY --from=builder /dashboard/lib /usr/local/apache2/htdocs/dashboard
-RUN sed -i -r -e 's#<base href="/">#<base href="/dashboard/"#g'  /usr/local/apache2/htdocs/dashboard/index.html
+ENV FRONTEND_LIB=/dashboard/packages/dashboard-frontend/lib
+ENV BACKEND_LIB=/dashboard/packages/dashboard-backend/lib
+ENV STATIC_SERVER_LIB=/dashboard/packages/static-server/lib
+
+COPY --from=builder ${STATIC_SERVER_LIB}/server.js /server.js
+COPY --from=builder ${FRONTEND_LIB} /public
+
+COPY build/dockerfiles/entrypoint.sh /entrypoint.sh
+
+EXPOSE 80
+EXPOSE 443
+
+ENTRYPOINT [ "/entrypoint.sh" ]
+CMD [ "sh" ]

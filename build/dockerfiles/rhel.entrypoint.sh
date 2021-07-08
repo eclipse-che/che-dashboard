@@ -16,9 +16,8 @@ fi
 
 set -x
 
-# start httpd
-if [[ -x /usr/sbin/httpd ]]; then
-  /usr/sbin/httpd -D FOREGROUND
-elif [[ -x /usr/bin/run-httpd ]]; then
-  /usr/bin/run-httpd
-fi
+# start static server
+echo 'Starting static server...'
+start_server="node /server.js --publicFolder /public"
+$start_server &
+wait

@@ -10,50 +10,11 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-module.exports = {
-  roots: ['src'],
-  transform: {
-    '^.+\\.tsx?$': 'ts-jest'
-  },
-  testRegex: '(/src/.+\\.(test|spec))\\.tsx?$',
-  moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node'],
-  moduleNameMapper: {
-    '\\.(css|less|sass|scss|styl)$': '<rootDir>/__mocks__/styleMock.js',
-    '\\.(gif|ttf|eot|svg)$': '<rootDir>/__mocks__/fileMock.js',
-    'monaco-editor-core': 'monaco-editor-core/esm/vs/editor/editor.main'
-  },
-  globals: {
-    'ts-jest': {
-      tsconfig: 'tsconfig.test.json',
-      packageJson: 'package.json'
-    }
-  },
-  maxWorkers: 4,
-  setupFilesAfterEnv: ['./jest.setup.ts'],
-  collectCoverage: false,
-  collectCoverageFrom: [
-    'src/**/*.{ts,tsx}',
+const base = require('./jest.config.base');
 
-    '!src/**/*.d.{ts,tsx}',
-    '!src/**/*.config.ts',
-    '!src/**/*.enum.ts',
-    '!src/index.tsx',
-    '!src/App.tsx',
-    '!src/Routes.tsx',
+module.exports = {
+  ...base,
+  projects: [
+    '<rootDir>/packages/*/jest.config.js'
   ],
-  coverageDirectory: './coverage',
-  coverageReporters: [
-    'html',
-    'lcov',
-    'text-summary',
-  ],
-  coverageThreshold: {
-    global: {
-      statements: 50,
-      branches: 36,
-      functions: 50,
-      lines: 50,
-    }
-  },
-  setupFiles: ['./src/inversify.config.ts'],
-}
+};

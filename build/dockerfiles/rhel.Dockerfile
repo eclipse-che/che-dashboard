@@ -17,11 +17,23 @@ RUN yum -y -q --nobest update && \
 COPY package.json /dashboard/
 COPY yarn.lock /dashboard/
 COPY .yarn/releases/yarn-*.cjs /dashboard/.yarn/releases/
+COPY .yarn/plugins/@yarnpkg/plugin-*.cjs /dashboard/.yarn/plugins/@yarnpkg/
 COPY .yarnrc.yml /dashboard/
+COPY lerna.json /dashboard/
+
+ENV FRONTEND=packages/dashboard-frontend
+COPY ${FRONTEND}/package.json /dashboard/${FRONTEND}/
+
+ENV BACKEND=packages/dashboard-backend
+COPY ${BACKEND}/package.json /dashboard/${BACKEND}/
+
+ENV STATIC_SERVER=packages/static-server
+COPY ${STATIC_SERVER}/package.json /dashboard/${STATIC_SERVER}/
+
 WORKDIR /dashboard
 RUN /dashboard/.yarn/releases/yarn-*.cjs install
-COPY . /dashboard/
-RUN /dashboard/.yarn/releases/yarn-*.cjs compile
+COPY packages/ /dashboard/packages
+RUN /dashboard/.yarn/releases/yarn-*.cjs build
 
 # https://access.redhat.com/containers/?tab=tags#/registry.access.redhat.com/ubi8/httpd-24
 FROM registry.access.redhat.com/ubi8/httpd-24:1-141 AS registry
@@ -35,16 +47,12 @@ RUN \
     yum -y -q clean all && rm -rf /var/cache/yum && \
     echo "Installed Packages" && rpm -qa | sort -V && echo "End Of Installed Packages"
 
-# configure apache
-RUN sed -i 's|    AllowOverride None|    AllowOverride All|' /etc/httpd/conf/httpd.conf && \
-    sed -i 's|Listen 80|Listen 8080|' /etc/httpd/conf/httpd.conf && \
-    mkdir -p /var/www && ln -s /etc/httpd/htdocs /var/www/html && \
-    chmod -R g+rwX /etc/httpd/ && \
-    echo "ServerName localhost" >> /etc/httpd/conf/httpd.conf
+ENV FRONTEND_LIB=/dashboard/packages/dashboard-frontend/lib
+ENV BACKEND_LIB=/dashboard/packages/dashboard-backend/lib
+ENV STATIC_SERVER_LIB=/dashboard/packages/static-server/lib
 
-COPY .htaccess /var/www/html/
-COPY --from=builder /dashboard/lib /var/www/html/dashboard
-RUN sed -i -r -e 's#<base href="/">#<base href="/dashboard/"#g'  /var/www/html/dashboard/index.html
+COPY --from=builder ${STATIC_SERVER_LIB}/server.js /server.js
+COPY --from=builder ${FRONTEND_LIB} /public
 
 COPY build/dockerfiles/rhel.entrypoint.sh /usr/local/bin
 CMD ["/usr/local/bin/rhel.entrypoint.sh"]
