@@ -28,7 +28,7 @@ function Catch_Finish() {
     bumpPodsInfo "devworkspace-che"
     bumpPodsInfo "admin-che"
     oc get devworkspaces -n "admin-che" -o=yaml > $ARTIFACT_DIR/devworkspaces.yaml
-    /tmp/chectl/bin/chectl server:logs --chenamespace=${NAMESPACE} --directory=${ARTIFACT_DIR} --telemetry=off
+    chectl server:logs --chenamespace=${NAMESPACE} --directory=${ARTIFACT_DIR} --telemetry=off
 }
 trap 'Catch_Finish $?' EXIT SIGINT
 
