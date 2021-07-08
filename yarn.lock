@@ -520,7 +520,7 @@ __metadata:
     "@devfile/api": 0.0.1-1622573075
     "@eclipse-che/api": ^7.18.1
     "@eclipse-che/che-theia-devworkspace-handler": 0.0.1-1623136422
-    "@eclipse-che/devworkspace-client": 0.0.1-1624633214
+    "@eclipse-che/devworkspace-client": 0.0.1-1625495079
     "@eclipse-che/workspace-client": 0.0.1-1622804813
     "@patternfly/react-core": 4.120.0
     "@patternfly/react-icons": ^4.3.5
@@ -669,19 +669,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@eclipse-che/devworkspace-client@npm:0.0.1-1624633214":
-  version: 0.0.1-1624633214
-  resolution: "@eclipse-che/devworkspace-client@npm:0.0.1-1624633214"
-  dependencies:
-    "@kubernetes/client-node": ^0.14.0
-    axios: ^0.21.1
-    inversify: ^5.0.5
-    reflect-metadata: ^0.1.13
-  checksum: bbb5fb41e10365b79c72b711090bcf698b5423324c1772ab73343aff0c62b3662fe69e14c91b4ee61344346e68127ee31ee7a77411efd336791365b250dc614e
-  languageName: node
-  linkType: hard
-
-"@eclipse-che/devworkspace-client@npm:^0.0.1-1618334569":
+"@eclipse-che/devworkspace-client@npm:0.0.1-1625495079, @eclipse-che/devworkspace-client@npm:^0.0.1-1618334569":
   version: 0.0.1-1625495079
   resolution: "@eclipse-che/devworkspace-client@npm:0.0.1-1625495079"
   dependencies:
