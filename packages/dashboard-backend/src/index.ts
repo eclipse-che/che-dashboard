@@ -66,7 +66,7 @@ server.addContentTypeParser(
 );
 
 server.get(
-  "/workspace/namespace/:namespace",
+  "/namespace/:namespace/devworkspaces",
   {
     schema: {
       headers: authenticationHeaderSchema,
@@ -85,7 +85,7 @@ server.get(
 );
 
 server.post(
-  "/workspace",
+  "/namespace/:namespace/devworkspaces",
   {
     schema: {
       headers: authenticationHeaderSchema,
@@ -104,7 +104,7 @@ server.post(
 );
 
 server.get(
-  "/workspace/namespace/:namespace/:workspaceName",
+  "/namespace/:namespace/devworkspaces/:workspaceName",
   {
     schema: {
       headers: authenticationHeaderSchema,
@@ -126,7 +126,7 @@ server.get(
 );
 
 server.delete(
-  "/workspace/namespace/:namespace/:workspaceName",
+  "/namespace/:namespace/devworkspaces/:workspaceName",
   {
     schema: {
       headers: authenticationHeaderSchema,
@@ -148,7 +148,7 @@ server.delete(
 );
 
 server.patch(
-  "/workspace/namespace/:namespace/:workspaceName",
+  "/namespace/:namespace/devworkspaces/:workspaceName",
   {
     schema: {
       headers: authenticationHeaderSchema,
