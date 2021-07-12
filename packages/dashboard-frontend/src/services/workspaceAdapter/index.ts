@@ -202,10 +202,14 @@ export class WorkspaceAdapter<T extends che.Workspace | IDevWorkspace> implement
       const attributes = typeToAttributes(type);
       if (!this.workspace.devfile.attributes) {
         this.workspace.devfile.attributes = {};
+      } else {
+        delete this.workspace.devfile.attributes.asyncPersist;
+        delete this.workspace.devfile.attributes.persistVolumes;
       }
       if (attributes) {
         Object.assign(this.workspace.devfile.attributes, attributes);
-      } else {
+      }
+      if (Object.keys(this.workspace.devfile.attributes).length === 0) {
         delete this.workspace.devfile.attributes;
       }
     } else {

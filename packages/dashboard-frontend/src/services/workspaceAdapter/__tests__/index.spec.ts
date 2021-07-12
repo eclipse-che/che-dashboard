@@ -246,6 +246,27 @@ describe('Workspace adapter', () => {
       expect((workspace.devfile as che.WorkspaceDevfile).attributes).toEqual(undefined);
     });
 
+    it('should preserve other attributes when changing storage type', () => {
+      cheDevfile.attributes = {
+        customAttribute: 'value',
+        persistVolumes: 'false',
+        asyncPersist: 'true',
+      };
+      const cheWorkspace = new CheWorkspaceBuilder()
+        .withDevfile(cheDevfile)
+        .build();
+      const workspace = convertWorkspace(cheWorkspace);
+
+      expect(workspace.storageType).toEqual('async');
+
+      workspace.storageType = 'persistent';
+
+      expect(workspace.storageType).toEqual('persistent');
+      expect((workspace.devfile as che.WorkspaceDevfile).attributes).toMatchObject({
+        customAttribute: 'value',
+      });
+    });
+
   });
 
   describe('for Dev workspace', () => {
