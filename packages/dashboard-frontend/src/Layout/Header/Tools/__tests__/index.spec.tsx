@@ -150,7 +150,7 @@ describe('Page header tools', () => {
     const infoButton = screen.getByRole('button', { name: 'info button' });
     fireEvent.click(infoButton);
 
-    const helpItem = screen.getByRole('menuitem', { name: new RegExp("Community", 'i') });
+    const helpItem = screen.getByRole('menuitem', { name: new RegExp('Community', 'i') });
     fireEvent.click(helpItem);
 
     expect(global.open).toBeCalled();
