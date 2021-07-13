@@ -204,7 +204,7 @@ export class HeaderTools extends React.PureComponent<Props, State> {
                 Click here
               </Button>
               <span> to see the login command and copy it manually.</span>
-              <pre className='refresh-token-area'>{loginCommand}</pre>
+              <pre className="refresh-token-area">{loginCommand}</pre>
             </React.Fragment>
           ),
         });
