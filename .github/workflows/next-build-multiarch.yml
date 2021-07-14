@@ -7,7 +7,7 @@
 # SPDX-License-Identifier: EPL-2.0
 # 
 
-name: Next build:multiarch
+name: Next container image:multiarch
 
 on:
   workflow_dispatch:
