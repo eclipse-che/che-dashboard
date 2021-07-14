@@ -7,7 +7,7 @@
 # SPDX-License-Identifier: EPL-2.0
 #
 
-name: Next build
+name: Next container image
 
 on:
   workflow_dispatch:
