@@ -7,7 +7,7 @@
 # SPDX-License-Identifier: EPL-2.0
 #
 
-name: CI
+name: Next build
 
 on:
   workflow_dispatch:

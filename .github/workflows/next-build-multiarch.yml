@@ -7,7 +7,7 @@
 # SPDX-License-Identifier: EPL-2.0
 #
 
-name: CI:multiarch
+name: Next build:multiarch
 
 on:
   workflow_dispatch:
