@@ -405,12 +405,12 @@ describe('Factory Loader container', () => {
               namespace: 'test',
               attributes: {
                 'dw.metadata.annotations': {
-                  'che.eclipse.org/devfile-source': safeDump({ factory: { params: 'url=http://test2-location/?policies.create=peruser' } })
+                  'che.eclipse.org/devfile-source': safeDump({ factory: { params: 'url=http://test2-location&policies.create=peruser' } })
                 }
               }
             }
           }, undefined, undefined, {
-            factoryUrl: 'http://test2-location/?policies.create=peruser',
+            factoryParams: 'url=http://test2-location&policies.create=peruser',
             'policies.create': 'peruser'
           }));
     });
@@ -445,7 +445,7 @@ function renderComponentV2(
 ): RenderResult {
   const wrks = convertWorkspace(workspace);
   (wrks.ref as IDevWorkspace).metadata.annotations = {
-    'che.eclipse.org/devfile-source': safeDump({ factory: { params: 'url=http://test-location/?policies.create=peruser' } })
+    'che.eclipse.org/devfile-source': safeDump({ factory: { params: 'url=http://test-location&policies.create=peruser' } })
   };
   const store = new FakeStoreBuilder()
     .withDevWorkspaces({

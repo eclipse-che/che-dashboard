@@ -21,7 +21,7 @@ import getRandomString from '../../services/helpers/random';
 
 export type FactorySource = { factory?: { params: string } };
 
-export default function updateDevfileMetadata(devfile: api.che.workspace.devfile.Devfile, factoryUrl: string, createPolicy: CreatePolicy): api.che.workspace.devfile.Devfile {
+export default function updateDevfileMetadata(devfile: api.che.workspace.devfile.Devfile, factoryParams: string, createPolicy: CreatePolicy): api.che.workspace.devfile.Devfile {
   if (isDevfileV2(devfile)) {
     const metadata = devfile.metadata;
     if (!metadata.attributes) {
@@ -33,7 +33,7 @@ export default function updateDevfileMetadata(devfile: api.che.workspace.devfile
     if (typeof devfileSourceObj !== 'object') {
       devfileSourceObj = {};
     }
-    (devfileSourceObj as FactorySource).factory = { params: `url=${factoryUrl}` };
+    (devfileSourceObj as FactorySource).factory = { params: factoryParams };
     devfileSource = safeDump(devfileSourceObj);
     if (!metadata.attributes[DEVWORKSPACE_METADATA_ANNOTATION]) {
       metadata.attributes[DEVWORKSPACE_METADATA_ANNOTATION] = {};
