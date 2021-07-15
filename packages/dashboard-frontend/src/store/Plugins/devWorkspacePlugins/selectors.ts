@@ -25,3 +25,8 @@ export const selectDwPluginsError = createSelector(
   selectState,
   state => state.error,
 );
+
+export const selectDwDefaultEditorError = createSelector(
+  selectState,
+  state => state.defaultEditorError,
+);

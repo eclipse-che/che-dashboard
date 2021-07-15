@@ -14,13 +14,15 @@ import { IDevWorkspaceDevfile } from '@eclipse-che/devworkspace-client';
 import { safeLoad } from 'js-yaml';
 import { Action, Reducer } from 'redux';
 import { AppThunk } from '../..';
-import { fetchDevfile } from '../../../services/registry/devfiles';
+import { fetchDevfile, fetchData } from '../../../services/registry/devfiles';
 import { createState } from '../../helpers';
 
 export interface State {
   isLoading: boolean;
   plugins: IDevWorkspaceDevfile[];
   error?: string;
+
+  defaultEditorError?: string;
 }
 
 interface RequestDwPluginAction {
@@ -37,12 +39,19 @@ interface ReceiveDwPluginErrorAction {
   error: string;
 }
 
+interface ReceiveDwDefaultEditorErrorAction {
+  type: 'RECEIVE_DW_DEFAULT_EDITOR_ERROR';
+  error: string;
+}
+
 type KnownAction = RequestDwPluginAction
   | ReceiveDwPluginAction
-  | ReceiveDwPluginErrorAction;
+  | ReceiveDwPluginErrorAction
+  | ReceiveDwDefaultEditorErrorAction;
 
 export type ActionCreators = {
   requestDwDevfiles: (url: string) => AppThunk<KnownAction, Promise<void>>;
+  requestDwDefaultEditor: (settings: che.WorkspaceSettings) => AppThunk<KnownAction, Promise<void>>;
 }
 
 export const actionCreators: ActionCreators = {
@@ -63,6 +72,44 @@ export const actionCreators: ActionCreators = {
         error,
       });
       throw error;
+    }
+  },
+
+  requestDwDefaultEditor: (settings: che.WorkspaceSettings): AppThunk<KnownAction, Promise<void>> => async (dispatch): Promise<void> => {
+    dispatch({ type: 'REQUEST_DW_PLUGIN' });
+
+    const pluginRegistryUrl = settings.cheWorkspacePluginRegistryUrl;
+    const defaultEditor = settings['che.factory.default_editor'];
+
+    if (!pluginRegistryUrl || !defaultEditor) {
+      const errorMessage = 'Failed to load the default editor, reason: plugin registry URL or default editor ID is not provided by Che server.';
+      dispatch({
+        type: 'RECEIVE_DW_DEFAULT_EDITOR_ERROR',
+        error: errorMessage,
+      });
+      throw errorMessage;
+    }
+
+    const defaultEditorUrl = `${settings.cheWorkspacePluginRegistryUrl}/plugins/${settings['che.factory.default_editor']}/devfile.yaml`;
+
+    try {
+      const pluginContent = await fetchData<string>(defaultEditorUrl);
+      const plugin = safeLoad(pluginContent) as IDevWorkspaceDevfile;
+      dispatch({
+        type: 'RECEIVE_DW_PLUGIN',
+        plugin,
+      });
+    } catch (error) {
+      const errorMessage = `Failed to load the default editor, reason: "${defaultEditorUrl}" responds "${error}".`;
+      dispatch({
+        type: 'RECEIVE_DW_PLUGIN_ERROR',
+        error: errorMessage,
+      });
+      dispatch({
+        type: 'RECEIVE_DW_DEFAULT_EDITOR_ERROR',
+        error: errorMessage,
+      });
+      throw errorMessage;
     }
   },
 
@@ -95,6 +142,10 @@ export const reducer: Reducer<State> = (state: State | undefined, incomingAction
     case 'RECEIVE_DW_PLUGIN_ERROR':
       return createState(state, {
         error: action.error,
+      });
+    case 'RECEIVE_DW_DEFAULT_EDITOR_ERROR':
+      return createState(state, {
+        defaultEditorError: action.error,
       });
     default:
       return state;

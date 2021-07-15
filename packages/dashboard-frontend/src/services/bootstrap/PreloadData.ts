@@ -14,6 +14,7 @@ import { Store } from 'redux';
 import { lazyInject } from '../../inversify.config';
 import { KeycloakSetupService } from '../keycloak/setup';
 import { AppState } from '../../store';
+import * as BannerAlertStore from '../../store/BannerAlert';
 import * as BrandingStore from '../../store/Branding';
 import * as DevfileRegistriesStore from '../../store/DevfileRegistries';
 import * as InfrastructureNamespacesStore from '../../store/InfrastructureNamespaces';
@@ -128,8 +129,16 @@ export class PreloadData {
       this.watchNamespaces(defaultNamespace);
     }
 
-    const { requestDwDevfiles } = DwPlugins.actionCreators;
-    await requestDwDevfiles(`${settings.cheWorkspacePluginRegistryUrl}/plugins/${settings['che.factory.default_editor']}/devfile.yaml`)(this.store.dispatch, this.store.getState, undefined);
+    const { requestDwDefaultEditor } = DwPlugins.actionCreators;
+    try {
+      await requestDwDefaultEditor(settings)(this.store.dispatch, this.store.getState, undefined);
+    } catch (e) {
+      const message = `Not able to create workspace due required resources failed to load: ${e}`;
+      const { addBanner } = BannerAlertStore.actionCreators;
+      addBanner(message)(this.store.dispatch, this.store.getState, undefined);
+
+      throw e;
+    }
   }
 
   private async fetchInfrastructureNamespaces(): Promise<void> {
