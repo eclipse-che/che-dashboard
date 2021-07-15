@@ -113,6 +113,20 @@ Example:
 }
 ```
 
+Field `"links"` allows you to configure links in the masthead, like
+```
+  links: [
+    {
+      text: 'Make a wish',
+      href: 'mailto:che-dev@eclipse.org'
+    },
+    {
+      text: 'Documentation',
+      href: 'https://www.eclipse.org/che/docs/che-7'
+    }
+  ]
+```
+
 ## License
 
 Che is open sourced under the Eclipse Public License 2.0.
