@@ -232,22 +232,27 @@ export class FactoryLoaderContainer extends React.PureComponent<Props, State> {
   }
 
   private getAttributes(location: string, search: string): { [key: string]: string } {
+    const url = 'url';
     const searchParam = new window.URLSearchParams(search);
-    searchParam.delete('url');
     searchParam.sort();
     // set devfile attributes
     const attrs: { [key: string]: string } = {};
-    const factoryUrl = new window.URL(location);
+    const factoryParams = new window.URLSearchParams(`${url}=${location}`);
     searchParam.forEach((val: string, key: string) => {
+      if (key === url) {
+        return;
+      }
       if (WS_ATTRIBUTES_TO_SAVE.indexOf(key) !== -1) {
         attrs[key] = val;
+        factoryParams.append(key, val);
       }
       if (key.startsWith('override.')) {
         this.updateOverrideParams(key, val);
+        factoryParams.append(key, val);
       }
-      factoryUrl.searchParams.append(key, val);
     });
-    attrs.factoryUrl = factoryUrl.toString();
+
+    attrs.factoryParams = window.decodeURIComponent(factoryParams.toString());
 
     return attrs;
   }
@@ -315,20 +320,36 @@ export class FactoryLoaderContainer extends React.PureComponent<Props, State> {
     }
   }
 
+  private getWorkspaceV1StackName(factoryParams: string): string {
+    const params = new window.URLSearchParams(factoryParams);
+    const location = params.get('url');
+    if (location) {
+      const factoryUrl = new window.URL(location);
+
+      params.forEach((val: string, key: string) => {
+        if (key !== 'url') {
+          factoryUrl.searchParams.append(key, val);
+        }
+      });
+      return factoryUrl.toString();
+    }
+    return factoryParams;
+  }
+
   private async resolveWorkspace(devfile: api.che.workspace.devfile.Devfile, attrs: { [key: string]: string }): Promise<Workspace | undefined> {
     let workspace: Workspace | undefined;
+    const stackName = this.getWorkspaceV1StackName(attrs.factoryParams);
     if (this.state.createPolicy === 'peruser') {
       workspace = this.props.allWorkspaces.find(workspace => {
         if (isWorkspaceV1(workspace.ref)) {
-          // looking for the stack name attribute in Che workspace
-          return workspace.ref?.attributes?.stackName === attrs.factoryUrl;
+          return workspace.ref?.attributes?.stackName === stackName;
         }
         else {
           const annotations = workspace.ref.metadata.annotations;
           const source = annotations ? annotations[DEVWORKSPACE_DEVFILE_SOURCE] : undefined;
           if (source) {
             const sourseObj = safeLoad(source) as FactorySource;
-            return sourseObj?.factory?.params === `url=${attrs.factoryUrl}`;
+            return sourseObj?.factory?.params === attrs.factoryParams;
           }
           // ignore createPolicy for dev workspaces
           return false;
@@ -338,9 +359,8 @@ export class FactoryLoaderContainer extends React.PureComponent<Props, State> {
     if (!workspace) {
       // for backward compatibility with workspaces V1
       if (isDevfileV1(devfile)) {
-        const { factoryUrl } = attrs;
-        attrs.stackName = factoryUrl;
-        delete attrs.factoryUrl;
+        attrs.stackName = stackName;
+        delete attrs.factoryParams;
       }
       try {
         workspace = await this.props.createWorkspaceFromDevfile(devfile, undefined, undefined, attrs, this.factoryResolver.resolver.optionalFilesContent || {});
@@ -458,7 +478,7 @@ export class FactoryLoaderContainer extends React.PureComponent<Props, State> {
       return;
     }
 
-    devfile = updateDevfileMetadata(devfile, attrs.factoryUrl, createPolicy);
+    devfile = updateDevfileMetadata(devfile, attrs.factoryParams, createPolicy);
     this.setState({ currentStep: LoadFactorySteps.APPLYING_DEVFILE });
 
     await delay();
