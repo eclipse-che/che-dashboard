@@ -11,7 +11,7 @@
  */
 
 import React from 'react';
-import WarningBanner from '..';
+import BannerAlertBranding from '..';
 import { Provider } from 'react-redux';
 import { FakeStoreBuilder } from '../../../../store/__mocks__/storeBuilder';
 import { BrandingData } from '../../../../services/bootstrap/branding.constant';
@@ -20,16 +20,16 @@ import { Store } from 'redux';
 
 const scheduledMaintenance = 'Scheduled maintenance.';
 
-describe('WarningBanner component', () => {
+describe('BannerAlertBranding component', () => {
   it('should show header warning message when warning option is set', () => {
-    const component = renderComponent(<WarningBanner />, storeBuilder(scheduledMaintenance));
+    const component = renderComponent(<BannerAlertBranding />, storeBuilder(scheduledMaintenance));
     expect(component.queryAllByText(scheduledMaintenance, {
       exact: false
     }).length).toEqual(1);
   });
 
   it('should not show header warning message when no warning option is present', () => {
-    const component = renderComponent(<WarningBanner />, new FakeStoreBuilder().build());
+    const component = renderComponent(<BannerAlertBranding />, new FakeStoreBuilder().build());
     expect(component.queryAllByText(scheduledMaintenance, {
       exact: false
     })).toEqual([]);
@@ -38,7 +38,7 @@ describe('WarningBanner component', () => {
   it('warning message is sanitized', () => {
     const sanitizingMessage = 'Scheduled maintenance. <a href="foo">foo</a> has more <b>info</b>';
     const sanitizedMessage = 'Scheduled maintenance. <a href="foo">foo</a> has more info';
-    const component = renderComponent(<WarningBanner />, storeBuilder(sanitizingMessage));
+    const component = renderComponent(<BannerAlertBranding />, storeBuilder(sanitizingMessage));
     const elements = component.queryAllByText(scheduledMaintenance, {
       exact: false
     });

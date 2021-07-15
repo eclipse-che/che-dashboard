@@ -24,7 +24,7 @@ type State = {
   erroringWebSockets: string[];
 };
 
-class WebSocketBanner extends React.PureComponent<Props, State> {
+class BannerAlertWebSocket extends React.PureComponent<Props, State> {
   private readonly cheWorkspaceClient: CheWorkspaceClient;
 
   constructor(props: Props) {
@@ -73,4 +73,4 @@ const mapStateToProps = (state: AppState) => ({
 const connector = connect(mapStateToProps);
 
 type MappedProps = ConnectedProps<typeof connector>;
-export default connector(WebSocketBanner);
+export default connector(BannerAlertWebSocket);

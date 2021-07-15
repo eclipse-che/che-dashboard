@@ -11,8 +11,8 @@
  */
 
 import React from 'react';
-import WarningBanner from './WarningBanner';
-import WebSocketBanner from './WebSocketBanner';
+import BannerAlertBranding from './Branding';
+import BannerAlertWebSocket from './WebSocket';
 
 type Props = {};
 
@@ -26,8 +26,8 @@ export class BannerAlert extends React.PureComponent<Props, State> {
     super(props);
     this.state = {
       bannerAlerts: [
-        <WebSocketBanner key='WebSocketBannerAlert'></WebSocketBanner>,
-        <WarningBanner key='WarningBanner'></WarningBanner>
+        <BannerAlertWebSocket key='WebSocketBannerAlert'></BannerAlertWebSocket>,
+        <BannerAlertBranding key='WarningBanner'></BannerAlertBranding>
       ]
     };
   }
