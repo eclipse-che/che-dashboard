@@ -7,7 +7,7 @@
 # SPDX-License-Identifier: EPL-2.0
 #
 
-name: Next container image:multiarch
+name: Next container image
 
 on:
   workflow_dispatch:
@@ -24,7 +24,6 @@ jobs:
 
   build-images:
     runs-on: ubuntu-18.04
-    continue-on-error: true
     strategy:
       fail-fast: false
       matrix:
@@ -106,5 +105,5 @@ jobs:
             echo "[!] The job 'build-images' didn't provide any outputs. Can't create the manifest list."
             exit 1;
           fi
-          docker manifest create ${{ env.IMAGE }}:multiarch-next $AMEND
-          docker manifest push ${{ env.IMAGE }}:multiarch-next
+          docker manifest create ${{ env.IMAGE }}:next $AMEND
+          docker manifest push ${{ env.IMAGE }}:next
