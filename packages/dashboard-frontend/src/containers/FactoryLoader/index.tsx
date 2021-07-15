@@ -187,7 +187,7 @@ export class FactoryLoaderContainer extends React.PureComponent<Props, State> {
     if (this.isCreatePolicy(policy)) {
       return policy;
     }
-    this.showAlert(`Unsupported create policy ${policy} is specified while the only following are supported: peruser, perclick. Please fix 'policies.create' parameter and try again.`);
+    this.showAlert(`Unsupported create policy '${policy}' is specified while the only following are supported: peruser, perclick. Please fix 'policies.create' parameter and try again.`);
     return undefined;
   }
 
