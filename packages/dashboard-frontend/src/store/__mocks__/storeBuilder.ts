@@ -18,6 +18,7 @@ import { AppState } from '..';
 import { State as DevfileRegistriesState } from '../DevfileRegistries/index';
 import { ContainerCredentials, RegistryRow } from '../UserPreferences/types';
 import { State as WorkspacesState } from '../Workspaces/index';
+import { State as BannerAlertState } from '../BannerAlert';
 import { State as BrandingState } from '../Branding';
 import { State as FactoryResolverState } from '../FactoryResolver';
 import { State as InfrastructureNamespaceState } from '../InfrastructureNamespaces';
@@ -30,6 +31,9 @@ import { IDevWorkspace } from '@eclipse-che/devworkspace-client';
 export class FakeStoreBuilder {
 
   private state: AppState = {
+    bannerAlert: {
+      messages: [],
+    },
     factoryResolver: {
       isLoading: false,
       resolver: {},
@@ -91,6 +95,11 @@ export class FakeStoreBuilder {
       plugins: [],
     },
   };
+
+  public withBannerAlert(messages: string[]): FakeStoreBuilder {
+    this.state.bannerAlert.messages = [...messages];
+    return this;
+  }
 
   public withUserPreferences(registries: RegistryRow[], isLoading = false): FakeStoreBuilder {
     const newContainerCredentials: ContainerCredentials = {};

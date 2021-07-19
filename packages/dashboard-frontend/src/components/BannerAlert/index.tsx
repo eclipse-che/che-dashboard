@@ -13,6 +13,7 @@
 import React from 'react';
 import BannerAlertBranding from './Branding';
 import BannerAlertWebSocket from './WebSocket';
+import BannerAlertCustomWarning from './Custom';
 
 type Props = {};
 
@@ -26,8 +27,9 @@ export class BannerAlert extends React.PureComponent<Props, State> {
     super(props);
     this.state = {
       bannerAlerts: [
-        <BannerAlertWebSocket key='WebSocketBannerAlert'></BannerAlertWebSocket>,
-        <BannerAlertBranding key='WarningBanner'></BannerAlertBranding>
+        <BannerAlertWebSocket key="BannerAlertWebSocket"></BannerAlertWebSocket>,
+        <BannerAlertBranding key="BannerAlertBranding"></BannerAlertBranding>,
+        <BannerAlertCustomWarning key="BannerAlertCustomWarning"></BannerAlertCustomWarning>,
       ]
     };
   }

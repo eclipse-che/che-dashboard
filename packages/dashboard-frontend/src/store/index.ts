@@ -12,6 +12,7 @@
 
 import { Action } from 'redux';
 import { ThunkAction } from 'redux-thunk';
+import * as BannerAlertStore from './BannerAlert';
 import * as BrandingStore from './Branding';
 import * as DevfileRegistriesStore from './DevfileRegistries';
 import * as FactoryResolver from './FactoryResolver';
@@ -28,6 +29,7 @@ import * as WorkspacesSettingsStore from './Workspaces/Settings';
 
 // the top-level state object
 export interface AppState {
+  bannerAlert: BannerAlertStore.State;
   branding: BrandingStore.State;
   devfileRegistries: DevfileRegistriesStore.State;
   infrastructureNamespaces: InfrastructureNamespacesStore.State;
@@ -44,6 +46,7 @@ export interface AppState {
 }
 
 export const reducers = {
+  bannerAlert: BannerAlertStore.reducer,
   workspaces: WorkspacesStore.reducer,
   cheWorkspaces: CheWorkspacesStore.reducer,
   devWorkspaces: DevWorkspacesStore.reducer,
