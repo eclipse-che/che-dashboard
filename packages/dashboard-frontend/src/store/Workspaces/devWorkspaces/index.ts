@@ -332,10 +332,16 @@ export const actionCreators: ActionCreators = {
   },
     pluginRegistryUrl: string | undefined,
   ): AppThunk<KnownAction, Promise<IDevWorkspace>> => async (dispatch, getState): Promise<IDevWorkspace> => {
+
+    const state = getState();
+
+    if (state.dwPlugins.defaultEditorError) {
+      const message = `Not able to create workspace due required resources failed to load: ${state.dwPlugins.defaultEditorError}`;
+      throw message;
+    }
+
     dispatch({ type: 'REQUEST_DEVWORKSPACE' });
     try {
-      const state = getState();
-
       // If the devworkspace doesn't have a namespace then we assign it to the default kubernetesNamespace
       const devWorkspaceDevfile = devfile as IDevWorkspaceDevfile;
       if (!devWorkspaceDevfile.metadata.namespace) {
