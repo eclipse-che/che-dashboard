@@ -25,26 +25,26 @@ export interface State {
   defaultEditorError?: string;
 }
 
-interface RequestDwPluginAction {
+export interface RequestDwPluginAction {
   type: 'REQUEST_DW_PLUGIN';
 }
 
-interface ReceiveDwPluginAction {
+export interface ReceiveDwPluginAction {
   type: 'RECEIVE_DW_PLUGIN';
   plugin: IDevWorkspaceDevfile;
 }
 
-interface ReceiveDwPluginErrorAction {
+export interface ReceiveDwPluginErrorAction {
   type: 'RECEIVE_DW_PLUGIN_ERROR';
   error: string;
 }
 
-interface ReceiveDwDefaultEditorErrorAction {
+export interface ReceiveDwDefaultEditorErrorAction {
   type: 'RECEIVE_DW_DEFAULT_EDITOR_ERROR';
   error: string;
 }
 
-type KnownAction = RequestDwPluginAction
+export type KnownAction = RequestDwPluginAction
   | ReceiveDwPluginAction
   | ReceiveDwPluginErrorAction
   | ReceiveDwDefaultEditorErrorAction;
@@ -76,8 +76,6 @@ export const actionCreators: ActionCreators = {
   },
 
   requestDwDefaultEditor: (settings: che.WorkspaceSettings): AppThunk<KnownAction, Promise<void>> => async (dispatch): Promise<void> => {
-    dispatch({ type: 'REQUEST_DW_PLUGIN' });
-
     const pluginRegistryUrl = settings.cheWorkspacePluginRegistryUrl;
     const defaultEditor = settings['che.factory.default_editor'];
 
@@ -92,6 +90,7 @@ export const actionCreators: ActionCreators = {
 
     const defaultEditorUrl = `${settings.cheWorkspacePluginRegistryUrl}/plugins/${settings['che.factory.default_editor']}/devfile.yaml`;
 
+    dispatch({ type: 'REQUEST_DW_PLUGIN' });
     try {
       const pluginContent = await fetchData<string>(defaultEditorUrl);
       const plugin = safeLoad(pluginContent) as IDevWorkspaceDevfile;
@@ -134,6 +133,7 @@ export const reducer: Reducer<State> = (state: State | undefined, incomingAction
       });
     case 'RECEIVE_DW_PLUGIN':
       return createState(state, {
+        isLoading: false,
         plugins:
           state.plugins.includes(action.plugin)
             ? state.plugins
@@ -141,10 +141,12 @@ export const reducer: Reducer<State> = (state: State | undefined, incomingAction
       });
     case 'RECEIVE_DW_PLUGIN_ERROR':
       return createState(state, {
+        isLoading: false,
         error: action.error,
       });
     case 'RECEIVE_DW_DEFAULT_EDITOR_ERROR':
       return createState(state, {
+        isLoading: false,
         defaultEditorError: action.error,
       });
     default:
