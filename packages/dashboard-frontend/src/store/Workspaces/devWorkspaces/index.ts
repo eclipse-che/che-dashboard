@@ -108,7 +108,7 @@ export type ResourceQueryParams = {
 export type ActionCreators = {
   updateAddedDevWorkspaces: (workspace: IDevWorkspace[]) => AppThunk<KnownAction, void>;
   updateDeletedDevWorkspaces: (deletedWorkspacesIds: string[]) => AppThunk<KnownAction, void>;
-  updateDevWorkspaceStatus: (workspace: IDevWorkspace, message: IStatusUpdate) => AppThunk<KnownAction, void>;
+  updateDevWorkspaceStatus: (message: IStatusUpdate) => AppThunk<KnownAction, void>;
   requestWorkspaces: () => AppThunk<KnownAction, Promise<void>>;
   requestWorkspace: (workspace: IDevWorkspace) => AppThunk<KnownAction, Promise<void>>;
   startWorkspace: (workspace: IDevWorkspace) => AppThunk<KnownAction, Promise<void>>;
@@ -145,8 +145,8 @@ export const actionCreators: ActionCreators = {
     });
   },
 
-  updateDevWorkspaceStatus: (workspace: IDevWorkspace, message: IStatusUpdate): AppThunk<KnownAction, void> => (dispatch): void => {
-    onStatusUpdateReceived(workspace, dispatch, message);
+  updateDevWorkspaceStatus: (message: IStatusUpdate): AppThunk<KnownAction, void> => (dispatch): void => {
+    onStatusUpdateReceived(dispatch, message);
   },
 
   requestWorkspaces: (): AppThunk<KnownAction, Promise<void>> => async (dispatch): Promise<void> => {
@@ -345,13 +345,9 @@ export const actionCreators: ActionCreators = {
     try {
       // If the devworkspace doesn't have a namespace then we assign it to the default kubernetesNamespace
       const devWorkspaceDevfile = devfile as IDevWorkspaceDevfile;
-      if (!devWorkspaceDevfile.metadata.namespace) {
-        const defaultNamespace = await cheWorkspaceClient.getDefaultNamespace();
-        devWorkspaceDevfile.metadata.namespace = defaultNamespace;
-      }
-
+      const defaultNamespace = await cheWorkspaceClient.getDefaultNamespace();
       const dwPlugins = selectDwPluginsList(state);
-      const workspace = await devWorkspaceClient.create(devWorkspaceDevfile, dwPlugins, pluginRegistryUrl, optionalFilesContent);
+      const workspace = await devWorkspaceClient.create(devWorkspaceDevfile, defaultNamespace, dwPlugins, pluginRegistryUrl, optionalFilesContent);
 
       dispatch({
         type: 'ADD_DEVWORKSPACE',
@@ -453,13 +449,12 @@ export const reducer: Reducer<State> = (state: State | undefined, action: KnownA
 };
 
 async function onStatusUpdateReceived(
-  workspace: IDevWorkspace,
   dispatch: ThunkDispatch<State, undefined, KnownAction>,
   statusUpdate: IStatusUpdate) {
   let status: string | undefined;
   if (statusUpdate.error) {
     const workspacesLogs = new Map<string, string[]>();
-    workspacesLogs.set(workspace.status.devworkspaceId, [`Error: Failed to run the workspace: "${statusUpdate.error}"`]);
+    workspacesLogs.set(statusUpdate.workspaceId, [`Error: Failed to run the workspace: "${statusUpdate.error}"`]);
     dispatch({
       type: 'UPDATE_DEVWORKSPACE_LOGS',
       workspacesLogs,
@@ -473,8 +468,8 @@ async function onStatusUpdateReceived(
        * Don't add in messages with no workspaces id or with stopped or stopping messages. The stopped and stopping messages
        * only appear because we initially create a stopped devworkspace, add in devworkspace templates, and then start the devworkspace
        */
-      if (workspace.status.devworkspaceId !== '' && workspace.status.message !== DevWorkspaceStatus.STOPPED && workspace.status.message !== DevWorkspaceStatus.STOPPING) {
-        workspacesLogs.set(workspace.status.devworkspaceId, [statusUpdate.message]);
+      if (statusUpdate.workspaceId !== '' && statusUpdate.status !== DevWorkspaceStatus.STOPPED && statusUpdate.status !== DevWorkspaceStatus.STOPPING) {
+        workspacesLogs.set(statusUpdate.workspaceId, [statusUpdate.message]);
         dispatch({
           type: 'UPDATE_DEVWORKSPACE_LOGS',
           workspacesLogs,
@@ -482,16 +477,16 @@ async function onStatusUpdateReceived(
       }
     }
     status = statusUpdate.status;
-    const callback = onStatusChangeCallbacks.get(workspace.status.devworkspaceId);
+    const callback = onStatusChangeCallbacks.get(statusUpdate.workspaceId);
     if (callback && status) {
       callback(status);
     }
   }
-  if (status && status !== devWorkspaceStatusMap.get(workspace.status.devworkspaceId)) {
-    devWorkspaceStatusMap.set(workspace.status.devworkspaceId, status);
+  if (status && status !== devWorkspaceStatusMap.get(statusUpdate.workspaceId)) {
+    devWorkspaceStatusMap.set(statusUpdate.workspaceId, status);
     dispatch({
       type: 'UPDATE_DEVWORKSPACE_STATUS',
-      workspaceId: workspace.status.devworkspaceId,
+      workspaceId: statusUpdate.workspaceId,
       status,
     });
   }

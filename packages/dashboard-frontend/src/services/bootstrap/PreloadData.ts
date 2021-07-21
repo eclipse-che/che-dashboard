@@ -93,10 +93,6 @@ export class PreloadData {
     return this.cheWorkspaceClient.updateJsonRpcMasterApi();
   }
 
-  private async initializeNamespace(namespace: string): Promise<boolean> {
-    return this.devWorkspaceClient.initializeNamespace(namespace);
-  }
-
   private async watchNamespaces(namespace: string): Promise<void> {
     const { updateDevWorkspaceStatus, updateDeletedDevWorkspaces, updateAddedDevWorkspaces } = DevWorkspacesStore.actionCreators;
     const callbacks = { updateDevWorkspaceStatus, updateDeletedDevWorkspaces, updateAddedDevWorkspaces };
@@ -124,10 +120,8 @@ export class PreloadData {
     }
 
     const defaultNamespace = await this.cheWorkspaceClient.getDefaultNamespace();
-    const namespaceInitialized = await this.initializeNamespace(defaultNamespace);
-    if (namespaceInitialized) {
-      this.watchNamespaces(defaultNamespace);
-    }
+    await this.devWorkspaceClient.initializeNamespace(defaultNamespace);
+    this.watchNamespaces(defaultNamespace);
 
     const { requestDwDefaultEditor } = DwPluginsStore.actionCreators;
     try {
