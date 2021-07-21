@@ -22,6 +22,13 @@ import { AppState } from '../../..';
 // mute the outputs
 console.error = jest.fn();
 
+const plugin = {
+  schemaVersion: '2.1.0',
+  metadata: {
+    name: 'void-sample',
+  },
+} as IDevWorkspaceDevfile;
+
 describe('dwPlugins store', () => {
 
   afterEach(() => {
@@ -32,7 +39,7 @@ describe('dwPlugins store', () => {
 
     it('should create REQUEST_DW_PLUGIN and RECEIVE_DW_PLUGIN when fetching a plugin', async () => {
       (mockAxios.get as jest.Mock).mockResolvedValueOnce({
-        data: {},
+        data: JSON.stringify(plugin),
       });
 
       const store = new FakeStoreBuilder().build() as MockStoreEnhanced<AppState, ThunkDispatch<AppState, undefined, dwPluginsStore.KnownAction>>;
@@ -44,9 +51,11 @@ describe('dwPlugins store', () => {
 
       const expectedActions: dwPluginsStore.KnownAction[] = [{
         type: 'REQUEST_DW_PLUGIN',
+        url,
       }, {
         type: 'RECEIVE_DW_PLUGIN',
-        plugin: {} as IDevWorkspaceDevfile,
+        plugin,
+        url,
       }];
 
       expect(actions).toEqual(expectedActions);
@@ -71,9 +80,11 @@ describe('dwPlugins store', () => {
 
       const expectedActions: dwPluginsStore.KnownAction[] = [{
         type: 'REQUEST_DW_PLUGIN',
+        url,
       }, {
         type: 'RECEIVE_DW_PLUGIN_ERROR',
         error: expect.stringContaining('unexpected error'),
+        url,
       }];
 
       expect(actions).toEqual(expectedActions);
@@ -81,7 +92,7 @@ describe('dwPlugins store', () => {
 
     it('should create REQUEST_DW_PLUGIN and RECEIVE_DW_PLUGIN when fetching the default editor', async () => {
       (mockAxios.get as jest.Mock).mockResolvedValueOnce({
-        data: {},
+        data: JSON.stringify(plugin),
       });
 
       const store = new FakeStoreBuilder().build() as MockStoreEnhanced<AppState, ThunkDispatch<AppState, undefined, dwPluginsStore.KnownAction>>;
@@ -96,9 +107,13 @@ describe('dwPlugins store', () => {
 
       const expectedActions: dwPluginsStore.KnownAction[] = [{
         type: 'REQUEST_DW_PLUGIN',
+        url: expect.stringContaining('default-editor'),
+      }, {
+        type: 'REQUEST_DW_DEFAULT_EDITOR',
       }, {
         type: 'RECEIVE_DW_PLUGIN',
-        plugin: {} as IDevWorkspaceDevfile,
+        plugin,
+        url: expect.stringContaining('default-editor'),
       }];
 
       expect(actions).toEqual(expectedActions);
@@ -126,9 +141,13 @@ describe('dwPlugins store', () => {
 
       const expectedActions: dwPluginsStore.KnownAction[] = [{
         type: 'REQUEST_DW_PLUGIN',
+        url: expect.stringContaining('default-editor'),
+      }, {
+        type: 'REQUEST_DW_DEFAULT_EDITOR',
       }, {
         type: 'RECEIVE_DW_PLUGIN_ERROR',
         error: expect.stringContaining('unexpected error'),
+        url: expect.stringContaining('default-editor'),
       }, {
         type: 'RECEIVE_DW_DEFAULT_EDITOR_ERROR',
         error: expect.stringContaining('unexpected error'),
@@ -163,122 +182,152 @@ describe('dwPlugins store', () => {
 
   });
 
-  fdescribe('reducers', () => {
-    const plugin = {
-      schemaVersion: '2.1.0',
-      metadata: {
-        name: 'void-sample',
-      },
-    } as IDevWorkspaceDevfile;
+  describe('reducers', () => {
 
     it('should return initial state', () => {
-      const incomingAction = {
+      const incomingAction: dwPluginsStore.RequestDwPluginAction = {
         type: 'REQUEST_DW_PLUGIN',
-      } as dwPluginsStore.RequestDwPluginAction;
+        url: 'devfile-location',
+      };
       const initialState = dwPluginsStore.reducer(undefined, incomingAction);
 
-      const expectedState = {
+      const expectedState: dwPluginsStore.State = {
         isLoading: false,
-        plugins: [],
+        plugins: {},
       };
 
       expect(initialState).toEqual(expectedState);
     });
 
     it('should return state if action type is not matched', () => {
-      const initialState = {
+      const initialState: dwPluginsStore.State = {
         isLoading: true,
-        plugins: [],
+        plugins: {},
       } as dwPluginsStore.State;
       const incomingAction = {
         type: 'OTHER_ACTION',
       } as AnyAction;
       const newState = dwPluginsStore.reducer(initialState, incomingAction);
 
-      const expectedState = {
+      const expectedState: dwPluginsStore.State = {
         isLoading: true,
-        plugins: [],
+        plugins: {},
       };
       expect(newState).toEqual(expectedState);
 
     });
 
     it('should handle REQUEST_DW_PLUGIN', () => {
-      const initialState = {
+      const initialState: dwPluginsStore.State = {
         isLoading: false,
-        error: 'error',
-        plugins: [],
-      } as dwPluginsStore.State;
-      const incomingAction = {
+        plugins: {
+          'devfile-location': {
+            error: 'unexpected error',
+          },
+        },
+      };
+      const incomingAction: dwPluginsStore.RequestDwPluginAction = {
         type: 'REQUEST_DW_PLUGIN',
-      } as dwPluginsStore.RequestDwPluginAction;
+        url: 'devfile-location',
+      };
 
       const newState = dwPluginsStore.reducer(initialState, incomingAction);
 
-      const expectedState = {
+      const expectedState: dwPluginsStore.State = {
         isLoading: true,
-        plugins: [],
+        plugins: {
+          'devfile-location': {},
+        },
+      };
+
+      expect(newState).toEqual(expectedState);
+    });
+
+    it('should handle REQUEST_DW_DEFAULT_EDITOR', () => {
+      const initialState: dwPluginsStore.State = {
+        isLoading: false,
+        plugins: {},
+        defaultEditorError: 'unexpected error',
+      };
+      const incomingAction: dwPluginsStore.RequestDwDefaultEditorAction = {
+        type: 'REQUEST_DW_DEFAULT_EDITOR',
+      };
+
+      const newState = dwPluginsStore.reducer(initialState, incomingAction);
+
+      const expectedState: dwPluginsStore.State = {
+        isLoading: true,
+        plugins: {},
       };
 
       expect(newState).toEqual(expectedState);
     });
 
     it('should handle RECEIVE_DW_PLUGIN', () => {
-      const initialState = {
+      const initialState: dwPluginsStore.State = {
         isLoading: true,
-        plugins: [],
-      } as dwPluginsStore.State;
-      const incomingAction = {
+        plugins: {},
+      };
+      const incomingAction: dwPluginsStore.ReceiveDwPluginAction = {
         type: 'RECEIVE_DW_PLUGIN',
+        url: 'devfile-location',
         plugin,
-      } as dwPluginsStore.ReceiveDwPluginAction;
+      };
 
       const newState = dwPluginsStore.reducer(initialState, incomingAction);
 
-      const expectedState = {
+      const expectedState: dwPluginsStore.State = {
         isLoading: false,
-        plugins: [plugin],
+        plugins: {
+          'devfile-location': {
+            plugin,
+          },
+        },
       };
 
       expect(newState).toEqual(expectedState);
     });
 
     it('should handle RECEIVE_DW_PLUGIN_ERROR', () => {
-      const initialState = {
+      const initialState: dwPluginsStore.State = {
         isLoading: true,
-        plugins: [],
-      } as dwPluginsStore.State;
-      const incomingAction = {
+        plugins: {},
+      };
+      const incomingAction: dwPluginsStore.ReceiveDwPluginErrorAction = {
         type: 'RECEIVE_DW_PLUGIN_ERROR',
+        url: 'devfile-location',
         error: 'unexpected error',
-      } as dwPluginsStore.ReceiveDwPluginErrorAction;
+      };
 
       const newState = dwPluginsStore.reducer(initialState, incomingAction);
 
-      const expectedState = {
+      const expectedState: dwPluginsStore.State = {
         isLoading: false,
-        plugins: [],
-        error: 'unexpected error',
+        plugins: {
+          'devfile-location': {
+            error: 'unexpected error',
+          },
+        },
       };
 
       expect(newState).toEqual(expectedState);
     });
 
     it('should handle RECEIVE_DW_DEFAULT_EDITOR_ERROR', () => {
-      const initialState = {
+      const initialState: dwPluginsStore.State = {
         isLoading: true,
-        plugins: [],
-      } as dwPluginsStore.State;
-      const incomingAction = {
+        plugins: {},
+      };
+      const incomingAction: dwPluginsStore.ReceiveDwDefaultEditorErrorAction = {
         type: 'RECEIVE_DW_DEFAULT_EDITOR_ERROR',
         error: 'unexpected error',
-      } as dwPluginsStore.ReceiveDwDefaultEditorErrorAction;
+      };
 
       const newState = dwPluginsStore.reducer(initialState, incomingAction);
 
-      const expectedState = {
+      const expectedState: dwPluginsStore.State = {
         isLoading: false,
-        plugins: [],
+        plugins: {},
         defaultEditorError: 'unexpected error',
       };
 

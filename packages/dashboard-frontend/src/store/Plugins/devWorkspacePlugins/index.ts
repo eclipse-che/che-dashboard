@@ -19,24 +19,35 @@ import { createState } from '../../helpers';
 
 export interface State {
   isLoading: boolean;
-  plugins: IDevWorkspaceDevfile[];
-  error?: string;
+  plugins: {
+    [url: string]: {
+      plugin?: IDevWorkspaceDevfile;
+      error?: string;
+    };
+  };
 
   defaultEditorError?: string;
 }
 
 export interface RequestDwPluginAction {
   type: 'REQUEST_DW_PLUGIN';
+  url: string;
 }
 
 export interface ReceiveDwPluginAction {
   type: 'RECEIVE_DW_PLUGIN';
+  url: string;
   plugin: IDevWorkspaceDevfile;
 }
 
 export interface ReceiveDwPluginErrorAction {
   type: 'RECEIVE_DW_PLUGIN_ERROR';
+  url: string;
   error: string;
+}
+
+export interface RequestDwDefaultEditorAction {
+  type: 'REQUEST_DW_DEFAULT_EDITOR';
 }
 
 export interface ReceiveDwDefaultEditorErrorAction {
@@ -47,6 +58,7 @@ export interface ReceiveDwDefaultEditorErrorAction {
 export type KnownAction = RequestDwPluginAction
   | ReceiveDwPluginAction
   | ReceiveDwPluginErrorAction
+  | RequestDwDefaultEditorAction
   | ReceiveDwDefaultEditorErrorAction;
 
 export type ActionCreators = {
@@ -57,18 +69,23 @@ export type ActionCreators = {
 export const actionCreators: ActionCreators = {
 
   requestDwDevfiles: (url: string): AppThunk<KnownAction, Promise<void>> => async (dispatch): Promise<void> => {
-    dispatch({ type: 'REQUEST_DW_PLUGIN' });
+    dispatch({
+      type: 'REQUEST_DW_PLUGIN',
+      url,
+    });
 
     try {
       const pluginContent = await fetchDevfile(url);
       const plugin = safeLoad(pluginContent) as IDevWorkspaceDevfile;
       dispatch({
         type: 'RECEIVE_DW_PLUGIN',
+        url,
         plugin,
       });
     } catch (error) {
       dispatch({
         type: 'RECEIVE_DW_PLUGIN_ERROR',
+        url,
         error,
       });
       throw error;
@@ -90,18 +107,26 @@ export const actionCreators: ActionCreators = {
 
     const defaultEditorUrl = `${settings.cheWorkspacePluginRegistryUrl}/plugins/${settings['che.factory.default_editor']}/devfile.yaml`;
 
-    dispatch({ type: 'REQUEST_DW_PLUGIN' });
+    dispatch({
+      type: 'REQUEST_DW_PLUGIN',
+      url: defaultEditorUrl,
+    });
+    dispatch({
+      type: 'REQUEST_DW_DEFAULT_EDITOR',
+    });
     try {
       const pluginContent = await fetchData<string>(defaultEditorUrl);
       const plugin = safeLoad(pluginContent) as IDevWorkspaceDevfile;
       dispatch({
         type: 'RECEIVE_DW_PLUGIN',
+        url: defaultEditorUrl,
         plugin,
       });
     } catch (error) {
       const errorMessage = `Failed to load the default editor, reason: "${defaultEditorUrl}" responds "${error}".`;
       dispatch({
         type: 'RECEIVE_DW_PLUGIN_ERROR',
+        url: defaultEditorUrl,
         error: errorMessage,
       });
       dispatch({
@@ -116,7 +141,7 @@ export const actionCreators: ActionCreators = {
 
 const unloadedState: State = {
   isLoading: false,
-  plugins: [],
+  plugins: {},
 };
 
 export const reducer: Reducer<State> = (state: State | undefined, incomingAction: Action): State => {
@@ -129,20 +154,37 @@ export const reducer: Reducer<State> = (state: State | undefined, incomingAction
     case 'REQUEST_DW_PLUGIN':
       return createState(state, {
         isLoading: true,
-        error: undefined,
+        plugins: {
+          [action.url]: {
+            // only keep the plugin and get rid of an error
+            plugin: state.plugins[action.url]?.plugin,
+          }
+        },
+      });
+    case 'REQUEST_DW_DEFAULT_EDITOR':
+      return createState(state, {
+        isLoading: true,
+        defaultEditorError: undefined,
       });
     case 'RECEIVE_DW_PLUGIN':
       return createState(state, {
         isLoading: false,
-        plugins:
-          state.plugins.includes(action.plugin)
-            ? state.plugins
-            : state.plugins.concat([action.plugin])
+        plugins: {
+          [action.url]: {
+            plugin: action.plugin,
+          }
+        }
       });
     case 'RECEIVE_DW_PLUGIN_ERROR':
       return createState(state, {
         isLoading: false,
-        error: action.error,
+        plugins: {
+          [action.url]: {
+            // save the error and keep the plugin
+            error: action.error,
+            plugin: state.plugins[action.url]?.plugin,
+          }
+        }
       });
     case 'RECEIVE_DW_DEFAULT_EDITOR_ERROR':
       return createState(state, {
