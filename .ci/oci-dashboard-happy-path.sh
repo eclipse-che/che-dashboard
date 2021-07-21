@@ -25,7 +25,6 @@ source "${SCRIPT_DIR}"/common.sh
 function Catch_Finish() {
     # grab devworkspace-controller namespace events after running e2e
     bumpPodsInfo "devworkspace-controller"
-    bumpPodsInfo "devworkspace-che"
     bumpPodsInfo "admin-che"
     oc get devworkspaces -n "admin-che" -o=yaml > $ARTIFACT_DIR/devworkspaces.yaml
     oc get devworkspacerouting -n "admin-che" -o=yaml > $ARTIFACT_DIR/devworkspaceRouting.yaml
