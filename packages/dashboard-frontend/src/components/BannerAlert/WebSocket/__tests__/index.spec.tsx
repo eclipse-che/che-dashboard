@@ -12,7 +12,7 @@
 
 import React from 'react';
 import { container } from '../../../../inversify.config';
-import WebSocketBanner from '..';
+import BannerAlertWebSocket from '..';
 import { CheWorkspaceClient } from '../../../../services/workspace-client/cheWorkspaceClient';
 import { Provider } from 'react-redux';
 import { FakeStoreBuilder } from '../../../../store/__mocks__/storeBuilder';
@@ -32,10 +32,10 @@ const store = new FakeStoreBuilder().withBranding({
   }
 } as BrandingData).build();
 
-describe('WebSocketBanner component', () => {
+describe('BannerAlertWebSocket component', () => {
   it('should show error message when error found before mounting', () => {
     container.rebind(CheWorkspaceClient).to(mockCheWorkspaceClient).inSingletonScope();
-    const component = renderComponent(<WebSocketBanner />);
+    const component = renderComponent(<BannerAlertWebSocket />);
     container.rebind(CheWorkspaceClient).to(CheWorkspaceClient).inSingletonScope();
     expect(component.getAllByText(failingMessage, {
       exact: false
@@ -45,7 +45,7 @@ describe('WebSocketBanner component', () => {
   it('should show error message when error found after mounting', () => {
     const comp = (
       <Provider store={store}>
-        <WebSocketBanner />
+        <BannerAlertWebSocket />
       </Provider>
     );
     const component = renderComponent(comp);
@@ -61,7 +61,7 @@ describe('WebSocketBanner component', () => {
   });
 
   it('should not show error message if none is present', () => {
-    const component = renderComponent(<WebSocketBanner />);
+    const component = renderComponent(<BannerAlertWebSocket />);
     expect(component.queryAllByText(failingMessage, {
       exact: false
     })).toEqual([]);

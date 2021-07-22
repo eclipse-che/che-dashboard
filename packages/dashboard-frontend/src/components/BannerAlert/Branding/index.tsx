@@ -21,7 +21,7 @@ type Props = MappedProps & {};
 
 type State = {};
 
-class WarningBannerAlert extends React.PureComponent<Props, State> {
+class BannerAlertBranding extends React.PureComponent<Props, State> {
 
   render() {
     const warningMessage = this.props.branding.header?.warning;
@@ -52,4 +52,4 @@ const mapStateToProps = (state: AppState) => ({
 const connector = connect(mapStateToProps);
 
 type MappedProps = ConnectedProps<typeof connector>;
-export default connector(WarningBannerAlert);
+export default connector(BannerAlertBranding);
