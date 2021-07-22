@@ -133,7 +133,7 @@ export class PreloadData {
     try {
       await requestDwDefaultEditor(settings)(this.store.dispatch, this.store.getState, undefined);
     } catch (e) {
-      const message = `Not able to create workspace due required resources failed to load: ${e}`;
+      const message = `Required sources failed when trying to create the workspace: ${e}`;
       const { addBanner } = BannerAlertStore.actionCreators;
       addBanner(message)(this.store.dispatch, this.store.getState, undefined);
 

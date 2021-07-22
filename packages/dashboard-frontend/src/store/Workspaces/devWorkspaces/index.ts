@@ -337,7 +337,7 @@ export const actionCreators: ActionCreators = {
     const state = getState();
 
     if (state.dwPlugins.defaultEditorError) {
-      const message = `Not able to create workspace due required resources failed to load: ${state.dwPlugins.defaultEditorError}`;
+      const message = `Required sources failed when trying to create the workspace: ${state.dwPlugins.defaultEditorError}`;
       throw message;
     }
 
