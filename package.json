@@ -27,6 +27,7 @@
     "webpack-cli": "^3.3.11"
   },
   "resolutions": {
-    "vscode-languageserver-protocol": "3.15.3"
+    "vscode-languageserver-protocol": "3.15.3",
+    "@eclipse-che/devworkspace-client": "portal:/home/sleshche/projects/devworkspace-client"
   }
 }

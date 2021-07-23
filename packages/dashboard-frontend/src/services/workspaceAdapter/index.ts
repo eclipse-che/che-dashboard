@@ -13,17 +13,16 @@
 import {
   devfileToDevWorkspace,
   devWorkspaceToDevfile,
-  IDevWorkspace,
-  IDevWorkspaceDevfile,
 } from '@eclipse-che/devworkspace-client';
 import { attributesToType, typeToAttributes } from '../storageTypes';
 import { DevWorkspaceStatus, WorkspaceStatus } from '../helpers/types';
 import { DEVWORKSPACE_NEXT_START_ANNOTATION } from '../workspace-client/devWorkspaceClient';
+import { V1alpha2DevWorkspace, V220Devfile } from '@devfile/api';
 
 const ROUTING_CLASS = 'che';
 
 export interface Workspace {
-  readonly ref: che.Workspace | IDevWorkspace;
+  readonly ref: che.Workspace | V1alpha2DevWorkspace;
 
   readonly id: string;
   name: string;
@@ -33,7 +32,7 @@ export interface Workspace {
   readonly updated: number;
   status: WorkspaceStatus | DevWorkspaceStatus;
   readonly ideUrl?: string;
-  devfile: che.WorkspaceDevfile | IDevWorkspaceDevfile;
+  devfile: che.WorkspaceDevfile | V220Devfile;
   storageType: che.WorkspaceStorageType;
   readonly projects: string[];
   readonly isStarting: boolean;
@@ -43,7 +42,7 @@ export interface Workspace {
   readonly hasError: boolean;
 }
 
-export class WorkspaceAdapter<T extends che.Workspace | IDevWorkspace> implements Workspace {
+export class WorkspaceAdapter<T extends che.Workspace | V1alpha2DevWorkspace> implements Workspace {
   private readonly workspace: T;
 
   constructor(workspace: T) {
@@ -63,7 +62,7 @@ export class WorkspaceAdapter<T extends che.Workspace | IDevWorkspace> implement
     if (isWorkspaceV1(this.workspace)) {
       return this.workspace.id;
     } else {
-      return (this.workspace as IDevWorkspace).status.devworkspaceId;
+      return (this.workspace as V1alpha2DevWorkspace).status.devworkspaceId;
     }
   }
 
@@ -71,7 +70,7 @@ export class WorkspaceAdapter<T extends che.Workspace | IDevWorkspace> implement
     if (isWorkspaceV1(this.workspace)) {
       return this.workspace.devfile.metadata.name || '';
     } else {
-      return (this.workspace as IDevWorkspace).metadata.name;
+      return (this.workspace as V1alpha2DevWorkspace).metadata.name;
     }
   }
 

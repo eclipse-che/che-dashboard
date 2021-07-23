@@ -12,11 +12,11 @@
 
 import React, { ChangeEvent, ClipboardEvent } from 'react';
 import { safeDump } from 'js-yaml';
-import { IDevWorkspaceDevfile } from '@eclipse-che/devworkspace-client';
+import { V220Devfile } from '@devfile/api';
 import stringify from '../../../services/helpers/editor';
 
 type Props = {
-  devfile: che.WorkspaceDevfile | IDevWorkspaceDevfile;
+  devfile: che.WorkspaceDevfile | V220Devfile;
   decorationPattern?: string;
   onChange: (newValue: string, isValid: boolean) => void;
   isReadonly?: boolean;
@@ -36,7 +36,7 @@ export default class DevfileEditor extends React.PureComponent<Props, State> {
     };
   }
 
-  public updateContent(devfile: che.WorkspaceDevfile | IDevWorkspaceDevfile): void {
+  public updateContent(devfile: che.WorkspaceDevfile | V220Devfile): void {
     if (!this.editor) {
       return;
     }

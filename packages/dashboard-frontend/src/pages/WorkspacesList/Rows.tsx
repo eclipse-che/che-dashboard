@@ -17,8 +17,8 @@ import WorkspaceIndicator from '../../components/Workspace/Indicator';
 import { formatDate, formatRelativeDate } from '../../services/helpers/date';
 import { buildDetailsLocation, toHref, buildIdeLoaderLocation } from '../../services/helpers/location';
 import { isWorkspaceV1, Workspace } from '../../services/workspaceAdapter';
-import { IDevWorkspaceDevfile } from '@eclipse-che/devworkspace-client';
 import { DevWorkspaceStatus } from '../../services/helpers/types';
+import { V220Devfile } from '@devfile/api';
 
 export interface RowData extends IRow {
   props: {
@@ -117,7 +117,7 @@ export function buildRow(
   }
 
   /* projects list */
-  const projects: string[] = [];
+  const projects: (string | undefined)[] = [];
   if (isWorkspaceV1(workspace.ref)) {
     const devfile = workspace.devfile as che.WorkspaceDevfile;
     (devfile.projects || [])
@@ -125,11 +125,11 @@ export function buildRow(
       .filter((projectName?: string) => projectName)
       .forEach((projectName: string) => projects.push(projectName));
   } else {
-    const devfile = workspace.devfile as IDevWorkspaceDevfile;
+    const devfile = workspace.devfile as V220Devfile;
     (devfile.projects || [])
       .map(project => project.name || project.git?.remotes?.origin)
       .filter((projectName?: string) => projectName)
-      .forEach((projectName: string) => projects.push(projectName));
+      .forEach((projectName?: string) => projects.push(projectName));
   }
   const projectsList = projects.join(', \n') || '-';
 
