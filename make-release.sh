@@ -51,7 +51,9 @@ bump_version () {
     git commit -asm "${COMMIT_MSG}"
     git pull origin "${BUMP_BRANCH}"
 
+    set +e
     PUSH_TRY="$(git push origin "${BUMP_BRANCH}")"
+    set -e
     # shellcheck disable=SC2181
     if [[ $? -gt 0 ]] || [[ $PUSH_TRY == *"protected branch hook declined"* ]]; then
       PR_BRANCH=pr-${BUMP_BRANCH}-to-${NEXT_VERSION}
