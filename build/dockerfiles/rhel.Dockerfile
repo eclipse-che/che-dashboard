@@ -28,6 +28,7 @@ ENV STATIC_SERVER=packages/static-server
 COPY ${STATIC_SERVER}/package.json /dashboard/${STATIC_SERVER}/
 
 WORKDIR /dashboard
+RUN npm i -g yarn
 RUN yarn install
 COPY packages/ /dashboard/packages
 RUN yarn build
