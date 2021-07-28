@@ -136,8 +136,6 @@ jobs:
           git config --global user.name "Mykhailo Kuznietsov"
           git config --global user.email "mkuznets@redhat.com"
           export GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }}
-
-          npm install --global lerna
           /bin/bash make-release.sh --version ${{ github.event.inputs.version }} --tag-release
       - name: Create failure MM message
         if: ${{ failure() }}
