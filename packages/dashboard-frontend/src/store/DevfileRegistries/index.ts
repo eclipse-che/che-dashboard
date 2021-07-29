@@ -242,11 +242,11 @@ export const reducer: Reducer<State> = (state: State | undefined, incomingAction
     case 'RECEIVE_REGISTRY_METADATA':
       return createState(state, {
         isLoading: false,
-        registries: {
+        registries: createState(state.registries, { 
           [action.url]: {
             metadata: action.metadata,
           },
-        },
+        }),
       });
     case 'RECEIVE_REGISTRY_ERROR':
       return createState(state, {
