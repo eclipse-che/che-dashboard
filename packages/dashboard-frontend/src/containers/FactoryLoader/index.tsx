@@ -278,7 +278,7 @@ export class FactoryLoaderContainer extends React.PureComponent<Props, State> {
     const searchParam = new window.URLSearchParams(this.state.search);
     const devfileLocationInfo = !source || source === 'repo' ?
       `${searchParam.get('url')}` :
-      `\`${source}\` in github repo ${location}`;
+      `\`${source}\` in git repo ${location}`;
     this.setState({ devfileLocationInfo });
     return this.getTargetDevfile();
   }
