@@ -282,12 +282,12 @@ export class FactoryLoaderContainer extends React.PureComponent<Props, State> {
     //  - repo: means no devfile is found and default is generated
     //  - any other - devfile is found in repository as filename from the value
     if (!source) {
-      resolvedDevfileMessage = `Devfile is loaded from ${searchParam.get('url')}`;
+      resolvedDevfileMessage = `Devfile loaded from ${searchParam.get('url')}`;
     } else {
       if (source === 'repo') {
-        resolvedDevfileMessage = `No devfile is found in the specified git repo ${searchParam.get('url')}. Applying default configuration`;
+        resolvedDevfileMessage = `Devfile could not be found in ${searchParam.get('url')}. Applying the default configuration`;
       } else {
-        resolvedDevfileMessage = `Devfile is found in repo ${searchParam.get('url')} as '${source}'. Applying it`;
+        resolvedDevfileMessage = `Devfile found in repo ${searchParam.get('url')} as '${source}'. Applying it`;
       }
     }
     this.setState({ resolvedDevfileMessage });

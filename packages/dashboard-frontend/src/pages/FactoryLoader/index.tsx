@@ -180,7 +180,7 @@ class FactoryLoader extends React.PureComponent<Props, State> {
                 'Looking for devfile' :
                 resolvedDevfileMessage ?
                   `${resolvedDevfileMessage}` :
-                  'Devfile is not found',
+                  'Devfile could not be found',
             ),
             canJumpTo: currentStep >= LoadFactorySteps.LOOKING_FOR_DEVFILE,
           },
