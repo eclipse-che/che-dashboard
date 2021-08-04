@@ -24,10 +24,10 @@ import {
   namespacedWorkspaceSchema,
   templateStartedBody,
 } from './constants/schemas';
-import { authenticateOpenShift } from './services/openshift/kubeconfig';
+import { authenticate } from './services/kubeclient/auth';
 import { initialize, initializeNodeConfig } from './nodeConfig';
 import { routingClass } from './constants/config';
-import SubscribeManager, { Subscriber } from './services/SubscribeManager';
+import SubscriptionManager, { Subscriber } from './services/SubscriptionManager';
 import { NamespacedParam } from 'models';
 
 // TODO add detection for openshift or kubernetes, we can probably just expose the devworkspace-client api to get that done for us
@@ -75,7 +75,7 @@ server.register(require('fastify-websocket'), {
 
 server.get('/websocket', { websocket: true } as RouteShorthandOptions, connection => {
   const subscriber: Subscriber = connection.socket as any;
-  const pubSubManager = new SubscribeManager(subscriber);
+  const pubSubManager = new SubscriptionManager(subscriber);
   connection.socket.on('message', message => {
     const { request, params, channel } = JSON.parse(message);
     if (!request || !channel) {
@@ -89,11 +89,11 @@ server.get('/websocket', { websocket: true } as RouteShorthandOptions, connectio
         pubSubManager.subscribe(channel, params as { token: string, namespace: string });
         break;
     }
-  })
-})
+  });
+});
 
 server.get(
-  "/namespace/:namespace/devworkspaces",
+  '/namespace/:namespace/devworkspaces',
   {
     schema: {
       headers: authenticationHeaderSchema,
@@ -103,7 +103,7 @@ server.get(
   async (request) => {
     const token = request.headers.authentication as string;
     const { namespace } = request.params as models.NamespacedParam;
-    const { devworkspaceApi } = await authenticateOpenShift(
+    const { devworkspaceApi } = await authenticate(
       client.getNodeApi(devworkspaceClientConfig),
       token
     );
@@ -122,7 +122,7 @@ server.post(
   async (request) => {
     const token = request.headers.authentication as string;
     const { template } = request.body as models.TemplateStartedBody;
-    const { templateApi } = await authenticateOpenShift(
+    const { templateApi } = await authenticate(
       client.getNodeApi(devworkspaceClientConfig),
       token
     );
@@ -142,7 +142,7 @@ server.get(
   async (request) => {
     const token = request.headers.authentication as string;
     const { namespace } = request.params as models.NamespacedWorkspaceParam;
-    const { cheApi } = await authenticateOpenShift(
+    const { cheApi } = await authenticate(
       client.getNodeApi(devworkspaceClientConfig),
       token
     );
@@ -167,7 +167,7 @@ server.post(
   async (request) => {
     const token = request.headers.authentication as string;
     const { devfile, started } = request.body as models.DevfileStartedBody;
-    const { devworkspaceApi } = await authenticateOpenShift(
+    const { devworkspaceApi } = await authenticate(
       client.getNodeApi(devworkspaceClientConfig),
       token
     );
@@ -176,7 +176,7 @@ server.post(
     if (devfile.metadata === undefined) {
       devfile.metadata = {};
     }
-    devfile.metadata.namespace = namespace
+    devfile.metadata.namespace = namespace;
 
     const workspace = await devworkspaceApi.create(devfile, routingClass, started);
     // we need to wait until the devworkspace has a status property
@@ -212,7 +212,7 @@ server.get(
       namespace,
       workspaceName,
     } = request.params as models.NamespacedWorkspaceParam;
-    const { devworkspaceApi } = await authenticateOpenShift(
+    const { devworkspaceApi } = await authenticate(
       client.getNodeApi(devworkspaceClientConfig),
       token
     );
@@ -234,7 +234,7 @@ server.delete(
       namespace,
       workspaceName,
     } = request.params as models.NamespacedWorkspaceParam;
-    const { devworkspaceApi } = await authenticateOpenShift(
+    const { devworkspaceApi } = await authenticate(
       client.getNodeApi(devworkspaceClientConfig),
       token
     );
@@ -257,7 +257,7 @@ server.patch(
       workspaceName,
     } = request.params as models.NamespacedWorkspaceParam;
     const patch = request.body as { op: string, path: string, value?: any; } [];
-    const { devworkspaceApi } = await authenticateOpenShift(
+    const { devworkspaceApi } = await authenticate(
       client.getNodeApi(devworkspaceClientConfig),
       token
     );
@@ -277,7 +277,7 @@ server.ready(() => {
   console.log(server.printRoutes());
 });
 
-async function delay(ms = 500): Promise<void> {
+async function delay(ms: number = 500): Promise<void> {
   return new Promise((resolve) => {
     setTimeout(resolve, ms);
   });

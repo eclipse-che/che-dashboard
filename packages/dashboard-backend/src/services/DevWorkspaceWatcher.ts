@@ -10,7 +10,7 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import { authenticateOpenShift } from './openshift/kubeconfig';
+import { authenticate } from './kubeclient/auth';
 import {
   container,
   IDevWorkspaceCallbacks,
@@ -26,7 +26,7 @@ const client: IDevWorkspaceClient = container.get(
   INVERSIFY_TYPES.IDevWorkspaceClient
 );
 
-class NamespaceData {
+class DevWorkspaceWatcher {
   private readonly callbacks: IDevWorkspaceCallbacks;
   private readonly namespace: string;
   private token: string;
@@ -51,7 +51,7 @@ class NamespaceData {
 
   async subscribe(): Promise<void> {
     try {
-      const { devWorkspaceWatcher } = await authenticateOpenShift(
+      const { devWorkspaceWatcher } = await authenticate(
         client.getNodeApi(devworkspaceClientConfig),
         this.token
       );
@@ -78,4 +78,4 @@ class NamespaceData {
 
 }
 
-export default NamespaceData;
+export default DevWorkspaceWatcher;
