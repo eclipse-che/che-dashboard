@@ -17,7 +17,7 @@
   ],
   "license": "EPL-2.0",
   "dependencies": {
-    "@eclipse-che/devworkspace-client": "^0.0.1-1618334569",
+    "@eclipse-che/devworkspace-client": "^0.0.1-1628067575",
     "@kubernetes/client-node": "^0.14.0",
     "axios": "^0.21.1",
     "fastify": "^3.19.2",

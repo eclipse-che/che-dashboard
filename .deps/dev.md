@@ -242,7 +242,7 @@
 | [`@webassemblyjs/wasm-parser@1.9.0`](https://github.com/xtuc/webassemblyjs.git) | MIT | clearlydefined |
 | [`@webassemblyjs/wast-parser@1.9.0`](https://github.com/xtuc/webassemblyjs.git) | MIT | clearlydefined |
 | [`@webassemblyjs/wast-printer@1.9.0`](https://github.com/xtuc/webassemblyjs.git) | MIT | clearlydefined |
-| [`@xtuc/ieee754@1.2.0`](git://github.com/feross/ieee754.git) | BSD-3-Clause | [CQ18717](https://dev.eclipse.org/ipzilla/show_bug.cgi?id=18717) |
+| [`@xtuc/ieee754@1.2.0`](git://github.com/feross/ieee754.git) | BSD-3-Clause | #123 |
 | [`@xtuc/long@4.2.2`](https://github.com/dcodeIO/long.js.git) | Apache-2.0 | [CQ18717](https://dev.eclipse.org/ipzilla/show_bug.cgi?id=18717) |
 | [`JSONStream@1.3.5`](git://github.com/dominictarr/JSONStream.git) | (MIT OR Apache-2.0) | emo_ip_team |
 | [`abab@2.0.5`](git+https://github.com/jsdom/abab.git) | BSD-3-Clause | [CQ20878](https://dev.eclipse.org/ipzilla/show_bug.cgi?id=20878) |
@@ -595,13 +595,13 @@
 | [`imurmurhash@0.1.4`](https://github.com/jensyt/imurmurhash-js) | MIT | [CQ17757](https://dev.eclipse.org/ipzilla/show_bug.cgi?id=17757) |
 | [`indexes-of@1.0.1`](git://github.com/dominictarr/indexes-of.git) | MIT | [CQ18717](https://dev.eclipse.org/ipzilla/show_bug.cgi?id=18717) |
 | [`infer-owner@1.0.4`](https://github.com/npm/infer-owner) | ISC | clearlydefined |
-| [`ini@1.3.8`](git://github.com/isaacs/ini.git) | ISC | [CQ23023](https://dev.eclipse.org/ipzilla/show_bug.cgi?id=23023) |
+| [`ini@1.3.8`](git://github.com/isaacs/ini.git) | ISC | [CQ16925](https://dev.eclipse.org/ipzilla/show_bug.cgi?id=16925) |
 | [`init-package-json@2.0.3`](https://github.com/npm/init-package-json.git) | ISC | clearlydefined |
 | [`inquirer@7.3.3`](https://github.com/SBoudrias/Inquirer.js.git) | MIT | clearlydefined |
 | [`internal-ip@4.3.0`](https://github.com/sindresorhus/internal-ip.git) | MIT | clearlydefined |
 | [`internal-slot@1.0.3`](git+https://github.com/ljharb/internal-slot.git) | MIT | clearlydefined |
 | [`ip-regex@2.1.0`](https://github.com/sindresorhus/ip-regex.git) | MIT | clearlydefined |
-| [`ip@1.1.5`](http://github.com/indutny/node-ip.git) | MIT | emo_ip_team |
+| [`ip@1.1.5`](http://github.com/indutny/node-ip.git) | MIT | #126 |
 | [`is-absolute-url@3.0.3`](https://github.com/sindresorhus/is-absolute-url.git) | MIT | clearlydefined |
 | [`is-accessor-descriptor@1.0.0`](https://github.com/jonschlinkert/is-accessor-descriptor.git) | MIT | [CQ17757](https://dev.eclipse.org/ipzilla/show_bug.cgi?id=17757) |
 | [`is-alphabetical@1.0.4`](https://github.com/wooorm/is-alphabetical.git) | MIT | clearlydefined |
