@@ -10,18 +10,18 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import NamespaceData from './NamespaceData';
+import DevWorkspaceWatcher from './DevWorkspaceWatcher';
 import { IDevWorkspace, IDevWorkspaceCallbacks } from '@eclipse-che/devworkspace-client';
 
 export type Subscriber = {
   send: (val: string) => void,
-}
+};
 
-class SubscribeManager {
+class SubscriptionManager {
   private readonly subscriber: Subscriber;
   private readonly channels: string[];
   private readonly callbacks: IDevWorkspaceCallbacks;
-  private namespaceData: NamespaceData | undefined;
+  private namespaceData: DevWorkspaceWatcher | undefined;
 
   constructor(subscriber: Subscriber) {
     this.subscriber = subscriber;
@@ -63,7 +63,7 @@ class SubscribeManager {
         this.namespaceData.setToken(data.token);
       }
     } else {
-      this.namespaceData = new NamespaceData({
+      this.namespaceData = new DevWorkspaceWatcher({
         callbacks: this.callbacks,
         token: data.token,
         namespace: data.namespace
@@ -80,4 +80,4 @@ class SubscribeManager {
 
 }
 
-export  default  SubscribeManager;
+export  default  SubscriptionManager;

@@ -10,12 +10,30 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import axios, { AxiosInstance } from 'axios';
+import axios from 'axios';
+import * as https from 'https';
 import { KubeConfig, Cluster, User } from '@kubernetes/client-node';
 import { IDevWorkspaceClientApi } from '@eclipse-che/devworkspace-client';
-import * as https from 'https';
 
 const keycloakAuthPath = '/realms/che/broker/openshift-v4/token';
+
+/**
+ * Convert the keycloak token into an openshift token and authenticate nodeApi
+ * @param nodeApi The nodeApi given by the devworkspace-client
+ * @param keycloakToken The keycloak token sent with the request
+ * @returns A promise of the authenticated nodeApi
+ */
+export async function authenticateOpenShift(nodeApi: IDevWorkspaceClientApi, keycloakToken: string): Promise<IDevWorkspaceClientApi> {
+    const openShiftToken = await keycloakToOpenShiftToken(keycloakToken);
+
+    // Create new kubeconfig and authenticate as the user
+    const kc: any = new KubeConfig();
+    kc.loadFromClusterAndUser(createCluster(), createUser(openShiftToken));
+
+    // Use the newly authenticated user
+    nodeApi.config = kc;
+    return nodeApi;
+}
 
 /**
  * Create a cluster kubernetes client cluster object
@@ -51,12 +69,12 @@ function createUser(openShiftToken: string): User {
 }
 
 /**
- * Transform the keycloak token into an openshift token
+ * Transform the keycloak token into an OpenShift token
  * @param keycloakToken
  * @throws Will throw an error if process.env.KEYCLOAK_URL is undefined 
  * @returns The openshift token obtained from the keycloak token
  */
-async function keycloakToOpenShiftToken(keycloakToken: string): Promise<string> {
+export async function keycloakToOpenShiftToken(keycloakToken: string): Promise<string> {
     const keycloak = process.env.KEYCLOAK_URL as string;
     if (!keycloak) {
         throw new Error('KEYCLOAK_URL environment variable must be set');
@@ -72,22 +90,4 @@ async function keycloakToOpenShiftToken(keycloakToken: string): Promise<string> 
             rejectUnauthorized: false
         })
     });
-}
-  
-/**
- * Convert the keycloak token into an openshift token and authenticate nodeApi
- * @param nodeApi The nodeApi given by the devworkspace-client
- * @param keycloakToken The keycloak token sent with the request
- * @returns A promise of the authenticated nodeApi
- */
-export async function authenticateOpenShift(nodeApi: IDevWorkspaceClientApi, keycloakToken: string): Promise<IDevWorkspaceClientApi> {
-    const openShiftToken = await keycloakToOpenShiftToken(keycloakToken);
-
-    // Create new kubeconfig and authenticate as the user
-    const kc: any = new KubeConfig();
-    kc.loadFromClusterAndUser(createCluster(), createUser(openShiftToken));
-    
-    // Use the newly authenticated user
-    nodeApi.config = kc;
-    return nodeApi;
 }
