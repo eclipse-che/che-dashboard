@@ -9,7 +9,7 @@
 | [`@eclipse-che/dashboard-backend@7.34.0-SNAPSHOT`](https://github.com/eclipse-che/che-dashboard) | EPL-2.0 | N/A |
 | [`@eclipse-che/dashboard-frontend@7.34.0-SNAPSHOT`](git://github.com/eclipse/che-dashboard.git) | EPL-2.0 | N/A |
 | [`@eclipse-che/dashboard-static-server@7.34.0-SNAPSHOT`](git://github.com/eclipse/che-dashboard.git) | EPL-2.0 | N/A |
-| [`@eclipse-che/devworkspace-client@0.0.1-1625495079`](https://github.com/che-incubator/devworkspace-client) | EPL-2.0 |  |
+| [`@eclipse-che/devworkspace-client@0.0.1-1628067575`](https://github.com/che-incubator/devworkspace-client) | EPL-2.0 | N/A |
 | [`@eclipse-che/workspace-client@0.0.1-1622804813`](https://github.com/eclipse/che-workspace-client) | EPL-2.0 | N/A |
 | [`@fastify/ajv-compiler@1.1.0`](git+https://github.com/fastify/ajv-compiler.git) | MIT | clearlydefined |
 | [`@kubernetes/client-node@0.14.3`](https://github.com/kubernetes-client/javascript.git) | Apache-2.0 | clearlydefined |
@@ -59,7 +59,7 @@
 | [`avvio@7.2.2`](git+https://github.com/fastify/avvio.git) | MIT | clearlydefined |
 | [`aws-sign2@0.7.0`](https://github.com/mikeal/aws-sign) | Apache-2.0 | [CQ16925](https://dev.eclipse.org/ipzilla/show_bug.cgi?id=16925) |
 | [`aws4@1.11.0`](https://github.com/mhart/aws4.git) | MIT | clearlydefined |
-| [`axios@0.21.1`](https://github.com/axios/axios.git) | MIT | [CQ23019](https://dev.eclipse.org/ipzilla/show_bug.cgi?id=23019) |
+| [`axios@0.21.1`](https://github.com/axios/axios.git) | MIT | clearlydefined |
 | [`babel-code-frame@6.26.0`](https://github.com/babel/babel/tree/master/packages/babel-code-frame) | MIT | [CQ18717](https://dev.eclipse.org/ipzilla/show_bug.cgi?id=18717) |
 | [`babel-core@6.26.3`](https://github.com/babel/babel/tree/master/packages/babel-core) | MIT | [CQ18717](https://dev.eclipse.org/ipzilla/show_bug.cgi?id=18717) |
 | [`babel-generator@6.26.1`](https://github.com/babel/babel/tree/master/packages/babel-generator) | MIT | [CQ18717](https://dev.eclipse.org/ipzilla/show_bug.cgi?id=18717) |
@@ -129,19 +129,19 @@
 | [`escape-html@1.0.3`](https://github.com/component/escape-html.git) | MIT | [CQ16925](https://dev.eclipse.org/ipzilla/show_bug.cgi?id=16925) |
 | [`escape-string-regexp@1.0.5`](https://github.com/sindresorhus/escape-string-regexp.git) | MIT | [CQ16925](https://dev.eclipse.org/ipzilla/show_bug.cgi?id=16925) |
 | [`esprima@4.0.1`](https://github.com/jquery/esprima.git) | BSD-2-Clause | [CQ18717](https://dev.eclipse.org/ipzilla/show_bug.cgi?id=18717) |
-| [`esutils@2.0.3`](http://github.com/estools/esutils.git) | BSD-2-Clause | [CQ18717](https://dev.eclipse.org/ipzilla/show_bug.cgi?id=18717) |
+| [`esutils@2.0.3`](http://github.com/estools/esutils.git) | BSD-2-Clause | #120 |
 | [`etag@1.8.1`](https://github.com/jshttp/etag.git) | MIT | [CQ16925](https://dev.eclipse.org/ipzilla/show_bug.cgi?id=16925) |
 | [`eventsource@1.1.0`](git://github.com/EventSource/eventsource.git) | MIT | clearlydefined |
 | [`execa@1.0.0`](https://github.com/sindresorhus/execa.git) | MIT | [CQ17757](https://dev.eclipse.org/ipzilla/show_bug.cgi?id=17757) |
 | [`extend@3.0.2`](https://github.com/justmoon/node-extend.git) | MIT | [CQ18717](https://dev.eclipse.org/ipzilla/show_bug.cgi?id=18717) |
-| [`extsprintf@1.3.0`](git://github.com/davepacheco/node-extsprintf.git) | MIT | [CQ16925](https://dev.eclipse.org/ipzilla/show_bug.cgi?id=16925) |
+| [`extsprintf@1.3.0`](git://github.com/davepacheco/node-extsprintf.git) | MIT | #128 |
 | [`fast-decode-uri-component@1.0.1`](git+https://github.com/delvedor/fast-decode-uri-component.git) | MIT | clearlydefined |
 | [`fast-deep-equal@3.1.3`](git+https://github.com/epoberezkin/fast-deep-equal.git) | MIT | clearlydefined |
 | [`fast-json-stable-stringify@2.1.0`](git://github.com/epoberezkin/fast-json-stable-stringify.git) | MIT | clearlydefined |
 | [`fast-json-stringify@2.7.7`](git+https://github.com/fastify/fast-json-stringify.git) | MIT | clearlydefined |
 | [`fast-redact@3.0.1`](git+https://github.com/davidmarkclements/fast-redact.git) | MIT | clearlydefined |
 | [`fast-safe-stringify@2.0.8`](git+https://github.com/davidmarkclements/fast-safe-stringify.git) | MIT | clearlydefined |
-| [`fastify-cors@5.2.0`](git+https://github.com/fastify/fastify-cors.git) | MIT | clearlydefined |
+| [`fastify-cors@6.0.2`](git+https://github.com/fastify/fastify-cors.git) | MIT | clearlydefined |
 | [`fastify-error@0.3.1`](git+https://github.com/fastify/fastify-error.git) | MIT | clearlydefined |
 | [`fastify-plugin@3.0.0`](git+https://github.com/fastify/fastify-plugin.git) | MIT | clearlydefined |
 | [`fastify-static@4.2.2`](https://github.com/fastify/fastify-static.git) | MIT | clearlydefined |
@@ -185,7 +185,7 @@
 | [`http-parser-js@0.5.3`](git://github.com/creationix/http-parser-js.git) | MIT | clearlydefined |
 | [`http-proxy-agent@2.1.0`](git://github.com/TooTallNate/node-http-proxy-agent.git) | MIT | [CQ18717](https://dev.eclipse.org/ipzilla/show_bug.cgi?id=18717) |
 | [`http-signature@1.2.0`](git://github.com/joyent/node-http-signature.git) | MIT | [CQ16925](https://dev.eclipse.org/ipzilla/show_bug.cgi?id=16925) |
-| [`http2-wrapper@1.0.3`](git+https://github.com/szmarczak/http2-wrapper.git) | MIT | [CQ23110](https://dev.eclipse.org/ipzilla/show_bug.cgi?id=23110) |
+| [`http2-wrapper@1.0.3`](git+https://github.com/szmarczak/http2-wrapper.git) | MIT | clearlydefined |
 | [`https-proxy-agent@2.2.4`](git://github.com/TooTallNate/node-https-proxy-agent.git) | MIT | [CQ18717](https://dev.eclipse.org/ipzilla/show_bug.cgi?id=18717) |
 | [`immutable@4.0.0-rc.14`](git://github.com/immutable-js/immutable-js.git) | MIT | clearlydefined |
 | [`indent-string@4.0.0`](https://github.com/sindresorhus/indent-string.git) | MIT | clearlydefined |
@@ -306,6 +306,7 @@
 | [`readable-stream@3.6.0`](git://github.com/nodejs/readable-stream) | MIT | [CQ22627](https://dev.eclipse.org/ipzilla/show_bug.cgi?id=22627) |
 | [`recast@0.11.23`](git://github.com/benjamn/recast.git) | MIT | [CQ18717](https://dev.eclipse.org/ipzilla/show_bug.cgi?id=18717) |
 | [`rechoir@0.6.2`](git://github.com/tkellen/node-rechoir.git) | MIT | [CQ18717](https://dev.eclipse.org/ipzilla/show_bug.cgi?id=18717) |
+| [`reconnecting-websocket@4.4.0`](git+https://github.com/pladaria/reconnecting-websocket.git) | MIT | clearlydefined |
 | [`redux-thunk@2.3.0`](https://github.com/reduxjs/redux-thunk.git) | MIT | clearlydefined |
 | [`redux@4.1.0`](https://github.com/reduxjs/redux.git) | MIT | clearlydefined |
 | [`reflect-metadata@0.1.13`](https://github.com/rbuckton/reflect-metadata.git) | Apache-2.0 | [CQ18717](https://dev.eclipse.org/ipzilla/show_bug.cgi?id=18717) |
@@ -328,7 +329,7 @@
 | [`safe-buffer@5.2.1`](git://github.com/feross/safe-buffer.git) | MIT | clearlydefined |
 | [`safe-regex2@2.0.0`](git://github.com/fastify/safe-regex.git) | MIT | clearlydefined |
 | [`safer-buffer@2.1.2`](git+https://github.com/ChALkeR/safer-buffer.git) | MIT | [CQ16925](https://dev.eclipse.org/ipzilla/show_bug.cgi?id=16925) |
-| [`sanitize-html@2.3.2`](https://github.com/apostrophecms/sanitize-html.git) | MIT | [CQ23018](https://dev.eclipse.org/ipzilla/show_bug.cgi?id=23018) |
+| [`sanitize-html@2.3.2`](https://github.com/apostrophecms/sanitize-html.git) | MIT | clearlydefined |
 | [`scheduler@0.19.1`](https://github.com/facebook/react.git) | MIT | clearlydefined |
 | [`seamless-immutable@7.1.4`](https://github.com/rtfeldman/seamless-immutable.git) | BSD-3-Clause | clearlydefined |
 | [`secure-json-parse@2.4.0`](git+https://github.com/fastify/secure-json-parse.git) | BSD-3-Clause | clearlydefined |
@@ -396,7 +397,7 @@
 | [`vscode-uri@2.1.2`](git+https://github.com/Microsoft/vscode-uri.git) | MIT | clearlydefined |
 | [`warning@4.0.3`](https://github.com/BerkeleyTrue/warning.git) | MIT | [CQ22359](https://dev.eclipse.org/ipzilla/show_bug.cgi?id=22359) |
 | [`websocket-driver@0.7.4`](git://github.com/faye/websocket-driver-node.git) | Apache-2.0 | clearlydefined |
-| [`websocket-extensions@0.1.4`](git://github.com/faye/websocket-extensions-node.git) | Apache-2.0 | [CQ23021](https://dev.eclipse.org/ipzilla/show_bug.cgi?id=23021) |
+| [`websocket-extensions@0.1.4`](git://github.com/faye/websocket-extensions-node.git) | Apache-2.0 | clearlydefined |
 | [`websocket@1.0.23`](https://github.com/theturtle32/WebSocket-Node.git) | Apache-2.0 | [CQ22360](https://dev.eclipse.org/ipzilla/show_bug.cgi?id=22360) |
 | [`which@1.3.1`](git://github.com/isaacs/node-which.git) | ISC | [CQ17757](https://dev.eclipse.org/ipzilla/show_bug.cgi?id=17757) |
 | [`wrappy@1.0.2`](https://github.com/npm/wrappy) | ISC | [CQ16925](https://dev.eclipse.org/ipzilla/show_bug.cgi?id=16925) |

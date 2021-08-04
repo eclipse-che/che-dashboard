@@ -2,8 +2,7 @@
 
 ## UNRESOLVED Production dependencies
 
-1. `@eclipse-che/devworkspace-client@0.0.1-1625495079`
-2. `@patternfly/react-table@4.29.0`
+1. `@patternfly/react-table@4.29.0`
 
 ## UNRESOLVED Development dependencies
 
