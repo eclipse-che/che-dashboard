@@ -10,20 +10,17 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import { authenticate } from './kubeclient/auth';
+import { createDevWorkspaceClient } from './kubeclient/auth';
 import {
   container,
   IDevWorkspaceCallbacks,
-  IDevWorkspaceClient,
+  IDevWorkspaceClientFactory,
   INVERSIFY_TYPES
 } from '@eclipse-che/devworkspace-client';
-import { initializeNodeConfig } from '../nodeConfig';
 
-
-// Get the default node configuration based off the provided environment arguments
-const devworkspaceClientConfig = initializeNodeConfig();
-const client: IDevWorkspaceClient = container.get(
-  INVERSIFY_TYPES.IDevWorkspaceClient
+// get the default node configuration based off the provided environment arguments
+const dwClientFactory: IDevWorkspaceClientFactory = container.get(
+  INVERSIFY_TYPES.IDevWorkspaceClientFactory
 );
 
 class DevWorkspaceWatcher {
@@ -51,11 +48,8 @@ class DevWorkspaceWatcher {
 
   async subscribe(): Promise<void> {
     try {
-      const { devWorkspaceWatcher } = await authenticate(
-        client.getNodeApi(devworkspaceClientConfig),
-        this.token
-      );
-      const unsubscribeFunction = await devWorkspaceWatcher.watcher(this.namespace, this.callbacks).then((ret: { abort: Function }) => ret.abort);
+      const { devworkspaceApi } = await createDevWorkspaceClient(dwClientFactory, this.token);
+      const unsubscribeFunction = await devworkspaceApi.watchInNamespace(this.namespace, this.callbacks).then((ret: { abort: Function }) => ret.abort);
 
       if (this.unsubscribeFunction) {
         await this.unsubscribe();

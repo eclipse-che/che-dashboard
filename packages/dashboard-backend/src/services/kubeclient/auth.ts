@@ -10,25 +10,29 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import { KubeConfig } from '@kubernetes/client-node';
-import { IDevWorkspaceClientApi } from '@eclipse-che/devworkspace-client';
+import { IDevWorkspaceClient, IDevWorkspaceClientFactory } from '@eclipse-che/devworkspace-client';
 import { isOpenShift } from './helpers';
-import { authenticateOpenShift } from './openshift';
-import { authenticateKubernetes } from './kubernetes';
+import { openshiftKubeconfig } from './openshift';
+import { k8sKubeconfig } from './kubernetes';
+import { KubeConfig } from '@kubernetes/client-node';
 import * as k8s from '@kubernetes/client-node';
 
-export async function authenticate(nodeApi: IDevWorkspaceClientApi, keycloakToken: string): Promise<IDevWorkspaceClientApi> {
+export async function createDevWorkspaceClient(dwClientFactory: IDevWorkspaceClientFactory, keycloakToken: string): Promise<IDevWorkspaceClient> {
     const kc: any = createLocalKubeConfig();
     const apiClient = kc.makeApiClient(k8s.ApisApi);
+
+    let contextKc: KubeConfig;
     if (await isOpenShift(apiClient)) {
-        return authenticateOpenShift(nodeApi, keycloakToken);
+      contextKc = await openshiftKubeconfig(keycloakToken);
     } else {
-        return authenticateKubernetes(nodeApi, keycloakToken);
+      contextKc = await k8sKubeconfig(keycloakToken);
     }
+    // todo
+    return dwClientFactory.create(contextKc as any);
 }
 
-function createLocalKubeConfig(): KubeConfig {
-  const kc = new KubeConfig();
+function createLocalKubeConfig(): k8s.KubeConfig {
+  const kc = new k8s.KubeConfig();
   if (process.env['LOCAL_RUN'] === 'true') {
     const kubeconfig = process.env['KUBECONFIG'];
     if (!kubeconfig) {

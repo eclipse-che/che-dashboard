@@ -10,8 +10,8 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import { IDevWorkspaceClientApi } from '@eclipse-che/devworkspace-client';
+import { KubeConfig } from '@kubernetes/client-node';
 
-export async function authenticateKubernetes(nodeApi: IDevWorkspaceClientApi, keycloakToken: string): Promise<IDevWorkspaceClientApi> {
+export async function k8sKubeconfig(keycloakToken: string): Promise<KubeConfig> {
     return Promise.reject(new Error('not implemented yet'));
 }

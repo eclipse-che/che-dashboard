@@ -10,4 +10,4 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-export const prefix = '/api/k8s';
+export const prefix = '/dashboard/api/k8s';
