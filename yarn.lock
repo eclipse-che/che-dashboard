@@ -1668,7 +1668,7 @@
   resolved "https://registry.yarnpkg.com/@tootallnate/once/-/once-1.1.2.tgz#ccb91445360179a04e7fe6aff78c00ffc1eeaf82"
   integrity sha512-RbzJvlNzmRq5c3O09UipeuXno4tA1FE6ikOjxZK0tuxVv3412l64l5t1W5pj4+rJq9vpkm/kwiR07aZXnsKPxw==
 
-"@types/args@^3.0.0":
+"@types/args@^3.0.1":
   version "3.0.1"
   resolved "https://registry.yarnpkg.com/@types/args/-/args-3.0.1.tgz#59e8e787ed8a810408dd9a324157cc20b7001468"
   integrity sha512-Mfre8T2comeJbw2D6W8mzQP+0Q8fpS7nkbHgatzU31tWsLs0Lkyc+ObdYfgV4SuMZn/n5MEWlxh2rc25125s0Q==
@@ -1800,7 +1800,7 @@
     "@types/qs" "*"
     "@types/serve-static" "*"
 
-"@types/glob@*", "@types/glob@^7.1.1":
+"@types/glob@^7.1.1":
   version "7.1.4"
   resolved "https://registry.yarnpkg.com/@types/glob/-/glob-7.1.4.tgz#ea59e21d2ee5c517914cb4bc8e4153b99e566672"
   integrity sha512-w+LsMxKyYQm347Otw+IfBXOv9UWVjpHpCDdbBMt8Kz/xbvCYNjP+0qPh91Km3iKfSRLBB0P7fAMf0KHrPu+MyA==
@@ -1949,14 +1949,6 @@
   resolved "https://registry.yarnpkg.com/@types/minipass/-/minipass-2.2.1.tgz#a52138867c493ff14f07616efcbe2af7662b76fb"
   integrity sha512-0bI74UwEJ+JjGqzkyoiCxLVGK5C3Vy5MYdDB6VCtUAulcrulHvqhIrQP9lh/gvMgaNzvvJljMW97rRHVvbTe8Q==
   dependencies:
-    "@types/node" "*"
-
-"@types/node-static@^0":
-  version "0.7.7"
-  resolved "https://registry.yarnpkg.com/@types/node-static/-/node-static-0.7.7.tgz#47a5adacc6fa79f77ad336bf572bf49953bea635"
-  integrity sha512-Cq3c9lfC9zRrGxe7ox073219Mpy/kmWNsISG0yEG7aUEk33xv/g+uqz/+4b7hM4WN9LsGageBzGuvy09inaGhg==
-  dependencies:
-    "@types/mime" "^1"
     "@types/node" "*"
 
 "@types/node@*":
@@ -2128,14 +2120,6 @@
   resolved "https://registry.yarnpkg.com/@types/responselike/-/responselike-1.0.0.tgz#251f4fe7d154d2bad125abe1b429b23afd262e29"
   integrity sha512-85Y2BjiufFzaMIlvJDvTTB8Fxl2xfLo4HgmHzVBz08w4wDePCTjYw66PdrolO0kzli3yam/YCgRufyo1DdQVTA==
   dependencies:
-    "@types/node" "*"
-
-"@types/rimraf@^3":
-  version "3.0.1"
-  resolved "https://registry.yarnpkg.com/@types/rimraf/-/rimraf-3.0.1.tgz#1bbc106f0978742289103e080d4b41b3b4656e58"
-  integrity sha512-CAoSlbco40aKZ0CkelBF2g3JeN6aioRaTVnqSX5pWsn/WApm6IDxI4e4tD9D0dY/meCkyyleP1IQDVN13F4maA==
-  dependencies:
-    "@types/glob" "*"
     "@types/node" "*"
 
 "@types/sanitize-html@^1.27.1":
@@ -5716,7 +5700,7 @@ fastify-websocket@^3.2.0:
     fastify-plugin "^3.0.0"
     ws "^7.4.2"
 
-fastify@^3.18.0, fastify@^3.19.2:
+fastify@^3.19.2:
   version "3.19.2"
   resolved "https://registry.yarnpkg.com/fastify/-/fastify-3.19.2.tgz#4e592835183a83f5b797897312a1a84eb6ff861d"
   integrity sha512-s9naCdC0V1ynEzxMoe/0oX8XgcLk90VAnIms4z6KcF7Rpn1XiguoMyZSviTmv1x5rgy/OjGGBM45sNpMoBzCUQ==
@@ -13053,17 +13037,6 @@ ts-loader@4.1.0:
   version "4.1.0"
   resolved "https://registry.yarnpkg.com/ts-loader/-/ts-loader-4.1.0.tgz#6216e75600941df3270bc4a7125e20aefb2dc5ea"
   integrity sha512-R4VEE0SZhU8gLa9Aayg2XOvpVjXtbB7KMLXs4He0xr92DM5G12i76IWd+lMLfmCz66Ztr2XFvDNvMAymHJGIqg==
-  dependencies:
-    chalk "^2.3.0"
-    enhanced-resolve "^4.0.0"
-    loader-utils "^1.0.2"
-    micromatch "^3.1.4"
-    semver "^5.0.1"
-
-ts-loader@^4.1.0:
-  version "4.5.0"
-  resolved "https://registry.yarnpkg.com/ts-loader/-/ts-loader-4.5.0.tgz#a1ce70b2dc799941fb2197605f0d67874097859b"
-  integrity sha512-ihgVaSmgrX4crGV4n7yuoHPoCHbDzj9aepCZR9TgIx4SgJ9gdnB6xLHgUBb7bsFM/f0K6x9iXa65KY/Fu1Klkw==
   dependencies:
     chalk "^2.3.0"
     enhanced-resolve "^4.0.0"

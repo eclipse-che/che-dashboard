@@ -46,6 +46,9 @@ declare namespace models {
     STOPPING = 'Stopping'
   }
 
+  export interface ISchemaParams {
+    [key: string]: any
+  }
 }
 
 declare module 'models' {
