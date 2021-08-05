@@ -11,42 +11,34 @@
  */
 
 import args from 'args';
-import fastify from 'fastify';
+import { FastifyInstance } from 'fastify';
 import fastifyStatic from 'fastify-static';
 import path from 'path';
 
 interface Flags {
   publicFolder: string;
-  port: number;
 }
 
 args
   .option('publicFolder', 'The public folder to serve', './public')
-  .option('port', 'The port on which the server will be running', 8080);
 const flags = args.parse(process.argv) as Flags;
 
 const hostname = '0.0.0.0';
-const { port, publicFolder } = flags;
+const { publicFolder } = flags;
 const rootPath = path.resolve(__dirname, publicFolder);
 
-const startupMessage = `I'll serve "${rootPath}" on "${hostname}:${port}".`;
+const startupMessage = `I'll serve "${rootPath}" on "${hostname}:8080".`;
 console.log(startupMessage);
 
-const server = fastify({
-  logger: true,
-});
-
-server.register(fastifyStatic, {
-  root: rootPath,
-  maxAge: 24 * 60 * 60 * 1000,
-  lastModified: true,
-  prefix: '/dashboard/',
-});
-server.get('/', async (request, reply) => {
-  reply.code(204);
-  return reply.send();
-});
-
-server.listen(port, hostname, (err, address) => {
-  if (err) throw err;
-})
+export function startStaticServer(server: FastifyInstance) {
+  server.register(fastifyStatic, {
+    root: rootPath,
+    maxAge: 24 * 60 * 60 * 1000,
+    lastModified: true,
+    prefix: '/dashboard/',
+  });
+  server.get('/', async (request, reply) => {
+    reply.code(204);
+    return reply.send();
+  });
+}

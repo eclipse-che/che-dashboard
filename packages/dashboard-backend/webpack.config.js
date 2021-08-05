@@ -37,6 +37,9 @@ const config = {
         new webpack.ProgressPlugin(),
     ],
     target: 'node',
+    node: {
+      __dirname: false,
+    },
     output: {
         filename: 'server.js',
         library: 'dashboard-backend',
