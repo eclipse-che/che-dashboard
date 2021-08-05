@@ -58,7 +58,7 @@ class SubscriptionManager {
     if (this.channels.indexOf(channel) === -1) {
       this.channels.push(channel);
     }
-    if(this.namespaceData) {
+    if (this.namespaceData) {
       if (this.namespaceData!.getNamespace() === data.namespace) {
         this.namespaceData.setToken(data.token);
       }

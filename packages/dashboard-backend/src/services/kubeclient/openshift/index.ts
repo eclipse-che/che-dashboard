@@ -13,7 +13,6 @@
 import axios from 'axios';
 import * as https from 'https';
 import { KubeConfig, Cluster, User } from '@kubernetes/client-node';
-import { IDevWorkspaceClientApi } from '@eclipse-che/devworkspace-client';
 
 const keycloakAuthPath = '/realms/che/broker/openshift-v4/token';
 
@@ -23,16 +22,14 @@ const keycloakAuthPath = '/realms/che/broker/openshift-v4/token';
  * @param keycloakToken The keycloak token sent with the request
  * @returns A promise of the authenticated nodeApi
  */
-export async function authenticateOpenShift(nodeApi: IDevWorkspaceClientApi, keycloakToken: string): Promise<IDevWorkspaceClientApi> {
+export async function openshiftKubeconfig(keycloakToken: string): Promise<KubeConfig> {
     const openShiftToken = await keycloakToOpenShiftToken(keycloakToken);
 
-    // Create new kubeconfig and authenticate as the user
+    // create new kubeconfig and authenticate as the user
     const kc: any = new KubeConfig();
     kc.loadFromClusterAndUser(createCluster(), createUser(openShiftToken));
 
-    // Use the newly authenticated user
-    nodeApi.config = kc;
-    return nodeApi;
+    return kc;
 }
 
 /**

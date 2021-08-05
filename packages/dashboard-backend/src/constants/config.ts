@@ -16,4 +16,4 @@
 
 export const routingClass = 'che';
 
-export const baseApiPath = '/api/k8s';
+export const baseApiPath = '/dashboard/api/k8s';

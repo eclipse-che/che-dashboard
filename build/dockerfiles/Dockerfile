@@ -11,7 +11,7 @@
 FROM docker.io/node:12.20.1-alpine3.12 as builder
 
 RUN if ! [ type "yarn" &> /dev/null ]; then \
-        apk add yarn --no-cache; \
+        apk add git yarn --no-cache; \
     fi
 
 COPY package.json /dashboard/
@@ -23,6 +23,10 @@ COPY ${FRONTEND}/package.json /dashboard/${FRONTEND}/
 
 ENV BACKEND=packages/dashboard-backend
 COPY ${BACKEND}/package.json /dashboard/${BACKEND}/
+
+RUN git clone https://github.com/che-incubator/devworkspace-client.git
+RUN cd devworkspace-client && git checkout -b refactor origin/refactor && yarn && yarn link
+RUN cd /dashboard/${BACKEND} && yarn link @eclipse-che/devworkspace-client
 
 WORKDIR /dashboard
 RUN yarn install --network-timeout 1000000
