@@ -12,7 +12,7 @@
 
 /**
  * Process the initialization of the server.
- * If CHE_HOST, KEYCLOAK_URL, KUBERNETES_SERVICE_HOST or KUBERNETES_SERVICE_PORT are undefined then exit the process since we cannot continue
+ * If CHE_HOST, KEYCLOAK_URL are undefined then exit the process since we cannot continue
  */
 export function initialize(): void {
   // Check that CHE_HOST is defined
