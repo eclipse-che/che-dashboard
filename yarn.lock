@@ -364,14 +364,13 @@
     jsonc-parser "^3.0.0"
     reflect-metadata "^0.1.13"
 
-"@eclipse-che/devworkspace-client@^0.0.1-1628085710":
-  version "0.0.1-1628085710"
-  resolved "https://registry.yarnpkg.com/@eclipse-che/devworkspace-client/-/devworkspace-client-0.0.1-1628085710.tgz#a366c4d3719cbd7d0ed755bd8647fbd3af83eb5d"
-  integrity sha512-l3sigqk6Ri2eKBAscH12YorA+jgeMsAfcoz40i+bm/ojMWZzz2bx+tQaVeiCuYvuxsxz/+uP+1IqGXg1I64xyQ==
+"@eclipse-che/devworkspace-client@^0.0.1-1628264033":
+  version "0.0.1-1628264033"
+  resolved "https://registry.yarnpkg.com/@eclipse-che/devworkspace-client/-/devworkspace-client-0.0.1-1628264033.tgz#e711f7768df857c197b07d99e1757db3d2c04273"
+  integrity sha512-yZonhVLKaOJ9uQJMYXQDRM3iTa5xo4liB2josf44684gUjUxV8yamOorE0yba7as81zC+E56DZ/NuNOLKTzrzQ==
   dependencies:
     "@kubernetes/client-node" "^0.14.0"
     axios "^0.21.1"
-    inversify "^5.0.5"
     reflect-metadata "^0.1.13"
 
 "@eclipse-che/workspace-client@0.0.1-1622804813":
@@ -7091,7 +7090,7 @@ inversify-react@^0.4.3:
   dependencies:
     prop-types "^15.7.2"
 
-inversify@^5.0.1, inversify@^5.0.5:
+inversify@^5.0.1:
   version "5.1.1"
   resolved "https://registry.yarnpkg.com/inversify/-/inversify-5.1.1.tgz#6fbd668c591337404e005a1946bfe0d802c08730"
   integrity sha512-j8grHGDzv1v+8T1sAQ+3boTCntFPfvxLCkNcxB1J8qA0lUN+fAlSyYd+RXKvaPRL4AGyPxViutBEJHNXOyUdFQ==
