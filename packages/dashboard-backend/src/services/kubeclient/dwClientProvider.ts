@@ -11,7 +11,7 @@
  */
 
 import {KubeConfig} from '@kubernetes/client-node';
-import {DevWorkspaceClientFactory, IDevWorkspaceClientFactory} from '@eclipse-che/devworkspace-client';
+import { DevWorkspaceClient } from '@eclipse-che/devworkspace-client';
 import * as k8s from '@kubernetes/client-node';
 import * as helper from './helpers';
 import {KubeConfigProvider} from './kubeConfigProvider';
@@ -19,11 +19,9 @@ import {keycloakToOpenShiftToken, validateToken} from './keycloak';
 
 export class DwClientProvider {
   private kubeconfigProvider: KubeConfigProvider;
-  private dwClientFactory: IDevWorkspaceClientFactory;
   private isOpenShift: Promise<boolean>;
 
   constructor() {
-    this.dwClientFactory = new DevWorkspaceClientFactory();
     this.kubeconfigProvider = new KubeConfigProvider();
 
     const kc: any = this.kubeconfigProvider.getSAKubeConfig();
@@ -39,6 +37,7 @@ export class DwClientProvider {
       await validateToken(keycloakToken);
       contextKc = this.kubeconfigProvider.getSAKubeConfig();
     }
-    return this.dwClientFactory.create(contextKc as any);
+    // todo get rid of any
+    return new DevWorkspaceClient(contextKc as any);
   }
 }

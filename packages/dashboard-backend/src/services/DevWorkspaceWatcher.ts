@@ -10,18 +10,8 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import {
-  container,
-  IDevWorkspaceCallbacks,
-  IDevWorkspaceClientFactory,
-  INVERSIFY_TYPES
-} from '@eclipse-che/devworkspace-client';
+import { IDevWorkspaceCallbacks } from '@eclipse-che/devworkspace-client';
 import {DwClientProvider} from './kubeclient/dwClientProvider';
-
-// get the default node configuration based off the provided environment arguments
-const dwClientFactory: IDevWorkspaceClientFactory = container.get(
-  INVERSIFY_TYPES.IDevWorkspaceClientFactory
-);
 
 class DevWorkspaceWatcher {
   private readonly dwClientProvider: DwClientProvider;
