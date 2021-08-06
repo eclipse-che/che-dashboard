@@ -12,7 +12,6 @@
 
 import 'reflect-metadata';
 import fastify, { FastifyRequest } from 'fastify';
-import { container, IDevWorkspaceClientFactory, INVERSIFY_TYPES } from '@eclipse-che/devworkspace-client';
 import { initialize } from './nodeConfig';
 import { baseApiPath } from './constants/config';
 import { startStaticServer } from './staticServer';
@@ -28,9 +27,6 @@ import {DwClientProvider} from './services/kubeclient/dwClientProvider';
 
 // initialize the server and exit if any needed environment variables aren't found
 initialize();
-
-// get the default node configuration based off the provided environment arguments
-const clientFactory: IDevWorkspaceClientFactory = container.get(INVERSIFY_TYPES.IDevWorkspaceClientFactory);
 
 const dwClientProvider: DwClientProvider = new DwClientProvider();
 
