@@ -10,13 +10,13 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import { createDevWorkspaceClient } from './kubeclient/auth';
 import {
   container,
   IDevWorkspaceCallbacks,
   IDevWorkspaceClientFactory,
   INVERSIFY_TYPES
 } from '@eclipse-che/devworkspace-client';
+import {DwClientProvider} from './kubeclient/dwClientProvider';
 
 // get the default node configuration based off the provided environment arguments
 const dwClientFactory: IDevWorkspaceClientFactory = container.get(
@@ -24,6 +24,7 @@ const dwClientFactory: IDevWorkspaceClientFactory = container.get(
 );
 
 class DevWorkspaceWatcher {
+  private readonly dwClientProvider: DwClientProvider;
   private readonly callbacks: IDevWorkspaceCallbacks;
   private readonly namespace: string;
   private token: string;
@@ -33,6 +34,7 @@ class DevWorkspaceWatcher {
     this.callbacks = data.callbacks;
     this.namespace = data.namespace;
     this.token = data.token;
+    this.dwClientProvider = new DwClientProvider();
   }
 
   public getNamespace(): string {
@@ -48,7 +50,7 @@ class DevWorkspaceWatcher {
 
   async subscribe(): Promise<void> {
     try {
-      const { devworkspaceApi } = await createDevWorkspaceClient(dwClientFactory, this.token);
+      const { devworkspaceApi } = await (this.dwClientProvider.getDWClient(this.token));
       const unsubscribeFunction = await devworkspaceApi.watchInNamespace(this.namespace, this.callbacks).then((ret: { abort: Function }) => ret.abort);
 
       if (this.unsubscribeFunction) {

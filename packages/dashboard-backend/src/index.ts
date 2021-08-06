@@ -13,7 +13,6 @@
 import 'reflect-metadata';
 import fastify, { FastifyRequest } from 'fastify';
 import { container, IDevWorkspaceClientFactory, INVERSIFY_TYPES } from '@eclipse-che/devworkspace-client';
-import { createDevWorkspaceClient} from './services/kubeclient/auth';
 import { initialize } from './nodeConfig';
 import { baseApiPath } from './constants/config';
 import { startStaticServer } from './staticServer';
@@ -21,6 +20,7 @@ import { startDevworkspaceWebsocketWatcher } from './api/devworkspaceWebsocketWa
 import { startDevworkspaceApi } from './api/devworkspaceApi';
 import { startCheApi } from './api/cheApi';
 import { startTemplateApi } from './api/templateApi';
+import {DwClientProvider} from './services/kubeclient/dwClientProvider';
 
 // todo add detection for openshift or kubernetes, we can probably just expose the devworkspace-client api to get that done for us
 // todo add service account for kubernetes with all the needed permissions
@@ -32,8 +32,10 @@ initialize();
 // get the default node configuration based off the provided environment arguments
 const clientFactory: IDevWorkspaceClientFactory = container.get(INVERSIFY_TYPES.IDevWorkspaceClientFactory);
 
+const dwClientProvider: DwClientProvider = new DwClientProvider();
+
 export function getApiObj(request: FastifyRequest) {
-  return createDevWorkspaceClient(clientFactory, `${request.headers!.authentication}`);
+  return dwClientProvider.getDWClient(`${request.headers!.authentication}`);
 }
 
 const server = fastify();
