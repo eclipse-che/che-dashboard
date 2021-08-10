@@ -27,20 +27,32 @@ export class KubeConfigProvider {
 
   getKubeConfig(token: string): KubeConfig {
     const baseKc = this.getSAKubeConfig();
-    // todo make sure that this user not appear twice
-    baseKc.addUser(this.createUser(token));
-    const context = baseKc.getContextObject(baseKc.getCurrentContext());
-    if (!context) {
-      throw 'SA kubecofig is not a valid';
+    const currentContext = baseKc.getContextObject(baseKc.getCurrentContext());
+    if (!currentContext) {
+      throw 'SA kubecofig is not a valid: no current context is found';
     }
-    const c: Context = {
-      user: 'developer',
-      cluster: context.cluster,
+    const currentCluster = baseKc.getCluster(currentContext.cluster);
+    if (!currentCluster) {
+      throw 'base kubeconfig is not a valid: no cluster exists specified in the current context';
+    }
+
+    const user: User = {
+      // todo is there way to figure out openshift username?
+      name: 'developer',
+      token: token,
+    };
+    const context: Context = {
+      user: user.name,
+      cluster: currentContext.cluster,
       name: 'logged-user',
     };
-    baseKc.addContext(c);
-    baseKc.setCurrentContext('logged-user');
-    return baseKc;
+
+    const kubeconfig = new KubeConfig();
+    kubeconfig.addUser(user);
+    kubeconfig.addCluster(currentCluster);
+    kubeconfig.addContext(context);
+    kubeconfig.setCurrentContext(context.name);
+    return kubeconfig;
   }
 
   getSAKubeConfig(): KubeConfig {
@@ -57,15 +69,4 @@ export class KubeConfigProvider {
     return kc;
   }
 
-  /**
-   * Create a kubernetes client node user with the provided openshift token
-   * @param openShiftToken The openShift token you want to use for the user
-   * @returns A kubernetes client node user object
-   */
-  createUser(openShiftToken: string): User {
-    return {
-      name: 'developer',
-      token: openShiftToken
-    } as User;
-  }
 }

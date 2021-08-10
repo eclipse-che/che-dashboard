@@ -33,14 +33,12 @@ export async function keycloakToOpenShiftToken(keycloakToken: string): Promise<s
     throw new Error('KEYCLOAK_URL environment variable must be set');
   }
   const keycloakEndTrimmed = keycloak.endsWith('/') ? keycloak.substr(-1) : keycloak;
-  const keycloakURL = keycloakEndTrimmed + keycloakAuthPath;
-
-  return axios.get(keycloakURL as string, {
+  return axios.get(keycloakEndTrimmed + keycloakAuthPath, {
     headers: {
       'Authorization': `Bearer ${keycloakToken}`
     },
     httpsAgent: new https.Agent({
       rejectUnauthorized: false
     })
-  });
+  }).then(resp => (resp.data['access_token']));
 }

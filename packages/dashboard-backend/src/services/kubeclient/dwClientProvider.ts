@@ -32,7 +32,8 @@ export class DwClientProvider {
   async getDWClient(keycloakToken: string) {
     let contextKc: KubeConfig;
     if (await this.isOpenShift) {
-      contextKc = this.kubeconfigProvider.getKubeConfig(await keycloakToOpenShiftToken(keycloakToken));
+      const openshiftToken = await keycloakToOpenShiftToken(keycloakToken);
+      contextKc = this.kubeconfigProvider.getKubeConfig(openshiftToken);
     } else {
       await validateToken(keycloakToken);
       contextKc = this.kubeconfigProvider.getSAKubeConfig();
