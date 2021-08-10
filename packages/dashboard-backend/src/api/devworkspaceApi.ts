@@ -13,7 +13,6 @@
 import { FastifyInstance, FastifyRequest } from 'fastify';
 import { baseApiPath, routingClass } from '../constants/config';
 import {
-  authenticationHeaderSchema,
   devfileStartedBody,
   namespacedSchema,
   namespacedWorkspaceSchema
