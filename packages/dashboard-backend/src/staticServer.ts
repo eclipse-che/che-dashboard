@@ -15,22 +15,17 @@ import { FastifyInstance } from 'fastify';
 import fastifyStatic from 'fastify-static';
 import path from 'path';
 
-interface Flags {
-  publicFolder: string;
-}
-
 args
   .option('publicFolder', 'The public folder to serve', './public')
-const flags = args.parse(process.argv) as Flags;
+  .option('cheServerUpstream', 'The upstream for che-server api', process.env.CHE_HOST)
 
-const hostname = '0.0.0.0';
-const { publicFolder } = flags;
+const { publicFolder } = args.parse(process.argv) as { publicFolder: string };
 const rootPath = path.resolve(__dirname, publicFolder);
 
-const startupMessage = `I'll serve "${rootPath}" on "${hostname}:8080".`;
-console.log(startupMessage);
-
 export function startStaticServer(server: FastifyInstance) {
+
+  console.log(`I'll serve "${rootPath}" on 0.0.0.0:8080`);
+
   server.register(fastifyStatic, {
     root: rootPath,
     maxAge: 24 * 60 * 60 * 1000,

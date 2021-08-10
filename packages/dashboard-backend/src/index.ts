@@ -19,7 +19,8 @@ import { startDevworkspaceWebsocketWatcher } from './api/devworkspaceWebsocketWa
 import { startDevworkspaceApi } from './api/devworkspaceApi';
 import { startCheApi } from './api/cheApi';
 import { startTemplateApi } from './api/templateApi';
-import {DwClientProvider} from './services/kubeclient/dwClientProvider';
+import { DwClientProvider } from './services/kubeclient/dwClientProvider';
+import { cheServerApiProxy } from './cheServerApiProxy';
 
 // todo add detection for openshift or kubernetes, we can probably just expose the devworkspace-client api to get that done for us
 // todo add service account for kubernetes with all the needed permissions
@@ -72,6 +73,8 @@ startDevworkspaceWebsocketWatcher(server);
 startTemplateApi(server);
 
 startCheApi(server);
+
+cheServerApiProxy(server);
 
 server.listen(8080, '0.0.0.0', (err, address) => {
   if (err) {

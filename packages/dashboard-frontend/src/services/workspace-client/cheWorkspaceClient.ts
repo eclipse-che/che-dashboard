@@ -110,7 +110,12 @@ export class CheWorkspaceClient extends WorkspaceClient {
     if (this.defaultNamespace) {
       return this.defaultNamespace;
     }
-    const defaultNamespace = (await this.restApiClient.getKubernetesNamespace()).filter(kubernetesNamespace => kubernetesNamespace.attributes.default === 'true');
+    // TODO figure out why default is not present
+    const namespaces = await this.restApiClient.getKubernetesNamespace();
+    if (namespaces.length === 1) {
+      return namespaces[0].name;
+    }
+    const defaultNamespace = namespaces.filter(kubernetesNamespace => kubernetesNamespace.attributes.default === 'true');
     if (defaultNamespace.length === 0) {
       throw new Error('Default namespace is not found');
     }
