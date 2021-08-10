@@ -13,7 +13,7 @@
 import { FastifyInstance, FastifyRequest } from 'fastify';
 import { baseApiPath } from '../constants/config';
 import { templateStartedBody } from '../constants/schemas';
-import { getApiObj } from '../index';
+import { getDevWorkspaceClient } from '../index';
 import { getSchema } from '../services/helpers';
 
 export function startTemplateApi(server: FastifyInstance) {
@@ -23,7 +23,7 @@ export function startTemplateApi(server: FastifyInstance) {
     getSchema({ body: templateStartedBody }),
     async (request: FastifyRequest) => {
       const { template } = request.body as models.TemplateStartedBody;
-      const { templateApi } = await getApiObj(request);
+      const { templateApi } = await getDevWorkspaceClient(request);
 
       return templateApi.create(template);
     }

@@ -17,7 +17,7 @@ import {
   namespacedSchema,
   namespacedWorkspaceSchema
 } from '../constants/schemas';
-import { getApiObj } from '../index';
+import { getDevWorkspaceClient } from '../index';
 import { NamespacedParam } from 'models';
 import { delay, getSchema } from '../services/helpers';
 
@@ -28,7 +28,7 @@ export function startDevworkspaceApi(server: FastifyInstance) {
     getSchema({ body: devfileStartedBody }),
     async (request: FastifyRequest) => {
       const { devfile, started } = request.body as models.DevfileStartedBody;
-      const { devworkspaceApi } = await getApiObj(request);
+      const { devworkspaceApi } = await getDevWorkspaceClient(request);
       // override the namespace from params
       const { namespace } = request.params as NamespacedParam;
       if (devfile.metadata === undefined) {
@@ -62,7 +62,7 @@ export function startDevworkspaceApi(server: FastifyInstance) {
     async (request: FastifyRequest) => {
       const { namespace, workspaceName } = request.params as models.NamespacedWorkspaceParam;
       const patch = request.body as { op: string, path: string, value?: any; } [];
-      const { devworkspaceApi } = await getApiObj(request);
+      const { devworkspaceApi } = await getDevWorkspaceClient(request);
       return devworkspaceApi.patch(namespace, workspaceName, patch);
     }
   );
@@ -72,7 +72,7 @@ export function startDevworkspaceApi(server: FastifyInstance) {
     getSchema({ params: namespacedSchema }),
     async (request: FastifyRequest) => {
       const { namespace } = request.params as models.NamespacedParam;
-      const { devworkspaceApi } = await getApiObj(request);
+      const { devworkspaceApi } = await getDevWorkspaceClient(request);
       return devworkspaceApi.listInNamespace(namespace);
     }
   );
@@ -82,7 +82,7 @@ export function startDevworkspaceApi(server: FastifyInstance) {
     getSchema({ params: namespacedSchema }),
     async (request: FastifyRequest) => {
       const { namespace, workspaceName } = request.params as models.NamespacedWorkspaceParam;
-      const { devworkspaceApi } = await getApiObj(request);
+      const { devworkspaceApi } = await getDevWorkspaceClient(request);
       return devworkspaceApi.getByName(namespace, workspaceName);
     }
   );
@@ -92,7 +92,7 @@ export function startDevworkspaceApi(server: FastifyInstance) {
     getSchema({ params: namespacedWorkspaceSchema }),
     async (request: FastifyRequest) => {
       const { namespace, workspaceName } = request.params as models.NamespacedWorkspaceParam;
-      const { devworkspaceApi } = await getApiObj(request);
+      const { devworkspaceApi } = await getDevWorkspaceClient(request);
       return devworkspaceApi.delete(namespace, workspaceName);
     }
   );

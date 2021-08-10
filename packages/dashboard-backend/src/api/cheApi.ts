@@ -13,7 +13,7 @@
 import { FastifyInstance, FastifyRequest } from 'fastify';
 import { baseApiPath } from '../constants/config';
 import { namespacedSchema } from '../constants/schemas';
-import { getApiObj } from '../index';
+import { getDevWorkspaceClient } from '../index';
 import { getSchema } from '../services/helpers';
 
 export function startCheApi(server: FastifyInstance) {
@@ -23,11 +23,11 @@ export function startCheApi(server: FastifyInstance) {
     getSchema({ params: namespacedSchema }),
     async (request: FastifyRequest) => {
       const { namespace } = request.params as models.NamespacedWorkspaceParam;
-      const { cheApi } = await getApiObj(request);
+      const { cheApi } = await getDevWorkspaceClient(request);
       try {
         await cheApi.initializeNamespace(namespace);
       } catch (e) {
-        return Promise.reject(`Was not able to initialize the namespace '${namespace}'`);
+        return Promise.reject(e);
       }
       return Promise.resolve(true);
     }

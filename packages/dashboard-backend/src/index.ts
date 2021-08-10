@@ -31,7 +31,10 @@ initialize();
 
 const dwClientProvider: DwClientProvider = new DwClientProvider();
 
-export function getApiObj(request: FastifyRequest) {
+/**
+ * Creates DevWorkspace Client depending on the context for the specified request.
+ */
+export function getDevWorkspaceClient(request: FastifyRequest) {
   return dwClientProvider.getDWClient(`${request.headers!.authentication}`);
 }
 
