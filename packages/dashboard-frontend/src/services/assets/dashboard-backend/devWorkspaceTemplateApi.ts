@@ -26,7 +26,7 @@ function addAuthentication(headers: {[key: string]: string}) {
 
 export async function createTemplate(template: IDevWorkspaceTemplate): Promise<IDevWorkspaceTemplate> {
   const headers = addAuthentication({});
-  const url = `${prefix}/namespace/${template.metadata.name}/devworkspacetemplates`;
+  const url = `${prefix}/namespace/${template.metadata.namespace}/devworkspacetemplates`;
   try {
     const response = await axios.post(url, { template }, { headers });
     return response.data;
