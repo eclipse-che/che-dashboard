@@ -19,10 +19,10 @@ const upstream = (args.parse(process.argv) as { cheServerUpstream: string }).che
 
 export function cheServerApiProxy(server: FastifyInstance) {
   const origin = process.env.CHE_HOST;
-  if (upstream !== origin) {
+  if (upstream && upstream !== origin) {
     console.log(`I'll use che-server upstream "${upstream}".`);
 
-    // todo replace this custom proxy with fastifyHttpProxy
+    // todo replace this custom implementation for dummy responses with fastifyHttpProxy
     server.get(`/api/websocket`, {websocket: true} as RouteShorthandOptions, (connection: FastifyRequest) => {
       connection.socket.on('message', message => {
         const data = JSON.parse(message);

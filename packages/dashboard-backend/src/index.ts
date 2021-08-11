@@ -12,7 +12,7 @@
 
 import 'reflect-metadata';
 import fastify, { FastifyRequest } from 'fastify';
-import { baseApiPath } from './constants/config';
+import fastifyCors from 'fastify-cors';
 import { startStaticServer } from './staticServer';
 import { startDevworkspaceWebsocketWatcher } from './api/devworkspaceWebsocketWatcher';
 import { startDevworkspaceApi } from './api/devworkspaceApi';
@@ -20,7 +20,6 @@ import { startCheApi } from './api/cheApi';
 import { startTemplateApi } from './api/templateApi';
 import { DwClientProvider } from './services/kubeclient/dwClientProvider';
 import { cheServerApiProxy } from './cheServerApiProxy';
-
 
 if (!('CHE_HOST' in process.env)) {
   console.error('CHE_HOST environment variable is required');
@@ -31,14 +30,13 @@ const dwClientProvider: DwClientProvider = new DwClientProvider();
 
 const server = fastify();
 
-server.register(require('fastify-cors'),
-  (instance: any) => (req: any, callback: any) => {
-  const regexp = new RegExp(baseApiPath);
-    const corsOptions = regexp.test(instance.origin) ? {
+// TODO replace an 'any' with the target type
+server.register(fastifyCors, () => (req: any, callback: any) => {
+    const corsOptions = /^(https?:\/\/)?localhost:8080/.test(req.headers.host) ? {
+      origin: false
+    } : {
       origin: [process.env.CHE_HOST],
       methods: ['GET', 'POST', 'PATCH', 'DELETE']
-    } : {
-      origin: false
     };
     callback(null, corsOptions);
   }

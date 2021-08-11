@@ -63,6 +63,8 @@ metadata:
 data:
   ADDITIONAL_WEBORIGINS: '"http://localhost:3000"'
   ADDITIONAL_REDIRECT_URIS: '"http://localhost:3000/*"'
+  ADDITIONAL_WEBORIGINS: '"http://localhost:8080"'
+  ADDITIONAL_REDIRECT_URIS: '"http://localhost:8080/*"'
 EOF
 # Due temporary limitation we need to rollout che operator to apply changes
 kubectl rollout restart deployment/che-operator -n $CHE_NAMESPACE
