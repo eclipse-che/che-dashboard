@@ -11,7 +11,7 @@
  */
 
 import DevWorkspaceWatcher from './DevWorkspaceWatcher';
-import { IDevWorkspace, IDevWorkspaceCallbacks } from '@eclipse-che/devworkspace-client';
+import { IDevWorkspace, IDevWorkspaceCallbacks } from '../devworkspace-client';
 
 export type Subscriber = {
   send: (val: string) => void,

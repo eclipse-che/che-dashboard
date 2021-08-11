@@ -10,7 +10,7 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import { IDevWorkspaceCallbacks } from '@eclipse-che/devworkspace-client';
+import { IDevWorkspaceCallbacks } from '../devworkspace-client';
 import {DwClientProvider} from './kubeclient/dwClientProvider';
 
 class DevWorkspaceWatcher {

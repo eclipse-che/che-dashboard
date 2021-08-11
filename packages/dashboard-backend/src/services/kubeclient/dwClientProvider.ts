@@ -11,7 +11,7 @@
  */
 
 import {KubeConfig} from '@kubernetes/client-node';
-import { DevWorkspaceClient } from '@eclipse-che/devworkspace-client';
+import { DevWorkspaceClient } from '../../devworkspace-client';
 import * as k8s from '@kubernetes/client-node';
 import * as helper from './helpers';
 import {KubeConfigProvider} from './kubeConfigProvider';
