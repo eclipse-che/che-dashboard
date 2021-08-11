@@ -17,13 +17,13 @@ import { render, screen, waitFor, fireEvent } from '@testing-library/react';
 import renderer from 'react-test-renderer';
 import userEvent from '@testing-library/user-event';
 import { dump } from 'js-yaml';
-import { IDevWorkspace, IDevWorkspaceDevfile } from '@eclipse-che/devworkspace-client';
+import { IDevWorkspace, IDevWorkspaceDevfile } from '../../../../services/workspace-client/devWorkspaceClient/types';
 import EditorTab from '..';
 import { Workspace, convertWorkspace } from '../../../../services/workspaceAdapter';
 import { CheWorkspaceBuilder } from '../../../../store/__mocks__/cheWorkspaceBuilder';
 import { DevWorkspaceBuilder } from '../../../../store/__mocks__/devWorkspaceBuilder';
 import { FakeStoreBuilder } from '../../../../store/__mocks__/storeBuilder';
-import { DevWorkspaceClient } from '../../../../services/workspace-client/devWorkspaceClient';
+import { Index } from '../../../../services/workspace-client/devWorkspaceClient';
 import { container } from '../../../../inversify.config';
 
 // uses the Devfile Editor mock
@@ -135,13 +135,13 @@ describe('Editor Tab', () => {
 
       const devWorkspaceCopy = JSON.parse(JSON.stringify(devWorkspace));
       // mock devWorkspaceClient method to be able to save the devfile
-      class MockDevWorkspaceClient extends DevWorkspaceClient {
+      class MockDevWorkspaceClient extends Index {
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         async getWorkspaceByName(namespace: string, workspaceName: string): Promise<IDevWorkspace> {
           return devWorkspaceCopy;
         }
       }
-      container.rebind(DevWorkspaceClient).to(MockDevWorkspaceClient).inSingletonScope();
+      container.rebind(Index).to(MockDevWorkspaceClient).inSingletonScope();
 
       const store = new FakeStoreBuilder()
         .withDevWorkspaces({

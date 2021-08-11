@@ -18,6 +18,7 @@ args.option('cheServerUpstream', 'The upstream for che-server api', process.env.
 const upstream = (args.parse(process.argv) as { cheServerUpstream: string }).cheServerUpstream;
 
 export function cheServerApiProxy(server: FastifyInstance) {
+  const origin = process.env.CHE_HOST;
   if (upstream !== origin) {
     console.log(`I'll use che-server upstream "${upstream}".`);
 

@@ -10,7 +10,7 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import { IDevWorkspace } from '@eclipse-che/devworkspace-client';
+import { IDevWorkspace } from '../../services/workspace-client/devWorkspaceClient/types';
 import getRandomString from '../../services/helpers/random';
 import { DevWorkspaceStatus, WorkspaceStatus } from '../../services/helpers/types';
 

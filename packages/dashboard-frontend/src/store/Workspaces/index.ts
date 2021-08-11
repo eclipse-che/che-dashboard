@@ -13,7 +13,7 @@
 import { Reducer } from 'redux';
 import { AppThunk } from '..';
 import { createObject } from '../helpers';
-import { IDevWorkspace, IDevWorkspaceDevfile } from '@eclipse-che/devworkspace-client';
+import { IDevWorkspace, IDevWorkspaceDevfile } from '../../services/workspace-client/devWorkspaceClient/types';
 import {
   convertWorkspace,
   isWorkspaceV2,

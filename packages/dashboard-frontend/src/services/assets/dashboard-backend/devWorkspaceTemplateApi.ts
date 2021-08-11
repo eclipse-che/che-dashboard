@@ -11,7 +11,7 @@
  */
 
 import axios from 'axios';
-import { IDevWorkspaceTemplate } from '@eclipse-che/devworkspace-client';
+import { IDevWorkspaceTemplate } from '../../workspace-client/devWorkspaceClient/types';
 import { getErrorMessage } from '../../helpers/getErrorMessage';
 import { KeycloakAuthService } from '../../keycloak/auth';
 import { prefix } from './const';

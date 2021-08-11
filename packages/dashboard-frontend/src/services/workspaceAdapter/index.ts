@@ -13,11 +13,11 @@
 import {
   IDevWorkspace,
   IDevWorkspaceDevfile,
-} from '@eclipse-che/devworkspace-client';
+} from '../workspace-client/devWorkspaceClient/types';
 import {
   devfileToDevWorkspace,
   devWorkspaceToDevfile,
-} from '@eclipse-che/devworkspace-client/client';
+} from '../workspace-client/devWorkspaceClient/converters';
 import { attributesToType, typeToAttributes } from '../storageTypes';
 import { DevWorkspaceStatus, WorkspaceStatus } from '../helpers/types';
 import { DEVWORKSPACE_NEXT_START_ANNOTATION } from '../workspace-client/devWorkspaceClient';

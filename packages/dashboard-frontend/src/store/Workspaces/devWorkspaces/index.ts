@@ -16,9 +16,9 @@ import { AppThunk } from '../..';
 import { container } from '../../../inversify.config';
 import { DevWorkspaceStatus } from '../../../services/helpers/types';
 import { createObject } from '../../helpers';
-import { DevWorkspaceClient, DEVWORKSPACE_NEXT_START_ANNOTATION, IStatusUpdate } from '../../../services/workspace-client/devWorkspaceClient';
+import { Index, DEVWORKSPACE_NEXT_START_ANNOTATION, IStatusUpdate } from '../../../services/workspace-client/devWorkspaceClient';
 import { CheWorkspaceClient } from '../../../services/workspace-client/cheWorkspaceClient';
-import { IDevWorkspace, IDevWorkspaceDevfile } from '@eclipse-che/devworkspace-client';
+import { IDevWorkspace, IDevWorkspaceDevfile } from '../../../services/workspace-client/devWorkspaceClient/types';
 import { deleteLogs, mergeLogs } from '../logs';
 import { getErrorMessage } from '../../../services/helpers/getErrorMessage';
 import { getDefer, IDeferred } from '../../../services/helpers/deferred';
@@ -26,7 +26,7 @@ import { DisposableCollection } from '../../../services/helpers/disposable';
 import { selectDwPluginsList } from '../../Plugins/devWorkspacePlugins/selectors';
 
 const cheWorkspaceClient = container.get(CheWorkspaceClient);
-const devWorkspaceClient = container.get(DevWorkspaceClient);
+const devWorkspaceClient = container.get(Index);
 
 const devWorkspaceStatusMap = new Map<string, string | undefined>();
 const onStatusChangeCallbacks = new Map<string, (status: string) => void>();
