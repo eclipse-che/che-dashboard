@@ -15,8 +15,10 @@ import { isWebTerminal } from '../helpers/devworkspace';
 import { WorkspaceClient } from '.';
 import {
   IDevWorkspaceDevfile, IDevWorkspace, IDevWorkspaceTemplate, IPatch,
-  devWorkspaceApiGroup, devworkspaceSingularSubresource, devworkspaceVersion
 } from '@eclipse-che/devworkspace-client';
+import {
+  devWorkspaceApiGroup, devworkspaceSingularSubresource, devworkspaceVersion
+} from '@eclipse-che/devworkspace-client/client';
 import { DevWorkspaceStatus } from '../helpers/types';
 import { KeycloakSetupService } from '../keycloak/setup';
 import { delay } from '../helpers/delay';
