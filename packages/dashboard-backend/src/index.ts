@@ -87,5 +87,5 @@ server.ready(() => {
  */
 export function getDevWorkspaceClient(request: FastifyRequest) {
   console.log(request.headers);
-  return dwClientProvider.getDWClient(`${request.headers!.authentication}`);
+  return dwClientProvider.getDWClient(`${request.headers!.Authorization}`);
 }

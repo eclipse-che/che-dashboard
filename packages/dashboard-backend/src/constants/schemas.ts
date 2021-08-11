@@ -13,11 +13,11 @@
 export const authenticationHeaderSchema = {
     type: 'object',
     properties: {
-        'authentication': { 
+        'Authorization': {
           type: 'string'
         }
     },
-    required: ['authentication']
+    required: ['Authorization']
 };
 
 export const namespacedWorkspaceSchema = {
