@@ -16,6 +16,7 @@ import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { RouteComponentProps } from 'react-router';
 import WorkspaceDetails, { WorkspaceDetails as Details } from '../pages/WorkspaceDetails';
+import { getErrorMessage } from '../services/helpers/getErrorMessage';
 import { buildDetailsLocation, toHref, buildWorkspacesLocation } from '../services/helpers/location';
 import { WorkspaceDetailsTab } from '../services/helpers/types';
 import { Workspace } from '../services/workspace-adapter';
@@ -112,10 +113,11 @@ class WorkspaceDetailsContainer extends React.Component<Props> {
       this.props.setWorkspaceId(changedWorkspace.id);
       this.props.history.replace(location);
     } catch (e) {
+      const errorMessage = getErrorMessage(e);
       if (this.workspaceDetailsPageRef.current?.state.activeTabKey === WorkspaceDetailsTab.DEVFILE) {
-        throw e;
+        throw errorMessage;
       }
-      this.showAlert(e);
+      this.showAlert(errorMessage);
     }
   }
 

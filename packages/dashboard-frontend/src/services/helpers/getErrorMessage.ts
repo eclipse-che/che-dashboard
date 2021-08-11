@@ -10,9 +10,10 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import { AxiosResponse } from 'axios';
+import { AxiosError, AxiosResponse } from 'axios';
 
-export function getErrorMessage(error: Error | AxiosResponse): string {
+// export function getErrorMessage(error: Error | AxiosResponse): string {
+export function getErrorMessage(error: unknown): string {
   if (!error) {
     return '';
   }
@@ -29,10 +30,15 @@ export function getErrorMessage(error: Error | AxiosResponse): string {
   return JSON.stringify(error);
 }
 
-function isError(error: Error | any): error is Error {
-  return error.message !== undefined;
+export function isError(error: unknown): error is Error {
+  return (error as Error).message !== undefined;
 }
 
-function isAxiosResponse(response: AxiosResponse | any): response is AxiosResponse {
-  return response.status !== undefined && response.data !== undefined;
+export function isAxiosResponse(response: unknown): response is AxiosResponse {
+  return (response as AxiosResponse).status !== undefined
+    && (response as AxiosResponse).data !== undefined;
+}
+
+export function isAxiosError(object: unknown): object is AxiosError {
+  return (object as AxiosError).isAxiosError === true;
 }

@@ -33,6 +33,7 @@ import { ROUTE } from '../../route.enum';
 import { Workspace } from '../../services/workspace-adapter';
 import { selectBranding } from '../../store/Branding/selectors';
 import { selectRegistriesErrors } from '../../store/DevfileRegistries/selectors';
+import { getErrorMessage } from '../../services/helpers/getErrorMessage';
 
 const SamplesListTab = React.lazy(() => import('./GetStartedTab'));
 const CustomWorkspaceTab = React.lazy(() => import('./CustomWorkspaceTab'));
@@ -116,10 +117,11 @@ export class GetStarted extends React.PureComponent<Props, State> {
     try {
       workspace = await this.props.createWorkspaceFromDevfile(devfile, undefined, infrastructureNamespace, attr, optionalFilesContent);
     } catch (e) {
+      const errorMessage = getErrorMessage(e);
       this.showAlert({
         key: 'new-workspace-failed',
         variant: AlertVariant.danger,
-        title: e,
+        title: errorMessage,
       });
       throw e;
     }
@@ -135,12 +137,13 @@ export class GetStarted extends React.PureComponent<Props, State> {
     try {
       this.props.history.push(`/ide/${workspace.namespace}/${workspaceName}`);
     } catch (error) {
+      const errorMessage = getErrorMessage(error);
       this.showAlert({
         key: 'start-workspace-failed',
         variant: AlertVariant.warning,
-        title: `Workspace ${workspaceName} failed to start. ${error}`,
+        title: `Workspace ${workspaceName} failed to start. ${errorMessage}`,
       });
-      throw new Error(error);
+      throw new Error(errorMessage);
     }
   }
 

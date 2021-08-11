@@ -42,6 +42,7 @@ import { buildRows, RowData } from './Rows';
 import { isWorkspaceV1, Workspace } from '../../services/workspace-adapter';
 
 import * as styles from './index.module.css';
+import { getErrorMessage } from '../../services/helpers/getErrorMessage';
 
 type Props = {
   branding: BrandingData;
@@ -208,7 +209,8 @@ export default class WorkspacesList extends React.PureComponent<Props, State> {
     } catch (e) {
       const workspace = this.props.workspaces.find(workspace => id === workspace.id);
       const workspaceName = workspace?.name ? ` "${workspace?.name}"` : '';
-      const message = `Unable to ${action.toLocaleLowerCase()}${workspaceName}. ` + e.toString().replace('Error: ', '');
+      const errorMessage = getErrorMessage(e);
+      const message = `Unable to ${action.toLocaleLowerCase()}${workspaceName}. ` + errorMessage.replace('Error: ', '');
       this.showAlert(message);
       console.warn(message);
     }
@@ -240,7 +242,8 @@ export default class WorkspacesList extends React.PureComponent<Props, State> {
       } catch (e) {
         const workspace = this.props.workspaces.find(workspace => id === workspace.id);
         const workspaceName = workspace?.name ? ` "${workspace?.name}"` : '';
-        const message = `Unable to ${workspace && isWorkspaceV1(workspace.ref) ? 'delete' : 'terminate'} workspace${workspaceName}. ` + e.toString().replace('Error: ', '');
+        const errorMessage = getErrorMessage(e);
+        const message = `Unable to ${workspace && isWorkspaceV1(workspace.ref) ? 'delete' : 'terminate'} workspace${workspaceName}. ` + errorMessage.replace('Error: ', '');
         this.showAlert(message);
         console.warn(message);
         throw new Error(message);

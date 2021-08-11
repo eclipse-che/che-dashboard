@@ -130,7 +130,8 @@ export const actionCreators: ActionCreators = {
             url,
             metadata,
           });
-        } catch (error) {
+        } catch (e) {
+          const error = getErrorMessage(e);
           dispatch({
             type: 'RECEIVE_REGISTRY_ERROR',
             url,

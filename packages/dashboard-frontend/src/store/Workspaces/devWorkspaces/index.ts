@@ -20,7 +20,7 @@ import { DevWorkspaceClient, DEVWORKSPACE_NEXT_START_ANNOTATION, IStatusUpdate }
 import { CheWorkspaceClient } from '../../../services/workspace-client/cheworkspace/cheWorkspaceClient';
 import { IDevWorkspace, IDevWorkspaceDevfile } from '../../../services/workspace-client/devworkspace/types';
 import { deleteLogs, mergeLogs } from '../logs';
-import { getErrorMessage } from '../../../services/helpers/getErrorMessage';
+import { getErrorMessage, isAxiosError } from '../../../services/helpers/getErrorMessage';
 import { getDefer, IDeferred } from '../../../services/helpers/deferred';
 import { DisposableCollection } from '../../../services/helpers/disposable';
 import { selectDwPluginsList } from '../../Plugins/devWorkspacePlugins/selectors';
@@ -286,20 +286,20 @@ export const actionCreators: ActionCreators = {
       });
       dispatch({ type: 'DELETE_DEVWORKSPACE_LOGS', workspaceId });
     } catch (e) {
-      const errorMessage = e?.message || '';
-      const code = e?.response?.status || '';
-      const statusText = e?.response?.statusText || '';
-      const responseMessage = e?.response?.data?.message || '';
+      let message = 'Unknown error.';
+      if (isAxiosError(e)) {
+        const errorMessage = e?.message || '';
+        const code = e?.response?.status || '';
+        const statusText = e?.response?.statusText || '';
+        const responseMessage = e?.response?.data?.message || '';
 
-      let message: string;
-      if (responseMessage) {
-        message = responseMessage;
-      } else if (errorMessage) {
-        message = errorMessage;
-      } else if (code && statusText) {
-        message = `Response code ${code}, ${statusText}.`;
-      } else {
-        message = 'Unknown error.';
+        if (responseMessage) {
+          message = responseMessage;
+        } else if (errorMessage) {
+          message = errorMessage;
+        } else if (code && statusText) {
+          message = `Response code ${code}, ${statusText}.`;
+        }
       }
 
       const resMessage = `Failed to delete the workspace ${workspace.metadata.name}, reason: ` + message;

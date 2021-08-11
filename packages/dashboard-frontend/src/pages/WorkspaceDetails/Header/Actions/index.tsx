@@ -22,6 +22,7 @@ import { ActionContextType, WorkspaceActionsConsumer } from '../../../../contain
 import { lazyInject } from '../../../../inversify.config';
 import { AppAlerts } from '../../../../services/alerts/appAlerts';
 import getRandomString from '../../../../services/helpers/random';
+import { getErrorMessage } from '../../../../services/helpers/getErrorMessage';
 
 type Props = {
   workspaceId: string;
@@ -74,7 +75,8 @@ export class HeaderActionSelect extends React.PureComponent<Props, State> {
       }
       this.props.history.push(nextPath);
     } catch (e) {
-      const message = `Unable to ${selected.toLocaleLowerCase()} ${this.props.workspaceName}. ` + e.toString().replace('Error: ', '');
+      const errorMessage = getErrorMessage(e);
+      const message = `Unable to ${selected.toLocaleLowerCase()} ${this.props.workspaceName}. ` + errorMessage.replace('Error: ', '');
       this.showAlert(message);
       console.warn(message);
     }

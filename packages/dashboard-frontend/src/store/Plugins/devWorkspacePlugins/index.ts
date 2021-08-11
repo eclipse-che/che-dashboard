@@ -16,6 +16,7 @@ import { Action, Reducer } from 'redux';
 import { AppThunk } from '../..';
 import { fetchDevfile, fetchData } from '../../../services/registry/devfiles';
 import { createObject } from '../../helpers';
+import { getErrorMessage } from '../../../services/helpers/getErrorMessage';
 
 export interface State {
   isLoading: boolean;
@@ -82,13 +83,14 @@ export const actionCreators: ActionCreators = {
         url,
         plugin,
       });
-    } catch (error) {
+    } catch (e) {
+      const errorMessage = getErrorMessage(e);
       dispatch({
         type: 'RECEIVE_DW_PLUGIN_ERROR',
         url,
-        error,
+        error: errorMessage,
       });
-      throw error;
+      throw errorMessage;
     }
   },
 

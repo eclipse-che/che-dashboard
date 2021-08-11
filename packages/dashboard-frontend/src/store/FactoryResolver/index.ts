@@ -18,7 +18,7 @@ import { container } from '../../inversify.config';
 import { CheWorkspaceClient } from '../../services/workspace-client/cheworkspace/cheWorkspaceClient';
 import { AppThunk } from '../index';
 import { createObject } from '../helpers';
-import { getErrorMessage } from '../../services/helpers/getErrorMessage';
+import { getErrorMessage, isAxiosError } from '../../services/helpers/getErrorMessage';
 import { getDevfile } from './getDevfile';
 
 const WorkspaceClient = container.get(CheWorkspaceClient);
@@ -99,7 +99,7 @@ export async function grabLink(links: api.che.core.rest.Link, filename: string):
     return response.data;
   } catch (error) {
     // content may not be there
-    if (error.response.status == 404) {
+    if (isAxiosError(error) && error?.response?.status == 404) {
       return undefined;
     }
     throw error;

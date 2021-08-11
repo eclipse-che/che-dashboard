@@ -29,6 +29,7 @@ import { ResourceFetcherService } from '../resource-fetcher';
 import { IssuesReporterService } from './issuesReporter';
 import { CheWorkspaceClient } from '../workspace-client/cheworkspace/cheWorkspaceClient';
 import { DevWorkspaceClient } from '../workspace-client/devworkspace/devWorkspaceClient';
+import { getErrorMessage } from '../helpers/getErrorMessage';
 
 /**
  * This class prepares all init data.
@@ -85,7 +86,8 @@ export class PreloadData {
     try {
       await requestBranding()(this.store.dispatch, this.store.getState, undefined);
     } catch (e) {
-      this.issuesReporterService.registerIssue('unknown', new Error(e));
+      const errorMessage = getErrorMessage(e);
+      this.issuesReporterService.registerIssue('unknown', new Error(errorMessage));
     }
   }
 

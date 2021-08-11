@@ -18,6 +18,7 @@ import { AppThunk } from '..';
 import { container } from '../../inversify.config';
 import { CheWorkspaceClient } from '../../services/workspace-client/cheworkspace/cheWorkspaceClient';
 import { ContainerCredentials, RegistryRow } from './types';
+import { getErrorMessage } from '../../services/helpers/getErrorMessage';
 
 const WorkspaceClient = container.get(CheWorkspaceClient);
 
@@ -53,7 +54,8 @@ export const actionCreators: ActionCreators = {
       dispatch({ type: 'RECEIVE_USER_PREFERENCES', preferences: data });
       return;
     } catch (e) {
-      throw new Error(e.message ? e.message : 'Failed to request user preferences');
+      const errorMessage = 'Failed to request user preferences, reason: ' + getErrorMessage(e);
+      throw new Error(errorMessage);
     }
   },
   replaceUserPreferences: (preferences: che.UserPreferences): AppThunk<KnownAction, Promise<void>> => async (dispatch): Promise<void> => {
@@ -64,7 +66,8 @@ export const actionCreators: ActionCreators = {
       dispatch({ type: 'RECEIVE_USER_PREFERENCES', preferences });
       return;
     } catch (e) {
-      throw new Error(e.message ? e.message : 'Failed to replace user preferences');
+      const errorMessage = 'Failed to update user preferences, reason: ' + getErrorMessage(e);
+      throw new Error(errorMessage);
     }
   },
   updateContainerRegistries: (registries: RegistryRow[]): AppThunk<KnownAction, Promise<void>> => async (dispatch): Promise<void> => {
@@ -80,7 +83,8 @@ export const actionCreators: ActionCreators = {
       dispatch({ type: 'RECEIVE_USER_PREFERENCES', preferences });
       return;
     } catch (e) {
-      throw new Error(e.message ? e.message : 'Failed to update docker registries');
+      const errorMessage = 'Failed to update docker registries, reason: ' + getErrorMessage(e);
+      throw new Error(errorMessage);
     }
   },
 };

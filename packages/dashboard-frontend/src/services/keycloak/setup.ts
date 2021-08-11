@@ -18,6 +18,7 @@ import { KeycloakInstance } from 'keycloak-js';
 import { IssuesReporterService } from '../bootstrap/issuesReporter';
 import { KeycloakAuthService } from './auth';
 import isDocumentReady from '../helpers/document';
+import { isAxiosError } from '../helpers/getErrorMessage';
 
 const keycloakSettingsFields = [
   'che.keycloak.oidc_provider',
@@ -134,15 +135,16 @@ export class KeycloakSetupService {
 
       return settings;
     } catch (e) {
-      if (e.response?.status === 404) {
+      if (isAxiosError(e) && e?.response?.status === 404) {
         return;
       }
 
-      const errorMessage = 'Cannot get Keycloak settings' + (
-        e.response?.status === undefined
-          ? '. Response is not available, please check console for details.'
-          : `: ${e.response?.status} ${e.response?.statusText}`
-      );
+      let errorMessage = 'Cannot get Keycloak settings';
+      if (isAxiosError(e) && e?.response?.status) {
+        errorMessage += `: ${e.response?.status} ${e.response?.statusText}`;
+      } else {
+        errorMessage += '. Response is not available, please check console for details.';
+      }
       throw new Error(errorMessage);
     }
   }
