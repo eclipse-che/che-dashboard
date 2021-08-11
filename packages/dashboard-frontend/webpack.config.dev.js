@@ -105,7 +105,7 @@ module.exports = (env = {}) => {
           changeOrigin: true,
           headers: headers
         },
-        '/dashboard/api/k8s/websocket': {
+        '/dashboard/api/websocket': {
           target: dashboardServer,
           ws: true,
           secure: false,
@@ -114,7 +114,7 @@ module.exports = (env = {}) => {
             origin: dashboardServer,
           },
         },
-        '/dashboard/api/k8s': {
+        '/dashboard/api': {
           target: dashboardServer,
           secure: false,
           changeOrigin: true,
