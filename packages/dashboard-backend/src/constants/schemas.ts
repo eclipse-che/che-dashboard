@@ -13,11 +13,11 @@
 export const authenticationHeaderSchema = {
     type: 'object',
     properties: {
-        'Authorization': {
+        'authorization': {
           type: 'string'
         }
     },
-    required: ['Authorization']
+    required: ['authorization']
 };
 
 export const namespacedWorkspaceSchema = {
@@ -31,7 +31,7 @@ export const namespacedWorkspaceSchema = {
     }
   },
   required: ['namespace', 'workspaceName']
-}
+};
 
 export const namespacedSchema = {
   type: 'object',
@@ -41,7 +41,7 @@ export const namespacedSchema = {
     },
   },
   required: ['namespace']
-}
+};
 
 export const devfileStartedBody = {
   type: 'object',
@@ -54,7 +54,7 @@ export const devfileStartedBody = {
     }
   },
   required: ['devfile', 'started']
-}
+};
 
 export const templateStartedBody = {
     type: 'object',
@@ -64,4 +64,4 @@ export const templateStartedBody = {
       }
     },
     required: ['template']
-}
+};
