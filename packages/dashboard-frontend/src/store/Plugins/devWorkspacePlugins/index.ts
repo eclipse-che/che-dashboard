@@ -10,7 +10,7 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import { IDevWorkspaceDevfile } from '@eclipse-che/devworkspace-client';
+import { IDevWorkspaceDevfile } from '../../../services/workspace-client/devWorkspaceClient/types';
 import { safeLoad } from 'js-yaml';
 import { Action, Reducer } from 'redux';
 import { AppThunk } from '../..';

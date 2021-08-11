@@ -26,7 +26,7 @@ import { State as PluginsState } from '../Plugins/chePlugins';
 import { State as UserState } from '../User';
 import { State as UserProfileState } from '../UserProfile';
 import mockThunk from './thunk';
-import { IDevWorkspace, IDevWorkspaceDevfile } from '@eclipse-che/devworkspace-client';
+import { IDevWorkspace, IDevWorkspaceDevfile } from '../../services/workspace-client/devWorkspaceClient/types';
 
 export class FakeStoreBuilder {
 

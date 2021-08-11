@@ -15,7 +15,7 @@ import { baseApiPath } from '../constants/config';
 import { templateStartedBody } from '../constants/schemas';
 import { getDevWorkspaceClient } from '../index';
 import { getSchema } from '../services/helpers';
-import { NamespacedParam } from '../typings/models';
+import { NamespacedParam } from 'models';
 
 export function startTemplateApi(server: FastifyInstance) {
   server.post(

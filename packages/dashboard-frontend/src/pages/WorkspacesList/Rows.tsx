@@ -17,7 +17,7 @@ import WorkspaceIndicator from '../../components/Workspace/Indicator';
 import { formatDate, formatRelativeDate } from '../../services/helpers/date';
 import { buildDetailsLocation, toHref, buildIdeLoaderLocation } from '../../services/helpers/location';
 import { isWorkspaceV1, Workspace } from '../../services/workspaceAdapter';
-import { IDevWorkspaceDevfile } from '@eclipse-che/devworkspace-client';
+import { IDevWorkspaceDevfile } from '../../services/workspace-client/devWorkspaceClient/types';
 import { DevWorkspaceStatus } from '../../services/helpers/types';
 
 export interface RowData extends IRow {

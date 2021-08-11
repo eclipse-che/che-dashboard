@@ -23,7 +23,7 @@ import FactoryLoaderContainer, { LoadFactorySteps } from '../FactoryLoader';
 import { AlertOptions } from '../../pages/IdeLoader';
 import { convertWorkspace, Workspace } from '../../services/workspaceAdapter';
 import { DevWorkspaceBuilder } from '../../store/__mocks__/devWorkspaceBuilder';
-import { IDevWorkspace } from '@eclipse-che/devworkspace-client';
+import { IDevWorkspace } from '../../services/workspace-client/devWorkspaceClient/types';
 import { safeDump } from 'js-yaml';
 
 const showAlertMock = jest.fn();

@@ -10,11 +10,9 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import mockAxios, { AxiosError } from 'axios';
 import { MockStoreEnhanced } from 'redux-mock-store';
-import { AnyAction } from 'redux';
 import { ThunkDispatch } from 'redux-thunk';
-import { IDevWorkspaceDevfile } from '@eclipse-che/devworkspace-client';
+import { IDevWorkspaceDevfile } from '../../../../services/workspace-client/devWorkspaceClient/types';
 import { FakeStoreBuilder } from '../../../__mocks__/storeBuilder';
 import * as store from '..';
 import { AppState } from '../../..';

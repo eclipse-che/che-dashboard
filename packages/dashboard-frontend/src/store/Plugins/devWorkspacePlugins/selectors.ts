@@ -12,7 +12,7 @@
 
 import { createSelector } from 'reselect';
 import { AppState } from '../..';
-import { IDevWorkspaceDevfile } from '@eclipse-che/devworkspace-client';
+import { IDevWorkspaceDevfile } from '../../../services/workspace-client/devWorkspaceClient/types';
 
 const selectState = (state: AppState) => state.dwPlugins;
 export const selectPluginsState = selectState;

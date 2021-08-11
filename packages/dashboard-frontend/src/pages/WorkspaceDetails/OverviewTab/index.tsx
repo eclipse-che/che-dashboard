@@ -17,7 +17,7 @@ import { WorkspaceNameFormGroup } from './WorkspaceName';
 import InfrastructureNamespaceFormGroup from './InfrastructureNamespace';
 import ProjectsFormGroup from './Projects';
 import { convertWorkspace, isWorkspaceV2, Workspace } from '../../../services/workspaceAdapter';
-import { IDevWorkspaceDevfile } from '@eclipse-che/devworkspace-client';
+import { IDevWorkspaceDevfile } from '../../../services/workspace-client/devWorkspaceClient/types';
 
 type Props = {
   onSave: (workspace: Workspace) => Promise<void>;

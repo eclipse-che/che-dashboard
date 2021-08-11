@@ -11,29 +11,29 @@
  */
 
 import { inject, injectable } from 'inversify';
-import { isWebTerminal } from '../helpers/devworkspace';
-import { WorkspaceClient } from '.';
+import { isWebTerminal } from '../../helpers/devworkspace';
+import { WorkspaceClient } from '../index';
 import {
   IDevWorkspaceDevfile, IDevWorkspace, IDevWorkspaceTemplate, IPatch,
-} from '@eclipse-che/devworkspace-client';
+} from './types';
 import {
   devWorkspaceApiGroup, devworkspaceSingularSubresource, devworkspaceVersion
-} from '@eclipse-che/devworkspace-client/client';
-import { DevWorkspaceStatus } from '../helpers/types';
-import { KeycloakSetupService } from '../keycloak/setup';
-import { delay } from '../helpers/delay';
+} from './converters';
+import { DevWorkspaceStatus } from '../../helpers/types';
+import { KeycloakSetupService } from '../../keycloak/setup';
+import { delay } from '../../helpers/delay';
 import { ThunkDispatch } from 'redux-thunk';
-import { State } from '../../store/Workspaces/devWorkspaces';
+import { State } from '../../../store/Workspaces/devWorkspaces';
 import { Action } from 'redux';
-import { AppState, AppThunk } from '../../store';
+import { AppState, AppThunk } from '../../../store';
 import { V1alpha2DevWorkspace, V1alpha2DevWorkspaceTemplate, V1alpha2DevWorkspaceSpecTemplate } from '@devfile/api';
 import { InversifyBinding } from '@eclipse-che/che-theia-devworkspace-handler/lib/inversify/inversify-binding';
 import { CheTheiaPluginsDevfileResolver } from '@eclipse-che/che-theia-devworkspace-handler/lib/devfile/che-theia-plugins-devfile-resolver';
 import { SidecarPolicy } from '@eclipse-che/che-theia-devworkspace-handler/lib/api/devfile-context';
-import * as DwApi from '../assets/dashboard-backend/devWorkspaceApi';
-import * as DwtApi from '../assets/dashboard-backend/devWorkspaceTemplateApi';
-import * as DwCheApi from '../assets/dashboard-backend/cheWorkspaceApi';
-import { WebsocketClient, SubscribeMessage } from '../assets/dashboard-backend/websocketClient';
+import * as DwApi from '../../assets/dashboard-backend/devWorkspaceApi';
+import * as DwtApi from '../../assets/dashboard-backend/devWorkspaceTemplateApi';
+import * as DwCheApi from '../../assets/dashboard-backend/cheWorkspaceApi';
+import { WebsocketClient, SubscribeMessage } from '../../assets/dashboard-backend/websocketClient';
 export interface IStatusUpdate {
   error?: string;
   message?: string;
@@ -52,7 +52,7 @@ export const DEVWORKSPACE_METADATA_ANNOTATION = 'dw.metadata.annotations';
  * This class manages the connection between the frontend and the devworkspace typescript library
  */
 @injectable()
-export class DevWorkspaceClient extends WorkspaceClient {
+export class Index extends WorkspaceClient {
   private previousItems: Map<string, Map<string, IStatusUpdate>>;
   private readonly maxStatusAttempts: number;
   private lastDevWorkspaceLog: Map<string, string>;
