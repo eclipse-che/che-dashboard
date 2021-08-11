@@ -34,7 +34,7 @@ export function startDevworkspaceApi(server: FastifyInstance) {
       if (devfile.metadata === undefined) {
         devfile.metadata = {};
       }
-      devfile.metadata.namespace = namespace
+      devfile.metadata.namespace = namespace;
 
       const workspace = await devworkspaceApi.create(devfile, routingClass, started);
       // we need to wait until the devworkspace has a status property
@@ -49,7 +49,7 @@ export function startDevworkspaceApi(server: FastifyInstance) {
         count += 1;
       }
       if (!found) {
-        const message = `Was not able to find a workspace with name '${devfile.metadata.name}' in namespace ${routingClass}`;
+        const message = `Was not able to find a workspace with name '${devfile.metadata.name}' in namespace ${workspace.metadata.namespace}`;
         return  Promise.reject(message);
       }
       return found;

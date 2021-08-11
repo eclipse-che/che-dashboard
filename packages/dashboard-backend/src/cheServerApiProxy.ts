@@ -10,28 +10,25 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 import args from 'args';
-import { FastifyInstance, FastifyRequest, RouteShorthandOptions } from 'fastify';
+import {FastifyInstance, FastifyRequest, RouteShorthandOptions} from 'fastify';
 import fastifyHttpProxy from 'fastify-http-proxy';
 
-args
-  .option('cheServerUpstream', 'The upstream for che-server api', process.env.CHE_HOST)
+args.option('cheServerUpstream', 'The upstream for che-server api', process.env.CHE_HOST);
 
-const upstream  = (args.parse(process.argv) as { cheServerUpstream: string }).cheServerUpstream;
+const upstream = (args.parse(process.argv) as { cheServerUpstream: string }).cheServerUpstream;
 
 export function cheServerApiProxy(server: FastifyInstance) {
-  const origin = process.env.CHE_HOST;
-
   if (upstream !== origin) {
     console.log(`I'll use che-server upstream "${upstream}".`);
 
-    // TODO replace this custom proxy with fastifyHttpProxy
-    server.get(`/api/websocket`, { websocket: true } as RouteShorthandOptions, (connection: FastifyRequest) => {
+    // todo replace this custom proxy with fastifyHttpProxy
+    server.get(`/api/websocket`, {websocket: true} as RouteShorthandOptions, (connection: FastifyRequest) => {
       connection.socket.on('message', message => {
-          const data = JSON.parse(message);
-          if (data!.id && data!.jsonrpc) {
-               (connection.socket as any).send(JSON.stringify({ jsonrpc: data.jsonrpc, id: data.id, result: [] }));
-          }
-      })
+        const data = JSON.parse(message);
+        if (data!.id && data!.jsonrpc) {
+          (connection.socket as any).send(JSON.stringify({jsonrpc: data.jsonrpc, id: data.id, result: []}));
+        }
+      });
     });
     // server.register(fastifyHttpProxy, {
     //   upstream: upstream.replace(/^http/, 'ws'),
@@ -54,10 +51,9 @@ export function cheServerApiProxy(server: FastifyInstance) {
       websocket: false,
       replyOptions: {
         rewriteRequestHeaders: (originalReq, headers) => {
-          return Object.assign({...headers}, { origin });
+          return Object.assign({...headers}, {origin});
         }
       }
     });
-
   }
 }

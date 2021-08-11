@@ -12,7 +12,6 @@
 
 import 'reflect-metadata';
 import fastify, { FastifyRequest } from 'fastify';
-import { initialize } from './nodeConfig';
 import { baseApiPath } from './constants/config';
 import { startStaticServer } from './staticServer';
 import { startDevworkspaceWebsocketWatcher } from './api/devworkspaceWebsocketWatcher';
@@ -22,21 +21,13 @@ import { startTemplateApi } from './api/templateApi';
 import { DwClientProvider } from './services/kubeclient/dwClientProvider';
 import { cheServerApiProxy } from './cheServerApiProxy';
 
-// todo add detection for openshift or kubernetes, we can probably just expose the devworkspace-client api to get that done for us
-// todo add service account for kubernetes with all the needed permissions
-// todo make it work on kubernetes
 
-// initialize the server and exit if any needed environment variables aren't found
-initialize();
+if (!('CHE_HOST' in process.env)) {
+  console.error('CHE_HOST environment variable is required');
+  process.exit(1);
+}
 
 const dwClientProvider: DwClientProvider = new DwClientProvider();
-
-/**
- * Creates DevWorkspace Client depending on the context for the specified request.
- */
-export function getDevWorkspaceClient(request: FastifyRequest) {
-  return dwClientProvider.getDWClient(`${request.headers!.authentication}`);
-}
 
 const server = fastify();
 
@@ -90,3 +81,10 @@ server.listen(8080, '0.0.0.0', (err, address) => {
 server.ready(() => {
   console.log(server.printRoutes());
 });
+
+/**
+ * Creates DevWorkspace Client depending on the context for the specified request.
+ */
+export function getDevWorkspaceClient(request: FastifyRequest) {
+  return dwClientProvider.getDWClient(`${request.headers!.authentication}`);
+}

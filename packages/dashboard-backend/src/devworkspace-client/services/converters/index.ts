@@ -15,7 +15,7 @@ import { devworkspaceVersion, devWorkspaceApiGroup } from '../../const';
 
 export function devfileToDevWorkspace(devfile: IDevWorkspaceDevfile, routingClass: string, started: boolean): IDevWorkspace {
     const devfileAttributes = devfile.metadata.attributes || {};
-    const devWorkspaceAnnotations = devfileAttributes['dw.metadata.annotations'] || {}
+    const devWorkspaceAnnotations = devfileAttributes['dw.metadata.annotations'] || {};
     const template = {
         apiVersion: `${devWorkspaceApiGroup}/${devworkspaceVersion}`,
         kind: 'DevWorkspace',
@@ -70,7 +70,7 @@ export function devWorkspaceToDevfile(devworkspace: IDevWorkspace): IDevWorkspac
     return template;
 }
 
-// Filter plugins from components
+// filter plugins from components
 function filterPluginComponents(components: any[]): any[] {
     return components.filter(comp => !("plugin" in comp));
 }
