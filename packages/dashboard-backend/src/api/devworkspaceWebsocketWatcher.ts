@@ -16,7 +16,7 @@ import SubscribeManager, { Subscriber } from '../services/SubscriptionManager';
 
 const options = { websocket: true } as RouteShorthandOptions;
 
-function hendler(connection: FastifyRequest) {
+function handler(connection: FastifyRequest) {
   const subscriber: Subscriber = connection.socket as any;
   const pubSubManager = new SubscribeManager(subscriber);
   connection.socket.on('message', message => {
@@ -37,5 +37,5 @@ function hendler(connection: FastifyRequest) {
 
 export function startDevworkspaceWebsocketWatcher(server: FastifyInstance) {
   server.register(require('fastify-websocket'));
-  server.get(`${baseApiPath}/websocket`, options, hendler);
+  server.get(`${baseApiPath}/websocket`, options, handler);
 }

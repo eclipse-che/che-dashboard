@@ -12,7 +12,6 @@
 
 import * as k8s from '@kubernetes/client-node';
 
-
 export async function findApi(apisApi: k8s.ApisApi, apiName: string, version?: string): Promise<boolean> {
     try {
       const resp = await apisApi.getAPIVersions();

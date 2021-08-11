@@ -26,11 +26,11 @@ function addAuthentication(headers: {[key: string]: string}) {
 
 export async function createTemplate(template: IDevWorkspaceTemplate): Promise<IDevWorkspaceTemplate> {
   const headers = addAuthentication({});
-  const url = `${prefix}/template`;
+  const url = `${prefix}/namespace/${template.metadata.name}/devworkspacetemplates`;
   try {
     const response = await axios.post(url, { template }, { headers });
     return response.data;
   } catch (e) {
-    throw `Failed to create a new template. ${getErrorMessage(e)}`;
+    throw `Failed to create a new DevWorkspaceTemplates. ${getErrorMessage(e)}`;
   }
 }

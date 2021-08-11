@@ -15,14 +15,21 @@ import { baseApiPath } from '../constants/config';
 import { templateStartedBody } from '../constants/schemas';
 import { getDevWorkspaceClient } from '../index';
 import { getSchema } from '../services/helpers';
+import { NamespacedParam } from '../typings/models';
 
 export function startTemplateApi(server: FastifyInstance) {
-
   server.post(
-    `${baseApiPath}/template`,
+    `${baseApiPath}/namespace/:namespace/devworkspacetemplates`,
     getSchema({ body: templateStartedBody }),
     async (request: FastifyRequest) => {
       const { template } = request.body as models.TemplateStartedBody;
+
+      const { namespace } = request.params as NamespacedParam;
+      if (!template.metadata) {
+        template.metadata = {};
+      }
+      template.metadata.namespace = namespace;
+
       const { templateApi } = await getDevWorkspaceClient(request);
 
       return templateApi.create(template);
