@@ -15,7 +15,7 @@ import { DevWorkspaceClient } from '../../devworkspace-client';
 import * as k8s from '@kubernetes/client-node';
 import * as helper from './helpers';
 import {KubeConfigProvider} from './kubeConfigProvider';
-import {keycloakToOpenShiftToken, validateToken} from './keycloak';
+import {validateToken} from './keycloak';
 
 export class DwClientProvider {
   private kubeconfigProvider: KubeConfigProvider;
@@ -29,16 +29,17 @@ export class DwClientProvider {
     this.isOpenShift = helper.isOpenShift(apiClient);
   }
 
-  async getDWClient(keycloakToken: string) {
+  async getDWClient(token: string) {
     let contextKc: KubeConfig;
     if (await this.isOpenShift) {
-      const openshiftToken = await keycloakToOpenShiftToken(keycloakToken);
-      contextKc = this.kubeconfigProvider.getKubeConfig(openshiftToken);
+      // on OpenShift it's supposed to be access token which we can use directly
+      contextKc = this.kubeconfigProvider.getKubeConfig(token);
     } else {
-      await validateToken(keycloakToken);
+      // on K8s it's supposed to be keycloak token which we can't use to access the cluster
+      // so, validate token and use SA
+      await validateToken(token);
       contextKc = this.kubeconfigProvider.getSAKubeConfig();
     }
-    // todo get rid of any
-    return new DevWorkspaceClient(contextKc as any);
+    return new DevWorkspaceClient(contextKc);
   }
 }
