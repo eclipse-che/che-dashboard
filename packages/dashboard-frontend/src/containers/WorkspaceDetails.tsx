@@ -18,7 +18,7 @@ import { RouteComponentProps } from 'react-router';
 import WorkspaceDetails, { WorkspaceDetails as Details } from '../pages/WorkspaceDetails';
 import { buildDetailsLocation, toHref, buildWorkspacesLocation } from '../services/helpers/location';
 import { WorkspaceDetailsTab } from '../services/helpers/types';
-import { Workspace } from '../services/workspaceAdapter';
+import { Workspace } from '../services/workspace-adapter';
 
 import { AppState } from '../store';
 import * as WorkspacesStore from '../store/Workspaces';

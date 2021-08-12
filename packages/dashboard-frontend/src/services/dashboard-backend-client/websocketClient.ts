@@ -12,8 +12,8 @@
 
 import { prefix } from './const';
 import ReconnectingWebSocket from 'reconnecting-websocket';
-import { getDefer } from '../../helpers/deferred';
-import { KeycloakAuthService } from '../../keycloak/auth';
+import { getDefer } from '../helpers/deferred';
+import { KeycloakAuthService } from '../keycloak/auth';
 
 export type SubscribeMessage = {
   request: string,

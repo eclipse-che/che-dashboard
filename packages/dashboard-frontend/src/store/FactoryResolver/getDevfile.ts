@@ -11,13 +11,13 @@
  */
 
 import { FactoryResolver, DevfileV2ProjectSource } from '../../services/helpers/types';
-import { isDevfileV2 } from '../../services/workspaceAdapter';
+import { isDevfileV2 } from '../../services/workspace-adapter';
 import { getProjectName } from '../../services/helpers/getProjectName';
 import { safeDump } from 'js-yaml';
 import {
   DEVWORKSPACE_DEVFILE_SOURCE,
   DEVWORKSPACE_METADATA_ANNOTATION
-} from '../../services/workspace-client/devWorkspaceClient';
+} from '../../services/workspace-client/devworkspace/devWorkspaceClient';
 
 /**
  * Returns a devfile from the FactoryResolver object.

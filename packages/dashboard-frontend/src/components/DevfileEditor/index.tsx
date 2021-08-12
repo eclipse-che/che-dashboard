@@ -20,7 +20,7 @@ import { TextDocument, getLanguageService, LanguageService, CompletionItem } fro
 import { initDefaultEditorTheme } from '../../services/monacoThemeRegister';
 import stringify, { language, conf } from '../../services/helpers/editor';
 import $ from 'jquery';
-import { IDevWorkspaceDevfile } from '../../services/workspace-client/devWorkspaceClient/types';
+import { IDevWorkspaceDevfile } from '../../services/workspace-client/devworkspace/types';
 import { selectDevfileSchema } from '../../store/DevfileRegistries/selectors';
 import { selectPlugins } from '../../store/Plugins/chePlugins/selectors';
 import { selectBranding } from '../../store/Branding/selectors';

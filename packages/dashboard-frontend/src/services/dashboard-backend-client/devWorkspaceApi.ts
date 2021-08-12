@@ -16,8 +16,8 @@ import {
   IDevWorkspace,
   IDevWorkspaces,
   IPatch,
-} from '../../workspace-client/devWorkspaceClient/types';
-import { getErrorMessage } from '../../helpers/getErrorMessage';
+} from '../workspace-client/devworkspace/types';
+import { getErrorMessage } from '../helpers/getErrorMessage';
 import { addAuthentication } from './auth';
 import { prefix } from './const';
 

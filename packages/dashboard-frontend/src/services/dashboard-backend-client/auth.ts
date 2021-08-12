@@ -10,7 +10,7 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import { KeycloakAuthService } from '../../keycloak/auth';
+import { KeycloakAuthService } from '../keycloak/auth';
 
 export function addAuthentication(headers: { [key: string]: string }) {
     const token = KeycloakAuthService?.keycloak?.token;

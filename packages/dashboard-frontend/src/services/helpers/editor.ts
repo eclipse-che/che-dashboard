@@ -10,7 +10,7 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import { IDevWorkspaceDevfile } from '../workspace-client/devWorkspaceClient/types';
+import { IDevWorkspaceDevfile } from '../workspace-client/devworkspace/types';
 import { safeDump } from 'js-yaml';
 import { LanguageConfiguration, IMonarchLanguage } from 'monaco-editor-core/esm/vs/editor/editor.main';
 

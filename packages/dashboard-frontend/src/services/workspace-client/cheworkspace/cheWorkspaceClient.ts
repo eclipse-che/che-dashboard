@@ -13,9 +13,9 @@
 import { inject, injectable } from 'inversify';
 import { default as WorkspaceClientLib, IWorkspaceMasterApi, IRemoteAPI } from '@eclipse-che/workspace-client';
 import { EventEmitter } from 'events';
-import { WorkspaceClient } from '.';
-import { KeycloakSetupService } from '../keycloak/setup';
-import { KeycloakAuthService } from '../keycloak/auth';
+import { WorkspaceClient } from '../index';
+import { KeycloakSetupService } from '../../keycloak/setup';
+import { KeycloakAuthService } from '../../keycloak/auth';
 
 export type WebSocketsFailedCallback = () => void;
 

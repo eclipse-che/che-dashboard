@@ -11,18 +11,17 @@
  */
 
 import axios from 'axios';
-import { IDevWorkspaceTemplate } from '../../workspace-client/devWorkspaceClient/types';
-import { getErrorMessage } from '../../helpers/getErrorMessage';
+import { getErrorMessage } from '../helpers/getErrorMessage';
 import { prefix } from './const';
 import { addAuthentication } from './auth';
 
-export async function createTemplate(template: IDevWorkspaceTemplate): Promise<IDevWorkspaceTemplate> {
+export async function initializeNamespace(namespace: string): Promise<void> {
   const headers = addAuthentication({});
-  const url = `${prefix}/namespace/${template.metadata.namespace}/devworkspacetemplates`;
+  const url = `${prefix}/namespace/${namespace}/init`;
   try {
-    const response = await axios.post(url, { template }, { headers });
+    const response = await axios.get(url, { headers });
     return response.data;
   } catch (e) {
-    throw `Failed to create a new DevWorkspaceTemplates. ${getErrorMessage(e)}`;
+    throw `Failed to initialize namespace '${namespace}'. ${getErrorMessage(e)}`;
   }
 }

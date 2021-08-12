@@ -12,7 +12,7 @@
 
 import React, { ChangeEvent, ClipboardEvent } from 'react';
 import { safeDump } from 'js-yaml';
-import { IDevWorkspaceDevfile } from '../../../services/workspace-client/devWorkspaceClient/types';
+import { IDevWorkspaceDevfile } from '../../../services/workspace-client/devworkspace/types';
 import stringify from '../../../services/helpers/editor';
 
 type Props = {

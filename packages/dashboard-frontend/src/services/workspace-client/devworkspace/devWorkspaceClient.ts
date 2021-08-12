@@ -14,7 +14,7 @@ import { inject, injectable } from 'inversify';
 import { isWebTerminal } from '../../helpers/devworkspace';
 import { WorkspaceClient } from '../index';
 import {
-  IDevWorkspaceDevfile, IDevWorkspace, IDevWorkspaces, IDevWorkspaceTemplate, IPatch,
+  IDevWorkspaceDevfile, IDevWorkspace, IDevWorkspaceTemplate, IPatch,
 } from './types';
 import {
   devWorkspaceApiGroup, devworkspaceSingularSubresource, devworkspaceVersion
@@ -30,10 +30,11 @@ import { V1alpha2DevWorkspace, V1alpha2DevWorkspaceTemplate, V1alpha2DevWorkspac
 import { InversifyBinding } from '@eclipse-che/che-theia-devworkspace-handler/lib/inversify/inversify-binding';
 import { CheTheiaPluginsDevfileResolver } from '@eclipse-che/che-theia-devworkspace-handler/lib/devfile/che-theia-plugins-devfile-resolver';
 import { SidecarPolicy } from '@eclipse-che/che-theia-devworkspace-handler/lib/api/devfile-context';
-import * as DwApi from '../../assets/dashboard-backend/devWorkspaceApi';
-import * as DwtApi from '../../assets/dashboard-backend/devWorkspaceTemplateApi';
-import * as DwCheApi from '../../assets/dashboard-backend/cheWorkspaceApi';
-import { WebsocketClient, SubscribeMessage } from '../../assets/dashboard-backend/websocketClient';
+import * as DwApi from '../../dashboard-backend-client/devWorkspaceApi';
+import * as DwtApi from '../../dashboard-backend-client/devWorkspaceTemplateApi';
+import * as DwCheApi from '../../dashboard-backend-client/cheWorkspaceApi';
+import { WebsocketClient, SubscribeMessage } from '../../dashboard-backend-client/websocketClient';
+
 export interface IStatusUpdate {
   error?: string;
   message?: string;
@@ -52,7 +53,7 @@ export const DEVWORKSPACE_METADATA_ANNOTATION = 'dw.metadata.annotations';
  * This class manages the connection between the frontend and the devworkspace typescript library
  */
 @injectable()
-export class Index extends WorkspaceClient {
+export class DevWorkspaceClient extends WorkspaceClient {
   private previousItems: Map<string, Map<string, IStatusUpdate>>;
   private readonly maxStatusAttempts: number;
   private lastDevWorkspaceLog: Map<string, string>;

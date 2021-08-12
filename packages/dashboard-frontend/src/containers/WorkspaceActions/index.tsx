@@ -41,7 +41,7 @@ import { WorkspaceActionsContext } from './context';
 import { lazyInject } from '../../inversify.config';
 import { AppAlerts } from '../../services/alerts/appAlerts';
 import getRandomString from '../../services/helpers/random';
-import { isWorkspaceV1 } from '../../services/workspaceAdapter';
+import { isWorkspaceV1 } from '../../services/workspace-adapter';
 
 type Deferred = {
   resolve: () => void;

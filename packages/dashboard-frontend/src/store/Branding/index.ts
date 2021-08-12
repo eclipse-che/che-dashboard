@@ -17,7 +17,7 @@ import { merge } from 'lodash';
 import axios from 'axios';
 import { BRANDING_DEFAULT, BrandingData } from '../../services/bootstrap/branding.constant';
 import { container } from '../../inversify.config';
-import { CheWorkspaceClient } from '../../services/workspace-client/cheWorkspaceClient';
+import { CheWorkspaceClient } from '../../services/workspace-client/cheworkspace/cheWorkspaceClient';
 import { getErrorMessage } from '../../services/helpers/getErrorMessage';
 import { createObject } from '../helpers';
 import { isSafari } from '../../services/helpers/detectBrowser';

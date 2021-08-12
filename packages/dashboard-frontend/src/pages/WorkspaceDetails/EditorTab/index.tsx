@@ -28,10 +28,10 @@ import * as lodash from 'lodash';
 import { safeLoad } from 'js-yaml';
 import DevfileEditor, { DevfileEditor as Editor } from '../../../components/DevfileEditor';
 import EditorTools from './EditorTools';
-import { convertWorkspace, isWorkspaceV1, isWorkspaceV2, Workspace, isDevfileV2 } from '../../../services/workspaceAdapter';
-import { IDevWorkspace, IDevWorkspaceDevfile } from '../../../services/workspace-client/devWorkspaceClient/types';
+import { convertWorkspace, isWorkspaceV1, isWorkspaceV2, Workspace, isDevfileV2 } from '../../../services/workspace-adapter';
+import { IDevWorkspace, IDevWorkspaceDevfile } from '../../../services/workspace-client/devworkspace/types';
 import { DevWorkspaceStatus } from '../../../services/helpers/types';
-import { Index, DEVWORKSPACE_NEXT_START_ANNOTATION } from '../../../services/workspace-client/devWorkspaceClient';
+import { DevWorkspaceClient, DEVWORKSPACE_NEXT_START_ANNOTATION } from '../../../services/workspace-client/devworkspace/devWorkspaceClient';
 import { container } from '../../../inversify.config';
 
 import styles from './index.module.css';
@@ -56,13 +56,13 @@ type State = {
 export class EditorTab extends React.PureComponent<Props, State> {
   private originDevfile: che.WorkspaceDevfile | IDevWorkspaceDevfile;
   private readonly devfileEditorRef: React.RefObject<Editor>;
-  private devworkspaceClient: Index;
+  private devworkspaceClient: DevWorkspaceClient;
 
   cancelChanges: () => void;
 
   constructor(props: Props) {
     super(props);
-    this.devworkspaceClient = container.get(Index);
+    this.devworkspaceClient = container.get(DevWorkspaceClient);
 
     this.state = {
       devfile: Object.assign({}, this.props.workspace.devfile),

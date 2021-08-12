@@ -14,7 +14,7 @@ import { Banner } from '@patternfly/react-core';
 import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { container } from '../../../inversify.config';
-import { CheWorkspaceClient } from '../../../services/workspace-client/cheWorkspaceClient';
+import { CheWorkspaceClient } from '../../../services/workspace-client/cheworkspace/cheWorkspaceClient';
 import { AppState } from '../../../store';
 import { selectBranding } from '../../../store/Branding/selectors';
 

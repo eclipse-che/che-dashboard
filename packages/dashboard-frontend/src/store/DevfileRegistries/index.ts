@@ -15,7 +15,7 @@ import { AppThunk } from '..';
 import { fetchRegistryMetadata, fetchDevfile } from '../../services/registry/devfiles';
 import { createObject } from '../helpers';
 import { container } from '../../inversify.config';
-import { CheWorkspaceClient } from '../../services/workspace-client/cheWorkspaceClient';
+import { CheWorkspaceClient } from '../../services/workspace-client/cheworkspace/cheWorkspaceClient';
 import { getErrorMessage } from '../../services/helpers/getErrorMessage';
 
 const WorkspaceClient = container.get(CheWorkspaceClient);
@@ -242,7 +242,7 @@ export const reducer: Reducer<State> = (state: State | undefined, incomingAction
     case 'RECEIVE_REGISTRY_METADATA':
       return createObject(state, {
         isLoading: false,
-        registries: createObject(state.registries, { 
+        registries: createObject(state.registries, {
           [action.url]: {
             metadata: action.metadata,
           },

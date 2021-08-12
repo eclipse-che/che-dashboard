@@ -15,7 +15,7 @@ import { RequestError } from '@eclipse-che/workspace-client';
 import axios, { AxiosResponse } from 'axios';
 import { FactoryResolver } from '../../services/helpers/types';
 import { container } from '../../inversify.config';
-import { CheWorkspaceClient } from '../../services/workspace-client/cheWorkspaceClient';
+import { CheWorkspaceClient } from '../../services/workspace-client/cheworkspace/cheWorkspaceClient';
 import { AppThunk } from '../index';
 import { createObject } from '../helpers';
 import { getErrorMessage } from '../../services/helpers/getErrorMessage';

@@ -10,7 +10,7 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import { IDevWorkspace } from '../../workspace-client/devWorkspaceClient/types';
+import { IDevWorkspace } from '../../workspace-client/devworkspace/types';
 import { cloneDeep } from 'lodash';
 import { convertWorkspace } from '..';
 import { CheWorkspaceBuilder, CHE_DEVFILE_STUB, CHE_RUNTIME_STUB } from '../../../store/__mocks__/cheWorkspaceBuilder';
