@@ -23,7 +23,7 @@ import FactoryLoaderContainer, { LoadFactorySteps } from '../FactoryLoader';
 import { AlertOptions } from '../../pages/IdeLoader';
 import { convertWorkspace, Workspace } from '../../services/workspace-adapter';
 import { DevWorkspaceBuilder } from '../../store/__mocks__/devWorkspaceBuilder';
-import { IDevWorkspace } from '../../services/workspace-client/devworkspace/types';
+import devfileApi from '../../services/devfileApi';
 import { safeDump } from 'js-yaml';
 import { getId } from '../../services/workspace-adapter/helper';
 
@@ -194,8 +194,8 @@ describe('Factory Loader container', () => {
       jest.runOnlyPendingTimers();
       await waitFor(() => expect(requestFactoryResolverMock).toHaveBeenCalledWith(
         location.split('&')[0], {
-          'override.metadata.generateName': 'testPrefix'
-        }));
+        'override.metadata.generateName': 'testPrefix'
+      }));
       expect(LoadFactorySteps[elementCurrentStep.innerHTML]).toEqual(LoadFactorySteps[LoadFactorySteps.APPLYING_DEVFILE]);
 
       jest.runOnlyPendingTimers();
@@ -411,9 +411,9 @@ describe('Factory Loader container', () => {
               }
             }
           }, undefined, undefined, {
-            factoryParams: 'url=http://test2-location&policies.create=peruser',
-            'policies.create': 'peruser'
-          }));
+          factoryParams: 'url=http://test2-location&policies.create=peruser',
+          'policies.create': 'peruser'
+        }));
     });
   });
 
@@ -442,10 +442,10 @@ describe('Factory Loader container', () => {
 
 function renderComponentV2(
   url: string,
-  workspace: IDevWorkspace,
+  workspace: devfileApi.DevWorkspace,
 ): RenderResult {
   const wrks = convertWorkspace(workspace);
-  (wrks.ref as IDevWorkspace).metadata.annotations = {
+  (wrks.ref as devfileApi.DevWorkspace).metadata.annotations = {
     'che.eclipse.org/devfile-source': safeDump({ factory: { params: 'url=http://test-location&policies.create=peruser' } })
   };
   const store = new FakeStoreBuilder()

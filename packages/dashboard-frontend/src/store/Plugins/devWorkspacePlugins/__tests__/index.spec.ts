@@ -14,7 +14,7 @@ import mockAxios, { AxiosError } from 'axios';
 import { MockStoreEnhanced } from 'redux-mock-store';
 import { AnyAction } from 'redux';
 import { ThunkDispatch } from 'redux-thunk';
-import { IDevWorkspaceDevfile } from '../../../../services/workspace-client/devworkspace/types';
+import devfileApi from '../../../../services/devfileApi';
 import { FakeStoreBuilder } from '../../../__mocks__/storeBuilder';
 import * as dwPluginsStore from '..';
 import { AppState } from '../../..';
@@ -27,7 +27,7 @@ const plugin = {
   metadata: {
     name: 'void-sample',
   },
-} as IDevWorkspaceDevfile;
+} as devfileApi.Devfile;
 
 describe('dwPlugins store', () => {
 

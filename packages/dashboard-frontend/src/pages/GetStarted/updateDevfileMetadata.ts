@@ -10,7 +10,7 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import { isDevfileV2 } from '../../services/workspace-adapter';
+import { isDevfile } from '../../services/devfileApi';
 import { safeDump } from 'js-yaml';
 import {
   DEVWORKSPACE_DEVFILE_SOURCE,
@@ -19,7 +19,7 @@ import {
 import getRandomString from '../../services/helpers/random';
 
 export function updateDevfileMetadata(devfile: api.che.workspace.devfile.Devfile, meta?: che.DevfileMetaData): api.che.workspace.devfile.Devfile {
-  if (isDevfileV2(devfile)) {
+  if (isDevfile(devfile)) {
     // provide metadata about the origin of the devfile with DevWorkspace
     const devfileSource = safeDump(meta ? {
       sample: {

@@ -10,18 +10,21 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import { IDevWorkspace } from '../../services/workspace-client/devworkspace/types';
+import devfileApi from '../../services/devfileApi';
 import getRandomString from '../../services/helpers/random';
 import { DevWorkspaceStatus, WorkspaceStatus } from '../../services/helpers/types';
 
 export class DevWorkspaceBuilder {
 
-  private workspace: IDevWorkspace = {
+  private workspace: devfileApi.DevWorkspace = {
     kind: 'DevWorkspace',
     apiVersion: 'workspace.devfile.io/v1alpha2',
     metadata: {
+      annotations: {},
+      labels: {},
       name: 'dev-wksp-' + getRandomString(4),
       namespace: '',
+      uid: 'uid-' + getRandomString(4)
     },
     spec: {
       started: false,
@@ -29,14 +32,14 @@ export class DevWorkspaceBuilder {
       template: {},
     },
     status: {
-      devworkspaceId: getRandomString(4),
+      devworkspaceId: 'devworkspaceId-' + getRandomString(4),
       mainUrl: '',
       phase: 'STOPPED',
     }
   }
 
   withId(id: string): DevWorkspaceBuilder {
-    this.workspace.status.devworkspaceId = id;
+    this.workspace.metadata.uid = id;
     return this;
   }
 
@@ -45,7 +48,7 @@ export class DevWorkspaceBuilder {
     return this;
   }
 
-  withMetadata(metadata: IDevWorkspace['metadata']): DevWorkspaceBuilder {
+  withMetadata(metadata: devfileApi.DevWorkspace['metadata']): DevWorkspaceBuilder {
     this.workspace.metadata = metadata;
     return this;
   }
@@ -56,12 +59,14 @@ export class DevWorkspaceBuilder {
   }
 
   withIdeUrl(ideUrl: string): DevWorkspaceBuilder {
-    this.workspace.status.mainUrl = ideUrl;
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    this.workspace.status!.mainUrl = ideUrl;
     return this;
   }
 
   withStatus(status: keyof typeof WorkspaceStatus | keyof typeof DevWorkspaceStatus): DevWorkspaceBuilder {
-    this.workspace.status.phase = status;
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    this.workspace.status!.phase = status;
     return this;
   }
 
@@ -70,7 +75,7 @@ export class DevWorkspaceBuilder {
     return this;
   }
 
-  build(): IDevWorkspace {
+  build(): devfileApi.DevWorkspace {
     return this.workspace;
   }
 

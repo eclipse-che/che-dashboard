@@ -10,10 +10,12 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
+import devfileApi from '../../../devfileApi';
+
 export interface IDevWorkspaces {
   apiVersion: string;
   kind: string;
-  items: IDevWorkspace[];
+  items: devfileApi.DevWorkspace[];
   metadata: {
     resourceVersion: string;
     [key: string]: string;

@@ -10,7 +10,7 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import { IDevWorkspace } from '../../workspace-client/devworkspace/types';
+import devfileApi from '../../devfileApi';
 import { cloneDeep } from 'lodash';
 import { convertWorkspace } from '..';
 import { CheWorkspaceBuilder, CHE_DEVFILE_STUB, CHE_RUNTIME_STUB } from '../../../store/__mocks__/cheWorkspaceBuilder';
@@ -314,11 +314,11 @@ describe('Workspace adapter', () => {
     });
 
     it('should return timestamp of creating', () => {
-      const created = new Date(Date.now());
+      const created = new Date(1111111 * 1000);
       const devWorkspace = new DevWorkspaceBuilder()
         .withMetadata({
           creationTimestamp: created,
-        } as IDevWorkspace['metadata'])
+        } as devfileApi.DevWorkspace['metadata'])
         .build();
       const workspace = convertWorkspace(devWorkspace);
       expect(workspace.created).toEqual(created.valueOf());
@@ -326,11 +326,11 @@ describe('Workspace adapter', () => {
 
     // todo fix that stub implementation
     it('should return timestamp of updating', () => {
-      const updated = new Date(Date.now());
+      const updated = new Date(22222222 * 1000);
       const devWorkspace = new DevWorkspaceBuilder()
         .withMetadata({
           creationTimestamp: updated,
-        } as IDevWorkspace['metadata'])
+        } as devfileApi.DevWorkspace['metadata'])
         .build();
       const workspace = convertWorkspace(devWorkspace);
       expect(workspace.updated).toEqual(updated.valueOf());

@@ -10,13 +10,13 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import { IDevWorkspaceDevfile, IDevWorkspace } from '../types';
+import devfileApi from '../../../devfileApi';
 
 export const devworkspaceVersion = 'v1alpha2';
 export const devWorkspaceApiGroup = 'workspace.devfile.io';
 export const devworkspaceSingularSubresource = 'devworkspace';
 
-export function devfileToDevWorkspace(devfile: IDevWorkspaceDevfile, routingClass: string, started: boolean): IDevWorkspace {
+export function devfileToDevWorkspace(devfile: devfileApi.Devfile, routingClass: string, started: boolean): devfileApi.DevWorkspace {
   const devfileAttributes = devfile.metadata.attributes || {};
   const devWorkspaceAnnotations = devfileAttributes['dw.metadata.annotations'] || {};
   const template = {
@@ -34,7 +34,7 @@ export function devfileToDevWorkspace(devfile: IDevWorkspaceDevfile, routingClas
         components: []
       }
     }
-  } as unknown as IDevWorkspace;
+  } as devfileApi.DevWorkspaceLike as devfileApi.DevWorkspace;
   if (devfile.projects) {
     template.spec.template.projects = devfile.projects;
   }
@@ -50,14 +50,14 @@ export function devfileToDevWorkspace(devfile: IDevWorkspaceDevfile, routingClas
   return template;
 }
 
-export function devWorkspaceToDevfile(devworkspace: IDevWorkspace): IDevWorkspaceDevfile {
+export function devWorkspaceToDevfile(devworkspace: devfileApi.DevWorkspace): devfileApi.Devfile {
     const template = {
         schemaVersion: '2.1.0',
         metadata: {
             name: devworkspace.metadata.name,
             namespace: devworkspace.metadata.namespace,
         },
-    } as IDevWorkspaceDevfile;
+    } as devfileApi.Devfile;
     if (devworkspace.spec.template.projects) {
         template.projects = devworkspace.spec.template.projects;
     }

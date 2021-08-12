@@ -39,7 +39,7 @@ import { lazyInject } from '../../inversify.config';
 import NoWorkspacesEmptyState from './EmptyState/NoWorkspaces';
 import NothingFoundEmptyState from './EmptyState/NothingFound';
 import { buildRows, RowData } from './Rows';
-import { isWorkspaceV1, Workspace } from '../../services/workspace-adapter';
+import { isCheWorkspace, Workspace } from '../../services/workspace-adapter';
 
 import * as styles from './index.module.css';
 import { getErrorMessage } from '../../services/helpers/getErrorMessage';
@@ -226,7 +226,7 @@ export default class WorkspacesList extends React.PureComponent<Props, State> {
       const wantDelete = selected.map(id => {
         const workspace = workspaces.find(workspace => id === workspace.id);
         if (!hasCheWorkspaces && workspace) {
-          hasCheWorkspaces = isWorkspaceV1(workspace.ref);
+          hasCheWorkspaces = isCheWorkspace(workspace.ref);
         }
         return workspace?.name || id;
       });
@@ -243,7 +243,7 @@ export default class WorkspacesList extends React.PureComponent<Props, State> {
         const workspace = this.props.workspaces.find(workspace => id === workspace.id);
         const workspaceName = workspace?.name ? ` "${workspace?.name}"` : '';
         const errorMessage = getErrorMessage(e);
-        const message = `Unable to ${workspace && isWorkspaceV1(workspace.ref) ? 'delete' : 'terminate'} workspace${workspaceName}. ` + errorMessage.replace('Error: ', '');
+        const message = `Unable to ${workspace && isCheWorkspace(workspace.ref) ? 'delete' : 'terminate'} workspace${workspaceName}. ` + errorMessage.replace('Error: ', '');
         this.showAlert(message);
         console.warn(message);
         throw new Error(message);

@@ -10,7 +10,7 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import { IDevWorkspaceDevfile } from '../../../services/workspace-client/devworkspace/types';
+import devfileApi from '../../../services/devfileApi';
 import { safeLoad } from 'js-yaml';
 import { Action, Reducer } from 'redux';
 import { AppThunk } from '../..';
@@ -22,7 +22,7 @@ export interface State {
   isLoading: boolean;
   plugins: {
     [url: string]: {
-      plugin?: IDevWorkspaceDevfile;
+      plugin?: devfileApi.Devfile;
       error?: string;
     };
   };
@@ -38,7 +38,7 @@ export interface RequestDwPluginAction {
 export interface ReceiveDwPluginAction {
   type: 'RECEIVE_DW_PLUGIN';
   url: string;
-  plugin: IDevWorkspaceDevfile;
+  plugin: devfileApi.Devfile;
 }
 
 export interface ReceiveDwPluginErrorAction {
@@ -77,7 +77,7 @@ export const actionCreators: ActionCreators = {
 
     try {
       const pluginContent = await fetchDevfile(url);
-      const plugin = safeLoad(pluginContent) as IDevWorkspaceDevfile;
+      const plugin = safeLoad(pluginContent) as devfileApi.Devfile;
       dispatch({
         type: 'RECEIVE_DW_PLUGIN',
         url,
@@ -118,7 +118,7 @@ export const actionCreators: ActionCreators = {
     });
     try {
       const pluginContent = await fetchData<string>(defaultEditorUrl);
-      const plugin = safeLoad(pluginContent) as IDevWorkspaceDevfile;
+      const plugin = safeLoad(pluginContent) as devfileApi.Devfile;
       dispatch({
         type: 'RECEIVE_DW_PLUGIN',
         url: defaultEditorUrl,

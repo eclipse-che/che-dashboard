@@ -27,7 +27,7 @@ import { KeycloakAuthService } from '../../services/keycloak/auth';
 import { getEnvironment, isDevEnvironment } from '../../services/helpers/environment';
 import { isOAuthResponse } from '../../store/FactoryResolver';
 import { updateDevfile } from '../../services/storageTypes';
-import { isDevfileV1, isWorkspaceV1, Workspace } from '../../services/workspace-adapter';
+import { isCheDevfile, isCheWorkspace, Workspace } from '../../services/workspace-adapter';
 import { AlertOptions } from '../../pages/FactoryLoader';
 import { selectInfrastructureNamespaces } from '../../store/InfrastructureNamespaces/selectors';
 import { safeLoad } from 'js-yaml';
@@ -358,7 +358,7 @@ export class FactoryLoaderContainer extends React.PureComponent<Props, State> {
     const stackName = this.getWorkspaceV1StackName(attrs.factoryParams);
     if (this.state.createPolicy === 'peruser') {
       workspace = this.props.allWorkspaces.find(workspace => {
-        if (isWorkspaceV1(workspace.ref)) {
+        if (isCheWorkspace(workspace.ref)) {
           return workspace.ref?.attributes?.stackName === stackName;
         }
         else {
@@ -375,7 +375,7 @@ export class FactoryLoaderContainer extends React.PureComponent<Props, State> {
     }
     if (!workspace) {
       // for backward compatibility with workspaces V1
-      if (isDevfileV1(devfile)) {
+      if (isCheDevfile(devfile)) {
         attrs.stackName = stackName;
         delete attrs.factoryParams;
       }
@@ -392,7 +392,7 @@ export class FactoryLoaderContainer extends React.PureComponent<Props, State> {
     }
     // check if it ephemeral
     // not implemented for dev workspaces yet
-    if (isWorkspaceV1(workspace.ref) && workspace.storageType === 'ephemeral') {
+    if (isCheWorkspace(workspace.ref) && workspace.storageType === 'ephemeral') {
       this.showAlert({
         title: 'You\'re starting an ephemeral workspace. All changes to the source code will be lost ' +
           'when the workspace is stopped unless they are pushed to a remote code repository.',

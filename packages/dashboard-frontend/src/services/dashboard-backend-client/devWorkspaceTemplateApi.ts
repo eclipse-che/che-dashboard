@@ -11,12 +11,12 @@
  */
 
 import axios from 'axios';
-import { IDevWorkspaceTemplate } from '../workspace-client/devworkspace/types';
+import devfileApi from '../devfileApi';
 import { getErrorMessage } from '../helpers/getErrorMessage';
 import { prefix } from './const';
 import { addAuthentication } from './auth';
 
-export async function createTemplate(template: IDevWorkspaceTemplate): Promise<IDevWorkspaceTemplate> {
+export async function createTemplate(template: devfileApi.DevWorkspaceTemplate): Promise<devfileApi.DevWorkspaceTemplate> {
   const headers = addAuthentication({});
   const url = `${prefix}/namespace/${template.metadata.namespace}/devworkspacetemplates`;
   try {

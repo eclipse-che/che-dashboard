@@ -14,3 +14,19 @@ export * from './typeguards';
 
 import * as devfileApi from './devfileApi';
 export default devfileApi;
+
+export interface IDevWorkspaces {
+  apiVersion: string;
+  kind: string;
+  items: devfileApi.DevWorkspace[];
+  metadata: {
+    resourceVersion: string;
+    [key: string]: string;
+  }
+}
+
+export interface IPatch {
+  op: string;
+  path: string;
+  value?: any;
+}

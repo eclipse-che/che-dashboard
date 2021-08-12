@@ -11,17 +11,12 @@
  */
 
 import axios from 'axios';
-import {
-  IDevWorkspaceDevfile,
-  IDevWorkspace,
-  IDevWorkspaces,
-  IPatch,
-} from '../workspace-client/devworkspace/types';
+import devfileApi, { IDevWorkspaces, IPatch } from '../devfileApi';
 import { getErrorMessage } from '../helpers/getErrorMessage';
 import { addAuthentication } from './auth';
 import { prefix } from './const';
 
-export async function createWorkspace(devfile: IDevWorkspaceDevfile, defaultNamespace: string, started: boolean): Promise<IDevWorkspace> {
+export async function createWorkspace(devfile: devfileApi.Devfile, defaultNamespace: string, started: boolean): Promise<devfileApi.DevWorkspace> {
   const headers = addAuthentication({});
   try {
     const response = await axios.post(`${prefix}/namespace/${defaultNamespace}/devworkspaces`, {
@@ -44,7 +39,7 @@ export async function listWorkspacesInNamespace(defaultNamespace: string): Promi
   }
 }
 
-export async function getWorkspaceByName(namespace: string, workspaceName: string): Promise<IDevWorkspace> {
+export async function getWorkspaceByName(namespace: string, workspaceName: string): Promise<devfileApi.DevWorkspace> {
   const headers = addAuthentication({});
   try {
     const response = await axios.get(`${prefix}/namespace/${namespace}/devworkspaces/${workspaceName}`, { headers });
@@ -54,7 +49,7 @@ export async function getWorkspaceByName(namespace: string, workspaceName: strin
   }
 }
 
-export async function patchWorkspace(namespace: string, workspaceName: string, patch: IPatch[]): Promise<IDevWorkspace> {
+export async function patchWorkspace(namespace: string, workspaceName: string, patch: IPatch[]): Promise<devfileApi.DevWorkspace> {
   const headers = addAuthentication({});
   try {
     const response = await axios.patch(`${prefix}/namespace/${namespace}/devworkspaces/${workspaceName}`, patch, { headers });
@@ -64,7 +59,7 @@ export async function patchWorkspace(namespace: string, workspaceName: string, p
   }
 }
 
-export async function deleteWorkspace(namespace: string, workspaceName: string): Promise<IDevWorkspace> {
+export async function deleteWorkspace(namespace: string, workspaceName: string): Promise<devfileApi.DevWorkspace> {
   const headers = addAuthentication({});
   try {
     const response = await axios.delete(`${prefix}/namespace/${namespace}/devworkspaces/${workspaceName}`, { headers });
