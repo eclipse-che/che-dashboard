@@ -42,7 +42,7 @@ const config = {
     },
     output: {
         filename: 'server.js',
-        library: 'dashboard-backend',
+        library: 'dashboard-backend-client',
         libraryTarget: 'umd',
         globalObject: 'this',
         path: path.resolve(__dirname, 'lib')

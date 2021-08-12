@@ -20,6 +20,46 @@ import { fail } from 'assert';
 
 describe('DevWorkspace API integration testing against cluster', () => {
 
+  describe('Test K8s errors', () => {
+    conditionalTest('test when object does not exist', isIntegrationTestEnabled, async (done: any) => {
+      const kc = new k8s.KubeConfig();
+      const kubeconfigFile = process.env['KUBECONFIG'];
+      if (!kubeconfigFile) {
+        throw 'KUBECONFIG must be configured with the valid current context set';
+      }
+      kc.loadFromFile(kubeconfigFile);
+      const dwClient = new DevWorkspaceClient(kc);
+      try {
+        let dw = await dwClient.devworkspaceApi.getByName('any', 'non-existing');
+        fail('devworkspace is expected to be not found');
+      } catch (e) {
+        expect(e.message).toBe('unthorized');
+      }
+    }, 60000);
+
+    conditionalTest('test when unauthorized', isIntegrationTestEnabled, async (done: any) => {
+      const kc = new k8s.KubeConfig();
+      const kubeconfigFile = process.env['KUBECONFIG'];
+      if (!kubeconfigFile) {
+        throw 'KUBECONFIG must be configured with the valid current context set';
+      }
+      kc.loadFromFile(kubeconfigFile);
+      let currentUser = kc.getCurrentUser();
+      if (!currentUser) {
+        throw 'current user is not present in kubeconfig';
+      }
+      (currentUser as any).token = '';
+
+      const dwClient = new DevWorkspaceClient(kc);
+      try {
+        let dw = await dwClient.devworkspaceApi.getByName('any', 'non-existing');
+        fail('devworkspace is expected to be not found');
+      } catch (e) {
+        expect(e.message).toBe('unthorized');
+      }
+    }, 60000);
+  });
+
   describe('Test Node DevWorkspace Api against local cluster', () => {
     conditionalTest('Test run the creation, retrieval, update and deletion of a devworkspace', isIntegrationTestEnabled, async (done: any) => {
       const kc = new k8s.KubeConfig();

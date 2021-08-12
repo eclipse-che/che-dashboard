@@ -10,12 +10,12 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import { isDevfileV2 } from '../../services/workspaceAdapter';
+import { isDevfileV2 } from '../../services/workspace-adapter';
 import { safeDump, safeLoad } from 'js-yaml';
 import {
   DEVWORKSPACE_DEVFILE_SOURCE,
   DEVWORKSPACE_METADATA_ANNOTATION
-} from '../../services/workspace-client/devWorkspaceClient';
+} from '../../services/workspace-client/devworkspace/devWorkspaceClient';
 import { CreatePolicy } from './index';
 import getRandomString from '../../services/helpers/random';
 

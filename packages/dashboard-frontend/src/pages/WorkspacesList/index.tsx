@@ -39,7 +39,7 @@ import { lazyInject } from '../../inversify.config';
 import NoWorkspacesEmptyState from './EmptyState/NoWorkspaces';
 import NothingFoundEmptyState from './EmptyState/NothingFound';
 import { buildRows, RowData } from './Rows';
-import { isWorkspaceV1, Workspace } from '../../services/workspaceAdapter';
+import { isWorkspaceV1, Workspace } from '../../services/workspace-adapter';
 
 import * as styles from './index.module.css';
 

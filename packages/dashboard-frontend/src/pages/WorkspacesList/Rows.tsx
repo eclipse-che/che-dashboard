@@ -16,8 +16,8 @@ import { IRow, SortByDirection } from '@patternfly/react-table';
 import WorkspaceIndicator from '../../components/Workspace/Indicator';
 import { formatDate, formatRelativeDate } from '../../services/helpers/date';
 import { buildDetailsLocation, toHref, buildIdeLoaderLocation } from '../../services/helpers/location';
-import { isWorkspaceV1, Workspace } from '../../services/workspaceAdapter';
-import { IDevWorkspaceDevfile } from '../../services/workspace-client/devWorkspaceClient/types';
+import { isWorkspaceV1, Workspace } from '../../services/workspace-adapter';
+import { IDevWorkspaceDevfile } from '../../services/workspace-client/devworkspace/types';
 import { DevWorkspaceStatus } from '../../services/helpers/types';
 
 export interface RowData extends IRow {

@@ -16,7 +16,7 @@ import React from 'react';
 import { Provider } from 'react-redux';
 import { HeaderActionSelect } from '..';
 import { WorkspaceAction, WorkspaceStatus } from '../../../../../services/helpers/types';
-import { Workspace } from '../../../../../services/workspaceAdapter';
+import { Workspace } from '../../../../../services/workspace-adapter';
 import { AppThunk } from '../../../../../store';
 import { ActionCreators, ResourceQueryParams } from '../../../../../store/Workspaces';
 import { FakeStoreBuilder } from '../../../../../store/__mocks__/storeBuilder';

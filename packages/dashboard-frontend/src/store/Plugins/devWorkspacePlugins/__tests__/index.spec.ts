@@ -14,7 +14,7 @@ import mockAxios, { AxiosError } from 'axios';
 import { MockStoreEnhanced } from 'redux-mock-store';
 import { AnyAction } from 'redux';
 import { ThunkDispatch } from 'redux-thunk';
-import { IDevWorkspaceDevfile } from '../../../../services/workspace-client/devWorkspaceClient/types';
+import { IDevWorkspaceDevfile } from '../../../../services/workspace-client/devworkspace/types';
 import { FakeStoreBuilder } from '../../../__mocks__/storeBuilder';
 import * as dwPluginsStore from '..';
 import { AppState } from '../../..';

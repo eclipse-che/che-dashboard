@@ -12,7 +12,7 @@
 
 import { createSelector } from 'reselect';
 import { AppState } from '..';
-import { convertWorkspace, Workspace } from '../../services/workspaceAdapter';
+import { convertWorkspace, Workspace } from '../../services/workspace-adapter';
 import { selectCheWorkspacesError } from './cheWorkspaces/selectors';
 import { selectDevWorkspacesError } from './devWorkspaces/selectors';
 

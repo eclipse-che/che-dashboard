@@ -13,14 +13,14 @@
 import { Reducer } from 'redux';
 import { AppThunk } from '..';
 import { createObject } from '../helpers';
-import { IDevWorkspace, IDevWorkspaceDevfile } from '../../services/workspace-client/devWorkspaceClient/types';
+import { IDevWorkspace, IDevWorkspaceDevfile } from '../../services/workspace-client/devworkspace/types';
 import {
   convertWorkspace,
   isWorkspaceV2,
   isDevfileV2,
   Workspace,
   isWorkspaceV1,
-} from '../../services/workspaceAdapter';
+} from '../../services/workspace-adapter';
 import * as CheWorkspacesStore from './cheWorkspaces';
 import * as DevWorkspacesStore from './devWorkspaces';
 

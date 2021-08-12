@@ -35,7 +35,7 @@ import { selectIsLoading, selectWorkspaceById } from '../../store/Workspaces/sel
 import { History, UnregisterCallback } from 'history';
 
 import './WorkspaceDetails.styl';
-import { isWorkspaceV1, Workspace } from '../../services/workspaceAdapter';
+import { isWorkspaceV1, Workspace } from '../../services/workspace-adapter';
 import UnsavedChangesModal from '../../components/UnsavedChangesModal';
 
 export const SECTION_THEME = PageSectionVariants.light;

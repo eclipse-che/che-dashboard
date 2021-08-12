@@ -21,9 +21,9 @@ import { createFakeCheWorkspace } from '../../store/__mocks__/workspace';
 import { WorkspaceStatus } from '../../services/helpers/types';
 import FactoryLoaderContainer, { LoadFactorySteps } from '../FactoryLoader';
 import { AlertOptions } from '../../pages/IdeLoader';
-import { convertWorkspace, Workspace } from '../../services/workspaceAdapter';
+import { convertWorkspace, Workspace } from '../../services/workspace-adapter';
 import { DevWorkspaceBuilder } from '../../store/__mocks__/devWorkspaceBuilder';
-import { IDevWorkspace } from '../../services/workspace-client/devWorkspaceClient/types';
+import { IDevWorkspace } from '../../services/workspace-client/devworkspace/types';
 import { safeDump } from 'js-yaml';
 
 const showAlertMock = jest.fn();

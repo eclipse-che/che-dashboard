@@ -26,7 +26,7 @@ import * as WorkspaceStore from '../store/Workspaces';
 import { selectAllWorkspaces, selectIsLoading, selectLogs, selectWorkspaceById } from '../store/Workspaces/selectors';
 import { buildWorkspacesLocation } from '../services/helpers/location';
 import { DisposableCollection } from '../services/helpers/disposable';
-import { Workspace } from '../services/workspaceAdapter';
+import { Workspace } from '../services/workspace-adapter';
 
 type Props =
   MappedProps

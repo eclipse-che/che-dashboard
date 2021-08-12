@@ -18,7 +18,7 @@ import React from 'react';
 import GetStarted from '..';
 import { FakeStoreBuilder } from '../../../store/__mocks__/storeBuilder';
 import { BrandingData } from '../../../services/bootstrap/branding.constant';
-import { convertWorkspace, Workspace } from '../../../services/workspaceAdapter';
+import { convertWorkspace, Workspace } from '../../../services/workspace-adapter';
 
 const createWorkspaceFromDevfileMock = jest.fn().mockResolvedValue(undefined);
 const startWorkspaceMock = jest.fn().mockResolvedValue(undefined);

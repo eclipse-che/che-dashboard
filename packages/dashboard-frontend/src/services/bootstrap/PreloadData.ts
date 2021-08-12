@@ -27,8 +27,8 @@ import * as DevWorkspacesStore from '../../store/Workspaces/devWorkspaces';
 import * as WorkspacesSettingsStore from '../../store/Workspaces/Settings';
 import { ResourceFetcherService } from '../resource-fetcher';
 import { IssuesReporterService } from './issuesReporter';
-import { CheWorkspaceClient } from '../workspace-client/cheWorkspaceClient';
-import { Index } from '../workspace-client/devWorkspaceClient';
+import { CheWorkspaceClient } from '../workspace-client/cheworkspace/cheWorkspaceClient';
+import { DevWorkspaceClient } from '../workspace-client/devworkspace/devWorkspaceClient';
 
 /**
  * This class prepares all init data.
@@ -45,8 +45,8 @@ export class PreloadData {
   @lazyInject(CheWorkspaceClient)
   private readonly cheWorkspaceClient: CheWorkspaceClient;
 
-  @lazyInject(Index)
-  private readonly devWorkspaceClient: Index;
+  @lazyInject(DevWorkspaceClient)
+  private readonly devWorkspaceClient: DevWorkspaceClient;
 
   private store: Store<AppState>;
 

@@ -13,14 +13,14 @@
 import {
   IDevWorkspace,
   IDevWorkspaceDevfile,
-} from '../workspace-client/devWorkspaceClient/types';
+} from '../workspace-client/devworkspace/types';
 import {
   devfileToDevWorkspace,
   devWorkspaceToDevfile,
-} from '../workspace-client/devWorkspaceClient/converters';
+} from '../workspace-client/devworkspace/converters';
 import { attributesToType, typeToAttributes } from '../storageTypes';
 import { DevWorkspaceStatus, WorkspaceStatus } from '../helpers/types';
-import { DEVWORKSPACE_NEXT_START_ANNOTATION } from '../workspace-client/devWorkspaceClient';
+import { DEVWORKSPACE_NEXT_START_ANNOTATION } from '../workspace-client/devworkspace/devWorkspaceClient';
 
 const ROUTING_CLASS = 'che';
 

@@ -15,7 +15,7 @@ import * as api from '@eclipse-che/api';
 import { ThunkDispatch } from 'redux-thunk';
 import { AppThunk } from '../..';
 import { container } from '../../../inversify.config';
-import { CheWorkspaceClient } from '../../../services/workspace-client/cheWorkspaceClient';
+import { CheWorkspaceClient } from '../../../services/workspace-client/cheworkspace/cheWorkspaceClient';
 import { WorkspaceStatus } from '../../../services/helpers/types';
 import { createObject } from '../../helpers';
 import { KeycloakAuthService } from '../../../services/keycloak/auth';

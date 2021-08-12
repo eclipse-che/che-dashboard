@@ -26,6 +26,34 @@ export class NodeRequestError extends Error {
   request: any;
   message: string;
 
+  // todo
+  // make it clear which response types we try to scan for
+  // like get non-existing pod: kubectl get pod q -n opentlc-mgr-che -v 9:
+  // [{
+  //   "kind": "Status",
+  //   "apiVersion": "v1",
+  //   "metadata": {},
+  //   "status": "Failure",
+  //   "message": "pods \"q\" not found",
+  //   "reason": "NotFound",
+  //   "details": {
+  //     "name": "q",
+  //     "kind": "pods"
+  //   },
+  //   "code": 404
+  // }]
+  //
+  // request K8s api with invalid token
+  // {
+  //   "kind":"Status",
+  //   "apiVersion":"v1",
+  //   "metadata":{},
+  //   "status":"Failure",
+  //   "message":"Unauthorized",
+  //   "reason":"Unauthorized",
+  //   "code":401
+  // }
+  // ^ check how they are returned from k8s client
   constructor(error: IKubernetesIncomingMessage) {
     super();
     this.status = error.statusCode;

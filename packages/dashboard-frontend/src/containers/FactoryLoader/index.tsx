@@ -27,12 +27,12 @@ import { KeycloakAuthService } from '../../services/keycloak/auth';
 import { getEnvironment, isDevEnvironment } from '../../services/helpers/environment';
 import { isOAuthResponse } from '../../store/FactoryResolver';
 import { updateDevfile } from '../../services/storageTypes';
-import { isDevfileV1, isWorkspaceV1, Workspace } from '../../services/workspaceAdapter';
+import { isDevfileV1, isWorkspaceV1, Workspace } from '../../services/workspace-adapter';
 import { AlertOptions } from '../../pages/FactoryLoader';
 import { selectInfrastructureNamespaces } from '../../store/InfrastructureNamespaces/selectors';
 import { safeLoad } from 'js-yaml';
 import updateDevfileMetadata, { FactorySource } from './updateDevfileMetadata';
-import { DEVWORKSPACE_DEVFILE_SOURCE } from '../../services/workspace-client/devWorkspaceClient';
+import { DEVWORKSPACE_DEVFILE_SOURCE } from '../../services/workspace-client/devworkspace/devWorkspaceClient';
 
 const WS_ATTRIBUTES_TO_SAVE: string[] = ['workspaceDeploymentLabels', 'workspaceDeploymentAnnotations', 'policies.create'];
 

@@ -13,7 +13,7 @@
 import { Reducer } from 'redux';
 import { AppThunk } from '../..';
 import { container } from '../../../inversify.config';
-import { CheWorkspaceClient } from '../../../services/workspace-client/cheWorkspaceClient';
+import { CheWorkspaceClient } from '../../../services/workspace-client/cheworkspace/cheWorkspaceClient';
 import { getErrorMessage } from '../../../services/helpers/getErrorMessage';
 import { createObject } from '../../helpers';
 
