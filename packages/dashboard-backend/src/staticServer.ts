@@ -10,20 +10,12 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import args from 'args';
 import { FastifyInstance } from 'fastify';
 import fastifyStatic from 'fastify-static';
 import path from 'path';
 
-args
-  .option('publicFolder', 'The public folder to serve', './public')
-  .option('cheServerUpstream', 'The upstream for che-server api', process.env.CHE_HOST)
-
-const { publicFolder } = args.parse(process.argv) as { publicFolder: string };
-const rootPath = path.resolve(__dirname, publicFolder);
-
-export function startStaticServer(server: FastifyInstance) {
-
+export function startStaticServer(publicFolder: string, server: FastifyInstance) {
+  const rootPath = path.resolve(__dirname, publicFolder);
   console.log(`Static server's serving "${rootPath}" on 0.0.0.0:8080/dashboard/`);
 
   server.register(fastifyStatic, {

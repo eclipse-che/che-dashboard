@@ -13,17 +13,17 @@
 import { FastifyInstance, FastifyRequest } from 'fastify';
 import { baseApiPath } from '../constants/config';
 import { namespacedSchema } from '../constants/schemas';
-import { getDevWorkspaceClient } from '../index';
+import { getDevWorkspaceClient } from './helper';
 import { getSchema } from '../services/helpers';
+import { restParams } from '../typings/models';
 
 export function startCheApi(server: FastifyInstance) {
-
   server.get(
     `${baseApiPath}/namespace/:namespace/init`,
-    getSchema({ params: namespacedSchema }),
+    getSchema({params: namespacedSchema}),
     async (request: FastifyRequest) => {
-      const { namespace } = request.params as models.NamespacedWorkspaceParam;
-      const { cheApi } = await getDevWorkspaceClient(request);
+      const {namespace} = request.params as restParams.INamespacedParam;
+      const {cheApi} = await getDevWorkspaceClient(request);
       try {
         await cheApi.initializeNamespace(namespace);
       } catch (e) {

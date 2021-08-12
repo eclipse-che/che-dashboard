@@ -29,8 +29,8 @@ import { devfileToDevWorkspace } from '../converters';
 import { NodeRequestError } from '../../errors';
 
 export class DevWorkspaceApi implements IDevWorkspaceApi {
-  private customObjectAPI: k8s.CustomObjectsApi;
-  private customObjectWatch: k8s.Watch;
+  private readonly customObjectAPI: k8s.CustomObjectsApi;
+  private readonly customObjectWatch: k8s.Watch;
 
   constructor(kc: k8s.KubeConfig) {
     this.customObjectAPI = kc.makeApiClient(k8s.CustomObjectsApi);

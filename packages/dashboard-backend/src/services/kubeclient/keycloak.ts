@@ -10,15 +10,19 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
+let keycloakUserInfoEndpoint: string | undefined;
+
 export async function validateToken(keycloakToken: string): Promise<void> {
+  if (!keycloakUserInfoEndpoint) {
+    // todo init value
+    // 1. request keycloak endpoint from CHE_HOST/api/keycloak/settings
+    // 2. cache made response
+    //   ...
+    //   "che.keycloak.userinfo.endpoint":"https://${SOME_HOST}/auth/realms/codeready/protocol/openid-connect/userinfo",
+    //   ...
+  }
+  // 4. validate token with
+
   // todo implement to validate token on k8s
   return undefined;
-}
-
-export function isKeycloakConfigure(): boolean {
-  const keycloak = process.env.KEYCLOAK_URL as string;
-  if (!keycloak) {
-    throw 'KEYCLOAK_URL environment variable must be set';
-  }
-  return true;
 }

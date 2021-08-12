@@ -11,22 +11,20 @@
  */
 
 import * as k8s from '@kubernetes/client-node';
-import {
-    ICheApi,
-} from '../../types';
-import {
-  projectApiGroup,
-  projectRequestResources,
-  projectResources,
-} from '../../const';
-import { projectRequestModel, namespaceModel } from '../../const/models';
+import { ICheApi, } from '../../types';
+import { projectApiGroup, projectRequestResources, projectResources, } from '../../const';
+import { namespaceModel, projectRequestModel } from '../../const/models';
 import { findApi } from '../helpers';
 import { NodeRequestError } from '../../errors';
 
+/**
+ * @deprecated Che Server started to provide rest endpoint to get namespace prepared.
+ * See for details https://github.com/eclipse/che/issues/20167
+ */
 export class CheApi implements ICheApi {
-  private customObjectAPI: k8s.CustomObjectsApi;
-  private coreV1API: k8s.CoreV1Api;
-  private apisApi: k8s.ApisApi;
+  private readonly customObjectAPI: k8s.CustomObjectsApi;
+  private readonly coreV1API: k8s.CoreV1Api;
+  private readonly apisApi: k8s.ApisApi;
 
   constructor(kc: k8s.KubeConfig) {
     this.customObjectAPI = kc.makeApiClient(k8s.CustomObjectsApi);
@@ -76,6 +74,14 @@ export class CheApi implements ICheApi {
     }
   }
 
+  async isOpenShift(): Promise<boolean> {
+    try {
+      return findApi(this.apisApi, projectApiGroup);
+    } catch (e) {
+      return false;
+    }
+  }
+
   private async createProject(namespace: string): Promise<void> {
     try {
       await this.customObjectAPI.createClusterCustomObject(
@@ -96,14 +102,6 @@ export class CheApi implements ICheApi {
       );
     } catch (e) {
       return Promise.reject(new NodeRequestError(e));
-    }
-  }
-
-  async isOpenShift(): Promise<boolean> {
-    try {
-      return findApi(this.apisApi, projectApiGroup);
-    } catch (e) {
-      return false;
     }
   }
 }

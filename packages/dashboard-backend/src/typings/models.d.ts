@@ -10,23 +10,16 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-declare namespace models {
+import { IDevWorkspaceTemplate } from '../devworkspace-client';
 
-  export interface NamespacedParam {
+declare namespace restParams {
+
+  export interface INamespacedParam {
     namespace: string;
   }
 
-  export interface NamespacedWorkspaceParam extends NamespacedParam {
+  export interface INamespacedWorkspaceParam extends INamespacedParam {
     workspaceName: string;
-  }
-
-  export interface DevfileStartedBody {
-    devfile: any;
-    started: boolean;
-  }
-
-  export interface TemplateStartedBody {
-    template: any;
   }
 
   export interface IStatusUpdate {
@@ -37,20 +30,20 @@ declare namespace models {
     workspaceId: string;
   }
 
-  export enum DevWorkspaceStatus {
-    FAILED = 'Failed',
-    STARTING = 'Starting',
-    TERMINATING = 'Terminating',
-    RUNNING = 'Running',
-    STOPPED = 'Stopped',
-    STOPPING = 'Stopping'
+  export interface ISchemaParams {
+    [key: string]: any;
   }
 
-  export interface ISchemaParams {
-    [key: string]: any
+  export interface ITemplateBodyParam {
+    template: IDevWorkspaceTemplate;
+  }
+
+  export interface IDevWorkspaceSpecParam {
+    devfile: IDevWorkspaceDevfile;
+    started: boolean;
   }
 }
 
-declare module 'models' {
-  export = models;
+declare module 'restParams' {
+  export = restParams;
 }

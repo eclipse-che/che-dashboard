@@ -38,7 +38,7 @@ class SubscriptionManager {
       },
       onError: (error: string) => {
         this.channels.forEach(channel => {
-          this.subscriber.send(JSON.stringify({ message: { error }, channel }));
+          this.subscriber.send(JSON.stringify({message: {error}, channel}));
         });
       }
     };
@@ -49,9 +49,9 @@ class SubscriptionManager {
     if (index > -1) {
       this.channels.splice(index, 1);
     }
-     if (this.channels.length === 0) {
-       this.namespaceData = undefined;
-     }
+    if (this.channels.length === 0) {
+      this.namespaceData = undefined;
+    }
   }
 
   subscribe(channel: string, data: { token: string, namespace: string, resourceVersion: string }): void {
@@ -75,10 +75,10 @@ class SubscriptionManager {
 
   publish(channel: string, message: any): void {
     if (this.channels.indexOf(channel) !== -1) {
-      this.subscriber.send(JSON.stringify({ message, channel }));
+      this.subscriber.send(JSON.stringify({message, channel}));
     }
   }
 
 }
 
-export  default  SubscriptionManager;
+export default SubscriptionManager;

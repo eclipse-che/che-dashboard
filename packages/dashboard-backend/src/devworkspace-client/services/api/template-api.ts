@@ -13,76 +13,76 @@
 import * as k8s from '@kubernetes/client-node';
 import { NodeRequestError } from '../../errors';
 import { devWorkspaceApiGroup, devworkspaceTemplateSubresource, devworkspaceVersion } from '../../const';
-import {
-    IDevWorkspaceTemplate,
-    IDevWorkspaceTemplateApi,
-} from '../../types';
+import { IDevWorkspaceTemplate, IDevWorkspaceTemplateApi, } from '../../types';
 
 export class DevWorkspaceTemplateApi implements IDevWorkspaceTemplateApi {
-    private customObjectAPI: k8s.CustomObjectsApi;
+  private readonly customObjectAPI: k8s.CustomObjectsApi;
 
-    constructor(kc: k8s.KubeConfig) {
-        this.customObjectAPI = kc.makeApiClient(k8s.CustomObjectsApi);
-    }
+  constructor(kc: k8s.KubeConfig) {
+    this.customObjectAPI = kc.makeApiClient(k8s.CustomObjectsApi);
+  }
 
-    async listInNamespace(namespace: string): Promise<IDevWorkspaceTemplate[]> {
-        try {
-            const resp = await this.customObjectAPI.listNamespacedCustomObject(
-                devWorkspaceApiGroup,
-                devworkspaceVersion,
-                namespace,
-                devworkspaceTemplateSubresource
-            );
-            return (resp.body as any).items as IDevWorkspaceTemplate[];
-        } catch (e) {
-            return Promise.reject(new NodeRequestError(e));
-        }
+  async listInNamespace(namespace: string): Promise<IDevWorkspaceTemplate[]> {
+    try {
+      const resp = await this.customObjectAPI.listNamespacedCustomObject(
+        devWorkspaceApiGroup,
+        devworkspaceVersion,
+        namespace,
+        devworkspaceTemplateSubresource
+      );
+      return (resp.body as any).items as IDevWorkspaceTemplate[];
+    } catch (e) {
+      return Promise.reject(new NodeRequestError(e));
     }
+  }
 
-    async getByName(namespace: string, name: string): Promise<IDevWorkspaceTemplate> {
-        try {
-            const resp = await this.customObjectAPI.getNamespacedCustomObject(
-                devWorkspaceApiGroup,
-                devworkspaceVersion,
-                namespace,
-                devworkspaceTemplateSubresource,
-                name
-            );
-            return resp.body as IDevWorkspaceTemplate;
-        } catch (e) {
-            return Promise.reject(new NodeRequestError(e));
-        }
+  async getByName(namespace: string, name: string): Promise<IDevWorkspaceTemplate> {
+    try {
+      const resp = await this.customObjectAPI.getNamespacedCustomObject(
+        devWorkspaceApiGroup,
+        devworkspaceVersion,
+        namespace,
+        devworkspaceTemplateSubresource,
+        name
+      );
+      return resp.body as IDevWorkspaceTemplate;
+    } catch (e) {
+      return Promise.reject(new NodeRequestError(e));
     }
+  }
 
-    async create(
-        devworkspaceTemplate: IDevWorkspaceTemplate,
-    ): Promise<IDevWorkspaceTemplate> {
-        try {
-            const namespace = devworkspaceTemplate.metadata.namespace;
-            const resp = await this.customObjectAPI.createNamespacedCustomObject(
-                devWorkspaceApiGroup,
-                devworkspaceVersion,
-                namespace,
-                devworkspaceTemplateSubresource,
-                devworkspaceTemplate
-            );
-            return resp.body as IDevWorkspaceTemplate;
-        } catch (e) {
-            return Promise.reject(new NodeRequestError(e));
-        }
+  async create(
+    devworkspaceTemplate: IDevWorkspaceTemplate,
+  ): Promise<IDevWorkspaceTemplate> {
+    const namespace = devworkspaceTemplate.metadata?.namespace;
+    if (!namespace) {
+      throw 'namespace is missing';
     }
+    try {
+      const resp = await this.customObjectAPI.createNamespacedCustomObject(
+        devWorkspaceApiGroup,
+        devworkspaceVersion,
+        namespace,
+        devworkspaceTemplateSubresource,
+        devworkspaceTemplate
+      );
+      return resp.body as IDevWorkspaceTemplate;
+    } catch (e) {
+      return Promise.reject(new NodeRequestError(e));
+    }
+  }
 
-    async delete(namespace: string, name: string): Promise<void> {
-        try {
-            await this.customObjectAPI.deleteNamespacedCustomObject(
-                devWorkspaceApiGroup,
-                devworkspaceVersion,
-                namespace,
-                devworkspaceTemplateSubresource,
-                name
-            );
-        } catch (e) {
-            return Promise.reject(new NodeRequestError(e));
-        }
+  async delete(namespace: string, name: string): Promise<void> {
+    try {
+      await this.customObjectAPI.deleteNamespacedCustomObject(
+        devWorkspaceApiGroup,
+        devworkspaceVersion,
+        namespace,
+        devworkspaceTemplateSubresource,
+        name
+      );
+    } catch (e) {
+      return Promise.reject(new NodeRequestError(e));
     }
+  }
 }

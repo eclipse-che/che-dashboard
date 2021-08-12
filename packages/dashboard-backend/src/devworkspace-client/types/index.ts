@@ -75,11 +75,11 @@ export interface IDevWorkspaceClient {
     isDevWorkspaceApiEnabled(): Promise<boolean>;
 }
 
-// deprecated!
-// see for details https://github.com/eclipse/che/issues/20167
+/**
+ * @deprecated Che Server started to provide rest endpoint to get namespace prepared.
+ * See for details https://github.com/eclipse/che/issues/20167
+ */
 export interface ICheApi {
-    // deprecated!
-    // see for details https://github.com/eclipse/che/issues/20167
     initializeNamespace(namespace: string): Promise<void>;
 }
 
@@ -127,9 +127,9 @@ export interface IDevWorkspaceTemplate {
     apiVersion: string;
     kind: string;
     metadata: {
-        name: string;
-        namespace: string;
-        ownerReferences: IOwnerRefs[];
+        name?: string;
+        namespace?: string;
+        ownerReferences?: IOwnerRefs[];
     };
     spec: IDevWorkspaceDevfile;
 }

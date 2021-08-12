@@ -10,7 +10,7 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import { Context, User, KubeConfig, ApisApi } from '@kubernetes/client-node';
+import { ApisApi, Context, KubeConfig, User } from '@kubernetes/client-node';
 import * as helper from './helpers';
 
 export class KubeConfigProvider {

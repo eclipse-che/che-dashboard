@@ -12,19 +12,19 @@
 
 import { FastifyInstance, FastifyRequest } from 'fastify';
 import { baseApiPath } from '../constants/config';
-import { templateStartedBody } from '../constants/schemas';
-import { getDevWorkspaceClient } from '../index';
+import { templateStartedSchema } from '../constants/schemas';
+import { getDevWorkspaceClient } from './helper';
 import { getSchema } from '../services/helpers';
-import { NamespacedParam } from 'models';
+import { restParams } from '../typings/models';
 
 export function startTemplateApi(server: FastifyInstance) {
   server.post(
     `${baseApiPath}/namespace/:namespace/devworkspacetemplates`,
-    getSchema({ body: templateStartedBody }),
+    getSchema({ body: templateStartedSchema }),
     async (request: FastifyRequest) => {
-      const { template } = request.body as models.TemplateStartedBody;
+      const { template } = request.body as restParams.ITemplateBodyParam;
 
-      const { namespace } = request.params as NamespacedParam;
+      const { namespace } = request.params as restParams.INamespacedParam;
       if (!template.metadata) {
         template.metadata = {};
       }

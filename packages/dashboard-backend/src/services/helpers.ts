@@ -11,7 +11,7 @@
  */
 
 import { authenticationHeaderSchema } from '../constants/schemas';
-import { ISchemaParams } from 'models';
+import { restParams } from '../typings/models';
 
 export async function delay(ms: number = 500): Promise<void> {
   await new Promise((resolve) => {
@@ -19,10 +19,10 @@ export async function delay(ms: number = 500): Promise<void> {
   });
 }
 
-export function getSchema(additionalParams: ISchemaParams): { schema: ISchemaParams } {
+export function getSchema(additionalParams: restParams.ISchemaParams): { schema: restParams.ISchemaParams } {
   const schema = Object.assign({
     headers: authenticationHeaderSchema
   }, additionalParams);
 
-  return { schema };
+  return {schema};
 }

@@ -44,7 +44,7 @@ export const namespacedSchema = {
   required: ['namespace']
 };
 
-export const devfileStartedBody = {
+export const devfileStartedSchema = {
   type: 'object',
   properties: {
     devfile: {
@@ -57,7 +57,7 @@ export const devfileStartedBody = {
   required: ['devfile', 'started']
 };
 
-export const templateStartedBody = {
+export const templateStartedSchema = {
     type: 'object',
     properties: {
       template: {

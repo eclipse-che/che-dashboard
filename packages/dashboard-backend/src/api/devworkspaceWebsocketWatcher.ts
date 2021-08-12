@@ -15,13 +15,13 @@ import fastifyWebsocket from 'fastify-websocket';
 import { baseApiPath } from '../constants/config';
 import SubscribeManager, { Subscriber } from '../services/SubscriptionManager';
 
-const options = { websocket: true } as RouteShorthandOptions;
+const options = {websocket: true} as RouteShorthandOptions;
 
 function handler(connection: FastifyRequest) {
   const subscriber: Subscriber = connection.socket as any;
   const pubSubManager = new SubscribeManager(subscriber);
   connection.socket.on('message', message => {
-    const { request, params, channel } = JSON.parse(message);
+    const {request, params, channel} = JSON.parse(message);
     if (!request || !channel) {
       return;
     }
@@ -33,7 +33,7 @@ function handler(connection: FastifyRequest) {
         pubSubManager.subscribe(channel, params as { token: string, namespace: string, resourceVersion: string });
         break;
     }
-  })
+  });
 }
 
 export function startDevworkspaceWebsocketWatcher(server: FastifyInstance) {
