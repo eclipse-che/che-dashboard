@@ -15,14 +15,13 @@ import fastifyHttpProxy from 'fastify-http-proxy';
 
 args.option('cheServerUpstream', 'The upstream for che-server api', process.env.CHE_HOST);
 
-const upstream = (args.parse(process.argv) as { cheServerUpstream: string }).cheServerUpstream;
+export function cheServerApiProxy(cheApiUpstream: string, server: FastifyInstance) {
+    console.log(`Che Server API proxy is running and proxying to "${cheApiUpstream}".`);
 
-export function cheServerApiProxy(server: FastifyInstance) {
-  const origin = process.env.CHE_HOST;
-  if (upstream && upstream !== origin) {
-    console.log(`I'll use che-server upstream "${upstream}".`);
-
-    // todo replace this custom implementation for dummy responses with fastifyHttpProxy
+    // fake JSON RPC for Che websocket API
+    // because the real proxy fails to some reason
+    // but since che workspace and devworkspace are not expected to work at the same time
+    // faking is an easier solution
     server.get(`/api/websocket`, {websocket: true} as RouteShorthandOptions, (connection: FastifyRequest) => {
       connection.socket.on('message', message => {
         const data = JSON.parse(message);
@@ -31,21 +30,9 @@ export function cheServerApiProxy(server: FastifyInstance) {
         }
       });
     });
-    // server.register(fastifyHttpProxy, {
-    //   upstream: upstream.replace(/^http/, 'ws'),
-    //   prefix: '/api/websocket',
-    //   rewritePrefix: '/api/websocket',
-    //   disableCache: true,
-    //   websocket: true,
-    //   replyOptions: {
-    //     rewriteRequestHeaders: (originalReq, headers) => {
-    //       return Object.assign({...headers}, { origin });
-    //     }
-    //   }
-    // });
 
     server.register(fastifyHttpProxy, {
-      upstream,
+      upstream: cheApiUpstream,
       prefix: '/api',
       rewritePrefix: '/api',
       disableCache: true,
@@ -56,5 +43,4 @@ export function cheServerApiProxy(server: FastifyInstance) {
         }
       }
     });
-  }
 }

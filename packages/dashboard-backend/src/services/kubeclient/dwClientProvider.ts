@@ -10,12 +10,12 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import {KubeConfig} from '@kubernetes/client-node';
-import { DevWorkspaceClient } from '../../devworkspace-client';
 import * as k8s from '@kubernetes/client-node';
+import { KubeConfig } from '@kubernetes/client-node';
+import { DevWorkspaceClient } from '../../devworkspace-client';
 import * as helper from './helpers';
-import {KubeConfigProvider} from './kubeConfigProvider';
-import {validateToken} from './keycloak';
+import { KubeConfigProvider } from './kubeConfigProvider';
+import { validateToken } from './keycloak';
 
 export class DwClientProvider {
   private kubeconfigProvider: KubeConfigProvider;

@@ -11,26 +11,30 @@
  */
 
 import 'reflect-metadata';
-import fastify, { FastifyRequest } from 'fastify';
+import fastify from 'fastify';
 import fastifyCors from 'fastify-cors';
 import { startStaticServer } from './staticServer';
 import { startDevworkspaceWebsocketWatcher } from './api/devworkspaceWebsocketWatcher';
 import { startDevworkspaceApi } from './api/devworkspaceApi';
 import { startCheApi } from './api/cheApi';
 import { startTemplateApi } from './api/templateApi';
-import { DwClientProvider } from './services/kubeclient/dwClientProvider';
 import { cheServerApiProxy } from './cheServerApiProxy';
+import args from 'args';
+
+args
+  .option('publicFolder', 'The public folder to serve', './public')
+  .option('cheServerUpstream', 'The upstream for Che server api', process.env.CHE_HOST);
+
+const { publicFolder, cheApiUpstream } = args.parse(process.argv) as { publicFolder: string, cheApiUpstream: string };
 
 if (!('CHE_HOST' in process.env)) {
   console.error('CHE_HOST environment variable is required');
   process.exit(1);
 }
 
-const dwClientProvider: DwClientProvider = new DwClientProvider();
-
 const server = fastify();
 
-// TODO replace an 'any' with the target type
+// todo replace an 'any' with the target type
 server.register(fastifyCors, () => (req: any, callback: any) => {
     const corsOptions = /^(https?:\/\/)?localhost:8080/.test(req.headers.host) ? {
       origin: false
@@ -56,7 +60,7 @@ server.addContentTypeParser(
   }
 );
 
-startStaticServer(server);
+startStaticServer(publicFolder, server);
 
 startDevworkspaceApi(server);
 
@@ -66,7 +70,11 @@ startTemplateApi(server);
 
 startCheApi(server);
 
-cheServerApiProxy(server);
+
+const origin = process.env.CHE_HOST;
+if (cheApiUpstream && cheApiUpstream !== origin) {
+  cheServerApiProxy(cheApiUpstream, server);
+}
 
 server.listen(8080, '0.0.0.0', (err, address) => {
   if (err) {
@@ -79,10 +87,3 @@ server.listen(8080, '0.0.0.0', (err, address) => {
 server.ready(() => {
   console.log(server.printRoutes());
 });
-
-/**
- * Creates DevWorkspace Client depending on the context for the specified request.
- */
-export function getDevWorkspaceClient(request: FastifyRequest) {
-  return dwClientProvider.getDWClient(`${request.headers!.authorization}`);
-}

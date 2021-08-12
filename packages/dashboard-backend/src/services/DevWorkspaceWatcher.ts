@@ -11,7 +11,7 @@
  */
 
 import { IDevWorkspaceCallbacks } from '../devworkspace-client';
-import {DwClientProvider} from './kubeclient/dwClientProvider';
+import { DwClientProvider } from './kubeclient/dwClientProvider';
 
 class DevWorkspaceWatcher {
   private readonly dwClientProvider: DwClientProvider;
@@ -43,7 +43,7 @@ class DevWorkspaceWatcher {
 
   async subscribe(): Promise<void> {
     try {
-      const { devworkspaceApi } = await (this.dwClientProvider.getDWClient(this.token));
+      const {devworkspaceApi} = await (this.dwClientProvider.getDWClient(this.token));
       const unsubscribeFunction = await devworkspaceApi.watchInNamespace(this.namespace, this.resourceVersion, this.callbacks);
       if (this.unsubscribeFunction) {
         await this.unsubscribe();

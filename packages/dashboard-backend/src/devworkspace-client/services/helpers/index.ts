@@ -13,23 +13,19 @@
 import * as k8s from '@kubernetes/client-node';
 
 export async function findApi(apisApi: k8s.ApisApi, apiName: string, version?: string): Promise<boolean> {
-    try {
-      const resp = await apisApi.getAPIVersions();
-      const groups = resp.body.groups;
-      const filtered =
-        groups.filter((apiGroup: k8s.V1APIGroup) => {
-          if (version) {
-            return apiGroup.name === apiName && apiGroup.versions.filter(versionGroup => versionGroup.version === version).length > 0;
-          }
-          return apiGroup.name === apiName;
-        })
-          .length > 0;
-      return Promise.resolve(filtered);
-    } catch (e) {
-      throw e;
-    }
-}
-
-export async function delay(ms: number = 500): Promise<void> {
-    await new Promise<void>(resolve => setTimeout(resolve, ms));
+  try {
+    const resp = await apisApi.getAPIVersions();
+    const groups = resp.body.groups;
+    const filtered =
+      groups.filter((apiGroup: k8s.V1APIGroup) => {
+        if (version) {
+          return apiGroup.name === apiName && apiGroup.versions.filter(versionGroup => versionGroup.version === version).length > 0;
+        }
+        return apiGroup.name === apiName;
+      })
+        .length > 0;
+    return Promise.resolve(filtered);
+  } catch (e) {
+    throw e;
+  }
 }

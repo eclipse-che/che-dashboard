@@ -4,6 +4,7 @@
 set -e
 set -u
 
+# TODO execute frontend build if lib does not exist
 cd packages/dashboard-backend && yarn build && cd -
 
 # Init Che Namespace with the default value if it's not set
@@ -11,7 +12,6 @@ CHE_NAMESPACE="${CHE_NAMESPACE:-eclipse-che}"
 
 export CHE_HOST=http://localhost:8080
 CHE_URL=$(oc get checluster -n $CHE_NAMESPACE eclipse-che -o=json | jq -r '.status.cheURL')
-export KEYCLOAK_URL=$(oc get checluster -n $CHE_NAMESPACE eclipse-che -o=json | jq -r '.status.keycloakURL')
 
 # guide backend to use the current cluster from kubeconfig
 export LOCAL_RUN="true"

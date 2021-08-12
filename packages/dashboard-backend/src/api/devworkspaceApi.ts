@@ -12,31 +12,28 @@
 
 import { FastifyInstance, FastifyRequest } from 'fastify';
 import { baseApiPath, routingClass } from '../constants/config';
-import {
-  devfileStartedBody,
-  namespacedSchema,
-  namespacedWorkspaceSchema
-} from '../constants/schemas';
-import { getDevWorkspaceClient } from '../index';
-import { NamespacedParam } from 'models';
+import { devfileStartedSchema, namespacedSchema, namespacedWorkspaceSchema } from '../constants/schemas';
+import { getDevWorkspaceClient } from './helper';
+import { restParams } from '../typings/models';
 import { delay, getSchema } from '../services/helpers';
 
 export function startDevworkspaceApi(server: FastifyInstance) {
 
   server.post(
     `${baseApiPath}/namespace/:namespace/devworkspaces`,
-    getSchema({ body: devfileStartedBody }),
+    getSchema({ body: devfileStartedSchema }),
     async (request: FastifyRequest) => {
-      const { devfile, started } = request.body as models.DevfileStartedBody;
+      const { devfile, started } = request.body as restParams.IDevWorkspaceSpecParam;
       const { devworkspaceApi } = await getDevWorkspaceClient(request);
       // override the namespace from params
-      const { namespace } = request.params as NamespacedParam;
+      const { namespace } = request.params as restParams.INamespacedParam;
       if (devfile.metadata === undefined) {
         devfile.metadata = {};
       }
       devfile.metadata.namespace = namespace;
 
       const workspace = await devworkspaceApi.create(devfile, routingClass, started);
+      // todo refactor frontend in the way we rely in namespace/name instead of workspaceId, then we can skip waiting for status
       // we need to wait until the devworkspace has a status property
       let found;
       let count = 0;
@@ -60,7 +57,7 @@ export function startDevworkspaceApi(server: FastifyInstance) {
     `${baseApiPath}/namespace/:namespace/devworkspaces/:workspaceName`,
     getSchema({ params: namespacedWorkspaceSchema }),
     async (request: FastifyRequest) => {
-      const { namespace, workspaceName } = request.params as models.NamespacedWorkspaceParam;
+      const { namespace, workspaceName } = request.params as restParams.INamespacedWorkspaceParam;
       const patch = request.body as { op: string, path: string, value?: any; } [];
       const { devworkspaceApi } = await getDevWorkspaceClient(request);
       return devworkspaceApi.patch(namespace, workspaceName, patch);
@@ -71,7 +68,7 @@ export function startDevworkspaceApi(server: FastifyInstance) {
     `${baseApiPath}/namespace/:namespace/devworkspaces`,
     getSchema({ params: namespacedSchema }),
     async (request: FastifyRequest) => {
-      const { namespace } = request.params as models.NamespacedParam;
+      const { namespace } = request.params as restParams.INamespacedParam;
       const { devworkspaceApi } = await getDevWorkspaceClient(request);
       return devworkspaceApi.listInNamespace(namespace);
     }
@@ -81,7 +78,7 @@ export function startDevworkspaceApi(server: FastifyInstance) {
     `${baseApiPath}/namespace/:namespace/devworkspaces/:workspaceName`,
     getSchema({ params: namespacedSchema }),
     async (request: FastifyRequest) => {
-      const { namespace, workspaceName } = request.params as models.NamespacedWorkspaceParam;
+      const { namespace, workspaceName } = request.params as restParams.INamespacedWorkspaceParam;
       const { devworkspaceApi } = await getDevWorkspaceClient(request);
       return devworkspaceApi.getByName(namespace, workspaceName);
     }
@@ -91,7 +88,7 @@ export function startDevworkspaceApi(server: FastifyInstance) {
     `${baseApiPath}/namespace/:namespace/devworkspaces/:workspaceName`,
     getSchema({ params: namespacedWorkspaceSchema }),
     async (request: FastifyRequest) => {
-      const { namespace, workspaceName } = request.params as models.NamespacedWorkspaceParam;
+      const { namespace, workspaceName } = request.params as restParams.INamespacedWorkspaceParam;
       const { devworkspaceApi } = await getDevWorkspaceClient(request);
       return devworkspaceApi.delete(namespace, workspaceName);
     }

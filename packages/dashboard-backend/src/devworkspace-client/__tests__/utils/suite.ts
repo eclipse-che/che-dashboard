@@ -24,3 +24,7 @@ export function conditionalTest(testName: string, testCondition: Function, testC
 
 export const integrationTestId = 'INTEGRATION_TESTS';
 export const isIntegrationTestEnabled = () => integrationTestId in process.env && process.env[integrationTestId] === 'true';
+
+export async function delay(ms: number = 500): Promise<void> {
+  await new Promise<void>(resolve => setTimeout(resolve, ms));
+}
