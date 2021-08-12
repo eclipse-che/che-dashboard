@@ -169,11 +169,11 @@ export class DevWorkspaceApi implements IDevWorkspaceApi {
     }
   }
 
-  // todo add resource version
-  async watchInNamespace(namespace: string, callbacks: IDevWorkspaceCallbacks): Promise<{ abort: Function }> {
+  async watchInNamespace(namespace: string, resourceVersion: string, callbacks: IDevWorkspaceCallbacks): Promise<{ abort: Function }> {
     const path = `/apis/${devWorkspaceApiGroup}/${devworkspaceVersion}/watch/namespaces/${namespace}/devworkspaces`;
+    const queryParams = { watch: true, resourceVersion };
 
-    return this.customObjectWatch.watch(path, {}, (type: string, devworkspace: IDevWorkspace) => {
+    return this.customObjectWatch.watch(path, queryParams, (type: string, devworkspace: IDevWorkspace) => {
       const workspaceId = devworkspace!.status!.devworkspaceId;
 
       if (type === 'ADDED') {

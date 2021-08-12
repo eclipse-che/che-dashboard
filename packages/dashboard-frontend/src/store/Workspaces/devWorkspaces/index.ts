@@ -34,6 +34,7 @@ const onStatusChangeCallbacks = new Map<string, (status: string) => void>();
 export interface State {
   isLoading: boolean;
   workspaces: IDevWorkspace[];
+  resourceVersion?: string;
   error?: string;
   // runtime logs
   workspacesLogs: Map<string, string[]>;
@@ -51,6 +52,7 @@ interface ReceiveErrorAction extends Action {
 interface ReceiveWorkspacesAction extends Action {
   type: 'RECEIVE_DEVWORKSPACE';
   workspaces: IDevWorkspace[];
+  resourceVersion: string;
 }
 
 interface UpdateWorkspaceAction extends Action {
@@ -154,11 +156,12 @@ export const actionCreators: ActionCreators = {
 
     try {
       const defaultNamespace = await cheWorkspaceClient.getDefaultNamespace();
-      const workspaces = await devWorkspaceClient.getAllWorkspaces(defaultNamespace);
+      const { workspaces, resourceVersion } = await devWorkspaceClient.getAllWorkspaces(defaultNamespace);
 
       dispatch({
         type: 'RECEIVE_DEVWORKSPACE',
         workspaces,
+        resourceVersion,
       });
     } catch (e) {
       const errorMessage = 'Failed to fetch available workspaces, reason: ' + getErrorMessage(e);
@@ -392,6 +395,7 @@ export const reducer: Reducer<State> = (state: State | undefined, action: KnownA
       return createObject(state, {
         isLoading: false,
         workspaces: action.workspaces,
+        resourceVersion: action.resourceVersion,
       });
     case 'RECEIVE_DEVWORKSPACE_ERROR':
       return createObject(state, {

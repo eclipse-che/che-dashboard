@@ -24,9 +24,10 @@ export interface IDevWorkspaceApi {
     /**
      * Listen to all DevWorkspaces changes in the given namespace
      * @param namespace namespace where to listen to DevWorkspaces changes
+     * @param resourceVersion special mark that all changes up to a given resourceVersion have already been sent
      * @param callbacks callback will be invoked when change happens
      */
-    watchInNamespace(namespace: string, callbacks: IDevWorkspaceCallbacks): Promise<{ abort: Function }>;
+    watchInNamespace(namespace: string, resourceVersion: string, callbacks: IDevWorkspaceCallbacks): Promise<{ abort: Function }>;
 
     /**
      * Create a devworkspace based on the specified configuration.

@@ -37,9 +37,9 @@ class SubscriptionManager {
         this.publish('onAdded', workspace);
       },
       onError: (error: string) => {
-        for (const channel in this.channels) {
+        this.channels.forEach(channel => {
           this.subscriber.send(JSON.stringify({ message: { error }, channel }));
-        }
+        });
       }
     };
   }
@@ -54,19 +54,20 @@ class SubscriptionManager {
      }
   }
 
-  subscribe(channel: string, data: { token: string, namespace: string }): void {
+  subscribe(channel: string, data: { token: string, namespace: string, resourceVersion: string }): void {
     if (this.channels.indexOf(channel) === -1) {
       this.channels.push(channel);
     }
     if (this.namespaceData) {
       if (this.namespaceData!.getNamespace() === data.namespace) {
-        this.namespaceData.setToken(data.token);
+        this.namespaceData.setParams(data.token, data.resourceVersion);
       }
     } else {
       this.namespaceData = new DevWorkspaceWatcher({
         callbacks: this.callbacks,
         token: data.token,
-        namespace: data.namespace
+        namespace: data.namespace,
+        resourceVersion: data.resourceVersion,
       });
       this.namespaceData.subscribe();
     }

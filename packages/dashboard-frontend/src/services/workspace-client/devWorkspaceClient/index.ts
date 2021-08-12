@@ -14,7 +14,7 @@ import { inject, injectable } from 'inversify';
 import { isWebTerminal } from '../../helpers/devworkspace';
 import { WorkspaceClient } from '../index';
 import {
-  IDevWorkspaceDevfile, IDevWorkspace, IDevWorkspaceTemplate, IPatch,
+  IDevWorkspaceDevfile, IDevWorkspace, IDevWorkspaces, IDevWorkspaceTemplate, IPatch,
 } from './types';
 import {
   devWorkspaceApiGroup, devworkspaceSingularSubresource, devworkspaceVersion
@@ -76,15 +76,15 @@ export class Index extends WorkspaceClient {
     return Promise.resolve(true); // this.client.isDevWorkspaceApiEnabled();
   }
 
-  async getAllWorkspaces(defaultNamespace: string): Promise<IDevWorkspace[]> {
-    const workspaces = await DwApi.listWorkspacesInNamespace(defaultNamespace);
-    const availableWorkspaces: IDevWorkspace[] = [];
-    for (const workspace of workspaces) {
-      if (!isWebTerminal(workspace)) {
-        availableWorkspaces.push(workspace);
+  async getAllWorkspaces(defaultNamespace: string): Promise<{ workspaces: IDevWorkspace[]; resourceVersion: string }> {
+    const { items, metadata: { resourceVersion } } = await DwApi.listWorkspacesInNamespace(defaultNamespace);
+    const workspaces: IDevWorkspace[] = [];
+    for (const item of items) {
+      if (!isWebTerminal(item)) {
+        workspaces.push(item);
       }
     }
-    return availableWorkspaces;
+    return { workspaces, resourceVersion };
   }
 
   async getWorkspaceByName(namespace: string, workspaceName: string): Promise<IDevWorkspace> {
@@ -350,6 +350,7 @@ export class Index extends WorkspaceClient {
 
   async subscribeToNamespace(
     namespace: string,
+    getResourceVersion: () => Promise<string|undefined>,
     callbacks: {
       updateDevWorkspaceStatus: (message: IStatusUpdate) => AppThunk<Action, void>,
       updateDeletedDevWorkspaces: (deletedWorkspacesIds: string[]) => AppThunk<Action, void>,
@@ -363,7 +364,7 @@ export class Index extends WorkspaceClient {
 
     const message: SubscribeMessage = {
       request: 'SUBSCRIBE',
-      params: { namespace },
+      params: { namespace, resourceVersion: await getResourceVersion() },
       channel: 'onModified'
     };
     await this.websocketClient.subscribe(message);
@@ -385,12 +386,19 @@ export class Index extends WorkspaceClient {
     });
 
     // websocketClient KeepAlive
-    const keepAliveTimeout = 60 * 1000;
+    const keepAliveTimeout = 1 * 60 * 1000;
     if (this.intervalId) {
       window.clearInterval(this.intervalId);
     }
     this.intervalId = window.setInterval(async () => {
-      await this.websocketClient.subscribe(message);
+      await this.websocketClient.subscribe(Object.assign({}, message,
+        {
+          params: {
+            resourceVersion: await getResourceVersion(),
+            namespace: message.params.namespace,
+          }
+        }
+      ));
     }, keepAliveTimeout);
 
     message.channel = 'onAdded';

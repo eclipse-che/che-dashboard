@@ -17,12 +17,14 @@ class DevWorkspaceWatcher {
   private readonly dwClientProvider: DwClientProvider;
   private readonly callbacks: IDevWorkspaceCallbacks;
   private readonly namespace: string;
+  private resourceVersion: string;
   private token: string;
   private unsubscribeFunction: Function | undefined;
 
-  constructor(data: { token: string, namespace: string, callbacks: IDevWorkspaceCallbacks }) {
+  constructor(data: { token: string, namespace: string, resourceVersion: string, callbacks: IDevWorkspaceCallbacks }) {
     this.callbacks = data.callbacks;
     this.namespace = data.namespace;
+    this.resourceVersion = data.resourceVersion;
     this.token = data.token;
     this.dwClientProvider = new DwClientProvider();
   }
@@ -31,9 +33,10 @@ class DevWorkspaceWatcher {
     return this.namespace;
   }
 
-  setToken(token: string): void {
-    if (this.token !== token) {
+  setParams(token: string, resourceVersion: string): void {
+    if (this.token !== token || this.resourceVersion !== resourceVersion) {
       this.token = token;
+      this.resourceVersion = resourceVersion;
       this.subscribe();
     }
   }
@@ -41,7 +44,9 @@ class DevWorkspaceWatcher {
   async subscribe(): Promise<void> {
     try {
       const { devworkspaceApi } = await (this.dwClientProvider.getDWClient(this.token));
-      const unsubscribeFunction = await devworkspaceApi.watchInNamespace(this.namespace, this.callbacks).then((ret: { abort: Function }) => ret.abort);
+      const unsubscribeFunction = await devworkspaceApi
+        .watchInNamespace(this.namespace, this.resourceVersion, this.callbacks)
+        .then((ret: { abort: Function }) => ret.abort);
 
       if (this.unsubscribeFunction) {
         await this.unsubscribe();
