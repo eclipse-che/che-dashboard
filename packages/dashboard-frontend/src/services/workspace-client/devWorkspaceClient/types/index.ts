@@ -10,6 +10,16 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
+export interface IDevWorkspaces {
+  apiVersion: string;
+  kind: string;
+  items: IDevWorkspace[];
+  metadata: {
+    resourceVersion: string;
+    [key: string]: string;
+  }
+}
+
 export interface IDevWorkspace {
     apiVersion: string;
     kind: string;

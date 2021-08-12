@@ -11,7 +11,12 @@
  */
 
 import axios from 'axios';
-import { IDevWorkspaceDevfile, IDevWorkspace, IPatch } from '../../workspace-client/devWorkspaceClient/types';
+import {
+  IDevWorkspaceDevfile,
+  IDevWorkspace,
+  IDevWorkspaces,
+  IPatch,
+} from '../../workspace-client/devWorkspaceClient/types';
 import { getErrorMessage } from '../../helpers/getErrorMessage';
 import { KeycloakAuthService } from '../../keycloak/auth';
 import { prefix } from './const';
@@ -37,7 +42,7 @@ export async function createWorkspace(devfile: IDevWorkspaceDevfile, defaultName
   }
 }
 
-export async function listWorkspacesInNamespace(defaultNamespace: string): Promise<IDevWorkspace[]> {
+export async function listWorkspacesInNamespace(defaultNamespace: string): Promise<IDevWorkspaces> {
   const headers = addAuthentication({});
   try {
     const response = await axios.get(`${prefix}/namespace/${defaultNamespace}/devworkspaces`, { headers });

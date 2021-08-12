@@ -18,7 +18,7 @@ import { KeycloakAuthService } from '../../keycloak/auth';
 export type SubscribeMessage = {
   request: string,
   channel: string,
-  params: { token?: string, namespace: string }
+  params: { token?: string, namespace: string, resourceVersion?: string }
 };
 
 export type PublishMessage = {

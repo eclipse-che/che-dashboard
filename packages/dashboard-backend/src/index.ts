@@ -84,6 +84,5 @@ server.ready(() => {
  * Creates DevWorkspace Client depending on the context for the specified request.
  */
 export function getDevWorkspaceClient(request: FastifyRequest) {
-  console.log(request.headers);
   return dwClientProvider.getDWClient(`${request.headers!.authorization}`);
 }

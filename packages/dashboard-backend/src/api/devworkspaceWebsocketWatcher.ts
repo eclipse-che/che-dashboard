@@ -11,6 +11,7 @@
  */
 
 import { FastifyInstance, FastifyRequest, RouteShorthandOptions } from 'fastify';
+import fastifyWebsocket from 'fastify-websocket';
 import { baseApiPath } from '../constants/config';
 import SubscribeManager, { Subscriber } from '../services/SubscriptionManager';
 
@@ -29,13 +30,13 @@ function handler(connection: FastifyRequest) {
         pubSubManager.unsubscribe(channel);
         break;
       case 'SUBSCRIBE':
-        pubSubManager.subscribe(channel, params as { token: string, namespace: string });
+        pubSubManager.subscribe(channel, params as { token: string, namespace: string, resourceVersion: string });
         break;
     }
   })
 }
 
 export function startDevworkspaceWebsocketWatcher(server: FastifyInstance) {
-  server.register(require('fastify-websocket'));
+  server.register(fastifyWebsocket);
   server.get(`${baseApiPath}/websocket`, options, handler);
 }
