@@ -17,6 +17,7 @@ export const authenticationHeaderSchema = {
           type: 'string'
         }
     },
+    // todo when authorization is missing it leads to 400 Bad request, bad the best practise it to return 401 Unauthorized
     required: ['authorization']
 };
 

@@ -18,16 +18,8 @@ import {
   IPatch,
 } from '../../workspace-client/devWorkspaceClient/types';
 import { getErrorMessage } from '../../helpers/getErrorMessage';
-import { KeycloakAuthService } from '../../keycloak/auth';
+import { addAuthentication } from './auth';
 import { prefix } from './const';
-
-function addAuthentication(headers: { [key: string]: string }) {
-  const token = KeycloakAuthService?.keycloak?.token;
-  if (token) {
-    headers.authentication = token;
-  }
-  return headers;
-}
 
 export async function createWorkspace(devfile: IDevWorkspaceDevfile, defaultNamespace: string, started: boolean): Promise<IDevWorkspace> {
   const headers = addAuthentication({});

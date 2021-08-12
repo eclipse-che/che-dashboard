@@ -13,16 +13,8 @@
 import axios from 'axios';
 import { IDevWorkspaceTemplate } from '../../workspace-client/devWorkspaceClient/types';
 import { getErrorMessage } from '../../helpers/getErrorMessage';
-import { KeycloakAuthService } from '../../keycloak/auth';
 import { prefix } from './const';
-
-function addAuthentication(headers: {[key: string]: string}) {
-  const token = KeycloakAuthService?.keycloak?.token;
-  if (token) {
-    headers.authentication = token;
-  }
-  return headers;
-}
+import { addAuthentication } from './auth';
 
 export async function createTemplate(template: IDevWorkspaceTemplate): Promise<IDevWorkspaceTemplate> {
   const headers = addAuthentication({});
