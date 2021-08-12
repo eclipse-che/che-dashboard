@@ -13,6 +13,9 @@
     {
       "name": "Josh Pinkney",
       "email": "jpinkney@redhat.com"
+    }, {
+      "name": "Oleksii Orel",
+      "email": "oorel@redhat.com"
     }
   ],
   "license": "EPL-2.0",
