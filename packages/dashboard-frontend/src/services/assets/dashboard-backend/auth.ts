@@ -19,4 +19,3 @@ export function addAuthentication(headers: { [key: string]: string }) {
     }
     return headers;
   }
-  

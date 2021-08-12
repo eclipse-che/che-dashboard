@@ -10,18 +10,16 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import { Context, KubeConfig, User} from '@kubernetes/client-node';
+import { Context, User, KubeConfig, ApisApi } from '@kubernetes/client-node';
 import * as helper from './helpers';
-import * as k8s from '@kubernetes/client-node';
 
 export class KubeConfigProvider {
   private isOpenShift: Promise<boolean>;
-  // todo maybe cache SA kubeconfig
-  // private saKubeConfig: KubeConfig;
+  private inClusterKubeConfig: KubeConfig | undefined;
 
   constructor() {
     const kc: any = this.getSAKubeConfig();
-    const apiClient = kc.makeApiClient(k8s.ApisApi);
+    const apiClient = kc.makeApiClient(ApisApi);
     this.isOpenShift = helper.isOpenShift(apiClient);
   }
 
@@ -38,6 +36,7 @@ export class KubeConfigProvider {
 
     const user: User = {
       // todo is there way to figure out openshift username?
+      // todo answer: there is with native auth. It's in dedicated headere
       name: 'developer',
       token: token,
     };
@@ -56,17 +55,21 @@ export class KubeConfigProvider {
   }
 
   getSAKubeConfig(): KubeConfig {
-    const kc = new k8s.KubeConfig();
     if (process.env['LOCAL_RUN'] === 'true') {
-      const kubeconfig = process.env['KUBECONFIG'];
-      if (!kubeconfig) {
-        return kc;
+      const kc = new KubeConfig();
+      let kubeConfigFile = process.env['KUBECONFIG'];
+      if (!kubeConfigFile) {
+        // if not kubeconfig env var is defined and fallback kubectl default value: $HOME/.kube/config
+        kubeConfigFile = process.env['HOME'] + '/.kube/config';
       }
-      kc.loadFromFile(kubeconfig);
+      kc.loadFromFile(kubeConfigFile);
+      return kc;
     } else {
-      kc.loadFromCluster();
+      if (!this.inClusterKubeConfig) {
+        this.inClusterKubeConfig = new KubeConfig();
+        this.inClusterKubeConfig.loadFromCluster();
+      }
+      return this.inClusterKubeConfig;
     }
-    return kc;
   }
-
 }

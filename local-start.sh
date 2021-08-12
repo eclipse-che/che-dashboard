@@ -13,15 +13,6 @@ export CHE_HOST=http://localhost:8080
 CHE_URL=$(oc get checluster -n $CHE_NAMESPACE eclipse-che -o=json | jq -r '.status.cheURL')
 export KEYCLOAK_URL=$(oc get checluster -n $CHE_NAMESPACE eclipse-che -o=json | jq -r '.status.keycloakURL')
 
-# Is still needed for DevWorkspace Client
-# TODO Make DevWorkspace Client being able to work with KUBECONFIG env var as well
-export KUBERNETES_SERVICE_PORT=6443
-API=$(oc whoami --show-server)
-API=${API##*://}
-API=${API%%:*}
-export KUBERNETES_SERVICE_HOST=${API}
-export IN_CLUSTER=false
-
 # guide backend to use the current cluster from kubeconfig
 export LOCAL_RUN="true"
 export KUBECONFIG=$HOME/.kube/config
