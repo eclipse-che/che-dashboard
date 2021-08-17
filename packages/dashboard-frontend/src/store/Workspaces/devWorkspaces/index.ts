@@ -24,6 +24,7 @@ import { getErrorMessage } from '../../../services/helpers/getErrorMessage';
 import { getDefer, IDeferred } from '../../../services/helpers/deferred';
 import { DisposableCollection } from '../../../services/helpers/disposable';
 import { selectDwPluginsList } from '../../Plugins/devWorkspacePlugins/selectors';
+import { getId } from '../../../services/workspace-adapter/helper';
 
 const cheWorkspaceClient = container.get(CheWorkspaceClient);
 const devWorkspaceClient = container.get(DevWorkspaceClient);
@@ -241,7 +242,7 @@ export const actionCreators: ActionCreators = {
     if (workspace.status.phase === DevWorkspaceStatus.STOPPED || workspace.status.phase === DevWorkspaceStatus.FAILED) {
       onStatusChangeCallback(workspace.status.phase);
     } else {
-      const workspaceId = workspace.status.devworkspaceId;
+      const workspaceId = getId(workspace);
       onStatusChangeCallbacks.set(workspaceId, onStatusChangeCallback);
       toDispose.push({
         dispose: () => onStatusChangeCallbacks.delete(workspaceId)
@@ -261,7 +262,7 @@ export const actionCreators: ActionCreators = {
   stopWorkspace: (workspace: IDevWorkspace): AppThunk<KnownAction, Promise<void>> => async (dispatch): Promise<void> => {
     try {
       devWorkspaceClient.changeWorkspaceStatus(workspace.metadata.namespace, workspace.metadata.name, false);
-      dispatch({ type: 'DELETE_DEVWORKSPACE_LOGS', workspaceId: workspace.status.devworkspaceId });
+      dispatch({ type: 'DELETE_DEVWORKSPACE_LOGS', workspaceId: getId(workspace) });
     } catch (e) {
       const errorMessage = `Failed to stop the workspace ${workspace.metadata.name}, reason: ` + getErrorMessage(e);
       dispatch({
@@ -277,7 +278,7 @@ export const actionCreators: ActionCreators = {
       const namespace = workspace.metadata.namespace;
       const name = workspace.metadata.name;
       await devWorkspaceClient.delete(namespace, name);
-      const workspaceId = workspace.status.devworkspaceId;
+      const workspaceId = getId(workspace);
       dispatch({
         type: 'TERMINATE_DEVWORKSPACE',
         workspaceId,
@@ -405,12 +406,12 @@ export const reducer: Reducer<State> = (state: State | undefined, action: KnownA
     case 'UPDATE_DEVWORKSPACE':
       return createObject(state, {
         isLoading: false,
-        workspaces: state.workspaces.map(workspace => workspace.status.devworkspaceId === action.workspace.status.devworkspaceId ? action.workspace : workspace),
+        workspaces: state.workspaces.map(workspace => getId(workspace) === getId(action.workspace) ? action.workspace : workspace),
       });
     case 'UPDATE_DEVWORKSPACE_STATUS':
       return createObject(state, {
         workspaces: state.workspaces.map(workspace => {
-          if (workspace.status.devworkspaceId === action.workspaceId) {
+          if (getId(workspace) === action.workspaceId) {
             workspace.status.phase = action.status;
           }
           return workspace;
@@ -419,14 +420,14 @@ export const reducer: Reducer<State> = (state: State | undefined, action: KnownA
     case 'ADD_DEVWORKSPACE':
       return createObject(state, {
         workspaces: state.workspaces
-          .filter(workspace => workspace.status.devworkspaceId !== action.workspace.status.devworkspaceId)
+          .filter(workspace => getId(workspace) !== getId(action.workspace))
           .concat([action.workspace]),
       });
     case 'TERMINATE_DEVWORKSPACE':
       return createObject(state, {
         isLoading: false,
         workspaces: state.workspaces.map(workspace => {
-          if (workspace.status.devworkspaceId === action.workspaceId) {
+          if (getId(workspace) === action.workspaceId) {
             const targetWorkspace = Object.assign({}, workspace);
             targetWorkspace.status.phase = DevWorkspaceStatus.TERMINATING;
             return targetWorkspace;
@@ -436,7 +437,7 @@ export const reducer: Reducer<State> = (state: State | undefined, action: KnownA
       });
     case 'DELETE_DEVWORKSPACE':
       return createObject(state, {
-        workspaces: state.workspaces.filter(workspace => workspace.status.devworkspaceId !== action.workspaceId),
+        workspaces: state.workspaces.filter(workspace => getId(workspace) !== action.workspaceId),
       });
     case 'UPDATE_DEVWORKSPACE_LOGS':
       return createObject(state, {
