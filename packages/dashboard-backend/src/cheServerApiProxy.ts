@@ -9,13 +9,10 @@
  * Contributors:
  *   Red Hat, Inc. - initial API and implementation
  */
-import args from 'args';
 import {FastifyInstance, FastifyRequest, RouteShorthandOptions} from 'fastify';
 import fastifyHttpProxy from 'fastify-http-proxy';
 
-args.option('cheServerUpstream', 'The upstream for che-server api', process.env.CHE_HOST);
-
-export function cheServerApiProxy(cheApiUpstream: string, server: FastifyInstance) {
+export function cheServerApiProxy(server: FastifyInstance, cheApiUpstream: string, origin: string) {
     console.log(`Che Server API proxy is running and proxying to "${cheApiUpstream}".`);
 
     // fake JSON RPC for Che websocket API

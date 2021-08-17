@@ -38,7 +38,7 @@ export class WebsocketClient {
     if (this.websocketStream) {
       this.websocketStream.close();
     }
-    const websocketContext = `${prefix}/websocket`
+    const websocketContext = `${prefix}/websocket`;
     const location = new URL(window.location.href).origin.replace('http', 'ws') + websocketContext;
     this.websocketStream = new ReconnectingWebSocket(
       location,

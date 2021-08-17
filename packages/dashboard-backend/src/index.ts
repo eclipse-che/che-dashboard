@@ -23,7 +23,7 @@ import args from 'args';
 
 args
   .option('publicFolder', 'The public folder to serve', './public')
-  .option('cheServerUpstream', 'The upstream for Che server api', process.env.CHE_HOST);
+  .option('cheApiUpstream', 'The upstream for Che server api', process.env.CHE_HOST);
 
 const { publicFolder, cheApiUpstream } = args.parse(process.argv) as { publicFolder: string, cheApiUpstream: string };
 
@@ -71,9 +71,9 @@ startTemplateApi(server);
 startCheApi(server);
 
 
-const origin = process.env.CHE_HOST;
-if (cheApiUpstream && cheApiUpstream !== origin) {
-  cheServerApiProxy(cheApiUpstream, server);
+const host = process.env.CHE_HOST as string;
+if (cheApiUpstream && cheApiUpstream !== host) {
+  cheServerApiProxy(server, cheApiUpstream, host);
 }
 
 server.listen(8080, '0.0.0.0', (err, address) => {

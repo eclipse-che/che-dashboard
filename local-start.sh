@@ -17,4 +17,4 @@ CHE_URL=$(oc get checluster -n $CHE_NAMESPACE eclipse-che -o=json | jq -r '.stat
 export LOCAL_RUN="true"
 export KUBECONFIG=$HOME/.kube/config
 
-node packages/dashboard-backend/lib/server.js --publicFolder ../../dashboard-frontend/lib  --cheServerUpstream $CHE_URL
+node packages/dashboard-backend/lib/server.js --publicFolder ../../dashboard-frontend/lib  --cheApiUpstream $CHE_URL

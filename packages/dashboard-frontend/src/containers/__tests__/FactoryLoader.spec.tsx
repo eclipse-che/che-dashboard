@@ -25,6 +25,7 @@ import { convertWorkspace, Workspace } from '../../services/workspace-adapter';
 import { DevWorkspaceBuilder } from '../../store/__mocks__/devWorkspaceBuilder';
 import { IDevWorkspace } from '../../services/workspace-client/devworkspace/types';
 import { safeDump } from 'js-yaml';
+import { getId } from '../../services/workspace-adapter/helper';
 
 const showAlertMock = jest.fn();
 const createWorkspaceFromDevfileMock = jest.fn().mockResolvedValue(undefined);
@@ -452,7 +453,7 @@ function renderComponentV2(
       workspaces: [workspace],
     })
     .withWorkspaces({
-      workspaceId: workspace.status.devworkspaceId
+      workspaceId: getId(workspace)
     })
     .withFactoryResolver({
       v: '4.0',
