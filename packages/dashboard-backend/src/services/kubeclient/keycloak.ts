@@ -10,19 +10,32 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-let keycloakUserInfoEndpoint: string | undefined;
+import axios from 'axios';
+import { getErrorMessage } from '../helpers';
+
+const ENDPOINT = 'che.keycloak.userinfo.endpoint';
+const HOST = process.env.CHE_HOST as string;
+
+let keycloakUserInfoEndpoint: URL | undefined;
 
 export async function validateToken(keycloakToken: string): Promise<void> {
-  if (!keycloakUserInfoEndpoint) {
-    // todo init value
-    // 1. request keycloak endpoint from CHE_HOST/api/keycloak/settings
-    // 2. cache made response
-    //   ...
-    //   "che.keycloak.userinfo.endpoint":"https://${SOME_HOST}/auth/realms/codeready/protocol/openid-connect/userinfo",
-    //   ...
-  }
-  // 4. validate token with
 
-  // todo implement to validate token on k8s
-  return undefined;
+  // lazy initialization
+  if (!keycloakUserInfoEndpoint) {
+    try {
+      const keycloakSettingsUrl = new URL('/api/keycloak/settings', HOST);
+      const response = await axios.get(keycloakSettingsUrl.href);
+      const { pathname } = new URL(response.data[ENDPOINT]);
+      keycloakUserInfoEndpoint = new URL(pathname, HOST);
+    } catch (e) {
+      throw `Failed to fetch keycloak settings: ${getErrorMessage(e)}`;
+    }
+  }
+
+  const headers = { Authorization: `Bearer ${keycloakToken}` };
+  try {
+    await axios.get(keycloakUserInfoEndpoint.href, { headers });
+  } catch (e) {
+    throw `Failed to to validate token: ${getErrorMessage(e)}`;
+  }
 }

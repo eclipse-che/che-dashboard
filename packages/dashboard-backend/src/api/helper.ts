@@ -12,6 +12,7 @@
 
 import { FastifyRequest } from 'fastify';
 import { DwClientProvider } from '../services/kubeclient/dwClientProvider';
+import { DevWorkspaceClient } from '../devworkspace-client';
 
 const BEARER = 'Bearer'; // Bearer Token Authentication
 const dwClientProvider: DwClientProvider = new DwClientProvider();
@@ -19,7 +20,7 @@ const dwClientProvider: DwClientProvider = new DwClientProvider();
 /**
  * Creates DevWorkspace Client depending on the context for the specified request.
  */
-export function getDevWorkspaceClient(request: FastifyRequest) {
+export function getDevWorkspaceClient(request: FastifyRequest): Promise<DevWorkspaceClient> {
   const authorization = request.headers!.authorization;
   const token = authorization && authorization.startsWith(BEARER) ? authorization.substring(BEARER.length) : '';
 
