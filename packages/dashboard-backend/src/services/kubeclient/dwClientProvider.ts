@@ -19,7 +19,7 @@ import { validateToken } from './keycloak';
 
 export class DwClientProvider {
   private kubeconfigProvider: KubeConfigProvider;
-  private isOpenShift: Promise<boolean>;
+  private readonly isOpenShift: Promise<boolean>;
 
   constructor() {
     this.kubeconfigProvider = new KubeConfigProvider();
@@ -33,7 +33,6 @@ export class DwClientProvider {
     let contextKc: KubeConfig;
     if (await this.isOpenShift) {
       // on OpenShift it's supposed to be access token which we can use directly
-      token = token.replace('Bearer ', '');
       contextKc = this.kubeconfigProvider.getKubeConfig(token);
     } else {
       // on K8s it's supposed to be keycloak token which we can't use to access the cluster
