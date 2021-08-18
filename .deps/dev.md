@@ -182,7 +182,6 @@
 | [`@types/mime@1.3.2`](https://github.com/DefinitelyTyped/DefinitelyTyped.git) | MIT | clearlydefined |
 | [`@types/minimatch@3.0.5`](https://github.com/DefinitelyTyped/DefinitelyTyped.git) | MIT | [CQ18717](https://dev.eclipse.org/ipzilla/show_bug.cgi?id=18717) |
 | [`@types/minimist@1.2.2`](https://github.com/DefinitelyTyped/DefinitelyTyped.git) | MIT | emo_ip_team |
-| [`@types/node-static@0.7.7`](https://github.com/DefinitelyTyped/DefinitelyTyped.git) | MIT | clearlydefined |
 | [`@types/normalize-package-data@2.4.1`](https://github.com/DefinitelyTyped/DefinitelyTyped.git) | MIT | clearlydefined |
 | [`@types/parse-json@4.0.0`](https://www.github.com/DefinitelyTyped/DefinitelyTyped.git) | MIT | clearlydefined |
 | [`@types/prettier@2.3.2`](https://github.com/DefinitelyTyped/DefinitelyTyped.git) | MIT | clearlydefined |
@@ -199,7 +198,6 @@
 | [`@types/react-tooltip@4.2.4`](https://github.com/wwayne/react-tooltip) | MIT | clearlydefined |
 | [`@types/redux-mock-store@1.0.3`](https://github.com/DefinitelyTyped/DefinitelyTyped.git) | MIT | clearlydefined |
 | [`@types/reselect@2.2.0`](https://github.com/rackt/reselect) | MIT | clearlydefined |
-| [`@types/rimraf@3.0.1`](https://github.com/DefinitelyTyped/DefinitelyTyped.git) | MIT | clearlydefined |
 | [`@types/sanitize-html@1.27.2`](https://github.com/DefinitelyTyped/DefinitelyTyped.git) | MIT | clearlydefined |
 | [`@types/serve-static@1.13.10`](https://github.com/DefinitelyTyped/DefinitelyTyped.git) | MIT | [CQ18717](https://dev.eclipse.org/ipzilla/show_bug.cgi?id=18717) |
 | [`@types/sizzle@2.3.3`](https://github.com/DefinitelyTyped/DefinitelyTyped.git) | MIT | clearlydefined |
@@ -216,6 +214,7 @@
 | [`@types/webpack-dev-server@3.11.5`](https://github.com/DefinitelyTyped/DefinitelyTyped.git) | MIT | clearlydefined |
 | [`@types/webpack-sources@2.1.1`](https://github.com/DefinitelyTyped/DefinitelyTyped.git) | MIT | clearlydefined |
 | [`@types/webpack@4.41.30`](https://github.com/DefinitelyTyped/DefinitelyTyped.git) | MIT | clearlydefined |
+| [`@types/ws@7.4.7`](https://github.com/DefinitelyTyped/DefinitelyTyped.git) | MIT | clearlydefined |
 | [`@types/yargs-parser@20.2.1`](https://github.com/DefinitelyTyped/DefinitelyTyped.git) | MIT | clearlydefined |
 | [`@types/yargs@15.0.14`](https://github.com/DefinitelyTyped/DefinitelyTyped.git) | MIT | clearlydefined |
 | [`@typescript-eslint/eslint-plugin@3.10.1`](https://github.com/typescript-eslint/typescript-eslint.git) | MIT | clearlydefined |
