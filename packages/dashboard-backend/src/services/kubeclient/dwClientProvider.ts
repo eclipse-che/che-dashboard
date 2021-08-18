@@ -37,7 +37,12 @@ export class DwClientProvider {
     } else {
       // on K8s it's supposed to be keycloak token which we can't use to access the cluster
       // so, validate token and use SA
-      await validateToken(token);
+      try {
+        await validateToken(token);
+      } catch (e) {
+        console.error(e);
+        throw e;
+      }
       contextKc = this.kubeconfigProvider.getSAKubeConfig();
     }
     return new DevWorkspaceClient(contextKc);
