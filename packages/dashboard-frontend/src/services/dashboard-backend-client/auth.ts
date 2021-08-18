@@ -15,7 +15,7 @@ import { KeycloakAuthService } from '../keycloak/auth';
 export function addAuthentication(headers: { [key: string]: string }) {
     const token = KeycloakAuthService?.keycloak?.token;
     if (token) {
-      headers.authorization = token;
+      headers['Authorization'] = `Bearer ${token}`; // Bearer Token Authentication
     }
     return headers;
   }

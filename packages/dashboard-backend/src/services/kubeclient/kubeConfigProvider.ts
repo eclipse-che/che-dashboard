@@ -36,7 +36,7 @@ export class KubeConfigProvider {
 
     const user: User = {
       // todo is there way to figure out openshift username?
-      // todo answer: there is with native auth. It's in dedicated headere
+      // todo answer: there is with native auth. It's in dedicated header
       name: 'developer',
       token: token,
     };
