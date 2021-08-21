@@ -4,8 +4,14 @@
 set -e
 set -u
 
-# TODO execute frontend build if lib does not exist
-cd packages/dashboard-backend && yarn build && cd -
+DASHBOARD_FRONTEND=packages/dashboard-frontend
+DASHBOARD_BACKEND=packages/dashboard-backend
+
+yarn --cwd $DASHBOARD_BACKEND
+
+if [ ! -f $DASHBOARD_FRONTEND/lib ]; then
+    yarn --cwd $DASHBOARD_FRONTEND build
+fi
 
 # Init Che Namespace with the default value if it's not set
 CHE_NAMESPACE="${CHE_NAMESPACE:-eclipse-che}"
@@ -17,4 +23,4 @@ CHE_URL=$(oc get checluster -n $CHE_NAMESPACE eclipse-che -o=json | jq -r '.stat
 export LOCAL_RUN="true"
 export KUBECONFIG=$HOME/.kube/config
 
-node packages/dashboard-backend/lib/server.js --publicFolder ../../dashboard-frontend/lib  --cheApiUpstream $CHE_URL
+yarn --cwd $DASHBOARD_BACKEND start:debug --publicFolder ../../dashboard-frontend/lib  --cheApiUpstream $CHE_URL

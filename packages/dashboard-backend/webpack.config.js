@@ -12,41 +12,41 @@
 
 const path = require('path');
 const webpack = require('webpack');
+const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 
 const config = {
-    entry: path.join(__dirname, 'src/index.ts'),
-    devtool: 'source-map',
-    module: {
-        rules: [
-            {
-                test: /\.ts$/,
-                use: [
-                    {
-                        loader: 'ts-loader',
-                    }
-                ],
-                exclude: /node_modules/
-            }
-        ]
-    },
-    resolve: {
-        extensions: ['.ts', '.js'],
-    },
-    resolveLoader: {},
-    plugins: [
-        new webpack.ProgressPlugin(),
-    ],
-    target: 'node',
-    node: {
-      __dirname: false,
-    },
-    output: {
-        filename: 'server.js',
-        library: 'dashboard-backend-client',
-        libraryTarget: 'umd',
-        globalObject: 'this',
-        path: path.resolve(__dirname, 'lib')
-    },
+  entry: path.join(__dirname, 'src/index.ts'),
+  module: {
+    rules: [
+      {
+        test: /\.ts$/,
+        loader: 'ts-loader',
+      }
+    ]
+  },
+  resolve: {
+    extensions: ['.ts', '.js'],
+  },
+  resolveLoader: {},
+  plugins: [
+    new webpack.ProgressPlugin(),
+    new CleanWebpackPlugin(),
+  ],
+  target: 'node',
+  node: {
+    __dirname: false,
+  },
+  output: {
+    filename: 'server.js',
+    library: 'dashboard-backend-client',
+    libraryTarget: 'umd',
+    globalObject: 'this',
+    path: path.join(__dirname, 'lib')
+  },
+  watchOptions: {
+    ignored: /node_modules/,
+    poll: 1000,
+  },
 };
 
 module.exports = (env = {}) => {
