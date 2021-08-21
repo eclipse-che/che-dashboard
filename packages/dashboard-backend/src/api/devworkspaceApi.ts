@@ -86,7 +86,16 @@ export function startDevworkspaceApi(server: FastifyInstance) {
 
   server.delete(
     `${baseApiPath}/namespace/:namespace/devworkspaces/:workspaceName`,
-    getSchema({ params: namespacedWorkspaceSchema }),
+    getSchema({
+      tags: ['devworkspace'],
+      params: namespacedWorkspaceSchema,
+      response: {
+        200: {
+          description: 'Succesful response',
+          type: 'boolean'
+        }
+      }
+    }),
     async (request: FastifyRequest) => {
       const { namespace, workspaceName } = request.params as restParams.INamespacedWorkspaceParam;
       const { devworkspaceApi } = await getDevWorkspaceClient(request);

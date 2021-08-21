@@ -63,6 +63,8 @@ server.addContentTypeParser(
 
 startStaticServer(publicFolder, server);
 
+startSwagger(server);
+
 startDevworkspaceApi(server);
 
 startDevworkspaceWebsocketWatcher(server);
@@ -70,8 +72,6 @@ startDevworkspaceWebsocketWatcher(server);
 startTemplateApi(server);
 
 startCheApi(server);
-
-startSwagger(server);
 
 const host = process.env.CHE_HOST as string;
 if (cheApiUpstream && cheApiUpstream !== host) {
