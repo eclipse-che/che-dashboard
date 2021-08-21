@@ -20,6 +20,7 @@ import { startCheApi } from './api/cheApi';
 import { startTemplateApi } from './api/templateApi';
 import { cheServerApiProxy } from './cheServerApiProxy';
 import args from 'args';
+import { startSwagger } from './swagger';
 
 args
   .option('publicFolder', 'The public folder to serve', './public')
@@ -70,6 +71,7 @@ startTemplateApi(server);
 
 startCheApi(server);
 
+startSwagger(server);
 
 const host = process.env.CHE_HOST as string;
 if (cheApiUpstream && cheApiUpstream !== host) {
