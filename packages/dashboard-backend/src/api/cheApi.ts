@@ -20,7 +20,16 @@ import { restParams } from '../typings/models';
 export function startCheApi(server: FastifyInstance) {
   server.get(
     `${baseApiPath}/namespace/:namespace/init`,
-    getSchema({params: namespacedSchema}),
+    getSchema({
+      tags: ['che-namespace init'],
+      params: namespacedSchema,
+      response: {
+        200: {
+          description: 'Succesful response',
+          type: 'boolean'
+        }
+      }
+    }),
     async (request: FastifyRequest) => {
       const {namespace} = request.params as restParams.INamespacedParam;
       const {cheApi} = await getDevWorkspaceClient(request);
