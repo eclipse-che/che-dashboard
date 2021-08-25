@@ -12,21 +12,33 @@
 
 import axios from 'axios';
 import { getErrorMessage } from '../helpers';
+import { isCheServerApiProxyRequired } from '../../index';
+import * as https from 'https';
 
+const CHE_HOST = process.env.CHE_HOST as string;
 const ENDPOINT = 'che.keycloak.userinfo.endpoint';
-const HOST = process.env.CHE_HOST as string;
 
-let keycloakUserInfoEndpoint: URL | undefined;
+let keycloakEndpointUrl: URL | undefined;
+
+const httpsAgent = new https.Agent({
+  rejectUnauthorized: false
+});
 
 export async function validateToken(keycloakToken: string): Promise<void> {
 
   // lazy initialization
-  if (!keycloakUserInfoEndpoint) {
+  if (!keycloakEndpointUrl) {
     try {
-      const keycloakSettingsUrl = new URL('/api/keycloak/settings', HOST);
-      const response = await axios.get(keycloakSettingsUrl.href);
-      const { pathname } = new URL(response.data[ENDPOINT]);
-      keycloakUserInfoEndpoint = new URL(pathname, HOST);
+      const keycloakSettingsUrl = new URL('/api/keycloak/settings', CHE_HOST);
+      const response = await axios.get(keycloakSettingsUrl.href, { httpsAgent });
+      const keycloakEndpoint = response.data[ENDPOINT];
+      // we should change a HOST in the case of using proxy to prevent the host check error
+      if (isCheServerApiProxyRequired()) {
+        const { pathname } = new URL(keycloakEndpoint);
+        keycloakEndpointUrl = new URL(pathname, CHE_HOST);
+      } else {
+        keycloakEndpointUrl = new URL(keycloakEndpoint)
+      }
     } catch (e) {
       throw `Failed to fetch keycloak settings: ${getErrorMessage(e)}`;
     }
@@ -34,7 +46,7 @@ export async function validateToken(keycloakToken: string): Promise<void> {
 
   const headers = { Authorization: `Bearer ${keycloakToken}` };
   try {
-    await axios.get(keycloakUserInfoEndpoint.href, { headers });
+    await axios.get(keycloakEndpointUrl.href, { headers, httpsAgent });
   } catch (e) {
     throw `Failed to to validate token: ${getErrorMessage(e)}`;
   }

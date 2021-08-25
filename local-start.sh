@@ -26,5 +26,9 @@ export ENABLE_SWAGGER=true
 
 yarn --cwd $DASHBOARD_BACKEND build:dev
 
-(yarn --cwd $DASHBOARD_BACKEND start:debug --publicFolder $DASHBOARD_FRONTEND/lib  --cheApiUpstream $CHE_URL) &
-wait $!
+# we use relative to the static server path which is starting with '../../' to serv the dashboard-frontend
+# build output directory. In the case of docker build dashboard-frontend output directory will be copied
+# into the './public' directory (default value for static server)
+PUBLIC_FOLDER=../../../../$DASHBOARD_FRONTEND/lib
+
+yarn --cwd $DASHBOARD_BACKEND start:debug --publicFolder $PUBLIC_FOLDER  --cheApiUpstream $CHE_URL

@@ -12,15 +12,20 @@
 
 import { FastifyInstance, FastifyRequest } from 'fastify';
 import { baseApiPath } from '../constants/config';
-import { templateStartedSchema } from '../constants/schemas';
+import { namespacedSchema, templateStartedSchema } from '../constants/schemas';
 import { getDevWorkspaceClient } from './helper';
 import { getSchema } from '../services/helpers';
 import { restParams } from '../typings/models';
 
+const tags = ['template'];
+
 export function registerTemplateApi(server: FastifyInstance) {
   server.post(
     `${baseApiPath}/namespace/:namespace/devworkspacetemplates`,
-    getSchema({ body: templateStartedSchema }),
+    getSchema({ tags,
+      params: namespacedSchema,
+      body: templateStartedSchema
+    }),
     async (request: FastifyRequest) => {
       const { template } = request.body as restParams.ITemplateBodyParam;
 
