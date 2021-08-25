@@ -36,7 +36,7 @@ function handler(connection: FastifyRequest) {
   });
 }
 
-export function startDevworkspaceWebsocketWatcher(server: FastifyInstance) {
+export function registerDevworkspaceWebsocketWatcher(server: FastifyInstance) {
   server.register(fastifyWebsocket);
   server.get(`${baseApiPath}/websocket`, options, handler);
 }

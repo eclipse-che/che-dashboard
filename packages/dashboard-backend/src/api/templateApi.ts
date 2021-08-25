@@ -17,7 +17,7 @@ import { getDevWorkspaceClient } from './helper';
 import { getSchema } from '../services/helpers';
 import { restParams } from '../typings/models';
 
-export function startTemplateApi(server: FastifyInstance) {
+export function registerTemplateApi(server: FastifyInstance) {
   server.post(
     `${baseApiPath}/namespace/:namespace/devworkspacetemplates`,
     getSchema({ body: templateStartedSchema }),

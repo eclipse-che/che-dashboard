@@ -14,7 +14,7 @@ import { FastifyInstance } from 'fastify';
 import fastifyStatic from 'fastify-static';
 import path from 'path';
 
-export function startStaticServer(publicFolder: string, server: FastifyInstance) {
+export function registerStaticServer(publicFolder: string, server: FastifyInstance) {
   const rootPath = path.resolve(__dirname, publicFolder);
   console.log(`Static server's serving "${rootPath}" on 0.0.0.0:8080/dashboard/`);
 

@@ -7,9 +7,8 @@ set -u
 DASHBOARD_FRONTEND=packages/dashboard-frontend
 DASHBOARD_BACKEND=packages/dashboard-backend
 
-yarn --cwd $DASHBOARD_BACKEND
-
-if [ ! -f $DASHBOARD_FRONTEND/lib ]; then
+# check if frontend is ready; run build otherwise
+if [ ! -d $DASHBOARD_FRONTEND/lib ] || [ -z "$(ls -A $DASHBOARD_FRONTEND/lib)" ]; then
     yarn --cwd $DASHBOARD_FRONTEND build
 fi
 
@@ -23,4 +22,9 @@ CHE_URL=$(oc get checluster -n $CHE_NAMESPACE eclipse-che -o=json | jq -r '.stat
 export LOCAL_RUN="true"
 export KUBECONFIG=$HOME/.kube/config
 
-yarn --cwd $DASHBOARD_BACKEND start:debug --publicFolder ../../dashboard-frontend/lib  --cheApiUpstream $CHE_URL
+export ENABLE_SWAGGER=true
+
+yarn --cwd $DASHBOARD_BACKEND build:dev
+
+(yarn --cwd $DASHBOARD_BACKEND start:debug --publicFolder $DASHBOARD_FRONTEND/lib  --cheApiUpstream $CHE_URL) &
+wait $!

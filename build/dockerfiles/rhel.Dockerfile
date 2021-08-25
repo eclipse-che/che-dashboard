@@ -24,9 +24,6 @@ COPY ${FRONTEND}/package.json /dashboard/${FRONTEND}/
 ENV BACKEND=packages/dashboard-backend
 COPY ${BACKEND}/package.json /dashboard/${BACKEND}/
 
-ENV STATIC_SERVER=packages/static-server
-COPY ${STATIC_SERVER}/package.json /dashboard/${STATIC_SERVER}/
-
 WORKDIR /dashboard
 RUN npm i -g yarn
 RUN yarn install
@@ -44,9 +41,8 @@ RUN \
 
 ENV FRONTEND_LIB=/dashboard/packages/dashboard-frontend/lib
 ENV BACKEND_LIB=/dashboard/packages/dashboard-backend/lib
-ENV STATIC_SERVER_LIB=/dashboard/packages/static-server/lib
 
-COPY --from=builder ${STATIC_SERVER_LIB}/server.js /server.js
+COPY --from=builder ${BACKEND_LIB} /backend
 COPY --from=builder ${FRONTEND_LIB} /public
 
 COPY build/dockerfiles/rhel.entrypoint.sh /usr/local/bin

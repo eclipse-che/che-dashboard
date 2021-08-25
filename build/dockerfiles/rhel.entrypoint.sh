@@ -18,6 +18,6 @@ set -x
 
 # start static server
 echo 'Starting static server...'
-start_server="node /server.js --publicFolder /public"
+start_server="node /backend/server/backend.js --publicFolder /public"
 $start_server &
 wait

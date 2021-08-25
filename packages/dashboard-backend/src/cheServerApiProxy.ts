@@ -12,7 +12,7 @@
 import { FastifyInstance, FastifyRequest, RouteShorthandOptions } from 'fastify';
 import fastifyHttpProxy from 'fastify-http-proxy';
 
-export function cheServerApiProxy(server: FastifyInstance, cheApiUpstream: string, origin: string) {
+export function registerCheServerApiProxy(server: FastifyInstance, cheApiUpstream: string, origin: string) {
   console.log(`Che Server API proxy is running and proxying to "${cheApiUpstream}".`);
 
   // fake JSON RPC for Che websocket API

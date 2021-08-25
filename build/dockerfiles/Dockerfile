@@ -34,7 +34,7 @@ FROM docker.io/node:12.20.1-alpine3.12
 ENV FRONTEND_LIB=/dashboard/packages/dashboard-frontend/lib
 ENV BACKEND_LIB=/dashboard/packages/dashboard-backend/lib
 
-COPY --from=builder ${BACKEND_LIB}/server.js /server.js
+COPY --from=builder ${BACKEND_LIB} /backend
 COPY --from=builder ${FRONTEND_LIB} /public
 
 COPY build/dockerfiles/entrypoint.sh /entrypoint.sh

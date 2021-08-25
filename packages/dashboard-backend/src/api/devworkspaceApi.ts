@@ -17,7 +17,7 @@ import { getDevWorkspaceClient } from './helper';
 import { restParams } from '../typings/models';
 import { delay, getSchema } from '../services/helpers';
 
-export function startDevworkspaceApi(server: FastifyInstance) {
+export function registerDevworkspaceApi(server: FastifyInstance) {
 
   server.post(
     `${baseApiPath}/namespace/:namespace/devworkspaces`,
