@@ -12,15 +12,15 @@
 
 import 'reflect-metadata';
 import fastify from 'fastify';
-import fastifyCors from 'fastify-cors';
-import { startStaticServer } from './staticServer';
-import { startDevworkspaceWebsocketWatcher } from './api/devworkspaceWebsocketWatcher';
-import { startDevworkspaceApi } from './api/devworkspaceApi';
-import { startCheApi } from './api/cheApi';
-import { startTemplateApi } from './api/templateApi';
-import { cheServerApiProxy } from './cheServerApiProxy';
 import args from 'args';
-import { startSwagger } from './swagger';
+import { registerStaticServer } from './static';
+import { registerDevworkspaceWebsocketWatcher } from './api/devworkspaceWebsocketWatcher';
+import { registerDevworkspaceApi } from './api/devworkspaceApi';
+import { registerCheApi } from './api/cheApi';
+import { registerTemplateApi } from './api/templateApi';
+import { registerCheServerApiProxy } from './cheServerApiProxy';
+import { registerCors } from './cors';
+import { registerSwagger } from './swagger';
 
 args
   .option('publicFolder', 'The public folder to serve', './public')
@@ -34,18 +34,6 @@ if (!('CHE_HOST' in process.env)) {
 }
 
 const server = fastify();
-
-// todo replace an 'any' with the target type
-server.register(fastifyCors, () => (req: any, callback: any) => {
-    const corsOptions = /^(https?:\/\/)?localhost:8080/.test(req.headers.host) ? {
-      origin: false
-    } : {
-      origin: [process.env.CHE_HOST],
-      methods: ['GET', 'POST', 'PATCH', 'DELETE']
-    };
-    callback(null, corsOptions);
-  }
-);
 
 server.addContentTypeParser(
   'application/merge-patch+json',
@@ -61,21 +49,26 @@ server.addContentTypeParser(
   }
 );
 
-startStaticServer(publicFolder, server);
+registerCors(server);
 
-startSwagger(server);
+registerStaticServer(publicFolder, server);
 
-startDevworkspaceApi(server);
+const enableSwagger = process.env.ENABLE_SWAGGER === 'true';
+if (enableSwagger) {
+  registerSwagger(server);
+}
 
-startDevworkspaceWebsocketWatcher(server);
+registerDevworkspaceApi(server);
 
-startTemplateApi(server);
+registerDevworkspaceWebsocketWatcher(server);
 
-startCheApi(server);
+registerTemplateApi(server);
+
+registerCheApi(server);
 
 const host = process.env.CHE_HOST as string;
 if (cheApiUpstream && cheApiUpstream !== host) {
-  cheServerApiProxy(server, cheApiUpstream, host);
+  registerCheServerApiProxy(server, cheApiUpstream, host);
 }
 
 server.listen(8080, '0.0.0.0', (err, address) => {

@@ -17,7 +17,7 @@ import { getDevWorkspaceClient } from './helper';
 import { getSchema } from '../services/helpers';
 import { restParams } from '../typings/models';
 
-export function startCheApi(server: FastifyInstance) {
+export function registerCheApi(server: FastifyInstance) {
   server.get(
     `${baseApiPath}/namespace/:namespace/init`,
     getSchema({

@@ -9,19 +9,21 @@
  * Contributors:
  *   Red Hat, Inc. - initial API and implementation
  */
+
+import fastify, { FastifyInstance } from 'fastify';
 import fastifySwagger from 'fastify-swagger';
-import { FastifyInstance } from 'fastify';
 
 const routePrefix = 'dashboard/api/swagger';
 
-export function startSwagger(server: FastifyInstance) {
+export function registerSwagger(server: FastifyInstance): void {
   console.log(`Che Dashboard swagger is running on "${routePrefix}".`);
 
-  server.register(fastifySwagger, { routePrefix,
+  server.register(fastifySwagger, {
+    routePrefix,
     swagger: {
       info: {
-        title: 'CHE Dashboard swagger',
-        description: 'testing dashboard-backend api',
+        title: 'Che Dashboard Backend Swagger',
+        description: 'Testing the Dashboard Backend API',
         version: '0.0.1'
       },
       consumes: ['application/json'],
@@ -30,5 +32,4 @@ export function startSwagger(server: FastifyInstance) {
     hideUntagged: true,
     exposeRoute: true
   });
-
 }
