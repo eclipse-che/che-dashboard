@@ -10,7 +10,7 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import fastify, { FastifyInstance } from 'fastify';
+import { FastifyInstance } from 'fastify';
 import fastifySwagger from 'fastify-swagger';
 
 const routePrefix = 'dashboard/api/swagger';
