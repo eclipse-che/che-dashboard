@@ -22,15 +22,21 @@ import { registerCheServerApiProxy } from './cheServerApiProxy';
 import { registerCors } from './cors';
 import { registerSwagger } from './swagger';
 
+const CHE_HOST = process.env.CHE_HOST as string;
+
+if (!CHE_HOST) {
+  console.error('CHE_HOST environment variable is required');
+  process.exit(1);
+}
+
 args
   .option('publicFolder', 'The public folder to serve', './public')
-  .option('cheApiUpstream', 'The upstream for Che server api', process.env.CHE_HOST);
+  .option('cheApiUpstream', 'The upstream for Che server api', CHE_HOST);
 
 const { publicFolder, cheApiUpstream } = args.parse(process.argv) as { publicFolder: string, cheApiUpstream: string };
 
-if (!('CHE_HOST' in process.env)) {
-  console.error('CHE_HOST environment variable is required');
-  process.exit(1);
+export function isCheServerApiProxyRequired(): boolean {
+  return cheApiUpstream !== CHE_HOST;
 }
 
 const server = fastify();
@@ -53,10 +59,7 @@ registerCors(server);
 
 registerStaticServer(publicFolder, server);
 
-const enableSwagger = process.env.ENABLE_SWAGGER === 'true';
-if (enableSwagger) {
-  registerSwagger(server);
-}
+registerSwagger(server);
 
 registerDevworkspaceApi(server);
 
@@ -66,12 +69,11 @@ registerTemplateApi(server);
 
 registerCheApi(server);
 
-const host = process.env.CHE_HOST as string;
-if (cheApiUpstream && cheApiUpstream !== host) {
-  registerCheServerApiProxy(server, cheApiUpstream, host);
+if (isCheServerApiProxyRequired()) {
+  registerCheServerApiProxy(server, cheApiUpstream, CHE_HOST);
 }
 
-server.listen(8080, '0.0.0.0', (err, address) => {
+server.listen(8080, '0.0.0.0', (err: Error, address: string) => {
   if (err) {
     console.error(err);
     process.exit(1);
