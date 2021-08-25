@@ -14,7 +14,7 @@ import { FastifyRequest } from 'fastify';
 import { DwClientProvider } from '../services/kubeclient/dwClientProvider';
 import { DevWorkspaceClient } from '../devworkspace-client';
 
-const BEARER = 'Bearer'; // Bearer Token Authentication
+const AUTHORIZATION_BEARER_PREFIX = 'Bearer';
 const dwClientProvider: DwClientProvider = new DwClientProvider();
 
 /**
@@ -22,11 +22,11 @@ const dwClientProvider: DwClientProvider = new DwClientProvider();
  */
 export function getDevWorkspaceClient(request: FastifyRequest): Promise<DevWorkspaceClient> {
   const authorization = request.headers!.authorization;
-  const token = authorization && authorization.startsWith(BEARER) ? authorization.substring(BEARER.length) : '';
 
-  if (!token) {
+  if (!authorization || !authorization.startsWith(AUTHORIZATION_BEARER_PREFIX)) {
     throw TypeError('Bearer Token Authentication is required');
   }
 
+  const token = authorization.substring(AUTHORIZATION_BEARER_PREFIX.length);
   return dwClientProvider.getDWClient(token);
 }
