@@ -26,7 +26,7 @@ export function registerCheApi(server: FastifyInstance) {
       params: namespacedSchema,
       response: {
         200: {
-          description: 'Succesful response',
+          description: 'Successful response',
           type: 'boolean'
         }
       }

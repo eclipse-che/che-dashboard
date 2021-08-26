@@ -47,7 +47,7 @@ export class DevWorkspaceApi implements IDevWorkspaceApi {
       );
       return resp.body as IDevWorkspaceList;
     } catch (e) {
-      throw new NodeRequestError(e);
+      throw new NodeRequestError('unable to list devworkspaces', e);
     }
   }
 
@@ -65,7 +65,7 @@ export class DevWorkspaceApi implements IDevWorkspaceApi {
       );
       return resp.body as IDevWorkspace;
     } catch (e) {
-      throw new NodeRequestError(e);
+      throw new NodeRequestError(`unable to get devworkspace ${namespace}/${name}`, e);
     }
   }
 
@@ -86,7 +86,7 @@ export class DevWorkspaceApi implements IDevWorkspaceApi {
       );
       return resp.body as IDevWorkspace;
     } catch (e) {
-      throw new NodeRequestError(e);
+      throw new NodeRequestError('unable to create devworkspace', e);
     }
   }
 
@@ -116,7 +116,7 @@ export class DevWorkspaceApi implements IDevWorkspaceApi {
       );
       return resp.body as IDevWorkspace;
     } catch (e) {
-      throw new NodeRequestError(e);
+      throw new NodeRequestError('unable to update devworkspace', e);
     }
   }
 
@@ -130,7 +130,7 @@ export class DevWorkspaceApi implements IDevWorkspaceApi {
         name
       );
     } catch (e) {
-      throw new NodeRequestError(e);
+      throw new NodeRequestError(`unable to delete devworkspace ${namespace}/${name}`, e);
     }
   }
 
@@ -165,7 +165,7 @@ export class DevWorkspaceApi implements IDevWorkspaceApi {
       );
       return resp.body as IDevWorkspace;
     } catch (e) {
-      throw new NodeRequestError(e);
+      throw new NodeRequestError(`unable to patch devworkspace`, e);
     }
   }
 

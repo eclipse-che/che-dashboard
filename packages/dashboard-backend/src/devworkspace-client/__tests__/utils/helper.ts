@@ -10,6 +10,18 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
+import { KubeConfig } from '@kubernetes/client-node';
+
 export async function delay(ms: number = 500): Promise<void> {
   await new Promise<void>(resolve => setTimeout(resolve, ms));
+}
+
+export function createKubeConfig(): KubeConfig {
+  const kc = new KubeConfig();
+  let kubeconfigFile = process.env['KUBECONFIG'];
+  if (!kubeconfigFile) {
+    kubeconfigFile =  process.env['HOME'] + '/.kube/config';
+  }
+  kc.loadFromFile(kubeconfigFile);
+  return kc;
 }
