@@ -9,8 +9,8 @@
 #
 
 set -e
-echo 'Starting static server...'
+echo 'Starting Dashboard backend server...'
 start_server="node /backend/server/backend.js --publicFolder /public"
 $start_server &
 wait
-echo 'Static server stopped.'
+echo 'Dashboard backend server is stopped.'
