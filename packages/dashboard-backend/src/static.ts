@@ -28,4 +28,21 @@ export function registerStaticServer(publicFolder: string, server: FastifyInstan
     reply.code(204);
     return reply.send();
   });
+
+  server.get('/dashboard', async (request, reply) => {
+    return reply.redirect('/dashboard/');
+  });
+
+  const doNotCache = [
+    '/dashboard/',
+    '/dashboard/index.html',
+    '/dashboard/assets/branding/product.json',
+  ];
+  server.addHook('onSend', (request, reply, payload: any, done) => {
+    const err = null;
+    if (doNotCache.includes(request.url)) {
+      reply.header('cache-control', 'no-store, max-age=0');
+    }
+    done(err, payload);
+  })
 }

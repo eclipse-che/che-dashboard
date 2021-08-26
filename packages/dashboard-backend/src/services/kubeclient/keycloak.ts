@@ -21,6 +21,7 @@ const ENDPOINT = 'che.keycloak.userinfo.endpoint';
 let keycloakEndpointUrl: URL | undefined;
 
 const httpsAgent = new https.Agent({
+  // TODO: remove this temporary solution after solving  https://github.com/eclipse/che/issues/20367
   rejectUnauthorized: false
 });
 

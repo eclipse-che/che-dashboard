@@ -25,21 +25,23 @@ export function registerCheApi(server: FastifyInstance) {
     getSchema({ tags,
       params: namespacedSchema,
       response: {
-        200: {
-          description: 'Successful response',
-          type: 'boolean'
+        204: {
+          description: 'The server has successfully fulfilled the request',
+          type: 'null'
         }
       }
     }),
     async (request: FastifyRequest) => {
       const {namespace} = request.params as restParams.INamespacedParam;
       const {cheApi} = await getDevWorkspaceClient(request);
+      // For some reason it couldn't work with status successful response codes 202, 204.
+      // So, return null for successful response codes 200.
       try {
         await cheApi.initializeNamespace(namespace);
       } catch (e) {
         return Promise.reject(e);
       }
-      return Promise.resolve(true);
+      return Promise.resolve(null);
     }
   );
 }

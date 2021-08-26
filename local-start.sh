@@ -22,8 +22,6 @@ CHE_URL=$(oc get checluster -n $CHE_NAMESPACE eclipse-che -o=json | jq -r '.stat
 export LOCAL_RUN="true"
 export KUBECONFIG=$HOME/.kube/config
 
-export ENABLE_SWAGGER=true
-
 yarn --cwd $DASHBOARD_BACKEND build:dev
 
 # we use relative to the static server path which is starting with '../../' to serv the dashboard-frontend

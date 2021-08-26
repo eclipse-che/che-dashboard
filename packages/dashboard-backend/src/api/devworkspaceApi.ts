@@ -13,14 +13,14 @@
 import { FastifyInstance, FastifyRequest } from 'fastify';
 import { baseApiPath, routingClass } from '../constants/config';
 import {
-  devfileStartedSchema,
-  devWorkspaceListSchema,
+  devfileSchema,
+  patchSchema,
   namespacedSchema,
   namespacedWorkspaceSchema
 } from '../constants/schemas';
 import { getDevWorkspaceClient } from './helper';
 import { restParams } from '../typings/models';
-import { delay, getSchema } from '../services/helpers';
+import { getSchema } from '../services/helpers';
 
 const tags = ['devworkspace'];
 
@@ -28,9 +28,7 @@ export function registerDevworkspaceApi(server: FastifyInstance) {
 
   server.post(
     `${baseApiPath}/namespace/:namespace/devworkspaces`,
-    getSchema({ tags,
-      body: devfileStartedSchema
-    }),
+    getSchema({ tags, params: namespacedSchema, body: devfileSchema }),
     async (request: FastifyRequest) => {
       const { devfile, started } = request.body as restParams.IDevWorkspaceSpecParam;
       const { devworkspaceApi } = await getDevWorkspaceClient(request);
@@ -40,33 +38,13 @@ export function registerDevworkspaceApi(server: FastifyInstance) {
         devfile.metadata = {};
       }
       devfile.metadata.namespace = namespace;
-
-      const workspace = await devworkspaceApi.create(devfile, routingClass, started);
-      // todo refactor frontend in the way we rely in namespace/name instead of workspaceId, then we can skip waiting for status
-      // we need to wait until the devworkspace has a status property
-      let found;
-      let count = 0;
-      while (count < 5 && !found) {
-        await delay();
-        const potentialWorkspace = await devworkspaceApi.getByName(workspace.metadata.namespace, workspace.metadata.name);
-        if (potentialWorkspace?.status) {
-          found = potentialWorkspace;
-        }
-        count += 1;
-      }
-      if (!found) {
-        const message = `Was not able to find a workspace with name '${devfile.metadata.name}' in namespace ${workspace.metadata.namespace}`;
-        return  Promise.reject(message);
-      }
-      return found;
+      return devworkspaceApi.create(devfile, routingClass, started);
     }
   );
 
   server.patch(
     `${baseApiPath}/namespace/:namespace/devworkspaces/:workspaceName`,
-    getSchema({ tags,
-      params: namespacedWorkspaceSchema
-    }),
+    getSchema({ tags, params: namespacedWorkspaceSchema, body: patchSchema }),
     async (request: FastifyRequest) => {
       const { namespace, workspaceName } = request.params as restParams.INamespacedWorkspaceParam;
       const patch = request.body as { op: string, path: string, value?: any; } [];
@@ -77,14 +55,7 @@ export function registerDevworkspaceApi(server: FastifyInstance) {
 
   server.get(
     `${baseApiPath}/namespace/:namespace/devworkspaces`,
-    getSchema({ tags,
-      params: namespacedSchema,
-      response: {
-        200: Object.assign({
-          description: 'Successful response'
-        }, devWorkspaceListSchema)
-      }
-    }),
+    getSchema({ tags, params: namespacedSchema }),
     async (request: FastifyRequest) => {
       const { namespace } = request.params as restParams.INamespacedParam;
       const { devworkspaceApi } = await getDevWorkspaceClient(request);
@@ -94,9 +65,7 @@ export function registerDevworkspaceApi(server: FastifyInstance) {
 
   server.get(
     `${baseApiPath}/namespace/:namespace/devworkspaces/:workspaceName`,
-    getSchema({ tags,
-      params: namespacedWorkspaceSchema
-    }),
+    getSchema({ tags, params: namespacedWorkspaceSchema }),
     async (request: FastifyRequest) => {
       const { namespace, workspaceName } = request.params as restParams.INamespacedWorkspaceParam;
       const { devworkspaceApi } = await getDevWorkspaceClient(request);
@@ -109,21 +78,23 @@ export function registerDevworkspaceApi(server: FastifyInstance) {
     getSchema({ tags,
       params: namespacedWorkspaceSchema,
       response: {
-        200: {
-          description: 'Successful response',
-          type: 'boolean'
+        204: {
+          description: 'The server has successfully fulfilled the request',
+          type: 'null'
         }
       }
     }),
     async (request: FastifyRequest) => {
       const { namespace, workspaceName } = request.params as restParams.INamespacedWorkspaceParam;
       const { devworkspaceApi } = await getDevWorkspaceClient(request);
+      // For some reason it couldn't work with status successful response codes 202, 204.
+      // So, return null for successful response codes 200.
       try {
         await devworkspaceApi.delete(namespace, workspaceName);
       } catch (e) {
         return Promise.reject(e);
       }
-      return Promise.resolve(true);
+      return Promise.resolve(null);
     }
   );
 }
