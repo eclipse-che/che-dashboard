@@ -10,65 +10,18 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import * as k8s from '@kubernetes/client-node';
 import * as fs from 'fs';
 import * as yaml from 'js-yaml';
 import { DevWorkspaceClient, IDevWorkspaceDevfile, IDevWorkspaceTemplate } from '../';
 import { conditionalTest, isIntegrationTestEnabled } from './utils/suite';
-import { delay } from './utils/helper';
+import { createKubeConfig, delay } from './utils/helper';
 import { fail } from 'assert';
 
 describe('DevWorkspace API integration testing against cluster', () => {
 
-  describe('Test K8s errors', () => {
-    conditionalTest('test when object does not exist', isIntegrationTestEnabled, async (done: any) => {
-      const kc = new k8s.KubeConfig();
-      const kubeconfigFile = process.env['KUBECONFIG'];
-      if (!kubeconfigFile) {
-        throw 'KUBECONFIG must be configured with the valid current context set';
-      }
-      kc.loadFromFile(kubeconfigFile);
-      const dwClient = new DevWorkspaceClient(kc);
-      try {
-        let dw = await dwClient.devworkspaceApi.getByName('any', 'non-existing');
-        fail('devworkspace is expected to be not found');
-      } catch (e) {
-        expect(e.message).toBe('unthorized');
-      }
-    }, 60000);
-
-    conditionalTest('test when unauthorized', isIntegrationTestEnabled, async (done: any) => {
-      const kc = new k8s.KubeConfig();
-      const kubeconfigFile = process.env['KUBECONFIG'];
-      if (!kubeconfigFile) {
-        throw 'KUBECONFIG must be configured with the valid current context set';
-      }
-      kc.loadFromFile(kubeconfigFile);
-      let currentUser = kc.getCurrentUser();
-      if (!currentUser) {
-        throw 'current user is not present in kubeconfig';
-      }
-      (currentUser as any).token = '';
-
-      const dwClient = new DevWorkspaceClient(kc);
-      try {
-        let dw = await dwClient.devworkspaceApi.getByName('any', 'non-existing');
-        fail('devworkspace is expected to be not found');
-      } catch (e) {
-        expect(e.message).toBe('unthorized');
-      }
-    }, 60000);
-  });
-
   describe('Test Node DevWorkspace Api against local cluster', () => {
     conditionalTest('Test run the creation, retrieval, update and deletion of a devworkspace', isIntegrationTestEnabled, async (done: any) => {
-      const kc = new k8s.KubeConfig();
-      const kubeconfigFile = process.env['KUBECONFIG'];
-      if (!kubeconfigFile) {
-        throw 'KUBECONFIG must be configured with the valid current context set';
-      }
-      kc.loadFromFile(kubeconfigFile);
-
+      const kc = createKubeConfig();
       const dwClient = new DevWorkspaceClient(kc);
       const devfile = yaml.load(fs.readFileSync(__dirname + '/fixtures/sample-devfile.yaml', 'utf-8')) as IDevWorkspaceDevfile;
       const name = devfile.metadata.name;
@@ -129,13 +82,7 @@ describe('DevWorkspace API integration testing against cluster', () => {
     }, 60000);
 
     conditionalTest('Test run the creation, retrieval and deletion of a devworkspace template', isIntegrationTestEnabled, async (done: any) => {
-      const kc = new k8s.KubeConfig();
-      const kubeconfigFile = process.env['KUBECONFIG'];
-      if (!kubeconfigFile) {
-        throw 'KUBECONFIG must be configured with the valid current context set';
-      }
-      kc.loadFromFile(kubeconfigFile);
-
+      const kc = createKubeConfig();
       const dwClient = new DevWorkspaceClient(kc);
       const dwt = yaml.load(fs.readFileSync(__dirname + '/fixtures/sample-dwt.yaml', 'utf-8')) as IDevWorkspaceTemplate;
       const name = dwt.metadata?.name;

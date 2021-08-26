@@ -81,7 +81,7 @@ export function registerDevworkspaceApi(server: FastifyInstance) {
       params: namespacedSchema,
       response: {
         200: Object.assign({
-          description: 'Succesful response'
+          description: 'Successful response'
         }, devWorkspaceListSchema)
       }
     }),
@@ -110,7 +110,7 @@ export function registerDevworkspaceApi(server: FastifyInstance) {
       params: namespacedWorkspaceSchema,
       response: {
         200: {
-          description: 'Succesful response',
+          description: 'Successful response',
           type: 'boolean'
         }
       }

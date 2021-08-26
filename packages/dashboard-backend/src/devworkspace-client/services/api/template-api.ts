@@ -32,7 +32,7 @@ export class DevWorkspaceTemplateApi implements IDevWorkspaceTemplateApi {
       );
       return (resp.body as any).items as IDevWorkspaceTemplate[];
     } catch (e) {
-      return Promise.reject(new NodeRequestError(e));
+      return Promise.reject(new NodeRequestError('unable to list devworkspace templates', e));
     }
   }
 
@@ -47,7 +47,7 @@ export class DevWorkspaceTemplateApi implements IDevWorkspaceTemplateApi {
       );
       return resp.body as IDevWorkspaceTemplate;
     } catch (e) {
-      return Promise.reject(new NodeRequestError(e));
+      return Promise.reject(new NodeRequestError(`unable to get devworkspace "${namespace}/${name}"`, e));
     }
   }
 
@@ -68,7 +68,7 @@ export class DevWorkspaceTemplateApi implements IDevWorkspaceTemplateApi {
       );
       return resp.body as IDevWorkspaceTemplate;
     } catch (e) {
-      return Promise.reject(new NodeRequestError(e));
+      return Promise.reject(new NodeRequestError('unable to create DevWorkspaceTemplate', e));
     }
   }
 
@@ -82,7 +82,7 @@ export class DevWorkspaceTemplateApi implements IDevWorkspaceTemplateApi {
         name
       );
     } catch (e) {
-      return Promise.reject(new NodeRequestError(e));
+      return Promise.reject(new NodeRequestError('unable to delete devworkspace template', e));
     }
   }
 }

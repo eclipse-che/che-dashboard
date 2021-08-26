@@ -47,7 +47,7 @@ export class CheApi implements ICheApi {
         }
       }
     } catch (e) {
-      return Promise.reject(new NodeRequestError(e));
+      return Promise.reject(new NodeRequestError('unable to init project', e));
     }
   }
 
@@ -91,7 +91,7 @@ export class CheApi implements ICheApi {
         projectRequestModel(namespace)
       );
     } catch (e) {
-      return Promise.reject(new NodeRequestError(e));
+      return Promise.reject(new NodeRequestError('unable to create project', e));
     }
   }
 
@@ -101,7 +101,7 @@ export class CheApi implements ICheApi {
         namespaceModel(namespace)
       );
     } catch (e) {
-      return Promise.reject(new NodeRequestError(e));
+      return Promise.reject(new NodeRequestError('unable to create namespace', e));
     }
   }
 }
