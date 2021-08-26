@@ -10,6 +10,8 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
+import { devfile, template } from './examples';
+
 export const authenticationHeaderSchema = {
     type: 'object',
     properties: {
@@ -44,120 +46,62 @@ export const namespacedSchema = {
   required: ['namespace']
 };
 
-export const devWorkspaceListSchema = {
-  type: 'object',
-  properties: {
-    apiVersion: {
-      type: 'string',
-      example: 'workspace.devfile.io/v1alpha2'
-    },
-    metadata: {
-      type: 'object',
-      properties: {
-        continue: { type: 'string' },
-        resourceVersion: { type: 'string' },
-      },
-      example: {
-        resourceVersion: '46875'
-      }
-    },
-    kind: {
-      type: 'string',
-      example: 'DevWorkspaceList'
-    },
-    items: {
-      type: 'array',
-      example: [{
-        schemaVersion: '2.1.0',
-        metadata: {
-          name: 'quarkus',
-          namespace: 'che'
-        },
-        projects: [{
-          name: 'quarkus-quickstarts',
-          git: {
-            remotes: {
-              origin: 'https://github.com/che-samples/quarkus-quickstarts.git'
-            }
-          }
-        }],
-        components: [],
-      }]
-    },
-  },
+export const patchSchema = {
+  type: 'array',
+  example: [{
+    op: 'replace',
+    path: '/spec/started',
+    value: true
+  }]
 };
 
-export const devWorkspaceSchema = {
-  type: 'object',
-  properties: {
-    apiVersion: {
-      type: 'string'
-    },
-    kind: {
-      type: 'string'
-    },
-    metadata: {
-      type: 'object'
-    },
-    spec: {
-      type: 'object'
-    },
-    status: {
-      type: 'object'
-    },
-  },
-  required: ['apiVersion', 'kind', 'metadata',  'spec', 'status']
-};
-
-export const devfileStartedSchema = {
+export const devfileSchema = {
   type: 'object',
   properties: {
     devfile: {
       type: 'object'
-    },
-    started: {
-      type: 'boolean'
     }
   },
-  required: ['devfile', 'started']
+  example: {
+    devfile
+  },
+  required: ['devfile']
 };
 
 export const templateStartedSchema = {
-    type: 'object',
-    properties: {
-      template: {
-        type: 'object',
-        properties: {
-          apiVersion: { type: 'string' },
-          kind: { type: 'string' },
-          metadata: { type: 'object' },
-          spec: {
-            type: 'object',
-            properties: {
-              commands: { type: 'array' },
-              components: { type: 'array' },
-              events: { type: 'object' },
+  type: 'object',
+  properties: {
+    template: {
+      type: 'object',
+      properties: {
+        apiVersion: { type: 'string' },
+        kind: { type: 'string' },
+        metadata: {
+          type: 'object',
+          template: {
+            name: { type: 'string' },
+            namespace: { type: 'string' },
+            ownerReferences: { type: 'array' },
+          }
+        },
+        spec: {
+          type: 'object',
+          properties: {
+            commands: { type: 'array' },
+            components: { type: 'array' },
+            events: {
+              type: 'object',
+              template: {
+                preStart: {
+                  type: 'array'
+                }
+              }
             },
           },
         },
-        example: {
-          apiVersion: 'workspace.devfile.io/v1alpha2',
-          kind: 'DevWorkspaceTemplate',
-          metadata: {
-            name: 'che-theia-vsix-installer',
-            managedFields: [],
-            namespace: 'che',
-            ownerReferences: [],
-            resourceVersion: '0',
-            uid: '12345',
-          },
-          spec: {
-            commands: [],
-            components: [],
-            events: { preStart: ['copy-vsix'] }
-          }
-        }
-      }
+      },
+      example: template
     }
+  }
 };
 

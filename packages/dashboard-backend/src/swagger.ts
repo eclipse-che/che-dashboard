@@ -29,6 +29,9 @@ export function registerSwagger(server: FastifyInstance): void {
       consumes: ['application/json'],
       produces: ['application/json'],
     },
+    uiConfig: {
+      tryItOutEnabled: true
+    },
     hideUntagged: true,
     exposeRoute: true
   });
