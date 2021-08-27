@@ -47,7 +47,7 @@ bump_version () {
   update_pkgs_versions $NEXT_VERSION
 
   if [[ ${NOCOMMIT} -eq 0 ]]; then
-    COMMIT_MSG="[release] Bump to ${NEXT_VERSION} in ${BUMP_BRANCH}"
+    COMMIT_MSG="chore: Bump to ${NEXT_VERSION} in ${BUMP_BRANCH}"
     git commit -asm "${COMMIT_MSG}"
     git pull origin "${BUMP_BRANCH}"
 
@@ -122,7 +122,7 @@ update_pkgs_versions $VERSION
 
 # commit change into branch
 if [[ ${NOCOMMIT} -eq 0 ]]; then
-  COMMIT_MSG="[release] Bump to ${VERSION} in ${BRANCH}"
+  COMMIT_MSG="chore: Bump to ${VERSION} in ${BRANCH}"
   git commit -asm "${COMMIT_MSG}"
   git pull origin "${BRANCH}"
   git push origin "${BRANCH}"
