@@ -24,7 +24,11 @@ export function getDevWorkspaceClient(request: FastifyRequest): Promise<DevWorks
   const authorization = request.headers!.authorization;
 
   if (!authorization || !authorization.startsWith(AUTHORIZATION_BEARER_PREFIX)) {
-    throw TypeError('Bearer Token Authentication is required');
+    throw {
+      statusCode: 401,
+      error: 'Unauthorized',
+      message: 'Bearer Token Authentication is required'
+    }
   }
 
   const token = authorization.substring(AUTHORIZATION_BEARER_PREFIX.length);

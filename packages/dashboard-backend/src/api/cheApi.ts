@@ -34,11 +34,7 @@ export function registerCheApi(server: FastifyInstance) {
     async  function (request: FastifyRequest, reply: FastifyReply) {
       const {namespace} = request.params as restParams.INamespacedParam;
       const {cheApi} = await getDevWorkspaceClient(request);
-      try {
-        await cheApi.initializeNamespace(namespace);
-      } catch (e) {
-        return Promise.reject(e);
-      }
+      await cheApi.initializeNamespace(namespace);
       reply.code(204);
       return reply.send();
     }

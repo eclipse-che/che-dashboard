@@ -29,15 +29,15 @@ export function registerDevworkspaceApi(server: FastifyInstance) {
   server.post(
     `${baseApiPath}/namespace/:namespace/devworkspaces`,
     getSchema({ tags, params: namespacedSchema, body: devfileSchema }),
-    async (request: FastifyRequest) => {
+    async function (request: FastifyRequest) {
       const { devfile, started } = request.body as restParams.IDevWorkspaceSpecParam;
-      const { devworkspaceApi } = await getDevWorkspaceClient(request);
       // override the namespace from params
       const { namespace } = request.params as restParams.INamespacedParam;
       if (devfile.metadata === undefined) {
         devfile.metadata = {};
       }
       devfile.metadata.namespace = namespace;
+      const { devworkspaceApi } = await getDevWorkspaceClient(request);
       return devworkspaceApi.create(devfile, routingClass, started);
     }
   );
@@ -45,7 +45,7 @@ export function registerDevworkspaceApi(server: FastifyInstance) {
   server.patch(
     `${baseApiPath}/namespace/:namespace/devworkspaces/:workspaceName`,
     getSchema({ tags, params: namespacedWorkspaceSchema, body: patchSchema }),
-    async (request: FastifyRequest) => {
+    async function (request: FastifyRequest) {
       const { namespace, workspaceName } = request.params as restParams.INamespacedWorkspaceParam;
       const patch = request.body as { op: string, path: string, value?: any; } [];
       const { devworkspaceApi } = await getDevWorkspaceClient(request);
@@ -56,7 +56,7 @@ export function registerDevworkspaceApi(server: FastifyInstance) {
   server.get(
     `${baseApiPath}/namespace/:namespace/devworkspaces`,
     getSchema({ tags, params: namespacedSchema }),
-    async (request: FastifyRequest) => {
+    async function (request: FastifyRequest) {
       const { namespace } = request.params as restParams.INamespacedParam;
       const { devworkspaceApi } = await getDevWorkspaceClient(request);
       return devworkspaceApi.listInNamespace(namespace);
@@ -66,7 +66,7 @@ export function registerDevworkspaceApi(server: FastifyInstance) {
   server.get(
     `${baseApiPath}/namespace/:namespace/devworkspaces/:workspaceName`,
     getSchema({ tags, params: namespacedWorkspaceSchema }),
-    async (request: FastifyRequest) => {
+    async function (request: FastifyRequest) {
       const { namespace, workspaceName } = request.params as restParams.INamespacedWorkspaceParam;
       const { devworkspaceApi } = await getDevWorkspaceClient(request);
       return devworkspaceApi.getByName(namespace, workspaceName);
@@ -84,16 +84,10 @@ export function registerDevworkspaceApi(server: FastifyInstance) {
         }
       }
     }),
-    async  (request: FastifyRequest, reply: FastifyReply) => {
+    async function (request: FastifyRequest, reply: FastifyReply) {
       const { namespace, workspaceName } = request.params as restParams.INamespacedWorkspaceParam;
       const { devworkspaceApi } = await getDevWorkspaceClient(request);
-      // For some reason it couldn't work with status successful response codes 202, 204.
-      // So, return null for successful response codes 200.
-      try {
-        await devworkspaceApi.delete(namespace, workspaceName);
-      } catch (e) {
-        return Promise.reject(e);
-      }
+      await devworkspaceApi.delete(namespace, workspaceName);
       reply.code(204);
       return reply.send();
     }

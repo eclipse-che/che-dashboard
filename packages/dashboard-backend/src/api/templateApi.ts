@@ -10,7 +10,7 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import { FastifyInstance, FastifyRequest } from 'fastify';
+import { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify';
 import { baseApiPath } from '../constants/config';
 import { namespacedSchema, templateStartedSchema } from '../constants/schemas';
 import { getDevWorkspaceClient } from './helper';
@@ -26,17 +26,14 @@ export function registerTemplateApi(server: FastifyInstance) {
       params: namespacedSchema,
       body: templateStartedSchema
     }),
-    async (request: FastifyRequest) => {
+    async function (request: FastifyRequest) {
       const { template } = request.body as restParams.ITemplateBodyParam;
-
       const { namespace } = request.params as restParams.INamespacedParam;
       if (!template.metadata) {
         template.metadata = {};
       }
       template.metadata.namespace = namespace;
-
       const { templateApi } = await getDevWorkspaceClient(request);
-
       return templateApi.create(template);
     }
   );
