@@ -10,7 +10,7 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import { FastifyInstance, FastifyRequest } from 'fastify';
+import { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify';
 import { baseApiPath, routingClass } from '../constants/config';
 import {
   devfileSchema,
@@ -84,7 +84,7 @@ export function registerDevworkspaceApi(server: FastifyInstance) {
         }
       }
     }),
-    async (request: FastifyRequest) => {
+    async  (request: FastifyRequest, reply: FastifyReply) => {
       const { namespace, workspaceName } = request.params as restParams.INamespacedWorkspaceParam;
       const { devworkspaceApi } = await getDevWorkspaceClient(request);
       // For some reason it couldn't work with status successful response codes 202, 204.
@@ -94,7 +94,8 @@ export function registerDevworkspaceApi(server: FastifyInstance) {
       } catch (e) {
         return Promise.reject(e);
       }
-      return Promise.resolve(null);
+      reply.code(204);
+      return reply.send();
     }
   );
 }

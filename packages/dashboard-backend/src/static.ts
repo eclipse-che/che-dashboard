@@ -10,7 +10,7 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import { FastifyInstance } from 'fastify';
+import { DoneFuncWithErrOrRes, FastifyInstance, FastifyReply, FastifyRequest } from 'fastify';
 import fastifyStatic from 'fastify-static';
 import path from 'path';
 
@@ -24,12 +24,10 @@ export function registerStaticServer(publicFolder: string, server: FastifyInstan
     lastModified: true,
     prefix: '/dashboard/',
   });
-  server.get('/', async (request, reply) => {
-    reply.code(204);
-    return reply.send();
+  server.get('/', async (request: FastifyRequest, reply: FastifyReply) => {
+    return reply.redirect('/dashboard/');
   });
-
-  server.get('/dashboard', async (request, reply) => {
+  server.get('/dashboard', async (request: FastifyRequest, reply: FastifyReply) => {
     return reply.redirect('/dashboard/');
   });
 
@@ -38,7 +36,7 @@ export function registerStaticServer(publicFolder: string, server: FastifyInstan
     '/dashboard/index.html',
     '/dashboard/assets/branding/product.json',
   ];
-  server.addHook('onSend', (request, reply, payload: any, done) => {
+  server.addHook('onSend', (request: FastifyRequest, reply:  FastifyReply, payload: any, done: DoneFuncWithErrOrRes) => {
     const err = null;
     if (doNotCache.includes(request.url)) {
       reply.header('cache-control', 'no-store, max-age=0');

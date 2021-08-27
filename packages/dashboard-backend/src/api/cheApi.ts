@@ -10,7 +10,7 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import { FastifyInstance, FastifyRequest } from 'fastify';
+import { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify';
 import { baseApiPath } from '../constants/config';
 import { namespacedSchema } from '../constants/schemas';
 import { getDevWorkspaceClient } from './helper';
@@ -31,17 +31,16 @@ export function registerCheApi(server: FastifyInstance) {
         }
       }
     }),
-    async (request: FastifyRequest) => {
+    async  function (request: FastifyRequest, reply: FastifyReply) {
       const {namespace} = request.params as restParams.INamespacedParam;
       const {cheApi} = await getDevWorkspaceClient(request);
-      // For some reason it couldn't work with status successful response codes 202, 204.
-      // So, return null for successful response codes 200.
       try {
         await cheApi.initializeNamespace(namespace);
       } catch (e) {
         return Promise.reject(e);
       }
-      return Promise.resolve(null);
+      reply.code(204);
+      return reply.send();
     }
   );
 }
