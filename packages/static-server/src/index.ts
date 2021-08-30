@@ -63,7 +63,7 @@ server.addHook('onSend', (request, reply, payload: any, done) => {
     reply.header('cache-control', 'no-store, max-age=0');
   }
   done(err, payload);
-})
+});
 
 server.listen(port, hostname, (err, address) => {
   if (err) throw err;
