@@ -79,7 +79,7 @@ export function registerDevworkspaceApi(server: FastifyInstance) {
       params: namespacedWorkspaceSchema,
       response: {
         204: {
-          description: 'The server has successfully fulfilled the request',
+          description: 'The DevWorkspace is successfully marked for deletion',
           type: 'null'
         }
       }

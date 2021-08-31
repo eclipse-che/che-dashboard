@@ -22,15 +22,14 @@ const dwClientProvider: DwClientProvider = new DwClientProvider();
  */
 export function getDevWorkspaceClient(request: FastifyRequest): Promise<DevWorkspaceClient> {
   const authorization = request.headers!.authorization;
-
   if (!authorization || !authorization.startsWith(AUTHORIZATION_BEARER_PREFIX)) {
     throw {
       statusCode: 401,
       error: 'Unauthorized',
       message: 'Bearer Token Authentication is required'
-    }
+    };
   }
 
-  const token = authorization.substring(AUTHORIZATION_BEARER_PREFIX.length);
+  const token = authorization.substring(AUTHORIZATION_BEARER_PREFIX.length + 1);
   return dwClientProvider.getDWClient(token);
 }
