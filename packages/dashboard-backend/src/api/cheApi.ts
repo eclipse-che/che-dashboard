@@ -26,7 +26,7 @@ export function registerCheApi(server: FastifyInstance) {
       params: namespacedSchema,
       response: {
         204: {
-          description: 'The server has successfully fulfilled the request',
+          description: 'DevWorkspaces target namespace is initialized',
           type: 'null'
         }
       }

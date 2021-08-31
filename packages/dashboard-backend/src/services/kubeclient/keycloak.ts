@@ -26,37 +26,41 @@ const httpsAgent = new https.Agent({
 });
 
 export async function validateToken(keycloakToken: string): Promise<void> {
-
   // lazy initialization
   if (!keycloakEndpointUrl) {
-    try {
-      const keycloakSettingsUrl = new URL('/api/keycloak/settings', CHE_HOST);
-      const response = await axios.get(keycloakSettingsUrl.href, { httpsAgent });
-      const keycloakEndpoint = response.data[ENDPOINT];
-      // we should change a HOST in the case of using proxy to prevent the host check error
-      if (isCheServerApiProxyRequired()) {
-        const { pathname } = new URL(keycloakEndpoint);
-        keycloakEndpointUrl = new URL(pathname, CHE_HOST);
-      } else {
-        keycloakEndpointUrl = new URL(keycloakEndpoint)
-      }
-    } catch (e) {
-      throw {
-        statusCode: e.statusCode ? e.statusCode : 401,
-        error: e.error ? e.error : 'Unauthorized',
-        message: `Failed to fetch keycloak settings: ${getErrorMessage(e)}`
-      }
-    }
+    keycloakEndpointUrl = await evaluateKeycloakEndpointUrl();
   }
 
   const headers = { Authorization: `Bearer ${keycloakToken}` };
   try {
     await axios.get(keycloakEndpointUrl.href, { headers, httpsAgent });
+    // token is a valid
   } catch (e) {
     throw {
       statusCode: e.statusCode ? e.statusCode : 401,
       error: e.error ? e.error : 'Unauthorized',
       message: `Failed to validate token: ${getErrorMessage(e)}`
+    };
+  }
+}
+
+async function evaluateKeycloakEndpointUrl(): Promise<URL> {
+  try {
+    const keycloakSettingsUrl = new URL('/api/keycloak/settings', CHE_HOST);
+    const response = await axios.get(keycloakSettingsUrl.href, {httpsAgent});
+    const keycloakEndpoint = response.data[ENDPOINT];
+    // we should change a HOST in the case of using proxy to prevent the host check error
+    if (isCheServerApiProxyRequired()) {
+      const {pathname} = new URL(keycloakEndpoint);
+      return new URL(pathname, CHE_HOST);
+    } else {
+      return new URL(keycloakEndpoint);
     }
+  } catch (e) {
+    throw {
+      statusCode: e.statusCode ? e.statusCode : 401,
+      error: e.error ? e.error : 'Unauthorized',
+      message: `Failed to fetch keycloak settings: ${getErrorMessage(e)}`
+    };
   }
 }
