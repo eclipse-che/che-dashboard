@@ -1,6 +1,6 @@
 {
   "name": "@eclipse-che/dashboard",
-  "version": "7.35.2-SNAPSHOT",
+  "version": "7.35.2",
   "description": "Dashboard for Eclipse CHE",
   "private": true,
   "workspaces": [
