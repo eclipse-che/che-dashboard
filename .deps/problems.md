@@ -3,6 +3,9 @@
 ## UNRESOLVED Production dependencies
 
 1. `@patternfly/react-table@4.29.0`
+2. `glob-to-regexp@0.3.0`
+3. `umd-compat-loader@2.1.1`
+4. `uri-js@4.4.1`
 
 ## UNRESOLVED Development dependencies
 
@@ -14,7 +17,8 @@
 6. `lz-string@1.4.4`
 7. `node-gyp@5.1.1`
 8. `node-notifier@8.0.2`
-9. `strong-log-transformer@2.1.0`
-10. `tslib@2.3.0`
-11. `tslint@5.9.1`
-12. `util-promisify@2.1.0`
+9. `promzard@0.3.0`
+10. `strong-log-transformer@2.1.0`
+11. `tslib@2.3.0`
+12. `tslint@5.9.1`
+13. `util-promisify@2.1.0`

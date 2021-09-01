@@ -58,7 +58,7 @@ async function evaluateKeycloakEndpointUrl(): Promise<URL> {
     }
   } catch (e) {
     throw {
-      statusCode: e.statusCode ? e.statusCode : 401,
+      statusCode: e.code ? e.code : 401,
       error: e.error ? e.error : 'Unauthorized',
       message: `Failed to fetch keycloak settings: ${getErrorMessage(e)}`
     };

@@ -46,7 +46,7 @@ class SubscriptionManager {
 
   unsubscribe(channel: string): void {
     const index = this.channels.indexOf(channel);
-    if (index > -1) {
+    if (index !== -1) {
       this.channels.splice(index, 1);
     }
     if (this.channels.length === 0) {

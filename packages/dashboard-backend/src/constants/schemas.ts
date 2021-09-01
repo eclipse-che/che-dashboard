@@ -18,8 +18,7 @@ export const authenticationHeaderSchema = {
         'authorization': {
           type: 'string'
         }
-    },
-    required: ['authorization']
+    }
 };
 
 export const namespacedWorkspaceSchema = {
@@ -62,7 +61,8 @@ export const devfileSchema = {
     }
   },
   example: {
-    devfile
+    devfile,
+    started: true
   },
   required: ['devfile']
 };
