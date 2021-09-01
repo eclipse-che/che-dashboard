@@ -28,7 +28,7 @@ export function getSchema(additionalParams: restParams.ISchemaParams): { schema:
   return {schema};
 }
 
-export function getErrorMessage(error: Error | AxiosResponse): string {
+export function getErrorMessage(error: unknown): string {
   if (!error) {
     return '';
   }
@@ -45,10 +45,10 @@ export function getErrorMessage(error: Error | AxiosResponse): string {
   return JSON.stringify(error);
 }
 
-function isError(error: Error | any): error is Error {
-  return error.message !== undefined;
+function isError(error: unknown): error is Error {
+  return (error as Error).message !== undefined;
 }
 
-function isAxiosResponse(response: AxiosResponse | any): response is AxiosResponse {
-  return response.status !== undefined && response.data !== undefined;
+function isAxiosResponse(response: unknown): response is AxiosResponse {
+  return (response as AxiosResponse).status !== undefined && (response as AxiosResponse).data !== undefined;
 }

@@ -11,7 +11,7 @@
  */
 
 import 'reflect-metadata';
-import fastify from 'fastify';
+import fastify, { FastifyRequest } from 'fastify';
 import args from 'args';
 import { registerStaticServer } from './static';
 import { registerDevworkspaceWebsocketWatcher } from './api/devworkspaceWebsocketWatcher';
@@ -49,8 +49,7 @@ server.addContentTypeParser(
       const json = JSON.parse(body as string);
       done(null, json);
     } catch (err) {
-      err.statusCode = 400;
-      done(err, undefined);
+      done(new Error('Bad Request'), undefined);
     }
   }
 );

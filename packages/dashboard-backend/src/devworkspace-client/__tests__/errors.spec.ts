@@ -16,6 +16,7 @@ import { createKubeConfig } from './utils/helper';
 import { fail } from 'assert';
 import * as k8s from '@kubernetes/client-node';
 import { NodeRequestError } from '../errors';
+import { HttpError } from '@kubernetes/client-node';
 
 describe('Kubernetes API integration testing against cluster', () => {
 
@@ -32,7 +33,7 @@ describe('Kubernetes API integration testing against cluster', () => {
         );
         fail('request to non-existing Custom API should fail');
       } catch (e) {
-        let error = new NodeRequestError('unable get non-existing', e);
+        let error = new NodeRequestError('unable get non-existing', (e as HttpError));
         expect(error.message).toBe('unable get non-existing: 404 page not found\n');
       }
       done();
@@ -51,7 +52,7 @@ describe('Kubernetes API integration testing against cluster', () => {
         await dwClient.devworkspaceApi.getByName('any', 'non-existing');
         fail('devworkspace is expected not to be found');
       } catch (e) {
-        expect(e.message).toBe('unable to get devworkspace any/non-existing: devworkspaces.workspace.devfile.io "non-existing" is forbidden: User "system:anonymous" ' +
+        expect((e as Error).message).toBe('unable to get devworkspace any/non-existing: devworkspaces.workspace.devfile.io "non-existing" is forbidden: User "system:anonymous" ' +
           'cannot get resource "devworkspaces" in API group "workspace.devfile.io" in the namespace "any"');
       }
       done();
@@ -70,7 +71,7 @@ describe('Kubernetes API integration testing against cluster', () => {
         await dwClient.devworkspaceApi.getByName('any', 'non-existing');
         fail('devworkspace is expected not to be found');
       } catch (e) {
-        expect(e.message).toBe('unable to get devworkspace any/non-existing: no response available due network issue.');
+        expect((e as Error).message).toBe('unable to get devworkspace any/non-existing: no response available due network issue.');
       }
       done();
     }, 60000);

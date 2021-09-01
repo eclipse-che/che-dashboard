@@ -50,7 +50,7 @@ class DevWorkspaceWatcher {
       }
       this.unsubscribeFunction = unsubscribeFunction;
     } catch (error) {
-      this.callbacks.onError(error.toString());
+      this.callbacks.onError((error as any).toString());
       throw error;
     }
   }

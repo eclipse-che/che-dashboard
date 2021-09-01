@@ -14,6 +14,7 @@ import * as k8s from '@kubernetes/client-node';
 import { NodeRequestError } from '../../errors';
 import { devWorkspaceApiGroup, devworkspaceTemplateSubresource, devworkspaceVersion } from '../../const';
 import { IDevWorkspaceTemplate, IDevWorkspaceTemplateApi, } from '../../types';
+import { HttpError } from '@kubernetes/client-node';
 
 export class DevWorkspaceTemplateApi implements IDevWorkspaceTemplateApi {
   private readonly customObjectAPI: k8s.CustomObjectsApi;
@@ -32,7 +33,7 @@ export class DevWorkspaceTemplateApi implements IDevWorkspaceTemplateApi {
       );
       return (resp.body as any).items as IDevWorkspaceTemplate[];
     } catch (e) {
-      return Promise.reject(new NodeRequestError('unable to list devworkspace templates', e));
+      return Promise.reject(new NodeRequestError('unable to list devworkspace templates', (e as HttpError)));
     }
   }
 
@@ -47,7 +48,7 @@ export class DevWorkspaceTemplateApi implements IDevWorkspaceTemplateApi {
       );
       return resp.body as IDevWorkspaceTemplate;
     } catch (e) {
-      return Promise.reject(new NodeRequestError(`unable to get devworkspace "${namespace}/${name}"`, e));
+      return Promise.reject(new NodeRequestError(`unable to get devworkspace "${namespace}/${name}"`, (e as HttpError)));
     }
   }
 
@@ -68,7 +69,7 @@ export class DevWorkspaceTemplateApi implements IDevWorkspaceTemplateApi {
       );
       return resp.body as IDevWorkspaceTemplate;
     } catch (e) {
-      return Promise.reject(new NodeRequestError('unable to create DevWorkspaceTemplate', e));
+      return Promise.reject(new NodeRequestError('unable to create DevWorkspaceTemplate', (e as HttpError)));
     }
   }
 
@@ -82,7 +83,7 @@ export class DevWorkspaceTemplateApi implements IDevWorkspaceTemplateApi {
         name
       );
     } catch (e) {
-      return Promise.reject(new NodeRequestError('unable to delete devworkspace template', e));
+      return Promise.reject(new NodeRequestError('unable to delete devworkspace template', (e as HttpError)));
     }
   }
 }

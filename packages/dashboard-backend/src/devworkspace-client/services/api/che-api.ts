@@ -16,6 +16,7 @@ import { projectApiGroup, projectRequestResources, projectResources, } from '../
 import { namespaceModel, projectRequestModel } from '../../const/models';
 import { findApi } from '../helpers';
 import { NodeRequestError } from '../../errors';
+import { HttpError } from '@kubernetes/client-node';
 
 /**
  * @deprecated Che Server started to provide rest endpoint to get namespace prepared.
@@ -47,7 +48,7 @@ export class CheApi implements ICheApi {
         }
       }
     } catch (e) {
-      return Promise.reject(new NodeRequestError('unable to init project', e));
+      return Promise.reject(new NodeRequestError('unable to init project', (e as HttpError)));
     }
   }
 
@@ -91,7 +92,7 @@ export class CheApi implements ICheApi {
         projectRequestModel(namespace)
       );
     } catch (e) {
-      return Promise.reject(new NodeRequestError('unable to create project', e));
+      return Promise.reject(new NodeRequestError('unable to create project', (e as HttpError)));
     }
   }
 
@@ -101,7 +102,7 @@ export class CheApi implements ICheApi {
         namespaceModel(namespace)
       );
     } catch (e) {
-      return Promise.reject(new NodeRequestError('unable to create namespace', e));
+      return Promise.reject(new NodeRequestError('unable to create namespace', (e as HttpError)));
     }
   }
 }

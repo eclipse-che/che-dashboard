@@ -19,7 +19,7 @@ export async function isOpenShift(apisApi: k8s.ApisApi): Promise<boolean> {
     return findApi(apisApi, projectApiGroup);
   } catch (e) {
     console.log('Can\'t evaluate target platform: ', e);
-    return e;
+    return e as boolean;
   }
 }
 

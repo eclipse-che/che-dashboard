@@ -36,9 +36,19 @@ export async function validateToken(keycloakToken: string): Promise<void> {
     await axios.get(keycloakEndpointUrl.href, { headers, httpsAgent });
     // token is a valid
   } catch (e) {
+    let statusCode = '401';
+    let statusText = 'Unauthorized';
+    if (axios.isAxiosError(e)) {
+      if (e.code) {
+        statusCode = e.code;
+      }
+      if (e.response?.statusText) {
+        statusText = e.response.statusText;
+      }
+    }
     throw {
-      statusCode: e.statusCode ? e.statusCode : 401,
-      error: e.error ? e.error : 'Unauthorized',
+      statusCode,
+      error: statusText,
       message: `Failed to validate token: ${getErrorMessage(e)}`
     };
   }
@@ -57,9 +67,19 @@ async function evaluateKeycloakEndpointUrl(): Promise<URL> {
       return new URL(keycloakEndpoint);
     }
   } catch (e) {
+    let statusCode = '401';
+    let statusText = 'Unauthorized';
+    if (axios.isAxiosError(e)) {
+      if (e.code) {
+        statusCode = e.code;
+      }
+      if (e.response?.statusText) {
+        statusText = e.response.statusText;
+      }
+    }
     throw {
-      statusCode: e.statusCode ? e.statusCode : 401,
-      error: e.error ? e.error : 'Unauthorized',
+      statusCode,
+      error: statusText,
       message: `Failed to fetch keycloak settings: ${getErrorMessage(e)}`
     };
   }
