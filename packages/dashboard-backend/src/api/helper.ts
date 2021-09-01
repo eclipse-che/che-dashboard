@@ -14,22 +14,26 @@ import { FastifyRequest } from 'fastify';
 import { DwClientProvider } from '../services/kubeclient/dwClientProvider';
 import { DevWorkspaceClient } from '../devworkspace-client';
 
-const AUTHORIZATION_BEARER_PREFIX = 'Bearer';
-const dwClientProvider: DwClientProvider = new DwClientProvider();
+const AUTHORIZATION_BEARER_PREFIX = /^Bearer /;
+const dwClientProvider = new DwClientProvider();
 
 /**
  * Creates DevWorkspace Client depending on the context for the specified request.
  */
 export function getDevWorkspaceClient(request: FastifyRequest): Promise<DevWorkspaceClient> {
+  const token = getToken(request);
+
+  return dwClientProvider.getDWClient(token);
+}
+
+export function getToken(request: FastifyRequest): string {
   const authorization = request.headers!.authorization;
-  if (!authorization || !authorization.startsWith(AUTHORIZATION_BEARER_PREFIX)) {
+  if (!authorization || !AUTHORIZATION_BEARER_PREFIX.test(authorization)) {
     throw {
       statusCode: 401,
       error: 'Unauthorized',
       message: 'Bearer Token Authentication is required'
     };
   }
-
-  const token = authorization.substring(AUTHORIZATION_BEARER_PREFIX.length + 1);
-  return dwClientProvider.getDWClient(token);
+  return authorization.replace(AUTHORIZATION_BEARER_PREFIX, '');
 }

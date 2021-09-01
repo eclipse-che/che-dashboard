@@ -35,6 +35,8 @@ import * as DwtApi from '../../dashboard-backend-client/devWorkspaceTemplateApi'
 import * as DwCheApi from '../../dashboard-backend-client/cheWorkspaceApi';
 import { WebsocketClient, SubscribeMessage } from '../../dashboard-backend-client/websocketClient';
 import { getId, getStatus } from '../../workspace-adapter/helper';
+import { EventEmitter } from 'events';
+import { isDevfileV2 } from '../../workspace-adapter';
 
 export interface IStatusUpdate {
   error?: string;
@@ -58,11 +60,13 @@ export class DevWorkspaceClient extends WorkspaceClient {
   private previousItems: Map<string, Map<string, IStatusUpdate>>;
   private readonly maxStatusAttempts: number;
   private lastDevWorkspaceLog: Map<string, string>;
-  private pluginRegistryUrlEnvName: string;
-  private pluginRegistryInternalUrlEnvName: string;
-  private dashboardUrlEnvName: string;
+  private readonly pluginRegistryUrlEnvName: string;
+  private readonly pluginRegistryInternalUrlEnvName: string;
+  private readonly dashboardUrlEnvName: string;
   private readonly websocketClient: WebsocketClient;
-  private intervalId: number | undefined;
+  private webSocketEventEmitter: EventEmitter;
+  private readonly webSocketEventName: string;
+  private readonly _failingWebSockets: string[];
 
   constructor(@inject(KeycloakSetupService) keycloakSetupService: KeycloakSetupService) {
     super(keycloakSetupService);
@@ -72,8 +76,36 @@ export class DevWorkspaceClient extends WorkspaceClient {
     this.pluginRegistryUrlEnvName = 'CHE_PLUGIN_REGISTRY_URL';
     this.pluginRegistryInternalUrlEnvName = 'CHE_PLUGIN_REGISTRY_INTERNAL_URL';
     this.dashboardUrlEnvName = 'CHE_DASHBOARD_URL';
+    this.webSocketEventEmitter = new EventEmitter();
+    this.webSocketEventName = 'websocketClose';
+    this._failingWebSockets = [];
 
-    this.websocketClient = new WebsocketClient();
+    this.websocketClient = new WebsocketClient({
+      onDidWebSocketFailing: (websocketContext: string) => {
+        this._failingWebSockets.push(websocketContext);
+        this.webSocketEventEmitter.emit(this.webSocketEventName);
+      },
+      onDidWebSocketOpen: (websocketContext: string) => {
+        const index = this._failingWebSockets.indexOf(websocketContext);
+        if (index > -1) {
+          this._failingWebSockets.splice(index, 1);
+          this.webSocketEventEmitter.emit(this.webSocketEventName);
+        }
+      }
+    });
+  }
+
+  onWebSocketFailed(callback: () => void) {
+    this.webSocketEventEmitter.on(this.webSocketEventName, callback);
+  }
+
+  removeWebSocketFailedListener() {
+    this.webSocketEventEmitter.removeAllListeners(this.webSocketEventName);
+    this._failingWebSockets.length = 0;
+  }
+
+  get failingWebSockets(): string[] {
+    return Array.from(this._failingWebSockets);
   }
 
   isEnabled(): Promise<boolean> {
@@ -110,9 +142,9 @@ export class DevWorkspaceClient extends WorkspaceClient {
     return workspace;
   }
 
-  async create(devfile: IDevWorkspaceDevfile, 
-    defaultNamespace: string, 
-    pluginsDevfile: IDevWorkspaceDevfile[], 
+  async create(devfile: IDevWorkspaceDevfile,
+    defaultNamespace: string,
+    pluginsDevfile: IDevWorkspaceDevfile[],
     pluginRegistryUrl: string | undefined,
     pluginRegistryInternalUrl: string | undefined,
     optionalFilesContent: {[fileName: string]: string},
@@ -381,49 +413,49 @@ export class DevWorkspaceClient extends WorkspaceClient {
       channel: 'onModified'
     };
     await this.websocketClient.subscribe(message);
-    this.websocketClient.addListener(message.channel, (devworkspace: IDevWorkspace) => {
+    this.websocketClient.addListener(message.channel, (maybeDevworkspace: unknown) => {
+      if (isDevfileV2(maybeDevworkspace as any) === false ) {
+        console.warn(`Channel "${message.channel}" received object that is not a devWorkspace, skipping it: `, maybeDevworkspace);
+        return;
+      }
+      const devworkspace = maybeDevworkspace as IDevWorkspace;
+
       const statusUpdate = this.createStatusUpdate(devworkspace);
 
-      const message = devworkspace.status.message;
-      if (message) {
+      const statusMessage = devworkspace.status.message;
+      if (statusMessage) {
         const workspaceId = getId(devworkspace);
         const lastMessage = this.lastDevWorkspaceLog.get(workspaceId);
 
         // Only add new messages we haven't seen before
-        if (lastMessage !== message) {
-          statusUpdate.message = message;
-          this.lastDevWorkspaceLog.set(workspaceId, message);
+        if (lastMessage !== statusMessage) {
+          statusUpdate.message = statusMessage;
+          this.lastDevWorkspaceLog.set(workspaceId, statusMessage);
         }
       }
       callbacks.updateDevWorkspaceStatus(statusUpdate)(dispatch, getState, undefined);
     });
 
-    // websocketClient KeepAlive
-    const keepAliveTimeout = 1 * 60 * 1000;
-    if (this.intervalId) {
-      window.clearInterval(this.intervalId);
-    }
-    this.intervalId = window.setInterval(async () => {
-      await this.websocketClient.subscribe(Object.assign({}, message,
-        {
-          params: {
-            resourceVersion: await getResourceVersion(),
-            namespace: message.params.namespace,
-          }
-        }
-      ));
-    }, keepAliveTimeout);
-
     message.channel = 'onAdded';
     await this.websocketClient.subscribe(message);
-    this.websocketClient.addListener(message.channel, (workspace: IDevWorkspace) => {
+    this.websocketClient.addListener(message.channel, (maybeDevworkspace: unknown) => {
+      if (isDevfileV2(maybeDevworkspace as any) === false ) {
+        console.warn(`Channel "${message.channel}" received object that is not a devWorkspace, skipping it: `, maybeDevworkspace);
+        return;
+      }
+      const workspace = maybeDevworkspace as IDevWorkspace;
       callbacks.updateAddedDevWorkspaces([workspace])(dispatch, getState, undefined);
     });
 
     message.channel = 'onDeleted';
     await this.websocketClient.subscribe(message);
-    this.websocketClient.addListener(message.channel, (workspacesId: string) => {
-      callbacks.updateDeletedDevWorkspaces([workspacesId])(dispatch, getState, undefined);
+    this.websocketClient.addListener(message.channel, (maybeWorkspaceId: unknown) => {
+      if (typeof(maybeWorkspaceId) === 'string') {
+        console.warn(`Channel "${message.channel}" received object that is not a string, skipping it: `, maybeWorkspaceId);
+        return;
+      }
+      const workspaceId = maybeWorkspaceId as string;
+      callbacks.updateDeletedDevWorkspaces([workspaceId])(dispatch, getState, undefined);
     });
 
   }

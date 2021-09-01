@@ -29,6 +29,16 @@ export type PublishMessage = {
 export class WebsocketClient {
   private websocketStream: ReconnectingWebSocket;
   private handlers: { [channel: string]: Function[] } = {};
+  private readonly onDidWebSocketStatusFailing: (websocketContext: string) => void;
+  private readonly onDidWebSocketStatusOpen: (websocketContext: string) => void;
+
+  constructor(callbacks: {
+    onDidWebSocketFailing: (websocketContext: string) => void,
+    onDidWebSocketOpen: (websocketContext: string) => void
+  }) {
+    this.onDidWebSocketStatusFailing = callbacks.onDidWebSocketFailing;
+    this.onDidWebSocketStatusOpen = callbacks.onDidWebSocketOpen;
+  }
 
   /**
    * Performs connection to the pointed entrypoint.
@@ -39,21 +49,31 @@ export class WebsocketClient {
       this.websocketStream.close();
     }
     const websocketContext = `${prefix}/websocket`;
-    const location = new URL(window.location.href).origin.replace('http', 'ws') + websocketContext;
+    const origin = new URL(window.location.href).origin;
+    const location = origin.replace('http', 'ws') + websocketContext;
     this.websocketStream = new ReconnectingWebSocket(
       location,
       [], {
       connectionTimeout: 10000,
       maxRetries: 10
     });
-    this.websocketStream.addEventListener('open', event => {
+
+    this.websocketStream.addEventListener('open', () => {
+      console.log(`WebSocket Client '${websocketContext}' Connected`);
+      this.onDidWebSocketStatusOpen(websocketContext);
       deferred.resolve();
     });
     this.websocketStream.addEventListener('error', event => {
+      console.log(`WebSocket Client '${websocketContext}' Error: ${event.message}`);
+      this.onDidWebSocketStatusFailing(websocketContext);
       deferred.reject();
     });
-    this.websocketStream.addEventListener('message', mes => {
-      const { channel, message } = JSON.parse(mes.data) as PublishMessage;
+    this.websocketStream.addEventListener('close', () => {
+      console.log(`WebSocket Client '${websocketContext}' Close`);
+      this.onDidWebSocketStatusFailing(websocketContext);
+    });
+    this.websocketStream.addEventListener('message', event => {
+      const { channel, message } = JSON.parse(event.data) as PublishMessage;
       if (channel && message) {
         this.callHandlers(channel, message);
       }

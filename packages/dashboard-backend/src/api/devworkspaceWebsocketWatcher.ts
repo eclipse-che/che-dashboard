@@ -11,19 +11,30 @@
  */
 
 import { FastifyInstance, FastifyRequest, RouteShorthandOptions } from 'fastify';
-import fastifyWebsocket from 'fastify-websocket';
+import fastifyWebsocket, { SocketStream } from 'fastify-websocket';
 import { baseApiPath } from '../constants/config';
 import SubscribeManager, { Subscriber } from '../services/SubscriptionManager';
+import { getToken } from './helper';
 
-const options = {websocket: true} as RouteShorthandOptions;
+const options = { websocket: true} as RouteShorthandOptions ;
 
-function handler(connection: FastifyRequest) {
-  const subscriber: Subscriber = connection.socket as any;
+function handler(connection: SocketStream, request: FastifyRequest) {
+  let token: string | undefined;
+  try {
+    token = getToken(request);
+  } catch (e) {
+    // noop
+  }
+
+  const subscriber: Subscriber = connection.socket;
   const pubSubManager = new SubscribeManager(subscriber);
   connection.socket.on('message', message => {
-    const {request, params, channel} = JSON.parse(message);
+    const { request, params, channel } = JSON.parse(message.toString());
     if (!request || !channel) {
       return;
+    }
+    if (params && token) {
+      params.token = token;
     }
     switch (request) {
       case 'UNSUBSCRIBE':
@@ -38,5 +49,5 @@ function handler(connection: FastifyRequest) {
 
 export function registerDevworkspaceWebsocketWatcher(server: FastifyInstance) {
   server.register(fastifyWebsocket);
-  server.get(`${baseApiPath}/websocket`, options, handler);
+  server.get(`${baseApiPath}/websocket`, options, handler as any);
 }

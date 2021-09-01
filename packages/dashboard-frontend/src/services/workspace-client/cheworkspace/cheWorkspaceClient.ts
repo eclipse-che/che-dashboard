@@ -90,8 +90,6 @@ export class CheWorkspaceClient extends WorkspaceClient {
       this.webSocketEventEmitter.emit(this.webSocketEventName);
     });
     await this._jsonRpcMasterApi.connect();
-    const clientId = this._jsonRpcMasterApi.getClientId();
-    console.log('WebSocket connection clientId', clientId);
   }
 
   onWebSocketFailed(callback: WebSocketsFailedCallback) {
@@ -110,7 +108,6 @@ export class CheWorkspaceClient extends WorkspaceClient {
     if (this.defaultNamespace) {
       return this.defaultNamespace;
     }
-    // TODO figure out why default is not present
     const namespaces = await this.restApiClient.getKubernetesNamespace();
     if (namespaces.length === 1) {
       return namespaces[0].name;

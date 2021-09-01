@@ -90,6 +90,7 @@ export const actionCreators: ActionCreators = {
 
         const apiInfo = await getApiInfo();
         branding.productVersion = apiInfo.implementationVersion;
+
         dispatch({
           type: 'RECEIVED_BRANDING',
           data: branding,
