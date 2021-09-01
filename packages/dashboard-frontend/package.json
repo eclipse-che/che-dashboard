@@ -33,7 +33,6 @@
     "test:watch": "jest --watch"
   },
   "dependencies": {
-    "@devfile/api": "0.0.1-1622573075",
     "@eclipse-che/che-theia-devworkspace-handler": "0.0.1-1623136422",
     "@eclipse-che/workspace-client": "0.0.1-1622804813",
     "@patternfly/react-core": "4.120.0",
@@ -76,6 +75,7 @@
     "yaml-language-server": "^0.13.0"
   },
   "devDependencies": {
+    "@devfile/api": "^2.2.0-alpha-1628104895",
     "@eclipse-che/api": "^7.18.1",
     "@testing-library/dom": "^7.30.3",
     "@testing-library/jest-dom": "^5.10.1",

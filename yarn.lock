@@ -325,18 +325,7 @@
     exec-sh "^0.3.2"
     minimist "^1.2.0"
 
-"@devfile/api@0.0.1-1622573075":
-  version "0.0.1-1622573075"
-  resolved "https://registry.yarnpkg.com/@devfile/api/-/api-0.0.1-1622573075.tgz#80bb031533da0e8a445cf8264a7cd9f6121946c7"
-  integrity sha512-s1oFegJS7VzTdyM2ity60kefrhBsU+n5nSOqqWh+ma728/uzsPaxU0hcHtBxc08PpRxfWxlpLsBUwY461879cg==
-  dependencies:
-    "@types/bluebird" "3.5.21"
-    "@types/request" "*"
-    bluebird "^3.5.0"
-    request "^2.81.0"
-    rewire "^3.0.2"
-
-"@devfile/api@latest":
+"@devfile/api@^2.2.0-alpha-1628104895", "@devfile/api@latest":
   version "2.2.0-alpha-1628805729"
   resolved "https://registry.yarnpkg.com/@devfile/api/-/api-2.2.0-alpha-1628805729.tgz#89aee057516ef2a7502e3490cc5d19507d7cdf32"
   integrity sha512-5RRVwEBHVokNqthbYCmgOWdG9D/b0RJA5QptmkxXsy2QCUPsuzf/g1AGjmYvv/2S3wXA/9R32jlfGpuluMA56w==
