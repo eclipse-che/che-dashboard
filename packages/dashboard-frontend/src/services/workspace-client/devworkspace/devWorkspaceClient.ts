@@ -108,10 +108,6 @@ export class DevWorkspaceClient extends WorkspaceClient {
     return Array.from(this._failingWebSockets);
   }
 
-  isEnabled(): Promise<boolean> {
-    return Promise.resolve(true); // this.client.isDevWorkspaceApiEnabled();
-  }
-
   async getAllWorkspaces(defaultNamespace: string): Promise<{ workspaces: IDevWorkspace[]; resourceVersion: string }> {
     const { items, metadata: { resourceVersion } } = await DwApi.listWorkspacesInNamespace(defaultNamespace);
     const workspaces: IDevWorkspace[] = [];

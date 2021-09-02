@@ -68,10 +68,6 @@ export class WebsocketClient {
       this.onDidWebSocketStatusFailing(websocketContext);
       deferred.reject();
     });
-    this.websocketStream.addEventListener('close', () => {
-      console.log(`WebSocket Client '${websocketContext}' Close`);
-      this.onDidWebSocketStatusFailing(websocketContext);
-    });
     this.websocketStream.addEventListener('message', event => {
       const { channel, message } = JSON.parse(event.data) as PublishMessage;
       if (channel && message) {
