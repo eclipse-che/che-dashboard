@@ -22,7 +22,10 @@ export async function delay(ms: number = 500): Promise<void> {
 
 export function getSchema(additionalParams: restParams.ISchemaParams): { schema: restParams.ISchemaParams } {
   const schema = Object.assign({
-    headers: authenticationHeaderSchema
+    headers: authenticationHeaderSchema,
+    security: [{
+      Authorization: ''
+    }],
   }, additionalParams);
 
   return {schema};
