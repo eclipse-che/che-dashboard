@@ -177,7 +177,7 @@ export class DevWorkspaceClient extends WorkspaceClient {
     } catch (e) {
       console.error(e);
       const errorMessage = getErrorMessage(e);
-      throw new Error(`Unable to update the devWorkspace with the devfile resolver: ${errorMessage}`);
+      throw new Error(`Unable to resolve theia plugins: ${errorMessage}`);
     }
     console.debug('Devfile updated to', devfile, ' and templates updated to', devWorkspaceTemplates);
 

@@ -143,7 +143,7 @@ export class KeycloakSetupService {
       if (isAxiosError(e) && e?.response?.status) {
         errorMessage += `: ${e.response?.status} ${e.response?.statusText}`;
       } else {
-        errorMessage += '. Response is not available, please check console for details.';
+        errorMessage += '. Response is not available, please check the Network tab of Developer tools.';
       }
       throw new Error(errorMessage);
     }

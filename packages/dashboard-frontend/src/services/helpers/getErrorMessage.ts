@@ -12,7 +12,6 @@
 
 import { AxiosError, AxiosResponse } from 'axios';
 
-// export function getErrorMessage(error: Error | AxiosResponse): string {
 export function getErrorMessage(error: unknown): string {
   if (!error) {
     return '';

@@ -241,9 +241,9 @@ export default class WorkspacesList extends React.PureComponent<Props, State> {
         return id;
       } catch (e) {
         const workspace = this.props.workspaces.find(workspace => id === workspace.id);
-        const workspaceName = workspace?.name ? ` "${workspace?.name}"` : '';
-        const errorMessage = getErrorMessage(e);
-        const message = `Unable to ${workspace && isCheWorkspace(workspace.ref) ? 'delete' : 'terminate'} workspace${workspaceName}. ` + errorMessage.replace('Error: ', '');
+        const action = workspace && isCheWorkspace(workspace.ref) ? 'delete' : 'terminate';
+        const workspaceName = workspace?.name ? `workspace "${workspace.name}"` : 'workspace';
+        const message = `Unable to ${action} ${workspaceName}. ` + getErrorMessage(e).replace('Error: ', '');
         this.showAlert(message);
         console.warn(message);
         throw new Error(message);
