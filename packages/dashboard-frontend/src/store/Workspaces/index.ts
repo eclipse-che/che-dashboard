@@ -13,7 +13,7 @@
 import { Reducer } from 'redux';
 import { AppThunk } from '..';
 import { createObject } from '../helpers';
-import devfileApi, { isDevfile, isDevWorkspace } from '../../services/devfileApi';
+import devfileApi, { isDevfileV2, isDevWorkspace } from '../../services/devfileApi';
 import {
   convertWorkspace,
   Workspace,
@@ -262,7 +262,7 @@ export const actionCreators: ActionCreators = {
       const state = getState();
 
       const cheDevworkspaceEnabled = state.workspacesSettings.settings['che.devworkspaces.enabled'] === 'true';
-      if (cheDevworkspaceEnabled && isDevfile(devfile)) {
+      if (cheDevworkspaceEnabled && isDevfileV2(devfile)) {
         const pluginRegistryUrl = state.workspacesSettings.settings['cheWorkspacePluginRegistryUrl'];
         const pluginRegistryInternalUrl = state.workspacesSettings.settings['cheWorkspacePluginRegistryInternalUrl'];
         const devWorkspace = await dispatch(DevWorkspacesStore.actionCreators.createWorkspaceFromDevfile(devfile, optionalFilesContent || {}, pluginRegistryUrl, pluginRegistryInternalUrl));

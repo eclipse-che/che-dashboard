@@ -18,7 +18,7 @@ import { attributesToType, typeToAttributes } from '../storageTypes';
 import { DevWorkspaceStatus, WorkspaceStatus } from '../helpers/types';
 import { DEVWORKSPACE_NEXT_START_ANNOTATION } from '../workspace-client/devworkspace/devWorkspaceClient';
 import { getId, getStatus } from './helper';
-import devfileApi, { isDevfile, isDevWorkspace } from '../devfileApi';
+import devfileApi, { isDevfileV2, isDevWorkspace } from '../devfileApi';
 import { devWorkspaceKind } from '../devfileApi/devWorkspace';
 
 const ROUTING_CLASS = 'che';
@@ -230,7 +230,7 @@ export class WorkspaceAdapter<T extends che.Workspace | devfileApi.DevWorkspace>
       const currentWorkspace = this.workspace as devfileApi.DevWorkspace;
       if (currentWorkspace.metadata.annotations && currentWorkspace.metadata.annotations[DEVWORKSPACE_NEXT_START_ANNOTATION]) {
         const devfile = devWorkspaceToDevfile(JSON.parse(currentWorkspace.metadata.annotations[DEVWORKSPACE_NEXT_START_ANNOTATION]));
-        if (isDevfile(devfile)) {
+        if (isDevfileV2(devfile)) {
           return devfile;
         }
       }
@@ -279,5 +279,5 @@ export function isCheWorkspace(workspace: che.Workspace | devfileApi.DevWorkspac
 }
 
 export function isCheDevfile(devfile: che.WorkspaceDevfile | devfileApi.Devfile): devfile is che.WorkspaceDevfile {
-  return !isDevfile(devfile);
+  return !isDevfileV2(devfile);
 }

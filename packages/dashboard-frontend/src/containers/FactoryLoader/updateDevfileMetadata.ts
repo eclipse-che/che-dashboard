@@ -10,7 +10,7 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import { isDevfile } from '../../services/devfileApi';
+import { isDevfileV2 } from '../../services/devfileApi';
 import { safeDump, safeLoad } from 'js-yaml';
 import {
   DEVWORKSPACE_DEVFILE_SOURCE,
@@ -22,7 +22,7 @@ import getRandomString from '../../services/helpers/random';
 export type FactorySource = { factory?: { params: string } };
 
 export default function updateDevfileMetadata(devfile: api.che.workspace.devfile.Devfile, factoryParams: string, createPolicy: CreatePolicy): api.che.workspace.devfile.Devfile {
-  if (isDevfile(devfile)) {
+  if (isDevfileV2(devfile)) {
     const metadata = devfile.metadata;
     if (!metadata.attributes) {
       metadata.attributes = {};

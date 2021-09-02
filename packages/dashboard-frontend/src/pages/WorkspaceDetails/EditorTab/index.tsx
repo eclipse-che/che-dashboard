@@ -29,7 +29,7 @@ import { safeLoad } from 'js-yaml';
 import DevfileEditor, { DevfileEditor as Editor } from '../../../components/DevfileEditor';
 import EditorTools from './EditorTools';
 import { convertWorkspace, isCheWorkspace, Workspace } from '../../../services/workspace-adapter';
-import devfileApi, { isDevfile, isDevWorkspace } from '../../../services/devfileApi';
+import devfileApi, { isDevfileV2, isDevWorkspace } from '../../../services/devfileApi';
 import { DevWorkspaceStatus } from '../../../services/helpers/types';
 import { DevWorkspaceClient, DEVWORKSPACE_NEXT_START_ANNOTATION } from '../../../services/workspace-client/devworkspace/devWorkspaceClient';
 import { container } from '../../../inversify.config';
@@ -293,7 +293,7 @@ export class EditorTab extends React.PureComponent<Props, State> {
     if (!devfile.metadata.name) {
       devfile.metadata.name = workspaceCopy.name;
     }
-    if (isDevfile(devfile) && !devfile.metadata.namespace) {
+    if (isDevfileV2(devfile) && !devfile.metadata.namespace) {
       devfile.metadata.namespace = workspaceCopy.namespace;
     }
 

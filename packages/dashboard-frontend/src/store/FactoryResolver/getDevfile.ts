@@ -11,7 +11,7 @@
  */
 
 import { FactoryResolver, DevfileV2ProjectSource } from '../../services/helpers/types';
-import { isDevfile } from '../../services/devfileApi';
+import { isDevfileV2 } from '../../services/devfileApi';
 import { getProjectName } from '../../services/helpers/getProjectName';
 import { safeDump } from 'js-yaml';
 import {
@@ -27,7 +27,7 @@ import {
 export function getDevfile(data: FactoryResolver, location: string): api.che.workspace.devfile.Devfile {
   let devfile = data.devfile;
 
-  if (isDevfile(devfile)) {
+  if (isDevfileV2(devfile)) {
     // temporary solution for fix che-server serialization bug with empty volume
     const components = devfile.components.map(component => {
       if (Object.keys(component).length === 1 && component.name) {

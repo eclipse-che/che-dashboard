@@ -12,17 +12,17 @@
 
 import devfileApi from '.';
 
-export function isDevfileLike(devfile: unknown): devfile is devfileApi.DevfileLike {
+export function isDevfileV2Like(devfile: unknown): devfile is devfileApi.DevfileLike {
   return (devfile as devfileApi.DevfileLike).schemaVersion !== undefined;
 }
 
-export function isDevfile(devfile: unknown): devfile is devfileApi.Devfile {
+export function isDevfileV2(devfile: unknown): devfile is devfileApi.Devfile {
   return (devfile as devfileApi.Devfile).schemaVersion !== undefined
     && (devfile as devfileApi.Devfile).components !== undefined
-    && isDevfileMetadata((devfile as devfileApi.Devfile).metadata);
+    && isDevfileV2Metadata((devfile as devfileApi.Devfile).metadata);
 }
 
-export function isDevfileMetadata(metadata: unknown): metadata is devfileApi.DevfileMetadata {
+export function isDevfileV2Metadata(metadata: unknown): metadata is devfileApi.DevfileMetadata {
   return metadata !== undefined
     && (metadata as devfileApi.DevfileMetadata).name !== undefined;
 }
