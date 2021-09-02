@@ -94,24 +94,24 @@ export class PreloadData {
   }
 
   private async watchNamespaces(namespace: string): Promise<void> {
-    const { updateDevWorkspaceStatus, updateDeletedDevWorkspaces, updateAddedDevWorkspaces, requestWorkspaces } = DevWorkspacesStore.actionCreators;
+    const {
+      updateDevWorkspaceStatus,
+      updateDeletedDevWorkspaces,
+      updateAddedDevWorkspaces,
+      requestWorkspaces
+    } = DevWorkspacesStore.actionCreators;
     const getResourceVersion = async () => {
       await requestWorkspaces()(this.store.dispatch, this.store.getState, undefined);
       return this.store.getState().devWorkspaces.resourceVersion;
     };
-    const subscribe = async () => {
-      await this.devWorkspaceClient.subscribeToNamespace(
-        namespace,
-        getResourceVersion,
-        { updateDevWorkspaceStatus, updateDeletedDevWorkspaces, updateAddedDevWorkspaces },
-        this.store.dispatch,
-        this.store.getState);
-    };
+    const callbacks = { updateDevWorkspaceStatus, updateDeletedDevWorkspaces, updateAddedDevWorkspaces };
 
-    // websocketClient KeepAlive
-    window.setInterval(subscribe, 3 * 60000);
-
-    return subscribe();
+    return await this.devWorkspaceClient.subscribeToNamespace(
+      namespace,
+      getResourceVersion,
+      callbacks,
+      this.store.dispatch,
+      this.store.getState);
   }
 
   private async fetchCurrentUser(): Promise<void> {
