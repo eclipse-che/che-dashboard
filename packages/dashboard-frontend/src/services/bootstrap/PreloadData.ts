@@ -109,7 +109,7 @@ export class PreloadData {
     };
 
     // websocketClient KeepAlive
-    window.setInterval(subscribe, 60000);
+    window.setInterval(subscribe, 3 * 60000);
 
     return subscribe();
   }
