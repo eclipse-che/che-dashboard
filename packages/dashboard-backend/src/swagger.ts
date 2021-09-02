@@ -28,11 +28,25 @@ export function registerSwagger(server: FastifyInstance): void {
       },
       consumes: ['application/json'],
       produces: ['application/json'],
+      securityDefinitions: {
+        Authorization: {
+          type: 'apiKey',
+          name: 'Authorization',
+          in: 'header'
+        }
+      }
     },
     uiConfig: {
-      tryItOutEnabled: true
+      tryItOutEnabled: true,
+      validatorUrl: null,
     },
     hideUntagged: true,
-    exposeRoute: true
+    exposeRoute: true,
+    transform: (schema: any) => {
+      if (schema?.headers?.properties?.authorization) {
+        delete schema?.headers?.properties?.authorization;
+      }
+      return schema;
+    }
   });
 }
