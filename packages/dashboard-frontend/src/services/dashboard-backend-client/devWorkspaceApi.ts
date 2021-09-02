@@ -11,7 +11,7 @@
  */
 
 import axios from 'axios';
-import devfileApi, { IDevWorkspaces, IPatch } from '../devfileApi';
+import devfileApi, { IDevWorkspacesList, IPatch } from '../devfileApi';
 import { getErrorMessage } from '../helpers/getErrorMessage';
 import { addAuthentication } from './auth';
 import { prefix } from './const';
@@ -29,7 +29,7 @@ export async function createWorkspace(devfile: devfileApi.Devfile, defaultNamesp
   }
 }
 
-export async function listWorkspacesInNamespace(defaultNamespace: string): Promise<IDevWorkspaces> {
+export async function listWorkspacesInNamespace(defaultNamespace: string): Promise<IDevWorkspacesList> {
   const headers = addAuthentication({});
   try {
     const response = await axios.get(`${prefix}/namespace/${defaultNamespace}/devworkspaces`, { headers });

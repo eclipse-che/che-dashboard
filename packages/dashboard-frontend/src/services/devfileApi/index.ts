@@ -15,7 +15,7 @@ export * from './typeguards';
 import * as devfileApi from './devfileApi';
 export default devfileApi;
 
-export interface IDevWorkspaces {
+export interface IDevWorkspacesList {
   apiVersion: string;
   kind: string;
   items: devfileApi.DevWorkspace[];
