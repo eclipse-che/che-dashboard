@@ -51,10 +51,8 @@ bump_version () {
     git commit -asm "${COMMIT_MSG}"
     git pull origin "${BUMP_BRANCH}"
 
-    set +e
-    PUSH_TRY="$(git push origin "${BUMP_BRANCH}")"
-    # shellcheck disable=SC2181
-    if [[ $? -gt 0 ]] || [[ $PUSH_TRY == *"protected branch hook declined"* ]]; then
+    PUSH_TRY="$(git push origin "${BUMP_BRANCH}" || true)"
+    if [[ $PUSH_TRY == *"protected branch hook declined"* ]]; then
       set -e
       PR_BRANCH=pr-${BUMP_BRANCH}-to-${NEXT_VERSION}
       # create pull request for main branch, as branch is restricted
@@ -64,7 +62,6 @@ bump_version () {
       lastCommitComment="$(git log -1 --pretty=%B)"
       hub pull-request -f -m "${lastCommitComment}" -b "${BUMP_BRANCH}" -h "${PR_BRANCH}"
     fi
-    set -e
   fi
   git checkout "${CURRENT_BRANCH}"
 }
