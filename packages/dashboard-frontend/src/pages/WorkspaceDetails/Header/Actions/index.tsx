@@ -57,26 +57,26 @@ export class HeaderActionSelect extends React.PureComponent<Props, State> {
     this.setState({ isExpanded });
   }
 
-  private async handleSelect(selected: WorkspaceAction, context: ActionContextType): Promise<void> {
+  private async handleSelect(selectedAction: WorkspaceAction, context: ActionContextType): Promise<void> {
     this.setState({
       isExpanded: false,
     });
     try {
-      if (selected === WorkspaceAction.DELETE_WORKSPACE) {
+      if (selectedAction === WorkspaceAction.DELETE_WORKSPACE) {
         try {
           await context.showConfirmation([this.props.workspaceName]);
         } catch (e) {
           return;
         }
       }
-      const nextPath = await context.handleAction(selected, this.props.workspaceId);
+      const nextPath = await context.handleAction(selectedAction, this.props.workspaceId);
       if (!nextPath) {
         return;
       }
       this.props.history.push(nextPath);
     } catch (e) {
       const errorMessage = getErrorMessage(e);
-      const message = `Unable to ${selected.toLocaleLowerCase()} ${this.props.workspaceName}. ` + errorMessage.replace('Error: ', '');
+      const message = `Unable to ${selectedAction.toLocaleLowerCase()} ${this.props.workspaceName}. ` + errorMessage.replace('Error: ', '');
       this.showAlert(message);
       console.warn(message);
     }
