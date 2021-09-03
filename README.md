@@ -40,14 +40,14 @@ yarn start
 
 The development server serves the dashboard-frontend and dashboard-backend on [http://localhost:8080](http://localhost:8080).
 
-Note: In the case with openshift, you should log in with a token first.
+Note: dashboard backend uses the K8s/OpenShift cluster from the kubeconfig, so you may need to logging with oc first.
 
 
 We can start dev-server for dashboard-frontend only. The start command requires to specify
 a remote Eclipse Che server like:
 
 ```sh
-yarn frontend:start --env.server=https://192.168.64.5.nip.io
+yarn frontend:start --env.server=https://che-che.192.168.99.100.nip.io
 ```
 
 The development server serves the dashboard-frontend on [http://localhost:3000](http://localhost:3000).

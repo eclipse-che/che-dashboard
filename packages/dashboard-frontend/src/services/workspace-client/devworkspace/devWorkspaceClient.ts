@@ -36,7 +36,7 @@ import * as DwCheApi from '../../dashboard-backend-client/cheWorkspaceApi';
 import { WebsocketClient, SubscribeMessage } from '../../dashboard-backend-client/websocketClient';
 import { getId, getStatus } from '../../workspace-adapter/helper';
 import { EventEmitter } from 'events';
-import { isDevfileV2 } from '../../workspace-adapter';
+import { isWorkspaceV2 } from '../../workspace-adapter';
 
 export interface IStatusUpdate {
   error?: string;
@@ -410,7 +410,7 @@ export class DevWorkspaceClient extends WorkspaceClient {
     };
     await this.websocketClient.subscribe(message);
     this.websocketClient.addListener(message.channel, (maybeDevworkspace: unknown) => {
-      if (isDevfileV2(maybeDevworkspace as any) === false ) {
+      if (isWorkspaceV2(maybeDevworkspace as any) === false ) {
         console.warn(`Channel "${message.channel}" received object that is not a devWorkspace, skipping it: `, maybeDevworkspace);
         return;
       }
@@ -435,7 +435,7 @@ export class DevWorkspaceClient extends WorkspaceClient {
     message.channel = 'onAdded';
     await this.websocketClient.subscribe(message);
     this.websocketClient.addListener(message.channel, (maybeDevworkspace: unknown) => {
-      if (isDevfileV2(maybeDevworkspace as any) === false ) {
+      if (isWorkspaceV2(maybeDevworkspace as any) === false ) {
         console.warn(`Channel "${message.channel}" received object that is not a devWorkspace, skipping it: `, maybeDevworkspace);
         return;
       }

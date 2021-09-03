@@ -21,6 +21,7 @@ import { registerTemplateApi } from './api/templateApi';
 import { registerCheServerApiProxy } from './cheServerApiProxy';
 import { registerCors } from './cors';
 import { registerSwagger } from './swagger';
+import { registerCheServerStubs } from './cheServerStubs';
 
 const CHE_HOST = process.env.CHE_HOST as string;
 
@@ -35,7 +36,7 @@ args
 
 const { publicFolder, cheApiUpstream } = args.parse(process.argv) as { publicFolder: string, cheApiUpstream: string };
 
-export function isCheServerApiProxyRequired(): boolean {
+export function isLocalRun(): boolean {
   return cheApiUpstream !== CHE_HOST;
 }
 
@@ -69,8 +70,10 @@ registerTemplateApi(server);
 
 registerCheApi(server);
 
-if (isCheServerApiProxyRequired()) {
+// server API proxy and stubs will be registered in the case with local run only
+if (isLocalRun()) {
   registerCheServerApiProxy(server, cheApiUpstream, CHE_HOST);
+  registerCheServerStubs(server);
 }
 
 server.listen(8080, '0.0.0.0', (err: Error, address: string) => {
