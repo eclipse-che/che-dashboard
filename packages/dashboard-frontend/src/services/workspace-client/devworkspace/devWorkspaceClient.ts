@@ -19,7 +19,7 @@ import {
 import {
   devWorkspaceApiGroup, devworkspaceSingularSubresource, devworkspaceVersion
 } from './converters';
-import { DevWorkspaceStatus } from '../../helpers/types';
+import { AlertItem, DevWorkspaceStatus } from '../../helpers/types';
 import { KeycloakSetupService } from '../../keycloak/setup';
 import { delay } from '../../helpers/delay';
 import { ThunkDispatch } from 'redux-thunk';
@@ -37,6 +37,8 @@ import { WebsocketClient, SubscribeMessage } from '../../dashboard-backend-clien
 import { getId, getStatus } from '../../workspace-adapter/helper';
 import { EventEmitter } from 'events';
 import { isWorkspaceV2 } from '../../workspace-adapter';
+import { AppAlerts } from '../../alerts/appAlerts';
+import { AlertVariant } from '@patternfly/react-core';
 
 export interface IStatusUpdate {
   error?: string;
@@ -67,8 +69,10 @@ export class DevWorkspaceClient extends WorkspaceClient {
   private webSocketEventEmitter: EventEmitter;
   private readonly webSocketEventName: string;
   private readonly _failingWebSockets: string[];
+  private readonly showAlert: (alert: AlertItem) => void;
 
-  constructor(@inject(KeycloakSetupService) keycloakSetupService: KeycloakSetupService) {
+  constructor(@inject(KeycloakSetupService) keycloakSetupService: KeycloakSetupService,
+              @inject(AppAlerts) appAlerts: AppAlerts) {
     super(keycloakSetupService);
     this.previousItems = new Map();
     this.maxStatusAttempts = 10;
@@ -79,6 +83,8 @@ export class DevWorkspaceClient extends WorkspaceClient {
     this.webSocketEventEmitter = new EventEmitter();
     this.webSocketEventName = 'websocketClose';
     this._failingWebSockets = [];
+
+    this.showAlert = (alert: AlertItem) => appAlerts.showAlert(alert);
 
     this.websocketClient = new WebsocketClient({
       onDidWebSocketFailing: (websocketContext: string) => {
@@ -411,7 +417,10 @@ export class DevWorkspaceClient extends WorkspaceClient {
     await this.websocketClient.subscribe(message);
     this.websocketClient.addListener(message.channel, (maybeDevworkspace: unknown) => {
       if (isWorkspaceV2(maybeDevworkspace as any) === false ) {
-        console.warn(`Channel "${message.channel}" received object that is not a devWorkspace, skipping it: `, maybeDevworkspace);
+        const title = `WebSocket channel "${message.channel}" received object that is not a devWorkspace, skipping it.`;
+        const key = `${message.channel}-websocket-channel`;
+        console.warn(title , maybeDevworkspace);
+        this.showAlert({ key, variant: AlertVariant.warning, title });
         return;
       }
       const devworkspace = maybeDevworkspace as IDevWorkspace;
@@ -436,7 +445,10 @@ export class DevWorkspaceClient extends WorkspaceClient {
     await this.websocketClient.subscribe(message);
     this.websocketClient.addListener(message.channel, (maybeDevworkspace: unknown) => {
       if (isWorkspaceV2(maybeDevworkspace as any) === false ) {
-        console.warn(`Channel "${message.channel}" received object that is not a devWorkspace, skipping it: `, maybeDevworkspace);
+        const title = `WebSocket channel "${message.channel}" received object that is not a devWorkspace, skipping it.`;
+        const key = `${message.channel}-websocket-channel`;
+        console.warn(title , maybeDevworkspace);
+        this.showAlert({ key, variant: AlertVariant.warning, title });
         return;
       }
       const workspace = maybeDevworkspace as IDevWorkspace;
@@ -447,7 +459,10 @@ export class DevWorkspaceClient extends WorkspaceClient {
     await this.websocketClient.subscribe(message);
     this.websocketClient.addListener(message.channel, (maybeWorkspaceId: unknown) => {
       if (typeof(maybeWorkspaceId) === 'string') {
-        console.warn(`Channel "${message.channel}" received object that is not a string, skipping it: `, maybeWorkspaceId);
+        const title = `WebSocket channel "${message.channel}" received value is not a string, skipping it.`;
+        const key = `${message.channel}-websocket-channel`;
+        console.warn(title , maybeWorkspaceId);
+        this.showAlert({ key, variant: AlertVariant.warning, title });
         return;
       }
       const workspaceId = maybeWorkspaceId as string;
@@ -457,7 +472,7 @@ export class DevWorkspaceClient extends WorkspaceClient {
   }
 
   /**
-   * Create a status update between the previously recieving DevWorkspace with a certain workspace id
+   * Create a status update between the previously receiving DevWorkspace with a certain workspace id
    * and the new DevWorkspace
    * @param devworkspace The incoming DevWorkspace
    */

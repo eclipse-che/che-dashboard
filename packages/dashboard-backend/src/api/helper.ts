@@ -32,7 +32,7 @@ export function getToken(request: FastifyRequest): string {
     throw {
       statusCode: 401,
       error: 'Unauthorized',
-      message: 'Bearer Token Authentication is required'
+      message: 'Bearer Token Authorization is required'
     };
   }
   return authorization.replace(AUTHORIZATION_BEARER_PREFIX, '');
