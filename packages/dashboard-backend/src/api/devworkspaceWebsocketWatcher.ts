@@ -16,15 +16,10 @@ import { baseApiPath } from '../constants/config';
 import SubscribeManager, { Subscriber } from '../services/SubscriptionManager';
 import { getToken } from './helper';
 
-const options = { websocket: true} as RouteShorthandOptions ;
+const options = { websocket: true } as RouteShorthandOptions;
 
-function handler(connection: SocketStream, request: FastifyRequest) {
-  let token: string | undefined;
-  try {
-    token = getToken(request);
-  } catch (e) {
-    // noop
-  }
+async function handler(connection: SocketStream, request: FastifyRequest) {
+  const bearerAuthenticationToken = request?.headers?.authorization ?  getToken(request) :  undefined;
 
   const subscriber: Subscriber = connection.socket;
   const pubSubManager = new SubscribeManager(subscriber);
@@ -33,8 +28,8 @@ function handler(connection: SocketStream, request: FastifyRequest) {
     if (!request || !channel) {
       return;
     }
-    if (params && token) {
-      params.token = token;
+    if (params && bearerAuthenticationToken) {
+      params.token = bearerAuthenticationToken;
     }
     switch (request) {
       case 'UNSUBSCRIBE':

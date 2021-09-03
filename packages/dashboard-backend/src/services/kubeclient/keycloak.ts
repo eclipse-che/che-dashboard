@@ -12,7 +12,7 @@
 
 import axios from 'axios';
 import { getErrorMessage } from '../helpers';
-import { isCheServerApiProxyRequired } from '../../index';
+import { isLocalRun } from '../../index';
 import * as https from 'https';
 
 const CHE_HOST = process.env.CHE_HOST as string;
@@ -37,8 +37,7 @@ export async function validateToken(keycloakToken: string): Promise<void> {
     // token is a valid
   } catch (e) {
     throw {
-      statusCode: e.statusCode ? e.statusCode : 401,
-      error: e.error ? e.error : 'Unauthorized',
+      code: e.code ? e.code : 401,
       message: `Failed to validate token: ${getErrorMessage(e)}`
     };
   }
@@ -50,7 +49,7 @@ async function evaluateKeycloakEndpointUrl(): Promise<URL> {
     const response = await axios.get(keycloakSettingsUrl.href, {httpsAgent});
     const keycloakEndpoint = response.data[ENDPOINT];
     // we should change a HOST in the case of using proxy to prevent the host check error
-    if (isCheServerApiProxyRequired()) {
+    if (isLocalRun()) {
       const {pathname} = new URL(keycloakEndpoint);
       return new URL(pathname, CHE_HOST);
     } else {
@@ -58,8 +57,7 @@ async function evaluateKeycloakEndpointUrl(): Promise<URL> {
     }
   } catch (e) {
     throw {
-      statusCode: e.code ? e.code : 401,
-      error: e.error ? e.error : 'Unauthorized',
+      code: e.code ? e.code : 401,
       message: `Failed to fetch keycloak settings: ${getErrorMessage(e)}`
     };
   }

@@ -59,12 +59,11 @@ export class WebsocketClient {
     });
 
     this.websocketStream.addEventListener('open', () => {
-      console.log(`WebSocket Client '${websocketContext}' Connected`);
       this.onDidWebSocketStatusOpen(websocketContext);
       deferred.resolve();
     });
     this.websocketStream.addEventListener('error', event => {
-      console.log(`WebSocket Client '${websocketContext}' Error: ${event.message}`);
+      console.log(`WebSocket client '${websocketContext}' Error: ${event.message}`);
       this.onDidWebSocketStatusFailing(websocketContext);
       deferred.reject();
     });
