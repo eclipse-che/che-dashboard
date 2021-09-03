@@ -16,7 +16,8 @@
   },
   "license": "EPL-2.0",
   "scripts": {
-    "build": "lerna run build",
+    "build": "lerna run build --scope=@eclipse-che/dashboard-*",
+    "prebuild": "lerna run build --scope=@eclipse-che/common",
     "frontend:start": "yarn workspace @eclipse-che/dashboard-frontend start $@",
     "start": "${PWD}/local-start.sh",
     "license:check": "docker run --rm -t -v ${PWD}/:/workspace/project quay.io/che-incubator/dash-licenses:next --check",
