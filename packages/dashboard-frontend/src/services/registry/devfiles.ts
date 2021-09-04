@@ -49,7 +49,7 @@ function resolveLinks(metadata: che.DevfileMetaData, baseUrl: string): any {
 
 export async function fetchData<T>(url: string): Promise<T> {
   try {
-    const response = await axiosInstance.get<T>(url);
+    const response = await axiosInstance.get<T>(url, {withCredentials: true});
     return response.data;
   } catch (e) {
     throw getErrorMessage(e);
