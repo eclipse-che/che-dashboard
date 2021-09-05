@@ -20,26 +20,27 @@ export function registerSwagger(server: FastifyInstance): void {
 
   server.register(fastifySwagger, {
     routePrefix,
-    swagger: {
+    openapi: {
       info: {
         title: 'Che Dashboard Backend Swagger',
         description: 'Testing the Dashboard Backend API',
-        version: '0.0.1'
+        version: '0.1.0'
       },
-      consumes: ['application/json'],
-      produces: ['application/json'],
-      securityDefinitions: {
-        Authorization: {
-          type: 'apiKey',
-          name: 'Authorization',
-          in: 'header'
+      'x-express-openapi-validation-strict': false,
+      components: {
+        securitySchemes: {
+          Authorization: {
+            type: 'apiKey',
+            name: 'Authorization',
+            in: 'header'
+          }
         }
-      }
+      },
     },
     uiConfig: {
       tryItOutEnabled: true,
       validatorUrl: null,
-    },
+    } as any,
     hideUntagged: true,
     exposeRoute: true,
     transform: (schema: any) => {

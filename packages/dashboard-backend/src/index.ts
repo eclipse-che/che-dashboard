@@ -40,7 +40,9 @@ export function isLocalRun(): boolean {
   return cheApiUpstream !== CHE_HOST;
 }
 
-const server = fastify();
+const server = fastify({
+  logger: true,
+});
 
 server.addContentTypeParser(
   'application/merge-patch+json',
