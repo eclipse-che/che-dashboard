@@ -314,26 +314,24 @@ describe('Workspace adapter', () => {
     });
 
     it('should return timestamp of creating', () => {
-      const created = new Date(1111111 * 1000);
+      const timestamp = 1111111;
+      const created = new Date(timestamp * 1000);
       const devWorkspace = new DevWorkspaceBuilder()
-        .withMetadata({
-          creationTimestamp: created,
-        } as devfileApi.DevWorkspace['metadata'])
         .build();
+      devWorkspace.metadata.creationTimestamp = created;
       const workspace = convertWorkspace(devWorkspace);
-      expect(workspace.created).toEqual(created.valueOf());
+      expect(workspace.created).toEqual(timestamp);
     });
 
     // todo fix that stub implementation
     it('should return timestamp of updating', () => {
-      const updated = new Date(22222222 * 1000);
+      const timestamp = 22222222;
+      const updated = new Date(timestamp * 1000);
       const devWorkspace = new DevWorkspaceBuilder()
-        .withMetadata({
-          creationTimestamp: updated,
-        } as devfileApi.DevWorkspace['metadata'])
         .build();
+      devWorkspace.metadata.creationTimestamp = updated;
       const workspace = convertWorkspace(devWorkspace);
-      expect(workspace.updated).toEqual(updated.valueOf());
+      expect(workspace.updated).toEqual(timestamp);
     });
 
     it('should return status', () => {

@@ -31,11 +31,16 @@ export class DevWorkspaceBuilder {
       routingClass: 'che',
       template: {},
     },
-    status: {
-      devworkspaceId: 'devworkspaceId-' + getRandomString(4),
-      mainUrl: '',
-      phase: 'STOPPED',
-    }
+  }
+
+  private uidToDevworkspaceId(uid: string): string {
+    return 'workspace' + uid.split('-').splice(0, 3).join('');
+  }
+
+  private buildStatus(): devfileApi.DevWorkspaceStatus {
+    return {
+      devworkspaceId: this.uidToDevworkspaceId(this.workspace.metadata.uid),
+    };
   }
 
   withId(id: string): DevWorkspaceBuilder {
@@ -48,7 +53,7 @@ export class DevWorkspaceBuilder {
     return this;
   }
 
-  withMetadata(metadata: devfileApi.DevWorkspace['metadata']): DevWorkspaceBuilder {
+  withMetadata(metadata: devfileApi.DevWorkspaceMetadata): DevWorkspaceBuilder {
     this.workspace.metadata = metadata;
     return this;
   }
@@ -59,14 +64,18 @@ export class DevWorkspaceBuilder {
   }
 
   withIdeUrl(ideUrl: string): DevWorkspaceBuilder {
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    this.workspace.status!.mainUrl = ideUrl;
+    if (this.workspace.status === undefined) {
+      this.workspace.status = this.buildStatus();
+    }
+    this.workspace.status.mainUrl = ideUrl;
     return this;
   }
 
   withStatus(status: keyof typeof WorkspaceStatus | keyof typeof DevWorkspaceStatus): DevWorkspaceBuilder {
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    this.workspace.status!.phase = status;
+    if (this.workspace.status === undefined) {
+      this.workspace.status = this.buildStatus();
+    }
+    this.workspace.status.phase = status;
     return this;
   }
 

@@ -35,8 +35,8 @@ export function isDevWorkspace(workspace: unknown): workspace is devfileApi.DevW
   return workspace !== undefined
     && isDevWorkspaceLike((workspace as devfileApi.DevWorkspace))
     && (workspace as devfileApi.DevWorkspace).apiVersion !== undefined
-    && isDevWorkspaceMetadata((workspace as devfileApi.DevWorkspace))
-    && isDevWorkspaceSpec((workspace as devfileApi.DevWorkspace));
+    && isDevWorkspaceMetadata((workspace as devfileApi.DevWorkspace).metadata)
+    && isDevWorkspaceSpec((workspace as devfileApi.DevWorkspace).spec);
 }
 
 export function isDevWorkspaceSpec(spec: unknown): spec is devfileApi.DevWorkspaceSpec {

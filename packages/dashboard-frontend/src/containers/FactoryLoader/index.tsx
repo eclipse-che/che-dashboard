@@ -34,6 +34,7 @@ import { selectInfrastructureNamespaces } from '../../store/InfrastructureNamesp
 import { safeLoad } from 'js-yaml';
 import updateDevfileMetadata, { FactorySource } from './updateDevfileMetadata';
 import { DEVWORKSPACE_DEVFILE_SOURCE } from '../../services/workspace-client/devworkspace/devWorkspaceClient';
+import devfileApi from '../../services/devfileApi';
 
 const WS_ATTRIBUTES_TO_SAVE: string[] = ['workspaceDeploymentLabels', 'workspaceDeploymentAnnotations', 'policies.create'];
 
@@ -352,7 +353,10 @@ export class FactoryLoaderContainer extends React.PureComponent<Props, State> {
     return factoryParams;
   }
 
-  private async resolveWorkspace(devfile: api.che.workspace.devfile.Devfile, attrs: { [key: string]: string }): Promise<Workspace | undefined> {
+  private async resolveWorkspace(
+    devfile: api.che.workspace.devfile.Devfile | devfileApi.Devfile,
+    attrs: { [key: string]: string }
+  ): Promise<Workspace | undefined> {
     let workspace: Workspace | undefined;
     const stackName = this.getWorkspaceV1StackName(attrs.factoryParams);
     if (this.state.createPolicy === 'peruser') {

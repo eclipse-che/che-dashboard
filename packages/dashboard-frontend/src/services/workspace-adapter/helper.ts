@@ -14,17 +14,7 @@ import { DevWorkspaceStatus } from '../helpers/types';
 import devfileApi from '../devfileApi';
 
 export function getId(workspace: devfileApi.DevWorkspace): string {
-  if (workspace?.status?.devworkspaceId) {
-    return  workspace.status.devworkspaceId;
-  }
-
-  let workspaceId = 'workspace';
-
-  if (workspace.metadata.uid) {
-    workspaceId += workspace.metadata.uid.split('-').splice(0,3).join('');
-  }
-
-  return workspaceId;
+  return workspace.metadata.uid;
 }
 
 export function getStatus(workspace: devfileApi.DevWorkspace): DevWorkspaceStatus {

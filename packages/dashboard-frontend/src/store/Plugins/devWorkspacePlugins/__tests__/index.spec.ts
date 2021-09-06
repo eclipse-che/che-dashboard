@@ -65,7 +65,7 @@ describe('dwPlugins store', () => {
       (mockAxios.get as jest.Mock).mockRejectedValueOnce({
         isAxiosError: true,
         code: '500',
-        message: 'unexpected error',
+        message: 'Something unexpected happened.',
       } as AxiosError);
 
       const store = new FakeStoreBuilder().build() as MockStoreEnhanced<AppState, ThunkDispatch<AppState, undefined, dwPluginsStore.KnownAction>>;
@@ -83,7 +83,7 @@ describe('dwPlugins store', () => {
         url,
       }, {
         type: 'RECEIVE_DW_PLUGIN_ERROR',
-        error: expect.stringContaining('unexpected error'),
+        error: expect.stringContaining('Unexpected error.'),
         url,
       }];
 

@@ -378,7 +378,7 @@ describe('Factory Loader container', () => {
       await waitFor(() => expect(createWorkspaceFromDevfileMock).not.toBeCalled());
     });
 
-    it('should resolve the factory with create policie "peruser" and create a new workspace', async () => {
+    it('should resolve the factory with create policy "peruser" and create a new workspace', async () => {
       const location = 'http://test2-location&policies.create=peruser';
       const name = 'test-name';
       const devWorkspace = new DevWorkspaceBuilder()
@@ -409,7 +409,8 @@ describe('Factory Loader container', () => {
                   'che.eclipse.org/devfile-source': safeDump({ factory: { params: 'url=http://test2-location&policies.create=peruser' } })
                 }
               }
-            }
+            },
+            components: [],
           }, undefined, undefined, {
           factoryParams: 'url=http://test2-location&policies.create=peruser',
           'policies.create': 'peruser'
@@ -417,7 +418,7 @@ describe('Factory Loader container', () => {
     });
   });
 
-  it('should resolve the factory with create policie "perclick" and create a new workspace', async () => {
+  it('should resolve the factory with create policy "perclick" and create a new workspace', async () => {
     const location = 'http://test-location&policies.create=perclick';
     const devWorkspace = new DevWorkspaceBuilder()
       .withId('id-wksp-test')

@@ -107,14 +107,11 @@ export class WorkspaceAdapter<T extends che.Workspace | devfileApi.DevWorkspace>
       const reference = this.workspace as devfileApi.DevWorkspace;
       let timestamp: number;
       if (reference.metadata.creationTimestamp) {
-        timestamp = reference.metadata.creationTimestamp.valueOf();
+        timestamp = Math.round(reference.metadata.creationTimestamp.getTime() / 1000);
       } else {
         timestamp = 0;
       }
-      if (!timestamp) {
-        return 0;
-      }
-      return reference.metadata.creationTimestamp.valueOf();
+      return timestamp;
     }
   }
 

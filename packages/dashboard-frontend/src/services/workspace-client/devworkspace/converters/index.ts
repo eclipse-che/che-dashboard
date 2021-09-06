@@ -57,6 +57,7 @@ export function devWorkspaceToDevfile(devworkspace: devfileApi.DevWorkspace): de
             name: devworkspace.metadata.name,
             namespace: devworkspace.metadata.namespace,
         },
+        components: [],
     } as devfileApi.Devfile;
     if (devworkspace.spec.template.projects) {
         template.projects = devworkspace.spec.template.projects;
