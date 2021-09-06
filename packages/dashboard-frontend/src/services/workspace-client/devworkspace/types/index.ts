@@ -26,8 +26,8 @@ export interface IDevWorkspace {
     metadata: {
         name: string;
         namespace: string;
-        creationTimestamp?: string;
-        deletionTimestamp?: string;
+        creationTimestamp?: Date | undefined;
+        deletionTimestamp?: Date | undefined;
         uid?: string;
         annotations?: any;
     };
