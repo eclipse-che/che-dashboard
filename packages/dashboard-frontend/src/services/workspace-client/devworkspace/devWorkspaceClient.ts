@@ -22,10 +22,6 @@ import {
 import { AlertItem, DevWorkspaceStatus } from '../../helpers/types';
 import { KeycloakSetupService } from '../../keycloak/setup';
 import { delay } from '../../helpers/delay';
-import { ThunkDispatch } from 'redux-thunk';
-import { State } from '../../../store/Workspaces/devWorkspaces';
-import { Action } from 'redux';
-import { AppState, AppThunk } from '../../../store';
 import { V1alpha2DevWorkspace, V1alpha2DevWorkspaceTemplate, V1alpha2DevWorkspaceSpecTemplate } from '@devfile/api';
 import { InversifyBinding } from '@eclipse-che/che-theia-devworkspace-handler/lib/inversify/inversify-binding';
 import { CheTheiaPluginsDevfileResolver } from '@eclipse-che/che-theia-devworkspace-handler/lib/devfile/che-theia-plugins-devfile-resolver';
@@ -48,6 +44,16 @@ export interface IStatusUpdate {
   workspaceId: string;
 }
 
+export type Subscriber = {
+  namespace: string,
+  callbacks: {
+    getResourceVersion: () => Promise<string|undefined>,
+    updateDevWorkspaceStatus: (message: IStatusUpdate) => void,
+    updateDeletedDevWorkspaces: (deletedWorkspacesIds: string[]) => void,
+    updateAddedDevWorkspaces: (workspace: IDevWorkspace[]) => void,
+  }
+};
+
 export const DEVWORKSPACE_NEXT_START_ANNOTATION = 'che.eclipse.org/next-start-cfg';
 
 export const DEVWORKSPACE_DEVFILE_SOURCE = 'che.eclipse.org/devfile-source';
@@ -59,6 +65,7 @@ export const DEVWORKSPACE_METADATA_ANNOTATION = 'dw.metadata.annotations';
  */
 @injectable()
 export class DevWorkspaceClient extends WorkspaceClient {
+  private subscriber: Subscriber | undefined;
   private previousItems: Map<string, Map<string, IStatusUpdate>>;
   private readonly maxStatusAttempts: number;
   private lastDevWorkspaceLog: Map<string, string>;
@@ -96,6 +103,19 @@ export class DevWorkspaceClient extends WorkspaceClient {
         if (index > -1) {
           this._failingWebSockets.splice(index, 1);
           this.webSocketEventEmitter.emit(this.webSocketEventName);
+        }
+        this.subscribe().catch(e => {
+          const key = 'websocket-subscribe-error';
+          const title = `Websocket '${websocketContext}' subscribe Error: ${e}`;
+          this.showAlert({ key, variant: AlertVariant.danger, title });
+        });
+      },
+      onDidWebSocketClose: (event: CloseEvent) => {
+        if(event.code !== 1011 && event.reason) {
+          const key = `websocket-close-code-${event.code}`;
+          this.showAlert({ key, variant: AlertVariant.warning, title: event.reason });
+        } else {
+          console.warn('WebSocket close', event);
         }
       }
     });
@@ -395,80 +415,73 @@ export class DevWorkspaceClient extends WorkspaceClient {
     return DwCheApi.initializeNamespace(namespace);
   }
 
-  async subscribeToNamespace(
-    namespace: string,
-    getResourceVersion: () => Promise<string|undefined>,
-    callbacks: {
-      updateDevWorkspaceStatus: (message: IStatusUpdate) => AppThunk<Action, void>,
-      updateDeletedDevWorkspaces: (deletedWorkspacesIds: string[]) => AppThunk<Action, void>,
-      updateAddedDevWorkspaces: (workspace: IDevWorkspace[]) => AppThunk<Action, void>,
-    },
-    dispatch: ThunkDispatch<State, undefined, Action>,
-    getState: () => AppState,
-  ): Promise<void> {
-
+  async subscribeToNamespace(subscriber: Subscriber): Promise<void> {
+    this.subscriber = subscriber;
     await this.websocketClient.connect();
+  }
 
-    const message: SubscribeMessage = {
-      request: 'SUBSCRIBE',
-      params: { namespace, resourceVersion: await getResourceVersion() },
-      channel: 'onModified'
+  private async subscribe(): Promise<void> {
+    if(!this.subscriber) {
+      throw 'Error: Subscriber does not set.';
+    }
+
+    const { namespace, callbacks } =  this.subscriber;
+    const getSubscribeMessage = async (channel: string): Promise<SubscribeMessage> => {
+      return { request: 'SUBSCRIBE', params: { namespace, resourceVersion: await callbacks.getResourceVersion() }, channel };
     };
-    await this.websocketClient.subscribe(message);
-    this.websocketClient.addListener(message.channel, (maybeDevworkspace: unknown) => {
+
+    const onModified = 'onModified';
+    await this.websocketClient.subscribe(await getSubscribeMessage(onModified));
+    this.websocketClient.addListener(onModified, (maybeDevworkspace: unknown) => {
       if (isWorkspaceV2(maybeDevworkspace as any) === false ) {
-        const title = `WebSocket channel "${message.channel}" received object that is not a devWorkspace, skipping it.`;
-        const key = `${message.channel}-websocket-channel`;
+        const title = `WebSocket channel "${onModified}" received object that is not a devWorkspace, skipping it.`;
+        const key = `${onModified}-websocket-channel`;
         console.warn(title , maybeDevworkspace);
         this.showAlert({ key, variant: AlertVariant.warning, title });
         return;
       }
       const devworkspace = maybeDevworkspace as IDevWorkspace;
-
       const statusUpdate = this.createStatusUpdate(devworkspace);
-
       const statusMessage = devworkspace.status.message;
       if (statusMessage) {
         const workspaceId = getId(devworkspace);
         const lastMessage = this.lastDevWorkspaceLog.get(workspaceId);
-
         // Only add new messages we haven't seen before
         if (lastMessage !== statusMessage) {
           statusUpdate.message = statusMessage;
           this.lastDevWorkspaceLog.set(workspaceId, statusMessage);
         }
       }
-      callbacks.updateDevWorkspaceStatus(statusUpdate)(dispatch, getState, undefined);
+      callbacks.updateDevWorkspaceStatus(statusUpdate);
     });
 
-    message.channel = 'onAdded';
-    await this.websocketClient.subscribe(message);
-    this.websocketClient.addListener(message.channel, (maybeDevworkspace: unknown) => {
+    const onAdded = 'onAdded';
+    await this.websocketClient.subscribe(await getSubscribeMessage(onAdded));
+    this.websocketClient.addListener(onAdded, (maybeDevworkspace: unknown) => {
       if (isWorkspaceV2(maybeDevworkspace as any) === false ) {
-        const title = `WebSocket channel "${message.channel}" received object that is not a devWorkspace, skipping it.`;
-        const key = `${message.channel}-websocket-channel`;
+        const title = `WebSocket channel "${onAdded}" received object that is not a devWorkspace, skipping it.`;
+        const key = `${onAdded}-websocket-channel`;
         console.warn(title , maybeDevworkspace);
         this.showAlert({ key, variant: AlertVariant.warning, title });
         return;
       }
       const workspace = maybeDevworkspace as IDevWorkspace;
-      callbacks.updateAddedDevWorkspaces([workspace])(dispatch, getState, undefined);
+      callbacks.updateAddedDevWorkspaces([workspace]);
     });
 
-    message.channel = 'onDeleted';
-    await this.websocketClient.subscribe(message);
-    this.websocketClient.addListener(message.channel, (maybeWorkspaceId: unknown) => {
-      if (typeof(maybeWorkspaceId) === 'string') {
-        const title = `WebSocket channel "${message.channel}" received value is not a string, skipping it.`;
-        const key = `${message.channel}-websocket-channel`;
-        console.warn(title , maybeWorkspaceId);
+    const onDeleted = 'onDeleted';
+    await this.websocketClient.subscribe(await getSubscribeMessage(onDeleted));
+    this.websocketClient.addListener(onDeleted, (maybeWorkspaceId: unknown) => {
+      if (typeof(maybeWorkspaceId) !== 'string') {
+        const title = `WebSocket channel "${onDeleted}" received value is not a string, skipping it.`;
+        const key = `${onDeleted}-websocket-channel`;
+        console.warn(title , maybeWorkspaceId, typeof(maybeWorkspaceId));
         this.showAlert({ key, variant: AlertVariant.warning, title });
         return;
       }
       const workspaceId = maybeWorkspaceId as string;
-      callbacks.updateDeletedDevWorkspaces([workspaceId])(dispatch, getState, undefined);
+      callbacks.updateDeletedDevWorkspaces([workspaceId]);
     });
-
   }
 
   /**

@@ -41,7 +41,7 @@ export function isLocalRun(): boolean {
 }
 
 const server = fastify({
-  logger: true,
+  logger: false,
 });
 
 server.addContentTypeParser(
