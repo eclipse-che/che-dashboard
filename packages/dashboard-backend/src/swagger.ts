@@ -40,7 +40,7 @@ export function registerSwagger(server: FastifyInstance): void {
     uiConfig: {
       tryItOutEnabled: true,
       validatorUrl: null,
-    } as any,
+    },
     hideUntagged: true,
     exposeRoute: true,
     transform: (schema: any) => {

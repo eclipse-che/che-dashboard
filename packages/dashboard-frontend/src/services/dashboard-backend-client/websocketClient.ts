@@ -29,15 +29,18 @@ export type PublishMessage = {
 export class WebsocketClient {
   private websocketStream: ReconnectingWebSocket;
   private handlers: { [channel: string]: Function[] } = {};
-  private readonly onDidWebSocketStatusFailing: (websocketContext: string) => void;
-  private readonly onDidWebSocketStatusOpen: (websocketContext: string) => void;
+  private readonly onDidWebSocketFailing: (websocketContext: string) => void;
+  private readonly onDidWebSocketOpen: (websocketContext: string) => void;
+  private readonly onDidWebSocketClose: (event: CloseEvent) => void;
 
   constructor(callbacks: {
     onDidWebSocketFailing: (websocketContext: string) => void,
-    onDidWebSocketOpen: (websocketContext: string) => void
+    onDidWebSocketOpen: (websocketContext: string) => void,
+    onDidWebSocketClose: (event: CloseEvent) => void
   }) {
-    this.onDidWebSocketStatusFailing = callbacks.onDidWebSocketFailing;
-    this.onDidWebSocketStatusOpen = callbacks.onDidWebSocketOpen;
+    this.onDidWebSocketFailing = callbacks.onDidWebSocketFailing;
+    this.onDidWebSocketOpen = callbacks.onDidWebSocketOpen;
+    this.onDidWebSocketClose = callbacks.onDidWebSocketClose;
   }
 
   /**
@@ -46,25 +49,26 @@ export class WebsocketClient {
   connect(): Promise<any> {
     const deferred = getDefer();
     if (this.websocketStream) {
-      this.websocketStream.close();
+      return Promise.resolve();
     }
     const websocketContext = `${prefix}/websocket`;
     const origin = new URL(window.location.href).origin;
     const location = origin.replace('http', 'ws') + websocketContext;
-    this.websocketStream = new ReconnectingWebSocket(
-      location,
-      [], {
-      connectionTimeout: 10000,
-      maxRetries: 10
+    this.websocketStream = new ReconnectingWebSocket(location, [], {
+      connectionTimeout: 20000,
+      minReconnectionDelay: 2000
     });
 
     this.websocketStream.addEventListener('open', () => {
-      this.onDidWebSocketStatusOpen(websocketContext);
+      this.onDidWebSocketOpen(websocketContext);
       deferred.resolve();
+    });
+    this.websocketStream.addEventListener('close', event => {
+      this.onDidWebSocketClose(event as CloseEvent);
     });
     this.websocketStream.addEventListener('error', event => {
       console.log(`WebSocket client '${websocketContext}' Error: ${event.message}`);
-      this.onDidWebSocketStatusFailing(websocketContext);
+      this.onDidWebSocketFailing(websocketContext);
       deferred.reject();
     });
     this.websocketStream.addEventListener('message', event => {

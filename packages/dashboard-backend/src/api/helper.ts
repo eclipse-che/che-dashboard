@@ -35,5 +35,5 @@ export function getToken(request: FastifyRequest): string {
       message: 'Bearer Token Authorization is required'
     };
   }
-  return authorization.replace(AUTHORIZATION_BEARER_PREFIX, '');
+  return authorization.replace(AUTHORIZATION_BEARER_PREFIX, '').trim();
 }
