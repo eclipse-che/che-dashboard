@@ -14,6 +14,7 @@ import { AlertActionLink, AlertVariant } from '@patternfly/react-core';
 import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { History } from 'history';
+import common from '@eclipse-che/common';
 import { delay } from '../../services/helpers/delay';
 import { AppState } from '../../store';
 import * as FactoryResolverStore from '../../store/FactoryResolver';
@@ -33,8 +34,6 @@ import { selectInfrastructureNamespaces } from '../../store/InfrastructureNamesp
 import { safeLoad } from 'js-yaml';
 import updateDevfileMetadata, { FactorySource } from './updateDevfileMetadata';
 import { DEVWORKSPACE_DEVFILE_SOURCE } from '../../services/workspace-client/devworkspace/devWorkspaceClient';
-import { isError } from 'lodash';
-import { getErrorMessage } from '../../services/helpers/getErrorMessage';
 
 const WS_ATTRIBUTES_TO_SAVE: string[] = ['workspaceDeploymentLabels', 'workspaceDeploymentAnnotations', 'policies.create'];
 
@@ -270,8 +269,8 @@ export class FactoryLoaderContainer extends React.PureComponent<Props, State> {
       }
 
       let alertMessage = 'Failed to resolve a devfile.';
-      if (isError(e)) {
-        alertMessage += ' ' + getErrorMessage(e);
+      if (common.helpers.errors.isError(e)) {
+        alertMessage += ' ' + common.helpers.errors.getMessage(e);
       }
       this.showAlert(alertMessage);
       return;

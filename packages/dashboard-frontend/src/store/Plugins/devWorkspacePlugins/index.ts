@@ -10,13 +10,13 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import devfileApi from '../../../services/devfileApi';
 import { safeLoad } from 'js-yaml';
 import { Action, Reducer } from 'redux';
+import common from '@eclipse-che/common';
+import devfileApi from '../../../services/devfileApi';
 import { AppThunk } from '../..';
 import { fetchDevfile, fetchData } from '../../../services/registry/devfiles';
 import { createObject } from '../../helpers';
-import { getErrorMessage } from '../../../services/helpers/getErrorMessage';
 
 export interface State {
   isLoading: boolean;
@@ -84,7 +84,7 @@ export const actionCreators: ActionCreators = {
         plugin,
       });
     } catch (e) {
-      const errorMessage = getErrorMessage(e);
+      const errorMessage = common.helpers.errors.getMessage(e);
       dispatch({
         type: 'RECEIVE_DW_PLUGIN_ERROR',
         url,

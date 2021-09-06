@@ -11,12 +11,12 @@
  */
 
 import { Action, Reducer } from 'redux';
+import common from '@eclipse-che/common';
 import { AppThunk } from '..';
 import { fetchRegistryMetadata, fetchDevfile } from '../../services/registry/devfiles';
 import { createObject } from '../helpers';
 import { container } from '../../inversify.config';
 import { CheWorkspaceClient } from '../../services/workspace-client/cheworkspace/cheWorkspaceClient';
-import { getErrorMessage } from '../../services/helpers/getErrorMessage';
 
 const WorkspaceClient = container.get(CheWorkspaceClient);
 
@@ -131,7 +131,7 @@ export const actionCreators: ActionCreators = {
             metadata,
           });
         } catch (e) {
-          const error = getErrorMessage(e);
+          const error = common.helpers.errors.getMessage(e);
           dispatch({
             type: 'RECEIVE_REGISTRY_ERROR',
             url,
@@ -191,7 +191,7 @@ export const actionCreators: ActionCreators = {
       });
       return schema;
     } catch (e) {
-      const errorMessage = 'Failed to request devfile JSON schema, reason: ' + getErrorMessage(e);
+      const errorMessage = 'Failed to request devfile JSON schema, reason: ' + common.helpers.errors.getMessage(e);
       dispatch({
         type: 'RECEIVE_SCHEMA_ERROR',
         error: errorMessage,

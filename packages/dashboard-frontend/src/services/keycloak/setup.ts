@@ -15,10 +15,10 @@ import 'keycloak-js';
 import axios from 'axios';
 import { inject, injectable } from 'inversify';
 import { KeycloakInstance } from 'keycloak-js';
+import common from '@eclipse-che/common';
 import { IssuesReporterService } from '../bootstrap/issuesReporter';
 import { KeycloakAuthService } from './auth';
 import isDocumentReady from '../helpers/document';
-import { isAxiosError } from '../helpers/getErrorMessage';
 
 const keycloakSettingsFields = [
   'che.keycloak.oidc_provider',
@@ -135,13 +135,13 @@ export class KeycloakSetupService {
 
       return settings;
     } catch (e) {
-      if (isAxiosError(e) && e?.response?.status === 404) {
+      if (common.helpers.errors.isAxiosError(e) && e.response?.status === 404) {
         return;
       }
 
       let errorMessage = 'Cannot get Keycloak settings';
-      if (isAxiosError(e) && e?.response?.status) {
-        errorMessage += `: ${e.response?.status} ${e.response?.statusText}`;
+      if (common.helpers.errors.isAxiosError(e) && e.response?.status) {
+        errorMessage += `: ${e.response.status} ${e.response.statusText}`;
       } else {
         errorMessage += '. Response is not available, please check the Network tab of Developer tools.';
       }

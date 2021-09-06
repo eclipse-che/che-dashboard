@@ -15,6 +15,7 @@ import { History } from 'history';
 import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { RouteComponentProps } from 'react-router';
+import common from '@eclipse-che/common';
 import { lazyInject } from '../inversify.config';
 import IdeLoader, { AlertOptions } from '../pages/IdeLoader';
 import { Debounce } from '../services/helpers/debounce';
@@ -27,7 +28,6 @@ import { selectAllWorkspaces, selectIsLoading, selectLogs, selectWorkspaceById }
 import { buildWorkspacesLocation } from '../services/helpers/location';
 import { DisposableCollection } from '../services/helpers/disposable';
 import { Workspace } from '../services/workspace-adapter';
-import { getErrorMessage } from '../services/helpers/getErrorMessage';
 
 type Props =
   MappedProps
@@ -162,7 +162,7 @@ class IdeLoaderContainer extends React.PureComponent<Props, State> {
         this.setState({ isWaitingForRestart: false });
       } catch (error) {
         this.setState({ isWaitingForRestart: false });
-        const errorMessage = getErrorMessage(error);
+        const errorMessage = common.helpers.errors.getMessage(error);
         this.showAlert(errorMessage);
       }
     }

@@ -28,6 +28,7 @@ import {
 import { History, Location } from 'history';
 import { AlertVariant, Divider, PageSection, PageSectionVariants, Text, TextContent } from '@patternfly/react-core';
 import { ExternalLinkAltIcon } from '@patternfly/react-icons';
+import common from '@eclipse-che/common';
 import { BrandingData } from '../../services/bootstrap/branding.constant';
 import { DevWorkspaceStatus, WorkspaceAction } from '../../services/helpers/types';
 import Head from '../../components/Head';
@@ -42,7 +43,6 @@ import { buildRows, RowData } from './Rows';
 import { isCheWorkspace, Workspace } from '../../services/workspace-adapter';
 
 import * as styles from './index.module.css';
-import { getErrorMessage } from '../../services/helpers/getErrorMessage';
 
 type Props = {
   branding: BrandingData;
@@ -209,7 +209,7 @@ export default class WorkspacesList extends React.PureComponent<Props, State> {
     } catch (e) {
       const workspace = this.props.workspaces.find(workspace => id === workspace.id);
       const workspaceName = workspace?.name ? ` "${workspace?.name}"` : '';
-      const errorMessage = getErrorMessage(e);
+      const errorMessage = common.helpers.errors.getMessage(e);
       const message = `Unable to ${action.toLocaleLowerCase()}${workspaceName}. ` + errorMessage.replace('Error: ', '');
       this.showAlert(message);
       console.warn(message);
@@ -243,7 +243,7 @@ export default class WorkspacesList extends React.PureComponent<Props, State> {
         const workspace = this.props.workspaces.find(workspace => id === workspace.id);
         const action = workspace && isCheWorkspace(workspace.ref) ? 'delete' : 'terminate';
         const workspaceName = workspace?.name ? `workspace "${workspace.name}"` : 'workspace';
-        const message = `Unable to ${action} ${workspaceName}. ` + getErrorMessage(e).replace('Error: ', '');
+        const message = `Unable to ${action} ${workspaceName}. ` + common.helpers.errors.getMessage(e).replace('Error: ', '');
         this.showAlert(message);
         console.warn(message);
         throw new Error(message);

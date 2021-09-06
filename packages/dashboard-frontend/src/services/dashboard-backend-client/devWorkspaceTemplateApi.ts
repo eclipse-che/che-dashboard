@@ -11,8 +11,8 @@
  */
 
 import axios from 'axios';
+import common from '@eclipse-che/common';
 import devfileApi from '../devfileApi';
-import { getErrorMessage } from '../helpers/getErrorMessage';
 import { prefix } from './const';
 import { addAuthentication } from './auth';
 
@@ -23,6 +23,6 @@ export async function createTemplate(template: devfileApi.DevWorkspaceTemplate):
     const response = await axios.post(url, { template }, { headers });
     return response.data;
   } catch (e) {
-    throw `Failed to create a new DevWorkspaceTemplates. ${getErrorMessage(e)}`;
+    throw `Failed to create a new DevWorkspaceTemplates. ${common.helpers.errors.getMessage(e)}`;
   }
 }

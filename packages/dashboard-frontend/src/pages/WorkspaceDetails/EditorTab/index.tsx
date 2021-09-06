@@ -26,6 +26,7 @@ import {
 } from '@patternfly/react-core';
 import * as lodash from 'lodash';
 import { safeLoad } from 'js-yaml';
+import common from '@eclipse-che/common';
 import DevfileEditor, { DevfileEditor as Editor } from '../../../components/DevfileEditor';
 import EditorTools from './EditorTools';
 import { convertWorkspace, isCheWorkspace, Workspace } from '../../../services/workspace-adapter';
@@ -35,7 +36,6 @@ import { DevWorkspaceClient, DEVWORKSPACE_NEXT_START_ANNOTATION } from '../../..
 import { container } from '../../../inversify.config';
 
 import styles from './index.module.css';
-import { getErrorMessage } from '../../../services/helpers/getErrorMessage';
 
 type Props = {
   onSave: (workspace: Workspace) => Promise<void>;
@@ -217,7 +217,7 @@ export class EditorTab extends React.PureComponent<Props, State> {
         showDevfileV2ConfirmationModal: false
       });
     } catch (e) {
-      const errorMessage = getErrorMessage(e);
+      const errorMessage = common.helpers.errors.getMessage(e);
       this.setState({
         hasChanges: true,
         hasRequestErrors: true,
@@ -310,7 +310,7 @@ export class EditorTab extends React.PureComponent<Props, State> {
 
       await this.props.onSave(workspaceCopy);
     } catch (e) {
-      const error = getErrorMessage(e).replace(/^Error: /gi, '');
+      const error = common.helpers.errors.getMessage(e).replace(/^Error: /gi, '');
       this.setState({
         hasChanges: true,
         hasRequestErrors: true,

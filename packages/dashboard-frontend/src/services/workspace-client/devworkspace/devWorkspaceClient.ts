@@ -11,6 +11,12 @@
  */
 
 import { inject, injectable } from 'inversify';
+import { V1alpha2DevWorkspace, V1alpha2DevWorkspaceTemplate, V1alpha2DevWorkspaceSpecTemplate } from '@devfile/api';
+import { InversifyBinding } from '@eclipse-che/che-theia-devworkspace-handler/lib/inversify/inversify-binding';
+import { CheTheiaPluginsDevfileResolver } from '@eclipse-che/che-theia-devworkspace-handler/lib/devfile/che-theia-plugins-devfile-resolver';
+import { ThunkDispatch } from 'redux-thunk';
+import common from '@eclipse-che/common';
+import { SidecarPolicy } from '@eclipse-che/che-theia-devworkspace-handler/lib/api/devfile-context';
 import { isWebTerminal } from '../../helpers/devworkspace';
 import { WorkspaceClient } from '../index';
 import devfileApi, { IPatch } from '../../devfileApi';
@@ -20,20 +26,14 @@ import {
 import { DevWorkspaceStatus } from '../../helpers/types';
 import { KeycloakSetupService } from '../../keycloak/setup';
 import { delay } from '../../helpers/delay';
-import { ThunkDispatch } from 'redux-thunk';
 import { State } from '../../../store/Workspaces/devWorkspaces';
 import { Action } from 'redux';
 import { AppState, AppThunk } from '../../../store';
-import { V1alpha2DevWorkspace, V1alpha2DevWorkspaceTemplate, V1alpha2DevWorkspaceSpecTemplate } from '@devfile/api';
-import { InversifyBinding } from '@eclipse-che/che-theia-devworkspace-handler/lib/inversify/inversify-binding';
-import { CheTheiaPluginsDevfileResolver } from '@eclipse-che/che-theia-devworkspace-handler/lib/devfile/che-theia-plugins-devfile-resolver';
-import { SidecarPolicy } from '@eclipse-che/che-theia-devworkspace-handler/lib/api/devfile-context';
 import * as DwApi from '../../dashboard-backend-client/devWorkspaceApi';
 import * as DwtApi from '../../dashboard-backend-client/devWorkspaceTemplateApi';
 import * as DwCheApi from '../../dashboard-backend-client/cheWorkspaceApi';
 import { WebsocketClient, SubscribeMessage } from '../../dashboard-backend-client/websocketClient';
 import { getId, getStatus } from '../../workspace-adapter/helper';
-import { getErrorMessage } from '../../helpers/getErrorMessage';
 
 export interface IStatusUpdate {
   error?: string;
@@ -176,7 +176,7 @@ export class DevWorkspaceClient extends WorkspaceClient {
       });
     } catch (e) {
       console.error(e);
-      const errorMessage = getErrorMessage(e);
+      const errorMessage = common.helpers.errors.getMessage(e);
       throw new Error(`Unable to resolve theia plugins: ${errorMessage}`);
     }
     console.debug('Devfile updated to', devfile, ' and templates updated to', devWorkspaceTemplates);

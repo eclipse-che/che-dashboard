@@ -11,6 +11,7 @@
  */
 
 import { Store } from 'redux';
+import common from '@eclipse-che/common';
 import { lazyInject } from '../../inversify.config';
 import { KeycloakSetupService } from '../keycloak/setup';
 import { AppState } from '../../store';
@@ -29,7 +30,6 @@ import { ResourceFetcherService } from '../resource-fetcher';
 import { IssuesReporterService } from './issuesReporter';
 import { CheWorkspaceClient } from '../workspace-client/cheworkspace/cheWorkspaceClient';
 import { DevWorkspaceClient } from '../workspace-client/devworkspace/devWorkspaceClient';
-import { getErrorMessage } from '../helpers/getErrorMessage';
 
 /**
  * This class prepares all init data.
@@ -86,7 +86,7 @@ export class PreloadData {
     try {
       await requestBranding()(this.store.dispatch, this.store.getState, undefined);
     } catch (e) {
-      const errorMessage = getErrorMessage(e);
+      const errorMessage = common.helpers.errors.getMessage(e);
       this.issuesReporterService.registerIssue('unknown', new Error(errorMessage));
     }
   }

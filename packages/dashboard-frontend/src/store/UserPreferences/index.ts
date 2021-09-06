@@ -12,13 +12,13 @@
 
 // This state defines the type of data maintained in the Redux store.
 
-import { createObject } from '../helpers';
 import { Action, Reducer } from 'redux';
+import common from '@eclipse-che/common';
+import { createObject } from '../helpers';
 import { AppThunk } from '..';
 import { container } from '../../inversify.config';
 import { CheWorkspaceClient } from '../../services/workspace-client/cheworkspace/cheWorkspaceClient';
 import { ContainerCredentials, RegistryRow } from './types';
-import { getErrorMessage } from '../../services/helpers/getErrorMessage';
 
 const WorkspaceClient = container.get(CheWorkspaceClient);
 
@@ -54,7 +54,7 @@ export const actionCreators: ActionCreators = {
       dispatch({ type: 'RECEIVE_USER_PREFERENCES', preferences: data });
       return;
     } catch (e) {
-      const errorMessage = 'Failed to request user preferences, reason: ' + getErrorMessage(e);
+      const errorMessage = 'Failed to request user preferences, reason: ' + common.helpers.errors.getMessage(e);
       throw new Error(errorMessage);
     }
   },
@@ -66,7 +66,7 @@ export const actionCreators: ActionCreators = {
       dispatch({ type: 'RECEIVE_USER_PREFERENCES', preferences });
       return;
     } catch (e) {
-      const errorMessage = 'Failed to update user preferences, reason: ' + getErrorMessage(e);
+      const errorMessage = 'Failed to update user preferences, reason: ' + common.helpers.errors.getMessage(e);
       throw new Error(errorMessage);
     }
   },
@@ -83,7 +83,7 @@ export const actionCreators: ActionCreators = {
       dispatch({ type: 'RECEIVE_USER_PREFERENCES', preferences });
       return;
     } catch (e) {
-      const errorMessage = 'Failed to update docker registries, reason: ' + getErrorMessage(e);
+      const errorMessage = 'Failed to update docker registries, reason: ' + common.helpers.errors.getMessage(e);
       throw new Error(errorMessage);
     }
   },

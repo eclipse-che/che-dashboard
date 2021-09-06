@@ -13,16 +13,16 @@
 import { AlertVariant, Dropdown, DropdownItem, DropdownToggle } from '@patternfly/react-core';
 import { CaretDownIcon } from '@patternfly/react-icons';
 import React from 'react';
+import { History } from 'history';
+import common from '@eclipse-che/common';
 import WorkspaceActionsProvider from '../../../../containers/WorkspaceActions';
 import { WorkspaceAction, WorkspaceStatus, DevWorkspaceStatus } from '../../../../services/helpers/types';
-import { History } from 'history';
-
-import './Actions.styl';
 import { ActionContextType, WorkspaceActionsConsumer } from '../../../../containers/WorkspaceActions/context';
 import { lazyInject } from '../../../../inversify.config';
 import { AppAlerts } from '../../../../services/alerts/appAlerts';
 import getRandomString from '../../../../services/helpers/random';
-import { getErrorMessage } from '../../../../services/helpers/getErrorMessage';
+
+import './Actions.styl';
 
 type Props = {
   workspaceId: string;
@@ -75,7 +75,7 @@ export class HeaderActionSelect extends React.PureComponent<Props, State> {
       }
       this.props.history.push(nextPath);
     } catch (e) {
-      const errorMessage = getErrorMessage(e);
+      const errorMessage = common.helpers.errors.getMessage(e);
       const message = `Unable to ${selectedAction.toLocaleLowerCase()} ${this.props.workspaceName}. ` + errorMessage.replace('Error: ', '');
       this.showAlert(message);
       console.warn(message);

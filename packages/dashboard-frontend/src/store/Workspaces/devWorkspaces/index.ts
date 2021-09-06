@@ -12,6 +12,7 @@
 
 import { Action, Reducer } from 'redux';
 import { ThunkDispatch } from 'redux-thunk';
+import common from '@eclipse-che/common';
 import { AppThunk } from '../..';
 import { container } from '../../../inversify.config';
 import { DevWorkspaceStatus } from '../../../services/helpers/types';
@@ -20,7 +21,6 @@ import { DevWorkspaceClient, DEVWORKSPACE_NEXT_START_ANNOTATION, IStatusUpdate }
 import { CheWorkspaceClient } from '../../../services/workspace-client/cheworkspace/cheWorkspaceClient';
 import devfileApi from '../../../services/devfileApi';
 import { deleteLogs, mergeLogs } from '../logs';
-import { getErrorMessage, isAxiosError } from '../../../services/helpers/getErrorMessage';
 import { getDefer, IDeferred } from '../../../services/helpers/deferred';
 import { DisposableCollection } from '../../../services/helpers/disposable';
 import { selectDwPluginsList } from '../../Plugins/devWorkspacePlugins/selectors';
@@ -166,7 +166,7 @@ export const actionCreators: ActionCreators = {
         resourceVersion,
       });
     } catch (e) {
-      const errorMessage = 'Failed to fetch available workspaces, reason: ' + getErrorMessage(e);
+      const errorMessage = 'Failed to fetch available workspaces, reason: ' + common.helpers.errors.getMessage(e);
       dispatch({
         type: 'RECEIVE_DEVWORKSPACE_ERROR',
         error: errorMessage,
@@ -188,7 +188,7 @@ export const actionCreators: ActionCreators = {
         workspace: update,
       });
     } catch (e) {
-      const errorMessage = `Failed to fetch the workspace ${workspace.metadata.name}, reason: ` + getErrorMessage(e);
+      const errorMessage = `Failed to fetch the workspace ${workspace.metadata.name}, reason: ` + common.helpers.errors.getMessage(e);
       dispatch({
         type: 'RECEIVE_DEVWORKSPACE_ERROR',
         error: errorMessage,
@@ -218,7 +218,7 @@ export const actionCreators: ActionCreators = {
         workspace: updatedWorkspace,
       });
     } catch (e) {
-      const errorMessage = `Failed to start the workspace ${workspace.metadata.name}, reason: ` + getErrorMessage(e);
+      const errorMessage = `Failed to start the workspace ${workspace.metadata.name}, reason: ` + common.helpers.errors.getMessage(e);
       dispatch({
         type: 'RECEIVE_DEVWORKSPACE_ERROR',
         error: errorMessage,
@@ -265,7 +265,7 @@ export const actionCreators: ActionCreators = {
       devWorkspaceClient.changeWorkspaceStatus(workspace.metadata.namespace, workspace.metadata.name, false);
       dispatch({ type: 'DELETE_DEVWORKSPACE_LOGS', workspaceId: getId(workspace) });
     } catch (e) {
-      const errorMessage = `Failed to stop the workspace ${workspace.metadata.name}, reason: ` + getErrorMessage(e);
+      const errorMessage = `Failed to stop the workspace ${workspace.metadata.name}, reason: ` + common.helpers.errors.getMessage(e);
       dispatch({
         type: 'RECEIVE_DEVWORKSPACE_ERROR',
         error: errorMessage,
@@ -286,23 +286,7 @@ export const actionCreators: ActionCreators = {
       });
       dispatch({ type: 'DELETE_DEVWORKSPACE_LOGS', workspaceId });
     } catch (e) {
-      let message = 'Unknown error.';
-      if (isAxiosError(e)) {
-        const errorMessage = e?.message || '';
-        const code = e?.response?.status || '';
-        const statusText = e?.response?.statusText || '';
-        const responseMessage = e?.response?.data?.message || '';
-
-        if (responseMessage) {
-          message = responseMessage;
-        } else if (errorMessage) {
-          message = errorMessage;
-        } else if (code && statusText) {
-          message = `Response code ${code}, ${statusText}.`;
-        }
-      }
-
-      const resMessage = `Failed to delete the workspace ${workspace.metadata.name}, reason: ` + message;
+      const resMessage = `Failed to delete the workspace ${workspace.metadata.name}, reason: ` + common.helpers.errors.getMessage(e);
       dispatch({
         type: 'RECEIVE_DEVWORKSPACE_ERROR',
         error: resMessage,
@@ -324,7 +308,7 @@ export const actionCreators: ActionCreators = {
         workspace: updated,
       });
     } catch (e) {
-      const errorMessage = `Failed to update the workspace ${workspace.metadata.name}, reason: ` + getErrorMessage(e);
+      const errorMessage = `Failed to update the workspace ${workspace.metadata.name}, reason: ` + common.helpers.errors.getMessage(e);
       dispatch({
         type: 'RECEIVE_DEVWORKSPACE_ERROR',
         error: errorMessage,
@@ -361,7 +345,7 @@ export const actionCreators: ActionCreators = {
       });
       return workspace;
     } catch (e) {
-      const errorMessage = 'Failed to create a new workspace from the devfile, reason: ' + getErrorMessage(e);
+      const errorMessage = 'Failed to create a new workspace from the devfile, reason: ' + common.helpers.errors.getMessage(e);
       dispatch({
         type: 'RECEIVE_DEVWORKSPACE_ERROR',
         error: errorMessage,
