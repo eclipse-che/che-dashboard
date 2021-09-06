@@ -14,7 +14,7 @@ import { inject, injectable } from 'inversify';
 import { isWebTerminal } from '../../helpers/devworkspace';
 import { WorkspaceClient } from '../index';
 import {
-  IDevWorkspaceDevfile, IDevWorkspace, IDevWorkspaces, IDevWorkspaceTemplate, IPatch,
+  IDevWorkspaceDevfile, IDevWorkspace, IDevWorkspaceTemplate, IPatch,
 } from './types';
 import {
   devWorkspaceApiGroup, devworkspaceSingularSubresource, devworkspaceVersion
@@ -59,6 +59,7 @@ export class DevWorkspaceClient extends WorkspaceClient {
   private readonly maxStatusAttempts: number;
   private lastDevWorkspaceLog: Map<string, string>;
   private pluginRegistryUrlEnvName: string;
+  private pluginRegistryInternalUrlEnvName: string;
   private dashboardUrlEnvName: string;
   private readonly websocketClient: WebsocketClient;
   private intervalId: number | undefined;
@@ -69,6 +70,7 @@ export class DevWorkspaceClient extends WorkspaceClient {
     this.maxStatusAttempts = 10;
     this.lastDevWorkspaceLog = new Map();
     this.pluginRegistryUrlEnvName = 'CHE_PLUGIN_REGISTRY_URL';
+    this.pluginRegistryInternalUrlEnvName = 'CHE_PLUGIN_REGISTRY_INTERNAL_URL';
     this.dashboardUrlEnvName = 'CHE_DASHBOARD_URL';
 
     this.websocketClient = new WebsocketClient();
@@ -108,9 +110,13 @@ export class DevWorkspaceClient extends WorkspaceClient {
     return workspace;
   }
 
-  async create(devfile: IDevWorkspaceDevfile, defaultNamespace: string, pluginsDevfile: IDevWorkspaceDevfile[], pluginRegistryUrl: string | undefined, optionalFilesContent: {
-    [fileName: string]: string
-  },): Promise<IDevWorkspace> {
+  async create(devfile: IDevWorkspaceDevfile, 
+    defaultNamespace: string, 
+    pluginsDevfile: IDevWorkspaceDevfile[], 
+    pluginRegistryUrl: string | undefined,
+    pluginRegistryInternalUrl: string | undefined,
+    optionalFilesContent: {[fileName: string]: string},
+  ): Promise<IDevWorkspace> {
     if (!devfile.components) {
       devfile.components = [];
     }
@@ -207,7 +213,12 @@ export class DevWorkspaceClient extends WorkspaceClient {
             }, {
               name: this.pluginRegistryUrlEnvName,
               value: pluginRegistryUrl || ''
-            }]);
+            }
+            , {
+              name: this.pluginRegistryInternalUrlEnvName,
+              value: pluginRegistryInternalUrl || ''
+            }
+          ]);
           }
         }
       }
