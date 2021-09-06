@@ -107,7 +107,12 @@ export class WorkspaceAdapter<T extends che.Workspace | IDevWorkspace> implement
       return parseInt(this.workspace.attributes?.created || '', 10) || 0;
     } else {
       const reference = this.workspace as IDevWorkspace;
-      const timestamp = parseInt(reference.metadata.creationTimestamp || '0', 10);
+      let timestamp: number;
+      if (reference.metadata.creationTimestamp) {
+        timestamp = reference.metadata.creationTimestamp.valueOf();
+      } else {
+        timestamp = 0;
+      }
       if (!timestamp) {
         return 0;
       }
