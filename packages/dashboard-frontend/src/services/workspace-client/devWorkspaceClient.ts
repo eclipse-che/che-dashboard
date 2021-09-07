@@ -26,6 +26,7 @@ import { V1alpha2DevWorkspace, V1alpha2DevWorkspaceTemplate, V1alpha2DevWorkspac
 import { InversifyBinding } from '@eclipse-che/che-theia-devworkspace-handler/lib/inversify/inversify-binding';
 import { CheTheiaPluginsDevfileResolver } from '@eclipse-che/che-theia-devworkspace-handler/lib/devfile/che-theia-plugins-devfile-resolver';
 import { SidecarPolicy } from '@eclipse-che/che-theia-devworkspace-handler/lib/api/devfile-context';
+import { getStatus } from '../workspaceAdapter/helper';
 export interface IStatusUpdate {
   error?: string;
   message?: string;
@@ -454,7 +455,7 @@ export class DevWorkspaceClient extends WorkspaceClient {
   }
 
   checkForDevWorkspaceError(devworkspace: IDevWorkspace) {
-    const currentPhase = devworkspace.status?.phase;
+    const currentPhase = getStatus(devworkspace);
     if (currentPhase && currentPhase === DevWorkspaceStatus.FAILED) {
       const message = devworkspace.status.message;
       if (message) {
