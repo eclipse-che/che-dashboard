@@ -15,8 +15,7 @@ import { conditionalTest, isIntegrationTestEnabled } from './utils/suite';
 import { createKubeConfig } from './utils/helper';
 import { fail } from 'assert';
 import * as k8s from '@kubernetes/client-node';
-import { NodeRequestError } from '../errors';
-import { HttpError } from '@kubernetes/client-node';
+import { helpers } from '@eclipse-che/common';
 
 describe('Kubernetes API integration testing against cluster', () => {
 
@@ -33,8 +32,8 @@ describe('Kubernetes API integration testing against cluster', () => {
         );
         fail('request to non-existing Custom API should fail');
       } catch (e) {
-        let error = new NodeRequestError('unable get non-existing', (e as HttpError));
-        expect(error.message).toBe('unable get non-existing: 404 page not found\n');
+        let errorMessage = 'unable get non-existing: ' + helpers.errors.getMessage(e);
+        expect(errorMessage).toBe('unable get non-existing: 404 page not found\n');
       }
       done();
     }, 1000);

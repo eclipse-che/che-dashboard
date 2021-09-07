@@ -16,6 +16,7 @@
     "test": "jest"
   },
   "devDependencies": {
+    "@kubernetes/client-node": "^0.15.1",
     "@types/jest": "^25.2.3",
     "axios": "^0.21.1",
     "axios-mock-adapter": "^1.20.0",

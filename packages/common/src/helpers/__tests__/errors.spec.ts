@@ -11,7 +11,9 @@
  */
 
 import axios, { AxiosError, AxiosResponse } from 'axios';
+import { HttpError } from '@kubernetes/client-node';
 import AxiosMockAdapter from 'axios-mock-adapter';
+import * as http from 'http';
 import { getMessage } from '../errors';
 
 let mockAxios = new AxiosMockAdapter(axios);
@@ -42,90 +44,160 @@ describe('Errors helper', () => {
     const expectedMessage = 'Unexpected error. Check DevTools console and network tabs for more information.'
     expect(getMessage(notError)).toEqual(expectedMessage);
 
-    const expectedOutput = ['Unexpected error:', {'alert': 'Beware of bugs!'}];
+    const expectedOutput = ['Unexpected error:', { 'alert': 'Beware of bugs!' }];
     expect(console.error).toBeCalledWith(...expectedOutput);
   })
 
-  it('should return error message if server responds with error', async (done) => {
-    const message = '500 Internal Server Error.';
+  describe('Frontend errors', () => {
 
-    mockAxios.onGet('/location/not/found').replyOnce(() => {
-      return [500, {}, {},]
+
+    it('should return error message if server responds with error', async (done) => {
+      const message = '"500 Internal Server Error" returned by "/location/".';
+
+      mockAxios.onGet('/location/').replyOnce(() => {
+        return [500, {}, {},]
+      });
+
+      try {
+        const data = await axios.get('/location/');
+        done.fail();
+      } catch (e) {
+        const err = e as AxiosError;
+        // provide `statusText` to the response because mocking library cannot do that
+        (err.response as AxiosResponse<unknown>).statusText = 'Internal Server Error';
+
+        expect(getMessage(err)).toEqual(message);
+        done();
+      }
     });
 
-    try {
-      const data = await axios.get('/location/not/found');
-      done.fail();
-    } catch (e) {
-      const err = e as AxiosError;
-      // provide `statusText` to the response because mocking library cannot do that
-      (err.response as AxiosResponse<unknown>).statusText = 'Internal Server Error';
+    it('should return error message if server responds with error', async (done) => {
+      const message = 'The server failed to fulfill a request';
 
-      expect(getMessage(err)).toEqual(message);
-      done();
-    }
-  });
+      mockAxios.onGet('/location/').replyOnce(() => {
+        return [500, { message }, {},]
+      });
 
-  it('should return error message if server responds with error', async (done) => {
-    const message = 'The server failed to fulfill a request';
+      try {
+        const data = await axios.get('/location/');
+        done.fail();
+      } catch (e) {
+        const err = e as AxiosError;
+        // provide `statusText` to the response because mocking library cannot do that
+        (err.response as AxiosResponse<unknown>).statusText = 'Internal Server Error';
 
-    mockAxios.onGet('/location/not/found').replyOnce(() => {
-      return [500, {message}, {},]
+        expect(getMessage(err)).toEqual(message);
+        done();
+      }
     });
 
-    try {
-      const data = await axios.get('/location/not/found');
-      done.fail();
-    } catch (e) {
-      const err = e as AxiosError;
-      // provide `statusText` to the response because mocking library cannot do that
-      (err.response as AxiosResponse<unknown>).statusText = 'Internal Server Error';
+    it('should return error message if network error', async (done) => {
+      const message = 'Network Error';
 
-      expect(getMessage(err)).toEqual(message);
-      done();
-    }
+      mockAxios.onGet('/location/').networkErrorOnce();
+
+      try {
+        const data = await axios.get('/location/');
+        done.fail();
+      } catch (e) {
+        expect(getMessage(e)).toEqual(message);
+        done();
+      }
+    });
+
+    it('should return error message if network timeout', async (done) => {
+      const message = 'timeout of 0ms exceeded';
+
+      mockAxios.onGet('/location/').timeoutOnce();
+
+      try {
+        const data = await axios.get('/location/');
+        done.fail();
+      } catch (e) {
+        expect(getMessage(e)).toEqual(message);
+        done();
+      }
+    });
+
+    it('should return error message if request aborted', async (done) => {
+      const message = 'Request aborted';
+
+      mockAxios.onGet('/location/').abortRequestOnce();
+
+      try {
+        const data = await axios.get('/location/');
+        done.fail();
+      } catch (e) {
+        expect(getMessage(e)).toEqual(message);
+        done();
+      }
+    });
+
   });
 
-  it('should return error message if network error', async (done) => {
-    const message = 'Network Error';
+  describe('Backend errors', () => {
 
-    mockAxios.onGet('/location/').networkErrorOnce();
+    it('should return error message if no response available', () => {
+      const error: HttpError = {
+        name: 'HttpError',
+        message: 'No response available.',
+        response: {
+          url: '/location/'
+        } as http.IncomingMessage,
+        body: 'No response available',
+        statusCode: -1,
+      };
+      const expectedMessage = 'no response available due to network issue.';
+      expect(getMessage(error)).toEqual(expectedMessage);
 
-    try {
-      const data = await axios.get('/location/');
-      done.fail();
-    } catch (e) {
-      expect(getMessage(e)).toEqual(message);
-      done();
-    }
-  });
+      delete error.statusCode;
+      expect(getMessage(error)).toEqual(expectedMessage);
+    });
 
-  it('should return error message if network timeout', async (done) => {
-    const message = 'timeout of 0ms exceeded';
+    it('should return error message if message from K8s is present', () => {
+      const expectedMessage = 'Error message from K8s.'
+      const error: HttpError = {
+        name: 'HttpError',
+        message: expectedMessage,
+        response: {
+          url: '/location/'
+        } as http.IncomingMessage,
+        body: {
+          message: expectedMessage,
+        },
+        statusCode: 500,
+      };
+      expect(getMessage(error)).toEqual(expectedMessage);
+    });
 
-    mockAxios.onGet('/location/').timeoutOnce();
+    it('should return error message if message in response body is present', () => {
+      const expectedMessage = 'Error message from K8s.'
+      const error: HttpError = {
+        name: 'HttpError',
+        message: expectedMessage,
+        response: {
+          url: '/location/'
+        } as http.IncomingMessage,
+        body: expectedMessage,
+        statusCode: 500,
+      };
+      expect(getMessage(error)).toEqual(expectedMessage);
+    });
 
-    try {
-      const data = await axios.get('/location/');
-      done.fail();
-    } catch (e) {
-      expect(getMessage(e)).toEqual(message);
-      done();
-    }
-  });
+    it('should return error message if `statusCode` is present', () => {
+      const expectedMessage = '"500" returned by "/location/".'
+      const error: HttpError = {
+        name: 'HttpError',
+        message: expectedMessage,
+        response: {
+          url: '/location/'
+        } as http.IncomingMessage,
+        body: undefined,
+        statusCode: 500,
+      };
+      expect(getMessage(error)).toEqual(expectedMessage);
+    });
 
-  it('should return error message if request aborted', async (done) => {
-    const message = 'Request aborted';
-
-    mockAxios.onGet('/location/').abortRequestOnce();
-
-    try {
-      const data = await axios.get('/location/');
-      done.fail();
-    } catch (e) {
-      expect(getMessage(e)).toEqual(message);
-      done();
-    }
   });
 
 });

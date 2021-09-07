@@ -11,6 +11,7 @@
  */
 
 import { AxiosError, AxiosResponse } from 'axios';
+import { HttpError } from "@kubernetes/client-node";
 
 /**
  * This helper function does its best to get an error message from the provided object.
@@ -22,12 +23,30 @@ export function getMessage(error: unknown): string {
     return 'Unexpected error.';
   }
 
+  if (isKubeClientError(error)) {
+    let statusCode = error.statusCode || error.response.statusCode;
+    if (!statusCode || statusCode === -1) {
+      return 'no response available due to network issue.';
+    }
+    if (error.body?.message) {
+      // body is from K8s in JSON form with message present
+      return error.body.message;
+    }
+    if (error.body) {
+      // pure http response body without message available
+      return error.body;
+    }
+    return `"${statusCode}" returned by "${error.response.url}".`;
+  }
+
   if (isAxiosError(error) && isAxiosResponse(error.response)) {
     const response = error.response;
     if (response.data.message) {
       return response.data.message;
+    } else if (response.config.url) {
+      return `"${response.status} ${response.statusText}" returned by "${response.config.url}".`;
     } else {
-      return `${response.status} ${response.statusText}.`;
+      return `"${response.status} ${response.statusText}".`;
     }
   }
 
@@ -62,4 +81,10 @@ export function isAxiosResponse(response: unknown): response is AxiosResponse {
 export function isAxiosError(object: unknown): object is AxiosError {
   return object !== undefined
     && (object as AxiosError).isAxiosError === true;
+}
+
+export function isKubeClientError(error: unknown): error is HttpError {
+  return isError(error)
+    && (error as HttpError).response !== undefined
+    && 'body' in (error as HttpError);
 }
