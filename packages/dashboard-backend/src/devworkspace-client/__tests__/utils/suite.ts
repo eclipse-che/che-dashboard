@@ -10,7 +10,7 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-export function conditionalTest(testName: string, testCondition: Function, testCallback: Function, timeout: number): void {
+export function conditionalTest(testName: string, testCondition: () => boolean | Promise<boolean>, testCallback: (done: jest.DoneCallback) => void | Promise<void>, timeout: number): void {
     it(testName, async (done) => {
         const evaluatedCondition = await testCondition();
         if (evaluatedCondition) {

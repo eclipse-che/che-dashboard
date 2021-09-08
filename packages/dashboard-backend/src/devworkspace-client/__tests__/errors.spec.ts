@@ -20,7 +20,7 @@ import { helpers } from '@eclipse-che/common';
 describe('Kubernetes API integration testing against cluster', () => {
 
   describe('Test Kubernetes errors', () => {
-    conditionalTest('test when Custom API does not exist', isIntegrationTestEnabled, async (done: any) => {
+    conditionalTest('test when Custom API does not exist', isIntegrationTestEnabled, async (done) => {
       let customObjectAPI = createKubeConfig().makeApiClient(k8s.CustomObjectsApi);
       try {
         const resp = await customObjectAPI.getNamespacedCustomObject(
@@ -38,7 +38,7 @@ describe('Kubernetes API integration testing against cluster', () => {
       done();
     }, 1000);
 
-    conditionalTest('test when unauthorized', isIntegrationTestEnabled, async (done: any) => {
+    conditionalTest('test when unauthorized', isIntegrationTestEnabled, async (done) => {
       const kc = createKubeConfig();
       let currentUser = kc.getCurrentUser();
       if (!currentUser) {
@@ -57,7 +57,7 @@ describe('Kubernetes API integration testing against cluster', () => {
       done();
     }, 1000);
 
-    conditionalTest('test watch when unauthorized', isIntegrationTestEnabled, async (done: any) => {
+    conditionalTest('test watch when unauthorized', isIntegrationTestEnabled, async (done) => {
       const kc = createKubeConfig();
       let currentUser = kc.getCurrentUser();
       if (!currentUser) {
@@ -90,7 +90,7 @@ describe('Kubernetes API integration testing against cluster', () => {
       done();
     }, 1000);
 
-    conditionalTest('test when request is not processed', isIntegrationTestEnabled, async (done: any) => {
+    conditionalTest('test when request is not processed', isIntegrationTestEnabled, async (done) => {
       const kc = createKubeConfig();
       let currentCluster = kc.getCurrentCluster();
       if (!currentCluster) {
