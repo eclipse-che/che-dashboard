@@ -27,7 +27,6 @@ import {
 
 import { devfileToDevWorkspace } from '../converters';
 import { helpers } from '@eclipse-che/common';
-import { HttpError } from '@kubernetes/client-node';
 
 export class DevWorkspaceApi implements IDevWorkspaceApi {
   private readonly customObjectAPI: k8s.CustomObjectsApi;
@@ -188,10 +187,19 @@ export class DevWorkspaceApi implements IDevWorkspaceApi {
       } else {
         callbacks.onError(`Error: Unknown type '${type}'.`);
       }
-    }, error => {
-      console.error('Watch in namespace error:', error);
-      const message = typeof (error) === 'string' ? error : 'Unknown type error.'
-      callbacks.onError(message);
+    }, (error: any) => {
+      let message;
+      if (error.message) {
+        message = error.message;
+      } else {
+        // unexpected error format. Log it and expose to user what we can
+        console.log(error);
+        message = error.toString();
+        if (!message) {
+          message = 'unknown. Contact admin to check server logs';
+        }
+      }
+      callbacks.onError(`Error: ${message}`);
     });
   }
 }

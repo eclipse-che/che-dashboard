@@ -10,7 +10,7 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import { DevWorkspaceClient } from '../';
+import { DevWorkspaceClient, IDevWorkspace, IDevWorkspaceCallbacks } from '../';
 import { conditionalTest, isIntegrationTestEnabled } from './utils/suite';
 import { createKubeConfig } from './utils/helper';
 import { fail } from 'assert';
@@ -54,6 +54,39 @@ describe('Kubernetes API integration testing against cluster', () => {
         expect((e as Error).message).toBe('unable to get devworkspace any/non-existing: devworkspaces.workspace.devfile.io "non-existing" is forbidden: User "system:anonymous" ' +
           'cannot get resource "devworkspaces" in API group "workspace.devfile.io" in the namespace "any"');
       }
+      done();
+    }, 1000);
+
+    conditionalTest('test watch when unauthorized', isIntegrationTestEnabled, async (done: any) => {
+      const kc = createKubeConfig();
+      let currentUser = kc.getCurrentUser();
+      if (!currentUser) {
+        throw 'current user is not present in kubeconfig';
+      }
+      (currentUser as any).token = '';
+
+      const dwClient = new DevWorkspaceClient(kc);
+      const err: Promise<string> = new Promise((resolve, reject) => {
+        try {
+          dwClient.devworkspaceApi.watchInNamespace('any', '', {
+            onModified: (workspace: IDevWorkspace) => {
+              resolve('on modified is not expected to be called');
+            },
+            onDeleted: (workspaceId: string) => {
+              resolve('on deleted is not expected to be called');
+            },
+            onAdded: (workspace: IDevWorkspace) => {
+              resolve('on added is not expected to be called');
+            },
+            onError: (error: string) => {
+              resolve(error);
+            }
+          });
+        } catch (e) {
+          fail('unexpected error is thrown while watching: ' + e);
+        }
+      });
+      expect((await err)).toBe('Error: Forbidden');
       done();
     }, 1000);
 
