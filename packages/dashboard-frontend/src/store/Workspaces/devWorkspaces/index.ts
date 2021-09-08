@@ -19,12 +19,13 @@ import { DevWorkspaceStatus } from '../../../services/helpers/types';
 import { createObject } from '../../helpers';
 import { DevWorkspaceClient, DEVWORKSPACE_NEXT_START_ANNOTATION, IStatusUpdate } from '../../../services/workspace-client/devworkspace/devWorkspaceClient';
 import { CheWorkspaceClient } from '../../../services/workspace-client/cheworkspace/cheWorkspaceClient';
-import devfileApi from '../../../services/devfileApi';
+import devfileApi, { isDevWorkspace } from '../../../services/devfileApi';
 import { deleteLogs, mergeLogs } from '../logs';
 import { getDefer, IDeferred } from '../../../services/helpers/deferred';
 import { DisposableCollection } from '../../../services/helpers/disposable';
 import { selectDwPluginsList } from '../../Plugins/devWorkspacePlugins/selectors';
 import { getId } from '../../../services/workspace-adapter/helper';
+import { devWorkspaceKind } from '../../../services/devfileApi/devWorkspace';
 
 const cheWorkspaceClient = container.get(CheWorkspaceClient);
 const devWorkspaceClient = container.get(DevWorkspaceClient);
@@ -205,7 +206,13 @@ export const actionCreators: ActionCreators = {
         // If the workspace has DEVWORKSPACE_NEXT_START_ANNOTATION then update the devworkspace with the DEVWORKSPACE_NEXT_START_ANNOTATION annotation value and then start the devworkspace
         const state = getState();
         const plugins = selectDwPluginsList(state);
-        const storedDevWorkspace = JSON.parse(workspace.metadata.annotations[DEVWORKSPACE_NEXT_START_ANNOTATION]) as devfileApi.DevWorkspace;
+
+        const storedDevWorkspace = JSON.parse(workspace.metadata.annotations[DEVWORKSPACE_NEXT_START_ANNOTATION]) as unknown;
+        if (!isDevWorkspace(storedDevWorkspace)) {
+          console.error(`The stored devworkspace either has wrong "kind" (not ${devWorkspaceKind}) or lacks some of mandatory fields: `, storedDevWorkspace);
+          throw new Error('Unexpected error happened. Please check the Console tab of Developer tools.');
+        }
+
         delete workspace.metadata.annotations[DEVWORKSPACE_NEXT_START_ANNOTATION];
         workspace.spec.template = storedDevWorkspace.spec.template;
         workspace.spec.started = true;

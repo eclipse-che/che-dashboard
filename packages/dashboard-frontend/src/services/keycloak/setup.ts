@@ -136,12 +136,13 @@ export class KeycloakSetupService {
       return settings;
     } catch (e) {
       if (common.helpers.errors.isAxiosError(e) && e.response?.status === 404) {
+        // not found, which mean Che Server is configured to be run without keycloak.
         return;
       }
 
       let errorMessage = 'Cannot get Keycloak settings';
-      if (common.helpers.errors.isAxiosError(e) && e.response?.status) {
-        errorMessage += `: ${e.response.status} ${e.response.statusText}`;
+      if (common.helpers.errors.isAxiosError(e)) {
+        errorMessage += ': ' + common.helpers.errors.getMessage(e);
       } else {
         errorMessage += '. Response is not available, please check the Network tab of Developer tools.';
       }

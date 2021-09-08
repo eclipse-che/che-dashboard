@@ -66,7 +66,6 @@ export function isDevWorkspaceTemplate(template: unknown): template is devfileAp
 
 export function isDevWorkspaceTemplateMetadata(metadata: unknown): metadata is devfileApi.DevWorkspaceTemplateMetadata {
   return metadata !== undefined
-    && (metadata as devfileApi.DevWorkspaceTemplateMetadata).labels !== undefined
     && (metadata as devfileApi.DevWorkspaceTemplateMetadata).name !== undefined
     && (metadata as devfileApi.DevWorkspaceTemplateMetadata).namespace !== undefined;
 }

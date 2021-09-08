@@ -21,8 +21,6 @@ import { getId, getStatus } from './helper';
 import devfileApi, { isDevfileV2, isDevWorkspace } from '../devfileApi';
 import { devWorkspaceKind } from '../devfileApi/devWorkspace';
 
-const ROUTING_CLASS = 'che';
-
 export interface Workspace {
   readonly ref: che.Workspace | devfileApi.DevWorkspace;
 
@@ -239,15 +237,18 @@ export class WorkspaceAdapter<T extends che.Workspace | devfileApi.DevWorkspace>
     if (isCheWorkspace(this.workspace)) {
       this.workspace.devfile = devfile as che.WorkspaceDevfile;
     } else {
+      const workspace = this.workspace as devfileApi.DevWorkspace;
       const converted = devfileToDevWorkspace(
         devfile as devfileApi.Devfile,
-        ROUTING_CLASS,
-        this.status === DevWorkspaceStatus.RUNNING
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        workspace.spec.routingClass!,
+        workspace.spec.started
       );
       if (isDevWorkspace(converted)) {
         (this.workspace as devfileApi.DevWorkspace) = converted;
       } else {
-        console.error(`WorkspaceAdapter: the received devworkspace either has wrong "kind" (not ${devWorkspaceKind}) or lacks some of mandatory : `, converted);
+        console.error(`WorkspaceAdapter: the received devworkspace either has wrong "kind" (not ${devWorkspaceKind}) or lacks some of mandatory fields: `, converted);
+        throw new Error('Unexpected error happened. Please check the Console tab of Developer tools.');
       }
     }
   }

@@ -27,28 +27,3 @@ export function getSchema(additionalParams: restParams.ISchemaParams): { schema:
 
   return {schema};
 }
-
-export function getErrorMessage(error: unknown): string {
-  if (!error) {
-    return '';
-  }
-  if (isError(error) && error.message) {
-    return error.message;
-  }
-  if (isAxiosResponse(error)) {
-    if (error.data.message && typeof error.data.message === 'string') {
-      return error.data.message;
-    } else {
-      return JSON.stringify(error.data);
-    }
-  }
-  return JSON.stringify(error);
-}
-
-function isError(error: unknown): error is Error {
-  return (error as Error).message !== undefined;
-}
-
-function isAxiosResponse(response: unknown): response is AxiosResponse {
-  return (response as AxiosResponse).status !== undefined && (response as AxiosResponse).data !== undefined;
-}

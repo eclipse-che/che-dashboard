@@ -26,6 +26,8 @@ export function devfileToDevWorkspace(devfile: devfileApi.Devfile, routingClass:
       name: devfile.metadata.name,
       namespace: devfile.metadata.namespace,
       annotations: devWorkspaceAnnotations,
+      labels: {},
+      uid: '',
     },
     spec: {
       started,
@@ -34,7 +36,7 @@ export function devfileToDevWorkspace(devfile: devfileApi.Devfile, routingClass:
         components: []
       }
     }
-  } as devfileApi.DevWorkspaceLike as devfileApi.DevWorkspace;
+  } as devfileApi.DevWorkspace;
   if (devfile.projects) {
     template.spec.template.projects = devfile.projects;
   }

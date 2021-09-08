@@ -11,7 +11,7 @@
  */
 
 import axios from 'axios';
-import { getErrorMessage } from '../helpers';
+import { getMessage } from '@eclipse-che/common/lib/helpers/errors';
 import { isCheServerApiProxyRequired } from '../../index';
 import * as https from 'https';
 import { URL } from 'url';
@@ -50,7 +50,7 @@ export async function validateToken(keycloakToken: string): Promise<void> {
     throw {
       statusCode,
       error: statusText,
-      message: `Failed to validate token: ${getErrorMessage(e)}`
+      message: `Failed to validate token: ${getMessage(e)}`
     };
   }
 }
@@ -81,7 +81,7 @@ async function evaluateKeycloakEndpointUrl(): Promise<URL> {
     throw {
       statusCode,
       error: statusText,
-      message: `Failed to fetch keycloak settings: ${getErrorMessage(e)}`
+      message: `Failed to fetch keycloak settings: ${getMessage(e)}`
     };
   }
 }

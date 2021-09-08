@@ -11,7 +11,7 @@
  */
 
 import 'reflect-metadata';
-import fastify, { FastifyRequest } from 'fastify';
+import fastify from 'fastify';
 import args from 'args';
 import { registerStaticServer } from './static';
 import { registerDevworkspaceWebsocketWatcher } from './api/devworkspaceWebsocketWatcher';
@@ -21,6 +21,7 @@ import { registerTemplateApi } from './api/templateApi';
 import { registerCheServerApiProxy } from './cheServerApiProxy';
 import { registerCors } from './cors';
 import { registerSwagger } from './swagger';
+import { HttpError } from '@kubernetes/client-node';
 
 const CHE_HOST = process.env.CHE_HOST as string;
 
@@ -48,8 +49,10 @@ server.addContentTypeParser(
     try {
       const json = JSON.parse(body as string);
       done(null, json);
-    } catch (err) {
-      done(new Error('Bad Request'), undefined);
+    } catch (e) {
+      const error = e as HttpError;
+      error.statusCode = 400;
+      done(error, undefined);
     }
   }
 );
