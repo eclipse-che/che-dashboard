@@ -16,4 +16,12 @@ module.exports = {
   ...base,
   name: 'common',
   displayName: 'Common',
+  coverageThreshold: {
+    global: {
+      statements: 97,
+      branches: 97,
+      functions: 100,
+      lines: 97,
+    }
+  },
 };
