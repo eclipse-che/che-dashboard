@@ -34,10 +34,10 @@ yarn
 
 and start dev-server:
 
-The start command requires to specify a remote Eclipse Che server like:
+The `frontend:start` command requires to specify a remote Eclipse Che server like:
 
 ```sh
-yarn start --env.server=https://che-che.192.168.99.100.nip.io
+yarn frontend:start --env.server=https://che-che.192.168.99.100.nip.io
 ```
 
 The development server serves the project on [http://localhost:3000](http://localhost:3000).
@@ -72,7 +72,7 @@ Note: To use CodeReady Workspaces(based on Che) Hosted by Red Hat instance at ht
 URL is looking like https://codeready-codeready-workspaces-operator.apps.sandbox.x8i5.p1.openshiftapps.com
 
 ```sh
-yarn start --env.server=https://codeready-codeready-workspaces-operator.apps.sandbox.x8i5.p1.openshiftapps.com
+yarn frontend:start --env.server=https://codeready-codeready-workspaces-operator.apps.sandbox.x8i5.p1.openshiftapps.com
 ```
 
 To specify a different port, add `--port=3333`
