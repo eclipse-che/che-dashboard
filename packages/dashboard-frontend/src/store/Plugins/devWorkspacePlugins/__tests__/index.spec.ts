@@ -83,7 +83,7 @@ describe('dwPlugins store', () => {
         url,
       }, {
         type: 'RECEIVE_DW_PLUGIN_ERROR',
-        error: expect.stringContaining('Unexpected error.'),
+        error: expect.stringContaining('Something unexpected happened.'),
         url,
       }];
 

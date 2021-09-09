@@ -28,9 +28,10 @@
     "eslint:fix": "tsc --noEmit && eslint '*/**/*.{js,ts,tsx}' --fix",
     "stylelint": "stylelint */**/*.css",
     "stylelint:fix": "stylelint */**/*.css --fix",
+    "pretest": "yarn workspace @eclipse-che/common build",
     "test": "jest",
-    "test:coverage": "jest --coverage",
-    "test:watch": "jest --watch"
+    "test:coverage": "yarn test --coverage",
+    "test:watch": "yarn test --watch"
   },
   "dependencies": {
     "@eclipse-che/che-theia-devworkspace-handler": "0.0.1-1623136422",
