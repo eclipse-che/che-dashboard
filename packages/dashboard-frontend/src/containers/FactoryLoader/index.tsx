@@ -268,12 +268,7 @@ export class FactoryLoaderContainer extends React.PureComponent<Props, State> {
         this.resolvePrivateDevfile(e.attributes.oauth_authentication_url, location);
         return;
       }
-
-      let alertMessage = 'Failed to resolve a devfile.';
-      if (common.helpers.errors.isError(e)) {
-        alertMessage += ' ' + common.helpers.errors.getMessage(e);
-      }
-      this.showAlert(alertMessage);
+      this.showAlert(`Failed to resolve a devfile. ${common.helpers.errors.getMessage(e)}`);
       return;
     }
     if (this.factoryResolver.resolver?.location !== location) {
