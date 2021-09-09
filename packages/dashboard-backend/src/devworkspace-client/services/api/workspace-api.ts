@@ -183,11 +183,15 @@ export class DevWorkspaceApi implements IDevWorkspaceApi {
         callbacks.onModified(devworkspace);
       } else if (type === 'DELETED') {
         callbacks.onDeleted(workspaceId);
+      } else if (type === 'ERROR') {
+        callbacks.onError('Error: Unknown error.');
       } else {
         callbacks.onError(`Error: Unknown type '${type}'.`);
       }
-    }, (error: any) => {
-      callbacks.onError(`Error: ${error}`);
+    }, error => {
+      console.error('Watch in namespace error:', error);
+      const message = typeof (error) === 'string' ? error : 'Unknown type error.'
+      callbacks.onError(message);
     });
   }
 }

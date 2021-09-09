@@ -11,19 +11,26 @@
  */
 
 import { FastifyInstance, FastifyRequest, RouteShorthandOptions } from 'fastify';
-import fastifyWebsocket from 'fastify-websocket';
+import fastifyWebsocket, { SocketStream } from 'fastify-websocket';
 import { baseApiPath } from '../constants/config';
-import SubscribeManager, { Subscriber } from '../services/SubscriptionManager';
+import SubscribeManager from '../services/SubscriptionManager';
+import { getToken } from './helper';
 
-const options = {websocket: true} as RouteShorthandOptions;
+const options = { websocket: true } as RouteShorthandOptions;
 
-function handler(connection: FastifyRequest) {
-  const subscriber: Subscriber = connection.socket as any;
-  const pubSubManager = new SubscribeManager(subscriber);
-  connection.socket.on('message', message => {
-    const {request, params, channel} = JSON.parse(message);
+async function handler(connection: SocketStream, request: FastifyRequest) {
+  const bearerAuthenticationToken = request?.headers?.authorization ?  getToken(request) :  undefined;
+
+  const socket  = connection.socket;
+  const pubSubManager = new SubscribeManager(socket);
+
+  socket.on('message', message => {
+    const { request, params, channel } = JSON.parse(message.toString());
     if (!request || !channel) {
       return;
+    }
+    if (params && bearerAuthenticationToken) {
+      params.token = bearerAuthenticationToken;
     }
     switch (request) {
       case 'UNSUBSCRIBE':
@@ -38,5 +45,5 @@ function handler(connection: FastifyRequest) {
 
 export function registerDevworkspaceWebsocketWatcher(server: FastifyInstance) {
   server.register(fastifyWebsocket);
-  server.get(`${baseApiPath}/websocket`, options, handler);
+  server.get(`${baseApiPath}/websocket`, options, handler as any);
 }

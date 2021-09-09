@@ -98,21 +98,28 @@ export class WorkspaceAdapter<T extends che.Workspace | devfileApi.DevWorkspace>
     }
   }
 
+  /**
+   * Returns a workspace creation time in ms
+   */
   get created(): number {
     if (isCheWorkspace(this.workspace)) {
-      return parseInt(this.workspace.attributes?.created || '', 10) || 0;
+      if (this.workspace.attributes?.created) {
+        // `created` is a Unix timestamp String
+        return new Date(parseInt(this.workspace.attributes.created)).getTime();
+      }
     } else {
       const reference = this.workspace as devfileApi.DevWorkspace;
-      let timestamp: number;
       if (reference.metadata.creationTimestamp) {
-        timestamp = Math.round(reference.metadata.creationTimestamp.getTime() / 1000);
-      } else {
-        timestamp = 0;
+        // `creationTimestamp` is a date time String
+        return new Date(reference.metadata.creationTimestamp.toString()).getTime();
       }
-      return timestamp;
     }
+    return new Date().getTime();
   }
 
+  /**
+   * Returns a workspace last updated time in ms
+   */
   get updated(): number {
     if (isCheWorkspace(this.workspace)) {
       return parseInt(this.workspace.attributes?.updated || '', 10) || 0;

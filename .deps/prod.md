@@ -2,10 +2,11 @@
 
 | Packages | License | Resolved CQs |
 | --- | --- | --- |
-| [`@babel/runtime@7.15.3`](https://github.com/babel/babel.git) | MIT | clearlydefined |
-| [`@devfile/api@2.2.0-alpha-1628805729`](https://github.com/devfile/api.git) | EPL-2.0 | clearlydefined |
-| `@eclipse-che/api@7.35.1` | EPL-2.0 | clearlydefined |
+| [`@babel/runtime@7.15.4`](https://github.com/babel/babel.git) | MIT | clearlydefined |
+| [`@devfile/api@2.2.0-alpha-1631030331`](https://github.com/devfile/api.git) | EPL-2.0 | clearlydefined |
+| `@eclipse-che/api@7.36.0` | EPL-2.0 | clearlydefined |
 | [`@eclipse-che/che-theia-devworkspace-handler@0.0.1-1623136422`](git+https://github.com/eclipse-che/che-theia.git) | EPL-2.0 | clearlydefined |
+| [`@eclipse-che/common@7.34.0-SNAPSHOT`](https://github.com/eclipse-che/che-dashboard) | EPL-2.0 | N/A |
 | [`@eclipse-che/dashboard-backend@7.34.0-SNAPSHOT`](https://github.com/eclipse-che/che-dashboard) | EPL-2.0 | N/A |
 | [`@eclipse-che/dashboard-frontend@7.34.0-SNAPSHOT`](git://github.com/eclipse/che-dashboard.git) | EPL-2.0 | N/A |
 | [`@eclipse-che/workspace-client@0.0.1-1622804813`](https://github.com/eclipse/che-workspace-client) | EPL-2.0 | N/A |
@@ -25,12 +26,12 @@
 | [`@types/hoist-non-react-statics@3.3.1`](https://github.com/DefinitelyTyped/DefinitelyTyped.git) | MIT | clearlydefined |
 | [`@types/http-cache-semantics@4.0.1`](https://github.com/DefinitelyTyped/DefinitelyTyped.git) | MIT | clearlydefined |
 | [`@types/js-yaml@3.12.7`](https://github.com/DefinitelyTyped/DefinitelyTyped.git) | MIT | clearlydefined |
-| [`@types/keyv@3.1.2`](https://github.com/DefinitelyTyped/DefinitelyTyped.git) | MIT | clearlydefined |
+| [`@types/keyv@3.1.3`](https://github.com/DefinitelyTyped/DefinitelyTyped.git) | MIT | clearlydefined |
 | [`@types/minipass@3.1.0`](https://github.com/DefinitelyTyped/DefinitelyTyped.git) | MIT | clearlydefined |
-| [`@types/node@16.7.10`](https://github.com/DefinitelyTyped/DefinitelyTyped.git) | MIT | clearlydefined |
+| [`@types/node@16.9.0`](https://github.com/DefinitelyTyped/DefinitelyTyped.git) | MIT | clearlydefined |
 | [`@types/prop-types@15.7.4`](https://github.com/DefinitelyTyped/DefinitelyTyped.git) | MIT | clearlydefined |
 | [`@types/react-redux@7.1.18`](https://github.com/DefinitelyTyped/DefinitelyTyped.git) | MIT | clearlydefined |
-| [`@types/react@17.0.19`](https://github.com/DefinitelyTyped/DefinitelyTyped.git) | MIT | clearlydefined |
+| [`@types/react@17.0.20`](https://github.com/DefinitelyTyped/DefinitelyTyped.git) | MIT | clearlydefined |
 | [`@types/request@2.48.7`](https://github.com/DefinitelyTyped/DefinitelyTyped.git) | MIT | clearlydefined |
 | [`@types/responselike@1.0.0`](https://github.com/DefinitelyTyped/DefinitelyTyped.git) | MIT | clearlydefined |
 | [`@types/scheduler@0.16.2`](https://github.com/DefinitelyTyped/DefinitelyTyped.git) | MIT | clearlydefined |
@@ -57,7 +58,7 @@
 | [`avvio@7.2.2`](git+https://github.com/fastify/avvio.git) | MIT | clearlydefined |
 | [`aws-sign2@0.7.0`](https://github.com/mikeal/aws-sign) | Apache-2.0 | clearlydefined |
 | [`aws4@1.11.0`](https://github.com/mhart/aws4.git) | MIT | clearlydefined |
-| [`axios@0.21.1`](https://github.com/axios/axios.git) | MIT | [CQ23019](https://dev.eclipse.org/ipzilla/show_bug.cgi?id=23019) |
+| [`axios@0.21.4`](https://github.com/axios/axios.git) | MIT | [CQ23019](https://dev.eclipse.org/ipzilla/show_bug.cgi?id=23019) |
 | [`babel-code-frame@6.26.0`](https://github.com/babel/babel/tree/master/packages/babel-code-frame) | MIT | clearlydefined |
 | [`babel-core@6.26.3`](https://github.com/babel/babel/tree/master/packages/babel-core) | MIT | clearlydefined |
 | [`babel-generator@6.26.1`](https://github.com/babel/babel/tree/master/packages/babel-generator) | MIT | clearlydefined |
@@ -88,7 +89,7 @@
 | [`clone-response@1.0.2`](git+https://github.com/lukechilds/clone-response.git) | MIT | clearlydefined |
 | [`color-convert@1.9.3`](https://github.com/Qix-/color-convert.git) | MIT | clearlydefined |
 | [`color-name@1.1.3`](git@github.com:dfcreative/color-name.git) | MIT | clearlydefined |
-| [`colorette@1.3.0`](https://github.com/jorgebucaran/colorette.git) | MIT | clearlydefined |
+| [`colorette@1.4.0`](https://github.com/jorgebucaran/colorette.git) | MIT | clearlydefined |
 | [`combined-stream@1.0.8`](git://github.com/felixge/node-combined-stream.git) | MIT | clearlydefined |
 | [`concat-map@0.0.1`](git://github.com/substack/node-concat-map.git) | MIT | clearlydefined |
 | [`connected-react-router@6.9.1`](https://github.com/supasate/connected-react-router.git) | MIT | clearlydefined |
@@ -138,24 +139,24 @@
 | [`fast-json-stable-stringify@2.1.0`](git://github.com/epoberezkin/fast-json-stable-stringify.git) | MIT | clearlydefined |
 | [`fast-json-stringify@2.7.9`](git+https://github.com/fastify/fast-json-stringify.git) | MIT | clearlydefined |
 | [`fast-redact@3.0.2`](git+https://github.com/davidmarkclements/fast-redact.git) | MIT | clearlydefined |
-| [`fast-safe-stringify@2.0.8`](git+https://github.com/davidmarkclements/fast-safe-stringify.git) | MIT | clearlydefined |
+| [`fast-safe-stringify@2.1.1`](git+https://github.com/davidmarkclements/fast-safe-stringify.git) | MIT | clearlydefined |
 | [`fastify-cors@6.0.2`](git+https://github.com/fastify/fastify-cors.git) | MIT | clearlydefined |
 | [`fastify-error@0.3.1`](git+https://github.com/fastify/fastify-error.git) | MIT | clearlydefined |
 | [`fastify-http-proxy@5.0.0`](git+https://github.com/fastify/fastify-http-proxy.git) | MIT | clearlydefined |
 | [`fastify-plugin@3.0.0`](git+https://github.com/fastify/fastify-plugin.git) | MIT | clearlydefined |
 | [`fastify-reply-from@5.3.0`](git+https://github.com/fastify/fastify-reply-from.git) | MIT | clearlydefined |
 | [`fastify-static@4.2.3`](https://github.com/fastify/fastify-static.git) | MIT | clearlydefined |
-| [`fastify-swagger@4.9.1`](git+https://github.com/fastify/fastify-swagger.git) | MIT | clearlydefined |
+| [`fastify-swagger@4.11.0`](git+https://github.com/fastify/fastify-swagger.git) | MIT | clearlydefined |
 | [`fastify-warning@0.2.0`](git+https://github.com/fastify/fastify-warning.git) | MIT | clearlydefined |
 | [`fastify-websocket@3.2.2`](git+https://github.com/fastify/fastify-websocket.git) | MIT | clearlydefined |
-| [`fastify@3.20.2`](git+https://github.com/fastify/fastify.git) | MIT | clearlydefined |
+| [`fastify@3.21.0`](git+https://github.com/fastify/fastify.git) | MIT | clearlydefined |
 | [`fastq@1.12.0`](git+https://github.com/mcollina/fastq.git) | ISC | clearlydefined |
 | [`faye-websocket@0.11.4`](git://github.com/faye/faye-websocket-node.git) | Apache-2.0 | clearlydefined |
 | [`file-selector@0.1.19`](https://github.com/react-dropzone/file-selector.git) | MIT | [CQ22350](https://dev.eclipse.org/ipzilla/show_bug.cgi?id=22350) |
 | [`find-my-way@4.3.3`](git+https://github.com/delvedor/find-my-way.git) | MIT | clearlydefined |
 | [`flatstr@1.0.12`](git+https://github.com/davidmarkclements/flatstr.git) | MIT | clearlydefined |
 | [`focus-trap@6.2.2`](git+https://github.com/focus-trap/focus-trap.git) | MIT | clearlydefined |
-| [`follow-redirects@1.14.2`](git@github.com:follow-redirects/follow-redirects.git) | MIT | clearlydefined |
+| [`follow-redirects@1.14.3`](git@github.com:follow-redirects/follow-redirects.git) | MIT | clearlydefined |
 | [`forever-agent@0.6.1`](https://github.com/mikeal/forever-agent) | Apache-2.0 | clearlydefined |
 | [`form-data@2.5.1`](git://github.com/form-data/form-data.git) | MIT | clearlydefined |
 | [`forwarded@0.2.0`](https://github.com/jshttp/forwarded.git) | MIT | clearlydefined |
@@ -276,7 +277,7 @@
 | [`path-to-regexp@1.8.0`](https://github.com/pillarjs/path-to-regexp.git) | MIT | clearlydefined |
 | [`performance-now@2.1.0`](git://github.com/braveg1rl/performance-now.git) | MIT | clearlydefined |
 | [`pino-std-serializers@3.2.0`](git+ssh://git@github.com/pinojs/pino-std-serializers.git) | MIT | clearlydefined |
-| [`pino@6.13.1`](git+https://github.com/pinojs/pino.git) | MIT | clearlydefined |
+| [`pino@6.13.2`](git+https://github.com/pinojs/pino.git) | MIT | clearlydefined |
 | [`popper.js@1.16.1`](git+https://github.com/FezVrasta/popper.js.git) | MIT | [CQ22353](https://dev.eclipse.org/ipzilla/show_bug.cgi?id=22353) |
 | [`postcss@8.3.6`](https://github.com/postcss/postcss.git) | MIT | clearlydefined |
 | [`prettier@2.0.5`](https://github.com/prettier/prettier.git) | MIT | clearlydefined |
@@ -300,8 +301,8 @@
 | [`react-helmet@6.1.0`](https://github.com/nfl/react-helmet) | MIT | clearlydefined |
 | [`react-is@16.13.1`](https://github.com/facebook/react.git) | MIT | clearlydefined |
 | [`react-pluralize@1.6.3`](https://github.com/tsmith123/react-pluralize) | MIT | clearlydefined |
-| [`react-redux@7.2.4`](https://github.com/reduxjs/react-redux.git) | MIT | clearlydefined |
-| [`react-router-dom@5.2.1`](https://github.com/ReactTraining/react-router.git) | MIT | clearlydefined |
+| [`react-redux@7.2.5`](https://github.com/reduxjs/react-redux.git) | MIT | clearlydefined |
+| [`react-router-dom@5.3.0`](https://github.com/ReactTraining/react-router.git) | MIT | clearlydefined |
 | [`react-router@5.2.1`](https://github.com/ReactTraining/react-router.git) | MIT | clearlydefined |
 | [`react-side-effect@2.1.1`](https://github.com/gaearon/react-side-effect.git) | MIT | clearlydefined |
 | [`react-tooltip@4.2.21`](https://github.com/wwayne/react-tooltip) | MIT | clearlydefined |
@@ -406,7 +407,7 @@
 | [`websocket@1.0.23`](https://github.com/theturtle32/WebSocket-Node.git) | Apache-2.0 | [CQ22360](https://dev.eclipse.org/ipzilla/show_bug.cgi?id=22360) |
 | [`which@1.3.1`](git://github.com/isaacs/node-which.git) | ISC | clearlydefined |
 | [`wrappy@1.0.2`](https://github.com/npm/wrappy) | ISC | clearlydefined |
-| [`ws@7.5.4`](https://github.com/websockets/ws.git) | MIT | clearlydefined |
+| [`ws@7.5.5`](https://github.com/websockets/ws.git) | MIT | clearlydefined |
 | [`yaeti@0.0.4`](https://github.com/ibc/yaeti.git) | MIT | clearlydefined |
 | [`yallist@4.0.0`](git+https://github.com/isaacs/yallist.git) | ISC | clearlydefined |
 | [`yaml-language-server-parser@0.1.1`](https://github.com/redhat-developer/yaml-ast-parser.git) | Apache-2.0 | clearlydefined |

@@ -13,6 +13,8 @@
 import { authenticationHeaderSchema } from '../constants/schemas';
 import { restParams } from '../typings/models';
 import { AxiosResponse } from 'axios';
+import createError from 'fastify-error';
+import { FastifyError } from 'fastify';
 
 export async function delay(ms: number = 500): Promise<void> {
   await new Promise((resolve) => {
@@ -22,8 +24,17 @@ export async function delay(ms: number = 500): Promise<void> {
 
 export function getSchema(additionalParams: restParams.ISchemaParams): { schema: restParams.ISchemaParams } {
   const schema = Object.assign({
-    headers: authenticationHeaderSchema
+    headers: authenticationHeaderSchema,
+    security: [{
+      Authorization: ''
+    }],
   }, additionalParams);
 
   return {schema};
+}
+
+type FastifyErrorDescr = Parameters<typeof createError>;
+export function createFastifyError(...args: FastifyErrorDescr): FastifyError {
+  const FastifyError = createError(...args);
+  return new FastifyError();
 }

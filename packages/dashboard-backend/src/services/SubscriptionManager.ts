@@ -12,18 +12,15 @@
 
 import DevWorkspaceWatcher from './DevWorkspaceWatcher';
 import { IDevWorkspace, IDevWorkspaceCallbacks } from '../devworkspace-client';
-
-export type Subscriber = {
-  send: (val: string) => void,
-};
+import WebSocket from 'ws';
 
 class SubscriptionManager {
-  private readonly subscriber: Subscriber;
+  private readonly subscriber: WebSocket;
   private readonly channels: string[];
   private readonly callbacks: IDevWorkspaceCallbacks;
   private namespaceData: DevWorkspaceWatcher | undefined;
 
-  constructor(subscriber: Subscriber) {
+  constructor(subscriber: WebSocket) {
     this.subscriber = subscriber;
     this.channels = [];
     this.callbacks = {
@@ -37,16 +34,17 @@ class SubscriptionManager {
         this.publish('onAdded', workspace);
       },
       onError: (error: string) => {
-        this.channels.forEach(channel => {
-          this.subscriber.send(JSON.stringify({message: {error}, channel}));
-        });
+        this.channels.length = 0;
+        this.namespaceData = undefined;
+        // code 1011: Internal Error
+        this.subscriber.close(1011, error);
       }
     };
   }
 
   unsubscribe(channel: string): void {
     const index = this.channels.indexOf(channel);
-    if (index > -1) {
+    if (index !== -1) {
       this.channels.splice(index, 1);
     }
     if (this.channels.length === 0) {

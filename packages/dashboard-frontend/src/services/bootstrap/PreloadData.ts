@@ -96,13 +96,25 @@ export class PreloadData {
   }
 
   private async watchNamespaces(namespace: string): Promise<void> {
-    const { updateDevWorkspaceStatus, updateDeletedDevWorkspaces, updateAddedDevWorkspaces, requestWorkspaces } = DevWorkspacesStore.actionCreators;
+    const {
+      updateDevWorkspaceStatus,
+      updateDeletedDevWorkspaces,
+      updateAddedDevWorkspaces,
+      requestWorkspaces
+    } = DevWorkspacesStore.actionCreators;
     const getResourceVersion = async () => {
       await requestWorkspaces()(this.store.dispatch, this.store.getState, undefined);
       return this.store.getState().devWorkspaces.resourceVersion;
     };
-    const callbacks = { updateDevWorkspaceStatus, updateDeletedDevWorkspaces, updateAddedDevWorkspaces };
-    return this.devWorkspaceClient.subscribeToNamespace(namespace, getResourceVersion, callbacks, this.store.dispatch, this.store.getState);
+    const dispatch = this.store.dispatch;
+    const getState = this.store.getState;
+    const callbacks = { getResourceVersion,
+      updateDevWorkspaceStatus: statusUpdate => updateDevWorkspaceStatus(statusUpdate)(dispatch, getState, undefined),
+      updateDeletedDevWorkspaces: workspaceIds => updateDeletedDevWorkspaces(workspaceIds)(dispatch, getState, undefined),
+      updateAddedDevWorkspaces: workspaces => updateAddedDevWorkspaces(workspaces)(dispatch, getState, undefined),
+    };
+
+    return await this.devWorkspaceClient.subscribeToNamespace({ namespace, callbacks });
   }
 
   private async fetchCurrentUser(): Promise<void> {

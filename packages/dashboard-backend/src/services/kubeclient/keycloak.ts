@@ -12,7 +12,8 @@
 
 import axios from 'axios';
 import { getMessage } from '@eclipse-che/common/lib/helpers/errors';
-import { isCheServerApiProxyRequired } from '../../index';
+import { createFastifyError } from '../helpers';
+import { isLocalRun } from '../../index';
 import * as https from 'https';
 import { URL } from 'url';
 
@@ -37,51 +38,31 @@ export async function validateToken(keycloakToken: string): Promise<void> {
     await axios.get(keycloakEndpointUrl.href, { headers, httpsAgent });
     // token is a valid
   } catch (e) {
-    let statusCode = '401';
-    let statusText = 'Unauthorized';
-    if (axios.isAxiosError(e)) {
-      if (e.code) {
-        statusCode = e.code;
-      }
-      if (e.response?.statusText) {
-        statusText = e.response.statusText;
-      }
-    }
-    throw {
-      statusCode,
-      error: statusText,
-      message: `Failed to validate token: ${getMessage(e)}`
-    };
+    throw createFastifyError(
+      'FST_UNAUTHORIZED',
+      `Failed to validate token: ${getMessage(e)}`,
+      401
+    );
   }
 }
 
 async function evaluateKeycloakEndpointUrl(): Promise<URL> {
   try {
     const keycloakSettingsUrl = new URL('/api/keycloak/settings', CHE_HOST);
-    const response = await axios.get(keycloakSettingsUrl.href, {httpsAgent});
+    const response = await axios.get(keycloakSettingsUrl.href, { httpsAgent });
     const keycloakEndpoint = response.data[ENDPOINT];
     // we should change a HOST in the case of using proxy to prevent the host check error
-    if (isCheServerApiProxyRequired()) {
-      const {pathname} = new URL(keycloakEndpoint);
+    if (isLocalRun()) {
+      const { pathname } = new URL(keycloakEndpoint);
       return new URL(pathname, CHE_HOST);
     } else {
       return new URL(keycloakEndpoint);
     }
   } catch (e) {
-    let statusCode = '401';
-    let statusText = 'Unauthorized';
-    if (axios.isAxiosError(e)) {
-      if (e.code) {
-        statusCode = e.code;
-      }
-      if (e.response?.statusText) {
-        statusText = e.response.statusText;
-      }
-    }
-    throw {
-      statusCode,
-      error: statusText,
-      message: `Failed to fetch keycloak settings: ${getMessage(e)}`
-    };
+    throw createFastifyError(
+      'FST_UNAUTHORIZED',
+      `Failed to fetch keycloak settings: ${getMessage(e)}`,
+      401
+    );
   }
 }
