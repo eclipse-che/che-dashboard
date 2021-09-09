@@ -100,7 +100,7 @@ export class DevWorkspaceClient extends WorkspaceClient {
       },
       onDidWebSocketOpen: (websocketContext: string) => {
         const index = this._failingWebSockets.indexOf(websocketContext);
-        if (index > -1) {
+        if (index !== -1) {
           this._failingWebSockets.splice(index, 1);
           this.webSocketEventEmitter.emit(this.webSocketEventName);
         }
