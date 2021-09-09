@@ -113,7 +113,7 @@ export class DevWorkspaceClient extends WorkspaceClient {
       onDidWebSocketClose: (event: CloseEvent) => {
         if(event.code !== 1011 && event.reason) {
           const key = `websocket-close-code-${event.code}`;
-          this.showAlert({ key, variant: AlertVariant.warning, title: event.reason });
+          this.showAlert({ key, variant: AlertVariant.warning, title: 'Failed to establish WebSocket to server: ' + event.reason });
         } else {
           console.warn('WebSocket close', event);
         }
