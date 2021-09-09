@@ -11,7 +11,7 @@
  */
 
 import axios from 'axios';
-import { getErrorMessage } from '../helpers';
+import { createFastifyError, getErrorMessage } from '../helpers';
 import { isLocalRun } from '../../index';
 import * as https from 'https';
 
@@ -36,29 +36,31 @@ export async function validateToken(keycloakToken: string): Promise<void> {
     await axios.get(keycloakEndpointUrl.href, { headers, httpsAgent });
     // token is a valid
   } catch (e) {
-    throw {
-      code: e.code ? e.code : 401,
-      message: `Failed to validate token: ${getErrorMessage(e)}`
-    };
+    throw createFastifyError(
+      'FST_UNAUTHORIZED',
+      `Failed to validate token: ${getErrorMessage(e)}`,
+      401
+    );
   }
 }
 
 async function evaluateKeycloakEndpointUrl(): Promise<URL> {
   try {
     const keycloakSettingsUrl = new URL('/api/keycloak/settings', CHE_HOST);
-    const response = await axios.get(keycloakSettingsUrl.href, {httpsAgent});
+    const response = await axios.get(keycloakSettingsUrl.href, { httpsAgent });
     const keycloakEndpoint = response.data[ENDPOINT];
     // we should change a HOST in the case of using proxy to prevent the host check error
     if (isLocalRun()) {
-      const {pathname} = new URL(keycloakEndpoint);
+      const { pathname } = new URL(keycloakEndpoint);
       return new URL(pathname, CHE_HOST);
     } else {
       return new URL(keycloakEndpoint);
     }
   } catch (e) {
-    throw {
-      code: e.code ? e.code : 401,
-      message: `Failed to fetch keycloak settings: ${getErrorMessage(e)}`
-    };
+    throw createFastifyError(
+      'FST_UNAUTHORIZED',
+      `Failed to fetch keycloak settings: ${getErrorMessage(e)}`,
+      401
+    );
   }
 }
