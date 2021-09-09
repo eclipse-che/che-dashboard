@@ -19,12 +19,17 @@ const path = require('path');
 const config = {
   entry: {
     client: path.join(__dirname, 'src/index.tsx'),
+    'service-worker': path.join(__dirname, 'src/service-worker.ts'),
   },
   output: {
     path: path.join(__dirname, 'lib'),
     publicPath: '/',
-    filename: 'client.[hash].js',
+    filename: (pathData) =>
+      pathData.chunk.name === 'service-worker'
+        ? "[name].js"
+        : "[name].[hash].js",
     chunkFilename: '[name].[chunkhash].js',
+    globalObject: 'this',
   },
   optimization: {
     chunkIds: 'named',
