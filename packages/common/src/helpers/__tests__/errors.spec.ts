@@ -28,15 +28,19 @@ describe('Errors helper', () => {
     mockAxios.resetHandlers();
   });
 
-  it('should return default message', () => {
-    expect(getMessage(undefined)).toEqual('Unexpected error.');
+  describe('Typeguards', () => {
+
+    it('should check if error', () => {
+      const message = 'Expected error.';
+      const error = new Error(message);
+      expect(isError(error)).toEqual(true);
+      expect(isError(message)).toEqual(false);
+    });
+
   });
 
-  it('should check if it is an error or not', () => {
-    const message = 'Expected error.';
-    const error = new Error(message);
-    expect(isError(error)).toEqual(true);
-    expect(isError(message)).toEqual(false);
+  it('should return default message', () => {
+    expect(getMessage(undefined)).toEqual('Unexpected error.');
   });
 
   it('should return message', () => {
