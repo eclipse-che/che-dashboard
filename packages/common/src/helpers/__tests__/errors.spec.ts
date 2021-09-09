@@ -14,7 +14,7 @@ import axios, { AxiosError, AxiosResponse } from 'axios';
 import { HttpError } from '@kubernetes/client-node';
 import AxiosMockAdapter from 'axios-mock-adapter';
 import * as http from 'http';
-import { getMessage } from '../errors';
+import { getMessage, isError } from '../errors';
 
 let mockAxios = new AxiosMockAdapter(axios);
 
@@ -28,8 +28,24 @@ describe('Errors helper', () => {
     mockAxios.resetHandlers();
   });
 
+  describe('Typeguards', () => {
+
+    it('should check if error', () => {
+      const message = 'Expected error.';
+      const error = new Error(message);
+      expect(isError(error)).toEqual(true);
+      expect(isError(message)).toEqual(false);
+    });
+
+  });
+
   it('should return default message', () => {
     expect(getMessage(undefined)).toEqual('Unexpected error.');
+  });
+
+  it('should return message', () => {
+    const message = 'Expected error message.';
+    expect(getMessage(message)).toEqual(message);
   });
 
   it('should return error message', () => {

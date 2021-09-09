@@ -54,6 +54,10 @@ export function getMessage(error: unknown): string {
     return error.message;
   }
 
+  if (typeof (error) === 'string') {
+    return error;
+  }
+
   console.error('Unexpected error:', error);
   return 'Unexpected error. Check DevTools console and network tabs for more information.'
 }
