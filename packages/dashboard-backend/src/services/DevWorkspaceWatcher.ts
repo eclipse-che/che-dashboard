@@ -51,7 +51,7 @@ class DevWorkspaceWatcher {
       }
       this.unsubscribeFunction = unsubscribeFunction;
     } catch (error) {
-      this.callbacks.onError(getMessage(error));
+      this.callbacks.onError('Failed to watch devworkspace: ' + getMessage(error));
       throw error;
     }
   }

@@ -33,13 +33,9 @@ export class DevWorkspaceBuilder {
     },
   }
 
-  private uidToDevworkspaceId(uid: string): string {
-    return 'workspace' + uid.split('-').splice(0, 3).join('');
-  }
-
   private buildStatus(): devfileApi.DevWorkspaceStatus {
     return {
-      devworkspaceId: this.uidToDevworkspaceId(this.workspace.metadata.uid),
+      devworkspaceId: 'workspace' + this.workspace.metadata.uid.split('-').splice(0, 3).join(''),
     };
   }
 

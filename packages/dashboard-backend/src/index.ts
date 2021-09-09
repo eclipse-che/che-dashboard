@@ -21,7 +21,7 @@ import { registerTemplateApi } from './api/templateApi';
 import { registerCheServerApiProxy } from './cheServerApiProxy';
 import { registerCors } from './cors';
 import { registerSwagger } from './swagger';
-import { HttpError } from '@kubernetes/client-node';
+import { getMessage } from '@eclipse-che/common/lib/helpers/errors';
 
 const CHE_HOST = process.env.CHE_HOST as string;
 
@@ -50,8 +50,7 @@ server.addContentTypeParser(
       const json = JSON.parse(body as string);
       done(null, json);
     } catch (e) {
-      const error = e as HttpError;
-      error.statusCode = 400;
+      const error = new Error(getMessage(e));
       done(error, undefined);
     }
   }
