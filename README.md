@@ -28,7 +28,7 @@ docker build . -f build/dockerfiles/Dockerfile -t quay.io/eclipse/che-dashboard:
 
 To run Dashboard against Che Cluster you need access to Kubernetes cluster where it lives.
 So, make sure kubeconfig from $KUBECONFIG (or if unset ~/.kube/config) has the target cluster as current.
-If no you may need to do oc logic (if it's OpenShift) or modify it manually if it's Kubernetes.
+If no you may need to do oc login (if it's OpenShift) or modify it manually if it's Kubernetes.
 Then you can proceed to the following steps:
 
 ```sh
@@ -68,8 +68,8 @@ metadata:
     che.eclipse.org/ADDITIONAL_REDIRECT_URIS_env-name: ADDITIONAL_REDIRECT_URIS
     che.eclipse.org/ADDITIONAL_WEBORIGINS_env-name: ADDITIONAL_WEBORIGINS
 data:
-  ADDITIONAL_WEBORIGINS: '"http://localhost:8080"'
-  ADDITIONAL_REDIRECT_URIS: '"http://localhost:8080/*"'
+  ADDITIONAL_WEBORIGINS: '"http://localhost:8080", "http://localhost:3000"'
+  ADDITIONAL_REDIRECT_URIS: '"http://localhost:8080/*", "http://localhost:3000/*"'
 EOF
 # Due temporary limitation we need to rollout che operator to apply changes
 kubectl rollout restart deployment/che-operator -n $CHE_NAMESPACE
@@ -78,20 +78,6 @@ kubectl rollout restart deployment/che-operator -n $CHE_NAMESPACE
 ### Native Auth
 
 Not supported yet.
-
-### Production
-
-To launch the production mode, the command is
-
-```sh
-yarn --cwd packages/dashboard-frontend start:prod
-```
-
-To provide a custom remote server:
-
-```sh
-yarn --cwd packages/dashboard-frontend start:prod --env.server=https://codeready-codeready-workspaces-operator.apps.sandbox.x8i5.p1.openshiftapps.com
-```
 
 ### Dependencies IP
 
