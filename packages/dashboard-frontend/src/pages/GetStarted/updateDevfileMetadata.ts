@@ -10,7 +10,7 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import { isDevfileV2 } from '../../services/workspace-adapter';
+import { isDevfileV2 } from '../../services/devfileApi';
 import { safeDump } from 'js-yaml';
 import {
   DEVWORKSPACE_DEVFILE_SOURCE,

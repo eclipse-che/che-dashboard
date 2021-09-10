@@ -22,6 +22,7 @@ import {
   Tabs,
   Title,
 } from '@patternfly/react-core';
+import common from '@eclipse-che/common';
 import Fallback from '../../components/Fallback';
 import Head from '../../components/Head';
 import { lazyInject } from '../../inversify.config';
@@ -116,10 +117,11 @@ export class GetStarted extends React.PureComponent<Props, State> {
     try {
       workspace = await this.props.createWorkspaceFromDevfile(devfile, undefined, infrastructureNamespace, attr, optionalFilesContent);
     } catch (e) {
+      const errorMessage = common.helpers.errors.getMessage(e);
       this.showAlert({
         key: 'new-workspace-failed',
         variant: AlertVariant.danger,
-        title: e,
+        title: errorMessage,
       });
       throw e;
     }
@@ -135,12 +137,13 @@ export class GetStarted extends React.PureComponent<Props, State> {
     try {
       this.props.history.push(`/ide/${workspace.namespace}/${workspaceName}`);
     } catch (error) {
+      const errorMessage = common.helpers.errors.getMessage(error);
       this.showAlert({
         key: 'start-workspace-failed',
         variant: AlertVariant.warning,
-        title: `Workspace ${workspaceName} failed to start. ${error}`,
+        title: `Workspace ${workspaceName} failed to start. ${errorMessage}`,
       });
-      throw new Error(error);
+      throw new Error(errorMessage);
     }
   }
 

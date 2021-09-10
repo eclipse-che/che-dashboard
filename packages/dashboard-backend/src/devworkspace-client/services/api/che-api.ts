@@ -15,7 +15,7 @@ import { ICheApi, } from '../../types';
 import { projectApiGroup, projectRequestResources, projectResources, } from '../../const';
 import { namespaceModel, projectRequestModel } from '../../const/models';
 import { findApi } from '../helpers';
-import { NodeRequestError } from '../../errors';
+import { helpers } from '@eclipse-che/common';
 
 /**
  * @deprecated Che Server started to provide rest endpoint to get namespace prepared.
@@ -47,7 +47,7 @@ export class CheApi implements ICheApi {
         }
       }
     } catch (e) {
-      return Promise.reject(new NodeRequestError('unable to init project', e));
+      throw new Error('unable to init project: ' + helpers.errors.getMessage(e));
     }
   }
 
@@ -91,7 +91,7 @@ export class CheApi implements ICheApi {
         projectRequestModel(namespace)
       );
     } catch (e) {
-      return Promise.reject(new NodeRequestError('unable to create project', e));
+      throw new Error('unable to create project: ' + helpers.errors.getMessage(e));
     }
   }
 
@@ -101,7 +101,7 @@ export class CheApi implements ICheApi {
         namespaceModel(namespace)
       );
     } catch (e) {
-      return Promise.reject(new NodeRequestError('unable to create namespace', e));
+      throw new Error('unable to create namespace: ' + helpers.errors.getMessage(e));
     }
   }
 }

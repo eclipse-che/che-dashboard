@@ -10,24 +10,14 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import { IDevWorkspace } from '../workspace-client/devworkspace/types';
 import { DevWorkspaceStatus } from '../helpers/types';
+import devfileApi from '../devfileApi';
 
-export function getId(workspace: IDevWorkspace): string {
-  if (workspace?.status?.devworkspaceId) {
-    return  workspace.status.devworkspaceId;
-  }
-
-  let workspaceId = 'workspace';
-
-  if (workspace.metadata.uid) {
-    workspaceId += workspace.metadata.uid.split('-').splice(0,3).join('');
-  }
-
-  return workspaceId;
+export function getId(workspace: devfileApi.DevWorkspace): string {
+  return workspace.metadata.uid;
 }
 
-export function getStatus(workspace: IDevWorkspace): DevWorkspaceStatus {
+export function getStatus(workspace: devfileApi.DevWorkspace): DevWorkspaceStatus {
     if (!workspace.status?.phase) {
       return workspace.spec.started ? DevWorkspaceStatus.STARTING : DevWorkspaceStatus.STOPPED;
     }

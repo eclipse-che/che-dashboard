@@ -15,6 +15,7 @@ import { History } from 'history';
 import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { RouteComponentProps } from 'react-router';
+import common from '@eclipse-che/common';
 import { lazyInject } from '../inversify.config';
 import IdeLoader, { AlertOptions } from '../pages/IdeLoader';
 import { Debounce } from '../services/helpers/debounce';
@@ -161,7 +162,8 @@ class IdeLoaderContainer extends React.PureComponent<Props, State> {
         this.setState({ isWaitingForRestart: false });
       } catch (error) {
         this.setState({ isWaitingForRestart: false });
-        this.showAlert(error);
+        const errorMessage = common.helpers.errors.getMessage(error);
+        this.showAlert(errorMessage);
       }
     }
   }

@@ -15,14 +15,13 @@ import fastifyWebsocket, { SocketStream } from 'fastify-websocket';
 import { baseApiPath } from '../constants/config';
 import SubscribeManager from '../services/SubscriptionManager';
 import { getToken } from './helper';
-import * as WebSocket from 'ws';
 
 const options = { websocket: true } as RouteShorthandOptions;
 
 async function handler(connection: SocketStream, request: FastifyRequest) {
   const bearerAuthenticationToken = request?.headers?.authorization ?  getToken(request) :  undefined;
 
-  const socket: WebSocket  = connection.socket;
+  const socket  = connection.socket;
   const pubSubManager = new SubscribeManager(socket);
 
   socket.on('message', message => {

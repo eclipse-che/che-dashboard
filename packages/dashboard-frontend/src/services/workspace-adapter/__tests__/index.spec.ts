@@ -10,7 +10,7 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import { IDevWorkspace } from '../../workspace-client/devworkspace/types';
+import devfileApi from '../../devfileApi';
 import { cloneDeep } from 'lodash';
 import { convertWorkspace } from '..';
 import { CheWorkspaceBuilder, CHE_DEVFILE_STUB, CHE_RUNTIME_STUB } from '../../../store/__mocks__/cheWorkspaceBuilder';
@@ -314,26 +314,24 @@ describe('Workspace adapter', () => {
     });
 
     it('should return timestamp of creating', () => {
-      const created = new Date(Date.now());
+      const timestamp = 1111111;
+      const created = new Date(timestamp);
       const devWorkspace = new DevWorkspaceBuilder()
-        .withMetadata({
-          creationTimestamp: created,
-        } as IDevWorkspace['metadata'])
         .build();
+      devWorkspace.metadata.creationTimestamp = created;
       const workspace = convertWorkspace(devWorkspace);
-      expect(workspace.created).toEqual(created.valueOf());
+      expect(workspace.created).toEqual(timestamp);
     });
 
     // todo fix that stub implementation
     it('should return timestamp of updating', () => {
-      const updated = new Date(Date.now());
+      const timestamp = 22222222;
+      const updated = new Date(timestamp);
       const devWorkspace = new DevWorkspaceBuilder()
-        .withMetadata({
-          creationTimestamp: updated,
-        } as IDevWorkspace['metadata'])
         .build();
+      devWorkspace.metadata.creationTimestamp = updated;
       const workspace = convertWorkspace(devWorkspace);
-      expect(workspace.updated).toEqual(updated.valueOf());
+      expect(workspace.updated).toEqual(timestamp);
     });
 
     it('should return status', () => {

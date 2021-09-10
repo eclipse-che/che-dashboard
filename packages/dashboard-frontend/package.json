@@ -29,11 +29,10 @@
     "stylelint": "stylelint */**/*.css",
     "stylelint:fix": "stylelint */**/*.css --fix",
     "test": "jest",
-    "test:coverage": "jest --coverage",
-    "test:watch": "jest --watch"
+    "test:coverage": "yarn test --coverage",
+    "test:watch": "yarn test --watch"
   },
   "dependencies": {
-    "@devfile/api": "0.0.1-1622573075",
     "@eclipse-che/che-theia-devworkspace-handler": "0.0.1-1623136422",
     "@eclipse-che/workspace-client": "0.0.1-1622804813",
     "@patternfly/react-core": "4.120.0",
@@ -76,6 +75,7 @@
     "yaml-language-server": "^0.13.0"
   },
   "devDependencies": {
+    "@devfile/api": "^2.2.0-alpha-1628104895",
     "@eclipse-che/api": "^7.18.1",
     "@testing-library/dom": "^7.30.3",
     "@testing-library/jest-dom": "^5.10.1",
@@ -143,7 +143,7 @@
     "stylus-loader": "^3.0.2",
     "ts-jest": "^26.1.0",
     "ts-loader": "^7.0.5",
-    "typescript": "^3.9.3",
+    "typescript": "~4.4.2",
     "typescript-formatter": "^7.2.2",
     "webpack": "^4.43.0",
     "webpack-cli": "^3.3.11",
@@ -151,6 +151,6 @@
     "webpack-merge": "^4.2.2"
   },
   "resolutions": {
-    "scode-languageserver-protocol": "3.15.1"
+    "vscode-languageserver-protocol": "3.15.1"
   }
 }

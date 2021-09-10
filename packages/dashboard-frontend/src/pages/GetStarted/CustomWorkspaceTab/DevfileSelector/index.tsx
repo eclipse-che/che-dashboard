@@ -25,6 +25,7 @@ import {
   TextVariants,
 } from '@patternfly/react-core';
 import { safeLoad } from 'js-yaml';
+import common from '@eclipse-che/common';
 import { AppState } from '../../../../store';
 import * as DevfileRegistriesStore from '../../../../store/DevfileRegistries';
 import * as FactoryResolverStore from '../../../../store/FactoryResolver';
@@ -32,11 +33,10 @@ import { DevfileSelect } from './DevfileSelect';
 import { DevfileLocationInput } from './DevfileLocationInput';
 import { AlertItem } from '../../../../services/helpers/types';
 import { selectRegistriesMetadata } from '../../../../store/DevfileRegistries/selectors';
-
-import styles from './index.module.css';
-import { getErrorMessage } from '../../../../services/helpers/getErrorMessage';
 import { updateDevfileMetadata } from '../../updateDevfileMetadata';
 import { selectWorkspacesSettings } from '../../../../store/Workspaces/Settings/selectors';
+
+import styles from './index.module.css';
 
 type Props =
   MappedProps
@@ -117,7 +117,7 @@ export class DevfileSelectorFormGroup extends React.PureComponent<Props, State> 
       this.devfileLocationRef.current?.invalidateInput();
       this.showAlert({
         key: 'load-factory-resolver-failed',
-        title: `Failed to resolve or load the devfile. ${getErrorMessage(e)}`,
+        title: `Failed to resolve or load the devfile. ${common.helpers.errors.getMessage(e)}`,
         variant: AlertVariant.danger,
       });
     }

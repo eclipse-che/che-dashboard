@@ -7,7 +7,7 @@
     "build:dev": "webpack --color --config webpack.config.dev.js",
     "build:watch": "yarn build:dev --watch",
     "start:debug": "nodemon --inspect lib/server/backend.js",
-    "test": "jest --passWithNoTests"
+    "test": "jest"
   },
   "contributors": [
     {
@@ -37,7 +37,6 @@
     "@types/args": "^3.0.1",
     "@types/jest": "^26.0.20",
     "@types/node": "^14.14.35",
-    "@types/ws": "^7.4.7",
     "copy-webpack-plugin": "^6.0.2",
     "file-loader": "^6.2.0",
     "jest": "^26.6.3",

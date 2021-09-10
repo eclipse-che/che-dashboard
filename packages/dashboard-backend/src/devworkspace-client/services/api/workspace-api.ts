@@ -26,7 +26,8 @@ import {
 } from '../../const';
 
 import { devfileToDevWorkspace } from '../converters';
-import { NodeRequestError } from '../../errors';
+import { helpers } from '@eclipse-che/common';
+import { HttpError } from '@kubernetes/client-node';
 
 export class DevWorkspaceApi implements IDevWorkspaceApi {
   private readonly customObjectAPI: k8s.CustomObjectsApi;
@@ -47,7 +48,7 @@ export class DevWorkspaceApi implements IDevWorkspaceApi {
       );
       return resp.body as IDevWorkspaceList;
     } catch (e) {
-      throw new NodeRequestError('unable to list devworkspaces', e);
+      throw new Error('unable to list devworkspaces: ' + helpers.errors.getMessage(e));
     }
   }
 
@@ -65,7 +66,7 @@ export class DevWorkspaceApi implements IDevWorkspaceApi {
       );
       return resp.body as IDevWorkspace;
     } catch (e) {
-      throw new NodeRequestError(`unable to get devworkspace ${namespace}/${name}`, e);
+      throw new Error(`unable to get devworkspace ${namespace}/${name}: ` + helpers.errors.getMessage(e));
     }
   }
 
@@ -86,7 +87,7 @@ export class DevWorkspaceApi implements IDevWorkspaceApi {
       );
       return resp.body as IDevWorkspace;
     } catch (e) {
-      throw new NodeRequestError('unable to create devworkspace', e);
+      throw new Error('unable to create devworkspace: ' + helpers.errors.getMessage(e));
     }
   }
 
@@ -116,7 +117,7 @@ export class DevWorkspaceApi implements IDevWorkspaceApi {
       );
       return resp.body as IDevWorkspace;
     } catch (e) {
-      throw new NodeRequestError('unable to update devworkspace', e);
+      throw new Error('unable to update devworkspace: ' + helpers.errors.getMessage(e));
     }
   }
 
@@ -130,7 +131,7 @@ export class DevWorkspaceApi implements IDevWorkspaceApi {
         name
       );
     } catch (e) {
-      throw new NodeRequestError(`unable to delete devworkspace ${namespace}/${name}`, e);
+      throw new Error(`unable to delete devworkspace ${namespace}/${name}: ` + helpers.errors.getMessage(e));
     }
   }
 
@@ -165,7 +166,7 @@ export class DevWorkspaceApi implements IDevWorkspaceApi {
       );
       return resp.body as IDevWorkspace;
     } catch (e) {
-      throw new NodeRequestError(`unable to patch devworkspace`, e);
+      throw new Error(`unable to patch devworkspace: ` + helpers.errors.getMessage(e));
     }
   }
 

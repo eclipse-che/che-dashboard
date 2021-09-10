@@ -11,28 +11,25 @@
  */
 
 import { inject, injectable } from 'inversify';
+import { InversifyBinding } from '@eclipse-che/che-theia-devworkspace-handler/lib/inversify/inversify-binding';
+import { CheTheiaPluginsDevfileResolver } from '@eclipse-che/che-theia-devworkspace-handler/lib/devfile/che-theia-plugins-devfile-resolver';
+import common from '@eclipse-che/common';
+import { SidecarPolicy } from '@eclipse-che/che-theia-devworkspace-handler/lib/api/devfile-context';
 import { isWebTerminal } from '../../helpers/devworkspace';
 import { WorkspaceClient } from '../index';
-import {
-  IDevWorkspaceDevfile, IDevWorkspace, IDevWorkspaceTemplate, IPatch,
-} from './types';
+import devfileApi, { IPatch, isDevWorkspace } from '../../devfileApi';
 import {
   devWorkspaceApiGroup, devworkspaceSingularSubresource, devworkspaceVersion
 } from './converters';
 import { AlertItem, DevWorkspaceStatus } from '../../helpers/types';
 import { KeycloakSetupService } from '../../keycloak/setup';
 import { delay } from '../../helpers/delay';
-import { V1alpha2DevWorkspace, V1alpha2DevWorkspaceTemplate, V1alpha2DevWorkspaceSpecTemplate } from '@devfile/api';
-import { InversifyBinding } from '@eclipse-che/che-theia-devworkspace-handler/lib/inversify/inversify-binding';
-import { CheTheiaPluginsDevfileResolver } from '@eclipse-che/che-theia-devworkspace-handler/lib/devfile/che-theia-plugins-devfile-resolver';
-import { SidecarPolicy } from '@eclipse-che/che-theia-devworkspace-handler/lib/api/devfile-context';
 import * as DwApi from '../../dashboard-backend-client/devWorkspaceApi';
 import * as DwtApi from '../../dashboard-backend-client/devWorkspaceTemplateApi';
 import * as DwCheApi from '../../dashboard-backend-client/cheWorkspaceApi';
 import { WebsocketClient, SubscribeMessage } from '../../dashboard-backend-client/websocketClient';
 import { getId, getStatus } from '../../workspace-adapter/helper';
 import { EventEmitter } from 'events';
-import { isWorkspaceV2 } from '../../workspace-adapter';
 import { AppAlerts } from '../../alerts/appAlerts';
 import { AlertVariant } from '@patternfly/react-core';
 
@@ -50,7 +47,7 @@ export type Subscriber = {
     getResourceVersion: () => Promise<string|undefined>,
     updateDevWorkspaceStatus: (message: IStatusUpdate) => void,
     updateDeletedDevWorkspaces: (deletedWorkspacesIds: string[]) => void,
-    updateAddedDevWorkspaces: (workspace: IDevWorkspace[]) => void,
+    updateAddedDevWorkspaces: (workspace: devfileApi.DevWorkspace[]) => void,
   }
 };
 
@@ -134,9 +131,9 @@ export class DevWorkspaceClient extends WorkspaceClient {
     return Array.from(this._failingWebSockets);
   }
 
-  async getAllWorkspaces(defaultNamespace: string): Promise<{ workspaces: IDevWorkspace[]; resourceVersion: string }> {
+  async getAllWorkspaces(defaultNamespace: string): Promise<{ workspaces: devfileApi.DevWorkspace[]; resourceVersion: string }> {
     const { items, metadata: { resourceVersion } } = await DwApi.listWorkspacesInNamespace(defaultNamespace);
-    const workspaces: IDevWorkspace[] = [];
+    const workspaces: devfileApi.DevWorkspace[] = [];
     for (const item of items) {
       if (!isWebTerminal(item)) {
         workspaces.push(item);
@@ -145,7 +142,7 @@ export class DevWorkspaceClient extends WorkspaceClient {
     return { workspaces, resourceVersion };
   }
 
-  async getWorkspaceByName(namespace: string, workspaceName: string): Promise<IDevWorkspace> {
+  async getWorkspaceByName(namespace: string, workspaceName: string): Promise<devfileApi.DevWorkspace> {
     let workspace = await DwApi.getWorkspaceByName(namespace, workspaceName);
     let attempted = 0;
     while ((!workspace.status || !workspace.status.phase || !workspace.status.mainUrl) && attempted < this.maxStatusAttempts) {
@@ -164,13 +161,13 @@ export class DevWorkspaceClient extends WorkspaceClient {
     return workspace;
   }
 
-  async create(devfile: IDevWorkspaceDevfile,
+  async create(devfile: devfileApi.Devfile,
     defaultNamespace: string,
-    pluginsDevfile: IDevWorkspaceDevfile[],
+    pluginsDevfile: devfileApi.Devfile[],
     pluginRegistryUrl: string | undefined,
     pluginRegistryInternalUrl: string | undefined,
     optionalFilesContent: {[fileName: string]: string},
-  ): Promise<IDevWorkspace> {
+  ): Promise<devfileApi.DevWorkspace> {
     if (!devfile.components) {
       devfile.components = [];
     }
@@ -181,7 +178,7 @@ export class DevWorkspaceClient extends WorkspaceClient {
     const workspaceId = getId(createdWorkspace);
 
     const devfileGroupVersion = `${devWorkspaceApiGroup}/${devworkspaceVersion}`;
-    const devWorkspaceTemplates: V1alpha2DevWorkspaceTemplate[] = [];
+    const devWorkspaceTemplates: devfileApi.DevWorkspaceTemplateLike[] = [];
     for (const pluginDevfile of pluginsDevfile) {
       // TODO handle error in a proper way
       const pluginName = this.normalizePluginName(pluginDevfile.metadata.name, workspaceId);
@@ -198,7 +195,7 @@ export class DevWorkspaceClient extends WorkspaceClient {
       devWorkspaceTemplates.push(theiaDWT);
     }
 
-    const devWorkspace: V1alpha2DevWorkspace = createdWorkspace;
+    const devWorkspace: devfileApi.DevWorkspace = createdWorkspace;
     // call theia library to insert all the logic
     const inversifyBindings = new InversifyBinding();
     const container = await inversifyBindings.initBindings({
@@ -211,7 +208,7 @@ export class DevWorkspaceClient extends WorkspaceClient {
     const cheTheiaPluginsDevfileResolver = container.get(CheTheiaPluginsDevfileResolver);
 
     let sidecarPolicy: SidecarPolicy;
-    const devfileCheTheiaSidecarPolicy = (devfile as V1alpha2DevWorkspaceSpecTemplate).attributes?.['che-theia.eclipse.org/sidecar-policy'];
+    const devfileCheTheiaSidecarPolicy = (devfile as devfileApi.DevWorkspaceSpecTemplate).attributes?.['che-theia.eclipse.org/sidecar-policy'];
     if (devfileCheTheiaSidecarPolicy === 'USE_DEV_CONTAINER') {
       sidecarPolicy = SidecarPolicy.USE_DEV_CONTAINER;
     } else {
@@ -229,9 +226,10 @@ export class DevWorkspaceClient extends WorkspaceClient {
         sidecarPolicy,
         suffix: workspaceId,
       });
-    } catch (error) {
-      console.error(error);
-      throw new Error(`Unable to update the devWorkspace with the devfile resolver: ${error.message}`);
+    } catch (e) {
+      console.error(e);
+      const errorMessage = common.helpers.errors.getMessage(e);
+      throw new Error(`Unable to resolve theia plugins: ${errorMessage}`);
     }
     console.debug('Devfile updated to', devfile, ' and templates updated to', devWorkspaceTemplates);
 
@@ -277,7 +275,7 @@ export class DevWorkspaceClient extends WorkspaceClient {
         }
       }
 
-      const pluginDWT = await DwtApi.createTemplate(<IDevWorkspaceTemplate>template);
+      const pluginDWT = await DwtApi.createTemplate(<devfileApi.DevWorkspaceTemplate>template);
       this.addPlugin(createdWorkspace, pluginDWT.metadata.name, pluginDWT.metadata.namespace);
     }));
 
@@ -303,7 +301,7 @@ export class DevWorkspaceClient extends WorkspaceClient {
    * @param workspace The DevWorkspace you want to update
    * @param plugins The plugins you want to inject into the devworkspace
    */
-  async update(workspace: IDevWorkspace, plugins: IDevWorkspaceDevfile[]): Promise<IDevWorkspace> {
+  async update(workspace: devfileApi.DevWorkspace, plugins: devfileApi.Devfile[]): Promise<devfileApi.DevWorkspace> {
     // Take the devworkspace with no plugins and then inject them
     for (const plugin of plugins) {
       const pluginName = this.normalizePluginName(plugin.metadata.name, getId(workspace));
@@ -373,7 +371,7 @@ export class DevWorkspaceClient extends WorkspaceClient {
     await DwApi.deleteWorkspace(namespace, name);
   }
 
-  async changeWorkspaceStatus(namespace: string, name: string, started: boolean): Promise<IDevWorkspace> {
+  async changeWorkspaceStatus(namespace: string, name: string, started: boolean): Promise<devfileApi.DevWorkspace> {
     const changedWorkspace = await DwApi.patchWorkspace(namespace, name, [{
       op: 'replace',
       path: '/spec/started',
@@ -391,7 +389,7 @@ export class DevWorkspaceClient extends WorkspaceClient {
    * @param workspace A devworkspace
    * @param pluginName The name of the plugin
    */
-  private addPlugin(workspace: IDevWorkspace, pluginName: string, namespace: string) {
+  private addPlugin(workspace: devfileApi.DevWorkspace, pluginName: string, namespace: string) {
     if (!workspace.spec.template.components) {
       workspace.spec.template.components = [];
     }
@@ -432,17 +430,16 @@ export class DevWorkspaceClient extends WorkspaceClient {
 
     const onModified = 'onModified';
     await this.websocketClient.subscribe(await getSubscribeMessage(onModified));
-    this.websocketClient.addListener(onModified, (maybeDevworkspace: unknown) => {
-      if (isWorkspaceV2(maybeDevworkspace as any) === false ) {
+    this.websocketClient.addListener(onModified, (devworkspace: unknown) => {
+      if (!isDevWorkspace(devworkspace)) {
         const title = `WebSocket channel "${onModified}" received object that is not a devWorkspace, skipping it.`;
         const key = `${onModified}-websocket-channel`;
-        console.warn(title , maybeDevworkspace);
+        console.warn(title , devworkspace);
         this.showAlert({ key, variant: AlertVariant.warning, title });
         return;
       }
-      const devworkspace = maybeDevworkspace as IDevWorkspace;
       const statusUpdate = this.createStatusUpdate(devworkspace);
-      const statusMessage = devworkspace.status.message;
+      const statusMessage = devworkspace.status?.message;
       if (statusMessage) {
         const workspaceId = getId(devworkspace);
         const lastMessage = this.lastDevWorkspaceLog.get(workspaceId);
@@ -457,16 +454,15 @@ export class DevWorkspaceClient extends WorkspaceClient {
 
     const onAdded = 'onAdded';
     await this.websocketClient.subscribe(await getSubscribeMessage(onAdded));
-    this.websocketClient.addListener(onAdded, (maybeDevworkspace: unknown) => {
-      if (isWorkspaceV2(maybeDevworkspace as any) === false ) {
+    this.websocketClient.addListener(onAdded, (devworkspace: unknown) => {
+      if (!isDevWorkspace(devworkspace)) {
         const title = `WebSocket channel "${onAdded}" received object that is not a devWorkspace, skipping it.`;
         const key = `${onAdded}-websocket-channel`;
-        console.warn(title , maybeDevworkspace);
+        console.warn(title , devworkspace);
         this.showAlert({ key, variant: AlertVariant.warning, title });
         return;
       }
-      const workspace = maybeDevworkspace as IDevWorkspace;
-      callbacks.updateAddedDevWorkspaces([workspace]);
+      callbacks.updateAddedDevWorkspaces([devworkspace]);
     });
 
     const onDeleted = 'onDeleted';
@@ -489,7 +485,7 @@ export class DevWorkspaceClient extends WorkspaceClient {
    * and the new DevWorkspace
    * @param devworkspace The incoming DevWorkspace
    */
-  private createStatusUpdate(devworkspace: IDevWorkspace): IStatusUpdate {
+  private createStatusUpdate(devworkspace: devfileApi.DevWorkspace): IStatusUpdate {
     const namespace = devworkspace.metadata.namespace;
     const workspaceId = getId(devworkspace);
     // Starting devworkspaces don't have status defined
@@ -522,12 +518,12 @@ export class DevWorkspaceClient extends WorkspaceClient {
     }
   }
 
-  checkForDevWorkspaceError(devworkspace: IDevWorkspace) {
+  checkForDevWorkspaceError(devworkspace: devfileApi.DevWorkspace) {
     const currentPhase = getStatus(devworkspace);
     if (currentPhase && currentPhase === DevWorkspaceStatus.FAILED) {
-      const message = devworkspace.status.message;
+      const message = devworkspace.status?.message;
       if (message) {
-        throw new Error(devworkspace.status.message);
+        throw new Error(message);
       }
       throw new Error('Unknown error occured when trying to process the devworkspace');
     }

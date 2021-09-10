@@ -11,17 +11,12 @@
  */
 
 import axios from 'axios';
-import {
-  IDevWorkspaceDevfile,
-  IDevWorkspace,
-  IDevWorkspaces,
-  IPatch,
-} from '../workspace-client/devworkspace/types';
-import { getErrorMessage } from '../helpers/getErrorMessage';
+import common from '@eclipse-che/common';
+import devfileApi, { IDevWorkspacesList, IPatch } from '../devfileApi';
 import { addAuthentication } from './auth';
 import { prefix } from './const';
 
-export async function createWorkspace(devfile: IDevWorkspaceDevfile, defaultNamespace: string, started: boolean): Promise<IDevWorkspace> {
+export async function createWorkspace(devfile: devfileApi.Devfile, defaultNamespace: string, started: boolean): Promise<devfileApi.DevWorkspace> {
   const headers = addAuthentication({});
   try {
     const response = await axios.post(`${prefix}/namespace/${defaultNamespace}/devworkspaces`, {
@@ -30,46 +25,46 @@ export async function createWorkspace(devfile: IDevWorkspaceDevfile, defaultName
     }, { headers });
     return response.data;
   } catch (e) {
-    throw `Failed to create a new workspace. ${getErrorMessage(e)}`;
+    throw `Failed to create a new workspace. ${common.helpers.errors.getMessage(e)}`;
   }
 }
 
-export async function listWorkspacesInNamespace(defaultNamespace: string): Promise<IDevWorkspaces> {
+export async function listWorkspacesInNamespace(defaultNamespace: string): Promise<IDevWorkspacesList> {
   const headers = addAuthentication({});
   try {
     const response = await axios.get(`${prefix}/namespace/${defaultNamespace}/devworkspaces`, { headers });
     return response.data;
   } catch (e) {
-    throw `Failed to fetch the list of devWorkspaces. ${getErrorMessage(e)}`;
+    throw `Failed to fetch the list of devWorkspaces. ${common.helpers.errors.getMessage(e)}`;
   }
 }
 
-export async function getWorkspaceByName(namespace: string, workspaceName: string): Promise<IDevWorkspace> {
+export async function getWorkspaceByName(namespace: string, workspaceName: string): Promise<devfileApi.DevWorkspace> {
   const headers = addAuthentication({});
   try {
     const response = await axios.get(`${prefix}/namespace/${namespace}/devworkspaces/${workspaceName}`, { headers });
     return response.data;
   } catch (e) {
-    throw `Failed to fetch workspace '${workspaceName}'. ${getErrorMessage(e)}`;
+    throw `Failed to fetch workspace '${workspaceName}'. ${common.helpers.errors.getMessage(e)}`;
   }
 }
 
-export async function patchWorkspace(namespace: string, workspaceName: string, patch: IPatch[]): Promise<IDevWorkspace> {
+export async function patchWorkspace(namespace: string, workspaceName: string, patch: IPatch[]): Promise<devfileApi.DevWorkspace> {
   const headers = addAuthentication({});
   try {
     const response = await axios.patch(`${prefix}/namespace/${namespace}/devworkspaces/${workspaceName}`, patch, { headers });
     return response.data;
   } catch (e) {
-    throw `Failed to update workspace '${workspaceName}'. ${getErrorMessage(e)}`;
+    throw `Failed to update workspace '${workspaceName}'. ${common.helpers.errors.getMessage(e)}`;
   }
 }
 
-export async function deleteWorkspace(namespace: string, workspaceName: string): Promise<IDevWorkspace> {
+export async function deleteWorkspace(namespace: string, workspaceName: string): Promise<devfileApi.DevWorkspace> {
   const headers = addAuthentication({});
   try {
     const response = await axios.delete(`${prefix}/namespace/${namespace}/devworkspaces/${workspaceName}`, { headers });
     return response.data;
   } catch (e) {
-    throw `Failed to delete workspace '${workspaceName}'. ${getErrorMessage(e)}`;
+    throw `Failed to delete workspace '${workspaceName}'. ${common.helpers.errors.getMessage(e)}`;
   }
 }

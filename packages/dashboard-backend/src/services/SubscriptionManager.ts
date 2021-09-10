@@ -12,7 +12,7 @@
 
 import DevWorkspaceWatcher from './DevWorkspaceWatcher';
 import { IDevWorkspace, IDevWorkspaceCallbacks } from '../devworkspace-client';
-import * as WebSocket from 'ws';
+import WebSocket from 'ws';
 
 class SubscriptionManager {
   private readonly subscriber: WebSocket;

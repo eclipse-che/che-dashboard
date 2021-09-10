@@ -11,7 +11,7 @@
  */
 
 import axios from 'axios';
-import { getErrorMessage } from '../helpers/getErrorMessage';
+import common from '@eclipse-che/common';
 import { prefix } from './const';
 import { addAuthentication } from './auth';
 
@@ -22,6 +22,6 @@ export async function initializeNamespace(namespace: string): Promise<void> {
     const response = await axios.get(url, { headers });
     return response.data;
   } catch (e) {
-    throw `Failed to initialize namespace '${namespace}'. ${getErrorMessage(e)}`;
+    throw `Failed to initialize namespace '${namespace}'. ${common.helpers.errors.getMessage(e)}`;
   }
 }

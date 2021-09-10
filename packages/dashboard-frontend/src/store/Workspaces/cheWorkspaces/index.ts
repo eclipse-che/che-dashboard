@@ -13,6 +13,7 @@
 import { Action, Reducer } from 'redux';
 import * as api from '@eclipse-che/api';
 import { ThunkDispatch } from 'redux-thunk';
+import common from '@eclipse-che/common';
 import { AppThunk } from '../..';
 import { container } from '../../../inversify.config';
 import { CheWorkspaceClient } from '../../../services/workspace-client/cheworkspace/cheWorkspaceClient';
@@ -20,7 +21,6 @@ import { WorkspaceStatus } from '../../../services/helpers/types';
 import { createObject } from '../../helpers';
 import { KeycloakAuthService } from '../../../services/keycloak/auth';
 import { deleteLogs, mergeLogs } from '../logs';
-import { getErrorMessage } from '../../../services/helpers/getErrorMessage';
 import { getDefer, IDeferred } from '../../../services/helpers/deferred';
 import { DisposableCollection } from '../../../services/helpers/disposable';
 
@@ -205,7 +205,7 @@ export const actionCreators: ActionCreators = {
         }
       });
     } catch (e) {
-      const errorMessage = 'Failed to fetch available workspaces, reason: ' + getErrorMessage(e);
+      const errorMessage = 'Failed to fetch available workspaces, reason: ' + common.helpers.errors.getMessage(e);
       dispatch({
         type: 'CHE_RECEIVE_ERROR',
         error: errorMessage,
@@ -231,7 +231,7 @@ export const actionCreators: ActionCreators = {
         workspace: update,
       });
     } catch (e) {
-      const errorMessage = `Failed to fetch the workspace ${workspace.devfile.metadata.name}, reason: ` + getErrorMessage(e);
+      const errorMessage = `Failed to fetch the workspace ${workspace.devfile.metadata.name}, reason: ` + common.helpers.errors.getMessage(e);
       dispatch({
         type: 'CHE_RECEIVE_ERROR',
         error: errorMessage,
@@ -252,7 +252,7 @@ export const actionCreators: ActionCreators = {
         workspace: update,
       });
     } catch (e) {
-      const errorMessage = `Failed to start the workspace ${workspace.devfile.metadata.name}, reason: ` + getErrorMessage(e);
+      const errorMessage = `Failed to start the workspace ${workspace.devfile.metadata.name}, reason: ` + common.helpers.errors.getMessage(e);
       dispatch({
         type: 'CHE_RECEIVE_ERROR',
         error: errorMessage,
@@ -265,7 +265,7 @@ export const actionCreators: ActionCreators = {
     try {
       await cheWorkspaceClient.restApiClient.stop(workspace.id);
     } catch (e) {
-      const errorMessage = `Failed to stop the workspace ${workspace.devfile.metadata.name}, reason: ` + getErrorMessage(e);
+      const errorMessage = `Failed to stop the workspace ${workspace.devfile.metadata.name}, reason: ` + common.helpers.errors.getMessage(e);
       dispatch({
         type: 'CHE_RECEIVE_ERROR',
         error: errorMessage,
@@ -318,7 +318,7 @@ export const actionCreators: ActionCreators = {
         workspaceId: workspace.id,
       });
     } catch (e) {
-      const errorMessage = `Failed to delete the workspace ${workspace.devfile.metadata.name}, reason: ` + getErrorMessage(e);
+      const errorMessage = `Failed to delete the workspace ${workspace.devfile.metadata.name}, reason: ` + common.helpers.errors.getMessage(e);
       dispatch({
         type: 'CHE_RECEIVE_ERROR',
         error: errorMessage,
@@ -337,7 +337,7 @@ export const actionCreators: ActionCreators = {
         workspace: updatedWorkspace
       });
     } catch (e) {
-      const errorMessage = `Failed to update the workspace ${workspace.devfile.metadata.name}, reason: ` + getErrorMessage(e);
+      const errorMessage = `Failed to update the workspace ${workspace.devfile.metadata.name}, reason: ` + common.helpers.errors.getMessage(e);
       dispatch({
         type: 'CHE_RECEIVE_ERROR',
         error: errorMessage,
@@ -366,7 +366,7 @@ export const actionCreators: ActionCreators = {
       });
       return workspace;
     } catch (e) {
-      const errorMessage = 'Failed to create a new workspace from the devfile, reason: ' + getErrorMessage(e);
+      const errorMessage = 'Failed to create a new workspace from the devfile, reason: ' + common.helpers.errors.getMessage(e);
       dispatch({
         type: 'CHE_RECEIVE_ERROR',
         error: errorMessage,

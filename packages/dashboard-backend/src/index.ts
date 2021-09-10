@@ -21,6 +21,7 @@ import { registerTemplateApi } from './api/templateApi';
 import { registerCheServerApiProxy } from './cheServerApiProxy';
 import { registerCors } from './cors';
 import { registerSwagger } from './swagger';
+import { getMessage } from '@eclipse-che/common/lib/helpers/errors';
 import { registerCheServerStubs } from './cheServerStubs';
 
 const CHE_HOST = process.env.CHE_HOST as string;
@@ -51,9 +52,9 @@ server.addContentTypeParser(
     try {
       const json = JSON.parse(body as string);
       done(null, json);
-    } catch (err) {
-      err.statusCode = 400;
-      done(err, undefined);
+    } catch (e) {
+      const error = new Error(getMessage(e));
+      done(error, undefined);
     }
   }
 );
