@@ -111,7 +111,7 @@ export class WorkspaceAdapter<T extends che.Workspace | devfileApi.DevWorkspace>
       const reference = this.workspace as devfileApi.DevWorkspace;
       if (reference.metadata.creationTimestamp) {
         // `creationTimestamp` is a date time String
-        return new Date(reference.metadata.creationTimestamp.toString()).getTime();
+        return new Date(reference.metadata.creationTimestamp).getTime();
       }
     }
     return new Date().getTime();

@@ -315,7 +315,7 @@ describe('Workspace adapter', () => {
 
     it('should return timestamp of creating', () => {
       const timestamp = 1111111;
-      const created = new Date(timestamp * 1000);
+      const created = new Date(timestamp);
       const devWorkspace = new DevWorkspaceBuilder()
         .build();
       devWorkspace.metadata.creationTimestamp = created;
@@ -326,7 +326,7 @@ describe('Workspace adapter', () => {
     // todo fix that stub implementation
     it('should return timestamp of updating', () => {
       const timestamp = 22222222;
-      const updated = new Date(timestamp * 1000);
+      const updated = new Date(timestamp);
       const devWorkspace = new DevWorkspaceBuilder()
         .build();
       devWorkspace.metadata.creationTimestamp = updated;

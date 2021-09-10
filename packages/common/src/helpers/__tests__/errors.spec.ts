@@ -40,7 +40,7 @@ describe('Errors helper', () => {
   });
 
   it('should return default message', () => {
-    expect(getMessage(undefined)).toEqual('Unexpected error.');
+    expect(getMessage(undefined)).toEqual('Error is not specified.');
   });
 
   it('should return message', () => {

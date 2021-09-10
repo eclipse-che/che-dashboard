@@ -20,7 +20,7 @@ import { HttpError } from "@kubernetes/client-node";
  */
 export function getMessage(error: unknown): string {
   if (!error) {
-    return 'Unexpected error.';
+    return 'Error is not specified.';
   }
 
   if (isKubeClientError(error)) {
