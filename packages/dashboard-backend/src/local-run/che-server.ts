@@ -9,7 +9,6 @@
  * Contributors:
  *   Red Hat, Inc. - initial API and implementation
  */
-
 import { FastifyInstance, FastifyRequest, RouteShorthandOptions } from 'fastify';
 import fastifyHttpProxy from 'fastify-http-proxy';
 

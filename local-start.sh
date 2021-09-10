@@ -60,10 +60,8 @@ if [ "$FORCE_BUILD" == "true" ] || \
 fi
 
 export CHE_HOST=http://localhost:8080
-CHE_URL=$(oc get checluster -n $CHE_NAMESPACE eclipse-che -o=json | jq -r '.status.cheURL')
+export CHE_API_PROXY_UPSTREAM=$(oc get checluster -n $CHE_NAMESPACE eclipse-che -o=json | jq -r '.status.cheURL')
 
 # relative path from backend package
 FRONTEND_RESOURCES=../../../../$DASHBOARD_FRONTEND/lib
-yarn --cwd $DASHBOARD_BACKEND start:debug \
-  --publicFolder $FRONTEND_RESOURCES \
-  --cheApiUpstream $CHE_URL
+yarn --cwd $DASHBOARD_BACKEND start:debug --publicFolder $FRONTEND_RESOURCES
