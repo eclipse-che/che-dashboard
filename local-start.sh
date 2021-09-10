@@ -34,8 +34,6 @@ parse_args() {
   done
 }
 
-SCRIPT_DIR=$(dirname $(readlink -f "$0"))
-
 FORCE_BUILD="false"
 # Init Che Namespace with the default value if it's not set
 CHE_NAMESPACE="${CHE_NAMESPACE:-eclipse-che}"
