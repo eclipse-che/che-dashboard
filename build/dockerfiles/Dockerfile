@@ -17,6 +17,10 @@ RUN if ! [ type "yarn" &> /dev/null ]; then \
 COPY package.json /dashboard/
 COPY yarn.lock /dashboard/
 COPY lerna.json /dashboard/
+COPY tsconfig.json /dashboard/
+
+ENV COMMON=packages/common
+COPY ${COMMON}/package.json /dashboard/${COMMON}/
 
 ENV FRONTEND=packages/dashboard-frontend
 COPY ${FRONTEND}/package.json /dashboard/${FRONTEND}/
