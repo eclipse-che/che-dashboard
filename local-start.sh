@@ -44,9 +44,8 @@ CHE_NAMESPACE="${CHE_NAMESPACE:-eclipse-che}"
 export LOCAL_RUN="true"
 export KUBECONFIG="${KUBECONFIG:-$HOME/.kube/config}"
 
-SCRIPT_DIR=$(dirname $(readlink -f "$0"))
-DASHBOARD_FRONTEND=${SCRIPT_DIR}/packages/dashboard-frontend
-DASHBOARD_BACKEND=${SCRIPT_DIR}/packages/dashboard-backend
+DASHBOARD_FRONTEND=packages/dashboard-frontend
+DASHBOARD_BACKEND=packages/dashboard-backend
 
 parse_args "$@"
 
@@ -65,11 +64,8 @@ fi
 export CHE_HOST=http://localhost:8080
 CHE_URL=$(oc get checluster -n $CHE_NAMESPACE eclipse-che -o=json | jq -r '.status.cheURL')
 
-# we use relative to the static server path which is starting with '../../' to serv the dashboard-frontend
-# build output directory. In the case of docker build dashboard-frontend output directory will be copied
-# into the './public' directory (default value for static server)
-PUBLIC_FOLDER=../../../../$DASHBOARD_FRONTEND/lib
-
+# relative path from backend package
+FRONTEND_RESOURCES=../../../../$DASHBOARD_FRONTEND/lib
 yarn --cwd $DASHBOARD_BACKEND start:debug \
-  --publicFolder $PUBLIC_FOLDER \
+  --publicFolder $FRONTEND_RESOURCES \
   --cheApiUpstream $CHE_URL
