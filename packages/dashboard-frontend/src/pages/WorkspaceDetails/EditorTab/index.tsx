@@ -124,12 +124,12 @@ export class EditorTab extends React.PureComponent<Props, State> {
         {(this.state.showDevfileV2ConfirmationModal) && (
           <Modal variant={ModalVariant.small} isOpen={true}
             title="Restart Workspace"
-            onClose={() => this.devfileConfirmationCancelation()}
+            onClose={() => this.devfileV2ConfirmationCancellation()}
             actions={[
               <Button key="yes" variant="primary" onClick={() => this.saveDevfile()}>
                 Yes
               </Button>,
-              <Button key="no" variant="secondary" onClick={() => this.devfileConfirmationCancelation()}>
+              <Button key="no" variant="secondary" onClick={() => this.devfileV2ConfirmationCancellation()}>
                 No
               </Button>,
             ]}
@@ -196,15 +196,15 @@ export class EditorTab extends React.PureComponent<Props, State> {
    * When a devfile v2 user does not allow the devworkspace to restart then store the configuration
    * in an annotation that will be used on next start
    */
-  private async devfileConfirmationCancelation() {
-    const devfile = this.state.devfile;
+  private async devfileV2ConfirmationCancellation() {
+    const devfile = this.state.devfile as devfileApi.Devfile;
     if (!devfile) {
       return;
     }
     try {
       await this.checkForModifiedClusterDevWorkspace();
       const devworkspace = this.props.workspace.ref as devfileApi.DevWorkspace;
-      const convertedDevWorkspace = convertWorkspace(this.props.workspace.ref);
+      const convertedDevWorkspace = convertWorkspace(devworkspace);
       convertedDevWorkspace.devfile = devfile;
       // Store the devfile in here
       (convertedDevWorkspace.ref as devfileApi.DevWorkspace).metadata.annotations = {
