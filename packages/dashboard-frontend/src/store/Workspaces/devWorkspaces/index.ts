@@ -24,8 +24,8 @@ import { deleteLogs, mergeLogs } from '../logs';
 import { getDefer, IDeferred } from '../../../services/helpers/deferred';
 import { DisposableCollection } from '../../../services/helpers/disposable';
 import { selectDwPluginsList } from '../../Plugins/devWorkspacePlugins/selectors';
-import { getId } from '../../../services/workspace-adapter/helper';
 import { devWorkspaceKind } from '../../../services/devfileApi/devWorkspace';
+import { WorkspaceAdapter } from '../../../services/workspace-adapter';
 
 const cheWorkspaceClient = container.get(CheWorkspaceClient);
 const devWorkspaceClient = container.get(DevWorkspaceClient);
@@ -250,7 +250,7 @@ export const actionCreators: ActionCreators = {
     if (workspace.status?.phase === DevWorkspaceStatus.STOPPED || workspace.status?.phase === DevWorkspaceStatus.FAILED) {
       onStatusChangeCallback(workspace.status.phase);
     } else {
-      const workspaceId = getId(workspace);
+      const workspaceId = WorkspaceAdapter.getId(workspace);
       onStatusChangeCallbacks.set(workspaceId, onStatusChangeCallback);
       toDispose.push({
         dispose: () => onStatusChangeCallbacks.delete(workspaceId)
@@ -270,7 +270,7 @@ export const actionCreators: ActionCreators = {
   stopWorkspace: (workspace: devfileApi.DevWorkspace): AppThunk<KnownAction, Promise<void>> => async (dispatch): Promise<void> => {
     try {
       devWorkspaceClient.changeWorkspaceStatus(workspace.metadata.namespace, workspace.metadata.name, false);
-      dispatch({ type: 'DELETE_DEVWORKSPACE_LOGS', workspaceId: getId(workspace) });
+      dispatch({ type: 'DELETE_DEVWORKSPACE_LOGS', workspaceId: WorkspaceAdapter.getId(workspace) });
     } catch (e) {
       const errorMessage = `Failed to stop the workspace ${workspace.metadata.name}, reason: ` + common.helpers.errors.getMessage(e);
       dispatch({
@@ -286,7 +286,7 @@ export const actionCreators: ActionCreators = {
       const namespace = workspace.metadata.namespace;
       const name = workspace.metadata.name;
       await devWorkspaceClient.delete(namespace, name);
-      const workspaceId = getId(workspace);
+      const workspaceId = WorkspaceAdapter.getId(workspace);
       dispatch({
         type: 'TERMINATE_DEVWORKSPACE',
         workspaceId,
@@ -397,12 +397,12 @@ export const reducer: Reducer<State> = (state: State | undefined, action: KnownA
     case 'UPDATE_DEVWORKSPACE':
       return createObject(state, {
         isLoading: false,
-        workspaces: state.workspaces.map(workspace => getId(workspace) === getId(action.workspace) ? action.workspace : workspace),
+        workspaces: state.workspaces.map(workspace => WorkspaceAdapter.getId(workspace) === WorkspaceAdapter.getId(action.workspace) ? action.workspace : workspace),
       });
     case 'UPDATE_DEVWORKSPACE_STATUS':
       return createObject(state, {
         workspaces: state.workspaces.map(workspace => {
-          if (getId(workspace) === action.workspaceId) {
+          if (WorkspaceAdapter.getId(workspace) === action.workspaceId) {
             if (!workspace.status) {
               workspace.status = {} as devfileApi.DevWorkspaceStatus;
             }
@@ -414,14 +414,14 @@ export const reducer: Reducer<State> = (state: State | undefined, action: KnownA
     case 'ADD_DEVWORKSPACE':
       return createObject(state, {
         workspaces: state.workspaces
-          .filter(workspace => getId(workspace) !== getId(action.workspace))
+          .filter(workspace => WorkspaceAdapter.getId(workspace) !== WorkspaceAdapter.getId(action.workspace))
           .concat([action.workspace]),
       });
     case 'TERMINATE_DEVWORKSPACE':
       return createObject(state, {
         isLoading: false,
         workspaces: state.workspaces.map(workspace => {
-          if (getId(workspace) === action.workspaceId) {
+          if (WorkspaceAdapter.getId(workspace) === action.workspaceId) {
             const targetWorkspace = Object.assign({}, workspace);
             if (!targetWorkspace.status) {
               targetWorkspace.status = {} as devfileApi.DevWorkspaceStatus;
@@ -434,7 +434,7 @@ export const reducer: Reducer<State> = (state: State | undefined, action: KnownA
       });
     case 'DELETE_DEVWORKSPACE':
       return createObject(state, {
-        workspaces: state.workspaces.filter(workspace => getId(workspace) !== action.workspaceId),
+        workspaces: state.workspaces.filter(workspace => WorkspaceAdapter.getId(workspace) !== action.workspaceId),
       });
     case 'UPDATE_DEVWORKSPACE_LOGS':
       return createObject(state, {

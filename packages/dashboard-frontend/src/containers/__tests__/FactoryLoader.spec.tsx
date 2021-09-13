@@ -21,11 +21,10 @@ import { createFakeCheWorkspace } from '../../store/__mocks__/workspace';
 import { WorkspaceStatus } from '../../services/helpers/types';
 import FactoryLoaderContainer, { LoadFactorySteps } from '../FactoryLoader';
 import { AlertOptions } from '../../pages/IdeLoader';
-import { convertWorkspace, Workspace } from '../../services/workspace-adapter';
+import { convertWorkspace, Workspace, WorkspaceAdapter } from '../../services/workspace-adapter';
 import { DevWorkspaceBuilder } from '../../store/__mocks__/devWorkspaceBuilder';
 import devfileApi from '../../services/devfileApi';
 import { safeDump } from 'js-yaml';
-import { getId } from '../../services/workspace-adapter/helper';
 
 const showAlertMock = jest.fn();
 const setWorkspaceQualifiedName = jest.fn();
@@ -462,7 +461,7 @@ function renderComponentV2(
       workspaces: [workspace],
     })
     .withWorkspaces({
-      workspaceId: getId(workspace),
+      workspaceId: WorkspaceAdapter.getId(workspace),
       namespace: namespace,
       workspaceName: workspace.metadata.name,
     })

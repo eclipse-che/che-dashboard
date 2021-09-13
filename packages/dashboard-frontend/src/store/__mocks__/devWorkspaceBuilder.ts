@@ -33,17 +33,18 @@ export class DevWorkspaceBuilder {
     },
   }
 
-  private buildStatus(): devfileApi.DevWorkspaceStatus {
+  private buildStatus(id?: string): devfileApi.DevWorkspaceStatus {
     return {
-      devworkspaceId: 'workspace' + this.workspace.metadata.uid.split('-').splice(0, 3).join(''),
+      devworkspaceId: (id ? id : 'workspace' + this.workspace.metadata.uid.split('-').splice(0, 3).join('')),
     };
   }
 
   withId(id: string): DevWorkspaceBuilder {
     if (this.workspace.status === undefined) {
-      this.workspace.status = this.buildStatus();
+      this.workspace.status = this.buildStatus(id);
+    } else {
+      this.workspace.status.devworkspaceId = id;
     }
-    this.workspace.status.devworkspaceId = id;
     return this;
   }
 
