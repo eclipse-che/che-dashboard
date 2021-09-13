@@ -172,6 +172,7 @@ export class DevWorkspaceClient extends WorkspaceClient {
       devfile.components = [];
     }
 
+    // todo create DevWorkspace
     const createdWorkspace = await DwApi.createWorkspace(devfile, defaultNamespace, false);
     const namespace = createdWorkspace.metadata.namespace;
     const name = createdWorkspace.metadata.name;

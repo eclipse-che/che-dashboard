@@ -16,7 +16,6 @@ import {
   IDevWorkspaceList,
   IDevWorkspaceApi,
   IDevWorkspaceCallbacks,
-  IDevWorkspaceDevfile,
   IPatch,
 } from '../../types';
 import {
@@ -25,7 +24,6 @@ import {
   devWorkspaceApiGroup,
 } from '../../const';
 
-import { devfileToDevWorkspace } from '../converters';
 import { helpers } from '@eclipse-che/common';
 
 export class DevWorkspaceApi implements IDevWorkspaceApi {
@@ -69,18 +67,12 @@ export class DevWorkspaceApi implements IDevWorkspaceApi {
     }
   }
 
-  async create(
-    devfile: IDevWorkspaceDevfile,
-    routingClass: string,
-    started: boolean = true
-  ): Promise<IDevWorkspace> {
+  async create(devworkspace: IDevWorkspace): Promise<IDevWorkspace> {
     try {
-      const devworkspace = devfileToDevWorkspace(devfile, routingClass, started);
-      const namespace = devfile.metadata.namespace;
       const resp = await this.customObjectAPI.createNamespacedCustomObject(
         devWorkspaceApiGroup,
         devworkspaceVersion,
-        namespace,
+        devworkspace.metadata.namespace,
         devworkspacePluralSubresource,
         devworkspace
       );

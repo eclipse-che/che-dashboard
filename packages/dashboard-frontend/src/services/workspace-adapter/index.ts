@@ -285,8 +285,7 @@ export class WorkspaceAdapter<T extends che.Workspace | devfileApi.DevWorkspace>
       return (this.workspace.devfile.projects || [])
         .map(project => project.name);
     } else {
-      const devfile = devWorkspaceToDevfile(this.workspace);
-      return (devfile.projects || [])
+      return (this.workspace.spec.template.projects || [])
         .map(project => project.name);
     }
   }

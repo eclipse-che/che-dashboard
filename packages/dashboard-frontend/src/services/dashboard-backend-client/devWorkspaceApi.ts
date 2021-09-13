@@ -29,6 +29,18 @@ export async function createWorkspace(devfile: devfileApi.Devfile, defaultNamesp
   }
 }
 
+export async function createWorkspace1TODO(devWorkspace: devfileApi.DevWorkspace): Promise<devfileApi.DevWorkspace> {
+  const headers = addAuthentication({});
+  try {
+    const response = await axios.post(`${prefix}/namespace/${defaultNamespace}/devworkspaces`, {
+      devWorkspace
+    }, { headers });
+    return response.data;
+  } catch (e) {
+    throw `Failed to create a new workspace. ${common.helpers.errors.getMessage(e)}`;
+  }
+}
+
 export async function listWorkspacesInNamespace(defaultNamespace: string): Promise<IDevWorkspacesList> {
   const headers = addAuthentication({});
   try {

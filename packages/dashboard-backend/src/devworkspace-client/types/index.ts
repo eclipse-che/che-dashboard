@@ -32,11 +32,7 @@ export interface IDevWorkspaceApi {
     /**
      * Create a devworkspace based on the specified configuration.
      */
-    create(
-        devfile: IDevWorkspaceDevfile,
-        routingClass: string,
-        started?: boolean,
-    ): Promise<IDevWorkspace>;
+    create(devworkspace: IDevWorkspace): Promise<IDevWorkspace>;
 
     /**
      * Updates the DevWorkspace with the given configuration

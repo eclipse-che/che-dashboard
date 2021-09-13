@@ -125,6 +125,7 @@ export function buildRow(
       .filter((projectName?: string) => projectName)
       .forEach((projectName: string) => projects.push(projectName));
   } else {
+    // todo make sure devfile is not used anywhere but for Devfile Editor. Everything else should be done with DevWorkspace
     const devfile = workspace.devfile as devfileApi.Devfile;
     (devfile.projects || [])
       .map(project => project.name || project.git?.remotes?.origin)
