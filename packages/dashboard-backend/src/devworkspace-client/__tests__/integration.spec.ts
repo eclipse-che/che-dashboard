@@ -12,10 +12,11 @@
 
 import * as fs from 'fs';
 import * as yaml from 'js-yaml';
-import { DevWorkspaceClient, IDevWorkspaceDevfile, IDevWorkspaceTemplate } from '../';
+import { DevWorkspaceClient, IDevWorkspace, IDevWorkspaceTemplate } from '../';
 import { conditionalTest, isIntegrationTestEnabled } from './utils/suite';
 import { createKubeConfig, delay } from './utils/helper';
 import { fail } from 'assert';
+import { V1alpha2DevWorkspace } from '@devfile/api';
 
 describe('DevWorkspace API integration testing against cluster', () => {
 
@@ -23,9 +24,10 @@ describe('DevWorkspace API integration testing against cluster', () => {
     conditionalTest('Test run the creation, retrieval, update and deletion of a devworkspace', isIntegrationTestEnabled, async (done: any) => {
       const kc = createKubeConfig();
       const dwClient = new DevWorkspaceClient(kc);
-      const devfile = yaml.load(fs.readFileSync(__dirname + '/fixtures/sample-devfile.yaml', 'utf-8')) as IDevWorkspaceDevfile;
-      const name = devfile.metadata.name;
-      const namespace = devfile.metadata.namespace;
+      // todo
+      const devWorkspace = yaml.load(fs.readFileSync(__dirname + '/fixtures/sample-devworkspace.yaml', 'utf-8')) as V1alpha2DevWorkspace as IDevWorkspace;
+      const name = devWorkspace.metadata?.name;
+      const namespace = devWorkspace.metadata?.namespace;
 
       // check that api is enabled
       const isApiEnabled = await dwClient.isDevWorkspaceApiEnabled();
@@ -33,7 +35,7 @@ describe('DevWorkspace API integration testing against cluster', () => {
 
       // check that the namespace is initialized
       // initialize namespace if it doesn't exist
-      await dwClient.cheApi.initializeNamespace(namespace);
+      await dwClient.cheApi.initializeNamespace(namespace || '');
       await delay(5000);
       let namespaceExists: boolean;
       if (await (dwClient.cheApi as any).isOpenShift()) {
@@ -44,7 +46,7 @@ describe('DevWorkspace API integration testing against cluster', () => {
       expect(namespaceExists).toBe(true);
 
       // check that creation works
-      const newDevWorkspace = await dwClient.devworkspaceApi.create(devfile, 'che', true);
+      const newDevWorkspace = await dwClient.devworkspaceApi.create(devWorkspace);
       expect(newDevWorkspace.metadata.name).toBe(name);
       expect(newDevWorkspace.metadata.namespace).toBe(namespace);
 

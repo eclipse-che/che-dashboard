@@ -14,7 +14,7 @@ import * as fs from 'fs';
 import * as yaml from 'js-yaml';
 
 describe('testing sample conversions', () => {
-
+  // todo move to frontend
   // describe('devfile to devworkspace', () => {
   //   test('the sample-devfile-plugins fixture should convert into sample-devworkspace fixture', () => {
   //     const input: any = yaml.load(fs.readFileSync(__dirname + '/fixtures/sample-devfile-plugins.yaml', 'utf-8'));
