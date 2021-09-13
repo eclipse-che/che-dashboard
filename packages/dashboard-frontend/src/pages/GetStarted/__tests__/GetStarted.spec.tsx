@@ -18,7 +18,7 @@ import React from 'react';
 import GetStarted from '..';
 import { FakeStoreBuilder } from '../../../store/__mocks__/storeBuilder';
 import { BrandingData } from '../../../services/bootstrap/branding.constant';
-import { convertWorkspace, Workspace } from '../../../services/workspace-adapter';
+import { convertWorkspace, Devfile, Workspace } from '../../../services/workspace-adapter';
 
 const createWorkspaceFromDevfileMock = jest.fn().mockResolvedValue(undefined);
 const startWorkspaceMock = jest.fn().mockResolvedValue(undefined);
@@ -28,7 +28,7 @@ const dummyDevfile = {
   metadata: {
     generateName: 'wksp-'
   },
-} as che.WorkspaceDevfile;
+} as Devfile;
 
 jest.mock('../../../store/Workspaces/index', () => {
   return {
@@ -36,7 +36,7 @@ jest.mock('../../../store/Workspaces/index', () => {
       createWorkspaceFromDevfile: (devfile, namespace, infrastructureNamespace, attributes) =>
         async (): Promise<Workspace> => {
           createWorkspaceFromDevfileMock(devfile, namespace, infrastructureNamespace, attributes);
-          return convertWorkspace({ id: 'id-wksp-test', attributes, namespace, devfile: dummyDevfile, temporary: false, status: 'STOPPED' });
+          return convertWorkspace({ id: 'id-wksp-test', attributes, namespace, devfile: dummyDevfile as che.WorkspaceDevfile, temporary: false, status: 'STOPPED' });
         },
       startWorkspace: workspace => async (): Promise<void> => {
         startWorkspaceMock(workspace);

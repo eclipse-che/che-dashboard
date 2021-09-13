@@ -37,11 +37,12 @@ import { updateDevfileMetadata } from '../../updateDevfileMetadata';
 import { selectWorkspacesSettings } from '../../../../store/Workspaces/Settings/selectors';
 
 import styles from './index.module.css';
+import { Devfile } from 'dashboard-frontend/src/services/workspace-adapter';
 
 type Props =
   MappedProps
   & {
-    onDevfile: (devfile: che.WorkspaceDevfile) => void;
+    onDevfile: (devfile: Devfile) => void;
     onClear?: () => void;
   };
 type State = {
@@ -110,7 +111,7 @@ export class DevfileSelectorFormGroup extends React.PureComponent<Props, State> 
       if (resolver.source === 'repo') {
         throw new Error('devfile.yaml not found in the specified GitHub repository root.');
       }
-      this.props.onDevfile(resolver.devfile as che.WorkspaceDevfile);
+      this.props.onDevfile(resolver.devfile as Devfile);
       this.setState({ isLoading: false });
     } catch (e) {
       this.setState({ isLoading: false });
