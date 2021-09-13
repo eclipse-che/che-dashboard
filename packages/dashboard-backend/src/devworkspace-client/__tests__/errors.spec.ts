@@ -103,7 +103,7 @@ describe('Kubernetes API integration testing against cluster', () => {
         await dwClient.devworkspaceApi.getByName('any', 'non-existing');
         fail('devworkspace is expected not to be found');
       } catch (e) {
-        expect((e as Error).message).toBe('unable to get devworkspace any/non-existing: no response available due network issue.');
+        expect((e as Error).message).toBe('unable to get devworkspace any/non-existing: getaddrinfo EAI_AGAIN non-existing-k8s.127.0.0.1');
       }
       done();
     }, 60000);
