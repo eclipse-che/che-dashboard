@@ -258,6 +258,9 @@ export class WorkspaceAdapter<T extends che.Workspace | devfileApi.DevWorkspace>
     if (isCheWorkspace(this.workspace)) {
       this.workspace.devfile = devfile as che.WorkspaceDevfile;
     } else {
+      const plugins = (this.workspace.spec.template.components || []).filter(component => {
+        return component.plugin !== undefined;
+      });
       const converted = devfileToDevWorkspace(
         devfile as devfileApi.Devfile,
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
@@ -265,6 +268,10 @@ export class WorkspaceAdapter<T extends che.Workspace | devfileApi.DevWorkspace>
         this.workspace.spec.started
       );
       if (isDevWorkspace(converted)) {
+        if (converted.spec.template.components === undefined) {
+          converted.spec.template.components = [];
+        }
+        converted.spec.template.components.push(...plugins);
         (this.workspace as devfileApi.DevWorkspace) = converted;
       } else {
         console.error(`WorkspaceAdapter: the received devworkspace either has wrong "kind" (not ${devWorkspaceKind}) or lacks some of mandatory fields: `, converted);
