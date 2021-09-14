@@ -9,34 +9,21 @@
  * Contributors:
  *   Red Hat, Inc. - initial API and implementation
  */
+
 import { FastifyInstance } from 'fastify';
 import fastifyHttpProxy from 'fastify-http-proxy';
 
-export function registerCheServerApiProxy(server: FastifyInstance, cheApiUpstream: string, origin: string) {
-  console.log(`Che Server API proxy is running and proxying to "${cheApiUpstream}".`);
-
+export function registerKeycloakProxy(server: FastifyInstance, cheApiProxyUpstream: string, origin: string) {
+  console.log(`Dashboard proxies requests to Keycloak on "${cheApiProxyUpstream}/auth".`);
   server.register(fastifyHttpProxy, {
-    upstream: cheApiUpstream,
-    prefix: '/api',
-    rewritePrefix: '/api',
-    disableCache: true,
-    websocket: false,
-    replyOptions: {
-      rewriteRequestHeaders: (originalReq, headers) => {
-        return Object.assign({ ...headers }, { origin });
-      }
-    }
-  });
-
-  server.register(fastifyHttpProxy, {
-    upstream: cheApiUpstream,
+    upstream: cheApiProxyUpstream,
     prefix: '/auth',
     rewritePrefix: '/auth',
     disableCache: true,
     websocket: false,
     replyOptions: {
       rewriteRequestHeaders: (originalReq, headers) => {
-        return Object.assign({ ...headers }, { origin });
+        return Object.assign({...headers}, { origin });
       }
     }
   });
