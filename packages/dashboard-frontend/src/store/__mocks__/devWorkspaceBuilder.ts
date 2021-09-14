@@ -40,7 +40,10 @@ export class DevWorkspaceBuilder {
   }
 
   withId(id: string): DevWorkspaceBuilder {
-    this.workspace.metadata.uid = id;
+    if (this.workspace.status === undefined) {
+      this.workspace.status = this.buildStatus();
+    }
+    this.workspace.status.devworkspaceId = id;
     return this;
   }
 

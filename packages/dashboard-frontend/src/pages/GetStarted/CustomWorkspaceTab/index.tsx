@@ -24,6 +24,8 @@ import { attributesToType, updateDevfile } from '../../../services/storageTypes'
 import { safeLoad } from 'js-yaml';
 import { updateDevfileMetadata } from '../updateDevfileMetadata';
 import { Devfile, isCheDevfile } from '../../../services/workspace-adapter';
+import getRandomString from '../../../services/helpers/random';
+import { isDevfileV2Like } from '../../../services/devfileApi';
 
 type Props = MappedProps
   & {
@@ -57,14 +59,20 @@ export class CustomWorkspaceTab extends React.PureComponent<Props, State> {
     this.devfileEditorRef = React.createRef<Editor>();
   }
 
-  private buildInitialDevfile(generateName?: string): Devfile {
-    const devfile = {
+  private buildInitialDevfile(generateName ='wksp-'): Devfile {
+    const devfile = (this.props.workspacesSettings['che.devworkspaces.enabled'] === 'true') ? {
+        schemaVersion: '2.1.0',
+        metadata: {
+          name: generateName + getRandomString(4).toLowerCase(),
+        }
+      } : {
       apiVersion: '1.0.0',
       metadata: {
-        generateName: generateName ? generateName : 'wksp-'
-      },
-    } as Devfile;
-    return updateDevfile(devfile, this.props.preferredStorageType);
+        generateName
+      }
+    };
+
+    return updateDevfile(devfile as Devfile, this.props.preferredStorageType);
   }
 
   private handleInfrastructureNamespaceChange(namespace: che.KubernetesNamespace): void {
@@ -186,6 +194,7 @@ export class CustomWorkspaceTab extends React.PureComponent<Props, State> {
 
   public render(): React.ReactElement {
     const { devfile, storageType, generateName, workspaceName, isCreated } = this.state;
+    const isStorageTypeDisabled = isDevfileV2Like(devfile);
     return (
       <>
         <PageSection
@@ -203,6 +212,7 @@ export class CustomWorkspaceTab extends React.PureComponent<Props, State> {
             <StorageTypeFormGroup
               storageType={storageType}
               onChange={_storageType => this.handleStorageChange(_storageType)}
+              isDisable={isStorageTypeDisabled}
             />
           </Form>
         </PageSection>

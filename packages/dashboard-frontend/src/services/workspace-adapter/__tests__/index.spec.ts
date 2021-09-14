@@ -10,7 +10,6 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import devfileApi from '../../devfileApi';
 import { cloneDeep } from 'lodash';
 import { convertWorkspace } from '..';
 import { CheWorkspaceBuilder, CHE_DEVFILE_STUB, CHE_RUNTIME_STUB } from '../../../store/__mocks__/cheWorkspaceBuilder';
@@ -70,7 +69,7 @@ describe('Workspace adapter', () => {
     });
 
     it('should return ID', () => {
-      const id = '1234asdf';
+      const id = 'workspace1234asdf';
       const cheWorkspace = new CheWorkspaceBuilder()
         .withId(id)
         .build();

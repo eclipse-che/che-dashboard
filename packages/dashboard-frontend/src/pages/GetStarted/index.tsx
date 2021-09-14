@@ -34,6 +34,7 @@ import { ROUTE } from '../../route.enum';
 import { Workspace } from '../../services/workspace-adapter';
 import { selectBranding } from '../../store/Branding/selectors';
 import { selectRegistriesErrors } from '../../store/DevfileRegistries/selectors';
+import { Devfile } from '../../services/workspace-adapter';
 
 const SamplesListTab = React.lazy(() => import('./GetStartedTab'));
 const CustomWorkspaceTab = React.lazy(() => import('./CustomWorkspaceTab'));
@@ -105,7 +106,7 @@ export class GetStarted extends React.PureComponent<Props, State> {
   }
 
   private async createWorkspace(
-    devfile: api.che.workspace.devfile.Devfile,
+    devfile: Devfile,
     stackName: string | undefined,
     infrastructureNamespace: string | undefined,
     optionalFilesContent?: {
@@ -148,7 +149,7 @@ export class GetStarted extends React.PureComponent<Props, State> {
   }
 
   private handleDevfile(
-    devfile: api.che.workspace.devfile.Devfile,
+    devfile: Devfile,
     attrs: { stackName?: string, infrastructureNamespace?: string },
     optionalFilesContent: { [fileName: string]: string } | undefined,
   ): Promise<void> {

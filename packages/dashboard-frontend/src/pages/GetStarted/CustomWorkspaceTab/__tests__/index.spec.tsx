@@ -120,6 +120,20 @@ describe('Custom Workspace Tab', () => {
     screen.getByRole('button', { name: /create & open/i });
   });
 
+  it('should use default template with schema version "2.1.0" if devworkspaces is enabled', () => {
+    const store = createStore({
+      isDevworkspacesEnabled: true,
+    });
+    const mockOnDevfile = jest.fn();
+    renderComponent(store, mockOnDevfile);
+
+    clickOnCreateAndOpenButton();
+
+    expect(mockOnDevfile).toHaveBeenCalledWith(expect.objectContaining({
+      schemaVersion: '2.1.0'
+    }), defaultInfrastructureNamespace, undefined);
+  });
+
   it('should handle click on "Create & Open" button', () => {
     const defaultStorageType = 'persistent';
     const store = createStore({
@@ -348,7 +362,8 @@ function clickOnCreateAndOpenButton() {
 }
 
 function createStore(opts: {
-  defaultStorageType?: che.WorkspaceStorageType
+  defaultStorageType?: che.WorkspaceStorageType,
+  isDevworkspacesEnabled?: boolean
 } = {}): Store {
   return new FakeStoreBuilder()
     .withDevfileRegistries({
@@ -371,7 +386,8 @@ function createStore(opts: {
     } as any)
     .withWorkspacesSettings({
       'che.workspace.storage.available_types': 'async,ephemeral,persistent',
-      'che.workspace.storage.preferred_type': opts.defaultStorageType ? opts.defaultStorageType : 'ephemeral'
+      'che.workspace.storage.preferred_type': opts.defaultStorageType ? opts.defaultStorageType : 'ephemeral',
+      'che.devworkspaces.enabled': opts.isDevworkspacesEnabled ? 'true' : 'false'
     } as che.WorkspaceSettings)
     .build();
 }

@@ -15,6 +15,10 @@
   margin-right: 10px;
 }
 
+.storageTypeSelector button[disabled] svg {
+  display: none;
+}
+
 .experimentalStorageType {
   color: #f37943;
   font-size: 0.8em;
