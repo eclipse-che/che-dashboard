@@ -13,7 +13,7 @@
 import axios from 'axios';
 import { getMessage } from '@eclipse-che/common/lib/helpers/errors';
 import { createFastifyError } from '../helpers';
-import { isLocalRun } from '../../index';
+import { isLocalRun } from '../../local-run';
 import * as https from 'https';
 import { URL } from 'url';
 
@@ -23,7 +23,7 @@ const ENDPOINT = 'che.keycloak.userinfo.endpoint';
 let keycloakEndpointUrl: URL | undefined;
 
 const httpsAgent = new https.Agent({
-  // TODO: remove this temporary solution after solving  https://github.com/eclipse/che/issues/20367
+  // todo: remove this temporary solution after solving https://github.com/eclipse/che/issues/20367
   rejectUnauthorized: false
 });
 

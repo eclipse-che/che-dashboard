@@ -18,11 +18,11 @@ import { registerDevworkspaceWebsocketWatcher } from './api/devworkspaceWebsocke
 import { registerDevworkspaceApi } from './api/devworkspaceApi';
 import { registerCheApi } from './api/cheApi';
 import { registerTemplateApi } from './api/templateApi';
-import { registerCheServerApiProxy } from './cheServerApiProxy';
+import { registerLocalServers } from './local-run';
 import { registerCors } from './cors';
 import { registerSwagger } from './swagger';
 import { getMessage } from '@eclipse-che/common/lib/helpers/errors';
-import { registerCheServerStubs } from './cheServerStubs';
+import { isLocalRun } from './local-run';
 
 const CHE_HOST = process.env.CHE_HOST as string;
 
@@ -32,14 +32,9 @@ if (!CHE_HOST) {
 }
 
 args
-  .option('publicFolder', 'The public folder to serve', './public')
-  .option('cheApiUpstream', 'The upstream for Che server api', CHE_HOST);
+  .option('publicFolder', 'The public folder to serve', './public');
 
-const { publicFolder, cheApiUpstream } = args.parse(process.argv) as { publicFolder: string, cheApiUpstream: string };
-
-export function isLocalRun(): boolean {
-  return cheApiUpstream !== CHE_HOST;
-}
+const { publicFolder } = args.parse(process.argv) as { publicFolder: string };
 
 const server = fastify({
   logger: false,
@@ -59,8 +54,6 @@ server.addContentTypeParser(
   }
 );
 
-registerCors(server);
-
 registerStaticServer(publicFolder, server);
 
 registerSwagger(server);
@@ -73,10 +66,9 @@ registerTemplateApi(server);
 
 registerCheApi(server);
 
-// server API proxy and stubs will be registered in the case with local run only
+registerCors(isLocalRun(), server);
 if (isLocalRun()) {
-  registerCheServerApiProxy(server, cheApiUpstream, CHE_HOST);
-  registerCheServerStubs(server);
+  registerLocalServers(server, CHE_HOST);
 }
 
 server.listen(8080, '0.0.0.0', (err: Error, address: string) => {
