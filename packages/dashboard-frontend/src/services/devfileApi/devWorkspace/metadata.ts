@@ -13,4 +13,4 @@
 import { V1alpha2DevWorkspaceMetadata } from '@devfile/api';
 
 export type DevWorkspaceMetadata = V1alpha2DevWorkspaceMetadata
-  & Required<Pick<V1alpha2DevWorkspaceMetadata, 'annotations' | 'labels' | 'name' | 'namespace' | 'uid'>>;
+  & Required<Pick<V1alpha2DevWorkspaceMetadata, 'labels' | 'name' | 'namespace' | 'uid'>>;

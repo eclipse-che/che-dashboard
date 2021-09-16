@@ -40,7 +40,7 @@ export class OverviewTab extends React.Component<Props, State> {
     const { workspace } = this.props;
     const storageType = workspace.storageType;
     const workspaceName = workspace.name;
-    const infrastructureNamespace = workspace.infrastructureNamespace;
+    const infrastructureNamespace = workspace.namespace;
 
     this.state = {
       storageType,

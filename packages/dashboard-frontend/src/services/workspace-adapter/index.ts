@@ -21,6 +21,8 @@ import { getId, getStatus } from './helper';
 import devfileApi, { isDevfileV2, isDevWorkspace } from '../devfileApi';
 import { devWorkspaceKind } from '../devfileApi/devWorkspace';
 
+export type Devfile = che.WorkspaceDevfile | devfileApi.Devfile;
+
 export interface Workspace {
   readonly ref: che.Workspace | devfileApi.DevWorkspace;
 
@@ -32,7 +34,7 @@ export interface Workspace {
   readonly updated: number;
   status: WorkspaceStatus | DevWorkspaceStatus;
   readonly ideUrl?: string;
-  devfile: che.WorkspaceDevfile | devfileApi.Devfile;
+  devfile: Devfile;
   storageType: che.WorkspaceStorageType;
   readonly projects: string[];
   readonly isStarting: boolean;
@@ -283,6 +285,6 @@ export function isCheWorkspace(workspace: che.Workspace | devfileApi.DevWorkspac
     && (workspace as che.Workspace).status !== undefined;
 }
 
-export function isCheDevfile(devfile: che.WorkspaceDevfile | devfileApi.Devfile): devfile is che.WorkspaceDevfile {
+export function isCheDevfile(devfile: Devfile): devfile is che.WorkspaceDevfile {
   return !isDevfileV2(devfile);
 }

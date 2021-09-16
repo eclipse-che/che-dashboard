@@ -125,7 +125,7 @@ export type ActionCreators = {
   },
     pluginRegistryUrl: string | undefined,
     pluginRegistryInternalUrl: string | undefined,
-  ) => AppThunk<KnownAction, Promise<devfileApi.DevWorkspace>>;
+  ) => AppThunk<KnownAction, Promise<void>>;
 
   deleteWorkspaceLogs: (workspaceId: string) => AppThunk<DeleteWorkspaceLogsAction, void>;
 };
@@ -329,13 +329,12 @@ export const actionCreators: ActionCreators = {
   },
     pluginRegistryUrl: string | undefined,
     pluginRegistryInternalUrl: string | undefined,
-  ): AppThunk<KnownAction, Promise<devfileApi.DevWorkspace>> => async (dispatch, getState): Promise<devfileApi.DevWorkspace> => {
+  ): AppThunk<KnownAction, Promise<void>> => async (dispatch, getState): Promise<void> => {
 
     const state = getState();
 
     if (state.dwPlugins.defaultEditorError) {
-      const message = `Required sources failed when trying to create the workspace: ${state.dwPlugins.defaultEditorError}`;
-      throw message;
+      throw `Required sources failed when trying to create the workspace: ${state.dwPlugins.defaultEditorError}`;
     }
 
     dispatch({ type: 'REQUEST_DEVWORKSPACE' });
@@ -350,7 +349,6 @@ export const actionCreators: ActionCreators = {
         type: 'ADD_DEVWORKSPACE',
         workspace,
       });
-      return workspace;
     } catch (e) {
       const errorMessage = 'Failed to create a new workspace from the devfile, reason: ' + common.helpers.errors.getMessage(e);
       dispatch({

@@ -116,7 +116,7 @@ export type ActionCreators = {
     optionalFilesContent?: {
       [fileName: string]: string
     }
-  ) => AppThunk<KnownAction, Promise<Workspace>>;
+  ) => AppThunk<KnownAction, Promise<void>>;
 
   setWorkspaceQualifiedName: (namespace: string, workspaceName: string) => AppThunk<SetWorkspaceQualifiedName>;
   clearWorkspaceQualifiedName: () => AppThunk<ClearWorkspaceQualifiedName>;
@@ -256,7 +256,7 @@ export const actionCreators: ActionCreators = {
     optionalFilesContent?: {
       [fileName: string]: string
     }
-  ): AppThunk<KnownAction, Promise<Workspace>> => async (dispatch, getState): Promise<Workspace> => {
+  ): AppThunk<KnownAction, Promise<void>> => async (dispatch, getState): Promise<void> => {
     dispatch({ type: 'REQUEST_WORKSPACES' });
     try {
       const state = getState();
@@ -265,15 +265,13 @@ export const actionCreators: ActionCreators = {
       if (cheDevworkspaceEnabled && isDevfileV2(devfile)) {
         const pluginRegistryUrl = state.workspacesSettings.settings['cheWorkspacePluginRegistryUrl'];
         const pluginRegistryInternalUrl = state.workspacesSettings.settings['cheWorkspacePluginRegistryInternalUrl'];
-        const devWorkspace = await dispatch(DevWorkspacesStore.actionCreators.createWorkspaceFromDevfile(devfile, optionalFilesContent || {}, pluginRegistryUrl, pluginRegistryInternalUrl));
+        await dispatch(DevWorkspacesStore.actionCreators.createWorkspaceFromDevfile(devfile, optionalFilesContent || {}, pluginRegistryUrl, pluginRegistryInternalUrl));
         dispatch({ type: 'ADD_WORKSPACE' });
-        return convertWorkspace(devWorkspace);
       } else {
-        const cheWorkspace = await dispatch(CheWorkspacesStore.actionCreators.createWorkspaceFromDevfile(devfile as che.WorkspaceDevfile, namespace, infrastructureNamespace, attributes));
+        await dispatch(CheWorkspacesStore.actionCreators.createWorkspaceFromDevfile(devfile as che.WorkspaceDevfile, namespace, infrastructureNamespace, attributes));
         dispatch({
           type: 'ADD_WORKSPACE',
         });
-        return convertWorkspace(cheWorkspace);
       }
     } catch (e) {
       dispatch({ type: 'RECEIVE_ERROR' });
