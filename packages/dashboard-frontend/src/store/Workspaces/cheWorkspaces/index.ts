@@ -108,7 +108,7 @@ export type ActionCreators = {
     namespace: string | undefined,
     infrastructureNamespace: string | undefined,
     attributes: { [key: string]: string } | {},
-  ) => AppThunk<KnownAction, Promise<che.Workspace>>;
+  ) => AppThunk<KnownAction, Promise<void>>;
   deleteWorkspaceLogs: (workspaceId: string) => AppThunk<DeleteWorkspaceLogsAction, void>;
 };
 
@@ -351,7 +351,7 @@ export const actionCreators: ActionCreators = {
     namespace: string | undefined,
     infrastructureNamespace: string | undefined,
     attributes: { [key: string]: string } = {},
-  ): AppThunk<KnownAction, Promise<che.Workspace>> => async (dispatch): Promise<che.Workspace> => {
+  ): AppThunk<KnownAction, Promise<void>> => async (dispatch): Promise<void> => {
     dispatch({ type: 'CHE_REQUEST_WORKSPACES' });
     try {
       const param = { attributes, namespace, infrastructureNamespace };
@@ -364,7 +364,6 @@ export const actionCreators: ActionCreators = {
         type: 'CHE_ADD_WORKSPACE',
         workspace,
       });
-      return workspace;
     } catch (e) {
       const errorMessage = 'Failed to create a new workspace from the devfile, reason: ' + common.helpers.errors.getMessage(e);
       dispatch({

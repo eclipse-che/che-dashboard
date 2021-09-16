@@ -34,7 +34,10 @@ import { ROUTE } from '../../route.enum';
 import { Workspace } from '../../services/workspace-adapter';
 import { selectBranding } from '../../store/Branding/selectors';
 import { selectRegistriesErrors } from '../../store/DevfileRegistries/selectors';
-import { Devfile } from '../../services/workspace-adapter';
+import { Devfile, isCheDevfile } from '../../services/workspace-adapter';
+import { selectWorkspaceByQualifiedName } from '../../store/Workspaces/selectors';
+import { selectDefaultNamespace, selectInfrastructureNamespaces } from '../../store/InfrastructureNamespaces/selectors';
+import getRandomString from '../../services/helpers/random';
 
 const SamplesListTab = React.lazy(() => import('./GetStartedTab'));
 const CustomWorkspaceTab = React.lazy(() => import('./CustomWorkspaceTab'));
@@ -114,9 +117,17 @@ export class GetStarted extends React.PureComponent<Props, State> {
     }
   ): Promise<void> {
     const attr = stackName ? { stackName } : {};
-    let workspace: Workspace;
+    if (isCheDevfile(devfile) && !devfile.metadata.name && devfile.metadata.generateName) {
+       const name = devfile.metadata.generateName + getRandomString(4).toLowerCase();
+       delete devfile.metadata.generateName;
+       devfile.metadata.name = name;
+    }
+    const namespace = infrastructureNamespace ? infrastructureNamespace : this.props.defaultNamespace.name;
+    let workspace: Workspace | undefined;
     try {
-      workspace = await this.props.createWorkspaceFromDevfile(devfile, undefined, infrastructureNamespace, attr, optionalFilesContent);
+      await this.props.createWorkspaceFromDevfile(devfile, undefined, namespace, attr, optionalFilesContent);
+      this.props.setWorkspaceQualifiedName(namespace, devfile.metadata.name as string);
+      workspace = this.props.activeWorkspace;
     } catch (e) {
       const errorMessage = common.helpers.errors.getMessage(e);
       this.showAlert({
@@ -125,6 +136,16 @@ export class GetStarted extends React.PureComponent<Props, State> {
         title: errorMessage,
       });
       throw e;
+    }
+
+    if (!workspace) {
+      const errorMessage =  `Workspace "${namespace}/${devfile.metadata.name}" failed to find.`;
+      this.showAlert({
+        key: 'find-workspace-failed',
+        variant: AlertVariant.danger,
+        title: errorMessage,
+      });
+      throw errorMessage;
     }
 
     const workspaceName = workspace.name;
@@ -237,6 +258,8 @@ export class GetStarted extends React.PureComponent<Props, State> {
 const mapStateToProps = (state: AppState) => ({
   branding: selectBranding(state),
   registriesErrors: selectRegistriesErrors(state),
+  activeWorkspace: selectWorkspaceByQualifiedName(state),
+  defaultNamespace: selectDefaultNamespace(state),
 });
 
 const connector = connect(

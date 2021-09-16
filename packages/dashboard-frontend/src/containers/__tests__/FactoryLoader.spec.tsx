@@ -28,6 +28,7 @@ import { safeDump } from 'js-yaml';
 import { getId } from '../../services/workspace-adapter/helper';
 
 const showAlertMock = jest.fn();
+const setWorkspaceQualifiedName = jest.fn();
 const createWorkspaceFromDevfileMock = jest.fn().mockResolvedValue(undefined);
 const requestWorkspaceMock = jest.fn().mockResolvedValue(undefined);
 const startWorkspaceMock = jest.fn().mockResolvedValue(undefined);
@@ -62,6 +63,9 @@ jest.mock('../../store/Workspaces/index', () => {
       },
       clearWorkspaceId: () => async (): Promise<void> => {
         clearWorkspaceIdMock();
+      },
+      setWorkspaceQualifiedName: ( namespace: string, workspaceName: string) => async (): Promise<void> => {
+        setWorkspaceQualifiedName(namespace, workspaceName);
       },
     },
   };
@@ -107,6 +111,8 @@ jest.mock('../../pages/FactoryLoader', () => {
   };
 });
 
+const namespace = 'che';
+
 describe('Factory Loader container', () => {
 
   beforeEach(() => {
@@ -139,7 +145,8 @@ describe('Factory Loader container', () => {
 
       jest.runOnlyPendingTimers();
       await waitFor(() =>
-        expect(createWorkspaceFromDevfileMock).toHaveBeenCalledWith(workspace.devfile, undefined, undefined, { stackName: location + '/' }));
+        expect(createWorkspaceFromDevfileMock).toHaveBeenCalledWith(workspace.devfile, undefined, namespace, { stackName: location + '/' }));
+      expect(setWorkspaceQualifiedName).toHaveBeenCalledWith(namespace, workspace.devfile.metadata.name);
 
       jest.runOnlyPendingTimers();
       expect(showAlertMock).not.toHaveBeenCalled();
@@ -166,7 +173,8 @@ describe('Factory Loader container', () => {
 
       jest.runOnlyPendingTimers();
       await waitFor(() =>
-        expect(createWorkspaceFromDevfileMock).toHaveBeenCalledWith(workspace.devfile, undefined, undefined, { stackName: location + '/' }));
+        expect(createWorkspaceFromDevfileMock).toHaveBeenCalledWith(workspace.devfile, undefined, namespace, { stackName: location + '/' }));
+      expect(setWorkspaceQualifiedName).toHaveBeenCalledWith(namespace, workspace.devfile.metadata.name);
 
       jest.runOnlyPendingTimers();
       expect(showAlertMock).toBeCalledWith({
@@ -207,7 +215,7 @@ describe('Factory Loader container', () => {
               name: 'name-wksp-2',
             },
             attributes: { persistVolumes: 'false' }
-          }, undefined, undefined,
+          }, undefined, namespace,
           { stackName: 'http://test-location/?override.metadata.generateName=testPrefix' }));
     });
 
@@ -286,7 +294,7 @@ describe('Factory Loader container', () => {
             metadata: {
               name: 'test-wksp-name',
             },
-          }, undefined, undefined, { stackName: location + '/' }));
+          }, undefined, namespace, { stackName: location + '/' }));
     });
 
     it('should resolve the factory with  the preferred storage type "ephemeral"', async () => {
@@ -310,7 +318,7 @@ describe('Factory Loader container', () => {
             attributes: {
               persistVolumes: 'false',
             },
-          }), undefined, undefined, { stackName: location + '/' }));
+          }), undefined, namespace, { stackName: location + '/' }));
     });
 
     it('should resolve the factory with  the preferred storage type "async"', async () => {
@@ -335,7 +343,7 @@ describe('Factory Loader container', () => {
               persistVolumes: 'false',
               asyncPersist: 'true',
             },
-          }), undefined, undefined, { stackName: location + '/' }));
+          }), undefined, namespace, { stackName: location + '/' }));
     });
 
     it('should show an error if something wrong with Repository/Devfile URL', async () => {
@@ -454,7 +462,9 @@ function renderComponentV2(
       workspaces: [workspace],
     })
     .withWorkspaces({
-      workspaceId: getId(workspace)
+      workspaceId: getId(workspace),
+      namespace: namespace,
+      workspaceName: workspace.metadata.name,
     })
     .withFactoryResolver({
       v: '4.0',
@@ -490,7 +500,9 @@ function renderComponentV1(
       workspaces: [workspace],
     })
     .withWorkspaces({
-      workspaceId: workspace.id
+      workspaceId: workspace.id,
+      namespace: namespace,
+      workspaceName: workspace.devfile.metadata.name
     })
     .withWorkspacesSettings(settings as che.WorkspaceSettings)
     .withFactoryResolver({
@@ -500,6 +512,7 @@ function renderComponentV1(
       location: url.split('&')[0],
       links: []
     })
+    .withInfrastructureNamespace([{ name: namespace, attributes: { phase: 'Active' } }], false)
     .build();
   const props = getMockRouterProps(ROUTE.LOAD_FACTORY_URL, { url });
 

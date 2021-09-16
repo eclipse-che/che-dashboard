@@ -15,7 +15,6 @@ import { AppState } from '..';
 import { convertWorkspace, Workspace } from '../../services/workspace-adapter';
 import { selectCheWorkspacesError } from './cheWorkspaces/selectors';
 import { selectDevWorkspacesError } from './devWorkspaces/selectors';
-import { isDevfileV2Metadata } from '../../services/devfileApi';
 
 const selectState = (state: AppState) => state.workspaces;
 const selectCheWorkspacesState = (state: AppState) => state.cheWorkspaces;
@@ -40,9 +39,7 @@ export const selectAllWorkspaces = createSelector(
   (cheWorkspacesState, devWorkspacesState) => {
     return [
       ...cheWorkspacesState.workspaces,
-      // we were needed to add a filter because at first, we can get a new workspace object without metadata
-      // and then will get the update event with metadata.
-      ...(devWorkspacesState.workspaces.filter(workspace => isDevfileV2Metadata(workspace.metadata))),
+      ...devWorkspacesState.workspaces,
     ].map(workspace => convertWorkspace(workspace));
   }
 );
@@ -51,11 +48,8 @@ export const selectWorkspaceByQualifiedName = createSelector(
   selectState,
   selectAllWorkspaces,
   (state, allWorkspaces) => {
-    if (!allWorkspaces) {
-      return null;
-    }
     return allWorkspaces.find(workspace =>
-      workspace.namespace === state.namespace && workspace.name === state.workspaceName);
+      workspace.infrastructureNamespace === state.namespace && workspace.name === state.workspaceName);
   }
 );
 
@@ -63,9 +57,6 @@ export const selectWorkspaceById = createSelector(
   selectState,
   selectAllWorkspaces,
   (state, allWorkspaces) => {
-    if (!allWorkspaces) {
-      return null;
-    }
     return allWorkspaces.find(workspace => workspace.id === state.workspaceId);
   }
 );

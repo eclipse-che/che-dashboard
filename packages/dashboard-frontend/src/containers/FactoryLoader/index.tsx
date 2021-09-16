@@ -20,7 +20,11 @@ import { AppState } from '../../store';
 import * as FactoryResolverStore from '../../store/FactoryResolver';
 import * as WorkspaceStore from '../../store/Workspaces';
 import FactoryLoader from '../../pages/FactoryLoader';
-import { selectAllWorkspaces, selectWorkspaceById } from '../../store/Workspaces/selectors';
+import {
+  selectAllWorkspaces,
+  selectWorkspaceById,
+  selectWorkspaceByQualifiedName
+} from '../../store/Workspaces/selectors';
 import { selectPreferredStorageType } from '../../store/Workspaces/Settings/selectors';
 import { buildIdeLoaderLocation, sanitizeLocation } from '../../services/helpers/location';
 import { lazyInject } from '../../inversify.config';
@@ -30,11 +34,12 @@ import { isOAuthResponse } from '../../store/FactoryResolver';
 import { updateDevfile } from '../../services/storageTypes';
 import { isCheDevfile, isCheWorkspace, Workspace } from '../../services/workspace-adapter';
 import { AlertOptions } from '../../pages/FactoryLoader';
-import { selectInfrastructureNamespaces } from '../../store/InfrastructureNamespaces/selectors';
+import { selectDefaultNamespace, selectInfrastructureNamespaces } from '../../store/InfrastructureNamespaces/selectors';
 import { safeLoad } from 'js-yaml';
 import updateDevfileMetadata, { FactorySource } from './updateDevfileMetadata';
 import { DEVWORKSPACE_DEVFILE_SOURCE } from '../../services/workspace-client/devworkspace/devWorkspaceClient';
 import devfileApi from '../../services/devfileApi';
+import getRandomString from '../../services/helpers/random';
 
 const WS_ATTRIBUTES_TO_SAVE: string[] = ['workspaceDeploymentLabels', 'workspaceDeploymentAnnotations', 'policies.create'];
 
@@ -376,9 +381,17 @@ export class FactoryLoaderContainer extends React.PureComponent<Props, State> {
       if (isCheDevfile(devfile)) {
         attrs.stackName = stackName;
         delete attrs.factoryParams;
+        if (!devfile.metadata.name && devfile.metadata.generateName) {
+          const name = devfile.metadata.generateName + getRandomString(4).toLowerCase();
+          delete devfile.metadata.generateName;
+          devfile.metadata.name = name;
+        }
       }
+      const namespace = this.props.defaultNamespace?.name;
       try {
-        workspace = await this.props.createWorkspaceFromDevfile(devfile, undefined, undefined, attrs, this.factoryResolver.resolver.optionalFilesContent || {});
+        await this.props.createWorkspaceFromDevfile(devfile, undefined, namespace, attrs, this.factoryResolver.resolver.optionalFilesContent || {});
+        this.props.setWorkspaceQualifiedName(namespace, devfile.metadata.name as string);
+        workspace = this.props.activeWorkspace;
       } catch (e) {
         this.showAlert(`Failed to create a workspace. ${e}`);
         return;
@@ -537,6 +550,8 @@ const mapStateToProps = (state: AppState) => ({
   allWorkspaces: selectAllWorkspaces(state),
   infrastructureNamespaces: selectInfrastructureNamespaces(state),
   preferredStorageType: selectPreferredStorageType(state),
+  activeWorkspace: selectWorkspaceByQualifiedName(state),
+  defaultNamespace: selectDefaultNamespace(state),
 });
 
 const connector = connect(

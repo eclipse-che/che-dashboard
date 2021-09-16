@@ -19,7 +19,7 @@ export type DevfileLike = V220Devfile
   };
 
 export type Devfile = DevfileLike
-  & Required<Pick<DevfileLike, 'metadata' | 'components'>>
+  & Required<Pick<DevfileLike, 'metadata'>>
   & {
     metadata?: DevfileMetadata;
   };

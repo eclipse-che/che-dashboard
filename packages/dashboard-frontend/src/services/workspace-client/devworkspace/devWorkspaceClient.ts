@@ -304,6 +304,9 @@ export class DevWorkspaceClient extends WorkspaceClient {
   async update(workspace: devfileApi.DevWorkspace, plugins: devfileApi.Devfile[]): Promise<devfileApi.DevWorkspace> {
     // Take the devworkspace with no plugins and then inject them
     for (const plugin of plugins) {
+      if (!plugin.metadata) {
+        continue;
+      }
       const pluginName = this.normalizePluginName(plugin.metadata.name, getId(workspace));
       this.addPlugin(workspace, pluginName, workspace.metadata.namespace);
     }

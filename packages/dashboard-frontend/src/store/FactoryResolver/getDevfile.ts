@@ -28,6 +28,9 @@ export function getDevfile(data: FactoryResolver, location: string): api.che.wor
   let devfile = data.devfile;
 
   if (isDevfileV2(devfile)) {
+    if (!devfile.components) {
+      devfile.components = [];
+    }
     // temporary solution for fix che-server serialization bug with empty volume
     const components = devfile.components.map(component => {
       if (Object.keys(component).length === 1 && component.name) {

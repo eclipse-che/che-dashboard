@@ -18,7 +18,6 @@ export function isDevfileV2Like(devfile: unknown): devfile is devfileApi.Devfile
 
 export function isDevfileV2(devfile: unknown): devfile is devfileApi.Devfile {
   return (devfile as devfileApi.Devfile).schemaVersion !== undefined
-    && (devfile as devfileApi.Devfile).components !== undefined
     && isDevfileV2Metadata((devfile as devfileApi.Devfile).metadata);
 }
 
@@ -46,7 +45,6 @@ export function isDevWorkspaceSpec(spec: unknown): spec is devfileApi.DevWorkspa
 
 export function isDevWorkspaceMetadata(metadata: unknown): metadata is devfileApi.DevWorkspaceMetadata {
   return metadata !== undefined
-    && (metadata as devfileApi.DevWorkspaceMetadata).annotations !== undefined
     && (metadata as devfileApi.DevWorkspaceMetadata).labels !== undefined
     && (metadata as devfileApi.DevWorkspaceMetadata).name !== undefined
     && (metadata as devfileApi.DevWorkspaceMetadata).namespace !== undefined
