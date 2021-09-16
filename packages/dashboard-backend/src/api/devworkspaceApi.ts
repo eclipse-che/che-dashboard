@@ -11,12 +11,12 @@
  */
 
 import { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify';
-import { baseApiPath, routingClass } from '../constants/config';
+import { baseApiPath } from '../constants/config';
 import {
-  devfileSchema,
   patchSchema,
   namespacedSchema,
-  namespacedWorkspaceSchema
+  namespacedWorkspaceSchema,
+  devworkspaceSchema
 } from '../constants/schemas';
 import { getDevWorkspaceClient } from './helper';
 import { restParams } from '../typings/models';
@@ -29,11 +29,11 @@ export function registerDevworkspaceApi(server: FastifyInstance) {
 
   server.post(
     `${baseApiPath}/namespace/:namespace/devworkspaces`,
-    getSchema({ tags, params: namespacedSchema, body: devfileSchema }),
+    getSchema({ tags, params: namespacedSchema, body: devworkspaceSchema }),
     async function (request: FastifyRequest) {
-      const devWorkspace = request.body as IDevWorkspace;
+      const { devworkspace } = request.body as restParams.IDevWorkspaceSpecParam;
       const { devworkspaceApi } = await getDevWorkspaceClient(request);
-      return devworkspaceApi.create(devWorkspace);
+      return devworkspaceApi.create(devworkspace);
     }
   );
 

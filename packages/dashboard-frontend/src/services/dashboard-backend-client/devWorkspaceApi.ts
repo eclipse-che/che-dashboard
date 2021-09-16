@@ -16,25 +16,12 @@ import devfileApi, { IDevWorkspacesList, IPatch } from '../devfileApi';
 import { addAuthentication } from './auth';
 import { prefix } from './const';
 
-export async function createWorkspace(devfile: devfileApi.Devfile, defaultNamespace: string, started: boolean): Promise<devfileApi.DevWorkspace> {
+export async function createWorkspace(devworkspace: devfileApi.DevWorkspace): Promise<devfileApi.DevWorkspace> {
   const headers = addAuthentication({});
   try {
-    const response = await axios.post(`${prefix}/namespace/${defaultNamespace}/devworkspaces`, {
-      devfile: devfile,
-      started: started
-    }, { headers });
-    return response.data;
-  } catch (e) {
-    throw `Failed to create a new workspace. ${common.helpers.errors.getMessage(e)}`;
-  }
-}
-
-export async function createWorkspace1TODO(devWorkspace: devfileApi.DevWorkspace): Promise<devfileApi.DevWorkspace> {
-  const headers = addAuthentication({});
-  try {
-    const response = await axios.post(`${prefix}/namespace/${defaultNamespace}/devworkspaces`, {
-      devWorkspace
-    }, { headers });
+    const response = await axios.post(`${prefix}/namespace/${devworkspace.metadata.namespace}/devworkspaces`,
+      { devworkspace },
+      { headers });
     return response.data;
   } catch (e) {
     throw `Failed to create a new workspace. ${common.helpers.errors.getMessage(e)}`;

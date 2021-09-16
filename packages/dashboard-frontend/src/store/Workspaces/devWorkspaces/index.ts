@@ -303,13 +303,11 @@ export const actionCreators: ActionCreators = {
     }
   },
 
-  updateWorkspace: (workspace: devfileApi.DevWorkspace): AppThunk<KnownAction, Promise<void>> => async (dispatch, getState): Promise<void> => {
+  updateWorkspace: (workspace: devfileApi.DevWorkspace): AppThunk<KnownAction, Promise<void>> => async (dispatch): Promise<void> => {
     dispatch({ type: 'REQUEST_DEVWORKSPACE' });
 
     try {
-      const state = getState();
-      const plugins = selectDwPluginsList(state);
-      const updated = await devWorkspaceClient.update(workspace, plugins);
+      const updated = await devWorkspaceClient.update(workspace);
       dispatch({
         type: 'UPDATE_DEVWORKSPACE',
         workspace: updated,

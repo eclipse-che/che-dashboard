@@ -251,8 +251,8 @@ export class EditorTab extends React.PureComponent<Props, State> {
       this.setState({ hasChanges: false });
       return;
     }
-    this.setState({ devfile });
     this.setState({
+      devfile,
       hasChanges: true,
       hasRequestErrors: false,
     });
@@ -271,7 +271,6 @@ export class EditorTab extends React.PureComponent<Props, State> {
   /**
    * Check to see if the current devworkspaces devfile and the cluster devworkspaces devfile are the same. If they
    * are not then throw an error
-   * @param workspace The Currne
    */
   private async checkForModifiedClusterDevWorkspace(): Promise<void> {
     const currentDevWorkspace = this.props.workspace.ref as devfileApi.DevWorkspace;
@@ -300,16 +299,14 @@ export class EditorTab extends React.PureComponent<Props, State> {
     workspaceCopy.devfile = devfile;
     this.setState({ hasChanges: false });
     try {
-
       if (isDevWorkspace(workspaceCopy.ref)) {
         await this.checkForModifiedClusterDevWorkspace();
         // We need to manually re-attach devworkspace id so that we can re-use it to re-add default plugins to the devworkspace custom resource
         const dw = this.props.workspace.ref as devfileApi.DevWorkspace;
         workspaceCopy.ref.status = dw.status;
       }
-
       await this.props.onSave(workspaceCopy);
-    } catch (e) {
+      } catch (e) {
       const error = common.helpers.errors.getMessage(e).replace(/^Error: /gi, '');
       this.setState({
         hasChanges: true,

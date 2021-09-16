@@ -19,6 +19,7 @@ import { isWebTerminal } from '../../helpers/devworkspace';
 import { WorkspaceClient } from '../index';
 import devfileApi, { IPatch, isDevWorkspace } from '../../devfileApi';
 import {
+  devfileToDevWorkspace,
   devWorkspaceApiGroup, devworkspaceSingularSubresource, devworkspaceVersion
 } from './converters';
 import { AlertItem, DevWorkspaceStatus } from '../../helpers/types';
@@ -171,9 +172,12 @@ export class DevWorkspaceClient extends WorkspaceClient {
     if (!devfile.components) {
       devfile.components = [];
     }
+    if (!devfile.metadata.namespace) {
+      devfile.metadata.namespace = defaultNamespace;
+    }
 
-    // todo create DevWorkspace
-    const createdWorkspace = await DwApi.createWorkspace(devfile, defaultNamespace, false);
+    const devworkspace = devfileToDevWorkspace(devfile, undefined, true);
+    const createdWorkspace = await DwApi.createWorkspace(devworkspace);
     const namespace = createdWorkspace.metadata.namespace;
     const name = createdWorkspace.metadata.name;
     const workspaceId = WorkspaceAdapter.getId(createdWorkspace);
@@ -302,7 +306,7 @@ export class DevWorkspaceClient extends WorkspaceClient {
    * @param workspace The DevWorkspace you want to update
    * @param plugins The plugins you want to inject into the devworkspace
    */
-  async update(workspace: devfileApi.DevWorkspace, plugins: devfileApi.Devfile[]): Promise<devfileApi.DevWorkspace> {
+  async update(workspace: devfileApi.DevWorkspace, plugins: devfileApi.Devfile[] = []): Promise<devfileApi.DevWorkspace> {
     // Take the devworkspace with no plugins and then inject them
     for (const plugin of plugins) {
       if (!plugin.metadata) {
@@ -396,6 +400,10 @@ export class DevWorkspaceClient extends WorkspaceClient {
   private addPlugin(workspace: devfileApi.DevWorkspace, pluginName: string, namespace: string) {
     if (!workspace.spec.template.components) {
       workspace.spec.template.components = [];
+    }
+    if (workspace.spec.template.components.some(component => component.name === pluginName)) {
+      // avoid plugin duplication
+      return;
     }
     workspace.spec.template.components.push({
       name: pluginName,

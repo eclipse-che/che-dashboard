@@ -271,6 +271,14 @@ export class WorkspaceAdapter<T extends che.Workspace | devfileApi.DevWorkspace>
         if (converted.spec.template.components === undefined) {
           converted.spec.template.components = [];
         }
+        // filter out plugins to avoid duplicates
+        converted.spec.template.components.forEach(component => {
+          plugins.some((plugin, index) => {
+            if (plugin.name === component.name) {
+              plugins.splice(index, 1);
+            }
+          });
+        });
         converted.spec.template.components.push(...plugins);
         (this.workspace as devfileApi.DevWorkspace) = converted;
       } else {

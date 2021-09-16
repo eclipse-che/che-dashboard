@@ -53,18 +53,14 @@ export const patchSchema = {
   }]
 };
 
-export const devfileSchema = {
+export const devworkspaceSchema = {
   type: 'object',
   properties: {
-    devfile: {
+    devworkspace: {
       type: 'object'
     }
   },
-  example: {
-    devfile,
-    started: true
-  },
-  required: ['devfile']
+  required: ['devworkspace']
 };
 
 export const templateStartedSchema = {
