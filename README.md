@@ -47,7 +47,7 @@ We can start dev-server for dashboard-frontend only. The start command requires 
 a remote Eclipse Che server like:
 
 ```sh
-yarn frontend:start --env.server=https://che-che.192.168.99.100.nip.io
+./local-start.sh
 ```
 
 The development server serves the dashboard-frontend on [http://localhost:3000](http://localhost:3000).
@@ -71,8 +71,6 @@ metadata:
     che.eclipse.org/ADDITIONAL_REDIRECT_URIS_env-name: ADDITIONAL_REDIRECT_URIS
     che.eclipse.org/ADDITIONAL_WEBORIGINS_env-name: ADDITIONAL_WEBORIGINS
 data:
-  ADDITIONAL_WEBORIGINS: '"http://localhost:3000"'
-  ADDITIONAL_REDIRECT_URIS: '"http://localhost:3000/*"'
   ADDITIONAL_WEBORIGINS: '"http://localhost:8080"'
   ADDITIONAL_REDIRECT_URIS: '"http://localhost:8080/*"'
 EOF
