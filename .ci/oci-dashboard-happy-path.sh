@@ -43,7 +43,6 @@ export HAPPY_PATH_POD_NAME=happy-path-che
 export GIT_COMMITTER_NAME="CI BOT"
 export GIT_COMMITTER_EMAIL="ci_bot@notused.com"
 export HAPPY_PATH_TEST_PROJECT='https://github.com/che-samples/java-spring-petclinic/tree/devfilev2'
-
 deployChe() {
   cat > /tmp/che-cr-patch.yaml <<EOL
 spec:
