@@ -14,7 +14,7 @@ COMMITTERS: please include labels on each PR. Labels are listed here: https://gi
 ### Is it tested? How?
 <!-- 
 Please provide instructions here which scenario you fix/implement
-and it which way you tested it, provide as much as you think reviewer
+and in which way you tested it, provide as much as you think reviewer
 needs to do the same.
 -->
 
