@@ -33,6 +33,7 @@ import { EventEmitter } from 'events';
 import { AppAlerts } from '../../alerts/appAlerts';
 import { AlertVariant } from '@patternfly/react-core';
 import { WorkspaceAdapter } from '../../workspace-adapter';
+import { safeLoad } from 'js-yaml';
 
 export interface IStatusUpdate {
   error?: string;
@@ -183,13 +184,33 @@ export class DevWorkspaceClient extends WorkspaceClient {
     const name = createdWorkspace.metadata.name;
     const workspaceId = WorkspaceAdapter.getId(createdWorkspace);
 
+    // do we have inline editor as part of the devfile ?
+    const inlineEditorYaml = ((devfile as any).attributes && (devfile as any).attributes['che-editor.yaml']) ? safeLoad((devfile as any).attributes['che-editor.yaml']) as devfileApi.Devfile : undefined;
+
     const devfileGroupVersion = `${devWorkspaceApiGroup}/${devworkspaceVersion}`;
     const devWorkspaceTemplates: devfileApi.DevWorkspaceTemplateLike[] = [];
-    for (const pluginDevfile of pluginsDevfile) {
+
+    // do we have a custom editor specified in the repository ?
+    const cheEditorYaml = optionalFilesContent['.che/che-editor.yaml'] ? safeLoad(optionalFilesContent['.che/che-editor.yaml']) as devfileApi.Devfile : undefined;
+
+    const editorsDevfile: devfileApi.Devfile[] = [];
+    // handle inlined editor in the devfile
+    if (inlineEditorYaml) {
+      console.debug('Using Inline editor specified in the devfile', inlineEditorYaml);
+      editorsDevfile.push(inlineEditorYaml);
+    } else if (cheEditorYaml) {
+      // then check if there is a file in the repository
+      editorsDevfile.push(cheEditorYaml);
+      console.debug('Using repository .che/che-editor.yaml file', cheEditorYaml);
+    } else {
+      editorsDevfile.push(...pluginsDevfile);
+    }
+
+    for (const pluginDevfile of editorsDevfile) {
       // TODO handle error in a proper way
       const pluginName = this.normalizePluginName(pluginDevfile.metadata.name, workspaceId);
 
-      const theiaDWT = {
+      const editorDWT = {
         kind: 'DevWorkspaceTemplate',
         apiVersion: devfileGroupVersion,
         metadata: {
@@ -198,7 +219,7 @@ export class DevWorkspaceClient extends WorkspaceClient {
         },
         spec: pluginDevfile
       };
-      devWorkspaceTemplates.push(theiaDWT);
+      devWorkspaceTemplates.push(editorDWT);
     }
 
     const devWorkspace: devfileApi.DevWorkspace = createdWorkspace;
@@ -220,7 +241,7 @@ export class DevWorkspaceClient extends WorkspaceClient {
     } else {
       sidecarPolicy = SidecarPolicy.MERGE_IMAGE;
     }
-    console.debug('Loading devfile', devfile, 'with optional .che/che-theia-plugins.yaml', cheTheiaPluginsContent, 'and .vscode/extensions.json', vscodeExtensionsJsonContent, 'with sidecar policy', sidecarPolicy);
+    console.debug('Loading devfile', devfile, 'with optional .che/che-theia-plugins.yaml', cheTheiaPluginsContent, 'and using editors devfile', editorsDevfile, 'and .vscode/extensions.json', vscodeExtensionsJsonContent, 'with sidecar policy', sidecarPolicy);
     // call library to update devWorkspace and add optional templates
     try {
       await cheTheiaPluginsDevfileResolver.handle({
