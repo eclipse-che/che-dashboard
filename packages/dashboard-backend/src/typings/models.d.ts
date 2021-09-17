@@ -39,8 +39,7 @@ declare namespace restParams {
   }
 
   export interface IDevWorkspaceSpecParam {
-    devfile: IDevWorkspaceDevfile;
-    started: boolean;
+    devworkspace: IDevWorkspace;
   }
 }
 

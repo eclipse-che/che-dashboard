@@ -19,6 +19,7 @@ import { isWebTerminal } from '../../helpers/devworkspace';
 import { WorkspaceClient } from '../index';
 import devfileApi, { IPatch, isDevWorkspace } from '../../devfileApi';
 import {
+  devfileToDevWorkspace,
   devWorkspaceApiGroup, devworkspaceSingularSubresource, devworkspaceVersion
 } from './converters';
 import { AlertItem, DevWorkspaceStatus } from '../../helpers/types';
@@ -28,10 +29,10 @@ import * as DwApi from '../../dashboard-backend-client/devWorkspaceApi';
 import * as DwtApi from '../../dashboard-backend-client/devWorkspaceTemplateApi';
 import * as DwCheApi from '../../dashboard-backend-client/cheWorkspaceApi';
 import { WebsocketClient, SubscribeMessage } from '../../dashboard-backend-client/websocketClient';
-import { getId, getStatus } from '../../workspace-adapter/helper';
 import { EventEmitter } from 'events';
 import { AppAlerts } from '../../alerts/appAlerts';
 import { AlertVariant } from '@patternfly/react-core';
+import { WorkspaceAdapter } from '../../workspace-adapter';
 
 export interface IStatusUpdate {
   error?: string;
@@ -171,11 +172,16 @@ export class DevWorkspaceClient extends WorkspaceClient {
     if (!devfile.components) {
       devfile.components = [];
     }
+    if (!devfile.metadata.namespace) {
+      devfile.metadata.namespace = defaultNamespace;
+    }
 
-    const createdWorkspace = await DwApi.createWorkspace(devfile, defaultNamespace, false);
+    const routingClass = 'che';
+    const devworkspace = devfileToDevWorkspace(devfile, routingClass, true);
+    const createdWorkspace = await DwApi.createWorkspace(devworkspace);
     const namespace = createdWorkspace.metadata.namespace;
     const name = createdWorkspace.metadata.name;
-    const workspaceId = getId(createdWorkspace);
+    const workspaceId = WorkspaceAdapter.getId(createdWorkspace);
 
     const devfileGroupVersion = `${devWorkspaceApiGroup}/${devworkspaceVersion}`;
     const devWorkspaceTemplates: devfileApi.DevWorkspaceTemplateLike[] = [];
@@ -301,13 +307,13 @@ export class DevWorkspaceClient extends WorkspaceClient {
    * @param workspace The DevWorkspace you want to update
    * @param plugins The plugins you want to inject into the devworkspace
    */
-  async update(workspace: devfileApi.DevWorkspace, plugins: devfileApi.Devfile[]): Promise<devfileApi.DevWorkspace> {
+  async update(workspace: devfileApi.DevWorkspace, plugins: devfileApi.Devfile[] = []): Promise<devfileApi.DevWorkspace> {
     // Take the devworkspace with no plugins and then inject them
     for (const plugin of plugins) {
       if (!plugin.metadata) {
         continue;
       }
-      const pluginName = this.normalizePluginName(plugin.metadata.name, getId(workspace));
+      const pluginName = this.normalizePluginName(plugin.metadata.name, WorkspaceAdapter.getId(workspace));
       this.addPlugin(workspace, pluginName, workspace.metadata.namespace);
     }
 
@@ -381,7 +387,7 @@ export class DevWorkspaceClient extends WorkspaceClient {
       value: started
     }]);
     if (!started) {
-      this.lastDevWorkspaceLog.delete(getId(changedWorkspace));
+      this.lastDevWorkspaceLog.delete(WorkspaceAdapter.getId(changedWorkspace));
     }
     this.checkForDevWorkspaceError(changedWorkspace);
     return changedWorkspace;
@@ -444,7 +450,7 @@ export class DevWorkspaceClient extends WorkspaceClient {
       const statusUpdate = this.createStatusUpdate(devworkspace);
       const statusMessage = devworkspace.status?.message;
       if (statusMessage) {
-        const workspaceId = getId(devworkspace);
+        const workspaceId = WorkspaceAdapter.getId(devworkspace);
         const lastMessage = this.lastDevWorkspaceLog.get(workspaceId);
         // Only add new messages we haven't seen before
         if (lastMessage !== statusMessage) {
@@ -490,7 +496,7 @@ export class DevWorkspaceClient extends WorkspaceClient {
    */
   private createStatusUpdate(devworkspace: devfileApi.DevWorkspace): IStatusUpdate {
     const namespace = devworkspace.metadata.namespace;
-    const workspaceId = getId(devworkspace);
+    const workspaceId = WorkspaceAdapter.getId(devworkspace);
     // Starting devworkspaces don't have status defined
     const status = typeof devworkspace?.status?.phase === 'string'
       ? devworkspace.status.phase
@@ -522,7 +528,7 @@ export class DevWorkspaceClient extends WorkspaceClient {
   }
 
   checkForDevWorkspaceError(devworkspace: devfileApi.DevWorkspace) {
-    const currentPhase = getStatus(devworkspace);
+    const currentPhase = WorkspaceAdapter.getStatus(devworkspace);
     if (currentPhase && currentPhase === DevWorkspaceStatus.FAILED) {
       const message = devworkspace.status?.message;
       if (message) {

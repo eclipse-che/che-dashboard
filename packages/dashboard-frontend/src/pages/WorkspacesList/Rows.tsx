@@ -119,14 +119,14 @@ export function buildRow(
   /* projects list */
   const projects: string[] = [];
   if (isCheWorkspace(workspace.ref)) {
-    const devfile = workspace.devfile as che.WorkspaceDevfile;
-    (devfile.projects || [])
+    const workspaceProjects = (workspace.devfile as che.WorkspaceDevfile).projects;
+    (workspaceProjects || [])
       .map(project => project.name || project.source?.location)
       .filter((projectName?: string) => projectName)
       .forEach((projectName: string) => projects.push(projectName));
   } else {
-    const devfile = workspace.devfile as devfileApi.Devfile;
-    (devfile.projects || [])
+    const workspaceProjects = (workspace.ref as devfileApi.DevWorkspace).spec.template.projects;
+    (workspaceProjects || [])
       .map(project => project.name || project.git?.remotes?.origin)
       .filter((projectName?: string): projectName is string => {
         return typeof projectName === 'string' && projectName !== '';

@@ -11,16 +11,17 @@
  */
 
 import { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify';
-import { baseApiPath, routingClass } from '../constants/config';
+import { baseApiPath } from '../constants/config';
 import {
-  devfileSchema,
   patchSchema,
   namespacedSchema,
-  namespacedWorkspaceSchema
+  namespacedWorkspaceSchema,
+  devworkspaceSchema
 } from '../constants/schemas';
 import { getDevWorkspaceClient } from './helper';
 import { restParams } from '../typings/models';
 import { getSchema } from '../services/helpers';
+import { IDevWorkspace } from '../devworkspace-client';
 
 const tags = ['devworkspace'];
 
@@ -28,17 +29,11 @@ export function registerDevworkspaceApi(server: FastifyInstance) {
 
   server.post(
     `${baseApiPath}/namespace/:namespace/devworkspaces`,
-    getSchema({ tags, params: namespacedSchema, body: devfileSchema }),
+    getSchema({ tags, params: namespacedSchema, body: devworkspaceSchema }),
     async function (request: FastifyRequest) {
-      const { devfile, started } = request.body as restParams.IDevWorkspaceSpecParam;
-      // override the namespace from params
-      const { namespace } = request.params as restParams.INamespacedParam;
-      if (devfile.metadata === undefined) {
-        devfile.metadata = {};
-      }
-      devfile.metadata.namespace = namespace;
+      const { devworkspace } = request.body as restParams.IDevWorkspaceSpecParam;
       const { devworkspaceApi } = await getDevWorkspaceClient(request);
-      return devworkspaceApi.create(devfile, routingClass, started);
+      return devworkspaceApi.create(devworkspace);
     }
   );
 

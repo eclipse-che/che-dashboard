@@ -10,7 +10,7 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import { devfile, template } from './examples';
+import { template } from './examples';
 
 export const authenticationHeaderSchema = {
     type: 'object',
@@ -53,18 +53,14 @@ export const patchSchema = {
   }]
 };
 
-export const devfileSchema = {
+export const devworkspaceSchema = {
   type: 'object',
   properties: {
-    devfile: {
+    devworkspace: {
       type: 'object'
     }
   },
-  example: {
-    devfile,
-    started: true
-  },
-  required: ['devfile']
+  required: ['devworkspace']
 };
 
 export const templateStartedSchema = {
