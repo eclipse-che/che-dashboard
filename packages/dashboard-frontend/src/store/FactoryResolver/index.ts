@@ -125,7 +125,7 @@ export const actionCreators: ActionCreators = {
       if (cheTheiaPlugins) {
         optionalFilesContent['.che/che-theia-plugins.yaml'] = cheTheiaPlugins;
       }
-      const cheEditor = await grabLink(data.links, 'che editor file');
+      const cheEditor = await grabLink(data.links, '.che/che-editor.yaml');
       if (cheEditor) {
         optionalFilesContent['.che/che-editor.yaml'] = cheEditor;
       }
