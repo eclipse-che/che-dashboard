@@ -16,7 +16,7 @@ export const devworkspaceVersion = 'v1alpha2';
 export const devWorkspaceApiGroup = 'workspace.devfile.io';
 export const devworkspaceSingularSubresource = 'devworkspace';
 
-export function devfileToDevWorkspace(devfile: devfileApi.Devfile, routingClass: string | undefined, started: boolean): devfileApi.DevWorkspace {
+export function devfileToDevWorkspace(devfile: devfileApi.Devfile, routingClass: string, started: boolean): devfileApi.DevWorkspace {
   const devfileAttributes = devfile.metadata.attributes || {};
   const devWorkspaceAnnotations = devfileAttributes['dw.metadata.annotations'] || {};
   const template = {

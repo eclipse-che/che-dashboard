@@ -322,9 +322,10 @@ export const actionCreators: ActionCreators = {
     }
   },
 
-  createWorkspaceFromDevfile: (devfile: devfileApi.Devfile, optionalFilesContent: {
-    [fileName: string]: string
-  },
+  createWorkspaceFromDevfile: (
+    devfile: devfileApi.Devfile, optionalFilesContent: {
+      [fileName: string]: string
+    },
     pluginRegistryUrl: string | undefined,
     pluginRegistryInternalUrl: string | undefined,
   ): AppThunk<KnownAction, Promise<void>> => async (dispatch, getState): Promise<void> => {

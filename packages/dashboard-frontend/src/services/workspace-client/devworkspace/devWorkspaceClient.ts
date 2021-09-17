@@ -176,7 +176,8 @@ export class DevWorkspaceClient extends WorkspaceClient {
       devfile.metadata.namespace = defaultNamespace;
     }
 
-    const devworkspace = devfileToDevWorkspace(devfile, undefined, true);
+    const routingClass = 'che';
+    const devworkspace = devfileToDevWorkspace(devfile, routingClass, true);
     const createdWorkspace = await DwApi.createWorkspace(devworkspace);
     const namespace = createdWorkspace.metadata.namespace;
     const name = createdWorkspace.metadata.name;
