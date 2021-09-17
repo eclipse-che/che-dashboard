@@ -88,7 +88,7 @@ export interface IDevWorkspaceList {
     items: IDevWorkspace[];
 }
 
-//todo
+// todo drop these types and use ones from devfile/api instead
 export interface IDevWorkspace {
     apiVersion: string;
     kind: string;
