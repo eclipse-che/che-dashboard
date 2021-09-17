@@ -402,10 +402,6 @@ export class DevWorkspaceClient extends WorkspaceClient {
     if (!workspace.spec.template.components) {
       workspace.spec.template.components = [];
     }
-    if (workspace.spec.template.components.some(component => component.name === pluginName)) {
-      // avoid plugin duplication
-      return;
-    }
     workspace.spec.template.components.push({
       name: pluginName,
       plugin: {
