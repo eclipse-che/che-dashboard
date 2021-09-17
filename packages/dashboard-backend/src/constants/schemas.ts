@@ -10,7 +10,7 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import { devfile, template } from './examples';
+import { template } from './examples';
 
 export const authenticationHeaderSchema = {
     type: 'object',
