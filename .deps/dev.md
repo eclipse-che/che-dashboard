@@ -167,6 +167,7 @@
 | [`@types/eslint-visitor-keys@1.0.0`](https://www.github.com/DefinitelyTyped/DefinitelyTyped.git) | MIT | clearlydefined |
 | [`@types/express-serve-static-core@4.17.24`](https://github.com/DefinitelyTyped/DefinitelyTyped.git) | MIT | clearlydefined |
 | [`@types/express@4.17.13`](https://github.com/DefinitelyTyped/DefinitelyTyped.git) | MIT | clearlydefined |
+| [`@types/fs-extra@9.0.12`](https://github.com/DefinitelyTyped/DefinitelyTyped.git) | MIT | clearlydefined |
 | [`@types/glob@7.1.4`](https://github.com/DefinitelyTyped/DefinitelyTyped.git) | MIT | clearlydefined |
 | [`@types/graceful-fs@4.1.5`](https://github.com/DefinitelyTyped/DefinitelyTyped.git) | MIT | clearlydefined |
 | [`@types/history@4.7.9`](https://github.com/DefinitelyTyped/DefinitelyTyped.git) | MIT | clearlydefined |
@@ -208,6 +209,7 @@
 | [`@types/stylelint@13.13.2`](https://github.com/DefinitelyTyped/DefinitelyTyped.git) | MIT | clearlydefined |
 | [`@types/tapable@1.0.8`](https://github.com/DefinitelyTyped/DefinitelyTyped.git) | MIT | clearlydefined |
 | [`@types/testing-library__jest-dom@5.14.1`](https://github.com/DefinitelyTyped/DefinitelyTyped.git) | MIT | clearlydefined |
+| [`@types/tunnel@0.0.1`](https://github.com/DefinitelyTyped/DefinitelyTyped.git) | MIT | clearlydefined |
 | [`@types/uglify-js@3.13.1`](https://github.com/DefinitelyTyped/DefinitelyTyped.git) | MIT | clearlydefined |
 | [`@types/unist@2.0.6`](https://github.com/DefinitelyTyped/DefinitelyTyped.git) | MIT | clearlydefined |
 | [`@types/vfile-message@2.0.0`](https://github.com/vfile/vfile-message#readme) | MIT | clearlydefined |
@@ -289,7 +291,6 @@
 | [`async-each@1.0.3`](git://github.com/paulmillr/async-each.git) | MIT | clearlydefined |
 | [`async-limiter@1.0.1`](https://github.com/strml/async-limiter.git) | MIT | clearlydefined |
 | [`async@2.6.3`](https://github.com/caolan/async.git) | MIT | clearlydefined |
-| [`at-least-node@1.0.0`](git+https://github.com/RyanZim/at-least-node.git) | ISC | clearlydefined |
 | [`atob@2.1.2`](git://git.coolaj86.com/coolaj86/atob.js.git) | (MIT OR Apache-2.0) | #1027 |
 | [`autoprefixer@9.8.6`](https://github.com/postcss/autoprefixer.git) | MIT | clearlydefined |
 | [`axios-mock-adapter@1.20.0`](git+https://github.com/ctimmerm/axios-mock-adapter.git) | MIT | clearlydefined |
@@ -493,7 +494,7 @@
 | [`eslint-visitor-keys@1.3.0`](https://github.com/eslint/eslint-visitor-keys.git) | Apache-2.0 | clearlydefined |
 | [`eslint@7.32.0`](https://github.com/eslint/eslint.git) | MIT | clearlydefined |
 | [`espree@7.3.1`](https://github.com/eslint/espree.git) | BSD-2-Clause | #903 |
-| [`esquery@1.4.0`](https://github.com/estools/esquery.git) | BSD-3-Clause | clearlydefined |
+| [`esquery@1.4.0`](https://github.com/estools/esquery.git) | BSD-3-Clause | #1100 |
 | [`esrecurse@4.3.0`](https://github.com/estools/esrecurse.git) | BSD-2-Clause | clearlydefined |
 | [`estraverse@5.2.0`](http://github.com/estools/estraverse.git) | BSD-2-Clause | #881 |
 | [`eventemitter3@4.0.7`](git://github.com/primus/eventemitter3.git) | MIT | clearlydefined |
@@ -532,7 +533,6 @@
 | [`for-in@1.0.2`](https://github.com/jonschlinkert/for-in.git) | MIT | clearlydefined |
 | [`fragment-cache@0.2.1`](https://github.com/jonschlinkert/fragment-cache.git) | MIT | clearlydefined |
 | [`from2@2.3.0`](git://github.com/hughsk/from2) | MIT | clearlydefined |
-| [`fs-extra@9.1.0`](https://github.com/jprichardson/node-fs-extra) | MIT | clearlydefined |
 | [`fs-write-stream-atomic@1.0.10`](https://github.com/npm/fs-write-stream-atomic) | ISC | clearlydefined |
 | `fsevents@2.3.2` |  |  |
 | [`functional-red-black-tree@1.0.1`](git://github.com/mikolalysenko/functional-red-black-tree.git) | MIT | clearlydefined |
@@ -561,7 +561,6 @@
 | [`globby@11.0.4`](https://github.com/sindresorhus/globby.git) | MIT | clearlydefined |
 | [`globjoin@0.1.4`](git+https://github.com/amobiz/globjoin.git) | MIT | clearlydefined |
 | [`gonzales-pe@4.3.0`](http://github.com/tonyganch/gonzales-pe.git) | MIT | clearlydefined |
-| [`graceful-fs@4.2.8`](https://github.com/isaacs/node-graceful-fs) | ISC | clearlydefined |
 | [`growly@1.3.0`](http://github.com/theabraham/growly) | MIT | clearlydefined |
 | [`handle-thing@2.0.1`](git+ssh://git@github.com/indutny/handle-thing.git) | MIT | clearlydefined |
 | [`handlebars@4.7.7`](https://github.com/wycats/handlebars.js.git) | MIT | clearlydefined |
@@ -711,7 +710,6 @@
 | [`json-parse-even-better-errors@2.3.1`](https://github.com/npm/json-parse-even-better-errors) | MIT | clearlydefined |
 | [`json-stable-stringify-without-jsonify@1.0.1`](git://github.com/samn/json-stable-stringify.git) | MIT | clearlydefined |
 | [`json5@2.2.0`](git+https://github.com/json5/json5.git) | MIT | clearlydefined |
-| [`jsonfile@6.1.0`](git@github.com:jprichardson/node-jsonfile.git) | MIT | clearlydefined |
 | [`jsonparse@1.3.1`](http://github.com/creationix/jsonparse.git) | MIT | clearlydefined |
 | [`jsx-ast-utils@3.2.0`](https://github.com/evcohen/jsx-ast-utils) | MIT | clearlydefined |
 | [`keycloak-js@10.0.2`](https://github.com/keycloak/keycloak) | Apache-2.0 | clearlydefined |

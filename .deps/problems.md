@@ -5,7 +5,6 @@
 1. `glob-to-regexp@0.3.0`
 2. `tslib@2.3.1`
 3. `umd-compat-loader@2.1.1`
-4. `uri-js@4.4.1`
 
 ## UNRESOLVED Development dependencies
 

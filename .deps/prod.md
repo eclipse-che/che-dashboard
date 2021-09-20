@@ -53,6 +53,7 @@
 | [`assert-plus@1.0.0`](https://github.com/mcavage/node-assert-plus.git) | MIT | clearlydefined |
 | [`ast-types@0.9.14`](git://github.com/benjamn/ast-types.git) | MIT | clearlydefined |
 | [`asynckit@0.4.0`](git+https://github.com/alexindigo/asynckit.git) | MIT | clearlydefined |
+| [`at-least-node@1.0.0`](git+https://github.com/RyanZim/at-least-node.git) | ISC | clearlydefined |
 | [`atomic-sleep@1.0.0`](git+https://github.com/davidmarkclements/atomic-sleep.git) | MIT | clearlydefined |
 | [`attr-accept@1.1.3`](https://github.com/okonet/attr-accept.git) | MIT | [CQ22348](https://dev.eclipse.org/ipzilla/show_bug.cgi?id=22348) |
 | [`avvio@7.2.2`](git+https://github.com/fastify/avvio.git) | MIT | clearlydefined |
@@ -161,6 +162,7 @@
 | [`form-data@2.5.1`](git://github.com/form-data/form-data.git) | MIT | clearlydefined |
 | [`forwarded@0.2.0`](https://github.com/jshttp/forwarded.git) | MIT | clearlydefined |
 | [`fresh@0.5.2`](https://github.com/jshttp/fresh.git) | MIT | clearlydefined |
+| [`fs-extra@9.1.0`](https://github.com/jprichardson/node-fs-extra) | MIT | clearlydefined |
 | [`fs-minipass@2.1.0`](git+https://github.com/npm/fs-minipass.git) | ISC | clearlydefined |
 | [`fs.realpath@1.0.0`](git+https://github.com/isaacs/fs.realpath.git) | ISC | clearlydefined |
 | [`function-bind@1.1.1`](git://github.com/Raynos/function-bind.git) | MIT | clearlydefined |
@@ -171,6 +173,7 @@
 | [`glob@7.1.7`](git://github.com/isaacs/node-glob.git) | ISC | #994 |
 | [`globals@9.18.0`](https://github.com/sindresorhus/globals.git) | MIT | clearlydefined |
 | [`got@11.8.2`](https://github.com/sindresorhus/got.git) | MIT | clearlydefined |
+| [`graceful-fs@4.2.8`](https://github.com/isaacs/node-graceful-fs) | ISC | clearlydefined |
 | [`gravatar-url@3.1.0`](https://github.com/sindresorhus/gravatar-url.git) | MIT | clearlydefined |
 | [`har-schema@2.0.0`](https://github.com/ahmadnassri/har-schema.git) | ISC | clearlydefined |
 | [`har-validator@5.1.5`](https://github.com/ahmadnassri/node-har-validator.git) | MIT | clearlydefined |
@@ -222,6 +225,7 @@
 | [`json3@3.3.3`](git://github.com/bestiejs/json3.git) | MIT | clearlydefined |
 | [`json5@1.0.1`](git+https://github.com/json5/json5.git) | MIT | [CQ22351](https://dev.eclipse.org/ipzilla/show_bug.cgi?id=22351) |
 | [`jsonc-parser@3.0.0`](https://github.com/microsoft/node-jsonc-parser) | MIT | clearlydefined |
+| [`jsonfile@6.1.0`](git@github.com:jprichardson/node-jsonfile.git) | MIT | clearlydefined |
 | [`jsonpath-plus@0.19.0`](git://github.com/s3u/JSONPath.git) | MIT | clearlydefined |
 | [`jsprim@1.4.1`](git://github.com/joyent/node-jsprim.git) | MIT | clearlydefined |
 | [`keyv@4.0.3`](git+https://github.com/lukechilds/keyv.git) | MIT | clearlydefined |
@@ -385,7 +389,8 @@
 | [`umd-compat-loader@2.1.1`](http://github.com/matt-gadd/umd-compat-loader.git) | BSD |  |
 | [`underscore@1.13.1`](git://github.com/jashkenas/underscore.git) | MIT | clearlydefined |
 | [`undici@3.3.6`](git+https://github.com/nodejs/undici.git) | MIT | clearlydefined |
-| [`uri-js@4.4.1`](http://github.com/garycourt/uri-js) | BSD-2-Clause |  |
+| [`universalify@2.0.0`](git+https://github.com/RyanZim/universalify.git) | MIT | clearlydefined |
+| [`uri-js@4.4.1`](http://github.com/garycourt/uri-js) | BSD-2-Clause | #1086 |
 | [`url-parse@1.5.3`](https://github.com/unshiftio/url-parse.git) | MIT | clearlydefined |
 | [`util-deprecate@1.0.2`](git://github.com/TooTallNate/util-deprecate.git) | MIT | clearlydefined |
 | [`uuid@7.0.3`](https://github.com/uuidjs/uuid.git) | MIT | #57 |
