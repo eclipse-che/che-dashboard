@@ -40,7 +40,9 @@ module.exports = (env = {}) => {
         {
           enforce: 'pre',
           test: /\.(tsx|ts|jsx|js)$/,
-          loader: 'source-map-loader',
+          use: [{
+            loader: 'source-map-loader'
+          }],
           include: path.resolve(__dirname, 'src'),
         },
         {
