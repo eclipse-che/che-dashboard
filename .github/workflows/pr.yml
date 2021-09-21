@@ -11,7 +11,7 @@ name: PR
 
 on:
   pull_request:
-    branches: [main]
+    branches: ['*']
 
 env:
   DIR_DASHBOARD: che-dashboard

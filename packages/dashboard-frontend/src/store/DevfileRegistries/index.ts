@@ -11,12 +11,13 @@
  */
 
 import { Action, Reducer } from 'redux';
+import common from '@eclipse-che/common';
 import { AppThunk } from '..';
 import { fetchRegistryMetadata, fetchDevfile } from '../../services/registry/devfiles';
 import { createObject } from '../helpers';
 import { container } from '../../inversify.config';
-import { CheWorkspaceClient } from '../../services/workspace-client/cheWorkspaceClient';
-import { getErrorMessage } from '../../services/helpers/getErrorMessage';
+import { CheWorkspaceClient } from '../../services/workspace-client/cheworkspace/cheWorkspaceClient';
+import { selectPlugins } from '../Plugins/chePlugins/selectors';
 
 const WorkspaceClient = container.get(CheWorkspaceClient);
 
@@ -130,7 +131,8 @@ export const actionCreators: ActionCreators = {
             url,
             metadata,
           });
-        } catch (error) {
+        } catch (e) {
+          const error = common.helpers.errors.getMessage(e);
           dispatch({
             type: 'RECEIVE_REGISTRY_ERROR',
             url,
@@ -162,7 +164,45 @@ export const actionCreators: ActionCreators = {
     dispatch({ type: 'REQUEST_SCHEMA' });
     try {
       const state = getState();
-      const schemav1 = await WorkspaceClient.restApiClient.getDevfileSchema('1.0.0');
+      const schemav1 = await WorkspaceClient.restApiClient.getDevfileSchema<{ [key: string]: any }>('1.0.0');
+      const items = selectPlugins(state);
+      const components = schemav1?.properties ? schemav1.properties.components : undefined;
+      if (components) {
+        const mountSources = components.items.properties.mountSources;
+        // mount sources is specific only for some of component types but always appears
+        // patch schema and remove default value for boolean mount sources to avoid their appearing during the completion
+        if (mountSources && mountSources.default === 'false') {
+          delete mountSources.default;
+        }
+        schemav1.additionalProperties = true;
+        if (!components.defaultSnippets) {
+          components.defaultSnippets = [];
+        }
+        const pluginsId: string[] = [];
+        items.forEach((item: che.Plugin) => {
+          const id = `${item.publisher}/${item.name}/latest`;
+          if (pluginsId.indexOf(id) === -1 && item.type !== 'Che Editor') {
+            pluginsId.push(id);
+            components.defaultSnippets.push({
+              label: item.displayName,
+              description: item.description,
+              body: { id: id, type: 'chePlugin' },
+            });
+          } else {
+            pluginsId.push(item.id);
+          }
+        });
+        if (components.items && components.items.properties) {
+          if (!components.items.properties.id) {
+            components.items.properties.id = {
+              type: 'string',
+              description: 'Plugin\'s/Editor\'s id.',
+            };
+          }
+          components.items.properties.id.examples = pluginsId;
+        }
+      }
+
       let schema = schemav1;
 
       const cheDevworkspaceEnabled = state.workspacesSettings.settings['che.devworkspaces.enabled'] === 'true';
@@ -190,7 +230,7 @@ export const actionCreators: ActionCreators = {
       });
       return schema;
     } catch (e) {
-      const errorMessage = 'Failed to request devfile JSON schema, reason: ' + getErrorMessage(e);
+      const errorMessage = 'Failed to request devfile JSON schema, reason: ' + common.helpers.errors.getMessage(e);
       dispatch({
         type: 'RECEIVE_SCHEMA_ERROR',
         error: errorMessage,
@@ -242,7 +282,7 @@ export const reducer: Reducer<State> = (state: State | undefined, incomingAction
     case 'RECEIVE_REGISTRY_METADATA':
       return createObject(state, {
         isLoading: false,
-        registries: createObject(state.registries, { 
+        registries: createObject(state.registries, {
           [action.url]: {
             metadata: action.metadata,
           },

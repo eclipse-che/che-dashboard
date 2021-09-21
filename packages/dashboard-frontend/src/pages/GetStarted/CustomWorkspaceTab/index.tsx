@@ -12,7 +12,7 @@
 
 import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
-import { Button, Form, PageSection, PageSectionVariants, } from '@patternfly/react-core';
+import { Button, Form, PageSection, PageSectionVariants, ValidatedOptions, } from '@patternfly/react-core';
 import { AppState } from '../../../store';
 import DevfileEditor, { DevfileEditor as Editor } from '../../../components/DevfileEditor';
 import StorageTypeFormGroup from './StorageType';
@@ -23,6 +23,9 @@ import { selectPreferredStorageType, selectWorkspacesSettings } from '../../../s
 import { attributesToType, updateDevfile } from '../../../services/storageTypes';
 import { safeLoad } from 'js-yaml';
 import { updateDevfileMetadata } from '../updateDevfileMetadata';
+import { Devfile, isCheDevfile } from '../../../services/workspace-adapter';
+import getRandomString from '../../../services/helpers/random';
+import { isDevfileV2Like } from '../../../services/devfileApi';
 
 type Props = MappedProps
   & {
@@ -34,11 +37,13 @@ type Props = MappedProps
   };
 type State = {
   storageType: che.WorkspaceStorageType;
-  devfile: che.WorkspaceDevfile;
+  devfile: Devfile;
   namespace?: che.KubernetesNamespace;
   generateName?: string;
   workspaceName: string;
   isCreated: boolean;
+  isDevfileValid: boolean;
+  isWorkspaceNameValid: boolean;
 };
 
 export class CustomWorkspaceTab extends React.PureComponent<Props, State> {
@@ -49,36 +54,43 @@ export class CustomWorkspaceTab extends React.PureComponent<Props, State> {
     super(props);
 
     const devfile = this.buildInitialDevfile();
-    const storageType = attributesToType(devfile.attributes);
-    const workspaceName = devfile.metadata.name ? devfile.metadata.name : '';
-    const generateName = !workspaceName ? devfile.metadata.generateName : '';
-    this.state = { devfile, storageType, generateName, workspaceName, isCreated: false };
+    const storageType = isCheDevfile(devfile) ? attributesToType(devfile.attributes) : 'persistent';
+    const workspaceName = devfile.metadata.name ? devfile.metadata.name || '' : '';
+    const generateName = isCheDevfile(devfile) && !workspaceName ? devfile.metadata.generateName : '';
+    this.state = { devfile, storageType, generateName, workspaceName, isCreated: false, isDevfileValid: true, isWorkspaceNameValid: true };
     this.devfileEditorRef = React.createRef<Editor>();
   }
 
-  private buildInitialDevfile(generateName?: string): che.WorkspaceDevfile {
-    const devfile = {
+  private buildInitialDevfile(generateName = 'wksp-'): Devfile {
+    const devfile = (this.props.workspacesSettings['che.devworkspaces.enabled'] === 'true') ? {
+      schemaVersion: '2.1.0',
+      metadata: {
+        name: generateName + getRandomString(4).toLowerCase(),
+      }
+    } : {
       apiVersion: '1.0.0',
       metadata: {
-        generateName: generateName ? generateName : 'wksp-'
-      },
-    } as che.WorkspaceDevfile;
+        generateName
+      }
+    };
 
-    return updateDevfile(devfile, this.props.preferredStorageType);
+    return updateDevfile(devfile as Devfile, this.props.preferredStorageType);
   }
 
   private handleInfrastructureNamespaceChange(namespace: che.KubernetesNamespace): void {
     this.setState({ namespace });
   }
 
-  private handleWorkspaceNameChange(workspaceName: string, workspaceDevfile?: che.WorkspaceDevfile): void {
+  private handleWorkspaceNameChange(workspaceName: string, workspaceDevfile?: Devfile): void {
     const devfile = workspaceDevfile ? workspaceDevfile : this.state.devfile;
     if (!devfile) {
       return;
     }
     if (workspaceName) {
       devfile.metadata.name = workspaceName;
-      delete devfile.metadata.generateName;
+      if (isCheDevfile(devfile)) {
+        delete devfile.metadata.generateName;
+      }
       const generateName = '';
       this.setState({ workspaceName, generateName });
     }
@@ -86,7 +98,7 @@ export class CustomWorkspaceTab extends React.PureComponent<Props, State> {
     this.updateEditor(devfile);
   }
 
-  private handleStorageChange(storageType: che.WorkspaceStorageType, workspaceDevfile?: che.WorkspaceDevfile): void {
+  private handleStorageChange(storageType: che.WorkspaceStorageType, workspaceDevfile?: Devfile): void {
     const devfile = workspaceDevfile ? workspaceDevfile : this.state.devfile;
     if (!devfile) {
       return;
@@ -101,11 +113,12 @@ export class CustomWorkspaceTab extends React.PureComponent<Props, State> {
     this.updateEditor(newDevfile);
   }
 
-  private handleNewDevfile(devfileContent?: che.WorkspaceDevfile): void {
-    let devfile: che.WorkspaceDevfile;
+  private handleNewDevfile(devfileContent?: Devfile): void {
+    let devfile: Devfile;
     if (!devfileContent) {
       devfile = this.buildInitialDevfile();
     } else if (
+      isCheDevfile(devfileContent) &&
       devfileContent?.attributes?.persistVolumes === undefined &&
       devfileContent?.attributes?.asyncPersist === undefined &&
       this.props.preferredStorageType
@@ -130,19 +143,22 @@ export class CustomWorkspaceTab extends React.PureComponent<Props, State> {
   }
 
   private handleDevfileChange(newValue: string, isValid: boolean): void {
+    if (this.state.isDevfileValid !== isValid) {
+      this.setState({ isDevfileValid: isValid });
+    }
     if (!isValid) {
       return;
     }
-    let devfile: che.WorkspaceDevfile;
+    let devfile: Devfile;
     try {
-      devfile = safeLoad(newValue) as che.WorkspaceDevfile;
+      devfile = safeLoad(newValue) as Devfile;
     } catch (e) {
       console.error('Devfile parse error', e);
       return;
     }
     devfile = updateDevfileMetadata(devfile);
     this.setState({ devfile, isCreated: false });
-    if (devfile?.attributes) {
+    if (devfile?.attributes && isCheDevfile(devfile)) {
       const storageType = attributesToType(devfile.attributes);
       if (storageType !== this.state.storageType) {
         this.setState({ storageType });
@@ -152,13 +168,13 @@ export class CustomWorkspaceTab extends React.PureComponent<Props, State> {
     if (workspaceName !== this.state.workspaceName) {
       this.setState({ workspaceName });
     }
-    const generateName = devfile?.metadata?.generateName;
+    const generateName = isCheDevfile(devfile) ? devfile?.metadata?.generateName : '';
     if (generateName !== this.state.generateName) {
       this.setState({ generateName });
     }
   }
 
-  private updateEditor(devfile: che.WorkspaceDevfile): void {
+  private updateEditor(devfile: Devfile): void {
     this.devfileEditorRef.current?.updateContent(devfile);
     this.setState({ isCreated: false });
   }
@@ -181,8 +197,16 @@ export class CustomWorkspaceTab extends React.PureComponent<Props, State> {
     }
   }
 
+  private handleNameValidatedOptions(validatedOptions: ValidatedOptions): void {
+    const isWorkspaceNameValid = validatedOptions !== ValidatedOptions.error;
+    if (this.state.isWorkspaceNameValid !== isWorkspaceNameValid) {
+      this.setState({ isWorkspaceNameValid });
+    }
+  }
+
   public render(): React.ReactElement {
-    const { devfile, storageType, generateName, workspaceName, isCreated } = this.state;
+    const { devfile, storageType, generateName, workspaceName, isCreated, isDevfileValid, isWorkspaceNameValid } = this.state;
+    const isDevfileV2 = isDevfileV2Like(devfile);
     return (
       <>
         <PageSection
@@ -196,10 +220,12 @@ export class CustomWorkspaceTab extends React.PureComponent<Props, State> {
               generateName={generateName}
               name={workspaceName}
               onChange={_name => this.handleWorkspaceNameChange(_name)}
+              onValidated={_validatedOptions => this.handleNameValidatedOptions(_validatedOptions)}
             />
             <StorageTypeFormGroup
               storageType={storageType}
               onChange={_storageType => this.handleStorageChange(_storageType)}
+              isDisable={isDevfileV2}
             />
           </Form>
         </PageSection>
@@ -227,7 +253,7 @@ export class CustomWorkspaceTab extends React.PureComponent<Props, State> {
           <Button
             variant="primary"
             onClick={() => this.handleCreate()}
-            isDisabled={isCreated}
+            isDisabled={isCreated || !isDevfileValid || !isWorkspaceNameValid}
           >
             Create & Open
           </Button>

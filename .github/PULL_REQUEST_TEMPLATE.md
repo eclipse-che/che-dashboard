@@ -10,9 +10,13 @@ COMMITTERS: please include labels on each PR. Labels are listed here: https://gi
 
 ### What issues does this PR fix or reference?
 
-<!-- #### Changelog -->
-<!-- The changelog will be pulled from the PR's title. 
-     Please provide a clear and meaningful title to the PR and don't include issue number -->
+
+### Is it tested? How?
+<!-- 
+Please provide instructions here which scenario you fix/implement
+and in which way you tested it, provide as much as you think reviewer
+needs to do the same.
+-->
 
 
 #### Release Notes

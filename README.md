@@ -32,15 +32,25 @@ Install all dependencies:
 yarn
 ```
 
-and start dev-server:
-
-The `frontend:start` command requires to specify a remote Eclipse Che server like:
+and start dashboard locally:
 
 ```sh
-yarn frontend:start --env.server=https://che-che.192.168.99.100.nip.io
+yarn start
 ```
 
-The development server serves the project on [http://localhost:3000](http://localhost:3000).
+The development server serves the dashboard-frontend and dashboard-backend on [http://localhost:8080](http://localhost:8080).
+
+Note: dashboard backend uses the K8s/OpenShift cluster from the kubeconfig, so you may need to logging with oc first.
+
+
+We can start dev-server for dashboard-frontend only. The start command requires to specify
+a remote Eclipse Che server like:
+
+```sh
+./local-start.sh
+```
+
+The development server serves the dashboard-frontend on [http://localhost:3000](http://localhost:3000).
 
 Note: For Che/CRW to allow connection from localhost it should be configured in accordance.
 
@@ -61,8 +71,8 @@ metadata:
     che.eclipse.org/ADDITIONAL_REDIRECT_URIS_env-name: ADDITIONAL_REDIRECT_URIS
     che.eclipse.org/ADDITIONAL_WEBORIGINS_env-name: ADDITIONAL_WEBORIGINS
 data:
-  ADDITIONAL_WEBORIGINS: '"http://localhost:3000"'
-  ADDITIONAL_REDIRECT_URIS: '"http://localhost:3000/*"'
+  ADDITIONAL_WEBORIGINS: '"http://localhost:8080"'
+  ADDITIONAL_REDIRECT_URIS: '"http://localhost:8080/*"'
 EOF
 # Due temporary limitation we need to rollout che operator to apply changes
 kubectl rollout restart deployment/che-operator -n $CHE_NAMESPACE
@@ -87,13 +97,13 @@ For better debugging experience you need to have React and Redux Developer Tools
 To launch the production mode, the command is
 
 ```sh
-yarn start:prod
+yarn --cwd packages/dashboard-frontend start:prod
 ```
 
 To provide a custom remote server:
 
 ```sh
-yarn start:prod --env.server=https://codeready-codeready-workspaces-operator.apps.sandbox.x8i5.p1.openshiftapps.com
+yarn --cwd packages/dashboard-frontend start:prod --env.server=https://codeready-codeready-workspaces-operator.apps.sandbox.x8i5.p1.openshiftapps.com
 ```
 
 ### Dependencies IP
