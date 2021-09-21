@@ -43,7 +43,10 @@ module.exports = (env = {}) => {
           use: [{
             loader: 'source-map-loader'
           }],
-          include: path.resolve(__dirname, 'src'),
+          include: [
+            path.resolve(__dirname, '../common'),
+            path.resolve(__dirname, 'src'),
+          ],
         },
         {
           test: /\.css$/,
