@@ -19,14 +19,18 @@ const path = require('path');
 const config = {
   entry: {
     client: path.join(__dirname, 'src/index.tsx'),
+    'service-worker': path.join(__dirname, 'src/service-worker.ts'),
     'editor.worker': 'monaco-editor-core/esm/vs/editor/editor.worker.js'
   },
   output: {
     path: path.join(__dirname, 'lib'),
     publicPath: '/',
-    filename: '[name].bundle.js',
+    filename: (pathData) =>
+      pathData.chunk.name === 'service-worker' || 'editor.worker'
+        ? "[name].js"
+        : "[name].[hash].js",
     chunkFilename: '[name].[chunkhash].js',
-    globalObject: 'this'
+    globalObject: 'this',
   },
   optimization: {
     chunkIds: 'named',
