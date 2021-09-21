@@ -52,9 +52,6 @@ const config = {
     }),
     new CleanTerminalPlugin(),
   ],
-  output: {
-    publicPath: './',
-  },
 };
 
 module.exports = (env = {}) => {

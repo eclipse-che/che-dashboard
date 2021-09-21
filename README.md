@@ -36,6 +36,8 @@ Then you can proceed to the following steps:
 yarn
 # 2. Run server locally
 ./local-start.sh
+# If you want to make sure the latest bits are used, add flag to recompile
+# ./local-start.sh --force-build
 ```
 
 The development server serves the dashboard-frontend and dashboard-backend on [http://localhost:8080](http://localhost:8080).
@@ -45,6 +47,12 @@ The you may would like to watch changes and recompile them incrementally:
 ```sh
 yarn --cwd packages/dashboard-backend build:watch
 yarn --cwd packages/dashboard-frontend build:watch
+```
+
+As an alternative for frontend you can run Dev Server
+
+```sh
+cd packages/yarn start --env.server=http://localhost:8080/
 ```
 
 Note: For Che/CRW to allow connection from localhost it should be configured in accordance:
