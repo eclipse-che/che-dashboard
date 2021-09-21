@@ -42,20 +42,27 @@ CHE_NAMESPACE="${CHE_NAMESPACE:-eclipse-che}"
 export LOCAL_RUN="true"
 export KUBECONFIG="${KUBECONFIG:-$HOME/.kube/config}"
 
+DASHBOARD_COMMON=packages/common
 DASHBOARD_FRONTEND=packages/dashboard-frontend
 DASHBOARD_BACKEND=packages/dashboard-backend
 
 parse_args "$@"
 
 if [ "$FORCE_BUILD" == "true" ] || \
+    [ ! -d $DASHBOARD_COMMON/lib ] || [ -z "$(ls -A $DASHBOARD_COMMON/lib)" ]; then
+  echo "[INFO] Compiling common package"
+  yarn --cwd $DASHBOARD_COMMON build
+fi
+
+if [ "$FORCE_BUILD" == "true" ] || \
     [ ! -d $DASHBOARD_FRONTEND/lib ] || [ -z "$(ls -A $DASHBOARD_FRONTEND/lib)" ]; then
-  echo "[INFO] Compiling frontend"
+  echo "[INFO] Compiling frontend package"
   yarn --cwd $DASHBOARD_FRONTEND build:dev
 fi
 
 if [ "$FORCE_BUILD" == "true" ] || \
     [ ! -d $DASHBOARD_BACKEND/lib ] || [ -z "$(ls -A $DASHBOARD_BACKEND/lib)" ]; then
-  echo "[INFO] Compiling backend"
+  echo "[INFO] Compiling backend package"
   yarn --cwd $DASHBOARD_BACKEND build:dev
 fi
 

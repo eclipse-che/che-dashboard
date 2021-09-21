@@ -25,7 +25,7 @@ const config = {
   },
   output: {
     path: path.join(__dirname, 'lib'),
-    publicPath: '/',
+    publicPath: './',
     filename: (pathData) =>
       pathData.chunk.name === 'service-worker' || pathData.chunk.name === 'editor.worker'
         ? "[name].js"
