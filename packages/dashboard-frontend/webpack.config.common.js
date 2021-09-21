@@ -26,7 +26,7 @@ const config = {
     path: path.join(__dirname, 'lib'),
     publicPath: '/',
     filename: (pathData) =>
-      pathData.chunk.name === 'service-worker' || 'editor.worker'
+      pathData.chunk.name === 'service-worker' || pathData.chunk.name === 'editor.worker'
         ? "[name].js"
         : "[name].[hash].js",
     chunkFilename: '[name].[chunkhash].js',
