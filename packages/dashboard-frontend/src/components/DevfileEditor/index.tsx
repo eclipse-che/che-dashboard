@@ -39,7 +39,7 @@ const MONACO_CONFIG: editor.IStandaloneEditorConstructionOptions = {
 };
 
 (self as any).MonacoEnvironment = {
-  getWorkerUrl: () => './editor.worker.bundle.js'
+  getWorkerUrl: () => './editor.worker.js'
 };
 
 type Props =
