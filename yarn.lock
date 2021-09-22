@@ -353,10 +353,10 @@
     jsonc-parser "^3.0.0"
     reflect-metadata "^0.1.13"
 
-"@eclipse-che/workspace-client@0.0.1-1622804813":
-  version "0.0.1-1622804813"
-  resolved "https://registry.yarnpkg.com/@eclipse-che/workspace-client/-/workspace-client-0.0.1-1622804813.tgz#0f845b65649d5e28a8d803c18e7b712580f71dad"
-  integrity sha512-ZK2VINIWCEwvGRr28TTqQGWT5/c5TcemiKcikj4KWikmdvcsr3lgqf7DdqPN/8avE580UajZJleVhtN4/pSzig==
+"@eclipse-che/workspace-client@0.0.1-1632305737":
+  version "0.0.1-1632305737"
+  resolved "https://registry.yarnpkg.com/@eclipse-che/workspace-client/-/workspace-client-0.0.1-1632305737.tgz#c701f165514fe010704e46442a1d5f8c474ff3c6"
+  integrity sha512-wIzrfAJI4unTFMeaqWBKyhLZkwrV3o5BeFHLXIw4/dhKwJwuZQ46PQB6orDejxrAErktq6pX8L1UXlJkMdLG+A==
   dependencies:
     "@eclipse-che/api" "^7.0.0-beta-4.0"
     axios "^0.21.1"
