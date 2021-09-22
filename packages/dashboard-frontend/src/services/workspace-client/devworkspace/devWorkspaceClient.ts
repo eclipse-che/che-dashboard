@@ -33,7 +33,6 @@ import { AppAlerts } from '../../alerts/appAlerts';
 import { AlertVariant } from '@patternfly/react-core';
 import { WorkspaceAdapter } from '../../workspace-adapter';
 import { safeLoad } from 'js-yaml';
-import { CheWorkspaceClient } from '../cheworkspace/cheWorkspaceClient';
 
 export interface IStatusUpdate {
   error?: string;
@@ -76,13 +75,10 @@ export class DevWorkspaceClient extends WorkspaceClient {
   private readonly webSocketEventName: string;
   private readonly _failingWebSockets: string[];
   private readonly showAlert: (alert: AlertItem) => void;
-  private workspaceClient: CheWorkspaceClient;
 
   constructor(@inject(KeycloakSetupService) keycloakSetupService: KeycloakSetupService,
-    @inject(AppAlerts) appAlerts: AppAlerts,
-    @inject(CheWorkspaceClient) workspaceClient: CheWorkspaceClient) {
+    @inject(AppAlerts) appAlerts: AppAlerts) {
     super(keycloakSetupService);
-    this.workspaceClient = workspaceClient;
     this.previousItems = new Map();
     this.maxStatusAttempts = 10;
     this.lastDevWorkspaceLog = new Map();
