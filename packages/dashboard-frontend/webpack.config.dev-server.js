@@ -27,7 +27,7 @@ module.exports = (env = {}) => {
     headers['Authorization'] = `Bearer ${env.token}`;
   }
 
-  const dashboardServer = env.dashboardServer ? env.dashboardServer : 'http://localhost:8080';
+  const dashboardServer = env.dashboardServer ? env.dashboardServer : proxyTarget;
 
   return merge(devConfig(env), {
     devServer: {
