@@ -12,11 +12,10 @@
 
 import { authenticationHeaderSchema } from '../constants/schemas';
 import { restParams } from '../typings/models';
-import { AxiosResponse } from 'axios';
 import createError from 'fastify-error';
 import { FastifyError } from 'fastify';
 
-export async function delay(ms: number = 500): Promise<void> {
+export async function delay(ms = 500): Promise<void> {
   await new Promise((resolve) => {
     setTimeout(resolve, ms);
   });

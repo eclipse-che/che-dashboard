@@ -21,7 +21,6 @@ import {
 import { getDevWorkspaceClient } from './helper';
 import { restParams } from '../typings/models';
 import { getSchema } from '../services/helpers';
-import { IDevWorkspace } from '../devworkspace-client';
 
 const tags = ['devworkspace'];
 

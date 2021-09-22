@@ -20,7 +20,7 @@ class DevWorkspaceWatcher {
   private readonly namespace: string;
   private resourceVersion: string;
   private token: string;
-  private unsubscribeFunction: { abort: Function } | undefined;
+  private unsubscribeFunction: { abort: () => void } | undefined;
 
   constructor(data: { token: string, namespace: string, resourceVersion: string, callbacks: IDevWorkspaceCallbacks }) {
     this.callbacks = data.callbacks;
