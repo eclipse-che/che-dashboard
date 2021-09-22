@@ -28,7 +28,7 @@ docker build . -f build/dockerfiles/Dockerfile -t quay.io/eclipse/che-dashboard:
 
 To run Dashboard against Che Cluster you need access to Kubernetes cluster where it lives.
 So, make sure kubeconfig from $KUBECONFIG (or if unset ~/.kube/config) has the target cluster as current.
-If no you may need to do oc login (if it's OpenShift) or modify it manually if it's Kubernetes.
+If no - you may need to do oc login (if it's OpenShift) or modify it manually if it's Kubernetes.
 Then you can proceed to the following steps:
 
 ```sh
@@ -42,7 +42,7 @@ yarn
 
 The development server serves the dashboard-frontend and dashboard-backend on [http://localhost:8080](http://localhost:8080).
 
-The you may would like to watch changes and recompile them incrementally:
+You may would like to watch changes and recompile them incrementally:
 
 ```sh
 yarn --cwd packages/dashboard-backend build:watch
@@ -52,7 +52,7 @@ yarn --cwd packages/dashboard-frontend build:watch
 As an alternative for frontend you can run Dev Server
 
 ```sh
-cd packages/yarn start --env.server=http://localhost:8080/
+cd packages/dashboard-frontend && yarn start --env.server=http://localhost:8080/
 ```
 
 Note: For Che/CRW to allow connection from localhost it should be configured in accordance:
