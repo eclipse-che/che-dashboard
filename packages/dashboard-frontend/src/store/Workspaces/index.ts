@@ -15,7 +15,6 @@ import { AppThunk } from '..';
 import { createObject } from '../helpers';
 import devfileApi, { isDevfileV2, isDevWorkspace } from '../../services/devfileApi';
 import {
-  convertWorkspace,
   Workspace,
   isCheWorkspace,
 } from '../../services/workspace-adapter';
@@ -112,7 +111,7 @@ export type ActionCreators = {
     devfile: che.WorkspaceDevfile | devfileApi.Devfile,
     namespace: string | undefined,
     infrastructureNamespace: string | undefined,
-    attributes: { [key: string]: string } | {},
+    attributes: { [key: string]: string },
     optionalFilesContent?: {
       [fileName: string]: string
     }
@@ -252,7 +251,7 @@ export const actionCreators: ActionCreators = {
     devfile: che.WorkspaceDevfile | devfileApi.Devfile,
     namespace: string | undefined,
     infrastructureNamespace: string | undefined,
-    attributes: { [key: string]: string } = {},
+    attributes: { [key: string]: string },
     optionalFilesContent?: {
       [fileName: string]: string
     }

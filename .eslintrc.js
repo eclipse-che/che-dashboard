@@ -77,7 +77,6 @@ module.exports = {
       }
     ],
     // TODO enable rules below and fix errors
-    // '@typescript-eslint/ban-types': 'off',
     '@typescript-eslint/explicit-module-boundary-types': 'off',
     '@typescript-eslint/no-explicit-any': 'off',
   },
