@@ -65,7 +65,9 @@ export class PreloadData {
 
     const results = await Promise.allSettled([
       this.fetchCurrentUser(),
-      this.fetchInfrastructureNamespaces(),
+      this.provisionKubernetesNamespace().then(() => {
+        return this.fetchInfrastructureNamespaces();
+      }),
       this.fetchUserProfile(),
       this.fetchPlugins(settings).then(() => {
         return this.fetchDevfileSchema();
@@ -82,6 +84,9 @@ export class PreloadData {
     }
   }
 
+  private async provisionKubernetesNamespace(): Promise<void> {
+    await this.devWorkspaceClient.provisionKubernetesNamespace();
+  }
   private async fetchBranding(): Promise<void> {
     const { requestBranding } = BrandingStore.actionCreators;
     try {
@@ -138,9 +143,7 @@ export class PreloadData {
     if (settings['che.devworkspaces.enabled'] !== 'true') {
       return;
     }
-
     const defaultNamespace = await this.cheWorkspaceClient.getDefaultNamespace();
-    await this.devWorkspaceClient.initializeNamespace(defaultNamespace);
     this.watchNamespaces(defaultNamespace);
 
     const { requestDwDefaultEditor } = DwPluginsStore.actionCreators;

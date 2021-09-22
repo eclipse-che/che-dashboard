@@ -16,7 +16,6 @@ import args from 'args';
 import { registerStaticServer } from './static';
 import { registerDevworkspaceWebsocketWatcher } from './api/devworkspaceWebsocketWatcher';
 import { registerDevworkspaceApi } from './api/devworkspaceApi';
-import { registerCheApi } from './api/cheApi';
 import { registerTemplateApi } from './api/templateApi';
 import { registerLocalServers } from './local-run';
 import { registerCors } from './cors';
@@ -63,8 +62,6 @@ registerDevworkspaceApi(server);
 registerDevworkspaceWebsocketWatcher(server);
 
 registerTemplateApi(server);
-
-registerCheApi(server);
 
 registerCors(isLocalRun, server);
 if (isLocalRun) {

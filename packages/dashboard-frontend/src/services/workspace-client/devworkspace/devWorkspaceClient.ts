@@ -34,6 +34,7 @@ import { AppAlerts } from '../../alerts/appAlerts';
 import { AlertVariant } from '@patternfly/react-core';
 import { WorkspaceAdapter } from '../../workspace-adapter';
 import { safeLoad } from 'js-yaml';
+import { CheWorkspaceClient } from '../cheworkspace/cheWorkspaceClient';
 
 export interface IStatusUpdate {
   error?: string;
@@ -46,7 +47,7 @@ export interface IStatusUpdate {
 export type Subscriber = {
   namespace: string,
   callbacks: {
-    getResourceVersion: () => Promise<string|undefined>,
+    getResourceVersion: () => Promise<string | undefined>,
     updateDevWorkspaceStatus: (message: IStatusUpdate) => void,
     updateDeletedDevWorkspaces: (deletedWorkspacesIds: string[]) => void,
     updateAddedDevWorkspaces: (workspace: devfileApi.DevWorkspace[]) => void,
@@ -76,10 +77,13 @@ export class DevWorkspaceClient extends WorkspaceClient {
   private readonly webSocketEventName: string;
   private readonly _failingWebSockets: string[];
   private readonly showAlert: (alert: AlertItem) => void;
+  private workspaceClient: CheWorkspaceClient;
 
   constructor(@inject(KeycloakSetupService) keycloakSetupService: KeycloakSetupService,
-              @inject(AppAlerts) appAlerts: AppAlerts) {
+    @inject(AppAlerts) appAlerts: AppAlerts,
+    @inject(CheWorkspaceClient) workspaceClient: CheWorkspaceClient) {
     super(keycloakSetupService);
+    this.workspaceClient = workspaceClient;
     this.previousItems = new Map();
     this.maxStatusAttempts = 10;
     this.lastDevWorkspaceLog = new Map();
@@ -110,7 +114,7 @@ export class DevWorkspaceClient extends WorkspaceClient {
         });
       },
       onDidWebSocketClose: (event: CloseEvent) => {
-        if(event.code !== 1011 && event.reason) {
+        if (event.code !== 1011 && event.reason) {
           const key = `websocket-close-code-${event.code}`;
           this.showAlert({ key, variant: AlertVariant.warning, title: 'Failed to establish WebSocket to server: ' + event.reason });
         } else {
@@ -168,7 +172,7 @@ export class DevWorkspaceClient extends WorkspaceClient {
     pluginsDevfile: devfileApi.Devfile[],
     pluginRegistryUrl: string | undefined,
     pluginRegistryInternalUrl: string | undefined,
-    optionalFilesContent: {[fileName: string]: string},
+    optionalFilesContent: { [fileName: string]: string },
   ): Promise<devfileApi.DevWorkspace> {
     if (!devfile.components) {
       devfile.components = [];
@@ -293,11 +297,11 @@ export class DevWorkspaceClient extends WorkspaceClient {
               name: this.pluginRegistryUrlEnvName,
               value: pluginRegistryUrl || ''
             }
-            , {
+              , {
               name: this.pluginRegistryInternalUrlEnvName,
               value: pluginRegistryInternalUrl || ''
             }
-          ]);
+            ]);
           }
         }
       }
@@ -436,11 +440,10 @@ export class DevWorkspaceClient extends WorkspaceClient {
 
   /**
    * Initialize the given namespace
-   * @param namespace The namespace you want to initialize
-   * @returns If the namespace has been initialized
+   * @returns If the namespace has been provisioned
    */
-  async initializeNamespace(namespace: string): Promise<void> {
-    return DwCheApi.initializeNamespace(namespace);
+  async provisionKubernetesNamespace(): Promise<void> {
+    await this.workspaceClient.restApiClient.provisionKubernetesNamespace();
   }
 
   async subscribeToNamespace(subscriber: Subscriber): Promise<void> {
@@ -449,11 +452,11 @@ export class DevWorkspaceClient extends WorkspaceClient {
   }
 
   private async subscribe(): Promise<void> {
-    if(!this.subscriber) {
+    if (!this.subscriber) {
       throw 'Error: Subscriber does not set.';
     }
 
-    const { namespace, callbacks } =  this.subscriber;
+    const { namespace, callbacks } = this.subscriber;
     const getSubscribeMessage = async (channel: string): Promise<SubscribeMessage> => {
       return { request: 'SUBSCRIBE', params: { namespace, resourceVersion: await callbacks.getResourceVersion() }, channel };
     };
@@ -464,7 +467,7 @@ export class DevWorkspaceClient extends WorkspaceClient {
       if (!isDevWorkspace(devworkspace)) {
         const title = `WebSocket channel "${onModified}" received object that is not a devWorkspace, skipping it.`;
         const key = `${onModified}-websocket-channel`;
-        console.warn(title , devworkspace);
+        console.warn(title, devworkspace);
         this.showAlert({ key, variant: AlertVariant.warning, title });
         return;
       }
@@ -488,7 +491,7 @@ export class DevWorkspaceClient extends WorkspaceClient {
       if (!isDevWorkspace(devworkspace)) {
         const title = `WebSocket channel "${onAdded}" received object that is not a devWorkspace, skipping it.`;
         const key = `${onAdded}-websocket-channel`;
-        console.warn(title , devworkspace);
+        console.warn(title, devworkspace);
         this.showAlert({ key, variant: AlertVariant.warning, title });
         return;
       }
@@ -498,10 +501,10 @@ export class DevWorkspaceClient extends WorkspaceClient {
     const onDeleted = 'onDeleted';
     await this.websocketClient.subscribe(await getSubscribeMessage(onDeleted));
     this.websocketClient.addListener(onDeleted, (maybeWorkspaceId: unknown) => {
-      if (typeof(maybeWorkspaceId) !== 'string') {
+      if (typeof (maybeWorkspaceId) !== 'string') {
         const title = `WebSocket channel "${onDeleted}" received value is not a string, skipping it.`;
         const key = `${onDeleted}-websocket-channel`;
-        console.warn(title , maybeWorkspaceId, typeof(maybeWorkspaceId));
+        console.warn(title, maybeWorkspaceId, typeof (maybeWorkspaceId));
         this.showAlert({ key, variant: AlertVariant.warning, title });
         return;
       }
