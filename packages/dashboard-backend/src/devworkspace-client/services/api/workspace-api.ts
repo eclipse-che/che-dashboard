@@ -181,12 +181,14 @@ export class DevWorkspaceApi implements IDevWorkspaceApi {
       }
     }, (error: any) => {
       let message;
-      if (error.message) {
+      if (error && error.message) {
         message = error.message;
       } else {
         // unexpected error format. Log it and expose to user what we can
-        console.log(error);
-        message = error.toString();
+        console.log('Unexpected error', error);
+        if (error) {
+          message = error.toString();
+        }
         if (!message) {
           message = 'unknown. Contact admin to check server logs';
         }
