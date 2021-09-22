@@ -6,5 +6,5 @@ This file lists dependencies that do not need CQs or auto-detection does not wor
 | `@eclipse-che/@devfile/api@0.0.1-1622573075` | N/A |
 | `@eclipse-che/dashboard-backend@7.37.0-SNAPSHOT` | N/A |
 | `@eclipse-che/dashboard-frontend@7.37.0-SNAPSHOT` | N/A |
-| `@eclipse-che/common@7.34.0-SNAPSHOT` | N/A |
+| `@eclipse-che/common@7.37.0-SNAPSHOT` | N/A |
 | `@eclipse-che/dashboard-static-server@7.37.0-SNAPSHOT` | N/A |

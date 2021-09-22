@@ -65,9 +65,7 @@ export class PreloadData {
 
     const results = await Promise.allSettled([
       this.fetchCurrentUser(),
-      this.provisionKubernetesNamespace().then(() => {
-        return this.fetchInfrastructureNamespaces();
-      }),
+      this.fetchInfrastructureNamespaces(),
       this.fetchUserProfile(),
       this.fetchPlugins(settings).then(() => {
         return this.fetchDevfileSchema();
@@ -84,9 +82,6 @@ export class PreloadData {
     }
   }
 
-  private async provisionKubernetesNamespace(): Promise<void> {
-    await this.devWorkspaceClient.provisionKubernetesNamespace();
-  }
   private async fetchBranding(): Promise<void> {
     const { requestBranding } = BrandingStore.actionCreators;
     try {
