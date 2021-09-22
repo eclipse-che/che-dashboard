@@ -30,10 +30,8 @@ module.exports = (env = {}) => {
   const dashboardServer = env.dashboardServer ? env.dashboardServer : 'http://localhost:8080';
 
   return merge(devConfig(env), {
-    output: {
-      publicPath: '/',
-    },
     devServer: {
+      publicPath: '/',
       clientLogLevel: 'debug',
       contentBase: path.join(__dirname, 'assets'),
       contentBasePublicPath: '/assets/',
