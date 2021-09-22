@@ -33,8 +33,6 @@ module.exports = (env = {}) => {
     devServer: {
       publicPath: '/',
       clientLogLevel: 'debug',
-      contentBase: path.join(__dirname, 'assets'),
-      contentBasePublicPath: '/assets/',
       disableHostCheck: true,
       host: 'localhost',
       hot: true,
