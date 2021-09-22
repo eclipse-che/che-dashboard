@@ -27,7 +27,6 @@ import { KeycloakSetupService } from '../../keycloak/setup';
 import { delay } from '../../helpers/delay';
 import * as DwApi from '../../dashboard-backend-client/devWorkspaceApi';
 import * as DwtApi from '../../dashboard-backend-client/devWorkspaceTemplateApi';
-import * as DwCheApi from '../../dashboard-backend-client/cheWorkspaceApi';
 import { WebsocketClient, SubscribeMessage } from '../../dashboard-backend-client/websocketClient';
 import { EventEmitter } from 'events';
 import { AppAlerts } from '../../alerts/appAlerts';
@@ -436,14 +435,6 @@ export class DevWorkspaceClient extends WorkspaceClient {
         }
       }
     });
-  }
-
-  /**
-   * Initialize the given namespace
-   * @returns If the namespace has been provisioned
-   */
-  async provisionKubernetesNamespace(): Promise<void> {
-    await this.workspaceClient.restApiClient.provisionKubernetesNamespace();
   }
 
   async subscribeToNamespace(subscriber: Subscriber): Promise<void> {
