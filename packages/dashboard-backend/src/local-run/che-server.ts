@@ -9,10 +9,14 @@
  * Contributors:
  *   Red Hat, Inc. - initial API and implementation
  */
+
 import { FastifyInstance, FastifyRequest, RouteShorthandOptions } from 'fastify';
 import fastifyHttpProxy from 'fastify-http-proxy';
 
-export function registerCheApiProxy(server: FastifyInstance, cheApiProxyUpstream: string, origin: string) {
+export function registerCheApiProxy(server: FastifyInstance,
+                                    cheApiProxyUpstream: string,
+                                    origin: string,
+                                    clusterAccessToken?: string) {
   console.log(`Dashboard proxies requests to Che Server API on ${cheApiProxyUpstream}/api.`);
   // server api
   server.register(fastifyHttpProxy, {
@@ -23,6 +27,10 @@ export function registerCheApiProxy(server: FastifyInstance, cheApiProxyUpstream
     websocket: false,
     replyOptions: {
       rewriteRequestHeaders: (originalReq, headers) => {
+        if (clusterAccessToken) {
+          headers.authorization = 'Bearer ' + clusterAccessToken;
+        }
+
         return Object.assign({...headers}, { origin });
       }
     }

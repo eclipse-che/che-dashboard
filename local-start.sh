@@ -66,9 +66,28 @@ if [ "$FORCE_BUILD" == "true" ] || \
   yarn --cwd $DASHBOARD_BACKEND build:dev
 fi
 
+# do nothing
+PRERUN_COMMAND="echo"
+GATEWAY=$(kubectl get deployments.apps che-gateway -o=json --ignore-not-found -n $CHE_NAMESPACE)
+if [[ ! -z "$GATEWAY" && \
+    $(echo "$GATEWAY" | jq -e '.spec.template.spec.containers|any(.name == "oauth-proxy")') == "true" ]]; then
+  echo "Detected gateway and oauth-proxy inside. Running in native auth mode."
+  export NATIVE_AUTH="true"
+  export CLUSTER_ACCESS_TOKEN=$(oc whoami -t)
+
+  # when native auth we go though port forward to avoid dealing with OpenShift OAuth Cookies
+  CHE_FORWARDED_PORT=8081
+  export CHE_API_PROXY_UPSTREAM="http://localhost:${CHE_FORWARDED_PORT}"
+  PRERUN_COMMAND="kubectl port-forward service/che-host ${CHE_FORWARDED_PORT}:8080 -n $CHE_NAMESPACE"
+else
+  echo "Gateway with oauth-proxy inside is not detected. Running in keycloak mode."
+  # when keycloak, we proxy requests directly against remote cluster
+  export CHE_API_PROXY_UPSTREAM=$(oc get checluster -n $CHE_NAMESPACE eclipse-che -o=json | jq -r '.status.cheURL')
+fi
+
+# consider renaming it to CHE_API_URL since it's not just host
 export CHE_HOST=http://localhost:8080
-export CHE_API_PROXY_UPSTREAM=$(oc get checluster -n $CHE_NAMESPACE eclipse-che -o=json | jq -r '.status.cheURL')
 
 # relative path from backend package
 FRONTEND_RESOURCES=../../../../$DASHBOARD_FRONTEND/lib
-yarn --cwd $DASHBOARD_BACKEND start:debug --publicFolder $FRONTEND_RESOURCES
+$PRERUN_COMMAND & yarn --cwd $DASHBOARD_BACKEND start:debug --publicFolder $FRONTEND_RESOURCES
