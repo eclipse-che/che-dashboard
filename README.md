@@ -55,10 +55,10 @@ As an alternative for frontend you can run Dev Server
 cd packages/dashboard-frontend && yarn start --env.server=http://localhost:8080/
 ```
 
-Note: For Che/CRW to allow connection from localhost it should be configured in accordance:
+Depending on your Che Cluster's routing, it may need additional configuration. See below:
 
 ### Keycloak
-
+Note: For Che/CRW to allow connection from localhost it should be configured in accordance:
 ```bash
 # Note: eclipse-che is the default target namespace but if you have custom - change it below
 CHE_NAMESPACE="eclipse-che"
@@ -89,7 +89,8 @@ kubectl rollout restart deployment/che-operator -n $CHE_NAMESPACE
 
 ### Native Auth
 
-Not supported yet.
+With Native Auth, routes are secured with OpenShift OAuth which we can't deal with easily.
+So, instead when you do `./local-start.sh` we by pass OpenShift OAuth proxy while requesting Che Server by doing `kubectl port-forward`. So, no additional configuration is needed but note that your Dashboard will be authentication with the user from the current KUBECONFIG.
 
 ### Dependencies IP
 

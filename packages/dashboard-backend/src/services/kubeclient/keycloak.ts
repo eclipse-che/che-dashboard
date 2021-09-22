@@ -14,7 +14,7 @@ import { getMessage } from '@eclipse-che/common/lib/helpers/errors';
 import { createFastifyError } from '../helpers';
 import { URL } from 'url';
 import { CheAxiosFactory } from '../che-http/CheAxiosFactory';
-import { isLocalRun } from "../../local-run";
+import { isLocalRun } from '../../local-run';
 
 const CHE_HOST = process.env.CHE_INTERNAL_URL || process.env.CHE_HOST;
 const ENDPOINT = 'che.keycloak.userinfo.endpoint';
