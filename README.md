@@ -79,6 +79,10 @@ data:
   ADDITIONAL_WEBORIGINS: '"http://localhost:8080", "http://localhost:3000"'
   ADDITIONAL_REDIRECT_URIS: '"http://localhost:8080/*", "http://localhost:3000/*"'
 EOF
+# Note that if configmap is update but not created, you also need to rollout keycloak deployment
+# oc patch deployment/keycloak --patch "{\"spec\":{\"replicas\":0}}" -n $CHE_NAMESPACE
+# oc patch deployment/keycloak --patch "{\"spec\":{\"replicas\":1}}" -n $CHE_NAMESPACE
+
 # Due temporary limitation we need to rollout che operator to apply changes
 kubectl rollout restart deployment/che-operator -n $CHE_NAMESPACE
 ```
