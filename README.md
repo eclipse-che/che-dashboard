@@ -35,62 +35,72 @@ Then you can proceed to the following steps:
 # 1. Install all dependencies:
 yarn
 # 2. Run server locally
-./local-start.sh
+yarn start
 # If you want to make sure the latest bits are used, add flag to recompile
-# ./local-start.sh --force-build
+# yarn start --force-build
+# Optionally you may need to set CHE_NAMESPACE where CheCluster CR live
+# which is eclipse-che by default
+# export CHE_NAMESPACE="my-custom-che"
 ```
 
 The development server serves the dashboard-frontend and dashboard-backend on [http://localhost:8080](http://localhost:8080).
 
-You may would like to watch changes and recompile them incrementally:
+Depending on your Che Cluster's routing, it may need additional configuration. See below:
+- **Keycloak**: Keycloak has allow-list for URLs which can receive token.
+  Localhost is not there by default, so you will need to configure it in the following way:
+  ```bash
+  # Note: eclipse-che is the default target namespace but if you have custom - change it below
+  CHE_NAMESPACE="eclipse-che"
+  cat <<EOF | kubectl apply -f -
+  apiVersion: v1
+  kind: ConfigMap
+  metadata:
+    name: keycloak-custom-config
+    namespace: $CHE_NAMESPACE
+    labels:
+      app.kubernetes.io/part-of: che.eclipse.org
+      app.kubernetes.io/component: keycloak-configmap
+    annotations:
+      che.eclipse.org/mount-as: env
+      che.eclipse.org/ADDITIONAL_REDIRECT_URIS_env-name: ADDITIONAL_REDIRECT_URIS
+      che.eclipse.org/ADDITIONAL_WEBORIGINS_env-name: ADDITIONAL_WEBORIGINS
+  data:
+    ADDITIONAL_WEBORIGINS: '"http://localhost:8080", "http://localhost:3000"'
+    ADDITIONAL_REDIRECT_URIS: '"http://localhost:8080/*", "http://localhost:3000/*"'
+  EOF
+  # Note that if configmap is update but not created, you also need to rollout keycloak deployment
+  # oc patch deployment/keycloak --patch "{\"spec\":{\"replicas\":0}}" -n $CHE_NAMESPACE
+  # oc patch deployment/keycloak --patch "{\"spec\":{\"replicas\":1}}" -n $CHE_NAMESPACE
 
+  # Due temporary limitation we need to rollout che operator to apply changes
+  kubectl rollout restart deployment/che-operator -n $CHE_NAMESPACE
+  ```
+
+- **Native Auth**:
+  With Native Auth, routes are secured with OpenShift OAuth which we can't deal with easily.
+  So, instead when you do `yarn start` we bypass OpenShift OAuth proxy while requesting Che Server by doing `kubectl port-forward`. So, no additional configuration is needed but note that your Dashboard will be authentication with the user from the current KUBECONFIG.
+
+### Incremental builds
+
+You may would like to watch changes and recompile them incrementally:
 ```sh
 yarn --cwd packages/dashboard-backend build:watch
 yarn --cwd packages/dashboard-frontend build:watch
 ```
 
-As an alternative for frontend you can run Dev Server
+As an alternative to build:watch for frontend, you can run Dev Server.
+
+If Che is behind Keycloak (Che Server workspace engine or K8s DevWorkspace) you are able to run Dev Server against it directly:
 
 ```sh
-cd packages/dashboard-frontend && yarn start --env.server=http://localhost:8080/
+yarn frontend:start --env.server=https://192.168.39.132.nip.io
 ```
 
-Depending on your Che Cluster's routing, it may need additional configuration. See below:
+If Che is behind Native Auth, local backend is prerequisite for Dev Server and then the command to run Dev Server is
 
-### Keycloak
-Note: For Che/CRW to allow connection from localhost it should be configured in accordance:
-```bash
-# Note: eclipse-che is the default target namespace but if you have custom - change it below
-CHE_NAMESPACE="eclipse-che"
-cat <<EOF | kubectl apply -f -
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: keycloak-custom-config
-  namespace: $CHE_NAMESPACE
-  labels:
-    app.kubernetes.io/part-of: che.eclipse.org
-    app.kubernetes.io/component: keycloak-configmap
-  annotations:
-    che.eclipse.org/mount-as: env
-    che.eclipse.org/ADDITIONAL_REDIRECT_URIS_env-name: ADDITIONAL_REDIRECT_URIS
-    che.eclipse.org/ADDITIONAL_WEBORIGINS_env-name: ADDITIONAL_WEBORIGINS
-data:
-  ADDITIONAL_WEBORIGINS: '"http://localhost:8080", "http://localhost:3000"'
-  ADDITIONAL_REDIRECT_URIS: '"http://localhost:8080/*", "http://localhost:3000/*"'
-EOF
-# Note that if configmap is update but not created, you also need to rollout keycloak deployment
-# oc patch deployment/keycloak --patch "{\"spec\":{\"replicas\":0}}" -n $CHE_NAMESPACE
-# oc patch deployment/keycloak --patch "{\"spec\":{\"replicas\":1}}" -n $CHE_NAMESPACE
-
-# Due temporary limitation we need to rollout che operator to apply changes
-kubectl rollout restart deployment/che-operator -n $CHE_NAMESPACE
+```sh
+yarn frontend:start --env.server=http://localhost:8080/
 ```
-
-### Native Auth
-
-With Native Auth, routes are secured with OpenShift OAuth which we can't deal with easily.
-So, instead when you do `./local-start.sh` we by pass OpenShift OAuth proxy while requesting Che Server by doing `kubectl port-forward`. So, no additional configuration is needed but note that your Dashboard will be authentication with the user from the current KUBECONFIG.
 
 ### Dependencies IP
 
