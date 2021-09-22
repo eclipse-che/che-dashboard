@@ -24,7 +24,9 @@
     "license:generate": "docker run --rm -t -v ${PWD}/:/workspace/project quay.io/che-incubator/dash-licenses:next",
     "test": "lerna run test --stream -- $@",
     "pretest": "yarn run prebuild",
-    "test:coverage": "yarn run test -- --runInBand --coverage"
+    "test:coverage": "yarn run test -- --runInBand --coverage",
+    "eslint": "lerna run --stream eslint",
+    "eslint:fix": "lerna run --stream eslint:fix"
   },
   "devDependencies": {
     "eslint": "^7.2.0",
