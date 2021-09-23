@@ -6,7 +6,7 @@
 | [`@devfile/api@2.2.0-alpha-1631030331`](https://github.com/devfile/api.git) | EPL-2.0 | clearlydefined |
 | `@eclipse-che/api@7.36.0` | EPL-2.0 | clearlydefined |
 | [`@eclipse-che/che-theia-devworkspace-handler@0.0.1-1623136422`](git+https://github.com/eclipse-che/che-theia.git) | EPL-2.0 | clearlydefined |
-| [`@eclipse-che/common@7.34.0-SNAPSHOT`](https://github.com/eclipse-che/che-dashboard) | EPL-2.0 | N/A |
+| [`@eclipse-che/common@7.37.0-SNAPSHOT`](https://github.com/eclipse-che/che-dashboard) | EPL-2.0 | N/A |
 | [`@eclipse-che/dashboard-backend@7.37.0-SNAPSHOT`](https://github.com/eclipse-che/che-dashboard) | EPL-2.0 | N/A |
 | [`@eclipse-che/dashboard-frontend@7.37.0-SNAPSHOT`](git://github.com/eclipse/che-dashboard.git) | EPL-2.0 | N/A |
 | [`@eclipse-che/workspace-client@0.0.1-1632305737`](https://github.com/eclipse/che-workspace-client) | EPL-2.0 | N/A |
