@@ -18,11 +18,7 @@ import {
   IDevWorkspaceCallbacks,
   IPatch,
 } from '../../types';
-import {
-  devworkspacePluralSubresource,
-  devworkspaceVersion,
-  devWorkspaceApiGroup,
-} from '../../const';
+import { devworkspaceGroup, devworkspaceLatestVersion, devworkspacePlural } from '@devfile/api';
 
 import { helpers } from '@eclipse-che/common';
 
@@ -38,10 +34,10 @@ export class DevWorkspaceApi implements IDevWorkspaceApi {
   async listInNamespace(namespace: string): Promise<IDevWorkspaceList> {
     try {
       const resp = await this.customObjectAPI.listNamespacedCustomObject(
-        devWorkspaceApiGroup,
-        devworkspaceVersion,
+        devworkspaceGroup,
+        devworkspaceLatestVersion,
         namespace,
-        devworkspacePluralSubresource
+        devworkspacePlural
       );
       return resp.body as IDevWorkspaceList;
     } catch (e) {
@@ -55,10 +51,10 @@ export class DevWorkspaceApi implements IDevWorkspaceApi {
   ): Promise<IDevWorkspace> {
     try {
       const resp = await this.customObjectAPI.getNamespacedCustomObject(
-        devWorkspaceApiGroup,
-        devworkspaceVersion,
+        devworkspaceGroup,
+        devworkspaceLatestVersion,
         namespace,
-        devworkspacePluralSubresource,
+        devworkspacePlural,
         name
       );
       return resp.body as IDevWorkspace;
@@ -70,10 +66,10 @@ export class DevWorkspaceApi implements IDevWorkspaceApi {
   async create(devworkspace: IDevWorkspace): Promise<IDevWorkspace> {
     try {
       const resp = await this.customObjectAPI.createNamespacedCustomObject(
-        devWorkspaceApiGroup,
-        devworkspaceVersion,
+        devworkspaceGroup,
+        devworkspaceLatestVersion,
         devworkspace.metadata.namespace,
-        devworkspacePluralSubresource,
+        devworkspacePlural,
         devworkspace
       );
       return resp.body as IDevWorkspace;
@@ -99,10 +95,10 @@ export class DevWorkspaceApi implements IDevWorkspaceApi {
       const namespace = devworkspace.metadata.namespace;
 
       const resp = await this.customObjectAPI.replaceNamespacedCustomObject(
-        devWorkspaceApiGroup,
-        devworkspaceVersion,
+        devworkspaceGroup,
+        devworkspaceLatestVersion,
         namespace,
-        devworkspacePluralSubresource,
+        devworkspacePlural,
         name,
         devworkspace
       );
@@ -115,10 +111,10 @@ export class DevWorkspaceApi implements IDevWorkspaceApi {
   async delete(namespace: string, name: string): Promise<void> {
     try {
       await this.customObjectAPI.deleteNamespacedCustomObject(
-        devWorkspaceApiGroup,
-        devworkspaceVersion,
+        devworkspaceGroup,
+        devworkspaceLatestVersion,
         namespace,
-        devworkspacePluralSubresource,
+        devworkspacePlural,
         name
       );
     } catch (e) {
@@ -144,10 +140,10 @@ export class DevWorkspaceApi implements IDevWorkspaceApi {
         },
       };
       const resp = await this.customObjectAPI.patchNamespacedCustomObject(
-        devWorkspaceApiGroup,
-        devworkspaceVersion,
+        devworkspaceGroup,
+        devworkspaceLatestVersion,
         namespace,
-        devworkspacePluralSubresource,
+        devworkspacePlural,
         name,
         patches,
         undefined,
@@ -162,7 +158,7 @@ export class DevWorkspaceApi implements IDevWorkspaceApi {
   }
 
   async watchInNamespace(namespace: string, resourceVersion: string, callbacks: IDevWorkspaceCallbacks): Promise<{ abort: () => void }> {
-    const path = `/apis/${devWorkspaceApiGroup}/${devworkspaceVersion}/watch/namespaces/${namespace}/devworkspaces`;
+    const path = `/apis/${devworkspaceGroup}/${devworkspaceLatestVersion}/watch/namespaces/${namespace}/${devworkspacePlural}`;
     const queryParams = { watch: true, resourceVersion };
 
     return this.customObjectWatch.watch(path, queryParams, (type: string, devworkspace: IDevWorkspace) => {

@@ -12,7 +12,11 @@
 
 import * as k8s from '@kubernetes/client-node';
 import { helpers } from '@eclipse-che/common';
-import { devWorkspaceApiGroup, devworkspaceTemplateSubresource, devworkspaceVersion } from '../../const';
+import {
+  devworkspacetemplateGroup,
+  devworkspacetemplateLatestVersion,
+  devworkspacetemplatePlural
+} from '@devfile/api';
 import { IDevWorkspaceTemplate, IDevWorkspaceTemplateApi, } from '../../types';
 
 export class DevWorkspaceTemplateApi implements IDevWorkspaceTemplateApi {
@@ -25,10 +29,10 @@ export class DevWorkspaceTemplateApi implements IDevWorkspaceTemplateApi {
   async listInNamespace(namespace: string): Promise<IDevWorkspaceTemplate[]> {
     try {
       const resp = await this.customObjectAPI.listNamespacedCustomObject(
-        devWorkspaceApiGroup,
-        devworkspaceVersion,
+        devworkspacetemplateGroup,
+        devworkspacetemplateLatestVersion,
         namespace,
-        devworkspaceTemplateSubresource
+        devworkspacetemplatePlural
       );
       return (resp.body as any).items as IDevWorkspaceTemplate[];
     } catch (e) {
@@ -39,10 +43,10 @@ export class DevWorkspaceTemplateApi implements IDevWorkspaceTemplateApi {
   async getByName(namespace: string, name: string): Promise<IDevWorkspaceTemplate> {
     try {
       const resp = await this.customObjectAPI.getNamespacedCustomObject(
-        devWorkspaceApiGroup,
-        devworkspaceVersion,
+        devworkspacetemplateGroup,
+        devworkspacetemplateLatestVersion,
         namespace,
-        devworkspaceTemplateSubresource,
+        devworkspacetemplatePlural,
         name
       );
       return resp.body as IDevWorkspaceTemplate;
@@ -60,10 +64,10 @@ export class DevWorkspaceTemplateApi implements IDevWorkspaceTemplateApi {
     }
     try {
       const resp = await this.customObjectAPI.createNamespacedCustomObject(
-        devWorkspaceApiGroup,
-        devworkspaceVersion,
+        devworkspacetemplateGroup,
+        devworkspacetemplateLatestVersion,
         namespace,
-        devworkspaceTemplateSubresource,
+        devworkspacetemplatePlural,
         devworkspaceTemplate
       );
       return resp.body as IDevWorkspaceTemplate;
@@ -75,10 +79,10 @@ export class DevWorkspaceTemplateApi implements IDevWorkspaceTemplateApi {
   async delete(namespace: string, name: string): Promise<void> {
     try {
       await this.customObjectAPI.deleteNamespacedCustomObject(
-        devWorkspaceApiGroup,
-        devworkspaceVersion,
+        devworkspacetemplateGroup,
+        devworkspacetemplateLatestVersion,
         namespace,
-        devworkspaceTemplateSubresource,
+        devworkspacetemplatePlural,
         name
       );
     } catch (e) {
