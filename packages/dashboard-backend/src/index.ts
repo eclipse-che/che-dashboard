@@ -42,7 +42,7 @@ const server = fastify({
 server.addContentTypeParser(
   'application/merge-patch+json',
   { parseAs: 'string' },
-  function(req, body, done) {
+  function (req, body, done) {
     try {
       const json = JSON.parse(body as string);
       done(null, json);

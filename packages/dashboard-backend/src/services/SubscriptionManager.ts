@@ -73,7 +73,7 @@ class SubscriptionManager {
 
   publish(channel: string, message: any): void {
     if (this.channels.indexOf(channel) !== -1) {
-      this.subscriber.send(JSON.stringify({message, channel}));
+      this.subscriber.send(JSON.stringify({ message, channel }));
     }
   }
 

@@ -32,7 +32,7 @@ export async function validateToken(keycloakToken: string): Promise<void> {
   const headers = { Authorization: `Bearer ${keycloakToken}` };
   try {
     const axios = await cheAxiosFactory.getAxiosInstance(keycloakEndpointUrl.href);
-    await axios.get(keycloakEndpointUrl.href, {headers});
+    await axios.get(keycloakEndpointUrl.href, { headers });
     // token is a valid
   } catch (e) {
     throw createFastifyError(

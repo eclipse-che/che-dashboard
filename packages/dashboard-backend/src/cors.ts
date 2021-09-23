@@ -19,9 +19,9 @@ export function registerCors(isLocalRun: boolean, server: FastifyInstance) {
     const corsOptions = isLocalRun ? {
       origin: false
     } : {
-        origin: [process.env.CHE_HOST],
-        methods: ['GET', 'POST', 'PATCH', 'DELETE']
-      };
+      origin: [process.env.CHE_HOST],
+      methods: ['GET', 'POST', 'PATCH', 'DELETE']
+    };
     callback(null, corsOptions);
   });
 }

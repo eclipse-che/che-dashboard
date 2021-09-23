@@ -22,7 +22,8 @@ const tags = ['template'];
 export function registerTemplateApi(server: FastifyInstance) {
   server.post(
     `${baseApiPath}/namespace/:namespace/devworkspacetemplates`,
-    getSchema({ tags,
+    getSchema({
+      tags,
       params: namespacedSchema,
       body: templateStartedSchema
     }),

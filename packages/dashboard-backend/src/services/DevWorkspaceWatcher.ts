@@ -47,7 +47,7 @@ class DevWorkspaceWatcher {
       if (this.unsubscribeFunction) {
         await this.unsubscribe();
       }
-      const {devworkspaceApi} = await (this.dwClientProvider.getDWClient(this.token));
+      const { devworkspaceApi } = await (this.dwClientProvider.getDWClient(this.token));
       const unsubscribeFunction = await devworkspaceApi.watchInNamespace(this.namespace, this.resourceVersion, this.callbacks);
       this.unsubscribeFunction = unsubscribeFunction;
     } catch (error) {

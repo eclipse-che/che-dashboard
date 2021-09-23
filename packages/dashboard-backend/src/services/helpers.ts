@@ -29,7 +29,7 @@ export function getSchema(additionalParams: restParams.ISchemaParams): { schema:
     }],
   }, additionalParams);
 
-  return {schema};
+  return { schema };
 }
 
 type FastifyErrorDescr = Parameters<typeof createError>;
