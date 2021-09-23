@@ -11,17 +11,15 @@
  */
 
 import * as k8s from '@kubernetes/client-node';
-import { devWorkspaceApiGroup, devworkspaceVersion } from './const';
 import {
-  ICheApi,
   IDevWorkspaceApi,
   IDevWorkspaceClient,
   IDevWorkspaceTemplateApi,
 } from './types';
 import { findApi } from './services/helpers';
-import { DevWorkspaceTemplateApi } from './services/api/template-api';
-import { DevWorkspaceApi } from './services/api/workspace-api';
-import { CheApi } from './services/api/che-api';
+import {DevWorkspaceTemplateApi} from './services/api/template-api';
+import {DevWorkspaceApi} from './services/api/workspace-api';
+import { devworkspaceGroup, devworkspaceLatestVersion } from '@devfile/api';
 
 export * from './types';
 
@@ -37,7 +35,6 @@ export class DevWorkspaceClient implements IDevWorkspaceClient {
     this._templateApi = new DevWorkspaceTemplateApi(kc);
     this._devworkspaceApi = new DevWorkspaceApi(kc);
     this._apisApi = kc.makeApiClient(k8s.ApisApi);
-    this._cheApi = new CheApi(kc);
   }
 
   get templateApi(): IDevWorkspaceTemplateApi {
@@ -56,7 +53,7 @@ export class DevWorkspaceClient implements IDevWorkspaceClient {
     if (this.apiEnabled !== undefined) {
       return Promise.resolve(this.apiEnabled);
     }
-    this.apiEnabled = await findApi(this._apisApi, devWorkspaceApiGroup, devworkspaceVersion);
+    this.apiEnabled = await findApi(this._apisApi, devworkspaceGroup, devworkspaceLatestVersion);
     return this.apiEnabled;
   }
 }
