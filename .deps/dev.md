@@ -164,7 +164,6 @@
 | [`@types/connect-history-api-fallback@1.3.5`](https://github.com/DefinitelyTyped/DefinitelyTyped.git) | MIT | clearlydefined |
 | [`@types/connect@3.4.35`](https://github.com/DefinitelyTyped/DefinitelyTyped.git) | MIT | clearlydefined |
 | [`@types/enzyme@3.10.9`](https://github.com/DefinitelyTyped/DefinitelyTyped.git) | MIT | clearlydefined |
-| [`@types/eslint-visitor-keys@1.0.0`](https://www.github.com/DefinitelyTyped/DefinitelyTyped.git) | MIT | clearlydefined |
 | [`@types/express-serve-static-core@4.17.24`](https://github.com/DefinitelyTyped/DefinitelyTyped.git) | MIT | clearlydefined |
 | [`@types/express@4.17.13`](https://github.com/DefinitelyTyped/DefinitelyTyped.git) | MIT | clearlydefined |
 | [`@types/fs-extra@9.0.12`](https://github.com/DefinitelyTyped/DefinitelyTyped.git) | MIT | clearlydefined |
@@ -220,12 +219,13 @@
 | [`@types/webpack@4.41.30`](https://github.com/DefinitelyTyped/DefinitelyTyped.git) | MIT | clearlydefined |
 | [`@types/yargs-parser@20.2.1`](https://github.com/DefinitelyTyped/DefinitelyTyped.git) | MIT | clearlydefined |
 | [`@types/yargs@15.0.14`](https://github.com/DefinitelyTyped/DefinitelyTyped.git) | MIT | clearlydefined |
-| [`@typescript-eslint/eslint-plugin@3.10.1`](https://github.com/typescript-eslint/typescript-eslint.git) | MIT | clearlydefined |
-| [`@typescript-eslint/experimental-utils@3.10.1`](https://github.com/typescript-eslint/typescript-eslint.git) | MIT | clearlydefined |
-| [`@typescript-eslint/parser@3.10.1`](https://github.com/typescript-eslint/typescript-eslint.git) | BSD-2-Clause | clearlydefined |
-| [`@typescript-eslint/types@3.10.1`](https://github.com/typescript-eslint/typescript-eslint.git) | MIT | clearlydefined |
-| [`@typescript-eslint/typescript-estree@3.10.1`](https://github.com/typescript-eslint/typescript-eslint.git) | BSD-2-Clause | clearlydefined |
-| [`@typescript-eslint/visitor-keys@3.10.1`](https://github.com/typescript-eslint/typescript-eslint.git) | MIT | clearlydefined |
+| [`@typescript-eslint/eslint-plugin@4.31.2`](https://github.com/typescript-eslint/typescript-eslint.git) | MIT | clearlydefined |
+| [`@typescript-eslint/experimental-utils@4.31.2`](https://github.com/typescript-eslint/typescript-eslint.git) | MIT | clearlydefined |
+| [`@typescript-eslint/parser@4.31.2`](https://github.com/typescript-eslint/typescript-eslint.git) | BSD-2-Clause | clearlydefined |
+| [`@typescript-eslint/scope-manager@4.31.2`](https://github.com/typescript-eslint/typescript-eslint.git) | MIT | clearlydefined |
+| [`@typescript-eslint/types@4.31.2`](https://github.com/typescript-eslint/typescript-eslint.git) | MIT | clearlydefined |
+| [`@typescript-eslint/typescript-estree@4.31.2`](https://github.com/typescript-eslint/typescript-eslint.git) | BSD-2-Clause | clearlydefined |
+| [`@typescript-eslint/visitor-keys@4.31.2`](https://github.com/typescript-eslint/typescript-eslint.git) | MIT | clearlydefined |
 | [`@webassemblyjs/ast@1.9.0`](https://github.com/xtuc/webassemblyjs.git) | MIT | clearlydefined |
 | [`@webassemblyjs/floating-point-hex-parser@1.9.0`](https://github.com/xtuc/webassemblyjs.git) | MIT | clearlydefined |
 | `@webassemblyjs/helper-api-error@1.9.0` | MIT | clearlydefined |
@@ -491,7 +491,7 @@
 | [`eslint-plugin-react@7.25.1`](https://github.com/yannickcr/eslint-plugin-react) | MIT | clearlydefined |
 | [`eslint-scope@5.1.1`](https://github.com/eslint/eslint-scope.git) | BSD-2-Clause | clearlydefined |
 | [`eslint-utils@2.1.0`](git+https://github.com/mysticatea/eslint-utils.git) | MIT | clearlydefined |
-| [`eslint-visitor-keys@1.3.0`](https://github.com/eslint/eslint-visitor-keys.git) | Apache-2.0 | clearlydefined |
+| [`eslint-visitor-keys@2.1.0`](https://github.com/eslint/eslint-visitor-keys.git) | Apache-2.0 | clearlydefined |
 | [`eslint@7.32.0`](https://github.com/eslint/eslint.git) | MIT | clearlydefined |
 | [`espree@7.3.1`](https://github.com/eslint/espree.git) | BSD-2-Clause | #903 |
 | [`esquery@1.4.0`](https://github.com/estools/esquery.git) | BSD-3-Clause | #1100 |
