@@ -26,7 +26,8 @@
     "pretest": "yarn run prebuild",
     "test:coverage": "yarn run test -- --runInBand --coverage",
     "eslint": "lerna run --stream eslint",
-    "eslint:fix": "lerna run --stream eslint:fix"
+    "eslint:fix": "lerna run --stream eslint:fix",
+    "format": "lerna run format"
   },
   "devDependencies": {
     "eslint": "^7.2.0",
