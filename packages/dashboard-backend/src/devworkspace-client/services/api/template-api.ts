@@ -15,9 +15,9 @@ import { helpers } from '@eclipse-che/common';
 import {
   devworkspacetemplateGroup,
   devworkspacetemplateLatestVersion,
-  devworkspacetemplatePlural
+  devworkspacetemplatePlural, V1alpha2DevWorkspaceTemplate
 } from '@devfile/api';
-import { IDevWorkspaceTemplate, IDevWorkspaceTemplateApi, } from '../../types';
+import { IDevWorkspaceTemplateApi, } from '../../types';
 
 export class DevWorkspaceTemplateApi implements IDevWorkspaceTemplateApi {
   private readonly customObjectAPI: k8s.CustomObjectsApi;
@@ -26,7 +26,7 @@ export class DevWorkspaceTemplateApi implements IDevWorkspaceTemplateApi {
     this.customObjectAPI = kc.makeApiClient(k8s.CustomObjectsApi);
   }
 
-  async listInNamespace(namespace: string): Promise<IDevWorkspaceTemplate[]> {
+  async listInNamespace(namespace: string): Promise<V1alpha2DevWorkspaceTemplate[]> {
     try {
       const resp = await this.customObjectAPI.listNamespacedCustomObject(
         devworkspacetemplateGroup,
@@ -34,13 +34,13 @@ export class DevWorkspaceTemplateApi implements IDevWorkspaceTemplateApi {
         namespace,
         devworkspacetemplatePlural
       );
-      return (resp.body as any).items as IDevWorkspaceTemplate[];
+      return (resp.body as any).items as V1alpha2DevWorkspaceTemplate[];
     } catch (e) {
       throw new Error('unable to list devworkspace templates: ' + helpers.errors.getMessage(e));
     }
   }
 
-  async getByName(namespace: string, name: string): Promise<IDevWorkspaceTemplate> {
+  async getByName(namespace: string, name: string): Promise<V1alpha2DevWorkspaceTemplate> {
     try {
       const resp = await this.customObjectAPI.getNamespacedCustomObject(
         devworkspacetemplateGroup,
@@ -49,15 +49,15 @@ export class DevWorkspaceTemplateApi implements IDevWorkspaceTemplateApi {
         devworkspacetemplatePlural,
         name
       );
-      return resp.body as IDevWorkspaceTemplate;
+      return resp.body as V1alpha2DevWorkspaceTemplate;
     } catch (e) {
       throw new Error(`unable to get devworkspace "${namespace}/${name}": ` + helpers.errors.getMessage(e));
     }
   }
 
   async create(
-    devworkspaceTemplate: IDevWorkspaceTemplate,
-  ): Promise<IDevWorkspaceTemplate> {
+    devworkspaceTemplate: V1alpha2DevWorkspaceTemplate,
+  ): Promise<V1alpha2DevWorkspaceTemplate> {
     const namespace = devworkspaceTemplate.metadata?.namespace;
     if (!namespace) {
       throw 'namespace is missing';
@@ -70,7 +70,7 @@ export class DevWorkspaceTemplateApi implements IDevWorkspaceTemplateApi {
         devworkspacetemplatePlural,
         devworkspaceTemplate
       );
-      return resp.body as IDevWorkspaceTemplate;
+      return resp.body as V1alpha2DevWorkspaceTemplate;
     } catch (e) {
       throw new Error('unable to create DevWorkspaceTemplate: ' + helpers.errors.getMessage(e));
     }
