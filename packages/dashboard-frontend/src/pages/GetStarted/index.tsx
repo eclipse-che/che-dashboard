@@ -142,7 +142,7 @@ export class GetStarted extends React.PureComponent<Props, State> {
     }
 
     if (!workspace) {
-      const errorMessage =  `Workspace "${namespace}/${devfile.metadata.name}" not found.`;
+      const errorMessage = `Workspace "${namespace}/${devfile.metadata.name}" not found.`;
       this.showAlert({
         key: 'find-workspace-failed',
         variant: AlertVariant.danger,

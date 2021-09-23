@@ -183,7 +183,7 @@ export class ErrorBoundary extends React.PureComponent<Props, State> {
 
     let title = <>The application has been likely updated on the server.</>;
     if (countdownStopped === false) {
-      title = <>{title} Refreshing a page to get newer resources in { secondsRemain}.</>;
+      title = <>{title} Refreshing a page to get newer resources in {secondsRemain}.</>;
     }
 
     let message: React.ReactNode | undefined;

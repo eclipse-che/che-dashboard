@@ -139,7 +139,7 @@ export const reducer: Reducer<State> = (state: State | undefined, incomingAction
   }
 };
 
-async function getApiInfo(): Promise<{implementationVersion: string}> {
+async function getApiInfo(): Promise<{ implementationVersion: string }> {
   if (isSafari) {
     return (await axios.options('/api/')).data;
   }
