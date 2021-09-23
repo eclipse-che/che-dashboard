@@ -488,7 +488,7 @@
 | [`eslint-loader@4.0.2`](https://github.com/webpack-contrib/eslint-loader.git) | MIT | clearlydefined |
 | [`eslint-plugin-notice@0.9.10`](https://github.com/nickdeis/eslint-plugin-notice) | MIT | clearlydefined |
 | [`eslint-plugin-react-hooks@4.2.0`](https://github.com/facebook/react.git) | MIT | clearlydefined |
-| [`eslint-plugin-react@7.25.1`](https://github.com/yannickcr/eslint-plugin-react) | MIT | clearlydefined |
+| [`eslint-plugin-react@7.26.0`](https://github.com/yannickcr/eslint-plugin-react) | MIT | clearlydefined |
 | [`eslint-scope@5.1.1`](https://github.com/eslint/eslint-scope.git) | BSD-2-Clause | clearlydefined |
 | [`eslint-utils@2.1.0`](git+https://github.com/mysticatea/eslint-utils.git) | MIT | clearlydefined |
 | [`eslint-visitor-keys@2.1.0`](https://github.com/eslint/eslint-visitor-keys.git) | Apache-2.0 | clearlydefined |
@@ -835,6 +835,7 @@
 | [`object.entries@1.1.4`](git://github.com/es-shims/Object.entries.git) | MIT | clearlydefined |
 | [`object.fromentries@2.0.4`](git://github.com/es-shims/Object.fromEntries.git) | MIT | clearlydefined |
 | [`object.getownpropertydescriptors@2.1.2`](git://github.com/es-shims/object.getownpropertydescriptors.git) | MIT | clearlydefined |
+| [`object.hasown@1.0.0`](https://github.com/es-shims/Object.hasOwn.git) | MIT | clearlydefined |
 | [`object.pick@1.3.0`](https://github.com/jonschlinkert/object.pick.git) | MIT | clearlydefined |
 | [`object.values@1.1.4`](git://github.com/es-shims/Object.values.git) | MIT | clearlydefined |
 | [`obuf@1.1.2`](git@github.com:indutny/offset-buffer) | MIT | clearlydefined |
