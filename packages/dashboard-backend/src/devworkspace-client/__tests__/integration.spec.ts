@@ -17,6 +17,7 @@ import { conditionalTest, isIntegrationTestEnabled } from './utils/suite';
 import { createKubeConfig, delay } from './utils/helper';
 import { fail } from 'assert';
 import { V1alpha2DevWorkspace } from '@devfile/api';
+import {NamespaceProvisioner} from './utils/namespaceProvisioner';
 
 describe('DevWorkspace API integration testing against cluster', () => {
 
@@ -35,13 +36,14 @@ describe('DevWorkspace API integration testing against cluster', () => {
 
       // check that the namespace is initialized
       // initialize namespace if it doesn't exist
-      await dwClient.cheApi.initializeNamespace(namespace || '');
+      const nsProvision = new NamespaceProvisioner(kc);
+      await nsProvision.initializeNamespace(namespace || '');
       await delay(5000);
       let namespaceExists: boolean;
-      if (await (dwClient.cheApi as any).isOpenShift()) {
-        namespaceExists = await (dwClient.cheApi as any).doesProjectExist(namespace);
+      if (await (nsProvision as any).isOpenShift()) {
+        namespaceExists = await (nsProvision as any).doesProjectExist(namespace);
       } else {
-        namespaceExists = await (dwClient.cheApi as any).doesNamespaceExist(namespace);
+        namespaceExists = await (nsProvision as any).doesNamespaceExist(namespace);
       }
       expect(namespaceExists).toBe(true);
 
@@ -100,14 +102,16 @@ describe('DevWorkspace API integration testing against cluster', () => {
       const isApiEnabled = await dwClient.isDevWorkspaceApiEnabled();
       expect(isApiEnabled).toBe(true);
 
+      // check that the namespace is initialized
       // initialize namespace if it doesn't exist
-      await dwClient.cheApi.initializeNamespace(namespace);
+      const nsProvision = new NamespaceProvisioner(kc);
+      await nsProvision.initializeNamespace(namespace || '');
       await delay(5000);
       let namespaceExists: boolean;
-      if (await (dwClient.cheApi as any).isOpenShift()) {
-        namespaceExists = await (dwClient.cheApi as any).doesProjectExist(namespace);
+      if (await nsProvision.isOpenShift()) {
+        namespaceExists = await (nsProvision as any).doesProjectExist(namespace);
       } else {
-        namespaceExists = await (dwClient.cheApi as any).doesNamespaceExist(namespace);
+        namespaceExists = await (nsProvision as any).doesNamespaceExist(namespace);
       }
       expect(namespaceExists).toBe(true);
 

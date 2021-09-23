@@ -67,16 +67,7 @@ export type IDevWorkspaceCallbacks = {
 export interface IDevWorkspaceClient {
   devworkspaceApi: IDevWorkspaceApi;
   templateApi: IDevWorkspaceTemplateApi;
-  cheApi: ICheApi;
   isDevWorkspaceApiEnabled(): Promise<boolean>;
-}
-
-/**
- * @deprecated Che Server started to provide rest endpoint to get namespace prepared.
- * See for details https://github.com/eclipse/che/issues/20167
- */
-export interface ICheApi {
-  initializeNamespace(namespace: string): Promise<void>;
 }
 
 export interface IDevWorkspaceList {

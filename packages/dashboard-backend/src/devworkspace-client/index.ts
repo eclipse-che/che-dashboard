@@ -29,7 +29,6 @@ export class DevWorkspaceClient implements IDevWorkspaceClient {
   private readonly _apisApi: k8s.ApisApi;
   private readonly _templateApi: IDevWorkspaceTemplateApi;
   private readonly _devworkspaceApi: IDevWorkspaceApi;
-  private readonly _cheApi: ICheApi;
 
   constructor(kc: k8s.KubeConfig) {
     this._templateApi = new DevWorkspaceTemplateApi(kc);
@@ -43,10 +42,6 @@ export class DevWorkspaceClient implements IDevWorkspaceClient {
 
   get devworkspaceApi(): IDevWorkspaceApi {
     return this._devworkspaceApi;
-  }
-
-  get cheApi(): ICheApi {
-    return this._cheApi;
   }
 
   async isDevWorkspaceApiEnabled(): Promise<boolean> {
