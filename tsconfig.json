@@ -13,5 +13,6 @@
     "emitDecoratorMetadata": true,
     "noEmit": false,
     "baseUrl": "./packages",
+    "sourceMap": true
   },
 }
