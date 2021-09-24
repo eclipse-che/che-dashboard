@@ -15,7 +15,6 @@
     "clean": "rimraf lib tsconfig.tsbuildinfo",
     "eslint": "tsc --noEmit && eslint '*/**/*.{js,ts,tsx}'",
     "eslint:fix": "tsc --noEmit && eslint '*/**/*.{js,ts,tsx}' --fix",
-    "format": "tsfmt -r --useTsfmt tsfmt.json",
     "test": "jest"
   },
   "devDependencies": {
@@ -30,7 +29,6 @@
     "jest": "^26.0.1",
     "rimraf": "^3.0.2",
     "ts-jest": "^26.1.0",
-    "typescript": "~4.4.2",
-    "typescript-formatter": "^7.2.2"
+    "typescript": "~4.4.2"
   }
 }
