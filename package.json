@@ -27,10 +27,13 @@
     "test:coverage": "yarn run test -- --runInBand --coverage",
     "eslint": "lerna run --stream eslint",
     "eslint:fix": "lerna run --stream eslint:fix",
-    "format": "lerna run format"
+    "lint-staged": "lerna run --concurrency=1 lint-staged -- --quiet",
+    "format": "lerna run format",
+    "prepare": "husky install"
   },
   "devDependencies": {
     "eslint": "^7.2.0",
+    "husky": "^7.0.2",
     "lerna": "^4.0.0",
     "stylelint": "^13.6.1",
     "typescript": "^4.1.3",
