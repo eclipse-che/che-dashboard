@@ -157,16 +157,16 @@ export class DevWorkspaceApi implements IDevWorkspaceApi {
       );
       return resp.body as IDevWorkspace;
     } catch (e) {
-      throw new Error(`unable to patch devworkspace: ` + helpers.errors.getMessage(e));
+      throw new Error('unable to patch devworkspace: ' + helpers.errors.getMessage(e));
     }
   }
 
-  async watchInNamespace(namespace: string, resourceVersion: string, callbacks: IDevWorkspaceCallbacks): Promise<{ abort: Function }> {
+  async watchInNamespace(namespace: string, resourceVersion: string, callbacks: IDevWorkspaceCallbacks): Promise<{ abort: () => void }> {
     const path = `/apis/${devWorkspaceApiGroup}/${devworkspaceVersion}/watch/namespaces/${namespace}/devworkspaces`;
     const queryParams = { watch: true, resourceVersion };
 
     return this.customObjectWatch.watch(path, queryParams, (type: string, devworkspace: IDevWorkspace) => {
-      const workspaceId = devworkspace!.status!.devworkspaceId;
+      const workspaceId = devworkspace.status.devworkspaceId;
 
       if (type === 'ADDED') {
         callbacks.onAdded(devworkspace);

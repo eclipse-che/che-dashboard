@@ -31,7 +31,7 @@ export function registerCheApiProxy(server: FastifyInstance,
           headers.authorization = 'Bearer ' + clusterAccessToken;
         }
 
-        return Object.assign({...headers}, { origin });
+        return Object.assign({ ...headers }, { origin });
       }
     }
   });
@@ -48,11 +48,11 @@ export function registerCheApiProxy(server: FastifyInstance,
   // because the real proxy fails to some reason
   // but since che workspace and devworkspace are not expected to work at the same time
   // faking is an easier solution
-  server.get(`/api/websocket`, {websocket: true} as RouteShorthandOptions, (connection: FastifyRequest) => {
+  server.get('/api/websocket', { websocket: true } as RouteShorthandOptions, (connection: FastifyRequest) => {
     connection.socket.on('message', message => {
       const data = JSON.parse(message);
-      if (data!.id && data!.jsonrpc) {
-        (connection.socket as any).send(JSON.stringify({jsonrpc: data.jsonrpc, id: data.id, result: []}));
+      if (data?.id && data?.jsonrpc) {
+        (connection.socket as any).send(JSON.stringify({ jsonrpc: data.jsonrpc, id: data.id, result: [] }));
       }
     });
   });

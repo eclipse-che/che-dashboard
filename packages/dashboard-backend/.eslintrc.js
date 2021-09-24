@@ -12,21 +12,10 @@
 
 module.exports = {
   env: {
-    browser: true,
-    es2020: true
+    node: true,
   },
   extends: [
-    'plugin:react-hooks/recommended',
-    'plugin:react/recommended',
     '../../.eslintrc.js',
-  ],
-  parserOptions: {
-    ecmaFeatures: {
-      jsx: true
-    },
-  },
-  plugins: [
-    'react',
   ],
   rules: {
     'notice/notice': [
@@ -39,10 +28,5 @@ module.exports = {
         },
       },
     ],
-  },
-  settings: {
-    react: {
-      version: 'detect',
-    },
   },
 };
