@@ -28,6 +28,7 @@
     "eslint:fix": "tsc --noEmit && eslint '*/**/*.{js,ts,tsx}' --fix",
     "stylelint": "stylelint */**/*.css",
     "stylelint:fix": "stylelint */**/*.css --fix",
+    "lint-staged": "lint-staged",
     "test": "jest",
     "test:coverage": "yarn test --coverage",
     "test:watch": "yarn test --watch"
@@ -125,7 +126,7 @@
     "html-webpack-plugin": "^4.3.0",
     "jest": "^26.0.1",
     "keycloak-js": "^10.0.2",
-    "lint-staged": "^10.2.8",
+    "lint-staged": "^11.1.2",
     "null-loader": "^4.0.1",
     "poststylus": "^1.0.0",
     "react-test-renderer": "^16.14.0",
@@ -151,5 +152,12 @@
   },
   "resolutions": {
     "vscode-languageserver-protocol": "3.15.1"
+  },
+  "lint-staged": {
+    "*.{js,ts,tsx}": [
+      "eslint --cache --fix",
+      "yarn format"
+    ],
+    "*.css": "stylelint --fix"
   }
 }
