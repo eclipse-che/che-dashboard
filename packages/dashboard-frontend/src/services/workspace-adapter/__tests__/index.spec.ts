@@ -14,6 +14,7 @@ import { cloneDeep } from 'lodash';
 import { convertWorkspace } from '..';
 import { CheWorkspaceBuilder, CHE_DEVFILE_STUB, CHE_RUNTIME_STUB } from '../../../store/__mocks__/cheWorkspaceBuilder';
 import { DevWorkspaceBuilder } from '../../../store/__mocks__/devWorkspaceBuilder';
+import { DEVWORKSPACE_UPDATING_TIMESTAMP_ANNOTATION } from '../../devfileApi/devWorkspace/metadata';
 import { StorageTypeTitle } from '../../storageTypes';
 
 /**
@@ -325,10 +326,12 @@ describe('Workspace adapter', () => {
     // todo fix that stub implementation
     it('should return timestamp of updating', () => {
       const timestamp = 22222222;
-      const updated = new Date(timestamp);
+      const updated = new Date(timestamp).toISOString();
       const devWorkspace = new DevWorkspaceBuilder()
         .build();
-      devWorkspace.metadata.creationTimestamp = updated;
+      devWorkspace.metadata.annotations = {
+        [DEVWORKSPACE_UPDATING_TIMESTAMP_ANNOTATION]: updated,
+      };
       const workspace = convertWorkspace(devWorkspace);
       expect(workspace.updated).toEqual(timestamp);
     });
