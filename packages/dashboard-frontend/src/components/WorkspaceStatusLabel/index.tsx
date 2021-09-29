@@ -110,6 +110,18 @@ class WorkspaceStatusLabel extends React.PureComponent<Props> {
           </>
         );
       case WorkspaceStatus.ERROR:
+        color = 'red';
+        return (
+          <>
+            <Label
+              data-tip=""
+              className={styles.statusLabel}
+              color={color}
+              icon={<ExclamationCircleIcon />}
+            >Error</Label>
+            {tooltip}
+          </>
+        );
       case DevWorkspaceStatus.FAILED:
         color = 'red';
         return (
@@ -119,7 +131,7 @@ class WorkspaceStatusLabel extends React.PureComponent<Props> {
               className={styles.statusLabel}
               color={color}
               icon={<ExclamationCircleIcon />}
-            >{`${status}`.toLocaleLowerCase()}</Label>
+            >Failed</Label>
             {tooltip}
           </>
         );
