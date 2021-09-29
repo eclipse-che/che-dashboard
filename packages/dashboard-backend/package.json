@@ -6,8 +6,8 @@
     "build": "webpack --color --config webpack.config.prod.js",
     "build:dev": "webpack --color --config webpack.config.dev.js",
     "build:watch": "yarn build:dev --watch",
-    "eslint": "tsc --noEmit && eslint '*/**/*.{js,ts,tsx}'",
-    "eslint:fix": "tsc --noEmit && eslint '*/**/*.{js,ts,tsx}' --fix",
+    "lint:check": "tsc --noEmit && eslint '*/**/*.{js,ts,tsx}'",
+    "lint:fix": "tsc --noEmit && eslint '*/**/*.{js,ts,tsx}' --fix",
     "start:debug": "nodemon --inspect lib/server/backend.js",
     "test": "jest"
   },

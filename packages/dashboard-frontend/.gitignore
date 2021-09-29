@@ -3,3 +3,4 @@ lib/
 coverage/
 
 tsconfig.tsbuildinfo
+.eslintcache

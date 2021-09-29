@@ -25,8 +25,8 @@
     "test": "lerna run test --stream -- $@",
     "pretest": "yarn run prebuild",
     "test:coverage": "yarn run test -- --runInBand --coverage",
-    "eslint": "lerna run --stream eslint",
-    "eslint:fix": "lerna run --stream eslint:fix",
+    "lint:check": "yarn workspaces run lint:check",
+    "lint:fix": "lerna run --stream lint:fix"
   },
   "devDependencies": {
     "lerna": "^4.0.0",

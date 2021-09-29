@@ -13,8 +13,8 @@
     "build": "yarn clean && tsc -b",
     "watch": "yarn build && tsc -w",
     "clean": "rimraf lib tsconfig.tsbuildinfo",
-    "eslint": "tsc --noEmit && eslint '*/**/*.{js,ts,tsx}'",
-    "eslint:fix": "tsc --noEmit && eslint '*/**/*.{js,ts,tsx}' --fix",
+    "lint:check": "tsc --noEmit && eslint '*/**/*.{js,ts,tsx}'",
+    "lint:fix": "tsc --noEmit && eslint '*/**/*.{js,ts,tsx}' --fix",
     "test": "jest"
   },
   "devDependencies": {
