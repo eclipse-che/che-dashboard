@@ -342,7 +342,7 @@ export class DevWorkspaceClient extends WorkspaceClient {
 
     const patch: IPatch[] = [];
 
-    if (workspace.metadata.annotations && workspace.metadata.annotations[DEVWORKSPACE_NEXT_START_ANNOTATION]) {
+    if (workspace.metadata.annotations?.[DEVWORKSPACE_NEXT_START_ANNOTATION]) {
 
       /**
        * This is the case when you are annotating a devworkspace and will restart it later
@@ -407,9 +407,8 @@ export class DevWorkspaceClient extends WorkspaceClient {
     return workspace.metadata.annotations[DEVWORKSPACE_DEBUG_START_ANNOTATION] === 'true';
   }
 
-  async updateDebugMode(namespace: string, name: string, debugMode: boolean): Promise<devfileApi.DevWorkspace> {
+  async updateDebugMode(workspace: devfileApi.DevWorkspace, debugMode: boolean): Promise<devfileApi.DevWorkspace> {
     const patch: IPatch[] = [];
-    const workspace = await this.getWorkspaceByName(namespace, name);
     const currentDebugMode = this.getDebugMode(workspace);
 
     if (currentDebugMode === debugMode) {
@@ -423,23 +422,24 @@ export class DevWorkspaceClient extends WorkspaceClient {
         value: DEVWORKSPACE_DEBUG_START_ANNOTATION
       });
     } else {
-      if (workspace.metadata.annotations && workspace.metadata.annotations[DEVWORKSPACE_DEBUG_START_ANNOTATION]) {
+      if (workspace.metadata.annotations?.[DEVWORKSPACE_DEBUG_START_ANNOTATION]) {
         patch.push({
-          op: 'remove',
+          op: 'replace',
+          path: `/metadata/annotations/${DEVWORKSPACE_DEBUG_START_ANNOTATION.replace('/', '~1')}`,
+          value: 'true'
+        });
+      } else {
+        patch.push({
+          op: 'add',
           path: '/metadata/annotations',
-          value: DEVWORKSPACE_DEBUG_START_ANNOTATION
+          value: {
+            [DEVWORKSPACE_DEBUG_START_ANNOTATION]: 'true'
+          }
         });
       }
-      patch.push({
-        op: 'add',
-        path: '/metadata/annotations',
-        value: {
-          [DEVWORKSPACE_DEBUG_START_ANNOTATION]: 'true'
-        }
-      });
     }
 
-    return await DwApi.patchWorkspace(namespace, name, patch);
+    return await DwApi.patchWorkspace(workspace.metadata.namespace, workspace.metadata.name, patch);
   }
 
   async changeWorkspaceStatus(namespace: string, name: string, started: boolean, skipErrorCheck?: boolean): Promise<devfileApi.DevWorkspace> {

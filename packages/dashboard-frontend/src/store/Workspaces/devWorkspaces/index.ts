@@ -205,11 +205,9 @@ export const actionCreators: ActionCreators = {
   startWorkspace: (workspace: devfileApi.DevWorkspace, debugWorkspace = false): AppThunk<KnownAction, Promise<void>> => async (dispatch, getState): Promise<void> => {
     dispatch({ type: 'REQUEST_DEVWORKSPACE' });
     try {
-      if (devWorkspaceClient.getDebugMode(workspace) !== debugWorkspace) {
-        await devWorkspaceClient.updateDebugMode(workspace.metadata.namespace, workspace.metadata.name, debugWorkspace);
-      }
+      await devWorkspaceClient.updateDebugMode(workspace, debugWorkspace);
       let updatedWorkspace: devfileApi.DevWorkspace;
-      if (workspace.metadata.annotations && workspace.metadata.annotations[DEVWORKSPACE_NEXT_START_ANNOTATION]) {
+      if (workspace.metadata.annotations?.[DEVWORKSPACE_NEXT_START_ANNOTATION]) {
         // If the workspace has DEVWORKSPACE_NEXT_START_ANNOTATION then update the devworkspace with the DEVWORKSPACE_NEXT_START_ANNOTATION annotation value and then start the devworkspace
         const state = getState();
         const plugins = selectDwPluginsList(state);

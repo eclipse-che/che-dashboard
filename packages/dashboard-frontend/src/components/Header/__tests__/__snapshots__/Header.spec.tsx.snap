@@ -117,7 +117,7 @@ exports[`The header component for IDE-loader and Factory-loader pages should ren
               />
             </svg>
           </span>
-          error
+          Error
         </span>
       </span>
       <div>
