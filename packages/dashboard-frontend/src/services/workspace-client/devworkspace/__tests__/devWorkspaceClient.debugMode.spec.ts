@@ -72,10 +72,8 @@ describe('DevWorkspaceClient debug mode', () => {
         `/dashboard/api/namespace/${namespace}/devworkspaces/${name}`,
         [{
           op: 'add',
-          path: '/metadata/annotations',
-          value: {
-            [DEVWORKSPACE_DEBUG_START_ANNOTATION]: 'true',
-          },
+          path: `/metadata/annotations/${DEVWORKSPACE_DEBUG_START_ANNOTATION.replace('/', '~1')}`,
+          value: 'true',
         }], { headers: {} }]);
       expect(resultData).toEqual(devWorkspaceWithDebug);
     });
@@ -114,8 +112,7 @@ describe('DevWorkspaceClient debug mode', () => {
         `/dashboard/api/namespace/${namespace}/devworkspaces/${name}`,
         [{
           op: 'remove',
-          path: '/metadata/annotations',
-          value: DEVWORKSPACE_DEBUG_START_ANNOTATION,
+          path: `/metadata/annotations/${DEVWORKSPACE_DEBUG_START_ANNOTATION.replace('/', '~1')}`
         }], { headers: {} }]);
       expect(resultData).toEqual(devWorkspaceNoDebug);
     });
