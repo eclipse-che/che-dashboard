@@ -54,6 +54,8 @@ export type Subscriber = {
 
 export const DEVWORKSPACE_NEXT_START_ANNOTATION = 'che.eclipse.org/next-start-cfg';
 
+export const DEVWORKSPACE_DEBUG_START_ANNOTATION = 'controller.devfile.io/debug-start';
+
 export const DEVWORKSPACE_DEVFILE_SOURCE = 'che.eclipse.org/devfile-source';
 
 export const DEVWORKSPACE_METADATA_ANNOTATION = 'dw.metadata.annotations';
@@ -148,11 +150,9 @@ export class DevWorkspaceClient extends WorkspaceClient {
     let attempted = 0;
     while ((!workspace.status || !workspace.status.phase || !workspace.status.mainUrl) && attempted < this.maxStatusAttempts) {
       workspace = await DwApi.getWorkspaceByName(namespace, workspaceName);
-      this.checkForDevWorkspaceError(workspace);
       attempted += 1;
       await delay();
     }
-    this.checkForDevWorkspaceError(workspace);
     const workspaceStatus = workspace?.status;
     if (!workspaceStatus || !workspaceStatus.phase) {
       throw new Error(`Could not retrieve devworkspace status information from ${workspaceName} in namespace ${namespace}`);
@@ -342,7 +342,7 @@ export class DevWorkspaceClient extends WorkspaceClient {
 
     const patch: IPatch[] = [];
 
-    if (workspace.metadata.annotations && workspace.metadata.annotations[DEVWORKSPACE_NEXT_START_ANNOTATION]) {
+    if (workspace.metadata.annotations?.[DEVWORKSPACE_NEXT_START_ANNOTATION]) {
 
       /**
        * This is the case when you are annotating a devworkspace and will restart it later
@@ -400,7 +400,46 @@ export class DevWorkspaceClient extends WorkspaceClient {
     await DwApi.deleteWorkspace(namespace, name);
   }
 
-  async changeWorkspaceStatus(namespace: string, name: string, started: boolean): Promise<devfileApi.DevWorkspace> {
+  getDebugMode(workspace: devfileApi.DevWorkspace): boolean {
+    return workspace.metadata.annotations?.[DEVWORKSPACE_DEBUG_START_ANNOTATION] === 'true';
+  }
+
+  async updateDebugMode(workspace: devfileApi.DevWorkspace, debugMode: boolean): Promise<devfileApi.DevWorkspace> {
+    const patch: IPatch[] = [];
+    const currentDebugMode = this.getDebugMode(workspace);
+
+    if (currentDebugMode === debugMode) {
+      return workspace;
+    }
+
+    if (!debugMode) {
+      patch.push({
+        op: 'remove',
+        path: '/metadata/annotations',
+        value: DEVWORKSPACE_DEBUG_START_ANNOTATION
+      });
+    } else {
+      if (workspace.metadata.annotations?.[DEVWORKSPACE_DEBUG_START_ANNOTATION]) {
+        patch.push({
+          op: 'replace',
+          path: `/metadata/annotations/${DEVWORKSPACE_DEBUG_START_ANNOTATION.replace('/', '~1')}`,
+          value: 'true'
+        });
+      } else {
+        patch.push({
+          op: 'add',
+          path: '/metadata/annotations',
+          value: {
+            [DEVWORKSPACE_DEBUG_START_ANNOTATION]: 'true'
+          }
+        });
+      }
+    }
+
+    return await DwApi.patchWorkspace(workspace.metadata.namespace, workspace.metadata.name, patch);
+  }
+
+  async changeWorkspaceStatus(namespace: string, name: string, started: boolean, skipErrorCheck?: boolean): Promise<devfileApi.DevWorkspace> {
     const changedWorkspace = await DwApi.patchWorkspace(namespace, name, [{
       op: 'replace',
       path: '/spec/started',
@@ -409,7 +448,9 @@ export class DevWorkspaceClient extends WorkspaceClient {
     if (!started) {
       this.lastDevWorkspaceLog.delete(WorkspaceAdapter.getId(changedWorkspace));
     }
-    this.checkForDevWorkspaceError(changedWorkspace);
+    if (!skipErrorCheck) {
+      this.checkForDevWorkspaceError(changedWorkspace);
+    }
     return changedWorkspace;
   }
 
@@ -417,12 +458,14 @@ export class DevWorkspaceClient extends WorkspaceClient {
    * Add the plugin to the workspace
    * @param workspace A devworkspace
    * @param pluginName The name of the plugin
+   * @param namespace A namespace
    */
   private addPlugin(workspace: devfileApi.DevWorkspace, pluginName: string, namespace: string) {
     if (!workspace.spec.template.components) {
       workspace.spec.template.components = [];
     }
-    workspace.spec.template.components.push({
+    const components = workspace.spec.template.components.filter(component => component.name !== pluginName);
+    components.push({
       name: pluginName,
       plugin: {
         kubernetes: {
@@ -431,6 +474,7 @@ export class DevWorkspaceClient extends WorkspaceClient {
         }
       }
     });
+    workspace.spec.template.components = components;
   }
 
   async subscribeToNamespace(subscriber: Subscriber): Promise<void> {

@@ -175,9 +175,10 @@ export const actionCreators: ActionCreators = {
       const cheDevworkspaceEnabled = state.workspacesSettings.settings['che.devworkspaces.enabled'] === 'true';
 
       if (cheDevworkspaceEnabled && isDevWorkspace(workspace.ref)) {
-        await dispatch(DevWorkspacesStore.actionCreators.startWorkspace(workspace.ref));
+        const debugWorkspace = params && params['debug-workspace-start'];
+        await dispatch(DevWorkspacesStore.actionCreators.startWorkspace(workspace.ref, debugWorkspace));
       } else {
-        await dispatch(CheWorkspacesStore.actionCreators.startWorkspace(workspace as che.Workspace, params));
+        await dispatch(CheWorkspacesStore.actionCreators.startWorkspace(workspace.ref as che.Workspace, params));
       }
       dispatch({ type: 'UPDATE_WORKSPACE' });
     } catch (e) {
