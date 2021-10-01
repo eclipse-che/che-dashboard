@@ -29,7 +29,7 @@ export interface IDevWorkspaceApi {
      * @param resourceVersion special mark that all changes up to a given resourceVersion have already been sent
      * @param callbacks callback will be invoked when change happens
      */
-    watchInNamespace(namespace: string, resourceVersion: string, callbacks: IDevWorkspaceCallbacks): Promise<{ abort: Function }>;
+    watchInNamespace(namespace: string, resourceVersion: string, callbacks: IDevWorkspaceCallbacks): Promise<{ abort: () => void }>;
 
     /**
      * Create a devworkspace based on the specified configuration.
@@ -73,84 +73,12 @@ export interface IDevWorkspaceClient {
 }
 
 export interface IDevWorkspaceList {
-<<<<<<< HEAD
-  apiVersion: string;
-  kind: string;
-  metadata: {
-    resourceVersion?: string;
-  };
-  items: IDevWorkspace[];
-}
-
-// todo drop these types and use ones from devfile/api instead
-export interface IDevWorkspace {
-  apiVersion: string;
-  kind: string;
-  metadata: {
-    name: string;
-    namespace: string;
-    creationTimestamp?: string;
-    deletionTimestamp?: string;
-    uid?: string;
-    annotations?: any;
-  };
-  spec: IDevWorkspaceSpec;
-  status: {
-    mainUrl: string;
-    phase: string;
-    devworkspaceId: string;
-    message?: string;
-  };
-}
-
-export interface IDevWorkspaceSpec {
-  started: boolean;
-  routingClass: string;
-  template: {
-    projects?: any;
-    components?: any[];
-    commands?: any;
-    events?: any;
-  };
-}
-
-export interface IDevWorkspaceTemplate {
-  apiVersion: string;
-  kind: string;
-  metadata: {
-    name?: string;
-    namespace?: string;
-    ownerReferences?: IOwnerRefs[];
-  };
-  spec: IDevWorkspaceDevfile;
-}
-
-export interface IOwnerRefs {
-  apiVersion: string;
-  kind: string;
-  name: string;
-  uid: string;
-}
-
-export interface IDevWorkspaceDevfile {
-  schemaVersion: string;
-  metadata: {
-    name: string;
-    namespace: string;
-    attributes?: { [key: string]: any };
-  };
-  projects?: any;
-  components?: any;
-  commands?: any;
-  events?: any;
-=======
     apiVersion: string;
     kind: string;
     metadata: {
         resourceVersion?: string;
     };
     items: V1alpha2DevWorkspace[];
->>>>>>> 614f37ce... Use devfile/api types on backend
 }
 
 export interface IPatch {

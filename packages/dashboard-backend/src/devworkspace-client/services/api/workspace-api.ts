@@ -169,14 +169,17 @@ export class DevWorkspaceApi implements IDevWorkspaceApi {
     const queryParams = { watch: true, resourceVersion };
 
     return this.customObjectWatch.watch(path, queryParams, (type: string, devworkspace: V1alpha2DevWorkspace) => {
-      const workspaceId = devworkspace!.status!.devworkspaceId;
-
       if (type === 'ADDED') {
         callbacks.onAdded(devworkspace);
       } else if (type === 'MODIFIED') {
         callbacks.onModified(devworkspace);
       } else if (type === 'DELETED') {
-        callbacks.onDeleted(workspaceId);
+        const workspaceId = devworkspace?.status?.devworkspaceId;
+        if (workspaceId) {
+          callbacks.onDeleted(workspaceId);
+        } else {
+           // workspace does not have id yet, means it's not processed by DWO yet
+        }
       } else if (type === 'ERROR') {
         callbacks.onError('Error: Unknown error.');
       } else {
