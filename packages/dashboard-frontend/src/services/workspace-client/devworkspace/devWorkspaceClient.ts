@@ -372,8 +372,7 @@ export class DevWorkspaceClient extends WorkspaceClient {
 
       // If the workspace currently has DEVWORKSPACE_NEXT_START_ANNOTATION then delete it since we are starting a devworkspace normally
       if (onClusterWorkspace.metadata.annotations && onClusterWorkspace.metadata.annotations[DEVWORKSPACE_NEXT_START_ANNOTATION]) {
-        // We have to escape the slash when removing the annotation and ~1 is used as the escape character https://tools.ietf.org/html/rfc6902#appendix-A.14
-        const escapedAnnotation = DEVWORKSPACE_NEXT_START_ANNOTATION.replace('/', '~1');
+        const escapedAnnotation = this.escape(DEVWORKSPACE_NEXT_START_ANNOTATION);
         patch.push(
           {
             op: 'remove',
@@ -386,6 +385,11 @@ export class DevWorkspaceClient extends WorkspaceClient {
     return DwApi.patchWorkspace(namespace, name, patch);
   }
 
+  private escape(key: string): string {
+    // We have to escape the slash and use ~1 instead. See https://tools.ietf.org/html/rfc6902#appendix-A.14
+    return key.replace(/\//g, '~1');
+  }
+
   /**
    * Created a normalize plugin name, which is a plugin name with all spaces replaced
    * to dashes and a workspaceId appended at the end
@@ -393,7 +397,7 @@ export class DevWorkspaceClient extends WorkspaceClient {
    * @param workspaceId The id of the workspace
    */
   private normalizePluginName(pluginName: string, workspaceId: string): string {
-    return `${pluginName.replaceAll(' ', '-').toLowerCase()}-${workspaceId}`;
+    return `${pluginName.replace(/ /g, '-').toLowerCase()}-${workspaceId}`;
   }
 
   async delete(namespace: string, name: string): Promise<void> {
@@ -412,27 +416,14 @@ export class DevWorkspaceClient extends WorkspaceClient {
       return workspace;
     }
 
+    const path = `/metadata/annotations/${this.escape(DEVWORKSPACE_DEBUG_START_ANNOTATION)}`;
     if (!debugMode) {
-      patch.push({
-        op: 'remove',
-        path: '/metadata/annotations',
-        value: DEVWORKSPACE_DEBUG_START_ANNOTATION
-      });
+      patch.push({ op: 'remove', path });
     } else {
       if (workspace.metadata.annotations?.[DEVWORKSPACE_DEBUG_START_ANNOTATION]) {
-        patch.push({
-          op: 'replace',
-          path: `/metadata/annotations/${DEVWORKSPACE_DEBUG_START_ANNOTATION.replace('/', '~1')}`,
-          value: 'true'
-        });
+        patch.push({ op: 'replace', path, value: 'true' });
       } else {
-        patch.push({
-          op: 'add',
-          path: '/metadata/annotations',
-          value: {
-            [DEVWORKSPACE_DEBUG_START_ANNOTATION]: 'true'
-          }
-        });
+        patch.push({ op: 'add', path, value: 'true' });
       }
     }
 

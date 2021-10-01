@@ -28,7 +28,7 @@ describe('DevWorkspaceClient debug mode', () => {
     devWorkspaceNoDebug = new DevWorkspaceBuilder().withMetadata({ name, namespace }).build();
     devWorkspaceWithDebug = new DevWorkspaceBuilder().withMetadata({
       annotations: {
-        'controller.devfile.io/debug-start': 'true',
+        [DEVWORKSPACE_DEBUG_START_ANNOTATION]: 'true',
       }, name, namespace
     }).build();
   });
@@ -72,10 +72,8 @@ describe('DevWorkspaceClient debug mode', () => {
         `/dashboard/api/namespace/${namespace}/devworkspaces/${name}`,
         [{
           op: 'add',
-          path: '/metadata/annotations',
-          value: {
-            [DEVWORKSPACE_DEBUG_START_ANNOTATION]: 'true',
-          },
+          path: '/metadata/annotations/controller.devfile.io~1debug-start',
+          value: 'true',
         }], { headers: {} }]);
       expect(resultData).toEqual(devWorkspaceWithDebug);
     });
@@ -97,7 +95,7 @@ describe('DevWorkspaceClient debug mode', () => {
         `/dashboard/api/namespace/${namespace}/devworkspaces/${name}`,
         [{
           op: 'replace',
-          path: `/metadata/annotations/${DEVWORKSPACE_DEBUG_START_ANNOTATION.replace('/', '~1')}`,
+          path: '/metadata/annotations/controller.devfile.io~1debug-start',
           value: 'true',
         }], { headers: {} }]);
       expect(resultData).toEqual(devWorkspaceWithDebug);
@@ -114,8 +112,7 @@ describe('DevWorkspaceClient debug mode', () => {
         `/dashboard/api/namespace/${namespace}/devworkspaces/${name}`,
         [{
           op: 'remove',
-          path: '/metadata/annotations',
-          value: DEVWORKSPACE_DEBUG_START_ANNOTATION,
+          path: '/metadata/annotations/controller.devfile.io~1debug-start'
         }], { headers: {} }]);
       expect(resultData).toEqual(devWorkspaceNoDebug);
     });
