@@ -401,10 +401,7 @@ export class DevWorkspaceClient extends WorkspaceClient {
   }
 
   getDebugMode(workspace: devfileApi.DevWorkspace): boolean {
-    if (!workspace.metadata.annotations) {
-      return false;
-    }
-    return workspace.metadata.annotations[DEVWORKSPACE_DEBUG_START_ANNOTATION] === 'true';
+    return workspace.metadata.annotations?.[DEVWORKSPACE_DEBUG_START_ANNOTATION] === 'true';
   }
 
   async updateDebugMode(workspace: devfileApi.DevWorkspace, debugMode: boolean): Promise<devfileApi.DevWorkspace> {
