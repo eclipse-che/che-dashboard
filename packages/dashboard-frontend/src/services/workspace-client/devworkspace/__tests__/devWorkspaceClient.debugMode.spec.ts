@@ -10,7 +10,7 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import { DEVWORKSPACE_DEBUG_START_ANNOTATION, DevWorkspaceClient } from '../devWorkspaceClient';
+import { DevWorkspaceClient } from '../devWorkspaceClient';
 import { container } from '../../../../inversify.config';
 import devfileApi from '../../../devfileApi';
 import mockAxios from 'axios';
@@ -72,7 +72,7 @@ describe('DevWorkspaceClient debug mode', () => {
         `/dashboard/api/namespace/${namespace}/devworkspaces/${name}`,
         [{
           op: 'add',
-          path: `/metadata/annotations/${DEVWORKSPACE_DEBUG_START_ANNOTATION.replace('/', '~1')}`,
+          path: '/metadata/annotations/controller.devfile.io~1debug-start',
           value: 'true',
         }], { headers: {} }]);
       expect(resultData).toEqual(devWorkspaceWithDebug);
@@ -84,7 +84,7 @@ describe('DevWorkspaceClient debug mode', () => {
 
       const devWorkspaceNoDebug = new DevWorkspaceBuilder().withMetadata({
         annotations: {
-          [DEVWORKSPACE_DEBUG_START_ANNOTATION]: 'false',
+          'controller.devfile.io/debug-start': 'false',
         }, name, namespace
       }).build();
 
@@ -95,7 +95,7 @@ describe('DevWorkspaceClient debug mode', () => {
         `/dashboard/api/namespace/${namespace}/devworkspaces/${name}`,
         [{
           op: 'replace',
-          path: `/metadata/annotations/${DEVWORKSPACE_DEBUG_START_ANNOTATION.replace('/', '~1')}`,
+          path: '/metadata/annotations/controller.devfile.io~1debug-start',
           value: 'true',
         }], { headers: {} }]);
       expect(resultData).toEqual(devWorkspaceWithDebug);
@@ -112,7 +112,7 @@ describe('DevWorkspaceClient debug mode', () => {
         `/dashboard/api/namespace/${namespace}/devworkspaces/${name}`,
         [{
           op: 'remove',
-          path: `/metadata/annotations/${DEVWORKSPACE_DEBUG_START_ANNOTATION.replace('/', '~1')}`
+          path: '/metadata/annotations/controller.devfile.io~1debug-start'
         }], { headers: {} }]);
       expect(resultData).toEqual(devWorkspaceNoDebug);
     });
