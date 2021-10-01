@@ -60,6 +60,9 @@ jobs:
         name: "Build"
         run: yarn build
       -
+        name: "Run linters"
+        run: yarn lint:check
+      -
         name: "Run unit tests"
         run: yarn test --runInBand
 
