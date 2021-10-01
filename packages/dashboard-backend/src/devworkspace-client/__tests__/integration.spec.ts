@@ -25,7 +25,6 @@ describe('DevWorkspace API integration testing against cluster', () => {
     conditionalTest('Test run the creation, retrieval, update and deletion of a devworkspace', isIntegrationTestEnabled, async (done: any) => {
       const kc = createKubeConfig();
       const dwClient = new DevWorkspaceClient(kc);
-      // todo
       const devWorkspace = yaml.load(fs.readFileSync(__dirname + '/fixtures/sample-devworkspace.yaml', 'utf-8')) as V1alpha2DevWorkspace;
 
       if (!devWorkspace.metadata?.namespace || !devWorkspace.metadata?.name) {

@@ -30,7 +30,7 @@ const projectRequestModel = (namespace: string) => {
 
 const namespaceModel = (namespace: string) => {
   return {
-    apiVersion: `v1`,
+    apiVersion: 'v1',
     kind: 'Namespace',
     metadata: {
       name: namespace,
