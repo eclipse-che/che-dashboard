@@ -10,7 +10,7 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import { DevWorkspaceClient } from '../devWorkspaceClient';
+import { DEVWORKSPACE_DEBUG_START_ANNOTATION, DevWorkspaceClient } from '../devWorkspaceClient';
 import { container } from '../../../../inversify.config';
 import devfileApi from '../../../devfileApi';
 import mockAxios from 'axios';
@@ -28,7 +28,7 @@ describe('DevWorkspaceClient debug mode', () => {
     devWorkspaceNoDebug = new DevWorkspaceBuilder().withMetadata({ name, namespace }).build();
     devWorkspaceWithDebug = new DevWorkspaceBuilder().withMetadata({
       annotations: {
-        'controller.devfile.io/debug-start': 'true',
+        [DEVWORKSPACE_DEBUG_START_ANNOTATION]: 'true',
       }, name, namespace
     }).build();
   });
@@ -84,7 +84,7 @@ describe('DevWorkspaceClient debug mode', () => {
 
       const devWorkspaceNoDebug = new DevWorkspaceBuilder().withMetadata({
         annotations: {
-          'controller.devfile.io/debug-start': 'false',
+          [DEVWORKSPACE_DEBUG_START_ANNOTATION]: 'false',
         }, name, namespace
       }).build();
 
