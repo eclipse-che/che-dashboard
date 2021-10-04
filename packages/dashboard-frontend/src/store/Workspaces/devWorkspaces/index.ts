@@ -30,6 +30,7 @@ import { DisposableCollection } from '../../../services/helpers/disposable';
 import { selectDwPluginsList } from '../../Plugins/devWorkspacePlugins/selectors';
 import { devWorkspaceKind } from '../../../services/devfileApi/devWorkspace';
 import { WorkspaceAdapter } from '../../../services/workspace-adapter';
+import { DEVWORKSPACE_UPDATING_TIMESTAMP_ANNOTATION } from '../../../services/devfileApi/devWorkspace/metadata';
 
 const cheWorkspaceClient = container.get(CheWorkspaceClient);
 const devWorkspaceClient = container.get(DevWorkspaceClient);
@@ -158,7 +159,7 @@ export const actionCreators: ActionCreators = {
     onStatusUpdateReceived(dispatch, message);
   },
 
-  requestWorkspaces: (): AppThunk<KnownAction, Promise<void>> => async (dispatch): Promise<void> => {
+  requestWorkspaces: (): AppThunk<KnownAction, Promise<void>> => async (dispatch, getState): Promise<void> => {
     dispatch({ type: 'REQUEST_DEVWORKSPACE' });
 
     try {
@@ -170,6 +171,14 @@ export const actionCreators: ActionCreators = {
         workspaces,
         resourceVersion,
       });
+
+      const promises = workspaces
+        .filter(workspace => workspace.metadata.annotations?.[DEVWORKSPACE_UPDATING_TIMESTAMP_ANNOTATION] === undefined)
+        .map(async (workspace) => {
+          // this will set updating timestamp to annotations and update the workspace
+          await actionCreators.updateWorkspace(workspace)(dispatch, getState, undefined);
+        });
+      await Promise.allSettled(promises);
     } catch (e) {
       const errorMessage = 'Failed to fetch available workspaces, reason: ' + common.helpers.errors.getMessage(e);
       dispatch({
@@ -181,7 +190,7 @@ export const actionCreators: ActionCreators = {
 
   },
 
-  requestWorkspace: (workspace: devfileApi.DevWorkspace): AppThunk<KnownAction, Promise<void>> => async (dispatch): Promise<void> => {
+  requestWorkspace: (workspace: devfileApi.DevWorkspace): AppThunk<KnownAction, Promise<void>> => async (dispatch, getState): Promise<void> => {
     dispatch({ type: 'REQUEST_DEVWORKSPACE' });
 
     try {
@@ -192,6 +201,11 @@ export const actionCreators: ActionCreators = {
         type: 'UPDATE_DEVWORKSPACE',
         workspace: update,
       });
+
+      if (update.metadata.annotations?.[DEVWORKSPACE_UPDATING_TIMESTAMP_ANNOTATION] === undefined) {
+        // this will set updating timestamp to annotations and update the workspace
+        await actionCreators.updateWorkspace(update)(dispatch, getState, undefined);
+      }
     } catch (e) {
       const errorMessage = `Failed to fetch the workspace ${workspace.metadata.name}, reason: ` + common.helpers.errors.getMessage(e);
       dispatch({
@@ -223,7 +237,7 @@ export const actionCreators: ActionCreators = {
         workspace.spec.started = true;
         updatedWorkspace = await devWorkspaceClient.update(workspace, plugins);
       } else {
-        updatedWorkspace = await devWorkspaceClient.changeWorkspaceStatus(workspace.metadata.namespace, workspace.metadata.name, true);
+        updatedWorkspace = await devWorkspaceClient.changeWorkspaceStatus(workspace, true);
       }
       dispatch({
         type: 'UPDATE_DEVWORKSPACE',
@@ -274,7 +288,7 @@ export const actionCreators: ActionCreators = {
 
   stopWorkspace: (workspace: devfileApi.DevWorkspace): AppThunk<KnownAction, Promise<void>> => async (dispatch): Promise<void> => {
     try {
-      devWorkspaceClient.changeWorkspaceStatus(workspace.metadata.namespace, workspace.metadata.name, false);
+      devWorkspaceClient.changeWorkspaceStatus(workspace, false);
       dispatch({ type: 'DELETE_DEVWORKSPACE_LOGS', workspaceId: WorkspaceAdapter.getId(workspace) });
     } catch (e) {
       const errorMessage = `Failed to stop the workspace ${workspace.metadata.name}, reason: ` + common.helpers.errors.getMessage(e);
@@ -353,6 +367,9 @@ export const actionCreators: ActionCreators = {
         type: 'ADD_DEVWORKSPACE',
         workspace,
       });
+
+      // this will set updating timestamp to annotations and update the workspace
+      await actionCreators.updateWorkspace(workspace)(dispatch, getState, undefined);
     } catch (e) {
       const errorMessage = 'Failed to create a new workspace from the devfile, reason: ' + common.helpers.errors.getMessage(e);
       dispatch({
