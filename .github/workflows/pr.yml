@@ -22,7 +22,7 @@ env:
 jobs:
 
   dash-licenses:
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-20.04
     steps:
       -
         name: "Checkout Che Dashboard source code"
@@ -40,7 +40,7 @@ jobs:
         run: yarn license:check
 
   build-and-test:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     strategy:
       matrix:
         node-version: [12.x, 14.x]
@@ -68,7 +68,7 @@ jobs:
 
   docker-build:
     needs: build-and-test
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-20.04
     continue-on-error: ${{ matrix.default == false }}
     strategy:
       fail-fast: false
