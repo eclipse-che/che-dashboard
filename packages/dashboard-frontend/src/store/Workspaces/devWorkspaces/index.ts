@@ -27,11 +27,11 @@ import devfileApi, { isDevWorkspace } from '../../../services/devfileApi';
 import { deleteLogs, mergeLogs } from '../logs';
 import { getDefer, IDeferred } from '../../../services/helpers/deferred';
 import { DisposableCollection } from '../../../services/helpers/disposable';
-import { selectDwPluginsList } from '../../Plugins/devWorkspacePlugins/selectors';
+import { selectDwEditorsPluginsList, selectDwPluginsList } from '../../Plugins/devWorkspacePlugins/selectors';
 import { devWorkspaceKind } from '../../../services/devfileApi/devWorkspace';
 import { WorkspaceAdapter } from '../../../services/workspace-adapter';
 import { DEVWORKSPACE_UPDATING_TIMESTAMP_ANNOTATION } from '../../../services/devfileApi/devWorkspace/metadata';
-
+import * as DwPluginsStore from '../../Plugins/devWorkspacePlugins';
 const cheWorkspaceClient = container.get(CheWorkspaceClient);
 const devWorkspaceClient = container.get(DevWorkspaceClient);
 
@@ -130,6 +130,7 @@ export type ActionCreators = {
   },
     pluginRegistryUrl: string | undefined,
     pluginRegistryInternalUrl: string | undefined,
+    attributes: { [key: string]: string },
   ) => AppThunk<KnownAction, Promise<void>>;
 
   deleteWorkspaceLogs: (workspaceId: string) => AppThunk<DeleteWorkspaceLogsAction, void>;
@@ -224,7 +225,7 @@ export const actionCreators: ActionCreators = {
       if (workspace.metadata.annotations?.[DEVWORKSPACE_NEXT_START_ANNOTATION]) {
         // If the workspace has DEVWORKSPACE_NEXT_START_ANNOTATION then update the devworkspace with the DEVWORKSPACE_NEXT_START_ANNOTATION annotation value and then start the devworkspace
         const state = getState();
-        const plugins = selectDwPluginsList(state);
+        const plugins = selectDwEditorsPluginsList(state.dwPlugins.defaultEditorName)(state);
 
         const storedDevWorkspace = JSON.parse(workspace.metadata.annotations[DEVWORKSPACE_NEXT_START_ANNOTATION]) as unknown;
         if (!isDevWorkspace(storedDevWorkspace)) {
@@ -347,21 +348,38 @@ export const actionCreators: ActionCreators = {
     },
     pluginRegistryUrl: string | undefined,
     pluginRegistryInternalUrl: string | undefined,
+    attributes: { [key: string]: string },
   ): AppThunk<KnownAction, Promise<void>> => async (dispatch, getState): Promise<void> => {
 
-    const state = getState();
+    let state = getState();
+
+    console.log(`Default editor is ${state.dwPlugins.defaultEditorName}`);
+    // do we have an optional editor parameter ?
+    let cheEditor : string | undefined = attributes?.['che-editor'];
+    if (cheEditor) {
+      // if the editor is different than the current default one, need to load a specific one
+      if (cheEditor !== state.dwPlugins.defaultEditorName) {
+        console.log(`User specified a different editor than the current default. Loading ${cheEditor} definition.`);
+        await dispatch(DwPluginsStore.actionCreators.requestDwEditor(state.workspacesSettings.settings, cheEditor));
+      }
+    } else {
+      // take the default editor name
+      cheEditor = state.dwPlugins.defaultEditorName;
+    }
 
     if (state.dwPlugins.defaultEditorError) {
       throw `Required sources failed when trying to create the workspace: ${state.dwPlugins.defaultEditorError}`;
     }
 
+    // refresh state
+    state = getState();
     dispatch({ type: 'REQUEST_DEVWORKSPACE' });
     try {
       // If the devworkspace doesn't have a namespace then we assign it to the default kubernetesNamespace
       const devWorkspaceDevfile = devfile as devfileApi.Devfile;
       const defaultNamespace = await cheWorkspaceClient.getDefaultNamespace();
-      const dwPlugins = selectDwPluginsList(state);
-      const workspace = await devWorkspaceClient.create(devWorkspaceDevfile, defaultNamespace, dwPlugins, pluginRegistryUrl, pluginRegistryInternalUrl, optionalFilesContent);
+      const dwEditors = selectDwEditorsPluginsList(cheEditor)(state);
+      const workspace = await devWorkspaceClient.create(devWorkspaceDevfile, defaultNamespace, dwEditors, pluginRegistryUrl, pluginRegistryInternalUrl, optionalFilesContent);
 
       dispatch({
         type: 'ADD_DEVWORKSPACE',
