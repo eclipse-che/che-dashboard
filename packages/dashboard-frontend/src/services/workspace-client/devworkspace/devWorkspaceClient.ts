@@ -213,6 +213,9 @@ export class DevWorkspaceClient extends WorkspaceClient {
     }
 
     for (const pluginDevfile of editorsDevfile) {
+      if (!pluginDevfile || !pluginDevfile.metadata || !pluginDevfile.metadata.name) {
+        throw new Error('Failed to analyze the editor devfile, reason: Missing metadata.name attribute in the editor yaml file.');
+      }
       // TODO handle error in a proper way
       const pluginName = this.normalizePluginName(pluginDevfile.metadata.name, workspaceId);
 
