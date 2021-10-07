@@ -12,7 +12,7 @@
 
 import React from 'react';
 import { render } from '@testing-library/react';
-import { AboutModal } from '../about-modal';
+import { AboutModal } from '../Modal';
 
 jest.mock('detect-browser/index.js', () => {
   return {
@@ -33,7 +33,7 @@ describe('About modal', () => {
   const component = (<AboutModal
     productName="Che"
     productVersion="0.0.1"
-    closeAboutModal={closeModal}
+    closeModal={closeModal}
     isOpen={true}
     logo="./"
     username="test-user"
@@ -43,7 +43,7 @@ describe('About modal', () => {
     jest.clearAllMocks();
   });
 
-  // todo react-test-renderer doesn't have support for portal: https://github.com/facebook/react/issues/11565
+  // react-test-renderer doesn't have support for portal: https://github.com/facebook/react/issues/11565
   // which makes this fail
   // it('should correctly render the component', () => {
   //   expect(renderer.create(component).toJSON()).toMatchSnapshot();

@@ -10,7 +10,7 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import * as React from 'react';
+import React from 'react';
 import {
   AboutModal as PatternflyAboutModal,
   TextContent,
@@ -19,33 +19,37 @@ import {
 } from '@patternfly/react-core';
 import { detect } from 'detect-browser';
 
-type AboutModalProps = {
+type Props = {
   productName: string | undefined;
   productVersion: string | undefined;
   logo: string;
   isOpen: boolean;
-  closeAboutModal: () => void;
+  closeModal: () => void;
   username: string | undefined;
 };
 
-type AboutModalItemsProps = {
-  username: string | undefined;
-  productVersion: string | undefined;
-  browserVersion: string | null | undefined;
-  browserOS: string | null | undefined;
-  browserName: string | null | undefined;
-};
+export class AboutModal extends React.PureComponent<Props> {
+  private browserVersion: string | undefined | null;
+  private browserOS: string | undefined | null;
+  private browserName: string | undefined;
 
-const AboutModalItems: React.FC<AboutModalItemsProps> = (
-  props: AboutModalItemsProps
-) => {
-  const productVersion = props.productVersion;
-  const username = props.username;
-  const browserVersion = props.browserVersion;
-  const browserOS = props.browserOS;
-  const browserName = props.browserName;
-  return (
-    <>
+  constructor(props: Props) {
+    super(props);
+
+    const browser = detect();
+    this.browserVersion = browser?.version;
+    this.browserOS = browser?.os;
+    this.browserName = browser?.name;
+  }
+
+  private buildContent(): React.ReactElement {
+    const productVersion = this.props.productVersion;
+    const username = this.props.username;
+    const browserVersion = this.browserVersion;
+    const browserOS = this.browserOS;
+    const browserName = this.browserName;
+
+    return (
       <TextContent>
         <TextList component='dl'>
           {productVersion && (
@@ -90,38 +94,27 @@ const AboutModalItems: React.FC<AboutModalItemsProps> = (
           )}
         </TextList>
       </TextContent>
-    </>
-  );
-};
+    );
+  }
 
-export class AboutModal extends React.PureComponent<AboutModalProps> {
   public render(): React.ReactElement {
-    const { isOpen, closeAboutModal } = this.props;
-    const productName = this.props.productName;
-    const logo = this.props.logo;
-    const productVersion = this.props.productVersion;
-    const userName = this.props.username;
+    const {
+      isOpen,
+      logo,
+      productName,
+    } = this.props;
 
-    const browser = detect();
-    const browserVersion = browser?.version;
-    const browserOS = browser?.os;
-    const browserName = browser?.name;
+    const modalContent = this.buildContent();
 
     return (
       <PatternflyAboutModal
         isOpen={isOpen}
-        onClose={closeAboutModal}
+        onClose={() => this.props.closeModal()}
         brandImageSrc={logo}
         brandImageAlt={`${productName} logo`}
         noAboutModalBoxContentContainer={true}
       >
-        <AboutModalItems
-          productVersion={productVersion}
-          username={userName}
-          browserOS={browserOS}
-          browserVersion={browserVersion}
-          browserName={browserName}
-        />
+        {modalContent}
       </PatternflyAboutModal>
     );
   }
