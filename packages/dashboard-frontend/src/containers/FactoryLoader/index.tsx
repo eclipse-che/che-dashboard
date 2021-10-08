@@ -25,7 +25,7 @@ import {
   selectWorkspaceById,
   selectWorkspaceByQualifiedName
 } from '../../store/Workspaces/selectors';
-import { selectPreferredStorageType } from '../../store/Workspaces/Settings/selectors';
+import { selectPreferredStorageType, selectWorkspacesSettings } from '../../store/Workspaces/Settings/selectors';
 import { buildIdeLoaderLocation, sanitizeLocation } from '../../services/helpers/location';
 import { lazyInject } from '../../inversify.config';
 import { KeycloakAuthService } from '../../services/keycloak/auth';
@@ -140,11 +140,22 @@ export class FactoryLoaderContainer extends React.PureComponent<Props, State> {
     }
   }
 
+  private showOnlyContentIfDevWorkspace() : void {
+    const cheDevworkspaceEnabled = this.props.workspacesSettings['che.devworkspaces.enabled'] === 'true';
+    if (cheDevworkspaceEnabled) {
+      // hide all bars
+      window.postMessage('hide-allbar', '*');
+    }
+  }
+
   public componentDidMount(): void {
+    this.showOnlyContentIfDevWorkspace();
     this.createWorkspaceFromFactory();
   }
 
   public async componentDidUpdate(): Promise<void> {
+    this.showOnlyContentIfDevWorkspace();
+
     const { history, workspace, factoryResolver } = this.props;
     if (this.state.search !== history.location.search) {
       this.setState({
@@ -552,6 +563,7 @@ const mapStateToProps = (state: AppState) => ({
   preferredStorageType: selectPreferredStorageType(state),
   activeWorkspace: selectWorkspaceByQualifiedName(state),
   defaultNamespace: selectDefaultNamespace(state),
+  workspacesSettings: selectWorkspacesSettings(state),
 });
 
 const connector = connect(
