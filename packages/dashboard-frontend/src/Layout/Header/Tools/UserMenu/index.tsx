@@ -126,30 +126,11 @@ export class UserMenu extends React.PureComponent<Props, State> {
   /**
    * Copies login command in clipboard.
    */
-  private copyLoginCommand(): void {
+  private async copyLoginCommand(): Promise<void> {
     let loginCommand = '';
     try {
       loginCommand = this.getLoginCommand();
-      const copyToClipboardEl = document.createElement('span');
-      copyToClipboardEl.appendChild(document.createTextNode(loginCommand));
-      const style = copyToClipboardEl.style;
-      style.setProperty('position', 'absolute');
-      style.setProperty('width', '1px');
-      style.setProperty('height', '1px');
-      style.setProperty('opacity', '0');
-      const bodyEl = document.getElementsByTagName('body')[0];
-      bodyEl.append(copyToClipboardEl);
-      const range = document.createRange();
-      range.selectNode(copyToClipboardEl);
-      const selection = document.getSelection();
-      if (!selection) {
-        throw new Error('Document selection is empty.');
-      }
-      selection.removeAllRanges();
-      selection.addRange(range);
-      document.execCommand('copy');
-      selection.removeAllRanges();
-      copyToClipboardEl.remove();
+      await window.navigator.clipboard.writeText(loginCommand);
       this.showAlert({
         key: 'login-command-copied-to-clipboard',
         variant: AlertVariant.success,
