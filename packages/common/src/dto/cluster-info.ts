@@ -10,15 +10,10 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import helpers from './helpers';
-
-export * from './dto/cluster-info';
-
-export {
-  helpers,
-};
-
-const common = {
-  helpers,
-};
-export default common;
+export interface ClusterInfo {
+  clusterWebUI: {
+    url: string;
+    title: string;
+    icon: string;
+  };
+}

@@ -26,12 +26,17 @@ import { State as UserState } from '../User';
 import { State as UserProfileState } from '../UserProfile';
 import mockThunk from './thunk';
 import devfileApi from '../../services/devfileApi';
+import { ApplicationInfo } from '../ExternalApplications';
 
 export class FakeStoreBuilder {
 
   private state: AppState = {
     bannerAlert: {
       messages: [],
+    },
+    externalApplications: {
+      isLoading: false,
+      applications: [],
     },
     factoryResolver: {
       isLoading: false,
@@ -109,6 +114,13 @@ export class FakeStoreBuilder {
     });
     this.state.userPreferences.preferences = { dockerCredentials: btoa(JSON.stringify(newContainerCredentials)) };
     this.state.branding.isLoading = isLoading;
+    return this;
+  }
+
+  public withApplications(applications: ApplicationInfo[], isLoading = false, error?: string): FakeStoreBuilder {
+    this.state.externalApplications.applications = Object.assign([], applications);
+    this.state.externalApplications.isLoading = isLoading;
+    this.state.externalApplications.error = error;
     return this;
   }
 

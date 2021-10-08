@@ -10,15 +10,17 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import helpers from './helpers';
+import { createSelector } from 'reselect';
+import { AppState } from '..';
 
-export * from './dto/cluster-info';
+const selectState = (state: AppState) => state.externalApplications;
 
-export {
-  helpers,
-};
+export const selectApplications = createSelector(
+  selectState,
+  state => state.applications,
+);
 
-const common = {
-  helpers,
-};
-export default common;
+export const selectApplicationsError = createSelector(
+  selectState,
+  state => state.error,
+);
