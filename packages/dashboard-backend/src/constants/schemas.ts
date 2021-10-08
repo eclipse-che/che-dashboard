@@ -11,8 +11,23 @@
  */
 
 import { template } from './examples';
+import { JSONSchema7 } from 'json-schema';
 
-export const authenticationHeaderSchema = {
+export const clusterInfoSchema: JSONSchema7 = {
+  type: 'object',
+  properties: {
+    'clusterWebUI': {
+      type: 'object',
+      properties: {
+        title: { type: 'string' },
+        url: { type: 'string' },
+        icon: { type: 'string' },
+      }
+    }
+  }
+};
+
+export const authenticationHeaderSchema: JSONSchema7 = {
   type: 'object',
   properties: {
     'authorization': {
@@ -21,7 +36,7 @@ export const authenticationHeaderSchema = {
   }
 };
 
-export const namespacedWorkspaceSchema = {
+export const namespacedWorkspaceSchema: JSONSchema7 = {
   type: 'object',
   properties: {
     namespace: {
@@ -34,7 +49,7 @@ export const namespacedWorkspaceSchema = {
   required: ['namespace', 'workspaceName']
 };
 
-export const namespacedSchema = {
+export const namespacedSchema: JSONSchema7 = {
   type: 'object',
   properties: {
     namespace: {
@@ -44,9 +59,17 @@ export const namespacedSchema = {
   required: ['namespace']
 };
 
-export const patchSchema = {
+export const patchSchema: JSONSchema7 = {
   type: 'array',
-  example: [{
+  items: {
+    type: 'object',
+    properties: {
+      op: { type: 'string' },
+      path: { type: 'string' },
+      value: {} // matches any value
+    },
+  },
+  examples: [{
     op: 'replace',
     path: '/spec/started',
     value: true
@@ -63,7 +86,7 @@ export const devworkspaceSchema = {
   required: ['devworkspace']
 };
 
-export const templateStartedSchema = {
+export const templateStartedSchema: JSONSchema7 = {
   type: 'object',
   properties: {
     template: {
@@ -73,10 +96,15 @@ export const templateStartedSchema = {
         kind: { type: 'string' },
         metadata: {
           type: 'object',
-          template: {
-            name: { type: 'string' },
-            namespace: { type: 'string' },
-            ownerReferences: { type: 'array' },
+          properties: {
+            template: {
+              type: 'object',
+              properties: {
+                name: { type: 'string' },
+                namespace: { type: 'string' },
+                ownerReferences: { type: 'array' },
+              }
+            }
           }
         },
         spec: {
@@ -86,16 +114,21 @@ export const templateStartedSchema = {
             components: { type: 'array' },
             events: {
               type: 'object',
-              template: {
-                preStart: {
-                  type: 'array'
+              properties: {
+                template: {
+                  type: 'object',
+                  properties: {
+                    preStart: {
+                      type: 'array'
+                    }
+                  }
                 }
               }
             },
           },
         },
       },
-      example: template
+      examples: [template]
     }
   }
 };
