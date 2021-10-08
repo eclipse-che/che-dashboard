@@ -25,6 +25,8 @@ import { selectBranding } from '../../../store/Branding/selectors';
 import { selectUserProfile } from '../../../store/UserProfile/selectors';
 import { AboutMenu } from './AboutMenu';
 import UserMenu from './UserMenu';
+import { ApplicationsMenu } from './ApplicationsMenu';
+import { selectApplications } from '../../../store/ExternalApplications/selectors';
 
 type Props =
   MappedProps
@@ -40,7 +42,7 @@ export class HeaderTools extends React.PureComponent<Props> {
   }
 
   public render(): React.ReactElement {
-    const { userProfile } = this.props;
+    const { applications, userProfile } = this.props;
     const userEmail = userProfile.email;
     const imageUrl = userEmail ? gravatarUrl(userEmail, { default: 'retro' }) : '';
     const isUserAuthenticated = !!userEmail;
@@ -49,6 +51,11 @@ export class HeaderTools extends React.PureComponent<Props> {
       <>
         <PageHeaderTools>
           <PageHeaderToolsGroup>
+            {applications.length !== 0 &&
+              <ApplicationsMenu
+                applications={applications}
+              />
+            }
             <PageHeaderToolsItem>
               <AboutMenu
                 branding={this.props.branding}
@@ -79,6 +86,7 @@ export class HeaderTools extends React.PureComponent<Props> {
 const mapStateToProps = (state: AppState) => ({
   userProfile: selectUserProfile(state),
   branding: selectBranding(state),
+  applications: selectApplications(state),
 });
 
 const connector = connect(
