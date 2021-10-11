@@ -72,6 +72,7 @@ type State = {
   currentStep: LoadFactorySteps;
   hasError: boolean;
   createPolicy: CreatePolicy;
+  cheDevworkspaceEnabled: boolean;
 };
 
 export class FactoryLoaderContainer extends React.PureComponent<Props, State> {
@@ -88,12 +89,14 @@ export class FactoryLoaderContainer extends React.PureComponent<Props, State> {
     super(props);
 
     const { search } = this.props.history.location;
+    const cheDevworkspaceEnabled = this.props.workspacesSettings['che.devworkspaces.enabled'] === 'true';
 
     this.state = {
       currentStep: LoadFactorySteps.INITIALIZING,
       hasError: false,
       createPolicy: DEFAULT_CREATE_POLICY,
       search,
+      cheDevworkspaceEnabled,
     };
   }
 
@@ -141,8 +144,7 @@ export class FactoryLoaderContainer extends React.PureComponent<Props, State> {
   }
 
   private showOnlyContentIfDevWorkspace() : void {
-    const cheDevworkspaceEnabled = this.props.workspacesSettings['che.devworkspaces.enabled'] === 'true';
-    if (cheDevworkspaceEnabled) {
+    if (this.state.cheDevworkspaceEnabled) {
       // hide all bars
       window.postMessage('hide-allbar', '*');
     }
@@ -537,7 +539,12 @@ export class FactoryLoaderContainer extends React.PureComponent<Props, State> {
 
   render() {
     const { workspace } = this.props;
-    const { currentStep, resolvedDevfileMessage, hasError } = this.state;
+    const {
+      currentStep,
+      resolvedDevfileMessage,
+      hasError,
+      cheDevworkspaceEnabled,
+    } = this.state;
     const workspaceName = workspace ? workspace.name : '';
     const workspaceId = workspace ? workspace.id : '';
 
@@ -548,6 +555,7 @@ export class FactoryLoaderContainer extends React.PureComponent<Props, State> {
         resolvedDevfileMessage={resolvedDevfileMessage}
         workspaceId={workspaceId}
         workspaceName={workspaceName}
+        isDevWorkspace={cheDevworkspaceEnabled}
         callbacks={this.factoryLoaderCallbacks}
       />
     );
