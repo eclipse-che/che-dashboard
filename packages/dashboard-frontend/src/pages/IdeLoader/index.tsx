@@ -314,7 +314,10 @@ class IdeLoader extends React.PureComponent<Props, State> {
             </Tab>
             <Tab eventKey={IdeLoaderTab.Logs} title={IdeLoaderTab[IdeLoaderTab.Logs]}
               id="ide-loader-page-logs-tab">
-              <WorkspaceLogs workspaceId={workspaceId} />
+              <WorkspaceLogs
+                workspaceId={workspaceId}
+                isDevWorkspace={this.props.isDevWorkspace}
+              />
             </Tab>
           </Tabs>
         </PageSection>
