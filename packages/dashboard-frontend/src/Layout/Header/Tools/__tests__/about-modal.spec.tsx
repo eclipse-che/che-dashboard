@@ -55,9 +55,20 @@ describe('About modal', () => {
     expect(getByText('test-user')).not.toBeNull();
   });
 
+  it('should display dashboard version', () => {
+    (window as any).process = {
+      env: {
+        DASHBOARD_VERSION: '1.2.3',
+      },
+    };
+    const { getByText } = render(component);
+    expect(getByText('Product Version')).not.toBeNull();
+    expect(getByText('1.2.3')).not.toBeNull();
+  });
+
   it('should display product version', () => {
     const { getByText } = render(component);
-    expect(getByText('Version')).not.toBeNull();
+    expect(getByText('Product Version')).not.toBeNull();
     expect(getByText('0.0.1')).not.toBeNull();
   });
 
