@@ -59,7 +59,7 @@ const AboutModalItems: React.FC<AboutModalItemsProps> = (
           )}
           {productVersion && (
             <>
-              <TextListItem component='dt'>Product Version</TextListItem>
+              <TextListItem component='dt'>Server Version</TextListItem>
               <TextListItem component='dd'>
                 <div className='co-select-to-copy'>{productVersion}</div>
               </TextListItem>
