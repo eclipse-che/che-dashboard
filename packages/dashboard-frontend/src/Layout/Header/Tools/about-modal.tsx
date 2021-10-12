@@ -39,6 +39,7 @@ type AboutModalItemsProps = {
 const AboutModalItems: React.FC<AboutModalItemsProps> = (
   props: AboutModalItemsProps
 ) => {
+  const dashboardVersion = process.env.DASHBOARD_VERSION;
   const productVersion = props.productVersion;
   const username = props.username;
   const browserVersion = props.browserVersion;
@@ -48,9 +49,17 @@ const AboutModalItems: React.FC<AboutModalItemsProps> = (
     <>
       <TextContent>
         <TextList component='dl'>
+          {dashboardVersion && (
+            <>
+              <TextListItem component='dt'>Dashboard Version</TextListItem>
+              <TextListItem component='dd'>
+                <div className='co-select-to-copy'>{dashboardVersion}</div>
+              </TextListItem>
+            </>
+          )}
           {productVersion && (
             <>
-              <TextListItem component='dt'>Version</TextListItem>
+              <TextListItem component='dt'>Product Version</TextListItem>
               <TextListItem component='dd'>
                 <div className='co-select-to-copy'>{productVersion}</div>
               </TextListItem>
