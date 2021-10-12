@@ -62,13 +62,13 @@ describe('About modal', () => {
       },
     };
     const { getByText } = render(component);
-    expect(getByText('Product Version')).not.toBeNull();
+    expect(getByText('Server Version')).not.toBeNull();
     expect(getByText('1.2.3')).not.toBeNull();
   });
 
   it('should display product version', () => {
     const { getByText } = render(component);
-    expect(getByText('Product Version')).not.toBeNull();
+    expect(getByText('Server Version')).not.toBeNull();
     expect(getByText('0.0.1')).not.toBeNull();
   });
 
