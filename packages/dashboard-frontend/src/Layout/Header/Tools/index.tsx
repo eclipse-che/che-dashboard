@@ -375,7 +375,7 @@ export class HeaderTools extends React.PureComponent<Props, State> {
           username={username}
           logo={branding.logoFile}
           productName={branding.name}
-          productVersion={branding.productVersion}
+          serverVersion={branding.productVersion}
         />
       </>
     );

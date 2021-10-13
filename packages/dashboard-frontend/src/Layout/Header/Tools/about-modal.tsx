@@ -21,7 +21,7 @@ import { detect } from 'detect-browser';
 
 type AboutModalProps = {
   productName: string | undefined;
-  productVersion: string | undefined;
+  serverVersion: string | undefined;
   logo: string;
   isOpen: boolean;
   closeAboutModal: () => void;
@@ -30,7 +30,7 @@ type AboutModalProps = {
 
 type AboutModalItemsProps = {
   username: string | undefined;
-  productVersion: string | undefined;
+  serverVersion: string | undefined;
   browserVersion: string | null | undefined;
   browserOS: string | null | undefined;
   browserName: string | null | undefined;
@@ -40,7 +40,7 @@ const AboutModalItems: React.FC<AboutModalItemsProps> = (
   props: AboutModalItemsProps
 ) => {
   const dashboardVersion = process.env.DASHBOARD_VERSION;
-  const productVersion = props.productVersion;
+  const serverVersion = props.serverVersion;
   const username = props.username;
   const browserVersion = props.browserVersion;
   const browserOS = props.browserOS;
@@ -61,7 +61,7 @@ const AboutModalItems: React.FC<AboutModalItemsProps> = (
               </TextListItem>
             </>
           )}
-          {productVersion && (
+          {serverVersion && (
             <>
               <TextListItem component="dt">Server Version</TextListItem>
               <TextListItem
@@ -69,7 +69,7 @@ const AboutModalItems: React.FC<AboutModalItemsProps> = (
                 className="co-select-to-copy"
                 data-testid="server-version"
               >
-                {productVersion}
+                {serverVersion}
               </TextListItem>
             </>
           )}
@@ -132,7 +132,7 @@ export class AboutModal extends React.PureComponent<AboutModalProps> {
     const { isOpen, closeAboutModal } = this.props;
     const productName = this.props.productName;
     const logo = this.props.logo;
-    const productVersion = this.props.productVersion;
+    const serverVersion = this.props.serverVersion;
     const userName = this.props.username;
 
     const browser = detect();
@@ -149,7 +149,7 @@ export class AboutModal extends React.PureComponent<AboutModalProps> {
         noAboutModalBoxContentContainer={true}
       >
         <AboutModalItems
-          productVersion={productVersion}
+          serverVersion={serverVersion}
           username={userName}
           browserOS={browserOS}
           browserVersion={browserVersion}
