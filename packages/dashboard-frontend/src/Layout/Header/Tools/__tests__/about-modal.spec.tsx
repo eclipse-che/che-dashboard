@@ -11,7 +11,7 @@
  */
 
 import React from 'react';
-import { render } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import { AboutModal } from '../about-modal';
 
 jest.mock('detect-browser/index.js', () => {
@@ -43,17 +43,11 @@ describe('About modal', () => {
     jest.clearAllMocks();
   });
 
-  // todo react-test-renderer doesn't have support for portal: https://github.com/facebook/react/issues/11565
+  // react-test-renderer doesn't have support for portal: https://github.com/facebook/react/issues/11565
   // which makes this fail
   // it('should correctly render the component', () => {
   //   expect(renderer.create(component).toJSON()).toMatchSnapshot();
   // });
-
-  it('should display username', () => {
-    const { getByText } = render(component);
-    expect(getByText('Username')).not.toBeNull();
-    expect(getByText('test-user')).not.toBeNull();
-  });
 
   it('should display dashboard version', () => {
     (window as any).process = {
@@ -61,32 +55,62 @@ describe('About modal', () => {
         DASHBOARD_VERSION: '1.2.3',
       },
     };
-    const { getByText } = render(component);
-    expect(getByText('Server Version')).not.toBeNull();
-    expect(getByText('1.2.3')).not.toBeNull();
+    render(component);
+
+    expect(screen.queryByText('Dashboard Version')).not.toBeNull();
+
+    const description = screen.queryByTestId('dashboard-version');
+    expect(description).not.toBeNull();
+    expect(description).toHaveTextContent('1.2.3');
   });
 
-  it('should display product version', () => {
-    const { getByText } = render(component);
-    expect(getByText('Server Version')).not.toBeNull();
-    expect(getByText('0.0.1')).not.toBeNull();
+  it('should display server version', () => {
+    render(component);
+
+    expect(screen.queryByText('Server Version')).not.toBeNull();
+
+    const description = screen.queryByTestId('server-version');
+    expect(description).not.toBeNull();
+    expect(description).toHaveTextContent('0.0.1');
+  });
+
+  it('should display username', () => {
+    render(component);
+
+    expect(screen.queryByText('Username')).not.toBeNull();
+
+    const description = screen.queryByTestId('username');
+    expect(description).not.toBeNull();
+    expect(description).toHaveTextContent('test-user');
   });
 
   it('should display browser version', () => {
-    const { getByText } = render(component);
-    expect(getByText('Browser Version')).not.toBeNull();
-    expect(getByText('1.0.0')).not.toBeNull();
+    render(component);
+
+    expect(screen.queryByText('Browser Version')).not.toBeNull();
+
+    const description = screen.queryByTestId('browser-version');
+    expect(description).not.toBeNull();
+    expect(description).toHaveTextContent('1.0.0');
   });
 
   it('should display browser os', () => {
-    const { getByText } = render(component);
-    expect(getByText('Browser OS')).not.toBeNull();
-    expect(getByText(/linux/i)).not.toBeNull();
+    render(component);
+
+    expect(screen.queryByText('Browser OS')).not.toBeNull();
+
+    const description = screen.queryByTestId('browser-os');
+    expect(description).not.toBeNull();
+    expect(description).toHaveTextContent('linux');
   });
 
   it('should display browser name', () => {
-    const { getByText } = render(component);
-    expect(getByText('Browser Name')).not.toBeNull();
-    expect(getByText(/chrome/i)).not.toBeNull();
+    render(component);
+
+    expect(screen.queryByText('Browser Name')).not.toBeNull();
+
+    const description = screen.queryByTestId('browser-name');
+    expect(description).not.toBeNull();
+    expect(description).toHaveTextContent('chrome');
   });
 });

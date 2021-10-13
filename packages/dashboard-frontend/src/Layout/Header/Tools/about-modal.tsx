@@ -48,51 +48,75 @@ const AboutModalItems: React.FC<AboutModalItemsProps> = (
   return (
     <>
       <TextContent>
-        <TextList component='dl'>
+        <TextList component="dl">
           {dashboardVersion && (
             <>
-              <TextListItem component='dt'>Dashboard Version</TextListItem>
-              <TextListItem component='dd'>
-                <div className='co-select-to-copy'>{dashboardVersion}</div>
+              <TextListItem component="dt">Dashboard Version</TextListItem>
+              <TextListItem
+                component="dd"
+                className="co-select-to-copy"
+                data-testid="dashboard-version"
+              >
+                {dashboardVersion}
               </TextListItem>
             </>
           )}
           {productVersion && (
             <>
-              <TextListItem component='dt'>Server Version</TextListItem>
-              <TextListItem component='dd'>
-                <div className='co-select-to-copy'>{productVersion}</div>
+              <TextListItem component="dt">Server Version</TextListItem>
+              <TextListItem
+                component="dd"
+                className="co-select-to-copy"
+                data-testid="server-version"
+              >
+                {productVersion}
               </TextListItem>
             </>
           )}
           {username && (
             <>
-              <TextListItem component='dt'>Username</TextListItem>
-              <TextListItem component='dd' className='co-select-to-copy'>
+              <TextListItem component="dt">Username</TextListItem>
+              <TextListItem
+                component="dd"
+                className="co-select-to-copy"
+                data-testid="username"
+              >
                 {username}
               </TextListItem>
             </>
           )}
           {browserName && (
             <>
-              <TextListItem component='dt'>Browser Name</TextListItem>
-              <TextListItem component='dd' className='co-select-to-copy'>
+              <TextListItem component="dt">Browser Name</TextListItem>
+              <TextListItem
+                component="dd"
+                className="co-select-to-copy"
+                data-testid="browser-name"
+              >
                 {browserName}
               </TextListItem>
             </>
           )}
           {browserVersion && (
             <>
-              <TextListItem component='dt'>Browser Version</TextListItem>
-              <TextListItem component='dd' className='co-select-to-copy'>
+              <TextListItem component="dt">Browser Version</TextListItem>
+              <TextListItem
+                component="dd"
+                className="co-select-to-copy"
+                data-testid="browser-version"
+              >
                 {browserVersion}
               </TextListItem>
             </>
           )}
           {browserOS && (
             <>
-              <TextListItem component='dt'>Browser OS</TextListItem>
-              <TextListItem component='dd' className='co-select-to-copy'>
+              <TextListItem component="dt">Browser OS</TextListItem>
+              <TextListItem
+                component="dd"
+                className="co-select-to-copy"
+                data-testid="browser-os"
+              >
                 {browserOS}
               </TextListItem>
             </>
