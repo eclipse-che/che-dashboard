@@ -19,7 +19,7 @@ import {
   ValidatedOptions,
 } from '@patternfly/react-core';
 import React from 'react';
-import { RegistryRow } from '../../../../store/UserPreferences/types';
+import { RegistryRow } from '../../../store/DockerConfig/types';
 import { RegistryPasswordFormGroup } from '../RegistryPassword';
 import { RegistryUrlFormGroup } from '../RegistryUrl';
 import { RegistryUsernameFormGroup } from '../RegistryUsername';

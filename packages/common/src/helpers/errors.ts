@@ -23,6 +23,8 @@ export function getMessage(error: unknown): string {
     return 'Error is not specified.';
   }
 
+  console.error(error);
+
   if (isKubeClientError(error)) {
     const statusCode = error.statusCode || error.response.statusCode;
     if (!statusCode || statusCode === -1) {

@@ -10,18 +10,13 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import helpers from './helpers';
-import * as api from './dto/api';
+export interface IPatch {
+  op: string;
+  path: string;
+  value?: any;
+}
 
-export * from './dto/application-info';
-
-export {
-  helpers,
-  api,
-};
-
-const common = {
-  helpers,
-  api,
-};
-export default common;
+export interface IDockerConfig {
+  dockerconfig: string,
+  resourceVersion?: string
+}

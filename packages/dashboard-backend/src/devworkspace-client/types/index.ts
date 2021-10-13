@@ -11,6 +11,40 @@
  */
 
 import { V1alpha2DevWorkspace, V1alpha2DevWorkspaceTemplate } from '@devfile/api';
+import { V1Secret, V1Status } from '@kubernetes/client-node';
+import { api } from '@eclipse-che/common';
+
+export interface ISecretApi {
+  /**
+   * Create a new secret based on the specified namespace and body.
+   */
+  create(namespace: string, body: V1Secret): Promise<V1Secret>
+
+  /**
+   * Get the secret with given namespace in the specified namespace
+   */
+  read(namespace: string, name: string): Promise<V1Secret>;
+
+  /**
+   * Get Array of secrets in the given namespace
+   */
+  readAll(namespace: string): Promise<Array<V1Secret>>
+
+  /**
+   * Patch the secret with given name in the specified namespace
+   */
+  patch(namespace: string, name: string, body: api.IPatch[]): Promise<V1Secret>
+
+  /**
+   * Replace the secret with given name in the specified namespace
+   */
+  replace(namespace: string, name: string, body: V1Secret ): Promise<V1Secret>
+
+  /**
+   * Delete the secret with given name in the specified namespace
+   */
+  delete(namespace: string, name: string): Promise<V1Status>;
+}
 
 export interface IDevWorkspaceApi {
     /**
@@ -49,7 +83,7 @@ export interface IDevWorkspaceApi {
     /**
      * Patches the DevWorkspace with given name in the specified namespace
      */
-    patch(namespace: string, name: string, patches: IPatch[]): Promise<V1alpha2DevWorkspace>;
+    patch(namespace: string, name: string, patches: api.IPatch[]): Promise<V1alpha2DevWorkspace>;
 }
 
 export interface IDevWorkspaceTemplateApi {
@@ -69,6 +103,7 @@ export type IDevWorkspaceCallbacks = {
 export interface IDevWorkspaceClient {
   devworkspaceApi: IDevWorkspaceApi;
   templateApi: IDevWorkspaceTemplateApi;
+  secretApi: ISecretApi;
   isDevWorkspaceApiEnabled(): Promise<boolean>;
 }
 
@@ -79,10 +114,4 @@ export interface IDevWorkspaceList {
         resourceVersion?: string;
     };
     items: V1alpha2DevWorkspace[];
-}
-
-export interface IPatch {
-  op: string;
-  path: string;
-  value?: any;
 }

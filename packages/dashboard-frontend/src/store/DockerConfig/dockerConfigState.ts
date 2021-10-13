@@ -10,18 +10,11 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import helpers from './helpers';
-import * as api from './dto/api';
+import { RegistryRow } from './types';
 
-export * from './dto/application-info';
-
-export {
-  helpers,
-  api,
-};
-
-const common = {
-  helpers,
-  api,
-};
-export default common;
+export interface State {
+  isLoading: boolean;
+  registries: RegistryRow[]
+  resourceVersion?: string;
+  error: string | undefined;
+}

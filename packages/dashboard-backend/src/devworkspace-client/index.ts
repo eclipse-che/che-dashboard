@@ -12,6 +12,7 @@
 
 import * as k8s from '@kubernetes/client-node';
 import {
+  ISecretApi,
   IDevWorkspaceApi,
   IDevWorkspaceClient,
   IDevWorkspaceTemplateApi,
@@ -20,6 +21,7 @@ import { findApi } from './services/helpers';
 import {DevWorkspaceTemplateApi} from './services/api/template-api';
 import {DevWorkspaceApi} from './services/api/workspace-api';
 import { devworkspaceGroup, devworkspaceLatestVersion } from '@devfile/api';
+import { SecretApi } from './services/api/secret-api';
 
 export * from './types';
 
@@ -29,11 +31,13 @@ export class DevWorkspaceClient implements IDevWorkspaceClient {
   private readonly _apisApi: k8s.ApisApi;
   private readonly _templateApi: IDevWorkspaceTemplateApi;
   private readonly _devworkspaceApi: IDevWorkspaceApi;
+  private readonly _secretApi: ISecretApi;
 
   constructor(kc: k8s.KubeConfig) {
     this._templateApi = new DevWorkspaceTemplateApi(kc);
     this._devworkspaceApi = new DevWorkspaceApi(kc);
     this._apisApi = kc.makeApiClient(k8s.ApisApi);
+    this._secretApi = new SecretApi(kc);
   }
 
   get templateApi(): IDevWorkspaceTemplateApi {
@@ -42,6 +46,10 @@ export class DevWorkspaceClient implements IDevWorkspaceClient {
 
   get devworkspaceApi(): IDevWorkspaceApi {
     return this._devworkspaceApi;
+  }
+
+  get secretApi(): ISecretApi {
+    return this._secretApi;
   }
 
   async isDevWorkspaceApiEnabled(): Promise<boolean> {

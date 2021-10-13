@@ -15,11 +15,10 @@ import {
   IDevWorkspaceList,
   IDevWorkspaceApi,
   IDevWorkspaceCallbacks,
-  IPatch,
 } from '../../types';
 import { devworkspaceGroup, devworkspaceLatestVersion, devworkspacePlural, V1alpha2DevWorkspace } from '@devfile/api';
 
-import { helpers } from '@eclipse-che/common';
+import { helpers, api } from '@eclipse-che/common';
 
 export class DevWorkspaceApi implements IDevWorkspaceApi {
   private readonly customObjectAPI: k8s.CustomObjectsApi;
@@ -132,14 +131,14 @@ export class DevWorkspaceApi implements IDevWorkspaceApi {
   /**
    * Patch a DevWorkspace
    */
-  async patch(namespace: string, name: string, patches: IPatch[]): Promise<V1alpha2DevWorkspace> {
+  async patch(namespace: string, name: string, patches: api.IPatch[]): Promise<V1alpha2DevWorkspace> {
     return this.createPatch(namespace, name, patches);
   }
 
   private async createPatch(
     namespace: string,
     name: string,
-    patches: IPatch[]) {
+    patches: api.IPatch[]) {
     try {
       const options = {
         headers: {

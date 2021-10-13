@@ -10,7 +10,7 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-export const template = {
+export const templateExample = {
   apiVersion: 'workspace.devfile.io/v1alpha2',
   kind: 'DevWorkspaceTemplate',
   metadata: {
@@ -65,5 +65,20 @@ export const template = {
         }
       }
     ]
+  }
+};
+
+export const dockerConfigExample = {
+  get dockerconfig() {
+    const registry = 'quay.io';
+    const username = 'sleshche+che_theia_readonly';
+    const passsword = 'EMYR16QS4JTQM1Y7S5QFAVYDI77CIRFGRXZCDTVN6SE3XGQSV9V3JI0VAXN8S4IR';
+    const auth = new Buffer(`${username}:${passsword}`).toString('base64');
+    const buff = new Buffer(JSON.stringify({
+      auths: {
+        [registry]: { auth },
+      }
+    }));
+    return buff.toString('base64');
   }
 };

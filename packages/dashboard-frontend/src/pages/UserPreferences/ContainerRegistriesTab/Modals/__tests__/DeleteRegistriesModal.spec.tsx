@@ -14,7 +14,7 @@ import userEvent from '@testing-library/user-event';
 import React from 'react';
 import { render, screen } from '@testing-library/react';
 import renderer from 'react-test-renderer';
-import { RegistryRow } from '../../../../../store/UserPreferences/types';
+import { RegistryRow } from '../../../../store/DockerConfig/types';
 import DeleteRegistriesModal from '../DeleteRegistriesModal';
 import { FakeRegistryBuilder } from '../../__tests__/__mocks__/registryRowBuilder';
 

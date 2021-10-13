@@ -18,6 +18,11 @@ declare namespace restParams {
     namespace: string;
   }
 
+  export interface ISecreteParams {
+    dockerconfig: string;
+    resourceVersion?: string;
+  }
+
   export interface INamespacedWorkspaceParam extends INamespacedParam {
     workspaceName: string;
   }

@@ -24,8 +24,8 @@ import Head from '../../components/Head';
 import { UserPreferencesTab } from '../../services/helpers/types';
 import { ROUTE } from '../../route.enum';
 import { AppState } from '../../store';
-import * as UserPreferencesStore from '../../store/UserPreferences';
-import { selectIsLoading, selectPreferences, selectRegistries } from '../../store/UserPreferences/selectors';
+import * as DockerConfigStore from '../../store/DockerConfig';
+import { selectIsLoading, selectRegistries } from '../../store/DockerConfig/selectors';
 
 const ContanerRegistryList = React.lazy(() => import('./ContainerRegistriesTab'));
 
@@ -71,7 +71,7 @@ export class UserPreferences extends React.PureComponent<Props, State> {
 
   render(): React.ReactNode {
     const { activeTabKey } = this.state;
-    const containerRegistriesTab: UserPreferencesTab = 'container-registries';    
+    const containerRegistriesTab: UserPreferencesTab = 'container-registries';
 
     return (
       <React.Fragment>
@@ -85,7 +85,7 @@ export class UserPreferences extends React.PureComponent<Props, State> {
           activeKey={activeTabKey}
           onSelect={(event, tabKey) => this.handleTabClick(event, tabKey)}>
           <Tab
-            id="container-registries-tab" 
+            id="container-registries-tab"
             eventKey={containerRegistriesTab}
             title="Containter Registries"
           >
@@ -100,14 +100,13 @@ export class UserPreferences extends React.PureComponent<Props, State> {
 }
 
 const mapStateToProps = (state: AppState) => ({
-  preferences: selectPreferences(state),
   registries: selectRegistries(state),
   isLoading: selectIsLoading(state),
 });
 
 const connector = connect(
   mapStateToProps,
-  UserPreferencesStore.actionCreators,
+  DockerConfigStore.actionCreators,
 );
 
 type MappedProps = ConnectedProps<typeof connector>;
