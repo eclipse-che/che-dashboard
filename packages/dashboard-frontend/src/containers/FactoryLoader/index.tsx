@@ -40,6 +40,7 @@ import updateDevfileMetadata, { FactorySource } from './updateDevfileMetadata';
 import { DEVWORKSPACE_DEVFILE_SOURCE } from '../../services/workspace-client/devworkspace/devWorkspaceClient';
 import devfileApi from '../../services/devfileApi';
 import getRandomString from '../../services/helpers/random';
+import { isDevworkspacesEnabled } from '../../services/helpers/devworkspace';
 
 const WS_ATTRIBUTES_TO_SAVE: string[] = ['workspaceDeploymentLabels', 'workspaceDeploymentAnnotations', 'policies.create', 'che-editor'];
 
@@ -89,7 +90,7 @@ export class FactoryLoaderContainer extends React.PureComponent<Props, State> {
     super(props);
 
     const { search } = this.props.history.location;
-    const cheDevworkspaceEnabled = this.props.workspacesSettings['che.devworkspaces.enabled'] === 'true';
+    const cheDevworkspaceEnabled = isDevworkspacesEnabled(this.props.workspacesSettings);
 
     this.state = {
       currentStep: LoadFactorySteps.INITIALIZING,
