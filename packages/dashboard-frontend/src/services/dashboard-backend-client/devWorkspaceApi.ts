@@ -17,7 +17,7 @@ import { addAuthentication } from './auth';
 import { prefix } from './const';
 
 export async function createWorkspace(devworkspace: devfileApi.DevWorkspace): Promise<devfileApi.DevWorkspace> {
-  const headers = addAuthentication({});
+  const headers = await addAuthentication({});
   try {
     const response = await axios.post(`${prefix}/namespace/${devworkspace.metadata.namespace}/devworkspaces`,
       { devworkspace },
@@ -29,7 +29,7 @@ export async function createWorkspace(devworkspace: devfileApi.DevWorkspace): Pr
 }
 
 export async function listWorkspacesInNamespace(defaultNamespace: string): Promise<IDevWorkspacesList> {
-  const headers = addAuthentication({});
+  const headers = await addAuthentication({});
   try {
     const response = await axios.get(`${prefix}/namespace/${defaultNamespace}/devworkspaces`, { headers });
     return response.data;
@@ -39,7 +39,7 @@ export async function listWorkspacesInNamespace(defaultNamespace: string): Promi
 }
 
 export async function getWorkspaceByName(namespace: string, workspaceName: string): Promise<devfileApi.DevWorkspace> {
-  const headers = addAuthentication({});
+  const headers = await addAuthentication({});
   try {
     const response = await axios.get(`${prefix}/namespace/${namespace}/devworkspaces/${workspaceName}`, { headers });
     return response.data;
@@ -49,7 +49,7 @@ export async function getWorkspaceByName(namespace: string, workspaceName: strin
 }
 
 export async function patchWorkspace(namespace: string, workspaceName: string, patch: api.IPatch[]): Promise<devfileApi.DevWorkspace> {
-  const headers = addAuthentication({});
+  const headers = await addAuthentication({});
   try {
     const response = await axios.patch(`${prefix}/namespace/${namespace}/devworkspaces/${workspaceName}`, patch, { headers });
     return response.data;
@@ -59,7 +59,7 @@ export async function patchWorkspace(namespace: string, workspaceName: string, p
 }
 
 export async function deleteWorkspace(namespace: string, workspaceName: string): Promise<void> {
-  const headers = addAuthentication({});
+  const headers = await addAuthentication({});
   try {
     await axios.delete(`${prefix}/namespace/${namespace}/devworkspaces/${workspaceName}`, { headers });
   } catch (e) {
@@ -68,7 +68,7 @@ export async function deleteWorkspace(namespace: string, workspaceName: string):
 }
 
 export async function getDockerConfig(namespace: string): Promise<api.IDockerConfig> {
-  const headers = addAuthentication({});
+  const headers = await addAuthentication({});
   try {
     const response = await axios.get(`${prefix}/namespace/${namespace}/dockerconfig`, { headers });
     return response.data;
@@ -78,7 +78,7 @@ export async function getDockerConfig(namespace: string): Promise<api.IDockerCon
 }
 
 export async function putDockerConfig(namespace: string, dockerconfig: api.IDockerConfig): Promise<api.IDockerConfig> {
-  const headers = addAuthentication({});
+  const headers = await addAuthentication({});
   try {
     const response = await axios.put(`${prefix}/namespace/${namespace}/dockerconfig`, dockerconfig, { headers });
     return response.data;
@@ -88,7 +88,7 @@ export async function putDockerConfig(namespace: string, dockerconfig: api.IDock
 }
 
 export async function deleteDockerConfig(namespace: string): Promise<void> {
-  const headers = addAuthentication({});
+  const headers = await addAuthentication({});
   try {
     await axios.delete(`${prefix}/namespace/${namespace}/dockerconfig`, { headers });
   } catch (e) {

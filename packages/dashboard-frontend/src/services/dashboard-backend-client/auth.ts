@@ -11,9 +11,30 @@
  */
 
 import { KeycloakAuthService } from '../keycloak/auth';
+import { container } from '../../inversify.config';
 
-export function addAuthentication(headers: { [key: string]: string }) {
-  const token = KeycloakAuthService?.keycloak?.token;
+let keycloakAuthService: KeycloakAuthService;
+let shouldUpdateToken = true;
+
+async function  getToken(): Promise<string|undefined> {
+  if (KeycloakAuthService.sso) {
+    // lazy init
+    if (!keycloakAuthService) {
+      keycloakAuthService = container.get(KeycloakAuthService);
+    }
+  } else {
+    return undefined;
+  }
+  if (shouldUpdateToken && keycloakAuthService) {
+    await keycloakAuthService.forceUpdateToken();
+    shouldUpdateToken = false;
+    window.setTimeout(() => shouldUpdateToken = true, 60000);
+  }
+  return KeycloakAuthService?.keycloak?.token;
+}
+
+export async function addAuthentication(headers: { [key: string]: string }) {
+  const token = await getToken();
   if (token) {
     headers['Authorization'] = `Bearer ${token}`; // Bearer Token Authentication
   }

@@ -17,7 +17,7 @@ import { prefix } from './const';
 import { addAuthentication } from './auth';
 
 export async function createTemplate(template: devfileApi.DevWorkspaceTemplate): Promise<devfileApi.DevWorkspaceTemplate> {
-  const headers = addAuthentication({});
+  const headers = await addAuthentication({});
   const url = `${prefix}/namespace/${template.metadata.namespace}/devworkspacetemplates`;
   try {
     const response = await axios.post(url, { template }, { headers });
