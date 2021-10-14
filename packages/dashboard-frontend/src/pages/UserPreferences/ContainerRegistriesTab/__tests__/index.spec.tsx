@@ -17,10 +17,10 @@ import React from 'react';
 import { render, screen } from '@testing-library/react';
 import renderer from 'react-test-renderer';
 import { Store } from 'redux';
-import { UserPreferences } from '..';
-import { selectIsLoading, selectPreferences, selectRegistries } from '../../../store/UserPreferences/selectors';
+import { ContainerRegistriesTab } from '..';
+import { selectIsLoading, selectPreferences, selectRegistries } from '../../../../store/UserPreferences/selectors';
 import { FakeRegistryBuilder } from './__mocks__/registryRowBuilder';
-import { FakeStoreBuilder } from '../../../store/__mocks__/storeBuilder';
+import { FakeStoreBuilder } from '../../../../store/__mocks__/storeBuilder';
 
 describe('User Preferences', () => {
   const mockRequestUserPreferences = jest.fn();
@@ -36,7 +36,7 @@ describe('User Preferences', () => {
     const isLoading = selectIsLoading(state);
     return (
       <Provider store={store}>
-        <UserPreferences
+        <ContainerRegistriesTab
           history={history}
           preferences={preferences}
           registries={registries}

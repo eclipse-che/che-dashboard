@@ -12,7 +12,7 @@
 
 import React from 'react';
 import { Button, ButtonVariant, ModalVariant, Modal, TextContent, Text, Checkbox } from '@patternfly/react-core';
-import { RegistryRow } from '../../../store/UserPreferences/types';
+import { RegistryRow } from '../../../../store/UserPreferences/types';
 
 type Props = {
   registry?: RegistryRow;

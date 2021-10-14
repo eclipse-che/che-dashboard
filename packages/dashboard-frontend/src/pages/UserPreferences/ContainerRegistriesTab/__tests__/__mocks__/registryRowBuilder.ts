@@ -10,7 +10,7 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import { RegistryRow } from '../../../../store/UserPreferences/types';
+import { RegistryRow } from '../../../../../store/UserPreferences/types';
 
 export class FakeRegistryBuilder {
 
