@@ -20,8 +20,12 @@ import { CheWorkspaceClient } from '../../services/workspace-client/cheworkspace
 import { AppThunk } from '../index';
 import { createObject } from '../helpers';
 import { getDevfile } from './getDevfile';
+import { isDevfileV2 } from '../../services/devfileApi';
+import { selectCheDevworkspaceEnabled } from '../Workspaces/Settings/selectors';
+import { DevfileConverter } from './devfile-converter';
 
 const WorkspaceClient = container.get(CheWorkspaceClient);
+const devfileConverter = new DevfileConverter();
 
 export type OAuthResponse = {
   attributes: {
@@ -107,10 +111,14 @@ export async function grabLink(links: api.che.core.rest.Link, filename: string):
 }
 
 export const actionCreators: ActionCreators = {
-  requestFactoryResolver: (location: string, overrideParams?: { [params: string]: string }): AppThunk<KnownAction, Promise<void>> => async (dispatch): Promise<void> => {
+
+  requestFactoryResolver: (location: string, overrideParams?: { [params: string]: string }): AppThunk<KnownAction, Promise<void>> => async (dispatch, getState): Promise<void> => {
     dispatch({ type: 'REQUEST_FACTORY_RESOLVER' });
 
+    const state = getState();
+
     try {
+
       await WorkspaceClient.restApiClient.provisionKubernetesNamespace();
       const data = await WorkspaceClient.restApiClient.getFactoryResolver<FactoryResolver>(location, overrideParams);
       if (!data.devfile) {
@@ -130,7 +138,12 @@ export const actionCreators: ActionCreators = {
       if (cheEditor) {
         optionalFilesContent['.che/che-editor.yaml'] = cheEditor;
       }
-      const devfile = getDevfile(data, location);
+      let devfile = getDevfile(data, location);
+
+      if (isDevfileV2(devfile) && selectCheDevworkspaceEnabled(state) === false) {
+        devfile = devfileConverter.devfileV2toDevfileV1(devfile);
+      }
+
       const { source, scm_info } = data;
       dispatch({
         type: 'RECEIVE_FACTORY_RESOLVER',
