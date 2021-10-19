@@ -10,25 +10,9 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import { ClusterInfo } from '@eclipse-che/common';
-
-export async function getClusterInfo(): Promise<ClusterInfo> {
-  const consoleUrl = process.env['OPENSHIFT_CONSOLE_URL'];
-  const consoleTitle = process.env['OPENSHIFT_CONSOLE_TITLE'];
-  const icon = 'https://console-openshift-console.apps.che-dev.x6e0.p1.openshiftapps.com/static/assets/redhat.svg';
-
-  if (!consoleTitle) {
-    throw new Error('Cannot detect the cluster web console title.');
-  }
-  if (!consoleUrl) {
-    throw new Error(`Cannot detect the ${consoleTitle} URL.`);
-  }
-
-  return {
-    clusterWebUI: {
-      title: consoleTitle,
-      url: consoleUrl,
-      icon,
-    },
-  };
-}
+export const clusterConsoleUrl = process.env['OPENSHIFT_CONSOLE_URL'] || '';
+export const clusterConsoleTitle = process.env['OPENSHIFT_CONSOLE_TITLE']
+  || 'Openshift Console';
+export const clusterConsoleIcon = process.env['OPENSHIFT_CONSOLE_ICON']
+  || (clusterConsoleUrl ? clusterConsoleUrl + '/static/assets/redhat.svg' : '');
+export const clusterConsoleGroup = process.env['OPENSHIFT_CONSOLE_GROUP'];

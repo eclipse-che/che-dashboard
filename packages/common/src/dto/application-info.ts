@@ -10,10 +10,9 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-export interface ClusterInfo {
-  clusterWebUI: {
-    url: string;
-    title: string;
-    icon: string;
-  };
+export interface ApplicationInfo {
+  url: string;
+  title: string;
+  icon: string;
+  group?: string;
 }

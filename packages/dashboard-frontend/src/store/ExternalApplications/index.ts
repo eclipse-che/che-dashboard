@@ -11,16 +11,10 @@
  */
 
 import { Action, Reducer } from 'redux';
-import common from '@eclipse-che/common';
+import common, { ApplicationInfo } from '@eclipse-che/common';
 import { AppThunk } from '..';
 import { createObject } from '../helpers';
 import { fetchClusterInfo } from '../../services/dashboard-backend-client/clusterInfo';
-
-export interface ApplicationInfo {
-  url: string;
-  title: string;
-  icon: string;
-}
 
 export interface State {
   isLoading: boolean;
@@ -66,10 +60,10 @@ export const actionCreators: ActionCreators = {
       });
 
       try {
-        const clusterInfo = await fetchClusterInfo();
+        const appInfo = await fetchClusterInfo();
         dispatch({
           type: Type.RECEIVE_APP_INFO,
-          appInfo: clusterInfo.clusterWebUI,
+          appInfo,
         });
       } catch (e) {
         const errorMessage = 'Failed to fetch cluster properties, reason: ' + common.helpers.errors.getMessage(e);

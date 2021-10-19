@@ -87,6 +87,7 @@ const mapStateToProps = (state: AppState) => ({
   userProfile: selectUserProfile(state),
   branding: selectBranding(state),
   applications: selectApplications(state),
+  extApps: state.externalApplications,
 });
 
 const connector = connect(

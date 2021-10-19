@@ -14,19 +14,17 @@ import mockAxios, { AxiosError } from 'axios';
 import { MockStoreEnhanced } from 'redux-mock-store';
 import { AnyAction } from 'redux';
 import { ThunkDispatch } from 'redux-thunk';
-import { ClusterInfo } from '@eclipse-che/common';
 import { FakeStoreBuilder } from '../../__mocks__/storeBuilder';
 import { AppState } from '../..';
 import * as testStore from '..';
+import { ApplicationInfo } from '@eclipse-che/common';
 
-describe('clusterInfo store', () => {
+describe('externalApplications store', () => {
 
-  const clusterInfo: ClusterInfo = {
-    clusterWebUI: {
-      url: 'web/console/url',
-      title: 'Web Console',
-      icon: 'web/console/icon.png',
-    }
+  const clusterInfo: ApplicationInfo = {
+    url: 'web/console/url',
+    title: 'Web Console',
+    icon: 'web/console/icon.png',
   };
 
   afterEach(() => {
@@ -54,7 +52,7 @@ describe('clusterInfo store', () => {
         type: testStore.Type.REQUEST_APP_INFO,
       }, {
         type: testStore.Type.RECEIVE_APP_INFO,
-        appInfo: clusterInfo.clusterWebUI,
+        appInfo: clusterInfo,
       }];
 
       expect(actions).toEqual(expectedActions);
@@ -148,14 +146,18 @@ describe('clusterInfo store', () => {
       };
       const incomingAction: testStore.ReceiveAppInfoAction = {
         type: testStore.Type.RECEIVE_APP_INFO,
-        appInfo: clusterInfo.clusterWebUI,
+        appInfo: clusterInfo,
       };
 
       const newState = testStore.reducer(initialState, incomingAction);
 
       const expectedState: testStore.State = {
         isLoading: false,
-        applications: [clusterInfo.clusterWebUI],
+        applications: [{
+          url: 'web/console/url',
+          title: 'Web Console',
+          icon: 'web/console/icon.png',
+        }],
       };
 
       expect(newState).toEqual(expectedState);

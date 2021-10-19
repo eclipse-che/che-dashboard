@@ -56,7 +56,7 @@ describe('About Menu', () => {
     fireEvent.click(toggleButton);
 
     const menuItems = screen.getAllByRole('menuitem');
-    expect(menuItems.length).toEqual(2);
+    expect(menuItems.length).toEqual(3);
   });
 
   it('should have required info', async () => {
@@ -76,6 +76,20 @@ describe('About Menu', () => {
     expect(screen.getByRole('link', { name: nameApp2 }));
   });
 
+  it('should have two groups', () => {
+    render(component);
+
+    const toggleButton = screen.getByRole('button', { name: 'External Applications' });
+
+    fireEvent.click(toggleButton);
+
+    const group1 = 'Group 1';
+    const group2 = 'Group 2';
+
+    expect(screen.getByText(group1)).toBeInTheDocument();
+    expect(screen.getByText(group2)).toBeInTheDocument();
+  });
+
 });
 
 function createStore(): Store {
@@ -84,10 +98,17 @@ function createStore(): Store {
       title: 'External App #1',
       url: 'http://example.com/ext/app/1',
       icon: 'http://example.com/ext/app/1/assets/logo.png',
+      group: 'Group 1',
     }, {
       title: 'External App #2',
       url: 'http://example.com/ext/app/2',
       icon: 'http://example.com/ext/app/2/assets/logo.png',
+      'group': 'Group 1',
+    }, {
+      title: 'External App #3',
+      url: 'http://example.com/ext/app/3',
+      icon: 'http://example.com/ext/app/3/assets/logo.png',
+      'group': 'Group 2',
     }])
     .build();
 }

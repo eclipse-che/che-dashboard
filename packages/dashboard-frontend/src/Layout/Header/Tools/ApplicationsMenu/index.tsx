@@ -12,7 +12,7 @@
 
 import React from 'react';
 import { ApplicationLauncher, ApplicationLauncherGroup, ApplicationLauncherItem } from '@patternfly/react-core';
-import { ApplicationInfo } from '../../../../store/ExternalApplications';
+import { ApplicationInfo } from '@eclipse-che/common';
 
 type Props = {
   applications: ApplicationInfo[];
@@ -37,34 +37,66 @@ export class ApplicationsMenu extends React.PureComponent<Props, State> {
     });
   }
 
-  render(): React.ReactElement {
-    const items = this.props.applications.map(app => (
-      <ApplicationLauncherItem
-        key={app.url}
-        isExternal={true}
-        icon={<img src={app.icon} />}
-        href={app.url}
-        target="_blank"
-      >
-        {app.title}
-      </ApplicationLauncherItem>
-    ));
+  private buildMenuItems(): React.ReactElement[] {
+    const apps = this.props.applications;
+    const defaultAppsGroup = 'Applications';
+    const itemsByGroup: { [groupName: string]: React.ReactElement[] } = {
+      [defaultAppsGroup]: [],
+    };
+    apps.forEach(app => {
+      if (!app) {
+        return;
+      }
 
-    const groups = [(
-      <ApplicationLauncherGroup
-        key="group"
-        label="Red Hat Applications"
-      >
-        {items}
-      </ApplicationLauncherGroup>
-    )];
+      const group = app.group || defaultAppsGroup;
+      if (itemsByGroup[group] === undefined) {
+        itemsByGroup[group] = [];
+      }
+
+      const item = (
+        <ApplicationLauncherItem
+          key={app.url}
+          isExternal={true}
+          icon={<img src={app.icon} />}
+          href={app.url}
+          target="_blank"
+        >
+          {app.title}
+        </ApplicationLauncherItem>
+      );
+
+      itemsByGroup[group].push(item);
+    });
+
+    const groupedItems: React.ReactElement[] = [];
+    Object.keys(itemsByGroup).forEach(group => {
+      const items = itemsByGroup[group];
+      if (items.length === 0) {
+        return;
+      }
+      const groupItem = (
+        <ApplicationLauncherGroup
+          key={group}
+          label={group}
+        >
+          {items}
+        </ApplicationLauncherGroup>
+      );
+      groupedItems.push(groupItem);
+    });
+
+    return groupedItems;
+  }
+
+  render(): React.ReactElement {
+    const groupedItems = this.buildMenuItems();
 
     return (
       <ApplicationLauncher
         aria-label='External Applications'
         isOpen={this.state.isOpen}
         onToggle={isOpen => this.onToggle(isOpen)}
-        items={groups}
+        items={groupedItems}
       />
     );
   }

@@ -12,7 +12,7 @@
 
 import helpers from './helpers';
 
-export * from './dto/cluster-info';
+export * from './dto/application-info';
 
 export {
   helpers,

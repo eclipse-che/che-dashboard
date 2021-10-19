@@ -13,20 +13,6 @@
 import { template } from './examples';
 import { JSONSchema7 } from 'json-schema';
 
-export const clusterInfoSchema: JSONSchema7 = {
-  type: 'object',
-  properties: {
-    'clusterWebUI': {
-      type: 'object',
-      properties: {
-        title: { type: 'string' },
-        url: { type: 'string' },
-        icon: { type: 'string' },
-      }
-    }
-  }
-};
-
 export const authenticationHeaderSchema: JSONSchema7 = {
   type: 'object',
   properties: {

@@ -26,7 +26,7 @@ import { State as UserState } from '../User';
 import { State as UserProfileState } from '../UserProfile';
 import mockThunk from './thunk';
 import devfileApi from '../../services/devfileApi';
-import { ApplicationInfo } from '../ExternalApplications';
+import { ApplicationInfo } from '@eclipse-che/common';
 
 export class FakeStoreBuilder {
 

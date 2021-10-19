@@ -85,8 +85,8 @@ export class PreloadData {
   }
 
   private async fetchApplications(): Promise<void> {
-    const { requestClusterInfo: requestProperties } = ExternalApplicationsStore.actionCreators;
-    await requestProperties()(this.store.dispatch, this.store.getState, undefined);
+    const { requestClusterInfo } = ExternalApplicationsStore.actionCreators;
+    await requestClusterInfo()(this.store.dispatch, this.store.getState, undefined);
   }
 
   private async fetchBranding(): Promise<void> {

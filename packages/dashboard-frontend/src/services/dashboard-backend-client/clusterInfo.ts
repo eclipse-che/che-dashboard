@@ -11,11 +11,11 @@
  */
 
 import axios from 'axios';
-import common, { ClusterInfo } from '@eclipse-che/common';
+import common, { ApplicationInfo } from '@eclipse-che/common';
 import { addAuthentication } from './auth';
 import { prefix } from './const';
 
-export async function fetchClusterInfo(): Promise<ClusterInfo> {
+export async function fetchClusterInfo(): Promise<ApplicationInfo> {
   const headers = addAuthentication({});
   try {
     const response = await axios.get(`${prefix}/cluster-info`, { headers });
