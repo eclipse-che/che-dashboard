@@ -86,12 +86,3 @@ export async function putDockerConfig(namespace: string, dockerconfig: api.IDock
     throw `Failed to put dockerconfig. ${helpers.errors.getMessage(e)}`;
   }
 }
-
-export async function deleteDockerConfig(namespace: string): Promise<void> {
-  const headers = await addAuthentication({});
-  try {
-    await axios.delete(`${prefix}/namespace/${namespace}/dockerconfig`, { headers });
-  } catch (e) {
-    throw `Failed to delete dockerconfig. ${helpers.errors.getMessage(e)}`;
-  }
-}

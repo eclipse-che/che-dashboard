@@ -39,7 +39,6 @@ type KnownAction = RequestCredentialsAction | SetCredentialsAction | ReceiveErro
 export type ActionCreators = {
   requestCredentials: (namespace: string) => AppThunk<KnownAction, Promise<void>>;
   updateCredentials: (namespace: string, registries: RegistryRow[]) => AppThunk<KnownAction, Promise<void>>;
-  deleteCredentials: (namespace: string) => AppThunk<KnownAction, Promise<void>>;
 };
 
 export const actionCreators: ActionCreators = {
@@ -81,28 +80,7 @@ export const actionCreators: ActionCreators = {
       });
       throw errorMessage;
     }
-  },
-
-  deleteCredentials: (namespace: string): AppThunk<Action, Promise<void>> => async (dispatch, getState): Promise<void> => {
-    dispatch({ type: 'REQUEST_DEVWORKSPACE_CREDENTIALS' });
-    const { dwDockerConfig } = getState();
-    const registries = [];
-    try {
-      const { resourceVersion } = await putDockerConfig(namespace, registries, dwDockerConfig.resourceVersion);
-      dispatch({
-        type: 'SET_DEVWORKSPACE_CREDENTIALS',
-        registries,
-        resourceVersion
-      });
-    } catch (e) {
-      const errorMessage = 'Failed to delete the docker cofig. Reason: ' + helpers.errors.getMessage(e);
-      dispatch({
-        type: 'RECEIVE_DEVWORKSPACE_CREDENTIALS_ERROR',
-        error: errorMessage
-      });
-      throw errorMessage;
-    }
-  },
+  }
 };
 
 async function getDockerConfig(namespace: string): Promise<{ registries: RegistryRow[], resourceVersion?: string }> {

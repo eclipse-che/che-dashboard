@@ -10,7 +10,7 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import { dockerConfigExample, templateExample } from './examples';
+import { dockerConfigExample, templateExample, workspaceExample } from './examples';
 import { JSONSchema7 } from 'json-schema';
 
 export const authenticationHeaderSchema: JSONSchema7 = {
@@ -72,7 +72,7 @@ export const patchSchema: JSONSchema7 = {
   }]
 };
 
-export const dockerConfigSchema = {
+export const dockerConfigSchema: JSONSchema7 = {
   type: 'object',
   properties: {
     dockerconfig: {
@@ -82,7 +82,7 @@ export const dockerConfigSchema = {
       type: 'string'
     }
   },
-  example: dockerConfigExample,
+  examples: [dockerConfigExample],
   required: ['dockerconfig']
 };
 
@@ -93,6 +93,7 @@ export const devworkspaceSchema = {
       type: 'object'
     }
   },
+  example: workspaceExample,
   required: ['devworkspace']
 };
 

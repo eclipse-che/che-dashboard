@@ -15,7 +15,6 @@ export const templateExample = {
   kind: 'DevWorkspaceTemplate',
   metadata: {
     name: 'che-theia-vsix-installer-workspace2d071d95b33a4835',
-    namespace: 'admin-che',
     ownerReferences: [
       {
         apiVersion: 'workspace.devfile.io/v1alpha2',
@@ -71,8 +70,8 @@ export const templateExample = {
 export const dockerConfigExample = {
   get dockerconfig() {
     const registry = 'quay.io';
-    const username = 'sleshche+che_theia_readonly';
-    const passsword = 'EMYR16QS4JTQM1Y7S5QFAVYDI77CIRFGRXZCDTVN6SE3XGQSV9V3JI0VAXN8S4IR';
+    const username = 'janedoe';
+    const passsword = 'xxxxxxxxxxxxxxxxxxxxxxx';
     const auth = new Buffer(`${username}:${passsword}`).toString('base64');
     const buff = new Buffer(JSON.stringify({
       auths: {
@@ -80,5 +79,156 @@ export const dockerConfigExample = {
       }
     }));
     return buff.toString('base64');
+  }
+};
+
+export const workspaceExample = {
+  devworkspace: {
+    kind: 'DevWorkspace',
+    apiVersion: 'workspace.devfile.io/v1alpha2',
+    metadata: {
+      name: 'theia'
+    },
+    spec: {
+      started: false,
+      template: {
+        projects: [
+          {
+            name: 'web-nodejs-sample',
+            git: {
+              remotes: {
+                origin: 'https://github.com/che-samples/web-nodejs-sample.git'
+              }
+            }
+          }
+        ],
+        components: [
+          {
+            name: 'plugins',
+            volume: {}
+          }, {
+            name: 'theia-ide',
+            attributes: {
+              'app.kubernetes.io/name': 'che-theia.eclipse.org',
+              'app.kubernetes.io/part-of': 'che.eclipse.org',
+              'app.kubernetes.io/component': 'editor'
+            },
+            container: {
+              image: 'quay.io/eclipse/che-theia:next',
+              env: [
+                {
+                  name: 'THEIA_PLUGINS',
+                  value: 'local-dir:///plugins'
+                }, {
+                  name: 'HOSTED_PLUGIN_HOSTNAME',
+                  value: '0.0.0.0'
+                }, {
+                  name: 'HOSTED_PLUGIN_PORT',
+                  value: '3130'
+                }, {
+                  name: 'THEIA_HOST',
+                  value: '0.0.0.0'
+                }
+              ],
+              volumeMounts: [
+                {
+                  path: '/plugins',
+                  name: 'plugins'
+                }
+              ],
+              mountSources: true,
+              memoryLimit: '512M',
+              endpoints: [
+                {
+                  name: 'theia',
+                  exposure: 'public',
+                  targetPort: 3100,
+                  secure: true,
+                  protocol: 'http',
+                  attributes: {
+                    type: 'main'
+                  }
+                }, {
+                  name: 'webviews',
+                  exposure: 'public',
+                  targetPort: 3100,
+                  protocol: 'http',
+                  secure: true,
+                  attributes: {
+                    type: 'webview',
+                    unique: 'true'
+                  }
+                }, {
+                  name: 'theia-dev',
+                  exposure: 'public',
+                  targetPort: 3130,
+                  protocol: 'http',
+                  attributes: {
+                    type: 'ide-dev'
+                  }
+                }, {
+                  name: 'theia-redir-1',
+                  exposure: 'public',
+                  targetPort: 13131,
+                  protocol: 'http'
+                }, {
+                  name: 'theia-redir-2',
+                  exposure: 'public',
+                  targetPort: 13132,
+                  protocol: 'http'
+                }, {
+                  name: 'theia-redir-3',
+                  exposure: 'public',
+                  targetPort: 13133,
+                  protocol: 'http'
+                }
+              ]
+            }
+          },
+          {
+            name: 'che-theia-terminal',
+            attributes: {
+              'app.kubernetes.io/name': 'che-theia.eclipse.org',
+              'app.kubernetes.io/part-of': 'che.eclipse.org',
+              'app.kubernetes.io/component': 'che-theia-terminal'
+            },
+            container: {
+              image: 'quay.io/eclipse/che-machine-exec:nightly',
+              command: [
+                '/go/bin/che-machine-exec'
+              ],
+              args: [
+                '--url',
+                '0.0.0.0:3333',
+                '--pod-selector',
+                'controller.devfile.io/workspace_id=$(DEVWORKSPACE_ID)'
+              ],
+              endpoints: [
+                {
+                  name: 'che-theia-terminal',
+                  exposure: 'public',
+                  targetPort: 3333,
+                  protocol: 'ws',
+                  secure: true,
+                  attributes: {
+                    type: 'collocated-terminal'
+                  }
+                }
+              ]
+            }
+          }
+        ],
+        commands: [
+          {
+            id: 'say-hello',
+            exec: {
+              component: 'plugin',
+              commandLine: 'echo "Hello from $(pwd)"',
+              workingDir: '${PROJECTS_ROOT}/project/app'
+            }
+          }
+        ]
+      }
+    }
   }
 };

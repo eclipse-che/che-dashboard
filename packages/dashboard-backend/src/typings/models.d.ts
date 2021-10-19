@@ -11,6 +11,7 @@
  */
 
 import { IDevWorkspaceTemplate } from '../devworkspace-client';
+import { V1alpha2DevWorkspace } from '@devfile/api';
 
 declare namespace restParams {
 
@@ -18,7 +19,7 @@ declare namespace restParams {
     namespace: string;
   }
 
-  export interface ISecreteParams {
+  export interface IDockerConfigParams {
     dockerconfig: string;
     resourceVersion?: string;
   }
@@ -44,7 +45,7 @@ declare namespace restParams {
   }
 
   export interface IDevWorkspaceSpecParam {
-    devworkspace: IDevWorkspace;
+    devworkspace: V1alpha2DevWorkspace;
   }
 }
 

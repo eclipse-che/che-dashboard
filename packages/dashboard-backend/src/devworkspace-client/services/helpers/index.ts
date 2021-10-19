@@ -11,6 +11,7 @@
  */
 
 import * as k8s from '@kubernetes/client-node';
+import { getMessage } from '@eclipse-che/common/lib/helpers/errors';
 
 export async function findApi(apisApi: k8s.ApisApi, apiName: string, version?: string): Promise<boolean> {
   const resp = await apisApi.getAPIVersions();
@@ -22,4 +23,21 @@ export async function findApi(apisApi: k8s.ApisApi, apiName: string, version?: s
     }
     return apiGroup.name === apiName;
   });
+}
+
+class DevWorkspaceClientError extends Error {
+  statusCode: number;
+
+  constructor(message: string, name: string, statusCode: number) {
+    super(message);
+    this.name = name;
+    this.statusCode = statusCode;
+  }
+}
+
+export function createError(error: unknown, name: string, additionalMessage: string): DevWorkspaceClientError {
+  const statusCode: number = (error as { statusCode?: number } | undefined)?.statusCode || 500;
+  const originErrorMessage = getMessage(error);
+
+  return new DevWorkspaceClientError(`${additionalMessage}: ${originErrorMessage}`, name, statusCode);
 }

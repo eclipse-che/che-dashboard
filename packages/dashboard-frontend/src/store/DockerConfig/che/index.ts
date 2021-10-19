@@ -38,7 +38,6 @@ type KnownAction = RequestCredentialsAction | SetCredentialsAction | ReceiveErro
 export type ActionCreators = {
   requestCredentials: () => AppThunk<KnownAction, Promise<void>>;
   updateCredentials: (registries: RegistryRow[]) => AppThunk<KnownAction, Promise<void>>;
-  deleteCredentials: () => AppThunk<KnownAction, Promise<void>>;
 };
 
 export const actionCreators: ActionCreators = {
@@ -94,28 +93,7 @@ export const actionCreators: ActionCreators = {
       });
       throw errorMessage;
     }
-  },
-
-  deleteCredentials: (): AppThunk<Action, Promise<void>> => async (dispatch, getState): Promise<void> => {
-    dispatch({ type: 'REQUEST_CHEWORKSPACE_CREDENTIALS' });
-    const { userPreferences: { preferences } } = getState();
-    const dockerCredentials = window.btoa(JSON.stringify({}));
-    const prefUpdate = Object.assign({}, preferences, { dockerCredentials }) as che.UserPreferences;
-    try {
-      await dispatch(UserPreferences.actionCreators.replaceUserPreferences(prefUpdate));
-      dispatch({
-        type: 'SET_CHEWORKSPACE_CREDENTIALS',
-        registries: []
-      });
-    } catch (e) {
-      const errorMessage = 'Failed to delete the docker cofig. Reason: ' + helpers.errors.getMessage(e);
-      dispatch({
-        type: 'RECEIVE_CHEWORKSPACE_CREDENTIALS_ERROR',
-        error: errorMessage
-      });
-      throw errorMessage;
-    }
-  },
+  }
 };
 
 const unloadedState: State = {

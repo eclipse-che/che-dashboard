@@ -20,8 +20,7 @@ import { selectDevworkspacesEnabled } from '../Workspaces/Settings/selectors';
 
 export type ActionCreators = {
   requestCredentials: () => AppThunk<Action, Promise<void>>;
-  updateCredentials: (registries: RegistryRow[]) => AppThunk<Action, Promise<void>>;
-  deleteCredentials: () => AppThunk<Action, Promise<void>>;
+  updateCredentials: (registries: RegistryRow[]) => AppThunk<Action, Promise<void>>
 };
 
 export const actionCreators: ActionCreators = {
@@ -44,16 +43,6 @@ export const actionCreators: ActionCreators = {
     } else {
       await dispatch(CheWorkspacesStore.actionCreators.updateCredentials(registries));
     }
-  },
-
-  deleteCredentials: (): AppThunk<Action, Promise<void>> => async (dispatch, getState): Promise<void> => {
-    const state = getState();
-    if (selectDevworkspacesEnabled(state)) {
-      const namespace = selectDefaultNamespace(state).name;
-      await dispatch(DevWorkspacesStore.actionCreators.deleteCredentials(namespace));
-    } else {
-      await dispatch(CheWorkspacesStore.actionCreators.deleteCredentials());
-    }
-  },
+  }
 
 };

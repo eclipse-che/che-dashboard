@@ -14,36 +14,20 @@ import { V1alpha2DevWorkspace, V1alpha2DevWorkspaceTemplate } from '@devfile/api
 import { V1Secret, V1Status } from '@kubernetes/client-node';
 import { api } from '@eclipse-che/common';
 
-export interface ISecretApi {
+/**
+ * Holds the methods for working with dockerconfig for devworkspace
+ * which is stored in Kubernetes Secret and is annotated in DevWorkspace operator specific way.
+ */
+export interface IDockerConfigApi {
   /**
-   * Create a new secret based on the specified namespace and body.
+   * Get DockerConfig in the specified namespace
    */
-  create(namespace: string, body: V1Secret): Promise<V1Secret>
+  read(namespace: string): Promise<api.IDockerConfig>;
 
   /**
-   * Get the secret with given namespace in the specified namespace
+   * Replace DockerConfig in the specified namespace
    */
-  read(namespace: string, name: string): Promise<V1Secret>;
-
-  /**
-   * Get Array of secrets in the given namespace
-   */
-  readAll(namespace: string): Promise<Array<V1Secret>>
-
-  /**
-   * Patch the secret with given name in the specified namespace
-   */
-  patch(namespace: string, name: string, body: api.IPatch[]): Promise<V1Secret>
-
-  /**
-   * Replace the secret with given name in the specified namespace
-   */
-  replace(namespace: string, name: string, body: V1Secret ): Promise<V1Secret>
-
-  /**
-   * Delete the secret with given name in the specified namespace
-   */
-  delete(namespace: string, name: string): Promise<V1Status>;
+  update(namespace: string, dockerCfg: api.IDockerConfig): Promise<api.IDockerConfig>;
 }
 
 export interface IDevWorkspaceApi {
@@ -103,7 +87,7 @@ export type IDevWorkspaceCallbacks = {
 export interface IDevWorkspaceClient {
   devworkspaceApi: IDevWorkspaceApi;
   templateApi: IDevWorkspaceTemplateApi;
-  secretApi: ISecretApi;
+  dockerConfigApi: IDockerConfigApi;
   isDevWorkspaceApiEnabled(): Promise<boolean>;
 }
 
