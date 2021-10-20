@@ -86,11 +86,10 @@ export const actionCreators: ActionCreators = {
       if (!branding.productVersion) {
         try {
           const apiInfo = await getApiInfo();
-          branding.productVersion = apiInfo.implementationVersion;
-
+          const data = Object.assign({}, branding, { productVersion: apiInfo.implementationVersion });
           dispatch({
             type: 'RECEIVED_BRANDING',
-            data: branding,
+            data
           });
         } catch (e) {
           const errorMessage = 'OPTIONS request to "/api/" failed, reason: ' + common.helpers.errors.getMessage(e);
@@ -121,17 +120,17 @@ export const reducer: Reducer<State> = (state: State | undefined, incomingAction
       return createObject(state, {
         isLoading: true,
         error: undefined,
-      });
+      }, true);
     case 'RECEIVED_BRANDING':
       return createObject(state, {
         isLoading: false,
         data: action.data,
-      });
+      }, true);
     case 'RECEIVED_BRANDING_ERROR':
       return createObject(state, {
         isLoading: false,
         error: action.error,
-      });
+      }, true);
     default:
       return state;
   }

@@ -14,6 +14,7 @@ import { createSelector } from 'reselect';
 import { AppState } from '..';
 import { selectDevworkspacesEnabled } from '../Workspaces/Settings/selectors';
 import  { State } from  './dockerConfigState';
+import { cloneObject } from '../helpers';
 
 const selectCheDockerConfigState = (state: AppState) => state.cheDockerConfig;
 const selectDwDockerConfigState = (state: AppState) => state.dwDockerConfig;
@@ -41,7 +42,7 @@ export const selectIsLoading = createSelector(
 export const selectRegistries = createSelector(
   selectState,
   (state: State) => {
-    return state.registries;
+    return cloneObject(state.registries);
   },
 );
 

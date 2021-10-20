@@ -82,23 +82,22 @@ export function attributesToType(attrs: che.WorkspaceDevfileAttributes | undefin
   return 'persistent';
 }
 
-export function updateDevfile(devfile: Devfile, storageType: che.WorkspaceStorageType): Devfile {
-  const newDevfile = Object.assign({}, devfile) as che.WorkspaceDevfile;
+export function updateDevfile(devfile: Devfile, storageType: che.WorkspaceStorageType): void {
   if (isCheDevfile(devfile)) {
-    const attributes = (newDevfile as che.WorkspaceDevfile).attributes;
+    const attributes = (devfile as che.WorkspaceDevfile).attributes;
     switch (storageType) {
       case 'persistent':
         if (attributes) {
           delete attributes.persistVolumes;
           delete attributes.asyncPersist;
           if (Object.keys(attributes).length === 0) {
-            delete newDevfile.attributes;
+            delete devfile.attributes;
           }
         }
         break;
       case 'ephemeral':
         if (!attributes) {
-          newDevfile.attributes = { persistVolumes: 'false' };
+          devfile.attributes = { persistVolumes: 'false' };
         } else {
           attributes.persistVolumes = 'false';
           delete attributes.asyncPersist;
@@ -106,7 +105,7 @@ export function updateDevfile(devfile: Devfile, storageType: che.WorkspaceStorag
         break;
       case 'async':
         if (!attributes) {
-          newDevfile.attributes = {
+          devfile.attributes = {
             persistVolumes: 'false',
             asyncPersist: 'true'
           };
@@ -117,6 +116,4 @@ export function updateDevfile(devfile: Devfile, storageType: che.WorkspaceStorag
         break;
     }
   }
-
-  return newDevfile;
 }

@@ -21,7 +21,7 @@ import getRandomString from '../../services/helpers/random';
 
 export type FactorySource = { factory?: { params: string } };
 
-export default function updateDevfileMetadata(devfile: api.che.workspace.devfile.Devfile, factoryParams: string, createPolicy: CreatePolicy): api.che.workspace.devfile.Devfile {
+export default function updateDevfileMetadata(devfile: api.che.workspace.devfile.Devfile, factoryParams: string, createPolicy: CreatePolicy): void {
   if (isDevfileV2(devfile)) {
     const metadata = devfile.metadata;
     if (!metadata.attributes) {
@@ -42,7 +42,6 @@ export default function updateDevfileMetadata(devfile: api.che.workspace.devfile
     if (createPolicy !== 'peruser' && metadata.name) {
       metadata.name = `${metadata.name}-${getRandomString(4).toLowerCase()}`;
     }
-    return Object.assign({}, devfile, { metadata });
   }
 
   return devfile;

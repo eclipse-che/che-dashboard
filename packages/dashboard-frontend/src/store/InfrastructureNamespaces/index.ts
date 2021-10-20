@@ -88,17 +88,17 @@ export const reducer: Reducer<State> = (state: State | undefined, incomingAction
       return createObject(state, {
         isLoading: true,
         error: undefined,
-      });
+      }, true);
     case 'RECEIVE_NAMESPACES':
       return createObject(state, {
         isLoading: false,
         namespaces: action.namespaces,
-      });
+      }, true);
     case 'RECEIVE_NAMESPACES_ERROR':
       return createObject(state, {
         isLoading: false,
         error: action.error,
-      });
+      }, true);
     default:
       return state;
   }

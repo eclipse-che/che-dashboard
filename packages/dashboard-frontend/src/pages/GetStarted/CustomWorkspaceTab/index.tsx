@@ -68,14 +68,16 @@ export class CustomWorkspaceTab extends React.PureComponent<Props, State> {
       metadata: {
         name: generateName + getRandomString(4).toLowerCase(),
       }
-    } : {
+    } as Devfile : {
       apiVersion: '1.0.0',
       metadata: {
         generateName
       }
-    };
+    } as Devfile;
 
-    return updateDevfile(devfile as Devfile, this.props.preferredStorageType);
+    updateDevfile(devfile, this.props.preferredStorageType);
+
+    return devfile;
   }
 
   private handleInfrastructureNamespaceChange(namespace: che.KubernetesNamespace): void {
@@ -105,17 +107,17 @@ export class CustomWorkspaceTab extends React.PureComponent<Props, State> {
       return;
     }
 
-    const newDevfile = updateDevfile(devfile, storageType);
+    updateDevfile(devfile, storageType);
 
     this.setState({
       storageType,
-      devfile: newDevfile,
+      devfile,
     });
-    this.updateEditor(newDevfile);
+    this.updateEditor(devfile);
   }
 
   private handleNewDevfile(devfileContent?: Devfile): void {
-    let devfile: Devfile;
+    let devfile: Devfile | undefined = undefined;
     if (!devfileContent) {
       devfile = this.buildInitialDevfile();
     } else if (
@@ -124,8 +126,8 @@ export class CustomWorkspaceTab extends React.PureComponent<Props, State> {
       devfileContent?.attributes?.asyncPersist === undefined &&
       this.props.preferredStorageType
     ) {
-      devfile = updateDevfile(devfileContent, this.props.preferredStorageType);
-    } else {
+      updateDevfile(devfileContent, this.props.preferredStorageType);
+    } if (devfileContent) {
       devfile = devfileContent;
     }
     const { storageType, workspaceName } = this.state;
@@ -137,7 +139,7 @@ export class CustomWorkspaceTab extends React.PureComponent<Props, State> {
       this.handleStorageChange(storageType, devfile);
     }
 
-    if (!workspaceName && !storageType) {
+    if (!workspaceName && !storageType && devfile) {
       this.setState({ devfile });
       this.updateEditor(devfile);
     }

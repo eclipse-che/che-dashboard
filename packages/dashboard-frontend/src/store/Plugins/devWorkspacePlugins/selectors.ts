@@ -13,28 +13,33 @@
 import { createSelector } from 'reselect';
 import { AppState } from '../..';
 import devfileApi from '../../../services/devfileApi';
+import { cloneObject } from '../../helpers';
 
 const selectState = (state: AppState) => state.dwPlugins;
 export const selectPluginsState = selectState;
 
 export const selectDwPlugins = createSelector(
   selectState,
-  state => state.plugins,
+  state => cloneObject(state.plugins),
 );
 
 export const selectDwPluginsList = createSelector(
   selectState,
-  state => Object.values(state.plugins)
+  state => cloneObject(
+    Object.values(state.plugins)
     .map(entry => entry.plugin)
-    .filter(plugin => plugin) as devfileApi.Devfile[],
+    .filter(plugin => plugin)
+  ) as devfileApi.Devfile[],
 );
 
 export const selectDwEditorsPluginsList = EDITOR_NAME => createSelector(
   selectState,
-  state => Object.keys(state.editors)
+  state => cloneObject(
+    Object.keys(state.editors)
     .filter(key => key === EDITOR_NAME)
     .map(key => state.editors[key])
-    .map(entry => entry.plugin) as devfileApi.Devfile[],
+    .map(entry => entry.plugin)
+  ) as devfileApi.Devfile[],
 );
 
 export const selectDwDefaultEditorError = createSelector(

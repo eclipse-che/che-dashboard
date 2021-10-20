@@ -12,17 +12,18 @@
 
 import { createSelector } from 'reselect';
 import { AppState } from '..';
+import { cloneObject } from '../helpers';
 
 const selectState = (state: AppState) => state.infrastructureNamespaces;
 
 export const selectDefaultNamespace = createSelector(
   selectState,
-  state => state.namespaces.find(namespace => namespace.attributes.default === 'true') || state.namespaces[0],
+  state => cloneObject(state.namespaces.find(namespace => namespace.attributes.default === 'true') || state.namespaces[0]),
 );
 
 export const selectInfrastructureNamespaces = createSelector(
   selectState,
-  state => state.namespaces,
+  state => cloneObject(state.namespaces),
 );
 
 export const selectInfrastructureNamespacesError = createSelector(

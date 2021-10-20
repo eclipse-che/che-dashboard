@@ -12,13 +12,14 @@
 
 import { createSelector } from 'reselect';
 import { AppState } from '../..';
+import { cloneObject } from '../../helpers';
 
 const selectState = (state: AppState) => state.plugins;
 export const selectPluginsState = selectState;
 
 export const selectPlugins = createSelector(
   selectState,
-  state => state.plugins,
+  state => cloneObject(state.plugins),
 );
 
 export const selectPluginsError = createSelector(

@@ -12,6 +12,7 @@
 
 import { createSelector } from 'reselect';
 import { AppState } from '..';
+import { cloneObject } from '../helpers';
 
 const selectState = (state: AppState) => state.userPreferences;
 
@@ -22,5 +23,5 @@ export const selectIsLoading = createSelector(
 
 export const selectPreferences = createSelector(
   selectState,
-  state => state.preferences
+  state => cloneObject(state.preferences)
 );

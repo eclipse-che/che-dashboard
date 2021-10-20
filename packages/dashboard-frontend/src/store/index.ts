@@ -73,7 +73,7 @@ export const reducers = {
 
 export type AppThunk<ActionType extends Action, ReturnType = void> = ThunkAction<
   ReturnType,
-  AppState,
+  Readonly<AppState>,
   unknown,
   ActionType
 >;

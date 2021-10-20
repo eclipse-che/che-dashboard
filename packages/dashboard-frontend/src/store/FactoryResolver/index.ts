@@ -171,17 +171,17 @@ export const reducer: Reducer<State> = (state: State | undefined, incomingAction
       return createObject(state, {
         isLoading: true,
         error: undefined,
-      });
+      }, true);
     case 'RECEIVE_FACTORY_RESOLVER':
       return createObject(state, {
         isLoading: false,
         resolver: action.resolver,
-      });
+      }, true);
     case 'RECEIVE_FACTORY_RESOLVER_ERROR':
       return createObject(state, {
         isLoading: false,
         error: action.error,
-      });
+      }, true);
     default:
       return state;
   }

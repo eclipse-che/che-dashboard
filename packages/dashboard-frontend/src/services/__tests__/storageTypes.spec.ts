@@ -23,31 +23,31 @@ describe('Storage Types Service', () => {
 
       it('should correctly update a devfile without volumes', () => {
         const devfile = getDevfileWithoutAttributes();
-        const newDevfile = updateDevfile(devfile, 'persistent');
+        updateDevfile(devfile, 'persistent');
 
-        expect(newDevfile.attributes).toEqual(expectedAttr);
-        expect(newDevfile).toEqual(devfile);
+        expect(devfile.attributes).toEqual(expectedAttr);
+        expect(devfile).toEqual(devfile);
       });
 
       it('should correctly update a devfile with "persistent" storage', () => {
         const devfile = getDevfileWithPersistentStorage();
-        const newDevfile = updateDevfile(devfile, 'persistent');
+        updateDevfile(devfile, 'persistent');
 
-        expect(newDevfile.attributes).toEqual(expectedAttr);
+        expect(devfile.attributes).toEqual(expectedAttr);
       });
 
       it('should correctly update a devfile with "ephemeral" storage', () => {
         const devfile = getDevfileWithEphemeralStorage();
-        const newDevfile = updateDevfile(devfile, 'persistent');
+        updateDevfile(devfile, 'persistent');
 
-        expect(newDevfile.attributes).toEqual(expectedAttr);
+        expect(devfile.attributes).toEqual(expectedAttr);
       });
 
       it('should correctly update a devfile with "async" storage', () => {
         const devfile = getDevfileWithAsyncStorage();
-        const newDevfile = updateDevfile(devfile, 'persistent');
+        updateDevfile(devfile, 'persistent');
 
-        expect(newDevfile.attributes).toEqual(expectedAttr);
+        expect(devfile.attributes).toEqual(expectedAttr);
       });
 
     });
@@ -60,31 +60,31 @@ describe('Storage Types Service', () => {
 
       it('should correctly update a devfile without volumes', () => {
         const devfile = getDevfileWithoutAttributes();
-        const newDevfile = updateDevfile(devfile, 'ephemeral');
+        updateDevfile(devfile, 'ephemeral');
 
-        expect(newDevfile.attributes).toEqual(expectedAttr);
+        expect(devfile.attributes).toEqual(expectedAttr);
       });
 
       it('should correctly update a devfile with "persistent" storage', () => {
         const devfile = getDevfileWithPersistentStorage();
-        const newDevfile = updateDevfile(devfile, 'ephemeral');
+        updateDevfile(devfile, 'ephemeral');
 
-        expect(newDevfile.attributes).toEqual(expectedAttr);
+        expect(devfile.attributes).toEqual(expectedAttr);
       });
 
       it('should correctly update a devfile with "ephemeral" storage', () => {
         const devfile = getDevfileWithEphemeralStorage();
-        const newDevfile = updateDevfile(devfile, 'ephemeral');
+        updateDevfile(devfile, 'ephemeral');
 
-        expect(newDevfile.attributes).toEqual(expectedAttr);
-        expect(newDevfile).toEqual(devfile);
+        expect(devfile.attributes).toEqual(expectedAttr);
+        expect(devfile).toEqual(devfile);
       });
 
       it('should correctly update a devfile with "async" storage', () => {
         const devfile = getDevfileWithAsyncStorage();
-        const newDevfile = updateDevfile(devfile, 'ephemeral');
+        updateDevfile(devfile, 'ephemeral');
 
-        expect(newDevfile.attributes).toEqual(expectedAttr);
+        expect(devfile.attributes).toEqual(expectedAttr);
       });
 
     });
@@ -98,31 +98,31 @@ describe('Storage Types Service', () => {
 
       it('should correctly update a devfile without volumes', () => {
         const devfile = getDevfileWithoutAttributes();
-        const newDevfile = updateDevfile(devfile, 'async');
+        updateDevfile(devfile, 'async');
 
-        expect(newDevfile.attributes).toEqual(expectedAttr);
+        expect(devfile.attributes).toEqual(expectedAttr);
       });
 
       it('should correctly update a devfile with "persistent" storage', () => {
         const devfile = getDevfileWithPersistentStorage();
-        const newDevfile = updateDevfile(devfile, 'async');
+        updateDevfile(devfile, 'async');
 
-        expect(newDevfile.attributes).toEqual(expectedAttr);
+        expect(devfile.attributes).toEqual(expectedAttr);
       });
 
       it('should correctly update a devfile with "ephemeral" storage', () => {
         const devfile = getDevfileWithEphemeralStorage();
-        const newDevfile = updateDevfile(devfile, 'async');
+        updateDevfile(devfile, 'async');
 
-        expect(newDevfile.attributes).toEqual(expectedAttr);
+        expect(devfile.attributes).toEqual(expectedAttr);
       });
 
       it('should correctly update a devfile with "async" storage', () => {
         const devfile = getDevfileWithAsyncStorage();
-        const newDevfile = updateDevfile(devfile, 'async');
+        updateDevfile(devfile, 'async');
 
-        expect(newDevfile.attributes).toEqual(expectedAttr);
-        expect(newDevfile).toEqual(devfile);
+        expect(devfile.attributes).toEqual(expectedAttr);
+        expect(devfile).toEqual(devfile);
       });
 
     });

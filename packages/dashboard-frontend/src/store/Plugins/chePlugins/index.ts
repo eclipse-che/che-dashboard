@@ -92,17 +92,17 @@ export const reducer: Reducer<State> = (state: State | undefined, incomingAction
       return createObject(state, {
         isLoading: true,
         error: undefined,
-      });
+      }, true);
     case 'RECEIVE_PLUGINS':
       return createObject(state, {
         isLoading: false,
         plugins: action.plugins,
-      });
+      }, true);
     case 'RECEIVE_PLUGINS_ERROR':
       return createObject(state, {
         isLoading: false,
         error: action.error,
-      });
+      }, true);
     default:
       return state;
   }

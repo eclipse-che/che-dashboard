@@ -334,45 +334,45 @@ export const reducer: Reducer<State> = (state: State | undefined, action: KnownA
     case 'REQUEST_WORKSPACES':
       return createObject(state, {
         isLoading: true,
-      });
+      }, true);
     case 'RECEIVE_ERROR':
       return createObject(state, {
         isLoading: false,
-      });
+      }, true);
     case 'UPDATE_WORKSPACE':
       return createObject(state, {
         isLoading: false,
-      });
+      }, true);
     case 'ADD_WORKSPACE':
       return createObject(state, {
         isLoading: false,
-      });
+      }, true);
     case 'DELETE_WORKSPACE':
       return createObject(state, {
         isLoading: false,
-      });
+      }, true);
     case 'RECEIVE_WORKSPACES':
       return createObject(state, {
         isLoading: false,
-      });
+      }, true);
     case 'SET_WORKSPACE_NAME':
       return createObject(state, {
         namespace: action.namespace,
         workspaceName: action.workspaceName,
-      });
+      }, true);
     case 'CLEAR_WORKSPACE_NAME':
       return createObject(state, {
         namespace: '',
         workspaceName: '',
-      });
+      }, true);
     case 'SET_WORKSPACE_ID':
       return createObject(state, {
         workspaceId: action.workspaceId,
-      });
+      }, true);
     case 'CLEAR_WORKSPACE_ID':
       return createObject(state, {
         workspaceId: '',
-      });
+      }, true);
     default:
       return state;
   }

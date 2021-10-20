@@ -72,14 +72,14 @@ export const reducer: Reducer<State> = (state: State | undefined, incomingAction
           state.messages.includes(action.message)
             ? state.messages
             : state.messages.concat([action.message]),
-      });
+      }, true);
     case 'REMOVE_BANNER':
       return createObject(state, {
         messages:
           state.messages.includes(action.message)
             ? state.messages.filter(message => message !== action.message)
             : state.messages,
-      });
+      }, true);
     default:
       return state;
   }

@@ -112,17 +112,17 @@ export const reducer: Reducer<State> = (state: State | undefined, action: KnownA
       return createObject(state, {
         isLoading: true,
         error: undefined,
-      });
+      }, true);
     case 'SET_CHEWORKSPACE_CREDENTIALS':
       return createObject(state, {
         isLoading: false,
         registries: action.registries,
-      });
+      }, true);
     case 'RECEIVE_CHEWORKSPACE_CREDENTIALS_ERROR':
       return createObject(state, {
         isLoading: false,
         error: action.error,
-      });
+      }, true);
     default:
       return state;
   }

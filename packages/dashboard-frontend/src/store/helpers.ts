@@ -22,7 +22,28 @@
  *
  * @param target an object that is usually a store state, e.g workspaces, plugins.
  * @param source a slice of a target object
+ * @param freeze if set to True, the output object will be frozen
  */
-export function createObject<T>(target: T, source: Partial<T>): T {
-  return Object.assign({}, target, source);
+export function createObject<T>(target: T, source: Partial<T>, freeze?: boolean): T {
+  const obj = Object.assign({}, target, source);
+  if (freeze) {
+    deepFreeze(obj);
+  }
+  return obj;
+}
+
+function deepFreeze(val: {[key: string]: any}) {
+  Object.keys(val).forEach((property: string) => {
+    if (typeof(val[property]) === 'object' && !Object.isFrozen(val[property])) {
+      deepFreeze(val[property]);
+    }
+  });
+  return Object.freeze(val);
+}
+
+export function cloneObject<T>(obj: T): T {
+  if (typeof obj === 'object') {
+    return JSON.parse(JSON.stringify(obj));
+  }
+  return obj;
 }

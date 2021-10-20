@@ -12,12 +12,13 @@
 
 import { createSelector } from 'reselect';
 import { AppState } from '..';
+import { cloneObject } from '../helpers';
 
 const selectState = (state: AppState) => state.branding;
 
 export const selectBranding = createSelector(
   selectState,
-  state => state.data,
+  state => cloneObject(state.data),
 );
 
 export const selectBrandingError = createSelector(

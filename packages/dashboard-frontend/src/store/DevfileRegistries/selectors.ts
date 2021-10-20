@@ -15,6 +15,7 @@ import { AppState } from '..';
 import match from '../../services/helpers/filter';
 import { selectWorkspacesSettingsState } from '../Workspaces/Settings/selectors';
 import { isDevworkspacesEnabled } from '../../services/helpers/devworkspace';
+import { cloneObject } from '../helpers';
 
 const selectState = (state: AppState) => state.devfileRegistries;
 
@@ -87,7 +88,7 @@ function filterDevfileV2Metadata(metadata: Array<che.DevfileMetaData>): Array<ch
 
 export const selectDevfileSchema = createSelector(
   selectState,
-  state => state.schema.schema,
+  state => cloneObject(state.schema.schema),
 );
 
 export const selectDevfileSchemaError = createSelector(

@@ -221,22 +221,22 @@ export const reducer: Reducer<State> = (state: State | undefined, incomingAction
             plugin: state.plugins[action.url]?.plugin,
           }
         },
-      });
-    case 'REQUEST_DW_EDITOR': 
-        return createObject(state, {
-          isLoading: true,
-          editors: Object.assign(state.editors, {
-            [action.editorName]: {
-              plugin: undefined,
-            }
-          }),
-        });
+      }, true);
+    case 'REQUEST_DW_EDITOR':
+      return createObject(state, {
+        isLoading: true,
+        editors: Object.assign(state.editors, {
+          [action.editorName]: {
+            plugin: undefined,
+          }
+        }),
+      }, true);
     case 'REQUEST_DW_DEFAULT_EDITOR':
       return createObject(state, {
         isLoading: true,
         defaultEditorName: undefined,
         defaultEditorError: undefined,
-      });
+      }, true);
     case 'RECEIVE_DW_PLUGIN':
       return createObject(state, {
         isLoading: false,
@@ -245,25 +245,25 @@ export const reducer: Reducer<State> = (state: State | undefined, incomingAction
             plugin: action.plugin,
           }
         }
-      });
-    case 'RECEIVE_DW_EDITOR': 
+      }, true);
+    case 'RECEIVE_DW_EDITOR':
       return createObject(state, {
-          isLoading: false,
-          editors: Object.assign(state.editors, {
-            [action.editorName]: {
-              plugin: action.plugin,
-            }
-          })
-        });
+        isLoading: false,
+        editors: Object.assign(state.editors, {
+          [action.editorName]: {
+            plugin: action.plugin,
+          }
+        })
+      }, true);
      case 'RECEIVE_DW_EDITOR_ERROR':
-          return createObject(state, {
-            isLoading: false,
-            editors: {
-              [action.editorName]: {
-                error: action.error,
-              }
-            }});
-      
+       return createObject(state, {
+         isLoading: false,
+         editors: {
+           [action.editorName]: {
+             error: action.error,
+           }
+         }
+       }, true);
     case 'RECEIVE_DW_PLUGIN_ERROR':
       return createObject(state, {
         isLoading: false,
@@ -274,17 +274,17 @@ export const reducer: Reducer<State> = (state: State | undefined, incomingAction
             plugin: state.plugins[action.url]?.plugin,
           }
         }
-      });
+      }, true);
     case 'RECEIVE_DW_DEFAULT_EDITOR_ERROR':
       return createObject(state, {
         isLoading: false,
         defaultEditorError: action.error,
-      });
+      }, true);
     case 'RECEIVE_DW_DEFAULT_EDITOR':
         return createObject(state, {
           isLoading: false,
           defaultEditorName: action.defaultEditorName,
-        });
+        }, true);
       default:
       return state;
   }

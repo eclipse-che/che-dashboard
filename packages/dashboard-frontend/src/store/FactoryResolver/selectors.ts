@@ -14,15 +14,9 @@ import { createSelector } from 'reselect';
 import { AppState } from '..';
 import { cloneObject } from '../helpers';
 
-const selectState = (state: AppState) => state.userProfile;
-export const selectUserProfileState = selectState;
+const selectState = (state: AppState) => state.factoryResolver;
 
-export const selectUserProfile = createSelector(
+export const selectFactoryResolver = createSelector(
   selectState,
-  state => cloneObject(state.profile),
-);
-
-export const selectUserProfileError = createSelector(
-  selectState,
-  state => state.error,
+  state => cloneObject(state.resolver),
 );

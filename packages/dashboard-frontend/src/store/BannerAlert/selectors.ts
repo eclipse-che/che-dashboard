@@ -12,10 +12,11 @@
 
 import { createSelector } from 'reselect';
 import { AppState } from '..';
+import { cloneObject } from '../helpers';
 
 const selectState = (state: AppState) => state.bannerAlert;
 
 export const selectBannerAlertMessages = createSelector(
   selectState,
-  state => state.messages,
+  state => cloneObject(state.messages),
 );

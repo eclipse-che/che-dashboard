@@ -93,19 +93,19 @@ export const reducer: Reducer<State> = (state: State | undefined, incomingAction
       return createObject(state, {
         isLoading: true,
         error: undefined,
-      });
+      }, true);
     case Type.RECEIVE_APP_INFO:
       return createObject(state, {
         isLoading: false,
         applications: state.applications
           .filter(appInfo => appInfo.title !== action.appInfo.title)
           .concat([action.appInfo]),
-      });
+      }, true);
     case Type.RECEIVE_APP_INFO_ERROR:
       return createObject(state, {
         isLoading: false,
         error: action.error,
-      });
+      }, true);
     default:
       return state;
   }

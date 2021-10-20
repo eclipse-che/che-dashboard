@@ -270,16 +270,16 @@ export const reducer: Reducer<State> = (state: State | undefined, incomingAction
       return createObject(state, {
         isLoading: true,
         registries: {},
-      });
+      }, true);
     case 'REQUEST_SCHEMA':
       return createObject(state, {
         isLoading: true,
         schema: {},
-      });
+      }, true);
     case 'REQUEST_DEVFILE':
       return createObject(state, {
         isLoading: true,
-      });
+      }, true);
     case 'RECEIVE_REGISTRY_METADATA':
       return createObject(state, {
         isLoading: false,
@@ -288,7 +288,7 @@ export const reducer: Reducer<State> = (state: State | undefined, incomingAction
             metadata: action.metadata,
           },
         }),
-      });
+      }, true);
     case 'RECEIVE_REGISTRY_ERROR':
       return createObject(state, {
         isLoading: false,
@@ -297,7 +297,7 @@ export const reducer: Reducer<State> = (state: State | undefined, incomingAction
             error: action.error,
           },
         },
-      });
+      }, true);
     case 'RECEIVE_DEVFILE':
       return createObject(state, {
         isLoading: false,
@@ -306,30 +306,30 @@ export const reducer: Reducer<State> = (state: State | undefined, incomingAction
             content: action.devfile,
           }
         }
-      });
+      }, true);
     case 'RECEIVE_SCHEMA':
       return createObject(state, {
         isLoading: false,
         schema: {
           schema: action.schema,
         },
-      });
+      }, true);
     case 'RECEIVE_SCHEMA_ERROR':
       return createObject(state, {
         isLoading: false,
         schema: {
           error: action.error,
         },
-      });
+      }, true);
     case 'SET_FILTER': {
       return createObject(state, {
         filter: action.value,
-      });
+      }, true);
     }
     case 'CLEAR_FILTER': {
       return createObject(state, {
         filter: '',
-      });
+      }, true);
     }
     default:
       return state;

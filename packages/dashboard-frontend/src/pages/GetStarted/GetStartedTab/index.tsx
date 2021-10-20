@@ -62,14 +62,14 @@ export class SamplesListTab extends React.PureComponent<Props, State> {
     if (this.isLoading) {
       return;
     }
-    let devfile = load(devfileContent);
+    const devfile = load(devfileContent);
 
     if (this.state.temporary === undefined) {
-      devfile = updateDevfile(devfile, this.props.preferredStorageType);
+      updateDevfile(devfile, this.props.preferredStorageType);
     } else if (this.props.preferredStorageType === 'async') {
-      devfile = updateDevfile(devfile, this.state.temporary ? 'ephemeral' : this.props.preferredStorageType);
+      updateDevfile(devfile, this.state.temporary ? 'ephemeral' : this.props.preferredStorageType);
     } else {
-      devfile = updateDevfile(devfile, this.state.temporary ? 'ephemeral' : 'persistent');
+      updateDevfile(devfile, this.state.temporary ? 'ephemeral' : 'persistent');
     }
     this.isLoading = true;
     try {
@@ -82,8 +82,8 @@ export class SamplesListTab extends React.PureComponent<Props, State> {
 
   private handleDevfileResolver(resolverState: ResolverState, stackName: string): Promise<void> {
     const devfile: Devfile = resolverState.devfile;
-    const updatedDevfile = updateDevfile(devfile, this.props.preferredStorageType);
-    const devfileContent = stringify(updatedDevfile);
+    updateDevfile(devfile, this.props.preferredStorageType);
+    const devfileContent = stringify(devfile);
 
     return this.props.onDevfile(devfileContent, stackName, resolverState.optionalFilesContent || {});
   }

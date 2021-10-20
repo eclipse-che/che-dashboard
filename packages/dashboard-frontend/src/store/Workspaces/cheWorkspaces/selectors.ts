@@ -12,6 +12,7 @@
 
 import { createSelector } from 'reselect';
 import { AppState } from '../..';
+import { cloneObject } from '../../helpers';
 
 const selectState = (state: AppState) => state.cheWorkspaces;
 export const selectCheWorkspacesState = selectState;
@@ -19,7 +20,7 @@ export const selectCheWorkspacesState = selectState;
 export const selectAllCheWorkspaces = createSelector(
   selectState,
   state => {
-    return state.workspaces;
+    return cloneObject(state.workspaces);
   }
 );
 

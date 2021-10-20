@@ -41,6 +41,7 @@ import { DEVWORKSPACE_DEVFILE_SOURCE } from '../../services/workspace-client/dev
 import devfileApi from '../../services/devfileApi';
 import getRandomString from '../../services/helpers/random';
 import { isDevworkspacesEnabled } from '../../services/helpers/devworkspace';
+import { selectFactoryResolver } from '../../store/FactoryResolver/selectors';
 
 const WS_ATTRIBUTES_TO_SAVE: string[] = ['workspaceDeploymentLabels', 'workspaceDeploymentAnnotations', 'policies.create', 'che-editor'];
 
@@ -78,7 +79,6 @@ type State = {
 
 export class FactoryLoaderContainer extends React.PureComponent<Props, State> {
   private factoryLoaderCallbacks: { showAlert?: (options: AlertOptions) => void } = {};
-  private factoryResolver: FactoryResolverStore.State;
   private overrideDevfileObject: {
     [params: string]: string
   } = {};
@@ -110,7 +110,7 @@ export class FactoryLoaderContainer extends React.PureComponent<Props, State> {
   }
 
   private getTargetDevfile(): api.che.workspace.devfile.Devfile | undefined {
-    let devfile = this.factoryResolver.resolver.devfile;
+    const devfile = this.props.resolver.devfile;
     if (!devfile) {
       return undefined;
     }
@@ -120,7 +120,7 @@ export class FactoryLoaderContainer extends React.PureComponent<Props, State> {
       devfile?.attributes?.asyncPersist === undefined &&
       this.props.preferredStorageType
     ) {
-      devfile = updateDevfile(devfile, this.props.preferredStorageType);
+      updateDevfile(devfile, this.props.preferredStorageType);
     }
 
     return devfile;
@@ -159,17 +159,13 @@ export class FactoryLoaderContainer extends React.PureComponent<Props, State> {
   public async componentDidUpdate(): Promise<void> {
     this.showOnlyContentIfDevWorkspace();
 
-    const { history, workspace, factoryResolver } = this.props;
+    const { history, workspace } = this.props;
     if (this.state.search !== history.location.search) {
       this.setState({
         search: history.location.search,
         hasError: false,
       });
       return this.createWorkspaceFromFactory();
-    }
-
-    if (factoryResolver) {
-      this.factoryResolver = factoryResolver;
     }
 
     if (this.state.currentStep === LoadFactorySteps.START_WORKSPACE &&
@@ -290,11 +286,11 @@ export class FactoryLoaderContainer extends React.PureComponent<Props, State> {
       this.showAlert(`Failed to resolve a devfile. ${common.helpers.errors.getMessage(e)}`);
       return;
     }
-    if (this.factoryResolver.resolver?.location !== location) {
+    if (this.props.resolver?.location !== location) {
       this.showAlert('Failed to resolve a devfile.');
       return;
     }
-    const { source } = this.factoryResolver.resolver;
+    const { source } = this.props.resolver;
     const searchParam = new window.URLSearchParams(this.state.search);
     let resolvedDevfileMessage: string;
     // source tells where devfile comes from
@@ -403,7 +399,7 @@ export class FactoryLoaderContainer extends React.PureComponent<Props, State> {
       }
       const namespace = this.props.defaultNamespace?.name;
       try {
-        await this.props.createWorkspaceFromDevfile(devfile, undefined, namespace, attrs, this.factoryResolver.resolver.optionalFilesContent || {});
+        await this.props.createWorkspaceFromDevfile(devfile, undefined, namespace, attrs, this.props.resolver.optionalFilesContent || {});
         this.props.setWorkspaceQualifiedName(namespace, devfile.metadata.name as string);
         workspace = this.props.activeWorkspace;
       } catch (e) {
@@ -514,13 +510,13 @@ export class FactoryLoaderContainer extends React.PureComponent<Props, State> {
 
     await delay();
 
-    let devfile = await this.resolveDevfile(location);
+    const devfile = await this.resolveDevfile(location);
 
     if (!devfile) {
       return;
     }
 
-    devfile = updateDevfileMetadata(devfile, attrs.factoryParams, createPolicy);
+    updateDevfileMetadata(devfile, attrs.factoryParams, createPolicy);
     this.setState({ currentStep: LoadFactorySteps.APPLYING_DEVFILE });
 
     await delay();
@@ -565,7 +561,7 @@ export class FactoryLoaderContainer extends React.PureComponent<Props, State> {
 }
 
 const mapStateToProps = (state: AppState) => ({
-  factoryResolver: state.factoryResolver,
+  resolver: selectFactoryResolver(state),
   workspace: selectWorkspaceById(state),
   allWorkspaces: selectAllWorkspaces(state),
   infrastructureNamespaces: selectInfrastructureNamespaces(state),

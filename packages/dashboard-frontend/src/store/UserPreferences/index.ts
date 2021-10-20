@@ -85,12 +85,12 @@ export const reducer: Reducer<State> = (state: State | undefined, incomingAction
     case 'REQUEST_USER_PREFERENCES':
       return createObject(state, {
         isLoading: true,
-      });
+      }, true);
     case 'RECEIVE_USER_PREFERENCES':
       return createObject(state, {
         isLoading: false,
         preferences: action.preferences
-      });
+      }, true);
     default:
       return state;
   }
