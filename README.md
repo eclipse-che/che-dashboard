@@ -159,10 +159,17 @@ Field `"links"` allows you to configure links in the masthead, like
   ]
 ```
 
-## External Applications Menu (experimental)
+#### External Applications Menu (experimental)
 
-The Dashboard has the ability to provide the way to navigate to the Openshift cluster console via the `Applications` menu that is appearing in the Dashboard masthead. This ability can be turned on by setting the environment variable `OPENSHIFT_CONSOLE_URL`. It cat be turned off as well by unsetting that variable or by providing an empty value. Optionally one can also provide a custom title, icon, and group name:
+The Dashboard has the ability to provide the way to navigate to the OpenShift cluster console via the `Applications` menu that is shown in the Dashboard masthead.
+This ability can be tunned by setting the environment variables:
+| Env var | Description | Default value |
+| ------- | ----------- | ------------- |
+| OPENSHIFT_CONSOLE_GROUP | The group title where Console link is shown | Applications |
+| OPENSHIFT_CONSOLE_TITLE | The title that is displayed near icon. Set to "" to hide that Console Link at all. | OpenShift Console |
+| OPENSHIFT_CONSOLE_ICON | The icon that is used for the link | ${CONSOLE_URL}/static/assets/redhat.png |
 
+The following example shows how to provision that env vars with Che Operator:
 ```sh
 CHE_NAMESPACE="eclipse-che"
 cat <<EOF | kubectl apply -f -
@@ -177,23 +184,19 @@ metadata:
   annotations:
     che.eclipse.org/OPENSHIFT_CONSOLE_GROUP_env-name: OPENSHIFT_CONSOLE_GROUP
     che.eclipse.org/OPENSHIFT_CONSOLE_TITLE_env-name: OPENSHIFT_CONSOLE_TITLE
+    che.eclipse.org/OPENSHIFT_CONSOLE_ICON_env-name: OPENSHIFT_CONSOLE_ICON
     che.eclipse.org/mount-as: env
 data:
   OPENSHIFT_CONSOLE_GROUP: Apps
-  OPENSHIFT_CONSOLE_TITLE: OpenShift
+  OPENSHIFT_CONSOLE_TITLE: OpenShift Container Platform
+  OPENSHIFT_CONSOLE_ICON: https://example.com/icon.png
 EOF
 
 # Due temporary limitation we need to rollout che operator to apply changes
 kubectl rollout restart deployment/che-operator -n $CHE_NAMESPACE
 ```
 
-**Note**:
-
-This feature is experimental and may be changed without any notice/announcement.
-
-**Note #2**:
-
-As for now, `Applications` menu can have only one item but we won't stop at this point and have already had plans to make it extendable and configurable.
+**Note**: This way to configure dashboard is experimental and may be changed.
 
 ## License
 
