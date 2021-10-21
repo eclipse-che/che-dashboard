@@ -12,35 +12,16 @@
 
 // https://github.com/eclipse-che/che-theia/blob/c9d74c0e05cf1323a524574c23bb26c73981743b/extensions/eclipse-che-theia-remote-impl-che-server/src/node/che-server-devfile-service-impl.ts
 
+import { V220DevfileCommands, V220DevfileComponents, V220DevfileComponentsItemsContainerEndpoints, V220DevfileComponentsItemsContainerEnv, V220DevfileProjects, V220DevfileProjectsItemsGit } from '@devfile/api';
 import { che as cheApi } from '@eclipse-che/api';
 import devfileApi from '../../services/devfileApi';
-import { DevfileCommand, DevfileComponent, DevfileComponentEndpoint, DevfileComponentEnv, DevfileComponentVolumeMount, DevfileProject, DevfileProjectInfo } from './devfile-service';
 
 export class DevfileConverter {
 
   private INFRASTRUCTURE_NAMESPACE = 'infrastructureNamespace';
 
-  componentVolumeV2toComponentVolumeV1(
-    componentVolumes?: DevfileComponentVolumeMount[]
-  ): cheApi.workspace.devfile.DevfileVolume[] | undefined {
-    if (componentVolumes) {
-      return componentVolumes.map(volumeV2 => {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const volume: any = {};
-        if (volumeV2.name) {
-          volume.name = volumeV2.name;
-        }
-        if (volumeV2.path) {
-          volume.containerPath = volumeV2.path;
-        }
-        return volume;
-      });
-    }
-    return undefined;
-  }
-
   componentEndpointV2toComponentEndpointV1(
-    componentEndpoints?: DevfileComponentEndpoint[]
+    componentEndpoints?: V220DevfileComponentsItemsContainerEndpoints[]
   ): cheApi.workspace.devfile.Endpoint[] | undefined {
     if (componentEndpoints) {
       return componentEndpoints.map(endpointV2 => {
@@ -67,7 +48,7 @@ export class DevfileConverter {
     return undefined;
   }
 
-  componentEnvV2toComponentEnvV1(componentEnvs?: DevfileComponentEnv[]): cheApi.workspace.devfile.Env[] | undefined {
+  componentEnvV2toComponentEnvV1(componentEnvs?: V220DevfileComponentsItemsContainerEnv[]): cheApi.workspace.devfile.Env[] | undefined {
     if (componentEnvs) {
       return componentEnvs.map(envV2 => {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -84,7 +65,7 @@ export class DevfileConverter {
     return undefined;
   }
 
-  componentV2toComponentV1(componentV2: DevfileComponent): cheApi.workspace.devfile.Component {
+  componentV2toComponentV1(componentV2: V220DevfileComponents): cheApi.workspace.devfile.Component {
     if (componentV2.kubernetes) {
       // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
@@ -97,44 +78,7 @@ export class DevfileConverter {
 
     const devfileV1Component: cheApi.workspace.devfile.Component = {};
 
-    if (componentV2.plugin) {
-      devfileV1Component.type = componentV2.attributes?.['source-origin'] || 'chePlugin';
-
-      if (componentV2.plugin.memoryLimit) {
-        devfileV1Component.memoryLimit = componentV2.plugin.memoryLimit;
-      }
-      if (componentV2.plugin.memoryRequest) {
-        devfileV1Component.memoryRequest = componentV2.plugin.memoryRequest;
-      }
-      if (componentV2.plugin.cpuLimit) {
-        devfileV1Component.cpuLimit = componentV2.plugin.cpuLimit;
-      }
-      if (componentV2.plugin.cpuRequest) {
-        devfileV1Component.cpuRequest = componentV2.plugin.cpuRequest;
-      }
-      if (componentV2.name) {
-        devfileV1Component.alias = componentV2.name;
-      }
-
-      if (componentV2.plugin.id) {
-        devfileV1Component.id = componentV2.plugin.id;
-      }
-      if (componentV2.plugin.url) {
-        devfileV1Component.reference = componentV2.plugin.url;
-      }
-      if (componentV2.plugin.mountSources) {
-        devfileV1Component.mountSources = componentV2.plugin.mountSources;
-      }
-      if (componentV2.plugin.preferences) {
-        devfileV1Component.preferences = componentV2.plugin.preferences;
-      }
-      if (componentV2.plugin.registryUrl) {
-        devfileV1Component.registryUrl = componentV2.plugin.registryUrl;
-      }
-      devfileV1Component.env = this.componentEnvV2toComponentEnvV1(componentV2.plugin.env);
-      devfileV1Component.volumes = this.componentVolumeV2toComponentVolumeV1(componentV2.plugin.volumeMounts);
-      devfileV1Component.endpoints = this.componentEndpointV2toComponentEndpointV1(componentV2.plugin.endpoints);
-    } else if (componentV2.container) {
+    if (componentV2.container) {
       devfileV1Component.type = 'dockerimage';
 
       if (componentV2.container.memoryLimit) {
@@ -167,7 +111,6 @@ export class DevfileConverter {
       }
 
       devfileV1Component.env = this.componentEnvV2toComponentEnvV1(componentV2.container.env);
-      devfileV1Component.volumes = this.componentVolumeV2toComponentVolumeV1(componentV2.container.volumeMounts);
       devfileV1Component.endpoints = this.componentEndpointV2toComponentEndpointV1(componentV2.container.endpoints);
     }
 
@@ -184,7 +127,7 @@ export class DevfileConverter {
     return devfileV1Component;
   }
 
-  commandV2toCommandV1(commandV2: DevfileCommand): cheApi.workspace.devfile.DevfileCommand {
+  commandV2toCommandV1(commandV2: V220DevfileCommands): cheApi.workspace.devfile.DevfileCommand {
     const devfileV1Command: cheApi.workspace.devfile.DevfileCommand = {};
 
     if (commandV2.id) {
@@ -204,27 +147,13 @@ export class DevfileConverter {
       }
       devfileAction.type = 'exec';
       devfileV1Command.actions = [devfileAction];
-    } else if (commandV2.vscodeLaunch) {
-      const devfileAction: cheApi.workspace.devfile.DevfileAction = {};
-      if (commandV2.vscodeLaunch.inline) {
-        devfileAction.referenceContent = commandV2.vscodeLaunch.inline;
-      }
-      devfileAction.type = 'vscode-launch';
-      devfileV1Command.actions = [devfileAction];
-    } else if (commandV2.vscodeTask) {
-      const devfileAction: cheApi.workspace.devfile.DevfileAction = {};
-      if (commandV2.vscodeTask.inline) {
-        devfileAction.referenceContent = commandV2.vscodeTask.inline;
-      }
-      devfileAction.type = 'vscode-task';
-      devfileV1Command.actions = [devfileAction];
     }
     return devfileV1Command;
   }
 
   projectInfoToProjectSource(
-    project: DevfileProject,
-    projectInfo: DevfileProjectInfo
+    project: V220DevfileProjects,
+    projectInfo: V220DevfileProjectsItemsGit
   ): cheApi.workspace.devfile.Source {
     const gitSource: cheApi.workspace.devfile.Source = {};
 
@@ -279,7 +208,7 @@ export class DevfileConverter {
     return devfileMetadataV1;
   }
 
-  projectV2toProjectV1(projectV2: DevfileProject): cheApi.workspace.devfile.Project {
+  projectV2toProjectV1(projectV2: V220DevfileProjects): cheApi.workspace.devfile.Project {
     const devfileV1Project: cheApi.workspace.devfile.Project = {
       name: projectV2.name,
     };
@@ -289,8 +218,6 @@ export class DevfileConverter {
 
     if (projectV2.git) {
       devfileV1Project.source = this.projectInfoToProjectSource(projectV2, projectV2.git);
-    } else if (projectV2.github) {
-      devfileV1Project.source = this.projectInfoToProjectSource(projectV2, projectV2.github);
     } else if (projectV2.zip) {
       devfileV1Project.source = {
         type: 'zip',
@@ -305,11 +232,11 @@ export class DevfileConverter {
     const devfileV1: cheApi.workspace.devfile.Devfile = {
       apiVersion: '1.0.0',
       metadata: this.metadataV2toMetadataV1(devfileV2.metadata),
-      projects: (devfileV2.projects || []).map(project => this.projectV2toProjectV1(project as DevfileProject)),
+      projects: (devfileV2.projects || []).map(project => this.projectV2toProjectV1(project)),
       components: (devfileV2.components || [])
-        .map(component => this.componentV2toComponentV1(component as DevfileComponent))
+        .map(component => this.componentV2toComponentV1(component))
         .filter(component => Object.keys(component).length !== 0),
-      commands: (devfileV2.commands || []).map(command => this.commandV2toCommandV1(command as DevfileCommand)),
+      commands: (devfileV2.commands || []).map(command => this.commandV2toCommandV1(command)),
     };
 
     if (devfileV2.metadata.attributes) {
