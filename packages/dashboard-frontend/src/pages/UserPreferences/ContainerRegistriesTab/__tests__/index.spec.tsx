@@ -40,7 +40,6 @@ describe('ContainerRegistries', () => {
           isLoading={isLoading}
           requestCredentials={mockRequestCredentials}
           updateCredentials={mockUpdateCredentials}
-          deleteCredentials={jest.fn()}
         />
       </Provider>
     );
