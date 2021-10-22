@@ -31,10 +31,10 @@ export class DockerConfigApi implements IDockerConfigApi {
   async read(namespace: string): Promise<api.IDockerConfig> {
     try {
       const { body } = await this.coreV1API.readNamespacedSecret(secretName, namespace);
-      return this.createResponse(body);
+      return this.toDockerConfig(body);
     } catch (error) {
       if ((error as { statusCode?: number } | undefined)?.statusCode === 404) {
-        return this.createResponse();
+        return this.toDockerConfig();
       }
       const additionalMessage = `unable to read dockerConfig in the specified namespace "${namespace}"`;
       throw createError(error, 'CORE_V1_API_ERROR', additionalMessage);
@@ -49,22 +49,22 @@ export class DockerConfigApi implements IDockerConfigApi {
         secret = resp.body;
       } catch (e) {
         if ((e as { statusCode?: number } | undefined)?.statusCode === 404) {
-          const dockerConfigSecret = this.createDockerConfigSecret(dockerCfg);
+          const dockerConfigSecret = this.toDockerConfigSecret(dockerCfg);
           const { body } = await this.coreV1API.createNamespacedSecret(namespace, dockerConfigSecret);
-          return this.createResponse(body);
+          return this.toDockerConfig(body);
         }
         throw e;
       }
       this.updateDockerConfigSecret(secret, dockerCfg);
       const { body } = await this.coreV1API.replaceNamespacedSecret(secretName, namespace, secret);
-      return this.createResponse(body);
+      return this.toDockerConfig(body);
     } catch (error) {
       const additionalMessage = `unable to update dockerConfig in the specified namespace "${namespace}"`;
       throw createError(error, 'CORE_V1_API_ERROR', additionalMessage);
     }
   }
 
-  private createDockerConfigSecret(dockerCfg: api.IDockerConfig): V1Secret {
+  private toDockerConfigSecret(dockerCfg: api.IDockerConfig): V1Secret {
     return {
       apiVersion: 'v1',
       data: {
@@ -83,7 +83,7 @@ export class DockerConfigApi implements IDockerConfigApi {
     return secret?.data?.[secretKey] || '';
   }
 
-  private createResponse(secret?: V1Secret): api.IDockerConfig {
+  private toDockerConfig(secret?: V1Secret): api.IDockerConfig {
     const dockerconfig = this.getDockerConfig(secret);
     const resourceVersion = secret?.metadata?.resourceVersion;
 

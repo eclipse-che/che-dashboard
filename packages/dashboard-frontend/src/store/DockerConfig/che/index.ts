@@ -19,21 +19,21 @@ import { State } from '../dockerConfigState';
 import * as UserPreferences from '../../UserPreferences';
 export * from '../dockerConfigState';
 
-interface RequestCredentialsAction extends Action {
+export interface RequestCredentialsAction extends Action {
   type: 'REQUEST_CHEWORKSPACE_CREDENTIALS';
 }
 
-interface SetCredentialsAction extends Action {
+export interface SetCredentialsAction extends Action {
   type: 'SET_CHEWORKSPACE_CREDENTIALS';
   registries: RegistryRow[];
 }
 
-interface ReceiveErrorAction extends Action {
+export interface ReceiveErrorAction extends Action {
   type: 'RECEIVE_CHEWORKSPACE_CREDENTIALS_ERROR';
   error: string;
 }
 
-type KnownAction = RequestCredentialsAction | SetCredentialsAction | ReceiveErrorAction;
+export type KnownAction = RequestCredentialsAction | SetCredentialsAction | ReceiveErrorAction;
 
 export type ActionCreators = {
   requestCredentials: () => AppThunk<KnownAction, Promise<void>>;

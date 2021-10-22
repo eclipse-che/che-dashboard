@@ -116,15 +116,23 @@ export class FakeStoreBuilder {
     return this;
   }
 
-  public withDwDockerConfig(registries: RegistryRow[], isLoading = false): FakeStoreBuilder {
+  public withDwDockerConfig(registries: RegistryRow[], isLoading = false, error?: string): FakeStoreBuilder {
     this.state.dwDockerConfig.registries = registries;
     this.state.dwDockerConfig.isLoading = isLoading;
+    this.state.dwDockerConfig.error = error;
     return this;
   }
 
-  public withCheDockerConfig(registries: RegistryRow[], isLoading = false): FakeStoreBuilder {
+  public withCheDockerConfig(registries: RegistryRow[], isLoading = false, error?: string): FakeStoreBuilder {
     this.state.cheDockerConfig.registries = registries;
     this.state.cheDockerConfig.isLoading = isLoading;
+    this.state.cheDockerConfig.error = error;
+    return this;
+  }
+
+  public withUserPreferences(preferences: che.UserPreferences, isLoading = false): FakeStoreBuilder {
+    this.state.userPreferences.preferences = preferences;
+    this.state.userPreferences.isLoading = isLoading;
     return this;
   }
 
@@ -195,11 +203,11 @@ export class FakeStoreBuilder {
   }
 
   public withWorkspacesSettings(
-    settings: che.WorkspaceSettings,
+    settings: Partial<che.WorkspaceSettings>,
     isLoading = false,
     error?: string,
   ): FakeStoreBuilder {
-    this.state.workspacesSettings.settings = Object.assign({}, settings);
+    this.state.workspacesSettings.settings = Object.assign({}, settings) as che.WorkspaceSettings;
     this.state.workspacesSettings.isLoading = isLoading;
     this.state.workspacesSettings.error = error;
     return this;

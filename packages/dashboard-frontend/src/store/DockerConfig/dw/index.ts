@@ -19,22 +19,22 @@ import { RegistryRow } from '../types';
 import { State } from '../dockerConfigState';
 export * from '../dockerConfigState';
 
-interface RequestCredentialsAction extends Action {
+export interface RequestCredentialsAction extends Action {
   type: 'REQUEST_DEVWORKSPACE_CREDENTIALS';
 }
 
-interface SetCredentialsAction extends Action {
+export interface SetCredentialsAction extends Action {
   type: 'SET_DEVWORKSPACE_CREDENTIALS';
   registries: RegistryRow[];
   resourceVersion: string | undefined;
 }
 
-interface ReceiveErrorAction extends Action {
+export interface ReceiveErrorAction extends Action {
   type: 'RECEIVE_DEVWORKSPACE_CREDENTIALS_ERROR';
   error: string;
 }
 
-type KnownAction = RequestCredentialsAction | SetCredentialsAction | ReceiveErrorAction;
+export type KnownAction = RequestCredentialsAction | SetCredentialsAction | ReceiveErrorAction;
 
 export type ActionCreators = {
   requestCredentials: (namespace: string) => AppThunk<KnownAction, Promise<void>>;
@@ -66,7 +66,7 @@ export const actionCreators: ActionCreators = {
     dispatch({ type: 'REQUEST_DEVWORKSPACE_CREDENTIALS' });
     const { dwDockerConfig } = getState();
     try {
-      const { resourceVersion } = await putDockerConfig(namespace, registries, dwDockerConfig.resourceVersion);
+      const { resourceVersion } = await putDockerConfig(namespace, registries, dwDockerConfig?.resourceVersion);
       dispatch({
         type: 'SET_DEVWORKSPACE_CREDENTIALS',
         registries,
