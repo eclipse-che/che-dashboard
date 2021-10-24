@@ -22,9 +22,6 @@ export function getMessage(error: unknown): string {
   if (!error) {
     return 'Error is not specified.';
   }
-
-  console.error(error);
-
   if (isKubeClientError(error)) {
     const statusCode = error.statusCode || error.response.statusCode;
     if (!statusCode || statusCode === -1) {
@@ -33,8 +30,14 @@ export function getMessage(error: unknown): string {
     if (error.body?.message) {
       // body is from K8s in JSON form with message present
       return error.body.message;
+    } else {
+      // todo should investigate why does it happen (fix for https://github.com/eclipse/che/issues/20684)
+      const message = (error.response as any)?.body?.message;
+      if (message) {
+        return  message;
+      }
     }
-    if (error.body) {
+    if (error.body && typeof (error.body) === 'string') {
       // pure http response body without message available
       return error.body;
     }
