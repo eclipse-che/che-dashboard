@@ -25,8 +25,6 @@ import devfileApi from '../../services/devfileApi';
 
 export class DevfileConverter {
 
-  private INFRASTRUCTURE_NAMESPACE = 'infrastructureNamespace';
-
   componentEndpointV2toComponentEndpointV1(
     componentEndpoints?: V220DevfileComponentsItemsContainerEndpoints[]
   ): cheApi.workspace.devfile.Endpoint[] | undefined {
@@ -254,10 +252,6 @@ export class DevfileConverter {
           // skip attribute that value is not a string
           if (typeof devfileV2.metadata.attributes?.[attributeName] !== 'string') {
             return;
-          }
-          if (attributeName !== this.INFRASTRUCTURE_NAMESPACE) {
-            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-            attributes[attributeName] = devfileV2.metadata.attributes![attributeName];
           }
         });
         if (Object.keys(attributes).length > 0) {
