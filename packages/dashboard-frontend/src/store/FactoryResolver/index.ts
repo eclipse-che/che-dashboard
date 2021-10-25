@@ -20,12 +20,8 @@ import { CheWorkspaceClient } from '../../services/workspace-client/cheworkspace
 import { AppThunk } from '../index';
 import { createObject } from '../helpers';
 import { getDevfile } from './getDevfile';
-import { isDevfileV2 } from '../../services/devfileApi';
-import { selectCheDevworkspaceEnabled } from '../Workspaces/Settings/selectors';
-import { DevfileConverter } from './devfile-converter';
 
 const WorkspaceClient = container.get(CheWorkspaceClient);
-const devfileConverter = new DevfileConverter();
 
 export type OAuthResponse = {
   attributes: {
@@ -138,11 +134,7 @@ export const actionCreators: ActionCreators = {
       if (cheEditor) {
         optionalFilesContent['.che/che-editor.yaml'] = cheEditor;
       }
-      let devfile = getDevfile(data, location);
-
-      if (isDevfileV2(devfile) && selectCheDevworkspaceEnabled(state) === false) {
-        devfile = devfileConverter.devfileV2toDevfileV1(devfile);
-      }
+      const devfile = getDevfile(data, location);
 
       const { source, scm_info } = data;
       dispatch({

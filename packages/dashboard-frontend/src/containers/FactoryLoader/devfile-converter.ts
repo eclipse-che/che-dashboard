@@ -12,7 +12,14 @@
 
 // https://github.com/eclipse-che/che-theia/blob/c9d74c0e05cf1323a524574c23bb26c73981743b/extensions/eclipse-che-theia-remote-impl-che-server/src/node/che-server-devfile-service-impl.ts
 
-import { V220DevfileCommands, V220DevfileComponents, V220DevfileComponentsItemsContainerEndpoints, V220DevfileComponentsItemsContainerEnv, V220DevfileProjects, V220DevfileProjectsItemsGit } from '@devfile/api';
+import {
+  V220DevfileCommands,
+  V220DevfileComponents,
+  V220DevfileComponentsItemsContainerEndpoints,
+  V220DevfileComponentsItemsContainerEnv,
+  V220DevfileProjects,
+  V220DevfileProjectsItemsGit,
+} from '@devfile/api';
 import { che as cheApi } from '@eclipse-che/api';
 import devfileApi from '../../services/devfileApi';
 
