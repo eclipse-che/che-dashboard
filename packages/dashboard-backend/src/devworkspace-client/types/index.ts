@@ -11,7 +11,6 @@
  */
 
 import { V1alpha2DevWorkspace, V1alpha2DevWorkspaceTemplate } from '@devfile/api';
-import { V1Secret, V1Status } from '@kubernetes/client-node';
 import { api } from '@eclipse-che/common';
 
 /**

@@ -105,8 +105,7 @@ const mapStateToProps = (state: AppState) => ({
 });
 
 const connector = connect(
-  mapStateToProps,
-  DockerConfigStore.actionCreators,
+  mapStateToProps
 );
 
 type MappedProps = ConnectedProps<typeof connector>;

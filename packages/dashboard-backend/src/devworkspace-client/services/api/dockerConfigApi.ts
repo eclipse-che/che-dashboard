@@ -15,6 +15,7 @@ import { IDockerConfigApi } from '../../types';
 import { V1Secret } from '@kubernetes/client-node/dist/gen/model/v1Secret';
 import { api } from '@eclipse-che/common';
 import { createError } from '../helpers';
+import { isKubeClientError } from '@eclipse-che/common/lib/helpers/errors';
 
 const secretKey = '.dockerconfigjson';
 const secretName = 'devworkspace-container-registry-dockercfg';
@@ -33,10 +34,11 @@ export class DockerConfigApi implements IDockerConfigApi {
       const { body } = await this.coreV1API.readNamespacedSecret(secretName, namespace);
       return this.toDockerConfig(body);
     } catch (error) {
-      if ((error as { statusCode?: number } | undefined)?.statusCode === 404) {
+      if (isKubeClientError(error) && error.statusCode === 404) {
         return this.toDockerConfig();
       }
-      const additionalMessage = `unable to read dockerConfig in the specified namespace "${namespace}"`;
+
+      const additionalMessage = `Unable to read dockerConfig in the specified namespace "${namespace}"`;
       throw createError(error, 'CORE_V1_API_ERROR', additionalMessage);
     }
   }
@@ -48,7 +50,7 @@ export class DockerConfigApi implements IDockerConfigApi {
         const resp = await this.coreV1API.readNamespacedSecret(secretName, namespace);
         secret = resp.body;
       } catch (e) {
-        if ((e as { statusCode?: number } | undefined)?.statusCode === 404) {
+        if (isKubeClientError(e) && e.statusCode === 404) {
           const dockerConfigSecret = this.toDockerConfigSecret(dockerCfg);
           const { body } = await this.coreV1API.createNamespacedSecret(namespace, dockerConfigSecret);
           return this.toDockerConfig(body);
@@ -59,7 +61,7 @@ export class DockerConfigApi implements IDockerConfigApi {
       const { body } = await this.coreV1API.replaceNamespacedSecret(secretName, namespace, secret);
       return this.toDockerConfig(body);
     } catch (error) {
-      const additionalMessage = `unable to update dockerConfig in the specified namespace "${namespace}"`;
+      const additionalMessage = `Unable to update dockerConfig in the specified namespace "${namespace}"`;
       throw createError(error, 'CORE_V1_API_ERROR', additionalMessage);
     }
   }

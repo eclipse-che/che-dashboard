@@ -36,7 +36,7 @@ export class DevWorkspaceTemplateApi implements IDevWorkspaceTemplateApi {
       );
       return (resp.body as any).items as V1alpha2DevWorkspaceTemplate[];
     } catch (e) {
-      throw createError(e, 'CUSTOM_OBJECTS_API_ERROR', 'unable to list devworkspace templates');
+      throw createError(e, 'CUSTOM_OBJECTS_API_ERROR', 'Unable to list devworkspace templates');
     }
   }
 
@@ -51,7 +51,7 @@ export class DevWorkspaceTemplateApi implements IDevWorkspaceTemplateApi {
       );
       return resp.body as V1alpha2DevWorkspaceTemplate;
     } catch (e) {
-      throw createError(e, 'CUSTOM_OBJECTS_API_ERROR', `unable to get devworkspace "${namespace}/${name}"`);
+      throw createError(e, 'CUSTOM_OBJECTS_API_ERROR', `Unable to get devworkspace "${namespace}/${name}"`);
     }
   }
 
@@ -72,7 +72,7 @@ export class DevWorkspaceTemplateApi implements IDevWorkspaceTemplateApi {
       );
       return resp.body as V1alpha2DevWorkspaceTemplate;
     } catch (e) {
-      throw createError(e, 'CUSTOM_OBJECTS_API_ERROR', 'unable to create DevWorkspaceTemplate');
+      throw createError(e, 'CUSTOM_OBJECTS_API_ERROR', 'Unable to create DevWorkspaceTemplate');
     }
   }
 
@@ -86,7 +86,7 @@ export class DevWorkspaceTemplateApi implements IDevWorkspaceTemplateApi {
         name
       );
     } catch (e) {
-      throw createError(e, 'CUSTOM_OBJECTS_API_ERROR', 'unable to delete devworkspace template');
+      throw createError(e, 'CUSTOM_OBJECTS_API_ERROR', 'Unable to delete devworkspace template');
     }
   }
 }

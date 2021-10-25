@@ -75,8 +75,7 @@ export class KeycloakAuthService {
         });
       });
     } catch (e) {
-      const { sessionStorage, location: { href } } = window;
-      sessionStorage.setItem('oidcDashboardRedirectUrl', href);
+      window.sessionStorage.setItem('oidcDashboardRedirectUrl', window.location.href);
       if (keycloak && keycloak.login) {
         keycloak.login();
       }
@@ -94,9 +93,8 @@ export class KeycloakAuthService {
   }
 
   logout(): void {
-    const { sessionStorage, location: { href } } = window;
-    sessionStorage.removeItem('githubToken');
-    sessionStorage.setItem('oidcDashboardRedirectUrl', href);
+    window.sessionStorage.removeItem('githubToken');
+    window.sessionStorage.setItem('oidcDashboardRedirectUrl', window.location.href);
     const { keycloak } = KeycloakAuthService;
     if (keycloak && keycloak.logout) {
       keycloak.logout({});

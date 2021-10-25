@@ -40,7 +40,7 @@ export class DevWorkspaceApi implements IDevWorkspaceApi {
       );
       return resp.body as IDevWorkspaceList;
     } catch (e) {
-      throw createError(e, 'CUSTOM_OBJECTS_API_ERROR', 'unable to list devworkspaces');
+      throw createError(e, 'CUSTOM_OBJECTS_API_ERROR', 'Unable to list devworkspaces');
     }
   }
 
@@ -58,7 +58,7 @@ export class DevWorkspaceApi implements IDevWorkspaceApi {
       );
       return resp.body as V1alpha2DevWorkspace;
     } catch (e) {
-      throw createError(e, 'CUSTOM_OBJECTS_API_ERROR', `unable to get devworkspace ${namespace}/${name}`);
+      throw createError(e, 'CUSTOM_OBJECTS_API_ERROR', `Unable to get devworkspace ${namespace}/${name}`);
     }
   }
 
@@ -77,7 +77,7 @@ export class DevWorkspaceApi implements IDevWorkspaceApi {
       );
       return resp.body as V1alpha2DevWorkspace;
     } catch (e) {
-      throw createError(e, 'CUSTOM_OBJECTS_API_ERROR', 'unable to update devworkspace');
+      throw createError(e, 'CUSTOM_OBJECTS_API_ERROR', 'Unable to create devworkspace');
     }
   }
 
@@ -111,7 +111,7 @@ export class DevWorkspaceApi implements IDevWorkspaceApi {
       );
       return resp.body as V1alpha2DevWorkspace;
     } catch (e) {
-      throw createError(e, 'CUSTOM_OBJECTS_API_ERROR', 'unable to update devworkspace');
+      throw createError(e, 'CUSTOM_OBJECTS_API_ERROR', 'Unable to update devworkspace');
     }
   }
 
@@ -125,7 +125,7 @@ export class DevWorkspaceApi implements IDevWorkspaceApi {
         name
       );
     } catch (e) {
-      throw createError(e, 'CUSTOM_OBJECTS_API_ERROR', `unable to delete devworkspace ${namespace}/${name}`);
+      throw createError(e, 'CUSTOM_OBJECTS_API_ERROR', `Unable to delete devworkspace ${namespace}/${name}`);
     }
   }
 
@@ -160,7 +160,7 @@ export class DevWorkspaceApi implements IDevWorkspaceApi {
       );
       return resp.body as V1alpha2DevWorkspace;
     } catch (e) {
-      throw createError(e, 'CUSTOM_OBJECTS_API_ERROR', 'unable to patch devworkspace');
+      throw createError(e, 'CUSTOM_OBJECTS_API_ERROR', 'Unable to patch devworkspace');
     }
   }
 

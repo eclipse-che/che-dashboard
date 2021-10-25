@@ -19,20 +19,20 @@ import {
   ValidatedOptions,
 } from '@patternfly/react-core';
 import React from 'react';
-import { RegistryRow } from '../../../store/DockerConfig/types';
+import { RegistryEntry } from '../../../../store/DockerConfig/types';
 import { RegistryPasswordFormGroup } from '../RegistryPassword';
 import { RegistryUrlFormGroup } from '../RegistryUrl';
 import { RegistryUsernameFormGroup } from '../RegistryUsername';
 
 type Props = {
-  registry: RegistryRow;
+  registry: RegistryEntry;
   isEditMode: boolean;
   isOpen: boolean;
-  onChange: (registry: RegistryRow) => void;
+  onChange: (registry: RegistryEntry) => void;
   onCancel: () => void;
 }
 type State = {
-  editRegistry: RegistryRow;
+  editRegistry: RegistryEntry;
   urlValid: ValidatedOptions;
   usernameValid: ValidatedOptions;
   passwordValid: ValidatedOptions;

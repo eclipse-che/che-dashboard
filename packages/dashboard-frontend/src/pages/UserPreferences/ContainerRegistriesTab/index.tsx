@@ -30,12 +30,13 @@ import { AppAlerts } from '../../../services/alerts/appAlerts';
 import { AlertItem } from '../../../services/helpers/types';
 import { ROUTE } from '../../../route.enum';
 import { AppState } from '../../../store';
-import * as UserPreferencesStore from '../../../store/UserPreferences';
-import { RegistryRow } from '../../../store/UserPreferences/types';
-import { selectIsLoading, selectPreferences, selectRegistries } from '../../../store/UserPreferences/selectors';
+import * as DockerConfigStore from '../../../store/DockerConfig';
+import { RegistryEntry } from '../../../store/DockerConfig/types';
+import { selectIsLoading, selectRegistries } from '../../../store/DockerConfig/selectors';
 import NoRegistriesEmptyState from './EmptyState/NoRegistries';
 import DeleteRegistriesModal from './Modals/DeleteRegistriesModal';
 import EditRegistryModal from './Modals/EditRegistryModal';
+import { helpers } from '@eclipse-che/common';
 
 const CONTAINER_REGISTRIES_TAB_KEY = 'container-registries';
 
@@ -45,8 +46,8 @@ type Props = {
 
 type State = {
   selectedItems: string[];
-  registries: RegistryRow[];
-  currentRegistry: RegistryRow;
+  registries: RegistryEntry[];
+  currentRegistry: RegistryEntry;
   currentRegistryIndex: number;
   isDeleteModalOpen: boolean;
   isEditModalOpen: boolean;
@@ -75,11 +76,8 @@ export class ContainerRegistriesTab extends React.PureComponent<Props, State> {
   }
 
   private onChangeRegistrySelection(isSelected: boolean, rowIndex: number) {
-    let registries = [...this.state.registries];
+    const { registries } = this.state;
     if (rowIndex === -1) {
-      registries = registries.map(registry => {
-        return registry;
-      });
       const selectedItems = isSelected ? registries.map(registry => registry.url) : [];
       this.setState({ registries, selectedItems });
     } else {
@@ -95,15 +93,15 @@ export class ContainerRegistriesTab extends React.PureComponent<Props, State> {
     }
   }
 
-  public componentDidMount(): void {
-    const { preferences, isLoading, requestUserPreferences } = this.props;
-    if (!isLoading && !preferences.dockerCredentials) {
-      requestUserPreferences(undefined);
+  public async componentDidMount(): Promise<void> {
+    const { isLoading, requestCredentials  } = this.props;
+    if (!isLoading) {
+      requestCredentials();
     }
   }
 
   public componentDidUpdate(prevProps: Props, prevState: State): void {
-    if (prevProps.preferences.dockerCredentials !== this.props.preferences.dockerCredentials) {
+    if (prevProps.registries !== this.props.registries) {
       const registries = this.props.registries;
       const selectedItems: string[] = [];
       this.state.selectedItems.forEach(item => {
@@ -128,7 +126,7 @@ export class ContainerRegistriesTab extends React.PureComponent<Props, State> {
     this.setState({ activeTabKey });
   }
 
-  private buildRegistryRow(registry: RegistryRow): React.ReactNode[] {
+  private buildRegistryRow(registry: RegistryEntry): React.ReactNode[] {
     const { url, username } = registry;
 
     if (/^http[s]?:\/\/.*/.test(url)) {
@@ -158,8 +156,8 @@ export class ContainerRegistriesTab extends React.PureComponent<Props, State> {
     this.setState({ currentRegistryIndex: rowIndex, isDeleteModalOpen: true });
   }
 
-  private async onDelete(registry?: RegistryRow): Promise<void> {
-    let registries: RegistryRow[];
+  private async onDelete(registry?: RegistryEntry): Promise<void> {
+    let registries: RegistryEntry[];
     if (registry === undefined) {
       registries = this.state.registries.filter(registry => !this.state.selectedItems.includes(registry.url));
     } else {
@@ -181,7 +179,7 @@ export class ContainerRegistriesTab extends React.PureComponent<Props, State> {
       if (!registry) {
         this.setState({ selectedItems: [] });
       }
-      await this.props.updateContainerRegistries(registries);
+      await this.props.updateCredentials(registries);
       this.showAlert({
         key: 'delete-success',
         variant: AlertVariant.success,
@@ -214,11 +212,11 @@ export class ContainerRegistriesTab extends React.PureComponent<Props, State> {
     this.setState({ currentRegistryIndex: -1, isDeleteModalOpen: true });
   }
 
-  private async onRegistriesChange(registries: RegistryRow[]): Promise<void> {
+  private async onRegistriesChange(registries: RegistryEntry[]): Promise<void> {
     const isEditMode = this.isEditMode;
     this.setState({ isEditModalOpen: false, currentRegistryIndex: -1 });
     try {
-      await this.props.updateContainerRegistries(registries);
+      await this.props.updateCredentials(registries);
       this.showAlert({
         key: 'edit-registry-success',
         variant: AlertVariant.success,
@@ -228,8 +226,13 @@ export class ContainerRegistriesTab extends React.PureComponent<Props, State> {
       this.showAlert({
         key: 'edit-registry-fail',
         variant: AlertVariant.danger,
-        title: `Unable to ${isEditMode ? 'save' : 'add'} the registry. ${e}`,
+        title: helpers.errors.getMessage(e),
       });
+      try {
+        await this.props.requestCredentials();
+      } catch (e) {
+        console.error(e);
+      }
     }
   }
 
@@ -239,7 +242,7 @@ export class ContainerRegistriesTab extends React.PureComponent<Props, State> {
     return currentRegistryIndex > -1 && currentRegistryIndex < registries.length;
   }
 
-  private getCurrentRegistry(): RegistryRow {
+  private getCurrentRegistry(): RegistryEntry {
     const { registries } = this.props;
     const { currentRegistryIndex } = this.state;
     const isEditMode = this.isEditMode;
@@ -254,7 +257,7 @@ export class ContainerRegistriesTab extends React.PureComponent<Props, State> {
     };
   }
 
-  private handleRegistryChange(editRegistry: RegistryRow): void {
+  private handleRegistryChange(editRegistry: RegistryEntry): void {
     const { registries } = this.props;
     const { currentRegistryIndex } = this.state;
     if (this.isEditMode) {
@@ -280,7 +283,7 @@ export class ContainerRegistriesTab extends React.PureComponent<Props, State> {
     ];
 
     return (
-      <React.Fragment>     
+      <React.Fragment>
         <CheProgress isLoading={isLoading} />
         <EditRegistryModal
           onCancel={() => this.setEditModalStatus(false)}
@@ -335,14 +338,13 @@ export class ContainerRegistriesTab extends React.PureComponent<Props, State> {
 }
 
 const mapStateToProps = (state: AppState) => ({
-  preferences: selectPreferences(state),
   registries: selectRegistries(state),
   isLoading: selectIsLoading(state),
 });
 
 const connector = connect(
   mapStateToProps,
-  UserPreferencesStore.actionCreators,
+  DockerConfigStore.actionCreators,
 );
 
 type MappedProps = ConnectedProps<typeof connector>;

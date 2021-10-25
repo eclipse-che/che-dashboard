@@ -15,7 +15,7 @@ import { api, helpers } from '@eclipse-che/common';
 import { AppThunk } from '../..';
 import { createObject } from '../../helpers';
 import * as DwApi from '../../../services/dashboard-backend-client/devWorkspaceApi';
-import { RegistryRow } from '../types';
+import { RegistryEntry } from '../types';
 import { State } from '../dockerConfigState';
 export * from '../dockerConfigState';
 
@@ -25,7 +25,7 @@ export interface RequestCredentialsAction extends Action {
 
 export interface SetCredentialsAction extends Action {
   type: 'SET_DEVWORKSPACE_CREDENTIALS';
-  registries: RegistryRow[];
+  registries: RegistryEntry[];
   resourceVersion: string | undefined;
 }
 
@@ -38,7 +38,7 @@ export type KnownAction = RequestCredentialsAction | SetCredentialsAction | Rece
 
 export type ActionCreators = {
   requestCredentials: (namespace: string) => AppThunk<KnownAction, Promise<void>>;
-  updateCredentials: (namespace: string, registries: RegistryRow[]) => AppThunk<KnownAction, Promise<void>>;
+  updateCredentials: (namespace: string, registries: RegistryEntry[]) => AppThunk<KnownAction, Promise<void>>;
 };
 
 export const actionCreators: ActionCreators = {
@@ -53,7 +53,7 @@ export const actionCreators: ActionCreators = {
         resourceVersion,
       });
     } catch (e) {
-      const errorMessage = 'Failed to request the docker config. Reason: ' + helpers.errors.getMessage(e);
+      const errorMessage = helpers.errors.getMessage(e);
       dispatch({
         type: 'RECEIVE_DEVWORKSPACE_CREDENTIALS_ERROR',
         error: errorMessage
@@ -62,7 +62,7 @@ export const actionCreators: ActionCreators = {
     }
   },
 
-  updateCredentials: (namespace: string, registries: RegistryRow[]): AppThunk<KnownAction, Promise<void>> => async (dispatch, getState): Promise<void> => {
+  updateCredentials: (namespace: string, registries: RegistryEntry[]): AppThunk<KnownAction, Promise<void>> => async (dispatch, getState): Promise<void> => {
     dispatch({ type: 'REQUEST_DEVWORKSPACE_CREDENTIALS' });
     const { dwDockerConfig } = getState();
     try {
@@ -73,7 +73,7 @@ export const actionCreators: ActionCreators = {
         resourceVersion
       });
     } catch (e) {
-      const errorMessage = 'Failed to update the docker cofig. Reason: ' + helpers.errors.getMessage(e);
+      const errorMessage = helpers.errors.getMessage(e);
       dispatch({
         type: 'RECEIVE_DEVWORKSPACE_CREDENTIALS_ERROR',
         error: errorMessage
@@ -83,29 +83,51 @@ export const actionCreators: ActionCreators = {
   }
 };
 
-async function getDockerConfig(namespace: string): Promise<{ registries: RegistryRow[], resourceVersion?: string }> {
-  const { dockerconfig, resourceVersion } =  await DwApi.getDockerConfig(namespace);
-  const auths = JSON.parse(window.atob(dockerconfig))['auths'];
-  const registries: RegistryRow[] = [];
-  Object.keys(auths).forEach(key => {
-    const [username, password] = window.atob(auths[key]['auth']).split(':');
-    registries.push({ url: key, username, password });
-  });
+async function getDockerConfig(namespace: string): Promise<{ registries: RegistryEntry[], resourceVersion?: string }> {
+  let dockerconfig, resourceVersion: string | undefined;
+  try {
+    const resp = await DwApi.getDockerConfig(namespace);
+    dockerconfig = resp.dockerconfig;
+    resourceVersion = resp.resourceVersion;
+  } catch (e) {
+    throw 'Failed to request the docker config. Reason: ' + helpers.errors.getMessage(e);
+  }
+  const registries: RegistryEntry[] = [];
+  if (dockerconfig) {
+    try {
+      const auths = JSON.parse(window.atob(dockerconfig))['auths'];
+      Object.keys(auths).forEach(key => {
+        const [username, password] = window.atob(auths[key]['auth']).split(':');
+        registries.push({ url: key, username, password });
+      });
+    } catch (e) {
+      throw 'Unable to decode and parse data. Reason: ' + helpers.errors.getMessage(e);
+    }
+  }
   return { registries, resourceVersion };
 }
 
-function putDockerConfig(namespace: string, registries: RegistryRow[], resourceVersion?: string ): Promise<api.IDockerConfig> {
-  const configObj = {auths: {}};
-  registries.forEach(item => {
-    const { url, username, password } = item;
-    configObj.auths[url] = {};
-    configObj.auths[url].auth = window.btoa(username + ':' + password);
-  });
-  const dockerconfig: api.IDockerConfig = { dockerconfig: window.btoa(JSON.stringify(configObj)) };
-  if(resourceVersion) {
-    dockerconfig.resourceVersion = resourceVersion;
+function putDockerConfig(namespace: string, registries: RegistryEntry[], resourceVersion?: string): Promise<api.IDockerConfig> {
+  const configObj = { auths: {} };
+  const dockerconfig: api.IDockerConfig = { dockerconfig: '' };
+  try {
+    registries.forEach(item => {
+      const { url, username, password } = item;
+      configObj.auths[url] = {};
+      configObj.auths[url].auth = window.btoa(username + ':' + password);
+    });
+    dockerconfig.dockerconfig = window.btoa(JSON.stringify(configObj));
+    if (resourceVersion) {
+      dockerconfig.resourceVersion = resourceVersion;
+    }
+  } catch (e) {
+    throw 'Unable to parse and code data. Reason: ' + helpers.errors.getMessage(e);
   }
-  return DwApi.putDockerConfig(namespace, dockerconfig);
+  try {
+    return DwApi.putDockerConfig(namespace, dockerconfig);
+  } catch (e) {
+    throw 'Failed to update the docker cofig. Reason: ' + helpers.errors.getMessage(e);
+  }
 }
 
 const unloadedState: State = {

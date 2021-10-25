@@ -74,7 +74,7 @@ export class KeycloakSetupService {
     await this.doInitialization();
     const { keycloak } = KeycloakAuthService;
     if (keycloak) {
-      await this.setAuthorizationHeader(keycloak);
+      await this.setAuthorizationHeader();
     }
     this.resolveReadyPromise();
 
@@ -239,7 +239,7 @@ export class KeycloakSetupService {
     }
   }
 
-  private async setAuthorizationHeader(keycloak: KeycloakInstance): Promise<void> {
+  private async setAuthorizationHeader(): Promise<void> {
     axios.interceptors.request.use(async config => {
       await this.keycloakAuthService.updateToken(5, config);
       return config;

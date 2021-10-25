@@ -18,7 +18,7 @@ import { render, screen } from '@testing-library/react';
 import renderer from 'react-test-renderer';
 import { Store } from 'redux';
 import { ContainerRegistriesTab } from '..';
-import { selectIsLoading, selectRegistries } from '../../../store/DockerConfig/selectors';
+import { selectIsLoading, selectRegistries } from '../../../../store/DockerConfig/selectors';
 import { FakeRegistryBuilder } from './__mocks__/registryRowBuilder';
 import { FakeStoreBuilder } from '../../../../store/__mocks__/storeBuilder';
 

@@ -16,7 +16,7 @@ import { BrandingData } from '../../services/bootstrap/branding.constant';
 import { FactoryResolver } from '../../services/helpers/types';
 import { AppState } from '..';
 import { State as DevfileRegistriesState } from '../DevfileRegistries/index';
-import { ContainerCredentials, RegistryRow } from '../DockerConfig/types';
+import { ContainerCredentials, RegistryEntry } from '../DockerConfig/types';
 import { State as WorkspacesState } from '../Workspaces/index';
 import { State as BrandingState } from '../Branding';
 import { State as FactoryResolverState } from '../FactoryResolver';
@@ -116,14 +116,14 @@ export class FakeStoreBuilder {
     return this;
   }
 
-  public withDwDockerConfig(registries: RegistryRow[], isLoading = false, error?: string): FakeStoreBuilder {
+  public withDwDockerConfig(registries: RegistryEntry[], isLoading = false, error?: string): FakeStoreBuilder {
     this.state.dwDockerConfig.registries = registries;
     this.state.dwDockerConfig.isLoading = isLoading;
     this.state.dwDockerConfig.error = error;
     return this;
   }
 
-  public withCheDockerConfig(registries: RegistryRow[], isLoading = false, error?: string): FakeStoreBuilder {
+  public withCheDockerConfig(registries: RegistryEntry[], isLoading = false, error?: string): FakeStoreBuilder {
     this.state.cheDockerConfig.registries = registries;
     this.state.cheDockerConfig.isLoading = isLoading;
     this.state.cheDockerConfig.error = error;

@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`User Preferences should correctly render the component which contains two registries 1`] = `
+exports[`ContainerRegistries should correctly render the component which contains two registries 1`] = `
 Array [
   <span>
     
@@ -357,7 +357,7 @@ Array [
 ]
 `;
 
-exports[`User Preferences should correctly render the component without registries 1`] = `
+exports[`ContainerRegistries should correctly render the component without registries 1`] = `
 Array [
   <span>
     

@@ -14,13 +14,13 @@ import { Action } from 'redux';
 import { AppThunk } from '..';
 import * as CheWorkspacesStore from './che';
 import * as DevWorkspacesStore from './dw';
-import { RegistryRow } from './types';
+import { RegistryEntry } from './types';
 import { selectDefaultNamespace } from '../InfrastructureNamespaces/selectors';
 import { selectDevworkspacesEnabled } from '../Workspaces/Settings/selectors';
 
 export type ActionCreators = {
   requestCredentials: () => AppThunk<Action, Promise<void>>;
-  updateCredentials: (registries: RegistryRow[]) => AppThunk<Action, Promise<void>>
+  updateCredentials: (registries: RegistryEntry[]) => AppThunk<Action, Promise<void>>
 };
 
 export const actionCreators: ActionCreators = {
@@ -35,7 +35,7 @@ export const actionCreators: ActionCreators = {
     }
   },
 
-  updateCredentials: (registries: RegistryRow[]): AppThunk<Action, Promise<void>> => async (dispatch, getState): Promise<void> => {
+  updateCredentials: (registries: RegistryEntry[]): AppThunk<Action, Promise<void>> => async (dispatch, getState): Promise<void> => {
     const state = getState();
     if (selectDevworkspacesEnabled(state)) {
       const namespace = selectDefaultNamespace(state).name;

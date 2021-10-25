@@ -14,7 +14,7 @@ import userEvent from '@testing-library/user-event';
 import React from 'react';
 import { render, screen } from '@testing-library/react';
 import renderer from 'react-test-renderer';
-import { RegistryRow } from '../../../../store/DockerConfig/types';
+import { RegistryEntry } from '../../../../../store/DockerConfig/types';
 import EditRegistryModal from '../EditRegistryModal';
 import { FakeRegistryBuilder } from '../../__tests__/__mocks__/registryRowBuilder';
 
@@ -26,7 +26,7 @@ describe('Edit Registry Modal', () => {
   function getComponent(
     isModalOpen: boolean,
     isEditMode: boolean,
-    currentRegistry: RegistryRow
+    currentRegistry: RegistryEntry
   ): React.ReactElement {
     return (<EditRegistryModal
       onCancel={mockOnCancel}

@@ -12,13 +12,11 @@
 
 import axios from 'axios';
 import common, { ApplicationInfo } from '@eclipse-che/common';
-import { addAuthentication } from './auth';
 import { prefix } from './const';
 
 export async function fetchClusterInfo(): Promise<ApplicationInfo> {
-  const headers = addAuthentication({});
   try {
-    const response = await axios.get(`${prefix}/cluster-info`, { headers });
+    const response = await axios.get(`${prefix}/cluster-info`,);
     return response.data;
   } catch (e) {
     throw `Failed to fetch cluster information. ${common.helpers.errors.getMessage(e)}`;

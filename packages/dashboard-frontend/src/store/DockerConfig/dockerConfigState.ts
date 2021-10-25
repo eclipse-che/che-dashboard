@@ -10,11 +10,11 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import { RegistryRow } from './types';
+import { RegistryEntry } from './types';
 
 export interface State {
   isLoading: boolean;
-  registries: RegistryRow[]
+  registries: RegistryEntry[]
   resourceVersion?: string;
   error: string | undefined;
 }

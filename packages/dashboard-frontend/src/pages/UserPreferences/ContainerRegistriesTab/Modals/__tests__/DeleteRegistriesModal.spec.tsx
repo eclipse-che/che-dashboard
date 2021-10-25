@@ -14,7 +14,7 @@ import userEvent from '@testing-library/user-event';
 import React from 'react';
 import { render, screen } from '@testing-library/react';
 import renderer from 'react-test-renderer';
-import { RegistryRow } from '../../../../store/DockerConfig/types';
+import { RegistryEntry } from '../../../../../store/DockerConfig/types';
 import DeleteRegistriesModal from '../DeleteRegistriesModal';
 import { FakeRegistryBuilder } from '../../__tests__/__mocks__/registryRowBuilder';
 
@@ -26,7 +26,7 @@ describe('Delete Registries Modal', () => {
   function getComponent(
     isDeleteModalOpen: boolean,
     selectedItems: string[],
-    currentRegistry?: RegistryRow
+    currentRegistry?: RegistryEntry
   ): React.ReactElement {
     return (<DeleteRegistriesModal
       selectedItems={selectedItems}

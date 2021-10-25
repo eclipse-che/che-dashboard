@@ -31,7 +31,7 @@ export function getMessage(error: unknown): string {
       // body is from K8s in JSON form with message present
       return error.body.message;
     } else {
-      // todo should investigate why does it happen (fix for https://github.com/eclipse/che/issues/20684)
+      // for unknown reason, the error message could be in response body
       const message = (error.response as any)?.body?.message;
       if (message) {
         return  message;

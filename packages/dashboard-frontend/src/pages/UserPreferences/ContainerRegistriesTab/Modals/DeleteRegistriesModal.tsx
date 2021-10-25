@@ -12,13 +12,13 @@
 
 import React from 'react';
 import { Button, ButtonVariant, ModalVariant, Modal, TextContent, Text, Checkbox } from '@patternfly/react-core';
-import { RegistryRow } from '../../../store/DockerConfig/types';
+import { RegistryEntry } from '../../../../store/DockerConfig/types';
 
 type Props = {
-  registry?: RegistryRow;
+  registry?: RegistryEntry;
   selectedItems: string[];
   isOpen: boolean;
-  onDelete: (registry?: RegistryRow) => void;
+  onDelete: (registry?: RegistryEntry) => void;
   onCancel: () => void;
 }
 type State = {

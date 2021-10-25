@@ -10,11 +10,11 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import { RegistryRow } from '../../../../../store/DockerConfig/types';
+import { RegistryEntry } from '../../../../../store/DockerConfig/types';
 
 export class FakeRegistryBuilder {
 
-  private registry: RegistryRow = { url: '', password: '', username: '' };
+  private registry: RegistryEntry = { url: '', password: '', username: '' };
 
   public withUrl(url: string): FakeRegistryBuilder {
     this.registry.url = url;
@@ -31,7 +31,7 @@ export class FakeRegistryBuilder {
     return this;
   }
 
-  public build(): RegistryRow {
+  public build(): RegistryEntry {
     return this.registry;
   }
 

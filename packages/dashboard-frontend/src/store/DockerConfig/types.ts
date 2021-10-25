@@ -10,7 +10,7 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-export type RegistryRow = {
+export type RegistryEntry = {
   url: string;
   username?: string;
   password?: string;

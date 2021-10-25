@@ -14,7 +14,7 @@ import { Action, Reducer } from 'redux';
 import { helpers } from '@eclipse-che/common';
 import { AppThunk } from '../..';
 import { createObject } from '../../helpers';
-import { ContainerCredentials, RegistryRow } from '../types';
+import { ContainerCredentials, RegistryEntry } from '../types';
 import { State } from '../dockerConfigState';
 import * as UserPreferences from '../../UserPreferences';
 export * from '../dockerConfigState';
@@ -25,7 +25,7 @@ export interface RequestCredentialsAction extends Action {
 
 export interface SetCredentialsAction extends Action {
   type: 'SET_CHEWORKSPACE_CREDENTIALS';
-  registries: RegistryRow[];
+  registries: RegistryEntry[];
 }
 
 export interface ReceiveErrorAction extends Action {
@@ -37,7 +37,7 @@ export type KnownAction = RequestCredentialsAction | SetCredentialsAction | Rece
 
 export type ActionCreators = {
   requestCredentials: () => AppThunk<KnownAction, Promise<void>>;
-  updateCredentials: (registries: RegistryRow[]) => AppThunk<KnownAction, Promise<void>>;
+  updateCredentials: (registries: RegistryEntry[]) => AppThunk<KnownAction, Promise<void>>;
 };
 
 export const actionCreators: ActionCreators = {
@@ -47,7 +47,7 @@ export const actionCreators: ActionCreators = {
     const { userPreferences: { preferences } } = getState();
     try {
       await dispatch(UserPreferences.actionCreators.requestUserPreferences(undefined));
-      const registries: RegistryRow[] = [];
+      const registries: RegistryEntry[] = [];
       if (preferences.dockerCredentials) {
         const containerCredentials: ContainerCredentials = JSON.parse(window.atob(preferences.dockerCredentials));
         for (const [url, value] of Object.entries(containerCredentials)) {
@@ -69,7 +69,7 @@ export const actionCreators: ActionCreators = {
     }
   },
 
-  updateCredentials: (registries: RegistryRow[]): AppThunk<KnownAction, Promise<void>> => async (dispatch, getState): Promise<void> => {
+  updateCredentials: (registries: RegistryEntry[]): AppThunk<KnownAction, Promise<void>> => async (dispatch, getState): Promise<void> => {
     dispatch({ type: 'REQUEST_CHEWORKSPACE_CREDENTIALS' });
     const { userPreferences: { preferences } } = getState();
     const newContainerCredentials: ContainerCredentials = {};
