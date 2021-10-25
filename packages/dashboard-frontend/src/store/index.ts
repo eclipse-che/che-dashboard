@@ -14,6 +14,7 @@ import { Action } from 'redux';
 import { ThunkAction } from 'redux-thunk';
 import * as BannerAlertStore from './BannerAlert';
 import * as BrandingStore from './Branding';
+import * as ExternalApplications from './ExternalApplications';
 import * as DevfileRegistriesStore from './DevfileRegistries';
 import * as FactoryResolverStore from './FactoryResolver';
 import * as InfrastructureNamespacesStore from './InfrastructureNamespaces';
@@ -31,6 +32,7 @@ import * as WorkspacesSettingsStore from './Workspaces/Settings';
 export interface AppState {
   bannerAlert: BannerAlertStore.State;
   branding: BrandingStore.State;
+  externalApplications: ExternalApplications.State;
   devfileRegistries: DevfileRegistriesStore.State;
   infrastructureNamespaces: InfrastructureNamespacesStore.State;
   user: UserStore.State;
@@ -52,6 +54,7 @@ export const reducers = {
   devWorkspaces: DevWorkspacesStore.reducer,
   devfileRegistries: DevfileRegistriesStore.reducer,
   branding: BrandingStore.reducer,
+  externalApplications: ExternalApplications.reducer,
   user: UserStore.reducer,
   userProfile: UserProfileStore.reducer,
   infrastructureNamespaces: InfrastructureNamespacesStore.reducer,
@@ -62,14 +65,6 @@ export const reducers = {
   workspacesSettings: WorkspacesSettingsStore.reducer,
 };
 
-// this type can be used as a hint on action creators so that its 'dispatch' and 'getState' params are
-// correctly typed to match your store.
-/**
- * @deprecated
- */
-export interface AppThunkAction<TAction> {
-  (dispatch: (action: TAction) => void, getState: () => AppState): void;
-}
 export type AppThunk<ActionType extends Action, ReturnType = void> = ThunkAction<
   ReturnType,
   AppState,

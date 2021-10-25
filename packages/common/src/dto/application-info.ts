@@ -10,15 +10,9 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import helpers from './helpers';
-
-export * from './dto/application-info';
-
-export {
-  helpers,
-};
-
-const common = {
-  helpers,
-};
-export default common;
+export interface ApplicationInfo {
+  url: string;
+  title: string;
+  icon: string;
+  group?: string;
+}

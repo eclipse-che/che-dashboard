@@ -22,6 +22,8 @@ import { registerCors } from './cors';
 import { registerSwagger } from './swagger';
 import { getMessage } from '@eclipse-che/common/lib/helpers/errors';
 import { isLocalRun } from './local-run';
+import { registerClusterInfo } from './api/clusterInfo';
+import { clusterConsoleIcon, clusterConsoleTitle, clusterConsoleUrl } from './devworkspace-client/services/cluster-info';
 
 const CHE_HOST = process.env.CHE_HOST as string;
 
@@ -62,6 +64,10 @@ registerDevworkspaceApi(server);
 registerDevworkspaceWebsocketWatcher(server);
 
 registerTemplateApi(server);
+
+if (clusterConsoleUrl) {
+  registerClusterInfo(server);
+}
 
 registerCors(isLocalRun, server);
 if (isLocalRun) {
