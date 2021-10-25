@@ -138,7 +138,7 @@ export class AboutMenu extends React.PureComponent<Props, State> {
           username={username}
           logo={logoFile}
           productName={name}
-          productVersion={productVersion}
+          serverVersion={productVersion}
         />
       </>
     );
