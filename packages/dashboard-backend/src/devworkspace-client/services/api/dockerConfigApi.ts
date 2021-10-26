@@ -15,7 +15,7 @@ import { IDockerConfigApi } from '../../types';
 import { V1Secret } from '@kubernetes/client-node/dist/gen/model/v1Secret';
 import { api } from '@eclipse-che/common';
 import { createError } from '../helpers';
-import { isKubeClientError } from '@eclipse-che/common/lib/helpers/errors';
+import { helpers } from '@eclipse-che/common';
 
 const SECRET_KEY = '.dockerconfigjson';
 const SECRET_NAME = 'devworkspace-container-registry-dockercfg';
@@ -35,7 +35,7 @@ export class DockerConfigApi implements IDockerConfigApi {
       const { body } = await this.coreV1API.readNamespacedSecret(SECRET_NAME, namespace);
       return this.toDockerConfig(body);
     } catch (error) {
-      if (isKubeClientError(error) && error.statusCode === 404) {
+      if (helpers.errors.isKubeClientError(error) && helpers.error.statusCode === 404) {
         return this.toDockerConfig();
       }
 

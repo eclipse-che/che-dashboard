@@ -21,7 +21,7 @@ import { devworkspaceGroup, devworkspaceLatestVersion, devworkspacePlural, V1alp
 import { api } from '@eclipse-che/common';
 import { createError } from '../helpers';
 
-const DEW_WORKSPACE_API_ERROR_LABEL = 'CUSTOM_OBJECTS_API_ERROR';
+const DEV_WORKSPACE_API_ERROR_LABEL = 'CUSTOM_OBJECTS_API_ERROR';
 
 export class DevWorkspaceApi implements IDevWorkspaceApi {
   private readonly customObjectAPI: k8s.CustomObjectsApi;
@@ -42,7 +42,7 @@ export class DevWorkspaceApi implements IDevWorkspaceApi {
       );
       return resp.body as IDevWorkspaceList;
     } catch (e) {
-      throw createError(e, DEW_WORKSPACE_API_ERROR_LABEL, 'Unable to list devworkspaces');
+      throw createError(e, DEV_WORKSPACE_API_ERROR_LABEL, 'Unable to list devworkspaces');
     }
   }
 
@@ -60,7 +60,7 @@ export class DevWorkspaceApi implements IDevWorkspaceApi {
       );
       return resp.body as V1alpha2DevWorkspace;
     } catch (e) {
-      throw createError(e, DEW_WORKSPACE_API_ERROR_LABEL, `Unable to get devworkspace ${namespace}/${name}`);
+      throw createError(e, DEV_WORKSPACE_API_ERROR_LABEL, `Unable to get devworkspace ${namespace}/${name}`);
     }
   }
 
@@ -79,7 +79,7 @@ export class DevWorkspaceApi implements IDevWorkspaceApi {
       );
       return resp.body as V1alpha2DevWorkspace;
     } catch (e) {
-      throw createError(e, DEW_WORKSPACE_API_ERROR_LABEL, 'Unable to create devworkspace');
+      throw createError(e, DEV_WORKSPACE_API_ERROR_LABEL, 'Unable to create devworkspace');
     }
   }
 
@@ -113,7 +113,7 @@ export class DevWorkspaceApi implements IDevWorkspaceApi {
       );
       return resp.body as V1alpha2DevWorkspace;
     } catch (e) {
-      throw createError(e, DEW_WORKSPACE_API_ERROR_LABEL, 'Unable to update devworkspace');
+      throw createError(e, DEV_WORKSPACE_API_ERROR_LABEL, 'Unable to update devworkspace');
     }
   }
 
@@ -127,7 +127,7 @@ export class DevWorkspaceApi implements IDevWorkspaceApi {
         name
       );
     } catch (e) {
-      throw createError(e, DEW_WORKSPACE_API_ERROR_LABEL, `Unable to delete devworkspace ${namespace}/${name}`);
+      throw createError(e, DEV_WORKSPACE_API_ERROR_LABEL, `Unable to delete devworkspace ${namespace}/${name}`);
     }
   }
 
@@ -162,7 +162,7 @@ export class DevWorkspaceApi implements IDevWorkspaceApi {
       );
       return resp.body as V1alpha2DevWorkspace;
     } catch (e) {
-      throw createError(e, DEW_WORKSPACE_API_ERROR_LABEL, 'Unable to patch devworkspace');
+      throw createError(e, DEV_WORKSPACE_API_ERROR_LABEL, 'Unable to patch devworkspace');
     }
   }
 
