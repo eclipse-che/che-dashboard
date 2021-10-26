@@ -35,7 +35,7 @@ export class DockerConfigApi implements IDockerConfigApi {
       const { body } = await this.coreV1API.readNamespacedSecret(SECRET_NAME, namespace);
       return this.toDockerConfig(body);
     } catch (error) {
-      if (helpers.errors.isKubeClientError(error) && helpers.error.statusCode === 404) {
+      if (helpers.errors.isKubeClientError(error) && error.statusCode === 404) {
         return this.toDockerConfig();
       }
 
@@ -51,7 +51,7 @@ export class DockerConfigApi implements IDockerConfigApi {
         const resp = await this.coreV1API.readNamespacedSecret(SECRET_NAME, namespace);
         secret = resp.body;
       } catch (e) {
-        if (isKubeClientError(e) && e.statusCode === 404) {
+        if (helpers.errors.isKubeClientError(e) && e.statusCode === 404) {
           const dockerConfigSecret = this.toDockerConfigSecret(dockerCfg);
           const { body } = await this.coreV1API.createNamespacedSecret(namespace, dockerConfigSecret);
           return this.toDockerConfig(body);
