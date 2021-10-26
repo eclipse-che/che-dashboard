@@ -10,62 +10,290 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-export const templateExample = {
-  apiVersion: 'workspace.devfile.io/v1alpha2',
-  kind: 'DevWorkspaceTemplate',
-  metadata: {
-    name: 'che-theia-vsix-installer-workspace2d071d95b33a4835',
-    ownerReferences: [
-      {
-        apiVersion: 'workspace.devfile.io/v1alpha2',
-        kind: 'devworkspace',
-        name: 'spring-petclinic-oqo7',
-        uid: '2d071d95-b33a-4835-9f66-5e1f3a42d7b8'
-      }
-    ]
-  },
-  spec: {
-    components: [
-      {
-        name: 'vsix-installer',
-        attributes: {
-          'app.kubernetes.io/part-of': 'che-theia.eclipse.org',
-          'app.kubernetes.io/component': 'vsix-installer'
+export const templateExample =
+  {
+    template: {
+      'kind': 'DevWorkspaceTemplate',
+      'apiVersion': 'workspace.devfile.io/v1alpha2',
+      'metadata': {
+        'name': 'theia-ide-workspace01e2ddf2213f464f',
+        'ownerReferences': [
+          {
+            'apiVersion': 'workspace.devfile.io/v1alpha2',
+            'kind': 'devworkspace',
+            'name': 'nodejs-mongodb',
+            'namespace': 'admin-che',
+            'uid': 'xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx'
+          }
+        ]
+      },
+      'spec': {
+        'schemaVersion': '2.1.0',
+        'metadata': {
+          'name': 'theia-ide'
         },
-        container: {
-          image: 'quay.io/eclipse/che-theia-vsix-installer:next',
-          volumeMounts: [
-            {
-              path: '/plugins',
-              name: 'plugins'
+        'commands': [
+          {
+            'id': 'init-container-command',
+            'apply': {
+              'component': 'remote-runtime-injector'
             }
-          ],
-          env: [
-            {
-              name: 'CHE_DASHBOARD_URL',
-              value: 'https://192.168.64.5.nip.io'
-            },
-            {
-              name: 'CHE_PLUGIN_REGISTRY_URL',
-              value: 'https://192.168.64.5.nip.io/plugin-registry/v3'
-            }
+          }
+        ],
+        'events': {
+          'preStart': [
+            'init-container-command'
           ]
-        }
-      }
-    ],
-    events: {
-      preStart: ['copy-vsix']
-    },
-    commands: [
-      {
-        id: 'copy-vsix',
-        apply: {
-          component: 'vsix-installer'
-        }
-      }
-    ]
-  }
-};
+        },
+        'components': [
+          {
+            'name': 'theia-ide',
+            'container': {
+              'image': 'quay.io/eclipse/che-theia:next',
+              'env': [
+                {
+                  'name': 'THEIA_PLUGINS',
+                  'value': 'local-dir:///plugins'
+                },
+                {
+                  'name': 'HOSTED_PLUGIN_HOSTNAME',
+                  'value': '0.0.0.0'
+                },
+                {
+                  'name': 'HOSTED_PLUGIN_PORT',
+                  'value': '3130'
+                },
+                {
+                  'name': 'THEIA_HOST',
+                  'value': '127.0.0.1'
+                },
+                {
+                  'name': 'CHE_DASHBOARD_URL',
+                  'value': 'http://localhost:8080'
+                },
+                {
+                  'name': 'CHE_PLUGIN_REGISTRY_URL',
+                  'value': 'https://192.168.64.9.nip.io/plugin-registry/v3'
+                },
+                {
+                  'name': 'CHE_PLUGIN_REGISTRY_INTERNAL_URL',
+                  'value': 'http://plugin-registry.eclipse-che.svc:8080/v3'
+                }
+              ],
+              'volumeMounts': [
+                {
+                  'name': 'plugins',
+                  'path': '/plugins'
+                },
+                {
+                  'name': 'theia-local',
+                  'path': '/home/theia/.theia'
+                }
+              ],
+              'mountSources': true,
+              'memoryLimit': '512M',
+              'cpuLimit': '1500m',
+              'cpuRequest': '100m',
+              'endpoints': [
+                {
+                  'name': 'theia',
+                  'attributes': {
+                    'type': 'main',
+                    'cookiesAuthEnabled': true,
+                    'discoverable': false,
+                    'urlRewriteSupported': true
+                  },
+                  'targetPort': 3100,
+                  'exposure': 'public',
+                  'secure': false,
+                  'protocol': 'https'
+                },
+                {
+                  'name': 'webviews',
+                  'attributes': {
+                    'type': 'webview',
+                    'cookiesAuthEnabled': true,
+                    'discoverable': false,
+                    'unique': true,
+                    'urlRewriteSupported': true
+                  },
+                  'targetPort': 3100,
+                  'exposure': 'public',
+                  'secure': false,
+                  'protocol': 'https'
+                },
+                {
+                  'name': 'mini-browser',
+                  'attributes': {
+                    'type': 'mini-browser',
+                    'cookiesAuthEnabled': true,
+                    'discoverable': false,
+                    'unique': true,
+                    'urlRewriteSupported': true
+                  },
+                  'targetPort': 3100,
+                  'exposure': 'public',
+                  'secure': false,
+                  'protocol': 'https'
+                },
+                {
+                  'name': 'theia-dev',
+                  'attributes': {
+                    'type': 'ide-dev',
+                    'discoverable': false,
+                    'urlRewriteSupported': true
+                  },
+                  'targetPort': 3130,
+                  'exposure': 'public',
+                  'protocol': 'http'
+                },
+                {
+                  'name': 'theia-redirect-1',
+                  'attributes': {
+                    'discoverable': false,
+                    'urlRewriteSupported': true
+                  },
+                  'targetPort': 13131,
+                  'exposure': 'public',
+                  'protocol': 'http'
+                },
+                {
+                  'name': 'theia-redirect-2',
+                  'attributes': {
+                    'discoverable': false,
+                    'urlRewriteSupported': true
+                  },
+                  'targetPort': 13132,
+                  'exposure': 'public',
+                  'protocol': 'http'
+                },
+                {
+                  'name': 'theia-redirect-3',
+                  'attributes': {
+                    'discoverable': false,
+                    'urlRewriteSupported': true
+                  },
+                  'targetPort': 13133,
+                  'exposure': 'public',
+                  'protocol': 'http'
+                },
+                {
+                  'name': 'terminal',
+                  'attributes': {
+                    'type': 'collocated-terminal',
+                    'discoverable': false,
+                    'cookiesAuthEnabled': true,
+                    'urlRewriteSupported': true
+                  },
+                  'targetPort': 3333,
+                  'exposure': 'public',
+                  'secure': false,
+                  'protocol': 'wss'
+                }
+              ]
+            },
+            'attributes': {
+              'app.kubernetes.io/component': 'che-theia',
+              'app.kubernetes.io/part-of': 'che-theia.eclipse.org'
+            }
+          },
+          {
+            'name': 'plugins',
+            'volume': {}
+          },
+          {
+            'name': 'theia-local',
+            'volume': {}
+          },
+          {
+            'name': 'che-machine-exec',
+            'container': {
+              'image': 'quay.io/eclipse/che-machine-exec:next',
+              'command': [
+                '/go/bin/che-machine-exec',
+                '--url',
+                '127.0.0.1:3333'
+              ],
+              'memoryLimit': '128Mi',
+              'memoryRequest': '32Mi',
+              'cpuLimit': '500m',
+              'cpuRequest': '30m',
+              'env': [
+                {
+                  'name': 'CHE_DASHBOARD_URL',
+                  'value': 'http://localhost:8080'
+                },
+                {
+                  'name': 'CHE_PLUGIN_REGISTRY_URL',
+                  'value': 'https://192.168.64.9.nip.io/plugin-registry/v3'
+                },
+                {
+                  'name': 'CHE_PLUGIN_REGISTRY_INTERNAL_URL',
+                  'value': 'http://plugin-registry.eclipse-che.svc:8080/v3'
+                }
+              ]
+            },
+            'attributes': {
+              'app.kubernetes.io/component': 'machine-exec',
+              'app.kubernetes.io/part-of': 'che-theia.eclipse.org'
+            }
+          },
+          {
+            'name': 'remote-runtime-injector',
+            'container': {
+              'image': 'quay.io/eclipse/che-theia-endpoint-runtime-binary:next',
+              'env': [
+                {
+                  'name': 'PLUGIN_REMOTE_ENDPOINT_EXECUTABLE',
+                  'value': '/remote-endpoint/plugin-remote-endpoint'
+                },
+                {
+                  'name': 'REMOTE_ENDPOINT_VOLUME_NAME',
+                  'value': 'remote-endpoint'
+                },
+                {
+                  'name': 'CHE_DASHBOARD_URL',
+                  'value': 'http://localhost:8080'
+                },
+                {
+                  'name': 'CHE_PLUGIN_REGISTRY_URL',
+                  'value': 'https://192.168.64.9.nip.io/plugin-registry/v3'
+                },
+                {
+                  'name': 'CHE_PLUGIN_REGISTRY_INTERNAL_URL',
+                  'value': 'http://plugin-registry.eclipse-che.svc:8080/v3'
+                }
+              ],
+              'volumeMounts': [
+                {
+                  'name': 'plugins',
+                  'path': '/plugins'
+                },
+                {
+                  'name': 'remote-endpoint',
+                  'path': '/remote-endpoint'
+                }
+              ],
+              'memoryLimit': '128Mi',
+              'memoryRequest': '32Mi',
+              'cpuLimit': '500m',
+              'cpuRequest': '30m'
+            },
+            'attributes': {
+              'app.kubernetes.io/component': 'remote-runtime-injector',
+              'app.kubernetes.io/part-of': 'che-theia.eclipse.org'
+            }
+          },
+          {
+            'name': 'remote-endpoint',
+            'volume': {
+              'ephemeral': true
+            }
+          }
+        ]
+      } as any
+    }
+  };
 
 export const dockerConfigExample = {
   get dockerconfig() {
@@ -84,151 +312,247 @@ export const dockerConfigExample = {
 
 export const workspaceExample = {
   devworkspace: {
-    kind: 'DevWorkspace',
-    apiVersion: 'workspace.devfile.io/v1alpha2',
-    metadata: {
-      name: 'theia'
+    'apiVersion': 'workspace.devfile.io/v1alpha2',
+    'kind': 'DevWorkspace',
+    'metadata': {
+      'name': 'nodejs-mongodb',
+      'namespace': 'admin-che',
+      'labels': {},
+      'uid': ''
     },
-    spec: {
-      started: false,
-      template: {
-        projects: [
+    'spec': {
+      'started': true,
+      'routingClass': 'che',
+      'template': {
+        'components': [
           {
-            name: 'web-nodejs-sample',
-            git: {
-              remotes: {
-                origin: 'https://github.com/che-samples/web-nodejs-sample.git'
-              }
+            'name': 'nodejs',
+            'container': {
+              'image': 'quay.io/devfile/universal-developer-image:ubi8-b452131',
+              'env': [
+                {
+                  'name': 'SECRET',
+                  'value': '220fd770-c028-480d-8f95-f84353c7d55a'
+                },
+                {
+                  'name': 'NODE_ENV',
+                  'value': 'production'
+                }
+              ],
+              'endpoints': [
+                {
+                  'exposure': 'public',
+                  'name': 'nodejs',
+                  'targetPort': 8080
+                }
+              ],
+              'memoryLimit': '1G',
+              'mountSources': true
             }
-          }
-        ],
-        components: [
+          },
           {
-            name: 'plugins',
-            volume: {}
-          }, {
-            name: 'theia-ide',
-            attributes: {
-              'app.kubernetes.io/name': 'che-theia.eclipse.org',
-              'app.kubernetes.io/part-of': 'che.eclipse.org',
-              'app.kubernetes.io/component': 'editor'
-            },
-            container: {
-              image: 'quay.io/eclipse/che-theia:next',
-              env: [
+            'name': 'mongo',
+            'container': {
+              'image': 'quay.io/eclipse/che--centos--mongodb-36-centos7:latest-a915db7beca87198fcd7860086989fe8a327a1a4f6508025b64ab28fcc7423b2',
+              'env': [
                 {
-                  name: 'THEIA_PLUGINS',
-                  value: 'local-dir:///plugins'
-                }, {
-                  name: 'HOSTED_PLUGIN_HOSTNAME',
-                  value: '0.0.0.0'
-                }, {
-                  name: 'HOSTED_PLUGIN_PORT',
-                  value: '3130'
-                }, {
-                  name: 'THEIA_HOST',
-                  value: '0.0.0.0'
+                  'name': 'MONGODB_USER',
+                  'value': 'user'
+                },
+                {
+                  'name': 'MONGODB_PASSWORD',
+                  'value': 'password'
+                },
+                {
+                  'name': 'MONGODB_DATABASE',
+                  'value': 'guestbook'
+                },
+                {
+                  'name': 'MONGODB_ADMIN_PASSWORD',
+                  'value': 'password'
                 }
               ],
-              volumeMounts: [
+              'endpoints': [
                 {
-                  path: '/plugins',
-                  name: 'plugins'
+                  'name': 'mongodb',
+                  'exposure': 'internal',
+                  'targetPort': 27017,
+                  'attributes': {
+                    'discoverable': 'true'
+                  }
                 }
               ],
-              mountSources: true,
-              memoryLimit: '512M',
-              endpoints: [
+              'memoryLimit': '512Mi',
+              'mountSources': true,
+              'volumeMounts': [
                 {
-                  name: 'theia',
-                  exposure: 'public',
-                  targetPort: 3100,
-                  secure: true,
-                  protocol: 'http',
-                  attributes: {
-                    type: 'main'
-                  }
-                }, {
-                  name: 'webviews',
-                  exposure: 'public',
-                  targetPort: 3100,
-                  protocol: 'http',
-                  secure: true,
-                  attributes: {
-                    type: 'webview',
-                    unique: 'true'
-                  }
-                }, {
-                  name: 'theia-dev',
-                  exposure: 'public',
-                  targetPort: 3130,
-                  protocol: 'http',
-                  attributes: {
-                    type: 'ide-dev'
-                  }
-                }, {
-                  name: 'theia-redir-1',
-                  exposure: 'public',
-                  targetPort: 13131,
-                  protocol: 'http'
-                }, {
-                  name: 'theia-redir-2',
-                  exposure: 'public',
-                  targetPort: 13132,
-                  protocol: 'http'
-                }, {
-                  name: 'theia-redir-3',
-                  exposure: 'public',
-                  targetPort: 13133,
-                  protocol: 'http'
+                  'name': 'mongo-storage',
+                  'path': '/var/lib/mongodb/data'
                 }
               ]
             }
           },
           {
-            name: 'che-theia-terminal',
-            attributes: {
-              'app.kubernetes.io/name': 'che-theia.eclipse.org',
-              'app.kubernetes.io/part-of': 'che.eclipse.org',
-              'app.kubernetes.io/component': 'che-theia-terminal'
-            },
-            container: {
-              image: 'quay.io/eclipse/che-machine-exec:nightly',
-              command: [
-                '/go/bin/che-machine-exec'
-              ],
-              args: [
-                '--url',
-                '0.0.0.0:3333',
-                '--pod-selector',
-                'controller.devfile.io/workspace_id=$(DEVWORKSPACE_ID)'
-              ],
-              endpoints: [
-                {
-                  name: 'che-theia-terminal',
-                  exposure: 'public',
-                  targetPort: 3333,
-                  protocol: 'ws',
-                  secure: true,
-                  attributes: {
-                    type: 'collocated-terminal'
-                  }
-                }
-              ]
+            'name': 'mongo-storage',
+            'volume': {
+              'size': '1G'
             }
           }
         ],
-        commands: [
+        'projects': [
           {
-            id: 'say-hello',
-            exec: {
-              component: 'plugin',
-              commandLine: 'echo "Hello from $(pwd)"',
-              workingDir: '${PROJECTS_ROOT}/project/app'
+            'name': 'nodejs-mongodb-sample',
+            'git': {
+              'remotes': {
+                'origin': 'https://github.com/che-samples/nodejs-mongodb-sample.git'
+              },
+              'checkoutFrom': {
+                'revision': 'devfilev2'
+              }
+            }
+          }
+        ],
+        'commands': [
+          {
+            'id': 'runapp',
+            'exec': {
+              'label': 'Run the application',
+              'component': 'nodejs',
+              'workingDir': '${PROJECTS_ROOT}/nodejs-mongodb-sample',
+              'commandLine': 'npm install && node --inspect=9229 app.js',
+              'group': {
+                'kind': 'run'
+              }
             }
           }
         ]
       }
     }
-  }
+  } as any
+};
+
+export const patchExample = {
+  op: 'replace',
+  path: '/spec',
+  value: {
+    'routingClass': 'che',
+    'started': true,
+    'template': {
+      'commands': [
+        {
+          'exec': {
+            'commandLine': 'npm install && node --inspect=9229 app.js',
+            'component': 'nodejs',
+            'group': {
+              'kind': 'run'
+            },
+            'label': 'Run the application',
+            'workingDir': '${PROJECTS_ROOT}/nodejs-mongodb-sample'
+          },
+          'id': 'runapp'
+        }
+      ],
+      'components': [
+        {
+          'container': {
+            'endpoints': [
+              {
+                'exposure': 'public',
+                'name': 'nodejs',
+                'protocol': 'http',
+                'targetPort': 8080
+              }
+            ],
+            'env': [
+              {
+                'name': 'SECRET',
+                'value': '220fd770-c028-480d-8f95-f84353c7d55a'
+              },
+              {
+                'name': 'NODE_ENV',
+                'value': 'production'
+              }
+            ],
+            'image': 'quay.io/devfile/universal-developer-image:ubi8-b452131',
+            'memoryLimit': '1G',
+            'mountSources': true,
+            'sourceMapping': '/projects'
+          },
+          'name': 'nodejs'
+        },
+        {
+          'container': {
+            'endpoints': [
+              {
+                'attributes': {
+                  'discoverable': 'true'
+                },
+                'exposure': 'internal',
+                'name': 'mongodb',
+                'protocol': 'http',
+                'targetPort': 27017
+              }
+            ],
+            'env': [
+              {
+                'name': 'MONGODB_USER',
+                'value': 'user'
+              },
+              {
+                'name': 'MONGODB_PASSWORD',
+                'value': 'password'
+              },
+              {
+                'name': 'MONGODB_DATABASE',
+                'value': 'guestbook'
+              },
+              {
+                'name': 'MONGODB_ADMIN_PASSWORD',
+                'value': 'password'
+              }
+            ],
+            'image': 'quay.io/eclipse/che--centos--mongodb-36-centos7:latest-a915db7beca87198fcd7860086989fe8a327a1a4f6508025b64ab28fcc7423b2',
+            'memoryLimit': '512Mi',
+            'mountSources': true,
+            'sourceMapping': '/projects',
+            'volumeMounts': [
+              {
+                'name': 'mongo-storage',
+                'path': '/var/lib/mongodb/data'
+              }
+            ]
+          },
+          'name': 'mongo'
+        },
+        {
+          'name': 'mongo-storage',
+          'volume': {
+            'size': '1G'
+          }
+        },
+        {
+          'name': 'theia-ide-workspace01e2ddf2213f464f',
+          'plugin': {
+            'kubernetes': {
+              'name': 'theia-ide-workspace01e2ddf2213f464f',
+              'namespace': 'admin-che'
+            }
+          }
+        }
+      ],
+      'projects': [
+        {
+          'git': {
+            'checkoutFrom': {
+              'revision': 'devfilev2'
+            },
+            'remotes': {
+              'origin': 'https://github.com/che-samples/nodejs-mongodb-sample.git'
+            }
+          },
+          'name': 'nodejs-mongodb-sample'
+        }
+      ]
+    }
+  } as any
 };

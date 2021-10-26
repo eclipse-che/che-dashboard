@@ -23,7 +23,7 @@ import { registerSwagger } from './swagger';
 import { getMessage } from '@eclipse-che/common/lib/helpers/errors';
 import { isLocalRun } from './local-run';
 import { registerClusterInfo } from './api/clusterInfo';
-import { clusterConsoleIcon, clusterConsoleTitle, clusterConsoleUrl } from './devworkspace-client/services/cluster-info';
+import { clusterConsoleUrl } from './devworkspace-client/services/cluster-info';
 import { registerDockerConfigApi } from './api/dockerConfigApi';
 
 const CHE_HOST = process.env.CHE_HOST as string;

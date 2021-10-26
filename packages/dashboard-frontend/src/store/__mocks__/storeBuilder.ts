@@ -16,7 +16,7 @@ import { BrandingData } from '../../services/bootstrap/branding.constant';
 import { FactoryResolver } from '../../services/helpers/types';
 import { AppState } from '..';
 import { State as DevfileRegistriesState } from '../DevfileRegistries/index';
-import { ContainerCredentials, RegistryEntry } from '../DockerConfig/types';
+import { RegistryEntry } from '../DockerConfig/types';
 import { State as WorkspacesState } from '../Workspaces/index';
 import { State as BrandingState } from '../Branding';
 import { State as FactoryResolverState } from '../FactoryResolver';

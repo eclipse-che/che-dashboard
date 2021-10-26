@@ -17,9 +17,10 @@ import { api } from '@eclipse-che/common';
 import { createError } from '../helpers';
 import { isKubeClientError } from '@eclipse-che/common/lib/helpers/errors';
 
-const secretKey = '.dockerconfigjson';
-const secretName = 'devworkspace-container-registry-dockercfg';
-const secretLabels = { 'controller.devfile.io/devworkspace_pullsecret': 'true' };
+const SECRET_KEY = '.dockerconfigjson';
+const SECRET_NAME = 'devworkspace-container-registry-dockercfg';
+const SECRET_LABELS = { 'controller.devfile.io/devworkspace_pullsecret': 'true' };
+const DOCKER_CONFIG_API_ERROR_LABEL = 'CORE_V1_API_ERROR';
 
 export class DockerConfigApi implements IDockerConfigApi {
 
@@ -31,7 +32,7 @@ export class DockerConfigApi implements IDockerConfigApi {
 
   async read(namespace: string): Promise<api.IDockerConfig> {
     try {
-      const { body } = await this.coreV1API.readNamespacedSecret(secretName, namespace);
+      const { body } = await this.coreV1API.readNamespacedSecret(SECRET_NAME, namespace);
       return this.toDockerConfig(body);
     } catch (error) {
       if (isKubeClientError(error) && error.statusCode === 404) {
@@ -39,7 +40,7 @@ export class DockerConfigApi implements IDockerConfigApi {
       }
 
       const additionalMessage = `Unable to read dockerConfig in the specified namespace "${namespace}"`;
-      throw createError(error, 'CORE_V1_API_ERROR', additionalMessage);
+      throw createError(error, DOCKER_CONFIG_API_ERROR_LABEL, additionalMessage);
     }
   }
 
@@ -47,7 +48,7 @@ export class DockerConfigApi implements IDockerConfigApi {
     try {
       let secret: V1Secret | undefined;
       try {
-        const resp = await this.coreV1API.readNamespacedSecret(secretName, namespace);
+        const resp = await this.coreV1API.readNamespacedSecret(SECRET_NAME, namespace);
         secret = resp.body;
       } catch (e) {
         if (isKubeClientError(e) && e.statusCode === 404) {
@@ -58,11 +59,11 @@ export class DockerConfigApi implements IDockerConfigApi {
         throw e;
       }
       this.updateDockerConfigSecret(secret, dockerCfg);
-      const { body } = await this.coreV1API.replaceNamespacedSecret(secretName, namespace, secret);
+      const { body } = await this.coreV1API.replaceNamespacedSecret(SECRET_NAME, namespace, secret);
       return this.toDockerConfig(body);
     } catch (error) {
       const additionalMessage = `Unable to update dockerConfig in the specified namespace "${namespace}"`;
-      throw createError(error, 'CORE_V1_API_ERROR', additionalMessage);
+      throw createError(error, DOCKER_CONFIG_API_ERROR_LABEL, additionalMessage);
     }
   }
 
@@ -70,19 +71,19 @@ export class DockerConfigApi implements IDockerConfigApi {
     return {
       apiVersion: 'v1',
       data: {
-        [secretKey]: dockerCfg.dockerconfig
+        [SECRET_KEY]: dockerCfg.dockerconfig || ''
       },
       kind: 'Secret',
       metadata: {
-        name: secretName,
-        labels: secretLabels,
+        name: SECRET_NAME,
+        labels: SECRET_LABELS,
       },
       type: 'kubernetes.io/dockerconfigjson'
     };
   }
 
-  private getDockerConfig(secret?: V1Secret): string {
-    return secret?.data?.[secretKey] || '';
+  private getDockerConfig(secret?: V1Secret): string | undefined {
+    return secret?.data?.[SECRET_KEY];
   }
 
   private toDockerConfig(secret?: V1Secret): api.IDockerConfig {
@@ -96,8 +97,8 @@ export class DockerConfigApi implements IDockerConfigApi {
     if (!secret.metadata) {
       secret.metadata = {};
     }
-    secret.data = { [secretKey]: dockerCfg.dockerconfig };
-    secret.metadata.labels = secretLabels;
+    secret.data = { [SECRET_KEY]: dockerCfg.dockerconfig || '' };
+    secret.metadata.labels = SECRET_LABELS;
     if (dockerCfg.resourceVersion) {
       secret.metadata.resourceVersion = dockerCfg.resourceVersion;
     }

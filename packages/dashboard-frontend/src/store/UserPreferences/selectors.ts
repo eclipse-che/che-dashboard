@@ -24,6 +24,3 @@ export const selectPreferences = createSelector(
   selectState,
   state => state.preferences
 );
-
-export class selectRegistries {
-}
