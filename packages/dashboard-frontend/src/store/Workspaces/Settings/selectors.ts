@@ -13,6 +13,7 @@
 import { createSelector } from 'reselect';
 import { AppState } from '../..';
 import * as storageTypesService from '../../../services/storageTypes';
+import { isDevworkspacesEnabled } from '../../../services/helpers/devworkspace';
 
 const selectState = (state: AppState) => state.workspacesSettings;
 export const selectWorkspacesSettingsState = selectState;
@@ -30,6 +31,11 @@ export const selectAvailableStorageTypes = createSelector(
 export const selectPreferredStorageType = createSelector(
   selectWorkspacesSettings,
   settings => storageTypesService.getPreferred(settings)
+);
+
+export const selectDevworkspacesEnabled = createSelector(
+  selectWorkspacesSettings,
+  settings => isDevworkspacesEnabled(settings)
 );
 
 export const selectWorkspacesSettingsError = createSelector(

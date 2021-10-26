@@ -10,12 +10,11 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import { KeycloakAuthService } from '../keycloak/auth';
+import { RegistryEntry } from './types';
 
-export function addAuthentication(headers: { [key: string]: string }) {
-  const token = KeycloakAuthService?.keycloak?.token;
-  if (token) {
-    headers['Authorization'] = `Bearer ${token}`; // Bearer Token Authentication
-  }
-  return headers;
+export interface State {
+  isLoading: boolean;
+  registries: RegistryEntry[]
+  resourceVersion?: string;
+  error: string | undefined;
 }

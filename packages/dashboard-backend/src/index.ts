@@ -20,10 +20,11 @@ import { registerTemplateApi } from './api/templateApi';
 import { registerLocalServers } from './local-run';
 import { registerCors } from './cors';
 import { registerSwagger } from './swagger';
-import { getMessage } from '@eclipse-che/common/lib/helpers/errors';
+import { helpers } from '@eclipse-che/common';
 import { isLocalRun } from './local-run';
 import { registerClusterInfo } from './api/clusterInfo';
-import { clusterConsoleIcon, clusterConsoleTitle, clusterConsoleUrl } from './devworkspace-client/services/cluster-info';
+import { clusterConsoleUrl } from './devworkspace-client/services/cluster-info';
+import { registerDockerConfigApi } from './api/dockerConfigApi';
 
 const CHE_HOST = process.env.CHE_HOST as string;
 
@@ -49,7 +50,7 @@ server.addContentTypeParser(
       const json = JSON.parse(body as string);
       done(null, json);
     } catch (e) {
-      const error = new Error(getMessage(e));
+      const error = new Error(helpers.errors.getMessage(e));
       done(error, undefined);
     }
   }
@@ -64,6 +65,8 @@ registerDevworkspaceApi(server);
 registerDevworkspaceWebsocketWatcher(server);
 
 registerTemplateApi(server);
+
+registerDockerConfigApi(server);
 
 if (clusterConsoleUrl) {
   registerClusterInfo(server);

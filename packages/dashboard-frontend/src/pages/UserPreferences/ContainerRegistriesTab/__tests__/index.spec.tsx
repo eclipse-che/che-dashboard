@@ -18,32 +18,28 @@ import { render, screen } from '@testing-library/react';
 import renderer from 'react-test-renderer';
 import { Store } from 'redux';
 import { ContainerRegistriesTab } from '..';
-import { selectIsLoading, selectPreferences, selectRegistries } from '../../../../store/UserPreferences/selectors';
+import { selectIsLoading, selectRegistries } from '../../../../store/DockerConfig/selectors';
 import { FakeRegistryBuilder } from './__mocks__/registryRowBuilder';
 import { FakeStoreBuilder } from '../../../../store/__mocks__/storeBuilder';
 
-describe('User Preferences', () => {
-  const mockRequestUserPreferences = jest.fn();
-  const mockReplaceUserPreferences = jest.fn();
-  const mockUpdateContainerRegistries = jest.fn();
+describe('ContainerRegistries', () => {
+  const mockRequestCredentials = jest.fn();
+  const mockUpdateCredentials = jest.fn();
 
   const history = createHashHistory();
 
   const getComponent = (store: Store): React.ReactElement => {
     const state = store.getState();
-    const preferences = selectPreferences(state);
     const registries = selectRegistries(state);
     const isLoading = selectIsLoading(state);
     return (
       <Provider store={store}>
         <ContainerRegistriesTab
           history={history}
-          preferences={preferences}
           registries={registries}
           isLoading={isLoading}
-          requestUserPreferences={mockRequestUserPreferences}
-          replaceUserPreferences={mockReplaceUserPreferences}
-          updateContainerRegistries={mockUpdateContainerRegistries}
+          requestCredentials={mockRequestCredentials}
+          updateCredentials={mockUpdateCredentials}
         />
       </Provider>
     );
@@ -66,7 +62,7 @@ describe('User Preferences', () => {
   });
 
   it('should correctly render the component which contains two registries', () => {
-    const component = getComponent(new FakeStoreBuilder().withUserPreferences([
+    const component = getComponent(new FakeStoreBuilder().withCheDockerConfig([
       new FakeRegistryBuilder().withUrl('http://test.reg').withPassword('qwerty').build(),
       new FakeRegistryBuilder().withUrl('https://tstreg.com').withPassword('123').build(),
     ]).build());
@@ -99,7 +95,7 @@ describe('User Preferences', () => {
     expect(editButton).toBeEnabled();
 
     userEvent.click(editButton);
-    expect(mockUpdateContainerRegistries).toBeCalledWith([{
+    expect(mockUpdateCredentials).toBeCalledWith([{
       url: 'http://tst',
       username: '',
       password: 'qwe',
@@ -107,7 +103,7 @@ describe('User Preferences', () => {
   });
 
   it('should delete a registry', () => {
-    const component = getComponent(new FakeStoreBuilder().withUserPreferences([
+    const component = getComponent(new FakeStoreBuilder().withCheDockerConfig([
       new FakeRegistryBuilder().withUrl('http://test.reg').withPassword('qwerty').build(),
     ]).build());
     render(component);
@@ -129,7 +125,7 @@ describe('User Preferences', () => {
     expect(deleteButton).toBeEnabled();
 
     userEvent.click(deleteButton);
-    expect(mockUpdateContainerRegistries).toBeCalledWith([]);
+    expect(mockUpdateCredentials).toBeCalledWith([]);
   });
 
 });

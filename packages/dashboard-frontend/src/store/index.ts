@@ -27,6 +27,8 @@ import * as UserStore from './User';
 import * as UserProfileStore from './UserProfile';
 import * as DwPluginsStore from './Plugins/devWorkspacePlugins';
 import * as WorkspacesSettingsStore from './Workspaces/Settings';
+import * as CheDockerConfigStore from './DockerConfig/che';
+import * as DwDockerConfigStore from './DockerConfig/dw';
 
 // the top-level state object
 export interface AppState {
@@ -45,6 +47,8 @@ export interface AppState {
   userPreferences: UserPreferences.State;
   dwPlugins: DwPluginsStore.State;
   workspacesSettings: WorkspacesSettingsStore.State,
+  cheDockerConfig: CheDockerConfigStore.State;
+  dwDockerConfig: DwDockerConfigStore.State;
 }
 
 export const reducers = {
@@ -63,6 +67,8 @@ export const reducers = {
   userPreferences: UserPreferences.reducer,
   dwPlugins: DwPluginsStore.reducer,
   workspacesSettings: WorkspacesSettingsStore.reducer,
+  cheDockerConfig: CheDockerConfigStore.reducer,
+  dwDockerConfig: DwDockerConfigStore.reducer,
 };
 
 export type AppThunk<ActionType extends Action, ReturnType = void> = ThunkAction<

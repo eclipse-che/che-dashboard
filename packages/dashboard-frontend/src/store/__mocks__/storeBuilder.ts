@@ -16,7 +16,7 @@ import { BrandingData } from '../../services/bootstrap/branding.constant';
 import { FactoryResolver } from '../../services/helpers/types';
 import { AppState } from '..';
 import { State as DevfileRegistriesState } from '../DevfileRegistries/index';
-import { ContainerCredentials, RegistryRow } from '../UserPreferences/types';
+import { RegistryEntry } from '../DockerConfig/types';
 import { State as WorkspacesState } from '../Workspaces/index';
 import { State as BrandingState } from '../Branding';
 import { State as FactoryResolverState } from '../FactoryResolver';
@@ -99,6 +99,16 @@ export class FakeStoreBuilder {
       editors: {},
       plugins: {},
     },
+    dwDockerConfig: {
+      isLoading: false,
+      registries: [],
+      error: undefined
+    },
+    cheDockerConfig: {
+      isLoading: false,
+      registries: [],
+      error: undefined
+    }
   };
 
   public withBannerAlert(messages: string[]): FakeStoreBuilder {
@@ -106,14 +116,23 @@ export class FakeStoreBuilder {
     return this;
   }
 
-  public withUserPreferences(registries: RegistryRow[], isLoading = false): FakeStoreBuilder {
-    const newContainerCredentials: ContainerCredentials = {};
-    registries.forEach(item => {
-      const { url, username, password } = item;
-      newContainerCredentials[url] = { username, password };
-    });
-    this.state.userPreferences.preferences = { dockerCredentials: btoa(JSON.stringify(newContainerCredentials)) };
-    this.state.branding.isLoading = isLoading;
+  public withDwDockerConfig(registries: RegistryEntry[], isLoading = false, error?: string): FakeStoreBuilder {
+    this.state.dwDockerConfig.registries = registries;
+    this.state.dwDockerConfig.isLoading = isLoading;
+    this.state.dwDockerConfig.error = error;
+    return this;
+  }
+
+  public withCheDockerConfig(registries: RegistryEntry[], isLoading = false, error?: string): FakeStoreBuilder {
+    this.state.cheDockerConfig.registries = registries;
+    this.state.cheDockerConfig.isLoading = isLoading;
+    this.state.cheDockerConfig.error = error;
+    return this;
+  }
+
+  public withUserPreferences(preferences: che.UserPreferences, isLoading = false): FakeStoreBuilder {
+    this.state.userPreferences.preferences = preferences;
+    this.state.userPreferences.isLoading = isLoading;
     return this;
   }
 
@@ -184,11 +203,11 @@ export class FakeStoreBuilder {
   }
 
   public withWorkspacesSettings(
-    settings: che.WorkspaceSettings,
+    settings: Partial<che.WorkspaceSettings>,
     isLoading = false,
     error?: string,
   ): FakeStoreBuilder {
-    this.state.workspacesSettings.settings = Object.assign({}, settings);
+    this.state.workspacesSettings.settings = Object.assign({}, settings) as che.WorkspaceSettings;
     this.state.workspacesSettings.isLoading = isLoading;
     this.state.workspacesSettings.error = error;
     return this;
