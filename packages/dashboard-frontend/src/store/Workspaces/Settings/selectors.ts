@@ -42,3 +42,8 @@ export const selectWorkspacesSettingsError = createSelector(
   selectState,
   state => state.error,
 );
+
+export const selectCheDevworkspaceEnabled = createSelector(
+  selectState,
+  state => state.settings['che.devworkspaces.enabled'] === 'true',
+);

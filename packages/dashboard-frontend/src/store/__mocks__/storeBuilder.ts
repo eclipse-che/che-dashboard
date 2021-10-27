@@ -207,7 +207,7 @@ export class FakeStoreBuilder {
     isLoading = false,
     error?: string,
   ): FakeStoreBuilder {
-    this.state.workspacesSettings.settings = Object.assign({}, settings) as che.WorkspaceSettings;
+    this.state.workspacesSettings.settings = Object.assign({}, settings as che.WorkspaceSettings);
     this.state.workspacesSettings.isLoading = isLoading;
     this.state.workspacesSettings.error = error;
     return this;
