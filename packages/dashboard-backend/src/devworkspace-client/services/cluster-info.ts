@@ -12,7 +12,7 @@
 
 export const clusterConsoleUrl = process.env['OPENSHIFT_CONSOLE_URL'] || '';
 export const clusterConsoleTitle = process.env['OPENSHIFT_CONSOLE_TITLE']
-  || 'Openshift Console';
+  || 'OpenShift console';
 export const clusterConsoleIcon = process.env['OPENSHIFT_CONSOLE_ICON']
   || (clusterConsoleUrl ? clusterConsoleUrl + '/static/assets/redhat.svg' : '');
 export const clusterConsoleGroup = process.env['OPENSHIFT_CONSOLE_GROUP'];
