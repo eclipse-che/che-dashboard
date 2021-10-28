@@ -237,7 +237,7 @@ export const reducer: Reducer<State> = (
     case 'REQUEST_DW_EDITOR':
       return createObject(state, {
         isLoading: true,
-        editors: Object.assign(state.editors, {
+        editors: createObject(state.editors, {
           [action.editorName]: {
             plugin: undefined,
           },
@@ -261,7 +261,7 @@ export const reducer: Reducer<State> = (
     case 'RECEIVE_DW_EDITOR':
       return createObject(state, {
         isLoading: false,
-        editors: Object.assign(state.editors, {
+        editors: createObject(state.editors, {
           [action.editorName]: {
             plugin: action.plugin,
           },

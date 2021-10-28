@@ -19,7 +19,7 @@ import { CheWorkspaceClient } from '../../services/workspace-client/cheworkspace
 import { AppThunk } from '../index';
 import { createObject } from '../helpers';
 import { getDevfile } from './getDevfile';
-import { selectCheDevworkspaceEnabled } from '../Workspaces/Settings/selectors';
+import { selectDevworkspacesEnabled } from '../Workspaces/Settings/selectors';
 import { Devfile } from '../../services/workspace-adapter';
 
 const WorkspaceClient = container.get(CheWorkspaceClient);
@@ -160,7 +160,7 @@ export const actionCreators: ActionCreators = {
         }
 
         const state = getState();
-        const isDevworkspacesEnabled = selectCheDevworkspaceEnabled(state);
+        const isDevworkspacesEnabled = selectDevworkspacesEnabled(state);
         const devfile = getDevfile(data, location, isDevworkspacesEnabled);
 
         const { source, scm_info } = data;
