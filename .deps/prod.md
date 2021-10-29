@@ -284,7 +284,7 @@
 | [`pino@6.13.2`](git+https://github.com/pinojs/pino.git) | MIT | clearlydefined |
 | [`popper.js@1.16.1`](git+https://github.com/FezVrasta/popper.js.git) | MIT | [CQ22353](https://dev.eclipse.org/ipzilla/show_bug.cgi?id=22353) |
 | [`postcss@8.3.6`](https://github.com/postcss/postcss.git) | MIT | clearlydefined |
-| [`prettier@2.0.5`](https://github.com/prettier/prettier.git) | MIT | clearlydefined |
+| [`prettier@2.0.5`](https://github.com/prettier/prettier.git) | MIT | #1523 |
 | [`private@0.1.8`](git://github.com/benjamn/private.git) | MIT | clearlydefined |
 | [`prop-types-extra@1.1.1`](git+https://github.com/react-bootstrap/prop-types-extra.git) | MIT | [CQ22354](https://dev.eclipse.org/ipzilla/show_bug.cgi?id=22354) |
 | [`prop-types@15.7.2`](https://github.com/facebook/prop-types.git) | MIT | clearlydefined |
