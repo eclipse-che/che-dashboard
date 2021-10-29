@@ -27,6 +27,7 @@ import { ActionCreators } from '../../store/Workspaces';
 import { Workspace } from '../../services/workspace-adapter';
 
 const showAlertMock = jest.fn();
+const hideAlertMock = jest.fn();
 const requestWorkspaceMock = jest.fn().mockResolvedValue(undefined);
 const startWorkspaceMock = jest.fn().mockResolvedValue(undefined);
 const setWorkspaceIdMock = jest.fn();
@@ -69,10 +70,12 @@ jest.mock('../../pages/IdeLoader', () => {
     ideUrl?: string;
     callbacks?: {
       showAlert?: (alertOptions: AlertOptions) => void;
+      hideAlert?: () => void;
     };
   }): React.ReactElement {
     if (props.callbacks) {
       props.callbacks.showAlert = showAlertMock;
+      props.callbacks.hideAlert = hideAlertMock;
     }
     return (
       <div>
@@ -179,10 +182,11 @@ describe('IDE Loader container', () => {
     expect(requestWorkspaceMock).toBeCalled();
     expect(startWorkspaceMock).not.toBeCalled();
 
-    expect(showAlertMock).toBeCalledTimes(1);
+    expect(showAlertMock).toBeCalled();
 
     const errorAlerts = (
       <React.Fragment>
+        <AlertActionLink onClick={() => jest.fn()}>Restart</AlertActionLink>
         <AlertActionLink onClick={() => jest.fn()}>Open in Verbose mode</AlertActionLink>
         <AlertActionLink onClick={() => jest.fn()}>Open Logs</AlertActionLink>
       </React.Fragment>

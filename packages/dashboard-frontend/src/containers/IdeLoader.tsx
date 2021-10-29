@@ -63,6 +63,7 @@ class IdeLoaderContainer extends React.PureComponent<Props, State> {
 
   private readonly loadFactoryPageCallbacks: {
     showAlert?: (alertOptions: AlertOptions) => void;
+    hideAlert?: () => void;
   };
   private readonly isDevEnvironment: boolean;
   private readonly toDispose = new DisposableCollection();
@@ -101,8 +102,8 @@ class IdeLoaderContainer extends React.PureComponent<Props, State> {
     };
 
     this.debounce.subscribe(async onStart => {
-      if (onStart) {
-        await this.initWorkspace();
+      if (onStart === false) {
+        await this.applyIdeLoadingStep();
       }
     });
     this.toDispose.push({
@@ -179,16 +180,20 @@ class IdeLoaderContainer extends React.PureComponent<Props, State> {
         return;
       }
       try {
-        this.setState({ isWaitingForRestart: true });
         window.postMessage('show-navbar', '*');
-        await this.props.restartWorkspace(workspace);
-        this.setState({ isWaitingForRestart: false });
+        await this.restartWorkspace(workspace);
       } catch (error) {
         this.setState({ isWaitingForRestart: false });
         const errorMessage = common.helpers.errors.getMessage(error);
         this.showAlert(errorMessage);
       }
     }
+  }
+
+  private async restartWorkspace(workspace: Workspace): Promise<void> {
+    this.setState({ isWaitingForRestart: false });
+    await this.props.restartWorkspace(workspace);
+    this.setState({ isWaitingForRestart: false });
   }
 
   public async componentWillUnmount(): Promise<void> {
@@ -249,6 +254,11 @@ class IdeLoaderContainer extends React.PureComponent<Props, State> {
       workspace =>
         workspace.namespace === params.namespace && workspace.name === this.workspaceName,
     );
+    if (workspace) {
+      this.setState({
+        hasError: workspace.hasError,
+      });
+    }
     if (!workspace) {
       const alertOptions = {
         title: `Workspace "${this.workspaceName}" is not found.`,
@@ -263,13 +273,12 @@ class IdeLoaderContainer extends React.PureComponent<Props, State> {
         hasError: true,
       });
     } else if (workspace.hasError) {
-      if (prevState.workspaceName === this.workspaceName && !hasError) {
+      if (prevState.workspaceName === this.workspaceName && hasError) {
         // When the current workspace didn't have an error but now does then show it
         this.showErrorAlert(workspace);
       } else if (prevState.workspaceName !== this.workspaceName) {
         // When the clicked workspace changes and the new one errors then show the new error message
         this.setState({
-          hasError: true,
           workspaceName: this.workspaceName,
           currentStep: LoadIdeSteps.START_WORKSPACE,
           workspaceId: workspace.id,
@@ -277,7 +286,7 @@ class IdeLoaderContainer extends React.PureComponent<Props, State> {
         this.showErrorAlert(workspace);
       }
     } else if (prevState.workspaceName !== this.workspaceName) {
-      await this.initWorkspace();
+      await this.applyIdeLoadingStep();
       return;
     } else if (prevState.isWaitingForRestart) {
       this.setState({
@@ -316,6 +325,13 @@ class IdeLoaderContainer extends React.PureComponent<Props, State> {
       <React.Fragment>
         <AlertActionLink
           onClick={async () => {
+            this.handleRestart(workspace);
+          }}
+        >
+          Restart
+        </AlertActionLink>
+        <AlertActionLink
+          onClick={async () => {
             this.verboseModeHandler(workspace);
           }}
         >
@@ -331,6 +347,13 @@ class IdeLoaderContainer extends React.PureComponent<Props, State> {
         </AlertActionLink>
       </React.Fragment>
     );
+  }
+
+  private async handleRestart(workspace: Workspace): Promise<void> {
+    this.loadFactoryPageCallbacks.hideAlert?.();
+    this.props.deleteWorkspaceLogs(workspace.id);
+
+    await this.restartWorkspace(workspace);
   }
 
   private async verboseModeHandler(workspace: Workspace): Promise<void> {
@@ -385,7 +408,7 @@ class IdeLoaderContainer extends React.PureComponent<Props, State> {
     }
   }
 
-  private async initWorkspace(): Promise<void> {
+  private async applyIdeLoadingStep(): Promise<void> {
     const {
       allWorkspaces,
       match: { params },

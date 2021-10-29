@@ -48,6 +48,7 @@ type Props = {
   isDevWorkspace: boolean;
   callbacks?: {
     showAlert?: (alertOptions: AlertOptions) => void;
+    hideAlert?: () => void;
   };
 };
 
@@ -72,7 +73,7 @@ export type AlertOptions = {
 };
 
 class IdeLoader extends React.PureComponent<Props, State> {
-  private readonly hideAlert: () => void;
+  public readonly hideAlert: () => void;
   private readonly handleTabClick: (
     event: React.MouseEvent<HTMLElement, MouseEvent>,
     tabIndex: React.ReactText,
@@ -130,12 +131,24 @@ class IdeLoader extends React.PureComponent<Props, State> {
         alertOptions.alertVariant === AlertVariant.success ? 2000 : 10000,
       );
     };
-    this.hideAlert = (): void => this.setState({ alertVisible: false });
+    this.hideAlert = (): void => {
+      this.setState({
+        alertVisible: false,
+        currentRequestError: '',
+      });
+    };
     // Prepare showAlert as a callback
-    if (this.props.callbacks && !this.props.callbacks.showAlert) {
-      this.props.callbacks.showAlert = (alertOptions: AlertOptions) => {
-        this.showAlert(alertOptions);
-      };
+    if (this.props.callbacks) {
+      if (this.props.callbacks.showAlert === undefined) {
+        this.props.callbacks.showAlert = (alertOptions: AlertOptions) => {
+          this.showAlert(alertOptions);
+        };
+      }
+      if (this.props.callbacks.hideAlert === undefined) {
+        this.props.callbacks.hideAlert = () => {
+          this.hideAlert();
+        };
+      }
     }
   }
 
@@ -215,22 +228,16 @@ class IdeLoader extends React.PureComponent<Props, State> {
   private getIcon(step: LoadIdeSteps, className = ''): React.ReactNode {
     const { currentStep, hasError } = this.props;
     if (currentStep > step) {
-      return (
-        <React.Fragment>
-          <CheckCircleIcon className={className} color="green" />
-        </React.Fragment>
-      );
+      return <CheckCircleIcon className={className} color="green" />;
     } else if (currentStep === step) {
       if (hasError) {
         return <ExclamationCircleIcon className={className} color="red" />;
       }
       return (
-        <React.Fragment>
-          <InProgressIcon
-            className={`${workspaceStatusLabelStyles.rotate} ${className}`}
-            color="#0e6fe0"
-          />
-        </React.Fragment>
+        <InProgressIcon
+          className={`${workspaceStatusLabelStyles.rotate} ${className}`}
+          color="#0e6fe0"
+        />
       );
     }
     return '';
