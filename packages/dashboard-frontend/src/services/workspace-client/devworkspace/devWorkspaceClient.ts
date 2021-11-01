@@ -798,9 +798,17 @@ export class DevWorkspaceClient extends WorkspaceClient {
     }
   }
 
-  checkForDevWorkspaceEditorUpgrade(devworkspace: devfileApi.DevWorkspace): api.IPatch[] {
+  upgradeDevWorkspaceTemplate(devworkspace: devfileApi.DevWorkspace): api.IPatch {
+    const {
+      spec: { template },
+    } = devworkspace;
 
-    return [];
+    const patch = {
+      op: 'replace',
+      path: '/spec/template',
+      value: template,
+    };
+
+    return patch;
   }
-
 }

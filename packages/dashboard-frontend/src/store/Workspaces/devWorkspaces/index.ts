@@ -298,7 +298,11 @@ export const actionCreators: ActionCreators = {
       const defer: IDeferred<void> = getDefer();
       const toDispose = new DisposableCollection();
       const onStatusChangeCallback = async status => {
-        if (status === DevWorkspaceStatus.STOPPED || status === DevWorkspaceStatus.FAILED) {
+        if (
+          status === DevWorkspaceStatus.STOPPED ||
+          status === DevWorkspaceStatus.FAILING ||
+          status === DevWorkspaceStatus.FAILED
+        ) {
           toDispose.dispose();
           try {
             await dispatch(actionCreators.startWorkspace(workspace));
@@ -310,6 +314,7 @@ export const actionCreators: ActionCreators = {
       };
       if (
         workspace.status?.phase === DevWorkspaceStatus.STOPPED ||
+        workspace.status?.phase === DevWorkspaceStatus.FAILING ||
         workspace.status?.phase === DevWorkspaceStatus.FAILED
       ) {
         onStatusChangeCallback(workspace.status.phase);

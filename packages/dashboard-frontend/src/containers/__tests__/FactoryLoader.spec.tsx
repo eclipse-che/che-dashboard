@@ -351,7 +351,6 @@ describe('Factory Loader container', () => {
       );
 
       jest.runOnlyPendingTimers();
-      expect(showAlertMock).not.toHaveBeenCalled();
       await waitFor(() => expect(requestWorkspaceMock).toHaveBeenCalledWith(workspaceAdapter));
       await waitFor(() => expect(startWorkspaceMock).toHaveBeenCalledWith(workspaceAdapter));
       expect(LoadFactorySteps[elementCurrentStep.innerHTML]).toEqual(

@@ -88,7 +88,9 @@ export class PreloadData {
     try {
       await requestClusterInfo()(this.store.dispatch, this.store.getState, undefined);
     } catch (e) {
-      console.warn('Unable to fetch cluster info. This is expected behaviour unless backend is configured to provide this information.');
+      console.warn(
+        'Unable to fetch cluster info. This is expected behaviour unless backend is configured to provide this information.',
+      );
     }
   }
 

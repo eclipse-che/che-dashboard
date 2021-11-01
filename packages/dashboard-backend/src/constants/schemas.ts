@@ -65,11 +65,13 @@ export const patchSchema: JSONSchema7 = {
       value: {}, // matches any value
     },
   },
-  examples: [{
-    op: 'replace',
-    path: '/spec/started',
-    value: true
-  }],
+  examples: [
+    {
+      op: 'replace',
+      path: '/spec/started',
+      value: true,
+    },
+  ],
 };
 
 export const dockerConfigSchema: JSONSchema7 = {
