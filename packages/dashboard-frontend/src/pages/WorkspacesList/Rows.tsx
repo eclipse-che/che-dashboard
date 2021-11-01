@@ -41,7 +41,6 @@ export function buildRows(
   const rows: RowData[] = [];
   workspaces
     // skip workspaces that are not match a filter
-    .filter(workspace => filtered.includes(workspace.id))
     .sort((workspaceA, workspaceB) => {
       if (sortBy.index === 1) {
         const nameA = workspaceA.name || '';

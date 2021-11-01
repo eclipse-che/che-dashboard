@@ -14,11 +14,7 @@ import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { History } from 'history';
 import { AppState } from '../store';
-import {
-  selectAllWorkspaces,
-  selectIsLoading,
-  selectWorkspacesError,
-} from '../store/Workspaces/selectors';
+import { selectAllWorkspaces, selectIsLoading, selectWorkspacesError, } from '../store/Workspaces/selectors';
 import * as WorkspacesStore from '../store/Workspaces';
 import Fallback from '../components/Fallback';
 import WorkspacesList from '../pages/WorkspacesList';
@@ -29,9 +25,12 @@ import { AppAlerts } from '../services/alerts/appAlerts';
 import { AlertVariant } from '@patternfly/react-core';
 import { selectBranding } from '../store/Branding/selectors';
 
-type Props = MappedProps & { history: History };
+type Props =
+  MappedProps
+  & { history: History };
 
 export class WorkspacesListContainer extends React.PureComponent<Props> {
+
   @lazyInject(AppAlerts)
   private appAlerts: AppAlerts;
 
@@ -73,12 +72,13 @@ export class WorkspacesListContainer extends React.PureComponent<Props> {
               onAction={(action, id) => context.handleAction(action, id)}
               showConfirmation={wantDelete => context.showConfirmation(wantDelete)}
               toDelete={context.toDelete}
-            ></WorkspacesList>
+            />
           )}
         </WorkspaceActionsConsumer>
       </WorkspaceActionsProvider>
     );
   }
+
 }
 
 const mapStateToProps = (state: AppState) => {
@@ -90,7 +90,10 @@ const mapStateToProps = (state: AppState) => {
   };
 };
 
-const connector = connect(mapStateToProps, WorkspacesStore.actionCreators);
+const connector = connect(
+  mapStateToProps,
+  WorkspacesStore.actionCreators
+);
 
 type MappedProps = ConnectedProps<typeof connector>;
 export default connector(WorkspacesListContainer);
