@@ -85,7 +85,11 @@ export class PreloadData {
 
   private async fetchApplications(): Promise<void> {
     const { requestClusterInfo } = ExternalApplicationsStore.actionCreators;
-    await requestClusterInfo()(this.store.dispatch, this.store.getState, undefined);
+    try {
+      await requestClusterInfo()(this.store.dispatch, this.store.getState, undefined);
+    } catch (e) {
+      console.warn('Unable to fetch cluster info. This is expected behaviour unless backend is configured to provide this information.');
+    }
   }
 
   private async fetchBranding(): Promise<void> {

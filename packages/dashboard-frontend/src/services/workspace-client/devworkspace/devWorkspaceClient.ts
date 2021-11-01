@@ -797,4 +797,10 @@ export class DevWorkspaceClient extends WorkspaceClient {
       throw new Error('Unknown error occured when trying to process the devworkspace');
     }
   }
+
+  checkForDevWorkspaceEditorUpgrade(devworkspace: devfileApi.DevWorkspace): api.IPatch[] {
+
+    return [];
+  }
+
 }
