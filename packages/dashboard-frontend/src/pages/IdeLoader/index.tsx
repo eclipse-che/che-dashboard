@@ -73,7 +73,7 @@ export type AlertOptions = {
 };
 
 class IdeLoader extends React.PureComponent<Props, State> {
-  public readonly hideAlert: () => void;
+  private readonly hideAlert: () => void;
   private readonly handleTabClick: (
     event: React.MouseEvent<HTMLElement, MouseEvent>,
     tabIndex: React.ReactText,
