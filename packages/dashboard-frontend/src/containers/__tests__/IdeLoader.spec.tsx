@@ -167,10 +167,11 @@ describe('IDE Loader container', () => {
     const elementHasError = screen.getByTestId('ide-loader-has-error');
     expect(elementHasError.innerHTML).toEqual('true');
 
-    const elementCurrentStep = screen.getByTestId('ide-loader-current-step');
-    expect(LoadIdeSteps[elementCurrentStep.innerHTML]).toEqual(
-      LoadIdeSteps[LoadIdeSteps.INITIALIZING],
+    const elementCurrentStep = Number.parseInt(
+      screen.getByTestId('ide-loader-current-step').innerHTML,
+      10,
     );
+    expect(LoadIdeSteps[elementCurrentStep]).toEqual(LoadIdeSteps[LoadIdeSteps.INITIALIZING]);
   });
 
   it('error links are passed to alert when workspace start error is found', () => {
@@ -201,10 +202,11 @@ describe('IDE Loader container', () => {
 
     expect(setWorkspaceIdMock).toBeCalled();
 
-    const elementCurrentStep = screen.getByTestId('ide-loader-current-step');
-    expect(LoadIdeSteps[elementCurrentStep.innerHTML]).toEqual(
-      LoadIdeSteps[LoadIdeSteps.START_WORKSPACE],
+    const elementCurrentStep = Number.parseInt(
+      screen.getByTestId('ide-loader-current-step').innerHTML,
+      10,
     );
+    expect(LoadIdeSteps[elementCurrentStep]).toEqual(LoadIdeSteps[LoadIdeSteps.START_WORKSPACE]);
   });
 
   it('should have correct WORKSPACE START and waiting for the workspace runtime', async () => {
@@ -229,10 +231,11 @@ describe('IDE Loader container', () => {
     const elementWorkspaceName = screen.getByTestId('ide-loader-workspace-name');
     expect(elementWorkspaceName.innerHTML).toEqual(workspaceName);
 
-    const elementCurrentStep = screen.getByTestId('ide-loader-current-step');
-    expect(LoadIdeSteps[elementCurrentStep.innerHTML]).toEqual(
-      LoadIdeSteps[LoadIdeSteps.START_WORKSPACE],
+    const elementCurrentStep = Number.parseInt(
+      screen.getByTestId('ide-loader-current-step').innerHTML,
+      10,
     );
+    expect(LoadIdeSteps[elementCurrentStep]).toEqual(LoadIdeSteps[LoadIdeSteps.START_WORKSPACE]);
 
     const elementIdeUrl = screen.getByTestId('ide-loader-workspace-ide-url');
     expect(elementIdeUrl.innerHTML).toEqual('');
@@ -254,8 +257,11 @@ describe('IDE Loader container', () => {
     const elementWorkspaceName = screen.getByTestId('ide-loader-workspace-name');
     expect(elementWorkspaceName.innerHTML).toEqual(workspaceName);
 
-    const elementCurrentStep = screen.getByTestId('ide-loader-current-step');
-    expect(LoadIdeSteps[elementCurrentStep.innerHTML]).toEqual(LoadIdeSteps[LoadIdeSteps.OPEN_IDE]);
+    const elementCurrentStep = Number.parseInt(
+      screen.getByTestId('ide-loader-current-step').innerHTML,
+      10,
+    );
+    expect(LoadIdeSteps[elementCurrentStep]).toEqual(LoadIdeSteps[LoadIdeSteps.OPEN_IDE]);
 
     const elementWorkspaceId = screen.getByTestId('ide-loader-workspace-id');
     expect(elementWorkspaceId.innerHTML).toEqual('');
