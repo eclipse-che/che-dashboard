@@ -297,16 +297,15 @@ export const actionCreators: ActionCreators = {
     async (dispatch): Promise<void> => {
       const defer: IDeferred<void> = getDefer();
       const toDispose = new DisposableCollection();
-      const onStatusChangeCallback = status => {
+      const onStatusChangeCallback = async status => {
         if (status === DevWorkspaceStatus.STOPPED || status === DevWorkspaceStatus.FAILED) {
           toDispose.dispose();
-          dispatch(actionCreators.startWorkspace(workspace))
-            .then(() => {
-              defer.resolve();
-            })
-            .catch(e => {
-              defer.reject(`Failed to restart the workspace ${workspace.metadata.name}. ${e}`);
-            });
+          try {
+            await dispatch(actionCreators.startWorkspace(workspace));
+            defer.resolve();
+          } catch (e) {
+            defer.reject(`Failed to restart the workspace ${workspace.metadata.name}. ${e}`);
+          }
         }
       };
       if (
