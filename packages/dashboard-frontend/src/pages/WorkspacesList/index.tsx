@@ -108,7 +108,7 @@ export default class WorkspacesList extends React.PureComponent<Props, State> {
         // content is aligned to the right
         title: '',
         dataLabel: ' ',
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        /* eslint-disable @typescript-eslint/no-non-null-assertion */
         cellTransforms: [
           classNames(
             styles.openIdeCell,
@@ -402,7 +402,7 @@ export default class WorkspacesList extends React.PureComponent<Props, State> {
     });
   }
 
-  public componentDidUpdate(prevProps: Props, prevState: State): void {
+  public componentDidUpdate(prevProps: Props): void {
     if (prevProps.workspaces.length !== this.props.workspaces.length) {
       const selected: string[] = [];
       const filtered: string[] = [];
@@ -421,7 +421,7 @@ export default class WorkspacesList extends React.PureComponent<Props, State> {
       });
     }
     /* Update checkboxes states if workspaces are deleting */
-    if (prevProps.workspaces.length !== this.props.workspaces.length) {
+    if (prevProps.toDelete.length !== this.props.toDelete.length) {
       const selected = this.state.selected.filter(id => false === this.props.toDelete.includes(id));
       this.setState({
         selected,

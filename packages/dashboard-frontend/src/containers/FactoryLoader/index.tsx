@@ -194,9 +194,11 @@ export class FactoryLoaderContainer extends React.PureComponent<Props, State> {
       await this.openIde();
     }
 
-    if (workspace &&
+    if (
+      workspace &&
       workspace.hasError &&
-      this.state.currentStep === LoadFactorySteps.START_WORKSPACE) {
+      this.state.currentStep === LoadFactorySteps.START_WORKSPACE
+    ) {
       this.showAlert('Unknown workspace error.');
     }
   }
