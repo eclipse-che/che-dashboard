@@ -34,6 +34,7 @@ import { WorkspaceAdapter } from '../../workspace-adapter';
 import { safeLoad } from 'js-yaml';
 import { DEVWORKSPACE_UPDATING_TIMESTAMP_ANNOTATION } from '../../devfileApi/devWorkspace/metadata';
 import { AxiosInstance } from 'axios';
+import { V220DevfileComponentsItemsContainer } from '@devfile/api';
 
 export interface IStatusUpdate {
   error?: string;
@@ -97,6 +98,19 @@ export const DEVWORKSPACE_DEBUG_START_ANNOTATION = 'controller.devfile.io/debug-
 export const DEVWORKSPACE_DEVFILE_SOURCE = 'che.eclipse.org/devfile-source';
 
 export const DEVWORKSPACE_METADATA_ANNOTATION = 'dw.metadata.annotations';
+
+export interface ICheEditorOverrideContainer extends V220DevfileComponentsItemsContainer {
+  name: string;
+}
+export interface ICheEditorYaml {
+  inline?: devfileApi.Devfile;
+  id?: string;
+  reference?: string;
+  registryUrl?: string;
+  override?: {
+    containers: ICheEditorOverrideContainer[];
+  };
+}
 
 /**
  * This class manages the connection between the frontend and the devworkspace typescript library
@@ -260,18 +274,77 @@ export class DevWorkspaceClient extends WorkspaceClient {
 
     // do we have a custom editor specified in the repository ?
     const cheEditorYaml = optionalFilesContent['.che/che-editor.yaml']
-      ? (safeLoad(optionalFilesContent['.che/che-editor.yaml']) as devfileApi.Devfile)
+      ? (safeLoad(optionalFilesContent['.che/che-editor.yaml']) as ICheEditorYaml)
       : undefined;
 
     const editorsDevfile: devfileApi.Devfile[] = [];
     // handle inlined editor in the devfile
     if (inlineEditorYaml) {
-      console.debug('Using Inline editor specified in the devfile', inlineEditorYaml);
+      console.debug('Using inline editor specified in the devfile', inlineEditorYaml);
       editorsDevfile.push(inlineEditorYaml);
     } else if (cheEditorYaml) {
-      // then check if there is a file in the repository
-      editorsDevfile.push(cheEditorYaml);
-      console.debug('Using repository .che/che-editor.yaml file', cheEditorYaml);
+      // check the content of cheEditor file
+      console.debug('Using the repository .che/che-editor.yaml file', cheEditorYaml);
+
+      let repositoryEditorYaml;
+      let repositoryEditorYamlUrl;
+      // it's an inlined editor, use the inline content
+      if (cheEditorYaml.inline) {
+        console.debug('Using the inline content of the repository editor');
+        repositoryEditorYaml = cheEditorYaml.inline;
+      } else if (cheEditorYaml.id) {
+        // load the content of this editor
+        console.debug(`Loading editor from its id ${cheEditorYaml.id}`);
+
+        // registryUrl ?
+        if (cheEditorYaml.registryUrl) {
+          repositoryEditorYamlUrl = `${cheEditorYaml.registryUrl}/plugins/${cheEditorYaml.id}/devfile.yaml`;
+        } else {
+          repositoryEditorYamlUrl = `${pluginRegistryUrl}/plugins/${cheEditorYaml.id}/devfile.yaml`;
+        }
+      } else if (cheEditorYaml.reference) {
+        // load the content of this editor
+        console.debug(`Loading editor from reference ${cheEditorYaml.reference}`);
+        repositoryEditorYamlUrl = cheEditorYaml.reference;
+      }
+      if (repositoryEditorYamlUrl) {
+        const response = await this.axios.get<string>(repositoryEditorYamlUrl, {
+          responseType: 'text',
+        });
+        if (response.data) {
+          repositoryEditorYaml = safeLoad(response.data);
+        }
+      }
+
+      // if there are some overrides, apply them
+      if (cheEditorYaml.override) {
+        console.debug(`Applying overrides ${JSON.stringify(cheEditorYaml.override)}...`);
+        cheEditorYaml.override.containers?.forEach(container => {
+          // search matching component
+          const matchingComponent = repositoryEditorYaml.components?.find(
+            component => component.name === container.name,
+          );
+          if (matchingComponent) {
+            // apply overrides except the name
+            Object.keys(container).forEach(property => {
+              if (property !== 'name') {
+                console.debug(
+                  `Updating property from ${matchingComponent.container[property]} to ${container[property]}`,
+                );
+                matchingComponent.container[property] = container[property];
+              }
+            });
+          }
+        });
+      }
+
+      if (!repositoryEditorYaml) {
+        throw new Error(
+          'Failed to analyze the editor devfile inside the repository, reason: Missing id, reference or inline content.',
+        );
+      }
+      // Use the repository defined editor
+      editorsDevfile.push(repositoryEditorYaml);
     } else {
       editorsDevfile.push(...pluginsDevfile);
     }
