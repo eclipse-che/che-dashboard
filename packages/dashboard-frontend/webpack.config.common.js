@@ -14,9 +14,12 @@ const CopyPlugin = require('copy-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const stylus_plugin = require('poststylus');
+const GitRevisionPlugin = require('git-revision-webpack-plugin');
 const stylusLoader = require('stylus-loader');
 const path = require('path');
 const webpack = require('webpack');
+
+const gitRevisionPlugin = new GitRevisionPlugin();
 
 const config = {
   entry: {
@@ -137,6 +140,8 @@ const config = {
   plugins: [
     new webpack.DefinePlugin({
       'process.env.DASHBOARD_VERSION': JSON.stringify(require('./package.json').version),
+      'process.env.COMMITHASH': JSON.stringify(gitRevisionPlugin.commithash()),
+      'process.env.VERSION': JSON.stringify(gitRevisionPlugin.version()),
     }),
     new HtmlWebpackPlugin({
       template: path.resolve(__dirname, './index.html'),

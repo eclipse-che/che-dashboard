@@ -44,6 +44,9 @@ export class AboutModal extends React.PureComponent<Props> {
 
   private buildContent(): React.ReactElement {
     const dashboardVersion = process.env.DASHBOARD_VERSION;
+    const version = process.env.VERSION;
+    const commitHash = process.env.COMMITHASH;
+    const commitUrl = `https://github.com/eclipse-che/che-dashboard/commit/${commitHash}`;
     const serverVersion = this.props.serverVersion;
     const username = this.props.username;
     const browserVersion = this.browserVersion;
@@ -61,7 +64,11 @@ export class AboutModal extends React.PureComponent<Props> {
                 className="co-select-to-copy"
                 data-testid="dashboard-version"
               >
-                {dashboardVersion}
+                {dashboardVersion} (
+                <a href={commitUrl} target="_blank" rel="noreferrer">
+                  {version}
+                </a>
+                )
               </TextListItem>
             </>
           )}

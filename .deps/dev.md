@@ -546,6 +546,7 @@
 | [`get-value@2.0.6`](https://github.com/jonschlinkert/get-value.git) | MIT | clearlydefined |
 | [`git-raw-commits@2.0.10`](https://github.com/conventional-changelog/conventional-changelog.git) | MIT | clearlydefined |
 | [`git-remote-origin-url@2.0.0`](https://github.com/sindresorhus/git-remote-origin-url.git) | MIT | clearlydefined |
+| [`git-revision-webpack-plugin@3.0.6`](https://github.com/pirelenito/git-revision-webpack-plugin.git) | MIT | clearlydefined |
 | [`git-semver-tags@4.1.1`](https://github.com/conventional-changelog/conventional-changelog.git) | MIT | clearlydefined |
 | [`git-up@4.0.5`](https://github.com/IonicaBizau/git-up.git) | MIT | clearlydefined |
 | [`git-url-parse@11.6.0`](git+ssh://git@github.com/IonicaBizau/git-url-parse.git) | MIT | clearlydefined |
