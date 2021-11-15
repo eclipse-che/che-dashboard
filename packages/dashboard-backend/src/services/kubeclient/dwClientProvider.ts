@@ -43,7 +43,12 @@ export class DwClientProvider {
         try {
           DwClientProvider.keycloakEndpoint = await evaluateKeycloakEndpointUrl();
         } catch (e) {
-          if (helpers.errors.isAxiosError(e) && e.code !== ERROR_INVALID_URL) {
+          if (
+            helpers.errors.isAxiosError(e) &&
+            helpers.errors.isAxiosResponse(e.response) &&
+            e.response.status !== 401 &&
+            e.response.status !== 404
+          ) {
             throw e;
           }
           DwClientProvider.keycloakEndpoint = ERROR_INVALID_URL;
