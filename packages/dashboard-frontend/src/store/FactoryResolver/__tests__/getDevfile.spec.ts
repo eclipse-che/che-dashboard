@@ -10,7 +10,7 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import { getDevfile } from '../../FactoryResolver/getDevfile';
+import { getDevfile } from '../getDevfile';
 import { FactoryResolverBuilder } from '../../__mocks__/factoryResolverBuilder';
 import { safeDump } from 'js-yaml';
 
