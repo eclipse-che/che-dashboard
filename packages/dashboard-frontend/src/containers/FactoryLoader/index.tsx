@@ -36,7 +36,7 @@ import { KeycloakAuthService } from '../../services/keycloak/auth';
 import { getEnvironment, isDevEnvironment } from '../../services/helpers/environment';
 import { isOAuthResponse } from '../../store/FactoryResolver';
 import { updateDevfile } from '../../services/storageTypes';
-import { isCheDevfile, isCheWorkspace, Workspace } from '../../services/workspace-adapter';
+import { Devfile, isCheDevfile, isCheWorkspace, Workspace } from '../../services/workspace-adapter';
 import { AlertOptions } from '../../pages/FactoryLoader';
 import {
   selectDefaultNamespace,
@@ -123,13 +123,13 @@ export class FactoryLoaderContainer extends React.PureComponent<Props, State> {
     this.overrideDevfileObject[key] = val;
   }
 
-  private getTargetDevfile(): api.che.workspace.devfile.Devfile | undefined {
-    let devfile = this.factoryResolver.resolver.devfile;
-    if (!devfile) {
-      return undefined;
-    }
+  private getTargetDevfile(): Devfile {
+    // at this point the resolver object is defined
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    let devfile = this.factoryResolver.resolver!.devfile;
 
     if (
+      isCheDevfile(devfile) &&
       devfile?.attributes?.persistVolumes === undefined &&
       devfile?.attributes?.asyncPersist === undefined &&
       this.props.preferredStorageType
@@ -299,9 +299,7 @@ export class FactoryLoaderContainer extends React.PureComponent<Props, State> {
     return attrs;
   }
 
-  private async resolveDevfile(
-    location: string,
-  ): Promise<api.che.workspace.devfile.Devfile | undefined> {
+  private async resolveDevfile(location: string): Promise<Devfile | undefined> {
     const override = Object.entries(this.overrideDevfileObject).length
       ? this.overrideDevfileObject
       : undefined;
@@ -445,7 +443,7 @@ export class FactoryLoaderContainer extends React.PureComponent<Props, State> {
           undefined,
           namespace,
           attrs,
-          this.factoryResolver.resolver.optionalFilesContent || {},
+          this.factoryResolver.resolver?.optionalFilesContent || {},
         );
         this.props.setWorkspaceQualifiedName(namespace, devfile.metadata.name as string);
         workspace = this.props.activeWorkspace;

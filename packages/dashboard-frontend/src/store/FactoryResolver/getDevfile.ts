@@ -11,13 +11,15 @@
  */
 
 import { FactoryResolver, DevfileV2ProjectSource } from '../../services/helpers/types';
-import { isDevfileV2 } from '../../services/devfileApi';
+import devfileApi, { isDevfileV2 } from '../../services/devfileApi';
 import { getProjectName } from '../../services/helpers/getProjectName';
 import { safeDump } from 'js-yaml';
 import {
   DEVWORKSPACE_DEVFILE_SOURCE,
   DEVWORKSPACE_METADATA_ANNOTATION,
 } from '../../services/workspace-client/devworkspace/devWorkspaceClient';
+import { getDefaultDevfileV2 } from '../../services/helpers/getDefaultDevfile';
+import getRandomString from '../../services/helpers/random';
 
 /**
  * Returns a devfile from the FactoryResolver object.
@@ -27,69 +29,88 @@ import {
 export function getDevfile(
   data: FactoryResolver,
   location: string,
-): api.che.workspace.devfile.Devfile {
+  isDevworkspacesEnabled: boolean,
+): devfileApi.Devfile | che.WorkspaceDevfile {
   let devfile = data.devfile;
+  const scmInfo = data['scm_info'];
 
-  if (isDevfileV2(devfile)) {
-    if (!devfile.components) {
-      devfile.components = [];
-    }
-    // temporary solution for fix che-server serialization bug with empty volume
-    const components =
-      devfile.components.map(component => {
-        if (Object.keys(component).length === 1 && component.name) {
-          component.volume = {};
-        }
-        return component;
-      }) || [];
-    devfile = Object.assign(devfile, { components });
-    // add a default project
-    const projects: DevfileV2ProjectSource[] = [];
-    const scmInfo = data['scm_info'];
-    if (!devfile.projects?.length && scmInfo) {
-      const origin = scmInfo['clone_url'];
-      const name = getProjectName(origin);
-      const revision = scmInfo.branch;
-      const project: DevfileV2ProjectSource = { name, git: { remotes: { origin } } };
-      if (revision) {
-        project.git.checkoutFrom = { revision };
+  if (isDevfileV2(devfile) === false) {
+    if (isDevworkspacesEnabled && data.source === 'repo') {
+      // no devfiles found in the repo, use the default devfile v2
+      let workspaceName =
+        (devfile as che.WorkspaceDevfile).metadata.name ||
+        (devfile as che.WorkspaceDevfile).metadata.generateName;
+      if (workspaceName?.endsWith('-')) {
+        workspaceName += getRandomString(4).toLowerCase();
       }
-      projects.push(project);
-      devfile = Object.assign({ projects }, devfile);
+      const name = scmInfo?.clone_url ? getProjectName(scmInfo.clone_url) : workspaceName;
+      devfile = getDefaultDevfileV2(name);
+    } else {
+      return devfile;
     }
-    // provide metadata about the origin of the devfile with DevWorkspace
-    let devfileSource = '';
-    if (data.source && scmInfo) {
-      if (scmInfo.branch) {
-        devfileSource = safeDump({
-          scm: {
-            repo: scmInfo['clone_url'],
-            revision: scmInfo.branch,
-            fileName: data.source,
-          },
-        });
-      } else {
-        devfileSource = safeDump({
-          scm: {
-            repo: scmInfo['clone_url'],
-            fileName: data.source,
-          },
-        });
-      }
-    } else if (location) {
-      devfileSource = safeDump({ url: { location } });
-    }
-    const metadata = devfile.metadata;
-    if (!metadata.attributes) {
-      metadata.attributes = {};
-    }
-    if (!metadata.attributes[DEVWORKSPACE_METADATA_ANNOTATION]) {
-      metadata.attributes[DEVWORKSPACE_METADATA_ANNOTATION] = {};
-    }
-    metadata.attributes[DEVWORKSPACE_METADATA_ANNOTATION][DEVWORKSPACE_DEVFILE_SOURCE] =
-      devfileSource;
-    devfile = Object.assign({}, devfile, { metadata });
   }
+
+  devfile = devfile as devfileApi.Devfile;
+  if (!devfile.components) {
+    devfile.components = [];
+  }
+
+  // temporary solution for fix che-server serialization bug with empty volume
+  const components =
+    devfile.components.map(component => {
+      if (Object.keys(component).length === 1 && component.name) {
+        component.volume = {};
+      }
+      return component;
+    }) || [];
+  devfile = Object.assign(devfile, { components });
+
+  // add a default project
+  const projects: DevfileV2ProjectSource[] = [];
+  if (!devfile.projects?.length && scmInfo) {
+    const origin = scmInfo.clone_url;
+    const name = getProjectName(origin);
+    const revision = scmInfo.branch;
+    const project: DevfileV2ProjectSource = { name, git: { remotes: { origin } } };
+    if (revision) {
+      project.git.checkoutFrom = { revision };
+    }
+    projects.push(project);
+    devfile = Object.assign({ projects }, devfile);
+  }
+
+  // provide metadata about the origin of the devfile with DevWorkspace
+  let devfileSource = '';
+  if (data.source && scmInfo) {
+    if (scmInfo.branch) {
+      devfileSource = safeDump({
+        scm: {
+          repo: scmInfo['clone_url'],
+          revision: scmInfo.branch,
+          fileName: data.source,
+        },
+      });
+    } else {
+      devfileSource = safeDump({
+        scm: {
+          repo: scmInfo['clone_url'],
+          fileName: data.source,
+        },
+      });
+    }
+  } else if (location) {
+    devfileSource = safeDump({ url: { location } });
+  }
+  const metadata = devfile.metadata;
+  if (!metadata.attributes) {
+    metadata.attributes = {};
+  }
+  if (!metadata.attributes[DEVWORKSPACE_METADATA_ANNOTATION]) {
+    metadata.attributes[DEVWORKSPACE_METADATA_ANNOTATION] = {};
+  }
+  metadata.attributes[DEVWORKSPACE_METADATA_ANNOTATION][DEVWORKSPACE_DEVFILE_SOURCE] =
+    devfileSource;
+  devfile = Object.assign({}, devfile, { metadata });
 
   return devfile;
 }

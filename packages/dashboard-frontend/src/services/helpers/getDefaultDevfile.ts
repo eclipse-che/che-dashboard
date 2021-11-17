@@ -10,7 +10,6 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import getRandomString from './random';
 import { updateDevfile } from '../storageTypes';
 import { Devfile } from '../workspace-adapter';
 import devfileApi from '../devfileApi';
@@ -29,11 +28,11 @@ export function getDefaultDevfileV1(
   return updateDevfile(devfile as Devfile, preferredStorageType) as che.WorkspaceDevfile;
 }
 
-export function getDefaultDevfileV2(generateName = 'wksp-'): devfileApi.Devfile {
+export function getDefaultDevfileV2(name = 'wksp'): devfileApi.Devfile {
   return {
     schemaVersion: '2.1.0',
     metadata: {
-      name: generateName + getRandomString(4).toLowerCase(),
+      name,
     },
   } as devfileApi.Devfile;
 }
