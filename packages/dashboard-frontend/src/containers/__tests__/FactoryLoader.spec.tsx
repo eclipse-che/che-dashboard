@@ -165,7 +165,7 @@ describe('Factory Loader container', () => {
       await waitFor(() => expect(startWorkspaceMock).toHaveBeenCalled());
 
       const convertingMessage = screen.queryByText(
-        `Devfile 2.x version found, converting it to devfile version 1.`,
+        'Devfile 2.x version found, converting it to devfile version 1.',
         { exact: false },
       );
       // the message should not appear
@@ -224,7 +224,7 @@ describe('Factory Loader container', () => {
       await waitFor(() => expect(startWorkspaceMock).toHaveBeenCalled());
 
       const convertingMessage = screen.queryByText(
-        `Devfile 2.x version found, converting it to devfile version 1.`,
+        'Devfile 2.x version found, converting it to devfile version 1.',
         { exact: false },
       );
       // the message should appear
@@ -284,7 +284,7 @@ describe('Factory Loader container', () => {
       await waitFor(() => expect(startWorkspaceMock).toHaveBeenCalled());
 
       const convertingMessage = screen.queryByText(
-        `Devfile 2.x version found, converting it to devfile version 1.`,
+        'Devfile 2.x version found, converting it to devfile version 1.',
         { exact: false },
       );
       // the message should not appear
