@@ -158,7 +158,7 @@ describe('Factory Loader container', () => {
           v: '4.0',
           source: 'devfile.yaml',
           devfile: workspace.devfile,
-          location: location.split('&')[0],
+          location,
           links: [],
         })
         .withInfrastructureNamespace([{ name: namespace, attributes: { phase: 'Active' } }], false)
@@ -217,7 +217,7 @@ describe('Factory Loader container', () => {
           v: '4.0',
           source: 'devfile.yaml',
           devfile: workspace.devfile,
-          location: location.split('&')[0],
+          location,
           links: [],
         })
         .withInfrastructureNamespace([{ name: namespace, attributes: { phase: 'Active' } }], false)
@@ -277,7 +277,7 @@ describe('Factory Loader container', () => {
           v: '4.0',
           source: 'devfile.yaml',
           devfile: workspace.devfile,
-          location: location.split('&')[0],
+          location,
           links: [],
         })
         .withInfrastructureNamespace([{ name: namespace, attributes: { phase: 'Active' } }], false)
