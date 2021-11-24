@@ -25,6 +25,7 @@ import getRandomString from '../../services/helpers/random';
  * Returns a devfile from the FactoryResolver object.
  * @param data a FactoryResolver object.
  * @param location a source location.
+ * @param isDevworkspacesEnabled indicates if devworkspace engine is enabled.
  */
 export function getDevfile(
   data: FactoryResolver,

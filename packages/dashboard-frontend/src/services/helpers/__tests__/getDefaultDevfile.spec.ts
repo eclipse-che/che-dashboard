@@ -13,7 +13,7 @@
 import getDefaultDevfile from '../getDefaultDevfile';
 
 describe('getDefaultDevfile', () => {
-  it('should return devfile v1', () => {
+  it('should return devfile v2', () => {
     const isDevworkspacesEnabled = true;
     const preferredStorageType = 'ephemeral';
     const devfile = getDefaultDevfile(isDevworkspacesEnabled, preferredStorageType);
@@ -25,7 +25,7 @@ describe('getDefaultDevfile', () => {
       },
     });
   });
-  it('should return devfile v2', () => {
+  it('should return devfile v1', () => {
     const isDevworkspacesEnabled = false;
     const preferredStorageType = 'ephemeral';
     const devfile = getDefaultDevfile(isDevworkspacesEnabled, preferredStorageType);
