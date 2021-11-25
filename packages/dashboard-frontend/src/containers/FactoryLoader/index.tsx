@@ -26,7 +26,7 @@ import {
   selectWorkspaceByQualifiedName,
 } from '../../store/Workspaces/selectors';
 import {
-  selectCheDevworkspaceEnabled,
+  selectDevworkspacesEnabled,
   selectPreferredStorageType,
   selectWorkspacesSettings,
 } from '../../store/Workspaces/Settings/selectors';
@@ -614,7 +614,7 @@ const mapStateToProps = (state: AppState) => ({
   activeWorkspace: selectWorkspaceByQualifiedName(state),
   defaultNamespace: selectDefaultNamespace(state),
   workspacesSettings: selectWorkspacesSettings(state),
-  cheDevworkspaceEnabled: selectCheDevworkspaceEnabled(state),
+  cheDevworkspaceEnabled: selectDevworkspacesEnabled(state),
 });
 
 const connector = connect(mapStateToProps, {

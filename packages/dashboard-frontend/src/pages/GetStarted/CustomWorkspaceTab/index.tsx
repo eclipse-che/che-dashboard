@@ -26,7 +26,7 @@ import { WorkspaceNameFormGroup } from './WorkspaceName';
 import DevfileSelectorFormGroup from './DevfileSelector';
 import InfrastructureNamespaceFormGroup from './InfrastructureNamespace';
 import {
-  selectCheDevworkspaceEnabled,
+  selectDevworkspacesEnabled,
   selectPreferredStorageType,
   selectWorkspacesSettings,
 } from '../../../store/Workspaces/Settings/selectors';
@@ -276,7 +276,7 @@ export class CustomWorkspaceTab extends React.PureComponent<Props, State> {
 const mapStateToProps = (state: AppState) => ({
   workspacesSettings: selectWorkspacesSettings(state),
   preferredStorageType: selectPreferredStorageType(state),
-  cheDevworkspacesEnabled: selectCheDevworkspaceEnabled(state),
+  cheDevworkspacesEnabled: selectDevworkspacesEnabled(state),
 });
 
 const connector = connect(mapStateToProps);
