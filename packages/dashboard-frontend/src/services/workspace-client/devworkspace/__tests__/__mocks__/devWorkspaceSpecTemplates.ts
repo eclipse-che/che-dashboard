@@ -10,139 +10,112 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import {
-  V1alpha2DevWorkspaceSpecTemplate,
-  V1alpha2DevWorkspaceSpecTemplateCommandsItemsExecGroup,
-  V1alpha2DevWorkspaceSpecTemplateComponentsItemsContainerEndpoints,
-} from '@devfile/api';
-import KindEnum = V1alpha2DevWorkspaceSpecTemplateCommandsItemsExecGroup.KindEnum;
-import ExposureEnum = V1alpha2DevWorkspaceSpecTemplateComponentsItemsContainerEndpoints.ExposureEnum;
-import ProtocolEnum = V1alpha2DevWorkspaceSpecTemplateComponentsItemsContainerEndpoints.ProtocolEnum;
+const getDevWorkspaceTemplate = (cpuLimit = '1500m') =>
+  ({
+    apiVersion: 'workspace.devfile.io/v1alpha2',
+    kind: 'DevWorkspaceTemplate',
+    metadata: {
+      annotations: {
+        'che.eclipse.org/components-update-policy': 'managed',
+        'che.eclipse.org/plugin-registry-url':
+          'https://192.168.64.24.nip.io/plugin-registry/v3/plugins/eclipse/che-theia/next/devfile.yaml',
+      },
+      creationTimestamp: '2021-11-24T17:11:37Z',
+      generation: 1,
+      name: 'theia-ide-workspacee2ade80d625b4f3e',
+      namespace: 'admin-che',
+      resourceVersion: '3766',
+      uid: '106c3fa1-32c6-47ef-87e5-333de6914837',
+    },
+    spec: {
+      commands: [],
+      components: [
+        {
+          attributes: {
+            'app.kubernetes.io/component': 'che-theia',
+            'app.kubernetes.io/part-of': 'che-theia.eclipse.org',
+          },
+          container: {
+            cpuLimit,
+            cpuRequest: '100m',
+            endpoints: [],
+            env: [],
+            image: 'quay.io/eclipse/che-theia:next',
+            memoryLimit: '512M',
+            mountSources: true,
+            sourceMapping: '/projects',
+            volumeMounts: [],
+          },
+          name: 'theia-ide',
+        },
+        {
+          name: 'plugins',
+          volume: {},
+        },
+        {
+          name: 'theia-local',
+          volume: {},
+        },
+        {
+          attributes: {
+            'app.kubernetes.io/component': 'machine-exec',
+            'app.kubernetes.io/part-of': 'che-theia.eclipse.org',
+          },
+          container: {
+            command: [
+              '/go/bin/che-machine-exec',
+              '--url',
+              '127.0.0.1:3333',
+              '--idle-timeout',
+              '15m',
+            ],
+            cpuLimit: '500m',
+            cpuRequest: '30m',
+            env: [],
+            image: 'quay.io/eclipse/che-machine-exec:next',
+            memoryLimit: '128Mi',
+            memoryRequest: '32Mi',
+            sourceMapping: '/projects',
+          },
+          name: 'che-machine-exec',
+        },
+        {
+          attributes: {
+            'app.kubernetes.io/component': 'remote-runtime-injector',
+            'app.kubernetes.io/part-of': 'che-theia.eclipse.org',
+          },
+          container: {
+            cpuLimit: '500m',
+            cpuRequest: '30m',
+            env: [],
+            image: 'quay.io/eclipse/che-theia-endpoint-runtime-binary:next',
+            memoryLimit: '128Mi',
+            memoryRequest: '32Mi',
+            sourceMapping: '/projects',
+            volumeMounts: [
+              {
+                name: 'plugins',
+                path: '/plugins',
+              },
+              {
+                name: 'remote-endpoint',
+                path: '/remote-endpoint',
+              },
+            ],
+          },
+          name: 'remote-runtime-injector',
+        },
+        {
+          name: 'remote-endpoint',
+          volume: {
+            ephemeral: true,
+          },
+        },
+      ],
+      events: {
+        preStart: ['init-container-command'],
+      },
+    },
+  } as any);
 
-const namespace = 'test-namespace';
-
-const template: V1alpha2DevWorkspaceSpecTemplate = {
-  commands: [
-    {
-      exec: {
-        commandLine: 'npm install',
-        component: 'nodejs',
-        group: {
-          isDefault: true,
-          kind: KindEnum.Build,
-        },
-        label: 'Download dependencies',
-        workingDir: '${PROJECTS_ROOT}/web-nodejs-sample/app',
-      },
-      id: 'dependencies',
-    },
-    {
-      exec: {
-        commandLine: 'nodemon app.js',
-        component: 'nodejs',
-        group: {
-          kind: KindEnum.Run,
-        },
-        label: 'Run the web app',
-        workingDir: '${PROJECTS_ROOT}/web-nodejs-sample/app',
-      },
-      id: 'runapp',
-    },
-    {
-      exec: {
-        commandLine: 'nodemon --inspect app.js',
-        component: 'nodejs',
-        group: {
-          isDefault: true,
-          kind: KindEnum.Debug,
-        },
-        label: 'Run the web app (debugging enabled)',
-        workingDir: '${PROJECTS_ROOT}/web-nodejs-sample/app',
-      },
-      id: 'debug',
-    },
-    {
-      exec: {
-        commandLine:
-          'node_server_pids=$(pgrep -fx \'.*nodemon (--inspect )?app.js\' | tr "\\\\n" " ") && echo "Stopping node server with PIDs: ${node_server_pids}" &&  kill -15 ${node_server_pids} &>/dev/null && echo \'Done.\'',
-        component: 'nodejs',
-        group: {
-          kind: KindEnum.Run,
-        },
-        label: 'Stop the web app',
-      },
-      id: 'stopapp',
-    },
-  ],
-  components: [
-    {
-      attributes: {
-        'app.kubernetes.io/name': 'nodejs',
-        'che-theia.eclipse.org/vscode-extensions': [
-          'https://open-vsx.org/api/vscode/typescript-language-features/1.49.3/file/vscode.typescript-language-features-1.49.3.vsix',
-          'https://open-vsx.org/api/ms-vscode/js-debug/1.52.2/file/ms-vscode.js-debug-1.52.2.vsix',
-        ],
-      },
-      container: {
-        args: ['sh', '-c', '${PLUGIN_REMOTE_ENDPOINT_EXECUTABLE}'],
-        endpoints: [
-          {
-            exposure: ExposureEnum.Public,
-            name: 'nodejs',
-            protocol: ProtocolEnum.Http,
-            targetPort: 3000,
-          },
-        ],
-        env: [
-          {
-            name: 'PLUGIN_REMOTE_ENDPOINT_EXECUTABLE',
-            value: '/remote-endpoint/plugin-remote-endpoint',
-          },
-          {
-            name: 'THEIA_PLUGINS',
-            value: 'local-dir:///plugins/sidecars/nodejs',
-          },
-        ],
-        image: 'quay.io/devfile/universal-developer-image:ubi8-b452131',
-        memoryLimit: '1G',
-        mountSources: true,
-        sourceMapping: '/projects',
-        volumeMounts: [
-          {
-            name: 'remote-endpoint',
-            path: '/remote-endpoint',
-          },
-          {
-            name: 'plugins',
-            path: '/plugins',
-          },
-        ],
-      },
-      name: 'nodejs',
-    },
-    {
-      name: 'theia-ide-workspace189007441fb54fb9',
-      plugin: {
-        kubernetes: {
-          name: 'theia-ide-workspace189007441fb54fb9',
-          namespace,
-        },
-      },
-    },
-  ],
-  projects: [
-    {
-      git: {
-        checkoutFrom: {
-          revision: 'devfilev2',
-        },
-        remotes: {
-          origin: 'https://github.com/che-samples/web-nodejs-sample.git',
-        },
-      },
-      name: 'web-nodejs-sample',
-    },
-  ],
-};
-
-export default template;
+export default getDevWorkspaceTemplate;
