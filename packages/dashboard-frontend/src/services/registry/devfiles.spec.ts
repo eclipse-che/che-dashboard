@@ -43,7 +43,6 @@ describe('devfile links', () => {
     const object = '/devfile/foo.yaml';
     const updated = updateObjectLinks(object, baseUrl);
 
-    // this one is not updated as already absolute
     expect(updated).toBe(`${baseUrl}/devfile/foo.yaml`);
   });
 
