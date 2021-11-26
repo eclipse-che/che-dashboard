@@ -21,19 +21,25 @@ const GROUP = 'org.eclipse.che';
 const VERSION = 'v1';
 const PLURAL = 'checlusters';
 
-const NAME = 'eclipse-che';
-const NAMESPACE = 'eclipse-che';
+const NAME = process.env.CHE_CRD_OBJECT_NAME;
+const NAMESPACE = process.env.CHE_NAMESPACE;
 
 export class ServerConfigApi implements IServerConfigApi {
-  private readonly coreV1API: k8s.CoreV1Api;
   private readonly customObjectAPI: k8s.CustomObjectsApi;
 
   constructor(kc: k8s.KubeConfig) {
     this.customObjectAPI = kc.makeApiClient(k8s.CustomObjectsApi);
-    this.coreV1API = kc.makeApiClient(k8s.CoreV1Api);
   }
 
   async getDefaultPlugins(): Promise<api.IWorkspacesDefaultPlugins[]> {
+    if (!NAME || !NAMESPACE) {
+      throw createError(
+        undefined,
+        CUSTOM_RECOURSE_DEFINITIONS_API_ERROR_LABEL,
+        'Mandatory environment variables are not defined: $CHE_NAMESPACE, $CHE_CRD_OBJECT_NAME',
+      );
+    }
+
     try {
       const resp = await this.customObjectAPI.listClusterCustomObject(GROUP, VERSION, PLURAL);
 
