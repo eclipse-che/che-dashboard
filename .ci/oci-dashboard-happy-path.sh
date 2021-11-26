@@ -51,3 +51,4 @@ EOL
 
 deployChe
 bash <(curl -s https://raw.githubusercontent.com/eclipse/che/${CHE_REPO_BRANCH}/tests/devworkspace-happy-path/remote-launch.sh)
+sleep 60
