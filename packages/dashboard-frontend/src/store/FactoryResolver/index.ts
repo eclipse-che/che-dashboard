@@ -170,8 +170,8 @@ export const actionCreators: ActionCreators = {
         });
         return;
       } catch (e) {
-        if (common.helpers.errors.isAxiosResponse((e as any).response)) {
-          const response = (e as any).response;
+        if (common.helpers.errors.includesAxiosResponse(e)) {
+          const response = e.response;
           if (response.status === 401 && isOAuthResponse(response.data)) {
             throw response.data;
           }
