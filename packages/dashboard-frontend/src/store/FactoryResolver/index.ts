@@ -170,13 +170,10 @@ export const actionCreators: ActionCreators = {
         });
         return;
       } catch (e) {
-        if (
-          common.helpers.errors.isAxiosError(e) &&
-          common.helpers.errors.isAxiosResponse(e.response)
-        ) {
-          const responseData = e.response.data;
-          if (e.response.status === 401 && isOAuthResponse(responseData)) {
-            throw responseData;
+        if (common.helpers.errors.isAxiosResponse((e as any).response)) {
+          const response = (e as any).response;
+          if (response.status === 401 && isOAuthResponse(response.data)) {
+            throw response.data;
           }
         }
         const errorMessage =
