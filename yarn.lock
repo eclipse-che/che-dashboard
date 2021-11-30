@@ -357,6 +357,18 @@
   resolved "https://registry.yarnpkg.com/@eclipse-che/api/-/api-7.39.2.tgz#a49d8a56345cbb52da7829652ffcad612e5f0391"
   integrity sha512-13zSFY4+YjYBQOzQTXE71fAX37HMQm/3rkMHN8c7Ejg1UF8ILXwC3Z28xzlMv4kSxtecn0/frqbwoZN8wRjc/g==
 
+"@eclipse-che/che-code-devworkspace-handler@1.63.0-dev-2c23dcf":
+  version "1.63.0-dev-2c23dcf"
+  resolved "https://registry.yarnpkg.com/@eclipse-che/che-code-devworkspace-handler/-/che-code-devworkspace-handler-1.63.0-dev-2c23dcf.tgz#83ff92a57a4913b79b509d25c84537e79b80e54a"
+  integrity sha512-r2iUfk780cpE9km5hMMqaCfIkE99LxEBDGPEcHYeJy8zHSMCnU/yr6DPGQcjFZCJui9VYDEb9HTpu7PqECGjxA==
+  dependencies:
+    "@devfile/api" latest
+    axios "0.21.2"
+    inversify "^5.0.1"
+    js-yaml "^4.0.0"
+    jsonc-parser "^3.0.0"
+    reflect-metadata "^0.1.13"
+
 "@eclipse-che/che-theia-devworkspace-handler@0.0.1-1637592995":
   version "0.0.1-1637592995"
   resolved "https://registry.yarnpkg.com/@eclipse-che/che-theia-devworkspace-handler/-/che-theia-devworkspace-handler-0.0.1-1637592995.tgz#cc584fa11b06dc19f9c5b33d33334d29abd07a1e"
