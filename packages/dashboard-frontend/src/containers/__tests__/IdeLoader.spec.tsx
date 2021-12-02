@@ -189,7 +189,6 @@ describe('IDE Loader container', () => {
       <React.Fragment>
         <AlertActionLink onClick={() => jest.fn()}>Restart</AlertActionLink>
         <AlertActionLink onClick={() => jest.fn()}>Open in Verbose mode</AlertActionLink>
-        <AlertActionLink onClick={() => jest.fn()}>Open Logs</AlertActionLink>
       </React.Fragment>
     );
     const firstCalledArgs = showAlertMock.mock.calls[0][0];

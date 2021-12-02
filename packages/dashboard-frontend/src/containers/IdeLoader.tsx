@@ -34,6 +34,7 @@ import { buildWorkspacesLocation } from '../services/helpers/location';
 import { DisposableCollection } from '../services/helpers/disposable';
 import { Workspace } from '../services/workspace-adapter';
 import { selectDevworkspacesEnabled } from '../store/Workspaces/Settings/selectors';
+import devfileApi from '../services/devfileApi';
 
 type Props = MappedProps & { history: History } & RouteComponentProps<{
     namespace: string;
@@ -239,13 +240,16 @@ class IdeLoaderContainer extends React.PureComponent<Props, State> {
   }
 
   private showErrorAlert(workspace: Workspace) {
-    const wsLogs = this.props.workspacesLogs.get(workspace.id) || [];
+    const errorMessage = workspace.isDevWorkspace
+      ? (workspace.ref as devfileApi.DevWorkspace)?.status?.message
+      : this.findErrorLogs(this.props.workspacesLogs.get(workspace.id) || []).join('\n');
+
     const alertActionLinks = this.errorActionLinks(workspace);
     this.showAlert({
       alertActionLinks: alertActionLinks,
       title: `Workspace ${this.state.workspaceName} failed to start`,
-      body: this.findErrorLogs(wsLogs).join('\n'),
       alertVariant: AlertVariant.danger,
+      body: errorMessage || 'Unknown devworkspace error.',
     });
   }
 
@@ -350,14 +354,6 @@ class IdeLoaderContainer extends React.PureComponent<Props, State> {
           }}
         >
           Open in Verbose mode
-        </AlertActionLink>
-        <AlertActionLink
-          onClick={() => {
-            // Since patternfly appends numbers to an id we can't just get the tab by id so look for the tab item with Logs
-            this.logsHandler();
-          }}
-        >
-          Open Logs
         </AlertActionLink>
       </React.Fragment>
     );
