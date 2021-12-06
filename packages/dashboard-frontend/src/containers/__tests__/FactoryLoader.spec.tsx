@@ -133,6 +133,35 @@ describe('Factory Loader container', () => {
     jest.useRealTimers();
   });
 
+  describe('default policy', () => {
+    const component = FactoryLoaderContainer.WrappedComponent;
+    const emptyProps = {
+      history: {
+        location: 'https://foo.location',
+      },
+    } as any;
+
+    it('default policy in in Che Server mode is perclick', () => {
+      const instance = new component({
+        ...emptyProps,
+        workspacesSettings: {
+          'che.devworkspaces.enabled': 'false',
+        },
+      });
+      expect(instance.state.createPolicy).toBe('perclick');
+    });
+
+    it('default policy in in DevWorkspaces mode is peruser', () => {
+      const instance = new component({
+        ...emptyProps,
+        workspacesSettings: {
+          'che.devworkspaces.enabled': 'true',
+        },
+      });
+      expect(instance.state.createPolicy).toBe('peruser');
+    });
+  });
+
   describe('converting devfiles', () => {
     it('should NOT convert devfile v1 in Che Server mode', async () => {
       const location = 'http://test-location';
@@ -667,6 +696,34 @@ describe('Factory Loader container', () => {
   });
 
   describe('Use a devfile V2', () => {
+    it('should resolve the factory with default policy and open existing workspace', async () => {
+      const location = 'http://test-location?new';
+      const name = 'test-name';
+      const devWorkspace = new DevWorkspaceBuilder()
+        .withId('id-wksp-test')
+        .withName(name)
+        .withNamespace('test')
+        .build();
+      renderComponentV2(location, devWorkspace);
+
+      const elementCurrentStep = screen.getByTestId('factory-loader-current-step');
+      expect(LoadFactorySteps[elementCurrentStep.innerHTML]).toEqual(
+        LoadFactorySteps[LoadFactorySteps.LOOKING_FOR_DEVFILE],
+      );
+
+      jest.runOnlyPendingTimers();
+      await waitFor(() =>
+        expect(requestFactoryResolverMock).toHaveBeenCalledWith(location.split('&')[0]),
+      );
+      expect(LoadFactorySteps[elementCurrentStep.innerHTML]).toEqual(
+        LoadFactorySteps[LoadFactorySteps.APPLYING_DEVFILE],
+      );
+
+      jest.runOnlyPendingTimers();
+
+      await waitFor(() => expect(createWorkspaceFromDevfileMock).not.toBeCalled());
+    });
+
     it('should resolve the factory with create policie "peruser" and open existing workspace', async () => {
       const location = 'http://test-location&policies.create=peruser';
       const name = 'test-name';

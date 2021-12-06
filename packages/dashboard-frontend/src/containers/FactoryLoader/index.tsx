@@ -57,8 +57,6 @@ const WS_ATTRIBUTES_TO_SAVE: string[] = [
   'che-editor',
 ];
 
-const DEFAULT_CREATE_POLICY = 'perclick';
-
 export type CreatePolicy = 'perclick' | 'peruser';
 
 enum ErrorCodes {
@@ -102,14 +100,19 @@ export class FactoryLoaderContainer extends React.PureComponent<Props, State> {
 
     const { search } = this.props.history.location;
     const cheDevworkspaceEnabled = isDevworkspacesEnabled(this.props.workspacesSettings);
-
+    const createPolicy = this.getDefaultCreatePolicy();
     this.state = {
       currentStep: LoadFactorySteps.INITIALIZING,
       hasError: false,
-      createPolicy: DEFAULT_CREATE_POLICY,
+      createPolicy,
       search,
       cheDevworkspaceEnabled,
     };
+  }
+
+  private getDefaultCreatePolicy(): CreatePolicy {
+    const devWorkspaceMode = isDevworkspacesEnabled(this.props.workspacesSettings);
+    return devWorkspaceMode ? 'peruser' : 'perclick';
   }
 
   private resetOverrideParams(): void {
@@ -220,7 +223,7 @@ export class FactoryLoaderContainer extends React.PureComponent<Props, State> {
   }
 
   private getCreatePolicy(attrs: { [key: string]: string }): CreatePolicy | undefined {
-    const policy = attrs['policies.create'] || DEFAULT_CREATE_POLICY;
+    const policy = attrs['policies.create'] || this.getDefaultCreatePolicy();
     if (this.isCreatePolicy(policy)) {
       return policy;
     }
