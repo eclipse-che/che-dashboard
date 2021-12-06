@@ -696,34 +696,6 @@ describe('Factory Loader container', () => {
   });
 
   describe('Use a devfile V2', () => {
-    it('should resolve the factory with default policy and open existing workspace', async () => {
-      const location = 'http://test-location?new';
-      const name = 'test-name';
-      const devWorkspace = new DevWorkspaceBuilder()
-        .withId('id-wksp-test')
-        .withName(name)
-        .withNamespace('test')
-        .build();
-      renderComponentV2(location, devWorkspace);
-
-      const elementCurrentStep = screen.getByTestId('factory-loader-current-step');
-      expect(LoadFactorySteps[elementCurrentStep.innerHTML]).toEqual(
-        LoadFactorySteps[LoadFactorySteps.LOOKING_FOR_DEVFILE],
-      );
-
-      jest.runOnlyPendingTimers();
-      await waitFor(() =>
-        expect(requestFactoryResolverMock).toHaveBeenCalledWith(location.split('&')[0]),
-      );
-      expect(LoadFactorySteps[elementCurrentStep.innerHTML]).toEqual(
-        LoadFactorySteps[LoadFactorySteps.APPLYING_DEVFILE],
-      );
-
-      jest.runOnlyPendingTimers();
-
-      await waitFor(() => expect(createWorkspaceFromDevfileMock).not.toBeCalled());
-    });
-
     it('should resolve the factory with create policie "peruser" and open existing workspace', async () => {
       const location = 'http://test-location&policies.create=peruser';
       const name = 'test-name';
