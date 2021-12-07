@@ -91,6 +91,7 @@ interface DeleteWorkspaceAction extends Action {
 interface TerminateWorkspaceAction extends Action {
   type: 'TERMINATE_DEVWORKSPACE';
   workspaceId: string;
+  message: string;
 }
 
 interface AddWorkspaceAction extends Action {
@@ -377,6 +378,7 @@ export const actionCreators: ActionCreators = {
         dispatch({
           type: 'TERMINATE_DEVWORKSPACE',
           workspaceId,
+          message: workspace.status?.message || 'Cleaning up resources for deletion',
         });
         dispatch({ type: 'DELETE_DEVWORKSPACE_LOGS', workspaceId });
       } catch (e) {
@@ -566,6 +568,7 @@ export const reducer: Reducer<State> = (state: State | undefined, action: KnownA
               targetWorkspace.status = {} as devfileApi.DevWorkspaceStatus;
             }
             targetWorkspace.status.phase = DevWorkspaceStatus.TERMINATING;
+            targetWorkspace.status.message = action.message;
             return targetWorkspace;
           }
           return workspace;
@@ -594,7 +597,17 @@ async function onStatusUpdateReceived(
   dispatch: ThunkDispatch<State, undefined, KnownAction>,
   statusUpdate: IStatusUpdate,
 ) {
-  const { status, message } = statusUpdate;
+  const { status } = statusUpdate;
+
+  if (status !== statusUpdate.prevStatus) {
+    dispatch({
+      type: 'UPDATE_DEVWORKSPACE_STATUS',
+      workspaceId: statusUpdate.workspaceId,
+      message: statusUpdate.message,
+      status,
+    });
+  }
+
   const callback = onStatusChangeCallbacks.get(statusUpdate.workspaceId);
 
   if (callback && status) {
@@ -617,14 +630,5 @@ async function onStatusUpdateReceived(
         workspacesLogs,
       });
     }
-  }
-
-  if (status !== statusUpdate.prevStatus || message !== statusUpdate.message) {
-    dispatch({
-      type: 'UPDATE_DEVWORKSPACE_STATUS',
-      workspaceId: statusUpdate.workspaceId,
-      status,
-      message,
-    });
   }
 }

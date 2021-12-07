@@ -240,16 +240,14 @@ class IdeLoaderContainer extends React.PureComponent<Props, State> {
   }
 
   private showErrorAlert(workspace: Workspace) {
-    const errorMessage = workspace.isDevWorkspace
-      ? (workspace.ref as devfileApi.DevWorkspace)?.status?.message
-      : this.findErrorLogs(this.props.workspacesLogs.get(workspace.id) || []).join('\n');
+    const errorMessage = this.findErrorLogs(workspace) || 'Unknown devworkspace error.';
 
     const alertActionLinks = this.errorActionLinks(workspace);
     this.showAlert({
       alertActionLinks: alertActionLinks,
       title: `Workspace ${this.state.workspaceName} failed to start`,
       alertVariant: AlertVariant.danger,
-      body: errorMessage || 'Unknown devworkspace error.',
+      body: errorMessage,
     });
   }
 
@@ -321,16 +319,18 @@ class IdeLoaderContainer extends React.PureComponent<Props, State> {
     }
   }
 
-  private findErrorLogs(wsLogs: string[]): string[] {
+  private findErrorLogs(workspace: Workspace): string {
+    const errorRe = workspace.isDevWorkspace ? /^[1-9]{0,5} error occurred:/i : /^Error: /i;
+    const wsLogs = this.props.workspacesLogs.get(workspace.id) || [];
+
     const errorLogs: string[] = [];
     wsLogs.forEach(e => {
-      if (e.startsWith('Error: Failed to run the workspace')) {
-        // Remove the default error message and the quotations that surround the error
-        const strippedError = e.replace('Error: Failed to run the workspace: ', '').slice(1, -1);
-        errorLogs.push(strippedError);
+      if (errorRe.test(e)) {
+        const message = e.replace(errorRe, '');
+        errorLogs.push(message);
       }
     });
-    return errorLogs;
+    return errorLogs.join('\n');
   }
 
   private errorActionLinks(workspace: Workspace): React.ReactFragment {
