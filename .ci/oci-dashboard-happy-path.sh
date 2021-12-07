@@ -44,7 +44,7 @@ EOL
 
   echo "INFO: Using the following Che Cluster CR"
   cat /tmp/che-cr-patch.yaml
-  echo "----------------------------------"
+  echo "-----------prow-investigation-----------------------"
   # chectl is preinstalled in OpenShift CI image. See ./openshift-ci/Dockerfile
   chectl server:deploy --che-operator-cr-patch-yaml=/tmp/che-cr-patch.yaml -p openshift --batch --telemetry=off --installer=operator
 }
