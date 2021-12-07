@@ -30,7 +30,7 @@ import Header from '../../components/Header';
 import WorkspaceLogs from '../../components/LogsTab';
 import { LoadIdeSteps } from '../../containers/IdeLoader';
 import { delay } from '../../services/helpers/delay';
-import { IdeLoaderTab } from '../../services/helpers/types';
+import { WorkspaceStatus, DevWorkspaceStatus, IdeLoaderTab } from '../../services/helpers/types';
 
 import workspaceStatusLabelStyles from '../../components/WorkspaceStatusLabel/index.module.css';
 import './IdeLoader.styl';
@@ -127,16 +127,12 @@ class IdeLoader extends React.PureComponent<Props, State> {
     };
     // Prepare showAlert as a callback
     if (this.props.callbacks) {
-      if (this.props.callbacks.showAlert === undefined) {
-        this.props.callbacks.showAlert = (alertOptions: AlertOptions) => {
-          this.showAlert(alertOptions);
-        };
-      }
-      if (this.props.callbacks.hideAlert === undefined) {
-        this.props.callbacks.hideAlert = () => {
-          this.hideAlert();
-        };
-      }
+      this.props.callbacks.showAlert = (alertOptions: AlertOptions) => {
+        this.showAlert(alertOptions);
+      };
+      this.props.callbacks.hideAlert = () => {
+        this.hideAlert();
+      };
     }
   }
 
@@ -214,11 +210,15 @@ class IdeLoader extends React.PureComponent<Props, State> {
   }
 
   private getIcon(step: LoadIdeSteps, className = ''): React.ReactNode {
-    const { currentStep, hasError } = this.props;
+    const { currentStep, status, isDevWorkspace } = this.props;
     if (currentStep > step) {
       return <CheckCircleIcon className={className} color="green" />;
     } else if (currentStep === step) {
-      if (hasError) {
+      if (isDevWorkspace) {
+        if (status === DevWorkspaceStatus.FAILED || status === DevWorkspaceStatus.FAILING) {
+          return <ExclamationCircleIcon className={className} color="red" />;
+        }
+      } else if (status === WorkspaceStatus.ERROR) {
         return <ExclamationCircleIcon className={className} color="red" />;
       }
       return (

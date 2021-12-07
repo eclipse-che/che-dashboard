@@ -112,7 +112,7 @@ class FactoryLoader extends React.PureComponent<Props, State> {
     };
     this.hideAlert = (): void => this.setState({ isPopupAlertVisible: false });
     // Prepare showAlert as a callback
-    if (this.props.callbacks && !this.props.callbacks.showAlert) {
+    if (this.props.callbacks) {
       this.props.callbacks.showAlert = (alertOptions: AlertOptions) => {
         this.showAlert(alertOptions);
       };

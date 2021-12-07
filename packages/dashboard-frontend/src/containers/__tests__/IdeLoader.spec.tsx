@@ -221,9 +221,6 @@ describe('IDE Loader container', () => {
       expect(startWorkspaceMock).toHaveBeenCalledTimes(1);
     });
 
-    const elementHasError = screen.getByTestId('ide-loader-has-error');
-    expect(elementHasError.innerHTML).toEqual('false');
-
     const elementWorkspaceId = screen.getByTestId('ide-loader-workspace-id');
     expect(elementWorkspaceId.innerHTML).toEqual(workspaceId);
 

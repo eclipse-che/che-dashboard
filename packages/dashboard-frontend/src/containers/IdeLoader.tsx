@@ -64,7 +64,7 @@ class IdeLoaderContainer extends React.PureComponent<Props, State> {
   @lazyInject(Debounce)
   private readonly debounce: Debounce;
 
-  private readonly loadFactoryPageCallbacks: {
+  private readonly ideLoaderCallbacks: {
     showAlert?: (alertOptions: AlertOptions) => void;
     hideAlert?: () => void;
   };
@@ -77,7 +77,7 @@ class IdeLoaderContainer extends React.PureComponent<Props, State> {
     const env = getEnvironment();
     this.isDevEnvironment = isDevEnvironment(env);
 
-    this.loadFactoryPageCallbacks = {};
+    this.ideLoaderCallbacks = {};
     const {
       match: { params },
       history,
@@ -141,18 +141,18 @@ class IdeLoaderContainer extends React.PureComponent<Props, State> {
   }
 
   public showAlert(alertOptions: string | AlertOptions): void {
-    if (typeof alertOptions == 'string') {
+    if (typeof alertOptions === 'string') {
       const currentAlertOptions = alertOptions;
       alertOptions = {
         title: currentAlertOptions,
         alertVariant: AlertVariant.danger,
       } as AlertOptions;
     }
-    if (alertOptions.alertVariant === AlertVariant.danger) {
+    if (alertOptions.alertVariant === AlertVariant.danger && !this.state.hasError) {
       this.setState({ hasError: true });
     }
-    if (this.loadFactoryPageCallbacks.showAlert) {
-      this.loadFactoryPageCallbacks.showAlert(alertOptions);
+    if (this.ideLoaderCallbacks.showAlert) {
+      this.ideLoaderCallbacks.showAlert(alertOptions);
     } else {
       console.error(alertOptions.title);
     }
@@ -186,12 +186,7 @@ class IdeLoaderContainer extends React.PureComponent<Props, State> {
       if (devworkspacesEnabled === false) {
         window.postMessage('show-navbar', '*');
       }
-      try {
-        await this.restartWorkspace(workspace);
-      } catch (error) {
-        const errorMessage = common.helpers.errors.getMessage(error);
-        this.showAlert(errorMessage);
-      }
+      await this.restartWorkspace(workspace);
     }
   }
 
@@ -200,8 +195,13 @@ class IdeLoaderContainer extends React.PureComponent<Props, State> {
     try {
       await this.props.restartWorkspace(workspace);
       this.setState({ isWaitingForRestart: false });
-    } catch (e) {
+    } catch (error) {
       this.setState({ isWaitingForRestart: false });
+      const errorMessage = common.helpers.errors.getMessage(error);
+      this.showAlert({
+        title: errorMessage,
+        alertVariant: AlertVariant.danger,
+      });
     }
   }
 
@@ -236,7 +236,7 @@ class IdeLoaderContainer extends React.PureComponent<Props, State> {
     } else if (workspace && workspace.hasError) {
       this.showErrorAlert(workspace);
     }
-    this.applyIdeLoadingStep();
+    await this.applyIdeLoadingStep();
   }
 
   private showErrorAlert(workspace: Workspace) {
@@ -254,44 +254,29 @@ class IdeLoaderContainer extends React.PureComponent<Props, State> {
   }
 
   public async componentDidUpdate(prevProps: Props, prevState: State): Promise<void> {
-    if (this.state.isWaitingForRestart) {
-      return;
-    }
     const {
       allWorkspaces,
       match: { params },
     } = this.props;
-    const { hasError } = this.state;
     const workspace = allWorkspaces.find(
       workspace =>
         workspace.namespace === params.namespace && workspace.name === this.workspaceName,
     );
     if (workspace) {
       this.setState({
-        hasError: workspace.hasError,
+        status: workspace.status,
       });
     }
-    const status = workspace?.status;
-    if (prevProps.workspace?.status !== status) {
-      this.setState({
-        status,
-      });
+    if (this.state.isWaitingForRestart) {
+      return;
     }
     if (!workspace) {
-      const alertOptions = {
+      this.showAlert({
         title: `Workspace "${this.workspaceName}" is not found.`,
         alertVariant: AlertVariant.danger,
-      };
-      if (this.loadFactoryPageCallbacks.showAlert) {
-        this.loadFactoryPageCallbacks.showAlert(alertOptions);
-      } else {
-        console.error(alertOptions.title);
-      }
-      this.setState({
-        hasError: true,
       });
     } else if (workspace.hasError) {
-      if (prevState.workspaceName === this.workspaceName && hasError) {
+      if (prevState.workspaceName === this.workspaceName) {
         // When the current workspace didn't have an error but now does then show it
         this.showErrorAlert(workspace);
       } else if (prevState.workspaceName !== this.workspaceName) {
@@ -302,6 +287,11 @@ class IdeLoaderContainer extends React.PureComponent<Props, State> {
           workspaceId: workspace.id,
         });
         this.showErrorAlert(workspace);
+      }
+      if (workspace.hasError && !this.state.hasError) {
+        this.setState({
+          hasError: workspace.hasError,
+        });
       }
     } else if (prevState.workspaceName !== this.workspaceName) {
       await this.applyIdeLoadingStep();
@@ -322,6 +312,11 @@ class IdeLoaderContainer extends React.PureComponent<Props, State> {
     if (workspace.isStopping) {
       this.setState({
         currentStep: LoadIdeSteps.START_WORKSPACE,
+      });
+    } else if (workspace?.isStopped && this.state.currentStep !== LoadIdeSteps.INITIALIZING) {
+      this.showAlert({
+        title: `Workspace "${this.workspaceName}" is failed to start.`,
+        alertVariant: AlertVariant.danger,
       });
     }
   }
@@ -487,7 +482,6 @@ class IdeLoaderContainer extends React.PureComponent<Props, State> {
       isDevWorkspace,
       status,
     } = this.state;
-
     return (
       <IdeLoader
         currentStep={currentStep}
@@ -498,7 +492,7 @@ class IdeLoaderContainer extends React.PureComponent<Props, State> {
         hasError={hasError}
         status={status}
         workspaceName={workspaceName || ''}
-        callbacks={this.loadFactoryPageCallbacks}
+        callbacks={this.ideLoaderCallbacks}
       />
     );
   }
