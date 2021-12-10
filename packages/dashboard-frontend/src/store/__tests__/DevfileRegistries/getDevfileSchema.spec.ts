@@ -16,7 +16,7 @@ import { cloneDeep } from 'lodash';
 
 describe('Get devfile schema', () => {
   it('Should return unmodified schema if the schemaVersion property includes a constant', async () => {
-    const schemeWithVersionConst = {
+    const schemaWithVersionConst = {
       description: 'Devfile describes the structure...',
       type: 'object',
       title: 'Devfile schema',
@@ -33,15 +33,15 @@ describe('Get devfile schema', () => {
     } as JSONSchema7;
 
     const targetScheme = await getDevfileSchema(version => {
-      const cloneObj = cloneDeep(schemeWithVersionConst);
+      const cloneObj = cloneDeep(schemaWithVersionConst);
       return Promise.resolve(cloneObj);
     }, '2.0.0');
 
-    expect(targetScheme).toEqual(schemeWithVersionConst);
+    expect(targetScheme).toEqual(schemaWithVersionConst);
   });
 
   it('Should return modified schema if the schemaVersion property does not include a constant', async () => {
-    const schemeWithVersionConst = {
+    const schemaWithoutVersionConst = {
       description: 'Devfile describes the structure...',
       type: 'object',
       title: 'Devfile schema',
@@ -57,11 +57,11 @@ describe('Get devfile schema', () => {
     } as JSONSchema7;
 
     const targetScheme = await getDevfileSchema(version => {
-      const cloneObj = cloneDeep(schemeWithVersionConst);
+      const cloneObj = cloneDeep(schemaWithoutVersionConst);
       return Promise.resolve(cloneObj);
     }, '2.0.0');
 
-    expect(targetScheme).not.toEqual(schemeWithVersionConst);
+    expect(targetScheme).not.toEqual(schemaWithoutVersionConst);
 
     expect(targetScheme).toEqual({
       description: 'Devfile describes the structure...',
