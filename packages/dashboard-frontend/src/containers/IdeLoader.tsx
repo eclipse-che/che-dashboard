@@ -34,7 +34,6 @@ import { buildWorkspacesLocation } from '../services/helpers/location';
 import { DisposableCollection } from '../services/helpers/disposable';
 import { Workspace } from '../services/workspace-adapter';
 import { selectDevworkspacesEnabled } from '../store/Workspaces/Settings/selectors';
-import devfileApi from '../services/devfileApi';
 
 type Props = MappedProps & { history: History } & RouteComponentProps<{
     namespace: string;
@@ -240,7 +239,7 @@ class IdeLoaderContainer extends React.PureComponent<Props, State> {
   }
 
   private showErrorAlert(workspace: Workspace) {
-    const errorMessage = this.findErrorLogs(workspace) || 'Unknown devworkspace error.';
+    const errorMessage = this.findErrorLogs(workspace) || 'Unknown error.';
 
     const alertActionLinks = this.errorActionLinks(workspace);
     this.showAlert({

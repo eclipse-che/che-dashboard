@@ -113,7 +113,7 @@ export class WorkspaceActionsProvider extends React.Component<Props, State> {
           try {
             await this.props.startWorkspace(workspace);
           } catch (e) {
-            console.debug(e);
+            console.warn(e);
           }
         }
         break;

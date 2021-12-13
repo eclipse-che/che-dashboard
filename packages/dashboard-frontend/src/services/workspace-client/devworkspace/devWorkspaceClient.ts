@@ -753,7 +753,7 @@ export class DevWorkspaceClient extends WorkspaceClient {
     }
 
     const previousItem = this.previousItems.get(namespace);
-    const prevStatusUpdate = previousItem!.get(workspaceId);
+    const prevStatusUpdate = previousItem?.get(workspaceId);
     const statusUpdate = {
       status,
       message,
@@ -761,7 +761,7 @@ export class DevWorkspaceClient extends WorkspaceClient {
       prevStatus: prevStatusUpdate?.status,
     };
 
-    previousItem!.set(workspaceId, statusUpdate);
+    previousItem?.set(workspaceId, statusUpdate);
 
     if (status === prevStatusUpdate?.status && message === prevStatusUpdate?.message) {
       return undefined;
