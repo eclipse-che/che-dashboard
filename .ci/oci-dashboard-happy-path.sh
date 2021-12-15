@@ -18,7 +18,7 @@ set -u
 # print each command before executing it
 set -x
 
-export CHE_REPO_BRANCH="main"
+export CHE_REPO_BRANCH="fix-test-user-creation-errors"
 source <(curl -s https://raw.githubusercontent.com/eclipse/che/${CHE_REPO_BRANCH}/tests/devworkspace-happy-path/common.sh)
 
 # Catch the finish of the job and write logs in artifacts.
