@@ -18,7 +18,7 @@ set -u
 # print each command before executing it
 set -x
 
-export CHE_REPO_BRANCH="investigate-che-20822"
+export CHE_REPO_BRANCH="main"
 source <(curl -s https://raw.githubusercontent.com/eclipse/che/${CHE_REPO_BRANCH}/tests/devworkspace-happy-path/common.sh)
 
 # Catch the finish of the job and write logs in artifacts.
@@ -44,7 +44,7 @@ EOL
 
   echo "INFO: Using the following Che Cluster CR"
   cat /tmp/che-cr-patch.yaml
-  echo "-----------prow-investigation-----------------------"
+  echo "-----------test-happy-path-with-debugging-----------------------"
   # chectl is preinstalled in OpenShift CI image. See ./openshift-ci/Dockerfile
   chectl server:deploy --che-operator-cr-patch-yaml=/tmp/che-cr-patch.yaml -p openshift --batch --telemetry=off --installer=operator
 }
