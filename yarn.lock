@@ -382,10 +382,10 @@
     jsonc-parser "^3.0.0"
     reflect-metadata "^0.1.13"
 
-"@eclipse-che/devfile-converter@0.0.1-eb20432":
-  version "0.0.1-eb20432"
-  resolved "https://registry.yarnpkg.com/@eclipse-che/devfile-converter/-/devfile-converter-0.0.1-eb20432.tgz#e02b7e5baa4c7aab67db1d1062998da0d60df9bd"
-  integrity sha512-VH6J/gaT4LOc8QpXvSf9W5FcilRmlc4FnGhLx+iwF/1/LgAyOnUOt24/hPUtPwskDoAEETpF2dE61ScwwT0QPA==
+"@eclipse-che/devfile-converter@0.0.1-8de908e":
+  version "0.0.1-8de908e"
+  resolved "https://registry.yarnpkg.com/@eclipse-che/devfile-converter/-/devfile-converter-0.0.1-8de908e.tgz#f1f170832c4f5062dd47227cd4c921b12652a927"
+  integrity sha512-/nwqpbjT5bHkcY+d7mGjkXafgNJ9UCcTK/snj5u+DTXbi+eE5MQMJgf7cEsO8FQcIXwaWKnJnoQF6y849IGCjA==
   dependencies:
     "@devfile/api" "2.2.0-alpha-1637255314"
     "@eclipse-che/api" "^7.39.2"
