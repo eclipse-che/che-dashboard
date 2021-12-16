@@ -26,6 +26,7 @@ import { KeycloakSetupService } from '../../keycloak/setup';
 import { delay } from '../../helpers/delay';
 import * as DwApi from '../../dashboard-backend-client/devWorkspaceApi';
 import * as DwtApi from '../../dashboard-backend-client/devWorkspaceTemplateApi';
+import * as ServerConfigApi from '../../dashboard-backend-client/serverConfigApi';
 import { WebsocketClient, SubscribeMessage } from '../../dashboard-backend-client/websocketClient';
 import { EventEmitter } from 'events';
 import { AppAlerts } from '../../alerts/appAlerts';
@@ -40,6 +41,7 @@ import {
 } from '@devfile/api';
 import { isEqual } from 'lodash';
 import { fetchData } from '../../registry/devfiles';
+import { DevWorkspaceDefaultPluginsHandler } from './DevWorkspaceDefaultPluginsHandler';
 
 export interface IStatusUpdate {
   status: string;
@@ -135,10 +137,13 @@ export class DevWorkspaceClient extends WorkspaceClient {
   private readonly webSocketEventName: string;
   private readonly _failingWebSockets: string[];
   private readonly showAlert: (alert: AlertItem) => void;
+  private readonly defaultPluginsHandler: DevWorkspaceDefaultPluginsHandler;
 
   constructor(
     @inject(KeycloakSetupService) keycloakSetupService: KeycloakSetupService,
     @inject(AppAlerts) appAlerts: AppAlerts,
+    @inject(DevWorkspaceDefaultPluginsHandler)
+    defaultPluginsHandler: DevWorkspaceDefaultPluginsHandler,
     @multiInject(IDevWorkspaceEditorProcess) private editorProcesses: IDevWorkspaceEditorProcess[],
   ) {
     super(keycloakSetupService);
@@ -150,6 +155,7 @@ export class DevWorkspaceClient extends WorkspaceClient {
     this.webSocketEventEmitter = new EventEmitter();
     this.webSocketEventName = 'websocketClose';
     this._failingWebSockets = [];
+    this.defaultPluginsHandler = defaultPluginsHandler;
 
     this.showAlert = (alert: AlertItem) => appAlerts.showAlert(alert);
 
@@ -467,6 +473,16 @@ export class DevWorkspaceClient extends WorkspaceClient {
         context.devWorkspaceTemplates,
       );
     }
+  }
+
+  /**
+   * Called when a DevWorkspace has started.
+   * 
+   * @param workspace The DevWorkspace that was started
+   * @param editorId The editor id of the DevWorkspace that was started
+   */
+  async onStart(workspace: devfileApi.DevWorkspace, editorId: string) {
+    await this.defaultPluginsHandler.handle(workspace, editorId);
   }
 
   /**

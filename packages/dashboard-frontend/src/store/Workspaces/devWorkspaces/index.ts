@@ -273,6 +273,10 @@ export const actionCreators: ActionCreators = {
         } else {
           updatedWorkspace = await devWorkspaceClient.changeWorkspaceStatus(workspace, true, true);
         }
+        await devWorkspaceClient.onStart(
+          updatedWorkspace,
+          getState().dwPlugins.defaultEditorName as string,
+        );
         dispatch({
           type: 'UPDATE_DEVWORKSPACE',
           workspace: updatedWorkspace,
@@ -466,6 +470,7 @@ export const actionCreators: ActionCreators = {
           optionalFilesContent,
         );
 
+        await devWorkspaceClient.onStart(workspace, cheEditor as string);
         dispatch({
           type: 'ADD_DEVWORKSPACE',
           workspace,
