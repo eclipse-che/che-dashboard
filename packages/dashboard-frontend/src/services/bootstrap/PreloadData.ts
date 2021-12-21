@@ -34,6 +34,8 @@ import { DevWorkspaceClient } from '../workspace-client/devworkspace/devWorkspac
 import { isDevworkspacesEnabled } from '../helpers/devworkspace';
 import { selectDwEditorsPluginsList } from '../../store/Plugins/devWorkspacePlugins/selectors';
 import devfileApi from '../devfileApi';
+import { selectDefaultNamespace } from '../../store/InfrastructureNamespaces/selectors';
+import { selectDevWorkspacesResourceVersion } from '../../store/Workspaces/devWorkspaces/selectors';
 
 /**
  * This class prepares all init data.
@@ -68,15 +70,18 @@ export class PreloadData {
 
     const results = await Promise.allSettled([
       this.fetchCurrentUser(),
-      this.fetchInfrastructureNamespaces(),
+      this.fetchInfrastructureNamespaces()
+        .then(() => this.fetchWorkspaces())
+        .then(() => {
+          return Promise.allSettled([
+            this.watchNamespaces(),
+            this.updateDevWorkspaceTemplates(settings),
+          ]);
+        }),
       this.fetchUserProfile(),
-      this.fetchPlugins(settings).then(() => {
-        return this.fetchDevfileSchema();
-      }),
+      this.fetchPlugins(settings).then(() => this.fetchDevfileSchema()),
       this.fetchDwPlugins(settings),
       this.fetchRegistriesMetadata(settings),
-      this.updateDevWorkspaceTemplates(settings),
-      this.fetchWorkspaces(),
       this.fetchApplications(),
     ]);
     const errors = results
@@ -93,7 +98,7 @@ export class PreloadData {
       await requestClusterInfo()(this.store.dispatch, this.store.getState, undefined);
     } catch (e) {
       console.warn(
-        'Unable to fetch cluster info. This is expected behaviour unless backend is configured to provide this information.',
+        'Unable to fetch cluster info. This is expected behavior unless backend is configured to provide this information.',
       );
     }
   }
@@ -112,17 +117,13 @@ export class PreloadData {
     return this.cheWorkspaceClient.updateJsonRpcMasterApi();
   }
 
-  private async watchNamespaces(namespace: string): Promise<void> {
-    const {
-      updateDevWorkspaceStatus,
-      updateDeletedDevWorkspaces,
-      updateAddedDevWorkspaces,
-      requestWorkspaces,
-    } = DevWorkspacesStore.actionCreators;
-    const getResourceVersion = async () => {
-      await requestWorkspaces()(this.store.dispatch, this.store.getState, undefined);
-      return this.store.getState().devWorkspaces.resourceVersion;
-    };
+  private async watchNamespaces(): Promise<void> {
+    const defaultKubernetesNamespace = selectDefaultNamespace(this.store.getState());
+    const namespace = defaultKubernetesNamespace.name;
+    const { updateDevWorkspaceStatus, updateDeletedDevWorkspaces, updateAddedDevWorkspaces } =
+      DevWorkspacesStore.actionCreators;
+    const getResourceVersion = async () =>
+      selectDevWorkspacesResourceVersion(this.store.getState());
     const dispatch = this.store.dispatch;
     const getState = this.store.getState;
     const callbacks = {
@@ -161,8 +162,6 @@ export class PreloadData {
     if (!isDevworkspacesEnabled(settings)) {
       return;
     }
-    const defaultNamespace = await this.cheWorkspaceClient.getDefaultNamespace();
-    await this.watchNamespaces(defaultNamespace);
     const { requestDwDefaultEditor } = DwPluginsStore.actionCreators;
     try {
       await requestDwDefaultEditor(settings)(this.store.dispatch, this.store.getState, undefined);
@@ -179,7 +178,8 @@ export class PreloadData {
     if (!isDevworkspacesEnabled(settings)) {
       return;
     }
-    const defaultNamespace = await this.cheWorkspaceClient.getDefaultNamespace();
+    const defaultKubernetesNamespace = selectDefaultNamespace(this.store.getState());
+    const defaultNamespace = defaultKubernetesNamespace.name;
     try {
       const pluginsByUrl: { [url: string]: devfileApi.Devfile } = {};
       const state = this.store.getState();

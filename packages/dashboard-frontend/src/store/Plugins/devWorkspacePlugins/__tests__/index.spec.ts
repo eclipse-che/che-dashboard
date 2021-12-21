@@ -260,7 +260,7 @@ describe('dwPlugins store', () => {
       expect(mockAxios.get).not.toHaveBeenCalled();
     });
 
-    it('should create REQUEST_DW_EDITOR and RECEIVE_DW__EDITOR_ERROR when missing plugin registry URL to fetch the editor', async () => {
+    it('should create REQUEST_DW_EDITOR and RECEIVE_DW_EDITOR_ERROR when missing plugin registry URL to fetch the editor', async () => {
       (mockAxios.get as jest.Mock).mockRejectedValueOnce({
         isAxiosError: true,
         code: '500',

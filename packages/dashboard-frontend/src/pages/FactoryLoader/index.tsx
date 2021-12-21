@@ -55,6 +55,7 @@ type Props = {
   workspaceId: string;
   isDevWorkspace: boolean;
   resolvedDevfileMessage?: string;
+  createFromDevfile: boolean;
   callbacks?: {
     showAlert?: (options: AlertOptions) => void;
   };
@@ -179,33 +180,14 @@ class FactoryLoader extends React.PureComponent<Props, State> {
       );
     };
 
-    return [
+    const steps: WizardStep[] = [
       {
         id: LoadFactorySteps.INITIALIZING,
         name: getTitle(LoadFactorySteps.INITIALIZING, 'Initializing', 'wizard-icon'),
-        canJumpTo: currentStep >= LoadFactorySteps.INITIALIZING,
       },
       {
+        id: LoadFactorySteps.CREATE_WORKSPACE,
         name: getTitle(LoadFactorySteps.CREATE_WORKSPACE, 'Creating a workspace', 'wizard-icon'),
-        steps: [
-          {
-            id: LoadFactorySteps.LOOKING_FOR_DEVFILE,
-            name: getTitle(
-              LoadFactorySteps.LOOKING_FOR_DEVFILE,
-              currentStep <= LoadFactorySteps.LOOKING_FOR_DEVFILE
-                ? 'Looking for devfile'
-                : resolvedDevfileMessage
-                ? `${resolvedDevfileMessage}`
-                : 'Devfile could not be found',
-            ),
-            canJumpTo: currentStep >= LoadFactorySteps.LOOKING_FOR_DEVFILE,
-          },
-          {
-            id: LoadFactorySteps.APPLYING_DEVFILE,
-            name: getTitle(LoadFactorySteps.APPLYING_DEVFILE, 'Applying devfile'),
-            canJumpTo: currentStep >= LoadFactorySteps.APPLYING_DEVFILE,
-          },
-        ],
       },
       {
         id: LoadFactorySteps.START_WORKSPACE,
@@ -214,14 +196,34 @@ class FactoryLoader extends React.PureComponent<Props, State> {
           'Waiting for workspace to start',
           'wizard-icon',
         ),
-        canJumpTo: currentStep >= LoadFactorySteps.START_WORKSPACE,
       },
       {
         id: LoadFactorySteps.OPEN_IDE,
         name: getTitle(LoadFactorySteps.OPEN_IDE, 'Open IDE', 'wizard-icon'),
-        canJumpTo: currentStep >= LoadFactorySteps.OPEN_IDE,
       },
     ];
+
+    if (this.props.createFromDevfile) {
+      steps[LoadFactorySteps.CREATE_WORKSPACE].steps = [
+        {
+          id: LoadFactorySteps.LOOKING_FOR_DEVFILE,
+          name: getTitle(
+            LoadFactorySteps.LOOKING_FOR_DEVFILE,
+            currentStep <= LoadFactorySteps.LOOKING_FOR_DEVFILE
+              ? 'Looking for devfile'
+              : resolvedDevfileMessage
+              ? `${resolvedDevfileMessage}`
+              : 'Devfile could not be found',
+          ),
+        },
+        {
+          id: LoadFactorySteps.APPLYING_DEVFILE,
+          name: getTitle(LoadFactorySteps.APPLYING_DEVFILE, 'Applying devfile'),
+        },
+      ];
+    }
+
+    return steps;
   }
 
   public render(): React.ReactElement {

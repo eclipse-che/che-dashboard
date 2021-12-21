@@ -242,7 +242,28 @@ export class DevWorkspaceClient extends WorkspaceClient {
     return workspace;
   }
 
-  async create(
+  async createFromPrebuiltResources(
+    defaultNamespace: string,
+    devworkspace: devfileApi.DevWorkspace,
+    devworkspaceTemplate: devfileApi.DevWorkspaceTemplate,
+  ): Promise<any> {
+    // create DWT
+    devworkspaceTemplate.metadata.namespace = defaultNamespace;
+    await DwtApi.createTemplate(<devfileApi.DevWorkspaceTemplate>devworkspaceTemplate);
+
+    // create DW
+    devworkspace.spec.routingClass = 'che';
+    devworkspace.metadata.namespace = defaultNamespace;
+    if (devworkspace.metadata.annotations === undefined) {
+      devworkspace.metadata.annotations = {};
+    }
+    devworkspace.metadata.annotations[DEVWORKSPACE_UPDATING_TIMESTAMP_ANNOTATION] =
+      new Date().toISOString();
+
+    return DwApi.createWorkspace(devworkspace);
+  }
+
+  async createFromDevfile(
     devfile: devfileApi.Devfile,
     defaultNamespace: string,
     dwEditorsPlugins: { devfile: devfileApi.Devfile; url: string }[],
