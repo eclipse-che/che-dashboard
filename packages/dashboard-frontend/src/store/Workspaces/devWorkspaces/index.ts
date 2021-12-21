@@ -34,6 +34,7 @@ import { WorkspaceAdapter } from '../../../services/workspace-adapter';
 import { DEVWORKSPACE_UPDATING_TIMESTAMP_ANNOTATION } from '../../../services/devfileApi/devWorkspace/metadata';
 import * as DwPluginsStore from '../../Plugins/devWorkspacePlugins';
 import { selectDefaultNamespace } from '../../InfrastructureNamespaces/selectors';
+import { injectKubeConfig } from '../../../services/dashboard-backend-client/devWorkspaceApi';
 const devWorkspaceClient = container.get(DevWorkspaceClient);
 
 const onStatusChangeCallbacks = new Map<string, (status: string) => void>();
@@ -294,6 +295,21 @@ export const actionCreators: ActionCreators = {
             workspaceId,
           });
         }
+        const toDispose = new DisposableCollection();
+        const onStatusChangeCallback = async status => {
+          if (status === DevWorkspaceStatus.RUNNING) {
+            toDispose.dispose();
+            const workspaceId = workspace.status?.devworkspaceId;
+            if (workspaceId) {
+              injectKubeConfig(workspace.metadata.namespace, workspaceId);
+            }
+          }
+        };
+        const adapterWorkspaceId = WorkspaceAdapter.getId(workspace);
+        onStatusChangeCallbacks.set(adapterWorkspaceId, onStatusChangeCallback);
+        toDispose.push({
+          dispose: () => onStatusChangeCallbacks.delete(adapterWorkspaceId),
+        });
         devWorkspaceClient.checkForDevWorkspaceError(updatedWorkspace);
       } catch (e) {
         const errorMessage =
@@ -524,6 +540,22 @@ export const actionCreators: ActionCreators = {
 
         // this will set updating timestamp to annotations and update the workspace
         await actionCreators.updateWorkspace(workspace)(dispatch, getState, undefined);
+
+        const toDispose = new DisposableCollection();
+        const onStatusChangeCallback = async status => {
+          if (status === DevWorkspaceStatus.RUNNING) {
+            toDispose.dispose();
+            const workspaceId = workspace.status?.devworkspaceId;
+            if (workspaceId) {
+              injectKubeConfig(workspace.metadata.namespace, workspaceId);
+            }
+          }
+        };
+        const adapterWorkspaceId = WorkspaceAdapter.getId(workspace);
+        onStatusChangeCallbacks.set(adapterWorkspaceId, onStatusChangeCallback);
+        toDispose.push({
+          dispose: () => onStatusChangeCallbacks.delete(adapterWorkspaceId),
+        });
       } catch (e) {
         const errorMessage =
           'Failed to create a new workspace from the devfile, reason: ' +
