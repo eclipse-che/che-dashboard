@@ -310,7 +310,11 @@ class IdeLoaderContainer extends React.PureComponent<Props, State> {
       this.setState({
         currentStep: LoadIdeSteps.START_WORKSPACE,
       });
-    } else if (workspace?.isStopped && this.state.currentStep !== LoadIdeSteps.INITIALIZING) {
+    } else if (
+      workspace?.isDevWorkspace &&
+      workspace?.isStopped &&
+      this.state.currentStep !== LoadIdeSteps.INITIALIZING
+    ) {
       this.showAlert({
         title: `Workspace "${this.workspaceName}" is failed to start.`,
         alertVariant: AlertVariant.danger,
