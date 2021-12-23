@@ -62,7 +62,7 @@ type Props = {
 };
 
 type State = {
-  alertVisible: boolean;
+  isPopupAlertVisible: boolean;
   activeTabKey: LoadFactoryTabs;
   currentRequestError: string;
   currentAlertVariant?: AlertVariant;
@@ -83,7 +83,7 @@ class FactoryLoader extends React.PureComponent<Props, State> {
     super(props);
 
     this.state = {
-      alertVisible: false,
+      isPopupAlertVisible: false,
       activeTabKey: LoadFactoryTabs.Progress,
       currentRequestError: '',
     };
@@ -95,36 +95,25 @@ class FactoryLoader extends React.PureComponent<Props, State> {
       event: React.MouseEvent<HTMLElement, MouseEvent>,
       tabIndex: React.ReactText,
     ): void => {
-      this.setState({ activeTabKey: tabIndex as LoadFactoryTabs });
-      if (this.state.activeTabKey === LoadFactoryTabs.Progress) {
-        this.setState({ alertVisible: false });
-      }
+      this.setState({
+        activeTabKey: tabIndex as LoadFactoryTabs,
+        isPopupAlertVisible: tabIndex === LoadFactoryTabs.Logs,
+      });
     };
-    // Init showAlert
-    let showAlertTimer: number;
+
     this.showAlert = (alertOptions: AlertOptions): void => {
+      const { activeTabKey } = this.state;
+
       this.setState({
         currentRequestError: alertOptions.title,
         currentAlertVariant: alertOptions.alertVariant,
         alertActionLinks: alertOptions?.alertActionLinks,
+        isPopupAlertVisible: activeTabKey === LoadFactoryTabs.Logs,
       });
-      if (this.state.activeTabKey === LoadFactoryTabs.Progress) {
-        return;
-      }
-      this.setState({ alertVisible: true });
-      if (showAlertTimer) {
-        clearTimeout(showAlertTimer);
-      }
-      showAlertTimer = window.setTimeout(
-        () => {
-          this.setState({ alertVisible: false });
-        },
-        alertOptions.alertVariant === AlertVariant.success ? 2000 : 10000,
-      );
     };
-    this.hideAlert = (): void => this.setState({ alertVisible: false });
+    this.hideAlert = (): void => this.setState({ isPopupAlertVisible: false });
     // Prepare showAlert as a callback
-    if (this.props.callbacks && !this.props.callbacks.showAlert) {
+    if (this.props.callbacks) {
       this.props.callbacks.showAlert = (alertOptions: AlertOptions) => {
         this.showAlert(alertOptions);
       };
@@ -133,7 +122,9 @@ class FactoryLoader extends React.PureComponent<Props, State> {
 
   public componentDidUpdate(): void {
     const { currentStep, hasError } = this.props;
-
+    if (!hasError && this.state.currentRequestError) {
+      this.setState({ currentRequestError: '' });
+    }
     const current = this.wizardRef.current;
     if (current && current.state && current.state.currentStep !== currentStep && !hasError) {
       current.state.currentStep = currentStep;
@@ -238,12 +229,13 @@ class FactoryLoader extends React.PureComponent<Props, State> {
 
   public render(): React.ReactElement {
     const { workspaceName, workspaceId, hasError, currentStep, isDevWorkspace } = this.props;
-    const { alertVisible, currentRequestError, currentAlertVariant, alertActionLinks } = this.state;
+    const { isPopupAlertVisible, currentRequestError, currentAlertVariant, alertActionLinks } =
+      this.state;
 
     return (
       <React.Fragment>
         <Head pageName="Factory Loader" />
-        {alertVisible && (
+        {isPopupAlertVisible && currentRequestError && (
           <AlertGroup isToast>
             <Alert
               variant={currentAlertVariant}
@@ -270,16 +262,12 @@ class FactoryLoader extends React.PureComponent<Props, State> {
               id="factory-loader-page-wizard-tab"
             >
               <PageSection>
-                {hasError && this.state.currentRequestError && (
+                {currentRequestError && (
                   <Alert
                     isInline
                     variant={currentAlertVariant}
                     title={currentRequestError}
-                    actionClose={
-                      <AlertActionCloseButton
-                        onClose={() => this.setState({ currentRequestError: '' })}
-                      />
-                    }
+                    actionClose={<AlertActionCloseButton onClose={this.hideAlert} />}
                     actionLinks={alertActionLinks}
                   />
                 )}
