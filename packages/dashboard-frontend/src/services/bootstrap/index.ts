@@ -38,10 +38,10 @@ import { selectDefaultNamespace } from '../../store/InfrastructureNamespaces/sel
 import { selectDevWorkspacesResourceVersion } from '../../store/Workspaces/devWorkspaces/selectors';
 
 /**
- * This class prepares all init data.
+ * This class executes a few initial instructions
  * @author Oleksii Orel
  */
-export class PreloadData {
+export default class Bootstrap {
   @lazyInject(IssuesReporterService)
   private readonly issuesReporterService: IssuesReporterService;
 
@@ -67,21 +67,17 @@ export class PreloadData {
     new ResourceFetcherService().prefetchResources(this.store.getState());
 
     const settings = await this.fetchWorkspaceSettings();
+    await this.fetchInfrastructureNamespaces();
 
     const results = await Promise.allSettled([
       this.fetchCurrentUser(),
-      this.fetchInfrastructureNamespaces()
-        .then(() => this.fetchWorkspaces())
-        .then(() => {
-          return Promise.allSettled([
-            this.watchNamespaces(),
-            this.updateDevWorkspaceTemplates(settings),
-          ]);
-        }),
       this.fetchUserProfile(),
       this.fetchPlugins(settings).then(() => this.fetchDevfileSchema()),
       this.fetchDwPlugins(settings),
       this.fetchRegistriesMetadata(settings),
+      this.watchNamespaces(),
+      this.updateDevWorkspaceTemplates(settings),
+      this.fetchWorkspaces(),
       this.fetchApplications(),
     ]);
     const errors = results
