@@ -36,10 +36,10 @@ import { selectDwEditorsPluginsList } from '../../store/Plugins/devWorkspacePlug
 import devfileApi from '../devfileApi';
 
 /**
- * This class prepares all init data.
+ * This class executes a few initial instructions
  * @author Oleksii Orel
  */
-export class PreloadData {
+export default class Bootstrap {
   @lazyInject(IssuesReporterService)
   private readonly issuesReporterService: IssuesReporterService;
 
@@ -65,10 +65,10 @@ export class PreloadData {
     new ResourceFetcherService().prefetchResources(this.store.getState());
 
     const settings = await this.fetchWorkspaceSettings();
+    await this.fetchInfrastructureNamespaces();
 
     const results = await Promise.allSettled([
       this.fetchCurrentUser(),
-      this.fetchInfrastructureNamespaces(),
       this.fetchUserProfile(),
       this.fetchPlugins(settings).then(() => {
         return this.fetchDevfileSchema();
