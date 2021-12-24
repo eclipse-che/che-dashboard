@@ -19,6 +19,8 @@ import { DevWorkspaceStatus } from '../../../services/helpers/types';
 import { createObject } from '../../helpers';
 import {
   DevWorkspaceClient,
+  DEVWORKSPACE_CHE_EDITOR,
+  DEVWORKSPACE_METADATA_ANNOTATION,
   DEVWORKSPACE_NEXT_START_ANNOTATION,
   IStatusUpdate,
 } from '../../../services/workspace-client/devworkspace/devWorkspaceClient';
@@ -141,7 +143,6 @@ export type ActionCreators = {
 
   deleteWorkspaceLogs: (workspaceId: string) => AppThunk<DeleteWorkspaceLogsAction, void>;
 };
-
 export const actionCreators: ActionCreators = {
   updateAddedDevWorkspaces:
     (workspaces: devfileApi.DevWorkspace[]): AppThunk<KnownAction, void> =>
@@ -273,6 +274,11 @@ export const actionCreators: ActionCreators = {
         } else {
           updatedWorkspace = await devWorkspaceClient.changeWorkspaceStatus(workspace, true, true);
         }
+        const editor = updatedWorkspace.metadata.annotations
+          ? updatedWorkspace.metadata.annotations[DEVWORKSPACE_CHE_EDITOR]
+          : undefined;
+        const defaultPlugins = getState().dwPlugins.defaultPlugins;
+        await devWorkspaceClient.onStart(updatedWorkspace, defaultPlugins, editor);
         dispatch({
           type: 'UPDATE_DEVWORKSPACE',
           workspace: updatedWorkspace,
@@ -457,6 +463,14 @@ export const actionCreators: ActionCreators = {
         const devWorkspaceDevfile = devfile as devfileApi.Devfile;
         const defaultNamespace = await cheWorkspaceClient.getDefaultNamespace();
         const dwEditorsList = selectDwEditorsPluginsList(cheEditor)(state);
+
+        if (!devWorkspaceDevfile.metadata.attributes) {
+          devWorkspaceDevfile.metadata.attributes = {};
+        }
+        devWorkspaceDevfile.metadata.attributes[DEVWORKSPACE_METADATA_ANNOTATION] = {
+          [DEVWORKSPACE_CHE_EDITOR]: cheEditor,
+        };
+
         const workspace = await devWorkspaceClient.create(
           devWorkspaceDevfile,
           defaultNamespace,
@@ -466,6 +480,8 @@ export const actionCreators: ActionCreators = {
           optionalFilesContent,
         );
 
+        const defaultPlugins = getState().dwPlugins.defaultPlugins;
+        await devWorkspaceClient.onStart(workspace, defaultPlugins, cheEditor as string);
         dispatch({
           type: 'ADD_DEVWORKSPACE',
           workspace,
