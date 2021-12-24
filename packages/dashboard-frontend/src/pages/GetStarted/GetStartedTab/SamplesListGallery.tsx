@@ -50,6 +50,16 @@ type State = {
 };
 
 export class SamplesListGallery extends React.PureComponent<Props, State> {
+  private static compareMetaData(a: che.DevfileMetaData, b: che.DevfileMetaData): number {
+    if (a.displayName < b.displayName) {
+      return -1;
+    }
+    if (a.displayName > b.displayName) {
+      return 1;
+    }
+    return 0;
+  }
+
   private isLoading: boolean;
 
   constructor(props: Props) {
@@ -128,13 +138,15 @@ export class SamplesListGallery extends React.PureComponent<Props, State> {
   }
 
   private buildCardsList(metadata: che.DevfileMetaData[] = []): React.ReactElement[] {
-    return metadata.map(meta => (
-      <SampleCard
-        key={meta.links.self}
-        metadata={meta}
-        onClick={(): Promise<void> => this.fetchDevfile(meta)}
-      />
-    ));
+    return metadata
+      .sort(SamplesListGallery.compareMetaData)
+      .map(meta => (
+        <SampleCard
+          key={meta.links.self}
+          metadata={meta}
+          onClick={(): Promise<void> => this.fetchDevfile(meta)}
+        />
+      ));
   }
 
   private buildEmptyState(): React.ReactElement {
