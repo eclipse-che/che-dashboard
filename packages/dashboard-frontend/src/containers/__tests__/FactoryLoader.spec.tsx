@@ -43,13 +43,13 @@ const requestFactoryResolverMock = jest.fn().mockResolvedValue(undefined);
 const setWorkspaceIdMock = jest.fn().mockResolvedValue(undefined);
 const clearWorkspaceIdMock = jest.fn().mockResolvedValue(undefined);
 
-const createWorkspaceFromPrebuiltResourcesMock = jest.fn().mockReturnValue(undefined);
+const createWorkspaceFromResourcesMock = jest.fn().mockReturnValue(undefined);
 jest.mock('../../store/Workspaces/devWorkspaces/index', () => {
   return {
     actionCreators: {
-      createWorkspaceFromPrebuiltResources:
+      createWorkspaceFromResources:
         (devworkspace: string, devworkspaceTemplate: string) => async (): Promise<void> => {
-          createWorkspaceFromPrebuiltResourcesMock(devworkspace, devworkspaceTemplate);
+          createWorkspaceFromResourcesMock(devworkspace, devworkspaceTemplate);
         },
     },
   };
@@ -212,7 +212,7 @@ metadata:
         </Provider>,
       );
 
-      await waitFor(() => expect(createWorkspaceFromPrebuiltResourcesMock).toHaveBeenCalled());
+      await waitFor(() => expect(createWorkspaceFromResourcesMock).toHaveBeenCalled());
     });
   });
 

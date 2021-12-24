@@ -137,7 +137,7 @@ export type ActionCreators = {
     pluginRegistryInternalUrl: string | undefined,
     attributes: { [key: string]: string },
   ) => AppThunk<KnownAction, Promise<void>>;
-  createWorkspaceFromPrebuiltResources: (
+  createWorkspaceFromResources: (
     devworkspace: devfileApi.DevWorkspace,
     devworkspaceTemplate: devfileApi.DevWorkspaceTemplate,
   ) => AppThunk<KnownAction, Promise<void>>;
@@ -415,7 +415,7 @@ export const actionCreators: ActionCreators = {
       }
     },
 
-  createWorkspaceFromPrebuiltResources:
+  createWorkspaceFromResources:
     (
       devworkspace: devfileApi.DevWorkspace,
       devworkspaceTemplate: devfileApi.DevWorkspaceTemplate,
@@ -424,7 +424,7 @@ export const actionCreators: ActionCreators = {
       const defaultKubernetesNamespace = selectDefaultNamespace(getState());
       const defaultNamespace = defaultKubernetesNamespace.name;
       try {
-        const workspace = await devWorkspaceClient.createFromPrebuiltResources(
+        const workspace = await devWorkspaceClient.createFromResources(
           defaultNamespace,
           devworkspace,
           devworkspaceTemplate,

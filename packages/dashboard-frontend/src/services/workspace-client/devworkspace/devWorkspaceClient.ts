@@ -239,7 +239,7 @@ export class DevWorkspaceClient extends WorkspaceClient {
     return workspace;
   }
 
-  async createFromPrebuiltResources(
+  async createFromResources(
     defaultNamespace: string,
     devworkspace: devfileApi.DevWorkspace,
     devworkspaceTemplate: devfileApi.DevWorkspaceTemplate,

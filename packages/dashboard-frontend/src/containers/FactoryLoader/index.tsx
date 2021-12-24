@@ -463,7 +463,7 @@ export class FactoryLoaderContainer extends React.PureComponent<Props, State> {
     return workspace;
   }
 
-  private async createDevWorkspaceFromPrebuiltResources(
+  private async createDevWorkspaceFromResources(
     devWorkspacePrebuiltResources: string,
     factoryParams: string,
   ): Promise<Workspace | undefined> {
@@ -507,7 +507,7 @@ export class FactoryLoaderContainer extends React.PureComponent<Props, State> {
           resource => resource.kind === 'DevWorkspaceTemplate',
         ) as devfileApi.DevWorkspaceTemplate;
 
-        await this.props.createWorkspaceFromPrebuiltResources(devworkspace, devworkspaceTemplate);
+        await this.props.createWorkspaceFromResources(devworkspace, devworkspaceTemplate);
 
         const namespace = this.props.defaultNamespace?.name;
         this.props.setWorkspaceQualifiedName(namespace, devworkspace.metadata.name as string);
@@ -621,7 +621,7 @@ export class FactoryLoaderContainer extends React.PureComponent<Props, State> {
     let workspace: Workspace | undefined;
     if (this.props.cheDevworkspaceEnabled && attrs.devWorkspace) {
       // create workspace using prebuilt resources
-      workspace = await this.createDevWorkspaceFromPrebuiltResources(
+      workspace = await this.createDevWorkspaceFromResources(
         attrs.devWorkspace,
         attrs.factoryParams,
       );
@@ -698,8 +698,7 @@ const mapStateToProps = (state: AppState) => ({
 const connector = connect(mapStateToProps, {
   ...FactoryResolverStore.actionCreators,
   ...WorkspacesStore.actionCreators,
-  createWorkspaceFromPrebuiltResources:
-    DevWorkspacesStore.actionCreators.createWorkspaceFromPrebuiltResources,
+  createWorkspaceFromResources: DevWorkspacesStore.actionCreators.createWorkspaceFromResources,
 });
 
 type MappedProps = ConnectedProps<typeof connector>;
