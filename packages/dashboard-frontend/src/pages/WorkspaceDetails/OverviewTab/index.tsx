@@ -16,7 +16,7 @@ import StorageTypeFormGroup from './StorageType';
 import { WorkspaceNameFormGroup } from './WorkspaceName';
 import InfrastructureNamespaceFormGroup from './InfrastructureNamespace';
 import ProjectsFormGroup from './Projects';
-import { convertWorkspace, Workspace } from '../../../services/workspace-adapter';
+import { constructWorkspace, Workspace } from '../../../services/workspace-adapter';
 import devfileApi, { isDevWorkspace } from '../../../services/devfileApi';
 
 type Props = {
@@ -105,7 +105,7 @@ export class OverviewTab extends React.Component<Props, State> {
   }
 
   private async onSave(devfile: che.WorkspaceDevfile | devfileApi.Devfile): Promise<void> {
-    const workspaceCopy = convertWorkspace(this.props.workspace.ref);
+    const workspaceCopy = constructWorkspace(this.props.workspace.ref);
     workspaceCopy.devfile = devfile;
     await this.props.onSave(workspaceCopy);
   }

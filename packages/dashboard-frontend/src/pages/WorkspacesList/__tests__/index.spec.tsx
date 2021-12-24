@@ -20,7 +20,7 @@ import WorkspacesList from '..';
 import { BrandingData } from '../../../services/bootstrap/branding.constant';
 import { createFakeCheWorkspace } from '../../../store/__mocks__/workspace';
 import { WorkspaceAction, WorkspaceStatus } from '../../../services/helpers/types';
-import { convertWorkspace, Workspace } from '../../../services/workspace-adapter';
+import { constructWorkspace, Workspace } from '../../../services/workspace-adapter';
 
 jest.mock('../../../components/Head', () => {
   const FakeHead = () => {
@@ -55,7 +55,7 @@ describe('Workspaces List Page', () => {
   beforeEach(() => {
     workspaces = [0, 1, 2, 3, 4]
       .map(i => createFakeCheWorkspace('workspace-' + i, 'workspace-' + i))
-      .map(workspace => convertWorkspace(workspace));
+      .map(workspace => constructWorkspace(workspace));
     isDeleted = [];
   });
 
@@ -352,7 +352,7 @@ describe('Workspaces List Page', () => {
         status: WorkspaceStatus.RUNNING,
         activeEnv: 'default',
       };
-      workspaces[0] = convertWorkspace(
+      workspaces[0] = constructWorkspace(
         createFakeCheWorkspace(
           'workspace-' + 0,
           'workspace-' + 0,

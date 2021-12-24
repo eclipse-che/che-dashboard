@@ -12,7 +12,7 @@
 
 import { createSelector } from 'reselect';
 import { AppState } from '..';
-import { convertWorkspace, Workspace } from '../../services/workspace-adapter';
+import { constructWorkspace, Workspace } from '../../services/workspace-adapter';
 import { selectCheWorkspacesError } from './cheWorkspaces/selectors';
 import { selectDevWorkspacesError } from './devWorkspaces/selectors';
 
@@ -35,7 +35,7 @@ export const selectAllWorkspaces = createSelector(
   selectDevWorkspacesState,
   (cheWorkspacesState, devWorkspacesState) => {
     return [...cheWorkspacesState.workspaces, ...devWorkspacesState.workspaces].map(workspace =>
-      convertWorkspace(workspace),
+      constructWorkspace(workspace),
     );
   },
 );

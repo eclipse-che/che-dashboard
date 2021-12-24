@@ -29,7 +29,7 @@ import { safeLoad } from 'js-yaml';
 import common from '@eclipse-che/common';
 import DevfileEditor, { DevfileEditor as Editor } from '../../../components/DevfileEditor';
 import EditorTools from './EditorTools';
-import { convertWorkspace, isCheWorkspace, Workspace } from '../../../services/workspace-adapter';
+import { constructWorkspace, isCheWorkspace, Workspace } from '../../../services/workspace-adapter';
 import devfileApi, { isDevfileV2, isDevWorkspace } from '../../../services/devfileApi';
 import {
   DevWorkspaceClient,
@@ -245,7 +245,7 @@ export class EditorTab extends React.PureComponent<Props, State> {
     try {
       await this.checkForModifiedClusterDevWorkspace();
       const devworkspace = this.props.workspace.ref as devfileApi.DevWorkspace;
-      const convertedDevWorkspace = convertWorkspace(devworkspace);
+      const convertedDevWorkspace = constructWorkspace(devworkspace);
       convertedDevWorkspace.devfile = devfile;
       // Store the devfile in here
       (convertedDevWorkspace.ref as devfileApi.DevWorkspace).metadata.annotations = {
@@ -333,7 +333,7 @@ export class EditorTab extends React.PureComponent<Props, State> {
     if (!devfile) {
       return;
     }
-    const workspaceCopy = convertWorkspace(this.props.workspace.ref);
+    const workspaceCopy = constructWorkspace(this.props.workspace.ref);
     if (!devfile.metadata) {
       devfile.metadata = {};
     }

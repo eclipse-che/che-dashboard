@@ -18,7 +18,7 @@ import { RenderResult, render, screen } from '@testing-library/react';
 import { Store } from 'redux';
 
 import NavigationRecentList from '../RecentList';
-import { convertWorkspace, Workspace } from '../../../services/workspace-adapter';
+import { constructWorkspace, Workspace } from '../../../services/workspace-adapter';
 import { FakeStoreBuilder } from '../../../store/__mocks__/storeBuilder';
 import { createHashHistory } from 'history';
 import { createFakeCheWorkspace } from '../../../store/__mocks__/workspace';
@@ -30,7 +30,7 @@ jest.mock('react-tooltip', () => {
 });
 
 const cheWorkspaces = [1, 2, 3].map(i => createFakeCheWorkspace('wksp-' + i, 'wksp-' + i));
-const workspaces = cheWorkspaces.map(workspace => convertWorkspace(workspace));
+const workspaces = cheWorkspaces.map(workspace => constructWorkspace(workspace));
 
 describe('Navigation Recent List', () => {
   function renderComponent(store: Store, workspaces: Workspace[]): RenderResult {

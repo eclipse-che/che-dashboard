@@ -334,7 +334,7 @@ export class WorkspaceAdapter<T extends che.Workspace | devfileApi.DevWorkspace>
   }
 }
 
-export function convertWorkspace<T extends che.Workspace | devfileApi.DevWorkspace>(
+export function constructWorkspace<T extends che.Workspace | devfileApi.DevWorkspace>(
   workspace: T,
 ): Workspace {
   return new WorkspaceAdapter(workspace);
