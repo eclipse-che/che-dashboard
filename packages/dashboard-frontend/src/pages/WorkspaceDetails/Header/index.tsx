@@ -26,10 +26,15 @@ import { Breadcrumb, BreadcrumbItem } from '@patternfly/react-core';
 import WorkspaceStatusLabel from '../../../components/WorkspaceStatusLabel';
 
 import styles from './index.module.css';
+import {
+  DeprecatedWorkspaceStatus,
+  DevWorkspaceStatus,
+  WorkspaceStatus,
+} from '../../../services/helpers/types';
 
 type Props = {
   workspacesLink: string;
-  status: string | undefined;
+  status: WorkspaceStatus | DevWorkspaceStatus | DeprecatedWorkspaceStatus;
   workspaceName: string;
 };
 

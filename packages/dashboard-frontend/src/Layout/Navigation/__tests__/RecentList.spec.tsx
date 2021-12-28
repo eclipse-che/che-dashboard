@@ -21,7 +21,7 @@ import NavigationRecentList from '../RecentList';
 import { constructWorkspace, Workspace } from '../../../services/workspace-adapter';
 import { FakeStoreBuilder } from '../../../store/__mocks__/storeBuilder';
 import { createHashHistory } from 'history';
-import { createFakeCheWorkspace } from '../../../store/__mocks__/workspace';
+import { CheWorkspaceBuilder } from '../../../store/__mocks__/cheWorkspaceBuilder';
 
 jest.mock('react-tooltip', () => {
   return function DummyTooltip(): React.ReactElement {
@@ -29,10 +29,20 @@ jest.mock('react-tooltip', () => {
   };
 });
 
-const cheWorkspaces = [1, 2, 3].map(i => createFakeCheWorkspace('wksp-' + i, 'wksp-' + i));
-const workspaces = cheWorkspaces.map(workspace => constructWorkspace(workspace));
+let cheWorkspaces: che.Workspace[];
+let workspaces: Workspace[];
 
 describe('Navigation Recent List', () => {
+  beforeEach(() => {
+    cheWorkspaces = [1, 2, 3].map(i =>
+      new CheWorkspaceBuilder()
+        .withId('wksp-' + i)
+        .withName('wksp-' + i)
+        .build(),
+    );
+    workspaces = cheWorkspaces.map(workspace => constructWorkspace(workspace));
+  });
+
   function renderComponent(store: Store, workspaces: Workspace[]): RenderResult {
     const history = createHashHistory();
     return render(

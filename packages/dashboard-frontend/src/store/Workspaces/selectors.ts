@@ -15,6 +15,7 @@ import { AppState } from '..';
 import { constructWorkspace, Workspace } from '../../services/workspace-adapter';
 import { selectCheWorkspacesError } from './cheWorkspaces/selectors';
 import { selectDevWorkspacesError } from './devWorkspaces/selectors';
+import { selectDevworkspacesEnabled } from './Settings/selectors';
 
 const selectState = (state: AppState) => state.workspaces;
 const selectCheWorkspacesState = (state: AppState) => state.cheWorkspaces;
@@ -27,6 +28,20 @@ export const selectLogs = createSelector(
   selectDevWorkspacesState,
   (cheWorkspacesState, devWorkspacesState) => {
     return new Map([...cheWorkspacesState.workspacesLogs, ...devWorkspacesState.workspacesLogs]);
+  },
+);
+
+/**
+ * Returns array of IDs of deprecated workspaces
+ */
+export const selectDeprecatedWorkspacesIds = createSelector(
+  selectCheWorkspacesState,
+  selectDevworkspacesEnabled,
+  (cheWorkspacesState, devworkspacesEnabled) => {
+    if (devworkspacesEnabled === false) {
+      return [];
+    }
+    return cheWorkspacesState.workspaces.map(workspace => workspace.id);
   },
 );
 
@@ -88,15 +103,6 @@ const sortByNameFn = (workspaceA: Workspace, workspaceB: Workspace): -1 | 0 | 1 
   }
 };
 
-export const selectAllWorkspacesSortedByTime = createSelector(
-  selectAllWorkspaces,
-  allWorkspaces => {
-    if (!allWorkspaces) {
-      return null;
-    }
-    return allWorkspaces.sort(sortByUpdatedTimeFn);
-  },
-);
 const sortByUpdatedTimeFn = (workspaceA: Workspace, workspaceB: Workspace): -1 | 0 | 1 => {
   const timeA = workspaceA.updated;
   const timeB = workspaceB.updated;
@@ -112,18 +118,18 @@ const sortByUpdatedTimeFn = (workspaceA: Workspace, workspaceB: Workspace): -1 |
 const selectRecentNumber = createSelector(selectState, state => state.recentNumber);
 export const selectRecentWorkspaces = createSelector(
   selectRecentNumber,
-  selectAllWorkspacesSortedByTime,
-  (recentNumber, workspacesSortedByTime) => {
-    if (!workspacesSortedByTime) {
-      return null;
-    }
-
-    return workspacesSortedByTime.slice(0, recentNumber);
-  },
+  selectAllWorkspaces,
+  selectDeprecatedWorkspacesIds,
+  (recentNumber, allWorkspaces, deprecatedWorkspacesIds) =>
+    allWorkspaces
+      .filter(workspace => deprecatedWorkspacesIds.indexOf(workspace.id) === -1)
+      .sort(sortByUpdatedTimeFn)
+      .slice(0, recentNumber),
 );
-export const selectAllWorkspacesNumber = createSelector(selectAllWorkspaces, allWorkspaces => {
-  return allWorkspaces.length;
-});
+export const selectAllWorkspacesNumber = createSelector(
+  selectAllWorkspaces,
+  allWorkspaces => allWorkspaces.length,
+);
 
 export const selectWorkspacesError = createSelector(
   selectCheWorkspacesError,

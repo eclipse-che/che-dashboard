@@ -15,7 +15,7 @@ import {
   devWorkspaceToDevfile,
 } from '../workspace-client/devworkspace/converters';
 import { attributesToType, typeToAttributes } from '../storageTypes';
-import { DevWorkspaceStatus, WorkspaceStatus } from '../helpers/types';
+import { DeprecatedWorkspaceStatus, DevWorkspaceStatus, WorkspaceStatus } from '../helpers/types';
 import { DEVWORKSPACE_NEXT_START_ANNOTATION } from '../workspace-client/devworkspace/devWorkspaceClient';
 import devfileApi, { isDevfileV2, isDevWorkspace } from '../devfileApi';
 import { devWorkspaceKind } from '../devfileApi/devWorkspace';
@@ -32,7 +32,7 @@ export interface Workspace {
   readonly infrastructureNamespace: string;
   readonly created: number;
   readonly updated: number;
-  status: WorkspaceStatus | DevWorkspaceStatus;
+  status: WorkspaceStatus | DevWorkspaceStatus | DeprecatedWorkspaceStatus;
   readonly ideUrl?: string;
   devfile: Devfile;
   storageType: che.WorkspaceStorageType;
@@ -48,6 +48,7 @@ export interface Workspace {
 export class WorkspaceAdapter<T extends che.Workspace | devfileApi.DevWorkspace>
   implements Workspace
 {
+  private static deprecatedIds: string[] = [];
   private workspace: T;
 
   constructor(workspace: T) {
@@ -57,6 +58,14 @@ export class WorkspaceAdapter<T extends che.Workspace | devfileApi.DevWorkspace>
       console.error('Unexpected workspace object shape:', workspace);
       throw new Error('Unexpected workspace object shape.');
     }
+  }
+
+  static setDeprecatedIds(ids: string[]) {
+    WorkspaceAdapter.deprecatedIds = ids;
+  }
+
+  static isDeprecated(workspace: che.Workspace | devfileApi.DevWorkspace): boolean {
+    return WorkspaceAdapter.deprecatedIds.indexOf(WorkspaceAdapter.getId(workspace)) !== -1;
   }
 
   static getId(workspace: che.Workspace | devfileApi.DevWorkspace): string {
@@ -72,7 +81,10 @@ export class WorkspaceAdapter<T extends che.Workspace | devfileApi.DevWorkspace>
 
   static getStatus(
     workspace: che.Workspace | devfileApi.DevWorkspace,
-  ): WorkspaceStatus | DevWorkspaceStatus {
+  ): WorkspaceStatus | DevWorkspaceStatus | DeprecatedWorkspaceStatus {
+    if (WorkspaceAdapter.isDeprecated(workspace)) {
+      return 'Deprecated';
+    }
     if (isCheWorkspace(workspace)) {
       return workspace.status as WorkspaceStatus;
     } else {
@@ -164,8 +176,12 @@ export class WorkspaceAdapter<T extends che.Workspace | devfileApi.DevWorkspace>
     return new Date().getTime();
   }
 
-  get status(): WorkspaceStatus | DevWorkspaceStatus {
+  get status(): WorkspaceStatus | DevWorkspaceStatus | DeprecatedWorkspaceStatus {
     return WorkspaceAdapter.getStatus(this.workspace);
+  }
+
+  get isDeprecated(): boolean {
+    return WorkspaceAdapter.isDeprecated(this.workspace);
   }
 
   get isStarting(): boolean {
