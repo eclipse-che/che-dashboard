@@ -252,7 +252,7 @@ export const actionCreators: ActionCreators = {
       workspace: devfileApi.DevWorkspace,
       debugWorkspace = false,
     ): AppThunk<KnownAction, Promise<void>> =>
-    async (dispatch): Promise<void> => {
+    async (dispatch, getState): Promise<void> => {
       dispatch({ type: 'REQUEST_DEVWORKSPACE' });
       try {
         await devWorkspaceClient.updateDebugMode(workspace, debugWorkspace);
