@@ -24,7 +24,6 @@ import {
   DEVWORKSPACE_NEXT_START_ANNOTATION,
   IStatusUpdate,
 } from '../../../services/workspace-client/devworkspace/devWorkspaceClient';
-import { CheWorkspaceClient } from '../../../services/workspace-client/cheworkspace/cheWorkspaceClient';
 import devfileApi, { isDevWorkspace } from '../../../services/devfileApi';
 import { deleteLogs, mergeLogs } from '../logs';
 import { getDefer, IDeferred } from '../../../services/helpers/deferred';
@@ -34,7 +33,7 @@ import { devWorkspaceKind } from '../../../services/devfileApi/devWorkspace';
 import { WorkspaceAdapter } from '../../../services/workspace-adapter';
 import { DEVWORKSPACE_UPDATING_TIMESTAMP_ANNOTATION } from '../../../services/devfileApi/devWorkspace/metadata';
 import * as DwPluginsStore from '../../Plugins/devWorkspacePlugins';
-const cheWorkspaceClient = container.get(CheWorkspaceClient);
+import { selectDefaultNamespace } from '../../InfrastructureNamespaces/selectors';
 const devWorkspaceClient = container.get(DevWorkspaceClient);
 
 const onStatusChangeCallbacks = new Map<string, (status: string) => void>();
@@ -140,6 +139,10 @@ export type ActionCreators = {
     pluginRegistryInternalUrl: string | undefined,
     attributes: { [key: string]: string },
   ) => AppThunk<KnownAction, Promise<void>>;
+  createWorkspaceFromResources: (
+    devworkspace: devfileApi.DevWorkspace,
+    devworkspaceTemplate: devfileApi.DevWorkspaceTemplate,
+  ) => AppThunk<KnownAction, Promise<void>>;
 
   deleteWorkspaceLogs: (workspaceId: string) => AppThunk<DeleteWorkspaceLogsAction, void>;
 };
@@ -178,7 +181,8 @@ export const actionCreators: ActionCreators = {
       dispatch({ type: 'REQUEST_DEVWORKSPACE' });
 
       try {
-        const defaultNamespace = await cheWorkspaceClient.getDefaultNamespace();
+        const defaultKubernetesNamespace = selectDefaultNamespace(getState());
+        const defaultNamespace = defaultKubernetesNamespace.name;
         const { workspaces, resourceVersion } = await devWorkspaceClient.getAllWorkspaces(
           defaultNamespace,
         );
@@ -417,6 +421,37 @@ export const actionCreators: ActionCreators = {
       }
     },
 
+  createWorkspaceFromResources:
+    (
+      devworkspace: devfileApi.DevWorkspace,
+      devworkspaceTemplate: devfileApi.DevWorkspaceTemplate,
+    ): AppThunk<KnownAction, Promise<void>> =>
+    async (dispatch, getState): Promise<void> => {
+      const defaultKubernetesNamespace = selectDefaultNamespace(getState());
+      const defaultNamespace = defaultKubernetesNamespace.name;
+      try {
+        const workspace = await devWorkspaceClient.createFromResources(
+          defaultNamespace,
+          devworkspace,
+          devworkspaceTemplate,
+        );
+
+        dispatch({
+          type: 'ADD_DEVWORKSPACE',
+          workspace,
+        });
+      } catch (e) {
+        const errorMessage =
+          'Failed to create a new workspace from the devfile, reason: ' +
+          common.helpers.errors.getMessage(e);
+        dispatch({
+          type: 'RECEIVE_DEVWORKSPACE_ERROR',
+          error: errorMessage,
+        });
+        throw errorMessage;
+      }
+    },
+
   createWorkspaceFromDevfile:
     (
       devfile: devfileApi.Devfile,
@@ -461,7 +496,7 @@ export const actionCreators: ActionCreators = {
       try {
         // If the devworkspace doesn't have a namespace then we assign it to the default kubernetesNamespace
         const devWorkspaceDevfile = devfile as devfileApi.Devfile;
-        const defaultNamespace = await cheWorkspaceClient.getDefaultNamespace();
+        const defaultNamespace = selectDefaultNamespace(state);
         const dwEditorsList = selectDwEditorsPluginsList(cheEditor)(state);
 
         if (!devWorkspaceDevfile.metadata.attributes) {
@@ -471,9 +506,9 @@ export const actionCreators: ActionCreators = {
           [DEVWORKSPACE_CHE_EDITOR]: cheEditor,
         };
 
-        const workspace = await devWorkspaceClient.create(
+        const workspace = await devWorkspaceClient.createFromDevfile(
           devWorkspaceDevfile,
-          defaultNamespace,
+          defaultNamespace.name,
           dwEditorsList,
           pluginRegistryUrl,
           pluginRegistryInternalUrl,
