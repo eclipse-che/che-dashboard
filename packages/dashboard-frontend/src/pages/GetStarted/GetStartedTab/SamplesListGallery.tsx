@@ -50,7 +50,7 @@ type State = {
 };
 
 export class SamplesListGallery extends React.PureComponent<Props, State> {
-  private static compareMetaData(a: che.DevfileMetaData, b: che.DevfileMetaData): number {
+  private static sortByDisplayName(a: che.DevfileMetaData, b: che.DevfileMetaData): number {
     if (a.displayName < b.displayName) {
       return -1;
     }
@@ -139,7 +139,7 @@ export class SamplesListGallery extends React.PureComponent<Props, State> {
 
   private buildCardsList(metadata: che.DevfileMetaData[] = []): React.ReactElement[] {
     return metadata
-      .sort(SamplesListGallery.compareMetaData)
+      .sort(SamplesListGallery.sortByDisplayName)
       .map(meta => (
         <SampleCard
           key={meta.links.self}

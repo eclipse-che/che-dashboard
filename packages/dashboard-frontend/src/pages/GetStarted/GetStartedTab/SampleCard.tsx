@@ -71,9 +71,7 @@ export class SampleCard extends React.PureComponent<SampleCardProps> {
       >
         <CardHeader>
           <CardHeaderMain>{devfileIcon}</CardHeaderMain>
-          <CardActions style={{ marginTop: '4px' }}>
-            {tags}
-          </CardActions>
+          <CardActions style={{ marginTop: '4px' }}>{tags}</CardActions>
         </CardHeader>
         <CardHeader>{metadata.displayName}</CardHeader>
         <CardBody>{metadata.description}</CardBody>
