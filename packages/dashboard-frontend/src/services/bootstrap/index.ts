@@ -74,6 +74,7 @@ export default class Bootstrap {
       this.fetchUserProfile(),
       this.fetchPlugins(settings).then(() => this.fetchDevfileSchema()),
       this.fetchDwPlugins(settings),
+      this.fetchDefaultDwPlugins(settings),
       this.fetchRegistriesMetadata(settings),
       this.watchNamespaces(),
       this.updateDevWorkspaceTemplates(settings),
@@ -167,6 +168,18 @@ export default class Bootstrap {
       addBanner(message)(this.store.dispatch, this.store.getState, undefined);
 
       throw e;
+    }
+  }
+
+  private async fetchDefaultDwPlugins(settings: che.WorkspaceSettings): Promise<void> {
+    if (!isDevworkspacesEnabled(settings)) {
+      return;
+    }
+    const { requestDwDefaultPlugins } = DwPluginsStore.actionCreators;
+    try {
+      await requestDwDefaultPlugins()(this.store.dispatch, this.store.getState, undefined);
+    } catch (e) {
+      console.error('Failed to retrieve default plug-ins.', e);
     }
   }
 
