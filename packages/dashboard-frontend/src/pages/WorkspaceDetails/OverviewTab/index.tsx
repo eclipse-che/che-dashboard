@@ -76,7 +76,7 @@ export class OverviewTab extends React.Component<Props, State> {
     const workspaceName = this.props.workspace.name;
     const namespace = this.state.infrastructureNamespace;
     const projects = this.props.workspace.projects;
-    const readonly = isDevWorkspace(this.props.workspace.ref);
+    const readonly = this.props.workspace.isDeprecated || this.props.workspace.isDevWorkspace;
 
     return (
       <React.Fragment>

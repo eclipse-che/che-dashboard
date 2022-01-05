@@ -141,6 +141,7 @@ export class EditorTab extends React.PureComponent<Props, State> {
   public render(): React.ReactElement {
     const originDevfile = this.props.workspace.devfile;
     const { devfile, additionSchema } = this.state;
+    const isReadonly = this.props.workspace.isDeprecated;
 
     return (
       <React.Fragment>
@@ -207,6 +208,7 @@ export class EditorTab extends React.PureComponent<Props, State> {
             devfile={originDevfile}
             decorationPattern="location[ \t]*(.*)[ \t]*$"
             onChange={(newValue, isValid) => this.onDevfileChange(newValue, isValid)}
+            isReadonly={isReadonly}
           />
           <Flex direction={{ default: 'column' }}>
             <FlexItem align={{ default: 'alignRight' }} className={styles.buttonsGroup}>
