@@ -18,9 +18,13 @@ import { render, screen, RenderResult, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import WorkspacesList from '..';
 import { BrandingData } from '../../../services/bootstrap/branding.constant';
-import { createFakeCheWorkspace } from '../../../store/__mocks__/workspace';
 import { WorkspaceAction, WorkspaceStatus } from '../../../services/helpers/types';
-import { constructWorkspace, Workspace } from '../../../services/workspace-adapter';
+import {
+  constructWorkspace,
+  Workspace,
+  WorkspaceAdapter,
+} from '../../../services/workspace-adapter';
+import { CheWorkspaceBuilder } from '../../../store/__mocks__/cheWorkspaceBuilder';
 
 jest.mock('../../../components/Head', () => {
   const FakeHead = () => {
@@ -54,7 +58,12 @@ let mockShowConfirmation = jest.fn().mockResolvedValue(undefined);
 describe('Workspaces List Page', () => {
   beforeEach(() => {
     workspaces = [0, 1, 2, 3, 4]
-      .map(i => createFakeCheWorkspace('workspace-' + i, 'workspace-' + i))
+      .map(i =>
+        new CheWorkspaceBuilder()
+          .withId('workspace-' + i)
+          .withName('workspace-' + i)
+          .build(),
+      )
       .map(workspace => constructWorkspace(workspace));
     isDeleted = [];
   });
@@ -353,13 +362,12 @@ describe('Workspaces List Page', () => {
         activeEnv: 'default',
       };
       workspaces[0] = constructWorkspace(
-        createFakeCheWorkspace(
-          'workspace-' + 0,
-          'workspace-' + 0,
-          undefined,
-          WorkspaceStatus.RUNNING,
-          runtime,
-        ),
+        new CheWorkspaceBuilder()
+          .withId('workspace-0')
+          .withName('workspace-0')
+          .withStatus('RUNNING')
+          .withRuntime(runtime)
+          .build(),
       );
 
       renderComponent();
@@ -387,6 +395,57 @@ describe('Workspaces List Page', () => {
       await waitFor(() => expect(mockOnAction).toHaveBeenCalled());
 
       expect(mockOnAction).toHaveBeenCalledWith(WorkspaceAction.DELETE_WORKSPACE, workspaces[0].id);
+    });
+
+    describe('with deprecated workspaces', () => {
+      test('actions', () => {
+        const deprecatedWorkspaceId = 'deprecated-workspace-id';
+        WorkspaceAdapter.setDeprecatedIds([deprecatedWorkspaceId]);
+        const workspaces: Workspace[] = [
+          new CheWorkspaceBuilder()
+            .withId(deprecatedWorkspaceId)
+            .withName('workspace-name')
+            .build(),
+        ].map(constructWorkspace);
+        renderComponent(workspaces);
+
+        // no menu items at all initially
+        let menuItems = screen.queryAllByRole('menuitem');
+        expect(menuItems.length).toEqual(0);
+
+        const actionButtons = screen.getAllByRole('button', { name: /actions/i });
+        // click the kebab button on the first workspace row
+        userEvent.click(actionButtons[0]);
+        expect(actionButtons[0]).toBeEnabled();
+
+        // check number of menu items shown
+        menuItems = screen.getAllByRole('menuitem');
+        expect(menuItems.length).toEqual(1);
+
+        const deleteAction = screen.queryByRole('button', { name: /delete workspace/i });
+        expect(deleteAction).not.toBeNull();
+        expect(deleteAction).toBeEnabled();
+      });
+
+      test('status icon', () => {
+        const deprecatedWorkspaceId = 'deprecated-workspace-id';
+        // mark the workspace as deprecated
+        WorkspaceAdapter.setDeprecatedIds([deprecatedWorkspaceId]);
+        const workspaces: Workspace[] = [
+          new CheWorkspaceBuilder()
+            .withId(deprecatedWorkspaceId)
+            .withName('workspace-name')
+            .build(),
+        ].map(constructWorkspace);
+        renderComponent(workspaces);
+
+        const rows = screen.getAllByRole('row');
+
+        // skip headings row, take the workspace row and get the workspace status indicator
+        const statusIcon = rows[1].querySelector('[data-testid="workspace-status-indicator"]');
+        expect(statusIcon).not.toBeNull();
+        expect(statusIcon!.getAttribute('data-tip')).toEqual('Deprecated workspace');
+      });
     });
   });
 
@@ -418,19 +477,19 @@ describe('Workspaces List Page', () => {
   });
 });
 
-function getComponent(): React.ReactElement {
+function getComponent(_workspaces = workspaces): React.ReactElement {
   const history = createHashHistory();
   return (
     <WorkspacesList
       branding={brandingData}
       history={history}
-      workspaces={workspaces}
+      workspaces={_workspaces}
       onAction={mockOnAction}
       showConfirmation={mockShowConfirmation}
       toDelete={isDeleted}
     ></WorkspacesList>
   );
 }
-function renderComponent(): RenderResult {
-  return render(getComponent());
+function renderComponent(workspaces?: Workspace[]): RenderResult {
+  return render(getComponent(workspaces));
 }

@@ -43,6 +43,7 @@ export interface Workspace {
   readonly isRunning: boolean;
   readonly hasError: boolean;
   readonly isDevWorkspace: boolean;
+  readonly isDeprecated: boolean;
 }
 
 export class WorkspaceAdapter<T extends che.Workspace | devfileApi.DevWorkspace>

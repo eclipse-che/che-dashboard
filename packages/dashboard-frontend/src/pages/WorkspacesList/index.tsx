@@ -157,6 +157,17 @@ export default class WorkspacesList extends React.PureComponent<Props, State> {
       return [];
     }
 
+    if (workspace.isDeprecated) {
+      return [
+        {
+          title: 'Delete Workspace',
+          onClick: (event, rowId, rowData) =>
+            this.handleAction(WorkspaceAction.DELETE_WORKSPACE, rowData),
+          isDisabled: false === this.isEnabledAction(WorkspaceAction.DELETE_WORKSPACE, workspace),
+        },
+      ];
+    }
+
     return [
       {
         title: 'Open in Verbose mode',
