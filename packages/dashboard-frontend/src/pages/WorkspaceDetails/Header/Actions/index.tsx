@@ -20,6 +20,7 @@ import {
   WorkspaceAction,
   WorkspaceStatus,
   DevWorkspaceStatus,
+  DeprecatedWorkspaceStatus,
 } from '../../../../services/helpers/types';
 import {
   ActionContextType,
@@ -29,12 +30,12 @@ import { lazyInject } from '../../../../inversify.config';
 import { AppAlerts } from '../../../../services/alerts/appAlerts';
 import getRandomString from '../../../../services/helpers/random';
 
-import './Actions.styl';
+import styles from './index.module.css';
 
 type Props = {
   workspaceId: string;
   workspaceName: string;
-  status: string | undefined;
+  status: WorkspaceStatus | DevWorkspaceStatus | DeprecatedWorkspaceStatus;
   history: History;
 };
 
@@ -104,6 +105,18 @@ export class HeaderActionSelect extends React.PureComponent<Props, State> {
   private getDropdownItems(context: ActionContextType): React.ReactNode[] {
     const { status } = this.props;
 
+    if (status === 'Deprecated') {
+      return [
+        <DropdownItem
+          key={`action-${WorkspaceAction.DELETE_WORKSPACE}`}
+          isDisabled={false}
+          onClick={async () => this.handleSelect(WorkspaceAction.DELETE_WORKSPACE, context)}
+        >
+          <div>{WorkspaceAction.DELETE_WORKSPACE}</div>
+        </DropdownItem>,
+      ];
+    }
+
     return [
       <DropdownItem
         key={`action-${WorkspaceAction.OPEN_IDE}`}
@@ -163,7 +176,7 @@ export class HeaderActionSelect extends React.PureComponent<Props, State> {
         <WorkspaceActionsConsumer>
           {context => (
             <Dropdown
-              className="workspace-action-selector"
+              className={styles.workspaceActionSelector}
               toggle={
                 <DropdownToggle
                   data-testid={`${workspaceId}-action-dropdown`}
