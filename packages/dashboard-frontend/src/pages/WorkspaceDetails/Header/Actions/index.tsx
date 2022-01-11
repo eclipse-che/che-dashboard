@@ -37,6 +37,8 @@ type Props = {
   workspaceName: string;
   status: WorkspaceStatus | DevWorkspaceStatus | DeprecatedWorkspaceStatus;
   history: History;
+  onConversionAlert: (errorMessage: string) => void;
+  closeConversionAlert: () => void;
 };
 
 type State = {
@@ -64,7 +66,7 @@ export class HeaderActionSelect extends React.PureComponent<Props, State> {
     this.setState({ isExpanded });
   }
 
-  private async handleSelect(
+  private async handleSelectedAction(
     selectedAction: WorkspaceAction,
     context: ActionContextType,
   ): Promise<void> {
@@ -86,11 +88,29 @@ export class HeaderActionSelect extends React.PureComponent<Props, State> {
       this.props.history.push(nextPath);
     } catch (e) {
       const errorMessage = common.helpers.errors.getMessage(e);
-      const message =
-        `Unable to ${selectedAction.toLocaleLowerCase()} ${this.props.workspaceName}. ` +
-        errorMessage.replace('Error: ', '');
-      this.showAlert(message);
-      console.warn(message);
+      this.showAlert(errorMessage);
+      console.warn(errorMessage);
+    }
+  }
+
+  private async handleConversion(
+    selectedAction: WorkspaceAction,
+    context: ActionContextType,
+  ): Promise<void> {
+    this.setState({
+      isExpanded: false,
+    });
+    try {
+      // todo implement redirecting to the new workspace page
+      const nextPath = await context.handleAction(selectedAction, this.props.workspaceId);
+      if (!nextPath) {
+        return;
+      }
+      this.props.history.push(nextPath);
+    } catch (e) {
+      const errorMessage = common.helpers.errors.getMessage(e);
+      this.props.onConversionAlert(errorMessage);
+      console.warn(errorMessage);
     }
   }
 
@@ -108,9 +128,23 @@ export class HeaderActionSelect extends React.PureComponent<Props, State> {
     if (status === 'Deprecated') {
       return [
         <DropdownItem
+          key={`action-${WorkspaceAction.CONVERT}`}
+          // todo isDisabled={isConverted}
+          isDisabled={false}
+          onClick={async () => {
+            this.props.closeConversionAlert();
+            this.handleConversion(WorkspaceAction.CONVERT, context);
+          }}
+        >
+          <div>{WorkspaceAction.CONVERT}</div>
+        </DropdownItem>,
+        <DropdownItem
           key={`action-${WorkspaceAction.DELETE_WORKSPACE}`}
           isDisabled={false}
-          onClick={async () => this.handleSelect(WorkspaceAction.DELETE_WORKSPACE, context)}
+          onClick={async () => {
+            this.props.closeConversionAlert();
+            this.handleSelectedAction(WorkspaceAction.CONVERT, context);
+          }}
         >
           <div>{WorkspaceAction.DELETE_WORKSPACE}</div>
         </DropdownItem>,
@@ -121,35 +155,39 @@ export class HeaderActionSelect extends React.PureComponent<Props, State> {
       <DropdownItem
         key={`action-${WorkspaceAction.OPEN_IDE}`}
         isDisabled={status === DevWorkspaceStatus.TERMINATING}
-        onClick={async () => this.handleSelect(WorkspaceAction.OPEN_IDE, context)}
+        onClick={async () => this.handleSelectedAction(WorkspaceAction.OPEN_IDE, context)}
       >
         <div>{WorkspaceAction.OPEN_IDE}</div>
       </DropdownItem>,
       <DropdownItem
         key={`action-${WorkspaceAction.START_DEBUG_AND_OPEN_LOGS}`}
         isDisabled={status === DevWorkspaceStatus.TERMINATING || status !== WorkspaceStatus.STOPPED}
-        onClick={async () => this.handleSelect(WorkspaceAction.START_DEBUG_AND_OPEN_LOGS, context)}
+        onClick={async () =>
+          this.handleSelectedAction(WorkspaceAction.START_DEBUG_AND_OPEN_LOGS, context)
+        }
       >
         <div>{WorkspaceAction.START_DEBUG_AND_OPEN_LOGS}</div>
       </DropdownItem>,
       <DropdownItem
         key={`action-${WorkspaceAction.START_IN_BACKGROUND}`}
         isDisabled={status === DevWorkspaceStatus.TERMINATING || status !== WorkspaceStatus.STOPPED}
-        onClick={async () => this.handleSelect(WorkspaceAction.START_IN_BACKGROUND, context)}
+        onClick={async () =>
+          this.handleSelectedAction(WorkspaceAction.START_IN_BACKGROUND, context)
+        }
       >
         <div>{WorkspaceAction.START_IN_BACKGROUND}</div>
       </DropdownItem>,
       <DropdownItem
         key={`action-${WorkspaceAction.RESTART_WORKSPACE}`}
         isDisabled={status === DevWorkspaceStatus.TERMINATING || status === WorkspaceStatus.STOPPED}
-        onClick={async () => this.handleSelect(WorkspaceAction.RESTART_WORKSPACE, context)}
+        onClick={async () => this.handleSelectedAction(WorkspaceAction.RESTART_WORKSPACE, context)}
       >
         <div>{WorkspaceAction.RESTART_WORKSPACE}</div>
       </DropdownItem>,
       <DropdownItem
         key={`action-${WorkspaceAction.STOP_WORKSPACE}`}
         isDisabled={status === DevWorkspaceStatus.TERMINATING || status === WorkspaceStatus.STOPPED}
-        onClick={async () => this.handleSelect(WorkspaceAction.STOP_WORKSPACE, context)}
+        onClick={async () => this.handleSelectedAction(WorkspaceAction.STOP_WORKSPACE, context)}
       >
         <div>{WorkspaceAction.STOP_WORKSPACE}</div>
       </DropdownItem>,
@@ -160,7 +198,7 @@ export class HeaderActionSelect extends React.PureComponent<Props, State> {
           status === WorkspaceStatus.STARTING ||
           status === WorkspaceStatus.STOPPING
         }
-        onClick={async () => this.handleSelect(WorkspaceAction.DELETE_WORKSPACE, context)}
+        onClick={async () => this.handleSelectedAction(WorkspaceAction.DELETE_WORKSPACE, context)}
       >
         <div>{WorkspaceAction.DELETE_WORKSPACE}</div>
       </DropdownItem>,

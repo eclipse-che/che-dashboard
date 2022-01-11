@@ -151,7 +151,9 @@ export function buildRow(
 
   /* Open IDE link */
   let open: React.ReactElement | string;
-  if (isDeleted || workspace.status === DevWorkspaceStatus.TERMINATING) {
+  if (workspace.isDeprecated) {
+    open = <></>;
+  } else if (isDeleted || workspace.status === DevWorkspaceStatus.TERMINATING) {
     open = 'deleting...';
   } else {
     if (isDevWorkspace) {

@@ -20,11 +20,13 @@ import { Action, Store } from 'redux';
 import { ActionCreators } from '../../store/Workspaces';
 import WorkspacesList from '../WorkspacesList';
 import { FakeStoreBuilder } from '../../store/__mocks__/storeBuilder';
-import { createFakeCheWorkspace } from '../../store/__mocks__/workspace';
+import { CheWorkspaceBuilder } from '../../store/__mocks__/cheWorkspaceBuilder';
 
-let isLoadingResult = false;
 let workspaces = [0, 1, 2, 3, 4].map(i =>
-  createFakeCheWorkspace('workspace-' + i, 'workspace-' + i),
+  new CheWorkspaceBuilder()
+    .withId('workspace-' + i)
+    .withName('workspace-' + i)
+    .build(),
 );
 
 jest.mock('../../store/Workspaces/index', () => {
@@ -34,13 +36,6 @@ jest.mock('../../store/Workspaces/index', () => {
         return Promise.resolve();
       },
     } as ActionCreators,
-  };
-});
-jest.mock('../../store/Workspaces/selectors.ts', () => {
-  return {
-    selectIsLoading: jest.fn(() => isLoadingResult),
-    selectAllWorkspaces: () => workspaces,
-    selectWorkspacesError: () => undefined,
   };
 });
 jest.mock('../../pages/WorkspacesList', () => {
@@ -65,17 +60,16 @@ describe('Workspaces List Container', () => {
 
   describe('while fetching workspaces', () => {
     it('should show the fallback', () => {
-      isLoadingResult = true;
       workspaces = [];
-      renderComponent(workspaces);
+      renderComponent(workspaces, true);
 
       expect(screen.queryByText('Fallback Spinner')).toBeTruthy();
     });
   });
 });
 
-function renderComponent(workspaces: che.Workspace[]): RenderResult {
-  const store = createFakeStore(workspaces);
+function renderComponent(workspaces: che.Workspace[], isLoading = false): RenderResult {
+  const store = createFakeStore(workspaces, isLoading);
   const history = createHashHistory();
   return render(
     <Provider store={store}>
@@ -84,10 +78,14 @@ function renderComponent(workspaces: che.Workspace[]): RenderResult {
   );
 }
 
-function createFakeStore(workspaces: che.Workspace[]): Store {
+function createFakeStore(workspaces: che.Workspace[], isLoading: boolean): Store {
   return new FakeStoreBuilder()
-    .withCheWorkspaces({
-      workspaces,
-    })
+    .withCheWorkspaces(
+      {
+        workspaces,
+      },
+      isLoading,
+    )
+    .withWorkspaces({}, isLoading)
     .build();
 }

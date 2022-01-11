@@ -35,6 +35,9 @@ import { selectAllWorkspaces } from '../../store/Workspaces/selectors';
 import * as WorkspacesStore from '../../store/Workspaces';
 import { WorkspaceActionsContext } from './context';
 import { isCheWorkspace, Workspace } from '../../services/workspace-adapter';
+import { convertDevfileV1toDevfileV2 } from '../../services/devfile/converters';
+import { isDevWorkspace } from '../../services/devfileApi';
+import { selectDefaultNamespace } from '../../store/InfrastructureNamespaces/selectors';
 
 type Deferred = {
   resolve: () => void;
@@ -70,12 +73,67 @@ export class WorkspaceActionsProvider extends React.Component<Props, State> {
   /**
    * open the action in a new tab for DevWorkspaces
    */
-  async handleLocation(location: Location, workspace: Workspace): Promise<Location | void> {
+  private async handleLocation(location: Location, workspace: Workspace): Promise<Location | void> {
     if (workspace.isDevWorkspace) {
       const link = toHref(this.props.history, location);
       window.open(link, workspace.id);
     } else {
       return location;
+    }
+  }
+
+  private async deleteWorkspace(
+    action: WorkspaceAction,
+    workspace: Workspace,
+  ): Promise<Location | void> {
+    if (isCheWorkspace(workspace.ref) && !(workspace.isStopped || workspace.hasError)) {
+      throw new Error('Only STOPPED workspaces can be deleted.');
+    }
+
+    this.deleting.add(workspace.id);
+    this.setState({
+      toDelete: Array.from(this.deleting),
+    });
+
+    try {
+      await this.props.deleteWorkspace(workspace);
+      this.deleting.delete(workspace.id);
+      this.setState({
+        toDelete: Array.from(this.deleting),
+      });
+      return buildWorkspacesLocation();
+    } catch (e) {
+      this.deleting.delete(workspace.id);
+      this.setState({
+        toDelete: Array.from(this.deleting),
+      });
+      console.error(`Action "${action}" failed with workspace "${workspace.name}". ${e}`);
+    }
+  }
+
+  private async convertWorkspace(
+    action: WorkspaceAction,
+    workspace: Workspace,
+  ): Promise<Location | void> {
+    try {
+      if (isDevWorkspace(workspace.ref)) {
+        throw new Error('This workspace cannot be converted to DevWorkspaces.');
+      }
+
+      const devfileV1 = workspace.devfile as che.WorkspaceDevfile;
+      const devfileV2 = await convertDevfileV1toDevfileV2(devfileV1);
+      const defaultNamespace = this.props.defaultNamespace.name;
+      // create a new workspace
+      await this.props.createWorkspaceFromDevfile(devfileV2, undefined, defaultNamespace, {});
+      // add 'converted' attribute to the old workspace
+      // to be able to hide it on the Workspaces page
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      workspace.ref.attributes!.converted = new Date().toISOString();
+      await this.props.updateWorkspace(workspace);
+    } catch (e) {
+      const errorMessage = `Action "${action}" failed with workspace "${workspace.name}". ${e}`;
+      console.error(errorMessage);
+      throw new Error(errorMessage);
     }
   }
 
@@ -126,34 +184,17 @@ export class WorkspaceActionsProvider extends React.Component<Props, State> {
         return buildDetailsLocation(workspace, WorkspaceDetailsTab.DEVFILE);
       case WorkspaceAction.DELETE_WORKSPACE:
         {
-          if (isCheWorkspace(workspace.ref) && !(workspace.isStopped || workspace.hasError)) {
-            throw new Error('Only STOPPED workspaces can be deleted.');
-          }
-
-          this.deleting.add(id);
-          this.setState({
-            toDelete: Array.from(this.deleting),
-          });
-
-          try {
-            await this.props.deleteWorkspace(workspace);
-            this.deleting.delete(id);
-            this.setState({
-              toDelete: Array.from(this.deleting),
-            });
-            return buildWorkspacesLocation();
-          } catch (e) {
-            this.deleting.delete(id);
-            this.setState({
-              toDelete: Array.from(this.deleting),
-            });
-            console.error(`Action failed: "${action}", ID: "${id}", e: ${e}.`);
-          }
+          await this.deleteWorkspace(action, workspace);
         }
         break;
       case WorkspaceAction.RESTART_WORKSPACE:
         {
           await this.props.restartWorkspace(workspace);
+        }
+        break;
+      case WorkspaceAction.CONVERT:
+        {
+          await this.convertWorkspace(action, workspace);
         }
         break;
       default:
@@ -290,6 +331,7 @@ export class WorkspaceActionsProvider extends React.Component<Props, State> {
 
 const mapStateToProps = (state: AppState) => ({
   allWorkspaces: selectAllWorkspaces(state),
+  defaultNamespace: selectDefaultNamespace(state),
 });
 
 const connector = connect(mapStateToProps, WorkspacesStore.actionCreators);

@@ -15,6 +15,7 @@ import { connect, ConnectedProps } from 'react-redux';
 import {
   Alert,
   AlertActionCloseButton,
+  AlertGroup,
   AlertVariant,
   PageSection,
   PageSectionVariants,
@@ -49,7 +50,8 @@ type Props = {
 type State = {
   activeTabKey: WorkspaceDetailsTab;
   clickedTabIndex?: WorkspaceDetailsTab;
-  hasWarningMessage?: boolean;
+  inlineAlertConversionError?: string;
+  inlineAlertRestartWarning?: boolean;
 };
 
 export class WorkspaceDetails extends React.PureComponent<Props, State> {
@@ -76,7 +78,6 @@ export class WorkspaceDetails extends React.PureComponent<Props, State> {
 
     this.state = {
       activeTabKey: this.getActiveTabKey(this.props.history.location.search),
-      hasWarningMessage: false,
     };
 
     // Toggle currently active tab
@@ -103,6 +104,66 @@ export class WorkspaceDetails extends React.PureComponent<Props, State> {
       ).slice(-4)}`;
       this.appAlerts.showAlert({ key, title, variant });
     };
+  }
+
+  private handleConversionAlert(errorMessage: string): void {
+    this.setState({
+      inlineAlertConversionError: errorMessage,
+    });
+  }
+
+  private handleCloseConversionAlert(): void {
+    this.setState({
+      inlineAlertConversionError: undefined,
+    });
+  }
+
+  private handleRestartWarning(): void {
+    this.setState({
+      inlineAlertRestartWarning: true,
+    });
+  }
+
+  private handleCloseRestartWarning(): void {
+    this.setState({
+      inlineAlertRestartWarning: false,
+    });
+  }
+
+  private buildInlineAlerts(): React.ReactElement {
+    const { inlineAlertConversionError, inlineAlertRestartWarning } = this.state;
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    const workspaceName = this.props.workspace!.name;
+    return (
+      <AlertGroup>
+        {inlineAlertConversionError && (
+          <Alert
+            variant={AlertVariant.danger}
+            isInline
+            title="Workspace conversion failed."
+            actionClose={
+              <AlertActionCloseButton onClose={() => this.handleCloseConversionAlert()} />
+            }
+          >
+            {inlineAlertConversionError}
+          </Alert>
+        )}
+        {inlineAlertRestartWarning && (
+          <Alert
+            variant={AlertVariant.warning}
+            isInline
+            title={
+              <React.Fragment>
+                The workspace <em>{workspaceName}&nbsp;</em> should be restarted to apply changes.
+              </React.Fragment>
+            }
+            actionClose={
+              <AlertActionCloseButton onClose={() => this.handleCloseRestartWarning()} />
+            }
+          />
+        )}
+      </AlertGroup>
+    );
   }
 
   private getActiveTabKey(search: History.Search): WorkspaceDetailsTab {
@@ -132,7 +193,7 @@ export class WorkspaceDetails extends React.PureComponent<Props, State> {
 
   public componentDidUpdate(): void {
     if (this.props.workspace && this.props.workspace?.isStopped) {
-      this.setState({ hasWarningMessage: false });
+      this.handleCloseRestartWarning();
     }
   }
 
@@ -175,6 +236,8 @@ export class WorkspaceDetails extends React.PureComponent<Props, State> {
 
     const workspaceName = workspace.name;
 
+    const inlineAlerts = this.buildInlineAlerts();
+
     return (
       <React.Fragment>
         <Head pageName={workspaceName} />
@@ -188,25 +251,12 @@ export class WorkspaceDetails extends React.PureComponent<Props, State> {
             workspaceName={workspaceName}
             status={workspace.status}
             history={this.props.history}
+            onConversionAlert={errorMessage => this.handleConversionAlert(errorMessage)}
+            closeConversionAlert={() => this.handleCloseConversionAlert()}
           />
         </Header>
         <PageSection variant={SECTION_THEME} className="workspace-details-tabs">
-          {this.state.hasWarningMessage && (
-            <Alert
-              variant={AlertVariant.warning}
-              isInline
-              title={
-                <React.Fragment>
-                  The workspace <em>{workspaceName}&nbsp;</em> should be restarted to apply changes.
-                </React.Fragment>
-              }
-              actionClose={
-                <AlertActionCloseButton
-                  onClose={() => this.setState({ hasWarningMessage: false })}
-                />
-              }
-            />
-          )}
+          {inlineAlerts}
           <Tabs activeKey={this.state.activeTabKey} onSelect={this.handleTabClick}>
             <Tab eventKey={WorkspaceDetailsTab.OVERVIEW} title={WorkspaceDetailsTab.OVERVIEW}>
               <CheProgress isLoading={this.props.isLoading} />
@@ -222,7 +272,7 @@ export class WorkspaceDetails extends React.PureComponent<Props, State> {
                 ref={this.editorTabPageRef}
                 workspace={workspace}
                 onSave={workspace => this.onSave(workspace)}
-                onDevWorkspaceWarning={() => this.setState({ hasWarningMessage: true })}
+                onDevWorkspaceWarning={() => this.handleRestartWarning()}
               />
             </Tab>
             {/* <Tab eventKey={WorkspaceDetailsTabs.Logs} title={WorkspaceDetailsTabs[WorkspaceDetailsTabs.Logs]}>*/}
@@ -245,7 +295,7 @@ export class WorkspaceDetails extends React.PureComponent<Props, State> {
       isCheWorkspace((this.props.workspace as Workspace).ref) &&
       this.props.workspace.status !== WorkspaceStatus.STOPPED
     ) {
-      this.setState({ hasWarningMessage: true });
+      this.handleRestartWarning();
     }
     await this.props.onSave(workspace, this.state.activeTabKey);
     this.editorTabPageRef.current?.cancelChanges();

@@ -46,6 +46,9 @@ jest.mock('../../../../../store/Workspaces/index', () => {
 });
 /* eslint-enable @typescript-eslint/no-unused-vars */
 
+const mockOnConversionAlert = jest.fn();
+const mockCloseConversionAlert = jest.fn();
+
 const namespace = 'che';
 const workspaceName = 'test-workspace-name';
 const workspaceId = 'test-workspace-id';
@@ -103,8 +106,9 @@ describe('Workspace WorkspaceAction widget', () => {
     actionDropdown.click();
 
     const menuitems = screen.getAllByRole('menuitem');
-    expect(menuitems.length).toEqual(1);
-    expect(menuitems[0]).toHaveTextContent('Delete Workspace');
+    expect(menuitems.length).toEqual(2);
+    expect(menuitems[0]).toHaveTextContent('Convert');
+    expect(menuitems[1]).toHaveTextContent('Delete Workspace');
   });
 
   it('should call the callback with OPEN action', async () => {
@@ -209,6 +213,8 @@ function createComponent(
       workspaceName={workspaceName}
       history={history}
       status={status}
+      onConversionAlert={mockOnConversionAlert}
+      closeConversionAlert={mockCloseConversionAlert}
     />
   );
 }
