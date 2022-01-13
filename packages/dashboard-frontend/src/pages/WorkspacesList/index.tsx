@@ -160,6 +160,13 @@ export default class WorkspacesList extends React.PureComponent<Props, State> {
     if (workspace.isDeprecated) {
       return [
         {
+          title: 'Convert',
+          onClick: (event, rowId, rowData) => {
+            this.handleConversion(WorkspaceAction.CONVERT, rowData);
+          },
+          isDisabled: false === this.isEnabledAction(WorkspaceAction.CONVERT, workspace),
+        },
+        {
           title: 'Delete Workspace',
           onClick: (event, rowId, rowData) =>
             this.handleAction(WorkspaceAction.DELETE_WORKSPACE, rowData),
@@ -242,14 +249,24 @@ export default class WorkspacesList extends React.PureComponent<Props, State> {
       }
       this.props.history.push(nextPath);
     } catch (e) {
-      const workspace = this.props.workspaces.find(workspace => id === workspace.id);
-      const workspaceName = workspace?.name ? ` "${workspace?.name}"` : '';
       const errorMessage = common.helpers.errors.getMessage(e);
-      const message =
-        `Unable to ${action.toLocaleLowerCase()}${workspaceName}. ` +
-        errorMessage.replace('Error: ', '');
-      this.showAlert(message);
-      console.warn(message);
+      this.showAlert(errorMessage);
+      console.warn(errorMessage);
+    }
+  }
+
+  private async handleConversion(action: WorkspaceAction, rowData: IRowData): Promise<void> {
+    const id = (rowData as RowData).props.workspaceId;
+    try {
+      const nextLocation = await this.props.onAction(action, id);
+      if (!nextLocation) {
+        return;
+      }
+      this.props.history.replace(nextLocation);
+    } catch (e) {
+      const errorMessage = common.helpers.errors.getMessage(e);
+      this.showAlert(errorMessage);
+      console.warn(errorMessage);
     }
   }
 

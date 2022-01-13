@@ -113,25 +113,37 @@ export class WorkspaceActionsProvider extends React.Component<Props, State> {
 
   private async convertWorkspace(
     action: WorkspaceAction,
-    workspace: Workspace,
+    oldWorkspace: Workspace,
   ): Promise<Location | void> {
     try {
-      if (isDevWorkspace(workspace.ref)) {
+      if (isDevWorkspace(oldWorkspace.ref)) {
         throw new Error('This workspace cannot be converted to DevWorkspaces.');
       }
 
-      const devfileV1 = workspace.devfile as che.WorkspaceDevfile;
+      const devfileV1 = oldWorkspace.devfile as che.WorkspaceDevfile;
       const devfileV2 = await convertDevfileV1toDevfileV2(devfileV1);
       const defaultNamespace = this.props.defaultNamespace.name;
       // create a new workspace
-      await this.props.createWorkspaceFromDevfile(devfileV2, undefined, defaultNamespace, {});
+      await this.props.createWorkspaceFromDevfile(
+        devfileV2,
+        undefined,
+        defaultNamespace,
+        {},
+        {},
+        false,
+      );
+
       // add 'converted' attribute to the old workspace
       // to be able to hide it on the Workspaces page
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      workspace.ref.attributes!.converted = new Date().toISOString();
-      await this.props.updateWorkspace(workspace);
+      oldWorkspace.ref.attributes!.converted = new Date().toISOString();
+      await this.props.updateWorkspace(oldWorkspace);
+
+      // return the new workspace page location
+      const nextLocation = buildDetailsLocation(defaultNamespace, oldWorkspace.name);
+      return nextLocation;
     } catch (e) {
-      const errorMessage = `Action "${action}" failed with workspace "${workspace.name}". ${e}`;
+      const errorMessage = `Action "${action}" failed with workspace "${oldWorkspace.name}". ${e}`;
       console.error(errorMessage);
       throw new Error(errorMessage);
     }
@@ -194,7 +206,7 @@ export class WorkspaceActionsProvider extends React.Component<Props, State> {
         break;
       case WorkspaceAction.CONVERT:
         {
-          await this.convertWorkspace(action, workspace);
+          return this.convertWorkspace(action, workspace);
         }
         break;
       default:

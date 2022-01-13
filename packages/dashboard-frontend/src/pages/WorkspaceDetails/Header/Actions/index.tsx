@@ -101,12 +101,11 @@ export class HeaderActionSelect extends React.PureComponent<Props, State> {
       isExpanded: false,
     });
     try {
-      // todo implement redirecting to the new workspace page
-      const nextPath = await context.handleAction(selectedAction, this.props.workspaceId);
-      if (!nextPath) {
+      const nextLocation = await context.handleAction(selectedAction, this.props.workspaceId);
+      if (!nextLocation) {
         return;
       }
-      this.props.history.push(nextPath);
+      this.props.history.replace(nextLocation);
     } catch (e) {
       const errorMessage = common.helpers.errors.getMessage(e);
       this.props.onConversionAlert(errorMessage);

@@ -334,6 +334,7 @@ export class DevWorkspaceClient extends WorkspaceClient {
     pluginRegistryInternalUrl: string | undefined,
     editorId: string | undefined,
     optionalFilesContent: { [fileName: string]: string },
+    start = true,
   ): Promise<devfileApi.DevWorkspace> {
     if (!devfile.components) {
       devfile.components = [];
@@ -526,7 +527,7 @@ export class DevWorkspaceClient extends WorkspaceClient {
       }),
     );
 
-    createdWorkspace.spec.started = true;
+    createdWorkspace.spec.started = start;
     const patch = [
       {
         op: 'replace',

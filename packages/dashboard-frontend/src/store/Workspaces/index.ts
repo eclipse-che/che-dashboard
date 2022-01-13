@@ -116,6 +116,7 @@ export type ActionCreators = {
     optionalFilesContent?: {
       [fileName: string]: string;
     },
+    start?: boolean,
   ) => AppThunk<KnownAction, Promise<void>>;
 
   setWorkspaceQualifiedName: (
@@ -292,6 +293,7 @@ export const actionCreators: ActionCreators = {
       optionalFilesContent?: {
         [fileName: string]: string;
       },
+      start = true,
     ): AppThunk<KnownAction, Promise<void>> =>
     async (dispatch, getState): Promise<void> => {
       dispatch({ type: 'REQUEST_WORKSPACES' });
@@ -311,6 +313,7 @@ export const actionCreators: ActionCreators = {
               pluginRegistryUrl,
               pluginRegistryInternalUrl,
               attributes,
+              start,
             ),
           );
           dispatch({ type: 'ADD_WORKSPACE' });

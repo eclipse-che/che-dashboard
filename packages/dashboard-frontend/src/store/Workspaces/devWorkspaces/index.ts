@@ -140,6 +140,7 @@ export type ActionCreators = {
     pluginRegistryUrl: string | undefined,
     pluginRegistryInternalUrl: string | undefined,
     attributes: { [key: string]: string },
+    start?: boolean,
   ) => AppThunk<KnownAction, Promise<void>>;
   createWorkspaceFromResources: (
     devworkspace: devfileApi.DevWorkspace,
@@ -496,6 +497,7 @@ export const actionCreators: ActionCreators = {
       pluginRegistryUrl: string | undefined,
       pluginRegistryInternalUrl: string | undefined,
       attributes: { [key: string]: string },
+      start = true,
     ): AppThunk<KnownAction, Promise<void>> =>
     async (dispatch, getState): Promise<void> => {
       let state = getState();
@@ -541,6 +543,7 @@ export const actionCreators: ActionCreators = {
           pluginRegistryInternalUrl,
           cheEditor,
           optionalFilesContent,
+          start,
         );
 
         if (workspace.spec.started) {

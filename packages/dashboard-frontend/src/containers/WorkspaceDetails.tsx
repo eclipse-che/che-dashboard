@@ -93,7 +93,10 @@ class WorkspaceDetailsContainer extends React.Component<Props> {
   }
 
   public shouldComponentUpdate(nextProps: Props): boolean {
-    return this.props.workspace?.id !== nextProps.workspace?.id;
+    return (
+      this.props.workspace?.id !== nextProps.workspace?.id ||
+      this.props.location.pathname !== nextProps.location.pathname
+    );
   }
 
   public componentDidUpdate(): void {
