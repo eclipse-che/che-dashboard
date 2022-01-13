@@ -53,7 +53,7 @@ describe('DevWorkspace client, start', () => {
     expect(patchWorkspace).toHaveBeenCalled();
   });
 
-  it('should remove default plugin uri when no default plugins exist', async () => {
+  it('should remove default plugin uri when no default plugins exist for the specified editor', async () => {
     const namespace = 'che';
     const name = 'wksp-test';
     const testWorkspace = new DevWorkspaceBuilder()
@@ -74,6 +74,33 @@ describe('DevWorkspace client, start', () => {
 
     const patchWorkspace = jest.spyOn(DwApi, 'patchWorkspace');
     const defaults = { 'eclipse/theia/next': [] };
+    const editor = 'eclipse/theia/next';
+    await client.onStart(testWorkspace, defaults, editor);
+    expect(testWorkspace.spec.template.components!.length).toBe(0);
+    expect(patchWorkspace).toHaveBeenCalled();
+  });
+
+  it('should remove default plugin uri when no default plugins exist', async () => {
+    const namespace = 'che';
+    const name = 'wksp-test';
+    const testWorkspace = new DevWorkspaceBuilder()
+      .withMetadata({
+        name,
+        namespace,
+      })
+      .withTemplate({
+        components: [
+          {
+            name: 'default',
+            attributes: { 'che.eclipse.org/default-plugin': true },
+            plugin: { uri: 'https://test.com/devfile.yaml' },
+          },
+        ],
+      })
+      .build();
+
+    const patchWorkspace = jest.spyOn(DwApi, 'patchWorkspace');
+    const defaults = {};
     const editor = 'eclipse/theia/next';
     await client.onStart(testWorkspace, defaults, editor);
     expect(testWorkspace.spec.template.components!.length).toBe(0);
