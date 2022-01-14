@@ -17,6 +17,7 @@ import {
   AlertActionCloseButton,
   AlertGroup,
   AlertVariant,
+  Button,
   PageSection,
   PageSectionVariants,
   Tab,
@@ -33,16 +34,20 @@ import { AppAlerts } from '../../services/alerts/appAlerts';
 import OverviewTab, { OverviewTab as Overview } from './OverviewTab';
 import EditorTab, { EditorTab as Editor } from './EditorTab';
 import { selectIsLoading, selectWorkspaceById } from '../../store/Workspaces/selectors';
-import { History, UnregisterCallback } from 'history';
-
-import './WorkspaceDetails.styl';
+import { History, UnregisterCallback, Location } from 'history';
 import { isCheWorkspace, Workspace } from '../../services/workspace-adapter';
 import UnsavedChangesModal from '../../components/UnsavedChangesModal';
+import { Link } from 'react-router-dom';
+import { isDevWorkspace } from '../../services/devfileApi';
+import { ORIGINAL_WORKSPACE_ID } from '../../containers/WorkspaceActions';
+
+import './WorkspaceDetails.styl';
 
 export const SECTION_THEME = PageSectionVariants.light;
 
 type Props = {
   workspacesLink: string;
+  oldWorkspacePath?: Location;
   onSave: (workspace: Workspace, activeTab: WorkspaceDetailsTab | undefined) => Promise<void>;
   history: History;
 } & MappedProps;
@@ -228,7 +233,7 @@ export class WorkspaceDetails extends React.PureComponent<Props, State> {
   }
 
   public render(): React.ReactElement {
-    const { workspace, workspacesLink, history } = this.props;
+    const { workspace, workspacesLink, history, oldWorkspacePath } = this.props;
 
     if (!workspace) {
       return <div>Workspace not found.</div>;
@@ -246,6 +251,11 @@ export class WorkspaceDetails extends React.PureComponent<Props, State> {
           workspaceName={workspaceName}
           status={workspace.status}
         >
+          {oldWorkspacePath && (
+            <Button variant="link" component={props => <Link {...props} to={oldWorkspacePath} />}>
+              Show Original Devfile
+            </Button>
+          )}
           <HeaderActionSelect
             workspaceId={workspace.id}
             workspaceName={workspaceName}

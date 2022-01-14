@@ -31,13 +31,19 @@ import {
 } from '../../services/helpers/location';
 import { IdeLoaderTab, WorkspaceAction, WorkspaceDetailsTab } from '../../services/helpers/types';
 import { AppState } from '../../store';
-import { selectAllWorkspaces } from '../../store/Workspaces/selectors';
+import {
+  selectAllWorkspaces,
+  selectWorkspaceByQualifiedName,
+} from '../../store/Workspaces/selectors';
 import * as WorkspacesStore from '../../store/Workspaces';
+import * as DevWorkspacesStore from '../../store/Workspaces/devWorkspaces';
 import { WorkspaceActionsContext } from './context';
 import { isCheWorkspace, Workspace } from '../../services/workspace-adapter';
 import { convertDevfileV1toDevfileV2 } from '../../services/devfile/converters';
-import { isDevWorkspace } from '../../services/devfileApi';
+import devfileApi, { isDevWorkspace } from '../../services/devfileApi';
 import { selectDefaultNamespace } from '../../store/InfrastructureNamespaces/selectors';
+
+export const ORIGINAL_WORKSPACE_ID = 'che.eclipse.org/original-workspace-id';
 
 type Deferred = {
   resolve: () => void;
@@ -133,6 +139,25 @@ export class WorkspaceActionsProvider extends React.Component<Props, State> {
         false,
       );
 
+      await this.props.requestWorkspaces();
+      const newWorkspace = this.props.allWorkspaces.find(
+        workspace =>
+          workspace.namespace === defaultNamespace && workspace.name === oldWorkspace.name,
+      );
+      if (!newWorkspace) {
+        // todo
+        throw new Error('todo');
+      }
+
+      // add annotation to the new workspace
+      // so then we can figure out the original workspace
+      const newDevworkspace = newWorkspace.ref as devfileApi.DevWorkspace;
+      if (!newDevworkspace.metadata.annotations) {
+        newDevworkspace.metadata.annotations = {};
+      }
+      newDevworkspace.metadata.annotations[ORIGINAL_WORKSPACE_ID] = oldWorkspace.id;
+      await this.props.updateWorkspaceAnnotations(newDevworkspace);
+
       // add 'converted' attribute to the old workspace
       // to be able to hide it on the Workspaces page
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
@@ -140,7 +165,7 @@ export class WorkspaceActionsProvider extends React.Component<Props, State> {
       await this.props.updateWorkspace(oldWorkspace);
 
       // return the new workspace page location
-      const nextLocation = buildDetailsLocation(defaultNamespace, oldWorkspace.name);
+      const nextLocation = buildDetailsLocation(newWorkspace);
       return nextLocation;
     } catch (e) {
       const errorMessage = `Action "${action}" failed with workspace "${oldWorkspace.name}". ${e}`;
@@ -344,9 +369,13 @@ export class WorkspaceActionsProvider extends React.Component<Props, State> {
 const mapStateToProps = (state: AppState) => ({
   allWorkspaces: selectAllWorkspaces(state),
   defaultNamespace: selectDefaultNamespace(state),
+  workspaceByQualifiedName: selectWorkspaceByQualifiedName(state),
 });
 
-const connector = connect(mapStateToProps, WorkspacesStore.actionCreators);
+const connector = connect(mapStateToProps, {
+  ...WorkspacesStore.actionCreators,
+  updateWorkspaceAnnotations: DevWorkspacesStore.actionCreators.updateWorkspaceAnnotation,
+});
 
 type MappedProps = ConnectedProps<typeof connector>;
 export default connector(WorkspaceActionsProvider);

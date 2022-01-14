@@ -11,7 +11,7 @@
  */
 
 import { AlertVariant } from '@patternfly/react-core';
-import { History } from 'history';
+import { History, Location } from 'history';
 import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { RouteComponentProps } from 'react-router';
@@ -31,6 +31,8 @@ import {
   selectIsLoading,
   selectWorkspaceById,
 } from '../store/Workspaces/selectors';
+import { isDevWorkspace } from '../services/devfileApi';
+import { ORIGINAL_WORKSPACE_ID } from './WorkspaceActions';
 
 type Props = MappedProps & { history: History } & RouteComponentProps<{
     namespace: string;
@@ -80,6 +82,24 @@ class WorkspaceDetailsContainer extends React.Component<Props> {
     }
   }
 
+  private getOldWorkspacePath(workspace: Workspace): Location | undefined {
+    if (!workspace || !isDevWorkspace(workspace.ref)) {
+      return;
+    }
+    const oldWorkspaceId = workspace.ref.metadata.annotations?.[ORIGINAL_WORKSPACE_ID];
+    if (!oldWorkspaceId) {
+      return;
+    }
+    // check if the old workspace is still available
+    const oldWorkspace = this.props.allWorkspaces.find(
+      workspace => workspace.id === oldWorkspaceId,
+    );
+    if (!oldWorkspace) {
+      return;
+    }
+    return buildDetailsLocation(oldWorkspace);
+  }
+
   public componentDidMount(): void {
     this.init();
     const showAlert = this.workspaceDetailsPageRef.current?.showAlert;
@@ -115,10 +135,16 @@ class WorkspaceDetailsContainer extends React.Component<Props> {
   }
 
   render() {
+    let oldWorkspacePath: Location | undefined;
+    if (this.props.workspace && isDevWorkspace(this.props.workspace.ref)) {
+      oldWorkspacePath = this.getOldWorkspacePath(this.props.workspace);
+    }
+
     return (
       <WorkspaceDetails
         ref={this.workspaceDetailsPageRef}
         workspacesLink={this.workspacesLink}
+        oldWorkspacePath={oldWorkspacePath}
         onSave={(workspace: Workspace, activeTab?: WorkspaceDetailsTab) =>
           this.onSave(workspace, activeTab)
         }

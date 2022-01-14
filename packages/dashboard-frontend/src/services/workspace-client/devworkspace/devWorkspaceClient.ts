@@ -665,6 +665,15 @@ export class DevWorkspaceClient extends WorkspaceClient {
     return DwApi.patchWorkspace(namespace, name, patch);
   }
 
+  async updateAnnotation(workspace: devfileApi.DevWorkspace): Promise<devfileApi.DevWorkspace> {
+    const patch: api.IPatch = {
+      op: 'replace',
+      path: '/metadata/annotations',
+      value: workspace.metadata.annotations || {},
+    };
+    return DwApi.patchWorkspace(workspace.metadata.namespace, workspace.metadata.name, [patch]);
+  }
+
   private escape(key: string): string {
     // We have to escape the slash and use ~1 instead. See https://tools.ietf.org/html/rfc6902#appendix-A.14
     return key.replace(/\//g, '~1');
