@@ -254,10 +254,6 @@ export class DevWorkspaceClient extends WorkspaceClient {
     devworkspaceTemplate: devfileApi.DevWorkspaceTemplate,
     editorId: string | undefined,
   ): Promise<any> {
-    // create DWT
-    devworkspaceTemplate.metadata.namespace = defaultNamespace;
-    await DwtApi.createTemplate(<devfileApi.DevWorkspaceTemplate>devworkspaceTemplate);
-
     // create DW
     devworkspace.spec.routingClass = 'che';
     devworkspace.metadata.namespace = defaultNamespace;
@@ -266,12 +262,53 @@ export class DevWorkspaceClient extends WorkspaceClient {
     }
     devworkspace.metadata.annotations[DEVWORKSPACE_UPDATING_TIMESTAMP_ANNOTATION] =
       new Date().toISOString();
+    // remove a component which is not created yet
+    const components = devworkspace.spec.template.components || [];
+    devworkspace.spec.template.components = components.filter(
+      component => component.name !== devworkspaceTemplate.metadata.name,
+    );
+    const createdWorkspace = await DwApi.createWorkspace(devworkspace);
 
     if (editorId) {
       devworkspace.metadata.annotations[DEVWORKSPACE_CHE_EDITOR] = editorId;
     }
 
     return DwApi.createWorkspace(devworkspace);
+    // create DWT
+    devworkspaceTemplate.metadata.namespace = defaultNamespace;
+    // update owner reference (to allow automatic cleanup)
+    devworkspaceTemplate.metadata.ownerReferences = [
+      {
+        apiVersion: `${devWorkspaceApiGroup}/${devworkspaceVersion}`,
+        kind: devworkspaceSingularSubresource,
+        name: createdWorkspace.metadata.name,
+        uid: createdWorkspace.metadata.uid,
+      },
+    ];
+    const createdTemplate = await DwtApi.createTemplate(
+      <devfileApi.DevWorkspaceTemplate>devworkspaceTemplate,
+    );
+
+    // update DW
+    return DwApi.patchWorkspace(
+      createdWorkspace.metadata.namespace,
+      createdWorkspace.metadata.name,
+      [
+        {
+          op: 'add',
+          path: '/spec/template/components/0',
+          value: {
+            name: createdTemplate.metadata.name,
+            plugin: {
+              kubernetes: {
+                name: createdTemplate.metadata.name,
+                namespace: createdTemplate.metadata.namespace,
+              },
+            },
+          },
+        },
+      ],
+    );
   }
 
   async createFromDevfile(
