@@ -33,7 +33,6 @@ import {
   actionCreators as factoryResolverActionCreators,
   isOAuthResponse,
 } from '../../store/FactoryResolver';
-import getRandomString from '../../services/helpers/random';
 
 const showAlertMock = jest.fn();
 const setWorkspaceQualifiedName = jest.fn();
@@ -200,7 +199,7 @@ describe('Factory Loader container', () => {
 
       const elementHasError = screen.getByTestId('factory-loader-has-error');
       await waitFor(() => expect(elementHasError.innerHTML).toEqual('true'));
-      await waitFor(() => expect(createWorkspaceFromResourcesMock).not.toHaveBeenCalled());
+      expect(createWorkspaceFromResourcesMock).not.toHaveBeenCalled();
     });
 
     it('should not try to create a new workspace and show an error if prebuilt resources does not include a Template', async () => {
@@ -226,7 +225,7 @@ metadata:
 
       const elementHasError = screen.getByTestId('factory-loader-has-error');
       await waitFor(() => expect(elementHasError.innerHTML).toEqual('true'));
-      await waitFor(() => expect(createWorkspaceFromResourcesMock).not.toHaveBeenCalled());
+      expect(createWorkspaceFromResourcesMock).not.toHaveBeenCalled();
     });
 
     it('should not try to create a new workspace and show an error if prebuilt resources does not include a DevWorkspace', async () => {
@@ -251,7 +250,7 @@ metadata:
 
       const elementHasError = screen.getByTestId('factory-loader-has-error');
       await waitFor(() => expect(elementHasError.innerHTML).toEqual('true'));
-      await waitFor(() => expect(createWorkspaceFromResourcesMock).not.toHaveBeenCalled());
+      expect(createWorkspaceFromResourcesMock).not.toHaveBeenCalled();
     });
 
     it('should start creating a devworkspace using pre-generated resources', async () => {

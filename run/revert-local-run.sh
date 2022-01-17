@@ -58,7 +58,7 @@ fi
 
 if kubectl get configMaps/dex -o jsonpath="{.data['config\.yaml']}" -n dex | yq e ".staticClients[0].redirectURIs" - | grep $CHE_HOST/oauth/callback; then
   echo 'Patching dex config map...'
-  UPDATED_CONFIG_YAML=$(kubectl get -n dex configMaps/dex -o jsonpath="{.data['config\.yaml']}" | yq e ".staticClients[0].redirectURIs = [\"$CHE_HOST_ORIGIN/oauth/callback\"]" -)
+  UPDATED_CONFIG_YAML=$(kubectl get -n dex configMaps/dex -o jsonpath="{.data['config\.yaml']}" | yq e ".staticClients[0].redirectURIs[0] = \"$CHE_HOST_ORIGIN/oauth/callback\"" -)
   dq_mid=\\\"
   yaml_esc="${UPDATED_CONFIG_YAML//\"/$dq_mid}"
   kubectl get configMaps/dex -n dex -o json | jq ".data[\"config.yaml\"] |= \"${yaml_esc}\"" | kubectl replace -f -

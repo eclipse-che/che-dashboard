@@ -257,16 +257,15 @@ export class DevWorkspaceClient extends WorkspaceClient {
     // create DW
     devworkspace.spec.routingClass = 'che';
     devworkspace.metadata.namespace = defaultNamespace;
-    if (devworkspace.metadata.annotations === undefined) {
+    if (!devworkspace.metadata.annotations) {
       devworkspace.metadata.annotations = {};
     }
     devworkspace.metadata.annotations[DEVWORKSPACE_UPDATING_TIMESTAMP_ANNOTATION] =
       new Date().toISOString();
-    // remove a component which is not created yet
-    const components = devworkspace.spec.template.components || [];
-    devworkspace.spec.template.components = components.filter(
-      component => component.name !== devworkspaceTemplate.metadata.name,
-    );
+    // remove components which is not created yet
+    const components = devworkspace.spec.template.components;
+    devworkspace.spec.template.components = [];
+
     const createdWorkspace = await DwApi.createWorkspace(devworkspace);
 
     if (editorId) {
@@ -285,9 +284,8 @@ export class DevWorkspaceClient extends WorkspaceClient {
         uid: createdWorkspace.metadata.uid,
       },
     ];
-    const createdTemplate = await DwtApi.createTemplate(
-      <devfileApi.DevWorkspaceTemplate>devworkspaceTemplate,
-    );
+
+    await DwtApi.createTemplate(<devfileApi.DevWorkspaceTemplate>devworkspaceTemplate);
 
     // update DW
     return DwApi.patchWorkspace(
@@ -295,17 +293,9 @@ export class DevWorkspaceClient extends WorkspaceClient {
       createdWorkspace.metadata.name,
       [
         {
-          op: 'add',
-          path: '/spec/template/components/0',
-          value: {
-            name: createdTemplate.metadata.name,
-            plugin: {
-              kubernetes: {
-                name: createdTemplate.metadata.name,
-                namespace: createdTemplate.metadata.namespace,
-              },
-            },
-          },
+          op: 'replace',
+          path: '/spec/template/components',
+          value: components,
         },
       ],
     );
