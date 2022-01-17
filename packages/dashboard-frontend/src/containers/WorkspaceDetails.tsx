@@ -32,7 +32,7 @@ import {
   selectWorkspaceById,
 } from '../store/Workspaces/selectors';
 import { isDevWorkspace } from '../services/devfileApi';
-import { ORIGINAL_WORKSPACE_ID } from './WorkspaceActions';
+import { ORIGINAL_WORKSPACE_ID_ANNOTATION } from '../services/devfileApi/devWorkspace/metadata';
 
 type Props = MappedProps & { history: History } & RouteComponentProps<{
     namespace: string;
@@ -86,7 +86,7 @@ class WorkspaceDetailsContainer extends React.Component<Props> {
     if (!workspace || !isDevWorkspace(workspace.ref)) {
       return;
     }
-    const oldWorkspaceId = workspace.ref.metadata.annotations?.[ORIGINAL_WORKSPACE_ID];
+    const oldWorkspaceId = workspace.ref.metadata.annotations?.[ORIGINAL_WORKSPACE_ID_ANNOTATION];
     if (!oldWorkspaceId) {
       return;
     }

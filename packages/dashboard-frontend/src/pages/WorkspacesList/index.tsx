@@ -142,10 +142,10 @@ export default class WorkspacesList extends React.PureComponent<Props, State> {
   }
 
   private buildRows(): RowData[] {
-    const { history, toDelete, workspaces } = this.props;
+    const { toDelete, workspaces } = this.props;
     const { filtered, selected, sortBy } = this.state;
 
-    return buildRows(history, workspaces, toDelete, filtered, selected, sortBy);
+    return buildRows(workspaces, toDelete, filtered, selected, sortBy);
   }
 
   private actionResolver(rowData: IRowData): IAction[] {
@@ -159,13 +159,6 @@ export default class WorkspacesList extends React.PureComponent<Props, State> {
 
     if (workspace.isDeprecated) {
       return [
-        {
-          title: 'Convert',
-          onClick: (event, rowId, rowData) => {
-            this.handleConversion(WorkspaceAction.CONVERT, rowData);
-          },
-          isDisabled: false === this.isEnabledAction(WorkspaceAction.CONVERT, workspace),
-        },
         {
           title: 'Delete Workspace',
           onClick: (event, rowId, rowData) =>
@@ -248,21 +241,6 @@ export default class WorkspacesList extends React.PureComponent<Props, State> {
         return;
       }
       this.props.history.push(nextPath);
-    } catch (e) {
-      const errorMessage = common.helpers.errors.getMessage(e);
-      this.showAlert(errorMessage);
-      console.warn(errorMessage);
-    }
-  }
-
-  private async handleConversion(action: WorkspaceAction, rowData: IRowData): Promise<void> {
-    const id = (rowData as RowData).props.workspaceId;
-    try {
-      const nextLocation = await this.props.onAction(action, id);
-      if (!nextLocation) {
-        return;
-      }
-      this.props.history.replace(nextLocation);
     } catch (e) {
       const errorMessage = common.helpers.errors.getMessage(e);
       this.showAlert(errorMessage);

@@ -12,6 +12,7 @@
 
 import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
+import { Link } from 'react-router-dom';
 import {
   Alert,
   AlertActionCloseButton,
@@ -37,9 +38,7 @@ import { selectIsLoading, selectWorkspaceById } from '../../store/Workspaces/sel
 import { History, UnregisterCallback, Location } from 'history';
 import { isCheWorkspace, Workspace } from '../../services/workspace-adapter';
 import UnsavedChangesModal from '../../components/UnsavedChangesModal';
-import { Link } from 'react-router-dom';
-import { isDevWorkspace } from '../../services/devfileApi';
-import { ORIGINAL_WORKSPACE_ID } from '../../containers/WorkspaceActions';
+import WorkspaceConversionButton from './ConversionButton';
 
 import './WorkspaceDetails.styl';
 
@@ -256,13 +255,19 @@ export class WorkspaceDetails extends React.PureComponent<Props, State> {
               Show Original Devfile
             </Button>
           )}
+          {workspace.isDeprecated && (
+            <WorkspaceConversionButton
+              history={history}
+              oldWorkspace={workspace}
+              cleanupError={() => this.handleCloseConversionAlert()}
+              onError={errorMessage => this.handleConversionAlert(errorMessage)}
+            />
+          )}
           <HeaderActionSelect
             workspaceId={workspace.id}
             workspaceName={workspaceName}
             status={workspace.status}
             history={this.props.history}
-            onConversionAlert={errorMessage => this.handleConversionAlert(errorMessage)}
-            closeConversionAlert={() => this.handleCloseConversionAlert()}
           />
         </Header>
         <PageSection variant={SECTION_THEME} className="workspace-details-tabs">

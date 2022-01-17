@@ -15,6 +15,7 @@
 import React from 'react';
 import { createHashHistory } from 'history';
 import { render, screen, RenderResult, waitFor } from '@testing-library/react';
+import { Router } from 'react-router';
 import userEvent from '@testing-library/user-event';
 import WorkspacesList from '..';
 import { BrandingData } from '../../../services/bootstrap/branding.constant';
@@ -25,6 +26,7 @@ import {
   WorkspaceAdapter,
 } from '../../../services/workspace-adapter';
 import { CheWorkspaceBuilder } from '../../../store/__mocks__/cheWorkspaceBuilder';
+import { DevWorkspaceBuilder } from '../../../store/__mocks__/devWorkspaceBuilder';
 
 jest.mock('../../../components/Head', () => {
   const FakeHead = () => {
@@ -41,7 +43,7 @@ jest.mock('react-tooltip', () => {
 });
 
 // mute the outputs
-console.log = jest.fn();
+// console.log = jest.fn();
 
 const brandingData = {
   docs: {
@@ -446,6 +448,25 @@ describe('Workspaces List Page', () => {
         expect(statusIcon).not.toBeNull();
         expect(statusIcon!.getAttribute('data-tip')).toEqual('Deprecated workspace');
       });
+
+      test('Convert action link should redirect to the workspace page', () => {
+        const deprecatedWorkspaceId = 'deprecated-workspace-id';
+        // mark the workspace as deprecated
+        WorkspaceAdapter.setDeprecatedIds([deprecatedWorkspaceId]);
+        const workspaces: Workspace[] = [
+          new CheWorkspaceBuilder()
+            .withId(deprecatedWorkspaceId)
+            .withName('workspace-name')
+            .withNamespace('user')
+            .build(),
+        ].map(constructWorkspace);
+        renderComponent(workspaces);
+
+        const convertActions = screen.getAllByRole('link', { name: 'Convert' });
+
+        userEvent.click(convertActions[0]);
+        expect(window.location.href).toMatch(/user\/workspace-name/);
+      });
     });
   });
 
@@ -480,14 +501,16 @@ describe('Workspaces List Page', () => {
 function getComponent(_workspaces = workspaces): React.ReactElement {
   const history = createHashHistory();
   return (
-    <WorkspacesList
-      branding={brandingData}
-      history={history}
-      workspaces={_workspaces}
-      onAction={mockOnAction}
-      showConfirmation={mockShowConfirmation}
-      toDelete={isDeleted}
-    ></WorkspacesList>
+    <Router history={history}>
+      <WorkspacesList
+        branding={brandingData}
+        history={history}
+        workspaces={_workspaces}
+        onAction={mockOnAction}
+        showConfirmation={mockShowConfirmation}
+        toDelete={isDeleted}
+      ></WorkspacesList>
+    </Router>
   );
 }
 function renderComponent(workspaces?: Workspace[]): RenderResult {

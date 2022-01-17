@@ -87,7 +87,6 @@ export enum WorkspaceAction {
   ADD_CUSTOM_WORKSPACE = 'Add Workspace',
   RESTART_WORKSPACE = 'Restart Workspace',
   EDIT_WORKSPACE = 'Edit Workspace',
-  CONVERT = 'Convert',
 }
 
 export type UserPreferencesTab = 'container-registries';

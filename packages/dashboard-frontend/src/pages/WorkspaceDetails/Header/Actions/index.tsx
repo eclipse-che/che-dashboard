@@ -37,8 +37,6 @@ type Props = {
   workspaceName: string;
   status: WorkspaceStatus | DevWorkspaceStatus | DeprecatedWorkspaceStatus;
   history: History;
-  onConversionAlert: (errorMessage: string) => void;
-  closeConversionAlert: () => void;
 };
 
 type State = {
@@ -93,26 +91,6 @@ export class HeaderActionSelect extends React.PureComponent<Props, State> {
     }
   }
 
-  private async handleConversion(
-    selectedAction: WorkspaceAction,
-    context: ActionContextType,
-  ): Promise<void> {
-    this.setState({
-      isExpanded: false,
-    });
-    try {
-      const nextLocation = await context.handleAction(selectedAction, this.props.workspaceId);
-      if (!nextLocation) {
-        return;
-      }
-      this.props.history.replace(nextLocation);
-    } catch (e) {
-      const errorMessage = common.helpers.errors.getMessage(e);
-      this.props.onConversionAlert(errorMessage);
-      console.warn(errorMessage);
-    }
-  }
-
   private showAlert(message: string): void {
     this.appAlerts.showAlert({
       key: 'workspace-details-' + getRandomString(4),
@@ -127,23 +105,9 @@ export class HeaderActionSelect extends React.PureComponent<Props, State> {
     if (status === 'Deprecated') {
       return [
         <DropdownItem
-          key={`action-${WorkspaceAction.CONVERT}`}
-          // todo isDisabled={isConverted}
-          isDisabled={false}
-          onClick={async () => {
-            this.props.closeConversionAlert();
-            this.handleConversion(WorkspaceAction.CONVERT, context);
-          }}
-        >
-          <div>{WorkspaceAction.CONVERT}</div>
-        </DropdownItem>,
-        <DropdownItem
           key={`action-${WorkspaceAction.DELETE_WORKSPACE}`}
           isDisabled={false}
-          onClick={async () => {
-            this.props.closeConversionAlert();
-            this.handleSelectedAction(WorkspaceAction.CONVERT, context);
-          }}
+          onClick={async () => this.handleSelectedAction(WorkspaceAction.DELETE_WORKSPACE, context)}
         >
           <div>{WorkspaceAction.DELETE_WORKSPACE}</div>
         </DropdownItem>,
