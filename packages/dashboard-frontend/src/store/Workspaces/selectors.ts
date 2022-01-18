@@ -126,10 +126,6 @@ export const selectRecentWorkspaces = createSelector(
       .sort(sortByUpdatedTimeFn)
       .slice(0, recentNumber),
 );
-export const selectAllWorkspacesNumber = createSelector(
-  selectAllWorkspaces,
-  allWorkspaces => allWorkspaces.length,
-);
 
 export const selectWorkspacesError = createSelector(
   selectCheWorkspacesError,
