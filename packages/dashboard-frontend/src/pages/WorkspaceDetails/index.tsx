@@ -23,6 +23,9 @@ import {
   PageSectionVariants,
   Tab,
   Tabs,
+  Text,
+  TextContent,
+  TextVariants,
 } from '@patternfly/react-core';
 import Head from '../../components/Head';
 import { WorkspaceDetailsTab, WorkspaceStatus } from '../../services/helpers/types';
@@ -41,6 +44,7 @@ import UnsavedChangesModal from '../../components/UnsavedChangesModal';
 import WorkspaceConversionButton from './ConversionButton';
 
 import './WorkspaceDetails.styl';
+import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 
 export const SECTION_THEME = PageSectionVariants.light;
 
@@ -138,8 +142,22 @@ export class WorkspaceDetails extends React.PureComponent<Props, State> {
     const { inlineAlertConversionError, inlineAlertRestartWarning } = this.state;
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     const workspaceName = this.props.workspace!.name;
+    const isDeprecated = this.props.workspace?.isDeprecated;
+    const migratingDocs =
+      'https://devfile.io/docs/devfile/2.1.0/user-guide/migrating-to-devfile-v2.html';
     return (
-      <AlertGroup>
+      <AlertGroup className={spacing.mbLg}>
+        {isDeprecated && (
+          <Alert
+            variant={AlertVariant.warning}
+            isInline
+            title="This workspace is deprecated. Please refer the document below to see next steps."
+          >
+            <a href={migratingDocs} rel="noreferrer" target="_blank">
+              Migrating to devfile v2
+            </a>
+          </Alert>
+        )}
         {inlineAlertConversionError && (
           <Alert
             variant={AlertVariant.danger}
@@ -149,7 +167,16 @@ export class WorkspaceDetails extends React.PureComponent<Props, State> {
               <AlertActionCloseButton onClose={() => this.handleCloseConversionAlert()} />
             }
           >
-            {inlineAlertConversionError}
+            <TextContent>
+              {inlineAlertConversionError}
+              <Text component={TextVariants.small}>
+                Find manual instructions for converting devfile v1 to devfile v2 in the{' '}
+                <a href={migratingDocs} rel="noreferrer" target="_blank">
+                  documentation
+                </a>
+                .
+              </Text>
+            </TextContent>
           </Alert>
         )}
         {inlineAlertRestartWarning && (
