@@ -210,26 +210,28 @@ export class EditorTab extends React.PureComponent<Props, State> {
             onChange={(newValue, isValid) => this.onDevfileChange(newValue, isValid)}
             isReadonly={isReadonly}
           />
-          <Flex direction={{ default: 'column' }}>
-            <FlexItem align={{ default: 'alignRight' }} className={styles.buttonsGroup}>
-              <Button
-                onClick={() => this.onSave()}
-                variant="primary"
-                className={styles.saveButton}
-                isDisabled={!this.state.hasChanges || !this.state.isDevfileValid}
-              >
-                Save
-              </Button>
-              <Button
-                onClick={() => this.cancelChanges()}
-                variant="secondary"
-                className={styles.cancelButton}
-                isDisabled={!this.state.hasChanges && this.state.isDevfileValid}
-              >
-                Cancel
-              </Button>
-            </FlexItem>
-          </Flex>
+          {isReadonly === false && (
+            <Flex direction={{ default: 'column' }}>
+              <FlexItem align={{ default: 'alignRight' }} className={styles.buttonsGroup}>
+                <Button
+                  onClick={() => this.onSave()}
+                  variant="primary"
+                  className={styles.saveButton}
+                  isDisabled={!this.state.hasChanges || !this.state.isDevfileValid}
+                >
+                  Save
+                </Button>
+                <Button
+                  onClick={() => this.cancelChanges()}
+                  variant="secondary"
+                  className={styles.cancelButton}
+                  isDisabled={!this.state.hasChanges && this.state.isDevfileValid}
+                >
+                  Cancel
+                </Button>
+              </FlexItem>
+            </Flex>
+          )}
         </TextContent>
       </React.Fragment>
     );

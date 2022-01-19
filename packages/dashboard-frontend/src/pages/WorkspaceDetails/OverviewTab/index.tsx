@@ -17,7 +17,7 @@ import { WorkspaceNameFormGroup } from './WorkspaceName';
 import InfrastructureNamespaceFormGroup from './InfrastructureNamespace';
 import ProjectsFormGroup from './Projects';
 import { constructWorkspace, Workspace } from '../../../services/workspace-adapter';
-import devfileApi, { isDevWorkspace } from '../../../services/devfileApi';
+import devfileApi from '../../../services/devfileApi';
 
 type Props = {
   onSave: (workspace: Workspace) => Promise<void>;
