@@ -26,7 +26,6 @@ import {
   WorkspaceAdapter,
 } from '../../../services/workspace-adapter';
 import { CheWorkspaceBuilder } from '../../../store/__mocks__/cheWorkspaceBuilder';
-import { DevWorkspaceBuilder } from '../../../store/__mocks__/devWorkspaceBuilder';
 
 jest.mock('../../../components/Head', () => {
   const FakeHead = () => {
