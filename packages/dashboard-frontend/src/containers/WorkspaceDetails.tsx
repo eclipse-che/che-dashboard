@@ -97,7 +97,7 @@ class WorkspaceDetailsContainer extends React.Component<Props> {
     if (!oldWorkspace) {
       return;
     }
-    return buildDetailsLocation(oldWorkspace);
+    return buildDetailsLocation(oldWorkspace, WorkspaceDetailsTab.DEVFILE);
   }
 
   public componentDidMount(): void {
