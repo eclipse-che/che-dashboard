@@ -266,13 +266,12 @@ export class DevWorkspaceClient extends WorkspaceClient {
     const components = devworkspace.spec.template.components;
     devworkspace.spec.template.components = [];
 
-    const createdWorkspace = await DwApi.createWorkspace(devworkspace);
-
     if (editorId) {
       devworkspace.metadata.annotations[DEVWORKSPACE_CHE_EDITOR] = editorId;
     }
 
-    return DwApi.createWorkspace(devworkspace);
+    const createdWorkspace = await DwApi.createWorkspace(devworkspace);
+
     // create DWT
     devworkspaceTemplate.metadata.namespace = defaultNamespace;
     // update owner reference (to allow automatic cleanup)
