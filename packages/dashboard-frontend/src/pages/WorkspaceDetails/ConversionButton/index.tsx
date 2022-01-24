@@ -15,7 +15,7 @@ import { Location, History } from 'history';
 import { connect, ConnectedProps } from 'react-redux';
 import { Button } from '@patternfly/react-core';
 import common from '@eclipse-che/common';
-import devfileApi, { isDevWorkspace } from '../../../services/devfileApi';
+import { isDevWorkspace } from '../../../services/devfileApi';
 import { ORIGINAL_WORKSPACE_ID_ANNOTATION } from '../../../services/devfileApi/devWorkspace/metadata';
 import { convertDevfileV1toDevfileV2 } from '../../../services/devfile/converters';
 import { Workspace } from '../../../services/workspace-adapter';
@@ -29,6 +29,7 @@ import * as WorkspacesStore from '../../../store/Workspaces';
 import * as DevWorkspacesStore from '../../../store/Workspaces/devWorkspaces';
 import { buildDetailsLocation } from '../../../services/helpers/location';
 import { WorkspaceDetailsTab } from '../../../services/helpers/types';
+import { DEVWORKSPACE_METADATA_ANNOTATION } from '../../../services/workspace-client/devworkspace/devWorkspaceClient';
 
 type Props = MappedProps & {
   history: History;
@@ -60,15 +61,17 @@ export class WorkspaceConversionButton extends React.PureComponent<Props, State>
 
     try {
       const newWorkspaceLocation = await this.convert(oldWorkspace);
+      this.setState({
+        isDisabled: false,
+      });
       this.props.history.replace(newWorkspaceLocation);
     } catch (e) {
+      this.setState({
+        isDisabled: false,
+      });
       const errorMessage = common.helpers.errors.getMessage(e);
       this.props.onError(errorMessage);
     }
-
-    this.setState({
-      isDisabled: false,
-    });
   }
 
   private async convert(oldWorkspace: Workspace): Promise<Location> {
@@ -78,6 +81,15 @@ export class WorkspaceConversionButton extends React.PureComponent<Props, State>
 
     const devfileV1 = oldWorkspace.devfile as che.WorkspaceDevfile;
     const devfileV2 = await convertDevfileV1toDevfileV2(devfileV1);
+    if (devfileV2.metadata.attributes === undefined) {
+      devfileV2.metadata.attributes = {};
+    }
+    if (devfileV2.metadata.attributes[DEVWORKSPACE_METADATA_ANNOTATION] === undefined) {
+      devfileV2.metadata.attributes[DEVWORKSPACE_METADATA_ANNOTATION] = {};
+    }
+    devfileV2.metadata.attributes[DEVWORKSPACE_METADATA_ANNOTATION][
+      ORIGINAL_WORKSPACE_ID_ANNOTATION
+    ] = oldWorkspace.id;
     const defaultNamespace = this.props.defaultNamespace.name;
     // create a new workspace
     await this.props.createWorkspaceFromDevfile(
@@ -92,18 +104,10 @@ export class WorkspaceConversionButton extends React.PureComponent<Props, State>
     const newWorkspace = this.props.allWorkspaces.find(
       workspace => workspace.namespace === defaultNamespace && workspace.name === oldWorkspace.name,
     );
+
     if (!newWorkspace) {
       throw new Error('The new DevWorkspace has been created but cannot be obtained.');
     }
-
-    // add annotation to the new workspace
-    // so then we can figure out the original workspace
-    const newDevworkspace = newWorkspace.ref as devfileApi.DevWorkspace;
-    if (!newDevworkspace.metadata.annotations) {
-      newDevworkspace.metadata.annotations = {};
-    }
-    newDevworkspace.metadata.annotations[ORIGINAL_WORKSPACE_ID_ANNOTATION] = oldWorkspace.id;
-    await this.props.updateWorkspaceAnnotation(newDevworkspace);
 
     // add 'converted' attribute to the old workspace
     // to be able to hide it on the Workspaces page
