@@ -14,18 +14,12 @@ import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { Link } from 'react-router-dom';
 import {
-  Alert,
-  AlertActionCloseButton,
-  AlertGroup,
   AlertVariant,
   Button,
   PageSection,
   PageSectionVariants,
   Tab,
   Tabs,
-  Text,
-  TextContent,
-  TextVariants,
 } from '@patternfly/react-core';
 import Head from '../../components/Head';
 import { WorkspaceDetailsTab, WorkspaceStatus } from '../../services/helpers/types';
@@ -42,9 +36,9 @@ import { History, UnregisterCallback, Location } from 'history';
 import { isCheWorkspace, Workspace } from '../../services/workspace-adapter';
 import UnsavedChangesModal from '../../components/UnsavedChangesModal';
 import WorkspaceConversionButton from './ConversionButton';
+import { WorkspaceInlineAlerts } from './InlineAlerts';
 
 import './WorkspaceDetails.styl';
-import spacing from '@patternfly/react-styles/css/utilities/Spacing/spacing';
 
 export const SECTION_THEME = PageSectionVariants.light;
 
@@ -59,7 +53,7 @@ type State = {
   activeTabKey: WorkspaceDetailsTab;
   clickedTabIndex?: WorkspaceDetailsTab;
   inlineAlertConversionError?: string;
-  inlineAlertRestartWarning?: boolean;
+  showInlineAlertRestartWarning: boolean;
 };
 
 export class WorkspaceDetails extends React.PureComponent<Props, State> {
@@ -86,6 +80,7 @@ export class WorkspaceDetails extends React.PureComponent<Props, State> {
 
     this.state = {
       activeTabKey: this.getActiveTabKey(this.props.history.location.search),
+      showInlineAlertRestartWarning: false,
     };
 
     // Toggle currently active tab
@@ -128,73 +123,14 @@ export class WorkspaceDetails extends React.PureComponent<Props, State> {
 
   private handleRestartWarning(): void {
     this.setState({
-      inlineAlertRestartWarning: true,
+      showInlineAlertRestartWarning: true,
     });
   }
 
   private handleCloseRestartWarning(): void {
     this.setState({
-      inlineAlertRestartWarning: false,
+      showInlineAlertRestartWarning: false,
     });
-  }
-
-  private buildInlineAlerts(): React.ReactElement {
-    const { inlineAlertConversionError, inlineAlertRestartWarning } = this.state;
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    const workspaceName = this.props.workspace!.name;
-    const isDeprecated = this.props.workspace?.isDeprecated;
-    const migratingDocs =
-      'https://devfile.io/docs/devfile/2.1.0/user-guide/migrating-to-devfile-v2.html';
-    return (
-      <AlertGroup className={spacing.mbLg}>
-        {isDeprecated && (
-          <Alert
-            variant={AlertVariant.warning}
-            isInline
-            title="This workspace is deprecated. Please refer the document below to see next steps."
-          >
-            <a href={migratingDocs} rel="noreferrer" target="_blank">
-              Migrating to devfile v2
-            </a>
-          </Alert>
-        )}
-        {inlineAlertConversionError && (
-          <Alert
-            variant={AlertVariant.danger}
-            isInline
-            title="Workspace conversion failed."
-            actionClose={
-              <AlertActionCloseButton onClose={() => this.handleCloseConversionAlert()} />
-            }
-          >
-            <TextContent>
-              {inlineAlertConversionError}
-              <Text component={TextVariants.small}>
-                Find manual instructions for converting devfile v1 to devfile v2 in the{' '}
-                <a href={migratingDocs} rel="noreferrer" target="_blank">
-                  documentation
-                </a>
-                .
-              </Text>
-            </TextContent>
-          </Alert>
-        )}
-        {inlineAlertRestartWarning && (
-          <Alert
-            variant={AlertVariant.warning}
-            isInline
-            title={
-              <React.Fragment>
-                The workspace <em>{workspaceName}&nbsp;</em> should be restarted to apply changes.
-              </React.Fragment>
-            }
-            actionClose={
-              <AlertActionCloseButton onClose={() => this.handleCloseRestartWarning()} />
-            }
-          />
-        )}
-      </AlertGroup>
-    );
   }
 
   private getActiveTabKey(search: History.Search): WorkspaceDetailsTab {
@@ -266,8 +202,7 @@ export class WorkspaceDetails extends React.PureComponent<Props, State> {
     }
 
     const workspaceName = workspace.name;
-
-    const inlineAlerts = this.buildInlineAlerts();
+    const { inlineAlertConversionError, showInlineAlertRestartWarning } = this.state;
 
     return (
       <React.Fragment>
@@ -298,7 +233,13 @@ export class WorkspaceDetails extends React.PureComponent<Props, State> {
           />
         </Header>
         <PageSection variant={SECTION_THEME} className="workspace-details-tabs">
-          {inlineAlerts}
+          <WorkspaceInlineAlerts
+            workspace={workspace}
+            conversionError={inlineAlertConversionError}
+            showRestartWarning={showInlineAlertRestartWarning}
+            onCloseConversionAlert={() => this.handleCloseConversionAlert()}
+            onCloseRestartAlert={() => this.handleCloseRestartWarning()}
+          />
           <Tabs activeKey={this.state.activeTabKey} onSelect={this.handleTabClick}>
             <Tab eventKey={WorkspaceDetailsTab.OVERVIEW} title={WorkspaceDetailsTab.OVERVIEW}>
               <ProgressIndicator isLoading={this.props.isLoading} />
