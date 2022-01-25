@@ -163,21 +163,14 @@ describe('DevWorkspace client, create', () => {
           ],
         },
       };
+      jest.spyOn(DwApi, 'patchWorkspace').mockResolvedValueOnce(testDevWorkspace);
     });
 
     it('should add annotation of last update time', async () => {
-      const testWorkspace = new DevWorkspaceBuilder()
-        .withMetadata({
-          name,
-          namespace,
-        })
-        .build();
-
       const spyCreateWorkspace = jest
         .spyOn(DwApi, 'createWorkspace')
         .mockResolvedValueOnce(testDevWorkspace);
       jest.spyOn(DwtApi, 'createTemplate').mockResolvedValueOnce(testDevWorkspaceTemplate);
-      jest.spyOn(DwApi, 'patchWorkspace').mockResolvedValueOnce(testWorkspace);
 
       await client.createFromResources(
         namespace,
@@ -200,53 +193,57 @@ describe('DevWorkspace client, create', () => {
     });
 
     it('should add pluginRegistry and dashboard URLs as environment variables', async () => {
-      const testWorkspace = new DevWorkspaceBuilder()
-        .withMetadata({
-          name,
-          namespace,
-        })
-        .build();
-
-      const spyCreateWorkspace = jest
-        .spyOn(DwApi, 'createWorkspace')
-        .mockResolvedValueOnce(testDevWorkspace);
-      jest.spyOn(DwtApi, 'createTemplate').mockResolvedValueOnce(testDevWorkspaceTemplate);
-      jest.spyOn(DwApi, 'patchWorkspace').mockResolvedValueOnce(testWorkspace);
+      const spyCreateWorkspaceTemplate = jest
+        .spyOn(DwtApi, 'createTemplate')
+        .mockResolvedValueOnce(testDevWorkspaceTemplate);
+      jest.spyOn(DwApi, 'createWorkspace').mockResolvedValueOnce(testDevWorkspace);
 
       await client.createFromResources(
         namespace,
         testDevWorkspace,
         testDevWorkspaceTemplate,
         undefined,
-        undefined,
-        undefined,
+        'http://plugin.registry.url',
+        'http://internal.plugin.registry.url',
       );
 
-      expect(spyCreateWorkspace).toBeCalledWith(
+      expect(spyCreateWorkspaceTemplate).toBeCalledWith(
         expect.objectContaining({
-          metadata: expect.objectContaining({
-            annotations: {
-              'che.eclipse.org/last-updated-timestamp': timestampNew,
-            },
+          spec: expect.objectContaining({
+            components: expect.arrayContaining([
+              expect.objectContaining({
+                container: expect.objectContaining({
+                  env: expect.arrayContaining([
+                    {
+                      name: 'CHE_PLUGIN_REGISTRY_URL',
+                      value: 'http://plugin.registry.url',
+                    },
+                    {
+                      name: 'CHE_PLUGIN_REGISTRY_INTERNAL_URL',
+                      value: 'http://internal.plugin.registry.url',
+                    },
+                  ]),
+                }),
+              }),
+            ]),
           }),
         }),
       );
     });
 
     it('should add owner reference to devWorkspace template to allow automatic cleanup', async () => {
-      const testWorkspace = new DevWorkspaceBuilder()
+      const workspace = new DevWorkspaceBuilder()
         .withMetadata({
           namespace,
           name: 'wksp-name-cvbn',
           uid: 'uid-asdfgh12345',
         })
         .build();
+      jest.spyOn(DwApi, 'createWorkspace').mockResolvedValueOnce(workspace);
 
       const spyCreateWorkspaceTemplate = jest
         .spyOn(DwtApi, 'createTemplate')
         .mockResolvedValueOnce(testDevWorkspaceTemplate);
-      jest.spyOn(DwApi, 'createWorkspace').mockResolvedValueOnce(testWorkspace);
-      jest.spyOn(DwApi, 'patchWorkspace').mockResolvedValueOnce(testWorkspace);
 
       await client.createFromResources(
         namespace,
