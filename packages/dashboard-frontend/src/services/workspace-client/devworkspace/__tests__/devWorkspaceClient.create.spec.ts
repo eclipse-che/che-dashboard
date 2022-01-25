@@ -43,6 +43,8 @@ describe('DevWorkspace client, create', () => {
 
   describe('Create from devfile', () => {
     let testDevfile: devfileApi.Devfile;
+    let spyCreateWorkspace: jest.SpyInstance;
+    let spyPatchWorkspace: jest.SpyInstance;
 
     beforeEach(() => {
       testDevfile = {
@@ -52,21 +54,24 @@ describe('DevWorkspace client, create', () => {
           name,
         },
       };
-    });
-
-    it('should add annotation of last update time', async () => {
       const testWorkspace = new DevWorkspaceBuilder()
         .withMetadata({
           name,
           namespace,
         })
         .build();
-
-      const spyCreateWorkspace = jest
+      spyCreateWorkspace = jest
         .spyOn(DwApi, 'createWorkspace')
         .mockResolvedValueOnce(testWorkspace);
-      jest.spyOn(DwApi, 'patchWorkspace').mockResolvedValueOnce(testWorkspace);
+      spyPatchWorkspace = jest.spyOn(DwApi, 'patchWorkspace').mockResolvedValueOnce(testWorkspace);
+    });
 
+    afterEach(() => {
+      spyPatchWorkspace.mockClear();
+      spyCreateWorkspace.mockClear();
+    });
+
+    it('should add annotation of last update time', async () => {
       await client.createFromDevfile(
         testDevfile,
         namespace,
@@ -89,26 +94,13 @@ describe('DevWorkspace client, create', () => {
     });
 
     it('should add editor annotation', async () => {
-      const testWorkspace = new DevWorkspaceBuilder()
-        .withMetadata({
-          name,
-          namespace,
-        })
-        .build();
-
-      const spyCreateWorkspace = jest
-        .spyOn(DwApi, 'createWorkspace')
-        .mockResolvedValueOnce(testWorkspace);
-      jest.spyOn(DwApi, 'patchWorkspace').mockResolvedValueOnce(testWorkspace);
-
-      const editorId = 'eclipse/theia/next';
       await client.createFromDevfile(
         testDevfile,
         namespace,
         [],
         undefined,
         undefined,
-        editorId,
+        'eclipse/theia/next',
         {},
       );
 
@@ -116,7 +108,7 @@ describe('DevWorkspace client, create', () => {
         expect.objectContaining({
           metadata: expect.objectContaining({
             annotations: expect.objectContaining({
-              'che.eclipse.org/che-editor': editorId,
+              'che.eclipse.org/che-editor': 'eclipse/theia/next',
             }),
           }),
         }),
@@ -127,6 +119,9 @@ describe('DevWorkspace client, create', () => {
   describe('Create from resources', () => {
     let testDevWorkspace: devfileApi.DevWorkspace;
     let testDevWorkspaceTemplate: devfileApi.DevWorkspaceTemplate;
+    let spyPatchWorkspace: jest.SpyInstance;
+    let spyCreateWorkspace: jest.SpyInstance;
+    let spyCreateWorkspaceTemplate: jest.SpyInstance;
 
     beforeEach(() => {
       testDevWorkspace = {
@@ -163,15 +158,29 @@ describe('DevWorkspace client, create', () => {
           ],
         },
       };
-      jest.spyOn(DwApi, 'patchWorkspace').mockResolvedValueOnce(testDevWorkspace);
+      spyPatchWorkspace = jest
+        .spyOn(DwApi, 'patchWorkspace')
+        .mockResolvedValueOnce(testDevWorkspace);
+      const workspace = new DevWorkspaceBuilder()
+        .withMetadata({
+          namespace,
+          name: 'wksp-name-cvbn',
+          uid: 'uid-asdfgh12345',
+        })
+        .build();
+      spyCreateWorkspace = jest.spyOn(DwApi, 'createWorkspace').mockResolvedValueOnce(workspace);
+      spyCreateWorkspaceTemplate = jest
+        .spyOn(DwtApi, 'createTemplate')
+        .mockResolvedValueOnce(testDevWorkspaceTemplate);
+    });
+
+    afterEach(() => {
+      spyPatchWorkspace.mockClear();
+      spyCreateWorkspace.mockClear();
+      spyCreateWorkspaceTemplate.mockClear();
     });
 
     it('should add annotation of last update time', async () => {
-      const spyCreateWorkspace = jest
-        .spyOn(DwApi, 'createWorkspace')
-        .mockResolvedValueOnce(testDevWorkspace);
-      jest.spyOn(DwtApi, 'createTemplate').mockResolvedValueOnce(testDevWorkspaceTemplate);
-
       await client.createFromResources(
         namespace,
         testDevWorkspace,
@@ -193,11 +202,6 @@ describe('DevWorkspace client, create', () => {
     });
 
     it('should add pluginRegistry and dashboard URLs as environment variables', async () => {
-      const spyCreateWorkspaceTemplate = jest
-        .spyOn(DwtApi, 'createTemplate')
-        .mockResolvedValueOnce(testDevWorkspaceTemplate);
-      jest.spyOn(DwApi, 'createWorkspace').mockResolvedValueOnce(testDevWorkspace);
-
       await client.createFromResources(
         namespace,
         testDevWorkspace,
@@ -232,19 +236,6 @@ describe('DevWorkspace client, create', () => {
     });
 
     it('should add owner reference to devWorkspace template to allow automatic cleanup', async () => {
-      const workspace = new DevWorkspaceBuilder()
-        .withMetadata({
-          namespace,
-          name: 'wksp-name-cvbn',
-          uid: 'uid-asdfgh12345',
-        })
-        .build();
-      jest.spyOn(DwApi, 'createWorkspace').mockResolvedValueOnce(workspace);
-
-      const spyCreateWorkspaceTemplate = jest
-        .spyOn(DwtApi, 'createTemplate')
-        .mockResolvedValueOnce(testDevWorkspaceTemplate);
-
       await client.createFromResources(
         namespace,
         testDevWorkspace,
