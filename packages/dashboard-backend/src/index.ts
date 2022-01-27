@@ -68,7 +68,10 @@ server.addContentTypeParser(
 server.register(fastifyWebsocket);
 
 if (isLocalRun) {
-  addDexProxy(server);
+  const DEX_INGRESS = process.env.DEX_INGRESS as string;
+  if (DEX_INGRESS) {
+    addDexProxy(server, `https://${DEX_INGRESS}`);
+  }
   registerDexCallback(server);
   registerOauth(server);
   addAuthorizationHooks(server);
