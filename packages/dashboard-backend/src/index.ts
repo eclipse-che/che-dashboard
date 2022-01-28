@@ -71,8 +71,8 @@ if (isLocalRun) {
   const DEX_INGRESS = process.env.DEX_INGRESS as string;
   if (DEX_INGRESS) {
     addDexProxy(server, `https://${DEX_INGRESS}`);
+    registerDexCallback(server);
   }
-  registerDexCallback(server);
   registerOauth(server);
   addAuthorizationHooks(server);
   const CHE_HOST_ORIGIN = process.env.CHE_HOST_ORIGIN as string;
