@@ -15,24 +15,24 @@ import { Provider } from 'react-redux';
 import { AlertVariant } from '@patternfly/react-core';
 import { RenderResult, render, screen, waitFor } from '@testing-library/react';
 import mockAxios from 'axios';
-import { ROUTE } from '../../route.enum';
-import { getMockRouterProps } from '../../services/__mocks__/router';
-import { FakeStoreBuilder } from '../../store/__mocks__/storeBuilder';
-import { createFakeCheWorkspace } from '../../store/__mocks__/workspace';
-import { WorkspaceStatus } from '../../services/helpers/types';
-import FactoryLoaderContainer, { LoadFactorySteps } from '../FactoryLoader';
-import { AlertOptions } from '../../pages/IdeLoader';
-import { constructWorkspace, Devfile, WorkspaceAdapter } from '../../services/workspace-adapter';
-import { DevWorkspaceBuilder } from '../../store/__mocks__/devWorkspaceBuilder';
-import devfileApi from '../../services/devfileApi';
+import { ROUTE } from '../../../route.enum';
+import { getMockRouterProps } from '../../../services/__mocks__/router';
+import { FakeStoreBuilder } from '../../../store/__mocks__/storeBuilder';
+import { createFakeCheWorkspace } from '../../../store/__mocks__/workspace';
+import { WorkspaceStatus } from '../../../services/helpers/types';
+import FactoryLoaderContainer, { LoadFactorySteps } from '../../FactoryLoader';
+import { AlertOptions } from '../../../pages/IdeLoader';
+import { constructWorkspace, Devfile, WorkspaceAdapter } from '../../../services/workspace-adapter';
+import { DevWorkspaceBuilder } from '../../../store/__mocks__/devWorkspaceBuilder';
+import devfileApi from '../../../services/devfileApi';
 import { safeDump } from 'js-yaml';
-import { CheWorkspaceBuilder } from '../../store/__mocks__/cheWorkspaceBuilder';
-import { ConvertedState, ResolverState } from '../../store/FactoryResolver';
-import { actionCreators as workspacesActionCreators } from '../../store/Workspaces';
+import { CheWorkspaceBuilder } from '../../../store/__mocks__/cheWorkspaceBuilder';
+import { ConvertedState, ResolverState } from '../../../store/FactoryResolver';
+import { actionCreators as workspacesActionCreators } from '../../../store/Workspaces';
 import {
   actionCreators as factoryResolverActionCreators,
   isOAuthResponse,
-} from '../../store/FactoryResolver';
+} from '../../../store/FactoryResolver';
 
 const showAlertMock = jest.fn();
 const setWorkspaceQualifiedName = jest.fn();
