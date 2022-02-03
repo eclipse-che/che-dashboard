@@ -440,12 +440,7 @@ export class FactoryLoaderContainer extends React.PureComponent<Props, State> {
       }
       const fullOauthUrl =
         oauthUrlTmp.toString() + '&redirect_after_login=' + redirectUrl.toString();
-
-      if (isDevEnvironment(env)) {
-        window.open(fullOauthUrl);
-      } else {
-        window.location.href = fullOauthUrl;
-      }
+      window.location.href = fullOauthUrl;
     } catch (e) {
       this.showAlert('Failed to open authentication page.');
       throw e;
