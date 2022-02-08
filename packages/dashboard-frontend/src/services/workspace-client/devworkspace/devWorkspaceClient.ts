@@ -927,6 +927,11 @@ export class DevWorkspaceClient extends WorkspaceClient {
         pluginsByUrl[url] = plugin;
       }
 
+      if (plugin.metadata.name.toLowerCase().includes('che-code')) {
+        // skip updates for editors in sidecarless mode
+        continue;
+      }
+
       const spec: Partial<V1alpha2DevWorkspaceTemplateSpec> = {};
       for (const key in plugin) {
         if (key !== 'schemaVersion' && key !== 'metadata') {
