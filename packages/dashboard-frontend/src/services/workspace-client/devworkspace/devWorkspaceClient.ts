@@ -927,7 +927,8 @@ export class DevWorkspaceClient extends WorkspaceClient {
         pluginsByUrl[url] = plugin;
       }
 
-      if (plugin.metadata.name.toLowerCase().includes('che-code')) {
+      const skipEditors = ['che-code', 'idea', 'pycharm'];
+      if (skipEditors.some(e => plugin?.metadata?.name?.toLowerCase().includes(e))) {
         // skip updates for editors in sidecarless mode
         continue;
       }
