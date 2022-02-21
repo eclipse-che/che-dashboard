@@ -80,7 +80,7 @@ if kubectl get configMaps/dex -o jsonpath="{.data['config\.yaml']}" -n dex | yq 
   # rollout Dex deployment
   echo 'Rolling out Dex deployment...'
   kubectl patch deployment/dex --patch "{\"spec\":{\"replicas\":0}}" -n dex
-  echo 'Waiting 5 seconds to operator shut down...'
+  echo 'Waiting 5 seconds to dex shut down...'
   sleep 5
   kubectl patch deployment/dex --patch "{\"spec\":{\"replicas\":1}}" -n dex
   echo 'Done.'
