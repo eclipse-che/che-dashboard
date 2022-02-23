@@ -41,7 +41,7 @@ describe('clusterConfig store', () => {
       >;
     });
 
-    it('should create REQUEST_CLUSTER_CONFIG and RECEIVE_CLUSTER_CONFIG when fetching cluster info', async () => {
+    it('should create REQUEST_CLUSTER_CONFIG and RECEIVE_CLUSTER_CONFIG when fetching cluster config', async () => {
       (mockAxios.get as jest.Mock).mockResolvedValueOnce({
         data: clusterConfig,
       });
@@ -57,6 +57,10 @@ describe('clusterConfig store', () => {
         {
           type: testStore.Type.RECEIVE_CLUSTER_CONFIG,
           clusterConfig: clusterConfig,
+        },
+        {
+          message: 'Maintenance warning info',
+          type: 'ADD_BANNER',
         },
       ];
 

@@ -16,6 +16,7 @@ import { AppThunk } from '..';
 import { createObject } from '../helpers';
 import * as BannerAlertStore from '../BannerAlert';
 import { fetchClusterConfig } from '../../services/dashboard-backend-client/clusterConfig';
+import { AddBannerAction } from '../BannerAlert';
 
 export interface State {
   isLoading: boolean;
@@ -46,7 +47,8 @@ export interface ReceivedClusterConfigErrorAction {
 export type KnownAction =
   | RequestClusterConfigAction
   | ReceiveClusterConfigAction
-  | ReceivedClusterConfigErrorAction;
+  | ReceivedClusterConfigErrorAction
+  | AddBannerAction;
 
 export type ActionCreators = {
   requestClusterConfig: () => AppThunk<KnownAction, Promise<void>>;
