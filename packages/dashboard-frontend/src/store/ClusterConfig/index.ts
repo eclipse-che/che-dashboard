@@ -11,62 +11,70 @@
  */
 
 import { Action, Reducer } from 'redux';
-import common, { ApplicationInfo } from '@eclipse-che/common';
+import common, { ClusterConfig } from '@eclipse-che/common';
 import { AppThunk } from '..';
 import { createObject } from '../helpers';
-import { fetchClusterInfo } from '../../services/dashboard-backend-client/clusterInfo';
+import * as BannerAlertStore from '../BannerAlert';
+import { fetchClusterConfig } from '../../services/dashboard-backend-client/clusterConfig';
 
 export interface State {
   isLoading: boolean;
-  applications: ApplicationInfo[];
+  clusterConfig: ClusterConfig;
   error?: string;
 }
 
 export enum Type {
-  REQUEST_APP_INFO = 'REQUEST_APP_INFO',
-  RECEIVE_APP_INFO = 'RECEIVE_APP_INFO',
-  RECEIVE_APP_INFO_ERROR = 'RECEIVE_APP_INFO_ERROR',
+  REQUEST_CLUSTER_CONFIG = 'REQUEST_CLUSTER_CONFIG',
+  RECEIVE_CLUSTER_CONFIG = 'RECEIVE_CLUSTER_CONFIG',
+  RECEIVE_CLUSTER_CONFIG_ERROR = 'RECEIVE_CLUSTER_CONFIG_ERROR',
 }
 
-export interface RequestAppInfoAction {
-  type: Type.REQUEST_APP_INFO;
+export interface RequestClusterConfigAction {
+  type: Type.REQUEST_CLUSTER_CONFIG;
 }
 
-export interface ReceiveAppInfoAction {
-  type: Type.RECEIVE_APP_INFO;
-  appInfo: ApplicationInfo;
+export interface ReceiveClusterConfigAction {
+  type: Type.RECEIVE_CLUSTER_CONFIG;
+  clusterConfig: ClusterConfig;
 }
 
-export interface ReceivedAppInfoErrorAction {
-  type: Type.RECEIVE_APP_INFO_ERROR;
+export interface ReceivedClusterConfigErrorAction {
+  type: Type.RECEIVE_CLUSTER_CONFIG_ERROR;
   error: string;
 }
 
-export type KnownAction = RequestAppInfoAction | ReceiveAppInfoAction | ReceivedAppInfoErrorAction;
+export type KnownAction =
+  | RequestClusterConfigAction
+  | ReceiveClusterConfigAction
+  | ReceivedClusterConfigErrorAction;
 
 export type ActionCreators = {
-  requestClusterInfo: () => AppThunk<KnownAction, Promise<void>>;
+  requestClusterConfig: () => AppThunk<KnownAction, Promise<void>>;
 };
 
 export const actionCreators: ActionCreators = {
-  requestClusterInfo:
+  requestClusterConfig:
     (): AppThunk<KnownAction, Promise<void>> =>
     async (dispatch): Promise<void> => {
       dispatch({
-        type: Type.REQUEST_APP_INFO,
+        type: Type.REQUEST_CLUSTER_CONFIG,
       });
 
       try {
-        const appInfo = await fetchClusterInfo();
+        const clusterConfig = await fetchClusterConfig();
         dispatch({
-          type: Type.RECEIVE_APP_INFO,
-          appInfo,
+          type: Type.RECEIVE_CLUSTER_CONFIG,
+          clusterConfig,
         });
+
+        if (clusterConfig.dashboardWarning) {
+          dispatch(BannerAlertStore.actionCreators.addBanner(clusterConfig.dashboardWarning));
+        }
       } catch (e) {
         const errorMessage =
-          'Failed to fetch cluster properties, reason: ' + common.helpers.errors.getMessage(e);
+          'Failed to fetch cluster configuration, reason: ' + common.helpers.errors.getMessage(e);
         dispatch({
-          type: Type.RECEIVE_APP_INFO_ERROR,
+          type: Type.RECEIVE_CLUSTER_CONFIG_ERROR,
           error: errorMessage,
         });
         throw errorMessage;
@@ -76,7 +84,7 @@ export const actionCreators: ActionCreators = {
 
 const unloadedState: State = {
   isLoading: false,
-  applications: [],
+  clusterConfig: {},
 };
 
 export const reducer: Reducer<State> = (
@@ -89,19 +97,17 @@ export const reducer: Reducer<State> = (
 
   const action = incomingAction as KnownAction;
   switch (action.type) {
-    case Type.REQUEST_APP_INFO:
+    case Type.REQUEST_CLUSTER_CONFIG:
       return createObject(state, {
         isLoading: true,
         error: undefined,
       });
-    case Type.RECEIVE_APP_INFO:
+    case Type.RECEIVE_CLUSTER_CONFIG:
       return createObject(state, {
         isLoading: false,
-        applications: state.applications
-          .filter(appInfo => appInfo.title !== action.appInfo.title)
-          .concat([action.appInfo]),
+        clusterConfig: action.clusterConfig,
       });
-    case Type.RECEIVE_APP_INFO_ERROR:
+    case Type.RECEIVE_CLUSTER_CONFIG_ERROR:
       return createObject(state, {
         isLoading: false,
         error: action.error,
