@@ -202,6 +202,7 @@ class IdeLoaderContainer extends React.PureComponent<Props, State> {
 
   private async restartWorkspace(workspace: Workspace): Promise<void> {
     this.setState({ isWaitingForRestart: true });
+    this.ideLoaderCallbacks?.hideAlert?.();
     try {
       await this.props.restartWorkspace(workspace);
       this.setState({ isWaitingForRestart: false });
