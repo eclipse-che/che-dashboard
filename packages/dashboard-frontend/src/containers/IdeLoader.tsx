@@ -229,7 +229,7 @@ class IdeLoaderContainer extends React.PureComponent<Props, State> {
       },
     });
 
-    const { isLoading, requestWorkspaces, allWorkspaces } = this.props;
+    const { isLoading, requestWorkspaces, updateWorkspace, allWorkspaces } = this.props;
     let workspace = allWorkspaces.find(
       workspace =>
         workspace.namespace === this.state.namespace && workspace.name === this.state.workspaceName,
@@ -245,6 +245,7 @@ class IdeLoaderContainer extends React.PureComponent<Props, State> {
     if (workspace && workspace.ideUrl && workspace.isRunning) {
       return await this.updateIdeUrl(workspace.ideUrl);
     } else if (workspace && workspace.hasError) {
+      await updateWorkspace(workspace);
       this.showErrorAlert(workspace);
     }
     await this.applyIdeLoadingStep();
