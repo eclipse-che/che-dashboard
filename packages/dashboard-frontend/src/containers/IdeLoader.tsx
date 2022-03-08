@@ -482,7 +482,7 @@ class IdeLoaderContainer extends React.PureComponent<Props, State> {
     if (this.state.currentStep === LoadIdeSteps.INITIALIZING) {
       this.setState({ currentStep: LoadIdeSteps.START_WORKSPACE });
       await this.props.requestWorkspace(workspace);
-      if (this.props.workspace?.isStopped) {
+      if (workspace?.isStopped) {
         try {
           await this.props.startWorkspace(workspace);
         } catch (e) {
