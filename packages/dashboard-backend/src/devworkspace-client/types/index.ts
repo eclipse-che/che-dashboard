@@ -95,6 +95,11 @@ export interface IServerConfigApi {
    * Returns a maintenance warning
    */
   getDashboardWarning(): Promise<string>;
+
+  /**
+   * Returns limit of running workspaces per user
+   */
+  getRunningWorkspacesLimit(): Promise<number>;
 }
 
 export interface IKubeConfigApi {

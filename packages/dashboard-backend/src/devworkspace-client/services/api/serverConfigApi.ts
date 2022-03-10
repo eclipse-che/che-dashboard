@@ -95,4 +95,18 @@ export class ServerConfigApi implements IServerConfigApi {
       );
     }
   }
+
+  async getRunningWorkspacesLimit(): Promise<number> {
+    try {
+      const cheCustomResource = await this.getCheCustomResource();
+
+      return cheCustomResource.spec.server.runningWorkspacesLimit || 1;
+    } catch (e) {
+      throw createError(
+        e,
+        CUSTOM_RESOURCE_DEFINITIONS_API_ERROR_LABEL,
+        'Unable to fetch listClusterCustomObject',
+      );
+    }
+  }
 }
