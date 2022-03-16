@@ -24,10 +24,7 @@ import {
 } from '../../../store/Workspaces';
 import { DevWorkspaceBuilder } from '../../../store/__mocks__/devWorkspaceBuilder';
 import { CheWorkspaceBuilder } from '../../../store/__mocks__/cheWorkspaceBuilder';
-import {
-  DEVWORKSPACE_ID_OVERRIDE_ANNOTATION,
-  ORIGINAL_WORKSPACE_ID_ANNOTATION,
-} from '../../../services/devfileApi/devWorkspace/metadata';
+import { DEVWORKSPACE_ID_OVERRIDE_ANNOTATION } from '../../../services/devfileApi/devWorkspace/metadata';
 import userEvent from '@testing-library/user-event';
 import devfileApi from '../../../services/devfileApi';
 import { DEVWORKSPACE_METADATA_ANNOTATION } from '../../../services/workspace-client/devworkspace/devWorkspaceClient';
@@ -141,7 +138,7 @@ describe('Workspace Details container', () => {
         const devWorkspace = devWorkspaceBuilder
           .withMetadata({
             annotations: {
-              [ORIGINAL_WORKSPACE_ID_ANNOTATION]: cheWorkspaceId,
+              [DEVWORKSPACE_ID_OVERRIDE_ANNOTATION]: cheWorkspaceId,
             },
           })
           .build();
@@ -166,7 +163,7 @@ describe('Workspace Details container', () => {
         const devWorkspace = devWorkspaceBuilder
           .withMetadata({
             annotations: {
-              [ORIGINAL_WORKSPACE_ID_ANNOTATION]: cheWorkspaceId,
+              [DEVWORKSPACE_ID_OVERRIDE_ANNOTATION]: cheWorkspaceId,
             },
           })
           .build();
@@ -272,7 +269,7 @@ describe('Workspace Details container', () => {
         const devWorkspace = devWorkspaceBuilder
           .withMetadata({
             annotations: {
-              [ORIGINAL_WORKSPACE_ID_ANNOTATION]: cheWorkspaceId,
+              [DEVWORKSPACE_ID_OVERRIDE_ANNOTATION]: cheWorkspaceId,
             },
           })
           .build();
@@ -305,7 +302,6 @@ describe('Workspace Details container', () => {
             metadata: expect.objectContaining({
               attributes: expect.objectContaining({
                 [DEVWORKSPACE_METADATA_ANNOTATION]: {
-                  [ORIGINAL_WORKSPACE_ID_ANNOTATION]: cheWorkspaceId,
                   [DEVWORKSPACE_ID_OVERRIDE_ANNOTATION]: cheWorkspaceId,
                 },
               }),
