@@ -66,6 +66,9 @@ export class WorkspaceAdapter<T extends che.Workspace | devfileApi.DevWorkspace>
   }
 
   static isDeprecated(workspace: che.Workspace | devfileApi.DevWorkspace): boolean {
+    if (isDevWorkspace(workspace)) {
+      return false;
+    }
     return WorkspaceAdapter.deprecatedIds.indexOf(WorkspaceAdapter.getId(workspace)) !== -1;
   }
 
