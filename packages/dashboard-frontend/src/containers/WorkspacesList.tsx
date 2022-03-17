@@ -65,10 +65,10 @@ export class WorkspacesListContainer extends React.PureComponent<Props> {
 
     const ids = allWorkspaces.map(workspace => workspace.id);
     const filteredWorkspaces = allWorkspaces.filter(workspace => {
-      if (workspace.isDeprecated === false) {
+      if (isDevWorkspace(workspace.ref)) {
         return true;
       }
-      if (isDevWorkspace(workspace.ref)) {
+      if (workspace.isDeprecated === false) {
         return true;
       }
       const convertedId = workspace.ref.attributes?.convertedId;
