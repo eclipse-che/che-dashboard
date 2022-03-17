@@ -28,10 +28,10 @@ jobs:
         name: "Checkout Che Dashboard source code"
         uses: actions/checkout@v2
       -
-        name: "Use Node 12"
+        name: "Use Node 16"
         uses: actions/setup-node@v1
         with:
-          node-version: 12
+          node-version: 16
       -
         name: "Install dependencies"
         run: yarn
@@ -43,7 +43,7 @@ jobs:
     runs-on: ubuntu-20.04
     strategy:
       matrix:
-        node-version: [12.x, 14.x]
+        node-version: [14.x, 16.x]
     steps:
       -
         name: "Checkout Che Dashboard source code"

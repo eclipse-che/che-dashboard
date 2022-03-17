@@ -34,7 +34,6 @@ RUN yarn install
 COPY packages/ /dashboard/packages
 RUN yarn build
 
-# https://access.redhat.com/containers/?tab=tags#/registry.access.redhat.com/ubi8/nodejs-12
 FROM registry.access.redhat.com/ubi8/nodejs-12:1-110
 USER 0
 

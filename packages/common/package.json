@@ -7,7 +7,7 @@
   "main": "lib/index.js",
   "engines": {
     "yarn": ">=1.20.0",
-    "node": ">=12"
+    "node": ">=14"
   },
   "scripts": {
     "build": "yarn clean && tsc -b",
