@@ -58,7 +58,7 @@ describe('Workspace Details container', () => {
   describe('devfile v1->v2 conversion', () => {
     const workspaceName = 'wksp';
     const cheWorkspaceId = 'che-wksp-id';
-    const devWorkspaceId = 'dev-wksp-id';
+    const devWorkspaceId = 'che-wksp-id';
     const cheNamespace = 'user-che';
     const devNamespace = 'user-dev';
 
