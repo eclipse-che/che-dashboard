@@ -29,7 +29,7 @@ class Head extends React.PureComponent<Props> {
 
     return (
       <Helmet>
-        <title>{pageName ? `${title} | ${pageName}` : title}</title>
+        <title>{pageName ? `${title} | ${pageName}` : title} | Test run</title>
       </Helmet>
     );
   }
