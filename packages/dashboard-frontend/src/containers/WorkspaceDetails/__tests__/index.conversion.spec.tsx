@@ -59,6 +59,7 @@ describe('Workspace Details container', () => {
     const workspaceName = 'wksp';
     const cheWorkspaceId = 'che-wksp-id';
     const devWorkspaceId = 'che-wksp-id';
+    const devWorkspaceUID = 'uid-1234';
     const cheNamespace = 'user-che';
     const devNamespace = 'user-dev';
 
@@ -78,6 +79,7 @@ describe('Workspace Details container', () => {
         .withNamespace(cheNamespace);
       devWorkspaceBuilder = new DevWorkspaceBuilder()
         .withId(devWorkspaceId)
+        .withUID(devWorkspaceUID)
         .withName(workspaceName)
         .withNamespace(devNamespace);
       fakeStoreBuilder = new FakeStoreBuilder()
@@ -247,7 +249,7 @@ describe('Workspace Details container', () => {
       it('should show the Convert button - with attribute', async () => {
         const cheWorkspace = cheWorkspaceBuilder
           .withAttributes({
-            convertedId: devWorkspaceId,
+            convertedId: devWorkspaceUID,
           } as che.WorkspaceAttributes)
           .build();
         const store = new FakeStoreBuilder()
@@ -320,7 +322,7 @@ describe('Workspace Details container', () => {
           expect.objectContaining({
             ref: expect.objectContaining({
               attributes: expect.objectContaining({
-                convertedId: devWorkspaceId,
+                convertedId: devWorkspaceUID,
               }),
             }),
           }),

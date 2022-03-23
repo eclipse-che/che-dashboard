@@ -86,19 +86,19 @@ class WorkspaceDetailsContainer extends React.Component<Props, State> {
       return;
     }
 
-    const oldWorkspaceId =
+    const che7WorkspaceId =
       workspace.ref.metadata.annotations?.[DEVWORKSPACE_ID_OVERRIDE_ANNOTATION];
-    if (!oldWorkspaceId) {
+    if (!che7WorkspaceId) {
       return;
     }
     // check if the old workspace is still available
-    const oldWorkspace = this.props.allWorkspaces.find(
-      workspace => !isDevWorkspace(workspace.ref) && workspace.id === oldWorkspaceId,
+    const che7Workspace = this.props.allWorkspaces.find(
+      workspace => workspace.uid === che7WorkspaceId,
     );
-    if (!oldWorkspace) {
+    if (!che7Workspace) {
       return;
     }
-    return buildDetailsLocation(oldWorkspace, WorkspaceDetailsTab.DEVFILE);
+    return buildDetailsLocation(che7Workspace, WorkspaceDetailsTab.DEVFILE);
   }
 
   private getShowConvertButton(workspace?: Workspace): boolean {
@@ -109,8 +109,8 @@ class WorkspaceDetailsContainer extends React.Component<Props, State> {
     if (!cheWorkspace.attributes?.convertedId) {
       return true;
     } else {
-      const id = cheWorkspace.attributes.convertedId;
-      return this.props.allWorkspaces.every(workspace => workspace.id !== id);
+      const devWorkspaceUID = cheWorkspace.attributes.convertedId;
+      return this.props.allWorkspaces.every(workspace => workspace.uid !== devWorkspaceUID);
     }
   }
 
@@ -121,7 +121,7 @@ class WorkspaceDetailsContainer extends React.Component<Props, State> {
   public shouldComponentUpdate(nextProps: Props, nextState: State): boolean {
     return (
       nextProps.isLoading === false &&
-      (this.state.workspace?.id !== nextState.workspace?.id ||
+      (this.state.workspace?.uid !== nextState.workspace?.uid ||
         this.props.location.pathname !== nextProps.location.pathname)
     );
   }
@@ -175,7 +175,7 @@ class WorkspaceDetailsContainer extends React.Component<Props, State> {
     }
     devfileV2.metadata.attributes[DEVWORKSPACE_METADATA_ANNOTATION][
       DEVWORKSPACE_ID_OVERRIDE_ANNOTATION
-    ] = oldWorkspace.id;
+    ] = oldWorkspace.uid;
     const defaultNamespace = this.props.defaultNamespace.name;
     // create a new workspace
     await this.props.createWorkspaceFromDevfile(
@@ -191,7 +191,7 @@ class WorkspaceDetailsContainer extends React.Component<Props, State> {
       if (isDevWorkspace(workspace.ref)) {
         return (
           workspace.ref.metadata.annotations?.[DEVWORKSPACE_ID_OVERRIDE_ANNOTATION] ===
-          oldWorkspace.id
+          oldWorkspace.uid
         );
       }
       return false;
@@ -204,7 +204,7 @@ class WorkspaceDetailsContainer extends React.Component<Props, State> {
     // add 'converted' attribute to the old workspace
     // to be able to hide it on the Workspaces page
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    oldWorkspace.ref.attributes!.convertedId = oldWorkspace.id;
+    oldWorkspace.ref.attributes!.convertedId = newWorkspace.uid;
     await this.props.updateWorkspace(oldWorkspace);
 
     // return the new workspace page location

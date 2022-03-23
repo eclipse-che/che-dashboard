@@ -63,7 +63,7 @@ export class WorkspacesListContainer extends React.PureComponent<Props> {
       return Fallback;
     }
 
-    const ids = allWorkspaces.map(workspace => workspace.id);
+    const UIDs = allWorkspaces.map(workspace => workspace.uid);
     const filteredWorkspaces = allWorkspaces.filter(workspace => {
       if (isDevWorkspace(workspace.ref)) {
         return true;
@@ -71,11 +71,11 @@ export class WorkspacesListContainer extends React.PureComponent<Props> {
       if (workspace.isDeprecated === false) {
         return true;
       }
-      const convertedId = workspace.ref.attributes?.convertedId;
-      if (convertedId === undefined) {
+      const convertedUID = workspace.ref.attributes?.convertedId;
+      if (convertedUID === undefined) {
         return true;
       }
-      return ids.includes(convertedId) === false;
+      return UIDs.includes(convertedUID) === false;
     });
 
     return (
@@ -86,7 +86,7 @@ export class WorkspacesListContainer extends React.PureComponent<Props> {
               branding={branding}
               history={history}
               workspaces={filteredWorkspaces}
-              onAction={(action, id) => context.handleAction(action, id)}
+              onAction={(action, uid) => context.handleAction(action, uid)}
               showConfirmation={wantDelete => context.showConfirmation(wantDelete)}
               toDelete={context.toDelete}
             />
