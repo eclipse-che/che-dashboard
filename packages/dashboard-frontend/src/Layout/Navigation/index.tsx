@@ -25,6 +25,7 @@ import { ROUTE } from '../../route.enum';
 import {
   buildGettingStartedLocation,
   buildWorkspacesLocation,
+  sanitizeLocation,
 } from '../../services/helpers/location';
 import {
   DeprecatedWorkspaceStatus,
@@ -60,7 +61,7 @@ export class Navigation extends React.PureComponent<Props, State> {
   constructor(props: Props) {
     super(props);
 
-    const activeLocation = this.props.history.location;
+    const activeLocation = sanitizeLocation(this.props.history.location);
     let newLocation: Location | undefined;
 
     if (activeLocation.pathname === ROUTE.HOME) {
