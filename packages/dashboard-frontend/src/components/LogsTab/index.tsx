@@ -101,7 +101,7 @@ export class LogsTab extends React.PureComponent<Props, State> {
   }
 
   private getLines(): JSX.Element[] {
-    let logs = this.state.logs ? [...this.state.logs] : [];
+    let logs = this.state.logs || [];
     if (logs.length > MAX_LOG_LENGTH) {
       logs = logs.slice(logs.length - MAX_LOG_LENGTH);
     }
