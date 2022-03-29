@@ -627,7 +627,7 @@ export const reducer: Reducer<State> = (state: State | undefined, action: KnownA
       return createObject(state, {
         isLoading: false,
         workspaces: state.workspaces.map(workspace =>
-          WorkspaceAdapter.getUID(workspace.metadata.uid) === WorkspaceAdapter.getUID(action.workspace)
+          WorkspaceAdapter.getUID(workspace) === WorkspaceAdapter.getUID(action.workspace)
             ? action.workspace
             : workspace,
         ),
