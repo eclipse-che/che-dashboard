@@ -88,7 +88,7 @@ interface DeleteWorkspaceLogsAction extends Action {
 
 interface DeleteWorkspaceAction extends Action {
   type: 'DELETE_DEVWORKSPACE';
-  workspaceUID: string;
+  workspaceId: string;
 }
 
 interface TerminateWorkspaceAction extends Action {
@@ -168,10 +168,10 @@ export const actionCreators: ActionCreators = {
   updateDeletedDevWorkspaces:
     (deletedWorkspacesIds: string[]): AppThunk<KnownAction, void> =>
     (dispatch): void => {
-      deletedWorkspacesIds.forEach(workspaceUID => {
+      deletedWorkspacesIds.forEach(workspaceId => {
         dispatch({
           type: 'DELETE_DEVWORKSPACE',
-          workspaceUID,
+          workspaceId,
         });
       });
     },
@@ -671,7 +671,7 @@ export const reducer: Reducer<State> = (state: State | undefined, action: KnownA
     case 'DELETE_DEVWORKSPACE':
       return createObject(state, {
         workspaces: state.workspaces.filter(
-          workspace => WorkspaceAdapter.getUID(workspace) !== action.workspaceUID,
+          workspace => WorkspaceAdapter.getId(workspace) !== action.workspaceId,
         ),
       });
     case 'UPDATE_DEVWORKSPACE_LOGS':
