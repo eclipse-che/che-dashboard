@@ -354,7 +354,7 @@ export class DevWorkspaceClient extends WorkspaceClient {
     }
 
     const routingClass = 'che';
-    const devworkspace = devfileToDevWorkspace(devfile, routingClass, true);
+    const devworkspace = devfileToDevWorkspace(devfile, routingClass, start);
 
     if (devworkspace.metadata.annotations === undefined) {
       devworkspace.metadata.annotations = {};
