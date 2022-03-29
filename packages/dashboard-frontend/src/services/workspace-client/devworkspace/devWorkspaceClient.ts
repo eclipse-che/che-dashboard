@@ -871,8 +871,8 @@ export class DevWorkspaceClient extends WorkspaceClient {
         this.showAlert({ key, variant: AlertVariant.warning, title });
         return;
       }
-      const workspaceId = maybeWorkspaceId as string;
-      callbacks.updateDeletedDevWorkspaces([workspaceId]);
+      const devworkspaceId = maybeWorkspaceId as string;
+      callbacks.updateDeletedDevWorkspaces([devworkspaceId]);
     });
   }
 
