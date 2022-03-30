@@ -64,6 +64,10 @@ export enum DevWorkspaceStatus {
   STOPPING = 'Stopping',
 }
 
+export function isDevWorkspaceStatus(status: unknown): status is DevWorkspaceStatus {
+  return DevWorkspaceStatus[status as DevWorkspaceStatus] !== undefined;
+}
+
 export type CreateWorkspaceTab = 'quick-add' | 'custom-workspace';
 
 export enum IdeLoaderTab {

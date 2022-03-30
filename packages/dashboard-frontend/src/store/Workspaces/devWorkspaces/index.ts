@@ -38,7 +38,7 @@ import { selectDefaultNamespace } from '../../InfrastructureNamespaces/selectors
 import { injectKubeConfig } from '../../../services/dashboard-backend-client/devWorkspaceApi';
 const devWorkspaceClient = container.get(DevWorkspaceClient);
 
-export const onStatusChangeCallbacks = new Map<string, (status: string) => void>();
+export const onStatusChangeCallbacks = new Map<string, (status: DevWorkspaceStatus) => void>();
 
 export interface State {
   isLoading: boolean;
@@ -325,7 +325,7 @@ export const actionCreators: ActionCreators = {
     async (dispatch): Promise<void> => {
       const defer: IDeferred<void> = getDefer();
       const toDispose = new DisposableCollection();
-      const onStatusChangeCallback = async status => {
+      const onStatusChangeCallback = async (status: DevWorkspaceStatus) => {
         if (status === DevWorkspaceStatus.STOPPED || status === DevWorkspaceStatus.FAILED) {
           toDispose.dispose();
           try {
