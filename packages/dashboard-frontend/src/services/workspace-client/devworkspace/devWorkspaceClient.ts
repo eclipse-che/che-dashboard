@@ -21,7 +21,7 @@ import {
   devWorkspaceSingularSubresource,
   devWorkspaceVersion,
 } from './converters';
-import { AlertItem, DevWorkspaceStatus } from '../../helpers/types';
+import { AlertItem, DevWorkspaceStatus, isDevWorkspaceStatus } from '../../helpers/types';
 import { KeycloakSetupService } from '../../keycloak/setup';
 import { delay } from '../../helpers/delay';
 import * as DwApi from '../../dashboard-backend-client/devWorkspaceApi';
@@ -52,7 +52,7 @@ import {
 } from '../../devfileApi/devWorkspace/spec';
 
 export interface IStatusUpdate {
-  status: string;
+  status: DevWorkspaceStatus;
   message: string;
   prevStatus: string | undefined;
   workspaceUID: string;
@@ -884,8 +884,11 @@ export class DevWorkspaceClient extends WorkspaceClient {
   private createStatusUpdate(devworkspace: devfileApi.DevWorkspace): IStatusUpdate | undefined {
     const namespace = devworkspace.metadata.namespace;
     const workspaceUID = WorkspaceAdapter.getUID(devworkspace);
-    const status = devworkspace?.status?.phase || DevWorkspaceStatus.STARTING;
-    const message = devworkspace?.status?.message || '';
+    const status =
+      devworkspace.status?.phase && isDevWorkspaceStatus(devworkspace.status.phase)
+        ? devworkspace.status.phase
+        : DevWorkspaceStatus.STARTING;
+    const message = devworkspace.status?.message || '';
 
     if (!this.previousItems.has(namespace)) {
       const defaultItem = new Map<string, IStatusUpdate>();
