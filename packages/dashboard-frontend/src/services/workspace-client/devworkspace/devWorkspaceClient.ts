@@ -240,21 +240,20 @@ export class DevWorkspaceClient extends WorkspaceClient {
   ): Promise<devfileApi.DevWorkspace> {
     let workspace = await DwApi.getWorkspaceByName(namespace, workspaceName);
     let attempted = 0;
-    while (
-      (!workspace.status?.phase || !workspace.status.mainUrl) &&
-      attempted < this.maxStatusAttempts
-    ) {
+    while (!workspace.status?.phase && attempted < this.maxStatusAttempts) {
+      if (attempted > 0) {
+        await delay();
+      }
       workspace = await DwApi.getWorkspaceByName(namespace, workspaceName);
-      attempted += 1;
-      await delay();
+      attempted++;
     }
     const workspaceStatus = workspace?.status;
     if (!workspaceStatus || !workspaceStatus.phase) {
-      throw new Error(
+      console.warn(
         `Could not retrieve devworkspace status information from ${workspaceName} in namespace ${namespace}`,
       );
     } else if (workspaceStatus.phase === DevWorkspaceStatus.RUNNING && !workspaceStatus?.mainUrl) {
-      throw new Error('Could not retrieve mainUrl for the running workspace');
+      console.warn('Could not retrieve mainUrl for the running workspace');
     }
     return workspace;
   }
