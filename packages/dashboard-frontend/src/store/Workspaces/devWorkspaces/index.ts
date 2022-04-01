@@ -647,6 +647,7 @@ export const reducer: Reducer<State> = (state: State | undefined, action: KnownA
       });
     case 'ADD_DEVWORKSPACE':
       return createObject(state, {
+        isLoading: false,
         workspaces: state.workspaces
           .filter(
             workspace =>
