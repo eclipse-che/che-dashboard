@@ -409,7 +409,15 @@ export default class WorkspacesList extends React.PureComponent<Props, State> {
   }
 
   public componentDidUpdate(prevProps: Props): void {
-    if (prevProps.workspaces.length !== this.props.workspaces.length) {
+    const prevUIDs = prevProps.workspaces
+      .map(w => w.uid)
+      .sort()
+      .join(',');
+    const UIDs = this.props.workspaces
+      .map(w => w.uid)
+      .sort()
+      .join(',');
+    if (prevUIDs !== UIDs) {
       const selected: string[] = [];
       const filtered: string[] = [];
       this.props.workspaces.forEach(workspace => {
