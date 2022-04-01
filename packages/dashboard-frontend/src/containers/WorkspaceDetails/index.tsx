@@ -125,10 +125,12 @@ class WorkspaceDetailsContainer extends React.Component<Props, State> {
     const workspace = this.props.allWorkspaces.find(
       workspace => workspace.namespace === namespace && workspace.name === workspaceName,
     );
-    if (
-      workspace &&
-      (this.props.location.pathname !== prevProps.location.pathname ||
-        !isEqual(workspace, this.state.workspace))
+    if (!workspace) {
+      const workspacesListLocation = buildWorkspacesLocation();
+      this.props.history.push(workspacesListLocation);
+    } else if (
+      this.props.location.pathname !== prevProps.location.pathname ||
+      !isEqual(workspace, this.state.workspace)
     ) {
       this.setState({ workspace });
     }
