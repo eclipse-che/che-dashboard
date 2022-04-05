@@ -65,7 +65,7 @@ export enum DevWorkspaceStatus {
 }
 
 export function isDevWorkspaceStatus(status: unknown): status is DevWorkspaceStatus {
-  return DevWorkspaceStatus[status as DevWorkspaceStatus] !== undefined;
+  return Object.values(DevWorkspaceStatus).includes(status as DevWorkspaceStatus);
 }
 
 export type CreateWorkspaceTab = 'quick-add' | 'custom-workspace';
