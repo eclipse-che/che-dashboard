@@ -884,10 +884,8 @@ export class DevWorkspaceClient extends WorkspaceClient {
   private createStatusUpdate(devworkspace: devfileApi.DevWorkspace): IStatusUpdate | undefined {
     const namespace = devworkspace.metadata.namespace;
     const workspaceUID = WorkspaceAdapter.getUID(devworkspace);
-    const status =
-      devworkspace.status?.phase && isDevWorkspaceStatus(devworkspace.status.phase)
-        ? devworkspace.status.phase
-        : DevWorkspaceStatus.STARTING;
+    const phase = devworkspace.status?.phase;
+    const status = isDevWorkspaceStatus(phase) ? phase : DevWorkspaceStatus.STARTING;
     const message = devworkspace.status?.message || '';
 
     if (!this.previousItems.has(namespace)) {
