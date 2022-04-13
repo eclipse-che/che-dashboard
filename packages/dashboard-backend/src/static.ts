@@ -32,10 +32,7 @@ export function registerStaticServer(publicFolder: string, server: FastifyInstan
         return reply.redirect(authorizationEndpoint);
       }
     }
-    return reply.redirect('/dashboard/');
-  });
-  server.get('/dashboard', async (request: FastifyRequest, reply: FastifyReply) => {
-    return reply.redirect('/dashboard/');
+    return reply.redirect('/dashboard/static/preload.html');
   });
 
   const doNotCache = [
