@@ -13,7 +13,6 @@
 import { DoneFuncWithErrOrRes, FastifyInstance, FastifyReply, FastifyRequest } from 'fastify';
 import fastifyStatic from 'fastify-static';
 import path from 'path';
-import { isLocalRun } from './local-run';
 
 export function registerStaticServer(publicFolder: string, server: FastifyInstance) {
   const rootPath = path.resolve(__dirname, publicFolder);
@@ -24,15 +23,6 @@ export function registerStaticServer(publicFolder: string, server: FastifyInstan
     maxAge: 24 * 60 * 60 * 1000,
     lastModified: true,
     prefix: '/dashboard/',
-  });
-  server.get('/', async (request: FastifyRequest, reply: FastifyReply) => {
-    if (isLocalRun && !process.env.CLUSTER_ACCESS_TOKEN) {
-      const authorizationEndpoint = server.localStart.generateAuthorizationUri(request);
-      if (authorizationEndpoint) {
-        return reply.redirect(authorizationEndpoint);
-      }
-    }
-    return reply.redirect('/dashboard/static/preload.html');
   });
 
   const doNotCache = [

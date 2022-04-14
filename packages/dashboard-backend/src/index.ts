@@ -35,6 +35,8 @@ import {
   registerOauth,
   addAuthorizationHooks,
 } from './local-run/dexHelper';
+import { registerPreload } from './preload';
+import { registerFactory } from './factory';
 
 const CHE_HOST = process.env.CHE_HOST as string;
 
@@ -72,14 +74,18 @@ if (isLocalRun) {
   if (DEX_INGRESS) {
     addDexProxy(server, `https://${DEX_INGRESS}`);
     registerDexCallback(server);
+    registerOauth(server);
+    addAuthorizationHooks(server);
   }
-  registerOauth(server);
-  addAuthorizationHooks(server);
   const CHE_HOST_ORIGIN = process.env.CHE_HOST_ORIGIN as string;
   registerLocalServers(server, CHE_HOST_ORIGIN);
 }
 
 registerStaticServer(publicFolder, server);
+
+registerPreload(server);
+
+registerFactory(server);
 
 registerSwagger(server);
 

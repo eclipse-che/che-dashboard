@@ -10,23 +10,21 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-(function acceptNewFactoryLink() {
+(function acceptNewFactoryLink(): void {
   const hash = window.location.hash.replace(/(\/?)#(\/?)/, '#');
-  if (hash) {
-    window.location.hash = '';
-  }
   if (hash.startsWith('#http')) {
     let factoryUrl = hash.substring(1);
-    if(!factoryUrl.includes('?')) {
+    if (!factoryUrl.includes('?')) {
       factoryUrl = factoryUrl.replace('&', '?');
     }
-    window.location.pathname = buildFactoryLoaderPath(factoryUrl);
+    window.location.href =
+      window.location.origin + '/dashboard' + buildFactoryLoaderPath(factoryUrl);
   } else {
     window.location.pathname = '/dashboard/';
   }
-})()
+})();
 
-function buildFactoryLoaderPath(url) {
+export function buildFactoryLoaderPath(url: string): string {
   const fullUrl = new window.URL(url);
   const editor = extractUrlParam(fullUrl, 'che-editor');
   let devfilePath = extractUrlParam(fullUrl, 'devfilePath');
@@ -53,15 +51,14 @@ function buildFactoryLoaderPath(url) {
   return newPath;
 }
 
-function extractUrlParam(fullUrl, paramName) {
+function extractUrlParam(fullUrl: URL, paramName: string): string {
   const param = fullUrl.searchParams.get(paramName);
-  let value;
-  if (param && typeof param === 'string') {
+  let value = '';
+  if (param) {
     value = param.slice();
-  } else if (!param && fullUrl.searchParams.has(paramName)) {
-    value = true;
+  } else if (fullUrl.searchParams.has(paramName)) {
+    value = 'true';
   }
   fullUrl.searchParams.delete(paramName);
   return value;
 }
-
