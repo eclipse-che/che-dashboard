@@ -30,5 +30,16 @@ export async function convertDevfileV2toDevfileV1(
 export async function convertDevfileV1toDevfileV2(
   devfile: che.WorkspaceDevfile,
 ): Promise<devfileApi.Devfile> {
-  return (await devfileConverter.v1ToV2(devfile)) as devfileApi.Devfile;
+  const converted = (await devfileConverter.v1ToV2(devfile)) as devfileApi.Devfile;
+
+  const sidecarPolicyKey = 'che-theia.eclipse.org/sidecar-policy';
+  const sidecarPolicy = 'mergeImage';
+  if (converted.attributes === undefined) {
+    converted.attributes = {};
+  }
+  if (converted.attributes?.[sidecarPolicyKey] === undefined) {
+    converted.attributes[sidecarPolicyKey] = sidecarPolicy;
+  }
+
+  return converted;
 }
