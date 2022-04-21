@@ -35,7 +35,6 @@ import {
   registerOauth,
   addAuthorizationHooks,
 } from './local-run/dexHelper';
-import { registerPreload } from './preload';
 import { registerFactory } from './factory';
 
 const CHE_HOST = process.env.CHE_HOST as string;
