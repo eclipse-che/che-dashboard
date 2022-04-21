@@ -83,8 +83,6 @@ if (isLocalRun) {
 
 registerStaticServer(publicFolder, server);
 
-registerPreload(server);
-
 registerFactory(server);
 
 registerSwagger(server);

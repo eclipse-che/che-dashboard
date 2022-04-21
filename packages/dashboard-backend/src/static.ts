@@ -16,13 +16,13 @@ import path from 'path';
 
 export function registerStaticServer(publicFolder: string, server: FastifyInstance) {
   const rootPath = path.resolve(__dirname, publicFolder);
-  console.log(`Static server's serving "${rootPath}" on 0.0.0.0:8080/dashboard/`);
+  console.log(`Static server's serving "${rootPath}" on 0.0.0.0:8080/`);
 
   server.register(fastifyStatic, {
     root: rootPath,
     maxAge: 24 * 60 * 60 * 1000,
     lastModified: true,
-    prefix: '/dashboard/',
+    prefix: '/',
   });
 
   const doNotCache = [
