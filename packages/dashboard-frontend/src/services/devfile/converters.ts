@@ -32,6 +32,12 @@ export async function convertDevfileV1toDevfileV2(
 ): Promise<devfileApi.Devfile> {
   const converted = (await devfileConverter.v1ToV2(devfile)) as devfileApi.Devfile;
 
+  if (converted.components?.some(component => component.container?.image)) {
+    return converted;
+  }
+
+  // if no user component found
+  // use `mergeImage` sidecar policy
   const sidecarPolicyKey = 'che-theia.eclipse.org/sidecar-policy';
   const sidecarPolicy = 'mergeImage';
   if (converted.attributes === undefined) {
