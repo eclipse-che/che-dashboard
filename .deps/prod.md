@@ -4,14 +4,14 @@
 | --- | --- | --- |
 | [`@babel/runtime@7.17.7`](https://github.com/babel/babel.git) | MIT | #1946 |
 | [`@devfile/api@2.2.0-alpha-1646855991`](https://github.com/devfile/api.git) | EPL-2.0 | clearlydefined |
-| `@eclipse-che/api@7.44.0` | EPL-2.0 | clearlydefined |
-| [`@eclipse-che/che-code-devworkspace-handler@1.64.0-dev-210b722`](git+https://github.com/che-incubator/che-code.git) | EPL-2.0 | clearlydefined |
-| [`@eclipse-che/che-theia-devworkspace-handler@0.0.1-1642670698`](git+https://github.com/eclipse-che/che-theia.git) | EPL-2.0 | clearlydefined |
-| [`@eclipse-che/common@7.43.0-next`](https://github.com/eclipse-che/che-dashboard) | EPL-2.0 | N/A |
-| [`@eclipse-che/dashboard-backend@7.43.0-next`](https://github.com/eclipse-che/che-dashboard) | EPL-2.0 | N/A |
-| [`@eclipse-che/dashboard-frontend@7.43.0-next`](git://github.com/eclipse/che-dashboard.git) | EPL-2.0 | N/A |
-| [`@eclipse-che/devfile-converter@0.0.1-e37ee54`](git+https://github.com/che-incubator/devfile-converter.git) | EPL-2.0 | N/A | 
-| [`@eclipse-che/workspace-client@0.0.1-1632305737`](https://github.com/eclipse/che-workspace-client) | EPL-2.0 | clearlydefined |
+| `@eclipse-che/api@7.44.0` | EPL-2.0 | ecd.che |
+| [`@eclipse-che/che-code-devworkspace-handler@1.64.0-dev-210b722`](git+https://github.com/che-incubator/che-code.git) | EPL-2.0 | ecd.che |
+| [`@eclipse-che/che-theia-devworkspace-handler@0.0.1-1642670698`](git+https://github.com/eclipse-che/che-theia.git) | EPL-2.0 | ecd.che |
+| [`@eclipse-che/common@7.46.1-next`](https://github.com/eclipse-che/che-dashboard) | EPL-2.0 | ecd.che |
+| [`@eclipse-che/dashboard-backend@7.46.1-next`](https://github.com/eclipse-che/che-dashboard) | EPL-2.0 | ecd.che |
+| [`@eclipse-che/dashboard-frontend@7.46.1-next`](git://github.com/eclipse/che-dashboard.git) | EPL-2.0 | ecd.che |
+| [`@eclipse-che/devfile-converter@0.0.1-e37ee54`](git+https://github.com/che-incubator/devfile-converter.git) | EPL-2.0 | ecd.che |
+| [`@eclipse-che/workspace-client@0.0.1-1632305737`](https://github.com/eclipse/che-workspace-client) | EPL-2.0 | ecd.che |
 | [`@fastify/ajv-compiler@1.1.0`](git+https://github.com/fastify/ajv-compiler.git) | MIT | clearlydefined |
 | [`@hapi/address@2.1.4`](git://github.com/hapijs/address) | BSD-3-Clause | clearlydefined |
 | [`@hapi/boom@7.4.11`](git://github.com/hapijs/boom) | BSD-3-Clause | clearlydefined |
@@ -224,7 +224,7 @@
 | [`isstream@0.1.2`](https://github.com/rvagg/isstream.git) | MIT | clearlydefined |
 | [`jose@2.0.5`](https://github.com/panva/jose.git) | MIT | clearlydefined |
 | [`jquery@3.6.0`](https://github.com/jquery/jquery.git) | MIT | clearlydefined |
-| [`js-tokens@4.0.0`](https://github.com/lydell/js-tokens.git) | MIT | clearlydefined |
+| [`js-tokens@4.0.0`](https://github.com/lydell/js-tokens.git) | MIT | #2401 |
 | [`js-yaml@4.1.0`](https://github.com/nodeca/js-yaml.git) | MIT | clearlydefined |
 | [`jsbn@0.1.1`](https://github.com/andyperlitch/jsbn.git) | MIT | clearlydefined |
 | [`jsesc@1.3.0`](https://github.com/mathiasbynens/jsesc.git) | MIT | clearlydefined |
@@ -258,7 +258,7 @@
 | [`mimic-response@3.1.0`](https://github.com/sindresorhus/mimic-response.git) | MIT | clearlydefined |
 | [`mini-create-react-context@0.4.1`](https://github.com/StringEpsilon/mini-create-react-context) | MIT | clearlydefined |
 | [`minimatch@3.1.2`](git://github.com/isaacs/minimatch.git) | ISC | clearlydefined |
-| [`minimist@1.2.5`](git://github.com/substack/minimist.git) | MIT | clearlydefined |
+| [`minimist@1.2.6`](git://github.com/substack/minimist.git) | MIT | clearlydefined |
 | [`minipass@3.1.6`](git+https://github.com/isaacs/minipass.git) | ISC | clearlydefined |
 | [`minizlib@2.1.2`](git+https://github.com/isaacs/minizlib.git) | MIT | clearlydefined |
 | [`mkdirp@1.0.4`](https://github.com/isaacs/node-mkdirp.git) | MIT | clearlydefined |
@@ -321,8 +321,8 @@
 | [`react-is@16.13.1`](https://github.com/facebook/react.git) | MIT | clearlydefined |
 | [`react-pluralize@1.6.3`](https://github.com/tsmith123/react-pluralize) | MIT | clearlydefined |
 | [`react-redux@7.2.6`](https://github.com/reduxjs/react-redux.git) | MIT | clearlydefined |
-| [`react-router-dom@5.3.0`](https://github.com/ReactTraining/react-router.git) | MIT | clearlydefined |
-| [`react-router@5.2.1`](https://github.com/ReactTraining/react-router.git) | MIT | clearlydefined |
+| [`react-router-dom@5.3.0`](https://github.com/ReactTraining/react-router.git) | MIT |  |
+| [`react-router@5.2.1`](https://github.com/ReactTraining/react-router.git) | MIT |  |
 | [`react-side-effect@2.1.1`](https://github.com/gaearon/react-side-effect.git) | MIT | clearlydefined |
 | [`react-tooltip@4.2.21`](https://github.com/wwayne/react-tooltip) | MIT | clearlydefined |
 | [`react@16.14.0`](git+https://github.com/facebook/react.git) | MIT | clearlydefined |
@@ -373,7 +373,7 @@
 | [`sonic-boom@1.4.1`](git+https://github.com/mcollina/sonic-boom.git) | MIT | clearlydefined |
 | [`source-map-js@1.0.2`](https://github.com/7rulnik/source-map-js.git) | BSD-3-Clause | clearlydefined |
 | [`source-map-support@0.4.18`](https://github.com/evanw/node-source-map-support) | MIT | clearlydefined |
-| [`source-map@0.5.7`](http://github.com/mozilla/source-map.git) | BSD-3-Clause | clearlydefined |
+| [`source-map@0.5.7`](http://github.com/mozilla/source-map.git) | BSD-3-Clause | #2400 |
 | [`sprintf-js@1.0.3`](https://github.com/alexei/sprintf.js.git) | BSD-3-Clause | #949 |
 | [`sshpk@1.17.0`](git+https://github.com/joyent/node-sshpk.git) | MIT | clearlydefined |
 | [`statuses@1.5.0`](https://github.com/jshttp/statuses.git) | MIT | clearlydefined |
