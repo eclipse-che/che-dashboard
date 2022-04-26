@@ -231,7 +231,7 @@
 | [`json-buffer@3.0.1`](git://github.com/dominictarr/json-buffer.git) | MIT | clearlydefined |
 | [`json-schema-resolver@1.3.0`](git+https://github.com/Eomm/json-schema-resolver.git) | MIT | clearlydefined |
 | [`json-schema-traverse@0.4.1`](git+https://github.com/epoberezkin/json-schema-traverse.git) | MIT | clearlydefined |
-| [`json-schema@0.4.0`](http://github.com/kriszyp/json-schema) | (AFL-2.1 OR BSD-3-Clause) | clearlydefined |
+| [`json-schema@0.4.0`](http://github.com/kriszyp/json-schema) | (AFL-2.1 OR BSD-3-Clause) | #2410 |
 | [`json-stringify-safe@5.0.1`](git://github.com/isaacs/json-stringify-safe) | ISC | clearlydefined |
 | [`json5@0.5.1`](https://github.com/aseemk/json5.git) | MIT | #1040 |
 | [`jsonc-parser@3.0.0`](https://github.com/microsoft/node-jsonc-parser) | MIT | clearlydefined |
@@ -321,8 +321,8 @@
 | [`react-is@16.13.1`](https://github.com/facebook/react.git) | MIT | clearlydefined |
 | [`react-pluralize@1.6.3`](https://github.com/tsmith123/react-pluralize) | MIT | clearlydefined |
 | [`react-redux@7.2.6`](https://github.com/reduxjs/react-redux.git) | MIT | clearlydefined |
-| [`react-router-dom@5.3.0`](https://github.com/ReactTraining/react-router.git) | MIT |  |
-| [`react-router@5.2.1`](https://github.com/ReactTraining/react-router.git) | MIT |  |
+| [`react-router-dom@5.3.0`](https://github.com/ReactTraining/react-router.git) | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/react-router-dom/5.3.0) |
+| [`react-router@5.2.1`](https://github.com/ReactTraining/react-router.git) | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/react-router/5.2.1) |
 | [`react-side-effect@2.1.1`](https://github.com/gaearon/react-side-effect.git) | MIT | clearlydefined |
 | [`react-tooltip@4.2.21`](https://github.com/wwayne/react-tooltip) | MIT | clearlydefined |
 | [`react@16.14.0`](git+https://github.com/facebook/react.git) | MIT | clearlydefined |
@@ -342,7 +342,7 @@
 | [`reselect@4.1.5`](https://github.com/reduxjs/reselect.git) | MIT | clearlydefined |
 | [`resolve-alpn@1.2.1`](git+https://github.com/szmarczak/resolve-alpn.git) | MIT | clearlydefined |
 | [`resolve-pathname@3.0.0`](https://github.com/mjackson/resolve-pathname.git) | MIT | clearlydefined |
-| [`resolve@1.22.0`](git://github.com/browserify/resolve.git) | MIT | clearlydefined |
+| [`resolve@1.22.0`](git://github.com/browserify/resolve.git) | MIT | #2409 |
 | [`responselike@2.0.0`](https://github.com/lukechilds/responselike.git) | MIT | clearlydefined |
 | [`ret@0.2.2`](git://github.com/fent/ret.js.git) | MIT | clearlydefined |
 | [`reusify@1.0.4`](git+https://github.com/mcollina/reusify.git) | MIT | clearlydefined |
@@ -371,7 +371,7 @@
 | [`slash@1.0.0`](https://github.com/sindresorhus/slash.git) | MIT | clearlydefined |
 | [`sockjs-client@1.6.0`](https://github.com/sockjs/sockjs-client.git) | MIT | clearlydefined |
 | [`sonic-boom@1.4.1`](git+https://github.com/mcollina/sonic-boom.git) | MIT | clearlydefined |
-| [`source-map-js@1.0.2`](https://github.com/7rulnik/source-map-js.git) | BSD-3-Clause | clearlydefined |
+| [`source-map-js@1.0.2`](https://github.com/7rulnik/source-map-js.git) | BSD-3-Clause | #2412 |
 | [`source-map-support@0.4.18`](https://github.com/evanw/node-source-map-support) | MIT | clearlydefined |
 | [`source-map@0.5.7`](http://github.com/mozilla/source-map.git) | BSD-3-Clause | #2400 |
 | [`sprintf-js@1.0.3`](https://github.com/alexei/sprintf.js.git) | BSD-3-Clause | #949 |
