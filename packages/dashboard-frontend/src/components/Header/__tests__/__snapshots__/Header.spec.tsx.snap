@@ -25,7 +25,7 @@ exports[`The header component for IDE-loader and Factory-loader pages should ren
           >
             <a
               className="pf-c-breadcrumb__link"
-              href="/workspaces"
+              href="/dashboard/"
               target={null}
             >
               Workspaces
@@ -151,7 +151,7 @@ exports[`The header component for IDE-loader and Factory-loader pages should ren
           >
             <a
               className="pf-c-breadcrumb__link"
-              href="/workspaces"
+              href="/dashboard/"
               target={null}
             >
               Workspaces

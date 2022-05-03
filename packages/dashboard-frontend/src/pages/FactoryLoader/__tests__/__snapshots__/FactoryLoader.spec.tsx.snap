@@ -26,7 +26,7 @@ Array [
             >
               <a
                 className="pf-c-breadcrumb__link"
-                href="/workspaces"
+                href="/dashboard/"
                 target={null}
               >
                 Workspaces
@@ -656,7 +656,7 @@ Array [
             >
               <a
                 className="pf-c-breadcrumb__link"
-                href="/workspaces"
+                href="/dashboard/"
                 target={null}
               >
                 Workspaces
@@ -1286,7 +1286,7 @@ Array [
             >
               <a
                 className="pf-c-breadcrumb__link"
-                href="/workspaces"
+                href="/dashboard/"
                 target={null}
               >
                 Workspaces
@@ -1815,7 +1815,7 @@ Array [
             >
               <a
                 className="pf-c-breadcrumb__link"
-                href="/workspaces"
+                href="/dashboard/"
                 target={null}
               >
                 Workspaces
@@ -2344,7 +2344,7 @@ Array [
             >
               <a
                 className="pf-c-breadcrumb__link"
-                href="/workspaces"
+                href="/dashboard/"
                 target={null}
               >
                 Workspaces
@@ -2956,7 +2956,7 @@ Array [
             >
               <a
                 className="pf-c-breadcrumb__link"
-                href="/workspaces"
+                href="/dashboard/"
                 target={null}
               >
                 Workspaces
@@ -3568,7 +3568,7 @@ Array [
             >
               <a
                 className="pf-c-breadcrumb__link"
-                href="/workspaces"
+                href="/dashboard/"
                 target={null}
               >
                 Workspaces
@@ -4180,7 +4180,7 @@ Array [
             >
               <a
                 className="pf-c-breadcrumb__link"
-                href="/workspaces"
+                href="/dashboard/"
                 target={null}
               >
                 Workspaces
@@ -4799,7 +4799,7 @@ Array [
             >
               <a
                 className="pf-c-breadcrumb__link"
-                href="/workspaces"
+                href="/dashboard/"
                 target={null}
               >
                 Workspaces
@@ -5400,7 +5400,7 @@ Array [
             >
               <a
                 className="pf-c-breadcrumb__link"
-                href="/workspaces"
+                href="/dashboard/"
                 target={null}
               >
                 Workspaces
