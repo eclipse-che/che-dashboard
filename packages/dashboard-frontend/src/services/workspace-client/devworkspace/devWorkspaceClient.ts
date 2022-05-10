@@ -287,11 +287,7 @@ export class DevWorkspaceClient extends WorkspaceClient {
     devworkspace.spec.started = false;
     const createdWorkspace = await DwApi.createWorkspace(devworkspace);
 
-    this.addEnvVarsToContainers(
-      createdWorkspace.spec.template.components,
-      pluginRegistryUrl,
-      pluginRegistryInternalUrl,
-    );
+    this.addEnvVarsToContainers(components, pluginRegistryUrl, pluginRegistryInternalUrl);
 
     // create DWT
     devworkspaceTemplate.metadata.namespace = defaultNamespace;
