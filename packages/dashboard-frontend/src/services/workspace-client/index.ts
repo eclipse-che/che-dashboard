@@ -10,14 +10,10 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import { AxiosInstance } from 'axios';
-import { inject, injectable } from 'inversify';
-import { KeycloakSetupService } from '../keycloak/setup';
-import { KeycloakAuthService } from '../keycloak/auth';
+import axios from 'axios';
+import { AxiosInstance, AxiosResponse } from 'axios';
+import { injectable } from 'inversify';
 import { default as WorkspaceClientLib } from '@eclipse-che/workspace-client';
-import { helpers } from '@eclipse-che/common';
-
-const VALIDITY_TIME = 5;
 export type WebSocketsFailedCallback = () => void;
 
 /**
@@ -27,50 +23,63 @@ export type WebSocketsFailedCallback = () => void;
 export abstract class WorkspaceClient {
   protected readonly axios: AxiosInstance;
 
-  @inject(KeycloakAuthService)
-  private readonly keycloakAuthService: KeycloakAuthService;
-
-  constructor(private keycloakSetupService: KeycloakSetupService) {
+  constructor() {
     // change this temporary solution after adding the proper method to workspace-client https://github.com/eclipse/che/issues/18311
     this.axios = (WorkspaceClientLib as any).createAxiosInstance({ loggingEnabled: false });
 
-    this.keycloakSetupService.ready.then(() => {
-      if (!KeycloakAuthService.sso) {
-        return;
-      }
+    // workspaceClientLib axios interceptor
+    this.axios.interceptors.response.use(
+      response => {
+        if (this.isUnauthorized(response) && this.checkPathPrefix(response, '/api/')) {
+          deauthorizeCallback();
+        }
+        return response;
+      },
+      error => {
+        if (this.isUnauthorized(error)) {
+          deauthorizeCallback();
+        }
+        return Promise.reject(error);
+      },
+    );
 
-      this.axios.interceptors.request.use(async config => {
-        await this.keycloakAuthService.updateToken(VALIDITY_TIME, config);
-        return config;
-      });
-
-      window.addEventListener(
-        'message',
-        (event: MessageEvent) => {
-          if (typeof event.data === 'string' && event.data.startsWith('update-token:')) {
-            const receivedValue = parseInt(event.data.split(':')[1], 10);
-            const validityTime = Number.isNaN(receivedValue)
-              ? VALIDITY_TIME
-              : Math.ceil(receivedValue / 1000);
-            this.keycloakAuthService.updateToken(validityTime);
-          }
-        },
-        false,
-      );
-    });
+    // dashboard-backend axios interceptor
+    axios.interceptors.response.use(
+      response => {
+        if (this.isUnauthorized(response) && this.checkPathPrefix(response, '/dashboard/api/')) {
+          deauthorizeCallback();
+        }
+        return response;
+      },
+      error => {
+        if (this.isUnauthorized(error)) {
+          deauthorizeCallback();
+        }
+        return Promise.reject(error);
+      },
+    );
   }
 
-  async refreshToken(validityTime: number): Promise<string | Error> {
-    try {
-      const token = await this.keycloakAuthService.updateToken(validityTime);
-      return token || '';
-    } catch (e) {
-      return new Error(helpers.errors.getMessage(e));
+  private checkPathPrefix(response: AxiosResponse, prefix: string): boolean {
+    const pathname = response.request?.responseURL;
+    if (!pathname) {
+      return false;
     }
+    return pathname.startsWith(prefix);
   }
 
-  protected get token(): string | undefined {
-    const { keycloak } = KeycloakAuthService;
-    return keycloak ? keycloak.token : undefined;
+  private isUnauthorized(response: unknown) {
+    if (typeof response === 'string') {
+      return response.includes('HTTP Status 401');
+    } else if (typeof response === 'object' && response !== null) {
+      const { status, code, statusCode } = response as { [propName: string]: string | number };
+      return (statusCode === 401 && code === 'FST_UNAUTHORIZED') || status === 401;
+    }
+    return false;
   }
+}
+
+export async function deauthorizeCallback(): Promise<void> {
+  await axios.get('/oauth/sign_out');
+  return Promise.resolve();
 }
