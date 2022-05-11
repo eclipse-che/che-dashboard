@@ -546,10 +546,13 @@ export class DevWorkspaceClient extends WorkspaceClient {
       if (container === undefined) {
         continue;
       }
-      if (!container.env) {
-        container.env = [];
-      }
-      container.env.push(
+      const envs = (container.env || []).filter(
+        env =>
+          env.name !== this.dashboardUrlEnvName &&
+          env.name !== this.pluginRegistryUrlEnvName &&
+          env.name !== this.pluginRegistryInternalUrlEnvName,
+      );
+      envs.push(
         {
           name: this.dashboardUrlEnvName,
           value: window.location.origin,
@@ -563,6 +566,7 @@ export class DevWorkspaceClient extends WorkspaceClient {
           value: pluginRegistryInternalUrl,
         },
       );
+      container.env = envs;
     }
   }
 
