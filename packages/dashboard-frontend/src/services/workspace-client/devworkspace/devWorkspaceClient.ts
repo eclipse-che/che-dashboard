@@ -500,8 +500,8 @@ export class DevWorkspaceClient extends WorkspaceClient {
         ];
         this.addEnvVarsToContainers(
           template.spec?.components,
-          pluginRegistryUrl,
-          pluginRegistryInternalUrl,
+          pluginRegistryUrl || '',
+          pluginRegistryInternalUrl || '',
         );
 
         const pluginDWT = await DwtApi.createTemplate(<devfileApi.DevWorkspaceTemplate>template);
@@ -511,8 +511,8 @@ export class DevWorkspaceClient extends WorkspaceClient {
 
     this.addEnvVarsToContainers(
       createdWorkspace.spec.template.components,
-      pluginRegistryUrl,
-      pluginRegistryInternalUrl,
+      pluginRegistryUrl || '',
+      pluginRegistryInternalUrl || '',
     );
 
     const patch = [
@@ -534,8 +534,8 @@ export class DevWorkspaceClient extends WorkspaceClient {
       | V1alpha2DevWorkspaceSpecTemplateComponents[]
       | V1alpha2DevWorkspaceTemplateSpecComponents[]
       | undefined,
-    pluginRegistryUrl = '',
-    pluginRegistryInternalUrl = '',
+    pluginRegistryUrl: string,
+    pluginRegistryInternalUrl: string,
   ): void {
     if (components === undefined) {
       return;
@@ -941,6 +941,8 @@ export class DevWorkspaceClient extends WorkspaceClient {
   async checkForTemplatesUpdate(
     namespace: string,
     pluginsByUrl: { [url: string]: devfileApi.Devfile } = {},
+    pluginRegistryUrl = '',
+    pluginRegistryInternalUrl = '',
   ): Promise<{ [templateName: string]: api.IPatch[] }> {
     const templates = await DwtApi.getTemplates(namespace);
     const managedTemplates = templates.filter(
@@ -972,6 +974,11 @@ export class DevWorkspaceClient extends WorkspaceClient {
               }
             });
             spec.components = plugin.components;
+            this.addEnvVarsToContainers(
+              spec.components,
+              pluginRegistryUrl,
+              pluginRegistryInternalUrl,
+            );
           } else {
             spec[key] = plugin[key];
           }
