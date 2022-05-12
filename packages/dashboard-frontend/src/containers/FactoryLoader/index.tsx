@@ -33,7 +33,6 @@ import {
   selectWorkspacesSettings,
 } from '../../store/Workspaces/Settings/selectors';
 import { buildIdeLoaderLocation } from '../../services/helpers/location';
-import { lazyInject } from '../../inversify.config';
 import { getEnvironment, isDevEnvironment } from '../../services/helpers/environment';
 import { isOAuthResponse } from '../../store/FactoryResolver';
 import { Devfile, isCheDevfile, isCheWorkspace, Workspace } from '../../services/workspace-adapter';

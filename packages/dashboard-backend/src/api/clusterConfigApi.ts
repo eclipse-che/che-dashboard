@@ -16,9 +16,9 @@ import { baseApiPath } from '../constants/config';
 import { getSchema } from '../services/helpers';
 import { getDevWorkspaceClient, getServiceAccountToken } from './helper';
 
-const tags = ['clusterConfig'];
+const tags = ['Cluster Config'];
 
-export function registerClusterConfig(server: FastifyInstance) {
+export function registerClusterConfigApi(server: FastifyInstance) {
   server.get(`${baseApiPath}/cluster-config`, getSchema({ tags }), async () =>
     buildClusterConfig(),
   );

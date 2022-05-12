@@ -15,7 +15,7 @@ import { baseApiPath } from '../constants/config';
 import { getDevWorkspaceClient, getServiceAccountToken } from './helper';
 import { getSchema } from '../services/helpers';
 
-const tags = ['serverconfig'];
+const tags = ['Server Config'];
 
 export function registerServerConfigApi(server: FastifyInstance) {
   server.get(
