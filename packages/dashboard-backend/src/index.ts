@@ -26,7 +26,7 @@ import { registerClusterInfoApi } from './api/clusterInfoApi';
 import { registerClusterConfigApi } from './api/clusterConfigApi';
 import { registerDockerConfigApi } from './api/dockerConfigApi';
 import { registerServerConfigApi } from './api/serverConfigApi';
-import { registerKubeConfigApi } from './api/kubeConfigAPI';
+import { registerKubeConfigApi } from './api/kubeConfigApi';
 import fastifyWebsocket from 'fastify-websocket';
 import {
   addDexProxy,

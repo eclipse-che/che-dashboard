@@ -20,7 +20,6 @@ import { BRANDING_DEFAULT, BrandingData } from '../../services/bootstrap/brandin
 import { container } from '../../inversify.config';
 import { CheWorkspaceClient } from '../../services/workspace-client/cheworkspace/cheWorkspaceClient';
 import { createObject } from '../helpers';
-import { isSafari } from '../../services/helpers/detectBrowser';
 import { deauthorizeCallback } from '../../services/workspace-client';
 
 const ASSET_PREFIX = './assets/branding/';
@@ -140,25 +139,23 @@ export const reducer: Reducer<State> = (
   }
 };
 
-async function getApiInfo(): Promise<{ implementationVersion: string }> {
+async function getApiInfo(): Promise<{
+  buildInfo: string;
+  implementationVendor: string;
+  implementationVersion: string;
+  scmRevision: string;
+  specificationTitle: string;
+  specificationVendor: string;
+  specificationVersion: string;
+}> {
   try {
-    if (isSafari) {
-      return (await axios.options('/api/')).data;
-    } else {
-      return cheWorkspaceClient.restApiClient.getApiInfo();
-    }
+    const { data } = await axios.options('/api/');
+    return data;
   } catch (e) {
     const errorMessage = common.helpers.errors.getMessage(e);
-    if (common.helpers.errors.isAxiosError(e)) {
-      if (e.code === '403') {
-        try {
-          await axios.get('/api/');
-        } catch (e) {
-          if (common.helpers.errors.isAxiosError(e) && e.code === '401') {
-            await deauthorizeCallback();
-          }
-        }
-      } else if (e.code === '500') {
+    if (typeof e === 'object' && e !== null) {
+      const { code } = e as { [propName: string]: string | number };
+      if (code == '403' || code == '500') {
         await deauthorizeCallback();
       }
     }

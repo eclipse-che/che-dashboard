@@ -29,15 +29,15 @@ export abstract class WorkspaceClient {
 
     // workspaceClientLib axios interceptor
     this.axios.interceptors.response.use(
-      response => {
+      async response => {
         if (this.isUnauthorized(response) && this.checkPathPrefix(response, '/api/')) {
-          deauthorizeCallback();
+          await deauthorizeCallback();
         }
         return response;
       },
-      error => {
+      async error => {
         if (this.isUnauthorized(error)) {
-          deauthorizeCallback();
+          await deauthorizeCallback();
         }
         return Promise.reject(error);
       },
@@ -45,15 +45,15 @@ export abstract class WorkspaceClient {
 
     // dashboard-backend axios interceptor
     axios.interceptors.response.use(
-      response => {
+      async response => {
         if (this.isUnauthorized(response) && this.checkPathPrefix(response, '/dashboard/api/')) {
-          deauthorizeCallback();
+          await deauthorizeCallback();
         }
         return response;
       },
-      error => {
+      async error => {
         if (this.isUnauthorized(error)) {
-          deauthorizeCallback();
+          await deauthorizeCallback();
         }
         return Promise.reject(error);
       },
@@ -68,12 +68,22 @@ export abstract class WorkspaceClient {
     return pathname.startsWith(prefix);
   }
 
-  private isUnauthorized(response: unknown) {
+  private isUnauthorized(response: unknown): boolean {
     if (typeof response === 'string') {
-      return response.includes('HTTP Status 401');
+      if (response.includes('HTTP Status 401')) {
+        return true;
+      }
     } else if (typeof response === 'object' && response !== null) {
-      const { status, code, statusCode } = response as { [propName: string]: string | number };
-      return (statusCode === 401 && code === 'FST_UNAUTHORIZED') || status === 401;
+      const { status, statusCode } = response as { [propName: string]: string | number };
+      if (statusCode == '401') {
+        return true;
+      } else if (status == '401') {
+        return true;
+      } else {
+        if (response.toString().includes('status code 401')) {
+          return true;
+        }
+      }
     }
     return false;
   }

@@ -10,7 +10,7 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import { FastifyInstance } from 'fastify';
+import { FastifyInstance, FastifyRequest } from 'fastify';
 import { ClusterConfig } from '@eclipse-che/common';
 import { baseApiPath } from '../constants/config';
 import { getSchema } from '../services/helpers';
@@ -19,13 +19,15 @@ import { getDevWorkspaceClient, getServiceAccountToken } from './helper';
 const tags = ['Cluster Config'];
 
 export function registerClusterConfigApi(server: FastifyInstance) {
-  server.get(`${baseApiPath}/cluster-config`, getSchema({ tags }), async () =>
-    buildClusterConfig(),
+  server.get(
+    `${baseApiPath}/cluster-config`,
+    getSchema({ tags }),
+    async (request: FastifyRequest) => buildClusterConfig(request),
   );
 }
 
-async function buildClusterConfig(): Promise<ClusterConfig> {
-  const token = getServiceAccountToken();
+async function buildClusterConfig(request: FastifyRequest): Promise<ClusterConfig> {
+  const token = await getServiceAccountToken(request);
   const { serverConfigApi } = await getDevWorkspaceClient(token);
 
   const cheCustomResource = await serverConfigApi.getCheCustomResource();
