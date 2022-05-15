@@ -150,7 +150,7 @@
 | [`@sinonjs/fake-timers@6.0.1`](http://github.com/sinonjs/fake-timers.git) | BSD-3-Clause | #1348 |
 | [`@stylelint/postcss-css-in-js@0.37.2`](https://github.com/stylelint/postcss-css-in-js.git) | MIT | clearlydefined |
 | [`@stylelint/postcss-markdown@0.36.2`](https://github.com/stylelint/postcss-markdown.git) | MIT | clearlydefined |
-| [`@testing-library/dom@7.31.2`](https://github.com/testing-library/dom-testing-library) | MIT | clearlydefined |
+| `@testing-library/dom@7.31.0` |  | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@testing-library/dom/7.31.0) |
 | [`@testing-library/jest-dom@5.16.2`](https://github.com/testing-library/jest-dom) | MIT | clearlydefined |
 | [`@testing-library/react@10.4.9`](https://github.com/testing-library/react-testing-library) | MIT | clearlydefined |
 | [`@testing-library/user-event@12.8.3`](https://github.com/testing-library/user-event) | MIT | clearlydefined |
