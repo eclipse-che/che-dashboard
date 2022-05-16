@@ -50,8 +50,6 @@ export type ActionCreators = {
   requestBranding: () => AppThunk<KnownAction, Promise<void>>;
 };
 
-const cheWorkspaceClient = container.get(CheWorkspaceClient);
-
 export const actionCreators: ActionCreators = {
   requestBranding:
     (): AppThunk<KnownAction, Promise<void>> =>

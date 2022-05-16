@@ -10,7 +10,6 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import axios from 'axios';
 import { FastifyRequest } from 'fastify';
 import { DwClientProvider } from '../services/kubeclient/dwClientProvider';
 import { DevWorkspaceClient } from '../devworkspace-client';
@@ -18,7 +17,6 @@ import { createFastifyError } from '../services/helpers';
 import { existsSync, readFileSync } from 'fs';
 import { isLocalRun } from '../local-run';
 
-const CHE_INTERNAL_URL = process.env.CHE_INTERNAL_URL as string;
 const SERVICE_ACCOUNT_TOKEN_PATH = '/run/secrets/kubernetes.io/serviceaccount/token';
 const AUTHORIZATION_BEARER_PREFIX = /^Bearer /;
 const dwClientProvider = new DwClientProvider();
