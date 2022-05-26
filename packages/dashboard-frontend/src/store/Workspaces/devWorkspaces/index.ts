@@ -15,7 +15,7 @@ import { ThunkDispatch } from 'redux-thunk';
 import common from '@eclipse-che/common';
 import { AppState, AppThunk } from '../..';
 import { container } from '../../../inversify.config';
-import { DevWorkspaceStatus } from '../../../services/helpers/types';
+import { DevWorkspaceStatus, WorkspacesLogs } from '../../../services/helpers/types';
 import { createObject } from '../../helpers';
 import {
   DevWorkspaceClient,
@@ -47,7 +47,7 @@ export interface State {
   resourceVersion?: string;
   error?: string;
   // runtime logs
-  workspacesLogs: Map<string, string[]>;
+  workspacesLogs: WorkspacesLogs;
 }
 
 interface RequestDevWorkspacesAction extends Action {
@@ -79,7 +79,7 @@ interface UpdateWorkspaceStatusAction extends Action {
 
 interface UpdateWorkspacesLogsAction extends Action {
   type: 'UPDATE_DEVWORKSPACE_LOGS';
-  workspacesLogs: Map<string, string[]>;
+  workspacesLogs: WorkspacesLogs;
 }
 
 interface DeleteWorkspaceLogsAction extends Action {
