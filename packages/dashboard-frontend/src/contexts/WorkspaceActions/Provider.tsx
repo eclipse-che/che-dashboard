@@ -33,7 +33,7 @@ import { IdeLoaderTab, WorkspaceAction, WorkspaceDetailsTab } from '../../servic
 import { AppState } from '../../store';
 import { selectAllWorkspaces } from '../../store/Workspaces/selectors';
 import * as WorkspacesStore from '../../store/Workspaces';
-import { WorkspaceActionsContext } from './context';
+import { WorkspaceActionsContext } from '.';
 import { isCheWorkspace, Workspace } from '../../services/workspace-adapter';
 
 type Deferred = {
