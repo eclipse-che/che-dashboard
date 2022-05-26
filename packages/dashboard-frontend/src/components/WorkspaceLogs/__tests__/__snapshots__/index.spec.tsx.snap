@@ -52,7 +52,9 @@ exports[`The LogsTab component should render workspace-logs widget with logs ins
   <div
     className=""
   >
-    <div>
+    <div
+      className="logsTools"
+    >
       <div
         className="pf-l-flex"
       >
@@ -125,7 +127,9 @@ exports[`The LogsTab component should render workspace-logs widget with logs ins
         </div>
       </div>
     </div>
-    <div>
+    <div
+      className="consoleOutput"
+    >
       <div>
         4
          lines
@@ -167,7 +171,9 @@ exports[`The LogsTab component should render workspace-logs widget without logs 
   <div
     className=""
   >
-    <div>
+    <div
+      className="logsTools"
+    >
       <div
         className="pf-l-flex"
       >
@@ -240,7 +246,9 @@ exports[`The LogsTab component should render workspace-logs widget without logs 
         </div>
       </div>
     </div>
-    <div>
+    <div
+      className="consoleOutput"
+    >
       <div>
         0
          lines

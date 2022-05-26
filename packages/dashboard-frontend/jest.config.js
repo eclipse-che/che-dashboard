@@ -18,7 +18,7 @@ module.exports = {
   displayName: 'Dashboard Frontend',
   moduleDirectories: ['node_modules', '../../node_modules', 'src'],
   moduleNameMapper: {
-    '\\.(css|less|sass|scss|styl)$': '<rootDir>/__mocks__/styleMock.js',
+    '\\.(css|less|sass|scss|styl)$': 'identity-obj-proxy',
     '\\.(gif|ttf|eot|svg)$': '<rootDir>/__mocks__/fileMock.js',
     'monaco-editor-core': 'monaco-editor-core/esm/vs/editor/editor.main',
     'vscode-languageserver-protocol/lib/utils/is':

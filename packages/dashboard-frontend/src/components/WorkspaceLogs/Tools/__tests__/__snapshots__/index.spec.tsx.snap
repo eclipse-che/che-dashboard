@@ -1,7 +1,9 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`The LogsTools component should render the component correctly 1`] = `
-<div>
+<div
+  className="logsTools"
+>
   <div
     className="pf-l-flex"
   >

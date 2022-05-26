@@ -86,7 +86,7 @@ Array [
             className=""
           >
             <span
-              className="pf-c-label undefined undefined"
+              className="pf-c-label statusLabel stoppedLabel"
               data-tip=""
             >
               <span
@@ -271,7 +271,7 @@ Array [
                 <svg
                   aria-hidden={true}
                   aria-labelledby={null}
-                  className="undefined wizard-icon"
+                  className="rotate wizard-icon"
                   fill="#0e6fe0"
                   height="1em"
                   role="img"
@@ -344,7 +344,7 @@ Array [
                       <svg
                         aria-hidden={true}
                         aria-labelledby={null}
-                        className="undefined wizard-icon"
+                        className="rotate wizard-icon"
                         fill="#0e6fe0"
                         height="1em"
                         role="img"
@@ -563,7 +563,7 @@ Array [
             className=""
           >
             <span
-              className="pf-c-label pf-m-red"
+              className="pf-c-label pf-m-red statusLabel"
               data-tip=""
             >
               <span
@@ -907,7 +907,9 @@ Array [
         <div
           className=""
         >
-          <div>
+          <div
+            className="logsTools"
+          >
             <div
               className="pf-l-flex"
             >
@@ -980,7 +982,9 @@ Array [
               </div>
             </div>
           </div>
-          <div>
+          <div
+            className="consoleOutput"
+          >
             <div>
               0
                lines
@@ -1083,7 +1087,7 @@ Array [
             className=""
           >
             <span
-              className="pf-c-label pf-m-green"
+              className="pf-c-label pf-m-green statusLabel"
               data-tip=""
             >
               <span
@@ -1262,7 +1266,7 @@ Array [
                 <svg
                   aria-hidden={true}
                   aria-labelledby={null}
-                  className="undefined wizard-icon"
+                  className="rotate wizard-icon"
                   fill="#0e6fe0"
                   height="1em"
                   role="img"
@@ -1407,7 +1411,7 @@ Array [
                       <svg
                         aria-hidden={true}
                         aria-labelledby={null}
-                        className="undefined wizard-icon"
+                        className="rotate wizard-icon"
                         fill="#0e6fe0"
                         height="1em"
                         role="img"
@@ -1463,7 +1467,9 @@ Array [
         <div
           className=""
         >
-          <div>
+          <div
+            className="logsTools"
+          >
             <div
               className="pf-l-flex"
             >
@@ -1536,7 +1542,9 @@ Array [
               </div>
             </div>
           </div>
-          <div>
+          <div
+            className="consoleOutput"
+          >
             <div>
               0
                lines
@@ -1639,7 +1647,7 @@ Array [
             className=""
           >
             <span
-              className="pf-c-label pf-m-red"
+              className="pf-c-label pf-m-red statusLabel"
               data-tip=""
             >
               <span
@@ -2158,7 +2166,7 @@ Array [
             className=""
           >
             <span
-              className="pf-c-label pf-m-blue"
+              className="pf-c-label pf-m-blue statusLabel"
               data-tip=""
             >
               <span
@@ -2170,6 +2178,7 @@ Array [
                   <svg
                     aria-hidden={true}
                     aria-labelledby={null}
+                    className="rotate"
                     fill="currentColor"
                     height="1em"
                     role="img"
@@ -2337,7 +2346,7 @@ Array [
                 <svg
                   aria-hidden={true}
                   aria-labelledby={null}
-                  className="undefined wizard-icon"
+                  className="rotate wizard-icon"
                   fill="#0e6fe0"
                   height="1em"
                   role="img"
@@ -2446,7 +2455,7 @@ Array [
                       <svg
                         aria-hidden={true}
                         aria-labelledby={null}
-                        className="undefined wizard-icon"
+                        className="rotate wizard-icon"
                         fill="#0e6fe0"
                         height="1em"
                         role="img"
@@ -2520,7 +2529,9 @@ Array [
         <div
           className=""
         >
-          <div>
+          <div
+            className="logsTools"
+          >
             <div
               className="pf-l-flex"
             >
@@ -2593,7 +2604,9 @@ Array [
               </div>
             </div>
           </div>
-          <div>
+          <div
+            className="consoleOutput"
+          >
             <div>
               0
                lines
@@ -2696,7 +2709,7 @@ Array [
             className=""
           >
             <span
-              className="pf-c-label pf-m-red"
+              className="pf-c-label pf-m-red statusLabel"
               data-tip=""
             >
               <span
