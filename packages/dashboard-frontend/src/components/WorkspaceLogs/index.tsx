@@ -10,6 +10,7 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
+import React from 'react';
 import { FileIcon } from '@patternfly/react-icons';
 import {
   Title,
@@ -19,33 +20,32 @@ import {
   PageSection,
   PageSectionVariants,
 } from '@patternfly/react-core';
-import React from 'react';
+import { isEqual } from 'lodash';
 import { connect, ConnectedProps } from 'react-redux';
-import LogsTools from './LogsTools';
+import WorkspaceLogsTools from './Tools';
 import { AppState } from '../../store';
 import { selectAllWorkspaces, selectLogs } from '../../store/Workspaces/selectors';
-import { isEqual } from 'lodash';
 
 import styles from './index.module.css';
 
 const MAX_LOG_LENGTH = 500;
 const OUTPUT_LOG_ID = 'output-logs';
+const cheErrorRe = /^Error: /i;
+const dwErrorRe = /^[1-9]{0,5} error occurred:/i;
 
-type Props = {
-  workspaceUID: string;
-  isDevWorkspace: boolean;
+export type Props = {
+  workspaceUID: string | undefined;
+  isDevWorkspace: boolean | undefined;
 } & MappedProps;
 
-type State = {
+export type State = {
   isExpanded: boolean;
   isStopped: boolean;
   hasError: boolean;
   logs: string[] | undefined;
 };
 
-export class LogsTab extends React.PureComponent<Props, State> {
-  private readonly errorRe: RegExp;
-
+export class WorkspaceLogs extends React.PureComponent<Props, State> {
   constructor(props: Props) {
     super(props);
 
@@ -55,8 +55,13 @@ export class LogsTab extends React.PureComponent<Props, State> {
       hasError: false,
       logs: [],
     };
+  }
 
-    this.errorRe = props.isDevWorkspace ? /^[1-9]{0,5} error occurred:/i : /^Error: /i;
+  private get errorRe(): RegExp {
+    if (this.props.isDevWorkspace) {
+      return dwErrorRe;
+    }
+    return cheErrorRe;
   }
 
   public componentDidMount(): void {
@@ -83,20 +88,23 @@ export class LogsTab extends React.PureComponent<Props, State> {
 
   private updateLogsData() {
     const { workspaceUID, workspacesLogs, allWorkspaces } = this.props;
-    if (allWorkspaces && allWorkspaces.length > 0) {
-      const workspace = allWorkspaces.find(workspace => workspace.uid === workspaceUID);
-      if (!workspace) {
-        return;
-      }
 
-      const logs = workspacesLogs.get(workspaceUID);
-      const isStopped = workspace.isStopped;
-      if (this.state.isStopped !== isStopped || !isEqual(this.state.logs, logs)) {
-        this.setState({
-          isStopped,
-          logs,
-        });
-      }
+    if (workspaceUID === undefined || allWorkspaces.length === 0) {
+      return;
+    }
+
+    const workspace = allWorkspaces.find(w => w.uid === workspaceUID);
+    if (!workspace) {
+      return;
+    }
+
+    const logs = workspacesLogs.get(workspaceUID);
+    const isStopped = workspace.isStopped;
+    if (this.state.isStopped !== isStopped || !isEqual(this.state.logs, logs)) {
+      this.setState({
+        isStopped,
+        logs,
+      });
     }
   }
 
@@ -138,6 +146,7 @@ export class LogsTab extends React.PureComponent<Props, State> {
 
   render() {
     const { isExpanded, isStopped, logs } = this.state;
+    const shouldToggleNavbar = this.props.isDevWorkspace === false;
 
     if (isStopped) {
       return (
@@ -154,9 +163,9 @@ export class LogsTab extends React.PureComponent<Props, State> {
     return (
       <PageSection variant={PageSectionVariants.light}>
         <div className={isExpanded ? styles.tabExpanded : ''}>
-          <LogsTools
+          <WorkspaceLogsTools
             logs={logs ? logs : []}
-            preventPostMessage={this.props.isDevWorkspace}
+            shouldToggleNavbar={shouldToggleNavbar}
             handleExpand={isExpanded => {
               this.setState({ isExpanded });
             }}
@@ -176,4 +185,4 @@ const mapStateToProps = (state: AppState) => ({
 const connector = connect(mapStateToProps);
 
 type MappedProps = ConnectedProps<typeof connector>;
-export default connector(LogsTab);
+export default connector(WorkspaceLogs);

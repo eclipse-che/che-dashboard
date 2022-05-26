@@ -14,7 +14,7 @@ import React from 'react';
 import { Provider } from 'react-redux';
 import renderer, { ReactTestRenderer } from 'react-test-renderer';
 import { Store } from 'redux';
-import LogsTab from '..';
+import WorkspaceLogs from '..';
 import { FakeStoreBuilder } from '../../../store/__mocks__/storeBuilder';
 import {
   createFakeCheWorkspace,
@@ -102,7 +102,7 @@ describe('The LogsTab component', () => {
 function renderComponent(store: Store, workspaceId: string): ReactTestRenderer {
   return renderer.create(
     <Provider store={store}>
-      <LogsTab workspaceUID={workspaceId} isDevWorkspace />
+      <WorkspaceLogs workspaceUID={workspaceId} isDevWorkspace />
     </Provider>,
   );
 }

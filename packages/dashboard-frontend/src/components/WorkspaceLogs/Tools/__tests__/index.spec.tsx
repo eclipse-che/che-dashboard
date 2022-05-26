@@ -12,7 +12,7 @@
 
 import React from 'react';
 import renderer, { ReactTestRenderer } from 'react-test-renderer';
-import LogsTools from '..';
+import WorkspaceLogsTools from '..';
 
 jest.mock('../../../../services/helpers/tools', () => {
   return {
@@ -46,5 +46,7 @@ function renderComponent(
   logs: string[],
   handleExpand: (isExpand: boolean) => void,
 ): ReactTestRenderer {
-  return renderer.create(<LogsTools logs={logs} handleExpand={handleExpand} preventPostMessage />);
+  return renderer.create(
+    <WorkspaceLogsTools logs={logs} handleExpand={handleExpand} shouldToggleNavbar />,
+  );
 }

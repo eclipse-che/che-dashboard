@@ -27,7 +27,7 @@ import { ExclamationCircleIcon, InProgressIcon } from '@patternfly/react-icons/d
 import React, { RefObject } from 'react';
 import Head from '../../components/Head';
 import Header from '../../components/Header';
-import WorkspaceLogs from '../../components/LogsTab';
+import WorkspaceLogs from '../../components/WorkspaceLogs';
 import { LoadIdeSteps } from '../../containers/IdeLoader';
 import { delay } from '../../services/helpers/delay';
 import {

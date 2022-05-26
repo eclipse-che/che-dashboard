@@ -19,7 +19,7 @@ import styles from './index.module.css';
 
 type Props = {
   logs: string[] | undefined;
-  preventPostMessage: boolean;
+  shouldToggleNavbar: boolean;
   handleExpand: (isExpand: boolean) => void;
 };
 
@@ -27,7 +27,7 @@ type State = {
   isExpanded: boolean;
 };
 
-class LogsTools extends React.PureComponent<Props, State> {
+class WorkspaceLogsTools extends React.PureComponent<Props, State> {
   private readonly handleExpand: () => void;
 
   constructor(props: Props) {
@@ -39,14 +39,14 @@ class LogsTools extends React.PureComponent<Props, State> {
 
     this.handleExpand = () => {
       if (this.state.isExpanded) {
-        if (this.props.preventPostMessage === false) {
+        if (this.props.shouldToggleNavbar === true) {
           window.postMessage('show-navbar', '*');
         }
         const isExpanded = false;
         this.setState({ isExpanded });
         this.props.handleExpand(isExpanded);
       } else {
-        if (this.props.preventPostMessage === false) {
+        if (this.props.shouldToggleNavbar === true) {
           window.postMessage('hide-navbar', '*');
         }
         const isExpanded = true;
@@ -92,4 +92,4 @@ class LogsTools extends React.PureComponent<Props, State> {
   }
 }
 
-export default LogsTools;
+export default WorkspaceLogsTools;
