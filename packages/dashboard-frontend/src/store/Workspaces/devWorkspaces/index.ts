@@ -37,6 +37,9 @@ import * as DwPluginsStore from '../../Plugins/devWorkspacePlugins';
 import { selectDefaultNamespace } from '../../InfrastructureNamespaces/selectors';
 import { injectKubeConfig } from '../../../services/dashboard-backend-client/devWorkspaceApi';
 import { selectRunningWorkspacesLimit } from '../../ClusterConfig/selectors';
+import { cloneDeep } from 'lodash';
+import { delay } from '../../../services/helpers/delay';
+
 const devWorkspaceClient = container.get(DevWorkspaceClient);
 
 export const onStatusChangeCallbacks = new Map<string, (status: DevWorkspaceStatus) => void>();
@@ -265,7 +268,7 @@ export const actionCreators: ActionCreators = {
         const { workspaces } = await devWorkspaceClient.getAllWorkspaces(
           workspace.metadata.namespace,
         );
-        const runningWorkspaces = workspaces.filter(workspace => workspace.spec.started === true);
+        const runningWorkspaces = workspaces.filter(w => w.spec.started === true);
         const runningLimit = selectRunningWorkspacesLimit(getState());
         if (runningWorkspaces.length >= runningLimit) {
           throw new Error('You are not allowed to start more workspaces.');
@@ -308,6 +311,24 @@ export const actionCreators: ActionCreators = {
           type: 'DELETE_DEVWORKSPACE_LOGS',
           workspaceUID,
         });
+
+        // sometimes workspace don't have enough time to change its status.
+        // wait for status to become STARTING or 10 seconds, whichever comes first
+        const defer: IDeferred<void> = getDefer();
+        const toDispose = new DisposableCollection();
+        const statusStartingHandler = async (status: DevWorkspaceStatus) => {
+          if (status === DevWorkspaceStatus.STARTING) {
+            defer.resolve();
+          }
+        };
+        onStatusChangeCallbacks.set(workspaceUID, statusStartingHandler);
+        toDispose.push({
+          dispose: () => onStatusChangeCallbacks.delete(workspaceUID),
+        });
+        const startingTimeout = 10000;
+        await Promise.race([defer.promise, delay(startingTimeout)]);
+        toDispose.dispose();
+
         devWorkspaceClient.checkForDevWorkspaceError(updatedWorkspace);
       } catch (e) {
         const errorMessage =
@@ -632,14 +653,16 @@ export const reducer: Reducer<State> = (state: State | undefined, action: KnownA
     case 'UPDATE_DEVWORKSPACE_STATUS':
       return createObject(state, {
         workspaces: state.workspaces.map(workspace => {
-          if (WorkspaceAdapter.getUID(workspace) === action.workspaceUID) {
-            if (!workspace.status) {
-              workspace.status = {} as devfileApi.DevWorkspaceStatus;
-            }
-            workspace.status.phase = action.status;
-            workspace.status.message = action.message;
+          if (WorkspaceAdapter.getUID(workspace) !== action.workspaceUID) {
+            return workspace;
           }
-          return workspace;
+          const nextWorkspace = cloneDeep(workspace);
+          if (!nextWorkspace.status) {
+            nextWorkspace.status = {} as devfileApi.DevWorkspaceStatus;
+          }
+          nextWorkspace.status.phase = action.status;
+          nextWorkspace.status.message = action.message;
+          return nextWorkspace;
         }),
       });
     case 'ADD_DEVWORKSPACE':
