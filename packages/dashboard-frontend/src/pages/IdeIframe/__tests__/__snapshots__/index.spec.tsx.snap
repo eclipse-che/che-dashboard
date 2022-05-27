@@ -1,0 +1,14 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`IDE iframe page component snapshot 1`] = `
+<div
+  className="ideIframeWrapper"
+>
+  <iframe
+    allow="fullscreen *;clipboard-write *;clipboard-read *"
+    className="ideIframe"
+    id="ide-iframe"
+    src="main-url"
+  />
+</div>
+`;
