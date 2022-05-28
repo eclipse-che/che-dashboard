@@ -13,7 +13,7 @@
 import React from 'react';
 import { Provider } from 'react-redux';
 import { Action, Store } from 'redux';
-import { render, RenderResult, screen, waitFor, within } from '@testing-library/react';
+import { render, screen, waitFor, within } from '@testing-library/react';
 import { StateMock } from '@react-mock/state';
 import { ROUTE } from '../../../route.enum';
 import { getMockRouterProps } from '../../../services/__mocks__/router';
