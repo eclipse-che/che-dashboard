@@ -276,6 +276,13 @@ export const actionCreators: ActionCreators = {
         await devWorkspaceClient.updateDebugMode(workspace, debugWorkspace);
         let updatedWorkspace: devfileApi.DevWorkspace;
         await addKubeConfigInjection(workspace);
+
+        const workspaceUID = workspace.metadata.uid;
+        dispatch({
+          type: 'DELETE_DEVWORKSPACE_LOGS',
+          workspaceUID,
+        });
+
         if (workspace.metadata.annotations?.[DEVWORKSPACE_NEXT_START_ANNOTATION]) {
           const storedDevWorkspace = JSON.parse(
             workspace.metadata.annotations[DEVWORKSPACE_NEXT_START_ANNOTATION],
@@ -297,6 +304,7 @@ export const actionCreators: ActionCreators = {
         } else {
           updatedWorkspace = await devWorkspaceClient.changeWorkspaceStatus(workspace, true, true);
         }
+
         const editor = updatedWorkspace.metadata.annotations
           ? updatedWorkspace.metadata.annotations[DEVWORKSPACE_CHE_EDITOR]
           : undefined;
@@ -305,11 +313,6 @@ export const actionCreators: ActionCreators = {
         dispatch({
           type: 'UPDATE_DEVWORKSPACE',
           workspace: updatedWorkspace,
-        });
-        const workspaceUID = workspace.metadata.uid;
-        dispatch({
-          type: 'DELETE_DEVWORKSPACE_LOGS',
-          workspaceUID,
         });
 
         // sometimes workspace don't have enough time to change its status.
