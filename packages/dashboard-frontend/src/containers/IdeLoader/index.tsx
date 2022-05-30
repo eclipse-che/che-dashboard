@@ -26,18 +26,16 @@ import {
 import { selectDevworkspacesEnabled } from '../../store/Workspaces/Settings/selectors';
 import * as WorkspaceStore from '../../store/Workspaces';
 import { IdeLoaderSteps, List, LoaderStep } from '../../components/Loader/Step';
-import { buildSteps } from '../../components/Loader/Step/buildSteps';
+import { buildIdeLoaderSteps } from '../../components/Loader/Step/buildSteps';
 import { IdeLoader } from '../../pages/IdeLoader';
 import { RouteComponentProps } from 'react-router';
 import { Workspace } from '../../services/workspace-adapter';
-import { WorkspaceStatus, DevWorkspaceStatus } from '../../services/helpers/types';
+import { DevWorkspaceStatus } from '../../services/helpers/types';
 import { DisposableCollection } from '../../services/helpers/disposable';
 import { delay } from '../../services/helpers/delay';
 import getRandomString from '../../services/helpers/random';
 import { filterErrorLogs } from '../../services/helpers/filterErrorLogs';
-import { IdeIframe } from '../../pages/IdeIframe';
 import { ToggleBarsContext } from '../../contexts/ToggleBars';
-import { buildWorkspacesLocation } from '../../services/helpers/location';
 
 export const TIMEOUT_TO_STOP_SEC = 60;
 export const TIMEOUT_TO_RUN_SEC = 5 * 60;
@@ -53,7 +51,6 @@ export type Props = MappedProps &
   };
 export type State = {
   currentStepIndex: number; // not ID, but index
-  ideUrl?: string;
   lastError?: string;
   shouldStart: boolean; // should the loader start a workspace?
   tabParam?: string;
@@ -84,7 +81,7 @@ class IdeLoaderContainer extends React.Component<Props, State> {
       matchParams: match.params,
     };
 
-    this.stepsList = buildSteps();
+    this.stepsList = buildIdeLoaderSteps();
   }
 
   public componentDidMount() {
@@ -100,10 +97,7 @@ class IdeLoaderContainer extends React.Component<Props, State> {
     const workspace = this.findTargetWorkspace(this.props, this.state);
     this.setBarsVisibility(workspace?.isDevWorkspace);
 
-    if (
-      workspace?.status === WorkspaceStatus.STARTING ||
-      workspace?.status === DevWorkspaceStatus.STARTING
-    ) {
+    if (workspace?.isStarting) {
       // prevent a workspace being repeatedly restarted, once it's starting
       this.setState({
         shouldStart: false,
@@ -133,10 +127,6 @@ class IdeLoaderContainer extends React.Component<Props, State> {
     if (this.state.lastError !== nextState.lastError) {
       return true;
     }
-    // propagate main URL
-    if (this.state.ideUrl === undefined && nextState.ideUrl) {
-      return true;
-    }
     return false;
   }
 
@@ -153,38 +143,12 @@ class IdeLoaderContainer extends React.Component<Props, State> {
       this.props.deleteWorkspaceLogs(workspace);
     }
 
-    this.stepsList = buildSteps();
+    this.stepsList = buildIdeLoaderSteps();
     this.setState({
       currentStepIndex: 0,
-      ideUrl: undefined,
       lastError: undefined,
       shouldStart: true,
     });
-  }
-
-  private handleWorkspaceRestartFromIframe(workspaceId: string): void {
-    const workspace = this.findTargetWorkspace(this.props, this.state);
-    if (workspace === undefined || workspace.id !== workspaceId) {
-      return;
-    }
-
-    this.props.deleteWorkspaceLogs(workspace);
-
-    this.stepsList = buildSteps();
-    this.setState({
-      currentStepIndex: 0,
-      ideUrl: undefined,
-      lastError: undefined,
-      shouldStart: true,
-    });
-  }
-
-  private handleOpenWorkspacesList(): void {
-    // open navigation bar and heading bar
-    this.context.showAll();
-
-    const location = buildWorkspacesLocation();
-    this.props.history.push(location);
   }
 
   /**
@@ -264,6 +228,10 @@ class IdeLoaderContainer extends React.Component<Props, State> {
     });
   }
 
+  private isWorkspaceStatus(workspace: Workspace, ...statuses: DevWorkspaceStatus[]): boolean {
+    return statuses.some(status => status === workspace.status);
+  }
+
   /**
    * The resolved boolean indicates whether to go to the next step or not
    */
@@ -272,15 +240,13 @@ class IdeLoaderContainer extends React.Component<Props, State> {
       throw new Error(`The workspace is deprecated. Convert the workspace and try again.`);
     }
 
-    if (workspace.status === DevWorkspaceStatus.TERMINATING) {
+    if (this.isWorkspaceStatus(workspace, DevWorkspaceStatus.TERMINATING)) {
       throw new Error(`The workspace is terminating and cannot be open.`);
     }
 
     // if stopping / failing
     if (
-      workspace.status === WorkspaceStatus.STOPPING ||
-      workspace.status === DevWorkspaceStatus.STOPPING ||
-      workspace.status === DevWorkspaceStatus.FAILING
+      this.isWorkspaceStatus(workspace, DevWorkspaceStatus.STOPPING, DevWorkspaceStatus.FAILING)
     ) {
       try {
         await new Promise<void>((resolve, reject) => {
@@ -315,15 +281,14 @@ class IdeLoaderContainer extends React.Component<Props, State> {
    */
   private async runStep2(workspace: Workspace): Promise<boolean> {
     if (
-      workspace.status === DevWorkspaceStatus.TERMINATING ||
-      workspace.status === WorkspaceStatus.STOPPING ||
-      workspace.status === DevWorkspaceStatus.STOPPING ||
-      workspace.status === DevWorkspaceStatus.FAILING ||
+      this.isWorkspaceStatus(
+        workspace,
+        DevWorkspaceStatus.TERMINATING,
+        DevWorkspaceStatus.STOPPING,
+        DevWorkspaceStatus.FAILING,
+      ) ||
       (this.state.shouldStart === false &&
-        (workspace.status === WorkspaceStatus.STOPPED ||
-          workspace.status === WorkspaceStatus.ERROR ||
-          workspace.status === DevWorkspaceStatus.STOPPED ||
-          workspace.status === DevWorkspaceStatus.FAILED))
+        this.isWorkspaceStatus(workspace, DevWorkspaceStatus.STOPPED, DevWorkspaceStatus.FAILED))
     ) {
       const errorLogs = filterErrorLogs(this.props.workspacesLogs, workspace);
       throw new Error(
@@ -357,10 +322,7 @@ class IdeLoaderContainer extends React.Component<Props, State> {
     // start workspace
     if (
       this.state.shouldStart &&
-      (workspace.status === WorkspaceStatus.STOPPED ||
-        workspace.status === WorkspaceStatus.ERROR ||
-        workspace.status === DevWorkspaceStatus.STOPPED ||
-        workspace.status === DevWorkspaceStatus.FAILED)
+      this.isWorkspaceStatus(workspace, DevWorkspaceStatus.STOPPED, DevWorkspaceStatus.FAILED)
     ) {
       try {
         await this.props.startWorkspace(workspace);
@@ -407,28 +369,14 @@ class IdeLoaderContainer extends React.Component<Props, State> {
 
     await delay(200);
 
-    this.setState({
-      ideUrl: workspace.ideUrl,
-    });
+    window.location.replace(workspace.ideUrl);
+
     return false;
   }
 
   render(): React.ReactNode {
-    const { currentStepIndex, ideUrl, lastError, matchParams, tabParam } = this.state;
+    const { currentStepIndex, lastError, matchParams, tabParam } = this.state;
     const workspace = this.findTargetWorkspace(this.props, this.state);
-
-    if (workspace && ideUrl) {
-      return (
-        <IdeIframe
-          ideUrl={ideUrl}
-          isDevWorkspace={workspace.isDevWorkspace}
-          onOpenWorkspacesList={() => this.handleOpenWorkspacesList()}
-          onWorkspaceRestartFromIframe={workspaceId =>
-            this.handleWorkspaceRestartFromIframe(workspaceId)
-          }
-        />
-      );
-    }
 
     const steps = this.stepsList.values;
     const currentStepId = this.stepsList.get(currentStepIndex).value.id;

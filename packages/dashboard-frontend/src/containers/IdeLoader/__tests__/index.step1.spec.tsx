@@ -26,7 +26,6 @@ import { IdeLoaderSteps } from '../../../components/Loader/Step';
 import IdeLoaderContainer, { TIMEOUT_TO_STOP_SEC } from '..';
 import { ToggleBarsContext } from '../../../contexts/ToggleBars';
 
-jest.mock('../../../pages/IdeIframe');
 jest.mock('../../../pages/IdeLoader');
 
 jest.mock('../../../store/Workspaces/index', () => {

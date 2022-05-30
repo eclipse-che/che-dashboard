@@ -12,12 +12,10 @@
 
 import { List, LoaderStep, IdeLoaderSteps } from './index';
 
-export function buildSteps(flow: 'ide' | 'factory' = 'ide'): List<LoaderStep> {
+export function buildIdeLoaderSteps(): List<LoaderStep> {
   const stepsList = new List<LoaderStep>();
-  if (flow === 'ide') {
-    stepsList.add(new LoaderStep(IdeLoaderSteps.INITIALIZING));
-    stepsList.add(new LoaderStep(IdeLoaderSteps.START_WORKSPACE));
-    stepsList.add(new LoaderStep(IdeLoaderSteps.OPEN_IDE));
-  }
+  stepsList.add(new LoaderStep(IdeLoaderSteps.INITIALIZING));
+  stepsList.add(new LoaderStep(IdeLoaderSteps.START_WORKSPACE));
+  stepsList.add(new LoaderStep(IdeLoaderSteps.OPEN_IDE));
   return stepsList;
 }

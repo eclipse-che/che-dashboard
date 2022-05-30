@@ -23,7 +23,6 @@ import IdeLoaderContainer, { State, TIMEOUT_TO_GET_URL_SEC } from '..';
 import { IdeLoaderSteps } from '../../../components/Loader/Step';
 import { ToggleBarsContext } from '../../../contexts/ToggleBars';
 
-jest.mock('../../../pages/IdeIframe');
 jest.mock('../../../pages/IdeLoader');
 
 describe('IDE Loader container, step OPEN_IDE', () => {
@@ -31,6 +30,8 @@ describe('IDE Loader container, step OPEN_IDE', () => {
   const workspaceName = 'test-workspace';
   const stepId = IdeLoaderSteps.OPEN_IDE.toString();
   let localState: State;
+
+  const mockLocationReplace = jest.fn();
 
   beforeEach(() => {
     localState = {
@@ -41,6 +42,9 @@ describe('IDE Loader container, step OPEN_IDE', () => {
         workspaceName,
       },
     };
+
+    delete (window as any).location;
+    (window.location as any) = { replace: mockLocationReplace };
 
     jest.useFakeTimers();
   });
@@ -70,8 +74,8 @@ describe('IDE Loader container, step OPEN_IDE', () => {
 
     jest.advanceTimersByTime(5000);
 
-    // show iframe with IDE
-    await waitFor(() => expect(screen.queryByTestId('ide-iframe')).toBeTruthy());
+    // wait for opening IDE url
+    await waitFor(() => expect(mockLocationReplace).toHaveBeenCalledWith('main-url'));
   });
 
   test(`workspace is RUNNING and mainUrl is not propagated longer than TIMEOUT_TO_GET_URL_SEC seconds`, async () => {
@@ -155,8 +159,8 @@ describe('IDE Loader container, step OPEN_IDE', () => {
       .build();
     reRenderComponent(namespace, workspaceName, nextStore, localState);
 
-    // show IDE url
-    await waitFor(() => expect(screen.queryByTestId('ide-iframe')).toBeTruthy());
+    // wait for opening IDE url
+    await waitFor(() => expect(mockLocationReplace).toHaveBeenCalledWith('main-url'));
   });
 
   test('workspace is FAILING', async () => {

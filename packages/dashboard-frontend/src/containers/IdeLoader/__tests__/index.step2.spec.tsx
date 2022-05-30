@@ -26,7 +26,6 @@ import { AppThunk } from '../../../store';
 import { IdeLoaderSteps } from '../../../components/Loader/Step';
 import { ToggleBarsContext } from '../../../contexts/ToggleBars';
 
-jest.mock('../../../pages/IdeIframe');
 jest.mock('../../../pages/IdeLoader');
 
 const mockStartWorkspace = jest.fn();

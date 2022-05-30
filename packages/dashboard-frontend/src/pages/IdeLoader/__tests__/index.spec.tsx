@@ -19,7 +19,7 @@ import renderer, { ReactTestRenderer } from 'react-test-renderer';
 import { AlertVariant } from '@patternfly/react-core';
 import { IdeLoader } from '..';
 import { IdeLoaderSteps, List, LoaderStep } from '../../../components/Loader/Step';
-import { buildSteps } from '../../../components/Loader/Step/buildSteps';
+import { buildIdeLoaderSteps } from '../../../components/Loader/Step/buildSteps';
 import { FakeStoreBuilder } from '../../../store/__mocks__/storeBuilder';
 import { DevWorkspaceBuilder } from '../../../store/__mocks__/devWorkspaceBuilder';
 import { AlertItem, DevWorkspaceStatus, IdeLoaderTab } from '../../../services/helpers/types';
@@ -53,7 +53,7 @@ describe('Ide Loader 2 page', () => {
   let store: Store;
 
   beforeEach(() => {
-    steps = buildSteps();
+    steps = buildIdeLoaderSteps();
     devWorkspace = new DevWorkspaceBuilder()
       .withNamespace(namespace)
       .withName(workspaceName)

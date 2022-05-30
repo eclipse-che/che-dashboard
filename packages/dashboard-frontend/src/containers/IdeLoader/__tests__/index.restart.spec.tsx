@@ -27,7 +27,6 @@ import { IdeLoaderSteps } from '../../../components/Loader/Step';
 import userEvent from '@testing-library/user-event';
 import { ToggleBarsContext } from '../../../contexts/ToggleBars';
 
-jest.mock('../../../pages/IdeIframe');
 jest.mock('../../../pages/IdeLoader');
 
 const mockStartWorkspace = jest.fn();

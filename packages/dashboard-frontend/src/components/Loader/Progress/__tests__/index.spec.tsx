@@ -13,7 +13,7 @@
 import React from 'react';
 import renderer, { ReactTestRenderer } from 'react-test-renderer';
 import { IdeLoaderSteps } from '../../Step';
-import { buildSteps } from '../../Step/buildSteps';
+import { buildIdeLoaderSteps } from '../../Step/buildSteps';
 import { LoaderProgress } from '..';
 import { WizardStep } from '@patternfly/react-core';
 
@@ -23,7 +23,7 @@ describe('Loader Progress', () => {
     let wizardSteps: WizardStep[];
 
     beforeEach(() => {
-      wizardSteps = buildSteps().values.map(v => v.toWizardStep(currentStepId));
+      wizardSteps = buildIdeLoaderSteps().values.map(v => v.toWizardStep(currentStepId));
     });
 
     test('snapshot', () => {
