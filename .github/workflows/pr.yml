@@ -23,6 +23,7 @@ jobs:
 
   dash-licenses:
     runs-on: ubuntu-20.04
+    if: ${{ github.base_ref == 'main' }}
     steps:
       -
         name: "Checkout Che Dashboard source code"
