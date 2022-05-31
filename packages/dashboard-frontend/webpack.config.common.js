@@ -133,13 +133,18 @@ const config = {
       'vscode-languageserver-protocol/lib/utils/is': 'vscode-languageserver-protocol/lib/common/utils/is',
       'vscode-languageserver-protocol/lib/main': 'vscode-languageserver-protocol/lib/node/main',
     },
+    fallback: {
+      "fs": false,
+      "net": false,
+      "module": false,
+      "crypto": false,
+      "buffer": false,
+      "path": false,
+      "os": false,
+    },
   },
   resolveLoader: {},
-  node: {
-    fs: 'empty',
-    net: 'empty',
-    module: 'empty'
-  },
+  node: false,
   plugins: [
     new CleanWebpackPlugin(),
     new webpack.DefinePlugin({
