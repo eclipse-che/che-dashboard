@@ -84,7 +84,7 @@ describe('User Menu', () => {
     fireEvent.click(menuButton);
 
     const items = screen.getAllByRole('menuitem');
-    expect(items.length).toEqual(4);
+    expect(items.length).toEqual(3);
   });
 
   it('should fire the logout event', () => {
@@ -97,25 +97,6 @@ describe('User Menu', () => {
     fireEvent.click(logoutItem);
 
     expect(mockLogout).toBeCalled();
-  });
-
-  it('should copy the login command to clipboard', async () => {
-    render(component);
-
-    const mockClipboardWriteText = jest.fn();
-    (window.navigator as any).clipboard = {
-      writeText: mockClipboardWriteText,
-    };
-
-    const menuButton = screen.getByRole('button', { name });
-    fireEvent.click(menuButton);
-
-    const copyLoginCommandButton = screen.getByText(`Copy ${productCli} login command`);
-    fireEvent.click(copyLoginCommandButton);
-
-    await waitFor(() =>
-      expect(mockClipboardWriteText).toHaveBeenCalledWith('crwctl auth:login localhost'),
-    );
   });
 });
 
