@@ -21,7 +21,7 @@ Below you can find installation instructions
 ## Quick start
 
 ```sh
-$ docker build . -f build/dockerfiles/Dockerfile -t quay.io/eclipse/che-dashboard:next
+docker build . -f build/dockerfiles/Dockerfile -t quay.io/eclipse/che-dashboard:next
 ```
 
 ## Running locally against remote Che Cluster
@@ -57,8 +57,8 @@ The development server serves the dashboard-frontend and dashboard-backend on [h
 
 You may would like to watch changes and recompile them incrementally:
 ```sh
-$ yarn --cwd packages/dashboard-backend build:watch
-$ yarn --cwd packages/dashboard-frontend build:watch
+yarn --cwd packages/dashboard-backend build:watch
+yarn --cwd packages/dashboard-frontend build:watch
 ```
 
 As an alternative to build:watch for frontend, you can run Dev Server.
@@ -66,12 +66,12 @@ As an alternative to build:watch for frontend, you can run Dev Server.
 Local backend is prerequisite for Dev Server and then the command to run Dev Server is
 
 ```sh
-$ yarn frontend:start
+yarn frontend:start
 ```
 
 To avoid memory issues and the process being killed, more memory is possible through the following command in the frontend package directory:
 ```sh
-$ NODE_OPTIONS="--max_old_space_size=6500" && yarn frontend:start
+NODE_OPTIONS="--max_old_space_size=6500" && yarn frontend:start
 ```
 
 
@@ -85,7 +85,7 @@ So, check [.deps/prod.md](https://github.com/eclipse-che/che-dashboard/blob/main
 To generate dependencies info:
 
 ```sh
-$ yarn license:generate
+yarn license:generate
 ```
 
 ## Branding

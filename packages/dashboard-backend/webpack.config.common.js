@@ -80,7 +80,6 @@ module.exports = (env = {}) => {
       __dirname: false,
     },
     externals: [
-      '_http_common',
       'long',
       'pino-pretty',
       nodeExternals()
