@@ -861,6 +861,7 @@
 | [`pretty-error@2.1.2`](https://github.com/AriaMinaei/pretty-error.git) | MIT | clearlydefined |
 | [`pretty-format@26.6.2`](https://github.com/facebook/jest.git) | MIT | clearlydefined |
 | [`process-nextick-args@2.0.1`](https://github.com/calvinmetcalf/process-nextick-args.git) | MIT | clearlydefined |
+| [`process@0.11.10`](git://github.com/shtylman/node-process.git) | MIT | [CQ23452](https://dev.eclipse.org/ipzilla/show_bug.cgi?id=23452) |
 | [`progress@2.0.3`](git://github.com/visionmedia/node-progress) | MIT | clearlydefined |
 | [`promise-inflight@1.0.1`](git+https://github.com/iarna/promise-inflight.git) | ISC | clearlydefined |
 | [`promise-retry@2.0.1`](git://github.com/IndigoUnited/node-promise-retry.git) | MIT | clearlydefined |
