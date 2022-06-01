@@ -138,14 +138,20 @@ const config = {
       "net": false,
       "module": false,
       "crypto": false,
-      "buffer": false,
       "path": false,
       "os": false,
+      "buffer": require.resolve("buffer")
     },
   },
   resolveLoader: {},
   node: false,
   plugins: [
+    new webpack.ProvidePlugin({
+      Buffer: ['buffer', 'Buffer'],
+    }),
+    new webpack.ProvidePlugin({
+      process: 'process/browser',
+    }),
     new CleanWebpackPlugin(),
     new webpack.DefinePlugin({
       'process.env.DASHBOARD_VERSION': JSON.stringify(require('./package.json').version),

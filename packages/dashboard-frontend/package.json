@@ -55,6 +55,7 @@
     "monaco-editor-core": "^0.20.0",
     "monaco-languageclient": "^0.13.0",
     "monaco-languages": "^1.10.0",
+    "process": "^0.11.10",
     "qs": "^6.9.4",
     "react": "^16.14.0",
     "react-copy-to-clipboard": "^5.0.2",

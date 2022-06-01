@@ -26,7 +26,7 @@ module.exports = () => {
       },
       devMiddleware: {
         publicPath: '/',
-        writeToDisk: true,
+        writeToDisk: false,
       },
       host: 'localhost',
       hot: true,
