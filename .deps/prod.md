@@ -309,6 +309,7 @@
 | [`prettier@2.0.5`](https://github.com/prettier/prettier.git) | MIT | #1523 |
 | [`private@0.1.8`](git://github.com/benjamn/private.git) | MIT | clearlydefined |
 | [`process-warning@1.0.0`](git+https://github.com/fastify/processs-warning.git) | MIT | clearlydefined |
+| [`process@0.11.10`](git://github.com/shtylman/node-process.git) | MIT | [CQ23452](https://dev.eclipse.org/ipzilla/show_bug.cgi?id=23452) |
 | [`prop-types-extra@1.1.1`](git+https://github.com/react-bootstrap/prop-types-extra.git) | MIT | [CQ22354](https://dev.eclipse.org/ipzilla/show_bug.cgi?id=22354) |
 | [`prop-types@15.8.1`](https://github.com/facebook/prop-types.git) | MIT | clearlydefined |
 | [`proxy-addr@2.0.7`](https://github.com/jshttp/proxy-addr.git) | MIT | clearlydefined |
