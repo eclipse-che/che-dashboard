@@ -43,10 +43,9 @@ describe('User Menu', () => {
   const mockLogout = jest.fn();
   global.open = jest.fn();
 
-  const productCli = 'crwctl';
   const email = 'johndoe@example.com';
   const name = 'John Doe';
-  const store = createStore(productCli, name, email);
+  const store = createStore(name, email);
   const history = createHashHistory();
   const user = {
     id: 'test-id',
@@ -100,7 +99,7 @@ describe('User Menu', () => {
   });
 });
 
-function createStore(cheCliTool: string, name: string, email: string): Store {
+function createStore(name: string, email: string): Store {
   return new FakeStoreBuilder()
     .withUserProfile({
       attributes: {
@@ -109,9 +108,6 @@ function createStore(cheCliTool: string, name: string, email: string): Store {
       email,
     } as api.che.user.Profile)
     .withBranding({
-      configuration: {
-        cheCliTool,
-      },
       links: BRANDING_DEFAULT.links,
       docs: {},
     } as BrandingData)
