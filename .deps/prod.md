@@ -19,7 +19,7 @@
 | [`@fastify/oauth2@5.0.0`](git+https://github.com/fastify/fastify-oauth2.git) | MIT | clearlydefined |
 | [`@fastify/reply-from@7.0.1`](git+https://github.com/fastify/fastify-reply-from.git) | MIT | clearlydefined |
 | [`@fastify/static@5.0.2`](https://github.com/fastify/fastify-static.git) | MIT | clearlydefined |
-| [`@fastify/swagger@6.0.1`](git+https://github.com/fastify/fastify-swagger.git) | MIT | clearlydefined |
+| [`@fastify/swagger@6.1.0`](git+https://github.com/fastify/fastify-swagger.git) | MIT | clearlydefined |
 | [`@fastify/websocket@5.0.0`](git+https://github.com/fastify/fastify-websocket.git) | MIT | clearlydefined |
 | [`@hapi/address@2.1.4`](git://github.com/hapijs/address) | BSD-3-Clause | clearlydefined |
 | [`@hapi/boom@7.4.11`](git://github.com/hapijs/boom) | BSD-3-Clause | clearlydefined |
@@ -64,7 +64,7 @@
 | [`aggregate-error@3.1.0`](https://github.com/sindresorhus/aggregate-error.git) | MIT | clearlydefined |
 | [`ajv@6.12.6`](https://github.com/ajv-validator/ajv.git) | MIT | #979 |
 | [`ansi-regex@2.1.1`](https://github.com/chalk/ansi-regex.git) | MIT | clearlydefined |
-| [`ansi-styles@2.2.1`](https://github.com/chalk/ansi-styles.git) | MIT | clearlydefined |
+| [`ansi-styles@3.2.1`](https://github.com/chalk/ansi-styles.git) | MIT | clearlydefined |
 | [`archy@1.0.0`](http://github.com/substack/node-archy.git) | MIT | clearlydefined |
 | [`argparse@2.0.1`](https://github.com/nodeca/argparse.git) | Python-2.0 | [CQ22954](https://dev.eclipse.org/ipzilla/show_bug.cgi?id=22954) |
 | [`args@5.0.3`](https://github.com/leo/args.git) | MIT | clearlydefined |
@@ -92,26 +92,26 @@
 | [`babel-types@6.26.0`](https://github.com/babel/babel/tree/master/packages/babel-types) | MIT | clearlydefined |
 | [`babylon@6.18.0`](https://github.com/babel/babylon) | MIT | #1052 |
 | [`balanced-match@1.0.2`](git://github.com/juliangruber/balanced-match.git) | MIT | clearlydefined |
+| [`base64-js@1.5.1`](git://github.com/beatgammit/base64-js.git) | MIT | clearlydefined |
 | [`bcrypt-pbkdf@1.0.2`](git://github.com/joyent/node-bcrypt-pbkdf.git) | BSD-3-Clause | clearlydefined |
 | [`big.js@5.2.2`](https://github.com/MikeMcl/big.js.git) | MIT | clearlydefined |
 | [`bluebird@3.7.2`](git://github.com/petkaantonov/bluebird.git) | MIT | clearlydefined |
 | [`blueimp-md5@2.19.0`](git://github.com/blueimp/JavaScript-MD5.git) | MIT | clearlydefined |
-| [`boom@2.10.1`](git://github.com/hapijs/boom) | BSD-3-Clause | clearlydefined |
 | [`brace-expansion@1.1.11`](git://github.com/juliangruber/brace-expansion.git) | MIT | clearlydefined |
+| [`buffer@6.0.3`](git://github.com/feross/buffer.git) | MIT | clearlydefined |
 | [`byline@5.0.0`](https://github.com/jahewson/node-byline) | MIT | clearlydefined |
 | [`cacheable-lookup@5.0.4`](git+https://github.com/szmarczak/cacheable-lookup.git) | MIT | clearlydefined |
 | [`cacheable-request@7.0.2`](https://github.com/lukechilds/cacheable-request.git) | MIT | clearlydefined |
 | [`call-bind@1.0.2`](git+https://github.com/ljharb/call-bind.git) | MIT | clearlydefined |
 | [`camelcase@5.0.0`](https://github.com/sindresorhus/camelcase.git) | MIT | clearlydefined |
 | [`caseless@0.12.0`](https://github.com/mikeal/caseless) | Apache-2.0 | clearlydefined |
-| [`chalk@1.1.3`](https://github.com/chalk/chalk.git) | MIT | clearlydefined |
+| [`chalk@2.4.2`](https://github.com/chalk/chalk.git) | MIT | clearlydefined |
 | [`chownr@2.0.0`](git://github.com/isaacs/chownr.git) | ISC | clearlydefined |
 | [`clean-stack@2.2.0`](https://github.com/sindresorhus/clean-stack.git) | MIT | clearlydefined |
 | [`clone-response@1.0.2`](git+https://github.com/lukechilds/clone-response.git) | MIT | clearlydefined |
 | [`color-convert@1.9.3`](https://github.com/Qix-/color-convert.git) | MIT | clearlydefined |
 | [`color-name@1.1.3`](git@github.com:dfcreative/color-name.git) | MIT | clearlydefined |
 | [`combined-stream@1.0.8`](git://github.com/felixge/node-combined-stream.git) | MIT | clearlydefined |
-| [`commander@2.20.3`](https://github.com/tj/commander.js.git) | MIT | clearlydefined |
 | [`concat-map@0.0.1`](git://github.com/substack/node-concat-map.git) | MIT | clearlydefined |
 | [`connected-react-router@6.9.2`](https://github.com/supasate/connected-react-router.git) | MIT | clearlydefined |
 | [`content-disposition@0.5.4`](https://github.com/jshttp/content-disposition.git) | MIT | clearlydefined |
@@ -121,7 +121,6 @@
 | [`core-js@2.6.12`](https://github.com/zloirock/core-js.git) | MIT | clearlydefined |
 | [`core-util-is@1.0.2`](git://github.com/isaacs/core-util-is) | MIT | clearlydefined |
 | [`cross-spawn@7.0.3`](git@github.com:moxystudio/node-cross-spawn.git) | MIT | clearlydefined |
-| [`cryptiles@2.0.5`](git://github.com/hapijs/cryptiles) | BSD-3-Clause | clearlydefined |
 | [`csstype@3.0.11`](https://github.com/frenic/csstype) | MIT | clearlydefined |
 | [`dashdash@1.14.1`](git://github.com/trentm/node-dashdash.git) | MIT | clearlydefined |
 | [`date-fns@2.28.0`](https://github.com/date-fns/date-fns) | MIT | clearlydefined |
@@ -170,15 +169,13 @@
 | [`focus-trap@6.2.2`](git+https://github.com/focus-trap/focus-trap.git) | MIT | clearlydefined |
 | [`follow-redirects@1.14.9`](git@github.com:follow-redirects/follow-redirects.git) | MIT | clearlydefined |
 | [`forever-agent@0.6.1`](https://github.com/mikeal/forever-agent) | Apache-2.0 | clearlydefined |
-| [`form-data@2.3.3`](git://github.com/form-data/form-data.git) | MIT | clearlydefined |
+| [`form-data@2.5.1`](git://github.com/form-data/form-data.git) | MIT | clearlydefined |
 | [`forwarded@0.2.0`](https://github.com/jshttp/forwarded.git) | MIT | clearlydefined |
 | [`fresh@0.5.2`](https://github.com/jshttp/fresh.git) | MIT | clearlydefined |
 | [`fs-extra@9.1.0`](https://github.com/jprichardson/node-fs-extra) | MIT | clearlydefined |
 | [`fs-minipass@2.1.0`](git+https://github.com/npm/fs-minipass.git) | ISC | clearlydefined |
 | [`fs.realpath@1.0.0`](git+https://github.com/isaacs/fs.realpath.git) | ISC | clearlydefined |
 | [`function-bind@1.1.1`](git://github.com/Raynos/function-bind.git) | MIT | clearlydefined |
-| [`generate-function@2.3.1`](https://github.com/mafintosh/generate-function) | MIT | clearlydefined |
-| [`generate-object-property@1.2.0`](https://github.com/mafintosh/generate-object-property) | MIT | clearlydefined |
 | [`get-intrinsic@1.1.1`](git+https://github.com/ljharb/get-intrinsic.git) | MIT | clearlydefined |
 | [`get-stream@6.0.1`](https://github.com/sindresorhus/get-stream.git) | MIT | clearlydefined |
 | [`getpass@0.1.7`](https://github.com/arekinath/node-getpass.git) | MIT | clearlydefined |
@@ -194,9 +191,7 @@
 | [`has-flag@3.0.0`](https://github.com/sindresorhus/has-flag.git) | MIT | clearlydefined |
 | [`has-symbols@1.0.3`](git://github.com/inspect-js/has-symbols.git) | MIT | clearlydefined |
 | [`has@1.0.3`](git://github.com/tarruda/has.git) | MIT | clearlydefined |
-| [`hawk@3.1.3`](git://github.com/hueniverse/hawk) | BSD-3-Clause | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/hawk/3.1.3) |
 | [`history@4.10.1`](https://github.com/ReactTraining/history.git) | MIT | clearlydefined |
-| [`hoek@2.16.3`](git://github.com/hapijs/hoek) | BSD-3-Clause | #1024 |
 | [`hoist-non-react-statics@3.3.2`](git://github.com/mridgway/hoist-non-react-statics.git) | BSD-3-Clause | clearlydefined |
 | [`home-or-tmp@2.0.0`](https://github.com/sindresorhus/home-or-tmp.git) | MIT | clearlydefined |
 | [`htmlparser2@6.1.0`](git://github.com/fb55/htmlparser2.git) | MIT | clearlydefined |
@@ -207,6 +202,7 @@
 | [`http2-wrapper@1.0.3`](git+https://github.com/szmarczak/http2-wrapper.git) | MIT | [CQ23110](https://dev.eclipse.org/ipzilla/show_bug.cgi?id=23110) |
 | [`https-proxy-agent@2.2.4`](git://github.com/TooTallNate/node-https-proxy-agent.git) | MIT | clearlydefined |
 | [`human-signals@2.1.0`](https://github.com/ehmicky/human-signals.git) | Apache-2.0 | clearlydefined |
+| [`ieee754@1.2.1`](git://github.com/feross/ieee754.git) | BSD-3-Clause | clearlydefined |
 | [`immutable@4.0.0`](git://github.com/immutable-js/immutable-js.git) | MIT | clearlydefined |
 | [`indent-string@4.0.0`](https://github.com/sindresorhus/indent-string.git) | MIT | clearlydefined |
 | [`inflight@1.0.6`](https://github.com/npm/inflight.git) | ISC | clearlydefined |
@@ -219,10 +215,7 @@
 | [`ipaddr.js@1.9.1`](git://github.com/whitequark/ipaddr.js) | MIT | clearlydefined |
 | [`is-core-module@2.8.1`](git+https://github.com/inspect-js/is-core-module.git) | MIT | clearlydefined |
 | [`is-finite@1.1.0`](https://github.com/sindresorhus/is-finite.git) | MIT | clearlydefined |
-| [`is-my-ip-valid@1.0.1`](https://github.com/LinusU/is-my-ip-valid.git) | MIT | clearlydefined |
-| [`is-my-json-valid@2.20.6`](https://github.com/mafintosh/is-my-json-valid.git) | MIT | clearlydefined |
 | [`is-plain-object@5.0.0`](https://github.com/jonschlinkert/is-plain-object.git) | MIT | clearlydefined |
-| [`is-property@1.0.2`](git://github.com/mikolalysenko/is-property.git) | MIT | clearlydefined |
 | [`is-stream@2.0.1`](https://github.com/sindresorhus/is-stream.git) | MIT | clearlydefined |
 | [`is-typedarray@1.0.0`](git://github.com/hughsk/is-typedarray.git) | MIT | #2531 |
 | [`isarray@0.0.1`](git://github.com/juliangruber/isarray.git) | MIT | clearlydefined |
@@ -244,7 +237,6 @@
 | [`jsonc-parser@3.0.0`](https://github.com/microsoft/node-jsonc-parser) | MIT | clearlydefined |
 | [`jsonfile@6.1.0`](git@github.com:jprichardson/node-jsonfile.git) | MIT | clearlydefined |
 | [`jsonpath-plus@0.19.0`](git://github.com/s3u/JSONPath.git) | MIT | clearlydefined |
-| [`jsonpointer@5.0.0`](https://github.com/janl/node-jsonpointer.git) | MIT | clearlydefined |
 | [`jsprim@1.4.2`](git://github.com/joyent/node-jsprim.git) | MIT | clearlydefined |
 | [`keyv@4.1.1`](git+https://github.com/jaredwray/keyv.git) | MIT | #1961 |
 | [`klona@2.0.5`](https://github.com/lukeed/klona.git) | MIT | clearlydefined |
@@ -300,8 +292,6 @@
 | [`path-to-regexp@1.8.0`](https://github.com/pillarjs/path-to-regexp.git) | MIT | clearlydefined |
 | [`performance-now@2.1.0`](git://github.com/braveg1rl/performance-now.git) | MIT | clearlydefined |
 | [`picocolors@1.0.0`](https://github.com/alexeyraspopov/picocolors.git) | ISC | clearlydefined |
-| [`pinkie-promise@2.0.1`](https://github.com/floatdrop/pinkie-promise.git) | MIT | clearlydefined |
-| [`pinkie@2.0.4`](https://github.com/floatdrop/pinkie.git) | MIT | clearlydefined |
 | [`pino-std-serializers@3.2.0`](git+ssh://git@github.com/pinojs/pino-std-serializers.git) | MIT | clearlydefined |
 | [`pino@6.14.0`](git+https://github.com/pinojs/pino.git) | MIT | clearlydefined |
 | [`popper.js@1.16.1`](git+https://github.com/FezVrasta/popper.js.git) | MIT | [CQ22353](https://dev.eclipse.org/ipzilla/show_bug.cgi?id=22353) |
@@ -309,6 +299,7 @@
 | [`prettier@2.0.5`](https://github.com/prettier/prettier.git) | MIT | #1523 |
 | [`private@0.1.8`](git://github.com/benjamn/private.git) | MIT | clearlydefined |
 | [`process-warning@1.0.0`](git+https://github.com/fastify/processs-warning.git) | MIT | clearlydefined |
+| [`process@0.11.10`](git://github.com/shtylman/node-process.git) | MIT | [CQ23452](https://dev.eclipse.org/ipzilla/show_bug.cgi?id=23452) |
 | [`prop-types-extra@1.1.1`](git+https://github.com/react-bootstrap/prop-types-extra.git) | MIT | [CQ22354](https://dev.eclipse.org/ipzilla/show_bug.cgi?id=22354) |
 | [`prop-types@15.8.1`](https://github.com/facebook/prop-types.git) | MIT | clearlydefined |
 | [`proxy-addr@2.0.7`](https://github.com/jshttp/proxy-addr.git) | MIT | clearlydefined |
@@ -377,7 +368,6 @@
 | [`signal-exit@3.0.7`](https://github.com/tapjs/signal-exit.git) | ISC | clearlydefined |
 | [`simple-oauth2@3.4.0`](https://github.com/lelylan/simple-oauth2) | Apache-2.0 | clearlydefined |
 | [`slash@1.0.0`](https://github.com/sindresorhus/slash.git) | MIT | clearlydefined |
-| [`sntp@1.0.9`](git://github.com/hueniverse/sntp) | SEE LICENSE IN LICENSE | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/sntp/1.0.9) |
 | [`sonic-boom@1.4.1`](git+https://github.com/mcollina/sonic-boom.git) | MIT | clearlydefined |
 | [`source-map-js@1.0.2`](https://github.com/7rulnik/source-map-js.git) | BSD-3-Clause | #2412 |
 | [`source-map-support@0.4.18`](https://github.com/evanw/node-source-map-support) | MIT | clearlydefined |
@@ -388,10 +378,9 @@
 | [`stream-buffers@3.0.2`](https://github.com/samcday/node-stream-buffer.git) | Unlicense | clearlydefined |
 | [`string-similarity@4.0.4`](git://github.com/aceakash/string-similarity.git) | ISC | clearlydefined |
 | [`string_decoder@1.3.0`](git://github.com/nodejs/string_decoder.git) | MIT | clearlydefined |
-| [`stringstream@0.0.6`](https://github.com/mhart/StringStream.git) | MIT | clearlydefined |
 | [`strip-ansi@3.0.1`](https://github.com/chalk/strip-ansi.git) | MIT | clearlydefined |
 | [`strip-final-newline@2.0.0`](https://github.com/sindresorhus/strip-final-newline.git) | MIT | clearlydefined |
-| [`supports-color@2.0.0`](https://github.com/chalk/supports-color.git) | MIT | clearlydefined |
+| [`supports-color@5.5.0`](https://github.com/chalk/supports-color.git) | MIT | clearlydefined |
 | [`supports-preserve-symlinks-flag@1.0.0`](git+https://github.com/inspect-js/node-supports-preserve-symlinks-flag.git) | MIT | clearlydefined |
 | [`tabbable@5.2.1`](git+https://github.com/focus-trap/tabbable.git) | MIT | clearlydefined |
 | [`tar@6.1.11`](https://github.com/npm/node-tar.git) | ISC | clearlydefined |
@@ -436,7 +425,6 @@
 | [`which@2.0.2`](git://github.com/isaacs/node-which.git) | ISC | clearlydefined |
 | [`wrappy@1.0.2`](https://github.com/npm/wrappy) | ISC | clearlydefined |
 | [`ws@8.7.0`](https://github.com/websockets/ws.git) | MIT | clearlydefined |
-| [`xtend@4.0.2`](git://github.com/Raynos/xtend.git) | MIT | clearlydefined |
 | [`yaeti@0.0.4`](https://github.com/ibc/yaeti.git) | MIT | clearlydefined |
 | [`yallist@4.0.0`](git+https://github.com/isaacs/yallist.git) | ISC | clearlydefined |
 | [`yaml-language-server-parser@0.1.1`](https://github.com/redhat-developer/yaml-ast-parser.git) | Apache-2.0 | clearlydefined |
