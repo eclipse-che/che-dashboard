@@ -37,7 +37,7 @@ export type BrandingDocs = {
 };
 
 export type BrandingConfiguration = {
-/*  Deprecated field  */
+  /* deprecated field */
   cheCliTool?: string;
   prefetch?: PrefetchConfiguration;
 };
