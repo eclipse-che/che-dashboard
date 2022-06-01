@@ -140,7 +140,6 @@ const config = {
       "crypto": false,
       "path": false,
       "os": false,
-      "buffer": require.resolve("buffer")
     },
   },
   resolveLoader: {},
