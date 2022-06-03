@@ -21,7 +21,6 @@ jobs:
 
   coverage-report:
     runs-on: ubuntu-20.04
-    if: ${{ false }}
     steps:
       -
         name: "Checkout Che Dashboard source code"
