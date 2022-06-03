@@ -153,7 +153,6 @@ export const actionCreators: ActionCreators = {
       }
     },
 
-  /* istanbul ignore next */
   requestDwEditor:
     (settings: che.WorkspaceSettings, editorName: string): AppThunk<KnownAction, Promise<void>> =>
     async (dispatch): Promise<void> => {
