@@ -41,7 +41,6 @@ module.exports = {
     '!src/index.tsx',
     '!src/App.tsx',
     '!src/Routes.tsx',
-    '!src/store/Plugins/devWorkspacePlugins/index.ts',
   ],
   coverageThreshold: {
     global: {
