@@ -33,12 +33,16 @@ const config = {
               modules: {
                 auto: true,
                 localIdentName: '[local]_[hash]',
-                getLocalIdent: (context, localIdentName, localName, options) => {
-                  if (localName.startsWith('pf-')) {
+                getLocalIdent: (context, localIdentName, localName) => {
+                  if (
+                    localName.startsWith('pf-') ||
+                    localName.startsWith('monaco') ||
+                    localName === 'error'
+                  ) {
                     // preserve PatternFly class names
                     return localName;
                   }
-                  const hash = loaderUtils.getHashDigest(context.context, 'sha512', 'base64');
+                  const hash = loaderUtils.getHashDigest(context.context, 'md5', 'hex');
                   return localIdentName.replace('[local]', localName).replace('[hash]', hash);
                 },
                 context: path.resolve(__dirname),

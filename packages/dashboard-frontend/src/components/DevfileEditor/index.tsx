@@ -34,7 +34,7 @@ import { selectDevfileSchema } from '../../store/DevfileRegistries/selectors';
 import { selectPlugins } from '../../store/Plugins/chePlugins/selectors';
 import { selectBranding } from '../../store/Branding/selectors';
 
-import './DevfileEditor.styl';
+import styles from './index.module.css';
 
 const LANGUAGE_ID = 'yaml';
 const YAML_SERVICE = 'yamlService';
@@ -153,7 +153,7 @@ export class DevfileEditor extends React.PureComponent<Props, State> {
 
   // This method is called when the component is first added to the document
   public componentDidMount(): void {
-    const element = $('.devfile-editor .monaco').get(0);
+    const element = $(`.${styles.devfileEditor} .monaco`).get(0);
     if (element) {
       const value = stringify(this.props.devfile);
       this.editor = editor.create(
@@ -230,7 +230,7 @@ export class DevfileEditor extends React.PureComponent<Props, State> {
     const { errorMessage } = this.state;
 
     return (
-      <div className="devfile-editor">
+      <div className={styles.devfileEditor}>
         <div className="monaco">&nbsp;</div>
         <div className="error">{errorMessage}</div>
         <a target="_blank" rel="noopener noreferrer" href={href}>
@@ -258,7 +258,7 @@ export class DevfileEditor extends React.PureComponent<Props, State> {
           endPosition.column,
         );
         const options: editor.IModelDecorationOptions = {
-          inlineClassName: 'devfile-editor-decoration',
+          inlineClassName: styles.devfileEditorDecoration,
         };
         decorations.push({
           range,
