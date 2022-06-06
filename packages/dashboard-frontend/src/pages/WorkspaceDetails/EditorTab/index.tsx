@@ -148,7 +148,6 @@ export class EditorTab extends React.PureComponent<Props, State> {
       !this.state.isDevfileValid ||
       this.props.workspace.status === DevWorkspaceStatus.TERMINATING;
     const editorTabStyle = isExpanded ? styles.editorTabExpanded : styles.editorTab;
-    console.log('>>>>>>>>>>>>> STEP 1 >>>>>>>>>>>  editorTabStyle=', editorTabStyle);
 
     return (
       <React.Fragment>
