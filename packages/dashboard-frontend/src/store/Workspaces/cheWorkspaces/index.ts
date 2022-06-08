@@ -275,32 +275,11 @@ export const actionCreators: ActionCreators = {
 
   startWorkspace:
     (
-      workspace: che.Workspace,
-      params?: ResourceQueryParams,
+      _workspace: che.Workspace,
+      _params?: ResourceQueryParams,
     ): AppThunk<KnownAction, Promise<void>> =>
-    async (dispatch): Promise<void> => {
-      try {
-        const update = await cheWorkspaceClient.restApiClient.start<che.Workspace>(
-          workspace.id,
-          params,
-        );
-        dispatch({ type: 'CHE_DELETE_WORKSPACE_LOGS', workspaceId: update.id });
-        subscribeToEnvironmentOutput(workspace.id, dispatch);
-
-        dispatch({
-          type: 'CHE_UPDATE_WORKSPACE',
-          workspace: update,
-        });
-      } catch (e) {
-        const errorMessage =
-          `Failed to start the workspace ${workspace.devfile.metadata.name}, reason: ` +
-          common.helpers.errors.getMessage(e);
-        dispatch({
-          type: 'CHE_RECEIVE_ERROR',
-          error: errorMessage,
-        });
-        throw errorMessage;
-      }
+    async (): Promise<void> => {
+      throw new Error('Running Che7 workspaces is not supported.');
     },
 
   stopWorkspace:
