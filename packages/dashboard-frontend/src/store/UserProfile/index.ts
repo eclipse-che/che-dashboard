@@ -60,7 +60,7 @@ export const actionCreators: ActionCreators = {
         const profile = await WorkspaceClient.restApiClient.getCurrentUserProfile();
         dispatch({
           type: 'RECEIVE_USER_PROFILE',
-          profile,
+          profile: profile ? profile : unloadedState.profile,
         });
       } catch (e) {
         const errorMessage =
