@@ -22,7 +22,7 @@ import { CheWorkspaceClient } from '../../services/workspace-client/cheworkspace
 const WorkspaceClient = container.get(CheWorkspaceClient);
 
 export interface State {
-  profile: api.che.user.Profile | undefined;
+  profile: api.che.user.Profile;
   error?: string;
   isLoading: boolean;
 }
@@ -75,7 +75,7 @@ export const actionCreators: ActionCreators = {
 };
 
 const unloadedState: State = {
-  profile: undefined,
+  profile: { email: '' },
   isLoading: false,
 };
 
