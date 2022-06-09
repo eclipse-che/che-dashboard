@@ -15,62 +15,62 @@ import { isForbidden, isUnauthorized } from '../helpers';
 describe('Workspace-client helpers', () => {
   describe('checks for HTTP 401 Unauthorized response status code', () => {
     it('should return false in the case with HTTP 400 Bad Request', () => {
-      expect(isUnauthorized(
-        '...HTTP Status 400 ....'
-      )).toBeFalsy();
-      expect(isUnauthorized({
-        statusCode: 400
-      })).toBeFalsy();
-      expect(isUnauthorized({
-        status: 400,
-      })).toBeFalsy();
-      expect(isUnauthorized(
-        new Error('...Status code 400...')
-      )).toBeFalsy();
+      expect(isUnauthorized('...HTTP Status 400 ....')).toBeFalsy();
+      expect(
+        isUnauthorized({
+          statusCode: 400,
+        }),
+      ).toBeFalsy();
+      expect(
+        isUnauthorized({
+          status: 400,
+        }),
+      ).toBeFalsy();
+      expect(isUnauthorized(new Error('...Status code 400...'))).toBeFalsy();
     });
     it('should return true in the case with HTTP 401 Unauthorized', () => {
-      expect(isUnauthorized(
-        '...HTTP Status 401 ....'
-      )).toBeTruthy();
-      expect(isUnauthorized({
-        statusCode: 401
-      })).toBeTruthy();
-      expect(isUnauthorized({
-        status: 401,
-      })).toBeTruthy();
-      expect(isUnauthorized(
-        new Error('...Status code 401...')
-      )).toBeTruthy();
+      expect(isUnauthorized('...HTTP Status 401 ....')).toBeTruthy();
+      expect(
+        isUnauthorized({
+          statusCode: 401,
+        }),
+      ).toBeTruthy();
+      expect(
+        isUnauthorized({
+          status: 401,
+        }),
+      ).toBeTruthy();
+      expect(isUnauthorized(new Error('...Status code 401...'))).toBeTruthy();
     });
   });
   describe('checks for HTTP 403 Forbidden response status code', () => {
     it('should return false in the case with HTTP 400 Bad Request', () => {
-      expect(isForbidden(
-        '...HTTP Status 400 ....'
-      )).toBeFalsy();
-      expect(isForbidden({
-        statusCode: 400
-      })).toBeFalsy();
-      expect(isForbidden({
-        status: 400
-      })).toBeFalsy();
-      expect(isForbidden(
-        new Error('...Status code 400...')
-      )).toBeFalsy();
+      expect(isForbidden('...HTTP Status 400 ....')).toBeFalsy();
+      expect(
+        isForbidden({
+          statusCode: 400,
+        }),
+      ).toBeFalsy();
+      expect(
+        isForbidden({
+          status: 400,
+        }),
+      ).toBeFalsy();
+      expect(isForbidden(new Error('...Status code 400...'))).toBeFalsy();
     });
     it('should return true in the case with HTTP 403 Forbidden', () => {
-      expect(isForbidden(
-        '...HTTP Status 403 ....'
-      )).toBeTruthy();
-      expect(isForbidden({
-        statusCode: 403
-      })).toBeTruthy();
-      expect(isForbidden({
-        status: 403
-      })).toBeTruthy();
-      expect(isForbidden(
-        new Error('...Status code 403...')
-      )).toBeTruthy();
+      expect(isForbidden('...HTTP Status 403 ....')).toBeTruthy();
+      expect(
+        isForbidden({
+          statusCode: 403,
+        }),
+      ).toBeTruthy();
+      expect(
+        isForbidden({
+          status: 403,
+        }),
+      ).toBeTruthy();
+      expect(isForbidden(new Error('...Status code 403...'))).toBeTruthy();
     });
   });
 });
