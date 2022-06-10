@@ -10,6 +10,8 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
+import common from '@eclipse-che/common';
+
 /**
  * Checks for HTTP 401 Unauthorized response status code
  */
@@ -33,11 +35,24 @@ function hasStatus(response: unknown, _status: number): boolean {
     const { status, statusCode } = response as { [propName: string]: string | number };
     if (statusCode == _status) {
       return true;
+    }
+    if (common.helpers.errors.isError(response)) {
+      const str = response.message.toLowerCase();
+      if (str.includes(`status code ${_status}`)) {
+        return true;
+      }
     } else if (status == _status) {
       return true;
     } else {
-      if (response.toString().toLowerCase().includes(`status code ${_status}`)) {
-        return true;
+      try {
+        const str = JSON.stringify(response).toLowerCase();
+        if (str.includes(`http status ${_status}`)) {
+          return true;
+        } else if (str.includes(`status code ${_status}`)) {
+          return true;
+        }
+      } catch (e) {
+        // no-op
       }
     }
   }
