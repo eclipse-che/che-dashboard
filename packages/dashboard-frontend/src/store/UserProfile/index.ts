@@ -18,11 +18,12 @@ import { createObject } from '../helpers';
 import { AppThunk } from '../index';
 import { container } from '../../inversify.config';
 import { CheWorkspaceClient } from '../../services/workspace-client/cheworkspace/cheWorkspaceClient';
+import { che as cheApi } from '@eclipse-che/api';
 
 const WorkspaceClient = container.get(CheWorkspaceClient);
 
 export interface State {
-  profile: api.che.user.Profile;
+  profile: cheApi.user.Profile;
   error?: string;
   isLoading: boolean;
 }
