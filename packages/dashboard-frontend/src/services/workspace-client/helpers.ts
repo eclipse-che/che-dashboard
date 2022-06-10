@@ -31,16 +31,15 @@ function hasStatus(response: unknown, _status: number): boolean {
     if (response.toLowerCase().includes(`http status ${_status}`)) {
       return true;
     }
+  } else if (common.helpers.errors.isError(response)) {
+    const str = response.message.toLowerCase();
+    if (str.includes(`status code ${_status}`)) {
+      return true;
+    }
   } else if (typeof response === 'object' && response !== null) {
     const { status, statusCode } = response as { [propName: string]: string | number };
     if (statusCode == _status) {
       return true;
-    }
-    if (common.helpers.errors.isError(response)) {
-      const str = response.message.toLowerCase();
-      if (str.includes(`status code ${_status}`)) {
-        return true;
-      }
     } else if (status == _status) {
       return true;
     } else {
