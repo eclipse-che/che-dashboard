@@ -23,6 +23,7 @@ export type WebSocketsFailedCallback = () => void;
 @injectable()
 export abstract class WorkspaceClient {
   protected readonly axios: AxiosInstance;
+  private debounceTimer: number | undefined;
 
   constructor() {
     // change this temporary solution after adding the proper method to workspace-client https://github.com/eclipse/che/issues/18311
@@ -35,13 +36,13 @@ export abstract class WorkspaceClient {
           this.checkPathPrefix(response, '/api/') &&
           (isUnauthorized(response) || isForbidden(response))
         ) {
-          await deauthorizeCallback();
+          await this.deauthorize();
         }
         return response;
       },
       async error => {
         if (isUnauthorized(error)) {
-          await deauthorizeCallback();
+          await this.deauthorize();
         }
         return Promise.reject(error);
       },
@@ -50,18 +51,35 @@ export abstract class WorkspaceClient {
     // dashboard-backend axios interceptor
     axios.interceptors.response.use(
       async response => {
-        if (isUnauthorized(response) && this.checkPathPrefix(response, '/dashboard/api/')) {
-          await deauthorizeCallback();
+        if (
+          this.checkPathPrefix(response, '/dashboard/api/') &&
+          (isUnauthorized(response) || isForbidden(response))
+        ) {
+          await this.deauthorize();
         }
         return response;
       },
       async error => {
         if (isUnauthorized(error)) {
-          await deauthorizeCallback();
+          await this.deauthorize();
         }
         return Promise.reject(error);
       },
     );
+  }
+
+  private async deauthorize(): Promise<void> {
+    if (this.debounceTimer) {
+      return;
+    }
+    try {
+      await deauthorizeCallback();
+      this.debounceTimer = window.setTimeout(() => {
+        this.debounceTimer = undefined;
+      }, 5000);
+    } catch (e) {
+      this.debounceTimer = undefined;
+    }
   }
 
   private checkPathPrefix(response: AxiosResponse, prefix: string): boolean {
@@ -75,5 +93,4 @@ export abstract class WorkspaceClient {
 
 export async function deauthorizeCallback(): Promise<void> {
   await axios.get('/oauth/sign_out');
-  return Promise.resolve();
 }
