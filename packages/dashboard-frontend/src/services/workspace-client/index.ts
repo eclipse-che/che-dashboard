@@ -15,7 +15,7 @@ import { AxiosInstance, AxiosResponse } from 'axios';
 import { injectable } from 'inversify';
 import { default as WorkspaceClientLib } from '@eclipse-che/workspace-client';
 import { isForbidden, isUnauthorized } from './helpers';
-import { signIn, signOut } from '../helpers/login';
+import { signIn } from '../helpers/login';
 
 /**
  * This class manages the common functions between the che workspace client and the devworkspace client
@@ -33,16 +33,14 @@ export abstract class WorkspaceClient {
       async response => {
         const isApi = this.checkPathPrefix(response, '/api/');
         if (isApi) {
-          if (isUnauthorized(response)) {
+          if (isUnauthorized(response) || isForbidden(response)) {
             signIn();
-          } else if (isForbidden(response)) {
-            signOut();
           }
         }
         return response;
       },
       async error => {
-        if (isUnauthorized(error)) {
+        if (isUnauthorized(error) || isForbidden(error)) {
           signIn();
         }
         return Promise.reject(error);
@@ -53,14 +51,12 @@ export abstract class WorkspaceClient {
     axios.interceptors.response.use(async response => {
       const isApi = this.checkPathPrefix(response, '/dashboard/api/');
       if (isApi) {
-        if (isUnauthorized(response)) {
+        if (isUnauthorized(response) || isForbidden(response)) {
           signIn();
-        } else if (isForbidden(response)) {
-          signOut();
         }
       }
       return response;
-    });
+      });
   }
 
   private checkPathPrefix(response: AxiosResponse, prefix: string): boolean {
