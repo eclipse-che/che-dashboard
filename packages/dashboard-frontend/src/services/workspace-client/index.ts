@@ -56,7 +56,7 @@ export abstract class WorkspaceClient {
         }
       }
       return response;
-      });
+    });
   }
 
   private checkPathPrefix(response: AxiosResponse, prefix: string): boolean {
