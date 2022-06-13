@@ -180,8 +180,23 @@ export const actionCreators: ActionCreators = {
     },
 
   updateDevWorkspaceStatus:
-    (message: IStatusUpdate): AppThunk<KnownAction, Promise<void>> =>
-    async (dispatch): Promise<void> => {
+    (
+      message: IStatusUpdate & {
+        namespace?: string;
+        workspaceId?: string;
+      },
+    ): AppThunk<KnownAction, Promise<void>> =>
+    async (dispatch, getState): Promise<void> => {
+      if (!message.namespace || !message.workspaceId) {
+        const {
+          devWorkspaces: { workspaces },
+        } = getState();
+        const workspace = workspaces.find(w => w.metadata.uid === message.workspaceUID);
+        if (workspace) {
+          message.namespace = workspace?.metadata?.namespace;
+          message.workspaceId = workspace.status?.devworkspaceId;
+        }
+      }
       await onStatusUpdateReceived(dispatch, message);
     },
 
@@ -275,8 +290,6 @@ export const actionCreators: ActionCreators = {
         }
         await devWorkspaceClient.updateDebugMode(workspace, debugWorkspace);
         let updatedWorkspace: devfileApi.DevWorkspace;
-        await addKubeConfigInjection(workspace);
-
         const workspaceUID = workspace.metadata.uid;
         dispatch({
           type: 'DELETE_DEVWORKSPACE_LOGS',
@@ -506,7 +519,6 @@ export const actionCreators: ActionCreators = {
           pluginRegistryUrl,
           pluginRegistryInternalUrl,
         );
-        await addKubeConfigInjection(workspace);
 
         if (workspace.spec.started) {
           const editor = workspace.metadata.annotations
@@ -586,8 +598,6 @@ export const actionCreators: ActionCreators = {
           cheEditor,
           optionalFilesContent,
         );
-        await addKubeConfigInjection(workspace);
-
         if (workspace.spec.started) {
           const defaultPlugins = getState().dwPlugins.defaultPlugins;
           await devWorkspaceClient.onStart(workspace, defaultPlugins, cheEditor as string);
@@ -715,9 +725,12 @@ export const reducer: Reducer<State> = (state: State | undefined, action: KnownA
 
 async function onStatusUpdateReceived(
   dispatch: ThunkDispatch<AppState, unknown, KnownAction>,
-  statusUpdate: IStatusUpdate,
+  statusUpdate: IStatusUpdate & {
+    namespace?: string;
+    workspaceId?: string;
+  },
 ) {
-  const { status } = statusUpdate;
+  const { status, namespace, workspaceId } = statusUpdate;
   if (status !== statusUpdate.prevStatus) {
     dispatch({
       type: 'UPDATE_DEVWORKSPACE_STATUS',
@@ -725,10 +738,12 @@ async function onStatusUpdateReceived(
       message: statusUpdate.message,
       status,
     });
+    if (status === DevWorkspaceStatus.RUNNING && namespace && workspaceId) {
+      injectKubeConfig(namespace, workspaceId).catch(e => console.error(e));
+    }
   }
 
   const callback = onStatusChangeCallbacks.get(statusUpdate.workspaceUID);
-
   if (callback && status) {
     callback(status);
   }
@@ -750,24 +765,4 @@ async function onStatusUpdateReceived(
       });
     }
   }
-}
-
-export async function addKubeConfigInjection(workspace: devfileApi.DevWorkspace): Promise<void> {
-  const toDispose = new DisposableCollection();
-  const onStatusChangeCallback = async (status: string) => {
-    if (status === DevWorkspaceStatus.RUNNING) {
-      const workspaceId = WorkspaceAdapter.getId(workspace);
-      try {
-        await injectKubeConfig(workspace.metadata.namespace, workspaceId);
-      } catch (e) {
-        console.error(e);
-      }
-      toDispose.dispose();
-    }
-  };
-  const workspaceUID = WorkspaceAdapter.getUID(workspace);
-  onStatusChangeCallbacks.set(workspaceUID, onStatusChangeCallback);
-  toDispose.push({
-    dispose: () => onStatusChangeCallbacks.delete(workspaceUID),
-  });
 }
