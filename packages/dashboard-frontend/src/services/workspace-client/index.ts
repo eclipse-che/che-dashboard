@@ -15,7 +15,7 @@ import { AxiosInstance, AxiosResponse } from 'axios';
 import { injectable } from 'inversify';
 import { default as WorkspaceClientLib } from '@eclipse-che/workspace-client';
 import { isForbidden, isUnauthorized } from './helpers';
-export type WebSocketsFailedCallback = () => void;
+import { signIn, signOut } from '../helpers/login';
 
 /**
  * This class manages the common functions between the che workspace client and the devworkspace client
@@ -23,7 +23,6 @@ export type WebSocketsFailedCallback = () => void;
 @injectable()
 export abstract class WorkspaceClient {
   protected readonly axios: AxiosInstance;
-  private debounceTimer: number | undefined;
 
   constructor() {
     // change this temporary solution after adding the proper method to workspace-client https://github.com/eclipse/che/issues/18311
@@ -32,54 +31,36 @@ export abstract class WorkspaceClient {
     // workspaceClientLib axios interceptor
     this.axios.interceptors.response.use(
       async response => {
-        if (
-          this.checkPathPrefix(response, '/api/') &&
-          (isUnauthorized(response) || isForbidden(response))
-        ) {
-          await this.deauthorize();
+        const isApi = this.checkPathPrefix(response, '/api/');
+        if (isApi) {
+          if (isUnauthorized(response)) {
+            signIn();
+          } else if (isForbidden(response)) {
+            signOut();
+          }
         }
         return response;
       },
       async error => {
         if (isUnauthorized(error)) {
-          await this.deauthorize();
+          signIn();
         }
         return Promise.reject(error);
       },
     );
 
     // dashboard-backend axios interceptor
-    axios.interceptors.response.use(
-      async response => {
-        if (
-          this.checkPathPrefix(response, '/dashboard/api/') &&
-          (isUnauthorized(response) || isForbidden(response))
-        ) {
-          await this.deauthorize();
+    axios.interceptors.response.use(async response => {
+      const isApi = this.checkPathPrefix(response, '/dashboard/api/');
+      if (isApi) {
+        if (isUnauthorized(response)) {
+          signIn();
+        } else if (isForbidden(response)) {
+          signOut();
         }
-        return response;
-      },
-      async error => {
-        if (isUnauthorized(error)) {
-          await this.deauthorize();
-        }
-        return Promise.reject(error);
-      },
-    );
-  }
-
-  private async deauthorize(): Promise<void> {
-    if (this.debounceTimer) {
-      return;
-    }
-    try {
-      await deauthorizeCallback();
-      this.debounceTimer = window.setTimeout(() => {
-        this.debounceTimer = undefined;
-      }, 5000);
-    } catch (e) {
-      this.debounceTimer = undefined;
-    }
+      }
+      return response;
+    });
   }
 
   private checkPathPrefix(response: AxiosResponse, prefix: string): boolean {
@@ -89,8 +70,4 @@ export abstract class WorkspaceClient {
     }
     return pathname.startsWith(prefix);
   }
-}
-
-export async function deauthorizeCallback(): Promise<void> {
-  await axios.get('/oauth/sign_out');
 }
