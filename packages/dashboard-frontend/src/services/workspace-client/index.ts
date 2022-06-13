@@ -48,15 +48,23 @@ export abstract class WorkspaceClient {
     );
 
     // dashboard-backend axios interceptor
-    axios.interceptors.response.use(async response => {
-      const isApi = this.checkPathPrefix(response, '/dashboard/api/');
-      if (isApi) {
-        if (isUnauthorized(response) || isForbidden(response)) {
+    axios.interceptors.response.use(
+      async response => {
+        const isApi = this.checkPathPrefix(response, '/dashboard/api/');
+        if (isApi) {
+          if (isUnauthorized(response) || isForbidden(response)) {
+            signIn();
+          }
+        }
+        return response;
+      },
+      async error => {
+        if (isUnauthorized(error) || isForbidden(error)) {
           signIn();
         }
-      }
-      return response;
-    });
+        return Promise.reject(error);
+      },
+    );
   }
 
   private checkPathPrefix(response: AxiosResponse, prefix: string): boolean {
