@@ -730,39 +730,42 @@ async function onStatusUpdateReceived(
     workspaceId?: string;
   },
 ) {
-  const { status, namespace, workspaceId } = statusUpdate;
-  if (status !== statusUpdate.prevStatus) {
-    dispatch({
-      type: 'UPDATE_DEVWORKSPACE_STATUS',
-      workspaceUID: statusUpdate.workspaceUID,
-      message: statusUpdate.message,
-      status,
-    });
-    if (status === DevWorkspaceStatus.RUNNING && namespace && workspaceId) {
-      injectKubeConfig(namespace, workspaceId).catch(e => console.error(e));
+  const { status, message, prevStatus, workspaceUID, namespace, workspaceId } = statusUpdate;
+
+  if (status !== prevStatus) {
+    const type = 'UPDATE_DEVWORKSPACE_STATUS';
+    dispatch({ type, workspaceUID, message, status });
+
+    const onChangeCallback = onStatusChangeCallbacks.get(workspaceUID);
+    if (onChangeCallback) {
+      onChangeCallback(status);
     }
   }
 
-  const callback = onStatusChangeCallbacks.get(statusUpdate.workspaceUID);
-  if (callback && status) {
-    callback(status);
+  if (message && status !== DevWorkspaceStatus.STOPPED) {
+    let log: string;
+    if (status === DevWorkspaceStatus.FAILED || status === DevWorkspaceStatus.FAILING) {
+      log = `1 error occurred: ${message}`;
+    } else {
+      log = message;
+    }
+
+    dispatch({
+      type: 'UPDATE_DEVWORKSPACE_LOGS',
+      workspacesLogs: new Map([[workspaceUID, [log]]]),
+    });
   }
 
-  if (statusUpdate.message) {
-    if (statusUpdate.status !== DevWorkspaceStatus.STOPPED) {
-      const workspacesLogs = new Map<string, string[]>();
-      let message = statusUpdate.message;
-      if (
-        statusUpdate.status === DevWorkspaceStatus.FAILED ||
-        statusUpdate.status === DevWorkspaceStatus.FAILING
-      ) {
-        message = `1 error occurred: ${message}`;
-      }
-      workspacesLogs.set(statusUpdate.workspaceUID, [message]);
-      dispatch({
-        type: 'UPDATE_DEVWORKSPACE_LOGS',
-        workspacesLogs,
-      });
+  if (
+    status === DevWorkspaceStatus.RUNNING &&
+    status !== prevStatus &&
+    namespace !== undefined &&
+    workspaceId !== undefined
+  ) {
+    try {
+      await injectKubeConfig(namespace, workspaceId);
+    } catch (e) {
+      console.error(e);
     }
   }
 }
