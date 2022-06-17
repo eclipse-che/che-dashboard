@@ -355,6 +355,8 @@ export class EditorTab extends React.PureComponent<Props, State> {
         devfile.attributes = {};
       }
       devfile.attributes[DEVWORKSPACE_METADATA_ANNOTATION] = dwMetadataAnnotation;
+    } else if (devfile.attributes?.[DEVWORKSPACE_METADATA_ANNOTATION]) {
+      delete devfile.attributes[DEVWORKSPACE_METADATA_ANNOTATION];
     }
 
     const workspaceCopy = constructWorkspace(this.props.workspace.ref);

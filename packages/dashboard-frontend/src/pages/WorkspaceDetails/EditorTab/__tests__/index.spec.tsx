@@ -243,7 +243,8 @@ describe('Editor Tab', () => {
       );
     });
 
-    it('should ignore the devworkspace metadata attribute typed in the editor', async () => {
+    it('#1 should ignore the devworkspace metadata attribute typed in the editor', async () => {
+      // the workspace already has DEVWORKSPACE_METADATA_ANNOTATION attribute
       renderComponent(store, workspace);
 
       // replace existing attributes
@@ -276,6 +277,72 @@ describe('Editor Tab', () => {
                 attributes: {
                   'new-attribute': 'new-value',
                   [DEVWORKSPACE_METADATA_ANNOTATION]: initialMetadataAnnotationAttr,
+                },
+              }),
+            }),
+          } as devfileApi.DevWorkspace),
+        }),
+      );
+    });
+
+    it('#2 should ignore the devworkspace metadata attribute typed in the editor', async () => {
+      // the workspace doesn't have the DEVWORKSPACE_METADATA_ANNOTATION attribute
+      const devWorkspace = new DevWorkspaceBuilder()
+        .withName(workspaceName)
+        .withNamespace(namespace)
+        .build();
+
+      const devWorkspaceCopy = JSON.parse(JSON.stringify(devWorkspace));
+      // mock devworkspace method to be able to save the devfile
+      class MockDevWorkspaceClient extends DevWorkspaceClient {
+        /* eslint-disable @typescript-eslint/no-unused-vars */
+        async getWorkspaceByName(
+          _namespace: string,
+          _workspaceName: string,
+        ): Promise<devfileApi.DevWorkspace> {
+          return devWorkspaceCopy;
+        }
+        /* eslint-enable @typescript-eslint/no-unused-vars */
+      }
+      container.rebind(DevWorkspaceClient).to(MockDevWorkspaceClient).inSingletonScope();
+
+      workspace = constructWorkspace(devWorkspace);
+      store = new FakeStoreBuilder()
+        .withDevWorkspaces({
+          workspaces: [devWorkspace],
+        })
+        .build();
+      renderComponent(store, workspace);
+
+      // replace existing attributes
+      const devfile = JSON.parse(JSON.stringify(workspace.devfile)) as devfileApi.Devfile;
+      devfile.attributes = {
+        'new-attribute': 'new-value',
+        [DEVWORKSPACE_METADATA_ANNOTATION]: 'this-value-should-be ignored',
+      };
+      const devfileContent = dump(devfile);
+
+      const editor = screen.getByRole('textbox');
+      fireEvent.input(editor, {
+        target: {
+          value: devfileContent,
+        },
+      });
+
+      const saveButton = screen.getByRole('button', { name: 'Save' });
+
+      await waitFor(() => expect(saveButton).toBeEnabled());
+      userEvent.click(saveButton);
+
+      await waitFor(() => expect(mockOnSave).toHaveBeenCalled());
+      expect(mockOnSave).toHaveBeenCalledWith(
+        expect.objectContaining({
+          workspace: expect.objectContaining({
+            kind: 'DevWorkspace',
+            spec: expect.objectContaining({
+              template: expect.objectContaining({
+                attributes: {
+                  'new-attribute': 'new-value',
                 },
               }),
             }),
