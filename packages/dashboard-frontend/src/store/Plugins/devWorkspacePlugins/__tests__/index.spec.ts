@@ -17,6 +17,7 @@ import { ThunkDispatch } from 'redux-thunk';
 import devfileApi from '../../../../services/devfileApi';
 import { FakeStoreBuilder } from '../../../__mocks__/storeBuilder';
 import * as dwPluginsStore from '..';
+import * as dwServerConfigStore from '../../../ServerConfig';
 import { AppState } from '../../..';
 import axios from 'axios';
 
@@ -298,11 +299,27 @@ describe('dwPlugins store', () => {
     });
 
     it('should create REQUEST_DW_DEFAULT_EDITOR and RECEIVE_DW_DEFAULT_EDITOR when fetching default plugins', async () => {
-      (mockAxios.get as jest.Mock).mockResolvedValueOnce({
-        data: [{ editor: 'eclipse/theia/next', plugins: ['https://test.com/devfile.yaml'] }],
-      });
-
-      const store = new FakeStoreBuilder().build() as MockStoreEnhanced<
+      const store = new FakeStoreBuilder()
+        .withDwServerConfig({
+          defaults: {
+            editor: 'eclipse/theia/next',
+            components: [
+              {
+                name: 'universal-developer-image',
+                container: {
+                  image: 'quay.io/devfile/universal-developer-image:ubi8-latest',
+                },
+              },
+            ],
+            plugins: [
+              {
+                editor: 'eclipse/theia/next',
+                plugins: ['https://test.com/devfile.yaml'],
+              },
+            ],
+          },
+        })
+        .build() as MockStoreEnhanced<
         AppState,
         ThunkDispatch<AppState, undefined, dwPluginsStore.KnownAction>
       >;
