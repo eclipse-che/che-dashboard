@@ -125,7 +125,7 @@ describe('Samples List Gallery', () => {
     fireEvent.click(cardHeader);
     jest.runOnlyPendingTimers();
     expect(windowSpy).toBeCalledWith(
-      'http://localhost/dashboard/#/load-factory?url=http%3A%2F%2Fmy-fake-repository.com%2F',
+      'http://localhost/#/load-factory?url=http%3A%2F%2Fmy-fake-repository.com%2F',
       '_blank',
     );
   });
