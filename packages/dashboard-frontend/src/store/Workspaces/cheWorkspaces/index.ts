@@ -274,6 +274,7 @@ export const actionCreators: ActionCreators = {
     },
 
   /* eslint-disable @typescript-eslint/no-unused-vars */
+  /* eslint-enable @typescript-eslint/no-unused-vars */
   startWorkspace:
     (
       workspace: che.Workspace,
