@@ -17,7 +17,6 @@ import { ThunkDispatch } from 'redux-thunk';
 import devfileApi from '../../../../services/devfileApi';
 import { FakeStoreBuilder } from '../../../__mocks__/storeBuilder';
 import * as dwPluginsStore from '..';
-import * as dwServerConfigStore from '../../../ServerConfig';
 import { AppState } from '../../..';
 import axios from 'axios';
 

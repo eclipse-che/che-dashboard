@@ -273,10 +273,11 @@ export const actionCreators: ActionCreators = {
       }
     },
 
+  /* eslint-disable @typescript-eslint/no-unused-vars */
   startWorkspace:
     (
-      _workspace: che.Workspace,
-      _params?: ResourceQueryParams,
+      workspace: che.Workspace,
+      params?: ResourceQueryParams,
     ): AppThunk<KnownAction, Promise<void>> =>
     async (): Promise<void> => {
       throw new Error('Running Che7 workspaces is not supported.');

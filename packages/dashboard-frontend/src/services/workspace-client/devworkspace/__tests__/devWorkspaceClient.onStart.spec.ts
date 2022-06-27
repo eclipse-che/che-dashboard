@@ -14,7 +14,6 @@ import { container } from '../../../../inversify.config';
 import { DevWorkspaceBuilder } from '../../../../store/__mocks__/devWorkspaceBuilder';
 import { DevWorkspaceClient } from '../devWorkspaceClient';
 import * as DwApi from '../../../dashboard-backend-client/devWorkspaceApi';
-import * as ServerConfigApi from '../../../dashboard-backend-client/serverConfigApi';
 import mockAxios from 'axios';
 
 /* eslint-disable @typescript-eslint/no-non-null-assertion */

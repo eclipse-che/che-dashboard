@@ -78,10 +78,9 @@ export default class Bootstrap {
     const results = await Promise.allSettled([
       this.fetchCurrentUser(),
       this.fetchUserProfile(),
-      this.fetchServerConfig(),
+      this.fetchServerConfig().then(() => this.fetchDefaultDwPlugins(settings)),
       this.fetchPlugins(settings).then(() => this.fetchDevfileSchema()),
       this.fetchDwPlugins(settings),
-      this.fetchDefaultDwPlugins(settings),
       this.fetchRegistriesMetadata(settings),
       this.watchNamespaces(),
       this.updateDevWorkspaceTemplates(settings),
