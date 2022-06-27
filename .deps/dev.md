@@ -346,7 +346,7 @@
 | [`cliui@6.0.0`](http://github.com/yargs/cliui.git) | ISC | clearlydefined |
 | [`clone-deep@4.0.1`](https://github.com/jonschlinkert/clone-deep.git) | MIT | clearlydefined |
 | [`clone-regexp@2.2.0`](https://github.com/sindresorhus/clone-regexp.git) | MIT | clearlydefined |
-| [`clone@1.0.4`](git://github.com/pvorb/node-clone.git) | MIT |  |
+| [`clone@1.0.4`](git://github.com/pvorb/node-clone.git) | MIT | #2729 |
 | [`cmd-shim@4.1.0`](https://github.com/npm/cmd-shim.git) | ISC | clearlydefined |
 | [`co@4.6.0`](https://github.com/tj/co.git) | MIT | clearlydefined |
 | [`code-point-at@1.1.0`](https://github.com/sindresorhus/code-point-at.git) | MIT | clearlydefined |
@@ -452,7 +452,7 @@
 | [`eslint-scope@5.1.1`](https://github.com/eslint/eslint-scope.git) | BSD-2-Clause | clearlydefined |
 | [`eslint-utils@2.1.0`](git+https://github.com/mysticatea/eslint-utils.git) | MIT | #2498 |
 | [`eslint-visitor-keys@2.1.0`](https://github.com/eslint/eslint-visitor-keys.git) | Apache-2.0 | #2433 |
-| [`eslint@7.32.0`](https://github.com/eslint/eslint.git) | MIT |  |
+| [`eslint@7.32.0`](https://github.com/eslint/eslint.git) | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/eslint/7.32.0) |
 | [`espree@7.3.1`](https://github.com/eslint/espree.git) | BSD-2-Clause | #903 |
 | [`esquery@1.4.0`](https://github.com/estools/esquery.git) | BSD-3-Clause | #1100 |
 | [`esrecurse@4.3.0`](https://github.com/estools/esrecurse.git) | BSD-2-Clause | clearlydefined |
@@ -844,7 +844,7 @@
 | [`read-pkg@3.0.0`](https://github.com/sindresorhus/read-pkg.git) | MIT | clearlydefined |
 | [`read@1.0.7`](git://github.com/isaacs/read.git) | ISC | clearlydefined |
 | [`readdir-scoped-modules@1.1.0`](https://github.com/npm/readdir-scoped-modules) | ISC | clearlydefined |
-| [`readdirp@3.6.0`](git://github.com/paulmillr/readdirp.git) | MIT |  |
+| [`readdirp@3.6.0`](git://github.com/paulmillr/readdirp.git) | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/readdirp/3.6.0) |
 | [`rechoir@0.7.1`](https://github.com/gulpjs/rechoir.git) | MIT | clearlydefined |
 | [`redent@3.0.0`](https://github.com/sindresorhus/redent.git) | MIT | clearlydefined |
 | [`redux-mock-store@1.5.4`](git+https://github.com/arnaudbenard/redux-mock-store.git) | MIT | clearlydefined |
