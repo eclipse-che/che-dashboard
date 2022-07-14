@@ -1,0 +1,262 @@
+/*
+ * Copyright (c) 2018-2021 Red Hat, Inc.
+ * This program and the accompanying materials are made
+ * available under the terms of the Eclipse Public License 2.0
+ * which is available at https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ *
+ * Contributors:
+ *   Red Hat, Inc. - initial API and implementation
+ */
+
+import React from 'react';
+import { connect, ConnectedProps } from 'react-redux';
+import { Cancellation, pseudoCancellable } from 'real-cancellable-promise';
+import { AlertVariant } from '@patternfly/react-core';
+import common from '@eclipse-che/common';
+import { AppState } from '../../../../../store';
+import { selectAllWorkspaces, selectLogs } from '../../../../../store/Workspaces/selectors';
+import * as WorkspaceStore from '../../../../../store/Workspaces';
+import { LoadingStep, List, LoaderStep } from '../../../../../components/Loader/Step';
+import { buildLoaderSteps } from '../../../../../components/Loader/Step/buildSteps';
+import { WorkspaceLoaderPage } from '../../../../../pages/Loader/Workspace';
+import { DevWorkspaceStatus } from '../../../../../services/helpers/types';
+import { DisposableCollection } from '../../../../../services/helpers/disposable';
+import { delay } from '../../../../../services/helpers/delay';
+import { filterErrorLogs } from '../../../../../services/helpers/filterErrorLogs';
+import { MIN_STEP_DURATION_MS, TIMEOUT_TO_RUN_SEC } from '../..';
+import findTargetWorkspace from '../../findTargetWorkspace';
+import workspaceStatusIs from '../../workspaceStatusIs';
+
+export type Props = MappedProps & {
+  currentStepIndex: number; // not ID, but index
+  loadingSteps: LoadingStep[];
+  matchParams: {
+    namespace: string;
+    workspaceName: string;
+  };
+  tabParam: string | undefined;
+  onNextStep: () => void;
+  onRestart: () => void;
+};
+export type State = {
+  lastError?: string;
+  shouldStart: boolean; // should the loader start a workspace?
+};
+
+class StepStartWorkspace extends React.Component<Props, State> {
+  private readonly toDispose = new DisposableCollection();
+  private stepsList: List<LoaderStep>;
+
+  constructor(props: Props) {
+    super(props);
+
+    this.state = {
+      shouldStart: true,
+    };
+
+    this.stepsList = buildLoaderSteps(this.props.loadingSteps);
+  }
+
+  public componentDidMount() {
+    const { allWorkspaces, matchParams } = this.props;
+    const workspace = findTargetWorkspace(allWorkspaces, matchParams);
+    if (workspace?.isStarting) {
+      // prevent a workspace being repeatedly restarted, once it's starting
+      this.setState({
+        shouldStart: false,
+      });
+    }
+
+    this.prepareAndRun();
+  }
+
+  public async componentDidUpdate() {
+    this.toDispose.dispose();
+
+    const { allWorkspaces, matchParams } = this.props;
+    const workspace = findTargetWorkspace(allWorkspaces, matchParams);
+    if (workspace?.isStarting) {
+      // prevent a workspace being repeatedly restarted, once it's starting
+      this.setState({
+        shouldStart: false,
+      });
+    }
+
+    this.prepareAndRun();
+  }
+
+  public shouldComponentUpdate(nextProps: Props, nextState: State): boolean {
+    const { allWorkspaces, matchParams } = this.props;
+    const workspace = findTargetWorkspace(allWorkspaces, matchParams);
+    const nextWorkspace = findTargetWorkspace(allWorkspaces, matchParams);
+
+    // next step
+    if (nextProps.currentStepIndex > this.props.currentStepIndex) {
+      return true;
+    }
+    // change workspace status, etc.
+    if (
+      workspace?.uid !== nextWorkspace?.uid ||
+      workspace?.status !== nextWorkspace?.status ||
+      workspace?.ideUrl !== nextWorkspace?.ideUrl
+    ) {
+      return true;
+    }
+    // set the error for the current step
+    if (this.state.lastError !== nextState.lastError) {
+      return true;
+    }
+    return false;
+  }
+
+  public componentWillUnmount(): void {
+    this.toDispose.dispose();
+  }
+
+  private handleWorkspaceRestart(): void {
+    this.props.onRestart();
+  }
+
+  private async prepareAndRun(): Promise<void> {
+    const { currentStepIndex } = this.props;
+
+    const currentStep = this.stepsList.get(currentStepIndex).value;
+
+    try {
+      const stepCancellablePromise = pseudoCancellable(this.runStep());
+      this.toDispose.push({
+        dispose: () => {
+          stepCancellablePromise.cancel();
+        },
+      });
+      const jumpToNextStep = await stepCancellablePromise;
+      if (jumpToNextStep) {
+        this.props.onNextStep();
+      }
+    } catch (e) {
+      if (e instanceof Cancellation) {
+        // component updated, do nothing
+        return;
+      }
+      currentStep.hasError = true;
+      const lastError = common.helpers.errors.getMessage(e);
+      this.setState({
+        lastError,
+      });
+    }
+  }
+
+  /**
+   * The resolved boolean indicates whether to go to the next step or not
+   */
+  private async runStep(): Promise<boolean> {
+    const { allWorkspaces, matchParams } = this.props;
+
+    const workspace = findTargetWorkspace(allWorkspaces, matchParams);
+
+    if (!workspace) {
+      throw new Error(
+        `Workspace "${matchParams.namespace}/${matchParams.workspaceName}" not found.`,
+      );
+    }
+
+    if (
+      workspaceStatusIs(
+        workspace,
+        DevWorkspaceStatus.TERMINATING,
+        DevWorkspaceStatus.STOPPING,
+        DevWorkspaceStatus.FAILING,
+      ) ||
+      (this.state.shouldStart === false &&
+        workspaceStatusIs(workspace, DevWorkspaceStatus.STOPPED, DevWorkspaceStatus.FAILED))
+    ) {
+      const errorLogs = filterErrorLogs(this.props.workspacesLogs, workspace).pop();
+      throw new Error(
+        errorLogs || `The workspace status changed unexpectedly to "${workspace.status}".`,
+      );
+    }
+
+    if (workspace.isStarting) {
+      try {
+        await new Promise<void>((resolve, reject) => {
+          const timeoutId = window.setTimeout(() => {
+            reject();
+          }, TIMEOUT_TO_RUN_SEC * 1000);
+          this.toDispose.push({
+            dispose: () => {
+              window.clearTimeout(timeoutId);
+              resolve();
+            },
+          });
+        });
+
+        // do not switch to the next step
+        return false;
+      } catch (e) {
+        throw new Error(
+          `The workspace status remains "${workspace.status}" in the last ${TIMEOUT_TO_RUN_SEC} seconds.`,
+        );
+      }
+    }
+
+    // start workspace
+    if (
+      this.state.shouldStart &&
+      workspaceStatusIs(workspace, DevWorkspaceStatus.STOPPED, DevWorkspaceStatus.FAILED)
+    ) {
+      try {
+        await this.props.startWorkspace(workspace);
+
+        // do not switch to the next step
+        return false;
+      } catch (e) {
+        throw new Error(common.helpers.errors.getMessage(e));
+      }
+    }
+
+    // switch to the next step
+    await delay(MIN_STEP_DURATION_MS);
+    return true;
+  }
+
+  render(): React.ReactNode {
+    const { allWorkspaces, currentStepIndex, matchParams, tabParam } = this.props;
+    const { lastError } = this.state;
+    const workspace = findTargetWorkspace(allWorkspaces, matchParams);
+
+    const steps = this.stepsList.values;
+    const currentStepId = this.stepsList.get(currentStepIndex).value.id;
+
+    const alertItem =
+      lastError === undefined
+        ? undefined
+        : {
+            key: 'ide-loader-start-workspace',
+            title: 'Failed to open the workspace',
+            variant: AlertVariant.danger,
+            children: lastError,
+          };
+
+    return (
+      <WorkspaceLoaderPage
+        alertItem={alertItem}
+        currentStepId={currentStepId}
+        steps={steps}
+        tabParam={tabParam}
+        workspace={workspace}
+        onRestart={() => this.handleWorkspaceRestart()}
+      />
+    );
+  }
+}
+
+const mapStateToProps = (state: AppState) => ({
+  allWorkspaces: selectAllWorkspaces(state),
+  workspacesLogs: selectLogs(state),
+});
+
+const connector = connect(mapStateToProps, WorkspaceStore.actionCreators);
+type MappedProps = ConnectedProps<typeof connector>;
+export default connector(StepStartWorkspace);

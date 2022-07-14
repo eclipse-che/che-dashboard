@@ -533,8 +533,7 @@ export const actionCreators: ActionCreators = {
         });
       } catch (e) {
         const errorMessage =
-          'Failed to create a new workspace from the devfile, reason: ' +
-          common.helpers.errors.getMessage(e);
+          'Failed to create a new workspace, reason: ' + common.helpers.errors.getMessage(e);
         dispatch({
           type: 'RECEIVE_DEVWORKSPACE_ERROR',
           error: errorMessage,
