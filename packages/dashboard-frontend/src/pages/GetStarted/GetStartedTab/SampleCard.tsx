@@ -73,16 +73,16 @@ export class SampleCard extends React.PureComponent<Props, State> {
   private getEditors(): TargetEditor[] {
     const editors: TargetEditor[] = [];
     this.props.targetEditors.forEach((editor: TargetEditor) => {
-      const isSavingEditor = editors.find(e => e.name === editor.name);
-      if (!isSavingEditor) {
+      const isAdded = editors.find(e => e.name === editor.name);
+      if (!isAdded) {
         editors.push(editor);
         return;
       }
-      if (isSavingEditor.isDefault || isSavingEditor.version === 'next') {
+      if (isAdded.isDefault || isAdded.version === 'next') {
         return;
       }
       if (editor.isDefault || editor.version === 'next' || editor.version === 'latest') {
-        const existingEditorIndex = editors.indexOf(isSavingEditor);
+        const existingEditorIndex = editors.indexOf(isAdded);
         editors[existingEditorIndex] = editor;
       }
     });
