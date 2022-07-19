@@ -104,7 +104,7 @@ export class SamplesListGallery extends React.PureComponent<Props, State> {
 
   render(): React.ReactElement {
     const metadata = this.props.metadataFiltered;
-    const cards = this.buildEditorList(metadata);
+    const cards = this.buildCardsList(metadata);
 
     if (cards.length) {
       return (
@@ -175,7 +175,7 @@ export class SamplesListGallery extends React.PureComponent<Props, State> {
     this.isLoading = false;
   }
 
-  private buildEditorList(metadata: che.DevfileMetaData[] = []): React.ReactElement[] {
+  private buildCardsList(metadata: che.DevfileMetaData[] = []): React.ReactElement[] {
     const { editors, defaultEditor } = this.props;
     const targetEditors = editors
       .filter(editor => !EXCLUDED_TARGET_EDITOR_NAMES.includes(editor.name))
