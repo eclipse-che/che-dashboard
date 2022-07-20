@@ -79,8 +79,6 @@ const getDevWorkspaceTemplate = (cpuLimit = '1500m') =>
               '/go/bin/che-machine-exec',
               '--url',
               '127.0.0.1:3333',
-              '--idle-timeout',
-              '15m',
             ],
             cpuLimit: '500m',
             cpuRequest: '30m',
