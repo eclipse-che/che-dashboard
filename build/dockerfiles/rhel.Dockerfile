@@ -1,4 +1,4 @@
-# Copyright (c) 2021 Red Hat, Inc.
+# Copyright (c) 2021-2022 Red Hat, Inc.
 # This program and the accompanying materials are made
 # available under the terms of the Eclipse Public License 2.0
 # which is available at https://www.eclipse.org/legal/epl-2.0/
@@ -8,6 +8,7 @@
 # Contributors:
 #   Red Hat, Inc. - initial API and implementation
 
+# https://access.redhat.com/containers/?tab=tags#/registry.access.redhat.com/ubi8/nodejs-16
 FROM registry.access.redhat.com/ubi8/nodejs-16:1-42 as builder
 USER 0
 RUN yum -y -q update && \
