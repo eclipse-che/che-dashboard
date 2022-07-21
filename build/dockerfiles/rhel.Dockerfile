@@ -14,8 +14,6 @@ USER 0
 RUN dnf -y -q update --exclude=unbound-libs 
 
 COPY . /dashboard/
-
-
 WORKDIR /dashboard/
 RUN npm i -g npm yarn; yarn install
 RUN yarn build
