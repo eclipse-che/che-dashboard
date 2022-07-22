@@ -37,3 +37,10 @@ async function findApi(apisApi: k8s.ApisApi, apiName: string, version?: string):
   });
   return filtered;
 }
+
+export function getUserName(token: string): string {
+  const tokenPayload = token.split('.')[1];
+  const decodedTokenPayload = Buffer.from(tokenPayload, 'base64').toString();
+  const parsedTokenPayload = JSON.parse(decodedTokenPayload);
+  return parsedTokenPayload.name;
+}

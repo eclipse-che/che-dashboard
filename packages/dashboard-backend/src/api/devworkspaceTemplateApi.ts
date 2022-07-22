@@ -25,6 +25,20 @@ import { restParams } from '../typings/models';
 const tags = ['Devworkspace Template'];
 
 export function registerTemplateApi(server: FastifyInstance) {
+  server.get(
+    `${baseApiPath}/namespace/:namespace/devworkspacetemplates`,
+    getSchema({
+      tags,
+      params: namespacedSchema,
+    }),
+    async function (request: FastifyRequest) {
+      const { namespace } = request.params as restParams.INamespacedParam;
+      const token = getToken(request);
+      const { templateApi } = await getDevWorkspaceClient(token);
+      return templateApi.listInNamespace(namespace);
+    },
+  );
+
   server.post(
     `${baseApiPath}/namespace/:namespace/devworkspacetemplates`,
     getSchema({
@@ -42,20 +56,6 @@ export function registerTemplateApi(server: FastifyInstance) {
       const token = getToken(request);
       const { templateApi } = await getDevWorkspaceClient(token);
       return templateApi.create(template);
-    },
-  );
-
-  server.get(
-    `${baseApiPath}/namespace/:namespace/devworkspacetemplates`,
-    getSchema({
-      tags,
-      params: namespacedSchema,
-    }),
-    async function (request: FastifyRequest) {
-      const { namespace } = request.params as restParams.INamespacedParam;
-      const token = getToken(request);
-      const { templateApi } = await getDevWorkspaceClient(token);
-      return templateApi.listInNamespace(namespace);
     },
   );
 
