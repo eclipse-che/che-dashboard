@@ -49,6 +49,24 @@ describe('Location test', () => {
       '/f?devWorkspace=%2Fdevfiles%2Fdevworkspace-che-theia-latest.yaml&url=https%3A%2F%2Fgithub.com%2Fche-samples%2Fjava-spring-petclinic%2Ftree%2Fdevfilev2',
     );
   });
+
+  test('storageType parameter', () => {
+    const result = buildFactoryLoaderPath(
+      'https://github.com/che-samples/java-spring-petclinic/tree/devfilev2?storageType=ephemeral',
+    );
+    expect(result).toEqual(
+      '/f?storageType=ephemeral&url=https%3A%2F%2Fgithub.com%2Fche-samples%2Fjava-spring-petclinic%2Ftree%2Fdevfilev2',
+    );
+  });
+
+  test('unsupported parameter', () => {
+    const result = buildFactoryLoaderPath(
+      'https://github.com/che-samples/java-spring-petclinic/tree/devfilev2?unsupportedParameter=foo',
+    );
+    expect(result).toEqual(
+      '/f?url=https%3A%2F%2Fgithub.com%2Fche-samples%2Fjava-spring-petclinic%2Ftree%2Fdevfilev2%3FunsupportedParameter%3Dfoo',
+    );
+  });
 });
 
 describe('storePathnameIfNeeded test', () => {
