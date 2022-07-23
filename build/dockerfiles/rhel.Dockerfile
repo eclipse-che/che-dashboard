@@ -34,7 +34,7 @@ RUN yarn install
 COPY packages/ /dashboard/packages
 RUN yarn build
 
-FROM registry.access.redhat.com/ubi8/nodejs-16:1-18
+FROM registry.access.redhat.com/ubi8/nodejs-16:1-42
 USER 0
 
 RUN \
