@@ -8,33 +8,18 @@
 # Contributors:
 #   Red Hat, Inc. - initial API and implementation
 
-# https://access.redhat.com/containers/?tab=tags#/registry.access.redhat.com/ubi8/nodejs-16
+# https://registry.access.redhat.com/ubi8/nodejs-16
 FROM registry.access.redhat.com/ubi8/nodejs-16:1-42 as builder
 USER 0
-RUN yum -y -q update && \
-    yum -y -q clean all && rm -rf /var/cache/yum
+RUN dnf -y -q update --exclude=unbound-libs 
 
-COPY package.json /dashboard/
-COPY yarn.lock /dashboard/
-COPY lerna.json /dashboard/
-COPY tsconfig.json /dashboard/
-
-ENV COMMON=packages/common
-COPY ${COMMON}/package.json /dashboard/${COMMON}/
-
-ENV FRONTEND=packages/dashboard-frontend
-COPY ${FRONTEND}/package.json /dashboard/${FRONTEND}/
-
-ENV BACKEND=packages/dashboard-backend
-COPY ${BACKEND}/package.json /dashboard/${BACKEND}/
-
-WORKDIR /dashboard
-RUN npm i -g yarn
-RUN yarn install
-COPY packages/ /dashboard/packages
+COPY . /dashboard/
+WORKDIR /dashboard/
+RUN npm i -g npm yarn; yarn install
 RUN yarn build
 
-FROM registry.access.redhat.com/ubi8/nodejs-16:1-18
+# https://registry.access.redhat.com/ubi8/nodejs-16
+FROM registry.access.redhat.com/ubi8/nodejs-16:1-42
 USER 0
 
 RUN \
