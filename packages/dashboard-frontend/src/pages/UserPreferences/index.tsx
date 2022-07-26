@@ -84,7 +84,7 @@ export class UserPreferences extends React.PureComponent<Props, State> {
           <Tab
             id="container-registries-tab"
             eventKey={containerRegistriesTab}
-            title="Containter Registries"
+            title="Container Registries"
           >
             <ContanerRegistryList history={this.props.history} />
           </Tab>
