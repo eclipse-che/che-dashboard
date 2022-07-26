@@ -66,9 +66,8 @@ class StepInitialize extends React.Component<Props, State> {
   }
 
   public shouldComponentUpdate(nextProps: Props, nextState: State): boolean {
-    const { allWorkspaces, matchParams } = this.props;
-    const workspace = findTargetWorkspace(allWorkspaces, matchParams);
-    const nextWorkspace = findTargetWorkspace(allWorkspaces, matchParams);
+    const workspace = this.findTargetWorkspace(this.props);
+    const nextWorkspace = this.findTargetWorkspace(nextProps);
 
     // next step
     if (nextProps.currentStepIndex > this.props.currentStepIndex) {
@@ -134,8 +133,8 @@ class StepInitialize extends React.Component<Props, State> {
    * The resolved boolean indicates whether to go to the next step or not
    */
   private async runStep(): Promise<boolean> {
-    const { allWorkspaces, matchParams } = this.props;
-    const workspace = findTargetWorkspace(allWorkspaces, matchParams);
+    const { matchParams } = this.props;
+    const workspace = this.findTargetWorkspace(this.props);
 
     if (!workspace) {
       throw new Error(
@@ -183,11 +182,15 @@ class StepInitialize extends React.Component<Props, State> {
     return true;
   }
 
+  private findTargetWorkspace(props: Props): Workspace | undefined {
+    return findTargetWorkspace(props.allWorkspaces, props.matchParams);
+  }
+
   render(): React.ReactNode {
-    const { allWorkspaces, currentStepIndex, matchParams, tabParam } = this.props;
+    const { currentStepIndex, tabParam } = this.props;
     const { lastError } = this.state;
 
-    const workspace = findTargetWorkspace(allWorkspaces, matchParams);
+    const workspace = this.findTargetWorkspace(this.props);
     const steps = this.stepsList.values;
     const currentStepId = this.stepsList.get(currentStepIndex).value.id;
 

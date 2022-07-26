@@ -25,6 +25,7 @@ import { DisposableCollection } from '../../../../../services/helpers/disposable
 import { delay } from '../../../../../services/helpers/delay';
 import { MIN_STEP_DURATION_MS, TIMEOUT_TO_GET_URL_SEC } from '../..';
 import findTargetWorkspace from '../../findTargetWorkspace';
+import { Workspace } from '../../../../../services/workspace-adapter';
 
 export type Props = MappedProps & {
   currentStepIndex: number; // not ID, but index
@@ -64,9 +65,8 @@ class StepOpenWorkspace extends React.Component<Props, State> {
   }
 
   public shouldComponentUpdate(nextProps: Props, nextState: State): boolean {
-    const { allWorkspaces, matchParams } = this.props;
-    const workspace = findTargetWorkspace(allWorkspaces, matchParams);
-    const nextWorkspace = findTargetWorkspace(allWorkspaces, matchParams);
+    const workspace = this.findTargetWorkspace(this.props);
+    const nextWorkspace = this.findTargetWorkspace(nextProps);
 
     // next step
     if (nextProps.currentStepIndex > this.props.currentStepIndex) {
@@ -125,9 +125,9 @@ class StepOpenWorkspace extends React.Component<Props, State> {
   }
 
   private async runStep(): Promise<boolean> {
-    const { allWorkspaces, matchParams } = this.props;
+    const { matchParams } = this.props;
 
-    const workspace = findTargetWorkspace(allWorkspaces, matchParams);
+    const workspace = this.findTargetWorkspace(this.props);
 
     if (!workspace) {
       throw new Error(
@@ -169,10 +169,14 @@ class StepOpenWorkspace extends React.Component<Props, State> {
     return true;
   }
 
+  private findTargetWorkspace(props: Props): Workspace | undefined {
+    return findTargetWorkspace(props.allWorkspaces, props.matchParams);
+  }
+
   render(): React.ReactNode {
-    const { allWorkspaces, currentStepIndex, matchParams, tabParam } = this.props;
+    const { currentStepIndex, tabParam } = this.props;
     const { lastError } = this.state;
-    const workspace = findTargetWorkspace(allWorkspaces, matchParams);
+    const workspace = this.findTargetWorkspace(this.props);
 
     const steps = this.stepsList.values;
     const currentStepId = this.stepsList.get(currentStepIndex).value.id;
