@@ -24,7 +24,7 @@ exports[`ErrorReporter component should correctly render the reported issue 1`] 
             className="pf-l-bullseye"
           >
             <div
-              className="pf-c-content"
+              className="pf-c-content messageContainer"
             >
               <h1
                 className=""
@@ -62,11 +62,15 @@ exports[`ErrorReporter component should correctly render the reported issue 1`] 
                 data-pf-content={true}
               >
                 Please try 
-                <kbd>
+                <kbd
+                  className="keybinding"
+                >
                   Shift
                 </kbd>
                 +
-                <kbd>
+                <kbd
+                  className="keybinding"
+                >
                   Refresh
                 </kbd>
               </p>

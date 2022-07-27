@@ -2,7 +2,7 @@
 
 exports[`Issue component should render an unknown error 1`] = `
 <div
-  className="pf-c-content"
+  className="pf-c-content messageContainer"
 >
   <h1
     className=""
@@ -40,11 +40,15 @@ exports[`Issue component should render an unknown error 1`] = `
     data-pf-content={true}
   >
     Please try 
-    <kbd>
+    <kbd
+      className="keybinding"
+    >
       Shift
     </kbd>
     +
-    <kbd>
+    <kbd
+      className="keybinding"
+    >
       Refresh
     </kbd>
   </p>
@@ -53,7 +57,7 @@ exports[`Issue component should render an unknown error 1`] = `
 
 exports[`Issue component should render the SSO error 1`] = `
 <div
-  className="pf-c-content"
+  className="pf-c-content messageContainer"
 >
   <h1
     className=""
@@ -180,7 +184,7 @@ exports[`Issue component should render the certification error 1`] = `
 
 exports[`Issue component should render the workspaceInactive error 1`] = `
 <div
-  className="pf-c-content"
+  className="pf-c-content messageContainer"
 >
   <h1
     className=""
