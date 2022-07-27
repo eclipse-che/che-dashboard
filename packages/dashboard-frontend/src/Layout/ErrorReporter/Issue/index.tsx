@@ -16,7 +16,7 @@ import React from 'react';
 import { BrandingData } from '../../../services/bootstrap/branding.constant';
 import { Issue, WorkspaceRoutes } from '../../../services/bootstrap/issuesReporter';
 
-import * as styles from './index.module.css';
+import styles from './index.module.css';
 
 type Props = {
   branding: BrandingData;
@@ -79,7 +79,7 @@ export class IssueComponent extends React.PureComponent<Props> {
     );
 
     return (
-      <TextContent>
+      <TextContent className={styles.messageContainer}>
         <Text component={TextVariants.h1}>
           <WarningTriangleIcon className={styles.warningIcon} />
           SSO Error
@@ -129,7 +129,7 @@ export class IssueComponent extends React.PureComponent<Props> {
     );
 
     return (
-      <TextContent>
+      <TextContent className={styles.messageContainer}>
         <Text component={TextVariants.h1}>
           <WarningTriangleIcon className={styles.warningIcon} />
           Warning
@@ -149,14 +149,15 @@ export class IssueComponent extends React.PureComponent<Props> {
     );
 
     return (
-      <TextContent>
+      <TextContent className={styles.messageContainer}>
         <Text component={TextVariants.h1}>
           <WarningTriangleIcon className={styles.warningIcon} />
           Error
         </Text>
         {errorTextbox}
         <Text component={TextVariants.p}>
-          Please try <kbd>Shift</kbd>+<kbd>Refresh</kbd>
+          Please try <kbd className={styles.keybinding}>Shift</kbd>+
+          <kbd className={styles.keybinding}>Refresh</kbd>
         </Text>
       </TextContent>
     );
