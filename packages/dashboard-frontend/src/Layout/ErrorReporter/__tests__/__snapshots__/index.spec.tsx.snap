@@ -9,7 +9,7 @@ exports[`ErrorReporter component should correctly render the reported issue 1`] 
     tabIndex={-1}
   >
     <section
-      className="pf-c-page__main-section pf-m-no-padding pf-m-fill"
+      className="pf-c-page__main-section pf-m-no-padding pf-m-fill backdropBackground"
     >
       <div
         className="pf-l-stack"
@@ -18,7 +18,7 @@ exports[`ErrorReporter component should correctly render the reported issue 1`] 
           className="pf-l-stack__item pf-m-fill"
         />
         <div
-          className="pf-l-stack__item"
+          className="pf-l-stack__item errorMessageContainer"
         >
           <div
             className="pf-l-bullseye"
@@ -33,6 +33,7 @@ exports[`ErrorReporter component should correctly render the reported issue 1`] 
                 <svg
                   aria-hidden={true}
                   aria-labelledby={null}
+                  className="warningIcon"
                   fill="currentColor"
                   height="1em"
                   role="img"
@@ -51,7 +52,7 @@ exports[`ErrorReporter component should correctly render the reported issue 1`] 
                 Error
               </h1>
               <pre
-                className=""
+                className="errorMessage"
                 data-pf-content={true}
               >
                 An Error Message

@@ -11,6 +11,7 @@ exports[`Issue component should render an unknown error 1`] = `
     <svg
       aria-hidden={true}
       aria-labelledby={null}
+      className="warningIcon"
       fill="currentColor"
       height="1em"
       role="img"
@@ -29,7 +30,7 @@ exports[`Issue component should render an unknown error 1`] = `
     Error
   </h1>
   <pre
-    className=""
+    className="errorMessage"
     data-pf-content={true}
   >
     Unknown Error Message
@@ -61,6 +62,7 @@ exports[`Issue component should render the SSO error 1`] = `
     <svg
       aria-hidden={true}
       aria-labelledby={null}
+      className="warningIcon"
       fill="currentColor"
       height="1em"
       role="img"
@@ -86,7 +88,7 @@ exports[`Issue component should render the SSO error 1`] = `
     :
   </p>
   <pre
-    className=""
+    className="errorMessage"
     data-pf-content={true}
   >
     SSO Error Message
@@ -96,11 +98,15 @@ exports[`Issue component should render the SSO error 1`] = `
     data-pf-content={true}
   >
     Please try 
-    <kbd>
+    <kbd
+      className="keybinding"
+    >
       Shift
     </kbd>
     +
-    <kbd>
+    <kbd
+      className="keybinding"
+    >
       Refresh
     </kbd>
   </p>
@@ -109,7 +115,7 @@ exports[`Issue component should render the SSO error 1`] = `
 
 exports[`Issue component should render the certification error 1`] = `
 <div
-  className="pf-c-content"
+  className="pf-c-content messageContainer"
 >
   <h1
     className=""
@@ -118,6 +124,7 @@ exports[`Issue component should render the certification error 1`] = `
     <svg
       aria-hidden={true}
       aria-labelledby={null}
+      className="warningIcon"
       fill="currentColor"
       height="1em"
       role="img"
@@ -182,6 +189,7 @@ exports[`Issue component should render the workspaceInactive error 1`] = `
     <svg
       aria-hidden={true}
       aria-labelledby={null}
+      className="warningIcon"
       fill="currentColor"
       height="1em"
       role="img"
@@ -200,7 +208,7 @@ exports[`Issue component should render the workspaceInactive error 1`] = `
     Warning
   </h1>
   <pre
-    className=""
+    className="errorMessage"
     data-pf-content={true}
   >
     The workspace is inactive.
