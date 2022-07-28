@@ -18,7 +18,7 @@ import { screen, waitFor, within } from '@testing-library/react';
 import { WorkspaceParams } from '../../../../../../Routes/routes';
 import { FakeStoreBuilder } from '../../../../../../store/__mocks__/storeBuilder';
 import { DevWorkspaceBuilder } from '../../../../../../store/__mocks__/devWorkspaceBuilder';
-import { TIMEOUT_TO_GET_URL_SEC } from '../../..';
+import { TIMEOUT_TO_GET_URL_SEC } from '../../consts';
 import { LoadingStep } from '../../../../../../components/Loader/Step';
 import { getIdeLoadingSteps } from '../../../../../../components/Loader/Step/buildSteps';
 import getComponentRenderer from '../../../../../../services/__mocks__/getComponentRenderer';

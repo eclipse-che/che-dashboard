@@ -12,43 +12,38 @@
 
 import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
-import { Cancellation, pseudoCancellable } from 'real-cancellable-promise';
 import { AlertVariant } from '@patternfly/react-core';
 import common from '@eclipse-che/common';
 import { AppState } from '../../../../../store';
 import { selectAllWorkspaces, selectLogs } from '../../../../../store/Workspaces/selectors';
 import * as WorkspaceStore from '../../../../../store/Workspaces';
-import { LoadingStep, List, LoaderStep } from '../../../../../components/Loader/Step';
+import { List, LoaderStep } from '../../../../../components/Loader/Step';
 import { buildLoaderSteps } from '../../../../../components/Loader/Step/buildSteps';
 import { WorkspaceLoaderPage } from '../../../../../pages/Loader/Workspace';
 import { DevWorkspaceStatus } from '../../../../../services/helpers/types';
 import { DisposableCollection } from '../../../../../services/helpers/disposable';
 import { delay } from '../../../../../services/helpers/delay';
 import { filterErrorLogs } from '../../../../../services/helpers/filterErrorLogs';
-import { MIN_STEP_DURATION_MS, TIMEOUT_TO_RUN_SEC } from '../..';
+import { MIN_STEP_DURATION_MS, TIMEOUT_TO_RUN_SEC } from '../consts';
 import findTargetWorkspace from '../../findTargetWorkspace';
-import workspaceStatusIs from '../../workspaceStatusIs';
+import workspaceStatusIs from '../workspaceStatusIs';
 import { Workspace } from '../../../../../services/workspace-adapter';
+import { AbstractLoaderStep, LoaderStepProps, LoaderStepState } from '../../../AbstractStep';
 
-export type Props = MappedProps & {
-  currentStepIndex: number; // not ID, but index
-  loadingSteps: LoadingStep[];
-  matchParams: {
-    namespace: string;
-    workspaceName: string;
+export type Props = MappedProps &
+  LoaderStepProps & {
+    matchParams: {
+      namespace: string;
+      workspaceName: string;
+    };
   };
-  tabParam: string | undefined;
-  onNextStep: () => void;
-  onRestart: () => void;
-};
-export type State = {
-  lastError?: string;
+export type State = LoaderStepState & {
   shouldStart: boolean; // should the loader start a workspace?
 };
 
-class StepStartWorkspace extends React.Component<Props, State> {
-  private readonly toDispose = new DisposableCollection();
-  private stepsList: List<LoaderStep>;
+class StepStartWorkspace extends AbstractLoaderStep<Props, State> {
+  protected readonly toDispose = new DisposableCollection();
+  protected readonly stepsList: List<LoaderStep>;
 
   constructor(props: Props) {
     super(props);
@@ -56,34 +51,17 @@ class StepStartWorkspace extends React.Component<Props, State> {
     this.state = {
       shouldStart: true,
     };
-
     this.stepsList = buildLoaderSteps(this.props.loadingSteps);
   }
 
   public componentDidMount() {
-    const workspace = this.findTargetWorkspace(this.props);
-    if (workspace?.isStarting) {
-      // prevent a workspace being repeatedly restarted, once it's starting
-      this.setState({
-        shouldStart: false,
-      });
-    }
-
-    this.prepareAndRun();
+    this.init();
   }
 
   public async componentDidUpdate() {
     this.toDispose.dispose();
 
-    const workspace = this.findTargetWorkspace(this.props);
-    if (workspace?.isStarting) {
-      // prevent a workspace being repeatedly restarted, once it's starting
-      this.setState({
-        shouldStart: false,
-      });
-    }
-
-    this.prepareAndRun();
+    this.init();
   }
 
   public shouldComponentUpdate(nextProps: Props, nextState: State): boolean {
@@ -113,43 +91,22 @@ class StepStartWorkspace extends React.Component<Props, State> {
     this.toDispose.dispose();
   }
 
-  private handleWorkspaceRestart(): void {
-    this.props.onRestart();
-  }
-
-  private async prepareAndRun(): Promise<void> {
-    const { currentStepIndex } = this.props;
-
-    const currentStep = this.stepsList.get(currentStepIndex).value;
-
-    try {
-      const stepCancellablePromise = pseudoCancellable(this.runStep());
-      this.toDispose.push({
-        dispose: () => {
-          stepCancellablePromise.cancel();
-        },
-      });
-      const jumpToNextStep = await stepCancellablePromise;
-      if (jumpToNextStep) {
-        this.props.onNextStep();
-      }
-    } catch (e) {
-      if (e instanceof Cancellation) {
-        // component updated, do nothing
-        return;
-      }
-      currentStep.hasError = true;
-      const lastError = common.helpers.errors.getMessage(e);
+  private init() {
+    const workspace = this.findTargetWorkspace(this.props);
+    if (workspace?.isStarting && this.state.shouldStart) {
+      // prevent a workspace being repeatedly restarted, once it's starting
       this.setState({
-        lastError,
+        shouldStart: false,
       });
     }
+
+    this.prepareAndRun();
   }
 
   /**
    * The resolved boolean indicates whether to go to the next step or not
    */
-  private async runStep(): Promise<boolean> {
+  protected async runStep(): Promise<boolean> {
     const { matchParams } = this.props;
 
     const workspace = this.findTargetWorkspace(this.props);
@@ -219,7 +176,7 @@ class StepStartWorkspace extends React.Component<Props, State> {
     return true;
   }
 
-  private findTargetWorkspace(props: Props): Workspace | undefined {
+  protected findTargetWorkspace(props: Props): Workspace | undefined {
     return findTargetWorkspace(props.allWorkspaces, props.matchParams);
   }
 
@@ -248,7 +205,7 @@ class StepStartWorkspace extends React.Component<Props, State> {
         steps={steps}
         tabParam={tabParam}
         workspace={workspace}
-        onRestart={() => this.handleWorkspaceRestart()}
+        onRestart={() => this.handleRestart()}
       />
     );
   }

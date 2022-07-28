@@ -11,6 +11,7 @@
  */
 
 import React from 'react';
+import { connect, ConnectedProps } from 'react-redux';
 import { matchPath, RouteComponentProps } from 'react-router-dom';
 import { ROUTE, WorkspaceParams } from '../../Routes/routes';
 import { List, LoadingStep } from '../../components/Loader/Step';
@@ -19,24 +20,28 @@ import {
   getFactoryLoadingSteps,
   getIdeLoadingSteps,
 } from '../../components/Loader/Step/buildSteps';
-import FactoryLoaderContainer from './Factory';
-import { DEV_WORKSPACE_ATTR } from './Factory/const';
+import FactoryLoader from './Factory';
+import buildFactoryParams from './Factory/buildFactoryParams';
 import WorkspaceLoader from './Workspace';
-import { connect, ConnectedProps } from 'react-redux';
 
-type FactoryMode = 'factory';
-type IdeMode = 'ide';
-type LoaderMode = FactoryMode | IdeMode;
+type LoaderMode = 'factory' | 'workspace';
 
 export type Props = MappedProps & RouteComponentProps;
 export type State = {
   currentStepIndex: number;
-  tabParam: string | undefined;
+  initialMode: LoaderMode;
   searchParams: URLSearchParams;
+  tabParam: string | undefined;
 };
 
 /**
- * todo describe how loader works
+ * This class handles factories and workspaces loading flows depending on the location state.
+ *
+ * Workspace flow.
+ * If location path matches `/ide/{namespace}/{workspaceName}` loader renders the `WorkspaceLoader` container which, in turn, starts the workspace by it's qualified name and opens the editor.
+ *
+ * Factory flow.
+ * This flow starts if location path doesn't match the pattern above. The `FactoryLoader` container gets rendered to resolve necessary resources (either devfile or pre-built devworkspace) and to create a new workspace. Once that's done, the `FactoryLoader` container changes location to switch to the workspaces loading flow. `WorkspaceLoader` container is in charge to perform the final steps of the factory flow - to start the workspace and open the editor.
  */
 class LoaderContainer extends React.Component<Props, State> {
   private readonly steps: LoadingStep[];
@@ -49,10 +54,11 @@ class LoaderContainer extends React.Component<Props, State> {
     const tabParam = searchParams.get('tab') || undefined;
 
     const { mode } = this.getMode(props);
-    if (mode === 'ide') {
+    if (mode === 'workspace') {
       this.steps = getIdeLoadingSteps();
     } else {
-      const factorySource: FactorySource = searchParams.has(DEV_WORKSPACE_ATTR)
+      const factoryParams = buildFactoryParams(searchParams);
+      const factorySource: FactorySource = factoryParams.useDevworkspaceResources
         ? 'devworkspace'
         : 'devfile';
       this.steps = getFactoryLoadingSteps(factorySource);
@@ -62,8 +68,9 @@ class LoaderContainer extends React.Component<Props, State> {
 
     this.state = {
       currentStepIndex: 0,
-      tabParam,
+      initialMode: mode,
       searchParams,
+      tabParam,
     };
   }
 
@@ -76,7 +83,7 @@ class LoaderContainer extends React.Component<Props, State> {
       exact: true,
     });
     if (matchIdeLoaderPath) {
-      return { mode: 'ide', ideLoaderParams: matchIdeLoaderPath.params };
+      return { mode: 'workspace', ideLoaderParams: matchIdeLoaderPath.params };
     } else {
       return { mode: 'factory' };
     }
@@ -96,7 +103,23 @@ class LoaderContainer extends React.Component<Props, State> {
   }
 
   private handleRestart(): void {
-    this.props.history.go(0);
+    const { initialMode } = this.state;
+    const { mode } = this.getMode(this.props);
+    if (initialMode === mode) {
+      this.setState({
+        currentStepIndex: 0,
+      });
+    } else {
+      // The workspace loader finalizes the factory loading flow - starts the workspace and opens the editor.
+
+      // START_WORKSPACE step is always present in the array
+      const startWorkspaceIndex = this.steps.findIndex(
+        step => step === LoadingStep.START_WORKSPACE,
+      );
+      this.setState({
+        currentStepIndex: startWorkspaceIndex,
+      });
+    }
   }
 
   render(): React.ReactElement {
@@ -105,7 +128,7 @@ class LoaderContainer extends React.Component<Props, State> {
     const { mode, ideLoaderParams } = this.getMode(this.props);
     if (mode === 'factory') {
       return (
-        <FactoryLoaderContainer
+        <FactoryLoader
           currentStepIndex={currentStepIndex}
           loadingSteps={this.stepsList.values}
           searchParams={searchParams}

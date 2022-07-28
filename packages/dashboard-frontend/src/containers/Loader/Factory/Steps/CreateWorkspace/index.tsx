@@ -11,37 +11,35 @@
  */
 
 import React from 'react';
-import { Cancellation, pseudoCancellable } from 'real-cancellable-promise';
-import common from '@eclipse-che/common';
 import { AlertVariant } from '@patternfly/react-core';
-import { List, LoaderStep, LoadingStep } from '../../../../../components/Loader/Step';
+import { List, LoaderStep } from '../../../../../components/Loader/Step';
 import { DisposableCollection } from '../../../../../services/helpers/disposable';
 import { buildLoaderSteps } from '../../../../../components/Loader/Step/buildSteps';
 import { delay } from '../../../../../services/helpers/delay';
 import { FactoryLoaderPage } from '../../../../../pages/Loader/Factory';
 import getRandomString from '../../../../../services/helpers/random';
 import { MIN_STEP_DURATION_MS } from '../../const';
+import { FactoryParams } from '../../types';
+import buildFactoryParams from '../../buildFactoryParams';
+import { AbstractLoaderStep, LoaderStepProps, LoaderStepState } from '../../../AbstractStep';
 
-export type Props = {
-  currentStepIndex: number;
-  loadingSteps: LoadingStep[];
+export type Props = LoaderStepProps & {
   searchParams: URLSearchParams;
-  tabParam: string | undefined;
-  onNextStep: () => void;
-  onRestart: () => void;
 };
-export type State = {
-  lastError?: string;
+export type State = LoaderStepState & {
+  factoryParams: FactoryParams;
 };
 
-export default class StepCreateWorkspace extends React.PureComponent<Props, State> {
-  private readonly toDispose = new DisposableCollection();
-  private stepsList: List<LoaderStep>;
+export default class StepCreateWorkspace extends AbstractLoaderStep<Props, State> {
+  protected readonly toDispose = new DisposableCollection();
+  protected readonly stepsList: List<LoaderStep>;
 
   constructor(props: Props) {
     super(props);
 
-    this.state = {};
+    this.state = {
+      factoryParams: buildFactoryParams(props.searchParams),
+    };
 
     this.stepsList = buildLoaderSteps(this.props.loadingSteps);
   }
@@ -54,42 +52,9 @@ export default class StepCreateWorkspace extends React.PureComponent<Props, Stat
     this.prepareAndRun();
   }
 
-  private async prepareAndRun(): Promise<void> {
-    const { currentStepIndex } = this.props;
-
-    const currentStep = this.stepsList.get(currentStepIndex).value;
-
-    try {
-      const nextStepCancellable = pseudoCancellable(this.runStep());
-      this.toDispose.push({
-        dispose: () => {
-          nextStepCancellable.cancel();
-        },
-      });
-      const nextStep = await nextStepCancellable;
-      if (nextStep) {
-        this.props.onNextStep();
-      }
-    } catch (e) {
-      if (e instanceof Cancellation) {
-        // component updated, do nothing
-        return;
-      }
-      currentStep.hasError = true;
-      const lastError = common.helpers.errors.getMessage(e);
-      this.setState({
-        lastError,
-      });
-    }
-  }
-
-  private async runStep(): Promise<boolean> {
+  protected async runStep(): Promise<boolean> {
     await delay(MIN_STEP_DURATION_MS);
     return true;
-  }
-
-  private handleFactoryReload(): void {
-    this.props.onRestart();
   }
 
   render(): React.ReactElement {
@@ -115,7 +80,7 @@ export default class StepCreateWorkspace extends React.PureComponent<Props, Stat
         currentStepId={currentStepId}
         steps={steps}
         tabParam={tabParam}
-        onRestart={() => this.handleFactoryReload()}
+        onRestart={() => this.handleRestart()}
       />
     );
   }

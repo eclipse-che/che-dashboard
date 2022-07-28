@@ -12,46 +12,38 @@
 
 import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
-import { Cancellation, pseudoCancellable } from 'real-cancellable-promise';
 import { AlertVariant } from '@patternfly/react-core';
-import common from '@eclipse-che/common';
 import { AppState } from '../../../../../store';
 import { selectAllWorkspaces } from '../../../../../store/Workspaces/selectors';
 import * as WorkspaceStore from '../../../../../store/Workspaces';
-import { LoadingStep, List, LoaderStep } from '../../../../../components/Loader/Step';
+import { List, LoaderStep } from '../../../../../components/Loader/Step';
 import { buildLoaderSteps } from '../../../../../components/Loader/Step/buildSteps';
 import { WorkspaceLoaderPage } from '../../../../../pages/Loader/Workspace';
 import { Workspace } from '../../../../../services/workspace-adapter';
 import { DevWorkspaceStatus } from '../../../../../services/helpers/types';
 import { DisposableCollection } from '../../../../../services/helpers/disposable';
 import { delay } from '../../../../../services/helpers/delay';
-import { MIN_STEP_DURATION_MS, TIMEOUT_TO_STOP_SEC } from '../..';
+import { MIN_STEP_DURATION_MS, TIMEOUT_TO_STOP_SEC } from '../consts';
 import findTargetWorkspace from '../../findTargetWorkspace';
+import { AbstractLoaderStep, LoaderStepProps, LoaderStepState } from '../../../AbstractStep';
 
-export type Props = MappedProps & {
-  currentStepIndex: number; // not ID, but index
-  loadingSteps: LoadingStep[];
-  matchParams: {
-    namespace: string;
-    workspaceName: string;
+export type Props = MappedProps &
+  LoaderStepProps & {
+    matchParams: {
+      namespace: string;
+      workspaceName: string;
+    };
   };
-  tabParam: string | undefined;
-  onNextStep: () => void;
-  onRestart: () => void;
-};
-export type State = {
-  lastError?: string;
-};
+export type State = LoaderStepState;
 
-class StepInitialize extends React.Component<Props, State> {
-  private readonly toDispose = new DisposableCollection();
-  private stepsList: List<LoaderStep>;
+class StepInitialize extends AbstractLoaderStep<Props, State> {
+  protected readonly toDispose = new DisposableCollection();
+  protected stepsList: List<LoaderStep>;
 
   constructor(props: Props) {
     super(props);
 
     this.stepsList = buildLoaderSteps(this.props.loadingSteps);
-
     this.state = {};
   }
 
@@ -61,7 +53,6 @@ class StepInitialize extends React.Component<Props, State> {
 
   public async componentDidUpdate() {
     this.toDispose.dispose();
-
     this.prepareAndRun();
   }
 
@@ -92,39 +83,6 @@ class StepInitialize extends React.Component<Props, State> {
     this.toDispose.dispose();
   }
 
-  private handleWorkspaceRestart(): void {
-    this.props.onRestart();
-  }
-
-  private async prepareAndRun(): Promise<void> {
-    const { currentStepIndex } = this.props;
-
-    const currentStep = this.stepsList.get(currentStepIndex).value;
-
-    try {
-      const stepCancellablePromise = pseudoCancellable(this.runStep());
-      this.toDispose.push({
-        dispose: () => {
-          stepCancellablePromise.cancel();
-        },
-      });
-      const jumpToNextStep = await stepCancellablePromise;
-      if (jumpToNextStep) {
-        this.props.onNextStep();
-      }
-    } catch (e) {
-      if (e instanceof Cancellation) {
-        // component updated, do nothing
-        return;
-      }
-      currentStep.hasError = true;
-      const lastError = common.helpers.errors.getMessage(e);
-      this.setState({
-        lastError,
-      });
-    }
-  }
-
   private isWorkspaceStatus(workspace: Workspace, ...statuses: DevWorkspaceStatus[]): boolean {
     return statuses.some(status => status === workspace.status);
   }
@@ -132,7 +90,7 @@ class StepInitialize extends React.Component<Props, State> {
   /**
    * The resolved boolean indicates whether to go to the next step or not
    */
-  private async runStep(): Promise<boolean> {
+  protected async runStep(): Promise<boolean> {
     const { matchParams } = this.props;
     const workspace = this.findTargetWorkspace(this.props);
 
@@ -182,7 +140,7 @@ class StepInitialize extends React.Component<Props, State> {
     return true;
   }
 
-  private findTargetWorkspace(props: Props): Workspace | undefined {
+  protected findTargetWorkspace(props: Props): Workspace | undefined {
     return findTargetWorkspace(props.allWorkspaces, props.matchParams);
   }
 
@@ -211,7 +169,7 @@ class StepInitialize extends React.Component<Props, State> {
         steps={steps}
         tabParam={tabParam}
         workspace={workspace}
-        onRestart={() => this.handleWorkspaceRestart()}
+        onRestart={() => this.handleRestart()}
       />
     );
   }

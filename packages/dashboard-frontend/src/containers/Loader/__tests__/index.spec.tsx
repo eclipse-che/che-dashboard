@@ -22,9 +22,12 @@ import { LoadingStep } from '../../../components/Loader/Step';
 import userEvent from '@testing-library/user-event';
 import { RouteComponentProps } from 'react-router';
 import LoaderContainer, { State } from '..';
+import getComponentRenderer from '../../../services/__mocks__/getComponentRenderer';
 
 jest.mock('../Factory');
 jest.mock('../Workspace');
+
+const { renderComponent } = getComponentRenderer(getComponent);
 
 describe('Loader container', () => {
   const url = 'factory-url';
@@ -80,15 +83,20 @@ describe('Loader container', () => {
     });
 
     it('should handle onRestart', async () => {
-      const spyHistoryGo = jest.spyOn(props.history, 'go');
-      renderComponent(props, store);
+      const localState = {
+        currentStepIndex: 1,
+        initialMode: 'factory',
+      } as State;
+      renderComponent(props, store, localState);
+
+      const currentStepIndex = screen.getByTestId('current-step-index');
+      await waitFor(() => expect(currentStepIndex.textContent).toEqual('1'));
 
       const restartButton = screen.getByTestId('on-restart');
 
       userEvent.click(restartButton);
 
-      await waitFor(() => expect(spyHistoryGo).toBeDefined());
-      expect(spyHistoryGo).toHaveBeenCalled();
+      await waitFor(() => expect(currentStepIndex.textContent).toEqual('0'));
     });
 
     describe('when starting the workspace', () => {
@@ -97,7 +105,8 @@ describe('Loader container', () => {
 
       beforeEach(() => {
         localState = {
-          currentStepIndex: 4, // LoadingStep.CREATE_WORKSPACE__APPLYING_DEVFILE
+          initialMode: 'factory',
+          currentStepIndex: 4, // LoadingStep.START_WORKSPACE
         };
         props = getMockRouterProps(ROUTE.FACTORY_LOADER_URL, { url });
       });
@@ -213,20 +222,23 @@ describe('Loader container', () => {
     });
 
     it('should handle onRestart', async () => {
-      const spyHistoryGo = jest.spyOn(props.history, 'go');
-      renderComponent(props, store);
+      const localState = {
+        currentStepIndex: 1,
+        initialMode: 'workspace',
+      } as State;
+      renderComponent(props, store, localState);
+
+      const currentStepIndex = screen.getByTestId('current-step-index');
+      await waitFor(() => expect(currentStepIndex.textContent).toEqual('1'));
 
       const restartButton = screen.getByTestId('on-restart');
-
       userEvent.click(restartButton);
 
-      await waitFor(() => expect(spyHistoryGo).toBeDefined());
-      expect(spyHistoryGo).toHaveBeenCalled();
+      await waitFor(() => expect(currentStepIndex.textContent).toEqual('0'));
     });
   });
 });
 
-type RenderParams = Parameters<typeof getComponent>;
 function getComponent(
   props: RouteComponentProps<any>,
   store: Store,
@@ -243,16 +255,4 @@ function getComponent(
     component = <LoaderContainer {...props} />;
   }
   return <Provider store={store}>{component}</Provider>;
-}
-
-function renderComponent(...args: RenderParams): {
-  reRenderComponent: (...args: RenderParams) => void;
-} {
-  const res = render(getComponent(...args));
-
-  return {
-    reRenderComponent: (...args) => {
-      res.rerender(getComponent(...args));
-    },
-  };
 }

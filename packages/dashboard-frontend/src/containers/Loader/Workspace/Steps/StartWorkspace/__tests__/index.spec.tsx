@@ -22,7 +22,7 @@ import { ActionCreators } from '../../../../../../store/Workspaces';
 import { AppThunk } from '../../../../../../store';
 import { LoadingStep } from '../../../../../../components/Loader/Step';
 import { getIdeLoadingSteps } from '../../../../../../components/Loader/Step/buildSteps';
-import { TIMEOUT_TO_RUN_SEC } from '../../..';
+import { TIMEOUT_TO_RUN_SEC } from '../../consts';
 import getComponentRenderer from '../../../../../../services/__mocks__/getComponentRenderer';
 import StepStartWorkspace from '..';
 

@@ -26,6 +26,7 @@ import { DEVWORKSPACE_DEVFILE_SOURCE } from '../../../../../../services/workspac
 import getComponentRenderer from '../../../../../../services/__mocks__/getComponentRenderer';
 import StepFetchResources from '..';
 import { DEV_WORKSPACE_ATTR, FACTORY_URL_ATTR, TIMEOUT_TO_RESOLVE_SEC } from '../../../const';
+import userEvent from '@testing-library/user-event';
 
 jest.mock('../../../../../../pages/Loader/Factory');
 
@@ -73,6 +74,18 @@ describe('Factory Loader container, step CREATE_WORKSPACE__FETCHING_RESOURCES', 
   afterEach(() => {
     jest.clearAllTimers();
     jest.clearAllMocks();
+  });
+
+  test('restart flow', async () => {
+    const store = new FakeStoreBuilder().build();
+    renderComponent(store, searchParams);
+
+    const restartButton = screen.getByRole('button', {
+      name: 'Restart',
+    });
+    userEvent.click(restartButton);
+
+    expect(mockOnRestart).toHaveBeenCalled();
   });
 
   test('workspace is already created', async () => {

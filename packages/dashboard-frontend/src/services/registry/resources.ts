@@ -31,7 +31,7 @@ export async function fetchResources(url: string): Promise<string> {
 
 export function loadResourcesContent(data: string): PreBuiltResources {
   if (!data) {
-    throw new Error(`Pre-built resources content is empty.`);
+    throw new Error('Pre-built resources content is empty.');
   }
 
   try {

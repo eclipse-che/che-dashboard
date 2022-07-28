@@ -12,12 +12,11 @@
 
 import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
-import { Cancellation, pseudoCancellable } from 'real-cancellable-promise';
 import common from '@eclipse-che/common';
 import { AlertVariant } from '@patternfly/react-core';
 import { AppState } from '../../../../../store';
 import * as FactoryResolverStore from '../../../../../store/FactoryResolver';
-import { List, LoaderStep, LoadingStep } from '../../../../../components/Loader/Step';
+import { List, LoaderStep } from '../../../../../components/Loader/Step';
 import { DisposableCollection } from '../../../../../services/helpers/disposable';
 import { buildLoaderSteps } from '../../../../../components/Loader/Step/buildSteps';
 import { selectAllWorkspaces } from '../../../../../store/Workspaces/selectors';
@@ -36,29 +35,25 @@ import { Workspace } from '../../../../../services/workspace-adapter';
 import { FactoryParams } from '../../types';
 import { MIN_STEP_DURATION_MS, TIMEOUT_TO_RESOLVE_SEC } from '../../const';
 import buildFactoryParams from '../../buildFactoryParams';
+import { AbstractLoaderStep, LoaderStepProps, LoaderStepState } from '../../../AbstractStep';
 
 const RELOADS_LIMIT = 2;
 type ReloadsInfo = {
   [url: string]: number;
 };
 
-export type Props = MappedProps & {
-  currentStepIndex: number;
-  loadingSteps: LoadingStep[];
-  searchParams: URLSearchParams;
-  tabParam: string | undefined;
-  onNextStep: () => void;
-  onRestart: () => void;
-};
-export type State = {
+export type Props = MappedProps &
+  LoaderStepProps & {
+    searchParams: URLSearchParams;
+  };
+export type State = LoaderStepState & {
   factoryParams: FactoryParams;
-  lastError?: string;
-  shouldResolve: boolean; // should the loader resolve a devfile
+  shouldResolve: boolean;
 };
 
-class StepFetchDevfile extends React.Component<Props, State> {
-  private readonly toDispose = new DisposableCollection();
-  private stepsList: List<LoaderStep>;
+class StepFetchDevfile extends AbstractLoaderStep<Props, State> {
+  protected readonly toDispose = new DisposableCollection();
+  protected readonly stepsList: List<LoaderStep>;
 
   constructor(props: Props) {
     super(props);
@@ -141,36 +136,7 @@ class StepFetchDevfile extends React.Component<Props, State> {
     this.prepareAndRun();
   }
 
-  private async prepareAndRun(): Promise<void> {
-    const { currentStepIndex } = this.props;
-
-    const currentStep = this.stepsList.get(currentStepIndex).value;
-
-    try {
-      const nextStepCancellable = pseudoCancellable(this.runStep());
-      this.toDispose.push({
-        dispose: () => {
-          nextStepCancellable.cancel();
-        },
-      });
-      const nextStep = await nextStepCancellable;
-      if (nextStep) {
-        this.props.onNextStep();
-      }
-    } catch (e) {
-      if (e instanceof Cancellation) {
-        // component updated, do nothing
-        return;
-      }
-      currentStep.hasError = true;
-      const lastError = common.helpers.errors.getMessage(e);
-      this.setState({
-        lastError,
-      });
-    }
-  }
-
-  private async runStep(): Promise<boolean> {
+  protected async runStep(): Promise<boolean> {
     const { factoryParams, shouldResolve } = this.state;
     const { currentStepIndex, factoryResolver, factoryResolverConverted } = this.props;
     const { sourceUrl } = factoryParams;
@@ -226,21 +192,6 @@ class StepFetchDevfile extends React.Component<Props, State> {
       state.factoryParams.factoryId,
       state.factoryParams.policiesCreate,
     );
-  }
-
-  private async waitForStepDone(seconds: number): Promise<void> {
-    await new Promise<void>((resolve, reject) => {
-      const timeoutId = window.setTimeout(() => {
-        reject();
-      }, seconds * 1000);
-
-      this.toDispose.push({
-        dispose: () => {
-          window.clearTimeout(timeoutId);
-          resolve();
-        },
-      });
-    });
   }
 
   /**
@@ -340,10 +291,6 @@ class StepFetchDevfile extends React.Component<Props, State> {
     SessionStorageService.update(SessionStorageKey.PRIVATE_FACTORY_RELOADS, strReloads);
   }
 
-  private handleFactoryReload(): void {
-    this.props.onRestart();
-  }
-
   render(): React.ReactElement {
     const { currentStepIndex, tabParam } = this.props;
     const { lastError } = this.state;
@@ -367,7 +314,7 @@ class StepFetchDevfile extends React.Component<Props, State> {
         currentStepId={currentStepId}
         steps={steps}
         tabParam={tabParam}
-        onRestart={() => this.handleFactoryReload()}
+        onRestart={() => this.handleRestart()}
       />
     );
   }

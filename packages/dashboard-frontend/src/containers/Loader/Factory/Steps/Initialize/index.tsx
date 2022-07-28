@@ -13,12 +13,10 @@
 import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { generatePath } from 'react-router-dom';
-import { Cancellation, pseudoCancellable } from 'real-cancellable-promise';
-import common from '@eclipse-che/common';
 import { AlertVariant } from '@patternfly/react-core';
 import { AppState } from '../../../../../store';
 import { selectInfrastructureNamespaces } from '../../../../../store/InfrastructureNamespaces/selectors';
-import { List, LoaderStep, LoadingStep } from '../../../../../components/Loader/Step';
+import { List, LoaderStep } from '../../../../../components/Loader/Step';
 import { buildLoaderSteps } from '../../../../../components/Loader/Step/buildSteps';
 import { DisposableCollection } from '../../../../../services/helpers/disposable';
 import { delay } from '../../../../../services/helpers/delay';
@@ -27,23 +25,19 @@ import { FactoryLoaderPage } from '../../../../../pages/Loader/Factory';
 import { FactoryParams, PoliciesCreate } from '../../types';
 import { MIN_STEP_DURATION_MS } from '../../const';
 import buildFactoryParams from '../../buildFactoryParams';
+import { AbstractLoaderStep, LoaderStepProps, LoaderStepState } from '../../../AbstractStep';
 
-export type Props = MappedProps & {
-  currentStepIndex: number;
-  loadingSteps: LoadingStep[];
-  searchParams: URLSearchParams;
-  tabParam: string | undefined;
-  onNextStep: () => void;
-  onRestart: () => void;
-};
-export type State = {
+export type Props = MappedProps &
+  LoaderStepProps & {
+    searchParams: URLSearchParams;
+  };
+export type State = LoaderStepState & {
   factoryParams: FactoryParams;
-  lastError?: string;
 };
 
-class StepInitialize extends React.Component<Props, State> {
-  private readonly toDispose = new DisposableCollection();
-  private stepsList: List<LoaderStep>;
+class StepInitialize extends AbstractLoaderStep<Props, State> {
+  protected readonly toDispose = new DisposableCollection();
+  protected readonly stepsList: List<LoaderStep>;
 
   constructor(props: Props) {
     super(props);
@@ -82,36 +76,7 @@ class StepInitialize extends React.Component<Props, State> {
     this.toDispose.dispose();
   }
 
-  private async prepareAndRun(): Promise<void> {
-    const { currentStepIndex } = this.props;
-
-    const currentStep = this.stepsList.get(currentStepIndex).value;
-
-    try {
-      const nextStepCancellable = pseudoCancellable(this.runStep());
-      this.toDispose.push({
-        dispose: () => {
-          nextStepCancellable.cancel();
-        },
-      });
-      const nextStep = await nextStepCancellable;
-      if (nextStep) {
-        this.props.onNextStep();
-      }
-    } catch (e) {
-      if (e instanceof Cancellation) {
-        // component updated, do nothing
-        return;
-      }
-      currentStep.hasError = true;
-      const lastError = common.helpers.errors.getMessage(e);
-      this.setState({
-        lastError,
-      });
-    }
-  }
-
-  private async runStep(): Promise<boolean> {
+  protected async runStep(): Promise<boolean> {
     const { useDevworkspaceResources, sourceUrl, errorCode, policiesCreate } =
       this.state.factoryParams;
 
@@ -162,10 +127,6 @@ class StepInitialize extends React.Component<Props, State> {
     return (val && (val as PoliciesCreate) === 'perclick') || (val as PoliciesCreate) === 'peruser';
   }
 
-  private handleFactoryReload(): void {
-    this.props.onRestart();
-  }
-
   render(): React.ReactElement {
     const { currentStepIndex, tabParam } = this.props;
     const { lastError } = this.state;
@@ -189,7 +150,7 @@ class StepInitialize extends React.Component<Props, State> {
         currentStepId={currentStepId}
         steps={steps}
         tabParam={tabParam}
-        onRestart={() => this.handleFactoryReload()}
+        onRestart={() => this.handleRestart()}
       />
     );
   }

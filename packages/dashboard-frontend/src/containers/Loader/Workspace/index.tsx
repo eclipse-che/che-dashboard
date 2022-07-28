@@ -21,11 +21,6 @@ import StepStartWorkspace from './Steps/StartWorkspace';
 import StepOpenWorkspace from './Steps/OpenWorkspace';
 import findTargetWorkspace from './findTargetWorkspace';
 
-export const TIMEOUT_TO_STOP_SEC = 60;
-export const TIMEOUT_TO_RUN_SEC = 5 * 60;
-export const TIMEOUT_TO_GET_URL_SEC = 20;
-export const MIN_STEP_DURATION_MS = 200;
-
 export type Props = MappedProps & {
   currentStepIndex: number; // not ID, but index
   loadingSteps: LoadingStep[];
