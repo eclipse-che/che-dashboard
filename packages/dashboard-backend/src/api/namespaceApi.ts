@@ -15,11 +15,11 @@ import { baseApiPath } from '../constants/config';
 import { getDevWorkspaceClient, getServiceAccountToken, getToken } from './helper';
 import { getSchema } from '../services/helpers';
 
-const tags = ['Namece'];
+const tags = ['Namespace'];
 
 export function namespaceApi(server: FastifyInstance) {
   server.get(
-    `${baseApiPath}/namespace`,
+    `${baseApiPath}/namespaces`,
     getSchema({ tags }),
     async function (request: FastifyRequest) {
       const userToken = getToken(request);
