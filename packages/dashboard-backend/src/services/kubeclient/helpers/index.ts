@@ -38,6 +38,7 @@ async function findApi(apisApi: k8s.ApisApi, apiName: string, version?: string):
   return filtered;
 }
 
+// currently, it works on minikube only (decode from Base64 format)
 export function getUserName(token: string): string {
   const tokenPayload = token.split('.')[1];
   const decodedTokenPayload = Buffer.from(tokenPayload, 'base64').toString();

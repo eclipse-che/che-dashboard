@@ -23,13 +23,13 @@ import common from '@eclipse-che/common';
  */
 @injectable()
 export abstract class WorkspaceClient {
-  private loginCheckerAxiosInstance: AxiosInstance;
-  private static loginCheckerTimeout: number | undefined;
+  private sessionCheckAxiosInstance: AxiosInstance;
+  private static sessionCheckTimeout: number | undefined;
 
   protected readonly axios: AxiosInstance;
 
   protected constructor() {
-    this.loginCheckerAxiosInstance = axios.create();
+    this.sessionCheckAxiosInstance = axios.create();
     // change this temporary solution after adding the proper method to workspace-client https://github.com/eclipse/che/issues/18311
     this.axios = (WorkspaceClientLib as any).createAxiosInstance({ loggingEnabled: false });
 
@@ -58,13 +58,13 @@ export abstract class WorkspaceClient {
     if (!isForbidden(error) && !isUnauthorized(error)) {
       return;
     }
-    if (!WorkspaceClient.loginCheckerTimeout) {
+    if (!WorkspaceClient.sessionCheckTimeout) {
       try {
-        await this.loginCheckerAxiosInstance.get('/api/kubernetes/namespace');
+        await this.sessionCheckAxiosInstance.get('/api/kubernetes/namespace');
       } catch (e) {
         console.error(common.helpers.errors.getMessage(e));
-        WorkspaceClient.loginCheckerTimeout = window.setTimeout(() => {
-          WorkspaceClient.loginCheckerTimeout = undefined;
+        WorkspaceClient.sessionCheckTimeout = window.setTimeout(() => {
+          WorkspaceClient.sessionCheckTimeout = undefined;
           signIn();
         }, 3000);
       }
