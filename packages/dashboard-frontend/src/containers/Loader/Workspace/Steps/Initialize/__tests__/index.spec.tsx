@@ -21,7 +21,7 @@ import { DevWorkspaceBuilder } from '../../../../../../store/__mocks__/devWorksp
 import { CheWorkspaceBuilder } from '../../../../../../store/__mocks__/cheWorkspaceBuilder';
 import { WorkspaceAdapter } from '../../../../../../services/workspace-adapter';
 import { LoadingStep } from '../../../../../../components/Loader/Step';
-import { TIMEOUT_TO_STOP_SEC } from '../../consts';
+import { TIMEOUT_TO_STOP_SEC } from '../../const';
 import { getIdeLoadingSteps } from '../../../../../../components/Loader/Step/buildSteps';
 import StepInitialize from '..';
 import getComponentRenderer from '../../../../../../services/__mocks__/getComponentRenderer';
