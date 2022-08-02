@@ -36,7 +36,6 @@ export class WorkspaceRunningError extends Error {
  */
 @injectable()
 export class WorkspaceStoppedDetector {
-
   private static STOPPED_BY_ANNOTATION = 'controller.devfile.io/stopped-by';
 
   /**
