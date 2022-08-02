@@ -28,7 +28,7 @@
     "@devfile/api": "^2.2.0-alpha-1633545768",
     "@fastify/cors": "^7.0.0",
     "@fastify/error": "^3.0.0",
-    "@fastify/http-proxy": "^7.1.0",
+    "@fastify/http-proxy": "^8.2.0",
     "@fastify/oauth2": "^5.0.0",
     "@fastify/static": "^5.0.2",
     "@fastify/swagger": "^6.0.1",
