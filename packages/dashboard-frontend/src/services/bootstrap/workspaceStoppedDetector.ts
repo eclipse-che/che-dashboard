@@ -36,6 +36,9 @@ export class WorkspaceRunningError extends Error {
  */
 @injectable()
 export class WorkspaceStoppedDetector {
+
+  private static STOPPED_BY_ANNOTATION = 'controller.devfile.io/stopped-by';
+
   /**
    * Checks if the dashboard has been reached from a workspace url.
    * This would happen if the workspace url is accessed when the workspace has stopped.
@@ -102,11 +105,11 @@ export class WorkspaceStoppedDetector {
     const workspaceAnnotations = devworkspace.metadata?.annotations;
 
     if (workspaceAnnotations) {
-      if (workspaceAnnotations['controller.devfile.io/stopped-by'] === 'inactivity') {
+      if (workspaceAnnotations[WorkspaceStoppedDetector.STOPPED_BY_ANNOTATION] === 'inactivity') {
         return 'workspaceInactive';
       }
 
-      if (workspaceAnnotations['controller.devfile.io/stopped-by'] === 'run-timeout') {
+      if (workspaceAnnotations[WorkspaceStoppedDetector.STOPPED_BY_ANNOTATION] === 'run-timeout') {
         return 'workspaceRunTimeout';
       }
     }

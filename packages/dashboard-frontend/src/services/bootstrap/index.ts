@@ -38,11 +38,8 @@ import { selectDefaultNamespace } from '../../store/InfrastructureNamespaces/sel
 import { selectDevWorkspacesResourceVersion } from '../../store/Workspaces/devWorkspaces/selectors';
 import { AppAlerts } from '../alerts/appAlerts';
 import { AlertVariant } from '@patternfly/react-core';
-import SessionStorageService, { SessionStorageKey } from '../session-storage';
 import { buildDetailsLocation, buildIdeLoaderLocation } from '../helpers/location';
-import { selectAllWorkspaces } from '../../store/Workspaces/selectors';
 import { Workspace } from '../workspace-adapter';
-import { DevWorkspaceStatus } from '../helpers/types';
 import { WorkspaceRunningError, WorkspaceStoppedDetector } from './workspaceStoppedDetector';
 
 /**
