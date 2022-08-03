@@ -16,14 +16,12 @@ import { AlertVariant } from '@patternfly/react-core';
 import { AppState } from '../../../../../store';
 import { selectAllWorkspaces } from '../../../../../store/Workspaces/selectors';
 import * as WorkspaceStore from '../../../../../store/Workspaces';
-import { List, LoaderStep } from '../../../../../components/Loader/Step';
-import { buildLoaderSteps } from '../../../../../components/Loader/Step/buildSteps';
 import { WorkspaceLoaderPage } from '../../../../../pages/Loader/Workspace';
 import { Workspace } from '../../../../../services/workspace-adapter';
 import { DevWorkspaceStatus } from '../../../../../services/helpers/types';
 import { DisposableCollection } from '../../../../../services/helpers/disposable';
 import { delay } from '../../../../../services/helpers/delay';
-import { MIN_STEP_DURATION_MS, TIMEOUT_TO_STOP_SEC } from '../const';
+import { MIN_STEP_DURATION_MS, TIMEOUT_TO_STOP_SEC } from '../../../const';
 import findTargetWorkspace from '../../findTargetWorkspace';
 import { AbstractLoaderStep, LoaderStepProps, LoaderStepState } from '../../../AbstractStep';
 
@@ -38,12 +36,10 @@ export type State = LoaderStepState;
 
 class StepInitialize extends AbstractLoaderStep<Props, State> {
   protected readonly toDispose = new DisposableCollection();
-  protected stepsList: List<LoaderStep>;
 
   constructor(props: Props) {
     super(props);
 
-    this.stepsList = buildLoaderSteps(this.props.loadingSteps);
     this.state = {};
   }
 
@@ -87,10 +83,17 @@ class StepInitialize extends AbstractLoaderStep<Props, State> {
     return statuses.some(status => status === workspace.status);
   }
 
+  protected handleRestart(): void {
+    this.clearStepError();
+    this.props.onRestart();
+  }
+
   /**
    * The resolved boolean indicates whether to go to the next step or not
    */
   protected async runStep(): Promise<boolean> {
+    await delay(MIN_STEP_DURATION_MS);
+
     const { matchParams } = this.props;
     const workspace = this.findTargetWorkspace(this.props);
 
@@ -136,7 +139,6 @@ class StepInitialize extends AbstractLoaderStep<Props, State> {
     }
 
     // switch to the next step
-    await delay(MIN_STEP_DURATION_MS);
     return true;
   }
 
@@ -145,12 +147,12 @@ class StepInitialize extends AbstractLoaderStep<Props, State> {
   }
 
   render(): React.ReactNode {
-    const { currentStepIndex, tabParam } = this.props;
+    const { currentStepIndex, loaderSteps, tabParam } = this.props;
     const { lastError } = this.state;
 
     const workspace = this.findTargetWorkspace(this.props);
-    const steps = this.stepsList.values;
-    const currentStepId = this.stepsList.get(currentStepIndex).value.id;
+    const steps = loaderSteps.values;
+    const currentStepId = loaderSteps.get(currentStepIndex).value.id;
 
     const alertItem =
       lastError === undefined

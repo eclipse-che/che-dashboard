@@ -14,7 +14,7 @@ import React from 'react';
 import renderer, { ReactTestRenderer } from 'react-test-renderer';
 import { WizardStep } from '@patternfly/react-core';
 import { LoaderStep, LoadingStep } from '../../Step';
-import { buildLoaderSteps, getIdeLoadingSteps } from '../../Step/buildSteps';
+import { buildLoaderSteps, getWorkspaceLoadingSteps } from '../../Step/buildSteps';
 import { LoaderProgress } from '..';
 
 describe('Loader Progress', () => {
@@ -23,7 +23,7 @@ describe('Loader Progress', () => {
     let wizardSteps: WizardStep[];
 
     beforeEach(() => {
-      const loadingSteps = getIdeLoadingSteps();
+      const loadingSteps = getWorkspaceLoadingSteps();
       const steps = buildLoaderSteps(loadingSteps).values;
       wizardSteps = LoaderStep.toWizardSteps(currentStepId, steps);
     });

@@ -17,14 +17,12 @@ import common from '@eclipse-che/common';
 import { AppState } from '../../../../../store';
 import { selectAllWorkspaces, selectLogs } from '../../../../../store/Workspaces/selectors';
 import * as WorkspaceStore from '../../../../../store/Workspaces';
-import { List, LoaderStep } from '../../../../../components/Loader/Step';
-import { buildLoaderSteps } from '../../../../../components/Loader/Step/buildSteps';
 import { WorkspaceLoaderPage } from '../../../../../pages/Loader/Workspace';
 import { DevWorkspaceStatus } from '../../../../../services/helpers/types';
 import { DisposableCollection } from '../../../../../services/helpers/disposable';
 import { delay } from '../../../../../services/helpers/delay';
 import { filterErrorLogs } from '../../../../../services/helpers/filterErrorLogs';
-import { MIN_STEP_DURATION_MS, TIMEOUT_TO_RUN_SEC } from '../const';
+import { MIN_STEP_DURATION_MS, TIMEOUT_TO_RUN_SEC } from '../../../const';
 import findTargetWorkspace from '../../findTargetWorkspace';
 import workspaceStatusIs from '../workspaceStatusIs';
 import { Workspace } from '../../../../../services/workspace-adapter';
@@ -43,7 +41,6 @@ export type State = LoaderStepState & {
 
 class StepStartWorkspace extends AbstractLoaderStep<Props, State> {
   protected readonly toDispose = new DisposableCollection();
-  protected readonly stepsList: List<LoaderStep>;
 
   constructor(props: Props) {
     super(props);
@@ -51,7 +48,6 @@ class StepStartWorkspace extends AbstractLoaderStep<Props, State> {
     this.state = {
       shouldStart: true,
     };
-    this.stepsList = buildLoaderSteps(this.props.loadingSteps);
   }
 
   public componentDidMount() {
@@ -93,7 +89,7 @@ class StepStartWorkspace extends AbstractLoaderStep<Props, State> {
 
   private init() {
     const workspace = this.findTargetWorkspace(this.props);
-    if (workspace?.isStarting && this.state.shouldStart) {
+    if ((workspace?.isStarting || workspace?.isRunning) && this.state.shouldStart) {
       // prevent a workspace being repeatedly restarted, once it's starting
       this.setState({
         shouldStart: false,
@@ -103,10 +99,18 @@ class StepStartWorkspace extends AbstractLoaderStep<Props, State> {
     this.prepareAndRun();
   }
 
+  protected handleRestart(): void {
+    this.setState({ shouldStart: true });
+    this.clearStepError();
+    this.props.onRestart();
+  }
+
   /**
    * The resolved boolean indicates whether to go to the next step or not
    */
   protected async runStep(): Promise<boolean> {
+    await delay(MIN_STEP_DURATION_MS);
+
     const { matchParams } = this.props;
 
     const workspace = this.findTargetWorkspace(this.props);
@@ -172,7 +176,6 @@ class StepStartWorkspace extends AbstractLoaderStep<Props, State> {
     }
 
     // switch to the next step
-    await delay(MIN_STEP_DURATION_MS);
     return true;
   }
 
@@ -181,12 +184,12 @@ class StepStartWorkspace extends AbstractLoaderStep<Props, State> {
   }
 
   render(): React.ReactNode {
-    const { currentStepIndex, tabParam } = this.props;
+    const { currentStepIndex, loaderSteps, tabParam } = this.props;
     const { lastError } = this.state;
     const workspace = this.findTargetWorkspace(this.props);
 
-    const steps = this.stepsList.values;
-    const currentStepId = this.stepsList.get(currentStepIndex).value.id;
+    const steps = loaderSteps.values;
+    const currentStepId = loaderSteps.get(currentStepIndex).value.id;
 
     const alertItem =
       lastError === undefined

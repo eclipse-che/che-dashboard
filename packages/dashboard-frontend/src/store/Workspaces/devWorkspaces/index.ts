@@ -280,6 +280,8 @@ export const actionCreators: ActionCreators = {
     ): AppThunk<KnownAction, Promise<void>> =>
     async (dispatch, getState): Promise<void> => {
       dispatch({ type: 'REQUEST_DEVWORKSPACE' });
+      // await delay(500);
+      // throw new Error('asdfjkl;');
       try {
         const { workspaces } = await devWorkspaceClient.getAllWorkspaces(
           workspace.metadata.namespace,

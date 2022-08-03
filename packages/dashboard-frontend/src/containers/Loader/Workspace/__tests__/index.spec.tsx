@@ -16,7 +16,10 @@ import { Provider } from 'react-redux';
 import userEvent from '@testing-library/user-event';
 import { screen } from '@testing-library/react';
 import { FakeStoreBuilder } from '../../../../store/__mocks__/storeBuilder';
-import { getIdeLoadingSteps } from '../../../../components/Loader/Step/buildSteps';
+import {
+  buildLoaderSteps,
+  getWorkspaceLoadingSteps,
+} from '../../../../components/Loader/Step/buildSteps';
 import getComponentRenderer from '../../../../services/__mocks__/getComponentRenderer';
 import { ActionCreators } from '../../../../store/Workspaces';
 import { AppThunk } from '../../../../store';
@@ -62,7 +65,8 @@ const matchParams = {
   workspaceName,
 };
 
-const loadingSteps = getIdeLoadingSteps();
+const loadingSteps = getWorkspaceLoadingSteps();
+const loaderSteps = buildLoaderSteps(loadingSteps);
 
 describe('Workspace loader', () => {
   beforeEach(() => {
@@ -209,7 +213,7 @@ function getComponent(store: Store, currentStepIndex: number): React.ReactElemen
     <Provider store={store}>
       <WorkspaceLoader
         currentStepIndex={currentStepIndex}
-        loadingSteps={loadingSteps}
+        loaderSteps={loaderSteps}
         matchParams={matchParams}
         tabParam={undefined}
         onNextStep={mockOnNextStep}

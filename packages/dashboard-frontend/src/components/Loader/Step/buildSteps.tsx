@@ -12,7 +12,7 @@
 
 import { List, LoaderStep, LoadingStep } from './index';
 
-export function getIdeLoadingSteps(): LoadingStep[] {
+export function getWorkspaceLoadingSteps(): LoadingStep[] {
   return [LoadingStep.INITIALIZE, LoadingStep.START_WORKSPACE, LoadingStep.OPEN_WORKSPACE];
 }
 

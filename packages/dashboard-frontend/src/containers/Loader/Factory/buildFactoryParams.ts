@@ -19,7 +19,7 @@ import {
   OVERRIDE_ATTR_PREFIX,
   POLICIES_CREATE_ATTR,
   STORAGE_TYPE_ATTR,
-} from './const';
+} from '../const';
 import { ErrorCode, FactoryParams, PoliciesCreate } from './types';
 
 export default function (searchParams: URLSearchParams): FactoryParams {

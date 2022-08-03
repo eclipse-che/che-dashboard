@@ -10,7 +10,7 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import { PROPAGATE_FACTORY_ATTRS } from '../containers/Loader/Factory/const';
+import { PROPAGATE_FACTORY_ATTRS } from '../containers/Loader/const';
 import SessionStorageService, { SessionStorageKey } from '../services/session-storage';
 
 (function acceptNewFactoryLink(): void {

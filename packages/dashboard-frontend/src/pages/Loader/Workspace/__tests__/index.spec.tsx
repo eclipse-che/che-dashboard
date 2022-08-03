@@ -11,16 +11,17 @@
  */
 
 import React from 'react';
-import { render, RenderResult, screen } from '@testing-library/react';
+import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { AlertVariant } from '@patternfly/react-core';
 import { WorkspaceLoaderPage } from '..';
 import { LoadingStep, List, LoaderStep } from '../../../../components/Loader/Step';
 import {
-  getIdeLoadingSteps,
+  getWorkspaceLoadingSteps,
   buildLoaderSteps,
 } from '../../../../components/Loader/Step/buildSteps';
 import { AlertItem, LoaderTab } from '../../../../services/helpers/types';
+import getComponentRenderer from '../../../../services/__mocks__/getComponentRenderer';
 
 jest.mock('react-tooltip', () => {
   return function DummyTooltip(): React.ReactElement {
@@ -32,6 +33,8 @@ jest.mock('../../../../components/Loader/Progress');
 jest.mock('../../../../components/WorkspaceLogs');
 jest.mock('../../Common');
 
+const { renderComponent } = getComponentRenderer(getComponent);
+
 const mockOnWorkspaceRestart = jest.fn();
 
 const currentStepId = LoadingStep.INITIALIZE;
@@ -40,7 +43,7 @@ describe('Workspace loader page', () => {
   let steps: List<LoaderStep>;
 
   beforeEach(() => {
-    const loadingSteps = getIdeLoadingSteps();
+    const loadingSteps = getWorkspaceLoadingSteps();
     steps = buildLoaderSteps(loadingSteps);
   });
 
@@ -81,6 +84,18 @@ describe('Workspace loader page', () => {
     const activeTab = screen.queryByTestId('active-tab-key');
     expect(activeTab?.textContent).toEqual(LoaderTab.Logs.toString());
   });
+
+  it('should handle tab change', () => {
+    renderComponent({ steps: steps.values, initialTab: 'Progress' });
+
+    const activeTab = screen.queryByTestId('active-tab-key');
+    expect(activeTab?.textContent).toEqual(LoaderTab.Progress.toString());
+
+    const logsTabButton = screen.getByRole('button', { name: 'Logs' });
+    userEvent.click(logsTabButton);
+
+    expect(activeTab?.textContent).toEqual(LoaderTab.Logs.toString());
+  });
 });
 
 function getComponent(props: {
@@ -98,8 +113,4 @@ function getComponent(props: {
       workspace={undefined}
     />
   );
-}
-
-function renderComponent(...args: Parameters<typeof getComponent>): RenderResult {
-  return render(getComponent(...args));
 }

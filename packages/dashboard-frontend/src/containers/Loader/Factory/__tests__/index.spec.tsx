@@ -13,10 +13,13 @@
 import React from 'react';
 import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { getFactoryLoadingSteps } from '../../../../components/Loader/Step/buildSteps';
+import {
+  buildLoaderSteps,
+  getFactoryLoadingSteps,
+} from '../../../../components/Loader/Step/buildSteps';
 import getComponentRenderer from '../../../../services/__mocks__/getComponentRenderer';
 import FactoryLoader from '..';
-import { LoadingStep } from '../../../../components/Loader/Step';
+import { List, LoaderStep } from '../../../../components/Loader/Step';
 
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 
@@ -43,17 +46,17 @@ describe('Factory Loader container', () => {
   });
 
   describe('Step INITIALIZE', () => {
-    const loadingSteps = getFactoryLoadingSteps('devworkspace');
+    const loaderSteps = buildLoaderSteps(getFactoryLoadingSteps('devworkspace'));
     const currentStepIndex = 0;
 
     test('render step', async () => {
-      renderComponent(loadingSteps, currentStepIndex);
+      renderComponent(loaderSteps, currentStepIndex);
 
       expect(screen.queryByText('Step initialize')).not.toBeNull();
     });
 
     test('restart the flow', () => {
-      renderComponent(loadingSteps, currentStepIndex);
+      renderComponent(loaderSteps, currentStepIndex);
 
       const restartButton = screen.queryByRole('button', {
         name: 'Restart',
@@ -66,7 +69,7 @@ describe('Factory Loader container', () => {
     });
 
     test('next step switch', () => {
-      renderComponent(loadingSteps, currentStepIndex);
+      renderComponent(loaderSteps, currentStepIndex);
 
       const nextStepButton = screen.queryByRole('button', {
         name: 'Next step',
@@ -80,17 +83,17 @@ describe('Factory Loader container', () => {
   });
 
   describe('Step CREATE_WORKSPACE', () => {
-    const loadingSteps = getFactoryLoadingSteps('devworkspace');
+    const loaderSteps = buildLoaderSteps(getFactoryLoadingSteps('devworkspace'));
     const currentStepIndex = 1;
 
     test('render step', async () => {
-      renderComponent(loadingSteps, currentStepIndex);
+      renderComponent(loaderSteps, currentStepIndex);
 
       expect(screen.queryByText('Step create workspace')).not.toBeNull();
     });
 
     test('restart the flow', () => {
-      renderComponent(loadingSteps, currentStepIndex);
+      renderComponent(loaderSteps, currentStepIndex);
 
       const restartButton = screen.queryByRole('button', {
         name: 'Restart',
@@ -103,7 +106,7 @@ describe('Factory Loader container', () => {
     });
 
     test('next step switch', () => {
-      renderComponent(loadingSteps, currentStepIndex);
+      renderComponent(loaderSteps, currentStepIndex);
 
       const nextStepButton = screen.queryByRole('button', {
         name: 'Next step',
@@ -117,17 +120,17 @@ describe('Factory Loader container', () => {
   });
 
   describe('Step CREATE_WORKSPACE__FETCH_RESOURCES', () => {
-    const loadingSteps = getFactoryLoadingSteps('devworkspace');
+    const loaderSteps = buildLoaderSteps(getFactoryLoadingSteps('devworkspace'));
     const currentStepIndex = 2;
 
     test('render step', async () => {
-      renderComponent(loadingSteps, currentStepIndex);
+      renderComponent(loaderSteps, currentStepIndex);
 
       expect(screen.queryByText('Step fetch resources')).not.toBeNull();
     });
 
     test('restart the flow', () => {
-      renderComponent(loadingSteps, currentStepIndex);
+      renderComponent(loaderSteps, currentStepIndex);
 
       const restartButton = screen.queryByRole('button', {
         name: 'Restart',
@@ -140,7 +143,7 @@ describe('Factory Loader container', () => {
     });
 
     test('next step switch', () => {
-      renderComponent(loadingSteps, currentStepIndex);
+      renderComponent(loaderSteps, currentStepIndex);
 
       const nextStepButton = screen.queryByRole('button', {
         name: 'Next step',
@@ -154,17 +157,17 @@ describe('Factory Loader container', () => {
   });
 
   describe('Step CREATE_WORKSPACE__FETCH_DEVFILE', () => {
-    const loadingSteps = getFactoryLoadingSteps('devfile');
+    const loaderSteps = buildLoaderSteps(getFactoryLoadingSteps('devfile'));
     const currentStepIndex = 2;
 
     test('render step', async () => {
-      renderComponent(loadingSteps, currentStepIndex);
+      renderComponent(loaderSteps, currentStepIndex);
 
       expect(screen.queryByText('Step fetch devfile')).not.toBeNull();
     });
 
     test('restart the flow', () => {
-      renderComponent(loadingSteps, currentStepIndex);
+      renderComponent(loaderSteps, currentStepIndex);
 
       const restartButton = screen.queryByRole('button', {
         name: 'Restart',
@@ -177,7 +180,7 @@ describe('Factory Loader container', () => {
     });
 
     test('next step switch', () => {
-      renderComponent(loadingSteps, currentStepIndex);
+      renderComponent(loaderSteps, currentStepIndex);
 
       const nextStepButton = screen.queryByRole('button', {
         name: 'Next step',
@@ -191,17 +194,17 @@ describe('Factory Loader container', () => {
   });
 
   describe('Step CREATE_WORKSPACE__APPLY_RESOURCES', () => {
-    const loadingSteps = getFactoryLoadingSteps('devworkspace');
+    const loaderSteps = buildLoaderSteps(getFactoryLoadingSteps('devworkspace'));
     const currentStepIndex = 3;
 
     test('render step', async () => {
-      renderComponent(loadingSteps, currentStepIndex);
+      renderComponent(loaderSteps, currentStepIndex);
 
       expect(screen.queryByText('Step apply resources')).not.toBeNull();
     });
 
     test('restart the flow', () => {
-      renderComponent(loadingSteps, currentStepIndex);
+      renderComponent(loaderSteps, currentStepIndex);
 
       const restartButton = screen.queryByRole('button', {
         name: 'Restart',
@@ -214,7 +217,7 @@ describe('Factory Loader container', () => {
     });
 
     test('next step switch', () => {
-      renderComponent(loadingSteps, currentStepIndex);
+      renderComponent(loaderSteps, currentStepIndex);
 
       const nextStepButton = screen.queryByRole('button', {
         name: 'Next step',
@@ -228,17 +231,17 @@ describe('Factory Loader container', () => {
   });
 
   describe('Step CREATE_WORKSPACE__APPLY_DEVFILE', () => {
-    const loadingSteps = getFactoryLoadingSteps('devfile');
+    const loaderSteps = buildLoaderSteps(getFactoryLoadingSteps('devfile'));
     const currentStepIndex = 3;
 
     test('render step', async () => {
-      renderComponent(loadingSteps, currentStepIndex);
+      renderComponent(loaderSteps, currentStepIndex);
 
       expect(screen.queryByText('Step apply devfile')).not.toBeNull();
     });
 
     test('restart the flow', () => {
-      renderComponent(loadingSteps, currentStepIndex);
+      renderComponent(loaderSteps, currentStepIndex);
 
       const restartButton = screen.queryByRole('button', {
         name: 'Restart',
@@ -251,7 +254,7 @@ describe('Factory Loader container', () => {
     });
 
     test('next step switch', () => {
-      renderComponent(loadingSteps, currentStepIndex);
+      renderComponent(loaderSteps, currentStepIndex);
 
       const nextStepButton = screen.queryByRole('button', {
         name: 'Next step',
@@ -265,12 +268,12 @@ describe('Factory Loader container', () => {
   });
 });
 
-function getComponent(loadingSteps: LoadingStep[], currentStepIndex: number): React.ReactElement {
+function getComponent(loaderSteps: List<LoaderStep>, currentStepIndex: number): React.ReactElement {
   const searchParams = new URLSearchParams();
   return (
     <FactoryLoader
       currentStepIndex={currentStepIndex}
-      loadingSteps={loadingSteps}
+      loaderSteps={loaderSteps}
       searchParams={searchParams}
       tabParam={undefined}
       onNextStep={mockOnNextStep}

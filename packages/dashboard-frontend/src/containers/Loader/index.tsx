@@ -14,11 +14,12 @@ import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { matchPath, RouteComponentProps } from 'react-router-dom';
 import { ROUTE, WorkspaceParams } from '../../Routes/routes';
-import { List, LoadingStep } from '../../components/Loader/Step';
+import { List, LoaderStep, LoadingStep } from '../../components/Loader/Step';
 import {
+  buildLoaderSteps,
   FactorySource,
   getFactoryLoadingSteps,
-  getIdeLoadingSteps,
+  getWorkspaceLoadingSteps,
 } from '../../components/Loader/Step/buildSteps';
 import FactoryLoader from './Factory';
 import buildFactoryParams from './Factory/buildFactoryParams';
@@ -32,6 +33,7 @@ export type State = {
   initialMode: LoaderMode;
   searchParams: URLSearchParams;
   tabParam: string | undefined;
+  loaderSteps: Readonly<List<LoaderStep>>;
 };
 
 /**
@@ -45,7 +47,6 @@ export type State = {
  */
 class LoaderContainer extends React.Component<Props, State> {
   private readonly steps: LoadingStep[];
-  private readonly stepsList: List<LoadingStep>;
 
   constructor(props: Props) {
     super(props);
@@ -55,7 +56,7 @@ class LoaderContainer extends React.Component<Props, State> {
 
     const { mode } = this.getMode(props);
     if (mode === 'workspace') {
-      this.steps = getIdeLoadingSteps();
+      this.steps = getWorkspaceLoadingSteps();
     } else {
       const factoryParams = buildFactoryParams(searchParams);
       const factorySource: FactorySource = factoryParams.useDevworkspaceResources
@@ -63,12 +64,11 @@ class LoaderContainer extends React.Component<Props, State> {
         : 'devfile';
       this.steps = getFactoryLoadingSteps(factorySource);
     }
-    this.stepsList = new List();
-    this.steps.forEach(step => this.stepsList.add(step));
 
     this.state = {
       currentStepIndex: 0,
       initialMode: mode,
+      loaderSteps: buildLoaderSteps(this.steps),
       searchParams,
       tabParam,
     };
@@ -90,8 +90,8 @@ class LoaderContainer extends React.Component<Props, State> {
   }
 
   private handleNextStep(): void {
-    const { currentStepIndex } = this.state;
-    const currentStep = this.stepsList.get(currentStepIndex);
+    const { currentStepIndex, loaderSteps } = this.state;
+    const currentStep = loaderSteps.get(currentStepIndex);
 
     if (currentStep.hasNext() === false) {
       return;
@@ -123,14 +123,14 @@ class LoaderContainer extends React.Component<Props, State> {
   }
 
   render(): React.ReactElement {
-    const { currentStepIndex, tabParam, searchParams } = this.state;
+    const { currentStepIndex, loaderSteps, tabParam, searchParams } = this.state;
 
     const { mode, ideLoaderParams } = this.getMode(this.props);
     if (mode === 'factory') {
       return (
         <FactoryLoader
           currentStepIndex={currentStepIndex}
-          loadingSteps={this.stepsList.values}
+          loaderSteps={loaderSteps}
           searchParams={searchParams}
           tabParam={tabParam}
           onNextStep={() => this.handleNextStep()}
@@ -143,7 +143,7 @@ class LoaderContainer extends React.Component<Props, State> {
       return (
         <WorkspaceLoader
           currentStepIndex={currentStepIndex}
-          loadingSteps={this.stepsList.values}
+          loaderSteps={loaderSteps}
           matchParams={matchParams}
           tabParam={tabParam}
           onNextStep={() => this.handleNextStep()}

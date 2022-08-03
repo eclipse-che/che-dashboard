@@ -16,12 +16,10 @@ import { AlertVariant } from '@patternfly/react-core';
 import { AppState } from '../../../../../store';
 import { selectAllWorkspaces } from '../../../../../store/Workspaces/selectors';
 import * as WorkspaceStore from '../../../../../store/Workspaces';
-import { List, LoaderStep } from '../../../../../components/Loader/Step';
-import { buildLoaderSteps } from '../../../../../components/Loader/Step/buildSteps';
 import { WorkspaceLoaderPage } from '../../../../../pages/Loader/Workspace';
 import { DisposableCollection } from '../../../../../services/helpers/disposable';
 import { delay } from '../../../../../services/helpers/delay';
-import { MIN_STEP_DURATION_MS, TIMEOUT_TO_GET_URL_SEC } from '../const';
+import { MIN_STEP_DURATION_MS, TIMEOUT_TO_GET_URL_SEC } from '../../../const';
 import findTargetWorkspace from '../../findTargetWorkspace';
 import { Workspace } from '../../../../../services/workspace-adapter';
 import { AbstractLoaderStep, LoaderStepProps, LoaderStepState } from '../../../AbstractStep';
@@ -37,12 +35,10 @@ export type State = LoaderStepState;
 
 class StepOpenWorkspace extends AbstractLoaderStep<Props, State> {
   protected readonly toDispose = new DisposableCollection();
-  protected readonly stepsList: List<LoaderStep>;
 
   constructor(props: Props) {
     super(props);
 
-    this.stepsList = buildLoaderSteps(this.props.loadingSteps);
     this.state = {};
   }
 
@@ -83,9 +79,15 @@ class StepOpenWorkspace extends AbstractLoaderStep<Props, State> {
     this.toDispose.dispose();
   }
 
-  protected async runStep(): Promise<boolean> {
-    const { matchParams } = this.props;
+  protected handleRestart(): void {
+    this.clearStepError();
+    this.props.onRestart();
+  }
 
+  protected async runStep(): Promise<boolean> {
+    await delay(MIN_STEP_DURATION_MS);
+
+    const { matchParams } = this.props;
     const workspace = this.findTargetWorkspace(this.props);
 
     if (!workspace) {
@@ -121,8 +123,6 @@ class StepOpenWorkspace extends AbstractLoaderStep<Props, State> {
       }
     }
 
-    await delay(MIN_STEP_DURATION_MS);
-
     window.location.replace(workspace.ideUrl);
 
     return true;
@@ -133,12 +133,12 @@ class StepOpenWorkspace extends AbstractLoaderStep<Props, State> {
   }
 
   render(): React.ReactNode {
-    const { currentStepIndex, tabParam } = this.props;
+    const { currentStepIndex, loaderSteps, tabParam } = this.props;
     const { lastError } = this.state;
     const workspace = this.findTargetWorkspace(this.props);
 
-    const steps = this.stepsList.values;
-    const currentStepId = this.stepsList.get(currentStepIndex).value.id;
+    const steps = loaderSteps.values;
+    const currentStepId = loaderSteps.get(currentStepIndex).value.id;
 
     const alertItem =
       lastError === undefined

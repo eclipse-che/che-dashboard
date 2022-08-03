@@ -20,9 +20,12 @@ import { FakeStoreBuilder } from '../../../../../../store/__mocks__/storeBuilder
 import { DevWorkspaceBuilder } from '../../../../../../store/__mocks__/devWorkspaceBuilder';
 import { CheWorkspaceBuilder } from '../../../../../../store/__mocks__/cheWorkspaceBuilder';
 import { WorkspaceAdapter } from '../../../../../../services/workspace-adapter';
-import { LoadingStep } from '../../../../../../components/Loader/Step';
-import { TIMEOUT_TO_STOP_SEC } from '../../const';
-import { getIdeLoadingSteps } from '../../../../../../components/Loader/Step/buildSteps';
+import { List, LoaderStep, LoadingStep } from '../../../../../../components/Loader/Step';
+import { MIN_STEP_DURATION_MS, TIMEOUT_TO_STOP_SEC } from '../../../../const';
+import {
+  buildLoaderSteps,
+  getWorkspaceLoadingSteps,
+} from '../../../../../../components/Loader/Step/buildSteps';
 import StepInitialize from '..';
 import getComponentRenderer from '../../../../../../services/__mocks__/getComponentRenderer';
 
@@ -42,10 +45,13 @@ const matchParams: WorkspaceParams = {
 
 const stepId = LoadingStep.INITIALIZE.toString();
 const currentStepIndex = 0;
-const loadingSteps = getIdeLoadingSteps();
+const loadingSteps = getWorkspaceLoadingSteps();
 
 describe('Workspace Loader, step INITIALIZE', () => {
+  let loaderSteps: List<LoaderStep>;
+
   beforeEach(() => {
+    loaderSteps = buildLoaderSteps(loadingSteps);
     jest.useFakeTimers();
   });
 
@@ -72,7 +78,9 @@ describe('Workspace Loader, step INITIALIZE', () => {
       namespace,
       workspaceName: wrongWorkspaceName,
     };
-    renderComponent(store, paramsWithWrongName);
+    renderComponent(store, loaderSteps, paramsWithWrongName);
+
+    jest.advanceTimersByTime(MIN_STEP_DURATION_MS);
 
     const currentStepId = screen.getByTestId('current-step-id');
     await waitFor(() => expect(currentStepId.textContent).toEqual(stepId));
@@ -110,7 +118,9 @@ describe('Workspace Loader, step INITIALIZE', () => {
       })
       .build();
 
-    renderComponent(store);
+    renderComponent(store, loaderSteps);
+
+    jest.advanceTimersByTime(MIN_STEP_DURATION_MS);
 
     const currentStepId = screen.getByTestId('current-step-id');
     await waitFor(() => expect(currentStepId.textContent).toEqual(stepId));
@@ -143,7 +153,9 @@ describe('Workspace Loader, step INITIALIZE', () => {
       })
       .build();
 
-    renderComponent(store);
+    renderComponent(store, loaderSteps);
+
+    jest.advanceTimersByTime(MIN_STEP_DURATION_MS);
 
     const currentStepId = screen.getByTestId('current-step-id');
     await waitFor(() => expect(currentStepId.textContent).toEqual(stepId));
@@ -185,7 +197,9 @@ describe('Workspace Loader, step INITIALIZE', () => {
       })
       .build();
 
-    const { reRenderComponent } = renderComponent(store);
+    const { reRenderComponent } = renderComponent(store, loaderSteps);
+
+    jest.advanceTimersByTime(MIN_STEP_DURATION_MS);
 
     const currentStepId = screen.getByTestId('current-step-id');
     await waitFor(() => expect(currentStepId.textContent).toEqual(stepId));
@@ -211,7 +225,9 @@ describe('Workspace Loader, step INITIALIZE', () => {
         ],
       })
       .build();
-    reRenderComponent(nextStore);
+    reRenderComponent(nextStore, loaderSteps);
+
+    jest.advanceTimersByTime(MIN_STEP_DURATION_MS);
 
     // switch to the next step
     await waitFor(() => expect(mockOnNextStep).toHaveBeenCalled());
@@ -230,7 +246,9 @@ describe('Workspace Loader, step INITIALIZE', () => {
       })
       .build();
 
-    renderComponent(store);
+    renderComponent(store, loaderSteps);
+
+    jest.advanceTimersByTime(MIN_STEP_DURATION_MS);
 
     const currentStepId = screen.getByTestId('current-step-id');
     await waitFor(() => expect(currentStepId.textContent).toEqual(stepId));
@@ -258,7 +276,9 @@ describe('Workspace Loader, step INITIALIZE', () => {
       })
       .build();
 
-    renderComponent(store);
+    renderComponent(store, loaderSteps);
+
+    jest.advanceTimersByTime(MIN_STEP_DURATION_MS);
 
     const currentStepId = screen.getByTestId('current-step-id');
     await waitFor(() => expect(currentStepId.textContent).toEqual(stepId));
@@ -300,7 +320,9 @@ describe('Workspace Loader, step INITIALIZE', () => {
       })
       .build();
 
-    const { reRenderComponent } = renderComponent(store);
+    const { reRenderComponent } = renderComponent(store, loaderSteps);
+
+    jest.advanceTimersByTime(MIN_STEP_DURATION_MS);
 
     const currentStepId = screen.getByTestId('current-step-id');
     await waitFor(() => expect(currentStepId.textContent).toEqual(stepId));
@@ -326,7 +348,9 @@ describe('Workspace Loader, step INITIALIZE', () => {
         ],
       })
       .build();
-    reRenderComponent(nextStore);
+    reRenderComponent(nextStore, loaderSteps);
+
+    jest.advanceTimersByTime(MIN_STEP_DURATION_MS);
 
     // switch to the next step
     await waitFor(() => expect(mockOnNextStep).toHaveBeenCalled());
@@ -345,7 +369,9 @@ describe('Workspace Loader, step INITIALIZE', () => {
       })
       .build();
 
-    renderComponent(store);
+    renderComponent(store, loaderSteps);
+
+    jest.advanceTimersByTime(MIN_STEP_DURATION_MS);
 
     const currentStepId = screen.getByTestId('current-step-id');
     await waitFor(() => expect(currentStepId.textContent).toEqual(stepId));
@@ -373,7 +399,9 @@ describe('Workspace Loader, step INITIALIZE', () => {
       })
       .build();
 
-    renderComponent(store);
+    renderComponent(store, loaderSteps);
+
+    jest.advanceTimersByTime(MIN_STEP_DURATION_MS);
 
     const currentStepId = screen.getByTestId('current-step-id');
     await waitFor(() => expect(currentStepId.textContent).toEqual(stepId));
@@ -404,7 +432,9 @@ describe('Workspace Loader, step INITIALIZE', () => {
       })
       .build();
 
-    renderComponent(store);
+    renderComponent(store, loaderSteps);
+
+    jest.advanceTimersByTime(MIN_STEP_DURATION_MS);
 
     const currentStepId = screen.getByTestId('current-step-id');
     await waitFor(() => expect(currentStepId.textContent).toEqual(stepId));
@@ -432,7 +462,9 @@ describe('Workspace Loader, step INITIALIZE', () => {
       })
       .build();
 
-    renderComponent(store);
+    renderComponent(store, loaderSteps);
+
+    jest.advanceTimersByTime(MIN_STEP_DURATION_MS);
 
     const currentStepId = screen.getByTestId('current-step-id');
     await waitFor(() => expect(currentStepId.textContent).toEqual(stepId));
@@ -460,7 +492,9 @@ describe('Workspace Loader, step INITIALIZE', () => {
       })
       .build();
 
-    renderComponent(store);
+    renderComponent(store, loaderSteps);
+
+    jest.advanceTimersByTime(MIN_STEP_DURATION_MS);
 
     const restartButton = screen.getByRole('button', {
       name: 'Restart',
@@ -473,13 +507,14 @@ describe('Workspace Loader, step INITIALIZE', () => {
 
 function getComponent(
   store: Store,
+  loaderSteps: List<LoaderStep>,
   params: { namespace: string; workspaceName: string } = matchParams,
 ): React.ReactElement {
   return (
     <Provider store={store}>
       <StepInitialize
         currentStepIndex={currentStepIndex}
-        loadingSteps={loadingSteps}
+        loaderSteps={loaderSteps}
         matchParams={params}
         tabParam={undefined}
         onNextStep={mockOnNextStep}

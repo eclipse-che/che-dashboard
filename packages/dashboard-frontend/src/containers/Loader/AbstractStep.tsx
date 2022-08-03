@@ -13,12 +13,12 @@
 import common from '@eclipse-che/common';
 import React from 'react';
 import { Cancellation, pseudoCancellable } from 'real-cancellable-promise';
-import { List, LoaderStep, LoadingStep } from '../../components/Loader/Step';
+import { List, LoaderStep } from '../../components/Loader/Step';
 import { DisposableCollection } from '../../services/helpers/disposable';
 
 export type LoaderStepProps = {
   currentStepIndex: number;
-  loadingSteps: LoadingStep[];
+  loaderSteps: Readonly<List<LoaderStep>>;
   tabParam: string | undefined;
   onNextStep: () => void;
   onRestart: () => void;
@@ -30,10 +30,10 @@ export abstract class AbstractLoaderStep<
   P extends LoaderStepProps,
   S extends LoaderStepState,
 > extends React.Component<P, S> {
-  protected readonly toDispose: DisposableCollection;
-  protected readonly stepsList: List<LoaderStep>;
+  protected abstract readonly toDispose: DisposableCollection;
 
   protected abstract runStep(): Promise<boolean>;
+  protected abstract handleRestart(): void;
 
   protected async prepareAndRun(): Promise<void> {
     try {
@@ -56,14 +56,9 @@ export abstract class AbstractLoaderStep<
     }
   }
 
-  protected handleRestart(): void {
-    this.clearStepError();
-    this.props.onRestart();
-  }
-
   protected setStepError(e: unknown) {
-    const { currentStepIndex } = this.props;
-    const currentStep = this.stepsList.get(currentStepIndex).value;
+    const { currentStepIndex, loaderSteps } = this.props;
+    const currentStep = loaderSteps.get(currentStepIndex).value;
 
     currentStep.hasError = true;
     const lastError = common.helpers.errors.getMessage(e);
@@ -73,8 +68,8 @@ export abstract class AbstractLoaderStep<
   }
 
   protected clearStepError() {
-    const { currentStepIndex } = this.props;
-    const currentStep = this.stepsList.get(currentStepIndex).value;
+    const { currentStepIndex, loaderSteps } = this.props;
+    const currentStep = loaderSteps.get(currentStepIndex).value;
 
     currentStep.hasError = false;
     this.setState({

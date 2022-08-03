@@ -20,13 +20,21 @@ import { FakeStoreBuilder } from '../../../../../../store/__mocks__/storeBuilder
 import { ActionCreators, OAuthResponse } from '../../../../../../store/FactoryResolver';
 import { DevWorkspaceBuilder } from '../../../../../../store/__mocks__/devWorkspaceBuilder';
 import { AppThunk } from '../../../../../../store';
-import { LoadingStep } from '../../../../../../components/Loader/Step';
-import { getFactoryLoadingSteps } from '../../../../../../components/Loader/Step/buildSteps';
+import { List, LoaderStep, LoadingStep } from '../../../../../../components/Loader/Step';
+import {
+  buildLoaderSteps,
+  getFactoryLoadingSteps,
+} from '../../../../../../components/Loader/Step/buildSteps';
 import devfileApi from '../../../../../../services/devfileApi';
 import { DEVWORKSPACE_DEVFILE_SOURCE } from '../../../../../../services/workspace-client/devworkspace/devWorkspaceClient';
 import StepFetchDevfile from '..';
 import getComponentRenderer from '../../../../../../services/__mocks__/getComponentRenderer';
-import { FACTORY_URL_ATTR, OVERRIDE_ATTR_PREFIX, TIMEOUT_TO_RESOLVE_SEC } from '../../../const';
+import {
+  FACTORY_URL_ATTR,
+  MIN_STEP_DURATION_MS,
+  OVERRIDE_ATTR_PREFIX,
+  TIMEOUT_TO_RESOLVE_SEC,
+} from '../../../../const';
 
 jest.mock('../../../../../../pages/Loader/Factory');
 
@@ -60,6 +68,7 @@ const factoryUrl = 'https://factory-url';
 describe('Factory Loader container, step CREATE_WORKSPACE__FETCH_DEVFILE', () => {
   let searchParams: URLSearchParams;
   let store: Store;
+  let loaderSteps: List<LoaderStep>;
 
   beforeEach(() => {
     store = new FakeStoreBuilder()
@@ -77,6 +86,8 @@ describe('Factory Loader container, step CREATE_WORKSPACE__FETCH_DEVFILE', () =>
     searchParams = new URLSearchParams({
       [FACTORY_URL_ATTR]: factoryUrl,
     });
+
+    loaderSteps = buildLoaderSteps(loadingSteps);
 
     jest.useFakeTimers();
   });
@@ -106,7 +117,9 @@ describe('Factory Loader container, step CREATE_WORKSPACE__FETCH_DEVFILE', () =>
       })
       .build();
 
-    renderComponent(storeWithWorkspace, searchParams);
+    renderComponent(storeWithWorkspace, loaderSteps, searchParams);
+
+    jest.advanceTimersByTime(MIN_STEP_DURATION_MS);
 
     const currentStepId = screen.getByTestId('current-step-id');
     await waitFor(() => expect(currentStepId.textContent).toEqual(stepId));
@@ -121,7 +134,9 @@ describe('Factory Loader container, step CREATE_WORKSPACE__FETCH_DEVFILE', () =>
   });
 
   test('devfile is already resolved', async () => {
-    renderComponent(store, searchParams);
+    renderComponent(store, loaderSteps, searchParams);
+
+    jest.advanceTimersByTime(MIN_STEP_DURATION_MS);
 
     const currentStepId = screen.getByTestId('current-step-id');
     await waitFor(() => expect(currentStepId.textContent).toEqual(stepId));
@@ -136,7 +151,9 @@ describe('Factory Loader container, step CREATE_WORKSPACE__FETCH_DEVFILE', () =>
   });
 
   test('restart flow', async () => {
-    renderComponent(store, searchParams);
+    renderComponent(store, loaderSteps, searchParams);
+
+    jest.advanceTimersByTime(MIN_STEP_DURATION_MS);
 
     const restartButton = screen.getByRole('button', {
       name: 'Restart',
@@ -147,8 +164,6 @@ describe('Factory Loader container, step CREATE_WORKSPACE__FETCH_DEVFILE', () =>
   });
 
   describe('step title', () => {
-    const nextStepIndex = 3;
-
     test('direct link to devfile', async () => {
       const store = new FakeStoreBuilder()
         .withFactoryResolver({
@@ -164,14 +179,13 @@ describe('Factory Loader container, step CREATE_WORKSPACE__FETCH_DEVFILE', () =>
         })
         .build();
 
-      const { reRenderComponent } = renderComponent(store, searchParams);
+      renderComponent(store, loaderSteps, searchParams);
 
-      // render next step, test current step
-      reRenderComponent(store, searchParams, nextStepIndex);
+      jest.advanceTimersByTime(MIN_STEP_DURATION_MS);
 
       const currentStep = screen.getByTestId(stepId);
       const title = within(currentStep).getByTestId('title');
-      expect(title.textContent).toEqual(`Devfile loaded from ${factoryUrl}.`);
+      await waitFor(() => expect(title.textContent).toEqual(`Devfile loaded from ${factoryUrl}.`));
     });
 
     test('devfile not found', async () => {
@@ -189,15 +203,16 @@ describe('Factory Loader container, step CREATE_WORKSPACE__FETCH_DEVFILE', () =>
         })
         .build();
 
-      const { reRenderComponent } = renderComponent(store, searchParams);
+      renderComponent(store, loaderSteps, searchParams);
 
-      // render next step, test current step
-      reRenderComponent(store, searchParams, nextStepIndex);
+      jest.advanceTimersByTime(MIN_STEP_DURATION_MS);
 
       const currentStep = screen.getByTestId(stepId);
       const title = within(currentStep).getByTestId('title');
-      expect(title.textContent).toEqual(
-        `Devfile could not be found in ${factoryUrl}. Applying the default configuration.`,
+      await waitFor(() =>
+        expect(title.textContent).toEqual(
+          `Devfile could not be found in ${factoryUrl}. Applying the default configuration.`,
+        ),
       );
     });
 
@@ -216,14 +231,15 @@ describe('Factory Loader container, step CREATE_WORKSPACE__FETCH_DEVFILE', () =>
         })
         .build();
 
-      const { reRenderComponent } = renderComponent(store, searchParams);
+      renderComponent(store, loaderSteps, searchParams);
 
-      // render next step, test current step
-      reRenderComponent(store, searchParams, nextStepIndex);
+      jest.advanceTimersByTime(MIN_STEP_DURATION_MS);
 
       const currentStep = screen.getByTestId(stepId);
       const title = within(currentStep).getByTestId('title');
-      expect(title.textContent).toEqual(`Devfile found in repo ${factoryUrl} as 'devfile.yaml'.`);
+      await waitFor(() =>
+        expect(title.textContent).toEqual(`Devfile found in repo ${factoryUrl} as 'devfile.yaml'.`),
+      );
     });
 
     test('devfile converted', async () => {
@@ -243,15 +259,16 @@ describe('Factory Loader container, step CREATE_WORKSPACE__FETCH_DEVFILE', () =>
         })
         .build();
 
-      const { reRenderComponent } = renderComponent(store, searchParams);
+      renderComponent(store, loaderSteps, searchParams);
 
-      // render next step, test current step
-      reRenderComponent(store, searchParams, nextStepIndex);
+      jest.advanceTimersByTime(MIN_STEP_DURATION_MS);
 
       const currentStep = screen.getByTestId(stepId);
       const title = within(currentStep).getByTestId('title');
-      expect(title.textContent).toEqual(
-        `Devfile found in repo ${factoryUrl} as 'devfile.yaml'. Devfile version 1 found, converting it to devfile version 2.1.0.`,
+      await waitFor(() =>
+        expect(title.textContent).toEqual(
+          `Devfile found in repo ${factoryUrl} as 'devfile.yaml'. Devfile version 1 found, converting it to devfile version 2.1.0.`,
+        ),
       );
     });
   });
@@ -265,7 +282,9 @@ describe('Factory Loader container, step CREATE_WORKSPACE__FETCH_DEVFILE', () =>
     test('request factory resolver', async () => {
       const emptyStore = new FakeStoreBuilder().build();
       // const path = generatePath(ROUTE.FACTORY_LOADER_URL, { url: factoryUrl });
-      renderComponent(emptyStore, searchParams);
+      renderComponent(emptyStore, loaderSteps, searchParams);
+
+      jest.advanceTimersByTime(MIN_STEP_DURATION_MS);
 
       const currentStepId = screen.getByTestId('current-step-id');
       await waitFor(() => expect(currentStepId.textContent).toEqual(stepId));
@@ -281,7 +300,9 @@ describe('Factory Loader container, step CREATE_WORKSPACE__FETCH_DEVFILE', () =>
       searchParams.append(attrName, attrValue);
       const emptyStore = new FakeStoreBuilder().build();
 
-      renderComponent(emptyStore, searchParams);
+      renderComponent(emptyStore, loaderSteps, searchParams);
+
+      jest.advanceTimersByTime(MIN_STEP_DURATION_MS);
 
       await waitFor(() =>
         expect(mockRequestFactoryResolver).toHaveBeenCalledWith(factoryUrl, expectedOverrideParams),
@@ -294,7 +315,9 @@ describe('Factory Loader container, step CREATE_WORKSPACE__FETCH_DEVFILE', () =>
       const rejectReason = 'Not found.';
       mockRequestFactoryResolver.mockRejectedValueOnce(rejectReason);
 
-      renderComponent(emptyStore, searchParams);
+      renderComponent(emptyStore, loaderSteps, searchParams);
+
+      jest.advanceTimersByTime(MIN_STEP_DURATION_MS);
 
       const currentStepId = screen.getByTestId('current-step-id');
       await waitFor(() => expect(currentStepId.textContent).toEqual(stepId));
@@ -315,7 +338,9 @@ describe('Factory Loader container, step CREATE_WORKSPACE__FETCH_DEVFILE', () =>
     test('devfile took more than TIMEOUT_TO_RESOLVE_SEC to resolve', async () => {
       const emptyStore = new FakeStoreBuilder().build();
 
-      renderComponent(emptyStore, searchParams);
+      renderComponent(emptyStore, loaderSteps, searchParams);
+
+      jest.advanceTimersByTime(MIN_STEP_DURATION_MS);
 
       const currentStepId = screen.getByTestId('current-step-id');
       await waitFor(() => expect(currentStepId.textContent).toEqual(stepId));
@@ -345,7 +370,9 @@ describe('Factory Loader container, step CREATE_WORKSPACE__FETCH_DEVFILE', () =>
     test('devfile resolved successfully', async () => {
       const emptyStore = new FakeStoreBuilder().build();
 
-      const { reRenderComponent } = renderComponent(emptyStore, searchParams);
+      const { reRenderComponent } = renderComponent(emptyStore, loaderSteps, searchParams);
+
+      jest.advanceTimersByTime(MIN_STEP_DURATION_MS);
 
       const currentStepId = screen.getByTestId('current-step-id');
       await waitFor(() => expect(currentStepId.textContent).toEqual(stepId));
@@ -372,7 +399,9 @@ describe('Factory Loader container, step CREATE_WORKSPACE__FETCH_DEVFILE', () =>
           },
         })
         .build();
-      reRenderComponent(nextStore, searchParams);
+      reRenderComponent(nextStore, loaderSteps, searchParams);
+
+      jest.advanceTimersByTime(MIN_STEP_DURATION_MS);
 
       await waitFor(() => expect(hasError.textContent).toEqual('false'));
 
@@ -406,7 +435,9 @@ describe('Factory Loader container, step CREATE_WORKSPACE__FETCH_DEVFILE', () =>
     test('redirect to an authentication URL', async () => {
       const emptyStore = new FakeStoreBuilder().build();
 
-      renderComponent(emptyStore, searchParams);
+      renderComponent(emptyStore, loaderSteps, searchParams);
+
+      jest.advanceTimersByTime(MIN_STEP_DURATION_MS);
 
       const expectedRedirectUrl = `${oauthAuthenticationUrl}/&redirect_after_login=${protocol}${host}/f?url=${encodeURIComponent(
         factoryUrl,
@@ -420,7 +451,9 @@ describe('Factory Loader container, step CREATE_WORKSPACE__FETCH_DEVFILE', () =>
     test('authentication fails', async () => {
       const emptyStore = new FakeStoreBuilder().build();
 
-      renderComponent(emptyStore, searchParams);
+      renderComponent(emptyStore, loaderSteps, searchParams);
+
+      jest.advanceTimersByTime(MIN_STEP_DURATION_MS);
 
       const expectedRedirectUrl = `${oauthAuthenticationUrl}/&redirect_after_login=${protocol}${host}/f?url=${encodeURIComponent(
         factoryUrl,
@@ -432,7 +465,9 @@ describe('Factory Loader container, step CREATE_WORKSPACE__FETCH_DEVFILE', () =>
       cleanup();
 
       // first unsuccessful try to resolve devfile after authentication
-      renderComponent(emptyStore, searchParams);
+      renderComponent(emptyStore, loaderSteps, searchParams);
+
+      jest.advanceTimersByTime(MIN_STEP_DURATION_MS);
 
       await waitFor(() => expect(spyWindowLocation).toHaveBeenCalledWith(expectedRedirectUrl));
 
@@ -444,7 +479,9 @@ describe('Factory Loader container, step CREATE_WORKSPACE__FETCH_DEVFILE', () =>
       cleanup();
 
       // second unsuccessful try to resolve devfile after authentication
-      renderComponent(emptyStore, searchParams);
+      renderComponent(emptyStore, loaderSteps, searchParams);
+
+      jest.advanceTimersByTime(MIN_STEP_DURATION_MS);
 
       await waitFor(() => expect(spyWindowLocation).toHaveBeenCalledWith(expectedRedirectUrl));
 
@@ -466,7 +503,9 @@ describe('Factory Loader container, step CREATE_WORKSPACE__FETCH_DEVFILE', () =>
     test('authentication passes', async () => {
       const emptyStore = new FakeStoreBuilder().build();
 
-      renderComponent(emptyStore, searchParams);
+      renderComponent(emptyStore, loaderSteps, searchParams);
+
+      jest.advanceTimersByTime(MIN_STEP_DURATION_MS);
 
       await waitFor(() => expect(mockRequestFactoryResolver).toHaveBeenCalled());
 
@@ -477,7 +516,10 @@ describe('Factory Loader container, step CREATE_WORKSPACE__FETCH_DEVFILE', () =>
       mockRequestFactoryResolver.mockResolvedValue(undefined);
 
       // redirect after authentication
-      const { reRenderComponent } = renderComponent(emptyStore, searchParams);
+      const { reRenderComponent } = renderComponent(emptyStore, loaderSteps, searchParams);
+
+      jest.advanceTimersByTime(MIN_STEP_DURATION_MS);
+
       await waitFor(() => expect(mockRequestFactoryResolver).toHaveBeenCalled());
 
       // build next store
@@ -491,7 +533,9 @@ describe('Factory Loader container, step CREATE_WORKSPACE__FETCH_DEVFILE', () =>
           },
         })
         .build();
-      reRenderComponent(nextStore, searchParams);
+      reRenderComponent(nextStore, loaderSteps, searchParams);
+
+      jest.advanceTimersByTime(MIN_STEP_DURATION_MS);
 
       await waitFor(() => expect(mockOnNextStep).toHaveBeenCalled());
 
@@ -519,6 +563,7 @@ function createWindowLocationSpy(host: string, protocol: string): jest.SpyInstan
 
 function getComponent(
   store: Store,
+  loaderSteps: List<LoaderStep>,
   searchParams: URLSearchParams,
   stepIndex = currentStepIndex,
 ): React.ReactElement {
@@ -526,7 +571,7 @@ function getComponent(
     <Provider store={store}>
       <StepFetchDevfile
         currentStepIndex={stepIndex}
-        loadingSteps={loadingSteps}
+        loaderSteps={loaderSteps}
         searchParams={searchParams}
         tabParam={undefined}
         onNextStep={mockOnNextStep}

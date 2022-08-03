@@ -51,6 +51,12 @@ export class WorkspaceLoaderPage extends React.PureComponent<Props, State> {
     this.props.onRestart();
   }
 
+  private handleTabChange(tabKey: LoaderTab): void {
+    this.setState({
+      activeTabKey: tabKey,
+    });
+  }
+
   render(): React.ReactNode {
     const { alertItem, currentStepId, steps, workspace } = this.props;
     const { activeTabKey } = this.state;
@@ -74,6 +80,7 @@ export class WorkspaceLoaderPage extends React.PureComponent<Props, State> {
         currentStepId={currentStepId}
         steps={steps}
         workspace={workspace}
+        onTabChange={tabKey => this.handleTabChange(tabKey)}
       />
     );
   }

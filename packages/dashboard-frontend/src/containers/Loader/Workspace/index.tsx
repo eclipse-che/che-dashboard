@@ -15,7 +15,7 @@ import { connect, ConnectedProps } from 'react-redux';
 import { AppState } from '../../../store';
 import { selectAllWorkspaces, selectLogs } from '../../../store/Workspaces/selectors';
 import * as WorkspaceStore from '../../../store/Workspaces';
-import { LoadingStep } from '../../../components/Loader/Step';
+import { List, LoaderStep, LoadingStep } from '../../../components/Loader/Step';
 import StepInitialize from './Steps/Initialize';
 import StepStartWorkspace from './Steps/StartWorkspace';
 import StepOpenWorkspace from './Steps/OpenWorkspace';
@@ -23,7 +23,7 @@ import findTargetWorkspace from './findTargetWorkspace';
 
 export type Props = MappedProps & {
   currentStepIndex: number; // not ID, but index
-  loadingSteps: LoadingStep[];
+  loaderSteps: Readonly<List<LoaderStep>>;
   matchParams: {
     namespace: string;
     workspaceName: string;
@@ -49,9 +49,9 @@ class WorkspaceLoader extends React.PureComponent<Props> {
   }
 
   render(): React.ReactNode {
-    const { currentStepIndex, loadingSteps } = this.props;
+    const { currentStepIndex, loaderSteps } = this.props;
 
-    switch (loadingSteps[currentStepIndex]) {
+    switch (loaderSteps.get(currentStepIndex).value.id) {
       case LoadingStep.INITIALIZE:
         return <StepInitialize {...this.props} onRestart={() => this.handleWorkspaceRestart()} />;
       case LoadingStep.START_WORKSPACE:

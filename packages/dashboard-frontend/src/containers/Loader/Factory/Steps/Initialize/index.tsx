@@ -16,14 +16,12 @@ import { generatePath } from 'react-router-dom';
 import { AlertVariant } from '@patternfly/react-core';
 import { AppState } from '../../../../../store';
 import { selectInfrastructureNamespaces } from '../../../../../store/InfrastructureNamespaces/selectors';
-import { List, LoaderStep } from '../../../../../components/Loader/Step';
-import { buildLoaderSteps } from '../../../../../components/Loader/Step/buildSteps';
 import { DisposableCollection } from '../../../../../services/helpers/disposable';
 import { delay } from '../../../../../services/helpers/delay';
 import { ROUTE } from '../../../../../Routes/routes';
 import { FactoryLoaderPage } from '../../../../../pages/Loader/Factory';
 import { FactoryParams, PoliciesCreate } from '../../types';
-import { MIN_STEP_DURATION_MS } from '../../const';
+import { MIN_STEP_DURATION_MS } from '../../../const';
 import buildFactoryParams from '../../buildFactoryParams';
 import { AbstractLoaderStep, LoaderStepProps, LoaderStepState } from '../../../AbstractStep';
 
@@ -37,7 +35,6 @@ export type State = LoaderStepState & {
 
 class StepInitialize extends AbstractLoaderStep<Props, State> {
   protected readonly toDispose = new DisposableCollection();
-  protected readonly stepsList: List<LoaderStep>;
 
   constructor(props: Props) {
     super(props);
@@ -45,8 +42,6 @@ class StepInitialize extends AbstractLoaderStep<Props, State> {
     this.state = {
       factoryParams: buildFactoryParams(props.searchParams),
     };
-
-    this.stepsList = buildLoaderSteps(this.props.loadingSteps);
   }
 
   public componentDidMount() {
@@ -76,7 +71,14 @@ class StepInitialize extends AbstractLoaderStep<Props, State> {
     this.toDispose.dispose();
   }
 
+  protected async handleRestart(): Promise<void> {
+    this.clearStepError();
+    this.props.onRestart();
+  }
+
   protected async runStep(): Promise<boolean> {
+    await delay(MIN_STEP_DURATION_MS);
+
     const { useDevworkspaceResources, sourceUrl, errorCode, policiesCreate } =
       this.state.factoryParams;
 
@@ -118,8 +120,6 @@ class StepInitialize extends AbstractLoaderStep<Props, State> {
       );
     }
 
-    await delay(MIN_STEP_DURATION_MS);
-
     return true;
   }
 
@@ -128,11 +128,11 @@ class StepInitialize extends AbstractLoaderStep<Props, State> {
   }
 
   render(): React.ReactElement {
-    const { currentStepIndex, tabParam } = this.props;
+    const { currentStepIndex, loaderSteps, tabParam } = this.props;
     const { lastError } = this.state;
 
-    const steps = this.stepsList.values;
-    const currentStepId = this.stepsList.get(currentStepIndex).value.id;
+    const steps = loaderSteps.values;
+    const currentStepId = loaderSteps.get(currentStepIndex).value.id;
 
     const alertItem =
       lastError === undefined

@@ -19,9 +19,7 @@ import * as FactoryResolverStore from '../../../../../store/FactoryResolver';
 import * as WorkspacesStore from '../../../../../store/Workspaces';
 import * as DevWorkspacesStore from '../../../../../store/Workspaces/devWorkspaces';
 import * as DevfileRegistriesStore from '../../../../../store/DevfileRegistries';
-import { List, LoaderStep } from '../../../../../components/Loader/Step';
 import { DisposableCollection } from '../../../../../services/helpers/disposable';
-import { buildLoaderSteps } from '../../../../../components/Loader/Step/buildSteps';
 import { selectAllWorkspaces } from '../../../../../store/Workspaces/selectors';
 import { selectDevworkspacesEnabled } from '../../../../../store/Workspaces/Settings/selectors';
 import { delay } from '../../../../../services/helpers/delay';
@@ -41,7 +39,7 @@ import { selectDevWorkspaceResources } from '../../../../../store/DevfileRegistr
 import { buildIdeLoaderLocation } from '../../../../../services/helpers/location';
 import { Workspace } from '../../../../../services/workspace-adapter';
 import { FactoryParams } from '../../types';
-import { MIN_STEP_DURATION_MS, TIMEOUT_TO_CREATE_SEC } from '../../const';
+import { MIN_STEP_DURATION_MS, TIMEOUT_TO_CREATE_SEC } from '../../../const';
 import buildFactoryParams from '../../buildFactoryParams';
 import { AbstractLoaderStep, LoaderStepProps, LoaderStepState } from '../../../AbstractStep';
 
@@ -58,7 +56,6 @@ export type State = LoaderStepState & {
 
 class StepApplyResources extends AbstractLoaderStep<Props, State> {
   protected readonly toDispose = new DisposableCollection();
-  protected readonly stepsList: List<LoaderStep>;
 
   constructor(props: Props) {
     super(props);
@@ -67,8 +64,6 @@ class StepApplyResources extends AbstractLoaderStep<Props, State> {
       factoryParams: buildFactoryParams(props.searchParams),
       shouldCreate: true,
     };
-
-    this.stepsList = buildLoaderSteps(this.props.loadingSteps);
   }
 
   public componentDidMount() {
@@ -123,13 +118,23 @@ class StepApplyResources extends AbstractLoaderStep<Props, State> {
       this.setState({
         shouldCreate: false,
       });
-      // todo return not to run prepareAndRun
     }
 
     this.prepareAndRun();
   }
 
+  protected handleRestart(): void {
+    this.setState({
+      shouldCreate: true,
+      newWorkspaceName: undefined,
+    });
+    this.clearStepError();
+    this.props.onRestart();
+  }
+
   protected async runStep(): Promise<boolean> {
+    await delay(MIN_STEP_DURATION_MS);
+
     const { devWorkspaceResources } = this.props;
     const { factoryParams, shouldCreate } = this.state;
     const { cheEditor, factoryId, sourceUrl, storageType } = factoryParams;
@@ -137,8 +142,6 @@ class StepApplyResources extends AbstractLoaderStep<Props, State> {
     const workspace = this.findTargetWorkspace(this.props, this.state);
     if (workspace) {
       // the workspace has been created, go to the next step
-      await delay(MIN_STEP_DURATION_MS);
-
       const nextLocation = buildIdeLoaderLocation(workspace);
       this.props.location.pathname = nextLocation.pathname;
       this.props.location.search = '';
@@ -194,11 +197,11 @@ class StepApplyResources extends AbstractLoaderStep<Props, State> {
   }
 
   render(): React.ReactElement {
-    const { currentStepIndex, tabParam } = this.props;
+    const { currentStepIndex, loaderSteps, tabParam } = this.props;
     const { lastError } = this.state;
 
-    const steps = this.stepsList.values;
-    const currentStepId = this.stepsList.get(currentStepIndex).value.id;
+    const steps = loaderSteps.values;
+    const currentStepId = loaderSteps.get(currentStepIndex).value.id;
 
     const alertItem =
       lastError === undefined

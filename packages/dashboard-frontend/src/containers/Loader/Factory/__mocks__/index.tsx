@@ -16,10 +16,10 @@ import { LoadingStep } from '../../../../components/Loader/Step';
 
 export default class FactoryLoaderContainer extends React.Component<Props> {
   public render(): React.ReactNode {
-    const { currentStepIndex, loadingSteps, onNextStep, onRestart } = this.props;
-    const steps = loadingSteps.map(step => (
-      <div key={LoadingStep[step]} data-testid={LoadingStep[step]}>
-        {LoadingStep[step]}
+    const { currentStepIndex, loaderSteps, onNextStep, onRestart } = this.props;
+    const steps = loaderSteps.values.map(step => (
+      <div key={LoadingStep[step.id]} data-testid={LoadingStep[step.id]}>
+        {LoadingStep[step.id]}
       </div>
     ));
     return (

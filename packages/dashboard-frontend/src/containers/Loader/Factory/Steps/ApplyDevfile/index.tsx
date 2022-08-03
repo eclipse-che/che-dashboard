@@ -16,9 +16,7 @@ import { RouteComponentProps, withRouter } from 'react-router-dom';
 import { AlertVariant } from '@patternfly/react-core';
 import { AppState } from '../../../../../store';
 import * as WorkspacesStore from '../../../../../store/Workspaces';
-import { List, LoaderStep } from '../../../../../components/Loader/Step';
 import { DisposableCollection } from '../../../../../services/helpers/disposable';
-import { buildLoaderSteps } from '../../../../../components/Loader/Step/buildSteps';
 import { selectAllWorkspaces } from '../../../../../store/Workspaces/selectors';
 import { delay } from '../../../../../services/helpers/delay';
 import devfileApi from '../../../../../services/devfileApi';
@@ -33,7 +31,7 @@ import { prepareDevfile } from './prepareDevfile';
 import { findTargetWorkspace } from '../findTargetWorkspace';
 import { buildIdeLoaderLocation } from '../../../../../services/helpers/location';
 import { Workspace } from '../../../../../services/workspace-adapter';
-import { MIN_STEP_DURATION_MS, TIMEOUT_TO_CREATE_SEC } from '../../const';
+import { MIN_STEP_DURATION_MS, TIMEOUT_TO_CREATE_SEC } from '../../../const';
 import { FactoryParams } from '../../types';
 import buildFactoryParams from '../../buildFactoryParams';
 import { AbstractLoaderStep, LoaderStepProps, LoaderStepState } from '../../../AbstractStep';
@@ -51,7 +49,6 @@ export type State = LoaderStepState & {
 
 class StepApplyDevfile extends AbstractLoaderStep<Props, State> {
   protected readonly toDispose = new DisposableCollection();
-  protected readonly stepsList: List<LoaderStep>;
 
   constructor(props: Props) {
     super(props);
@@ -60,8 +57,6 @@ class StepApplyDevfile extends AbstractLoaderStep<Props, State> {
       factoryParams: buildFactoryParams(props.searchParams),
       shouldCreate: true,
     };
-
-    this.stepsList = buildLoaderSteps(this.props.loadingSteps);
   }
 
   public componentDidMount() {
@@ -121,7 +116,18 @@ class StepApplyDevfile extends AbstractLoaderStep<Props, State> {
     this.prepareAndRun();
   }
 
+  protected handleRestart(): void {
+    this.setState({
+      shouldCreate: true,
+      newWorkspaceName: undefined,
+    });
+    this.clearStepError();
+    this.props.onRestart();
+  }
+
   protected async runStep(): Promise<boolean> {
+    await delay(MIN_STEP_DURATION_MS);
+
     const { factoryResolverConverted } = this.props;
     const { shouldCreate, factoryParams } = this.state;
     const { factoryId, policiesCreate, storageType } = factoryParams;
@@ -129,8 +135,6 @@ class StepApplyDevfile extends AbstractLoaderStep<Props, State> {
     const workspace = this.findTargetWorkspace(this.props, this.state);
     if (workspace !== undefined) {
       // the workspace has been created, go to the next step
-      await delay(MIN_STEP_DURATION_MS);
-
       const nextLocation = buildIdeLoaderLocation(workspace);
       this.props.location.pathname = nextLocation.pathname;
       this.props.location.search = '';
@@ -194,11 +198,11 @@ class StepApplyDevfile extends AbstractLoaderStep<Props, State> {
   }
 
   render(): React.ReactElement {
-    const { currentStepIndex, tabParam } = this.props;
+    const { currentStepIndex, loaderSteps, tabParam } = this.props;
     const { lastError } = this.state;
 
-    const steps = this.stepsList.values;
-    const currentStepId = this.stepsList.get(currentStepIndex).value.id;
+    const steps = loaderSteps.values;
+    const currentStepId = loaderSteps.get(currentStepIndex).value.id;
 
     const alertItem =
       lastError === undefined

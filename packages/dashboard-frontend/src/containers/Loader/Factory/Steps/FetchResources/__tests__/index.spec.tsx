@@ -18,14 +18,22 @@ import { dump } from 'js-yaml';
 import { FakeStoreBuilder } from '../../../../../../store/__mocks__/storeBuilder';
 import { ActionCreators } from '../../../../../../store/DevfileRegistries';
 import { AppThunk } from '../../../../../../store';
-import { LoadingStep } from '../../../../../../components/Loader/Step';
-import { getFactoryLoadingSteps } from '../../../../../../components/Loader/Step/buildSteps';
+import { List, LoaderStep, LoadingStep } from '../../../../../../components/Loader/Step';
+import {
+  buildLoaderSteps,
+  getFactoryLoadingSteps,
+} from '../../../../../../components/Loader/Step/buildSteps';
 import devfileApi from '../../../../../../services/devfileApi';
 import { DevWorkspaceBuilder } from '../../../../../../store/__mocks__/devWorkspaceBuilder';
 import { DEVWORKSPACE_DEVFILE_SOURCE } from '../../../../../../services/workspace-client/devworkspace/devWorkspaceClient';
 import getComponentRenderer from '../../../../../../services/__mocks__/getComponentRenderer';
 import StepFetchResources from '..';
-import { DEV_WORKSPACE_ATTR, FACTORY_URL_ATTR, TIMEOUT_TO_RESOLVE_SEC } from '../../../const';
+import {
+  DEV_WORKSPACE_ATTR,
+  FACTORY_URL_ATTR,
+  MIN_STEP_DURATION_MS,
+  TIMEOUT_TO_RESOLVE_SEC,
+} from '../../../../const';
 import userEvent from '@testing-library/user-event';
 
 jest.mock('../../../../../../pages/Loader/Factory');
@@ -60,6 +68,7 @@ const factoryUrl = 'https://factory-url';
 const factoryId = `${DEV_WORKSPACE_ATTR}=${resourcesUrl}&${FACTORY_URL_ATTR}=${factoryUrl}`;
 
 describe('Factory Loader container, step CREATE_WORKSPACE__FETCHING_RESOURCES', () => {
+  let loaderSteps: List<LoaderStep>;
   let searchParams: URLSearchParams;
 
   beforeEach(() => {
@@ -67,6 +76,8 @@ describe('Factory Loader container, step CREATE_WORKSPACE__FETCHING_RESOURCES', 
       [FACTORY_URL_ATTR]: factoryUrl,
       [DEV_WORKSPACE_ATTR]: resourcesUrl,
     });
+
+    loaderSteps = buildLoaderSteps(loadingSteps);
 
     jest.useFakeTimers();
   });
@@ -78,7 +89,9 @@ describe('Factory Loader container, step CREATE_WORKSPACE__FETCHING_RESOURCES', 
 
   test('restart flow', async () => {
     const store = new FakeStoreBuilder().build();
-    renderComponent(store, searchParams);
+    renderComponent(store, loaderSteps, searchParams);
+
+    jest.advanceTimersByTime(MIN_STEP_DURATION_MS);
 
     const restartButton = screen.getByRole('button', {
       name: 'Restart',
@@ -108,7 +121,9 @@ describe('Factory Loader container, step CREATE_WORKSPACE__FETCHING_RESOURCES', 
       })
       .build();
 
-    renderComponent(store, searchParams);
+    renderComponent(store, loaderSteps, searchParams);
+
+    jest.advanceTimersByTime(MIN_STEP_DURATION_MS);
 
     const currentStepId = screen.getByTestId('current-step-id');
     await waitFor(() => expect(currentStepId.textContent).toEqual(stepId));
@@ -133,7 +148,9 @@ describe('Factory Loader container, step CREATE_WORKSPACE__FETCHING_RESOURCES', 
       })
       .build();
 
-    renderComponent(store, searchParams);
+    renderComponent(store, loaderSteps, searchParams);
+
+    jest.advanceTimersByTime(MIN_STEP_DURATION_MS);
 
     const currentStepId = screen.getByTestId('current-step-id');
     await waitFor(() => expect(currentStepId.textContent).toEqual(stepId));
@@ -150,7 +167,9 @@ describe('Factory Loader container, step CREATE_WORKSPACE__FETCHING_RESOURCES', 
   test('fetch pre-built resources', async () => {
     const store = new FakeStoreBuilder().build();
 
-    renderComponent(store, searchParams);
+    renderComponent(store, loaderSteps, searchParams);
+
+    jest.advanceTimersByTime(MIN_STEP_DURATION_MS);
 
     const currentStepId = screen.getByTestId('current-step-id');
     await waitFor(() => expect(currentStepId.textContent).toEqual(stepId));
@@ -164,7 +183,9 @@ describe('Factory Loader container, step CREATE_WORKSPACE__FETCHING_RESOURCES', 
     const rejectReason = 'Not found.';
     mockRequestResources.mockRejectedValueOnce(rejectReason);
 
-    renderComponent(store, searchParams);
+    renderComponent(store, loaderSteps, searchParams);
+
+    jest.advanceTimersByTime(MIN_STEP_DURATION_MS);
 
     const currentStepId = screen.getByTestId('current-step-id');
     await waitFor(() => expect(currentStepId.textContent).toEqual(stepId));
@@ -185,7 +206,9 @@ describe('Factory Loader container, step CREATE_WORKSPACE__FETCHING_RESOURCES', 
   test('resources took more than TIMEOUT_TO_RESOLVE_SEC to fetch', async () => {
     const store = new FakeStoreBuilder().build();
 
-    renderComponent(store, searchParams);
+    renderComponent(store, loaderSteps, searchParams);
+
+    jest.advanceTimersByTime(MIN_STEP_DURATION_MS);
 
     const currentStepId = screen.getByTestId('current-step-id');
     await waitFor(() => expect(currentStepId.textContent).toEqual(stepId));
@@ -217,7 +240,9 @@ describe('Factory Loader container, step CREATE_WORKSPACE__FETCHING_RESOURCES', 
   test('resources fetched successfully', async () => {
     const store = new FakeStoreBuilder().build();
 
-    const { reRenderComponent } = renderComponent(store, searchParams);
+    const { reRenderComponent } = renderComponent(store, loaderSteps, searchParams);
+
+    jest.advanceTimersByTime(MIN_STEP_DURATION_MS);
 
     const currentStepId = screen.getByTestId('current-step-id');
     await waitFor(() => expect(currentStepId.textContent).toEqual(stepId));
@@ -243,7 +268,9 @@ describe('Factory Loader container, step CREATE_WORKSPACE__FETCHING_RESOURCES', 
         },
       })
       .build();
-    reRenderComponent(nextStore, searchParams);
+    reRenderComponent(nextStore, loaderSteps, searchParams);
+
+    jest.advanceTimersByTime(MIN_STEP_DURATION_MS);
 
     await waitFor(() => expect(hasError.textContent).toEqual('false'));
 
@@ -253,6 +280,7 @@ describe('Factory Loader container, step CREATE_WORKSPACE__FETCHING_RESOURCES', 
 
 function getComponent(
   store: Store,
+  loaderSteps: List<LoaderStep>,
   searchParams: URLSearchParams,
   stepIndex = currentStepIndex,
 ): React.ReactElement {
@@ -260,7 +288,7 @@ function getComponent(
     <Provider store={store}>
       <StepFetchResources
         currentStepIndex={stepIndex}
-        loadingSteps={loadingSteps}
+        loaderSteps={loaderSteps}
         searchParams={searchParams}
         tabParam={undefined}
         onNextStep={mockOnNextStep}

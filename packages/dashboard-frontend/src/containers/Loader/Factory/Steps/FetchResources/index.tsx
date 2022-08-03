@@ -15,9 +15,7 @@ import { connect, ConnectedProps } from 'react-redux';
 import { AlertVariant } from '@patternfly/react-core';
 import { AppState } from '../../../../../store';
 import * as DevfileRegistriesStore from '../../../../../store/DevfileRegistries';
-import { List, LoaderStep } from '../../../../../components/Loader/Step';
 import { DisposableCollection } from '../../../../../services/helpers/disposable';
-import { buildLoaderSteps } from '../../../../../components/Loader/Step/buildSteps';
 import { selectAllWorkspaces } from '../../../../../store/Workspaces/selectors';
 import { delay } from '../../../../../services/helpers/delay';
 import { FactoryLoaderPage } from '../../../../../pages/Loader/Factory';
@@ -25,7 +23,7 @@ import { findTargetWorkspace } from '../findTargetWorkspace';
 import { selectDevWorkspaceResources } from '../../../../../store/DevfileRegistries/selectors';
 import { Workspace } from '../../../../../services/workspace-adapter';
 import { FactoryParams } from '../../types';
-import { MIN_STEP_DURATION_MS, TIMEOUT_TO_RESOLVE_SEC } from '../../const';
+import { MIN_STEP_DURATION_MS, TIMEOUT_TO_RESOLVE_SEC } from '../../../const';
 import buildFactoryParams from '../../buildFactoryParams';
 import { AbstractLoaderStep, LoaderStepProps, LoaderStepState } from '../../../AbstractStep';
 
@@ -40,7 +38,6 @@ export type State = LoaderStepState & {
 
 class StepFetchResources extends AbstractLoaderStep<Props, State> {
   protected readonly toDispose = new DisposableCollection();
-  protected readonly stepsList: List<LoaderStep>;
 
   constructor(props: Props) {
     super(props);
@@ -49,8 +46,6 @@ class StepFetchResources extends AbstractLoaderStep<Props, State> {
       factoryParams: buildFactoryParams(props.searchParams),
       shouldResolve: true,
     };
-
-    this.stepsList = buildLoaderSteps(this.props.loadingSteps);
   }
 
   public componentDidMount() {
@@ -124,7 +119,17 @@ class StepFetchResources extends AbstractLoaderStep<Props, State> {
     this.prepareAndRun();
   }
 
+  protected handleRestart(): void {
+    this.setState({
+      shouldResolve: true,
+    });
+    this.clearStepError();
+    this.props.onRestart();
+  }
+
   protected async runStep(): Promise<boolean> {
+    await delay(MIN_STEP_DURATION_MS);
+
     const { devWorkspaceResources } = this.props;
     const { factoryParams, lastError, shouldResolve } = this.state;
     const { sourceUrl } = factoryParams;
@@ -132,13 +137,11 @@ class StepFetchResources extends AbstractLoaderStep<Props, State> {
     const workspace = this.findTargetWorkspace(this.props, this.state);
     if (workspace) {
       // the workspace has been created, go to the next step
-      await delay(MIN_STEP_DURATION_MS);
       return true;
     }
 
     if (devWorkspaceResources[sourceUrl]) {
       // pre-built resources fetched successfully
-      await delay(MIN_STEP_DURATION_MS);
       return true;
     }
 
@@ -170,11 +173,11 @@ class StepFetchResources extends AbstractLoaderStep<Props, State> {
   }
 
   render(): React.ReactElement {
-    const { currentStepIndex, tabParam } = this.props;
+    const { currentStepIndex, loaderSteps, tabParam } = this.props;
     const { lastError } = this.state;
 
-    const steps = this.stepsList.values;
-    const currentStepId = this.stepsList.get(currentStepIndex).value.id;
+    const steps = loaderSteps.values;
+    const currentStepId = loaderSteps.get(currentStepIndex).value.id;
 
     const alertItem =
       lastError === undefined

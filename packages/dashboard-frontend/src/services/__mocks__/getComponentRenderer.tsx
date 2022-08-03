@@ -12,15 +12,20 @@
 
 import React from 'react';
 import { render } from '@testing-library/react';
+import renderer from 'react-test-renderer';
 
 export default function <T extends Array<unknown>>(
   getComponent: (..._args: T) => React.ReactElement,
 ): {
+  createSnapshot: (...args: T) => renderer.ReactTestRenderer;
   renderComponent: (...args: T) => {
     reRenderComponent: (..._args: T) => void;
   };
 } {
   return {
+    createSnapshot: (...args: T) => {
+      return renderer.create(getComponent(...args));
+    },
     renderComponent: (...args: T) => {
       const res = render(getComponent(...args));
       return {

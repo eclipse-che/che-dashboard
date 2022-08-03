@@ -13,7 +13,7 @@
 import React from 'react';
 import { Provider } from 'react-redux';
 import { Store } from 'redux';
-import { render, screen, waitFor } from '@testing-library/react';
+import { screen, waitFor } from '@testing-library/react';
 import { StateMock } from '@react-mock/state';
 import { ROUTE } from '../../../Routes/routes';
 import { getMockRouterProps } from '../../../services/__mocks__/router';
@@ -23,6 +23,11 @@ import userEvent from '@testing-library/user-event';
 import { RouteComponentProps } from 'react-router';
 import LoaderContainer, { State } from '..';
 import getComponentRenderer from '../../../services/__mocks__/getComponentRenderer';
+import {
+  buildLoaderSteps,
+  getFactoryLoadingSteps,
+  getWorkspaceLoadingSteps,
+} from '../../../components/Loader/Step/buildSteps';
 
 jest.mock('../Factory');
 jest.mock('../Workspace');
@@ -42,7 +47,7 @@ describe('Loader container', () => {
     jest.clearAllMocks();
   });
 
-  describe('Factory mode', () => {
+  describe('Factory loading flow', () => {
     let props: RouteComponentProps;
 
     beforeEach(() => {
@@ -82,11 +87,12 @@ describe('Loader container', () => {
       expect(currentStepIndex.textContent).toEqual('1');
     });
 
-    it('should handle onRestart', async () => {
+    it('should handle onRestart in Factory mode', async () => {
       const localState = {
         currentStepIndex: 1,
         initialMode: 'factory',
-      } as State;
+        loaderSteps: buildLoaderSteps(getFactoryLoadingSteps('devfile')),
+      } as Partial<State>;
       renderComponent(props, store, localState);
 
       const currentStepIndex = screen.getByTestId('current-step-index');
@@ -99,6 +105,29 @@ describe('Loader container', () => {
       await waitFor(() => expect(currentStepIndex.textContent).toEqual('0'));
     });
 
+    it('should handle onRestart in Workspace mode', async () => {
+      const localState = {
+        currentStepIndex: 5,
+        initialMode: 'factory',
+        loaderSteps: buildLoaderSteps(getFactoryLoadingSteps('devfile')),
+      } as Partial<State>;
+      const { reRenderComponent } = renderComponent(props, store, localState);
+
+      const namespace = 'user-che';
+      const workspaceName = 'wksp-name';
+      const workspaceModeProps = getMockRouterProps(ROUTE.IDE_LOADER, { namespace, workspaceName });
+      reRenderComponent(workspaceModeProps, store, localState);
+
+      const currentStepIndex = screen.getByTestId('current-step-index');
+      await waitFor(() => expect(currentStepIndex.textContent).toEqual('5'));
+
+      const restartButton = screen.getByTestId('on-restart');
+
+      userEvent.click(restartButton);
+
+      await waitFor(() => expect(currentStepIndex.textContent).toEqual('4'));
+    });
+
     describe('when starting the workspace', () => {
       let localState: Partial<State>;
       let props: RouteComponentProps;
@@ -107,6 +136,7 @@ describe('Loader container', () => {
         localState = {
           initialMode: 'factory',
           currentStepIndex: 4, // LoadingStep.START_WORKSPACE
+          loaderSteps: buildLoaderSteps(getFactoryLoadingSteps('devfile')),
         };
         props = getMockRouterProps(ROUTE.FACTORY_LOADER_URL, { url });
       });
@@ -177,7 +207,7 @@ describe('Loader container', () => {
     });
   });
 
-  describe('IDE mode', () => {
+  describe('Workspace loading flow', () => {
     let props: RouteComponentProps;
 
     beforeEach(() => {
@@ -225,7 +255,8 @@ describe('Loader container', () => {
       const localState = {
         currentStepIndex: 1,
         initialMode: 'workspace',
-      } as State;
+        loaderSteps: buildLoaderSteps(getWorkspaceLoadingSteps()),
+      } as Partial<State>;
       renderComponent(props, store, localState);
 
       const currentStepIndex = screen.getByTestId('current-step-index');

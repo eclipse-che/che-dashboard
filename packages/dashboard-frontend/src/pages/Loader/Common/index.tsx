@@ -30,32 +30,17 @@ export type Props = {
   currentStepId: number;
   steps: LoaderStep[];
   workspace: Workspace | undefined;
-};
-export type State = {
-  activeTabKey: LoaderTab;
-  isPopupAlertVisible: boolean;
+  onTabChange: (tab: LoaderTab) => void;
 };
 
-export class CommonLoaderPage extends React.PureComponent<Props, State> {
-  constructor(props: Props) {
-    super(props);
-
-    this.state = {
-      activeTabKey: props.activeTabKey,
-      isPopupAlertVisible: false,
-    };
-  }
-
+export class CommonLoaderPage extends React.PureComponent<Props> {
   private handleTabClick(tabIndex: React.ReactText): void {
-    this.setState({
-      activeTabKey: tabIndex as LoaderTab,
-      isPopupAlertVisible: tabIndex === LoaderTab.Logs,
-    });
+    this.props.onTabChange(tabIndex as LoaderTab);
   }
 
   render(): React.ReactNode {
-    const { alertItem, currentStepId, steps, workspace, actionCallbacks } = this.props;
-    const { activeTabKey } = this.state;
+    const { activeTabKey, alertItem, currentStepId, steps, workspace, actionCallbacks } =
+      this.props;
 
     const pageTitle = workspace ? `Starting workspace ${workspace.name}` : 'Creating a workspace';
     const workspaceStatus = workspace?.status || DevWorkspaceStatus.STOPPED;

@@ -22,13 +22,16 @@ import { FakeStoreBuilder } from '../../../../../../store/__mocks__/storeBuilder
 import { DevWorkspaceBuilder } from '../../../../../../store/__mocks__/devWorkspaceBuilder';
 import { ActionCreators } from '../../../../../../store/Workspaces';
 import { AppThunk } from '../../../../../../store';
-import { LoadingStep } from '../../../../../../components/Loader/Step';
-import { getFactoryLoadingSteps } from '../../../../../../components/Loader/Step/buildSteps';
+import { List, LoaderStep, LoadingStep } from '../../../../../../components/Loader/Step';
+import {
+  buildLoaderSteps,
+  getFactoryLoadingSteps,
+} from '../../../../../../components/Loader/Step/buildSteps';
 import { DEVWORKSPACE_DEVFILE_SOURCE } from '../../../../../../services/workspace-client/devworkspace/devWorkspaceClient';
 import devfileApi from '../../../../../../services/devfileApi';
 import getComponentRenderer from '../../../../../../services/__mocks__/getComponentRenderer';
 import StepApplyDevfile from '..';
-import { FACTORY_URL_ATTR, TIMEOUT_TO_CREATE_SEC } from '../../../const';
+import { FACTORY_URL_ATTR, MIN_STEP_DURATION_MS, TIMEOUT_TO_CREATE_SEC } from '../../../../const';
 import userEvent from '@testing-library/user-event';
 
 jest.mock('../../../../../../pages/Loader/Factory');
@@ -61,11 +64,13 @@ const factoryUrl = 'https://factory-url';
 
 describe('Factory Loader container, step CREATE_WORKSPACE__APPLYING_DEVFILE', () => {
   let searchParams: URLSearchParams;
+  let loaderSteps: List<LoaderStep>;
 
   beforeEach(() => {
     searchParams = new URLSearchParams({
       [FACTORY_URL_ATTR]: factoryUrl,
     });
+    loaderSteps = buildLoaderSteps(loadingSteps);
 
     jest.useFakeTimers();
   });
@@ -80,7 +85,9 @@ describe('Factory Loader container, step CREATE_WORKSPACE__APPLYING_DEVFILE', ()
     const path = generatePath(ROUTE.FACTORY_LOADER_URL, {
       url: factoryUrl,
     });
-    renderComponent(store, path, searchParams, currentStepIndex);
+    renderComponent(store, path, loaderSteps, searchParams, currentStepIndex);
+
+    jest.advanceTimersByTime(MIN_STEP_DURATION_MS);
 
     const restartButton = screen.getByRole('button', {
       name: 'Restart',
@@ -115,7 +122,9 @@ describe('Factory Loader container, step CREATE_WORKSPACE__APPLYING_DEVFILE', ()
     const path = generatePath(ROUTE.FACTORY_LOADER_URL, {
       url: factoryUrl,
     });
-    renderComponent(store, path, searchParams, currentStepIndex);
+    renderComponent(store, path, loaderSteps, searchParams, currentStepIndex);
+
+    jest.advanceTimersByTime(MIN_STEP_DURATION_MS);
 
     const currentStepId = screen.getByTestId('current-step-id');
     await waitFor(() => expect(currentStepId.textContent).toEqual(stepId));
@@ -134,7 +143,9 @@ describe('Factory Loader container, step CREATE_WORKSPACE__APPLYING_DEVFILE', ()
     const path = generatePath(ROUTE.FACTORY_LOADER_URL, {
       url: factoryUrl,
     });
-    renderComponent(store, path, searchParams, currentStepIndex);
+    renderComponent(store, path, loaderSteps, searchParams, currentStepIndex);
+
+    jest.advanceTimersByTime(MIN_STEP_DURATION_MS);
 
     const currentStepId = screen.getByTestId('current-step-id');
     await waitFor(() => expect(currentStepId.textContent).toEqual(stepId));
@@ -171,7 +182,9 @@ describe('Factory Loader container, step CREATE_WORKSPACE__APPLYING_DEVFILE', ()
     const path = generatePath(ROUTE.FACTORY_LOADER_URL, {
       url: factoryUrl,
     });
-    renderComponent(store, path, searchParams, currentStepIndex);
+    renderComponent(store, path, loaderSteps, searchParams, currentStepIndex);
+
+    jest.advanceTimersByTime(MIN_STEP_DURATION_MS);
 
     const currentStepId = screen.getByTestId('current-step-id');
     await waitFor(() => expect(currentStepId.textContent).toEqual(stepId));
@@ -222,7 +235,15 @@ describe('Factory Loader container, step CREATE_WORKSPACE__APPLYING_DEVFILE', ()
     const path = generatePath(ROUTE.FACTORY_LOADER_URL, {
       url: factoryUrl,
     });
-    const { reRenderComponent } = renderComponent(store, path, searchParams, currentStepIndex);
+    const { reRenderComponent } = renderComponent(
+      store,
+      path,
+      loaderSteps,
+      searchParams,
+      currentStepIndex,
+    );
+
+    jest.advanceTimersByTime(MIN_STEP_DURATION_MS);
 
     const currentStepId = screen.getByTestId('current-step-id');
     await waitFor(() => expect(currentStepId.textContent).toEqual(stepId));
@@ -272,7 +293,9 @@ describe('Factory Loader container, step CREATE_WORKSPACE__APPLYING_DEVFILE', ()
         ],
       })
       .build();
-    reRenderComponent(nextStore, path, searchParams, currentStepIndex);
+    reRenderComponent(nextStore, path, loaderSteps, searchParams, currentStepIndex);
+
+    jest.advanceTimersByTime(MIN_STEP_DURATION_MS);
 
     await waitFor(() => expect(mockOnNextStep).toHaveBeenCalled());
     expect(testLocation.pathname).toEqual('/ide/user-che/my-project');
@@ -284,6 +307,7 @@ describe('Factory Loader container, step CREATE_WORKSPACE__APPLYING_DEVFILE', ()
 function getComponent(
   store: Store,
   path: string,
+  loaderSteps: List<LoaderStep>,
   searchParams: URLSearchParams,
   stepIndex = currentStepIndex,
 ): React.ReactElement {
@@ -294,7 +318,7 @@ function getComponent(
           <StepApplyDevfile
             searchParams={searchParams}
             currentStepIndex={stepIndex}
-            loadingSteps={loadingSteps}
+            loaderSteps={loaderSteps}
             tabParam={undefined}
             onNextStep={mockOnNextStep}
             onRestart={mockOnRestart}

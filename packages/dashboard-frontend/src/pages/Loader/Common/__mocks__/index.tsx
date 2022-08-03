@@ -11,11 +11,13 @@
  */
 
 import React from 'react';
-import { Props, State } from '..';
+import { Props } from '..';
+import { LoaderTab } from '../../../../services/helpers/types';
 
-export class CommonLoaderPage extends React.PureComponent<Props, State> {
+export class CommonLoaderPage extends React.PureComponent<Props> {
   render(): React.ReactNode {
-    const { alertItem, currentStepId, steps, actionCallbacks, activeTabKey } = this.props;
+    const { alertItem, currentStepId, steps, actionCallbacks, activeTabKey, onTabChange } =
+      this.props;
     const wizardSteps = steps.map(step => (
       <div key={step.id} data-testid={step.id}>
         <div data-testid="hasError">{step.hasError ? 'true' : 'false'}</div>
@@ -30,6 +32,12 @@ export class CommonLoaderPage extends React.PureComponent<Props, State> {
     ));
     return (
       <div data-testid="common-loader-page">
+        <button data-testid="tab-progress" onClick={() => onTabChange(LoaderTab.Progress)}>
+          Progress
+        </button>
+        <button data-testid="tab-logs" onClick={() => onTabChange(LoaderTab.Logs)}>
+          Logs
+        </button>
         <div data-testid="active-tab-key">{activeTabKey}</div>
         <div data-testid="current-step-id">{currentStepId}</div>
         <div data-testid="alert">

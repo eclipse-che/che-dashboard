@@ -12,13 +12,11 @@
 
 import React from 'react';
 import { AlertVariant } from '@patternfly/react-core';
-import { List, LoaderStep } from '../../../../../components/Loader/Step';
 import { DisposableCollection } from '../../../../../services/helpers/disposable';
-import { buildLoaderSteps } from '../../../../../components/Loader/Step/buildSteps';
 import { delay } from '../../../../../services/helpers/delay';
 import { FactoryLoaderPage } from '../../../../../pages/Loader/Factory';
 import getRandomString from '../../../../../services/helpers/random';
-import { MIN_STEP_DURATION_MS } from '../../const';
+import { MIN_STEP_DURATION_MS } from '../../../const';
 import { FactoryParams } from '../../types';
 import buildFactoryParams from '../../buildFactoryParams';
 import { AbstractLoaderStep, LoaderStepProps, LoaderStepState } from '../../../AbstractStep';
@@ -32,7 +30,6 @@ export type State = LoaderStepState & {
 
 export default class StepCreateWorkspace extends AbstractLoaderStep<Props, State> {
   protected readonly toDispose = new DisposableCollection();
-  protected readonly stepsList: List<LoaderStep>;
 
   constructor(props: Props) {
     super(props);
@@ -40,8 +37,6 @@ export default class StepCreateWorkspace extends AbstractLoaderStep<Props, State
     this.state = {
       factoryParams: buildFactoryParams(props.searchParams),
     };
-
-    this.stepsList = buildLoaderSteps(this.props.loadingSteps);
   }
 
   public componentDidMount() {
@@ -52,17 +47,22 @@ export default class StepCreateWorkspace extends AbstractLoaderStep<Props, State
     this.prepareAndRun();
   }
 
+  protected handleRestart(): void {
+    this.clearStepError();
+    this.props.onRestart();
+  }
+
   protected async runStep(): Promise<boolean> {
     await delay(MIN_STEP_DURATION_MS);
     return true;
   }
 
   render(): React.ReactElement {
-    const { currentStepIndex, tabParam } = this.props;
+    const { currentStepIndex, loaderSteps, tabParam } = this.props;
     const { lastError } = this.state;
 
-    const steps = this.stepsList.values;
-    const currentStepId = this.stepsList.get(currentStepIndex).value.id;
+    const steps = loaderSteps.values;
+    const currentStepId = loaderSteps.get(currentStepIndex).value.id;
 
     const alertItem =
       lastError === undefined

@@ -13,14 +13,13 @@
 import React from 'react';
 import { Provider } from 'react-redux';
 import { Store } from 'redux';
-import { render, RenderResult, screen } from '@testing-library/react';
+import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import renderer, { ReactTestRenderer } from 'react-test-renderer';
 import { AlertVariant } from '@patternfly/react-core';
 import { CommonLoaderPage } from '..';
 import { LoadingStep, List, LoaderStep } from '../../../../components/Loader/Step';
 import {
-  getIdeLoadingSteps,
+  getWorkspaceLoadingSteps,
   buildLoaderSteps,
 } from '../../../../components/Loader/Step/buildSteps';
 import { FakeStoreBuilder } from '../../../../store/__mocks__/storeBuilder';
@@ -29,6 +28,7 @@ import { AlertItem, LoaderTab, DevWorkspaceStatus } from '../../../../services/h
 import devfileApi from '../../../../services/devfileApi';
 import { constructWorkspace, Workspace } from '../../../../services/workspace-adapter';
 import { ActionCallback } from '../../../../components/Loader/Alert';
+import getComponentRenderer from '../../../../services/__mocks__/getComponentRenderer';
 
 jest.mock('react-tooltip', () => {
   return function DummyTooltip(): React.ReactElement {
@@ -39,6 +39,9 @@ jest.mock('../../../../components/Loader/Alert');
 jest.mock('../../../../components/Loader/Progress');
 jest.mock('../../../../components/WorkspaceLogs');
 
+const { createSnapshot, renderComponent } = getComponentRenderer(getComponent);
+
+const mockOnTabChange = jest.fn();
 const mockOnWorkspaceRestart = jest.fn();
 const actionCallbacks: ActionCallback[] = [
   {
@@ -60,7 +63,7 @@ describe('Loader page', () => {
   let store: Store;
 
   beforeEach(() => {
-    const loadingSteps = getIdeLoadingSteps();
+    const loadingSteps = getWorkspaceLoadingSteps();
     steps = buildLoaderSteps(loadingSteps);
     devWorkspace = new DevWorkspaceBuilder()
       .withNamespace(namespace)
@@ -101,13 +104,17 @@ describe('Loader page', () => {
   });
 
   it('should handle tab click', () => {
-    renderComponent(store, { actionCallbacks, activeTab, steps: steps.values, workspace });
+    renderComponent(store, {
+      actionCallbacks,
+      activeTab,
+      steps: steps.values,
+      workspace,
+    });
 
     const tabButtonLogs = screen.getByRole('button', { name: 'Logs' });
     userEvent.click(tabButtonLogs);
 
-    const tabpanelLogs = screen.queryByRole('tabpanel', { name: 'Logs' });
-    expect(tabpanelLogs).not.toBeNull();
+    expect(mockOnTabChange).toHaveBeenCalledWith(LoaderTab.Logs);
   });
 
   it('should handle reload', () => {
@@ -128,14 +135,40 @@ describe('Loader page', () => {
     userEvent.click(reloadButton);
 
     expect(mockOnWorkspaceRestart).toHaveBeenCalledWith();
+  });
+
+  it('should render Progress tab active by default', () => {
+    renderComponent(store, {
+      actionCallbacks,
+      activeTab,
+      steps: steps.values,
+      workspace,
+    });
 
     const tabpanelProgress = screen.queryByRole('tabpanel', { name: 'Progress' });
     const tabpanelLogs = screen.queryByRole('tabpanel', { name: 'Logs' });
 
-    // active tab
+    // active tab by default
     expect(tabpanelProgress).not.toBeNull();
     // disabled tab
     expect(tabpanelLogs).toBeNull();
+  });
+
+  it('should render Logs tab active', () => {
+    renderComponent(store, {
+      actionCallbacks,
+      activeTab: LoaderTab.Logs,
+      steps: steps.values,
+      workspace,
+    });
+
+    const tabpanelProgress = screen.queryByRole('tabpanel', { name: 'Progress' });
+    const tabpanelLogs = screen.queryByRole('tabpanel', { name: 'Logs' });
+
+    // disabled tab
+    expect(tabpanelProgress).toBeNull();
+    // active tab
+    expect(tabpanelLogs).not.toBeNull();
   });
 });
 
@@ -158,15 +191,8 @@ function getComponent(
         currentStepId={currentStepId}
         steps={props.steps}
         workspace={props.workspace}
+        onTabChange={mockOnTabChange}
       />
     </Provider>
   );
-}
-
-function renderComponent(...args: Parameters<typeof getComponent>): RenderResult {
-  return render(getComponent(...args));
-}
-
-function createSnapshot(...args: Parameters<typeof getComponent>): ReactTestRenderer {
-  return renderer.create(getComponent(...args));
 }
