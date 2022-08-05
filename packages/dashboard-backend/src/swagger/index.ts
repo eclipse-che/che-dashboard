@@ -54,7 +54,7 @@ export function registerSwagger(server: FastifyInstance): void {
     exposeRoute: true,
     transform: ({ schema, url }) => {
       const mySchema = schema as MySchema;
-      if (mySchema.headers?.properties?.authorization) {
+      if (mySchema?.headers?.properties?.authorization) {
         delete mySchema.headers.properties.authorization;
       }
       return { schema: mySchema, url };
