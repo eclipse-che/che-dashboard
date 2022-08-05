@@ -172,7 +172,6 @@ function subscribeToStatusChange(
     return;
   }
   const callback = (message: any) => onStatusUpdateReceived(workspace, dispatch, message);
-  cheWorkspaceClient.jsonRpcMasterApi.subscribeWorkspaceStatus(workspace.id, callback);
   subscribedWorkspaceStatusCallbacks.set(workspace.id, callback);
 }
 
@@ -197,7 +196,6 @@ function subscribeToEnvironmentOutput(
     type: 'CHE_DELETE_WORKSPACE_LOGS',
     workspaceId,
   });
-  cheWorkspaceClient.jsonRpcMasterApi.subscribeEnvironmentOutput(workspaceId, callback);
   subscribedEnvironmentOutputCallbacks.set(workspaceId, callback);
 }
 

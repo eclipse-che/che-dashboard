@@ -76,7 +76,6 @@ export default class Bootstrap {
 
     await Promise.all([
       this.fetchBranding(),
-      this.updateJsonRpcMasterApi(),
       this.fetchInfrastructureNamespaces(),
       this.fetchWorkspaceSettings(),
       this.fetchServerConfig(),
@@ -141,10 +140,6 @@ export default class Bootstrap {
       const errorMessage = common.helpers.errors.getMessage(e);
       this.issuesReporterService.registerIssue('unknown', new Error(errorMessage));
     }
-  }
-
-  private async updateJsonRpcMasterApi(): Promise<void> {
-    return this.cheWorkspaceClient.updateJsonRpcMasterApi();
   }
 
   private async watchNamespaces(): Promise<void> {

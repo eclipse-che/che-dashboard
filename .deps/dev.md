@@ -381,7 +381,6 @@
 | [`conventional-commits-parser@3.2.4`](https://github.com/conventional-changelog/conventional-changelog.git) | MIT | clearlydefined |
 | [`conventional-recommended-bump@6.1.0`](https://github.com/conventional-changelog/conventional-changelog.git) | MIT | clearlydefined |
 | [`cookie-signature@1.0.6`](https://github.com/visionmedia/node-cookie-signature.git) | MIT | clearlydefined |
-| [`cookie@0.5.0`](https://github.com/jshttp/cookie.git) | MIT | clearlydefined |
 | [`copy-descriptor@0.1.1`](https://github.com/jonschlinkert/copy-descriptor.git) | MIT | clearlydefined |
 | [`copy-webpack-plugin@10.2.4`](https://github.com/webpack-contrib/copy-webpack-plugin.git) | MIT | clearlydefined |
 | [`core-js-pure@3.21.1`](https://github.com/zloirock/core-js.git) | MIT | clearlydefined |
