@@ -13,7 +13,6 @@
 import { TextContent, Text, TextVariants } from '@patternfly/react-core';
 import { InfoIcon, WarningTriangleIcon } from '@patternfly/react-icons';
 import React from 'react';
-import { workspace } from 'vscode';
 import { BrandingData } from '../../../services/bootstrap/branding.constant';
 import { Issue, WorkspaceData } from '../../../services/bootstrap/issuesReporter';
 
