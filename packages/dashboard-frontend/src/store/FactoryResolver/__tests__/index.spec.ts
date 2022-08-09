@@ -91,7 +91,7 @@ describe('FactoryResolver store', () => {
         ThunkDispatch<AppState, undefined, factoryResolverStore.KnownAction>
       >;
 
-      const location = 'factory-link';
+      const location = 'http://factory-link';
       await store.dispatch(factoryResolverStore.actionCreators.requestFactoryResolver(location));
 
       const actions = store.getActions();
@@ -126,7 +126,7 @@ describe('FactoryResolver store', () => {
         ThunkDispatch<AppState, undefined, factoryResolverStore.KnownAction>
       >;
 
-      const location = 'factory-link';
+      const location = 'http://factory-link';
       await store.dispatch(factoryResolverStore.actionCreators.requestFactoryResolver(location));
 
       const actions = store.getActions();
@@ -161,7 +161,7 @@ describe('FactoryResolver store', () => {
         ThunkDispatch<AppState, undefined, factoryResolverStore.KnownAction>
       >;
 
-      const location = 'factory-link';
+      const location = 'http://factory-link';
       await store.dispatch(factoryResolverStore.actionCreators.requestFactoryResolver(location));
 
       const actions = store.getActions();
@@ -196,7 +196,7 @@ describe('FactoryResolver store', () => {
         ThunkDispatch<AppState, undefined, factoryResolverStore.KnownAction>
       >;
 
-      const location = 'factory-link';
+      const location = 'http://factory-link';
       await store.dispatch(factoryResolverStore.actionCreators.requestFactoryResolver(location));
 
       const actions = store.getActions();
@@ -233,7 +233,7 @@ describe('FactoryResolver store', () => {
         ThunkDispatch<AppState, undefined, factoryResolverStore.KnownAction>
       >;
 
-      const location = 'factory-link';
+      const location = 'http://factory-link';
       await store.dispatch(factoryResolverStore.actionCreators.requestFactoryResolver(location));
 
       const actions = store.getActions();
@@ -284,7 +284,7 @@ describe('FactoryResolver store', () => {
         .spyOn(common.helpers.errors, 'isAxiosResponse')
         .mockImplementation(() => true);
 
-      const location = 'factory-link';
+      const location = 'http://factory-link';
       await expect(
         store.dispatch(factoryResolverStore.actionCreators.requestFactoryResolver(location)),
       ).rejects.toMatch('Failed to request factory resolver');
@@ -315,7 +315,7 @@ describe('FactoryResolver store', () => {
         },
       ];
 
-      const location = 'factory-link';
+      const location = 'http://factory-link';
       await expect(
         store.dispatch(factoryResolverStore.actionCreators.requestFactoryResolver(location)),
       ).rejects.toMatch('The specified link does not contain a valid Devfile.');
@@ -352,7 +352,7 @@ describe('FactoryResolver store', () => {
         .spyOn(common.helpers.errors, 'isAxiosResponse')
         .mockReturnValue(true);
 
-      const location = 'factory-link';
+      const location = 'http://factory-link';
       await expect(
         store.dispatch(factoryResolverStore.actionCreators.requestFactoryResolver(location)),
       ).rejects.toEqual({

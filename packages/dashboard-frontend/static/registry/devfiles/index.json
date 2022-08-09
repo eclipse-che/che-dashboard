@@ -1,0 +1,12 @@
+[{
+  "displayName": "Empty Workspace",
+  "description": "Empty Workspace",
+  "tags": [
+    "Community",
+    "Empty"
+  ],
+  "icon": "/images/empty.svg",
+  "links": {
+    "v2": "/devfiles/empty.yaml"
+  }
+}]

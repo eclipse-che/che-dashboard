@@ -60,6 +60,7 @@ type State = {
 };
 
 const EXCLUDED_TARGET_EDITOR_NAMES = ['dirigible', 'jupyter', 'eclipseide', 'code-server'];
+const EMPTY_WORKSPACE_TAG = 'Empty';
 
 export class SamplesListGallery extends React.PureComponent<Props, State> {
   private static sortByName(a: TargetEditor, b: TargetEditor): number {
@@ -67,6 +68,15 @@ export class SamplesListGallery extends React.PureComponent<Props, State> {
       return -1;
     }
     if (a.name > b.name) {
+      return 1;
+    }
+    return 0;
+  }
+  private static sortByEmptyWorkspaceTag(a: che.DevfileMetaData, b: che.DevfileMetaData): number {
+    if (a.tags.includes(EMPTY_WORKSPACE_TAG) > b.tags.includes(EMPTY_WORKSPACE_TAG)) {
+      return -1;
+    }
+    if (a.tags.includes(EMPTY_WORKSPACE_TAG) < b.tags.includes(EMPTY_WORKSPACE_TAG)) {
       return 1;
     }
     return 0;
@@ -186,6 +196,7 @@ export class SamplesListGallery extends React.PureComponent<Props, State> {
 
     return metadata
       .sort(SamplesListGallery.sortByDisplayName)
+      .sort(SamplesListGallery.sortByEmptyWorkspaceTag)
       .map(meta => (
         <SampleCard
           key={meta.links.self}
