@@ -96,7 +96,7 @@ class StepFetchDevfile extends AbstractLoaderStep<Props, State> {
     }
 
     // current step failed
-    if (this.state.lastError !== nextState.lastError) {
+    if (this.state.lastError?.message !== nextState.lastError?.message) {
       return true;
     }
 
@@ -170,7 +170,7 @@ class StepFetchDevfile extends AbstractLoaderStep<Props, State> {
     }
 
     if (shouldResolve === false) {
-      throw new Error(this.state.lastError || 'Failed to resolve the devfile.');
+      throw new Error(this.state.lastError?.message || 'Failed to resolve the devfile.');
     }
 
     // start resolving the devfile
@@ -314,7 +314,7 @@ class StepFetchDevfile extends AbstractLoaderStep<Props, State> {
             key: 'factory-loader-fetch-devfile',
             title: 'Failed to create the workspace',
             variant: AlertVariant.danger,
-            children: lastError,
+            children: lastError.message,
           };
 
     return (

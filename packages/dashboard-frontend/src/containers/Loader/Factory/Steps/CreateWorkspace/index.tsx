@@ -71,7 +71,7 @@ export default class StepCreateWorkspace extends AbstractLoaderStep<Props, State
             key: 'factory-loader-' + getRandomString(4),
             title: 'Failed to create the workspace',
             variant: AlertVariant.danger,
-            children: lastError,
+            children: lastError.message,
           };
 
     return (

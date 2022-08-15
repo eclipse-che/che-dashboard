@@ -16,7 +16,7 @@ import { AlertVariant } from '@patternfly/react-core';
 import { AppState } from '../../../../../store';
 import { selectAllWorkspaces } from '../../../../../store/Workspaces/selectors';
 import * as WorkspaceStore from '../../../../../store/Workspaces';
-import { WorkspaceLoaderPage } from '../../../../../pages/Loader/Workspace';
+import WorkspaceLoaderPage from '../../../../../pages/Loader/Workspace';
 import { Workspace } from '../../../../../services/workspace-adapter';
 import { DevWorkspaceStatus } from '../../../../../services/helpers/types';
 import { DisposableCollection } from '../../../../../services/helpers/disposable';
@@ -69,7 +69,7 @@ class StepInitialize extends AbstractLoaderStep<Props, State> {
       return true;
     }
     // set the error for the current step
-    if (this.state.lastError !== nextState.lastError) {
+    if (this.state.lastError?.message !== nextState.lastError?.message) {
       return true;
     }
     return false;
@@ -161,9 +161,9 @@ class StepInitialize extends AbstractLoaderStep<Props, State> {
             key: 'ide-loader-initialize',
             title: 'Failed to open the workspace',
             variant: AlertVariant.danger,
-            children: lastError,
+            children: lastError.message,
+            error: lastError.error,
           };
-
     return (
       <WorkspaceLoaderPage
         alertItem={alertItem}

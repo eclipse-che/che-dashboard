@@ -24,7 +24,11 @@ export type LoaderStepProps = {
   onRestart: () => void;
 };
 export type LoaderStepState = {
-  lastError?: string;
+  lastError?: LoaderStepError;
+};
+export type LoaderStepError = {
+  message: string;
+  error: unknown;
 };
 export abstract class AbstractLoaderStep<
   P extends LoaderStepProps,
@@ -61,7 +65,10 @@ export abstract class AbstractLoaderStep<
     const currentStep = loaderSteps.get(currentStepIndex).value;
 
     currentStep.hasError = true;
-    const lastError = common.helpers.errors.getMessage(e);
+    const lastError = {
+      message: common.helpers.errors.getMessage(e),
+      error: e,
+    };
     this.setState({
       lastError,
     });

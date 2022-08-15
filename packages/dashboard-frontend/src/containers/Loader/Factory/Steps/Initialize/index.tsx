@@ -60,7 +60,7 @@ class StepInitialize extends AbstractLoaderStep<Props, State> {
     }
 
     // current step failed
-    if (this.state.lastError !== nextState.lastError) {
+    if (this.state.lastError?.message !== nextState.lastError?.message) {
       return true;
     }
 
@@ -136,7 +136,7 @@ class StepInitialize extends AbstractLoaderStep<Props, State> {
             key: 'factory-loader-initialize',
             title: 'Failed to create the workspace',
             variant: AlertVariant.danger,
-            children: lastError,
+            children: lastError.message,
           };
 
     return (

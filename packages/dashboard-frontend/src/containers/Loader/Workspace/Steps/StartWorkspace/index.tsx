@@ -17,7 +17,7 @@ import common from '@eclipse-che/common';
 import { AppState } from '../../../../../store';
 import { selectAllWorkspaces, selectLogs } from '../../../../../store/Workspaces/selectors';
 import * as WorkspaceStore from '../../../../../store/Workspaces';
-import { WorkspaceLoaderPage } from '../../../../../pages/Loader/Workspace';
+import WorkspaceLoaderPage from '../../../../../pages/Loader/Workspace';
 import { DevWorkspaceStatus } from '../../../../../services/helpers/types';
 import { DisposableCollection } from '../../../../../services/helpers/disposable';
 import { delay } from '../../../../../services/helpers/delay';
@@ -77,7 +77,7 @@ class StepStartWorkspace extends AbstractLoaderStep<Props, State> {
       return true;
     }
     // set the error for the current step
-    if (this.state.lastError !== nextState.lastError) {
+    if (this.state.lastError?.message !== nextState.lastError?.message) {
       return true;
     }
     return false;
@@ -171,7 +171,14 @@ class StepStartWorkspace extends AbstractLoaderStep<Props, State> {
         // do not switch to the next step
         return false;
       } catch (e) {
-        throw new Error(common.helpers.errors.getMessage(e));
+        const message = common.helpers.errors.getMessage(e);
+
+        if (common.helpers.errors.isError(e)) {
+          // throw original error
+          e.message = message;
+          throw e;
+        }
+        throw new Error(message);
       }
     }
 
@@ -198,7 +205,8 @@ class StepStartWorkspace extends AbstractLoaderStep<Props, State> {
             key: 'ide-loader-start-workspace',
             title: 'Failed to open the workspace',
             variant: AlertVariant.danger,
-            children: lastError,
+            children: lastError.message,
+            error: lastError.error,
           };
 
     return (

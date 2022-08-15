@@ -11,14 +11,20 @@
  */
 
 import React from 'react';
+import { connect, ConnectedProps } from 'react-redux';
+import * as WorkspaceStore from '../../../store/Workspaces';
 import { LoaderStep } from '../../../components/Loader/Step';
 import { AlertItem, LoaderTab } from '../../../services/helpers/types';
 import { ActionCallback } from '../../../components/Loader/Alert';
-import { Workspace } from '../../../services/workspace-adapter';
+import { Workspace, WorkspaceAdapter } from '../../../services/workspace-adapter';
 
 import { CommonLoaderPage } from '../Common';
+import { AppState } from '../../../store';
+import { buildIdeLoaderLocation } from '../../../services/helpers/location';
+import { selectAllDevWorkspaces } from '../../../store/Workspaces/devWorkspaces/selectors';
+import { RunningWorkspacesExceededError } from '../../../store/Workspaces/devWorkspaces';
 
-export type Props = {
+export type Props = MappedProps & {
   alertItem: AlertItem | undefined;
   currentStepId: number;
   steps: LoaderStep[];
@@ -31,7 +37,7 @@ export type State = {
   isPopupAlertVisible: boolean;
 };
 
-export class WorkspaceLoaderPage extends React.PureComponent<Props, State> {
+class WorkspaceLoaderPage extends React.PureComponent<Props, State> {
   constructor(props: Props) {
     super(props);
 
@@ -57,11 +63,51 @@ export class WorkspaceLoaderPage extends React.PureComponent<Props, State> {
     });
   }
 
-  render(): React.ReactNode {
-    const { alertItem, currentStepId, steps, workspace } = this.props;
-    const { activeTabKey } = this.state;
+  private getActionCallbacks(): ActionCallback[] {
+    if (this.props.alertItem?.error instanceof RunningWorkspacesExceededError) {
+      const runningWorkspaces = this.props.allWorkspaces.filter(
+        workspace => workspace.spec.started,
+      );
+      if (runningWorkspaces.length > 1) {
+        return [
+          {
+            title: `Return to dashboard`,
+            callback: () => {
+              window.location.href = window.location.origin + '/dashboard/';
+            },
+          },
+        ];
+      }
+      if (runningWorkspaces.length === 1) {
+        const runningWorkspace = new WorkspaceAdapter(runningWorkspaces[0]);
+        return [
+          {
+            title: `Switch to running workspace (${runningWorkspace.name})`,
+            callback: () => {
+              const ideLoader = buildIdeLoaderLocation(runningWorkspace);
+              const url = window.location.href.split('#')[0];
+              window.open(`${url}#${ideLoader.pathname}`, runningWorkspace.uid);
+            },
+          },
+          {
+            title: `Close running workspace (${runningWorkspace.name}) and restart ${this.props.workspace?.name}`,
+            callback: () => {
+              this.props
+                .stopWorkspace(runningWorkspace)
+                .then(() => {
+                  this.handleRestart(false);
+                })
+                .catch(err => {
+                  // TODO
+                  // Maybe set the AlertItem prop to state, and then change the AlertItem message?
+                });
+            },
+          },
+        ];
+      }
+    }
 
-    const actionCallbacks: ActionCallback[] = [
+    return [
       {
         title: 'Restart',
         callback: () => this.handleRestart(false),
@@ -71,10 +117,15 @@ export class WorkspaceLoaderPage extends React.PureComponent<Props, State> {
         callback: () => this.handleRestart(true),
       },
     ];
+  }
+
+  render(): React.ReactNode {
+    const { alertItem, currentStepId, steps, workspace } = this.props;
+    const { activeTabKey } = this.state;
 
     return (
       <CommonLoaderPage
-        actionCallbacks={actionCallbacks}
+        actionCallbacks={this.getActionCallbacks()}
         activeTabKey={activeTabKey}
         alertItem={alertItem}
         currentStepId={currentStepId}
@@ -85,3 +136,11 @@ export class WorkspaceLoaderPage extends React.PureComponent<Props, State> {
     );
   }
 }
+
+const mapStateToProps = (state: AppState) => ({
+  allWorkspaces: selectAllDevWorkspaces(state),
+});
+
+const connector = connect(mapStateToProps, WorkspaceStore.actionCreators);
+type MappedProps = ConnectedProps<typeof connector>;
+export default connector(WorkspaceLoaderPage);

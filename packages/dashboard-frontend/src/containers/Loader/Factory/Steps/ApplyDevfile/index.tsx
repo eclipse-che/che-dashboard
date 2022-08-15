@@ -84,7 +84,7 @@ class StepApplyDevfile extends AbstractLoaderStep<Props, State> {
     }
 
     // current step failed
-    if (this.state.lastError !== nextState.lastError) {
+    if (this.state.lastError?.message !== nextState.lastError?.message) {
       return true;
     }
 
@@ -142,7 +142,9 @@ class StepApplyDevfile extends AbstractLoaderStep<Props, State> {
     }
 
     if (shouldCreate === false) {
-      throw new Error(this.state.lastError || 'The workspace creation unexpectedly failed.');
+      throw new Error(
+        this.state.lastError?.message || 'The workspace creation unexpectedly failed.',
+      );
     }
 
     const devfile = factoryResolverConverted?.devfileV2;
@@ -211,7 +213,7 @@ class StepApplyDevfile extends AbstractLoaderStep<Props, State> {
             key: 'factory-loader-' + getRandomString(4),
             title: 'Failed to create the workspace',
             variant: AlertVariant.danger,
-            children: lastError,
+            children: lastError.message,
           };
 
     return (

@@ -14,7 +14,7 @@ import React from 'react';
 import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { AlertVariant } from '@patternfly/react-core';
-import { WorkspaceLoaderPage } from '..';
+import WorkspaceLoaderPage from '..';
 import { LoadingStep, List, LoaderStep } from '../../../../components/Loader/Step';
 import {
   getWorkspaceLoadingSteps,
@@ -22,6 +22,9 @@ import {
 } from '../../../../components/Loader/Step/buildSteps';
 import { AlertItem, LoaderTab } from '../../../../services/helpers/types';
 import getComponentRenderer from '../../../../services/__mocks__/getComponentRenderer';
+import { Provider } from 'react-redux';
+import { Store } from 'redux';
+import { FakeStoreBuilder } from '../../../../store/__mocks__/storeBuilder';
 
 jest.mock('react-tooltip', () => {
   return function DummyTooltip(): React.ReactElement {
@@ -98,19 +101,28 @@ describe('Workspace loader page', () => {
   });
 });
 
-function getComponent(props: {
-  steps: LoaderStep[];
-  initialTab?: keyof typeof LoaderTab;
-  alertItem?: AlertItem;
-}): React.ReactElement {
+function getComponent(
+  props: {
+    steps: LoaderStep[];
+    initialTab?: keyof typeof LoaderTab;
+    alertItem?: AlertItem;
+  },
+  store?: Store,
+): React.ReactElement {
+  if (!store) {
+    store = new FakeStoreBuilder().build();
+  }
+
   return (
-    <WorkspaceLoaderPage
-      alertItem={props.alertItem}
-      currentStepId={currentStepId}
-      onRestart={mockOnWorkspaceRestart}
-      steps={props.steps}
-      tabParam={'Progress'}
-      workspace={undefined}
-    />
+    <Provider store={store}>
+      <WorkspaceLoaderPage
+        alertItem={props.alertItem}
+        currentStepId={currentStepId}
+        onRestart={mockOnWorkspaceRestart}
+        steps={props.steps}
+        tabParam={'Progress'}
+        workspace={undefined}
+      />
+    </Provider>
   );
 }
