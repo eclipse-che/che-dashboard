@@ -72,41 +72,6 @@ const getFactoryResolverSpy = jest.spyOn(cheWorkspaceClient.restApiClient, 'getF
 
 describe('FactoryResolver store', () => {
   describe('requestFactoryResolver action', () => {
-    it('should NOT convert resolved devfile v1 with devworkspace mode DISABLED', async () => {
-      const resolver = {
-        devfile: {
-          apiVersion: '1.0.0',
-        } as che.WorkspaceDevfile,
-      } as factoryResolverStore.ResolverState;
-
-      getFactoryResolverSpy.mockResolvedValueOnce(resolver);
-
-      const store = new FakeStoreBuilder()
-        .withWorkspacesSettings({
-          'che.devworkspaces.enabled': 'false',
-          'che.workspace.storage.preferred_type': 'ephemeral',
-        })
-        .build() as MockStoreEnhanced<
-        AppState,
-        ThunkDispatch<AppState, undefined, factoryResolverStore.KnownAction>
-      >;
-
-      const location = 'http://factory-link';
-      await store.dispatch(factoryResolverStore.actionCreators.requestFactoryResolver(location));
-
-      const actions = store.getActions();
-      expect(actions).toEqual(
-        expect.arrayContaining([
-          expect.objectContaining({
-            type: 'RECEIVE_FACTORY_RESOLVER',
-            converted: expect.objectContaining({
-              isConverted: false,
-            }),
-          }),
-        ]),
-      );
-    });
-
     it('should convert resolved devfile v1 with devworkspace mode ENABLED', async () => {
       const resolver = {
         devfile: {
@@ -176,80 +141,9 @@ describe('FactoryResolver store', () => {
         ]),
       );
     });
-
-    it('should convert resolved devfile v2.x.x with devworkspace mode DISABLED', async () => {
-      const resolver = {
-        devfile: {
-          schemaVersion: '2.0.0',
-        } as devfileApi.Devfile,
-      } as factoryResolverStore.ResolverState;
-
-      getFactoryResolverSpy.mockResolvedValueOnce(resolver);
-
-      const store = new FakeStoreBuilder()
-        .withWorkspacesSettings({
-          'che.devworkspaces.enabled': 'false',
-          'che.workspace.storage.preferred_type': 'ephemeral',
-        })
-        .build() as MockStoreEnhanced<
-        AppState,
-        ThunkDispatch<AppState, undefined, factoryResolverStore.KnownAction>
-      >;
-
-      const location = 'http://factory-link';
-      await store.dispatch(factoryResolverStore.actionCreators.requestFactoryResolver(location));
-
-      const actions = store.getActions();
-      expect(actions).toEqual(
-        expect.arrayContaining([
-          expect.objectContaining({
-            type: 'RECEIVE_FACTORY_RESOLVER',
-            converted: expect.objectContaining({
-              isConverted: true,
-            }),
-          }),
-        ]),
-      );
-    });
   });
 
   describe('actions', () => {
-    it('should create REQUEST_FACTORY_RESOLVER and RECEIVE_FACTORY_RESOLVER', async () => {
-      const resolver = {
-        devfile: {
-          schemaVersion: '2.0.0',
-        },
-      } as factoryResolverStore.ResolverState;
-
-      getFactoryResolverSpy.mockResolvedValueOnce(resolver);
-
-      const store = new FakeStoreBuilder()
-        .withWorkspacesSettings({
-          'che.devworkspaces.enabled': 'false',
-          'che.workspace.storage.preferred_type': 'ephemeral',
-        })
-        .build() as MockStoreEnhanced<
-        AppState,
-        ThunkDispatch<AppState, undefined, factoryResolverStore.KnownAction>
-      >;
-
-      const location = 'http://factory-link';
-      await store.dispatch(factoryResolverStore.actionCreators.requestFactoryResolver(location));
-
-      const actions = store.getActions();
-      const expectedActions: factoryResolverStore.KnownAction[] = [
-        {
-          type: 'REQUEST_FACTORY_RESOLVER',
-        },
-        {
-          type: 'RECEIVE_FACTORY_RESOLVER',
-          resolver: expect.objectContaining(resolver),
-          converted: expect.objectContaining({ isConverted: true }),
-        },
-      ];
-      expect(actions).toEqual(expectedActions);
-    });
-
     it('should create REQUEST_FACTORY_RESOLVER and RECEIVE_FACTORY_RESOLVER_ERROR', async () => {
       getFactoryResolverSpy.mockRejectedValueOnce({
         isAxiosError: true,
