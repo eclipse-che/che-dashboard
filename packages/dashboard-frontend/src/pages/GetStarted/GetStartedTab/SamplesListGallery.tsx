@@ -59,8 +59,10 @@ type State = {
   alerts: AlertItem[];
 };
 
+export const VISIBLE_TAGS = ['community', 'tech-preview'];
+export const EMPTY_WORKSPACE_TAG = 'Empty';
+
 const EXCLUDED_TARGET_EDITOR_NAMES = ['dirigible', 'jupyter', 'eclipseide', 'code-server'];
-const EMPTY_WORKSPACE_TAG = 'Empty';
 
 export class SamplesListGallery extends React.PureComponent<Props, State> {
   private static sortByName(a: TargetEditor, b: TargetEditor): number {
@@ -68,6 +70,17 @@ export class SamplesListGallery extends React.PureComponent<Props, State> {
       return -1;
     }
     if (a.name > b.name) {
+      return 1;
+    }
+    return 0;
+  }
+  private static sortByVisibleTag(a: che.DevfileMetaData, b: che.DevfileMetaData): number {
+    const getVisibleTag = (metadata: che.DevfileMetaData) =>
+      metadata.tags.filter(tag => VISIBLE_TAGS.includes(tag))[0];
+    if (getVisibleTag(a) < getVisibleTag(b)) {
+      return -1;
+    }
+    if (getVisibleTag(a) > getVisibleTag(b)) {
       return 1;
     }
     return 0;
@@ -196,6 +209,7 @@ export class SamplesListGallery extends React.PureComponent<Props, State> {
 
     return metadata
       .sort(SamplesListGallery.sortByDisplayName)
+      .sort(SamplesListGallery.sortByVisibleTag)
       .sort(SamplesListGallery.sortByEmptyWorkspaceTag)
       .map(meta => (
         <SampleCard
