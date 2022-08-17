@@ -23,6 +23,11 @@ import { AppState } from '../../../store';
 import { buildIdeLoaderLocation } from '../../../services/helpers/location';
 import { selectAllDevWorkspaces } from '../../../store/Workspaces/devWorkspaces/selectors';
 import { RunningWorkspacesExceededError } from '../../../store/Workspaces/devWorkspaces';
+import { lazyInject } from '../../../inversify.config';
+import { AppAlerts } from '../../../services/alerts/appAlerts';
+import { AlertVariant } from '@patternfly/react-core';
+import getRandomString from '../../../services/helpers/random';
+import common from '@eclipse-che/common';
 
 export type Props = MappedProps & {
   alertItem: AlertItem | undefined;
@@ -38,6 +43,9 @@ export type State = {
 };
 
 class WorkspaceLoaderPage extends React.PureComponent<Props, State> {
+  @lazyInject(AppAlerts)
+  private appAlerts: AppAlerts;
+
   constructor(props: Props) {
     super(props);
 
@@ -98,8 +106,11 @@ class WorkspaceLoaderPage extends React.PureComponent<Props, State> {
                   this.handleRestart(false);
                 })
                 .catch(err => {
-                  // TODO
-                  // Maybe set the AlertItem prop to state, and then change the AlertItem message?
+                  this.appAlerts.showAlert({
+                    key: 'workspace-loader-page-' + getRandomString(4),
+                    title: common.helpers.errors.getMessage(err),
+                    variant: AlertVariant.danger,
+                  });
                 });
             },
           },
@@ -141,6 +152,9 @@ const mapStateToProps = (state: AppState) => ({
   allWorkspaces: selectAllDevWorkspaces(state),
 });
 
-const connector = connect(mapStateToProps, WorkspaceStore.actionCreators);
+const connector = connect(mapStateToProps, WorkspaceStore.actionCreators, null, {
+  // forwardRef is mandatory for using `@react-mock/state` in unit tests
+  forwardRef: true,
+});
 type MappedProps = ConnectedProps<typeof connector>;
 export default connector(WorkspaceLoaderPage);

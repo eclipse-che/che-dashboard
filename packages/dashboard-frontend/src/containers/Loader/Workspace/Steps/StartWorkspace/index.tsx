@@ -14,6 +14,7 @@ import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { AlertVariant } from '@patternfly/react-core';
 import common from '@eclipse-che/common';
+import { isEqual } from 'lodash';
 import { AppState } from '../../../../../store';
 import { selectAllWorkspaces, selectLogs } from '../../../../../store/Workspaces/selectors';
 import * as WorkspaceStore from '../../../../../store/Workspaces';
@@ -77,7 +78,7 @@ class StepStartWorkspace extends AbstractLoaderStep<Props, State> {
       return true;
     }
     // set the error for the current step
-    if (this.state.lastError?.message !== nextState.lastError?.message) {
+    if (!isEqual(this.state.lastError, nextState.lastError)) {
       return true;
     }
     return false;
@@ -171,14 +172,10 @@ class StepStartWorkspace extends AbstractLoaderStep<Props, State> {
         // do not switch to the next step
         return false;
       } catch (e) {
-        const message = common.helpers.errors.getMessage(e);
-
         if (common.helpers.errors.isError(e)) {
-          // throw original error
-          e.message = message;
           throw e;
         }
-        throw new Error(message);
+        throw new Error(common.helpers.errors.getMessage(e));
       }
     }
 
@@ -205,8 +202,8 @@ class StepStartWorkspace extends AbstractLoaderStep<Props, State> {
             key: 'ide-loader-start-workspace',
             title: 'Failed to open the workspace',
             variant: AlertVariant.danger,
-            children: lastError.message,
-            error: lastError.error,
+            children: common.helpers.errors.getMessage(lastError),
+            error: lastError,
           };
 
     return (
