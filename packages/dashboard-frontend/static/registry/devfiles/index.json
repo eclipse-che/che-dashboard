@@ -1,8 +1,7 @@
 [{
   "displayName": "Empty Workspace",
-  "description": "Empty Workspace",
+  "description": "Start an empty remote development environment and create files or clone a git repository afterwards",
   "tags": [
-    "Community",
     "Empty"
   ],
   "icon": "/images/empty.svg",
