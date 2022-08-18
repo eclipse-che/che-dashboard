@@ -152,9 +152,6 @@ const mapStateToProps = (state: AppState) => ({
   allWorkspaces: selectAllDevWorkspaces(state),
 });
 
-const connector = connect(mapStateToProps, WorkspaceStore.actionCreators, null, {
-  // forwardRef is mandatory for using `@react-mock/state` in unit tests
-  forwardRef: true,
-});
+const connector = connect(mapStateToProps, WorkspaceStore.actionCreators);
 type MappedProps = ConnectedProps<typeof connector>;
 export default connector(WorkspaceLoaderPage);

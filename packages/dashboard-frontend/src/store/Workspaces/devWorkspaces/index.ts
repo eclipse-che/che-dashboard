@@ -418,6 +418,7 @@ export const actionCreators: ActionCreators = {
     (workspace: devfileApi.DevWorkspace): AppThunk<KnownAction, Promise<void>> =>
     async (dispatch): Promise<void> => {
       try {
+        throw '<error message here>';
         await devWorkspaceClient.changeWorkspaceStatus(workspace, false);
         dispatch({
           type: 'DELETE_DEVWORKSPACE_LOGS',
