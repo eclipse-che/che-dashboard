@@ -500,8 +500,8 @@ export class DevWorkspaceClient extends WorkspaceClient {
         ];
         this.addEnvVarsToContainers(
           template.spec?.components,
-          pluginRegistryUrl || '',
-          pluginRegistryInternalUrl || '',
+          pluginRegistryUrl,
+          pluginRegistryInternalUrl,
           openVSXUrl,
         );
 
@@ -512,8 +512,8 @@ export class DevWorkspaceClient extends WorkspaceClient {
 
     this.addEnvVarsToContainers(
       createdWorkspace.spec.template.components,
-      pluginRegistryUrl || '',
-      pluginRegistryInternalUrl || '',
+      pluginRegistryUrl,
+      pluginRegistryInternalUrl,
       openVSXUrl,
     );
 
