@@ -317,6 +317,7 @@ describe('dwPlugins store', () => {
               },
             ],
           },
+          openVSXURL: undefined,
           timeouts: {
             inactivityTimeout: -1,
             runTimeout: -1,
