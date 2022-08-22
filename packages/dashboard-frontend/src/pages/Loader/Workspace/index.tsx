@@ -106,6 +106,7 @@ class WorkspaceLoaderPage extends React.PureComponent<Props, State> {
                   this.handleRestart(false);
                 })
                 .catch(err => {
+                  console.log('CATCH!!!:', common.helpers.errors.getMessage(err));
                   this.appAlerts.showAlert({
                     key: 'workspace-loader-page-' + getRandomString(4),
                     title: common.helpers.errors.getMessage(err),

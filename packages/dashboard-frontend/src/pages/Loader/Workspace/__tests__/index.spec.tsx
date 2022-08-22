@@ -29,6 +29,7 @@ import { DevWorkspaceBuilder } from '../../../../store/__mocks__/devWorkspaceBui
 import { Workspace, WorkspaceAdapter } from '../../../../services/workspace-adapter';
 import { RunningWorkspacesExceededError } from '../../../../store/Workspaces/devWorkspaces';
 import { DevWorkspace } from '../../../../services/devfileApi/devWorkspace';
+import { actionCreators } from '../../../../store/Workspaces';
 
 jest.mock('react-tooltip', () => {
   return function DummyTooltip(): React.ReactElement {
@@ -45,6 +46,14 @@ const { renderComponent } = getComponentRenderer(getComponent);
 const mockOnWorkspaceRestart = jest.fn();
 
 const currentStepId = LoadingStep.INITIALIZE;
+
+const mockStopWorkspace = jest.fn();
+jest.mock('../../../../store/Workspaces');
+(actionCreators.stopWorkspace as jest.Mock).mockImplementation(
+  (...args) =>
+    async () =>
+      mockStopWorkspace(...args),
+);
 
 describe('Workspace loader page', () => {
   let steps: List<LoaderStep>;
@@ -175,7 +184,6 @@ describe('Workspace loader page', () => {
         origin: 'https://che-host',
       });
       window.open = jest.fn();
-      window.location.href = 'asdfsadf';
 
       const alertItem: AlertItem = {
         key: 'alert-id',
@@ -208,6 +216,45 @@ describe('Workspace loader page', () => {
           'uid-bash',
         ),
       );
+    });
+
+    it('should close running workspace and restart when there is only one running workspace and button clicked', async () => {
+      createWindowMock({
+        href: 'https://che-host/dashboard/#/ide/user-che/golang-example',
+        origin: 'https://che-host',
+      });
+      window.open = jest.fn();
+
+      const alertItem: AlertItem = {
+        key: 'alert-id',
+        title:
+          'Failed to start the workspace golang-example, reason: You are not allowed to start more workspaces.',
+        variant: AlertVariant.danger,
+        error: new RunningWorkspacesExceededError('You are not allowed to start more workspaces.'),
+      };
+
+      const store = new FakeStoreBuilder()
+        .withDevWorkspaces({
+          workspaces: [startedWorkspace1, stoppedWorkspace, currentWorkspace],
+        })
+        .build();
+
+      renderComponent(
+        { steps: steps.values, alertItem, workspace: new WorkspaceAdapter(currentWorkspace) },
+        store,
+      );
+
+      const alert = screen.getByTestId('action-links');
+      const buttons = within(alert).getAllByRole('button');
+      expect(buttons.length).toEqual(2);
+      expect(buttons[1].textContent).toEqual(
+        'Close running workspace (bash) and restart golang-example',
+      );
+
+      userEvent.click(buttons[1]);
+
+      await waitFor(() => expect(mockStopWorkspace).toHaveBeenCalled());
+      await waitFor(() => expect(mockOnWorkspaceRestart).toHaveBeenCalled());
     });
 
     it('should show options if workspace running limit has been reached, and there more than one running workspaces', async () => {
