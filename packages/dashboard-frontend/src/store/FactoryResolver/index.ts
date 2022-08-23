@@ -152,14 +152,7 @@ export const actionCreators: ActionCreators = {
         let data: FactoryResolver;
 
         if (location.includes(DEFAULT_REGISTRY) && location.endsWith('.yaml')) {
-          const resp = await getYamlResolver(namespace, location);
-          const devfile = yaml.load(resp) as Devfile;
-          data = {
-            v: 'yaml-resolver',
-            devfile,
-            location,
-            links: [],
-          };
+          data = await getYamlResolver(namespace, location);
         } else {
           data = await WorkspaceClient.restApiClient.getFactoryResolver<FactoryResolver>(
             location,

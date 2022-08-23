@@ -13,15 +13,26 @@
 import axios from 'axios';
 import { helpers } from '@eclipse-che/common';
 import { prefix } from './const';
+import * as yaml from 'js-yaml';
+import { FactoryResolver } from '../helpers/types';
 
-export async function getYamlResolver(namespace: string, location: string): Promise<string> {
+export async function getYamlResolver(
+  namespace: string,
+  location: string,
+): Promise<FactoryResolver> {
   try {
     const url = new URL(location);
     const response =
       url.origin === window.location.origin
         ? await axios.get(url.href)
         : await axios.post(`${prefix}/namespace/${namespace}/yaml/resolver`, { url: url.href });
-    return response.data;
+
+    return {
+      v: 'yaml-resolver',
+      devfile: yaml.load(response.data),
+      location: url.href,
+      links: [],
+    };
   } catch (e) {
     throw `Failed to fetch yaml resolver'. ${helpers.errors.getMessage(e)}`;
   }

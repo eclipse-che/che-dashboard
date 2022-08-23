@@ -24,7 +24,7 @@ import devfileApi from '../../services/devfileApi';
 import { fetchResources, loadResourcesContent } from '../../services/registry/resources';
 
 const WorkspaceClient = container.get(CheWorkspaceClient);
-export const DEFAULT_REGISTRY = '/dashboard/static/registry/';
+export const DEFAULT_REGISTRY = '/dashboard/devfile-registry/';
 
 export type DevWorkspaceResources = [devfileApi.DevWorkspace, devfileApi.DevWorkspaceTemplate];
 

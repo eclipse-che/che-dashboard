@@ -44,12 +44,8 @@ export function registerYamlResolverApi(server: FastifyInstance) {
       }
 
       let outputData = '';
-      try {
-        for await (const chunk of response.body) {
-          outputData += chunk.toString();
-        }
-      } catch (err) {
-        throw new Error(`Type error. ${helpers.errors.getMessage(err)}`);
+      for await (const chunk of response.body) {
+        outputData += chunk.toString();
       }
 
       return outputData;
