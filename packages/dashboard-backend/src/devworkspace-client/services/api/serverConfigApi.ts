@@ -71,9 +71,7 @@ export class ServerConfigApi implements IServerConfigApi {
   }
 
   getOpenVSXURL(cheCustomResource: { [key: string]: any }): string {
-    return (
-      cheCustomResource.spec.components.devWorkspace.cheServer?.pluginRegistry?.OpenVSXURL || ''
-    );
+    return cheCustomResource.spec.components.pluginRegistry?.openVSXURL || '';
   }
 
   getDashboardWarning(cheCustomResource: { [key: string]: any }): string | undefined {
