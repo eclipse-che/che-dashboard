@@ -27,7 +27,6 @@ import normalizeDevfileV2 from './normalizeDevfileV2';
 import normalizeDevfileV1 from './normalizeDevfileV1';
 import { selectDefaultNamespace } from '../InfrastructureNamespaces/selectors';
 import { getYamlResolver } from '../../services/dashboard-backend-client/yamlResolverApi';
-import * as yaml from 'js-yaml';
 import { DEFAULT_REGISTRY } from '../DevfileRegistries';
 
 const WorkspaceClient = container.get(CheWorkspaceClient);
