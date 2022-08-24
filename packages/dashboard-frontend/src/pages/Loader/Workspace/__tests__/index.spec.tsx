@@ -172,9 +172,11 @@ describe('Workspace loader page', () => {
       const alert = screen.getByTestId('action-links');
       const buttons = within(alert).getAllByRole('button');
       expect(buttons.length).toEqual(2);
-      expect(buttons[0].textContent).toEqual('Switch to running workspace (bash)');
-      expect(buttons[1].textContent).toEqual(
+      expect(buttons[0].textContent).toEqual(
         'Close running workspace (bash) and restart golang-example',
+      );
+      expect(buttons[1].textContent).toEqual(
+        'Switch to running workspace (bash) to save any changes',
       );
     });
 
@@ -207,9 +209,11 @@ describe('Workspace loader page', () => {
       const alert = screen.getByTestId('action-links');
       const buttons = within(alert).getAllByRole('button');
       expect(buttons.length).toEqual(2);
-      expect(buttons[0].textContent).toEqual('Switch to running workspace (bash)');
+      expect(buttons[1].textContent).toEqual(
+        'Switch to running workspace (bash) to save any changes',
+      );
 
-      userEvent.click(buttons[0]);
+      userEvent.click(buttons[1]);
       await waitFor(() =>
         expect(window.open).toHaveBeenCalledWith(
           'https://che-host/dashboard/#/ide/user-che/bash',
@@ -247,11 +251,11 @@ describe('Workspace loader page', () => {
       const alert = screen.getByTestId('action-links');
       const buttons = within(alert).getAllByRole('button');
       expect(buttons.length).toEqual(2);
-      expect(buttons[1].textContent).toEqual(
+      expect(buttons[0].textContent).toEqual(
         'Close running workspace (bash) and restart golang-example',
       );
 
-      userEvent.click(buttons[1]);
+      userEvent.click(buttons[0]);
 
       await waitFor(() => expect(mockStopWorkspace).toHaveBeenCalled());
       await waitFor(() => expect(mockOnWorkspaceRestart).toHaveBeenCalled());

@@ -90,14 +90,6 @@ class WorkspaceLoaderPage extends React.PureComponent<Props, State> {
         const runningWorkspace = new WorkspaceAdapter(runningWorkspaces[0]);
         return [
           {
-            title: `Switch to running workspace (${runningWorkspace.name})`,
-            callback: () => {
-              const ideLoader = buildIdeLoaderLocation(runningWorkspace);
-              const url = window.location.href.split('#')[0];
-              window.open(`${url}#${ideLoader.pathname}`, runningWorkspace.uid);
-            },
-          },
-          {
             title: `Close running workspace (${runningWorkspace.name}) and restart ${this.props.workspace?.name}`,
             callback: () => {
               this.props
@@ -106,13 +98,20 @@ class WorkspaceLoaderPage extends React.PureComponent<Props, State> {
                   this.handleRestart(false);
                 })
                 .catch(err => {
-                  console.log('CATCH!!!:', common.helpers.errors.getMessage(err));
                   this.appAlerts.showAlert({
                     key: 'workspace-loader-page-' + getRandomString(4),
                     title: common.helpers.errors.getMessage(err),
                     variant: AlertVariant.danger,
                   });
                 });
+            },
+          },
+          {
+            title: `Switch to running workspace (${runningWorkspace.name}) to save any changes`,
+            callback: () => {
+              const ideLoader = buildIdeLoaderLocation(runningWorkspace);
+              const url = window.location.href.split('#')[0];
+              window.open(`${url}#${ideLoader.pathname}`, runningWorkspace.uid);
             },
           },
         ];
