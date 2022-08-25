@@ -166,17 +166,9 @@ class StepStartWorkspace extends AbstractLoaderStep<Props, State> {
       this.state.shouldStart &&
       workspaceStatusIs(workspace, DevWorkspaceStatus.STOPPED, DevWorkspaceStatus.FAILED)
     ) {
-      try {
-        await this.props.startWorkspace(workspace);
-
-        // do not switch to the next step
-        return false;
-      } catch (e) {
-        if (common.helpers.errors.isError(e)) {
-          throw e;
-        }
-        throw new Error(common.helpers.errors.getMessage(e));
-      }
+      await this.props.startWorkspace(workspace);
+      // do not switch to the next step
+      return false;
     }
 
     // switch to the next step

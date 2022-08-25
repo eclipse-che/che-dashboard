@@ -367,7 +367,7 @@ export const actionCreators: ActionCreators = {
         if (common.helpers.errors.isError(e)) {
           throw e;
         }
-        throw errorMessage;
+        throw new Error(errorMessage);
       }
     },
 
