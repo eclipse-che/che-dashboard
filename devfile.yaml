@@ -31,7 +31,31 @@ commands:
       label: "[UD] build"
       component: tools
       workingDir: ${PROJECTS_ROOT}/che-dashboard
-      commandLine: "yarn build"
+      commandLine: "yarn --cwd packages/common build && yarn --cwd packages/dashboard-frontend build:dev && yarn --cwd packages/dashboard-backend build:dev"
+      group:
+        kind: build
+  - id: watchfrontend
+    exec:
+      label: "[UD] watch front-end"
+      component: tools
+      workingDir: ${PROJECTS_ROOT}/che-dashboard
+      commandLine: "yarn --cwd packages/dashboard-frontend build:watch"
+      group:
+        kind: build
+  - id: watchbackend
+    exec:
+      label: "[UD] watch back-end"
+      component: tools
+      workingDir: ${PROJECTS_ROOT}/che-dashboard
+      commandLine: "yarn --cwd packages/dashboard-backend build:watch"
+      group:
+        kind: build
+  - id: start
+    exec:
+      label: "[UD] start"
+      component: tools
+      workingDir: ${PROJECTS_ROOT}/che-dashboard
+      commandLine: "yarn start:prepare && yarn start"
       group:
         kind: build
   - id: runtests
