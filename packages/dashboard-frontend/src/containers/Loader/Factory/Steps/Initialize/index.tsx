@@ -113,7 +113,7 @@ class StepInitialize extends AbstractLoaderStep<Props, State> {
     const namespaces = this.props.infrastructureNamespaces;
     if (namespaces.length === 0 || (namespaces.length === 1 && !namespaces[0].attributes.phase)) {
       throw new Error(
-        'Failed to start a workspace. The infrastructure namespace is required to be created. Please, contact the cluster administrator.',
+        'Failed to create a workspace. The infrastructure namespace is required to be created. Please, contact the cluster administrator.',
       );
     }
 
