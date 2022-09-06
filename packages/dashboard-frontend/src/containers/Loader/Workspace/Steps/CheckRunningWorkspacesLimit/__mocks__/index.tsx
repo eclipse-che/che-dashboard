@@ -13,12 +13,12 @@
 import React from 'react';
 import { Props, State } from '..';
 
-export default class StepApplyDevfile extends React.Component<Props, State> {
+export default class StepCheckRunningWorkspacesLimit extends React.Component<Props, State> {
   render(): React.ReactElement {
     const { onNextStep, onRestart } = this.props;
     return (
       <div>
-        <span>Step apply devfile</span>
+        <span>Step check running workspaces limit</span>
         <button onClick={() => onRestart()}>Restart</button>
         <button onClick={() => onNextStep()}>Next step</button>
       </div>

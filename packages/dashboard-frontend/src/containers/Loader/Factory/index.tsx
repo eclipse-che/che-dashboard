@@ -11,6 +11,7 @@
  */
 
 import React from 'react';
+import { History } from 'history';
 import { List, LoaderStep, LoadingStep } from '../../../components/Loader/Step';
 import StepInitialize from './Steps/Initialize';
 import StepCreateWorkspace from './Steps/CreateWorkspace';
@@ -21,6 +22,7 @@ import StepApplyResources from './Steps/ApplyResources';
 
 export type Props = {
   currentStepIndex: number;
+  history: History;
   loaderSteps: Readonly<List<LoaderStep>>;
   searchParams: URLSearchParams;
   tabParam: string | undefined;

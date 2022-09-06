@@ -13,7 +13,7 @@
 import React from 'react';
 import { Props, State } from '..';
 
-export default class StepFetchDevfile extends React.Component<Props, State> {
+export default class StepApplyResources extends React.Component<Props, State> {
   render(): React.ReactElement {
     const { onNextStep, onRestart } = this.props;
     return (

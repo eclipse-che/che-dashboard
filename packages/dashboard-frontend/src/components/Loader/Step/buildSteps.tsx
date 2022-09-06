@@ -13,7 +13,12 @@
 import { List, LoaderStep, LoadingStep } from './index';
 
 export function getWorkspaceLoadingSteps(): LoadingStep[] {
-  return [LoadingStep.INITIALIZE, LoadingStep.START_WORKSPACE, LoadingStep.OPEN_WORKSPACE];
+  return [
+    LoadingStep.INITIALIZE,
+    LoadingStep.CHECK_RUNNING_WORKSPACES_LIMIT,
+    LoadingStep.START_WORKSPACE,
+    LoadingStep.OPEN_WORKSPACE,
+  ];
 }
 
 export type FactorySource = 'devworkspace' | 'devfile';
@@ -22,6 +27,7 @@ export function getFactoryLoadingSteps(source: FactorySource): LoadingStep[] {
     LoadingStep.INITIALIZE,
     LoadingStep.CREATE_WORKSPACE,
     ...getResourcesFetchingSteps(source),
+    LoadingStep.CHECK_RUNNING_WORKSPACES_LIMIT,
     LoadingStep.START_WORKSPACE,
     LoadingStep.OPEN_WORKSPACE,
   ];

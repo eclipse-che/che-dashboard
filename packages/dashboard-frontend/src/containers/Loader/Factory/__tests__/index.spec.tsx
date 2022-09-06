@@ -11,6 +11,7 @@
  */
 
 import React from 'react';
+import { createMemoryHistory } from 'history';
 import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import {
@@ -270,9 +271,11 @@ describe('Factory Loader container', () => {
 
 function getComponent(loaderSteps: List<LoaderStep>, currentStepIndex: number): React.ReactElement {
   const searchParams = new URLSearchParams();
+  const history = createMemoryHistory();
   return (
     <FactoryLoader
       currentStepIndex={currentStepIndex}
+      history={history}
       loaderSteps={loaderSteps}
       searchParams={searchParams}
       tabParam={undefined}

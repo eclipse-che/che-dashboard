@@ -35,6 +35,7 @@ import { FactoryParams } from '../../types';
 import { MIN_STEP_DURATION_MS, TIMEOUT_TO_RESOLVE_SEC } from '../../../const';
 import buildFactoryParams from '../../buildFactoryParams';
 import { AbstractLoaderStep, LoaderStepProps, LoaderStepState } from '../../../AbstractStep';
+import { AlertItem } from '../../../../../services/helpers/types';
 
 const RELOADS_LIMIT = 2;
 type ReloadsInfo = {
@@ -299,6 +300,24 @@ class StepFetchDevfile extends AbstractLoaderStep<Props, State> {
     }
   }
 
+  private getAlertItem(error: unknown): AlertItem | undefined {
+    if (!error) {
+      return;
+    }
+    return {
+      key: 'factory-loader-apply-resources',
+      title: 'Failed to create the workspace',
+      variant: AlertVariant.danger,
+      children: helpers.errors.getMessage(error),
+      actionCallbacks: [
+        {
+          title: 'Click to try again',
+          callback: () => this.handleRestart(),
+        },
+      ],
+    };
+  }
+
   private setReloadsInfo(reloads: ReloadsInfo): void {
     const strReloads = JSON.stringify(reloads);
     SessionStorageService.update(SessionStorageKey.PRIVATE_FACTORY_RELOADS, strReloads);
@@ -311,15 +330,7 @@ class StepFetchDevfile extends AbstractLoaderStep<Props, State> {
     const steps = loaderSteps.values;
     const currentStepId = loaderSteps.get(currentStepIndex).value.id;
 
-    const alertItem =
-      lastError === undefined
-        ? undefined
-        : {
-            key: 'factory-loader-fetch-devfile',
-            title: 'Failed to create the workspace',
-            variant: AlertVariant.danger,
-            children: helpers.errors.getMessage(lastError),
-          };
+    const alertItem = this.getAlertItem(lastError);
 
     return (
       <FactoryLoaderPage
@@ -327,7 +338,6 @@ class StepFetchDevfile extends AbstractLoaderStep<Props, State> {
         currentStepId={currentStepId}
         steps={steps}
         tabParam={tabParam}
-        onRestart={() => this.handleRestart()}
       />
     );
   }
@@ -339,8 +349,16 @@ const mapStateToProps = (state: AppState) => ({
   factoryResolverConverted: selectFactoryResolverConverted(state),
 });
 
-const connector = connect(mapStateToProps, {
-  ...FactoryResolverStore.actionCreators,
-});
+const connector = connect(
+  mapStateToProps,
+  {
+    ...FactoryResolverStore.actionCreators,
+  },
+  null,
+  {
+    // forwardRef is mandatory for using `@react-mock/state` in unit tests
+    forwardRef: true,
+  },
+);
 type MappedProps = ConnectedProps<typeof connector>;
 export default connector(StepFetchDevfile);

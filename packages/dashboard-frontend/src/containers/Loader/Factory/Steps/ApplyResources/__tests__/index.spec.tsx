@@ -14,10 +14,10 @@ import React from 'react';
 import { Provider } from 'react-redux';
 import { Action, Store } from 'redux';
 import { screen, waitFor, within } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import { StateMock } from '@react-mock/state';
 import { dump } from 'js-yaml';
-import { generatePath, MemoryRouter, Route } from 'react-router-dom';
-import { Location } from 'history';
-import { ROUTE } from '../../../../../../Routes/routes';
+import { createMemoryHistory, MemoryHistory } from 'history';
 import { FakeStoreBuilder } from '../../../../../../store/__mocks__/storeBuilder';
 import { DevWorkspaceBuilder } from '../../../../../../store/__mocks__/devWorkspaceBuilder';
 import { ActionCreators } from '../../../../../../store/Workspaces/devWorkspaces';
@@ -29,9 +29,9 @@ import {
 } from '../../../../../../components/Loader/Step/buildSteps';
 import { DEVWORKSPACE_DEVFILE_SOURCE } from '../../../../../../services/workspace-client/devworkspace/devWorkspaceClient';
 import devfileApi from '../../../../../../services/devfileApi';
-import { prepareResources } from '../prepareResources';
+import prepareResources from '../prepareResources';
 import { DevWorkspaceResources } from '../../../../../../store/DevfileRegistries';
-import StepApplyResources from '..';
+import StepApplyResources, { State } from '..';
 import getComponentRenderer from '../../../../../../services/__mocks__/getComponentRenderer';
 import {
   DEV_WORKSPACE_ATTR,
@@ -39,7 +39,8 @@ import {
   MIN_STEP_DURATION_MS,
   TIMEOUT_TO_CREATE_SEC,
 } from '../../../../const';
-import userEvent from '@testing-library/user-event';
+import buildFactoryParams from '../../../buildFactoryParams';
+import { ROUTE } from '../../../../../../Routes/routes';
 
 jest.mock('../prepareResources.ts');
 jest.mock('../../../../../../pages/Loader/Factory');
@@ -59,10 +60,10 @@ jest.mock('../../../../../../store/Workspaces/devWorkspaces', () => {
 });
 
 const { renderComponent } = getComponentRenderer(getComponent);
+let history: MemoryHistory;
 
 const mockOnNextStep = jest.fn();
 const mockOnRestart = jest.fn();
-let testLocation: Location;
 
 const stepId = LoadingStep.CREATE_WORKSPACE__APPLY_RESOURCES.toString();
 const currentStepIndex = 3;
@@ -78,6 +79,10 @@ describe('Factory Loader container, step CREATE_WORKSPACE__APPLYING_RESOURCES', 
 
   beforeEach(() => {
     (prepareResources as jest.Mock).mockReturnValue([{}, {}]);
+
+    history = createMemoryHistory({
+      initialEntries: [ROUTE.FACTORY_LOADER],
+    });
 
     searchParams = new URLSearchParams({
       [FACTORY_URL_ATTR]: factoryUrl,
@@ -95,17 +100,19 @@ describe('Factory Loader container, step CREATE_WORKSPACE__APPLYING_RESOURCES', 
   });
 
   test('restart flow', async () => {
+    const localState: Partial<State> = {
+      lastError: new Error('Unexpected error'),
+      factoryParams: buildFactoryParams(searchParams),
+    };
     const store = new FakeStoreBuilder().build();
-    const path = generatePath(ROUTE.FACTORY_LOADER_URL, {
-      url: factoryUrl,
-    });
-    renderComponent(store, path, loaderSteps, searchParams, currentStepIndex);
+    renderComponent(store, loaderSteps, searchParams, currentStepIndex, localState);
 
     jest.advanceTimersByTime(MIN_STEP_DURATION_MS);
 
-    const restartButton = screen.getByRole('button', {
-      name: 'Restart',
+    const restartButton = await screen.findByRole('button', {
+      name: 'Click to try again',
     });
+    expect(restartButton).toBeDefined();
     userEvent.click(restartButton);
 
     expect(mockOnRestart).toHaveBeenCalled();
@@ -153,11 +160,7 @@ describe('Factory Loader container, step CREATE_WORKSPACE__APPLYING_RESOURCES', 
 
   test('resources are not fetched', async () => {
     const store = new FakeStoreBuilder().build();
-
-    const path = generatePath(ROUTE.FACTORY_LOADER_URL, {
-      url: factoryUrl,
-    });
-    renderComponent(store, path, loaderSteps, searchParams);
+    renderComponent(store, loaderSteps, searchParams);
 
     jest.advanceTimersByTime(MIN_STEP_DURATION_MS);
 
@@ -175,7 +178,7 @@ describe('Factory Loader container, step CREATE_WORKSPACE__APPLYING_RESOURCES', 
     expect(alertBody.textContent).toEqual('Failed to fetch devworkspace resources.');
 
     // stay on the factory loader page
-    expect(testLocation.pathname).toContain('/load-factory');
+    expect(history.location.pathname).toContain('/load-factory');
     expect(mockOnNextStep).not.toHaveBeenCalled();
   });
 
@@ -199,10 +202,7 @@ describe('Factory Loader container, step CREATE_WORKSPACE__APPLYING_RESOURCES', 
       .build();
     (prepareResources as jest.Mock).mockReturnValue(resources);
 
-    const path = generatePath(ROUTE.FACTORY_LOADER_URL, {
-      url: factoryUrl,
-    });
-    renderComponent(store, path, loaderSteps, searchParams);
+    renderComponent(store, loaderSteps, searchParams);
 
     jest.advanceTimersByTime(MIN_STEP_DURATION_MS);
 
@@ -216,7 +216,7 @@ describe('Factory Loader container, step CREATE_WORKSPACE__APPLYING_RESOURCES', 
     await waitFor(() => expect(mockCreateWorkspaceFromResources).toHaveBeenCalled());
 
     // stay on the factory loader page
-    expect(testLocation.pathname).toContain('/load-factory');
+    expect(history.location.pathname).toContain('/load-factory');
     expect(mockOnNextStep).not.toHaveBeenCalled();
 
     // wait a bit more than necessary to end the workspace creating timeout
@@ -234,7 +234,7 @@ describe('Factory Loader container, step CREATE_WORKSPACE__APPLYING_RESOURCES', 
     );
 
     // stay on the factory loader page
-    expect(testLocation.pathname).toContain('/load-factory');
+    expect(history.location.pathname).toContain('/load-factory');
     expect(mockOnNextStep).not.toHaveBeenCalled();
   });
 
@@ -274,10 +274,7 @@ describe('Factory Loader container, step CREATE_WORKSPACE__APPLYING_RESOURCES', 
       {},
     ]);
 
-    const path = generatePath(ROUTE.FACTORY_LOADER_URL, {
-      url: factoryUrl,
-    });
-    const { reRenderComponent } = renderComponent(store, path, loaderSteps, searchParams);
+    const { reRenderComponent } = renderComponent(store, loaderSteps, searchParams);
 
     jest.advanceTimersByTime(MIN_STEP_DURATION_MS);
 
@@ -291,7 +288,7 @@ describe('Factory Loader container, step CREATE_WORKSPACE__APPLYING_RESOURCES', 
     await waitFor(() => expect(mockCreateWorkspaceFromResources).toHaveBeenCalled());
 
     // stay on the factory loader page
-    expect(testLocation.pathname).toContain('/load-factory');
+    expect(history.location.pathname).toContain('/load-factory');
     expect(mockOnNextStep).not.toHaveBeenCalled();
 
     // wait a bit less than necessary to end the workspace creating timeout
@@ -303,14 +300,21 @@ describe('Factory Loader container, step CREATE_WORKSPACE__APPLYING_RESOURCES', 
       .withDevfileRegistries({
         devWorkspaceResources: {
           [resourcesUrl]: {
-            resources: [{} as devfileApi.DevWorkspace, {} as devfileApi.DevWorkspaceTemplate],
+            resources: [
+              {
+                metadata: {
+                  name: 'project',
+                },
+              } as devfileApi.DevWorkspace,
+              {} as devfileApi.DevWorkspaceTemplate,
+            ],
           },
         },
       })
       .withDevWorkspaces({
         workspaces: [
           new DevWorkspaceBuilder()
-            .withName('my-project')
+            .withName('project')
             .withNamespace('user-che')
             .withMetadata({
               annotations: {
@@ -321,12 +325,12 @@ describe('Factory Loader container, step CREATE_WORKSPACE__APPLYING_RESOURCES', 
         ],
       })
       .build();
-    reRenderComponent(nextStore, path, loaderSteps, searchParams);
+    reRenderComponent(nextStore, loaderSteps, searchParams);
 
     jest.advanceTimersByTime(MIN_STEP_DURATION_MS);
 
     await waitFor(() => expect(mockOnNextStep).toHaveBeenCalled());
-    expect(testLocation.pathname).toEqual('/ide/user-che/my-project');
+    expect(history.location.pathname).toEqual('/ide/user-che/project');
 
     expect(hasError.textContent).toEqual('false');
   });
@@ -334,33 +338,29 @@ describe('Factory Loader container, step CREATE_WORKSPACE__APPLYING_RESOURCES', 
 
 function getComponent(
   store: Store,
-  path: string,
   loaderSteps: List<LoaderStep>,
   searchParams: URLSearchParams,
   stepIndex = currentStepIndex,
+  localState?: Partial<State>,
 ): React.ReactElement {
-  return (
-    <MemoryRouter initialEntries={[path]} initialIndex={0}>
-      <Route path={ROUTE.FACTORY_LOADER}>
-        <Provider store={store}>
-          <StepApplyResources
-            searchParams={searchParams}
-            currentStepIndex={stepIndex}
-            loaderSteps={loaderSteps}
-            tabParam={undefined}
-            onNextStep={mockOnNextStep}
-            onRestart={mockOnRestart}
-          />
-        </Provider>
-      </Route>
-      <Route
-        path="*"
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        render={({ history, location }) => {
-          testLocation = location;
-          return null;
-        }}
-      />
-    </MemoryRouter>
+  const component = (
+    <StepApplyResources
+      searchParams={searchParams}
+      currentStepIndex={stepIndex}
+      history={history}
+      loaderSteps={loaderSteps}
+      tabParam={undefined}
+      onNextStep={mockOnNextStep}
+      onRestart={mockOnRestart}
+    />
   );
+  if (localState) {
+    return (
+      <Provider store={store}>
+        <StateMock state={localState}>{component}</StateMock>
+      </Provider>
+    );
+  } else {
+    return <Provider store={store}>{component}</Provider>;
+  }
 }

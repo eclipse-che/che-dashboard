@@ -24,6 +24,7 @@ export enum LoadingStep {
   CREATE_WORKSPACE__APPLY_DEVFILE,
   CREATE_WORKSPACE__FETCH_RESOURCES,
   CREATE_WORKSPACE__APPLY_RESOURCES,
+  CHECK_RUNNING_WORKSPACES_LIMIT,
   START_WORKSPACE,
   OPEN_WORKSPACE,
 }
@@ -46,6 +47,8 @@ function getStepTitle(id: LoadingStep): string {
       return 'Fetching pre-built resources';
     case LoadingStep.CREATE_WORKSPACE__APPLY_RESOURCES:
       return 'Applying resources';
+    case LoadingStep.CHECK_RUNNING_WORKSPACES_LIMIT:
+      return 'Checking for the limit of running workspaces';
     case LoadingStep.START_WORKSPACE:
       return 'Waiting for workspace to start';
     case LoadingStep.OPEN_WORKSPACE:

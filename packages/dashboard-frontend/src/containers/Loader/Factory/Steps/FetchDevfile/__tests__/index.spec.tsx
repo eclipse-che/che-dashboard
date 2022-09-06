@@ -13,6 +13,7 @@
 import React from 'react';
 import { Action, Store } from 'redux';
 import { Provider } from 'react-redux';
+import { createMemoryHistory } from 'history';
 import userEvent from '@testing-library/user-event';
 import { screen, waitFor, within, cleanup } from '@testing-library/react';
 import { dump } from 'js-yaml';
@@ -27,7 +28,7 @@ import {
 } from '../../../../../../components/Loader/Step/buildSteps';
 import devfileApi from '../../../../../../services/devfileApi';
 import { DEVWORKSPACE_DEVFILE_SOURCE } from '../../../../../../services/workspace-client/devworkspace/devWorkspaceClient';
-import StepFetchDevfile from '..';
+import StepFetchDevfile, { State } from '..';
 import getComponentRenderer from '../../../../../../services/__mocks__/getComponentRenderer';
 import {
   FACTORY_URL_ATTR,
@@ -35,6 +36,8 @@ import {
   OVERRIDE_ATTR_PREFIX,
   TIMEOUT_TO_RESOLVE_SEC,
 } from '../../../../const';
+import { StateMock } from '@react-mock/state';
+import buildFactoryParams from '../../../buildFactoryParams';
 
 jest.mock('../../../../../../pages/Loader/Factory');
 
@@ -151,13 +154,18 @@ describe('Factory Loader container, step CREATE_WORKSPACE__FETCH_DEVFILE', () =>
   });
 
   test('restart flow', async () => {
-    renderComponent(store, loaderSteps, searchParams);
+    const localState: Partial<State> = {
+      lastError: new Error('Unexpected error'),
+      factoryParams: buildFactoryParams(searchParams),
+    };
+    renderComponent(store, loaderSteps, searchParams, currentStepIndex, localState);
 
     jest.advanceTimersByTime(MIN_STEP_DURATION_MS);
 
-    const restartButton = screen.getByRole('button', {
-      name: 'Restart',
+    const restartButton = await screen.findByRole('button', {
+      name: 'Click to try again',
     });
+    expect(restartButton).toBeDefined();
     userEvent.click(restartButton);
 
     expect(mockOnRestart).toHaveBeenCalled();
@@ -566,17 +574,27 @@ function getComponent(
   loaderSteps: List<LoaderStep>,
   searchParams: URLSearchParams,
   stepIndex = currentStepIndex,
+  localState?: Partial<State>,
 ): React.ReactElement {
-  return (
-    <Provider store={store}>
-      <StepFetchDevfile
-        currentStepIndex={stepIndex}
-        loaderSteps={loaderSteps}
-        searchParams={searchParams}
-        tabParam={undefined}
-        onNextStep={mockOnNextStep}
-        onRestart={mockOnRestart}
-      />
-    </Provider>
+  const history = createMemoryHistory();
+  const component = (
+    <StepFetchDevfile
+      currentStepIndex={stepIndex}
+      history={history}
+      loaderSteps={loaderSteps}
+      searchParams={searchParams}
+      tabParam={undefined}
+      onNextStep={mockOnNextStep}
+      onRestart={mockOnRestart}
+    />
   );
+  if (localState) {
+    return (
+      <Provider store={store}>
+        <StateMock state={localState}>{component}</StateMock>
+      </Provider>
+    );
+  } else {
+    return <Provider store={store}>{component}</Provider>;
+  }
 }

@@ -12,7 +12,6 @@
 
 import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
-import { RouteComponentProps, withRouter } from 'react-router-dom';
 import { isEqual } from 'lodash';
 import { AlertVariant } from '@patternfly/react-core';
 import { helpers } from '@eclipse-che/common';
@@ -26,7 +25,6 @@ import { selectAllWorkspaces } from '../../../../../store/Workspaces/selectors';
 import { selectDevworkspacesEnabled } from '../../../../../store/Workspaces/Settings/selectors';
 import { delay } from '../../../../../services/helpers/delay';
 import { FactoryLoaderPage } from '../../../../../pages/Loader/Factory';
-import getRandomString from '../../../../../services/helpers/random';
 import {
   selectDefaultNamespace,
   selectInfrastructureNamespaces,
@@ -35,7 +33,7 @@ import {
   selectFactoryResolver,
   selectFactoryResolverConverted,
 } from '../../../../../store/FactoryResolver/selectors';
-import { prepareResources } from './prepareResources';
+import prepareResources from './prepareResources';
 import { findTargetWorkspace } from '../findTargetWorkspace';
 import { selectDevWorkspaceResources } from '../../../../../store/DevfileRegistries/selectors';
 import { buildIdeLoaderLocation } from '../../../../../services/helpers/location';
@@ -44,9 +42,9 @@ import { FactoryParams } from '../../types';
 import { MIN_STEP_DURATION_MS, TIMEOUT_TO_CREATE_SEC } from '../../../const';
 import buildFactoryParams from '../../buildFactoryParams';
 import { AbstractLoaderStep, LoaderStepProps, LoaderStepState } from '../../../AbstractStep';
+import { AlertItem } from '../../../../../services/helpers/types';
 
 export type Props = MappedProps &
-  RouteComponentProps &
   LoaderStepProps & {
     searchParams: URLSearchParams;
   };
@@ -144,9 +142,9 @@ class StepApplyResources extends AbstractLoaderStep<Props, State> {
     const workspace = this.findTargetWorkspace(this.props, this.state);
     if (workspace) {
       // the workspace has been created, go to the next step
-      const nextLocation = buildIdeLoaderLocation(workspace);
-      this.props.location.pathname = nextLocation.pathname;
-      this.props.location.search = '';
+      const nextLocation = buildIdeLoaderLocation(targetWorkspace);
+      this.props.history.location.pathname = nextLocation.pathname;
+      this.props.history.location.search = '';
       return true;
     }
 
@@ -201,6 +199,24 @@ class StepApplyResources extends AbstractLoaderStep<Props, State> {
     );
   }
 
+  private getAlertItem(error: unknown): AlertItem | undefined {
+    if (!error) {
+      return;
+    }
+    return {
+      key: 'factory-loader-apply-resources',
+      title: 'Failed to create the workspace',
+      variant: AlertVariant.danger,
+      children: helpers.errors.getMessage(error),
+      actionCallbacks: [
+        {
+          title: 'Click to try again',
+          callback: () => this.handleRestart(),
+        },
+      ],
+    };
+  }
+
   render(): React.ReactElement {
     const { currentStepIndex, loaderSteps, tabParam } = this.props;
     const { lastError } = this.state;
@@ -208,15 +224,7 @@ class StepApplyResources extends AbstractLoaderStep<Props, State> {
     const steps = loaderSteps.values;
     const currentStepId = loaderSteps.get(currentStepIndex).value.id;
 
-    const alertItem =
-      lastError === undefined
-        ? undefined
-        : {
-            key: 'factory-loader-' + getRandomString(4),
-            title: 'Failed to create the workspace',
-            variant: AlertVariant.danger,
-            children: helpers.errors.getMessage(lastError),
-          };
+    const alertItem = this.getAlertItem(lastError);
 
     return (
       <FactoryLoaderPage
@@ -224,7 +232,6 @@ class StepApplyResources extends AbstractLoaderStep<Props, State> {
         currentStepId={currentStepId}
         steps={steps}
         tabParam={tabParam}
-        onRestart={() => this.handleRestart()}
       />
     );
   }
@@ -240,11 +247,19 @@ const mapStateToProps = (state: AppState) => ({
   devWorkspaceResources: selectDevWorkspaceResources(state),
 });
 
-const connector = connect(mapStateToProps, {
-  ...DevfileRegistriesStore.actionCreators,
-  ...FactoryResolverStore.actionCreators,
-  ...WorkspacesStore.actionCreators,
-  createWorkspaceFromResources: DevWorkspacesStore.actionCreators.createWorkspaceFromResources,
-});
+const connector = connect(
+  mapStateToProps,
+  {
+    ...DevfileRegistriesStore.actionCreators,
+    ...FactoryResolverStore.actionCreators,
+    ...WorkspacesStore.actionCreators,
+    createWorkspaceFromResources: DevWorkspacesStore.actionCreators.createWorkspaceFromResources,
+  },
+  null,
+  {
+    // forwardRef is mandatory for using `@react-mock/state` in unit tests
+    forwardRef: true,
+  },
+);
 type MappedProps = ConnectedProps<typeof connector>;
-export default connector(withRouter(StepApplyResources));
+export default connector(StepApplyResources);

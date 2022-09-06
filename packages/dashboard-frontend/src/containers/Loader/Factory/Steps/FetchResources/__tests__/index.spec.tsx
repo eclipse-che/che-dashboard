@@ -13,7 +13,10 @@
 import React from 'react';
 import { Action, Store } from 'redux';
 import { Provider } from 'react-redux';
+import { createMemoryHistory } from 'history';
 import { screen, waitFor, within } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import { StateMock } from '@react-mock/state';
 import { dump } from 'js-yaml';
 import { FakeStoreBuilder } from '../../../../../../store/__mocks__/storeBuilder';
 import { ActionCreators } from '../../../../../../store/DevfileRegistries';
@@ -27,14 +30,14 @@ import devfileApi from '../../../../../../services/devfileApi';
 import { DevWorkspaceBuilder } from '../../../../../../store/__mocks__/devWorkspaceBuilder';
 import { DEVWORKSPACE_DEVFILE_SOURCE } from '../../../../../../services/workspace-client/devworkspace/devWorkspaceClient';
 import getComponentRenderer from '../../../../../../services/__mocks__/getComponentRenderer';
-import StepFetchResources from '..';
+import StepFetchResources, { State } from '..';
 import {
   DEV_WORKSPACE_ATTR,
   FACTORY_URL_ATTR,
   MIN_STEP_DURATION_MS,
   TIMEOUT_TO_RESOLVE_SEC,
 } from '../../../../const';
-import userEvent from '@testing-library/user-event';
+import buildFactoryParams from '../../../buildFactoryParams';
 
 jest.mock('../../../../../../pages/Loader/Factory');
 
@@ -88,13 +91,17 @@ describe('Factory Loader container, step CREATE_WORKSPACE__FETCHING_RESOURCES', 
   });
 
   test('restart flow', async () => {
+    const localState: Partial<State> = {
+      lastError: new Error('Unexpected error'),
+      factoryParams: buildFactoryParams(searchParams),
+    };
     const store = new FakeStoreBuilder().build();
-    renderComponent(store, loaderSteps, searchParams);
+    renderComponent(store, loaderSteps, searchParams, currentStepIndex, localState);
 
     jest.advanceTimersByTime(MIN_STEP_DURATION_MS);
 
-    const restartButton = screen.getByRole('button', {
-      name: 'Restart',
+    const restartButton = await screen.findByRole('button', {
+      name: 'Click to try again',
     });
     userEvent.click(restartButton);
 
@@ -283,17 +290,27 @@ function getComponent(
   loaderSteps: List<LoaderStep>,
   searchParams: URLSearchParams,
   stepIndex = currentStepIndex,
+  localState?: Partial<State>,
 ): React.ReactElement {
-  return (
-    <Provider store={store}>
-      <StepFetchResources
-        currentStepIndex={stepIndex}
-        loaderSteps={loaderSteps}
-        searchParams={searchParams}
-        tabParam={undefined}
-        onNextStep={mockOnNextStep}
-        onRestart={mockOnRestart}
-      />
-    </Provider>
+  const history = createMemoryHistory();
+  const component = (
+    <StepFetchResources
+      history={history}
+      currentStepIndex={stepIndex}
+      loaderSteps={loaderSteps}
+      searchParams={searchParams}
+      tabParam={undefined}
+      onNextStep={mockOnNextStep}
+      onRestart={mockOnRestart}
+    />
   );
+  if (localState) {
+    return (
+      <Provider store={store}>
+        <StateMock state={localState}>{component}</StateMock>
+      </Provider>
+    );
+  } else {
+    return <Provider store={store}>{component}</Provider>;
+  }
 }
