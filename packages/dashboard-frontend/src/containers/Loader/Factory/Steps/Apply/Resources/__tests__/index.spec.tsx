@@ -11,42 +11,50 @@
  */
 
 import React from 'react';
-import { Action, Store } from 'redux';
 import { Provider } from 'react-redux';
+import { Action, Store } from 'redux';
 import { screen, waitFor, within } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import { StateMock } from '@react-mock/state';
 import { dump } from 'js-yaml';
 import { createMemoryHistory, MemoryHistory } from 'history';
-import { ROUTE } from '../../../../../../Routes/routes';
-import { FakeStoreBuilder } from '../../../../../../store/__mocks__/storeBuilder';
-import { DevWorkspaceBuilder } from '../../../../../../store/__mocks__/devWorkspaceBuilder';
-import { ActionCreators } from '../../../../../../store/Workspaces';
-import { AppThunk } from '../../../../../../store';
-import { List, LoaderStep, LoadingStep } from '../../../../../../components/Loader/Step';
+import { FakeStoreBuilder } from '../../../../../../../store/__mocks__/storeBuilder';
+import { DevWorkspaceBuilder } from '../../../../../../../store/__mocks__/devWorkspaceBuilder';
+import { ActionCreators } from '../../../../../../../store/Workspaces/devWorkspaces';
+import { AppThunk } from '../../../../../../../store';
+import { List, LoaderStep, LoadingStep } from '../../../../../../../components/Loader/Step';
 import {
   buildLoaderSteps,
   getFactoryLoadingSteps,
-} from '../../../../../../components/Loader/Step/buildSteps';
-import { DEVWORKSPACE_DEVFILE_SOURCE } from '../../../../../../services/workspace-client/devworkspace/devWorkspaceClient';
-import devfileApi from '../../../../../../services/devfileApi';
-import getComponentRenderer from '../../../../../../services/__mocks__/getComponentRenderer';
-import StepApplyDevfile, { State } from '..';
-import { FACTORY_URL_ATTR, MIN_STEP_DURATION_MS, TIMEOUT_TO_CREATE_SEC } from '../../../../const';
-import userEvent from '@testing-library/user-event';
-import { StateMock } from '@react-mock/state';
-import buildFactoryParams from '../../../buildFactoryParams';
+} from '../../../../../../../components/Loader/Step/buildSteps';
+import { DEVWORKSPACE_DEVFILE_SOURCE } from '../../../../../../../services/workspace-client/devworkspace/devWorkspaceClient';
+import devfileApi from '../../../../../../../services/devfileApi';
+import prepareResources from '../prepareResources';
+import { DevWorkspaceResources } from '../../../../../../../store/DevfileRegistries';
+import StepApplyResources, { State } from '..';
+import getComponentRenderer from '../../../../../../../services/__mocks__/getComponentRenderer';
+import {
+  DEV_WORKSPACE_ATTR,
+  FACTORY_URL_ATTR,
+  MIN_STEP_DURATION_MS,
+  TIMEOUT_TO_CREATE_SEC,
+} from '../../../../../const';
+import buildFactoryParams from '../../../../buildFactoryParams';
+import { ROUTE } from '../../../../../../../Routes/routes';
 
-jest.mock('../../../../../../pages/Loader/Factory');
+jest.mock('../prepareResources.ts');
+jest.mock('../../../../../../../pages/Loader/Factory');
 
-const mockCreateWorkspaceFromDevfile = jest.fn().mockResolvedValue(undefined);
-jest.mock('../../../../../../store/Workspaces/index', () => {
+const mockCreateWorkspaceFromResources = jest.fn().mockResolvedValue(undefined);
+jest.mock('../../../../../../../store/Workspaces/devWorkspaces', () => {
   return {
     actionCreators: {
-      createWorkspaceFromDevfile:
+      createWorkspaceFromResources:
         (
-          ...args: Parameters<ActionCreators['createWorkspaceFromDevfile']>
+          ...args: Parameters<ActionCreators['createWorkspaceFromResources']>
         ): AppThunk<Action, Promise<void>> =>
         async (): Promise<void> =>
-          mockCreateWorkspaceFromDevfile(...args),
+          mockCreateWorkspaceFromResources(...args),
     } as ActionCreators,
   };
 });
@@ -57,24 +65,30 @@ let history: MemoryHistory;
 const mockOnNextStep = jest.fn();
 const mockOnRestart = jest.fn();
 
-const stepId = LoadingStep.CREATE_WORKSPACE__APPLY_DEVFILE.toString();
+const stepId = LoadingStep.CREATE_WORKSPACE__APPLY_RESOURCES.toString();
 const currentStepIndex = 4;
-const loadingSteps = getFactoryLoadingSteps('devfile');
+const loadingSteps = getFactoryLoadingSteps('devworkspace');
 
+const resourcesUrl = 'https://resources-url';
 const factoryUrl = 'https://factory-url';
+const factoryId = `${DEV_WORKSPACE_ATTR}=${resourcesUrl}&${FACTORY_URL_ATTR}=${factoryUrl}`;
 
-describe('Factory Loader container, step CREATE_WORKSPACE__APPLYING_DEVFILE', () => {
-  let searchParams: URLSearchParams;
+describe('Factory Loader container, step CREATE_WORKSPACE__APPLYING_RESOURCES', () => {
   let loaderSteps: List<LoaderStep>;
+  let searchParams: URLSearchParams;
 
   beforeEach(() => {
+    (prepareResources as jest.Mock).mockReturnValue([{}, {}]);
+
     history = createMemoryHistory({
       initialEntries: [ROUTE.FACTORY_LOADER],
     });
 
     searchParams = new URLSearchParams({
       [FACTORY_URL_ATTR]: factoryUrl,
+      [DEV_WORKSPACE_ATTR]: resourcesUrl,
     });
+
     loaderSteps = buildLoaderSteps(loadingSteps);
 
     jest.useFakeTimers();
@@ -104,46 +118,9 @@ describe('Factory Loader container, step CREATE_WORKSPACE__APPLYING_DEVFILE', ()
     expect(mockOnRestart).toHaveBeenCalled();
   });
 
-  test('workspace is already created', async () => {
-    const factorySource = {
-      factory: {
-        params: `url=${factoryUrl}`,
-      },
-    };
-    const store = new FakeStoreBuilder()
-      .withDevWorkspaces({
-        workspaces: [
-          new DevWorkspaceBuilder()
-            .withName('my-project')
-            .withNamespace('user-che')
-            .withMetadata({
-              annotations: {
-                [DEVWORKSPACE_DEVFILE_SOURCE]: dump(factorySource),
-              },
-            })
-            .build(),
-        ],
-      })
-      .build();
-
-    renderComponent(store, loaderSteps, searchParams, currentStepIndex);
-
-    jest.advanceTimersByTime(MIN_STEP_DURATION_MS);
-
-    const currentStepId = screen.getByTestId('current-step-id');
-    await waitFor(() => expect(currentStepId.textContent).toEqual(stepId));
-
-    const currentStep = screen.getByTestId(stepId);
-    const hasError = within(currentStep).getByTestId('hasError');
-    expect(hasError.textContent).toEqual('false');
-
-    await waitFor(() => expect(mockOnNextStep).toHaveBeenCalled());
-    expect(history.location.pathname).toEqual('/ide/user-che/my-project');
-  });
-
-  test('factory url is not resolved', async () => {
+  test('resources are not fetched', async () => {
     const store = new FakeStoreBuilder().build();
-    renderComponent(store, loaderSteps, searchParams, currentStepIndex);
+    renderComponent(store, loaderSteps, searchParams);
 
     jest.advanceTimersByTime(MIN_STEP_DURATION_MS);
 
@@ -158,7 +135,7 @@ describe('Factory Loader container, step CREATE_WORKSPACE__APPLYING_DEVFILE', ()
     expect(alertTitle.textContent).toEqual('Failed to create the workspace');
 
     const alertBody = screen.getByTestId('alert-body');
-    expect(alertBody.textContent).toEqual('Failed to resolve the devfile.');
+    expect(alertBody.textContent).toEqual('Failed to fetch devworkspace resources.');
 
     // stay on the factory loader page
     expect(history.location.pathname).toContain('/load-factory');
@@ -166,20 +143,26 @@ describe('Factory Loader container, step CREATE_WORKSPACE__APPLYING_DEVFILE', ()
   });
 
   test('the workspace took more than TIMEOUT_TO_CREATE_SEC to create', async () => {
+    const resources: DevWorkspaceResources = [
+      {
+        metadata: {
+          name: 'project',
+        },
+      } as devfileApi.DevWorkspace,
+      {} as devfileApi.DevWorkspaceTemplate,
+    ];
     const store = new FakeStoreBuilder()
-      .withFactoryResolver({
-        converted: {
-          devfileV2: {
-            schemaVersion: '2.1.0',
-            metadata: {
-              name: 'my-project',
-            },
-          } as devfileApi.Devfile,
+      .withDevfileRegistries({
+        devWorkspaceResources: {
+          [resourcesUrl]: {
+            resources,
+          },
         },
       })
       .build();
+    (prepareResources as jest.Mock).mockReturnValue(resources);
 
-    renderComponent(store, loaderSteps, searchParams, currentStepIndex);
+    renderComponent(store, loaderSteps, searchParams);
 
     jest.advanceTimersByTime(MIN_STEP_DURATION_MS);
 
@@ -190,7 +173,7 @@ describe('Factory Loader container, step CREATE_WORKSPACE__APPLYING_DEVFILE', ()
     const hasError = within(currentStep).getByTestId('hasError');
     expect(hasError.textContent).toEqual('false');
 
-    await waitFor(() => expect(mockCreateWorkspaceFromDevfile).toHaveBeenCalled());
+    await waitFor(() => expect(mockCreateWorkspaceFromResources).toHaveBeenCalled());
 
     // stay on the factory loader page
     expect(history.location.pathname).toContain('/load-factory');
@@ -217,24 +200,41 @@ describe('Factory Loader container, step CREATE_WORKSPACE__APPLYING_DEVFILE', ()
 
   test('the workspace created successfully', async () => {
     const store = new FakeStoreBuilder()
-      .withFactoryResolver({
-        converted: {
-          devfileV2: {
-            schemaVersion: '2.1.0',
-            metadata: {
-              name: 'my-project',
-            },
-          } as devfileApi.Devfile,
+      .withDevfileRegistries({
+        devWorkspaceResources: {
+          [resourcesUrl]: {
+            resources: [{} as devfileApi.DevWorkspace, {} as devfileApi.DevWorkspaceTemplate],
+          },
         },
       })
       .build();
+    const factorySource = dump({
+      factory: {
+        params: factoryId,
+      },
+    });
+    (prepareResources as jest.Mock).mockReturnValue([
+      {
+        apiVersion: 'workspace.devfile.io/v1alpha2',
+        kind: 'DevWorkspace',
+        metadata: {
+          name: 'project',
+          annotations: {
+            [DEVWORKSPACE_DEVFILE_SOURCE]: factorySource,
+          },
+          labels: {},
+          namespace: 'user-che',
+          uid: '',
+        },
+        spec: {
+          started: false,
+          template: {},
+        },
+      } as devfileApi.DevWorkspace,
+      {},
+    ]);
 
-    const { reRenderComponent } = renderComponent(
-      store,
-      loaderSteps,
-      searchParams,
-      currentStepIndex,
-    );
+    const { reRenderComponent } = renderComponent(store, loaderSteps, searchParams);
 
     jest.advanceTimersByTime(MIN_STEP_DURATION_MS);
 
@@ -245,7 +245,7 @@ describe('Factory Loader container, step CREATE_WORKSPACE__APPLYING_DEVFILE', ()
     const hasError = within(currentStep).getByTestId('hasError');
     expect(hasError.textContent).toEqual('false');
 
-    await waitFor(() => expect(mockCreateWorkspaceFromDevfile).toHaveBeenCalled());
+    await waitFor(() => expect(mockCreateWorkspaceFromResources).toHaveBeenCalled());
 
     // stay on the factory loader page
     expect(history.location.pathname).toContain('/load-factory');
@@ -256,42 +256,41 @@ describe('Factory Loader container, step CREATE_WORKSPACE__APPLYING_DEVFILE', ()
     jest.advanceTimersByTime(time);
 
     // build next store
-    const factorySource = {
-      factory: {
-        params: `url=${factoryUrl}`,
-      },
-    };
     const nextStore = new FakeStoreBuilder()
-      .withFactoryResolver({
-        converted: {
-          devfileV2: {
-            schemaVersion: '2.1.0',
-            metadata: {
-              name: 'my-project',
-            },
-          } as devfileApi.Devfile,
+      .withDevfileRegistries({
+        devWorkspaceResources: {
+          [resourcesUrl]: {
+            resources: [
+              {
+                metadata: {
+                  name: 'project',
+                },
+              } as devfileApi.DevWorkspace,
+              {} as devfileApi.DevWorkspaceTemplate,
+            ],
+          },
         },
       })
       .withDevWorkspaces({
         workspaces: [
           new DevWorkspaceBuilder()
-            .withName('my-project')
+            .withName('project')
             .withNamespace('user-che')
             .withMetadata({
               annotations: {
-                [DEVWORKSPACE_DEVFILE_SOURCE]: dump(factorySource),
+                [DEVWORKSPACE_DEVFILE_SOURCE]: factorySource,
               },
             })
             .build(),
         ],
       })
       .build();
-    reRenderComponent(nextStore, loaderSteps, searchParams, currentStepIndex);
+    reRenderComponent(nextStore, loaderSteps, searchParams);
 
     jest.advanceTimersByTime(MIN_STEP_DURATION_MS);
 
     await waitFor(() => expect(mockOnNextStep).toHaveBeenCalled());
-    expect(history.location.pathname).toEqual('/ide/user-che/my-project');
+    expect(history.location.pathname).toEqual('/ide/user-che/project');
 
     expect(hasError.textContent).toEqual('false');
   });
@@ -305,7 +304,7 @@ function getComponent(
   localState?: Partial<State>,
 ): React.ReactElement {
   const component = (
-    <StepApplyDevfile
+    <StepApplyResources
       searchParams={searchParams}
       currentStepIndex={stepIndex}
       history={history}
@@ -315,7 +314,7 @@ function getComponent(
       onRestart={mockOnRestart}
     />
   );
-  if (localStorage) {
+  if (localState) {
     return (
       <Provider store={store}>
         <StateMock state={localState}>{component}</StateMock>

@@ -16,34 +16,31 @@ import { Provider } from 'react-redux';
 import { createMemoryHistory } from 'history';
 import userEvent from '@testing-library/user-event';
 import { screen, waitFor, within, cleanup } from '@testing-library/react';
-import { dump } from 'js-yaml';
-import { FakeStoreBuilder } from '../../../../../../store/__mocks__/storeBuilder';
-import { ActionCreators, OAuthResponse } from '../../../../../../store/FactoryResolver';
-import { DevWorkspaceBuilder } from '../../../../../../store/__mocks__/devWorkspaceBuilder';
-import { AppThunk } from '../../../../../../store';
-import { List, LoaderStep, LoadingStep } from '../../../../../../components/Loader/Step';
+import { FakeStoreBuilder } from '../../../../../../../store/__mocks__/storeBuilder';
+import { ActionCreators, OAuthResponse } from '../../../../../../../store/FactoryResolver';
+import { AppThunk } from '../../../../../../../store';
+import { List, LoaderStep, LoadingStep } from '../../../../../../../components/Loader/Step';
 import {
   buildLoaderSteps,
   getFactoryLoadingSteps,
-} from '../../../../../../components/Loader/Step/buildSteps';
-import devfileApi from '../../../../../../services/devfileApi';
-import { DEVWORKSPACE_DEVFILE_SOURCE } from '../../../../../../services/workspace-client/devworkspace/devWorkspaceClient';
+} from '../../../../../../../components/Loader/Step/buildSteps';
+import devfileApi from '../../../../../../../services/devfileApi';
 import StepFetchDevfile, { State } from '..';
-import getComponentRenderer from '../../../../../../services/__mocks__/getComponentRenderer';
+import getComponentRenderer from '../../../../../../../services/__mocks__/getComponentRenderer';
 import {
   FACTORY_URL_ATTR,
   MIN_STEP_DURATION_MS,
   OVERRIDE_ATTR_PREFIX,
   TIMEOUT_TO_RESOLVE_SEC,
-} from '../../../../const';
+} from '../../../../../const';
 import { StateMock } from '@react-mock/state';
-import buildFactoryParams from '../../../buildFactoryParams';
+import buildFactoryParams from '../../../../buildFactoryParams';
 
-jest.mock('../../../../../../pages/Loader/Factory');
+jest.mock('../../../../../../../pages/Loader/Factory');
 
 const mockRequestFactoryResolver = jest.fn();
 const mockIsOAuthResponse = jest.fn();
-jest.mock('../../../../../../store/FactoryResolver', () => {
+jest.mock('../../../../../../../store/FactoryResolver', () => {
   return {
     actionCreators: {
       requestFactoryResolver:

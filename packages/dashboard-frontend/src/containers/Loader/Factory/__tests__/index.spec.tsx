@@ -26,11 +26,11 @@ import { List, LoaderStep } from '../../../../components/Loader/Step';
 
 jest.mock('../Steps/Initialize');
 jest.mock('../Steps/CreateWorkspace');
-jest.mock('../Steps/FetchDevfile');
-jest.mock('../Steps/FetchResources');
+jest.mock('../Steps/Fetch/Devfile');
+jest.mock('../Steps/Fetch/Resources');
 jest.mock('../Steps/CheckExistingWorkspaces');
-jest.mock('../Steps/ApplyDevfile');
-jest.mock('../Steps/ApplyResources');
+jest.mock('../Steps/Apply/Devfile');
+jest.mock('../Steps/Apply/Resources');
 
 const { renderComponent } = getComponentRenderer(getComponent);
 

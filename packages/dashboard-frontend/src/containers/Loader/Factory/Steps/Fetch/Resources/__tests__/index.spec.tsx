@@ -17,29 +17,29 @@ import { createMemoryHistory } from 'history';
 import { screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { StateMock } from '@react-mock/state';
-import { FakeStoreBuilder } from '../../../../../../store/__mocks__/storeBuilder';
-import { ActionCreators } from '../../../../../../store/DevfileRegistries';
-import { AppThunk } from '../../../../../../store';
-import { List, LoaderStep, LoadingStep } from '../../../../../../components/Loader/Step';
+import { FakeStoreBuilder } from '../../../../../../../store/__mocks__/storeBuilder';
+import { ActionCreators } from '../../../../../../../store/DevfileRegistries';
+import { AppThunk } from '../../../../../../../store';
+import { List, LoaderStep, LoadingStep } from '../../../../../../../components/Loader/Step';
 import {
   buildLoaderSteps,
   getFactoryLoadingSteps,
-} from '../../../../../../components/Loader/Step/buildSteps';
-import devfileApi from '../../../../../../services/devfileApi';
-import getComponentRenderer from '../../../../../../services/__mocks__/getComponentRenderer';
+} from '../../../../../../../components/Loader/Step/buildSteps';
+import devfileApi from '../../../../../../../services/devfileApi';
+import getComponentRenderer from '../../../../../../../services/__mocks__/getComponentRenderer';
 import StepFetchResources, { State } from '..';
 import {
   DEV_WORKSPACE_ATTR,
   FACTORY_URL_ATTR,
   MIN_STEP_DURATION_MS,
   TIMEOUT_TO_RESOLVE_SEC,
-} from '../../../../const';
-import buildFactoryParams from '../../../buildFactoryParams';
+} from '../../../../../const';
+import buildFactoryParams from '../../../../buildFactoryParams';
 
-jest.mock('../../../../../../pages/Loader/Factory');
+jest.mock('../../../../../../../pages/Loader/Factory');
 
 const mockRequestResources = jest.fn();
-jest.mock('../../../../../../store/DevfileRegistries', () => {
+jest.mock('../../../../../../../store/DevfileRegistries', () => {
   /* eslint-disable @typescript-eslint/no-unused-vars */
   return {
     actionCreators: {

@@ -15,18 +15,18 @@ import { connect, ConnectedProps } from 'react-redux';
 import { isEqual } from 'lodash';
 import { AlertVariant } from '@patternfly/react-core';
 import { helpers } from '@eclipse-che/common';
-import { AppState } from '../../../../../store';
-import * as DevfileRegistriesStore from '../../../../../store/DevfileRegistries';
-import { DisposableCollection } from '../../../../../services/helpers/disposable';
-import { selectAllWorkspaces } from '../../../../../store/Workspaces/selectors';
-import { delay } from '../../../../../services/helpers/delay';
-import { FactoryLoaderPage } from '../../../../../pages/Loader/Factory';
-import { selectDevWorkspaceResources } from '../../../../../store/DevfileRegistries/selectors';
-import { FactoryParams } from '../../types';
-import { MIN_STEP_DURATION_MS, TIMEOUT_TO_RESOLVE_SEC } from '../../../const';
-import buildFactoryParams from '../../buildFactoryParams';
-import { AbstractLoaderStep, LoaderStepProps, LoaderStepState } from '../../../AbstractStep';
-import { AlertItem } from '../../../../../services/helpers/types';
+import { AppState } from '../../../../../../store';
+import * as DevfileRegistriesStore from '../../../../../../store/DevfileRegistries';
+import { DisposableCollection } from '../../../../../../services/helpers/disposable';
+import { selectAllWorkspaces } from '../../../../../../store/Workspaces/selectors';
+import { delay } from '../../../../../../services/helpers/delay';
+import { FactoryLoaderPage } from '../../../../../../pages/Loader/Factory';
+import { selectDevWorkspaceResources } from '../../../../../../store/DevfileRegistries/selectors';
+import { FactoryParams } from '../../../types';
+import { MIN_STEP_DURATION_MS, TIMEOUT_TO_RESOLVE_SEC } from '../../../../const';
+import buildFactoryParams from '../../../buildFactoryParams';
+import { AbstractLoaderStep, LoaderStepProps, LoaderStepState } from '../../../../AbstractStep';
+import { AlertItem } from '../../../../../../services/helpers/types';
 
 export type Props = MappedProps &
   LoaderStepProps & {

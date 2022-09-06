@@ -15,10 +15,10 @@ import { History } from 'history';
 import { List, LoaderStep, LoadingStep } from '../../../components/Loader/Step';
 import StepInitialize from './Steps/Initialize';
 import StepCreateWorkspace from './Steps/CreateWorkspace';
-import StepFetchDevfile from './Steps/FetchDevfile';
-import StepFetchResources from './Steps/FetchResources';
-import StepApplyDevfile from './Steps/ApplyDevfile';
-import StepApplyResources from './Steps/ApplyResources';
+import StepFetchDevfile from './Steps/Fetch/Devfile';
+import StepFetchResources from './Steps/Fetch/Resources';
+import StepApplyDevfile from './Steps/Apply/Devfile';
+import StepApplyResources from './Steps/Apply/Resources';
 import StepCheckExistingWorkspaces from './Steps/CheckExistingWorkspaces';
 
 export type Props = {

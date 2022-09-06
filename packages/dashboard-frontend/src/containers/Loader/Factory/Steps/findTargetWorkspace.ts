@@ -13,7 +13,7 @@
 import { safeLoad } from 'js-yaml';
 import { isCheWorkspace, Workspace } from '../../../../services/workspace-adapter';
 import { DEVWORKSPACE_DEVFILE_SOURCE } from '../../../../services/workspace-client/devworkspace/devWorkspaceClient';
-import { FactorySource } from './ApplyDevfile/prepareDevfile';
+import { FactorySource } from './Apply/Devfile/prepareDevfile';
 import { PoliciesCreate } from '../types';
 
 export function findTargetWorkspace(

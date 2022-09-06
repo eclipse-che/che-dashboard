@@ -11,16 +11,16 @@
  */
 
 import { dump } from 'js-yaml';
-import devfileApi from '../../../../../../services/devfileApi';
+import devfileApi from '../../../../../../../services/devfileApi';
 import {
   DEVWORKSPACE_DEVFILE_SOURCE,
   DEVWORKSPACE_METADATA_ANNOTATION,
-} from '../../../../../../services/workspace-client/devworkspace/devWorkspaceClient';
+} from '../../../../../../../services/workspace-client/devworkspace/devWorkspaceClient';
 import { prepareDevfile } from '../prepareDevfile';
-import { generateWorkspaceName } from '../../../../../../services/helpers/generateName';
-import { DEVWORKSPACE_STORAGE_TYPE } from '../../../../../../services/devfileApi/devWorkspace/spec';
+import { generateWorkspaceName } from '../../../../../../../services/helpers/generateName';
+import { DEVWORKSPACE_STORAGE_TYPE } from '../../../../../../../services/devfileApi/devWorkspace/spec';
 
-jest.mock('../../../../../../services/helpers/generateName');
+jest.mock('../../../../../../../services/helpers/generateName');
 (generateWorkspaceName as jest.Mock).mockImplementation(name => name + '1234');
 
 describe('FactoryLoaderContainer/prepareDevfile', () => {

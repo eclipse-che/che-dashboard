@@ -15,25 +15,27 @@ import { connect, ConnectedProps } from 'react-redux';
 import { isEqual } from 'lodash';
 import { helpers } from '@eclipse-che/common';
 import { AlertVariant } from '@patternfly/react-core';
-import { AppState } from '../../../../../store';
-import * as FactoryResolverStore from '../../../../../store/FactoryResolver';
-import { DisposableCollection } from '../../../../../services/helpers/disposable';
-import { selectAllWorkspaces } from '../../../../../store/Workspaces/selectors';
-import { delay } from '../../../../../services/helpers/delay';
-import { FactoryLoaderPage } from '../../../../../pages/Loader/Factory';
-import { isOAuthResponse } from '../../../../../store/FactoryResolver';
-import { getEnvironment, isDevEnvironment } from '../../../../../services/helpers/environment';
-import SessionStorageService, { SessionStorageKey } from '../../../../../services/session-storage';
+import { AppState } from '../../../../../../store';
+import * as FactoryResolverStore from '../../../../../../store/FactoryResolver';
+import { DisposableCollection } from '../../../../../../services/helpers/disposable';
+import { selectAllWorkspaces } from '../../../../../../store/Workspaces/selectors';
+import { delay } from '../../../../../../services/helpers/delay';
+import { FactoryLoaderPage } from '../../../../../../pages/Loader/Factory';
+import { isOAuthResponse } from '../../../../../../store/FactoryResolver';
+import { getEnvironment, isDevEnvironment } from '../../../../../../services/helpers/environment';
+import SessionStorageService, {
+  SessionStorageKey,
+} from '../../../../../../services/session-storage';
 import {
   selectFactoryResolver,
   selectFactoryResolverConverted,
-} from '../../../../../store/FactoryResolver/selectors';
+} from '../../../../../../store/FactoryResolver/selectors';
 import buildStepTitle from './buildStepTitle';
-import { FactoryParams } from '../../types';
-import { MIN_STEP_DURATION_MS, TIMEOUT_TO_RESOLVE_SEC } from '../../../const';
-import buildFactoryParams from '../../buildFactoryParams';
-import { AbstractLoaderStep, LoaderStepProps, LoaderStepState } from '../../../AbstractStep';
-import { AlertItem } from '../../../../../services/helpers/types';
+import { FactoryParams } from '../../../types';
+import { MIN_STEP_DURATION_MS, TIMEOUT_TO_RESOLVE_SEC } from '../../../../const';
+import buildFactoryParams from '../../../buildFactoryParams';
+import { AbstractLoaderStep, LoaderStepProps, LoaderStepState } from '../../../../AbstractStep';
+import { AlertItem } from '../../../../../../services/helpers/types';
 
 const RELOADS_LIMIT = 2;
 type ReloadsInfo = {

@@ -12,11 +12,11 @@
 
 import { safeDump } from 'js-yaml';
 import { cloneDeep } from 'lodash';
-import { DevWorkspaceTemplate } from '../../../../../services/devfileApi/devfileApi';
-import { DevWorkspace } from '../../../../../services/devfileApi/devWorkspace';
-import { DEVWORKSPACE_STORAGE_TYPE } from '../../../../../services/devfileApi/devWorkspace/spec';
-import { DEVWORKSPACE_DEVFILE_SOURCE } from '../../../../../services/workspace-client/devworkspace/devWorkspaceClient';
-import { DevWorkspaceResources } from '../../../../../store/DevfileRegistries';
+import { DevWorkspaceTemplate } from '../../../../../../services/devfileApi/devfileApi';
+import { DevWorkspace } from '../../../../../../services/devfileApi/devWorkspace';
+import { DEVWORKSPACE_STORAGE_TYPE } from '../../../../../../services/devfileApi/devWorkspace/spec';
+import { DEVWORKSPACE_DEVFILE_SOURCE } from '../../../../../../services/workspace-client/devworkspace/devWorkspaceClient';
+import { DevWorkspaceResources } from '../../../../../../store/DevfileRegistries';
 
 export default function prepareResources(
   _resources: DevWorkspaceResources,

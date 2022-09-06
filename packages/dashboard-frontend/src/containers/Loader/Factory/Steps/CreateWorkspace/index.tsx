@@ -16,7 +16,6 @@ import { helpers } from '@eclipse-che/common';
 import { DisposableCollection } from '../../../../../services/helpers/disposable';
 import { delay } from '../../../../../services/helpers/delay';
 import { FactoryLoaderPage } from '../../../../../pages/Loader/Factory';
-import getRandomString from '../../../../../services/helpers/random';
 import { MIN_STEP_DURATION_MS } from '../../../const';
 import { FactoryParams } from '../../types';
 import buildFactoryParams from '../../buildFactoryParams';

@@ -15,11 +15,11 @@ import { cloneDeep } from 'lodash';
 import {
   DEVWORKSPACE_DEVFILE_SOURCE,
   DEVWORKSPACE_METADATA_ANNOTATION,
-} from '../../../../../services/workspace-client/devworkspace/devWorkspaceClient';
-import { DEVWORKSPACE_STORAGE_TYPE } from '../../../../../services/devfileApi/devWorkspace/spec';
-import devfileApi from '../../../../../services/devfileApi';
-import { generateWorkspaceName } from '../../../../../services/helpers/generateName';
-import { PoliciesCreate } from '../../types';
+} from '../../../../../../services/workspace-client/devworkspace/devWorkspaceClient';
+import { DEVWORKSPACE_STORAGE_TYPE } from '../../../../../../services/devfileApi/devWorkspace/spec';
+import devfileApi from '../../../../../../services/devfileApi';
+import { generateWorkspaceName } from '../../../../../../services/helpers/generateName';
+import { PoliciesCreate } from '../../../types';
 
 export type FactorySource = { factory?: { params: string } };
 

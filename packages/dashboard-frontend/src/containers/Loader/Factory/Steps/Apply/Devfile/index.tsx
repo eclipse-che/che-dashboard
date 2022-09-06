@@ -15,35 +15,27 @@ import { connect, ConnectedProps } from 'react-redux';
 import { isEqual } from 'lodash';
 import { AlertVariant } from '@patternfly/react-core';
 import { helpers } from '@eclipse-che/common';
-import { AppState } from '../../../../../store';
-import * as FactoryResolverStore from '../../../../../store/FactoryResolver';
-import * as WorkspacesStore from '../../../../../store/Workspaces';
-import * as DevWorkspacesStore from '../../../../../store/Workspaces/devWorkspaces';
-import * as DevfileRegistriesStore from '../../../../../store/DevfileRegistries';
-import { DisposableCollection } from '../../../../../services/helpers/disposable';
-import { selectAllWorkspaces } from '../../../../../store/Workspaces/selectors';
-import { selectDevworkspacesEnabled } from '../../../../../store/Workspaces/Settings/selectors';
-import { delay } from '../../../../../services/helpers/delay';
-import { FactoryLoaderPage } from '../../../../../pages/Loader/Factory';
-import {
-  selectDefaultNamespace,
-  selectInfrastructureNamespaces,
-} from '../../../../../store/InfrastructureNamespaces/selectors';
+import { AppState } from '../../../../../../store';
+import * as WorkspacesStore from '../../../../../../store/Workspaces';
+import { DisposableCollection } from '../../../../../../services/helpers/disposable';
+import { selectAllWorkspaces } from '../../../../../../store/Workspaces/selectors';
+import { delay } from '../../../../../../services/helpers/delay';
+import devfileApi from '../../../../../../services/devfileApi';
+import { FactoryLoaderPage } from '../../../../../../pages/Loader/Factory';
+import { selectDefaultNamespace } from '../../../../../../store/InfrastructureNamespaces/selectors';
 import {
   selectFactoryResolver,
   selectFactoryResolverConverted,
-} from '../../../../../store/FactoryResolver/selectors';
-import prepareResources from './prepareResources';
-import { findTargetWorkspace } from '../findTargetWorkspace';
-import { selectDevWorkspaceResources } from '../../../../../store/DevfileRegistries/selectors';
-import { buildIdeLoaderLocation } from '../../../../../services/helpers/location';
-import { Workspace } from '../../../../../services/workspace-adapter';
-import { FactoryParams } from '../../types';
-import { MIN_STEP_DURATION_MS, TIMEOUT_TO_CREATE_SEC } from '../../../const';
-import buildFactoryParams from '../../buildFactoryParams';
-import { AbstractLoaderStep, LoaderStepProps, LoaderStepState } from '../../../AbstractStep';
-import { AlertItem } from '../../../../../services/helpers/types';
-import { generateWorkspaceName } from '../../../../../services/helpers/generateName';
+} from '../../../../../../store/FactoryResolver/selectors';
+import { prepareDevfile } from './prepareDevfile';
+import { findTargetWorkspace } from '../../findTargetWorkspace';
+import { buildIdeLoaderLocation } from '../../../../../../services/helpers/location';
+import { Workspace } from '../../../../../../services/workspace-adapter';
+import { MIN_STEP_DURATION_MS, TIMEOUT_TO_CREATE_SEC } from '../../../../const';
+import { FactoryParams } from '../../../types';
+import buildFactoryParams from '../../../buildFactoryParams';
+import { AbstractLoaderStep, LoaderStepProps, LoaderStepState } from '../../../../AbstractStep';
+import { AlertItem } from '../../../../../../services/helpers/types';
 
 export type Props = MappedProps &
   LoaderStepProps & {
@@ -53,10 +45,9 @@ export type State = LoaderStepState & {
   factoryParams: FactoryParams;
   newWorkspaceName?: string;
   shouldCreate: boolean; // should the loader create a workspace
-  suffix: string; // a suffix to add to a resource name to avoid names conflict
 };
 
-class StepApplyResources extends AbstractLoaderStep<Props, State> {
+class StepApplyDevfile extends AbstractLoaderStep<Props, State> {
   protected readonly toDispose = new DisposableCollection();
 
   constructor(props: Props) {
@@ -65,7 +56,6 @@ class StepApplyResources extends AbstractLoaderStep<Props, State> {
     this.state = {
       factoryParams: buildFactoryParams(props.searchParams),
       shouldCreate: true,
-      suffix: generateWorkspaceName(''),
     };
   }
 
@@ -116,7 +106,7 @@ class StepApplyResources extends AbstractLoaderStep<Props, State> {
   private init() {
     const workspace = this.findTargetWorkspace(this.props, this.state);
 
-    if (this.state.newWorkspaceName && workspace) {
+    if (workspace) {
       // prevent a workspace being created one more time
       this.setState({
         shouldCreate: false,
@@ -138,14 +128,14 @@ class StepApplyResources extends AbstractLoaderStep<Props, State> {
   protected async runStep(): Promise<boolean> {
     await delay(MIN_STEP_DURATION_MS);
 
-    const { devWorkspaceResources } = this.props;
-    const { factoryParams, shouldCreate, newWorkspaceName, suffix } = this.state;
-    const { cheEditor, factoryId, sourceUrl, storageType } = factoryParams;
+    const { factoryResolverConverted } = this.props;
+    const { shouldCreate, factoryParams } = this.state;
+    const { factoryId, policiesCreate, storageType } = factoryParams;
 
-    const targetWorkspace = this.findTargetWorkspace(this.props, this.state);
-    if (newWorkspaceName && targetWorkspace) {
+    const workspace = this.findTargetWorkspace(this.props, this.state);
+    if (workspace !== undefined) {
       // the workspace has been created, go to the next step
-      const nextLocation = buildIdeLoaderLocation(targetWorkspace);
+      const nextLocation = buildIdeLoaderLocation(workspace);
       this.props.history.location.pathname = nextLocation.pathname;
       this.props.history.location.search = '';
       return true;
@@ -158,30 +148,22 @@ class StepApplyResources extends AbstractLoaderStep<Props, State> {
       throw new Error('The workspace creation unexpectedly failed.');
     }
 
-    const resources = devWorkspaceResources[sourceUrl]?.resources;
-    if (resources === undefined) {
-      throw new Error('Failed to fetch devworkspace resources.');
+    const devfile = factoryResolverConverted?.devfileV2;
+    if (devfile === undefined) {
+      throw new Error('Failed to resolve the devfile.');
     }
 
-    // test the devWorkspace name to decide if we need to append a suffix to is
-    const appendSuffix = this.props.allWorkspaces.some(w => resources[0].metadata.name === w.name);
+    const updatedDevfile = prepareDevfile(devfile, factoryId, policiesCreate, storageType);
 
-    // create a workspace using pre-generated resources
-    const [devWorkspace, devWorkspaceTemplate] = prepareResources(
-      resources,
-      factoryId,
-      storageType,
-      appendSuffix ? suffix : undefined,
-    );
-
-    if (newWorkspaceName !== devWorkspace.metadata.name) {
+    const { newWorkspaceName } = this.state;
+    if (newWorkspaceName !== updatedDevfile.metadata.name) {
       this.setState({
-        newWorkspaceName: devWorkspace.metadata.name,
+        newWorkspaceName: devfile.metadata.name,
       });
       return false;
     }
 
-    await this.props.createWorkspaceFromResources(devWorkspace, devWorkspaceTemplate, cheEditor);
+    await this.createWorkspaceFromDevfile(updatedDevfile);
 
     // wait for the workspace creation to complete
     try {
@@ -205,12 +187,25 @@ class StepApplyResources extends AbstractLoaderStep<Props, State> {
     );
   }
 
+  private async createWorkspaceFromDevfile(devfile: devfileApi.Devfile): Promise<void> {
+    const params = Object.fromEntries(this.props.searchParams);
+    const infrastructureNamespace = this.props.defaultNamespace.name;
+    const optionalFilesContent = this.props.factoryResolver?.optionalFilesContent || {};
+    await this.props.createWorkspaceFromDevfile(
+      devfile,
+      undefined,
+      infrastructureNamespace,
+      params,
+      optionalFilesContent,
+    );
+  }
+
   private getAlertItem(error: unknown): AlertItem | undefined {
     if (!error) {
       return;
     }
     return {
-      key: 'factory-loader-apply-resources',
+      key: 'factory-loader-initialize',
       title: 'Failed to create the workspace',
       variant: AlertVariant.danger,
       children: helpers.errors.getMessage(error),
@@ -246,20 +241,14 @@ class StepApplyResources extends AbstractLoaderStep<Props, State> {
 const mapStateToProps = (state: AppState) => ({
   allWorkspaces: selectAllWorkspaces(state),
   defaultNamespace: selectDefaultNamespace(state),
-  devworkspacesEnabled: selectDevworkspacesEnabled(state),
   factoryResolver: selectFactoryResolver(state),
   factoryResolverConverted: selectFactoryResolverConverted(state),
-  infrastructureNamespaces: selectInfrastructureNamespaces(state),
-  devWorkspaceResources: selectDevWorkspaceResources(state),
 });
 
 const connector = connect(
   mapStateToProps,
   {
-    ...DevfileRegistriesStore.actionCreators,
-    ...FactoryResolverStore.actionCreators,
     ...WorkspacesStore.actionCreators,
-    createWorkspaceFromResources: DevWorkspacesStore.actionCreators.createWorkspaceFromResources,
   },
   null,
   {
@@ -268,4 +257,4 @@ const connector = connect(
   },
 );
 type MappedProps = ConnectedProps<typeof connector>;
-export default connector(StepApplyResources);
+export default connector(StepApplyDevfile);
