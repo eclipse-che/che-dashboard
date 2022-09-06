@@ -16,36 +16,46 @@ import { isEqual } from 'lodash';
 import { AlertVariant } from '@patternfly/react-core';
 import { helpers } from '@eclipse-che/common';
 import { AppState } from '../../../../../store';
-import * as DevfileRegistriesStore from '../../../../../store/DevfileRegistries';
 import { DisposableCollection } from '../../../../../services/helpers/disposable';
 import { selectAllWorkspaces } from '../../../../../store/Workspaces/selectors';
 import { delay } from '../../../../../services/helpers/delay';
 import { FactoryLoaderPage } from '../../../../../pages/Loader/Factory';
 import { selectDevWorkspaceResources } from '../../../../../store/DevfileRegistries/selectors';
+import { buildIdeLoaderLocation } from '../../../../../services/helpers/location';
+import { Workspace } from '../../../../../services/workspace-adapter';
 import { FactoryParams } from '../../types';
-import { MIN_STEP_DURATION_MS, TIMEOUT_TO_RESOLVE_SEC } from '../../../const';
+import { MIN_STEP_DURATION_MS } from '../../../const';
 import buildFactoryParams from '../../buildFactoryParams';
 import { AbstractLoaderStep, LoaderStepProps, LoaderStepState } from '../../../AbstractStep';
 import { AlertItem } from '../../../../../services/helpers/types';
+
+export class WorkspacesNameConflictError extends Error {
+  constructor(message: string | undefined) {
+    super(message);
+    this.name = 'RunningWorkspacesExceededError';
+  }
+}
 
 export type Props = MappedProps &
   LoaderStepProps & {
     searchParams: URLSearchParams;
   };
 export type State = LoaderStepState & {
+  existingWorkspace: Workspace | undefined; // a workspace with the same name that fetched resource has
   factoryParams: FactoryParams;
-  shouldResolve: boolean;
+  shouldCreate: boolean; // should the loader proceed with creating a new workspace or switch to the existing one
 };
 
-class StepFetchResources extends AbstractLoaderStep<Props, State> {
+class StepCheckExistingWorkspaces extends AbstractLoaderStep<Props, State> {
   protected readonly toDispose = new DisposableCollection();
 
   constructor(props: Props) {
     super(props);
 
     this.state = {
+      existingWorkspace: undefined,
       factoryParams: buildFactoryParams(props.searchParams),
-      shouldResolve: true,
+      shouldCreate: false,
     };
   }
 
@@ -65,25 +75,15 @@ class StepFetchResources extends AbstractLoaderStep<Props, State> {
       return true;
     }
 
-    // factory resolver got updated
-    const { sourceUrl } = this.state.factoryParams;
-    // devworkspace resources fetched
-    if (
-      sourceUrl &&
-      this.props.devWorkspaceResources[sourceUrl]?.resources === undefined &&
-      nextProps.devWorkspaceResources[sourceUrl]?.resources !== undefined
-    ) {
-      return true;
-    }
-
     // current step failed
     if (!isEqual(this.state.lastError, nextState.lastError)) {
       return true;
     }
 
-    if (this.state.shouldResolve !== nextState.shouldResolve) {
+    if (this.state.shouldCreate !== nextState.shouldCreate) {
       return true;
     }
+
     return false;
   }
 
@@ -92,67 +92,102 @@ class StepFetchResources extends AbstractLoaderStep<Props, State> {
   }
 
   private init() {
-    const { devWorkspaceResources } = this.props;
-    const { factoryParams } = this.state;
-    const { sourceUrl } = factoryParams;
-    if (sourceUrl && devWorkspaceResources[sourceUrl]?.resources !== undefined) {
-      // prevent a resource being fetched one more time
-      this.setState({
-        shouldResolve: false,
-      });
-    }
-
     this.prepareAndRun();
   }
 
   protected handleRestart(): void {
     this.setState({
-      shouldResolve: true,
+      shouldCreate: false,
     });
     this.clearStepError();
     this.props.onRestart();
+  }
+
+  private handleNameConflict(action: 'create-new' | 'open-existing'): void {
+    if (action === 'create-new') {
+      // proceed with creating an new workspace
+      this.setState({
+        shouldCreate: true,
+      });
+      this.clearStepError();
+      return;
+    }
+
+    // open workspace flow for the existing workspace
+    const { existingWorkspace } = this.state;
+    // at this moment existing workspace must be defined
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    const nextLocation = buildIdeLoaderLocation(existingWorkspace!);
+    this.props.history.push(nextLocation);
+    this.props.history.go(0);
   }
 
   protected async runStep(): Promise<boolean> {
     await delay(MIN_STEP_DURATION_MS);
 
     const { devWorkspaceResources } = this.props;
-    const { factoryParams, lastError, shouldResolve } = this.state;
-    const { sourceUrl } = factoryParams;
+    const { factoryParams, shouldCreate } = this.state;
 
-    if (devWorkspaceResources[sourceUrl]?.resources) {
-      // pre-built resources fetched successfully
+    if (shouldCreate) {
+      // user decided to create a new workspace
+      return true;
+    }
+    if (factoryParams.policiesCreate === 'perclick') {
+      // continue creating new workspace in accordance to the policy
       return true;
     }
 
-    if (shouldResolve === false) {
-      if (lastError instanceof Error) {
-        throw lastError;
-      }
-      throw new Error('Failed to fetch pre-built resources');
+    const resources = devWorkspaceResources[factoryParams.sourceUrl]?.resources;
+    if (resources === undefined) {
+      throw new Error('Failed to fetch devworkspace resources.');
     }
 
-    await this.props.requestResources(sourceUrl);
+    const [devWorkspace] = resources;
 
-    // wait for fetching resources to complete
-    try {
-      await this.waitForStepDone(TIMEOUT_TO_RESOLVE_SEC);
-
-      // do not switch to the next step
-      return false;
-    } catch (e) {
-      throw new Error(
-        `Pre-built resources haven't been fetched in the last ${TIMEOUT_TO_RESOLVE_SEC} seconds.`,
+    // check existing workspaces to avoid name conflicts
+    const existingWorkspace = this.props.allWorkspaces.find(
+      w => devWorkspace.metadata.name === w.name,
+    );
+    if (existingWorkspace) {
+      // detected workspaces name conflict
+      this.setStepError(
+        new WorkspacesNameConflictError(
+          `A workspace with the same name (${existingWorkspace.name}) has been found. Should you want to open the existing workspace or proceed to create a new one, please choose the corresponding action.`,
+        ),
       );
+      this.setState({
+        existingWorkspace,
+      });
+      return false;
     }
+
+    return true;
   }
 
   private getAlertItem(error: unknown): AlertItem | undefined {
+    if (error instanceof WorkspacesNameConflictError) {
+      return {
+        key: 'factory-loader-check-existing-workspaces',
+        title: 'Existing workspace found',
+        variant: AlertVariant.warning,
+        children: helpers.errors.getMessage(error),
+        actionCallbacks: [
+          {
+            title: 'Open the existing workspace',
+            callback: () => this.handleNameConflict('open-existing'),
+          },
+          {
+            title: 'Create a new workspace',
+            callback: () => this.handleNameConflict('create-new'),
+          },
+        ],
+      };
+    }
     if (!error) {
       return;
     }
     return {
-      key: 'factory-loader-apply-resources',
+      key: 'factory-loader-check-existing-workspaces',
       title: 'Failed to create the workspace',
       variant: AlertVariant.danger,
       children: helpers.errors.getMessage(error),
@@ -190,16 +225,9 @@ const mapStateToProps = (state: AppState) => ({
   devWorkspaceResources: selectDevWorkspaceResources(state),
 });
 
-const connector = connect(
-  mapStateToProps,
-  {
-    ...DevfileRegistriesStore.actionCreators,
-  },
-  null,
-  {
-    // forwardRef is mandatory for using `@react-mock/state` in unit tests
-    forwardRef: true,
-  },
-);
+const connector = connect(mapStateToProps, null, null, {
+  // forwardRef is mandatory for using `@react-mock/state` in unit tests
+  forwardRef: true,
+});
 type MappedProps = ConnectedProps<typeof connector>;
-export default connector(StepFetchResources);
+export default connector(StepCheckExistingWorkspaces);

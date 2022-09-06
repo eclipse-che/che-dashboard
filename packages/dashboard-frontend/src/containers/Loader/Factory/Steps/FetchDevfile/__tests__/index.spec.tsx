@@ -100,42 +100,6 @@ describe('Factory Loader container, step CREATE_WORKSPACE__FETCH_DEVFILE', () =>
     jest.clearAllMocks();
   });
 
-  test('workspace is already created', async () => {
-    const factorySource = {
-      factory: {
-        params: `${FACTORY_URL_ATTR}=${factoryUrl}`,
-      },
-    };
-    const storeWithWorkspace = new FakeStoreBuilder()
-      .withDevWorkspaces({
-        workspaces: [
-          new DevWorkspaceBuilder()
-            .withMetadata({
-              annotations: {
-                [DEVWORKSPACE_DEVFILE_SOURCE]: dump(factorySource),
-              },
-            })
-            .build(),
-        ],
-      })
-      .build();
-
-    renderComponent(storeWithWorkspace, loaderSteps, searchParams);
-
-    jest.advanceTimersByTime(MIN_STEP_DURATION_MS);
-
-    const currentStepId = screen.getByTestId('current-step-id');
-    await waitFor(() => expect(currentStepId.textContent).toEqual(stepId));
-
-    const currentStep = screen.getByTestId(stepId);
-    const hasError = within(currentStep).getByTestId('hasError');
-    expect(hasError.textContent).toEqual('false');
-
-    await waitFor(() => expect(mockOnNextStep).toHaveBeenCalled());
-
-    expect(mockRequestFactoryResolver).not.toHaveBeenCalled();
-  });
-
   test('devfile is already resolved', async () => {
     renderComponent(store, loaderSteps, searchParams);
 

@@ -17,7 +17,6 @@ import { createMemoryHistory } from 'history';
 import { screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { StateMock } from '@react-mock/state';
-import { dump } from 'js-yaml';
 import { FakeStoreBuilder } from '../../../../../../store/__mocks__/storeBuilder';
 import { ActionCreators } from '../../../../../../store/DevfileRegistries';
 import { AppThunk } from '../../../../../../store';
@@ -27,8 +26,6 @@ import {
   getFactoryLoadingSteps,
 } from '../../../../../../components/Loader/Step/buildSteps';
 import devfileApi from '../../../../../../services/devfileApi';
-import { DevWorkspaceBuilder } from '../../../../../../store/__mocks__/devWorkspaceBuilder';
-import { DEVWORKSPACE_DEVFILE_SOURCE } from '../../../../../../services/workspace-client/devworkspace/devWorkspaceClient';
 import getComponentRenderer from '../../../../../../services/__mocks__/getComponentRenderer';
 import StepFetchResources, { State } from '..';
 import {
@@ -68,7 +65,6 @@ const loadingSteps = getFactoryLoadingSteps('devworkspace');
 
 const resourcesUrl = 'https://resources-url';
 const factoryUrl = 'https://factory-url';
-const factoryId = `${DEV_WORKSPACE_ATTR}=${resourcesUrl}&${FACTORY_URL_ATTR}=${factoryUrl}`;
 
 describe('Factory Loader container, step CREATE_WORKSPACE__FETCHING_RESOURCES', () => {
   let loaderSteps: List<LoaderStep>;
@@ -106,42 +102,6 @@ describe('Factory Loader container, step CREATE_WORKSPACE__FETCHING_RESOURCES', 
     userEvent.click(restartButton);
 
     expect(mockOnRestart).toHaveBeenCalled();
-  });
-
-  test('workspace is already created', async () => {
-    const factorySource = {
-      factory: {
-        params: factoryId,
-      },
-    };
-    const store = new FakeStoreBuilder()
-      .withDevWorkspaces({
-        workspaces: [
-          new DevWorkspaceBuilder()
-            .withMetadata({
-              annotations: {
-                [DEVWORKSPACE_DEVFILE_SOURCE]: dump(factorySource),
-              },
-            })
-            .build(),
-        ],
-      })
-      .build();
-
-    renderComponent(store, loaderSteps, searchParams);
-
-    jest.advanceTimersByTime(MIN_STEP_DURATION_MS);
-
-    const currentStepId = screen.getByTestId('current-step-id');
-    await waitFor(() => expect(currentStepId.textContent).toEqual(stepId));
-
-    const currentStep = screen.getByTestId(stepId);
-    const hasError = within(currentStep).getByTestId('hasError');
-    expect(hasError.textContent).toEqual('false');
-
-    await waitFor(() => expect(mockOnNextStep).toHaveBeenCalled());
-
-    expect(mockRequestResources).not.toHaveBeenCalled();
   });
 
   test('resources are already resolved', async () => {

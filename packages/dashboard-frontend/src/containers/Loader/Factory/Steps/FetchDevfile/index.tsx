@@ -28,9 +28,7 @@ import {
   selectFactoryResolver,
   selectFactoryResolverConverted,
 } from '../../../../../store/FactoryResolver/selectors';
-import { findTargetWorkspace } from '../findTargetWorkspace';
 import buildStepTitle from './buildStepTitle';
-import { Workspace } from '../../../../../services/workspace-adapter';
 import { FactoryParams } from '../../types';
 import { MIN_STEP_DURATION_MS, TIMEOUT_TO_RESOLVE_SEC } from '../../../const';
 import buildFactoryParams from '../../buildFactoryParams';
@@ -74,9 +72,6 @@ class StepFetchDevfile extends AbstractLoaderStep<Props, State> {
   }
 
   public shouldComponentUpdate(nextProps: Props, nextState: State): boolean {
-    const workspace = this.findTargetWorkspace(this.props, this.state);
-    const nextWorkspace = this.findTargetWorkspace(nextProps, nextState);
-
     // switch to the next step
     if (this.props.currentStepIndex !== nextProps.currentStepIndex) {
       return true;
@@ -89,11 +84,6 @@ class StepFetchDevfile extends AbstractLoaderStep<Props, State> {
       this.props.factoryResolver?.location !== sourceUrl &&
       nextProps.factoryResolver?.location === sourceUrl
     ) {
-      return true;
-    }
-
-    // new workspace appeared
-    if (workspace === undefined && nextWorkspace !== undefined) {
       return true;
     }
 
@@ -113,18 +103,11 @@ class StepFetchDevfile extends AbstractLoaderStep<Props, State> {
   }
 
   private init() {
-    const workspace = this.findTargetWorkspace(this.props, this.state);
-    if (workspace) {
-      // prevent a resource being fetched one more time
-      this.setState({
-        shouldResolve: false,
-      });
-    }
-
     const { factoryResolver } = this.props;
     const { factoryParams } = this.state;
     const { sourceUrl } = factoryParams;
     if (sourceUrl && sourceUrl === factoryResolver?.location) {
+      // prevent a resource being fetched one more time
       this.setState({
         shouldResolve: false,
       });
@@ -147,12 +130,6 @@ class StepFetchDevfile extends AbstractLoaderStep<Props, State> {
     const { factoryParams, shouldResolve } = this.state;
     const { currentStepIndex, factoryResolver, factoryResolverConverted, loaderSteps } = this.props;
     const { sourceUrl } = factoryParams;
-
-    const workspace = this.findTargetWorkspace(this.props, this.state);
-    if (workspace) {
-      // the workspace has been created, go to the next step
-      return true;
-    }
 
     if (
       factoryResolver?.location === sourceUrl &&
@@ -195,14 +172,6 @@ class StepFetchDevfile extends AbstractLoaderStep<Props, State> {
         `Devfile hasn't been resolved in the last ${TIMEOUT_TO_RESOLVE_SEC} seconds.`,
       );
     }
-  }
-
-  private findTargetWorkspace(props: Props, state: State): Workspace | undefined {
-    return findTargetWorkspace(
-      props.allWorkspaces,
-      state.factoryParams.factoryId,
-      state.factoryParams.policiesCreate,
-    );
   }
 
   /**

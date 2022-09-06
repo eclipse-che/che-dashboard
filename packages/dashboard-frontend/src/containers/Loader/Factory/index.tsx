@@ -19,6 +19,7 @@ import StepFetchDevfile from './Steps/FetchDevfile';
 import StepFetchResources from './Steps/FetchResources';
 import StepApplyDevfile from './Steps/ApplyDevfile';
 import StepApplyResources from './Steps/ApplyResources';
+import StepCheckExistingWorkspaces from './Steps/CheckExistingWorkspaces';
 
 export type Props = {
   currentStepIndex: number;
@@ -41,6 +42,8 @@ export default class FactoryLoader extends React.Component<Props> {
         return <StepFetchDevfile {...this.props} />;
       case LoadingStep.CREATE_WORKSPACE__FETCH_RESOURCES:
         return <StepFetchResources {...this.props} />;
+      case LoadingStep.CREATE_WORKSPACE__CHECK_EXISTING_WORKSPACES:
+        return <StepCheckExistingWorkspaces {...this.props} />;
       case LoadingStep.CREATE_WORKSPACE__APPLY_DEVFILE:
         return <StepApplyDevfile {...this.props} />;
       case LoadingStep.CREATE_WORKSPACE__APPLY_RESOURCES:

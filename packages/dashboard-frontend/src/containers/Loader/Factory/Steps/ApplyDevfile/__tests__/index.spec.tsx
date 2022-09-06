@@ -58,7 +58,7 @@ const mockOnNextStep = jest.fn();
 const mockOnRestart = jest.fn();
 
 const stepId = LoadingStep.CREATE_WORKSPACE__APPLY_DEVFILE.toString();
-const currentStepIndex = 3;
+const currentStepIndex = 4;
 const loadingSteps = getFactoryLoadingSteps('devfile');
 
 const factoryUrl = 'https://factory-url';

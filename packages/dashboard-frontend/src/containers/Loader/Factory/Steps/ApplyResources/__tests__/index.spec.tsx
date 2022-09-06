@@ -66,7 +66,7 @@ const mockOnNextStep = jest.fn();
 const mockOnRestart = jest.fn();
 
 const stepId = LoadingStep.CREATE_WORKSPACE__APPLY_RESOURCES.toString();
-const currentStepIndex = 3;
+const currentStepIndex = 4;
 const loadingSteps = getFactoryLoadingSteps('devworkspace');
 
 const resourcesUrl = 'https://resources-url';
@@ -116,46 +116,6 @@ describe('Factory Loader container, step CREATE_WORKSPACE__APPLYING_RESOURCES', 
     userEvent.click(restartButton);
 
     expect(mockOnRestart).toHaveBeenCalled();
-  });
-
-  test('workspace is already created', async () => {
-    const factorySource = {
-      factory: {
-        params: factoryId,
-      },
-    };
-    const store = new FakeStoreBuilder()
-      .withDevWorkspaces({
-        workspaces: [
-          new DevWorkspaceBuilder()
-            .withName('my-project')
-            .withNamespace('user-che')
-            .withMetadata({
-              annotations: {
-                [DEVWORKSPACE_DEVFILE_SOURCE]: dump(factorySource),
-              },
-            })
-            .build(),
-        ],
-      })
-      .build();
-
-    const path = generatePath(ROUTE.FACTORY_LOADER_URL, {
-      url: factoryUrl,
-    });
-    renderComponent(store, path, loaderSteps, searchParams);
-
-    jest.advanceTimersByTime(MIN_STEP_DURATION_MS);
-
-    const currentStepId = screen.getByTestId('current-step-id');
-    await waitFor(() => expect(currentStepId.textContent).toEqual(stepId));
-
-    const currentStep = screen.getByTestId(stepId);
-    const hasError = within(currentStep).getByTestId('hasError');
-    expect(hasError.textContent).toEqual('false');
-
-    await waitFor(() => expect(mockOnNextStep).toHaveBeenCalled());
-    expect(testLocation.pathname).toEqual('/ide/user-che/my-project');
   });
 
   test('resources are not fetched', async () => {

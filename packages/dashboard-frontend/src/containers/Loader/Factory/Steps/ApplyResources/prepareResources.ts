@@ -12,14 +12,17 @@
 
 import { safeDump } from 'js-yaml';
 import { cloneDeep } from 'lodash';
+import { DevWorkspaceTemplate } from '../../../../../services/devfileApi/devfileApi';
+import { DevWorkspace } from '../../../../../services/devfileApi/devWorkspace';
 import { DEVWORKSPACE_STORAGE_TYPE } from '../../../../../services/devfileApi/devWorkspace/spec';
 import { DEVWORKSPACE_DEVFILE_SOURCE } from '../../../../../services/workspace-client/devworkspace/devWorkspaceClient';
 import { DevWorkspaceResources } from '../../../../../store/DevfileRegistries';
 
-export function prepareResources(
+export default function prepareResources(
   _resources: DevWorkspaceResources,
   factoryId: string,
   storageType: che.WorkspaceStorageType | undefined,
+  suffix: string | undefined,
 ): DevWorkspaceResources {
   const resources = cloneDeep(_resources);
   const [devWorkspace, devWorkspaceTemplate] = resources;
@@ -33,6 +36,11 @@ export function prepareResources(
     factory: { params: factoryId },
   });
 
+  // update the DevWorkspace and DevWorkspaceTemplate names in accordance to the policy
+  if (suffix) {
+    appendSuffix(suffix, devWorkspace, devWorkspaceTemplate);
+  }
+
   // set storage type attribute
   if (storageType === 'ephemeral') {
     if (!devWorkspace.spec.template.attributes) {
@@ -44,4 +52,35 @@ export function prepareResources(
   }
 
   return [devWorkspace, devWorkspaceTemplate];
+}
+
+function appendSuffix(
+  suffix: string,
+  devWorkspace: DevWorkspace,
+  devWorkspaceTemplate: DevWorkspaceTemplate,
+) {
+  const editorPluginName = devWorkspaceTemplate.metadata.name;
+
+  if (devWorkspace.metadata.generateName) {
+    // assign devworkspace name
+    devWorkspace.metadata.name = devWorkspace.metadata.generateName + suffix;
+    delete devWorkspace.metadata.generateName;
+  } else {
+    // update devworkspace name
+    devWorkspace.metadata.name += suffix;
+  }
+
+  // update editor plugin name
+  const editorPlugin = devWorkspace.spec.template.components?.find(
+    component => component.name === editorPluginName,
+  );
+  if (editorPlugin) {
+    editorPlugin.name = editorPluginName + suffix;
+    if (editorPlugin.plugin?.kubernetes) {
+      editorPlugin.plugin.kubernetes.name = editorPluginName + suffix;
+    }
+  }
+
+  // update DevWorkspaceTemplate name
+  devWorkspaceTemplate.metadata.name = editorPluginName + suffix;
 }

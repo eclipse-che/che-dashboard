@@ -37,11 +37,13 @@ export function getResourcesFetchingSteps(source: FactorySource): LoadingStep[] 
   if (source === 'devfile') {
     return [
       LoadingStep.CREATE_WORKSPACE__FETCH_DEVFILE,
+      LoadingStep.CREATE_WORKSPACE__CHECK_EXISTING_WORKSPACES,
       LoadingStep.CREATE_WORKSPACE__APPLY_DEVFILE,
     ];
   } else {
     return [
       LoadingStep.CREATE_WORKSPACE__FETCH_RESOURCES,
+      LoadingStep.CREATE_WORKSPACE__CHECK_EXISTING_WORKSPACES,
       LoadingStep.CREATE_WORKSPACE__APPLY_RESOURCES,
     ];
   }
@@ -54,7 +56,8 @@ export function buildLoaderSteps(loadingSteps: LoadingStep[]): List<LoaderStep> 
       step === LoadingStep.CREATE_WORKSPACE__FETCH_DEVFILE ||
       step === LoadingStep.CREATE_WORKSPACE__FETCH_RESOURCES ||
       step === LoadingStep.CREATE_WORKSPACE__APPLY_DEVFILE ||
-      step === LoadingStep.CREATE_WORKSPACE__APPLY_RESOURCES
+      step === LoadingStep.CREATE_WORKSPACE__APPLY_RESOURCES ||
+      step === LoadingStep.CREATE_WORKSPACE__CHECK_EXISTING_WORKSPACES
         ? LoadingStep.CREATE_WORKSPACE
         : undefined;
     stepsList.add(new LoaderStep(step, parentStep));
