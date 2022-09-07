@@ -33,7 +33,7 @@ export type Props = MappedProps & {
   };
   tabParam: string | undefined;
   onNextStep: () => void;
-  onRestart: (openLogsTab?: boolean) => void;
+  onRestart: (tabName?: string) => void;
 };
 
 class WorkspaceLoader extends React.PureComponent<Props> {
@@ -41,14 +41,14 @@ class WorkspaceLoader extends React.PureComponent<Props> {
     super(props);
   }
 
-  private handleWorkspaceRestart(openLogsTab = false): void {
+  private handleWorkspaceRestart(tabName?: string): void {
     const { allWorkspaces, matchParams } = this.props;
     const workspace = findTargetWorkspace(allWorkspaces, matchParams);
     if (workspace) {
       this.props.deleteWorkspaceLogs(workspace);
     }
 
-    this.props.onRestart(openLogsTab);
+    this.props.onRestart(tabName);
   }
 
   render(): React.ReactNode {
@@ -59,28 +59,28 @@ class WorkspaceLoader extends React.PureComponent<Props> {
         return (
           <StepInitialize
             {...this.props}
-            onRestart={openLogsTab => this.handleWorkspaceRestart(openLogsTab)}
+            onRestart={tabName => this.handleWorkspaceRestart(tabName)}
           />
         );
       case LoadingStep.CHECK_RUNNING_WORKSPACES_LIMIT:
         return (
           <StepCheckRunningWorkspacesLimit
             {...this.props}
-            onRestart={openLogsTab => this.handleWorkspaceRestart(openLogsTab)}
+            onRestart={tabName => this.handleWorkspaceRestart(tabName)}
           />
         );
       case LoadingStep.START_WORKSPACE:
         return (
           <StepStartWorkspace
             {...this.props}
-            onRestart={openLogsTab => this.handleWorkspaceRestart(openLogsTab)}
+            onRestart={tabName => this.handleWorkspaceRestart(tabName)}
           />
         );
       default:
         return (
           <StepOpenWorkspace
             {...this.props}
-            onRestart={openLogsTab => this.handleWorkspaceRestart(openLogsTab)}
+            onRestart={tabName => this.handleWorkspaceRestart(tabName)}
           />
         );
     }

@@ -20,7 +20,7 @@ import { selectAllWorkspaces } from '../../../../../store/Workspaces/selectors';
 import * as WorkspaceStore from '../../../../../store/Workspaces';
 import WorkspaceLoaderPage from '../../../../../pages/Loader/Workspace';
 import { Workspace } from '../../../../../services/workspace-adapter';
-import { AlertItem, DevWorkspaceStatus } from '../../../../../services/helpers/types';
+import { AlertItem, DevWorkspaceStatus, LoaderTab } from '../../../../../services/helpers/types';
 import { DisposableCollection } from '../../../../../services/helpers/disposable';
 import { delay } from '../../../../../services/helpers/delay';
 import { MIN_STEP_DURATION_MS, TIMEOUT_TO_STOP_SEC } from '../../../const';
@@ -85,9 +85,9 @@ class StepInitialize extends AbstractLoaderStep<Props, State> {
     return statuses.some(status => status === workspace.status);
   }
 
-  protected handleRestart(openLogsTab = false): void {
+  protected handleRestart(tabName?: string): void {
     this.clearStepError();
-    this.props.onRestart(openLogsTab);
+    this.props.onRestart(tabName);
   }
 
   /**
@@ -164,7 +164,7 @@ class StepInitialize extends AbstractLoaderStep<Props, State> {
         },
         {
           title: 'Open in Verbose mode',
-          callback: () => this.handleRestart(true),
+          callback: () => this.handleRestart(LoaderTab[LoaderTab.Logs]),
         },
       ],
     };

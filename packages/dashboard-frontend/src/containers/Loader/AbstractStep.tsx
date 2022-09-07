@@ -22,7 +22,7 @@ export type LoaderStepProps = {
   loaderSteps: Readonly<List<LoaderStep>>;
   tabParam: string | undefined;
   onNextStep: () => void;
-  onRestart: (openLogsTab?: boolean) => void;
+  onRestart: (tabName?: string) => void;
 };
 export type LoaderStepState = {
   lastError?: unknown;

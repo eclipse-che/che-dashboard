@@ -22,7 +22,7 @@ import {
 } from '../../../../../store/Workspaces/selectors';
 import * as WorkspaceStore from '../../../../../store/Workspaces';
 import WorkspaceLoaderPage from '../../../../../pages/Loader/Workspace';
-import { AlertItem, DevWorkspaceStatus } from '../../../../../services/helpers/types';
+import { AlertItem, DevWorkspaceStatus, LoaderTab } from '../../../../../services/helpers/types';
 import { DisposableCollection } from '../../../../../services/helpers/disposable';
 import { delay } from '../../../../../services/helpers/delay';
 import { MIN_STEP_DURATION_MS, TIMEOUT_TO_STOP_SEC } from '../../../const';
@@ -215,13 +215,13 @@ class StepCheckRunningWorkspacesLimit extends AbstractLoaderStep<Props, State> {
     this.forceUpdate();
   }
 
-  protected handleRestart(openLogsTab = false): void {
+  protected handleRestart(tabName?: string): void {
     this.setState({
       shouldStop: true,
       redundantWorkspaceUID: undefined,
     });
     this.clearStepError();
-    this.props.onRestart(openLogsTab);
+    this.props.onRestart(tabName);
   }
 
   private handleOpenDashboard(): void {
@@ -297,7 +297,7 @@ class StepCheckRunningWorkspacesLimit extends AbstractLoaderStep<Props, State> {
         },
         {
           title: 'Open in Verbose mode',
-          callback: () => this.handleRestart(true),
+          callback: () => this.handleRestart(LoaderTab[LoaderTab.Logs]),
         },
       ],
     };

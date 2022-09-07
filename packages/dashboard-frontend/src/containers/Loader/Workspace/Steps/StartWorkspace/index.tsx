@@ -19,7 +19,7 @@ import { AppState } from '../../../../../store';
 import { selectAllWorkspaces, selectLogs } from '../../../../../store/Workspaces/selectors';
 import * as WorkspaceStore from '../../../../../store/Workspaces';
 import WorkspaceLoaderPage from '../../../../../pages/Loader/Workspace';
-import { AlertItem, DevWorkspaceStatus } from '../../../../../services/helpers/types';
+import { AlertItem, DevWorkspaceStatus, LoaderTab } from '../../../../../services/helpers/types';
 import { DisposableCollection } from '../../../../../services/helpers/disposable';
 import { delay } from '../../../../../services/helpers/delay';
 import { filterErrorLogs } from '../../../../../services/helpers/filterErrorLogs';
@@ -100,10 +100,10 @@ class StepStartWorkspace extends AbstractLoaderStep<Props, State> {
     this.prepareAndRun();
   }
 
-  protected handleRestart(openLogsTab = false): void {
+  protected handleRestart(tabName?: string): void {
     this.setState({ shouldStart: true });
     this.clearStepError();
-    this.props.onRestart(openLogsTab);
+    this.props.onRestart(tabName);
   }
 
   /**
@@ -195,7 +195,7 @@ class StepStartWorkspace extends AbstractLoaderStep<Props, State> {
         },
         {
           title: 'Open in Verbose mode',
-          callback: () => this.handleRestart(true),
+          callback: () => this.handleRestart(LoaderTab[LoaderTab.Logs]),
         },
       ],
     };

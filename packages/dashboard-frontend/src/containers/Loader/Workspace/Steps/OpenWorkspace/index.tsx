@@ -25,7 +25,7 @@ import { MIN_STEP_DURATION_MS, TIMEOUT_TO_GET_URL_SEC } from '../../../const';
 import findTargetWorkspace from '../../findTargetWorkspace';
 import { Workspace } from '../../../../../services/workspace-adapter';
 import { AbstractLoaderStep, LoaderStepProps, LoaderStepState } from '../../../AbstractStep';
-import { AlertItem } from '../../../../../services/helpers/types';
+import { AlertItem, LoaderTab } from '../../../../../services/helpers/types';
 
 export type Props = MappedProps &
   LoaderStepProps & {
@@ -82,9 +82,9 @@ class StepOpenWorkspace extends AbstractLoaderStep<Props, State> {
     this.toDispose.dispose();
   }
 
-  protected handleRestart(openLogsTab = false): void {
+  protected handleRestart(tabName?: string): void {
     this.clearStepError();
-    this.props.onRestart(openLogsTab);
+    this.props.onRestart(tabName);
   }
 
   protected async runStep(): Promise<boolean> {
@@ -151,7 +151,7 @@ class StepOpenWorkspace extends AbstractLoaderStep<Props, State> {
         },
         {
           title: 'Open in Verbose mode',
-          callback: () => this.handleRestart(true),
+          callback: () => this.handleRestart(LoaderTab[LoaderTab.Logs]),
         },
       ],
     };

@@ -106,10 +106,10 @@ class LoaderContainer extends React.Component<Props, State> {
     });
   }
 
-  private handleRestart(openLogsTab = false): void {
+  private handleRestart(tabName?: string): void {
     const { initialMode } = this.state;
 
-    const tabParam = openLogsTab ? LoaderTab.Logs.toString() : LoaderTab.Progress.toString();
+    const tabParam = tabName && LoaderTab[tabName] ? tabName : LoaderTab[LoaderTab.Progress];
 
     const { mode } = this.getMode(this.props);
     if (initialMode === mode) {
@@ -159,7 +159,7 @@ class LoaderContainer extends React.Component<Props, State> {
           matchParams={matchParams}
           tabParam={tabParam}
           onNextStep={() => this.handleNextStep()}
-          onRestart={openLogsTab => this.handleRestart(openLogsTab)}
+          onRestart={tabName => this.handleRestart(tabName)}
         />
       );
     }
