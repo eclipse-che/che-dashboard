@@ -103,7 +103,7 @@ export function sanitizeLocation(location: Location, removeParams: string[] = []
   // clear search params
   if (location.search) {
     const searchParams = new window.URLSearchParams(location.search);
-    toRemove.forEach(param => searchParams.delete(param));
+    toRemove.forEach(val => searchParams.delete(val));
     location.search = '?' + searchParams.toString();
   }
 
