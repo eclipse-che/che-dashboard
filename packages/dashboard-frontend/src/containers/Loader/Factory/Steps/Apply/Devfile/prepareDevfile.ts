@@ -19,15 +19,14 @@ import {
 import { DEVWORKSPACE_STORAGE_TYPE } from '../../../../../../services/devfileApi/devWorkspace/spec';
 import devfileApi from '../../../../../../services/devfileApi';
 import { generateWorkspaceName } from '../../../../../../services/helpers/generateName';
-import { PoliciesCreate } from '../../../types';
 
 export type FactorySource = { factory?: { params: string } };
 
 export function prepareDevfile(
   _devfile: devfileApi.Devfile,
   factoryId: string,
-  createPolicy: PoliciesCreate | undefined,
   storageType: che.WorkspaceStorageType | undefined,
+  appendSuffix: boolean,
 ): devfileApi.Devfile {
   const devfile = cloneDeep(_devfile);
 
@@ -52,12 +51,11 @@ export function prepareDevfile(
     safeDump(devfileSource);
 
   // update `metadata.name` in accordance to the policy
-  if (createPolicy === 'perclick') {
-    if (devfile.metadata.generateName) {
-      devfile.metadata.name = generateWorkspaceName(devfile.metadata.generateName);
-    } else {
-      devfile.metadata.name = generateWorkspaceName(devfile.metadata.name);
-    }
+  if (devfile.metadata.generateName) {
+    devfile.metadata.name = generateWorkspaceName(devfile.metadata.generateName);
+    delete devfile.metadata.generateName;
+  } else if (appendSuffix) {
+    devfile.metadata.name = generateWorkspaceName(devfile.metadata.name);
   }
 
   // propagate storage type

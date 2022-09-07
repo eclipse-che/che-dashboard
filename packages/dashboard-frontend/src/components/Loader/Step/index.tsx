@@ -45,7 +45,7 @@ function getStepTitle(id: LoadingStep): string {
     case LoadingStep.CREATE_WORKSPACE__FETCH_RESOURCES:
       return 'Fetching pre-built resources';
     case LoadingStep.CREATE_WORKSPACE__CHECK_EXISTING_WORKSPACES:
-      return 'Checking for existing workspaces';
+      return 'Checking existing workspaces';
     case LoadingStep.CREATE_WORKSPACE__APPLY_DEVFILE:
       return 'Applying devfile';
     case LoadingStep.CREATE_WORKSPACE__APPLY_RESOURCES:

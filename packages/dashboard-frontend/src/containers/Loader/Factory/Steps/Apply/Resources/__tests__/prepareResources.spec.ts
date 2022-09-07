@@ -67,66 +67,119 @@ describe('FactoryLoaderContainer/prepareResources', () => {
   });
 
   test('the DEVWORKSPACE_DEVFILE_SOURCE annotation', () => {
-    const result = prepareResources(resources, factoryId, undefined, suffix);
+    const result = prepareResources(resources, factoryId, undefined, false);
     expect(result[0].metadata.annotations?.[DEVWORKSPACE_DEVFILE_SOURCE]).toBeDefined();
     expect(result[0].metadata.annotations?.[DEVWORKSPACE_DEVFILE_SOURCE]).toContain(factoryId);
   });
 
   test('custom DEVWORKSPACE_STORAGE_TYPE value', () => {
-    const result = prepareResources(resources, factoryId, 'ephemeral', suffix);
+    const result = prepareResources(resources, factoryId, 'ephemeral', false);
     expect((result[0].spec.template.attributes as any)?.[DEVWORKSPACE_STORAGE_TYPE]).toEqual(
       'ephemeral',
     );
   });
 
-  test('DevWorkspace has "generateName" field', () => {
-    const generateName = 'my-proj';
+  describe('DevWorkspace name', () => {
+    it('should generate a new name #1', () => {
+      const generateName = 'wksp-';
 
-    resources[0].metadata.generateName = generateName;
-    delete (resources[0] as V1alpha2DevWorkspace).metadata?.name;
+      resources[0].metadata.generateName = generateName;
+      delete (resources[0] as V1alpha2DevWorkspace).metadata?.name;
 
-    const result = prepareResources(resources, factoryId, 'ephemeral', suffix);
+      const result = prepareResources(resources, factoryId, 'ephemeral', true);
 
-    // DevWorkspaceTemplate
-    expect(result[1].metadata.name).toEqual(devWorkspaceTemplateName + suffix);
+      // DevWorkspaceTemplate
+      expect(result[1].metadata.name).toEqual(devWorkspaceTemplateName + suffix);
 
-    // DevWorkspace
-    expect(result[0].metadata.generateName).toBeUndefined();
-    expect(result[0].metadata.name).toEqual(generateName + suffix);
-    expect(result[0].spec.template.components).toEqual(
-      expect.arrayContaining([
-        {
-          name: devWorkspaceTemplateName + suffix,
-          plugin: {
-            kubernetes: {
-              name: devWorkspaceTemplateName + suffix,
+      // DevWorkspace
+      expect(result[0].metadata.generateName).toBeUndefined();
+      expect(result[0].metadata.name).toEqual(generateName + suffix);
+      expect(result[0].spec.template.components).toEqual(
+        expect.arrayContaining([
+          {
+            name: devWorkspaceTemplateName + suffix,
+            plugin: {
+              kubernetes: {
+                name: devWorkspaceTemplateName + suffix,
+              },
             },
           },
-        },
-      ]),
-    );
-  });
+        ]),
+      );
+    });
 
-  test('DevWorkspace has "name" field', () => {
-    const result = prepareResources(resources, factoryId, 'ephemeral', suffix);
+    it('should generate a new name #2', () => {
+      const generateName = 'wksp-';
 
-    // DevWorkspaceTemplate
-    expect(result[1].metadata.name).toEqual(devWorkspaceTemplateName + suffix);
+      resources[0].metadata.generateName = generateName;
+      delete (resources[0] as V1alpha2DevWorkspace).metadata?.name;
 
-    // DevWorkspace
-    expect(result[0].metadata.generateName).toBeUndefined();
-    expect(result[0].metadata.name).toEqual(devWorkspaceName + suffix);
-    expect(result[0].spec.template.components).toEqual(
-      expect.arrayContaining([
-        {
-          name: devWorkspaceTemplateName + suffix,
-          plugin: {
-            kubernetes: {
-              name: devWorkspaceTemplateName + suffix,
+      const result = prepareResources(resources, factoryId, 'ephemeral', false);
+
+      // DevWorkspaceTemplate
+      expect(result[1].metadata.name).toEqual(devWorkspaceTemplateName + suffix);
+
+      // DevWorkspace
+      expect(result[0].metadata.generateName).toBeUndefined();
+      expect(result[0].metadata.name).toEqual(generateName + suffix);
+      expect(result[0].spec.template.components).toEqual(
+        expect.arrayContaining([
+          {
+            name: devWorkspaceTemplateName + suffix,
+            plugin: {
+              kubernetes: {
+                name: devWorkspaceTemplateName + suffix,
+              },
             },
           },
-        },
-      ]),
-    );
+        ]),
+      );
+    });
+
+    it('should not change the name', () => {
+      const result = prepareResources(resources, factoryId, 'ephemeral', false);
+
+      // DevWorkspaceTemplate
+      expect(result[1].metadata.name).toEqual(devWorkspaceTemplateName);
+
+      // DevWorkspace
+      expect(result[0].metadata.generateName).toBeUndefined();
+      expect(result[0].metadata.name).toEqual(devWorkspaceName);
+      expect(result[0].spec.template.components).toEqual(
+        expect.arrayContaining([
+          {
+            name: devWorkspaceTemplateName,
+            plugin: {
+              kubernetes: {
+                name: devWorkspaceTemplateName,
+              },
+            },
+          },
+        ]),
+      );
+    });
+
+    it('should append a suffix to the name', () => {
+      const result = prepareResources(resources, factoryId, 'ephemeral', true);
+
+      // DevWorkspaceTemplate
+      expect(result[1].metadata.name).toEqual(devWorkspaceTemplateName + suffix);
+
+      // DevWorkspace
+      expect(result[0].metadata.generateName).toBeUndefined();
+      expect(result[0].metadata.name).toEqual(devWorkspaceName + suffix);
+      expect(result[0].spec.template.components).toEqual(
+        expect.arrayContaining([
+          {
+            name: devWorkspaceTemplateName + suffix,
+            plugin: {
+              kubernetes: {
+                name: devWorkspaceTemplateName + suffix,
+              },
+            },
+          },
+        ]),
+      );
+    });
   });
 });

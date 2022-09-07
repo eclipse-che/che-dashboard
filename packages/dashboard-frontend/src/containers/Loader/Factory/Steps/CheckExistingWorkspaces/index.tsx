@@ -28,6 +28,11 @@ import { MIN_STEP_DURATION_MS } from '../../../const';
 import buildFactoryParams from '../../buildFactoryParams';
 import { AbstractLoaderStep, LoaderStepProps, LoaderStepState } from '../../../AbstractStep';
 import { AlertItem } from '../../../../../services/helpers/types';
+import { LoaderStep, LoadingStep } from '../../../../../components/Loader/Step';
+import {
+  selectFactoryResolver,
+  selectFactoryResolverConverted,
+} from '../../../../../store/FactoryResolver/selectors';
 
 export class WorkspacesNameConflictError extends Error {
   constructor(message: string | undefined) {
@@ -44,6 +49,7 @@ export type State = LoaderStepState & {
   existingWorkspace: Workspace | undefined; // a workspace with the same name that fetched resource has
   factoryParams: FactoryParams;
   shouldCreate: boolean; // should the loader proceed with creating a new workspace or switch to the existing one
+  prevLoaderStep: LoaderStep;
 };
 
 class StepCheckExistingWorkspaces extends AbstractLoaderStep<Props, State> {
@@ -56,6 +62,7 @@ class StepCheckExistingWorkspaces extends AbstractLoaderStep<Props, State> {
       existingWorkspace: undefined,
       factoryParams: buildFactoryParams(props.searchParams),
       shouldCreate: false,
+      prevLoaderStep: props.loaderSteps.get(props.currentStepIndex - 1).value,
     };
   }
 
@@ -125,8 +132,8 @@ class StepCheckExistingWorkspaces extends AbstractLoaderStep<Props, State> {
   protected async runStep(): Promise<boolean> {
     await delay(MIN_STEP_DURATION_MS);
 
-    const { devWorkspaceResources } = this.props;
-    const { factoryParams, shouldCreate } = this.state;
+    const { devWorkspaceResources, factoryResolver, factoryResolverConverted } = this.props;
+    const { factoryParams, shouldCreate, prevLoaderStep } = this.state;
 
     if (shouldCreate) {
       // user decided to create a new workspace
@@ -137,17 +144,28 @@ class StepCheckExistingWorkspaces extends AbstractLoaderStep<Props, State> {
       return true;
     }
 
-    const resources = devWorkspaceResources[factoryParams.sourceUrl]?.resources;
-    if (resources === undefined) {
-      throw new Error('Failed to fetch devworkspace resources.');
+    let newWorkspaceName: string;
+    if (prevLoaderStep.id === LoadingStep.CREATE_WORKSPACE__FETCH_DEVFILE) {
+      if (
+        factoryResolver?.location !== factoryParams.sourceUrl ||
+        factoryResolverConverted?.devfileV2 === undefined
+      ) {
+        throw new Error('Failed to resolve the devfile.');
+      }
+      const devfile = factoryResolverConverted.devfileV2;
+      newWorkspaceName = devfile.metadata.name;
+    } else {
+      const resources = devWorkspaceResources[factoryParams.sourceUrl]?.resources;
+      if (resources === undefined) {
+        throw new Error('Failed to fetch devworkspace resources.');
+      }
+
+      const [devWorkspace] = resources;
+      newWorkspaceName = devWorkspace.metadata.name;
     }
 
-    const [devWorkspace] = resources;
-
     // check existing workspaces to avoid name conflicts
-    const existingWorkspace = this.props.allWorkspaces.find(
-      w => devWorkspace.metadata.name === w.name,
-    );
+    const existingWorkspace = this.props.allWorkspaces.find(w => newWorkspaceName === w.name);
     if (existingWorkspace) {
       // detected workspaces name conflict
       this.setStepError(
@@ -223,6 +241,8 @@ class StepCheckExistingWorkspaces extends AbstractLoaderStep<Props, State> {
 const mapStateToProps = (state: AppState) => ({
   allWorkspaces: selectAllWorkspaces(state),
   devWorkspaceResources: selectDevWorkspaceResources(state),
+  factoryResolver: selectFactoryResolver(state),
+  factoryResolverConverted: selectFactoryResolverConverted(state),
 });
 
 const connector = connect(mapStateToProps, null, null, {

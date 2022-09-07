@@ -37,6 +37,7 @@ import {
   DEV_WORKSPACE_ATTR,
   FACTORY_URL_ATTR,
   MIN_STEP_DURATION_MS,
+  POLICIES_CREATE_ATTR,
   TIMEOUT_TO_CREATE_SEC,
 } from '../../../../../const';
 import buildFactoryParams from '../../../../buildFactoryParams';
@@ -71,18 +72,29 @@ const loadingSteps = getFactoryLoadingSteps('devworkspace');
 
 const resourcesUrl = 'https://resources-url';
 const factoryUrl = 'https://factory-url';
-const factoryId = `${DEV_WORKSPACE_ATTR}=${resourcesUrl}&${FACTORY_URL_ATTR}=${factoryUrl}`;
+const resourceDevworkspaceName = 'new-project';
+const resources = [
+  {
+    metadata: {
+      name: resourceDevworkspaceName,
+    },
+  } as devfileApi.DevWorkspace,
+  {},
+] as DevWorkspaceResources;
 
 describe('Factory Loader container, step CREATE_WORKSPACE__APPLYING_RESOURCES', () => {
   let loaderSteps: List<LoaderStep>;
   let searchParams: URLSearchParams;
+  let factoryId: string;
 
   beforeEach(() => {
-    (prepareResources as jest.Mock).mockReturnValue([{}, {}]);
+    (prepareResources as jest.Mock).mockReturnValue(resources);
 
     history = createMemoryHistory({
       initialEntries: [ROUTE.FACTORY_LOADER],
     });
+
+    factoryId = `${DEV_WORKSPACE_ATTR}=${resourcesUrl}&${FACTORY_URL_ATTR}=${factoryUrl}`;
 
     searchParams = new URLSearchParams({
       [FACTORY_URL_ATTR]: factoryUrl,
@@ -104,7 +116,15 @@ describe('Factory Loader container, step CREATE_WORKSPACE__APPLYING_RESOURCES', 
       lastError: new Error('Unexpected error'),
       factoryParams: buildFactoryParams(searchParams),
     };
-    const store = new FakeStoreBuilder().build();
+    const store = new FakeStoreBuilder()
+      .withDevfileRegistries({
+        devWorkspaceResources: {
+          [resourcesUrl]: {
+            resources,
+          },
+        },
+      })
+      .build();
     renderComponent(store, loaderSteps, searchParams, currentStepIndex, localState);
 
     jest.advanceTimersByTime(MIN_STEP_DURATION_MS);
@@ -126,6 +146,7 @@ describe('Factory Loader container, step CREATE_WORKSPACE__APPLYING_RESOURCES', 
 
     const currentStepId = screen.getByTestId('current-step-id');
     await waitFor(() => expect(currentStepId.textContent).toEqual(stepId));
+    jest.runOnlyPendingTimers();
 
     const currentStep = screen.getByTestId(stepId);
     const hasError = within(currentStep).getByTestId('hasError');
@@ -142,15 +163,78 @@ describe('Factory Loader container, step CREATE_WORKSPACE__APPLYING_RESOURCES', 
     expect(mockOnNextStep).not.toHaveBeenCalled();
   });
 
+  describe('handle name conflicts', () => {
+    test('name conflict', async () => {
+      const store = new FakeStoreBuilder()
+        .withDevWorkspaces({
+          workspaces: [new DevWorkspaceBuilder().withName(resourceDevworkspaceName).build()],
+        })
+        .withDevfileRegistries({
+          devWorkspaceResources: {
+            [resourcesUrl]: {
+              resources,
+            },
+          },
+        })
+        .build();
+
+      renderComponent(store, loaderSteps, searchParams);
+      jest.advanceTimersByTime(MIN_STEP_DURATION_MS);
+
+      await waitFor(() =>
+        expect(prepareResources).toHaveBeenCalledWith(resources, factoryId, undefined, true),
+      );
+    });
+
+    test('policy "perclick"', async () => {
+      const store = new FakeStoreBuilder()
+        .withDevWorkspaces({
+          workspaces: [new DevWorkspaceBuilder().withName('unique-name').build()],
+        })
+        .withDevfileRegistries({
+          devWorkspaceResources: {
+            [resourcesUrl]: {
+              resources,
+            },
+          },
+        })
+        .build();
+
+      factoryId = `${DEV_WORKSPACE_ATTR}=${resourcesUrl}&${POLICIES_CREATE_ATTR}=perclick&${FACTORY_URL_ATTR}=${factoryUrl}`;
+      searchParams.append(POLICIES_CREATE_ATTR, 'perclick');
+
+      renderComponent(store, loaderSteps, searchParams);
+      jest.advanceTimersByTime(MIN_STEP_DURATION_MS);
+
+      await waitFor(() =>
+        expect(prepareResources).toHaveBeenCalledWith(resources, factoryId, undefined, true),
+      );
+    });
+
+    test('unique name', async () => {
+      const store = new FakeStoreBuilder()
+        .withDevWorkspaces({
+          workspaces: [new DevWorkspaceBuilder().withName('unique-name').build()],
+        })
+        .withDevfileRegistries({
+          devWorkspaceResources: {
+            [resourcesUrl]: {
+              resources,
+            },
+          },
+        })
+        .build();
+
+      renderComponent(store, loaderSteps, searchParams);
+      jest.advanceTimersByTime(MIN_STEP_DURATION_MS);
+
+      await waitFor(() =>
+        expect(prepareResources).toHaveBeenCalledWith(resources, factoryId, undefined, false),
+      );
+    });
+  });
+
   test('the workspace took more than TIMEOUT_TO_CREATE_SEC to create', async () => {
-    const resources: DevWorkspaceResources = [
-      {
-        metadata: {
-          name: 'project',
-        },
-      } as devfileApi.DevWorkspace,
-      {} as devfileApi.DevWorkspaceTemplate,
-    ];
     const store = new FakeStoreBuilder()
       .withDevfileRegistries({
         devWorkspaceResources: {
@@ -160,7 +244,6 @@ describe('Factory Loader container, step CREATE_WORKSPACE__APPLYING_RESOURCES', 
         },
       })
       .build();
-    (prepareResources as jest.Mock).mockReturnValue(resources);
 
     renderComponent(store, loaderSteps, searchParams);
 
@@ -203,7 +286,7 @@ describe('Factory Loader container, step CREATE_WORKSPACE__APPLYING_RESOURCES', 
       .withDevfileRegistries({
         devWorkspaceResources: {
           [resourcesUrl]: {
-            resources: [{} as devfileApi.DevWorkspace, {} as devfileApi.DevWorkspaceTemplate],
+            resources,
           },
         },
       })
@@ -213,26 +296,6 @@ describe('Factory Loader container, step CREATE_WORKSPACE__APPLYING_RESOURCES', 
         params: factoryId,
       },
     });
-    (prepareResources as jest.Mock).mockReturnValue([
-      {
-        apiVersion: 'workspace.devfile.io/v1alpha2',
-        kind: 'DevWorkspace',
-        metadata: {
-          name: 'project',
-          annotations: {
-            [DEVWORKSPACE_DEVFILE_SOURCE]: factorySource,
-          },
-          labels: {},
-          namespace: 'user-che',
-          uid: '',
-        },
-        spec: {
-          started: false,
-          template: {},
-        },
-      } as devfileApi.DevWorkspace,
-      {},
-    ]);
 
     const { reRenderComponent } = renderComponent(store, loaderSteps, searchParams);
 
@@ -260,21 +323,14 @@ describe('Factory Loader container, step CREATE_WORKSPACE__APPLYING_RESOURCES', 
       .withDevfileRegistries({
         devWorkspaceResources: {
           [resourcesUrl]: {
-            resources: [
-              {
-                metadata: {
-                  name: 'project',
-                },
-              } as devfileApi.DevWorkspace,
-              {} as devfileApi.DevWorkspaceTemplate,
-            ],
+            resources,
           },
         },
       })
       .withDevWorkspaces({
         workspaces: [
           new DevWorkspaceBuilder()
-            .withName('project')
+            .withName(resourceDevworkspaceName)
             .withNamespace('user-che')
             .withMetadata({
               annotations: {
@@ -290,7 +346,7 @@ describe('Factory Loader container, step CREATE_WORKSPACE__APPLYING_RESOURCES', 
     jest.advanceTimersByTime(MIN_STEP_DURATION_MS);
 
     await waitFor(() => expect(mockOnNextStep).toHaveBeenCalled());
-    expect(history.location.pathname).toEqual('/ide/user-che/project');
+    expect(history.location.pathname).toEqual('/ide/user-che/new-project');
 
     expect(hasError.textContent).toEqual('false');
   });

@@ -129,7 +129,7 @@ class StepApplyDevfile extends AbstractLoaderStep<Props, State> {
     await delay(MIN_STEP_DURATION_MS);
 
     const { factoryResolverConverted } = this.props;
-    const { shouldCreate, factoryParams } = this.state;
+    const { shouldCreate, factoryParams, newWorkspaceName } = this.state;
     const { factoryId, policiesCreate, storageType } = factoryParams;
 
     const workspace = this.findTargetWorkspace(this.props, this.state);
@@ -153,9 +153,12 @@ class StepApplyDevfile extends AbstractLoaderStep<Props, State> {
       throw new Error('Failed to resolve the devfile.');
     }
 
-    const updatedDevfile = prepareDevfile(devfile, factoryId, policiesCreate, storageType);
+    // test the devfile name to decide if we need to append a suffix to is
+    const nameConflict = this.props.allWorkspaces.some(w => devfile.metadata.name === w.name);
+    const appendSuffix = policiesCreate === 'perclick' || nameConflict;
 
-    const { newWorkspaceName } = this.state;
+    const updatedDevfile = prepareDevfile(devfile, factoryId, storageType, appendSuffix);
+
     if (newWorkspaceName !== updatedDevfile.metadata.name) {
       this.setState({
         newWorkspaceName: devfile.metadata.name,
@@ -179,6 +182,9 @@ class StepApplyDevfile extends AbstractLoaderStep<Props, State> {
   }
 
   private findTargetWorkspace(props: Props, state: State): Workspace | undefined {
+    if (state.newWorkspaceName === undefined) {
+      return undefined;
+    }
     return findTargetWorkspace(
       props.allWorkspaces,
       state.factoryParams.factoryId,

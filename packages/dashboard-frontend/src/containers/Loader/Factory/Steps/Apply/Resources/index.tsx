@@ -43,7 +43,6 @@ import { MIN_STEP_DURATION_MS, TIMEOUT_TO_CREATE_SEC } from '../../../../const';
 import buildFactoryParams from '../../../buildFactoryParams';
 import { AbstractLoaderStep, LoaderStepProps, LoaderStepState } from '../../../../AbstractStep';
 import { AlertItem } from '../../../../../../services/helpers/types';
-import { generateWorkspaceName } from '../../../../../../services/helpers/generateName';
 
 export type Props = MappedProps &
   LoaderStepProps & {
@@ -53,7 +52,6 @@ export type State = LoaderStepState & {
   factoryParams: FactoryParams;
   newWorkspaceName?: string;
   shouldCreate: boolean; // should the loader create a workspace
-  suffix: string; // a suffix to add to a resource name to avoid names conflict
 };
 
 class StepApplyResources extends AbstractLoaderStep<Props, State> {
@@ -65,7 +63,6 @@ class StepApplyResources extends AbstractLoaderStep<Props, State> {
     this.state = {
       factoryParams: buildFactoryParams(props.searchParams),
       shouldCreate: true,
-      suffix: generateWorkspaceName(''),
     };
   }
 
@@ -116,7 +113,7 @@ class StepApplyResources extends AbstractLoaderStep<Props, State> {
   private init() {
     const workspace = this.findTargetWorkspace(this.props, this.state);
 
-    if (this.state.newWorkspaceName && workspace) {
+    if (workspace) {
       // prevent a workspace being created one more time
       this.setState({
         shouldCreate: false,
@@ -139,11 +136,11 @@ class StepApplyResources extends AbstractLoaderStep<Props, State> {
     await delay(MIN_STEP_DURATION_MS);
 
     const { devWorkspaceResources } = this.props;
-    const { factoryParams, shouldCreate, newWorkspaceName, suffix } = this.state;
-    const { cheEditor, factoryId, sourceUrl, storageType } = factoryParams;
+    const { factoryParams, shouldCreate, newWorkspaceName } = this.state;
+    const { cheEditor, factoryId, sourceUrl, storageType, policiesCreate } = factoryParams;
 
     const targetWorkspace = this.findTargetWorkspace(this.props, this.state);
-    if (newWorkspaceName && targetWorkspace) {
+    if (targetWorkspace) {
       // the workspace has been created, go to the next step
       const nextLocation = buildIdeLoaderLocation(targetWorkspace);
       this.props.history.location.pathname = nextLocation.pathname;
@@ -164,14 +161,15 @@ class StepApplyResources extends AbstractLoaderStep<Props, State> {
     }
 
     // test the devWorkspace name to decide if we need to append a suffix to is
-    const appendSuffix = this.props.allWorkspaces.some(w => resources[0].metadata.name === w.name);
+    const nameConflict = this.props.allWorkspaces.some(w => resources[0].metadata.name === w.name);
+    const appendSuffix = policiesCreate === 'perclick' || nameConflict;
 
     // create a workspace using pre-generated resources
     const [devWorkspace, devWorkspaceTemplate] = prepareResources(
       resources,
       factoryId,
       storageType,
-      appendSuffix ? suffix : undefined,
+      appendSuffix,
     );
 
     if (newWorkspaceName !== devWorkspace.metadata.name) {
@@ -197,6 +195,9 @@ class StepApplyResources extends AbstractLoaderStep<Props, State> {
   }
 
   private findTargetWorkspace(props: Props, state: State): Workspace | undefined {
+    if (state.newWorkspaceName === undefined) {
+      return undefined;
+    }
     return findTargetWorkspace(
       props.allWorkspaces,
       state.factoryParams.factoryId,

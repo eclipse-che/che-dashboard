@@ -40,7 +40,7 @@ describe('FactoryLoaderContainer/prepareDevfile', () => {
         }),
       };
 
-      const newDevfile = prepareDevfile(devfile, factoryId, undefined, undefined);
+      const newDevfile = prepareDevfile(devfile, factoryId, undefined, false);
 
       expect(newDevfile.metadata.attributes).toEqual({
         [DEVWORKSPACE_METADATA_ANNOTATION]: factorySource,
@@ -71,7 +71,7 @@ describe('FactoryLoaderContainer/prepareDevfile', () => {
         },
       } as devfileApi.Devfile;
 
-      const newDevfile = prepareDevfile(devfile, factoryId, undefined, undefined);
+      const newDevfile = prepareDevfile(devfile, factoryId, undefined, false);
 
       expect((newDevfile.metadata.attributes as any)?.[DEVWORKSPACE_METADATA_ANNOTATION]).toEqual(
         expect.objectContaining(customAnnotation),
@@ -102,7 +102,7 @@ describe('FactoryLoaderContainer/prepareDevfile', () => {
         },
       } as devfileApi.Devfile;
 
-      const newDevfile = prepareDevfile(devfile, factoryId, undefined, undefined);
+      const newDevfile = prepareDevfile(devfile, factoryId, undefined, false);
 
       expect(
         (newDevfile.metadata.attributes as any)?.[DEVWORKSPACE_METADATA_ANNOTATION],
@@ -135,7 +135,7 @@ describe('FactoryLoaderContainer/prepareDevfile', () => {
         },
       } as devfileApi.Devfile;
 
-      const newDevfile = prepareDevfile(devfile, factoryId, undefined, undefined);
+      const newDevfile = prepareDevfile(devfile, factoryId, undefined, false);
 
       expect(
         (newDevfile.metadata.attributes as any)?.[DEVWORKSPACE_METADATA_ANNOTATION],
@@ -146,8 +146,8 @@ describe('FactoryLoaderContainer/prepareDevfile', () => {
     });
   });
 
-  describe('devworkspace name', () => {
-    test('policy "peruser"', () => {
+  describe('DevWorkspace name', () => {
+    it('should not change the name', () => {
       const factoryId = 'url=https://devfile-location';
       const devfile = {
         metadata: {
@@ -155,36 +155,48 @@ describe('FactoryLoaderContainer/prepareDevfile', () => {
         },
       } as devfileApi.Devfile;
 
-      const newDevfile = prepareDevfile(devfile, factoryId, undefined, undefined);
+      const newDevfile = prepareDevfile(devfile, factoryId, undefined, false);
 
       expect(newDevfile.metadata.name).toEqual('wksp-test');
     });
 
-    test('policy "perclick" - use "metadata.generateName"', () => {
+    it('should append a suffix to the name', () => {
+      const factoryId = 'url=https://devfile-location';
+      const devfile = {
+        metadata: {
+          name: 'wksp-test',
+        },
+      } as devfileApi.Devfile;
+
+      const newDevfile = prepareDevfile(devfile, factoryId, undefined, true);
+
+      expect(newDevfile.metadata.name).toEqual('wksp-test1234');
+    });
+
+    it('should generate a new name #1', () => {
       const factoryId = 'url=https://devfile-location';
       const devfile = {
         metadata: {
           generateName: 'wksp-',
-          name: 'wksp-test',
         },
       } as devfileApi.Devfile;
 
-      const newDevfile = prepareDevfile(devfile, factoryId, 'perclick', undefined);
+      const newDevfile = prepareDevfile(devfile, factoryId, undefined, false);
 
       expect(newDevfile.metadata.name).toEqual('wksp-1234');
     });
 
-    test('policy "perclick" - use "metadata.name"', () => {
+    it('should generate a new name #2', () => {
       const factoryId = 'url=https://devfile-location';
       const devfile = {
         metadata: {
-          name: 'wksp-test',
+          generateName: 'wksp-',
         },
       } as devfileApi.Devfile;
 
-      const newDevfile = prepareDevfile(devfile, factoryId, 'perclick', undefined);
+      const newDevfile = prepareDevfile(devfile, factoryId, undefined, true);
 
-      expect(newDevfile.metadata.name).toEqual('wksp-test1234');
+      expect(newDevfile.metadata.name).toEqual('wksp-1234');
     });
   });
 
@@ -198,14 +210,14 @@ describe('FactoryLoaderContainer/prepareDevfile', () => {
     } as devfileApi.Devfile;
 
     test('default storage type', () => {
-      const newDevfile = prepareDevfile(devfile, factoryId, undefined, undefined);
+      const newDevfile = prepareDevfile(devfile, factoryId, undefined, false);
 
       expect((newDevfile.metadata.attributes as any)?.[DEVWORKSPACE_STORAGE_TYPE]).toBeUndefined();
       expect((newDevfile.attributes as any)?.[DEVWORKSPACE_STORAGE_TYPE]).toBeUndefined();
     });
 
     test('non-default storage type', () => {
-      const newDevfile = prepareDevfile(devfile, factoryId, undefined, 'ephemeral');
+      const newDevfile = prepareDevfile(devfile, factoryId, 'ephemeral', false);
 
       expect((newDevfile.metadata.attributes as any)?.[DEVWORKSPACE_STORAGE_TYPE]).toBeUndefined();
       expect((newDevfile.attributes as any)?.[DEVWORKSPACE_STORAGE_TYPE]).toEqual('ephemeral');

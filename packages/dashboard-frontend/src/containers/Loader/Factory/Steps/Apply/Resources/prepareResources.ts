@@ -15,6 +15,7 @@ import { cloneDeep } from 'lodash';
 import { DevWorkspaceTemplate } from '../../../../../../services/devfileApi/devfileApi';
 import { DevWorkspace } from '../../../../../../services/devfileApi/devWorkspace';
 import { DEVWORKSPACE_STORAGE_TYPE } from '../../../../../../services/devfileApi/devWorkspace/spec';
+import { generateWorkspaceName } from '../../../../../../services/helpers/generateName';
 import { DEVWORKSPACE_DEVFILE_SOURCE } from '../../../../../../services/workspace-client/devworkspace/devWorkspaceClient';
 import { DevWorkspaceResources } from '../../../../../../store/DevfileRegistries';
 
@@ -22,7 +23,7 @@ export default function prepareResources(
   _resources: DevWorkspaceResources,
   factoryId: string,
   storageType: che.WorkspaceStorageType | undefined,
-  suffix: string | undefined,
+  appendSuffix: boolean,
 ): DevWorkspaceResources {
   const resources = cloneDeep(_resources);
   const [devWorkspace, devWorkspaceTemplate] = resources;
@@ -37,8 +38,8 @@ export default function prepareResources(
   });
 
   // update the DevWorkspace and DevWorkspaceTemplate names in accordance to the policy
-  if (suffix) {
-    appendSuffix(suffix, devWorkspace, devWorkspaceTemplate);
+  if (appendSuffix == true || devWorkspace.metadata.generateName !== undefined) {
+    addSuffix(devWorkspace, devWorkspaceTemplate);
   }
 
   // set storage type attribute
@@ -54,14 +55,11 @@ export default function prepareResources(
   return [devWorkspace, devWorkspaceTemplate];
 }
 
-function appendSuffix(
-  suffix: string,
-  devWorkspace: DevWorkspace,
-  devWorkspaceTemplate: DevWorkspaceTemplate,
-) {
+function addSuffix(devWorkspace: DevWorkspace, devWorkspaceTemplate: DevWorkspaceTemplate) {
+  const suffix = generateWorkspaceName('');
   const editorPluginName = devWorkspaceTemplate.metadata.name;
 
-  if (devWorkspace.metadata.generateName) {
+  if (devWorkspace.metadata.generateName !== undefined) {
     // assign devworkspace name
     devWorkspace.metadata.name = devWorkspace.metadata.generateName + suffix;
     delete devWorkspace.metadata.generateName;

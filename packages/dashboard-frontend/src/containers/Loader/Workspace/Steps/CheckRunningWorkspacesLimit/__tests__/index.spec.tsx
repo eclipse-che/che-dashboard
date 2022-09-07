@@ -131,10 +131,10 @@ describe('Workspace Loader, step CHECK_RUNNING_WORKSPACES_LIMIT', () => {
     const currentStep = screen.getByTestId(stepId);
     const hasError = within(currentStep).getByTestId('hasError');
 
+    await waitFor(() => expect(mockOnNextStep).toHaveBeenCalled());
+
     // no error alert should appear
     expect(hasError.textContent).toEqual('false');
-
-    expect(mockOnNextStep).toHaveBeenCalled();
   });
 
   describe('limit of running workspaces equals 1', () => {
@@ -269,15 +269,16 @@ describe('Workspace Loader, step CHECK_RUNNING_WORKSPACES_LIMIT', () => {
         renderComponent(store, loaderSteps, localState);
         jest.runOnlyPendingTimers();
 
-        // wait a bit more than necessary to end the workspace stop timeout
-        const time = (TIMEOUT_TO_STOP_SEC + 1) * 1000;
-        jest.advanceTimersByTime(time);
-
-        // another error alert should appear
         const currentStepId = screen.getByTestId('current-step-id');
         await waitFor(() => expect(currentStepId.textContent).toEqual(stepId));
 
         const currentStep = screen.getByTestId(stepId);
+
+        // wait a bit more than necessary to end the workspace stop timeout
+        const time = (TIMEOUT_TO_STOP_SEC + 1) * 1000;
+        jest.advanceTimersByTime(time);
+
+        // an error alert should appear
         const hasError = within(currentStep).getByTestId('hasError');
         await waitFor(() => expect(hasError.textContent).toEqual('true'));
 
@@ -290,6 +291,8 @@ describe('Workspace Loader, step CHECK_RUNNING_WORKSPACES_LIMIT', () => {
         expect(alertBody.textContent).toEqual(
           'The workspace status remains "Stopping" in the last 60 seconds.',
         );
+
+        expect(mockOnNextStep).not.toHaveBeenCalled();
       });
 
       test('the workspace is STOPPING then STOPPED', async () => {

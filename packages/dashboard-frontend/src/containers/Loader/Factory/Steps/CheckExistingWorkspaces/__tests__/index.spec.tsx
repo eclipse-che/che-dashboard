@@ -47,26 +47,15 @@ const mockOnRestart = jest.fn();
 
 const stepId = LoadingStep.CREATE_WORKSPACE__CHECK_EXISTING_WORKSPACES.toString();
 const currentStepIndex = 3;
-const loadingSteps = getFactoryLoadingSteps('devworkspace');
 
 const resourcesUrl = 'https://resources-url';
 const factoryUrl = 'https://factory-url';
 
 describe('Factory Loader container, step CREATE_WORKSPACE__CHECK_EXISTING_WORKSPACES', () => {
-  let loaderSteps: List<LoaderStep>;
-  let searchParams: URLSearchParams;
-
   beforeEach(() => {
     history = createMemoryHistory({
       initialEntries: [ROUTE.FACTORY_LOADER],
     });
-
-    searchParams = new URLSearchParams({
-      [FACTORY_URL_ATTR]: factoryUrl,
-      [DEV_WORKSPACE_ATTR]: resourcesUrl,
-    });
-
-    loaderSteps = buildLoaderSteps(loadingSteps);
 
     jest.useFakeTimers();
   });
@@ -76,79 +65,45 @@ describe('Factory Loader container, step CREATE_WORKSPACE__CHECK_EXISTING_WORKSP
     jest.clearAllMocks();
   });
 
-  test('restart flow', async () => {
-    const localState: Partial<State> = {
-      lastError: new Error('Unexpected error'),
-      factoryParams: buildFactoryParams(searchParams),
-    };
-    const store = new FakeStoreBuilder().build();
-    renderComponent(store, loaderSteps, searchParams, currentStepIndex, localState);
+  describe('creating workspace from resources', () => {
+    const loadingSteps = getFactoryLoadingSteps('devworkspace');
+    const loaderSteps = buildLoaderSteps(loadingSteps);
 
-    jest.advanceTimersByTime(MIN_STEP_DURATION_MS);
-
-    const restartButton = await screen.findByRole('button', {
-      name: 'Click to try again',
-    });
-    expect(restartButton).toBeDefined();
-    userEvent.click(restartButton);
-
-    expect(mockOnRestart).toHaveBeenCalled();
-  });
-
-  test('policy "perclick"', async () => {
-    const searchParams = new URLSearchParams({
-      [FACTORY_URL_ATTR]: factoryUrl,
-      [POLICIES_CREATE_ATTR]: 'perclick',
-      [DEV_WORKSPACE_ATTR]: resourcesUrl,
-    });
-    const store = new FakeStoreBuilder().build();
-    renderComponent(store, loaderSteps, searchParams);
-
-    jest.advanceTimersByTime(MIN_STEP_DURATION_MS);
-
-    const currentStepId = screen.getByTestId('current-step-id');
-    await waitFor(() => expect(currentStepId.textContent).toEqual(stepId));
-
-    jest.runOnlyPendingTimers();
-
-    const currentStep = screen.getByTestId(stepId);
-    const hasError = within(currentStep).getByTestId('hasError');
-    expect(hasError.textContent).toEqual('false');
-
-    expect(mockOnNextStep).toHaveBeenCalled();
-  });
-
-  describe('existing workspace not found', () => {
-    let store: Store;
-    const workspaceName = 'my-project';
+    let searchParams: URLSearchParams;
 
     beforeEach(() => {
-      const resources: DevWorkspaceResources = [
-        {
-          metadata: {
-            name: workspaceName,
-          },
-        } as devfileApi.DevWorkspace,
-        {} as devfileApi.DevWorkspaceTemplate,
-      ];
-      store = new FakeStoreBuilder()
-        .withDevWorkspaces({
-          workspaces: [
-            new DevWorkspaceBuilder().withName('project-1').withNamespace('user-che').build(),
-            new DevWorkspaceBuilder().withName('project-2').withNamespace('user-che').build(),
-          ],
-        })
-        .withDevfileRegistries({
-          devWorkspaceResources: {
-            [resourcesUrl]: {
-              resources,
-            },
-          },
-        })
-        .build();
+      searchParams = new URLSearchParams({
+        [FACTORY_URL_ATTR]: factoryUrl,
+        [DEV_WORKSPACE_ATTR]: resourcesUrl,
+      });
     });
 
-    it('should proceed to the next step', async () => {
+    test('restart flow', async () => {
+      const localState: Partial<State> = {
+        lastError: new Error('Unexpected error'),
+        factoryParams: buildFactoryParams(searchParams),
+      };
+      const store = new FakeStoreBuilder().build();
+      renderComponent(store, loaderSteps, searchParams, currentStepIndex, localState);
+
+      jest.advanceTimersByTime(MIN_STEP_DURATION_MS);
+
+      const restartButton = await screen.findByRole('button', {
+        name: 'Click to try again',
+      });
+      expect(restartButton).toBeDefined();
+      userEvent.click(restartButton);
+
+      expect(mockOnRestart).toHaveBeenCalled();
+    });
+
+    test('policy "perclick"', async () => {
+      const searchParams = new URLSearchParams({
+        [FACTORY_URL_ATTR]: factoryUrl,
+        [POLICIES_CREATE_ATTR]: 'perclick',
+        [DEV_WORKSPACE_ATTR]: resourcesUrl,
+      });
+      const store = new FakeStoreBuilder().build();
       renderComponent(store, loaderSteps, searchParams);
 
       jest.advanceTimersByTime(MIN_STEP_DURATION_MS);
@@ -164,101 +119,256 @@ describe('Factory Loader container, step CREATE_WORKSPACE__CHECK_EXISTING_WORKSP
 
       expect(mockOnNextStep).toHaveBeenCalled();
     });
+
+    describe('no workspace names conflicts', () => {
+      let store: Store;
+      const workspaceName = 'my-project';
+
+      beforeEach(() => {
+        const resources: DevWorkspaceResources = [
+          {
+            metadata: {
+              name: workspaceName,
+            },
+          } as devfileApi.DevWorkspace,
+          {} as devfileApi.DevWorkspaceTemplate,
+        ];
+        store = new FakeStoreBuilder()
+          .withDevWorkspaces({
+            workspaces: [
+              new DevWorkspaceBuilder().withName('project-1').withNamespace('user-che').build(),
+              new DevWorkspaceBuilder().withName('project-2').withNamespace('user-che').build(),
+            ],
+          })
+          .withDevfileRegistries({
+            devWorkspaceResources: {
+              [resourcesUrl]: {
+                resources,
+              },
+            },
+          })
+          .build();
+      });
+
+      it('should proceed to the next step', async () => {
+        renderComponent(store, loaderSteps, searchParams);
+
+        jest.advanceTimersByTime(MIN_STEP_DURATION_MS);
+
+        const currentStepId = screen.getByTestId('current-step-id');
+        await waitFor(() => expect(currentStepId.textContent).toEqual(stepId));
+
+        jest.runOnlyPendingTimers();
+
+        const currentStep = screen.getByTestId(stepId);
+        const hasError = within(currentStep).getByTestId('hasError');
+        expect(hasError.textContent).toEqual('false');
+
+        expect(mockOnNextStep).toHaveBeenCalled();
+      });
+    });
+
+    describe('workspace names conflict faced', () => {
+      let store: Store;
+      const workspaceName = 'my-project';
+
+      beforeEach(() => {
+        const resources: DevWorkspaceResources = [
+          {
+            metadata: {
+              name: workspaceName,
+            },
+          } as devfileApi.DevWorkspace,
+          {} as devfileApi.DevWorkspaceTemplate,
+        ];
+        store = new FakeStoreBuilder()
+          .withDevWorkspaces({
+            workspaces: [
+              new DevWorkspaceBuilder().withName(workspaceName).withNamespace('user-che').build(),
+            ],
+          })
+          .withDevfileRegistries({
+            devWorkspaceResources: {
+              [resourcesUrl]: {
+                resources,
+              },
+            },
+          })
+          .build();
+      });
+
+      it('should show warning alert', async () => {
+        renderComponent(store, loaderSteps, searchParams);
+
+        jest.advanceTimersByTime(MIN_STEP_DURATION_MS);
+
+        const currentStepId = screen.getByTestId('current-step-id');
+        await waitFor(() => expect(currentStepId.textContent).toEqual(stepId));
+
+        const currentStep = screen.getByTestId(stepId);
+        const hasError = within(currentStep).getByTestId('hasError');
+        expect(hasError.textContent).toEqual('true');
+
+        const alertBody = screen.getByTestId('alert-body');
+        expect(alertBody.textContent).toEqual(
+          `A workspace with the same name (${workspaceName}) has been found. Should you want to open the existing workspace or proceed to create a new one, please choose the corresponding action.`,
+        );
+      });
+
+      it('should open the existing workspace', async () => {
+        renderComponent(store, loaderSteps, searchParams);
+
+        jest.advanceTimersByTime(MIN_STEP_DURATION_MS);
+
+        const currentStepId = screen.getByTestId('current-step-id');
+        await waitFor(() => expect(currentStepId.textContent).toEqual(stepId));
+        jest.runOnlyPendingTimers();
+
+        const currentStep = screen.getByTestId(stepId);
+        const hasError = within(currentStep).getByTestId('hasError');
+        expect(hasError.textContent).toEqual('true');
+
+        const openWorkspaceLink = screen.queryByRole('button', {
+          name: 'Open the existing workspace',
+        });
+        expect(openWorkspaceLink).not.toBeNull();
+
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        userEvent.click(openWorkspaceLink!);
+        jest.runOnlyPendingTimers();
+
+        expect(history.location.pathname).toEqual('/ide/user-che/my-project');
+      });
+
+      it('should create a new workspace', async () => {
+        renderComponent(store, loaderSteps, searchParams);
+
+        jest.advanceTimersByTime(MIN_STEP_DURATION_MS);
+
+        const currentStepId = screen.getByTestId('current-step-id');
+        await waitFor(() => expect(currentStepId.textContent).toEqual(stepId));
+        jest.runOnlyPendingTimers();
+
+        const currentStep = screen.getByTestId(stepId);
+        const hasError = within(currentStep).getByTestId('hasError');
+        expect(hasError.textContent).toEqual('true');
+
+        const createNewWorkspaceLink = screen.queryByRole('button', {
+          name: 'Create a new workspace',
+        });
+        expect(createNewWorkspaceLink).not.toBeNull();
+
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        userEvent.click(createNewWorkspaceLink!);
+        jest.runOnlyPendingTimers();
+
+        await waitFor(() => expect(mockOnNextStep).toHaveBeenCalled());
+      });
+    });
   });
 
-  describe('existing workspace with same name', () => {
-    let store: Store;
-    const workspaceName = 'my-project';
+  describe('creating workspace from devfiles', () => {
+    describe('workspace names conflict faced', () => {
+      let store: Store;
+      let searchParams: URLSearchParams;
+      const workspaceName = 'my-project';
+      const loadingSteps = getFactoryLoadingSteps('devfile');
+      const loaderSteps = buildLoaderSteps(loadingSteps);
 
-    beforeEach(() => {
-      const resources: DevWorkspaceResources = [
-        {
-          metadata: {
-            name: workspaceName,
-          },
-        } as devfileApi.DevWorkspace,
-        {} as devfileApi.DevWorkspaceTemplate,
-      ];
-      store = new FakeStoreBuilder()
-        .withDevWorkspaces({
-          workspaces: [
-            new DevWorkspaceBuilder().withName('my-project').withNamespace('user-che').build(),
-          ],
-        })
-        .withDevfileRegistries({
-          devWorkspaceResources: {
-            [resourcesUrl]: {
-              resources,
+      beforeEach(() => {
+        searchParams = new URLSearchParams({
+          [FACTORY_URL_ATTR]: factoryUrl,
+        });
+
+        store = new FakeStoreBuilder()
+          .withDevWorkspaces({
+            workspaces: [
+              new DevWorkspaceBuilder().withName(workspaceName).withNamespace('user-che').build(),
+            ],
+          })
+          .withFactoryResolver({
+            resolver: {
+              location: factoryUrl,
             },
-          },
-        })
-        .build();
-    });
-
-    it('should show warning alert', async () => {
-      renderComponent(store, loaderSteps, searchParams);
-
-      jest.advanceTimersByTime(MIN_STEP_DURATION_MS);
-
-      const currentStepId = screen.getByTestId('current-step-id');
-      await waitFor(() => expect(currentStepId.textContent).toEqual(stepId));
-
-      const currentStep = screen.getByTestId(stepId);
-      const hasError = within(currentStep).getByTestId('hasError');
-      expect(hasError.textContent).toEqual('true');
-
-      const alertBody = screen.getByTestId('alert-body');
-      expect(alertBody.textContent).toEqual(
-        `A workspace with the same name (${workspaceName}) has been found. Should you want to open the existing workspace or proceed to create a new one, please choose the corresponding action.`,
-      );
-    });
-
-    it('should open the existing workspace', async () => {
-      renderComponent(store, loaderSteps, searchParams);
-
-      jest.advanceTimersByTime(MIN_STEP_DURATION_MS);
-
-      const currentStepId = screen.getByTestId('current-step-id');
-      await waitFor(() => expect(currentStepId.textContent).toEqual(stepId));
-      jest.runOnlyPendingTimers();
-
-      const currentStep = screen.getByTestId(stepId);
-      const hasError = within(currentStep).getByTestId('hasError');
-      expect(hasError.textContent).toEqual('true');
-
-      const openWorkspaceLink = screen.queryByRole('button', {
-        name: 'Open the existing workspace',
+            converted: {
+              devfileV2: {
+                schemaVersion: '2.1.0',
+                metadata: {
+                  name: workspaceName,
+                },
+              } as devfileApi.Devfile,
+            },
+          })
+          .build();
       });
-      expect(openWorkspaceLink).not.toBeNull();
 
-      userEvent.click(openWorkspaceLink!);
-      jest.runOnlyPendingTimers();
+      it('should show warning alert', async () => {
+        renderComponent(store, loaderSteps, searchParams);
 
-      expect(history.location.pathname).toEqual('/ide/user-che/my-project');
-    });
+        jest.advanceTimersByTime(MIN_STEP_DURATION_MS);
 
-    it('should create a new workspace', async () => {
-      renderComponent(store, loaderSteps, searchParams);
+        const currentStepId = screen.getByTestId('current-step-id');
+        await waitFor(() => expect(currentStepId.textContent).toEqual(stepId));
 
-      jest.advanceTimersByTime(MIN_STEP_DURATION_MS);
+        const currentStep = screen.getByTestId(stepId);
+        const hasError = within(currentStep).getByTestId('hasError');
+        expect(hasError.textContent).toEqual('true');
 
-      const currentStepId = screen.getByTestId('current-step-id');
-      await waitFor(() => expect(currentStepId.textContent).toEqual(stepId));
-      jest.runOnlyPendingTimers();
-
-      const currentStep = screen.getByTestId(stepId);
-      const hasError = within(currentStep).getByTestId('hasError');
-      expect(hasError.textContent).toEqual('true');
-
-      const createNewWorkspaceLink = screen.queryByRole('button', {
-        name: 'Create a new workspace',
+        const alertBody = screen.getByTestId('alert-body');
+        expect(alertBody.textContent).toEqual(
+          `A workspace with the same name (${workspaceName}) has been found. Should you want to open the existing workspace or proceed to create a new one, please choose the corresponding action.`,
+        );
       });
-      expect(createNewWorkspaceLink).not.toBeNull();
 
-      userEvent.click(createNewWorkspaceLink!);
-      jest.runOnlyPendingTimers();
+      it('should open the existing workspace', async () => {
+        renderComponent(store, loaderSteps, searchParams);
 
-      await waitFor(() => expect(mockOnNextStep).toHaveBeenCalled());
+        jest.advanceTimersByTime(MIN_STEP_DURATION_MS);
+
+        const currentStepId = screen.getByTestId('current-step-id');
+        await waitFor(() => expect(currentStepId.textContent).toEqual(stepId));
+        jest.runOnlyPendingTimers();
+
+        const currentStep = screen.getByTestId(stepId);
+        const hasError = within(currentStep).getByTestId('hasError');
+        expect(hasError.textContent).toEqual('true');
+
+        const openWorkspaceLink = screen.queryByRole('button', {
+          name: 'Open the existing workspace',
+        });
+        expect(openWorkspaceLink).not.toBeNull();
+
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        userEvent.click(openWorkspaceLink!);
+        jest.runOnlyPendingTimers();
+
+        expect(history.location.pathname).toEqual('/ide/user-che/my-project');
+      });
+
+      it('should create a new workspace', async () => {
+        renderComponent(store, loaderSteps, searchParams);
+
+        jest.advanceTimersByTime(MIN_STEP_DURATION_MS);
+
+        const currentStepId = screen.getByTestId('current-step-id');
+        await waitFor(() => expect(currentStepId.textContent).toEqual(stepId));
+        jest.runOnlyPendingTimers();
+
+        const currentStep = screen.getByTestId(stepId);
+        const hasError = within(currentStep).getByTestId('hasError');
+        expect(hasError.textContent).toEqual('true');
+
+        const createNewWorkspaceLink = screen.queryByRole('button', {
+          name: 'Create a new workspace',
+        });
+        expect(createNewWorkspaceLink).not.toBeNull();
+
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        userEvent.click(createNewWorkspaceLink!);
+        jest.runOnlyPendingTimers();
+
+        await waitFor(() => expect(mockOnNextStep).toHaveBeenCalled());
+      });
     });
   });
 });
