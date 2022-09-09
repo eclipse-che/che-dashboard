@@ -236,6 +236,9 @@ class StepCheckRunningWorkspacesLimit extends AbstractLoaderStep<Props, State> {
   }
 
   private handleSwitchToWorkspace(workspace: Workspace): void {
+    // update browsing context
+    window.name = workspace.uid;
+
     const workspaceLoaderLocation = buildIdeLoaderLocation(workspace);
     this.props.history.push(workspaceLoaderLocation);
     this.props.history.go(0);
