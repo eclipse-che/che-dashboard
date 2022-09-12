@@ -22,19 +22,15 @@ import * as DevWorkspacesStore from '../../../../../../store/Workspaces/devWorks
 import * as DevfileRegistriesStore from '../../../../../../store/DevfileRegistries';
 import { DisposableCollection } from '../../../../../../services/helpers/disposable';
 import { selectAllWorkspaces } from '../../../../../../store/Workspaces/selectors';
-import { selectDevworkspacesEnabled } from '../../../../../../store/Workspaces/Settings/selectors';
 import { delay } from '../../../../../../services/helpers/delay';
 import { FactoryLoaderPage } from '../../../../../../pages/Loader/Factory';
-import {
-  selectDefaultNamespace,
-  selectInfrastructureNamespaces,
-} from '../../../../../../store/InfrastructureNamespaces/selectors';
+import { selectDefaultNamespace } from '../../../../../../store/InfrastructureNamespaces/selectors';
 import {
   selectFactoryResolver,
   selectFactoryResolverConverted,
 } from '../../../../../../store/FactoryResolver/selectors';
 import prepareResources from './prepareResources';
-import { findTargetWorkspace } from '../../findTargetWorkspace';
+import findTargetWorkspace from '../../../../findTargetWorkspace';
 import { selectDevWorkspaceResources } from '../../../../../../store/DevfileRegistries/selectors';
 import { buildIdeLoaderLocation } from '../../../../../../services/helpers/location';
 import { Workspace } from '../../../../../../services/workspace-adapter';
@@ -43,6 +39,7 @@ import { MIN_STEP_DURATION_MS, TIMEOUT_TO_CREATE_SEC } from '../../../../const';
 import buildFactoryParams from '../../../buildFactoryParams';
 import { AbstractLoaderStep, LoaderStepProps, LoaderStepState } from '../../../../AbstractStep';
 import { AlertItem } from '../../../../../../services/helpers/types';
+import { DevWorkspaceResources } from '../../../../../../store/DevfileRegistries';
 
 export type Props = MappedProps &
   LoaderStepProps & {
@@ -51,6 +48,7 @@ export type Props = MappedProps &
 export type State = LoaderStepState & {
   factoryParams: FactoryParams;
   newWorkspaceName?: string;
+  resources?: DevWorkspaceResources;
   shouldCreate: boolean; // should the loader create a workspace
 };
 
@@ -136,7 +134,7 @@ class StepApplyResources extends AbstractLoaderStep<Props, State> {
     await delay(MIN_STEP_DURATION_MS);
 
     const { devWorkspaceResources } = this.props;
-    const { factoryParams, shouldCreate, newWorkspaceName } = this.state;
+    const { factoryParams, shouldCreate, resources } = this.state;
     const { cheEditor, factoryId, sourceUrl, storageType, policiesCreate } = factoryParams;
 
     const targetWorkspace = this.findTargetWorkspace(this.props, this.state);
@@ -155,31 +153,34 @@ class StepApplyResources extends AbstractLoaderStep<Props, State> {
       throw new Error('The workspace creation unexpectedly failed.');
     }
 
-    const resources = devWorkspaceResources[sourceUrl]?.resources;
     if (resources === undefined) {
-      throw new Error('Failed to fetch devworkspace resources.');
-    }
+      const _resources = devWorkspaceResources[sourceUrl]?.resources;
+      if (_resources === undefined) {
+        throw new Error('Failed to fetch devworkspace resources.');
+      }
 
-    // test the devWorkspace name to decide if we need to append a suffix to is
-    const nameConflict = this.props.allWorkspaces.some(w => resources[0].metadata.name === w.name);
-    const appendSuffix = policiesCreate === 'perclick' || nameConflict;
+      // test the devWorkspace name to decide if we need to append a suffix to is
+      const nameConflict = this.props.allWorkspaces.some(
+        w => _resources[0].metadata.name === w.name,
+      );
+      const appendSuffix = policiesCreate === 'perclick' || nameConflict;
 
-    // create a workspace using pre-generated resources
-    const [devWorkspace, devWorkspaceTemplate] = prepareResources(
-      resources,
-      factoryId,
-      storageType,
-      appendSuffix,
-    );
+      // create a workspace using pre-generated resources
+      const [devWorkspace, devWorkspaceTemplate] = prepareResources(
+        _resources,
+        factoryId,
+        storageType,
+        appendSuffix,
+      );
 
-    if (newWorkspaceName !== devWorkspace.metadata.name) {
       this.setState({
         newWorkspaceName: devWorkspace.metadata.name,
+        resources: [devWorkspace, devWorkspaceTemplate],
       });
       return false;
     }
 
-    await this.props.createWorkspaceFromResources(devWorkspace, devWorkspaceTemplate, cheEditor);
+    await this.props.createWorkspaceFromResources(...resources, cheEditor);
 
     // wait for the workspace creation to complete
     try {
@@ -198,12 +199,10 @@ class StepApplyResources extends AbstractLoaderStep<Props, State> {
     if (state.newWorkspaceName === undefined) {
       return undefined;
     }
-    return findTargetWorkspace(
-      props.allWorkspaces,
-      state.factoryParams.factoryId,
-      state.factoryParams.policiesCreate,
-      state.newWorkspaceName,
-    );
+    return findTargetWorkspace(props.allWorkspaces, {
+      namespace: props.defaultNamespace.name,
+      workspaceName: state.newWorkspaceName,
+    });
   }
 
   private getAlertItem(error: unknown): AlertItem | undefined {
@@ -247,10 +246,8 @@ class StepApplyResources extends AbstractLoaderStep<Props, State> {
 const mapStateToProps = (state: AppState) => ({
   allWorkspaces: selectAllWorkspaces(state),
   defaultNamespace: selectDefaultNamespace(state),
-  devworkspacesEnabled: selectDevworkspacesEnabled(state),
   factoryResolver: selectFactoryResolver(state),
   factoryResolverConverted: selectFactoryResolverConverted(state),
-  infrastructureNamespaces: selectInfrastructureNamespaces(state),
   devWorkspaceResources: selectDevWorkspaceResources(state),
 });
 

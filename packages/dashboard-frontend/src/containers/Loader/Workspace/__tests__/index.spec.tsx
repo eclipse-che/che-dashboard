@@ -33,7 +33,7 @@ jest.mock('../Steps/Initialize');
 jest.mock('../Steps/OpenWorkspace');
 jest.mock('../Steps/StartWorkspace');
 jest.mock('../Steps/CheckRunningWorkspacesLimit');
-jest.mock('../findTargetWorkspace.ts', () => {
+jest.mock('../../findTargetWorkspace.ts', () => {
   return {
     __esModule: true,
     default: () => {

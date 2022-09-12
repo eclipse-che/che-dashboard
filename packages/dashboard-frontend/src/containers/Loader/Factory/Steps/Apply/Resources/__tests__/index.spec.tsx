@@ -16,7 +16,6 @@ import { Action, Store } from 'redux';
 import { screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { StateMock } from '@react-mock/state';
-import { dump } from 'js-yaml';
 import { createMemoryHistory, MemoryHistory } from 'history';
 import { FakeStoreBuilder } from '../../../../../../../store/__mocks__/storeBuilder';
 import { DevWorkspaceBuilder } from '../../../../../../../store/__mocks__/devWorkspaceBuilder';
@@ -27,7 +26,6 @@ import {
   buildLoaderSteps,
   getFactoryLoadingSteps,
 } from '../../../../../../../components/Loader/Step/buildSteps';
-import { DEVWORKSPACE_DEVFILE_SOURCE } from '../../../../../../../services/workspace-client/devworkspace/devWorkspaceClient';
 import devfileApi from '../../../../../../../services/devfileApi';
 import prepareResources from '../prepareResources';
 import { DevWorkspaceResources } from '../../../../../../../store/DevfileRegistries';
@@ -116,7 +114,7 @@ describe('Factory Loader container, step CREATE_WORKSPACE__APPLYING_RESOURCES', 
       lastError: new Error('Unexpected error'),
       factoryParams: buildFactoryParams(searchParams),
     };
-    const store = new FakeStoreBuilder()
+    const store = getStoreBuilder()
       .withDevfileRegistries({
         devWorkspaceResources: {
           [resourcesUrl]: {
@@ -139,7 +137,7 @@ describe('Factory Loader container, step CREATE_WORKSPACE__APPLYING_RESOURCES', 
   });
 
   test('resources are not fetched', async () => {
-    const store = new FakeStoreBuilder().build();
+    const store = getStoreBuilder().build();
     renderComponent(store, loaderSteps, searchParams);
 
     jest.advanceTimersByTime(MIN_STEP_DURATION_MS);
@@ -165,7 +163,7 @@ describe('Factory Loader container, step CREATE_WORKSPACE__APPLYING_RESOURCES', 
 
   describe('handle name conflicts', () => {
     test('name conflict', async () => {
-      const store = new FakeStoreBuilder()
+      const store = getStoreBuilder()
         .withDevWorkspaces({
           workspaces: [new DevWorkspaceBuilder().withName(resourceDevworkspaceName).build()],
         })
@@ -187,7 +185,7 @@ describe('Factory Loader container, step CREATE_WORKSPACE__APPLYING_RESOURCES', 
     });
 
     test('policy "perclick"', async () => {
-      const store = new FakeStoreBuilder()
+      const store = getStoreBuilder()
         .withDevWorkspaces({
           workspaces: [new DevWorkspaceBuilder().withName('unique-name').build()],
         })
@@ -212,7 +210,7 @@ describe('Factory Loader container, step CREATE_WORKSPACE__APPLYING_RESOURCES', 
     });
 
     test('unique name', async () => {
-      const store = new FakeStoreBuilder()
+      const store = getStoreBuilder()
         .withDevWorkspaces({
           workspaces: [new DevWorkspaceBuilder().withName('unique-name').build()],
         })
@@ -235,7 +233,7 @@ describe('Factory Loader container, step CREATE_WORKSPACE__APPLYING_RESOURCES', 
   });
 
   test('the workspace took more than TIMEOUT_TO_CREATE_SEC to create', async () => {
-    const store = new FakeStoreBuilder()
+    const store = getStoreBuilder()
       .withDevfileRegistries({
         devWorkspaceResources: {
           [resourcesUrl]: {
@@ -282,7 +280,7 @@ describe('Factory Loader container, step CREATE_WORKSPACE__APPLYING_RESOURCES', 
   });
 
   test('the workspace created successfully', async () => {
-    const store = new FakeStoreBuilder()
+    const store = getStoreBuilder()
       .withDevfileRegistries({
         devWorkspaceResources: {
           [resourcesUrl]: {
@@ -290,12 +288,12 @@ describe('Factory Loader container, step CREATE_WORKSPACE__APPLYING_RESOURCES', 
           },
         },
       })
+      .withDevWorkspaces({
+        workspaces: [
+          new DevWorkspaceBuilder().withName('other-workspace').withNamespace('user-che').build(),
+        ],
+      })
       .build();
-    const factorySource = dump({
-      factory: {
-        params: factoryId,
-      },
-    });
 
     const { reRenderComponent } = renderComponent(store, loaderSteps, searchParams);
 
@@ -319,7 +317,7 @@ describe('Factory Loader container, step CREATE_WORKSPACE__APPLYING_RESOURCES', 
     jest.advanceTimersByTime(time);
 
     // build next store
-    const nextStore = new FakeStoreBuilder()
+    const nextStore = getStoreBuilder()
       .withDevfileRegistries({
         devWorkspaceResources: {
           [resourcesUrl]: {
@@ -332,25 +330,29 @@ describe('Factory Loader container, step CREATE_WORKSPACE__APPLYING_RESOURCES', 
           new DevWorkspaceBuilder()
             .withName(resourceDevworkspaceName)
             .withNamespace('user-che')
-            .withMetadata({
-              annotations: {
-                [DEVWORKSPACE_DEVFILE_SOURCE]: factorySource,
-              },
-            })
             .build(),
         ],
       })
       .build();
     reRenderComponent(nextStore, loaderSteps, searchParams);
 
-    jest.advanceTimersByTime(MIN_STEP_DURATION_MS);
+    jest.runAllTimers();
 
     await waitFor(() => expect(mockOnNextStep).toHaveBeenCalled());
-    expect(history.location.pathname).toEqual('/ide/user-che/new-project');
+    expect(history.location.pathname).toEqual(`/ide/user-che/${resourceDevworkspaceName}`);
 
     expect(hasError.textContent).toEqual('false');
   });
 });
+
+function getStoreBuilder(): FakeStoreBuilder {
+  return new FakeStoreBuilder().withInfrastructureNamespace([
+    {
+      attributes: { phase: 'Active' },
+      name: 'user-che',
+    },
+  ]);
+}
 
 function getComponent(
   store: Store,

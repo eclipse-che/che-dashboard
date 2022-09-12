@@ -35,7 +35,7 @@ import {
   buildIdeLoaderLocation,
 } from '../../../../../services/helpers/location';
 import { selectRunningDevWorkspacesLimitExceeded } from '../../../../../store/Workspaces/devWorkspaces/selectors';
-import findTargetWorkspace from '../../findTargetWorkspace';
+import findTargetWorkspace from '../../../findTargetWorkspace';
 
 export type Props = MappedProps &
   LoaderStepProps & {

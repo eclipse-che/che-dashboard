@@ -24,7 +24,7 @@ import { AlertItem, DevWorkspaceStatus, LoaderTab } from '../../../../../service
 import { DisposableCollection } from '../../../../../services/helpers/disposable';
 import { delay } from '../../../../../services/helpers/delay';
 import { MIN_STEP_DURATION_MS, TIMEOUT_TO_STOP_SEC } from '../../../const';
-import findTargetWorkspace from '../../findTargetWorkspace';
+import findTargetWorkspace from '../../../findTargetWorkspace';
 import { AbstractLoaderStep, LoaderStepProps, LoaderStepState } from '../../../AbstractStep';
 
 export type Props = MappedProps &

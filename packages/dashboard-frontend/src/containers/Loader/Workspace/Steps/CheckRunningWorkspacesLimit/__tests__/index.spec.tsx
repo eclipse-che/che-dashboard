@@ -26,12 +26,11 @@ import {
   buildLoaderSteps,
   getWorkspaceLoadingSteps,
 } from '../../../../../../components/Loader/Step/buildSteps';
-import { TIMEOUT_TO_STOP_SEC } from '../../../../const';
+import { MIN_STEP_DURATION_MS, TIMEOUT_TO_STOP_SEC } from '../../../../const';
 import getComponentRenderer from '../../../../../../services/__mocks__/getComponentRenderer';
 import StepCheckRunningWorkspacesLimit, { State } from '..';
 import { AppThunk } from '../../../../../../store';
 import devfileApi from '../../../../../../services/devfileApi';
-import { RunningWorkspacesExceededError } from '../../../../../../store/Workspaces/devWorkspaces';
 import { constructWorkspace } from '../../../../../../services/workspace-adapter';
 
 jest.mock('../../../../../../pages/Loader/Workspace');
@@ -256,9 +255,6 @@ describe('Workspace Loader, step CHECK_RUNNING_WORKSPACES_LIMIT', () => {
           .build();
         localState = {
           shouldStop: true,
-          lastError: new RunningWorkspacesExceededError(
-            'You are not allowed to start more workspaces.',
-          ),
           redundantWorkspaceUID: constructWorkspace(redundantDevworkspace).uid,
         };
       });
@@ -267,7 +263,7 @@ describe('Workspace Loader, step CHECK_RUNNING_WORKSPACES_LIMIT', () => {
         mockStopWorkspace.mockResolvedValue(undefined);
 
         renderComponent(store, loaderSteps, localState);
-        jest.runOnlyPendingTimers();
+        jest.advanceTimersByTime(MIN_STEP_DURATION_MS);
 
         const currentStepId = screen.getByTestId('current-step-id');
         await waitFor(() => expect(currentStepId.textContent).toEqual(stepId));

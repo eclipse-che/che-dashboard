@@ -10,7 +10,7 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import { Workspace } from '../../../services/workspace-adapter';
+import { Workspace } from '../../services/workspace-adapter';
 
 export default function (
   workspaces: Workspace[],

@@ -28,7 +28,7 @@ import {
   selectFactoryResolverConverted,
 } from '../../../../../../store/FactoryResolver/selectors';
 import { prepareDevfile } from './prepareDevfile';
-import { findTargetWorkspace } from '../../findTargetWorkspace';
+import findTargetWorkspace from '../../../../findTargetWorkspace';
 import { buildIdeLoaderLocation } from '../../../../../../services/helpers/location';
 import { Workspace } from '../../../../../../services/workspace-adapter';
 import { MIN_STEP_DURATION_MS, TIMEOUT_TO_CREATE_SEC } from '../../../../const';
@@ -42,6 +42,7 @@ export type Props = MappedProps &
     searchParams: URLSearchParams;
   };
 export type State = LoaderStepState & {
+  devfile?: devfileApi.Devfile;
   factoryParams: FactoryParams;
   newWorkspaceName?: string;
   shouldCreate: boolean; // should the loader create a workspace
@@ -129,7 +130,7 @@ class StepApplyDevfile extends AbstractLoaderStep<Props, State> {
     await delay(MIN_STEP_DURATION_MS);
 
     const { factoryResolverConverted } = this.props;
-    const { shouldCreate, factoryParams, newWorkspaceName } = this.state;
+    const { shouldCreate, factoryParams, devfile } = this.state;
     const { factoryId, policiesCreate, storageType } = factoryParams;
 
     const workspace = this.findTargetWorkspace(this.props, this.state);
@@ -148,25 +149,26 @@ class StepApplyDevfile extends AbstractLoaderStep<Props, State> {
       throw new Error('The workspace creation unexpectedly failed.');
     }
 
-    const devfile = factoryResolverConverted?.devfileV2;
     if (devfile === undefined) {
-      throw new Error('Failed to resolve the devfile.');
-    }
+      const _devfile = factoryResolverConverted?.devfileV2;
+      if (_devfile === undefined) {
+        throw new Error('Failed to resolve the devfile.');
+      }
 
-    // test the devfile name to decide if we need to append a suffix to is
-    const nameConflict = this.props.allWorkspaces.some(w => devfile.metadata.name === w.name);
-    const appendSuffix = policiesCreate === 'perclick' || nameConflict;
+      // test the devfile name to decide if we need to append a suffix to is
+      const nameConflict = this.props.allWorkspaces.some(w => _devfile.metadata.name === w.name);
+      const appendSuffix = policiesCreate === 'perclick' || nameConflict;
 
-    const updatedDevfile = prepareDevfile(devfile, factoryId, storageType, appendSuffix);
+      const updatedDevfile = prepareDevfile(_devfile, factoryId, storageType, appendSuffix);
 
-    if (newWorkspaceName !== updatedDevfile.metadata.name) {
       this.setState({
-        newWorkspaceName: devfile.metadata.name,
+        devfile: updatedDevfile,
+        newWorkspaceName: updatedDevfile.metadata.name,
       });
       return false;
     }
 
-    await this.createWorkspaceFromDevfile(updatedDevfile);
+    await this.createWorkspaceFromDevfile(devfile);
 
     // wait for the workspace creation to complete
     try {
@@ -185,12 +187,10 @@ class StepApplyDevfile extends AbstractLoaderStep<Props, State> {
     if (state.newWorkspaceName === undefined) {
       return undefined;
     }
-    return findTargetWorkspace(
-      props.allWorkspaces,
-      state.factoryParams.factoryId,
-      state.factoryParams.policiesCreate,
-      state.newWorkspaceName,
-    );
+    return findTargetWorkspace(props.allWorkspaces, {
+      namespace: props.defaultNamespace.name,
+      workspaceName: state.newWorkspaceName,
+    });
   }
 
   private async createWorkspaceFromDevfile(devfile: devfileApi.Devfile): Promise<void> {

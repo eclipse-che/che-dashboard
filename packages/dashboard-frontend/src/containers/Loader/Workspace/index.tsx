@@ -21,7 +21,7 @@ import StepInitialize from './Steps/Initialize';
 import StepStartWorkspace from './Steps/StartWorkspace';
 import StepOpenWorkspace from './Steps/OpenWorkspace';
 import StepCheckRunningWorkspacesLimit from './Steps/CheckRunningWorkspacesLimit';
-import findTargetWorkspace from './findTargetWorkspace';
+import findTargetWorkspace from '../findTargetWorkspace';
 
 export type Props = MappedProps & {
   currentStepIndex: number; // not ID, but index

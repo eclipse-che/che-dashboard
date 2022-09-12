@@ -14,7 +14,6 @@ import React from 'react';
 import { Action, Store } from 'redux';
 import { Provider } from 'react-redux';
 import { screen, waitFor, within } from '@testing-library/react';
-import { dump } from 'js-yaml';
 import { createMemoryHistory, MemoryHistory } from 'history';
 import { ROUTE } from '../../../../../../../Routes/routes';
 import { FakeStoreBuilder } from '../../../../../../../store/__mocks__/storeBuilder';
@@ -26,7 +25,6 @@ import {
   buildLoaderSteps,
   getFactoryLoadingSteps,
 } from '../../../../../../../components/Loader/Step/buildSteps';
-import { DEVWORKSPACE_DEVFILE_SOURCE } from '../../../../../../../services/workspace-client/devworkspace/devWorkspaceClient';
 import devfileApi from '../../../../../../../services/devfileApi';
 import getComponentRenderer from '../../../../../../../services/__mocks__/getComponentRenderer';
 import StepApplyDevfile, { State } from '..';
@@ -109,7 +107,7 @@ describe('Factory Loader container, step CREATE_WORKSPACE__APPLYING_DEVFILE', ()
       lastError: new Error('Unexpected error'),
       factoryParams: buildFactoryParams(searchParams),
     };
-    const store = new FakeStoreBuilder()
+    const store = getStoreBuilder()
       .withFactoryResolver({
         converted: {
           devfileV2: devfile,
@@ -130,7 +128,7 @@ describe('Factory Loader container, step CREATE_WORKSPACE__APPLYING_DEVFILE', ()
   });
 
   test('factory url is not resolved', async () => {
-    const store = new FakeStoreBuilder().build();
+    const store = getStoreBuilder().build();
     renderComponent(store, loaderSteps, searchParams, currentStepIndex);
 
     jest.advanceTimersByTime(MIN_STEP_DURATION_MS);
@@ -155,7 +153,7 @@ describe('Factory Loader container, step CREATE_WORKSPACE__APPLYING_DEVFILE', ()
 
   describe('handle name conflicts', () => {
     test('name conflict', async () => {
-      const store = new FakeStoreBuilder()
+      const store = getStoreBuilder()
         .withDevWorkspaces({
           workspaces: [new DevWorkspaceBuilder().withName(devfileName).build()],
         })
@@ -175,7 +173,7 @@ describe('Factory Loader container, step CREATE_WORKSPACE__APPLYING_DEVFILE', ()
     });
 
     test('policy "perclick"', async () => {
-      const store = new FakeStoreBuilder()
+      const store = getStoreBuilder()
         .withDevWorkspaces({
           workspaces: [new DevWorkspaceBuilder().withName('unique-name').build()],
         })
@@ -198,7 +196,7 @@ describe('Factory Loader container, step CREATE_WORKSPACE__APPLYING_DEVFILE', ()
     });
 
     test('unique name', async () => {
-      const store = new FakeStoreBuilder()
+      const store = getStoreBuilder()
         .withDevWorkspaces({
           workspaces: [new DevWorkspaceBuilder().withName('unique-name').build()],
         })
@@ -219,7 +217,7 @@ describe('Factory Loader container, step CREATE_WORKSPACE__APPLYING_DEVFILE', ()
   });
 
   test('the workspace took more than TIMEOUT_TO_CREATE_SEC to create', async () => {
-    const store = new FakeStoreBuilder()
+    const store = getStoreBuilder()
       .withFactoryResolver({
         converted: {
           devfileV2: devfile,
@@ -264,7 +262,7 @@ describe('Factory Loader container, step CREATE_WORKSPACE__APPLYING_DEVFILE', ()
   });
 
   test('the workspace created successfully', async () => {
-    const store = new FakeStoreBuilder()
+    const store = getStoreBuilder()
       .withFactoryResolver({
         converted: {
           devfileV2: devfile,
@@ -299,12 +297,7 @@ describe('Factory Loader container, step CREATE_WORKSPACE__APPLYING_DEVFILE', ()
     jest.advanceTimersByTime(time);
 
     // build next store
-    const factorySource = {
-      factory: {
-        params: factoryId,
-      },
-    };
-    const nextStore = new FakeStoreBuilder()
+    const nextStore = getStoreBuilder()
       .withFactoryResolver({
         converted: {
           devfileV2: devfile,
@@ -312,15 +305,7 @@ describe('Factory Loader container, step CREATE_WORKSPACE__APPLYING_DEVFILE', ()
       })
       .withDevWorkspaces({
         workspaces: [
-          new DevWorkspaceBuilder()
-            .withName(devfileName)
-            .withNamespace('user-che')
-            .withMetadata({
-              annotations: {
-                [DEVWORKSPACE_DEVFILE_SOURCE]: dump(factorySource),
-              },
-            })
-            .build(),
+          new DevWorkspaceBuilder().withName(devfileName).withNamespace('user-che').build(),
         ],
       })
       .build();
@@ -334,6 +319,15 @@ describe('Factory Loader container, step CREATE_WORKSPACE__APPLYING_DEVFILE', ()
     expect(hasError.textContent).toEqual('false');
   });
 });
+
+function getStoreBuilder(): FakeStoreBuilder {
+  return new FakeStoreBuilder().withInfrastructureNamespace([
+    {
+      attributes: { phase: 'Active' },
+      name: 'user-che',
+    },
+  ]);
+}
 
 function getComponent(
   store: Store,
