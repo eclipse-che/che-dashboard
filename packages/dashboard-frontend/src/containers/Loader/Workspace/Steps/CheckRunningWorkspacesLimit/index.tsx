@@ -29,13 +29,17 @@ import { MIN_STEP_DURATION_MS, TIMEOUT_TO_STOP_SEC } from '../../../const';
 import workspaceStatusIs from '../workspaceStatusIs';
 import { Workspace } from '../../../../../services/workspace-adapter';
 import { AbstractLoaderStep, LoaderStepProps, LoaderStepState } from '../../../AbstractStep';
-import { RunningWorkspacesExceededError } from '../../../../../store/Workspaces/devWorkspaces';
+import {
+  RunningWorkspacesExceededError,
+  throwRunningWorkspacesExceededError,
+} from '../../../../../store/Workspaces/devWorkspaces';
 import {
   buildHomeLocation,
   buildIdeLoaderLocation,
 } from '../../../../../services/helpers/location';
 import { selectRunningDevWorkspacesLimitExceeded } from '../../../../../store/Workspaces/devWorkspaces/selectors';
 import findTargetWorkspace from '../../../findTargetWorkspace';
+import { selectRunningWorkspacesLimit } from '../../../../../store/ClusterConfig/selectors';
 
 export type Props = MappedProps &
   LoaderStepProps & {
@@ -127,6 +131,7 @@ class StepCheckRunningWorkspacesLimit extends AbstractLoaderStep<Props, State> {
   protected async runStep(): Promise<boolean> {
     await delay(MIN_STEP_DURATION_MS);
 
+    const { runningWorkspacesLimit } = this.props;
     const { shouldStop, redundantWorkspaceUID, lastError } = this.state;
 
     const redundantWorkspace = this.findRedundantWorkspace(this.props, this.state);
@@ -139,7 +144,7 @@ class StepCheckRunningWorkspacesLimit extends AbstractLoaderStep<Props, State> {
     if (redundantWorkspaceUID === undefined) {
       // this will show a notification with action links
       // to ask user which workspace to stop or to switch
-      throw new RunningWorkspacesExceededError('You are not allowed to start more workspaces.');
+      throwRunningWorkspacesExceededError(runningWorkspacesLimit);
     }
 
     if (lastError) {
@@ -332,6 +337,7 @@ const mapStateToProps = (state: AppState) => ({
   allWorkspaces: selectAllWorkspaces(state),
   runningDevWorkspacesLimitExceeded: selectRunningDevWorkspacesLimitExceeded(state),
   runningWorkspaces: selectRunningWorkspaces(state),
+  runningWorkspacesLimit: selectRunningWorkspacesLimit(state),
 });
 
 const connector = connect(mapStateToProps, WorkspaceStore.actionCreators, null, {

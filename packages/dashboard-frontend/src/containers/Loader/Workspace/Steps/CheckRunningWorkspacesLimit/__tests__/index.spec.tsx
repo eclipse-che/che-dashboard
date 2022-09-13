@@ -185,7 +185,7 @@ describe('Workspace Loader, step CHECK_RUNNING_WORKSPACES_LIMIT', () => {
       expect(alertTitle.textContent).toEqual('Running workspace(s) found.');
 
       const alertBody = screen.getByTestId('alert-body');
-      expect(alertBody.textContent).toEqual('You are not allowed to start more workspaces.');
+      expect(alertBody.textContent).toEqual('You can only have 1 running workspace at a time.');
 
       jest.runOnlyPendingTimers();
     });
@@ -424,7 +424,7 @@ describe('Workspace Loader, step CHECK_RUNNING_WORKSPACES_LIMIT', () => {
       expect(alertTitle.textContent).toEqual('Running workspace(s) found.');
 
       const alertBody = screen.getByTestId('alert-body');
-      expect(alertBody.textContent).toEqual('You are not allowed to start more workspaces.');
+      expect(alertBody.textContent).toEqual('You can only have 2 running workspaces at a time.');
     });
 
     test('action link text', async () => {
