@@ -12,14 +12,14 @@
 
 import { V1alpha2DevWorkspace } from '@devfile/api';
 import { DEVWORKSPACE_STORAGE_TYPE } from '../../../../../../../services/devfileApi/devWorkspace/spec';
-import { generateWorkspaceName } from '../../../../../../../services/helpers/generateName';
+import { generateSuffix } from '../../../../../../../services/helpers/generateName';
 import { DEVWORKSPACE_DEVFILE_SOURCE } from '../../../../../../../services/workspace-client/devworkspace/devWorkspaceClient';
 import { DevWorkspaceResources } from '../../../../../../../store/DevfileRegistries';
 import prepareResources from '../prepareResources';
 
 const suffix = '-1234';
 jest.mock('../../../../../../../services/helpers/generateName.ts');
-(generateWorkspaceName as jest.Mock).mockImplementation(name => name + suffix);
+(generateSuffix as jest.Mock).mockImplementation(() => suffix);
 
 describe('FactoryLoaderContainer/prepareResources', () => {
   const factoryId = 'url=https://factory-location';

@@ -15,7 +15,7 @@ import { cloneDeep } from 'lodash';
 import { DevWorkspaceTemplate } from '../../../../../../services/devfileApi/devfileApi';
 import { DevWorkspace } from '../../../../../../services/devfileApi/devWorkspace';
 import { DEVWORKSPACE_STORAGE_TYPE } from '../../../../../../services/devfileApi/devWorkspace/spec';
-import { generateWorkspaceName } from '../../../../../../services/helpers/generateName';
+import { generateSuffix } from '../../../../../../services/helpers/generateName';
 import { DEVWORKSPACE_DEVFILE_SOURCE } from '../../../../../../services/workspace-client/devworkspace/devWorkspaceClient';
 import { DevWorkspaceResources } from '../../../../../../store/DevfileRegistries';
 
@@ -56,7 +56,7 @@ export default function prepareResources(
 }
 
 function addSuffix(devWorkspace: DevWorkspace, devWorkspaceTemplate: DevWorkspaceTemplate) {
-  const suffix = generateWorkspaceName('');
+  const suffix = generateSuffix();
   const editorPluginName = devWorkspaceTemplate.metadata.name;
 
   if (devWorkspace.metadata.generateName !== undefined) {
