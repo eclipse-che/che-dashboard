@@ -16,7 +16,7 @@ import { getDevWorkspaceClient, getServiceAccountToken } from './helper';
 import { getSchema } from '../services/helpers';
 import { api } from '@eclipse-che/common';
 
-const CHECLUSTER_CR_NAME = process.env.CHECLUSTER_CR_NAME as string;
+const CHECLUSTER_CR_NAMESPACE = process.env.CHECLUSTER_CR_NAMESPACE as string;
 
 const tags = ['Server Config'];
 
@@ -48,7 +48,7 @@ export function registerServerConfigApi(server: FastifyInstance) {
       pluginRegistry: {
         openVSXURL,
       },
-      cheNamespace: CHECLUSTER_CR_NAME,
+      cheNamespace: CHECLUSTER_CR_NAMESPACE,
     };
 
     return serverConfig;
