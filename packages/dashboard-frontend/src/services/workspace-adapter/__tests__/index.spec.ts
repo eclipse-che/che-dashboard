@@ -335,7 +335,7 @@ describe('Workspace adapter', () => {
     it('should return storage type', () => {
       const devWorkspace = new DevWorkspaceBuilder().build();
       const workspace = constructWorkspace(devWorkspace);
-      expect(workspace.storageType).toEqual(StorageTypeTitle.persistent.toLowerCase());
+      expect(workspace.storageType).toEqual(StorageTypeTitle['per-workspace'].toLowerCase());
     });
 
     it('should return devfile', () => {
