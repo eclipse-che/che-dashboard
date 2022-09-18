@@ -754,7 +754,9 @@ export class DevWorkspaceClient extends WorkspaceClient {
     config: api.IServerConfig,
   ): Promise<void> {
     const patch: api.IPatch[] = [];
-
+    if (workspace.spec.started) {
+      return;
+    }
     const cheNamespace = config.cheNamespace;
     if (cheNamespace) {
       const devworkspaceConfig = { name: 'devworkspace-config', namespace: cheNamespace };
@@ -819,9 +821,8 @@ export class DevWorkspaceClient extends WorkspaceClient {
     }
 
     if (patch.length > 0) {
-      await DwApi.patchWorkspace(workspace.metadata.namespace, workspace.metadata.name, patch).then(
-        () => delay(),
-      );
+      await DwApi.patchWorkspace(workspace.metadata.namespace, workspace.metadata.name, patch);
+      await delay(800);
     }
   }
 
