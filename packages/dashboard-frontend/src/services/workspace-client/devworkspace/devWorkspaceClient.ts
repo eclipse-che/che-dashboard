@@ -728,9 +728,11 @@ export class DevWorkspaceClient extends WorkspaceClient {
   async updateConfigData(
     workspace: devfileApi.DevWorkspace,
     config: api.IServerConfig,
-  ): Promise<devfileApi.DevWorkspace> {
+  ): Promise<void> {
     const patch: api.IPatch[] = [];
-
+    if (workspace.spec.started) {
+      return;
+    }
     const cheNamespace = config.cheNamespace;
     if (cheNamespace) {
       const devworkspaceConfig = { name: 'devworkspace-config', namespace: cheNamespace };
@@ -764,13 +766,7 @@ export class DevWorkspaceClient extends WorkspaceClient {
       )}`;
 
       if (workspace.spec.template.attributes) {
-        if (workspace.spec.template.attributes[DEVWORKSPACE_STORAGE_TYPE] !== currentPvcStrategy) {
-          patch.push({
-            op: 'replace',
-            path: devworkspaceStorageTypePath,
-            value: currentPvcStrategy,
-          });
-        } else {
+        if (!workspace.spec.template.attributes[DEVWORKSPACE_STORAGE_TYPE]) {
           patch.push({ op: 'add', path: devworkspaceStorageTypePath, value: currentPvcStrategy });
         }
       } else {
@@ -782,11 +778,10 @@ export class DevWorkspaceClient extends WorkspaceClient {
       }
     }
 
-    if (patch.length === 0) {
-      return workspace;
+    if (patch.length > 0) {
+      await DwApi.patchWorkspace(workspace.metadata.namespace, workspace.metadata.name, patch);
+      await delay(800);
     }
-
-    return await DwApi.patchWorkspace(workspace.metadata.namespace, workspace.metadata.name, patch);
   }
 
   async updateDebugMode(
