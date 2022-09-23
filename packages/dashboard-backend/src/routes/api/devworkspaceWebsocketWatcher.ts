@@ -12,8 +12,9 @@
 
 import { FastifyInstance, FastifyRequest } from 'fastify';
 import { SocketStream } from '@fastify/websocket';
-import { baseApiPath } from '../constants/config';
-import SubscribeManager, { Channel, Parameters } from '../services/SubscriptionManager';
+import WebSocket from 'ws';
+import { baseApiPath } from '../../constants/config';
+import SubscribeManager, { Channel, Parameters } from '../../services/SubscriptionManager';
 import { getToken } from './helper';
 
 type Action = 'SUBSCRIBE' | 'UNSUBSCRIBE';
@@ -24,7 +25,7 @@ async function handler(connection: SocketStream, request: FastifyRequest) {
   const socket = connection.socket;
   const pubSubManager = new SubscribeManager(socket);
 
-  socket.on('message', messageStr => {
+  socket.on('message', (messageStr: WebSocket.Data) => {
     let message: { request: Action; params: Parameters; channel: Channel };
     try {
       message = JSON.parse(messageStr.toString());

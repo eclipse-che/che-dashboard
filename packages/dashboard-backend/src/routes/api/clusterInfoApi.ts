@@ -12,14 +12,14 @@
 
 import { FastifyInstance } from 'fastify';
 import { ApplicationInfo, ClusterInfo } from '@eclipse-che/common';
-import { baseApiPath } from '../constants/config';
+import { baseApiPath } from '../../constants/config';
 import {
   CLUSTER_CONSOLE_GROUP,
   CLUSTER_CONSOLE_ICON,
   CLUSTER_CONSOLE_TITLE,
   CLUSTER_CONSOLE_URL,
-} from '../devworkspace-client/services/cluster-info';
-import { getSchema } from '../services/helpers';
+} from '../../devworkspace-client/services/cluster-info';
+import { getSchema } from '../../services/helpers';
 
 const tags = ['Cluster Info'];
 

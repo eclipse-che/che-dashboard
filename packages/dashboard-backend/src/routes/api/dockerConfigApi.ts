@@ -11,11 +11,11 @@
  */
 
 import { FastifyInstance, FastifyRequest } from 'fastify';
-import { baseApiPath } from '../constants/config';
-import { dockerConfigSchema, namespacedSchema } from '../constants/schemas';
+import { baseApiPath } from '../../constants/config';
+import { dockerConfigSchema, namespacedSchema } from '../../constants/schemas';
 import { getDevWorkspaceClient, getToken } from './helper';
-import { restParams } from '../typings/models';
-import { getSchema } from '../services/helpers';
+import { restParams } from '../../typings/models';
+import { getSchema } from '../../services/helpers';
 
 const tags = ['Docker Config'];
 

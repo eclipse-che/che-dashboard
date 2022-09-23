@@ -11,16 +11,16 @@
  */
 
 import { FastifyInstance, FastifyRequest } from 'fastify';
-import { baseApiPath } from '../constants/config';
+import { baseApiPath } from '../../constants/config';
 import {
   namespacedSchema,
   namespacedTemplateSchema,
   dwTemplatePatchSchema,
   templateStartedSchema,
-} from '../constants/schemas';
+} from '../../constants/schemas';
 import { getDevWorkspaceClient, getToken } from './helper';
-import { getSchema } from '../services/helpers';
-import { restParams } from '../typings/models';
+import { getSchema } from '../../services/helpers';
+import { restParams } from '../../typings/models';
 
 const tags = ['Devworkspace Template'];
 

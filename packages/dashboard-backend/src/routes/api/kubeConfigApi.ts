@@ -11,11 +11,11 @@
  */
 
 import { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify';
-import { baseApiPath } from '../constants/config';
+import { baseApiPath } from '../../constants/config';
 import { getDevWorkspaceClient, getToken } from './helper';
-import { getSchema } from '../services/helpers';
-import { restParams } from '../typings/models';
-import { namespacedKubeConfigSchema } from '../constants/schemas';
+import { getSchema } from '../../services/helpers';
+import { restParams } from '../../typings/models';
+import { namespacedKubeConfigSchema } from '../../constants/schemas';
 
 const tags = ['Kube Config'];
 

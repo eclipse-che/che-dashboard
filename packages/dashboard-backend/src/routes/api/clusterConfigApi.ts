@@ -12,8 +12,8 @@
 
 import { FastifyInstance } from 'fastify';
 import { ClusterConfig } from '@eclipse-che/common';
-import { baseApiPath } from '../constants/config';
-import { getSchema } from '../services/helpers';
+import { baseApiPath } from '../../constants/config';
+import { getSchema } from '../../services/helpers';
 import { getDevWorkspaceClient, getServiceAccountToken } from './helper';
 
 const tags = ['Cluster Config'];

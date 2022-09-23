@@ -10,32 +10,32 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import 'reflect-metadata';
-import fastify, { FastifyInstance } from 'fastify';
-import fastifyWebsocket from '@fastify/websocket';
-import args from 'args';
 import { helpers } from '@eclipse-che/common';
-import { registerStaticServer } from './static';
-import { registerDevworkspaceWebsocketWatcher } from './api/devworkspaceWebsocketWatcher';
-import { registerDevworkspaceApi } from './api/devworkspaceApi';
-import { registerTemplateApi } from './api/devworkspaceTemplateApi';
-import { registerCors } from './cors';
-import { registerSwagger } from './swagger';
-import { registerClusterInfoApi } from './api/clusterInfoApi';
-import { registerClusterConfigApi } from './api/clusterConfigApi';
-import { registerDockerConfigApi } from './api/dockerConfigApi';
-import { registerServerConfigApi } from './api/serverConfigApi';
-import { registerKubeConfigApi } from './api/kubeConfigApi';
-import { registerLocalServers, isLocalRun } from './local-run';
+import args from 'args';
+import fastify, { FastifyInstance } from 'fastify';
+import 'reflect-metadata';
+import { isLocalRun, registerLocalServers } from './local-run';
 import {
+  addAuthorizationHooks,
   addDexProxy,
   registerDexCallback,
   registerOauth,
-  addAuthorizationHooks,
 } from './local-run/dexHelper';
-import { registerFactory } from './factory';
-import { namespaceApi } from './api/namespaceApi';
-import { registerYamlResolverApi } from './api/yamlResolverApi';
+import { registerCors } from './plugins/cors';
+import { registerStaticServer } from './plugins/staticServer';
+import { registerSwagger } from './plugins/swagger';
+import { registerWebSocket } from './plugins/webSocket';
+import { registerClusterConfigApi } from './routes/api/clusterConfigApi';
+import { registerClusterInfoApi } from './routes/api/clusterInfoApi';
+import { registerDevworkspaceApi } from './routes/api/devworkspaceApi';
+import { registerTemplateApi } from './routes/api/devworkspaceTemplateApi';
+import { registerDevworkspaceWebsocketWatcher } from './routes/api/devworkspaceWebsocketWatcher';
+import { registerDockerConfigApi } from './routes/api/dockerConfigApi';
+import { registerKubeConfigApi } from './routes/api/kubeConfigApi';
+import { namespaceApi } from './routes/api/namespaceApi';
+import { registerServerConfigApi } from './routes/api/serverConfigApi';
+import { registerYamlResolverApi } from './routes/api/yamlResolverApi';
+import { registerFactoryAcceptance } from './routes/factoryAcceptance';
 
 export default function buildApp(): FastifyInstance {
   const CHE_HOST = process.env.CHE_HOST as string;
@@ -68,7 +68,7 @@ export default function buildApp(): FastifyInstance {
     },
   );
 
-  server.register(fastifyWebsocket);
+  registerWebSocket(server);
 
   if (isLocalRun) {
     const DEX_INGRESS = process.env.DEX_INGRESS as string;
@@ -86,7 +86,7 @@ export default function buildApp(): FastifyInstance {
 
   registerStaticServer(publicFolder, server);
 
-  registerFactory(server);
+  registerFactoryAcceptance(server);
 
   registerDevworkspaceWebsocketWatcher(server);
 

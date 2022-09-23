@@ -12,7 +12,7 @@
 
 import { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify';
 
-export function registerFactory(server: FastifyInstance): void {
+export function registerFactoryAcceptance(server: FastifyInstance): void {
   // redirect to the Dashboard factory flow
   function redirectFactoryFlow(path: string) {
     server.get(path, async (request: FastifyRequest, reply: FastifyReply) => {

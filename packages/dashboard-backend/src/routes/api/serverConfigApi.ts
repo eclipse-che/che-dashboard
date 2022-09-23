@@ -11,9 +11,9 @@
  */
 
 import { FastifyInstance } from 'fastify';
-import { baseApiPath } from '../constants/config';
+import { baseApiPath } from '../../constants/config';
 import { getDevWorkspaceClient, getServiceAccountToken } from './helper';
-import { getSchema } from '../services/helpers';
+import { getSchema } from '../../services/helpers';
 import { api } from '@eclipse-che/common';
 
 const CHECLUSTER_CR_NAMESPACE = process.env.CHECLUSTER_CR_NAMESPACE as string;

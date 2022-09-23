@@ -12,11 +12,11 @@
 
 import { FastifyInstance, FastifyRequest } from 'fastify';
 import fetch from 'node-fetch';
-import { baseApiPath } from '../constants/config';
-import { yamlResolverSchema, namespacedSchema } from '../constants/schemas';
+import { baseApiPath } from '../../constants/config';
+import { yamlResolverSchema, namespacedSchema } from '../../constants/schemas';
 import { getDevWorkspaceClient, getToken } from './helper';
-import { restParams } from '../typings/models';
-import { getSchema } from '../services/helpers';
+import { restParams } from '../../typings/models';
+import { getSchema } from '../../services/helpers';
 import { helpers } from '@eclipse-che/common';
 
 const tags = ['Yaml Resolver'];
