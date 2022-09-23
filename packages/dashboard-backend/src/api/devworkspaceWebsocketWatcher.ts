@@ -10,13 +10,13 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import { FastifyInstance, FastifyRequest, RouteShorthandOptions } from 'fastify';
+import { FastifyInstance, FastifyRequest } from 'fastify';
 import { SocketStream } from '@fastify/websocket';
 import { baseApiPath } from '../constants/config';
-import SubscribeManager from '../services/SubscriptionManager';
+import SubscribeManager, { Channel, Parameters } from '../services/SubscriptionManager';
 import { getToken } from './helper';
 
-const options = { websocket: true } as RouteShorthandOptions;
+type Action = 'SUBSCRIBE' | 'UNSUBSCRIBE';
 
 async function handler(connection: SocketStream, request: FastifyRequest) {
   const bearerAuthenticationToken = request?.headers?.authorization ? getToken(request) : undefined;
@@ -25,7 +25,7 @@ async function handler(connection: SocketStream, request: FastifyRequest) {
   const pubSubManager = new SubscribeManager(socket);
 
   socket.on('message', messageStr => {
-    let message: any;
+    let message: { request: Action; params: Parameters; channel: Channel };
     try {
       message = JSON.parse(messageStr.toString());
     } catch (e) {
@@ -45,15 +45,12 @@ async function handler(connection: SocketStream, request: FastifyRequest) {
         pubSubManager.unsubscribe(channel);
         break;
       case 'SUBSCRIBE':
-        pubSubManager.subscribe(
-          channel,
-          params as { token: string; namespace: string; resourceVersion: string },
-        );
+        pubSubManager.subscribe(channel, params);
         break;
     }
   });
 }
 
 export function registerDevworkspaceWebsocketWatcher(server: FastifyInstance) {
-  server.get(`${baseApiPath}/websocket`, options, handler as any);
+  server.get(`${baseApiPath}/websocket`, { websocket: true }, handler);
 }
