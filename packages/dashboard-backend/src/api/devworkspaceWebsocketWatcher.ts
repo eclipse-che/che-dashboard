@@ -24,8 +24,16 @@ async function handler(connection: SocketStream, request: FastifyRequest) {
   const socket = connection.socket;
   const pubSubManager = new SubscribeManager(socket);
 
-  socket.on('message', message => {
-    const { request, params, channel } = JSON.parse(message.toString());
+  socket.on('message', messageStr => {
+    let message: any;
+    try {
+      message = JSON.parse(messageStr.toString());
+    } catch (e) {
+      console.warn(`[WARN] Can't parse the WS message payload:`, messageStr.toString());
+      throw e;
+    }
+    const { request, params, channel } = message;
+
     if (!request || !channel) {
       return;
     }
