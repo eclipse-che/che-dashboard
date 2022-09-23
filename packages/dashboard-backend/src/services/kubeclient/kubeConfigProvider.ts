@@ -12,7 +12,7 @@
 
 import { ApisApi, Context, KubeConfig, User } from '@kubernetes/client-node';
 import * as helper from './helpers';
-import { isLocalRun } from '../../local-run';
+import { isLocalRun } from '../../localRun';
 import { getUserName } from './helpers';
 
 export class KubeConfigProvider {

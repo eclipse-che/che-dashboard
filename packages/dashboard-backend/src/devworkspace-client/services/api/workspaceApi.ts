@@ -21,7 +21,7 @@ import {
 
 import { api } from '@eclipse-che/common';
 import { createError } from '../helpers';
-import { isLocalRun } from '../../../local-run';
+import { isLocalRun } from '../../../localRun';
 
 const DEV_WORKSPACE_API_ERROR_LABEL = 'CUSTOM_OBJECTS_API_ERROR';
 

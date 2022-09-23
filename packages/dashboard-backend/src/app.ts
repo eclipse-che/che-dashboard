@@ -14,13 +14,13 @@ import { helpers } from '@eclipse-che/common';
 import args from 'args';
 import fastify, { FastifyInstance } from 'fastify';
 import 'reflect-metadata';
-import { isLocalRun, registerLocalServers } from './local-run';
+import { isLocalRun, registerLocalServers } from './localRun';
 import {
   addAuthorizationHooks,
   addDexProxy,
   registerDexCallback,
   registerOauth,
-} from './local-run/dexHelper';
+} from './localRun/dexHelper';
 import { registerCors } from './plugins/cors';
 import { registerStaticServer } from './plugins/staticServer';
 import { registerSwagger } from './plugins/swagger';

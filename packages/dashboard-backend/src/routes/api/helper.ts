@@ -15,7 +15,7 @@ import { DwClientProvider } from '../../services/kubeclient/dwClientProvider';
 import { DevWorkspaceClient } from '../../devworkspace-client';
 import { createFastifyError } from '../../services/helpers';
 import { existsSync, readFileSync } from 'fs';
-import { isLocalRun } from '../../local-run';
+import { isLocalRun } from '../../localRun';
 
 const SERVICE_ACCOUNT_TOKEN_PATH = '/run/secrets/kubernetes.io/serviceaccount/token';
 const AUTHORIZATION_BEARER_PREFIX = /^Bearer /;

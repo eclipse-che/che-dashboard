@@ -12,7 +12,7 @@
 
 import 'reflect-metadata';
 import buildApp from './app';
-import { isLocalRun } from './local-run';
+import { isLocalRun } from './localRun';
 
 const server = buildApp();
 
