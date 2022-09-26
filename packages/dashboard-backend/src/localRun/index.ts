@@ -11,20 +11,34 @@
  */
 
 import { FastifyInstance } from 'fastify';
-import { registerCheApiProxy } from './che-server';
-import { authenticateDashboardRequestsHook } from './dashboard';
+import { authenticateApiRequestsHook } from './hooks/authenticateApiRequests';
+import { addAuthorizationHooks } from './hooks/authorizationHooks';
+import { registerOauth2Plugin } from './plugins/oauth2';
+import { registerCheApiProxy } from './proxies/cheServerApi';
+import { registerDexProxies } from './proxies/dexProxies';
+import { registerDexCallback } from './routes/dexCallback';
+import { registerSignOut } from './routes/signOut';
 
 export const isLocalRun = process.env['LOCAL_RUN'] === 'true';
-export const isNativeAuth = process.env['NATIVE_AUTH'] === 'true';
 
+const isNativeAuth = process.env['NATIVE_AUTH'] === 'true';
 const cheApiProxyUpstream = process.env['CHE_API_PROXY_UPSTREAM'] || '';
+const cheHostOrigin = process.env.CHE_HOST_ORIGIN || '';
+const dexIngress = process.env.DEX_INGRESS || '';
 
-export function registerLocalServers(server: FastifyInstance, origin: string) {
+export function registerLocalRun(server: FastifyInstance) {
   console.log('Running locally, setting up stubs');
 
-  if (isNativeAuth) {
-    authenticateDashboardRequestsHook(server);
+  if (dexIngress) {
+    registerDexProxies(server, `https://${dexIngress}`);
+    registerDexCallback(server);
+    registerOauth2Plugin(server);
+    registerSignOut(server);
+    addAuthorizationHooks(server);
   }
 
-  registerCheApiProxy(server, cheApiProxyUpstream, origin);
+  if (isNativeAuth) {
+    authenticateApiRequestsHook(server);
+  }
+  registerCheApiProxy(server, cheApiProxyUpstream, cheHostOrigin);
 }

@@ -14,13 +14,7 @@ import { helpers } from '@eclipse-che/common';
 import args from 'args';
 import fastify, { FastifyInstance } from 'fastify';
 import 'reflect-metadata';
-import { isLocalRun, registerLocalServers } from './localRun';
-import {
-  addAuthorizationHooks,
-  addDexProxy,
-  registerDexCallback,
-  registerOauth,
-} from './localRun/dexHelper';
+import { isLocalRun, registerLocalRun } from './localRun';
 import { registerCors } from './plugins/cors';
 import { registerStaticServer } from './plugins/staticServer';
 import { registerSwagger } from './plugins/swagger';
@@ -71,15 +65,7 @@ export default function buildApp(): FastifyInstance {
   registerWebSocket(server);
 
   if (isLocalRun) {
-    const DEX_INGRESS = process.env.DEX_INGRESS as string;
-    if (DEX_INGRESS) {
-      addDexProxy(server, `https://${DEX_INGRESS}`);
-      registerDexCallback(server);
-      registerOauth(server);
-      addAuthorizationHooks(server);
-    }
-    const CHE_HOST_ORIGIN = process.env.CHE_HOST_ORIGIN as string;
-    registerLocalServers(server, CHE_HOST_ORIGIN);
+    registerLocalRun(server);
   }
 
   registerCors(isLocalRun, server);

@@ -12,14 +12,13 @@
 
 import { FastifyInstance } from 'fastify';
 
-export function authenticateDashboardRequestsHook(server: FastifyInstance) {
-  // authenticate requests to Dashboard Backend
+export function stubCheServerOptionsRequests(server: FastifyInstance) {
+  // stub OPTIONS requests to '/api/' since they fail when running the backend locally.
   server.addHook('onRequest', (request, reply, done) => {
-    if (request.url.startsWith('/dashboard/api')) {
-      const clusterAccessToken = process.env.CLUSTER_ACCESS_TOKEN as string;
-      if (clusterAccessToken) {
-        request.headers.authorization = 'Bearer ' + clusterAccessToken;
-      }
+    if ((request.url === '/api' || request.url === '/api/') && request.method === 'OPTIONS') {
+      return reply.send({
+        implementationVersion: 'Local Run',
+      });
     }
     done();
   });
