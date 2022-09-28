@@ -29,7 +29,7 @@ import { registerKubeConfigApi } from './routes/api/kubeConfigApi';
 import { namespaceApi } from './routes/api/namespaceApi';
 import { registerServerConfigApi } from './routes/api/serverConfigApi';
 import { registerYamlResolverApi } from './routes/api/yamlResolverApi';
-import { registerFactoryAcceptance } from './routes/factoryAcceptance';
+import { registerFactoryAcceptanceRedirect } from './routes/factoryAcceptanceRedirect';
 
 export default async function buildApp(server: FastifyInstance): Promise<void> {
   const cheHost = process.env.CHE_HOST as string;
@@ -65,7 +65,7 @@ export default async function buildApp(server: FastifyInstance): Promise<void> {
 
   registerStaticServer(publicFolder, server);
 
-  registerFactoryAcceptance(server);
+  registerFactoryAcceptanceRedirect(server);
 
   registerDevworkspaceWebsocketWatcher(server);
 
