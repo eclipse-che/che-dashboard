@@ -13,30 +13,31 @@
 import { FastifyInstance } from 'fastify';
 import { ApplicationInfo, ClusterInfo } from '@eclipse-che/common';
 import { baseApiPath } from '../../constants/config';
-import {
-  CLUSTER_CONSOLE_GROUP,
-  CLUSTER_CONSOLE_ICON,
-  CLUSTER_CONSOLE_TITLE,
-  CLUSTER_CONSOLE_URL,
-} from '../../devworkspace-client/services/cluster-info';
 import { getSchema } from '../../services/helpers';
 
 const tags = ['Cluster Info'];
 
-export function registerClusterInfoApi(server: FastifyInstance) {
+export function registerClusterInfoRoute(server: FastifyInstance) {
   server.get(`${baseApiPath}/cluster-info`, getSchema({ tags }), async () =>
     buildApplicationInfo(),
   );
 }
 
 function buildApplicationInfo(): ClusterInfo {
+  const clusterConsoleUrl = process.env['OPENSHIFT_CONSOLE_URL'] || '';
+  const clusterConsoleTitle = process.env['OPENSHIFT_CONSOLE_TITLE'] || 'OpenShift console';
+  const clusterConsoleIcon =
+    process.env['OPENSHIFT_CONSOLE_ICON'] ||
+    (clusterConsoleUrl ? clusterConsoleUrl + '/static/assets/redhat.svg' : '');
+  const clusterConsoleGroup = process.env['OPENSHIFT_CONSOLE_GROUP'];
+
   const applications: ApplicationInfo[] = [];
-  if (CLUSTER_CONSOLE_URL) {
+  if (clusterConsoleUrl) {
     applications.push({
-      icon: CLUSTER_CONSOLE_ICON,
-      title: CLUSTER_CONSOLE_TITLE,
-      url: CLUSTER_CONSOLE_URL,
-      group: CLUSTER_CONSOLE_GROUP,
+      icon: clusterConsoleIcon,
+      title: clusterConsoleTitle,
+      url: clusterConsoleUrl,
+      group: clusterConsoleGroup,
     });
   }
   return { applications };

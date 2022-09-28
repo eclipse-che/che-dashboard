@@ -20,7 +20,7 @@ import { registerStaticServer } from './plugins/staticServer';
 import { registerSwagger } from './plugins/swagger';
 import { registerWebSocket } from './plugins/webSocket';
 import { registerClusterConfigRoute } from './routes/api/clusterConfig';
-import { registerClusterInfoApi } from './routes/api/clusterInfoApi';
+import { registerClusterInfoRoute } from './routes/api/clusterInfo';
 import { registerDevworkspaceApi } from './routes/api/devworkspaceApi';
 import { registerTemplateApi } from './routes/api/devworkspaceTemplateApi';
 import { registerDevworkspaceWebsocketWatcher } from './routes/api/devworkspaceWebsocketWatcher';
@@ -86,7 +86,7 @@ export default async function buildApp(server: FastifyInstance): Promise<void> {
 
   registerKubeConfigApi(server);
 
-  registerClusterInfoApi(server);
+  registerClusterInfoRoute(server);
 
   registerClusterConfigRoute(server);
 
