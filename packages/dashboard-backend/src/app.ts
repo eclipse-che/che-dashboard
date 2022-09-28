@@ -11,9 +11,9 @@
  */
 
 import { helpers } from '@eclipse-che/common';
-import args from 'args';
 import fastify, { FastifyInstance } from 'fastify';
 import 'reflect-metadata';
+import parseArgs from './helpers/parseArgs';
 import { isLocalRun, registerLocalRun } from './localRun';
 import { registerCors } from './plugins/cors';
 import { registerStaticServer } from './plugins/staticServer';
@@ -39,13 +39,7 @@ export default function buildApp(): FastifyInstance {
     process.exit(1);
   }
 
-  args.option('publicFolder', 'The public folder to serve', './public');
-
-  const { publicFolder } = args.parse(process.argv) as { publicFolder: string };
-
-  const server = fastify({
-    logger: false,
-  });
+  const { publicFolder } = parseArgs();
 
   server.addContentTypeParser(
     'application/merge-patch+json',
