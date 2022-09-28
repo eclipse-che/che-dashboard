@@ -10,11 +10,15 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
+import fastify from 'fastify';
 import 'reflect-metadata';
 import buildApp from './app';
 import { isLocalRun } from './localRun';
 
-const server = buildApp();
+const server = fastify({
+  logger: false,
+});
+buildApp(server);
 
 server.listen(8080, '0.0.0.0', (err: Error | null, address: string) => {
   if (err) {

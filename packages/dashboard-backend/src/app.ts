@@ -11,7 +11,7 @@
  */
 
 import { helpers } from '@eclipse-che/common';
-import fastify, { FastifyInstance } from 'fastify';
+import { FastifyInstance } from 'fastify';
 import 'reflect-metadata';
 import parseArgs from './helpers/parseArgs';
 import { isLocalRun, registerLocalRun } from './localRun';
@@ -31,10 +31,9 @@ import { registerServerConfigApi } from './routes/api/serverConfigApi';
 import { registerYamlResolverApi } from './routes/api/yamlResolverApi';
 import { registerFactoryAcceptance } from './routes/factoryAcceptance';
 
-export default function buildApp(): FastifyInstance {
-  const CHE_HOST = process.env.CHE_HOST as string;
-
-  if (!CHE_HOST) {
+export default async function buildApp(server: FastifyInstance): Promise<void> {
+  const cheHost = process.env.CHE_HOST as string;
+  if (!cheHost) {
     console.error('CHE_HOST environment variable is required');
     process.exit(1);
   }
@@ -92,6 +91,4 @@ export default function buildApp(): FastifyInstance {
   registerClusterConfigApi(server);
 
   registerYamlResolverApi(server);
-
-  return server;
 }
