@@ -27,7 +27,7 @@ export class DwClientProvider {
     this.isOpenShift = helper.isOpenShift(apiClient);
   }
 
-  async getDWClient(token: string) {
+  getDWClient(token: string) {
     const contextKc = this.kubeconfigProvider.getKubeConfig(token);
 
     return new DevWorkspaceClient(contextKc);

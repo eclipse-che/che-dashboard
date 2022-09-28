@@ -14,19 +14,20 @@ import { FastifyInstance } from 'fastify';
 import { ClusterConfig } from '@eclipse-che/common';
 import { baseApiPath } from '../../constants/config';
 import { getSchema } from '../../services/helpers';
-import { getDevWorkspaceClient, getServiceAccountToken } from './helper';
+import { getDevWorkspaceClient } from './helpers/getDevWorkspaceClient';
+import { getServiceAccountToken } from './helpers/getServiceAccountToken';
 
 const tags = ['Cluster Config'];
 
-export function registerClusterConfigApi(server: FastifyInstance) {
+export function registerClusterConfigRoute(server: FastifyInstance) {
   server.get(`${baseApiPath}/cluster-config`, getSchema({ tags }), async () =>
     buildClusterConfig(),
   );
 }
 
 async function buildClusterConfig(): Promise<ClusterConfig> {
-  const token = await getServiceAccountToken();
-  const { serverConfigApi } = await getDevWorkspaceClient(token);
+  const token = getServiceAccountToken();
+  const { serverConfigApi } = getDevWorkspaceClient(token);
 
   const cheCustomResource = await serverConfigApi.getCheCustomResource();
   const dashboardWarning = serverConfigApi.getDashboardWarning(cheCustomResource);

@@ -12,7 +12,8 @@
 
 import { FastifyInstance } from 'fastify';
 import { baseApiPath } from '../../constants/config';
-import { getDevWorkspaceClient, getServiceAccountToken } from './helper';
+import { getDevWorkspaceClient } from './helpers/getDevWorkspaceClient';
+import { getServiceAccountToken } from './helpers/getServiceAccountToken';
 import { getSchema } from '../../services/helpers';
 import { api } from '@eclipse-che/common';
 

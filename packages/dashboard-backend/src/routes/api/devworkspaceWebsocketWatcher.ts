@@ -15,7 +15,7 @@ import { SocketStream } from '@fastify/websocket';
 import WebSocket from 'ws';
 import { baseApiPath } from '../../constants/config';
 import SubscribeManager, { Channel, Parameters } from '../../services/SubscriptionManager';
-import { getToken } from './helper';
+import { getToken } from './helpers/getToken';
 
 type Action = 'SUBSCRIBE' | 'UNSUBSCRIBE';
 

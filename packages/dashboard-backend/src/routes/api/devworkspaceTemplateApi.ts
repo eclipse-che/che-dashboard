@@ -18,7 +18,8 @@ import {
   dwTemplatePatchSchema,
   templateStartedSchema,
 } from '../../constants/schemas';
-import { getDevWorkspaceClient, getToken } from './helper';
+import { getDevWorkspaceClient } from './helpers/getDevWorkspaceClient';
+import { getToken } from './helpers/getToken';
 import { getSchema } from '../../services/helpers';
 import { restParams } from '../../typings/models';
 

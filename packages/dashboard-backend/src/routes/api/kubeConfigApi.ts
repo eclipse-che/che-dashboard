@@ -12,7 +12,8 @@
 
 import { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify';
 import { baseApiPath } from '../../constants/config';
-import { getDevWorkspaceClient, getToken } from './helper';
+import { getDevWorkspaceClient } from './helpers/getDevWorkspaceClient';
+import { getToken } from './helpers/getToken';
 import { getSchema } from '../../services/helpers';
 import { restParams } from '../../typings/models';
 import { namespacedKubeConfigSchema } from '../../constants/schemas';

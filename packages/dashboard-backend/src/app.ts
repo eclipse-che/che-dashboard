@@ -19,7 +19,7 @@ import { registerCors } from './plugins/cors';
 import { registerStaticServer } from './plugins/staticServer';
 import { registerSwagger } from './plugins/swagger';
 import { registerWebSocket } from './plugins/webSocket';
-import { registerClusterConfigApi } from './routes/api/clusterConfigApi';
+import { registerClusterConfigRoute } from './routes/api/clusterConfig';
 import { registerClusterInfoApi } from './routes/api/clusterInfoApi';
 import { registerDevworkspaceApi } from './routes/api/devworkspaceApi';
 import { registerTemplateApi } from './routes/api/devworkspaceTemplateApi';
@@ -88,7 +88,7 @@ export default async function buildApp(server: FastifyInstance): Promise<void> {
 
   registerClusterInfoApi(server);
 
-  registerClusterConfigApi(server);
+  registerClusterConfigRoute(server);
 
   registerYamlResolverApi(server);
 }

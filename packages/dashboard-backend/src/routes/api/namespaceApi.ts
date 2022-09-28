@@ -12,7 +12,9 @@
 
 import { FastifyInstance, FastifyRequest } from 'fastify';
 import { baseApiPath } from '../../constants/config';
-import { getDevWorkspaceClient, getServiceAccountToken, getToken } from './helper';
+import { getDevWorkspaceClient } from './helpers/getDevWorkspaceClient';
+import { getToken } from './helpers/getToken';
+import { getServiceAccountToken } from './helpers/getServiceAccountToken';
 import { getSchema } from '../../services/helpers';
 
 const tags = ['Namespace'];
