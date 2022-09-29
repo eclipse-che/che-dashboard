@@ -186,6 +186,7 @@ class StepFetchDevfile extends AbstractLoaderStep<Props, State> {
     });
 
     try {
+      SessionStorageService.update(SessionStorageKey.AUTHENTICATION_STATUS, 'started');
       await this.props.requestFactoryResolver(factoryUrl, params);
       this.clearNumberOfTries();
       return true;
