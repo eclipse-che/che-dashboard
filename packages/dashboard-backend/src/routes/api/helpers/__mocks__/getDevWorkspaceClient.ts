@@ -12,11 +12,12 @@
 
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
-import { V1alpha2DevWorkspace } from '@devfile/api';
+import { V1alpha2DevWorkspace, V1alpha2DevWorkspaceTemplate } from '@devfile/api';
 import {
   DevWorkspaceClient,
   IDevWorkspaceApi,
   IDevWorkspaceList,
+  IDevWorkspaceTemplateApi,
   IServerConfigApi,
 } from '../../../../devworkspace-client';
 import { getDevWorkspaceClient as helper } from '../getDevWorkspaceClient';
@@ -37,6 +38,17 @@ export const stubDevWorkspace: V1alpha2DevWorkspace = {
   kind: 'DevWorkspace',
 };
 
+export const stubDevWorkspaceTemplatesList = [
+  {
+    apiVersion: 'workspace.devfile.io/v1alpha2',
+    kind: 'DevWorkspaceTemplate',
+  },
+];
+export const stubDevWorkspaceTemplate: V1alpha2DevWorkspaceTemplate = {
+  apiVersion: 'workspace.devfile.io/v1alpha2',
+  kind: 'DevWorkspaceTemplate',
+};
+
 export function getDevWorkspaceClient(args: Parameters<typeof helper>): ReturnType<typeof helper> {
   return {
     serverConfigApi: {
@@ -51,5 +63,10 @@ export function getDevWorkspaceClient(args: Parameters<typeof helper>): ReturnTy
       listInNamespace: _namespace => Promise.resolve(stubDevWorkspacesList),
       patch: (_namespace, _name, _patches) => Promise.resolve(stubDevWorkspace),
     } as IDevWorkspaceApi,
+    templateApi: {
+      create: _template => Promise.resolve(stubDevWorkspaceTemplate),
+      listInNamespace: _namespace => Promise.resolve(stubDevWorkspaceTemplatesList),
+      patch: (_namespace, _name, _patches) => Promise.resolve(stubDevWorkspaceTemplate),
+    } as IDevWorkspaceTemplateApi,
   } as DevWorkspaceClient;
 }

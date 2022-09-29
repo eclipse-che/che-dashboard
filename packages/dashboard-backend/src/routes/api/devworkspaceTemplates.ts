@@ -25,7 +25,7 @@ import { restParams } from '../../typings/models';
 
 const tags = ['Devworkspace Template'];
 
-export function registerTemplateApi(server: FastifyInstance) {
+export function registerDevWorkspaceTemplates(server: FastifyInstance) {
   server.get(
     `${baseApiPath}/namespace/:namespace/devworkspacetemplates`,
     getSchema({
@@ -35,7 +35,7 @@ export function registerTemplateApi(server: FastifyInstance) {
     async function (request: FastifyRequest) {
       const { namespace } = request.params as restParams.INamespacedParam;
       const token = getToken(request);
-      const { templateApi } = await getDevWorkspaceClient(token);
+      const { templateApi } = getDevWorkspaceClient(token);
       return templateApi.listInNamespace(namespace);
     },
   );
@@ -55,7 +55,7 @@ export function registerTemplateApi(server: FastifyInstance) {
       }
       template.metadata.namespace = namespace;
       const token = getToken(request);
-      const { templateApi } = await getDevWorkspaceClient(token);
+      const { templateApi } = getDevWorkspaceClient(token);
       return templateApi.create(template);
     },
   );
@@ -67,7 +67,7 @@ export function registerTemplateApi(server: FastifyInstance) {
       const { namespace, templateName } = request.params as restParams.INamespacedTemplateParam;
       const patch = request.body as { op: string; path: string; value?: any }[];
       const token = getToken(request);
-      const { templateApi } = await getDevWorkspaceClient(token);
+      const { templateApi } = getDevWorkspaceClient(token);
       return templateApi.patch(namespace, templateName, patch);
     },
   );
