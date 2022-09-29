@@ -12,11 +12,30 @@
 
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
-import { DevWorkspaceClient, IServerConfigApi } from '../../../../devworkspace-client';
+import { V1alpha2DevWorkspace } from '@devfile/api';
+import {
+  DevWorkspaceClient,
+  IDevWorkspaceApi,
+  IDevWorkspaceList,
+  IServerConfigApi,
+} from '../../../../devworkspace-client';
 import { getDevWorkspaceClient as helper } from '../getDevWorkspaceClient';
 
 export const stubDashboardWarning = 'Dashboard warning';
 export const stubRunningWorkspacesLimit = 2;
+
+export const stubDevWorkspacesList: IDevWorkspaceList = {
+  apiVersion: 'workspace.devfile.io/v1alpha2',
+  kind: 'DevWorkspaceList',
+  metadata: {
+    resourceVersion: '123456789',
+  },
+  items: [],
+};
+export const stubDevWorkspace: V1alpha2DevWorkspace = {
+  apiVersion: 'workspace.devfile.io/v1alpha2',
+  kind: 'DevWorkspace',
+};
 
 export function getDevWorkspaceClient(args: Parameters<typeof helper>): ReturnType<typeof helper> {
   return {
@@ -25,5 +44,12 @@ export function getDevWorkspaceClient(args: Parameters<typeof helper>): ReturnTy
       getDashboardWarning: _cheCustomResource => stubDashboardWarning,
       getRunningWorkspacesLimit: _cheCustomResource => stubRunningWorkspacesLimit,
     } as IServerConfigApi,
+    devworkspaceApi: {
+      create: (_devworkspace, _namespace) => Promise.resolve(stubDevWorkspace),
+      delete: (_namespace, _name) => Promise.resolve(undefined),
+      getByName: (_namespace, _name) => Promise.resolve(stubDevWorkspace),
+      listInNamespace: _namespace => Promise.resolve(stubDevWorkspacesList),
+      patch: (_namespace, _name, _patches) => Promise.resolve(stubDevWorkspace),
+    } as IDevWorkspaceApi,
   } as DevWorkspaceClient;
 }

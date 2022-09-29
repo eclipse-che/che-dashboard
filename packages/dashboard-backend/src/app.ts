@@ -21,7 +21,7 @@ import { registerSwagger } from './plugins/swagger';
 import { registerWebSocket } from './plugins/webSocket';
 import { registerClusterConfigRoute } from './routes/api/clusterConfig';
 import { registerClusterInfoRoute } from './routes/api/clusterInfo';
-import { registerDevworkspaceApi } from './routes/api/devworkspaceApi';
+import { registerDevworkspacesRoutes } from './routes/api/devworkspaces';
 import { registerTemplateApi } from './routes/api/devworkspaceTemplateApi';
 import { registerDevworkspaceWebsocketWatcher } from './routes/api/devworkspaceWebsocketWatcher';
 import { registerDockerConfigApi } from './routes/api/dockerConfigApi';
@@ -76,7 +76,7 @@ export default async function buildApp(server: FastifyInstance): Promise<void> {
     namespaceApi(server);
   }
 
-  registerDevworkspaceApi(server);
+  registerDevworkspacesRoutes(server);
 
   registerTemplateApi(server);
 

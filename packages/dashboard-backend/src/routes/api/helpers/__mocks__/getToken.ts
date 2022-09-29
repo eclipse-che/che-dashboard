@@ -11,14 +11,9 @@
  */
 
 import { FastifyRequest } from 'fastify';
-import { createFastifyError } from '../../../services/helpers';
 
-const authorizationBearerPrefix = /^Bearer /;
-
+export const stubToken = 'authorization token';
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export function getToken(request: FastifyRequest): string {
-  const authorization = request.headers?.authorization;
-  if (!authorization || !authorizationBearerPrefix.test(authorization)) {
-    throw createFastifyError('FST_UNAUTHORIZED', 'Bearer Token Authorization is required', 401);
-  }
-  return authorization.replace(authorizationBearerPrefix, '').trim();
+  return stubToken;
 }

@@ -22,18 +22,19 @@ import { getDevWorkspaceClient } from './helpers/getDevWorkspaceClient';
 import { getToken } from './helpers/getToken';
 import { restParams } from '../../typings/models';
 import { getSchema } from '../../services/helpers';
+import { IPatch } from '@eclipse-che/common/src/dto/api';
 
 const tags = ['Devworkspace'];
 
-export function registerDevworkspaceApi(server: FastifyInstance) {
+export function registerDevworkspacesRoutes(server: FastifyInstance) {
   server.get(
     `${baseApiPath}/namespace/:namespace/devworkspaces`,
     getSchema({ tags, params: namespacedSchema }),
     async function (request: FastifyRequest) {
       const { namespace } = request.params as restParams.INamespacedParam;
       const token = getToken(request);
-      const { devworkspaceApi } = await getDevWorkspaceClient(token);
-      return devworkspaceApi.listInNamespace(namespace);
+      const { devworkspaceApi } = getDevWorkspaceClient(token);
+      return await devworkspaceApi.listInNamespace(namespace);
     },
   );
 
@@ -51,7 +52,7 @@ export function registerDevworkspaceApi(server: FastifyInstance) {
       }
       devworkspace.metadata.namespace = namespace;
       const token = getToken(request);
-      const { devworkspaceApi } = await getDevWorkspaceClient(token);
+      const { devworkspaceApi } = getDevWorkspaceClient(token);
       return devworkspaceApi.create(devworkspace, namespace);
     },
   );
@@ -62,7 +63,7 @@ export function registerDevworkspaceApi(server: FastifyInstance) {
     async function (request: FastifyRequest) {
       const { namespace, workspaceName } = request.params as restParams.INamespacedWorkspaceParam;
       const token = getToken(request);
-      const { devworkspaceApi } = await getDevWorkspaceClient(token);
+      const { devworkspaceApi } = getDevWorkspaceClient(token);
       return devworkspaceApi.getByName(namespace, workspaceName);
     },
   );
@@ -72,9 +73,9 @@ export function registerDevworkspaceApi(server: FastifyInstance) {
     getSchema({ tags, params: namespacedWorkspaceSchema, body: devworkspacePatchSchema }),
     async function (request: FastifyRequest) {
       const { namespace, workspaceName } = request.params as restParams.INamespacedWorkspaceParam;
-      const patch = request.body as { op: string; path: string; value?: any }[];
+      const patch = request.body as IPatch[];
       const token = getToken(request);
-      const { devworkspaceApi } = await getDevWorkspaceClient(token);
+      const { devworkspaceApi } = getDevWorkspaceClient(token);
       return devworkspaceApi.patch(namespace, workspaceName, patch);
     },
   );
@@ -94,7 +95,7 @@ export function registerDevworkspaceApi(server: FastifyInstance) {
     async function (request: FastifyRequest, reply: FastifyReply) {
       const { namespace, workspaceName } = request.params as restParams.INamespacedWorkspaceParam;
       const token = getToken(request);
-      const { devworkspaceApi } = await getDevWorkspaceClient(token);
+      const { devworkspaceApi } = getDevWorkspaceClient(token);
       await devworkspaceApi.delete(namespace, workspaceName);
       reply.code(204);
       return reply.send();
