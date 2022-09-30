@@ -12,7 +12,12 @@
 
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
-import { V1alpha2DevWorkspace, V1alpha2DevWorkspaceTemplate } from '@devfile/api';
+import {
+  V1alpha2DevWorkspace,
+  V1alpha2DevWorkspaceTemplate,
+  V220DevfileComponents,
+} from '@devfile/api';
+import { api } from '@eclipse-che/common';
 import {
   DevWorkspaceClient,
   IDevWorkspaceApi,
@@ -26,7 +31,14 @@ import {
 import { getDevWorkspaceClient as helper } from '../getDevWorkspaceClient';
 
 export const stubDashboardWarning = 'Dashboard warning';
+export const stubDefaultComponents: V220DevfileComponents[] = [];
+export const stubDefaultEditor = undefined;
+export const stubDefaultPlugins: api.IWorkspacesDefaultPlugins[] = [];
+export const stubOpenVSXURL = 'openvsx-url';
+export const stubPvcStrategy = '';
 export const stubRunningWorkspacesLimit = 2;
+export const stubWorkspaceInactivityTimeout = 0;
+export const stubWorkspaceRunTimeout = 0;
 
 export const stubDevWorkspacesList: IDevWorkspaceList = {
   apiVersion: 'workspace.devfile.io/v1alpha2',
@@ -56,12 +68,19 @@ export const stubDockerConfig = {};
 
 export const stubNamespaces = ['user-che'];
 
-export function getDevWorkspaceClient(args: Parameters<typeof helper>): ReturnType<typeof helper> {
+export function getDevWorkspaceClient(_args: Parameters<typeof helper>): ReturnType<typeof helper> {
   return {
     serverConfigApi: {
       getCheCustomResource: () => ({}),
       getDashboardWarning: _cheCustomResource => stubDashboardWarning,
+      getDefaultComponents: _cheCustomResource => stubDefaultComponents,
+      getDefaultEditor: _cheCustomResource => stubDefaultEditor,
+      getDefaultPlugins: _cheCustomResource => stubDefaultPlugins,
+      getOpenVSXURL: _cheCustomResource => stubOpenVSXURL,
+      getPvcStrategy: _cheCustomResource => stubPvcStrategy,
       getRunningWorkspacesLimit: _cheCustomResource => stubRunningWorkspacesLimit,
+      getWorkspaceInactivityTimeout: _cheCustomResource => stubWorkspaceInactivityTimeout,
+      getWorkspaceRunTimeout: _cheCustomResource => stubWorkspaceRunTimeout,
     } as IServerConfigApi,
     devworkspaceApi: {
       create: (_devworkspace, _namespace) => Promise.resolve(stubDevWorkspace),
