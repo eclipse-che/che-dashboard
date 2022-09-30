@@ -13,13 +13,13 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
 import { V1alpha2DevWorkspace, V1alpha2DevWorkspaceTemplate } from '@devfile/api';
-import { IDockerConfig } from '@eclipse-che/common/src/dto/api';
 import {
   DevWorkspaceClient,
   IDevWorkspaceApi,
   IDevWorkspaceList,
   IDevWorkspaceTemplateApi,
   IDockerConfigApi,
+  IKubeConfigApi,
   IServerConfigApi,
 } from '../../../../devworkspace-client';
 import { getDevWorkspaceClient as helper } from '../getDevWorkspaceClient';
@@ -71,6 +71,9 @@ export function getDevWorkspaceClient(args: Parameters<typeof helper>): ReturnTy
       read: _namespace => Promise.resolve(stubDockerConfig),
       update: (_namespace, _dockerCfg) => Promise.resolve(stubDockerConfig),
     } as IDockerConfigApi,
+    kubeConfigApi: {
+      injectKubeConfig: (_namespace, _devworkspaceId) => Promise.resolve(undefined),
+    } as IKubeConfigApi,
     templateApi: {
       create: _template => Promise.resolve(stubDevWorkspaceTemplate),
       listInNamespace: _namespace => Promise.resolve(stubDevWorkspaceTemplatesList),

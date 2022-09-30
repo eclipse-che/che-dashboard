@@ -20,7 +20,7 @@ import { namespacedKubeConfigSchema } from '../../constants/schemas';
 
 const tags = ['Kube Config'];
 
-export function registerKubeConfigApi(server: FastifyInstance) {
+export function registerKubeConfigRoute(server: FastifyInstance) {
   server.post(
     `${baseApiPath}/namespace/:namespace/devworkspaceId/:devworkspaceId/kubeconfig`,
     getSchema({
@@ -35,7 +35,7 @@ export function registerKubeConfigApi(server: FastifyInstance) {
     }),
     async function (request: FastifyRequest, reply: FastifyReply) {
       const token = getToken(request);
-      const { kubeConfigApi } = await getDevWorkspaceClient(token);
+      const { kubeConfigApi } = getDevWorkspaceClient(token);
       const { namespace, devworkspaceId } = request.params as restParams.INamespacedPodParam;
       await kubeConfigApi.injectKubeConfig(namespace, devworkspaceId);
       reply.code(204);
