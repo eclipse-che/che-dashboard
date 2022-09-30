@@ -38,6 +38,26 @@ export function setup(
   return server;
 }
 
+export async function setupAsync(options?: {
+  env?: { [envName: string]: string };
+}): Promise<FastifyInstance> {
+  process.env = Object.assign(
+    {
+      CHE_HOST: 'localhost',
+    },
+    options?.env,
+  );
+
+  const server = fastify({
+    logger: false,
+  });
+
+  buildApp(server);
+  await server.ready();
+
+  return server;
+}
+
 export function teardown(server: FastifyInstance): void {
   server.close();
 }

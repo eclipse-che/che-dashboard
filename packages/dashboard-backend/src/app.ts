@@ -26,8 +26,8 @@ import { registerDevWorkspaceTemplates } from './routes/api/devworkspaceTemplate
 import { registerDevworkspaceWebsocketWatcher } from './routes/api/devworkspaceWebsocketWatcher';
 import { registerDockerConfigRoutes } from './routes/api/dockerConfig';
 import { registerKubeConfigRoute } from './routes/api/kubeConfig';
-import { namespaceApi } from './routes/api/namespaceApi';
 import { registerServerConfigApi } from './routes/api/serverConfigApi';
+import { registerNamespacesRoute } from './routes/api/namespaces';
 import { registerYamlResolverApi } from './routes/api/yamlResolverApi';
 import { registerFactoryAcceptanceRedirect } from './routes/factoryAcceptanceRedirect';
 
@@ -57,11 +57,11 @@ export default async function buildApp(server: FastifyInstance): Promise<void> {
 
   registerWebSocket(server);
 
-  if (isLocalRun) {
+  if (isLocalRun()) {
     registerLocalRun(server);
   }
 
-  registerCors(isLocalRun, server);
+  registerCors(isLocalRun(), server);
 
   registerStaticServer(publicFolder, server);
 
@@ -72,8 +72,8 @@ export default async function buildApp(server: FastifyInstance): Promise<void> {
   // swagger and API
   registerSwagger(server);
 
-  if (isLocalRun) {
-    namespaceApi(server);
+  if (isLocalRun()) {
+    registerNamespacesRoute(server);
   }
 
   registerDevworkspacesRoutes(server);

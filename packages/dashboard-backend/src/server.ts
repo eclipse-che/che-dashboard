@@ -25,7 +25,7 @@ server.listen(8080, '0.0.0.0', (err: Error | null, address: string) => {
     console.error(err);
     process.exit(1);
   }
-  if (isLocalRun) {
+  if (isLocalRun()) {
     // when we're running against keycloak, 0.0.0.0 is not allowed
     // so suggesting to use whitelisted localhost instead
     console.log('Server listening at http://localhost:8080/');

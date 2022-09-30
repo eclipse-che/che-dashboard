@@ -16,7 +16,7 @@ import { isLocalRun } from '../../../localRun';
 export const SERVICE_ACCOUNT_TOKEN_PATH = '/run/secrets/kubernetes.io/serviceaccount/token';
 
 export function getServiceAccountToken(): string {
-  if (isLocalRun) {
+  if (isLocalRun()) {
     return process.env.SERVICE_ACCOUNT_TOKEN as string;
   }
   if (!existsSync(SERVICE_ACCOUNT_TOKEN_PATH)) {

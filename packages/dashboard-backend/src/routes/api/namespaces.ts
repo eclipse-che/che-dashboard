@@ -19,14 +19,14 @@ import { getSchema } from '../../services/helpers';
 
 const tags = ['Namespace'];
 
-export function namespaceApi(server: FastifyInstance) {
+export function registerNamespacesRoute(server: FastifyInstance) {
   server.get(
     `${baseApiPath}/namespaces`,
     getSchema({ tags }),
     async function (request: FastifyRequest) {
       const userToken = getToken(request);
-      const serviceAccountToken = await getServiceAccountToken();
-      const { namespaceApi } = await getDevWorkspaceClient(serviceAccountToken);
+      const serviceAccountToken = getServiceAccountToken();
+      const { namespaceApi } = getDevWorkspaceClient(serviceAccountToken);
       return namespaceApi.getNamespaces(userToken);
     },
   );

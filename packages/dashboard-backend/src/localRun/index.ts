@@ -19,15 +19,18 @@ import { registerDexProxies } from './proxies/dexProxies';
 import { registerDexCallback } from './routes/dexCallback';
 import { registerSignOut } from './routes/signOut';
 
-export const isLocalRun = process.env['LOCAL_RUN'] === 'true';
-
-const isNativeAuth = process.env['NATIVE_AUTH'] === 'true';
-const cheApiProxyUpstream = process.env['CHE_API_PROXY_UPSTREAM'] || '';
-const cheHostOrigin = process.env.CHE_HOST_ORIGIN || '';
-const dexIngress = process.env.DEX_INGRESS || '';
+export function isLocalRun(): boolean {
+  const isLocalRun = process.env['LOCAL_RUN'] === 'true';
+  return isLocalRun;
+}
 
 export function registerLocalRun(server: FastifyInstance) {
   console.log('Running locally, setting up stubs');
+
+  const isNativeAuth = process.env['NATIVE_AUTH'] === 'true';
+  const cheApiProxyUpstream = process.env['CHE_API_PROXY_UPSTREAM'] || '';
+  const cheHostOrigin = process.env.CHE_HOST_ORIGIN || '';
+  const dexIngress = process.env.DEX_INGRESS || '';
 
   if (dexIngress) {
     registerDexProxies(server, `https://${dexIngress}`);

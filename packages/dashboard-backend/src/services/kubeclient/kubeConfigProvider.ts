@@ -62,7 +62,7 @@ export class KubeConfigProvider {
   }
 
   getSAKubeConfig(): KubeConfig {
-    if (isLocalRun) {
+    if (isLocalRun()) {
       const kc = new KubeConfig();
       let kubeConfigFile = process.env['KUBECONFIG'];
       if (!kubeConfigFile) {

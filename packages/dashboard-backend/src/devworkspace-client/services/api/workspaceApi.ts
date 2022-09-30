@@ -213,7 +213,7 @@ export class DevWorkspaceApi implements IDevWorkspaceApi {
         if (error && error.message) {
           message = error.message;
         } else {
-          if (isLocalRun) {
+          if (isLocalRun()) {
             // unexpected error format. Log it and expose to user what we can
             console.log('Unexpected error', error);
           }

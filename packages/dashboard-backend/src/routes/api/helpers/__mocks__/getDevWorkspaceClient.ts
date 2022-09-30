@@ -20,6 +20,7 @@ import {
   IDevWorkspaceTemplateApi,
   IDockerConfigApi,
   IKubeConfigApi,
+  INamespaceApi,
   IServerConfigApi,
 } from '../../../../devworkspace-client';
 import { getDevWorkspaceClient as helper } from '../getDevWorkspaceClient';
@@ -53,6 +54,8 @@ export const stubDevWorkspaceTemplate: V1alpha2DevWorkspaceTemplate = {
 
 export const stubDockerConfig = {};
 
+export const stubNamespaces = ['user-che'];
+
 export function getDevWorkspaceClient(args: Parameters<typeof helper>): ReturnType<typeof helper> {
   return {
     serverConfigApi: {
@@ -74,6 +77,9 @@ export function getDevWorkspaceClient(args: Parameters<typeof helper>): ReturnTy
     kubeConfigApi: {
       injectKubeConfig: (_namespace, _devworkspaceId) => Promise.resolve(undefined),
     } as IKubeConfigApi,
+    namespaceApi: {
+      getNamespaces: _token => Promise.resolve(stubNamespaces),
+    } as INamespaceApi,
     templateApi: {
       create: _template => Promise.resolve(stubDevWorkspaceTemplate),
       listInNamespace: _namespace => Promise.resolve(stubDevWorkspaceTemplatesList),
