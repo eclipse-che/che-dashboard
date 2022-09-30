@@ -24,7 +24,7 @@ import { registerClusterInfoRoute } from './routes/api/clusterInfo';
 import { registerDevworkspacesRoutes } from './routes/api/devworkspaces';
 import { registerDevWorkspaceTemplates } from './routes/api/devworkspaceTemplates';
 import { registerDevworkspaceWebsocketWatcher } from './routes/api/devworkspaceWebsocketWatcher';
-import { registerDockerConfigApi } from './routes/api/dockerConfigApi';
+import { registerDockerConfigRoutes } from './routes/api/dockerConfig';
 import { registerKubeConfigApi } from './routes/api/kubeConfigApi';
 import { namespaceApi } from './routes/api/namespaceApi';
 import { registerServerConfigApi } from './routes/api/serverConfigApi';
@@ -80,7 +80,7 @@ export default async function buildApp(server: FastifyInstance): Promise<void> {
 
   registerDevWorkspaceTemplates(server);
 
-  registerDockerConfigApi(server);
+  registerDockerConfigRoutes(server);
 
   registerServerConfigApi(server);
 

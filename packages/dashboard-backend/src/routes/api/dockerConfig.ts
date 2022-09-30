@@ -20,14 +20,14 @@ import { getSchema } from '../../services/helpers';
 
 const tags = ['Docker Config'];
 
-export function registerDockerConfigApi(server: FastifyInstance) {
+export function registerDockerConfigRoutes(server: FastifyInstance) {
   server.get(
     `${baseApiPath}/namespace/:namespace/dockerconfig`,
     getSchema({ tags, params: namespacedSchema }),
     async function (request: FastifyRequest) {
       const { namespace } = request.params as restParams.INamespacedParam;
       const token = getToken(request);
-      const { dockerConfigApi } = await getDevWorkspaceClient(token);
+      const { dockerConfigApi } = getDevWorkspaceClient(token);
 
       return dockerConfigApi.read(namespace);
     },
@@ -40,7 +40,7 @@ export function registerDockerConfigApi(server: FastifyInstance) {
       const { namespace } = request.params as restParams.INamespacedParam;
       const dockerCfg = request.body as restParams.IDockerConfigParams;
       const token = getToken(request);
-      const { dockerConfigApi } = await getDevWorkspaceClient(token);
+      const { dockerConfigApi } = getDevWorkspaceClient(token);
 
       return dockerConfigApi.update(namespace, dockerCfg);
     },

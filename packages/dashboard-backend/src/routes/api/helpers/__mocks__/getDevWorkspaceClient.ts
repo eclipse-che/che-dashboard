@@ -13,11 +13,13 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
 import { V1alpha2DevWorkspace, V1alpha2DevWorkspaceTemplate } from '@devfile/api';
+import { IDockerConfig } from '@eclipse-che/common/src/dto/api';
 import {
   DevWorkspaceClient,
   IDevWorkspaceApi,
   IDevWorkspaceList,
   IDevWorkspaceTemplateApi,
+  IDockerConfigApi,
   IServerConfigApi,
 } from '../../../../devworkspace-client';
 import { getDevWorkspaceClient as helper } from '../getDevWorkspaceClient';
@@ -49,6 +51,8 @@ export const stubDevWorkspaceTemplate: V1alpha2DevWorkspaceTemplate = {
   kind: 'DevWorkspaceTemplate',
 };
 
+export const stubDockerConfig = {};
+
 export function getDevWorkspaceClient(args: Parameters<typeof helper>): ReturnType<typeof helper> {
   return {
     serverConfigApi: {
@@ -63,6 +67,10 @@ export function getDevWorkspaceClient(args: Parameters<typeof helper>): ReturnTy
       listInNamespace: _namespace => Promise.resolve(stubDevWorkspacesList),
       patch: (_namespace, _name, _patches) => Promise.resolve(stubDevWorkspace),
     } as IDevWorkspaceApi,
+    dockerConfigApi: {
+      read: _namespace => Promise.resolve(stubDockerConfig),
+      update: (_namespace, _dockerCfg) => Promise.resolve(stubDockerConfig),
+    } as IDockerConfigApi,
     templateApi: {
       create: _template => Promise.resolve(stubDevWorkspaceTemplate),
       listInNamespace: _namespace => Promise.resolve(stubDevWorkspaceTemplatesList),
