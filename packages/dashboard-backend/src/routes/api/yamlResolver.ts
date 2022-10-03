@@ -10,7 +10,7 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import { FastifyInstance, FastifyRequest } from 'fastify';
+import { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify';
 import fetch from 'node-fetch';
 import { baseApiPath } from '../../constants/config';
 import { yamlResolverSchema, namespacedSchema } from '../../constants/schemas';
@@ -22,15 +22,15 @@ import { helpers } from '@eclipse-che/common';
 
 const tags = ['Yaml Resolver'];
 
-export function registerYamlResolverApi(server: FastifyInstance) {
+export function registerYamlResolverRoute(server: FastifyInstance) {
   server.post(
     `${baseApiPath}/namespace/:namespace/yaml/resolver`,
     getSchema({ tags, params: namespacedSchema, body: yamlResolverSchema }),
-    async function (request: FastifyRequest) {
+    async function (request: FastifyRequest, reply: FastifyReply): Promise<string | void> {
       const { url } = request.body as restParams.IYamlResolverParam;
       const { namespace } = request.params as restParams.INamespacedParam;
       const token = getToken(request);
-      const { dockerConfigApi } = await getDevWorkspaceClient(token);
+      const { dockerConfigApi } = getDevWorkspaceClient(token);
 
       try {
         // check user permissions
@@ -40,16 +40,13 @@ export function registerYamlResolverApi(server: FastifyInstance) {
       }
 
       const response = await fetch(url);
-      if (!response.ok || response.body === null) {
-        throw new Error(`Unexpected response ${response.statusText}`);
+      if (response.ok) {
+        return response.text();
+      } else {
+        reply.code(response.status);
+        reply.send(response.body);
+        return reply;
       }
-
-      let outputData = '';
-      for await (const chunk of response.body) {
-        outputData += chunk.toString();
-      }
-
-      return outputData;
     },
   );
 }

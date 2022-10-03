@@ -28,7 +28,7 @@ import { registerDockerConfigRoutes } from './routes/api/dockerConfig';
 import { registerKubeConfigRoute } from './routes/api/kubeConfig';
 import { registerNamespacesRoute } from './routes/api/namespaces';
 import { registerServerConfigRoute } from './routes/api/serverConfig';
-import { registerYamlResolverApi } from './routes/api/yamlResolverApi';
+import { registerYamlResolverRoute } from './routes/api/yamlResolver';
 import { registerFactoryAcceptanceRedirect } from './routes/factoryAcceptanceRedirect';
 
 export default async function buildApp(server: FastifyInstance): Promise<void> {
@@ -90,5 +90,5 @@ export default async function buildApp(server: FastifyInstance): Promise<void> {
 
   registerClusterConfigRoute(server);
 
-  registerYamlResolverApi(server);
+  registerYamlResolverRoute(server);
 }
