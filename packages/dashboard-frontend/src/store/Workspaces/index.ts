@@ -18,11 +18,8 @@ import { isCheWorkspace, Workspace } from '../../services/workspace-adapter';
 import * as CheWorkspacesStore from './cheWorkspaces';
 import * as DevWorkspacesStore from './devWorkspaces';
 import { isDevworkspacesEnabled } from '../../services/helpers/devworkspace';
-import { container } from '../../inversify.config';
-import { CheWorkspaceClient } from '../../services/workspace-client/cheworkspace/cheWorkspaceClient';
-import common, { helpers } from '@eclipse-che/common';
-import { isOAuthResponse } from '../FactoryResolver';
-import SessionStorageService, { SessionStorageKey } from '../../services/session-storage';
+import common from '@eclipse-che/common';
+import OAuthService, { isOAuthResponse } from '../../services/oauth';
 
 // This state defines the type of data maintained in the Redux store.
 export interface State {
@@ -132,8 +129,6 @@ export type ActionCreators = {
   deleteWorkspaceLogs: (workspace: Workspace) => AppThunk<DeleteWorkspaceLogsAction>;
 };
 
-const WorkspaceClient = container.get(CheWorkspaceClient);
-
 export const actionCreators: ActionCreators = {
   requestWorkspaces:
     (): AppThunk<KnownAction, Promise<void>> =>
@@ -183,38 +178,11 @@ export const actionCreators: ActionCreators = {
   startWorkspace:
     (workspace: Workspace, params?: ResourceQueryParams): AppThunk<KnownAction, Promise<void>> =>
     async (dispatch, getState): Promise<void> => {
-      const openOauthPage = (oauthUrl: string, namespace: string, workspaceName: string) => {
-        try {
-          // build redirect URL
-          const redirectHost = window.location.protocol + '//' + window.location.host;
-          const redirectUrl = new URL('dashboard/w', redirectHost);
-          redirectUrl.searchParams.set(
-            'params',
-            `{"namespace":"${namespace}","workspace":"${workspaceName}"}`,
-          );
-          const oauthUrlTmp = new window.URL(oauthUrl);
-          window.location.href =
-            oauthUrlTmp.toString() + '&redirect_after_login=' + redirectUrl.toString();
-        } catch (e) {
-          throw new Error(`Failed to open authentication page. ${helpers.errors.getMessage(e)}`);
-        }
-      };
       dispatch({ type: 'REQUEST_WORKSPACES' });
       try {
         const state = getState();
         const cheDevworkspaceEnabled = isDevworkspacesEnabled(state.workspacesSettings.settings);
-        if (
-          SessionStorageService.get(SessionStorageKey.AUTHENTICATION_STATUS) !== 'started' &&
-          workspace.devfile.projects
-        ) {
-          SessionStorageService.update(SessionStorageKey.AUTHENTICATION_STATUS, 'started');
-          const project = workspace.devfile.projects.find(p => (p.name = workspace.projects[0]));
-          if (project && project.git) {
-            await WorkspaceClient.restApiClient.refreshFactoryOauthToken(
-              project.git.remotes.origin,
-            );
-          }
-        }
+        await OAuthService.refreshTokenIfNeeded(workspace);
 
         if (cheDevworkspaceEnabled && isDevWorkspace(workspace.ref)) {
           const debugWorkspace = params && params['debug-workspace-start'];
@@ -234,11 +202,18 @@ export const actionCreators: ActionCreators = {
         if (common.helpers.errors.includesAxiosResponse(e)) {
           const response = e.response;
           if (response.status === 401 && isOAuthResponse(response.data)) {
-            // open authentication page
-            openOauthPage(
+            // build redirect URL
+            const redirectUrl = new URL(
+              'dashboard/w',
+              window.location.protocol + '//' + window.location.host,
+            );
+            redirectUrl.searchParams.set(
+              'params',
+              `{"namespace":"${workspace.namespace}","workspace":"${workspace.name}"}`,
+            );
+            OAuthService.openOAuthPage(
               response.data.attributes.oauth_authentication_url,
-              workspace.namespace,
-              workspace.name,
+              redirectUrl.toString(),
             );
             return;
           }
