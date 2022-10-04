@@ -12,7 +12,7 @@
 
 import * as k8s from '@kubernetes/client-node';
 import { IServerConfigApi } from '../../types';
-import { createError } from '../helpers';
+import { createError } from '../helpers/createError';
 import { api } from '@eclipse-che/common';
 import { V220DevfileComponents } from '@devfile/api';
 

@@ -11,7 +11,7 @@
  */
 
 import * as k8s from '@kubernetes/client-node';
-import { findApi } from '../../services/helpers';
+import { findApi } from '../../services/helpers/findApi';
 import { helpers } from '@eclipse-che/common';
 
 const projectResources = 'projects';

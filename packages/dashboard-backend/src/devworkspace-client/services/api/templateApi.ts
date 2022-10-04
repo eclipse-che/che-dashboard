@@ -18,7 +18,7 @@ import {
   V1alpha2DevWorkspaceTemplate,
 } from '@devfile/api';
 import { IDevWorkspaceTemplateApi } from '../../types';
-import { createError } from '../helpers';
+import { createError } from '../helpers/createError';
 import { api } from '@eclipse-che/common';
 
 const DEW_WORKSPACE_TEMPLATE_API_ERROR_LABEL = 'CUSTOM_OBJECTS_API_ERROR';

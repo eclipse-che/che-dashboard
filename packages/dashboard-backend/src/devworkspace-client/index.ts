@@ -20,7 +20,7 @@ import {
   IKubeConfigApi,
   INamespaceApi,
 } from './types';
-import { findApi } from './services/helpers';
+import { findApi } from './services/helpers/findApi';
 import { DevWorkspaceTemplateApi } from './services/api/templateApi';
 import { DevWorkspaceApi } from './services/api/workspaceApi';
 import { devworkspaceGroup, devworkspaceLatestVersion } from '@devfile/api';

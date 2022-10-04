@@ -12,7 +12,7 @@
 
 import * as k8s from '@kubernetes/client-node';
 import { INamespaceApi } from '../../types';
-import { createError } from '../helpers';
+import { createError } from '../helpers/createError';
 import { getUserName } from '../../../services/kubeclient/helpers';
 
 const NAMESPACE_API_ERROR_LABEL = 'CUSTOM_OBJECTS_API_ERROR';

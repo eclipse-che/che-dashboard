@@ -14,7 +14,7 @@ import * as k8s from '@kubernetes/client-node';
 import { IDockerConfigApi } from '../../types';
 import { V1Secret } from '@kubernetes/client-node/dist/gen/model/v1Secret';
 import { api } from '@eclipse-che/common';
-import { createError } from '../helpers';
+import { createError } from '../helpers/createError';
 import { helpers } from '@eclipse-che/common';
 
 const SECRET_KEY = '.dockerconfigjson';
