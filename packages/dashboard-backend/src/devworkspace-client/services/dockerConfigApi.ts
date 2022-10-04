@@ -10,22 +10,21 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
+import { api, helpers } from '@eclipse-che/common';
 import * as k8s from '@kubernetes/client-node';
-import { IDockerConfigApi } from '../../types';
 import { V1Secret } from '@kubernetes/client-node/dist/gen/model/v1Secret';
-import { api } from '@eclipse-che/common';
-import { createError } from '../helpers/createError';
-import { helpers } from '@eclipse-che/common';
+import { IDockerConfigApi } from '../types';
+import { createError } from './helpers/createError';
 
-const SECRET_KEY = '.dockerconfigjson';
-const SECRET_NAME = 'devworkspace-container-registry-dockercfg';
+export const SECRET_KEY = '.dockerconfigjson';
+export const SECRET_NAME = 'devworkspace-container-registry-dockercfg';
 const SECRET_LABELS = {
   'controller.devfile.io/devworkspace_pullsecret': 'true',
   'controller.devfile.io/watch-secret': 'true',
 };
 const DOCKER_CONFIG_API_ERROR_LABEL = 'CORE_V1_API_ERROR';
 
-export class DockerConfigApi implements IDockerConfigApi {
+export class DockerConfigApiService implements IDockerConfigApi {
   private readonly coreV1API: k8s.CoreV1Api;
 
   constructor(kc: k8s.KubeConfig) {
@@ -34,8 +33,8 @@ export class DockerConfigApi implements IDockerConfigApi {
 
   async read(namespace: string): Promise<api.IDockerConfig> {
     try {
-      const { body } = await this.coreV1API.readNamespacedSecret(SECRET_NAME, namespace);
-      return this.toDockerConfig(body);
+      const secret = await this.coreV1API.readNamespacedSecret(SECRET_NAME, namespace);
+      return this.toDockerConfig(secret.body);
     } catch (error) {
       if (helpers.errors.isKubeClientError(error) && error.statusCode === 404) {
         return this.toDockerConfig();
