@@ -24,8 +24,8 @@ import { findApi } from './services/helpers/findApi';
 import { DevWorkspaceTemplateApi } from './services/api/templateApi';
 import { DevWorkspaceApi } from './services/api/workspaceApi';
 import { devworkspaceGroup, devworkspaceLatestVersion } from '@devfile/api';
-import { ServerConfigApi } from './services/api/serverConfigApi';
 import { DockerConfigApiService } from './services/dockerConfigApi';
+import { ServerConfigApiService } from './services/serverConfigApi';
 import { KubeConfigApiService } from './services/kubeConfigApi';
 import { NamespaceApiService } from './services/namespaceApi';
 
@@ -45,8 +45,8 @@ export class DevWorkspaceClient implements IDevWorkspaceClient {
   constructor(kc: k8s.KubeConfig) {
     this._templateApi = new DevWorkspaceTemplateApi(kc);
     this._devworkspaceApi = new DevWorkspaceApi(kc);
-    this._serverConfigApi = new ServerConfigApi(kc);
     this._dockerConfigApi = new DockerConfigApiService(kc);
+    this._serverConfigApi = new ServerConfigApiService(kc);
     this._kubeConfigApi = new KubeConfigApiService(kc);
     this._namespaceApi = new NamespaceApiService(kc);
     this._apisApi = kc.makeApiClient(k8s.ApisApi);
