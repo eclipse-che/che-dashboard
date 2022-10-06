@@ -11,24 +11,24 @@
  */
 
 import * as k8s from '@kubernetes/client-node';
-import { INamespaceApi } from '../../types';
-import { createError } from '../helpers/createError';
-import { getUserName } from '../../../services/kubeclient/helpers';
+import { getUserName } from '../../helpers/getUserName';
+import { INamespaceApi } from '../types';
+import { createError } from './helpers/createError';
 
 const NAMESPACE_API_ERROR_LABEL = 'CUSTOM_OBJECTS_API_ERROR';
 
-export class NamespaceApi implements INamespaceApi {
-  private readonly corev1API: k8s.CoreV1Api;
+export class NamespaceApiService implements INamespaceApi {
+  private readonly coreV1API: k8s.CoreV1Api;
 
   constructor(kc: k8s.KubeConfig) {
-    this.corev1API = kc.makeApiClient(k8s.CoreV1Api);
+    this.coreV1API = kc.makeApiClient(k8s.CoreV1Api);
   }
 
   async getNamespaces(token: string): Promise<Array<string>> {
     try {
       const name = getUserName(token);
-      const resp = await this.corev1API.listNamespace();
-      return resp.body.items
+      const resp = await this.coreV1API.listNamespace();
+      const namespaces = resp.body.items
         .filter(item => {
           if (item.metadata?.labels?.['app.kubernetes.io/component'] !== 'workspaces-namespace') {
             return false;
@@ -38,6 +38,7 @@ export class NamespaceApi implements INamespaceApi {
         .map(item => {
           return item.metadata?.labels?.['kubernetes.io/metadata.name'] || '';
         });
+      return namespaces;
     } catch (e) {
       throw createError(e, NAMESPACE_API_ERROR_LABEL, 'Unable to get user namespaces');
     }

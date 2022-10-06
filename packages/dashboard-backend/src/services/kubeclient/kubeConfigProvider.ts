@@ -11,9 +11,9 @@
  */
 
 import { ApisApi, Context, KubeConfig, User } from '@kubernetes/client-node';
-import * as helper from './helpers';
+import { getUserName } from '../../helpers/getUserName';
 import { isLocalRun } from '../../localRun';
-import { getUserName } from './helpers';
+import * as helper from './helpers';
 
 export class KubeConfigProvider {
   private isOpenShift: Promise<boolean>;
