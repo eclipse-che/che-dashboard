@@ -276,10 +276,21 @@ export const actionCreators: ActionCreators = {
 
   startWorkspace:
     (
-      workspace: devfileApi.DevWorkspace,
+      _workspace: devfileApi.DevWorkspace,
       debugWorkspace = false,
     ): AppThunk<KnownAction, Promise<void>> =>
     async (dispatch, getState): Promise<void> => {
+      const workspace = getState().devWorkspaces.workspaces.find(
+        w => w.metadata.uid === _workspace.metadata.uid,
+      );
+      if (workspace === undefined) {
+        console.warn(`Can't find the target workspace ${_workspace.metadata.name}`);
+        return;
+      }
+      if (workspace.spec.started) {
+        console.warn(`Workspace ${_workspace.metadata.name} already started`);
+        return;
+      }
       dispatch({ type: 'REQUEST_DEVWORKSPACE' });
       // await delay(500);
       // throw new Error('asdfjkl;');
@@ -734,12 +745,12 @@ async function onStatusUpdateReceived(
   dispatch: ThunkDispatch<AppState, unknown, KnownAction>,
   statusUpdate: IStatusUpdate,
 ) {
-  const { status, message, prevStatus, workspaceUID, namespace, workspaceId, mainUrl } =
+  const { status, message, prevStatus, workspaceUID, namespace, workspaceId, mainUrl, started } =
     statusUpdate;
 
   if (status !== prevStatus) {
     const type = 'UPDATE_DEVWORKSPACE_STATUS';
-    dispatch({ type, workspaceUID, message, status, mainUrl });
+    dispatch({ type, workspaceUID, message, status, mainUrl, started });
 
     const onChangeCallback = onStatusChangeCallbacks.get(workspaceUID);
     if (onChangeCallback) {
