@@ -11,7 +11,7 @@
  */
 
 import * as k8s from '@kubernetes/client-node';
-import { IDevWorkspaceList, IDevWorkspaceApi, IDevWorkspaceCallbacks } from '../../types';
+import { IDevWorkspaceList, IDevWorkspaceApi, IDevWorkspaceCallbacks } from '../types';
 import {
   devworkspaceGroup,
   devworkspaceLatestVersion,
@@ -20,12 +20,12 @@ import {
 } from '@devfile/api';
 
 import { api } from '@eclipse-che/common';
-import { createError } from '../helpers/createError';
-import { isLocalRun } from '../../../localRun';
+import { createError } from './helpers/createError';
+import { isLocalRun } from '../../localRun';
 
 const DEV_WORKSPACE_API_ERROR_LABEL = 'CUSTOM_OBJECTS_API_ERROR';
 
-export class DevWorkspaceApi implements IDevWorkspaceApi {
+export class DevWorkspaceApiService implements IDevWorkspaceApi {
   private readonly customObjectAPI: k8s.CustomObjectsApi;
   private readonly customObjectWatch: k8s.Watch;
 
@@ -94,7 +94,7 @@ export class DevWorkspaceApi implements IDevWorkspaceApi {
   async update(devworkspace: V1alpha2DevWorkspace): Promise<V1alpha2DevWorkspace> {
     try {
       if (!devworkspace.metadata?.name || !devworkspace.metadata?.namespace) {
-        throw 'DevWorkspace.metadata with name and namespace are required';
+        throw new Error('DevWorkspace.metadata with name and namespace are required');
       }
 
       // you have to delete some elements from the devworkspace in order to update
