@@ -21,7 +21,7 @@ import {
   INamespaceApi,
 } from './types';
 import { findApi } from './services/helpers/findApi';
-import { DevWorkspaceTemplateApi } from './services/api/templateApi';
+import { DevWorkspaceTemplateApiService } from './services/devWorkspaceTemplateApi';
 import { DevWorkspaceApi } from './services/api/workspaceApi';
 import { devworkspaceGroup, devworkspaceLatestVersion } from '@devfile/api';
 import { DockerConfigApiService } from './services/dockerConfigApi';
@@ -43,7 +43,7 @@ export class DevWorkspaceClient implements IDevWorkspaceClient {
   private readonly _namespaceApi: INamespaceApi;
 
   constructor(kc: k8s.KubeConfig) {
-    this._templateApi = new DevWorkspaceTemplateApi(kc);
+    this._templateApi = new DevWorkspaceTemplateApiService(kc);
     this._devworkspaceApi = new DevWorkspaceApi(kc);
     this._dockerConfigApi = new DockerConfigApiService(kc);
     this._serverConfigApi = new ServerConfigApiService(kc);

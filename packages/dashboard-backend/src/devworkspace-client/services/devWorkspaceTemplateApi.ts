@@ -17,13 +17,18 @@ import {
   devworkspacetemplatePlural,
   V1alpha2DevWorkspaceTemplate,
 } from '@devfile/api';
-import { IDevWorkspaceTemplateApi } from '../../types';
-import { createError } from '../helpers/createError';
+import { IDevWorkspaceTemplateApi } from '../types';
+import { createError } from './helpers/createError';
 import { api } from '@eclipse-che/common';
+
+export type DevWorkspaceTemplateList = {
+  items?: V1alpha2DevWorkspaceTemplate[];
+  [key: string]: unknown;
+};
 
 const DEW_WORKSPACE_TEMPLATE_API_ERROR_LABEL = 'CUSTOM_OBJECTS_API_ERROR';
 
-export class DevWorkspaceTemplateApi implements IDevWorkspaceTemplateApi {
+export class DevWorkspaceTemplateApiService implements IDevWorkspaceTemplateApi {
   private readonly customObjectAPI: k8s.CustomObjectsApi;
 
   constructor(kc: k8s.KubeConfig) {
@@ -38,7 +43,7 @@ export class DevWorkspaceTemplateApi implements IDevWorkspaceTemplateApi {
         namespace,
         devworkspacetemplatePlural,
       );
-      return (resp.body as any).items as V1alpha2DevWorkspaceTemplate[];
+      return (resp.body as DevWorkspaceTemplateList).items as V1alpha2DevWorkspaceTemplate[];
     } catch (e) {
       throw createError(
         e,
@@ -72,7 +77,7 @@ export class DevWorkspaceTemplateApi implements IDevWorkspaceTemplateApi {
   ): Promise<V1alpha2DevWorkspaceTemplate> {
     const namespace = devworkspaceTemplate.metadata?.namespace;
     if (!namespace) {
-      throw 'namespace is missing';
+      throw new Error('namespace is missing');
     }
     try {
       const resp = await this.customObjectAPI.createNamespacedCustomObject(
