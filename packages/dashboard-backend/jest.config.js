@@ -19,10 +19,9 @@ module.exports = {
   moduleDirectories: [
     'node_modules',
   ],
-  collectCoverageFrom: [
-    'src/api/**/*.ts',
-    'src/services/**/*.ts',
-    'src/devworkspace-client/*.ts',
-    'src/devworkspace-client/services/**/*.ts',
-  ],
+  testPathIgnorePatterns: [
+    '/node_modules/',
+    'src/devworkspace-client/__tests__/errors.spec.ts',
+    'src/devworkspace-client/__tests__/integration.spec.ts',
+  ]
 };
