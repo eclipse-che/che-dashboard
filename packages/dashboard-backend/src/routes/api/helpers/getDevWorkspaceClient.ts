@@ -11,7 +11,7 @@
  */
 
 import { DwClientProvider } from '../../../services/kubeclient/dwClientProvider';
-import { DevWorkspaceClient } from '../../../devworkspace-client';
+import { DevWorkspaceClient } from '../../../devworkspaceClient';
 
 /**
  * Creates DevWorkspace Client depending on the context for the specified request.

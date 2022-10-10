@@ -11,8 +11,8 @@
  */
 
 import * as k8s from '@kubernetes/client-node';
-import { DevWorkspaceClient } from '../../devworkspace-client';
 import * as helper from './helpers';
+import { DevWorkspaceClient } from '../../devworkspaceClient';
 import { KubeConfigProvider } from './kubeConfigProvider';
 
 export class DwClientProvider {

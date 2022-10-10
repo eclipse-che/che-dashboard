@@ -27,7 +27,7 @@ import {
   IKubeConfigApi,
   INamespaceApi,
   IServerConfigApi,
-} from '../../../../devworkspace-client';
+} from '../../../../devworkspaceClient';
 import { getDevWorkspaceClient as helper } from '../getDevWorkspaceClient';
 
 export const stubDashboardWarning = 'Dashboard warning';

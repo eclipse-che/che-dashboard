@@ -10,7 +10,7 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import { DevWorkspaceClient } from '../';
+import { DevWorkspaceClient } from '..';
 import { conditionalTest, isIntegrationTestEnabled } from './utils/suite';
 import { createKubeConfig } from './utils/helper';
 import { fail } from 'assert';

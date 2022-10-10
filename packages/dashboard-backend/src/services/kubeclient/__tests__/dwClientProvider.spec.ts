@@ -12,7 +12,7 @@
 
 import { DwClientProvider } from '../dwClientProvider';
 
-jest.mock('../../../devworkspace-client');
+jest.mock('../../../devworkspaceClient');
 jest.mock('../kubeConfigProvider.ts');
 jest.mock('../../kubeclient/helpers/index.ts', () => {
   return {

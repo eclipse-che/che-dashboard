@@ -12,7 +12,7 @@
 
 import * as fs from 'fs';
 import * as yaml from 'js-yaml';
-import { DevWorkspaceClient } from '../';
+import { DevWorkspaceClient } from '..';
 import { conditionalTest, isIntegrationTestEnabled } from './utils/suite';
 import { createKubeConfig, delay } from './utils/helper';
 import { fail } from 'assert';

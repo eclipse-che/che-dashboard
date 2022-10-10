@@ -22,8 +22,6 @@ import {
 
 jest.mock('../../../helpers/getUserName.ts');
 
-const userNamespace = 'user1-che';
-
 describe('Server Config API Service', () => {
   const env = process.env;
   let serverConfigService: ServerConfigApiService;
