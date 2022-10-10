@@ -22,7 +22,7 @@ import { getDevWorkspaceClient } from './helpers/getDevWorkspaceClient';
 import { getToken } from './helpers/getToken';
 import { restParams } from '../../typings/models';
 import { getSchema } from '../../services/helpers';
-import { IPatch } from '@eclipse-che/common/src/dto/api';
+import { api } from '@eclipse-che/common';
 
 const tags = ['Devworkspace'];
 
@@ -73,7 +73,7 @@ export function registerDevworkspacesRoutes(server: FastifyInstance) {
     getSchema({ tags, params: namespacedWorkspaceSchema, body: devworkspacePatchSchema }),
     async function (request: FastifyRequest) {
       const { namespace, workspaceName } = request.params as restParams.INamespacedWorkspaceParam;
-      const patch = request.body as IPatch[];
+      const patch = request.body as api.IPatch[];
       const token = getToken(request);
       const { devworkspaceApi } = getDevWorkspaceClient(token);
       return devworkspaceApi.patch(namespace, workspaceName, patch);
