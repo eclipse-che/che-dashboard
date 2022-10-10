@@ -99,7 +99,7 @@ export function getDevWorkspaceClient(_args: Parameters<typeof helper>): ReturnT
     namespaceApi: {
       getNamespaces: _token => Promise.resolve(stubNamespaces),
     } as INamespaceApi,
-    templateApi: {
+    devWorkspaceTemplateApi: {
       create: _template => Promise.resolve(stubDevWorkspaceTemplate),
       listInNamespace: _namespace => Promise.resolve(stubDevWorkspaceTemplatesList),
       patch: (_namespace, _name, _patches) => Promise.resolve(stubDevWorkspaceTemplate),

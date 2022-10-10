@@ -156,12 +156,11 @@ export type IDevWorkspaceCallbacks = {
 
 export interface IDevWorkspaceClient {
   devworkspaceApi: IDevWorkspaceApi;
-  templateApi: IDevWorkspaceTemplateApi;
+  devWorkspaceTemplateApi: IDevWorkspaceTemplateApi;
   dockerConfigApi: IDockerConfigApi;
   serverConfigApi: IServerConfigApi;
   kubeConfigApi: IKubeConfigApi;
   namespaceApi: INamespaceApi;
-  isDevWorkspaceApiEnabled(): Promise<boolean>;
 }
 
 export interface IDevWorkspaceList {

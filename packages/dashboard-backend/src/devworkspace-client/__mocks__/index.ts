@@ -24,7 +24,7 @@ export class DevWorkspaceClient implements IDevWorkspaceClient {
   get devworkspaceApi(): IDevWorkspaceApi {
     throw new Error('Method not implemented.');
   }
-  get templateApi(): IDevWorkspaceTemplateApi {
+  get devWorkspaceTemplateApi(): IDevWorkspaceTemplateApi {
     throw new Error('Method not implemented.');
   }
   get dockerConfigApi(): IDockerConfigApi {

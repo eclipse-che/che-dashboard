@@ -37,10 +37,6 @@ describe('DevWorkspace API integration testing against cluster', () => {
         const name = devWorkspace.metadata?.name;
         const namespace = devWorkspace.metadata?.namespace;
 
-        // check that api is enabled
-        const isApiEnabled = await dwClient.isDevWorkspaceApiEnabled();
-        expect(isApiEnabled).toBe(true);
-
         // check that the namespace is initialized
         // initialize namespace if it doesn't exist
         const nsProvision = new NamespaceProvisioner(kc);
@@ -118,10 +114,6 @@ describe('DevWorkspace API integration testing against cluster', () => {
           fail('namespace is mandatory but missing');
         }
 
-        // check that api is enabled
-        const isApiEnabled = await dwClient.isDevWorkspaceApiEnabled();
-        expect(isApiEnabled).toBe(true);
-
         // check that the namespace is initialized
         // initialize namespace if it doesn't exist
         const nsProvision = new NamespaceProvisioner(kc);
@@ -136,27 +128,27 @@ describe('DevWorkspace API integration testing against cluster', () => {
         expect(namespaceExists).toBe(true);
 
         // check that creation works
-        const newDWT = await dwClient.templateApi.create(dwt);
+        const newDWT = await dwClient.devWorkspaceTemplateApi.create(dwt);
         expect(newDWT.metadata?.name).toBe(name);
         expect(newDWT.metadata?.namespace).toBe(namespace);
 
         await delay(5000);
 
         // check that retrieval works
-        const allTemplates = await dwClient.templateApi.listInNamespace(namespace);
+        const allTemplates = await dwClient.devWorkspaceTemplateApi.listInNamespace(namespace);
         expect(allTemplates.length).toBe(1);
         const firstTemplate = allTemplates[0];
         expect(firstTemplate.metadata?.name).toBe(name);
         expect(firstTemplate.metadata?.namespace).toBe(namespace);
 
-        const singleNamespace = await dwClient.templateApi.getByName(namespace, name);
+        const singleNamespace = await dwClient.devWorkspaceTemplateApi.getByName(namespace, name);
         expect(singleNamespace.metadata?.name).toBe(name);
         expect(singleNamespace.metadata?.namespace).toBe(namespace);
 
         // check that deletion works
-        await dwClient.templateApi.delete(namespace, name);
+        await dwClient.devWorkspaceTemplateApi.delete(namespace, name);
         await delay(5000);
-        const finalNamespaces = await dwClient.templateApi.listInNamespace(namespace);
+        const finalNamespaces = await dwClient.devWorkspaceTemplateApi.listInNamespace(namespace);
         expect(finalNamespaces.length).toBe(0);
 
         done();

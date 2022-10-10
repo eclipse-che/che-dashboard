@@ -20,10 +20,8 @@ import {
   IKubeConfigApi,
   INamespaceApi,
 } from './types';
-import { findApi } from './services/helpers/findApi';
 import { DevWorkspaceTemplateApiService } from './services/devWorkspaceTemplateApi';
 import { DevWorkspaceApiService } from './services/devWorkspaceApi';
-import { devworkspaceGroup, devworkspaceLatestVersion } from '@devfile/api';
 import { DockerConfigApiService } from './services/dockerConfigApi';
 import { ServerConfigApiService } from './services/serverConfigApi';
 import { KubeConfigApiService } from './services/kubeConfigApi';
@@ -35,7 +33,7 @@ export class DevWorkspaceClient implements IDevWorkspaceClient {
   private apiEnabled: boolean | undefined;
 
   private readonly _apisApi: k8s.ApisApi;
-  private readonly _templateApi: IDevWorkspaceTemplateApi;
+  private readonly _devWorkspaceTemplateApi: IDevWorkspaceTemplateApi;
   private readonly _devworkspaceApi: IDevWorkspaceApi;
   private readonly _dockerConfigApi: IDockerConfigApi;
   private readonly _serverConfigApi: IServerConfigApi;
@@ -43,7 +41,7 @@ export class DevWorkspaceClient implements IDevWorkspaceClient {
   private readonly _namespaceApi: INamespaceApi;
 
   constructor(kc: k8s.KubeConfig) {
-    this._templateApi = new DevWorkspaceTemplateApiService(kc);
+    this._devWorkspaceTemplateApi = new DevWorkspaceTemplateApiService(kc);
     this._devworkspaceApi = new DevWorkspaceApiService(kc);
     this._dockerConfigApi = new DockerConfigApiService(kc);
     this._serverConfigApi = new ServerConfigApiService(kc);
@@ -52,8 +50,8 @@ export class DevWorkspaceClient implements IDevWorkspaceClient {
     this._apisApi = kc.makeApiClient(k8s.ApisApi);
   }
 
-  get templateApi(): IDevWorkspaceTemplateApi {
-    return this._templateApi;
+  get devWorkspaceTemplateApi(): IDevWorkspaceTemplateApi {
+    return this._devWorkspaceTemplateApi;
   }
 
   get devworkspaceApi(): IDevWorkspaceApi {
@@ -74,13 +72,5 @@ export class DevWorkspaceClient implements IDevWorkspaceClient {
 
   get namespaceApi(): INamespaceApi {
     return this._namespaceApi;
-  }
-
-  async isDevWorkspaceApiEnabled(): Promise<boolean> {
-    if (this.apiEnabled !== undefined) {
-      return Promise.resolve(this.apiEnabled);
-    }
-    this.apiEnabled = await findApi(this._apisApi, devworkspaceGroup, devworkspaceLatestVersion);
-    return this.apiEnabled;
   }
 }
