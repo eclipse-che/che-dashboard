@@ -27,11 +27,11 @@ describe('DevWorkspaceTemplates Routes', () => {
   const clusterConsoleUrl = 'cluster-console-url';
   const namespace = 'user-che';
 
-  beforeAll(done => {
+  beforeAll(async () => {
     const env = {
       OPENSHIFT_CONSOLE_URL: clusterConsoleUrl,
     };
-    app = setup(done, { env });
+    app = await setup({ env });
   });
 
   afterAll(() => {

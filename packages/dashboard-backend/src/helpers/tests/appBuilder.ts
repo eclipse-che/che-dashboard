@@ -15,30 +15,7 @@ import buildApp from '../../app';
 
 jest.mock('args');
 
-export function setup(
-  done: jest.DoneCallback,
-  options?: {
-    env?: { [envName: string]: string };
-  },
-): FastifyInstance {
-  process.env = Object.assign(
-    {
-      CHE_HOST: 'localhost',
-    },
-    options?.env,
-  );
-
-  const server = fastify({
-    logger: false,
-  });
-
-  buildApp(server);
-  server.ready(done);
-
-  return server;
-}
-
-export async function setupAsync(options?: {
+export async function setup(options?: {
   env?: { [envName: string]: string };
 }): Promise<FastifyInstance> {
   process.env = Object.assign(

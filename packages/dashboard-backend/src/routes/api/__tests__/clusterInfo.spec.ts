@@ -18,11 +18,11 @@ describe('Cluster Info Route', () => {
   let app: FastifyInstance;
   const clusterConsoleUrl = 'cluster-console-url';
 
-  beforeAll(done => {
+  beforeAll(async () => {
     const env = {
       OPENSHIFT_CONSOLE_URL: clusterConsoleUrl,
     };
-    app = setup(done, { env });
+    app = await setup({ env });
   });
 
   afterAll(() => {

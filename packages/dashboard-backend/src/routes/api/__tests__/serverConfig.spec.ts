@@ -12,7 +12,7 @@
 
 import { FastifyInstance } from 'fastify';
 import { baseApiPath } from '../../../constants/config';
-import { setupAsync, teardown } from '../../../helpers/tests/appBuilder';
+import { setup, teardown } from '../../../helpers/tests/appBuilder';
 
 jest.mock('../helpers/getDevWorkspaceClient.ts');
 jest.mock('../helpers/getToken.ts');
@@ -22,7 +22,7 @@ describe('Server Config Route', () => {
   let app: FastifyInstance;
 
   beforeAll(async () => {
-    app = await setupAsync();
+    app = await setup();
   });
 
   afterAll(() => {

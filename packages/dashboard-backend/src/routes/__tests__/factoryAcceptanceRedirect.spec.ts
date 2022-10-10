@@ -16,8 +16,8 @@ import { setup, teardown } from '../../helpers/tests/appBuilder';
 describe('Factory Acceptance Redirect', () => {
   let app: FastifyInstance;
 
-  beforeAll(done => {
-    app = setup(done);
+  beforeAll(async () => {
+    app = await setup();
   });
 
   afterAll(() => {

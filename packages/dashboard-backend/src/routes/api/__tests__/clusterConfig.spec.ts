@@ -24,8 +24,8 @@ jest.mock('../helpers/getDevWorkspaceClient.ts');
 describe('Cluster Config Route', () => {
   let app: FastifyInstance;
 
-  beforeAll(done => {
-    app = setup(done);
+  beforeAll(async () => {
+    app = await setup();
   });
 
   afterAll(() => {

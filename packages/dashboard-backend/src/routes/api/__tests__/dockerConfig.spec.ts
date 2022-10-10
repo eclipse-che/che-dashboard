@@ -22,8 +22,8 @@ describe('Docker Config Routes', () => {
   let app: FastifyInstance;
   const namespace = 'user-che';
 
-  beforeAll(done => {
-    app = setup(done);
+  beforeAll(async () => {
+    app = await setup();
   });
 
   afterAll(() => {

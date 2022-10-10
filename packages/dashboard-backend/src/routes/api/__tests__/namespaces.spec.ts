@@ -12,7 +12,7 @@
 
 import { FastifyInstance } from 'fastify';
 import { baseApiPath } from '../../../constants/config';
-import { setupAsync, teardown } from '../../../helpers/tests/appBuilder';
+import { setup, teardown } from '../../../helpers/tests/appBuilder';
 import { stubNamespaces } from '../helpers/__mocks__/getDevWorkspaceClient';
 
 const mockIsLocalRun = jest.fn();
@@ -37,7 +37,7 @@ describe('Namespaces Route', () => {
   describe('GET ${baseApiPath}/namespaces', () => {
     test('development mode', async () => {
       mockIsLocalRun.mockReturnValue(true);
-      app = await setupAsync();
+      app = await setup();
 
       const res = await app.inject().get(`${baseApiPath}/namespaces`);
 
@@ -47,7 +47,7 @@ describe('Namespaces Route', () => {
 
     test('production mode', async () => {
       mockIsLocalRun.mockReturnValue(false);
-      app = await setupAsync();
+      app = await setup();
 
       const res = await app.inject().get(`${baseApiPath}/namespaces`);
 
