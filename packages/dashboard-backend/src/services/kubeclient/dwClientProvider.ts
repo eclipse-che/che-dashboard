@@ -22,7 +22,7 @@ export class DwClientProvider {
   constructor() {
     this.kubeconfigProvider = new KubeConfigProvider();
 
-    const kc: any = this.kubeconfigProvider.getSAKubeConfig();
+    const kc = this.kubeconfigProvider.getSAKubeConfig();
     const apiClient = kc.makeApiClient(k8s.ApisApi);
     this.isOpenShift = helper.isOpenShift(apiClient);
   }
