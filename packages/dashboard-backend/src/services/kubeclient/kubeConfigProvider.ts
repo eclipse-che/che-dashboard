@@ -10,30 +10,24 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import { ApisApi, Context, KubeConfig, User } from '@kubernetes/client-node';
+import { Context, KubeConfig, User } from '@kubernetes/client-node';
 import { getUserName } from '../../helpers/getUserName';
 import { isLocalRun } from '../../localRun';
-import * as helper from './helpers';
 
 export class KubeConfigProvider {
-  private isOpenShift: Promise<boolean>;
   private inClusterKubeConfig: KubeConfig | undefined;
-
-  constructor() {
-    const kc: any = this.getSAKubeConfig();
-    const apiClient = kc.makeApiClient(ApisApi);
-    this.isOpenShift = helper.isOpenShift(apiClient);
-  }
 
   getKubeConfig(token: string): KubeConfig {
     const baseKc = this.getSAKubeConfig();
     const currentContext = baseKc.getContextObject(baseKc.getCurrentContext());
     if (!currentContext) {
-      throw 'SA kubecofig is not a valid: no current context is found';
+      throw new Error('SA kubecofig is not a valid: no current context is found');
     }
     const currentCluster = baseKc.getCluster(currentContext.cluster);
     if (!currentCluster) {
-      throw 'base kubeconfig is not a valid: no cluster exists specified in the current context';
+      throw new Error(
+        'base kubeconfig is not a valid: no cluster exists specified in the current context',
+      );
     }
 
     let name: string;
