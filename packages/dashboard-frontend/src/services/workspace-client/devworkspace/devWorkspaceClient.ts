@@ -732,17 +732,15 @@ export class DevWorkspaceClient extends WorkspaceClient {
   ): Promise<void> {
     const patch: api.IPatch[] = [];
     const cheNamespace = config.cheNamespace;
+    let attributes = workspace.spec.template.attributes;
     if (cheNamespace) {
       const devworkspaceConfig = { name: 'devworkspace-config', namespace: cheNamespace };
       const devworkspaceConfigPath = `/spec/template/attributes/${this.escape(
         DEVWORKSPACE_CONFIG_ANNOTATION,
       )}`;
-      if (workspace.spec.template.attributes) {
-        if (workspace.spec.template.attributes[DEVWORKSPACE_CONFIG_ANNOTATION]) {
-          if (
-            workspace.spec.template.attributes[DEVWORKSPACE_CONFIG_ANNOTATION] !==
-            devworkspaceConfig
-          ) {
+      if (attributes) {
+        if (attributes[DEVWORKSPACE_CONFIG_ANNOTATION]) {
+          if (attributes[DEVWORKSPACE_CONFIG_ANNOTATION] !== devworkspaceConfig) {
             patch.push({ op: 'replace', path: devworkspaceConfigPath, value: devworkspaceConfig });
           }
         } else {
@@ -754,6 +752,7 @@ export class DevWorkspaceClient extends WorkspaceClient {
           path: '/spec/template/attributes',
           value: { 'controller.devfile.io/devworkspace-config': devworkspaceConfig },
         });
+        attributes = {};
       }
     }
 
@@ -763,8 +762,8 @@ export class DevWorkspaceClient extends WorkspaceClient {
         DEVWORKSPACE_STORAGE_TYPE,
       )}`;
 
-      if (workspace.spec.template.attributes) {
-        if (!workspace.spec.template.attributes[DEVWORKSPACE_STORAGE_TYPE]) {
+      if (attributes) {
+        if (!attributes[DEVWORKSPACE_STORAGE_TYPE]) {
           patch.push({ op: 'add', path: devworkspaceStorageTypePath, value: currentPvcStrategy });
         }
       } else {
@@ -773,6 +772,7 @@ export class DevWorkspaceClient extends WorkspaceClient {
           path: '/spec/template/attributes',
           value: { 'controller.devfile.io/storage-type': currentPvcStrategy },
         });
+        attributes = {};
       }
     }
 
