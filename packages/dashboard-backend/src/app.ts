@@ -30,6 +30,7 @@ import { registerNamespacesRoute } from './routes/api/namespaces';
 import { registerServerConfigRoute } from './routes/api/serverConfig';
 import { registerYamlResolverRoute } from './routes/api/yamlResolver';
 import { registerFactoryAcceptanceRedirect } from './routes/factoryAcceptanceRedirect';
+import { registerWorkspaceRedirect } from './routes/workspaceRedirect';
 
 export default async function buildApp(server: FastifyInstance): Promise<void> {
   const cheHost = process.env.CHE_HOST as string;
@@ -66,6 +67,8 @@ export default async function buildApp(server: FastifyInstance): Promise<void> {
   registerStaticServer(publicFolder, server);
 
   registerFactoryAcceptanceRedirect(server);
+
+  registerWorkspaceRedirect(server);
 
   registerDevworkspaceWebsocketWatcher(server);
 

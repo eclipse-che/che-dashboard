@@ -55,6 +55,7 @@ export interface IStatusUpdate {
   mainUrl?: string;
   namespace?: string;
   workspaceId?: string;
+  started: boolean;
 }
 
 export type Subscriber = {
@@ -754,21 +755,16 @@ export class DevWorkspaceClient extends WorkspaceClient {
     config: api.IServerConfig,
   ): Promise<void> {
     const patch: api.IPatch[] = [];
-    if (workspace.spec.started) {
-      return;
-    }
     const cheNamespace = config.cheNamespace;
+    let attributes = workspace.spec.template.attributes;
     if (cheNamespace) {
       const devworkspaceConfig = { name: 'devworkspace-config', namespace: cheNamespace };
       const devworkspaceConfigPath = `/spec/template/attributes/${this.escape(
         DEVWORKSPACE_CONFIG_ANNOTATION,
       )}`;
-      if (workspace.spec.template.attributes) {
-        if (workspace.spec.template.attributes[DEVWORKSPACE_CONFIG_ANNOTATION]) {
-          if (
-            workspace.spec.template.attributes[DEVWORKSPACE_CONFIG_ANNOTATION] !==
-            devworkspaceConfig
-          ) {
+      if (attributes) {
+        if (attributes[DEVWORKSPACE_CONFIG_ANNOTATION]) {
+          if (attributes[DEVWORKSPACE_CONFIG_ANNOTATION] !== devworkspaceConfig) {
             patch.push({ op: 'replace', path: devworkspaceConfigPath, value: devworkspaceConfig });
           }
         } else {
@@ -780,6 +776,7 @@ export class DevWorkspaceClient extends WorkspaceClient {
           path: '/spec/template/attributes',
           value: { 'controller.devfile.io/devworkspace-config': devworkspaceConfig },
         });
+        attributes = {};
       }
     }
 
@@ -789,8 +786,8 @@ export class DevWorkspaceClient extends WorkspaceClient {
         DEVWORKSPACE_STORAGE_TYPE,
       )}`;
 
-      if (workspace.spec.template.attributes) {
-        if (!workspace.spec.template.attributes[DEVWORKSPACE_STORAGE_TYPE]) {
+      if (attributes) {
+        if (!attributes[DEVWORKSPACE_STORAGE_TYPE]) {
           patch.push({ op: 'add', path: devworkspaceStorageTypePath, value: currentPvcStrategy });
         }
       } else {
@@ -799,6 +796,7 @@ export class DevWorkspaceClient extends WorkspaceClient {
           path: '/spec/template/attributes',
           value: { 'controller.devfile.io/storage-type': currentPvcStrategy },
         });
+        attributes = {};
       }
     }
 
@@ -1000,6 +998,7 @@ export class DevWorkspaceClient extends WorkspaceClient {
     const phase = devworkspace.status?.phase;
     const status = isDevWorkspaceStatus(phase) ? phase : DevWorkspaceStatus.STARTING;
     const message = devworkspace.status?.message || '';
+    const started = devworkspace.spec.started;
 
     if (!this.previousItems.has(namespace)) {
       const defaultItem = new Map<string, IStatusUpdate>();
@@ -1016,11 +1015,16 @@ export class DevWorkspaceClient extends WorkspaceClient {
       namespace,
       workspaceId: devworkspace.status?.devworkspaceId,
       mainUrl: devworkspace.status?.mainUrl,
+      started,
     };
 
     previousItem?.set(workspaceUID, statusUpdate);
 
-    if (status === prevStatusUpdate?.status && message === prevStatusUpdate?.message) {
+    if (
+      started === prevStatusUpdate?.started &&
+      status === prevStatusUpdate?.status &&
+      message === prevStatusUpdate?.message
+    ) {
       return undefined;
     }
 
