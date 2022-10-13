@@ -19,11 +19,4 @@ module.exports = {
   moduleDirectories: [
     'node_modules',
   ],
-  coveragePathIgnorePatterns: [
-    'src/devworkspaceClient/__tests__/*',
-  ],
-  testPathIgnorePatterns: [
-    'src/devworkspaceClient/__tests__/errors.spec.ts',
-    'src/devworkspaceClient/__tests__/integration.spec.ts',
-  ]
 };

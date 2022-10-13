@@ -27,7 +27,7 @@ describe('DevWorkspace client', () => {
   beforeEach(() => {
     const { KubeConfig } = mockClientNode;
     config = new KubeConfig();
-    config.makeApiClient = jest.fn().mockImplementation(_api => ({}));
+    config.makeApiClient = jest.fn().mockImplementation(() => ({}));
   });
 
   afterEach(() => {
