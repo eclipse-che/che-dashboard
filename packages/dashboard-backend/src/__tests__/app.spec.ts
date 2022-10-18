@@ -18,6 +18,9 @@ const mockProcessExit = jest.fn();
   throw new Error('exit code ' + code);
 });
 
+// mute the output
+console.error = jest.fn();
+
 describe('App', () => {
   afterEach(() => {
     jest.clearAllMocks();
