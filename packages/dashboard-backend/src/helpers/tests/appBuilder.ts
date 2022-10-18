@@ -29,7 +29,7 @@ export async function setup(options?: {
     logger: false,
   });
 
-  buildApp(server);
+  await buildApp(server);
   await server.ready();
 
   return server;

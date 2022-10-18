@@ -10,21 +10,42 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import { FastifyInstance } from 'fastify';
+import process from 'process';
 import { setup, teardown } from '../helpers/tests/appBuilder';
 
+const mockProcessExit = jest.fn();
+(process as any).exit = mockProcessExit.mockImplementation(code => {
+  throw new Error('exit code ' + code);
+});
+
 describe('App', () => {
-  let app: FastifyInstance;
-
-  beforeAll(async () => {
-    app = await setup();
+  afterEach(() => {
+    jest.clearAllMocks();
   });
 
-  afterAll(() => {
-    teardown(app);
+  test('start when CHE_HOST is empty', async () => {
+    // one error should be thrown
+    expect.assertions(1);
+    try {
+      const app = await setup({
+        env: {
+          CHE_HOST: '',
+        },
+      });
+      teardown(app);
+    } catch (e) {
+      expect((e as Error).message).toMatch('exit code 1');
+    }
   });
 
-  test('setup', () => {
-    expect(app).toBeDefined();
+  test('start when CHE_HOST is set', async () => {
+    // no errors should be thrown
+    expect.assertions(0);
+    try {
+      const app = await setup();
+      teardown(app);
+    } catch (e) {
+      expect((e as Error).message).toMatch('exit code 1');
+    }
   });
 });
