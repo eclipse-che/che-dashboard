@@ -13,7 +13,12 @@
 import { V220DevfileComponents } from '@devfile/api';
 import { api } from '@eclipse-che/common';
 import * as k8s from '@kubernetes/client-node';
-import { CustomResourceDefinition, CustomResourceDefinitionList, IServerConfigApi } from '../types';
+import {
+  CustomResourceDefinition,
+  CustomResourceDefinitionList,
+  CustomResourceDefinitionSpecDevEnvironments,
+  IServerConfigApi,
+} from '../types';
 import { createError } from './helpers/createError';
 
 const CUSTOM_RESOURCE_DEFINITIONS_API_ERROR_LABEL = 'CUSTOM_RESOURCE_DEFINITIONS_API_ERROR';
@@ -36,7 +41,7 @@ export class ServerConfigApiService implements IServerConfigApi {
     };
   }
 
-  async getCheCustomResource(): Promise<CustomResourceDefinition> {
+  async fetchCheCustomResource(): Promise<CustomResourceDefinition> {
     if (!this.env.NAME || !this.env.NAMESPACE) {
       throw createError(
         undefined,
@@ -62,6 +67,19 @@ export class ServerConfigApiService implements IServerConfigApi {
       );
     }
     return cheCustomResource;
+  }
+
+  getContainerBuild(
+    cheCustomResource: CustomResourceDefinition,
+  ): Pick<
+    CustomResourceDefinitionSpecDevEnvironments,
+    'containerBuildConfiguration' | 'disableContainerBuildCapabilities'
+  > {
+    const { devEnvironments } = cheCustomResource.spec;
+    return {
+      containerBuildConfiguration: devEnvironments?.containerBuildConfiguration,
+      disableContainerBuildCapabilities: devEnvironments?.disableContainerBuildCapabilities,
+    };
   }
 
   getDefaultPlugins(cheCustomResource: CustomResourceDefinition): api.IWorkspacesDefaultPlugins[] {

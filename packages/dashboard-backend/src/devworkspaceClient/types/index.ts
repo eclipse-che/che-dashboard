@@ -100,32 +100,41 @@ export interface IDevWorkspaceTemplateApi {
 export type CustomResourceDefinitionList = k8s.V1CustomResourceDefinitionList & {
   items?: CustomResourceDefinition[];
 };
+
 export type CustomResourceDefinition = k8s.V1CustomResourceDefinition & {
   spec: {
-    devEnvironments?: {
-      defaultComponents?: V220DevfileComponents[];
-      defaultEditor?: string;
-      defaultPlugins?: api.IWorkspacesDefaultPlugins[];
-      secondsOfRunBeforeIdling?: number;
-      secondsOfInactivityBeforeIdling?: number;
-      storage?: {
-        pvcStrategy?: string;
-      };
+    devEnvironments?: CustomResourceDefinitionSpecDevEnvironments;
+    components?: CustomResourceDefinitionSpecComponents;
+  };
+};
+
+export type CustomResourceDefinitionSpecDevEnvironments = {
+  containerBuildConfiguration?: {
+    openShiftSecurityContextConstraint?: string;
+  };
+  defaultComponents?: V220DevfileComponents[];
+  defaultEditor?: string;
+  defaultPlugins?: api.IWorkspacesDefaultPlugins[];
+  disableContainerBuildCapabilities?: boolean;
+  secondsOfInactivityBeforeIdling?: number;
+  secondsOfRunBeforeIdling?: number;
+  storage?: {
+    pvcStrategy?: string;
+  };
+};
+
+export type CustomResourceDefinitionSpecComponents = {
+  dashboard?: {
+    headerMessage?: {
+      show?: boolean;
+      text?: string;
     };
-    components?: {
-      dashboard?: {
-        headerMessage?: {
-          show?: boolean;
-          text?: string;
-        };
-      };
-      devWorkspace?: {
-        runningLimit?: number;
-      };
-      pluginRegistry?: {
-        openVSXURL?: string;
-      };
-    };
+  };
+  devWorkspace?: {
+    runningLimit?: number;
+  };
+  pluginRegistry?: {
+    openVSXURL?: string;
   };
 };
 
@@ -133,7 +142,16 @@ export interface IServerConfigApi {
   /**
    * Returns custom resource
    */
-  getCheCustomResource(): Promise<CustomResourceDefinition>;
+  fetchCheCustomResource(): Promise<CustomResourceDefinition>;
+  /**
+   * Returns the container build capabilities and configuration.
+   */
+  getContainerBuild(
+    cheCustomResource: CustomResourceDefinition,
+  ): Pick<
+    CustomResourceDefinitionSpecDevEnvironments,
+    'containerBuildConfiguration' | 'disableContainerBuildCapabilities'
+  >;
   /**
    * Returns default plugins
    */
