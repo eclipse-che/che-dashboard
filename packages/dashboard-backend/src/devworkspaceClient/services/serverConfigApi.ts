@@ -13,40 +13,8 @@
 import { V220DevfileComponents } from '@devfile/api';
 import { api } from '@eclipse-che/common';
 import * as k8s from '@kubernetes/client-node';
-import { IServerConfigApi } from '../types';
+import { CustomResourceDefinition, CustomResourceDefinitionList, IServerConfigApi } from '../types';
 import { createError } from './helpers/createError';
-
-export type CustomResourceDefinitionList = k8s.V1CustomResourceDefinitionList & {
-  items?: CustomResourceDefinition[];
-};
-export type CustomResourceDefinition = k8s.V1CustomResourceDefinition & {
-  spec: {
-    devEnvironments?: {
-      defaultComponents?: V220DevfileComponents[];
-      defaultEditor?: string;
-      defaultPlugins?: api.IWorkspacesDefaultPlugins[];
-      secondsOfRunBeforeIdling?: number;
-      secondsOfInactivityBeforeIdling?: number;
-      storage?: {
-        pvcStrategy?: string;
-      };
-    };
-    components?: {
-      dashboard?: {
-        headerMessage?: {
-          show?: boolean;
-          text?: string;
-        };
-      };
-      devWorkspace?: {
-        runningLimit?: number;
-      };
-      pluginRegistry?: {
-        openVSXURL?: string;
-      };
-    };
-  };
-};
 
 const CUSTOM_RESOURCE_DEFINITIONS_API_ERROR_LABEL = 'CUSTOM_RESOURCE_DEFINITIONS_API_ERROR';
 

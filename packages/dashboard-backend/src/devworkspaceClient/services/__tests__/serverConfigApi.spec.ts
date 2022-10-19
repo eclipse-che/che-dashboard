@@ -14,11 +14,8 @@
 
 import * as mockClient from '@kubernetes/client-node';
 import { CustomObjectsApi } from '@kubernetes/client-node';
-import {
-  CustomResourceDefinition,
-  CustomResourceDefinitionList,
-  ServerConfigApiService,
-} from '../serverConfigApi';
+import { CustomResourceDefinition, CustomResourceDefinitionList } from '../..';
+import { ServerConfigApiService } from '../serverConfigApi';
 
 jest.mock('../../../helpers/getUserName.ts');
 
