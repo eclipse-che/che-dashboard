@@ -27,6 +27,6 @@ export async function getServerConfig(): Promise<api.IServerConfig> {
     const response = await axios.get(url);
     return response.data ? response.data : [];
   } catch (e) {
-    throw `Failed to fetch default plugins. ${common.helpers.errors.getMessage(e)}`;
+    throw new Error(`Failed to fetch default plugins. ${common.helpers.errors.getMessage(e)}`);
   }
 }
