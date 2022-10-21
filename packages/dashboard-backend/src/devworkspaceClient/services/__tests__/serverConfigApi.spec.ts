@@ -143,8 +143,6 @@ function buildCustomResource(): CustomResourceDefinition {
         disableContainerBuildCapabilities: false,
         containerBuildConfiguration: {
           openShiftSecurityContextConstraint: 'container-build',
-          containerOverrides: '{"securityContext":{"capabilities":{"add": ["SETGID", "SETUID"]}}}',
-          podOverrides: '{"spec": {"securityContext": {"allowPrivilegeEscalation": false}}}',
         },
         defaultComponents: [
           {
