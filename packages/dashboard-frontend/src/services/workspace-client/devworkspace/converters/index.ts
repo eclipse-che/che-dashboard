@@ -10,6 +10,7 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
+import { V1alpha2DevWorkspaceSpecTemplateComponents } from '@devfile/api';
 import devfileApi from '../../../devfileApi';
 import { DevWorkspaceSpecTemplateAttribute } from '../../../devfileApi/devWorkspace/spec/template';
 import { DEVWORKSPACE_METADATA_ANNOTATION } from '../devWorkspaceClient';
@@ -98,7 +99,7 @@ export function devWorkspaceToDevfile(devworkspace: devfileApi.DevWorkspace): de
     template.events = devworkspace.spec.template.events;
   }
   if (devworkspace.spec.template.attributes) {
-    const devWorkspaceAttributes: { [key: string]: unknown } = {};
+    const devWorkspaceAttributes: DevWorkspaceSpecTemplateAttribute = {};
     Object.keys(devworkspace.spec.template.attributes).forEach(key => {
       devWorkspaceAttributes[key] = devworkspace.spec.template.attributes?.[key];
     });
@@ -110,6 +111,8 @@ export function devWorkspaceToDevfile(devworkspace: devfileApi.DevWorkspace): de
 }
 
 // Filter plugins from components
-function filterPluginComponents(components: any[]): any[] {
+function filterPluginComponents(
+  components: V1alpha2DevWorkspaceSpecTemplateComponents[],
+): V1alpha2DevWorkspaceSpecTemplateComponents[] {
   return components.filter(comp => !('plugin' in comp));
 }

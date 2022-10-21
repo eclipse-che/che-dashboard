@@ -111,7 +111,7 @@ describe('dwPlugins store', () => {
       },
       {
         type: 'RECEIVE_DW_SERVER_CONFIG_ERROR',
-        error: 'Failed to fetch default plugins. Test error',
+        error: 'Test error',
       },
     ];
     expect(actions).toEqual(expectedActions);
