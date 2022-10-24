@@ -38,7 +38,7 @@ type State = {
   isExpanded: boolean;
 };
 
-class ExpandableWarningItems extends React.Component<Props, State> {
+class ExpandableWarning extends React.Component<Props, State> {
   private readonly checkOverflow: () => void;
   private copiedTimer: number | undefined;
 
@@ -152,4 +152,4 @@ class ExpandableWarningItems extends React.Component<Props, State> {
   }
 }
 
-export default ExpandableWarningItems;
+export default ExpandableWarning;

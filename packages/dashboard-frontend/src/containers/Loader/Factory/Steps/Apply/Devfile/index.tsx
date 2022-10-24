@@ -38,7 +38,7 @@ import { AbstractLoaderStep, LoaderStepProps, LoaderStepState } from '../../../.
 import { AlertItem } from '../../../../../../services/helpers/types';
 import { selectDefaultDevfile } from '../../../../../../store/DevfileRegistries/selectors';
 import { getProjectName } from '../../../../../../services/helpers/getProjectName';
-import ExpandableWarningItems from '../../../../../../components/ExpandableWarning';
+import ExpandableWarning from '../../../../../../components/ExpandableWarning';
 
 export class CreateWorkspaceError extends Error {
   constructor(message: string) {
@@ -272,7 +272,7 @@ class StepApplyDevfile extends AbstractLoaderStep<Props, State> {
         title: 'Warning',
         variant: AlertVariant.warning,
         children: (
-          <ExpandableWarningItems
+          <ExpandableWarning
             textBefore="The new Workspace couldn't be created from the Devfile in the git repository:"
             errorMessage={helpers.errors.getMessage(error)}
             textAfter="If you continue it will be ignored and a regular workspace will be created.

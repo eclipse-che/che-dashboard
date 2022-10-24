@@ -36,7 +36,7 @@ import buildFactoryParams from '../../../buildFactoryParams';
 import { AbstractLoaderStep, LoaderStepProps, LoaderStepState } from '../../../../AbstractStep';
 import { AlertItem } from '../../../../../../services/helpers/types';
 import OAuthService, { isOAuthResponse } from '../../../../../../services/oauth';
-import ExpandableWarningItems from '../../../../../../components/ExpandableWarning';
+import ExpandableWarning from '../../../../../../components/ExpandableWarning';
 
 export class ApplyingDevfileError extends Error {
   constructor(message) {
@@ -299,7 +299,7 @@ class StepFetchDevfile extends AbstractLoaderStep<Props, State> {
         title: 'Warning',
         variant: AlertVariant.warning,
         children: (
-          <ExpandableWarningItems
+          <ExpandableWarning
             textBefore="The Devfile in the git repository is invalid:"
             errorMessage={helpers.errors.getMessage(error)}
             textAfter="If you continue it will be ignored and a regular workspace will be created.
