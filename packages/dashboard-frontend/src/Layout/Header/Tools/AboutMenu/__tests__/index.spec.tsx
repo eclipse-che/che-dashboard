@@ -49,20 +49,13 @@ describe('About Menu', () => {
 
   const productCli = 'crwctl';
   const email = 'johndoe@example.com';
-  const name = 'John Doe';
-  const store = createStore(productCli, name, email);
-  const user = {
-    id: 'test-id',
-    name: name,
-    email: email,
-    links: [],
-  };
+  const username = 'John Doe';
+  const store = createStore(productCli, username, email);
   const branding = selectBranding(store.getState());
-  const userProfile = selectUserProfile(store.getState());
 
   const component = (
     <Provider store={store}>
-      <AboutMenu branding={branding} user={user} userProfile={userProfile} />
+      <AboutMenu branding={branding} username={username} />
     </Provider>
   );
 
