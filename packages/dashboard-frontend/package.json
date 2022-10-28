@@ -150,5 +150,6 @@
     "webpack-cli": "^4.9.2",
     "webpack-dev-server": "^4.2.0",
     "webpack-merge": "^4.2.2"
-  }
+  },
+  "sideEffects": ["*.css"]
 }
