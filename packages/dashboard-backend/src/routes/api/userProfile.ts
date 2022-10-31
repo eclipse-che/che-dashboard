@@ -16,7 +16,7 @@ import { namespacedSchema } from '../../constants/schemas';
 import { getSchema } from '../../services/helpers';
 import { restParams } from '../../typings/models';
 import { getDevWorkspaceClient } from './helpers/getDevWorkspaceClient';
-import { getServiceAccountToken } from './helpers/getServiceAccountToken';
+import { getToken } from './helpers/getToken';
 
 const tags = ['UserProfile'];
 
@@ -26,8 +26,8 @@ export function registerUserProfileRoute(server: FastifyInstance) {
     getSchema({ tags, params: namespacedSchema }),
     async function (request: FastifyRequest) {
       const { namespace } = request.params as restParams.INamespacedParam;
-      const serviceAccountToken = getServiceAccountToken();
-      const { userProfileApi } = getDevWorkspaceClient(serviceAccountToken);
+      const token = getToken(request);
+      const { userProfileApi } = getDevWorkspaceClient(token);
       return userProfileApi.getUserProfile(namespace);
     },
   );
