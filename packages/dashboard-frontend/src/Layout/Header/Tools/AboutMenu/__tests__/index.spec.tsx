@@ -10,21 +10,20 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
+import { fireEvent, render, screen } from '@testing-library/react';
 import React from 'react';
 import { Provider } from 'react-redux';
 import renderer from 'react-test-renderer';
-import { fireEvent, render, screen } from '@testing-library/react';
 import { Action, Store } from 'redux';
 import { AboutMenu } from '..';
-import { AppThunk } from '../../../../../store';
-import { FakeStoreBuilder } from '../../../../../store/__mocks__/storeBuilder';
 import {
   BrandingData,
   BRANDING_DEFAULT,
 } from '../../../../../services/bootstrap/branding.constant';
-import * as InfrastructureNamespacesStore from '../../../../../store/InfrastructureNamespaces';
+import { AppThunk } from '../../../../../store';
 import { selectBranding } from '../../../../../store/Branding/selectors';
-import { selectUserProfile } from '../../../../../store/UserProfile/selectors';
+import * as InfrastructureNamespacesStore from '../../../../../store/InfrastructureNamespaces';
+import { FakeStoreBuilder } from '../../../../../store/__mocks__/storeBuilder';
 
 jest.mock('gravatar-url', () => {
   return function () {
