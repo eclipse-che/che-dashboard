@@ -26,9 +26,9 @@ describe('sanitizeName', () => {
   });
 
   test('with non-alphanumeric character in the middle', () => {
-    const name = 'test%project';
+    const name = 'test%-#project';
     const sanitizedName = sanitizeName(name);
-    expect(sanitizedName).toEqual('test-project');
+    expect(sanitizedName).toEqual('test---project');
   });
 
   test('with non-alphanumeric first character', () => {

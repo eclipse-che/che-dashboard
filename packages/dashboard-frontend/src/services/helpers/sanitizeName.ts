@@ -20,6 +20,6 @@ export default function sanitizeName(name: string): string {
     .toLowerCase()
     .replace(/^[^a-z0-9]/, '')
     .replace(/[^a-z0-9]$/, '')
-    .replaceAll(/[^-.a-z0-9]/g, '-');
+    .replace(/[^-.a-z0-9]/g, '-');
   return sanitized;
 }
