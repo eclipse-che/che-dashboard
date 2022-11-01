@@ -31,14 +31,14 @@ describe('sanitizeName', () => {
     expect(sanitizedName).toEqual('test---project');
   });
 
-  test('with non-alphanumeric first character', () => {
-    const name = '-test-project';
+  test('with non-alphanumeric first characters', () => {
+    const name = '-@&test-project';
     const sanitizedName = sanitizeName(name);
     expect(sanitizedName).toEqual('test-project');
   });
 
-  test('with non-alphanumeric last character', () => {
-    const name = 'test-project-';
+  test('with non-alphanumeric last characters', () => {
+    const name = 'test-project-@&';
     const sanitizedName = sanitizeName(name);
     expect(sanitizedName).toEqual('test-project');
   });

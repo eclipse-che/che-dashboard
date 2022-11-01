@@ -18,8 +18,8 @@ export default function sanitizeName(name: string): string {
 
   const sanitized = name
     .toLowerCase()
-    .replace(/^[^a-z0-9]/, '')
-    .replace(/[^a-z0-9]$/, '')
+    .replace(/^[^a-z0-9]+/, '')
+    .replace(/[^a-z0-9]+$/, '')
     .replace(/[^-.a-z0-9]/g, '-');
   return sanitized;
 }
