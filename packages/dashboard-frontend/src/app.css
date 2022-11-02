@@ -18,6 +18,10 @@ body {
   --pf-c-form--m-horizontal__group-label--md--GridColumnWidth: 11rem;
 }
 
+.pf-c-alert__description {
+  width: 100%;
+}
+
 .page-description {
   min-height: 30px;
   padding: 5px 25px;
