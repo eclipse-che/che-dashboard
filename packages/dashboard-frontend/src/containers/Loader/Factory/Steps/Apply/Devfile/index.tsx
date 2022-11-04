@@ -37,7 +37,6 @@ import buildFactoryParams from '../../../buildFactoryParams';
 import { AbstractLoaderStep, LoaderStepProps, LoaderStepState } from '../../../../AbstractStep';
 import { AlertItem } from '../../../../../../services/helpers/types';
 import { selectDefaultDevfile } from '../../../../../../store/DevfileRegistries/selectors';
-import { getProjectName } from '../../../../../../services/helpers/getProjectName';
 import ExpandableWarning from '../../../../../../components/ExpandableWarning';
 import { getProjectFromUrl } from './getProjectFromUrl';
 
