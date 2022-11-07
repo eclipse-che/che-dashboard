@@ -11,18 +11,9 @@
  */
 
 import { getProjectName } from '../../../../../../services/helpers/getProjectName';
+import { V220DevfileProjects } from '@devfile/api';
 
-export type Project = {
-  git: {
-    remotes: {
-      origin: string;
-    };
-    checkoutFrom?: { revision: string };
-  };
-  name: string;
-};
-
-export function getProjectFromUrl(url: string): Project {
+export function getProjectFromUrl(url: string): V220DevfileProjects {
   const sourceUrl = new URL(url);
   const name = getProjectName(url);
   if (sourceUrl.pathname.endsWith('.git')) {
