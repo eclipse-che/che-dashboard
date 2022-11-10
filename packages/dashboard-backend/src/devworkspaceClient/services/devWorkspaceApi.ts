@@ -22,15 +22,16 @@ import {
 import { api } from '@eclipse-che/common';
 import { createError } from './helpers/createError';
 import { isLocalRun } from '../../localRun';
+import { CustomObjectAPI, prepareCustomObjectAPI } from './helpers/prepareCustomObjectAPI';
 
 const DEV_WORKSPACE_API_ERROR_LABEL = 'CUSTOM_OBJECTS_API_ERROR';
 
 export class DevWorkspaceApiService implements IDevWorkspaceApi {
-  private readonly customObjectAPI: k8s.CustomObjectsApi;
+  private readonly customObjectAPI: CustomObjectAPI;
   private readonly customObjectWatch: k8s.Watch;
 
   constructor(kc: k8s.KubeConfig) {
-    this.customObjectAPI = kc.makeApiClient(k8s.CustomObjectsApi);
+    this.customObjectAPI = prepareCustomObjectAPI(kc);
     this.customObjectWatch = new k8s.Watch(kc);
   }
 
