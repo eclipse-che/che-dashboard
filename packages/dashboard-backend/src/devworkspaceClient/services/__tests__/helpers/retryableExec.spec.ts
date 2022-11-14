@@ -10,7 +10,7 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 // eslint-disable-next-line notice/notice
-import { retryableExec } from '../helpers/retryableExec';
+import { retryableExec } from '../../helpers/retryableExec';
 
 describe('Retryable Exec', () => {
   let attempt: number;
@@ -42,7 +42,7 @@ describe('Retryable Exec', () => {
   });
 
   test('retry custom max attempts times', async () => {
-    const maxAttempt = 10;
+    const maxAttempt = 15;
     const callback = async () => {
       attempt++;
       return new Error(attempt.toString());
