@@ -23,6 +23,7 @@ import { api } from '@eclipse-che/common';
 import { createError } from './helpers/createError';
 import { isLocalRun } from '../../localRun';
 import { CustomObjectAPI, prepareCustomObjectAPI } from './helpers/prepareCustomObjectAPI';
+import { prepareCustomObjectWatch } from './helpers/prepareCustomObjectWatch';
 
 const DEV_WORKSPACE_API_ERROR_LABEL = 'CUSTOM_OBJECTS_API_ERROR';
 
@@ -32,7 +33,7 @@ export class DevWorkspaceApiService implements IDevWorkspaceApi {
 
   constructor(kc: k8s.KubeConfig) {
     this.customObjectAPI = prepareCustomObjectAPI(kc);
-    this.customObjectWatch = new k8s.Watch(kc);
+    this.customObjectWatch = prepareCustomObjectWatch(kc);
   }
 
   async listInNamespace(namespace: string): Promise<IDevWorkspaceList> {
