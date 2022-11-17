@@ -751,7 +751,7 @@ export class DevWorkspaceClient extends WorkspaceClient {
     return workspace.metadata.annotations?.[DEVWORKSPACE_DEBUG_START_ANNOTATION] === 'true';
   }
 
-  async updateConfigData(
+  async managePvcStrategy(
     workspace: devfileApi.DevWorkspace,
     config: api.IServerConfig,
   ): Promise<devfileApi.DevWorkspace> {
@@ -831,7 +831,7 @@ export class DevWorkspaceClient extends WorkspaceClient {
     return updatedDwvWorkspace;
   }
 
-  async updateDebugMode(
+  async manageDebugMode(
     workspace: devfileApi.DevWorkspace,
     debugMode: boolean,
   ): Promise<devfileApi.DevWorkspace> {
@@ -858,13 +858,14 @@ export class DevWorkspaceClient extends WorkspaceClient {
   /**
    * Injects or removes the container build attribute depending on the CR `disableContainerBuildCapabilities` field value.
    */
-  async updateContainerBuildAttribute(
+  async manageContainerBuildAttribute(
     workspace: devfileApi.DevWorkspace,
     config: api.IServerConfig,
   ): Promise<devfileApi.DevWorkspace> {
     const patch: api.IPatch[] = [];
     if (config.containerBuild.disableContainerBuildCapabilities) {
       if (workspace.spec.template.attributes?.[DEVWORKSPACE_CONTAINER_BUILD_ATTR]) {
+        // remove the attribute
         const path = `/spec/template/attributes/${this.escape(DEVWORKSPACE_CONTAINER_BUILD_ATTR)}`;
         patch.push({ op: 'remove', path });
       }
@@ -875,11 +876,8 @@ export class DevWorkspaceClient extends WorkspaceClient {
         'Skip injecting the container build attribute: "openShiftSecurityContextConstraint" is undefined',
       );
     } else {
+      // add the attribute
       if (!workspace.spec.template.attributes) {
-        workspace.spec.template.attributes = {
-          [DEVWORKSPACE_CONTAINER_BUILD_ATTR]:
-            config.containerBuild.containerBuildConfiguration.openShiftSecurityContextConstraint,
-        };
         const path = '/spec/template/attributes';
         const value = {
           [DEVWORKSPACE_CONTAINER_BUILD_ATTR]:

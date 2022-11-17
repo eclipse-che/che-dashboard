@@ -330,12 +330,12 @@ export const actionCreators: ActionCreators = {
 
         await dispatch(DwServerConfigStore.actionCreators.requestServerConfig());
         const config = getState().dwServerConfig.config;
-        workspace = await devWorkspaceClient.updateConfigData(workspace, config);
+        workspace = await devWorkspaceClient.managePvcStrategy(workspace, config);
 
         // inject or remove the container build attribute
-        workspace = await devWorkspaceClient.updateContainerBuildAttribute(workspace, config);
+        workspace = await devWorkspaceClient.manageContainerBuildAttribute(workspace, config);
 
-        workspace = await devWorkspaceClient.updateDebugMode(workspace, debugWorkspace);
+        workspace = await devWorkspaceClient.manageDebugMode(workspace, debugWorkspace);
 
         const workspaceUID = workspace.metadata.uid;
         dispatch({
