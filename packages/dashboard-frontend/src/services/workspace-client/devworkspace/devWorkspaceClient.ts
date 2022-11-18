@@ -818,17 +818,11 @@ export class DevWorkspaceClient extends WorkspaceClient {
         patch.push({ op: 'replace', path: '/spec/template/components', value: components });
       }
     }
+
     if (patch.length === 0) {
       return workspace;
     }
-    const updatedDwvWorkspace = await DwApi.patchWorkspace(
-      workspace.metadata.namespace,
-      workspace.metadata.name,
-      patch,
-    );
-    await delay(800);
-
-    return updatedDwvWorkspace;
+    return DwApi.patchWorkspace(workspace.metadata.namespace, workspace.metadata.name, patch);
   }
 
   async manageDebugMode(
@@ -837,20 +831,21 @@ export class DevWorkspaceClient extends WorkspaceClient {
   ): Promise<devfileApi.DevWorkspace> {
     const patch: api.IPatch[] = [];
     const currentDebugMode = this.getDebugMode(workspace);
-
-    if (currentDebugMode === debugMode) {
-      return workspace;
+    if (currentDebugMode !== debugMode) {
+      const path = `/metadata/annotations/${this.escape(DEVWORKSPACE_DEBUG_START_ANNOTATION)}`;
+      if (!debugMode) {
+        patch.push({ op: 'remove', path });
+      } else {
+        if (workspace.metadata.annotations?.[DEVWORKSPACE_DEBUG_START_ANNOTATION]) {
+          patch.push({ op: 'replace', path, value: 'true' });
+        } else {
+          patch.push({ op: 'add', path, value: 'true' });
+        }
+      }
     }
 
-    const path = `/metadata/annotations/${this.escape(DEVWORKSPACE_DEBUG_START_ANNOTATION)}`;
-    if (!debugMode) {
-      patch.push({ op: 'remove', path });
-    } else {
-      if (workspace.metadata.annotations?.[DEVWORKSPACE_DEBUG_START_ANNOTATION]) {
-        patch.push({ op: 'replace', path, value: 'true' });
-      } else {
-        patch.push({ op: 'add', path, value: 'true' });
-      }
+    if (patch.length === 0) {
+      return workspace;
     }
     return DwApi.patchWorkspace(workspace.metadata.namespace, workspace.metadata.name, patch);
   }
