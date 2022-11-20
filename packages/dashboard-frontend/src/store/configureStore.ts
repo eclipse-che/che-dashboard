@@ -15,6 +15,7 @@ import { History } from 'history';
 import { applyMiddleware, combineReducers, compose, createStore, Store } from 'redux';
 import thunk from 'redux-thunk';
 import { AppState, reducers } from '.';
+import { sanityCheckMiddleware } from './sanityCheckMiddleware';
 
 export default function configureStore(history: History, initialState?: AppState): Store<AppState> {
   const rootReducer = combineReducers({
@@ -22,7 +23,7 @@ export default function configureStore(history: History, initialState?: AppState
     router: connectRouter(history),
   });
 
-  const middleware = [thunk, routerMiddleware(history)];
+  const middleware = [thunk, routerMiddleware(history), sanityCheckMiddleware];
 
   const enhancers: Array<() => void> = [];
   const windowIfDefined = typeof window === 'undefined' ? null : (window as Window);

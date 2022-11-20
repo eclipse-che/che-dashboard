@@ -21,7 +21,7 @@ import { createObject } from '../helpers';
 import { isForbidden, isInternalServerError } from '../../services/workspace-client/helpers';
 import { signIn } from '../../services/helpers/login';
 
-const ASSET_PREFIX = './assets/branding/';
+export const ASSET_PREFIX = './assets/branding/';
 
 export interface State {
   isLoading: boolean;

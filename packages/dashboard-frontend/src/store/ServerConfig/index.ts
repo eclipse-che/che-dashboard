@@ -52,7 +52,7 @@ export const actionCreators: ActionCreators = {
         type: 'REQUEST_DW_SERVER_CONFIG',
       });
       try {
-        const config = await ServerConfigApi.getServerConfig();
+        const config = await ServerConfigApi.fetchServerConfig();
         dispatch({
           type: 'RECEIVE_DW_SERVER_CONFIG',
           config,
