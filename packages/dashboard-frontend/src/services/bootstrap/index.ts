@@ -22,6 +22,7 @@ import * as ServerConfigStore from '../../store/ServerConfig';
 import * as DevfileRegistriesStore from '../../store/DevfileRegistries';
 import * as InfrastructureNamespacesStore from '../../store/InfrastructureNamespaces';
 import * as PluginsStore from '../../store/Plugins/chePlugins';
+import * as SanityCheckStore from '../../store/SanityCheck';
 import * as DwPluginsStore from '../../store/Plugins/devWorkspacePlugins';
 import * as UserProfileStore from '../../store/UserProfile';
 import * as WorkspacesStore from '../../store/Workspaces';
@@ -35,8 +36,6 @@ import { selectDwEditorsPluginsList } from '../../store/Plugins/devWorkspacePlug
 import devfileApi from '../devfileApi';
 import { selectDefaultNamespace } from '../../store/InfrastructureNamespaces/selectors';
 import { selectDevWorkspacesResourceVersion } from '../../store/Workspaces/devWorkspaces/selectors';
-import { AppAlerts } from '../alerts/appAlerts';
-import { AlertVariant } from '@patternfly/react-core';
 import { buildDetailsLocation, buildIdeLoaderLocation } from '../helpers/location';
 import { Workspace } from '../workspace-adapter';
 import { WorkspaceRunningError, WorkspaceStoppedDetector } from './workspaceStoppedDetector';
@@ -57,9 +56,6 @@ export default class Bootstrap {
   @lazyInject(DevWorkspaceClient)
   private readonly devWorkspaceClient: DevWorkspaceClient;
 
-  @lazyInject(AppAlerts)
-  private readonly appAlerts: AppAlerts;
-
   @lazyInject(WorkspaceStoppedDetector)
   private readonly workspaceStoppedDetector: WorkspaceStoppedDetector;
 
@@ -74,6 +70,12 @@ export default class Bootstrap {
 
   async init(): Promise<void> {
     this.prefetchResources();
+
+    try {
+      await this.doBackendsSanityCheck();
+    } catch (e) {
+      return;
+    }
 
     await Promise.all([
       this.fetchBranding(),
@@ -110,6 +112,16 @@ export default class Bootstrap {
     this.resourceFetcher.prefetchResources(state).catch(e => {
       console.warn('Unable to fetch prefetch resources.', e);
     });
+  }
+
+  private async doBackendsSanityCheck(): Promise<void> {
+    const { testBackends } = SanityCheckStore.actionCreators;
+    try {
+      await testBackends()(this.store.dispatch, this.store.getState, undefined);
+    } catch (e) {
+      const errorMessage = common.helpers.errors.getMessage(e);
+      this.issuesReporterService.registerIssue('unknown', new Error(errorMessage));
+    }
   }
 
   private async fetchClusterConfig(): Promise<void> {
@@ -237,11 +249,7 @@ export default class Bootstrap {
     try {
       await requestNamespaces()(this.store.dispatch, this.store.getState, undefined);
     } catch (e) {
-      this.appAlerts.showAlert({
-        key: 'bootstrap-request-namespaces',
-        title: common.helpers.errors.getMessage(e),
-        variant: AlertVariant.danger,
-      });
+      console.error(e);
     }
   }
 
@@ -250,11 +258,7 @@ export default class Bootstrap {
     try {
       await requestSettings()(this.store.dispatch, this.store.getState, undefined);
     } catch (e) {
-      this.appAlerts.showAlert({
-        key: 'bootstrap-request-workspace-settings',
-        title: common.helpers.errors.getMessage(e),
-        variant: AlertVariant.danger,
-      });
+      console.log(e);
     }
 
     return this.store.getState().workspacesSettings.settings;
@@ -265,11 +269,7 @@ export default class Bootstrap {
     try {
       await requestServerConfig()(this.store.dispatch, this.store.getState, undefined);
     } catch (e) {
-      this.appAlerts.showAlert({
-        key: 'bootstrap-request-server-config',
-        title: common.helpers.errors.getMessage(e),
-        variant: AlertVariant.danger,
-      });
+      console.log(e);
     }
   }
 
