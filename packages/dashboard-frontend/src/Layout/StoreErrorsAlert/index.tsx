@@ -30,7 +30,7 @@ import { AppAlerts } from '../../services/alerts/appAlerts';
 
 type Props = MappedProps;
 
-export class PreloadIssuesAlert extends React.PureComponent<Props> {
+export class StoreErrorsAlert extends React.PureComponent<Props> {
   @lazyInject(AppAlerts)
   private readonly appAlerts: AppAlerts;
 
@@ -147,4 +147,4 @@ const mapStateToProps = (state: AppState) => ({
 const connector = connect(mapStateToProps);
 
 type MappedProps = ConnectedProps<typeof connector>;
-export default connector(PreloadIssuesAlert);
+export default connector(StoreErrorsAlert);
