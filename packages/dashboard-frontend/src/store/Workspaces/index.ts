@@ -135,14 +135,10 @@ export const actionCreators: ActionCreators = {
     async (dispatch, getState): Promise<void> => {
       dispatch({ type: 'REQUEST_WORKSPACES' });
       try {
-        const state = getState();
-        const cheDevworkspaceEnabled = isDevworkspacesEnabled(state.workspacesSettings.settings);
-
-        const promises: Promise<unknown>[] = [];
-        if (cheDevworkspaceEnabled) {
-          promises.push(dispatch(DevWorkspacesStore.actionCreators.requestWorkspaces()));
-        }
-        promises.push(dispatch(CheWorkspacesStore.actionCreators.requestWorkspaces()));
+        const promises: Promise<unknown>[] = [
+          dispatch(DevWorkspacesStore.actionCreators.requestWorkspaces()),
+          dispatch(CheWorkspacesStore.actionCreators.requestWorkspaces()),
+        ];
 
         await Promise.allSettled(promises);
 
