@@ -89,7 +89,10 @@ export default class Bootstrap {
       this.fetchDefaultDwPlugins(),
       this.fetchRegistriesMetadata().then(() => this.fetchEmptyWorkspace()),
       this.updateDevWorkspaceTemplates(),
-      this.fetchWorkspaces().then(() => this.watchNamespaces()),
+      this.fetchWorkspaces().then(() => {
+        this.checkWorkspaceStopped();
+        return this.watchNamespaces();
+      }),
       this.fetchClusterInfo(),
       this.fetchClusterConfig(),
     ]);
@@ -166,7 +169,6 @@ export default class Bootstrap {
   private async fetchWorkspaces(): Promise<void> {
     const { requestWorkspaces } = WorkspacesStore.actionCreators;
     await requestWorkspaces()(this.store.dispatch, this.store.getState, undefined);
-    this.checkWorkspaceStopped();
   }
 
   private async fetchPlugins(): Promise<void> {
