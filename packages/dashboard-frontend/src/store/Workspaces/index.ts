@@ -132,7 +132,7 @@ export type ActionCreators = {
 export const actionCreators: ActionCreators = {
   requestWorkspaces:
     (): AppThunk<KnownAction, Promise<void>> =>
-    async (dispatch, getState): Promise<void> => {
+    async (dispatch): Promise<void> => {
       dispatch({ type: 'REQUEST_WORKSPACES' });
       try {
         const promises: Promise<unknown>[] = [
