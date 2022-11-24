@@ -18,6 +18,7 @@ import { AppThunk } from '../..';
 import { fetchDevfile } from '../../../services/registry/devfiles';
 import { fetchData } from '../../../services/registry/fetchData';
 import { createObject } from '../../helpers';
+import { AUTHORIZED, SanityCheckAction } from '../../sanityCheckMiddleware';
 
 export interface PluginDefinition {
   plugin?: devfileApi.Devfile;
@@ -42,11 +43,11 @@ export interface State {
   defaultEditorError?: string;
 }
 
-export interface RequestDwDefaultEditorAction {
+export interface RequestDwDefaultEditorAction extends Action, SanityCheckAction {
   type: 'REQUEST_DW_DEFAULT_EDITOR';
 }
 
-export interface RequestDwPluginAction {
+export interface RequestDwPluginAction extends Action, SanityCheckAction {
   type: 'REQUEST_DW_PLUGIN';
   url: string;
 }
@@ -70,7 +71,7 @@ export interface ReceiveDwEditorAction {
   plugin: devfileApi.Devfile;
 }
 
-export interface RequestDwEditorAction {
+export interface RequestDwEditorAction extends Action, SanityCheckAction {
   type: 'REQUEST_DW_EDITOR';
   url: string;
   editorName: string;
@@ -94,7 +95,7 @@ export interface ReceiveDwDefaultEditorErrorAction {
   error: string;
 }
 
-export interface RequestDwDefaultPluginsAction {
+export interface RequestDwDefaultPluginsAction extends Action, SanityCheckAction {
   type: 'REQUEST_DW_DEFAULT_PLUGINS';
 }
 
@@ -131,6 +132,7 @@ export const actionCreators: ActionCreators = {
     async (dispatch): Promise<void> => {
       dispatch({
         type: 'REQUEST_DW_PLUGIN',
+        check: AUTHORIZED,
         url,
       });
 
@@ -180,6 +182,7 @@ export const actionCreators: ActionCreators = {
       try {
         dispatch({
           type: 'REQUEST_DW_EDITOR',
+          check: AUTHORIZED,
           url: editorUrl,
           editorName,
         });
@@ -212,6 +215,7 @@ export const actionCreators: ActionCreators = {
         : settings['che.factory.default_editor'];
       dispatch({
         type: 'REQUEST_DW_DEFAULT_EDITOR',
+        check: AUTHORIZED,
       });
 
       if (!defaultEditor) {
@@ -243,6 +247,7 @@ export const actionCreators: ActionCreators = {
     async (dispatch, getState): Promise<void> => {
       dispatch({
         type: 'REQUEST_DW_DEFAULT_PLUGINS',
+        check: AUTHORIZED,
       });
 
       const defaultPlugins = {};
