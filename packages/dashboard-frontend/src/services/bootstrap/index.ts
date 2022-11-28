@@ -120,7 +120,7 @@ export default class Bootstrap {
       await testBackends()(this.store.dispatch, this.store.getState, undefined);
     } catch (e) {
       const errorMessage = common.helpers.errors.getMessage(e);
-      this.issuesReporterService.registerIssue('unknown', new Error(errorMessage));
+      this.issuesReporterService.registerIssue('sessionExpired', new Error(errorMessage));
     }
   }
 

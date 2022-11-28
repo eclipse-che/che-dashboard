@@ -92,16 +92,13 @@ export const actionCreators: ActionCreators = {
           type: Type.RECEIVED_BACKEND_CHECK,
         });
       } catch (e) {
-        let errorMessage =
-          'Che-server or Dashboard backend is not available. Try to refresh the page or re-login to the Dashboard.';
-        if (isUnauthorized(e)) {
-          errorMessage = 'User session has expired. You need to re-login to the Dashboard.';
-        }
+        const errorMessage = 'User session has expired. You need to re-login to the Dashboard.';
         deferred.resolve(false);
         dispatch({
           type: Type.RECEIVED_BACKEND_CHECK_ERROR,
           error: errorMessage,
         });
+        throw new Error(errorMessage);
       }
     },
 };
