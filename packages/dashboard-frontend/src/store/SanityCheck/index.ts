@@ -14,10 +14,10 @@ import axios from 'axios';
 import { Action, Reducer } from 'redux';
 import { AppThunk } from '..';
 import { getDefer } from '../../services/helpers/deferred';
-import { isUnauthorized } from '../../services/workspace-client/helpers';
+import { isForbidden, isUnauthorized } from '../../services/workspace-client/helpers';
 import { createObject } from '../helpers';
 
-const secToStale = 30;
+const secToStale = 5;
 const timeToStale = secToStale * 1000;
 
 export interface State {
@@ -92,7 +92,11 @@ export const actionCreators: ActionCreators = {
           type: Type.RECEIVED_BACKEND_CHECK,
         });
       } catch (e) {
-        const errorMessage = 'User session has expired. You need to re-login to the Dashboard.';
+        let errorMessage =
+          'Backend in not available. Try to refresh the page or re-login to the Dashboard.';
+        if (isUnauthorized(e) || isForbidden(e)) {
+          errorMessage = 'User session has expired. You need to re-login to the Dashboard.';
+        }
         deferred.resolve(false);
         dispatch({
           type: Type.RECEIVED_BACKEND_CHECK_ERROR,
