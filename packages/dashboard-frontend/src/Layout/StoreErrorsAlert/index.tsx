@@ -41,6 +41,7 @@ export class StoreErrorsAlert extends React.PureComponent<Props> {
         key: 'authorization-error',
         title: this.props.sanityCheckError,
         variant: AlertVariant.danger,
+        timeout: false,
       });
       // do not show other errors if any
       return;
@@ -54,6 +55,7 @@ export class StoreErrorsAlert extends React.PureComponent<Props> {
         key: 'authorization-error',
         title: this.props.sanityCheckError,
         variant: AlertVariant.danger,
+        timeout: false,
       });
       // do not show other errors if any
       return;
