@@ -69,13 +69,9 @@ export default class Bootstrap {
   }
 
   async init(): Promise<void> {
-    this.prefetchResources();
+    await this.doBackendsSanityCheck();
 
-    try {
-      await this.doBackendsSanityCheck();
-    } catch (e) {
-      return;
-    }
+    this.prefetchResources();
 
     await Promise.all([
       this.fetchBranding(),
@@ -121,6 +117,7 @@ export default class Bootstrap {
     } catch (e) {
       const errorMessage = common.helpers.errors.getMessage(e);
       this.issuesReporterService.registerIssue('sessionExpired', new Error(errorMessage));
+      throw e;
     }
   }
 
@@ -258,7 +255,7 @@ export default class Bootstrap {
     try {
       await requestSettings()(this.store.dispatch, this.store.getState, undefined);
     } catch (e) {
-      console.log(e);
+      console.error(e);
     }
 
     return this.store.getState().workspacesSettings.settings;
@@ -269,7 +266,7 @@ export default class Bootstrap {
     try {
       await requestServerConfig()(this.store.dispatch, this.store.getState, undefined);
     } catch (e) {
-      console.log(e);
+      console.error(e);
     }
   }
 
