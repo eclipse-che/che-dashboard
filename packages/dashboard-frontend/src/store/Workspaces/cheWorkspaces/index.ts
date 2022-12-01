@@ -204,7 +204,7 @@ export const actionCreators: ActionCreators = {
   requestWorkspaces:
     (): AppThunk<KnownAction, Promise<void>> =>
     async (dispatch, getState): Promise<void> => {
-      dispatch({ type: 'CHE_REQUEST_WORKSPACES', check: AUTHORIZED });
+      await dispatch({ type: 'CHE_REQUEST_WORKSPACES', check: AUTHORIZED });
       const state = getState();
 
       try {
@@ -245,7 +245,7 @@ export const actionCreators: ActionCreators = {
   requestWorkspace:
     (workspace: che.Workspace): AppThunk<KnownAction, Promise<void>> =>
     async (dispatch): Promise<void> => {
-      dispatch({ type: 'CHE_REQUEST_WORKSPACES', check: AUTHORIZED });
+      await dispatch({ type: 'CHE_REQUEST_WORKSPACES', check: AUTHORIZED });
 
       try {
         const update = await cheWorkspaceClient.restApiClient.getById<che.Workspace>(workspace.id);
@@ -374,7 +374,7 @@ export const actionCreators: ActionCreators = {
   updateWorkspace:
     (workspace: che.Workspace): AppThunk<KnownAction, Promise<void>> =>
     async (dispatch): Promise<void> => {
-      dispatch({ type: 'CHE_REQUEST_WORKSPACES', check: AUTHORIZED });
+      await dispatch({ type: 'CHE_REQUEST_WORKSPACES', check: AUTHORIZED });
 
       try {
         const updatedWorkspace = await cheWorkspaceClient.restApiClient.update<che.Workspace>(
@@ -405,7 +405,7 @@ export const actionCreators: ActionCreators = {
       attributes: { [key: string]: string } = {},
     ): AppThunk<KnownAction, Promise<void>> =>
     async (dispatch): Promise<void> => {
-      dispatch({ type: 'CHE_REQUEST_WORKSPACES', check: AUTHORIZED });
+      await dispatch({ type: 'CHE_REQUEST_WORKSPACES', check: AUTHORIZED });
       try {
         const param = { attributes, namespace, infrastructureNamespace };
         const workspace = await cheWorkspaceClient.restApiClient.create<che.Workspace>(

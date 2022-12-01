@@ -54,7 +54,7 @@ export const actionCreators: ActionCreators = {
     async (dispatch): Promise<void> => {
       const url = `${ASSET_PREFIX}product.json`;
 
-      dispatch({
+      await dispatch({
         type: 'REQUEST_BRANDING',
         check: AUTHORIZED,
       });

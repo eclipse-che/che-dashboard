@@ -49,7 +49,7 @@ export const actionCreators: ActionCreators = {
   requestUserPreferences:
     (filter: string | undefined): AppThunk<KnownAction, Promise<void>> =>
     async (dispatch): Promise<void> => {
-      dispatch({ type: 'REQUEST_USER_PREFERENCES', check: AUTHORIZED });
+      await dispatch({ type: 'REQUEST_USER_PREFERENCES', check: AUTHORIZED });
 
       try {
         const data = await WorkspaceClient.restApiClient.getUserPreferences(filter);
@@ -64,7 +64,7 @@ export const actionCreators: ActionCreators = {
   replaceUserPreferences:
     (preferences: che.UserPreferences): AppThunk<KnownAction, Promise<void>> =>
     async (dispatch): Promise<void> => {
-      dispatch({ type: 'REQUEST_USER_PREFERENCES', check: AUTHORIZED });
+      await dispatch({ type: 'REQUEST_USER_PREFERENCES', check: AUTHORIZED });
 
       try {
         await WorkspaceClient.restApiClient.replaceUserPreferences(preferences);

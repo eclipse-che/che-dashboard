@@ -131,7 +131,7 @@ export const actionCreators: ActionCreators = {
       overrideParams?: { [params: string]: string },
     ): AppThunk<KnownAction, Promise<void>> =>
     async (dispatch, getState): Promise<void> => {
-      dispatch({ type: 'REQUEST_FACTORY_RESOLVER', check: AUTHORIZED });
+      await dispatch({ type: 'REQUEST_FACTORY_RESOLVER', check: AUTHORIZED });
       const state = getState();
       const namespace = selectDefaultNamespace(state).name;
       const optionalFilesContent = {};

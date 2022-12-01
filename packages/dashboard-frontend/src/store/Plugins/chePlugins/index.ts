@@ -50,7 +50,7 @@ export const actionCreators: ActionCreators = {
   requestPlugins:
     (registryUrl: string): AppThunk<KnownAction, Promise<che.Plugin[]>> =>
     async (dispatch): Promise<che.Plugin[]> => {
-      dispatch({ type: 'REQUEST_PLUGINS', check: AUTHORIZED });
+      await dispatch({ type: 'REQUEST_PLUGINS', check: AUTHORIZED });
 
       try {
         const response = await axiosInstance.request<che.Plugin[]>({

@@ -174,7 +174,7 @@ export const actionCreators: ActionCreators = {
   requestRegistriesMetadata:
     (registryUrls: string): AppThunk<KnownAction, Promise<void>> =>
     async (dispatch): Promise<void> => {
-      dispatch({ type: Type.REQUEST_REGISTRY_METADATA, check: AUTHORIZED });
+      await dispatch({ type: Type.REQUEST_REGISTRY_METADATA, check: AUTHORIZED });
 
       const registries: string[] = registryUrls.split(' ');
       if (DEFAULT_REGISTRY) {
@@ -216,7 +216,7 @@ export const actionCreators: ActionCreators = {
   requestDevfile:
     (url: string): AppThunk<KnownAction, Promise<string>> =>
     async (dispatch): Promise<string> => {
-      dispatch({ type: Type.REQUEST_DEVFILE, check: AUTHORIZED });
+      await dispatch({ type: Type.REQUEST_DEVFILE, check: AUTHORIZED });
       try {
         const devfile = await fetchDevfile(url);
         dispatch({ type: Type.RECEIVE_DEVFILE, devfile, url });
@@ -229,7 +229,7 @@ export const actionCreators: ActionCreators = {
   requestResources:
     (resourcesUrl: string): AppThunk<KnownAction, Promise<void>> =>
     async (dispatch): Promise<void> => {
-      dispatch({ type: Type.REQUEST_RESOURCES, check: AUTHORIZED });
+      await dispatch({ type: Type.REQUEST_RESOURCES, check: AUTHORIZED });
 
       try {
         const resourcesContent = await fetchResources(resourcesUrl);
@@ -270,7 +270,7 @@ export const actionCreators: ActionCreators = {
   requestJsonSchema:
     (): AppThunk<KnownAction, any> =>
     async (dispatch, getState): Promise<any> => {
-      dispatch({ type: Type.REQUEST_SCHEMA, check: AUTHORIZED });
+      await dispatch({ type: Type.REQUEST_SCHEMA, check: AUTHORIZED });
       try {
         const state = getState();
         const schemav1 = await WorkspaceClient.restApiClient.getDevfileSchema<{

@@ -52,7 +52,7 @@ export const actionCreators: ActionCreators = {
   requestSettings:
     (): AppThunk<KnownAction, Promise<void>> =>
     async (dispatch): Promise<void> => {
-      dispatch({ type: 'REQUEST_WORKSPACE_SETTINGS', check: AUTHORIZED });
+      await dispatch({ type: 'REQUEST_WORKSPACE_SETTINGS', check: AUTHORIZED });
 
       try {
         const settings =

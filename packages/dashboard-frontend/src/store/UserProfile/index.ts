@@ -58,7 +58,7 @@ export const actionCreators: ActionCreators = {
   requestUserProfile:
     (namespace: string): AppThunk<KnownAction, Promise<void>> =>
     async (dispatch): Promise<void> => {
-      dispatch({ type: Type.REQUEST_USER_PROFILE, check: AUTHORIZED });
+      await dispatch({ type: Type.REQUEST_USER_PROFILE, check: AUTHORIZED });
 
       try {
         const userProfile = await fetchUserProfile(namespace);

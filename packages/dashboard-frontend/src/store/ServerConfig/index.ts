@@ -49,7 +49,7 @@ export const actionCreators: ActionCreators = {
   requestServerConfig:
     (): AppThunk<KnownAction, Promise<void>> =>
     async (dispatch): Promise<void> => {
-      dispatch({
+      await dispatch({
         type: 'REQUEST_DW_SERVER_CONFIG',
         check: AUTHORIZED,
       });

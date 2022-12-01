@@ -49,7 +49,7 @@ export const actionCreators: ActionCreators = {
   requestCredentials:
     (namespace: string): AppThunk<KnownAction, Promise<void>> =>
     async (dispatch): Promise<void> => {
-      dispatch({ type: 'REQUEST_DEVWORKSPACE_CREDENTIALS', check: AUTHORIZED });
+      await dispatch({ type: 'REQUEST_DEVWORKSPACE_CREDENTIALS', check: AUTHORIZED });
       try {
         const { registries, resourceVersion } = await getDockerConfig(namespace);
         dispatch({
@@ -70,7 +70,7 @@ export const actionCreators: ActionCreators = {
   updateCredentials:
     (namespace: string, registries: RegistryEntry[]): AppThunk<KnownAction, Promise<void>> =>
     async (dispatch, getState): Promise<void> => {
-      dispatch({ type: 'REQUEST_DEVWORKSPACE_CREDENTIALS', check: AUTHORIZED });
+      await dispatch({ type: 'REQUEST_DEVWORKSPACE_CREDENTIALS', check: AUTHORIZED });
       const { dwDockerConfig } = getState();
       try {
         const { resourceVersion } = await putDockerConfig(

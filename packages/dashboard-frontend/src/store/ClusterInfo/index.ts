@@ -56,7 +56,7 @@ export const actionCreators: ActionCreators = {
   requestClusterInfo:
     (): AppThunk<KnownAction, Promise<void>> =>
     async (dispatch): Promise<void> => {
-      dispatch({
+      await dispatch({
         type: Type.REQUEST_CLUSTER_INFO,
         check: AUTHORIZED,
       });

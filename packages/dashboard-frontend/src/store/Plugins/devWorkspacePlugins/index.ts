@@ -130,7 +130,7 @@ export const actionCreators: ActionCreators = {
   requestDwDevfile:
     (url: string): AppThunk<KnownAction, Promise<void>> =>
     async (dispatch): Promise<void> => {
-      dispatch({
+      await dispatch({
         type: 'REQUEST_DW_PLUGIN',
         check: AUTHORIZED,
         url,
@@ -180,7 +180,7 @@ export const actionCreators: ActionCreators = {
       }
 
       try {
-        dispatch({
+        await dispatch({
           type: 'REQUEST_DW_EDITOR',
           check: AUTHORIZED,
           url: editorUrl,
@@ -213,7 +213,7 @@ export const actionCreators: ActionCreators = {
       const defaultEditor = config.defaults.editor
         ? config.defaults.editor
         : settings['che.factory.default_editor'];
-      dispatch({
+      await dispatch({
         type: 'REQUEST_DW_DEFAULT_EDITOR',
         check: AUTHORIZED,
       });
@@ -245,7 +245,7 @@ export const actionCreators: ActionCreators = {
   requestDwDefaultPlugins:
     (): AppThunk<KnownAction, Promise<void>> =>
     async (dispatch, getState): Promise<void> => {
-      dispatch({
+      await dispatch({
         type: 'REQUEST_DW_DEFAULT_PLUGINS',
         check: AUTHORIZED,
       });

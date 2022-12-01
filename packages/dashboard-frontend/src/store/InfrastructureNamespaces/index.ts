@@ -50,7 +50,7 @@ export const actionCreators: ActionCreators = {
   requestNamespaces:
     (): AppThunk<KnownAction, Promise<Array<che.KubernetesNamespace>>> =>
     async (dispatch): Promise<Array<che.KubernetesNamespace>> => {
-      dispatch({ type: 'REQUEST_NAMESPACES', check: AUTHORIZED });
+      await dispatch({ type: 'REQUEST_NAMESPACES', check: AUTHORIZED });
 
       await WorkspaceClient.restApiClient.provisionKubernetesNamespace();
 

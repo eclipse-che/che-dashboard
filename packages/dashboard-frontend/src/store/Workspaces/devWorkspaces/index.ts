@@ -216,7 +216,7 @@ export const actionCreators: ActionCreators = {
   requestWorkspaces:
     (): AppThunk<KnownAction, Promise<void>> =>
     async (dispatch, getState): Promise<void> => {
-      dispatch({ type: 'REQUEST_DEVWORKSPACE', check: AUTHORIZED });
+      await dispatch({ type: 'REQUEST_DEVWORKSPACE', check: AUTHORIZED });
 
       try {
         const defaultKubernetesNamespace = selectDefaultNamespace(getState());
@@ -259,7 +259,7 @@ export const actionCreators: ActionCreators = {
   requestWorkspace:
     (workspace: devfileApi.DevWorkspace): AppThunk<KnownAction, Promise<void>> =>
     async (dispatch, getState): Promise<void> => {
-      dispatch({ type: 'REQUEST_DEVWORKSPACE', check: AUTHORIZED });
+      await dispatch({ type: 'REQUEST_DEVWORKSPACE', check: AUTHORIZED });
 
       try {
         const namespace = workspace.metadata.namespace;
@@ -305,7 +305,7 @@ export const actionCreators: ActionCreators = {
         console.warn(`Workspace ${_workspace.metadata.name} already started`);
         return;
       }
-      dispatch({ type: 'REQUEST_DEVWORKSPACE', check: AUTHORIZED });
+      await dispatch({ type: 'REQUEST_DEVWORKSPACE', check: AUTHORIZED });
       try {
         checkRunningWorkspacesLimit(getState());
 
@@ -487,7 +487,7 @@ export const actionCreators: ActionCreators = {
   updateWorkspaceAnnotation:
     (workspace: devfileApi.DevWorkspace): AppThunk<KnownAction, Promise<void>> =>
     async (dispatch): Promise<void> => {
-      dispatch({ type: 'REQUEST_DEVWORKSPACE', check: AUTHORIZED });
+      await dispatch({ type: 'REQUEST_DEVWORKSPACE', check: AUTHORIZED });
 
       try {
         const updated = await devWorkspaceClient.updateAnnotation(workspace);
@@ -510,7 +510,7 @@ export const actionCreators: ActionCreators = {
   updateWorkspace:
     (workspace: devfileApi.DevWorkspace): AppThunk<KnownAction, Promise<void>> =>
     async (dispatch): Promise<void> => {
-      dispatch({ type: 'REQUEST_DEVWORKSPACE', check: AUTHORIZED });
+      await dispatch({ type: 'REQUEST_DEVWORKSPACE', check: AUTHORIZED });
 
       try {
         const updated = await devWorkspaceClient.update(workspace);
@@ -619,7 +619,7 @@ export const actionCreators: ActionCreators = {
 
       // refresh state
       state = getState();
-      dispatch({ type: 'REQUEST_DEVWORKSPACE', check: AUTHORIZED });
+      await dispatch({ type: 'REQUEST_DEVWORKSPACE', check: AUTHORIZED });
       try {
         // If the devworkspace doesn't have a namespace then we assign it to the default kubernetesNamespace
         const devWorkspaceDevfile = devfile as devfileApi.Devfile;

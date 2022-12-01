@@ -45,7 +45,7 @@ export const actionCreators: ActionCreators = {
   requestCredentials:
     (): AppThunk<KnownAction, Promise<void>> =>
     async (dispatch, getState): Promise<void> => {
-      dispatch({ type: 'REQUEST_CHEWORKSPACE_CREDENTIALS', check: AUTHORIZED });
+      await dispatch({ type: 'REQUEST_CHEWORKSPACE_CREDENTIALS', check: AUTHORIZED });
       const {
         userPreferences: { preferences },
       } = getState();
@@ -79,7 +79,7 @@ export const actionCreators: ActionCreators = {
   updateCredentials:
     (registries: RegistryEntry[]): AppThunk<KnownAction, Promise<void>> =>
     async (dispatch, getState): Promise<void> => {
-      dispatch({ type: 'REQUEST_CHEWORKSPACE_CREDENTIALS', check: AUTHORIZED });
+      await dispatch({ type: 'REQUEST_CHEWORKSPACE_CREDENTIALS', check: AUTHORIZED });
       const {
         userPreferences: { preferences },
       } = getState();
