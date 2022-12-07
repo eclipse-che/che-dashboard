@@ -11,7 +11,7 @@
  */
 
 import React from 'react';
-import { Action, Store } from 'redux';
+import { Store } from 'redux';
 import { Provider } from 'react-redux';
 import { createMemoryHistory } from 'history';
 import userEvent from '@testing-library/user-event';
@@ -22,8 +22,6 @@ import {
   getWorkspaceLoadingSteps,
 } from '../../../../components/Loader/Step/buildSteps';
 import getComponentRenderer from '../../../../services/__mocks__/getComponentRenderer';
-import { ActionCreators } from '../../../../store/Workspaces';
-import { AppThunk } from '../../../../store';
 import WorkspaceLoader from '..';
 import { Workspace } from '../../../../services/workspace-adapter';
 
@@ -39,19 +37,6 @@ jest.mock('../../findTargetWorkspace.ts', () => {
     default: () => {
       return {} as Workspace;
     },
-  };
-});
-
-const mockDeleteWorkspaceLogs = jest.fn();
-jest.mock('../../../../store/Workspaces/index', () => {
-  return {
-    actionCreators: {
-      deleteWorkspaceLogs:
-        (...args: Parameters<ActionCreators['deleteWorkspaceLogs']>): AppThunk<Action, void> =>
-        (): void => {
-          return mockDeleteWorkspaceLogs(...args);
-        },
-    } as ActionCreators,
   };
 });
 
@@ -104,7 +89,6 @@ describe('Workspace loader', () => {
       userEvent.click(restartButton!);
 
       expect(mockOnRestart).toHaveBeenCalled();
-      expect(mockDeleteWorkspaceLogs).toHaveBeenCalled();
     });
 
     test('next step switch', () => {
@@ -147,7 +131,6 @@ describe('Workspace loader', () => {
       userEvent.click(restartButton!);
 
       expect(mockOnRestart).toHaveBeenCalled();
-      expect(mockDeleteWorkspaceLogs).toHaveBeenCalled();
     });
 
     test('next step switch', () => {
@@ -190,7 +173,6 @@ describe('Workspace loader', () => {
       userEvent.click(restartButton!);
 
       expect(mockOnRestart).toHaveBeenCalled();
-      expect(mockDeleteWorkspaceLogs).toHaveBeenCalled();
     });
 
     test('next step switch', () => {
@@ -233,7 +215,6 @@ describe('Workspace loader', () => {
       userEvent.click(restartButton!);
 
       expect(mockOnRestart).toHaveBeenCalled();
-      expect(mockDeleteWorkspaceLogs).toHaveBeenCalled();
     });
 
     test('next step switch', () => {

@@ -29,10 +29,8 @@ import { MIN_STEP_DURATION_MS, TIMEOUT_TO_STOP_SEC } from '../../../const';
 import workspaceStatusIs from '../workspaceStatusIs';
 import { Workspace } from '../../../../../services/workspace-adapter';
 import { AbstractLoaderStep, LoaderStepProps, LoaderStepState } from '../../../AbstractStep';
-import {
-  RunningWorkspacesExceededError,
-  throwRunningWorkspacesExceededError,
-} from '../../../../../store/Workspaces/devWorkspaces';
+import { RunningWorkspacesExceededError } from '../../../../../store/Workspaces/devWorkspaces';
+import { throwRunningWorkspacesExceededError } from '../../../../../store/Workspaces/devWorkspaces/checkRunningWorkspacesLimit';
 import {
   buildHomeLocation,
   buildIdeLoaderLocation,

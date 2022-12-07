@@ -271,6 +271,7 @@
 | [`add-stream@1.0.0`](https://github.com/wilsonjackson/add-stream) | MIT | clearlydefined |
 | [`agent-base@6.0.2`](git://github.com/TooTallNate/node-agent-base.git) | MIT | clearlydefined |
 | [`agentkeepalive@4.2.1`](git://github.com/node-modules/agentkeepalive.git) | MIT | clearlydefined |
+| [`aggregate-error@3.1.0`](https://github.com/sindresorhus/aggregate-error.git) | MIT | clearlydefined |
 | [`ajv-formats@2.1.1`](git+https://github.com/ajv-validator/ajv-formats.git) | MIT | clearlydefined |
 | [`ajv-keywords@3.5.2`](git+https://github.com/epoberezkin/ajv-keywords.git) | MIT | clearlydefined |
 | [`ansi-colors@4.1.1`](https://github.com/doowb/ansi-colors.git) | MIT | clearlydefined |
@@ -338,6 +339,7 @@
 | [`cjs-module-lexer@0.6.0`](git+https://github.com/guybedford/cjs-module-lexer.git) | MIT | clearlydefined |
 | [`class-utils@0.3.6`](https://github.com/jonschlinkert/class-utils.git) | MIT | clearlydefined |
 | [`clean-css@5.3.1`](https://github.com/clean-css/clean-css.git) | MIT | clearlydefined |
+| [`clean-stack@2.2.0`](https://github.com/sindresorhus/clean-stack.git) | MIT | clearlydefined |
 | [`clean-terminal-webpack-plugin@3.0.0`](git+https://github.com/danillouz/clean-terminal-webpack-plugin.git) | MIT | clearlydefined |
 | [`cli-cursor@3.1.0`](https://github.com/sindresorhus/cli-cursor.git) | MIT | clearlydefined |
 | [`cli-width@3.0.0`](git@github.com:knownasilya/cli-width.git) | ISC | clearlydefined |
@@ -531,6 +533,7 @@
 | [`html-minifier-terser@6.1.0`](git+https://github.com/terser/html-minifier-terser.git) | MIT | #2968 |
 | [`html-tags@3.2.0`](https://github.com/sindresorhus/html-tags.git) | MIT | clearlydefined |
 | [`html-webpack-plugin@5.5.0`](https://github.com/jantimon/html-webpack-plugin.git) | MIT | clearlydefined |
+| [`http-cache-semantics@4.1.0`](https://github.com/kornelski/http-cache-semantics.git) | BSD-2-Clause | clearlydefined |
 | [`http-deceiver@1.2.7`](git+ssh://git@github.com/indutny/http-deceiver.git) | MIT | clearlydefined |
 | [`http-errors@2.0.0`](https://github.com/jshttp/http-errors.git) | MIT | clearlydefined |
 | [`http-parser-js@0.5.6`](git://github.com/creationix/http-parser-js.git) | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/http-parser-js/0.5.6) |
@@ -549,6 +552,7 @@
 | [`import-lazy@4.0.0`](https://github.com/sindresorhus/import-lazy.git) | MIT | clearlydefined |
 | [`import-local@3.1.0`](https://github.com/sindresorhus/import-local.git) | MIT | clearlydefined |
 | [`imurmurhash@0.1.4`](https://github.com/jensyt/imurmurhash-js) | MIT | clearlydefined |
+| [`indent-string@4.0.0`](https://github.com/sindresorhus/indent-string.git) | MIT | clearlydefined |
 | [`infer-owner@1.0.4`](https://github.com/npm/infer-owner) | ISC | clearlydefined |
 | [`ini@1.3.8`](git://github.com/isaacs/ini.git) | ISC | [CQ23023](https://dev.eclipse.org/ipzilla/show_bug.cgi?id=23023) |
 | [`init-package-json@2.0.5`](https://github.com/npm/init-package-json.git) | ISC | clearlydefined |
@@ -657,6 +661,7 @@
 | [`lower-case@2.0.2`](git://github.com/blakeembrey/change-case.git) | MIT | clearlydefined |
 | [`lz-string@1.4.4`](https://github.com/pieroxy/lz-string.git) | WTFPL | #1378 |
 | [`make-dir@3.1.0`](https://github.com/sindresorhus/make-dir.git) | MIT | clearlydefined |
+| [`make-error@1.3.6`](git://github.com/JsCommunity/make-error.git) | ISC | clearlydefined |
 | [`make-fetch-happen@10.1.8`](https://github.com/npm/make-fetch-happen.git) | ISC | #2636 |
 | [`makeerror@1.0.12`](https://github.com/daaku/nodejs-makeerror) | BSD-3-Clause | clearlydefined |
 | [`map-cache@0.2.2`](https://github.com/jonschlinkert/map-cache.git) | MIT | clearlydefined |
@@ -704,6 +709,7 @@
 | [`nopt@5.0.0`](https://github.com/npm/nopt.git) | ISC | clearlydefined |
 | [`normalize-package-data@3.0.3`](git://github.com/npm/normalize-package-data.git) | BSD-2-Clause | clearlydefined |
 | [`normalize-path@3.0.0`](https://github.com/jonschlinkert/normalize-path.git) | MIT | clearlydefined |
+| [`normalize-url@6.1.0`](https://github.com/sindresorhus/normalize-url.git) | MIT | clearlydefined |
 | [`npm-bundled@1.1.2`](git+https://github.com/npm/npm-bundled.git) | ISC | clearlydefined |
 | [`npm-install-checks@5.0.0`](https://github.com/npm/npm-install-checks.git) | BSD-2-Clause | clearlydefined |
 | [`npm-normalize-package-bin@1.0.1`](git+https://github.com/npm/npm-normalize-package-bin) | ISC | clearlydefined |

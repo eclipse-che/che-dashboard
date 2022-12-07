@@ -10,15 +10,11 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import { WorkspacesLogs } from '../../services/helpers/types';
+import React from 'react';
+import { Props } from '..';
 
-export const createFakeWorkspaceLogs = (
-  workspaceId: string,
-  logs: string[] = [],
-): WorkspacesLogs => {
-  const workspacesLogs = new Map<string, string[]>();
-  if (logs.length > 0) {
-    workspacesLogs.set(workspaceId, logs);
+export default class WorkspaceEvents extends React.PureComponent<Props> {
+  render(): React.ReactNode {
+    return <div>Workspace Events</div>;
   }
-  return workspacesLogs;
-};
+}

@@ -10,160 +10,230 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
+import common, { api } from '@eclipse-che/common';
+import EventEmitter from 'events';
+import { injectable } from 'inversify';
+import ReconnectingWebSocket, { CloseEvent, ErrorEvent } from 'reconnecting-websocket';
+import { getDefer, IDeferred } from '../helpers/deferred';
+import { delay } from '../helpers/delay';
 import { prefix } from './const';
-import ReconnectingWebSocket from 'reconnecting-websocket';
-import { getDefer } from '../helpers/deferred';
-import { V1alpha2DevWorkspace } from '@devfile/api';
 
-export type SubscribeMessage = {
-  request: string;
-  channel: string;
-  params: { token?: string; namespace: string; resourceVersion?: string };
-};
+export enum ConnectionEvent {
+  OPEN = 'open',
+  CLOSE = 'close',
+  ERROR = 'error',
+}
+export type ConnectionListener = (...args: unknown[]) => void;
+export type ChannelListener = (message: api.webSocket.NotificationMessage) => void;
 
-export type PublishMessage = {
-  channel: string;
-  message: string | V1alpha2DevWorkspace;
-};
-
-type Handler = (data: unknown) => void;
-
+@injectable()
 export class WebsocketClient {
-  private websocketStream: ReconnectingWebSocket;
-  private handlers: { [channel: string]: Handler[] } = {};
-  private resourceVersion = 0;
-  private readonly onDidWebSocketFailing: (websocketContext: string) => void;
-  private readonly onDidWebSocketOpen: (websocketContext: string) => void;
-  private readonly onDidWebSocketClose: (event: CloseEvent) => void;
+  private connectDeferred: IDeferred<void> | undefined;
+  private readonly channelEventListeners: Map<api.webSocket.Channel, ChannelListener[]> = new Map();
+  private readonly connectionEventEmitter: EventEmitter = new EventEmitter();
+  private readonly connectionEventListeners: Map<ConnectionEvent, ConnectionListener[]> = new Map();
+  private websocketStream: ReconnectingWebSocket | undefined;
+  private lastFiredConnectionEvent: [string, unknown[]] | undefined;
+  public readonly websocketContext = `${prefix}/websocket`;
 
-  constructor(callbacks: {
-    onDidWebSocketFailing: (websocketContext: string) => void;
-    onDidWebSocketOpen: (websocketContext: string) => void;
-    onDidWebSocketClose: (event: CloseEvent) => void;
-  }) {
-    this.onDidWebSocketFailing = callbacks.onDidWebSocketFailing;
-    this.onDidWebSocketOpen = callbacks.onDidWebSocketOpen;
-    this.onDidWebSocketClose = callbacks.onDidWebSocketClose;
+  constructor() {
+    this.connectionEventEmitter.on(ConnectionEvent.CLOSE, (...args: unknown[]) =>
+      this.handleConnectionEvent(ConnectionEvent.CLOSE, ...args),
+    );
+    this.connectionEventEmitter.on(ConnectionEvent.ERROR, (...args: unknown[]) =>
+      this.handleConnectionEvent(ConnectionEvent.ERROR, ...args),
+    );
+    this.connectionEventEmitter.on(ConnectionEvent.OPEN, (...args: unknown[]) =>
+      this.handleConnectionEvent(ConnectionEvent.OPEN, ...args),
+    );
+  }
+
+  /**
+   * If `existingEventNotification` equals ‘true’ then listener will be immediately notified about last fired event in case if their types match.
+   */
+  public addConnectionEventListener(
+    type: ConnectionEvent,
+    listener: ConnectionListener,
+    existingEventNotification = false,
+  ): void {
+    const listeners = this.connectionEventListeners.get(type) || [];
+    this.connectionEventListeners.set(type, [...listeners, listener]);
+
+    if (existingEventNotification === false || this.lastFiredConnectionEvent === undefined) {
+      return;
+    }
+
+    const [eventType, args] = this.lastFiredConnectionEvent;
+    if (type === eventType) {
+      listener(...args);
+    }
+  }
+
+  public removeConnectionEventListener(type: ConnectionEvent, listener: ConnectionListener): void {
+    const listeners = this.connectionEventListeners.get(type) || [];
+    this.connectionEventListeners.set(
+      type,
+      listeners.filter(_listener => _listener !== listener),
+    );
+  }
+
+  private handleConnectionEvent(eventType: ConnectionEvent, ...args: unknown[]): void {
+    const listeners = this.connectionEventListeners.get(eventType) || [];
+    this.lastFiredConnectionEvent = [eventType, args];
+    listeners.forEach(listener => listener(...args));
   }
 
   /**
    * Performs connection to the pointed entrypoint.
    */
-  connect(): Promise<any> {
-    const deferred = getDefer();
-    if (this.websocketStream) {
-      return Promise.resolve();
+  public async connect(): Promise<void> {
+    if (this.connectDeferred) {
+      return this.connectDeferred.promise;
     }
-    const websocketContext = `${prefix}/websocket`;
+
+    const deferred = getDefer<void>();
+
     const origin = new URL(window.location.href).origin;
-    const location = origin.replace('http', 'ws') + websocketContext;
+    const location = origin.replace('http', 'ws') + this.websocketContext;
     this.websocketStream = new ReconnectingWebSocket(location, [], {
-      connectionTimeout: 20000,
-      minReconnectionDelay: 2000,
+      connectionTimeout: 10000,
+      minReconnectionDelay: 500,
     });
 
     this.websocketStream.addEventListener('open', () => {
-      this.onDidWebSocketOpen(websocketContext);
+      this.handleStreamOpen(this.websocketContext);
       deferred.resolve();
     });
     this.websocketStream.addEventListener('close', event => {
-      this.onDidWebSocketClose(event as CloseEvent);
+      this.handleStreamClose(event);
     });
     this.websocketStream.addEventListener('error', event => {
-      console.log(`WebSocket client '${websocketContext}' Error: ${event.message}`);
-      this.onDidWebSocketFailing(websocketContext);
+      this.handleStreamFail(event);
       deferred.reject();
     });
     this.websocketStream.addEventListener('message', event => {
-      const { channel, message } = JSON.parse(event.data) as PublishMessage;
-      if (channel && message) {
-        this.saveResourceVersion(message);
-        this.callHandlers(channel, message);
+      try {
+        const message = this.parseMessageEvent(event);
+        this.notifyListeners(message);
+      } catch (e) {
+        console.warn(common.helpers.errors.getMessage(e), event.data);
       }
     });
-    return deferred.promise;
+
+    this.connectDeferred = deferred;
+    return this.connectDeferred.promise;
+  }
+
+  private handleStreamFail(event: ErrorEvent): void {
+    console.warn(`WebSocket client '${this.websocketContext}' failed:`, event);
+    this.connectionEventEmitter.emit(ConnectionEvent.ERROR, event);
+  }
+
+  private handleStreamOpen(websocketContext: string) {
+    console.log(`WebSocket client '${websocketContext}' connected`);
+    this.connectionEventEmitter.emit(ConnectionEvent.OPEN);
+  }
+
+  private handleStreamClose(event: CloseEvent) {
+    console.log(`WebSocket client '${this.websocketContext}' closed:`, event);
+    this.connectionEventEmitter.emit(ConnectionEvent.CLOSE, event);
+  }
+
+  private parseMessageEvent(event: MessageEvent<string>): api.webSocket.EventData {
+    try {
+      const dataMessage = JSON.parse(event.data);
+      if (api.webSocket.isWebSocketEventData(dataMessage)) {
+        return dataMessage;
+      } else {
+        throw new Error(`[WARN] Unexpected WS message payload:`);
+      }
+    } catch (e) {
+      throw new Error(`[WARN] Can't parse the WS message payload:`);
+    }
   }
 
   /**
    * Performs closing the connection.
    * @param code close code
    */
-  disconnect(code?: number): void {
-    if (this.websocketStream) {
-      this.websocketStream.close(code ? code : undefined);
-    }
+  public disconnect(code?: number): void {
+    this.websocketStream?.close(code ? code : undefined);
+    this.connectDeferred = undefined;
   }
 
   /**
-   * Adds a listener on an event.
-   * @param  channel
-   * @param  handler
+   * Adds a listener on an event for the given channel.
    */
-  addListener(channel: string, handler: Handler): void {
-    if (!this.handlers[channel]) {
-      this.handlers[channel] = [];
-    }
-    this.handlers[channel].push(handler);
+  public addChannelEventListener(channel: api.webSocket.Channel, listener: ChannelListener): void {
+    const listeners = this.channelEventListeners.get(channel) || [];
+    listeners.push(listener);
+    this.channelEventListeners.set(channel, listeners);
   }
 
   /**
    * Removes a listener.
-   * @param event
-   * @param handler
    */
-  removeListener(event: string, handler: Handler): void {
-    if (this.handlers[event]) {
-      const index = this.handlers[event].indexOf(handler);
-      if (index !== -1) {
-        this.handlers[event].splice(index, 1);
-      }
-    }
-  }
-
-  private sleep(ms: number): Promise<any> {
-    return new Promise<any>(resolve => setTimeout(resolve, ms));
+  public removeChannelEventListener(
+    channel: api.webSocket.Channel,
+    listener: ChannelListener,
+  ): void {
+    const listeners = this.channelEventListeners.get(channel) || [];
+    listeners?.splice(listeners.indexOf(listener), 1);
+    this.channelEventListeners.set(channel, listeners);
   }
 
   /**
-   * Sends pointed data.
-   * @param data to be sent
+   * Send a message that subscribes to events for the given channel.
    */
-  async subscribe(data: SubscribeMessage): Promise<void> {
+  async subscribeToChannelEvents(
+    channel: api.webSocket.Channel,
+    namespace: string,
+    resourceVersion: string,
+  ): Promise<void> {
+    if (this.websocketStream === undefined) {
+      throw new Error('WebSocket is not initialized.');
+    }
+
+    const message: api.webSocket.SubscribeMessage = {
+      method: 'SUBSCRIBE',
+      channel,
+      params: {
+        namespace,
+        resourceVersion,
+      },
+    };
     while (this.websocketStream.readyState !== this.websocketStream.OPEN) {
-      await this.sleep(1000);
+      await delay(1000);
     }
-
-    data.params.resourceVersion = this.getLatestResourceVersion(data.params.resourceVersion);
-
-    return this.websocketStream.send(JSON.stringify(data));
+    return this.websocketStream.send(JSON.stringify(message));
   }
 
-  private callHandlers(channel: string, data: unknown): void {
-    if (this.handlers[channel] && this.handlers[channel].length > 0) {
-      this.handlers[channel].forEach((handler: Handler) => handler(data));
-    }
-  }
-
-  private getLatestResourceVersion(resourceVersion: string | undefined): string | undefined {
-    if (!this.resourceVersion) {
-      return resourceVersion;
-    }
-    if (!resourceVersion) {
-      return this.resourceVersion.toString();
+  /**
+   * Send a message that unsubscribes to events for the given channel.
+   */
+  async unsubscribeToChannelEvents(channel: api.webSocket.Channel): Promise<void> {
+    if (this.websocketStream === undefined) {
+      throw new Error('WebSocket is not initialized.');
     }
 
-    const resourceVersionNum = parseInt(resourceVersion, 10) || 0;
-    this.resourceVersion = Math.max(resourceVersionNum, this.resourceVersion);
-    return this.resourceVersion.toString();
-  }
-
-  private saveResourceVersion(message: PublishMessage['message']): void {
-    if (typeof message === 'string') {
+    if (this.websocketStream.readyState !== this.websocketStream.OPEN) {
       return;
     }
 
-    const resourceVersion = message.metadata?.resourceVersion || '0';
-    const resourceVersionNum = parseInt(resourceVersion, 10) || 0;
-    this.resourceVersion = Math.max(resourceVersionNum, this.resourceVersion);
+    const message: api.webSocket.UnsubscribeMessage = {
+      method: 'UNSUBSCRIBE',
+      channel,
+      params: {},
+    };
+    return this.websocketStream.send(JSON.stringify(message));
+  }
+
+  /**
+   * Notifies all listeners for the given channel.
+   */
+  private notifyListeners(dataMessage: api.webSocket.EventData): void {
+    const { channel, message } = dataMessage;
+    const listeners = this.channelEventListeners.get(channel) || [];
+    listeners.forEach(handler => handler(message));
   }
 }

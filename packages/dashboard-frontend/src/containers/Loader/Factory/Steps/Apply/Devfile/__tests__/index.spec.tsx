@@ -240,8 +240,8 @@ describe('Factory Loader container, step CREATE_WORKSPACE__APPLYING_DEVFILE', ()
       );
 
       expect(dashboardDevfile.projects).not.toBe(undefined);
-      expect(dashboardDevfile.projects!.length).toBe(1);
-      expect(dashboardDevfile.projects![0]).toMatchObject({
+      expect(dashboardDevfile.projects?.length).toBe(1);
+      expect(dashboardDevfile.projects?.[0]).toMatchObject({
         git: {
           checkoutFrom: {
             remote: 'origin',
@@ -281,8 +281,8 @@ describe('Factory Loader container, step CREATE_WORKSPACE__APPLYING_DEVFILE', ()
       );
 
       expect(dashboardDevfile.projects).not.toBe(undefined);
-      expect(dashboardDevfile.projects!.length).toBe(1);
-      expect(dashboardDevfile.projects![0]).toMatchObject({
+      expect(dashboardDevfile.projects?.length).toBe(1);
+      expect(dashboardDevfile.projects?.[0]).toMatchObject({
         git: {
           checkoutFrom: {
             remote: 'origin',
