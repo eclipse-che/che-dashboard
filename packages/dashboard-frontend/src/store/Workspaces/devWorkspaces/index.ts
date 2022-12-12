@@ -11,6 +11,7 @@
  */
 
 import common from '@eclipse-che/common';
+import { getGitRemotes } from '../../../containers/Loader/Factory/getGitRemotes';
 import { cloneDeep } from 'lodash';
 import { Action, Reducer } from 'redux';
 import { ThunkDispatch } from 'redux-thunk';
@@ -613,6 +614,9 @@ export const actionCreators: ActionCreators = {
         cheEditor = state.dwPlugins.defaultEditorName;
       }
 
+      const remotesAttr: string | undefined = attributes?.['remotes'];
+      const remotes = getGitRemotes(remotesAttr);
+
       if (state.dwPlugins.defaultEditorError) {
         throw `Required sources failed when trying to create the workspace: ${state.dwPlugins.defaultEditorError}`;
       }
@@ -634,6 +638,7 @@ export const actionCreators: ActionCreators = {
           pluginRegistryInternalUrl,
           openVSXURL,
           cheEditor,
+          remotes,
           optionalFilesContent,
         );
         if (workspace.spec.started) {

@@ -12,6 +12,7 @@
 
 import {
   V1alpha2DevWorkspaceSpecTemplateComponents,
+  V1alpha2DevWorkspaceSpecTemplateProjects,
   V1alpha2DevWorkspaceTemplateSpec,
   V1alpha2DevWorkspaceTemplateSpecComponents,
   V220DevfileComponentsItemsContainer,
@@ -20,6 +21,7 @@ import { api } from '@eclipse-che/common';
 import { AlertVariant } from '@patternfly/react-core';
 import { AxiosInstance } from 'axios';
 import { WorkspacesDefaultPlugins } from 'dashboard-frontend/src/store/Plugins/devWorkspacePlugins';
+import { GitRemote } from '../../../containers/Loader/Factory/getGitRemotes';
 import { EventEmitter } from 'events';
 import { inject, injectable, multiInject } from 'inversify';
 import { safeLoad } from 'js-yaml';
@@ -336,6 +338,7 @@ export class DevWorkspaceClient extends WorkspaceClient {
     pluginRegistryInternalUrl: string | undefined,
     openVSXUrl: string | undefined,
     editorId: string | undefined,
+    remotes: GitRemote[],
     optionalFilesContent: { [fileName: string]: string },
   ): Promise<devfileApi.DevWorkspace> {
     if (!devfile.components) {
@@ -524,6 +527,15 @@ export class DevWorkspaceClient extends WorkspaceClient {
       openVSXUrl,
     );
     createdWorkspace.spec.started = false;
+    if (remotes.length > 0 && createdWorkspace.spec.template.projects) {
+      const gitProject = this.getGitProjectForRemotes(createdWorkspace.spec.template.projects);
+      gitProject.git!.remotes = remotes.reduce((map, remote) => {
+        map[remote.name] = remote.url;
+        return map;
+      }, {});
+      gitProject.git!.checkoutFrom = { remote: remotes[0].name };
+    }
+
     const patch = [
       {
         op: 'replace',
@@ -532,7 +544,17 @@ export class DevWorkspaceClient extends WorkspaceClient {
       },
     ];
     return DwApi.patchWorkspace(namespace, name, patch);
-    await delay();
+  }
+
+  /**
+   * Returns the Git project to replace remotes for
+   */
+  private getGitProjectForRemotes(projects: Array<V1alpha2DevWorkspaceSpecTemplateProjects>) {
+    const gitProjects = projects.filter(project => project.git);
+    if (gitProjects.length === 1) {
+      return gitProjects[0];
+    }
+    throw new Error('Configuring remotes only supported with one Git project exists in DevWorkspace.');
   }
 
   /**
