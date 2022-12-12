@@ -143,25 +143,6 @@ export class WorkspaceEditor extends React.PureComponent<Props> {
         },
       });
     }
-
-    const handleMessage = (event: MessageEvent): void => {
-      if (typeof event.data !== 'string') {
-        return;
-      }
-      const { data } = event;
-      if (
-        (data === 'show-navbar' || data === 'hide-navbar' || data === 'toggle-navbar') &&
-        this.handleResize
-      ) {
-        this.handleResize();
-      }
-    };
-    window.addEventListener('message', handleMessage, false);
-    this.toDispose.push({
-      dispose: () => {
-        window.removeEventListener('message', handleMessage, false);
-      },
-    });
   }
 
   // This method is called when the component is removed from the document

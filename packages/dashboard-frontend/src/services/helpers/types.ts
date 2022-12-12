@@ -86,7 +86,7 @@ export enum LoaderTab {
 export enum WorkspaceDetailsTab {
   OVERVIEW = 'Overview',
   DEVFILE = 'Devfile',
-  DEVWRKSPACE = 'Devworkspace',
+  DEVWRKSPACE = 'DevWorkspace',
 }
 
 export enum WorkspaceAction {

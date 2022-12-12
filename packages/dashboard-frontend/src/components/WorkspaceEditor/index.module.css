@@ -29,5 +29,5 @@
   right: 0;
   bottom: 0;
   left: 0;
-  border: 1px solid #cecece;
+  border: 1px solid var(--pf-global--BorderColor--100);
 }

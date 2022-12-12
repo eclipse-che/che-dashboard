@@ -10,13 +10,18 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import { Button, Divider, Flex, FlexItem } from '@patternfly/react-core';
+import { AlertVariant, Button, Divider, Flex, FlexItem } from '@patternfly/react-core';
 import { CompressIcon, CopyIcon, DownloadIcon, ExpandIcon } from '@patternfly/react-icons';
 import React from 'react';
 import CopyToClipboard from 'react-copy-to-clipboard';
 import stringify from '../../services/helpers/editor';
 import styles from './index.module.css';
 import devfileApi from '../../services/devfileApi';
+import { AppAlerts } from '../../services/alerts/appAlerts';
+import { lazyInject } from '../../inversify.config';
+import { AlertItem } from '../../services/helpers/types';
+import { helpers } from '@eclipse-che/common';
+import { ToggleBarsContext } from '../../contexts/ToggleBars';
 
 type Props = {
   content: che.Workspace | devfileApi.DevWorkspace | che.WorkspaceDevfile | devfileApi.Devfile;
@@ -27,12 +32,18 @@ type State = {
   copied?: boolean;
   isExpanded: boolean;
   contentText: string;
-  isDevWorkspace: boolean;
+  isWorkspace: boolean;
   contentBlobUrl: string;
 };
 
 class EditorTools extends React.PureComponent<Props, State> {
+  static contextType = ToggleBarsContext;
+  readonly context: React.ContextType<typeof ToggleBarsContext>;
+
   private copiedTimer: number | undefined;
+
+  @lazyInject(AppAlerts)
+  private readonly appAlerts: AppAlerts;
 
   constructor(props: Props) {
     super(props);
@@ -40,7 +51,7 @@ class EditorTools extends React.PureComponent<Props, State> {
     this.state = {
       isExpanded: false,
       contentText: '',
-      isDevWorkspace: false,
+      isWorkspace: false,
       contentBlobUrl: '',
     };
   }
@@ -49,13 +60,17 @@ class EditorTools extends React.PureComponent<Props, State> {
     const { content } = this.props;
     try {
       const contentText = stringify(content);
-      const isDevWorkspace = this.isDevWorkspace(content);
+      const isWorkspace = this.isWorkspace(content);
       const contentBlobUrl = URL.createObjectURL(
         new Blob([contentText], { type: 'application/x-yaml' }),
       );
-      this.setState({ contentText, isDevWorkspace, contentBlobUrl });
+      this.setState({ contentText, isWorkspace, contentBlobUrl });
     } catch (e) {
-      console.error(e);
+      this.showAlert({
+        key: 'editor-tools-create blob-url-fails',
+        variant: AlertVariant.danger,
+        title: helpers.errors.getMessage(e),
+      });
     }
   }
 
@@ -64,32 +79,55 @@ class EditorTools extends React.PureComponent<Props, State> {
     try {
       const contentText = stringify(content);
       if (contentText !== this.state.contentText) {
-        const isDevWorkspace = this.isDevWorkspace(content);
+        const isWorkspace = this.isWorkspace(content);
         const contentBlobUrl = URL.createObjectURL(
           new Blob([contentText], { type: 'application/x-yaml' }),
         );
-        this.setState({ contentText, isDevWorkspace, contentBlobUrl });
+        this.setState({ contentText, isWorkspace, contentBlobUrl });
       }
     } catch (e) {
-      console.error(e);
+      this.showAlert({
+        key: 'editor-tools-create blob-url-fails',
+        variant: AlertVariant.danger,
+        title: helpers.errors.getMessage(e),
+      });
     }
+  }
+
+  private showAlert(alert: AlertItem): void {
+    this.appAlerts.showAlert(alert);
   }
 
   private handleExpand(): void {
     if (this.state.isExpanded) {
-      window.postMessage('show-navbar', '*');
+      this.context.showAll();
       const isExpanded = false;
       this.setState({ isExpanded });
       this.props.handleExpand(isExpanded);
     } else {
-      window.postMessage('hide-navbar', '*');
+      this.context.hideAll();
       const isExpanded = true;
       this.setState({ isExpanded });
       this.props.handleExpand(isExpanded);
     }
   }
 
-  private isDevWorkspace(
+  private getName(
+    content: che.Workspace | devfileApi.DevWorkspace | che.WorkspaceDevfile | devfileApi.Devfile,
+  ): string | undefined {
+    if ((content as devfileApi.DevWorkspace)?.kind === 'DevWorkspace') {
+      return (content as devfileApi.DevWorkspace).metadata.name;
+    } else if ((content as che.Workspace)?.devfile) {
+      return (content as che.Workspace).devfile.metadata.name;
+    } else if ((content as che.WorkspaceDevfile).apiVersion) {
+      return (content as che.WorkspaceDevfile).metadata.name;
+    } else if ((content as devfileApi.Devfile).schemaVersion) {
+      return (content as devfileApi.Devfile).metadata.name;
+    }
+    return undefined;
+  }
+
+  private isWorkspace(
     content: che.Workspace | devfileApi.DevWorkspace | che.WorkspaceDevfile | devfileApi.Devfile,
   ): boolean {
     if ((content as devfileApi.DevWorkspace)?.kind === 'DevWorkspace') {
@@ -112,7 +150,8 @@ class EditorTools extends React.PureComponent<Props, State> {
   }
 
   public render(): React.ReactElement {
-    const { contentText, isDevWorkspace, contentBlobUrl, isExpanded, copied } = this.state;
+    const { contentText, isWorkspace, contentBlobUrl, isExpanded, copied } = this.state;
+    const name = this.getName(this.props.content);
 
     return (
       <div className={styles.editorTools}>
@@ -128,7 +167,7 @@ class EditorTools extends React.PureComponent<Props, State> {
           <Divider isVertical />
           <FlexItem>
             <a
-              download={`${isDevWorkspace ? 'devworkspace' : 'devfile'}.yaml`}
+              download={`${name}.${isWorkspace ? 'workspace' : 'devfile'}.yaml`}
               href={contentBlobUrl}
             >
               <DownloadIcon />
