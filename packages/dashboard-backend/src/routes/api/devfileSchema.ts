@@ -24,7 +24,7 @@ import { JSONSchema7 } from 'json-schema';
 
 const tags = ['Devfile'];
 
-type DevfileSchemaV100 = { [key: string]: any };
+type DevfileSchemaV100 = { [key: string]: unknown };
 
 export function registerDevfileSchemaRoute(server: FastifyInstance) {
   server.get(
@@ -47,7 +47,7 @@ export function registerDevfileSchemaRoute(server: FastifyInstance) {
         case '2.2.1-alpha':
           return devfileSchemaV221Alpha;
       }
-      reply.code(204);
+      reply.code(404);
     },
   );
 }
