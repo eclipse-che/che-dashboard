@@ -14,6 +14,7 @@ import { Action, Reducer } from 'redux';
 import { AppThunk } from '..';
 import { container } from '../../inversify.config';
 import { getDefer } from '../../services/helpers/deferred';
+import { delay } from '../../services/helpers/delay';
 import { CheWorkspaceClient } from '../../services/workspace-client/cheworkspace/cheWorkspaceClient';
 import { isForbidden, isUnauthorized } from '../../services/workspace-client/helpers';
 import { createObject } from '../helpers';
@@ -103,6 +104,7 @@ export const actionCreators: ActionCreators = {
             if (attempt === maxAttemptsNumber) {
               throw e;
             }
+            delay(1000);
           }
         }
       } catch (e) {
