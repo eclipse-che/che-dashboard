@@ -529,11 +529,13 @@ export class DevWorkspaceClient extends WorkspaceClient {
     createdWorkspace.spec.started = false;
     if (remotes.length > 0 && createdWorkspace.spec.template.projects) {
       const gitProject = this.getGitProjectForRemotes(createdWorkspace.spec.template.projects);
-      gitProject.git!.remotes = remotes.reduce((map, remote) => {
-        map[remote.name] = remote.url;
-        return map;
-      }, {});
-      gitProject.git!.checkoutFrom = { remote: remotes[0].name };
+      if (gitProject.git) {
+        gitProject.git.remotes = remotes.reduce((map, remote) => {
+          map[remote.name] = remote.url;
+          return map;
+        }, {});
+        gitProject.git.checkoutFrom = { remote: remotes[0].name };
+      }
     }
 
     const patch = [
@@ -554,7 +556,9 @@ export class DevWorkspaceClient extends WorkspaceClient {
     if (gitProjects.length === 1) {
       return gitProjects[0];
     }
-    throw new Error('Configuring remotes only supported with one Git project exists in DevWorkspace.');
+    throw new Error(
+      'Configuring remotes only supported with one Git project exists in DevWorkspace.',
+    );
   }
 
   /**

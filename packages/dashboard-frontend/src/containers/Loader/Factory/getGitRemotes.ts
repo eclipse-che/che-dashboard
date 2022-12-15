@@ -23,10 +23,10 @@ export interface GitRemote {
  *
  * 1. Explicit name and URL
  * {{origin,https://git...},{upstream,https://git...},...}
- * 
+ *
  * 2. URLs only, name is implicit: first is origin, second is upstream, subsequent are fork1, fork2
  * {https://git...,https://git...,...}
- * 
+ *
  * @param remotes input string to parse
  * @returns parsed array of Git remotes
  */
