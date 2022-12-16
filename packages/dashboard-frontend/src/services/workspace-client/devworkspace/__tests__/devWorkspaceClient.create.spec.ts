@@ -80,7 +80,6 @@ describe('DevWorkspace client, create', () => {
         undefined,
         undefined,
         undefined,
-        [],
         {},
       );
 
@@ -104,7 +103,6 @@ describe('DevWorkspace client, create', () => {
         undefined,
         undefined,
         'eclipse/theia/next',
-        [],
         {},
       );
 

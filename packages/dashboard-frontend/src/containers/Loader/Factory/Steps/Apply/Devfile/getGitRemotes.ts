@@ -30,7 +30,7 @@ export interface GitRemote {
  * @param remotes input string to parse
  * @returns parsed array of Git remotes
  */
-export function getGitRemotes(remotes: string): GitRemote[] {
+export function getGitRemotes(remotes: string | undefined): GitRemote[] {
   if (!remotes || remotes.length === 0) {
     return [];
   }
@@ -43,9 +43,9 @@ export function getGitRemotes(remotes: string): GitRemote[] {
 
 function parseRemotes(remotes: string): string[] {
   try {
-    return JSON.parse(convertToArrayString(remotes));
+    return JSON.parse(sanitizeValue(remotes));
   } catch (e) {
-    throw `Unable to parse remotes. ${common.helpers.errors.getMessage(e)}`;
+    throw `Unable to parse remotes attribute. ${common.helpers.errors.getMessage(e)}`;
   }
 }
 
@@ -55,18 +55,21 @@ function parseRemotes(remotes: string): string[] {
  * @param str
  * @returns string representing an array
  */
-function convertToArrayString(str: string): string {
+export function sanitizeValue(str: string): string {
   return (
     str
-      .replaceAll(' ', '')
-      .replaceAll('{', '[')
-      .replaceAll('}', ']')
+      .replace(/\s/g, '')
+      .replace(/{/g, '[')
+      .replace(/}/g, ']')
       /* eslint-disable no-useless-escape */
-      .replaceAll(/(\[([^\[]))/g, '["$2')
-      .replaceAll(/(([^\]])\])/g, '$2"]')
-      .replaceAll(/(([^\]]),([^\[]))/g, '$2","$3')
+      // replace '[<string>' with '["<char>'
+      .replace(/(\[([^\["]))/g, '["$2')
+      // replace '<string>]' with '<char>"]'
+      .replace(/(([^\]"])\])/g, '$2"]')
+      // replace '<string>,<string>' with '<char>","<char>'
+      .replace(/(([^\]"]),([^\["]))/g, '$2","$3')
+    /* eslint-enable no-useless-escape */
   );
-  /* eslint-enable no-useless-escape */
 }
 
 function parseNameAndUrls(remotesArray, remotesString): GitRemote[] {
