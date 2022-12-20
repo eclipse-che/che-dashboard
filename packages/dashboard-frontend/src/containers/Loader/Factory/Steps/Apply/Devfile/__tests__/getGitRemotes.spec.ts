@@ -10,7 +10,7 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import { getGitRemotes, GitRemote, sanitizeValue } from '../Steps/Apply/Devfile/getGitRemotes';
+import { getGitRemotes, GitRemote, sanitizeValue } from '../getGitRemotes';
 
 describe('getGitRemotes functions', () => {
   describe('getGitRemotes()', () => {

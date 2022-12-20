@@ -524,7 +524,6 @@ export class DevWorkspaceClient extends WorkspaceClient {
       openVSXUrl,
     );
     createdWorkspace.spec.started = false;
-
     const patch = [
       {
         op: 'replace',
