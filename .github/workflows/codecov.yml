@@ -20,18 +20,18 @@ on:
 jobs:
 
   coverage-report:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     steps:
       -
         name: "Checkout Che Dashboard source code"
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           fetch-depth: 0
       -
         name: "Use Node.js"
-        uses: actions/setup-node@v1
+        uses: actions/setup-node@v3
         with:
-          node-version: 14.x
+          node-version: 16.x
       -
         name: "Install dependencies"
         run: yarn
@@ -40,7 +40,7 @@ jobs:
         run: yarn test:coverage
       -
         name: "Build Codecov report"
-        uses: codecov/codecov-action@v2
+        uses: codecov/codecov-action@v3
         with:
           files: ./packages/dashboard-frontend/coverage/lcov.info,./packages/dashboard-backend/coverage/lcov.info,./packages/common/coverage/lcov.info
           flags: unittests
