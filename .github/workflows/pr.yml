@@ -22,7 +22,7 @@ env:
 jobs:
 
   dash-licenses:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     if: ${{ github.base_ref == 'main' }}
     steps:
       -
@@ -41,7 +41,7 @@ jobs:
         run: yarn license:check
 
   build-and-test:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     strategy:
       matrix:
         node-version: [14.x, 16.x]
@@ -69,7 +69,7 @@ jobs:
 
   docker-build:
     needs: build-and-test
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     continue-on-error: ${{ matrix.default == false }}
     strategy:
       fail-fast: false

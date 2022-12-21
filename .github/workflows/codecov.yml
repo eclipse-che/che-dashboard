@@ -20,7 +20,7 @@ on:
 jobs:
 
   coverage-report:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     steps:
       -
         name: "Checkout Che Dashboard source code"
@@ -40,7 +40,7 @@ jobs:
         run: yarn test:coverage
       -
         name: "Build Codecov report"
-        uses: codecov/codecov-action@v3.1.1
+        uses: codecov/codecov-action@v3
         with:
           files: ./packages/dashboard-frontend/coverage/lcov.info,./packages/dashboard-backend/coverage/lcov.info,./packages/common/coverage/lcov.info
           flags: unittests
