@@ -30,8 +30,8 @@ export interface GitRemote {
  * @param remotes input string to parse
  * @returns parsed array of Git remotes
  */
-export function getGitRemotes(remotes: string | undefined): GitRemote[] {
-  if (!remotes || remotes.length === 0) {
+export function getGitRemotes(remotes: string): GitRemote[] {
+  if (remotes.length === 0) {
     return [];
   }
   const remotesArray = parseRemotes(remotes);

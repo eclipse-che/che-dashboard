@@ -14,23 +14,14 @@ import { getGitRemotes, GitRemote, sanitizeValue } from '../getGitRemotes';
 
 describe('getGitRemotes functions', () => {
   describe('getGitRemotes()', () => {
-    it('should return remotes when two values', () => {
+    it('should return remotes when one remote is provided', () => {
       const input = '{https://github.com/test1/che-dashboard}';
       const expected: GitRemote[] = [
         { name: 'origin', url: 'https://github.com/test1/che-dashboard' },
       ];
       expect(getGitRemotes(input)).toMatchObject(expected);
     });
-    it('should return remote when two values', () => {
-      const input =
-        '{https://github.com/test1/che-dashboard, https://github.com/test2/che-dashboard}';
-      const expected: GitRemote[] = [
-        { name: 'origin', url: 'https://github.com/test1/che-dashboard' },
-        { name: 'upstream', url: 'https://github.com/test2/che-dashboard' },
-      ];
-      expect(getGitRemotes(input)).toMatchObject(expected);
-    });
-    it('should return remotes when two values', () => {
+    it('should return remotes when two remotes are provided', () => {
       const input =
         '{https://github.com/test1/che-dashboard, https://github.com/test2/che-dashboard}';
       const expected: GitRemote[] = [
@@ -40,7 +31,7 @@ describe('getGitRemotes functions', () => {
       expect(getGitRemotes(input)).toMatchObject(expected);
     });
 
-    it('should return remotes when multiple values', () => {
+    it('should return remotes when three values are provided', () => {
       const input =
         '{https://github.com/test1/che-dashboard, https://github.com/test2/che-dashboard, https://github.com/test3/che-dashboard}';
       const expected: GitRemote[] = [
@@ -51,7 +42,7 @@ describe('getGitRemotes functions', () => {
       expect(getGitRemotes(input)).toMatchObject(expected);
     });
 
-    it('should return remotes when two values with remote names are provided', () => {
+    it('should return remotes when two remotes with names are provided', () => {
       const input =
         '{{test1,https://github.com/test1/che-dashboard},{test2,https://github.com/test2/che-dashboard}}';
       const expected: GitRemote[] = [
@@ -61,7 +52,7 @@ describe('getGitRemotes functions', () => {
       expect(getGitRemotes(input)).toMatchObject(expected);
     });
 
-    it('should return remotes when one value with remote name is provided', () => {
+    it('should return remotes when one remote with name is provided', () => {
       const input = '{{test1,https://github.com/test1/che-dashboard}}';
       const expected: GitRemote[] = [
         { name: 'test1', url: 'https://github.com/test1/che-dashboard' },
@@ -69,7 +60,7 @@ describe('getGitRemotes functions', () => {
       expect(getGitRemotes(input)).toMatchObject(expected);
     });
 
-    it('should return remotes when multiple values with remote names are provided', () => {
+    it('should return remotes when multiple remotes with names are provided', () => {
       const input =
         '{{test1,https://github.com/test1/che-dashboard},{test2,https://github.com/test2/che-dashboard},{test3,https://github.com/test3/che-dashboard},{test4,https://github.com/test4/che-dashboard}}';
       const expected: GitRemote[] = [
@@ -79,6 +70,14 @@ describe('getGitRemotes functions', () => {
         { name: 'test4', url: 'https://github.com/test4/che-dashboard' },
       ];
       expect(getGitRemotes(input)).toMatchObject(expected);
+    });
+
+    it('should throw error when cannot parse remotes input', () => {
+      const input =
+        '{{https://github.com/test1/che-dashboard,https://github.com/test2/che-dashboard}';
+      expect(() => {
+        getGitRemotes(input);
+      }).toThrow();
     });
   });
 

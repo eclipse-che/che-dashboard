@@ -179,8 +179,8 @@ describe('Factory Loader container, step CREATE_WORKSPACE__APPLYING_DEVFILE', ()
       );
 
       expect(devfile.projects).not.toBe(undefined);
-      expect(devfile.projects!.length).toBe(1);
-      expect(devfile.projects![0]).toMatchObject({
+      expect(devfile.projects?.length).toBe(1);
+      expect(devfile.projects?.[0]).toMatchObject({
         git: {
           checkoutFrom: {
             remote: 'origin',

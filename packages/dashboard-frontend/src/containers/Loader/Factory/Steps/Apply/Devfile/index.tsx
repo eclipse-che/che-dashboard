@@ -317,7 +317,7 @@ class StepApplyDevfile extends AbstractLoaderStep<Props, State> {
 
   private configureProjectRemotes(
     devfile: devfileApi.Devfile,
-    remotes: string | undefined,
+    remotes: string,
     isDefaultDevfile: boolean,
   ) {
     const parsedRemotes = getGitRemotes(remotes);
