@@ -31,7 +31,7 @@ describe('getGitRemotes functions', () => {
       expect(getGitRemotes(input)).toMatchObject(expected);
     });
 
-    it('should return remotes when three values are provided', () => {
+    it('should return remotes when three remotes are provided', () => {
       const input =
         '{https://github.com/test1/che-dashboard, https://github.com/test2/che-dashboard, https://github.com/test3/che-dashboard}';
       const expected: GitRemote[] = [
