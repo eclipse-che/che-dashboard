@@ -36,4 +36,9 @@ export const selectPvcStrategy = createSelector(
   state => (state.config.defaults.pvcStrategy || '') as che.WorkspaceStorageType,
 );
 
+export const selectStartTimeout = createSelector(
+  selectState,
+  state => state.config.timeouts.startTimeout || 0,
+);
+
 export const selectServerConfigError = createSelector(selectState, state => state.error);
