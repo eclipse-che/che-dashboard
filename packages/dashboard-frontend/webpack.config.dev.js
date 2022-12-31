@@ -11,26 +11,15 @@
  */
 
 const merge = require('webpack-merge');
+const loaderUtils = require('loader-utils');
 const path = require('path');
 const webpack = require('webpack');
 const CleanTerminalPlugin = require('clean-terminal-webpack-plugin');
-const HardSourceWebpackPlugin = require('hard-source-webpack-plugin');
 const StylelintPlugin = require('stylelint-webpack-plugin');
 
 const common = require('./webpack.config.common');
 
 module.exports = (env = {}) => {
-  const proxyTarget = env.server;
-  if (!proxyTarget) {
-    throw new Error('Che server URL is not set. Argument "--env.server=" is mandatory in development mode.');
-  }
-  const headers = {
-    origin: proxyTarget,
-  };
-  if (env.token) {
-    headers['Authorization'] = `Bearer ${env.token}`;
-  }
-
   return merge(common(env), {
     mode: 'development',
     module: {
@@ -38,8 +27,13 @@ module.exports = (env = {}) => {
         {
           enforce: 'pre',
           test: /\.(tsx|ts|jsx|js)$/,
-          loader: 'source-map-loader',
-          include: path.resolve(__dirname, 'src'),
+          use: [{
+            loader: 'source-map-loader'
+          }],
+          include: [
+            path.resolve(__dirname, '../common'),
+            path.resolve(__dirname, 'src'),
+          ],
         },
         {
           test: /\.css$/,
@@ -51,6 +45,17 @@ module.exports = (env = {}) => {
                 modules: {
                   auto: true,
                   localIdentName: '[path][name]__[local]',
+                  getLocalIdent: (context, localIdentName, localName, options) => {
+                    if (localName.startsWith('pf-')) {
+                      // preserve PatternFly class names
+                      return localName;
+                    }
+                    return loaderUtils
+                      .interpolateName(context, localIdentName, options)
+                      .replace(/[<>:"/\\|?*.]/g, '-')
+                      .replace('[local]', localName);
+                  },
+                  context: path.resolve(__dirname),
                 },
               },
             },
@@ -66,7 +71,6 @@ module.exports = (env = {}) => {
       }),
       new webpack.HotModuleReplacementPlugin(),
       new CleanTerminalPlugin(),
-      new HardSourceWebpackPlugin(),
       new StylelintPlugin({
         context: path.join(__dirname, 'src'),
         emitWarning: true,
@@ -84,33 +88,6 @@ module.exports = (env = {}) => {
       splitChunks: false,
     },
     devtool: 'eval-cheap-module-source-map',
-    devServer: {
-      clientLogLevel: 'debug',
-      contentBase: path.join(__dirname, 'assets'),
-      contentBasePublicPath: '/assets/',
-      disableHostCheck: true,
-      host: 'localhost',
-      hot: true,
-      open: false,
-      port: 3000,
-      stats: 'errors-warnings',
-      // writeToDisk: true,
-      proxy: {
-        '/api/websocket': {
-          target: proxyTarget,
-          ws: true,
-          secure: false,
-          changeOrigin: true,
-          headers: headers
-        },
-        '/api': {
-          target: proxyTarget,
-          secure: false,
-          changeOrigin: true,
-          headers: headers,
-        },
-      },
-    },
     watchOptions: {
       aggregateTimeout: 1000,
       ignored: /node_modules/,

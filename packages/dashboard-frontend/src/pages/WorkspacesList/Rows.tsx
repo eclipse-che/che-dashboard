@@ -11,33 +11,34 @@
  */
 
 import React from 'react';
-import { History } from 'history';
+import { Link } from 'react-router-dom';
+import { Location } from 'history';
 import { IRow, SortByDirection } from '@patternfly/react-table';
+import { Button } from '@patternfly/react-core';
 import WorkspaceIndicator from '../../components/Workspace/Indicator';
 import { formatDate, formatRelativeDate } from '../../services/helpers/date';
-import { buildDetailsLocation, toHref, buildIdeLoaderLocation } from '../../services/helpers/location';
-import { isWorkspaceV1, Workspace } from '../../services/workspaceAdapter';
-import { IDevWorkspaceDevfile } from '@eclipse-che/devworkspace-client';
-import { DevWorkspaceStatus } from '../../services/helpers/types';
+import { buildDetailsLocation, buildIdeLoaderLocation } from '../../services/helpers/location';
+import { isCheWorkspace, Workspace } from '../../services/workspace-adapter';
+import devfileApi from '../../services/devfileApi';
+import { DevWorkspaceStatus, WorkspaceDetailsTab } from '../../services/helpers/types';
 
 export interface RowData extends IRow {
   props: {
-    workspaceId: string;
+    workspaceUID: string;
   };
 }
 
 export function buildRows(
-  history: History,
   workspaces: Workspace[],
   toDelete: string[],
   filtered: string[],
   selected: string[],
-  sortBy: { index: number, direction: SortByDirection }
+  sortBy: { index: number; direction: SortByDirection },
 ): RowData[] {
   const rows: RowData[] = [];
   workspaces
     // skip workspaces that are not match a filter
-    .filter(workspace => filtered.includes(workspace.id))
+    .filter(workspace => filtered.includes(workspace.uid))
     .sort((workspaceA, workspaceB) => {
       if (sortBy.index === 1) {
         const nameA = workspaceA.name || '';
@@ -52,17 +53,25 @@ export function buildRows(
       return 0;
     })
     .forEach(workspace => {
-      const isSelected = selected.includes(workspace.id);
-      const isDeleted = toDelete.includes(workspace.id);
+      const isSelected = selected.includes(workspace.uid);
+      const isDeleted = toDelete.includes(workspace.uid);
 
-      const locationToDetails = buildDetailsLocation(workspace);
-      const linkToDetails = toHref(history, locationToDetails);
+      const overviewPageLocation = buildDetailsLocation(workspace);
+      const devfilePageLocation = buildDetailsLocation(workspace, WorkspaceDetailsTab.DEVFILE);
 
-      const locationToIde = buildIdeLoaderLocation(workspace);
-      const linkToIde = toHref(history, locationToIde);
+      const ideLoaderLocation = buildIdeLoaderLocation(workspace);
 
       try {
-        rows.push(buildRow(workspace, isSelected, isDeleted, linkToDetails, linkToIde));
+        rows.push(
+          buildRow(
+            workspace,
+            isSelected,
+            isDeleted,
+            overviewPageLocation,
+            devfilePageLocation,
+            ideLoaderLocation,
+          ),
+        );
       } catch (e) {
         console.warn('Skip workspace: ', e);
       }
@@ -83,8 +92,9 @@ export function buildRow(
   workspace: Workspace,
   isSelected: boolean,
   isDeleted: boolean,
-  linkToDetails: string,
-  linkToIde: string
+  overviewPageLocation: Location,
+  devfilePageLocation: Location,
+  ideLoaderLocation: Location,
 ): RowData {
   if (!workspace.name) {
     throw new Error('Empty workspace name.');
@@ -94,17 +104,19 @@ export function buildRow(
   }
 
   /* workspace status indicator */
-  const statusIndicator = (<WorkspaceIndicator status={workspace.status} />);
+  const statusIndicator = <WorkspaceIndicator status={workspace.status} />;
   /* workspace name */
   const details = (
     <span>
       {statusIndicator}
-      <a href={linkToDetails}>{workspace.name}</a>
+      <Button variant="link" component={props => <Link {...props} to={overviewPageLocation} />}>
+        {workspace.name}
+      </Button>
     </span>
   );
 
   /* last modified time */
-  const lastModifiedMs = workspace.updated ? workspace.updated : workspace.created;
+  const lastModifiedMs = workspace.updated;
   let lastModifiedDate = '';
   if (lastModifiedMs) {
     const nowMs = Date.now();
@@ -118,27 +130,63 @@ export function buildRow(
 
   /* projects list */
   const projects: string[] = [];
-  if (isWorkspaceV1(workspace.ref)) {
-    const devfile = workspace.devfile as che.WorkspaceDevfile;
-    (devfile.projects || [])
+  if (isCheWorkspace(workspace.ref)) {
+    const workspaceProjects = (workspace.devfile as che.WorkspaceDevfile).projects;
+    (workspaceProjects || [])
       .map(project => project.name || project.source?.location)
       .filter((projectName?: string) => projectName)
       .forEach((projectName: string) => projects.push(projectName));
   } else {
-    const devfile = workspace.devfile as IDevWorkspaceDevfile;
-    (devfile.projects || [])
+    const workspaceProjects = (workspace.ref as devfileApi.DevWorkspace).spec.template.projects;
+    (workspaceProjects || [])
       .map(project => project.name || project.git?.remotes?.origin)
-      .filter((projectName?: string) => projectName)
+      .filter((projectName?: string): projectName is string => {
+        return typeof projectName === 'string' && projectName !== '';
+      })
       .forEach((projectName: string) => projects.push(projectName));
   }
   const projectsList = projects.join(', \n') || '-';
 
-  /* Open IDE link */
-  let open: React.ReactElement | string;
-  if (isDeleted || workspace.status === DevWorkspaceStatus.TERMINATING) {
-    open = 'deleting...';
+  let action: React.ReactElement | string;
+  if (workspace.isDeprecated) {
+    action = (
+      <Button
+        variant="link"
+        isInline
+        isSmall
+        component={props => <Link {...props} to={devfilePageLocation} />}
+      >
+        Convert
+      </Button>
+    );
+  } else if (isDeleted || workspace.status === DevWorkspaceStatus.TERMINATING) {
+    action = 'deleting...';
   } else {
-    open = <a href={linkToIde}>Open</a>;
+    if (workspace.isDevWorkspace) {
+      action = (
+        <Button
+          variant="link"
+          isInline
+          isSmall
+          component={props => (
+            <Link {...props} to={ideLoaderLocation} rel="noreferrer" target={workspace.uid} />
+          )}
+        >
+          Open
+        </Button>
+      );
+    } else {
+      action = (
+        <Button
+          variant="link"
+          isInline
+          isSmall
+          component={props => <Link {...props} to={ideLoaderLocation} />}
+        >
+          Open
+        </Button>
+      );
+    }
   }
 
   return {
@@ -149,25 +197,25 @@ export function buildRow(
       },
       {
         title: lastModifiedDate,
-        key: 'last-modified-time'
+        key: 'last-modified-time',
       },
       {
         title: projectsList,
-        key: 'projects-list'
+        key: 'projects-list',
       },
       {
         // Cell is visible only on Sm
-        title: open,
-        key: 'open-ide-visible-sm'
+        title: action,
+        key: 'open-ide-visible-sm',
       },
       {
         // Cell is hidden only on Sm
-        title: open,
+        title: action,
         key: 'open-ide-hidden-sm',
       },
     ],
     props: {
-      workspaceId: workspace.id,
+      workspaceUID: workspace.uid,
     },
     selected: isSelected || isDeleted,
     disableSelection: isDeleted,

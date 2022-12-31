@@ -2,9 +2,8 @@ This file lists dependencies that do not need CQs or auto-detection does not wor
 
 | Packages | Resolved CQs |
 | --- | --- |
-| `@eclipse-che/workspace-client@0.0.1-1622804813` | N/A |
-| `@eclipse-che/devworkspace-client@0.0.1-1622804813` | N/A |
-| `@eclipse-che/@devfile/api@0.0.1-1622573075` | N/A |
-| `@eclipse-che/dashboard-backend@7.34.0-SNAPSHOT` | N/A |
-| `@eclipse-che/dashboard-frontend@7.34.0-SNAPSHOT` | N/A |
-| `@eclipse-che/dashboard-static-server@7.34.0-SNAPSHOT` | N/A |
+| `jose@2.0.6` | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/jose/2.0.6) |
+| `@hapi/hoek@8.5.1` | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@hapi/hoek/8.5.1) |
+| `@patternfly/react-icons@4.49.19` | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@patternfly/react-icons/4.49.19) |
+| `@patternfly/react-table@4.67.19` | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@patternfly/react-table/4.67.19) |
+| `fastify@3.29.1` | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/fastify/3.29.1) |

@@ -11,14 +11,22 @@
  */
 
 import { Action, Reducer } from 'redux';
+import common from '@eclipse-che/common';
 import { AppThunk } from '..';
 import { fetchRegistryMetadata, fetchDevfile } from '../../services/registry/devfiles';
-import { createState } from '../helpers';
+import { createObject } from '../helpers';
 import { container } from '../../inversify.config';
-import { CheWorkspaceClient } from '../../services/workspace-client/cheWorkspaceClient';
-import { getErrorMessage } from '../../services/helpers/getErrorMessage';
+import { CheWorkspaceClient } from '../../services/workspace-client/cheworkspace/cheWorkspaceClient';
+import { selectPlugins } from '../Plugins/chePlugins/selectors';
+import { isDevworkspacesEnabled } from '../../services/helpers/devworkspace';
+import fetchAndUpdateDevfileSchema from './fetchAndUpdateDevfileSchema';
+import devfileApi from '../../services/devfileApi';
+import { fetchResources, loadResourcesContent } from '../../services/registry/resources';
 
 const WorkspaceClient = container.get(CheWorkspaceClient);
+export const DEFAULT_REGISTRY = '/dashboard/devfile-registry/';
+
+export type DevWorkspaceResources = [devfileApi.DevWorkspace, devfileApi.DevWorkspaceTemplate];
 
 // This state defines the type of data maintained in the Redux store.
 export interface State {
@@ -39,65 +47,109 @@ export interface State {
       error?: string;
     };
   };
+  devWorkspaceResources: {
+    [location: string]: {
+      resources?: DevWorkspaceResources;
+      error?: string;
+    };
+  };
 
   // current filter value
   filter: string;
 }
 
-interface RequestRegistryMetadataAction {
-  type: 'REQUEST_REGISTRY_METADATA';
+export enum Type {
+  REQUEST_REGISTRY_METADATA = 'REQUEST_REGISTRY_METADATA',
+  RECEIVE_REGISTRY_METADATA = 'RECEIVE_REGISTRY_METADATA',
+  RECEIVE_REGISTRY_ERROR = 'RECEIVE_REGISTRY_ERROR',
+  REQUEST_DEVFILE = 'REQUEST_DEVFILE',
+  RECEIVE_DEVFILE = 'RECEIVE_DEVFILE',
+  REQUEST_RESOURCES = 'REQUEST_RESOURCES',
+  RECEIVE_RESOURCES = 'RECEIVE_RESOURCES',
+  RECEIVE_RESOURCES_ERROR = 'RECEIVE_RESOURCES_ERROR',
+  REQUEST_SCHEMA = 'REQUEST_SCHEMA',
+  RECEIVE_SCHEMA = 'RECEIVE_SCHEMA',
+  RECEIVE_SCHEMA_ERROR = 'RECEIVE_SCHEMA_ERROR',
+  UPDATE_PREBUILT_TEMPLATES = 'UPDATE_PREBUILT_TEMPLATES',
+  SET_FILTER = 'SET_FILTER',
+  CLEAR_FILTER = 'CLEAR_FILTER',
 }
 
-interface ReceiveRegistryMetadataAction {
-  type: 'RECEIVE_REGISTRY_METADATA';
+export interface RequestRegistryMetadataAction {
+  type: Type.REQUEST_REGISTRY_METADATA;
+}
+
+export interface ReceiveRegistryMetadataAction {
+  type: Type.RECEIVE_REGISTRY_METADATA;
   url: string;
   metadata: che.DevfileMetaData[];
 }
 
-interface ReceiveRegistryErrorAction {
-  type: 'RECEIVE_REGISTRY_ERROR';
+export interface ReceiveRegistryErrorAction {
+  type: Type.RECEIVE_REGISTRY_ERROR;
   url: string;
   error: string;
 }
 
-interface RequestDevfileAction {
-  type: 'REQUEST_DEVFILE';
+export interface RequestDevfileAction {
+  type: Type.REQUEST_DEVFILE;
 }
 
-interface ReceiveDevfileAction {
-  type: 'RECEIVE_DEVFILE';
+export interface ReceiveDevfileAction {
+  type: Type.RECEIVE_DEVFILE;
   url: string;
   devfile: string;
 }
 
-interface RequestSchemaAction {
-  type: 'REQUEST_SCHEMA';
+export interface RequestResourcesAction {
+  type: Type.REQUEST_RESOURCES;
 }
 
-interface ReceiveSchemaAction {
-  type: 'RECEIVE_SCHEMA';
-  schema: any;
+export interface ReceiveResourcesAction {
+  type: Type.RECEIVE_RESOURCES;
+  url: string;
+  devWorkspace: devfileApi.DevWorkspace;
+  devWorkspaceTemplate: devfileApi.DevWorkspaceTemplate;
 }
 
-interface ReceiveSchemaErrorAction {
-  type: 'RECEIVE_SCHEMA_ERROR';
+export interface ReceiveResourcesErrorAction {
+  type: Type.RECEIVE_RESOURCES_ERROR;
+  url: string;
   error: string;
 }
 
-interface SetFilterValue extends Action {
-  type: 'SET_FILTER',
+export interface RequestSchemaAction {
+  type: Type.REQUEST_SCHEMA;
+}
+
+export interface ReceiveSchemaAction {
+  type: Type.RECEIVE_SCHEMA;
+  schema: any;
+}
+
+export interface ReceiveSchemaErrorAction {
+  type: Type.RECEIVE_SCHEMA_ERROR;
+  error: string;
+}
+
+export interface SetFilterValue extends Action {
+  type: Type.SET_FILTER;
   value: string;
 }
 
-interface ClearFilterValue extends Action {
-  type: 'CLEAR_FILTER',
+export interface ClearFilterValue extends Action {
+  type: Type.CLEAR_FILTER;
 }
 
-type KnownAction = RequestRegistryMetadataAction
+export type KnownAction =
+  | RequestRegistryMetadataAction
   | ReceiveRegistryMetadataAction
   | ReceiveRegistryErrorAction
   | RequestDevfileAction
   | ReceiveDevfileAction
+  | RequestResourcesAction
+  | ReceiveResourcesAction
+  | ReceiveResourcesErrorAction
   | RequestSchemaAction
   | ReceiveSchemaAction
   | ReceiveSchemaErrorAction
@@ -106,7 +158,8 @@ type KnownAction = RequestRegistryMetadataAction
 
 export type ActionCreators = {
   requestRegistriesMetadata: (location: string) => AppThunk<KnownAction, Promise<void>>;
-  requestDevfile: (Location: string) => AppThunk<KnownAction, Promise<string>>;
+  requestDevfile: (location: string) => AppThunk<KnownAction, Promise<string>>;
+  requestResources: (resourceUrl: string) => AppThunk<KnownAction, Promise<void>>;
   requestJsonSchema: () => AppThunk<KnownAction, any>;
 
   setFilter: (value: string) => AppThunk<SetFilterValue, void>;
@@ -114,99 +167,196 @@ export type ActionCreators = {
 };
 
 export const actionCreators: ActionCreators = {
-
   /**
    * Request devfile metadata from available registries. `registryUrls` is space-separated list of urls.
    */
-  requestRegistriesMetadata: (registryUrls: string): AppThunk<KnownAction, Promise<void>> => async (dispatch): Promise<void> => {
-    dispatch({ type: 'REQUEST_REGISTRY_METADATA' });
-    const promises = registryUrls
-      .split(' ')
-      .map(async url => {
+  requestRegistriesMetadata:
+    (registryUrls: string): AppThunk<KnownAction, Promise<void>> =>
+    async (dispatch): Promise<void> => {
+      dispatch({ type: Type.REQUEST_REGISTRY_METADATA });
+
+      const registries: string[] = registryUrls.split(' ');
+      if (DEFAULT_REGISTRY) {
+        if (DEFAULT_REGISTRY.startsWith('http')) {
+          registries.push(DEFAULT_REGISTRY);
+        } else {
+          registries.push(new URL(DEFAULT_REGISTRY, window.location.origin).href);
+        }
+      }
+      const promises = registries.map(async url => {
         try {
           const metadata = await fetchRegistryMetadata(url);
+          if (!Array.isArray(metadata) || metadata.length === 0) {
+            return;
+          }
           dispatch({
-            type: 'RECEIVE_REGISTRY_METADATA',
+            type: Type.RECEIVE_REGISTRY_METADATA,
             url,
             metadata,
           });
-        } catch (error) {
+        } catch (e) {
+          const error = common.helpers.errors.getMessage(e);
           dispatch({
-            type: 'RECEIVE_REGISTRY_ERROR',
+            type: Type.RECEIVE_REGISTRY_ERROR,
             url,
             error,
           });
           throw error;
         }
       });
-    const results = await Promise.allSettled(promises);
-    results.forEach(result => {
-      if (result.status === 'rejected') {
-        throw result.reason;
-      }
-    });
-  },
-
-  requestDevfile: (url: string): AppThunk<KnownAction, Promise<string>> => async (dispatch): Promise<string> => {
-    dispatch({ type: 'REQUEST_DEVFILE' });
-    try {
-      const devfile = await fetchDevfile(url);
-      dispatch({ type: 'RECEIVE_DEVFILE', devfile, url });
-      return devfile;
-    } catch (e) {
-      throw new Error(`Failed to request a devfile from URL: ${url}, \n` + e);
-    }
-  },
-
-  requestJsonSchema: (): AppThunk<KnownAction, any> => async (dispatch, getState): Promise<any> => {
-    dispatch({ type: 'REQUEST_SCHEMA' });
-    try {
-      const state = getState();
-      const schemav1 = await WorkspaceClient.restApiClient.getDevfileSchema('1.0.0');
-      let schema = schemav1;
-
-      const cheDevworkspaceEnabled = state.workspacesSettings.settings['che.devworkspaces.enabled'] === 'true';
-      if (cheDevworkspaceEnabled) {
-        // This makes $ref resolve against the first schema, otherwise the yaml language server will report errors
-        const patchedJSONString = JSON.stringify(schemav1).replaceAll('#/definitions', '#/oneOf/0/definitions');
-        const parsedSchemaV1 = JSON.parse(patchedJSONString);
-
-        const schemav200 = await WorkspaceClient.restApiClient.getDevfileSchema('2.0.0');
-        const schemav210 = await WorkspaceClient.restApiClient.getDevfileSchema('2.1.0');
-        const schemav220alpha = await WorkspaceClient.restApiClient.getDevfileSchema('2.2.0');
-        schema = {
-          oneOf: [
-            parsedSchemaV1,
-            schemav200,
-            schemav210,
-            schemav220alpha
-          ]
-        };
-      }
-
-      dispatch({
-        type: 'RECEIVE_SCHEMA',
-        schema,
+      const results = await Promise.allSettled(promises);
+      results.forEach(result => {
+        if (result.status === 'rejected') {
+          throw result.reason;
+        }
       });
-      return schema;
-    } catch (e) {
-      const errorMessage = 'Failed to request devfile JSON schema, reason: ' + getErrorMessage(e);
-      dispatch({
-        type: 'RECEIVE_SCHEMA_ERROR',
-        error: errorMessage,
-      });
-      throw errorMessage;
-    }
-  },
+    },
 
-  setFilter: (value: string): AppThunk<SetFilterValue, void> => dispatch => {
-    dispatch({ type: 'SET_FILTER', value });
-  },
+  requestDevfile:
+    (url: string): AppThunk<KnownAction, Promise<string>> =>
+    async (dispatch): Promise<string> => {
+      dispatch({ type: Type.REQUEST_DEVFILE });
+      try {
+        const devfile = await fetchDevfile(url);
+        dispatch({ type: Type.RECEIVE_DEVFILE, devfile, url });
+        return devfile;
+      } catch (e) {
+        throw new Error(`Failed to request a devfile from URL: ${url}, \n` + e);
+      }
+    },
+
+  requestResources:
+    (resourcesUrl: string): AppThunk<KnownAction, Promise<void>> =>
+    async (dispatch): Promise<void> => {
+      dispatch({ type: Type.REQUEST_RESOURCES });
+
+      try {
+        const resourcesContent = await fetchResources(resourcesUrl);
+        const resources = loadResourcesContent(resourcesContent);
+
+        const devWorkspace = resources.find(
+          resource => resource.kind === 'DevWorkspace',
+        ) as devfileApi.DevWorkspace;
+        if (!devWorkspace) {
+          throw new Error('Failed to find a devworkspace in prebuilt resources.');
+        }
+        const devWorkspaceTemplate = resources.find(
+          resource => resource.kind === 'DevWorkspaceTemplate',
+        ) as devfileApi.DevWorkspaceTemplate;
+        if (!devWorkspaceTemplate) {
+          throw new Error('Failed to find a devworkspaceTemplate in prebuilt resources.');
+        }
+
+        dispatch({
+          type: Type.RECEIVE_RESOURCES,
+          url: resourcesUrl,
+          devWorkspace,
+          devWorkspaceTemplate,
+        });
+      } catch (e) {
+        const message =
+          'Failed to fetch devworkspace resources. ' + common.helpers.errors.getMessage(e);
+        dispatch({
+          type: Type.RECEIVE_RESOURCES_ERROR,
+          url: resourcesUrl,
+          error: message,
+        });
+        throw new Error(message);
+      }
+    },
+
+  requestJsonSchema:
+    (): AppThunk<KnownAction, any> =>
+    async (dispatch, getState): Promise<any> => {
+      dispatch({ type: Type.REQUEST_SCHEMA });
+      try {
+        const state = getState();
+        const schemav1 = await WorkspaceClient.restApiClient.getDevfileSchema<{
+          [key: string]: any;
+        }>('1.0.0');
+        const items = selectPlugins(state);
+        const components = schemav1?.properties?.components;
+        if (components) {
+          const mountSources = components.items.properties.mountSources;
+          // mount sources is specific only for some of component types but always appears
+          // patch schema and remove default value for boolean mount sources to avoid their appearing during the completion
+          if (mountSources && mountSources.default === 'false') {
+            delete mountSources.default;
+          }
+          schemav1.additionalProperties = true;
+          if (!components.defaultSnippets) {
+            components.defaultSnippets = [];
+          }
+          const pluginsId: string[] = [];
+          items.forEach((item: che.Plugin) => {
+            const id = `${item.publisher}/${item.name}/latest`;
+            if (pluginsId.indexOf(id) === -1 && item.type !== 'Che Editor') {
+              pluginsId.push(id);
+              components.defaultSnippets.push({
+                label: item.displayName,
+                description: item.description,
+                body: { id: id, type: 'chePlugin' },
+              });
+            } else {
+              pluginsId.push(item.id);
+            }
+          });
+          if (components.items && components.items.properties) {
+            if (!components.items.properties.id) {
+              components.items.properties.id = {
+                type: 'string',
+                description: 'Plugin/Editor id.',
+              };
+            }
+            components.items.properties.id.examples = pluginsId;
+          }
+        }
+
+        let schema = schemav1;
+
+        const cheDevworkspaceEnabled = isDevworkspacesEnabled(state.workspacesSettings.settings);
+        if (cheDevworkspaceEnabled) {
+          // This makes $ref resolve against the first schema, otherwise the yaml language server will report errors
+          const patchedJSONString = JSON.stringify(schemav1).replace(
+            /#\/definitions/g,
+            '#/oneOf/0/definitions',
+          );
+          const parsedSchemaV1 = JSON.parse(patchedJSONString);
+
+          const schemav200 = await fetchAndUpdateDevfileSchema(WorkspaceClient, '2.0.0');
+          const schemav210 = await fetchAndUpdateDevfileSchema(WorkspaceClient, '2.1.0');
+          const schemav220 = await fetchAndUpdateDevfileSchema(WorkspaceClient, '2.2.0');
+
+          schema = {
+            oneOf: [parsedSchemaV1, schemav200, schemav210, schemav220],
+          };
+        }
+
+        dispatch({
+          type: Type.RECEIVE_SCHEMA,
+          schema,
+        });
+        return schema;
+      } catch (e) {
+        const errorMessage =
+          'Failed to request devfile JSON schema, reason: ' + common.helpers.errors.getMessage(e);
+        dispatch({
+          type: Type.RECEIVE_SCHEMA_ERROR,
+          error: errorMessage,
+        });
+        throw errorMessage;
+      }
+    },
+
+  setFilter:
+    (value: string): AppThunk<SetFilterValue, void> =>
+    dispatch => {
+      dispatch({ type: Type.SET_FILTER, value });
+    },
 
   clearFilter: (): AppThunk<ClearFilterValue, void> => dispatch => {
-    dispatch({ type: 'CLEAR_FILTER' });
-  }
-
+    dispatch({ type: Type.CLEAR_FILTER });
+  },
 };
 
 const unloadedState: State = {
@@ -214,42 +364,50 @@ const unloadedState: State = {
   registries: {},
   devfiles: {},
   schema: {},
+  devWorkspaceResources: {},
 
   filter: '',
 };
 
-export const reducer: Reducer<State> = (state: State | undefined, incomingAction: Action): State => {
+export const reducer: Reducer<State> = (
+  state: State | undefined,
+  incomingAction: Action,
+): State => {
   if (state === undefined) {
     return unloadedState;
   }
 
   const action = incomingAction as KnownAction;
   switch (action.type) {
-    case 'REQUEST_REGISTRY_METADATA':
-      return createState(state, {
+    case Type.REQUEST_REGISTRY_METADATA:
+      return createObject(state, {
         isLoading: true,
         registries: {},
       });
-    case 'REQUEST_SCHEMA':
-      return createState(state, {
+    case Type.REQUEST_SCHEMA:
+      return createObject(state, {
         isLoading: true,
         schema: {},
       });
-    case 'REQUEST_DEVFILE':
-      return createState(state, {
+    case Type.REQUEST_DEVFILE:
+      return createObject(state, {
         isLoading: true,
       });
-    case 'RECEIVE_REGISTRY_METADATA':
-      return createState(state, {
+    case Type.REQUEST_RESOURCES:
+      return createObject(state, {
+        isLoading: true,
+      });
+    case Type.RECEIVE_REGISTRY_METADATA:
+      return createObject(state, {
         isLoading: false,
-        registries: {
+        registries: createObject(state.registries, {
           [action.url]: {
             metadata: action.metadata,
           },
-        },
+        }),
       });
-    case 'RECEIVE_REGISTRY_ERROR':
-      return createState(state, {
+    case Type.RECEIVE_REGISTRY_ERROR:
+      return createObject(state, {
         isLoading: false,
         registries: {
           [action.url]: {
@@ -257,41 +415,58 @@ export const reducer: Reducer<State> = (state: State | undefined, incomingAction
           },
         },
       });
-    case 'RECEIVE_DEVFILE':
-      return createState(state, {
+    case Type.RECEIVE_DEVFILE:
+      return createObject(state, {
         isLoading: false,
         devfiles: {
           [action.url]: {
             content: action.devfile,
-          }
-        }
+          },
+        },
       });
-    case 'RECEIVE_SCHEMA':
-      return createState(state, {
+    case Type.RECEIVE_RESOURCES:
+      return createObject(state, {
+        isLoading: false,
+        devWorkspaceResources: {
+          [action.url]: {
+            resources: [action.devWorkspace, action.devWorkspaceTemplate],
+          },
+        },
+      });
+    case Type.RECEIVE_RESOURCES_ERROR:
+      return createObject(state, {
+        isLoading: false,
+        devWorkspaceResources: {
+          [action.url]: {
+            error: action.error,
+          },
+        },
+      });
+    case Type.RECEIVE_SCHEMA:
+      return createObject(state, {
         isLoading: false,
         schema: {
           schema: action.schema,
         },
       });
-    case 'RECEIVE_SCHEMA_ERROR':
-      return createState(state, {
+    case Type.RECEIVE_SCHEMA_ERROR:
+      return createObject(state, {
         isLoading: false,
         schema: {
           error: action.error,
         },
       });
-    case 'SET_FILTER': {
-      return createState(state, {
+    case Type.SET_FILTER: {
+      return createObject(state, {
         filter: action.value,
       });
     }
-    case 'CLEAR_FILTER': {
-      return createState(state, {
+    case Type.CLEAR_FILTER: {
+      return createObject(state, {
         filter: '',
       });
     }
     default:
       return state;
   }
-
 };

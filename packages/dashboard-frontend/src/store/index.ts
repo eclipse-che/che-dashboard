@@ -12,11 +12,14 @@
 
 import { Action } from 'redux';
 import { ThunkAction } from 'redux-thunk';
+import * as BannerAlertStore from './BannerAlert';
 import * as BrandingStore from './Branding';
+import * as ClusterInfo from './ClusterInfo';
+import * as ClusterConfig from './ClusterConfig';
 import * as DevfileRegistriesStore from './DevfileRegistries';
-import * as FactoryResolver from './FactoryResolver';
+import * as FactoryResolverStore from './FactoryResolver';
 import * as InfrastructureNamespacesStore from './InfrastructureNamespaces';
-import * as Plugins from './Plugins/chePlugins';
+import * as PluginsStore from './Plugins/chePlugins';
 import * as UserPreferences from './UserPreferences';
 import * as WorkspacesStore from './Workspaces';
 import * as CheWorkspacesStore from './Workspaces/cheWorkspaces';
@@ -25,10 +28,16 @@ import * as UserStore from './User';
 import * as UserProfileStore from './UserProfile';
 import * as DwPluginsStore from './Plugins/devWorkspacePlugins';
 import * as WorkspacesSettingsStore from './Workspaces/Settings';
+import * as CheDockerConfigStore from './DockerConfig/che';
+import * as DwDockerConfigStore from './DockerConfig/dw';
+import * as DwServerConfigStore from './ServerConfig';
 
 // the top-level state object
 export interface AppState {
+  bannerAlert: BannerAlertStore.State;
   branding: BrandingStore.State;
+  clusterInfo: ClusterInfo.State;
+  clusterConfig: ClusterConfig.State;
   devfileRegistries: DevfileRegistriesStore.State;
   infrastructureNamespaces: InfrastructureNamespacesStore.State;
   user: UserStore.State;
@@ -36,37 +45,38 @@ export interface AppState {
   workspaces: WorkspacesStore.State;
   cheWorkspaces: CheWorkspacesStore.State;
   devWorkspaces: DevWorkspacesStore.State;
-  plugins: Plugins.State;
-  factoryResolver: FactoryResolver.State;
+  plugins: PluginsStore.State;
+  factoryResolver: FactoryResolverStore.State;
   userPreferences: UserPreferences.State;
   dwPlugins: DwPluginsStore.State;
-  workspacesSettings: WorkspacesSettingsStore.State,
+  workspacesSettings: WorkspacesSettingsStore.State;
+  cheDockerConfig: CheDockerConfigStore.State;
+  dwDockerConfig: DwDockerConfigStore.State;
+  dwServerConfig: DwServerConfigStore.State;
 }
 
 export const reducers = {
+  bannerAlert: BannerAlertStore.reducer,
   workspaces: WorkspacesStore.reducer,
   cheWorkspaces: CheWorkspacesStore.reducer,
   devWorkspaces: DevWorkspacesStore.reducer,
   devfileRegistries: DevfileRegistriesStore.reducer,
   branding: BrandingStore.reducer,
+  clusterInfo: ClusterInfo.reducer,
+  clusterConfig: ClusterConfig.reducer,
   user: UserStore.reducer,
   userProfile: UserProfileStore.reducer,
   infrastructureNamespaces: InfrastructureNamespacesStore.reducer,
-  plugins: Plugins.reducer,
-  factoryResolver: FactoryResolver.reducer,
+  plugins: PluginsStore.reducer,
+  factoryResolver: FactoryResolverStore.reducer,
   userPreferences: UserPreferences.reducer,
   dwPlugins: DwPluginsStore.reducer,
   workspacesSettings: WorkspacesSettingsStore.reducer,
+  cheDockerConfig: CheDockerConfigStore.reducer,
+  dwDockerConfig: DwDockerConfigStore.reducer,
+  dwServerConfig: DwServerConfigStore.reducer,
 };
 
-// this type can be used as a hint on action creators so that its 'dispatch' and 'getState' params are
-// correctly typed to match your store.
-/**
- * @deprecated
- */
-export interface AppThunkAction<TAction> {
-  (dispatch: (action: TAction) => void, getState: () => AppState): void;
-}
 export type AppThunk<ActionType extends Action, ReturnType = void> = ThunkAction<
   ReturnType,
   AppState,

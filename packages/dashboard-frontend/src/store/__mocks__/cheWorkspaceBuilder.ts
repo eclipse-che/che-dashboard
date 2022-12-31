@@ -18,7 +18,7 @@ export const CHE_DEVFILE_STUB: che.WorkspaceDevfile = {
   apiVersion: '1.0.0',
   metadata: {
     name: 'wksp-' + getRandomString(4),
-  }
+  },
 } as che.WorkspaceDevfile;
 
 export const CHE_RUNTIME_STUB: che.WorkspaceRuntime = {
@@ -44,11 +44,14 @@ export const CHE_RUNTIME_STUB: che.WorkspaceRuntime = {
 };
 
 export class CheWorkspaceBuilder {
-
   private workspace: che.Workspace = {
     id: getRandomString(4),
+    attributes: {
+      infrastructureNamespace: 'che',
+    } as che.WorkspaceAttributes,
     status: WorkspaceStatus.STOPPED,
-    devfile: CHE_DEVFILE_STUB,
+    namespace: 'admin',
+    devfile: cloneDeep(CHE_DEVFILE_STUB),
   };
 
   withId(id: string): CheWorkspaceBuilder {
@@ -62,7 +65,7 @@ export class CheWorkspaceBuilder {
   }
 
   withAttributes(attributes: che.WorkspaceAttributes): CheWorkspaceBuilder {
-    this.workspace.attributes = cloneDeep(attributes);
+    this.workspace.attributes = Object.assign({}, this.workspace.attributes, attributes);
     return this;
   }
 
@@ -83,6 +86,10 @@ export class CheWorkspaceBuilder {
 
   withNamespace(namespace: string): CheWorkspaceBuilder {
     this.workspace.namespace = namespace;
+    if (!this.workspace.attributes) {
+      this.workspace.attributes = {} as che.WorkspaceAttributes;
+    }
+    this.workspace.attributes.infrastructureNamespace = namespace;
     return this;
   }
 

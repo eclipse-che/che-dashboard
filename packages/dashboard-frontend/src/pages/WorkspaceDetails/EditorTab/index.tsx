@@ -12,38 +12,44 @@
 
 import React from 'react';
 import {
-  Button,
-  Text,
-  TextContent,
   Alert,
   AlertActionCloseButton,
-  AlertVariant,
   AlertGroup,
-  Modal,
-  ModalVariant,
+  AlertVariant,
+  Button,
   Flex,
   FlexItem,
+  Modal,
+  ModalVariant,
+  Text,
+  TextContent,
 } from '@patternfly/react-core';
 import * as lodash from 'lodash';
 import { safeLoad } from 'js-yaml';
+import common from '@eclipse-che/common';
 import DevfileEditor, { DevfileEditor as Editor } from '../../../components/DevfileEditor';
 import EditorTools from './EditorTools';
-import { convertWorkspace, isWorkspaceV1, isWorkspaceV2, Workspace, isDevfileV2 } from '../../../services/workspaceAdapter';
-import { IDevWorkspace, IDevWorkspaceDevfile } from '@eclipse-che/devworkspace-client';
-import { DevWorkspaceStatus } from '../../../services/helpers/types';
-import { DevWorkspaceClient, DEVWORKSPACE_NEXT_START_ANNOTATION } from '../../../services/workspace-client/devWorkspaceClient';
+import { constructWorkspace, isCheWorkspace, Workspace } from '../../../services/workspace-adapter';
+import devfileApi, { isDevfileV2, isDevWorkspace } from '../../../services/devfileApi';
+import {
+  DEVWORKSPACE_NEXT_START_ANNOTATION,
+  DevWorkspaceClient,
+  DEVWORKSPACE_METADATA_ANNOTATION,
+} from '../../../services/workspace-client/devworkspace/devWorkspaceClient';
 import { container } from '../../../inversify.config';
 
 import styles from './index.module.css';
+import { DevWorkspaceStatus } from '../../../services/helpers/types';
 
-type Props = {
+export type Props = {
   onSave: (workspace: Workspace) => Promise<void>;
   workspace: Workspace;
+  isRunning: boolean;
   onDevWorkspaceWarning: () => void;
 };
 
-type State = {
-  devfile: che.WorkspaceDevfile | IDevWorkspaceDevfile;
+export type State = {
+  devfile: che.WorkspaceDevfile | devfileApi.Devfile;
   hasChanges: boolean;
   hasRequestErrors: boolean;
   currentRequestError: string;
@@ -51,10 +57,11 @@ type State = {
   isExpanded: boolean;
   copied?: boolean;
   showDevfileV2ConfirmationModal: boolean;
+  additionSchema?: { [key: string]: any };
 };
 
 export class EditorTab extends React.PureComponent<Props, State> {
-  private originDevfile: che.WorkspaceDevfile | IDevWorkspaceDevfile;
+  private originDevfile: che.WorkspaceDevfile | devfileApi.Devfile | undefined;
   private readonly devfileEditorRef: React.RefObject<Editor>;
   private devworkspaceClient: DevWorkspaceClient;
 
@@ -64,37 +71,67 @@ export class EditorTab extends React.PureComponent<Props, State> {
     super(props);
     this.devworkspaceClient = container.get(DevWorkspaceClient);
 
+    const devfile = Object.assign({}, this.props.workspace.devfile);
+    const additionSchema = this.getAdditionSchema(devfile);
+
     this.state = {
-      devfile: Object.assign({}, this.props.workspace.devfile),
+      devfile,
       hasChanges: false,
       isDevfileValid: true,
       hasRequestErrors: false,
       currentRequestError: '',
       isExpanded: false,
-      showDevfileV2ConfirmationModal: false
+      showDevfileV2ConfirmationModal: false,
+      additionSchema,
     };
 
     this.cancelChanges = (): void => {
-      this.updateEditor(this.props.workspace.devfile);
-      this.setState({
-        hasChanges: false,
-        hasRequestErrors: false,
-        currentRequestError: '',
-      });
+      delete this.originDevfile;
+      this.init();
     };
 
     this.devfileEditorRef = React.createRef<Editor>();
   }
 
+  private getAdditionSchema(
+    devfile: che.WorkspaceDevfile | devfileApi.Devfile,
+  ): { [key: string]: any } | undefined {
+    return isDevfileV2(devfile)
+      ? {
+          properties: {
+            metadata: {
+              properties: {
+                name: {
+                  const: (devfile as devfileApi.Devfile).metadata.name,
+                },
+                namespace: {
+                  const: (devfile as devfileApi.Devfile).metadata.namespace,
+                },
+              },
+            },
+          },
+        }
+      : undefined;
+  }
+
   private init(): void {
     const devfile = Object.assign({}, this.props.workspace.devfile);
+
+    // do not expose this attribute
+    const attrs = devfile.attributes;
+    if (attrs?.[DEVWORKSPACE_METADATA_ANNOTATION]) {
+      delete attrs[DEVWORKSPACE_METADATA_ANNOTATION];
+    }
+
     if (devfile && (!this.originDevfile || !this.areEqual(devfile, this.originDevfile))) {
       this.originDevfile = devfile;
       this.updateEditor(devfile);
+      const additionSchema = this.getAdditionSchema(devfile);
       this.setState({
         hasRequestErrors: false,
         currentRequestError: '',
         hasChanges: false,
+        additionSchema,
       });
     }
   }
@@ -109,45 +146,63 @@ export class EditorTab extends React.PureComponent<Props, State> {
 
   public render(): React.ReactElement {
     const originDevfile = this.props.workspace.devfile;
-    const { devfile } = this.state;
+    const { devfile, additionSchema, isExpanded } = this.state;
+    const isReadonly = this.props.workspace.isDeprecated;
+    const saveButtonDisabled =
+      !this.state.hasChanges ||
+      !this.state.isDevfileValid ||
+      this.props.workspace.status === DevWorkspaceStatus.TERMINATING;
+    const editorTabStyle = isExpanded ? styles.editorTabExpanded : styles.editorTab;
+    const cancelButtonDisabled = !this.state.hasChanges && this.state.isDevfileValid;
 
     return (
       <React.Fragment>
         <br />
-        {(this.state.currentRequestError) && (
+        {this.state.currentRequestError && (
           <Alert
-            variant={AlertVariant.danger} isInline title={this.state.currentRequestError}
-            actionClose={<AlertActionCloseButton onClose={() => this.setState({ currentRequestError: '' })} />}
+            variant={AlertVariant.danger}
+            isInline
+            title={this.state.currentRequestError}
+            actionClose={
+              <AlertActionCloseButton onClose={() => this.setState({ currentRequestError: '' })} />
+            }
           />
         )}
-        {(this.state.showDevfileV2ConfirmationModal) && (
-          <Modal variant={ModalVariant.small} isOpen={true}
+        {this.state.showDevfileV2ConfirmationModal && (
+          <Modal
+            variant={ModalVariant.small}
+            isOpen={true}
             title="Restart Workspace"
-            onClose={() => this.devfileConfirmationCancelation()}
+            onClose={() => this.devfileV2ConfirmationCancellation()}
             actions={[
               <Button key="yes" variant="primary" onClick={() => this.saveDevfile()}>
                 Yes
-            </Button>,
-              <Button key="no" variant="secondary" onClick={() => this.devfileConfirmationCancelation()}>
+              </Button>,
+              <Button
+                key="no"
+                variant="secondary"
+                onClick={() => this.devfileV2ConfirmationCancellation()}
+              >
                 No
-            </Button>,
+              </Button>,
             ]}
           >
             <TextContent>
-              <Text>
-                Would you like to restart the workspace with the changes?
-            </Text>
+              <Text>Would you like to restart the workspace with the changes?</Text>
             </TextContent>
           </Modal>
         )}
-        <TextContent
-          className={this.state.isExpanded ? styles.editorTabExpanded : styles.editorTab}>
-          {(this.state.currentRequestError && this.state.isExpanded) && (
+        <TextContent className={editorTabStyle}>
+          {this.state.currentRequestError && this.state.isExpanded && (
             <AlertGroup isToast>
               <Alert
                 variant={AlertVariant.danger}
                 title={this.state.currentRequestError}
-                actionClose={<AlertActionCloseButton onClose={() => this.setState({ currentRequestError: '' })} />}
+                actionClose={
+                  <AlertActionCloseButton
+                    onClose={() => this.setState({ currentRequestError: '' })}
+                  />
+                }
               />
             </AlertGroup>
           )}
@@ -158,34 +213,35 @@ export class EditorTab extends React.PureComponent<Props, State> {
             }}
           />
           <DevfileEditor
+            additionSchema={additionSchema}
             ref={this.devfileEditorRef}
             devfile={originDevfile}
             decorationPattern="location[ \t]*(.*)[ \t]*$"
             onChange={(newValue, isValid) => this.onDevfileChange(newValue, isValid)}
+            isReadonly={isReadonly}
           />
-          <Flex direction={{ default: 'column' }}>
-            <FlexItem
-              align={{ default: 'alignRight' }}
-              className={styles.buttonsGroup}
-            >
-              <Button
-                onClick={() => this.onSave()}
-                variant="primary"
-                className={styles.saveButton}
-                isDisabled={!this.state.hasChanges || !this.state.isDevfileValid}
-              >
-                Save
-              </Button>
-              <Button
-                onClick={() => this.cancelChanges()}
-                variant="secondary"
-                className={styles.cancelButton}
-                isDisabled={!this.state.hasChanges && this.state.isDevfileValid}
-              >
-                Cancel
-              </Button>
-            </FlexItem>
-          </Flex>
+          {isReadonly === false && (
+            <Flex direction={{ default: 'column' }}>
+              <FlexItem align={{ default: 'alignRight' }} className={styles.buttonsGroup}>
+                <Button
+                  onClick={() => this.onSave()}
+                  variant="primary"
+                  className={styles.saveButton}
+                  isDisabled={saveButtonDisabled}
+                >
+                  Save
+                </Button>
+                <Button
+                  onClick={() => this.cancelChanges()}
+                  variant="secondary"
+                  className={styles.cancelButton}
+                  isDisabled={cancelButtonDisabled}
+                >
+                  Cancel
+                </Button>
+              </FlexItem>
+            </Flex>
+          )}
         </TextContent>
       </React.Fragment>
     );
@@ -195,36 +251,39 @@ export class EditorTab extends React.PureComponent<Props, State> {
    * When a devfile v2 user does not allow the devworkspace to restart then store the configuration
    * in an annotation that will be used on next start
    */
-  private async devfileConfirmationCancelation() {
-    const devfile = this.state.devfile;
+  private async devfileV2ConfirmationCancellation() {
+    const devfile = this.state.devfile as devfileApi.Devfile;
     if (!devfile) {
       return;
     }
     try {
       await this.checkForModifiedClusterDevWorkspace();
-      const devworkspace = this.props.workspace.ref as IDevWorkspace;
-      const convertedDevWorkspace = convertWorkspace(this.props.workspace.ref);
+      const devworkspace = this.props.workspace.ref as devfileApi.DevWorkspace;
+      const convertedDevWorkspace = constructWorkspace(devworkspace);
       convertedDevWorkspace.devfile = devfile;
       // Store the devfile in here
-      (convertedDevWorkspace.ref as IDevWorkspace).metadata.annotations = {
-        [DEVWORKSPACE_NEXT_START_ANNOTATION]: JSON.stringify((convertedDevWorkspace.ref as IDevWorkspace)),
+      (convertedDevWorkspace.ref as devfileApi.DevWorkspace).metadata.annotations = {
+        [DEVWORKSPACE_NEXT_START_ANNOTATION]: JSON.stringify(
+          convertedDevWorkspace.ref as devfileApi.DevWorkspace,
+        ),
       };
       convertedDevWorkspace.ref.status = devworkspace.status;
       this.props.onDevWorkspaceWarning();
       this.props.onSave(convertedDevWorkspace);
       this.setState({
-        showDevfileV2ConfirmationModal: false
+        showDevfileV2ConfirmationModal: false,
       });
     } catch (e) {
+      const errorMessage = common.helpers.errors.getMessage(e);
       this.setState({
         hasChanges: true,
         hasRequestErrors: true,
-        currentRequestError: e,
+        currentRequestError: errorMessage,
       });
     }
   }
 
-  private updateEditor(devfile: che.WorkspaceDevfile | IDevWorkspaceDevfile): void {
+  private updateEditor(devfile: che.WorkspaceDevfile | devfileApi.Devfile): void {
     if (!devfile) {
       return;
     }
@@ -249,19 +308,19 @@ export class EditorTab extends React.PureComponent<Props, State> {
       this.setState({ hasChanges: false });
       return;
     }
-    this.setState({ devfile });
     this.setState({
+      devfile,
       hasChanges: true,
       hasRequestErrors: false,
     });
   }
 
   private async onSave(): Promise<void> {
-    if (isWorkspaceV1(this.props.workspace.ref) || this.props.workspace.status !== DevWorkspaceStatus.RUNNING.toUpperCase()) {
-      this.saveDevfile();
+    if (!this.props.workspace.isRunning || isCheWorkspace(this.props.workspace.ref)) {
+      await this.saveDevfile();
     } else {
       this.setState({
-        showDevfileV2ConfirmationModal: true
+        showDevfileV2ConfirmationModal: true,
       });
     }
   }
@@ -269,13 +328,17 @@ export class EditorTab extends React.PureComponent<Props, State> {
   /**
    * Check to see if the current devworkspaces devfile and the cluster devworkspaces devfile are the same. If they
    * are not then throw an error
-   * @param workspace The Currne
    */
   private async checkForModifiedClusterDevWorkspace(): Promise<void> {
-    const currentDevWorkspace = this.props.workspace.ref as IDevWorkspace;
-    const clusterDevWorkspace = await this.devworkspaceClient.getWorkspaceByName(currentDevWorkspace.metadata.namespace, currentDevWorkspace.metadata.name);
+    const currentDevWorkspace = this.props.workspace.ref as devfileApi.DevWorkspace;
+    const clusterDevWorkspace = await this.devworkspaceClient.getWorkspaceByName(
+      currentDevWorkspace.metadata.namespace,
+      currentDevWorkspace.metadata.name,
+    );
     if (!lodash.isEqual(clusterDevWorkspace.spec.template, currentDevWorkspace.spec.template)) {
-      throw new Error('Could not save devfile to cluster. The clusters devfile and the incoming devfile are different. Please reload the page to get an updated devfile.');
+      throw new Error(
+        'Could not save devfile to cluster. The clusters devfile and the incoming devfile are different. Please reload the page to get an updated devfile.',
+      );
     }
   }
 
@@ -284,7 +347,20 @@ export class EditorTab extends React.PureComponent<Props, State> {
     if (!devfile) {
       return;
     }
-    const workspaceCopy = convertWorkspace(this.props.workspace.ref);
+
+    // restore the attribute
+    const dwMetadataAnnotation =
+      this.props.workspace.devfile.attributes?.[DEVWORKSPACE_METADATA_ANNOTATION];
+    if (dwMetadataAnnotation) {
+      if (!devfile.attributes) {
+        devfile.attributes = {};
+      }
+      devfile.attributes[DEVWORKSPACE_METADATA_ANNOTATION] = dwMetadataAnnotation;
+    } else if (devfile.attributes?.[DEVWORKSPACE_METADATA_ANNOTATION]) {
+      delete devfile.attributes[DEVWORKSPACE_METADATA_ANNOTATION];
+    }
+
+    const workspaceCopy = constructWorkspace(this.props.workspace.ref);
     if (!devfile.metadata) {
       devfile.metadata = {};
     }
@@ -298,37 +374,48 @@ export class EditorTab extends React.PureComponent<Props, State> {
     workspaceCopy.devfile = devfile;
     this.setState({ hasChanges: false });
     try {
-
-      if (isWorkspaceV2(workspaceCopy.ref)) {
+      if (isDevWorkspace(workspaceCopy.ref)) {
         await this.checkForModifiedClusterDevWorkspace();
         // We need to manually re-attach devworkspace id so that we can re-use it to re-add default plugins to the devworkspace custom resource
-        const dw = this.props.workspace.ref as IDevWorkspace;
+        const dw = this.props.workspace.ref as devfileApi.DevWorkspace;
         workspaceCopy.ref.status = dw.status;
+        if (!this.props.isRunning && workspaceCopy.ref.spec.started) {
+          workspaceCopy.ref.spec.started = false;
+        }
       }
-
       await this.props.onSave(workspaceCopy);
     } catch (e) {
-      const errorMessage = e.toString().replace(/^Error: /gi, '');
+      const error = common.helpers.errors.getMessage(e).replace(/^Error: /gi, '');
       this.setState({
         hasChanges: true,
         hasRequestErrors: true,
-        currentRequestError: errorMessage,
+        currentRequestError: error,
       });
     }
     this.setState({
-      showDevfileV2ConfirmationModal: false
+      showDevfileV2ConfirmationModal: false,
     });
   }
 
-  private sortKeysInObject(obj: che.WorkspaceDevfile | IDevWorkspaceDevfile): che.WorkspaceDevfile | IDevWorkspaceDevfile {
-    return Object.keys(obj).sort().reduce((result: che.WorkspaceDevfile | IDevWorkspaceDevfile, key: string) => {
-      result[key] = obj[key];
-      return result;
-    }, {} as che.WorkspaceDevfile | IDevWorkspaceDevfile);
+  private sortKeysInObject(
+    obj: che.WorkspaceDevfile | devfileApi.Devfile,
+  ): che.WorkspaceDevfile | devfileApi.Devfile {
+    return Object.keys(obj)
+      .sort()
+      .reduce((result: che.WorkspaceDevfile | devfileApi.Devfile, key: string) => {
+        result[key] = obj[key];
+        return result;
+      }, {} as che.WorkspaceDevfile | devfileApi.Devfile);
   }
 
-  private areEqual(a: che.WorkspaceDevfile | IDevWorkspaceDevfile, b: che.WorkspaceDevfile | IDevWorkspaceDevfile): boolean {
-    return JSON.stringify(this.sortKeysInObject(a)) == JSON.stringify(this.sortKeysInObject(b as che.WorkspaceDevfile));
+  private areEqual(
+    a: che.WorkspaceDevfile | devfileApi.Devfile,
+    b: che.WorkspaceDevfile | devfileApi.Devfile,
+  ): boolean {
+    return (
+      JSON.stringify(this.sortKeysInObject(a)) ==
+      JSON.stringify(this.sortKeysInObject(b as che.WorkspaceDevfile))
+    );
   }
 }
 

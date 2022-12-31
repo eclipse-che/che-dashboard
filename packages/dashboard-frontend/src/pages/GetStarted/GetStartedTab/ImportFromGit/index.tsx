@@ -24,18 +24,18 @@ import {
   TextContent,
   TextVariants,
 } from '@patternfly/react-core';
+import common from '@eclipse-che/common';
 import { AppState } from '../../../../store';
 import * as DevfileRegistriesStore from '../../../../store/DevfileRegistries';
 import * as FactoryResolverStore from '../../../../store/FactoryResolver';
 import { GitRepoLocationInput } from './GitRepoLocationInput';
 import { AlertItem } from '../../../../services/helpers/types';
-import { getErrorMessage } from '../../../../services/helpers/getErrorMessage';
+import { selectWorkspacesSettings } from '../../../../store/Workspaces/Settings/selectors';
+import { isDevworkspacesEnabled } from '../../../../services/helpers/devworkspace';
 
-type Props =
-  MappedProps
-  & {
-    onDevfileResolve: (resolverState: FactoryResolverStore.ResolverState, location: string) => void;
-  };
+type Props = MappedProps & {
+  onDevfileResolve: (resolverState: FactoryResolverStore.ResolverState, location: string) => void;
+};
 type State = {
   isLoading: boolean;
   alerts: AlertItem[];
@@ -60,10 +60,22 @@ export class ImportFromGit extends React.PureComponent<Props, State> {
   }
 
   private async handleLocationChange(location: string): Promise<void> {
+    // if devWorkspace is enabled
+    // use factory workflow to load the git location
+    const cheDevworkspaceEnabled = isDevworkspacesEnabled(this.props.workspacesSettings);
+    if (cheDevworkspaceEnabled) {
+      const factoryUrl = `${window.location.origin}/#${location}`;
+      // open a new page to handle that
+      window.open(factoryUrl, '_blank');
+      return;
+    }
+
     try {
       this.setState({ isLoading: true });
       await this.props.requestFactoryResolver(location);
-      const { resolver } = this.factoryResolver;
+      // at this point the resolver object is defined
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      const resolver = this.factoryResolver.resolver!;
       this.props.onDevfileResolve(resolver, location);
       this.setState({ isLoading: false });
     } catch (e) {
@@ -71,7 +83,7 @@ export class ImportFromGit extends React.PureComponent<Props, State> {
       this.devfileLocationRef.current?.invalidateInput();
       this.showAlert({
         key: 'load-devfile-resolver-failed',
-        title: getErrorMessage(e),
+        title: common.helpers.errors.getMessage(e),
         variant: AlertVariant.danger,
       });
     }
@@ -101,13 +113,14 @@ export class ImportFromGit extends React.PureComponent<Props, State> {
             />
           ))}
         </AlertGroup>
-        <FormGroup fieldId='import-from-git' label={
-          <TextContent>
-            <Text component={TextVariants.h4}>
-              Import from Git
-            </Text>
-          </TextContent>
-        }>
+        <FormGroup
+          fieldId="import-from-git"
+          label={
+            <TextContent>
+              <Text component={TextVariants.h4}>Import from Git</Text>
+            </TextContent>
+          }
+        >
           <Flex style={{ marginTop: '15px', minHeight: '85px' }}>
             <FlexItem>
               <TextContent>
@@ -129,20 +142,17 @@ export class ImportFromGit extends React.PureComponent<Props, State> {
       </>
     );
   }
-
 }
 
 const mapStateToProps = (state: AppState) => ({
   factoryResolver: state.factoryResolver,
+  workspacesSettings: selectWorkspacesSettings(state),
 });
 
-const connector = connect(
-  mapStateToProps,
-  {
-    ...DevfileRegistriesStore.actionCreators,
-    ...FactoryResolverStore.actionCreators,
-  },
-);
+const connector = connect(mapStateToProps, {
+  ...DevfileRegistriesStore.actionCreators,
+  ...FactoryResolverStore.actionCreators,
+});
 
 type MappedProps = ConnectedProps<typeof connector>;
 export default connector(ImportFromGit);

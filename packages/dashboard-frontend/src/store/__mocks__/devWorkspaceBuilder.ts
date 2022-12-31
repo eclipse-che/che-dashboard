@@ -10,33 +10,47 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import { IDevWorkspace } from '@eclipse-che/devworkspace-client';
+import devfileApi from '../../services/devfileApi';
 import getRandomString from '../../services/helpers/random';
-import { DevWorkspaceStatus, WorkspaceStatus } from '../../services/helpers/types';
+import { DevWorkspaceStatus } from '../../services/helpers/types';
 
 export class DevWorkspaceBuilder {
-
-  private workspace: IDevWorkspace = {
+  private workspace: devfileApi.DevWorkspace = {
     kind: 'DevWorkspace',
     apiVersion: 'workspace.devfile.io/v1alpha2',
     metadata: {
+      annotations: {},
+      labels: {},
       name: 'dev-wksp-' + getRandomString(4),
       namespace: '',
+      uid: 'uid-' + getRandomString(4),
     },
     spec: {
       started: false,
       routingClass: 'che',
       template: {},
     },
-    status: {
-      devworkspaceId: getRandomString(4),
-      mainUrl: '',
-      phase: 'STOPPED',
-    }
+  };
+
+  private buildStatus(id?: string): devfileApi.DevWorkspaceStatus {
+    return {
+      devworkspaceId: id
+        ? id
+        : 'workspace' + this.workspace.metadata.uid.split('-').splice(0, 3).join(''),
+    };
   }
 
   withId(id: string): DevWorkspaceBuilder {
-    this.workspace.status.devworkspaceId = id;
+    if (this.workspace.status === undefined) {
+      this.workspace.status = this.buildStatus(id);
+    } else {
+      this.workspace.status.devworkspaceId = id;
+    }
+    return this;
+  }
+
+  withUID(uid: string): DevWorkspaceBuilder {
+    this.workspace.metadata.uid = uid;
     return this;
   }
 
@@ -45,8 +59,8 @@ export class DevWorkspaceBuilder {
     return this;
   }
 
-  withMetadata(metadata: IDevWorkspace['metadata']): DevWorkspaceBuilder {
-    this.workspace.metadata = metadata;
+  withMetadata(metadata: Partial<devfileApi.DevWorkspaceMetadata>): DevWorkspaceBuilder {
+    Object.assign(this.workspace.metadata, metadata);
     return this;
   }
 
@@ -55,13 +69,50 @@ export class DevWorkspaceBuilder {
     return this;
   }
 
+  withSpec(spec: Partial<devfileApi.DevWorkspaceSpec>): DevWorkspaceBuilder {
+    Object.assign(this.workspace.spec, spec);
+    return this;
+  }
+
+  withTemplate(template: devfileApi.DevWorkspaceSpecTemplate): DevWorkspaceBuilder {
+    this.workspace.spec.template = template;
+    return this;
+  }
+
+  /**
+   * @deprecated use `withStatus`
+   * @param ideUrl
+   * @returns
+   */
   withIdeUrl(ideUrl: string): DevWorkspaceBuilder {
+    if (this.workspace.status === undefined) {
+      this.workspace.status = this.buildStatus();
+    }
     this.workspace.status.mainUrl = ideUrl;
     return this;
   }
 
-  withStatus(status: keyof typeof WorkspaceStatus | keyof typeof DevWorkspaceStatus): DevWorkspaceBuilder {
-    this.workspace.status.phase = status;
+  withStatus(status: {
+    phase?: keyof typeof DevWorkspaceStatus;
+    devworkspaceId?: string;
+    mainUrl?: string;
+    message?: string;
+  }): DevWorkspaceBuilder {
+    if (this.workspace.status === undefined) {
+      this.workspace.status = this.buildStatus();
+    }
+    if (status.phase) {
+      this.workspace.status.phase = DevWorkspaceStatus[status.phase];
+    }
+    if (status.devworkspaceId) {
+      this.workspace.status.devworkspaceId = status.devworkspaceId;
+    }
+    if (status.mainUrl) {
+      this.workspace.status.mainUrl = status.mainUrl;
+    }
+    if (status.message) {
+      this.workspace.status.message = status.message;
+    }
     return this;
   }
 
@@ -70,8 +121,7 @@ export class DevWorkspaceBuilder {
     return this;
   }
 
-  build(): IDevWorkspace {
+  build(): devfileApi.DevWorkspace {
     return this.workspace;
   }
-
 }

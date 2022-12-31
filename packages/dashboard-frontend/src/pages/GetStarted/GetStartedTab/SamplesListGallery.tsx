@@ -31,24 +31,86 @@ import { AppState } from '../../../store';
 import * as DevfileRegistriesStore from '../../../store/DevfileRegistries';
 import { SampleCard } from './SampleCard';
 import { AlertItem } from '../../../services/helpers/types';
-import { selectMetadataFiltered } from '../../../store/DevfileRegistries/selectors';
+import {
+  EMPTY_WORKSPACE_TAG,
+  selectMetadataFiltered,
+} from '../../../store/DevfileRegistries/selectors';
 import { selectWorkspacesSettings } from '../../../store/Workspaces/Settings/selectors';
 import * as FactoryResolverStore from '../../../store/FactoryResolver';
-import stringify from '../../../services/helpers/editor';
-import { updateDevfileMetadata } from '../updateDevfileMetadata';
+import { isDevworkspacesEnabled } from '../../../services/helpers/devworkspace';
+import { selectDefaultEditor } from '../../../store/Plugins/devWorkspacePlugins/selectors';
+import { selectEditors } from '../../../store/Plugins/chePlugins/selectors';
 
-type Props =
-  MappedProps
-  & {
-    onCardClick: (devfileContent: string, stackName: string, optionalFilesContent?: {
-      [fileName: string]: string
-    }) => void;
-  };
+export type TargetEditor = {
+  id: string;
+  name: string;
+  tooltip: string | undefined;
+  version: string;
+  isDefault: boolean;
+};
+type Props = MappedProps & {
+  onCardClick: (
+    devfileContent: string,
+    stackName: string,
+    optionalFilesContent?: {
+      [fileName: string]: string;
+    },
+  ) => void;
+  storageType: che.WorkspaceStorageType;
+};
 type State = {
   alerts: AlertItem[];
 };
 
+export const VISIBLE_TAGS = ['Community', 'Tech-Preview'];
+
+const EXCLUDED_TARGET_EDITOR_NAMES = ['dirigible', 'jupyter', 'eclipseide', 'code-server'];
+
 export class SamplesListGallery extends React.PureComponent<Props, State> {
+  private static sortByName(a: TargetEditor, b: TargetEditor): number {
+    if (a.name < b.name) {
+      return -1;
+    }
+    if (a.name > b.name) {
+      return 1;
+    }
+    return 0;
+  }
+  private static sortByVisibleTag(a: che.DevfileMetaData, b: che.DevfileMetaData): number {
+    const getVisibleTag = (metadata: che.DevfileMetaData) =>
+      metadata.tags.filter(tag => VISIBLE_TAGS.includes(tag))[0];
+    const tagA = getVisibleTag(a);
+    const tagB = getVisibleTag(b);
+    if (tagA === tagB) {
+      return 0;
+    }
+    if (tagA === undefined || tagA < tagB) {
+      return -1;
+    }
+    if (tagB === undefined || tagA > tagB) {
+      return 1;
+    }
+    return 0;
+  }
+  private static sortByEmptyWorkspaceTag(a: che.DevfileMetaData, b: che.DevfileMetaData): number {
+    if (a.tags.includes(EMPTY_WORKSPACE_TAG) > b.tags.includes(EMPTY_WORKSPACE_TAG)) {
+      return -1;
+    }
+    if (a.tags.includes(EMPTY_WORKSPACE_TAG) < b.tags.includes(EMPTY_WORKSPACE_TAG)) {
+      return 1;
+    }
+    return 0;
+  }
+  private static sortByDisplayName(a: che.DevfileMetaData, b: che.DevfileMetaData): number {
+    if (a.displayName < b.displayName) {
+      return -1;
+    }
+    if (a.displayName > b.displayName) {
+      return 1;
+    }
+    return 0;
+  }
+
   private isLoading: boolean;
 
   constructor(props: Props) {
@@ -81,9 +143,7 @@ export class SamplesListGallery extends React.PureComponent<Props, State> {
               />
             ))}
           </AlertGroup>
-          <Gallery hasGutter={true}>
-            {cards}
-          </Gallery>
+          <Gallery hasGutter={true}>{cards}</Gallery>
         </React.Fragment>
       );
     }
@@ -91,84 +151,115 @@ export class SamplesListGallery extends React.PureComponent<Props, State> {
     return this.buildEmptyState();
   }
 
-  private async fetchDevfile(meta: che.DevfileMetaData): Promise<void> {
+  private async fetchDevfile(meta: che.DevfileMetaData, editor: string | undefined): Promise<void> {
     if (this.isLoading) {
       return;
     }
     this.isLoading = true;
     try {
-      const cheDevworkspaceEnabled = this.props.workspacesSettings['che.devworkspaces.enabled'] === 'true';
-      let devfileContent;
-      let optionalFilesContent;
-      if (cheDevworkspaceEnabled) {
-        const link = meta.links.v2;
-        await this.props.requestFactoryResolver(link);
-        const resolver = this.props.factoryResolver.resolver;
-        devfileContent = stringify(updateDevfileMetadata(resolver.devfile, meta));
-        optionalFilesContent = resolver.optionalFilesContent;
-      } else {
-        devfileContent = await this.props.requestDevfile(meta.links.self) as string;
+      const cheDevworkspaceEnabled = isDevworkspacesEnabled(this.props.workspacesSettings);
+      if (cheDevworkspaceEnabled && meta.links.v2) {
+        const link = encodeURIComponent(meta.links.v2);
+        let devWorkspace = '';
+        if (!editor && this.props.defaultEditor) {
+          editor = this.props.defaultEditor;
+        }
+        if (editor) {
+          const prebuiltDevWorkspace = meta.links.devWorkspaces?.[editor];
+          const storageType = this.props.storageType;
+          devWorkspace = prebuiltDevWorkspace
+            ? `&devWorkspace=${encodeURIComponent(prebuiltDevWorkspace)}&storageType=${storageType}`
+            : `&storageType=${storageType}`;
+        }
+        // use factory workflow to load the getting started samples
+        let factoryUrl = `${window.location.origin}${window.location.pathname}#/load-factory?url=${link}${devWorkspace}`;
+        if (editor !== this.props.defaultEditor) {
+          factoryUrl += `&che-editor=${editor}`;
+        }
+        // open a new page to handle that
+        window.open(factoryUrl, '_blank');
+        this.isLoading = false;
+        return;
       }
-      this.props.onCardClick(devfileContent, meta.displayName, optionalFilesContent);
+      const devfileContent = (await this.props.requestDevfile(meta.links.self)) as string;
+      this.props.onCardClick(devfileContent, meta.displayName);
     } catch (e) {
       console.warn('Failed to load devfile.', e);
 
-      const alerts = [...this.state.alerts, {
-        key: meta.links.self,
-        title: `Failed to load devfile "${meta.displayName}"`,
-        variant: AlertVariant.warning,
-      }];
+      const alerts = [
+        ...this.state.alerts,
+        {
+          key: meta.links.self,
+          title: `Failed to load devfile "${meta.displayName}"`,
+          variant: AlertVariant.warning,
+        },
+      ];
       this.setState({ alerts });
     }
     this.isLoading = false;
   }
 
   private buildCardsList(metadata: che.DevfileMetaData[] = []): React.ReactElement[] {
-    return metadata.map(meta => (
-      <SampleCard
-        key={meta.links.self}
-        metadata={meta}
-        onClick={(): Promise<void> => this.fetchDevfile(meta)}
-      />
-    ));
+    const { editors, defaultEditor } = this.props;
+    const targetEditors = editors
+      .filter(editor => !EXCLUDED_TARGET_EDITOR_NAMES.includes(editor.name))
+      .map(editor => {
+        return {
+          id: editor.id,
+          version: editor.version,
+          name: editor.displayName,
+          tooltip: editor.description,
+          isDefault: defaultEditor === editor.id,
+        } as TargetEditor;
+      });
+    targetEditors.sort(SamplesListGallery.sortByName);
+
+    return metadata
+      .sort(SamplesListGallery.sortByDisplayName)
+      .sort(SamplesListGallery.sortByVisibleTag)
+      .sort(SamplesListGallery.sortByEmptyWorkspaceTag)
+      .map(meta => (
+        <SampleCard
+          key={meta.links.self}
+          metadata={meta}
+          targetEditors={targetEditors}
+          onClick={(editorId: string | undefined): Promise<void> =>
+            this.fetchDevfile(meta, editorId)
+          }
+        />
+      ));
   }
 
   private buildEmptyState(): React.ReactElement {
     return (
       <EmptyState variant={EmptyStateVariant.full}>
         <EmptyStateIcon icon={SearchIcon} />
-        <Title headingLevel='h1'>
-          No results found
-          </Title>
+        <Title headingLevel="h1">No results found</Title>
         <EmptyStateBody>
           No results match the filter criteria. Clear filter to show results.
-          </EmptyStateBody>
+        </EmptyStateBody>
         <EmptyStatePrimary>
-          <Button
-            variant='link'
-            onClick={(): void => this.props.clearFilter()}>
+          <Button variant="link" onClick={(): void => this.props.clearFilter()}>
             Clear filter
-            </Button>
+          </Button>
         </EmptyStatePrimary>
       </EmptyState>
     );
   }
-
 }
 
 const mapStateToProps = (state: AppState) => ({
   metadataFiltered: selectMetadataFiltered(state),
   workspacesSettings: selectWorkspacesSettings(state),
   factoryResolver: state.factoryResolver,
+  editors: selectEditors(state),
+  defaultEditor: selectDefaultEditor(state),
 });
 
-const connector = connect(
-  mapStateToProps,
-  {
-    ...DevfileRegistriesStore.actionCreators,
-    ...FactoryResolverStore.actionCreators,
-  }
-);
+const connector = connect(mapStateToProps, {
+  ...DevfileRegistriesStore.actionCreators,
+  ...FactoryResolverStore.actionCreators,
+});
 
 type MappedProps = ConnectedProps<typeof connector>;
 export default connector(SamplesListGallery);

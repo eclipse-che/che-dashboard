@@ -13,16 +13,17 @@
 // This state defines the type of data maintained in the Redux store.
 
 import { Action, Reducer } from 'redux';
-import { createState } from '../helpers';
+import common from '@eclipse-che/common';
+import { createObject } from '../helpers';
 import { AppThunk } from '../index';
 import { container } from '../../inversify.config';
-import { CheWorkspaceClient } from '../../services/workspace-client/cheWorkspaceClient';
-import { getErrorMessage } from '../../services/helpers/getErrorMessage';
+import { CheWorkspaceClient } from '../../services/workspace-client/cheworkspace/cheWorkspaceClient';
+import { che as cheApi } from '@eclipse-che/api';
 
 const WorkspaceClient = container.get(CheWorkspaceClient);
 
 export interface State {
-  profile: api.che.user.Profile | undefined;
+  profile: cheApi.user.Profile;
   error?: string;
   isLoading: boolean;
 }
@@ -41,7 +42,8 @@ interface ReceiveUserProfileErrorAction {
   error: string;
 }
 
-type KnownAction = RequestUserProfileAction
+type KnownAction =
+  | RequestUserProfileAction
   | ReceiveUserProfileAction
   | ReceiveUserProfileErrorAction;
 
@@ -50,32 +52,38 @@ export type ActionCreators = {
 };
 
 export const actionCreators: ActionCreators = {
-  requestUserProfile: (): AppThunk<KnownAction, Promise<void>> => async (dispatch): Promise<void> => {
-    dispatch({ type: 'REQUEST_USER_PROFILE' });
+  requestUserProfile:
+    (): AppThunk<KnownAction, Promise<void>> =>
+    async (dispatch): Promise<void> => {
+      dispatch({ type: 'REQUEST_USER_PROFILE' });
 
-    try {
-      const profile = await WorkspaceClient.restApiClient.getCurrentUserProfile();
-      dispatch({
-        type: 'RECEIVE_USER_PROFILE',
-        profile,
-      });
-    } catch (e) {
-      const errorMessage = 'Failed to fetch the user profile, reason: ' + getErrorMessage(e);
-      dispatch({
-        type: 'RECEIVE_USER_PROFILE_ERROR',
-        error: errorMessage,
-      });
-      throw errorMessage;
-    }
-  },
+      try {
+        const profile = await WorkspaceClient.restApiClient.getCurrentUserProfile();
+        dispatch({
+          type: 'RECEIVE_USER_PROFILE',
+          profile: profile ? profile : unloadedState.profile,
+        });
+      } catch (e) {
+        const errorMessage =
+          'Failed to fetch the user profile, reason: ' + common.helpers.errors.getMessage(e);
+        dispatch({
+          type: 'RECEIVE_USER_PROFILE_ERROR',
+          error: errorMessage,
+        });
+        throw errorMessage;
+      }
+    },
 };
 
 const unloadedState: State = {
-  profile: undefined,
+  profile: { email: '' },
   isLoading: false,
 };
 
-export const reducer: Reducer<State> = (state: State | undefined, incomingAction: Action): State => {
+export const reducer: Reducer<State> = (
+  state: State | undefined,
+  incomingAction: Action,
+): State => {
   if (state === undefined) {
     return unloadedState;
   }
@@ -83,17 +91,17 @@ export const reducer: Reducer<State> = (state: State | undefined, incomingAction
   const action = incomingAction as KnownAction;
   switch (action.type) {
     case 'REQUEST_USER_PROFILE':
-      return createState(state, {
+      return createObject(state, {
         isLoading: true,
         error: undefined,
       });
     case 'RECEIVE_USER_PROFILE':
-      return createState(state, {
+      return createObject(state, {
         isLoading: false,
         profile: action.profile,
       });
     case 'RECEIVE_USER_PROFILE_ERROR':
-      return createState(state, {
+      return createObject(state, {
         isLoading: false,
         error: action.error,
       });

@@ -11,11 +11,11 @@
  */
 
 import { Action, Reducer } from 'redux';
-import { createState } from '../helpers';
+import common from '@eclipse-che/common';
+import { createObject } from '../helpers';
 import { AppThunk } from '../index';
 import { container } from '../../inversify.config';
-import { CheWorkspaceClient } from '../../services/workspace-client/cheWorkspaceClient';
-import { getErrorMessage } from '../../services/helpers/getErrorMessage';
+import { CheWorkspaceClient } from '../../services/workspace-client/cheworkspace/cheWorkspaceClient';
 
 const WorkspaceClient = container.get(CheWorkspaceClient);
 
@@ -44,10 +44,7 @@ interface SetUserAction {
   user: che.User;
 }
 
-type KnownAction = RequestUserAction
-  | ReceiveUserAction
-  | ReceiveErrorAction
-  | SetUserAction;
+type KnownAction = RequestUserAction | ReceiveUserAction | ReceiveErrorAction | SetUserAction;
 
 export type ActionCreators = {
   requestUser: () => AppThunk<KnownAction, Promise<void>>;
@@ -55,32 +52,38 @@ export type ActionCreators = {
 };
 
 export const actionCreators: ActionCreators = {
-  requestUser: (): AppThunk<KnownAction, Promise<void>> => async (dispatch): Promise<void> => {
-    dispatch({ type: 'REQUEST_USER' });
+  requestUser:
+    (): AppThunk<KnownAction, Promise<void>> =>
+    async (dispatch): Promise<void> => {
+      dispatch({ type: 'REQUEST_USER' });
 
-    try {
-      const user = await WorkspaceClient.restApiClient.getCurrentUser() as che.User;
-      dispatch({
-        type: 'RECEIVE_USER',
-        user,
-      });
-      return;
-    } catch (e) {
-      const errorMessage = 'Failed to fetch currently logged user info, reason: ' + getErrorMessage(e);
-      dispatch({
-        type: 'RECEIVE_USER_ERROR',
-        error: errorMessage,
-      });
-      throw errorMessage;
-    }
-  },
+      try {
+        const user = (await WorkspaceClient.restApiClient.getCurrentUser()) as che.User;
+        dispatch({
+          type: 'RECEIVE_USER',
+          user,
+        });
+        return;
+      } catch (e) {
+        const errorMessage =
+          'Failed to fetch currently logged user info, reason: ' +
+          common.helpers.errors.getMessage(e);
+        dispatch({
+          type: 'RECEIVE_USER_ERROR',
+          error: errorMessage,
+        });
+        throw errorMessage;
+      }
+    },
 
-  setUser: (user: che.User): AppThunk<SetUserAction> => dispatch => {
-    dispatch({
-      type: 'SET_USER',
-      user: user,
-    });
-  },
+  setUser:
+    (user: che.User): AppThunk<SetUserAction> =>
+    dispatch => {
+      dispatch({
+        type: 'SET_USER',
+        user: user,
+      });
+    },
 };
 
 const unloadedState: State = {
@@ -88,7 +91,10 @@ const unloadedState: State = {
   isLoading: false,
 };
 
-export const reducer: Reducer<State> = (state: State | undefined, incomingAction: Action): State => {
+export const reducer: Reducer<State> = (
+  state: State | undefined,
+  incomingAction: Action,
+): State => {
   if (state === undefined) {
     return unloadedState;
   }
@@ -96,22 +102,22 @@ export const reducer: Reducer<State> = (state: State | undefined, incomingAction
   const action = incomingAction as KnownAction;
   switch (action.type) {
     case 'REQUEST_USER':
-      return createState(state, {
+      return createObject(state, {
         isLoading: true,
         error: undefined,
       });
     case 'RECEIVE_USER':
-      return createState(state, {
+      return createObject(state, {
         isLoading: false,
         user: action.user,
       });
     case 'RECEIVE_USER_ERROR':
-      return createState(state, {
+      return createObject(state, {
         isLoading: false,
         error: action.error,
       });
     case 'SET_USER':
-      return createState(state, {
+      return createObject(state, {
         isLoading: false,
         user: action.user,
       });

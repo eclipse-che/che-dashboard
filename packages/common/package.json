@@ -1,0 +1,35 @@
+{
+  "name": "@eclipse-che/common",
+  "version": "7.56.0-next",
+  "repository": "https://github.com/eclipse-che/che-dashboard",
+  "license": "EPL-2.0",
+  "private": true,
+  "main": "lib/index.js",
+  "scripts": {
+    "build": "yarn clean && tsc -b",
+    "watch": "yarn build && tsc -w",
+    "clean": "rimraf lib tsconfig.tsbuildinfo",
+    "format:check": "yarn prettier --config .prettierrc --check src/",
+    "format:fix": "yarn prettier --config .prettierrc --write src/",
+    "lint:check": "tsc --noEmit && eslint '*/**/*.{js,ts,tsx}'",
+    "lint:fix": "tsc --noEmit && eslint '*/**/*.{js,ts,tsx}' --fix",
+    "test": "jest"
+  },
+  "devDependencies": {
+    "@kubernetes/client-node": "^0.16.3",
+    "@types/jest": "^25.2.3",
+    "@typescript-eslint/eslint-plugin": "^4.31.2",
+    "@typescript-eslint/parser": "^4.31.2",
+    "axios": "^0.21.1",
+    "axios-mock-adapter": "^1.20.0",
+    "eslint": "^7.32.0",
+    "eslint-config-prettier": "^8.3.0",
+    "eslint-plugin-notice": "^0.9.10",
+    "eslint-plugin-prettier": "^4.0.0",
+    "jest": "^26.0.1",
+    "prettier": "^2.4.1",
+    "rimraf": "^3.0.2",
+    "ts-jest": "^26.1.0",
+    "typescript": "~4.4.2"
+  }
+}

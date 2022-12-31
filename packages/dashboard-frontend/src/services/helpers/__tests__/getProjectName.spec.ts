@@ -13,7 +13,6 @@
 import { getProjectName } from '../getProjectName';
 
 describe('Get a project name based on location', () => {
-
   it('should return a valid name less then 63 symbols', () => {
     let cloneUrl = 'http://dummy/test.com/project-demo';
 
@@ -23,15 +22,15 @@ describe('Get a project name based on location', () => {
     expect(projectName).toEqual('project-demo' + 'a'.repeat(50));
   });
 
-  it('should return a valid name which has the first char [a-zA-Z0-9]', () => {
-    const cloneUrl = 'http://dummy/test.com/$_project-demo';
+  it('should return a valid name which has the first char [a-z0-9]', () => {
+    const cloneUrl = 'http://dummy/test.com/$_Project-Demo';
 
     const projectName = getProjectName(cloneUrl);
 
     expect(projectName).toEqual('project-demo');
   });
 
-  it('should return a valid name which has the last char [a-zA-Z0-9]', () => {
+  it('should return a valid name which has the last char [a-z0-9]', () => {
     const cloneUrl = 'http://dummy/test.com/project-demo-$';
 
     const projectName = getProjectName(cloneUrl);
@@ -39,12 +38,11 @@ describe('Get a project name based on location', () => {
     expect(projectName).toEqual('project-demo');
   });
 
-  it('should return a valid name after replacement of forbidden characters [^-a-zA-Z0-9] to \'-\'', () => {
+  it('should return a valid name after replacement of forbidden characters [^-a-z0-9] to "-"', () => {
     const cloneUrl = 'http://dummy/test.com/proj$$$$$___$ect-de$$$$_____mo';
 
     const projectName = getProjectName(cloneUrl);
 
     expect(projectName).toEqual('proj-ect-de-mo');
   });
-
 });

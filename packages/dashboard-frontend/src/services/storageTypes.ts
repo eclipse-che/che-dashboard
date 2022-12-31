@@ -11,11 +11,15 @@
  */
 
 import { getEnvironment, isDevEnvironment } from './helpers/environment';
+import { isDevworkspacesEnabled } from './helpers/devworkspace';
 
 export enum StorageTypeTitle {
   async = 'Asynchronous',
   ephemeral = 'Ephemeral',
   persistent = 'Persistent',
+  'per-user' = 'Per-user',
+  'per-workspace' = 'Per-workspace',
+  '' = 'Not defined',
 }
 
 export function toTitle(type: che.WorkspaceStorageType): string {
@@ -25,21 +29,11 @@ export function toTitle(type: che.WorkspaceStorageType): string {
   return StorageTypeTitle[type];
 }
 
-export function fromTitle(title: string): che.WorkspaceStorageType {
-  switch (title) {
-    case StorageTypeTitle.async:
-      return 'async';
-    case StorageTypeTitle.ephemeral:
-      return 'ephemeral';
-    case StorageTypeTitle.persistent:
-      return 'persistent';
-    default:
-      throw new Error(`Cannot get storage type for given title: "${title}"`);
-  }
-}
-
 export function getAvailable(settings: che.WorkspaceSettings): che.WorkspaceStorageType[] {
-  if (!settings || !settings['che.workspace.storage.available_types']) {
+  if (isDevworkspacesEnabled(settings)) {
+    return ['per-user', 'per-workspace', 'ephemeral'];
+  }
+  if (!settings['che.workspace.storage.available_types']) {
     const env = getEnvironment();
     if (isDevEnvironment(env)) {
       // running Dashboard in Che in dev mode needs for storage types to be stubbed
@@ -51,11 +45,9 @@ export function getAvailable(settings: che.WorkspaceSettings): che.WorkspaceStor
   return availableTypes.split(',') as che.WorkspaceStorageType[];
 }
 
-export function getPreferred(settings: che.WorkspaceSettings): che.WorkspaceStorageType {
-  return settings['che.workspace.storage.preferred_type'] as che.WorkspaceStorageType;
-}
-
-export function typeToAttributes(type: che.WorkspaceStorageType): che.WorkspaceDevfileAttributes | undefined {
+export function typeToAttributes(
+  type: che.WorkspaceStorageType,
+): che.WorkspaceDevfileAttributes | undefined {
   switch (type) {
     case 'persistent':
       return;
@@ -71,7 +63,9 @@ export function typeToAttributes(type: che.WorkspaceStorageType): che.WorkspaceD
   }
 }
 
-export function attributesToType(attrs: che.WorkspaceDevfileAttributes | undefined): che.WorkspaceStorageType {
+export function attributesToType(
+  attrs: che.WorkspaceDevfileAttributes | undefined,
+): che.WorkspaceStorageType {
   if (attrs?.persistVolumes === 'false') {
     if (attrs.asyncPersist === 'true') {
       return 'async';
@@ -79,34 +73,4 @@ export function attributesToType(attrs: che.WorkspaceDevfileAttributes | undefin
     return 'ephemeral';
   }
   return 'persistent';
-}
-
-export function updateDevfile(devfile: che.WorkspaceDevfile, storageType: che.WorkspaceStorageType): che.WorkspaceDevfile {
-  const copy = JSON.parse(JSON.stringify(devfile));
-  switch (storageType) {
-    case 'persistent':
-      if (copy.attributes) {
-        delete copy.attributes.persistVolumes;
-        delete copy.attributes.asyncPersist;
-        if (Object.keys(copy.attributes).length === 0) {
-          delete copy.attributes;
-        }
-      }
-      break;
-    case 'ephemeral':
-      if (!copy.attributes) {
-        copy.attributes = {};
-      }
-      copy.attributes.persistVolumes = 'false';
-      delete copy.attributes.asyncPersist;
-      break;
-    case 'async':
-      if (!copy.attributes) {
-        copy.attributes = {};
-      }
-      copy.attributes.persistVolumes = 'false';
-      copy.attributes.asyncPersist = 'true';
-      break;
-  }
-  return copy;
 }

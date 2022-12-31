@@ -10,15 +10,10 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import axios from 'axios';
-import { getErrorMessage } from '../helpers/getErrorMessage';
-
-// create new instance of `axios` to avoid adding an authorization header
-const axiosInstance = axios.create();
+import { fetchData } from './fetchData';
 
 function createURL(url: string, baseUrl: string): URL {
-
-  // todo Remove it after fixing all source links https://github.com/eclipse/che/issues/19140
+  // Remove it after fixing all source links https://github.com/eclipse/che/issues/19140
   if (/^\/(\w+)/.test(url)) {
     return new URL(`.${url}`, baseUrl);
   }
@@ -34,17 +29,26 @@ function resolveIconUrl(metadata: che.DevfileMetaData, baseUrl: string): string 
   return createURL(metadata.icon, baseUrl).href;
 }
 
-function resolveLinks(metadata: che.DevfileMetaData, baseUrl: string): any {
+export function resolveLinks(metadata: che.DevfileMetaData, baseUrl: string): any {
   const resolvedLinks = {};
   const linkNames = Object.keys(metadata.links);
   linkNames.map(linkName => {
-    let updatedLink = metadata.links[linkName];
-    if (!updatedLink.startsWith('http')) {
-      updatedLink = createURL(updatedLink, baseUrl).href;
-    }
-    resolvedLinks[linkName] = updatedLink;
+    resolvedLinks[linkName] = updateObjectLinks(metadata.links[linkName], baseUrl);
   });
   return resolvedLinks;
+}
+
+export function updateObjectLinks(object: any, baseUrl): any {
+  if (typeof object === 'string') {
+    if (!object.startsWith('http')) {
+      object = createURL(object, baseUrl).href;
+    }
+  } else {
+    Object.keys(object).forEach(key => {
+      object[key] = updateObjectLinks(object[key], baseUrl);
+    });
+  }
+  return object;
 }
 
 export async function fetchRegistryMetadata(registryUrl: string): Promise<che.DevfileMetaData[]> {
@@ -52,15 +56,16 @@ export async function fetchRegistryMetadata(registryUrl: string): Promise<che.De
 
   try {
     const registryIndexUrl = new URL('devfiles/index.json', registryUrl);
-    const response = await axiosInstance.get<che.DevfileMetaData[]>(registryIndexUrl.href);
+    const devfileMetaData = await fetchData<che.DevfileMetaData[]>(registryIndexUrl.href);
 
-    return response.data.map(meta => {
+    return devfileMetaData.map(meta => {
       meta.icon = resolveIconUrl(meta, registryUrl);
       meta.links = resolveLinks(meta, registryUrl);
       return meta;
     });
-  } catch (e) {
-    const errorMessage = `Failed to fetch devfiles metadata from registry URL: ${registryUrl}, reason: ` + getErrorMessage(e);
+  } catch (error) {
+    const errorMessage =
+      `Failed to fetch devfiles metadata from registry URL: ${registryUrl}, reason: ` + error;
     console.error(errorMessage);
     throw errorMessage;
   }
@@ -68,10 +73,10 @@ export async function fetchRegistryMetadata(registryUrl: string): Promise<che.De
 
 export async function fetchDevfile(url: string): Promise<string> {
   try {
-    const response = await axiosInstance.get<string>(url);
-    return response.data;
-  } catch (e) {
-    const errorMessage = `Failed to fetch a devfile from URL: ${url}, reason: ` + getErrorMessage(e);
+    const devfile = await fetchData<string>(url);
+    return devfile;
+  } catch (error) {
+    const errorMessage = `Failed to fetch a devfile from URL: ${url}, reason: ` + error;
     console.error(errorMessage);
     throw errorMessage;
   }

@@ -22,26 +22,25 @@ import PreloadIssuesAlert from './PreloadIssuesAlert';
 import { ThemeVariant } from './themeVariant';
 import { AppState } from '../store';
 import { lazyInject } from '../inversify.config';
-import { KeycloakAuthService } from '../services/keycloak/auth';
 import { IssuesReporterService } from '../services/bootstrap/issuesReporter';
 import { ErrorReporter } from './ErrorReporter';
 import { IssueComponent } from './ErrorReporter/Issue';
 import { BannerAlert } from '../components/BannerAlert';
 import { ErrorBoundary } from './ErrorBoundary';
 import { DisposableCollection } from '../services/helpers/disposable';
-import { ROUTE } from '../route.enum';
+import { ROUTE } from '../Routes/routes';
 import { selectUser } from '../store/User/selectors';
 import { selectBranding } from '../store/Branding/selectors';
+import { ToggleBarsContext } from '../contexts/ToggleBars';
+import { signOut } from '../services/helpers/login';
 
 const THEME_KEY = 'theme';
 const IS_MANAGED_SIDEBAR = false;
 
-type Props =
-  MappedProps
-  & {
-    children: React.ReactNode;
-    history: History;
-  };
+type Props = MappedProps & {
+  children: React.ReactNode;
+  history: History;
+};
 type State = {
   isSidebarVisible: boolean;
   isHeaderVisible: boolean;
@@ -49,29 +48,22 @@ type State = {
 };
 
 export class Layout extends React.PureComponent<Props, State> {
-
   @lazyInject(IssuesReporterService)
   private readonly issuesReporterService: IssuesReporterService;
-
-  @lazyInject(KeycloakAuthService)
-  private readonly keycloakAuthService: KeycloakAuthService;
 
   private readonly toDispose = new DisposableCollection();
 
   constructor(props: Props) {
     super(props);
 
-    const theme: ThemeVariant = window.sessionStorage.getItem(THEME_KEY) as ThemeVariant || ThemeVariant.DARK;
+    const theme: ThemeVariant =
+      (window.sessionStorage.getItem(THEME_KEY) as ThemeVariant) || ThemeVariant.DARK;
 
     this.state = {
       isHeaderVisible: true,
       isSidebarVisible: true,
       theme,
     };
-  }
-
-  private logout(): void {
-    this.keycloakAuthService.logout();
   }
 
   private toggleNav(): void {
@@ -99,7 +91,31 @@ export class Layout extends React.PureComponent<Props, State> {
     return match !== null;
   }
 
+  private hideAllBars(): void {
+    this.setState({
+      isHeaderVisible: false,
+      isSidebarVisible: false,
+    });
+  }
+
+  private showAllBars(): void {
+    this.setState({
+      isHeaderVisible: true,
+      isSidebarVisible: true,
+    });
+  }
+
   public componentDidMount(): void {
+    const matchFactoryLoaderPath = matchPath(this.props.history.location.pathname, {
+      path: ROUTE.FACTORY_LOADER,
+    });
+    const matchIdeLoaderPath = matchPath(this.props.history.location.pathname, {
+      path: ROUTE.IDE_LOADER,
+    });
+    if (matchFactoryLoaderPath !== null || matchIdeLoaderPath !== null) {
+      this.hideAllBars();
+    }
+
     this.listenToIframeMessages();
   }
 
@@ -118,12 +134,17 @@ export class Layout extends React.PureComponent<Props, State> {
           isSidebarVisible: true,
           isHeaderVisible: true,
         });
-      }
-      else if (event.data === 'hide-navbar') {
-        const isHeaderVisible = !this.testIdePath() || document.getElementById('ide-iframe') === null;
+      } else if (event.data === 'hide-navbar') {
+        const isHeaderVisible =
+          !this.testIdePath() || document.getElementById('ide-iframe') === null;
         this.setState({
           isSidebarVisible: false,
           isHeaderVisible,
+        });
+      } else if (event.data === 'hide-allbar') {
+        this.setState({
+          isSidebarVisible: false,
+          isHeaderVisible: false,
         });
       }
     };
@@ -143,10 +164,7 @@ export class Layout extends React.PureComponent<Props, State> {
       if (issue) {
         return (
           <ErrorReporter>
-            <IssueComponent
-              branding={brandingData}
-              issue={issue}
-            />
+            <IssueComponent branding={brandingData} issue={issue} />
           </ErrorReporter>
         );
       }
@@ -158,37 +176,43 @@ export class Layout extends React.PureComponent<Props, State> {
     const logoUrl = this.props.branding.logoFile;
 
     return (
-      <Page
-        header={
-          <Header
-            history={history}
-            isVisible={isHeaderVisible}
-            logoUrl={logoUrl}
-            user={user}
-            logout={() => this.logout()}
-            toggleNav={() => this.toggleNav()}
-            changeTheme={theme => this.changeTheme(theme)}
-          />
-        }
-        sidebar={
-          <Sidebar
-            isManaged={IS_MANAGED_SIDEBAR}
-            isNavOpen={isSidebarVisible}
-            history={history}
-            theme={theme}
-          />
-        }
-        isManagedSidebar={IS_MANAGED_SIDEBAR}
+      <ToggleBarsContext.Provider
+        value={{
+          hideAll: () => this.hideAllBars(),
+          showAll: () => this.showAllBars(),
+        }}
       >
-        <ErrorBoundary>
-          <PreloadIssuesAlert />
-          <BannerAlert />
-          {this.props.children}
-        </ErrorBoundary>
-      </Page>
+        <Page
+          header={
+            <Header
+              history={history}
+              isVisible={isHeaderVisible}
+              logoUrl={logoUrl}
+              user={user}
+              logout={() => signOut()}
+              toggleNav={() => this.toggleNav()}
+              changeTheme={theme => this.changeTheme(theme)}
+            />
+          }
+          sidebar={
+            <Sidebar
+              isManaged={IS_MANAGED_SIDEBAR}
+              isNavOpen={isSidebarVisible}
+              history={history}
+              theme={theme}
+            />
+          }
+          isManagedSidebar={IS_MANAGED_SIDEBAR}
+        >
+          <ErrorBoundary>
+            <PreloadIssuesAlert />
+            <BannerAlert />
+            {this.props.children}
+          </ErrorBoundary>
+        </Page>
+      </ToggleBarsContext.Provider>
     );
   }
-
 }
 
 const mapStateToProps = (state: AppState) => ({
@@ -196,9 +220,7 @@ const mapStateToProps = (state: AppState) => ({
   user: selectUser(state),
 });
 
-const connector = connect(
-  mapStateToProps
-);
+const connector = connect(mapStateToProps);
 
-type MappedProps = ConnectedProps<typeof connector>
+type MappedProps = ConnectedProps<typeof connector>;
 export default connector(Layout);

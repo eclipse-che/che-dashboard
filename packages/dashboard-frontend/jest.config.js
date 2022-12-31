@@ -16,21 +16,27 @@ module.exports = {
   ...base,
   name: 'dashboard-frontend',
   displayName: 'Dashboard Frontend',
+  moduleDirectories: ['node_modules', '../../node_modules', 'src'],
   moduleNameMapper: {
-    '\\.(css|less|sass|scss|styl)$': '<rootDir>/__mocks__/styleMock.js',
+    '\\.(css|less|sass|scss|styl)$': 'identity-obj-proxy',
     '\\.(gif|ttf|eot|svg)$': '<rootDir>/__mocks__/fileMock.js',
-    'monaco-editor-core': 'monaco-editor-core/esm/vs/editor/editor.main'
+    'monaco-editor-core': 'monaco-editor-core/esm/vs/editor/editor.main',
+    'vscode-languageserver-protocol/lib/utils/is':
+      'vscode-languageserver-protocol/lib/common/utils/is',
+    'vscode-languageserver-protocol/lib/main': 'vscode-languageserver-protocol/lib/node/main',
   },
   globals: {
     'ts-jest': {
       tsconfig: 'tsconfig.test.json',
-    }
+      diagnostics: true,
+    },
   },
   setupFilesAfterEnv: ['./jest.setup.ts'],
   setupFiles: ['./src/inversify.config.ts'],
   collectCoverageFrom: [
     ...base.collectCoverageFrom,
 
+    '!src/**/__tests__/**',
     '!src/**/*.d.{ts,tsx}',
     '!src/**/*.config.ts',
     '!src/**/*.enum.ts',
@@ -40,10 +46,10 @@ module.exports = {
   ],
   coverageThreshold: {
     global: {
-      statements: 50,
-      branches: 36,
-      functions: 50,
-      lines: 50,
-    }
+      statements: 66,
+      branches: 55,
+      functions: 62,
+      lines: 66,
+    },
   },
-}
+};

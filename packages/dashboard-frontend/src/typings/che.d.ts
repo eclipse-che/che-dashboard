@@ -11,7 +11,6 @@
  */
 
 declare namespace che {
-
   export interface Workspace {
     id: string;
     projects?: any;
@@ -29,11 +28,19 @@ declare namespace che {
     usedResources?: string;
   }
 
-  export type WorkspaceStorageType = 'async' | 'ephemeral' | 'persistent';
+  export type WorkspaceStorageType =
+    | 'async'
+    | 'ephemeral'
+    | 'persistent'
+    | 'per-workspace'
+    | 'per-user'
+    | 'common'
+    | '';
 
   export interface WorkspaceSettings {
     cheWorkspaceDevfileRegistryUrl?: string;
     cheWorkspacePluginRegistryUrl?: string;
+    cheWorkspacePluginRegistryInternalUrl?: string;
     'che.workspace.storage.available_types': string;
     'che.workspace.storage.preferred_type': WorkspaceStorageType;
     supportedRecipeTypes: string;
@@ -65,6 +72,7 @@ declare namespace che {
     stackName?: string;
     errorMessage?: string;
     infrastructureNamespace: string;
+    convertedId?: string;
 
     [propName: string]: string | number | undefined;
   }
@@ -155,7 +163,14 @@ declare namespace che {
     globalMemoryLimit?: string;
     registry?: string;
     icon: string;
-    links: any;
+    links: {
+      v2?: string;
+      devWorkspaces?: {
+        [editorId: string]: string;
+      };
+      self: string;
+      [key: string]: any;
+    };
     tags: Array<string>;
   }
 

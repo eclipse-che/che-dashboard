@@ -14,23 +14,25 @@ import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { History } from 'history';
 import { AppState } from '../store';
-import { selectAllWorkspaces, selectIsLoading, selectWorkspacesError, } from '../store/Workspaces/selectors';
+import {
+  selectAllWorkspaces,
+  selectIsLoading,
+  selectWorkspacesError,
+} from '../store/Workspaces/selectors';
 import * as WorkspacesStore from '../store/Workspaces';
 import Fallback from '../components/Fallback';
 import WorkspacesList from '../pages/WorkspacesList';
-import WorkspaceActionsProvider from './WorkspaceActions';
-import { WorkspaceActionsConsumer } from './WorkspaceActions/context';
+import WorkspaceActionsProvider from '../contexts/WorkspaceActions/Provider';
+import { WorkspaceActionsConsumer } from '../contexts/WorkspaceActions';
 import { lazyInject } from '../inversify.config';
 import { AppAlerts } from '../services/alerts/appAlerts';
 import { AlertVariant } from '@patternfly/react-core';
 import { selectBranding } from '../store/Branding/selectors';
+import { isDevWorkspace } from '../services/devfileApi';
 
-type Props =
-  MappedProps
-  & { history: History };
+type Props = MappedProps & { history: History };
 
 export class WorkspacesListContainer extends React.PureComponent<Props> {
-
   @lazyInject(AppAlerts)
   private appAlerts: AppAlerts;
 
@@ -61,25 +63,38 @@ export class WorkspacesListContainer extends React.PureComponent<Props> {
       return Fallback;
     }
 
+    const UIDs = allWorkspaces.map(workspace => workspace.uid);
+    const filteredWorkspaces = allWorkspaces.filter(workspace => {
+      if (isDevWorkspace(workspace.ref)) {
+        return true;
+      }
+      if (workspace.isDeprecated === false) {
+        return true;
+      }
+      const convertedUID = workspace.ref.attributes?.convertedId;
+      if (convertedUID === undefined) {
+        return true;
+      }
+      return UIDs.includes(convertedUID) === false;
+    });
+
     return (
-      <WorkspaceActionsProvider>
+      <WorkspaceActionsProvider history={history}>
         <WorkspaceActionsConsumer>
           {context => (
             <WorkspacesList
               branding={branding}
               history={history}
-              workspaces={allWorkspaces}
-              onAction={(action, id) => context.handleAction(action, id)}
+              workspaces={filteredWorkspaces}
+              onAction={(action, uid) => context.handleAction(action, uid)}
               showConfirmation={wantDelete => context.showConfirmation(wantDelete)}
               toDelete={context.toDelete}
-            >
-            </WorkspacesList>
+            />
           )}
         </WorkspaceActionsConsumer>
       </WorkspaceActionsProvider>
     );
   }
-
 }
 
 const mapStateToProps = (state: AppState) => {
@@ -91,10 +106,7 @@ const mapStateToProps = (state: AppState) => {
   };
 };
 
-const connector = connect(
-  mapStateToProps,
-  WorkspacesStore.actionCreators
-);
+const connector = connect(mapStateToProps, WorkspacesStore.actionCreators);
 
 type MappedProps = ConnectedProps<typeof connector>;
 export default connector(WorkspacesListContainer);

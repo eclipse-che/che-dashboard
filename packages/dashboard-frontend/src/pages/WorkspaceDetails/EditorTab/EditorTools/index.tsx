@@ -12,11 +12,16 @@
 
 import React from 'react';
 import { Flex, FlexItem, Button, Divider } from '@patternfly/react-core';
-import { CompressIcon, CopyIcon, DownloadIcon, ExpandIcon } from '@patternfly/react-icons/dist/js/icons';
+import {
+  CompressIcon,
+  CopyIcon,
+  DownloadIcon,
+  ExpandIcon,
+} from '@patternfly/react-icons/dist/js/icons';
 import CopyToClipboard from 'react-copy-to-clipboard';
 import stringify from '../../../../services/helpers/editor';
 
-import './EditorTools.styl';
+import styles from './index.module.css';
 
 type Props = {
   devfile: che.WorkspaceDevfile;
@@ -55,7 +60,9 @@ class EditorTools extends React.PureComponent<Props, State> {
 
   public render(): React.ReactElement {
     const devfileText = stringify(this.props.devfile);
-    const devfileBlobUrl = URL.createObjectURL(new Blob([devfileText], { type: 'application/x-yaml' }));
+    const devfileBlobUrl = URL.createObjectURL(
+      new Blob([devfileText], { type: 'application/x-yaml' }),
+    );
 
     let copiedTimer;
     const onCopyToClipboard = () => {
@@ -69,27 +76,37 @@ class EditorTools extends React.PureComponent<Props, State> {
     };
 
     return (
-      <div className="editor-tools">
+      <div className={styles.editorTools}>
         <Flex>
           <FlexItem>
             <CopyToClipboard text={devfileText} onCopy={() => onCopyToClipboard()}>
               <Button variant="link">
-                <CopyIcon />{this.state.copied ? 'Copied' : 'Copy to clipboard'}
+                <CopyIcon />
+                {this.state.copied ? 'Copied' : 'Copy to clipboard'}
               </Button>
             </CopyToClipboard>
           </FlexItem>
           <Divider isVertical />
           <FlexItem>
-            <a download="devfile.yaml" href={devfileBlobUrl}><DownloadIcon />Download</a>
+            <a download="devfile.yaml" href={devfileBlobUrl}>
+              <DownloadIcon />
+              Download
+            </a>
           </FlexItem>
           <Divider isVertical />
           <FlexItem>
             <Button variant="link" onClick={() => this.handleExpand()}>
               {this.state.isExpanded ? (
-                <React.Fragment><CompressIcon />Compress</React.Fragment>
+                <React.Fragment>
+                  <CompressIcon />
+                  Compress
+                </React.Fragment>
               ) : (
-                  <React.Fragment><ExpandIcon />Expand</React.Fragment>
-                )}
+                <React.Fragment>
+                  <ExpandIcon />
+                  Expand
+                </React.Fragment>
+              )}
             </Button>
           </FlexItem>
         </Flex>

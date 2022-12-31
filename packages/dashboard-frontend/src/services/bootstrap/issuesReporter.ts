@@ -12,25 +12,36 @@
 
 import { injectable } from 'inversify';
 
-export type IssueType = 'cert'
+export type IssueType =
+  | 'cert'
   | 'sso'
+  | 'workspaceInactive'
+  | 'workspaceRunTimeout'
+  | 'workspaceStoppedError'
+  | 'workspaceStopped'
   | 'unknown';
 export type Issue = {
   type: IssueType;
   error: Error;
-}
+  data?: WorkspaceData;
+};
+
+export type WorkspaceData = {
+  ideLoaderPath: string;
+  workspaceDetailsPath: string;
+  timeout?: number;
+};
 
 @injectable()
 export class IssuesReporterService {
-
   private issues: Issue[] = [];
 
   public get hasIssue(): boolean {
     return this.issues.length !== 0;
   }
 
-  public registerIssue(type: IssueType, error: Error): void {
-    this.issues.push({ type, error });
+  public registerIssue(type: IssueType, error: Error, data?: WorkspaceData): void {
+    this.issues.push({ type, error, data });
   }
 
   public reportIssue(): Issue | undefined {
@@ -40,5 +51,4 @@ export class IssuesReporterService {
   public reportAllIssues(): Issue[] {
     return this.issues;
   }
-
 }

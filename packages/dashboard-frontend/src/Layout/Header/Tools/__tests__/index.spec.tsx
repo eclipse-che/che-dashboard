@@ -14,12 +14,11 @@ import { createHashHistory } from 'history';
 import React from 'react';
 import { Provider } from 'react-redux';
 import renderer from 'react-test-renderer';
-import { fireEvent, render, screen } from '@testing-library/react';
 import { Action, Store } from 'redux';
 import HeaderTools from '..';
 import { AppThunk } from '../../../../store';
 import { FakeStoreBuilder } from '../../../../store/__mocks__/storeBuilder';
-import { BrandingData } from '../../../../services/bootstrap/branding.constant';
+import { BrandingData, BRANDING_DEFAULT } from '../../../../services/bootstrap/branding.constant';
 import * as InfrastructureNamespacesStore from '../../../../store/InfrastructureNamespaces';
 
 jest.mock('gravatar-url', () => {
@@ -31,24 +30,22 @@ jest.mock('gravatar-url', () => {
 jest.mock('../../../../store/InfrastructureNamespaces', () => {
   return {
     actionCreators: {
-      requestNamespaces: (): AppThunk<Action, Promise<che.KubernetesNamespace[]>> => async (): Promise<che.KubernetesNamespace[]> => {
-        return Promise.resolve([]);
-      }
+      requestNamespaces:
+        (): AppThunk<Action, Promise<che.KubernetesNamespace[]>> =>
+        async (): Promise<che.KubernetesNamespace[]> => {
+          return Promise.resolve([]);
+        },
     } as InfrastructureNamespacesStore.ActionCreators,
   };
 });
 
 describe('Page header tools', () => {
   const mockLogout = jest.fn();
-  const mockChangeTheme = jest.fn();
-  const mockOnCopyLoginCommand = jest.fn();
-  global.open = jest.fn();
 
   const productCli = 'crwctl';
   const email = 'johndoe@example.com';
   const name = 'John Doe';
-  const helpTitle = 'Help';
-  const store = createStore(productCli, helpTitle, name, email);
+  const store = createStore(productCli, name, email);
   const history = createHashHistory();
   const user = {
     id: 'test-id',
@@ -59,13 +56,7 @@ describe('Page header tools', () => {
 
   const component = (
     <Provider store={store}>
-      <HeaderTools
-        history={history}
-        user={user}
-        logout={mockLogout}
-        changeTheme={mockChangeTheme}
-        onCopyLoginCommand={mockOnCopyLoginCommand}
-      />
+      <HeaderTools history={history} user={user} logout={mockLogout} />
     </Provider>
   );
 
@@ -76,117 +67,22 @@ describe('Page header tools', () => {
   it('should correctly render the component', () => {
     expect(renderer.create(component).toJSON()).toMatchSnapshot();
   });
-
-  it('should open the dropdown', () => {
-    render(component);
-
-    const menuButton = screen.getByRole('button', { name });
-    fireEvent.click(menuButton);
-
-    const items = screen.getAllByRole('menuitem');
-    expect(items.length).toEqual(4);
-  });
-
-  it('should fire the logout event', () => {
-    render(component);
-
-    const menuButton = screen.getByRole('button', { name });
-    fireEvent.click(menuButton);
-
-    const logoutItem = screen.getByRole('menuitem', { name: /logout/i });
-    fireEvent.click(logoutItem);
-
-    expect(mockLogout).toBeCalled();
-  });
-
-  it('should send a request', () => {
-    render(component);
-
-    const menuButton = screen.getByRole('button', { name });
-    fireEvent.click(menuButton);
-
-    const copyLoginCommandButton = screen.getByText(`Copy ${productCli} login command`);
-    fireEvent.click(copyLoginCommandButton);
-
-    expect(mockOnCopyLoginCommand).toBeCalled();
-  });
-
-  it('should open the info button', () => {
-    render(component);
-
-    const infoButton = screen.getByRole('button', { name: 'info button' });
-    fireEvent.click(infoButton);
-
-    const items = screen.getAllByRole('menuitem');
-    expect(items.length).toEqual(4);
-  });
-
-  it('should fire the make a wish event', () => {
-    render(component);
-
-    const infoButton = screen.getByRole('button', { name: 'info button' });
-    fireEvent.click(infoButton);
-
-    const makeAWishItem = screen.getByRole('menuitem', { name: /Make a wish/i });
-    fireEvent.click(makeAWishItem);
-
-    expect(global.open).toBeCalled();
-  });
-
-  it('should fire the documentation event', () => {
-    render(component);
-
-    const infoButton = screen.getByRole('button', { name: 'info button' });
-    fireEvent.click(infoButton);
-
-    const documentationItem = screen.getByRole('menuitem', { name: /Documentation/i });
-    fireEvent.click(documentationItem);
-
-    expect(global.open).toBeCalled();
-  });
-
-  it('should fire the community event', () => {
-    render(component);
-
-    const infoButton = screen.getByRole('button', { name: 'info button' });
-    fireEvent.click(infoButton);
-
-    const helpItem = screen.getByRole('menuitem', { name: new RegExp(helpTitle, 'i') });
-    fireEvent.click(helpItem);
-
-    expect(global.open).toBeCalled();
-  });
-
-  it('should fire the about dropdown event', () => {
-    render(component);
-
-    const infoButton = screen.getByRole('button', { name: 'info button' });
-    fireEvent.click(infoButton);
-
-    const aboutItem = screen.getByRole('menuitem', { name: /About/i });
-    fireEvent.click(aboutItem);
-
-    const dialog = screen.getByRole('dialog');
-    expect(dialog).not.toBeNull();
-  });
-
 });
 
-function createStore(cheCliTool: string, helpTitle: string, name: string, email: string): Store {
+function createStore(cheCliTool: string, name: string, email: string): Store {
   return new FakeStoreBuilder()
     .withUserProfile({
       attributes: {
         preferred_username: name,
       },
-      email
+      email,
     } as api.che.user.Profile)
     .withBranding({
-      helpTitle: helpTitle,
       configuration: {
-        cheCliTool
+        cheCliTool,
       },
-      docs: {
-      }
+      links: BRANDING_DEFAULT.links,
+      docs: {},
     } as BrandingData)
     .build();
 }

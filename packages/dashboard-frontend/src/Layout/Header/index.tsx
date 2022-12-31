@@ -12,16 +12,11 @@
 
 import { History } from 'history';
 import React from 'react';
-import {
-  Brand,
-  PageHeader,
-} from '@patternfly/react-core';
+import { Brand, PageHeader } from '@patternfly/react-core';
 import { User } from 'che';
 
 import HeaderTools from './Tools';
 import { ThemeVariant } from '../themeVariant';
-
-import * as styles from './index.module.css';
 
 type Props = {
   history: History;
@@ -37,7 +32,6 @@ type State = {
 };
 
 export default class Header extends React.PureComponent<Props, State> {
-
   constructor(props: Props) {
     super(props);
 
@@ -59,9 +53,8 @@ export default class Header extends React.PureComponent<Props, State> {
   }
 
   public render(): React.ReactElement {
-    const logo = <Brand src={this.props.logoUrl} alt='Logo' />;
-
-    const className = this.state.isVisible ? styles.headerShow : styles.headerHide;
+    const logo = <Brand src={this.props.logoUrl} alt="Logo" />;
+    const className = this.state.isVisible ? 'show-header' : 'hide-header';
 
     return (
       <PageHeader
@@ -76,11 +69,9 @@ export default class Header extends React.PureComponent<Props, State> {
             history={this.props.history}
             user={this.props.user}
             logout={() => this.props.logout()}
-            changeTheme={theme => this.props.changeTheme(theme)}
           />
         }
       />
     );
   }
-
 }

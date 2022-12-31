@@ -13,26 +13,19 @@
 import { createSelector } from 'reselect';
 import { AppState } from '../..';
 import * as storageTypesService from '../../../services/storageTypes';
+import { isDevworkspacesEnabled } from '../../../services/helpers/devworkspace';
 
 const selectState = (state: AppState) => state.workspacesSettings;
 export const selectWorkspacesSettingsState = selectState;
 
-export const selectWorkspacesSettings = createSelector(
-  selectState,
-  state => state.settings,
+export const selectWorkspacesSettings = createSelector(selectState, state => state.settings);
+
+export const selectAvailableStorageTypes = createSelector(selectWorkspacesSettings, settings =>
+  storageTypesService.getAvailable(settings),
 );
 
-export const selectAvailableStorageTypes = createSelector(
-  selectWorkspacesSettings,
-  settings => storageTypesService.getAvailable(settings)
-);
+export const selectWorkspacesSettingsError = createSelector(selectState, state => state.error);
 
-export const selectPreferredStorageType = createSelector(
-  selectWorkspacesSettings,
-  settings => storageTypesService.getPreferred(settings)
-);
-
-export const selectWorkspacesSettingsError = createSelector(
-  selectState,
-  state => state.error,
+export const selectDevworkspacesEnabled = createSelector(selectState, state =>
+  isDevworkspacesEnabled(state?.settings || {}),
 );

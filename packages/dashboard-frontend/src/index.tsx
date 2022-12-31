@@ -19,22 +19,13 @@ import '@patternfly/react-core/dist/styles/base.css';
 import 'monaco-editor-core/esm/vs/base/browser/ui/codiconLabel/codicon/codicon.css';
 import configureStore from './store/configureStore';
 import App from './App';
-import { PreloadData } from './services/bootstrap/PreloadData';
-import { container } from './inversify.config';
-import { KeycloakSetupService } from './services/keycloak/setup';
+import PreloadData from './services/bootstrap';
 
-import './overrides.styl';
+import './overrides.css';
 
 startApp();
 
 async function startApp(): Promise<void> {
-  const keycloakSetupService = container.get(KeycloakSetupService);
-  try {
-    await keycloakSetupService.start();
-  } catch (error) {
-    console.error('Keycloak initialization failed. ', error);
-  }
-
   const history = createHashHistory();
   const store = configureStore(history);
 
@@ -47,5 +38,14 @@ async function startApp(): Promise<void> {
     console.error('UD: preload data failed.', error);
   }
 
-  ReactDOM.render(<Provider store={store}><App history={history} /></Provider>, ROOT);
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('./service-worker.js');
+  }
+
+  ReactDOM.render(
+    <Provider store={store}>
+      <App history={history} />
+    </Provider>,
+    ROOT,
+  );
 }

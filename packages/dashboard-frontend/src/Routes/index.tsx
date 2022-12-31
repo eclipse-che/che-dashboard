@@ -12,15 +12,13 @@
 
 import React from 'react';
 import { Redirect, Route, RouteComponentProps, Switch } from 'react-router';
-
-import { ROUTE } from '../route.enum';
-import { buildFactoryLoaderLocation, sanitizeLocation } from '../services/helpers/location';
+import { buildFactoryLoaderPath } from '../preload';
+import { ROUTE } from './routes';
 
 const CreateWorkspace = React.lazy(() => import('../pages/GetStarted'));
 const WorkspacesListContainer = React.lazy(() => import('../containers/WorkspacesList'));
 const WorkspaceDetailsContainer = React.lazy(() => import('../containers/WorkspaceDetails'));
-const IdeLoaderContainer = React.lazy(() => import('../containers/IdeLoader'));
-const FactoryLoaderContainer = React.lazy(() => import('../containers/FactoryLoader'));
+const LoaderContainer = React.lazy(() => import('../containers/Loader'));
 const UserPreferences = React.lazy(() => import('../pages/UserPreferences'));
 const UserAccount = React.lazy(() => import('../pages/UserAccount'));
 
@@ -34,51 +32,37 @@ const items: RouteItem[] = [
   { to: ROUTE.HOME, component: CreateWorkspace },
   { to: ROUTE.WORKSPACES, component: WorkspacesListContainer },
   { to: ROUTE.WORKSPACE_DETAILS, component: WorkspaceDetailsContainer },
-  { to: ROUTE.IDE_LOADER, component: IdeLoaderContainer },
-  { to: ROUTE.LOAD_FACTORY, component: FactoryLoaderContainer },
+  { to: ROUTE.IDE_LOADER, component: LoaderContainer },
+  { to: ROUTE.FACTORY_LOADER, component: LoaderContainer },
   { to: ROUTE.USER_PREFERENCES, component: UserPreferences },
   { to: ROUTE.USER_ACCOUNT, component: UserAccount },
 ];
 
 function Routes(): React.ReactElement {
   const routes = items.map(item => (
-    <Route exact
-      key={item.to}
-      path={item.to}
-      component={item.component}
-    />
+    <Route exact key={item.to} path={item.to} component={item.component} />
   ));
   return (
     <Switch>
-      <Route
-        key="simple-factory-url-1"
-        path="/http:\/\/*"
-        render={redirectToFactoryLoader}
-      />
-      <Route
-        key="simple-factory-url-2"
-        path="/https:\/\/*"
-        render={redirectToFactoryLoader}
-      />
+      <Route key="simple-factory-url-1" path="/http:\/\/*" render={redirectToFactoryLoader} />
+      <Route key="simple-factory-url-2" path="/https:\/\/*" render={redirectToFactoryLoader} />
       {...routes}
-      <Redirect
-        key="redirect-to-home"
-        path='*'
-        to='/'
-      />
+      <Redirect key="redirect-to-home" path="*" to={ROUTE.HOME} />
     </Switch>
   );
 }
 
 function redirectToFactoryLoader(props: RouteComponentProps): React.ReactElement {
-  const location = props.location;
-  if (location.pathname.startsWith('/')) {
-    location.pathname = location.pathname.substring(1);
+  const { pathname, search } = props.location;
+  let factoryUrl = pathname.substring(1) + search;
+  if (!factoryUrl.includes('?')) {
+    factoryUrl = factoryUrl.replace('&', '?');
   }
-  const newLocation = sanitizeLocation(location);
-  const factoryUrl = newLocation.pathname + newLocation.search;
-  const factoryLoaderLocation = buildFactoryLoaderLocation(factoryUrl);
-  return <Redirect to={factoryLoaderLocation} />;
+  const factoryLoaderPath = buildFactoryLoaderPath(factoryUrl).replace(
+    /^\/f/,
+    ROUTE.FACTORY_LOADER,
+  );
+  return <Redirect key="redirect-to-factory" to={factoryLoaderPath} />;
 }
 
 Routes.displayName = 'RoutesComponent';

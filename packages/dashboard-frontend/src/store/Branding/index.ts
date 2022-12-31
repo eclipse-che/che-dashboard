@@ -14,11 +14,12 @@ import { Action, Reducer } from 'redux';
 import { fetchBranding } from '../../services/assets/branding';
 import { AppThunk } from '..';
 import { merge } from 'lodash';
+import axios from 'axios';
+import common from '@eclipse-che/common';
 import { BRANDING_DEFAULT, BrandingData } from '../../services/bootstrap/branding.constant';
-import { container } from '../../inversify.config';
-import { CheWorkspaceClient } from '../../services/workspace-client/cheWorkspaceClient';
-import { getErrorMessage } from '../../services/helpers/getErrorMessage';
-import { createState } from '../helpers';
+import { createObject } from '../helpers';
+import { isForbidden, isInternalServerError } from '../../services/workspace-client/helpers';
+import { signIn } from '../../services/helpers/login';
 
 const ASSET_PREFIX = './assets/branding/';
 
@@ -42,20 +43,15 @@ export interface ReceivedBrandingErrorAction {
   error: string;
 }
 
-type KnownAction =
-  RequestBrandingAction
-  | ReceivedBrandingAction
-  | ReceivedBrandingErrorAction;
+type KnownAction = RequestBrandingAction | ReceivedBrandingAction | ReceivedBrandingErrorAction;
 
 export type ActionCreators = {
   requestBranding: () => AppThunk<KnownAction, Promise<void>>;
 };
 
-const cheWorkspaceClient = container.get(CheWorkspaceClient);
-
 export const actionCreators: ActionCreators = {
-
-  requestBranding: (): AppThunk<KnownAction, Promise<void>> =>
+  requestBranding:
+    (): AppThunk<KnownAction, Promise<void>> =>
     async (dispatch): Promise<void> => {
       const url = `${ASSET_PREFIX}product.json`;
 
@@ -63,28 +59,46 @@ export const actionCreators: ActionCreators = {
         type: 'REQUEST_BRANDING',
       });
 
+      let branding: BrandingData;
       try {
         const receivedBranding = await fetchBranding(url);
-        const branding = getBrandingData(receivedBranding);
-        const productVersion = await cheWorkspaceClient.restApiClient.getApiInfo();
-
-        // Use the products version if specified in product.json, otherwise use the default version given by che server
-        branding.productVersion = branding.productVersion ? branding.productVersion : productVersion['implementationVersion'];
-
+        branding = getBrandingData(receivedBranding);
         dispatch({
           type: 'RECEIVED_BRANDING',
           data: branding,
         });
       } catch (e) {
-        const errorMessage = `Failed to fetch branding data by URL: "${url}", reason: ` + getErrorMessage(e);
+        const errorMessage =
+          `Failed to fetch branding data by URL: "${url}", reason: ` +
+          common.helpers.errors.getMessage(e);
         dispatch({
           type: 'RECEIVED_BRANDING_ERROR',
           error: errorMessage,
         });
         throw errorMessage;
       }
-    },
 
+      // Use the products version if specified in product.json, otherwise use the default version given by che server
+      if (!branding.productVersion) {
+        try {
+          const apiInfo = await getApiInfo();
+          branding.productVersion = apiInfo.implementationVersion;
+
+          dispatch({
+            type: 'RECEIVED_BRANDING',
+            data: branding,
+          });
+        } catch (e) {
+          const errorMessage =
+            'OPTIONS request to "/api/" failed, reason: ' + common.helpers.errors.getMessage(e);
+          dispatch({
+            type: 'RECEIVED_BRANDING_ERROR',
+            error: errorMessage,
+          });
+          throw errorMessage;
+        }
+      }
+    },
 };
 
 const unloadedState: State = {
@@ -92,7 +106,10 @@ const unloadedState: State = {
   data: getBrandingData(),
 };
 
-export const reducer: Reducer<State> = (state: State | undefined, incomingAction: Action): State => {
+export const reducer: Reducer<State> = (
+  state: State | undefined,
+  incomingAction: Action,
+): State => {
   if (state === undefined) {
     return unloadedState;
   }
@@ -100,17 +117,17 @@ export const reducer: Reducer<State> = (state: State | undefined, incomingAction
   const action = incomingAction as KnownAction;
   switch (action.type) {
     case 'REQUEST_BRANDING':
-      return createState(state, {
+      return createObject(state, {
         isLoading: true,
         error: undefined,
       });
     case 'RECEIVED_BRANDING':
-      return createState(state, {
+      return createObject(state, {
         isLoading: false,
         data: action.data,
       });
     case 'RECEIVED_BRANDING_ERROR':
-      return createState(state, {
+      return createObject(state, {
         isLoading: false,
         error: action.error,
       });
@@ -118,6 +135,27 @@ export const reducer: Reducer<State> = (state: State | undefined, incomingAction
       return state;
   }
 };
+
+async function getApiInfo(): Promise<{
+  buildInfo: string;
+  implementationVendor: string;
+  implementationVersion: string;
+  scmRevision: string;
+  specificationTitle: string;
+  specificationVendor: string;
+  specificationVersion: string;
+}> {
+  try {
+    const { data } = await axios.options('/api/');
+    return data;
+  } catch (e) {
+    const errorMessage = common.helpers.errors.getMessage(e);
+    if (isInternalServerError(e) || isForbidden(e)) {
+      signIn();
+    }
+    throw errorMessage;
+  }
+}
 
 function getBrandingData(receivedBranding?: { [key: string]: any }): BrandingData {
   let branding: BrandingData = Object.assign({}, BRANDING_DEFAULT);

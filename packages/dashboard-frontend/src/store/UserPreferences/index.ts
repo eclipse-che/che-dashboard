@@ -12,12 +12,12 @@
 
 // This state defines the type of data maintained in the Redux store.
 
-import { createState } from '../helpers';
 import { Action, Reducer } from 'redux';
+import common from '@eclipse-che/common';
+import { createObject } from '../helpers';
 import { AppThunk } from '..';
 import { container } from '../../inversify.config';
-import { CheWorkspaceClient } from '../../services/workspace-client/cheWorkspaceClient';
-import { ContainerCredentials, RegistryRow } from './types';
+import { CheWorkspaceClient } from '../../services/workspace-client/cheworkspace/cheWorkspaceClient';
 
 const WorkspaceClient = container.get(CheWorkspaceClient);
 
@@ -32,57 +32,49 @@ interface RequestUserPreferencesAction {
 
 interface ReceiveUserPreferencesAction {
   type: 'RECEIVE_USER_PREFERENCES';
-  preferences: che.UserPreferences
+  preferences: che.UserPreferences;
 }
 
-type KnownAction = RequestUserPreferencesAction
-  | ReceiveUserPreferencesAction;
+type KnownAction = RequestUserPreferencesAction | ReceiveUserPreferencesAction;
 
 export type ActionCreators = {
   requestUserPreferences: (filter: string | undefined) => AppThunk<KnownAction, Promise<void>>;
-  replaceUserPreferences: (preferences: che.UserPreferences) => AppThunk<KnownAction, Promise<void>>;
-  updateContainerRegistries: (registries: RegistryRow[]) => AppThunk<KnownAction, Promise<void>>;
+  replaceUserPreferences: (
+    preferences: che.UserPreferences,
+  ) => AppThunk<KnownAction, Promise<void>>;
 };
 
 export const actionCreators: ActionCreators = {
-  requestUserPreferences: (filter: string | undefined): AppThunk<KnownAction, Promise<void>> => async (dispatch): Promise<void> => {
-    dispatch({ type: 'REQUEST_USER_PREFERENCES' });
-
-    try {
-      const data = await WorkspaceClient.restApiClient.getUserPreferences(filter);
-      dispatch({ type: 'RECEIVE_USER_PREFERENCES', preferences: data });
-      return;
-    } catch (e) {
-      throw new Error(e.message ? e.message : 'Failed to request user preferences');
-    }
-  },
-  replaceUserPreferences: (preferences: che.UserPreferences): AppThunk<KnownAction, Promise<void>> => async (dispatch): Promise<void> => {
-    dispatch({ type: 'REQUEST_USER_PREFERENCES' });
-
-    try {
-      await WorkspaceClient.restApiClient.replaceUserPreferences(preferences);
-      dispatch({ type: 'RECEIVE_USER_PREFERENCES', preferences });
-      return;
-    } catch (e) {
-      throw new Error(e.message ? e.message : 'Failed to replace user preferences');
-    }
-  },
-  updateContainerRegistries: (registries: RegistryRow[]): AppThunk<KnownAction, Promise<void>> => async (dispatch): Promise<void> => {
-    const newContainerCredentials: ContainerCredentials = {};
-    registries.forEach(item => {
-      const { url, username, password } = item;
-      newContainerCredentials[url] = { username, password };
-    });
-    try {
-      const prefUpdate = { dockerCredentials: btoa(JSON.stringify(newContainerCredentials)) };
+  requestUserPreferences:
+    (filter: string | undefined): AppThunk<KnownAction, Promise<void>> =>
+    async (dispatch): Promise<void> => {
       dispatch({ type: 'REQUEST_USER_PREFERENCES' });
-      const preferences = await WorkspaceClient.restApiClient.updateUserPreferences(prefUpdate);
-      dispatch({ type: 'RECEIVE_USER_PREFERENCES', preferences });
-      return;
-    } catch (e) {
-      throw new Error(e.message ? e.message : 'Failed to update docker registries');
-    }
-  },
+
+      try {
+        const data = await WorkspaceClient.restApiClient.getUserPreferences(filter);
+        dispatch({ type: 'RECEIVE_USER_PREFERENCES', preferences: data });
+        return;
+      } catch (e) {
+        const errorMessage =
+          'Failed to request user preferences, reason: ' + common.helpers.errors.getMessage(e);
+        throw new Error(errorMessage);
+      }
+    },
+  replaceUserPreferences:
+    (preferences: che.UserPreferences): AppThunk<KnownAction, Promise<void>> =>
+    async (dispatch): Promise<void> => {
+      dispatch({ type: 'REQUEST_USER_PREFERENCES' });
+
+      try {
+        await WorkspaceClient.restApiClient.replaceUserPreferences(preferences);
+        dispatch({ type: 'RECEIVE_USER_PREFERENCES', preferences });
+        return;
+      } catch (e) {
+        const errorMessage =
+          'Failed to update user preferences, reason: ' + common.helpers.errors.getMessage(e);
+        throw new Error(errorMessage);
+      }
+    },
 };
 
 const unloadedState: State = {
@@ -90,7 +82,10 @@ const unloadedState: State = {
   isLoading: false,
 };
 
-export const reducer: Reducer<State> = (state: State | undefined, incomingAction: Action): State => {
+export const reducer: Reducer<State> = (
+  state: State | undefined,
+  incomingAction: Action,
+): State => {
   if (state === undefined) {
     return unloadedState;
   }
@@ -98,13 +93,13 @@ export const reducer: Reducer<State> = (state: State | undefined, incomingAction
   const action = incomingAction as KnownAction;
   switch (action.type) {
     case 'REQUEST_USER_PREFERENCES':
-      return createState(state, {
+      return createObject(state, {
         isLoading: true,
       });
     case 'RECEIVE_USER_PREFERENCES':
-      return createState(state, {
+      return createObject(state, {
         isLoading: false,
-        preferences: action.preferences
+        preferences: action.preferences,
       });
     default:
       return state;

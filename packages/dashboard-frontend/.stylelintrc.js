@@ -11,8 +11,12 @@
  */
 
 module.exports = {
-  'extends': [
+  extends: [
     'stylelint-config-standard',
-    'stylelint-config-rational-order',
-  ]
+  ],
+  rules: {
+    'selector-class-pattern': null,
+    'custom-property-pattern': null,
+    'keyframes-name-pattern': null,
+  }
 }

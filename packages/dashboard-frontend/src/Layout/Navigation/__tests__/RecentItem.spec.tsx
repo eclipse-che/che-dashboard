@@ -24,17 +24,17 @@ import { FakeStoreBuilder } from '../../../store/__mocks__/storeBuilder';
 
 jest.mock('../../../components/Workspace/Indicator', () => {
   return function DummyWorkspaceIndicator(): React.ReactElement {
-    return (<div>Dummy Workspace Indicator</div>);
+    return <div>Dummy Workspace Indicator</div>;
   };
 });
 
 describe('Navigation Item', () => {
-
   const item: NavigationRecentItemObject = {
-    status: '',
+    status: WorkspaceStatus.STOPPED,
     label: 'workspace',
     to: '/namespace/workspace',
-    workspaceId: 'test-wrks-id'
+    isDevWorkspace: false,
+    workspaceUID: 'test-wrks-id',
   };
 
   afterEach(() => {
@@ -90,7 +90,6 @@ describe('Navigation Item', () => {
   });
 
   describe('activation', () => {
-
     it('should render not active navigation item', () => {
       render(buildElement(item));
 
@@ -113,17 +112,26 @@ describe('Navigation Item', () => {
       const link = screen.getByTestId(item.to);
       expect(link).toHaveAttribute('aria-current');
     });
-
   });
-
 });
 
-function buildElement(item: NavigationRecentItemObject, activeItem = '', isDefaultExpanded = false): JSX.Element {
+function buildElement(
+  item: NavigationRecentItemObject,
+  activeItem = '',
+  isDefaultExpanded = false,
+): JSX.Element {
   const store = new FakeStoreBuilder().build();
   const history = createHashHistory();
-  return (<Provider store={store}>
-    <MemoryRouter>
-      <NavigationRecentItem isDefaultExpanded={isDefaultExpanded} item={item} activePath={activeItem} history={history} />
-    </MemoryRouter>
-  </Provider>);
+  return (
+    <Provider store={store}>
+      <MemoryRouter>
+        <NavigationRecentItem
+          isDefaultExpanded={isDefaultExpanded}
+          item={item}
+          activePath={activeItem}
+          history={history}
+        />
+      </MemoryRouter>
+    </Provider>
+  );
 }

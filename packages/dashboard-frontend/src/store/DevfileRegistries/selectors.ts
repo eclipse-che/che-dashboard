@@ -14,6 +14,11 @@ import { createSelector } from 'reselect';
 import { AppState } from '..';
 import match from '../../services/helpers/filter';
 import { selectWorkspacesSettingsState } from '../Workspaces/Settings/selectors';
+import { isDevworkspacesEnabled } from '../../services/helpers/devworkspace';
+import { load } from 'js-yaml';
+import devfileApi from '../../services/devfileApi';
+
+export const EMPTY_WORKSPACE_TAG = 'Empty';
 
 const selectState = (state: AppState) => state.devfileRegistries;
 
@@ -26,36 +31,29 @@ export const selectRegistriesMetadata = createSelector(
       return metadata.map(meta => Object.assign({ registry }, meta));
     });
     const metadata = mergeRegistriesMetadata(registriesMetadata);
-    const cheDevworkspaceEnabled = workspacesSettingsState.settings['che.devworkspaces.enabled'] === 'true';
+    const cheDevworkspaceEnabled = isDevworkspacesEnabled(workspacesSettingsState.settings);
     if (cheDevworkspaceEnabled) {
       return filterDevfileV2Metadata(metadata);
     } else {
       return metadata;
     }
-
-  }
+  },
 );
 
-export const selectRegistriesErrors = createSelector(
-  selectState,
-  state => {
-    const errors: Array<{ url: string, errorMessage: string }> = [];
-    for (const [url, value] of Object.entries(state.registries)) {
-      if (value.error) {
-        errors.push({
-          url,
-          errorMessage: value.error,
-        });
-      }
+export const selectRegistriesErrors = createSelector(selectState, state => {
+  const errors: Array<{ url: string; errorMessage: string }> = [];
+  for (const [url, value] of Object.entries(state.registries)) {
+    if (value.error) {
+      errors.push({
+        url,
+        errorMessage: value.error,
+      });
     }
-    return errors;
   }
-);
+  return errors;
+});
 
-export const selectFilterValue = createSelector(
-  selectState,
-  state => state.filter
-);
+export const selectFilterValue = createSelector(selectState, state => state.filter);
 
 export const selectMetadataFiltered = createSelector(
   selectState,
@@ -66,15 +64,45 @@ export const selectMetadataFiltered = createSelector(
       return metadata;
     }
     return metadata.filter(meta => matches(meta, filterValue));
-  }
+  },
+);
+
+export const selectEmptyWorkspaceUrl = createSelector(
+  selectState,
+  selectRegistriesMetadata,
+  (state, metadata) => {
+    const v2Metadata = filterDevfileV2Metadata(metadata);
+    const emptyWorkspaceMetadata = v2Metadata.find(meta => meta.tags.includes(EMPTY_WORKSPACE_TAG));
+    return emptyWorkspaceMetadata?.links?.v2;
+  },
+);
+
+export const selectDefaultDevfile = createSelector(
+  selectState,
+  selectEmptyWorkspaceUrl,
+  (state, devfileLocation) => {
+    if (!devfileLocation) {
+      return undefined;
+    }
+    const devfileContent = state.devfiles[devfileLocation]?.content;
+    if (devfileContent) {
+      try {
+        return load(devfileContent) as devfileApi.Devfile;
+      } catch (e) {
+        console.error(e);
+      }
+    }
+    return undefined;
+  },
 );
 
 function matches(meta: che.DevfileMetaData, filterValue: string): boolean {
-  return match(meta.displayName, filterValue)
-    || match(meta.description || '', filterValue);
+  return match(meta.displayName, filterValue) || match(meta.description || '', filterValue);
 }
 
-function mergeRegistriesMetadata(registriesMetadata: Array<Array<che.DevfileMetaData>>): Array<che.DevfileMetaData> {
+function mergeRegistriesMetadata(
+  registriesMetadata: Array<Array<che.DevfileMetaData>>,
+): Array<che.DevfileMetaData> {
   return registriesMetadata.reduce((mergedMetadata, registryMetadata) => {
     return mergedMetadata.concat(registryMetadata);
   }, []);
@@ -84,12 +112,11 @@ function filterDevfileV2Metadata(metadata: Array<che.DevfileMetaData>): Array<ch
   return metadata.filter(metadata => metadata.links?.v2);
 }
 
-export const selectDevfileSchema = createSelector(
-  selectState,
-  state => state.schema.schema,
-);
+export const selectDevfileSchema = createSelector(selectState, state => state.schema.schema);
 
-export const selectDevfileSchemaError = createSelector(
+export const selectDevfileSchemaError = createSelector(selectState, state => state.schema.error);
+
+export const selectDevWorkspaceResources = createSelector(
   selectState,
-  state => state.schema.error,
+  state => state.devWorkspaceResources,
 );

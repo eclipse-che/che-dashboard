@@ -12,27 +12,35 @@
 
 import { AlertVariant } from '@patternfly/react-core';
 import * as React from 'react';
+import { Devfile } from '../workspace-adapter';
+
+export type ActionCallback = {
+  title: string;
+  callback: () => void;
+};
 
 export interface AlertItem {
   key: string;
   title: string;
   variant: AlertVariant;
   children?: React.ReactNode;
+  actionCallbacks?: ActionCallback[];
+  error?: never;
 }
 
 export interface FactoryResolver {
   v: string;
   source?: string;
-  devfile: api.che.workspace.devfile.Devfile;
+  devfile: Devfile;
   location?: string;
   scm_info?: FactoryResolverScmInfo;
   links: api.che.core.rest.Link[];
 }
 
 export type FactoryResolverScmInfo = {
-  'clone_url': string;
-  'scm_provider': string;
-  'branch'?: string;
+  clone_url: string;
+  scm_provider: string;
+  branch?: string;
 };
 
 export type DevfileV2ProjectSource = {
@@ -40,8 +48,10 @@ export type DevfileV2ProjectSource = {
   git: {
     remotes: { origin: string };
     checkoutFrom?: { revision: string };
-  }
+  };
 };
+
+export type DeprecatedWorkspaceStatus = 'Deprecated';
 
 export enum WorkspaceStatus {
   RUNNING = 'RUNNING',
@@ -53,17 +63,21 @@ export enum WorkspaceStatus {
 
 export enum DevWorkspaceStatus {
   FAILED = 'Failed',
+  FAILING = 'Failing',
   STARTING = 'Starting',
   TERMINATING = 'Terminating',
   RUNNING = 'Running',
   STOPPED = 'Stopped',
-  STOPPING = 'Stopping'
+  STOPPING = 'Stopping',
 }
 
-export type CreateWorkspaceTab = 'quick-add'
-  | 'custom-workspace';
+export function isDevWorkspaceStatus(status: unknown): status is DevWorkspaceStatus {
+  return Object.values(DevWorkspaceStatus).includes(status as DevWorkspaceStatus);
+}
 
-export enum IdeLoaderTab {
+export type CreateWorkspaceTab = 'quick-add' | 'custom-workspace';
+
+export enum LoaderTab {
   Progress = 0,
   Logs = 1,
 }
@@ -85,3 +99,7 @@ export enum WorkspaceAction {
   RESTART_WORKSPACE = 'Restart Workspace',
   EDIT_WORKSPACE = 'Edit Workspace',
 }
+
+export type UserPreferencesTab = 'container-registries';
+
+export type WorkspacesLogs = Map<string, string[]>;

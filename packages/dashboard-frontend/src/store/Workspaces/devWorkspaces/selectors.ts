@@ -12,18 +12,33 @@
 
 import { createSelector } from 'reselect';
 import { AppState } from '../..';
+import { DevWorkspaceStatus } from '../../../services/helpers/types';
+import { selectRunningWorkspacesLimit } from '../../ClusterConfig/selectors';
 
-const selectState = (state: AppState) => state.cheWorkspaces;
+const selectState = (state: AppState) => state.devWorkspaces;
 export const selectDevWorkspacesState = selectState;
 
-export const selectAllDevWorkspaces = createSelector(
-  selectState,
-  state => {
-    return state.workspaces;
-  }
-);
+export const selectDevWorkspacesResourceVersion = createSelector(selectState, state => {
+  return state.resourceVersion;
+});
 
-export const selectDevWorkspacesError = createSelector(
-  selectState,
-  state => state.error,
+export const selectAllDevWorkspaces = createSelector(selectState, state => {
+  return state.workspaces;
+});
+
+export const selectDevWorkspacesError = createSelector(selectState, state => state.error);
+
+export const selectRunningDevWorkspaces = createSelector(selectState, state => {
+  return state.workspaces.filter(
+    workspace =>
+      workspace.status?.phase === DevWorkspaceStatus.STARTING ||
+      workspace.status?.phase === DevWorkspaceStatus.RUNNING,
+  );
+});
+
+export const selectRunningDevWorkspacesLimitExceeded = createSelector(
+  selectRunningDevWorkspaces,
+  selectRunningWorkspacesLimit,
+  (runningDevWorkspaces, runningWorkspacesLimit) =>
+    runningDevWorkspaces.length >= runningWorkspacesLimit,
 );

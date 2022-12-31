@@ -25,6 +25,16 @@ while [[ "$#" -gt 0 ]]; do
   shift 1
 done
 
+sed_in_place() {
+    SHORT_UNAME=$(uname -s)
+  if [ "$(uname)" == "Darwin" ]; then
+    sed -i '' "$@"
+  elif [ "${SHORT_UNAME:0:5}" == "Linux" ]; then
+    sed -i "$@"
+  fi
+}
+
+
 bump_version () {
   CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
 
@@ -37,22 +47,24 @@ bump_version () {
   update_pkgs_versions $NEXT_VERSION
 
   if [[ ${NOCOMMIT} -eq 0 ]]; then
-    COMMIT_MSG="[release] Bump to ${NEXT_VERSION} in ${BUMP_BRANCH}"
+    COMMIT_MSG="chore: Bump to ${NEXT_VERSION} in ${BUMP_BRANCH}"
     git commit -asm "${COMMIT_MSG}"
     git pull origin "${BUMP_BRANCH}"
 
+    set +e
     PUSH_TRY="$(git push origin "${BUMP_BRANCH}")"
     # shellcheck disable=SC2181
     if [[ $? -gt 0 ]] || [[ $PUSH_TRY == *"protected branch hook declined"* ]]; then
-      PR_BRANCH=pr-${BUMP_BRANCH}-to-${NEXT_VERSION}
-      # create pull request for main branch, as branch is restricted
-      git branch "${PR_BRANCH}"
-      git checkout "${PR_BRANCH}"
-      git pull origin "${PR_BRANCH}"
-      git push origin "${PR_BRANCH}"
-      lastCommitComment="$(git log -1 --pretty=%B)"
-      hub pull-request -f -m "${lastCommitComment}" -b "${BUMP_BRANCH}" -h "${PR_BRANCH}"
+        # create pull request for main branch, as branch is restricted
+        PR_BRANCH=pr-${BUMP_BRANCH}-to-${NEXT_VERSION}
+        git branch "${PR_BRANCH}"
+        git checkout "${PR_BRANCH}"
+        git pull origin "${PR_BRANCH}"
+        git push origin "${PR_BRANCH}"
+        lastCommitComment="$(git log -1 --pretty=%B)"
+        hub pull-request -f -m "${lastCommitComment}" -b "${BUMP_BRANCH}" -h "${PR_BRANCH}"
     fi
+    set -e
   fi
   git checkout "${CURRENT_BRANCH}"
 }
@@ -64,11 +76,9 @@ function update_pkgs_versions() {
   # update each package version
   lerna version --no-git-tag-version -y "${VER}"
   # update excluded dependencies vesion
-  sed -i '' -r \
-    -e "s/@eclipse-che\/dashboard-backend@.*\`/@eclipse-che\/dashboard-backend@$VER\`/" \
-    -e "s/@eclipse-che\/dashboard-frontend@.*\`/@eclipse-che\/dashboard-frontend@$VER\`/" \
-    -e "s/@eclipse-che\/dashboard-static-server@.*\`/@eclipse-che\/dashboard-static-server@$VER\`/" \
-    .deps/EXCLUDED/prod.md
+  sed_in_place -e "s/@eclipse-che\/dashboard-backend@.*\`/@eclipse-che\/dashboard-backend@${VER}\`/" .deps/EXCLUDED/prod.md
+  sed_in_place -e "s/@eclipse-che\/dashboard-frontend@.*\`/@eclipse-che\/dashboard-frontend@${VER}\`/" .deps/EXCLUDED/prod.md
+  sed_in_place -e "s/@eclipse-che\/common@.*\`/@eclipse-che\/common@${VER}\`/" .deps/EXCLUDED/prod.md
   # we don't have all deps resolved. So, do no fail in case of failure
   # yarn license:generate || true
 }
@@ -112,7 +122,7 @@ update_pkgs_versions $VERSION
 
 # commit change into branch
 if [[ ${NOCOMMIT} -eq 0 ]]; then
-  COMMIT_MSG="[release] Bump to ${VERSION} in ${BRANCH}"
+  COMMIT_MSG="chore: Bump to ${VERSION} in ${BRANCH}"
   git commit -asm "${COMMIT_MSG}"
   git pull origin "${BRANCH}"
   git push origin "${BRANCH}"
@@ -125,17 +135,17 @@ if [[ $TAG_RELEASE -eq 1 ]]; then
   git push origin "${VERSION}"
 fi
 
-# now update ${BASEBRANCH} to the new snapshot version
+# now update ${BASEBRANCH} to the new version
 git checkout "${BASEBRANCH}"
 
 # change VERSION file + commit change into ${BASEBRANCH} branch
 if [[ "${BASEBRANCH}" != "${BRANCH}" ]]; then
   # bump the y digit, if it is a major release
   [[ $BRANCH =~ ^([0-9]+)\.([0-9]+)\.x ]] && BASE=${BASH_REMATCH[1]}; NEXT=${BASH_REMATCH[2]}; (( NEXT=NEXT+1 )) # for BRANCH=7.10.x, get BASE=7, NEXT=11
-  NEXT_VERSION_Y="${BASE}.${NEXT}.0-SNAPSHOT"
+  NEXT_VERSION_Y="${BASE}.${NEXT}.0-next"
   bump_version "${NEXT_VERSION_Y}" "${BASEBRANCH}"
 fi
 # bump the z digit
 [[ $VERSION =~ ^([0-9]+)\.([0-9]+)\.([0-9]+) ]] && BASE="${BASH_REMATCH[1]}.${BASH_REMATCH[2]}"; NEXT="${BASH_REMATCH[3]}"; (( NEXT=NEXT+1 )) # for VERSION=7.7.1, get BASE=7.7, NEXT=2
-NEXT_VERSION_Z="${BASE}.${NEXT}-SNAPSHOT"
+NEXT_VERSION_Z="${BASE}.${NEXT}-next"
 bump_version "${NEXT_VERSION_Z}" "${BRANCH}"

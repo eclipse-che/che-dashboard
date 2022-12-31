@@ -11,7 +11,7 @@
  */
 
 .nameColumnTitle {
-  margin-left: 23px;
+  margin-left: 40px;
 }
 
 .lastModifiedColumnTitle {
@@ -23,5 +23,10 @@
 }
 
 .openIdeCell {
+  width: 80px !important;
+  max-width: 80px !important;
+  overflow: hidden !important;
+  white-space: nowrap !important;
   text-align: right;
+  text-overflow: ellipsis !important;
 }

@@ -1,0 +1,108 @@
+#
+# Copyright (c) 2020-2021 Red Hat, Inc.
+# This program and the accompanying materials are made
+# available under the terms of the Eclipse Public License 2.0
+# which is available at https://www.eclipse.org/legal/epl-2.0/
+#
+# SPDX-License-Identifier: EPL-2.0
+#
+
+name: Next container image
+
+on:
+  workflow_dispatch:
+    inputs: {}
+  push:
+    branches:
+      - main
+
+env:
+  IMAGE: quay.io/eclipse/che-dashboard
+
+jobs:
+
+  build-images:
+    runs-on: ubuntu-20.04
+    strategy:
+      fail-fast: false
+      matrix:
+        arch: [amd64,arm64,ppc64le]
+    outputs:
+      amd64: ${{ steps.result.outputs.amd64 }}
+      arm64: ${{ steps.result.outputs.arm64 }}
+      ppc64le: ${{ steps.result.outputs.ppc64le }}
+    steps:
+      -
+        name: "Checkout Che Dashboard source code"
+        uses: actions/checkout@v2
+      -
+        name: "Set up QEMU"
+        uses: docker/setup-qemu-action@v1
+      -
+        name: "Set up Docker Buildx ${{ matrix.arch }}"
+        uses: docker/setup-buildx-action@v1
+      -
+        name: "Docker quay.io Login"
+        uses: docker/login-action@v1
+        with:
+          registry: quay.io
+          username: ${{ secrets.QUAY_USERNAME }}
+          password: ${{ secrets.QUAY_PASSWORD }}
+      -
+        name: "Docker docker.io Login"
+        uses: docker/login-action@v1
+        with:
+          registry: docker.io
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_PASSWORD }}
+      -
+        name: "Build and push ${{ matrix.arch }}"
+        uses: docker/build-push-action@v2
+        with:
+          cache-from: type=registry,ref=${{ env.CACHE_IMAGE_FULL }}
+          cache-to: type=registry,ref=${{ env.CACHE_IMAGE_FULL }},mode=max
+          context: .
+          file: ./build/dockerfiles/Dockerfile
+          platforms: linux/${{ matrix.arch }}
+          push: true
+          tags: ${{ env.IMAGE }}:${{ matrix.arch }}-next
+      -
+        id: result
+        name: "Build result outputs version"
+        if: ${{ success() }}
+        run: echo "::set-output name=${{ matrix.arch }}::${{ matrix.arch }}-next"
+
+  create-manifest:
+    if: always()
+    needs: build-images
+    runs-on: ubuntu-20.04
+    steps:
+      -
+        name: "Docker quay.io Login"
+        uses: docker/login-action@v1
+        with:
+          registry: quay.io
+          username: ${{ secrets.QUAY_USERNAME }}
+          password: ${{ secrets.QUAY_PASSWORD }}
+      -
+        name: "Create and push manifest"
+        run: |
+          AMEND=""
+          AMD64_VERSION="${{ needs['build-images'].outputs.amd64 }}"
+          if [ -n "$AMD64_VERSION" ]; then
+            AMEND+=" --amend ${{ env.IMAGE }}:$AMD64_VERSION";
+          fi
+          ARM64_VERSION="${{ needs['build-images'].outputs.arm64 }}"
+          if [ -n "$ARM64_VERSION" ]; then
+            AMEND+=" --amend ${{ env.IMAGE }}:$ARM64_VERSION";
+          fi
+          PPC64LE_VERSION="${{ needs['build-images'].outputs.ppc64le }}"
+          if [ -n "$PPC64LE_VERSION" ]; then
+            AMEND+=" --amend ${{ env.IMAGE }}:$PPC64LE_VERSION";
+          fi
+          if [ -z "$AMEND" ]; then
+            echo "[!] The job 'build-images' didn't provide any outputs. Can't create the manifest list."
+            exit 1;
+          fi
+          docker manifest create ${{ env.IMAGE }}:next $AMEND
+          docker manifest push ${{ env.IMAGE }}:next

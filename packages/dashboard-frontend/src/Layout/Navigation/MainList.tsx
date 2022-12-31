@@ -14,21 +14,25 @@ import React from 'react';
 import { NavList } from '@patternfly/react-core';
 import NavigationMainItem from './MainItem';
 import { NavigationItemObject } from '.';
-import { ROUTE } from '../../route.enum';
+import { ROUTE } from '../../Routes/routes';
 import { AppState } from '../../store';
 import { connect, ConnectedProps } from 'react-redux';
-import { selectAllWorkspacesNumber } from '../../store/Workspaces/selectors';
+import { selectAllWorkspaces } from '../../store/Workspaces/selectors';
 
-type Props =
-  MappedProps
-  & {
-    activePath: string,
-  };
+type Props = MappedProps & {
+  activePath: string;
+};
 
 export class NavigationMainList extends React.PureComponent<Props> {
-
   private get items(): NavigationItemObject[] {
-    const { allWorkspacesNumber } = this.props;
+    const { allWorkspaces } = this.props;
+
+    const allWorkspacesNumber = allWorkspaces.filter(workspace => {
+      if (workspace.isDevWorkspace) {
+        return true;
+      }
+      return (workspace.ref as che.Workspace).attributes?.convertedId === undefined;
+    }).length;
 
     return [
       { to: ROUTE.GET_STARTED, label: 'Create Workspace' },
@@ -40,30 +44,18 @@ export class NavigationMainList extends React.PureComponent<Props> {
     const { activePath } = this.props;
 
     const navItems = this.items.map(item => {
-      return (
-        <NavigationMainItem
-          key={item.label}
-          item={item}
-          activePath={activePath}
-        />
-      );
+      return <NavigationMainItem key={item.label} item={item} activePath={activePath} />;
     });
 
-    return (
-      <NavList>
-        {navItems}
-      </NavList>
-    );
+    return <NavList>{navItems}</NavList>;
   }
 }
 
 const mapStateToProps = (state: AppState) => ({
-  allWorkspacesNumber: selectAllWorkspacesNumber(state),
+  allWorkspaces: selectAllWorkspaces(state),
 });
 
-const connector = connect(
-  mapStateToProps,
-);
+const connector = connect(mapStateToProps);
 
-type MappedProps = ConnectedProps<typeof connector>
+type MappedProps = ConnectedProps<typeof connector>;
 export default connector(NavigationMainList);

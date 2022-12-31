@@ -24,13 +24,12 @@ const brandingData = {
 } as BrandingData;
 
 describe('Issue component', () => {
-
   it('should render the certification error', () => {
     const issue = {
       type: 'cert',
       error: new Error('Certificate Error Message'),
     } as Issue;
-    const component = (<IssueComponent branding={brandingData} issue={issue} />);
+    const component = <IssueComponent branding={brandingData} issue={issue} />;
 
     expect(renderer.create(component).toJSON()).toMatchSnapshot();
   });
@@ -40,7 +39,117 @@ describe('Issue component', () => {
       type: 'sso',
       error: new Error('SSO Error Message'),
     } as Issue;
-    const component = (<IssueComponent branding={brandingData} issue={issue} />);
+    const component = <IssueComponent branding={brandingData} issue={issue} />;
+
+    expect(renderer.create(component).toJSON()).toMatchSnapshot();
+  });
+
+  it('should render the workspaceInactive error', () => {
+    const issue = {
+      type: 'workspaceInactive',
+      error: new Error('The workspace is inactive.'),
+      data: { ideLoaderPath: '', workspaceDetailsPath: '' },
+    } as Issue;
+    const component = <IssueComponent branding={brandingData} issue={issue} />;
+
+    expect(renderer.create(component).toJSON()).toMatchSnapshot();
+  });
+
+  it('should render the workspaceInactive error with timeout with seconds', () => {
+    const issue = {
+      type: 'workspaceInactive',
+      error: new Error('The workspace is inactive.'),
+      data: { ideLoaderPath: '', workspaceDetailsPath: '', timeout: 40 },
+    } as Issue;
+    const component = <IssueComponent branding={brandingData} issue={issue} />;
+
+    expect(renderer.create(component).toJSON()).toMatchSnapshot();
+  });
+
+  it('should render the workspaceInactive error with timeout with minutes', () => {
+    const issue = {
+      type: 'workspaceInactive',
+      error: new Error('The workspace is inactive.'),
+      data: { ideLoaderPath: '', workspaceDetailsPath: '', timeout: 300 },
+    } as Issue;
+    const component = <IssueComponent branding={brandingData} issue={issue} />;
+
+    expect(renderer.create(component).toJSON()).toMatchSnapshot();
+  });
+
+  it('should render the workspaceInactive error with timeout with minutes and seconds', () => {
+    const issue = {
+      type: 'workspaceInactive',
+      error: new Error('The workspace is inactive.'),
+      data: { ideLoaderPath: '', workspaceDetailsPath: '', timeout: 320 },
+    } as Issue;
+    const component = <IssueComponent branding={brandingData} issue={issue} />;
+
+    expect(renderer.create(component).toJSON()).toMatchSnapshot();
+  });
+
+  it('should render the workspaceRunTimeout error', () => {
+    const issue = {
+      type: 'workspaceRunTimeout',
+      error: new Error('workspaceRunTimeout error message'),
+      data: { ideLoaderPath: '', workspaceDetailsPath: '' },
+    } as Issue;
+    const component = <IssueComponent branding={brandingData} issue={issue} />;
+
+    expect(renderer.create(component).toJSON()).toMatchSnapshot();
+  });
+
+  it('should render the workspaceRunTimeout error with timeout with seconds', () => {
+    const issue = {
+      type: 'workspaceRunTimeout',
+      error: new Error('workspaceRunTimeout error message'),
+      data: { ideLoaderPath: '', workspaceDetailsPath: '', timeout: 40 },
+    } as Issue;
+    const component = <IssueComponent branding={brandingData} issue={issue} />;
+
+    expect(renderer.create(component).toJSON()).toMatchSnapshot();
+  });
+
+  it('should render the workspaceRunTimeout error with timeout with minutes', () => {
+    const issue = {
+      type: 'workspaceRunTimeout',
+      error: new Error('workspaceRunTimeout error message'),
+      data: { ideLoaderPath: '', workspaceDetailsPath: '', timeout: 300 },
+    } as Issue;
+    const component = <IssueComponent branding={brandingData} issue={issue} />;
+
+    expect(renderer.create(component).toJSON()).toMatchSnapshot();
+  });
+
+  it('should render the workspaceRunTimeout error with timeout with minutes and seconds', () => {
+    const issue = {
+      type: 'workspaceRunTimeout',
+      error: new Error('workspaceRunTimeout error message'),
+      data: { ideLoaderPath: '', workspaceDetailsPath: '', timeout: 320 },
+    } as Issue;
+    const component = <IssueComponent branding={brandingData} issue={issue} />;
+
+    expect(renderer.create(component).toJSON()).toMatchSnapshot();
+  });
+
+  it('should render the workspaceStoppedError error', () => {
+    const issue = {
+      type: 'workspaceStoppedError',
+      error: new Error('workspaceStoppedError error message'),
+      data: { ideLoaderPath: '', workspaceDetailsPath: '' },
+    } as Issue;
+    const component = <IssueComponent branding={brandingData} issue={issue} />;
+
+    expect(renderer.create(component).toJSON()).toMatchSnapshot();
+  });
+
+  it('should render the workspaceStopped error', () => {
+    const issue = {
+      type: 'workspaceStopped',
+      error: new Error('workspaceStopped error message'),
+      data: { ideLoaderPath: '', workspaceDetailsPath: '' },
+    } as Issue;
+    const component = <IssueComponent branding={brandingData} issue={issue} />;
 
     expect(renderer.create(component).toJSON()).toMatchSnapshot();
   });
@@ -50,9 +159,8 @@ describe('Issue component', () => {
       type: 'unknown',
       error: new Error('Unknown Error Message'),
     } as Issue;
-    const component = (<IssueComponent branding={brandingData} issue={issue} />);
+    const component = <IssueComponent branding={brandingData} issue={issue} />;
 
     expect(renderer.create(component).toJSON()).toMatchSnapshot();
   });
-
 });

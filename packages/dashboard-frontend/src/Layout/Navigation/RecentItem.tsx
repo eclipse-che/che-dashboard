@@ -20,10 +20,10 @@ import styles from './index.module.css';
 import NavigationItemWorkspaceActions from './RecentItemWorkspaceActions';
 
 function NavigationRecentItem(props: {
-  item: NavigationRecentItemObject,
-  activePath: string,
-  history: History,
-  isDefaultExpanded?: boolean,
+  item: NavigationRecentItemObject;
+  activePath: string;
+  history: History;
+  isDefaultExpanded?: boolean;
 }): React.ReactElement {
   return (
     <NavItem
@@ -32,14 +32,43 @@ function NavigationRecentItem(props: {
       isActive={getActivity(props.item.to, props.activePath)}
       className={styles.navItem}
       preventDefault={true}
-      onClick={() => props.history.push(props.item.to)}
+      onClick={() =>
+        handleClick(
+          props.history,
+          props.item.to,
+          props.item.workspaceUID,
+          props.item.isDevWorkspace,
+        )
+      }
     >
-      <span data-testid="recent-workspace-item"><WorkspaceIndicator
-        status={props.item.status} />{props.item.label}</span>
-      <NavigationItemWorkspaceActions item={props.item} history={props.history}
-        isDefaultExpanded={props.isDefaultExpanded} />
+      <span data-testid="recent-workspace-item">
+        <WorkspaceIndicator status={props.item.status} />
+        {props.item.label}
+      </span>
+      <NavigationItemWorkspaceActions
+        item={props.item}
+        history={props.history}
+        isDefaultExpanded={props.isDefaultExpanded}
+      />
     </NavItem>
   );
+}
+
+/**
+ * Open the link in a new tab if it's a devWorkspace, else open in it in the current window in iframe
+ */
+function handleClick(
+  history: History,
+  location: string,
+  workspaceUID: string,
+  isDevWorkspace: boolean,
+) {
+  if (isDevWorkspace) {
+    const link = `#${location}`;
+    window.open(link, workspaceUID);
+  } else {
+    history.push(location);
+  }
 }
 
 NavigationRecentItem.displayName = 'NavigationRecentItemComponent';

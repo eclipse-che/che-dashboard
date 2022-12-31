@@ -26,21 +26,20 @@ import {
 import { AppState } from '../../../../store';
 import { connect, ConnectedProps } from 'react-redux';
 import { OutlinedQuestionCircleIcon, PencilAltIcon } from '@patternfly/react-icons';
-import { selectAvailableStorageTypes, selectPreferredStorageType } from '../../../../store/Workspaces/Settings/selectors';
+import { selectAvailableStorageTypes } from '../../../../store/Workspaces/Settings/selectors';
 import * as storageTypeService from '../../../../services/storageTypes';
 import { selectBranding } from '../../../../store/Branding/selectors';
 
 import overviewStyles from '../index.module.css';
 import styles from './index.module.css';
+import { selectPvcStrategy } from '../../../../store/ServerConfig/selectors';
 
-type Props =
-  MappedProps
-  & {
-    readonly: boolean;
-    storageType?: che.WorkspaceStorageType;
-    onSave?: (storageType: che.WorkspaceStorageType) => void;
-  };
-type State = {
+export type Props = MappedProps & {
+  readonly: boolean;
+  storageType?: che.WorkspaceStorageType;
+  onSave?: (storageType: che.WorkspaceStorageType) => void;
+};
+export type State = {
   isSelectorOpen?: boolean;
   selected?: che.WorkspaceStorageType;
   isInfoOpen?: boolean;
@@ -60,13 +59,12 @@ export class StorageTypeFormGroup extends React.PureComponent<Props, State> {
     };
 
     const availableTypes = this.props.availableStorageTypes;
+
     if (Array.isArray(availableTypes)) {
       this.storageTypes = availableTypes;
-      this.storageTypes.forEach(type =>
-        this.options.push(storageTypeService.toTitle(type))
-      );
+      this.storageTypes.forEach(type => this.options.push(storageTypeService.toTitle(type)));
     }
-    const preferredType = this.props.preferredStorageType;
+    const preferredType = this.props.preferredStorageType as che.WorkspaceStorageType;
     if (preferredType) {
       this.preferredType = preferredType;
     }
@@ -94,84 +92,204 @@ export class StorageTypeFormGroup extends React.PureComponent<Props, State> {
     }));
   }
 
-  private getExistingTypes(): { hasAsync: boolean, hasPersistent: boolean, hasEphemeral: boolean } {
+  private getExistingTypes(): {
+    hasAsync: boolean;
+    hasPersistent: boolean;
+    hasEphemeral: boolean;
+    hasPerUser: boolean;
+    hasPerWorkspace: boolean;
+  } {
     const hasAsync = this.storageTypes.some(type => type === 'async');
     const hasPersistent = this.storageTypes.some(type => type === 'persistent');
     const hasEphemeral = this.storageTypes.some(type => type === 'ephemeral');
+    const hasPerUser = this.storageTypes.some(type => type === 'per-user');
+    const hasPerWorkspace = this.storageTypes.some(type => type === 'per-workspace');
 
-    return { hasAsync, hasPersistent, hasEphemeral };
+    return { hasAsync, hasPersistent, hasEphemeral, hasPerUser, hasPerWorkspace };
   }
 
   private getInfoModalContent(): React.ReactNode {
-    const { hasAsync, hasPersistent, hasEphemeral } = this.getExistingTypes();
+    const { hasAsync, hasPersistent, hasEphemeral, hasPerUser, hasPerWorkspace } =
+      this.getExistingTypes();
 
-    const asyncTypeDescr = hasAsync ?
-      (<Text><span className={styles.experimentalStorageType}> Experimental feature </span><br />
+    const asyncTypeDescr = hasAsync ? (
+      <Text>
+        <span className={styles.experimentalStorageType}> Experimental feature </span>
+        <br />
         <b>Asynchronous Storage </b>
-        is combination of Ephemeral and Persistent storages. It allows for faster I / O and keeps your changes,
-        it does backup the workspace on stop and restores it on start.</Text>) : '';
-    const persistentTypeDescr = hasPersistent ?
-      (<Text><b>Persistent Storage</b> is slow I/O but persistent.</Text>) : '';
-    const ephemeralTypeDescr = hasEphemeral ?
-      (<Text><b>Ephemeral Storage</b> allows for faster I/O but may have limited
-        storage and is not persistent.</Text>) : '';
+        is combination of Ephemeral and Persistent storages. It allows for faster I / O and keeps
+        your changes, it does backup the workspace on stop and restores it on start.
+      </Text>
+    ) : (
+      ''
+    );
+    const persistentTypeDescr = hasPersistent ? (
+      <Text>
+        <b>Persistent Storage</b> is slow I/O but persistent.
+      </Text>
+    ) : (
+      ''
+    );
+    const ephemeralTypeDescr = hasEphemeral ? (
+      <Text>
+        <b>Ephemeral Storage</b> allows for faster I/O but may have limited storage and is not
+        persistent.
+      </Text>
+    ) : (
+      ''
+    );
+    const perUserTypeDescr = hasPerUser ? (
+      <Text>
+        <b>Per-user Storage</b> one PVC is provisioned per namespace. All of the workspace&apos;s
+        storage (volume mounts) mounted in it on subpaths according to devworkspace ID.
+      </Text>
+    ) : (
+      ''
+    );
+    const perWorkspaceTypeDescr = hasPerWorkspace ? (
+      <Text>
+        <b>Per-workspace Storage</b> a PVC is provisioned for each workspace within the namespace.
+        All of the workspace&apos;s storage (volume mounts) are mounted on subpaths within the
+        workspace&apos;s PVC.
+      </Text>
+    ) : (
+      ''
+    );
+
     const href = this.props.branding.docs.storageTypes;
 
-    return (<TextContent>
-      {persistentTypeDescr}
-      {ephemeralTypeDescr}
-      {asyncTypeDescr}
-      <Text><a rel="noreferrer" target="_blank" href={href}>Open documentation page</a></Text>
-    </TextContent>);
+    return (
+      <TextContent>
+        {persistentTypeDescr}
+        {perUserTypeDescr}
+        {perWorkspaceTypeDescr}
+        {ephemeralTypeDescr}
+        {asyncTypeDescr}
+        <Text>
+          <a rel="noreferrer" target="_blank" href={href}>
+            Open documentation page
+          </a>
+        </Text>
+      </TextContent>
+    );
   }
 
   private getSelectorModal(): React.ReactNode {
-    const { hasAsync, hasPersistent, hasEphemeral } = this.getExistingTypes();
+    const { hasAsync, hasPersistent, hasEphemeral, hasPerUser, hasPerWorkspace } =
+      this.getExistingTypes();
+
     const { isSelectorOpen, selected } = this.state;
     const originSelection = this.props.storageType ? this.props.storageType : this.preferredType;
 
-    const asyncTypeDescr = hasAsync ?
-      (<Text component={TextVariants.h6}><Radio
-        label="Asynchronous" name="asynchronous" id="async-type-radio"
-        description={`Asynchronous this is combination of Ephemeral and Persistent storage. Allows for faster I/O
+    const asyncTypeDescr = hasAsync ? (
+      <Text component={TextVariants.h6}>
+        <Radio
+          label="Asynchronous"
+          name="asynchronous"
+          id="async-type-radio"
+          description={`Asynchronous this is combination of Ephemeral and Persistent storage. Allows for faster I/O
          and keeps your changes, will backup on stop and restores on start.`}
-        isChecked={selected === 'async'}
-        onChange={() => this.setState({ selected: 'async' })}
-      /></Text>) : '';
-    const persistentTypeDescr = hasPersistent ?
-      (<Text component={TextVariants.h6}><Radio
-        label="Persistent" name="persistent" id="persistent-type-radio"
-        description="Persistent Storage slow I/O but persistent."
-        isChecked={selected === 'persistent'}
-        onChange={() => this.setState({ selected: 'persistent' })}
-      /></Text>) : '';
-    const ephemeralTypeDescr = hasEphemeral ?
-      (<Text component={TextVariants.h6}><Radio
-        label="Ephemeral" name="ephemeral" id="ephemeral-type-radio"
-        description="Ephemeral Storage allows for faster I/O but may have limited storage and is not persistent."
-        isChecked={selected === 'ephemeral'}
-        onChange={() => this.setState({ selected: 'ephemeral' })}
-      /></Text>) : '';
+          isChecked={selected === 'async'}
+          onChange={() => this.setState({ selected: 'async' })}
+        />
+      </Text>
+    ) : (
+      ''
+    );
+    const persistentTypeDescr = hasPersistent ? (
+      <Text component={TextVariants.h6}>
+        <Radio
+          label="Persistent"
+          name="persistent"
+          id="persistent-type-radio"
+          description="Persistent Storage slow I/O but persistent."
+          isChecked={selected === 'persistent'}
+          onChange={() => this.setState({ selected: 'persistent' })}
+        />
+      </Text>
+    ) : (
+      ''
+    );
+    const ephemeralTypeDescr = hasEphemeral ? (
+      <Text component={TextVariants.h6}>
+        <Radio
+          label="Ephemeral"
+          name="ephemeral"
+          id="ephemeral-type-radio"
+          description="Ephemeral Storage allows for faster I/O but may have limited storage and is not persistent."
+          isChecked={selected === 'ephemeral'}
+          onChange={() => this.setState({ selected: 'ephemeral' })}
+        />
+      </Text>
+    ) : (
+      ''
+    );
+    const perUserTypeDescr = hasPerUser ? (
+      <Text component={TextVariants.h6}>
+        <Radio
+          label="Per-user"
+          name="per-user"
+          id="per-user-type-radio"
+          description="Per-user Storage. One PVC is provisioned per user namespace and used by all workspaces of a given user"
+          isChecked={selected === 'per-user'}
+          onChange={() => this.setState({ selected: 'per-user' })}
+        />
+      </Text>
+    ) : (
+      ''
+    );
+    const perWorkspaceTypeDescr = hasPerWorkspace ? (
+      <Text component={TextVariants.h6}>
+        <Radio
+          label="Per-workspace"
+          name="per-workspace"
+          id="per-workspace-type-radio"
+          description="Per-workspace Storage. One PVC is provisioned for each workspace within the namespace."
+          isChecked={selected === 'per-workspace'}
+          onChange={() => this.setState({ selected: 'per-workspace' })}
+        />
+      </Text>
+    ) : (
+      ''
+    );
 
     return (
-      <Modal variant={ModalVariant.small} isOpen={isSelectorOpen} className={styles.modalEditStorageType}
+      <Modal
+        variant={ModalVariant.small}
+        isOpen={isSelectorOpen}
+        className={styles.modalEditStorageType}
         title="Edit Storage Type"
         onClose={() => this.handleCancelChanges()}
         actions={[
-          <Button key="confirm" variant="primary" isDisabled={originSelection === selected}
-            onClick={() => this.handleConfirmChanges()}>Save</Button>,
-          <Button key="cancel" variant="secondary" onClick={() => this.handleCancelChanges()}>Cancel</Button>,
+          <Button
+            key="confirm"
+            variant="primary"
+            isDisabled={originSelection === selected}
+            onClick={() => this.handleConfirmChanges()}
+          >
+            Save
+          </Button>,
+          <Button key="cancel" variant="secondary" onClick={() => this.handleCancelChanges()}>
+            Cancel
+          </Button>,
         ]}
       >
         <TextContent>
-          <Alert variant={AlertVariant.warning} className={styles.warningAlert}
-            title="Note that after changing the storage type you may lose workspace data." isInline />
+          <Alert
+            variant={AlertVariant.warning}
+            className={styles.warningAlert}
+            title="Note that after changing the storage type you may lose workspace data."
+            isInline
+          />
           <Text component={TextVariants.h6}>Select the storage type</Text>
           {persistentTypeDescr}
+          {perUserTypeDescr}
+          {perWorkspaceTypeDescr}
           {ephemeralTypeDescr}
           {asyncTypeDescr}
         </TextContent>
-      </Modal>);
+      </Modal>
+    );
   }
 
   private handleConfirmChanges(): void {
@@ -207,12 +325,9 @@ export class StorageTypeFormGroup extends React.PureComponent<Props, State> {
           >
             <OutlinedQuestionCircleIcon />
           </Button>
-        }>
-        {readonly && (
-          <span className={overviewStyles.readonly}>
-            {selected}
-          </span>
-        )}
+        }
+      >
+        {readonly && <span className={overviewStyles.readonly}>{selected}</span>}
         {!readonly && (
           <span className={overviewStyles.editable}>
             {selected}
@@ -230,7 +345,9 @@ export class StorageTypeFormGroup extends React.PureComponent<Props, State> {
           title="Storage Type info"
           variant={ModalVariant.small}
           isOpen={isInfoOpen}
-          onClose={() => { this.handleInfoToggle(); }}
+          onClose={() => {
+            this.handleInfoToggle();
+          }}
         >
           {this.getInfoModalContent()}
         </Modal>
@@ -242,12 +359,10 @@ export class StorageTypeFormGroup extends React.PureComponent<Props, State> {
 const mapStateToProps = (state: AppState) => ({
   branding: selectBranding(state),
   availableStorageTypes: selectAvailableStorageTypes(state),
-  preferredStorageType: selectPreferredStorageType(state),
+  preferredStorageType: selectPvcStrategy(state),
 });
 
-const connector = connect(
-  mapStateToProps,
-);
+const connector = connect(mapStateToProps);
 
 type MappedProps = ConnectedProps<typeof connector>;
 export default connector(StorageTypeFormGroup);

@@ -10,12 +10,12 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-const CopyPlugin = require('copy-webpack-plugin');
 const StylelintPlugin = require('stylelint-webpack-plugin');
 const CleanTerminalPlugin = require('clean-terminal-webpack-plugin');
 const merge = require('webpack-merge');
 const path = require('path');
 const webpack = require('webpack');
+const loaderUtils = require('loader-utils');
 
 const common = require('./webpack.config.common.js');
 
@@ -32,7 +32,18 @@ const config = {
             options: {
               modules: {
                 auto: true,
-                localIdentName: '[hash:base64]',
+                localIdentName: '[local]_[hash]',
+                getLocalIdent: (context, localIdentName, localName) => {
+                  if (localName.startsWith('pf-') ||
+                    localName.startsWith('monaco')
+                  ) {
+                    // preserve PatternFly class names
+                    return localName;
+                  }
+                  const hash = loaderUtils.getHashDigest(context.context, 'md5', 'hex');
+                  return localIdentName.replace('[local]', localName).replace('[hash]', hash);
+                },
+                context: path.resolve(__dirname),
               },
             },
           },
@@ -42,16 +53,10 @@ const config = {
   },
   plugins: [
     new webpack.DefinePlugin({
-      __isBrowser__: "true",
+      __isBrowser__: 'true',
       'process.env.ENVIRONMENT': JSON.stringify('production'),
     }),
     new webpack.ProgressPlugin(),
-    new CopyPlugin({
-      patterns: [
-        { from: path.join(__dirname, 'assets'), to: 'assets' },
-        { from: path.join(__dirname, 'static'), to: 'static' },
-      ]
-    }),
     new StylelintPlugin({
       context: path.join(__dirname, 'src'),
       files: '**/*.css',
@@ -59,9 +64,6 @@ const config = {
     }),
     new CleanTerminalPlugin(),
   ],
-  output: {
-    publicPath: './',
-  },
 };
 
 module.exports = (env = {}) => {

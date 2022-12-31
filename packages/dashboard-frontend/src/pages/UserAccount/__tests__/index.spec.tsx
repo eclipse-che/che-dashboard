@@ -12,7 +12,6 @@
 
 import { createHashHistory } from 'history';
 import React from 'react';
-import { render, screen } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import renderer from 'react-test-renderer';
 import { Store } from 'redux';
@@ -23,7 +22,6 @@ import { selectBranding } from '../../../store/Branding/selectors';
 import { selectUserProfile } from '../../../store/UserProfile/selectors';
 
 describe('UserAccount page', () => {
-
   const history = createHashHistory();
 
   const getComponent = (store: Store): React.ReactElement => {
@@ -44,16 +42,12 @@ describe('UserAccount page', () => {
   };
 
   it('should correctly render the component without profile data', () => {
-    const store = new FakeStoreBuilder().withBranding({
-      name: 'test',
-    } as BrandingData).build();
+    const store = new FakeStoreBuilder()
+      .withBranding({
+        name: 'test',
+      } as BrandingData)
+      .build();
     const component = getComponent(store);
-    render(component);
-
-    const editAccountButton = screen.queryByLabelText('edit account info');
-    expect(editAccountButton).toBeTruthy();
-    expect(editAccountButton).toBeDisabled();
-
     const json = renderer.create(component).toJSON();
 
     expect(json).toMatchSnapshot();
@@ -62,7 +56,7 @@ describe('UserAccount page', () => {
   it('should correctly render the component which contains profile data', () => {
     const store = new FakeStoreBuilder()
       .withBranding({
-        name: 'Product name'
+        name: 'Product name',
       } as BrandingData)
       .withUserProfile({
         attributes: {
@@ -75,14 +69,8 @@ describe('UserAccount page', () => {
       })
       .build();
     const component = getComponent(store);
-    render(component);
-
-    const editAccountButton = screen.getByLabelText('edit account info');
-    expect(editAccountButton).toBeDisabled();
-
     const json = renderer.create(component).toJSON();
 
     expect(json).toMatchSnapshot();
   });
-
 });

@@ -16,51 +16,64 @@ import { RenderResult, render, screen } from '@testing-library/react';
 import { FakeStoreBuilder } from '../../../../store/__mocks__/storeBuilder';
 import { SamplesListTab } from '..';
 import { selectIsLoading } from '../../../../store/Workspaces/selectors';
-import { selectPreferredStorageType, selectWorkspacesSettings } from '../../../../store/Workspaces/Settings/selectors';
+import { selectWorkspacesSettings } from '../../../../store/Workspaces/Settings/selectors';
 import { BrandingData } from '../../../../services/bootstrap/branding.constant';
+import { Devfile } from '../../../../services/workspace-adapter';
+import { selectPvcStrategy } from '../../../../store/ServerConfig/selectors';
+import { api as dashboardBackendApi } from '@eclipse-che/common';
 
-const onDevfileMock: (devfileContent: string, stackName: string, optionalFilesContent?: { [fileName: string]: string }) => Promise<void> = jest.fn().mockResolvedValue(true);
+const onDevfileMock: (
+  devfileContent: string,
+  stackName: string,
+  optionalFilesContent?: { [fileName: string]: string },
+) => Promise<void> = jest.fn().mockResolvedValue(true);
 
 const testStackName = 'http://test-location/';
 const testDevfileName = 'Custom Devfile';
 const testDevfile = {
   apiVersion: '1.0.0',
   metadata: { name: testDevfileName },
-} as che.WorkspaceDevfile;
+} as Devfile;
 
-jest.mock(
-  '../SamplesListGallery',
-  () => {
-    const FakeSamplesListGallery = (props: {
-      onCardClick: (devfileContent: string, stackName: string) => void
-    }) => <div>
-        <button data-testid="sample-item-id" onClick={() => {
+jest.mock('../SamplesListGallery', () => {
+  const FakeSamplesListGallery = (props: {
+    onCardClick: (devfileContent: string, stackName: string) => void;
+  }) => (
+    <div>
+      <button
+        data-testid="sample-item-id"
+        onClick={() => {
           props.onCardClick(JSON.stringify(testDevfile), testStackName);
-        }}>logout</button>
-      </div>;
-    FakeSamplesListGallery.displayName = 'SamplesListGallery';
-    return FakeSamplesListGallery;
-  },
-);
+        }}
+      >
+        logout
+      </button>
+    </div>
+  );
+  FakeSamplesListGallery.displayName = 'SamplesListGallery';
+  return FakeSamplesListGallery;
+});
 
 describe('Samples list tab', () => {
-
   afterEach(() => {
     jest.resetAllMocks();
   });
 
-  const renderComponent = (
-    preferredStorageType: che.WorkspaceStorageType,
-  ): RenderResult => {
+  const renderComponent = (preferredStorageType: che.WorkspaceStorageType): RenderResult => {
     const brandingData = {
       name: 'Product Name',
       docs: {
-        storageTypes: 'https://dummy.location'
-      }
+        storageTypes: 'https://dummy.location',
+      },
     } as BrandingData;
     const store = new FakeStoreBuilder()
+      .withDwServerConfig({
+        defaults: {
+          pvcStrategy: preferredStorageType,
+        },
+      } as dashboardBackendApi.IServerConfig)
       .withWorkspacesSettings({
-        'che.workspace.storage.preferred_type': preferredStorageType
+        'che.workspace.storage.preferred_type': preferredStorageType,
       } as che.WorkspaceSettings)
       .withCheWorkspaces({
         workspaces: [],
@@ -76,10 +89,10 @@ describe('Samples list tab', () => {
           onDevfile={onDevfileMock}
           isLoading={selectIsLoading(state)}
           workspacesSettings={selectWorkspacesSettings(state)}
-          preferredStorageType={selectPreferredStorageType(state)}
+          preferredStorageType={selectPvcStrategy(state)}
           dispatch={jest.fn()}
         />
-      </Provider>
+      </Provider>,
     );
   };
 
@@ -106,8 +119,16 @@ describe('Samples list tab', () => {
     sampleItem.click();
     sampleItem.click();
     expect(onDevfileMock).toBeCalledTimes(1);
-    expect(onDevfileMock).toHaveBeenCalledWith(expect.not.stringContaining('persistVolumes:'), testStackName, undefined);
-    expect(onDevfileMock).toHaveBeenCalledWith(expect.not.stringContaining('asyncPersist:'), testStackName, undefined);
+    expect(onDevfileMock).toHaveBeenCalledWith(
+      expect.not.stringContaining('persistVolumes:'),
+      testStackName,
+      undefined,
+    );
+    expect(onDevfileMock).toHaveBeenCalledWith(
+      expect.not.stringContaining('asyncPersist:'),
+      testStackName,
+      undefined,
+    );
     (onDevfileMock as jest.Mock).mockClear();
   });
 
@@ -122,8 +143,16 @@ describe('Samples list tab', () => {
     expect(onDevfileMock).not.toBeCalled();
 
     sampleItem.click();
-    expect(onDevfileMock).toHaveBeenCalledWith(expect.not.stringContaining('persistVolumes:'), testStackName, undefined);
-    expect(onDevfileMock).toHaveBeenCalledWith(expect.not.stringContaining('asyncPersist:'), testStackName, undefined);
+    expect(onDevfileMock).toHaveBeenCalledWith(
+      expect.not.stringContaining('persistVolumes:'),
+      testStackName,
+      undefined,
+    );
+    expect(onDevfileMock).toHaveBeenCalledWith(
+      expect.not.stringContaining('asyncPersist:'),
+      testStackName,
+      undefined,
+    );
   });
 
   it('should correctly apply the storage type "ephemeral"', () => {
@@ -140,7 +169,11 @@ describe('Samples list tab', () => {
     expect(switchInput.checked).toBeTruthy();
 
     sampleItem.click();
-    expect(onDevfileMock).toHaveBeenCalledWith(expect.stringContaining('persistVolumes: \'false\''), testStackName, undefined);
+    expect(onDevfileMock).toHaveBeenCalledWith(
+      expect.stringContaining("persistVolumes: 'false'"),
+      testStackName,
+      undefined,
+    );
   });
 
   it('should correctly apply the preferred storage type "async"', () => {
@@ -154,8 +187,16 @@ describe('Samples list tab', () => {
     expect(onDevfileMock).not.toBeCalled();
 
     sampleItem.click();
-    expect(onDevfileMock).toHaveBeenCalledWith(expect.stringContaining('persistVolumes: \'false\''), testStackName, undefined);
-    expect(onDevfileMock).toHaveBeenCalledWith(expect.stringContaining('asyncPersist: \'true\''), testStackName, undefined);
+    expect(onDevfileMock).toHaveBeenCalledWith(
+      expect.stringContaining("persistVolumes: 'false'"),
+      testStackName,
+      undefined,
+    );
+    expect(onDevfileMock).toHaveBeenCalledWith(
+      expect.stringContaining("asyncPersist: 'true'"),
+      testStackName,
+      undefined,
+    );
   });
 
   it('should correctly apply the storage type "async"', () => {
@@ -172,7 +213,11 @@ describe('Samples list tab', () => {
     expect(switchInput.checked).toBeTruthy();
 
     sampleItem.click();
-    expect(onDevfileMock).toHaveBeenCalledWith(expect.stringContaining('persistVolumes: \'false\''), testStackName, undefined);
+    expect(onDevfileMock).toHaveBeenCalledWith(
+      expect.stringContaining("persistVolumes: 'false'"),
+      testStackName,
+      undefined,
+    );
   });
 
   it('should correctly apply the preferred storage type "persistent"', () => {
@@ -189,9 +234,15 @@ describe('Samples list tab', () => {
     expect(switchInput.checked).toBeFalsy();
 
     sampleItem.click();
-    expect(onDevfileMock).toHaveBeenCalledWith(expect.not.stringContaining('persistVolumes:'), testStackName, undefined);
-    expect(onDevfileMock).toHaveBeenCalledWith(expect.not.stringContaining('asyncPersist:'), testStackName, undefined);
+    expect(onDevfileMock).toHaveBeenCalledWith(
+      expect.not.stringContaining('persistVolumes:'),
+      testStackName,
+      undefined,
+    );
+    expect(onDevfileMock).toHaveBeenCalledWith(
+      expect.not.stringContaining('asyncPersist:'),
+      testStackName,
+      undefined,
+    );
   });
-
 });
-

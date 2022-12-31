@@ -12,11 +12,11 @@
 
 import React, { ChangeEvent, ClipboardEvent } from 'react';
 import { safeDump } from 'js-yaml';
-import { IDevWorkspaceDevfile } from '@eclipse-che/devworkspace-client';
+import devfileApi from '../../../services/devfileApi';
 import stringify from '../../../services/helpers/editor';
 
 type Props = {
-  devfile: che.WorkspaceDevfile | IDevWorkspaceDevfile;
+  devfile: che.WorkspaceDevfile | devfileApi.Devfile;
   decorationPattern?: string;
   onChange: (newValue: string, isValid: boolean) => void;
   isReadonly?: boolean;
@@ -36,7 +36,7 @@ export default class DevfileEditor extends React.PureComponent<Props, State> {
     };
   }
 
-  public updateContent(devfile: che.WorkspaceDevfile | IDevWorkspaceDevfile): void {
+  public updateContent(devfile: che.WorkspaceDevfile | devfileApi.Devfile): void {
     if (!this.editor) {
       return;
     }
@@ -46,16 +46,13 @@ export default class DevfileEditor extends React.PureComponent<Props, State> {
   public componentDidMount(): void {
     const element = document.querySelector('#devfile-editor');
     if (element) {
-      const value = stringify(this.props.devfile);
+      const value = safeDump(this.props.devfile);
       this.editor = element as HTMLTextAreaElement;
       this.editor.value = value;
     }
   }
 
   public render(): React.ReactElement {
-    const { devfile } = this.props;
-    const content = safeDump(devfile);
-
     const onChange = (event: ChangeEvent<HTMLTextAreaElement>) => {
       const newContent = event.currentTarget.value;
       this.onChange(newContent, true);
@@ -67,17 +64,14 @@ export default class DevfileEditor extends React.PureComponent<Props, State> {
     };
 
     return (
-      <div className='devfile-editor'>
-        <div className='monaco'>
-          <textarea
-            id="devfile-editor"
-            onChange={onChange}
-            onPaste={onPaste}
-            value={content}
-          ></textarea>
+      <div className="devfile-editor">
+        <div className="monaco">
+          <textarea id="devfile-editor" onChange={onChange} onPaste={onPaste}></textarea>
         </div>
-        <div className='error'></div>
-        <a target='_blank' rel='noopener noreferrer'>Devfile Documentation</a>
+        <div className="error"></div>
+        <a target="_blank" rel="noopener noreferrer">
+          Devfile Documentation
+        </a>
       </div>
     );
   }
@@ -85,5 +79,4 @@ export default class DevfileEditor extends React.PureComponent<Props, State> {
   private onChange(newValue: string, isValid: boolean): void {
     this.props.onChange(newValue, isValid);
   }
-
 }

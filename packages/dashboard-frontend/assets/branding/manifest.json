@@ -1,0 +1,15 @@
+{
+  "short_name": "Che",
+  "name": "Eclipse Che",
+  "icons": [
+    {
+      "src": "./loader.svg",
+      "sizes": "any"
+    }
+  ],
+  "start_url": "../..",
+  "display": "standalone",
+  "theme_color": "#000000",
+  "background_color": "#ffffff",
+  "scope": "../.."
+}

@@ -13,9 +13,12 @@
 import React from 'react';
 import { ConnectedProps, connect } from 'react-redux';
 import { AppState } from '../../store';
-import { selectRegistriesErrors, selectDevfileSchemaError } from '../../store/DevfileRegistries/selectors';
+import {
+  selectRegistriesErrors,
+  selectDevfileSchemaError,
+} from '../../store/DevfileRegistries/selectors';
 import { selectPluginsError } from '../../store/Plugins/chePlugins/selectors';
-import { selectDwPluginsError } from '../../store/Plugins/devWorkspacePlugins/selectors';
+import { selectDwDefaultEditorError } from '../../store/Plugins/devWorkspacePlugins/selectors';
 import { selectInfrastructureNamespacesError } from '../../store/InfrastructureNamespaces/selectors';
 import { selectUserProfileError } from '../../store/UserProfile/selectors';
 import { selectWorkspacesSettingsError } from '../../store/Workspaces/Settings/selectors';
@@ -28,7 +31,6 @@ import { AppAlerts } from '../../services/alerts/appAlerts';
 type Props = MappedProps;
 
 export class PreloadIssuesAlert extends React.PureComponent<Props> {
-
   @lazyInject(AppAlerts)
   private readonly appAlerts: AppAlerts;
 
@@ -67,11 +69,11 @@ export class PreloadIssuesAlert extends React.PureComponent<Props> {
         variant: AlertVariant.danger,
       });
     }
-    // devWorkspace plugins error
-    if (this.props.dwPluginsError) {
+    // devWorkspace default editor error
+    if (this.props.dwDefaultEditorError) {
       this.appAlerts.showAlert({
         key: 'dw-plugins-error',
-        title: this.props.dwPluginsError,
+        title: this.props.dwDefaultEditorError,
         variant: AlertVariant.danger,
       });
     }
@@ -112,14 +114,13 @@ export class PreloadIssuesAlert extends React.PureComponent<Props> {
   render() {
     return '';
   }
-
 }
 
 const mapStateToProps = (state: AppState) => ({
   userError: selectUserError(state),
   registriesErrors: selectRegistriesErrors(state),
   pluginsError: selectPluginsError(state),
-  dwPluginsError: selectDwPluginsError(state),
+  dwDefaultEditorError: selectDwDefaultEditorError(state),
   infrastructureNamespacesError: selectInfrastructureNamespacesError(state),
   devfileSchemaError: selectDevfileSchemaError(state),
   userProfileError: selectUserProfileError(state),
@@ -127,10 +128,7 @@ const mapStateToProps = (state: AppState) => ({
   workspacesError: selectWorkspacesError(state),
 });
 
-const connector = connect(
-  mapStateToProps
-);
+const connector = connect(mapStateToProps);
 
-type MappedProps = ConnectedProps<typeof connector>
+type MappedProps = ConnectedProps<typeof connector>;
 export default connector(PreloadIssuesAlert);
-

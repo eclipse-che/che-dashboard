@@ -13,23 +13,30 @@
 import 'reflect-metadata';
 import { Container } from 'inversify';
 import getDecorators from 'inversify-inject-decorators';
-import { KeycloakSetupService } from './services/keycloak/setup';
-import { KeycloakAuthService } from './services/keycloak/auth';
 import { Debounce } from './services/helpers/debounce';
-import { CheWorkspaceClient } from './services/workspace-client/cheWorkspaceClient';
+import { CheWorkspaceClient } from './services/workspace-client/cheworkspace/cheWorkspaceClient';
 import { AppAlerts } from './services/alerts/appAlerts';
 import { IssuesReporterService } from './services/bootstrap/issuesReporter';
-import { DevWorkspaceClient } from './services/workspace-client/devWorkspaceClient';
+import {
+  DevWorkspaceClient,
+  IDevWorkspaceEditorProcess,
+} from './services/workspace-client/devworkspace/devWorkspaceClient';
+import { DevWorkspaceEditorProcessTheia } from './services/workspace-client/devworkspace/DevWorkspaceEditorProcessTheia';
+import { DevWorkspaceEditorProcessCode } from './services/workspace-client/devworkspace/DevWorkspaceEditorProcessCode';
+import { DevWorkspaceDefaultPluginsHandler } from './services/workspace-client/devworkspace/DevWorkspaceDefaultPluginsHandler';
+import { WorkspaceStoppedDetector } from './services/bootstrap/workspaceStoppedDetector';
 
 const container = new Container();
 const { lazyInject } = getDecorators(container);
 
 container.bind(IssuesReporterService).toSelf().inSingletonScope();
-container.bind(KeycloakSetupService).toSelf().inSingletonScope();
-container.bind(KeycloakAuthService).toSelf().inSingletonScope();
 container.bind(Debounce).toSelf();
 container.bind(CheWorkspaceClient).toSelf().inSingletonScope();
 container.bind(DevWorkspaceClient).toSelf().inSingletonScope();
+container.bind(IDevWorkspaceEditorProcess).to(DevWorkspaceEditorProcessTheia).inSingletonScope();
+container.bind(IDevWorkspaceEditorProcess).to(DevWorkspaceEditorProcessCode).inSingletonScope();
 container.bind(AppAlerts).toSelf().inSingletonScope();
+container.bind(DevWorkspaceDefaultPluginsHandler).toSelf().inSingletonScope();
+container.bind(WorkspaceStoppedDetector).toSelf().inSingletonScope();
 
 export { container, lazyInject };

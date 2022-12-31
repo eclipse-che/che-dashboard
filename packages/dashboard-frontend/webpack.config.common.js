@@ -10,26 +10,37 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
+const CopyPlugin = require('copy-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
-const { CleanWebpackPlugin } = require('clean-webpack-plugin');
-const stylus_plugin = require('poststylus');
-const stylusLoader = require('stylus-loader');
 const path = require('path');
+const webpack = require('webpack');
 
 const config = {
   entry: {
     client: path.join(__dirname, 'src/index.tsx'),
+    'service-worker': path.join(__dirname, 'src/service-worker.ts'),
+    'editor.worker': 'monaco-editor-core/esm/vs/editor/editor.worker.js',
+    'accept-factory-link': path.join(__dirname, 'src/preload/index.ts'),
   },
   output: {
-    path: path.join(__dirname, 'lib'),
-    publicPath: '/',
-    filename: 'client.[hash].js',
+    path: path.join(__dirname, 'lib', 'public/dashboard'),
+    publicPath: './',
+    filename: (pathData) => {
+      if (pathData.chunk.name === 'accept-factory-link') {
+        return 'static/preload/[name].js';
+      }
+      if (pathData.chunk.name === 'service-worker' || pathData.chunk.name === 'editor.worker') {
+        return '[name].js';
+      }
+      return '[name].[hash].js';
+    },
     chunkFilename: '[name].[chunkhash].js',
+    globalObject: 'this',
+    clean: true,
   },
   optimization: {
-    chunkIds: 'named',
+    chunkIds: 'deterministic',
     splitChunks: {
-      name: 'vendor',
       chunks: 'initial',
       cacheGroups: {
         default: false,
@@ -49,7 +60,7 @@ const config = {
         common: {
           name: 'common',
           minChunks: 2,
-          chunks: 'all',
+          chunks: 'async',
           priority: 10,
           reuseExistingChunk: true,
           enforce: true
@@ -64,83 +75,95 @@ const config = {
         enforce: 'pre',
         include: path.join(__dirname, 'src'),
         exclude: /node_modules/,
-        loader: 'eslint-loader',
-        options: {
-          cache: true,
-        },
+        use: [{
+          loader: 'eslint-loader',
+          options: {
+            cache: true,
+          }
+        }],
       },
       {
         test: /\.tsx?$/,
         include: path.join(__dirname, 'src'),
-        use: [
-          {
-            loader: 'ts-loader',
-          },
-        ],
+        use: ['ts-loader'],
         exclude: /node_modules/,
       },
       {
         test: /node_modules[\\\\|\/](yaml-language-server)/,
-        loader: 'umd-compat-loader'
+        use: ['umd-compat-loader']
       },
       {
         test: /node_modules[\\\\|/](vscode-json-languageservice)/,
-        loader: 'umd-compat-loader',
+        use: ['umd-compat-loader']
       },
       {
         test: /prettier\/parser-yaml/,
-        loader: 'null-loader',
+        use: ['null-loader']
       },
       {
         test: /prettier/,
-        loader: 'null-loader',
-      },
-      {
-        test: /\.styl$/,
-        loader: 'style-loader!css-loader!stylus-loader',
+        use: ['null-loader']
       },
       {
         test: /\.(jpg|svg|woff|woff2|ttf|eot|ico)$/,
-        loader: 'file-loader',
-        options: {
-          name: '[name].[ext]',
-          outputPath: 'fonts/'
-        }
+        use: [{
+          loader: 'file-loader',
+          options: {
+            name: '[name].[ext]',
+            outputPath: 'fonts/'
+          }
+        }]
       },
     ]
   },
   resolve: {
-    extensions: ['.js', '.ts', '.tsx']
+    extensions: ['.js', '.ts', '.tsx'],
+    alias: {
+      'vscode-languageserver-protocol/lib/utils/is': 'vscode-languageserver-protocol/lib/common/utils/is',
+      'vscode-languageserver-protocol/lib/main': 'vscode-languageserver-protocol/lib/node/main',
+    },
+    fallback: {
+      "fs": false,
+      "net": false,
+      "module": false,
+      "path": false,
+      "os": false,
+      "crypto": require.resolve("crypto-browserify"),
+      "stream": require.resolve("stream-browserify"),
+    },
   },
   resolveLoader: {},
-  node: {
-    fs: 'empty',
-    net: 'empty',
-    module: 'empty'
-  },
+  node: { global: true },
   plugins: [
+    new webpack.ProvidePlugin({
+      Buffer: ['buffer', 'Buffer'],
+    }),
+    new webpack.ProvidePlugin({
+      process: 'process/browser',
+    }),
+    new webpack.DefinePlugin({
+      'process.env.DASHBOARD_VERSION': JSON.stringify(require('./package.json').version),
+    }),
     new HtmlWebpackPlugin({
-      template: './index.html'
+      template: path.resolve(__dirname, './index.html'),
+      chunks : ['client', 'service-worker', 'editor.worker'],
+      filename: 'index.html',
     }),
-    new stylusLoader.OptionsPlugin({
-      default: {
-        use: [stylus_plugin()],
-      },
+    new HtmlWebpackPlugin({
+      template: path.resolve(__dirname, 'src/preload/index.html'),
+      chunks : ['accept-factory-link'],
+      filename: '../index.html',
+      publicPath: '/dashboard/',
     }),
-    new CleanWebpackPlugin(),
+    new CopyPlugin({
+      patterns: [
+        { from: path.join(__dirname, 'assets'), to: 'assets' },
+        { from: path.join(__dirname, 'static'), to: 'static' },
+      ]
+    }),
   ],
 };
 
 module.exports = (env = {}) => {
-  if (env.yarnV1 === 'true') {
-    console.log('\nStart building the package assuming that yarn v1 will be used...\n');
-  } else {
-    console.log('\nStart building the package assuming that yarn v2 will be used...\n');
-
-    const PnpPlugin = require('pnp-webpack-plugin');
-    config.resolve.plugins = [PnpPlugin];
-    config.resolveLoader.plugins = [PnpPlugin.moduleLoader(module)];
-  }
-
   return config;
 };

@@ -22,6 +22,7 @@ import {
   Tabs,
   Title,
 } from '@patternfly/react-core';
+import common from '@eclipse-che/common';
 import Fallback from '../../components/Fallback';
 import Head from '../../components/Head';
 import { lazyInject } from '../../inversify.config';
@@ -29,24 +30,26 @@ import { AppAlerts } from '../../services/alerts/appAlerts';
 import * as WorkspaceStore from '../../store/Workspaces';
 import { AppState } from '../../store';
 import { AlertItem, CreateWorkspaceTab } from '../../services/helpers/types';
-import { ROUTE } from '../../route.enum';
-import { Workspace } from '../../services/workspaceAdapter';
+import { ROUTE } from '../../Routes/routes';
+import { Workspace, Devfile, isCheDevfile } from '../../services/workspace-adapter';
 import { selectBranding } from '../../store/Branding/selectors';
 import { selectRegistriesErrors } from '../../store/DevfileRegistries/selectors';
+import { selectWorkspaceByQualifiedName } from '../../store/Workspaces/selectors';
+import { selectDefaultNamespace } from '../../store/InfrastructureNamespaces/selectors';
+import getRandomString from '../../services/helpers/random';
+import { selectWorkspacesSettings } from '../../store/Workspaces/Settings/selectors';
 
 const SamplesListTab = React.lazy(() => import('./GetStartedTab'));
-const CustomWorkspaceTab = React.lazy(() => import('./CustomWorkspaceTab'));
 
 type Props = MappedProps & {
   history: History;
-}
+};
 
 type State = {
   activeTabKey: CreateWorkspaceTab;
-}
+};
 
 export class GetStarted extends React.PureComponent<Props, State> {
-
   @lazyInject(AppAlerts)
   private readonly appAlerts: AppAlerts;
 
@@ -95,7 +98,10 @@ export class GetStarted extends React.PureComponent<Props, State> {
 
     if (search) {
       const searchParam = new URLSearchParams(search.substring(1));
-      if (pathname === ROUTE.GET_STARTED && searchParam.get('tab') as CreateWorkspaceTab === 'custom-workspace') {
+      if (
+        pathname === ROUTE.GET_STARTED &&
+        (searchParam.get('tab') as CreateWorkspaceTab) === 'custom-workspace'
+      ) {
         return 'custom-workspace';
       }
     }
@@ -104,66 +110,98 @@ export class GetStarted extends React.PureComponent<Props, State> {
   }
 
   private async createWorkspace(
-    devfile: api.che.workspace.devfile.Devfile,
+    devfile: Devfile,
     stackName: string | undefined,
     infrastructureNamespace: string | undefined,
     optionalFilesContent?: {
-      [fileName: string]: string
-    }
+      [fileName: string]: string;
+    },
   ): Promise<void> {
-    const attr = stackName ? { stackName } : {};
-    let workspace: Workspace;
+    const attr: { [key: string]: string } = {};
+    if (stackName) {
+      attr.stackName = stackName;
+    }
+    if (isCheDevfile(devfile) && !devfile.metadata.name && devfile.metadata.generateName) {
+      const name = devfile.metadata.generateName + getRandomString(4).toLowerCase();
+      delete devfile.metadata.generateName;
+      devfile.metadata.name = name;
+    }
+    const namespace = infrastructureNamespace
+      ? infrastructureNamespace
+      : this.props.defaultNamespace.name;
+    let workspace: Workspace | undefined;
     try {
-      workspace = await this.props.createWorkspaceFromDevfile(devfile, undefined, infrastructureNamespace, attr, optionalFilesContent);
+      await this.props.createWorkspaceFromDevfile(
+        devfile,
+        undefined,
+        namespace,
+        attr,
+        optionalFilesContent,
+      );
+      this.props.setWorkspaceQualifiedName(namespace, devfile.metadata.name as string);
+      workspace = this.props.activeWorkspace;
     } catch (e) {
+      const errorMessage = common.helpers.errors.getMessage(e);
       this.showAlert({
         key: 'new-workspace-failed',
         variant: AlertVariant.danger,
-        title: e,
+        title: errorMessage,
       });
       throw e;
+    }
+
+    if (!workspace) {
+      const errorMessage = `Workspace "${namespace}/${devfile.metadata.name}" not found.`;
+      this.showAlert({
+        key: 'find-workspace-failed',
+        variant: AlertVariant.danger,
+        title: errorMessage,
+      });
+      throw errorMessage;
     }
 
     const workspaceName = workspace.name;
     this.showAlert({
       key: 'new-workspace-success',
       variant: AlertVariant.success,
-      title: `Workspace ${workspaceName} has been created.`
+      title: `Workspace ${workspaceName} has been created.`,
     });
 
     // force start for the new workspace
     try {
       this.props.history.push(`/ide/${workspace.namespace}/${workspaceName}`);
     } catch (error) {
+      const errorMessage = common.helpers.errors.getMessage(error);
       this.showAlert({
         key: 'start-workspace-failed',
         variant: AlertVariant.warning,
-        title: `Workspace ${workspaceName} failed to start. ${error}`,
+        title: `Workspace ${workspaceName} failed to start. ${errorMessage}`,
       });
-      throw new Error(error);
+      throw new Error(errorMessage);
     }
   }
 
-  private handleDevfile(
-    devfile: api.che.workspace.devfile.Devfile,
-    attrs: { stackName?: string, infrastructureNamespace?: string },
-    optionalFilesContent: { [fileName: string]: string } | undefined,
+  private handleDevfileContent(
+    devfileContent: string,
+    attrs: { stackName?: string; infrastructureNamespace?: string },
+    optionalFilesContent?: {
+      [fileName: string]: string;
+    },
   ): Promise<void> {
-    return this.createWorkspace(devfile, attrs.stackName, attrs.infrastructureNamespace, optionalFilesContent || {});
-  }
-
-  private handleDevfileContent(devfileContent: string, attrs: { stackName?: string, infrastructureNamespace?: string }, optionalFilesContent?: {
-    [fileName: string]: string
-  }): Promise<void> {
     try {
       const devfile = load(devfileContent);
-      return this.createWorkspace(devfile, attrs.stackName, attrs.infrastructureNamespace, optionalFilesContent);
+      return this.createWorkspace(
+        devfile,
+        attrs.stackName,
+        attrs.infrastructureNamespace,
+        optionalFilesContent,
+      );
     } catch (e) {
       const errorMessage = 'Failed to parse the devfile';
       this.showAlert({
         key: 'parse-devfile-failed',
         variant: AlertVariant.danger,
-        title: errorMessage + '.'
+        title: errorMessage + '.',
       });
       throw new Error(errorMessage + ', \n' + e);
     }
@@ -173,19 +211,10 @@ export class GetStarted extends React.PureComponent<Props, State> {
     this.appAlerts.showAlert(alert);
   }
 
-  private handleTabClick(event: React.MouseEvent<HTMLElement, MouseEvent>, activeTabKey: React.ReactText): void {
-    this.props.history.push(`${ROUTE.GET_STARTED}?tab=${activeTabKey}`);
-
-    this.setState({
-      activeTabKey: activeTabKey as CreateWorkspaceTab,
-    });
-  }
-
   render(): React.ReactNode {
     const { activeTabKey } = this.state;
     const title = 'Create Workspace';
     const quickAddTab: CreateWorkspaceTab = 'quick-add';
-    const customWorkspaceTab: CreateWorkspaceTab = 'custom-workspace';
 
     return (
       <React.Fragment>
@@ -195,30 +224,22 @@ export class GetStarted extends React.PureComponent<Props, State> {
         </PageSection>
         <PageSection
           variant={PageSectionVariants.light}
-          className='pf-c-page-section-no-padding'
+          className="pf-c-page-section-no-padding"
           isFilled={false}
         >
           <Tabs
             style={{ paddingTop: 'var(--pf-c-page__main-section--PaddingTop)' }}
             activeKey={activeTabKey}
-            onSelect={(event, tabKey) => this.handleTabClick(event, tabKey)}>
-            <Tab
-              eventKey={quickAddTab}
-              title="Quick Add"
-            >
+          >
+            <Tab eventKey={quickAddTab} title="Quick Add">
               <Suspense fallback={Fallback}>
                 <SamplesListTab
                   onDevfile={(devfileContent: string, stackName: string, optionalFilesContent) => {
-                    return this.handleDevfileContent(devfileContent, { stackName }, optionalFilesContent);
-                  }}
-                />
-              </Suspense>
-            </Tab>
-            <Tab eventKey={customWorkspaceTab} title="Custom Workspace">
-              <Suspense fallback={Fallback}>
-                <CustomWorkspaceTab
-                  onDevfile={(devfile, infrastructureNamespace, optionalFilesContent) => {
-                    return this.handleDevfile(devfile, { infrastructureNamespace }, optionalFilesContent);
+                    return this.handleDevfileContent(
+                      devfileContent,
+                      { stackName },
+                      optionalFilesContent,
+                    );
                   }}
                 />
               </Suspense>
@@ -233,12 +254,12 @@ export class GetStarted extends React.PureComponent<Props, State> {
 const mapStateToProps = (state: AppState) => ({
   branding: selectBranding(state),
   registriesErrors: selectRegistriesErrors(state),
+  activeWorkspace: selectWorkspaceByQualifiedName(state),
+  defaultNamespace: selectDefaultNamespace(state),
+  workspacesSettings: selectWorkspacesSettings(state),
 });
 
-const connector = connect(
-  mapStateToProps,
-  WorkspaceStore.actionCreators
-);
+const connector = connect(mapStateToProps, WorkspaceStore.actionCreators);
 
 type MappedProps = ConnectedProps<typeof connector>;
 export default connector(GetStarted);

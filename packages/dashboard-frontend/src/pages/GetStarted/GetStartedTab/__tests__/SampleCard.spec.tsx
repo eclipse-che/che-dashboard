@@ -15,21 +15,23 @@ import { render, screen, RenderResult, fireEvent } from '@testing-library/react'
 import { SampleCard } from '../SampleCard';
 
 describe('Devfile Metadata Card', () => {
-
-  const metadata: che.DevfileMetaData = {
-    'displayName': 'Go',
-    'description': 'Stack with Go 1.12.10',
-    'tags': [
-      'Debian',
-      'Go'
-    ],
-    'icon': '/images/go.svg',
-    'globalMemoryLimit': '1686Mi',
-    'links': {
-      'self': '/devfiles/go/devfile.yaml'
-    },
-  };
   const onCardClick = jest.fn();
+  let metadata: che.DevfileMetaData;
+
+  beforeEach(() => {
+    metadata = {
+      displayName: 'Go',
+      description: 'Stack with Go 1.12.10',
+      tags: ['Debian', 'Go'],
+      icon: '/images/go.svg',
+      globalMemoryLimit: '1686Mi',
+      links: {
+        self: '/devfiles/go/devfile.yaml',
+      },
+    };
+
+    jest.clearAllMocks();
+  });
 
   function renderCard(): RenderResult {
     return render(
@@ -37,7 +39,9 @@ describe('Devfile Metadata Card', () => {
         key={metadata.links.self}
         metadata={metadata}
         onClick={onCardClick}
-      />);
+        targetEditors={[]}
+      />,
+    );
   }
 
   it('should have a correct title in header', () => {
@@ -69,7 +73,32 @@ describe('Devfile Metadata Card', () => {
     const card = screen.getByRole('article');
     fireEvent.click(card);
 
-    expect(onCardClick).toHaveBeenCalledWith(metadata);
+    expect(onCardClick).toHaveBeenCalledWith(undefined);
   });
 
+  it('should not have visible tags', () => {
+    metadata.tags = ['Debian', 'Go'];
+    renderCard();
+
+    const badge = screen.queryAllByTestId('card-badge');
+    expect(badge.length).toEqual(0);
+  });
+
+  it('should have "Community" tag', () => {
+    metadata.tags = ['Community', 'Debian', 'Go'];
+    renderCard();
+
+    const badge = screen.queryAllByTestId('card-badge');
+    expect(badge.length).toEqual(1);
+    expect(screen.queryByText('Community')).toBeTruthy();
+  });
+
+  it('should have "tech-preview" tag', () => {
+    metadata.tags = ['Tech-Preview', 'Debian', 'Go'];
+    renderCard();
+
+    const badge = screen.queryAllByTestId('card-badge');
+    expect(badge.length).toEqual(1);
+    expect(screen.queryByText('Tech-Preview')).toBeTruthy();
+  });
 });

@@ -11,11 +11,11 @@
  */
 
 import { Reducer } from 'redux';
+import common from '@eclipse-che/common';
 import { AppThunk } from '../..';
 import { container } from '../../../inversify.config';
-import { CheWorkspaceClient } from '../../../services/workspace-client/cheWorkspaceClient';
-import { getErrorMessage } from '../../../services/helpers/getErrorMessage';
-import { createState } from '../../helpers';
+import { CheWorkspaceClient } from '../../../services/workspace-client/cheworkspace/cheWorkspaceClient';
+import { createObject } from '../../helpers';
 
 const cheWorkspaceClient = container.get(CheWorkspaceClient);
 
@@ -26,7 +26,7 @@ export interface State {
 }
 
 interface RequestWorkspaceSettingsAction {
-  type: 'REQUEST_WORKSPACE_SETTINGS'
+  type: 'REQUEST_WORKSPACE_SETTINGS';
 }
 
 interface ReceiveWorkspaceSettingsAction {
@@ -38,7 +38,8 @@ interface ReceiveWorkspaceSettingsErrorAction {
   error: string;
 }
 
-type KnownAction = RequestWorkspaceSettingsAction
+type KnownAction =
+  | RequestWorkspaceSettingsAction
   | ReceiveWorkspaceSettingsAction
   | ReceiveWorkspaceSettingsErrorAction;
 
@@ -47,25 +48,28 @@ export type ActionCreators = {
 };
 
 export const actionCreators: ActionCreators = {
+  requestSettings:
+    (): AppThunk<KnownAction, Promise<void>> =>
+    async (dispatch): Promise<void> => {
+      dispatch({ type: 'REQUEST_WORKSPACE_SETTINGS' });
 
-  requestSettings: (): AppThunk<KnownAction, Promise<void>> => async (dispatch): Promise<void> => {
-    dispatch({ type: 'REQUEST_WORKSPACE_SETTINGS' });
-
-    try {
-      const settings = await cheWorkspaceClient.restApiClient.getSettings<che.WorkspaceSettings>();
-      dispatch({
-        type: 'RECEIVE_WORKSPACE_SETTINGS',
-        settings,
-      });
-    } catch (e) {
-      const errorMessage = 'Failed to fetch workspaces settings, reason: ' + getErrorMessage(e);
-      dispatch({
-        type: 'RECEIVE_WORKSPACE_SETTINGS_ERROR',
-        error: errorMessage,
-      });
-      throw errorMessage;
-    }
-  },
+      try {
+        const settings =
+          await cheWorkspaceClient.restApiClient.getSettings<che.WorkspaceSettings>();
+        dispatch({
+          type: 'RECEIVE_WORKSPACE_SETTINGS',
+          settings,
+        });
+      } catch (e) {
+        const errorMessage =
+          'Failed to fetch workspaces settings, reason: ' + common.helpers.errors.getMessage(e);
+        dispatch({
+          type: 'RECEIVE_WORKSPACE_SETTINGS_ERROR',
+          error: errorMessage,
+        });
+        throw errorMessage;
+      }
+    },
 };
 
 const unloadedState: State = {
@@ -80,17 +84,17 @@ export const reducer: Reducer<State> = (state: State | undefined, action: KnownA
 
   switch (action.type) {
     case 'REQUEST_WORKSPACE_SETTINGS':
-      return createState(state, {
+      return createObject(state, {
         isLoading: true,
         error: undefined,
       });
     case 'RECEIVE_WORKSPACE_SETTINGS':
-      return createState(state, {
+      return createObject(state, {
         isLoading: false,
         settings: action.settings,
       });
     case 'RECEIVE_WORKSPACE_SETTINGS_ERROR':
-      return createState(state, {
+      return createObject(state, {
         isLoading: false,
         error: action.error,
       });

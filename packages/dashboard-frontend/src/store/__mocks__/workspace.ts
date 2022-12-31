@@ -10,7 +10,7 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import { WorkspaceStatus } from '../../services/helpers/types';
+import { WorkspacesLogs, WorkspaceStatus } from '../../services/helpers/types';
 
 /**
  * @deprecated use CheWorkspaceBuilder instead
@@ -23,7 +23,9 @@ export const createFakeCheWorkspace = (
   runtime?: che.WorkspaceRuntime,
 ): che.Workspace => {
   if (runtime && status === WorkspaceStatus.STOPPED) {
-    throw new Error('Failed creating a stub workspace. Workspace runtime object is only combined with "RUNNING" status');
+    throw new Error(
+      'Failed creating a stub workspace. Workspace runtime object is only combined with "RUNNING" status',
+    );
   }
   return {
     id: workspaceId,
@@ -45,7 +47,7 @@ export const createFakeCheWorkspace = (
 export const createFakeWorkspaceLogs = (
   workspaceId: string,
   logs: string[] = [],
-): Map<string, string[]> => {
+): WorkspacesLogs => {
   const workspacesLogs = new Map<string, string[]>();
   if (logs.length > 0) {
     workspacesLogs.set(workspaceId, logs);

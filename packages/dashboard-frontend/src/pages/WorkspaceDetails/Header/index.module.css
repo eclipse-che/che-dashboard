@@ -17,3 +17,7 @@
 .breadcrumb li:first-child a {
   margin-right: 8px;
 }
+
+.actionButtons > * {
+  margin-left: 10px;
+}

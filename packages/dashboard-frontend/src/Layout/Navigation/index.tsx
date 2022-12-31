@@ -21,40 +21,46 @@ import NavigationMainList from './MainList';
 import NavigationRecentList from './RecentList';
 import * as WorkspacesStore from '../../store/Workspaces';
 import { selectAllWorkspaces, selectRecentWorkspaces } from '../../store/Workspaces/selectors';
-import { ROUTE } from '../../route.enum';
-import { buildGettingStartedLocation, buildWorkspacesLocation, sanitizeLocation } from '../../services/helpers/location';
+import { ROUTE } from '../../Routes/routes';
+import {
+  buildGettingStartedLocation,
+  buildWorkspacesLocation,
+} from '../../services/helpers/location';
+import {
+  DeprecatedWorkspaceStatus,
+  DevWorkspaceStatus,
+  WorkspaceStatus,
+} from '../../services/helpers/types';
 
 export interface NavigationItemObject {
-  to: string,
-  label: string,
+  to: string;
+  label: string;
   icon?: React.ReactElement;
 }
 export interface NavigationRecentItemObject {
-  to: string,
-  label: string,
-  status: string;
-  workspaceId: string;
+  to: string;
+  label: string;
+  status: WorkspaceStatus | DevWorkspaceStatus | DeprecatedWorkspaceStatus;
+  workspaceUID: string;
+  isDevWorkspace: boolean;
 }
 
-type Props =
-  MappedProps
-  & {
-    history: History;
-    theme: ThemeVariant;
-  };
+type Props = MappedProps & {
+  history: History;
+  theme: ThemeVariant;
+};
 
 type State = {
   activeLocation: Location;
 };
 
 export class Navigation extends React.PureComponent<Props, State> {
-
   private readonly unregisterFn: UnregisterCallback;
 
   constructor(props: Props) {
     super(props);
 
-    const activeLocation = sanitizeLocation(this.props.history.location);
+    const activeLocation = this.props.history.location;
     let newLocation: Location | undefined;
 
     if (activeLocation.pathname === ROUTE.HOME) {
@@ -109,36 +115,28 @@ export class Navigation extends React.PureComponent<Props, State> {
     const { theme, recentWorkspaces, history } = this.props;
     const { activeLocation } = this.state;
 
-    const recent = recentWorkspaces || [];
-
     return (
       <Nav
-        aria-label='Navigation'
+        aria-label="Navigation"
         onSelect={selected => this.handleNavSelect(selected)}
         theme={theme}
       >
-        <NavigationMainList
-          activePath={activeLocation.pathname}
-        />
+        <NavigationMainList activePath={activeLocation.pathname} />
         <NavigationRecentList
-          workspaces={recent}
+          workspaces={recentWorkspaces}
           activePath={activeLocation.pathname}
           history={history}
         />
       </Nav>
     );
   }
-
 }
 
 const mapStateToProps = (state: AppState) => ({
   recentWorkspaces: selectRecentWorkspaces(state),
   allWorkspaces: selectAllWorkspaces(state),
 });
-const connector = connect(
-  mapStateToProps,
-  WorkspacesStore.actionCreators,
-);
+const connector = connect(mapStateToProps, WorkspacesStore.actionCreators);
 
 type MappedProps = ConnectedProps<typeof connector>;
 

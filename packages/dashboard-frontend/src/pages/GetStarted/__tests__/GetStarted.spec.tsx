@@ -18,57 +18,73 @@ import React from 'react';
 import GetStarted from '..';
 import { FakeStoreBuilder } from '../../../store/__mocks__/storeBuilder';
 import { BrandingData } from '../../../services/bootstrap/branding.constant';
-import { convertWorkspace, Workspace } from '../../../services/workspaceAdapter';
+import { constructWorkspace, Devfile, Workspace } from '../../../services/workspace-adapter';
+import { CheWorkspaceBuilder } from '../../../store/__mocks__/cheWorkspaceBuilder';
 
+const setWorkspaceQualifiedName = jest.fn();
 const createWorkspaceFromDevfileMock = jest.fn().mockResolvedValue(undefined);
 const startWorkspaceMock = jest.fn().mockResolvedValue(undefined);
 
+const namespace = 'che';
+const workspaceName = 'wksp-test';
 const dummyDevfile = {
   apiVersion: '1.0.0',
   metadata: {
-    generateName: 'wksp-'
+    name: workspaceName,
   },
-} as che.WorkspaceDevfile;
+} as Devfile;
+const workspace = new CheWorkspaceBuilder()
+  .withDevfile(dummyDevfile as che.WorkspaceDevfile)
+  .withNamespace(namespace)
+  .build();
 
 jest.mock('../../../store/Workspaces/index', () => {
   return {
     actionCreators: {
-      createWorkspaceFromDevfile: (devfile, namespace, infrastructureNamespace, attributes) =>
+      createWorkspaceFromDevfile:
+        (devfile, namespace, infrastructureNamespace, attributes) =>
         async (): Promise<Workspace> => {
           createWorkspaceFromDevfileMock(devfile, namespace, infrastructureNamespace, attributes);
-          return convertWorkspace({ id: 'id-wksp-test', attributes, namespace, devfile: dummyDevfile, temporary: false, status: 'STOPPED' });
+          return constructWorkspace({
+            id: 'id-wksp-test',
+            attributes,
+            namespace,
+            devfile: dummyDevfile as che.WorkspaceDevfile,
+            temporary: false,
+            status: 'STOPPED',
+          });
         },
       startWorkspace: workspace => async (): Promise<void> => {
         startWorkspaceMock(workspace);
       },
+      setWorkspaceQualifiedName:
+        (namespace: string, workspaceName: string) => async (): Promise<void> => {
+          setWorkspaceQualifiedName(namespace, workspaceName);
+        },
     },
   };
 });
 
 jest.mock('../GetStartedTab', () => {
   return function DummyTab(props: {
-    onDevfile: (devfileContent: string, stackName: string) => Promise<void>
+    onDevfile: (devfileContent: string, stackName: string) => Promise<void>;
   }): React.ReactElement {
     return (
       <span>
         Samples List Tab Content
-        <button onClick={() => {
-          props.onDevfile(
-            JSON.stringify(dummyDevfile),
-            'dummyStackName',
-          );
-        }}>Dummy Devfile</button>
-      </span>);
-  };
-});
-jest.mock('../CustomWorkspaceTab', () => {
-  return function DummyTab(): React.ReactNode {
-    return <span>Custom Workspace Tab Content</span>;
+        <button
+          onClick={() => {
+            props.onDevfile(JSON.stringify(dummyDevfile), 'dummyStackName');
+          }}
+        >
+          Dummy Devfile
+        </button>
+      </span>
+    );
   };
 });
 
 describe('Quick Add page', () => {
-
   it('should create and start a new workspace', async () => {
     renderGetStartedPage();
 
@@ -80,7 +96,12 @@ describe('Quick Add page', () => {
     const devfileButton = screen.getByRole('button', { name: 'Dummy Devfile' });
     devfileButton.click();
 
-    expect(createWorkspaceFromDevfileMock).toHaveBeenCalledWith(dummyDevfile, undefined, undefined, { stackName: 'dummyStackName' });
+    expect(createWorkspaceFromDevfileMock).toHaveBeenCalledWith(
+      dummyDevfile,
+      undefined,
+      namespace,
+      { stackName: 'dummyStackName' },
+    );
   });
 
   it('should have correct masthead when Quick Add tab is active', () => {
@@ -92,17 +113,6 @@ describe('Quick Add page', () => {
 
     expect(masthead.textContent?.startsWith('Getting Started with'));
   });
-
-  it('should have correct masthead when Custom Workspace tab is active', () => {
-    renderGetStartedPage();
-    const masthead = screen.getByRole('heading');
-
-    const customWorkspaceTabButton = screen.getByRole('button', { name: 'Custom Workspace' });
-    customWorkspaceTabButton.click();
-
-    expect(masthead.textContent?.startsWith('Custom Workspace'));
-  });
-
 });
 
 function renderGetStartedPage(): void {
@@ -111,14 +121,23 @@ function renderGetStartedPage(): void {
   render(
     <Provider store={store}>
       <GetStarted history={history} />
-    </Provider>
+    </Provider>,
   );
 }
 
 function createFakeStore(): Store {
   return new FakeStoreBuilder()
     .withBranding({
-      name: 'test'
+      name: 'test',
     } as BrandingData)
+    .withCheWorkspaces({
+      workspaces: [workspace],
+    })
+    .withWorkspaces({
+      workspaceUID: workspace.id,
+      namespace: namespace,
+      workspaceName: workspace.devfile.metadata.name,
+    })
+    .withInfrastructureNamespace([{ name: namespace, attributes: { phase: 'Active' } }], false)
     .build();
 }

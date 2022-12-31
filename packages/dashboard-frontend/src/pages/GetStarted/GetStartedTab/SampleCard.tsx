@@ -17,20 +17,98 @@ import {
   CardBody,
   CardHeader,
   CardHeaderMain,
+  Badge,
+  CardActions,
+  Dropdown,
+  KebabToggle,
+  DropdownPosition,
 } from '@patternfly/react-core';
-import './SampleCard.styl';
+import './sample-card.css';
+import { TargetEditor, VISIBLE_TAGS } from './SamplesListGallery';
+import DropdownEditors from './DropdownEditors';
 
-type SampleCardProps = {
+type Props = {
   metadata: che.DevfileMetaData;
-  onClick: (metadata: che.DevfileMetaData) => void;
-}
+  targetEditors: TargetEditor[];
+  onClick: (editorId: string | undefined) => void;
+};
+type State = {
+  isExpanded: boolean;
+};
 
-export class SampleCard extends React.PureComponent<SampleCardProps> {
+export class SampleCard extends React.PureComponent<Props, State> {
+  constructor(props: Props) {
+    super(props);
+
+    this.state = {
+      isExpanded: false,
+    };
+  }
+
+  private getTags(): JSX.Element[] {
+    const {
+      metadata: { tags },
+    } = this.props;
+
+    const createTag = (text: string, key: number): React.ReactElement => {
+      return (
+        <Badge
+          isRead
+          style={{ whiteSpace: 'nowrap' }}
+          key={`badge_${key}`}
+          data-testid="card-badge"
+        >
+          {text.trim()}
+        </Badge>
+      );
+    };
+
+    return tags
+      .filter(tag => VISIBLE_TAGS.indexOf(tag) !== -1)
+      .map((item: string, index: number) => createTag(item, index));
+  }
+
+  private getEditors(): TargetEditor[] {
+    const editors: TargetEditor[] = [];
+    this.props.targetEditors.forEach((editor: TargetEditor) => {
+      const isAdded = editors.find(e => e.name === editor.name);
+      if (!isAdded) {
+        editors.push(editor);
+        return;
+      }
+      if (isAdded.isDefault || isAdded.version === 'next') {
+        return;
+      }
+      if (editor.isDefault || editor.version === 'next' || editor.version === 'latest') {
+        const existingEditorIndex = editors.indexOf(isAdded);
+        editors[existingEditorIndex] = editor;
+      }
+    });
+    return editors;
+  }
+
+  private getDropdownItems(): React.ReactNode[] {
+    const targetEditors = this.getEditors();
+
+    return [
+      <DropdownEditors
+        key="che-editors"
+        targetEditors={targetEditors}
+        onClick={(editorId: string) => {
+          this.setState({ isExpanded: false });
+          this.props.onClick(editorId);
+        }}
+      />,
+    ];
+  }
 
   render(): React.ReactElement {
-    const metadata = this.props.metadata;
+    const { metadata } = this.props;
+    const { isExpanded } = this.state;
+    const tags = this.getTags();
     const devfileIcon = this.buildIcon(metadata);
-    const onClickHandler = (): void => this.props.onClick(metadata);
+    const dropdownItems = this.getDropdownItems();
+    const onClickHandler = () => this.props.onClick(undefined);
 
     return (
       <Card
@@ -43,9 +121,25 @@ export class SampleCard extends React.PureComponent<SampleCardProps> {
         className={'sample-card'}
       >
         <CardHeader>
-          <CardHeaderMain>
-            {devfileIcon}
-          </CardHeaderMain>
+          <CardHeaderMain>{devfileIcon}</CardHeaderMain>
+          <CardActions>
+            {tags}
+            <Dropdown
+              style={{ whiteSpace: 'nowrap' }}
+              onClick={e => e.stopPropagation()}
+              toggle={
+                <KebabToggle
+                  onToggle={isExpanded => {
+                    this.setState({ isExpanded });
+                  }}
+                />
+              }
+              isOpen={isExpanded}
+              position={DropdownPosition.right}
+              dropdownItems={dropdownItems}
+              isPlain
+            />
+          </CardActions>
         </CardHeader>
         <CardHeader>{metadata.displayName}</CardHeader>
         <CardBody>{metadata.description}</CardBody>
@@ -54,14 +148,12 @@ export class SampleCard extends React.PureComponent<SampleCardProps> {
   }
 
   private buildIcon(metadata: che.DevfileMetaData): React.ReactElement {
-    return metadata.icon
-      ? (<Brand
-        src={metadata.icon}
-        alt={metadata.displayName}
-        style={{ height: '64px' }} />)
-      : (<div className='blank-icon'>
-        <div className='codicon codicon-symbol-method'></div>
-      </div>);
+    return metadata.icon ? (
+      <Brand src={metadata.icon} alt={metadata.displayName} style={{ height: '64px' }} />
+    ) : (
+      <div className="blank-icon">
+        <div className="codicon codicon-symbol-method"></div>
+      </div>
+    );
   }
-
 }

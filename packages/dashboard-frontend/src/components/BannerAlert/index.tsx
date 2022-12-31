@@ -11,24 +11,27 @@
  */
 
 import React from 'react';
-import WarningBanner from './WarningBanner';
-import WebSocketBanner from './WebSocketBanner';
+import BannerAlertBranding from './Branding';
+import BannerAlertWebSocket from './WebSocket';
+import BannerAlertCustomWarning from './Custom';
+import BannerAlertNotSupportedBrowser from './NotSupportedBrowser';
 
-type Props = {};
+type Props = unknown;
 
 type State = {
   bannerAlerts: React.ReactElement[];
 };
 
 export class BannerAlert extends React.PureComponent<Props, State> {
-
   constructor(props) {
     super(props);
     this.state = {
       bannerAlerts: [
-        <WebSocketBanner key='WebSocketBannerAlert'></WebSocketBanner>,
-        <WarningBanner key='WarningBanner'></WarningBanner>
-      ]
+        <BannerAlertNotSupportedBrowser key="BannerAlertNotSupportedBrowser"></BannerAlertNotSupportedBrowser>,
+        <BannerAlertWebSocket key="BannerAlertWebSocket"></BannerAlertWebSocket>,
+        <BannerAlertBranding key="BannerAlertBranding"></BannerAlertBranding>,
+        <BannerAlertCustomWarning key="BannerAlertCustomWarning"></BannerAlertCustomWarning>,
+      ],
     };
   }
 
@@ -36,10 +39,10 @@ export class BannerAlert extends React.PureComponent<Props, State> {
     const banners = this.state.bannerAlerts;
     return (
       <div>
-        {
+        {banners.map(banner => (
           // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-          banners.map(banner => <div key={banner.key!}>{banner}</div>)
-        }
+          <div key={banner.key!}>{banner}</div>
+        ))}
       </div>
     );
   }

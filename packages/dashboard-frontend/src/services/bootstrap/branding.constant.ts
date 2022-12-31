@@ -14,19 +14,17 @@ export type BrandingData = {
   title: string;
   name: string;
   productVersion?: string;
+  links?: Link[];
   logoTextFile: string;
   logoFile: string;
-  helpPath: string;
-  helpTitle: string;
-  supportEmail: string;
   docs: BrandingDocs;
   configuration: BrandingConfiguration;
   header?: BrandingHeader;
-}
+};
 
 export type BrandingHeader = {
   warning: string;
-}
+};
 
 export type BrandingDocs = {
   devfile: string;
@@ -36,17 +34,23 @@ export type BrandingDocs = {
   faq?: string;
   storageTypes: string;
   webSocketTroubleshooting: string;
-}
+};
 
 export type BrandingConfiguration = {
-  cheCliTool: string;
+  /* deprecated field */
+  cheCliTool?: string;
   prefetch?: PrefetchConfiguration;
-}
+};
 
 export type PrefetchConfiguration = {
   cheCDN?: string;
   resources: string[];
-}
+};
+
+export type Link = {
+  text: string;
+  href: string;
+};
 
 export enum TogglableFeature {
   WORKSPACE_SHARING = 'workspaceSharing',
@@ -62,18 +66,28 @@ export const BRANDING_DEFAULT: BrandingData = {
   // in case customization is needed these files should be defined in
   // favicon: '/assets/branding/favicon.ico',
   // loader: '/assets/branding/loader.svg',
-  helpPath: 'https://www.eclipse.org/che/',
-  helpTitle: 'Community',
-  supportEmail: 'che-dev@eclipse.org',
+  links: [
+    {
+      text: 'Make a wish',
+      href: 'mailto:che-dev@eclipse.org',
+    },
+    {
+      text: 'Documentation',
+      href: 'https://www.eclipse.org/che/docs/che-7',
+    },
+    {
+      text: 'Community',
+      href: 'https://www.eclipse.org/che/',
+    },
+  ],
   docs: {
-    devfile: 'https://www.eclipse.org/che/docs/che-7/making-a-workspace-portable-using-a-devfile/',
+    devfile: 'https://www.eclipse.org/che/docs/che-7/end-user-guide/authoring-devfiles/',
     workspace: 'https://www.eclipse.org/che/docs/che-7/workspaces-overview/',
     certificate: 'https://www.eclipse.org/che/docs/che-7/importing-certificates-to-browsers/',
     general: 'https://www.eclipse.org/che/docs/che-7',
     storageTypes: 'https://www.eclipse.org/che/docs/che-7/configuring-storage-types/',
-    webSocketTroubleshooting: 'https://www.eclipse.org/che/docs/che-7/troubleshooting-network-problems/#troubleshooting-websocket-secure-connections_troubleshooting-network-problems'
+    webSocketTroubleshooting:
+      'https://www.eclipse.org/che/docs/che-7/troubleshooting-network-problems/#troubleshooting-websocket-secure-connections_troubleshooting-network-problems',
   },
-  configuration: {
-    cheCliTool: 'chectl'
-  },
+  configuration: {},
 };

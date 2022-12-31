@@ -11,26 +11,30 @@
  */
 
 import React from 'react';
-import { render, screen } from '@testing-library/react';
+import { render, RenderResult, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router';
 import { Nav } from '@patternfly/react-core';
 
 import NavigationMainList from '../MainList';
 import { FakeStoreBuilder } from '../../../store/__mocks__/storeBuilder';
 import { Provider } from 'react-redux';
-import { createFakeCheWorkspace } from '../../../store/__mocks__/workspace';
+import { DevWorkspaceBuilder } from '../../../store/__mocks__/devWorkspaceBuilder';
+import { Store } from 'redux';
+import { CheWorkspaceBuilder } from '../../../store/__mocks__/cheWorkspaceBuilder';
+import { WorkspaceAdapter } from '../../../services/workspace-adapter';
 
 describe('Navigation Main List', () => {
-
   it('should have correct number of main navigation items', () => {
-    render(buildElement());
+    const store = new FakeStoreBuilder().build();
+    renderComponent(store);
 
     const navLinks = screen.getAllByRole('link');
     expect(navLinks.length).toEqual(2);
   });
 
   it('should have correct navigation item labels', () => {
-    render(buildElement());
+    const store = new FakeStoreBuilder().build();
+    renderComponent(store);
 
     const navLinks = screen.getAllByRole('link');
 
@@ -39,29 +43,70 @@ describe('Navigation Main List', () => {
   });
 
   it('should have correct navigation item workspaces quantity', () => {
-    let workspaces = [0, 1, 2, 3, 4].map(i => createFakeCheWorkspace('works-' + i, 'works-' + i));
-    const { rerender } = render(buildElement(workspaces));
+    let workspaces = [0, 1, 2, 3, 4].map(i =>
+      new DevWorkspaceBuilder()
+        .withId('wksp-' + i)
+        .withName('wksp-' + i)
+        .build(),
+    );
+    let store = new FakeStoreBuilder().withDevWorkspaces({ workspaces }).build();
+    const { rerender } = renderComponent(store);
 
     expect(screen.queryByRole('link', { name: 'Workspaces (5)' })).toBeInTheDocument();
 
-    workspaces = [0, 1, 2].map(i => createFakeCheWorkspace('works-' + i, 'works-' + i));
-    rerender(buildElement(workspaces));
+    workspaces = [0, 1, 2].map(i =>
+      new DevWorkspaceBuilder()
+        .withId('wksp-' + i)
+        .withName('wksp-' + i)
+        .build(),
+    );
+    store = new FakeStoreBuilder().withDevWorkspaces({ workspaces }).build();
+    rerender(buildElement(store));
 
     expect(screen.queryByRole('link', { name: 'Workspaces (3)' })).toBeInTheDocument();
   });
 
+  describe('with deprecated workspaces', () => {
+    it('should count all workspaces but converted', () => {
+      const devworkspaces = [0, 1].map(i =>
+        new DevWorkspaceBuilder()
+          .withId('devwksp-' + i)
+          .withName('wksp-' + i)
+          .build(),
+      );
+      const cheworkspaces = [
+        new CheWorkspaceBuilder().withId('wksp-1').withName('wksp-1').build(),
+        new CheWorkspaceBuilder()
+          .withId('wksp-2')
+          .withName('wksp-2')
+          .withAttributes({
+            convertedId: WorkspaceAdapter.getId(devworkspaces[0]),
+          } as che.WorkspaceAttributes)
+          .build(),
+      ];
+      const store = new FakeStoreBuilder()
+        .withCheWorkspaces({ workspaces: cheworkspaces })
+        .withDevWorkspaces({ workspaces: devworkspaces })
+        .build();
+      renderComponent(store);
+
+      expect(screen.queryByRole('link', { name: 'Workspaces (3)' })).toBeInTheDocument();
+    });
+  });
 });
 
-function buildElement(workspaces: che.Workspace[] = []): JSX.Element {
-  const store = new FakeStoreBuilder().withCheWorkspaces({ workspaces }).build();
-  return (<Provider store={store}>
-    <MemoryRouter>
-      <Nav
-        onSelect={() => jest.fn()}
-        theme="light"
-      >
-        <NavigationMainList activePath="" />
-      </Nav>
-    </MemoryRouter>
-  </Provider>);
+function renderComponent(store: Store): RenderResult {
+  return render(buildElement(store));
+}
+
+function buildElement(store: Store): React.ReactElement {
+  return (
+    <Provider store={store}>
+      <MemoryRouter>
+        <Nav onSelect={() => jest.fn()} theme="light">
+          <NavigationMainList activePath="" />
+        </Nav>
+      </MemoryRouter>
+    </Provider>
+  );
 }

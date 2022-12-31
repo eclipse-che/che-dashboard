@@ -17,7 +17,7 @@ import { render, screen, RenderResult, fireEvent } from '@testing-library/react'
 import userEvent from '@testing-library/user-event';
 import WorkspacesListToolbar from '..';
 import { createFakeCheWorkspace } from '../../../../store/__mocks__/workspace';
-import { convertWorkspace, Workspace } from '../../../../services/workspaceAdapter';
+import { constructWorkspace, Workspace } from '../../../../services/workspace-adapter';
 
 let workspaces: Workspace[];
 let isSelectedAll: boolean;
@@ -28,23 +28,24 @@ const mockOnFilter = jest.fn();
 const mockOnToggleSelectAll = jest.fn();
 
 describe('Workspaces List Toolbar', () => {
-
   function renderComponent(): RenderResult {
-    return render(<WorkspacesListToolbar
-      workspaces={workspaces}
-      selectedAll={isSelectedAll}
-      enabledDelete={isEnabledDelete}
-      onAddWorkspace={() => mockOnAddWorkspace()}
-      onBulkDelete={() => mockOnBulkDelete()}
-      onFilter={filtered => mockOnFilter(filtered)}
-      onToggleSelectAll={isSelectedAll => mockOnToggleSelectAll(isSelectedAll)}
-    />);
+    return render(
+      <WorkspacesListToolbar
+        workspaces={workspaces}
+        selectedAll={isSelectedAll}
+        enabledDelete={isEnabledDelete}
+        onAddWorkspace={() => mockOnAddWorkspace()}
+        onBulkDelete={() => mockOnBulkDelete()}
+        onFilter={filtered => mockOnFilter(filtered)}
+        onToggleSelectAll={isSelectedAll => mockOnToggleSelectAll(isSelectedAll)}
+      />,
+    );
   }
 
   beforeEach(() => {
     workspaces = [0, 1, 2, 3, 4]
       .map(i => createFakeCheWorkspace('workspace-' + i, 'workspace-' + i))
-      .map(workspace => convertWorkspace(workspace));
+      .map(workspace => constructWorkspace(workspace));
     isSelectedAll = false;
     isEnabledDelete = false;
   });
@@ -148,5 +149,4 @@ describe('Workspaces List Toolbar', () => {
 
     expect(mockOnFilter).toHaveBeenCalledWith(workspaces);
   });
-
 });

@@ -13,8 +13,8 @@
 import React from 'react';
 import { AlertVariant, Dropdown, DropdownItem, KebabToggle } from '@patternfly/react-core';
 import { NavigationRecentItemObject } from '.';
-import WorkspaceActionsProvider from '../../containers/WorkspaceActions';
-import { ActionContextType, WorkspaceActionsConsumer } from '../../containers/WorkspaceActions/context';
+import WorkspaceActionsProvider from '../../contexts/WorkspaceActions/Provider';
+import { ActionContextType, WorkspaceActionsConsumer } from '../../contexts/WorkspaceActions';
 import { DevWorkspaceStatus, WorkspaceAction, WorkspaceStatus } from '../../services/helpers/types';
 import getRandomString from '../../services/helpers/random';
 import { lazyInject } from '../../inversify.config';
@@ -22,17 +22,16 @@ import { AppAlerts } from '../../services/alerts/appAlerts';
 import { History } from 'history';
 
 type Props = {
-  item: NavigationRecentItemObject,
-  history: History,
-  isDefaultExpanded?: boolean,
+  item: NavigationRecentItemObject;
+  history: History;
+  isDefaultExpanded?: boolean;
 };
 
 type State = {
   isExpanded: boolean;
-}
+};
 
 class NavigationItemWorkspaceActions extends React.PureComponent<Props, State> {
-
   @lazyInject(AppAlerts)
   private appAlerts: AppAlerts;
 
@@ -40,7 +39,7 @@ class NavigationItemWorkspaceActions extends React.PureComponent<Props, State> {
     super(props);
 
     this.state = {
-      isExpanded: this.props.isDefaultExpanded === true
+      isExpanded: this.props.isDefaultExpanded === true,
     };
   }
 
@@ -57,7 +56,7 @@ class NavigationItemWorkspaceActions extends React.PureComponent<Props, State> {
       isExpanded: false,
     });
     try {
-      const nextPath = await context.handleAction(selected, this.props.item.workspaceId);
+      const nextPath = await context.handleAction(selected, this.props.item.workspaceUID);
       if (!nextPath) {
         return;
       }
@@ -70,7 +69,9 @@ class NavigationItemWorkspaceActions extends React.PureComponent<Props, State> {
   }
 
   private getDropdownItems(context: ActionContextType): React.ReactNode[] {
-    const { item: { status } } = this.props;
+    const {
+      item: { status },
+    } = this.props;
     const dropdownItems: React.ReactNode[] = [];
 
     const createAction = (action: WorkspaceAction): React.ReactNode => (
@@ -79,7 +80,8 @@ class NavigationItemWorkspaceActions extends React.PureComponent<Props, State> {
         onClick={e => {
           e.stopPropagation();
           this.handleSelect(action, context);
-        }}>
+        }}
+      >
         <div>{action}</div>
       </DropdownItem>
     );
@@ -93,14 +95,8 @@ class NavigationItemWorkspaceActions extends React.PureComponent<Props, State> {
         createAction(WorkspaceAction.START_DEBUG_AND_OPEN_LOGS),
         createAction(WorkspaceAction.START_IN_BACKGROUND),
       );
-    } else if (
-      status !== WorkspaceStatus.STOPPING &&
-      status !== DevWorkspaceStatus.TERMINATING &&
-      status !== DevWorkspaceStatus.FAILED
-    ) {
-      dropdownItems.push(
-        createAction(WorkspaceAction.STOP_WORKSPACE),
-      );
+    } else if (status !== WorkspaceStatus.STOPPING && status !== DevWorkspaceStatus.TERMINATING) {
+      dropdownItems.push(createAction(WorkspaceAction.STOP_WORKSPACE));
     }
     if (
       status !== WorkspaceStatus.STOPPING &&
@@ -109,13 +105,9 @@ class NavigationItemWorkspaceActions extends React.PureComponent<Props, State> {
       status !== DevWorkspaceStatus.STOPPED &&
       status !== DevWorkspaceStatus.TERMINATING
     ) {
-      dropdownItems.push(
-        createAction(WorkspaceAction.RESTART_WORKSPACE),
-      );
+      dropdownItems.push(createAction(WorkspaceAction.RESTART_WORKSPACE));
     }
-    dropdownItems.push(
-      createAction(WorkspaceAction.EDIT_WORKSPACE),
-    );
+    dropdownItems.push(createAction(WorkspaceAction.EDIT_WORKSPACE));
 
     return dropdownItems;
   }
@@ -126,35 +118,38 @@ class NavigationItemWorkspaceActions extends React.PureComponent<Props, State> {
 
   public render(): React.ReactElement {
     const { isExpanded } = this.state;
+    const { history } = this.props;
     const menuAppendTo = document.getElementById('page-sidebar') || 'inline';
 
-    return (<WorkspaceActionsProvider>
-      <WorkspaceActionsConsumer>
-        {context => (
-          <Dropdown
-            onClick={e => e.stopPropagation()}
-            toggle={(
-              <KebabToggle
-                onBlur={() => {
-                  if (isExpanded) {
-                    setTimeout(() => {
-                      this.handleToggle(false);
-                    }, 500);
-                  }
-                }}
-                onToggle={isExpanded => this.handleToggle(isExpanded)} />
-            )}
-            isOpen={isExpanded}
-            position="right"
-            dropdownItems={this.getDropdownItems(context)}
-            menuAppendTo={menuAppendTo}
-            isPlain
-          />
-        )}
-      </WorkspaceActionsConsumer>
-    </WorkspaceActionsProvider>);
+    return (
+      <WorkspaceActionsProvider history={history}>
+        <WorkspaceActionsConsumer>
+          {context => (
+            <Dropdown
+              onClick={e => e.stopPropagation()}
+              toggle={
+                <KebabToggle
+                  onBlur={() => {
+                    if (isExpanded) {
+                      setTimeout(() => {
+                        this.handleToggle(false);
+                      }, 500);
+                    }
+                  }}
+                  onToggle={isExpanded => this.handleToggle(isExpanded)}
+                />
+              }
+              isOpen={isExpanded}
+              position="right"
+              dropdownItems={this.getDropdownItems(context)}
+              menuAppendTo={menuAppendTo}
+              isPlain
+            />
+          )}
+        </WorkspaceActionsConsumer>
+      </WorkspaceActionsProvider>
+    );
   }
-
 }
 
 export default NavigationItemWorkspaceActions;

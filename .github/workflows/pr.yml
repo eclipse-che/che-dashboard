@@ -1,0 +1,131 @@
+#
+# Copyright (c) 2020-2021 Red Hat, Inc.
+# This program and the accompanying materials are made
+# available under the terms of the Eclipse Public License 2.0
+# which is available at https://www.eclipse.org/legal/epl-2.0/
+#
+# SPDX-License-Identifier: EPL-2.0
+#
+
+name: PR
+
+on:
+  pull_request:
+    branches: ['*']
+
+env:
+  DIR_DASHBOARD: che-dashboard
+  DIR_CHE: che
+  IMAGE_VERSION: pr-${{ github.event.pull_request.number }}
+  ORGANIZATION: quay.io/eclipse
+
+jobs:
+
+  dash-licenses:
+    runs-on: ubuntu-20.04
+    if: ${{ github.base_ref == 'main' }}
+    steps:
+      -
+        name: "Checkout Che Dashboard source code"
+        uses: actions/checkout@v2
+      -
+        name: "Use Node 16"
+        uses: actions/setup-node@v1
+        with:
+          node-version: 16
+      -
+        name: "Install dependencies"
+        run: yarn
+      -
+        name: "Check dependencies usage restrictions"
+        run: yarn license:check
+
+  build-and-test:
+    runs-on: ubuntu-20.04
+    strategy:
+      matrix:
+        node-version: [14.x, 16.x]
+    steps:
+      -
+        name: "Checkout Che Dashboard source code"
+        uses: actions/checkout@v2
+      -
+        name: "Use Node.js ${{ matrix.node-version }}"
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{ matrix.node-version }}
+      -
+        name: "Install dependencies"
+        run: yarn
+      -
+        name: "Build"
+        run: yarn build
+      -
+        name: "Run linters"
+        run: yarn lint:check
+      -
+        name: "Run unit tests"
+        run: yarn test --runInBand
+
+  docker-build:
+    needs: build-and-test
+    runs-on: ubuntu-20.04
+    continue-on-error: ${{ matrix.default == false }}
+    strategy:
+      fail-fast: false
+      matrix:
+        platform: [linux/amd64]
+        default: [true]
+        include:
+          - platform: linux/arm64
+            default: false
+          - platform: linux/ppc64le
+            default: false
+    steps:
+      -
+        name: "Checkout Che Dashboard source code"
+        uses: actions/checkout@v2
+        with:
+          path: ${{ env.DIR_DASHBOARD }}
+          ref: ${{ github.event.pull_request.head.sha }}
+      -
+        name: "Set up QEMU"
+        uses: docker/setup-qemu-action@v1
+      -
+        name: "Set up Docker Buildx ${{ matrix.platform }}"
+        uses: docker/setup-buildx-action@v1
+      -
+        name: "Cache Docker layers"
+        uses: actions/cache@v2
+        with:
+          path: /tmp/.buildx-cache
+          key: ${{ runner.os }}-buildx-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-buildx-
+      -
+        name: "Docker quay.io Login"
+        uses: docker/login-action@v1
+        with:
+          registry: quay.io
+          username: ${{ secrets.QUAY_USERNAME }}
+          password: ${{ secrets.QUAY_PASSWORD }}
+      -
+        name: "Build and push ${{ matrix.platform }}"
+        uses: docker/build-push-action@v2
+        with:
+          cache-from: type=local,src=/tmp/.buildx-cache
+          cache-to: type=local,dest=/tmp/.buildx-cache
+          context: ./${{ env.DIR_DASHBOARD }}
+          file: ./${{ env.DIR_DASHBOARD }}/build/dockerfiles/Dockerfile
+          platforms: ${{ matrix.platform }}
+          push: ${{ matrix.default == true }}
+          tags: ${{ env.ORGANIZATION }}/che-dashboard:${{ env.IMAGE_VERSION }}
+      -
+        name: "Comment with image name"
+        uses: actions/github-script@v3
+        if: ${{ matrix.default == true }}
+        with:
+          script: |
+            const { issue: { number: issue_number }, repo: { owner, repo }  } = context;
+            const dashboardImage = '${{ env.ORGANIZATION }}/che-dashboard:${{ env.IMAGE_VERSION }}';
+            github.issues.createComment({ issue_number, owner, repo, body: 'Docker image build succeeded: **' + dashboardImage + '**' });

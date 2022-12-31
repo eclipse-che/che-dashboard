@@ -12,18 +12,17 @@
 
 import { createSelector } from 'reselect';
 import { AppState } from '..';
-import { convertWorkspace, Workspace } from '../../services/workspaceAdapter';
+import { constructWorkspace, Workspace, WorkspaceAdapter } from '../../services/workspace-adapter';
 import { selectCheWorkspacesError } from './cheWorkspaces/selectors';
-import { selectDevWorkspacesError } from './devWorkspaces/selectors';
+import { selectDevWorkspacesError, selectRunningDevWorkspaces } from './devWorkspaces/selectors';
 
 const selectState = (state: AppState) => state.workspaces;
 const selectCheWorkspacesState = (state: AppState) => state.cheWorkspaces;
 const selectDevWorkspacesState = (state: AppState) => state.devWorkspaces;
 
-export const selectIsLoading = createSelector(
-  selectState,
-  state => state.isLoading,
-);
+export const selectIsLoading = createSelector(selectDevWorkspacesState, devWorkspacesState => {
+  return devWorkspacesState.isLoading;
+});
 
 export const selectLogs = createSelector(
   selectCheWorkspacesState,
@@ -33,52 +32,54 @@ export const selectLogs = createSelector(
   },
 );
 
+/**
+ * Returns array of UIDs of deprecated workspaces
+ */
+export const selectDeprecatedWorkspacesUIDs = createSelector(
+  selectCheWorkspacesState,
+  cheWorkspacesState => {
+    return cheWorkspacesState.workspaces.map(workspace => WorkspaceAdapter.getUID(workspace));
+  },
+);
+
 export const selectAllWorkspaces = createSelector(
   selectCheWorkspacesState,
   selectDevWorkspacesState,
   (cheWorkspacesState, devWorkspacesState) => {
-    return [
-      ...cheWorkspacesState.workspaces,
-      ...devWorkspacesState.workspaces,
-    ].map(workspace => convertWorkspace(workspace));
-  }
+    return [...cheWorkspacesState.workspaces, ...devWorkspacesState.workspaces].map(workspace =>
+      constructWorkspace(workspace),
+    );
+  },
 );
 
 export const selectWorkspaceByQualifiedName = createSelector(
   selectState,
   selectAllWorkspaces,
   (state, allWorkspaces) => {
-    if (!allWorkspaces) {
-      return null;
-    }
-    return allWorkspaces.find(workspace =>
-      workspace.namespace === state.namespace && workspace.name === state.workspaceName);
-  }
+    return allWorkspaces.find(
+      workspace =>
+        workspace.infrastructureNamespace === state.namespace &&
+        workspace.name === state.workspaceName,
+    );
+  },
 );
 
-export const selectWorkspaceById = createSelector(
+export const selectWorkspaceByUID = createSelector(
   selectState,
   selectAllWorkspaces,
   (state, allWorkspaces) => {
-    if (!allWorkspaces) {
-      return null;
-    }
-    return allWorkspaces.find(workspace => workspace.id === state.workspaceId);
-  }
+    return allWorkspaces.find(workspace => workspace.uid === state.workspaceUID);
+  },
 );
 
-export const selectAllWorkspacesByName = createSelector(
-  selectAllWorkspaces,
-  allWorkspaces => {
-    if (!allWorkspaces) {
-      return null;
-    }
-    return allWorkspaces.sort(sortByNamespaceNameFn);
+export const selectAllWorkspacesByName = createSelector(selectAllWorkspaces, allWorkspaces => {
+  if (!allWorkspaces) {
+    return null;
   }
-);
+  return allWorkspaces.sort(sortByNamespaceNameFn);
+});
 const sortByNamespaceNameFn = (workspaceA: Workspace, workspaceB: Workspace): -1 | 0 | 1 => {
-  return sortByNamespaceFn(workspaceA, workspaceB)
-    || sortByNameFn(workspaceA, workspaceB);
+  return sortByNamespaceFn(workspaceA, workspaceB) || sortByNameFn(workspaceA, workspaceB);
 };
 const sortByNamespaceFn = (workspaceA: Workspace, workspaceB: Workspace): -1 | 0 | 1 => {
   if (workspaceA.namespace > workspaceB.namespace) {
@@ -99,18 +100,9 @@ const sortByNameFn = (workspaceA: Workspace, workspaceB: Workspace): -1 | 0 | 1 
   }
 };
 
-export const selectAllWorkspacesSortedByTime = createSelector(
-  selectAllWorkspaces,
-  allWorkspaces => {
-    if (!allWorkspaces) {
-      return null;
-    }
-    return allWorkspaces.sort(sortByUpdatedTimeFn);
-  }
-);
 const sortByUpdatedTimeFn = (workspaceA: Workspace, workspaceB: Workspace): -1 | 0 | 1 => {
-  const timeA = workspaceA.updated || workspaceA.created || 0;
-  const timeB = workspaceB.updated || workspaceB.created || 0;
+  const timeA = workspaceA.updated;
+  const timeB = workspaceB.updated;
   if (timeA > timeB) {
     return -1;
   } else if (timeA < timeB) {
@@ -120,26 +112,16 @@ const sortByUpdatedTimeFn = (workspaceA: Workspace, workspaceB: Workspace): -1 |
   }
 };
 
-const selectRecentNumber = createSelector(
-  selectState,
-  state => state.recentNumber
-);
+const selectRecentNumber = createSelector(selectState, state => state.recentNumber);
 export const selectRecentWorkspaces = createSelector(
   selectRecentNumber,
-  selectAllWorkspacesSortedByTime,
-  (recentNumber, workspacesSortedByTime) => {
-    if (!workspacesSortedByTime) {
-      return null;
-    }
-
-    return workspacesSortedByTime.slice(0, recentNumber);
-  }
-);
-export const selectAllWorkspacesNumber = createSelector(
   selectAllWorkspaces,
-  allWorkspaces => {
-    return allWorkspaces.length;
-  }
+  selectDeprecatedWorkspacesUIDs,
+  (recentNumber, allWorkspaces, deprecatedWorkspacesUIDs) =>
+    allWorkspaces
+      .filter(workspace => deprecatedWorkspacesUIDs.indexOf(workspace.uid) === -1)
+      .sort(sortByUpdatedTimeFn)
+      .slice(0, recentNumber),
 );
 
 export const selectWorkspacesError = createSelector(
@@ -150,5 +132,12 @@ export const selectWorkspacesError = createSelector(
       return devWorkspacesError;
     }
     return cheWorkspacesError;
-  }
+  },
+);
+
+export const selectRunningWorkspaces = createSelector(
+  selectRunningDevWorkspaces,
+  runningDevWorkspaces => {
+    return runningDevWorkspaces.map(constructWorkspace);
+  },
 );
