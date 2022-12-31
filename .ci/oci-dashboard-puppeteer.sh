@@ -75,6 +75,7 @@ setUpTestPod(){
   yq -iy  '(.spec.containers[].env[]? | select(.name=="BASE_URL")).value = env.ECLIPSE_CHE_URL' .ci/resources/dashboard-pod.yaml
   yq -iy  '(.spec.containers[].env[]? | select(.value=="crw4ever!")).value = env.KUBE_ADMIN_PASSWORD' .ci/resources/dashboard-pod.yaml
 
+  echo '---sleep---'
   sleep 1800
 
   echo '---------------pupetter-test-pod---------------:'
