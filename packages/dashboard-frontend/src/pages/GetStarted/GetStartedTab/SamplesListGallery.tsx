@@ -37,7 +37,6 @@ import {
 } from '../../../store/DevfileRegistries/selectors';
 import { selectWorkspacesSettings } from '../../../store/Workspaces/Settings/selectors';
 import * as FactoryResolverStore from '../../../store/FactoryResolver';
-import { isDevworkspacesEnabled } from '../../../services/helpers/devworkspace';
 import { selectDefaultEditor } from '../../../store/Plugins/devWorkspacePlugins/selectors';
 import { selectEditors } from '../../../store/Plugins/chePlugins/selectors';
 
@@ -157,8 +156,7 @@ export class SamplesListGallery extends React.PureComponent<Props, State> {
     }
     this.isLoading = true;
     try {
-      const cheDevworkspaceEnabled = isDevworkspacesEnabled(this.props.workspacesSettings);
-      if (cheDevworkspaceEnabled && meta.links.v2) {
+      if (meta.links.v2) {
         const link = encodeURIComponent(meta.links.v2);
         let devWorkspace = '';
         if (!editor && this.props.defaultEditor) {

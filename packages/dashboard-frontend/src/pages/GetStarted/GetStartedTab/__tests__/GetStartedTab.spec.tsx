@@ -30,7 +30,7 @@ const onDevfileMock: (
 const testStackName = 'http://test-location/';
 const testDevfileName = 'Custom Devfile';
 const testDevfile = {
-  apiVersion: '1.0.0',
+  apiVersion: '2.2.0',
   metadata: { name: testDevfileName },
 } as Devfile;
 
@@ -74,7 +74,7 @@ describe('Samples list tab', () => {
       .withWorkspacesSettings({
         'che.workspace.storage.preferred_type': preferredStorageType,
       } as che.WorkspaceSettings)
-      .withCheWorkspaces({
+      .withDevWorkspaces({
         workspaces: [],
       })
       .withBranding(brandingData)

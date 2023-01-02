@@ -19,7 +19,8 @@ import GetStarted from '..';
 import { FakeStoreBuilder } from '../../../store/__mocks__/storeBuilder';
 import { BrandingData } from '../../../services/bootstrap/branding.constant';
 import { constructWorkspace, Devfile, Workspace } from '../../../services/workspace-adapter';
-import { CheWorkspaceBuilder } from '../../../store/__mocks__/cheWorkspaceBuilder';
+import { DevWorkspaceBuilder } from '../../../store/__mocks__/devWorkspaceBuilder';
+import { devfileToDevWorkspace } from '../../../services/workspace-client/devworkspace/converters';
 
 const setWorkspaceQualifiedName = jest.fn();
 const createWorkspaceFromDevfileMock = jest.fn().mockResolvedValue(undefined);
@@ -28,13 +29,13 @@ const startWorkspaceMock = jest.fn().mockResolvedValue(undefined);
 const namespace = 'che';
 const workspaceName = 'wksp-test';
 const dummyDevfile = {
-  apiVersion: '1.0.0',
+  schemaVersion: '2.2.0',
   metadata: {
     name: workspaceName,
   },
 } as Devfile;
-const workspace = new CheWorkspaceBuilder()
-  .withDevfile(dummyDevfile as che.WorkspaceDevfile)
+const workspace = new DevWorkspaceBuilder()
+  .withName(workspaceName)
   .withNamespace(namespace)
   .build();
 
@@ -45,14 +46,9 @@ jest.mock('../../../store/Workspaces/index', () => {
         (devfile, namespace, infrastructureNamespace, attributes) =>
         async (): Promise<Workspace> => {
           createWorkspaceFromDevfileMock(devfile, namespace, infrastructureNamespace, attributes);
-          return constructWorkspace({
-            id: 'id-wksp-test',
-            attributes,
-            namespace,
-            devfile: dummyDevfile as che.WorkspaceDevfile,
-            temporary: false,
-            status: 'STOPPED',
-          });
+          const devWorkspace = devfileToDevWorkspace(devfile, 'che', false);
+          devWorkspace.metadata.namespace = infrastructureNamespace;
+          return constructWorkspace(devWorkspace);
         },
       startWorkspace: workspace => async (): Promise<void> => {
         startWorkspaceMock(workspace);
@@ -84,7 +80,7 @@ jest.mock('../GetStartedTab', () => {
   };
 });
 
-describe('Quick Add page', () => {
+fdescribe('Quick Add page', () => {
   it('should create and start a new workspace', async () => {
     renderGetStartedPage();
 
@@ -94,6 +90,7 @@ describe('Quick Add page', () => {
     await waitFor(() => expect(screen.getByRole('button', { name: 'Dummy Devfile' })).toBeTruthy());
 
     const devfileButton = screen.getByRole('button', { name: 'Dummy Devfile' });
+    await waitFor(() => expect(devfileButton).toBeTruthy());
     devfileButton.click();
 
     expect(createWorkspaceFromDevfileMock).toHaveBeenCalledWith(
@@ -130,13 +127,12 @@ function createFakeStore(): Store {
     .withBranding({
       name: 'test',
     } as BrandingData)
-    .withCheWorkspaces({
+    .withDevWorkspaces({
       workspaces: [workspace],
     })
     .withWorkspaces({
-      workspaceUID: workspace.id,
-      namespace: namespace,
-      workspaceName: workspace.devfile.metadata.name,
+      namespace: workspace.metadata.namespace,
+      workspaceName: workspace.metadata.name,
     })
     .withInfrastructureNamespace([{ name: namespace, attributes: { phase: 'Active' } }], false)
     .build();

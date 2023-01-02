@@ -84,11 +84,6 @@ export class FakeStoreBuilder {
       workspaceUID: '',
       recentNumber: 5,
     } as WorkspacesState,
-    cheWorkspaces: {
-      isLoading: false,
-      workspaces: [],
-      workspacesLogs: new Map<string, string[]>(),
-    },
     devWorkspaces: {
       isLoading: false,
       workspaces: [],
@@ -118,10 +113,6 @@ export class FakeStoreBuilder {
       isLoading: false,
       namespaces: [],
     } as InfrastructureNamespaceState,
-    userPreferences: {
-      isLoading: false,
-      preferences: {},
-    },
     dwPlugins: {
       isLoading: false,
       editors: {},
@@ -129,11 +120,6 @@ export class FakeStoreBuilder {
       defaultPlugins: {},
     },
     dwDockerConfig: {
-      isLoading: false,
-      registries: [],
-      error: undefined,
-    },
-    cheDockerConfig: {
       isLoading: false,
       registries: [],
       error: undefined,
@@ -161,26 +147,6 @@ export class FakeStoreBuilder {
     this.state.dwDockerConfig.registries = registries;
     this.state.dwDockerConfig.isLoading = isLoading;
     this.state.dwDockerConfig.error = error;
-    return this;
-  }
-
-  public withCheDockerConfig(
-    registries: RegistryEntry[],
-    isLoading = false,
-    error?: string,
-  ): FakeStoreBuilder {
-    this.state.cheDockerConfig.registries = registries;
-    this.state.cheDockerConfig.isLoading = isLoading;
-    this.state.cheDockerConfig.error = error;
-    return this;
-  }
-
-  public withUserPreferences(
-    preferences: che.UserPreferences,
-    isLoading = false,
-  ): FakeStoreBuilder {
-    this.state.userPreferences.preferences = preferences;
-    this.state.userPreferences.isLoading = isLoading;
     return this;
   }
 
@@ -294,25 +260,6 @@ export class FakeStoreBuilder {
     this.state.workspacesSettings.settings = Object.assign({}, settings as che.WorkspaceSettings);
     this.state.workspacesSettings.isLoading = isLoading;
     this.state.workspacesSettings.error = error;
-    return this;
-  }
-
-  public withCheWorkspaces(
-    options: {
-      workspaces?: che.Workspace[];
-      workspacesLogs?: WorkspacesLogs;
-    },
-    isLoading = false,
-    error?: string,
-  ): FakeStoreBuilder {
-    if (options.workspaces) {
-      this.state.cheWorkspaces.workspaces = Object.assign([], options.workspaces);
-    }
-    if (options.workspacesLogs) {
-      this.state.cheWorkspaces.workspacesLogs = new Map(options.workspacesLogs);
-    }
-    this.state.cheWorkspaces.isLoading = isLoading;
-    this.state.cheWorkspaces.error = error;
     return this;
   }
 

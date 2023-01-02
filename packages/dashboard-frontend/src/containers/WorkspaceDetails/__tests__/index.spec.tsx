@@ -78,10 +78,8 @@ describe('Workspace Details container', () => {
       .withName(nextWorkspaceName)
       .withNamespace(namespace);
     prevStoreBuilder = new FakeStoreBuilder()
-      .withWorkspacesSettings({ 'che.devworkspaces.enabled': 'true' } as che.WorkspaceSettings)
       .withInfrastructureNamespace([{ name: namespace, attributes: { phase: 'Active' } }], false);
     nextStoreBuilder = new FakeStoreBuilder()
-      .withWorkspacesSettings({ 'che.devworkspaces.enabled': 'true' } as che.WorkspaceSettings)
       .withInfrastructureNamespace([{ name: namespace, attributes: { phase: 'Active' } }], false);
   });
 
@@ -222,7 +220,6 @@ describe('Workspace Details container', () => {
         .build();
 
       const prevStore = new FakeStoreBuilder()
-        .withWorkspacesSettings({ 'che.devworkspaces.enabled': 'true' } as che.WorkspaceSettings)
         .withInfrastructureNamespace([{ name: namespace, attributes: { phase: 'Active' } }], false)
         .withDevWorkspaces({ workspaces: [workspace1, workspace2] })
         .build();
@@ -240,7 +237,6 @@ describe('Workspace Details container', () => {
 
       // remove workspace1 from store
       const nextStore = new FakeStoreBuilder()
-        .withWorkspacesSettings({ 'che.devworkspaces.enabled': 'true' } as che.WorkspaceSettings)
         .withInfrastructureNamespace([{ name: namespace, attributes: { phase: 'Active' } }], false)
         .withDevWorkspaces({ workspaces: [workspace2] })
         .build();

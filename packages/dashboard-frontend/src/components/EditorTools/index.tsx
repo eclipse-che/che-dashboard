@@ -24,7 +24,7 @@ import { helpers } from '@eclipse-che/common';
 import { ToggleBarsContext } from '../../contexts/ToggleBars';
 
 type Props = {
-  content: che.Workspace | devfileApi.DevWorkspace | che.WorkspaceDevfile | devfileApi.Devfile;
+  content: devfileApi.DevWorkspace | che.WorkspaceDevfile | devfileApi.Devfile;
   handleExpand: (isExpand: boolean) => void;
 };
 
@@ -113,12 +113,10 @@ class EditorTools extends React.PureComponent<Props, State> {
   }
 
   private getName(
-    content: che.Workspace | devfileApi.DevWorkspace | che.WorkspaceDevfile | devfileApi.Devfile,
+    content: devfileApi.DevWorkspace | che.WorkspaceDevfile | devfileApi.Devfile,
   ): string | undefined {
     if ((content as devfileApi.DevWorkspace)?.kind === 'DevWorkspace') {
       return (content as devfileApi.DevWorkspace).metadata.name;
-    } else if ((content as che.Workspace)?.devfile) {
-      return (content as che.Workspace).devfile.metadata.name;
     } else if ((content as che.WorkspaceDevfile).apiVersion) {
       return (content as che.WorkspaceDevfile).metadata.name;
     } else if ((content as devfileApi.Devfile).schemaVersion) {
@@ -128,12 +126,9 @@ class EditorTools extends React.PureComponent<Props, State> {
   }
 
   private isWorkspace(
-    content: che.Workspace | devfileApi.DevWorkspace | che.WorkspaceDevfile | devfileApi.Devfile,
+    content: devfileApi.DevWorkspace | che.WorkspaceDevfile | devfileApi.Devfile,
   ): boolean {
     if ((content as devfileApi.DevWorkspace)?.kind === 'DevWorkspace') {
-      return true;
-    }
-    if ((content as che.Workspace)?.devfile) {
       return true;
     }
     return false;

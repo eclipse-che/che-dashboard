@@ -11,22 +11,22 @@
  */
 
 declare namespace che {
-  export interface Workspace {
-    id: string;
-    projects?: any;
-    links?: {
-      ide?: string;
-      [rel: string]: string | undefined;
-    };
-    temporary?: boolean;
-    status: string;
-    namespace?: string;
-    attributes?: WorkspaceAttributes;
-    devfile: WorkspaceDevfile;
-    runtime?: WorkspaceRuntime;
-    isLocked?: boolean;
-    usedResources?: string;
-  }
+  // export interface Workspace {
+  //   id: string;
+  //   projects?: any;
+  //   links?: {
+  //     ide?: string;
+  //     [rel: string]: string | undefined;
+  //   };
+  //   temporary?: boolean;
+  //   status: string;
+  //   namespace?: string;
+  //   attributes?: WorkspaceAttributes;
+  //   devfile: WorkspaceDevfile;
+  //   runtime?: WorkspaceRuntime;
+  //   isLocked?: boolean;
+  //   usedResources?: string;
+  // }
 
   export type WorkspaceStorageType =
     | 'async'
@@ -97,45 +97,45 @@ declare namespace che {
     };
   }
 
-  export interface WorkspaceRuntime {
-    activeEnv: string;
-    status: string;
-    machines: {
-      [machineName: string]: WorkspaceRuntimeMachine;
-    };
-    machineToken?: string;
-  }
+  // export interface WorkspaceRuntime {
+  //   activeEnv: string;
+  //   status: string;
+  //   machines: {
+  //     [machineName: string]: WorkspaceRuntimeMachine;
+  //   };
+  //   machineToken?: string;
+  // }
 
-  export interface WorkspaceWarning {
-    code?: number;
-    message: string;
-  }
+  // export interface WorkspaceWarning {
+  //   code?: number;
+  //   message: string;
+  // }
 
-  export interface WorkspaceRuntimeMachine {
-    attributes: { [propName: string]: string };
-    servers: { [serverName: string]: WorkspaceRuntimeMachineServer };
-    status: string;
-  }
+  // export interface WorkspaceRuntimeMachine {
+  //   attributes: { [propName: string]: string };
+  //   servers: { [serverName: string]: WorkspaceRuntimeMachineServer };
+  //   status: string;
+  // }
 
-  export interface WorkspaceRuntimeMachineServer {
-    status: string;
-    url: string;
-    attributes: { [propName: string]: string };
-  }
+  // export interface WorkspaceRuntimeMachineServer {
+  //   status: string;
+  //   url: string;
+  //   attributes: { [propName: string]: string };
+  // }
 
-  export interface ProfileAttributes {
-    firstName?: string;
-    lastName?: string;
+  // export interface ProfileAttributes {
+  //   firstName?: string;
+  //   lastName?: string;
+  //
+  //   [propName: string]: string | number | undefined;
+  // }
 
-    [propName: string]: string | number | undefined;
-  }
-
-  export interface Profile {
-    attributes?: ProfileAttributes;
-    email: string;
-    links?: Array<any>;
-    userId: string;
-  }
+  // export interface Profile {
+  //   attributes?: ProfileAttributes;
+  //   email: string;
+  //   links?: Array<any>;
+  //   userId: string;
+  // }
 
   export interface User {
     links: any[];
@@ -153,9 +153,9 @@ declare namespace che {
     sub?: string;
   }
 
-  export interface UserPreferences {
-    [key: string]: string;
-  }
+  // export interface UserPreferences {
+  //   [key: string]: string;
+  // }
 
   export interface DevfileMetaData {
     displayName: string;

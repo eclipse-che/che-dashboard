@@ -32,7 +32,7 @@ import OverviewTab, { OverviewTab as Overview } from './OverviewTab';
 import DevfileEditorTab, { DevfileEditorTab as Editor } from './DevfileEditorTab';
 import DevworkspaceEditorTab from './DevworkspaceEditorTab';
 import { History, UnregisterCallback, Location } from 'history';
-import { isCheWorkspace, Workspace } from '../../services/workspace-adapter';
+import { Workspace } from '../../services/workspace-adapter';
 import UnsavedChangesModal from '../../components/UnsavedChangesModal';
 import WorkspaceConversionButton from './ConversionButton';
 import { WorkspaceInlineAlerts } from './InlineAlerts';
@@ -300,13 +300,6 @@ export class WorkspaceDetails extends React.PureComponent<Props, State> {
   }
 
   private async handleOnSave(workspace: Workspace): Promise<void> {
-    if (
-      this.props.workspace &&
-      isCheWorkspace((this.props.workspace as Workspace).ref) &&
-      this.props.workspace.status !== WorkspaceStatus.STOPPED
-    ) {
-      this.handleRestartWarning();
-    }
     try {
       await this.props.onSave(workspace);
       this.showAlert(AlertVariant.success, 'Workspace has been updated');

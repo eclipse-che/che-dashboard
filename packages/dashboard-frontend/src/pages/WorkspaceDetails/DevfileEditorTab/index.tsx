@@ -29,7 +29,7 @@ import { safeLoad } from 'js-yaml';
 import common from '@eclipse-che/common';
 import DevfileEditor, { DevfileEditor as Editor } from '../../../components/DevfileEditor';
 import EditorTools from '../../../components/EditorTools';
-import { constructWorkspace, isCheWorkspace, Workspace } from '../../../services/workspace-adapter';
+import { constructWorkspace, Workspace } from '../../../services/workspace-adapter';
 import devfileApi, { isDevfileV2, isDevWorkspace } from '../../../services/devfileApi';
 import {
   DEVWORKSPACE_NEXT_START_ANNOTATION,
@@ -316,7 +316,7 @@ export class DevfileEditorTab extends React.PureComponent<Props, State> {
   }
 
   private async onSave(): Promise<void> {
-    if (!this.props.workspace.isRunning || isCheWorkspace(this.props.workspace.ref)) {
+    if (!this.props.workspace.isRunning) {
       await this.saveDevfile();
     } else {
       this.setState({

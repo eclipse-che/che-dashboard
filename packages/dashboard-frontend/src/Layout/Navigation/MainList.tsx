@@ -31,7 +31,7 @@ export class NavigationMainList extends React.PureComponent<Props> {
       if (workspace.isDevWorkspace) {
         return true;
       }
-      return (workspace.ref as che.Workspace).attributes?.convertedId === undefined;
+      return (workspace.ref as any)?.attributes?.convertedId === undefined;
     }).length;
 
     return [

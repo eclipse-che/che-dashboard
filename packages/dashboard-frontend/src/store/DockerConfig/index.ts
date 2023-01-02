@@ -12,11 +12,9 @@
 
 import { Action } from 'redux';
 import { AppThunk } from '..';
-import * as CheWorkspacesStore from './che';
 import * as DevWorkspacesStore from './dw';
 import { RegistryEntry } from './types';
 import { selectDefaultNamespace } from '../InfrastructureNamespaces/selectors';
-import { selectDevworkspacesEnabled } from '../Workspaces/Settings/selectors';
 
 export type ActionCreators = {
   requestCredentials: () => AppThunk<Action, Promise<void>>;
@@ -28,23 +26,15 @@ export const actionCreators: ActionCreators = {
     (): AppThunk<Action, Promise<void>> =>
     async (dispatch, getState): Promise<void> => {
       const state = getState();
-      if (selectDevworkspacesEnabled(state)) {
-        const namespace = selectDefaultNamespace(state).name;
-        await dispatch(DevWorkspacesStore.actionCreators.requestCredentials(namespace));
-      } else {
-        await dispatch(CheWorkspacesStore.actionCreators.requestCredentials());
-      }
+      const namespace = selectDefaultNamespace(state).name;
+      await dispatch(DevWorkspacesStore.actionCreators.requestCredentials(namespace));
     },
 
   updateCredentials:
     (registries: RegistryEntry[]): AppThunk<Action, Promise<void>> =>
     async (dispatch, getState): Promise<void> => {
       const state = getState();
-      if (selectDevworkspacesEnabled(state)) {
-        const namespace = selectDefaultNamespace(state).name;
-        await dispatch(DevWorkspacesStore.actionCreators.updateCredentials(namespace, registries));
-      } else {
-        await dispatch(CheWorkspacesStore.actionCreators.updateCredentials(registries));
-      }
+      const namespace = selectDefaultNamespace(state).name;
+      await dispatch(DevWorkspacesStore.actionCreators.updateCredentials(namespace, registries));
     },
 };

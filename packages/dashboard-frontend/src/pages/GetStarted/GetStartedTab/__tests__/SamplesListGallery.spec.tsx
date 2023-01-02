@@ -72,7 +72,7 @@ describe('Samples List Gallery', () => {
     renderGallery(store);
 
     const cards = screen.getAllByRole('article');
-    expect(cards.length).toEqual(26);
+    expect(cards.length).toEqual(1);
   });
 
   it('should render cards with v2 metadata only', () => {
@@ -83,28 +83,6 @@ describe('Samples List Gallery', () => {
     const cards = screen.getAllByRole('article');
     // only one link is with devfile v2 format
     expect(cards.length).toEqual(1);
-  });
-
-  it('should handle "onCardClick" event', async () => {
-    let resolveFn: {
-      (value?: unknown): void;
-    };
-    const onCardClickedPromise = new Promise(resolve => (resolveFn = resolve));
-    const onCardClicked = jest.fn(() => resolveFn());
-
-    // eslint-disable-next-line
-    const store = createFakeStoreWithMetadata();
-    renderGallery(store, onCardClicked);
-
-    (mockAxios.get as any).mockResolvedValueOnce({
-      data: {},
-    });
-
-    const cardHeader = screen.getByText('Go');
-    fireEvent.click(cardHeader);
-
-    await onCardClickedPromise;
-    expect(onCardClicked).toHaveBeenCalled();
   });
 
   it('should handle "onCardClick" event for v2 metadata', async () => {

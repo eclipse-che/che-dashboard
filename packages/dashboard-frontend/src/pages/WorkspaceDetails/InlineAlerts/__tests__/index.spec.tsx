@@ -20,7 +20,6 @@ import {
   WorkspaceAdapter,
 } from '../../../../services/workspace-adapter';
 import { DevWorkspaceBuilder } from '../../../../store/__mocks__/devWorkspaceBuilder';
-import { CheWorkspaceBuilder } from '../../../../store/__mocks__/cheWorkspaceBuilder';
 
 const mockOnCloseConversionError = jest.fn();
 const mockOnCloseRestartAlert = jest.fn();
@@ -40,25 +39,11 @@ describe('Inline alerts', () => {
     expect(alertHeadings.length).toEqual(0);
   });
 
-  it('should render the deprecation warning', () => {
-    const deprecatedId = 'wksp-id';
-    WorkspaceAdapter.setDeprecatedUIDs([deprecatedId]);
-    const workspace = constructWorkspace(
-      new CheWorkspaceBuilder().withId(deprecatedId).withName('wksp').withNamespace('user').build(),
-    );
-    renderComponent({ workspace });
-
-    const alertHeading = screen.queryByRole('heading');
-    expect(alertHeading).toBeTruthy();
-    expect(alertHeading).toBeInTheDocument();
-    expect(alertHeading).toHaveTextContent('This workspace is deprecated.');
-  });
-
   it('should render the conversion error', () => {
     const deprecatedId = 'wksp-id';
     WorkspaceAdapter.setDeprecatedUIDs([deprecatedId]);
     const workspace = constructWorkspace(
-      new CheWorkspaceBuilder().withId(deprecatedId).withName('wksp').withNamespace('user').build(),
+      new DevWorkspaceBuilder().withId(deprecatedId).withName('wksp').withNamespace('user').build(),
     );
     const conversionError = 'An error happened during devfiles conversion.';
     renderComponent({ workspace, conversionError });

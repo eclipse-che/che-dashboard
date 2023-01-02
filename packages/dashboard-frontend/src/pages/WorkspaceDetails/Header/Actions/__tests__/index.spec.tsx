@@ -11,7 +11,7 @@
  */
 
 import { render, RenderResult, screen, waitFor } from '@testing-library/react';
-import { createHashHistory, History } from 'history';
+import { createHashHistory, History, Location } from 'history';
 import React from 'react';
 import { Provider } from 'react-redux';
 import { HeaderActionSelect } from '..';
@@ -24,8 +24,9 @@ import { Workspace } from '../../../../../services/workspace-adapter';
 import { AppThunk } from '../../../../../store';
 import { ActionCreators, ResourceQueryParams } from '../../../../../store/Workspaces';
 import { FakeStoreBuilder } from '../../../../../store/__mocks__/storeBuilder';
-import { CheWorkspaceBuilder } from '../../../../../store/__mocks__/cheWorkspaceBuilder';
+import { DevWorkspaceBuilder } from '../../../../../store/__mocks__/devWorkspaceBuilder';
 import { Store } from 'redux';
+import devfileApi from '../../../../../services/devfileApi';
 
 /* eslint-disable @typescript-eslint/no-unused-vars */
 jest.mock('../../../../../store/Workspaces/index', () => {
@@ -50,23 +51,15 @@ const namespace = 'che';
 const workspaceName = 'test-workspace-name';
 const workspaceUID = 'test-workspace-id';
 
-let cheWorkspace: che.Workspace;
+let devWorkspace: devfileApi.DevWorkspace;
 let store: Store;
 
 describe('Workspace WorkspaceAction widget', () => {
   beforeEach(() => {
-    cheWorkspace = new CheWorkspaceBuilder()
+    devWorkspace = new DevWorkspaceBuilder()
       .withId(workspaceUID)
       .withName(workspaceName)
       .withNamespace(namespace)
-      .withStatus(WorkspaceStatus.STOPPED)
-      .withDevfile({
-        apiVersion: 'v1',
-        components: [],
-        metadata: {
-          name: workspaceName,
-        },
-      })
       .build();
     store = new FakeStoreBuilder()
       .withWorkspaces({
@@ -74,8 +67,8 @@ describe('Workspace WorkspaceAction widget', () => {
         workspaceName,
       })
       .withInfrastructureNamespace([{ name: namespace, attributes: { phase: 'Active' } }], false)
-      .withCheWorkspaces({
-        workspaces: [cheWorkspace],
+      .withDevWorkspaces({
+        workspaces: [devWorkspace],
       })
       .build();
   });
@@ -131,9 +124,7 @@ describe('Workspace WorkspaceAction widget', () => {
     const targetAction = screen.getByText(action);
     targetAction.click();
 
-    await waitFor(() =>
-      expect(history.location.pathname).toBe(`/ide/${namespace}/test-workspace-name`),
-    );
+    await waitFor(() => expect(history.location.pathname).toBe(`/`));
   });
 
   it('should call the callback with OPEN_IN_VERBOSE_MODE action', async () => {
@@ -151,9 +142,7 @@ describe('Workspace WorkspaceAction widget', () => {
     const targetAction = screen.getByText(action);
     targetAction.click();
 
-    await waitFor(() =>
-      expect(history.location.pathname).toBe(`/ide/${namespace}/test-workspace-name`),
-    );
+    await waitFor(() => expect(history.location.pathname).toBe(`/`));
   });
 
   it('should call the callback with START_IN_BACKGROUND action', () => {

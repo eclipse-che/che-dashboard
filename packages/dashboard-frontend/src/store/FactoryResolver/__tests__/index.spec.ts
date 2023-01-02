@@ -84,7 +84,6 @@ describe('FactoryResolver store', () => {
 
       const store = new FakeStoreBuilder()
         .withWorkspacesSettings({
-          'che.devworkspaces.enabled': 'true',
           'che.workspace.storage.preferred_type': 'ephemeral',
         })
         .build() as MockStoreEnhanced<
@@ -119,7 +118,6 @@ describe('FactoryResolver store', () => {
 
       const store = new FakeStoreBuilder()
         .withWorkspacesSettings({
-          'che.devworkspaces.enabled': 'true',
           'che.workspace.storage.preferred_type': 'ephemeral',
         })
         .build() as MockStoreEnhanced<
