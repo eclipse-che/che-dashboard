@@ -83,11 +83,7 @@ function renderComponent(
 
   return renderer.create(
     <Provider store={store}>
-      <DevfileEditor
-        devfile={devfile}
-        decorationPattern={decorationPattern}
-        onChange={onChange}
-      />
+      <DevfileEditor devfile={devfile} decorationPattern={decorationPattern} onChange={onChange} />
     </Provider>,
   );
 }

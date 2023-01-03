@@ -20,10 +20,7 @@ import userEvent from '@testing-library/user-event';
 import WorkspacesList from '..';
 import { BrandingData } from '../../../services/bootstrap/branding.constant';
 import { WorkspaceAction } from '../../../services/helpers/types';
-import {
-  constructWorkspace,
-  Workspace,
-} from '../../../services/workspace-adapter';
+import { constructWorkspace, Workspace } from '../../../services/workspace-adapter';
 import { DevWorkspaceBuilder } from '../../../store/__mocks__/devWorkspaceBuilder';
 
 jest.mock('../../../components/Head', () => {

@@ -77,10 +77,14 @@ describe('Workspace Details container', () => {
       .withId(nextWorkspaceId)
       .withName(nextWorkspaceName)
       .withNamespace(namespace);
-    prevStoreBuilder = new FakeStoreBuilder()
-      .withInfrastructureNamespace([{ name: namespace, attributes: { phase: 'Active' } }], false);
-    nextStoreBuilder = new FakeStoreBuilder()
-      .withInfrastructureNamespace([{ name: namespace, attributes: { phase: 'Active' } }], false);
+    prevStoreBuilder = new FakeStoreBuilder().withInfrastructureNamespace(
+      [{ name: namespace, attributes: { phase: 'Active' } }],
+      false,
+    );
+    nextStoreBuilder = new FakeStoreBuilder().withInfrastructureNamespace(
+      [{ name: namespace, attributes: { phase: 'Active' } }],
+      false,
+    );
   });
 
   afterEach(() => {
