@@ -21,8 +21,6 @@ import {
 } from '../workspace-client/devworkspace/converters';
 import { DEVWORKSPACE_NEXT_START_ANNOTATION } from '../workspace-client/devworkspace/devWorkspaceClient';
 
-export type Devfile = che.WorkspaceDevfile | devfileApi.Devfile;
-
 export interface Workspace {
   readonly ref: devfileApi.DevWorkspace;
 
@@ -35,7 +33,7 @@ export interface Workspace {
   readonly updated: number;
   status: WorkspaceStatus | DevWorkspaceStatus | DeprecatedWorkspaceStatus;
   readonly ideUrl?: string;
-  devfile: Devfile;
+  devfile: devfileApi.Devfile;
   storageType: che.WorkspaceStorageType;
   readonly projects: string[];
   readonly isStarting: boolean;
@@ -276,6 +274,6 @@ export function constructWorkspace<T extends devfileApi.DevWorkspace>(workspace:
   return new WorkspaceAdapter(workspace);
 }
 
-export function isCheDevfile(devfile: Devfile): devfile is che.WorkspaceDevfile {
+export function isCheDevfile(devfile: unknown): devfile is che.WorkspaceDevfile {
   return !isDevfileV2(devfile);
 }

@@ -85,7 +85,7 @@ const unloadedState: State = {
     },
     timeouts: {
       inactivityTimeout: -1,
-      runTimeout: -1,
+      startTimeout: 300,
     } as any,
     cheNamespace: '',
   },

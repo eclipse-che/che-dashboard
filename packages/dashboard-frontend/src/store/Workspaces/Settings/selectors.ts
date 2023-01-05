@@ -19,5 +19,3 @@ export const selectWorkspacesSettingsState = selectState;
 export const selectWorkspacesSettings = createSelector(selectState, state => state.settings);
 
 export const selectWorkspacesSettingsError = createSelector(selectState, state => state.error);
-
-export const selectDevworkspacesEnabled = true;
