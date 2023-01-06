@@ -13,16 +13,14 @@
 import mockAxios from 'axios';
 import { MockStoreEnhanced } from 'redux-mock-store';
 import { ThunkDispatch } from 'redux-thunk';
-import { FakeStoreBuilder } from '../../../__mocks__/storeBuilder';
+import { FakeStoreBuilder } from '../../__mocks__/storeBuilder';
 import * as dwDockerConfigStore from '..';
-import { AppState } from '../../..';
+import { AppState } from '../..';
 import { AnyAction } from 'redux';
-import { AUTHORIZED } from '../../../sanityCheckMiddleware';
+import { AUTHORIZED } from '../../sanityCheckMiddleware';
 
 // mute the outputs
 console.error = jest.fn();
-
-const namespace = 'admin-che';
 
 describe('dwDockerConfig store', () => {
   afterEach(() => {
@@ -44,7 +42,7 @@ describe('dwDockerConfig store', () => {
         ThunkDispatch<AppState, undefined, dwDockerConfigStore.KnownAction>
       >;
 
-      await store.dispatch(dwDockerConfigStore.actionCreators.requestCredentials(namespace));
+      await store.dispatch(dwDockerConfigStore.actionCreators.requestCredentials());
 
       const actions = store.getActions();
 
@@ -82,7 +80,7 @@ describe('dwDockerConfig store', () => {
       >;
 
       await store.dispatch(
-        dwDockerConfigStore.actionCreators.updateCredentials(namespace, [
+        dwDockerConfigStore.actionCreators.updateCredentials([
           {
             password: 'YYYYYYYYYYYY',
             url: 'dummy.io',

@@ -19,8 +19,8 @@ import { Provider } from 'react-redux';
 import mockMetadata from '../../__tests__/devfileMetadata.json';
 import { FakeStoreBuilder } from '../../../../store/__mocks__/storeBuilder';
 import { BrandingData } from '../../../../services/bootstrap/branding.constant';
-import { Devfile } from '../../../../services/workspace-adapter';
 import { ConvertedState } from '../../../../store/FactoryResolver';
+import devfileApi from '../../../../services/devfileApi';
 
 const requestFactoryResolverMock = jest.fn().mockResolvedValue(undefined);
 
@@ -144,7 +144,7 @@ function createFakeStore(metadata?: che.DevfileMetaData[], devWorkspaceEnabled?:
     .withFactoryResolver({
       resolver: {
         source: 'devfile.yaml',
-        devfile: {} as Devfile,
+        devfile: {} as devfileApi.Devfile,
         location: 'http://fake-location',
         scm_info: {
           clone_url: 'http://github.com/clone-url',

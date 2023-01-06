@@ -18,9 +18,10 @@ import React from 'react';
 import GetStarted from '..';
 import { FakeStoreBuilder } from '../../../store/__mocks__/storeBuilder';
 import { BrandingData } from '../../../services/bootstrap/branding.constant';
-import { constructWorkspace, Devfile, Workspace } from '../../../services/workspace-adapter';
+import { constructWorkspace, Workspace } from '../../../services/workspace-adapter';
 import { DevWorkspaceBuilder } from '../../../store/__mocks__/devWorkspaceBuilder';
 import { devfileToDevWorkspace } from '../../../services/workspace-client/devworkspace/converters';
+import devfileApi from '../../../services/devfileApi';
 
 const setWorkspaceQualifiedName = jest.fn();
 const createWorkspaceFromDevfileMock = jest.fn().mockResolvedValue(undefined);
@@ -33,7 +34,7 @@ const dummyDevfile = {
   metadata: {
     name: workspaceName,
   },
-} as Devfile;
+} as devfileApi.Devfile;
 const workspace = new DevWorkspaceBuilder()
   .withName(workspaceName)
   .withNamespace(namespace)
@@ -80,7 +81,7 @@ jest.mock('../GetStartedTab', () => {
   };
 });
 
-fdescribe('Quick Add page', () => {
+describe('Quick Add page', () => {
   it('should create and start a new workspace', async () => {
     renderGetStartedPage();
 

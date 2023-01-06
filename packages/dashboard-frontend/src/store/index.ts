@@ -17,7 +17,7 @@ import * as BrandingStore from './Branding';
 import * as ClusterConfig from './ClusterConfig';
 import * as ClusterInfo from './ClusterInfo';
 import * as DevfileRegistriesStore from './DevfileRegistries';
-import * as DwDockerConfigStore from './DockerConfig/dw';
+import * as DockerConfigStore from './DockerConfig';
 import * as FactoryResolverStore from './FactoryResolver';
 import * as InfrastructureNamespacesStore from './InfrastructureNamespaces';
 import * as PluginsStore from './Plugins/chePlugins';
@@ -37,7 +37,7 @@ export interface AppState {
   clusterInfo: ClusterInfo.State;
   devWorkspaces: DevWorkspacesStore.State;
   devfileRegistries: DevfileRegistriesStore.State;
-  dwDockerConfig: DwDockerConfigStore.State;
+  dockerConfig: DockerConfigStore.State;
   dwPlugins: DwPluginsStore.State;
   dwServerConfig: DwServerConfigStore.State;
   factoryResolver: FactoryResolverStore.State;
@@ -56,7 +56,7 @@ export const reducers = {
   clusterInfo: ClusterInfo.reducer,
   devWorkspaces: DevWorkspacesStore.reducer,
   devfileRegistries: DevfileRegistriesStore.reducer,
-  dwDockerConfig: DwDockerConfigStore.reducer,
+  dockerConfig: DockerConfigStore.reducer,
   dwPlugins: DwPluginsStore.reducer,
   dwServerConfig: DwServerConfigStore.reducer,
   factoryResolver: FactoryResolverStore.reducer,

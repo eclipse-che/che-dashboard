@@ -119,7 +119,7 @@ export class FakeStoreBuilder {
       plugins: {},
       defaultPlugins: {},
     },
-    dwDockerConfig: {
+    dockerConfig: {
       isLoading: false,
       registries: [],
       error: undefined,
@@ -144,9 +144,9 @@ export class FakeStoreBuilder {
     isLoading = false,
     error?: string,
   ): FakeStoreBuilder {
-    this.state.dwDockerConfig.registries = registries;
-    this.state.dwDockerConfig.isLoading = isLoading;
-    this.state.dwDockerConfig.error = error;
+    this.state.dockerConfig.registries = registries;
+    this.state.dockerConfig.isLoading = isLoading;
+    this.state.dockerConfig.error = error;
     return this;
   }
 

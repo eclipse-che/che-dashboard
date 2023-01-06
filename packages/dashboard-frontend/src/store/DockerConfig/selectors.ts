@@ -14,7 +14,7 @@ import { createSelector } from 'reselect';
 import { AppState } from '..';
 import { State } from './dockerConfigState';
 
-const selectDwDockerConfigState = (state: AppState) => state.dwDockerConfig;
+const selectDwDockerConfigState = (state: AppState) => state.dockerConfig;
 
 const selectState = createSelector(
   selectDwDockerConfigState,
