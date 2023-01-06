@@ -107,7 +107,7 @@ declare namespace che {
       devWorkspaces?: {
         [editorId: string]: string;
       };
-      self: string;
+      self?: string;
       [key: string]: any;
     };
     tags: Array<string>;

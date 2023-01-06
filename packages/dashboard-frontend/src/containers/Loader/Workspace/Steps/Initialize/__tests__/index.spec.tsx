@@ -19,7 +19,6 @@ import { screen, waitFor, within } from '@testing-library/react';
 import { WorkspaceParams } from '../../../../../../Routes/routes';
 import { FakeStoreBuilder } from '../../../../../../store/__mocks__/storeBuilder';
 import { DevWorkspaceBuilder } from '../../../../../../store/__mocks__/devWorkspaceBuilder';
-import { WorkspaceAdapter } from '../../../../../../services/workspace-adapter';
 import { List, LoaderStep, LoadingStep } from '../../../../../../components/Loader/Step';
 import { MIN_STEP_DURATION_MS, TIMEOUT_TO_STOP_SEC } from '../../../../const';
 import {

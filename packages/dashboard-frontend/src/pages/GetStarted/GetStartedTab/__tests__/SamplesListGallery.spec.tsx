@@ -66,23 +66,14 @@ describe('Samples List Gallery', () => {
     );
   }
 
-  it('should render cards with metadata', () => {
+  it('should render cards with v2 metadata only', () => {
     // eslint-disable-next-line
     const store = createFakeStoreWithMetadata();
     renderGallery(store);
 
     const cards = screen.getAllByRole('article');
-    expect(cards.length).toEqual(1);
-  });
-
-  it('should render cards with v2 metadata only', () => {
-    // eslint-disable-next-line
-    const store = createFakeStoreWithMetadata(true);
-    renderGallery(store);
-
-    const cards = screen.getAllByRole('article');
     // only one link is with devfile v2 format
-    expect(cards.length).toEqual(1);
+    expect(cards.length).toEqual(18);
   });
 
   it('should handle "onCardClick" event for v2 metadata', async () => {
@@ -92,18 +83,18 @@ describe('Samples List Gallery', () => {
     const onCardClicked = jest.fn(() => resolveFn());
 
     // eslint-disable-next-line
-    const store = createFakeStoreWithMetadata(true);
+    const store = createFakeStoreWithMetadata();
     renderGallery(store, onCardClicked);
 
     (mockAxios.get as any).mockResolvedValueOnce({
       data: {},
     });
     const windowSpy = spyOn(window, 'open');
-    const cardHeader = screen.getByText('Java with Spring Boot and MySQL');
+    const cardHeader = screen.getByText('Java with Spring Boot and MongoDB');
     fireEvent.click(cardHeader);
     jest.runOnlyPendingTimers();
     expect(windowSpy).toBeCalledWith(
-      'http://localhost/#/load-factory?url=http%3A%2F%2Fmy-fake-repository.com%2F',
+      'http://localhost/#/load-factory?url=https%3A%2F%2Fgithub.com%2Fche-samples%2Fjava-guestbook%2Ftree%2Fdevfilev2',
       '_blank',
     );
   });
@@ -118,7 +109,7 @@ describe('Samples List Gallery', () => {
   });
 });
 
-function createFakeStore(metadata?: che.DevfileMetaData[], devWorkspaceEnabled?: boolean): Store {
+function createFakeStore(metadata?: che.DevfileMetaData[]): Store {
   const registries = {} as {
     [location: string]: {
       metadata?: che.DevfileMetaData[];
@@ -130,17 +121,12 @@ function createFakeStore(metadata?: che.DevfileMetaData[], devWorkspaceEnabled?:
       metadata,
     };
   }
-  const workspaceSettings = {} as che.WorkspaceSettings;
-  if (devWorkspaceEnabled) {
-    workspaceSettings['che.devworkspaces.enabled'] = 'true';
-  }
   return new FakeStoreBuilder()
     .withBranding({
       docs: {
         storageTypes: 'https://docs.location',
       },
     } as BrandingData)
-    .withWorkspacesSettings(workspaceSettings)
     .withFactoryResolver({
       resolver: {
         source: 'devfile.yaml',
@@ -164,6 +150,6 @@ function createFakeStoreWithoutMetadata(): Store {
   return createFakeStore();
 }
 
-function createFakeStoreWithMetadata(devWorkspaceEnabled?: boolean): Store {
-  return createFakeStore(mockMetadata, devWorkspaceEnabled);
+function createFakeStoreWithMetadata(): Store {
+  return createFakeStore(mockMetadata);
 }

@@ -23,7 +23,6 @@ import { WorkspaceActionsConsumer } from '../contexts/WorkspaceActions';
 import { lazyInject } from '../inversify.config';
 import { AppAlerts } from '../services/alerts/appAlerts';
 import { selectBranding } from '../store/Branding/selectors';
-import { isDevWorkspace } from '../services/devfileApi';
 
 type Props = MappedProps & { history: History };
 

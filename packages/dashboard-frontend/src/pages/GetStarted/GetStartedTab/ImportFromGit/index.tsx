@@ -16,7 +16,6 @@ import {
   Alert,
   AlertActionCloseButton,
   AlertGroup,
-  AlertVariant,
   Flex,
   FlexItem,
   FormGroup,
@@ -24,7 +23,6 @@ import {
   TextContent,
   TextVariants,
 } from '@patternfly/react-core';
-import common from '@eclipse-che/common';
 import { AppState } from '../../../../store';
 import * as DevfileRegistriesStore from '../../../../store/DevfileRegistries';
 import * as FactoryResolverStore from '../../../../store/FactoryResolver';
@@ -62,30 +60,6 @@ export class ImportFromGit extends React.PureComponent<Props, State> {
     const factoryUrl = `${window.location.origin}/#${location}`;
     // open a new page to handle that
     window.open(factoryUrl, '_blank');
-    return;
-
-    try {
-      this.setState({ isLoading: true });
-      await this.props.requestFactoryResolver(location);
-      // at this point the resolver object is defined
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      const resolver = this.factoryResolver.resolver!;
-      this.props.onDevfileResolve(resolver, location);
-      this.setState({ isLoading: false });
-    } catch (e) {
-      this.setState({ isLoading: false });
-      this.devfileLocationRef.current?.invalidateInput();
-      this.showAlert({
-        key: 'load-devfile-resolver-failed',
-        title: common.helpers.errors.getMessage(e),
-        variant: AlertVariant.danger,
-      });
-    }
-  }
-
-  private showAlert(alert: AlertItem): void {
-    const alerts = [...this.state.alerts, alert];
-    this.setState({ alerts });
   }
 
   private removeAlert(key: string): void {

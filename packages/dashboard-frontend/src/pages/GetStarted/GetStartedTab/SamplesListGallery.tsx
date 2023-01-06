@@ -176,18 +176,17 @@ export class SamplesListGallery extends React.PureComponent<Props, State> {
         }
         // open a new page to handle that
         window.open(factoryUrl, '_blank');
-        this.isLoading = false;
-        return;
+      } else if (meta.links.self) {
+        const devfileContent = (await this.props.requestDevfile(meta.links.self)) as string;
+        this.props.onCardClick(devfileContent, meta.displayName);
       }
-      const devfileContent = (await this.props.requestDevfile(meta.links.self)) as string;
-      this.props.onCardClick(devfileContent, meta.displayName);
     } catch (e) {
       console.warn('Failed to load devfile.', e);
-
+      const key = meta.links.self ? meta.links.self : meta.links.v2 || meta.displayName;
       const alerts = [
         ...this.state.alerts,
         {
-          key: meta.links.self,
+          key,
           title: `Failed to load devfile "${meta.displayName}"`,
           variant: AlertVariant.warning,
         },

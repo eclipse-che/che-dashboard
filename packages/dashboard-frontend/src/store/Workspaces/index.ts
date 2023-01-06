@@ -209,7 +209,7 @@ export const actionCreators: ActionCreators = {
 
   stopWorkspace:
     (workspace: Workspace): AppThunk<KnownAction, Promise<void>> =>
-    async (dispatch, getState): Promise<void> => {
+    async (dispatch): Promise<void> => {
       try {
         await dispatch(DevWorkspacesStore.actionCreators.stopWorkspace(workspace.ref));
       } catch (e) {

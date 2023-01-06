@@ -35,7 +35,6 @@ import { History, UnregisterCallback, Location } from 'history';
 import { Workspace } from '../../services/workspace-adapter';
 import UnsavedChangesModal from '../../components/UnsavedChangesModal';
 import WorkspaceConversionButton from './ConversionButton';
-import { WorkspaceInlineAlerts } from './InlineAlerts';
 import { buildDetailsLocation } from '../../services/helpers/location';
 
 import styles from './index.module.css';
@@ -46,10 +45,8 @@ export type Props = {
   history: History;
   isLoading: boolean;
   oldWorkspaceLocation?: Location;
-  showConvertButton: boolean;
   workspace: Workspace | undefined;
   workspacesLink: string;
-  onConvert: (workspace: Workspace) => Promise<void>;
   onSave: (workspace: Workspace) => Promise<void>;
 };
 
@@ -109,16 +106,6 @@ export class WorkspaceDetails extends React.PureComponent<Props, State> {
       ).slice(-4)}`;
       this.appAlerts.showAlert({ key, title, variant });
     };
-  }
-
-  private async handleConversion(workspace: Workspace): Promise<void> {
-    this.closeConversionAlert();
-    try {
-      await this.props.onConvert(workspace);
-    } catch (e) {
-      const errorMessage = common.helpers.errors.getMessage(e);
-      this.showConversionAlert(errorMessage);
-    }
   }
 
   private showConversionAlert(errorMessage: string): void {
@@ -213,8 +200,7 @@ export class WorkspaceDetails extends React.PureComponent<Props, State> {
   }
 
   public render(): React.ReactElement {
-    const { history, oldWorkspaceLocation, showConvertButton, workspace, workspacesLink } =
-      this.props;
+    const { history, oldWorkspaceLocation, workspace, workspacesLink } = this.props;
 
     if (!workspace) {
       return <div>Workspace not found.</div>;
@@ -222,9 +208,6 @@ export class WorkspaceDetails extends React.PureComponent<Props, State> {
 
     const workspaceName = workspace.name;
     const { inlineAlertConversionError, showInlineAlertRestartWarning } = this.state;
-
-    // show the Delete button for a deprecated workspace until it's converted
-    const canDelete = showConvertButton;
 
     return (
       <React.Fragment>
@@ -242,26 +225,14 @@ export class WorkspaceDetails extends React.PureComponent<Props, State> {
               Show Original Devfile
             </Button>
           )}
-          {showConvertButton && (
-            <WorkspaceConversionButton onConvert={() => this.handleConversion(workspace)} />
-          )}
           <HeaderActionSelect
             workspaceUID={workspace.uid}
             workspaceName={workspaceName}
-            canDelete={canDelete}
             status={workspace.status}
             history={this.props.history}
           />
         </Header>
         <PageSection variant={SECTION_THEME} className={styles.workspaceDetailsTabs}>
-          <WorkspaceInlineAlerts
-            workspace={workspace}
-            canConvert={showConvertButton}
-            conversionError={inlineAlertConversionError}
-            showRestartWarning={showInlineAlertRestartWarning}
-            onCloseConversionAlert={() => this.closeConversionAlert()}
-            onCloseRestartAlert={() => this.handleCloseRestartWarning()}
-          />
           <Tabs activeKey={this.state.activeTabKey} onSelect={this.handleTabClick}>
             <Tab eventKey={WorkspaceDetailsTab.OVERVIEW} title={WorkspaceDetailsTab.OVERVIEW}>
               <ProgressIndicator isLoading={this.props.isLoading} />

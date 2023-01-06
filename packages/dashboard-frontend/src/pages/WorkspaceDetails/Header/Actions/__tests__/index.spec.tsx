@@ -96,19 +96,6 @@ describe('Workspace WorkspaceAction widget', () => {
     expect(actionButton).toBeTruthy();
   });
 
-  it('should not not show actions nor button', () => {
-    const history = createHashHistory();
-    const component = createComponent(history, 'Deprecated', false);
-
-    renderComponent(component);
-
-    const actionButton = screen.queryByRole('button', { name: /delete/i });
-    expect(actionButton).toBe(null);
-
-    const actionDropdown = screen.queryByTestId(`${workspaceUID}-action-dropdown`);
-    expect(actionDropdown).toBe(null);
-  });
-
   it('should call the callback with OPEN action', async () => {
     const action = WorkspaceAction.OPEN_IDE;
     const history = createHashHistory();
@@ -200,13 +187,11 @@ describe('Workspace WorkspaceAction widget', () => {
 function createComponent(
   history: History,
   status: WorkspaceStatus | DeprecatedWorkspaceStatus = WorkspaceStatus.STOPPED,
-  canDelete = true,
 ): React.ReactElement {
   return (
     <HeaderActionSelect
       workspaceUID={workspaceUID}
       workspaceName={workspaceName}
-      canDelete={canDelete}
       history={history}
       status={status}
     />

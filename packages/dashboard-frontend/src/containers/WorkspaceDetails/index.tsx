@@ -131,10 +131,8 @@ class WorkspaceDetailsContainer extends React.Component<Props, State> {
         history={this.props.history}
         isLoading={this.props.isLoading}
         oldWorkspaceLocation={oldWorkspaceLocation}
-        showConvertButton={false}
         workspace={workspace}
         workspacesLink={this.workspacesLink}
-        onConvert={async () => Promise.resolve()}
         onSave={async (workspace: Workspace) => await this.onSave(workspace)}
       />
     );

@@ -21,7 +21,7 @@ import { ActionCreators } from '../../store/Workspaces';
 import WorkspacesList from '../WorkspacesList';
 import { FakeStoreBuilder } from '../../store/__mocks__/storeBuilder';
 import { DevWorkspaceBuilder } from '../../store/__mocks__/devWorkspaceBuilder';
-import { Workspace, WorkspaceAdapter } from '../../services/workspace-adapter';
+import { Workspace } from '../../services/workspace-adapter';
 
 jest.mock('../../store/Workspaces/index', () => {
   return {
