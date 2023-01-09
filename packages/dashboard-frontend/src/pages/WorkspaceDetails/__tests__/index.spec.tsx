@@ -22,7 +22,6 @@ import { FakeStoreBuilder } from '../../../store/__mocks__/storeBuilder';
 import { constructWorkspace } from '../../../services/workspace-adapter';
 import devfileApi from '../../../services/devfileApi';
 
-const mockOnConvert = jest.fn();
 const mockOnSave = jest.fn();
 
 jest.mock('../DevfileEditorTab');
@@ -180,10 +179,8 @@ function renderComponent(props?: Partial<Props>): void {
           history={history}
           isLoading={props?.isLoading || false}
           oldWorkspaceLocation={props?.oldWorkspaceLocation}
-          showConvertButton={props?.showConvertButton || false}
           workspace={props?.workspace}
           workspacesLink={props?.workspacesLink || '/workspaces'}
-          onConvert={mockOnConvert}
           onSave={mockOnSave}
         />
       </Provider>
