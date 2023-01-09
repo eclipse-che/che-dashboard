@@ -130,13 +130,7 @@ export class GetStarted extends React.PureComponent<Props, State> {
       : this.props.defaultNamespace.name;
     let workspace: Workspace | undefined;
     try {
-      await this.props.createWorkspaceFromDevfile(
-        devfile as any,
-        undefined,
-        namespace,
-        attr,
-        optionalFilesContent,
-      );
+      await this.props.createWorkspaceFromDevfile(devfile as any, attr, optionalFilesContent);
       this.props.setWorkspaceQualifiedName(namespace, devfile.metadata.name as string);
       workspace = this.props.activeWorkspace;
     } catch (e) {

@@ -13,8 +13,6 @@
 import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import {
-  Alert,
-  AlertActionCloseButton,
   AlertGroup,
   Flex,
   FlexItem,
@@ -27,7 +25,6 @@ import { AppState } from '../../../../store';
 import * as DevfileRegistriesStore from '../../../../store/DevfileRegistries';
 import * as FactoryResolverStore from '../../../../store/FactoryResolver';
 import { GitRepoLocationInput } from './GitRepoLocationInput';
-import { AlertItem } from '../../../../services/helpers/types';
 import { selectWorkspacesSettings } from '../../../../store/Workspaces/Settings/selectors';
 
 type Props = MappedProps & {
@@ -35,7 +32,6 @@ type Props = MappedProps & {
 };
 type State = {
   isLoading: boolean;
-  alerts: AlertItem[];
 };
 
 export class ImportFromGit extends React.PureComponent<Props, State> {
@@ -47,7 +43,6 @@ export class ImportFromGit extends React.PureComponent<Props, State> {
 
     this.state = {
       isLoading: false,
-      alerts: [],
     };
     this.devfileLocationRef = React.createRef();
   }
@@ -62,25 +57,11 @@ export class ImportFromGit extends React.PureComponent<Props, State> {
     window.open(factoryUrl, '_blank');
   }
 
-  private removeAlert(key: string): void {
-    this.setState({ alerts: [...this.state.alerts.filter(al => al.key !== key)] });
-  }
-
   public render(): React.ReactNode {
-    const { alerts, isLoading } = this.state;
+    const { isLoading } = this.state;
 
     return (
       <>
-        <AlertGroup isToast>
-          {alerts.map(({ title, variant, key }) => (
-            <Alert
-              variant={variant}
-              title={title}
-              key={key}
-              actionClose={<AlertActionCloseButton onClose={() => this.removeAlert(key)} />}
-            />
-          ))}
-        </AlertGroup>
         <FormGroup
           fieldId="import-from-git"
           label={
@@ -119,7 +100,6 @@ const mapStateToProps = (state: AppState) => ({
 
 const connector = connect(mapStateToProps, {
   ...DevfileRegistriesStore.actionCreators,
-  ...FactoryResolverStore.actionCreators,
 });
 
 type MappedProps = ConnectedProps<typeof connector>;

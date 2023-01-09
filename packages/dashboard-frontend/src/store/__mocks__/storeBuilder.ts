@@ -139,7 +139,7 @@ export class FakeStoreBuilder {
     return this;
   }
 
-  public withDwDockerConfig(
+  public withDockerConfig(
     registries: RegistryEntry[],
     isLoading = false,
     error?: string,

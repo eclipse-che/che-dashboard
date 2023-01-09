@@ -33,6 +33,7 @@ const dummyDevfile = {
   schemaVersion: '2.2.0',
   metadata: {
     name: workspaceName,
+    namespace,
   },
 } as devfileApi.Devfile;
 const workspace = new DevWorkspaceBuilder()
@@ -43,14 +44,11 @@ const workspace = new DevWorkspaceBuilder()
 jest.mock('../../../store/Workspaces/index', () => {
   return {
     actionCreators: {
-      createWorkspaceFromDevfile:
-        (devfile, namespace, infrastructureNamespace, attributes) =>
-        async (): Promise<Workspace> => {
-          createWorkspaceFromDevfileMock(devfile, namespace, infrastructureNamespace, attributes);
-          const devWorkspace = devfileToDevWorkspace(devfile, 'che', false);
-          devWorkspace.metadata.namespace = infrastructureNamespace;
-          return constructWorkspace(devWorkspace);
-        },
+      createWorkspaceFromDevfile: (devfile, attributes) => async (): Promise<Workspace> => {
+        createWorkspaceFromDevfileMock(devfile, attributes);
+        const devWorkspace = devfileToDevWorkspace(devfile, 'che', false);
+        return constructWorkspace(devWorkspace);
+      },
       startWorkspace: workspace => async (): Promise<void> => {
         startWorkspaceMock(workspace);
       },
@@ -90,16 +88,13 @@ describe('Quick Add page', () => {
 
     await waitFor(() => expect(screen.getByRole('button', { name: 'Dummy Devfile' })).toBeTruthy());
 
-    const devfileButton = screen.getByRole('button', { name: 'Dummy Devfile' });
-    await waitFor(() => expect(devfileButton).toBeTruthy());
+    const devfileButton = await screen.findByRole('button', { name: 'Dummy Devfile' });
+    expect(devfileButton).toBeTruthy();
     devfileButton.click();
 
-    expect(createWorkspaceFromDevfileMock).toHaveBeenCalledWith(
-      dummyDevfile,
-      undefined,
-      namespace,
-      { stackName: 'dummyStackName' },
-    );
+    expect(createWorkspaceFromDevfileMock).toHaveBeenCalledWith(dummyDevfile, {
+      stackName: 'dummyStackName',
+    });
   });
 
   it('should have correct masthead when Quick Add tab is active', () => {

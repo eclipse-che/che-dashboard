@@ -34,7 +34,7 @@ describe('dockerConfig selectors', () => {
   describe('devworkspaces enabled', () => {
     it('should return all registries', () => {
       const fakeStore = new FakeStoreBuilder()
-        .withDwDockerConfig(registries, false)
+        .withDockerConfig(registries, false)
         .build() as MockStoreEnhanced<AppState, ThunkDispatch<AppState, undefined, AnyAction>>;
       const state = fakeStore.getState();
 
@@ -45,7 +45,7 @@ describe('dockerConfig selectors', () => {
 
     it('should return isLoading status', () => {
       const fakeStore = new FakeStoreBuilder()
-        .withDwDockerConfig([], true)
+        .withDockerConfig([], true)
         .build() as MockStoreEnhanced<AppState, ThunkDispatch<AppState, undefined, AnyAction>>;
       const state = fakeStore.getState();
 
@@ -56,7 +56,7 @@ describe('dockerConfig selectors', () => {
 
     it('should return an error related to default editor fetching', () => {
       const fakeStore = new FakeStoreBuilder()
-        .withDwDockerConfig(registries, false, 'default editor fetching error')
+        .withDockerConfig(registries, false, 'default editor fetching error')
         .build() as MockStoreEnhanced<AppState, ThunkDispatch<AppState, undefined, AnyAction>>;
       const state = fakeStore.getState();
 
@@ -68,7 +68,7 @@ describe('dockerConfig selectors', () => {
   describe('devworkspaces disabled', () => {
     it('should return all registries', () => {
       const fakeStore = new FakeStoreBuilder()
-        .withDwDockerConfig(registries, false)
+        .withDockerConfig(registries, false)
         .build() as MockStoreEnhanced<AppState, ThunkDispatch<AppState, undefined, AnyAction>>;
       const state = fakeStore.getState();
 
@@ -79,7 +79,7 @@ describe('dockerConfig selectors', () => {
 
     it('should return isLoading status', () => {
       const fakeStore = new FakeStoreBuilder()
-        .withDwDockerConfig([], true)
+        .withDockerConfig([], true)
         .build() as MockStoreEnhanced<AppState, ThunkDispatch<AppState, undefined, AnyAction>>;
       const state = fakeStore.getState();
 
@@ -90,7 +90,7 @@ describe('dockerConfig selectors', () => {
 
     it('should return an error related to default editor fetching', () => {
       const fakeStore = new FakeStoreBuilder()
-        .withDwDockerConfig(registries, false, 'default editor fetching error')
+        .withDockerConfig(registries, false, 'default editor fetching error')
         .build() as MockStoreEnhanced<AppState, ThunkDispatch<AppState, undefined, AnyAction>>;
       const state = fakeStore.getState();
 

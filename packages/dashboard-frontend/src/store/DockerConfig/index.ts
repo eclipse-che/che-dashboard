@@ -63,7 +63,7 @@ export const actionCreators: ActionCreators = {
           type: 'RECEIVE_DEVWORKSPACE_CREDENTIALS_ERROR',
           error: errorMessage,
         });
-        throw errorMessage;
+        throw e;
       }
     },
 
@@ -90,7 +90,7 @@ export const actionCreators: ActionCreators = {
           type: 'RECEIVE_DEVWORKSPACE_CREDENTIALS_ERROR',
           error: errorMessage,
         });
-        throw errorMessage;
+        throw e;
       }
     },
 };

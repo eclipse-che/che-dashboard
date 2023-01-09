@@ -109,8 +109,6 @@ export type ActionCreators = {
   updateWorkspace: (workspace: Workspace) => AppThunk<KnownAction, Promise<void>>;
   createWorkspaceFromDevfile: (
     devfile: devfileApi.Devfile,
-    namespace: string | undefined,
-    infrastructureNamespace: string | undefined,
     attributes: { [key: string]: string },
     optionalFilesContent?: {
       [fileName: string]: string;
@@ -133,11 +131,7 @@ export const actionCreators: ActionCreators = {
     async (dispatch): Promise<void> => {
       dispatch({ type: 'REQUEST_WORKSPACES' });
       try {
-        const promises: Promise<unknown>[] = [
-          dispatch(DevWorkspacesStore.actionCreators.requestWorkspaces()),
-        ];
-
-        await Promise.allSettled(promises);
+        await dispatch(DevWorkspacesStore.actionCreators.requestWorkspaces());
 
         dispatch({ type: 'RECEIVE_WORKSPACES' });
       } catch (e) {
@@ -249,8 +243,6 @@ export const actionCreators: ActionCreators = {
   createWorkspaceFromDevfile:
     (
       devfile: devfileApi.Devfile,
-      namespace: string | undefined,
-      infrastructureNamespace: string | undefined,
       attributes: { [key: string]: string },
       optionalFilesContent?: {
         [fileName: string]: string;

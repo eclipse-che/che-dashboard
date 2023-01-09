@@ -207,7 +207,6 @@ export class WorkspaceDetails extends React.PureComponent<Props, State> {
     }
 
     const workspaceName = workspace.name;
-    const { inlineAlertConversionError, showInlineAlertRestartWarning } = this.state;
 
     return (
       <React.Fragment>
