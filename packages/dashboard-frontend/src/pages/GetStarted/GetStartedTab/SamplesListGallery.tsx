@@ -215,9 +215,9 @@ export class SamplesListGallery extends React.PureComponent<Props, State> {
       .sort(SamplesListGallery.sortByDisplayName)
       .sort(SamplesListGallery.sortByVisibleTag)
       .sort(SamplesListGallery.sortByEmptyWorkspaceTag)
-      .map(meta => (
+      .map((meta: che.DevfileMetaData, index: number) => (
         <SampleCard
-          key={meta.links.self}
+          key={`${meta.links.self}_${index}`}
           metadata={meta}
           targetEditors={targetEditors}
           onClick={(editorId: string | undefined): Promise<void> =>

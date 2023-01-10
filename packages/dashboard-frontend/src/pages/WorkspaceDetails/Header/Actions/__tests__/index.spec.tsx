@@ -55,9 +55,11 @@ let devWorkspace: devfileApi.DevWorkspace;
 let store: Store;
 
 describe('Workspace WorkspaceAction widget', () => {
+  global.open = jest.fn();
+
   beforeEach(() => {
     devWorkspace = new DevWorkspaceBuilder()
-      .withId(workspaceUID)
+      .withUID(workspaceUID)
       .withName(workspaceName)
       .withNamespace(namespace)
       .build();
@@ -111,7 +113,9 @@ describe('Workspace WorkspaceAction widget', () => {
     const targetAction = screen.getByText(action);
     targetAction.click();
 
-    await waitFor(() => expect(history.location.pathname).toBe(`/`));
+    await waitFor(() =>
+      expect(window.open).toBeCalledWith(`#/ide/${namespace}/test-workspace-name`, workspaceUID),
+    );
   });
 
   it('should call the callback with OPEN_IN_VERBOSE_MODE action', async () => {
@@ -129,7 +133,9 @@ describe('Workspace WorkspaceAction widget', () => {
     const targetAction = screen.getByText(action);
     targetAction.click();
 
-    await waitFor(() => expect(history.location.pathname).toBe(`/`));
+    await waitFor(() =>
+      expect(window.open).toBeCalledWith(`#/ide/${namespace}/test-workspace-name`, workspaceUID),
+    );
   });
 
   it('should call the callback with START_IN_BACKGROUND action', () => {

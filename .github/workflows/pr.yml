@@ -128,4 +128,4 @@ jobs:
           script: |
             const { issue: { number: issue_number }, repo: { owner, repo }  } = context;
             const dashboardImage = '${{ env.ORGANIZATION }}/che-dashboard:${{ env.IMAGE_VERSION }}';
-            github.issues.createComment({ issue_number, owner, repo, body: 'Docker image build succeeded: **' + dashboardImage + '**' });
+            github.rest.issues.createComment({ issue_number, owner, repo, body: 'Docker image build succeeded: **' + dashboardImage + '**' });
