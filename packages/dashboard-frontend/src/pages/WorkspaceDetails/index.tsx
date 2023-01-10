@@ -22,7 +22,7 @@ import {
 } from '@patternfly/react-core';
 import common from '@eclipse-che/common';
 import Head from '../../components/Head';
-import { WorkspaceDetailsTab, WorkspaceStatus } from '../../services/helpers/types';
+import { WorkspaceDetailsTab } from '../../services/helpers/types';
 import Header from './Header';
 import ProgressIndicator from '../../components/Progress';
 import { HeaderActionSelect } from './Header/Actions';
@@ -34,7 +34,6 @@ import DevworkspaceEditorTab from './DevworkspaceEditorTab';
 import { History, UnregisterCallback, Location } from 'history';
 import { Workspace } from '../../services/workspace-adapter';
 import UnsavedChangesModal from '../../components/UnsavedChangesModal';
-import WorkspaceConversionButton from './ConversionButton';
 import { buildDetailsLocation } from '../../services/helpers/location';
 
 import styles from './index.module.css';

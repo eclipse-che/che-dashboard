@@ -10,11 +10,13 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
+import * as devfileApi from '../devfileApi/devfileApi';
+
 /**
  * Check to see if the workspace is a web terminal
  * @param workspaceOrDevfile The workspace or devfile you want to check
  */
-export function isWebTerminal(workspaceOrDevfile: api.che.workspace.devfile.Devfile): boolean {
+export function isWebTerminal(workspaceOrDevfile: devfileApi.DevWorkspace): boolean {
   const labels = workspaceOrDevfile?.metadata?.labels;
   return labels?.['console.openshift.io/terminal'] !== undefined;
 }

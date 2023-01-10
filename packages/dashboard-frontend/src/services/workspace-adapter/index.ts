@@ -165,31 +165,19 @@ export class WorkspaceAdapter<T extends devfileApi.DevWorkspace> implements Work
   }
 
   get isStarting(): boolean {
-    return (
-      (WorkspaceAdapter.getStatus(this.workspace) as DevWorkspaceStatus) ===
-      DevWorkspaceStatus.STARTING
-    );
+    return WorkspaceAdapter.getStatus(this.workspace) === DevWorkspaceStatus.STARTING;
   }
 
   get isStopped(): boolean {
-    return (
-      (WorkspaceAdapter.getStatus(this.workspace) as DevWorkspaceStatus) ===
-      DevWorkspaceStatus.STOPPED
-    );
+    return WorkspaceAdapter.getStatus(this.workspace) === DevWorkspaceStatus.STOPPED;
   }
 
   get isStopping(): boolean {
-    return (
-      (WorkspaceAdapter.getStatus(this.workspace) as DevWorkspaceStatus) ===
-      DevWorkspaceStatus.STOPPING
-    );
+    return WorkspaceAdapter.getStatus(this.workspace) === DevWorkspaceStatus.STOPPING;
   }
 
   get isRunning(): boolean {
-    return (
-      (WorkspaceAdapter.getStatus(this.workspace) as DevWorkspaceStatus) ===
-      DevWorkspaceStatus.RUNNING
-    );
+    return WorkspaceAdapter.getStatus(this.workspace) === DevWorkspaceStatus.RUNNING;
   }
 
   get hasError(): boolean {
@@ -248,21 +236,11 @@ export class WorkspaceAdapter<T extends devfileApi.DevWorkspace> implements Work
       this.workspace.spec.routingClass!,
       this.workspace.spec.started,
     );
-    if (isDevWorkspace(converted)) {
-      if (converted.spec.contributions === undefined) {
-        converted.spec.contributions = [];
-      }
-      converted.spec.contributions.push(...plugins);
-      (this.workspace as devfileApi.DevWorkspace) = converted;
-    } else {
-      console.error(
-        `WorkspaceAdapter: the received devworkspace either has wrong "kind" (not ${devWorkspaceKind}) or lacks some of mandatory fields: `,
-        converted,
-      );
-      throw new Error(
-        'Unexpected error happened. Please check the Console tab of Developer tools.',
-      );
+    if (converted.spec.contributions === undefined) {
+      converted.spec.contributions = [];
     }
+    converted.spec.contributions.push(...plugins);
+    (this.workspace as devfileApi.DevWorkspace) = converted;
   }
 
   get projects(): string[] {

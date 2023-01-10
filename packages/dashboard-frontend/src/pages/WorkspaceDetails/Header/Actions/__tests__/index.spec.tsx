@@ -11,7 +11,7 @@
  */
 
 import { render, RenderResult, screen, waitFor } from '@testing-library/react';
-import { createHashHistory, History, Location } from 'history';
+import { createHashHistory, History } from 'history';
 import React from 'react';
 import { Provider } from 'react-redux';
 import { HeaderActionSelect } from '..';

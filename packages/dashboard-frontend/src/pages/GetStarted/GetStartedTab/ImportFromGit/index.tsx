@@ -12,15 +12,7 @@
 
 import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
-import {
-  AlertGroup,
-  Flex,
-  FlexItem,
-  FormGroup,
-  Text,
-  TextContent,
-  TextVariants,
-} from '@patternfly/react-core';
+import { Flex, FlexItem, FormGroup, Text, TextContent, TextVariants } from '@patternfly/react-core';
 import { AppState } from '../../../../store';
 import * as DevfileRegistriesStore from '../../../../store/DevfileRegistries';
 import * as FactoryResolverStore from '../../../../store/FactoryResolver';
