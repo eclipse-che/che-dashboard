@@ -14,9 +14,9 @@ import * as devfileApi from '../devfileApi/devfileApi';
 
 /**
  * Check to see if the workspace is a web terminal
- * @param workspaceOrDevfile The workspace or devfile you want to check
+ * @param workspace The workspace you want to check
  */
-export function isWebTerminal(workspaceOrDevfile: devfileApi.DevWorkspace): boolean {
-  const labels = workspaceOrDevfile?.metadata?.labels;
+export function isWebTerminal(workspace: devfileApi.DevWorkspace): boolean {
+  const labels = workspace?.metadata?.labels;
   return labels?.['console.openshift.io/terminal'] !== undefined;
 }
