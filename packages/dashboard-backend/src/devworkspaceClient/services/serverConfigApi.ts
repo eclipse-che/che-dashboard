@@ -112,7 +112,11 @@ export class ServerConfigApiService implements IServerConfigApi {
   }
 
   getRunningWorkspacesLimit(cheCustomResource: CustomResourceDefinition): number {
-    return cheCustomResource.spec.components?.devWorkspace?.runningLimit || 1;
+    return (
+      cheCustomResource.spec.components?.devWorkspace?.runningLimit ||
+      cheCustomResource.spec.devEnvironments?.maxNumberOfRunningWorkspacesPerUser ||
+      1
+    );
   }
 
   getWorkspaceInactivityTimeout(cheCustomResource: CustomResourceDefinition): number {
