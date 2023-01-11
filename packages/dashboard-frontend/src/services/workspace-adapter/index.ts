@@ -11,7 +11,6 @@
  */
 
 import devfileApi, { isDevfileV2, isDevWorkspace } from '../devfileApi';
-import { devWorkspaceKind } from '../devfileApi/devWorkspace';
 import { DEVWORKSPACE_UPDATING_TIMESTAMP_ANNOTATION } from '../devfileApi/devWorkspace/metadata';
 import { DEVWORKSPACE_STORAGE_TYPE_ATTR } from '../devfileApi/devWorkspace/spec/template';
 import { DeprecatedWorkspaceStatus, DevWorkspaceStatus, WorkspaceStatus } from '../helpers/types';
