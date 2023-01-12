@@ -114,7 +114,7 @@ export class ServerConfigApiService implements IServerConfigApi {
   getRunningWorkspacesLimit(cheCustomResource: CustomResourceDefinition): number {
     return (
       cheCustomResource.spec.devEnvironments?.maxNumberOfRunningWorkspacesPerUser ||
-      cheCustomResource.spec.components?.devWorkspace?.runningLimit ||
+      cheCustomResource.spec.components?.devWorkspace?.rt ||
       1
     );
   }
