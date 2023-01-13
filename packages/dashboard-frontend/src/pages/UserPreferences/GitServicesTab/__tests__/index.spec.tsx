@@ -20,6 +20,7 @@ import { GitServicesTab } from '..';
 import { FakeGitOauthBuilder } from './__mocks__/gitOauthRowBuilder';
 import { FakeStoreBuilder } from '../../../../store/__mocks__/storeBuilder';
 import { selectIsLoading, selectGitOauth } from '../../../../store/GitOauthConfig/selectors';
+import { actionCreators } from '../../../../store/GitOauthConfig';
 
 describe('GitServices', () => {
   const mockRevokeOauth = jest.fn();
@@ -83,6 +84,7 @@ describe('GitServices', () => {
   });
 
   it('should revoke a git service', () => {
+    const spyRevokeOauth = jest.spyOn(actionCreators, 'revokeOauth');
     const component = getComponent(
       new FakeStoreBuilder()
         .withGitOauthConfig([
@@ -112,6 +114,6 @@ describe('GitServices', () => {
     expect(revokeButton).toBeEnabled();
 
     userEvent.click(revokeButton);
-    expect(mockRevokeOauth).toBeCalledWith('github');
+    expect(spyRevokeOauth).toBeCalledWith('github');
   });
 });

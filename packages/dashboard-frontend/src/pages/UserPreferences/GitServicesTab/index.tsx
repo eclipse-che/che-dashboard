@@ -10,29 +10,19 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import {
-  AlertVariant,
-  Button,
-  ButtonVariant,
-  PageSection,
-  Toolbar,
-  ToolbarContent,
-  ToolbarItem,
-} from '@patternfly/react-core';
+import { PageSection } from '@patternfly/react-core';
 import { Table, TableBody, TableHeader } from '@patternfly/react-table';
 import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import ProgressIndicator from '../../../components/Progress';
-import { lazyInject } from '../../../inversify.config';
-import { AppAlerts } from '../../../services/alerts/appAlerts';
-import { AlertItem } from '../../../services/helpers/types';
 import { AppState } from '../../../store';
 import { selectIsLoading, selectGitOauth } from '../../../store/GitOauthConfig/selectors';
 import EmptyState from './EmptyState';
-import RevokeGitServicesModal from './Modals/RevokeGitServicesModal';
-import { api, helpers } from '@eclipse-che/common';
+import { api } from '@eclipse-che/common';
 import * as GitOauthConfig from '../../../store/GitOauthConfig';
 import { isEqual } from 'lodash';
+import { IGitOauth } from '../../../store/GitOauthConfig/types';
+import GitServicesToolbar, { GitServicesToolbar as Toolbar } from './GitServicesToolbar';
 
 export const providersMap = {
   github: 'GitHub',
@@ -44,29 +34,25 @@ type Props = MappedProps;
 
 type State = {
   selectedItems: api.GitOauthProvider[];
-  gitOauth: { name: api.GitOauthProvider; endpointUrl: string }[];
-  currentGitOauth: api.GitOauthProvider | undefined;
-  currentGitOauthIndex: number;
-  isRevokeModalOpen: boolean;
-  isEditModalOpen: boolean;
+  gitOauth: IGitOauth[];
 };
 
 export class GitServicesTab extends React.PureComponent<Props, State> {
-  @lazyInject(AppAlerts)
-  private readonly appAlerts: AppAlerts;
+  private readonly gitServicesToolbarRef: React.RefObject<Toolbar>;
+  private readonly callbacks: {
+    onChangeSelection?: (selectedItems: api.GitOauthProvider[]) => void;
+  };
 
   constructor(props: Props) {
     super(props);
+
+    this.gitServicesToolbarRef = React.createRef<Toolbar>();
 
     const gitOauth = this.props.gitOauth;
 
     this.state = {
       gitOauth,
-      currentGitOauth: undefined,
       selectedItems: [],
-      currentGitOauthIndex: -1,
-      isEditModalOpen: false,
-      isRevokeModalOpen: false,
     };
   }
 
@@ -94,25 +80,11 @@ export class GitServicesTab extends React.PureComponent<Props, State> {
     }
   }
 
-  public componentDidUpdate(prevProps: Props, prevState: State): void {
+  public componentDidUpdate(prevProps: Props): void {
     const gitOauth = this.props.gitOauth;
     if (!isEqual(prevProps.gitOauth, gitOauth)) {
-      const selectedItems: api.GitOauthProvider[] = [];
-      this.state.selectedItems.forEach(selectedItem => {
-        if (gitOauth.map(val => val.name).indexOf(selectedItem) !== -1) {
-          selectedItems.push(selectedItem);
-        }
-      });
-      this.setState({ gitOauth, selectedItems });
+      this.setState({ gitOauth });
     }
-    if (prevState.currentGitOauthIndex !== this.state.currentGitOauthIndex) {
-      const currentGitOauth = gitOauth[this.state.currentGitOauthIndex]?.name;
-      this.setState({ currentGitOauth });
-    }
-  }
-
-  private showAlert(alert: AlertItem): void {
-    this.appAlerts.showAlert(alert);
   }
 
   private buildGitOauthRow(gitOauth: api.GitOauthProvider, server: string): React.ReactNode[] {
@@ -134,55 +106,15 @@ export class GitServicesTab extends React.PureComponent<Props, State> {
   }
 
   private showOnRevokeGitOauthModal(rowIndex: number): void {
-    this.setState({ currentGitOauthIndex: rowIndex, isRevokeModalOpen: true });
-  }
-
-  private async revokeOauth(gitOauth: api.GitOauthProvider): Promise<void> {
-    try {
-      await this.props.revokeOauth(gitOauth);
-      this.showAlert({
-        key: 'revoke-github',
-        variant: AlertVariant.success,
-        title: `Git oauth '${gitOauth}' successfully deleted.`,
-      });
-    } catch (e) {
-      this.showAlert({
-        key: 'revoke-fail',
-        variant: AlertVariant.danger,
-        title: helpers.errors.getMessage(e),
-      });
-    }
-  }
-
-  private async handleRevoke(gitOauth?: api.GitOauthProvider): Promise<void> {
-    this.setState({ isRevokeModalOpen: false, currentGitOauthIndex: -1 });
-    if (gitOauth === undefined) {
-      for (const selectedItem of this.state.selectedItems) {
-        await this.revokeOauth(selectedItem);
-      }
-      this.setState({ selectedItems: [] });
-    } else {
-      await this.revokeOauth(gitOauth);
-    }
-  }
-
-  private setRevokeModalStatus(isRevokeModalOpen: boolean): void {
-    if (this.state.isRevokeModalOpen === isRevokeModalOpen) {
-      return;
-    }
-    this.setState({ isRevokeModalOpen });
-  }
-
-  private handleModalShow(): void {
-    this.setState({ currentGitOauthIndex: -1, isRevokeModalOpen: true });
+    this.gitServicesToolbarRef.current?.showOnRevokeGitOauthModal(rowIndex);
   }
 
   render(): React.ReactNode {
     const { isLoading } = this.props;
-    const { isRevokeModalOpen, currentGitOauth, selectedItems } = this.state;
+    const { selectedItems, gitOauth } = this.state;
     const columns = ['Name', 'Server'];
     const rows =
-      this.state.gitOauth.map(provider => ({
+      gitOauth.map(provider => ({
         cells: this.buildGitOauthRow(provider.name, provider.endpointUrl),
         selected: selectedItems.includes(provider.name),
       })) || [];
@@ -201,27 +133,11 @@ export class GitServicesTab extends React.PureComponent<Props, State> {
             <EmptyState text="No Git Services" />
           ) : (
             <React.Fragment>
-              <RevokeGitServicesModal
+              <GitServicesToolbar
+                ref={this.gitServicesToolbarRef}
+                callbacks={this.callbacks}
                 selectedItems={selectedItems}
-                onCancel={() => this.setRevokeModalStatus(false)}
-                onRevoke={() => this.handleRevoke(currentGitOauth)}
-                isOpen={isRevokeModalOpen}
-                gitOauth={currentGitOauth}
               />
-              <Toolbar id="git-services-list-toolbar" className="pf-m-page-insets">
-                <ToolbarContent>
-                  <ToolbarItem>
-                    <Button
-                      variant={ButtonVariant.danger}
-                      isDisabled={this.state.selectedItems.length === 0}
-                      data-testid="bulk-revoke-button"
-                      onClick={() => this.handleModalShow()}
-                    >
-                      Revoke
-                    </Button>
-                  </ToolbarItem>
-                </ToolbarContent>
-              </Toolbar>
               <Table
                 cells={columns}
                 actions={actions}
