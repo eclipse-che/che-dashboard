@@ -111,10 +111,12 @@ export class ServerConfigApiService implements IServerConfigApi {
     return cheCustomResource.spec.components?.dashboard?.headerMessage?.text;
   }
 
+  // getRunningWorkspacesLimit return the maximum number of running workspaces.
+  // See https://github.com/eclipse-che/che-operator/pull/1585 for details.
   getRunningWorkspacesLimit(cheCustomResource: CustomResourceDefinition): number {
     return (
       cheCustomResource.spec.devEnvironments?.maxNumberOfRunningWorkspacesPerUser ||
-      cheCustomResource.spec.components?.devWorkspace?.rt ||
+      cheCustomResource.spec.components?.devWorkspace?.runningLimit ||
       1
     );
   }
