@@ -155,10 +155,9 @@ export const reducer: Reducer<State> = (
         gitOauth: action.gitOauth,
       });
     case Type.DELETE_OAUTH:
-      delete gitOauth[action.provider];
       return createObject(state, {
         isLoading: false,
-        gitOauth,
+        gitOauth: gitOauth.filter(v => v.name !== action.provider),
       });
     case Type.RECEIVE_GIT_OAUTH_CONFIG_ERROR:
       return createObject(state, {

@@ -53,7 +53,7 @@ export class GitServicesTab extends React.PureComponent<Props, State> {
   private onChangeSelection(isSelected: boolean, rowIndex: number) {
     const { gitOauth } = this.props;
     if (rowIndex === -1) {
-      const selectedItems = isSelected ? gitOauth.map(val => val.name) : [];
+      const selectedItems = isSelected && gitOauth.length > 0 ? gitOauth.map(val => val.name) : [];
       this.setState({ selectedItems });
     } else {
       const selectedItem = gitOauth[rowIndex]?.name;
