@@ -58,7 +58,7 @@ export class GitServicesToolbar extends React.PureComponent<Props, State> {
   }
 
   private onChangeSelection(selectedItems: api.GitOauthProvider[]): void {
-    if (this.props.callbacks.onChangeSelection) {
+    if (this.props.callbacks?.onChangeSelection) {
       this.props.callbacks.onChangeSelection(selectedItems);
     }
   }
@@ -68,7 +68,7 @@ export class GitServicesToolbar extends React.PureComponent<Props, State> {
     if (!isEqual(prevProps.gitOauth, gitOauth)) {
       const selectedItems: api.GitOauthProvider[] = [];
       this.props.selectedItems.forEach(selectedItem => {
-        if (gitOauth.map(val => val.name).indexOf(selectedItem) !== -1) {
+        if (gitOauth.find(val => val.name === selectedItem) !== undefined) {
           selectedItems.push(selectedItem);
         }
       });
@@ -117,11 +117,8 @@ export class GitServicesToolbar extends React.PureComponent<Props, State> {
     }
   }
 
-  private setRevokeModalStatus(isRevokeModalOpen: boolean): void {
-    if (this.state.isRevokeModalOpen === isRevokeModalOpen) {
-      return;
-    }
-    this.setState({ isRevokeModalOpen });
+  private handleModalHide(): void {
+    this.setState({ isRevokeModalOpen: false });
   }
 
   private handleModalShow(): void {
@@ -135,7 +132,7 @@ export class GitServicesToolbar extends React.PureComponent<Props, State> {
       <React.Fragment>
         <RevokeGitServicesModal
           selectedItems={selectedItems}
-          onCancel={() => this.setRevokeModalStatus(false)}
+          onCancel={() => this.handleModalHide()}
           onRevoke={() => this.handleRevoke(currentGitOauth)}
           isOpen={isRevokeModalOpen}
           gitOauth={currentGitOauth}

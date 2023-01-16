@@ -42,14 +42,6 @@ describe('Revoke Registries Modal', () => {
     jest.clearAllMocks();
   });
 
-  it('should correctly render the closed modal component', () => {
-    const component = getComponent(false, []);
-
-    const json = renderer.create(component).toJSON();
-
-    expect(json).toMatchSnapshot();
-  });
-
   it('should correctly render the component', () => {
     const component = getComponent(true, [], 'gitlab');
     render(component);

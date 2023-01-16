@@ -59,7 +59,7 @@ export class GitServicesTab extends React.PureComponent<Props, State> {
   private onChangeSelection(isSelected: boolean, rowIndex: number) {
     const { gitOauth } = this.state;
     if (rowIndex === -1) {
-      const selectedItems = isSelected ? gitOauth.map(val => val.name) : [];
+      const selectedItems = gitOauth?.length && isSelected ? gitOauth.map(val => val.name) : [];
       this.setState({ selectedItems });
     } else {
       const selectedItem = gitOauth[rowIndex]?.name;
@@ -114,7 +114,7 @@ export class GitServicesTab extends React.PureComponent<Props, State> {
     const { selectedItems, gitOauth } = this.state;
     const columns = ['Name', 'Server'];
     const rows =
-      gitOauth.map(provider => ({
+      gitOauth?.map(provider => ({
         cells: this.buildGitOauthRow(provider.name, provider.endpointUrl),
         selected: selectedItems.includes(provider.name),
       })) || [];
