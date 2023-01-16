@@ -140,8 +140,6 @@ export const reducer: Reducer<State> = (
     return unloadedState;
   }
 
-  const gitOauth = Object.assign({}, state.gitOauth);
-
   const action = incomingAction as KnownAction;
   switch (action.type) {
     case Type.REQUEST_GIT_OAUTH_CONFIG:
@@ -157,7 +155,7 @@ export const reducer: Reducer<State> = (
     case Type.DELETE_OAUTH:
       return createObject(state, {
         isLoading: false,
-        gitOauth: gitOauth.filter(v => v.name !== action.provider),
+        gitOauth: state.gitOauth.filter(v => v.name !== action.provider),
       });
     case Type.RECEIVE_GIT_OAUTH_CONFIG_ERROR:
       return createObject(state, {
