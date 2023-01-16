@@ -70,21 +70,23 @@ export const actionCreators: ActionCreators = {
     async (dispatch): Promise<void> => {
       await dispatch({
         type: Type.REQUEST_GIT_OAUTH_CONFIG,
+        check: AUTHORIZED,
       });
       const gitOauth: IGitOauth[] = [];
       try {
         const oAuthProviders = await cheWorkspaceClient.restApiClient.getOAuthProviders();
+        const promises: Promise<void>[] = [];
         for (const { name, endpointUrl } of oAuthProviders) {
-          try {
-            await cheWorkspaceClient.restApiClient.getOAuthToken(name);
-            gitOauth.push({
-              name: name as api.GitOauthProvider,
-              endpointUrl,
-            });
-          } catch (e) {
-            // no-op
-          }
+          promises.push(
+            cheWorkspaceClient.restApiClient.getOAuthToken(name).then(() => {
+              gitOauth.push({
+                name: name as api.GitOauthProvider,
+                endpointUrl,
+              });
+            }),
+          );
         }
+        await Promise.allSettled(promises);
 
         dispatch({
           type: Type.RECEIVE_GIT_OAUTH_CONFIG,
@@ -119,7 +121,7 @@ export const actionCreators: ActionCreators = {
           type: Type.RECEIVE_GIT_OAUTH_CONFIG_ERROR,
           error: errorMessage,
         });
-        throw errorMessage;
+        throw e;
       }
     },
 };

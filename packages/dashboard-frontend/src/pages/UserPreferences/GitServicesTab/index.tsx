@@ -20,8 +20,6 @@ import { selectIsLoading, selectGitOauth } from '../../../store/GitOauthConfig/s
 import EmptyState from './EmptyState';
 import { api } from '@eclipse-che/common';
 import * as GitOauthConfig from '../../../store/GitOauthConfig';
-import { isEqual } from 'lodash';
-import { IGitOauth } from '../../../store/GitOauthConfig/types';
 import GitServicesToolbar, { GitServicesToolbar as Toolbar } from './GitServicesToolbar';
 
 export const providersMap = {
@@ -34,7 +32,6 @@ type Props = MappedProps;
 
 type State = {
   selectedItems: api.GitOauthProvider[];
-  gitOauth: IGitOauth[];
 };
 
 export class GitServicesTab extends React.PureComponent<Props, State> {
@@ -48,18 +45,15 @@ export class GitServicesTab extends React.PureComponent<Props, State> {
 
     this.gitServicesToolbarRef = React.createRef<Toolbar>();
 
-    const gitOauth = this.props.gitOauth;
-
     this.state = {
-      gitOauth,
       selectedItems: [],
     };
   }
 
   private onChangeSelection(isSelected: boolean, rowIndex: number) {
-    const { gitOauth } = this.state;
+    const { gitOauth } = this.props;
     if (rowIndex === -1) {
-      const selectedItems = gitOauth?.length && isSelected ? gitOauth.map(val => val.name) : [];
+      const selectedItems = isSelected ? gitOauth.map(val => val.name) : [];
       this.setState({ selectedItems });
     } else {
       const selectedItem = gitOauth[rowIndex]?.name;
@@ -77,13 +71,6 @@ export class GitServicesTab extends React.PureComponent<Props, State> {
     const { isLoading, requestGitOauthConfig } = this.props;
     if (!isLoading) {
       requestGitOauthConfig();
-    }
-  }
-
-  public componentDidUpdate(prevProps: Props): void {
-    const gitOauth = this.props.gitOauth;
-    if (!isEqual(prevProps.gitOauth, gitOauth)) {
-      this.setState({ gitOauth });
     }
   }
 
@@ -110,20 +97,22 @@ export class GitServicesTab extends React.PureComponent<Props, State> {
   }
 
   render(): React.ReactNode {
-    const { isLoading } = this.props;
-    const { selectedItems, gitOauth } = this.state;
+    const { isLoading, gitOauth } = this.props;
+    const { selectedItems } = this.state;
     const columns = ['Name', 'Server'];
-    const rows =
-      gitOauth?.map(provider => ({
-        cells: this.buildGitOauthRow(provider.name, provider.endpointUrl),
-        selected: selectedItems.includes(provider.name),
-      })) || [];
     const actions = [
       {
         title: 'Revoke',
         onClick: (event, rowIndex) => this.showOnRevokeGitOauthModal(rowIndex),
       },
     ];
+    const rows =
+      gitOauth.length > 0
+        ? gitOauth.map(provider => ({
+            cells: this.buildGitOauthRow(provider.name, provider.endpointUrl),
+            selected: selectedItems.includes(provider.name),
+          }))
+        : [];
 
     return (
       <React.Fragment>
