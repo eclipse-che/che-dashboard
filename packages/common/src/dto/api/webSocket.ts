@@ -55,9 +55,13 @@ export function isWebSocketSubscriptionMessage(
 ): message is SubscribeMessage | UnsubscribeMessage {
   return (
     message !== undefined &&
-    isWebSocketSubscriptionMethod((message as SubscribeMessage).method) &&
-    (isWebSocketSubscribeParams((message as SubscribeMessage).params) ||
-      isWebSocketUnsubscribeParams((message as UnsubscribeMessage).params)) &&
+    ((isWebSocketSubscriptionMethod((message as SubscribeMessage).method) &&
+      (message as SubscribeMessage).method === 'SUBSCRIBE' &&
+      isWebSocketSubscribeParams((message as SubscribeMessage).params)) ||
+      ((message as UnsubscribeMessage).method === 'UNSUBSCRIBE' &&
+        isWebSocketUnsubscribeParams(
+          (message as UnsubscribeMessage).params,
+        ))) &&
     isWebSocketChannel((message as SubscribeMessage).channel)
   );
 }
@@ -80,7 +84,11 @@ export function isWebSocketSubscribeParams(
 export function isWebSocketUnsubscribeParams(
   parameters: unknown,
 ): parameters is Record<string, never> {
-  return parameters !== undefined;
+  return (
+    parameters !== undefined &&
+    parameters === Object(parameters) &&
+    Object.keys(parameters as Record<string, never>).length === 0
+  );
 }
 
 export enum EventPhase {
