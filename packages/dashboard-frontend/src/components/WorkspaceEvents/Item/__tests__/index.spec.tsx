@@ -18,6 +18,10 @@ import React from 'react';
 import { WorkspaceEventsItem } from '..';
 import getComponentRenderer from '../../../../services/__mocks__/getComponentRenderer';
 
+jest.mock('date-fns', () => ({
+  format: jest.fn(() => '14:00:00'),
+}));
+
 const { createSnapshot, renderComponent } = getComponentRenderer(getComponent);
 
 const message = 'Event message';
