@@ -81,13 +81,13 @@ export const BRANDING_DEFAULT: BrandingData = {
     },
   ],
   docs: {
-    devfile: 'https://www.eclipse.org/che/docs/che-7/end-user-guide/authoring-devfiles/',
-    workspace: 'https://www.eclipse.org/che/docs/che-7/workspaces-overview/',
+    devfile: 'https://www.eclipse.org/che/docs/stable/end-user-guide/devfile-introduction/',
+    workspace: 'https://www.eclipse.org/che/docs/stable/end-user-guide/customizing-workspace-components/',
     certificate: 'https://www.eclipse.org/che/docs/che-7/importing-certificates-to-browsers/',
-    general: 'https://www.eclipse.org/che/docs/che-7',
-    storageTypes: 'https://www.eclipse.org/che/docs/che-7/configuring-storage-types/',
+    general: 'https://www.eclipse.org/che/docs/stable/overview/introduction-to-eclipse-che/',
+    storageTypes: 'https://www.eclipse.org/che/docs/stable/end-user-guide/url-parameter-for-the-workspace-storage/',
     webSocketTroubleshooting:
-      'https://www.eclipse.org/che/docs/che-7/troubleshooting-network-problems/#troubleshooting-websocket-secure-connections_troubleshooting-network-problems',
+      'https://www.eclipse.org/che/docs/stable/end-user-guide/troubleshooting-network-problems/',
   },
   configuration: {},
 };

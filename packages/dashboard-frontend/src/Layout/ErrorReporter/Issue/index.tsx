@@ -59,9 +59,9 @@ export class IssueComponent extends React.PureComponent<Props> {
         </Text>
         <Text component={TextVariants.p}>
           Your {productName} server may be using a self-signed certificate. To resolve this issue,
-          try to import the servers CA certificate into your browser, as described{' '}
+          try to import the servers CA certificate into your browser, as described in{' '}
           <a href={certDocumentation} target="_blank" rel="noreferrer">
-            here
+            Importing certificates to browsers
           </a>
           .
         </Text>
@@ -69,7 +69,7 @@ export class IssueComponent extends React.PureComponent<Props> {
           After importing the certificate, refresh your browser.
         </Text>
         <Text component={TextVariants.p}>
-          <a href="/">Refresh Now</a>
+          <a href="/">Refresh now</a>
         </Text>
       </TextContent>
     );
