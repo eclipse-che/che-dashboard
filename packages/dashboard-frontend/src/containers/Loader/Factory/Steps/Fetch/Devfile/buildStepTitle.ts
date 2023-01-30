@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018-2021 Red Hat, Inc.
+ * Copyright (c) 2018-2023 Red Hat, Inc.
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
  * which is available at https://www.eclipse.org/legal/epl-2.0/
@@ -29,10 +29,10 @@ export default function (
     newTitle = `Devfile could not be found in ${sourceUrl}. Applying the default configuration.`;
   } else {
     newTitle = `Devfile found in repo ${sourceUrl} as '${source}'.`;
-  }
-  if (factoryResolverConverted.isConverted) {
-    const devfile = factoryResolverConverted.devfileV2;
-    newTitle += ` Devfile version 1 found, converting it to devfile version ${devfile.schemaVersion}.`;
+    if (factoryResolverConverted.isConverted) {
+      const devfile = factoryResolverConverted.devfileV2;
+      newTitle += ` Devfile version 1 found, converting it to devfile version ${devfile.schemaVersion}.`;
+    }
   }
   return newTitle;
 }
