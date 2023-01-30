@@ -30,7 +30,6 @@ export default function (
   } else {
     newTitle = `Devfile found in repo ${sourceUrl} as '${source}'.`;
     if (factoryResolverConverted.isConverted) {
-      const devfile = factoryResolverConverted.devfileV2;
       newTitle += ` Devfile version 1 found, converting it to devfile version 2.`;
     }
   }
