@@ -55,6 +55,7 @@
 | [`@jest/fake-timers@26.6.2`](https://github.com/facebook/jest.git) | MIT | clearlydefined |
 | [`@jest/globals@26.6.2`](https://github.com/facebook/jest.git) | MIT | clearlydefined |
 | [`@jest/reporters@26.6.2`](https://github.com/facebook/jest) | MIT | clearlydefined |
+| [`@jest/schemas@28.1.3`](https://github.com/facebook/jest.git) | MIT | clearlydefined |
 | [`@jest/source-map@26.6.2`](https://github.com/facebook/jest.git) | MIT | clearlydefined |
 | [`@jest/test-result@26.6.2`](https://github.com/facebook/jest.git) | MIT | clearlydefined |
 | [`@jest/test-sequencer@26.6.3`](https://github.com/facebook/jest.git) | MIT | clearlydefined |
@@ -157,6 +158,7 @@
 | [`@octokit/rest@18.12.0`](https://github.com/octokit/rest.js.git) | MIT | ecd.jkube |
 | [`@octokit/types@6.34.0`](https://github.com/octokit/types.ts.git) | MIT | ecd.jkube |
 | [`@react-mock/state@0.1.8`](https://github.com/skidding/react-mock) | MIT | clearlydefined |
+| [`@sinclair/typebox@0.24.51`](https://github.com/sinclairzx81/typebox) | MIT | #3330 |
 | [`@sinonjs/commons@1.8.3`](git+https://github.com/sinonjs/commons.git) | BSD-3-Clause | #4340 |
 | [`@sinonjs/fake-timers@6.0.1`](http://github.com/sinonjs/fake-timers.git) | BSD-3-Clause | #1348 |
 | [`@testing-library/dom@7.31.2`](https://github.com/testing-library/dom-testing-library) | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@testing-library/dom/7.31.2) |
@@ -628,6 +630,7 @@
 | [`jest-util@26.6.2`](https://github.com/facebook/jest.git) | MIT | clearlydefined |
 | [`jest-validate@26.6.2`](https://github.com/facebook/jest.git) | MIT | clearlydefined |
 | [`jest-watcher@26.6.2`](https://github.com/facebook/jest) | MIT | clearlydefined |
+| [`jest-websocket-mock@2.4.0`](git+https://github.com/romgain/jest-websocket-mock.git) | MIT | clearlydefined |
 | [`jest-worker@26.6.2`](https://github.com/facebook/jest.git) | MIT | clearlydefined |
 | [`jest@26.6.3`](https://github.com/facebook/jest) | MIT | clearlydefined |
 | [`js-yaml@3.14.1`](https://github.com/nodeca/js-yaml.git) | MIT | clearlydefined |
@@ -688,6 +691,7 @@
 | [`minipass-sized@1.0.3`](git+https://github.com/isaacs/minipass-sized.git) | ISC | clearlydefined |
 | [`mixin-deep@1.3.2`](https://github.com/jonschlinkert/mixin-deep.git) | MIT | clearlydefined |
 | [`mkdirp-infer-owner@2.0.0`](git+https://github.com/isaacs/mkdirp-infer-owner) | ISC | clearlydefined |
+| [`mock-socket@9.1.5`](https://github.com/thoov/mock-socket.git) | MIT | clearlydefined |
 | [`modify-values@1.0.1`](https://github.com/sindresorhus/modify-values.git) | MIT | clearlydefined |
 | [`ms@2.1.3`](https://github.com/vercel/ms.git) | MIT | #5895 |
 | [`multicast-dns@7.2.5`](https://github.com/mafintosh/multicast-dns.git) | MIT | clearlydefined |

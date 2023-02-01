@@ -33,12 +33,12 @@ import { connect, ConnectedProps } from 'react-redux';
 import { DevWorkspaceStatus } from '../../services/helpers/types';
 import { Workspace } from '../../services/workspace-adapter';
 import { AppState } from '../../store';
-import { selectAllEvents, selectEvents } from '../../store/Events/selectors';
+import { selectAllEvents, selectEventsFromResourceVersion } from '../../store/Events/selectors';
+import { selectStartedWorkspaces } from '../../store/Workspaces/devWorkspaces/selectors';
 import { selectAllWorkspaces } from '../../store/Workspaces/selectors';
 import compareEventTime from './compareEventTime';
-import { WorkspaceEventsItem } from './Item';
-
 import styles from './index.module.css';
+import { WorkspaceEventsItem } from './Item';
 
 export type Props = {
   workspaceUID: string | undefined;
@@ -71,11 +71,15 @@ export class WorkspaceEvents extends React.PureComponent<Props> {
   }
 
   render() {
-    const { workspaceUID, allWorkspaces } = this.props;
+    const { workspaceUID, allWorkspaces, startedWorkspaces } = this.props;
 
     const workspace = this.findWorkspace(workspaceUID, allWorkspaces);
 
-    if (workspace === undefined || workspace.status === DevWorkspaceStatus.STOPPED) {
+    if (
+      workspaceUID === undefined ||
+      workspace === undefined ||
+      workspace.status === DevWorkspaceStatus.STOPPED
+    ) {
       return (
         <EmptyState>
           <EmptyStateIcon icon={FileIcon} />
@@ -87,10 +91,12 @@ export class WorkspaceEvents extends React.PureComponent<Props> {
       );
     }
 
-    const workspaceEvents = this.props.eventsFilterFn(workspace.id);
-    const eventItems = this.getEventItems(workspaceEvents);
+    const startResourceVersion = startedWorkspaces[workspaceUID] || '0';
 
-    const stackFirstItem = (
+    const events = this.props.eventsFromResourceVersionFn(startResourceVersion);
+    const eventItems = this.getEventItems(events);
+
+    const tailStackItem = (
       <StackItem>
         <Flex>
           <FlexItem>
@@ -108,7 +114,7 @@ export class WorkspaceEvents extends React.PureComponent<Props> {
         </Flex>
       </StackItem>
     );
-    const stackLastItem = (
+    const headStackItem = (
       <StackItem>
         <TextContent>
           <Text component={TextVariants.small}>Older events are not stored.</Text>
@@ -119,9 +125,9 @@ export class WorkspaceEvents extends React.PureComponent<Props> {
     return (
       <PageSection variant={PageSectionVariants.light}>
         <Stack hasGutter>
-          {stackFirstItem}
+          {tailStackItem}
           {eventItems}
-          {stackLastItem}
+          {headStackItem}
         </Stack>
       </PageSection>
     );
@@ -131,7 +137,8 @@ export class WorkspaceEvents extends React.PureComponent<Props> {
 const mapStateToProps = (state: AppState) => ({
   allEvents: selectAllEvents(state),
   allWorkspaces: selectAllWorkspaces(state),
-  eventsFilterFn: selectEvents(state),
+  eventsFromResourceVersionFn: selectEventsFromResourceVersion(state),
+  startedWorkspaces: selectStartedWorkspaces(state),
 });
 
 const connector = connect(mapStateToProps);

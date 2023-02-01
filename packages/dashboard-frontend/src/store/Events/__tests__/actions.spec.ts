@@ -89,18 +89,26 @@ describe('Events store, actions', () => {
     expect(actions).toEqual(expectedActions);
   });
 
-  it('should create DELETE_EVENTS action', () => {
-    const pod = {
-      metadata: { name: event1.involvedObject.name, namespace: event1.involvedObject.namespace },
-    };
-    appStore.dispatch(testStore.actionCreators.deleteEvents(pod));
+  it('should create DELETE_OLD_EVENTS action', () => {
+    const _appStore = new FakeStoreBuilder()
+      .withDevWorkspaces({
+        startedWorkspaces: {
+          workspace123: '123',
+          workspace456: '456',
+        },
+      })
+      .build() as MockStoreEnhanced<
+      AppState,
+      ThunkDispatch<AppState, undefined, testStore.KnownAction>
+    >;
+    _appStore.dispatch(testStore.actionCreators.clearOldEvents());
 
-    const actions = appStore.getActions();
+    const actions = _appStore.getActions();
 
     const expectedActions: testStore.KnownAction[] = [
       {
-        type: testStore.Type.DELETE_EVENTS,
-        pod,
+        type: testStore.Type.DELETE_OLD_EVENTS,
+        resourceVersion: '123',
       },
     ];
 

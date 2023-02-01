@@ -16,7 +16,6 @@ import { MockStoreEnhanced } from 'redux-mock-store';
 import { ThunkDispatch } from 'redux-thunk';
 import * as testStore from '..';
 import { AppState } from '../..';
-import * as eventStore from '../../Events';
 import { AUTHORIZED } from '../../sanityCheckMiddleware';
 import { FakeStoreBuilder } from '../../__mocks__/storeBuilder';
 import { pod1, pod2 } from './stub';
@@ -141,13 +140,9 @@ describe('Pods store, actions', () => {
 
       const actions = appStore.getActions();
 
-      const expectedActions: (testStore.KnownAction | eventStore.KnownAction)[] = [
+      const expectedActions: testStore.KnownAction[] = [
         {
           type: testStore.Type.DELETE_POD,
-          pod: pod1,
-        },
-        {
-          type: eventStore.Type.DELETE_EVENTS,
           pod: pod1,
         },
       ];

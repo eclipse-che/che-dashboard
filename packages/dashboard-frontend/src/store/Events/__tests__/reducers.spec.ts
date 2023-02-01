@@ -10,12 +10,22 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
+import { CoreV1Event } from '@kubernetes/client-node';
+import { cloneDeep } from 'lodash';
 import { AnyAction } from 'redux';
 import * as testStore from '..';
 import { AUTHORIZED } from '../../sanityCheckMiddleware';
-import { event1, event2 } from './stubs';
+import * as stub from './stubs';
 
 describe('Events store, reducers', () => {
+  let event1: CoreV1Event;
+  let event2: CoreV1Event;
+
+  beforeEach(() => {
+    event1 = cloneDeep(stub.event1);
+    event2 = cloneDeep(stub.event2);
+  });
+
   it('should return initial state', () => {
     const incomingAction: testStore.RequestEventsAction = {
       type: testStore.Type.REQUEST_EVENTS,
@@ -120,21 +130,18 @@ describe('Events store, reducers', () => {
     expect(newState).toEqual(expectedState);
   });
 
-  it('should handle DELETE_EVENTS', () => {
+  it('should handle DELETE_OLD_EVENTS', () => {
+    event1.metadata.resourceVersion = '1';
+    event2.metadata.resourceVersion = '2';
     const initialState: testStore.State = {
       isLoading: false,
       events: [event1, event2],
       resourceVersion: '2',
     };
-    const incomingAction: testStore.DeleteEventsAction = {
-      type: testStore.Type.DELETE_EVENTS,
-      pod: {
-        metadata: {
-          name: event1.involvedObject.name,
-          namespace: event1.involvedObject.namespace,
-          uid: event1.involvedObject.uid,
-        },
-      },
+
+    const incomingAction: testStore.DeleteOldEventsAction = {
+      type: testStore.Type.DELETE_OLD_EVENTS,
+      resourceVersion: '2',
     };
 
     const newState = testStore.reducer(initialState, incomingAction);

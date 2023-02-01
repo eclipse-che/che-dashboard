@@ -100,6 +100,9 @@ describe('DevWorkspace store, actions', () => {
           workspaces: [],
           resourceVersion: '',
         },
+        {
+          type: testStore.Type.UPDATE_STARTED_WORKSPACES,
+        },
       ];
 
       expect(actions).toEqual(expectedActions);
@@ -126,6 +129,9 @@ describe('DevWorkspace store, actions', () => {
           type: testStore.Type.RECEIVE_DEVWORKSPACE,
           resourceVersion: '1234',
           workspaces: [devWorkspace],
+        },
+        {
+          type: testStore.Type.UPDATE_STARTED_WORKSPACES,
         },
         {
           check: AUTHORIZED,
@@ -663,6 +669,9 @@ describe('DevWorkspace store, actions', () => {
           type: testStore.Type.ADD_DEVWORKSPACE,
           workspace: devWorkspace,
         },
+        {
+          type: testStore.Type.UPDATE_STARTED_WORKSPACES,
+        },
       ];
 
       expect(actions).toEqual(expectedActions);
@@ -685,6 +694,9 @@ describe('DevWorkspace store, actions', () => {
           type: testStore.Type.UPDATE_DEVWORKSPACE,
           workspace: devWorkspace,
         },
+        {
+          type: testStore.Type.UPDATE_STARTED_WORKSPACES,
+        },
       ];
 
       expect(actions).toEqual(expectedActions);
@@ -706,6 +718,9 @@ describe('DevWorkspace store, actions', () => {
         {
           type: testStore.Type.DELETE_DEVWORKSPACE,
           workspaceId: WorkspaceAdapter.getId(devWorkspace),
+        },
+        {
+          type: testStore.Type.UPDATE_STARTED_WORKSPACES,
         },
       ];
 

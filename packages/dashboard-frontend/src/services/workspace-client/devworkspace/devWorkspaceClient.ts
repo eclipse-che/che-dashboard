@@ -24,7 +24,6 @@ import { safeLoad } from 'js-yaml';
 import { cloneDeep, isEqual } from 'lodash';
 import * as DwApi from '../../dashboard-backend-client/devWorkspaceApi';
 import * as DwtApi from '../../dashboard-backend-client/devWorkspaceTemplateApi';
-import { ChannelListener, WebsocketClient } from '../../dashboard-backend-client/websocketClient';
 import devfileApi from '../../devfileApi';
 import {
   DEVWORKSPACE_CHE_EDITOR,
@@ -120,14 +119,12 @@ export class DevWorkspaceClient extends WorkspaceClient {
   private readonly pluginRegistryInternalUrlEnvName: string;
   private readonly openVSXUrlEnvName: string;
   private readonly dashboardUrlEnvName: string;
-  private readonly websocketClient: WebsocketClient;
   private readonly defaultPluginsHandler: DevWorkspaceDefaultPluginsHandler;
 
   constructor(
     @inject(DevWorkspaceDefaultPluginsHandler)
     defaultPluginsHandler: DevWorkspaceDefaultPluginsHandler,
     @multiInject(IDevWorkspaceEditorProcess) private editorProcesses: IDevWorkspaceEditorProcess[],
-    @inject(WebsocketClient) websocketClient: WebsocketClient,
   ) {
     super();
     this.maxStatusAttempts = 10;
@@ -136,7 +133,6 @@ export class DevWorkspaceClient extends WorkspaceClient {
     this.openVSXUrlEnvName = 'OPENVSX_REGISTRY_URL';
     this.dashboardUrlEnvName = 'CHE_DASHBOARD_URL';
     this.defaultPluginsHandler = defaultPluginsHandler;
-    this.websocketClient = websocketClient;
   }
 
   async getAllWorkspaces(
@@ -884,22 +880,6 @@ export class DevWorkspaceClient extends WorkspaceClient {
       },
     });
     workspace.spec.contributions = contributions;
-  }
-
-  /**
-   * Subscribe to the WebSocket channel to receive DevWorkspace events adn call the listener on each event.
-   */
-  async watchDevWorkspaces(
-    namespace: string,
-    resourceVersion: string,
-    listener: ChannelListener,
-  ): Promise<void> {
-    const channel = api.webSocket.Channel.DEV_WORKSPACE;
-    await this.websocketClient.subscribeToChannelEvents(channel, namespace, resourceVersion);
-    this.websocketClient.addChannelEventListener(
-      channel,
-      (message: api.webSocket.NotificationMessage) => listener(message),
-    );
   }
 
   public checkForDevWorkspaceError(devworkspace: devfileApi.DevWorkspace) {

@@ -11,13 +11,12 @@
  */
 
 import { api, helpers } from '@eclipse-che/common';
-import { CoreV1Event, V1Pod } from '@kubernetes/client-node';
+import { CoreV1Event } from '@kubernetes/client-node';
 import { Action, Reducer } from 'redux';
 import { AppThunk } from '..';
 import { fetchEvents } from '../../services/dashboard-backend-client/eventsApi';
 import { createObject } from '../helpers';
 import { selectDefaultNamespace } from '../InfrastructureNamespaces/selectors';
-import isSamePod from '../Pods/isSamePod';
 import { AUTHORIZED, SanityCheckAction } from '../sanityCheckMiddleware';
 
 export interface State {
@@ -31,7 +30,7 @@ export enum Type {
   REQUEST_EVENTS = 'REQUEST_EVENTS',
   RECEIVE_EVENTS = 'RECEIVE_EVENTS',
   RECEIVE_ERROR = 'RECEIVE_ERROR',
-  DELETE_EVENTS = 'DELETE_EVENTS',
+  DELETE_OLD_EVENTS = 'DELETE_OLD_EVENTS',
 }
 
 export interface RequestEventsAction extends Action, SanityCheckAction {
@@ -49,20 +48,20 @@ export interface ReceiveErrorAction {
   error: string;
 }
 
-export interface DeleteEventsAction {
-  type: Type.DELETE_EVENTS;
-  pod: V1Pod;
+export interface DeleteOldEventsAction {
+  type: Type.DELETE_OLD_EVENTS;
+  resourceVersion: string;
 }
 
 export type KnownAction =
   | RequestEventsAction
   | ReceiveEventsAction
   | ReceiveErrorAction
-  | DeleteEventsAction;
+  | DeleteOldEventsAction;
 
 export type ActionCreators = {
   requestEvents: () => AppThunk<KnownAction, Promise<void>>;
-  deleteEvents: (pod: V1Pod) => AppThunk<KnownAction, void>;
+  clearOldEvents: () => AppThunk<KnownAction, void>;
 
   handleWebSocketMessage: (
     message: api.webSocket.NotificationMessage,
@@ -89,6 +88,7 @@ export const actionCreators: ActionCreators = {
           events: eventsList.items,
           resourceVersion: eventsList.metadata?.resourceVersion,
         });
+        dispatch(actionCreators.clearOldEvents());
       } catch (e) {
         const errorMessage = 'Failed to fetch events, reason: ' + helpers.errors.getMessage(e);
         dispatch({
@@ -99,36 +99,44 @@ export const actionCreators: ActionCreators = {
       }
     },
 
-  deleteEvents:
-    (pod: V1Pod): AppThunk<KnownAction, void> =>
-    (dispatch): void => {
+  clearOldEvents:
+    (): AppThunk<KnownAction, void> =>
+    (dispatch, getState): void => {
+      // for all started workspaces find the oldest resource version to delete events older than that
+      const startedWorkspaces = getState().devWorkspaces.startedWorkspaces;
+      const startedWorkspacesResourceVersions = Object.values(startedWorkspaces);
+      const firstStartedWorkspaceResourceVersion = startedWorkspacesResourceVersions
+        .sort(compareResourceVersion)
+        .shift();
+      if (firstStartedWorkspaceResourceVersion === undefined) {
+        return;
+      }
+
       dispatch({
-        type: Type.DELETE_EVENTS,
-        pod,
+        type: Type.DELETE_OLD_EVENTS,
+        resourceVersion: firstStartedWorkspaceResourceVersion,
       });
     },
 
   handleWebSocketMessage:
     (message: api.webSocket.NotificationMessage): AppThunk<KnownAction, Promise<void>> =>
     async (dispatch): Promise<void> => {
-      console.debug('Received message from websocket', message);
-
-      if (!api.webSocket.isEventMessage(message)) {
-        console.warn('WebSocket: unexpected message:', message);
+      if (api.webSocket.isEventMessage(message)) {
+        const { event, eventPhase } = message;
+        switch (eventPhase) {
+          case api.webSocket.EventPhase.ADDED:
+            dispatch({
+              type: Type.RECEIVE_EVENTS,
+              events: [event],
+            });
+            break;
+          default:
+            console.warn('WebSocket: unexpected eventPhase:', message);
+        }
         return;
       }
 
-      const { event, eventPhase } = message;
-      switch (eventPhase) {
-        case api.webSocket.EventPhase.ADDED:
-          dispatch({
-            type: Type.RECEIVE_EVENTS,
-            events: [event],
-          });
-          break;
-        default:
-          console.warn('WebSocket: unexpected eventPhase:', message);
-      }
+      console.warn('WebSocket: unexpected message:', message);
     },
 };
 
@@ -164,20 +172,32 @@ export const reducer: Reducer<State> = (
         isLoading: false,
         error: action.error,
       });
-    case Type.DELETE_EVENTS:
+    case Type.DELETE_OLD_EVENTS:
       return createObject(state, {
-        events: state.events.filter(
-          event =>
-            isSamePod(action.pod, {
-              metadata: {
-                name: event.involvedObject.name,
-                namespace: event.involvedObject.namespace,
-                uid: event.involvedObject.uid,
-              },
-            }) === false,
-        ),
+        events: state.events.filter(event => isOldEvent(event, action.resourceVersion) === false),
       });
     default:
       return state;
   }
 };
+
+function isOldEvent(event: CoreV1Event, resourceVersion: string): boolean {
+  return compareResourceVersion(event.metadata.resourceVersion, resourceVersion) < 0;
+}
+
+function compareResourceVersion(
+  versionA: string | undefined,
+  versionB: string | undefined,
+): number {
+  if (versionA === undefined || versionB === undefined) {
+    return 0;
+  }
+
+  const aNum = parseInt(versionA, 10);
+  const bNum = parseInt(versionB, 10);
+  if (isNaN(aNum) || isNaN(bNum)) {
+    return 0;
+  }
+
+  return aNum - bNum;
+}

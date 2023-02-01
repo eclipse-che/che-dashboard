@@ -44,7 +44,7 @@ describe('BannerAlertWebSocket component', () => {
   it('should show error message when error found before component mounted', () => {
     // fire event before component mounted
     const websocketClient = container.get(WebsocketClient);
-    (websocketClient as any).handleConnectionEvent(
+    (websocketClient as any).notifyConnectionEventListeners(
       ConnectionEvent.ERROR,
       'WebSocket connection error.',
     );
@@ -73,7 +73,7 @@ describe('BannerAlertWebSocket component', () => {
     ).toBeFalsy();
 
     const websocketClient = container.get(WebsocketClient);
-    (websocketClient as any).handleConnectionEvent(
+    (websocketClient as any).notifyConnectionEventListeners(
       ConnectionEvent.ERROR,
       'WebSocket connection error.',
     );

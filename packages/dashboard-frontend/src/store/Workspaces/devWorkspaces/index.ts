@@ -30,6 +30,7 @@ import {
   DevWorkspaceClient,
   DEVWORKSPACE_NEXT_START_ANNOTATION,
 } from '../../../services/workspace-client/devworkspace/devWorkspaceClient';
+import * as EventsStore from '../../Events';
 import { createObject } from '../../helpers';
 import { selectDefaultNamespace } from '../../InfrastructureNamespaces/selectors';
 import * as DwPluginsStore from '../../Plugins/devWorkspacePlugins';
@@ -46,6 +47,9 @@ export interface State {
   workspaces: devfileApi.DevWorkspace[];
   resourceVersion: string;
   error?: string;
+  startedWorkspaces: {
+    [workspaceUID: string]: string;
+  };
 }
 
 export class RunningWorkspacesExceededError extends Error {
@@ -63,6 +67,7 @@ export enum Type {
   DELETE_DEVWORKSPACE = 'DELETE_DEVWORKSPACE',
   TERMINATE_DEVWORKSPACE = 'TERMINATE_DEVWORKSPACE',
   ADD_DEVWORKSPACE = 'ADD_DEVWORKSPACE',
+  UPDATE_STARTED_WORKSPACES = 'UPDATE_STARTED_WORKSPACES',
 }
 
 export interface RequestDevWorkspacesAction extends Action, SanityCheckAction {
@@ -101,6 +106,10 @@ export interface AddWorkspaceAction extends Action {
   workspace: devfileApi.DevWorkspace;
 }
 
+export interface UpdateStartedWorkspaceAction extends Action {
+  type: Type.UPDATE_STARTED_WORKSPACES;
+}
+
 export type KnownAction =
   | RequestDevWorkspacesAction
   | ReceiveErrorAction
@@ -108,7 +117,8 @@ export type KnownAction =
   | UpdateWorkspaceAction
   | DeleteWorkspaceAction
   | TerminateWorkspaceAction
-  | AddWorkspaceAction;
+  | AddWorkspaceAction
+  | UpdateStartedWorkspaceAction;
 
 export type ResourceQueryParams = {
   'debug-workspace-start': boolean;
@@ -168,6 +178,12 @@ export const actionCreators: ActionCreators = {
           workspaces,
           resourceVersion,
         });
+        dispatch({
+          type: Type.UPDATE_STARTED_WORKSPACES,
+        });
+
+        // dispatch action of events store to clean up the list of events
+        dispatch(EventsStore.actionCreators.clearOldEvents());
 
         const promises = workspaces
           .filter(
@@ -582,8 +598,6 @@ export const actionCreators: ActionCreators = {
   handleWebSocketMessage:
     (message: api.webSocket.NotificationMessage): AppThunk<KnownAction, Promise<void>> =>
     async (dispatch, getState): Promise<void> => {
-      console.debug('Received message from websocket', message);
-
       if (api.webSocket.isStatusMessage(message)) {
         const { status } = message;
         console.info('Received status message on DevWorkspace channel: ', status);
@@ -626,6 +640,9 @@ export const actionCreators: ActionCreators = {
           default:
             console.warn(`Unknown event phase in message: `, message);
         }
+        dispatch({
+          type: Type.UPDATE_STARTED_WORKSPACES,
+        });
 
         // notify about workspace status changes
         const devworkspaceId = workspace.status?.devworkspaceId;
@@ -651,6 +668,11 @@ export const actionCreators: ActionCreators = {
             console.error(e);
           }
         }
+
+        // clean up the list of events
+        if (workspace.spec.started !== prevWorkspace?.spec.started) {
+          dispatch(EventsStore.actionCreators.clearOldEvents());
+        }
       }
     },
 };
@@ -659,6 +681,7 @@ const unloadedState: State = {
   workspaces: [],
   isLoading: false,
   resourceVersion: '0',
+  startedWorkspaces: {},
 };
 
 export const reducer: Reducer<State> = (
@@ -728,6 +751,16 @@ export const reducer: Reducer<State> = (
         workspaces: state.workspaces.filter(
           workspace => WorkspaceAdapter.getId(workspace) !== action.workspaceId,
         ),
+      });
+    case Type.UPDATE_STARTED_WORKSPACES:
+      return createObject(state, {
+        startedWorkspaces: state.workspaces
+          .filter(workspace => workspace.spec.started === true)
+          .filter(workspace => workspace.metadata.resourceVersion !== undefined)
+          .reduce((acc, workspace) => {
+            acc[WorkspaceAdapter.getUID(workspace)] = workspace.metadata.resourceVersion;
+            return acc;
+          }, {}),
       });
     default:
       return state;

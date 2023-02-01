@@ -10,6 +10,8 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
+import { CoreV1Event } from '@kubernetes/client-node';
+import { cloneDeep } from 'lodash';
 import { MockStoreEnhanced } from 'redux-mock-store';
 import { ThunkDispatch } from 'redux-thunk';
 import * as store from '..';
@@ -17,13 +19,21 @@ import { AppState } from '../..';
 import { FakeStoreBuilder } from '../../__mocks__/storeBuilder';
 import {
   selectAllEvents,
-  selectEvents,
   selectEventsError,
+  selectEventsFromResourceVersion,
   selectEventsResourceVersion,
 } from '../selectors';
-import { event1, event2 } from './stubs';
+import * as stub from './stubs';
 
 describe('Events store, selectors', () => {
+  let event1: CoreV1Event;
+  let event2: CoreV1Event;
+
+  beforeEach(() => {
+    event1 = cloneDeep(stub.event1);
+    event2 = cloneDeep(stub.event2);
+  });
+
   it('should return the error', () => {
     const fakeStore = new FakeStoreBuilder()
       .withEvents({ events: [], error: 'Something unexpected' }, false)
@@ -63,37 +73,21 @@ describe('Events store, selectors', () => {
     expect(resourceVersion).toEqual('1234');
   });
 
-  it('should filter events by pod name', () => {
+  it('should return events starting from a resource version', () => {
+    event1.metadata.resourceVersion = '1';
+    event2.metadata.resourceVersion = '5';
     const fakeStore = new FakeStoreBuilder()
-      .withEvents({ events: [event1, event2], resourceVersion: '1234' }, false)
-      .withPods({
-        pods: [
-          {
-            metadata: {
-              name: event1.involvedObject.name,
-              namespace: event1.involvedObject.namespace,
-              uid: event1.involvedObject.uid,
-            },
-          },
-          {
-            metadata: {
-              name: event2.involvedObject.name,
-              namespace: event2.involvedObject.namespace,
-              uid: event2.involvedObject.uid,
-            },
-          },
-        ],
-      })
+      .withEvents({ events: [event1, event2], resourceVersion: '1' }, false)
       .build() as MockStoreEnhanced<
       AppState,
       ThunkDispatch<AppState, undefined, store.KnownAction>
     >;
     const state = fakeStore.getState();
 
-    const selectEventsFn = selectEvents(state);
+    const selectEventsFn = selectEventsFromResourceVersion(state);
     expect(typeof selectEventsFn).toEqual('function');
 
-    const events = selectEventsFn('pod-name-1');
-    expect(events).toEqual([event1]);
+    const events = selectEventsFn('3');
+    expect(events).toEqual([event2]);
   });
 });

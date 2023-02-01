@@ -11,13 +11,17 @@
  */
 
 import { CoreV1Event, V1Pod } from '@kubernetes/client-node';
-import { screen } from '@testing-library/react';
+import { screen, within } from '@testing-library/react';
 import React from 'react';
 import { Provider } from 'react-redux';
 import { Store } from 'redux';
 import WorkspaceEvents from '..';
 import devfileApi from '../../../services/devfileApi';
-import { constructWorkspace, Workspace } from '../../../services/workspace-adapter';
+import {
+  constructWorkspace,
+  Workspace,
+  WorkspaceAdapter,
+} from '../../../services/workspace-adapter';
 import getComponentRenderer from '../../../services/__mocks__/getComponentRenderer';
 import { DevWorkspaceBuilder } from '../../../store/__mocks__/devWorkspaceBuilder';
 import { FakeStoreBuilder } from '../../../store/__mocks__/storeBuilder';
@@ -48,7 +52,9 @@ describe('The WorkspaceEvents component', () => {
         kind: 'Pod',
         name: podName,
       },
-      metadata: {},
+      metadata: {
+        resourceVersion: '1',
+      },
     };
     event2 = {
       lastTimestamp: '2021-03-31T14:01:00Z' as unknown as Date,
@@ -57,7 +63,9 @@ describe('The WorkspaceEvents component', () => {
         kind: 'Pod',
         name: podName,
       },
-      metadata: {},
+      metadata: {
+        resourceVersion: '2',
+      },
     };
 
     devWorkspaceBuilder = new DevWorkspaceBuilder()
@@ -89,8 +97,10 @@ describe('The WorkspaceEvents component', () => {
   test('snapshot - with events', () => {
     const devWorkspace = devWorkspaceBuilder.withStatus({ phase: 'STARTING' }).build();
     const store = new FakeStoreBuilder()
-      .withDevWorkspaces({ workspaces: [devWorkspace] })
-      .withPods({ pods: [pod] })
+      .withDevWorkspaces({
+        workspaces: [devWorkspace],
+        startedWorkspaces: { [WorkspaceAdapter.getUID(devWorkspace)]: '1' },
+      })
       .withEvents({ events: [event1, event2] })
       .build();
     const component = createSnapshot(store, devWorkspace);
@@ -100,8 +110,10 @@ describe('The WorkspaceEvents component', () => {
   it('should show a correct number of events', () => {
     const devWorkspace = devWorkspaceBuilder.withStatus({ phase: 'STARTING' }).build();
     const store = new FakeStoreBuilder()
-      .withDevWorkspaces({ workspaces: [devWorkspace] })
-      .withPods({ pods: [pod] })
+      .withDevWorkspaces({
+        workspaces: [devWorkspace],
+        startedWorkspaces: { [WorkspaceAdapter.getUID(devWorkspace)]: '1' },
+      })
       .withEvents({ events: [event1] })
       .build();
     const { reRenderComponent } = renderComponent(store, devWorkspace);
@@ -110,8 +122,10 @@ describe('The WorkspaceEvents component', () => {
     expect(screen.getAllByTestId('event-item').length).toEqual(1);
 
     const nextStore = new FakeStoreBuilder()
-      .withDevWorkspaces({ workspaces: [devWorkspace] })
-      .withPods({ pods: [pod] })
+      .withDevWorkspaces({
+        workspaces: [devWorkspace],
+        startedWorkspaces: { [WorkspaceAdapter.getUID(devWorkspace)]: '1' },
+      })
       .withEvents({ events: [event1, event2] })
       .build();
     reRenderComponent(nextStore, devWorkspace);
@@ -123,31 +137,37 @@ describe('The WorkspaceEvents component', () => {
   it('should sort events by timestamp', () => {
     const devWorkspace = devWorkspaceBuilder.withStatus({ phase: 'STARTING' }).build();
     const store = new FakeStoreBuilder()
-      .withDevWorkspaces({ workspaces: [devWorkspace] })
-      .withPods({ pods: [pod] })
-      // events are stored in wrong order
-      .withEvents({ events: [event2, event1] })
+      .withDevWorkspaces({
+        workspaces: [devWorkspace],
+        startedWorkspaces: { [WorkspaceAdapter.getUID(devWorkspace)]: '1' },
+      })
+      .withEvents({ events: [event1, event2] })
       .build();
     renderComponent(store, devWorkspace);
 
     const eventItems = screen.getAllByTestId('event-item');
-    expect(eventItems[0].textContent).toContain('message 2');
-    expect(eventItems[1].textContent).toContain('message 1');
+    expect(within(eventItems[0]).getByText('message 2')).toBeTruthy();
+    expect(within(eventItems[1]).getByText('message 1')).toBeTruthy();
   });
 
   it('should not sort', () => {
+    // events don't have time labels
+    event1.lastTimestamp = undefined;
+    event2.lastTimestamp = undefined;
+
     const devWorkspace = devWorkspaceBuilder.withStatus({ phase: 'STARTING' }).build();
     const store = new FakeStoreBuilder()
-      .withDevWorkspaces({ workspaces: [devWorkspace] })
-      .withPods({ pods: [pod] })
-      // events are stored in wrong order
-      .withEvents({ events: [event2, event1] })
+      .withDevWorkspaces({
+        workspaces: [devWorkspace],
+        startedWorkspaces: { [WorkspaceAdapter.getUID(devWorkspace)]: '1' },
+      })
+      .withEvents({ events: [event1, event2] })
       .build();
     renderComponent(store, devWorkspace);
 
     const eventItems = screen.getAllByTestId('event-item');
-    expect(eventItems[0].textContent).toContain('message 2');
-    expect(eventItems[1].textContent).toContain('message 1');
+    expect(within(eventItems[0]).getByText('message 1')).toBeTruthy();
+    expect(within(eventItems[1]).getByText('message 2')).toBeTruthy();
   });
 });
 

@@ -15,7 +15,6 @@ import { V1Pod } from '@kubernetes/client-node';
 import { Action, Reducer } from 'redux';
 import { AppThunk } from '..';
 import { fetchPods } from '../../services/dashboard-backend-client/podsApi';
-import * as eventsStore from '../Events';
 import { createObject } from '../helpers';
 import { selectDefaultNamespace } from '../InfrastructureNamespaces/selectors';
 import { AUTHORIZED, SanityCheckAction } from '../sanityCheckMiddleware';
@@ -142,8 +141,6 @@ export const actionCreators: ActionCreators = {
             type: Type.DELETE_POD,
             pod,
           });
-          // delete events related to the pod
-          dispatch(eventsStore.actionCreators.deleteEvents(pod));
           break;
         }
         default:

@@ -38,6 +38,7 @@ describe('DevWorkspace, reducers', () => {
     const expectedState: testStore.State = {
       isLoading: false,
       workspaces: [],
+      startedWorkspaces: {},
       resourceVersion: '0',
     };
 
@@ -48,6 +49,7 @@ describe('DevWorkspace, reducers', () => {
     const initialState: testStore.State = {
       isLoading: true,
       workspaces: [devWorkspace],
+      startedWorkspaces: {},
       resourceVersion: '0',
     };
     const incomingAction = {
@@ -58,6 +60,7 @@ describe('DevWorkspace, reducers', () => {
     const expectedState: testStore.State = {
       isLoading: true,
       workspaces: [devWorkspace],
+      startedWorkspaces: {},
       resourceVersion: '0',
     };
     expect(newState).toEqual(expectedState);
@@ -67,6 +70,7 @@ describe('DevWorkspace, reducers', () => {
     const initialState: testStore.State = {
       isLoading: false,
       workspaces: [],
+      startedWorkspaces: {},
       error: 'unexpected error',
       resourceVersion: '0',
     };
@@ -80,6 +84,7 @@ describe('DevWorkspace, reducers', () => {
     const expectedState: testStore.State = {
       isLoading: true,
       workspaces: [],
+      startedWorkspaces: {},
       resourceVersion: '0',
     };
 
@@ -90,6 +95,7 @@ describe('DevWorkspace, reducers', () => {
     const initialState: testStore.State = {
       isLoading: true,
       workspaces: [],
+      startedWorkspaces: {},
       resourceVersion: '0',
     };
     const incomingAction: testStore.ReceiveWorkspacesAction = {
@@ -103,6 +109,7 @@ describe('DevWorkspace, reducers', () => {
     const expectedState: testStore.State = {
       isLoading: false,
       workspaces: [devWorkspace],
+      startedWorkspaces: {},
       resourceVersion: '1',
     };
 
@@ -113,6 +120,7 @@ describe('DevWorkspace, reducers', () => {
     const initialState: testStore.State = {
       isLoading: true,
       workspaces: [],
+      startedWorkspaces: {},
       resourceVersion: '0',
     };
     const incomingAction: testStore.ReceiveErrorAction = {
@@ -125,6 +133,7 @@ describe('DevWorkspace, reducers', () => {
     const expectedState: testStore.State = {
       isLoading: false,
       workspaces: [],
+      startedWorkspaces: {},
       error: 'Error',
       resourceVersion: '0',
     };
@@ -136,6 +145,7 @@ describe('DevWorkspace, reducers', () => {
     const initialState: testStore.State = {
       isLoading: true,
       workspaces: [devWorkspace],
+      startedWorkspaces: {},
       resourceVersion: '0',
     };
 
@@ -155,6 +165,7 @@ describe('DevWorkspace, reducers', () => {
     const expectedState: testStore.State = {
       isLoading: false,
       workspaces: [updatedWorkspace],
+      startedWorkspaces: {},
       resourceVersion: '0',
     };
 
@@ -165,6 +176,7 @@ describe('DevWorkspace, reducers', () => {
     const initialState: testStore.State = {
       isLoading: true,
       workspaces: [],
+      startedWorkspaces: {},
       resourceVersion: '0',
     };
 
@@ -178,6 +190,7 @@ describe('DevWorkspace, reducers', () => {
     const expectedState: testStore.State = {
       isLoading: false,
       workspaces: [devWorkspace],
+      startedWorkspaces: {},
       resourceVersion: '0',
     };
 
@@ -188,6 +201,7 @@ describe('DevWorkspace, reducers', () => {
     const initialState: testStore.State = {
       isLoading: true,
       workspaces: [devWorkspace],
+      startedWorkspaces: {},
       resourceVersion: '0',
     };
 
@@ -208,6 +222,7 @@ describe('DevWorkspace, reducers', () => {
     const expectedState: testStore.State = {
       isLoading: false,
       workspaces: [updatedWorkspace],
+      startedWorkspaces: {},
       resourceVersion: '0',
     };
 
@@ -218,6 +233,7 @@ describe('DevWorkspace, reducers', () => {
     const initialState: testStore.State = {
       isLoading: true,
       workspaces: [devWorkspace],
+      startedWorkspaces: {},
       resourceVersion: '0',
     };
 
@@ -231,6 +247,7 @@ describe('DevWorkspace, reducers', () => {
     const expectedState: testStore.State = {
       isLoading: false,
       workspaces: [],
+      startedWorkspaces: {},
       resourceVersion: '0',
     };
 
