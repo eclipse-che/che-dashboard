@@ -29,6 +29,7 @@ export interface State {
 export enum Type {
   REQUEST_EVENTS = 'REQUEST_EVENTS',
   RECEIVE_EVENTS = 'RECEIVE_EVENTS',
+  MODIFY_EVENT = 'MODIFY_EVENT',
   RECEIVE_ERROR = 'RECEIVE_ERROR',
   DELETE_OLD_EVENTS = 'DELETE_OLD_EVENTS',
 }
@@ -41,6 +42,11 @@ export interface ReceiveEventsAction {
   type: Type.RECEIVE_EVENTS;
   events: CoreV1Event[];
   resourceVersion?: string;
+}
+
+export interface ModifyEventAction {
+  type: Type.MODIFY_EVENT;
+  event: CoreV1Event;
 }
 
 export interface ReceiveErrorAction {
@@ -56,6 +62,7 @@ export interface DeleteOldEventsAction {
 export type KnownAction =
   | RequestEventsAction
   | ReceiveEventsAction
+  | ModifyEventAction
   | ReceiveErrorAction
   | DeleteOldEventsAction;
 
@@ -130,6 +137,12 @@ export const actionCreators: ActionCreators = {
               events: [event],
             });
             break;
+          case api.webSocket.EventPhase.MODIFIED:
+            dispatch({
+              type: Type.MODIFY_EVENT,
+              event,
+            });
+            break;
           default:
             console.warn('WebSocket: unexpected eventPhase:', message);
         }
@@ -166,6 +179,15 @@ export const reducer: Reducer<State> = (
         isLoading: false,
         events: state.events.concat(action.events),
         resourceVersion: action.resourceVersion ? action.resourceVersion : state.resourceVersion,
+      });
+    case Type.MODIFY_EVENT:
+      return createObject(state, {
+        events: state.events.map(event => {
+          if (event.metadata.uid === action.event.metadata.uid) {
+            return action.event;
+          }
+          return event;
+        }),
       });
     case Type.RECEIVE_ERROR:
       return createObject(state, {

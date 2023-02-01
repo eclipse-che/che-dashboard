@@ -107,6 +107,31 @@ describe('Events store, reducers', () => {
     expect(newState).toEqual(expectedState);
   });
 
+  it('should handle MODIFY_EVENT', () => {
+    const initialState: testStore.State = {
+      isLoading: false,
+      events: [event1, event2],
+      resourceVersion: '1',
+    };
+
+    const modifiedEvent = cloneDeep(event1);
+    modifiedEvent.message = 'modified message';
+    const incomingAction: testStore.ModifyEventAction = {
+      type: testStore.Type.MODIFY_EVENT,
+      event: modifiedEvent,
+    };
+
+    const newState = testStore.reducer(initialState, incomingAction);
+
+    const expectedState: testStore.State = {
+      isLoading: false,
+      events: [modifiedEvent, event2],
+      resourceVersion: '1',
+    };
+
+    expect(newState).toEqual(expectedState);
+  });
+
   it('should handle RECEIVE_ERROR', () => {
     const initialState: testStore.State = {
       isLoading: true,

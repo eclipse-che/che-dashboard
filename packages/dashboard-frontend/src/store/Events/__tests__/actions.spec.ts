@@ -11,6 +11,7 @@
  */
 
 import { api } from '@eclipse-che/common';
+import { V1Status } from '@kubernetes/client-node';
 import mockAxios, { AxiosError } from 'axios';
 import { MockStoreEnhanced } from 'redux-mock-store';
 import { ThunkDispatch } from 'redux-thunk';
@@ -132,6 +133,56 @@ describe('Events store, actions', () => {
           events: [event1],
         },
       ];
+
+      expect(actions).toEqual(expectedActions);
+    });
+
+    it('should create MODIFY_EVENT action when receiving a modified event', () => {
+      appStore.dispatch(
+        testStore.actionCreators.handleWebSocketMessage({
+          event: event1,
+          eventPhase: api.webSocket.EventPhase.MODIFIED,
+        }),
+      );
+
+      const actions = appStore.getActions();
+
+      const expectedActions: testStore.KnownAction[] = [
+        {
+          type: testStore.Type.MODIFY_EVENT,
+          event: event1,
+        },
+      ];
+
+      expect(actions).toEqual(expectedActions);
+    });
+
+    it('should not create any action when receiving an unexpected message', () => {
+      appStore.dispatch(
+        testStore.actionCreators.handleWebSocketMessage({
+          status: {} as V1Status,
+          eventPhase: api.webSocket.EventPhase.ERROR,
+        }),
+      );
+
+      const actions = appStore.getActions();
+
+      const expectedActions: testStore.KnownAction[] = [];
+
+      expect(actions).toEqual(expectedActions);
+    });
+
+    it('should not create any action when receiving a message with an unexpected eventPhase', () => {
+      appStore.dispatch(
+        testStore.actionCreators.handleWebSocketMessage({
+          event: event1,
+          eventPhase: api.webSocket.EventPhase.DELETED,
+        }),
+      );
+
+      const actions = appStore.getActions();
+
+      const expectedActions: testStore.KnownAction[] = [];
 
       expect(actions).toEqual(expectedActions);
     });
