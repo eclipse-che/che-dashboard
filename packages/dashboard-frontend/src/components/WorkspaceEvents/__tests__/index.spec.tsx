@@ -10,7 +10,7 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import { CoreV1Event, V1Pod } from '@kubernetes/client-node';
+import { CoreV1Event } from '@kubernetes/client-node';
 import { screen, within } from '@testing-library/react';
 import React from 'react';
 import { Provider } from 'react-redux';
@@ -35,16 +35,10 @@ describe('The WorkspaceEvents component', () => {
   const podName = devworkspaceId + '-pod';
 
   let devWorkspaceBuilder: DevWorkspaceBuilder;
-  let pod: V1Pod;
   let event1: CoreV1Event;
   let event2: CoreV1Event;
 
   beforeEach(() => {
-    pod = {
-      metadata: {
-        name: podName,
-      },
-    };
     event1 = {
       lastTimestamp: '2021-03-31T14:00:00Z' as unknown as Date,
       message: 'message 1',
