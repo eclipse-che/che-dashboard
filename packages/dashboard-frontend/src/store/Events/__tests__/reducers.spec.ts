@@ -155,7 +155,7 @@ describe('Events store, reducers', () => {
     expect(newState).toEqual(expectedState);
   });
 
-  it('should handle DELETE_OLD_EVENTS', () => {
+  it('should handle DELETE_EVENTS', () => {
     event1.metadata.resourceVersion = '1';
     event2.metadata.resourceVersion = '2';
     const initialState: testStore.State = {
@@ -164,9 +164,11 @@ describe('Events store, reducers', () => {
       resourceVersion: '2',
     };
 
-    const incomingAction: testStore.DeleteOldEventsAction = {
-      type: testStore.Type.DELETE_OLD_EVENTS,
-      resourceVersion: '2',
+    const nextEvent1 = cloneDeep(event1);
+    nextEvent1.metadata.resourceVersion = '3';
+    const incomingAction: testStore.DeleteEventAction = {
+      type: testStore.Type.DELETE_EVENT,
+      event: nextEvent1,
     };
 
     const newState = testStore.reducer(initialState, incomingAction);
@@ -174,7 +176,7 @@ describe('Events store, reducers', () => {
     const expectedState: testStore.State = {
       isLoading: false,
       events: [event2],
-      resourceVersion: '2',
+      resourceVersion: '3',
     };
 
     expect(newState).toEqual(expectedState);

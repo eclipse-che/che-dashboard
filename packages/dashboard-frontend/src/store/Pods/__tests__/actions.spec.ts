@@ -39,7 +39,7 @@ describe('Pods store, actions', () => {
 
   it('should create REQUEST_PODS and RECEIVE_PODS when fetching pods', async () => {
     (mockAxios.get as jest.Mock).mockResolvedValueOnce({
-      data: { items: [pod1, pod2] },
+      data: { items: [pod1, pod2], metadata: { resourceVersion: '123' } },
     });
 
     await appStore.dispatch(testStore.actionCreators.requestPods());
@@ -54,6 +54,7 @@ describe('Pods store, actions', () => {
       {
         type: testStore.Type.RECEIVE_PODS,
         pods: [pod1, pod2],
+        resourceVersion: '123',
       },
     ];
 

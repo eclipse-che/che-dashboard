@@ -102,6 +102,7 @@ describe('DevWorkspace store, actions', () => {
         },
         {
           type: testStore.Type.UPDATE_STARTED_WORKSPACES,
+          workspaces: [],
         },
       ];
 
@@ -132,6 +133,7 @@ describe('DevWorkspace store, actions', () => {
         },
         {
           type: testStore.Type.UPDATE_STARTED_WORKSPACES,
+          workspaces: [devWorkspace],
         },
         {
           check: AUTHORIZED,
@@ -671,6 +673,7 @@ describe('DevWorkspace store, actions', () => {
         },
         {
           type: testStore.Type.UPDATE_STARTED_WORKSPACES,
+          workspaces: [devWorkspace],
         },
       ];
 
@@ -696,6 +699,7 @@ describe('DevWorkspace store, actions', () => {
         },
         {
           type: testStore.Type.UPDATE_STARTED_WORKSPACES,
+          workspaces: [devWorkspace],
         },
       ];
 
@@ -717,10 +721,11 @@ describe('DevWorkspace store, actions', () => {
       const expectedActions: Array<testStore.KnownAction> = [
         {
           type: testStore.Type.DELETE_DEVWORKSPACE,
-          workspaceId: WorkspaceAdapter.getId(devWorkspace),
+          workspace: devWorkspace,
         },
         {
           type: testStore.Type.UPDATE_STARTED_WORKSPACES,
+          workspaces: [devWorkspace],
         },
       ];
 

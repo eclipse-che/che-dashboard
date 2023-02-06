@@ -239,7 +239,7 @@ describe('DevWorkspace, reducers', () => {
 
     const incomingAction: testStore.DeleteWorkspaceAction = {
       type: testStore.Type.DELETE_DEVWORKSPACE,
-      workspaceId: WorkspaceAdapter.getId(devWorkspace),
+      workspace: devWorkspace,
     };
 
     const newState = testStore.reducer(initialState, incomingAction);

@@ -18,7 +18,7 @@ describe('websocketClient', () => {
   let websocketClient: WebsocketClient;
   let serverMock: WS;
 
-  beforeEach(async () => {
+  beforeEach(() => {
     websocketClient = new WebsocketClient();
     serverMock = new WS('ws://localhost/dashboard/api/websocket');
 
@@ -45,7 +45,7 @@ describe('websocketClient', () => {
         expect(handleConnectionOpen).toBeCalledTimes(1);
       });
 
-      it('should reconnect to websocket and call listener for the OPEN event twice', async () => {
+      it('should reconnect to websocket when server closes the connection', async () => {
         websocketClient.addConnectionEventListener(ConnectionEvent.OPEN, handleConnectionOpen);
 
         websocketClient.connect();
@@ -56,6 +56,30 @@ describe('websocketClient', () => {
 
         serverMock.close();
         await serverMock.closed;
+
+        const serverMockNext = new WS('ws://localhost/dashboard/api/websocket');
+        const wsNext = await serverMockNext.connected;
+
+        expect(wsNext).toBeDefined();
+        expect(handleConnectionOpen).toBeCalledTimes(2);
+      });
+
+      it('should reconnect to websocket when receives "error" event', async () => {
+        websocketClient.addConnectionEventListener(ConnectionEvent.OPEN, handleConnectionOpen);
+
+        const handleConnectionError = jest.fn();
+        websocketClient.addConnectionEventListener(ConnectionEvent.ERROR, handleConnectionError);
+
+        websocketClient.connect();
+        const ws = await serverMock.connected;
+
+        expect(ws).toBeDefined();
+        expect(handleConnectionOpen).toBeCalledTimes(1);
+
+        serverMock.error();
+        await serverMock.closed;
+
+        expect(handleConnectionError).toBeCalledTimes(1);
 
         const serverMockNext = new WS('ws://localhost/dashboard/api/websocket');
         const wsNext = await serverMockNext.connected;
@@ -115,6 +139,7 @@ describe('websocketClient', () => {
 
       describe('past event notification', () => {
         it('should not call the listener', async () => {
+          await Promise.resolve();
           websocketClient.connect();
           const ws = await serverMock.connected;
 

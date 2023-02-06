@@ -92,7 +92,7 @@ export interface UpdateWorkspaceAction extends Action {
 
 export interface DeleteWorkspaceAction extends Action {
   type: Type.DELETE_DEVWORKSPACE;
-  workspaceId: string;
+  workspace: devfileApi.DevWorkspace;
 }
 
 export interface TerminateWorkspaceAction extends Action {
@@ -108,6 +108,7 @@ export interface AddWorkspaceAction extends Action {
 
 export interface UpdateStartedWorkspaceAction extends Action {
   type: Type.UPDATE_STARTED_WORKSPACES;
+  workspaces: devfileApi.DevWorkspace[];
 }
 
 export type KnownAction =
@@ -180,10 +181,8 @@ export const actionCreators: ActionCreators = {
         });
         dispatch({
           type: Type.UPDATE_STARTED_WORKSPACES,
+          workspaces,
         });
-
-        // dispatch action of events store to clean up the list of events
-        dispatch(EventsStore.actionCreators.clearOldEvents());
 
         const promises = workspaces
           .filter(
@@ -634,7 +633,7 @@ export const actionCreators: ActionCreators = {
           case api.webSocket.EventPhase.DELETED:
             dispatch({
               type: Type.DELETE_DEVWORKSPACE,
-              workspaceId: WorkspaceAdapter.getId(workspace),
+              workspace,
             });
             break;
           default:
@@ -642,6 +641,7 @@ export const actionCreators: ActionCreators = {
         }
         dispatch({
           type: Type.UPDATE_STARTED_WORKSPACES,
+          workspaces: [workspace],
         });
 
         // notify about workspace status changes
@@ -667,11 +667,6 @@ export const actionCreators: ActionCreators = {
           } catch (e) {
             console.error(e);
           }
-        }
-
-        // clean up the list of events
-        if (workspace.spec.started !== prevWorkspace?.spec.started) {
-          dispatch(EventsStore.actionCreators.clearOldEvents());
         }
       }
     },
@@ -718,6 +713,7 @@ export const reducer: Reducer<State> = (
             ? action.workspace
             : workspace,
         ),
+        resourceVersion: action.workspace.metadata.resourceVersion ?? state.resourceVersion,
       });
     case Type.ADD_DEVWORKSPACE:
       return createObject(state, {
@@ -728,6 +724,7 @@ export const reducer: Reducer<State> = (
               WorkspaceAdapter.getUID(workspace) !== WorkspaceAdapter.getUID(action.workspace),
           )
           .concat([action.workspace]),
+        resourceVersion: action.workspace.metadata.resourceVersion ?? state.resourceVersion,
       });
     case Type.TERMINATE_DEVWORKSPACE:
       return createObject(state, {
@@ -749,18 +746,33 @@ export const reducer: Reducer<State> = (
       return createObject(state, {
         isLoading: false,
         workspaces: state.workspaces.filter(
-          workspace => WorkspaceAdapter.getId(workspace) !== action.workspaceId,
+          workspace =>
+            WorkspaceAdapter.getUID(workspace) !== WorkspaceAdapter.getUID(action.workspace),
         ),
+        resourceVersion: action.workspace.metadata.resourceVersion ?? state.resourceVersion,
       });
     case Type.UPDATE_STARTED_WORKSPACES:
       return createObject(state, {
-        startedWorkspaces: state.workspaces
-          .filter(workspace => workspace.spec.started === true)
-          .filter(workspace => workspace.metadata.resourceVersion !== undefined)
-          .reduce((acc, workspace) => {
-            acc[WorkspaceAdapter.getUID(workspace)] = workspace.metadata.resourceVersion;
+        startedWorkspaces: action.workspaces.reduce((acc, workspace) => {
+          if (workspace.spec.started === false) {
+            delete acc[WorkspaceAdapter.getUID(workspace)];
             return acc;
-          }, {}),
+          }
+
+          // workspace.spec.started === true
+          if (acc[WorkspaceAdapter.getUID(workspace)] !== undefined) {
+            // do nothing
+            return acc;
+          }
+
+          if (workspace.metadata.resourceVersion === undefined) {
+            // do nothing
+            return acc;
+          }
+
+          acc[WorkspaceAdapter.getUID(workspace)] = workspace.metadata.resourceVersion;
+          return acc;
+        }, state.startedWorkspaces),
       });
     default:
       return state;

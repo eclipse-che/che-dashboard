@@ -40,7 +40,7 @@ describe('Events store, actions', () => {
 
   it('should create REQUEST_EVENTS and RECEIVE_EVENTS when fetching events', async () => {
     (mockAxios.get as jest.Mock).mockResolvedValueOnce({
-      data: { items: [event1, event2] },
+      data: { items: [event1, event2], metadata: { resourceVersion: '123' } },
     });
 
     await appStore.dispatch(testStore.actionCreators.requestEvents());
@@ -55,6 +55,7 @@ describe('Events store, actions', () => {
       {
         type: testStore.Type.RECEIVE_EVENTS,
         events: [event1, event2],
+        resourceVersion: '123',
       },
     ];
 
@@ -90,32 +91,6 @@ describe('Events store, actions', () => {
     expect(actions).toEqual(expectedActions);
   });
 
-  it('should create DELETE_OLD_EVENTS action', () => {
-    const _appStore = new FakeStoreBuilder()
-      .withDevWorkspaces({
-        startedWorkspaces: {
-          workspace123: '123',
-          workspace456: '456',
-        },
-      })
-      .build() as MockStoreEnhanced<
-      AppState,
-      ThunkDispatch<AppState, undefined, testStore.KnownAction>
-    >;
-    _appStore.dispatch(testStore.actionCreators.clearOldEvents());
-
-    const actions = _appStore.getActions();
-
-    const expectedActions: testStore.KnownAction[] = [
-      {
-        type: testStore.Type.DELETE_OLD_EVENTS,
-        resourceVersion: '123',
-      },
-    ];
-
-    expect(actions).toEqual(expectedActions);
-  });
-
   describe('handle WebSocket events', () => {
     it('should create RECEIVE_EVENTS action when receiving a new event', () => {
       appStore.dispatch(
@@ -131,6 +106,7 @@ describe('Events store, actions', () => {
         {
           type: testStore.Type.RECEIVE_EVENTS,
           events: [event1],
+          resourceVersion: '1',
         },
       ];
 
@@ -157,26 +133,31 @@ describe('Events store, actions', () => {
       expect(actions).toEqual(expectedActions);
     });
 
-    it('should not create any action when receiving an unexpected message', () => {
+    it('should create DELETE_EVENTS action when receiving a deleted event', () => {
       appStore.dispatch(
         testStore.actionCreators.handleWebSocketMessage({
-          status: {} as V1Status,
-          eventPhase: api.webSocket.EventPhase.ERROR,
+          event: event1,
+          eventPhase: api.webSocket.EventPhase.DELETED,
         }),
       );
 
       const actions = appStore.getActions();
 
-      const expectedActions: testStore.KnownAction[] = [];
+      const expectedActions: testStore.KnownAction[] = [
+        {
+          type: testStore.Type.DELETE_EVENT,
+          event: event1,
+        },
+      ];
 
       expect(actions).toEqual(expectedActions);
     });
 
-    it('should not create any action when receiving a message with an unexpected eventPhase', () => {
+    it('should not create any action when receiving an unexpected message', () => {
       appStore.dispatch(
         testStore.actionCreators.handleWebSocketMessage({
-          event: event1,
-          eventPhase: api.webSocket.EventPhase.DELETED,
+          status: {} as V1Status,
+          eventPhase: api.webSocket.EventPhase.ERROR,
         }),
       );
 

@@ -30,8 +30,8 @@ export enum Type {
   REQUEST_EVENTS = 'REQUEST_EVENTS',
   RECEIVE_EVENTS = 'RECEIVE_EVENTS',
   MODIFY_EVENT = 'MODIFY_EVENT',
+  DELETE_EVENT = 'DELETE_EVENT',
   RECEIVE_ERROR = 'RECEIVE_ERROR',
-  DELETE_OLD_EVENTS = 'DELETE_OLD_EVENTS',
 }
 
 export interface RequestEventsAction extends Action, SanityCheckAction {
@@ -41,11 +41,16 @@ export interface RequestEventsAction extends Action, SanityCheckAction {
 export interface ReceiveEventsAction {
   type: Type.RECEIVE_EVENTS;
   events: CoreV1Event[];
-  resourceVersion?: string;
+  resourceVersion: string | undefined;
 }
 
 export interface ModifyEventAction {
   type: Type.MODIFY_EVENT;
+  event: CoreV1Event;
+}
+
+export interface DeleteEventAction {
+  type: Type.DELETE_EVENT;
   event: CoreV1Event;
 }
 
@@ -54,21 +59,15 @@ export interface ReceiveErrorAction {
   error: string;
 }
 
-export interface DeleteOldEventsAction {
-  type: Type.DELETE_OLD_EVENTS;
-  resourceVersion: string;
-}
-
 export type KnownAction =
   | RequestEventsAction
   | ReceiveEventsAction
   | ModifyEventAction
-  | ReceiveErrorAction
-  | DeleteOldEventsAction;
+  | DeleteEventAction
+  | ReceiveErrorAction;
 
 export type ActionCreators = {
   requestEvents: () => AppThunk<KnownAction, Promise<void>>;
-  clearOldEvents: () => AppThunk<KnownAction, void>;
 
   handleWebSocketMessage: (
     message: api.webSocket.NotificationMessage,
@@ -95,7 +94,6 @@ export const actionCreators: ActionCreators = {
           events: eventsList.items,
           resourceVersion: eventsList.metadata?.resourceVersion,
         });
-        dispatch(actionCreators.clearOldEvents());
       } catch (e) {
         const errorMessage = 'Failed to fetch events, reason: ' + helpers.errors.getMessage(e);
         dispatch({
@@ -104,25 +102,6 @@ export const actionCreators: ActionCreators = {
         });
         throw errorMessage;
       }
-    },
-
-  clearOldEvents:
-    (): AppThunk<KnownAction, void> =>
-    (dispatch, getState): void => {
-      // for all started workspaces find the oldest resource version to delete events older than that
-      const startedWorkspaces = getState().devWorkspaces.startedWorkspaces;
-      const startedWorkspacesResourceVersions = Object.values(startedWorkspaces);
-      const firstStartedWorkspaceResourceVersion = startedWorkspacesResourceVersions
-        .sort(compareResourceVersion)
-        .shift();
-      if (firstStartedWorkspaceResourceVersion === undefined) {
-        return;
-      }
-
-      dispatch({
-        type: Type.DELETE_OLD_EVENTS,
-        resourceVersion: firstStartedWorkspaceResourceVersion,
-      });
     },
 
   handleWebSocketMessage:
@@ -135,6 +114,7 @@ export const actionCreators: ActionCreators = {
             dispatch({
               type: Type.RECEIVE_EVENTS,
               events: [event],
+              resourceVersion: event.metadata?.resourceVersion,
             });
             break;
           case api.webSocket.EventPhase.MODIFIED:
@@ -143,8 +123,12 @@ export const actionCreators: ActionCreators = {
               event,
             });
             break;
-          default:
-            console.warn('WebSocket: unexpected eventPhase:', message);
+          case api.webSocket.EventPhase.DELETED:
+            dispatch({
+              type: Type.DELETE_EVENT,
+              event,
+            });
+            break;
         }
         return;
       }
@@ -178,7 +162,7 @@ export const reducer: Reducer<State> = (
       return createObject(state, {
         isLoading: false,
         events: state.events.concat(action.events),
-        resourceVersion: action.resourceVersion ? action.resourceVersion : state.resourceVersion,
+        resourceVersion: action.resourceVersion ?? state.resourceVersion,
       });
     case Type.MODIFY_EVENT:
       return createObject(state, {
@@ -188,38 +172,19 @@ export const reducer: Reducer<State> = (
           }
           return event;
         }),
+        resourceVersion: action.event.metadata.resourceVersion ?? state.resourceVersion,
+      });
+    case Type.DELETE_EVENT:
+      return createObject(state, {
+        events: state.events.filter(event => event.metadata.uid !== action.event.metadata.uid),
+        resourceVersion: action.event.metadata.resourceVersion ?? state.resourceVersion,
       });
     case Type.RECEIVE_ERROR:
       return createObject(state, {
         isLoading: false,
         error: action.error,
       });
-    case Type.DELETE_OLD_EVENTS:
-      return createObject(state, {
-        events: state.events.filter(event => isOldEvent(event, action.resourceVersion) === false),
-      });
     default:
       return state;
   }
 };
-
-function isOldEvent(event: CoreV1Event, resourceVersion: string): boolean {
-  return compareResourceVersion(event.metadata.resourceVersion, resourceVersion) < 0;
-}
-
-function compareResourceVersion(
-  versionA: string | undefined,
-  versionB: string | undefined,
-): number {
-  if (versionA === undefined || versionB === undefined) {
-    return 0;
-  }
-
-  const aNum = parseInt(versionA, 10);
-  const bNum = parseInt(versionB, 10);
-  if (isNaN(aNum) || isNaN(bNum)) {
-    return 0;
-  }
-
-  return aNum - bNum;
-}

@@ -43,7 +43,7 @@ export interface RequestPodsAction extends Action, SanityCheckAction {
 export interface ReceivePodsAction {
   type: Type.RECEIVE_PODS;
   pods: V1Pod[];
-  resourceVersion?: string;
+  resourceVersion: string | undefined;
 }
 
 export interface ReceiveErrorAction {
@@ -174,7 +174,7 @@ export const reducer: Reducer<State> = (
       return createObject(state, {
         isLoading: false,
         pods: action.pods,
-        resourceVersion: action.resourceVersion ? action.resourceVersion : state.resourceVersion,
+        resourceVersion: action.resourceVersion ?? state.resourceVersion,
       });
     case Type.RECEIVE_ERROR:
       return createObject(state, {
@@ -184,17 +184,17 @@ export const reducer: Reducer<State> = (
     case Type.RECEIVE_POD:
       return createObject(state, {
         pods: state.pods.concat([action.pod]),
-        resourceVersion: action.pod.metadata?.resourceVersion || state.resourceVersion,
+        resourceVersion: action.pod.metadata?.resourceVersion ?? state.resourceVersion,
       });
     case Type.MODIFY_POD:
       return createObject(state, {
         pods: state.pods.map(pod => (isSamePod(pod, action.pod) ? action.pod : pod)),
-        resourceVersion: action.pod.metadata?.resourceVersion || state.resourceVersion,
+        resourceVersion: action.pod.metadata?.resourceVersion ?? state.resourceVersion,
       });
     case Type.DELETE_POD:
       return createObject(state, {
         pods: state.pods.filter(pod => isSamePod(pod, action.pod) === false),
-        resourceVersion: action.pod.metadata?.resourceVersion || state.resourceVersion,
+        resourceVersion: action.pod.metadata?.resourceVersion ?? state.resourceVersion,
       });
     default:
       return state;

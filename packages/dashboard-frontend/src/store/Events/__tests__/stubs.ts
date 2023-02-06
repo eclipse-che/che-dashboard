@@ -22,6 +22,7 @@ export const event1: CoreV1Event = {
   metadata: {
     name: 'test-event-1',
     uid: 'test-event-1',
+    resourceVersion: '1',
   },
   lastTimestamp: '2021-03-01T00:00:00Z' as unknown as Date,
   message: 'first test event message',
@@ -40,6 +41,7 @@ export const event2: CoreV1Event = {
   metadata: {
     name: 'test-event-2',
     uid: 'test-event-2',
+    resourceVersion: '2',
   },
   lastTimestamp: '2021-03-01T00:00:00Z' as unknown as Date,
   message: 'second test event message',
