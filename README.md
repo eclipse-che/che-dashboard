@@ -228,7 +228,7 @@ kubectl rollout restart deployment/che-operator -n $CHE_NAMESPACE
 
 ## che-server API usage
 
-Currently, Dashboard use the following che-server API:
+Currently, Dashboard uses the following che-server API:
 
 | Method | Path                            |
 |--------|---------------------------------|
