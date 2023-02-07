@@ -32,7 +32,6 @@ import {
   DevWorkspaceClient,
   DEVWORKSPACE_NEXT_START_ANNOTATION,
 } from '../../../services/workspace-client/devworkspace/devWorkspaceClient';
-import * as EventsStore from '../../Events';
 import { createObject } from '../../helpers';
 import { selectDefaultNamespace } from '../../InfrastructureNamespaces/selectors';
 import * as DwPluginsStore from '../../Plugins/devWorkspacePlugins';

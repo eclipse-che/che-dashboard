@@ -15,6 +15,7 @@ import { History } from 'history';
 import { Cancellation, pseudoCancellable } from 'real-cancellable-promise';
 import { List, LoaderStep } from '../../components/Loader/Step';
 import { DisposableCollection } from '../../services/helpers/disposable';
+import { delay } from '../../services/helpers/delay';
 
 export type LoaderStepProps = {
   currentStepIndex: number;
@@ -23,6 +24,7 @@ export type LoaderStepProps = {
   tabParam: string | undefined;
   onNextStep: () => void;
   onRestart: (tabName?: string) => void;
+  onTabChange: (tab: string) => void;
 };
 export type LoaderStepState = {
   lastError?: unknown;
@@ -38,6 +40,9 @@ export abstract class AbstractLoaderStep<
   protected abstract handleRestart(): void;
 
   protected async prepareAndRun(): Promise<void> {
+    // debug
+    await delay(2000);
+
     try {
       const stepCancellablePromise = pseudoCancellable(this.runStep());
       this.toDispose.push({
@@ -91,5 +96,9 @@ export abstract class AbstractLoaderStep<
         },
       });
     });
+  }
+
+  protected handleTabChange(tab: string): void {
+    this.props.onTabChange(tab);
   }
 }

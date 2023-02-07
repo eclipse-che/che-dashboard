@@ -33,6 +33,7 @@ export type Props = MappedProps & {
   tabParam: string | undefined;
   onNextStep: () => void;
   onRestart: (tabName?: string) => void;
+  onTabChange: (tab: string) => void;
 };
 
 class WorkspaceLoader extends React.PureComponent<Props> {
