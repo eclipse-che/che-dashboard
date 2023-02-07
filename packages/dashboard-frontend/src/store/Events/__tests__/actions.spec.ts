@@ -17,6 +17,8 @@ import { MockStoreEnhanced } from 'redux-mock-store';
 import { ThunkDispatch } from 'redux-thunk';
 import * as testStore from '..';
 import { AppState } from '../..';
+import { container } from '../../../inversify.config';
+import { WebsocketClient } from '../../../services/dashboard-backend-client/websocketClient';
 import { AUTHORIZED } from '../../sanityCheckMiddleware';
 import { FakeStoreBuilder } from '../../__mocks__/storeBuilder';
 import { event1, event2 } from './stubs';
@@ -32,10 +34,12 @@ describe('Events store, actions', () => {
       AppState,
       ThunkDispatch<AppState, undefined, testStore.KnownAction>
     >;
+    container.snapshot();
   });
 
   afterEach(() => {
     jest.clearAllMocks();
+    container.restore();
   });
 
   it('should create REQUEST_EVENTS and RECEIVE_EVENTS when fetching events', async () => {
@@ -92,8 +96,8 @@ describe('Events store, actions', () => {
   });
 
   describe('handle WebSocket events', () => {
-    it('should create RECEIVE_EVENTS action when receiving a new event', () => {
-      appStore.dispatch(
+    it('should create RECEIVE_EVENTS action when receiving a new event', async () => {
+      await appStore.dispatch(
         testStore.actionCreators.handleWebSocketMessage({
           event: event1,
           eventPhase: api.webSocket.EventPhase.ADDED,
@@ -113,8 +117,8 @@ describe('Events store, actions', () => {
       expect(actions).toEqual(expectedActions);
     });
 
-    it('should create MODIFY_EVENT action when receiving a modified event', () => {
-      appStore.dispatch(
+    it('should create MODIFY_EVENT action when receiving a modified event', async () => {
+      await appStore.dispatch(
         testStore.actionCreators.handleWebSocketMessage({
           event: event1,
           eventPhase: api.webSocket.EventPhase.MODIFIED,
@@ -133,8 +137,8 @@ describe('Events store, actions', () => {
       expect(actions).toEqual(expectedActions);
     });
 
-    it('should create DELETE_EVENTS action when receiving a deleted event', () => {
-      appStore.dispatch(
+    it('should create DELETE_EVENTS action when receiving a deleted event', async () => {
+      await appStore.dispatch(
         testStore.actionCreators.handleWebSocketMessage({
           event: event1,
           eventPhase: api.webSocket.EventPhase.DELETED,
@@ -153,19 +157,57 @@ describe('Events store, actions', () => {
       expect(actions).toEqual(expectedActions);
     });
 
-    it('should not create any action when receiving an unexpected message', () => {
-      appStore.dispatch(
+    it('should create REQUEST_EVENTS and RECEIVE_EVENTS and resubscribe to channel', async () => {
+      (mockAxios.get as jest.Mock).mockResolvedValueOnce({
+        data: { items: [event1, event2], metadata: { resourceVersion: '123' } },
+      });
+
+      const websocketClient = container.get(WebsocketClient);
+      const unsubscribeFromChannelSpy = jest
+        .spyOn(websocketClient, 'unsubscribeFromChannel')
+        .mockReturnValue(undefined);
+      const subscribeToChannelSpy = jest
+        .spyOn(websocketClient, 'subscribeToChannel')
+        .mockReturnValue(undefined);
+
+      const namespace = 'user-che';
+      const appStoreWithNamespace = new FakeStoreBuilder()
+        .withInfrastructureNamespace([{ name: namespace, attributes: { phase: 'Active' } }])
+        .build() as MockStoreEnhanced<
+        AppState,
+        ThunkDispatch<AppState, undefined, testStore.KnownAction>
+      >;
+      await appStoreWithNamespace.dispatch(
         testStore.actionCreators.handleWebSocketMessage({
-          status: {} as V1Status,
+          status: {
+            code: 410,
+            message: 'The resourceVersion for the provided watch is too old.',
+          } as V1Status,
           eventPhase: api.webSocket.EventPhase.ERROR,
         }),
       );
 
-      const actions = appStore.getActions();
+      const actions = appStoreWithNamespace.getActions();
 
-      const expectedActions: testStore.KnownAction[] = [];
+      const expectedActions: testStore.KnownAction[] = [
+        {
+          check: AUTHORIZED,
+          type: testStore.Type.REQUEST_EVENTS,
+        },
+        {
+          type: testStore.Type.RECEIVE_EVENTS,
+          events: [event1, event2],
+          resourceVersion: '123',
+        },
+      ];
 
       expect(actions).toEqual(expectedActions);
+      expect(unsubscribeFromChannelSpy).toHaveBeenCalledWith(api.webSocket.Channel.EVENT);
+      expect(subscribeToChannelSpy).toHaveBeenCalledWith(
+        api.webSocket.Channel.EVENT,
+        namespace,
+        expect.any(Function),
+      );
     });
   });
 });

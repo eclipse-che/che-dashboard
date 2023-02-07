@@ -11,11 +11,14 @@
  */
 
 import { api } from '@eclipse-che/common';
+import { V1Status } from '@kubernetes/client-node';
 import mockAxios, { AxiosError } from 'axios';
 import { MockStoreEnhanced } from 'redux-mock-store';
 import { ThunkDispatch } from 'redux-thunk';
 import * as testStore from '..';
 import { AppState } from '../..';
+import { container } from '../../../inversify.config';
+import { WebsocketClient } from '../../../services/dashboard-backend-client/websocketClient';
 import { AUTHORIZED } from '../../sanityCheckMiddleware';
 import { FakeStoreBuilder } from '../../__mocks__/storeBuilder';
 import { pod1, pod2 } from './stub';
@@ -149,6 +152,59 @@ describe('Pods store, actions', () => {
       ];
 
       expect(actions).toEqual(expectedActions);
+    });
+
+    it('should create REQUEST_PODS and RECEIVE_PODS and resubscribe to channel', async () => {
+      (mockAxios.get as jest.Mock).mockResolvedValueOnce({
+        data: { items: [pod1, pod2], metadata: { resourceVersion: '123' } },
+      });
+
+      const websocketClient = container.get(WebsocketClient);
+      const unsubscribeFromChannelSpy = jest
+        .spyOn(websocketClient, 'unsubscribeFromChannel')
+        .mockReturnValue(undefined);
+      const subscribeToChannelSpy = jest
+        .spyOn(websocketClient, 'subscribeToChannel')
+        .mockReturnValue(undefined);
+
+      const namespace = 'user-che';
+      const appStoreWithNamespace = new FakeStoreBuilder()
+        .withInfrastructureNamespace([{ name: namespace, attributes: { phase: 'Active' } }])
+        .build() as MockStoreEnhanced<
+        AppState,
+        ThunkDispatch<AppState, undefined, testStore.KnownAction>
+      >;
+      await appStoreWithNamespace.dispatch(
+        testStore.actionCreators.handleWebSocketMessage({
+          status: {
+            code: 410,
+            message: 'The resourceVersion for the provided watch is too old.',
+          } as V1Status,
+          eventPhase: api.webSocket.EventPhase.ERROR,
+        }),
+      );
+
+      const actions = appStoreWithNamespace.getActions();
+
+      const expectedActions: testStore.KnownAction[] = [
+        {
+          check: AUTHORIZED,
+          type: testStore.Type.REQUEST_PODS,
+        },
+        {
+          type: testStore.Type.RECEIVE_PODS,
+          pods: [pod1, pod2],
+          resourceVersion: '123',
+        },
+      ];
+
+      expect(actions).toEqual(expectedActions);
+      expect(unsubscribeFromChannelSpy).toHaveBeenCalledWith(api.webSocket.Channel.POD);
+      expect(subscribeToChannelSpy).toHaveBeenCalledWith(
+        api.webSocket.Channel.POD,
+        namespace,
+        expect.any(Function),
+      );
     });
   });
 });

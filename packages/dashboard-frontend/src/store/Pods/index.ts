@@ -123,7 +123,7 @@ export const actionCreators: ActionCreators = {
         const { status } = message;
 
         const errorMessage = `WebSocket(POD): status code ${status.code}, reason: ${status.message}`;
-        console.error(errorMessage);
+        console.warn(errorMessage);
 
         if (status.code !== 200) {
           /* in case of error status trying to fetch all pods and re-subscribe to websocket channel */

@@ -13,6 +13,7 @@
 import { api, helpers } from '@eclipse-che/common';
 import { CoreV1Event } from '@kubernetes/client-node';
 import { Action, Reducer } from 'redux';
+import { cli } from 'webpack';
 import { AppThunk } from '..';
 import { container } from '../../inversify.config';
 import { fetchEvents } from '../../services/dashboard-backend-client/eventsApi';
@@ -115,7 +116,7 @@ export const actionCreators: ActionCreators = {
         const { status } = message;
 
         const errorMessage = `WebSocket(EVENT): status code ${status.code}, reason: ${status.message}`;
-        console.error(errorMessage);
+        console.warn(errorMessage);
 
         if (status.code !== 200) {
           /* in case of error status trying to fetch all events and re-subscribe to websocket channel */

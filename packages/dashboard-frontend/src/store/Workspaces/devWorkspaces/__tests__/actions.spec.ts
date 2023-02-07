@@ -13,6 +13,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
 import { api } from '@eclipse-che/common';
+import { V1Status } from '@kubernetes/client-node';
 import { AnyAction } from 'redux';
 import { MockStoreEnhanced } from 'redux-mock-store';
 import { ThunkDispatch } from 'redux-thunk';
@@ -20,8 +21,8 @@ import * as testStore from '..';
 import { AppState } from '../../..';
 import { container } from '../../../../inversify.config';
 import { fetchServerConfig } from '../../../../services/dashboard-backend-client/serverConfigApi';
+import { WebsocketClient } from '../../../../services/dashboard-backend-client/websocketClient';
 import devfileApi from '../../../../services/devfileApi';
-import { WorkspaceAdapter } from '../../../../services/workspace-adapter';
 import { DevWorkspaceClient } from '../../../../services/workspace-client/devworkspace/devWorkspaceClient';
 import { AUTHORIZED } from '../../../sanityCheckMiddleware';
 import * as ServerConfigStore from '../../../ServerConfig';
@@ -730,6 +731,61 @@ describe('DevWorkspace store, actions', () => {
       ];
 
       expect(actions).toEqual(expectedActions);
+    });
+
+    it('should create REQUEST_DEVWORKSPACE and RECEIVE_DEVWORKSPACE and resubscribe to channel', async () => {
+      mockGetAllWorkspaces.mockResolvedValueOnce({ workspaces: [], resourceVersion: '123' });
+
+      const websocketClient = container.get(WebsocketClient);
+      const unsubscribeFromChannelSpy = jest
+        .spyOn(websocketClient, 'unsubscribeFromChannel')
+        .mockReturnValue(undefined);
+      const subscribeToChannelSpy = jest
+        .spyOn(websocketClient, 'subscribeToChannel')
+        .mockReturnValue(undefined);
+
+      const namespace = 'user-che';
+      const appStoreWithNamespace = new FakeStoreBuilder()
+        .withInfrastructureNamespace([{ name: namespace, attributes: { phase: 'Active' } }])
+        .build() as MockStoreEnhanced<
+        AppState,
+        ThunkDispatch<AppState, undefined, testStore.KnownAction>
+      >;
+      await appStoreWithNamespace.dispatch(
+        testStore.actionCreators.handleWebSocketMessage({
+          status: {
+            code: 410,
+            message: 'The resourceVersion for the provided watch is too old.',
+          } as V1Status,
+          eventPhase: api.webSocket.EventPhase.ERROR,
+        }),
+      );
+
+      const actions = appStoreWithNamespace.getActions();
+
+      const expectedActions: testStore.KnownAction[] = [
+        {
+          check: AUTHORIZED,
+          type: testStore.Type.REQUEST_DEVWORKSPACE,
+        },
+        {
+          type: testStore.Type.RECEIVE_DEVWORKSPACE,
+          workspaces: [],
+          resourceVersion: '123',
+        },
+        {
+          type: testStore.Type.UPDATE_STARTED_WORKSPACES,
+          workspaces: [],
+        },
+      ];
+
+      expect(actions).toEqual(expectedActions);
+      expect(unsubscribeFromChannelSpy).toHaveBeenCalledWith(api.webSocket.Channel.DEV_WORKSPACE);
+      expect(subscribeToChannelSpy).toHaveBeenCalledWith(
+        api.webSocket.Channel.DEV_WORKSPACE,
+        namespace,
+        expect.any(Function),
+      );
     });
   });
 });
