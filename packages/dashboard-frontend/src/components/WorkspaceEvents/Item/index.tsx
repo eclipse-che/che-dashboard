@@ -69,9 +69,9 @@ export class WorkspaceEventsItem extends React.PureComponent<Props> {
 
   /**
    * Returns the time of the event, if available.
-   * Accepts string in ISO format.
    */
-  private getTime(eventTime: Date | undefined): React.ReactElement {
+  private getTime(event: CoreV1Event): React.ReactElement {
+    const eventTime = event.lastTimestamp || event.eventTime;
     if (eventTime === undefined) {
       return <></>;
     }
@@ -94,7 +94,7 @@ export class WorkspaceEventsItem extends React.PureComponent<Props> {
                 </Text>
               </FlexItem>
               <FlexItem align={{ default: 'alignRight' }}>
-                <Text component={TextVariants.small}>{this.getTime(event.lastTimestamp)}</Text>
+                <Text component={TextVariants.small}>{this.getTime(event)}</Text>
               </FlexItem>
             </Flex>
           </CardHeader>
