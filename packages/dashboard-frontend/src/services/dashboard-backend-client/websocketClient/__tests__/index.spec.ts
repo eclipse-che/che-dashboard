@@ -15,13 +15,7 @@ import WS from 'jest-websocket-mock';
 import { ConnectionEvent, WebsocketClient } from '..';
 
 describe('websocketClient', () => {
-  let websocketClient: WebsocketClient;
-  let serverMock: WS;
-
   beforeEach(() => {
-    websocketClient = new WebsocketClient();
-    serverMock = new WS('ws://localhost/dashboard/api/websocket');
-
     // do not use fake timers, because it causes issues with jest-websocket-mock
     // jest.useFakeTimers();
   });
@@ -36,6 +30,9 @@ describe('websocketClient', () => {
       const handleConnectionOpen = jest.fn();
 
       it('should connect to websocket and call listener for the OPEN event once', async () => {
+        const websocketClient = new WebsocketClient();
+        const serverMock = new WS('ws://localhost/dashboard/api/websocket');
+
         websocketClient.addConnectionEventListener(ConnectionEvent.OPEN, handleConnectionOpen);
 
         websocketClient.connect();
@@ -46,6 +43,9 @@ describe('websocketClient', () => {
       });
 
       it('should reconnect to websocket when server closes the connection', async () => {
+        const websocketClient = new WebsocketClient();
+        const serverMock = new WS('ws://localhost/dashboard/api/websocket');
+
         websocketClient.addConnectionEventListener(ConnectionEvent.OPEN, handleConnectionOpen);
 
         websocketClient.connect();
@@ -65,6 +65,10 @@ describe('websocketClient', () => {
       });
 
       it('should reconnect to websocket when receives "error" event', async () => {
+        const websocketClient = new WebsocketClient();
+        const serverMock = new WS('ws://localhost/dashboard/api/websocket');
+
+        const handleConnectionOpen = jest.fn();
         websocketClient.addConnectionEventListener(ConnectionEvent.OPEN, handleConnectionOpen);
 
         const handleConnectionError = jest.fn();
@@ -89,6 +93,9 @@ describe('websocketClient', () => {
       });
 
       it('should return the same connection ready promise when called', async () => {
+        const websocketClient = new WebsocketClient();
+        const serverMock = new WS('ws://localhost/dashboard/api/websocket');
+
         websocketClient.addConnectionEventListener(ConnectionEvent.OPEN, handleConnectionOpen);
 
         const readyPromise1 = websocketClient.connect();
@@ -105,6 +112,9 @@ describe('websocketClient', () => {
 
     describe('getting connection closed', () => {
       it('should call the listener for the CLOSE event', async () => {
+        const websocketClient = new WebsocketClient();
+        const serverMock = new WS('ws://localhost/dashboard/api/websocket');
+
         const handleConnectionClose = jest.fn();
         websocketClient.addConnectionEventListener(ConnectionEvent.CLOSE, handleConnectionClose);
 
@@ -123,6 +133,9 @@ describe('websocketClient', () => {
 
     describe('getting connection error', () => {
       it('should call listener for the ERROR event', async () => {
+        const websocketClient = new WebsocketClient();
+        const serverMock = new WS('ws://localhost/dashboard/api/websocket');
+
         const handleConnectionError = jest.fn();
         websocketClient.addConnectionEventListener(ConnectionEvent.ERROR, handleConnectionError);
 
@@ -139,7 +152,9 @@ describe('websocketClient', () => {
 
       describe('past event notification', () => {
         it('should not call the listener', async () => {
-          await Promise.resolve();
+          const websocketClient = new WebsocketClient();
+          const serverMock = new WS('ws://localhost/dashboard/api/websocket');
+
           websocketClient.connect();
           const ws = await serverMock.connected;
 
@@ -154,6 +169,9 @@ describe('websocketClient', () => {
         });
 
         it('should call the listener', async () => {
+          const websocketClient = new WebsocketClient();
+          const serverMock = new WS('ws://localhost/dashboard/api/websocket');
+
           websocketClient.connect();
           const ws = await serverMock.connected;
 
@@ -174,6 +192,9 @@ describe('websocketClient', () => {
     });
 
     it('should remove the listener', async () => {
+      const websocketClient = new WebsocketClient();
+      const serverMock = new WS('ws://localhost/dashboard/api/websocket');
+
       const handleConnectionOpen = jest.fn();
       websocketClient.addConnectionEventListener(ConnectionEvent.OPEN, handleConnectionOpen);
 
@@ -202,6 +223,9 @@ describe('websocketClient', () => {
 
     describe('adding subscriptions', () => {
       it('should add a subscription and send the subscribe message', async () => {
+        const websocketClient = new WebsocketClient();
+        const serverMock = new WS('ws://localhost/dashboard/api/websocket');
+
         const addSubscriptionSpy = jest.spyOn(
           (websocketClient as any).subscriptionsManager,
           'addSubscription',
@@ -229,6 +253,9 @@ describe('websocketClient', () => {
       });
 
       it('should add a subscription but not send the subscribe message #1', async () => {
+        const websocketClient = new WebsocketClient();
+        const serverMock = new WS('ws://localhost/dashboard/api/websocket');
+
         const addSubscriptionSpy = jest.spyOn(
           (websocketClient as any).subscriptionsManager,
           'addSubscription',
@@ -249,6 +276,9 @@ describe('websocketClient', () => {
       });
 
       it('should add a subscription but not send the subscribe message #2', async () => {
+        const websocketClient = new WebsocketClient();
+        const serverMock = new WS('ws://localhost/dashboard/api/websocket');
+
         const addSubscriptionSpy = jest.spyOn(
           (websocketClient as any).subscriptionsManager,
           'addSubscription',
@@ -272,6 +302,9 @@ describe('websocketClient', () => {
 
     describe('removing subscriptions', () => {
       it('should remove a subscription and send the unsubscribe message', async () => {
+        const websocketClient = new WebsocketClient();
+        const serverMock = new WS('ws://localhost/dashboard/api/websocket');
+
         const removeSubscriptionSpy = jest.spyOn(
           (websocketClient as any).subscriptionsManager,
           'removeSubscription',
@@ -295,6 +328,9 @@ describe('websocketClient', () => {
       });
 
       it('should remove a subscription but not send the unsubscribe message #1', async () => {
+        const websocketClient = new WebsocketClient();
+        const serverMock = new WS('ws://localhost/dashboard/api/websocket');
+
         const removeSubscriptionSpy = jest.spyOn(
           (websocketClient as any).subscriptionsManager,
           'removeSubscription',
@@ -311,6 +347,9 @@ describe('websocketClient', () => {
       });
 
       it('should remove a subscription but not send the unsubscribe message #2', async () => {
+        const websocketClient = new WebsocketClient();
+        const serverMock = new WS('ws://localhost/dashboard/api/websocket');
+
         const removeSubscriptionSpy = jest.spyOn(
           (websocketClient as any).subscriptionsManager,
           'removeSubscription',
@@ -330,6 +369,9 @@ describe('websocketClient', () => {
 
     describe('resubscribing', () => {
       it('should get existing subscriptions and send messages', async () => {
+        const websocketClient = new WebsocketClient();
+        const serverMock = new WS('ws://localhost/dashboard/api/websocket');
+
         const getSubscriptionsSpy = jest.spyOn(
           (websocketClient as any).subscriptionsManager,
           'getSubscriptions',
@@ -367,6 +409,9 @@ describe('websocketClient', () => {
       });
 
       it('should not send any messages #1', async () => {
+        const websocketClient = new WebsocketClient();
+        const serverMock = new WS('ws://localhost/dashboard/api/websocket');
+
         const getSubscriptionsSpy = jest.spyOn(
           (websocketClient as any).subscriptionsManager,
           'getSubscriptions',
@@ -388,6 +433,9 @@ describe('websocketClient', () => {
       });
 
       it('should not send any messages #1', async () => {
+        const websocketClient = new WebsocketClient();
+        const serverMock = new WS('ws://localhost/dashboard/api/websocket');
+
         const getSubscriptionsSpy = jest.spyOn(
           (websocketClient as any).subscriptionsManager,
           'getSubscriptions',
@@ -413,6 +461,8 @@ describe('websocketClient', () => {
 
   describe('handling data messages', () => {
     it('should add a channel message listener', () => {
+      const websocketClient = new WebsocketClient();
+
       const addListenerSpy = jest.spyOn((websocketClient as any).messageHandler, 'addListener');
 
       const channel = api.webSocket.Channel.EVENT;
@@ -423,6 +473,9 @@ describe('websocketClient', () => {
     });
 
     it('should notify a channel listener', async () => {
+      const websocketClient = new WebsocketClient();
+      const serverMock = new WS('ws://localhost/dashboard/api/websocket');
+
       const notifyListenersSpy = jest.spyOn(
         (websocketClient as any).messageHandler,
         'notifyListeners',

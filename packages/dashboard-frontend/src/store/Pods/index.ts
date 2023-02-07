@@ -14,11 +14,15 @@ import { api, helpers } from '@eclipse-che/common';
 import { V1Pod } from '@kubernetes/client-node';
 import { Action, Reducer } from 'redux';
 import { AppThunk } from '..';
+import { container } from '../../inversify.config';
 import { fetchPods } from '../../services/dashboard-backend-client/podsApi';
+import { WebsocketClient } from '../../services/dashboard-backend-client/websocketClient';
+import { getNewerResourceVersion } from '../../services/helpers/resourceVersion';
 import { createObject } from '../helpers';
 import { selectDefaultNamespace } from '../InfrastructureNamespaces/selectors';
 import { AUTHORIZED, SanityCheckAction } from '../sanityCheckMiddleware';
 import isSamePod from './isSamePod';
+import { selectPodsResourceVersion } from './selectors';
 
 export interface State {
   isLoading: boolean;
@@ -114,38 +118,68 @@ export const actionCreators: ActionCreators = {
 
   handleWebSocketMessage:
     (message: api.webSocket.NotificationMessage): AppThunk<KnownAction, Promise<void>> =>
-    async (dispatch): Promise<void> => {
-      if (!api.webSocket.isPodMessage(message)) {
-        console.warn('WebSocket: unexpected message:', message);
+    async (dispatch, getState): Promise<void> => {
+      if (api.webSocket.isStatusMessage(message)) {
+        const { status } = message;
+
+        const errorMessage = `WebSocket(POD): status code ${status.code}, reason: ${status.message}`;
+        console.error(errorMessage);
+
+        if (status.code !== 200) {
+          /* in case of error status trying to fetch all pods and re-subscribe to websocket channel */
+
+          const websocketClient = container.get(WebsocketClient);
+
+          websocketClient.unsubscribeFromChannel(api.webSocket.Channel.POD);
+
+          await dispatch(actionCreators.requestPods());
+
+          const defaultKubernetesNamespace = selectDefaultNamespace(getState());
+          const namespace = defaultKubernetesNamespace.name;
+          const getResourceVersion = () => {
+            const state = getState();
+            return selectPodsResourceVersion(state);
+          };
+          websocketClient.subscribeToChannel(
+            api.webSocket.Channel.POD,
+            namespace,
+            getResourceVersion,
+          );
+        }
         return;
       }
 
-      const { pod, eventPhase } = message;
-      switch (eventPhase) {
-        case api.webSocket.EventPhase.ADDED: {
-          dispatch({
-            type: Type.RECEIVE_POD,
-            pod,
-          });
-          break;
+      if (api.webSocket.isPodMessage(message)) {
+        const { pod, eventPhase } = message;
+        switch (eventPhase) {
+          case api.webSocket.EventPhase.ADDED: {
+            dispatch({
+              type: Type.RECEIVE_POD,
+              pod,
+            });
+            break;
+          }
+          case api.webSocket.EventPhase.MODIFIED: {
+            dispatch({
+              type: Type.MODIFY_POD,
+              pod,
+            });
+            break;
+          }
+          case api.webSocket.EventPhase.DELETED: {
+            dispatch({
+              type: Type.DELETE_POD,
+              pod,
+            });
+            break;
+          }
+          default:
+            console.warn('WebSocket: unexpected eventPhase:', message);
         }
-        case api.webSocket.EventPhase.MODIFIED: {
-          dispatch({
-            type: Type.MODIFY_POD,
-            pod,
-          });
-          break;
-        }
-        case api.webSocket.EventPhase.DELETED: {
-          dispatch({
-            type: Type.DELETE_POD,
-            pod,
-          });
-          break;
-        }
-        default:
-          console.warn('WebSocket: unexpected eventPhase:', message);
+        return;
       }
+
+      console.warn('WebSocket: unexpected message:', message);
     },
 };
 
@@ -174,7 +208,7 @@ export const reducer: Reducer<State> = (
       return createObject(state, {
         isLoading: false,
         pods: action.pods,
-        resourceVersion: action.resourceVersion ?? state.resourceVersion,
+        resourceVersion: getNewerResourceVersion(action.resourceVersion, state.resourceVersion),
       });
     case Type.RECEIVE_ERROR:
       return createObject(state, {
@@ -184,17 +218,26 @@ export const reducer: Reducer<State> = (
     case Type.RECEIVE_POD:
       return createObject(state, {
         pods: state.pods.concat([action.pod]),
-        resourceVersion: action.pod.metadata?.resourceVersion ?? state.resourceVersion,
+        resourceVersion: getNewerResourceVersion(
+          action.pod.metadata?.resourceVersion,
+          state.resourceVersion,
+        ),
       });
     case Type.MODIFY_POD:
       return createObject(state, {
         pods: state.pods.map(pod => (isSamePod(pod, action.pod) ? action.pod : pod)),
-        resourceVersion: action.pod.metadata?.resourceVersion ?? state.resourceVersion,
+        resourceVersion: getNewerResourceVersion(
+          action.pod.metadata?.resourceVersion,
+          state.resourceVersion,
+        ),
       });
     case Type.DELETE_POD:
       return createObject(state, {
         pods: state.pods.filter(pod => isSamePod(pod, action.pod) === false),
-        resourceVersion: action.pod.metadata?.resourceVersion ?? state.resourceVersion,
+        resourceVersion: getNewerResourceVersion(
+          action.pod.metadata?.resourceVersion,
+          state.resourceVersion,
+        ),
       });
     default:
       return state;

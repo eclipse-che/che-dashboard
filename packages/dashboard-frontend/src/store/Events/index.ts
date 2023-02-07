@@ -14,10 +14,14 @@ import { api, helpers } from '@eclipse-che/common';
 import { CoreV1Event } from '@kubernetes/client-node';
 import { Action, Reducer } from 'redux';
 import { AppThunk } from '..';
+import { container } from '../../inversify.config';
 import { fetchEvents } from '../../services/dashboard-backend-client/eventsApi';
+import { WebsocketClient } from '../../services/dashboard-backend-client/websocketClient';
+import { getNewerResourceVersion } from '../../services/helpers/resourceVersion';
 import { createObject } from '../helpers';
 import { selectDefaultNamespace } from '../InfrastructureNamespaces/selectors';
 import { AUTHORIZED, SanityCheckAction } from '../sanityCheckMiddleware';
+import { selectEventsResourceVersion } from './selectors';
 
 export interface State {
   isLoading: boolean;
@@ -106,7 +110,37 @@ export const actionCreators: ActionCreators = {
 
   handleWebSocketMessage:
     (message: api.webSocket.NotificationMessage): AppThunk<KnownAction, Promise<void>> =>
-    async (dispatch): Promise<void> => {
+    async (dispatch, getState): Promise<void> => {
+      if (api.webSocket.isStatusMessage(message)) {
+        const { status } = message;
+
+        const errorMessage = `WebSocket(EVENT): status code ${status.code}, reason: ${status.message}`;
+        console.error(errorMessage);
+
+        if (status.code !== 200) {
+          /* in case of error status trying to fetch all events and re-subscribe to websocket channel */
+
+          const websocketClient = container.get(WebsocketClient);
+
+          websocketClient.unsubscribeFromChannel(api.webSocket.Channel.EVENT);
+
+          await dispatch(actionCreators.requestEvents());
+
+          const defaultKubernetesNamespace = selectDefaultNamespace(getState());
+          const namespace = defaultKubernetesNamespace.name;
+          const getResourceVersion = () => {
+            const state = getState();
+            return selectEventsResourceVersion(state);
+          };
+          websocketClient.subscribeToChannel(
+            api.webSocket.Channel.EVENT,
+            namespace,
+            getResourceVersion,
+          );
+        }
+        return;
+      }
+
       if (api.webSocket.isEventMessage(message)) {
         const { event, eventPhase } = message;
         switch (eventPhase) {
@@ -129,6 +163,8 @@ export const actionCreators: ActionCreators = {
               event,
             });
             break;
+          default:
+            console.warn('WebSocket: unexpected eventPhase:', message);
         }
         return;
       }
@@ -162,7 +198,7 @@ export const reducer: Reducer<State> = (
       return createObject(state, {
         isLoading: false,
         events: state.events.concat(action.events),
-        resourceVersion: action.resourceVersion ?? state.resourceVersion,
+        resourceVersion: getNewerResourceVersion(action.resourceVersion, state.resourceVersion),
       });
     case Type.MODIFY_EVENT:
       return createObject(state, {
@@ -172,12 +208,18 @@ export const reducer: Reducer<State> = (
           }
           return event;
         }),
-        resourceVersion: action.event.metadata.resourceVersion ?? state.resourceVersion,
+        resourceVersion: getNewerResourceVersion(
+          action.event.metadata.resourceVersion,
+          state.resourceVersion,
+        ),
       });
     case Type.DELETE_EVENT:
       return createObject(state, {
         events: state.events.filter(event => event.metadata.uid !== action.event.metadata.uid),
-        resourceVersion: action.event.metadata.resourceVersion ?? state.resourceVersion,
+        resourceVersion: getNewerResourceVersion(
+          action.event.metadata.resourceVersion,
+          state.resourceVersion,
+        ),
       });
     case Type.RECEIVE_ERROR:
       return createObject(state, {

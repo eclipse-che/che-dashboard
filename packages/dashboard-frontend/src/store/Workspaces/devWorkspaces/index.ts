@@ -15,6 +15,7 @@ import { Action, Reducer } from 'redux';
 import { AppThunk } from '../..';
 import { container } from '../../../inversify.config';
 import { injectKubeConfig } from '../../../services/dashboard-backend-client/devWorkspaceApi';
+import { WebsocketClient } from '../../../services/dashboard-backend-client/websocketClient';
 import devfileApi, { isDevWorkspace } from '../../../services/devfileApi';
 import { devWorkspaceKind } from '../../../services/devfileApi/devWorkspace';
 import {
@@ -24,6 +25,7 @@ import {
 import { getDefer, IDeferred } from '../../../services/helpers/deferred';
 import { delay } from '../../../services/helpers/delay';
 import { DisposableCollection } from '../../../services/helpers/disposable';
+import { getNewerResourceVersion } from '../../../services/helpers/resourceVersion';
 import { DevWorkspaceStatus } from '../../../services/helpers/types';
 import { WorkspaceAdapter } from '../../../services/workspace-adapter';
 import {
@@ -39,6 +41,7 @@ import { AUTHORIZED, SanityCheckAction } from '../../sanityCheckMiddleware';
 import * as DwServerConfigStore from '../../ServerConfig';
 import { selectOpenVSXUrl } from '../../ServerConfig/selectors';
 import { checkRunningWorkspacesLimit } from './checkRunningWorkspacesLimit';
+import { selectDevWorkspacesResourceVersion } from './selectors';
 
 export const onStatusChangeCallbacks = new Map<string, (status: DevWorkspaceStatus) => void>();
 
@@ -599,7 +602,32 @@ export const actionCreators: ActionCreators = {
     async (dispatch, getState): Promise<void> => {
       if (api.webSocket.isStatusMessage(message)) {
         const { status } = message;
-        console.info('Received status message on DevWorkspace channel: ', status);
+
+        const errorMessage = `WebSocket(DEV_WORKSPACE): status code ${status.code}, reason: ${status.message}`;
+        console.error(errorMessage);
+
+        if (status.code !== 200) {
+          /* in case of error status trying to fetch all devWorkspaces and re-subscribe to websocket channel */
+
+          const websocketClient = container.get(WebsocketClient);
+
+          websocketClient.unsubscribeFromChannel(api.webSocket.Channel.DEV_WORKSPACE);
+
+          await dispatch(actionCreators.requestWorkspaces());
+
+          const defaultKubernetesNamespace = selectDefaultNamespace(getState());
+          const namespace = defaultKubernetesNamespace.name;
+          const getResourceVersion = () => {
+            const state = getState();
+            return selectDevWorkspacesResourceVersion(state);
+          };
+          websocketClient.subscribeToChannel(
+            api.webSocket.Channel.DEV_WORKSPACE,
+            namespace,
+            getResourceVersion,
+          );
+        }
+        return;
       }
 
       if (api.webSocket.isDevWorkspaceMessage(message)) {
@@ -698,7 +726,7 @@ export const reducer: Reducer<State> = (
       return createObject(state, {
         isLoading: false,
         workspaces: action.workspaces,
-        resourceVersion: action.resourceVersion,
+        resourceVersion: getNewerResourceVersion(action.resourceVersion, state.resourceVersion),
       });
     case Type.RECEIVE_DEVWORKSPACE_ERROR:
       return createObject(state, {
@@ -713,7 +741,10 @@ export const reducer: Reducer<State> = (
             ? action.workspace
             : workspace,
         ),
-        resourceVersion: action.workspace.metadata.resourceVersion ?? state.resourceVersion,
+        resourceVersion: getNewerResourceVersion(
+          action.workspace.metadata.resourceVersion,
+          state.resourceVersion,
+        ),
       });
     case Type.ADD_DEVWORKSPACE:
       return createObject(state, {
@@ -724,7 +755,10 @@ export const reducer: Reducer<State> = (
               WorkspaceAdapter.getUID(workspace) !== WorkspaceAdapter.getUID(action.workspace),
           )
           .concat([action.workspace]),
-        resourceVersion: action.workspace.metadata.resourceVersion ?? state.resourceVersion,
+        resourceVersion: getNewerResourceVersion(
+          action.workspace.metadata.resourceVersion,
+          state.resourceVersion,
+        ),
       });
     case Type.TERMINATE_DEVWORKSPACE:
       return createObject(state, {
@@ -749,7 +783,10 @@ export const reducer: Reducer<State> = (
           workspace =>
             WorkspaceAdapter.getUID(workspace) !== WorkspaceAdapter.getUID(action.workspace),
         ),
-        resourceVersion: action.workspace.metadata.resourceVersion ?? state.resourceVersion,
+        resourceVersion: getNewerResourceVersion(
+          action.workspace.metadata.resourceVersion,
+          state.resourceVersion,
+        ),
       });
     case Type.UPDATE_STARTED_WORKSPACES:
       return createObject(state, {
