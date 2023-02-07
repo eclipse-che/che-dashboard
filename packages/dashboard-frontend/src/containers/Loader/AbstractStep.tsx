@@ -40,9 +40,6 @@ export abstract class AbstractLoaderStep<
   protected abstract handleRestart(): void;
 
   protected async prepareAndRun(): Promise<void> {
-    // debug
-    await delay(2000);
-
     try {
       const stepCancellablePromise = pseudoCancellable(this.runStep());
       this.toDispose.push({

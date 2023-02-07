@@ -44,6 +44,7 @@ const { renderComponent } = getComponentRenderer(getComponent);
 
 const mockOnNextStep = jest.fn();
 const mockOnRestart = jest.fn();
+const mockOnTabChange = jest.fn();
 
 const namespace = 'che-user';
 const workspaceName = 'test-workspace';
@@ -246,6 +247,7 @@ function getComponent(store: Store, currentStepIndex: number): React.ReactElemen
         tabParam={undefined}
         onNextStep={mockOnNextStep}
         onRestart={mockOnRestart}
+        onTabChange={mockOnTabChange}
       />
     </Provider>
   );
