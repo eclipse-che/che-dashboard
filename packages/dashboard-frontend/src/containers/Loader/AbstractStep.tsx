@@ -15,7 +15,6 @@ import { History } from 'history';
 import { Cancellation, pseudoCancellable } from 'real-cancellable-promise';
 import { List, LoaderStep } from '../../components/Loader/Step';
 import { DisposableCollection } from '../../services/helpers/disposable';
-import { delay } from '../../services/helpers/delay';
 
 export type LoaderStepProps = {
   currentStepIndex: number;

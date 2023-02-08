@@ -564,7 +564,7 @@ function getComponent(
       tabParam={undefined}
       onNextStep={mockOnNextStep}
       onRestart={mockOnRestart}
-      onTabChange={mockOnNextStep}
+      onTabChange={mockOnTabChange}
     />
   );
   if (localState) {
