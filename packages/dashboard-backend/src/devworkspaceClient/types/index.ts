@@ -18,6 +18,7 @@ import {
 import { api } from '@eclipse-che/common';
 import * as k8s from '@kubernetes/client-node';
 import { MessageListener } from '../../services/types/Observer';
+import { IncomingHttpHeaders } from 'http';
 
 /**
  * Holds the methods for working with dockerconfig for devworkspace
@@ -56,7 +57,10 @@ export interface IDevWorkspaceApi extends IWatcherService {
   /**
    * Create a devworkspace based on the specified configuration.
    */
-  create(devworkspace: V1alpha2DevWorkspace, namespace: string): Promise<V1alpha2DevWorkspace>;
+  create(
+    devworkspace: V1alpha2DevWorkspace,
+    namespace: string,
+  ): Promise<{ devWorkspace: V1alpha2DevWorkspace; headers: Partial<IncomingHttpHeaders> }>;
 
   /**
    * Updates the DevWorkspace with the given configuration

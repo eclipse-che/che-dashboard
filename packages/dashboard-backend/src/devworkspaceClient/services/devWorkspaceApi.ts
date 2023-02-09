@@ -19,7 +19,7 @@ import {
 import { api } from '@eclipse-che/common';
 import * as k8s from '@kubernetes/client-node';
 import { V1Status } from '@kubernetes/client-node';
-import http from 'http';
+import http, { IncomingHttpHeaders } from 'http';
 import { MessageListener } from '../../services/types/Observer';
 import { IDevWorkspaceApi } from '../types';
 import { createError } from './helpers/createError';
@@ -74,7 +74,7 @@ export class DevWorkspaceApiService implements IDevWorkspaceApi {
   async create(
     devworkspace: V1alpha2DevWorkspace,
     namespace: string,
-  ): Promise<V1alpha2DevWorkspace> {
+  ): Promise<{ devWorkspace: V1alpha2DevWorkspace; headers: Partial<IncomingHttpHeaders> }> {
     try {
       if (!devworkspace.metadata?.name && !devworkspace.metadata?.generateName) {
         throw new Error(
@@ -89,7 +89,17 @@ export class DevWorkspaceApiService implements IDevWorkspaceApi {
         devworkspacePlural,
         devworkspace,
       );
-      return resp.body as V1alpha2DevWorkspace;
+      const devWorkspace = resp.body as V1alpha2DevWorkspace;
+
+      const propagateHeaders = ['warning'];
+      const headers = Object.entries(resp.response.headers).reduce((acc, [key, value]) => {
+        if (propagateHeaders.includes(key)) {
+          acc[key] = value;
+        }
+        return acc;
+      }, {} as Partial<IncomingHttpHeaders>);
+
+      return { devWorkspace, headers };
     } catch (e) {
       throw createError(e, DEV_WORKSPACE_API_ERROR_LABEL, 'Unable to create devworkspace');
     }

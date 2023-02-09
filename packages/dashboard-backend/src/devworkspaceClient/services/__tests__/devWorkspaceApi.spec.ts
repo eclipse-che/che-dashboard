@@ -22,6 +22,7 @@ import { api } from '@eclipse-che/common';
 import { IPatch } from '@eclipse-che/common/src/dto/api';
 import * as mockClient from '@kubernetes/client-node';
 import { CustomObjectsApi } from '@kubernetes/client-node';
+import { IncomingMessage } from 'http';
 import { DevWorkspaceApiService } from '../devWorkspaceApi';
 
 const namespace = 'user-che';
@@ -32,7 +33,10 @@ describe('DevWorkspace API Service', () => {
 
   const stubCustomObjectsApi = {
     createNamespacedCustomObject: () => {
-      return Promise.resolve({ body: getDevWorkspace() });
+      return Promise.resolve({
+        body: getDevWorkspace(),
+        response: { headers: {} } as IncomingMessage,
+      });
     },
     deleteNamespacedCustomObject: () => {
       return Promise.resolve({ body: {} });
@@ -123,7 +127,8 @@ describe('DevWorkspace API Service', () => {
     } as V1alpha2DevWorkspace;
 
     const res = await devWorkspaceService.create(devWorkspace, namespace);
-    expect(res).toEqual(getDevWorkspace());
+    expect(res.devWorkspace).toStrictEqual(getDevWorkspace());
+    expect(res.headers).toStrictEqual({});
     expect(spyCreateNamespacedCustomObject).toHaveBeenCalledWith(
       devworkspaceGroup,
       devworkspaceLatestVersion,
