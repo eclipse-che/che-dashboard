@@ -102,7 +102,8 @@ export function getDevWorkspaceClient(_args: Parameters<typeof helper>): ReturnT
       delete: (_namespace, _name) => Promise.resolve(undefined),
       getByName: (_namespace, _name) => Promise.resolve(stubDevWorkspace),
       listInNamespace: _namespace => Promise.resolve(stubDevWorkspacesList),
-      patch: (_namespace, _name, _patches) => Promise.resolve(stubDevWorkspace),
+      patch: (_namespace, _name, _patches) =>
+        Promise.resolve({ devWorkspace: stubDevWorkspace, headers: stubHeaders }),
     } as IDevWorkspaceApi,
     dockerConfigApi: {
       read: _namespace => Promise.resolve(stubDockerConfig),
