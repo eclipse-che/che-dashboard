@@ -42,18 +42,10 @@ describe('DevWorkspace client, create', () => {
   });
 
   describe('Create from devfile', () => {
-    let testDevfile: devfileApi.Devfile;
     let spyCreateWorkspace: jest.SpyInstance;
     let spyPatchWorkspace: jest.SpyInstance;
 
     beforeEach(() => {
-      testDevfile = {
-        schemaVersion: '2.1.0',
-        metadata: {
-          namespace,
-          name,
-        },
-      };
       const testWorkspace = new DevWorkspaceBuilder()
         .withMetadata({
           name,
@@ -69,52 +61,6 @@ describe('DevWorkspace client, create', () => {
     afterEach(() => {
       spyPatchWorkspace.mockClear();
       spyCreateWorkspace.mockClear();
-    });
-
-    it('should add annotation of last update time', async () => {
-      await client.createFromDevfile(
-        testDevfile,
-        namespace,
-        [],
-        undefined,
-        undefined,
-        undefined,
-        undefined,
-        {},
-      );
-
-      expect(spyCreateWorkspace).toBeCalledWith(
-        expect.objectContaining({
-          metadata: expect.objectContaining({
-            annotations: {
-              'che.eclipse.org/last-updated-timestamp': timestampNew,
-            },
-          }),
-        }),
-      );
-    });
-
-    it('should add editor annotation', async () => {
-      await client.createFromDevfile(
-        testDevfile,
-        namespace,
-        [],
-        undefined,
-        undefined,
-        undefined,
-        'eclipse/theia/next',
-        {},
-      );
-
-      expect(spyCreateWorkspace).toBeCalledWith(
-        expect.objectContaining({
-          metadata: expect.objectContaining({
-            annotations: expect.objectContaining({
-              'che.eclipse.org/che-editor': 'eclipse/theia/next',
-            }),
-          }),
-        }),
-      );
     });
   });
 

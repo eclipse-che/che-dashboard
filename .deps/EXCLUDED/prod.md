@@ -2,6 +2,7 @@ This file lists dependencies that do not need CQs or auto-detection does not wor
 
 | Packages | Resolved CQs |
 | --- | --- |
+| `@devfile/api@2.2.1-alpha-1667236163` | N/A |
 | `jose@2.0.6` | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/jose/2.0.6) |
 | `@hapi/hoek@8.5.1` | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@hapi/hoek/8.5.1) |
 | `@patternfly/react-icons@4.49.19` | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@patternfly/react-icons/4.49.19) |
