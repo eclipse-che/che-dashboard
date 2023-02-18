@@ -559,7 +559,7 @@
 | [`ini@1.3.8`](git://github.com/isaacs/ini.git) | ISC | [CQ23023](https://dev.eclipse.org/ipzilla/show_bug.cgi?id=23023) |
 | [`init-package-json@2.0.5`](https://github.com/npm/init-package-json.git) | ISC | clearlydefined |
 | [`inquirer@7.3.3`](https://github.com/SBoudrias/Inquirer.js.git) | MIT | clearlydefined |
-| [`internal-slot@1.0.3`](git+https://github.com/ljharb/internal-slot.git) | MIT | clearlydefined |
+| [`internal-slot@1.0.3`](git+https://github.com/ljharb/internal-slot.git) | MIT | #7118 |
 | [`interpret@2.2.0`](https://github.com/gulpjs/interpret.git) | MIT | clearlydefined |
 | [`ip@1.1.5`](http://github.com/indutny/node-ip.git) | MIT | #126 |
 | [`ipaddr.js@2.0.1`](git://github.com/whitequark/ipaddr.js) | MIT | clearlydefined |
@@ -736,7 +736,7 @@
 | [`obuf@1.1.2`](git@github.com:indutny/offset-buffer) | MIT | clearlydefined |
 | [`on-finished@2.4.1`](https://github.com/jshttp/on-finished.git) | MIT | clearlydefined |
 | [`on-headers@1.0.2`](https://github.com/jshttp/on-headers.git) | MIT | clearlydefined |
-| [`open@8.4.0`](https://github.com/sindresorhus/open.git) | MIT | clearlydefined |
+| [`open@8.4.0`](https://github.com/sindresorhus/open.git) | MIT | #7102 |
 | [`optionator@0.9.1`](git://github.com/gkz/optionator.git) | MIT | clearlydefined |
 | [`p-each-series@2.2.0`](https://github.com/sindresorhus/p-each-series.git) | MIT | clearlydefined |
 | [`p-finally@1.0.0`](https://github.com/sindresorhus/p-finally.git) | MIT | clearlydefined |
