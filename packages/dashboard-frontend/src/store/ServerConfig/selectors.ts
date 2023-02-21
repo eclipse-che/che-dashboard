@@ -21,7 +21,14 @@ export const selectDefaultComponents = createSelector(
   state => state.config.defaults?.components || [],
 );
 
-export const selectDefaultPlugins = createSelector(
+// returns a default editor id read from CheCluster CR
+export const selectDefaultEditorCR = createSelector(
+  selectState,
+  state => state.config.defaults?.editor,
+);
+
+// returns plugin ids read from CheCluster CR
+export const selectDefaultPluginsCR = createSelector(
   selectState,
   state => state.config.defaults?.plugins || [],
 );
