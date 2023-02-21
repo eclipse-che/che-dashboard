@@ -67,6 +67,7 @@ jobs:
           file: ./build/dockerfiles/Dockerfile
           platforms: linux/${{ matrix.arch }}
           push: false
+          provenance: false
           tags: ${{ env.IMAGE }}:${{ matrix.arch }}-next
       -
         id: result
