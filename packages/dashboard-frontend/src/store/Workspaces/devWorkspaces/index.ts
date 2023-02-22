@@ -44,7 +44,7 @@ import {
 } from '../../Plugins/devWorkspacePlugins/selectors';
 import { AUTHORIZED, SanityCheckAction } from '../../sanityCheckMiddleware';
 import * as DwServerConfigStore from '../../ServerConfig';
-import { selectDefaultEditorCR, selectOpenVSXUrl } from '../../ServerConfig/selectors';
+import { selectOpenVSXUrl } from '../../ServerConfig/selectors';
 import { deleteLogs, mergeLogs } from '../logs';
 import { selectRunningDevWorkspacesLimitExceeded } from './selectors';
 
@@ -597,37 +597,29 @@ export const actionCreators: ActionCreators = {
       let editor: EditorDefinition | undefined;
 
       const urlEditorId = attributes?.['che-editor'];
-      const crDefaultEditorId = selectDefaultEditorCR(getState());
-      const registryDefaultEditorId = selectDefaultEditor(getState());
+      const defaultEditorId = selectDefaultEditor(getState());
       if (urlEditorId !== undefined) {
+        // fetch editor if needed
+        if (urlEditorId !== defaultEditorId) {
+          await dispatch(
+            PluginsStore.actionCreators.requestDwEditor(
+              getState().workspacesSettings.settings,
+              urlEditorId,
+            ),
+          );
+        }
+
         editor = {
           default: false,
           id: urlEditorId,
-          plugins: [],
+          plugins: selectDwEditorsPluginsList(urlEditorId)(getState()),
         };
-      } else if (crDefaultEditorId !== undefined) {
+      } else if (defaultEditorId !== undefined) {
         editor = {
           default: true,
-          id: crDefaultEditorId,
-          plugins: [],
+          id: defaultEditorId,
+          plugins: selectDwEditorsPluginsList(defaultEditorId)(getState()),
         };
-      } else if (registryDefaultEditorId !== undefined) {
-        editor = {
-          default: true,
-          id: registryDefaultEditorId,
-          plugins: selectDwEditorsPluginsList(registryDefaultEditorId)(getState()),
-        };
-      }
-      // fetch editor if needed
-      if (editor !== undefined) {
-        await dispatch(
-          PluginsStore.actionCreators.requestDwEditor(
-            getState().workspacesSettings.settings,
-            editor.id,
-          ),
-        );
-        const plugins = selectDwEditorsPluginsList(editor.id)(getState());
-        editor.plugins.push(...plugins);
       }
 
       await dispatch({ type: 'REQUEST_DEVWORKSPACE', check: AUTHORIZED });
