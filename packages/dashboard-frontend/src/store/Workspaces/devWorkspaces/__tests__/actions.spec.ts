@@ -59,6 +59,9 @@ describe('DevWorkspace store, actions', () => {
       .withWorkspacesSettings({
         cheWorkspacePluginRegistryUrl: pluginRegistryUrl,
       })
+      .withDwPlugins({
+        defaultEditorName: defaultEditorId,
+      })
       .withDwServerConfig({
         defaults: {
           editor: defaultEditorId,
@@ -106,18 +109,6 @@ describe('DevWorkspace store, actions', () => {
 
       const expectedActions: Array<testStore.KnownAction | pluginRegistryStore.KnownAction> = [
         {
-          check: AUTHORIZED,
-          editorName: defaultEditorId,
-          type: 'REQUEST_DW_EDITOR',
-          url: `${pluginRegistryUrl}/plugins/${defaultEditorId}/devfile.yaml`,
-        },
-        {
-          editorName: 'default-editor-id',
-          plugin: expect.anything(),
-          type: 'RECEIVE_DW_EDITOR',
-          url: `${pluginRegistryUrl}/plugins/${defaultEditorId}/devfile.yaml`,
-        },
-        {
           type: 'REQUEST_DEVWORKSPACE',
           check: AUTHORIZED,
         },
@@ -159,18 +150,6 @@ describe('DevWorkspace store, actions', () => {
       const actions = store.getActions();
 
       const expectedActions: Array<testStore.KnownAction | pluginRegistryStore.KnownAction> = [
-        {
-          check: AUTHORIZED,
-          editorName: defaultEditorId,
-          type: 'REQUEST_DW_EDITOR',
-          url: `${pluginRegistryUrl}/plugins/${defaultEditorId}/devfile.yaml`,
-        },
-        {
-          editorName: 'default-editor-id',
-          plugin: expect.anything(),
-          type: 'RECEIVE_DW_EDITOR',
-          url: `${pluginRegistryUrl}/plugins/${defaultEditorId}/devfile.yaml`,
-        },
         {
           type: 'REQUEST_DEVWORKSPACE',
           check: AUTHORIZED,
