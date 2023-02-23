@@ -18,7 +18,7 @@ import { helpers } from '@eclipse-che/common';
 import { AppState } from '../../../../../store';
 import { selectAllWorkspaces } from '../../../../../store/Workspaces/selectors';
 import * as WorkspaceStore from '../../../../../store/Workspaces';
-import WorkspaceLoaderPage from '../../../../../pages/Loader/Workspace';
+import { LoaderPage } from '../../../../../pages/Loader';
 import { Workspace } from '../../../../../services/workspace-adapter';
 import { AlertItem, DevWorkspaceStatus, LoaderTab } from '../../../../../services/helpers/types';
 import { DisposableCollection } from '../../../../../services/helpers/disposable';
@@ -181,7 +181,7 @@ class StepInitialize extends AbstractLoaderStep<Props, State> {
     const alertItem = this.getAlertItem(lastError);
 
     return (
-      <WorkspaceLoaderPage
+      <LoaderPage
         alertItem={alertItem}
         currentStepId={currentStepId}
         steps={steps}

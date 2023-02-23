@@ -18,7 +18,7 @@ import common from '@eclipse-che/common';
 import { AppState } from '../../../../../store';
 import { selectAllWorkspaces } from '../../../../../store/Workspaces/selectors';
 import * as WorkspaceStore from '../../../../../store/Workspaces';
-import WorkspaceLoaderPage from '../../../../../pages/Loader/Workspace';
+import { LoaderPage } from '../../../../../pages/Loader';
 import { DisposableCollection } from '../../../../../services/helpers/disposable';
 import { delay } from '../../../../../services/helpers/delay';
 import { MIN_STEP_DURATION_MS, TIMEOUT_TO_GET_URL_SEC } from '../../../const';
@@ -168,7 +168,7 @@ class StepOpenWorkspace extends AbstractLoaderStep<Props, State> {
     const alertItem = this.getAlertItem(lastError);
 
     return (
-      <WorkspaceLoaderPage
+      <LoaderPage
         alertItem={alertItem}
         currentStepId={currentStepId}
         steps={steps}

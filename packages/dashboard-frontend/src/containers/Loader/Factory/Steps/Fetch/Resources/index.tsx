@@ -20,7 +20,7 @@ import * as DevfileRegistriesStore from '../../../../../../store/DevfileRegistri
 import { DisposableCollection } from '../../../../../../services/helpers/disposable';
 import { selectAllWorkspaces } from '../../../../../../store/Workspaces/selectors';
 import { delay } from '../../../../../../services/helpers/delay';
-import { FactoryLoaderPage } from '../../../../../../pages/Loader/Factory';
+import { LoaderPage } from '../../../../../../pages/Loader';
 import { selectDevWorkspaceResources } from '../../../../../../store/DevfileRegistries/selectors';
 import { FactoryParams } from '../../../types';
 import { MIN_STEP_DURATION_MS, TIMEOUT_TO_RESOLVE_SEC } from '../../../../const';
@@ -175,11 +175,12 @@ class StepFetchResources extends AbstractLoaderStep<Props, State> {
     const alertItem = this.getAlertItem(lastError);
 
     return (
-      <FactoryLoaderPage
+      <LoaderPage
         alertItem={alertItem}
         currentStepId={currentStepId}
         steps={steps}
         tabParam={tabParam}
+        workspace={undefined}
         onTabChange={tab => this.handleTabChange(tab)}
       />
     );

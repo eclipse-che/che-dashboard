@@ -21,7 +21,7 @@ import { DisposableCollection } from '../../../../../../services/helpers/disposa
 import { selectAllWorkspaces } from '../../../../../../store/Workspaces/selectors';
 import { delay } from '../../../../../../services/helpers/delay';
 import devfileApi from '../../../../../../services/devfileApi';
-import { FactoryLoaderPage } from '../../../../../../pages/Loader/Factory';
+import { LoaderPage } from '../../../../../../pages/Loader';
 import { selectDefaultNamespace } from '../../../../../../store/InfrastructureNamespaces/selectors';
 import {
   selectFactoryResolver,
@@ -399,11 +399,12 @@ class StepApplyDevfile extends AbstractLoaderStep<Props, State> {
     const alertItem = this.getAlertItem(lastError);
 
     return (
-      <FactoryLoaderPage
+      <LoaderPage
         alertItem={alertItem}
         currentStepId={currentStepId}
         steps={steps}
         tabParam={tabParam}
+        workspace={undefined}
         onTabChange={tab => this.handleTabChange(tab)}
       />
     );

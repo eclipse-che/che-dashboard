@@ -19,7 +19,7 @@ import { AppState } from '../../../../../store';
 import { DisposableCollection } from '../../../../../services/helpers/disposable';
 import { selectAllWorkspaces } from '../../../../../store/Workspaces/selectors';
 import { delay } from '../../../../../services/helpers/delay';
-import { FactoryLoaderPage } from '../../../../../pages/Loader/Factory';
+import { LoaderPage } from '../../../../../pages/Loader';
 import { selectDevWorkspaceResources } from '../../../../../store/DevfileRegistries/selectors';
 import { buildIdeLoaderLocation } from '../../../../../services/helpers/location';
 import { Workspace } from '../../../../../services/workspace-adapter';
@@ -232,11 +232,12 @@ class StepCheckExistingWorkspaces extends AbstractLoaderStep<Props, State> {
     const alertItem = this.getAlertItem(lastError);
 
     return (
-      <FactoryLoaderPage
+      <LoaderPage
         alertItem={alertItem}
         currentStepId={currentStepId}
         steps={steps}
         tabParam={tabParam}
+        workspace={undefined}
         onTabChange={tab => this.handleTabChange(tab)}
       />
     );

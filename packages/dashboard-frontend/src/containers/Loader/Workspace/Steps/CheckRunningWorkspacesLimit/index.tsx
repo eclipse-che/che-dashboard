@@ -21,7 +21,7 @@ import {
   selectRunningWorkspaces,
 } from '../../../../../store/Workspaces/selectors';
 import * as WorkspaceStore from '../../../../../store/Workspaces';
-import WorkspaceLoaderPage from '../../../../../pages/Loader/Workspace';
+import { LoaderPage } from '../../../../../pages/Loader';
 import { AlertItem, DevWorkspaceStatus, LoaderTab } from '../../../../../services/helpers/types';
 import { DisposableCollection } from '../../../../../services/helpers/disposable';
 import { delay } from '../../../../../services/helpers/delay';
@@ -326,7 +326,7 @@ class StepCheckRunningWorkspacesLimit extends AbstractLoaderStep<Props, State> {
     const alertItem = this.getAlertItem(lastError, workspace);
 
     return (
-      <WorkspaceLoaderPage
+      <LoaderPage
         alertItem={alertItem}
         currentStepId={currentStepId}
         steps={steps}

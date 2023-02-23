@@ -15,7 +15,7 @@ import { AlertVariant } from '@patternfly/react-core';
 import { helpers } from '@eclipse-che/common';
 import { DisposableCollection } from '../../../../../services/helpers/disposable';
 import { delay } from '../../../../../services/helpers/delay';
-import { FactoryLoaderPage } from '../../../../../pages/Loader/Factory';
+import { LoaderPage } from '../../../../../pages/Loader';
 import { MIN_STEP_DURATION_MS } from '../../../const';
 import { FactoryParams } from '../../types';
 import buildFactoryParams from '../../buildFactoryParams';
@@ -86,11 +86,12 @@ export default class StepCreateWorkspace extends AbstractLoaderStep<Props, State
     const alertItem = this.getAlertItem(lastError);
 
     return (
-      <FactoryLoaderPage
+      <LoaderPage
         alertItem={alertItem}
         currentStepId={currentStepId}
         steps={steps}
         tabParam={tabParam}
+        workspace={undefined}
         onTabChange={tab => this.handleTabChange(tab)}
       />
     );
