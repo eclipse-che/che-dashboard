@@ -36,7 +36,7 @@ import { AbstractLoaderStep, LoaderStepProps, LoaderStepState } from '../../Abst
 import { MIN_STEP_DURATION_MS, TIMEOUT_TO_STOP_SEC } from '../../const';
 import findTargetWorkspace from '../../findTargetWorkspace';
 import workspaceStatusIs from '../../workspaceStatusIs';
-import { ToggleBarsContext } from '../../../../../contexts/ToggleBars';
+import { ToggleBarsContext } from '../../../../contexts/ToggleBars';
 
 export type Props = MappedProps &
   LoaderStepProps & {
