@@ -10,42 +10,37 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
+import common from '@eclipse-che/common';
+import { AlertVariant } from '@patternfly/react-core';
+import { isEqual } from 'lodash';
 import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
-import { AlertVariant } from '@patternfly/react-core';
-import common from '@eclipse-che/common';
-import { isEqual } from 'lodash';
-import { AppState } from '../../../../../store';
+import { LoaderPage } from '../../../../pages/Loader';
+import { WorkspaceParams } from '../../../../Routes/routes';
+import { delay } from '../../../../services/helpers/delay';
+import { DisposableCollection } from '../../../../services/helpers/disposable';
+import { buildHomeLocation, buildIdeLoaderLocation } from '../../../../services/helpers/location';
+import { AlertItem, DevWorkspaceStatus, LoaderTab } from '../../../../services/helpers/types';
+import { Workspace } from '../../../../services/workspace-adapter';
+import { AppState } from '../../../../store';
+import { selectRunningWorkspacesLimit } from '../../../../store/ClusterConfig/selectors';
+import * as WorkspaceStore from '../../../../store/Workspaces';
+import { RunningWorkspacesExceededError } from '../../../../store/Workspaces/devWorkspaces';
+import { throwRunningWorkspacesExceededError } from '../../../../store/Workspaces/devWorkspaces/checkRunningWorkspacesLimit';
+import { selectRunningDevWorkspacesLimitExceeded } from '../../../../store/Workspaces/devWorkspaces/selectors';
 import {
   selectAllWorkspaces,
   selectRunningWorkspaces,
-} from '../../../../../store/Workspaces/selectors';
-import * as WorkspaceStore from '../../../../../store/Workspaces';
-import { LoaderPage } from '../../../../../pages/Loader';
-import { AlertItem, DevWorkspaceStatus, LoaderTab } from '../../../../../services/helpers/types';
-import { DisposableCollection } from '../../../../../services/helpers/disposable';
-import { delay } from '../../../../../services/helpers/delay';
-import { MIN_STEP_DURATION_MS, TIMEOUT_TO_STOP_SEC } from '../../../const';
-import workspaceStatusIs from '../workspaceStatusIs';
-import { Workspace } from '../../../../../services/workspace-adapter';
-import { AbstractLoaderStep, LoaderStepProps, LoaderStepState } from '../../../AbstractStep';
-import { RunningWorkspacesExceededError } from '../../../../../store/Workspaces/devWorkspaces';
-import { throwRunningWorkspacesExceededError } from '../../../../../store/Workspaces/devWorkspaces/checkRunningWorkspacesLimit';
-import {
-  buildHomeLocation,
-  buildIdeLoaderLocation,
-} from '../../../../../services/helpers/location';
-import { selectRunningDevWorkspacesLimitExceeded } from '../../../../../store/Workspaces/devWorkspaces/selectors';
-import findTargetWorkspace from '../../../findTargetWorkspace';
-import { selectRunningWorkspacesLimit } from '../../../../../store/ClusterConfig/selectors';
+} from '../../../../store/Workspaces/selectors';
+import { AbstractLoaderStep, LoaderStepProps, LoaderStepState } from '../../AbstractStep';
+import { MIN_STEP_DURATION_MS, TIMEOUT_TO_STOP_SEC } from '../../const';
+import findTargetWorkspace from '../../findTargetWorkspace';
+import workspaceStatusIs from '../../workspaceStatusIs';
 import { ToggleBarsContext } from '../../../../../contexts/ToggleBars';
 
 export type Props = MappedProps &
   LoaderStepProps & {
-    matchParams: {
-      namespace: string;
-      workspaceName: string;
-    };
+    matchParams: WorkspaceParams | undefined;
   };
 export type State = LoaderStepState & {
   shouldStop: boolean; // should the loader to stop another workspace if the running workspaces limit is exceeded
@@ -114,11 +109,7 @@ class StepCheckRunningWorkspacesLimit extends AbstractLoaderStep<Props, State> {
     const targetWorkspace = this.findTargetWorkspace(this.props);
     const targetWorkspaceIsRunning = runningWorkspaces.some(w => w.uid === targetWorkspace?.uid);
 
-    if (
-      targetWorkspace !== undefined &&
-      targetWorkspaceIsRunning === false &&
-      runningDevWorkspacesLimitExceeded === true
-    ) {
+    if (targetWorkspaceIsRunning === false && runningDevWorkspacesLimitExceeded === true) {
       this.setState({
         shouldStop: true,
       });
@@ -132,6 +123,9 @@ class StepCheckRunningWorkspacesLimit extends AbstractLoaderStep<Props, State> {
    */
   protected async runStep(): Promise<boolean> {
     await delay(MIN_STEP_DURATION_MS);
+
+    // eslint-disable-next-line no-debugger
+    debugger;
 
     const { runningWorkspacesLimit } = this.props;
     const { shouldStop, redundantWorkspaceUID, lastError } = this.state;
@@ -258,6 +252,9 @@ class StepCheckRunningWorkspacesLimit extends AbstractLoaderStep<Props, State> {
   }
 
   protected findTargetWorkspace(props: Props): Workspace | undefined {
+    if (props.matchParams === undefined) {
+      return undefined;
+    }
     return findTargetWorkspace(props.allWorkspaces, props.matchParams);
   }
 

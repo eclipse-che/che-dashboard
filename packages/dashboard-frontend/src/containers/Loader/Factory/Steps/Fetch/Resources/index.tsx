@@ -10,23 +10,22 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
+import { helpers } from '@eclipse-che/common';
+import { AlertVariant } from '@patternfly/react-core';
+import { isEqual } from 'lodash';
 import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
-import { isEqual } from 'lodash';
-import { AlertVariant } from '@patternfly/react-core';
-import { helpers } from '@eclipse-che/common';
+import { LoaderPage } from '../../../../../../pages/Loader';
+import { delay } from '../../../../../../services/helpers/delay';
+import { DisposableCollection } from '../../../../../../services/helpers/disposable';
+import { AlertItem } from '../../../../../../services/helpers/types';
 import { AppState } from '../../../../../../store';
 import * as DevfileRegistriesStore from '../../../../../../store/DevfileRegistries';
-import { DisposableCollection } from '../../../../../../services/helpers/disposable';
-import { selectAllWorkspaces } from '../../../../../../store/Workspaces/selectors';
-import { delay } from '../../../../../../services/helpers/delay';
-import { LoaderPage } from '../../../../../../pages/Loader';
 import { selectDevWorkspaceResources } from '../../../../../../store/DevfileRegistries/selectors';
-import { FactoryParams } from '../../../types';
-import { MIN_STEP_DURATION_MS, TIMEOUT_TO_RESOLVE_SEC } from '../../../../const';
-import buildFactoryParams from '../../../buildFactoryParams';
+import { selectAllWorkspaces } from '../../../../../../store/Workspaces/selectors';
 import { AbstractLoaderStep, LoaderStepProps, LoaderStepState } from '../../../../AbstractStep';
-import { AlertItem } from '../../../../../../services/helpers/types';
+import { buildFactoryParams, FactoryParams } from '../../../../buildFactoryParams';
+import { MIN_STEP_DURATION_MS, TIMEOUT_TO_RESOLVE_SEC } from '../../../../const';
 
 export type Props = MappedProps &
   LoaderStepProps & {

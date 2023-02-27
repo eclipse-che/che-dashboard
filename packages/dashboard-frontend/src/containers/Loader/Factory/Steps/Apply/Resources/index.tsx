@@ -10,36 +10,35 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
+import { helpers } from '@eclipse-che/common';
+import { AlertVariant } from '@patternfly/react-core';
+import { isEqual } from 'lodash';
 import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
-import { isEqual } from 'lodash';
-import { AlertVariant } from '@patternfly/react-core';
-import { helpers } from '@eclipse-che/common';
-import { AppState } from '../../../../../../store';
-import * as FactoryResolverStore from '../../../../../../store/FactoryResolver';
-import * as WorkspacesStore from '../../../../../../store/Workspaces';
-import * as DevWorkspacesStore from '../../../../../../store/Workspaces/devWorkspaces';
-import * as DevfileRegistriesStore from '../../../../../../store/DevfileRegistries';
-import { DisposableCollection } from '../../../../../../services/helpers/disposable';
-import { selectAllWorkspaces } from '../../../../../../store/Workspaces/selectors';
-import { delay } from '../../../../../../services/helpers/delay';
 import { LoaderPage } from '../../../../../../pages/Loader';
-import { selectDefaultNamespace } from '../../../../../../store/InfrastructureNamespaces/selectors';
+import { delay } from '../../../../../../services/helpers/delay';
+import { DisposableCollection } from '../../../../../../services/helpers/disposable';
+import { buildIdeLoaderLocation } from '../../../../../../services/helpers/location';
+import { AlertItem } from '../../../../../../services/helpers/types';
+import { Workspace } from '../../../../../../services/workspace-adapter';
+import { AppState } from '../../../../../../store';
+import * as DevfileRegistriesStore from '../../../../../../store/DevfileRegistries';
+import { DevWorkspaceResources } from '../../../../../../store/DevfileRegistries';
+import { selectDevWorkspaceResources } from '../../../../../../store/DevfileRegistries/selectors';
+import * as FactoryResolverStore from '../../../../../../store/FactoryResolver';
 import {
   selectFactoryResolver,
   selectFactoryResolverConverted,
 } from '../../../../../../store/FactoryResolver/selectors';
-import prepareResources from './prepareResources';
-import findTargetWorkspace from '../../../../findTargetWorkspace';
-import { selectDevWorkspaceResources } from '../../../../../../store/DevfileRegistries/selectors';
-import { buildIdeLoaderLocation } from '../../../../../../services/helpers/location';
-import { Workspace } from '../../../../../../services/workspace-adapter';
-import { FactoryParams } from '../../../types';
-import { MIN_STEP_DURATION_MS, TIMEOUT_TO_CREATE_SEC } from '../../../../const';
-import buildFactoryParams from '../../../buildFactoryParams';
+import { selectDefaultNamespace } from '../../../../../../store/InfrastructureNamespaces/selectors';
+import * as WorkspacesStore from '../../../../../../store/Workspaces';
+import * as DevWorkspacesStore from '../../../../../../store/Workspaces/devWorkspaces';
+import { selectAllWorkspaces } from '../../../../../../store/Workspaces/selectors';
 import { AbstractLoaderStep, LoaderStepProps, LoaderStepState } from '../../../../AbstractStep';
-import { AlertItem } from '../../../../../../services/helpers/types';
-import { DevWorkspaceResources } from '../../../../../../store/DevfileRegistries';
+import { buildFactoryParams, FactoryParams } from '../../../../buildFactoryParams';
+import { MIN_STEP_DURATION_MS, TIMEOUT_TO_CREATE_SEC } from '../../../../const';
+import findTargetWorkspace from '../../../../findTargetWorkspace';
+import prepareResources from './prepareResources';
 
 export type Props = MappedProps &
   LoaderStepProps & {

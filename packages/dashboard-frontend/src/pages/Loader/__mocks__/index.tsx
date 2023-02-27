@@ -14,7 +14,7 @@ import React from 'react';
 import { Props } from '..';
 import { LoaderTab } from '../../../services/helpers/types';
 
-export class CommonLoaderPage extends React.PureComponent<Props> {
+export class LoaderPage extends React.PureComponent<Props> {
   render(): React.ReactNode {
     const { alertItem, currentStepId, steps, tabParam, onTabChange } = this.props;
     const wizardSteps = steps.map(step => (

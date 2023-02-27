@@ -39,10 +39,10 @@ jest.mock('react-tooltip', () => {
     return <div>Dummy Tooltip</div>;
   };
 });
-jest.mock('../../../../components/Loader/Alert');
-jest.mock('../../../../components/Loader/Progress');
-jest.mock('../../../../components/WorkspaceLogs');
-jest.mock('../../../../components/WorkspaceEvents');
+jest.mock('../../../components/Loader/Alert');
+jest.mock('../../../components/Loader/Progress');
+jest.mock('../../../components/WorkspaceLogs');
+jest.mock('../../../components/WorkspaceEvents');
 
 const { createSnapshot, renderComponent } = getComponentRenderer(getComponent);
 
@@ -116,7 +116,7 @@ describe('Loader page', () => {
     const tabButtonLogs = screen.getByRole('button', { name: 'Logs' });
     userEvent.click(tabButtonLogs);
 
-    expect(mockOnTabChange).toHaveBeenCalledWith(LoaderTab.Logs);
+    expect(mockOnTabChange).toHaveBeenCalledWith(LoaderTab[LoaderTab.Logs]);
   });
 
   it('should handle reload', () => {

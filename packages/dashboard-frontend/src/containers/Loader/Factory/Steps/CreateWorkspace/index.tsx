@@ -10,17 +10,16 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import React from 'react';
-import { AlertVariant } from '@patternfly/react-core';
 import { helpers } from '@eclipse-che/common';
-import { DisposableCollection } from '../../../../../services/helpers/disposable';
-import { delay } from '../../../../../services/helpers/delay';
+import { AlertVariant } from '@patternfly/react-core';
+import React from 'react';
 import { LoaderPage } from '../../../../../pages/Loader';
-import { MIN_STEP_DURATION_MS } from '../../../const';
-import { FactoryParams } from '../../types';
-import buildFactoryParams from '../../buildFactoryParams';
-import { AbstractLoaderStep, LoaderStepProps, LoaderStepState } from '../../../AbstractStep';
+import { delay } from '../../../../../services/helpers/delay';
+import { DisposableCollection } from '../../../../../services/helpers/disposable';
 import { AlertItem } from '../../../../../services/helpers/types';
+import { AbstractLoaderStep, LoaderStepProps, LoaderStepState } from '../../../AbstractStep';
+import { buildFactoryParams, FactoryParams } from '../../../buildFactoryParams';
+import { MIN_STEP_DURATION_MS } from '../../../const';
 
 export type Props = LoaderStepProps & {
   searchParams: URLSearchParams;
