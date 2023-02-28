@@ -41,29 +41,6 @@ describe('DevWorkspace client, create', () => {
     window.Date = dateConstructor;
   });
 
-  describe('Create from devfile', () => {
-    let spyCreateWorkspace: jest.SpyInstance;
-    let spyPatchWorkspace: jest.SpyInstance;
-
-    beforeEach(() => {
-      const testWorkspace = new DevWorkspaceBuilder()
-        .withMetadata({
-          name,
-          namespace,
-        })
-        .build();
-      spyCreateWorkspace = jest
-        .spyOn(DwApi, 'createWorkspace')
-        .mockResolvedValueOnce(testWorkspace);
-      spyPatchWorkspace = jest.spyOn(DwApi, 'patchWorkspace').mockResolvedValueOnce(testWorkspace);
-    });
-
-    afterEach(() => {
-      spyPatchWorkspace.mockClear();
-      spyCreateWorkspace.mockClear();
-    });
-  });
-
   describe('Create from resources', () => {
     let testDevWorkspace: devfileApi.DevWorkspace;
     let testDevWorkspaceTemplate: devfileApi.DevWorkspaceTemplate;
