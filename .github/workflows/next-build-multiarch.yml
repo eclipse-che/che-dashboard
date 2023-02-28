@@ -18,6 +18,7 @@ on:
 
 env:
   IMAGE: quay.io/eclipse/che-dashboard
+  CACHE_IMAGE_FULL: registry,ref=quay.io/eclipse/che-dashboard:cache
 
 jobs:
 
