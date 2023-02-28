@@ -65,7 +65,7 @@ jobs:
         run: yarn lint:check
       -
         name: "Run unit tests"
-        run: yarn test --runInBand
+        run: yarn test
 
   docker-build:
     needs: build-and-test
