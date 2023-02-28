@@ -182,13 +182,6 @@ export const devWorkspaceResourcesSchema: JSONSchema7 = {
   examples: [devWorkspaceResourcesExample],
 };
 
-export interface IDevWorkspaceResourcesParams {
-  devfileContent: string | undefined;
-  editorPath: string | undefined;
-  pluginRegistryUrl: string | undefined;
-  editorEntry: string | undefined;
-}
-
 export const devworkspaceSchema: JSONSchema7 = {
   type: 'object',
   properties: {
