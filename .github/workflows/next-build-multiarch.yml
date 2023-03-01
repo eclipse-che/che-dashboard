@@ -17,8 +17,8 @@ on:
       - main
 
 env:
-  IMAGE: quay.io/mkuznyetsov/che-dashboard
-  CACHE_IMAGE_FULL: registry,ref=quay.io/mkuznyetsov/che-dashboard:cache
+  IMAGE: quay.io/mkuznets/che-dashboard
+  CACHE_IMAGE_FULL: registry,ref=quay.io/mkuznets/che-dashboard:cache
 
 jobs:
 
