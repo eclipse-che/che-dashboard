@@ -18,6 +18,7 @@ on:
 
 env:
   IMAGE: quay.io/eclipse/che-dashboard
+  CACHE_IMAGE_FULL: quay.io/eclipse/che-dashboard:cache 
 
 jobs:
 
