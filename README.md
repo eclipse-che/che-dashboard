@@ -100,6 +100,7 @@ Within Eclipse Che, you are able to:
 * debug the project within the editor
 * push changes to GitHub
 
+
 ###  Starting a workspace within Eclipse Che
 
 Navigate to the following URL to start a new workspace within Eclipse Che:
