@@ -124,9 +124,6 @@ class StepCheckRunningWorkspacesLimit extends AbstractLoaderStep<Props, State> {
   protected async runStep(): Promise<boolean> {
     await delay(MIN_STEP_DURATION_MS);
 
-    // eslint-disable-next-line no-debugger
-    debugger;
-
     const { runningWorkspacesLimit } = this.props;
     const { shouldStop, redundantWorkspaceUID, lastError } = this.state;
 
