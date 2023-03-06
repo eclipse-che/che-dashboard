@@ -69,10 +69,17 @@ export class GitRepoLocationInput extends React.PureComponent<Props, State> {
         errorMessage: undefined,
       });
     } else {
-      this.setState({
-        validated: ValidatedOptions.error,
-        errorMessage: validity.typeMismatch ? ERROR_TYPE_MISMATCH : undefined,
-      });
+      if (location.startsWith('git@')) {
+        this.setState({
+          validated: ValidatedOptions.default,
+          errorMessage: undefined,
+        });
+      } else {
+        this.setState({
+          validated: ValidatedOptions.error,
+          errorMessage: validity.typeMismatch ? ERROR_TYPE_MISMATCH : undefined,
+        });
+      }
     }
 
     this.setState({
