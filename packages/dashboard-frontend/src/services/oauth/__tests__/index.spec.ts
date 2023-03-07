@@ -31,8 +31,24 @@ OAuthService.openOAuthPage = mockOpenOAuthPage;
 console.log = jest.fn();
 
 describe('OAuth service', () => {
-  it('should not refresh token if no projects section in devworkspace', async () => {
+  it('should not refresh token if no status section in devworkspace', async () => {
     const devWorkspace = new DevWorkspaceBuilder().build();
+
+    OAuthService.refreshTokenIfNeeded(devWorkspace);
+
+    expect(refreshFactoryOauthTokenSpy).not.toHaveBeenCalled();
+  });
+  it('should not refresh token if no mainUrl in status', async () => {
+    const status = {};
+    const devWorkspace = new DevWorkspaceBuilder().withStatus(status).build();
+
+    OAuthService.refreshTokenIfNeeded(devWorkspace);
+
+    expect(refreshFactoryOauthTokenSpy).not.toHaveBeenCalled();
+  });
+  it('should not refresh token if no projects section in devworkspace', async () => {
+    const status = { mainUrl: 'https://mainUrl' };
+    const devWorkspace = new DevWorkspaceBuilder().withStatus(status).build();
 
     OAuthService.refreshTokenIfNeeded(devWorkspace);
 
@@ -41,7 +57,11 @@ describe('OAuth service', () => {
 
   it('should not refresh token if devworkspace does not have any project', async () => {
     const projects = [{}];
-    const devWorkspace = new DevWorkspaceBuilder().withProjects(projects).build();
+    const status = { mainUrl: 'https://mainUrl' };
+    const devWorkspace = new DevWorkspaceBuilder()
+      .withStatus(status)
+      .withProjects(projects)
+      .build();
 
     OAuthService.refreshTokenIfNeeded(devWorkspace);
 
@@ -49,6 +69,7 @@ describe('OAuth service', () => {
   });
 
   it('should not refresh token if no git project', async () => {
+    const status = { mainUrl: 'https://mainUrl' };
     const projects = [
       {
         name: 'project',
@@ -57,7 +78,10 @@ describe('OAuth service', () => {
         },
       },
     ];
-    const devWorkspace = new DevWorkspaceBuilder().withProjects(projects).build();
+    const devWorkspace = new DevWorkspaceBuilder()
+      .withStatus(status)
+      .withProjects(projects)
+      .build();
 
     OAuthService.refreshTokenIfNeeded(devWorkspace);
 
@@ -65,6 +89,7 @@ describe('OAuth service', () => {
   });
 
   it('should refresh token', async () => {
+    const status = { mainUrl: 'https://mainUrl' };
     const projects = [
       {
         name: 'project',
@@ -75,7 +100,10 @@ describe('OAuth service', () => {
         },
       },
     ];
-    const devWorkspace = new DevWorkspaceBuilder().withProjects(projects).build();
+    const devWorkspace = new DevWorkspaceBuilder()
+      .withStatus(status)
+      .withProjects(projects)
+      .build();
 
     refreshFactoryOauthTokenSpy.mockResolvedValueOnce();
 
@@ -85,6 +113,7 @@ describe('OAuth service', () => {
   });
 
   it('should not redirect to oauth window if an error does not include axios responce', async () => {
+    const status = { mainUrl: 'https://mainUrl' };
     const projects = [
       {
         name: 'project',
@@ -95,7 +124,10 @@ describe('OAuth service', () => {
         },
       },
     ];
-    const devWorkspace = new DevWorkspaceBuilder().withProjects(projects).build();
+    const devWorkspace = new DevWorkspaceBuilder()
+      .withStatus(status)
+      .withProjects(projects)
+      .build();
 
     refreshFactoryOauthTokenSpy.mockRejectedValueOnce({
       isAxiosError: false,
@@ -116,6 +148,7 @@ describe('OAuth service', () => {
   });
 
   it('should not redirect to oauth window if status code is not 401', async () => {
+    const status = { mainUrl: 'https://mainUrl' };
     const projects = [
       {
         name: 'project',
@@ -126,7 +159,10 @@ describe('OAuth service', () => {
         },
       },
     ];
-    const devWorkspace = new DevWorkspaceBuilder().withProjects(projects).build();
+    const devWorkspace = new DevWorkspaceBuilder()
+      .withStatus(status)
+      .withProjects(projects)
+      .build();
 
     refreshFactoryOauthTokenSpy.mockRejectedValueOnce({
       isAxiosError: false,
@@ -153,6 +189,7 @@ describe('OAuth service', () => {
   });
 
   it('should not redirect to oauth window if error does not provide OAuth response', async () => {
+    const status = { mainUrl: 'https://mainUrl' };
     const projects = [
       {
         name: 'project',
@@ -163,7 +200,10 @@ describe('OAuth service', () => {
         },
       },
     ];
-    const devWorkspace = new DevWorkspaceBuilder().withProjects(projects).build();
+    const devWorkspace = new DevWorkspaceBuilder()
+      .withStatus(status)
+      .withProjects(projects)
+      .build();
 
     refreshFactoryOauthTokenSpy.mockRejectedValueOnce({
       isAxiosError: false,

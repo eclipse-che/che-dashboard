@@ -227,7 +227,6 @@ class StepFetchDevfile extends AbstractLoaderStep<Props, State> {
     });
 
     try {
-      OAuthService.setOauthStartedState();
       await this.props.requestFactoryResolver(factoryUrl, params);
       this.clearNumberOfTries();
       return true;

@@ -12,7 +12,6 @@
 
 import common, { helpers } from '@eclipse-che/common';
 import { OAuthResponse } from '../../store/FactoryResolver';
-import SessionStorageService, { SessionStorageKey } from '../session-storage';
 import { container } from '../../inversify.config';
 import { CheWorkspaceClient } from '../workspace-client/cheworkspace/cheWorkspaceClient';
 import devfileApi from '../devfileApi';
@@ -31,6 +30,10 @@ export default class OAuthService {
   }
 
   static async refreshTokenIfNeeded(workspace: devfileApi.DevWorkspace): Promise<void> {
+    // if workspace is not created yet, do not refresh token
+    if (!workspace.status || !workspace.status.mainUrl) {
+      return;
+    }
     if (!workspace.spec.template.projects) {
       return;
     }
@@ -63,10 +66,6 @@ export default class OAuthService {
         );
       }
     }
-  }
-
-  static setOauthStartedState(): void {
-    SessionStorageService.update(SessionStorageKey.AUTHENTICATION_STATUS, 'started');
   }
 }
 
