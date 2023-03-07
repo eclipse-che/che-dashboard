@@ -121,6 +121,7 @@ jobs:
           file: ./${{ env.DIR_DASHBOARD }}/build/dockerfiles/Dockerfile
           platforms: ${{ matrix.platform }}
           push: ${{ matrix.default == true }}
+          provenance: false
           tags: ${{ env.ORGANIZATION }}/che-dashboard:${{ env.IMAGE_VERSION }}
       -
         name: "Comment with image name"
