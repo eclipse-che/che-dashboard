@@ -514,10 +514,13 @@ export const actionCreators: ActionCreators = {
         );
 
         if (createResp.headers.warning) {
+          // get rid of the status code
+          const warning = createResp.headers.warning.replace(/^\d+\s*?-\s*?/g, '');
+
           dispatch({
             type: Type.UPDATE_WARNING,
             workspace: createResp.devWorkspace,
-            warning: createResp.headers.warning,
+            warning,
           });
         }
 
