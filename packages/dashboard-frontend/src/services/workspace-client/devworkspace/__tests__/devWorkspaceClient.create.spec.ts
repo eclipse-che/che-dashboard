@@ -11,9 +11,7 @@
  */
 
 import { container } from '../../../../inversify.config';
-import { DevWorkspaceBuilder } from '../../../../store/__mocks__/devWorkspaceBuilder';
 import { DevWorkspaceClient } from '../devWorkspaceClient';
-import * as DwApi from '../../../dashboard-backend-client/devWorkspaceApi';
 import * as DwtApi from '../../../dashboard-backend-client/devWorkspaceTemplateApi';
 import devfileApi from '../../../devfileApi';
 

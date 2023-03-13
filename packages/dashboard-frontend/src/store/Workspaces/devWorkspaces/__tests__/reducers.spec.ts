@@ -284,7 +284,7 @@ describe('DevWorkspace, reducers', () => {
     const incomingAction: testStore.UpdateWarningAction = {
       type: testStore.Type.UPDATE_WARNING,
       workspace: devWorkspace,
-      warning: '299 - Unsupported Devfile feature',
+      warning: 'Unsupported Devfile feature',
     };
 
     const newState = testStore.reducer(initialState, incomingAction);
@@ -295,7 +295,7 @@ describe('DevWorkspace, reducers', () => {
       startedWorkspaces: {},
       resourceVersion: '0',
       warnings: {
-        [WorkspaceAdapter.getUID(devWorkspace)]: '299 - Unsupported Devfile feature',
+        [WorkspaceAdapter.getUID(devWorkspace)]: 'Unsupported Devfile feature',
       },
     };
 

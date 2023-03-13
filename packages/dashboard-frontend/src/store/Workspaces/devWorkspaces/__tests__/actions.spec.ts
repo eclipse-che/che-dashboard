@@ -539,7 +539,7 @@ describe('DevWorkspace store, actions', () => {
       };
 
       mockCreateDevWorkspace.mockResolvedValueOnce({
-        headers: { warning: '299 - Unsupported Devfile feature' },
+        headers: { warning: 'Unsupported Devfile feature' },
         devWorkspace,
       });
       mockCreateDevWorkspaceTemplate.mockResolvedValueOnce({ headers: {}, devWorkspaceTemplate });
@@ -561,7 +561,7 @@ describe('DevWorkspace store, actions', () => {
         {
           type: testStore.Type.UPDATE_WARNING,
           workspace: devWorkspace,
-          warning: '299 - Unsupported Devfile feature',
+          warning: 'Unsupported Devfile feature',
         },
         {
           type: testStore.Type.ADD_DEVWORKSPACE,
