@@ -44,7 +44,7 @@ export class ApplyingDevfileError extends Error {
   }
 }
 
-class UnsupportedGitProviderError extends Error {
+export class UnsupportedGitProviderError extends Error {
   constructor(message) {
     super(message);
     this.name = 'UnsupportedGitProviderError';
