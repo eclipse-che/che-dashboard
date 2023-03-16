@@ -30,6 +30,7 @@ import { DevWorkspaceBuilder } from '../../../__mocks__/devWorkspaceBuilder';
 import { FakeStoreBuilder } from '../../../__mocks__/storeBuilder';
 import { checkRunningWorkspacesLimit } from '../checkRunningWorkspacesLimit';
 import { dump } from 'js-yaml';
+import { FactoryParams } from '../../../../containers/Loader/buildFactoryParams';
 
 jest.mock('../../../../services/dashboard-backend-client/serverConfigApi');
 jest.mock('../../../../services/helpers/delay', () => ({
@@ -636,11 +637,14 @@ describe('DevWorkspace store, actions', () => {
           namespace: 'user-che',
         },
       };
+      const attr: Partial<FactoryParams> = {};
 
       mockCreateDevWorkspace.mockResolvedValueOnce({ devWorkspace, headers: {} });
       mockUpdateDevWorkspace.mockResolvedValueOnce({ devWorkspace, headers: {} });
 
-      await store.dispatch(testStore.actionCreators.createWorkspaceFromDevfile(devfile, {}, {}));
+      await store.dispatch(
+        testStore.actionCreators.createWorkspaceFromDevfile(devfile, attr as FactoryParams, {}),
+      );
 
       const actions = store.getActions();
 
@@ -670,11 +674,14 @@ describe('DevWorkspace store, actions', () => {
           namespace: 'user-che',
         },
       };
+      const attr: Partial<FactoryParams> = {};
 
       mockCreateDevWorkspace.mockRejectedValueOnce(new Error('Something unexpected happened.'));
 
       try {
-        await store.dispatch(testStore.actionCreators.createWorkspaceFromDevfile(devfile, {}, {}));
+        await store.dispatch(
+          testStore.actionCreators.createWorkspaceFromDevfile(devfile, attr as FactoryParams, {}),
+        );
       } catch (e) {
         // no-op
       }

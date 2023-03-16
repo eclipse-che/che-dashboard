@@ -160,7 +160,7 @@ export type ActionCreators = {
   updateWorkspace: (workspace: devfileApi.DevWorkspace) => AppThunk<KnownAction, Promise<void>>;
   createWorkspaceFromDevfile: (
     devfile: devfileApi.Devfile,
-    attributes: Partial<FactoryParams>,
+    attributes: FactoryParams,
     optionalFilesContent: {
       [fileName: string]: string;
     },
@@ -168,7 +168,7 @@ export type ActionCreators = {
   createWorkspaceFromResources: (
     devWorkspace: devfileApi.DevWorkspace,
     devWorkspaceTemplate: devfileApi.DevWorkspaceTemplate,
-    editor?: string,
+    editorId?: string,
   ) => AppThunk<KnownAction, Promise<void>>;
 
   handleWebSocketMessage: (
@@ -574,7 +574,7 @@ export const actionCreators: ActionCreators = {
   createWorkspaceFromDevfile:
     (
       devfile: devfileApi.Devfile,
-      attributes: Partial<FactoryParams>,
+      attributes: FactoryParams,
       optionalFilesContent: {
         [fileName: string]: string;
       },

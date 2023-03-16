@@ -11,12 +11,10 @@
  */
 
 import common from '@eclipse-che/common';
-import axios from 'axios';
 import devfileApi from '../devfileApi';
 import { load, dump } from 'js-yaml';
 import { ICheEditorYaml } from './devworkspace/devWorkspaceClient';
 import { CHE_EDITOR_YAML_PATH } from './';
-import { EDITOR_ATTR } from '../../containers/Loader/const';
 import { AppState } from '../../store';
 import { ThunkDispatch } from 'redux-thunk';
 import { KnownAction } from '../../store/DevfileRegistries';

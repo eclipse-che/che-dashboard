@@ -108,7 +108,7 @@ export type ActionCreators = {
   updateWorkspace: (workspace: Workspace) => AppThunk<KnownAction, Promise<void>>;
   createWorkspaceFromDevfile: (
     devfile: devfileApi.Devfile,
-    attributes: Partial<FactoryParams>,
+    attributes: FactoryParams,
     optionalFilesContent?: {
       [fileName: string]: string;
     },
@@ -215,7 +215,7 @@ export const actionCreators: ActionCreators = {
   createWorkspaceFromDevfile:
     (
       devfile: devfileApi.Devfile,
-      attributes: Partial<FactoryParams>,
+      attributes: FactoryParams,
       optionalFilesContent?: {
         [fileName: string]: string;
       },
