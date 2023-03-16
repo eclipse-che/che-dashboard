@@ -12,7 +12,7 @@
 
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
-import { api } from '@eclipse-che/common';
+import { api as dashboardBackendApi, api } from '@eclipse-che/common';
 import { V1Status } from '@kubernetes/client-node';
 import { AnyAction } from 'redux';
 import { MockStoreEnhanced } from 'redux-mock-store';
@@ -29,6 +29,7 @@ import * as ServerConfigStore from '../../../ServerConfig';
 import { DevWorkspaceBuilder } from '../../../__mocks__/devWorkspaceBuilder';
 import { FakeStoreBuilder } from '../../../__mocks__/storeBuilder';
 import { checkRunningWorkspacesLimit } from '../checkRunningWorkspacesLimit';
+import { dump } from 'js-yaml';
 
 jest.mock('../../../../services/dashboard-backend-client/serverConfigApi');
 jest.mock('../../../../services/helpers/delay', () => ({
@@ -92,7 +93,21 @@ describe('DevWorkspace store, actions', () => {
     storeBuilder = new FakeStoreBuilder().withInfrastructureNamespace([
       { name: 'user-che', attributes: { default: 'true', phase: 'Active' } },
     ]);
-    store = storeBuilder.build();
+    store = storeBuilder
+      .withDwServerConfig({
+        defaults: {
+          editor: 'che-incubator/che-code/latest',
+        },
+      } as dashboardBackendApi.IServerConfig)
+      .withWorkspacesSettings({ cheWorkspacePluginRegistryUrl: 'https://dummy.registry' })
+      .withDevfileRegistries({
+        devfiles: {
+          ['https://dummy.registry/plugins/che-incubator/che-code/latest/devfile.yaml']: {
+            content: dump(new DevWorkspaceBuilder().build()),
+          },
+        },
+      })
+      .build();
   });
 
   afterEach(() => {
@@ -648,7 +663,6 @@ describe('DevWorkspace store, actions', () => {
     });
 
     it('should create REQUEST_DEVWORKSPACE and RECEIVE_DEVWORKSPACE_ERROR when fails to create a new workspace from devfile', async () => {
-      const devWorkspace = new DevWorkspaceBuilder().build();
       const devfile: devfileApi.Devfile = {
         schemaVersion: '2.1.0',
         metadata: {
