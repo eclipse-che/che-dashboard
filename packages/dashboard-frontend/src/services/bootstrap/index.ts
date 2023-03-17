@@ -312,11 +312,16 @@ export default class Bootstrap {
       const settings = this.store.getState().workspacesSettings.settings;
       const pluginRegistryUrl = settings['cheWorkspacePluginRegistryUrl'];
       const pluginRegistryInternalUrl = settings['cheWorkspacePluginRegistryInternalUrl'];
+      const appInfo: { id?: string; url: string; title: string }[] =
+        state.clusterInfo.clusterInfo.applications;
+      const clusterConsoleInfo = appInfo.find(item => item.id === 'clusterConsole');
       const updates = await this.devWorkspaceClient.checkForTemplatesUpdate(
         defaultNamespace,
         pluginsByUrl,
         pluginRegistryUrl,
         pluginRegistryInternalUrl,
+        clusterConsoleInfo ? clusterConsoleInfo.url : undefined,
+        clusterConsoleInfo ? clusterConsoleInfo.title : undefined,
         openVSXUrl,
       );
       if (Object.keys(updates).length > 0) {

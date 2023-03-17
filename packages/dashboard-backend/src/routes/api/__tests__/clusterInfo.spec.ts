@@ -40,6 +40,7 @@ describe('Cluster Info Route', () => {
           icon: `${clusterConsoleUrl}/static/assets/redhat.svg`,
           title: 'OpenShift console',
           url: clusterConsoleUrl,
+          id: 'clusterConsole',
         },
       ],
     });

@@ -19,4 +19,5 @@ export interface ApplicationInfo {
   title: string;
   icon: string;
   group?: string;
+  id?: string;
 }

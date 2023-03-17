@@ -78,6 +78,8 @@ export class DevWorkspaceClient extends WorkspaceClient {
   private readonly maxStatusAttempts: number;
   private readonly pluginRegistryUrlEnvName: string;
   private readonly pluginRegistryInternalUrlEnvName: string;
+  private readonly clusterConsoleUrlEnvName: string;
+  private readonly clusterConsoleTitleEnvName: string;
   private readonly openVSXUrlEnvName: string;
   private readonly dashboardUrlEnvName: string;
   private readonly defaultPluginsHandler: DevWorkspaceDefaultPluginsHandler;
@@ -92,6 +94,8 @@ export class DevWorkspaceClient extends WorkspaceClient {
     this.pluginRegistryInternalUrlEnvName = 'CHE_PLUGIN_REGISTRY_INTERNAL_URL';
     this.openVSXUrlEnvName = 'OPENVSX_REGISTRY_URL';
     this.dashboardUrlEnvName = 'CHE_DASHBOARD_URL';
+    this.clusterConsoleUrlEnvName = 'CLUSTER_CONSOLE_URL';
+    this.clusterConsoleTitleEnvName = 'CLUSTER_CONSOLE_TITLE';
     this.defaultPluginsHandler = defaultPluginsHandler;
   }
 
@@ -173,6 +177,8 @@ export class DevWorkspaceClient extends WorkspaceClient {
     devWorkspaceTemplateResource: devfileApi.DevWorkspaceTemplate,
     pluginRegistryUrl: string | undefined,
     pluginRegistryInternalUrl: string | undefined,
+    clusterConsoleUrl: string | undefined,
+    clusterConsoleTitle: string | undefined,
     openVSXUrl: string | undefined,
   ): Promise<devfileApi.DevWorkspaceTemplate> {
     devWorkspaceTemplateResource.metadata.namespace = defaultNamespace;
@@ -191,6 +197,8 @@ export class DevWorkspaceClient extends WorkspaceClient {
       devWorkspaceTemplateResource.spec?.components,
       pluginRegistryUrl,
       pluginRegistryInternalUrl,
+      clusterConsoleUrl,
+      clusterConsoleTitle,
       openVSXUrl,
     );
 
@@ -201,12 +209,16 @@ export class DevWorkspaceClient extends WorkspaceClient {
     devWorkspace: devfileApi.DevWorkspace,
     pluginRegistryUrl: string | undefined,
     pluginRegistryInternalUrl: string | undefined,
+    clusterConsoleUrl: string | undefined,
+    clusterConsoleTitle: string | undefined,
     openVSXUrl: string | undefined,
   ): Promise<{ headers: DwApi.Headers; devWorkspace: devfileApi.DevWorkspace }> {
     this.addEnvVarsToContainers(
       devWorkspace.spec.template.components,
       pluginRegistryUrl,
       pluginRegistryInternalUrl,
+      clusterConsoleUrl,
+      clusterConsoleTitle,
       openVSXUrl,
     );
 
@@ -230,6 +242,8 @@ export class DevWorkspaceClient extends WorkspaceClient {
       | undefined,
     pluginRegistryUrl: string | undefined,
     pluginRegistryInternalUrl: string | undefined,
+    clusterConsoleUrl: string | undefined,
+    clusterConsoleTitle: string | undefined,
     openVSXUrl: string | undefined,
   ): void {
     if (components === undefined) {
@@ -248,6 +262,8 @@ export class DevWorkspaceClient extends WorkspaceClient {
           env.name !== this.dashboardUrlEnvName &&
           env.name !== this.pluginRegistryUrlEnvName &&
           env.name !== this.pluginRegistryInternalUrlEnvName &&
+          env.name !== this.clusterConsoleUrlEnvName &&
+          env.name !== this.clusterConsoleTitleEnvName &&
           env.name !== this.openVSXUrlEnvName,
       );
       envs.push({
@@ -264,6 +280,18 @@ export class DevWorkspaceClient extends WorkspaceClient {
         envs.push({
           name: this.pluginRegistryInternalUrlEnvName,
           value: pluginRegistryInternalUrl,
+        });
+      }
+      if (clusterConsoleUrl !== undefined) {
+        envs.push({
+          name: this.clusterConsoleUrlEnvName,
+          value: clusterConsoleUrl,
+        });
+      }
+      if (clusterConsoleTitle !== undefined) {
+        envs.push({
+          name: this.clusterConsoleTitleEnvName,
+          value: clusterConsoleTitle,
         });
       }
       if (openVSXUrl !== undefined) {
@@ -663,6 +691,8 @@ export class DevWorkspaceClient extends WorkspaceClient {
     pluginsByUrl: { [url: string]: devfileApi.Devfile } = {},
     pluginRegistryUrl: string | undefined,
     pluginRegistryInternalUrl: string | undefined,
+    clusterConsoleUrl: string | undefined,
+    clusterConsoleTitle: string | undefined,
     openVSXUrl: string | undefined,
   ): Promise<{ [templateName: string]: api.IPatch[] }> {
     const templates = await DwtApi.getTemplates(namespace);
@@ -699,6 +729,8 @@ export class DevWorkspaceClient extends WorkspaceClient {
               spec.components,
               pluginRegistryUrl,
               pluginRegistryInternalUrl,
+              clusterConsoleUrl,
+              clusterConsoleTitle,
               openVSXUrl,
             );
           } else {

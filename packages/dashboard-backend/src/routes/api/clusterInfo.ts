@@ -34,6 +34,7 @@ function buildApplicationInfo(): ClusterInfo {
   const applications: ApplicationInfo[] = [];
   if (clusterConsoleUrl) {
     applications.push({
+      id: 'clusterConsole',
       icon: clusterConsoleIcon,
       title: clusterConsoleTitle,
       url: clusterConsoleUrl,

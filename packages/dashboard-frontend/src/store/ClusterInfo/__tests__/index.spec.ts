@@ -24,6 +24,7 @@ describe('clusterInfo store', () => {
   const clusterInfo: ClusterInfo = {
     applications: [
       {
+        id: 'clusterConsole',
         url: 'web/console/url',
         title: 'Web Console',
         icon: 'web/console/icon.png',
@@ -184,6 +185,7 @@ describe('clusterInfo store', () => {
         clusterInfo: {
           applications: [
             {
+              id: 'clusterConsole',
               url: 'web/console/url',
               title: 'Web Console',
               icon: 'web/console/icon.png',

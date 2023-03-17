@@ -528,14 +528,19 @@ export const actionCreators: ActionCreators = {
           });
         }
 
-        /* create a new DevWorkspaceTemplate */
+        const appInfo: { id?: string; url: string; title: string }[] =
+          state.clusterInfo.clusterInfo.applications;
+        const clusterConsoleInfo = appInfo.find(item => item.id === 'clusterConsole');
 
+        /* create a new DevWorkspaceTemplate */
         await getDevWorkspaceClient().createDevWorkspaceTemplate(
           defaultNamespace,
           createResp.devWorkspace,
           devWorkspaceTemplateResource,
           pluginRegistryUrl,
           pluginRegistryInternalUrl,
+          clusterConsoleInfo ? clusterConsoleInfo.url : undefined,
+          clusterConsoleInfo ? clusterConsoleInfo.title : undefined,
           openVSXUrl,
         );
 
@@ -545,6 +550,8 @@ export const actionCreators: ActionCreators = {
           createResp.devWorkspace,
           pluginRegistryUrl,
           pluginRegistryInternalUrl,
+          clusterConsoleInfo ? clusterConsoleInfo.url : undefined,
+          clusterConsoleInfo ? clusterConsoleInfo.title : undefined,
           openVSXUrl,
         );
 
