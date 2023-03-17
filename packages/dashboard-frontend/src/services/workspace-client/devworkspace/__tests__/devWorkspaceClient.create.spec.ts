@@ -104,8 +104,6 @@ describe('DevWorkspace client, create', () => {
         testDevWorkspaceTemplate,
         pluginRegistryUrl,
         internalPluginRegistryUrl,
-        undefined,
-        undefined,
         openVSXUrl,
       );
 
@@ -148,8 +146,6 @@ describe('DevWorkspace client, create', () => {
         testDevWorkspaceTemplate,
         pluginRegistryUrl,
         internalPluginRegistryUrl,
-        undefined,
-        undefined,
         openVSXUrl,
       );
 

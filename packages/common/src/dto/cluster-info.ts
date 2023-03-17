@@ -14,10 +14,14 @@ export interface ClusterInfo {
   applications: ApplicationInfo[];
 }
 
+export enum ApplicationId {
+  CLUSTER_CONSOLE = 'cluster-console',
+}
+
 export interface ApplicationInfo {
   url: string;
   title: string;
   icon: string;
   group?: string;
-  id?: string;
+  id?: ApplicationId;
 }

@@ -177,9 +177,11 @@ export class DevWorkspaceClient extends WorkspaceClient {
     devWorkspaceTemplateResource: devfileApi.DevWorkspaceTemplate,
     pluginRegistryUrl: string | undefined,
     pluginRegistryInternalUrl: string | undefined,
-    clusterConsoleUrl: string | undefined,
-    clusterConsoleTitle: string | undefined,
     openVSXUrl: string | undefined,
+    clusterConsole?: {
+      url: string;
+      title: string;
+    },
   ): Promise<devfileApi.DevWorkspaceTemplate> {
     devWorkspaceTemplateResource.metadata.namespace = defaultNamespace;
 
@@ -197,9 +199,8 @@ export class DevWorkspaceClient extends WorkspaceClient {
       devWorkspaceTemplateResource.spec?.components,
       pluginRegistryUrl,
       pluginRegistryInternalUrl,
-      clusterConsoleUrl,
-      clusterConsoleTitle,
       openVSXUrl,
+      clusterConsole,
     );
 
     return DwtApi.createTemplate(devWorkspaceTemplateResource);
@@ -209,17 +210,18 @@ export class DevWorkspaceClient extends WorkspaceClient {
     devWorkspace: devfileApi.DevWorkspace,
     pluginRegistryUrl: string | undefined,
     pluginRegistryInternalUrl: string | undefined,
-    clusterConsoleUrl: string | undefined,
-    clusterConsoleTitle: string | undefined,
     openVSXUrl: string | undefined,
+    clusterConsole?: {
+      url: string;
+      title: string;
+    },
   ): Promise<{ headers: DwApi.Headers; devWorkspace: devfileApi.DevWorkspace }> {
     this.addEnvVarsToContainers(
       devWorkspace.spec.template.components,
       pluginRegistryUrl,
       pluginRegistryInternalUrl,
-      clusterConsoleUrl,
-      clusterConsoleTitle,
       openVSXUrl,
+      clusterConsole,
     );
 
     return await DwApi.patchWorkspace(devWorkspace.metadata.namespace, devWorkspace.metadata.name, [
@@ -242,9 +244,11 @@ export class DevWorkspaceClient extends WorkspaceClient {
       | undefined,
     pluginRegistryUrl: string | undefined,
     pluginRegistryInternalUrl: string | undefined,
-    clusterConsoleUrl: string | undefined,
-    clusterConsoleTitle: string | undefined,
     openVSXUrl: string | undefined,
+    clusterConsole?: {
+      url: string;
+      title: string;
+    },
   ): void {
     if (components === undefined) {
       return;
@@ -282,16 +286,16 @@ export class DevWorkspaceClient extends WorkspaceClient {
           value: pluginRegistryInternalUrl,
         });
       }
-      if (clusterConsoleUrl !== undefined) {
+      if (clusterConsole?.url !== undefined) {
         envs.push({
           name: this.clusterConsoleUrlEnvName,
-          value: clusterConsoleUrl,
+          value: clusterConsole.url,
         });
       }
-      if (clusterConsoleTitle !== undefined) {
+      if (clusterConsole?.title !== undefined) {
         envs.push({
           name: this.clusterConsoleTitleEnvName,
-          value: clusterConsoleTitle,
+          value: clusterConsole.title,
         });
       }
       if (openVSXUrl !== undefined) {
@@ -691,9 +695,11 @@ export class DevWorkspaceClient extends WorkspaceClient {
     pluginsByUrl: { [url: string]: devfileApi.Devfile } = {},
     pluginRegistryUrl: string | undefined,
     pluginRegistryInternalUrl: string | undefined,
-    clusterConsoleUrl: string | undefined,
-    clusterConsoleTitle: string | undefined,
     openVSXUrl: string | undefined,
+    clusterConsole?: {
+      url: string;
+      title: string;
+    },
   ): Promise<{ [templateName: string]: api.IPatch[] }> {
     const templates = await DwtApi.getTemplates(namespace);
     const managedTemplates = templates.filter(
@@ -729,9 +735,8 @@ export class DevWorkspaceClient extends WorkspaceClient {
               spec.components,
               pluginRegistryUrl,
               pluginRegistryInternalUrl,
-              clusterConsoleUrl,
-              clusterConsoleTitle,
               openVSXUrl,
+              clusterConsole,
             );
           } else {
             spec[key] = plugin[key];
