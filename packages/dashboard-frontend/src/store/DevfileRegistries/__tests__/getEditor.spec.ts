@@ -14,7 +14,7 @@ import { dump } from 'js-yaml';
 import mockAxios from 'axios';
 import common from '@eclipse-che/common';
 import devfileApi from '../../../services/devfileApi';
-import { getEditor } from '../getDevfileByUrl';
+import { getEditor } from '../getEditor';
 import { FakeStoreBuilder } from '../../__mocks__/storeBuilder';
 
 describe('Get Devfile by URL', () => {

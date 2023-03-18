@@ -46,7 +46,7 @@ import { selectDevWorkspacesResourceVersion } from './selectors';
 import OAuthService from '../../../services/oauth';
 import { EDITOR_ATTR } from '../../../containers/Loader/const';
 import { FactoryParams } from '../../../containers/Loader/buildFactoryParams';
-import { getEditor } from '../../DevfileRegistries/getDevfileByUrl';
+import { getEditor } from '../../DevfileRegistries/getEditor';
 
 export const onStatusChangeCallbacks = new Map<string, (status: DevWorkspaceStatus) => void>();
 

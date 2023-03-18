@@ -18,7 +18,7 @@ import { CHE_EDITOR_YAML_PATH } from './';
 import { AppState } from '../../store';
 import { ThunkDispatch } from 'redux-thunk';
 import { KnownAction } from '../../store/DevfileRegistries';
-import { getEditor } from '../../store/DevfileRegistries/getDevfileByUrl';
+import { getEditor } from '../../store/DevfileRegistries/getEditor';
 
 /**
  * Checks for HTTP 401 Unauthorized response status code
