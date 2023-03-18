@@ -277,7 +277,7 @@ class StepCheckRunningWorkspacesLimit extends AbstractLoaderStep<Props, State> {
         const runningWorkspace = runningWorkspaces[0];
         runningWorkspacesAlertItem.actionCallbacks = [
           {
-            title: `Close running workspace (${runningWorkspace.name}) and restart ${workspace?.name}`,
+            title: `Close running workspace (${runningWorkspace.name}) and restart`,
             callback: () => this.handleStopRedundantWorkspace(runningWorkspace),
           },
           {
