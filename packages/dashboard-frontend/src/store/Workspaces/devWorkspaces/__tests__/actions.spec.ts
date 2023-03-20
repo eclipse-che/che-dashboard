@@ -12,7 +12,7 @@
 
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
-import { api as dashboardBackendApi, api } from '@eclipse-che/common';
+import { api } from '@eclipse-che/common';
 import { V1Status } from '@kubernetes/client-node';
 import { AnyAction } from 'redux';
 import { MockStoreEnhanced } from 'redux-mock-store';
@@ -99,7 +99,7 @@ describe('DevWorkspace store, actions', () => {
         defaults: {
           editor: 'che-incubator/che-code/latest',
         },
-      } as dashboardBackendApi.IServerConfig)
+      } as api.IServerConfig)
       .withWorkspacesSettings({ cheWorkspacePluginRegistryUrl: 'https://dummy.registry' })
       .withDevfileRegistries({
         devfiles: {
@@ -642,9 +642,7 @@ describe('DevWorkspace store, actions', () => {
       mockCreateDevWorkspace.mockResolvedValueOnce({ devWorkspace, headers: {} });
       mockUpdateDevWorkspace.mockResolvedValueOnce({ devWorkspace, headers: {} });
 
-      await store.dispatch(
-        testStore.actionCreators.createWorkspaceFromDevfile(devfile, attr as FactoryParams, {}),
-      );
+      await store.dispatch(testStore.actionCreators.createWorkspaceFromDevfile(devfile, attr, {}));
 
       const actions = store.getActions();
 
@@ -680,7 +678,7 @@ describe('DevWorkspace store, actions', () => {
 
       try {
         await store.dispatch(
-          testStore.actionCreators.createWorkspaceFromDevfile(devfile, attr as FactoryParams, {}),
+          testStore.actionCreators.createWorkspaceFromDevfile(devfile, attr, {}),
         );
       } catch (e) {
         // no-op
