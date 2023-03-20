@@ -45,6 +45,8 @@ import { checkRunningWorkspacesLimit } from './checkRunningWorkspacesLimit';
 import { selectDevWorkspacesResourceVersion } from './selectors';
 import OAuthService from '../../../services/oauth';
 import { EDITOR_ATTR } from '../../../containers/Loader/const';
+import { FactoryParams } from '../../../containers/Loader/buildFactoryParams';
+import { getEditor } from '../../DevfileRegistries/getEditor';
 
 export const onStatusChangeCallbacks = new Map<string, (status: DevWorkspaceStatus) => void>();
 
@@ -158,7 +160,7 @@ export type ActionCreators = {
   updateWorkspace: (workspace: devfileApi.DevWorkspace) => AppThunk<KnownAction, Promise<void>>;
   createWorkspaceFromDevfile: (
     devfile: devfileApi.Devfile,
-    attributes: { [key: string]: string },
+    attributes: Partial<FactoryParams>,
     optionalFilesContent: {
       [fileName: string]: string;
     },
@@ -166,7 +168,7 @@ export type ActionCreators = {
   createWorkspaceFromResources: (
     devWorkspace: devfileApi.DevWorkspace,
     devWorkspaceTemplate: devfileApi.DevWorkspaceTemplate,
-    editor?: string,
+    editorId?: string,
   ) => AppThunk<KnownAction, Promise<void>>;
 
   handleWebSocketMessage: (
@@ -501,7 +503,7 @@ export const actionCreators: ActionCreators = {
       const openVSXUrl = selectOpenVSXUrl(state);
       const defaultNamespace = defaultKubernetesNamespace.name;
       try {
-        const cheEditor = editorId ? editorId : state.dwPlugins.defaultEditorName;
+        const cheEditor = editorId ? editorId : devWorkspaceTemplateResource.metadata.name;
         const pluginRegistryUrl =
           state.workspacesSettings.settings['cheWorkspacePluginRegistryUrl'];
         const pluginRegistryInternalUrl =
@@ -572,7 +574,7 @@ export const actionCreators: ActionCreators = {
   createWorkspaceFromDevfile:
     (
       devfile: devfileApi.Devfile,
-      attributes: { [key: string]: string },
+      attributes: Partial<FactoryParams>,
       optionalFilesContent: {
         [fileName: string]: string;
       },
@@ -582,39 +584,52 @@ export const actionCreators: ActionCreators = {
 
       await dispatch({ type: Type.REQUEST_DEVWORKSPACE, check: AUTHORIZED });
 
-      let editorId: string | undefined;
+      const pluginRegistryUrl = state.workspacesSettings.settings['cheWorkspacePluginRegistryUrl'];
       let devWorkspaceResource: devfileApi.DevWorkspace;
       let devWorkspaceTemplateResource: devfileApi.DevWorkspaceTemplate;
+      let editorContent: string | undefined;
+      // do we have an optional editor parameter ?
+      if (attributes[EDITOR_ATTR]) {
+        const response = await getEditor(
+          attributes[EDITOR_ATTR],
+          dispatch,
+          getState,
+          pluginRegistryUrl,
+        );
+        if (response.content) {
+          editorContent = response.content;
+        } else {
+          throw new Error(response.error);
+        }
+      } else {
+        // do we have the custom editor in `.che/che-editor.yaml` ?
+        editorContent = await getCustomEditor(
+          pluginRegistryUrl,
+          optionalFilesContent,
+          dispatch,
+          getState,
+        );
+        if (!editorContent) {
+          const defaultsEditor = state.dwServerConfig.config.defaults.editor;
+          if (!defaultsEditor) {
+            throw new Error('Cannot define default editor');
+          }
+          const response = await getEditor(defaultsEditor, dispatch, getState, pluginRegistryUrl);
+          if (response.content) {
+            editorContent = response.content;
+          } else {
+            throw new Error(response.error);
+          }
+          console.debug(`Using default editor ${defaultsEditor}`);
+        }
+      }
 
       try {
-        const defaultEditorId = state.dwServerConfig.config.defaults.editor;
-        const pluginRegistryUrl =
-          state.workspacesSettings.settings['cheWorkspacePluginRegistryUrl'];
-
-        let editorContent: string | undefined;
-        // do we have an optional editor parameter ?
-        if (attributes[EDITOR_ATTR]) {
-          editorId = attributes[EDITOR_ATTR];
-          editorContent = undefined;
-          if (editorId !== defaultEditorId) {
-            console.log(
-              `User specified a different editor than the current default. Loading ${editorId} definition instead of ${defaultEditorId}.`,
-            );
-          }
-        } else {
-          // do we have the custom editor in `.che/che-editor.yaml` ?
-          editorContent = await getCustomEditor(pluginRegistryUrl, optionalFilesContent);
-          if (!editorContent) {
-            editorId = defaultEditorId;
-            console.debug(`Using default editor ${defaultEditorId}`);
-          }
-        }
-
         const resourcesContent = await fetchResources({
+          pluginRegistryUrl,
           devfileContent: dump(devfile),
           editorPath: undefined,
-          pluginRegistryUrl,
-          editorId,
+          editorId: undefined,
           editorContent,
         });
         const resources = loadResourcesContent(resourcesContent);
@@ -644,7 +659,7 @@ export const actionCreators: ActionCreators = {
         actionCreators.createWorkspaceFromResources(
           devWorkspaceResource,
           devWorkspaceTemplateResource,
-          editorId,
+          attributes[EDITOR_ATTR],
         ),
       );
     },
