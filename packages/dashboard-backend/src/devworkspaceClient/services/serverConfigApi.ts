@@ -89,15 +89,25 @@ export class ServerConfigApiService implements IServerConfigApi {
   }
 
   getDefaultEditor(cheCustomResource: CustomResourceDefinition): string | undefined {
-    return cheCustomResource.spec.devEnvironments?.defaultEditor;
+    return (
+      cheCustomResource.spec.devEnvironments?.defaultEditor ||
+      process.env['CHE_SPEC_DEVENVIRONMENTS_DEFAULTEDITOR']
+    );
   }
 
   getDefaultComponents(cheCustomResource: CustomResourceDefinition): V221DevfileComponents[] {
-    return cheCustomResource.spec.devEnvironments?.defaultComponents || [];
+    return (
+      cheCustomResource.spec.devEnvironments?.defaultComponents ||
+      JSON.parse(process.env['CHE_SPEC_DEVENVIRONMENTS_DEFAULTCOMPONENTS'] || '[]')
+    );
   }
 
   getOpenVSXURL(cheCustomResource: CustomResourceDefinition): string {
-    return cheCustomResource.spec.components?.pluginRegistry?.openVSXURL || '';
+    return (
+      cheCustomResource.spec.components?.pluginRegistry?.openVSXURL ||
+      process.env['CHE_SPEC_COMPONENTS_PLUGINREGISTRY_OPENVSXURL'] ||
+      ''
+    );
   }
 
   getPvcStrategy(cheCustomResource: CustomResourceDefinition): string | undefined {
@@ -105,10 +115,17 @@ export class ServerConfigApiService implements IServerConfigApi {
   }
 
   getDashboardWarning(cheCustomResource: CustomResourceDefinition): string | undefined {
-    if (!cheCustomResource.spec.components?.dashboard?.headerMessage?.show) {
-      return undefined;
+    const defaultHeaderMessage = process.env['CHE_SPEC_COMPONENTS_DASHBOARD_HEADERMESSAGE_TEXT'];
+    const configuredHeaderMessage =
+      cheCustomResource.spec.components?.dashboard?.headerMessage?.text;
+
+    if (configuredHeaderMessage) {
+      if (!cheCustomResource.spec.components?.dashboard?.headerMessage?.show) {
+        return undefined;
+      }
+      return configuredHeaderMessage;
     }
-    return cheCustomResource.spec.components?.dashboard?.headerMessage?.text;
+    return defaultHeaderMessage;
   }
 
   // getRunningWorkspacesLimit return the maximum number of running workspaces.
