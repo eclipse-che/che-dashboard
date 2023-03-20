@@ -255,7 +255,7 @@ class StepCheckRunningWorkspacesLimit extends AbstractLoaderStep<Props, State> {
     return findTargetWorkspace(props.allWorkspaces, props.matchParams);
   }
 
-  private getAlertItem(error: unknown, workspace: Workspace | undefined): AlertItem | undefined {
+  private getAlertItem(error: unknown): AlertItem | undefined {
     const { runningWorkspaces } = this.props;
 
     if (error instanceof RunningWorkspacesExceededError) {
@@ -317,7 +317,7 @@ class StepCheckRunningWorkspacesLimit extends AbstractLoaderStep<Props, State> {
     const steps = loaderSteps.values;
     const currentStepId = loaderSteps.get(currentStepIndex).value.id;
 
-    const alertItem = this.getAlertItem(lastError, workspace);
+    const alertItem = this.getAlertItem(lastError);
 
     return (
       <LoaderPage
