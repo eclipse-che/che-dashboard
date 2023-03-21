@@ -96,10 +96,21 @@ export class ServerConfigApiService implements IServerConfigApi {
   }
 
   getDefaultComponents(cheCustomResource: CustomResourceDefinition): V221DevfileComponents[] {
-    return (
-      cheCustomResource.spec.devEnvironments?.defaultComponents ||
-      JSON.parse(process.env['CHE_SPEC_DEVENVIRONMENTS_DEFAULTCOMPONENTS'] || '[]')
-    );
+    if (cheCustomResource.spec.devEnvironments?.defaultComponents) {
+      return cheCustomResource.spec.devEnvironments.defaultComponents;
+    }
+
+    if (process.env['CHE_SPEC_DEVENVIRONMENTS_DEFAULTCOMPONENTS']) {
+      try {
+        JSON.parse(process.env['CHE_SPEC_DEVENVIRONMENTS_DEFAULTCOMPONENTS']);
+      } catch (e) {
+        console.error(
+          `Unable to parse default components from environment variable CHE_SPEC_DEVENVIRONMENTS_DEFAULTCOMPONENTS: ${e}`,
+        );
+      }
+    }
+
+    return [];
   }
 
   getOpenVSXURL(cheCustomResource: CustomResourceDefinition): string {
