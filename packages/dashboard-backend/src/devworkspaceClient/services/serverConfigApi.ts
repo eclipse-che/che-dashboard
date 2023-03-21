@@ -122,17 +122,13 @@ export class ServerConfigApiService implements IServerConfigApi {
   }
 
   getDashboardWarning(cheCustomResource: CustomResourceDefinition): string | undefined {
-    const defaultHeaderMessage = process.env['CHE_SPEC_COMPONENTS_DASHBOARD_HEADERMESSAGE_TEXT'];
-    const configuredHeaderMessage =
-      cheCustomResource.spec.components?.dashboard?.headerMessage?.text;
-
-    if (configuredHeaderMessage) {
-      if (!cheCustomResource.spec.components?.dashboard?.headerMessage?.show) {
-        return undefined;
-      }
-      return configuredHeaderMessage;
+    if (cheCustomResource.spec.components?.dashboard?.headerMessage?.text) {
+      return cheCustomResource.spec.components?.dashboard?.headerMessage?.show
+        ? cheCustomResource.spec.components.dashboard.headerMessage.text
+        : undefined;
     }
-    return defaultHeaderMessage;
+
+    return process.env['CHE_SPEC_COMPONENTS_DASHBOARD_HEADERMESSAGE_TEXT'];
   }
 
   // getRunningWorkspacesLimit return the maximum number of running workspaces.
