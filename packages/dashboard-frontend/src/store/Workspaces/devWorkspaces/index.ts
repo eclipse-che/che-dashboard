@@ -10,7 +10,7 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import common, { api } from '@eclipse-che/common';
+import common, { api, ApplicationId } from '@eclipse-che/common';
 import { Action, Reducer } from 'redux';
 import { AppThunk } from '../..';
 import { container } from '../../../inversify.config';
@@ -47,6 +47,7 @@ import OAuthService from '../../../services/oauth';
 import { EDITOR_ATTR } from '../../../containers/Loader/const';
 import { FactoryParams } from '../../../containers/Loader/buildFactoryParams';
 import { getEditor } from '../../DevfileRegistries/getEditor';
+import { selectApplications } from '../../ClusterInfo/selectors';
 
 export const onStatusChangeCallbacks = new Map<string, (status: DevWorkspaceStatus) => void>();
 
@@ -528,8 +529,11 @@ export const actionCreators: ActionCreators = {
           });
         }
 
-        /* create a new DevWorkspaceTemplate */
+        const clusterConsole = selectApplications(state).find(
+          app => app.id === ApplicationId.CLUSTER_CONSOLE,
+        );
 
+        /* create a new DevWorkspaceTemplate */
         await getDevWorkspaceClient().createDevWorkspaceTemplate(
           defaultNamespace,
           createResp.devWorkspace,
@@ -537,6 +541,7 @@ export const actionCreators: ActionCreators = {
           pluginRegistryUrl,
           pluginRegistryInternalUrl,
           openVSXUrl,
+          clusterConsole,
         );
 
         /* update the DevWorkspace with components */
@@ -546,6 +551,7 @@ export const actionCreators: ActionCreators = {
           pluginRegistryUrl,
           pluginRegistryInternalUrl,
           openVSXUrl,
+          clusterConsole,
         );
 
         if (updateResp.headers.warning) {
