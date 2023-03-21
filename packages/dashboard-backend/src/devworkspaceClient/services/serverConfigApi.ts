@@ -114,11 +114,7 @@ export class ServerConfigApiService implements IServerConfigApi {
   }
 
   getOpenVSXURL(cheCustomResource: CustomResourceDefinition): string {
-    return (
-      cheCustomResource.spec.components?.pluginRegistry?.openVSXURL ||
-      process.env['CHE_SPEC_COMPONENTS_PLUGINREGISTRY_OPENVSXURL'] ||
-      ''
-    );
+    return cheCustomResource.spec.components?.pluginRegistry?.openVSXURL || '';
   }
 
   getPvcStrategy(cheCustomResource: CustomResourceDefinition): string | undefined {
