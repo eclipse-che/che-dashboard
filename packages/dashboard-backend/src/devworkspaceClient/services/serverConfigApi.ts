@@ -122,12 +122,14 @@ export class ServerConfigApiService implements IServerConfigApi {
   }
 
   getDashboardWarning(cheCustomResource: CustomResourceDefinition): string | undefined {
+    // Return the message if it is defined and the show flag is true
     if (cheCustomResource.spec.components?.dashboard?.headerMessage?.text) {
       return cheCustomResource.spec.components?.dashboard?.headerMessage?.show
         ? cheCustomResource.spec.components.dashboard.headerMessage.text
         : undefined;
     }
 
+    // Return default message independently of the show flag.
     return process.env['CHE_SPEC_COMPONENTS_DASHBOARD_HEADERMESSAGE_TEXT'];
   }
 
