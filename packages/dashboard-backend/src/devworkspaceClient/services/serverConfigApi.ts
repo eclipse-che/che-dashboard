@@ -102,7 +102,7 @@ export class ServerConfigApiService implements IServerConfigApi {
 
     if (process.env['CHE_SPEC_DEVENVIRONMENTS_DEFAULTCOMPONENTS']) {
       try {
-        JSON.parse(process.env['CHE_SPEC_DEVENVIRONMENTS_DEFAULTCOMPONENTS']);
+        return JSON.parse(process.env['CHE_SPEC_DEVENVIRONMENTS_DEFAULTCOMPONENTS']);
       } catch (e) {
         console.error(
           `Unable to parse default components from environment variable CHE_SPEC_DEVENVIRONMENTS_DEFAULTCOMPONENTS: ${e}`,
