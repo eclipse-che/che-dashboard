@@ -80,7 +80,9 @@ export class ServerConfigApiService implements IServerConfigApi {
     const { devEnvironments } = cheCustomResource.spec;
     return {
       containerBuildConfiguration: devEnvironments?.containerBuildConfiguration,
-      disableContainerBuildCapabilities: devEnvironments?.disableContainerBuildCapabilities,
+      disableContainerBuildCapabilities:
+        devEnvironments?.disableContainerBuildCapabilities ||
+        !!process.env['CHE_DEFAULT_SPEC_DEVENVIRONMENTS_DISABLECONTAINERBUILDCAPABILITIES'],
     };
   }
 
@@ -91,7 +93,7 @@ export class ServerConfigApiService implements IServerConfigApi {
   getDefaultEditor(cheCustomResource: CustomResourceDefinition): string | undefined {
     return (
       cheCustomResource.spec.devEnvironments?.defaultEditor ||
-      process.env['CHE_SPEC_DEVENVIRONMENTS_DEFAULTEDITOR']
+      process.env['CHE_DEFAULT_SPEC_DEVENVIRONMENTS_DEFAULTEDITOR']
     );
   }
 
@@ -100,12 +102,12 @@ export class ServerConfigApiService implements IServerConfigApi {
       return cheCustomResource.spec.devEnvironments.defaultComponents;
     }
 
-    if (process.env['CHE_SPEC_DEVENVIRONMENTS_DEFAULTCOMPONENTS']) {
+    if (process.env['CHE_DEFAULT_SPEC_DEVENVIRONMENTS_DEFAULTCOMPONENTS']) {
       try {
-        return JSON.parse(process.env['CHE_SPEC_DEVENVIRONMENTS_DEFAULTCOMPONENTS']);
+        return JSON.parse(process.env['CHE_DEFAULT_SPEC_DEVENVIRONMENTS_DEFAULTCOMPONENTS']);
       } catch (e) {
         console.error(
-          `Unable to parse default components from environment variable CHE_SPEC_DEVENVIRONMENTS_DEFAULTCOMPONENTS: ${e}`,
+          `Unable to parse default components from environment variable CHE_DEFAULT_SPEC_DEVENVIRONMENTS_DEFAULTCOMPONENTS: ${e}`,
         );
       }
     }
@@ -114,7 +116,14 @@ export class ServerConfigApiService implements IServerConfigApi {
   }
 
   getOpenVSXURL(cheCustomResource: CustomResourceDefinition): string {
-    return cheCustomResource.spec.components?.pluginRegistry?.openVSXURL || '';
+    // Undefined and empty value are treated in a different ways:
+    //   - empty value forces to use embedded registry
+    //   - undefined value means that the default value should be used
+    if (cheCustomResource.spec.components?.pluginRegistry?.openVSXURL !== undefined) {
+      return cheCustomResource.spec.components.pluginRegistry.openVSXURL;
+    }
+
+    return process.env['CHE_DEFAULT_SPEC_COMPONENTS_PLUGINREGISTRY_OPENVSXURL'] || '';
   }
 
   getPvcStrategy(cheCustomResource: CustomResourceDefinition): string | undefined {
@@ -130,7 +139,7 @@ export class ServerConfigApiService implements IServerConfigApi {
     }
 
     // Return default message independently of the show flag.
-    return process.env['CHE_SPEC_COMPONENTS_DASHBOARD_HEADERMESSAGE_TEXT'];
+    return process.env['CHE_DEFAULT_SPEC_COMPONENTS_DASHBOARD_HEADERMESSAGE_TEXT'];
   }
 
   // getRunningWorkspacesLimit return the maximum number of running workspaces.
