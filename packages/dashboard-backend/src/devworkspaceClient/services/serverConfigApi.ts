@@ -81,8 +81,14 @@ export class ServerConfigApiService implements IServerConfigApi {
     return {
       containerBuildConfiguration: devEnvironments?.containerBuildConfiguration,
       disableContainerBuildCapabilities:
-        devEnvironments?.disableContainerBuildCapabilities ||
-        !!process.env['CHE_DEFAULT_SPEC_DEVENVIRONMENTS_DISABLECONTAINERBUILDCAPABILITIES'],
+        devEnvironments?.disableContainerBuildCapabilities !== undefined
+          ? devEnvironments?.disableContainerBuildCapabilities
+          : process.env['CHE_DEFAULT_SPEC_DEVENVIRONMENTS_DISABLECONTAINERBUILDCAPABILITIES'] !==
+            undefined
+          ? process.env[
+              'CHE_DEFAULT_SPEC_DEVENVIRONMENTS_DISABLECONTAINERBUILDCAPABILITIES'
+            ].toLowerCase() === 'true'
+          : false,
     };
   }
 
