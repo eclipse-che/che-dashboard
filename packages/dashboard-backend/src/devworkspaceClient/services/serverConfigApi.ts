@@ -88,7 +88,7 @@ export class ServerConfigApiService implements IServerConfigApi {
           ? process.env[
               'CHE_DEFAULT_SPEC_DEVENVIRONMENTS_DISABLECONTAINERBUILDCAPABILITIES'
             ].toLowerCase() === 'true'
-          : false,
+          : true,
     };
   }
 
