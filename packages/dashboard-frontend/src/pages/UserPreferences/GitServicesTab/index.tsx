@@ -21,6 +21,8 @@ import EmptyState from './EmptyState';
 import { api } from '@eclipse-che/common';
 import * as GitOauthConfig from '../../../store/GitOauthConfig';
 import GitServicesToolbar, { GitServicesToolbar as Toolbar } from './GitServicesToolbar';
+import { WarningTriangleIcon } from '@patternfly/react-icons';
+import ReactTooltip from 'react-tooltip';
 
 export const enabledProviders: api.GitOauthProvider[] = ['github'];
 
@@ -78,7 +80,28 @@ export class GitServicesTab extends React.PureComponent<Props, State> {
   }
 
   private buildGitOauthRow(gitOauth: api.GitOauthProvider, server: string): React.ReactNode[] {
-    const oauthRow: React.ReactNode[] = [<span key={gitOauth}>{providersMap[gitOauth]}</span>];
+    const oauthRow: React.ReactNode[] = [];
+    const isDisabled = this.isDisabled(gitOauth);
+
+    oauthRow.push(
+      <span key={gitOauth}>
+        {providersMap[gitOauth]}
+        {isDisabled && (
+          <>
+            <span
+              data-tip="Provided API does not support the automatic token revoke. You can revoke it manually."
+              data-testid={gitOauth + '-unsupported-automatic-revoke-tooltip'}
+            >
+              <WarningTriangleIcon
+                color="var(--pf-global--warning-color--100)"
+                style={{ verticalAlign: 'text-top', margin: '2px 5px' }}
+              />
+            </span>
+            <ReactTooltip backgroundColor="black" textColor="white" effect="solid" />
+          </>
+        )}
+      </span>,
+    );
 
     if (/^http[s]?:\/\/.*/.test(server)) {
       oauthRow.push(
