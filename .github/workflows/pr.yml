@@ -94,8 +94,6 @@ jobs:
       -
         name: "Set up Docker Buildx ${{ matrix.platform }}"
         uses: docker/setup-buildx-action@v2
-        with:
-          version: v0.9.1
       -
         name: "Cache Docker layers"
         uses: actions/cache@v3
@@ -121,6 +119,7 @@ jobs:
           file: ./${{ env.DIR_DASHBOARD }}/build/dockerfiles/Dockerfile
           platforms: ${{ matrix.platform }}
           push: ${{ matrix.default == true }}
+          provenance: false
           tags: ${{ env.ORGANIZATION }}/che-dashboard:${{ env.IMAGE_VERSION }}
       -
         name: "Comment with image name"
