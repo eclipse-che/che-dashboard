@@ -31,6 +31,10 @@ jest.mock('@patternfly/react-core', () => {
 });
 
 describe('ProviderWarning component', () => {
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
   it('should render ProviderWarning correctly', () => {
     const element = (
       <ProviderWarning
