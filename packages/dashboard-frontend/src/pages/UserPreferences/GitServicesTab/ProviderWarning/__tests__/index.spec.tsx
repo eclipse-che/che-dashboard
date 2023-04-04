@@ -16,11 +16,11 @@ import ProviderWarning from '../';
 
 jest.mock('@patternfly/react-core', () => {
   return {
-    Tooltip: ({ children, content }) => {
+    Tooltip: (props: any) => {
       return (
         <>
-          {children}
-          {content}
+          {props.children}
+          {props.content}
         </>
       );
     },
