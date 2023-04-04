@@ -21,8 +21,7 @@ import EmptyState from './EmptyState';
 import { api } from '@eclipse-che/common';
 import * as GitOauthConfig from '../../../store/GitOauthConfig';
 import GitServicesToolbar, { GitServicesToolbar as Toolbar } from './GitServicesToolbar';
-import { WarningTriangleIcon } from '@patternfly/react-icons';
-import ReactTooltip from 'react-tooltip';
+import ProviderWarning from './ProviderWarning';
 
 export const enabledProviders: api.GitOauthProvider[] = ['github'];
 
@@ -87,33 +86,34 @@ export class GitServicesTab extends React.PureComponent<Props, State> {
       <span key={gitOauth}>
         {providersMap[gitOauth]}
         {isDisabled && (
-          <>
-            <span
-              data-tip="Provided API does not support the automatic token revoke. You can revoke it manually."
-              data-testid={gitOauth + '-unsupported-automatic-revoke-tooltip'}
-            >
-              <WarningTriangleIcon
-                color="var(--pf-global--warning-color--100)"
-                style={{ verticalAlign: 'text-top', margin: '2px 5px' }}
-              />
-            </span>
-            <ReactTooltip backgroundColor="black" textColor="white" effect="solid" />
-          </>
+          <ProviderWarning
+            warning={
+              <>
+                Provided API does not support the automatic token revocation. You can revoke it
+                manually on &nbsp;
+                <a
+                  href={server}
+                  target="_blank"
+                  rel="noreferrer"
+                  style={{ color: 'var(--pf-global--info-color--100)' }}
+                >
+                  {server}
+                </a>
+                .
+              </>
+            }
+          />
         )}
       </span>,
     );
 
-    if (/^http[s]?:\/\/.*/.test(server)) {
-      oauthRow.push(
-        <span key={server}>
-          <a href={server} target="_blank" rel="noreferrer">
-            {server}
-          </a>
-        </span>,
-      );
-    } else {
-      oauthRow.push(<span key={server}>{server}</span>);
-    }
+    oauthRow.push(
+      <span key={server}>
+        <a href={server} target="_blank" rel="noreferrer">
+          {server}
+        </a>
+      </span>,
+    );
 
     return oauthRow;
   }

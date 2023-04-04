@@ -14,10 +14,6 @@ body {
   overflow: hidden;
 }
 
-#page-sidebar {
-  z-index: 99;
-}
-
 .pf-c-form {
   --pf-c-form--m-horizontal__group-label--md--GridColumnWidth: 11rem;
 }

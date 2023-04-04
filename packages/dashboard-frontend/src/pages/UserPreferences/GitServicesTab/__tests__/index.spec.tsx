@@ -24,9 +24,9 @@ import { actionCreators } from '../../../../store/GitOauthConfig';
 
 // mute the outputs
 console.error = jest.fn();
-jest.mock('react-tooltip', () => {
-  return function DummyTooltip(): React.ReactElement {
-    return <div>Dummy Tooltip</div>;
+jest.mock('../ProviderWarning', () => {
+  return function ProviderWarning(props: { warning: React.ReactNode }): React.ReactElement {
+    return <span>{props.warning}</span>;
   };
 });
 
