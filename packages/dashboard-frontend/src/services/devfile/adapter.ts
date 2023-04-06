@@ -13,6 +13,7 @@
 import devfileApi, { isDevfileV2 } from '../devfileApi';
 import { DEVWORKSPACE_STORAGE_TYPE_ATTR } from '../devfileApi/devWorkspace/spec/template';
 import { attributesToType } from '../storageTypes';
+import { getAttributesFromDevfileV2 } from './helper';
 
 export type Devfile = che.WorkspaceDevfile | devfileApi.Devfile;
 
@@ -29,30 +30,18 @@ export class DevfileAdapter {
 
   set storageType(type: che.WorkspaceStorageType) {
     if (isDevfileV2(this._devfile)) {
+      const attributes = getAttributesFromDevfileV2(this._devfile);
       if (type && type !== 'persistent') {
-        if (this._devfile.schemaVersion === '2.0.0') {
-          if (!this._devfile.metadata.attributes) {
-            this._devfile.metadata.attributes = {};
-          }
-          this._devfile.metadata.attributes[DEVWORKSPACE_STORAGE_TYPE_ATTR] = type;
-        } else {
-          // for devfiles version 2.1.0 and above
-          if (!this._devfile.attributes) {
-            this._devfile.attributes = {};
-          }
-          this._devfile.attributes[DEVWORKSPACE_STORAGE_TYPE_ATTR] = type;
-        }
+        attributes[DEVWORKSPACE_STORAGE_TYPE_ATTR] = type;
       } else {
-        if (this._devfile.metadata.attributes?.[DEVWORKSPACE_STORAGE_TYPE_ATTR]) {
-          delete this._devfile.metadata.attributes[DEVWORKSPACE_STORAGE_TYPE_ATTR];
-          if (Object.keys(this._devfile.metadata.attributes).length === 0) {
-            delete this._devfile.metadata.attributes;
-          }
+        if (attributes[DEVWORKSPACE_STORAGE_TYPE_ATTR]) {
+          delete attributes[DEVWORKSPACE_STORAGE_TYPE_ATTR];
         }
-        if (this._devfile.attributes?.[DEVWORKSPACE_STORAGE_TYPE_ATTR]) {
-          delete this._devfile.attributes[DEVWORKSPACE_STORAGE_TYPE_ATTR];
-          if (Object.keys(this._devfile.attributes).length === 0) {
+        if (Object.keys(attributes).length === 0) {
+          if (this._devfile.attributes === attributes) {
             delete this._devfile.attributes;
+          } else if (this._devfile.metadata.attributes === attributes) {
+            delete this._devfile.metadata.attributes;
           }
         }
       }

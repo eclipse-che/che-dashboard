@@ -22,6 +22,7 @@ import {
 } from '../../services/workspace-client/devworkspace/devWorkspaceClient';
 import { generateWorkspaceName } from '../../services/helpers/generateName';
 import { FactoryParams } from '../../containers/Loader/buildFactoryParams';
+import { getAttributesFromDevfileV2 } from '../../services/devfile/helper';
 
 /**
  * Returns a devfile from the FactoryResolver object.
@@ -110,14 +111,13 @@ export default function normalizeDevfileV2(
   } else if (location) {
     devfileSource = dump({ url: { location } });
   }
-  if (!devfile.metadata.attributes) {
-    devfile.metadata.attributes = {};
+
+  const attributes = getAttributesFromDevfileV2(devfile);
+
+  if (!attributes[DEVWORKSPACE_METADATA_ANNOTATION]) {
+    attributes[DEVWORKSPACE_METADATA_ANNOTATION] = {};
   }
-  if (!devfile.metadata.attributes[DEVWORKSPACE_METADATA_ANNOTATION]) {
-    devfile.metadata.attributes[DEVWORKSPACE_METADATA_ANNOTATION] = {};
-  }
-  devfile.metadata.attributes[DEVWORKSPACE_METADATA_ANNOTATION][DEVWORKSPACE_DEVFILE_SOURCE] =
-    devfileSource;
+  attributes[DEVWORKSPACE_METADATA_ANNOTATION][DEVWORKSPACE_DEVFILE_SOURCE] = devfileSource;
 
   return devfile;
 }
