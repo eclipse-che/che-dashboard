@@ -13,7 +13,6 @@
 import devfileApi, { isDevfileV2 } from '../devfileApi';
 import { DEVWORKSPACE_STORAGE_TYPE_ATTR } from '../devfileApi/devWorkspace/spec/template';
 import { attributesToType } from '../storageTypes';
-import { getAttributesFromDevfileV2 } from './helper';
 
 export type Devfile = che.WorkspaceDevfile | devfileApi.Devfile;
 
@@ -24,13 +23,32 @@ export class DevfileAdapter {
     this._devfile = devfile;
   }
 
+  public static getAttributesFromDevfileV2(devfile: devfileApi.Devfile) {
+    let attributes = {};
+    if (devfile.schemaVersion?.startsWith('2.0')) {
+      if (!devfile.metadata.attributes) {
+        devfile.metadata.attributes = attributes;
+      } else {
+        attributes = devfile.metadata.attributes;
+      }
+    } else {
+      if (!devfile.attributes) {
+        devfile.attributes = attributes;
+      } else {
+        attributes = devfile.attributes;
+      }
+    }
+
+    return attributes;
+  }
+
   get devfile(): Devfile {
     return this._devfile;
   }
 
   set storageType(type: che.WorkspaceStorageType) {
     if (isDevfileV2(this._devfile)) {
-      const attributes = getAttributesFromDevfileV2(this._devfile);
+      const attributes = DevfileAdapter.getAttributesFromDevfileV2(this._devfile);
       if (type && type !== 'persistent') {
         attributes[DEVWORKSPACE_STORAGE_TYPE_ATTR] = type;
       } else {

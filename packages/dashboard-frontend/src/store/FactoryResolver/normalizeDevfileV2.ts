@@ -22,7 +22,7 @@ import {
 } from '../../services/workspace-client/devworkspace/devWorkspaceClient';
 import { generateWorkspaceName } from '../../services/helpers/generateName';
 import { FactoryParams } from '../../containers/Loader/buildFactoryParams';
-import { getAttributesFromDevfileV2 } from '../../services/devfile/helper';
+import { DevfileAdapter } from '../../services/devfile/adapter';
 
 /**
  * Returns a devfile from the FactoryResolver object.
@@ -112,7 +112,7 @@ export default function normalizeDevfileV2(
     devfileSource = dump({ url: { location } });
   }
 
-  const attributes = getAttributesFromDevfileV2(devfile);
+  const attributes = DevfileAdapter.getAttributesFromDevfileV2(devfile);
 
   if (!attributes[DEVWORKSPACE_METADATA_ANNOTATION]) {
     attributes[DEVWORKSPACE_METADATA_ANNOTATION] = {};

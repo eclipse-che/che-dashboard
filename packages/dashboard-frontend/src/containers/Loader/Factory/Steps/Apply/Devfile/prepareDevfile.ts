@@ -20,7 +20,7 @@ import {
   DEVWORKSPACE_DEVFILE_SOURCE,
   DEVWORKSPACE_METADATA_ANNOTATION,
 } from '../../../../../../services/workspace-client/devworkspace/devWorkspaceClient';
-import { getAttributesFromDevfileV2 } from '../../../../../../services/devfile/helper';
+import { DevfileAdapter } from '../../../../../../services/devfile/adapter';
 
 export type FactorySource = { factory?: { params: string } };
 
@@ -31,7 +31,7 @@ export function prepareDevfile(
   appendSuffix: boolean,
 ): devfileApi.Devfile {
   const devfile = cloneDeep(_devfile);
-  const attributes = getAttributesFromDevfileV2(devfile);
+  const attributes = DevfileAdapter.getAttributesFromDevfileV2(devfile);
   if (
     !attributes[DEVWORKSPACE_METADATA_ANNOTATION] ||
     typeof attributes[DEVWORKSPACE_METADATA_ANNOTATION] !== 'object'
