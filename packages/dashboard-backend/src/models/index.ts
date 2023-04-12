@@ -10,21 +10,4 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-const base = require('../../jest.config.base');
-
-module.exports = {
-  ...base,
-  name: 'dashboard-backend',
-  displayName: 'Dashboard backend',
-  moduleDirectories: [
-    'node_modules',
-  ],
-  coverageThreshold: {
-    global: {
-      statements: 78,
-      branches: 75,
-      functions: 75,
-      lines: 78,
-    },
-  },
-};
+export * as restParams from './restParams';
