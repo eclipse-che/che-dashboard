@@ -95,6 +95,8 @@ function webSocketHandler(connection: SocketStream, request: FastifyRequest): vo
       throw e;
     }
 
+    console.log(`[INFO] WS message:`, message);
+
     switch (message.method) {
       case 'UNSUBSCRIBE': {
         handleChannelUnsubscribe(message.channel);

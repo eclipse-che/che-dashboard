@@ -10,7 +10,7 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import { V1Status } from '@kubernetes/client-node';
+import { V1Status, HttpError } from '@kubernetes/client-node';
 import { Response } from 'request';
 
 /**
@@ -29,4 +29,16 @@ export function isResponse(response: unknown): response is Response {
  */
 export function isV1Status(status: unknown): status is V1Status {
   return (status as V1Status).kind === 'Status';
+}
+
+/**
+ * Typeguard for HttpError
+ */
+export function isHttpError(error: unknown): error is HttpError {
+  return (
+    (error as HttpError).name === 'HttpError' &&
+    (error as HttpError).message !== undefined &&
+    isResponse((error as HttpError).response) &&
+    isV1Status((error as HttpError).body)
+  );
 }

@@ -14,7 +14,7 @@
 
 import { api } from '@eclipse-che/common';
 import * as mockClient from '@kubernetes/client-node';
-import { CoreV1Api, V1Pod, V1Status } from '@kubernetes/client-node';
+import { CoreV1Api, HttpError, V1Pod, V1Status } from '@kubernetes/client-node';
 import * as request from 'request';
 import { Writable } from 'stream';
 import { LogsApiService } from '../';
@@ -121,9 +121,9 @@ describe('Logs API Service', () => {
       params,
       status: {
         kind: 'Status',
-        code: 410,
-        message: 'Unknown error while watching logs',
-        status: 'Unknown error while watching logs',
+        code: 400,
+        message: 'pod not found',
+        status: 'Failure',
       },
     });
   });
@@ -190,7 +190,7 @@ describe('Logs API Service', () => {
     });
   });
 
-  it('should handle a status message', async () => {
+  it('should handle an HttpError message', async () => {
     const params: api.webSocket.SubscribeLogsParams = {
       namespace,
       podName,
@@ -199,7 +199,7 @@ describe('Logs API Service', () => {
 
     const status = {
       kind: 'Status',
-      code: 410,
+      code: 400,
       message: 'container not found',
       status: 'Failure',
     } as V1Status;
@@ -213,9 +213,15 @@ describe('Logs API Service', () => {
       ) => {
         throw {
           body: status,
-          statusCode: 410,
-          statusMessage: 'container not found',
-        } as request.Response;
+          statusCode: 400,
+          message: 'container not found',
+          name: 'HttpError',
+          response: {
+            statusCode: 400,
+            statusMessage: 'Bad Request',
+            body: 'container not found',
+          } as request.Response,
+        } as HttpError;
       },
     );
     mockLog.mockResolvedValue({} as request.Request);
@@ -234,7 +240,47 @@ describe('Logs API Service', () => {
     });
   });
 
-  it('should handle a non-status response', async () => {
+  it('should handle a Status message', async () => {
+    const params: api.webSocket.SubscribeLogsParams = {
+      namespace,
+      podName,
+    };
+    const listener = jest.fn();
+
+    const status = {
+      kind: 'Status',
+      code: 400,
+      message: 'container not found',
+      status: 'Failure',
+    } as V1Status;
+    mockLog.mockImplementationOnce(
+      (
+        _namespace: string,
+        _podName: string,
+        _containerName: string,
+        stream: Writable,
+        _options: unknown,
+      ) => {
+        throw status;
+      },
+    );
+    mockLog.mockResolvedValue({} as request.Request);
+
+    try {
+      await logsApiService._watchContainerLogs(listener, params, containerName);
+    } catch (e) {
+      // noop
+    }
+
+    expect(listener).toHaveBeenCalledTimes(1);
+    expect(listener).toHaveBeenCalledWith({
+      eventPhase: 'ERROR',
+      params: { ...params, containerName },
+      status,
+    });
+  });
+
+  it('should handle a Response', async () => {
     const params: api.webSocket.SubscribeLogsParams = {
       namespace,
       podName,
@@ -243,9 +289,9 @@ describe('Logs API Service', () => {
 
     const expectedStatus = {
       kind: 'Status',
-      code: 410,
-      message: 'Unexpected error. Check DevTools console and network tabs for more information.',
-      status: 'container not found',
+      code: 400,
+      message: 'container not found',
+      status: 'Failure',
     } as V1Status;
 
     mockLog.mockImplementationOnce(
@@ -258,9 +304,48 @@ describe('Logs API Service', () => {
       ) => {
         throw {
           body: 'container not found',
-          statusCode: 410,
+          statusCode: 400,
           statusMessage: 'container not found',
         } as request.Response;
+      },
+    );
+    mockLog.mockResolvedValue({} as request.Request);
+
+    await logsApiService.watchInNamespace(listener, params);
+
+    expect(listener).toHaveBeenCalledTimes(1);
+    expect(listener).toHaveBeenCalledWith({
+      eventPhase: 'ERROR',
+      params: { ...params, containerName },
+      status: expectedStatus,
+    });
+  });
+
+  it('should handle an non-response error', async () => {
+    const params: api.webSocket.SubscribeLogsParams = {
+      namespace,
+      podName,
+    };
+    const listener = jest.fn();
+
+    const expectedStatus = {
+      kind: 'Status',
+      code: 400,
+      message: 'container not found',
+      status: 'Failure',
+    } as V1Status;
+
+    mockLog.mockImplementationOnce(
+      (
+        _namespace: string,
+        _podName: string,
+        _containerName: string,
+        stream: Writable,
+        _options: unknown,
+      ) => {
+        throw {
+          message: 'container not found',
+        };
       },
     );
     mockLog.mockResolvedValue({} as request.Request);

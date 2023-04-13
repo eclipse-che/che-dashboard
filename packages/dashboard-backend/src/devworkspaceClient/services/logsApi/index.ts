@@ -14,7 +14,7 @@ import { api, helpers } from '@eclipse-che/common';
 import * as k8s from '@kubernetes/client-node';
 import { Log, V1Container, V1Pod, V1Status } from '@kubernetes/client-node';
 import { Writable } from 'stream';
-import { isResponse, isV1Status } from '../../../helpers/typeguards';
+import { isHttpError, isResponse, isV1Status } from '../../../helpers/typeguards';
 import { delay } from '../../../services/helpers';
 import { MessageListener } from '../../../services/types/Observer';
 import { ILogsApi } from '../../types';
@@ -178,14 +178,8 @@ export class LogsApiService implements ILogsApi {
       });
       this.storeStopWatchCallback(params, containerName, () => request.destroy());
     } catch (e) {
-      let status: V1Status;
-      if (isResponse(e) && isV1Status(e.body)) {
-        console.warn(e.body.message);
-        status = e.body;
-      } else {
-        // no status available, prepare a custom one
-        status = this.buildStatus(e);
-      }
+      const status = this.buildStatus(e);
+      console.warn(status.message);
 
       listener({
         eventPhase: api.webSocket.EventPhase.ERROR,
@@ -199,16 +193,31 @@ export class LogsApiService implements ILogsApi {
   }
 
   private buildStatus(e: unknown): V1Status {
-    const code = isResponse(e) ? e.statusCode : 410;
-    const statusMessage = isResponse(e) ? e.statusMessage : 'Unknown error while watching logs';
-    const message = isResponse(e)
-      ? helpers.errors.getMessage(e)
-      : 'Unknown error while watching logs';
+    if (isV1Status(e)) {
+      return e;
+    } else if (isHttpError(e)) {
+      return e.body;
+    }
+
+    let code: number;
+    let message: string;
+
+    if (helpers.errors.isError(e)) {
+      code = 400;
+      message = e.message;
+    } else if (isResponse(e)) {
+      code = e.statusCode;
+      message = e.statusMessage;
+    } else {
+      code = 400;
+      message = helpers.errors.getMessage(e);
+    }
+
     return {
       kind: 'Status',
       code,
       message,
-      status: statusMessage,
+      status: 'Failure',
     };
   }
 
