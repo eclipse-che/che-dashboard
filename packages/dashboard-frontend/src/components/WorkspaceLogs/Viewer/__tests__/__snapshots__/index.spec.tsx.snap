@@ -11,7 +11,7 @@ exports[`WorkspaceLogsViewer snapshot compressed viewer 1`] = `
      lines
   </div>
   <pre
-    className="logs "
+    className="logs"
     id="output-logs"
     tabIndex={0}
   >
@@ -28,15 +28,15 @@ exports[`WorkspaceLogsViewer snapshot error logs 1`] = `
   <div
     className="linesCounter"
   >
-    1
+    0
      lines
   </div>
   <pre
-    className="logs errorColor"
+    className="logs"
     id="output-logs"
     tabIndex={0}
   >
-    error logs line
+    
   </pre>
 </div>
 `;
@@ -52,7 +52,7 @@ exports[`WorkspaceLogsViewer snapshot expanded viewer 1`] = `
      lines
   </div>
   <pre
-    className="logs "
+    className="logs"
     id="output-logs"
     tabIndex={0}
   >

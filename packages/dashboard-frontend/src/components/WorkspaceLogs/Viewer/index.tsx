@@ -46,16 +46,20 @@ export class WorkspaceLogsViewer extends React.PureComponent<Props> {
   render() {
     const { logsData } = this.props;
 
-    const logs = logsData?.logs || '';
-    const linesNumber = logs === '' ? 0 : logs.split('\n').length;
+    let logs = '';
+    let linesNumber = 0;
 
-    const errorColorStyle = logsData?.failure === true ? styles.errorColor : '';
+    if (logsData && logsData.failure === false) {
+      logs = logsData.logs || '';
+      linesNumber = logs === '' ? 0 : logs.split('\n').length;
+    }
+
     const expandedStyle = this.props.isExpanded ? styles.expanded : '';
 
     return (
       <div className={`${styles.viewer} ${expandedStyle}`}>
         <div className={styles.linesCounter}>{linesNumber} lines</div>
-        <pre id={LOGS_CONTAINER_ID} tabIndex={0} className={`${styles.logs} ${errorColorStyle}`}>
+        <pre id={LOGS_CONTAINER_ID} tabIndex={0} className={styles.logs}>
           {logs}
         </pre>
       </div>

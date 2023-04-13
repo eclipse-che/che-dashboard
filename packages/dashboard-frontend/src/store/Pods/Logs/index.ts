@@ -19,6 +19,7 @@ import { WebsocketClient } from '../../../services/dashboard-backend-client/webs
 import { ChannelListener } from '../../../services/dashboard-backend-client/websocketClient/messageHandler';
 import { createObject } from '../../helpers';
 import { selectDefaultNamespace } from '../../InfrastructureNamespaces/selectors';
+import { selectAllPods } from '../selectors';
 
 export type ContainerLogs = {
   logs: string;
@@ -27,12 +28,14 @@ export type ContainerLogs = {
 
 export interface State {
   logs: {
-    [podName: string]: {
-      containers: {
-        [containerName: string]: ContainerLogs;
-      };
-      error?: string;
-    };
+    [podName: string]:
+      | {
+          containers: {
+            [containerName: string]: ContainerLogs | undefined;
+          };
+          error?: string;
+        }
+      | undefined;
   };
 }
 
@@ -112,7 +115,7 @@ export const actionCreators: ActionCreators = {
 
   handleWebSocketMessage:
     (message: api.webSocket.NotificationMessage): AppThunk<KnownAction, Promise<void>> =>
-    async (dispatch): Promise<void> => {
+    async (dispatch, getState): Promise<void> => {
       if (api.webSocket.isStatusMessage(message)) {
         const { params, status } = message;
 
@@ -124,7 +127,8 @@ export const actionCreators: ActionCreators = {
         const errorMessage = status.message || 'Unknown error while watching logs';
         console.warn(`WebSocket(LOGS): status code ${status.code}, reason: ${errorMessage}`);
 
-        // If container name is specified, then it's a single container logs.
+        /* if container name is specified, then it's a single container logs. */
+
         if (params.containerName) {
           dispatch({
             type: Type.RECEIVE_LOGS,
@@ -136,9 +140,16 @@ export const actionCreators: ActionCreators = {
           return;
         }
 
-        // If container name is not specified, then backend failed to get pod to watch. We need to resubscribe to the channel.
+        /* If container name is not specified, then backend failed to get pod to watch. We need to check if pod exists, and resubscribe to the channel. */
+
         const websocketClient = container.get(WebsocketClient);
         websocketClient.unsubscribeFromChannel(api.webSocket.Channel.LOGS);
+
+        const allPods = selectAllPods(getState());
+        if (allPods.find(pod => pod.metadata?.name === params.podName) === undefined) {
+          console.warn('WebSocket(LOGS): pod not found, stop watching logs:', params.podName);
+          return;
+        }
         websocketClient.subscribeToChannel(api.webSocket.Channel.LOGS, params.namespace, {
           podName: params.podName,
         });
@@ -172,15 +183,16 @@ export const reducer: Reducer<State> = (
   incomingAction: Action,
 ): State => {
   if (state === undefined) {
-    return unloadedState;
+    state = unloadedState;
   }
 
   const action = incomingAction as KnownAction;
   switch (action.type) {
     case Type.RECEIVE_LOGS: {
-      const _pod = state.logs[action.podName] || {};
-      const _containers = _pod.containers || {};
-      const _logs = action.failure === true ? '' : _containers[action.containerName]?.logs || '';
+      const _pod = state.logs[action.podName];
+      const _containers = _pod?.containers;
+      const _containerLogs = _containers?.[action.containerName];
+      const _logs = action.failure === _containerLogs?.failure ? _containerLogs.logs : '';
       return createObject(state, {
         logs: createObject(state.logs, {
           [action.podName]: createObject(_pod, {
