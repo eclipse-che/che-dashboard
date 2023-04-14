@@ -188,37 +188,79 @@ describe('Pod logs store, actions', () => {
         expect(actions).toStrictEqual(expectedActions);
       });
 
-      it('should resubscribe to the channel', () => {
-        const statusMessage = {
-          eventPhase: api.webSocket.EventPhase.ERROR,
-          params: {
-            podName,
+      describe('resubscribe if failure', () => {
+        it('should not resubscribe if pod not found', () => {
+          const statusMessage = {
+            eventPhase: api.webSocket.EventPhase.ERROR,
+            params: {
+              podName,
+              namespace,
+            },
+            status: {
+              kind: 'Status',
+              message: 'an error message',
+            } as V1Status,
+          } as api.webSocket.StatusMessage;
+
+          const websocketClient = container.get(WebsocketClient);
+          const unsubscribeFromChannelSpy = jest
+            .spyOn(websocketClient, 'unsubscribeFromChannel')
+            .mockReturnValue(undefined);
+          const subscribeToChannelSpy = jest
+            .spyOn(websocketClient, 'subscribeToChannel')
+            .mockReturnValue(undefined);
+
+          /* no such pod in the store */
+          appStore.dispatch(testStore.actionCreators.handleWebSocketMessage(statusMessage));
+
+          const actions = appStore.getActions();
+
+          const expectedActions: testStore.KnownAction[] = [];
+          expect(actions).toStrictEqual(expectedActions);
+
+          expect(unsubscribeFromChannelSpy).toHaveBeenCalledWith(api.webSocket.Channel.LOGS);
+          expect(subscribeToChannelSpy).not.toHaveBeenCalledWith();
+        });
+
+        it('should not resubscribe if pod not found', () => {
+          const statusMessage = {
+            eventPhase: api.webSocket.EventPhase.ERROR,
+            params: {
+              podName,
+              namespace,
+            },
+            status: {
+              kind: 'Status',
+              message: 'an error message',
+            } as V1Status,
+          } as api.webSocket.StatusMessage;
+
+          const websocketClient = container.get(WebsocketClient);
+          const unsubscribeFromChannelSpy = jest
+            .spyOn(websocketClient, 'unsubscribeFromChannel')
+            .mockReturnValue(undefined);
+          const subscribeToChannelSpy = jest
+            .spyOn(websocketClient, 'subscribeToChannel')
+            .mockReturnValue(undefined);
+
+          /* adding the pod in the store */
+          const _appStore = new FakeStoreBuilder(appStore).withPods({ pods: [pod] }).build();
+
+          _appStore.dispatch(testStore.actionCreators.handleWebSocketMessage(statusMessage));
+
+          const actions = _appStore.getActions();
+
+          const expectedActions: testStore.KnownAction[] = [];
+          expect(actions).toStrictEqual(expectedActions);
+
+          expect(unsubscribeFromChannelSpy).toHaveBeenCalledWith(api.webSocket.Channel.LOGS);
+          expect(subscribeToChannelSpy).toHaveBeenCalledWith(
+            api.webSocket.Channel.LOGS,
             namespace,
-          },
-          status: {
-            kind: 'Status',
-            message: 'an error message',
-          } as V1Status,
-        } as api.webSocket.StatusMessage;
-
-        const websocketClient = container.get(WebsocketClient);
-        const unsubscribeFromChannelSpy = jest
-          .spyOn(websocketClient, 'unsubscribeFromChannel')
-          .mockReturnValue(undefined);
-        const subscribeToChannelSpy = jest
-          .spyOn(websocketClient, 'subscribeToChannel')
-          .mockReturnValue(undefined);
-
-        appStore.dispatch(testStore.actionCreators.handleWebSocketMessage(statusMessage));
-
-        const actions = appStore.getActions();
-
-        const expectedActions: testStore.KnownAction[] = [];
-        expect(actions).toStrictEqual(expectedActions);
-
-        expect(unsubscribeFromChannelSpy).toHaveBeenCalledWith(api.webSocket.Channel.LOGS);
-        expect(subscribeToChannelSpy).toHaveBeenCalledWith(api.webSocket.Channel.LOGS, namespace, {
-          podName,
+            {
+              podName,
+            },
+          );
         });
       });
     });

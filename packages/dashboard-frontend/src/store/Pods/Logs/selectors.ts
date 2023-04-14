@@ -22,8 +22,3 @@ export const selectPodLogs = createSelector(
   state => (podName: string | undefined) =>
     podName === undefined ? undefined : state.logs[podName]?.containers,
 );
-
-export const selectPodLogsError = createSelector(
-  selectState,
-  state => (podName: string | undefined) => podName && state.logs[podName]?.error,
-);
