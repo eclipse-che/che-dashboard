@@ -69,7 +69,7 @@ jobs:
         id: result
         name: "Build result outputs version"
         if: ${{ success() }}
-        run: echo "::set-output name=${{ matrix.arch }}::${{ matrix.arch }}-next"
+        run: echo "${{ matrix.arch }}=${{ matrix.arch }}-next" >> $GITHUB_OUTPUT
 
   create-manifest:
     if: always()

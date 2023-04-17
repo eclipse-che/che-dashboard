@@ -58,7 +58,7 @@ jobs:
         id: result
         name: "Build result outputs version"
         if: ${{ success() }}
-        run: echo "::set-output name=${{ matrix.arch }}::${{ github.event.inputs.version }}-${{ matrix.arch }}"
+        run: echo "${{ matrix.arch }}=${{ github.event.inputs.version }}-${{ matrix.arch }}" >> $GITHUB_OUTPUT
 
   create-manifest:
     needs: build-images
