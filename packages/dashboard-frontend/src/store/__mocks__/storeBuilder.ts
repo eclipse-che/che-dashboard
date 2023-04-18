@@ -152,6 +152,10 @@ export class FakeStoreBuilder {
     logs: {
       logs: {},
     },
+    personalAccessToken: {
+      isLoading: false,
+      tokens: [],
+    },
   };
 
   constructor(store?: MockStoreEnhanced<AppState, ThunkDispatch<AppState, undefined, AnyAction>>) {
@@ -404,6 +408,16 @@ export class FakeStoreBuilder {
 
   public withLogs(logs: LogsState['logs']) {
     this.state.logs.logs = Object.assign({}, logs);
+    return this;
+  }
+
+  public withPersonalAccessTokens(
+    options: { tokens: api.PersonalAccessToken[]; error?: string },
+    isLoading = false,
+  ) {
+    this.state.personalAccessToken.tokens = Object.assign([], options.tokens);
+    this.state.personalAccessToken.error = options.error;
+    this.state.personalAccessToken.isLoading = isLoading;
     return this;
   }
 

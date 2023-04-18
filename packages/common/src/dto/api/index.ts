@@ -22,6 +22,22 @@ export type GitOauthProvider =
   | 'bitbucket'
   | 'azure-devops';
 
+export type PersonalAccessToken = {
+  cheUserId: string;
+  tokenName: string;
+  tokenData: string; // base64 encoded
+  gitProviderEndpoint: string;
+  gitProviderUsername: string;
+} & (
+  | {
+      gitProvider: Exclude<GitOauthProvider, 'azure-devops'>;
+    }
+  | {
+      gitProvider: Extract<GitOauthProvider, 'azure-devops'>;
+      gitProviderOrganization: string;
+    }
+);
+
 export interface IPatch {
   op: string;
   path: string;
