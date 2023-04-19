@@ -42,7 +42,7 @@ exports[`The WorkspaceLogs component snapshot - empty state 1`] = `
 
 exports[`The WorkspaceLogs component snapshot - with logs 1`] = `
 <section
-  className="pf-c-page__main-section pf-m-padding"
+  className="pf-c-page__main-section pf-m-fill"
 >
   <div
     className="pf-l-split"
