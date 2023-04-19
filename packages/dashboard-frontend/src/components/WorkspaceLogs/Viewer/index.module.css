@@ -3,8 +3,8 @@
   border-radius: 2px;
   color: var(--pf-global--palette--black-400);
   background-color: var(--pf-global--palette--black-1000);
-  height: calc(100vh - 400px);
-  min-height: 200px;
+  height: calc(100vh - 31em);
+  min-height: 15em;
   font-size: small;
 }
 

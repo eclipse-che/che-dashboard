@@ -190,10 +190,9 @@ export class WorkspaceLogs extends React.PureComponent<Props, State> {
     const containerLogs = this.getContainerLogs(this.props, this.state);
 
     const expandedStyle = isExpanded ? styles.viewerExpanded : '';
-    const defaultPadding = isExpanded ? 'noPadding' : 'padding';
 
     return (
-      <PageSection padding={{ default: defaultPadding }} className={expandedStyle}>
+      <PageSection className={expandedStyle} isFilled>
         <WorkspaceLogsToolsPanel
           isExpanded={isExpanded}
           leftPart={
