@@ -15,6 +15,7 @@ import { Action, Reducer } from 'redux';
 import { AppThunk } from '../..';
 import { container } from '../../../inversify.config';
 import { injectKubeConfig } from '../../../services/dashboard-backend-client/devWorkspaceApi';
+import { podmanLogin } from '../../../services/dashboard-backend-client/devWorkspaceApi';
 import { WebsocketClient } from '../../../services/dashboard-backend-client/websocketClient';
 import devfileApi, { isDevWorkspace } from '../../../services/devfileApi';
 import { devWorkspaceKind } from '../../../services/devfileApi/devWorkspace';
@@ -756,7 +757,7 @@ export const actionCreators: ActionCreators = {
           }
         }
 
-        // inject the kube config
+        // inject the kube config and 'podman login' to the OpenShift internal registry
         if (
           phase === DevWorkspaceStatus.RUNNING &&
           phase !== prevPhase &&
@@ -764,6 +765,7 @@ export const actionCreators: ActionCreators = {
         ) {
           try {
             await injectKubeConfig(workspace.metadata.namespace, devworkspaceId);
+            await podmanLogin(workspace.metadata.namespace, devworkspaceId);
           } catch (e) {
             console.error(e);
           }
