@@ -25,8 +25,9 @@ import {
   TextContent,
 } from '@patternfly/react-core';
 import { ExclamationCircleIcon } from '@patternfly/react-icons';
+import { FactoryAdapter } from '../../../../services/factory-adapter';
 
-const ERROR_TYPE_MISMATCH = 'The URL is not valid.';
+const ERROR_PATTERN_MISMATCH = 'The URL or SSHLocation is not valid.';
 const ERROR_FAILED_LOAD = 'Failed to load the devfile.';
 
 type Props = {
@@ -61,9 +62,11 @@ export class GitRepoLocationInput extends React.PureComponent<Props, State> {
     });
   }
 
-  private handleChange(location: string, event: React.FormEvent<HTMLInputElement>): void {
-    const validity = (event.target as HTMLInputElement).validity;
-    if (validity.valid) {
+  private handleChange(location: string): void {
+    const isValid =
+      FactoryAdapter.isFullPathUrl(location) || FactoryAdapter.isSshLocation(location);
+
+    if (isValid) {
       this.setState({
         validated: ValidatedOptions.default,
         errorMessage: undefined,
@@ -71,7 +74,7 @@ export class GitRepoLocationInput extends React.PureComponent<Props, State> {
     } else {
       this.setState({
         validated: ValidatedOptions.error,
-        errorMessage: validity.typeMismatch ? ERROR_TYPE_MISMATCH : undefined,
+        errorMessage: ERROR_PATTERN_MISMATCH,
       });
     }
 
@@ -110,11 +113,10 @@ export class GitRepoLocationInput extends React.PureComponent<Props, State> {
               <TextContent>
                 <TextInput
                   id={fieldId}
-                  type="url"
-                  aria-label="Git URL"
-                  placeholder="Enter Git URL"
+                  aria-label="Git URL or SSHLocation"
+                  placeholder="Enter Git URL or SSHLocation"
                   validated={validated}
-                  onChange={(value, event) => this.handleChange(value, event)}
+                  onChange={value => this.handleChange(value)}
                   value={location}
                 />
                 <Text component={TextVariants.small}>
