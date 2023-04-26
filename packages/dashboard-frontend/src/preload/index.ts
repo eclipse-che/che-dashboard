@@ -12,7 +12,7 @@
 
 import { PROPAGATE_FACTORY_ATTRS, REMOTES_ATTR } from '../containers/Loader/const';
 import SessionStorageService, { SessionStorageKey } from '../services/session-storage';
-import { FactoryAdapter, Factory } from '../services/factory-adapter';
+import { FactoryLocationAdapter, FactoryLocation } from '../services/factory-location-adapter';
 import { sanitizeLocation } from '../services/helpers/location';
 
 (function acceptNewFactoryLink(): void {
@@ -23,7 +23,7 @@ import { sanitizeLocation } from '../services/helpers/location';
   storePathIfNeeded(window.location.pathname);
 
   const hash = window.location.hash.replace(/(\/?)#(\/?)/, '');
-  if (FactoryAdapter.isFullPathUrl(hash) || FactoryAdapter.isSshLocation(hash)) {
+  if (FactoryLocationAdapter.isFullPathUrl(hash) || FactoryLocationAdapter.isSshLocation(hash)) {
     window.location.href = window.location.origin + '/dashboard' + buildFactoryLoaderPath(hash);
   } else if (
     window.location.search.startsWith(`?${REMOTES_ATTR}=`) ||
@@ -44,10 +44,10 @@ export function storePathIfNeeded(path: string) {
 }
 
 export function buildFactoryLoaderPath(location: string, appendUrl = true): string {
-  let factory: Factory | URL;
+  let factory: FactoryLocation | URL;
   if (appendUrl) {
     try {
-      factory = new FactoryAdapter(location);
+      factory = new FactoryLocationAdapter(location);
     } catch (e) {
       console.error(e);
       return '/';

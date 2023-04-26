@@ -25,7 +25,7 @@ import {
   TextContent,
 } from '@patternfly/react-core';
 import { ExclamationCircleIcon } from '@patternfly/react-icons';
-import { FactoryAdapter } from '../../../../services/factory-adapter';
+import { FactoryLocationAdapter } from '../../../../services/factory-location-adapter';
 
 const ERROR_PATTERN_MISMATCH = 'The URL or SSHLocation is not valid.';
 const ERROR_FAILED_LOAD = 'Failed to load the devfile.';
@@ -64,7 +64,8 @@ export class GitRepoLocationInput extends React.PureComponent<Props, State> {
 
   private handleChange(location: string): void {
     const isValid =
-      FactoryAdapter.isFullPathUrl(location) || FactoryAdapter.isSshLocation(location);
+      FactoryLocationAdapter.isFullPathUrl(location) ||
+      FactoryLocationAdapter.isSshLocation(location);
 
     if (isValid) {
       this.setState({

@@ -13,14 +13,14 @@
 import { sanitizeLocation } from '../helpers/location';
 import { Location } from 'history';
 
-export interface Factory {
+export interface FactoryLocation {
   readonly searchParams: URLSearchParams;
   readonly isFullPathUrl: boolean;
   readonly isSshLocation: boolean;
   readonly toString: () => string;
 }
 
-export class FactoryAdapter implements Factory {
+export class FactoryLocationAdapter implements FactoryLocation {
   private readonly fullPathUrl: string | undefined;
   private readonly sshLocation: string | undefined;
   private readonly search: URLSearchParams;
@@ -36,24 +36,23 @@ export class FactoryAdapter implements Factory {
     this.search = new window.URLSearchParams(sanitizedLocation.search);
     this.pathname = pathname;
 
-    if (FactoryAdapter.isFullPathUrl(sanitizedLocation.pathname)) {
+    if (FactoryLocationAdapter.isFullPathUrl(sanitizedLocation.pathname)) {
       this.fullPathUrl = sanitizedLocation.pathname;
       if (sanitizedLocation.search) {
         this.fullPathUrl += sanitizedLocation.search;
       }
-    } else if (FactoryAdapter.isSshLocation(sanitizedLocation.pathname)) {
+    } else if (FactoryLocationAdapter.isSshLocation(sanitizedLocation.pathname)) {
       this.sshLocation = sanitizedLocation.pathname;
       if (sanitizedLocation.search) {
         this.sshLocation += sanitizedLocation.search;
       }
     } else {
-      console.error('Unsupported factory type:', href);
-      throw new Error('Unsupported factory type.');
+      throw new Error(`Unsupported factory location: "${href}"`);
     }
   }
 
   public static isFullPathUrl(href: string): boolean {
-    return /^(https?:\/\/.)?[-a-zA-Z0-9@:%._+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_+.~#?&/=]*)$/.test(
+    return /^(https?:\/\/.)[-a-zA-Z0-9@:%._+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_+.~#?&/=]*)$/.test(
       href,
     );
   }
