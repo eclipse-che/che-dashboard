@@ -50,22 +50,34 @@ describe('FactoryLocationAdapter Service', () => {
   describe('SSH location', () => {
     it('should determine searchParams', () => {
       const sshLocation = 'git@github.com:eclipse-che/che-dashboard.git';
-      const params = 'che-editor=che-incubator/checode/insiders';
+      const search = 'che-editor=che-incubator/checode/insiders';
 
-      factoryLocation = new FactoryLocationAdapter(`${sshLocation}?${params}`);
+      factoryLocation = new FactoryLocationAdapter(`${sshLocation}?${search}`);
 
       expect(factoryLocation.searchParams.toString()).toEqual(
         'che-editor=che-incubator%2Fchecode%2Finsiders',
       );
+
+      factoryLocation = new FactoryLocationAdapter(`${sshLocation}&${search}`);
+
+      expect(factoryLocation.searchParams.toString()).toEqual(
+        'che-editor=che-incubator%2Fchecode%2Finsiders',
+      );
+    });
+
+    it('should return factory reference without oauth params', () => {
+      const sshLocation = 'git@github.com:eclipse-che/che-dashboard.git';
+      const oauthParams = 'session_state=63273265623765783252378';
+      const params = 'che-editor=che-incubator/checode/insiders';
+
+      factoryLocation = new FactoryLocationAdapter(`${sshLocation}?${oauthParams}&${params}`);
+
       expect(factoryLocation.toString()).toEqual(
         'git@github.com:eclipse-che/che-dashboard.git?che-editor=che-incubator%2Fchecode%2Finsiders',
       );
 
-      factoryLocation = new FactoryLocationAdapter(`${sshLocation}&${params}`);
+      factoryLocation = new FactoryLocationAdapter(`${sshLocation}&${oauthParams}&${params}`);
 
-      expect(factoryLocation.searchParams.toString()).toEqual(
-        'che-editor=che-incubator%2Fchecode%2Finsiders',
-      );
       expect(factoryLocation.toString()).toEqual(
         'git@github.com:eclipse-che/che-dashboard.git?che-editor=che-incubator%2Fchecode%2Finsiders',
       );
@@ -75,25 +87,37 @@ describe('FactoryLocationAdapter Service', () => {
   describe('full path URL', () => {
     it('should determine searchParams', () => {
       const fullPathUrl = 'https://github.com/eclipse-che/che-dashboard.git';
-      const params = 'che-editor=che-incubator/checode/insiders';
+      const search = 'che-editor=che-incubator/checode/insiders';
 
-      factoryLocation = new FactoryLocationAdapter(`${fullPathUrl}?${params}`);
-
-      expect(factoryLocation.searchParams.toString()).toEqual(
-        'che-editor=che-incubator%2Fchecode%2Finsiders',
-      );
-      expect(factoryLocation.toString()).toEqual(
-        'https://github.com/eclipse-che/che-dashboard.git?che-editor=che-incubator%2Fchecode%2Finsiders',
-      );
-
-      factoryLocation = new FactoryLocationAdapter(`${fullPathUrl}&${params}`);
+      factoryLocation = new FactoryLocationAdapter(`${fullPathUrl}?${search}`);
 
       expect(factoryLocation.searchParams.toString()).toEqual(
         'che-editor=che-incubator%2Fchecode%2Finsiders',
       );
-      expect(factoryLocation.toString()).toEqual(
-        'https://github.com/eclipse-che/che-dashboard.git?che-editor=che-incubator%2Fchecode%2Finsiders',
+
+      factoryLocation = new FactoryLocationAdapter(`${fullPathUrl}&${search}`);
+
+      expect(factoryLocation.searchParams.toString()).toEqual(
+        'che-editor=che-incubator%2Fchecode%2Finsiders',
       );
     });
+  });
+
+  it('should return factory reference without oauth params', () => {
+    const fullPathUrl = 'https://github.com/eclipse-che/che-dashboard.git';
+    const oauthParams = 'session_state=63273265623765783252378';
+    const params = 'che-editor=che-incubator/checode/insiders';
+
+    factoryLocation = new FactoryLocationAdapter(`${fullPathUrl}?${oauthParams}&${params}`);
+
+    expect(factoryLocation.toString()).toEqual(
+      'https://github.com/eclipse-che/che-dashboard.git?che-editor=che-incubator%2Fchecode%2Finsiders',
+    );
+
+    factoryLocation = new FactoryLocationAdapter(`${fullPathUrl}&${oauthParams}&${params}`);
+
+    expect(factoryLocation.toString()).toEqual(
+      'https://github.com/eclipse-che/che-dashboard.git?che-editor=che-incubator%2Fchecode%2Finsiders',
+    );
   });
 });
