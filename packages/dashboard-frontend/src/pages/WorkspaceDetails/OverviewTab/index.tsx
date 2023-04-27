@@ -111,7 +111,7 @@ export class OverviewTab extends React.Component<Props, State> {
             <InfrastructureNamespaceFormGroup namespace={namespace} />
             <StorageTypeFormGroup
               readonly={isDeprecated || workspace.status === DevWorkspaceStatus.TERMINATING}
-              storageType={StorageTypeTitle[storageType as che.WorkspaceStorageType] || storageType}
+              storageType={storageType}
               onSave={_storageType => this.handleStorageSave(_storageType)}
             />
             <ProjectsFormGroup projects={projects} />
