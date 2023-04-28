@@ -757,15 +757,15 @@ export const actionCreators: ActionCreators = {
           }
         }
 
-        // inject the kube config and 'podman login' to the OpenShift internal registry
+        // inject the 'podman login' and kube config to the OpenShift internal registry
         if (
           phase === DevWorkspaceStatus.RUNNING &&
           phase !== prevPhase &&
           devworkspaceId !== undefined
         ) {
           try {
-            await injectKubeConfig(workspace.metadata.namespace, devworkspaceId);
             await podmanLogin(workspace.metadata.namespace, devworkspaceId);
+            await injectKubeConfig(workspace.metadata.namespace, devworkspaceId);
           } catch (e) {
             console.error(e);
           }
