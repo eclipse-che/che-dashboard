@@ -19,7 +19,6 @@ import ProjectsFormGroup from './Projects';
 import { constructWorkspace, Workspace } from '../../../services/workspace-adapter';
 import { cloneDeep } from 'lodash';
 import { DevWorkspaceStatus } from '../../../services/helpers/types';
-import { StorageTypeTitle } from '../../../services/storageTypes';
 
 type Props = {
   onSave: (workspace: Workspace) => Promise<void>;
