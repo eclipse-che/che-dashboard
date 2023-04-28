@@ -47,7 +47,7 @@ function Routes(): React.ReactElement {
   return (
     <Switch>
       <Route key="simple-factory-location-1" path="/http*" render={redirectToFactoryLoader} />
-      <Route key="simple-factory-location-2" path="/git*" render={redirectToFactoryLoader} />
+      <Route key="simple-factory-location-2" path="/git@*" render={redirectToFactoryLoader} />
       {...routes}
       <Redirect key="redirect-to-home" path="*" to={ROUTE.HOME} />
     </Switch>
