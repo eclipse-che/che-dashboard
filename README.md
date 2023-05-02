@@ -169,7 +169,7 @@ $ export IMAGE_REGISTRY_USER_NAME=<IMAGE_REGISTRY_USER_NAME> && \
 
 To a new image and apply it to the CheCluster, run:
 ```sh
-yarn yarn build-and-patch
+yarn build-and-patch
 ```
 
 ## Branding
