@@ -23,11 +23,15 @@ export async function isAvailableEndpoint(url: string | undefined): Promise<bool
   }
   let attempt = 0;
   while (attempt < MAX_ATTEMPT_QUANTITY) {
+    attempt++;
     try {
       await axios.get(url);
       return true;
     } catch (error) {
-      if (common.helpers.errors.includesAxiosResponse(error) && error.response?.status === 404) {
+      if (
+        common.helpers.errors.includesAxiosResponse(error) &&
+        (error.response?.status === 404 || error.response?.status === 503)
+      ) {
         if (attempt === MAX_ATTEMPT_QUANTITY) {
           console.error(`Endpoint '${url}' is not available. ${helpers.errors.getMessage(error)}`);
           return false;
@@ -37,7 +41,6 @@ export async function isAvailableEndpoint(url: string | undefined): Promise<bool
         return true;
       }
     }
-    attempt++;
   }
 
   return false;
