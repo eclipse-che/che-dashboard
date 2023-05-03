@@ -50,7 +50,6 @@ import { EDITOR_ATTR } from '../../../containers/Loader/const';
 import { FactoryParams } from '../../../containers/Loader/buildFactoryParams';
 import { getEditor } from '../../DevfileRegistries/getEditor';
 import { selectApplications } from '../../ClusterInfo/selectors';
-import { isAvailableEndpoint } from '../../../services/helpers/api-ping';
 
 export const onStatusChangeCallbacks = new Map<string, (status: string) => void>();
 
