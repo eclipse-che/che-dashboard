@@ -29,6 +29,9 @@ import { FakeStoreBuilder } from '../../../../../../store/__mocks__/storeBuilder
 import { MIN_STEP_DURATION_MS, TIMEOUT_TO_GET_URL_SEC } from '../../../../const';
 
 jest.mock('../../../../../../pages/Loader');
+jest.mock('../../../../../../services/helpers/api-ping', () => ({
+  isAvailableEndpoint: () => Promise.resolve(true),
+}));
 
 const { renderComponent } = getComponentRenderer(getComponent);
 
