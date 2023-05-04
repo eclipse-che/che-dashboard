@@ -93,7 +93,7 @@ describe('test API endpoints', () => {
     expect(isAvailable).toBeTruthy();
   });
 
-  it('should return "true" if response status 503', async () => {
+  it('should return "false" if response status 503', async () => {
     mockedAxios.get = jest.fn().mockRejectedValue({
       response: {
         headers: {},
@@ -114,7 +114,7 @@ describe('test API endpoints', () => {
     expect(isAvailable).toBeFalsy();
   });
 
-  it('should return "true" if response status 404', async () => {
+  it('should return "false" if response status 404', async () => {
     mockedAxios.get = jest.fn().mockRejectedValue({
       response: {
         headers: {},
