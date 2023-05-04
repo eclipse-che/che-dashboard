@@ -668,7 +668,7 @@ export const actionCreators: ActionCreators = {
         actionCreators.createWorkspaceFromResources(
           devWorkspaceResource,
           devWorkspaceTemplateResource,
-          attributes.cheEditor,
+          editor,
         ),
       );
     },
