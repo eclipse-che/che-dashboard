@@ -59,6 +59,17 @@ describe('testing sample conversions', () => {
       delete (output as any).metadata.attributes;
       expect(devWorkspaceToDevfile(input)).toStrictEqual(output);
     });
+
+    test('the test-devworkspace-devfile-annotation fixture should convert into test-devfile-metadata-description fixture', () => {
+      const input: any = yaml.load(
+        fs.readFileSync(__dirname + '/fixtures/test-devworkspace-devfile-annotation.yaml', 'utf-8'),
+      );
+      const output = yaml.load(
+        fs.readFileSync(__dirname + '/fixtures/test-devfile-metadata-description.yaml', 'utf-8'),
+      );
+      delete (output as any).metadata.attributes;
+      expect(devWorkspaceToDevfile(input)).toStrictEqual(output);
+    });
   });
   describe('storage-type section', () => {
     test('the test-devfile-ephemeral fixture should convert into test-devworkspace-ephemeral fixture', () => {
