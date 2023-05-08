@@ -15,6 +15,7 @@ import devfileApi, { isDevfileV2 } from '../../../devfileApi';
 import { DevWorkspaceSpecTemplateAttribute } from '../../../devfileApi/devWorkspace/spec/template';
 import { DEVWORKSPACE_DEVFILE, DEVWORKSPACE_METADATA_ANNOTATION } from '../devWorkspaceClient';
 import { load } from 'js-yaml';
+import { helpers } from '@eclipse-che/common';
 
 export const devfileSchemaVersion = '2.2.0';
 
@@ -88,7 +89,8 @@ export function devWorkspaceToDevfile(devworkspace: devfileApi.DevWorkspace): de
         throw new Error('The target object is not devfile V2.');
       }
     } catch (e) {
-      console.debug('Failed to parse the origin devfile. ', e);
+      const errorMessage = helpers.errors.getMessage(e);
+      console.debug(`Failed to parse the origin devfile. ${errorMessage}`);
     }
   }
 
