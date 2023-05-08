@@ -11,7 +11,7 @@
  */
 
 import { V1alpha2DevWorkspaceSpecTemplateComponents } from '@devfile/api';
-import devfileApi from '../../../devfileApi';
+import devfileApi, { isDevfileV2 } from '../../../devfileApi';
 import { DevWorkspaceSpecTemplateAttribute } from '../../../devfileApi/devWorkspace/spec/template';
 import { DEVWORKSPACE_DEVFILE, DEVWORKSPACE_METADATA_ANNOTATION } from '../devWorkspaceClient';
 import { load } from 'js-yaml';
@@ -81,9 +81,12 @@ export function devWorkspaceToDevfile(devworkspace: devfileApi.DevWorkspace): de
   let originDevfile: devfileApi.Devfile | undefined;
   if (devworkspace.metadata?.annotations?.[DEVWORKSPACE_DEVFILE]) {
     try {
-      originDevfile = load(
-        devworkspace.metadata.annotations[DEVWORKSPACE_DEVFILE],
-      ) as devfileApi.Devfile;
+      const loadedObject = load(devworkspace.metadata.annotations[DEVWORKSPACE_DEVFILE]);
+      if (isDevfileV2(loadedObject)) {
+        originDevfile = loadedObject;
+      } else {
+        throw new Error('The target object is not devfile V2.');
+      }
     } catch (e) {
       console.debug('Failed to parse the origin devfile. ', e);
     }

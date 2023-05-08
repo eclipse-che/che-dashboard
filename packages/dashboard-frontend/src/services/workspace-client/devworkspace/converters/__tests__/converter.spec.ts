@@ -67,7 +67,6 @@ describe('testing sample conversions', () => {
       const output = yaml.load(
         fs.readFileSync(__dirname + '/fixtures/test-devfile-metadata-description.yaml', 'utf-8'),
       );
-      delete (output as any).metadata.attributes;
       expect(devWorkspaceToDevfile(input)).toStrictEqual(output);
     });
   });
