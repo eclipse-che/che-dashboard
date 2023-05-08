@@ -546,7 +546,7 @@ describe('Factory Loader container, step CREATE_WORKSPACE__APPLYING_DEVFILE', ()
         })
         .build();
 
-      const component = renderComponent(store, loaderSteps, searchParams);
+      renderComponent(store, loaderSteps, searchParams);
       jest.advanceTimersByTime(MIN_STEP_DURATION_MS);
 
       const restartButton = await screen.findByRole('button', {
