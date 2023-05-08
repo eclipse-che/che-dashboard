@@ -330,7 +330,7 @@ class StepApplyDevfile extends AbstractLoaderStep<Props, State> {
           },
           {
             title: 'Reload',
-            callback: () => super.clearStepError(),
+            callback: () => this.clearStepError(),
           },
         ],
       };
