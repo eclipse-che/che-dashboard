@@ -40,6 +40,16 @@ describe('Server Config Route', () => {
       defaults: { components: [], plugins: [], pvcStrategy: '' },
       pluginRegistry: { openVSXURL: 'openvsx-url' },
       timeouts: { inactivityTimeout: 0, runTimeout: 0, startTimeout: 0 },
+      devfileRegistryURL: 'http://devfile-registry.eclipse-che.svc',
+      pluginRegistryURL: 'http://plugin-registry.eclipse-che.svc/v3',
+      devfileRegistry: {
+        disableInternalRegistry: true,
+        externalDevfileRegistries: [
+          {
+            url: 'https://devfile.registry.test.org/',
+          },
+        ],
+      },
     });
   });
 });

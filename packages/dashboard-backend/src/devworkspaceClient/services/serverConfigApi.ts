@@ -22,6 +22,7 @@ import {
 import { createError } from './helpers/createError';
 import { CustomObjectAPI, prepareCustomObjectAPI } from './helpers/prepareCustomObjectAPI';
 import { startTimeoutSeconds } from '../../constants/server-config';
+import { IExternalDevfileRegistry } from '@eclipse-che/common/src/dto/api';
 
 const CUSTOM_RESOURCE_DEFINITIONS_API_ERROR_LABEL = 'CUSTOM_RESOURCE_DEFINITIONS_API_ERROR';
 
@@ -98,6 +99,14 @@ export class ServerConfigApiService implements IServerConfigApi {
     return cheCustomResource.spec.devEnvironments?.defaultPlugins || [];
   }
 
+  getDefaultDevfileRegistryUrl(cheCustomResource: CustomResourceDefinition): string {
+    return cheCustomResource.status?.devfileRegistryURL || '';
+  }
+
+  getDefaultPluginRegistryUrl(cheCustomResource: CustomResourceDefinition): string {
+    return cheCustomResource.status?.pluginRegistryURL || '';
+  }
+
   getDefaultEditor(cheCustomResource: CustomResourceDefinition): string | undefined {
     return (
       cheCustomResource.spec.devEnvironments?.defaultEditor ||
@@ -136,6 +145,16 @@ export class ServerConfigApiService implements IServerConfigApi {
 
   getPvcStrategy(cheCustomResource: CustomResourceDefinition): string | undefined {
     return cheCustomResource.spec.devEnvironments?.storage?.pvcStrategy;
+  }
+
+  getInternalRegistryDisableStatus(cheCustomResource: CustomResourceDefinition): boolean {
+    return cheCustomResource.spec.components?.devfileRegistry?.disableInternalRegistry || false;
+  }
+
+  getExternalDevfileRegistries(
+    cheCustomResource: CustomResourceDefinition,
+  ): IExternalDevfileRegistry[] {
+    return cheCustomResource.spec.components?.devfileRegistry?.externalDevfileRegistries || [];
   }
 
   getDashboardWarning(cheCustomResource: CustomResourceDefinition): string | undefined {

@@ -44,6 +44,10 @@ export const stubAllWorkspacesLimit = 1;
 export const stubWorkspaceInactivityTimeout = 0;
 export const stubWorkspaceRunTimeout = 0;
 export const stubWorkspaceStartupTimeout = 0;
+export const defaultDevfileRegistryUrl = 'http://devfile-registry.eclipse-che.svc';
+export const defaultPluginRegistryUrl = 'http://plugin-registry.eclipse-che.svc/v3';
+export const internalRegistryDisableStatus = true;
+export const externalDevfileRegistries = [{ url: 'https://devfile.registry.test.org/' }];
 
 export const stubDevWorkspacesList: api.IDevWorkspaceList = {
   apiVersion: 'workspace.devfile.io/v1alpha2',
@@ -95,6 +99,10 @@ export function getDevWorkspaceClient(_args: Parameters<typeof helper>): ReturnT
       getWorkspaceInactivityTimeout: _cheCustomResource => stubWorkspaceInactivityTimeout,
       getWorkspaceRunTimeout: _cheCustomResource => stubWorkspaceRunTimeout,
       getWorkspaceStartTimeout: _cheCustomResource => stubWorkspaceStartupTimeout,
+      getDefaultDevfileRegistryUrl: _cheCustomResource => defaultDevfileRegistryUrl,
+      getDefaultPluginRegistryUrl: _cheCustomResource => defaultPluginRegistryUrl,
+      getExternalDevfileRegistries: _cheCustomResource => externalDevfileRegistries,
+      getInternalRegistryDisableStatus: _cheCustomResource => internalRegistryDisableStatus,
     } as IServerConfigApi,
     devworkspaceApi: {
       create: (_devworkspace, _namespace) =>

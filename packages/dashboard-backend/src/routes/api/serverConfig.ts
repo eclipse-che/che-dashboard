@@ -16,6 +16,7 @@ import { getDevWorkspaceClient } from './helpers/getDevWorkspaceClient';
 import { getServiceAccountToken } from './helpers/getServiceAccountToken';
 import { getSchema } from '../../services/helpers';
 import { api } from '@eclipse-che/common';
+import { IExternalDevfileRegistry } from '@eclipse-che/common/src/dto/api';
 
 const tags = ['Server Config'];
 
@@ -34,6 +35,12 @@ export function registerServerConfigRoute(server: FastifyInstance) {
     const startTimeout = serverConfigApi.getWorkspaceStartTimeout(cheCustomResource);
     const openVSXURL = serverConfigApi.getOpenVSXURL(cheCustomResource);
     const pvcStrategy = serverConfigApi.getPvcStrategy(cheCustomResource);
+    const pluginRegistryURL = serverConfigApi.getDefaultPluginRegistryUrl(cheCustomResource);
+    const devfileRegistryURL = serverConfigApi.getDefaultDevfileRegistryUrl(cheCustomResource);
+    const externalDevfileRegistries =
+      serverConfigApi.getExternalDevfileRegistries(cheCustomResource);
+    const disableInternalRegistry =
+      serverConfigApi.getInternalRegistryDisableStatus(cheCustomResource);
 
     const CheClusterCRNamespace = process.env.CHECLUSTER_CR_NAMESPACE as string;
 
@@ -50,10 +57,16 @@ export function registerServerConfigRoute(server: FastifyInstance) {
         runTimeout,
         startTimeout,
       },
+      devfileRegistry: {
+        disableInternalRegistry,
+        externalDevfileRegistries,
+      },
       pluginRegistry: {
         openVSXURL,
       },
       cheNamespace: CheClusterCRNamespace,
+      pluginRegistryURL,
+      devfileRegistryURL,
     };
 
     return serverConfig;
