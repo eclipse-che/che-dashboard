@@ -75,7 +75,12 @@ export function buildFactoryLoaderPath(location: string, appendUrl = true): stri
   const searchParams = new URLSearchParams(initParams);
 
   if (appendUrl) {
-    searchParams.append('url', factory.toString());
+    if ((factory as FactoryLocationAdapter)?.isFullPathUrl) {
+      const factoryUrl = new URL(factory.toString());
+      searchParams.append('url', `${factoryUrl.origin}${factoryUrl.pathname}`);
+    } else {
+      searchParams.append('url', factory.toString());
+    }
   }
 
   return '/f?' + searchParams.toString();
