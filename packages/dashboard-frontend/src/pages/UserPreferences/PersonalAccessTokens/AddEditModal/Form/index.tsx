@@ -13,7 +13,7 @@
 import { api } from '@eclipse-che/common';
 import { Form } from '@patternfly/react-core';
 import React from 'react';
-import { DEFAULT_PROVIDER } from '../../../const';
+import { DEFAULT_PROVIDER, PROVIDER_ENDPOINTS } from '../../../const';
 import { EditTokenProps } from '../../types';
 import { GitProviderEndpoint } from './GitProviderEndpoint';
 import { GitProviderOrganization } from './GitProviderOrganization';
@@ -28,15 +28,16 @@ export type Props = EditTokenProps & {
 };
 export type State = {
   gitProvider: api.GitOauthProvider;
-  gitProviderEndpoint: string;
+  defaultGitProviderEndpoint: string;
+  gitProviderEndpoint: string | undefined;
   gitProviderEndpointIsValid: boolean;
-  gitProviderUsername: string;
+  gitProviderUsername: string | undefined;
   gitProviderUsernameIsValid: boolean;
-  gitProviderOrganization: string;
+  gitProviderOrganization: string | undefined;
   gitProviderOrganizationIsValid: boolean;
-  tokenName: string;
+  tokenName: string | undefined;
   tokenNameIsValid: boolean;
-  tokenData: string;
+  tokenData: string | undefined;
   tokenDataIsValid: boolean;
 };
 
@@ -46,22 +47,20 @@ export class AddEditModalForm extends React.PureComponent<Props, State> {
 
     const { gitProviderEndpoint, gitProvider, gitProviderUsername, tokenName, tokenData } =
       props.token || {
-        gitProviderEndpoint: '',
         gitProvider: DEFAULT_PROVIDER,
-        gitProviderUsername: '',
-        tokenName: '',
-        tokenData: '',
       };
 
     const gitProviderOrganization =
-      props.token?.gitProvider === 'azure-devops' ? props.token.gitProviderOrganization : '';
+      props.token?.gitProvider === 'azure-devops' ? props.token.gitProviderOrganization : undefined;
 
     const isValid = this.props.isEdit;
 
     this.state = {
       gitProvider,
+      defaultGitProviderEndpoint: PROVIDER_ENDPOINTS[DEFAULT_PROVIDER],
       gitProviderEndpoint,
-      gitProviderEndpointIsValid: isValid,
+      // next field is initially valid because a default value should be used instead of an empty string
+      gitProviderEndpointIsValid: true,
       gitProviderUsername,
       gitProviderUsernameIsValid: isValid,
       gitProviderOrganization,
@@ -79,16 +78,16 @@ export class AddEditModalForm extends React.PureComponent<Props, State> {
     this.setState(nextState);
 
     const {
-      gitProviderEndpoint,
+      gitProviderEndpoint = nextState.defaultGitProviderEndpoint,
       gitProviderEndpointIsValid,
       gitProvider,
-      gitProviderOrganization,
+      gitProviderOrganization = '',
       gitProviderOrganizationIsValid,
-      gitProviderUsername,
+      gitProviderUsername = '',
       gitProviderUsernameIsValid,
-      tokenName,
+      tokenName = '',
       tokenNameIsValid,
-      tokenData,
+      tokenData = '',
       tokenDataIsValid,
     } = nextState;
 
@@ -130,6 +129,7 @@ export class AddEditModalForm extends React.PureComponent<Props, State> {
   private handleChangeGitProvider(gitProvider: api.GitOauthProvider): void {
     this.updateChangeToken({
       gitProvider,
+      defaultGitProviderEndpoint: PROVIDER_ENDPOINTS[gitProvider],
     });
   }
 
@@ -187,6 +187,7 @@ export class AddEditModalForm extends React.PureComponent<Props, State> {
     const { isEdit } = this.props;
     const {
       gitProvider,
+      defaultGitProviderEndpoint,
       gitProviderEndpoint,
       gitProviderOrganization,
       gitProviderUsername,
@@ -206,6 +207,7 @@ export class AddEditModalForm extends React.PureComponent<Props, State> {
           onSelect={(...args) => this.handleChangeGitProvider(...args)}
         />
         <GitProviderEndpoint
+          defaultProviderEndpoint={defaultGitProviderEndpoint}
           providerEndpoint={gitProviderEndpoint}
           onChange={(...args) => this.handleChangeGitProviderEndpoint(...args)}
         />

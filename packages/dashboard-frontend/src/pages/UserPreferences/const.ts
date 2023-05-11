@@ -19,4 +19,11 @@ export const PROVIDERS: Record<api.GitOauthProvider, string> = {
   'azure-devops': 'Microsoft Azure DevOps',
 } as const;
 
+export const PROVIDER_ENDPOINTS: Record<api.GitOauthProvider, string> = {
+  github: 'https://github.com',
+  gitlab: 'https://gitlab.com',
+  bitbucket: 'https://bitbucket.org',
+  'azure-devops': 'https://dev.azure.com',
+} as const;
+
 export const DEFAULT_PROVIDER: api.GitOauthProvider = 'github';

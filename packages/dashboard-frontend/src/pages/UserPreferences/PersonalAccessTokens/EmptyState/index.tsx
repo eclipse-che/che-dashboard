@@ -22,6 +22,7 @@ import { KeyIcon, PlusCircleIcon } from '@patternfly/react-icons';
 import React from 'react';
 
 export type Props = {
+  isDisabled: boolean;
   onAddToken: () => void;
 };
 
@@ -38,6 +39,7 @@ export class PersonalAccessTokenEmptyState extends React.PureComponent<Props> {
             icon={<PlusCircleIcon />}
             aria-label="Add Personal Access Token"
             variant="link"
+            isDisabled={this.props.isDisabled}
             onClick={() => this.props.onAddToken()}
           >
             Add Personal Access Token

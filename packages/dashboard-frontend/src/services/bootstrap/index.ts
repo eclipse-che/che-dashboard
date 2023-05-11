@@ -24,7 +24,7 @@ import * as InfrastructureNamespacesStore from '../../store/InfrastructureNamesp
 import * as PluginsStore from '../../store/Plugins/chePlugins';
 import * as SanityCheckStore from '../../store/SanityCheck';
 import * as DwPluginsStore from '../../store/Plugins/devWorkspacePlugins';
-import * as UserProfileStore from '../../store/UserProfile';
+import * as UserProfileStore from '../../store/User/Profile';
 import * as WorkspacesStore from '../../store/Workspaces';
 import * as EventsStore from '../../store/Events';
 import * as PodsStore from '../../store/Pods';

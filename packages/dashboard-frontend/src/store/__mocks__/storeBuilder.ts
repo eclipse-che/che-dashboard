@@ -24,7 +24,7 @@ import { RegistryEntry } from '../DockerConfig/types';
 import { ConvertedState, ResolverState, State as FactoryResolverState } from '../FactoryResolver';
 import { State as InfrastructureNamespaceState } from '../InfrastructureNamespaces';
 import { State as PluginsState } from '../Plugins/chePlugins';
-import { State as UserProfileState } from '../UserProfile';
+import { State as UserProfileState } from '../User/Profile';
 import { State as WorkspacesState } from '../Workspaces';
 import mockThunk from './thunk';
 import { IGitOauth } from '../GitOauthConfig/types';
@@ -130,6 +130,10 @@ export class FakeStoreBuilder {
       devWorkspaceResources: {},
       schema: {},
     } as DevfileRegistriesState,
+    userId: {
+      cheUserId: '',
+      isLoading: false,
+    },
     userProfile: {
       isLoading: false,
       userProfile: {},
@@ -418,6 +422,13 @@ export class FakeStoreBuilder {
     this.state.personalAccessToken.tokens = Object.assign([], options.tokens);
     this.state.personalAccessToken.error = options.error;
     this.state.personalAccessToken.isLoading = isLoading;
+    return this;
+  }
+
+  public withCheUserId(options: { cheUserId: string; error?: string }, isLoading = false) {
+    this.state.userId.cheUserId = options.cheUserId;
+    this.state.userId.error = options.error;
+    this.state.userId.isLoading = isLoading;
     return this;
   }
 

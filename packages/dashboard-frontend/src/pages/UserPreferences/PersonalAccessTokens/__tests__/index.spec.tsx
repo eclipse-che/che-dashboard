@@ -409,6 +409,44 @@ describe('PersonalAccessTokens', () => {
       expect(deleteAllButton).toBeDisabled();
     });
   });
+
+  describe('component updated', () => {
+    it('should report error when fetching Che user ID fails', async () => {
+      const store = storeBuilder.build();
+      const { reRenderComponent } = renderComponent(store);
+
+      const errorMessage = 'fetch-user-id-error';
+      const nextStore = new FakeStoreBuilder()
+        .withCheUserId({ cheUserId: '', error: errorMessage }, false)
+        .build();
+      reRenderComponent(nextStore);
+
+      await waitFor(() => expect(mockShowAlert).toHaveBeenCalled());
+      expect(mockShowAlert).toHaveBeenCalledWith({
+        key: 'che-user-id-error',
+        title: `Failed to load user ID. ${errorMessage}`,
+        variant: 'danger',
+      } as AlertItem);
+    });
+
+    it('should report error when fetching tokens fails', async () => {
+      const store = storeBuilder.build();
+      const { reRenderComponent } = renderComponent(store);
+
+      const errorMessage = 'fetch-tokens-error';
+      const nextStore = new FakeStoreBuilder()
+        .withPersonalAccessTokens({ tokens: [], error: errorMessage }, false)
+        .build();
+      reRenderComponent(nextStore);
+
+      await waitFor(() => expect(mockShowAlert).toHaveBeenCalled());
+      expect(mockShowAlert).toHaveBeenCalledWith({
+        key: 'personal-access-tokens-error',
+        title: `Failed to load personal access tokens. ${errorMessage}`,
+        variant: 'danger',
+      } as AlertItem);
+    });
+  });
 });
 
 function getComponent(store: Store, localState?: Partial<State>): React.ReactElement {

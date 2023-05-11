@@ -17,6 +17,7 @@ const INVALID_URL_ERROR = 'The URL is not valid.';
 const REQUIRED_ERROR = 'This field is required.';
 
 export type Props = {
+  defaultProviderEndpoint: string;
   providerEndpoint: string | undefined;
   onChange: (providerEndpoint: string, isValid: boolean) => void;
 };
@@ -27,16 +28,65 @@ export type State = {
 };
 
 export class GitProviderEndpoint extends React.PureComponent<Props, State> {
+  private textInputRef = React.createRef<HTMLInputElement>();
+
   constructor(props: Props) {
     super(props);
 
-    const providerEndpoint = this.props.providerEndpoint;
+    const providerEndpoint = this.props.providerEndpoint || this.props.defaultProviderEndpoint;
     const validated = ValidatedOptions.default;
 
-    this.state = { providerEndpoint, validated };
+    this.state = {
+      providerEndpoint,
+      validated,
+    };
   }
 
-  private onChange(providerEndpoint: string): void {
+  public componentDidMount(): void {
+    this.init();
+  }
+
+  public componentDidUpdate(prevProps: Props): void {
+    this.init(prevProps);
+  }
+
+  private init(prevProps?: Props): void {
+    const { validated } = this.state;
+
+    /* Decide whether to change input value to a new default */
+
+    // value has been changed by user
+    if (validated !== ValidatedOptions.default) {
+      // do nothing
+      return;
+    }
+    // parent component passed value so the default value should be ignored
+    if (this.props.providerEndpoint !== undefined) {
+      // do nothing
+      return;
+    }
+    // default value has not been changed
+    if (prevProps?.defaultProviderEndpoint === this.props.defaultProviderEndpoint) {
+      // do nothing
+      return;
+    }
+
+    // use the new default value
+    this.setState({ providerEndpoint: this.props.defaultProviderEndpoint });
+  }
+
+  /**
+   * Set the focus on the input field and select the text
+   * if the input field has not been touched yet.
+   */
+  private handleFocus(): void {
+    const { validated } = this.state;
+    if (validated === ValidatedOptions.default && this.textInputRef.current !== null) {
+      this.textInputRef.current.setSelectionRange(0, this.textInputRef.current.value.length);
+    }
+  }
+
+  private handleChange(providerEndpoint: string): void {
     const { onChange } = this.props;
     const validated = this.validate(providerEndpoint);
     const isValid = validated === ValidatedOptions.success;
@@ -62,17 +112,19 @@ export class GitProviderEndpoint extends React.PureComponent<Props, State> {
 
     return (
       <FormGroup
-        label="Git Provider Endpoint"
         fieldId="git-provider-endpoint-label"
-        isRequired
         helperTextInvalid={errorMessage}
+        label="Git Provider Endpoint"
         validated={validated}
+        isRequired
       >
         <TextInput
           aria-describedby="git-provider-endpoint-label"
           aria-label="Git Provider Endpoint"
+          onChange={providerEndpoint => this.handleChange(providerEndpoint)}
+          onFocus={() => this.handleFocus()}
           placeholder="Enter a Git Provider Endpoint"
-          onChange={providerEndpoint => this.onChange(providerEndpoint)}
+          ref={this.textInputRef}
           type={TextInputTypes.url}
           value={providerEndpoint}
         />

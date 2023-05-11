@@ -14,10 +14,10 @@
 
 import common, { api } from '@eclipse-che/common';
 import { Action, Reducer } from 'redux';
-import { fetchUserProfile } from '../../services/dashboard-backend-client/userProfileApi';
-import { createObject } from '../helpers';
-import { AppThunk } from '../index';
-import { AUTHORIZED, SanityCheckAction } from '../sanityCheckMiddleware';
+import { fetchUserProfile } from '../../../services/dashboard-backend-client/userProfileApi';
+import { createObject } from '../../helpers';
+import { AppThunk } from '../../index';
+import { AUTHORIZED, SanityCheckAction } from '../../sanityCheckMiddleware';
 
 export interface State {
   userProfile: api.IUserProfile;

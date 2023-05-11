@@ -46,7 +46,7 @@ exports[`GitProviderEndpoint snapshot w/o endpoint 1`] = `
         readOnly={false}
         required={false}
         type="url"
-        value=""
+        value="https://github.com"
       />
       
     </div>

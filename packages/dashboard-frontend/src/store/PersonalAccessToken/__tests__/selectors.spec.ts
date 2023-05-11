@@ -15,7 +15,11 @@ import { ThunkDispatch } from 'redux-thunk';
 import * as store from '..';
 import { AppState } from '../..';
 import { FakeStoreBuilder } from '../../__mocks__/storeBuilder';
-import { selectError, selectIsLoading, selectPersonalAccessTokens } from '../selectors';
+import {
+  selectPersonalAccessTokensError,
+  selectPersonalAccessTokensIsLoading,
+  selectPersonalAccessTokens,
+} from '../selectors';
 import { token1, token2 } from './stub';
 
 describe('Personal Access Token store, selectors', () => {
@@ -32,7 +36,7 @@ describe('Personal Access Token store, selectors', () => {
     >;
     const state = fakeStore.getState();
 
-    const selectedError = selectError(state);
+    const selectedError = selectPersonalAccessTokensError(state);
     expect(selectedError).toEqual('Something unexpected');
   });
 
@@ -58,7 +62,7 @@ describe('Personal Access Token store, selectors', () => {
     >;
     const state = fakeStore.getState();
 
-    const isLoading = selectIsLoading(state);
+    const isLoading = selectPersonalAccessTokensIsLoading(state);
     expect(isLoading).toEqual(true);
   });
 });

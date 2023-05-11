@@ -22,13 +22,15 @@ const { createSnapshot, renderComponent } = getComponentRenderer(getComponent);
 
 const mockOnChange = jest.fn();
 
+const defaultGitProviderEndpoint = 'https://github.com';
+
 describe('GitProviderEndpoint', () => {
   afterEach(() => {
     jest.clearAllMocks();
   });
 
   test('snapshot w/o endpoint', () => {
-    const snapshot = createSnapshot();
+    const snapshot = createSnapshot(undefined);
     expect(snapshot.toJSON()).toMatchSnapshot();
   });
 
@@ -39,7 +41,7 @@ describe('GitProviderEndpoint', () => {
 
   it('should handle a correct endpoint', () => {
     const endpoint = 'https://provider/endpoint';
-    renderComponent();
+    renderComponent(undefined);
 
     expect(mockOnChange).not.toHaveBeenCalled();
 
@@ -52,7 +54,7 @@ describe('GitProviderEndpoint', () => {
 
   it('should handle endpoint started with an incorrect protocol', () => {
     const endpoint = 'asdf://provider/endpoint';
-    renderComponent();
+    renderComponent(undefined);
 
     expect(mockOnChange).not.toHaveBeenCalled();
 
@@ -65,7 +67,7 @@ describe('GitProviderEndpoint', () => {
 
   it('should handle endpoint w/o protocol', () => {
     const endpoint = 'provider/endpoint';
-    renderComponent();
+    renderComponent(undefined);
 
     expect(mockOnChange).not.toHaveBeenCalled();
 
@@ -88,12 +90,58 @@ describe('GitProviderEndpoint', () => {
     expect(mockOnChange).toHaveBeenCalledWith('', false);
     expect(screen.queryByText('This field is required.')).toBeTruthy();
   });
+
+  describe('default endpoint update', () => {
+    it('should change value if input untouched', () => {
+      const defaultEndpoint = 'https://default/endpoint';
+      const { reRenderComponent } = renderComponent(undefined, defaultEndpoint);
+
+      const input = screen.getByRole('textbox');
+      expect(input).toHaveValue(defaultEndpoint);
+
+      const nextDefaultEndpoint = 'https://next-default/endpoint';
+      reRenderComponent(undefined, nextDefaultEndpoint);
+
+      expect(input).toHaveValue(nextDefaultEndpoint);
+    });
+
+    it('should not change value if input is modified', () => {
+      const defaultEndpoint = 'https://default/endpoint';
+      const { reRenderComponent } = renderComponent(undefined, defaultEndpoint);
+
+      const input = screen.getByRole('textbox');
+      const userModifiedEndpoint = 'https://user-modified';
+      userEvent.paste(input, userModifiedEndpoint);
+
+      const nextDefaultEndpoint = 'https://next-default/endpoint';
+      reRenderComponent(undefined, nextDefaultEndpoint);
+
+      expect(input).toHaveValue(userModifiedEndpoint);
+    });
+
+    it('should not change value if it is provided as param', () => {
+      const editEndpoint = 'https://some/endpoint';
+      const defaultEndpoint = 'https://default/endpoint';
+      const { reRenderComponent } = renderComponent(editEndpoint, defaultEndpoint);
+
+      const input = screen.getByRole('textbox');
+
+      const nextDefaultEndpoint = 'https://next-default/endpoint';
+      reRenderComponent(editEndpoint, nextDefaultEndpoint);
+
+      expect(input).toHaveValue(editEndpoint);
+    });
+  });
 });
 
-function getComponent(providerEndpoint?: string): React.ReactElement {
+function getComponent(
+  providerEndpoint: string | undefined,
+  defaultProviderEndpoint = defaultGitProviderEndpoint,
+): React.ReactElement {
   return (
     <Form>
       <GitProviderEndpoint
+        defaultProviderEndpoint={defaultProviderEndpoint}
         providerEndpoint={providerEndpoint}
         onChange={(...args) => mockOnChange(...args)}
       />

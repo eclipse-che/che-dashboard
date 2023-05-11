@@ -18,12 +18,18 @@ import ProgressIndicator from '../../../components/Progress';
 import { lazyInject } from '../../../inversify.config';
 import { AppAlerts } from '../../../services/alerts/appAlerts';
 import { AppState } from '../../../store';
-import * as PersonalAccessTokenStore from '../../../store/PersonalAccessToken/index';
+import * as PersonalAccessTokenStore from '../../../store/PersonalAccessToken';
 import {
-  selectIsLoading,
+  selectPersonalAccessTokensIsLoading,
   selectPersonalAccessTokens,
+  selectPersonalAccessTokensError,
 } from '../../../store/PersonalAccessToken/selectors';
-import { selectUserProfile } from '../../../store/UserProfile/selectors';
+import * as UserIdStore from '../../../store/User/Id';
+import {
+  selectCheUserId,
+  selectCheUserIdError,
+  selectCheUserIsLoading,
+} from '../../../store/User/Id/selectors';
 import { PersonalAccessTokenAddEditModal } from './AddEditModal';
 import { PersonalAccessTokenDeleteModal } from './DeleteModal';
 import { PersonalAccessTokenEmptyState } from './EmptyState';
@@ -40,7 +46,7 @@ export type State = {
   isDeleting: boolean;
 };
 
-export class PersonalAccessTokens extends React.PureComponent<Props, State> {
+class PersonalAccessTokens extends React.PureComponent<Props, State> {
   @lazyInject(AppAlerts)
   private readonly appAlerts: AppAlerts;
 
@@ -57,9 +63,38 @@ export class PersonalAccessTokens extends React.PureComponent<Props, State> {
   }
 
   public async componentDidMount(): Promise<void> {
-    const { isLoading, requestTokens } = this.props;
-    if (!isLoading) {
-      await requestTokens();
+    const { cheUserIdIsLoading, personalAccessTokensIsLoading, requestCheUserId, requestTokens } =
+      this.props;
+    const promises: Array<Promise<unknown>> = [];
+    if (!cheUserIdIsLoading) {
+      promises.push(requestCheUserId());
+    }
+    if (!personalAccessTokensIsLoading) {
+      promises.push(requestTokens());
+    }
+    await Promise.allSettled(promises);
+  }
+
+  public componentDidUpdate(prevProps: Props): void {
+    const { cheUserIdError, personalAccessTokensError } = this.props;
+    if (cheUserIdError && cheUserIdError !== prevProps.cheUserIdError) {
+      this.appAlerts.showAlert({
+        key: 'che-user-id-error',
+        title: `Failed to load user ID. ${helpers.errors.getMessage(cheUserIdError)}`,
+        variant: AlertVariant.danger,
+      });
+    }
+    if (
+      personalAccessTokensError &&
+      personalAccessTokensError !== prevProps.personalAccessTokensError
+    ) {
+      this.appAlerts.showAlert({
+        key: 'personal-access-tokens-error',
+        title: `Failed to load personal access tokens. ${helpers.errors.getMessage(
+          personalAccessTokensError,
+        )}`,
+        variant: AlertVariant.danger,
+      });
     }
   }
 
@@ -168,13 +203,18 @@ export class PersonalAccessTokens extends React.PureComponent<Props, State> {
   }
 
   public render(): React.ReactElement {
-    const { isLoading, personalAccessTokens, userProfile } = this.props;
+    const {
+      cheUserId,
+      cheUserIdError,
+      cheUserIdIsLoading,
+      personalAccessTokens,
+      personalAccessTokensIsLoading,
+    } = this.props;
     const { isAddEditOpen, isDeleteOpen, editToken, deleteTokens, isDeleting } = this.state;
 
-    const cheUserId = userProfile.username;
+    const isLoading = cheUserIdIsLoading || personalAccessTokensIsLoading;
     const isEdit = editToken !== undefined;
-
-    const isDisabled = isLoading || isDeleting;
+    const isDisabled = isLoading || isDeleting || cheUserIdError !== undefined;
 
     const editTokenProps: EditTokenProps = isEdit
       ? {
@@ -204,6 +244,7 @@ export class PersonalAccessTokens extends React.PureComponent<Props, State> {
         />
         {personalAccessTokens.length === 0 ? (
           <PersonalAccessTokenEmptyState
+            isDisabled={isDisabled}
             onAddToken={(...args) => this.handleShowAddEditModal(...args)}
           />
         ) : (
@@ -221,15 +262,24 @@ export class PersonalAccessTokens extends React.PureComponent<Props, State> {
 }
 
 const mapStateToProps = (state: AppState) => ({
-  userProfile: selectUserProfile(state),
-  isLoading: selectIsLoading(state),
+  patState: state.personalAccessToken,
+  cheUserId: selectCheUserId(state),
+  cheUserIdError: selectCheUserIdError(state),
+  cheUserIdIsLoading: selectCheUserIsLoading(state),
   personalAccessTokens: selectPersonalAccessTokens(state),
+  personalAccessTokensError: selectPersonalAccessTokensError(state),
+  personalAccessTokensIsLoading: selectPersonalAccessTokensIsLoading(state),
 });
 
-const connector = connect(mapStateToProps, PersonalAccessTokenStore.actionCreators, null, {
-  // forwardRef is mandatory for using `@react-mock/state` in unit tests
-  forwardRef: true,
-});
+const connector = connect(
+  mapStateToProps,
+  { ...PersonalAccessTokenStore.actionCreators, ...UserIdStore.actionCreators },
+  null,
+  {
+    // forwardRef is mandatory for using `@react-mock/state` in unit tests
+    forwardRef: true,
+  },
+);
 
 type MappedProps = ConnectedProps<typeof connector>;
 export default connector(PersonalAccessTokens);

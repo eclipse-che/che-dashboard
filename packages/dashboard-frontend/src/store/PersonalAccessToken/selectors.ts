@@ -16,11 +16,14 @@ import { State } from './state';
 
 const selectState = (state: AppState) => state.personalAccessToken;
 
-export const selectIsLoading = createSelector(selectState, state => state.isLoading);
+export const selectPersonalAccessTokensIsLoading = createSelector(
+  selectState,
+  state => state.isLoading,
+);
 
 export const selectPersonalAccessTokens = createSelector(
   selectState,
   (state: State) => state.tokens,
 );
 
-export const selectError = createSelector(selectState, state => state.error);
+export const selectPersonalAccessTokensError = createSelector(selectState, state => state.error);

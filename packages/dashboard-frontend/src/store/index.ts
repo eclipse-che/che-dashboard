@@ -30,7 +30,8 @@ import * as PersonalAccessToken from './PersonalAccessToken';
 import * as PluginsStore from './Plugins/chePlugins';
 import * as PodsStore from './Pods';
 import * as SanityCheckStore from './SanityCheck';
-import * as UserProfileStore from './UserProfile';
+import * as UserIdStore from './User/Id';
+import * as UserProfileStore from './User/Profile';
 import * as WorkspacesStore from './Workspaces';
 
 // the top-level state object
@@ -53,6 +54,7 @@ export interface AppState {
   plugins: PluginsStore.State;
   pods: PodsStore.State;
   sanityCheck: SanityCheckStore.State;
+  userId: UserIdStore.State;
   userProfile: UserProfileStore.State;
   workspaces: WorkspacesStore.State;
 }
@@ -76,6 +78,7 @@ export const reducers = {
   plugins: PluginsStore.reducer,
   pods: PodsStore.reducer,
   sanityCheck: SanityCheckStore.reducer,
+  userId: UserIdStore.reducer,
   userProfile: UserProfileStore.reducer,
   workspaces: WorkspacesStore.reducer,
 };

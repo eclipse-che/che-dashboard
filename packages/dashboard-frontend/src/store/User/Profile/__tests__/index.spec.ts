@@ -16,9 +16,9 @@ import { AnyAction } from 'redux';
 import { MockStoreEnhanced } from 'redux-mock-store';
 import { ThunkDispatch } from 'redux-thunk';
 import * as testStore from '..';
-import { AppState } from '../..';
-import { AUTHORIZED } from '../../sanityCheckMiddleware';
-import { FakeStoreBuilder } from '../../__mocks__/storeBuilder';
+import { AppState } from '../../..';
+import { AUTHORIZED } from '../../../sanityCheckMiddleware';
+import { FakeStoreBuilder } from '../../../__mocks__/storeBuilder';
 
 const namespace = 'user1-che';
 

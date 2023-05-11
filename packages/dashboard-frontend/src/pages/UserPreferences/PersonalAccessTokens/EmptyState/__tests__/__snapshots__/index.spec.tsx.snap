@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`EmptyState should match the snapshot 1`] = `
+exports[`EmptyState snapshot 1`] = `
 <div
   className="pf-c-empty-state pf-m-sm pf-m-full-height"
 >

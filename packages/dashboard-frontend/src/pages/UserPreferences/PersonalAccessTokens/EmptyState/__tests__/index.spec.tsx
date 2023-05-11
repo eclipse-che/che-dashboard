@@ -22,23 +22,40 @@ const { createSnapshot, renderComponent } = getComponentRenderer(getComponent);
 const mockOnAddToken = jest.fn();
 
 describe('EmptyState', () => {
-  it('should match the snapshot', () => {
-    const snapshot = createSnapshot();
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
+  test('snapshot', () => {
+    const snapshot = createSnapshot(false);
     expect(snapshot.toJSON()).toMatchSnapshot();
   });
 
-  it('should handle add token', () => {
-    renderComponent();
+  test('add a new token', () => {
+    renderComponent(false);
 
     expect(mockOnAddToken).not.toHaveBeenCalled();
 
     const button = screen.getByRole('button', { name: 'Add Personal Access Token' });
+
+    expect(button).toBeEnabled();
+
     fireEvent.click(button);
 
     expect(mockOnAddToken).toHaveBeenCalled();
   });
+
+  test('disable Add Token button', () => {
+    renderComponent(true);
+
+    expect(mockOnAddToken).not.toHaveBeenCalled();
+
+    const button = screen.getByRole('button', { name: 'Add Personal Access Token' });
+
+    expect(button).toBeDisabled();
+  });
 });
 
-function getComponent(): React.ReactElement {
-  return <PersonalAccessTokenEmptyState onAddToken={mockOnAddToken} />;
+function getComponent(isDisabled: boolean): React.ReactElement {
+  return <PersonalAccessTokenEmptyState isDisabled={isDisabled} onAddToken={mockOnAddToken} />;
 }

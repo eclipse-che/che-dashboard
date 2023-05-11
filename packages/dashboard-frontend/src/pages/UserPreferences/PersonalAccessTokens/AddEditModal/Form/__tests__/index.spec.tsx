@@ -148,14 +148,10 @@ describe('AddEditModalForm', () => {
 
       // expect mockOnChange was called
       expect(mockOnChange).toHaveBeenCalledWith(
-        {
+        expect.objectContaining({
           cheUserId,
           gitProvider: 'github',
-          gitProviderEndpoint: '',
-          gitProviderUsername: '',
-          tokenData: '',
-          tokenName: '',
-        },
+        }),
         false,
       );
     });
@@ -257,6 +253,38 @@ describe('AddEditModalForm', () => {
       expect(mockOnChange).toHaveBeenCalledWith(
         expect.objectContaining({
           gitProviderEndpoint: INVALID_GIT_PROVIDER_ENDPOINT,
+        }),
+        false,
+      );
+    });
+
+    it('should use the default git provider endpoint', () => {
+      renderComponent({ isEdit: false, token: undefined });
+
+      // change other field to trigger onChange event
+      const gitProviderUsernameField = screen.getByRole('button', {
+        name: NEW_GIT_PROVIDER_USERNAME_BUTTON,
+      });
+      userEvent.click(gitProviderUsernameField);
+
+      // expect mockOnChange was called
+      expect(mockOnChange).toHaveBeenLastCalledWith(
+        expect.objectContaining({
+          gitProviderEndpoint: 'https://github.com',
+        }),
+        false,
+      );
+
+      // change other field to trigger onChange event
+      const gitProviderButton = screen.getByRole('button', {
+        name: 'Submit Provider Azure DevOps',
+      });
+      userEvent.click(gitProviderButton);
+
+      // expect mockOnChange was called
+      expect(mockOnChange).toHaveBeenLastCalledWith(
+        expect.objectContaining({
+          gitProviderEndpoint: 'https://dev.azure.com',
         }),
         false,
       );
