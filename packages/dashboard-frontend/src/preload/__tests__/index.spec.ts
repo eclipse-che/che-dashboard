@@ -119,7 +119,7 @@ describe('Location test', () => {
         'https://github.com/che-samples/java-spring-petclinic/tree/devfilev2?image=quay.io/devfile/universal-developer-image:latest',
       );
       expect(result).toEqual(
-        '/f?url=https%3A%2F%2Fgithub.com%2Fche-samples%2Fjava-spring-petclinic%2Ftree%2Fdevfilev2',
+        '/f?image=quay.io%2Fdevfile%2Funiversal-developer-image%3Alatest&url=https%3A%2F%2Fgithub.com%2Fche-samples%2Fjava-spring-petclinic%2Ftree%2Fdevfilev2',
       );
     });
 
@@ -128,7 +128,7 @@ describe('Location test', () => {
         'https://github.com/che-samples/java-spring-petclinic/tree/devfilev2?unsupportedParameter=foo',
       );
       expect(result).toEqual(
-        '/f?url=https%3A%2F%2Fgithub.com%2Fche-samples%2Fjava-spring-petclinic%2Ftree%2Fdevfilev2',
+        '/f?url=https%3A%2F%2Fgithub.com%2Fche-samples%2Fjava-spring-petclinic%2Ftree%2Fdevfilev2%3FunsupportedParameter%3Dfoo',
       );
     });
   });
