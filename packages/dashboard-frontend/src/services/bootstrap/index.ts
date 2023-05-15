@@ -48,6 +48,7 @@ import { selectPodsResourceVersion } from '../../store/Pods/selectors';
 import { ChannelListener } from '../dashboard-backend-client/websocketClient/messageHandler';
 import { selectApplications } from '../../store/ClusterInfo/selectors';
 import { isAvailableEndpoint } from '../helpers/api-ping';
+import { DEFAULT_REGISTRY } from '../../store/DevfileRegistries';
 
 /**
  * This class executes a few initial instructions
@@ -264,12 +265,8 @@ export default class Bootstrap {
 
   private async fetchPlugins(): Promise<void> {
     const { requestPlugins } = PluginsStore.actionCreators;
-    const settings = this.store.getState().workspacesSettings.settings;
-    await requestPlugins(settings.cheWorkspacePluginRegistryUrl || '')(
-      this.store.dispatch,
-      this.store.getState,
-      undefined,
-    );
+    const pluginRegistryURL = this.store.getState().dwServerConfig.config.pluginRegistryURL;
+    await requestPlugins(pluginRegistryURL)(this.store.dispatch, this.store.getState, undefined);
   }
 
   private async fetchDwPlugins(): Promise<void> {
@@ -305,8 +302,8 @@ export default class Bootstrap {
         pluginsByUrl[dwEditor.url] = dwEditor.devfile;
       });
       const openVSXUrl = selectOpenVSXUrl(state);
+      const pluginRegistryUrl = this.store.getState().dwServerConfig.config.pluginRegistryURL;
       const settings = this.store.getState().workspacesSettings.settings;
-      const pluginRegistryUrl = settings['cheWorkspacePluginRegistryUrl'];
       const pluginRegistryInternalUrl = settings['cheWorkspacePluginRegistryInternalUrl'];
       const clusterConsole = selectApplications(state).find(
         app => app.id === ApplicationId.CLUSTER_CONSOLE,
@@ -358,12 +355,40 @@ export default class Bootstrap {
 
   private async fetchRegistriesMetadata(): Promise<void> {
     const { requestRegistriesMetadata } = DevfileRegistriesStore.actionCreators;
-    const settings = this.store.getState().workspacesSettings.settings;
-    await requestRegistriesMetadata(settings.cheWorkspaceDevfileRegistryUrl || '')(
+    const defaultRegistry = DEFAULT_REGISTRY.startsWith('http')
+      ? DEFAULT_REGISTRY
+      : new URL(DEFAULT_REGISTRY, window.location.origin).href;
+    await requestRegistriesMetadata(defaultRegistry, false)(
       this.store.dispatch,
       this.store.getState,
       undefined,
     );
+
+    const serverConfig = this.store.getState().dwServerConfig.config;
+    const devfileRegistry = serverConfig.devfileRegistry;
+    const internalDevfileRegistryUrl = serverConfig.devfileRegistryURL;
+    if (
+      devfileRegistry?.disableInternalRegistry !== undefined &&
+      devfileRegistry?.disableInternalRegistry !== true &&
+      internalDevfileRegistryUrl
+    ) {
+      await requestRegistriesMetadata(internalDevfileRegistryUrl, false)(
+        this.store.dispatch,
+        this.store.getState,
+        undefined,
+      );
+    }
+
+    const externalRegistries = devfileRegistry.externalDevfileRegistries.map(
+      registry => registry?.url,
+    );
+    if (externalRegistries.length > 0) {
+      await requestRegistriesMetadata(externalRegistries.join(' '), true)(
+        this.store.dispatch,
+        this.store.getState,
+        undefined,
+      );
+    }
   }
 
   private async fetchEmptyWorkspace(): Promise<void> {

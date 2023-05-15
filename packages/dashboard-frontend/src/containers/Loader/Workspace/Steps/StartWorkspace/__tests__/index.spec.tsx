@@ -81,6 +81,12 @@ const serverConfig: api.IServerConfig = {
     startTimeout,
   },
   cheNamespace: '',
+  devfileRegistry: {
+    disableInternalRegistry: false,
+    externalDevfileRegistries: [],
+  },
+  devfileRegistryURL: '',
+  pluginRegistryURL: '',
 };
 
 describe('Workspace Loader, step START_WORKSPACE', () => {

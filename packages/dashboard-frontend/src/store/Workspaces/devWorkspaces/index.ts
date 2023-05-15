@@ -48,7 +48,6 @@ import OAuthService from '../../../services/oauth';
 import { FactoryParams } from '../../../containers/Loader/buildFactoryParams';
 import { getEditor } from '../../DevfileRegistries/getEditor';
 import { selectApplications } from '../../ClusterInfo/selectors';
-import { cloneDeep } from 'lodash';
 
 export const onStatusChangeCallbacks = new Map<string, (status: string) => void>();
 

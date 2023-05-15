@@ -62,6 +62,12 @@ describe('dwPlugins store', () => {
         startTimeout: 300,
       },
       cheNamespace: 'eclipse-che',
+      devfileRegistry: {
+        disableInternalRegistry: false,
+        externalDevfileRegistries: [],
+      },
+      devfileRegistryURL: '',
+      pluginRegistryURL: '',
     };
 
     it('should create RECEIVE_DW_SERVER_CONFIG when fetching server config', async () => {

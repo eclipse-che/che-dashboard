@@ -16,7 +16,6 @@ import { getDevWorkspaceClient } from './helpers/getDevWorkspaceClient';
 import { getServiceAccountToken } from './helpers/getServiceAccountToken';
 import { getSchema } from '../../services/helpers';
 import { api } from '@eclipse-che/common';
-import { IExternalDevfileRegistry } from '@eclipse-che/common/src/dto/api';
 
 const tags = ['Server Config'];
 

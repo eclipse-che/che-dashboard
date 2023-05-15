@@ -71,6 +71,12 @@ export class FakeStoreBuilder {
           startTimeout: 300,
         },
         cheNamespace: '',
+        devfileRegistry: {
+          disableInternalRegistry: false,
+          externalDevfileRegistries: [],
+        },
+        devfileRegistryURL: '',
+        pluginRegistryURL: '',
       } as api.IServerConfig,
     },
     clusterInfo: {

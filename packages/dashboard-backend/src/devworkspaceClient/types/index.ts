@@ -19,7 +19,6 @@ import { api } from '@eclipse-che/common';
 import * as k8s from '@kubernetes/client-node';
 import { MessageListener } from '../../services/types/Observer';
 import { IncomingHttpHeaders } from 'http';
-import { IExternalDevfileRegistry } from '@eclipse-che/common/src/dto/api';
 
 /**
  * Holds the methods for working with dockerconfig for devworkspace
@@ -154,7 +153,7 @@ export type CustomResourceDefinitionSpecComponents = {
   };
   devfileRegistry: {
     disableInternalRegistry?: boolean;
-    externalDevfileRegistries?: IExternalDevfileRegistry[];
+    externalDevfileRegistries?: api.IExternalDevfileRegistry[];
   };
 };
 
@@ -206,7 +205,7 @@ export interface IServerConfigApi {
    */
   getExternalDevfileRegistries(
     cheCustomResource: CustomResourceDefinition,
-  ): IExternalDevfileRegistry[];
+  ): api.IExternalDevfileRegistry[];
   /**
    * Returns the PVC strategy if it is defined.
    */

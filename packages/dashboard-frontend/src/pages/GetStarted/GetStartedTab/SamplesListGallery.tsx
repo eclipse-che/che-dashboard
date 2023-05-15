@@ -61,7 +61,7 @@ type State = {
   alerts: AlertItem[];
 };
 
-export const VISIBLE_TAGS = ['Community', 'Tech-Preview'];
+export const VISIBLE_TAGS = ['Community', 'Tech-Preview', 'Devfile.io'];
 
 const EXCLUDED_TARGET_EDITOR_NAMES = ['dirigible', 'jupyter', 'eclipseide', 'code-server'];
 

@@ -22,7 +22,6 @@ import {
 import { createError } from './helpers/createError';
 import { CustomObjectAPI, prepareCustomObjectAPI } from './helpers/prepareCustomObjectAPI';
 import { startTimeoutSeconds } from '../../constants/server-config';
-import { IExternalDevfileRegistry } from '@eclipse-che/common/src/dto/api';
 
 const CUSTOM_RESOURCE_DEFINITIONS_API_ERROR_LABEL = 'CUSTOM_RESOURCE_DEFINITIONS_API_ERROR';
 
@@ -153,7 +152,7 @@ export class ServerConfigApiService implements IServerConfigApi {
 
   getExternalDevfileRegistries(
     cheCustomResource: CustomResourceDefinition,
-  ): IExternalDevfileRegistry[] {
+  ): api.IExternalDevfileRegistry[] {
     return cheCustomResource.spec.components?.devfileRegistry?.externalDevfileRegistries || [];
   }
 

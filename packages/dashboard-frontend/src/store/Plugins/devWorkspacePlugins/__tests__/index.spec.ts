@@ -337,6 +337,12 @@ describe('dwPlugins store', () => {
             startTimeout: 300,
           },
           cheNamespace: 'eclipse-che',
+          devfileRegistry: {
+            disableInternalRegistry: false,
+            externalDevfileRegistries: [],
+          },
+          devfileRegistryURL: '',
+          pluginRegistryURL: '',
         })
         .build() as MockStoreEnhanced<
         AppState,
