@@ -191,6 +191,37 @@ describe('DevWorkspace client, start', () => {
     expect(patchWorkspace).toHaveBeenCalledTimes(2);
   });
 
+  it('should not remove non default plugin component', async () => {
+    const namespace = 'che';
+    const name = 'wksp-test';
+    const testWorkspace = new DevWorkspaceBuilder()
+      .withMetadata({
+        name,
+        namespace,
+      })
+      .withTemplate({
+        components: [
+          {
+            name: 'universal-developer-image',
+            container: {
+              image: 'quay.io/devfile/universal-developer-image:ubi8-latest'
+            }
+          },
+        ],
+      })
+      .build();
+
+    const patchWorkspace = jest.spyOn(DwApi, 'patchWorkspace');
+    const defaults = { 'eclipse/theia/next': [] };
+    const editor = 'eclipse/theia/next';
+
+    await client.onStart(testWorkspace, defaults, editor);
+
+    expect(testWorkspace.spec.template.components?.length).toBe(1);
+    expect(testWorkspace.spec.template.components![0].name).toBe('universal-developer-image');
+    expect(patchWorkspace).toHaveBeenCalledTimes(0);
+  });
+
   it('should not remove non default plugin uri component', async () => {
     const namespace = 'che';
     const name = 'wksp-test';
@@ -277,6 +308,68 @@ describe('DevWorkspace client, start', () => {
 
     expect(testWorkspace.spec.contributions?.length).toBe(1);
     expect(testWorkspace.spec.contributions![0].uri!).toBe(uri);
+    expect(patchWorkspace).toHaveBeenCalledTimes(0);
+  });
+
+  it('should not do anything if default uri plugin already exists', async () => {
+    const namespace = 'che';
+    const name = 'wksp-test';
+    const testWorkspace = new DevWorkspaceBuilder()
+      .withMetadata({
+        name,
+        namespace,
+      })
+      .withContributions([
+        {
+          name: 'default',
+          uri: 'https://test.com/devfile.yaml',
+          attributes: { 'che.eclipse.org/default-plugin': true },
+        },
+      ])
+      .build();
+
+    const patchWorkspace = jest.spyOn(DwApi, 'patchWorkspace');
+
+    const defaultUri = 'https://test.com/devfile.yaml';
+    const editor = 'eclipse/theia/next';
+    const defaults = { [editor]: [defaultUri] };
+
+    await client.onStart(testWorkspace, defaults, editor);
+
+    expect(testWorkspace.spec.contributions?.length).toBe(1);
+    expect(testWorkspace.spec.contributions![0].uri!).toBe(defaultUri);
+    expect(patchWorkspace).toHaveBeenCalledTimes(0);
+  });
+
+  it('should ignore default uri plugin if uri is not valid', async () => {
+    const namespace = 'che';
+    const name = 'wksp-test';
+    const validUri = 'https://test.com/devfile.yaml';
+    const testWorkspace = new DevWorkspaceBuilder()
+      .withMetadata({
+        name,
+        namespace,
+      })
+      .withContributions([
+        {
+          name: 'default',
+          uri: validUri,
+          attributes: { 'che.eclipse.org/default-plugin': true },
+        },
+      ])
+      .build();
+
+    const patchWorkspace = jest.spyOn(DwApi, 'patchWorkspace');
+
+    const editor = 'eclipse/theia/next';
+    const invalidUri = '1234';
+    const defaults = { [editor]: [invalidUri, validUri] };
+
+    await client.onStart(testWorkspace, defaults, editor);
+
+    // invalid uri is ignored, valid uri default plugin remains in workspace
+    expect(testWorkspace.spec.contributions?.length).toBe(1);
+    expect(testWorkspace.spec.contributions![0].uri!).toBe(validUri);
     expect(patchWorkspace).toHaveBeenCalledTimes(0);
   });
 });

@@ -173,7 +173,11 @@ export class DevWorkspaceDefaultPluginsHandler {
       workspace.spec.contributions = [];
     }
 
-    if (workspace.spec.contributions.find(component => component.name === pluginName)) {
+    if (
+      workspace.spec.contributions.find(contribution => {
+        return this.isDefaultPluginContribution(contribution) && contribution.uri === pluginUri;
+      })
+    ) {
       // plugin already exists
       return false;
     }
