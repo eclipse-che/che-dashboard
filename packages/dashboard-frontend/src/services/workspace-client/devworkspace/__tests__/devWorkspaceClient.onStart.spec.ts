@@ -204,8 +204,8 @@ describe('DevWorkspace client, start', () => {
           {
             name: 'universal-developer-image',
             container: {
-              image: 'quay.io/devfile/universal-developer-image:ubi8-latest'
-            }
+              image: 'quay.io/devfile/universal-developer-image:ubi8-latest',
+            },
           },
         ],
       })
