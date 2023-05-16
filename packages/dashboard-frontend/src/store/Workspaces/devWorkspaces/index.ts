@@ -38,7 +38,11 @@ import { selectDefaultNamespace } from '../../InfrastructureNamespaces/selectors
 import { getCustomEditor } from '../../../services/workspace-client/helpers';
 import { AUTHORIZED, SanityCheckAction } from '../../sanityCheckMiddleware';
 import * as DwServerConfigStore from '../../ServerConfig';
-import { selectOpenVSXUrl } from '../../ServerConfig/selectors';
+import {
+  selectOpenVSXUrl,
+  selectPluginRegistryInternalUrl,
+  selectPluginRegistryUrl,
+} from '../../ServerConfig/selectors';
 import { fetchResources } from '../../../services/dashboard-backend-client/devworkspaceResourcesApi';
 import { dump } from 'js-yaml';
 import { loadResourcesContent } from '../../../services/registry/resources';
@@ -502,16 +506,12 @@ export const actionCreators: ActionCreators = {
 
       const defaultKubernetesNamespace = selectDefaultNamespace(state);
       const openVSXUrl = selectOpenVSXUrl(state);
+      const pluginRegistryUrl = selectPluginRegistryUrl(state);
+      const pluginRegistryInternalUrl = selectPluginRegistryInternalUrl(state);
+      const cheEditor = editorId ? editorId : state.dwPlugins.defaultEditorName;
       const defaultNamespace = defaultKubernetesNamespace.name;
       try {
-        const cheEditor = editorId ? editorId : state.dwPlugins.defaultEditorName;
-        const pluginRegistryUrl =
-          state.workspacesSettings.settings['cheWorkspacePluginRegistryUrl'];
-        const pluginRegistryInternalUrl =
-          state.workspacesSettings.settings['cheWorkspacePluginRegistryInternalUrl'];
-
-        /* create a new DevWorkspace (without components) */
-
+        /* create a new DevWorkspace */
         const createResp = await getDevWorkspaceClient().createDevWorkspace(
           defaultNamespace,
           devWorkspaceResource,
@@ -590,7 +590,7 @@ export const actionCreators: ActionCreators = {
 
       await dispatch({ type: Type.REQUEST_DEVWORKSPACE, check: AUTHORIZED });
 
-      const pluginRegistryUrl = state.workspacesSettings.settings['cheWorkspacePluginRegistryUrl'];
+      const pluginRegistryUrl = state.dwServerConfig.config.pluginRegistryURL;
       let devWorkspaceResource: devfileApi.DevWorkspace;
       let devWorkspaceTemplateResource: devfileApi.DevWorkspaceTemplate;
       let editorContent: string | undefined;

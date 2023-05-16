@@ -27,7 +27,6 @@ import * as DwServerConfigStore from './ServerConfig';
 import * as UserProfileStore from './UserProfile';
 import * as WorkspacesStore from './Workspaces';
 import * as DevWorkspacesStore from './Workspaces/devWorkspaces';
-import * as WorkspacesSettingsStore from './Workspaces/Settings';
 import * as GitOauthConfigStore from './GitOauthConfig';
 import * as EventsStore from './Events';
 import * as PodsStore from './Pods';
@@ -51,7 +50,6 @@ export interface AppState {
   sanityCheck: SanityCheckStore.State;
   userProfile: UserProfileStore.State;
   workspaces: WorkspacesStore.State;
-  workspacesSettings: WorkspacesSettingsStore.State;
   events: EventsStore.State;
   pods: PodsStore.State;
   logs: LogsStore.State;
@@ -74,7 +72,6 @@ export const reducers = {
   sanityCheck: SanityCheckStore.reducer,
   userProfile: UserProfileStore.reducer,
   workspaces: WorkspacesStore.reducer,
-  workspacesSettings: WorkspacesSettingsStore.reducer,
   events: EventsStore.reducer,
   pods: PodsStore.reducer,
   logs: LogsStore.reducer,

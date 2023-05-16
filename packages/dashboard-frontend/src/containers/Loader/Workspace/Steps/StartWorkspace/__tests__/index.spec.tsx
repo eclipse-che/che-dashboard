@@ -86,7 +86,9 @@ const serverConfig: api.IServerConfig = {
     externalDevfileRegistries: [],
   },
   devfileRegistryURL: '',
+  devfileRegistryInternalURL: '',
   pluginRegistryURL: '',
+  pluginRegistryInternalURL: '',
 };
 
 describe('Workspace Loader, step START_WORKSPACE', () => {

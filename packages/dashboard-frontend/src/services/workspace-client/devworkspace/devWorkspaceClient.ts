@@ -285,6 +285,7 @@ export class DevWorkspaceClient extends WorkspaceClient {
           value: pluginRegistryUrl,
         });
       }
+
       if (pluginRegistryInternalUrl !== undefined) {
         envs.push({
           name: this.pluginRegistryInternalUrlEnvName,

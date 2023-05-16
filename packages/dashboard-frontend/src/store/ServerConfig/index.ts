@@ -94,7 +94,9 @@ const unloadedState: State = {
     },
     cheNamespace: '',
     devfileRegistryURL: '',
+    devfileRegistryInternalURL: '',
     pluginRegistryURL: '',
+    pluginRegistryInternalURL: '',
   },
   error: undefined,
 };

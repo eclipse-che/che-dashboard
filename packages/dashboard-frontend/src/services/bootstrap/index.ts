@@ -29,7 +29,6 @@ import * as WorkspacesStore from '../../store/Workspaces';
 import * as EventsStore from '../../store/Events';
 import * as PodsStore from '../../store/Pods';
 import * as DevWorkspacesStore from '../../store/Workspaces/devWorkspaces';
-import * as WorkspacesSettingsStore from '../../store/Workspaces/Settings';
 import { ResourceFetcherService } from '../resource-fetcher';
 import { IssuesReporterService, IssueType, WorkspaceData } from './issuesReporter';
 import { DevWorkspaceClient } from '../workspace-client/devworkspace/devWorkspaceClient';
@@ -84,7 +83,6 @@ export default class Bootstrap {
     await Promise.all([
       this.fetchBranding(),
       this.fetchInfrastructureNamespaces(),
-      this.fetchWorkspaceSettings(),
       this.fetchServerConfig(),
       this.fetchClusterInfo(),
     ]);
@@ -271,9 +269,8 @@ export default class Bootstrap {
 
   private async fetchDwPlugins(): Promise<void> {
     const { requestDwDefaultEditor } = DwPluginsStore.actionCreators;
-    const settings = this.store.getState().workspacesSettings.settings;
     try {
-      await requestDwDefaultEditor(settings)(this.store.dispatch, this.store.getState, undefined);
+      await requestDwDefaultEditor()(this.store.dispatch, this.store.getState, undefined);
     } catch (e) {
       const message = `Required sources failed when trying to create the workspace: ${e}`;
       const { addBanner } = BannerAlertStore.actionCreators;
@@ -302,9 +299,8 @@ export default class Bootstrap {
         pluginsByUrl[dwEditor.url] = dwEditor.devfile;
       });
       const openVSXUrl = selectOpenVSXUrl(state);
-      const pluginRegistryUrl = this.store.getState().dwServerConfig.config.pluginRegistryURL;
-      const settings = this.store.getState().workspacesSettings.settings;
-      const pluginRegistryInternalUrl = settings['cheWorkspacePluginRegistryInternalUrl'];
+      const pluginRegistryUrl = state.dwServerConfig.config.pluginRegistryURL;
+      const pluginRegistryInternalUrl = state.dwServerConfig.config.pluginRegistryInternalURL;
       const clusterConsole = selectApplications(state).find(
         app => app.id === ApplicationId.CLUSTER_CONSOLE,
       );
@@ -331,17 +327,6 @@ export default class Bootstrap {
     } catch (e) {
       console.error(e);
     }
-  }
-
-  private async fetchWorkspaceSettings(): Promise<che.WorkspaceSettings> {
-    const { requestSettings } = WorkspacesSettingsStore.actionCreators;
-    try {
-      await requestSettings()(this.store.dispatch, this.store.getState, undefined);
-    } catch (e) {
-      console.error(e);
-    }
-
-    return this.store.getState().workspacesSettings.settings;
   }
 
   private async fetchServerConfig(): Promise<void> {

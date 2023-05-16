@@ -68,8 +68,10 @@ export interface IServerConfig {
     startTimeout: number;
   };
   cheNamespace: string;
-  devfileRegistryURL: string;
   pluginRegistryURL: string;
+  pluginRegistryInternalURL: string;
+  devfileRegistryURL: string;
+  devfileRegistryInternalURL: string;
 }
 
 export interface IUserProfile {
