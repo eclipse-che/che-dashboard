@@ -339,7 +339,7 @@ class StepFetchDevfile extends AbstractLoaderStep<Props, State> {
         variant: AlertVariant.warning,
         children: (
           <ExpandableWarning
-            textBefore="Looking for a Devfile in the git repository failed."
+            textBefore="Could not find any devfile in the Git repository"
             errorMessage={helpers.errors.getMessage(error)}
             textAfter="The git provider is either not supported or has not been configured correctly.
             Note that the git cloning of the public repository will succeed.
