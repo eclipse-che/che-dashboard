@@ -343,7 +343,7 @@ class StepFetchDevfile extends AbstractLoaderStep<Props, State> {
             errorMessage={helpers.errors.getMessage(error)}
             textAfter="The git provider is either not supported or has not been configured correctly.
             Note that the git cloning of the public repository will succeed. If the repository is private a Personal Access Token secret should be configured.
-            and a Personal Access Token secret has been configured."
+            
           />
         ),
         actionCallbacks: [
