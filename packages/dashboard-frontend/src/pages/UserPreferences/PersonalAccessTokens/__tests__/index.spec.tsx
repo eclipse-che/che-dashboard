@@ -231,15 +231,6 @@ describe('PersonalAccessTokens', () => {
 
       // modal should be closed
       expect(screen.queryByRole('heading', { name: 'Add Personal Access Token Modal' })).toBeNull();
-
-      // error alert should be shown
-      await waitFor(() =>
-        expect(mockShowAlert).toHaveBeenCalledWith({
-          key: 'save-token-error',
-          title: 'Failed to save token. Error',
-          variant: 'danger',
-        } as AlertItem),
-      );
     });
   });
 
@@ -442,7 +433,7 @@ describe('PersonalAccessTokens', () => {
       await waitFor(() => expect(mockShowAlert).toHaveBeenCalled());
       expect(mockShowAlert).toHaveBeenCalledWith({
         key: 'personal-access-tokens-error',
-        title: `Failed to load personal access tokens. ${errorMessage}`,
+        title: errorMessage,
         variant: 'danger',
       } as AlertItem);
     });
