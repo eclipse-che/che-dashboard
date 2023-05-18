@@ -43,10 +43,12 @@ export class PersonalAccessTokenDeleteModal extends React.PureComponent<Props, S
   }
 
   private handleDelete(): void {
+    this.setState({ isChecked: false });
     this.props.onDelete(this.props.deleteItems);
   }
 
   private handleCloseModal(): void {
+    this.setState({ isChecked: false });
     this.props.onCloseModal();
   }
 
