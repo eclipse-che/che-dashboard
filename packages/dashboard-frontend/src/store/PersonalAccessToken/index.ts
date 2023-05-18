@@ -149,7 +149,7 @@ export const actionCreators: ActionCreators = {
           token: newToken,
         });
       } else {
-        const errorMessage = `Token ${newToken.tokenName} was not added because it is not valid.`;
+        const errorMessage = `Token "${newToken.tokenName}" was not added because it is not valid.`;
         dispatch({
           type: Type.RECEIVE_ERROR,
           error: errorMessage,

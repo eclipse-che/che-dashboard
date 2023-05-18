@@ -181,7 +181,7 @@ describe('Personal Access Token store, actions', () => {
       },
       {
         type: testStore.Type.RECEIVE_ERROR,
-        error: `Token ${token1.tokenName} was not added because it is not valid.`,
+        error: `Token "${token1.tokenName}" was not added because it is not valid.`,
       },
     ];
     expect(actions).toEqual(expectedActions);
