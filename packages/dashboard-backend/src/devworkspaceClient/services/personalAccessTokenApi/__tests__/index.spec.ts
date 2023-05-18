@@ -99,7 +99,7 @@ describe('Personal Access Token API', () => {
   describe('listing PAT secrets', () => {
     it('should list secrets', async () => {
       mockIsPatSecret.mockReturnValueOnce(false);
-      mockIsPatSecret.mockReturnValue(true);
+      mockIsPatSecret.mockReturnValueOnce(true);
 
       const resp = await personalAccessTokenService.listInNamespace(namespace);
 
@@ -117,7 +117,7 @@ describe('Personal Access Token API', () => {
     });
 
     it('should return error', async done => {
-      spyListNamespacedSecret.mockImplementation(() => {
+      spyListNamespacedSecret.mockImplementationOnce(() => {
         throw new Error('Conflict');
       });
 
@@ -145,8 +145,40 @@ describe('Personal Access Token API', () => {
       expect(spyCreateNamespacedSecret).toHaveBeenCalled();
     });
 
-    it('should return error', async done => {
-      const errorMessage = 'Conflict';
+    it('should return error if token already exists', async done => {
+      const token = {
+        tokenName: 'asdf-1234',
+        tokenData: 'token-data',
+      } as api.PersonalAccessToken;
+
+      spyListNamespacedSecret.mockImplementationOnce(() => {
+        return Promise.resolve({
+          response: {} as IncomingMessage,
+          body: {
+            items: [
+              {
+                metadata: {
+                  name: `personal-access-token-${token.tokenName}`,
+                },
+              } as V1Secret,
+            ],
+          } as V1SecretList,
+        });
+      });
+
+      try {
+        await personalAccessTokenService.create(namespace, token);
+        done.fail('should have thrown an error');
+      } catch (e) {
+        expect((e as unknown as Error).message).toEqual(
+          `Unable to add personal access token "${token.tokenName}": Token already exists`,
+        );
+      }
+      done();
+    });
+
+    it('should return error if token contains the dummy data', async done => {
+      const errorMessage = 'Token is not defined';
       mockToSecret.mockImplementationOnce(() => {
         throw new Error(errorMessage);
       });
@@ -161,7 +193,7 @@ describe('Personal Access Token API', () => {
         done.fail('should have thrown an error');
       } catch (e) {
         expect((e as unknown as Error).message).toEqual(
-          `Unable to create personal access token secret "${token.tokenName}": ${errorMessage}`,
+          `Unable to add personal access token "${token.tokenName}": ${errorMessage}`,
         );
       }
       done();
@@ -184,7 +216,7 @@ describe('Personal Access Token API', () => {
         done.fail('should have thrown an error');
       } catch (e) {
         expect((e as unknown as Error).message).toEqual(
-          `Unable to find personal access token secret "${token.tokenName}" in the namespace "${namespace}"`,
+          `Unable to find personal access token "${token.tokenName}" in the namespace "${namespace}": Not Found`,
         );
       }
 
@@ -207,7 +239,7 @@ describe('Personal Access Token API', () => {
         done.fail('should have thrown an error');
       } catch (e) {
         expect((e as unknown as Error).message).toEqual(
-          `Unable to replace personal access token secret "${token.tokenName}" in the namespace "${namespace}": ${errorMessage}`,
+          `Unable to replace personal access token "${token.tokenName}" in the namespace "${namespace}": ${errorMessage}`,
         );
       }
 
@@ -280,7 +312,7 @@ describe('Personal Access Token API', () => {
         done.fail('should have thrown an error');
       } catch (e) {
         expect((e as unknown as Error).message).toEqual(
-          `Unable to delete personal access token secret "${tokenName}" in the namespace "${namespace}": ${errorMessage}`,
+          `Unable to delete personal access token "${tokenName}" in the namespace "${namespace}": ${errorMessage}`,
         );
       }
 

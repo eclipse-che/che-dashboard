@@ -13,18 +13,22 @@
 import { api, helpers } from '@eclipse-che/common';
 import { Action, Reducer } from 'redux';
 import { AppThunk } from '..';
+import { container } from '../../inversify.config';
 import {
   addToken,
   fetchTokens,
   removeToken,
   updateToken,
 } from '../../services/dashboard-backend-client/personalAccessTokenApi';
+import { CheWorkspaceClient } from '../../services/workspace-client/cheworkspace/cheWorkspaceClient';
 import { createObject } from '../helpers';
 import { selectDefaultNamespace } from '../InfrastructureNamespaces/selectors';
 import { AUTHORIZED, SanityCheckAction } from '../sanityCheckMiddleware';
 import { State } from './state';
 
 export * from './state';
+
+const WorkspaceClient = container.get(CheWorkspaceClient);
 
 export enum Type {
   RECEIVE_ERROR = 'RECEIVE_ERROR',
@@ -118,12 +122,9 @@ export const actionCreators: ActionCreators = {
         check: AUTHORIZED,
       });
 
+      let newToken: api.PersonalAccessToken;
       try {
-        const newToken = await addToken(namespace, token);
-        dispatch({
-          type: Type.ADD_TOKEN,
-          token: newToken,
-        });
+        newToken = await addToken(namespace, token);
       } catch (e) {
         const errorMessage = helpers.errors.getMessage(e);
         dispatch({
@@ -131,6 +132,29 @@ export const actionCreators: ActionCreators = {
           error: errorMessage,
         });
         throw e;
+      }
+
+      /* request namespace provision as it triggers tokens validation */
+
+      await WorkspaceClient.restApiClient.provisionKubernetesNamespace();
+
+      /* check if the new token is available */
+
+      const allTokens = await fetchTokens(namespace);
+      const tokenExists = allTokens.some(t => t.tokenName === newToken.tokenName);
+
+      if (tokenExists) {
+        dispatch({
+          type: Type.ADD_TOKEN,
+          token: newToken,
+        });
+      } else {
+        const errorMessage = `Token ${newToken.tokenName} was not added because it is not valid.`;
+        dispatch({
+          type: Type.RECEIVE_ERROR,
+          error: errorMessage,
+        });
+        throw new Error(errorMessage);
       }
     },
 

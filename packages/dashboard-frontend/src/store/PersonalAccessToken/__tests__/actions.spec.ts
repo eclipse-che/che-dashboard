@@ -18,8 +18,15 @@ import { AUTHORIZED } from '../../sanityCheckMiddleware';
 import { FakeStoreBuilder } from '../../__mocks__/storeBuilder';
 import { token1, token2 } from './stub';
 import * as PersonalAccessTokenApi from '../../../services/dashboard-backend-client/personalAccessTokenApi';
+import { container } from '../../../inversify.config';
+import { CheWorkspaceClient } from '../../../services/workspace-client/cheworkspace/cheWorkspaceClient';
 
-const mockRequestTokens = jest.fn();
+const cheWorkspaceClient = container.get(CheWorkspaceClient);
+jest
+  .spyOn(cheWorkspaceClient.restApiClient, 'provisionKubernetesNamespace')
+  .mockImplementation(() => Promise.resolve({} as che.KubernetesNamespace));
+
+const mockFetchTokens = jest.fn();
 const mockAddToken = jest.fn();
 const mockUpdateToken = jest.fn();
 const mockRemoveToken = jest.fn();
@@ -27,7 +34,7 @@ jest.mock(
   '../../../services/dashboard-backend-client/personalAccessTokenApi',
   () =>
     ({
-      fetchTokens: (...args) => mockRequestTokens(...args),
+      fetchTokens: (...args) => mockFetchTokens(...args),
       addToken: (...args) => mockAddToken(...args),
       updateToken: (...args) => mockUpdateToken(...args),
       removeToken: (...args) => mockRemoveToken(...args),
@@ -43,7 +50,7 @@ describe('Personal Access Token store, actions', () => {
   });
 
   it('should create REQUEST_TOKENS and RECEIVE_TOKENS when requesting tokens', async () => {
-    mockRequestTokens.mockResolvedValueOnce([token1, token2]);
+    mockFetchTokens.mockResolvedValueOnce([token1, token2]);
 
     const store = new FakeStoreBuilder().build() as MockStoreEnhanced<
       AppState,
@@ -68,7 +75,7 @@ describe('Personal Access Token store, actions', () => {
 
   it('should create REQUEST_TOKENS and RECEIVE_ERROR when requesting tokens', async () => {
     const errorMessage = 'Something bad happened';
-    mockRequestTokens.mockRejectedValueOnce(new Error(errorMessage));
+    mockFetchTokens.mockRejectedValueOnce(new Error(errorMessage));
 
     const store = new FakeStoreBuilder().build() as MockStoreEnhanced<
       AppState,
@@ -97,6 +104,7 @@ describe('Personal Access Token store, actions', () => {
 
   it('should create REQUEST_TOKENS and ADD_TOKEN when adding token', async () => {
     mockAddToken.mockResolvedValueOnce(token1);
+    mockFetchTokens.mockResolvedValueOnce([token1]);
 
     const store = new FakeStoreBuilder().build() as MockStoreEnhanced<
       AppState,
@@ -143,6 +151,37 @@ describe('Personal Access Token store, actions', () => {
       {
         type: testStore.Type.RECEIVE_ERROR,
         error: errorMessage,
+      },
+    ];
+    expect(actions).toEqual(expectedActions);
+  });
+
+  it('should create REQUEST_TOKENS and RECEIVE_ERROR when adding a non valid token', async () => {
+    // the non valid token was added successfully
+    mockAddToken.mockResolvedValueOnce(token1);
+    // but it was missing among the tokens returned by the backend
+    mockFetchTokens.mockResolvedValueOnce([]);
+
+    const store = new FakeStoreBuilder().build() as MockStoreEnhanced<
+      AppState,
+      ThunkDispatch<AppState, undefined, testStore.KnownAction>
+    >;
+
+    try {
+      await store.dispatch(testStore.actionCreators.addToken(token1));
+    } catch (e) {
+      // no-op
+    }
+
+    const actions = store.getActions();
+    const expectedActions: testStore.KnownAction[] = [
+      {
+        type: testStore.Type.REQUEST_TOKENS,
+        check: AUTHORIZED,
+      },
+      {
+        type: testStore.Type.RECEIVE_ERROR,
+        error: `Token ${token1.tokenName} was not added because it is not valid.`,
       },
     ];
     expect(actions).toEqual(expectedActions);

@@ -29,23 +29,30 @@ const API_ERROR_LABEL = 'CORE_V1_API_ERROR';
 
 export class PersonalAccessTokenService implements IPersonalAccessTokenApi {
   private readonly coreV1API: CoreV1API;
+  private readonly config: k8s.KubeConfig;
 
   constructor(kc: k8s.KubeConfig) {
+    this.config = kc;
     this.coreV1API = prepareCoreV1API(kc);
+  }
+
+  private async listSecrets(namespace: string): Promise<k8s.V1Secret[]> {
+    const labelSelector = buildLabelSelector();
+    const resp = await this.coreV1API.listNamespacedSecret(
+      namespace,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      labelSelector,
+    );
+    return resp.body.items;
   }
 
   async listInNamespace(namespace: string): Promise<Array<api.PersonalAccessToken>> {
     try {
-      const labelSelector = buildLabelSelector();
-      const resp = await this.coreV1API.listNamespacedSecret(
-        namespace,
-        undefined,
-        undefined,
-        undefined,
-        undefined,
-        labelSelector,
-      );
-      return resp.body.items
+      const secrets = await this.listSecrets(namespace);
+      return secrets
         .filter(secret => isPatSecret(secret))
         .map(secret => {
           return toToken(secret);
@@ -60,12 +67,31 @@ export class PersonalAccessTokenService implements IPersonalAccessTokenApi {
     namespace: string,
     personalAccessToken: api.PersonalAccessToken,
   ): Promise<api.PersonalAccessToken> {
+    /* check if secret is already exists */
+
+    try {
+      const secrets = await this.listSecrets(namespace);
+
+      const secretName = toSecretName(personalAccessToken.tokenName);
+      const existingSecret = secrets.find(secret => {
+        return secret.metadata?.name === secretName;
+      });
+      if (existingSecret !== undefined) {
+        throw new Error(`Token already exists`);
+      }
+    } catch (error) {
+      const additionalMessage = `Unable to add personal access token "${personalAccessToken.tokenName}"`;
+      throw createError(error, API_ERROR_LABEL, additionalMessage);
+    }
+
+    /* create the secret */
+
     try {
       const secret = toSecret(namespace, personalAccessToken);
       const { body } = await this.coreV1API.createNamespacedSecret(namespace, secret);
       return toToken(body);
     } catch (error) {
-      const additionalMessage = `Unable to create personal access token secret "${personalAccessToken.tokenName}"`;
+      const additionalMessage = `Unable to add personal access token "${personalAccessToken.tokenName}"`;
       throw createError(error, API_ERROR_LABEL, additionalMessage);
     }
   }
@@ -82,10 +108,9 @@ export class PersonalAccessTokenService implements IPersonalAccessTokenApi {
     try {
       const resp = await this.coreV1API.readNamespacedSecret(secretName, namespace);
       existingSecret = resp.body;
-    } catch (e) {
-      throw new Error(
-        `Unable to find personal access token secret "${token.tokenName}" in the namespace "${namespace}"`,
-      );
+    } catch (error) {
+      const additionalMessage = `Unable to find personal access token "${token.tokenName}" in the namespace "${namespace}"`;
+      throw createError(error, API_ERROR_LABEL, additionalMessage);
     }
 
     /* replace the dummy token value with the real one */
@@ -105,7 +130,7 @@ export class PersonalAccessTokenService implements IPersonalAccessTokenApi {
       const newSecret = body as PersonalAccessTokenSecret;
       return toToken(newSecret);
     } catch (error) {
-      const additionalMessage = `Unable to replace personal access token secret "${token.tokenName}" in the namespace "${namespace}"`;
+      const additionalMessage = `Unable to replace personal access token "${token.tokenName}" in the namespace "${namespace}"`;
       throw createError(error, API_ERROR_LABEL, additionalMessage);
     }
   }
@@ -115,7 +140,7 @@ export class PersonalAccessTokenService implements IPersonalAccessTokenApi {
     try {
       await this.coreV1API.deleteNamespacedSecret(secretName, namespace);
     } catch (error) {
-      const additionalMessage = `Unable to delete personal access token secret "${tokenName}" in the namespace "${namespace}"`;
+      const additionalMessage = `Unable to delete personal access token "${tokenName}" in the namespace "${namespace}"`;
       throw createError(error, API_ERROR_LABEL, additionalMessage);
     }
   }

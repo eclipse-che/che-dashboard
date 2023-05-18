@@ -72,7 +72,11 @@ class PersonalAccessTokens extends React.PureComponent<Props, State> {
     if (!personalAccessTokensIsLoading) {
       promises.push(requestTokens());
     }
-    await Promise.allSettled(promises);
+    const results = await Promise.allSettled(promises);
+    // log failed promises into console
+    results
+      .filter(result => result.status === 'rejected')
+      .forEach(result => console.error((result as PromiseRejectedResult).reason));
   }
 
   public componentDidUpdate(prevProps: Props): void {
@@ -90,9 +94,7 @@ class PersonalAccessTokens extends React.PureComponent<Props, State> {
     ) {
       this.appAlerts.showAlert({
         key: 'personal-access-tokens-error',
-        title: `Failed to load personal access tokens. ${helpers.errors.getMessage(
-          personalAccessTokensError,
-        )}`,
+        title: helpers.errors.getMessage(personalAccessTokensError),
         variant: AlertVariant.danger,
       });
     }
@@ -146,13 +148,6 @@ class PersonalAccessTokens extends React.PureComponent<Props, State> {
       });
     } catch (error) {
       console.error('Failed to save token. ', error);
-
-      const errorMessage = helpers.errors.getMessage(error);
-      this.appAlerts.showAlert({
-        key: 'save-token-error',
-        title: `Failed to save token. ${errorMessage}`,
-        variant: AlertVariant.danger,
-      });
     }
   }
 

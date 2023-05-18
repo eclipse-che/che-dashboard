@@ -168,6 +168,43 @@ describe('Helpers for Personal Access Token API', () => {
       });
     });
 
+    test('token with correct data - azure-devops', () => {
+      const namespace = 'user-che';
+      const token: api.PersonalAccessToken = {
+        tokenName: 'asdf-1234',
+        cheUserId: 'che-user',
+        gitProvider: 'azure-devops',
+        gitProviderEndpoint: 'https://dev.azure.com',
+        gitProviderUsername: 'azure-user',
+        gitProviderOrganization: 'azure-org',
+        tokenData: 'base64-encoded-token-data',
+      };
+
+      const secret = toSecret(namespace, token);
+      expect(secret).toStrictEqual({
+        apiVersion: 'v1',
+        data: {
+          token: 'base64-encoded-token-data',
+        },
+        kind: 'Secret',
+        metadata: {
+          annotations: {
+            'che.eclipse.org/che-userid': token.cheUserId,
+            'che.eclipse.org/scm-personal-access-token-name': token.gitProvider,
+            'che.eclipse.org/scm-url': token.gitProviderEndpoint,
+            'che.eclipse.org/scm-username': token.gitProviderUsername,
+            'che.eclipse.org/scm-organization': token.gitProviderOrganization,
+          },
+          labels: {
+            'app.kubernetes.io/component': 'scm-personal-access-token',
+            'app.kubernetes.io/part-of': 'che.eclipse.org',
+          },
+          name: `personal-access-token-${token.tokenName}`,
+          namespace,
+        },
+      });
+    });
+
     test('token with dummy data', () => {
       const namespace = 'user-che';
       const token: api.PersonalAccessToken = {
