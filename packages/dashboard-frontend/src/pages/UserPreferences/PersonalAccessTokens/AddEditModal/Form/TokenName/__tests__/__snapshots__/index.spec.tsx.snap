@@ -108,13 +108,7 @@ exports[`TokenName snapshot with token name 1`] = `
         type="text"
         value="github-token"
       />
-      <div
-        aria-live="polite"
-        className="pf-c-form__helper-text"
-        id="token-name-label-helper"
-      >
-        Alphanumeric characters, "-" or ".", starting and ending with an alphanumeric character.
-      </div>
+      
     </div>
   </div>
 </form>
