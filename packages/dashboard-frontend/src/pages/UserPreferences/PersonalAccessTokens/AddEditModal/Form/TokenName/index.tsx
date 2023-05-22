@@ -80,6 +80,7 @@ export class TokenName extends React.PureComponent<Props, State> {
     }
 
     const readOnlyAttr = isEdit ? { isReadOnly: true } : {};
+    const helperText = isEdit ? {} : { helperText: ALLOWED_CHARACTERS };
 
     return (
       <FormGroup
@@ -88,7 +89,7 @@ export class TokenName extends React.PureComponent<Props, State> {
         isRequired
         label="Token Name"
         validated={validated}
-        helperText={ALLOWED_CHARACTERS}
+        {...helperText}
       >
         <TextInput
           aria-describedby="token-name-label"

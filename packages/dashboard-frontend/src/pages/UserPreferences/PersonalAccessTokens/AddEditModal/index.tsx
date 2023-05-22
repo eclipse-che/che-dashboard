@@ -24,7 +24,7 @@ export type Props = EditTokenProps & {
 };
 export type State = {
   token: api.PersonalAccessToken | undefined;
-  isValid: boolean;
+  isSaveEnabled: boolean;
 };
 
 export class PersonalAccessTokenAddEditModal extends React.PureComponent<Props, State> {
@@ -33,8 +33,21 @@ export class PersonalAccessTokenAddEditModal extends React.PureComponent<Props, 
 
     this.state = {
       token: props.token,
-      isValid: props.token !== undefined,
+      // initially disabled until something changes and form is valid
+      isSaveEnabled: false,
     };
+  }
+
+  public componentDidUpdate(prevProps: Props): void {
+    if (
+      prevProps.token?.tokenName !== this.props.token?.tokenName ||
+      prevProps.isOpen !== this.props.isOpen
+    ) {
+      this.setState({
+        token: this.props.token,
+        isSaveEnabled: false,
+      });
+    }
   }
 
   private handleSaveToken(): void {
@@ -49,12 +62,15 @@ export class PersonalAccessTokenAddEditModal extends React.PureComponent<Props, 
   }
 
   private handleChangeToken(token: api.PersonalAccessToken, isValid: boolean): void {
-    this.setState({ token, isValid });
+    this.setState({
+      token,
+      isSaveEnabled: isValid,
+    });
   }
 
   private buildModalFooter(): React.ReactNode {
     const { isEdit } = this.props;
-    const isDisabled = this.state.isValid === false;
+    const isDisabled = this.state.isSaveEnabled === false;
 
     return (
       <React.Fragment>
