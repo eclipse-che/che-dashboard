@@ -16,6 +16,12 @@ import React from 'react';
 const MAX_LENGTH = 255;
 const MAX_LENGTH_ERROR = `The Token Name is too long. The maximum length is ${MAX_LENGTH} characters.`;
 const REQUIRED_ERROR = 'This field is required.';
+const WRONG_CHARACTERS_ERROR =
+  'The Token Name must consist of lower case alphanumeric characters, "-" or ".", and must start and end with an alphanumeric character.';
+const ALLOWED_CHARACTERS =
+  'Alphanumeric characters, "-" or ".", starting and ending with an alphanumeric character.';
+
+const REGEXP = /^[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*$/;
 
 export type Props = {
   isEdit: boolean;
@@ -52,6 +58,8 @@ export class TokenName extends React.PureComponent<Props, State> {
       return ValidatedOptions.error;
     } else if (tokenName.length === 0) {
       return ValidatedOptions.error;
+    } else if (REGEXP.test(tokenName) === false) {
+      return ValidatedOptions.error;
     } else {
       return ValidatedOptions.success;
     }
@@ -60,7 +68,16 @@ export class TokenName extends React.PureComponent<Props, State> {
   public render(): React.ReactElement {
     const { isEdit } = this.props;
     const { tokenName = '', validated } = this.state;
-    const errorMessage = tokenName.length === 0 ? REQUIRED_ERROR : MAX_LENGTH_ERROR;
+    let errorMessage: string;
+    if (tokenName.length === 0) {
+      errorMessage = REQUIRED_ERROR;
+    } else if (tokenName.length > MAX_LENGTH) {
+      errorMessage = MAX_LENGTH_ERROR;
+    } else if (REGEXP.test(tokenName) === false) {
+      errorMessage = WRONG_CHARACTERS_ERROR;
+    } else {
+      errorMessage = '';
+    }
 
     const readOnlyAttr = isEdit ? { isReadOnly: true } : {};
 
@@ -71,6 +88,7 @@ export class TokenName extends React.PureComponent<Props, State> {
         isRequired
         label="Token Name"
         validated={validated}
+        helperText={ALLOWED_CHARACTERS}
       >
         <TextInput
           aria-describedby="token-name-label"

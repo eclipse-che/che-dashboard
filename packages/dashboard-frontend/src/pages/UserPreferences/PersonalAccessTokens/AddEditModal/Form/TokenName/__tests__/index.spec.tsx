@@ -103,6 +103,25 @@ describe('TokenName', () => {
     expect(screen.queryByText('This field is required.')).toBeTruthy();
     expect(screen.queryByText(/^The Token Name is too long./)).toBeFalsy();
   });
+
+  it('should handle a non valid token name', () => {
+    renderComponent(false);
+
+    expect(mockOnChange).not.toHaveBeenCalled();
+
+    const input = screen.getByRole('textbox');
+
+    // set non valid name
+    const nonValidTokenName = 'github+token';
+    fireEvent.change(input, { target: { value: nonValidTokenName } });
+
+    expect(mockOnChange).toHaveBeenCalledWith(nonValidTokenName, false);
+    expect(
+      screen.queryByText(
+        'The Token Name must consist of lower case alphanumeric characters, "-" or ".", and must start and end with an alphanumeric character.',
+      ),
+    ).toBeTruthy();
+  });
 });
 
 function getComponent(isEdit: boolean, tokenName?: string): React.ReactElement {
