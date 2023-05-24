@@ -71,6 +71,14 @@ export class FakeStoreBuilder {
           startTimeout: 300,
         },
         cheNamespace: '',
+        devfileRegistry: {
+          disableInternalRegistry: false,
+          externalDevfileRegistries: [],
+        },
+        devfileRegistryURL: '',
+        devfileRegistryInternalURL: '',
+        pluginRegistryURL: '',
+        pluginRegistryInternalURL: '',
       } as api.IServerConfig,
     },
     clusterInfo: {
@@ -104,10 +112,6 @@ export class FakeStoreBuilder {
       resourceVersion: '0',
       startedWorkspaces: {},
       warnings: {},
-    },
-    workspacesSettings: {
-      isLoading: false,
-      settings: {} as che.WorkspaceSettings,
     },
     branding: {
       isLoading: false,
@@ -294,17 +298,6 @@ export class FakeStoreBuilder {
       this.state.devfileRegistries.schema = Object.assign({}, options.schema);
     }
     this.state.devfileRegistries.isLoading = isLoading;
-    return this;
-  }
-
-  public withWorkspacesSettings(
-    settings: Partial<che.WorkspaceSettings>,
-    isLoading = false,
-    error?: string,
-  ): FakeStoreBuilder {
-    this.state.workspacesSettings.settings = Object.assign({}, settings as che.WorkspaceSettings);
-    this.state.workspacesSettings.isLoading = isLoading;
-    this.state.workspacesSettings.error = error;
     return this;
   }
 

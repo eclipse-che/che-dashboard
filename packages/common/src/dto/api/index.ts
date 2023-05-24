@@ -38,6 +38,10 @@ export interface IWorkspacesDefaultPlugins {
   plugins: string[];
 }
 
+export interface IExternalDevfileRegistry {
+  url: string;
+}
+
 export interface IServerConfig {
   containerBuild: {
     containerBuildConfiguration?: {
@@ -51,6 +55,10 @@ export interface IServerConfig {
     plugins: IWorkspacesDefaultPlugins[];
     pvcStrategy: string | undefined;
   };
+  devfileRegistry: {
+    disableInternalRegistry: boolean;
+    externalDevfileRegistries: IExternalDevfileRegistry[];
+  };
   pluginRegistry: {
     openVSXURL: string;
   };
@@ -60,6 +68,10 @@ export interface IServerConfig {
     startTimeout: number;
   };
   cheNamespace: string;
+  pluginRegistryURL: string;
+  pluginRegistryInternalURL: string;
+  devfileRegistryURL: string;
+  devfileRegistryInternalURL: string;
 }
 
 export interface IUserProfile {
