@@ -544,7 +544,7 @@ export const actionCreators: ActionCreators = {
           clusterConsole,
         );
 
-        /* update the DevWorkspace with components */
+        /* update the DevWorkspace */
 
         const updateResp = await getDevWorkspaceClient().updateDevWorkspace(
           createResp.devWorkspace,
