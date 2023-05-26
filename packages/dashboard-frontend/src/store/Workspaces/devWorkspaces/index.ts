@@ -224,7 +224,7 @@ export const actionCreators: ActionCreators = {
           type: Type.RECEIVE_DEVWORKSPACE_ERROR,
           error: errorMessage,
         });
-        throw errorMessage;
+        throw e;
       }
     },
 
@@ -256,7 +256,7 @@ export const actionCreators: ActionCreators = {
           type: Type.RECEIVE_DEVWORKSPACE_ERROR,
           error: errorMessage,
         });
-        throw errorMessage;
+        throw e;
       }
     },
 
@@ -417,7 +417,7 @@ export const actionCreators: ActionCreators = {
           type: Type.RECEIVE_DEVWORKSPACE_ERROR,
           error: errorMessage,
         });
-        throw errorMessage;
+        throw e;
       }
     },
 
@@ -443,7 +443,7 @@ export const actionCreators: ActionCreators = {
           error: resMessage,
         });
 
-        throw resMessage;
+        throw e;
       }
     },
 
@@ -466,7 +466,7 @@ export const actionCreators: ActionCreators = {
           type: Type.RECEIVE_DEVWORKSPACE_ERROR,
           error: errorMessage,
         });
-        throw errorMessage;
+        throw e;
       }
     },
 
@@ -489,7 +489,7 @@ export const actionCreators: ActionCreators = {
           type: Type.RECEIVE_DEVWORKSPACE_ERROR,
           error: errorMessage,
         });
-        throw errorMessage;
+        throw e;
       }
     },
 
@@ -573,7 +573,7 @@ export const actionCreators: ActionCreators = {
           type: Type.RECEIVE_DEVWORKSPACE_ERROR,
           error: errorMessage,
         });
-        throw errorMessage;
+        throw e;
       }
     },
 
@@ -658,7 +658,7 @@ export const actionCreators: ActionCreators = {
           type: Type.RECEIVE_DEVWORKSPACE_ERROR,
           error: errorMessage,
         });
-        throw errorMessage;
+        throw e;
       }
 
       await dispatch(

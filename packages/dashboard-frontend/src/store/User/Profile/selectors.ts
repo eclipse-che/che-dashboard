@@ -11,7 +11,7 @@
  */
 
 import { createSelector } from 'reselect';
-import { AppState } from '..';
+import { AppState } from '../..';
 
 const selectState = (state: AppState) => state.userProfile;
 export const selectUserProfileState = selectState;
