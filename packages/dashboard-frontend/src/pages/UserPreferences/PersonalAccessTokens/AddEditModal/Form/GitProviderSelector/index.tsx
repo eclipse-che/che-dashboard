@@ -13,17 +13,15 @@
 import { api } from '@eclipse-che/common';
 import { Dropdown, DropdownItem, DropdownToggle, FormGroup } from '@patternfly/react-core';
 import React from 'react';
-import { PROVIDERS } from '../../../../const';
-
-const DEFAULT_PROVIDER: api.GitOauthProvider = 'github';
+import { DEFAULT_GIT_PROVIDER, GIT_PROVIDERS } from '../../../../const';
 
 export type Props = {
-  provider: api.GitOauthProvider | undefined;
-  onSelect: (provider: api.GitOauthProvider) => void;
+  provider: api.GitProvider | undefined;
+  onSelect: (provider: api.GitProvider) => void;
 };
 export type State = {
   isOpen: boolean;
-  provider: api.GitOauthProvider | undefined;
+  provider: api.GitProvider | undefined;
 };
 
 export class GitProviderSelector extends React.PureComponent<Props, State> {
@@ -50,7 +48,7 @@ export class GitProviderSelector extends React.PureComponent<Props, State> {
   }
 
   private onSelect(event: React.SyntheticEvent<HTMLDivElement, Event> | undefined): void {
-    const provider = (event?.currentTarget as HTMLDivElement).id as api.GitOauthProvider;
+    const provider = (event?.currentTarget as HTMLDivElement).id as api.GitProvider;
 
     this.setState({
       isOpen: false,
@@ -60,7 +58,7 @@ export class GitProviderSelector extends React.PureComponent<Props, State> {
   }
 
   private buildDropdownItems(): React.ReactElement[] {
-    return Object.entries(PROVIDERS)
+    return Object.entries(GIT_PROVIDERS)
       .sort((providerEntryA, providerEntryB) => {
         // compare by values
         const providerNameA = providerEntryA[1];
@@ -68,7 +66,7 @@ export class GitProviderSelector extends React.PureComponent<Props, State> {
         return providerNameA.localeCompare(providerNameB);
       })
       .map(providerEntry => {
-        const [provider, providerName] = providerEntry as [api.GitOauthProvider, string];
+        const [provider, providerName] = providerEntry as [api.GitProvider, string];
         return (
           <DropdownItem key={provider} id={provider} component="button">
             {providerName}
@@ -78,8 +76,8 @@ export class GitProviderSelector extends React.PureComponent<Props, State> {
   }
 
   public render(): React.ReactElement {
-    const { isOpen, provider = DEFAULT_PROVIDER } = this.state;
-    const providerName = PROVIDERS[provider];
+    const { isOpen, provider = DEFAULT_GIT_PROVIDER } = this.state;
+    const providerName = GIT_PROVIDERS[provider];
 
     const dropdownItems = this.buildDropdownItems();
 

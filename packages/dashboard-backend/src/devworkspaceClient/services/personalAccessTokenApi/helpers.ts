@@ -40,13 +40,13 @@ export interface PersonalAccessTokenSecret extends k8s.V1Secret {
     } & (
       | {
           'che.eclipse.org/scm-personal-access-token-name': Exclude<
-            api.GitOauthProvider,
+            api.GitProvider,
             'azure-devops'
           >;
         }
       | {
           'che.eclipse.org/scm-personal-access-token-name': Extract<
-            api.GitOauthProvider,
+            api.GitProvider,
             'azure-devops'
           >;
           'che.eclipse.org/scm-organization': GitProviderOrganization;
@@ -81,12 +81,19 @@ export function isPatSecret(secret: k8s.V1Secret): secret is PersonalAccessToken
     secret.metadata?.annotations !== undefined &&
     secret.metadata.annotations?.['che.eclipse.org/che-userid'] !== undefined &&
     secret.metadata.annotations?.['che.eclipse.org/scm-personal-access-token-name'] !== undefined &&
+    isGitProvider(
+      secret.metadata.annotations?.['che.eclipse.org/scm-personal-access-token-name'],
+    ) &&
     secret.metadata.annotations?.['che.eclipse.org/scm-url'] !== undefined &&
     secret.metadata.annotations?.['che.eclipse.org/scm-username'] !== undefined;
 
   const hasToken = secret.data?.token !== undefined;
 
   return hasName && hasLabels && hasAnnotations && hasToken;
+}
+
+function isGitProvider(provider: string): provider is api.GitProvider {
+  return ['github', 'gitlab', 'bitbucket', 'azure-devops'].includes(provider);
 }
 
 export function toToken(secret: k8s.V1Secret): api.PersonalAccessToken {

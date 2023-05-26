@@ -19,7 +19,7 @@ import ProgressIndicator from '../../../components/Progress';
 import { AppState } from '../../../store';
 import * as GitOauthConfig from '../../../store/GitOauthConfig';
 import { selectGitOauth, selectIsLoading } from '../../../store/GitOauthConfig/selectors';
-import { PROVIDERS } from '../const';
+import { GIT_OAUTH_PROVIDERS } from '../const';
 import EmptyState from './EmptyState';
 import GitServicesToolbar, { GitServicesToolbar as Toolbar } from './GitServicesToolbar';
 import ProviderWarning from './ProviderWarning';
@@ -78,7 +78,7 @@ export class GitServices extends React.PureComponent<Props, State> {
 
     oauthRow.push(
       <span key={gitOauth}>
-        {PROVIDERS[gitOauth]}
+        {GIT_OAUTH_PROVIDERS[gitOauth]}
         {isDisabled && (
           <ProviderWarning
             warning={

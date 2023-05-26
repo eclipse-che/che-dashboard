@@ -12,18 +12,28 @@
 
 import { api } from '@eclipse-che/common';
 
-export const PROVIDERS: Record<api.GitOauthProvider, string> = {
+export const GIT_OAUTH_PROVIDERS: Record<api.GitOauthProvider, string> = {
+  'azure-devops': 'Microsoft Azure DevOps',
+  bitbucket: 'Bitbucket Server',
   github: 'GitHub',
   gitlab: 'GitLab',
-  bitbucket: 'Bitbucket',
-  'azure-devops': 'Microsoft Azure DevOps',
 } as const;
 
-export const PROVIDER_ENDPOINTS: Record<api.GitOauthProvider, string> = {
+export const DEFAULT_GIT_OAUTH_PROVIDER: api.GitOauthProvider = 'github';
+
+export const GIT_PROVIDERS: Record<api.GitProvider, string> = {
+  'azure-devops': 'Microsoft Azure DevOps',
+  'bitbucket-server': 'Bitbucket Server',
+  github: 'GitHub',
+  gitlab: 'GitLab',
+} as const;
+
+export const DEFAULT_GIT_PROVIDER: api.GitProvider = 'github';
+
+export const PROVIDER_ENDPOINTS: Record<api.GitOauthProvider | api.GitProvider, string> = {
+  'azure-devops': 'https://dev.azure.com',
+  'bitbucket-server': '',
+  bitbucket: '',
   github: 'https://github.com',
   gitlab: 'https://gitlab.com',
-  bitbucket: 'https://bitbucket.org',
-  'azure-devops': 'https://dev.azure.com',
 } as const;
-
-export const DEFAULT_PROVIDER: api.GitOauthProvider = 'github';

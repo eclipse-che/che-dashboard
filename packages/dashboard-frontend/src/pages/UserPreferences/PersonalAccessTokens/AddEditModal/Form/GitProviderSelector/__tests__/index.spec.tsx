@@ -48,7 +48,7 @@ describe('Registry Username Input', () => {
     const dropdownButton = screen.getByRole('button', { name: 'GitHub' });
     userEvent.click(dropdownButton);
 
-    expect(screen.queryByRole('menuitem', { name: 'Bitbucket' })).toBeTruthy();
+    expect(screen.queryByRole('menuitem', { name: 'Bitbucket Server' })).toBeTruthy();
     expect(screen.queryByRole('menuitem', { name: 'GitHub' })).toBeTruthy();
     expect(screen.queryByRole('menuitem', { name: 'GitLab' })).toBeTruthy();
     expect(screen.queryByRole('menuitem', { name: 'Microsoft Azure DevOps' })).toBeTruthy();
@@ -61,19 +61,19 @@ describe('Registry Username Input', () => {
     const dropdownButton = screen.getByRole('button', { name: 'GitHub' });
     userEvent.click(dropdownButton);
 
-    const bitbucketMenuitem = screen.getByRole('menuitem', { name: 'Bitbucket' });
+    const bitbucketMenuitem = screen.getByRole('menuitem', { name: 'Bitbucket Server' });
 
     userEvent.click(bitbucketMenuitem);
 
-    expect(mockOnSelect).toHaveBeenCalledWith('bitbucket');
-    expect(screen.queryByRole('button', { name: 'Bitbucket' })).toBeTruthy();
+    expect(mockOnSelect).toHaveBeenCalledWith('bitbucket-server');
+    expect(screen.queryByRole('button', { name: 'Bitbucket Server' })).toBeTruthy();
   });
 
   it('should handle component update', () => {
-    const { reRenderComponent } = renderComponent('bitbucket');
+    const { reRenderComponent } = renderComponent('bitbucket-server');
 
     // expect Bitbucket to be selected by default
-    expect(screen.queryByRole('button', { name: 'Bitbucket' })).toBeTruthy();
+    expect(screen.queryByRole('button', { name: 'Bitbucket Server' })).toBeTruthy();
 
     reRenderComponent('gitlab');
 
@@ -82,7 +82,7 @@ describe('Registry Username Input', () => {
   });
 });
 
-function getComponent(provider?: api.GitOauthProvider): React.ReactElement {
+function getComponent(provider?: api.GitProvider): React.ReactElement {
   return (
     <Form>
       <GitProviderSelector provider={provider} onSelect={mockOnSelect} />

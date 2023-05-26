@@ -21,7 +21,7 @@ import {
   TextContent,
 } from '@patternfly/react-core';
 import React from 'react';
-import { PROVIDERS } from '../../const';
+import { GIT_OAUTH_PROVIDERS } from '../../const';
 
 type Props = {
   gitOauth?: api.GitOauthProvider;
@@ -55,10 +55,10 @@ export default class RevokeGitServicesModal extends React.PureComponent<Props, S
     let text = 'Would you like to revoke ';
 
     if (gitOauth) {
-      text += `git service '${PROVIDERS[gitOauth]}'`;
+      text += `git service '${GIT_OAUTH_PROVIDERS[gitOauth]}'`;
     } else {
       if (selectedItems.length === 1) {
-        text += `git service '${PROVIDERS[selectedItems[0]]}'`;
+        text += `git service '${GIT_OAUTH_PROVIDERS[selectedItems[0]]}'`;
       } else {
         text += `${selectedItems.length} git services`;
       }

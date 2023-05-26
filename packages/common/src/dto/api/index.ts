@@ -22,6 +22,12 @@ export type GitOauthProvider =
   | 'bitbucket'
   | 'azure-devops';
 
+export type GitProvider =
+  | 'github'
+  | 'gitlab'
+  | 'bitbucket-server'
+  | 'azure-devops';
+
 export type PersonalAccessToken = {
   cheUserId: string;
   tokenName: string;
@@ -30,10 +36,10 @@ export type PersonalAccessToken = {
   gitProviderUsername: string;
 } & (
   | {
-      gitProvider: Exclude<GitOauthProvider, 'azure-devops'>;
+      gitProvider: Exclude<GitProvider, 'azure-devops'>;
     }
   | {
-      gitProvider: Extract<GitOauthProvider, 'azure-devops'>;
+      gitProvider: Extract<GitProvider, 'azure-devops'>;
       gitProviderOrganization: string;
     }
 );

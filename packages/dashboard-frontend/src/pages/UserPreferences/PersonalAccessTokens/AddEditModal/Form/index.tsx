@@ -13,7 +13,7 @@
 import { api } from '@eclipse-che/common';
 import { Form } from '@patternfly/react-core';
 import React from 'react';
-import { DEFAULT_PROVIDER, PROVIDER_ENDPOINTS } from '../../../const';
+import { DEFAULT_GIT_PROVIDER, PROVIDER_ENDPOINTS } from '../../../const';
 import { EditTokenProps } from '../../types';
 import { GitProviderEndpoint } from './GitProviderEndpoint';
 import { GitProviderOrganization } from './GitProviderOrganization';
@@ -27,7 +27,7 @@ export type Props = EditTokenProps & {
   onChange: (token: api.PersonalAccessToken, isValid: boolean) => void;
 };
 export type State = {
-  gitProvider: api.GitOauthProvider;
+  gitProvider: api.GitProvider;
   defaultGitProviderEndpoint: string;
   gitProviderEndpoint: string | undefined;
   gitProviderEndpointIsValid: boolean;
@@ -47,7 +47,7 @@ export class AddEditModalForm extends React.PureComponent<Props, State> {
 
     const { gitProviderEndpoint, gitProvider, gitProviderUsername, tokenName, tokenData } =
       props.token || {
-        gitProvider: DEFAULT_PROVIDER,
+        gitProvider: DEFAULT_GIT_PROVIDER,
       };
 
     const gitProviderOrganization =
@@ -57,7 +57,7 @@ export class AddEditModalForm extends React.PureComponent<Props, State> {
 
     this.state = {
       gitProvider,
-      defaultGitProviderEndpoint: PROVIDER_ENDPOINTS[DEFAULT_PROVIDER],
+      defaultGitProviderEndpoint: PROVIDER_ENDPOINTS[DEFAULT_GIT_PROVIDER],
       gitProviderEndpoint,
       // next field is initially valid because a default value should be used instead of an empty string
       gitProviderEndpointIsValid: true,
@@ -126,7 +126,7 @@ export class AddEditModalForm extends React.PureComponent<Props, State> {
     }
   }
 
-  private handleChangeGitProvider(gitProvider: api.GitOauthProvider): void {
+  private handleChangeGitProvider(gitProvider: api.GitProvider): void {
     this.updateChangeToken({
       gitProvider,
       defaultGitProviderEndpoint: PROVIDER_ENDPOINTS[gitProvider],
