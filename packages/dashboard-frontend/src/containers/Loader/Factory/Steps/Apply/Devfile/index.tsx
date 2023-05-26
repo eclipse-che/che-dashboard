@@ -158,10 +158,10 @@ class StepApplyDevfile extends AbstractLoaderStep<Props, State> {
     this.props.onRestart();
   }
 
-  private updateCurrentDevfile(devfile: devfileApi.Devfile, appendSuffix?: boolean): void {
+  private updateCurrentDevfile(devfile: devfileApi.Devfile): void {
     const { factoryResolver, allWorkspaces, defaultDevfile } = this.props;
     const { factoryParams } = this.state;
-    const { factoryId, policiesCreate, sourceUrl, storageType, remotes } = factoryParams;
+    const { factoryId, sourceUrl, storageType, remotes } = factoryParams;
 
     // when using the default devfile instead of a user devfile
     if (factoryResolver === undefined && isEqual(devfile, defaultDevfile)) {
@@ -186,14 +186,11 @@ class StepApplyDevfile extends AbstractLoaderStep<Props, State> {
 
     // test the devfile name to decide if we need to append a suffix to is
     const nameConflict = allWorkspaces.some(w => devfile.metadata.name === w.name);
-    const _appendSuffix =
-      appendSuffix === undefined ? policiesCreate === 'perclick' || nameConflict : appendSuffix;
 
-    const updatedDevfile = prepareDevfile(devfile, factoryId, storageType, _appendSuffix);
+    const updatedDevfile = prepareDevfile(devfile, factoryId, storageType, nameConflict);
 
     this.setState({
       devfile: updatedDevfile,
-      newWorkspaceName: updatedDevfile.metadata.name,
     });
   }
 
@@ -243,12 +240,19 @@ class StepApplyDevfile extends AbstractLoaderStep<Props, State> {
           throw new Error('Failed to resolve the default devfile.');
         }
         this.updateCurrentDevfile(_devfile);
+        try {
+          await this.createWorkspaceFromDevfile(_devfile);
+        } catch (e) {
+          const errorMessage = common.helpers.errors.getMessage(e);
+          throw new CreateWorkspaceError(errorMessage);
+        }
         return false;
       }
       const _devfile = factoryResolverConverted?.devfileV2;
       if (_devfile === undefined) {
         throw new Error('Failed to resolve the devfile.');
       }
+      this.updateCurrentDevfile(_devfile);
       if (!this.state.restartFromError) {
         try {
           await this.createWorkspaceFromDevfile(_devfile);
@@ -257,7 +261,6 @@ class StepApplyDevfile extends AbstractLoaderStep<Props, State> {
           throw new CreateWorkspaceError(errorMessage);
         }
       }
-      this.updateCurrentDevfile(_devfile, false);
       return false;
     }
 
@@ -291,6 +294,9 @@ class StepApplyDevfile extends AbstractLoaderStep<Props, State> {
       this.state.factoryParams,
       optionalFilesContent,
     );
+    this.setState({
+      newWorkspaceName: devfile.metadata.name,
+    });
   }
 
   private handleCreateWorkspaceError(): void {
