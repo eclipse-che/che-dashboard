@@ -93,7 +93,8 @@ export function isPatSecret(secret: k8s.V1Secret): secret is PersonalAccessToken
 }
 
 function isGitProvider(provider: string): provider is api.GitProvider {
-  return ['github', 'gitlab', 'bitbucket', 'azure-devops'].includes(provider);
+  const providers: api.GitProvider[] = ['github', 'gitlab', 'bitbucket-server', 'azure-devops'];
+  return providers.includes(provider as api.GitProvider);
 }
 
 export function toToken(secret: k8s.V1Secret): api.PersonalAccessToken {
