@@ -625,7 +625,7 @@ describe('Factory Loader container, step CREATE_WORKSPACE__APPLYING_DEVFILE', ()
       jest.advanceTimersByTime(MIN_STEP_DURATION_MS);
 
       await waitFor(() =>
-        expect(prepareDevfile).toHaveBeenCalledWith(devfile, factoryId, undefined, false),
+        expect(prepareDevfile).toHaveBeenCalledWith(devfile, factoryId, undefined, true),
       );
     });
 

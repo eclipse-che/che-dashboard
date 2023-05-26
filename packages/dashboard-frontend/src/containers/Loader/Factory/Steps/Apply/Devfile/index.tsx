@@ -161,7 +161,7 @@ class StepApplyDevfile extends AbstractLoaderStep<Props, State> {
   private updateCurrentDevfile(devfile: devfileApi.Devfile): void {
     const { factoryResolver, allWorkspaces, defaultDevfile } = this.props;
     const { factoryParams } = this.state;
-    const { factoryId, sourceUrl, storageType, remotes } = factoryParams;
+    const { factoryId, policiesCreate, sourceUrl, storageType, remotes } = factoryParams;
 
     // when using the default devfile instead of a user devfile
     if (factoryResolver === undefined && isEqual(devfile, defaultDevfile)) {
@@ -186,8 +186,8 @@ class StepApplyDevfile extends AbstractLoaderStep<Props, State> {
 
     // test the devfile name to decide if we need to append a suffix to is
     const nameConflict = allWorkspaces.some(w => devfile.metadata.name === w.name);
-
-    const updatedDevfile = prepareDevfile(devfile, factoryId, storageType, nameConflict);
+    const appendSuffix = policiesCreate === 'perclick' || nameConflict;
+    const updatedDevfile = prepareDevfile(devfile, factoryId, storageType, appendSuffix);
 
     this.setState({
       devfile: updatedDevfile,
