@@ -158,7 +158,10 @@ class StepApplyDevfile extends AbstractLoaderStep<Props, State> {
     this.props.onRestart();
   }
 
-  private updateCurrentDevfile(devfile: devfileApi.Devfile): void {
+  private updateCurrentDevfile(devfile?: devfileApi.Devfile): void {
+    if (devfile === undefined) {
+      throw new Error('Failed to resolve the devfile.');
+    }
     const { factoryResolver, allWorkspaces, defaultDevfile } = this.props;
     const { factoryParams } = this.state;
     const { factoryId, policiesCreate, sourceUrl, storageType, remotes } = factoryParams;
@@ -248,19 +251,16 @@ class StepApplyDevfile extends AbstractLoaderStep<Props, State> {
         }
         return false;
       }
-      const _devfile = factoryResolverConverted?.devfileV2;
-      if (_devfile === undefined) {
-        throw new Error('Failed to resolve the devfile.');
-      }
-      this.updateCurrentDevfile(_devfile);
-      if (!this.state.restartFromError) {
+      this.updateCurrentDevfile(factoryResolverConverted?.devfileV2);
+      const { devfile, restartFromError } = this.state;
+      if (devfile && !restartFromError) {
         try {
-          await this.createWorkspaceFromDevfile(_devfile);
+          await this.createWorkspaceFromDevfile(devfile);
         } catch (e) {
           const errorMessage = common.helpers.errors.getMessage(e);
           throw new CreateWorkspaceError(errorMessage);
         }
-      }
+      }q
       return false;
     }
 
