@@ -260,7 +260,7 @@ class StepApplyDevfile extends AbstractLoaderStep<Props, State> {
           const errorMessage = common.helpers.errors.getMessage(e);
           throw new CreateWorkspaceError(errorMessage);
         }
-      }q
+      }
       return false;
     }
 
