@@ -10,70 +10,52 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
+import { screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import { createMemoryHistory, History } from 'history';
 import React from 'react';
 import { Provider } from 'react-redux';
 import { Store } from 'redux';
-import { screen } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
-import { AlertVariant } from '@patternfly/react-core';
 import { LoaderPage } from '..';
-import { LoadingStep, List, LoaderStep } from '../../../components/Loader/Step';
-import {
-  getWorkspaceLoadingSteps,
-  buildLoaderSteps,
-} from '../../../components/Loader/Step/buildSteps';
-import { FakeStoreBuilder } from '../../../store/__mocks__/storeBuilder';
-import { DevWorkspaceBuilder } from '../../../store/__mocks__/devWorkspaceBuilder';
-import {
-  AlertItem,
-  LoaderTab,
-  DevWorkspaceStatus,
-  ActionCallback,
-} from '../../../services/helpers/types';
 import devfileApi from '../../../services/devfileApi';
+import { LoaderMode } from '../../../services/helpers/factoryFlow/getLoaderMode';
+import { LoaderTab } from '../../../services/helpers/types';
 import { constructWorkspace, Workspace } from '../../../services/workspace-adapter';
 import getComponentRenderer from '../../../services/__mocks__/getComponentRenderer';
+import { DevWorkspaceBuilder } from '../../../store/__mocks__/devWorkspaceBuilder';
+import { FakeStoreBuilder } from '../../../store/__mocks__/storeBuilder';
 
 jest.mock('react-tooltip', () => {
   return function DummyTooltip(): React.ReactElement {
     return <div>Dummy Tooltip</div>;
   };
 });
-jest.mock('../../../components/Loader/Alert');
-jest.mock('../../../components/Loader/Progress');
+
+jest.mock('../../../components/WorkspaceProgress');
 jest.mock('../../../components/WorkspaceLogs');
 jest.mock('../../../components/WorkspaceEvents');
 
 const { createSnapshot, renderComponent } = getComponentRenderer(getComponent);
 
 const mockOnTabChange = jest.fn();
-const mockOnWorkspaceRestart = jest.fn();
-const actionCallbacks: ActionCallback[] = [
-  {
-    title: 'Restart',
-    callback: mockOnWorkspaceRestart,
-  },
-];
 
 const namespace = 'user-che';
 const workspaceName = 'wksp-test';
-const currentStepId = LoadingStep.INITIALIZE;
-const status: keyof typeof DevWorkspaceStatus = 'STARTING';
 const tabParam = LoaderTab[LoaderTab.Progress];
 
 describe('Loader page', () => {
   let devWorkspace: devfileApi.DevWorkspace;
   let workspace: Workspace;
-  let steps: List<LoaderStep>;
   let store: Store;
+  let history: History;
 
   beforeEach(() => {
-    const loadingSteps = getWorkspaceLoadingSteps();
-    steps = buildLoaderSteps(loadingSteps);
+    history = createMemoryHistory();
+
     devWorkspace = new DevWorkspaceBuilder()
       .withNamespace(namespace)
       .withName(workspaceName)
-      .withStatus({ phase: status })
+      .withStatus({ phase: 'STARTING' })
       .build();
     store = new FakeStoreBuilder()
       .withDevWorkspaces({
@@ -87,20 +69,28 @@ describe('Loader page', () => {
     jest.clearAllMocks();
   });
 
-  test('component snapshot: creating a workspace', () => {
+  test('snapshot, creating workspace flow', () => {
     const emptyStore = new FakeStoreBuilder().build();
     const snapshot = createSnapshot(emptyStore, {
+      history,
+      loaderMode: { mode: 'factory' },
       tabParam,
-      steps: steps.values,
       workspace: undefined,
     });
     expect(snapshot.toJSON()).toMatchSnapshot();
   });
 
-  test('component snapshot: starting a workspace', () => {
+  test('snapshot, starting workspace flow', () => {
     const snapshot = createSnapshot(store, {
+      history,
+      loaderMode: {
+        mode: 'workspace',
+        workspaceParams: {
+          namespace,
+          workspaceName,
+        },
+      },
       tabParam,
-      steps: steps.values,
       workspace,
     });
     expect(snapshot.toJSON()).toMatchSnapshot();
@@ -108,8 +98,15 @@ describe('Loader page', () => {
 
   it('should handle tab click', () => {
     renderComponent(store, {
+      history,
+      loaderMode: {
+        mode: 'workspace',
+        workspaceParams: {
+          namespace,
+          workspaceName,
+        },
+      },
       tabParam,
-      steps: steps.values,
       workspace,
     });
 
@@ -119,46 +116,17 @@ describe('Loader page', () => {
     expect(mockOnTabChange).toHaveBeenCalledWith(LoaderTab[LoaderTab.Logs]);
   });
 
-  it('should handle reload', () => {
-    const alertItem: AlertItem = {
-      key: 'alert-id',
-      title: 'Failed to start the workspace',
-      variant: AlertVariant.danger,
-      actionCallbacks,
-    };
-    renderComponent(store, {
-      tabParam,
-      steps: steps.values,
-      alertItem,
-      workspace,
-    });
-
-    const reloadButton = screen.getByRole('button', { name: 'Restart' });
-    userEvent.click(reloadButton);
-
-    expect(mockOnWorkspaceRestart).toHaveBeenCalledWith();
-  });
-
-  it('should render Progress tab active by default', () => {
-    renderComponent(store, {
-      tabParam,
-      steps: steps.values,
-      workspace,
-    });
-
-    const tabpanelProgress = screen.queryByRole('tabpanel', { name: 'Progress' });
-    const tabpanelLogs = screen.queryByRole('tabpanel', { name: 'Logs' });
-
-    // active tab by default
-    expect(tabpanelProgress).not.toBeNull();
-    // disabled tab
-    expect(tabpanelLogs).toBeNull();
-  });
-
   it('should render Logs tab active', () => {
     renderComponent(store, {
+      history,
+      loaderMode: {
+        mode: 'workspace',
+        workspaceParams: {
+          namespace,
+          workspaceName,
+        },
+      },
       tabParam: LoaderTab[LoaderTab.Logs],
-      steps: steps.values,
       workspace,
     });
 
@@ -175,19 +143,18 @@ describe('Loader page', () => {
 function getComponent(
   store: Store,
   props: {
-    steps: LoaderStep[];
+    history: History;
+    loaderMode: LoaderMode;
     tabParam: string;
-    alertItem?: AlertItem;
     workspace?: Workspace;
   },
 ): React.ReactElement {
   return (
     <Provider store={store}>
       <LoaderPage
-        alertItem={props.alertItem}
+        history={props.history}
         tabParam={props.tabParam}
-        currentStepId={currentStepId}
-        steps={props.steps}
+        searchParams={new URLSearchParams()}
         workspace={props.workspace}
         onTabChange={mockOnTabChange}
       />

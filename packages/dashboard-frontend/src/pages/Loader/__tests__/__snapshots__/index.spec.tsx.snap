@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`Loader page component snapshot: creating a workspace 1`] = `
+exports[`Loader page snapshot, creating workspace flow 1`] = `
 Array [
   <section
     className="pf-c-page__main-section pf-m-light"
@@ -259,10 +259,8 @@ Array [
       <section
         className="pf-c-page__main-section"
       >
-        <div
-          data-testid="ide-loader-progress"
-        >
-          Dummy loading progress
+        <div>
+          Progress
         </div>
       </section>
     </section>
@@ -298,7 +296,7 @@ Array [
 ]
 `;
 
-exports[`Loader page component snapshot: starting a workspace 1`] = `
+exports[`Loader page snapshot, starting workspace flow 1`] = `
 Array [
   <section
     className="pf-c-page__main-section pf-m-light"
@@ -552,10 +550,8 @@ Array [
       <section
         className="pf-c-page__main-section"
       >
-        <div
-          data-testid="ide-loader-progress"
-        >
-          Dummy loading progress
+        <div>
+          Progress
         </div>
       </section>
     </section>
