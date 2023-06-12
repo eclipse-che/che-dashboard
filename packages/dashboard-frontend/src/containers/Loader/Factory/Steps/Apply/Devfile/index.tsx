@@ -39,7 +39,7 @@ import { buildFactoryParams, FactoryParams } from '../../../../buildFactoryParam
 import { MIN_STEP_DURATION_MS, TIMEOUT_TO_CREATE_SEC } from '../../../../const';
 import findTargetWorkspace from '../../../../findTargetWorkspace';
 import { getGitRemotes, GitRemote } from './getGitRemotes';
-import { getProjectFromUrl } from './getProjectFromUrl';
+import { getProjectFromLocation } from './getProjectFromLocation';
 import { prepareDevfile } from './prepareDevfile';
 import { selectDevWorkspaceWarnings } from '../../../../../../store/Workspaces/devWorkspaces/selectors';
 
@@ -174,7 +174,7 @@ class StepApplyDevfile extends AbstractLoaderStep<Props, State> {
       if (devfile.projects.length === 0) {
         // adds a default project from the source URL
         if (sourceUrl) {
-          const project = getProjectFromUrl(factoryParams.sourceUrl);
+          const project = getProjectFromLocation(factoryParams.sourceUrl);
           devfile.projects[0] = project;
           // change default name
           devfile.metadata.name = project.name;
@@ -377,7 +377,7 @@ class StepApplyDevfile extends AbstractLoaderStep<Props, State> {
       if (!devfile.projects) {
         devfile.projects = [];
       }
-      devfile.projects[0] = getProjectFromUrl(checkoutRemote.url, checkoutRemote.name);
+      devfile.projects[0] = getProjectFromLocation(checkoutRemote.url, checkoutRemote.name);
       gitProject = devfile.projects[0].git;
     } else if (Object.keys(gitProject.remotes).includes('origin')) {
       checkoutRemote = { name: 'origin', url: gitProject.remotes.origin };

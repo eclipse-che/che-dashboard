@@ -10,54 +10,90 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import { getProjectFromUrl } from '../getProjectFromUrl';
+import { getProjectFromLocation } from '../getProjectFromLocation';
+import common from '@eclipse-che/common';
 
 describe('FactoryLoaderContainer/getProjectFromUrl', () => {
-  test('Get a project from the URL which does not include "*/tree/*" and "*.git"', () => {
-    const url = 'https://github.com/test/rest-repo';
+  describe('unsupported location', () => {
+    test('Get a project from the unsupported location', () => {
+      const unsupportedLocation = 'github.com/che-incubator/devfile-converter';
 
-    const project = getProjectFromUrl(url);
+      let errorMessage: string | undefined;
+      try {
+        getProjectFromLocation(unsupportedLocation);
+      } catch (err) {
+        errorMessage = common.helpers.errors.getMessage(err);
+      }
 
-    expect(project).toEqual({
-      git: {
-        remotes: {
-          origin: 'https://github.com/test/rest-repo.git',
+      expect(errorMessage).toEqual(
+        "Failed to get project from location: 'github.com/che-incubator/devfile-converter'.",
+      );
+    });
+  });
+  describe('SSH location', () => {
+    test('Get a project from the SSH location', () => {
+      const location = 'git@github.com:eclipse-che/che-devfile-registry.git';
+
+      const project = getProjectFromLocation(location);
+
+      expect(project).toEqual({
+        git: {
+          remotes: {
+            origin: 'git@github.com:eclipse-che/che-devfile-registry.git',
+          },
         },
-      },
-      name: 'rest-repo',
+        name: 'che-devfile-registry',
+      });
     });
   });
 
-  test('Get a project from the URL which ends with ".git"', () => {
-    const url = 'https://github.com/test/rest-repo.git';
+  describe('Full path URL', () => {
+    test('Get a project from the URL which does not include "*/tree/*" and "*.git"', () => {
+      const url = 'https://github.com/test/rest-repo';
 
-    const project = getProjectFromUrl(url);
+      const project = getProjectFromLocation(url);
 
-    expect(project).toEqual({
-      git: {
-        remotes: {
-          origin: 'https://github.com/test/rest-repo.git',
+      expect(project).toEqual({
+        git: {
+          remotes: {
+            origin: 'https://github.com/test/rest-repo.git',
+          },
         },
-      },
-      name: 'rest-repo',
+        name: 'rest-repo',
+      });
     });
-  });
 
-  test('Get a project from the URL which includs "*/tree/*"', () => {
-    const url = 'https://github.com/test/rest-repo/tree/a4f1949c33ddab5f66c19c27a844af1c46aa0820';
+    test('Get a project from the URL which ends with ".git"', () => {
+      const url = 'https://github.com/test/rest-repo.git';
 
-    const project = getProjectFromUrl(url);
+      const project = getProjectFromLocation(url);
 
-    expect(project).toEqual({
-      git: {
-        checkoutFrom: {
-          revision: 'a4f1949c33ddab5f66c19c27a844af1c46aa0820',
+      expect(project).toEqual({
+        git: {
+          remotes: {
+            origin: 'https://github.com/test/rest-repo.git',
+          },
         },
-        remotes: {
-          origin: 'https://github.com/test/rest-repo.git',
+        name: 'rest-repo',
+      });
+    });
+
+    test('Get a project from the URL which includs "*/tree/*"', () => {
+      const url = 'https://github.com/test/rest-repo/tree/a4f1949c33ddab5f66c19c27a844af1c46aa0820';
+
+      const project = getProjectFromLocation(url);
+
+      expect(project).toEqual({
+        git: {
+          checkoutFrom: {
+            revision: 'a4f1949c33ddab5f66c19c27a844af1c46aa0820',
+          },
+          remotes: {
+            origin: 'https://github.com/test/rest-repo.git',
+          },
         },
-      },
-      name: 'a4f1949c33ddab5f66c19c27a844af1c46aa0820',
+        name: 'a4f1949c33ddab5f66c19c27a844af1c46aa0820',
+      });
     });
   });
 });
