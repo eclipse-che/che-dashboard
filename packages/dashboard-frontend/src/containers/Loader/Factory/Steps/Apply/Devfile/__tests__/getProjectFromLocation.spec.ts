@@ -13,7 +13,7 @@
 import { getProjectFromLocation } from '../getProjectFromLocation';
 import common from '@eclipse-che/common';
 
-describe('FactoryLoaderContainer/getProjectFromUrl', () => {
+describe('FactoryLoaderContainer/getProjectFromLocation', () => {
   describe('unsupported location', () => {
     test('Get a project from the unsupported location', () => {
       const unsupportedLocation = 'github.com/che-incubator/devfile-converter';

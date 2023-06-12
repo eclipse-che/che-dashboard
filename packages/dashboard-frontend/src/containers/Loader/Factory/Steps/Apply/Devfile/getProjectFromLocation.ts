@@ -32,7 +32,7 @@ export function getProjectFromLocation(
       return { git: { remotes: { [remoteName]: origin } }, name };
     } else {
       const sources = sourceUrl.pathname.split('/tree/');
-      const origin = `${sourceUrl.origin}${sources[0]}.git`;
+      const origin = `${sourceUrl.origin}${sources[0].replace(new RegExp('/$'), '')}.git`;
       const revision = sources[1];
 
       if (revision) {

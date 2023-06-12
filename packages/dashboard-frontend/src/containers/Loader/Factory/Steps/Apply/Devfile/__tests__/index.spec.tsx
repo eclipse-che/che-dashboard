@@ -556,7 +556,7 @@ describe('Factory Loader container, step CREATE_WORKSPACE__APPLYING_DEVFILE', ()
           {
             git: {
               remotes: {
-                origin: `${factoryUrl}/.git`,
+                origin: `${factoryUrl}.git`,
               },
             },
             name: 'factory-url',
