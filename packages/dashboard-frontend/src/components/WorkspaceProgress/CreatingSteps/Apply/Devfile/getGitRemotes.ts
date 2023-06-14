@@ -14,7 +14,7 @@ import common from '@eclipse-che/common';
 import devfileApi from '../../../../../services/devfileApi';
 import { V221DevfileProjects, V221DevfileProjectsItemsGit } from '@devfile/api';
 import { getProjectName } from '../../../../../services/helpers/getProjectName';
-import { getProjectFromUrl } from './getProjectFromUrl';
+import { getProjectFromLocation } from './getProjectFromLocation';
 
 export interface GitRemote {
   name: string;
@@ -127,7 +127,7 @@ export function configureProjectRemotes(
     if (!devfile.projects) {
       devfile.projects = [];
     }
-    devfile.projects[0] = getProjectFromUrl(checkoutRemote.url, checkoutRemote.name);
+    devfile.projects[0] = getProjectFromLocation(checkoutRemote.url, checkoutRemote.name);
     gitProject = devfile.projects[0].git;
   } else if (Object.keys(gitProject.remotes).includes('origin')) {
     checkoutRemote = { name: 'origin', url: gitProject.remotes.origin };

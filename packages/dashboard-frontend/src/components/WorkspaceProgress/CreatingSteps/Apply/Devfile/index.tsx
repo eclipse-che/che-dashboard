@@ -43,7 +43,7 @@ import { ProgressStep, ProgressStepProps, ProgressStepState } from '../../../Pro
 import { ProgressStepTitle } from '../../../StepTitle';
 import { TimeLimit } from '../../../TimeLimit';
 import { configureProjectRemotes } from './getGitRemotes';
-import { getProjectFromUrl } from './getProjectFromUrl';
+import { getProjectFromLocation } from './getProjectFromLocation';
 import { prepareDevfile } from './prepareDevfile';
 
 export class CreateWorkspaceError extends Error {
@@ -181,7 +181,7 @@ class CreatingStepApplyDevfile extends ProgressStep<Props, State> {
       if (devfile.projects.length === 0) {
         // adds a default project from the source URL
         if (sourceUrl) {
-          const project = getProjectFromUrl(factoryParams.sourceUrl);
+          const project = getProjectFromLocation(factoryParams.sourceUrl);
           devfile.projects[0] = project;
           // change default name
           devfile.metadata.name = project.name;
