@@ -6,9 +6,9 @@
 | [`@devfile/api@2.2.1-alpha-1667236163`](https://github.com/devfile/api.git) | Apache-2.0 | clearlydefined |
 | `@eclipse-che/api@7.44.0` | EPL-2.0 | ecd.che |
 | [`@eclipse-che/che-devworkspace-generator@0.0.1-602dcb4`](git+https://github.com/eclipse-che/che-devfile-registry.git) | EPL-2.0 | ecd.che |
-| [`@eclipse-che/common@7.67.0-next`](https://github.com/eclipse-che/che-dashboard) | EPL-2.0 | ecd.che |
-| [`@eclipse-che/dashboard-backend@7.67.0-next`](https://github.com/eclipse-che/che-dashboard) | EPL-2.0 | ecd.che |
-| [`@eclipse-che/dashboard-frontend@7.67.0-next`](git://github.com/eclipse/che-dashboard.git) | EPL-2.0 | ecd.che |
+| [`@eclipse-che/common@7.69.0-next`](https://github.com/eclipse-che/che-dashboard) | EPL-2.0 | ecd.che |
+| [`@eclipse-che/dashboard-backend@7.69.0-next`](https://github.com/eclipse-che/che-dashboard) | EPL-2.0 | ecd.che |
+| [`@eclipse-che/dashboard-frontend@7.69.0-next`](git://github.com/eclipse/che-dashboard.git) | EPL-2.0 | ecd.che |
 | [`@eclipse-che/devfile-converter@0.0.1-ff55f9a`](git+https://github.com/che-incubator/devfile-converter.git) | EPL-2.0 | ecd.che |
 | [`@eclipse-che/workspace-client@0.0.1-1672830275`](https://github.com/eclipse/che-workspace-client) | EPL-2.0 | ecd.che |
 | [`@fastify/ajv-compiler@1.1.0`](git+https://github.com/fastify/ajv-compiler.git) | MIT | clearlydefined |
@@ -84,7 +84,7 @@
 | [`bcrypt-pbkdf@1.0.2`](git://github.com/joyent/node-bcrypt-pbkdf.git) | BSD-3-Clause | #2725 |
 | [`big.js@5.2.2`](https://github.com/MikeMcl/big.js.git) | MIT | clearlydefined |
 | [`bluebird@3.7.2`](git://github.com/petkaantonov/bluebird.git) | MIT | clearlydefined |
-| [`blueimp-md5@2.19.0`](git://github.com/blueimp/JavaScript-MD5.git) | MIT | clearlydefined |
+| [`blueimp-md5@2.19.0`](git://github.com/blueimp/JavaScript-MD5.git) | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/blueimp-md5/2.19.0) |
 | [`bn.js@4.12.0`](git@github.com:indutny/bn.js) | MIT | clearlydefined |
 | [`brace-expansion@1.1.11`](git://github.com/juliangruber/brace-expansion.git) | MIT | clearlydefined |
 | [`brorand@1.1.0`](git@github.com:indutny/brorand) | MIT | clearlydefined |

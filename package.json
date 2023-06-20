@@ -1,6 +1,6 @@
 {
   "name": "@eclipse-che/dashboard",
-  "version": "7.68.0-next",
+  "version": "7.69.0-next",
   "description": "Dashboard for Eclipse Che",
   "private": true,
   "workspaces": [
@@ -12,7 +12,7 @@
   "homepage": "https://github.com/eclipse-che/che-dashboard",
   "engines": {
     "yarn": ">=1.20.0",
-    "node": ">=14"
+    "node": ">=16"
   },
   "license": "EPL-2.0",
   "scripts": {

@@ -79,6 +79,29 @@ To avoid memory issues and the process being killed, more memory is possible thr
 NODE_OPTIONS="--max_old_space_size=6500" && yarn frontend:start
 ```
 
+### Bundle analyzer
+
+To get visualizations of what’s in your webpack bundle for dashboard-backend:
+```sh
+yarn --cwd  packages/dashboard-backend build --env bundleAnalyzer=true
+```
+
+To get visualizations of what’s in your webpack bundle for dashboard-frontend:
+```sh
+yarn --cwd  packages/dashboard-frontend build --env bundleAnalyzer=true
+```
+
+### Measure build speed
+
+To measure build speed for dashboard-backend:
+```sh
+yarn --cwd  packages/dashboard-backend build:dev --env speedMeasure=true
+```
+
+To measure build speed for dashboard-frontend:
+```sh
+yarn --cwd  packages/dashboard-frontend build:dev --env speedMeasure=true
+```
 
 ### Dependencies IP
 
@@ -253,7 +276,6 @@ Currently, Dashboard uses the following che-server API:
 | GET   | /kubernetes/namespace                |
 | POST   | /factory/resolver/                  |
 | POST   | /factory/token/refresh              |
-| GET    | /workspace/settings                 |
 | GET    | /oauth                              |
 | GET    | /oauth/token                        |
 | DELETE | /oauth/token                        |
