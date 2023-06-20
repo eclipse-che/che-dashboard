@@ -257,7 +257,7 @@ Array [
       tabIndex={0}
     >
       <section
-        className="pf-c-page__main-section"
+        className="pf-c-page__main-section pf-m-fill"
       >
         <div>
           Progress
@@ -548,7 +548,7 @@ Array [
       tabIndex={0}
     >
       <section
-        className="pf-c-page__main-section"
+        className="pf-c-page__main-section pf-m-fill"
       >
         <div>
           Progress
