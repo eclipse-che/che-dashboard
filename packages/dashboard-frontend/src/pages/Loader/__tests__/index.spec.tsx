@@ -41,7 +41,7 @@ const mockOnTabChange = jest.fn();
 
 const namespace = 'user-che';
 const workspaceName = 'wksp-test';
-const tabParam = LoaderTab[LoaderTab.Progress];
+const tabParam = LoaderTab.Progress;
 
 describe('Loader page', () => {
   let devWorkspace: devfileApi.DevWorkspace;
@@ -113,7 +113,7 @@ describe('Loader page', () => {
     const tabButtonLogs = screen.getByRole('button', { name: 'Logs' });
     userEvent.click(tabButtonLogs);
 
-    expect(mockOnTabChange).toHaveBeenCalledWith(LoaderTab[LoaderTab.Logs]);
+    expect(mockOnTabChange).toHaveBeenCalledWith(LoaderTab.Logs);
   });
 
   it('should render Logs tab active', () => {
@@ -126,7 +126,7 @@ describe('Loader page', () => {
           workspaceName,
         },
       },
-      tabParam: LoaderTab[LoaderTab.Logs],
+      tabParam: LoaderTab.Logs,
       workspace,
     });
 

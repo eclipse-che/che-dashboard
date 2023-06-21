@@ -17,6 +17,7 @@ import { LoaderPage } from '../../pages/Loader';
 import { findTargetWorkspace } from '../../services/helpers/factoryFlow/findTargetWorkspace';
 import { getLoaderMode, LoaderMode } from '../../services/helpers/factoryFlow/getLoaderMode';
 import { sanitizeLocation } from '../../services/helpers/location';
+import { LoaderTab } from '../../services/helpers/types';
 import { Workspace } from '../../services/workspace-adapter';
 import { AppState } from '../../store';
 import { selectAllWorkspaces } from '../../store/Workspaces/selectors';
@@ -53,11 +54,16 @@ class LoaderContainer extends React.Component<Props, State> {
     return findTargetWorkspace(props.allWorkspaces, state.loaderMode.workspaceParams);
   }
 
-  private handleTabChange(tabName: string): void {
+  private handleTabChange(tab: LoaderTab): void {
     this.setState({
-      tabParam: tabName,
+      tabParam: tab,
     });
-    // todo update adress bar
+
+    const { location } = this.props.history;
+    const searchParams = new URLSearchParams(location.search);
+    searchParams.set('tab', LoaderTab[tab]);
+    location.search = searchParams.toString();
+    this.props.history.push(location);
   }
 
   render(): React.ReactElement {
@@ -72,7 +78,7 @@ class LoaderContainer extends React.Component<Props, State> {
         tabParam={tabParam}
         searchParams={searchParams}
         workspace={workspace}
-        onTabChange={tabName => this.handleTabChange(tabName)}
+        onTabChange={tab => this.handleTabChange(tab)}
       />
     );
   }

@@ -20,7 +20,7 @@ export class LoaderPage extends React.PureComponent<Props> {
     return (
       <div data-testid="loader-page">
         <div data-testid="loader-tab">{tabParam}</div>
-        <button data-testid="tab-button" onClick={() => onTabChange(LoaderTab[LoaderTab.Events])} />
+        <button data-testid="tab-button" onClick={() => onTabChange(LoaderTab.Events)} />
         <div data-testid="workspace">{workspace?.name || 'unknown'}</div>
       </div>
     );

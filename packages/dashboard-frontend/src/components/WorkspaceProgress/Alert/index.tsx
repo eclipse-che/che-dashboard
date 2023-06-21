@@ -10,8 +10,8 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
+import { Alert, AlertActionLink, AlertGroup } from '@patternfly/react-core';
 import React from 'react';
-import { AlertGroup, Alert, AlertActionCloseButton, AlertActionLink } from '@patternfly/react-core';
 import { AlertItem } from '../../../services/helpers/types';
 
 import styles from './index.module.css';

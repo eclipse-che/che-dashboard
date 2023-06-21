@@ -203,7 +203,7 @@ class CommonStepCheckRunningWorkspacesLimit extends ProgressStep<Props, State> {
     });
   }
 
-  protected handleRestart(alertKey: string, tabName?: string): void {
+  protected handleRestart(alertKey: string, tabName?: LoaderTab): void {
     this.props.onHideError(alertKey);
 
     this.setState({
@@ -211,8 +211,7 @@ class CommonStepCheckRunningWorkspacesLimit extends ProgressStep<Props, State> {
       redundantWorkspaceUID: undefined,
     });
     this.clearStepError();
-    // todo
-    this.props.onRestart();
+    this.props.onRestart(tabName);
   }
 
   private handleOpenDashboard(alertKey: string): void {
@@ -312,7 +311,7 @@ class CommonStepCheckRunningWorkspacesLimit extends ProgressStep<Props, State> {
         },
         {
           title: 'Open in Verbose mode',
-          callback: () => this.handleRestart(key, LoaderTab[LoaderTab.Logs]),
+          callback: () => this.handleRestart(key, LoaderTab.Logs),
         },
       ],
     };

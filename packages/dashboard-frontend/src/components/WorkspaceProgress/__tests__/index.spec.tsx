@@ -49,6 +49,8 @@ jest.mock('../StartingSteps/WorkspaceConditions');
 
 const { renderComponent, createSnapshot } = getComponentRenderer(getComponent);
 
+const mockOnTabChange = jest.fn();
+
 describe('LoaderProgress', () => {
   let history: MemoryHistory;
   let searchParams: URLSearchParams;
@@ -459,7 +461,12 @@ function getComponent(
   localState?: Partial<State>,
 ) {
   const component = (
-    <Progress history={history} searchParams={searchParams} showToastAlert={showToastAlert} />
+    <Progress
+      history={history}
+      searchParams={searchParams}
+      showToastAlert={showToastAlert}
+      onTabChange={mockOnTabChange}
+    />
   );
   if (localState) {
     return (

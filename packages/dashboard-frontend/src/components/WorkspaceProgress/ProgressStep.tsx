@@ -15,7 +15,7 @@ import { History } from 'history';
 import React from 'react';
 import { Cancellation, pseudoCancellable } from 'real-cancellable-promise';
 import { DisposableCollection } from '../../services/helpers/disposable';
-import { AlertItem } from '../../services/helpers/types';
+import { AlertItem, LoaderTab } from '../../services/helpers/types';
 
 export type ProgressStepProps = {
   distance: -1 | 0 | 1 | undefined;
@@ -23,7 +23,7 @@ export type ProgressStepProps = {
   onError: (alertItem: AlertItem) => void;
   onHideError: (key: string) => void;
   onNextStep: () => void;
-  onRestart: () => void;
+  onRestart: (tabName?: LoaderTab) => void;
 };
 export type ProgressStepState = {
   name: string;

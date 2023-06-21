@@ -147,12 +147,11 @@ export class StartingStepWorkspaceConditions extends ProgressStep<Props, State> 
     return false;
   }
 
-  protected handleRestart(alertKey: string, tabName?: string): void {
+  protected handleRestart(alertKey: string, tab: LoaderTab): void {
     this.props.onHideError(alertKey);
 
     this.clearStepError();
-    // todo tabName?
-    this.props.onRestart();
+    this.props.onRestart(tab);
   }
 
   protected buildAlertItem(error: Error): AlertItem {
@@ -165,11 +164,11 @@ export class StartingStepWorkspaceConditions extends ProgressStep<Props, State> 
       actionCallbacks: [
         {
           title: 'Restart',
-          callback: () => this.handleRestart(key),
+          callback: () => this.handleRestart(key, LoaderTab.Progress),
         },
         {
           title: 'Open in Verbose mode',
-          callback: () => this.handleRestart(key, LoaderTab[LoaderTab.Logs]),
+          callback: () => this.handleRestart(key, LoaderTab.Logs),
         },
       ],
     };

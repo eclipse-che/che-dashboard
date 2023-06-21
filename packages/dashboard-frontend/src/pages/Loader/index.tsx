@@ -27,7 +27,7 @@ export type Props = {
   tabParam: string | undefined;
   searchParams: URLSearchParams;
   workspace: Workspace | undefined;
-  onTabChange: (tabName: string) => void;
+  onTabChange: (tab: LoaderTab) => void;
 };
 
 export type State = {
@@ -52,8 +52,8 @@ export class LoaderPage extends React.PureComponent<Props, State> {
     this.setState({
       activeTabKey: tabKey,
     });
-    const tabName = LoaderTab[tabKey];
-    this.props.onTabChange(tabName);
+    const tab = LoaderTab[tabKey];
+    this.props.onTabChange(tab);
   }
 
   render(): React.ReactNode {
@@ -81,7 +81,7 @@ export class LoaderPage extends React.PureComponent<Props, State> {
           >
             <Tab
               eventKey={LoaderTab.Progress}
-              title={LoaderTab[LoaderTab.Progress]}
+              title={LoaderTab.Progress}
               data-testid="loader-progress-tab"
               id="loader-progress-tab"
             >
@@ -90,12 +90,13 @@ export class LoaderPage extends React.PureComponent<Props, State> {
                   history={history}
                   searchParams={searchParams}
                   showToastAlert={showToastAlert}
+                  onTabChange={tab => this.handleTabClick(tab)}
                 />
               </PageSection>
             </Tab>
             <Tab
               eventKey={LoaderTab.Logs}
-              title={LoaderTab[LoaderTab.Logs]}
+              title={LoaderTab.Logs}
               data-testid="loader-logs-tab"
               id="loader-logs-tab"
             >
@@ -103,7 +104,7 @@ export class LoaderPage extends React.PureComponent<Props, State> {
             </Tab>
             <Tab
               eventKey={LoaderTab.Events}
-              title={LoaderTab[LoaderTab.Events]}
+              title={LoaderTab.Events}
               data-testid="loader-events-tab"
               id="loader-events-tab"
             >
