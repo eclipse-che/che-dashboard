@@ -179,6 +179,9 @@ describe('Creating steps, applying a devfile', () => {
         metadata: {
           generateName: 'empty',
         },
+        attributes: {
+          defaultDevfile: true, // this is the default devfile
+        },
       } as devfileApi.Devfile);
       const defaultComponents = [
         {
@@ -213,7 +216,18 @@ describe('Creating steps, applying a devfile', () => {
       renderComponent(store, searchParams);
       jest.runAllTimers();
 
-      await waitFor(() => expect(prepareDevfile).toHaveBeenCalled());
+      await waitFor(() =>
+        expect(prepareDevfile).toHaveBeenCalledWith(
+          expect.objectContaining({
+            attributes: {
+              defaultDevfile: true,
+            },
+          }),
+          factoryId,
+          undefined,
+          false,
+        ),
+      );
       await waitFor(() => expect(mockCreateWorkspaceFromDevfile).toHaveBeenCalled());
     });
 
@@ -233,6 +247,9 @@ describe('Creating steps, applying a devfile', () => {
         schemaVersion: '2.1.0',
         metadata: {
           generateName: 'empty',
+        },
+        attributes: {
+          defaultDevfile: true, // this is the default devfile
         },
       } as devfileApi.Devfile);
       const defaultComponents = [
@@ -278,7 +295,18 @@ describe('Creating steps, applying a devfile', () => {
       renderComponent(store, searchParams, localState);
       jest.runAllTimers();
 
-      await waitFor(() => expect(prepareDevfile).toHaveBeenCalled());
+      await waitFor(() =>
+        expect(prepareDevfile).toHaveBeenCalledWith(
+          expect.objectContaining({
+            attributes: {
+              defaultDevfile: true,
+            },
+          }),
+          factoryId,
+          undefined,
+          false,
+        ),
+      );
       await waitFor(() => expect(mockCreateWorkspaceFromDevfile).toHaveBeenCalled());
     });
   });

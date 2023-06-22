@@ -607,12 +607,19 @@ export const actionCreators: ActionCreators = {
         }
       } else {
         // do we have the custom editor in `.che/che-editor.yaml` ?
-        editorContent = await getCustomEditor(
-          pluginRegistryUrl,
-          optionalFilesContent,
-          dispatch,
-          getState,
-        );
+        try {
+          editorContent = await getCustomEditor(
+            pluginRegistryUrl,
+            optionalFilesContent,
+            dispatch,
+            getState,
+          );
+          if (!editorContent) {
+            console.warn('No custom editor found');
+          }
+        } catch (e) {
+          console.warn('Failed to get custom editor', e);
+        }
         if (!editorContent) {
           const defaultsEditor = state.dwServerConfig.config.defaults.editor;
           if (!defaultsEditor) {

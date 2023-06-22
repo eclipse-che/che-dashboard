@@ -492,7 +492,6 @@ class Progress extends React.PureComponent<Props, State> {
 
   private handleSwitchToNextStep(...params: Parameters<PF.WizardStepFunctionType>): void {
     const [newStep, prevStep] = params;
-    console.debug('>>> newStep', newStep, 'prevStep', prevStep);
 
     const activeStep = newStep.id ? (newStep.id as Step) : this.state.activeStep;
 
