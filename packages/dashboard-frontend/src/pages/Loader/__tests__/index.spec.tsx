@@ -16,9 +16,8 @@ import { createMemoryHistory, History } from 'history';
 import React from 'react';
 import { Provider } from 'react-redux';
 import { Store } from 'redux';
-import { LoaderPage } from '..';
+import { LoaderPage, Props } from '..';
 import devfileApi from '../../../services/devfileApi';
-import { LoaderMode } from '../../../services/helpers/factoryFlow/getLoaderMode';
 import { LoaderTab } from '../../../services/helpers/types';
 import { constructWorkspace, Workspace } from '../../../services/workspace-adapter';
 import getComponentRenderer from '../../../services/__mocks__/getComponentRenderer';
@@ -73,7 +72,6 @@ describe('Loader page', () => {
     const emptyStore = new FakeStoreBuilder().build();
     const snapshot = createSnapshot(emptyStore, {
       history,
-      loaderMode: { mode: 'factory' },
       tabParam,
       workspace: undefined,
     });
@@ -83,13 +81,6 @@ describe('Loader page', () => {
   test('snapshot, starting workspace flow', () => {
     const snapshot = createSnapshot(store, {
       history,
-      loaderMode: {
-        mode: 'workspace',
-        workspaceParams: {
-          namespace,
-          workspaceName,
-        },
-      },
       tabParam,
       workspace,
     });
@@ -99,13 +90,6 @@ describe('Loader page', () => {
   it('should handle tab click', () => {
     renderComponent(store, {
       history,
-      loaderMode: {
-        mode: 'workspace',
-        workspaceParams: {
-          namespace,
-          workspaceName,
-        },
-      },
       tabParam,
       workspace,
     });
@@ -119,13 +103,6 @@ describe('Loader page', () => {
   it('should render Logs tab active', () => {
     renderComponent(store, {
       history,
-      loaderMode: {
-        mode: 'workspace',
-        workspaceParams: {
-          namespace,
-          workspaceName,
-        },
-      },
       tabParam: LoaderTab.Logs,
       workspace,
     });
@@ -138,16 +115,41 @@ describe('Loader page', () => {
     // active tab
     expect(tabpanelLogs).not.toBeNull();
   });
+
+  it('should update the section header when the workspace is ready', () => {
+    const store = new FakeStoreBuilder().build();
+    const { reRenderComponent } = renderComponent(store, {
+      history,
+      tabParam,
+      workspace: undefined,
+    });
+
+    expect(screen.queryByRole('heading')).toHaveTextContent('Creating a workspace');
+
+    const devWorkspaceReady = new DevWorkspaceBuilder()
+      .withNamespace(namespace)
+      .withName(workspaceName)
+      .withStatus({ phase: 'RUNNING' })
+      .build();
+    const storeReady = new FakeStoreBuilder()
+      .withDevWorkspaces({
+        workspaces: [devWorkspaceReady],
+      })
+      .build();
+
+    reRenderComponent(storeReady, {
+      history,
+      tabParam,
+      workspace: constructWorkspace(devWorkspaceReady),
+    });
+
+    expect(screen.queryByRole('heading')).toHaveTextContent('Starting workspace');
+  });
 });
 
 function getComponent(
   store: Store,
-  props: {
-    history: History;
-    loaderMode: LoaderMode;
-    tabParam: string;
-    workspace?: Workspace;
-  },
+  props: Omit<Props, 'onTabChange' | 'searchParams'>,
 ): React.ReactElement {
   return (
     <Provider store={store}>

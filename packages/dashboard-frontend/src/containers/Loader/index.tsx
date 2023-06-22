@@ -47,6 +47,17 @@ class LoaderContainer extends React.Component<Props, State> {
     };
   }
 
+  public componentDidUpdate(prevProps: Props): void {
+    // check if the location has changed
+    // if so, update the loader mode
+    if (prevProps.history.location !== this.props.history.location) {
+      const loaderMode = getLoaderMode(this.props.history.location);
+      this.setState({
+        loaderMode,
+      });
+    }
+  }
+
   private findTargetWorkspace(props: Props, state: State): Workspace | undefined {
     if (state.loaderMode.mode !== 'workspace') {
       return;
