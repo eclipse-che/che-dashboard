@@ -17,7 +17,6 @@ import {
   namespacedTemplateSchema,
   dwTemplatePatchSchema,
   templateStartedSchema,
-  namespacedWorkspaceSchema,
 } from '../../constants/schemas';
 import { getDevWorkspaceClient } from './helpers/getDevWorkspaceClient';
 import { getToken } from './helpers/getToken';
