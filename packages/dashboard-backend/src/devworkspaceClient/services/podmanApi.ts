@@ -35,7 +35,10 @@ export class PodmanApiService implements IPodmanApi {
   }
 
   /**
-   * Executes the 'podman login' command to the OpenShift internal registry
+   * Executes the 'podman login' command to the OpenShift internal registry.
+   * Before executing the login command, symbolic links for already mounted
+   * 'ca.crt' and 'service-ca.crt' certificates are created in the '$HOME/.config/containers/certs.d' folder
+   * for the OpenShift internal registry in order to avoid 'x509: certificate signed by unknown authority' errors.
    * @param namespace The namespace where the pod lives
    * @param devworkspaceId The id of the devworkspace
    */
@@ -59,7 +62,14 @@ export class PodmanApiService implements IPodmanApi {
           [
             'sh',
             '-c',
-            `podman login --cert-dir /var/run/secrets/kubernetes.io/serviceaccount -u $(oc whoami) -p $(oc whoami -t) image-registry.openshift-image-registry.svc:5000`,
+            `
+            export CERTS_SRC="/var/run/secrets/kubernetes.io/serviceaccount"
+            export CERTS_DEST="$HOME/.config/containers/certs.d/image-registry.openshift-image-registry.svc:5000"
+            mkdir -p $CERTS_DEST
+            ln -s $CERTS_SRC/service-ca.crt $CERTS_DEST/service-ca.crt
+            ln -s $CERTS_SRC/ca.crt $CERTS_DEST/ca.crt
+            podman login -u $(oc whoami) -p $(oc whoami -t) image-registry.openshift-image-registry.svc:5000
+            `,
           ],
           this.getServerConfig(),
         );
