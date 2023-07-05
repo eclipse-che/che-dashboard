@@ -65,10 +65,12 @@ export class PodmanApiService implements IPodmanApi {
             `
             export CERTS_SRC="/var/run/secrets/kubernetes.io/serviceaccount"
             export CERTS_DEST="$HOME/.config/containers/certs.d/image-registry.openshift-image-registry.svc:5000"
-            mkdir -p $CERTS_DEST
-            ln -s $CERTS_SRC/service-ca.crt $CERTS_DEST/service-ca.crt
-            ln -s $CERTS_SRC/ca.crt $CERTS_DEST/ca.crt
-            podman login -u $(oc whoami) -p $(oc whoami -t) image-registry.openshift-image-registry.svc:5000
+            mkdir -p "$CERTS_DEST"
+            ln -s "$CERTS_SRC/service-ca.crt" "$CERTS_DEST/service-ca.crt"
+            ln -s "$CERTS_SRC/ca.crt" "$CERTS_DEST/ca.crt"
+            export OC_USER=$(oc whoami)
+            [[ "$OC_USER" == "kube:admin" ]] && export OC_USER="kubeadmin"
+            podman login -u "$OC_USER" -p $(oc whoami -t) image-registry.openshift-image-registry.svc:5000
             `,
           ],
           this.getServerConfig(),
