@@ -63,6 +63,7 @@ export class PodmanApiService implements IPodmanApi {
             'sh',
             '-c',
             `
+            command -v oc >/dev/null 2>&1 && command -v podman >/dev/null 2>&1 && [[ -n "$HOME" ]] || { echo "oc, podman, or HOME is not set"; exit 1; }
             export CERTS_SRC="/var/run/secrets/kubernetes.io/serviceaccount"
             export CERTS_DEST="$HOME/.config/containers/certs.d/image-registry.openshift-image-registry.svc:5000"
             mkdir -p "$CERTS_DEST"
