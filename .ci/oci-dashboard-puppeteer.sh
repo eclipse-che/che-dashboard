@@ -33,12 +33,14 @@ source <(curl -s ${DEVWORKSPACE_HAPPY_PATH}/common.sh)
 setupCheDashboard() {
   # Deploy Eclipse Che with a custom dashboard image
   cat >/tmp/che-cr-patch.yaml <<EOF
+apiVersion: org.eclipse.che/v2
 spec:
   components:
     dashboard:
       deployment:
         containers:
-          - image: ${CI_CHE_DASHBOARD_IMAGE}
+          - image: '${CI_CHE_DASHBOARD_IMAGE}'
+            imagePullPolicy: Always
 EOF
   chectl server:deploy \
     --platform openshift \
