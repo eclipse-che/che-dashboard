@@ -163,7 +163,10 @@ apiVersion: org.eclipse.che/v2
 spec:
   components:
     dashboard:
-      dashboardImage: '${CI_CHE_DASHBOARD_IMAGE}'
+      deployment:
+        containers:
+          - image: ${CI_CHE_DASHBOARD_IMAGE}
+            imagePullPolicy: Always
 EOF
 chectl server:deploy \
   --platform openshift \
