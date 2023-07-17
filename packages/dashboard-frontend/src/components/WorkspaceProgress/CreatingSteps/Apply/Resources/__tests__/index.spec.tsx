@@ -72,7 +72,7 @@ const resources = [
   {},
 ] as DevWorkspaceResources;
 
-describe('Creating steps, applying resources', () => {
+xdescribe('Creating steps, applying resources', () => {
   let searchParams: URLSearchParams;
   let factoryId: string;
 

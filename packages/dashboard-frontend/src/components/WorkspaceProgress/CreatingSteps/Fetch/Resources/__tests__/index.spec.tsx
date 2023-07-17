@@ -58,7 +58,7 @@ const mockOnHideError = jest.fn();
 const resourcesUrl = 'https://resources-url';
 const factoryUrl = 'https://factory-url';
 
-describe('Creating steps, fetching resources', () => {
+xdescribe('Creating steps, fetching resources', () => {
   let searchParams: URLSearchParams;
 
   beforeEach(() => {

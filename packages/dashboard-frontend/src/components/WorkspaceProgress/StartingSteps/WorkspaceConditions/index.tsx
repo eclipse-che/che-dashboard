@@ -16,7 +16,6 @@ import { AlertVariant } from '@patternfly/react-core';
 import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { WorkspaceParams } from '../../../../Routes/routes';
-import { delay } from '../../../../services/helpers/delay';
 import { findTargetWorkspace } from '../../../../services/helpers/factoryFlow/findTargetWorkspace';
 import { AlertItem, LoaderTab } from '../../../../services/helpers/types';
 import { Workspace } from '../../../../services/workspace-adapter';
@@ -24,7 +23,6 @@ import { AppState } from '../../../../store';
 import { selectStartTimeout } from '../../../../store/ServerConfig/selectors';
 import * as WorkspaceStore from '../../../../store/Workspaces';
 import { selectAllWorkspaces } from '../../../../store/Workspaces/selectors';
-import { MIN_STEP_DURATION_MS } from '../../const';
 import { ProgressStep, ProgressStepProps, ProgressStepState } from '../../ProgressStep';
 import { ProgressStepTitle } from '../../StepTitle';
 import styles from './index.module.css';
@@ -90,8 +88,6 @@ export class StartingStepWorkspaceConditions extends ProgressStep<Props, State> 
   }
 
   public async componentDidUpdate() {
-    this.toDispose.dispose();
-
     this.init();
   }
 
@@ -118,10 +114,6 @@ export class StartingStepWorkspaceConditions extends ProgressStep<Props, State> 
     return false;
   }
 
-  public componentWillUnmount() {
-    this.toDispose.dispose();
-  }
-
   protected findTargetWorkspace(props: Props): Workspace | undefined {
     return findTargetWorkspace(props.allWorkspaces, props.matchParams);
   }
@@ -138,8 +130,6 @@ export class StartingStepWorkspaceConditions extends ProgressStep<Props, State> 
   }
 
   protected async runStep(): Promise<boolean> {
-    await delay(MIN_STEP_DURATION_MS);
-
     if (this.state.isReady) {
       return true;
     }

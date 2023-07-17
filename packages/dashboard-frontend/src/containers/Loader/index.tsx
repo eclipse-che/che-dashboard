@@ -32,30 +32,35 @@ export type State = {
 class LoaderContainer extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props);
-
-    const { location: dirtyLocation } = this.props.history;
-    const { search } = sanitizeLocation(dirtyLocation);
-    const searchParams = new URLSearchParams(search);
-    const tabParam = searchParams.get('tab') || undefined;
-
-    const loaderMode = getLoaderMode(props.history.location);
-
-    this.state = {
-      loaderMode,
-      searchParams,
-      tabParam,
-    };
+    this.state = this.init();
   }
 
   public componentDidUpdate(prevProps: Props): void {
     // check if the location has changed
     // if so, update the loader mode
     if (prevProps.history.location !== this.props.history.location) {
-      const loaderMode = getLoaderMode(this.props.history.location);
+      const { loaderMode, searchParams, tabParam } = this.init();
       this.setState({
         loaderMode,
+        searchParams,
+        tabParam,
       });
     }
+  }
+
+  private init(): State {
+    const { location: dirtyLocation } = this.props.history;
+    const { search } = sanitizeLocation(dirtyLocation);
+    const searchParams = new URLSearchParams(search);
+    const tabParam = searchParams.get('tab') || undefined;
+
+    const loaderMode = getLoaderMode(this.props.history.location);
+
+    return {
+      loaderMode,
+      searchParams,
+      tabParam,
+    };
   }
 
   private findTargetWorkspace(props: Props, state: State): Workspace | undefined {

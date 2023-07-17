@@ -67,7 +67,7 @@
 | [`@jridgewell/gen-mapping@0.3.1`](https://github.com/jridgewell/gen-mapping) | MIT | clearlydefined |
 | [`@jridgewell/resolve-uri@3.0.5`](https://github.com/jridgewell/resolve-uri) | MIT | clearlydefined |
 | [`@jridgewell/set-array@1.1.1`](https://github.com/jridgewell/set-array) | MIT | clearlydefined |
-| [`@jridgewell/source-map@0.3.2`](https://github.com/jridgewell/source-map) | MIT | clearlydefined |
+| [`@jridgewell/source-map@0.3.2`](https://github.com/jridgewell/source-map) | MIT | #9304 |
 | [`@jridgewell/sourcemap-codec@1.4.11`](git+https://github.com/jridgewell/sourcemap-codec.git) | MIT | clearlydefined |
 | [`@jridgewell/trace-mapping@0.3.13`](git+https://github.com/jridgewell/trace-mapping.git) | MIT | clearlydefined |
 | [`@leichtgewicht/ip-codec@2.0.4`](git+https://github.com/martinheidegger/ip-codec.git) | MIT | clearlydefined |
@@ -741,7 +741,7 @@
 | [`on-headers@1.0.2`](https://github.com/jshttp/on-headers.git) | MIT | clearlydefined |
 | [`open@8.4.0`](https://github.com/sindresorhus/open.git) | MIT | #7102 |
 | [`opener@1.5.2`](https://github.com/domenic/opener.git) | (WTFPL OR MIT) | clearlydefined |
-| [`optionator@0.9.1`](git://github.com/gkz/optionator.git) | MIT | clearlydefined |
+| [`optionator@0.9.1`](git://github.com/gkz/optionator.git) | MIT | #9208 |
 | [`p-each-series@2.2.0`](https://github.com/sindresorhus/p-each-series.git) | MIT | clearlydefined |
 | [`p-finally@1.0.0`](https://github.com/sindresorhus/p-finally.git) | MIT | clearlydefined |
 | [`p-limit@2.3.0`](https://github.com/sindresorhus/p-limit.git) | MIT | clearlydefined |

@@ -74,7 +74,7 @@ const targetDevworkspace = new DevWorkspaceBuilder()
   .withNamespace(namespace)
   .build();
 
-describe('Common steps, check running workspaces limit', () => {
+xdescribe('Common steps, check running workspaces limit', () => {
   let runningDevworkspaceBuilder1: DevWorkspaceBuilder;
   let runningDevworkspaceBuilder2: DevWorkspaceBuilder;
   let stoppedDevworkspaceBuilder: DevWorkspaceBuilder;

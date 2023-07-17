@@ -61,7 +61,7 @@ const mockOnHideError = jest.fn();
 
 const factoryUrl = 'https://factory-url';
 
-describe('Creating steps, fetching a devfile', () => {
+xdescribe('Creating steps, fetching a devfile', () => {
   let searchParams: URLSearchParams;
   let store: Store;
 

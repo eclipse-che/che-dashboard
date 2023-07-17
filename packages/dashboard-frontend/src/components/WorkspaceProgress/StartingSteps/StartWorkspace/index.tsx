@@ -16,7 +16,6 @@ import { isEqual } from 'lodash';
 import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { WorkspaceParams } from '../../../../Routes/routes';
-import { delay } from '../../../../services/helpers/delay';
 import { DisposableCollection } from '../../../../services/helpers/disposable';
 import { findTargetWorkspace } from '../../../../services/helpers/factoryFlow/findTargetWorkspace';
 import { AlertItem, DevWorkspaceStatus, LoaderTab } from '../../../../services/helpers/types';
@@ -25,7 +24,6 @@ import { AppState } from '../../../../store';
 import { selectStartTimeout } from '../../../../store/ServerConfig/selectors';
 import * as WorkspaceStore from '../../../../store/Workspaces';
 import { selectAllWorkspaces } from '../../../../store/Workspaces/selectors';
-import { MIN_STEP_DURATION_MS } from '../../const';
 import { ProgressStep, ProgressStepProps, ProgressStepState } from '../../ProgressStep';
 import { ProgressStepTitle } from '../../StepTitle';
 import { TimeLimit } from '../../TimeLimit';
@@ -40,6 +38,7 @@ export type State = ProgressStepState & {
 };
 
 class StartingStepStartWorkspace extends ProgressStep<Props, State> {
+  static startWorkspacePromise = Promise.resolve();
   protected readonly name = 'Waiting for workspace to start';
   protected readonly toDispose = new DisposableCollection();
 
@@ -57,14 +56,16 @@ class StartingStepStartWorkspace extends ProgressStep<Props, State> {
   }
 
   public async componentDidUpdate() {
-    this.toDispose.dispose();
-
     this.init();
   }
 
   public shouldComponentUpdate(nextProps: Props, nextState: State): boolean {
     // active step changed
-    if (this.props.distance !== nextProps.distance) {
+    if (this.props.distance !== 0) {
+      return false;
+    }
+
+    if (!this.state.shouldStart && nextState.shouldStart) {
       return true;
     }
 
@@ -91,20 +92,9 @@ class StartingStepStartWorkspace extends ProgressStep<Props, State> {
     this.toDispose.dispose();
   }
 
-  private init() {
-    if (this.props.distance !== 0) {
-      return;
-    }
-
-    const workspace = this.findTargetWorkspace(this.props);
-    if ((workspace?.isStarting || workspace?.isRunning) && this.state.shouldStart) {
-      // prevent a workspace being repeatedly restarted, once it's starting
-      this.setState({
-        shouldStart: false,
-      });
-    }
-
-    this.prepareAndRun();
+  private async init() {
+    await StartingStepStartWorkspace.startWorkspacePromise;
+    await this.prepareAndRun();
   }
 
   protected handleRestart(alertKey: string, tab: LoaderTab): void {
@@ -128,8 +118,6 @@ class StartingStepStartWorkspace extends ProgressStep<Props, State> {
    * The resolved boolean indicates whether to go to the next step or not
    */
   protected async runStep(): Promise<boolean> {
-    await delay(MIN_STEP_DURATION_MS);
-
     const { matchParams } = this.props;
     if (matchParams === undefined) {
       throw new Error('Cannot determine the workspace to start.');
@@ -158,17 +146,21 @@ class StartingStepStartWorkspace extends ProgressStep<Props, State> {
       );
     }
 
-    if (workspace.isRunning) {
-      // switch to the next step
-      return true;
-    }
-
     // start workspace
     if (
       this.state.shouldStart &&
       workspaceStatusIs(workspace, DevWorkspaceStatus.STOPPED, DevWorkspaceStatus.FAILED)
     ) {
-      await this.props.startWorkspace(workspace);
+      StartingStepStartWorkspace.startWorkspacePromise = this.props.startWorkspace(workspace);
+      this.setState({
+        shouldStart: false,
+      });
+      await StartingStepStartWorkspace.startWorkspacePromise;
+    }
+
+    if (workspace.isRunning) {
+      // switch to the next step
+      return true;
     }
 
     // do not switch to the next step

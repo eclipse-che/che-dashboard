@@ -17,7 +17,6 @@ import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { WorkspaceParams } from '../../../../Routes/routes';
 import { isAvailableEndpoint } from '../../../../services/helpers/api-ping';
-import { delay } from '../../../../services/helpers/delay';
 import { DisposableCollection } from '../../../../services/helpers/disposable';
 import { findTargetWorkspace } from '../../../../services/helpers/factoryFlow/findTargetWorkspace';
 import { AlertItem, LoaderTab } from '../../../../services/helpers/types';
@@ -25,7 +24,7 @@ import { Workspace } from '../../../../services/workspace-adapter';
 import { AppState } from '../../../../store';
 import * as WorkspaceStore from '../../../../store/Workspaces';
 import { selectAllWorkspaces } from '../../../../store/Workspaces/selectors';
-import { MIN_STEP_DURATION_MS, TIMEOUT_TO_GET_URL_SEC } from '../../const';
+import { TIMEOUT_TO_GET_URL_SEC } from '../../const';
 import { ProgressStep, ProgressStepProps, ProgressStepState } from '../../ProgressStep';
 import { ProgressStepTitle } from '../../StepTitle';
 import { TimeLimit } from '../../TimeLimit';
@@ -37,6 +36,7 @@ export type Props = MappedProps &
 export type State = ProgressStepState;
 
 class StartingStepOpenWorkspace extends ProgressStep<Props, State> {
+  static isAvailableEndpointPromise = Promise.resolve(false);
   protected readonly name = 'Open IDE';
   protected readonly toDispose = new DisposableCollection();
 
@@ -48,16 +48,13 @@ class StartingStepOpenWorkspace extends ProgressStep<Props, State> {
     };
   }
 
-  private init(): void {
-    if (this.props.distance !== 0) {
-      return;
-    }
-
+  private async init(): Promise<void> {
+    await StartingStepOpenWorkspace.isAvailableEndpointPromise;
     if (this.state.lastError) {
       return;
     }
 
-    this.prepareAndRun();
+    await this.prepareAndRun();
   }
 
   public componentDidMount() {
@@ -65,15 +62,13 @@ class StartingStepOpenWorkspace extends ProgressStep<Props, State> {
   }
 
   public async componentDidUpdate() {
-    this.toDispose.dispose();
-
     this.init();
   }
 
   public shouldComponentUpdate(nextProps: Props, nextState: State): boolean {
     // active step changed
-    if (this.props.distance !== nextProps.distance) {
-      return true;
+    if (this.props.distance !== 0) {
+      return false;
     }
 
     const workspace = this.findTargetWorkspace(this.props);
@@ -113,14 +108,13 @@ class StartingStepOpenWorkspace extends ProgressStep<Props, State> {
   }
 
   protected async runStep(): Promise<boolean> {
-    await delay(MIN_STEP_DURATION_MS);
-
     const { matchParams } = this.props;
-    const workspace = this.findTargetWorkspace(this.props);
 
     if (matchParams === undefined) {
       throw new Error('Cannot determine the workspace to start.');
     }
+
+    const workspace = this.findTargetWorkspace(this.props);
 
     if (workspace === undefined) {
       throw new Error(
@@ -139,7 +133,8 @@ class StartingStepOpenWorkspace extends ProgressStep<Props, State> {
       return false;
     }
 
-    const isAvailable = await isAvailableEndpoint(workspace.ideUrl);
+    StartingStepOpenWorkspace.isAvailableEndpointPromise = isAvailableEndpoint(workspace.ideUrl);
+    const isAvailable = await StartingStepOpenWorkspace.isAvailableEndpointPromise;
     if (isAvailable) {
       window.location.replace(workspace.ideUrl);
       return true;

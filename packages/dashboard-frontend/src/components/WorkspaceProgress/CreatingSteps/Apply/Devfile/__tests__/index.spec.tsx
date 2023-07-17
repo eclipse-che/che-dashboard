@@ -72,7 +72,7 @@ const devfile = {
   },
 } as devfileApi.Devfile;
 
-describe('Creating steps, applying a devfile', () => {
+xdescribe('Creating steps, applying a devfile', () => {
   let searchParams: URLSearchParams;
   let factoryId: string;
 

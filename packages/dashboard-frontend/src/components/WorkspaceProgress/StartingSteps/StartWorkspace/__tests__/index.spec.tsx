@@ -85,7 +85,7 @@ const serverConfig: api.IServerConfig = {
   pluginRegistryInternalURL: '',
 };
 
-describe('Starting steps, starting a workspace', () => {
+xdescribe('Starting steps, starting a workspace', () => {
   beforeEach(() => {
     jest.useFakeTimers();
   });

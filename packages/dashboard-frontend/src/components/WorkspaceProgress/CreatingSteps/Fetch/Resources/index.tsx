@@ -19,14 +19,13 @@ import {
   buildFactoryParams,
   FactoryParams,
 } from '../../../../../services/helpers/factoryFlow/buildFactoryParams';
-import { delay } from '../../../../../services/helpers/delay';
 import { DisposableCollection } from '../../../../../services/helpers/disposable';
 import { AlertItem } from '../../../../../services/helpers/types';
 import { AppState } from '../../../../../store';
 import * as DevfileRegistriesStore from '../../../../../store/DevfileRegistries';
 import { selectDevWorkspaceResources } from '../../../../../store/DevfileRegistries/selectors';
 import { selectAllWorkspaces } from '../../../../../store/Workspaces/selectors';
-import { MIN_STEP_DURATION_MS, TIMEOUT_TO_RESOLVE_SEC } from '../../../const';
+import { TIMEOUT_TO_RESOLVE_SEC } from '../../../const';
 import { ProgressStep, ProgressStepProps, ProgressStepState } from '../../../ProgressStep';
 import { ProgressStepTitle } from '../../../StepTitle';
 import { TimeLimit } from '../../../TimeLimit';
@@ -41,6 +40,7 @@ export type State = ProgressStepState & {
 };
 
 class CreatingStepFetchResources extends ProgressStep<Props, State> {
+  static fetchResourcesPromise = Promise.resolve();
   protected readonly name = 'Fetching pre-built resources';
   protected readonly toDispose = new DisposableCollection();
 
@@ -59,26 +59,13 @@ class CreatingStepFetchResources extends ProgressStep<Props, State> {
   }
 
   public componentDidUpdate() {
-    this.toDispose.dispose();
-
     this.init();
   }
 
   public shouldComponentUpdate(nextProps: Props, nextState: State): boolean {
     // active step changed
     if (this.props.distance !== nextProps.distance) {
-      return true;
-    }
-
-    // factory resolver got updated
-    const { sourceUrl } = this.state.factoryParams;
-    // devworkspace resources fetched
-    if (
-      sourceUrl &&
-      this.props.devWorkspaceResources[sourceUrl]?.resources === undefined &&
-      nextProps.devWorkspaceResources[sourceUrl]?.resources !== undefined
-    ) {
-      return true;
+      return false;
     }
 
     // current step failed
@@ -105,16 +92,6 @@ class CreatingStepFetchResources extends ProgressStep<Props, State> {
       return;
     }
 
-    const { devWorkspaceResources } = this.props;
-    const { factoryParams } = this.state;
-    const { sourceUrl } = factoryParams;
-    if (sourceUrl && devWorkspaceResources[sourceUrl]?.resources !== undefined) {
-      // prevent a resource being fetched one more time
-      this.setState({
-        shouldResolve: false,
-      });
-    }
-
     this.prepareAndRun();
   }
 
@@ -136,25 +113,26 @@ class CreatingStepFetchResources extends ProgressStep<Props, State> {
   }
 
   protected async runStep(): Promise<boolean> {
-    await delay(MIN_STEP_DURATION_MS);
-
+    try {
+      await CreatingStepFetchResources.fetchResourcesPromise;
+    } catch (e) {
+      return false;
+    }
     const { devWorkspaceResources } = this.props;
-    const { factoryParams, shouldResolve } = this.state;
+    const { factoryParams } = this.state;
     const { sourceUrl } = factoryParams;
+
+    if (!devWorkspaceResources[sourceUrl]?.resources) {
+      CreatingStepFetchResources.fetchResourcesPromise = this.props.requestResources(sourceUrl);
+      await CreatingStepFetchResources.fetchResourcesPromise;
+    }
 
     if (devWorkspaceResources[sourceUrl]?.resources) {
       // pre-built resources fetched successfully
       return true;
     }
 
-    if (shouldResolve === false) {
-      throw new Error('Failed to fetch pre-built resources');
-    }
-
-    await this.props.requestResources(sourceUrl);
-
-    // wait for fetching resources to complete
-    return false;
+    throw new Error('Failed to fetch pre-built resources');
   }
 
   protected buildAlertItem(error: Error): AlertItem {

@@ -22,14 +22,12 @@ import {
   FactoryParams,
   PoliciesCreate,
 } from '../../../../services/helpers/factoryFlow/buildFactoryParams';
-import { delay } from '../../../../services/helpers/delay';
 import { DisposableCollection } from '../../../../services/helpers/disposable';
 import { AlertItem } from '../../../../services/helpers/types';
 import { AppState } from '../../../../store';
 import { selectAllWorkspacesLimit } from '../../../../store/ClusterConfig/selectors';
 import { selectInfrastructureNamespaces } from '../../../../store/InfrastructureNamespaces/selectors';
 import { selectAllWorkspaces } from '../../../../store/Workspaces/selectors';
-import { MIN_STEP_DURATION_MS } from '../../const';
 import { ProgressStep, ProgressStepProps, ProgressStepState } from '../../ProgressStep';
 import { ProgressStepTitle } from '../../StepTitle';
 
@@ -71,8 +69,6 @@ class CreatingStepInitialize extends ProgressStep<Props, State> {
   }
 
   public componentDidUpdate() {
-    this.toDispose.dispose();
-
     this.init();
   }
 
@@ -91,8 +87,6 @@ class CreatingStepInitialize extends ProgressStep<Props, State> {
   }
 
   protected async runStep(): Promise<boolean> {
-    await delay(MIN_STEP_DURATION_MS);
-
     const { useDevworkspaceResources, sourceUrl, errorCode, policiesCreate, remotes } =
       this.state.factoryParams;
 

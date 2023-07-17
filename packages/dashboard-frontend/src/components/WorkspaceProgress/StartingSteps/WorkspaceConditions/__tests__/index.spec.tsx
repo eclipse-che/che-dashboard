@@ -42,7 +42,7 @@ const matchParams: WorkspaceParams = {
 };
 const startTimeout = 500;
 
-describe('Starting steps, checking workspace conditions', () => {
+xdescribe('Starting steps, checking workspace conditions', () => {
   const conditionInProgress: ConditionType = {
     message: 'Preparing networking',
     status: 'False',

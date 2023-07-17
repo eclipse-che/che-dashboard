@@ -76,8 +76,6 @@ class CreatingStepApplyResources extends ProgressStep<Props, State> {
   }
 
   public componentDidUpdate() {
-    this.toDispose.dispose();
-
     this.init();
   }
 
@@ -87,11 +85,7 @@ class CreatingStepApplyResources extends ProgressStep<Props, State> {
       return true;
     }
 
-    const workspace = this.findTargetWorkspace(this.props, this.state);
-    const nextWorkspace = this.findTargetWorkspace(nextProps, nextState);
-
-    // new workspace appeared
-    if (workspace === undefined && nextWorkspace !== undefined) {
+    if (this.props.searchParams !== nextProps.searchParams) {
       return true;
     }
 
@@ -108,6 +102,8 @@ class CreatingStepApplyResources extends ProgressStep<Props, State> {
       return true;
     }
 
+    const workspace = this.findTargetWorkspace(this.props, this.state);
+    const nextWorkspace = this.findTargetWorkspace(nextProps, nextState);
     // a warning appeared
     if (
       workspace !== undefined &&
@@ -188,20 +184,13 @@ class CreatingStepApplyResources extends ProgressStep<Props, State> {
       }
     }
 
-    const targetWorkspace = this.findTargetWorkspace(this.props, this.state);
-    if (targetWorkspace) {
-      // the workspace has been created, go to the next step
-      const nextLocation = buildIdeLoaderLocation(targetWorkspace);
-      this.props.history.location.pathname = nextLocation.pathname;
-      this.props.history.location.search = '';
-      return true;
-    }
-
     if (shouldCreate === false) {
       throw new Error('The workspace creation unexpectedly failed.');
     }
 
-    if (resources === undefined) {
+    if (resources) {
+      await this.createWorkspaceFromResources(resources, cheEditor);
+    } else {
       const _resources = devWorkspaceResources[sourceUrl]?.resources;
       if (_resources === undefined) {
         throw new Error('Failed to fetch devworkspace resources.');
@@ -225,13 +214,11 @@ class CreatingStepApplyResources extends ProgressStep<Props, State> {
         newWorkspaceName: devWorkspace.metadata.name,
         resources: [devWorkspace, devWorkspaceTemplate],
       });
-      return false;
+
+      await this.createWorkspaceFromResources([devWorkspace, devWorkspaceTemplate], cheEditor);
     }
 
-    await this.props.createWorkspaceFromResources(...resources, cheEditor);
-
-    // wait for the workspace creation to complete
-    return false;
+    return true;
   }
 
   private findTargetWorkspace(props: Props, state: State): Workspace | undefined {
@@ -242,6 +229,26 @@ class CreatingStepApplyResources extends ProgressStep<Props, State> {
       namespace: props.defaultNamespace.name,
       workspaceName: state.newWorkspaceName,
     });
+  }
+
+  private async createWorkspaceFromResources(
+    resources: DevfileRegistriesStore.DevWorkspaceResources,
+    cheEditor: string | undefined,
+  ): Promise<void> {
+    if (resources === undefined) {
+      throw new Error('Failed to find workspace resources.');
+    }
+
+    await this.props.createWorkspaceFromResources(...resources, cheEditor);
+
+    const targetWorkspace = this.findTargetWorkspace(this.props, this.state);
+    if (targetWorkspace === undefined) {
+      throw new Error('Failed to find created workspace.');
+    }
+    // the workspace has been created, prepare the next step
+    const nextLocation = buildIdeLoaderLocation(targetWorkspace);
+    this.props.history.location.pathname = nextLocation.pathname;
+    this.props.history.location.search = '';
   }
 
   protected buildAlertItem(error: Error): AlertItem {

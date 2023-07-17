@@ -17,7 +17,6 @@ import isEqual from 'lodash/isEqual';
 import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import devfileApi from '../../../../../services/devfileApi';
-import { delay } from '../../../../../services/helpers/delay';
 import { DisposableCollection } from '../../../../../services/helpers/disposable';
 import {
   buildFactoryParams,
@@ -38,7 +37,7 @@ import * as WorkspacesStore from '../../../../../store/Workspaces';
 import { selectDevWorkspaceWarnings } from '../../../../../store/Workspaces/devWorkspaces/selectors';
 import { selectAllWorkspaces } from '../../../../../store/Workspaces/selectors';
 import ExpandableWarning from '../../../../ExpandableWarning';
-import { MIN_STEP_DURATION_MS, TIMEOUT_TO_CREATE_SEC } from '../../../const';
+import { TIMEOUT_TO_CREATE_SEC } from '../../../const';
 import { ProgressStep, ProgressStepProps, ProgressStepState } from '../../../ProgressStep';
 import { ProgressStepTitle } from '../../../StepTitle';
 import { TimeLimit } from '../../../TimeLimit';
@@ -58,15 +57,15 @@ export type Props = MappedProps &
     searchParams: URLSearchParams;
   };
 export type State = ProgressStepState & {
-  devfile?: devfileApi.Devfile;
   factoryParams: FactoryParams;
-  newWorkspaceName?: string; // a workspace name to create
   shouldCreate: boolean; // should the loader create a workspace
   warning?: string; // the devWorkspace warning to show
   continueWithDefaultDevfile?: boolean; //
 };
 
 class CreatingStepApplyDevfile extends ProgressStep<Props, State> {
+  static devfile: devfileApi.Devfile | undefined;
+  static createWorkspaceFromDevfilePromise = Promise.resolve();
   protected readonly name = 'Applying devfile';
   protected readonly toDispose = new DisposableCollection();
 
@@ -85,8 +84,6 @@ class CreatingStepApplyDevfile extends ProgressStep<Props, State> {
   }
 
   public componentDidUpdate() {
-    this.toDispose.dispose();
-
     this.init();
   }
 
@@ -96,39 +93,20 @@ class CreatingStepApplyDevfile extends ProgressStep<Props, State> {
       return true;
     }
 
-    const workspace = this.findTargetWorkspace(this.props, this.state);
-    const nextWorkspace = this.findTargetWorkspace(nextProps, nextState);
-
-    // devfile changed (when using the default one)
-    if (!isEqual(this.state.devfile, nextState.devfile)) {
+    if (this.props.searchParams !== nextProps.searchParams) {
       return true;
     }
 
-    // new workspace appeared
-    if (workspace === undefined && nextWorkspace !== undefined) {
+    if (!this.state.shouldCreate && nextState.shouldCreate) {
+      return true;
+    }
+
+    if (!this.state.continueWithDefaultDevfile && nextState.continueWithDefaultDevfile) {
       return true;
     }
 
     // current step failed
     if (!isEqual(this.state.lastError, nextState.lastError)) {
-      return true;
-    }
-
-    if (this.state.shouldCreate !== nextState.shouldCreate) {
-      return true;
-    }
-
-    if (this.state.newWorkspaceName !== nextState.newWorkspaceName) {
-      return true;
-    }
-
-    // a warning appeared
-    if (
-      workspace !== undefined &&
-      nextWorkspace !== undefined &&
-      this.props.devWorkspaceWarnings[workspace.uid] !==
-        nextProps.devWorkspaceWarnings[nextWorkspace.uid]
-    ) {
       return true;
     }
 
@@ -148,27 +126,10 @@ class CreatingStepApplyDevfile extends ProgressStep<Props, State> {
       return;
     }
 
-    const workspace = this.findTargetWorkspace(this.props, this.state);
-
-    if (workspace) {
-      // prevent a workspace being created one more time
-      this.setState({
-        shouldCreate: false,
-        continueWithDefaultDevfile: false,
-      });
-
-      const warning = this.props.devWorkspaceWarnings[workspace.uid];
-      if (warning) {
-        this.setState({
-          warning,
-        });
-      }
-    }
-
     this.prepareAndRun();
   }
 
-  private updateCurrentDevfile(devfile: devfileApi.Devfile): void {
+  private updateDevfile(devfile: devfileApi.Devfile): devfileApi.Devfile {
     const { factoryResolver, allWorkspaces, defaultDevfile } = this.props;
     const { factoryParams } = this.state;
     const { factoryId, policiesCreate, sourceUrl, storageType, remotes } = factoryParams;
@@ -198,37 +159,40 @@ class CreatingStepApplyDevfile extends ProgressStep<Props, State> {
     const nameConflict = allWorkspaces.some(w => devfile.metadata.name === w.name);
 
     const appendSuffix = policiesCreate === 'perclick' || nameConflict;
-    const updatedDevfile = prepareDevfile(devfile, factoryId, storageType, appendSuffix);
-
-    this.setState({
-      devfile: updatedDevfile,
-      newWorkspaceName: updatedDevfile.metadata.name,
-    });
+    return prepareDevfile(devfile, factoryId, storageType, appendSuffix);
   }
 
   protected async runStep(): Promise<boolean> {
-    await delay(MIN_STEP_DURATION_MS);
-
-    const { factoryResolverConverted, factoryResolver, defaultDevfile } = this.props;
-    const { shouldCreate, devfile, warning, continueWithDefaultDevfile } = this.state;
-
-    if (warning) {
-      const newName = `Warning: ${warning}`;
-      if (this.state.name !== newName) {
-        this.setState({
-          name: newName,
-        });
-        this.forceUpdate();
-      }
+    try {
+      await CreatingStepApplyDevfile.createWorkspaceFromDevfilePromise;
+    } catch (e) {
+      return false;
     }
 
-    const workspace = this.findTargetWorkspace(this.props, this.state);
-    if (workspace !== undefined) {
-      // the workspace has been created, go to the next step
-      const nextLocation = buildIdeLoaderLocation(workspace);
-      this.props.history.location.pathname = nextLocation.pathname;
-      this.props.history.location.search = '';
-      return true;
+    const { factoryResolverConverted, factoryResolver, defaultDevfile } = this.props;
+    const { shouldCreate, continueWithDefaultDevfile } = this.state;
+
+    if (CreatingStepApplyDevfile.devfile) {
+      const workspace = this.findTargetWorkspace(CreatingStepApplyDevfile.devfile);
+      if (workspace) {
+        const warning = this.props.devWorkspaceWarnings[workspace.uid];
+        // a warning appeared
+        if (warning) {
+          const newName = `Warning: ${warning}`;
+          if (this.state.name !== newName) {
+            this.setState({
+              warning,
+              name: newName,
+            });
+            this.forceUpdate();
+          }
+        }
+        // the workspace has been created, go to the next step
+        const nextLocation = buildIdeLoaderLocation(workspace);
+        this.props.history.location.pathname = nextLocation.pathname;
+        this.props.history.location.search = '';
+        return true;
+      }
     }
 
     if (shouldCreate === false) {
@@ -238,20 +202,20 @@ class CreatingStepApplyDevfile extends ProgressStep<Props, State> {
     // factory resolving failed in the previous step
     // hence we have to proceed with the default devfile
     if (factoryResolver === undefined) {
-      if (devfile === undefined) {
-        if (defaultDevfile === undefined) {
-          throw new Error('Failed to resolve the default devfile.');
-        }
-        this.updateCurrentDevfile(defaultDevfile);
-      } else {
-        try {
-          await this.createWorkspaceFromDevfile(devfile);
-        } catch (e) {
-          const errorMessage = common.helpers.errors.getMessage(e);
-          throw new CreateWorkspaceError(errorMessage);
-        }
+      if (!defaultDevfile) {
+        throw new Error('Failed to resolve the default devfile.');
       }
-      return false;
+      const targetDevfile = this.updateDevfile(defaultDevfile);
+      try {
+        const createWorkspaceFromDevfilePromise = this.createWorkspaceFromDevfile(targetDevfile);
+        CreatingStepApplyDevfile.createWorkspaceFromDevfilePromise =
+          createWorkspaceFromDevfilePromise;
+        await createWorkspaceFromDevfilePromise;
+      } catch (e) {
+        const errorMessage = common.helpers.errors.getMessage(e);
+        throw new CreateWorkspaceError(errorMessage);
+      }
+      return true;
     }
 
     // the user devfile is invalid and caused creation error
@@ -261,78 +225,78 @@ class CreatingStepApplyDevfile extends ProgressStep<Props, State> {
         throw new Error('Failed to resolve the default devfile.');
       }
 
-      if (devfile === undefined) {
-        const _devfile = cloneDeep(defaultDevfile);
+      let targetDevfile = cloneDeep(defaultDevfile);
 
-        if (factoryResolverConverted?.devfileV2 !== undefined) {
-          const { metadata, projects } = factoryResolverConverted.devfileV2;
-          _devfile.projects = projects;
-          _devfile.metadata.name = metadata.name;
-          _devfile.metadata.generateName = metadata.generateName;
-        }
-
-        this.updateCurrentDevfile(_devfile);
-        return false;
+      const resolvedDevfile = factoryResolverConverted?.devfileV2;
+      if (resolvedDevfile) {
+        targetDevfile.projects = resolvedDevfile.projects;
+        targetDevfile.metadata.name = resolvedDevfile.metadata.name;
+        targetDevfile.metadata.generateName = resolvedDevfile.metadata.generateName;
       }
 
-      // proceed with the default devfile
+      targetDevfile = this.updateDevfile(targetDevfile);
       try {
-        await this.createWorkspaceFromDevfile(devfile);
+        const createWorkspaceFromDevfilePromise = this.createWorkspaceFromDevfile(targetDevfile);
+        CreatingStepApplyDevfile.createWorkspaceFromDevfilePromise =
+          createWorkspaceFromDevfilePromise;
+        await createWorkspaceFromDevfilePromise;
       } catch (e) {
         const errorMessage = common.helpers.errors.getMessage(e);
         throw new CreateWorkspaceError(errorMessage);
       }
-      return false;
+      return true;
     }
 
     // proceed with the user devfile
-    if (devfile === undefined) {
-      const resolvedDevfile = factoryResolverConverted?.devfileV2;
-      if (resolvedDevfile === undefined) {
-        throw new Error('Failed to resolve the devfile.');
-      }
-      this.updateCurrentDevfile(resolvedDevfile);
-    } else {
-      const { devfile } = this.state;
-      if (devfile) {
-        try {
-          await this.createWorkspaceFromDevfile(devfile);
-        } catch (e) {
-          const errorMessage = common.helpers.errors.getMessage(e);
-          throw new CreateWorkspaceError(errorMessage);
-        }
-      }
+    let targetDevfile = factoryResolverConverted?.devfileV2;
+    if (targetDevfile === undefined) {
+      throw new Error('Failed to resolve the devfile.');
+    }
+    targetDevfile = this.updateDevfile(targetDevfile);
+    try {
+      const createWorkspaceFromDevfilePromise = this.createWorkspaceFromDevfile(targetDevfile);
+      CreatingStepApplyDevfile.createWorkspaceFromDevfilePromise =
+        createWorkspaceFromDevfilePromise;
+      await createWorkspaceFromDevfilePromise;
+    } catch (e) {
+      const errorMessage = common.helpers.errors.getMessage(e);
+      throw new CreateWorkspaceError(errorMessage);
     }
 
     // wait for the workspace creation to complete
-    return false;
+    return true;
   }
 
-  private findTargetWorkspace(props: Props, state: State): Workspace | undefined {
-    if (state.newWorkspaceName === undefined) {
+  private findTargetWorkspace(devfile: devfileApi.Devfile): Workspace | undefined {
+    if (!devfile || !devfile.metadata.name) {
       return undefined;
     }
-    return findTargetWorkspace(props.allWorkspaces, {
-      namespace: props.defaultNamespace.name,
-      workspaceName: state.newWorkspaceName,
+    return findTargetWorkspace(this.props.allWorkspaces, {
+      namespace: this.props.defaultNamespace.name,
+      workspaceName: devfile.metadata.name,
     });
   }
 
   private async createWorkspaceFromDevfile(devfile: devfileApi.Devfile): Promise<void> {
     const optionalFilesContent = this.props.factoryResolver?.optionalFilesContent || {};
-    await this.props.createWorkspaceFromDevfile(
+    const createWorkspacePromise = this.props.createWorkspaceFromDevfile(
       devfile,
       this.state.factoryParams,
       optionalFilesContent,
     );
+    CreatingStepApplyDevfile.devfile = devfile;
+    this.setState({
+      shouldCreate: false,
+    });
+    await createWorkspacePromise;
   }
 
   protected handleRestart(alertKey: string): void {
     this.props.onHideError(alertKey);
-
+    CreatingStepApplyDevfile.devfile = undefined;
+    CreatingStepApplyDevfile.createWorkspaceFromDevfilePromise = Promise.resolve();
     this.setState({
       shouldCreate: true,
-      newWorkspaceName: undefined,
     });
     this.clearStepError();
     this.props.onRestart();
@@ -340,10 +304,11 @@ class CreatingStepApplyDevfile extends ProgressStep<Props, State> {
 
   private handleContinueWithDefaultDevfile(alertKey: string): void {
     this.props.onHideError(alertKey);
-
+    CreatingStepApplyDevfile.devfile = undefined;
+    CreatingStepApplyDevfile.createWorkspaceFromDevfilePromise = Promise.resolve();
     this.setState({
       continueWithDefaultDevfile: true,
-      devfile: undefined,
+      shouldCreate: true,
     });
     this.clearStepError();
   }

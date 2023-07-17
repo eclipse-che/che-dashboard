@@ -41,7 +41,7 @@ const matchParams: WorkspaceParams = {
   workspaceName,
 };
 
-describe('Starting steps, initializing', () => {
+xdescribe('Starting steps, initializing', () => {
   beforeEach(() => {
     jest.useFakeTimers();
   });

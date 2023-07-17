@@ -19,8 +19,6 @@ import {
   buildFactoryParams,
   FactoryParams,
 } from '../../../../../services/helpers/factoryFlow/buildFactoryParams';
-import { delay } from '../../../../../services/helpers/delay';
-import { DisposableCollection } from '../../../../../services/helpers/disposable';
 import { getEnvironment, isDevEnvironment } from '../../../../../services/helpers/environment';
 import { AlertItem } from '../../../../../services/helpers/types';
 import OAuthService, { isOAuthResponse } from '../../../../../services/oauth';
@@ -33,7 +31,7 @@ import {
 } from '../../../../../store/FactoryResolver/selectors';
 import { selectAllWorkspaces } from '../../../../../store/Workspaces/selectors';
 import ExpandableWarning from '../../../../ExpandableWarning';
-import { MIN_STEP_DURATION_MS, TIMEOUT_TO_RESOLVE_SEC } from '../../../const';
+import { TIMEOUT_TO_RESOLVE_SEC } from '../../../const';
 import { ProgressStep, ProgressStepProps, ProgressStepState } from '../../../ProgressStep';
 import { ProgressStepTitle } from '../../../StepTitle';
 import { TimeLimit } from '../../../TimeLimit';
@@ -69,8 +67,8 @@ export type State = ProgressStepState & {
 };
 
 class CreatingStepFetchDevfile extends ProgressStep<Props, State> {
+  static factoryResolverPromise = Promise.resolve();
   protected readonly name = 'Looking for devfile';
-  protected readonly toDispose = new DisposableCollection();
 
   constructor(props: Props) {
     super(props);
@@ -88,8 +86,6 @@ class CreatingStepFetchDevfile extends ProgressStep<Props, State> {
   }
 
   public componentDidUpdate() {
-    this.toDispose.dispose();
-
     this.init();
   }
 
@@ -157,7 +153,7 @@ class CreatingStepFetchDevfile extends ProgressStep<Props, State> {
 
   protected handleRestart(alertKey: string): void {
     this.props.onHideError(alertKey);
-
+    CreatingStepFetchDevfile.factoryResolverPromise = Promise.resolve();
     this.setState({
       shouldResolve: true,
     });
@@ -182,7 +178,11 @@ class CreatingStepFetchDevfile extends ProgressStep<Props, State> {
   }
 
   protected async runStep(): Promise<boolean> {
-    await delay(MIN_STEP_DURATION_MS);
+    try {
+      await CreatingStepFetchDevfile.factoryResolverPromise;
+    } catch (e) {
+      return false;
+    }
 
     const { factoryParams, shouldResolve, useDefaultDevfile } = this.state;
     const { factoryResolver, factoryResolverConverted } = this.props;
@@ -201,9 +201,8 @@ class CreatingStepFetchDevfile extends ProgressStep<Props, State> {
       return true;
     }
 
-    if (shouldResolve === false && useDefaultDevfile) {
-      // go to the next step
-      return true;
+    if (!shouldResolve) {
+      return useDefaultDevfile;
     }
 
     let resolveDone = false;
@@ -221,8 +220,16 @@ class CreatingStepFetchDevfile extends ProgressStep<Props, State> {
       }
       throw e;
     }
-    if (!resolveDone) {
-      return false;
+
+    if (resolveDone) {
+      // the devfile resolved successfully
+      if (factoryResolver && factoryResolverConverted) {
+        const newName = buildStepName(sourceUrl, factoryResolver, factoryResolverConverted);
+        this.setState({
+          name: newName,
+        });
+        return true;
+      }
     }
 
     // wait for the devfile resolving to complete
@@ -234,9 +241,14 @@ class CreatingStepFetchDevfile extends ProgressStep<Props, State> {
    */
   private async resolveDevfile(factoryUrl: string): Promise<boolean> {
     const { factoryParams } = this.state;
+    const factoryResolverPromise = this.props.requestFactoryResolver(factoryUrl, factoryParams);
+    this.setState({
+      shouldResolve: false,
+    });
+    CreatingStepFetchDevfile.factoryResolverPromise = factoryResolverPromise;
 
     try {
-      await this.props.requestFactoryResolver(factoryUrl, factoryParams);
+      await factoryResolverPromise;
       this.clearNumberOfTries();
       return true;
     } catch (e) {
