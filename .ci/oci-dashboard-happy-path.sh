@@ -158,6 +158,7 @@ startHappyPathTest() {
 trap 'collectLogs $?' EXIT SIGINT
 
 # Deploy Eclipse Che with a custom dashboard image
+mkdir ${ARTIFACT_DIR}/e2e
 cat > /tmp/che-cr-patch.yaml <<EOF
 apiVersion: org.eclipse.che/v2
 spec:
@@ -168,6 +169,7 @@ spec:
           - image: '${CI_CHE_DASHBOARD_IMAGE}'
             imagePullPolicy: Always
 EOF
+cp /tmp/che-cr-patch.yaml ${ARTIFACT_DIR}/e2e/
 chectl server:deploy \
   --platform openshift \
   --che-operator-cr-patch-yaml /tmp/che-cr-patch.yaml \
@@ -187,10 +189,7 @@ sleep 3
 
 # Download artifacts
 echo "[INFO] Downloading test report."
-mkdir ${ARTIFACT_DIR}/e2e
-mkdir ${ARTIFACT_DIR}/ffmpeg_report
 oc rsync -n ${CHE_NAMESPACE} ${HAPPY_PATH_POD_NAME}:/tmp/e2e/report/ ${ARTIFACT_DIR}/e2e -c download-reports
-# oc rsync -n ${CHE_NAMESPACE} ${HAPPY_PATH_POD_NAME}:/tmp/ffmpeg_report/ ${ARTIFACT_DIR}/ffmpeg_report -c download-reports
 oc exec -n ${CHE_NAMESPACE} ${HAPPY_PATH_POD_NAME} -c download-reports -- touch /tmp/done
 EXIT_CODE=$(oc logs -n ${CHE_NAMESPACE} ${HAPPY_PATH_POD_NAME} -c happy-path-test | grep EXIT_CODE)
 if [[ ${EXIT_CODE} != "+ EXIT_CODE=0" ]]; then
