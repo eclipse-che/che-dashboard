@@ -156,15 +156,7 @@ export const actionCreators: ActionCreators = {
         if (externalDevfileRegistries.length) {
           devfileRegistries.push(...externalDevfileRegistries);
         }
-        let isRegistryLocation = false;
-        devfileRegistries.every(registry => {
-          if (location.startsWith(registry)) {
-            isRegistryLocation = true;
-            return false;
-          }
-          return true;
-        });
-        return isRegistryLocation;
+        return devfileRegistries.some(registry => location.startsWith(registry));
       };
 
       try {
