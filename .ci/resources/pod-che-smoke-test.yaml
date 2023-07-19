@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: Pod
 metadata:
-  name: happy-path-che
+  name: smoke-test-che
   namespace: CHE-NAMESPACE
 spec:
   volumes:
@@ -12,7 +12,7 @@ spec:
         medium: Memory
   containers:
     # container containing the tests
-    - name: happy-path-test
+    - name: smoke-test
       image: quay.io/eclipse/che-e2e:next
       imagePullPolicy: Always
       env:
