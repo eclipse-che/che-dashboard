@@ -18,9 +18,9 @@ SCRIPT_DIR=$(dirname $(readlink -f "$0"))
 
 export WORKDIR=${WORKDIR:-"${SCRIPT_DIR}/workdir"}
 export CHE_NAMESPACE=${CHE_NAMESPACE:-"eclipse-che"}
-export HAPPY_PATH_POD_NAME='happy-path-che'
-export HAPPY_PATH_POD_FILE="${SCRIPT_DIR}/resources/pod-che-smoke-test.yaml"
-export ARTIFACT_DIR=${ARTIFACT_DIR:-"/tmp/devworkspace-happy-path-artifacts"}
+export SMOKE_TEST_POD_NAME='smoke-test-che'
+export SMOKE_TEST_POD_FILE="${SCRIPT_DIR}/resources/pod-che-smoke-test.yaml"
+export ARTIFACT_DIR=${ARTIFACT_DIR:-"/tmp/devworkspace-smoke-test-artifacts"}
 
 rm -rf ${WORKDIR}
 mkdir -p ${WORKDIR}
@@ -120,14 +120,14 @@ function provisionOpenShiftOAuthUser() {
 }
 
 # method originally extracted from eclipse/che/tests/devworkspace-happy-path/launch.sh
-startHappyPathTest() {
-  oc delete pod happy-path-che -n eclipse-che --grace-period=30 --ignore-not-found
-  # patch happy-path-che.yaml
+startSmokeTest() {
+  oc delete pod "${SMOKE_TEST_POD_NAME}" -n eclipse-che --grace-period=30 --ignore-not-found
+  # patch smoke-test-che.yaml
   ECLIPSE_CHE_URL=http://$(oc get route -n "${CHE_NAMESPACE}" che -o jsonpath='{.status.ingress[0].host}')
-  cp $HAPPY_PATH_POD_FILE ${WORKDIR}/e2e-pod.yaml
+  cp $SMOKE_TEST_POD_FILE ${WORKDIR}/e2e-pod.yaml
   sed -i "s@CHE_URL@${ECLIPSE_CHE_URL}@g" ${WORKDIR}/e2e-pod.yaml
   sed -i "s@CHE-NAMESPACE@${CHE_NAMESPACE}@g" ${WORKDIR}/e2e-pod.yaml
-  echo "[INFO] Applying the following patched Che Happy Path Pod:"
+  echo "[INFO] Applying the following patched Che Smoke Test Pod:"
   cat ${WORKDIR}/e2e-pod.yaml
   echo "[INFO] --------------------------------------------------"
   oc apply -f ${WORKDIR}/e2e-pod.yaml
@@ -135,10 +135,10 @@ startHappyPathTest() {
   n=0
   while [ $n -le 120 ]
   do
-    PHASE=$(oc get pod -n ${CHE_NAMESPACE} ${HAPPY_PATH_POD_NAME} \
+    PHASE=$(oc get pod -n ${CHE_NAMESPACE} ${SMOKE_TEST_POD_NAME} \
         --template='{{ .status.phase }}')
     if [[ ${PHASE} == "Running" ]]; then
-      echo "[INFO] Happy-path test started successfully."
+      echo "[INFO] Smoke test started successfully."
       return
     fi
 
@@ -146,7 +146,7 @@ startHappyPathTest() {
     n=$(( n+1 ))
   done
 
-  echo "[ERROR] Failed to start happy-path test."
+  echo "[ERROR] Failed to start smoke test."
   exit 1
 }
 
@@ -180,24 +180,24 @@ chectl server:deploy \
 provisionOpenShiftOAuthUser
 
 # Run Smoke test
-startHappyPathTest
+startSmokeTest
 
-echo "[INFO] Waiting until happy path pod finished"
-oc logs -n ${CHE_NAMESPACE} ${HAPPY_PATH_POD_NAME} -c happy-path-test -f
+echo "[INFO] Waiting until smoke test pod finished"
+oc logs -n ${CHE_NAMESPACE} ${SMOKE_TEST_POD_NAME} -c smoke-test -f
 # just to sleep
 sleep 3
 
 # Download artifacts
 echo "[INFO] Downloading test report."
-oc rsync -n ${CHE_NAMESPACE} ${HAPPY_PATH_POD_NAME}:/tmp/e2e/report/ ${ARTIFACT_DIR}/e2e -c download-reports
-oc exec -n ${CHE_NAMESPACE} ${HAPPY_PATH_POD_NAME} -c download-reports -- touch /tmp/done
-EXIT_CODE=$(oc logs -n ${CHE_NAMESPACE} ${HAPPY_PATH_POD_NAME} -c happy-path-test | grep EXIT_CODE)
+oc rsync -n ${CHE_NAMESPACE} ${SMOKE_TEST_POD_NAME}:/tmp/e2e/report/ ${ARTIFACT_DIR}/e2e -c download-reports
+oc exec -n ${CHE_NAMESPACE} ${SMOKE_TEST_POD_NAME} -c download-reports -- touch /tmp/done
+EXIT_CODE=$(oc logs -n ${CHE_NAMESPACE} ${SMOKE_TEST_POD_NAME} -c smoke-test | grep EXIT_CODE)
 if [[ ${EXIT_CODE} != "+ EXIT_CODE=0" ]]; then
-    echo "[ERROR] Happy-path test failed. Check report at ${ARTIFACT_DIR}. Or happy path pod in eclipse-che namespace"
+    echo "[ERROR] Smoke test failed. Check report at ${ARTIFACT_DIR}. Or smoke test pod in eclipse-che namespace"
     exit 1
 fi
-echo "[INFO] Happy-path test succeed."
+echo "[INFO] Smoke test succeed."
 
 # End test
 END=$(date +%s.%N)
-echo "[INFO] Happy-path execution took $(echo "$END - $START" | bc) seconds."
+echo "[INFO] Smoke test execution took $(echo "$END - $START" | bc) seconds."

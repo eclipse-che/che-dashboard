@@ -22,11 +22,11 @@ set -x
 export CI_CHE_DASHBOARD_IMAGE=${CI_CHE_DASHBOARD_IMAGE:-quay.io/eclipse/che-dashboard:next}
 export CHE_REPO_BRANCH="main"
 export CHE_NAMESPACE="${CHE_NAMESPACE:-eclipse-che}"
-export DEVWORKSPACE_HAPPY_PATH="https://raw.githubusercontent.com/eclipse/che/${CHE_REPO_BRANCH}/tests/devworkspace-happy-path"
+export DEVWORKSPACE_SMOKE_TEST="https://raw.githubusercontent.com/eclipse/che/${CHE_REPO_BRANCH}/tests/devworkspace-happy-path"
 export ECLIPSE_CHE_URL="${ECLIPSE_CHE_URL:-localhost}"
 export KUBE_ADMIN_PASSWORD="${ECLIPSE_CHE_URL:-admin}"
 
-source <(curl -s ${DEVWORKSPACE_HAPPY_PATH}/common.sh)
+source <(curl -s ${DEVWORKSPACE_SMOKE_TEST}/common.sh)
 
 #trap 'collectLogs $?' EXIT SIGINT
 
