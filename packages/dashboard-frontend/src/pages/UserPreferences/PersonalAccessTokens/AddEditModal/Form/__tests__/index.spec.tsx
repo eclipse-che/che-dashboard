@@ -247,10 +247,10 @@ describe('AddEditModalForm', () => {
       renderComponent({ isEdit: false, token: undefined });
 
       // change other field to trigger onChange event
-      const gitProviderEndpointField = screen.getByRole('button', {
-        name: NEW_GIT_PROVIDER_ENDPOINT_BUTTON,
+      const tokenNameField = screen.getByRole('button', {
+        name: 'Submit Valid Token Name',
       });
-      userEvent.click(gitProviderEndpointField);
+      userEvent.click(tokenNameField);
 
       // expect mockOnChange was called
       expect(mockOnChange).toHaveBeenLastCalledWith(
