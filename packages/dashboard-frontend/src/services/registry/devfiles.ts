@@ -87,7 +87,6 @@ export function updateObjectLinks(object: any, baseUrl): any {
 }
 
 export function getRegistryIndexUrl(registryUrl: string, isExternal: boolean): URL {
-  registryUrl = registryUrl[registryUrl.length - 1] === '/' ? registryUrl : registryUrl + '/';
   if (isExternal) {
     if (new URL(registryUrl).host === 'registry.devfile.io') {
       return new URL('index', registryUrl);
