@@ -10,7 +10,7 @@ build:
       context: .
       custom:
         buildCommand: |
-          podman build  --tag=$IMAGE -f build/dockerfiles/skaffold.Dockerfile . && podman push $IMAGE
+          scripts/container_tool.sh build  --tag=$IMAGE -f build/dockerfiles/skaffold.Dockerfile . && scripts/container_tool.sh push $IMAGE
         dependencies:
           paths:
             - packages/*/lib/*

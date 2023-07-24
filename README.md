@@ -200,11 +200,11 @@ yarn build-and-patch
 
 To update the dashboard deployment you need access to the Kubernetes cluster (see [Running locally against remote Che Cluster (Node.js v.16)](#running-locally-against-remote-che-cluster-nodejs-v16))
 
-Then proceed with the following steps: 
+Then proceed with the following steps:
 
 ```sh
 # export an environment variable to define a repository you want images to be pushed, e.g.:
-export DEFAULT_REPO=quay.io/<project-id>
+export DEFAULT_REPO="${IMAGE_REGISTRY_HOST}/${IMAGE_REGISTRY_USER_NAME}"
 ```
 
 ```sh
