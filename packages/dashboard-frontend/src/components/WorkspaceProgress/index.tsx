@@ -10,7 +10,6 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import * as PF from '@patternfly/react-core';
 import { History } from 'history';
 import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
@@ -39,8 +38,7 @@ import StartingStepStartWorkspace from './StartingSteps/StartWorkspace';
 import StartingStepWorkspaceConditions, {
   ConditionType,
 } from './StartingSteps/WorkspaceConditions';
-
-import styles from './index.module.css';
+import WorkspaceProgressWizard, { WorkspaceProgressWizardStep } from './Wizard';
 
 export type Props = MappedProps & {
   history: History;
@@ -49,7 +47,7 @@ export type Props = MappedProps & {
   onTabChange: (tab: LoaderTab) => void;
 };
 export type State = {
-  activeStep: StepId;
+  activeStepId: StepId;
   alertItems: AlertItem[];
   conditions: ConditionType[];
   doneSteps: StepId[];
@@ -68,12 +66,9 @@ export enum Step {
   OPEN = 'open',
 }
 type ConditionStepId = `condition-${string}`;
-type StepId = Step | ConditionStepId;
+export type StepId = Step | ConditionStepId;
 
 class Progress extends React.PureComponent<Props, State> {
-  static contextType = PF.WizardContext;
-  readonly context: React.ContextType<typeof PF.WizardContext>;
-
   private readonly wizardRef: React.RefObject<any>;
 
   constructor(props: Props) {
@@ -85,7 +80,7 @@ class Progress extends React.PureComponent<Props, State> {
     const factoryParams = buildFactoryParams(this.props.searchParams);
 
     this.state = {
-      activeStep: Step.INITIALIZE,
+      activeStepId: Step.INITIALIZE,
       alertItems: [],
       conditions: [],
       doneSteps: [],
@@ -143,8 +138,8 @@ class Progress extends React.PureComponent<Props, State> {
     }, 0);
   }
 
-  private handleShowStepAlert(step: StepId, alertItem: AlertItem): void {
-    if (step !== this.state.activeStep) {
+  private handleStepsShowAlert(step: StepId, alertItem: AlertItem): void {
+    if (step !== this.state.activeStepId) {
       return;
     }
 
@@ -166,16 +161,28 @@ class Progress extends React.PureComponent<Props, State> {
     });
   }
 
-  private handleGoToNextStep(step: StepId): void {
-    if (step !== this.state.activeStep) {
+  private handleStepsGoToNext(stepId: StepId): void {
+    if (stepId !== this.state.activeStepId) {
+      // filter out condition steps
       return;
     }
 
-    this.wizardRef.current?.onNext();
+    if (stepId !== Step.START) {
+      this.wizardRef.current?.goToNext();
+      return;
+    }
+
+    // because there are condition steps between `START` and `OPEN`, we need to jump over them
+    const activeStepId = Step.OPEN;
+    const doneSteps = [...this.state.doneSteps, stepId];
+    this.setState({
+      activeStepId,
+      doneSteps,
+    });
   }
 
-  private handleRestartFlow(step: StepId, tab?: LoaderTab): void {
-    if (step !== this.state.activeStep) {
+  private handleStepsRestart(step: StepId, tab?: LoaderTab): void {
+    if (step !== this.state.activeStepId) {
       return;
     }
 
@@ -195,18 +202,17 @@ class Progress extends React.PureComponent<Props, State> {
     }
 
     this.setState({
-      activeStep: newActiveStep,
+      activeStepId: newActiveStep,
       doneSteps: newDoneSteps,
       conditions: [],
     });
-    this.wizardRef.current?.goToStepById(newActiveStep);
 
     if (tab) {
       this.props.onTabChange(tab);
     }
   }
 
-  private getSteps(): PF.WizardStep[] {
+  private getSteps(): WorkspaceProgressWizardStep[] {
     const { initialLoaderMode } = this.state;
     const showFactorySteps = initialLoaderMode.mode === 'factory';
 
@@ -219,14 +225,14 @@ class Progress extends React.PureComponent<Props, State> {
   }
 
   private getDistance(stepId: StepId) {
-    const { activeStep, doneSteps } = this.state;
+    const { activeStepId, doneSteps } = this.state;
 
-    const isActive = activeStep === stepId;
+    const isActive = activeStepId === stepId;
     const isDone = doneSteps.includes(stepId);
     return isActive ? 0 : isDone ? 1 : -1;
   }
 
-  private getCreationInitStep(): PF.WizardStep {
+  private getCreationInitStep(): WorkspaceProgressWizardStep {
     const { history, searchParams } = this.props;
 
     return {
@@ -236,17 +242,17 @@ class Progress extends React.PureComponent<Props, State> {
           distance={this.getDistance(Step.INITIALIZE)}
           history={history}
           searchParams={searchParams}
-          onError={alertItem => this.handleShowStepAlert(Step.INITIALIZE, alertItem)}
+          onError={alertItem => this.handleStepsShowAlert(Step.INITIALIZE, alertItem)}
           onHideError={key => this.handleCloseStepAlert(key)}
-          onNextStep={() => this.handleGoToNextStep(Step.INITIALIZE)}
-          onRestart={tab => this.handleRestartFlow(Step.INITIALIZE, tab)}
+          onNextStep={() => this.handleStepsGoToNext(Step.INITIALIZE)}
+          onRestart={tab => this.handleStepsRestart(Step.INITIALIZE, tab)}
         />
       ),
       component: <></>,
     };
   }
 
-  private getStartingInitStep(): PF.WizardStep {
+  private getStartingInitStep(): WorkspaceProgressWizardStep {
     const { history } = this.props;
 
     const loaderMode = getLoaderMode(history.location);
@@ -259,17 +265,17 @@ class Progress extends React.PureComponent<Props, State> {
           distance={this.getDistance(Step.INITIALIZE)}
           history={history}
           matchParams={matchParams}
-          onError={alertItem => this.handleShowStepAlert(Step.INITIALIZE, alertItem)}
+          onError={alertItem => this.handleStepsShowAlert(Step.INITIALIZE, alertItem)}
           onHideError={key => this.handleCloseStepAlert(key)}
-          onNextStep={() => this.handleGoToNextStep(Step.INITIALIZE)}
-          onRestart={tab => this.handleRestartFlow(Step.INITIALIZE, tab)}
+          onNextStep={() => this.handleStepsGoToNext(Step.INITIALIZE)}
+          onRestart={tab => this.handleStepsRestart(Step.INITIALIZE, tab)}
         />
       ),
       component: <></>,
     };
   }
 
-  private getCommonSteps(): PF.WizardStep[] {
+  private getCommonSteps(): WorkspaceProgressWizardStep[] {
     const { history } = this.props;
 
     const loaderMode = getLoaderMode(history.location);
@@ -283,10 +289,10 @@ class Progress extends React.PureComponent<Props, State> {
             distance={this.getDistance(Step.LIMIT_CHECK)}
             history={history}
             matchParams={matchParams}
-            onError={alertItem => this.handleShowStepAlert(Step.LIMIT_CHECK, alertItem)}
+            onError={alertItem => this.handleStepsShowAlert(Step.LIMIT_CHECK, alertItem)}
             onHideError={key => this.handleCloseStepAlert(key)}
-            onNextStep={() => this.handleGoToNextStep(Step.LIMIT_CHECK)}
-            onRestart={tab => this.handleRestartFlow(Step.LIMIT_CHECK, tab)}
+            onNextStep={() => this.handleStepsGoToNext(Step.LIMIT_CHECK)}
+            onRestart={tab => this.handleStepsRestart(Step.LIMIT_CHECK, tab)}
           />
         ),
         component: <></>,
@@ -294,7 +300,7 @@ class Progress extends React.PureComponent<Props, State> {
     ];
   }
 
-  private getCreationSteps(): PF.WizardStep[] {
+  private getCreationSteps(): WorkspaceProgressWizardStep[] {
     const { history, searchParams } = this.props;
     const { factoryParams } = this.state;
 
@@ -308,10 +314,10 @@ class Progress extends React.PureComponent<Props, State> {
             distance={this.getDistance(Step.CREATE)}
             history={history}
             searchParams={searchParams}
-            onError={alertItem => this.handleShowStepAlert(Step.CREATE, alertItem)}
+            onError={alertItem => this.handleStepsShowAlert(Step.CREATE, alertItem)}
             onHideError={key => this.handleCloseStepAlert(key)}
-            onNextStep={() => this.handleGoToNextStep(Step.CREATE)}
-            onRestart={tab => this.handleRestartFlow(Step.CREATE, tab)}
+            onNextStep={() => this.handleStepsGoToNext(Step.CREATE)}
+            onRestart={tab => this.handleStepsRestart(Step.CREATE, tab)}
           />
         ),
         component: <></>,
@@ -324,10 +330,10 @@ class Progress extends React.PureComponent<Props, State> {
                 distance={this.getDistance(Step.CONFLICT_CHECK)}
                 history={history}
                 searchParams={searchParams}
-                onError={alertItem => this.handleShowStepAlert(Step.CONFLICT_CHECK, alertItem)}
+                onError={alertItem => this.handleStepsShowAlert(Step.CONFLICT_CHECK, alertItem)}
                 onHideError={alertId => this.handleCloseStepAlert(alertId)}
-                onNextStep={() => this.handleGoToNextStep(Step.CONFLICT_CHECK)}
-                onRestart={tab => this.handleRestartFlow(Step.CONFLICT_CHECK, tab)}
+                onNextStep={() => this.handleStepsGoToNext(Step.CONFLICT_CHECK)}
+                onRestart={tab => this.handleStepsRestart(Step.CONFLICT_CHECK, tab)}
               />
             ),
             component: <></>,
@@ -338,7 +344,7 @@ class Progress extends React.PureComponent<Props, State> {
     ];
   }
 
-  private getFactoryFetchResources(): PF.WizardStep {
+  private getFactoryFetchResources(): WorkspaceProgressWizardStep {
     const { history, searchParams } = this.props;
 
     return {
@@ -348,17 +354,17 @@ class Progress extends React.PureComponent<Props, State> {
           distance={this.getDistance(Step.FETCH)}
           history={history}
           searchParams={searchParams}
-          onError={alertItem => this.handleShowStepAlert(Step.FETCH, alertItem)}
+          onError={alertItem => this.handleStepsShowAlert(Step.FETCH, alertItem)}
           onHideError={key => this.handleCloseStepAlert(key)}
-          onNextStep={() => this.handleGoToNextStep(Step.FETCH)}
-          onRestart={tab => this.handleRestartFlow(Step.FETCH, tab)}
+          onNextStep={() => this.handleStepsGoToNext(Step.FETCH)}
+          onRestart={tab => this.handleStepsRestart(Step.FETCH, tab)}
         />
       ),
       component: <></>,
     };
   }
 
-  private getFactoryApplyResources(): PF.WizardStep {
+  private getFactoryApplyResources(): WorkspaceProgressWizardStep {
     const { history, searchParams } = this.props;
 
     return {
@@ -368,17 +374,17 @@ class Progress extends React.PureComponent<Props, State> {
           distance={this.getDistance(Step.APPLY)}
           history={history}
           searchParams={searchParams}
-          onError={alertItem => this.handleShowStepAlert(Step.APPLY, alertItem)}
+          onError={alertItem => this.handleStepsShowAlert(Step.APPLY, alertItem)}
           onHideError={key => this.handleCloseStepAlert(key)}
-          onNextStep={() => this.handleGoToNextStep(Step.APPLY)}
-          onRestart={tab => this.handleRestartFlow(Step.APPLY, tab)}
+          onNextStep={() => this.handleStepsGoToNext(Step.APPLY)}
+          onRestart={tab => this.handleStepsRestart(Step.APPLY, tab)}
         />
       ),
       component: <></>,
     };
   }
 
-  private getFactoryFetchDevfile(): PF.WizardStep {
+  private getFactoryFetchDevfile(): WorkspaceProgressWizardStep {
     const { history, searchParams } = this.props;
 
     return {
@@ -388,17 +394,17 @@ class Progress extends React.PureComponent<Props, State> {
           distance={this.getDistance(Step.FETCH)}
           history={history}
           searchParams={searchParams}
-          onError={alertItem => this.handleShowStepAlert(Step.FETCH, alertItem)}
+          onError={alertItem => this.handleStepsShowAlert(Step.FETCH, alertItem)}
           onHideError={key => this.handleCloseStepAlert(key)}
-          onNextStep={() => this.handleGoToNextStep(Step.FETCH)}
-          onRestart={tab => this.handleRestartFlow(Step.FETCH, tab)}
+          onNextStep={() => this.handleStepsGoToNext(Step.FETCH)}
+          onRestart={tab => this.handleStepsRestart(Step.FETCH, tab)}
         />
       ),
       component: <></>,
     };
   }
 
-  private getFactoryApplyDevfile(): PF.WizardStep {
+  private getFactoryApplyDevfile(): WorkspaceProgressWizardStep {
     const { history, searchParams } = this.props;
 
     return {
@@ -408,17 +414,17 @@ class Progress extends React.PureComponent<Props, State> {
           distance={this.getDistance(Step.APPLY)}
           history={history}
           searchParams={searchParams}
-          onError={alertItem => this.handleShowStepAlert(Step.APPLY, alertItem)}
+          onError={alertItem => this.handleStepsShowAlert(Step.APPLY, alertItem)}
           onHideError={key => this.handleCloseStepAlert(key)}
-          onNextStep={() => this.handleGoToNextStep(Step.APPLY)}
-          onRestart={tab => this.handleRestartFlow(Step.APPLY, tab)}
+          onNextStep={() => this.handleStepsGoToNext(Step.APPLY)}
+          onRestart={tab => this.handleStepsRestart(Step.APPLY, tab)}
         />
       ),
       component: <></>,
     };
   }
 
-  private getStartingSteps(): PF.WizardStep[] {
+  private getStartingSteps(): WorkspaceProgressWizardStep[] {
     const { history } = this.props;
 
     const loaderMode = getLoaderMode(history.location);
@@ -434,10 +440,10 @@ class Progress extends React.PureComponent<Props, State> {
         name: (
           <StartingStepStartWorkspace
             distance={this.getDistance(Step.START)}
-            onError={alertItem => this.handleShowStepAlert(Step.START, alertItem)}
+            onError={alertItem => this.handleStepsShowAlert(Step.START, alertItem)}
             onHideError={key => this.handleCloseStepAlert(key)}
-            onNextStep={() => this.handleGoToNextStep(Step.START)}
-            onRestart={tab => this.handleRestartFlow(Step.START, tab)}
+            onNextStep={() => this.handleStepsGoToNext(Step.START)}
+            onRestart={tab => this.handleStepsRestart(Step.START, tab)}
             history={history}
             matchParams={matchParams}
           />
@@ -449,10 +455,10 @@ class Progress extends React.PureComponent<Props, State> {
         name: (
           <StartingStepOpenWorkspace
             distance={this.getDistance(Step.OPEN)}
-            onError={alertItem => this.handleShowStepAlert(Step.OPEN, alertItem)}
+            onError={alertItem => this.handleStepsShowAlert(Step.OPEN, alertItem)}
             onHideError={key => this.handleCloseStepAlert(key)}
-            onNextStep={() => this.handleGoToNextStep(Step.OPEN)}
-            onRestart={tab => this.handleRestartFlow(Step.OPEN, tab)}
+            onNextStep={() => this.handleStepsGoToNext(Step.OPEN)}
+            onRestart={tab => this.handleStepsRestart(Step.OPEN, tab)}
             history={history}
             matchParams={matchParams}
           />
@@ -461,7 +467,7 @@ class Progress extends React.PureComponent<Props, State> {
     ];
   }
 
-  private buildConditionSteps(): PF.WizardStep[] {
+  private buildConditionSteps(): WorkspaceProgressWizardStep[] {
     const { history } = this.props;
     const { conditions } = this.state;
     const loaderMode = getLoaderMode(history.location);
@@ -480,45 +486,39 @@ class Progress extends React.PureComponent<Props, State> {
             condition={condition as ConditionType}
             matchParams={loaderMode.workspaceParams}
             history={history}
-            onError={alertItem => this.handleShowStepAlert(stepId, alertItem)}
+            onError={alertItem => this.handleStepsShowAlert(stepId, alertItem)}
             onHideError={key => this.handleCloseStepAlert(key)}
-            onNextStep={() => this.handleGoToNextStep(stepId)}
-            onRestart={tab => this.handleRestartFlow(stepId, tab)}
+            onNextStep={() => this.handleStepsGoToNext(stepId)}
+            onRestart={tab => this.handleStepsRestart(stepId, tab)}
           />
         ),
       };
     });
   }
 
-  private handleSwitchToNextStep(...params: Parameters<PF.WizardStepFunctionType>): void {
-    const [newStep, prevStep] = params;
-
-    const activeStep = newStep.id ? (newStep.id as Step) : this.state.activeStep;
-
-    const doneSteps = prevStep.prevId
-      ? [...this.state.doneSteps, prevStep.prevId as Step]
-      : this.state.doneSteps;
+  private handleSwitchToNextStep(nextStepId: StepId | undefined, prevStepId: StepId): void {
+    const activeStepId = nextStepId || this.state.activeStepId;
+    const doneSteps = [...this.state.doneSteps, prevStepId];
 
     this.setState({
-      activeStep,
+      activeStepId,
       doneSteps,
     });
   }
 
   render(): React.ReactNode {
     const { showToastAlert } = this.props;
-    const { alertItems } = this.state;
+    const { alertItems, activeStepId: activeStep } = this.state;
 
     const steps = this.getSteps();
 
     return (
       <React.Fragment>
         <ProgressAlert isToast={showToastAlert} alertItems={alertItems} />
-        <PF.Wizard
-          className={styles.progress}
-          steps={steps}
-          footer={<></>}
+        <WorkspaceProgressWizard
           ref={this.wizardRef}
+          activeStepId={activeStep}
+          steps={steps}
           onNext={(...params) => this.handleSwitchToNextStep(...params)}
         />
       </React.Fragment>
