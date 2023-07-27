@@ -31,7 +31,7 @@
     "@fastify/cors": "^7.0.0",
     "@fastify/error": "^3.0.0",
     "@fastify/http-proxy": "^7.1.0",
-    "@fastify/oauth2": "^5.0.0",
+    "@fastify/oauth2": "^7.2.0",
     "@fastify/static": "^5.0.2",
     "@fastify/swagger": "^6.1.0",
     "@fastify/websocket": "^5.0.0",
