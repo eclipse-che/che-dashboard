@@ -11,6 +11,7 @@
  */
 
 import { History } from 'history';
+import isEqual from 'lodash/isEqual';
 import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import {
@@ -87,6 +88,26 @@ class Progress extends React.PureComponent<Props, State> {
       factoryParams,
       initialLoaderMode,
     };
+  }
+
+  public shouldComponentUpdate(nextProps: Readonly<Props>, nextState: Readonly<State>): boolean {
+    if (this.state.activeStepId !== nextState.activeStepId) {
+      return true;
+    }
+
+    if (isEqual(this.state.alertItems, nextState.alertItems) === false) {
+      return true;
+    }
+
+    if (isEqual(this.state.conditions, nextState.conditions) === false) {
+      return true;
+    }
+
+    if (isEqual(this.state.doneSteps, nextState.doneSteps) === false) {
+      return true;
+    }
+
+    return false;
   }
 
   public componentDidMount(): void {
