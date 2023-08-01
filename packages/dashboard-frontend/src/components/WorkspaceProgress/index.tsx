@@ -129,14 +129,21 @@ class Progress extends React.Component<Props, State> {
 
   private init(): void {
     const workspace = this.findTargetWorkspace(this.props);
-    if (workspace && workspace.status === DevWorkspaceStatus.STARTING) {
+    if (
+      workspace &&
+      (workspace.status === DevWorkspaceStatus.STARTING ||
+        workspace.status === DevWorkspaceStatus.RUNNING)
+    ) {
       const conditions = (workspace.ref.status?.conditions || []).filter(
         condition => condition.message,
       ) as ConditionType[];
 
       const lastScore = this.scoreConditions(this.state.conditions);
       const score = this.scoreConditions(conditions);
-      if (score > lastScore) {
+      if (
+        score > lastScore ||
+        (score === lastScore && isEqual(this.state.conditions, conditions) === false)
+      ) {
         this.setState({
           conditions,
         });
@@ -341,6 +348,11 @@ class Progress extends React.Component<Props, State> {
     const { factoryParams } = this.state;
 
     const usePrebuiltResources = factoryParams.useDevworkspaceResources;
+    const steps = [
+      usePrebuiltResources ? this.getFactoryFetchResources() : this.getFactoryFetchDevfile(),
+      this.getCheckExistingWorkspacesStep(),
+      usePrebuiltResources ? this.getFactoryApplyResources() : this.getFactoryApplyDevfile(),
+    ];
 
     return [
       {
@@ -357,37 +369,43 @@ class Progress extends React.Component<Props, State> {
           />
         ),
         component: <></>,
-        steps: [
-          usePrebuiltResources ? this.getFactoryFetchResources() : this.getFactoryFetchDevfile(),
-          {
-            id: Step.CONFLICT_CHECK,
-            name: (
-              <CreatingStepCheckExistingWorkspaces
-                distance={this.getDistance(Step.CONFLICT_CHECK)}
-                history={history}
-                searchParams={searchParams}
-                onError={alertItem => this.handleStepsShowAlert(Step.CONFLICT_CHECK, alertItem)}
-                onHideError={alertId => this.handleCloseStepAlert(alertId)}
-                onNextStep={() => this.handleStepsGoToNext(Step.CONFLICT_CHECK)}
-                onRestart={tab => this.handleStepsRestart(Step.CONFLICT_CHECK, tab)}
-              />
-            ),
-            component: <></>,
-          },
-          usePrebuiltResources ? this.getFactoryApplyResources() : this.getFactoryApplyDevfile(),
-        ],
+        steps,
       },
     ];
   }
 
+  private getCheckExistingWorkspacesStep(): WorkspaceProgressWizardStep {
+    const { history, searchParams } = this.props;
+    const distance = this.getDistance(Step.CONFLICT_CHECK);
+
+    return {
+      id: Step.CONFLICT_CHECK,
+      isFinishedStep: distance === 1,
+      name: (
+        <CreatingStepCheckExistingWorkspaces
+          distance={distance}
+          history={history}
+          searchParams={searchParams}
+          onError={alertItem => this.handleStepsShowAlert(Step.CONFLICT_CHECK, alertItem)}
+          onHideError={alertId => this.handleCloseStepAlert(alertId)}
+          onNextStep={() => this.handleStepsGoToNext(Step.CONFLICT_CHECK)}
+          onRestart={tab => this.handleStepsRestart(Step.CONFLICT_CHECK, tab)}
+        />
+      ),
+      component: <></>,
+    };
+  }
+
   private getFactoryFetchResources(): WorkspaceProgressWizardStep {
     const { history, searchParams } = this.props;
+    const distance = this.getDistance(Step.FETCH);
 
     return {
       id: Step.FETCH,
+      isFinishedStep: distance === 1,
       name: (
         <CreatingStepFetchResources
-          distance={this.getDistance(Step.FETCH)}
+          distance={distance}
           history={history}
           searchParams={searchParams}
           onError={alertItem => this.handleStepsShowAlert(Step.FETCH, alertItem)}
@@ -402,12 +420,14 @@ class Progress extends React.Component<Props, State> {
 
   private getFactoryApplyResources(): WorkspaceProgressWizardStep {
     const { history, searchParams } = this.props;
+    const distance = this.getDistance(Step.APPLY);
 
     return {
       id: Step.APPLY,
+      isFinishedStep: distance === 1,
       name: (
         <CreatingStepApplyResources
-          distance={this.getDistance(Step.APPLY)}
+          distance={distance}
           history={history}
           searchParams={searchParams}
           onError={alertItem => this.handleStepsShowAlert(Step.APPLY, alertItem)}
@@ -422,12 +442,14 @@ class Progress extends React.Component<Props, State> {
 
   private getFactoryFetchDevfile(): WorkspaceProgressWizardStep {
     const { history, searchParams } = this.props;
+    const distance = this.getDistance(Step.FETCH);
 
     return {
       id: Step.FETCH,
+      isFinishedStep: distance === 1,
       name: (
         <CreatingStepFetchDevfile
-          distance={this.getDistance(Step.FETCH)}
+          distance={distance}
           history={history}
           searchParams={searchParams}
           onError={alertItem => this.handleStepsShowAlert(Step.FETCH, alertItem)}
@@ -442,12 +464,14 @@ class Progress extends React.Component<Props, State> {
 
   private getFactoryApplyDevfile(): WorkspaceProgressWizardStep {
     const { history, searchParams } = this.props;
+    const distance = this.getDistance(Step.APPLY);
 
     return {
       id: Step.APPLY,
+      isFinishedStep: distance === 1,
       name: (
         <CreatingStepApplyDevfile
-          distance={this.getDistance(Step.APPLY)}
+          distance={distance}
           history={history}
           searchParams={searchParams}
           onError={alertItem => this.handleStepsShowAlert(Step.APPLY, alertItem)}
@@ -514,11 +538,15 @@ class Progress extends React.Component<Props, State> {
 
     return conditions.map(condition => {
       const stepId: ConditionStepId = `condition-${condition.type}`;
+      const distance = condition.status === 'True' ? 1 : 0;
+      const isFinishedStep = distance === 1;
+
       return {
         id: stepId,
+        isFinishedStep,
         name: (
           <StartingStepWorkspaceConditions
-            distance={1}
+            distance={distance}
             condition={condition as ConditionType}
             matchParams={loaderMode.workspaceParams}
             history={history}
