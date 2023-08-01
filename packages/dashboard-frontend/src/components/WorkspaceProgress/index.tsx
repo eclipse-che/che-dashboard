@@ -21,6 +21,7 @@ import {
 import { findTargetWorkspace } from '../../services/helpers/factoryFlow/findTargetWorkspace';
 import { getLoaderMode, LoaderMode } from '../../services/helpers/factoryFlow/getLoaderMode';
 import { AlertItem, DevWorkspaceStatus, LoaderTab } from '../../services/helpers/types';
+import { Workspace } from '../../services/workspace-adapter';
 import { AppState } from '../../store';
 import * as WorkspaceStore from '../../store/Workspaces';
 import { selectAllWorkspaces } from '../../store/Workspaces/selectors';
@@ -69,7 +70,7 @@ export enum Step {
 type ConditionStepId = `condition-${string}`;
 export type StepId = Step | ConditionStepId;
 
-class Progress extends React.PureComponent<Props, State> {
+class Progress extends React.Component<Props, State> {
   private readonly wizardRef: React.RefObject<any>;
 
   constructor(props: Props) {
@@ -107,6 +108,14 @@ class Progress extends React.PureComponent<Props, State> {
       return true;
     }
 
+    const workspace = this.findTargetWorkspace(this.props);
+    const conditions = workspace?.ref.status?.conditions || [];
+    const nextWorkspace = this.findTargetWorkspace(nextProps);
+    const nextConditions = nextWorkspace?.ref.status?.conditions || [];
+    if (isEqual(conditions, nextConditions) === false) {
+      return true;
+    }
+
     return false;
   }
 
@@ -119,25 +128,31 @@ class Progress extends React.PureComponent<Props, State> {
   }
 
   private init(): void {
-    const { allWorkspaces, history } = this.props;
-    const loaderMode = getLoaderMode(history.location);
+    const workspace = this.findTargetWorkspace(this.props);
+    if (workspace && workspace.status === DevWorkspaceStatus.STARTING) {
+      const conditions = (workspace.ref.status?.conditions || []).filter(
+        condition => condition.message,
+      ) as ConditionType[];
 
-    if (loaderMode.mode === 'workspace') {
-      const workspace = findTargetWorkspace(allWorkspaces, loaderMode.workspaceParams);
-      if (workspace && workspace.status === DevWorkspaceStatus.STARTING) {
-        const conditions = (workspace.ref.status?.conditions || []).filter(
-          condition => condition.message,
-        ) as ConditionType[];
-
-        const lastScore = this.scoreConditions(this.state.conditions);
-        const score = this.scoreConditions(conditions);
-        if (score > lastScore) {
-          this.setState({
-            conditions,
-          });
-        }
+      const lastScore = this.scoreConditions(this.state.conditions);
+      const score = this.scoreConditions(conditions);
+      if (score > lastScore) {
+        this.setState({
+          conditions,
+        });
       }
     }
+  }
+
+  private findTargetWorkspace(props: Props): Workspace | undefined {
+    const { allWorkspaces, history } = props;
+    const loaderMode = getLoaderMode(history.location);
+
+    if (loaderMode.mode !== 'workspace') {
+      return;
+    }
+
+    return findTargetWorkspace(allWorkspaces, loaderMode.workspaceParams);
   }
 
   private scoreConditions(conditions: ConditionType[]): number {
