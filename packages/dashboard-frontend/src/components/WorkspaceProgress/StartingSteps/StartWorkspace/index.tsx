@@ -203,7 +203,7 @@ class StartingStepStartWorkspace extends ProgressStep<Props, State> {
   }
 
   render(): React.ReactNode {
-    const { distance, startTimeout } = this.props;
+    const { distance, hasChildren, startTimeout } = this.props;
     const { name, lastError } = this.state;
 
     const isActive = distance === 0;
@@ -217,7 +217,12 @@ class StartingStepStartWorkspace extends ProgressStep<Props, State> {
         {isActive && (
           <TimeLimit timeLimitSec={startTimeout} onTimeout={() => this.handleTimeout(workspace)} />
         )}
-        <ProgressStepTitle distance={distance} isError={isError} isWarning={isWarning}>
+        <ProgressStepTitle
+          distance={distance}
+          hasChildren={hasChildren}
+          isError={isError}
+          isWarning={isWarning}
+        >
           {name}
         </ProgressStepTitle>
       </React.Fragment>

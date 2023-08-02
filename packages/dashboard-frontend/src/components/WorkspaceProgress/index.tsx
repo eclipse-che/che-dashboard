@@ -283,6 +283,7 @@ class Progress extends React.Component<Props, State> {
       name: (
         <CreatingStepInitialize
           distance={this.getDistance(Step.INITIALIZE)}
+          hasChildren={false}
           history={history}
           searchParams={searchParams}
           onError={alertItem => this.handleStepsShowAlert(Step.INITIALIZE, alertItem)}
@@ -306,6 +307,7 @@ class Progress extends React.Component<Props, State> {
       name: (
         <StartingStepInitialize
           distance={this.getDistance(Step.INITIALIZE)}
+          hasChildren={false}
           history={history}
           matchParams={matchParams}
           onError={alertItem => this.handleStepsShowAlert(Step.INITIALIZE, alertItem)}
@@ -330,6 +332,7 @@ class Progress extends React.Component<Props, State> {
         name: (
           <CommonStepCheckRunningWorkspacesLimit
             distance={this.getDistance(Step.LIMIT_CHECK)}
+            hasChildren={false}
             history={history}
             matchParams={matchParams}
             onError={alertItem => this.handleStepsShowAlert(Step.LIMIT_CHECK, alertItem)}
@@ -354,12 +357,16 @@ class Progress extends React.Component<Props, State> {
       usePrebuiltResources ? this.getFactoryApplyResources() : this.getFactoryApplyDevfile(),
     ];
 
+    const areFinishedChildren = steps.every(step => step.isFinishedStep);
+    const distance = areFinishedChildren ? 1 : -1;
+
     return [
       {
         id: Step.CREATE,
         name: (
           <CreatingStepCreateWorkspace
-            distance={this.getDistance(Step.CREATE)}
+            distance={distance}
+            hasChildren={true}
             history={history}
             searchParams={searchParams}
             onError={alertItem => this.handleStepsShowAlert(Step.CREATE, alertItem)}
@@ -384,6 +391,7 @@ class Progress extends React.Component<Props, State> {
       name: (
         <CreatingStepCheckExistingWorkspaces
           distance={distance}
+          hasChildren={false}
           history={history}
           searchParams={searchParams}
           onError={alertItem => this.handleStepsShowAlert(Step.CONFLICT_CHECK, alertItem)}
@@ -406,6 +414,7 @@ class Progress extends React.Component<Props, State> {
       name: (
         <CreatingStepFetchResources
           distance={distance}
+          hasChildren={false}
           history={history}
           searchParams={searchParams}
           onError={alertItem => this.handleStepsShowAlert(Step.FETCH, alertItem)}
@@ -428,6 +437,7 @@ class Progress extends React.Component<Props, State> {
       name: (
         <CreatingStepApplyResources
           distance={distance}
+          hasChildren={false}
           history={history}
           searchParams={searchParams}
           onError={alertItem => this.handleStepsShowAlert(Step.APPLY, alertItem)}
@@ -450,6 +460,7 @@ class Progress extends React.Component<Props, State> {
       name: (
         <CreatingStepFetchDevfile
           distance={distance}
+          hasChildren={false}
           history={history}
           searchParams={searchParams}
           onError={alertItem => this.handleStepsShowAlert(Step.FETCH, alertItem)}
@@ -472,6 +483,7 @@ class Progress extends React.Component<Props, State> {
       name: (
         <CreatingStepApplyDevfile
           distance={distance}
+          hasChildren={false}
           history={history}
           searchParams={searchParams}
           onError={alertItem => this.handleStepsShowAlert(Step.APPLY, alertItem)}
@@ -500,6 +512,7 @@ class Progress extends React.Component<Props, State> {
         name: (
           <StartingStepStartWorkspace
             distance={this.getDistance(Step.START)}
+            hasChildren={true}
             onError={alertItem => this.handleStepsShowAlert(Step.START, alertItem)}
             onHideError={key => this.handleCloseStepAlert(key)}
             onNextStep={() => this.handleStepsGoToNext(Step.START)}
@@ -515,6 +528,7 @@ class Progress extends React.Component<Props, State> {
         name: (
           <StartingStepOpenWorkspace
             distance={this.getDistance(Step.OPEN)}
+            hasChildren={false}
             onError={alertItem => this.handleStepsShowAlert(Step.OPEN, alertItem)}
             onHideError={key => this.handleCloseStepAlert(key)}
             onNextStep={() => this.handleStepsGoToNext(Step.OPEN)}
@@ -547,6 +561,7 @@ class Progress extends React.Component<Props, State> {
         name: (
           <StartingStepWorkspaceConditions
             distance={distance}
+            hasChildren={false}
             condition={condition as ConditionType}
             matchParams={loaderMode.workspaceParams}
             history={history}

@@ -42,8 +42,8 @@ export type ConditionType = V1alpha2DevWorkspaceStatusConditions &
 
 export type Props = MappedProps &
   ProgressStepProps & {
-    matchParams: WorkspaceParams;
     condition: ConditionType;
+    matchParams: WorkspaceParams;
   };
 export type State = ProgressStepState & {
   isFailed: boolean;
@@ -175,6 +175,7 @@ export class StartingStepWorkspaceConditions extends ProgressStep<Props, State> 
   }
 
   render() {
+    const { hasChildren } = this.props;
     const { isFailed, isReady } = this.state;
 
     const distance = isReady ? 1 : 0;
@@ -186,6 +187,7 @@ export class StartingStepWorkspaceConditions extends ProgressStep<Props, State> 
         <ProgressStepTitle
           className={styles.conditionTitle}
           distance={distance}
+          hasChildren={hasChildren}
           isError={isError}
           isWarning={isWarning}
         >

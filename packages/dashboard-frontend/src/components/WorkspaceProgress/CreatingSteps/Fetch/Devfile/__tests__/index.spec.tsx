@@ -655,6 +655,7 @@ function getComponent(store: Store, searchParams: URLSearchParams): React.ReactE
     <Provider store={store}>
       <CreatingStepFetchDevfile
         distance={0}
+        hasChildren={false}
         history={history}
         searchParams={searchParams}
         onNextStep={mockOnNextStep}

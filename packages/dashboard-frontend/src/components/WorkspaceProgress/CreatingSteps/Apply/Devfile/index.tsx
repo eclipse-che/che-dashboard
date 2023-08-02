@@ -398,7 +398,7 @@ class CreatingStepApplyDevfile extends ProgressStep<Props, State> {
   }
 
   render(): React.ReactElement {
-    const { distance } = this.props;
+    const { distance, hasChildren } = this.props;
     const { name, lastError, warning } = this.state;
 
     const isActive = distance === 0;
@@ -410,7 +410,12 @@ class CreatingStepApplyDevfile extends ProgressStep<Props, State> {
         {isActive && (
           <TimeLimit timeLimitSec={TIMEOUT_TO_CREATE_SEC} onTimeout={() => this.handleTimeout()} />
         )}
-        <ProgressStepTitle distance={distance} isError={isError} isWarning={isWarning}>
+        <ProgressStepTitle
+          distance={distance}
+          hasChildren={hasChildren}
+          isError={isError}
+          isWarning={isWarning}
+        >
           {name}
         </ProgressStepTitle>
       </React.Fragment>

@@ -318,7 +318,7 @@ class CommonStepCheckRunningWorkspacesLimit extends ProgressStep<Props, State> {
   }
 
   render(): React.ReactNode {
-    const { distance } = this.props;
+    const { distance, hasChildren } = this.props;
     const { name, lastError } = this.state;
 
     const redundantWorkspace = this.findRedundantWorkspace(this.props, this.state);
@@ -335,7 +335,12 @@ class CommonStepCheckRunningWorkspacesLimit extends ProgressStep<Props, State> {
             onTimeout={() => this.handleTimeout(redundantWorkspace)}
           />
         )}
-        <ProgressStepTitle distance={distance} isError={isError} isWarning={isWarning}>
+        <ProgressStepTitle
+          distance={distance}
+          hasChildren={hasChildren}
+          isError={isError}
+          isWarning={isWarning}
+        >
           {name}
         </ProgressStepTitle>
       </React.Fragment>
