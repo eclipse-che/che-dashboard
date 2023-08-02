@@ -304,6 +304,7 @@ function getComponent(
     <React.Fragment>
       <StartingStepWorkspaceConditions
         distance={0}
+        hasChildren={false}
         condition={condition}
         history={history}
         matchParams={_matchParams}
