@@ -34,7 +34,7 @@ describe('FactoryLocationAdapter Service', () => {
       expect(factoryLocation.isSshLocation).toBeTruthy();
     });
     it('should determine the Bitbucket-Server SSH location', () => {
-      const location = 'ssh://git@bitbucket-server.com:7999/~user/repo.git
+      const location = 'ssh://git@bitbucket-server.com:7999/~user/repo.git';
 
       factoryLocation = new FactoryLocationAdapter(location);
 
