@@ -29,7 +29,9 @@ export class ProgressStepTitle extends React.Component<Props> {
 
     let readiness = styles.ready;
     if (distance === 0) {
-      readiness = isError ? styles.error : styles.progress;
+      readiness = styles.progress;
+    } else if (isError) {
+      readiness = styles.error;
     }
 
     const fullClassName = [readiness, className].filter(c => c).join(' ');
