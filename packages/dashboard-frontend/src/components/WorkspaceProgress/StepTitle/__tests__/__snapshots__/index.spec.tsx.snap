@@ -54,7 +54,7 @@ Array [
     />
   </svg>,
   <span
-    className="error"
+    className="progress"
     data-testid="step-title"
   >
     Step 1

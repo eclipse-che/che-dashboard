@@ -62,6 +62,11 @@ class StartingStepStartWorkspace extends ProgressStep<Props, State> {
       return true;
     }
 
+    // show/hide spinner near the step title
+    if (this.props.hasChildren !== nextProps.hasChildren) {
+      return true;
+    }
+
     const workspace = this.findTargetWorkspace(this.props);
     const nextWorkspace = this.findTargetWorkspace(nextProps);
 

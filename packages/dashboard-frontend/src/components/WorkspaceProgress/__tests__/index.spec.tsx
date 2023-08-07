@@ -423,16 +423,29 @@ describe('LoaderProgress', () => {
         expect(within(steps[3]).getByTestId('step-name')).toHaveTextContent('Open workspace');
       });
 
-      test('with condition steps', () => {
+      test('with condition steps', async () => {
         const store = new FakeStoreBuilder()
           .withDevWorkspaces({ workspaces: [devWorkspace] })
           .build();
 
-        renderComponent(history, store, searchParams, false);
+        renderComponent(history, store, searchParams, false, {
+          activeStepId: Step.START,
+          alertItems: [],
+          conditions: [],
+          doneSteps: [Step.INITIALIZE, Step.LIMIT_CHECK],
+          hasBeenStarted: true,
+          initialLoaderMode: {
+            mode: 'workspace',
+            workspaceParams: {
+              namespace,
+              workspaceName,
+            },
+          },
+        });
 
         const steps = getSteps();
 
-        expect(steps.length).toEqual(6);
+        await waitFor(() => expect(getSteps().length).toEqual(6));
 
         expect(within(steps[0]).getByTestId('step-name')).toHaveTextContent('Initialize');
         expect(within(steps[1]).getByTestId('step-name')).toHaveTextContent(
