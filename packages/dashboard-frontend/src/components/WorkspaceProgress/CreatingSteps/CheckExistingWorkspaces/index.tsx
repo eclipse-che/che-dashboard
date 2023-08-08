@@ -44,7 +44,7 @@ export type State = ProgressStepState & {
 };
 
 class CreatingStepCheckExistingWorkspaces extends ProgressStep<Props, State> {
-  protected readonly name = 'Checking existing workspaces';
+  protected readonly name = 'Checking if a workspace with the same name exists';
 
   constructor(props: Props) {
     super(props);

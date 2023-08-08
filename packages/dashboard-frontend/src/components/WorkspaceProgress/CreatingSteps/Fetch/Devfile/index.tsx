@@ -67,16 +67,19 @@ export type State = ProgressStepState & {
 };
 
 class CreatingStepFetchDevfile extends ProgressStep<Props, State> {
-  protected readonly name = 'Looking for devfile';
+  protected readonly name = 'Inspecting repo';
 
   constructor(props: Props) {
     super(props);
 
+    const factoryParams = buildFactoryParams(props.searchParams);
+    const name = `Inspecting repo ${factoryParams.sourceUrl} for a devfile`;
+
     this.state = {
-      factoryParams: buildFactoryParams(props.searchParams),
+      factoryParams,
       shouldResolve: true,
       useDefaultDevfile: false,
-      name: this.name,
+      name,
     };
   }
 

@@ -65,7 +65,7 @@ export type State = ProgressStepState & {
 };
 
 class CreatingStepApplyDevfile extends ProgressStep<Props, State> {
-  protected readonly name = 'Applying devfile';
+  protected readonly name = 'Generating a DevWorkspace from the Devfile';
 
   constructor(props: Props) {
     super(props);
