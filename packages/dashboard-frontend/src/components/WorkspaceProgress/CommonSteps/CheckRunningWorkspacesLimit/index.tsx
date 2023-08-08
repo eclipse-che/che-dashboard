@@ -244,8 +244,6 @@ class CommonStepCheckRunningWorkspacesLimit extends ProgressStep<Props, State> {
   }
 
   protected handleTimeout(redundantWorkspace: Workspace | undefined): void {
-    // eslint-disable-next-line no-debugger
-    debugger;
     const message = redundantWorkspace
       ? `The workspace status remains "${redundantWorkspace.status}" in the last ${TIMEOUT_TO_STOP_SEC} seconds.`
       : `Could not check running workspaces limit in the last ${TIMEOUT_TO_STOP_SEC} seconds.`;
