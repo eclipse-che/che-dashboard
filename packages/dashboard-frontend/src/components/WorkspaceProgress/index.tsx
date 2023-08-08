@@ -583,8 +583,14 @@ class Progress extends React.Component<Props, State> {
       condition => condition.type === 'Ready' && condition.status === 'True',
     );
 
+    const workspaceStartFailed = conditions.some(condition => condition.reason !== undefined);
+
     return conditions
       .filter((condition): condition is ConditionType => isWorkspaceStatusCondition(condition))
+      .filter(condition => {
+        // show only condition with the failure description
+        return workspaceStartFailed ? condition.status === 'True' : true;
+      })
       .map(condition => {
         const stepId: ConditionStepId = `condition-${condition.type}`;
         const distance = condition.status === 'True' ? 1 : 0;
