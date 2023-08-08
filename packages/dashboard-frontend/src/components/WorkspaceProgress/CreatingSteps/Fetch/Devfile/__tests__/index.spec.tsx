@@ -73,7 +73,12 @@ describe('Creating steps, fetching a devfile', () => {
           location: factoryUrl,
         },
         converted: {
-          devfileV2: {} as devfileApi.Devfile,
+          devfileV2: {
+            metadata: {
+              name: 'my-project',
+              generateName: 'my-project-',
+            },
+          } as devfileApi.Devfile,
         },
       })
       .build();
@@ -487,7 +492,12 @@ describe('Creating steps, fetching a devfile', () => {
             location: factoryUrl,
           },
           converted: {
-            devfileV2: {} as devfileApi.Devfile,
+            devfileV2: {
+              metadata: {
+                name: 'my-project',
+                generateName: 'my-project-',
+              },
+            } as devfileApi.Devfile,
           },
         })
         .build();
@@ -620,7 +630,12 @@ describe('Creating steps, fetching a devfile', () => {
             location: factoryUrl,
           },
           converted: {
-            devfileV2: {} as devfileApi.Devfile,
+            devfileV2: {
+              metadata: {
+                name: 'my-project',
+                generateName: 'my-project-',
+              },
+            } as devfileApi.Devfile,
           },
         })
         .build();
