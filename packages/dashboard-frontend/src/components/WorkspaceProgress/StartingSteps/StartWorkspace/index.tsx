@@ -68,6 +68,11 @@ class StartingStepStartWorkspace extends ProgressStep<Props, State> {
       return true;
     }
 
+    // show/hide spinner near the step title
+    if (this.props.hasChildren !== nextProps.hasChildren) {
+      return true;
+    }
+
     const workspace = this.findTargetWorkspace(this.props);
     const nextWorkspace = this.findTargetWorkspace(nextProps);
 
@@ -203,7 +208,7 @@ class StartingStepStartWorkspace extends ProgressStep<Props, State> {
   }
 
   render(): React.ReactNode {
-    const { distance, startTimeout } = this.props;
+    const { distance, hasChildren, startTimeout } = this.props;
     const { name, lastError } = this.state;
 
     const isActive = distance === 0;
@@ -217,7 +222,12 @@ class StartingStepStartWorkspace extends ProgressStep<Props, State> {
         {isActive && (
           <TimeLimit timeLimitSec={startTimeout} onTimeout={() => this.handleTimeout(workspace)} />
         )}
-        <ProgressStepTitle distance={distance} isError={isError} isWarning={isWarning}>
+        <ProgressStepTitle
+          distance={distance}
+          hasChildren={hasChildren}
+          isError={isError}
+          isWarning={isWarning}
+        >
           {name}
         </ProgressStepTitle>
       </React.Fragment>
