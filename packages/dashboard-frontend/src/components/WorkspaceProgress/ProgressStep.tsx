@@ -19,6 +19,7 @@ import { AlertItem, LoaderTab } from '../../services/helpers/types';
 
 export type ProgressStepProps = {
   distance: -1 | 0 | 1 | undefined;
+  hasChildren: boolean;
   history: History;
   onError: (alertItem: AlertItem) => void;
   onHideError: (key: string) => void;
