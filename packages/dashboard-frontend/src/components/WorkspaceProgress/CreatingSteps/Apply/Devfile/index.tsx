@@ -19,7 +19,8 @@ import { connect, ConnectedProps } from 'react-redux';
 import devfileApi from '../../../../../services/devfileApi';
 import {
   buildFactoryParams,
-  FactoryParams, USE_DEFAULT_DEVFILE
+  FactoryParams,
+  USE_DEFAULT_DEVFILE,
 } from '../../../../../services/helpers/factoryFlow/buildFactoryParams';
 import { findTargetWorkspace } from '../../../../../services/helpers/factoryFlow/findTargetWorkspace';
 import { buildIdeLoaderLocation } from '../../../../../services/helpers/location';

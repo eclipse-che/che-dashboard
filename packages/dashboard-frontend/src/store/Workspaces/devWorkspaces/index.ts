@@ -62,7 +62,7 @@ import * as DwApi from '../../../services/dashboard-backend-client/devWorkspaceA
 import {
   devWorkspaceApiGroup,
   devWorkspaceSingularSubresource,
-  devWorkspaceVersion
+  devWorkspaceVersion,
 } from '../../../services/workspace-client/devworkspace/converters';
 import { selectDefaultEditor } from '../../Plugins/devWorkspacePlugins/selectors';
 
