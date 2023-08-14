@@ -112,6 +112,10 @@ describe('Creating steps, applying a devfile', () => {
         children: 'Failed to resolve the devfile.',
         actionCallbacks: [
           expect.objectContaining({
+            title: 'Continue with the default devfile',
+            callback: expect.any(Function),
+          }),
+          expect.objectContaining({
             title: 'Click to try again',
             callback: expect.any(Function),
           }),
@@ -568,6 +572,10 @@ describe('Creating steps, applying a devfile', () => {
       title: 'Failed to create the workspace',
       children: `Workspace hasn't been created in the last 20 seconds.`,
       actionCallbacks: [
+        expect.objectContaining({
+          title: 'Continue with the default devfile',
+          callback: expect.any(Function),
+        }),
         expect.objectContaining({
           title: 'Click to try again',
           callback: expect.any(Function),

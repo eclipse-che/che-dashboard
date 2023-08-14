@@ -266,6 +266,10 @@ describe('Creating steps, fetching a devfile', () => {
         children: `Devfile hasn't been resolved in the last ${TIMEOUT_TO_RESOLVE_SEC} seconds.`,
         actionCallbacks: [
           expect.objectContaining({
+            title: 'Continue with the default devfile',
+            callback: expect.any(Function),
+          }),
+          expect.objectContaining({
             title: 'Click to try again',
             callback: expect.any(Function),
           }),
@@ -590,6 +594,10 @@ describe('Creating steps, fetching a devfile', () => {
         children:
           'The Dashboard reached a limit of reloads while trying to resolve a devfile in a private repo. Please contact admin to check if OAuth is configured correctly.',
         actionCallbacks: [
+          expect.objectContaining({
+            title: 'Continue with the default devfile',
+            callback: expect.any(Function),
+          }),
           expect.objectContaining({
             title: 'Click to try again',
             callback: expect.any(Function),

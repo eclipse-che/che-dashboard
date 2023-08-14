@@ -27,6 +27,10 @@ import { ProgressStep, ProgressStepProps, ProgressStepState } from '../../Progre
 import { ProgressStepTitle } from '../../StepTitle';
 import { TimeLimit } from '../../TimeLimit';
 import workspaceStatusIs from '../../workspaceStatusIs';
+import {
+  DEBUG_WORKSPACE_START,
+  USE_DEFAULT_DEVFILE,
+} from '../../../../services/helpers/factoryFlow/buildFactoryParams';
 
 export type Props = MappedProps &
   ProgressStepProps & {
@@ -34,6 +38,7 @@ export type Props = MappedProps &
   };
 export type State = ProgressStepState & {
   shouldStart: boolean; // should the loader start a workspace?
+  shouldUpdateWithDefaultDevfile: boolean;
 };
 
 class StartingStepStartWorkspace extends ProgressStep<Props, State> {
@@ -45,6 +50,7 @@ class StartingStepStartWorkspace extends ProgressStep<Props, State> {
     this.state = {
       shouldStart: true,
       name: this.name,
+      shouldUpdateWithDefaultDevfile: false,
     };
   }
 
@@ -53,6 +59,15 @@ class StartingStepStartWorkspace extends ProgressStep<Props, State> {
   }
 
   public async componentDidUpdate() {
+    const searchParams = new URLSearchParams(this.props.history.location.search);
+    const safeMode = searchParams.get(USE_DEFAULT_DEVFILE) === 'true';
+    if (safeMode) {
+      this.setState({ shouldUpdateWithDefaultDevfile: safeMode });
+      searchParams.delete(USE_DEFAULT_DEVFILE);
+      this.props.history.location.search = searchParams.toString();
+      return;
+    }
+
     this.init();
   }
 
@@ -83,6 +98,15 @@ class StartingStepStartWorkspace extends ProgressStep<Props, State> {
     if (!isEqual(this.state.lastError, nextState.lastError)) {
       return true;
     }
+
+    if (this.state.shouldUpdateWithDefaultDevfile !== nextState.shouldUpdateWithDefaultDevfile) {
+      return true;
+    }
+
+    if (this.props.history.location.search !== nextProps.history.location.search) {
+      return true;
+    }
+
     return false;
   }
 
@@ -106,7 +130,38 @@ class StartingStepStartWorkspace extends ProgressStep<Props, State> {
     this.prepareAndRun();
   }
 
+  protected handleRestartInSafeMode(alertKey: string, tab: LoaderTab): void {
+    const searchParams = new URLSearchParams(this.props.history.location.search);
+    searchParams.set(USE_DEFAULT_DEVFILE, 'true');
+    searchParams.delete(DEBUG_WORKSPACE_START);
+    this.props.history.location.search = searchParams.toString();
+
+    this.props.onHideError(alertKey);
+
+    this.setState({ shouldStart: true });
+    this.clearStepError();
+    this.props.onRestart(tab);
+  }
+
+  protected handleRestartInDebugMode(alertKey: string, tab: LoaderTab): void {
+    const searchParams = new URLSearchParams(this.props.history.location.search);
+    searchParams.set(DEBUG_WORKSPACE_START, 'true');
+    searchParams.delete(USE_DEFAULT_DEVFILE);
+    this.props.history.location.search = searchParams.toString();
+
+    this.props.onHideError(alertKey);
+
+    this.setState({ shouldStart: true });
+    this.clearStepError();
+    this.props.onRestart(tab);
+  }
+
   protected handleRestart(alertKey: string, tab: LoaderTab): void {
+    const searchParams = new URLSearchParams(this.props.history.location.search);
+    searchParams.delete(DEBUG_WORKSPACE_START);
+    searchParams.delete(USE_DEFAULT_DEVFILE);
+    this.props.history.location.search = searchParams.toString();
+
     this.props.onHideError(alertKey);
 
     this.setState({ shouldStart: true });
@@ -140,6 +195,12 @@ class StartingStepStartWorkspace extends ProgressStep<Props, State> {
       );
     }
 
+    if (this.state.shouldUpdateWithDefaultDevfile) {
+      await this.props.updateWorkspaceWithDefaultDevfile(workspace);
+      this.setState({ shouldUpdateWithDefaultDevfile: false });
+      return false;
+    }
+
     if (
       workspaceStatusIs(
         workspace,
@@ -165,7 +226,14 @@ class StartingStepStartWorkspace extends ProgressStep<Props, State> {
       this.state.shouldStart &&
       workspaceStatusIs(workspace, DevWorkspaceStatus.STOPPED, DevWorkspaceStatus.FAILED)
     ) {
-      await this.props.startWorkspace(workspace);
+      const searchParams = new URLSearchParams(this.props.history.location.search);
+      const params =
+        searchParams.get(DEBUG_WORKSPACE_START) === 'true'
+          ? {
+              'debug-workspace-start': true,
+            }
+          : undefined;
+      await this.props.startWorkspace(workspace, params);
     }
 
     // do not switch to the next step
@@ -192,8 +260,12 @@ class StartingStepStartWorkspace extends ProgressStep<Props, State> {
           callback: () => this.handleRestart(key, LoaderTab.Progress),
         },
         {
-          title: 'Open in Verbose mode',
-          callback: () => this.handleRestart(key, LoaderTab.Logs),
+          title: 'Restart in Safe mode',
+          callback: () => this.handleRestartInSafeMode(key, LoaderTab.Progress),
+        },
+        {
+          title: 'Open in Debug mode',
+          callback: () => this.handleRestartInDebugMode(key, LoaderTab.Logs),
         },
       ],
     };

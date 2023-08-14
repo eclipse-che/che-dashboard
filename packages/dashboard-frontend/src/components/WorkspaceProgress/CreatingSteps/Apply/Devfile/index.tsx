@@ -19,7 +19,7 @@ import { connect, ConnectedProps } from 'react-redux';
 import devfileApi from '../../../../../services/devfileApi';
 import {
   buildFactoryParams,
-  FactoryParams,
+  FactoryParams, USE_DEFAULT_DEVFILE
 } from '../../../../../services/helpers/factoryFlow/buildFactoryParams';
 import { findTargetWorkspace } from '../../../../../services/helpers/factoryFlow/findTargetWorkspace';
 import { buildIdeLoaderLocation } from '../../../../../services/helpers/location';
@@ -61,7 +61,7 @@ export type State = ProgressStepState & {
   newWorkspaceName?: string; // a workspace name to create
   shouldCreate: boolean; // should the loader create a workspace
   warning?: string; // the devWorkspace warning to show
-  continueWithDefaultDevfile?: boolean; //
+  continueWithDefaultDevfile: boolean; //
 };
 
 class CreatingStepApplyDevfile extends ProgressStep<Props, State> {
@@ -70,10 +70,12 @@ class CreatingStepApplyDevfile extends ProgressStep<Props, State> {
   constructor(props: Props) {
     super(props);
 
+    const factoryParams = buildFactoryParams(props.searchParams);
     this.state = {
       factoryParams: buildFactoryParams(props.searchParams),
       shouldCreate: true,
       name: this.name,
+      continueWithDefaultDevfile: factoryParams.useDefaultDevfile,
     };
   }
 
@@ -321,6 +323,9 @@ class CreatingStepApplyDevfile extends ProgressStep<Props, State> {
   }
 
   protected handleRestart(alertKey: string): void {
+    const searchParams = new URLSearchParams(this.props.history.location.search);
+    searchParams.delete(USE_DEFAULT_DEVFILE);
+    this.props.history.location.search = searchParams.toString();
     this.props.onHideError(alertKey);
 
     this.setState({
@@ -332,6 +337,9 @@ class CreatingStepApplyDevfile extends ProgressStep<Props, State> {
   }
 
   private handleContinueWithDefaultDevfile(alertKey: string): void {
+    const searchParams = new URLSearchParams(this.props.history.location.search);
+    searchParams.set(USE_DEFAULT_DEVFILE, 'true');
+    this.props.history.location.search = searchParams.toString();
     this.props.onHideError(alertKey);
 
     this.setState({
@@ -382,6 +390,10 @@ class CreatingStepApplyDevfile extends ProgressStep<Props, State> {
       variant: AlertVariant.danger,
       children: helpers.errors.getMessage(error),
       actionCallbacks: [
+        {
+          title: 'Continue with the default devfile',
+          callback: () => this.handleContinueWithDefaultDevfile(key),
+        },
         {
           title: 'Click to try again',
           callback: () => this.handleRestart(key),

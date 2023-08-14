@@ -27,6 +27,10 @@ import { TIMEOUT_TO_GET_URL_SEC } from '../../const';
 import { ProgressStep, ProgressStepProps, ProgressStepState } from '../../ProgressStep';
 import { ProgressStepTitle } from '../../StepTitle';
 import { TimeLimit } from '../../TimeLimit';
+import {
+  DEBUG_WORKSPACE_START,
+  USE_DEFAULT_DEVFILE,
+} from '../../../../services/helpers/factoryFlow/buildFactoryParams';
 
 export type Props = MappedProps &
   ProgressStepProps & {
@@ -93,7 +97,36 @@ class StartingStepOpenWorkspace extends ProgressStep<Props, State> {
     return false;
   }
 
+  protected handleRestartInSafeMode(alertKey: string, tab: LoaderTab): void {
+    const searchParams = new URLSearchParams(this.props.history.location.search);
+    searchParams.set(USE_DEFAULT_DEVFILE, 'true');
+    searchParams.delete(DEBUG_WORKSPACE_START);
+    this.props.history.location.search = searchParams.toString();
+
+    this.props.onHideError(alertKey);
+
+    this.clearStepError();
+    this.props.onRestart(tab);
+  }
+
+  protected handleRestartInDebugMode(alertKey: string, tab: LoaderTab): void {
+    const searchParams = new URLSearchParams(this.props.history.location.search);
+    searchParams.set(DEBUG_WORKSPACE_START, 'true');
+    searchParams.delete(USE_DEFAULT_DEVFILE);
+    this.props.history.location.search = searchParams.toString();
+
+    this.props.onHideError(alertKey);
+
+    this.clearStepError();
+    this.props.onRestart(tab);
+  }
+
   protected handleRestart(alertKey: string, tab: LoaderTab): void {
+    const searchParams = new URLSearchParams(this.props.history.location.search);
+    searchParams.delete(DEBUG_WORKSPACE_START);
+    searchParams.delete(USE_DEFAULT_DEVFILE);
+    this.props.history.location.search = searchParams.toString();
+
     this.props.onHideError(alertKey);
 
     this.clearStepError();
@@ -161,8 +194,12 @@ class StartingStepOpenWorkspace extends ProgressStep<Props, State> {
           callback: () => this.handleRestart(key, LoaderTab.Progress),
         },
         {
-          title: 'Open in Verbose mode',
-          callback: () => this.handleRestart(key, LoaderTab.Logs),
+          title: 'Restart in Safe mode',
+          callback: () => this.handleRestartInSafeMode(key, LoaderTab.Progress),
+        },
+        {
+          title: 'Open in Debug mode',
+          callback: () => this.handleRestartInDebugMode(key, LoaderTab.Logs),
         },
       ],
     };
