@@ -171,7 +171,7 @@ class StartingStepInitialize extends ProgressStep<Props, State> {
           callback: () => this.handleRestart(key, LoaderTab.Progress),
         },
         {
-          title: 'Open in Debug mode',
+          title: 'Restart in Debug mode',
           callback: () => this.handleRestart(key, LoaderTab.Logs),
         },
       ],

@@ -300,7 +300,7 @@ class CommonStepCheckRunningWorkspacesLimit extends ProgressStep<Props, State> {
           callback: () => this.handleRestart(key),
         },
         {
-          title: 'Open in Debug mode',
+          title: 'Restart in Debug mode',
           callback: () => this.handleRestart(key, LoaderTab.Logs),
         },
       ],

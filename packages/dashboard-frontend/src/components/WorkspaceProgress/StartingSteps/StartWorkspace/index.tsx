@@ -264,7 +264,7 @@ class StartingStepStartWorkspace extends ProgressStep<Props, State> {
           callback: () => this.handleRestartInSafeMode(key, LoaderTab.Progress),
         },
         {
-          title: 'Open in Debug mode',
+          title: 'Restart in Debug mode',
           callback: () => this.handleRestartInDebugMode(key, LoaderTab.Logs),
         },
       ],

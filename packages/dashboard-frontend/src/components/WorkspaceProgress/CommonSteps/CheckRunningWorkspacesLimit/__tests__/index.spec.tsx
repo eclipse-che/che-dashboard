@@ -272,7 +272,7 @@ describe('Common steps, check running workspaces limit', () => {
               callback: expect.any(Function),
             }),
             expect.objectContaining({
-              title: 'Open in Debug mode',
+              title: 'Restart in Debug mode',
               callback: expect.any(Function),
             }),
           ],

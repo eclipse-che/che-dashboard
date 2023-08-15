@@ -321,7 +321,7 @@ describe('Workspaces List Page', () => {
       expect(actionButtons[0]).toBeDisabled();
     });
 
-    it('should handle "Open in Debug mode" action', () => {
+    it('should handle "Restart in Debug mode" action', () => {
       renderComponent();
 
       const actionButtons = screen.getAllByRole('button', { name: /actions/i });
