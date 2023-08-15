@@ -35,7 +35,7 @@ import { getNewerResourceVersion } from '../../../services/helpers/resourceVersi
 import { DevWorkspaceStatus } from '../../../services/helpers/types';
 import OAuthService from '../../../services/oauth';
 import { loadResourcesContent } from '../../../services/registry/resources';
-import { Workspace, WorkspaceAdapter } from '../../../services/workspace-adapter';
+import { WorkspaceAdapter } from '../../../services/workspace-adapter';
 import {
   DevWorkspaceClient,
   DEVWORKSPACE_NEXT_START_ANNOTATION,
@@ -59,11 +59,6 @@ import { selectDevWorkspacesResourceVersion } from './selectors';
 import * as DwtApi from '../../../services/dashboard-backend-client/devWorkspaceTemplateApi';
 import { selectDefaultDevfile } from '../../DevfileRegistries/selectors';
 import * as DwApi from '../../../services/dashboard-backend-client/devWorkspaceApi';
-import {
-  devWorkspaceApiGroup,
-  devWorkspaceSingularSubresource,
-  devWorkspaceVersion,
-} from '../../../services/workspace-client/devworkspace/converters';
 import { selectDefaultEditor } from '../../Plugins/devWorkspacePlugins/selectors';
 
 export const onStatusChangeCallbacks = new Map<string, (status: string) => void>();
@@ -597,6 +592,8 @@ export const actionCreators: ActionCreators = {
     (workspace: devfileApi.DevWorkspace): AppThunk<KnownAction, Promise<void>> =>
     async (dispatch, getState): Promise<void> => {
       const state = getState();
+
+      await dispatch({ type: Type.REQUEST_DEVWORKSPACE, check: AUTHORIZED });
 
       const defaultsDevfile = selectDefaultDevfile(state);
       if (!defaultsDevfile) {
