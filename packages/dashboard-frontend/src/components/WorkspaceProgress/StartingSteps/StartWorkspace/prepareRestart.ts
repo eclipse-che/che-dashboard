@@ -1,0 +1,65 @@
+/*
+ * Copyright (c) 2018-2023 Red Hat, Inc.
+ * This program and the accompanying materials are made
+ * available under the terms of the Eclipse Public License 2.0
+ * which is available at https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ *
+ * Contributors:
+ *   Red Hat, Inc. - initial API and implementation
+ */
+
+import { Location } from 'history';
+import {
+  DEBUG_WORKSPACE_START,
+  USE_DEFAULT_DEVFILE,
+} from '../../../../services/helpers/factoryFlow/buildFactoryParams';
+import { Workspace } from '../../../../services/workspace-adapter';
+import { ResourceQueryParams } from '../../../../store/Workspaces';
+
+export function applyRestartDefaultLocation(location: Location): void {
+  const searchParams = new URLSearchParams(location.search);
+  searchParams.delete(DEBUG_WORKSPACE_START);
+  searchParams.delete(USE_DEFAULT_DEVFILE);
+  location.search = searchParams.toString();
+}
+
+export function applyRestartInDebugModeLocation(location: Location): void {
+  const searchParams = new URLSearchParams(location.search);
+  searchParams.set(DEBUG_WORKSPACE_START, 'true');
+  searchParams.delete(USE_DEFAULT_DEVFILE);
+  location.search = searchParams.toString();
+}
+
+export function applyRestartInSafeModeLocation(location: Location): void {
+  const searchParams = new URLSearchParams(location.search);
+  searchParams.set(USE_DEFAULT_DEVFILE, 'true');
+  searchParams.delete(DEBUG_WORKSPACE_START);
+  location.search = searchParams.toString();
+}
+
+export function resetRestartInSafeModeLocation(location: Location): boolean {
+  const searchParams = new URLSearchParams(location.search);
+  const safeMode = searchParams.get(USE_DEFAULT_DEVFILE) === 'true';
+  if (safeMode) {
+    searchParams.delete(USE_DEFAULT_DEVFILE);
+    location.search = searchParams.toString();
+  }
+  return safeMode;
+}
+
+export async function applyStartWorkspace(
+  startCallback: (workspace: Workspace, params?: ResourceQueryParams | undefined) => Promise<void>,
+  workspace: Workspace,
+  location: Location,
+): Promise<void> {
+  const searchParams = new URLSearchParams(location.search);
+  const params =
+    searchParams.get(DEBUG_WORKSPACE_START) === 'true'
+      ? {
+          'debug-workspace-start': true,
+        }
+      : undefined;
+  await startCallback(workspace, params);
+}

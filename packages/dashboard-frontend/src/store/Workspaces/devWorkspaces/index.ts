@@ -658,6 +658,9 @@ export const actionCreators: ActionCreators = {
           openVSXUrl,
           clusterConsole,
         );
+        if (!devWorkspaceResource.metadata.annotations) {
+          devWorkspaceResource.metadata.annotations = {};
+        }
         devWorkspaceResource.spec.contributions = workspace.spec.contributions;
 
         // add projects from the origin workspace
@@ -669,10 +672,10 @@ export const actionCreators: ActionCreators = {
         if (devWorkspaceTemplateResource === undefined) {
           throw new Error('Failed to find a DevWorkspaceTemplate in the fetched resources.');
         }
-        if (editorYamlUrl && devWorkspaceTemplateResource.metadata) {
-          if (!devWorkspaceTemplateResource.metadata.annotations) {
-            devWorkspaceTemplateResource.metadata.annotations = {};
-          }
+        if (!devWorkspaceTemplateResource.metadata.annotations) {
+          devWorkspaceTemplateResource.metadata.annotations = {};
+        }
+        if (editorYamlUrl) {
           devWorkspaceTemplateResource.metadata.annotations[COMPONENT_UPDATE_POLICY] = 'managed';
           devWorkspaceTemplateResource.metadata.annotations[REGISTRY_URL] = editorYamlUrl;
         }
@@ -721,9 +724,9 @@ export const actionCreators: ActionCreators = {
         await DwtApi.patchTemplate(templateNamespace, templateName, targetTemplatePatch);
 
         const targetWorkspacePatch: api.IPatch[] = [];
-        devWorkspaceResource.metadata.annotations![DEVWORKSPACE_UPDATING_TIMESTAMP_ANNOTATION] =
+        devWorkspaceResource.metadata.annotations[DEVWORKSPACE_UPDATING_TIMESTAMP_ANNOTATION] =
           new Date().toISOString();
-        devWorkspaceResource.metadata.annotations![DEVWORKSPACE_CHE_EDITOR] = defaultsEditor;
+        devWorkspaceResource.metadata.annotations[DEVWORKSPACE_CHE_EDITOR] = defaultsEditor;
         if (workspace.metadata.annotations) {
           targetWorkspacePatch.push({
             op: 'replace',
