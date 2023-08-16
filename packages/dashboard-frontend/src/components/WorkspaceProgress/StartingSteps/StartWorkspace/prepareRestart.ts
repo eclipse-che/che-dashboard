@@ -47,7 +47,7 @@ export function resetRestartInSafeModeLocation(location: Location): boolean {
   return safeMode;
 }
 
-export function getStartParams(location: Location) {
+export function getStartParams(location: Location): { 'debug-workspace-start': true } | undefined {
   const searchParams = new URLSearchParams(location.search);
   return searchParams.get(DEBUG_WORKSPACE_START) === 'true'
     ? {

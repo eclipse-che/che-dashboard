@@ -195,7 +195,7 @@ class StartingStepStartWorkspace extends ProgressStep<Props, State> {
       this.state.shouldStart &&
       workspaceStatusIs(workspace, DevWorkspaceStatus.STOPPED, DevWorkspaceStatus.FAILED)
     ) {
-      this.props.startWorkspace(workspace, getStartParams(this.props.history.location));
+      await this.props.startWorkspace(workspace, getStartParams(this.props.history.location));
     }
 
     // do not switch to the next step
