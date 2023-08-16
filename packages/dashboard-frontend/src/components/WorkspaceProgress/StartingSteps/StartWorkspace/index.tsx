@@ -31,7 +31,7 @@ import {
   applyRestartDefaultLocation,
   applyRestartInDebugModeLocation,
   applyRestartInSafeModeLocation,
-  applyStartWorkspace,
+  getStartParams,
   resetRestartInSafeModeLocation,
 } from './prepareRestart';
 
@@ -195,7 +195,7 @@ class StartingStepStartWorkspace extends ProgressStep<Props, State> {
       this.state.shouldStart &&
       workspaceStatusIs(workspace, DevWorkspaceStatus.STOPPED, DevWorkspaceStatus.FAILED)
     ) {
-      await applyStartWorkspace(this.props.startWorkspace, workspace, this.props.history.location);
+      this.props.startWorkspace(workspace, getStartParams(this.props.history.location));
     }
 
     // do not switch to the next step

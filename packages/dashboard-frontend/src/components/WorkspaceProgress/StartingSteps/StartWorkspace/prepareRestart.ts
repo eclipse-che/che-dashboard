@@ -15,8 +15,6 @@ import {
   DEBUG_WORKSPACE_START,
   USE_DEFAULT_DEVFILE,
 } from '../../../../services/helpers/factoryFlow/buildFactoryParams';
-import { Workspace } from '../../../../services/workspace-adapter';
-import { ResourceQueryParams } from '../../../../store/Workspaces';
 
 export function applyRestartDefaultLocation(location: Location): void {
   const searchParams = new URLSearchParams(location.search);
@@ -49,17 +47,11 @@ export function resetRestartInSafeModeLocation(location: Location): boolean {
   return safeMode;
 }
 
-export async function applyStartWorkspace(
-  startCallback: (workspace: Workspace, params?: ResourceQueryParams | undefined) => Promise<void>,
-  workspace: Workspace,
-  location: Location,
-): Promise<void> {
+export function getStartParams(location: Location) {
   const searchParams = new URLSearchParams(location.search);
-  const params =
-    searchParams.get(DEBUG_WORKSPACE_START) === 'true'
-      ? {
-          'debug-workspace-start': true,
-        }
-      : undefined;
-  await startCallback(workspace, params);
+  return searchParams.get(DEBUG_WORKSPACE_START) === 'true'
+    ? {
+        'debug-workspace-start': true,
+      }
+    : undefined;
 }

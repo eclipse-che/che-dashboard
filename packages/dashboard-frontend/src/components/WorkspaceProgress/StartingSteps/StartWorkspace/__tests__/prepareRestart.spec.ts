@@ -10,28 +10,16 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
+import { Location } from 'history';
 import {
-  applyStartWorkspace,
   applyRestartDefaultLocation,
   applyRestartInDebugModeLocation,
   applyRestartInSafeModeLocation,
+  getStartParams,
   resetRestartInSafeModeLocation,
 } from '../prepareRestart';
-import { Location } from 'history';
-import { DevWorkspaceBuilder } from '../../../../../store/__mocks__/devWorkspaceBuilder';
-import { constructWorkspace } from '../../../../../services/workspace-adapter';
 
 describe('Prepare workspace start', () => {
-  const startCallback = jest.fn();
-
-  beforeEach(() => {
-    startCallback.mockResolvedValueOnce(Promise.resolve());
-  });
-
-  afterEach(() => {
-    jest.clearAllMocks();
-  });
-
   test('apply Safe Mode location', () => {
     const location = { search: '?tab=Progress' } as Location<unknown>;
 
@@ -71,21 +59,17 @@ describe('Prepare workspace start', () => {
   });
 
   test('apply start workspace', async () => {
-    const workspace = constructWorkspace(new DevWorkspaceBuilder().build());
     const location = { search: '' } as Location<unknown>;
+    const startParams = getStartParams(location);
 
-    await applyStartWorkspace(startCallback, workspace, location);
-
-    expect(startCallback).toBeCalledWith(workspace, undefined);
+    expect(startParams).toEqual(undefined);
   });
 
   test('apply start workspace in Debug Mode', async () => {
-    const workspace = constructWorkspace(new DevWorkspaceBuilder().build());
     const location = { search: '?debugWorkspaceStart=true' } as Location<unknown>;
+    const startParams = getStartParams(location);
 
-    await applyStartWorkspace(startCallback, workspace, location);
-
-    expect(startCallback).toBeCalledWith(workspace, {
+    expect(startParams).toStrictEqual({
       'debug-workspace-start': true,
     });
   });
