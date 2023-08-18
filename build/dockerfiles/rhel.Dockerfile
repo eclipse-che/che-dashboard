@@ -8,8 +8,8 @@
 # Contributors:
 #   Red Hat, Inc. - initial API and implementation
 
-# https://registry.access.redhat.com/ubi8/nodejs-16
-FROM registry.access.redhat.com/ubi8/nodejs-16:1-118 as builder
+# https://registry.access.redhat.com/ubi8/nodejs-18
+FROM registry.access.redhat.com/ubi8/nodejs-18:1-60 as builder
 USER 0
 RUN dnf -y -q update --exclude=unbound-libs 
 
@@ -18,8 +18,8 @@ WORKDIR /dashboard/
 RUN npm i -g yarn; yarn install
 RUN yarn build
 
-# https://registry.access.redhat.com/ubi8/nodejs-16
-FROM registry.access.redhat.com/ubi8/nodejs-16:1-118
+# https://registry.access.redhat.com/ubi8/nodejs-18
+FROM registry.access.redhat.com/ubi8/nodejs-18:1-60
 USER 0
 
 RUN \

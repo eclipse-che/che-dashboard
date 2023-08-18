@@ -8,8 +8,8 @@
 # Contributors:
 #   Red Hat, Inc. - initial API and implementation
 
-# https://registry.access.redhat.com/ubi8/nodejs-16
-FROM ubi8/nodejs-16:1-118 as builder
+# https://registry.access.redhat.com/ubi8/nodejs-18
+FROM ubi8/nodejs-18:1-60 as builder
 USER 0
 RUN dnf -y -q update --exclude=unbound-libs 
 # https://docs.engineering.redhat.com/pages/viewpage.action?pageId=228017926#UpstreamSources%28Cachito,ContainerFirst%29-CachitoIntegrationforyarn
@@ -38,8 +38,8 @@ RUN yarn build
 # cachito:yarn step 6: cleanup (required only if not using a builder stage)
 # RUN rm -rf $REMOTE_SOURCES_DIR
 
-# https://registry.access.redhat.com/ubi8/nodejs-16
-FROM ubi8/nodejs-16:1-118
+# https://registry.access.redhat.com/ubi8/nodejs-18
+FROM ubi8/nodejs-18:1-60
 USER 0
 
 RUN \

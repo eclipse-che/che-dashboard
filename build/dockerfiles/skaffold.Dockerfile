@@ -8,7 +8,7 @@
 # Contributors:
 #   Red Hat, Inc. - initial API and implementation
 
-FROM docker.io/node:16.16.0-alpine3.15
+FROM docker.io/node:18-alpine3.17
 
 ENV FRONTEND_LIB=../../packages/dashboard-frontend/lib/public
 ENV BACKEND_LIB=../../packages/dashboard-backend/lib
