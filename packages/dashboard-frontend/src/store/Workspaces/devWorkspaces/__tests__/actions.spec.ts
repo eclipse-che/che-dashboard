@@ -31,6 +31,7 @@ import * as ServerConfigStore from '../../../ServerConfig';
 import { DevWorkspaceBuilder } from '../../../__mocks__/devWorkspaceBuilder';
 import { FakeStoreBuilder } from '../../../__mocks__/storeBuilder';
 import { checkRunningWorkspacesLimit } from '../checkRunningWorkspacesLimit';
+import { DEVWORKSPACE_STORAGE_TYPE_ATTR } from '../../../../services/devfileApi/devWorkspace/spec/template';
 
 jest.mock('../../../../services/dashboard-backend-client/serverConfigApi');
 jest.mock('../../../../services/helpers/delay', () => ({
@@ -45,7 +46,42 @@ kind: DevWorkspaceTemplate
 metadata:
   name: che-code
 spec:
-  components: []
+  components:
+    - name: che-code-runtime-description
+      container:
+        image: quay.io/devfile/universal-developer-image:next
+        endpoints:
+          - name: che-code
+            attributes:
+              type: main
+              cookiesAuthEnabled: true
+              discoverable: false
+              urlRewriteSupported: true
+            targetPort: 3100
+            exposure: public
+            secure: false
+            protocol: https
+          - name: code-redirect-1
+            attributes:
+              discoverable: false
+              urlRewriteSupported: false
+            targetPort: 13131
+            exposure: public
+            protocol: http
+          - name: code-redirect-2
+            attributes:
+              discoverable: false
+              urlRewriteSupported: false
+            targetPort: 13132
+            exposure: public
+            protocol: http
+          - name: code-redirect-3
+            attributes:
+              discoverable: false
+              urlRewriteSupported: false
+            targetPort: 13133
+            exposure: public
+            protocol: http
 ---
 apiVersion: workspace.devfile.io/v1alpha2
 kind: DevWorkspace
@@ -471,7 +507,53 @@ describe('DevWorkspace store, actions', () => {
               'https://dummy.registry/plugins/che-incubator/che-code/latest/devfile.yaml',
           },
         },
-        { op: 'replace', path: '/spec', value: { components: [] } },
+        {
+          op: 'replace',
+          path: '/spec',
+          value: {
+            components: [
+              {
+                name: 'che-code-runtime-description',
+                container: {
+                  image: 'quay.io/devfile/universal-developer-image:next',
+                  endpoints: [
+                    {
+                      name: 'che-code',
+                      attributes: {
+                        type: 'main',
+                        discoverable: false,
+                        cookiesAuthEnabled: true,
+                        urlRewriteSupported: true,
+                      },
+                      targetPort: 3100,
+                      exposure: 'public',
+                      secure: false,
+                      protocol: 'https',
+                    },
+                  ],
+                  env: [
+                    {
+                      name: 'CHE_DASHBOARD_URL',
+                      value: 'http://localhost',
+                    },
+                    {
+                      name: 'CHE_PLUGIN_REGISTRY_URL',
+                      value: 'https://dummy.registry',
+                    },
+                    {
+                      name: 'CHE_PLUGIN_REGISTRY_INTERNAL_URL',
+                      value: '',
+                    },
+                    {
+                      name: 'OPENVSX_REGISTRY_URL',
+                      value: '',
+                    },
+                  ],
+                },
+              },
+            ],
+          },
+        },
       ]);
       expect(mockPatchWorkspace).toHaveBeenCalledWith('test-che', 'dev-wksp', [
         {
@@ -489,7 +571,13 @@ describe('DevWorkspace store, actions', () => {
             contributions: undefined,
             routingClass: 'che',
             started: false,
-            template: { components: [], projects: undefined },
+            template: {
+              attributes: {
+                [DEVWORKSPACE_STORAGE_TYPE_ATTR]: 'ephemeral',
+              },
+              components: [],
+              projects: undefined,
+            },
           },
         },
       ]);

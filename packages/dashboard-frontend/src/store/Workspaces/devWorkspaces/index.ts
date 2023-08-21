@@ -60,6 +60,7 @@ import * as DwtApi from '../../../services/dashboard-backend-client/devWorkspace
 import { selectDefaultDevfile } from '../../DevfileRegistries/selectors';
 import * as DwApi from '../../../services/dashboard-backend-client/devWorkspaceApi';
 import { selectDefaultEditor } from '../../Plugins/devWorkspacePlugins/selectors';
+import { DEVWORKSPACE_STORAGE_TYPE_ATTR } from '../../../services/devfileApi/devWorkspace/spec/template';
 
 export const onStatusChangeCallbacks = new Map<string, (status: string) => void>();
 
@@ -666,6 +667,13 @@ export const actionCreators: ActionCreators = {
         // add projects from the origin workspace
         devWorkspaceResource.spec.template.projects = workspace.spec.template.projects;
 
+        // sets ephemeral storage type
+        const storageType: che.WorkspaceStorageType = 'ephemeral';
+        if (!devWorkspaceResource.spec.template.attributes) {
+          devWorkspaceResource.spec.template.attributes = {};
+        }
+        devWorkspaceResource.spec.template.attributes[DEVWORKSPACE_STORAGE_TYPE_ATTR] = storageType;
+
         devWorkspaceTemplateResource = resources.find(
           resource => resource.kind === 'DevWorkspaceTemplate',
         ) as devfileApi.DevWorkspaceTemplate;
@@ -675,6 +683,18 @@ export const actionCreators: ActionCreators = {
         if (!devWorkspaceTemplateResource.metadata.annotations) {
           devWorkspaceTemplateResource.metadata.annotations = {};
         }
+
+        // removes endpoints with 'urlRewriteSupport: false'
+        const components = devWorkspaceTemplateResource.spec?.components || [];
+        components.forEach(component => {
+          if (component.container && Array.isArray(component.container.endpoints)) {
+            component.container.endpoints = component.container.endpoints.filter(endpoint => {
+              const attributes = endpoint.attributes as { urlRewriteSupported: boolean };
+              return attributes.urlRewriteSupported;
+            });
+          }
+        });
+
         if (editorYamlUrl) {
           devWorkspaceTemplateResource.metadata.annotations[COMPONENT_UPDATE_POLICY] = 'managed';
           devWorkspaceTemplateResource.metadata.annotations[REGISTRY_URL] = editorYamlUrl;
