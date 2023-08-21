@@ -16,6 +16,7 @@ import {
   applyRestartInDebugModeLocation,
   applyRestartInSafeModeLocation,
   getStartParams,
+  getRestartInSafeModeLocation,
   resetRestartInSafeModeLocation,
 } from '../prepareRestart';
 
@@ -56,6 +57,20 @@ describe('Prepare workspace start', () => {
 
     expect(hasChanged).toBeFalsy();
     expect(location).toEqual({ search: 'tab=Logs' });
+  });
+
+  test('get Safe Mode location', () => {
+    let hasChanged = getRestartInSafeModeLocation({
+      search: '?tab=Logs&useDefaultDevfile=true',
+    } as Location<unknown>);
+
+    expect(hasChanged).toBeTruthy();
+
+    hasChanged = getRestartInSafeModeLocation({
+      search: '?tab=Logs',
+    } as Location<unknown>);
+
+    expect(hasChanged).toBeFalsy();
   });
 
   test('apply start workspace', async () => {

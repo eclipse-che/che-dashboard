@@ -38,18 +38,27 @@ export function applyRestartInSafeModeLocation(location: Location): void {
 }
 
 export function resetRestartInSafeModeLocation(location: Location): boolean {
-  const searchParams = new URLSearchParams(location.search);
-  const safeMode = searchParams.get(USE_DEFAULT_DEVFILE) === 'true';
+  const safeMode = getRestartInSafeModeLocation(location);
   if (safeMode) {
+    const searchParams = new URLSearchParams(location.search);
     searchParams.delete(USE_DEFAULT_DEVFILE);
     location.search = searchParams.toString();
   }
   return safeMode;
 }
 
-export function getStartParams(location: Location): { 'debug-workspace-start': true } | undefined {
+export function getRestartInSafeModeLocation(location: Location): boolean {
   const searchParams = new URLSearchParams(location.search);
-  return searchParams.get(DEBUG_WORKSPACE_START) === 'true'
+  return searchParams.get(USE_DEFAULT_DEVFILE) === 'true';
+}
+
+export function getRestartInDebugModeLocation(location: Location): boolean {
+  const searchParams = new URLSearchParams(location.search);
+  return searchParams.get(DEBUG_WORKSPACE_START) === 'true';
+}
+
+export function getStartParams(location: Location): { 'debug-workspace-start': true } | undefined {
+  return getRestartInDebugModeLocation(location)
     ? {
         'debug-workspace-start': true,
       }
