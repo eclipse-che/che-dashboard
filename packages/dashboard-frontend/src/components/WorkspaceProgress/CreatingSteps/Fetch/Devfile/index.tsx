@@ -20,7 +20,6 @@ import {
   FactoryParams,
   USE_DEFAULT_DEVFILE,
 } from '../../../../../services/helpers/factoryFlow/buildFactoryParams';
-import { getEnvironment, isDevEnvironment } from '../../../../../services/helpers/environment';
 import { AlertItem } from '../../../../../services/helpers/types';
 import OAuthService, { isOAuthResponse } from '../../../../../services/oauth';
 import SessionStorageService, { SessionStorageKey } from '../../../../../services/session-storage';
@@ -247,15 +246,9 @@ class CreatingStepFetchDevfile extends ProgressStep<Props, State> {
         this.checkNumberOfTries(factoryUrl);
         this.increaseNumberOfTries(factoryUrl);
 
-        // open authentication page
-        const env = getEnvironment();
-        // build redirect URL
-        let redirectHost = window.location.origin;
-        if (isDevEnvironment(env)) {
-          redirectHost = env.server || redirectHost;
-        }
+        /* open authentication page */
 
-        const redirectUrl = new URL('/f', redirectHost);
+        const redirectUrl = new URL('/f', window.location.origin);
         redirectUrl.searchParams.set(
           FACTORY_LINK_ATTR,
           this.props.history.location.search.replace(/^\?/, ''),
