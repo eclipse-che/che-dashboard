@@ -15,7 +15,6 @@ import { AlertVariant } from '@patternfly/react-core';
 import { isEqual } from 'lodash';
 import React from 'react';
 import { ConnectedProps, connect } from 'react-redux';
-import { getEnvironment, isDevEnvironment } from '../../../../../services/helpers/environment';
 import { buildFactoryParams } from '../../../../../services/helpers/factoryFlow/buildFactoryParams';
 import { FactoryParams } from '../../../../../services/helpers/factoryFlow/buildFactoryParams';
 import { AlertItem } from '../../../../../services/helpers/types';
@@ -238,15 +237,9 @@ class CreatingStepFetchDevfile extends ProgressStep<Props, State> {
         this.checkNumberOfTries(factoryUrl);
         this.increaseNumberOfTries(factoryUrl);
 
-        // open authentication page
-        const env = getEnvironment();
-        // build redirect URL
-        let redirectHost = window.location.origin;
-        if (isDevEnvironment(env)) {
-          redirectHost = env.server || redirectHost;
-        }
+        /* open authentication page */
 
-        const redirectUrl = new URL('/f', redirectHost);
+        const redirectUrl = new URL('/f', window.location.origin);
         redirectUrl.searchParams.set(
           FACTORY_LINK_ATTR,
           this.props.history.location.search.replace(/^\?/, ''),
