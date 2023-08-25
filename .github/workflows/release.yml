@@ -22,11 +22,10 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        arch: [amd64,arm64,ppc64le]
+        arch: [amd64,arm64]
     outputs:
       amd64: ${{ steps.result.outputs.amd64 }}
       arm64: ${{ steps.result.outputs.arm64 }}
-      ppc64le: ${{ steps.result.outputs.ppc64le }}
     steps:
       -
         name: "Checkout Che Dashboard source code"
@@ -76,11 +75,9 @@ jobs:
         run: |
           AMD64_VERSION="${{ needs['build-images'].outputs.amd64 }}"
           ARM64_VERSION="${{ needs['build-images'].outputs.arm64 }}"
-          PPC64LE_VERSION="${{ needs['build-images'].outputs.ppc64le }}"
 
           if [[ -z "$AMD64_VERSION" || \
-               -z "$ARM64_VERSION" || \
-               -z "$PPC64LE_VERSION" ]]; then
+               -z "$ARM64_VERSION" ]]; then
             echo "[!] The job 'build-images' fails on some of the architectures. Can't create complete manifest.";
             exit 1;
           fi
@@ -88,7 +85,6 @@ jobs:
           AMEND=""
           AMEND+=" --amend ${{ env.IMAGE }}:$AMD64_VERSION";
           AMEND+=" --amend ${{ env.IMAGE }}:$ARM64_VERSION";
-          AMEND+=" --amend ${{ env.IMAGE }}:$PPC64LE_VERSION";
 
           docker manifest create ${{ env.IMAGE }}:${{ github.event.inputs.version }} $AMEND
           docker manifest push ${{ env.IMAGE }}:${{ github.event.inputs.version }}
