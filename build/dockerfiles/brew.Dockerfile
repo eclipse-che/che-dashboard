@@ -8,8 +8,8 @@
 # Contributors:
 #   Red Hat, Inc. - initial API and implementation
 
-# https://registry.access.redhat.com/ubi8/nodejs-16
-FROM ubi8/nodejs-16:1-118.1692780867 as builder
+# https://registry.access.redhat.com/ubi8/nodejs-18
+FROM ubi8/nodejs-18:1-60.1692780884 as builder
 # hadolint ignore=DL3002
 USER 0
 RUN dnf -y -q update --exclude=unbound-libs 
@@ -42,8 +42,8 @@ RUN yarn build
 # cachito:yarn step 6: cleanup (required only if not using a builder stage)
 # RUN rm -rf $REMOTE_SOURCES_DIR
 
-# https://registry.access.redhat.com/ubi8/nodejs-16
-FROM ubi8/nodejs-16:1-118.1692780867
+# https://registry.access.redhat.com/ubi8/nodejs-18
+FROM ubi8/nodejs-18:1-60.1692780884
 # hadolint ignore=DL3002
 USER 0
 # hadolint ignore=DL4006
