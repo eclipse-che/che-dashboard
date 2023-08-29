@@ -134,11 +134,7 @@ describe('Starting steps, starting a workspace', () => {
             callback: expect.any(Function),
           }),
           expect.objectContaining({
-            title: 'Restart in Safe mode',
-            callback: expect.any(Function),
-          }),
-          expect.objectContaining({
-            title: 'Restart in Debug mode',
+            title: 'Restart with default devfile',
             callback: expect.any(Function),
           }),
         ],
@@ -247,11 +243,7 @@ describe('Starting steps, starting a workspace', () => {
           callback: expect.any(Function),
         }),
         expect.objectContaining({
-          title: 'Restart in Safe mode',
-          callback: expect.any(Function),
-        }),
-        expect.objectContaining({
-          title: 'Restart in Debug mode',
+          title: 'Restart with default devfile',
           callback: expect.any(Function),
         }),
       ],
@@ -410,11 +402,7 @@ describe('Starting steps, starting a workspace', () => {
           callback: expect.any(Function),
         }),
         expect.objectContaining({
-          title: 'Restart in Safe mode',
-          callback: expect.any(Function),
-        }),
-        expect.objectContaining({
-          title: 'Restart in Debug mode',
+          title: 'Restart with default devfile',
           callback: expect.any(Function),
         }),
       ],
@@ -474,11 +462,7 @@ describe('Starting steps, starting a workspace', () => {
           callback: expect.any(Function),
         }),
         expect.objectContaining({
-          title: 'Restart in Safe mode',
-          callback: expect.any(Function),
-        }),
-        expect.objectContaining({
-          title: 'Restart in Debug mode',
+          title: 'Restart with default devfile',
           callback: expect.any(Function),
         }),
       ],
@@ -538,11 +522,7 @@ describe('Starting steps, starting a workspace', () => {
           callback: expect.any(Function),
         }),
         expect.objectContaining({
-          title: 'Restart in Safe mode',
-          callback: expect.any(Function),
-        }),
-        expect.objectContaining({
-          title: 'Restart in Debug mode',
+          title: 'Restart with default devfile',
           callback: expect.any(Function),
         }),
       ],
@@ -600,11 +580,7 @@ describe('Starting steps, starting a workspace', () => {
           callback: expect.any(Function),
         }),
         expect.objectContaining({
-          title: 'Restart in Safe mode',
-          callback: expect.any(Function),
-        }),
-        expect.objectContaining({
-          title: 'Restart in Debug mode',
+          title: 'Restart with default devfile',
           callback: expect.any(Function),
         }),
       ],
@@ -645,11 +621,7 @@ describe('Starting steps, starting a workspace', () => {
           callback: expect.any(Function),
         }),
         expect.objectContaining({
-          title: 'Restart in Safe mode',
-          callback: expect.any(Function),
-        }),
-        expect.objectContaining({
-          title: 'Restart in Debug mode',
+          title: 'Restart with default devfile',
           callback: expect.any(Function),
         }),
       ],
@@ -687,11 +659,7 @@ describe('Starting steps, starting a workspace', () => {
           callback: expect.any(Function),
         }),
         expect.objectContaining({
-          title: 'Restart in Safe mode',
-          callback: expect.any(Function),
-        }),
-        expect.objectContaining({
-          title: 'Restart in Debug mode',
+          title: 'Restart with default devfile',
           callback: expect.any(Function),
         }),
       ],
@@ -729,11 +697,7 @@ describe('Starting steps, starting a workspace', () => {
           callback: expect.any(Function),
         }),
         expect.objectContaining({
-          title: 'Restart in Safe mode',
-          callback: expect.any(Function),
-        }),
-        expect.objectContaining({
-          title: 'Restart in Debug mode',
+          title: 'Restart with default devfile',
           callback: expect.any(Function),
         }),
       ],
@@ -780,11 +744,7 @@ describe('Starting steps, starting a workspace', () => {
             callback: expect.any(Function),
           }),
           expect.objectContaining({
-            title: 'Restart in Safe mode',
-            callback: expect.any(Function),
-          }),
-          expect.objectContaining({
-            title: 'Restart in Debug mode',
+            title: 'Restart with default devfile',
             callback: expect.any(Function),
           }),
         ],

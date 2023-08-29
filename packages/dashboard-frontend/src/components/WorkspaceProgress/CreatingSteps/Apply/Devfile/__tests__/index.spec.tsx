@@ -112,7 +112,7 @@ describe('Creating steps, applying a devfile', () => {
         children: 'Failed to resolve the devfile.',
         actionCallbacks: [
           expect.objectContaining({
-            title: 'Continue with the default devfile',
+            title: 'Continue with default devfile',
             callback: expect.any(Function),
           }),
           expect.objectContaining({
@@ -224,6 +224,7 @@ describe('Creating steps, applying a devfile', () => {
         expect(prepareDevfile).toHaveBeenCalledWith(
           expect.objectContaining({
             attributes: {
+              'controller.devfile.io/storage-type': 'ephemeral',
               defaultDevfile: true,
             },
           }),
@@ -303,6 +304,7 @@ describe('Creating steps, applying a devfile', () => {
         expect(prepareDevfile).toHaveBeenCalledWith(
           expect.objectContaining({
             attributes: {
+              'controller.devfile.io/storage-type': 'ephemeral',
               defaultDevfile: true,
             },
           }),
@@ -448,7 +450,7 @@ describe('Creating steps, applying a devfile', () => {
         ),
         actionCallbacks: [
           expect.objectContaining({
-            title: 'Continue with the default devfile',
+            title: 'Continue with default devfile',
             callback: expect.any(Function),
           }),
           expect.objectContaining({
@@ -506,11 +508,11 @@ describe('Creating steps, applying a devfile', () => {
       await waitFor(() => expect(mockCreateWorkspaceFromDevfile).toHaveBeenCalledTimes(2));
     });
 
-    test('action callback to continue with the default devfile', async () => {
+    test('action callback to continue with default devfile', async () => {
       // this deferred object will help run the callback at the right time
       const deferred = getDefer();
 
-      const continueActionTitle = 'Continue with the default devfile';
+      const continueActionTitle = 'Continue with default devfile';
       mockOnError.mockImplementationOnce(async (alertItem: AlertItem) => {
         const continueAction = alertItem.actionCallbacks?.find(action =>
           action.title.startsWith(continueActionTitle),
@@ -573,7 +575,7 @@ describe('Creating steps, applying a devfile', () => {
       children: `Workspace hasn't been created in the last 20 seconds.`,
       actionCallbacks: [
         expect.objectContaining({
-          title: 'Continue with the default devfile',
+          title: 'Continue with default devfile',
           callback: expect.any(Function),
         }),
         expect.objectContaining({

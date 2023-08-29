@@ -29,7 +29,6 @@ import { TimeLimit } from '../../TimeLimit';
 import workspaceStatusIs from '../../workspaceStatusIs';
 import {
   applyRestartDefaultLocation,
-  applyRestartInDebugModeLocation,
   applyRestartInSafeModeLocation,
   getStartParams,
   resetRestartInSafeModeLocation,
@@ -225,17 +224,10 @@ class StartingStepStartWorkspace extends ProgressStep<Props, State> {
           },
         },
         {
-          title: 'Restart in Safe mode',
+          title: 'Restart with default devfile',
           callback: () => {
             applyRestartInSafeModeLocation(this.props.history.location);
             this.handleRestart(key, LoaderTab.Progress);
-          },
-        },
-        {
-          title: 'Restart in Debug mode',
-          callback: () => {
-            applyRestartInDebugModeLocation(this.props.history.location);
-            this.handleRestart(key, LoaderTab.Logs);
           },
         },
       ],

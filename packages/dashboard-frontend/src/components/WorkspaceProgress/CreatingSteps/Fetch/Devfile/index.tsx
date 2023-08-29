@@ -330,7 +330,7 @@ class CreatingStepFetchDevfile extends ProgressStep<Props, State> {
         ),
         actionCallbacks: [
           {
-            title: 'Continue with the default devfile',
+            title: 'Continue with default devfile',
             callback: () => this.handleDefaultDevfile(key),
           },
           {
@@ -354,7 +354,7 @@ class CreatingStepFetchDevfile extends ProgressStep<Props, State> {
         ),
         actionCallbacks: [
           {
-            title: 'Continue with the default devfile',
+            title: 'Continue with default devfile',
             callback: () => this.handleDefaultDevfile(key),
           },
           {
@@ -371,7 +371,7 @@ class CreatingStepFetchDevfile extends ProgressStep<Props, State> {
       children: helpers.errors.getMessage(error),
       actionCallbacks: [
         {
-          title: 'Continue with the default devfile',
+          title: 'Continue with default devfile',
           callback: () => this.handleDefaultDevfile(key),
         },
         {

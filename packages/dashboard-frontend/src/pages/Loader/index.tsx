@@ -74,7 +74,7 @@ export class LoaderPage extends React.PureComponent<Props, State> {
       getRestartInSafeModeLocation(this.props.history.location) ||
       this.appliedSafeMode[this.props.history.location.pathname]
     ) {
-      pageTitle += ' in Safe mode';
+      pageTitle += ' with default devfile';
       this.appliedSafeMode[this.props.history.location.pathname] = true;
     } else if (getRestartInDebugModeLocation(this.props.history.location)) {
       pageTitle += ' in Debug mode';

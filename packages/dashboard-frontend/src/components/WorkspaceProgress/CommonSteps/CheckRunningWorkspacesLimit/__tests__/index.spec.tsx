@@ -271,10 +271,6 @@ describe('Common steps, check running workspaces limit', () => {
               title: 'Restart',
               callback: expect.any(Function),
             }),
-            expect.objectContaining({
-              title: 'Restart in Debug mode',
-              callback: expect.any(Function),
-            }),
           ],
         });
         await waitFor(() => expect(mockOnError).toHaveBeenCalledWith(expectAlertItem));
