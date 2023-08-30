@@ -147,7 +147,7 @@ div.main-page-loader .ide-page-loader-content img {
 }
 
 .pf-c-page__header-brand-link .pf-c-brand {
-  min-height: 50px;
+  height: 3.17rem;
 }
 
 @keyframes hide {
