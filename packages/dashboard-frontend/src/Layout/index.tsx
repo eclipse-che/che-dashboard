@@ -18,7 +18,6 @@ import { matchPath } from 'react-router';
 import Header from './Header';
 import Sidebar from './Sidebar';
 import StoreErrorsAlert from './StoreErrorsAlert';
-import { ThemeVariant } from './themeVariant';
 import { AppState } from '../store';
 import { lazyInject } from '../inversify.config';
 import { IssuesReporterService } from '../services/bootstrap/issuesReporter';
@@ -32,7 +31,8 @@ import { ToggleBarsContext } from '../contexts/ToggleBars';
 import { signOut } from '../services/helpers/login';
 import { selectDashboardLogo } from '../store/ServerConfig/selectors';
 
-const THEME_KEY = 'theme';
+import * as styles from './index.module.css';
+
 const IS_MANAGED_SIDEBAR = false;
 
 type Props = MappedProps & {
@@ -42,7 +42,6 @@ type Props = MappedProps & {
 type State = {
   isSidebarVisible: boolean;
   isHeaderVisible: boolean;
-  theme: ThemeVariant;
 };
 
 export class Layout extends React.PureComponent<Props, State> {
@@ -52,13 +51,9 @@ export class Layout extends React.PureComponent<Props, State> {
   constructor(props: Props) {
     super(props);
 
-    const theme: ThemeVariant =
-      (window.sessionStorage.getItem(THEME_KEY) as ThemeVariant) || ThemeVariant.DARK;
-
     this.state = {
       isHeaderVisible: true,
       isSidebarVisible: true,
-      theme,
     };
   }
 
@@ -66,11 +61,6 @@ export class Layout extends React.PureComponent<Props, State> {
     this.setState({
       isSidebarVisible: !this.state.isSidebarVisible,
     });
-  }
-
-  private changeTheme(theme: ThemeVariant): void {
-    this.setState({ theme });
-    window.sessionStorage.setItem(THEME_KEY, theme);
   }
 
   private hideAllBars(): void {
@@ -113,7 +103,7 @@ export class Layout extends React.PureComponent<Props, State> {
       }
     }
 
-    const { isHeaderVisible, isSidebarVisible, theme } = this.state;
+    const { isHeaderVisible, isSidebarVisible } = this.state;
     const { history, branding, dashboardLogo } = this.props;
 
     const logoSrc =
@@ -133,10 +123,9 @@ export class Layout extends React.PureComponent<Props, State> {
             <Header
               history={history}
               isVisible={isHeaderVisible}
-              logo={<Brand src={logoSrc} style={{ minHeight: '50px' }} alt="Logo" />}
+              logo={<Brand src={logoSrc} className={styles.cheBrand} alt="Logo" />}
               logout={() => signOut()}
               toggleNav={() => this.toggleNav()}
-              changeTheme={theme => this.changeTheme(theme)}
             />
           }
           sidebar={
@@ -144,7 +133,6 @@ export class Layout extends React.PureComponent<Props, State> {
               isManaged={IS_MANAGED_SIDEBAR}
               isNavOpen={isSidebarVisible}
               history={history}
-              theme={theme}
             />
           }
           isManagedSidebar={IS_MANAGED_SIDEBAR}

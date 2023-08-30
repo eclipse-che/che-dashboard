@@ -21,7 +21,6 @@ jest.mock('../Tools', () => {
   const FakeTools = (props: { logout: () => void; changeTheme: () => void }) => (
     <React.Fragment>
       <button onClick={() => props.logout()}>logout</button>
-      <button onClick={() => props.changeTheme()}>change theme</button>
     </React.Fragment>
   );
   FakeTools.displayName = 'Tools';
@@ -31,7 +30,6 @@ jest.mock('../Tools', () => {
 describe('Page header', () => {
   const mockLogout = jest.fn();
   const mockToggleNav = jest.fn();
-  const mockChangeTheme = jest.fn();
 
   const logo = <Brand src="branding/logo" alt="Logo" />;
   const isHeaderVisible = true;
@@ -44,7 +42,6 @@ describe('Page header', () => {
       logo={logo}
       logout={mockLogout}
       toggleNav={mockToggleNav}
-      changeTheme={mockChangeTheme}
     />
   );
 

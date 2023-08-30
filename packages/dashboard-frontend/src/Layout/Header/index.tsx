@@ -13,7 +13,6 @@
 import { PageHeader } from '@patternfly/react-core';
 import { History } from 'history';
 import React from 'react';
-import { ThemeVariant } from '../themeVariant';
 import HeaderTools from './Tools';
 
 type Props = {
@@ -22,7 +21,6 @@ type Props = {
   logo: React.ReactNode;
   logout: () => void;
   toggleNav: () => void;
-  changeTheme: (theme: ThemeVariant) => void;
 };
 type State = {
   isVisible: boolean;
