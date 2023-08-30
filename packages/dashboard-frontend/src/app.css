@@ -146,6 +146,10 @@ div.main-page-loader .ide-page-loader-content img {
   animation-timing-function: linear;
 }
 
+.pf-c-page__header-brand-link .pf-c-brand {
+  min-height: 50px;
+}
+
 @keyframes hide {
   0% {
     overflow: visible;

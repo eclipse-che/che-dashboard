@@ -31,8 +31,6 @@ import { ToggleBarsContext } from '../contexts/ToggleBars';
 import { signOut } from '../services/helpers/login';
 import { selectDashboardLogo } from '../store/ServerConfig/selectors';
 
-import * as styles from './index.module.css';
-
 const IS_MANAGED_SIDEBAR = false;
 
 type Props = MappedProps & {
@@ -123,7 +121,7 @@ export class Layout extends React.PureComponent<Props, State> {
             <Header
               history={history}
               isVisible={isHeaderVisible}
-              logo={<Brand src={logoSrc} className={styles.cheBrand} alt="Logo" />}
+              logo={<Brand src={logoSrc} alt="Logo" />}
               logout={() => signOut()}
               toggleNav={() => this.toggleNav()}
             />
