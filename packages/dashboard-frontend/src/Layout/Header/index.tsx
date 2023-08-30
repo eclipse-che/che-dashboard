@@ -10,7 +10,7 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import { Brand, PageHeader } from '@patternfly/react-core';
+import { PageHeader } from '@patternfly/react-core';
 import { History } from 'history';
 import React from 'react';
 import { ThemeVariant } from '../themeVariant';
@@ -19,7 +19,7 @@ import HeaderTools from './Tools';
 type Props = {
   history: History;
   isVisible: boolean;
-  logoUrl: string;
+  logo: React.ReactNode;
   logout: () => void;
   toggleNav: () => void;
   changeTheme: (theme: ThemeVariant) => void;
@@ -50,7 +50,6 @@ export default class Header extends React.PureComponent<Props, State> {
   }
 
   public render(): React.ReactElement {
-    const logo = <Brand src={this.props.logoUrl} alt="Logo" />;
     const className = this.state.isVisible ? 'show-header' : 'hide-header';
 
     return (
@@ -58,7 +57,7 @@ export default class Header extends React.PureComponent<Props, State> {
         style={{ zIndex: 'inherit' }}
         className={className}
         logoComponent="div"
-        logo={logo}
+        logo={this.props.logo}
         showNavToggle={true}
         onNavToggle={() => this.toggleNav()}
         headerTools={

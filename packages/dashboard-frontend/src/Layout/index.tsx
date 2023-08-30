@@ -12,7 +12,7 @@
 
 import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
-import { Page } from '@patternfly/react-core';
+import { Brand, Page } from '@patternfly/react-core';
 import { History } from 'history';
 import { matchPath } from 'react-router';
 import Header from './Header';
@@ -30,6 +30,7 @@ import { ROUTE } from '../Routes/routes';
 import { selectBranding } from '../store/Branding/selectors';
 import { ToggleBarsContext } from '../contexts/ToggleBars';
 import { signOut } from '../services/helpers/login';
+import { selectDashboardLogo } from '../store/ServerConfig/selectors';
 
 const THEME_KEY = 'theme';
 const IS_MANAGED_SIDEBAR = false;
@@ -113,9 +114,12 @@ export class Layout extends React.PureComponent<Props, State> {
     }
 
     const { isHeaderVisible, isSidebarVisible, theme } = this.state;
-    const { history } = this.props;
+    const { history, branding, dashboardLogo } = this.props;
 
-    const logoUrl = this.props.branding.logoFile;
+    const logoSrc =
+      dashboardLogo !== undefined
+        ? `data:${dashboardLogo.mediatype};base64,${dashboardLogo.base64data}`
+        : branding.logoFile;
 
     return (
       <ToggleBarsContext.Provider
@@ -129,7 +133,7 @@ export class Layout extends React.PureComponent<Props, State> {
             <Header
               history={history}
               isVisible={isHeaderVisible}
-              logoUrl={logoUrl}
+              logo={<Brand src={logoSrc} style={{ minHeight: '50px' }} alt="Logo" />}
               logout={() => signOut()}
               toggleNav={() => this.toggleNav()}
               changeTheme={theme => this.changeTheme(theme)}
@@ -158,6 +162,7 @@ export class Layout extends React.PureComponent<Props, State> {
 
 const mapStateToProps = (state: AppState) => ({
   branding: selectBranding(state),
+  dashboardLogo: selectDashboardLogo(state),
 });
 
 const connector = connect(mapStateToProps);
