@@ -33,7 +33,7 @@ exports[`EditorTools DevWorkspace snapshot 1`] = `
             height="1em"
             role="img"
             style={
-              Object {
+              {
                 "verticalAlign": "-0.125em",
               }
             }
@@ -78,7 +78,7 @@ exports[`EditorTools DevWorkspace snapshot 1`] = `
           height="1em"
           role="img"
           style={
-            Object {
+            {
               "verticalAlign": "-0.125em",
             }
           }
@@ -117,7 +117,7 @@ exports[`EditorTools DevWorkspace snapshot 1`] = `
           height="1em"
           role="img"
           style={
-            Object {
+            {
               "verticalAlign": "-0.125em",
             }
           }
@@ -169,7 +169,7 @@ exports[`EditorTools Devfile snapshot 1`] = `
           height="1em"
           role="img"
           style={
-            Object {
+            {
               "verticalAlign": "-0.125em",
             }
           }
@@ -208,7 +208,7 @@ exports[`EditorTools Devfile snapshot 1`] = `
           height="1em"
           role="img"
           style={
-            Object {
+            {
               "verticalAlign": "-0.125em",
             }
           }
