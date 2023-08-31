@@ -12,7 +12,7 @@
 
 import { REMOTES_ATTR } from '../../services/helpers/factoryFlow/buildFactoryParams';
 import SessionStorageService, { SessionStorageKey } from '../../services/session-storage';
-import { main, buildFactoryLoaderPath, storePathIfNeeded } from '../main';
+import { redirectToDashboard, buildFactoryLoaderPath, storePathIfNeeded } from '../main';
 
 describe('test buildFactoryLoaderPath()', () => {
   describe('SSHLocation', () => {
@@ -158,7 +158,7 @@ describe('test storePathnameIfNeeded()', () => {
   });
 });
 
-describe('test main()', () => {
+describe('test redirectToDashboard()', () => {
   const origin = 'https://che-host';
   let spyWindowLocation: jest.SpyInstance;
 
@@ -166,20 +166,11 @@ describe('test main()', () => {
     spyWindowLocation.mockRestore();
   });
 
-  describe('known pathname', () => {
-    it('should not redirect', () => {
-      spyWindowLocation = createWindowLocationSpy(origin + '/dashboard/#/workspaces');
-
-      main();
-      expect(spyWindowLocation).not.toHaveBeenCalled();
-    });
-  });
-
   describe('wrong pathname', () => {
     it('should redirect to home', () => {
       spyWindowLocation = createWindowLocationSpy(origin + '/test');
 
-      main();
+      redirectToDashboard();
       expect(spyWindowLocation).toHaveBeenCalledWith(origin + '/dashboard/');
     });
   });
@@ -190,7 +181,7 @@ describe('test main()', () => {
       const query = 'new';
       spyWindowLocation = createWindowLocationSpy(origin + '#' + repoUrl + '&' + query);
 
-      main();
+      redirectToDashboard();
       expect(spyWindowLocation).toHaveBeenCalledWith(
         origin + '/dashboard/f?policies.create=perclick&url=' + encodeURIComponent(repoUrl),
       );
@@ -201,7 +192,7 @@ describe('test main()', () => {
       const query = 'devfilePath=my-devfile.yaml';
       spyWindowLocation = createWindowLocationSpy(origin + '#' + repoUrl + '&' + query);
 
-      main();
+      redirectToDashboard();
       expect(spyWindowLocation).toHaveBeenCalledWith(
         origin +
           '/dashboard/f?override.devfileFilename=my-devfile.yaml&url=' +
@@ -215,7 +206,7 @@ describe('test main()', () => {
       const remoteUrl = '{https://origin-url,https://upstream-url}';
       spyWindowLocation = createWindowLocationSpy(origin + '?' + REMOTES_ATTR + '=' + remoteUrl);
 
-      main();
+      redirectToDashboard();
       expect(spyWindowLocation).toHaveBeenCalledWith(
         origin + '/dashboard/f?remotes=' + encodeURIComponent(remoteUrl),
       );

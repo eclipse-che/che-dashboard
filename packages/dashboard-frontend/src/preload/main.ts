@@ -18,7 +18,7 @@ import {
 import { sanitizeLocation } from '../services/helpers/location';
 import SessionStorageService, { SessionStorageKey } from '../services/session-storage';
 
-export function main(): void {
+export function redirectToDashboard(): void {
   if (window.location.pathname.startsWith('/dashboard/')) {
     // known location, do nothing
     return;

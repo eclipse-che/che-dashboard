@@ -10,8 +10,8 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import { main } from './main';
+import { redirectToDashboard } from './main';
 
 (function (): void {
-  main();
+  redirectToDashboard();
 })();

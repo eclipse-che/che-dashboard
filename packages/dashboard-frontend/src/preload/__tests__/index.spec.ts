@@ -10,12 +10,12 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-const mockMain = jest.fn();
+const mockRedirectToDashboard = jest.fn();
 jest.mock('../main.ts', () => ({
-  main: mockMain,
+  redirectToDashboard: mockRedirectToDashboard,
 }));
 
 it('should call main()', () => {
   require('../index.ts');
-  expect(mockMain).toHaveBeenCalled();
+  expect(mockRedirectToDashboard).toHaveBeenCalled();
 });
