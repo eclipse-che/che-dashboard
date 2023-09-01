@@ -115,13 +115,18 @@ fi
 export CHECLUSTER_CR_NAMESPACE=$(grep -o 'CHECLUSTER_CR_NAMESPACE:.*' run/.che-dashboard-pod | grep -o '\S*$')
 export CHECLUSTER_CR_NAME=$(grep -o 'CHECLUSTER_CR_NAME:.*' run/.che-dashboard-pod | grep -o '\S*$')
 export CHE_DEFAULT_SPEC_DEVENVIRONMENTS_DEFAULTEDITOR=$(grep -o 'CHE_DEFAULT_SPEC_DEVENVIRONMENTS_DEFAULTEDITOR:.*' run/.che-dashboard-pod | grep -o '\S*$')
-export CHE_DEFAULT_SPEC_DEVENVIRONMENTS_DEFAULTCOMPONENTS=$(grep -o 'CHE_DEFAULT_SPEC_DEVENVIRONMENTS_DEFAULTCOMPONENTS:.*' run/.che-dashboard-pod | grep -o '\S*$')
+export CHE_DEFAULT_SPEC_DEVENVIRONMENTS_DEFAULTCOMPONENTS=$(grep -o 'CHE_DEFAULT_SPEC_DEVENVIRONMENTS_DEFAULTCOMPONENTS:.*' run/.che-dashboard-pod | grep -o '\[.*$')
 export CHE_DEFAULT_SPEC_COMPONENTS_PLUGINREGISTRY_OPENVSXURL=$(grep -o 'CHE_DEFAULT_SPEC_COMPONENTS_PLUGINREGISTRY_OPENVSXURL:.*' run/.che-dashboard-pod | grep -o '\S*$')
 export CHE_DEFAULT_SPEC_COMPONENTS_DASHBOARD_HEADERMESSAGE_TEXT=$(grep -o 'CHE_DEFAULT_SPEC_COMPONENTS_DASHBOARD_HEADERMESSAGE_TEXT:.*' run/.che-dashboard-pod | grep -o '\S*$')
 export CHE_DEFAULT_SPEC_DEVENVIRONMENTS_DISABLECONTAINERBUILDCAPABILITIES=$(grep -o 'CHE_DEFAULT_SPEC_DEVENVIRONMENTS_DISABLECONTAINERBUILDCAPABILITIES:.*' run/.che-dashboard-pod | grep -o '\S*$')
 export CHE_WORKSPACE_PLUGIN__REGISTRY__INTERNAL__URL=$(grep -o 'CHE_WORKSPACE_PLUGIN__REGISTRY__INTERNAL__URL:.*' run/.che-dashboard-pod | grep -o '\S*$')
 export CHE_WORKSPACE_DEVFILE__REGISTRY__INTERNAL__URL=$(grep -o 'CHE_WORKSPACE_DEVFILE__REGISTRY__INTERNAL__URL:.*' run/.che-dashboard-pod | grep -o '\S*$')
 export CHE_WORKSPACE_DEVFILE__REGISTRY__INTERNAL__URL=$(grep -o 'CHE_WORKSPACE_DEVFILE__REGISTRY__INTERNAL__URL:.*' run/.che-dashboard-pod | grep -o '\S*$')
+
+export OPENSHIFT_CONSOLE_URL=$(grep -o 'OPENSHIFT_CONSOLE_URL:.*' run/.che-dashboard-pod | grep -o '\S*$')
+export OPENSHIFT_CONSOLE_TITLE=$(grep -o 'OPENSHIFT_CONSOLE_TITLE:.*' run/.che-dashboard-pod | grep -o '\S*$')
+export OPENSHIFT_CONSOLE_ICON=$(grep -o 'OPENSHIFT_CONSOLE_ICON:.*' run/.che-dashboard-pod | grep -o '\S*$')
+export OPENSHIFT_CONSOLE_GROUP=$(grep -o 'OPENSHIFT_CONSOLE_GROUP:.*' run/.che-dashboard-pod | grep -o '\S*$')
 
 if [ "$CHE_IN_CHE" == "true" ]; then
   export CHE_INTERNAL_URL=$(grep -o 'CHE_INTERNAL_URL:.*' run/.che-dashboard-pod | grep -o '\S*$')
