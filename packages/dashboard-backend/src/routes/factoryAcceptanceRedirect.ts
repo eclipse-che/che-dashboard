@@ -11,6 +11,7 @@
  */
 
 import { FACTORY_LINK_ATTR } from '@eclipse-che/common';
+import { sanitizeSearchParams } from '@eclipse-che/common/src/helpers/sanitize';
 import { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify';
 import querystring from 'querystring';
 
@@ -19,17 +20,17 @@ export function registerFactoryAcceptanceRedirect(instance: FastifyInstance): vo
   function redirectFactoryFlow(path: string) {
     instance.register(async server => {
       server.get(path, async (request: FastifyRequest, reply: FastifyReply) => {
-        const queryStr = request.url.replace(path, '');
+        let queryStr = request.url.replace(path, '').replace(/^\?/, '');
 
-        const query = querystring.parse(queryStr.replace(/^\?/, ''));
+        const query = querystring.parse(queryStr);
         if (query[FACTORY_LINK_ATTR] !== undefined) {
-          // handle the redirect url
-          return reply.redirect(
-            '/dashboard/#/load-factory?' + querystring.unescape(query[FACTORY_LINK_ATTR] as string),
-          );
+          // restore the factory link from the query string
+          queryStr = querystring.unescape(query[FACTORY_LINK_ATTR] as string);
         }
 
-        return reply.redirect('/dashboard/#/load-factory' + queryStr);
+        const sanitizedQueryParams = sanitizeSearchParams(new URLSearchParams(queryStr));
+
+        return reply.redirect('/dashboard/#/load-factory?' + sanitizedQueryParams.toString());
       });
     });
   }
