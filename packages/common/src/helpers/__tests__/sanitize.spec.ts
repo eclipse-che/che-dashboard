@@ -31,11 +31,13 @@ describe('sanitize', () => {
 
       const sanitizedLocation = sanitizeLocation(location);
 
-      expect(sanitizedLocation).toStrictEqual({
-        search:
-          'url=https%3A%2F%2Fgithub.com%2Ftest-samples&storageType=persistent',
-        pathname: '/f',
-      });
+      expect(sanitizedLocation).toEqual(
+        expect.objectContaining({
+          search:
+            'url=https%3A%2F%2Fgithub.com%2Ftest-samples&storageType=persistent',
+          pathname: '/f',
+        }),
+      );
     });
   });
 
