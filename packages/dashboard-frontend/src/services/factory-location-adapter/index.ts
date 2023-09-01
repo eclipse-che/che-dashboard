@@ -10,7 +10,7 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import { sanitizeLocation } from '../helpers/location';
+import { helpers } from '@eclipse-che/common';
 import { Location } from 'history';
 
 export interface FactoryLocation {
@@ -31,7 +31,7 @@ export class FactoryLocationAdapter implements FactoryLocation {
       href = href.replace('&', '?');
     }
     const [pathname, search] = href.split('?');
-    const sanitizedLocation = sanitizeLocation({ search, pathname } as Location);
+    const sanitizedLocation = helpers.sanitizeLocation({ search, pathname } as Location);
 
     this.pathname = sanitizedLocation.pathname;
     this.search = new window.URLSearchParams(sanitizedLocation.search);

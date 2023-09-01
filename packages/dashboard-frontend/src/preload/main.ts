@@ -10,12 +10,12 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
+import { helpers } from '@eclipse-che/common';
 import { FactoryLocation, FactoryLocationAdapter } from '../services/factory-location-adapter';
 import {
   PROPAGATE_FACTORY_ATTRS,
   REMOTES_ATTR,
 } from '../services/helpers/factoryFlow/buildFactoryParams';
-import { sanitizeLocation } from '../services/helpers/location';
 import SessionStorageService, { SessionStorageKey } from '../services/session-storage';
 
 export function redirectToDashboard(): void {
@@ -65,7 +65,7 @@ export function buildFactoryLoaderPath(location: string, appendUrl = true): stri
       return '/';
     }
   } else {
-    factory = sanitizeLocation<URL>(new window.URL(location));
+    factory = helpers.sanitizeLocation<URL>(new window.URL(location));
   }
 
   const initParams = PROPAGATE_FACTORY_ATTRS.map(paramName => {
