@@ -110,7 +110,6 @@ declare namespace che {
       self?: string;
       [key: string]: any;
     };
-    url?: string;
     tags: Array<string>;
   }
 
