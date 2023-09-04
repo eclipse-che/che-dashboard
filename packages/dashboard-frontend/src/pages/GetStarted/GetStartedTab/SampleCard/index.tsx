@@ -157,6 +157,17 @@ export class SampleCard extends React.PureComponent<Props, State> {
       'data-testid': 'sample-card-icon',
     };
 
-    return metadata.icon ? <Brand src={metadata.icon} {...props} /> : <CubesIcon {...props} />;
+    return metadata.icon ? (
+      <Brand
+        src={`${
+          typeof metadata.icon === 'string'
+            ? metadata.icon
+            : 'data:' + metadata.icon.mediatype + ';base64,' + metadata.icon.base64data
+        }`}
+        {...props}
+      />
+    ) : (
+      <CubesIcon {...props} />
+    );
   }
 }
