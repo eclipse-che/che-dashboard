@@ -11,7 +11,6 @@
  */
 
 import * as mockClient from '@kubernetes/client-node';
-import { CustomObjectsApi } from '@kubernetes/client-node';
 import { GettingStartedSample } from '../gettingStartedSamplesApi';
 import { api } from '@eclipse-che/common';
 
@@ -28,14 +27,14 @@ describe('Getting Started Samples API Service', () => {
     const { KubeConfig } = mockClient;
     const kubeConfig = new KubeConfig();
 
-    kubeConfig.makeApiClient = jest.fn().mockImplementation((_api: unknown) => {
+    kubeConfig.makeApiClient = jest.fn().mockImplementation(() => {
       return {
         listNamespacedConfigMap: () => {
           return Promise.resolve({
             body: { items: [{ data: { mySample: JSON.stringify(getGettingStartedSample()) } }] },
           });
         },
-      } as unknown as CustomObjectsApi;
+      };
     });
 
     gettingStartedSample = new GettingStartedSample(kubeConfig);

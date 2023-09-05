@@ -10,7 +10,7 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import { FastifyInstance} from 'fastify';
+import { FastifyInstance } from 'fastify';
 import { baseApiPath } from '../../constants/config';
 import { getSchema } from '../../services/helpers';
 import { getDevWorkspaceClient } from './helpers/getDevWorkspaceClient';
