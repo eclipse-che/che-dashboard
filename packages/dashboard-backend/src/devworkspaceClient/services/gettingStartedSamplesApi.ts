@@ -15,17 +15,15 @@ import * as k8s from '@kubernetes/client-node';
 import { api } from '@eclipse-che/common';
 import { CoreV1API, prepareCoreV1API } from './helpers/prepareCoreV1API';
 import { createError } from './helpers/createError';
+import { getIcon } from './helpers/getSampleIcon';
+import http from 'http';
+import { V1ConfigMapList } from '@kubernetes/client-node/dist/gen/model/v1ConfigMapList';
 
 const API_ERROR_LABEL = 'CORE_V1_API_ERROR';
 const DEVFILE_METADATA_LABEL_SELECTOR =
   'app.kubernetes.io/component=getting-started-samples,app.kubernetes.io/part-of=che.eclipse.org';
-const DEFAULT_ICON = {
-  base64data:
-    'PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZlcnNpb249IjEuMSIgaGVpZ2h0PSI1ZW0iIHdpZHRoPSI1ZW0iIHZpZXdCb3g9IjAgMCA1MTIgNTEyIj4KICA8ZyBmaWxsPSIjNmE2ZTczIj4KICA8cGF0aAogICAgICBkPSJNNDg4LjYgMjUwLjJMMzkyIDIxNFYxMDUuNWMwLTE1LTkuMy0yOC40LTIzLjQtMzMuN2wtMTAwLTM3LjVjLTguMS0zLjEtMTcuMS0zLjEtMjUuMyAwbC0xMDAgMzcuNWMtMTQuMSA1LjMtMjMuNCAxOC43LTIzLjQgMzMuN1YyMTRsLTk2LjYgMzYuMkM5LjMgMjU1LjUgMCAyNjguOSAwIDI4My45VjM5NGMwIDEzLjYgNy43IDI2LjEgMTkuOSAzMi4ybDEwMCA1MGMxMC4xIDUuMSAyMi4xIDUuMSAzMi4yIDBsMTAzLjktNTIgMTAzLjkgNTJjMTAuMSA1LjEgMjIuMSA1LjEgMzIuMiAwbDEwMC01MGMxMi4yLTYuMSAxOS45LTE4LjYgMTkuOS0zMi4yVjI4My45YzAtMTUtOS4zLTI4LjQtMjMuNC0zMy43ek0zNTggMjE0LjhsLTg1IDMxLjl2LTY4LjJsODUtMzd2NzMuM3pNMTU0IDEwNC4xbDEwMi0zOC4yIDEwMiAzOC4ydi42bC0xMDIgNDEuNC0xMDItNDEuNHYtLjZ6bTg0IDI5MS4xbC04NSA0Mi41di03OS4xbDg1LTM4Ljh2NzUuNHptMC0xMTJsLTEwMiA0MS40LTEwMi00MS40di0uNmwxMDItMzguMiAxMDIgMzguMnYuNnptMjQwIDExMmwtODUgNDIuNXYtNzkuMWw4NS0zOC44djc1LjR6bTAtMTEybC0xMDIgNDEuNC0xMDItNDEuNHYtLjZsMTAyLTM4LjIgMTAyIDM4LjJ2LjZ6Ij48L3BhdGg+CiAgPC9nPgo8L3N2Zz4K',
-  mediatype: 'image/svg+xml',
-};
 
-export class GettingStartedSample implements IGettingStartedSampleApi {
+export class GettingStartedSamplesApiService implements IGettingStartedSampleApi {
   private readonly coreV1API: CoreV1API;
   constructor(kubeConfig: k8s.KubeConfig) {
     this.coreV1API = prepareCoreV1API(kubeConfig);
@@ -43,7 +41,7 @@ export class GettingStartedSample implements IGettingStartedSampleApi {
       return [];
     }
 
-    let response;
+    let response: { response: http.IncomingMessage; body: V1ConfigMapList };
     try {
       response = await this.coreV1API.listNamespacedConfigMap(
         this.env.NAMESPACE,
@@ -58,7 +56,7 @@ export class GettingStartedSample implements IGettingStartedSampleApi {
       throw createError(error, API_ERROR_LABEL, additionalMessage);
     }
 
-    const samples = [];
+    const samples: api.IGettingStartedSample[] = [];
 
     for (const cm of response.body.items) {
       if (cm.data) {
@@ -73,11 +71,8 @@ export class GettingStartedSample implements IGettingStartedSampleApi {
       }
     }
 
-    for (const sample of samples) {
-      if (!sample.icon) {
-        sample.icon = DEFAULT_ICON;
-      }
-    }
+    // Ensure icon for each sample
+    samples.forEach(sample => (sample.icon = getIcon(sample)));
 
     return samples;
   }

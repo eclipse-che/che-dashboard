@@ -36,7 +36,7 @@ import {
   IServerConfigApi,
   IUserProfileApi,
 } from './types';
-import { GettingStartedSample } from './services/gettingStartedSamplesApi';
+import { GettingStartedSamplesApiService } from './services/gettingStartedSamplesApi';
 
 export * from './types';
 
@@ -92,6 +92,6 @@ export class DevWorkspaceClient implements IDevWorkspaceClient {
   }
 
   get gettingStartedSampleApi(): IGettingStartedSampleApi {
-    return new GettingStartedSample(this.kubeConfig);
+    return new GettingStartedSamplesApiService(this.kubeConfig);
   }
 }

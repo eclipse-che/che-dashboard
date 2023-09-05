@@ -11,12 +11,12 @@
  */
 
 import * as mockClient from '@kubernetes/client-node';
-import { GettingStartedSample } from '../gettingStartedSamplesApi';
+import { GettingStartedSamplesApiService } from '../gettingStartedSamplesApi';
 import { api } from '@eclipse-che/common';
 
 describe('Getting Started Samples API Service', () => {
   const env = process.env;
-  let gettingStartedSample: GettingStartedSample;
+  let gettingStartedSample: GettingStartedSamplesApiService;
 
   beforeEach(() => {
     jest.resetModules();
@@ -37,7 +37,7 @@ describe('Getting Started Samples API Service', () => {
       };
     });
 
-    gettingStartedSample = new GettingStartedSample(kubeConfig);
+    gettingStartedSample = new GettingStartedSamplesApiService(kubeConfig);
   });
 
   afterEach(() => {

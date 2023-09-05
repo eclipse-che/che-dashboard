@@ -16,9 +16,9 @@ import { getSchema } from '../../services/helpers';
 import { getDevWorkspaceClient } from './helpers/getDevWorkspaceClient';
 import { getServiceAccountToken } from './helpers/getServiceAccountToken';
 
-const tags = ['Getting Started Sample'];
+const tags = ['Getting Started Samples'];
 
-export function registerGettingStartedSampleRoutes(instance: FastifyInstance) {
+export function registerGettingStartedSamplesRoutes(instance: FastifyInstance) {
   instance.register(async server => {
     server.get(`${baseApiPath}/getting-started-sample`, getSchema({ tags }), async () => {
       const token = getServiceAccountToken();
