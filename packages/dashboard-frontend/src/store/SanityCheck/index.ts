@@ -107,7 +107,7 @@ export const actionCreators: ActionCreators = {
             delay(1000);
           }
         }
-      } catch (e) {
+      } catch (e: any) {
         let errorMessage =
           'Backend is not available. Try to refresh the page or re-login to the Dashboard.';
         if (isUnauthorized(e) || isForbidden(e)) {
@@ -118,6 +118,12 @@ export const actionCreators: ActionCreators = {
           type: Type.RECEIVED_BACKEND_CHECK_ERROR,
           error: errorMessage,
         });
+        if (e.message) {
+          console.error(e.message);
+        }
+        if (e.response && e.response.data && e.response.data.trace) {
+          console.error(e.response.data.trace.join('\n'));
+        }
         throw new Error(errorMessage);
       }
     },
