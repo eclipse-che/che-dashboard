@@ -108,7 +108,7 @@ export const actionCreators: ActionCreators = {
             delay(1000);
           }
         }
-      } catch (e: any) {
+      } catch (e) {
         let errorMessage =
           'Backend is not available. Try to refresh the page or re-login to the Dashboard.';
         if (isUnauthorized(e) || isForbidden(e)) {
@@ -120,7 +120,11 @@ export const actionCreators: ActionCreators = {
           error: errorMessage,
         });
         console.error(helpers.errors.getMessage(e));
-        if (e.response && e.response.data && e.response.data.trace) {
+        if (
+          helpers.errors.includesAxiosResponse(e) &&
+          e.response.data.trace &&
+          Array.isArray(e.response.data.trace)
+        ) {
           console.error(e.response.data.trace.join('\n'));
         }
         throw new Error(errorMessage);
