@@ -41,6 +41,14 @@ function resolveIconUrl(
   return metadata.icon;
 }
 
+export function convertIconToSrc(icon: che.DevfileMetaData['icon']): string {
+  if (typeof icon === 'string') {
+    return icon;
+  }
+
+  return 'data:' + icon.mediatype + ';base64,' + icon.base64data;
+}
+
 export function resolveTags(
   metadata: che.DevfileMetaData,
   baseUrl: string,
