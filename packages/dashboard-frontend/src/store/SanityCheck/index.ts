@@ -12,6 +12,7 @@
 
 import { Action, Reducer } from 'redux';
 import { AppThunk } from '..';
+import { helpers } from '@eclipse-che/common';
 import { container } from '../../inversify.config';
 import { getDefer } from '../../services/helpers/deferred';
 import { delay } from '../../services/helpers/delay';
@@ -118,9 +119,7 @@ export const actionCreators: ActionCreators = {
           type: Type.RECEIVED_BACKEND_CHECK_ERROR,
           error: errorMessage,
         });
-        if (e.message) {
-          console.error(e.message);
-        }
+        console.error(helpers.errors.getMessage(e));
         if (e.response && e.response.data && e.response.data.trace) {
           console.error(e.response.data.trace.join('\n'));
         }
