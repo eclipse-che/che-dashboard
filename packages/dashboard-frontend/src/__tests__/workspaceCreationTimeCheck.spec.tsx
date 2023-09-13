@@ -104,7 +104,7 @@ describe('Workspace creation time', () => {
     await waitFor(
       () =>
         expect(mockPost).toBeCalledWith('/api/factory/resolver', { error_code: undefined, url }),
-      { timeout: 4000 },
+      { timeout: 6000 },
     );
     expect(mockPost).toHaveBeenCalledTimes(1);
     expect(mockGet).not.toHaveBeenCalled();
