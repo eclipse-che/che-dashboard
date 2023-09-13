@@ -147,7 +147,7 @@ yarn build-and-patch
 
 ### Updating Dashboard on Remote Cluster Using `skaffold.dev`
 
-To update the dashboard deployment you need access to the Kubernetes cluster (see [Running locally against remote Che Cluster (Node.js v18)](#running-locally-against-remote-che-cluster-nodejs-v18))
+To update the dashboard deployment you need access to the Kubernetes cluster (see [Running the Project Locally](#running-the-project-locally))
 
 Then proceed with the following steps:
 
