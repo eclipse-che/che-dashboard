@@ -59,6 +59,8 @@ The development server serves the dashboard-frontend and dashboard-backend on [h
   With Native Auth, routes are secured with OpenShift OAuth which we can't deal with easily.
   So, instead when you do `yarn start` we bypass OpenShift OAuth proxy while requesting Che Server by doing `kubectl port-forward`. So, no additional configuration is needed but note that your Dashboard will be authentication with the user from the current KUBECONFIG.
 
+
+
 ### Incremental builds
 
 You may would like to watch changes and recompile them incrementally:
