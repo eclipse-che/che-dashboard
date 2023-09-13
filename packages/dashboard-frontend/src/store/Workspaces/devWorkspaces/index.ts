@@ -520,7 +520,7 @@ export const actionCreators: ActionCreators = {
       const openVSXUrl = selectOpenVSXUrl(state);
       const pluginRegistryUrl = selectPluginRegistryUrl(state);
       const pluginRegistryInternalUrl = selectPluginRegistryInternalUrl(state);
-      const cheEditor = editorId ? editorId : selectDefaultEditor(state);
+      const cheEditor = editorId ? editorId : state.dwServerConfig.config.defaults.editor;
       const defaultNamespace = defaultKubernetesNamespace.name;
       try {
         /* create a new DevWorkspace */

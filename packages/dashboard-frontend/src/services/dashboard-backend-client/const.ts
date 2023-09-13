@@ -10,4 +10,6 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-export const prefix = '/dashboard/api';
+export const dashboardBackendPrefix = '/dashboard/api';
+
+export const cheServerBaseUrl = '/api';

@@ -14,8 +14,6 @@ const base = require('../../jest.config.base');
 
 module.exports = {
   ...base,
-  displayName: 'Dashboard Frontend',
-  moduleDirectories: ['node_modules', '../../node_modules', 'src'],
   moduleNameMapper: {
     '\\.(css|less|sass|scss|styl)$': 'identity-obj-proxy',
     '\\.(gif|ttf|eot|svg)$': '<rootDir>/__mocks__/fileMock.js',
@@ -26,7 +24,6 @@ module.exports = {
   },
   modulePathIgnorePatterns: [
     '__mocks__/index.tsx',
-    'src/__tests__/workspaceCreationTimeCheck.spec.tsx',
   ],
   testEnvironment: 'jsdom',
   transform: {
@@ -39,23 +36,4 @@ module.exports = {
   },
   setupFilesAfterEnv: ['./jest.setup.ts'],
   setupFiles: ['./src/inversify.config.ts'],
-  collectCoverageFrom: [
-    ...base.collectCoverageFrom,
-
-    '!src/**/__tests__/**',
-    '!src/**/*.d.{ts,tsx}',
-    '!src/**/*.config.ts',
-    '!src/**/*.enum.ts',
-    '!src/index.tsx',
-    '!src/App.tsx',
-    '!src/Routes.tsx',
-  ],
-  coverageThreshold: {
-    global: {
-      statements: 81,
-      branches: 85,
-      functions: 77,
-      lines: 81,
-    },
-  },
 };

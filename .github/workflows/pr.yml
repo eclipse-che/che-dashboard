@@ -40,6 +40,27 @@ jobs:
         name: "Check dependencies usage restrictions"
         run: yarn license:check
 
+  time-check:
+    runs-on: ubuntu-22.04
+    strategy:
+      matrix:
+        node-version: [18.x]
+    steps:
+      -
+        name: "Checkout Che Dashboard source code"
+        uses: actions/checkout@v3
+      -
+        name: "Use Node.js ${{ matrix.node-version }}"
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+      -
+        name: "Install dependencies"
+        run: yarn
+      -
+        name: "Workspace creation time check"
+        run: yarn pretest && yarn --cwd  packages/dashboard-frontend test --testPathPattern=src/__tests__/workspaceCreationTimeCheck --config=jest.config.check.js
+
   build-and-test:
     runs-on: ubuntu-22.04
     strategy:
