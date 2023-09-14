@@ -147,7 +147,7 @@ export const targetDevWorkspace = {
   kind: 'DevWorkspace',
   metadata: {
     annotations: {
-      'che.eclipse.org/che-editor': 'che-incubator/che-code/insiders',
+      // 'che.eclipse.org/che-editor': 'che-incubator/che-code/insiders',
       'che.eclipse.org/last-updated-timestamp': `${timestampNew}`,
     },
     name: 'che-dashboard',

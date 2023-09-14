@@ -12,10 +12,10 @@
 
 import axios from 'axios';
 import { helpers } from '@eclipse-che/common';
-import { cheServerBaseUrl } from './const';
+import { cheServerPrefix } from './const';
 import { FactoryResolver } from '../helpers/types';
 
-const factoryUrl = '/factory';
+const factoryResolverEndpoint = '/factory/resolver';
 
 export async function getFactoryResolver(
   url: string,
@@ -23,12 +23,12 @@ export async function getFactoryResolver(
 ): Promise<FactoryResolver> {
   try {
     const response = await axios.post(
-      `${cheServerBaseUrl}${factoryUrl}/resolver`,
+      `${cheServerPrefix}${factoryResolverEndpoint}`,
       Object.assign({}, overrideParams, { url }),
     );
 
     return response.data;
   } catch (e) {
-    throw new Error(`Failed to fetch factory'. ${helpers.errors.getMessage(e)}`);
+    throw new Error(`Failed to fetch factory resolver'. ${helpers.errors.getMessage(e)}`);
   }
 }

@@ -10,16 +10,9 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
+const config = require('./jest.config');
+
 module.exports = {
-  roots: ['<rootDir>/src'],
-  transform: {
-    '^.+\\.tsx?$': 'ts-jest'
-  },
+  ...config,
   testRegex: '(/src/.+\\.check)\\.tsx?$',
-  moduleNameMapper: {
-    '\\.(css|less|sass|scss|styl)$': 'identity-obj-proxy',
-  },
-  testEnvironment: 'jsdom',
-  setupFilesAfterEnv: ['./jest.setup.ts'],
-  setupFiles: ['./src/inversify.config.ts'],
 };

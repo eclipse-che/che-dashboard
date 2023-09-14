@@ -12,4 +12,4 @@
 
 export const dashboardBackendPrefix = '/dashboard/api';
 
-export const cheServerBaseUrl = '/api';
+export const cheServerPrefix = '/api';

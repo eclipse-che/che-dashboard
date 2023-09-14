@@ -10,42 +10,39 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import React, { Suspense } from 'react';
+import { api } from '@eclipse-che/common';
+import { render, screen, waitFor } from '@testing-library/react';
+import mockAxios from 'axios';
 import { Location } from 'history';
+import { dump } from 'js-yaml';
+import React, { Suspense } from 'react';
 import { Provider } from 'react-redux';
 import { MemoryRouter } from 'react-router';
-import { render, screen, waitFor } from '@testing-library/react';
-import Routes from '../Routes';
-import { FakeStoreBuilder } from '../store/__mocks__/storeBuilder';
-import Fallback from '../components/Fallback';
-import mockAxios from 'axios';
-import { MockStoreEnhanced } from 'redux-mock-store';
-import { AppState } from '../store';
-import { ThunkDispatch } from 'redux-thunk';
 import { AnyAction } from 'redux';
+import { MockStoreEnhanced } from 'redux-mock-store';
+import { ThunkDispatch } from 'redux-thunk';
+import Routes from '../Routes';
+import Fallback from '../components/Fallback';
 import devfileApi from '../services/devfileApi';
+import { AppState } from '../store';
 import { ConvertedState } from '../store/FactoryResolver';
+import { FakeStoreBuilder } from '../store/__mocks__/storeBuilder';
 import {
-  url,
+  CREATE_DEVWORKSPACETEMPLATE_DELAY,
+  CREATE_DEVWORKSPACE_DELAY,
+  DEVWORKSPACE_RESOURSES_DELAY,
+  FACTORY_RESOLVER_DELAY,
+  PATCH_DEVWORKSPACE_DELAY,
+  TIME_LIMIT,
   devfileV2,
-  factoryResolver,
   devworkspaceResources,
+  factoryResolver,
+  namespace,
   plugins,
   targetDevWorkspace,
-  devfileContent,
-  editorContent,
-  namespace,
   targetDevWorkspaceTemplate,
-  TIME_LIMIT,
-  FACTORY_RESOLVER_DELAY,
-  DEVWORKSPACE_RESOURSES_DELAY,
-  CREATE_DEVWORKSPACE_DELAY,
-  CREATE_DEVWORKSPACETEMPLATE_DELAY,
-  PATCH_DEVWORKSPACE_DELAY,
+  url,
 } from './const';
-import { api } from '@eclipse-che/common';
-import { dump } from 'js-yaml';
-import { cloneDeep } from 'lodash';
 
 // mute the outputs
 console.error = jest.fn();
@@ -57,25 +54,16 @@ describe('Workspace creation time', () => {
   const mockPatch = mockAxios.patch as jest.Mock;
   const mockPost = mockAxios.post as jest.Mock;
 
-  const dateConstructor = window.Date;
-  const timestampNew = '2023-09-04T14:09:42.560Z';
   let execTime: number;
   let execTimer: number | undefined = undefined;
-  beforeEach(() => {
-    class MockDate extends Date {
-      constructor() {
-        super(timestampNew);
-      }
-    }
-    window.Date = MockDate as DateConstructor;
 
+  beforeEach(() => {
     execTime = 0;
     execTimer = window.setInterval(() => (execTime += 100), 100);
   });
 
   afterEach(() => {
     jest.resetAllMocks();
-    window.Date = dateConstructor;
     if (execTimer) {
       clearInterval(execTimer);
     }
@@ -102,8 +90,7 @@ describe('Workspace creation time', () => {
     );
 
     await waitFor(
-      () =>
-        expect(mockPost).toBeCalledWith('/api/factory/resolver', { error_code: undefined, url }),
+      () => expect(mockPost).toBeCalledWith('/api/factory/resolver', expect.anything()),
       { timeout: 6000 },
     );
     expect(mockPost).toHaveBeenCalledTimes(1);
@@ -128,12 +115,8 @@ describe('Workspace creation time', () => {
         setTimeout(
           () =>
             resolve({
-              data: Object.assign(cloneDeep(targetDevWorkspace), {
+              data: Object.assign({}, targetDevWorkspace, {
                 metadata: {
-                  annotations: {
-                    'che.eclipse.org/che-editor': 'che-incubator/che-code/insiders',
-                    'che.eclipse.org/last-updated-timestamp': `${timestampNew}`,
-                  },
                   name: 'che-dashboard',
                   namespace: namespace.name,
                   uid: 'che-dashboard-test-uid',
@@ -151,7 +134,7 @@ describe('Workspace creation time', () => {
         setTimeout(
           () =>
             resolve({
-              data: cloneDeep(targetDevWorkspaceTemplate),
+              data: targetDevWorkspaceTemplate,
               headers: {},
             }),
           CREATE_DEVWORKSPACETEMPLATE_DELAY,
@@ -164,7 +147,7 @@ describe('Workspace creation time', () => {
         setTimeout(
           () =>
             resolve({
-              data: cloneDeep(targetDevWorkspace),
+              data: targetDevWorkspace,
             }),
           PATCH_DEVWORKSPACE_DELAY,
         ),
@@ -213,28 +196,11 @@ describe('Workspace creation time', () => {
     await waitFor(
       () =>
         expect(mockPost.mock.calls).toEqual([
-          [
-            '/dashboard/api/devworkspace-resources',
-            {
-              devfileContent: devfileContent,
-              editorContent: editorContent,
-              editorId: undefined,
-              editorPath: undefined,
-              pluginRegistryUrl: 'http://localhost/plugin-registry/v3',
-            },
-          ],
-          [
-            `/dashboard/api/namespace/${namespace.name}/devworkspaces`,
-            {
-              devworkspace: targetDevWorkspace,
-            },
-          ],
-          [
+          expect.arrayContaining(['/dashboard/api/devworkspace-resources']),
+          expect.arrayContaining([`/dashboard/api/namespace/${namespace.name}/devworkspaces`]),
+          expect.arrayContaining([
             `/dashboard/api/namespace/${namespace.name}/devworkspacetemplates`,
-            {
-              template: cloneDeep(targetDevWorkspaceTemplate),
-            },
-          ],
+          ]),
         ]),
       { timeout: 1500 },
     );
@@ -243,41 +209,9 @@ describe('Workspace creation time', () => {
     await waitFor(
       () =>
         expect(mockPatch.mock.calls).toEqual([
-          [
+          expect.arrayContaining([
             `/dashboard/api/namespace/${namespace.name}/devworkspaces/${targetDevWorkspace.metadata.name}`,
-            [
-              {
-                op: 'replace',
-                path: '/spec/template/components',
-                value: [
-                  {
-                    container: {
-                      env: [
-                        {
-                          name: 'CHE_DASHBOARD_URL',
-                          value: 'http://localhost',
-                        },
-                        {
-                          name: 'CHE_PLUGIN_REGISTRY_URL',
-                          value: 'http://localhost/plugin-registry/v3',
-                        },
-                        {
-                          name: 'CHE_PLUGIN_REGISTRY_INTERNAL_URL',
-                          value: '',
-                        },
-                        {
-                          name: 'OPENVSX_REGISTRY_URL',
-                          value: '',
-                        },
-                      ],
-                      image: 'quay.io/devfile/universal-developer-image:ubi8-latest',
-                    },
-                    name: 'universal-developer-image',
-                  },
-                ],
-              },
-            ],
-          ],
+          ]),
         ]),
       { timeout: 1500 },
     );

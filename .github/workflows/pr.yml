@@ -59,7 +59,7 @@ jobs:
         run: yarn
       -
         name: "Workspace creation time check"
-        run: yarn pretest && yarn --cwd  packages/dashboard-frontend test --testPathPattern=src/__tests__/workspaceCreationTimeCheck --config=jest.config.check.js
+        run: yarn test:check
 
   build-and-test:
     runs-on: ubuntu-22.04
