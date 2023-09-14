@@ -26,7 +26,6 @@ module.exports = {
   },
   modulePathIgnorePatterns: [
     '__mocks__/index.tsx',
-    'src/__tests__/workspaceCreationTimeCheck.spec.tsx',
   ],
   testEnvironment: 'jsdom',
   transform: {
