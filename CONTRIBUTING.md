@@ -178,7 +178,7 @@ skaffold dev --cleanup=false --default-repo=$DEFAULT_REPO
 
 ### Running the Project Locally
 
-To use Dashboard with a Che Cluster, you need to establish connection to the Kubernetes cluster where Che is deployed. You can verify the current cluster in your kubeconfig file, typically located at $KUBECONFIG (or ~/.kube/config if $KUBECONFIG is not set). If the current cluster is not the one you want, you may need to use `oc login` (for OpenShift) or edit the file manually (for Kubernetes).
+To run the Dashboard, you need to establish a connection to the Kubernetes cluster where Che is deployed. You can verify the current cluster in your kubeconfig file, typically located at $KUBECONFIG (or ~/.kube/config if $KUBECONFIG is not set). If the current cluster is not the one you want, you may need to use `oc login` (for OpenShift) or edit the file manually (for Kubernetes).
 
 After that, you can follow these steps:
 
