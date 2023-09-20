@@ -117,7 +117,7 @@ You may opt to add a remote with `git add remote` and push to a personal fork ra
 
 ### Building an Image
 
-To build an image within a Che workspace on an OpenShift cluster, the cluster and OpenShift user must be configured to allow with rootless builds. Additionally, the following attribute must be added to the devfile:
+To build an image within a Che workspace on an OpenShift cluster, the cluster and OpenShift user must be configured to allow rootless builds.
 
 ```yaml
 attributes:
