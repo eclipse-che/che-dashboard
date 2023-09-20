@@ -229,7 +229,7 @@ yarn --cwd packages/dashboard-backend build:watch
 yarn --cwd packages/dashboard-frontend build:watch
 ```
 
-Local backend is prerequisite for the development server. You can run the dev server using the following command:
+Local backend is a prerequisite for the development server. You can run the dev server using the following command:
 
 ```sh
 yarn start
