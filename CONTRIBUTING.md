@@ -112,7 +112,7 @@ To debug the backend within the editor, after running the `[UD] build` and `[UD]
 For PRs targeting the `eclipse-che/che-dashboard` repository, the PR source branch should also be located in `eclipse-che/che-dashboard` to allow all PR checks to run.
 Therefore, if your Che instance has the GitHub oAuth app set up, follow [these steps to request access](https://github.com/eclipse/che/issues/21627#issuecomment-1216592765) for pushing to `eclipse-che/che-dashboard`.
 
-To commit and push changes to remote repository, open a terminal within `tools` container and run Git commands such as `git add` and `git push`.
+To commit and push changes to the remote repository, open a terminal within the `tools` container and run Git commands such as `git add` and `git push`.
 You may opt to add a remote with `git add remote` and push to a personal fork rather than the upstream `eclipse-che/che-dashboard` repository.
 
 ### Building an Image
