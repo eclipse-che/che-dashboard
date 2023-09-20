@@ -74,7 +74,7 @@ For VS Code, execute tasks defined in the devfile with these steps:
 
 1. Open the command palette (Ctrl/Cmd + Shift + P).
 2. Execute the `Tasks: Run Task` command.
-3. Select the `[UD] install dependencies` task to install project dependencies.
+3. Select the `devfile` folder  and select the `[UD] install dependencies` task to install project dependencies.
 4. Follow steps 1 and 2 again, select the `[UD] build` task to build the project.
 
 ### Analyzing Bundles within Eclipse Che
