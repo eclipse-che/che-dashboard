@@ -1,28 +1,28 @@
 # Table of Contents
 
 - [Contributing Guidelines](#contributing-guidelines)
-    - [Code of Conduct](#code-of-conduct)
-    - [Reporting Issues](#reporting-issues)
-    - [Opening Pull Requests](#opening-pull-requests)
-        - [Additional PR Requirements](#additional-pr-requirements)
-            - [Approval of Project Dependencies](#approval-of-project-dependencies)
-    - [Developing within Eclipse Che](#developing-within-eclipse-che)
-        - [Starting a Workspace within Eclipse Che](#starting-a-workspace-within-eclipse-che)
-        - [Running Devfile Tasks for Downloading Dependencies and Building the Project](#running-devfile-tasks-for-downloading-dependencies-and-building-the-project)
-        - [Analyzing Bundles within Eclipse Che](#analyzing-bundles-within-eclipse-che)
-        - [Measuring Build Speed within Eclipse Che](#measuring-build-speed-within-eclipse-che)
-        - [Running the Project Locally Against a Remote Eclipse Che Installation on a Seperate Cluster](#running-the-project-locally-against-a-remote-eclipse-che-installation-on-a-seperate-cluster)
-        - [Debugging](#debugging)
-        - [Pushing to GitHub and Creating a Pull Request](#pushing-to-github-and-creating-a-pull-request)
-        - [Building an Image](#building-an-image)
-        - [Building a New Image and Applying it to the CheCluster in the Current Context](#building-a-new-image-and-applying-it-to-the-checluster-in-the-current-context)
-        - [Updating Dashboard on Remote Cluster Using skaffold.dev](#updating-dashboard-on-remote-cluster-using-skaffolddev)
-    - [Developing Locally Against Remote Che Cluster](#developing-locally-against-remote-che-cluster)
-        - [Running the Project Locally](#running-the-project-locally)
-        - [Building Changes Incrementally](#building-changes-incrementally)
-        - [Analyzing Bundles](#analyzing-bundles)
-        - [Measuring Build Speed](#measuring-build-speed)
-        - [Checking Dependencies for Intellectual Property (IP) Compliance](#checking-dependencies-for-intellectual-property-ip-compliance)
+  - [Code of Conduct](#code-of-conduct)
+  - [Reporting Issues](#reporting-issues)
+  - [Opening Pull Requests](#opening-pull-requests)
+    - [Additional PR Requirements](#additional-pr-requirements)
+      - [Approval of Project Dependencies](#approval-of-project-dependencies)
+  - [Developing within Eclipse Che](#developing-within-eclipse-che)
+    - [Starting a Workspace within Eclipse Che](#starting-a-workspace-within-eclipse-che)
+    - [Running Devfile Tasks for Downloading Dependencies and Building the Project](#running-devfile-tasks-for-downloading-dependencies-and-building-the-project)
+    - [Analyzing Bundles within Eclipse Che](#analyzing-bundles-within-eclipse-che)
+    - [Measuring Build Speed within Eclipse Che](#measuring-build-speed-within-eclipse-che)
+    - [Running the Project Locally Against a Remote Eclipse Che Installation on a Seperate Cluster](#running-the-project-locally-against-a-remote-eclipse-che-installation-on-a-seperate-cluster)
+    - [Debugging](#debugging)
+    - [Pushing to GitHub and Creating a Pull Request](#pushing-to-github-and-creating-a-pull-request)
+    - [Building an Image](#building-an-image)
+    - [Building a New Image and Applying it to the CheCluster in the Current Context](#building-a-new-image-and-applying-it-to-the-checluster-in-the-current-context)
+    - [Updating Dashboard on Remote Cluster Using skaffold.dev](#updating-dashboard-on-remote-cluster-using-skaffolddev)
+  - [Developing Locally Against Remote Che Cluster](#developing-locally-against-remote-che-cluster)
+    - [Running the Project Locally](#running-the-project-locally)
+    - [Building Changes Incrementally](#building-changes-incrementally)
+    - [Analyzing Bundles](#analyzing-bundles)
+    - [Measuring Build Speed](#measuring-build-speed)
+    - [Checking Dependencies for Intellectual Property (IP) Compliance](#checking-dependencies-for-intellectual-property-ip-compliance)
 
 ---
 
@@ -46,7 +46,7 @@ You can explore information about pull request templates and the necessary requi
 
 #### Approval of Project Dependencies
 
-The author has to ensure that all dependencies satisfy Eclipse [Intellectual Property](https://www.eclipse.org/projects/handbook/#ip). 
+The author has to ensure that all dependencies satisfy Eclipse [Intellectual Property](https://www.eclipse.org/projects/handbook/#ip).
 
 ## Developing within Eclipse Che
 
@@ -60,7 +60,7 @@ Within Eclipse Che, you can perform the following tasks:
 - Debug the project directly within your editor.
 - Push your changes to GitHub.
 
-###  Starting a Workspace within Eclipse Che
+### Starting a Workspace within Eclipse Che
 
 To start a new workspace within Eclipse Che, navigate to the following URL:
 
@@ -96,12 +96,12 @@ To run the Dashboard against a remote Eclipse Che installation, provide your clu
 
 1. Open the `tools` container within the editor.
 2. For an OpenShift cluster, execute the `oc login` command with your cluster credentials. For a Kubernetes cluster, configure the `~/.kube/config` file.
-3. Execute the `[UD] start` task defined in the devfile by following the steps 1 and 2 from [Running devfile tasks to download yarn dependencies and build the project](#running-devfile-tasks-to-download-yarn-dependencies-and-build-the-project) to start the dashboard instance.
+3. Execute the `[UD] start` task defined in the devfile by following the steps 1 and 2 from [Running Devfile Tasks for Downloading Dependencies and Building the Project](#running-devfile-tasks-for-downloading-dependencies-and-building-the-project) to start the dashboard instance.
 4. Wait for the VS Code notification confirming that local server is now listening on port 8080. Click on `Open in New Tab` to open a new tab running the latest Dashboard changes.
 
 ### Debugging
 
-To start the Dashboard for debugging, run the `[UD] build` and `[UD] start` tasks by following the steps 1 and 2 from  [Running devfile tasks to download yarn dependencies and build the project](#running-devfile-tasks-to-download-yarn-dependencies-and-build-the-project).
+To start the Dashboard for debugging, run the `[UD] build` and `[UD] start` tasks by following the steps 1 and 2 from  [Running Devfile Tasks for Downloading Dependencies and Building the Project](#running-devfile-tasks-for-downloading-dependencies-and-building-the-project).
 
 Debugging the dashboard-frontend and dashboard-backend can be done with your browser developer tools. For Chrome DevTools, this can be done from the `Sources` tab. For debugging the backend, open the dedicated Chrome DevTools for Node.js.
 
@@ -118,11 +118,6 @@ You may opt to add a remote with `git add remote` and push to a personal fork ra
 ### Building an Image
 
 To build an image within a Che workspace on an OpenShift cluster, the cluster and OpenShift user must be configured to allow rootless builds.
-
-```yaml
-attributes:
-  controller.devfile.io/scc: container-build 
-```
 
 To build the image, run:
 
