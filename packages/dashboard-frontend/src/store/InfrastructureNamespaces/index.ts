@@ -12,13 +12,10 @@
 
 import { Action, Reducer } from 'redux';
 import common from '@eclipse-che/common';
-import { container } from '../../inversify.config';
-import { CheWorkspaceClient } from '../../services/workspace-client/cheworkspace/cheWorkspaceClient';
 import { AppThunk } from '..';
 import { createObject } from '../helpers';
 import { AUTHORIZED, SanityCheckAction } from '../sanityCheckMiddleware';
-
-const WorkspaceClient = container.get(CheWorkspaceClient);
+import { getKubernetesNamespace } from '../../services/backend-client/kubernetesNamespaceApi';
 
 export interface State {
   isLoading: boolean;
@@ -53,10 +50,7 @@ export const actionCreators: ActionCreators = {
       await dispatch({ type: 'REQUEST_NAMESPACES', check: AUTHORIZED });
 
       try {
-        const namespaces =
-          await WorkspaceClient.restApiClient.getKubernetesNamespace<
-            Array<che.KubernetesNamespace>
-          >();
+        const namespaces = await getKubernetesNamespace();
         dispatch({
           type: 'RECEIVE_NAMESPACES',
           namespaces,
@@ -91,17 +85,17 @@ export const reducer: Reducer<State> = (
   const action = incomingAction as KnownAction;
   switch (action.type) {
     case 'REQUEST_NAMESPACES':
-      return createObject(state, {
+      return createObject<State>(state, {
         isLoading: true,
         error: undefined,
       });
     case 'RECEIVE_NAMESPACES':
-      return createObject(state, {
+      return createObject<State>(state, {
         isLoading: false,
         namespaces: action.namespaces,
       });
     case 'RECEIVE_NAMESPACES_ERROR':
-      return createObject(state, {
+      return createObject<State>(state, {
         isLoading: false,
         error: action.error,
       });

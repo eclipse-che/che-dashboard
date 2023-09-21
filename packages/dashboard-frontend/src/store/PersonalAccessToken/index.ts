@@ -13,22 +13,19 @@
 import { api, helpers } from '@eclipse-che/common';
 import { Action, Reducer } from 'redux';
 import { AppThunk } from '..';
-import { container } from '../../inversify.config';
 import {
   addToken,
   fetchTokens,
   removeToken,
   updateToken,
-} from '../../services/dashboard-backend-client/personalAccessTokenApi';
-import { CheWorkspaceClient } from '../../services/workspace-client/cheworkspace/cheWorkspaceClient';
+} from '../../services/backend-client/personalAccessTokenApi';
 import { createObject } from '../helpers';
 import { selectDefaultNamespace } from '../InfrastructureNamespaces/selectors';
 import { AUTHORIZED, SanityCheckAction } from '../sanityCheckMiddleware';
 import { State } from './state';
+import { provisionKubernetesNamespace } from '../../services/backend-client/kubernetesNamespaceApi';
 
 export * from './state';
-
-const WorkspaceClient = container.get(CheWorkspaceClient);
 
 export enum Type {
   RECEIVE_ERROR = 'RECEIVE_ERROR',
@@ -90,7 +87,7 @@ export const actionCreators: ActionCreators = {
       const state = getState();
       const namespace = selectDefaultNamespace(state).name;
 
-      await dispatch({
+      dispatch({
         type: Type.REQUEST_TOKENS,
         check: AUTHORIZED,
       });
@@ -117,7 +114,7 @@ export const actionCreators: ActionCreators = {
       const state = getState();
       const namespace = selectDefaultNamespace(state).name;
 
-      await dispatch({
+      dispatch({
         type: Type.REQUEST_TOKENS,
         check: AUTHORIZED,
       });
@@ -135,8 +132,7 @@ export const actionCreators: ActionCreators = {
       }
 
       /* request namespace provision as it triggers tokens validation */
-
-      await WorkspaceClient.restApiClient.provisionKubernetesNamespace();
+      await provisionKubernetesNamespace();
 
       /* check if the new token is available */
 
@@ -164,7 +160,7 @@ export const actionCreators: ActionCreators = {
       const state = getState();
       const namespace = selectDefaultNamespace(state).name;
 
-      await dispatch({
+      dispatch({
         type: Type.REQUEST_TOKENS,
         check: AUTHORIZED,
       });
@@ -191,7 +187,7 @@ export const actionCreators: ActionCreators = {
       const state = getState();
       const namespace = selectDefaultNamespace(state).name;
 
-      await dispatch({
+      dispatch({
         type: Type.REQUEST_TOKENS,
         check: AUTHORIZED,
       });
@@ -229,34 +225,34 @@ export const reducer: Reducer<State> = (
   const action = incomingAction as KnownAction;
   switch (action.type) {
     case Type.REQUEST_TOKENS:
-      return createObject(state, {
+      return createObject<State>(state, {
         isLoading: true,
         error: undefined,
       });
     case Type.RECEIVE_TOKENS:
-      return createObject(state, {
+      return createObject<State>(state, {
         isLoading: false,
         tokens: action.tokens,
       });
     case Type.ADD_TOKEN:
-      return createObject(state, {
+      return createObject<State>(state, {
         isLoading: false,
         tokens: [...state.tokens, action.token],
       });
     case Type.UPDATE_TOKEN:
-      return createObject(state, {
+      return createObject<State>(state, {
         isLoading: false,
         tokens: state.tokens.map(token =>
           token.tokenName === action.token.tokenName ? action.token : token,
         ),
       });
     case Type.REMOVE_TOKEN:
-      return createObject(state, {
+      return createObject<State>(state, {
         isLoading: false,
         tokens: state.tokens.filter(token => token.tokenName !== action.token.tokenName),
       });
     case Type.RECEIVE_ERROR:
-      return createObject(state, {
+      return createObject<State>(state, {
         isLoading: false,
         error: action.error,
       });

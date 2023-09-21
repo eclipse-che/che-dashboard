@@ -14,7 +14,7 @@ import { Action, Reducer } from 'redux';
 import { api, helpers } from '@eclipse-che/common';
 import { AppThunk } from '..';
 import { createObject } from '../helpers';
-import * as DwApi from '../../services/dashboard-backend-client/devWorkspaceApi';
+import * as DwApi from '../../services/backend-client/devWorkspaceApi';
 import { RegistryEntry } from './types';
 import { State } from './dockerConfigState';
 import { AUTHORIZED, SanityCheckAction } from '../sanityCheckMiddleware';
@@ -166,18 +166,18 @@ export const reducer: Reducer<State> = (
   const action = incomingAction as KnownAction;
   switch (action.type) {
     case 'REQUEST_DEVWORKSPACE_CREDENTIALS':
-      return createObject(state, {
+      return createObject<State>(state, {
         isLoading: true,
         error: undefined,
       });
     case 'SET_DEVWORKSPACE_CREDENTIALS':
-      return createObject(state, {
+      return createObject<State>(state, {
         isLoading: false,
         registries: action.registries,
         resourceVersion: action.resourceVersion,
       });
     case 'RECEIVE_DEVWORKSPACE_CREDENTIALS_ERROR':
-      return createObject(state, {
+      return createObject<State>(state, {
         isLoading: false,
         error: action.error,
       });

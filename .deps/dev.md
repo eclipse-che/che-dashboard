@@ -253,6 +253,7 @@
 | [`at-least-node@1.0.0`](git+https://github.com/RyanZim/at-least-node.git) | ISC | clearlydefined |
 | [`available-typed-arrays@1.0.5`](git+https://github.com/inspect-js/available-typed-arrays.git) | MIT | clearlydefined |
 | [`axios-mock-adapter@1.21.5`](git+https://github.com/ctimmerm/axios-mock-adapter.git) | MIT | clearlydefined |
+| [`axios@1.4.0`](https://github.com/axios/axios.git) | MIT | clearlydefined |
 | [`babel-jest@29.6.2`](https://github.com/facebook/jest.git) | MIT | clearlydefined |
 | [`babel-plugin-istanbul@6.1.1`](git+https://github.com/istanbuljs/babel-plugin-istanbul.git) | BSD-3-Clause | clearlydefined |
 | [`babel-plugin-jest-hoist@29.5.0`](https://github.com/facebook/jest.git) | MIT | clearlydefined |

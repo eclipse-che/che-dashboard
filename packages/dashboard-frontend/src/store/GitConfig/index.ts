@@ -12,10 +12,7 @@
 
 import common, { api, helpers } from '@eclipse-che/common';
 import { AppThunk } from '..';
-import {
-  fetchGitConfig,
-  patchGitConfig,
-} from '../../services/dashboard-backend-client/gitConfigApi';
+import { fetchGitConfig, patchGitConfig } from '../../services/backend-client/gitConfigApi';
 import { selectDefaultNamespace } from '../InfrastructureNamespaces/selectors';
 import { AUTHORIZED } from '../sanityCheckMiddleware';
 import { GitConfigUser, KnownAction, Type } from './types';

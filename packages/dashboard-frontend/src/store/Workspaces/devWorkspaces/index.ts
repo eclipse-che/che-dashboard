@@ -16,12 +16,9 @@ import { Action, Reducer } from 'redux';
 import { AppThunk } from '../..';
 import { container } from '../../../inversify.config';
 import { FactoryParams } from '../../../services/helpers/factoryFlow/buildFactoryParams';
-import {
-  injectKubeConfig,
-  podmanLogin,
-} from '../../../services/dashboard-backend-client/devWorkspaceApi';
-import { fetchResources } from '../../../services/dashboard-backend-client/devworkspaceResourcesApi';
-import { WebsocketClient } from '../../../services/dashboard-backend-client/websocketClient';
+import { injectKubeConfig, podmanLogin } from '../../../services/backend-client/devWorkspaceApi';
+import { fetchResources } from '../../../services/backend-client/devworkspaceResourcesApi';
+import { WebsocketClient } from '../../../services/backend-client/websocketClient';
 import devfileApi, { isDevWorkspace } from '../../../services/devfileApi';
 import { devWorkspaceKind } from '../../../services/devfileApi/devWorkspace';
 import {
@@ -56,9 +53,9 @@ import {
 } from '../../ServerConfig/selectors';
 import { checkRunningWorkspacesLimit } from './checkRunningWorkspacesLimit';
 import { selectDevWorkspacesResourceVersion } from './selectors';
-import * as DwtApi from '../../../services/dashboard-backend-client/devWorkspaceTemplateApi';
+import * as DwtApi from '../../../services/backend-client/devWorkspaceTemplateApi';
 import { selectDefaultDevfile } from '../../DevfileRegistries/selectors';
-import * as DwApi from '../../../services/dashboard-backend-client/devWorkspaceApi';
+import * as DwApi from '../../../services/backend-client/devWorkspaceApi';
 import { selectDefaultEditor } from '../../Plugins/devWorkspacePlugins/selectors';
 import { DEVWORKSPACE_STORAGE_TYPE_ATTR } from '../../../services/devfileApi/devWorkspace/spec/template';
 
@@ -1019,23 +1016,23 @@ export const reducer: Reducer<State> = (
   const action = incomingAction as KnownAction;
   switch (action.type) {
     case Type.REQUEST_DEVWORKSPACE:
-      return createObject(state, {
+      return createObject<State>(state, {
         isLoading: true,
         error: undefined,
       });
     case Type.RECEIVE_DEVWORKSPACE:
-      return createObject(state, {
+      return createObject<State>(state, {
         isLoading: false,
         workspaces: action.workspaces,
         resourceVersion: getNewerResourceVersion(action.resourceVersion, state.resourceVersion),
       });
     case Type.RECEIVE_DEVWORKSPACE_ERROR:
-      return createObject(state, {
+      return createObject<State>(state, {
         isLoading: false,
         error: action.error,
       });
     case Type.UPDATE_DEVWORKSPACE:
-      return createObject(state, {
+      return createObject<State>(state, {
         isLoading: false,
         workspaces: state.workspaces.map(workspace =>
           WorkspaceAdapter.getUID(workspace) === WorkspaceAdapter.getUID(action.workspace)
@@ -1048,7 +1045,7 @@ export const reducer: Reducer<State> = (
         ),
       });
     case Type.ADD_DEVWORKSPACE:
-      return createObject(state, {
+      return createObject<State>(state, {
         isLoading: false,
         workspaces: state.workspaces
           .filter(
@@ -1062,7 +1059,7 @@ export const reducer: Reducer<State> = (
         ),
       });
     case Type.TERMINATE_DEVWORKSPACE:
-      return createObject(state, {
+      return createObject<State>(state, {
         isLoading: false,
         workspaces: state.workspaces.map(workspace => {
           if (WorkspaceAdapter.getUID(workspace) === action.workspaceUID) {
@@ -1078,7 +1075,7 @@ export const reducer: Reducer<State> = (
         }),
       });
     case Type.DELETE_DEVWORKSPACE:
-      return createObject(state, {
+      return createObject<State>(state, {
         isLoading: false,
         workspaces: state.workspaces.filter(
           workspace =>
@@ -1090,7 +1087,7 @@ export const reducer: Reducer<State> = (
         ),
       });
     case Type.UPDATE_STARTED_WORKSPACES:
-      return createObject(state, {
+      return createObject<State>(state, {
         startedWorkspaces: action.workspaces.reduce((acc, workspace) => {
           if (workspace.spec.started === false) {
             delete acc[WorkspaceAdapter.getUID(workspace)];
@@ -1113,7 +1110,7 @@ export const reducer: Reducer<State> = (
         }, state.startedWorkspaces),
       });
     case Type.UPDATE_WARNING:
-      return createObject(state, {
+      return createObject<State>(state, {
         warnings: {
           [WorkspaceAdapter.getUID(action.workspace)]: action.warning,
         },

@@ -13,14 +13,11 @@
 import { Action, Reducer } from 'redux';
 import { AppThunk } from '..';
 import { helpers } from '@eclipse-che/common';
-import { container } from '../../inversify.config';
 import { getDefer } from '../../services/helpers/deferred';
 import { delay } from '../../services/helpers/delay';
-import { CheWorkspaceClient } from '../../services/workspace-client/cheworkspace/cheWorkspaceClient';
 import { isForbidden, isUnauthorized } from '../../services/workspace-client/helpers';
 import { createObject } from '../helpers';
-
-const WorkspaceClient = container.get(CheWorkspaceClient);
+import { provisionKubernetesNamespace } from '../../services/backend-client/kubernetesNamespaceApi';
 
 const secToStale = 5;
 const timeToStale = secToStale * 1000;
@@ -93,7 +90,7 @@ export const actionCreators: ActionCreators = {
 
         for (let attempt = 1; attempt <= maxAttemptsNumber; attempt++) {
           try {
-            await WorkspaceClient.restApiClient.provisionKubernetesNamespace();
+            await provisionKubernetesNamespace();
 
             deferred.resolve(true);
             dispatch({
@@ -148,15 +145,15 @@ export const reducer: Reducer<State> = (
   const action = incomingAction as KnownAction;
   switch (action.type) {
     case Type.REQUEST_BACKEND_CHECK:
-      return createObject(state, {
+      return createObject<State>(state, {
         error: undefined,
         authorized: action.authorized,
         lastFetched: action.lastFetched,
       });
     case Type.RECEIVED_BACKEND_CHECK:
-      return createObject(state, {});
+      return createObject<State>(state, {});
     case Type.RECEIVED_BACKEND_CHECK_ERROR:
-      return createObject(state, {
+      return createObject<State>(state, {
         authorized: state.authorized,
         lastFetched: state.lastFetched,
         error: action.error,

@@ -14,7 +14,6 @@ import common from '@eclipse-che/common';
 import devfileApi, { isDevfileV2 } from '../devfileApi';
 import { load, dump } from 'js-yaml';
 import { ICheEditorYaml } from './devworkspace/devWorkspaceClient';
-import { CHE_EDITOR_YAML_PATH } from './';
 import { AppState } from '../../store';
 import { ThunkDispatch } from 'redux-thunk';
 import { KnownAction } from '../../store/DevfileRegistries';
@@ -72,6 +71,8 @@ function hasStatus(response: unknown, _status: number): boolean {
   }
   return false;
 }
+
+export const CHE_EDITOR_YAML_PATH = '.che/che-editor.yaml';
 
 /**
  * Look for the custom editor in .che/che-editor.yaml

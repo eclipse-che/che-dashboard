@@ -93,17 +93,17 @@ export const reducer: Reducer<State> = (
   const action = incomingAction as KnownAction;
   switch (action.type) {
     case 'REQUEST_PLUGINS':
-      return createObject(state, {
+      return createObject<State>(state, {
         isLoading: true,
         error: undefined,
       });
     case 'RECEIVE_PLUGINS':
-      return createObject(state, {
+      return createObject<State>(state, {
         isLoading: false,
         plugins: action.plugins,
       });
     case 'RECEIVE_PLUGINS_ERROR':
-      return createObject(state, {
+      return createObject<State>(state, {
         isLoading: false,
         error: action.error,
       });

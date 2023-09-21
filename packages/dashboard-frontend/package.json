@@ -33,7 +33,6 @@
   },
   "dependencies": {
     "@eclipse-che/devfile-converter": "0.0.1-ff55f9a",
-    "@eclipse-che/workspace-client": "0.0.1-1672830275",
     "@patternfly/react-core": "^4.276.11",
     "@patternfly/react-icons": "^4.93.7",
     "@patternfly/react-table": "^4.113.3",

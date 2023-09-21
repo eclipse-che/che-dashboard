@@ -376,7 +376,7 @@
   resolved "https://registry.yarnpkg.com/@discoveryjs/json-ext/-/json-ext-0.5.7.tgz#1d572bfbbe14b7704e0ba0f39b74815b84870d70"
   integrity sha512-dBVuXR082gk3jsFp7Rd/JI4kytwGHecnCoTtXFb7DB6CNHp4rg5k1bhg0nWdLGLnOV71lmDzGQaLMy8iPLY0pw==
 
-"@eclipse-che/api@^7.0.0-beta-4.0", "@eclipse-che/api@^7.18.1", "@eclipse-che/api@^7.39.2":
+"@eclipse-che/api@^7.18.1", "@eclipse-che/api@^7.39.2":
   version "7.72.0"
   resolved "https://registry.yarnpkg.com/@eclipse-che/api/-/api-7.72.0.tgz#f16a19f2628c307783203aa5c205b6098b7e57df"
   integrity sha512-baah1TSYAmCOuiFCHssb7mBoO5BrTAAz8tLV8Y1nqXvDIYMXXyHOnbBpl8/rVeplHGEZIDpFyFN1OGLoy6mcJA==
@@ -405,16 +405,6 @@
     js-yaml "^4.0.0"
     jsonc-parser "^3.0.0"
     reflect-metadata "^0.1.13"
-
-"@eclipse-che/workspace-client@0.0.1-1672830275":
-  version "0.0.1-1672830275"
-  resolved "https://registry.yarnpkg.com/@eclipse-che/workspace-client/-/workspace-client-0.0.1-1672830275.tgz#7724fbe74fa8ee86a23f888e23d7031cb608787e"
-  integrity sha512-QgbLxTns7m/efbWZbFRqd9UxH4ELN5Np3JzYWzqN5i/R3cra/xuV9KwDedctarZ6iwnW9ptZFsfDcU5zedZKKQ==
-  dependencies:
-    "@eclipse-che/api" "^7.0.0-beta-4.0"
-    axios "^0.21.4"
-    qs "^6.9.4"
-    tunnel "0.0.6"
 
 "@eslint-community/eslint-utils@^4.2.0", "@eslint-community/eslint-utils@^4.4.0":
   version "4.4.0"
@@ -9512,7 +9502,7 @@ q@^1.5.1:
   resolved "https://registry.yarnpkg.com/q/-/q-1.5.1.tgz#7e32f75b41381291d04611f1bf14109ac00651d7"
   integrity sha512-kV/CThkXo6xyFEZUugw/+pIOywXcDbFYgSct5cT3gqlbkBE1SJdwy6UQoZvodiWF/ckQLZyDE/Bu1M6gVu5lVw==
 
-qs@^6.11.2, qs@^6.9.4:
+qs@^6.11.2:
   version "6.11.2"
   resolved "https://registry.yarnpkg.com/qs/-/qs-6.11.2.tgz#64bea51f12c1f5da1bc01496f48ffcff7c69d7d9"
   integrity sha512-tDNIz22aBzCDxLtVH++VnTfzxlfeK5CbqohpSqpJgj1Wg/cQbStNAz3NuqCs5vV+pjBsK4x4pN9HlVh7rcYRiA==
@@ -11327,11 +11317,6 @@ tunnel-agent@^0.6.0:
   integrity sha512-McnNiV1l8RYeY8tBgEpuodCC1mLUdbSN+CYBL7kJsJNInOP8UjDDEwdk6Mw60vdLLrr5NHKZhMAOSrR2NZuQ+w==
   dependencies:
     safe-buffer "^5.0.1"
-
-tunnel@0.0.6:
-  version "0.0.6"
-  resolved "https://registry.yarnpkg.com/tunnel/-/tunnel-0.0.6.tgz#72f1314b34a5b192db012324df2cc587ca47f92c"
-  integrity sha512-1h/Lnq9yajKY2PEbBadPXj3VxsDDu844OnaAo52UVmIzIvwwtBPIuNvkjuzBlTWpfJyUbG3ez0KSBibQkj4ojg==
 
 tweetnacl@^0.14.3, tweetnacl@~0.14.0:
   version "0.14.5"

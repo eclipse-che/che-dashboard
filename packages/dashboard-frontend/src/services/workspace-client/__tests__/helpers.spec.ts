@@ -11,7 +11,7 @@
  */
 
 import { getCustomEditor, isForbidden, isInternalServerError, isUnauthorized } from '../helpers';
-import { CHE_EDITOR_YAML_PATH } from '../';
+import { CHE_EDITOR_YAML_PATH } from '../helpers';
 import { dump } from 'js-yaml';
 import common from '@eclipse-che/common';
 import devfileApi from '../../devfileApi';

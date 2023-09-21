@@ -88,17 +88,17 @@ export const reducer: Reducer<State> = (
   const action = incomingAction as KnownAction;
   switch (action.type) {
     case Type.REQUEST_CHE_USER_ID:
-      return createObject(state, {
+      return createObject<State>(state, {
         isLoading: true,
         error: undefined,
       });
     case Type.RECEIVE_CHE_USER_ID:
-      return createObject(state, {
+      return createObject<State>(state, {
         isLoading: false,
         cheUserId: action.cheUserId,
       });
     case Type.RECEIVE_CHE_USER_ID_ERROR:
-      return createObject(state, {
+      return createObject<State>(state, {
         isLoading: false,
         error: action.error,
       });

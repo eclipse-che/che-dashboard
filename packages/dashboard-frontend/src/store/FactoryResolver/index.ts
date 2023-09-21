@@ -22,13 +22,13 @@ import { convertDevfileV1toDevfileV2 } from '../../services/devfile/converters';
 import normalizeDevfileV2 from './normalizeDevfileV2';
 import normalizeDevfileV1 from './normalizeDevfileV1';
 import { selectDefaultNamespace } from '../InfrastructureNamespaces/selectors';
-import { getYamlResolver } from '../../services/dashboard-backend-client/yamlResolverApi';
+import { getYamlResolver } from '../../services/backend-client/yamlResolverApi';
 import { DEFAULT_REGISTRY } from '../DevfileRegistries';
 import { isOAuthResponse } from '../../services/oauth';
 import { AUTHORIZED, SanityCheckAction } from '../sanityCheckMiddleware';
-import { CHE_EDITOR_YAML_PATH } from '../../services/workspace-client';
+import { CHE_EDITOR_YAML_PATH } from '../../services/workspace-client/helpers';
 import { FactoryParams } from '../../services/helpers/factoryFlow/buildFactoryParams';
-import { getFactoryResolver } from '../../services/dashboard-backend-client/factoryResolverApi';
+import { getFactoryResolver } from '../../services/backend-client/factoryApi';
 
 export type OAuthResponse = {
   attributes: {
@@ -245,18 +245,18 @@ export const reducer: Reducer<State> = (
   const action = incomingAction as KnownAction;
   switch (action.type) {
     case 'REQUEST_FACTORY_RESOLVER':
-      return createObject(state, {
+      return createObject<State>(state, {
         isLoading: true,
         error: undefined,
       });
     case 'RECEIVE_FACTORY_RESOLVER':
-      return createObject(state, {
+      return createObject<State>(state, {
         isLoading: false,
         resolver: action.resolver,
         converted: action.converted,
       });
     case 'RECEIVE_FACTORY_RESOLVER_ERROR':
-      return createObject(state, {
+      return createObject<State>(state, {
         isLoading: false,
         error: action.error,
       });

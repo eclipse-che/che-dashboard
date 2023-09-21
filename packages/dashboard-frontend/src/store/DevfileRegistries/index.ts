@@ -319,24 +319,24 @@ export const reducer: Reducer<State> = (
   const action = incomingAction as KnownAction;
   switch (action.type) {
     case Type.REQUEST_REGISTRY_METADATA:
-      return createObject(state, {
+      return createObject<State>(state, {
         isLoading: true,
       });
     case Type.REQUEST_SCHEMA:
-      return createObject(state, {
+      return createObject<State>(state, {
         isLoading: true,
         schema: {},
       });
     case Type.REQUEST_DEVFILE:
-      return createObject(state, {
+      return createObject<State>(state, {
         isLoading: true,
       });
     case Type.REQUEST_RESOURCES:
-      return createObject(state, {
+      return createObject<State>(state, {
         isLoading: true,
       });
     case Type.RECEIVE_REGISTRY_METADATA:
-      return createObject(state, {
+      return createObject<State>(state, {
         isLoading: false,
         registries: createObject(state.registries, {
           [action.url]: {
@@ -345,7 +345,7 @@ export const reducer: Reducer<State> = (
         }),
       });
     case Type.RECEIVE_REGISTRY_ERROR:
-      return createObject(state, {
+      return createObject<State>(state, {
         isLoading: false,
         registries: {
           [action.url]: {
@@ -354,7 +354,7 @@ export const reducer: Reducer<State> = (
         },
       });
     case Type.RECEIVE_DEVFILE:
-      return createObject(state, {
+      return createObject<State>(state, {
         isLoading: false,
         devfiles: createObject(state.devfiles, {
           [action.url]: {
@@ -363,7 +363,7 @@ export const reducer: Reducer<State> = (
         }),
       });
     case Type.RECEIVE_RESOURCES:
-      return createObject(state, {
+      return createObject<State>(state, {
         isLoading: false,
         devWorkspaceResources: createObject(state.devWorkspaceResources, {
           [action.url]: {
@@ -372,7 +372,7 @@ export const reducer: Reducer<State> = (
         }),
       });
     case Type.RECEIVE_RESOURCES_ERROR:
-      return createObject(state, {
+      return createObject<State>(state, {
         isLoading: false,
         devWorkspaceResources: {
           [action.url]: {
@@ -381,26 +381,26 @@ export const reducer: Reducer<State> = (
         },
       });
     case Type.RECEIVE_SCHEMA:
-      return createObject(state, {
+      return createObject<State>(state, {
         isLoading: false,
         schema: {
           schema: action.schema,
         },
       });
     case Type.RECEIVE_SCHEMA_ERROR:
-      return createObject(state, {
+      return createObject<State>(state, {
         isLoading: false,
         schema: {
           error: action.error,
         },
       });
     case Type.SET_FILTER: {
-      return createObject(state, {
+      return createObject<State>(state, {
         filter: action.value,
       });
     }
     case Type.CLEAR_FILTER: {
-      return createObject(state, {
+      return createObject<State>(state, {
         filter: '',
       });
     }
