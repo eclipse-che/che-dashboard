@@ -73,6 +73,24 @@ describe('Gitconfig API', () => {
       expect(spyReadNamespacedConfigMap).toHaveBeenCalledTimes(1);
       expect(spyPatchNamespacedConfigMap).not.toHaveBeenCalled();
     });
+
+    it('should throw', async () => {
+      spyReadNamespacedConfigMap.mockRejectedValueOnce('404 not found');
+
+      try {
+        await gitConfigApiService.read(namespace);
+
+        // should not reach here
+        expect(false).toBeTruthy();
+      } catch (e) {
+        expect((e as Error).message).toBe(
+          'Unable to read gitconfig in the namespace "user-che": 404 not found',
+        );
+      }
+
+      expect(spyReadNamespacedConfigMap).toHaveBeenCalledTimes(1);
+      expect(spyPatchNamespacedConfigMap).not.toHaveBeenCalled();
+    });
   });
 
   describe('patching gitconfig', () => {
@@ -107,6 +125,101 @@ email="user-2@che"
         undefined,
         { headers: { 'content-type': 'application/strategic-merge-patch+json' } },
       );
+    });
+
+    it('should throw when can`t read the ConfigMap', async () => {
+      spyReadNamespacedConfigMap.mockRejectedValueOnce('404 not found');
+
+      const newGitConfig = {
+        gitconfig: {
+          user: {
+            email: 'user-2@che',
+            name: 'User Two',
+          },
+        },
+      } as api.IGitConfig;
+
+      try {
+        await gitConfigApiService.patch(namespace, newGitConfig);
+
+        // should not reach here
+        expect(false).toBeTruthy();
+      } catch (e) {
+        expect((e as Error).message).toBe(
+          'Unable to update gitconfig in the namespace "user-che".',
+        );
+      }
+
+      expect(spyReadNamespacedConfigMap).toHaveBeenCalledTimes(1);
+      expect(spyPatchNamespacedConfigMap).toHaveBeenCalledTimes(0);
+    });
+
+    it('should throw when failed to patch the ConfigMap', async () => {
+      spyPatchNamespacedConfigMap.mockRejectedValueOnce('some error');
+
+      const newGitConfig = {
+        gitconfig: {
+          user: {
+            email: 'user-2@che',
+            name: 'User Two',
+          },
+        },
+      } as api.IGitConfig;
+
+      try {
+        await gitConfigApiService.patch(namespace, newGitConfig);
+
+        // should not reach here
+        expect(false).toBeTruthy();
+      } catch (e) {
+        expect((e as Error).message).toBe(
+          'Unable to update gitconfig in the namespace "user-che": some error',
+        );
+      }
+
+      expect(spyReadNamespacedConfigMap).toHaveBeenCalledTimes(1);
+      expect(spyPatchNamespacedConfigMap).toHaveBeenCalledTimes(1);
+    });
+
+    it('should throw when conflict detected', async () => {
+      spyReadNamespacedConfigMap.mockResolvedValueOnce({
+        body: {
+          metadata: {
+            resourceVersion: '2',
+          },
+          data: {
+            gitconfig: `[user]
+name="User Two"
+email="user-2@che"
+`,
+          },
+        } as V1ConfigMap,
+        response: {} as IncomingMessage,
+      });
+
+      const newGitConfig = {
+        gitconfig: {
+          user: {
+            email: 'user-2@che',
+            name: 'User Two',
+          },
+        },
+        resourceVersion: '1',
+      } as api.IGitConfig;
+
+      try {
+        await gitConfigApiService.patch(namespace, newGitConfig);
+
+        // should not reach here
+        expect(false).toBeTruthy();
+      } catch (e) {
+        expect((e as Error).message).toBe(
+          'Conflict detected. The gitconfig was modified in the namespace "user-che".',
+        );
+      }
+
+      expect(spyReadNamespacedConfigMap).toHaveBeenCalledTimes(1);
+      expect(spyPatchNamespacedConfigMap).toHaveBeenCalledTimes(0);
     });
   });
 });

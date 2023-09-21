@@ -34,7 +34,7 @@ export interface RequestGitConfigAction extends Action, SanityCheckAction {
 
 export interface ReceiveGitConfigAction extends Action {
   type: Type.RECEIVE_GITCONFIG;
-  config: api.IGitConfig;
+  config: api.IGitConfig | undefined;
 }
 
 export interface ReceiveGitConfigErrorAction extends Action {

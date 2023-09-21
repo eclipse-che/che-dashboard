@@ -10,7 +10,7 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import { api, helpers } from '@eclipse-che/common';
+import common, { api, helpers } from '@eclipse-che/common';
 import { AppThunk } from '..';
 import {
   fetchGitConfig,
@@ -42,6 +42,14 @@ export const actionCreators: ActionCreators = {
           config,
         });
       } catch (e) {
+        if (common.helpers.errors.includesAxiosResponse(e) && e.response.status === 404) {
+          dispatch({
+            type: Type.RECEIVE_GITCONFIG,
+            config: undefined,
+          });
+          return;
+        }
+
         const errorMessage = helpers.errors.getMessage(e);
         dispatch({
           type: Type.RECEIVE_GITCONFIG_ERROR,

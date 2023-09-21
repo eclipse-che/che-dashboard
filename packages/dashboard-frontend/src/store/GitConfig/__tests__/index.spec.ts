@@ -65,7 +65,43 @@ describe('GitConfig store, actions', () => {
     expect(mockPatchGitConfig).toHaveBeenCalledTimes(0);
   });
 
-  it('should create REQUEST_GITCONFIG and RECEIVE_GITCONFIG_ERROR when fetch the gitconfig with error', async () => {
+  it('should create REQUEST_GITCONFIG and RECEIVE_GITCONFIG when got 404', async () => {
+    mockFetchGitConfig.mockRejectedValueOnce({
+      response: {
+        status: 404,
+        statusText: 'Not Found',
+        headers: {},
+        config: {},
+        data: {},
+      },
+    });
+
+    try {
+      await store.dispatch(TestStore.actionCreators.requestGitConfig());
+    } catch (e) {
+      // ignore
+    }
+
+    const actions = store.getActions();
+
+    const expectedActions: TestStore.KnownAction[] = [
+      {
+        type: TestStore.Type.REQUEST_GITCONFIG,
+        check: AUTHORIZED,
+      },
+      {
+        type: TestStore.Type.RECEIVE_GITCONFIG,
+        config: undefined,
+      },
+    ];
+
+    expect(actions).toEqual(expectedActions);
+
+    expect(mockFetchGitConfig).toHaveBeenCalledTimes(1);
+    expect(mockPatchGitConfig).toHaveBeenCalledTimes(0);
+  });
+
+  it('should create REQUEST_GITCONFIG and RECEIVE_GITCONFIG_ERROR when fetch the gitconfig with error other than 404', async () => {
     mockFetchGitConfig.mockRejectedValueOnce(new Error('unexpected error'));
 
     try {

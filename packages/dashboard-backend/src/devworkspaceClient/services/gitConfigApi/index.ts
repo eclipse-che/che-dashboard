@@ -59,7 +59,7 @@ export class GitConfigApiService implements IGitConfigApi {
       parseInt(gitConfig.resourceVersion || '0', 10) >
       parseInt(changedGitConfig.resourceVersion || '0', 10)
     ) {
-      const message = `Gitconfig was modified in namespace "${namespace}" by someone else.`;
+      const message = `Conflict detected. The gitconfig was modified in the namespace "${namespace}"`;
       throw createError(undefined, GITCONFIG_API_ERROR_LABEL, message);
     }
 
