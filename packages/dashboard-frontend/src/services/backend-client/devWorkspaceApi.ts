@@ -11,11 +11,12 @@
  */
 
 import { api, helpers } from '@eclipse-che/common';
-import { JSONSchema7 } from 'json-schema';
-import devfileApi, { IDevWorkspacesList } from '../devfileApi';
-import { dashboardBackendPrefix } from './const';
 import axios from 'axios';
-import { AxiosWrapper } from './axiosWrapper';
+import { JSONSchema7 } from 'json-schema';
+
+import { AxiosWrapper } from '@/services/backend-client/axiosWrapper';
+import { dashboardBackendPrefix } from '@/services/backend-client/const';
+import devfileApi, { IDevWorkspacesList } from '@/services/devfileApi';
 
 export type Headers = { [key: string]: string };
 

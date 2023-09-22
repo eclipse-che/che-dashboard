@@ -14,8 +14,9 @@
 
 import * as mockClient from '@kubernetes/client-node';
 import { CoreV1Api, V1PodList } from '@kubernetes/client-node';
-import { KubeConfigApiService } from '../kubeConfigApi';
-import * as helper from '../helpers/exec';
+
+import * as helper from '@/devworkspaceClient/services/helpers/exec';
+import { KubeConfigApiService } from '@/devworkspaceClient/services/kubeConfigApi';
 
 const homeUserDir = '/home/user';
 const kubeConfigDir = `${homeUserDir}/.kube`;

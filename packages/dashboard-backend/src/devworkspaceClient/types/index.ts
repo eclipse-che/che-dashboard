@@ -17,8 +17,9 @@ import {
 } from '@devfile/api';
 import { api } from '@eclipse-che/common';
 import * as k8s from '@kubernetes/client-node';
-import { MessageListener } from '../../services/types/Observer';
 import { IncomingHttpHeaders } from 'http';
+
+import { MessageListener } from '@/services/types/Observer';
 
 /**
  * Holds the methods for working with dockerconfig for devworkspace
