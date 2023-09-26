@@ -24,6 +24,7 @@ import { selectDefaultNamespace } from '../InfrastructureNamespaces/selectors';
 import { AUTHORIZED, SanityCheckAction } from '../sanityCheckMiddleware';
 import { State } from './state';
 import { provisionKubernetesNamespace } from '../../services/backend-client/kubernetesNamespaceApi';
+import { selectAsyncIsAuthorized, selectSanityCheckError } from '../SanityCheck/selectors';
 
 export * from './state';
 
@@ -84,14 +85,21 @@ export const actionCreators: ActionCreators = {
   requestTokens:
     (): AppThunk<KnownAction, Promise<void>> =>
     async (dispatch, getState): Promise<void> => {
-      const state = getState();
-      const namespace = selectDefaultNamespace(state).name;
-
       dispatch({
         type: Type.REQUEST_TOKENS,
         check: AUTHORIZED,
       });
+      if (!(await selectAsyncIsAuthorized(getState()))) {
+        const error = selectSanityCheckError(getState());
+        dispatch({
+          type: Type.RECEIVE_ERROR,
+          error,
+        });
+        throw new Error(error);
+      }
 
+      const state = getState();
+      const namespace = selectDefaultNamespace(state).name;
       try {
         const tokens = await fetchTokens(namespace);
         dispatch({
@@ -111,14 +119,21 @@ export const actionCreators: ActionCreators = {
   addToken:
     (token: api.PersonalAccessToken): AppThunk<KnownAction, Promise<void>> =>
     async (dispatch, getState): Promise<void> => {
-      const state = getState();
-      const namespace = selectDefaultNamespace(state).name;
-
       dispatch({
         type: Type.REQUEST_TOKENS,
         check: AUTHORIZED,
       });
+      if (!(await selectAsyncIsAuthorized(getState()))) {
+        const error = selectSanityCheckError(getState());
+        dispatch({
+          type: Type.RECEIVE_ERROR,
+          error,
+        });
+        throw new Error(error);
+      }
 
+      const state = getState();
+      const namespace = selectDefaultNamespace(state).name;
       let newToken: api.PersonalAccessToken;
       try {
         newToken = await addToken(namespace, token);
@@ -157,14 +172,21 @@ export const actionCreators: ActionCreators = {
   updateToken:
     (token: api.PersonalAccessToken): AppThunk<KnownAction, Promise<void>> =>
     async (dispatch, getState): Promise<void> => {
-      const state = getState();
-      const namespace = selectDefaultNamespace(state).name;
-
       dispatch({
         type: Type.REQUEST_TOKENS,
         check: AUTHORIZED,
       });
+      if (!(await selectAsyncIsAuthorized(getState()))) {
+        const error = selectSanityCheckError(getState());
+        dispatch({
+          type: Type.RECEIVE_ERROR,
+          error,
+        });
+        throw new Error(error);
+      }
 
+      const state = getState();
+      const namespace = selectDefaultNamespace(state).name;
       try {
         const newToken = await updateToken(namespace, token);
         dispatch({
@@ -184,14 +206,21 @@ export const actionCreators: ActionCreators = {
   removeToken:
     (token: api.PersonalAccessToken): AppThunk<KnownAction, Promise<void>> =>
     async (dispatch, getState): Promise<void> => {
-      const state = getState();
-      const namespace = selectDefaultNamespace(state).name;
-
       dispatch({
         type: Type.REQUEST_TOKENS,
         check: AUTHORIZED,
       });
+      if (!(await selectAsyncIsAuthorized(getState()))) {
+        const error = selectSanityCheckError(getState());
+        dispatch({
+          type: Type.RECEIVE_ERROR,
+          error,
+        });
+        throw new Error(error);
+      }
 
+      const state = getState();
+      const namespace = selectDefaultNamespace(state).name;
       try {
         await removeToken(namespace, token);
         dispatch({

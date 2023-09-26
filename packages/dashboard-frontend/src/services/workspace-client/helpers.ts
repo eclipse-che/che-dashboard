@@ -18,47 +18,88 @@ import { AppState } from '../../store';
 import { ThunkDispatch } from 'redux-thunk';
 import { KnownAction } from '../../store/DevfileRegistries';
 import { getEditor } from '../../store/DevfileRegistries/getEditor';
+import { includesAxiosResponse } from '@eclipse-che/common/lib/helpers/errors';
+
+/**
+ * Returns an error message for the sanity check service
+ */
+export function getErrorMessage(error: unknown): string {
+  let errorMessage = 'Check the browser logs message.';
+
+  if (typeof error === 'object' && error !== null) {
+    const { request, response } = error as { [propName: string]: any };
+    const code = response?.status ? response?.status : response?.request?.status;
+    const endpoint = request?.responseURL ? request?.responseURL : response?.request?.responseURL;
+
+    errorMessage = `HTTP Error code ${code}. Endpoint which throw an error ${endpoint}. ${errorMessage}`;
+  }
+
+  if (isUnauthorized(error) || isForbidden(error)) {
+    errorMessage += ' User session has expired. You need to re-login to the Dashboard.';
+  }
+
+  return errorMessage;
+}
+
+/**
+ * Checks for login page in the axios response data
+ */
+export function hasLoginPage(error: unknown): boolean {
+  if (includesAxiosResponse(error)) {
+    const response = error.response;
+    if (typeof response.data === 'string') {
+      try {
+        const doc = new DOMParser().parseFromString(response.data, 'text/html');
+        const docText = doc.documentElement.textContent;
+        if (docText && docText.toLowerCase().indexOf('log in') !== -1) {
+          return true;
+        }
+      } catch (e) {
+        // no op
+      }
+    }
+  }
+  return false;
+}
 
 /**
  * Checks for HTTP 401 Unauthorized response status code
  */
-export function isUnauthorized(response: unknown): boolean {
-  return hasStatus(response, 401);
+export function isUnauthorized(error: unknown): boolean {
+  return hasStatus(error, 401);
 }
 
 /**
  * Checks for HTTP 403 Forbidden
  */
-export function isForbidden(response: unknown): boolean {
-  return hasStatus(response, 403);
+export function isForbidden(error: unknown): boolean {
+  return hasStatus(error, 403);
 }
 
 /**
  * Checks for HTTP 500 Internal Server Error
  */
-export function isInternalServerError(response: unknown): boolean {
-  return hasStatus(response, 500);
+export function isInternalServerError(error: unknown): boolean {
+  return hasStatus(error, 500);
 }
 
-function hasStatus(response: unknown, _status: number): boolean {
-  if (typeof response === 'string') {
-    if (response.toLowerCase().includes(`http status ${_status}`)) {
+function hasStatus(error: unknown, _status: number): boolean {
+  if (typeof error === 'string') {
+    if (error.toLowerCase().includes(`http status ${_status}`)) {
       return true;
     }
-  } else if (common.helpers.errors.isError(response)) {
-    const str = response.message.toLowerCase();
+  } else if (common.helpers.errors.isError(error)) {
+    const str = error.message.toLowerCase();
     if (str.includes(`status code ${_status}`)) {
       return true;
     }
-  } else if (typeof response === 'object' && response !== null) {
-    const { status, statusCode } = response as { [propName: string]: string | number };
-    if (statusCode == _status) {
-      return true;
-    } else if (status == _status) {
+  } else if (typeof error === 'object' && error !== null) {
+    const { status, statusCode } = error as { [propName: string]: string | number };
+    if (statusCode == _status || status == _status) {
       return true;
     } else {
       try {
-        const str = JSON.stringify(response).toLowerCase();
+        const str = JSON.stringify(error).toLowerCase();
         if (str.includes(`http status ${_status}`)) {
           return true;
         } else if (str.includes(`status code ${_status}`)) {

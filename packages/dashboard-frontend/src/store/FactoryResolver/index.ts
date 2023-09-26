@@ -29,6 +29,7 @@ import { AUTHORIZED, SanityCheckAction } from '../sanityCheckMiddleware';
 import { CHE_EDITOR_YAML_PATH } from '../../services/workspace-client/helpers';
 import { FactoryParams } from '../../services/helpers/factoryFlow/buildFactoryParams';
 import { getFactoryResolver } from '../../services/backend-client/factoryApi';
+import { selectAsyncIsAuthorized, selectSanityCheckError } from '../SanityCheck/selectors';
 
 export type OAuthResponse = {
   attributes: {
@@ -129,7 +130,16 @@ export const actionCreators: ActionCreators = {
       factoryParams: Partial<FactoryParams> = {},
     ): AppThunk<KnownAction, Promise<void>> =>
     async (dispatch, getState): Promise<void> => {
-      await dispatch({ type: 'REQUEST_FACTORY_RESOLVER', check: AUTHORIZED });
+      dispatch({ type: 'REQUEST_FACTORY_RESOLVER', check: AUTHORIZED });
+      if (!(await selectAsyncIsAuthorized(getState()))) {
+        const error = selectSanityCheckError(getState());
+        dispatch({
+          type: 'RECEIVE_FACTORY_RESOLVER_ERROR',
+          error,
+        });
+        throw new Error(error);
+      }
+
       const state = getState();
       const namespace = selectDefaultNamespace(state).name;
       const optionalFilesContent = {};

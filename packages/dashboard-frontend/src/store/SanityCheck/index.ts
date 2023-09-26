@@ -15,7 +15,12 @@ import { AppThunk } from '..';
 import { helpers } from '@eclipse-che/common';
 import { getDefer } from '../../services/helpers/deferred';
 import { delay } from '../../services/helpers/delay';
-import { isForbidden, isUnauthorized } from '../../services/workspace-client/helpers';
+import {
+  getErrorMessage,
+  hasLoginPage,
+  isForbidden,
+  isUnauthorized,
+} from '../../services/workspace-client/helpers';
 import { createObject } from '../helpers';
 import { provisionKubernetesNamespace } from '../../services/backend-client/kubernetesNamespaceApi';
 
@@ -99,23 +104,23 @@ export const actionCreators: ActionCreators = {
 
             break;
           } catch (e) {
+            if (isUnauthorized(e) || (isForbidden(e) && hasLoginPage(e))) {
+              await delay(1000);
+              window.location.reload();
+            }
             if (attempt === maxAttemptsNumber) {
               throw e;
             }
-            delay(1000);
+            await delay(1000);
           }
         }
       } catch (e) {
-        let errorMessage =
-          'Backend is not available. Try to refresh the page or re-login to the Dashboard.';
-        if (isUnauthorized(e) || isForbidden(e)) {
-          errorMessage = 'User session has expired. You need to re-login to the Dashboard.';
-        }
-        deferred.resolve(false);
+        const errorMessage = getErrorMessage(e);
         dispatch({
           type: Type.RECEIVED_BACKEND_CHECK_ERROR,
           error: errorMessage,
         });
+        deferred.resolve(false);
         console.error(helpers.errors.getMessage(e));
         if (
           helpers.errors.includesAxiosResponse(e) &&

@@ -636,6 +636,10 @@ describe('DevWorkspace store, actions', () => {
 
       const expectedActions: Array<testStore.KnownAction> = [
         {
+          type: testStore.Type.REQUEST_DEVWORKSPACE,
+          check: AUTHORIZED,
+        },
+        {
           message: 'Cleaning up resources for deletion',
           type: testStore.Type.TERMINATE_DEVWORKSPACE,
           workspaceUID: devWorkspace.metadata.uid,
@@ -659,6 +663,10 @@ describe('DevWorkspace store, actions', () => {
       const actions = store.getActions();
 
       const expectedActions: Array<testStore.KnownAction> = [
+        {
+          type: testStore.Type.REQUEST_DEVWORKSPACE,
+          check: AUTHORIZED,
+        },
         {
           type: testStore.Type.RECEIVE_DEVWORKSPACE_ERROR,
           error: `Failed to delete the workspace ${devWorkspace.metadata.name}, reason: Something unexpected happened.`,

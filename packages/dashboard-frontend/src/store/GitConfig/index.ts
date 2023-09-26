@@ -16,6 +16,7 @@ import { fetchGitConfig, patchGitConfig } from '../../services/backend-client/gi
 import { selectDefaultNamespace } from '../InfrastructureNamespaces/selectors';
 import { AUTHORIZED } from '../sanityCheckMiddleware';
 import { GitConfigUser, KnownAction, Type } from './types';
+import { selectAsyncIsAuthorized, selectSanityCheckError } from '../SanityCheck/selectors';
 export * from './reducer';
 export * from './types';
 
@@ -28,7 +29,15 @@ export const actionCreators: ActionCreators = {
   requestGitConfig:
     (): AppThunk<KnownAction, Promise<void>> =>
     async (dispatch, getState): Promise<void> => {
-      await dispatch({ type: Type.REQUEST_GITCONFIG, check: AUTHORIZED });
+      dispatch({ type: Type.REQUEST_GITCONFIG, check: AUTHORIZED });
+      if (!(await selectAsyncIsAuthorized(getState()))) {
+        const error = selectSanityCheckError(getState());
+        dispatch({
+          type: Type.RECEIVE_GITCONFIG_ERROR,
+          error,
+        });
+        throw new Error(error);
+      }
 
       const state = getState();
       const namespace = selectDefaultNamespace(state).name;
@@ -59,10 +68,19 @@ export const actionCreators: ActionCreators = {
   updateGitConfig:
     (changedGitConfig: GitConfigUser): AppThunk<KnownAction, Promise<void>> =>
     async (dispatch, getState): Promise<void> => {
-      await dispatch({ type: Type.REQUEST_GITCONFIG, check: AUTHORIZED });
+      dispatch({ type: Type.REQUEST_GITCONFIG, check: AUTHORIZED });
+      if (!(await selectAsyncIsAuthorized(getState()))) {
+        const error = selectSanityCheckError(getState());
+        dispatch({
+          type: Type.RECEIVE_GITCONFIG_ERROR,
+          error,
+        });
+        throw new Error(error);
+      }
 
-      const namespace = selectDefaultNamespace(getState()).name;
-      const { gitConfig } = getState();
+      const state = getState();
+      const namespace = selectDefaultNamespace(state).name;
+      const { gitConfig } = state;
       const gitconfig = Object.assign(gitConfig.config || {}, {
         gitconfig: {
           user: changedGitConfig,

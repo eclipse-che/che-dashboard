@@ -43,6 +43,7 @@ type State = {
 
 export class ErrorBoundary extends React.PureComponent<Props, State> {
   private readonly toDispose = new DisposableCollection();
+  private notFoundCallback: (error?: Error) => void;
 
   constructor(props: Props) {
     super(props);
@@ -74,6 +75,9 @@ export class ErrorBoundary extends React.PureComponent<Props, State> {
     });
 
     if (this.testResourceNotFound(error)) {
+      if (this.notFoundCallback) {
+        this.notFoundCallback(error);
+      }
       this.setState({
         shouldReload: true,
       });
@@ -93,6 +97,13 @@ export class ErrorBoundary extends React.PureComponent<Props, State> {
 
   public componentWillUnmount(): void {
     this.toDispose.dispose();
+  }
+
+  /**
+   * This method is used from parent component by reference.
+   */
+  public setCallback(notFoundCallback: (error?: Error) => void): void {
+    this.notFoundCallback = notFoundCallback;
   }
 
   private testResourceNotFound(error: Error): boolean {

@@ -433,6 +433,8 @@ export const actionCreators: ActionCreators = {
   terminateWorkspace:
     (workspace: devfileApi.DevWorkspace): AppThunk<KnownAction, Promise<void>> =>
     async (dispatch): Promise<void> => {
+      await dispatch({ type: Type.REQUEST_DEVWORKSPACE, check: AUTHORIZED });
+
       try {
         const namespace = workspace.metadata.namespace;
         const name = workspace.metadata.name;
@@ -510,14 +512,14 @@ export const actionCreators: ActionCreators = {
     ): AppThunk<KnownAction, Promise<void>> =>
     async (dispatch, getState): Promise<void> => {
       const state = getState();
-
-      await dispatch({ type: Type.REQUEST_DEVWORKSPACE, check: AUTHORIZED });
-
       const defaultKubernetesNamespace = selectDefaultNamespace(state);
       const openVSXUrl = selectOpenVSXUrl(state);
       const pluginRegistryUrl = selectPluginRegistryUrl(state);
       const pluginRegistryInternalUrl = selectPluginRegistryInternalUrl(state);
       const defaultNamespace = defaultKubernetesNamespace.name;
+
+      await dispatch({ type: Type.REQUEST_DEVWORKSPACE, check: AUTHORIZED });
+
       try {
         /* create a new DevWorkspace */
         const createResp = await getDevWorkspaceClient().createDevWorkspace(
@@ -589,9 +591,6 @@ export const actionCreators: ActionCreators = {
     (workspace: devfileApi.DevWorkspace): AppThunk<KnownAction, Promise<void>> =>
     async (dispatch, getState): Promise<void> => {
       const state = getState();
-
-      await dispatch({ type: Type.REQUEST_DEVWORKSPACE, check: AUTHORIZED });
-
       const defaultsDevfile = selectDefaultDevfile(state);
       if (!defaultsDevfile) {
         throw new Error('Cannot define default devfile');
@@ -611,6 +610,8 @@ export const actionCreators: ActionCreators = {
       let editorYamlUrl: string | undefined;
       let devWorkspaceResource: devfileApi.DevWorkspace;
       let devWorkspaceTemplateResource: devfileApi.DevWorkspaceTemplate;
+
+      await dispatch({ type: Type.REQUEST_DEVWORKSPACE, check: AUTHORIZED });
 
       try {
         const response = await getEditor(defaultsEditor, dispatch, getState, pluginRegistryUrl);
@@ -792,10 +793,9 @@ export const actionCreators: ActionCreators = {
       },
     ): AppThunk<KnownAction, Promise<void>> =>
     async (dispatch, getState): Promise<void> => {
-      const state = getState();
-
       await dispatch({ type: Type.REQUEST_DEVWORKSPACE, check: AUTHORIZED });
 
+      const state = getState();
       const pluginRegistryUrl = state.dwServerConfig.config.pluginRegistryURL;
       let devWorkspaceResource: devfileApi.DevWorkspace;
       let devWorkspaceTemplateResource: devfileApi.DevWorkspaceTemplate;

@@ -30,6 +30,7 @@ import { selectBranding } from '../store/Branding/selectors';
 import { ToggleBarsContext } from '../contexts/ToggleBars';
 import { signOut } from '../services/helpers/login';
 import { selectDashboardLogo } from '../store/ServerConfig/selectors';
+import * as SanityCheckStore from '../store/SanityCheck';
 
 const IS_MANAGED_SIDEBAR = false;
 
@@ -45,9 +46,12 @@ type State = {
 export class Layout extends React.PureComponent<Props, State> {
   @lazyInject(IssuesReporterService)
   private readonly issuesReporterService: IssuesReporterService;
+  private readonly errorBoundaryRef: React.RefObject<ErrorBoundary>;
 
   constructor(props: Props) {
     super(props);
+
+    this.errorBoundaryRef = React.createRef<ErrorBoundary>();
 
     this.state = {
       isHeaderVisible: true,
@@ -85,6 +89,12 @@ export class Layout extends React.PureComponent<Props, State> {
     if (matchFactoryLoaderPath !== null || matchIdeLoaderPath !== null) {
       this.hideAllBars();
     }
+    this.errorBoundaryRef.current?.setCallback((error?: Error) => {
+      if (error?.message) {
+        console.error(error.message);
+      }
+      this.props.testBackends();
+    });
   }
 
   public render(): React.ReactElement {
@@ -135,7 +145,7 @@ export class Layout extends React.PureComponent<Props, State> {
           }
           isManagedSidebar={IS_MANAGED_SIDEBAR}
         >
-          <ErrorBoundary>
+          <ErrorBoundary ref={this.errorBoundaryRef}>
             <StoreErrorsAlert />
             <BannerAlert />
             {this.props.children}
@@ -151,7 +161,7 @@ const mapStateToProps = (state: AppState) => ({
   dashboardLogo: selectDashboardLogo(state),
 });
 
-const connector = connect(mapStateToProps);
+const connector = connect(mapStateToProps, SanityCheckStore.actionCreators);
 
 type MappedProps = ConnectedProps<typeof connector>;
 export default connector(Layout);
