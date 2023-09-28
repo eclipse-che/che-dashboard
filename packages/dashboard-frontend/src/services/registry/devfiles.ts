@@ -119,7 +119,13 @@ export function updateObjectLinks(object: any, baseUrl): any {
 export function getRegistryIndexLocations(registryUrl: string, isExternal: boolean): Array<string> {
   registryUrl = registryUrl[registryUrl.length - 1] === '/' ? registryUrl : registryUrl + '/';
   const registryIndexLocations: Array<string> = [];
-  if (!isExternal) {
+  if (isExternal) {
+    const indexUrl = new URL('index', registryUrl);
+    registryIndexLocations.push(indexUrl.href);
+
+    const deprecatedIndexUrl = new URL('devfiles/index.json', registryUrl);
+    registryIndexLocations.push(deprecatedIndexUrl.href);
+  } else {
     if (registryUrl.endsWith('/getting-started-sample/')) {
       const indexUrl = new URL(registryUrl.slice(0, -1));
       registryIndexLocations.push(indexUrl.href);
@@ -127,12 +133,6 @@ export function getRegistryIndexLocations(registryUrl: string, isExternal: boole
       const indexUrl = new URL('devfiles/index.json', registryUrl);
       registryIndexLocations.push(indexUrl.href);
     }
-  } else {
-    const indexUrl = new URL('index', registryUrl);
-    registryIndexLocations.push(indexUrl.href);
-
-    const deprecatedIndexUrl = new URL('devfiles/index.json', registryUrl);
-    registryIndexLocations.push(deprecatedIndexUrl.href);
   }
 
   return registryIndexLocations;
