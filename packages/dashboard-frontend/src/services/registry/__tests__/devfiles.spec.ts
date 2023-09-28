@@ -156,10 +156,10 @@ describe('fetch registry metadata', () => {
       );
       expect(mockSessionStorageServiceUpdate).not.toHaveBeenCalled();
       expect(errorMessage).toEqual(
-        'Failed to fetch devfiles metadata from registry URL: https://eclipse-che.github.io/che-devfile-registry/7.71.0/, reason: Returns type is not array.',
+        'Failed to fetch devfiles metadata from registry URL: https://eclipse-che.github.io/che-devfile-registry/7.71.0/, reason: Returned value is not array.',
       );
       expect(console.error).toBeCalledWith(
-        'Failed to fetch devfiles metadata from registry URL: https://eclipse-che.github.io/che-devfile-registry/7.71.0/, reason: Returns type is not array.',
+        'Failed to fetch devfiles metadata from registry URL: https://eclipse-che.github.io/che-devfile-registry/7.71.0/, reason: Returned value is not array.',
       );
     });
 
@@ -333,10 +333,10 @@ describe('fetch registry metadata', () => {
       expect(mockFetchData).toBeCalledWith('https://registry.devfile.io/index');
       expect(mockSessionStorageServiceUpdate).not.toHaveBeenCalled();
       expect(errorMessage).toEqual(
-        'Failed to fetch devfiles metadata from registry URL: https://registry.devfile.io/, reason: Returns type is not array.',
+        'Failed to fetch devfiles metadata from registry URL: https://registry.devfile.io/, reason: Returned value is not array.',
       );
       expect(console.error).toBeCalledWith(
-        'Failed to fetch devfiles metadata from registry URL: https://registry.devfile.io/, reason: Returns type is not array.',
+        'Failed to fetch devfiles metadata from registry URL: https://registry.devfile.io/, reason: Returned value is not array.',
       );
     });
 

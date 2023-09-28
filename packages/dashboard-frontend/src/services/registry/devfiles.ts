@@ -22,7 +22,7 @@ export class DevfileMetaDataIsNotArrayError extends Error {
   public location: string;
 
   constructor(location: string) {
-    super('Returns type is not array.');
+    super('Returned value is not array.');
     this.location = location;
   }
 }
