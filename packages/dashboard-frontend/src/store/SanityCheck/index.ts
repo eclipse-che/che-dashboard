@@ -104,10 +104,6 @@ export const actionCreators: ActionCreators = {
 
             break;
           } catch (e) {
-            if (isUnauthorized(e) || (isForbidden(e) && hasLoginPage(e))) {
-              await delay(1000);
-              window.location.reload();
-            }
             if (attempt === maxAttemptsNumber) {
               throw e;
             }
@@ -115,6 +111,9 @@ export const actionCreators: ActionCreators = {
           }
         }
       } catch (e) {
+        if (isUnauthorized(e) || (isForbidden(e) && hasLoginPage(e))) {
+          window.location.reload();
+        }
         const errorMessage = getErrorMessage(e);
         dispatch({
           type: Type.RECEIVED_BACKEND_CHECK_ERROR,
