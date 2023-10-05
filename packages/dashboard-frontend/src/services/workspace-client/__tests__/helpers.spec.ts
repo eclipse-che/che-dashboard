@@ -13,6 +13,7 @@
 import {
   getCustomEditor,
   hasLoginPage,
+  getErrorMessage,
   isForbidden,
   isInternalServerError,
   isUnauthorized,
@@ -24,6 +25,28 @@ import devfileApi from '../../devfileApi';
 import { FakeStoreBuilder } from '../../../store/__mocks__/storeBuilder';
 
 describe('Workspace-client helpers', () => {
+  describe('get an error message', () => {
+    it('should return the default error message', () => {
+      expect(getErrorMessage(undefined)).toEqual('Check the browser logs message.');
+    });
+    it('should return the unknown error message', () => {
+      expect(getErrorMessage({})).toEqual('Unexpected error type. Please report a bug.');
+    });
+    it('should return unknown an error message', () => {
+      expect(
+        getErrorMessage({
+          response: {
+            status: 401,
+          },
+          request: {
+            responseURL: 'http://dummyurl.com',
+          },
+        }),
+      ).toEqual(
+        'HTTP Error code 401. Endpoint which throws an error http://dummyurl.com. Check the browser logs message.',
+      );
+    });
+  });
   describe('checks for HTML login page in response data', () => {
     it('should return false without  HTML login page', () => {
       expect(

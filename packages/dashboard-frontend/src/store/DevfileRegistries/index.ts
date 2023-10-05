@@ -19,6 +19,7 @@ import fetchAndUpdateDevfileSchema from './fetchAndUpdateDevfileSchema';
 import devfileApi from '../../services/devfileApi';
 import { fetchResources, loadResourcesContent } from '../../services/registry/resources';
 import { AUTHORIZED, SanityCheckAction } from '../sanityCheckMiddleware';
+import { selectAsyncIsAuthorized, selectSanityCheckError } from '../SanityCheck/selectors';
 
 export const DEFAULT_REGISTRY = '/dashboard/devfile-registry/';
 
@@ -170,12 +171,15 @@ export const actionCreators: ActionCreators = {
    */
   requestRegistriesMetadata:
     (registryUrls: string, isExternal: boolean): AppThunk<KnownAction, Promise<void>> =>
-    async (dispatch): Promise<void> => {
-      await dispatch({ type: Type.REQUEST_REGISTRY_METADATA, check: AUTHORIZED });
-
+    async (dispatch, getState): Promise<void> => {
       const registries: string[] = registryUrls.split(' ');
       const promises = registries.map(async url => {
         try {
+          await dispatch({ type: Type.REQUEST_REGISTRY_METADATA, check: AUTHORIZED });
+          if (!(await selectAsyncIsAuthorized(getState()))) {
+            const error = selectSanityCheckError(getState());
+            throw new Error(error);
+          }
           const metadata: che.DevfileMetaData[] = await fetchRegistryMetadata(url, isExternal);
           if (!Array.isArray(metadata) || metadata.length === 0) {
             return;
@@ -205,9 +209,13 @@ export const actionCreators: ActionCreators = {
 
   requestDevfile:
     (url: string): AppThunk<KnownAction, Promise<string>> =>
-    async (dispatch): Promise<string> => {
-      await dispatch({ type: Type.REQUEST_DEVFILE, check: AUTHORIZED });
+    async (dispatch, getState): Promise<string> => {
       try {
+        await dispatch({ type: Type.REQUEST_DEVFILE, check: AUTHORIZED });
+        if (!(await selectAsyncIsAuthorized(getState()))) {
+          const error = selectSanityCheckError(getState());
+          throw new Error(error);
+        }
         const devfile = await fetchDevfile(url);
         dispatch({ type: Type.RECEIVE_DEVFILE, devfile, url });
         return devfile;
@@ -218,10 +226,13 @@ export const actionCreators: ActionCreators = {
 
   requestResources:
     (resourcesUrl: string): AppThunk<KnownAction, Promise<void>> =>
-    async (dispatch): Promise<void> => {
-      await dispatch({ type: Type.REQUEST_RESOURCES, check: AUTHORIZED });
-
+    async (dispatch, getState): Promise<void> => {
       try {
+        await dispatch({ type: Type.REQUEST_RESOURCES, check: AUTHORIZED });
+        if (!(await selectAsyncIsAuthorized(getState()))) {
+          const error = selectSanityCheckError(getState());
+          throw new Error(error);
+        }
         const resourcesContent = await fetchResources(resourcesUrl);
         const resources = loadResourcesContent(resourcesContent);
 
@@ -259,9 +270,13 @@ export const actionCreators: ActionCreators = {
 
   requestJsonSchema:
     (): AppThunk<KnownAction, any> =>
-    async (dispatch): Promise<any> => {
-      await dispatch({ type: Type.REQUEST_SCHEMA, check: AUTHORIZED });
+    async (dispatch, getState): Promise<any> => {
       try {
+        await dispatch({ type: Type.REQUEST_SCHEMA, check: AUTHORIZED });
+        if (!(await selectAsyncIsAuthorized(getState()))) {
+          const error = selectSanityCheckError(getState());
+          throw new Error(error);
+        }
         const schemav200 = await fetchAndUpdateDevfileSchema('2.0.0');
         const schemav210 = await fetchAndUpdateDevfileSchema('2.1.0');
         const schemav220 = await fetchAndUpdateDevfileSchema('2.2.0');

@@ -16,6 +16,7 @@ import { AppThunk } from '..';
 import { createObject } from '../helpers';
 import { AUTHORIZED, SanityCheckAction } from '../sanityCheckMiddleware';
 import { getKubernetesNamespace } from '../../services/backend-client/kubernetesNamespaceApi';
+import { selectAsyncIsAuthorized, selectSanityCheckError } from '../SanityCheck/selectors';
 
 export interface State {
   isLoading: boolean;
@@ -46,10 +47,13 @@ export type ActionCreators = {
 export const actionCreators: ActionCreators = {
   requestNamespaces:
     (): AppThunk<KnownAction, Promise<Array<che.KubernetesNamespace>>> =>
-    async (dispatch): Promise<Array<che.KubernetesNamespace>> => {
-      await dispatch({ type: 'REQUEST_NAMESPACES', check: AUTHORIZED });
-
+    async (dispatch, getState): Promise<Array<che.KubernetesNamespace>> => {
       try {
+        await dispatch({ type: 'REQUEST_NAMESPACES', check: AUTHORIZED });
+        if (!(await selectAsyncIsAuthorized(getState()))) {
+          const error = selectSanityCheckError(getState());
+          throw new Error(error);
+        }
         const namespaces = await getKubernetesNamespace();
         dispatch({
           type: 'RECEIVE_NAMESPACES',

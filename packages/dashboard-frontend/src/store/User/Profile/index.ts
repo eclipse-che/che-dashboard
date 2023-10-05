@@ -18,6 +18,7 @@ import { fetchUserProfile } from '../../../services/backend-client/userProfileAp
 import { createObject } from '../../helpers';
 import { AppThunk } from '../../index';
 import { AUTHORIZED, SanityCheckAction } from '../../sanityCheckMiddleware';
+import { selectAsyncIsAuthorized, selectSanityCheckError } from '../../SanityCheck/selectors';
 
 export interface State {
   userProfile: api.IUserProfile;
@@ -57,10 +58,13 @@ export type ActionCreators = {
 export const actionCreators: ActionCreators = {
   requestUserProfile:
     (namespace: string): AppThunk<KnownAction, Promise<void>> =>
-    async (dispatch): Promise<void> => {
-      await dispatch({ type: Type.REQUEST_USER_PROFILE, check: AUTHORIZED });
-
+    async (dispatch, getState): Promise<void> => {
       try {
+        await dispatch({ type: Type.REQUEST_USER_PROFILE, check: AUTHORIZED });
+        if (!(await selectAsyncIsAuthorized(getState()))) {
+          const error = selectSanityCheckError(getState());
+          throw new Error(error);
+        }
         const userProfile = await fetchUserProfile(namespace);
         dispatch({
           type: Type.RECEIVE_USER_PROFILE,

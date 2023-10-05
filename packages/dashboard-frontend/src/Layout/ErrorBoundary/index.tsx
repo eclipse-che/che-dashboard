@@ -28,7 +28,9 @@ export const STORAGE_KEY_RELOAD_NUMBER = 'UD:ErrorBoundary:reloaded';
 const RELOAD_TIMEOUT_SEC = 30;
 const RELOADS_FOR_EXTENDED_MESSAGE = 2;
 
-type Props = PropsWithChildren;
+type Props = PropsWithChildren & {
+  testBackends: (error?: string) => void;
+};
 type State = {
   hasError: boolean;
   error?: Error;
@@ -43,7 +45,6 @@ type State = {
 
 export class ErrorBoundary extends React.PureComponent<Props, State> {
   private readonly toDispose = new DisposableCollection();
-  private notFoundCallback: (error?: Error) => void;
 
   constructor(props: Props) {
     super(props);
@@ -75,9 +76,7 @@ export class ErrorBoundary extends React.PureComponent<Props, State> {
     });
 
     if (this.testResourceNotFound(error)) {
-      if (this.notFoundCallback) {
-        this.notFoundCallback(error);
-      }
+      this.props.testBackends(error.message);
       this.setState({
         shouldReload: true,
       });
@@ -97,13 +96,6 @@ export class ErrorBoundary extends React.PureComponent<Props, State> {
 
   public componentWillUnmount(): void {
     this.toDispose.dispose();
-  }
-
-  /**
-   * This method is used from parent component by reference.
-   */
-  public setCallback(notFoundCallback: (error?: Error) => void): void {
-    this.notFoundCallback = notFoundCallback;
   }
 
   private testResourceNotFound(error: Error): boolean {

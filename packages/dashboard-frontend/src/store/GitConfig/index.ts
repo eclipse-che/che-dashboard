@@ -29,19 +29,14 @@ export const actionCreators: ActionCreators = {
   requestGitConfig:
     (): AppThunk<KnownAction, Promise<void>> =>
     async (dispatch, getState): Promise<void> => {
-      dispatch({ type: Type.REQUEST_GITCONFIG, check: AUTHORIZED });
-      if (!(await selectAsyncIsAuthorized(getState()))) {
-        const error = selectSanityCheckError(getState());
-        dispatch({
-          type: Type.RECEIVE_GITCONFIG_ERROR,
-          error,
-        });
-        throw new Error(error);
-      }
-
       const state = getState();
       const namespace = selectDefaultNamespace(state).name;
       try {
+        await dispatch({ type: Type.REQUEST_GITCONFIG, check: AUTHORIZED });
+        if (!(await selectAsyncIsAuthorized(getState()))) {
+          const error = selectSanityCheckError(getState());
+          throw new Error(error);
+        }
         const config = await fetchGitConfig(namespace);
         dispatch({
           type: Type.RECEIVE_GITCONFIG,
@@ -68,16 +63,6 @@ export const actionCreators: ActionCreators = {
   updateGitConfig:
     (changedGitConfig: GitConfigUser): AppThunk<KnownAction, Promise<void>> =>
     async (dispatch, getState): Promise<void> => {
-      dispatch({ type: Type.REQUEST_GITCONFIG, check: AUTHORIZED });
-      if (!(await selectAsyncIsAuthorized(getState()))) {
-        const error = selectSanityCheckError(getState());
-        dispatch({
-          type: Type.RECEIVE_GITCONFIG_ERROR,
-          error,
-        });
-        throw new Error(error);
-      }
-
       const state = getState();
       const namespace = selectDefaultNamespace(state).name;
       const { gitConfig } = state;
@@ -87,6 +72,11 @@ export const actionCreators: ActionCreators = {
         },
       } as api.IGitConfig);
       try {
+        await dispatch({ type: Type.REQUEST_GITCONFIG, check: AUTHORIZED });
+        if (!(await selectAsyncIsAuthorized(getState()))) {
+          const error = selectSanityCheckError(getState());
+          throw new Error(error);
+        }
         const updated = await patchGitConfig(namespace, gitconfig);
         dispatch({
           type: Type.RECEIVE_GITCONFIG,

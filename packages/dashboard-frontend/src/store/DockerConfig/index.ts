@@ -59,19 +59,13 @@ export const actionCreators: ActionCreators = {
   requestCredentials:
     (): AppThunk<KnownAction, Promise<void>> =>
     async (dispatch, getState): Promise<void> => {
-      dispatch({ type: Type.REQUEST_DEVWORKSPACE_CREDENTIALS, check: AUTHORIZED });
-      const state = getState();
-      if (!(await selectAsyncIsAuthorized(getState()))) {
-        const error = selectSanityCheckError(getState());
-        dispatch({
-          type: Type.RECEIVE_DEVWORKSPACE_CREDENTIALS_ERROR,
-          error,
-        });
-        throw new Error(error);
-      }
-
-      const namespace = selectDefaultNamespace(state).name;
+      const namespace = selectDefaultNamespace(getState()).name;
       try {
+        await dispatch({ type: Type.REQUEST_DEVWORKSPACE_CREDENTIALS, check: AUTHORIZED });
+        if (!(await selectAsyncIsAuthorized(getState()))) {
+          const error = selectSanityCheckError(getState());
+          throw new Error(error);
+        }
         const { registries, resourceVersion } = await getDockerConfig(namespace);
         dispatch({
           type: Type.SET_DEVWORKSPACE_CREDENTIALS,
@@ -91,19 +85,14 @@ export const actionCreators: ActionCreators = {
   updateCredentials:
     (registries: RegistryEntry[]): AppThunk<KnownAction, Promise<void>> =>
     async (dispatch, getState): Promise<void> => {
-      dispatch({ type: Type.REQUEST_DEVWORKSPACE_CREDENTIALS, check: AUTHORIZED });
       const state = getState();
-      if (!(await selectAsyncIsAuthorized(getState()))) {
-        const error = selectSanityCheckError(getState());
-        dispatch({
-          type: Type.RECEIVE_DEVWORKSPACE_CREDENTIALS_ERROR,
-          error,
-        });
-        throw new Error(error);
-      }
-
       const namespace = selectDefaultNamespace(state).name;
       try {
+        await dispatch({ type: Type.REQUEST_DEVWORKSPACE_CREDENTIALS, check: AUTHORIZED });
+        if (!(await selectAsyncIsAuthorized(getState()))) {
+          const error = selectSanityCheckError(getState());
+          throw new Error(error);
+        }
         const { resourceVersion } = await putDockerConfig(
           namespace,
           registries,

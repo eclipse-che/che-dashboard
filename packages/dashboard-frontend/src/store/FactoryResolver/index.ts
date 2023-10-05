@@ -30,6 +30,7 @@ import { CHE_EDITOR_YAML_PATH } from '../../services/workspace-client/helpers';
 import { FactoryParams } from '../../services/helpers/factoryFlow/buildFactoryParams';
 import { getFactoryResolver } from '../../services/backend-client/factoryApi';
 import { selectAsyncIsAuthorized, selectSanityCheckError } from '../SanityCheck/selectors';
+import * as cheApi from '@eclipse-che/api';
 
 export type OAuthResponse = {
   attributes: {
@@ -88,7 +89,7 @@ export type ActionCreators = {
 };
 
 export async function grabLink(
-  links: api.che.core.rest.Link,
+  links: cheApi.che.core.rest.Link[],
   filename: string,
 ): Promise<string | undefined> {
   // handle servers not yet providing links
@@ -96,8 +97,8 @@ export async function grabLink(
     return undefined;
   }
   // grab the one matching
-  const foundLink = links.find(link => link.href.includes(`file=${filename}`));
-  if (!foundLink) {
+  const foundLink = links.find(link => link.href?.includes(`file=${filename}`));
+  if (!foundLink || !foundLink.href) {
     return undefined;
   }
 
@@ -130,16 +131,6 @@ export const actionCreators: ActionCreators = {
       factoryParams: Partial<FactoryParams> = {},
     ): AppThunk<KnownAction, Promise<void>> =>
     async (dispatch, getState): Promise<void> => {
-      dispatch({ type: 'REQUEST_FACTORY_RESOLVER', check: AUTHORIZED });
-      if (!(await selectAsyncIsAuthorized(getState()))) {
-        const error = selectSanityCheckError(getState());
-        dispatch({
-          type: 'RECEIVE_FACTORY_RESOLVER_ERROR',
-          error,
-        });
-        throw new Error(error);
-      }
-
       const state = getState();
       const namespace = selectDefaultNamespace(state).name;
       const optionalFilesContent = {};
@@ -167,6 +158,11 @@ export const actionCreators: ActionCreators = {
       };
 
       try {
+        await dispatch({ type: 'REQUEST_FACTORY_RESOLVER', check: AUTHORIZED });
+        if (!(await selectAsyncIsAuthorized(getState()))) {
+          const error = selectSanityCheckError(getState());
+          throw new Error(error);
+        }
         let data: FactoryResolver;
         if (isDevfileRegistryLocation(location)) {
           data = await getYamlResolver(namespace, location);

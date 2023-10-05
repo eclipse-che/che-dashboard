@@ -31,7 +31,11 @@ export function getErrorMessage(error: unknown): string {
     const code = response?.status ? response?.status : response?.request?.status;
     const endpoint = request?.responseURL ? request?.responseURL : response?.request?.responseURL;
 
-    errorMessage = `HTTP Error code ${code}. Endpoint which throw an error ${endpoint}. ${errorMessage}`;
+    if (!code || !endpoint) {
+      return 'Unexpected error type. Please report a bug.';
+    }
+
+    errorMessage = `HTTP Error code ${code}. Endpoint which throws an error ${endpoint}. ${errorMessage}`;
   }
 
   if (isUnauthorized(error) || isForbidden(error)) {
