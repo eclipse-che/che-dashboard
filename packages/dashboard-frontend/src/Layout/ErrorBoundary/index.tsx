@@ -29,7 +29,7 @@ const RELOAD_TIMEOUT_SEC = 30;
 const RELOADS_FOR_EXTENDED_MESSAGE = 2;
 
 type Props = PropsWithChildren & {
-  testBackends: (error?: string) => void;
+  onError: (error?: string) => void;
 };
 type State = {
   hasError: boolean;

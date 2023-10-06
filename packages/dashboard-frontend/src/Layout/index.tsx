@@ -145,7 +145,7 @@ export class Layout extends React.PureComponent<Props, State> {
           }
           isManagedSidebar={IS_MANAGED_SIDEBAR}
         >
-          <ErrorBoundary testBackends={error => this.testBackends(error)}>
+          <ErrorBoundary onError={error => this.testBackends(error)}>
             <StoreErrorsAlert />
             <BannerAlert />
             {this.props.children}

@@ -32,7 +32,7 @@ describe('Workspace-client helpers', () => {
     it('should return the unknown error message', () => {
       expect(getErrorMessage({})).toEqual('Unexpected error type. Please report a bug.');
     });
-    it('should return unknown an error message', () => {
+    it('should return the error message', () => {
       expect(
         getErrorMessage({
           response: {
