@@ -42,7 +42,7 @@ export class AxiosWrapper {
     data?: any,
     config?: AxiosRequestConfig,
   ): Promise<R> {
-    return this.retryAxiosFuncWithData(this.axiosInstance.delete, url, data, config);
+    return this.retryAxiosFuncWithData(this.axiosInstance.post, url, data, config);
   }
 
   put<T = any, R = AxiosResponse<T>>(
