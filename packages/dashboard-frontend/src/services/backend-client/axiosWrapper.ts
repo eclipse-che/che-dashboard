@@ -11,6 +11,7 @@
  */
 
 import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios';
+import { delay } from '../helpers/delay';
 
 const retryCount = 3;
 const retryDelay = 500;
@@ -78,29 +79,23 @@ export class AxiosWrapper {
     return this.doRetryFunc(() => axiosFunc(url, data, config), url, retryCount);
   }
 
-  private doRetryFunc<T = any, R = AxiosResponse<T>>(
+  async doRetryFunc<T = any, R = AxiosResponse<T>>(
     fun: () => Promise<R>,
     url: string,
     retry: number,
   ): Promise<R> {
-    return new Promise<R>((resolve, reject) => {
-      fun()
-        .then(response => resolve(response))
-        .catch(err => {
-          const { message } = err;
-          if (!retry || !message.includes('Bearer Token Authorization is required')) {
-            reject(err);
-          }
+    try {
+      return await fun();
+    } catch (err) {
+      if (!retry || !(err as Error)?.message?.includes('Bearer Token Authorization is required')) {
+        throw err;
+      }
 
-          const delayRetryRequest = new Promise<void>(resolve => {
-            setTimeout(() => {
-              console.warn(`Retrying request ${url}... ${retry} left`);
-              resolve();
-            }, retryDelay);
-          });
+      // Retry the request after a delay.
+      console.warn(`Retrying request ${url}... ${retry} left`);
+      await delay(retryDelay);
 
-          return delayRetryRequest.then(() => resolve(this.doRetryFunc(fun, url, --retry)));
-        });
-    });
+      return await this.doRetryFunc(fun, url, --retry);
+    }
   }
 }
