@@ -10,7 +10,7 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import axios, { AxiosInstance } from 'axios';
+import { AxiosInstance } from 'axios';
 import { AxiosWrapper } from '../axiosWrapper';
 import mockAxios from 'axios';
 
