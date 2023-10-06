@@ -76,7 +76,7 @@ export class ErrorBoundary extends React.PureComponent<Props, State> {
     });
 
     if (this.testResourceNotFound(error)) {
-      this.props.testBackends(error.message);
+      this.props.onError(error.message);
       this.setState({
         shouldReload: true,
       });
