@@ -14,17 +14,13 @@ import mockAxios from 'axios';
 import { getKubernetesNamespace, provisionKubernetesNamespace } from '../kubernetesNamespaceApi';
 
 describe('Kubernetes namespace API', () => {
-  let mockGet: jest.Mock;
-  let mockPost: jest.Mock;
+  const mockGet = mockAxios.get as jest.Mock;
+  const mockPost = mockAxios.post as jest.Mock;
 
   const namespace: che.KubernetesNamespace = { name: 'test-name', attributes: { phase: 'Active' } };
 
-  beforeEach(() => {
-    mockAxios.get = jest.fn();
-    mockAxios.post = jest.fn();
-
-    mockGet = mockAxios.get as jest.Mock;
-    mockPost = mockAxios.post as jest.Mock;
+  afterEach(() => {
+    jest.clearAllMocks();
   });
 
   describe('fetch namespace', () => {
