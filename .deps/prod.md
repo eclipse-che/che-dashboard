@@ -106,7 +106,7 @@
 | [`chalk@2.4.2`](https://github.com/chalk/chalk.git) | MIT | clearlydefined |
 | [`chownr@2.0.0`](git://github.com/isaacs/chownr.git) | ISC | clearlydefined |
 | [`cipher-base@1.0.4`](git+https://github.com/crypto-browserify/cipher-base.git) | MIT | clearlydefined |
-| [`codemirror@5.65.15`](https://github.com/codemirror/CodeMirror.git) | MIT |  |
+| [`codemirror@5.65.15`](https://github.com/codemirror/CodeMirror.git) | MIT | (clearlydefined)[https://clearlydefined.io/definitions/npm/npmjs/-/codemirror/5.65.15] |
 | [`color-convert@1.9.3`](https://github.com/Qix-/color-convert.git) | MIT | clearlydefined |
 | [`color-name@1.1.3`](git@github.com:dfcreative/color-name.git) | MIT | clearlydefined |
 | [`combined-stream@1.0.8`](git://github.com/felixge/node-combined-stream.git) | MIT | clearlydefined |
@@ -376,9 +376,6 @@
 | [`uuid@3.4.0`](https://github.com/uuidjs/uuid.git) | MIT | #2733 |
 | [`value-equal@1.0.1`](https://github.com/mjackson/value-equal.git) | MIT | clearlydefined |
 | [`verror@1.10.0`](git://github.com/davepacheco/node-verror.git) | MIT | clearlydefined |
-| [`vscode-jsonrpc@8.1.0`](https://github.com/Microsoft/vscode-languageserver-node.git) | MIT | #3274 |
-| [`vscode-languageserver-protocol@3.17.3`](https://github.com/Microsoft/vscode-languageserver-node.git) | MIT | #4965 |
-| [`vscode-languageserver-types@3.17.3`](https://github.com/Microsoft/vscode-languageserver-node.git) | MIT | #2564 |
 | [`warning@4.0.3`](https://github.com/BerkeleyTrue/warning.git) | MIT | [CQ22359](https://dev.eclipse.org/ipzilla/show_bug.cgi?id=22359) |
 | [`webidl-conversions@3.0.1`](https://github.com/jsdom/webidl-conversions.git) | BSD-2-Clause | clearlydefined |
 | [`whatwg-url@5.0.0`](https://github.com/jsdom/whatwg-url.git) | MIT | clearlydefined |
