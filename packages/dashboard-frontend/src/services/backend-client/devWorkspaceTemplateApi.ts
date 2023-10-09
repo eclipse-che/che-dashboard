@@ -20,7 +20,9 @@ export async function createTemplate(
 ): Promise<devfileApi.DevWorkspaceTemplate> {
   const url = `${dashboardBackendPrefix}/namespace/${template.metadata.namespace}/devworkspacetemplates`;
   try {
-    const response = await AxiosWrapper.createToRetryMissedBearerTokenError().post(url, { template });
+    const response = await AxiosWrapper.createToRetryMissedBearerTokenError().post(url, {
+      template,
+    });
     return response.data;
   } catch (e) {
     throw new Error(

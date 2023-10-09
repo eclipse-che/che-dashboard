@@ -34,7 +34,10 @@ describe('axiosWrapper', () => {
     const expectedData = { data: 'some-data' };
     axiosGetMock.mockReturnValue(new Promise(resolve => resolve(expectedData)));
 
-    const result = await new AxiosWrapper(axiosInstance, bearerTokenAuthorizationIsRequiredErrorMsg).get('some-url');
+    const result = await new AxiosWrapper(
+      axiosInstance,
+      bearerTokenAuthorizationIsRequiredErrorMsg,
+    ).get('some-url');
 
     expect(result).toEqual(expectedData);
     expect(axiosGetSpy).toBeCalledTimes(1);
@@ -56,7 +59,10 @@ describe('axiosWrapper', () => {
       .mockRejectedValueOnce(new Error(bearerTokenAuthorizationIsRequiredErrorMsg))
       .mockReturnValue(new Promise(resolve => resolve(expectedData)));
 
-    const result = await new AxiosWrapper(axiosInstance, bearerTokenAuthorizationIsRequiredErrorMsg).get('some-url');
+    const result = await new AxiosWrapper(
+      axiosInstance,
+      bearerTokenAuthorizationIsRequiredErrorMsg,
+    ).get('some-url');
 
     expect(result).toEqual(expectedData);
     expect(axiosGetSpy).toBeCalledTimes(2);
@@ -81,7 +87,10 @@ describe('axiosWrapper', () => {
       .mockRejectedValueOnce(new Error(bearerTokenAuthorizationIsRequiredErrorMsg))
       .mockReturnValue(new Promise(resolve => resolve(expectedData)));
 
-    const result = await new AxiosWrapper(axiosInstance, bearerTokenAuthorizationIsRequiredErrorMsg).get('some-url');
+    const result = await new AxiosWrapper(
+      axiosInstance,
+      bearerTokenAuthorizationIsRequiredErrorMsg,
+    ).get('some-url');
 
     expect(result).toEqual(expectedData);
     expect(axiosGetSpy).toBeCalledTimes(3);
@@ -108,7 +117,9 @@ describe('axiosWrapper', () => {
       .mockRejectedValue(new Error(bearerTokenAuthorizationIsRequiredErrorMsg));
 
     try {
-      await new AxiosWrapper(axiosInstance, bearerTokenAuthorizationIsRequiredErrorMsg).get('some-url');
+      await new AxiosWrapper(axiosInstance, bearerTokenAuthorizationIsRequiredErrorMsg).get(
+        'some-url',
+      );
       fail('should fail');
     } catch (e: any) {
       expect(e.message).toEqual(bearerTokenAuthorizationIsRequiredErrorMsg);
