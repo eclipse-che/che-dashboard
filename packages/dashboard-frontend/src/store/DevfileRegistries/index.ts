@@ -27,10 +27,6 @@ export type DevWorkspaceResources = [devfileApi.DevWorkspace, devfileApi.DevWork
 // This state defines the type of data maintained in the Redux store.
 export interface State {
   isLoading: boolean;
-  schema: {
-    schema?: any;
-    error?: string;
-  };
   registries: {
     [location: string]: {
       metadata?: che.DevfileMetaData[];
@@ -63,9 +59,6 @@ export enum Type {
   REQUEST_RESOURCES = 'REQUEST_RESOURCES',
   RECEIVE_RESOURCES = 'RECEIVE_RESOURCES',
   RECEIVE_RESOURCES_ERROR = 'RECEIVE_RESOURCES_ERROR',
-  REQUEST_SCHEMA = 'REQUEST_SCHEMA',
-  RECEIVE_SCHEMA = 'RECEIVE_SCHEMA',
-  RECEIVE_SCHEMA_ERROR = 'RECEIVE_SCHEMA_ERROR',
   SET_FILTER = 'SET_FILTER',
   CLEAR_FILTER = 'CLEAR_FILTER',
 }
@@ -113,20 +106,6 @@ export interface ReceiveResourcesErrorAction {
   error: string;
 }
 
-export interface RequestSchemaAction extends Action, SanityCheckAction {
-  type: Type.REQUEST_SCHEMA;
-}
-
-export interface ReceiveSchemaAction {
-  type: Type.RECEIVE_SCHEMA;
-  schema: any;
-}
-
-export interface ReceiveSchemaErrorAction {
-  type: Type.RECEIVE_SCHEMA_ERROR;
-  error: string;
-}
-
 export interface SetFilterValue extends Action {
   type: Type.SET_FILTER;
   value: string;
@@ -145,9 +124,6 @@ export type KnownAction =
   | RequestResourcesAction
   | ReceiveResourcesAction
   | ReceiveResourcesErrorAction
-  | RequestSchemaAction
-  | ReceiveSchemaAction
-  | ReceiveSchemaErrorAction
   | SetFilterValue
   | ClearFilterValue;
 
@@ -281,7 +257,6 @@ const unloadedState: State = {
   isLoading: false,
   registries: {},
   devfiles: {},
-  schema: {},
   devWorkspaceResources: {},
 
   filter: '',
@@ -300,11 +275,6 @@ export const reducer: Reducer<State> = (
     case Type.REQUEST_REGISTRY_METADATA:
       return createObject<State>(state, {
         isLoading: true,
-      });
-    case Type.REQUEST_SCHEMA:
-      return createObject<State>(state, {
-        isLoading: true,
-        schema: {},
       });
     case Type.REQUEST_DEVFILE:
       return createObject<State>(state, {
@@ -357,20 +327,6 @@ export const reducer: Reducer<State> = (
           [action.url]: {
             error: action.error,
           },
-        },
-      });
-    case Type.RECEIVE_SCHEMA:
-      return createObject<State>(state, {
-        isLoading: false,
-        schema: {
-          schema: action.schema,
-        },
-      });
-    case Type.RECEIVE_SCHEMA_ERROR:
-      return createObject<State>(state, {
-        isLoading: false,
-        schema: {
-          error: action.error,
         },
       });
     case Type.SET_FILTER: {

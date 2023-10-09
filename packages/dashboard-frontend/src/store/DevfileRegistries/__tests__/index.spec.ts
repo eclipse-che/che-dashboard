@@ -204,7 +204,6 @@ describe('Devfile registries', () => {
         registries: {},
         devfiles: {},
         devWorkspaceResources: {},
-        schema: {},
         filter: '',
       };
 
@@ -217,7 +216,6 @@ describe('Devfile registries', () => {
         registries: {},
         devfiles: {},
         devWorkspaceResources: {},
-        schema: {},
         filter: '',
       };
       const incomingAction = {
@@ -230,7 +228,6 @@ describe('Devfile registries', () => {
         registries: {},
         devfiles: {},
         devWorkspaceResources: {},
-        schema: {},
         filter: '',
       };
       expect(newState).toEqual(expectedState);
@@ -242,7 +239,6 @@ describe('Devfile registries', () => {
         registries: {},
         devfiles: {},
         devWorkspaceResources: {},
-        schema: {},
         filter: '',
       };
       const incomingAction: devfileRegistriesStore.RequestRegistryMetadataAction = {
@@ -256,7 +252,6 @@ describe('Devfile registries', () => {
         registries: {},
         devfiles: {},
         devWorkspaceResources: {},
-        schema: {},
         filter: '',
       };
       expect(newState).toEqual(expectedState);
@@ -268,7 +263,6 @@ describe('Devfile registries', () => {
         registries: {},
         devfiles: {},
         devWorkspaceResources: {},
-        schema: {},
         filter: '',
       };
       const url = 'http://example.com/devfiles/registry';
@@ -287,7 +281,6 @@ describe('Devfile registries', () => {
         },
         devfiles: {},
         devWorkspaceResources: {},
-        schema: {},
         filter: '',
       };
       expect(newState).toEqual(expectedState);
@@ -299,7 +292,6 @@ describe('Devfile registries', () => {
         registries: {},
         devfiles: {},
         devWorkspaceResources: {},
-        schema: {},
         filter: '',
       };
       const url = 'http://example.com/devfiles/registry';
@@ -318,7 +310,6 @@ describe('Devfile registries', () => {
         },
         devfiles: {},
         devWorkspaceResources: {},
-        schema: {},
         filter: '',
       };
       expect(newState).toEqual(expectedState);
@@ -330,7 +321,6 @@ describe('Devfile registries', () => {
         registries: {},
         devfiles: {},
         devWorkspaceResources: {},
-        schema: {},
         filter: '',
       };
       const incomingAction: devfileRegistriesStore.RequestDevfileAction = {
@@ -344,7 +334,6 @@ describe('Devfile registries', () => {
         registries: {},
         devfiles: {},
         devWorkspaceResources: {},
-        schema: {},
         filter: '',
       };
       expect(newState).toEqual(expectedState);
@@ -356,7 +345,6 @@ describe('Devfile registries', () => {
         registries: {},
         devfiles: {},
         devWorkspaceResources: {},
-        schema: {},
         filter: '',
       };
       const url = 'http://example.com/devfile.yaml';
@@ -375,89 +363,6 @@ describe('Devfile registries', () => {
           [url]: { content },
         },
         devWorkspaceResources: {},
-        schema: {},
-        filter: '',
-      };
-      expect(newState).toEqual(expectedState);
-    });
-
-    it('should should handle REQUEST_SCHEMA', () => {
-      const initialState: devfileRegistriesStore.State = {
-        isLoading: false,
-        registries: {},
-        devfiles: {},
-        devWorkspaceResources: {},
-        schema: {},
-        filter: '',
-      };
-      const incomingAction: devfileRegistriesStore.RequestSchemaAction = {
-        type: devfileRegistriesStore.Type.REQUEST_SCHEMA,
-        check: AUTHORIZED,
-      };
-      const newState = devfileRegistriesStore.reducer(initialState, incomingAction);
-
-      const expectedState: devfileRegistriesStore.State = {
-        isLoading: true,
-        registries: {},
-        devfiles: {},
-        devWorkspaceResources: {},
-        schema: {},
-        filter: '',
-      };
-      expect(newState).toEqual(expectedState);
-    });
-
-    it('should should handle RECEIVE_SCHEMA', () => {
-      const initialState: devfileRegistriesStore.State = {
-        isLoading: true,
-        registries: {},
-        devfiles: {},
-        devWorkspaceResources: {},
-        schema: {},
-        filter: '',
-      };
-      const schema = getSchemaV1();
-      const incomingAction: devfileRegistriesStore.ReceiveSchemaAction = {
-        type: devfileRegistriesStore.Type.RECEIVE_SCHEMA,
-        schema,
-      };
-      const newState = devfileRegistriesStore.reducer(initialState, incomingAction);
-
-      const expectedState: devfileRegistriesStore.State = {
-        isLoading: false,
-        registries: {},
-        devfiles: {},
-        devWorkspaceResources: {},
-        schema: { schema },
-        filter: '',
-      };
-      expect(newState).toEqual(expectedState);
-    });
-
-    it('should should handle RECEIVE_SCHEMA_ERROR', () => {
-      const initialState: devfileRegistriesStore.State = {
-        isLoading: true,
-        registries: {},
-        devfiles: {},
-        devWorkspaceResources: {},
-        schema: {},
-        filter: '',
-      };
-      const error = 'error message';
-      const incomingAction: devfileRegistriesStore.ReceiveSchemaErrorAction = {
-        type: devfileRegistriesStore.Type.RECEIVE_SCHEMA_ERROR,
-        error,
-      };
-      const newState = devfileRegistriesStore.reducer(initialState, incomingAction);
-
-      const expectedState: devfileRegistriesStore.State = {
-        isLoading: false,
-        registries: {},
-        devfiles: {},
-        devWorkspaceResources: {},
-        schema: {
-          error,
-        },
         filter: '',
       };
       expect(newState).toEqual(expectedState);
@@ -495,29 +400,4 @@ function getMetadataV2(): che.DevfileMetaData[] {
       },
     },
   ];
-}
-
-function getSchemaV1() {
-  return {
-    $schema: 'http://json-schema.org/draft-07/schema#',
-    type: 'object',
-    title: 'Devfile object',
-    description: 'This schema describes the structure of the devfile object',
-    definitions: {
-      attributes: {
-        type: 'object',
-        additionalProperties: {
-          type: 'string',
-        },
-      },
-      selector: {
-        type: 'object',
-        additionalProperties: {
-          type: 'string',
-        },
-      },
-    },
-    additionalProperties: false,
-    properties: {},
-  };
 }

@@ -19,9 +19,6 @@ module.exports = {
   moduleNameMapper: {
     '\\.(css|less|sass|scss|styl)$': 'identity-obj-proxy',
     '\\.(gif|ttf|eot|svg)$': '<rootDir>/__mocks__/fileMock.js',
-    'vscode-languageserver-protocol/lib/utils/is':
-      'vscode-languageserver-protocol/lib/common/utils/is',
-    'vscode-languageserver-protocol/lib/main': 'vscode-languageserver-protocol/lib/node/main',
   },
   modulePathIgnorePatterns: [
     '__mocks__/index.tsx',
