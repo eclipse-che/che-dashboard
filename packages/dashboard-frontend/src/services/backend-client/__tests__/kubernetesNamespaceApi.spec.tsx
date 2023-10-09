@@ -14,30 +14,30 @@ import mockAxios from 'axios';
 import { getKubernetesNamespace, provisionKubernetesNamespace } from '../kubernetesNamespaceApi';
 
 describe('Kubernetes namespace API', () => {
-  const mockGet = mockAxios.get as jest.Mock;
-  const mockPost = mockAxios.post as jest.Mock;
+  let mockGet: jest.Mock;
+  let mockPost: jest.Mock;
 
   const namespace: che.KubernetesNamespace = { name: 'test-name', attributes: { phase: 'Active' } };
 
-  afterEach(() => {
-    jest.resetAllMocks();
+  beforeEach(() => {
+    mockAxios.get = jest.fn();
+    mockAxios.post = jest.fn();
+
+    mockGet = mockAxios.get as jest.Mock;
+    mockPost = mockAxios.post as jest.Mock;
   });
 
   describe('fetch namespace', () => {
     it('should call "/api/kubernetes/namespace"', async () => {
-      mockGet.mockResolvedValueOnce({
-        data: expect.anything(),
-      });
+      mockGet.mockResolvedValueOnce(new Promise(resolve => resolve({ data: expect.anything() })));
       await getKubernetesNamespace();
 
-      expect(mockGet).toBeCalledWith('/api/kubernetes/namespace');
+      expect(mockGet).toBeCalledWith('/api/kubernetes/namespace', undefined);
       expect(mockPost).not.toBeCalled();
     });
 
     it('should return a list of namespaces', async () => {
-      mockGet.mockResolvedValueOnce({
-        data: [namespace],
-      });
+      mockGet.mockResolvedValueOnce(new Promise(resolve => resolve({ data: [namespace] })));
 
       const res = await getKubernetesNamespace();
 
