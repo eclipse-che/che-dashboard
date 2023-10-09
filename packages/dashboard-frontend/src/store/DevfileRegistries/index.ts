@@ -15,7 +15,6 @@ import common from '@eclipse-che/common';
 import { AppThunk } from '..';
 import { fetchRegistryMetadata, fetchDevfile } from '../../services/registry/devfiles';
 import { createObject } from '../helpers';
-import fetchAndUpdateDevfileSchema from './fetchAndUpdateDevfileSchema';
 import devfileApi from '../../services/devfileApi';
 import { fetchResources, loadResourcesContent } from '../../services/registry/resources';
 import { AUTHORIZED, SanityCheckAction } from '../sanityCheckMiddleware';
@@ -159,7 +158,6 @@ export type ActionCreators = {
   ) => AppThunk<KnownAction, Promise<void>>;
   requestDevfile: (location: string) => AppThunk<KnownAction, Promise<string>>;
   requestResources: (resourceUrl: string) => AppThunk<KnownAction, Promise<void>>;
-  requestJsonSchema: () => AppThunk<KnownAction, any>;
 
   setFilter: (value: string) => AppThunk<SetFilterValue, void>;
   clearFilter: () => AppThunk<ClearFilterValue, void>;
@@ -265,40 +263,6 @@ export const actionCreators: ActionCreators = {
           error: message,
         });
         throw new Error(message);
-      }
-    },
-
-  requestJsonSchema:
-    (): AppThunk<KnownAction, any> =>
-    async (dispatch, getState): Promise<any> => {
-      try {
-        await dispatch({ type: Type.REQUEST_SCHEMA, check: AUTHORIZED });
-        if (!(await selectAsyncIsAuthorized(getState()))) {
-          const error = selectSanityCheckError(getState());
-          throw new Error(error);
-        }
-        const schemav200 = await fetchAndUpdateDevfileSchema('2.0.0');
-        const schemav210 = await fetchAndUpdateDevfileSchema('2.1.0');
-        const schemav220 = await fetchAndUpdateDevfileSchema('2.2.0');
-        const schemav221alpha = await fetchAndUpdateDevfileSchema('2.2.1-alpha');
-
-        const schema = {
-          oneOf: [schemav200, schemav210, schemav220, schemav221alpha],
-        };
-
-        dispatch({
-          type: Type.RECEIVE_SCHEMA,
-          schema,
-        });
-        return schema;
-      } catch (e) {
-        const errorMessage =
-          'Failed to request devfile JSON schema, reason: ' + common.helpers.errors.getMessage(e);
-        dispatch({
-          type: Type.RECEIVE_SCHEMA_ERROR,
-          error: errorMessage,
-        });
-        throw errorMessage;
       }
     },
 
