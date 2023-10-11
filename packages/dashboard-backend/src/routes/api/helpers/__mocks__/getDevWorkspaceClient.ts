@@ -19,6 +19,7 @@ import {
 } from '@devfile/api';
 import { api } from '@eclipse-che/common';
 import { IncomingHttpHeaders } from 'http';
+
 import {
   DevWorkspaceClient,
   IDevWorkspaceApi,
@@ -32,8 +33,8 @@ import {
   IPodApi,
   IServerConfigApi,
   IUserProfileApi,
-} from '../../../../devworkspaceClient';
-import { getDevWorkspaceClient as helper } from '../getDevWorkspaceClient';
+} from '@/devworkspaceClient';
+import { getDevWorkspaceClient as helper } from '@/routes/api/helpers/getDevWorkspaceClient';
 
 export const stubContainerBuild = {
   disableContainerBuildCapabilities: true,

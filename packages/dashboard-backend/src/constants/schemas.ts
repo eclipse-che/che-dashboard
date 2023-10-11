@@ -10,8 +10,9 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import { dockerConfigExample, devWorkspaceResourcesExample } from './examples';
 import { JSONSchema7 } from 'json-schema';
+
+import { devWorkspaceResourcesExample, dockerConfigExample } from '@/constants/examples';
 
 export const authenticationHeaderSchema: JSONSchema7 = {
   type: 'object',
