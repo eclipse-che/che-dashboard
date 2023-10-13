@@ -14,6 +14,8 @@ import common, { api, ApplicationId } from '@eclipse-che/common';
 import { Store } from 'redux';
 
 import { lazyInject } from '@/inversify.config';
+import { AxiosWrapper } from '@/services/backend-client/axiosWrapper';
+import { dashboardBackendPrefix } from '@/services/backend-client/const';
 import { WebsocketClient } from '@/services/backend-client/websocketClient';
 import { ChannelListener } from '@/services/backend-client/websocketClient/messageHandler';
 import {
@@ -56,8 +58,6 @@ import * as UserProfileStore from '@/store/User/Profile';
 import * as WorkspacesStore from '@/store/Workspaces';
 import * as DevWorkspacesStore from '@/store/Workspaces/devWorkspaces';
 import { selectDevWorkspacesResourceVersion } from '@/store/Workspaces/devWorkspaces/selectors';
-import { AxiosWrapper } from '../backend-client/axiosWrapper';
-import { dashboardBackendPrefix } from '../backend-client/const';
 
 /**
  * This class executes a few initial instructions

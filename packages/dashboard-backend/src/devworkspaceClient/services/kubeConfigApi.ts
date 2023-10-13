@@ -10,12 +10,16 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import * as k8s from '@kubernetes/client-node';
-import { IKubeConfigApi } from '../types';
 import { helpers, KUBECONFIG_MOUNT_PATH } from '@eclipse-che/common';
-import { ServerConfig } from './helpers/exec';
-import { CoreV1API, prepareCoreV1API } from './helpers/prepareCoreV1API';
+import * as k8s from '@kubernetes/client-node';
 import { V1Secret } from '@kubernetes/client-node';
+
+import { ServerConfig } from '@/devworkspaceClient/services/helpers/exec';
+import {
+  CoreV1API,
+  prepareCoreV1API,
+} from '@/devworkspaceClient/services/helpers/prepareCoreV1API';
+import { IKubeConfigApi } from '@/devworkspaceClient/types';
 
 const KUBECONFIG_SECRET_NAME = 'kubeconfig';
 

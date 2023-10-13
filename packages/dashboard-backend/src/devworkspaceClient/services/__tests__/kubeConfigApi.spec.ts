@@ -14,8 +14,9 @@
 
 import * as mockClient from '@kubernetes/client-node';
 import { CoreV1Api, HttpError } from '@kubernetes/client-node';
-import { KubeConfigApiService } from '../kubeConfigApi';
 import { IncomingMessage } from 'http';
+
+import { KubeConfigApiService } from '@/devworkspaceClient/services/kubeConfigApi';
 
 const namespace = 'user-che';
 
