@@ -56,6 +56,8 @@ import * as UserProfileStore from '@/store/User/Profile';
 import * as WorkspacesStore from '@/store/Workspaces';
 import * as DevWorkspacesStore from '@/store/Workspaces/devWorkspaces';
 import { selectDevWorkspacesResourceVersion } from '@/store/Workspaces/devWorkspaces/selectors';
+import { AxiosWrapper } from '../backend-client/axiosWrapper';
+import { dashboardBackendPrefix } from '../backend-client/const';
 
 /**
  * This class executes a few initial instructions
@@ -113,6 +115,7 @@ export default class Bootstrap {
         this.watchWebSocketPods();
       }),
       this.fetchClusterConfig(),
+      this.createKubeConfigSecret(),
     ]);
 
     const errors = results
@@ -252,6 +255,13 @@ export default class Bootstrap {
     this.websocketClient.subscribeToChannel(api.webSocket.Channel.POD, namespace, {
       getResourceVersion,
     });
+  }
+
+  private async createKubeConfigSecret(): Promise<void> {
+    const defaultKubernetesNamespace = selectDefaultNamespace(this.store.getState());
+    await AxiosWrapper.createToRetryMissedBearerTokenError().post(
+      `${dashboardBackendPrefix}/namespace/${defaultKubernetesNamespace.name}/kubeconfig`,
+    );
   }
 
   private async fetchWorkspaces(): Promise<void> {
