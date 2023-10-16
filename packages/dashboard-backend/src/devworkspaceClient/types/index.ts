@@ -262,9 +262,9 @@ export interface IServerConfigApi {
 
 export interface IKubeConfigApi {
   /**
-   * Inject the kubeconfig into all containers with the given devworkspaceId in a namespace.
+   * Creates or replaces kubeconfig Secret to be mounted into all containers in a namespace.
    */
-  injectKubeConfig(namespace: string, devworkspaceId: string): Promise<void>;
+  applyKubeConfigSecret(namespace: string): Promise<void>;
 }
 
 export interface IPodmanApi {

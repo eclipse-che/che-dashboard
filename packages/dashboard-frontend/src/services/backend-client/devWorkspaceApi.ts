@@ -123,16 +123,6 @@ export async function putDockerConfig(
   }
 }
 
-export async function injectKubeConfig(namespace: string, devworkspaceId: string): Promise<void> {
-  try {
-    await AxiosWrapper.createToRetryMissedBearerTokenError().post(
-      `${dashboardBackendPrefix}/namespace/${namespace}/devworkspaceId/${devworkspaceId}/kubeconfig`,
-    );
-  } catch (e) {
-    throw new Error(`Failed to inject kubeconfig. ${helpers.errors.getMessage(e)}`);
-  }
-}
-
 export async function podmanLogin(namespace: string, devworkspaceId: string): Promise<void> {
   try {
     await AxiosWrapper.createToRetryMissedBearerTokenError().post(
