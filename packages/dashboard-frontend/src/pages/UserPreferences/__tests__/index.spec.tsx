@@ -16,15 +16,16 @@ import React from 'react';
 import { Provider } from 'react-redux';
 import { Router } from 'react-router';
 
-import getComponentRenderer, { screen } from '@/services/__mocks__/getComponentRenderer';
+import getComponentRenderer, { screen, waitFor } from '@/services/__mocks__/getComponentRenderer';
 import { FakeStoreBuilder } from '@/store/__mocks__/storeBuilder';
 
 import UserPreferences from '..';
 
-jest.mock('../GitServicesTab');
 jest.mock('../ContainerRegistriesTab');
-jest.mock('../PersonalAccessTokens');
 jest.mock('../GitConfig');
+jest.mock('../GitServicesTab');
+jest.mock('../PersonalAccessTokens');
+jest.mock('../SshKeys');
 
 const { renderComponent } = getComponentRenderer(getComponent);
 
@@ -88,6 +89,14 @@ describe('UserPreferences', () => {
 
       expect(screen.queryByRole('tabpanel', { name: 'Personal Access Tokens' })).toBeTruthy();
     });
+
+    it('should activate the SSH Keys tab', () => {
+      history.push('/user-preferences?tab=ssh-keys');
+
+      renderComponent();
+
+      expect(screen.queryByRole('tabpanel', { name: 'SSH Keys' })).toBeTruthy();
+    });
   });
 
   describe('Tabs', () => {
@@ -125,6 +134,15 @@ describe('UserPreferences', () => {
       userEvent.click(tab);
 
       expect(screen.queryByRole('tabpanel', { name: 'Gitconfig' })).toBeTruthy();
+    });
+
+    it('should activate the SSH Keys tab', () => {
+      renderComponent();
+
+      const tab = screen.getByRole('tab', { name: 'SSH Keys' });
+      userEvent.click(tab);
+
+      expect(screen.queryByRole('tabpanel', { name: 'SSH Keys' })).toBeTruthy();
     });
   });
 });
