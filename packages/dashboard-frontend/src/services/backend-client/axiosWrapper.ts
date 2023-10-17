@@ -18,6 +18,8 @@ type AxiosFunc = (url: string, config?: AxiosRequestConfig) => Promise<any>;
 type AxiosFuncWithData = (url: string, data?: any, config?: AxiosRequestConfig) => Promise<any>;
 
 export const bearerTokenAuthorizationIsRequiredErrorMsg = 'Bearer Token Authorization is required';
+export const cannotGetResourceErrorMessage =
+  'users.user.openshift.io "~" is forbidden: User "system:anonymous" cannot get resource "users" in API group "user.openshift.io" at the cluster scope';
 
 export class AxiosWrapper {
   protected readonly retryCount = 3;
@@ -32,6 +34,10 @@ export class AxiosWrapper {
 
   static createToRetryMissedBearerTokenError(): AxiosWrapper {
     return new AxiosWrapper(axios.create(), bearerTokenAuthorizationIsRequiredErrorMsg);
+  }
+
+  static createToRetryCannotGetResourceErrors(): AxiosWrapper {
+    return new AxiosWrapper(axios.create(), cannotGetResourceErrorMessage);
   }
 
   static createToRetryAnyErrors(): AxiosWrapper {

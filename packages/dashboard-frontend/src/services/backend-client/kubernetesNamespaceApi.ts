@@ -24,7 +24,9 @@ export async function getKubernetesNamespace(): Promise<che.KubernetesNamespace[
 }
 
 export async function provisionKubernetesNamespace(): Promise<che.KubernetesNamespace> {
-  const response = await axios.post(`${cheServerPrefix}/kubernetes/namespace/provision`);
+  const response = await AxiosWrapper.createToRetryCannotGetResourceErrors().post(
+    `${cheServerPrefix}/kubernetes/namespace/provision`,
+  );
 
   return response.data;
 }
