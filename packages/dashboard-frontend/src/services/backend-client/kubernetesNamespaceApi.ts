@@ -10,8 +10,6 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import axios from 'axios';
-
 import { AxiosWrapper } from '@/services/backend-client/axiosWrapper';
 import { cheServerPrefix } from '@/services/backend-client/const';
 
