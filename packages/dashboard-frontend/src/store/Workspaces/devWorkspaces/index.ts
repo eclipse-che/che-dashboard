@@ -15,7 +15,7 @@ import { dump } from 'js-yaml';
 import { Action, Reducer } from 'redux';
 
 import { container } from '@/inversify.config';
-import { injectKubeConfig, podmanLogin } from '@/services/backend-client/devWorkspaceApi';
+import { podmanLogin } from '@/services/backend-client/devWorkspaceApi';
 import * as DwApi from '@/services/backend-client/devWorkspaceApi';
 import { fetchResources } from '@/services/backend-client/devworkspaceResourcesApi';
 import * as DwtApi from '@/services/backend-client/devWorkspaceTemplateApi';
@@ -1015,8 +1015,6 @@ export const actionCreators: ActionCreators = {
           devworkspaceId !== undefined
         ) {
           try {
-            // inject the kube config
-            await injectKubeConfig(workspace.metadata.namespace, devworkspaceId);
             // inject the 'podman login'
             await podmanLogin(workspace.metadata.namespace, devworkspaceId);
           } catch (e) {
