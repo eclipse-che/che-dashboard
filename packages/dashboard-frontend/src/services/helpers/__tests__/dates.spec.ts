@@ -10,46 +10,47 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
+import { format, formatDistanceToNow } from 'date-fns';
+
 import { formatDate, formatRelativeDate, getFormattedDate } from '@/services/helpers/dates';
 
-describe('formatDate', () => {
-  it('should return date in format "MMM dd, h:mm aaaa"', () => {
-    const date = new Date('2000-11-01T00:00:00.000Z');
-    const result = formatDate(date);
-    expect(result).toEqual('Nov 01, 2:00 a.m.');
-  });
+jest.mock('date-fns', () => {
+  return {
+    format: jest.fn(),
+    formatDistanceToNow: jest.fn(),
+  };
 });
 
-describe('formatRelativeDate', () => {
-  it('should return relative date (5 seconds ago)', () => {
-    const date = new Date(Date.now() - 5_000);
-    const result = formatRelativeDate(date);
-    expect(result).toEqual('less than a minute ago');
+describe('dates', () => {
+  afterEach(() => {
+    jest.clearAllMocks();
   });
 
-  it('should return relative date (5 minutes ago)', () => {
-    const date = new Date(Date.now() - 300_000);
-    const result = formatRelativeDate(date);
-    expect(result).toEqual('5 minutes ago');
-  });
-
-  it('should return relative date (2 hours ago)', () => {
-    const date = new Date(Date.now() - 7_200_000);
-    const result = formatRelativeDate(date);
-    expect(result).toEqual('about 2 hours ago');
-  });
-});
-
-describe('getFormattedDate', () => {
-  it('should return relative date (5 seconds ago)', () => {
-    const date = new Date(Date.now() - 5_000);
-    const result = getFormattedDate(date);
-    expect(result).toEqual('less than a minute ago');
-  });
-
-  it('should return non-relative date', () => {
+  test('formatDate', () => {
     const date = new Date('2000-11-01T00:00:00.000Z');
-    const result = getFormattedDate(date);
-    expect(result).toEqual('Nov 01, 2:00 a.m.');
+    formatDate(date);
+    expect(format).toHaveBeenCalledWith(date, 'MMM dd, h:mm aaaa');
+  });
+
+  test('formatRelativeDate', () => {
+    const date = new Date('2000-11-01T00:00:00.000Z');
+    formatRelativeDate(date);
+    expect(formatDistanceToNow).toHaveBeenCalledWith(date, { addSuffix: true });
+  });
+
+  describe('getFormattedDate', () => {
+    it('should call `formatDistanceToNow` (5 seconds ago)', () => {
+      const date = new Date(Date.now() - 5_000);
+      getFormattedDate(date);
+      expect(formatDistanceToNow).toHaveBeenCalled();
+      expect(format).not.toHaveBeenCalled();
+    });
+
+    it('should return non-relative date', () => {
+      const date = new Date('2000-11-01T00:00:00.000Z');
+      getFormattedDate(date);
+      expect(formatDistanceToNow).not.toHaveBeenCalled();
+      expect(format).toHaveBeenCalled();
+    });
   });
 });

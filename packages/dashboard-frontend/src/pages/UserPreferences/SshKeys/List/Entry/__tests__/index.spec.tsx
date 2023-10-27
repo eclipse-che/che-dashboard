@@ -19,6 +19,12 @@ import getComponentRenderer, { screen } from '@/services/__mocks__/getComponentR
 
 import { Props, SshKeysListEntry } from '..';
 
+jest.mock('@/services/helpers/dates', () => {
+  return {
+    getFormattedDate: () => 'Aug 27, 4:17 p.m.',
+  };
+});
+
 // mock the React.Tooltip component
 jest.mock('@patternfly/react-core', () => {
   return {
