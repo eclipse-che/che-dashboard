@@ -16,7 +16,7 @@ import React from 'react';
 import { Provider } from 'react-redux';
 import { Router } from 'react-router';
 
-import getComponentRenderer, { screen, waitFor } from '@/services/__mocks__/getComponentRenderer';
+import getComponentRenderer, { screen } from '@/services/__mocks__/getComponentRenderer';
 import { FakeStoreBuilder } from '@/store/__mocks__/storeBuilder';
 
 import UserPreferences from '..';
