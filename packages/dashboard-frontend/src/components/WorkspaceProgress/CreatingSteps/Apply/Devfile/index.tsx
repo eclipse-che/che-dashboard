@@ -30,7 +30,6 @@ import {
 import { ProgressStepTitle } from '@/components/WorkspaceProgress/StepTitle';
 import { TimeLimit } from '@/components/WorkspaceProgress/TimeLimit';
 import devfileApi from '@/services/devfileApi';
-import { DEVWORKSPACE_STORAGE_TYPE_ATTR } from '@/services/devfileApi/devWorkspace/spec/template';
 import {
   buildFactoryParams,
   FactoryParams,
