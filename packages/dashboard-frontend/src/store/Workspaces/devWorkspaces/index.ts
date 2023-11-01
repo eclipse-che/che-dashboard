@@ -667,13 +667,6 @@ export const actionCreators: ActionCreators = {
         // add projects from the origin workspace
         devWorkspaceResource.spec.template.projects = workspace.spec.template.projects;
 
-        // sets ephemeral storage type
-        const storageType: che.WorkspaceStorageType = 'ephemeral';
-        if (!devWorkspaceResource.spec.template.attributes) {
-          devWorkspaceResource.spec.template.attributes = {};
-        }
-        devWorkspaceResource.spec.template.attributes[DEVWORKSPACE_STORAGE_TYPE_ATTR] = storageType;
-
         devWorkspaceTemplateResource = resources.find(
           resource => resource.kind === 'DevWorkspaceTemplate',
         ) as devfileApi.DevWorkspaceTemplate;
