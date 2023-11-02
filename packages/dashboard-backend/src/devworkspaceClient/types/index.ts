@@ -16,6 +16,7 @@ import {
   V221DevfileComponents,
 } from '@devfile/api';
 import { api } from '@eclipse-che/common';
+import { GitProvider } from '@eclipse-che/common/lib/dto/api';
 import * as k8s from '@kubernetes/client-node';
 import { IncomingHttpHeaders } from 'http';
 
@@ -348,6 +349,18 @@ export interface IUserProfileApi {
   getUserProfile(namespace: string): Promise<api.IUserProfile | undefined>;
 }
 
+export interface IDevWorkspacePreferencesApi {
+  /**
+   * Returns workspace preferences object that contains skip-authorisation info.
+   */
+  getWorkspacePreferences(namespace: string): Promise<api.IDevWorkspacePreferences>;
+
+  /**
+   * Removes the target provider from skip-authorisation property from the workspace preferences object.
+   */
+  removeProviderFromSkipAuthorization(namespace: string, provider: GitProvider): Promise<void>;
+}
+
 export interface IPersonalAccessTokenApi {
   /**
    * Reads all the PAT secrets from the specified namespace.
@@ -390,6 +403,7 @@ export interface IDevWorkspaceClient {
   gitConfigApi: IGitConfigApi;
   gettingStartedSampleApi: IGettingStartedSampleApi;
   sshKeysApi: IShhKeysApi;
+  devWorkspacePreferencesApi: IDevWorkspacePreferencesApi;
 }
 
 export interface IWatcherService<T = Record<string, unknown>> {
