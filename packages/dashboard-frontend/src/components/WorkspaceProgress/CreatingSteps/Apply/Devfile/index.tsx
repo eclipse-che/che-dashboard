@@ -44,7 +44,6 @@ import { TimeLimit } from '../../../TimeLimit';
 import { configureProjectRemotes } from './getGitRemotes';
 import { getProjectFromLocation } from './getProjectFromLocation';
 import { prepareDevfile } from './prepareDevfile';
-import { DEVWORKSPACE_STORAGE_TYPE_ATTR } from '../../../../../services/devfileApi/devWorkspace/spec/template';
 
 export class CreateWorkspaceError extends Error {
   constructor(message: string) {
