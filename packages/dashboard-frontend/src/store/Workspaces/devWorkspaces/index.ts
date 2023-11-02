@@ -60,7 +60,6 @@ import * as DwtApi from '../../../services/dashboard-backend-client/devWorkspace
 import { selectDefaultDevfile } from '../../DevfileRegistries/selectors';
 import * as DwApi from '../../../services/dashboard-backend-client/devWorkspaceApi';
 import { selectDefaultEditor } from '../../Plugins/devWorkspacePlugins/selectors';
-import { DEVWORKSPACE_STORAGE_TYPE_ATTR } from '../../../services/devfileApi/devWorkspace/spec/template';
 
 export const onStatusChangeCallbacks = new Map<string, (status: string) => void>();
 
