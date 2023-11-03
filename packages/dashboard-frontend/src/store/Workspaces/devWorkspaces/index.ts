@@ -365,6 +365,7 @@ export const actionCreators: ActionCreators = {
 
         getDevWorkspaceClient().checkForDevWorkspaceError(startingWorkspace);
       } catch (e) {
+        // Skip unauthorised errors. The page is redirecting to an SCM authentication page.
         if (common.helpers.errors.includesAxiosResponse(e) && isOAuthResponse(e.response.data)) {
           return;
         }
