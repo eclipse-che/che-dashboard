@@ -43,6 +43,19 @@ describe('Factory Acceptance Redirect', () => {
     expect(res.headers.location).toEqual(`/dashboard/#/load-factory?url=${factoryUrl}`);
   });
 
+  it('should redirect "/f?factoryLink=che-editor=che-incubator/.che-code/insiders&override.devfileFilename=my.devfile.yaml&url=factoryUr"', async () => {
+    const factoryUrl = 'factoryUrl';
+    const res = await app.inject({
+      url: `/f?${encodeURIComponent(
+        'factoryLink=che-editor=che-incubator/.che-code/insiders&override.devfileFilename=my.devfile.yaml&url=factoryUrl',
+      )}`,
+    });
+    expect(res.statusCode).toEqual(302);
+    expect(res.headers.location).toEqual(
+      `/dashboard/#/load-factory?che-editor=che-incubator%2F.che-code%2Finsiders&override.devfileFilename=my.devfile.yaml&url=${factoryUrl}`,
+    );
+  });
+
   it('should redirect "/f?url=factoryUrl"', async () => {
     const factoryUrl = 'factoryUrl';
     const res = await app.inject({
