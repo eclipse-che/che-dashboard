@@ -78,7 +78,7 @@ function sanitizeStr(str: string, removeParams: string[] = []): string {
 }
 
 // `%20` might be decoded to ` ` by the dashboard, so we need to restore them.
-// It actual for repository urls such as: https://myorganization@dev.azure.com/myorganization/my%20project/_git/test%20repository
+// It is actual for repository urls such as: https://myorganization@dev.azure.com/myorganization/my%20project/_git/test%20repository
 export function restoreDecodedSpaces(url: string): string {
   return url.replace(/ /g, '%20');
 }
