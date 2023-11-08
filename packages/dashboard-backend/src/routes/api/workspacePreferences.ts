@@ -24,7 +24,7 @@ const tags = ['WorkspacePreferences'];
 export function registerWorkspacePreferencesRoute(instance: FastifyInstance) {
   instance.register(async server => {
     server.get(
-      `${baseApiPath}/workspacepreferences/:namespace`,
+      `${baseApiPath}/workspace-preferences/namespace/:namespace`,
       getSchema({ tags, params: namespacedSchema }),
       async function (request: FastifyRequest) {
         const { namespace } = request.params as restParams.INamespacedParams;
@@ -35,7 +35,7 @@ export function registerWorkspacePreferencesRoute(instance: FastifyInstance) {
     );
 
     server.delete(
-      `${baseApiPath}/workspacepreferences/:namespace/skip-authorisation/:provider`,
+      `${baseApiPath}/workspace-preferences/namespace/:namespace/skip-authorisation/:provider`,
       getSchema({
         tags,
         params: namespacedWorkspacePreferencesSchema,

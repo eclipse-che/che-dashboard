@@ -20,33 +20,41 @@ import { Store } from 'redux';
 import { FakeGitOauthBuilder } from '@/pages/UserPreferences/GitServicesTab/__tests__/__mocks__/gitOauthRowBuilder';
 import { FakeStoreBuilder } from '@/store/__mocks__/storeBuilder';
 import { actionCreators } from '@/store/GitOauthConfig';
-import { selectGitOauth, selectIsLoading } from '@/store/GitOauthConfig/selectors';
+import {
+  selectGitOauth,
+  selectIsLoading,
+  selectProvidersWithToken,
+  selectSkipOauthProviders,
+} from '@/store/GitOauthConfig/selectors';
 
 import { GitServices } from '..';
 
 // mute the outputs
 console.error = jest.fn();
-jest.mock('../ProviderWarning', () => {
-  return function ProviderWarning(props: { warning: React.ReactNode }): React.ReactElement {
-    return <span>{props.warning}</span>;
-  };
-});
 
 describe('GitServices', () => {
   const mockRevokeOauth = jest.fn();
   const requestGitOauthConfig = jest.fn();
+  const requestSkipAuthorisationProviders = jest.fn();
+  const deleteSkipOauth = jest.fn();
 
   const getComponent = (store: Store): React.ReactElement => {
     const state = store.getState();
     const gitOauth = selectGitOauth(state);
     const isLoading = selectIsLoading(state);
+    const providersWithToken = selectProvidersWithToken(state);
+    const skipOauthProviders = selectSkipOauthProviders(state);
     return (
       <Provider store={store}>
         <GitServices
           gitOauth={gitOauth}
           isLoading={isLoading}
           revokeOauth={mockRevokeOauth}
+          deleteSkipOauth={deleteSkipOauth}
           requestGitOauthConfig={requestGitOauthConfig}
+          requestSkipAuthorisationProviders={requestSkipAuthorisationProviders}
+          providersWithToken={providersWithToken}
+          skipOauthProviders={skipOauthProviders}
         />
       </Provider>
     );
@@ -71,24 +79,28 @@ describe('GitServices', () => {
   it('should correctly render the component which contains four git services', () => {
     const component = getComponent(
       new FakeStoreBuilder()
-        .withGitOauthConfig([
-          new FakeGitOauthBuilder()
-            .withName('github')
-            .withEndpointUrl('https://github.dummy.endpoint.com')
-            .build(),
-          new FakeGitOauthBuilder()
-            .withName('gitlab')
-            .withEndpointUrl('https://gitlab.dummy.endpoint.com')
-            .build(),
-          new FakeGitOauthBuilder()
-            .withName('bitbucket')
-            .withEndpointUrl('https://bitbucket.dummy.endpoint.org')
-            .build(),
-          new FakeGitOauthBuilder()
-            .withName('azure-devops')
-            .withEndpointUrl('https://azure.dummy.endpoint.com/')
-            .build(),
-        ])
+        .withGitOauthConfig(
+          [
+            new FakeGitOauthBuilder()
+              .withName('github')
+              .withEndpointUrl('https://github.dummy.endpoint.com')
+              .build(),
+            new FakeGitOauthBuilder()
+              .withName('gitlab')
+              .withEndpointUrl('https://gitlab.dummy.endpoint.com')
+              .build(),
+            new FakeGitOauthBuilder()
+              .withName('bitbucket')
+              .withEndpointUrl('https://bitbucket.dummy.endpoint.org')
+              .build(),
+            new FakeGitOauthBuilder()
+              .withName('azure-devops')
+              .withEndpointUrl('https://azure.dummy.endpoint.com/')
+              .build(),
+          ],
+          ['github'],
+          [],
+        )
         .build(),
     );
     render(component);
@@ -113,17 +125,22 @@ describe('GitServices', () => {
     const spyRevokeOauth = jest.spyOn(actionCreators, 'revokeOauth');
     const component = getComponent(
       new FakeStoreBuilder()
-        .withGitOauthConfig([
-          new FakeGitOauthBuilder()
-            .withName('github')
-            .withEndpointUrl('https://github.com')
-            .build(),
-        ])
+        .withGitOauthConfig(
+          [
+            new FakeGitOauthBuilder()
+              .withName('github')
+              .withEndpointUrl('https://github.com')
+              .build(),
+          ],
+          ['github'],
+          [],
+        )
         .build(),
     );
     render(component);
 
     const menuButton = screen.getByLabelText('Actions');
+    expect(menuButton).not.toBeDisabled();
     userEvent.click(menuButton);
 
     const revokeItem = screen.getByRole('menuitem', { name: /Revoke/i });

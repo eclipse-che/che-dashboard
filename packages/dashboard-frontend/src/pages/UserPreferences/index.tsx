@@ -77,6 +77,7 @@ export class UserPreferences extends React.PureComponent<Props, State> {
     _event: React.MouseEvent<HTMLElement, MouseEvent>,
     activeTabKey: React.ReactText,
   ): void {
+    _event.stopPropagation();
     this.props.history.push(`${ROUTE.USER_PREFERENCES}?tab=${activeTabKey}`);
 
     this.setState({
