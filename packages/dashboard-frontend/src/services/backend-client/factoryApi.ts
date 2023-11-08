@@ -14,13 +14,12 @@ import axios from 'axios';
 
 import { cheServerPrefix } from '@/services/backend-client/const';
 import { FactoryResolver } from '@/services/helpers/types';
-import { restoreDecodedSpaces } from '@eclipse-che/common/lib/helpers/sanitize';
 
 export async function getFactoryResolver(
   url: string,
   overrideParams: { [params: string]: string } = {},
 ): Promise<FactoryResolver> {
-  url = restoreDecodedSpaces(url);
+  url = encodeURI(url);
   const response = await axios.post(
     `${cheServerPrefix}/factory/resolver`,
     Object.assign({}, overrideParams, { url }),

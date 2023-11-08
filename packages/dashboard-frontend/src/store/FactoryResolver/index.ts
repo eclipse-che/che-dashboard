@@ -32,7 +32,6 @@ import { selectDefaultNamespace } from '@/store/InfrastructureNamespaces/selecto
 import { selectAsyncIsAuthorized, selectSanityCheckError } from '@/store/SanityCheck/selectors';
 import { AUTHORIZED, SanityCheckAction } from '@/store/sanityCheckMiddleware';
 import { selectDefaultComponents, selectPvcStrategy } from '@/store/ServerConfig/selectors';
-import { restoreDecodedSpaces } from '@eclipse-che/common/lib/helpers/sanitize';
 
 export type OAuthResponse = {
   attributes: {
@@ -107,7 +106,7 @@ export async function grabLink(
   const url = new URL(foundLink.href);
   let search = '?';
   url.searchParams.forEach((value, key) => {
-    search += `${key}=${encodeURIComponent(restoreDecodedSpaces(value))}&`;
+    search += `${key}=${encodeURIComponent(encodeURI(value))}&`;
   });
   search = search.slice(0, -1);
 
