@@ -64,7 +64,6 @@ bump_version () {
         git checkout "${PR_BRANCH}"
         git pull origin "${PR_BRANCH}"
         git push origin "${PR_BRANCH}"
-        lastCommitComment="$(git log -1 --pretty=%B)"
         gh pr create -f -B "${BUMP_BRANCH}" -H "${PR_BRANCH}"
     fi
     set -e
