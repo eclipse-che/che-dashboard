@@ -1,0 +1,10 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`CheTooltip component should render CheTooltip component correctly 1`] = `
+<div>
+  some text
+  <span>
+    Tooltip text.
+  </span>
+</div>
+`;

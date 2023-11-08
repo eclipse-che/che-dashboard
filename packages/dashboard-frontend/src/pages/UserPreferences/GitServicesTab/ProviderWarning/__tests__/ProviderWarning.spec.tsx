@@ -15,38 +15,9 @@ import renderer from 'react-test-renderer';
 
 import ProviderWarning from '..';
 
-jest.mock('@patternfly/react-core', () => {
-  return {
-    Tooltip: (props: any) => {
-      return (
-        <>
-          {props.children}
-          {props.content}
-        </>
-      );
-    },
-    TooltipPosition: {
-      right: 'right',
-    },
-  };
-});
-
 describe('ProviderWarning component', () => {
-  afterEach(() => {
-    jest.clearAllMocks();
-  });
-
   it('should render ProviderWarning correctly', () => {
-    const element = (
-      <ProviderWarning
-        warning={
-          <>
-            Provided API does not support the automatic token revocation. You can revoke it manually
-            on <a href="http://dummy.ref">link</a>.
-          </>
-        }
-      />
-    );
+    const element = <ProviderWarning serverURI={'http://dummy.ref'} />;
 
     expect(renderer.create(element).toJSON()).toMatchSnapshot();
   });
