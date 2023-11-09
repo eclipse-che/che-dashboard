@@ -19,7 +19,9 @@ export async function getFactoryResolver(
   url: string,
   overrideParams: { [params: string]: string } = {},
 ): Promise<FactoryResolver> {
-  url = encodeURI(url);
+  if (url.indexOf(' ') !== -1) {
+    url = encodeURI(url);
+  }
   const response = await axios.post(
     `${cheServerPrefix}/factory/resolver`,
     Object.assign({}, overrideParams, { url }),
