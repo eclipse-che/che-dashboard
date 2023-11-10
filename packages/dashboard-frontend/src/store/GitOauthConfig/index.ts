@@ -78,14 +78,14 @@ export type KnownAction =
   | ReceivedGitOauthErrorAction;
 
 export type ActionCreators = {
-  requestSkipAuthorisationProviders: () => AppThunk<KnownAction, Promise<void>>;
+  requestSkipAuthorizationProviders: () => AppThunk<KnownAction, Promise<void>>;
   requestGitOauthConfig: () => AppThunk<KnownAction, Promise<void>>;
   revokeOauth: (oauthProvider: api.GitOauthProvider) => AppThunk<KnownAction, Promise<void>>;
   deleteSkipOauth: (oauthProvider: api.GitOauthProvider) => AppThunk<KnownAction, Promise<void>>;
 };
 
 export const actionCreators: ActionCreators = {
-  requestSkipAuthorisationProviders:
+  requestSkipAuthorizationProviders:
     (): AppThunk<KnownAction, Promise<void>> =>
     async (dispatch, getState): Promise<void> => {
       dispatch({
@@ -149,7 +149,7 @@ export const actionCreators: ActionCreators = {
             }),
           );
         }
-        promises.push(dispatch(actionCreators.requestSkipAuthorisationProviders()));
+        promises.push(dispatch(actionCreators.requestSkipAuthorizationProviders()));
         await Promise.allSettled(promises);
 
         dispatch({
@@ -218,7 +218,7 @@ export const actionCreators: ActionCreators = {
       const defaultKubernetesNamespace = selectDefaultNamespace(getState());
       try {
         await deleteSkipOauthProvider(defaultKubernetesNamespace.name, oauthProvider);
-        await dispatch(actionCreators.requestSkipAuthorisationProviders());
+        await dispatch(actionCreators.requestSkipAuthorizationProviders());
       } catch (e) {
         const errorMessage = common.helpers.errors.getMessage(e);
         dispatch({

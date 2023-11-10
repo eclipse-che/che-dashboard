@@ -39,7 +39,7 @@ function getComponent(
         gitProvider={gitOauth}
         providersWithToken={selectProvidersWithToken(state)}
         skipOauthProviders={selectSkipOauthProviders(state)}
-        requestSkipAuthorisationProviders={jest.fn()}
+        requestSkipAuthorizationProviders={jest.fn()}
         requestGitOauthConfig={jest.fn()}
         revokeOauth={jest.fn()}
         deleteSkipOauth={jest.fn()}
@@ -49,7 +49,7 @@ function getComponent(
 }
 
 describe('ProviderIcon component', () => {
-  it('should render ProviderIcon component correctly when the user has been authorized successfully.', () => {
+  test('snapshot for the successfully authorized provider', () => {
     const gitOauth: api.GitOauthProvider = 'github';
     const store = new FakeStoreBuilder().withGitOauthConfig([], ['github'], []).build();
 
@@ -58,7 +58,7 @@ describe('ProviderIcon component', () => {
     expect(snapshot.toJSON()).toMatchSnapshot();
   });
 
-  it('should render ProviderIcon component correctly when authorization has been rejected by user.', () => {
+  test('snapshot for rejected provider', () => {
     const gitOauth: api.GitOauthProvider = 'github';
     const store = new FakeStoreBuilder().withGitOauthConfig([], [], ['github']).build();
 
@@ -67,7 +67,7 @@ describe('ProviderIcon component', () => {
     expect(snapshot.toJSON()).toMatchSnapshot();
   });
 
-  it('should render ProviderIcon component correctly when the user has not been authorized yet.', () => {
+  test('snapshot for the provider not authorized yet', () => {
     const gitOauth: api.GitOauthProvider = 'github';
     const store = new FakeStoreBuilder().withGitOauthConfig([], [], []).build();
 
