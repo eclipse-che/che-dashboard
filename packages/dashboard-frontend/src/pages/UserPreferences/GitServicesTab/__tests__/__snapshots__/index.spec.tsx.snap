@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`GitServices should correctly render the component which contains four git services 1`] = `
+exports[`GitServices with 4 git services snapshot 1`] = `
 [
   <span
     className="progressLine"
@@ -648,7 +648,7 @@ exports[`GitServices should correctly render the component which contains four g
 ]
 `;
 
-exports[`GitServices should correctly render the component without git services 1`] = `
+exports[`GitServices without git services snapshot 1`] = `
 [
   <span
     className="progressLine"
@@ -685,7 +685,7 @@ exports[`GitServices should correctly render the component without git services 
         </svg>
         <h4
           className="pf-c-title pf-m-lg"
-          data-ouia-component-id="OUIA-Generated-Title-2"
+          data-ouia-component-id="OUIA-Generated-Title-1"
           data-ouia-component-type="PF4/Title"
           data-ouia-safe={true}
         >

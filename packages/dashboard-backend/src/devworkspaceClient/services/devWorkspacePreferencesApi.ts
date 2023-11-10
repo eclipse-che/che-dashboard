@@ -11,7 +11,6 @@
  */
 
 import { api } from '@eclipse-che/common';
-import { GitProvider } from '@eclipse-che/common/lib/dto/api';
 import * as k8s from '@kubernetes/client-node';
 
 import { createError } from '@/devworkspaceClient/services/helpers/createError';
@@ -24,7 +23,7 @@ import { IDevWorkspacePreferencesApi } from '@/devworkspaceClient/types';
 const ERROR_LABEL = 'CORE_V1_API_ERROR';
 const DEV_WORKSPACE_PREFERENCES_CONFIGMAP = 'workspace-preferences-configmap';
 
-const SKIP_AUTORIZATION_KEY = 'skip-authorisation';
+const SKIP_AUTHORIZATION_KEY = 'skip-authorisation';
 
 export class DevWorkspacePreferencesApiService implements IDevWorkspacePreferencesApi {
   private readonly coreV1API: CoreV1API;
@@ -44,32 +43,32 @@ export class DevWorkspacePreferencesApiService implements IDevWorkspacePreferenc
         throw new Error('Data is empty');
       }
 
-      const skipAuthorisation =
-        data[SKIP_AUTORIZATION_KEY] && data[SKIP_AUTORIZATION_KEY] !== '[]'
-          ? data[SKIP_AUTORIZATION_KEY].replace(/^\[/, '').replace(/\]$/, '').split(', ')
+      const skipAuthorization =
+        data[SKIP_AUTHORIZATION_KEY] && data[SKIP_AUTHORIZATION_KEY] !== '[]'
+          ? data[SKIP_AUTHORIZATION_KEY].replace(/^\[/, '').replace(/\]$/, '').split(', ')
           : [];
 
       return Object.assign({}, data, {
-        [SKIP_AUTORIZATION_KEY]: skipAuthorisation,
+        [SKIP_AUTHORIZATION_KEY]: skipAuthorization,
       }) as api.IDevWorkspacePreferences;
     } catch (e) {
       throw createError(e, ERROR_LABEL, 'Unable to get workspace preferences data');
     }
   }
 
-  public async removeProviderFromSkipAuthorization(
+  public async removeProviderFromSkipAuthorizationList(
     namespace: string,
-    provider: GitProvider,
+    provider: api.GitProvider,
   ): Promise<void> {
     const devWorkspacePreferences = await this.getWorkspacePreferences(namespace);
 
-    const skipAuthorisation = devWorkspacePreferences[SKIP_AUTORIZATION_KEY].filter(
+    const skipAuthorization = devWorkspacePreferences[SKIP_AUTHORIZATION_KEY].filter(
       (val: string) => val !== provider,
     );
-    const skipAuthorisationStr =
-      skipAuthorisation.length > 0 ? `[${skipAuthorisation.join(', ')}]` : '[]';
+    const skipAuthorizationStr =
+      skipAuthorization.length > 0 ? `[${skipAuthorization.sort().join(', ')}]` : '[]';
     const data = Object.assign({}, devWorkspacePreferences, {
-      [SKIP_AUTORIZATION_KEY]: skipAuthorisationStr,
+      [SKIP_AUTHORIZATION_KEY]: skipAuthorizationStr,
     });
 
     try {

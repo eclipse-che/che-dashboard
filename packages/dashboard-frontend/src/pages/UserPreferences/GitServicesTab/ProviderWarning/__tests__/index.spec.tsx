@@ -11,14 +11,16 @@
  */
 
 import React from 'react';
-import renderer from 'react-test-renderer';
+
+import getComponentRenderer from '@/services/__mocks__/getComponentRenderer';
 
 import ProviderWarning from '..';
 
 describe('ProviderWarning component', () => {
   it('should render ProviderWarning correctly', () => {
-    const element = <ProviderWarning serverURI={'http://dummy.ref'} />;
+    const getComponent = () => <ProviderWarning serverURI={'http://dummy.ref'} />;
+    const { createSnapshot } = getComponentRenderer(getComponent);
 
-    expect(renderer.create(element).toJSON()).toMatchSnapshot();
+    expect(createSnapshot().toJSON()).toMatchSnapshot();
   });
 });

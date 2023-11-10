@@ -12,7 +12,7 @@
 
 import { api } from '@eclipse-che/common';
 import { PageSection } from '@patternfly/react-core';
-import { IActionsResolver, OnSelect, Table, TableBody, TableHeader } from '@patternfly/react-table';
+import { IActionsResolver, Table, TableBody, TableHeader } from '@patternfly/react-table';
 import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 
@@ -81,36 +81,38 @@ export class GitServices extends React.PureComponent<Props, State> {
     }
   }
 
-  private buildGitOauthRow(gitOauth: api.GitOauthProvider, server: string): React.ReactNode[] {
-    const oauthRow: React.ReactNode[] = [];
+  private buildGitOauthRow(gitOauth: api.GitOauthProvider, serverUrl: string): React.ReactNode[] {
     const hasWarningMessage = this.isDisabled(gitOauth) && this.hasOauthToken(gitOauth);
 
-    oauthRow.push(
+    const name = (
       <span key={gitOauth}>
         {GIT_OAUTH_PROVIDERS[gitOauth]}
-        {hasWarningMessage && <ProviderWarning serverURI={server} />}
-      </span>,
+        {hasWarningMessage && <ProviderWarning serverURI={serverUrl} />}
+      </span>
     );
 
-    oauthRow.push(
-      <span key={server}>
-        <a href={server} target="_blank" rel="noreferrer">
-          {server}
+    const server = (
+      <span key={serverUrl}>
+        <a href={serverUrl} target="_blank" rel="noreferrer">
+          {serverUrl}
         </a>
-      </span>,
+      </span>
     );
 
-    oauthRow.push(
+    const authorization = (
       <span key="Token">
         <ProviderIcon gitProvider={gitOauth} />
-      </span>,
+      </span>
     );
 
-    return oauthRow;
+    return [name, server, authorization];
   }
 
   private isDisabled(providerName: api.GitOauthProvider): boolean {
-    return !enabledProviders.includes(providerName) || !this.hasOauthToken(providerName);
+    return (
+      enabledProviders.includes(providerName) === false ||
+      this.hasOauthToken(providerName) === false
+    );
   }
 
   private isSkipOauth(providerName: api.GitOauthProvider): boolean {
@@ -163,11 +165,6 @@ export class GitServices extends React.PureComponent<Props, State> {
       ];
     };
 
-    const onSelect: OnSelect = (event, isSelected, rowIndex) => {
-      event.stopPropagation();
-      this.onChangeSelection(isSelected, rowIndex);
-    };
-
     return (
       <React.Fragment>
         <ProgressIndicator isLoading={isLoading} />
@@ -186,7 +183,10 @@ export class GitServices extends React.PureComponent<Props, State> {
                 actionResolver={actionResolver}
                 areActionsDisabled={rowData => !!rowData.disableActions}
                 rows={rows}
-                onSelect={onSelect}
+                onSelect={(event, isSelected, rowIndex) => {
+                  event.stopPropagation();
+                  this.onChangeSelection(isSelected, rowIndex);
+                }}
                 canSelectAll={false}
                 aria-label="Git services"
                 variant="compact"

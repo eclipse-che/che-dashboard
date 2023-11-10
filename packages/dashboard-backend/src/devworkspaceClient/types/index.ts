@@ -16,7 +16,6 @@ import {
   V221DevfileComponents,
 } from '@devfile/api';
 import { api } from '@eclipse-che/common';
-import { GitProvider } from '@eclipse-che/common/lib/dto/api';
 import * as k8s from '@kubernetes/client-node';
 import { IncomingHttpHeaders } from 'http';
 
@@ -358,7 +357,10 @@ export interface IDevWorkspacePreferencesApi {
   /**
    * Removes the target provider from skip-authorisation property from the workspace preferences object.
    */
-  removeProviderFromSkipAuthorization(namespace: string, provider: GitProvider): Promise<void>;
+  removeProviderFromSkipAuthorizationList(
+    namespace: string,
+    provider: api.GitProvider,
+  ): Promise<void>;
 }
 
 export interface IPersonalAccessTokenApi {
