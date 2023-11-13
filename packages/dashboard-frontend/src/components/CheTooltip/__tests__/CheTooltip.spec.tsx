@@ -10,27 +10,60 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
+import { TooltipPosition } from '@patternfly/react-core';
 import React from 'react';
-import renderer, { ReactTestRendererJSON } from 'react-test-renderer';
 
-import CheTooltip from '@/components/CheTooltip';
+import { CheTooltip, Props } from '@/components/CheTooltip';
+import getComponentRenderer, { screen } from '@/services/__mocks__/getComponentRenderer';
+
+// use actual CheTooltip component
+jest.unmock('@/components/CheTooltip');
+
+const { createSnapshot, renderComponent } = getComponentRenderer(getComponent);
 
 describe('CheTooltip component', () => {
-  it('should render CheTooltip component correctly', () => {
-    const content = <span>Tooltip text.</span>;
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
 
-    const component = (
-      <CheTooltip content={content}>
-        <>some text</>
-      </CheTooltip>
+  test('snapshot', () => {
+    const props = {
+      content: <span>Tooltip text.</span>,
+    };
+
+    const snapshot = createSnapshot(props);
+
+    expect(snapshot.toJSON()).toMatchSnapshot();
+  });
+
+  test('passed props', () => {
+    const props: Props = {
+      position: TooltipPosition.right,
+      exitDelay: 500,
+      content: <span>Tooltip text.</span>,
+    };
+
+    renderComponent(props);
+
+    const tooltipProps = screen.getByTestId('tooltip-props');
+    expect(tooltipProps).toHaveTextContent(
+      '{"isContentLeftAligned":true,"style":{"border":"1px solid","borderRadius":"3px","opacity":"0.9"},"position":"right","exitDelay":500}',
     );
 
-    expect(getComponentSnapshot(component)).toMatchSnapshot();
+    const tooltipContent = screen.getByTestId('tooltip-content');
+    expect(tooltipContent).toHaveTextContent('Tooltip text.');
+
+    const tooltipPlacedTo = screen.getByTestId('tooltip-placed-to');
+    expect(tooltipPlacedTo).toHaveTextContent('some text');
+
+    screen.debug();
   });
 });
 
-function getComponentSnapshot(
-  component: React.ReactElement,
-): null | ReactTestRendererJSON | ReactTestRendererJSON[] {
-  return renderer.create(component).toJSON();
+function getComponent(props: Props): React.ReactElement {
+  return (
+    <CheTooltip {...props}>
+      <div>some text</div>
+    </CheTooltip>
+  );
 }
