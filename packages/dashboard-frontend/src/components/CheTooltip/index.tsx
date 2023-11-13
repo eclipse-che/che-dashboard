@@ -10,31 +10,19 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import { Tooltip, TooltipPosition } from '@patternfly/react-core';
+import { Tooltip, TooltipProps } from '@patternfly/react-core';
 import React from 'react';
 
-type Props = {
-  children: React.ReactElement;
-  content: React.ReactNode;
-  position?: TooltipPosition;
-};
+export type Props = Omit<TooltipProps, 'ref'>;
 
-class CheTooltip extends React.PureComponent<Props> {
+export class CheTooltip extends React.PureComponent<Props> {
   public render(): React.ReactElement {
-    const { content, position, children } = this.props;
-
     return (
       <Tooltip
-        exitDelay={3000}
         isContentLeftAligned={true}
-        position={position ? position : TooltipPosition.right}
-        content={content}
         style={{ border: '1px solid', borderRadius: '3px', opacity: '0.9' }}
-      >
-        {children}
-      </Tooltip>
+        {...this.props}
+      />
     );
   }
 }
-
-export default CheTooltip;

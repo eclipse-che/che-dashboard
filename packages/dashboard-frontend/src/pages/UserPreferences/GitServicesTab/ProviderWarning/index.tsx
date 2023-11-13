@@ -13,7 +13,7 @@
 import { WarningTriangleIcon } from '@patternfly/react-icons';
 import React from 'react';
 
-import CheTooltip from '@/components/CheTooltip';
+import { CheTooltip } from '@/components/CheTooltip';
 
 type Props = {
   serverURI: string;
