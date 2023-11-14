@@ -62,8 +62,8 @@ export default class OAuthService {
           response.data.attributes.oauth_authentication_url,
           redirectUrl.toString(),
         );
+        throw e;
       }
-      throw e;
     }
   }
 }
