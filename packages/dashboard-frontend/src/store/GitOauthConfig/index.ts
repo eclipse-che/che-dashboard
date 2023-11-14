@@ -154,6 +154,8 @@ export const actionCreators: ActionCreators = {
                 providersWithToken.push(gitOauth.name);
               })
 
+              // if `api/oauth/token` doesn't return a user's token,
+              // then check if there is the user's token in a Kubernetes Secret
               .catch(() => {
                 const normalizedGitOauthEndpoint = gitOauth.endpointUrl.endsWith('/')
                   ? gitOauth.endpointUrl.slice(0, -1)
