@@ -20,6 +20,7 @@ import {
   getOAuthProviders,
   getOAuthToken,
 } from '@/services/backend-client/oAuthApi';
+import { fetchTokens } from '@/services/backend-client/personalAccessTokenApi';
 import { IGitOauth } from '@/store/GitOauthConfig/types';
 import { createObject } from '@/store/helpers';
 import { selectDefaultNamespace } from '@/store/InfrastructureNamespaces/selectors';
@@ -141,12 +142,40 @@ export const actionCreators: ActionCreators = {
       const providersWithToken: api.GitOauthProvider[] = [];
       try {
         const supportedGitOauth = await getOAuthProviders();
+
+        const defaultKubernetesNamespace = selectDefaultNamespace(getState());
+        const tokens = await fetchTokens(defaultKubernetesNamespace.name);
+
         const promises: Promise<void>[] = [];
-        for (const { name } of supportedGitOauth) {
+        for (const gitOauth of supportedGitOauth) {
           promises.push(
-            getOAuthToken(name).then(() => {
-              providersWithToken.push(name);
-            }),
+            getOAuthToken(gitOauth.name)
+              .then(() => {
+                providersWithToken.push(gitOauth.name);
+              })
+
+              // if `api/oauth/token` doesn't return a user's token,
+              // then check if there is the user's token in a Kubernetes Secret
+              .catch(() => {
+                const normalizedGitOauthEndpoint = gitOauth.endpointUrl.endsWith('/')
+                  ? gitOauth.endpointUrl.slice(0, -1)
+                  : gitOauth.endpointUrl;
+
+                for (const token of tokens) {
+                  const normalizedTokenGitProviderEndpoint = token.gitProviderEndpoint.endsWith('/')
+                    ? token.gitProviderEndpoint.slice(0, -1)
+                    : token.gitProviderEndpoint;
+
+                  // compare Git OAuth Endpoint url ONLY with OAuth tokens
+                  if (
+                    token.gitProvider.startsWith('oauth2') &&
+                    normalizedGitOauthEndpoint === normalizedTokenGitProviderEndpoint
+                  ) {
+                    providersWithToken.push(gitOauth.name);
+                    break;
+                  }
+                }
+              }),
           );
         }
         promises.push(dispatch(actionCreators.requestSkipAuthorizationProviders()));
