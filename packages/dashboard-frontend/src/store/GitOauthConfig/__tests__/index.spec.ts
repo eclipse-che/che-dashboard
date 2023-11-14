@@ -9,13 +9,13 @@
  * Contributors:
  *   Red Hat, Inc. - initial API and implementation
  */
+
 import { MockStoreEnhanced } from 'redux-mock-store';
 import { ThunkDispatch } from 'redux-thunk';
 
 import { AppState } from '@/store';
 import { FakeStoreBuilder } from '@/store/__mocks__/storeBuilder';
 import { IGitOauth } from '@/store/GitOauthConfig/types';
-import { AUTHORIZED } from '@/store/sanityCheckMiddleware';
 
 import * as TestStore from '..';
 
