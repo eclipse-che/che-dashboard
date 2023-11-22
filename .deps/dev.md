@@ -21,7 +21,7 @@
 | [`@babel/helper-string-parser@7.22.5`](https://github.com/babel/babel.git) | MIT | #8962 |
 | [`@babel/helper-validator-identifier@7.22.20`](https://github.com/babel/babel.git) | MIT | #8955 |
 | [`@babel/helper-validator-option@7.22.15`](https://github.com/babel/babel.git) | MIT | #8961 |
-| [`@babel/helpers@7.23.2`](https://github.com/babel/babel.git) | MIT | clearlydefined |
+| [`@babel/helpers@7.23.2`](https://github.com/babel/babel.git) | MIT | #11662 |
 | [`@babel/highlight@7.22.20`](https://github.com/babel/babel.git) | MIT | #9073 |
 | [`@babel/parser@7.23.0`](https://github.com/babel/babel.git) | MIT | #10663 |
 | [`@babel/plugin-syntax-async-generators@7.8.4`](https://github.com/babel/babel/tree/master/packages/babel-plugin-syntax-async-generators) | MIT | #1973 |
@@ -440,7 +440,6 @@
 | [`flatted@3.2.9`](git+https://github.com/WebReflection/flatted.git) | ISC | #2430 |
 | [`for-each@0.3.3`](git://github.com/Raynos/for-each.git) | MIT | clearlydefined |
 | [`foreground-child@3.1.1`](git+https://github.com/tapjs/foreground-child.git) | ISC | #8232 |
-| [`form-data@4.0.0`](git://github.com/form-data/form-data.git) | MIT | clearlydefined |
 | [`fs-constants@1.0.0`](https://github.com/mafintosh/fs-constants.git) | MIT | clearlydefined |
 | [`fs-extra@9.1.0`](https://github.com/jprichardson/node-fs-extra) | MIT | clearlydefined |
 | `fsevents@2.3.3` |  | transitive dependency |
@@ -675,7 +674,7 @@
 | [`node-releases@2.0.13`](https://github.com/chicoxyzzy/node-releases.git) | MIT | #1954 |
 | [`nodemon@3.0.1`](https://github.com/remy/nodemon.git) | MIT | clearlydefined |
 | [`nopt@6.0.0`](https://github.com/npm/nopt.git) | ISC | clearlydefined |
-| [`normalize-package-data@3.0.3`](git://github.com/npm/normalize-package-data.git) | BSD-2-Clause |  |
+| [`normalize-package-data@3.0.3`](git://github.com/npm/normalize-package-data.git) | BSD-2-Clause | transitive dependency |
 | [`normalize-path@3.0.0`](https://github.com/jonschlinkert/normalize-path.git) | MIT | clearlydefined |
 | [`npm-bundled@1.1.2`](git+https://github.com/npm/npm-bundled.git) | ISC | clearlydefined |
 | [`npm-install-checks@6.3.0`](https://github.com/npm/npm-install-checks.git) | BSD-2-Clause | clearlydefined |
@@ -781,7 +780,6 @@
 | [`promzard@0.3.0`](git://github.com/isaacs/promzard) | ISC | #1135 |
 | [`proto-list@1.2.4`](https://github.com/isaacs/proto-list) | ISC | clearlydefined |
 | [`protocols@2.0.1`](git@github.com:IonicaBizau/protocols.git) | MIT | clearlydefined |
-| [`proxy-from-env@1.1.0`](https://github.com/Rob--W/proxy-from-env.git) | MIT | clearlydefined |
 | [`pstree.remy@1.1.8`](https://github.com/remy/pstree.git) | MIT | clearlydefined |
 | [`pure-rand@6.0.4`](git+https://github.com/dubzzz/pure-rand.git) | MIT | #8423 |
 | [`q@1.5.1`](git://github.com/kriskowal/q.git) | MIT | #1020 |

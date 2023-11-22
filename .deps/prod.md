@@ -71,7 +71,7 @@
 | [`avvio@8.2.1`](git+https://github.com/fastify/avvio.git) | MIT | clearlydefined |
 | [`aws-sign2@0.7.0`](https://github.com/mikeal/aws-sign) | Apache-2.0 | clearlydefined |
 | [`aws4@1.12.0`](https://github.com/mhart/aws4.git) | MIT | #6221 |
-| [`axios@0.21.4`](https://github.com/axios/axios.git) | MIT | [CQ23019](https://dev.eclipse.org/ipzilla/show_bug.cgi?id=23019) |
+| [`axios@1.6.2`](https://github.com/axios/axios.git) | MIT | #11338 |
 | [`babel-code-frame@6.26.0`](https://github.com/babel/babel/tree/master/packages/babel-code-frame) | MIT | clearlydefined |
 | [`babel-core@6.26.3`](https://github.com/babel/babel/tree/master/packages/babel-core) | MIT | clearlydefined |
 | [`babel-generator@6.26.1`](https://github.com/babel/babel/tree/master/packages/babel-generator) | MIT | clearlydefined |
@@ -170,7 +170,7 @@
 | [`focus-trap@6.9.2`](git+https://github.com/focus-trap/focus-trap.git) | MIT | clearlydefined |
 | [`follow-redirects@1.15.3`](git@github.com:follow-redirects/follow-redirects.git) | MIT | #10782 |
 | [`forever-agent@0.6.1`](https://github.com/mikeal/forever-agent) | Apache-2.0 | clearlydefined |
-| [`form-data@2.5.1`](git://github.com/form-data/form-data.git) | MIT | clearlydefined |
+| [`form-data@4.0.0`](git://github.com/form-data/form-data.git) | MIT | clearlydefined |
 | [`forwarded@0.2.0`](https://github.com/jshttp/forwarded.git) | MIT | clearlydefined |
 | [`fs-extra@11.1.1`](https://github.com/jprichardson/node-fs-extra) | MIT | #5742 |
 | [`fs-minipass@2.1.0`](git+https://github.com/npm/fs-minipass.git) | ISC | clearlydefined |
@@ -291,6 +291,7 @@
 | [`prop-types-extra@1.1.1`](git+https://github.com/react-bootstrap/prop-types-extra.git) | MIT | [CQ22354](https://dev.eclipse.org/ipzilla/show_bug.cgi?id=22354) |
 | [`prop-types@15.8.1`](https://github.com/facebook/prop-types.git) | MIT | clearlydefined |
 | [`proxy-addr@2.0.7`](https://github.com/jshttp/proxy-addr.git) | MIT | clearlydefined |
+| [`proxy-from-env@1.1.0`](https://github.com/Rob--W/proxy-from-env.git) | MIT | clearlydefined |
 | [`psl@1.9.0`](git@github.com:lupomontero/psl.git) | MIT | #3080 |
 | [`public-encrypt@4.0.3`](https://github.com/crypto-browserify/publicEncrypt.git) | MIT | clearlydefined |
 | [`pump@3.0.0`](git://github.com/mafintosh/pump.git) | MIT | clearlydefined |

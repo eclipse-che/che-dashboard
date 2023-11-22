@@ -36,7 +36,7 @@
     "@patternfly/react-core": "^4.276.11",
     "@patternfly/react-icons": "^4.93.7",
     "@patternfly/react-table": "^4.113.3",
-    "axios": "^0.21.4",
+    "axios": "^1.6.2",
     "buffer": "^6.0.3",
     "codemirror": "^5.65.15",
     "connected-react-router": "^6.9.3",
