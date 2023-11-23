@@ -12,7 +12,6 @@
 
 import { Icon } from '@patternfly/react-core';
 import {
-  ExclamationCircleIcon,
   ExclamationTriangleIcon,
   InProgressIcon,
   ResourcesFullIcon,
@@ -44,16 +43,8 @@ export function getStatusIcon(status: string) {
       break;
     case DevWorkspaceStatus.FAILING:
       icon = (
-        <Icon status="danger" isInline>
+        <Icon status="warning" isInline>
           <InProgressIcon className={styles.rotate} />
-        </Icon>
-      );
-      break;
-    case DevWorkspaceStatus.FAILED:
-    case WorkspaceStatus.ERROR:
-      icon = (
-        <Icon status="danger" isInline>
-          <ExclamationCircleIcon />
         </Icon>
       );
       break;
@@ -65,6 +56,8 @@ export function getStatusIcon(status: string) {
         </Icon>
       );
       break;
+    case DevWorkspaceStatus.FAILED:
+    case WorkspaceStatus.ERROR:
     case 'Deprecated':
       icon = (
         <Icon status="warning" isInline>

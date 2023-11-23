@@ -36,15 +36,13 @@ export class WorkspaceStatusLabel extends React.PureComponent<Props> {
       case DevWorkspaceStatus.RUNNING:
         statusLabelColor = 'green';
         break;
-      case DevWorkspaceStatus.FAILING:
-      case WorkspaceStatus.ERROR:
-      case DevWorkspaceStatus.FAILED:
-        statusLabelColor = 'red';
-        break;
       case WorkspaceStatus.STARTING:
       case DevWorkspaceStatus.STARTING:
         statusLabelColor = 'blue';
         break;
+      case DevWorkspaceStatus.FAILING:
+      case WorkspaceStatus.ERROR:
+      case DevWorkspaceStatus.FAILED:
       case 'Deprecated':
         statusLabelColor = 'orange';
         break;
