@@ -146,6 +146,18 @@ jobs:
         if: ${{ matrix.default == true }}
         with:
           script: |
-            const { issue: { number: issue_number }, repo: { owner, repo }  } = context;
-            const dashboardImage = '${{ env.ORGANIZATION }}/che-dashboard:${{ env.IMAGE_VERSION }}';
-            github.rest.issues.createComment({ issue_number, owner, repo, body: 'Docker image build succeeded: **' + dashboardImage + '**' });
+            const { issue: { number: issue_number }, repo: { owner, repo } } = context;
+            const dashboardImage = "${{ env.ORGANIZATION }}/che-dashboard:${{ env.IMAGE_VERSION }}";
+            const patchCommand = `kubectl patch -n eclipse-che "checluster/eclipse-che" --type=json -p="[{\"op\": \"replace\", \"path\": \"/spec/components/dashboard/deployment\", \"value\": {containers: [{image: \"${dashboardImage}\", name: che-dashboard}]}}]"`;
+            const text = `
+            Docker image build succeeded: **${dashboardImage}**
+            <details>
+            <summary>kubectl patch command</summary>
+            
+            \`\`\`bash
+            ${patchCommand}
+            \`\`\`
+            
+            </details>
+            `;
+            github.rest.issues.createComment({ issue_number, owner, repo, body: text });
