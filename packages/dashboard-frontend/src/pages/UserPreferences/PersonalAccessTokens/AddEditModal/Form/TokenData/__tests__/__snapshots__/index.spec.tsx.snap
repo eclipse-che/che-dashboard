@@ -26,7 +26,7 @@ exports[`TokenData snapshot w/o token data 1`] = `
     <div
       className="pf-c-form__group-control"
     >
-      <textarea
+      <input
         aria-describedby="token-data-label"
         aria-invalid={false}
         aria-label="Token"
@@ -34,7 +34,7 @@ exports[`TokenData snapshot w/o token data 1`] = `
         onChange={[Function]}
         placeholder="Enter a Token"
         required={false}
-        type="text"
+        type="password"
         value=""
       />
       
