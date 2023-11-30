@@ -42,7 +42,7 @@ export function registerDevworkspaceResourcesRoute(instance: FastifyInstance) {
             editorContent,
             projects: [],
           },
-          axiosInstance,
+          axiosInstance as any,
         );
         // write templates and then DevWorkspace in a single file
         const allContentArray = context.devWorkspaceTemplates.map(
