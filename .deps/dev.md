@@ -169,7 +169,6 @@
 | [`@types/lodash@4.14.200`](https://github.com/DefinitelyTyped/DefinitelyTyped.git) | MIT | #4131 |
 | [`@types/minimatch@3.0.5`](https://github.com/DefinitelyTyped/DefinitelyTyped.git) | MIT | clearlydefined |
 | [`@types/minimist@1.2.4`](https://github.com/DefinitelyTyped/DefinitelyTyped.git) | MIT | #10839 |
-| [`@types/node-fetch@2.6.8`](https://github.com/DefinitelyTyped/DefinitelyTyped.git) | MIT | #11004 |
 | [`@types/normalize-package-data@2.4.3`](https://github.com/DefinitelyTyped/DefinitelyTyped.git) | MIT | #10792 |
 | [`@types/parse-json@4.0.1`](https://github.com/DefinitelyTyped/DefinitelyTyped.git) | MIT | clearlydefined |
 | [`@types/qs@6.9.9`](https://github.com/DefinitelyTyped/DefinitelyTyped.git) | MIT | clearlydefined |
