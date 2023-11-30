@@ -42,11 +42,7 @@ export function registerDevworkspaceResourcesRoute(instance: FastifyInstance) {
             editorContent,
             projects: [],
           },
-          // because of the axios version mismatch between the generator and the dashboard
-          // we need to cast the axiosInstance to any
-          // the difference is the `method` property type which is `Method | undefined` in the generator
-          // and `Method | string | undefined` in the dashboard
-          axiosInstance as any,
+          axiosInstance,
         );
         // write templates and then DevWorkspace in a single file
         const allContentArray = context.devWorkspaceTemplates.map(

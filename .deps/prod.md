@@ -5,7 +5,7 @@
 | [`@babel/runtime@7.23.2`](https://github.com/babel/babel.git) | MIT | #10718 |
 | [`@devfile/api@2.2.1-alpha-1667236163`](https://github.com/devfile/api.git) | Apache-2.0 | clearlydefined |
 | `@eclipse-che/api@7.76.0` | EPL-2.0 | ecd.che |
-| [`@eclipse-che/che-devworkspace-generator@7.77.0`](git+https://github.com/eclipse-che/che-devfile-registry.git) | EPL-2.0 | ecd.che |
+| [`@eclipse-che/che-devworkspace-generator@7.78.0`](git+https://github.com/eclipse-che/che-devfile-registry.git) | EPL-2.0 | ecd.che |
 | [`@eclipse-che/common@7.79.0-next`](https://github.com/eclipse-che/che-dashboard) | EPL-2.0 | ecd.che |
 | [`@eclipse-che/dashboard-backend@7.79.0-next`](https://github.com/eclipse-che/che-dashboard) | EPL-2.0 | ecd.che |
 | [`@eclipse-che/dashboard-frontend@7.79.0-next`](git://github.com/eclipse/che-dashboard.git) | EPL-2.0 | ecd.che |
@@ -233,6 +233,7 @@
 | [`jsonc-parser@3.2.0`](https://github.com/microsoft/node-jsonc-parser) | MIT | clearlydefined |
 | [`jsonfile@6.1.0`](git@github.com:jprichardson/node-jsonfile.git) | MIT | clearlydefined |
 | [`jsonpath-plus@7.2.0`](git://github.com/s3u/JSONPath.git) | MIT | clearlydefined |
+| [`jsonschema@1.4.1`](git://github.com/tdegrunt/jsonschema.git) | MIT | clearlydefined |
 | [`jsprim@1.4.2`](git://github.com/joyent/node-jsprim.git) | MIT | clearlydefined |
 | [`leven@2.1.0`](https://github.com/sindresorhus/leven.git) | MIT | clearlydefined |
 | [`light-my-request@5.11.0`](https://github.com/fastify/light-my-request.git) | BSD-3-Clause | clearlydefined |
