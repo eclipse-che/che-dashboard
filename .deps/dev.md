@@ -3,7 +3,7 @@
 | Packages | License | Resolved CQs |
 | --- | --- | --- |
 | [`@aashutoshrathi/word-wrap@1.2.6`](git+https://github.com/aashutoshrathi/word-wrap.git) | MIT | #9212 |
-| [`@adobe/css-tools@4.3.1`](https://github.com/adobe/css-tools.git) | MIT | #9985 |
+| [`@adobe/css-tools@4.3.2`](https://github.com/adobe/css-tools.git) | MIT | #9985 |
 | [`@ampproject/remapping@2.2.1`](git+https://github.com/ampproject/remapping.git) | Apache-2.0 | clearlydefined |
 | [`@babel/code-frame@7.22.13`](https://github.com/babel/babel.git) | MIT | #8946 |
 | [`@babel/compat-data@7.23.2`](https://github.com/babel/babel.git) | MIT | #11554 |
