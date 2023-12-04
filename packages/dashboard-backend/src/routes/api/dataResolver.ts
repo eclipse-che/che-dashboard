@@ -14,7 +14,7 @@ import { helpers } from '@eclipse-che/common';
 import { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify';
 
 import { baseApiPath } from '@/constants/config';
-import { namespacedSchema, dataResolverSchema } from '@/constants/schemas';
+import { dataResolverSchema, namespacedSchema } from '@/constants/schemas';
 import { restParams } from '@/models';
 import { axiosInstance } from '@/routes/api/helpers/getCertificateAuthority';
 import { getDevWorkspaceClient } from '@/routes/api/helpers/getDevWorkspaceClient';

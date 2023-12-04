@@ -12,7 +12,11 @@
 
 import { JSONSchema7 } from 'json-schema';
 
-import { devWorkspaceResourcesExample, dockerConfigExample, dataResolverSchemaExample } from '@/constants/examples';
+import {
+  dataResolverSchemaExample,
+  devWorkspaceResourcesExample,
+  dockerConfigExample,
+} from '@/constants/examples';
 
 export const authenticationHeaderSchema: JSONSchema7 = {
   type: 'object',
