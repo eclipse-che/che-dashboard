@@ -43,4 +43,3 @@ jobs:
         uses: codecov/codecov-action@v3
         with:
           files: ./packages/dashboard-frontend/coverage/lcov.info,./packages/dashboard-backend/coverage/lcov.info,./packages/common/coverage/lcov.info
-          flags: unittests
