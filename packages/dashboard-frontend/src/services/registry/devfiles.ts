@@ -12,10 +12,10 @@
 
 import common from '@eclipse-che/common';
 
+import { getDataResolver } from '@/services/backend-client/dataResolverApi';
 import { fetchData } from '@/services/registry/fetchData';
 import { isDevfileMetaData } from '@/services/registry/types';
 import SessionStorageService, { SessionStorageKey } from '@/services/session-storage';
-import { getDataResolver } from "@/services/backend-client/dataResolverApi";
 
 const EXPIRATION_TIME_FOR_STORED_METADATA = 60 * 60 * 1000; // expiration time in milliseconds
 

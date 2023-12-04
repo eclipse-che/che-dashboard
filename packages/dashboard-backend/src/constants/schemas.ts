@@ -12,7 +12,7 @@
 
 import { JSONSchema7 } from 'json-schema';
 
-import { devWorkspaceResourcesExample, dockerConfigExample } from '@/constants/examples';
+import { devWorkspaceResourcesExample, dockerConfigExample, dataResolverSchemaExample } from '@/constants/examples';
 
 export const authenticationHeaderSchema: JSONSchema7 = {
   type: 'object',
@@ -178,7 +178,7 @@ export const devfileVersionSchema: JSONSchema7 = {
   required: ['version'],
 };
 
-export const yamlResolverSchema: JSONSchema7 = {
+export const dataResolverSchema: JSONSchema7 = {
   type: 'object',
   properties: {
     url: {
@@ -187,6 +187,7 @@ export const yamlResolverSchema: JSONSchema7 = {
     },
   },
   required: ['url'],
+  examples: [dataResolverSchemaExample],
 };
 
 export const devWorkspaceResourcesSchema: JSONSchema7 = {
