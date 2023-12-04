@@ -35,7 +35,7 @@ describe('Server Config Route', () => {
     teardown(app);
   });
 
-  describe('POST ${baseApiPath}/namespace/:namespace/yaml/resolver', () => {
+  describe('POST ${baseApiPath}/namespace/:namespace/data/resolver', () => {
     test('file exists', async () => {
       const devfileContent = 'devfile content';
       getAxiosInstanceMock.mockResolvedValue({
@@ -45,7 +45,7 @@ describe('Server Config Route', () => {
 
       const res = await app
         .inject()
-        .post(`${baseApiPath}/namespace/${namespace}/yaml/resolver`)
+        .post(`${baseApiPath}/namespace/${namespace}/data/resolver`)
         .payload({ url: 'https://devfile.yaml' });
 
       expect(res.statusCode).toEqual(200);
@@ -61,7 +61,7 @@ describe('Server Config Route', () => {
 
       const res = await app
         .inject()
-        .post(`${baseApiPath}/namespace/${namespace}/yaml/resolver`)
+        .post(`${baseApiPath}/namespace/${namespace}/data/resolver`)
         .payload({ url: 'https://devfile.yaml' });
 
       expect(res.statusCode).toEqual(404);

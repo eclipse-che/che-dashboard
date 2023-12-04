@@ -27,7 +27,7 @@ export async function getYamlResolver(
     const response =
       url.origin === window.location.origin
         ? await axios.get(url.href)
-        : await axios.post(`${dashboardBackendPrefix}/namespace/${namespace}/yaml/resolver`, {
+        : await axios.post(`${dashboardBackendPrefix}/namespace/${namespace}/data/resolver`, {
             url: url.href,
           });
 

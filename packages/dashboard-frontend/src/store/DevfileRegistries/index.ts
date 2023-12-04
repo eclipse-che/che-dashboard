@@ -21,6 +21,7 @@ import { selectAsyncIsAuthorized, selectSanityCheckError } from '@/store/SanityC
 import { AUTHORIZED, SanityCheckAction } from '@/store/sanityCheckMiddleware';
 
 import { AppThunk } from '..';
+import { selectDefaultNamespace } from "@/store/InfrastructureNamespaces/selectors";
 
 export const DEFAULT_REGISTRY = '/dashboard/devfile-registry/';
 
@@ -156,7 +157,8 @@ export const actionCreators: ActionCreators = {
             const error = selectSanityCheckError(getState());
             throw new Error(error);
           }
-          const metadata: che.DevfileMetaData[] = await fetchRegistryMetadata(url, isExternal);
+          const namespace = selectDefaultNamespace(getState()).name;
+          const metadata: che.DevfileMetaData[] = await fetchRegistryMetadata(url, isExternal, namespace);
           if (!Array.isArray(metadata) || metadata.length === 0) {
             return;
           }

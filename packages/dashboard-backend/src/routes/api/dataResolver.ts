@@ -21,12 +21,12 @@ import { getDevWorkspaceClient } from '@/routes/api/helpers/getDevWorkspaceClien
 import { getToken } from '@/routes/api/helpers/getToken';
 import { getSchema } from '@/services/helpers';
 
-const tags = ['Yaml Resolver'];
+const tags = ['Data Resolver'];
 
-export function registerYamlResolverRoute(instance: FastifyInstance) {
+export function registerDataResolverRoute(instance: FastifyInstance) {
   instance.register(async server => {
     server.post(
-      `${baseApiPath}/namespace/:namespace/yaml/resolver`,
+      `${baseApiPath}/namespace/:namespace/data/resolver`,
       getSchema({ tags, params: namespacedSchema, body: yamlResolverSchema }),
       async function (request: FastifyRequest, reply: FastifyReply): Promise<string | void> {
         const { url } = request.body as restParams.IYamlResolverParams;

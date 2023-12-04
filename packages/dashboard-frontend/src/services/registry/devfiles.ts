@@ -15,6 +15,7 @@ import common from '@eclipse-che/common';
 import { fetchData } from '@/services/registry/fetchData';
 import { isDevfileMetaData } from '@/services/registry/types';
 import SessionStorageService, { SessionStorageKey } from '@/services/session-storage';
+import { getDataResolver } from "@/services/backend-client/dataResolverApi";
 
 const EXPIRATION_TIME_FOR_STORED_METADATA = 60 * 60 * 1000; // expiration time in milliseconds
 
@@ -141,6 +142,7 @@ export function getRegistryIndexLocations(registryUrl: string, isExternal: boole
 export async function fetchRegistryMetadata(
   registryUrl: string,
   isExternal: boolean,
+  namespace: string,
 ): Promise<che.DevfileMetaData[]> {
   try {
     const registryIndexLocations = getRegistryIndexLocations(registryUrl, isExternal);
@@ -154,7 +156,17 @@ export async function fetchRegistryMetadata(
     const devfileMetaDataArr: che.DevfileMetaData[] = [];
     for (const [index, location] of registryIndexLocations.entries()) {
       try {
-        const data = await fetchData(location);
+        let data: che.DevfileMetaData[] | undefined = undefined;
+        if (isExternal) {
+          try {
+            data = await getDataResolver(namespace, location);
+          } catch (e) {
+            console.error(`Failed to fetch data resolver for URL: ${location}, reason: ${e}`);
+            data = await fetchData(location);
+          }
+        } else {
+          data = await fetchData(location);
+        }
         if (Array.isArray(data)) {
           data.forEach(metadata => {
             if (metadata.url) {
