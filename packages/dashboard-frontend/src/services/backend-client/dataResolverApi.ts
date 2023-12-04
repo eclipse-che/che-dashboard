@@ -26,6 +26,6 @@ export async function getDataResolver<T>(namespace: string, location: string): P
 
     return response?.data;
   } catch (e) {
-    throw new Error(`Failed to fetch data resolver'. ${helpers.errors.getMessage(e)}`);
+    throw new Error(`Failed to fetch data resolver. ${helpers.errors.getMessage(e)}`);
   }
 }
