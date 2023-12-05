@@ -34,7 +34,7 @@ describe('Data Resolver Route', () => {
     teardown(app);
   });
 
-  describe('POST ${baseApiPath}/namespace/:namespace/data/resolver', () => {
+  describe('POST ${baseApiPath}/data/resolver', () => {
     test('file exists', async () => {
       const devfileContent = 'devfile content';
       getAxiosInstanceMock.mockResolvedValue({
