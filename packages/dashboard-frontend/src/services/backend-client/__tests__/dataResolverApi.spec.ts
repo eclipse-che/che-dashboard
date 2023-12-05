@@ -18,7 +18,6 @@ import { getDataResolver } from '@/services/backend-client/dataResolverApi';
 describe('Data Resolver API', () => {
   const mockPost = mockAxios.post as jest.Mock;
 
-  const userNamespace = 'test-namespace';
   const registryLocation = 'http://127.0.0.1:8080/dashboard/devfile-registry/devfiles/index.json';
   const metaData: che.DevfileMetaData[] = [
     {
@@ -38,13 +37,13 @@ describe('Data Resolver API', () => {
   });
 
   describe('resolve registry metadata', () => {
-    it('should call "//dashboard/api/namespace/test-namespace/data/resolver"', async () => {
+    it('should call "/dashboard/api/data/resolver"', async () => {
       mockPost.mockResolvedValueOnce({
         data: metaData,
       });
-      const data = await getDataResolver(userNamespace, registryLocation);
+      const data = await getDataResolver(registryLocation);
 
-      expect(mockPost).toBeCalledWith('/dashboard/api/namespace/test-namespace/data/resolver', {
+      expect(mockPost).toBeCalledWith('/dashboard/api/data/resolver', {
         url: 'http://127.0.0.1:8080/dashboard/devfile-registry/devfiles/index.json',
       });
       expect(data).toEqual(metaData);
@@ -52,18 +51,17 @@ describe('Data Resolver API', () => {
 
     it('should return an error message', async () => {
       mockPost.mockRejectedValueOnce({
-        isAxiosError: true,
         code: '500',
         message: 'Something unexpected happened.',
       } as AxiosError);
       let errorMessage: string | undefined;
       try {
-        await getDataResolver(userNamespace, registryLocation);
+        await getDataResolver(registryLocation);
       } catch (err) {
         errorMessage = common.helpers.errors.getMessage(err);
       }
 
-      expect(errorMessage).toEqual('Failed to fetch data resolver. Something unexpected happened.');
+      expect(errorMessage).toEqual('Failed to resolve data. Something unexpected happened.');
     });
   });
 });

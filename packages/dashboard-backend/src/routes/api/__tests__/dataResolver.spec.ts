@@ -16,16 +16,15 @@ import { baseApiPath } from '@/constants/config';
 import { axiosInstance } from '@/routes/api/helpers/getCertificateAuthority';
 import { setup, teardown } from '@/utils/appBuilder';
 
-jest.mock('../helpers/getDevWorkspaceClient.ts');
-jest.mock('../helpers/getToken.ts');
+jest.mock('@/routes/api/helpers/getDevWorkspaceClient.ts');
+jest.mock('@/routes/api/helpers/getToken.ts');
 
 jest.mock('@/routes/api/helpers/getCertificateAuthority');
 const getAxiosInstanceMock = jest.fn();
 (axiosInstance.get as jest.Mock).mockImplementation(getAxiosInstanceMock);
 
-describe('Server Config Route', () => {
+describe('Data Resolver Route', () => {
   let app: FastifyInstance;
-  const namespace = 'user-che';
 
   beforeAll(async () => {
     app = await setup();
@@ -45,7 +44,7 @@ describe('Server Config Route', () => {
 
       const res = await app
         .inject()
-        .post(`${baseApiPath}/namespace/${namespace}/data/resolver`)
+        .post(`${baseApiPath}/data/resolver`)
         .payload({ url: 'https://devfile.yaml' });
 
       expect(res.statusCode).toEqual(200);
@@ -61,7 +60,7 @@ describe('Server Config Route', () => {
 
       const res = await app
         .inject()
-        .post(`${baseApiPath}/namespace/${namespace}/data/resolver`)
+        .post(`${baseApiPath}/data/resolver`)
         .payload({ url: 'https://devfile.yaml' });
 
       expect(res.statusCode).toEqual(404);

@@ -15,17 +15,14 @@ import axios from 'axios';
 
 import { dashboardBackendPrefix } from '@/services/backend-client/const';
 
-export async function getDataResolver<T>(namespace: string, location: string): Promise<T> {
+export async function getDataResolver<T>(location: string): Promise<T> {
   try {
-    const response = await axios.post<T>(
-      `${dashboardBackendPrefix}/namespace/${namespace}/data/resolver`,
-      {
-        url: location,
-      },
-    );
+    const response = await axios.post<T>(`${dashboardBackendPrefix}/data/resolver`, {
+      url: location,
+    });
 
     return response?.data;
   } catch (e) {
-    throw new Error(`Failed to fetch data resolver. ${helpers.errors.getMessage(e)}`);
+    throw new Error(`Failed to resolve data. ${helpers.errors.getMessage(e)}`);
   }
 }

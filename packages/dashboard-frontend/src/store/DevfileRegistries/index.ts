@@ -17,7 +17,6 @@ import devfileApi from '@/services/devfileApi';
 import { fetchDevfile, fetchRegistryMetadata } from '@/services/registry/devfiles';
 import { fetchResources, loadResourcesContent } from '@/services/registry/resources';
 import { createObject } from '@/store/helpers';
-import { selectDefaultNamespace } from '@/store/InfrastructureNamespaces/selectors';
 import { selectAsyncIsAuthorized, selectSanityCheckError } from '@/store/SanityCheck/selectors';
 import { AUTHORIZED, SanityCheckAction } from '@/store/sanityCheckMiddleware';
 
@@ -157,12 +156,7 @@ export const actionCreators: ActionCreators = {
             const error = selectSanityCheckError(getState());
             throw new Error(error);
           }
-          const namespace = selectDefaultNamespace(getState()).name;
-          const metadata: che.DevfileMetaData[] = await fetchRegistryMetadata(
-            url,
-            isExternal,
-            namespace,
-          );
+          const metadata: che.DevfileMetaData[] = await fetchRegistryMetadata(url, isExternal);
           if (!Array.isArray(metadata) || metadata.length === 0) {
             return;
           }

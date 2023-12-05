@@ -142,7 +142,6 @@ export function getRegistryIndexLocations(registryUrl: string, isExternal: boole
 export async function fetchRegistryMetadata(
   registryUrl: string,
   isExternal: boolean,
-  namespace: string,
 ): Promise<che.DevfileMetaData[]> {
   try {
     const registryIndexLocations = getRegistryIndexLocations(registryUrl, isExternal);
@@ -159,7 +158,7 @@ export async function fetchRegistryMetadata(
         let data: che.DevfileMetaData[] | undefined = undefined;
         if (isExternal) {
           try {
-            data = await getDataResolver(namespace, location);
+            data = await getDataResolver(location);
           } catch (e) {
             console.error(`Failed to fetch data resolver for URL: ${location}, reason: ${e}`);
             data = await fetchData(location);
