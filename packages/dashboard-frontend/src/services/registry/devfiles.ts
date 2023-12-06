@@ -155,7 +155,7 @@ export async function fetchRegistryMetadata(
     const devfileMetaDataArr: che.DevfileMetaData[] = [];
     for (const [index, location] of registryIndexLocations.entries()) {
       try {
-        let data: che.DevfileMetaData[] | undefined = undefined;
+        let data: che.DevfileMetaData[] | undefined;
         if (isExternal) {
           try {
             data = await getDataResolver(location);
