@@ -66,7 +66,10 @@ export class ProviderIcon extends React.PureComponent<Props, State> {
   }
 
   private isSkipOauth(providerName: api.GitOauthProvider): boolean {
-    return this.props.skipOauthProviders.includes(providerName);
+    // Use includes filter to handle the bitbucket-server oauth 2 provider.
+    // The bitbucket server oauth2 provider name is 'bitbucket',
+    // but the corresponding 'skip oauth' item is 'bitbucket-server'.
+    return this.props.skipOauthProviders.some(s => s.includes(providerName));
   }
 
   private hasOauthToken(providerName: api.GitOauthProvider): boolean {
