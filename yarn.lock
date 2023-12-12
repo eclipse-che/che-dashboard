@@ -365,17 +365,6 @@
     node-fetch "^2.6.0"
     url-parse "^1.4.3"
 
-"@devfile/api@^2.2.1-alpha-1667236163":
-  version "2.2.1-alpha-1667236163"
-  resolved "https://registry.yarnpkg.com/@devfile/api/-/api-2.2.1-alpha-1667236163.tgz#33cf448dae960c071037b32c6c68f96ba26f1990"
-  integrity sha512-tspoTrbyMbPIVwTD2qr6ljvQAJLE1lCN6uBFIGcYXKw89JGt0s0+WLQ/qIh2+RP5pDpDWbDp/yNFKCmzaOLupg==
-  dependencies:
-    "@types/bluebird" "3.5.21"
-    "@types/request" "*"
-    bluebird "^3.5.0"
-    request "^2.81.0"
-    rewire "^3.0.2"
-
 "@discoveryjs/json-ext@0.5.7", "@discoveryjs/json-ext@^0.5.0":
   version "0.5.7"
   resolved "https://registry.yarnpkg.com/@discoveryjs/json-ext/-/json-ext-0.5.7.tgz#1d572bfbbe14b7704e0ba0f39b74815b84870d70"
