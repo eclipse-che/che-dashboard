@@ -12,18 +12,18 @@
 
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
-import {
-  devworkspaceGroup,
-  devworkspaceLatestVersion,
-  devworkspacePlural,
-  V1alpha2DevWorkspace,
-} from '@devfile/api';
+import { V1alpha2DevWorkspace } from '@devfile/api';
 import { api } from '@eclipse-che/common';
 import * as mockClient from '@kubernetes/client-node';
 import { CustomObjectsApi } from '@kubernetes/client-node';
 import { IncomingMessage } from 'http';
 
 import { DevWorkspaceApiService } from '@/devworkspaceClient/services/devWorkspaceApi';
+import {
+  devworkspaceGroup,
+  devworkspaceLatestVersion,
+  devworkspacePlural,
+} from '@/devworkspaceClient/services/helpers/devworkspace/constants';
 
 const namespace = 'user-che';
 const name = 'wksp-name';

@@ -12,12 +12,7 @@
 
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
-import {
-  devworkspacetemplateGroup,
-  devworkspacetemplateLatestVersion,
-  devworkspacetemplatePlural,
-  V1alpha2DevWorkspaceTemplate,
-} from '@devfile/api';
+import { V1alpha2DevWorkspaceTemplate } from '@devfile/api';
 import { api } from '@eclipse-che/common';
 import * as mockClient from '@kubernetes/client-node';
 import { CustomObjectsApi } from '@kubernetes/client-node';
@@ -26,6 +21,11 @@ import {
   DevWorkspaceTemplateApiService,
   DevWorkspaceTemplateList,
 } from '@/devworkspaceClient/services/devWorkspaceTemplateApi';
+import {
+  devworkspacetemplateGroup,
+  devworkspacetemplateLatestVersion,
+  devworkspacetemplatePlural,
+} from '@/devworkspaceClient/services/helpers/devworkspace/constants';
 
 const namespace = 'user-che';
 const name = 'tmpl-name';
