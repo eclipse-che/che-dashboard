@@ -11,15 +11,15 @@
  */
 
 import { V1alpha2DevWorkspaceTemplate } from '@devfile/api';
-import { api } from '@eclipse-che/common';
-import * as k8s from '@kubernetes/client-node';
-
-import { createError } from '@/devworkspaceClient/services/helpers/createError';
 import {
   devworkspacetemplateGroup,
   devworkspacetemplateLatestVersion,
   devworkspacetemplatePlural,
-} from '@/devworkspaceClient/services/helpers/devworkspace/constants';
+} from '@devfile/api/api';
+import { api } from '@eclipse-che/common';
+import * as k8s from '@kubernetes/client-node';
+
+import { createError } from '@/devworkspaceClient/services/helpers/createError';
 import {
   CustomObjectAPI,
   prepareCustomObjectAPI,

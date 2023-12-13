@@ -18,46 +18,4 @@ export { DevWorkspaceSpec } from './devWorkspace/spec';
 export { DevWorkspaceSpecTemplate } from './devWorkspace/spec/template';
 export { DevWorkspaceTemplate, DevWorkspaceTemplateLike } from './devWorkspaceTemplate';
 export { DevWorkspaceTemplateMetadata } from './devWorkspaceTemplate/metadata';
-
-export declare class DevWorkspaceStatus {
-  'conditions'?: Array<DevWorkspaceConditions>;
-  'devworkspaceId': string;
-  'mainUrl'?: string;
-  'message'?: string;
-  'phase'?: string;
-  static readonly discriminator: string | undefined;
-  static readonly attributeTypeMap: Array<{
-    name: string;
-    baseName: string;
-    type: string;
-    format: string;
-  }>;
-  static getAttributeTypeMap(): {
-    name: string;
-    baseName: string;
-    type: string;
-    format: string;
-  }[];
-  constructor();
-}
-export declare class DevWorkspaceConditions {
-  'lastTransitionTime'?: Date;
-  'message'?: string;
-  'reason'?: string;
-  'status': string;
-  'type': string;
-  static readonly discriminator: string | undefined;
-  static readonly attributeTypeMap: Array<{
-    name: string;
-    baseName: string;
-    type: string;
-    format: string;
-  }>;
-  static getAttributeTypeMap(): {
-    name: string;
-    baseName: string;
-    type: string;
-    format: string;
-  }[];
-  constructor();
-}
+export { V1alpha2DevWorkspaceStatus as DevWorkspaceStatus } from '@devfile/api';

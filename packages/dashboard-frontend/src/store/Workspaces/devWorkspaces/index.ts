@@ -11,7 +11,6 @@
  */
 
 import common, { api, ApplicationId } from '@eclipse-che/common';
-import { AxiosResponse } from 'axios';
 import { dump } from 'js-yaml';
 import { Action, Reducer } from 'redux';
 
@@ -367,16 +366,7 @@ export const actionCreators: ActionCreators = {
         getDevWorkspaceClient().checkForDevWorkspaceError(startingWorkspace);
       } catch (e) {
         // Skip unauthorised errors. The page is redirecting to an SCM authentication page.
-        if (
-          common.helpers.errors.includesAxiosResponse(e) &&
-          isOAuthResponse(
-            (
-              e as {
-                response: AxiosResponse;
-              }
-            ).response.data,
-          )
-        ) {
+        if (common.helpers.errors.includesAxiosResponse(e) && isOAuthResponse(e.response.data)) {
           return;
         }
         const errorMessage =
