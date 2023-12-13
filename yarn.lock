@@ -375,7 +375,7 @@
   resolved "https://registry.yarnpkg.com/@eclipse-che/api/-/api-7.76.0.tgz#4e51015b566df5a9843d32d4de040875da78e368"
   integrity sha512-V7egXY0x5Ce9DJGLrjXEeBkA/0854C9oz+KhxzCT/mXYbVVj4+YbNFjiuufNRnuGOBOOVCOLhhe69ebODjCiQQ==
 
-"@eclipse-che/che-devworkspace-generator@next":
+"@eclipse-che/che-devworkspace-generator@7.79.0-next-1427c19":
   version "7.79.0-next-1427c19"
   resolved "https://registry.yarnpkg.com/@eclipse-che/che-devworkspace-generator/-/che-devworkspace-generator-7.79.0-next-1427c19.tgz#2530b87d3e551b2c71ebb84e3e2e15c8229c0a19"
   integrity sha512-eIu2bW165I4UzYFdpFQ1c2JXU1qGd7RRO4ITWE4To372+Cq1DTKNMjhVdj40DDeU2Pw1UjYh3Rr0flS7KBAUbg==

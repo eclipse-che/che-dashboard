@@ -24,7 +24,7 @@ module.exports = {
 
     // not everything we need is exported from the package
     // so we need to alias the rest
-    '@devfile/api/api': '<rootDir>/../../node_modules/@devfile/api/api.ts',
+    '@devfile/api/(.*)$': '<rootDir>/../../node_modules/@devfile/api/$1.ts',
   },
   transformIgnorePatterns: [
     'node_modules/(?!@devfile/api)',

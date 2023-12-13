@@ -21,7 +21,14 @@ module.exports = {
     '\\.(gif|ttf|eot|svg)$': '<rootDir>/__mocks__/fileMock.js',
     // mapping for absolute imports (see tsconfig.json)
     '^@/(.*)$': '<rootDir>/src/$1',
+
+    // not everything we need is exported from the package
+    // so we need to alias the rest
+    '^@devfile/api$': '<rootDir>/../../node_modules/@devfile/api/index.ts',
   },
+  transformIgnorePatterns: [
+    'node_modules/(?!@devfile/api)',
+  ],
   modulePathIgnorePatterns: [
     '__mocks__/index.tsx',
   ],
