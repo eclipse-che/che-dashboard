@@ -10,8 +10,6 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import { V1alpha2DevWorkspaceStatus } from '@devfile/api';
-
 export { Devfile, DevfileLike } from './devfile';
 export { DevfileMetadata } from './devfile/metadata';
 export { DevWorkspace, DevWorkspaceKind, DevWorkspaceLike } from './devWorkspace';
@@ -20,5 +18,3 @@ export { DevWorkspaceSpec } from './devWorkspace/spec';
 export { DevWorkspaceSpecTemplate } from './devWorkspace/spec/template';
 export { DevWorkspaceTemplate, DevWorkspaceTemplateLike } from './devWorkspaceTemplate';
 export { DevWorkspaceTemplateMetadata } from './devWorkspaceTemplate/metadata';
-
-export interface DevWorkspaceStatus extends V1alpha2DevWorkspaceStatus {}
