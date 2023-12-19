@@ -70,11 +70,12 @@ export class SshPrivateKey extends React.Component<Props, State> {
         helperTextInvalid={errorMessage}
         label="Private Key"
         validated={validated}
-        required={true}
+        isRequired={true}
       >
         <TextFileUpload
           fieldId="ssh-private-key"
-          placeholder="Paste the PRIVATE key here."
+          fileNamePlaceholder="Upload the PRIVATE key"
+          textAreaPlaceholder="Or paste the PRIVATE key"
           validated={validated}
           onChange={key => this.onChange(key)}
         />

@@ -7,7 +7,6 @@ exports[`SshPublicKey snapshot 1`] = `
 >
   <div
     className="pf-c-form__group"
-    required={true}
   >
     <div
       className="pf-c-form__group-label"
@@ -21,6 +20,13 @@ exports[`SshPublicKey snapshot 1`] = `
         >
           Public Key
         </span>
+        <span
+          aria-hidden="true"
+          className="pf-c-form__label-required"
+        >
+           
+          *
+        </span>
       </label>
        
     </div>
@@ -31,7 +37,7 @@ exports[`SshPublicKey snapshot 1`] = `
         data-testid="ssh-public-key"
         id="ssh-public-key"
         onChange={[Function]}
-        placeholder="Paste the PUBLIC key here."
+        placeholder="Upload the PUBLIC key"
       />
       
     </div>
