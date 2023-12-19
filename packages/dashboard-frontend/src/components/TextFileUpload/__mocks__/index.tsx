@@ -16,13 +16,13 @@ import { Props } from '..';
 
 export class TextFileUpload extends React.PureComponent<Props> {
   public render(): React.ReactElement {
-    const { fieldId, onChange, placeholder } = this.props;
+    const { fieldId, onChange, fileNamePlaceholder } = this.props;
 
     return (
       <input
         id={fieldId}
         data-testid={fieldId}
-        placeholder={placeholder}
+        placeholder={fileNamePlaceholder}
         onChange={event => onChange(event.target.value)}
       />
     );
