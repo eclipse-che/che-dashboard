@@ -33,12 +33,25 @@ exports[`SshPublicKey snapshot 1`] = `
     <div
       className="pf-c-form__group-control"
     >
-      <input
-        data-testid="ssh-public-key"
-        id="ssh-public-key"
-        onChange={[Function]}
-        placeholder="Upload the PUBLIC key"
-      />
+      <div>
+        <span
+          data-testid="ssh-public-key-validated"
+        >
+          default
+        </span>
+        <input
+          data-testid="ssh-public-key-upload"
+          id="ssh-public-key-upload"
+          onChange={[Function]}
+          placeholder="Upload the PUBLIC key"
+        />
+        <input
+          data-testid="ssh-public-key-textarea"
+          id="ssh-public-key-textarea"
+          onChange={[Function]}
+          placeholder="Or paste the PUBLIC key"
+        />
+      </div>
       
     </div>
   </div>

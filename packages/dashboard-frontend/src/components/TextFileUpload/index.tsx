@@ -13,6 +13,8 @@
 import { FileUpload, FileUploadProps, ValidatedOptions } from '@patternfly/react-core';
 import React from 'react';
 
+import { TextFileUploadPreview } from '@/components/TextFileUpload/Preview';
+
 export type Props = {
   fieldId: string;
   fileNamePlaceholder?: string;
@@ -21,7 +23,7 @@ export type Props = {
   /**
    * @param content base64 encoded file content
    */
-  onChange: (content: string) => void;
+  onChange: (content: string, isUpload: boolean) => void;
 };
 
 export type State = {
@@ -59,12 +61,12 @@ export class TextFileUpload extends React.PureComponent<Props, State> {
       file: undefined,
       filename: undefined,
     });
-    this.props.onChange('');
+    this.props.onChange('', false);
   }
 
   private handleDataChange(content: string): void {
     this.setState({ content });
-    this.props.onChange(btoa(content));
+    this.props.onChange(btoa(content), true);
   }
 
   private handleTextChange(content: string): void {
@@ -73,18 +75,19 @@ export class TextFileUpload extends React.PureComponent<Props, State> {
       file: undefined,
       filename: undefined,
     });
-    this.props.onChange(btoa(content));
+    this.props.onChange(btoa(content), false);
   }
 
   public render(): React.ReactElement {
     const { fieldId, fileNamePlaceholder, textAreaPlaceholder, validated } = this.props;
-    const { content, filename, isLoading } = this.state;
+    const { content, file, filename, isLoading } = this.state;
 
     const fileUploadValidated: FileUploadProps['validated'] =
       validated === ValidatedOptions.warning ? ValidatedOptions.success : validated;
 
     const isReadOnly = filename !== undefined;
     const allowEditingUploadedText = filename === undefined;
+    const hideDefaultPreview = filename !== undefined;
 
     return (
       <FileUpload
@@ -108,7 +111,10 @@ export class TextFileUpload extends React.PureComponent<Props, State> {
         onReadFailed={() => this.setState({ isLoading: false })}
         textAreaPlaceholder={textAreaPlaceholder}
         allowEditingUploadedText={allowEditingUploadedText}
-      />
+        hideDefaultPreview={hideDefaultPreview}
+      >
+        {filename && <TextFileUploadPreview file={file} />}
+      </FileUpload>
     );
   }
 }
