@@ -89,12 +89,12 @@ describe('TextFileUpload', () => {
       const fileUploadInput = fileUploader.querySelector('input[type="file"]');
       userEvent.upload(fileUploadInput!, file);
 
-      await waitFor(() => expect(mockOnChange).toHaveBeenCalledWith(fileContentBase64));
+      await waitFor(() => expect(mockOnChange).toHaveBeenCalledWith(fileContentBase64, true));
 
       expect(fileInput).toHaveValue(file.name);
       expect(clearButton).toBeEnabled();
-      expect(contentInput).toHaveTextContent(fileContent);
-      expect(contentInput).toHaveAttribute('readonly');
+      expect(contentInput).not.toBeInTheDocument();
+      expect(screen.queryByTestId('text-file-upload-preview')).toBeInTheDocument();
 
       /* Clear the field */
 
@@ -121,12 +121,13 @@ describe('TextFileUpload', () => {
       const contentBase64 = Buffer.from(content).toString('base64');
       userEvent.paste(contentInput, content);
 
-      await waitFor(() => expect(mockOnChange).toHaveBeenCalledWith(contentBase64));
+      await waitFor(() => expect(mockOnChange).toHaveBeenCalledWith(contentBase64, false));
 
       expect(fileInput).toHaveValue('');
       expect(clearButton).toBeEnabled();
       expect(contentInput).toHaveTextContent(content);
       expect(contentInput).not.toHaveAttribute('readonly');
+      expect(screen.queryByTestId('text-file-upload-preview')).not.toBeInTheDocument();
 
       /* Clear the field */
 
