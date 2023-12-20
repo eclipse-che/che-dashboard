@@ -73,7 +73,10 @@ export class ProviderIcon extends React.PureComponent<Props, State> {
   }
 
   private hasOauthToken(providerName: api.GitOauthProvider): boolean {
-    return this.props.providersWithToken.includes(providerName);
+    // Use includes filter to handle the bitbucket-server oauth 2 provider.
+    // The bitbucket server oauth2 provider name is 'bitbucket',
+    // but the corresponding 'provider with token' item is 'bitbucket-server'.
+    return this.props.providersWithToken.some(p => p.includes(providerName));
   }
 
   public render(): React.ReactElement {
