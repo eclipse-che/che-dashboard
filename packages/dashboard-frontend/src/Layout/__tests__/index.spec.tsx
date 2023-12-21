@@ -16,11 +16,15 @@ import React from 'react';
 import { Provider } from 'react-redux';
 import { Store } from 'redux';
 
+import { container } from '@/inversify.config';
 import Layout from '@/Layout';
 import getComponentRenderer, { screen } from '@/services/__mocks__/getComponentRenderer';
 import { BrandingData } from '@/services/bootstrap/branding.constant';
+import { IssuesReporterService } from '@/services/bootstrap/issuesReporter';
 import { FakeStoreBuilder } from '@/store/__mocks__/storeBuilder';
 import * as SanityCheckStore from '@/store/SanityCheck';
+
+const issuesReporterService = container.get(IssuesReporterService);
 
 jest.mock('@/Layout/ErrorBoundary');
 jest.mock('@/Layout/Header');
@@ -56,10 +60,20 @@ describe('Layout component', () => {
   });
 
   afterEach(() => {
+    issuesReporterService.clearIssues();
     jest.clearAllMocks();
   });
 
-  test('snapshot', () => {
+  test('snapshot of the namespace provisioning error page', () => {
+    issuesReporterService.registerIssue(
+      'namespaceProvisioningError',
+      new Error('Namespace provisioning error'),
+    );
+    const snapshot = createSnapshot(store);
+    expect(snapshot).toMatchSnapshot();
+  });
+
+  test('snapshot of the default page', () => {
     const snapshot = createSnapshot(store);
     expect(snapshot).toMatchSnapshot();
   });
@@ -92,6 +106,17 @@ describe('Layout component', () => {
     userEvent.click(btn);
 
     expect(mockTestBackends).toHaveBeenCalled();
+  });
+
+  test('onNamespaceProvisioningError', async () => {
+    const errorMessage = 'Namespace provisioning error';
+    issuesReporterService.registerIssue('namespaceProvisioningError', new Error(errorMessage));
+
+    renderComponent(store);
+
+    const errorMessageContainer = await screen.findByText(errorMessage);
+
+    expect(errorMessageContainer).toBeDefined();
   });
 });
 
