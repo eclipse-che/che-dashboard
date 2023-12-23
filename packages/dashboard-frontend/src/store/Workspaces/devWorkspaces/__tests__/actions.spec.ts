@@ -34,6 +34,7 @@ import * as ServerConfigStore from '@/store/ServerConfig';
 import { checkRunningWorkspacesLimit } from '@/store/Workspaces/devWorkspaces/checkRunningWorkspacesLimit';
 
 import * as testStore from '..';
+import * as getEditorModule from '@/store/DevfileRegistries/getEditor';
 
 jest.mock('../../../../services/backend-client/serverConfigApi');
 jest.mock('../../../../services/helpers/delay', () => ({
@@ -994,6 +995,78 @@ describe('DevWorkspace store, actions', () => {
       ];
 
       expect(actions).toStrictEqual(expectedActions);
+    });
+
+    describe('verify editor id', () => {
+      let devWorkspace: devfileApi.DevWorkspace;
+      let devWorkspaceTemplate: devfileApi.DevWorkspaceTemplate;
+      let devfile: devfileApi.Devfile;
+
+      beforeEach(() => {
+        devWorkspace = new DevWorkspaceBuilder().build();
+        devWorkspaceTemplate = {
+          apiVersion: 'v1alpha2',
+          kind: 'DevWorkspaceTemplate',
+          metadata: {
+            name: 'template',
+            namespace: 'user-che',
+            annotations: {},
+          },
+        };
+        devfile = {
+          schemaVersion: '2.1.0',
+          metadata: {
+            name: 'che-dashboard',
+            namespace: 'admin-che',
+          },
+          components: [
+            {
+              name: 'tools',
+              container: {
+                image: 'quay.io/devfile/universal-developer-image:ubi8',
+              },
+            },
+          ],
+        };
+
+        mockCreateDevWorkspace.mockResolvedValueOnce({ headers: {}, devWorkspace });
+        mockCreateDevWorkspaceTemplate.mockResolvedValueOnce({ headers: {}, devWorkspaceTemplate });
+        mockUpdateDevWorkspace.mockResolvedValueOnce({ headers: {}, devWorkspace });
+        mockOnStart.mockResolvedValueOnce(undefined);
+      });
+
+      it('should provide default editor id to createDevWorkspace', async () => {
+        await store.dispatch(testStore.actionCreators.createWorkspaceFromDevfile(devfile, {}, {}));
+
+        expect(mockCreateDevWorkspace.mock.calls).toEqual([
+          expect.arrayContaining(['che-incubator/che-code/latest']),
+        ]);
+      });
+
+      it('should provide the editor id from attributes to createDevWorkspace', async () => {
+        const editorContent = {
+          schemaVersion: '2.1.0',
+          metadata: {
+            name: 'test-editor',
+            namespace: 'che',
+          },
+        };
+
+        jest.spyOn(getEditorModule, 'getEditor').mockResolvedValueOnce({
+          editorYamlUrl: 'test-editor-yaml',
+          content: JSON.stringify(editorContent),
+        });
+        await store.dispatch(
+          testStore.actionCreators.createWorkspaceFromDevfile(
+            devfile,
+            { cheEditor: 'test-editor' },
+            {},
+          ),
+        );
+        expect(mockCreateDevWorkspace.mock.calls).toEqual([
+          expect.arrayContaining(['test-editor']),
+        ]);
+      });
     });
   });
 
