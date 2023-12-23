@@ -819,7 +819,7 @@ export const actionCreators: ActionCreators = {
       let editorContent: string | undefined;
       let editorYamlUrl: string | undefined;
       // do we have an optional editor parameter ?
-      const editor = attributes.cheEditor;
+      let editor = attributes.cheEditor;
       if (editor) {
         const response = await getEditor(editor, dispatch, getState, pluginRegistryUrl);
         if (response.content) {
@@ -855,6 +855,7 @@ export const actionCreators: ActionCreators = {
           } else {
             throw new Error(response.error);
           }
+          editor = defaultsEditor;
           console.debug(`Using default editor ${defaultsEditor}`);
         }
       }
