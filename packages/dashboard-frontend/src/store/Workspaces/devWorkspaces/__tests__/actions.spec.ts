@@ -28,12 +28,12 @@ import { DevWorkspaceClient } from '@/services/workspace-client/devworkspace/dev
 import { AppState } from '@/store';
 import { DevWorkspaceBuilder } from '@/store/__mocks__/devWorkspaceBuilder';
 import { FakeStoreBuilder } from '@/store/__mocks__/storeBuilder';
+import * as getEditorModule from '@/store/DevfileRegistries/getEditor';
 import { AUTHORIZED } from '@/store/sanityCheckMiddleware';
 import * as ServerConfigStore from '@/store/ServerConfig';
 import { checkRunningWorkspacesLimit } from '@/store/Workspaces/devWorkspaces/checkRunningWorkspacesLimit';
 
 import * as testStore from '..';
-import * as getEditorModule from '@/store/DevfileRegistries/getEditor';
 
 jest.mock('../../../../services/backend-client/serverConfigApi');
 jest.mock('../../../../services/helpers/delay', () => ({
