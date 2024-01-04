@@ -20,16 +20,23 @@ import { FakeStoreBuilder } from '@/store/__mocks__/storeBuilder';
 const warningsReporterService = container.get(WarningsReporterService);
 
 describe('Check namespace provision warnings', () => {
-  const testUser = {
-    name: 'test-user',
+  const testNamespace = {
+    name: 'test-namespace',
     attributes: { default: true },
+  };
+  const testUser = {
+    username: 'test-user',
+    email: 'test-user@che',
   };
 
   const mockGet = mockAxios.get as jest.Mock;
 
   beforeEach(() => {
     mockGet.mockResolvedValueOnce({
-      data: [testUser],
+      data: [testNamespace],
+    });
+    mockGet.mockResolvedValueOnce({
+      data: testUser,
     });
   });
 
@@ -73,7 +80,11 @@ describe('Check namespace provision warnings', () => {
 
     await checkNamespaceProvisionWarnings(store.getState);
 
-    expect(mockGet).toBeCalledWith('/api/kubernetes/namespace', undefined);
+    expect(mockGet.mock.calls).toEqual([
+      ['/api/kubernetes/namespace', undefined],
+      ['/dashboard/api/userprofile/test-namespace', undefined],
+    ]);
+    expect(mockGet).toBeCalledTimes(2);
     expect(warningsReporterService.hasWarning).toBeTruthy();
     expect(warningsReporterService.reportAllWarnings()).toEqual([
       {
@@ -99,7 +110,11 @@ describe('Check namespace provision warnings', () => {
 
     await checkNamespaceProvisionWarnings(store.getState);
 
-    expect(mockGet).toBeCalledWith('/api/kubernetes/namespace', undefined);
+    expect(mockGet.mock.calls).toEqual([
+      ['/api/kubernetes/namespace', undefined],
+      ['/dashboard/api/userprofile/test-namespace', undefined],
+    ]);
+    expect(mockGet).toBeCalledTimes(2);
     expect(warningsReporterService.hasWarning).toBeTruthy();
     expect(warningsReporterService.reportAllWarnings()).toEqual([
       {
@@ -125,7 +140,11 @@ describe('Check namespace provision warnings', () => {
 
     await checkNamespaceProvisionWarnings(store.getState);
 
-    expect(mockGet).toBeCalledWith('/api/kubernetes/namespace', undefined);
+    expect(mockGet.mock.calls).toEqual([
+      ['/api/kubernetes/namespace', undefined],
+      ['/dashboard/api/userprofile/test-namespace', undefined],
+    ]);
+    expect(mockGet).toBeCalledTimes(2);
     expect(warningsReporterService.hasWarning).toBeTruthy();
     expect(warningsReporterService.reportAllWarnings()).toEqual([
       {
@@ -151,7 +170,11 @@ describe('Check namespace provision warnings', () => {
 
     await checkNamespaceProvisionWarnings(store.getState);
 
-    expect(mockGet).toBeCalledWith('/api/kubernetes/namespace', undefined);
+    expect(mockGet.mock.calls).toEqual([
+      ['/api/kubernetes/namespace', undefined],
+      ['/dashboard/api/userprofile/test-namespace', undefined],
+    ]);
+    expect(mockGet).toBeCalledTimes(2);
     expect(warningsReporterService.hasWarning).toBeTruthy();
     expect(warningsReporterService.reportAllWarnings()).toEqual([
       {
@@ -177,7 +200,11 @@ describe('Check namespace provision warnings', () => {
 
     await checkNamespaceProvisionWarnings(store.getState);
 
-    expect(mockGet).toBeCalledWith('/api/kubernetes/namespace', undefined);
+    expect(mockGet.mock.calls).toEqual([
+      ['/api/kubernetes/namespace', undefined],
+      ['/dashboard/api/userprofile/test-namespace', undefined],
+    ]);
+    expect(mockGet).toBeCalledTimes(2);
     expect(warningsReporterService.hasWarning).toBeTruthy();
     expect(warningsReporterService.reportAllWarnings()).toEqual([
       {
@@ -202,7 +229,11 @@ describe('Check namespace provision warnings', () => {
 
     await checkNamespaceProvisionWarnings(store.getState);
 
-    expect(mockGet).toBeCalledWith('/api/kubernetes/namespace', undefined);
+    expect(mockGet.mock.calls).toEqual([
+      ['/api/kubernetes/namespace', undefined],
+      ['/dashboard/api/userprofile/test-namespace', undefined],
+    ]);
+    expect(mockGet).toBeCalledTimes(2);
     expect(warningsReporterService.hasWarning).toBeTruthy();
     expect(warningsReporterService.reportAllWarnings()).toEqual([
       {
@@ -231,8 +262,11 @@ describe('Check namespace provision warnings', () => {
 
     await checkNamespaceProvisionWarnings(store.getState);
 
-    expect(mockGet).toBeCalledWith('/api/kubernetes/namespace', undefined);
-    expect(mockGet).toBeCalledTimes(1);
+    expect(mockGet.mock.calls).toEqual([
+      ['/api/kubernetes/namespace', undefined],
+      ['/dashboard/api/userprofile/test-namespace', undefined],
+    ]);
+    expect(mockGet).toBeCalledTimes(2);
     expect(warningsReporterService.hasWarning).toBeTruthy();
     expect(warningsReporterService.reportAllWarnings()).toEqual([
       {

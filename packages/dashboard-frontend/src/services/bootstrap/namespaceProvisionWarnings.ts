@@ -12,6 +12,7 @@
 
 import { container } from '@/inversify.config';
 import { getKubernetesNamespace } from '@/services/backend-client/kubernetesNamespaceApi';
+import { fetchUserProfile } from '@/services/backend-client/userProfileApi';
 import { WarningsReporterService } from '@/services/bootstrap/warningsReporter';
 import { AppState } from '@/store';
 import { selectAdvancedAuthorization, selectAutoProvision } from '@/store/ServerConfig/selectors';
@@ -63,7 +64,8 @@ async function getUsername(): Promise<string> {
     const targetNamespace =
       namespaces.find(namespace => namespace.attributes.default === 'true') || namespaces[0];
     if (targetNamespace !== undefined) {
-      username = targetNamespace.name;
+      const userProfile = await fetchUserProfile(targetNamespace.name);
+      username = userProfile.username;
     }
   } catch (e) {
     // noop
