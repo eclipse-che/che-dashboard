@@ -37,6 +37,18 @@ export async function checkNamespaceProvisionWarnings(getState: () => AppState):
   if (advancedAuthorization === undefined || Object.keys(advancedAuthorization).length === 0) {
     return;
   }
+  if (advancedAuthorization.denyUsers) {
+    if (username === undefined) {
+      username = await getUsername();
+    }
+    if (advancedAuthorization.denyUsers.includes(username)) {
+      warningsReporterService.registerWarning(
+        'advancedAuthorizationUsersWarning',
+        `Access for ${username} is forbidden. Please contact the administrator.`,
+      );
+      return;
+    }
+  }
   if (advancedAuthorization.allowGroups || advancedAuthorization.denyGroups) {
     if (username === undefined) {
       username = await getUsername();
@@ -52,7 +64,7 @@ export async function checkNamespaceProvisionWarnings(getState: () => AppState):
     }
     warningsReporterService.registerWarning(
       'advancedAuthorizationUsersWarning',
-      `Access for ${username} is forbidden. Please contact the administrator.`,
+      `Advanced authorization is enabled. User ${username} might not be allowed. Please, contact the administrator.`,
     );
   }
 }

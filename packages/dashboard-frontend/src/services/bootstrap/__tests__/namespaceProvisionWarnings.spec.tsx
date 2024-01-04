@@ -209,7 +209,8 @@ describe('Check namespace provision warnings', () => {
     expect(warningsReporterService.reportAllWarnings()).toEqual([
       {
         key: 'advancedAuthorizationUsersWarning',
-        title: 'Access for test-user is forbidden. Please contact the administrator.',
+        title:
+          'Advanced authorization is enabled. User test-user might not be allowed. Please, contact the administrator.',
       },
     ]);
   });
@@ -273,11 +274,6 @@ describe('Check namespace provision warnings', () => {
         key: 'autoProvisionWarning',
         title:
           'Automatic namespace provisioning is disabled. Namespace for test-user might not have been configured yet. Please, contact the administrator.',
-      },
-      {
-        key: 'advancedAuthorizationGroupsWarning',
-        title:
-          'Advanced authorization is enabled. User test-user might not be allowed. Please, contact the administrator.',
       },
       {
         key: 'advancedAuthorizationUsersWarning',
