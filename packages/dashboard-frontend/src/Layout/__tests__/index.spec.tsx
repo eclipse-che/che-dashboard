@@ -10,6 +10,7 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
+import { waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { createMemoryHistory } from 'history';
 import React from 'react';
@@ -114,9 +115,9 @@ describe('Layout component', () => {
 
     renderComponent(store);
 
-    const errorMessageContainer = await screen.findByText(errorMessage);
+    const errorMessageContainer = await waitFor(() => screen.queryByText(errorMessage));
 
-    expect(errorMessageContainer).toBeDefined();
+    expect(errorMessageContainer).not.toBeNull();
   });
 });
 

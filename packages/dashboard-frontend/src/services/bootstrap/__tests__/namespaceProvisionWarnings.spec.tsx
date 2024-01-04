@@ -65,7 +65,7 @@ describe('Check namespace provision warnings', () => {
 
     await checkNamespaceProvisionWarnings(store.getState);
 
-    expect(mockGet).not.toBeCalled();
+    expect(mockGet).not.toHaveBeenCalled();
     expect(warningsReporterService.hasWarning).toBeFalsy();
   });
 
