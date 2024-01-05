@@ -135,7 +135,7 @@ export default class Bootstrap {
     try {
       await testBackends()(this.store.dispatch, this.store.getState, undefined);
     } catch (e) {
-      await checkNamespaceProvisionWarnings(this.store.getState);
+      checkNamespaceProvisionWarnings(this.store.getState);
       const errorMessage = common.helpers.errors.getMessage(e);
       this.issuesReporterService.registerIssue(
         'namespaceProvisioningError',

@@ -10,8 +10,6 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import mockAxios from 'axios';
-
 import { container } from '@/inversify.config';
 import { checkNamespaceProvisionWarnings } from '@/services/bootstrap/namespaceProvisionWarnings';
 import { WarningsReporterService } from '@/services/bootstrap/warningsReporter';
@@ -20,37 +18,16 @@ import { FakeStoreBuilder } from '@/store/__mocks__/storeBuilder';
 const warningsReporterService = container.get(WarningsReporterService);
 
 describe('Check namespace provision warnings', () => {
-  const testNamespace = {
-    name: 'test-namespace',
-    attributes: { default: true },
-  };
-  const testUser = {
-    username: 'test-user',
-    email: 'test-user@che',
-  };
-
-  const mockGet = mockAxios.get as jest.Mock;
-
-  beforeEach(() => {
-    mockGet.mockResolvedValueOnce({
-      data: [testNamespace],
-    });
-    mockGet.mockResolvedValueOnce({
-      data: testUser,
-    });
-  });
-
   afterEach(() => {
     warningsReporterService.clearWarnings();
     jest.clearAllMocks();
   });
 
-  it('should not register any warning', async () => {
+  it('should not register any warning', () => {
     let store = new FakeStoreBuilder().build();
 
-    await checkNamespaceProvisionWarnings(store.getState);
+    checkNamespaceProvisionWarnings(store.getState);
 
-    expect(mockGet).not.toBeCalled();
     expect(warningsReporterService.hasWarning).toBeFalsy();
 
     store = new FakeStoreBuilder()
@@ -63,13 +40,12 @@ describe('Check namespace provision warnings', () => {
       })
       .build();
 
-    await checkNamespaceProvisionWarnings(store.getState);
+    checkNamespaceProvisionWarnings(store.getState);
 
-    expect(mockGet).not.toHaveBeenCalled();
     expect(warningsReporterService.hasWarning).toBeFalsy();
   });
 
-  it('should register the autoProvision warning', async () => {
+  it('should register the autoProvision warning', () => {
     const store = new FakeStoreBuilder()
       .withDwServerConfig({
         defaultNamespace: {
@@ -78,24 +54,19 @@ describe('Check namespace provision warnings', () => {
       })
       .build();
 
-    await checkNamespaceProvisionWarnings(store.getState);
+    checkNamespaceProvisionWarnings(store.getState);
 
-    expect(mockGet.mock.calls).toEqual([
-      ['/api/kubernetes/namespace', undefined],
-      ['/dashboard/api/userprofile/test-namespace', undefined],
-    ]);
-    expect(mockGet).toBeCalledTimes(2);
     expect(warningsReporterService.hasWarning).toBeTruthy();
     expect(warningsReporterService.reportAllWarnings()).toEqual([
       {
         key: 'autoProvisionWarning',
         title:
-          'Automatic namespace provisioning is disabled. Namespace for test-user might not have been configured yet. Please, contact the administrator.',
+          'Automatic namespace provisioning is disabled. Namespace might not have been configured yet. Please, contact the administrator.',
       },
     ]);
   });
 
-  it('should register the advanced authorization warning for allowGroups', async () => {
+  it('should register the advanced authorization warning for allowGroups', () => {
     const store = new FakeStoreBuilder()
       .withDwServerConfig({
         networking: {
@@ -108,24 +79,19 @@ describe('Check namespace provision warnings', () => {
       })
       .build();
 
-    await checkNamespaceProvisionWarnings(store.getState);
+    checkNamespaceProvisionWarnings(store.getState);
 
-    expect(mockGet.mock.calls).toEqual([
-      ['/api/kubernetes/namespace', undefined],
-      ['/dashboard/api/userprofile/test-namespace', undefined],
-    ]);
-    expect(mockGet).toBeCalledTimes(2);
     expect(warningsReporterService.hasWarning).toBeTruthy();
     expect(warningsReporterService.reportAllWarnings()).toEqual([
       {
         key: 'advancedAuthorizationGroupsWarning',
         title:
-          'Advanced authorization is enabled. User test-user might not be allowed. Please, contact the administrator.',
+          'Advanced authorization is enabled. User might not be allowed. Please, contact the administrator.',
       },
     ]);
   });
 
-  it('should register the advanced authorization warning for denyGroups', async () => {
+  it('should register the advanced authorization warning for denyGroups', () => {
     const store = new FakeStoreBuilder()
       .withDwServerConfig({
         networking: {
@@ -138,24 +104,19 @@ describe('Check namespace provision warnings', () => {
       })
       .build();
 
-    await checkNamespaceProvisionWarnings(store.getState);
+    checkNamespaceProvisionWarnings(store.getState);
 
-    expect(mockGet.mock.calls).toEqual([
-      ['/api/kubernetes/namespace', undefined],
-      ['/dashboard/api/userprofile/test-namespace', undefined],
-    ]);
-    expect(mockGet).toBeCalledTimes(2);
     expect(warningsReporterService.hasWarning).toBeTruthy();
     expect(warningsReporterService.reportAllWarnings()).toEqual([
       {
         key: 'advancedAuthorizationGroupsWarning',
         title:
-          'Advanced authorization is enabled. User test-user might not be allowed. Please, contact the administrator.',
+          'Advanced authorization is enabled. User might not be allowed. Please, contact the administrator.',
       },
     ]);
   });
 
-  it('should register the advanced authorization warning for allowGroups', async () => {
+  it('should register the advanced authorization warning for allowGroups', () => {
     const store = new FakeStoreBuilder()
       .withDwServerConfig({
         networking: {
@@ -168,24 +129,19 @@ describe('Check namespace provision warnings', () => {
       })
       .build();
 
-    await checkNamespaceProvisionWarnings(store.getState);
+    checkNamespaceProvisionWarnings(store.getState);
 
-    expect(mockGet.mock.calls).toEqual([
-      ['/api/kubernetes/namespace', undefined],
-      ['/dashboard/api/userprofile/test-namespace', undefined],
-    ]);
-    expect(mockGet).toBeCalledTimes(2);
     expect(warningsReporterService.hasWarning).toBeTruthy();
     expect(warningsReporterService.reportAllWarnings()).toEqual([
       {
         key: 'advancedAuthorizationGroupsWarning',
         title:
-          'Advanced authorization is enabled. User test-user might not be allowed. Please, contact the administrator.',
+          'Advanced authorization is enabled. User might not be allowed. Please, contact the administrator.',
       },
     ]);
   });
 
-  it('should register the advanced authorization warning for allowUsers', async () => {
+  it('should register the advanced authorization warning for allowUsers', () => {
     const store = new FakeStoreBuilder()
       .withDwServerConfig({
         networking: {
@@ -198,24 +154,19 @@ describe('Check namespace provision warnings', () => {
       })
       .build();
 
-    await checkNamespaceProvisionWarnings(store.getState);
+    checkNamespaceProvisionWarnings(store.getState);
 
-    expect(mockGet.mock.calls).toEqual([
-      ['/api/kubernetes/namespace', undefined],
-      ['/dashboard/api/userprofile/test-namespace', undefined],
-    ]);
-    expect(mockGet).toBeCalledTimes(2);
     expect(warningsReporterService.hasWarning).toBeTruthy();
     expect(warningsReporterService.reportAllWarnings()).toEqual([
       {
         key: 'advancedAuthorizationUsersWarning',
         title:
-          'Advanced authorization is enabled. User test-user might not be allowed. Please, contact the administrator.',
+          'Advanced authorization is enabled. User might not be allowed. Please, contact the administrator.',
       },
     ]);
   });
 
-  it('should register the advanced authorization warning for denyUsers', async () => {
+  it('should register the advanced authorization warning for denyUsers', () => {
     const store = new FakeStoreBuilder()
       .withDwServerConfig({
         networking: {
@@ -228,23 +179,19 @@ describe('Check namespace provision warnings', () => {
       })
       .build();
 
-    await checkNamespaceProvisionWarnings(store.getState);
+    checkNamespaceProvisionWarnings(store.getState);
 
-    expect(mockGet.mock.calls).toEqual([
-      ['/api/kubernetes/namespace', undefined],
-      ['/dashboard/api/userprofile/test-namespace', undefined],
-    ]);
-    expect(mockGet).toBeCalledTimes(2);
     expect(warningsReporterService.hasWarning).toBeTruthy();
     expect(warningsReporterService.reportAllWarnings()).toEqual([
       {
         key: 'advancedAuthorizationUsersWarning',
-        title: 'Access for test-user is forbidden. Please contact the administrator.',
+        title:
+          'Advanced authorization is enabled. User might not be allowed. Please, contact the administrator.',
       },
     ]);
   });
 
-  it('should register all possible warnings', async () => {
+  it('should register all possible warnings', () => {
     const store = new FakeStoreBuilder()
       .withDwServerConfig({
         defaultNamespace: {
@@ -261,23 +208,24 @@ describe('Check namespace provision warnings', () => {
       })
       .build();
 
-    await checkNamespaceProvisionWarnings(store.getState);
+    checkNamespaceProvisionWarnings(store.getState);
 
-    expect(mockGet.mock.calls).toEqual([
-      ['/api/kubernetes/namespace', undefined],
-      ['/dashboard/api/userprofile/test-namespace', undefined],
-    ]);
-    expect(mockGet).toBeCalledTimes(2);
     expect(warningsReporterService.hasWarning).toBeTruthy();
     expect(warningsReporterService.reportAllWarnings()).toEqual([
       {
         key: 'autoProvisionWarning',
         title:
-          'Automatic namespace provisioning is disabled. Namespace for test-user might not have been configured yet. Please, contact the administrator.',
+          'Automatic namespace provisioning is disabled. Namespace might not have been configured yet. Please, contact the administrator.',
+      },
+      {
+        key: 'advancedAuthorizationGroupsWarning',
+        title:
+          'Advanced authorization is enabled. User might not be allowed. Please, contact the administrator.',
       },
       {
         key: 'advancedAuthorizationUsersWarning',
-        title: 'Access for test-user is forbidden. Please contact the administrator.',
+        title:
+          'Advanced authorization is enabled. User might not be allowed. Please, contact the administrator.',
       },
     ]);
   });
