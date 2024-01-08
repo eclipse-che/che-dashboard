@@ -160,6 +160,7 @@ describe('DevWorkspace store, actions', () => {
       { name: 'user-che', attributes: { default: 'true', phase: 'Active' } },
     ]);
     store = storeBuilder
+      .withDwPlugins({}, false, undefined, 'che-incubator/che-code/latest')
       .withDwServerConfig({
         defaults: {
           editor: 'che-incubator/che-code/latest',
@@ -864,6 +865,59 @@ describe('DevWorkspace store, actions', () => {
       ];
 
       expect(actions).toStrictEqual(expectedActions);
+    });
+
+    describe('should test editor id', () => {
+      let devWorkspace;
+      let devWorkspaceTemplate;
+      beforeEach(() => {
+        devWorkspace = new DevWorkspaceBuilder().build();
+        devWorkspaceTemplate = {
+          apiVersion: 'v1alpha2',
+          kind: 'DevWorkspaceTemplate',
+          metadata: {
+            name: 'template',
+            namespace: 'user-che',
+            annotations: {},
+          },
+        };
+        mockCreateDevWorkspace.mockResolvedValueOnce({
+          headers: { warning: 'Unsupported Devfile feature' },
+          devWorkspace,
+        });
+        mockCreateDevWorkspaceTemplate.mockResolvedValueOnce({ headers: {}, devWorkspaceTemplate });
+        mockCreateDevWorkspace.mockResolvedValueOnce({ headers: {}, devWorkspace });
+        mockUpdateDevWorkspace.mockResolvedValueOnce({ headers: {}, devWorkspace });
+        mockOnStart.mockResolvedValueOnce(undefined);
+      });
+
+      it('should provide default editor id when creating a new workspace from resources', async () => {
+        await store.dispatch(
+          testStore.actionCreators.createWorkspaceFromResources(devWorkspace, devWorkspaceTemplate),
+        );
+
+        expect(mockCreateDevWorkspace).toHaveBeenCalledWith(
+          expect.any(String),
+          devWorkspace,
+          'che-incubator/che-code/latest',
+        );
+      });
+
+      it('should use provided editor id when creating a new workspace from resources', async () => {
+        await store.dispatch(
+          testStore.actionCreators.createWorkspaceFromResources(
+            devWorkspace,
+            devWorkspaceTemplate,
+            'editorid',
+          ),
+        );
+
+        expect(mockCreateDevWorkspace).toHaveBeenCalledWith(
+          expect.any(String),
+          devWorkspace,
+          'editorid',
+        );
+      });
     });
   });
 
