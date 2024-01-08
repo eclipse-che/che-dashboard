@@ -505,12 +505,13 @@
     simple-oauth2 "^5.0.0"
 
 "@fastify/reply-from@^9.0.0":
-  version "9.4.0"
-  resolved "https://registry.yarnpkg.com/@fastify/reply-from/-/reply-from-9.4.0.tgz#7d648cd5221e1aa9a0ec2cd5451f32078c431dd3"
-  integrity sha512-A0rT2o2Y8Xe9+CpS/VCfpWMLyptwI7peljdtdsW3nlLwwMbDr3kxDry5aiIb43SCfI1nr3B5mMH48kerJAZ8YQ==
+  version "9.6.0"
+  resolved "https://registry.yarnpkg.com/@fastify/reply-from/-/reply-from-9.6.0.tgz#63d45f4cd63f95a012549cc56fcb73ea6432d660"
+  integrity sha512-c1AqCq5+Wsc9iGpeRE5UpkzNJFn1HW1tCBgQw9h/EcaohqhYp2zoeXFM/MVFZvVKPph9eFkbWzLoQqMH4degfg==
   dependencies:
     "@fastify/error" "^3.0.0"
     end-of-stream "^1.4.4"
+    fast-content-type-parse "^1.1.0"
     fast-querystring "^1.0.0"
     fastify-plugin "^4.0.0"
     pump "^3.0.0"
