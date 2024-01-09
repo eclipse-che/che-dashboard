@@ -78,7 +78,7 @@ describe('SshPrivateKey', () => {
 
       const input = screen.getByPlaceholderText('Upload the PRIVATE key');
 
-      const sshPrivateKey = 'ssh-private-key'.repeat(1000);
+      const sshPrivateKey = 'ssh-private-key'.repeat(5000);
       userEvent.paste(input, sshPrivateKey);
 
       expect(mockOnChange).toHaveBeenCalledWith(sshPrivateKey, false);
@@ -137,7 +137,7 @@ describe('SshPrivateKey', () => {
       const input = screen.getByPlaceholderText('Or paste the PRIVATE key');
 
       // fill the SSH key data field
-      const sshKeyData = 'ssh-key-data'.repeat(1000);
+      const sshKeyData = 'ssh-key-data'.repeat(5000);
       userEvent.paste(input, sshKeyData);
 
       expect(mockOnChange).toHaveBeenCalledWith(sshKeyData, false);
