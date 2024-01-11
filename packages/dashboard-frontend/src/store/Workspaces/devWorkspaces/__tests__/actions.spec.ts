@@ -24,6 +24,7 @@ import { fetchServerConfig } from '@/services/backend-client/serverConfigApi';
 import { WebsocketClient } from '@/services/backend-client/websocketClient';
 import devfileApi from '@/services/devfileApi';
 import { FactoryParams } from '@/services/helpers/factoryFlow/buildFactoryParams';
+import { che } from '@/services/models';
 import { DevWorkspaceClient } from '@/services/workspace-client/devworkspace/devWorkspaceClient';
 import { AppState } from '@/store';
 import { DevWorkspaceBuilder } from '@/store/__mocks__/devWorkspaceBuilder';

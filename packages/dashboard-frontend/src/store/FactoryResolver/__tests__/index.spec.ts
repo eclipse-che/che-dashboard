@@ -19,6 +19,8 @@ import * as factoryResolver from '@/services/backend-client/factoryApi';
 import * as yamlResolver from '@/services/backend-client/yamlResolverApi';
 import { convertDevfileV1toDevfileV2 } from '@/services/devfile/converters';
 import devfileApi from '@/services/devfileApi';
+import { FactoryResolver } from '@/services/helpers/types';
+import { che } from '@/services/models';
 import { AppState } from '@/store';
 import { FakeStoreBuilder } from '@/store/__mocks__/storeBuilder';
 import normalizeDevfileV1 from '@/store/FactoryResolver/normalizeDevfileV1';
@@ -66,8 +68,8 @@ describe('FactoryResolver store', () => {
       const resolver = {
         devfile: {
           apiVersion: '1.0.0',
-        } as che.WorkspaceDevfile,
-      } as factoryResolverStore.ResolverState;
+        } as che.api.workspace.devfile.Devfile,
+      } as FactoryResolver;
 
       getFactoryResolverSpy.mockResolvedValueOnce(resolver);
 

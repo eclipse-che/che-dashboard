@@ -20,6 +20,7 @@ import mockMetadata from '@/pages/GetStarted/__tests__/devfileMetadata.json';
 import SamplesListGallery from '@/pages/GetStarted/GetStartedTab/SamplesListGallery';
 import { BrandingData } from '@/services/bootstrap/branding.constant';
 import devfileApi from '@/services/devfileApi';
+import { che } from '@/services/models';
 import { FakeStoreBuilder } from '@/store/__mocks__/storeBuilder';
 import { ConvertedState } from '@/store/FactoryResolver';
 

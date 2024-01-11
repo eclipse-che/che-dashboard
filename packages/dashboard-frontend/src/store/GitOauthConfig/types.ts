@@ -10,11 +10,12 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import * as cheApi from '@eclipse-che/api';
 import { api } from '@eclipse-che/common';
+
+import { che } from '@/services/models';
 
 export interface IGitOauth {
   name: api.GitOauthProvider;
   endpointUrl: string;
-  links?: cheApi.che.core.rest.Link[];
+  links?: che.api.core.rest.Link[];
 }
