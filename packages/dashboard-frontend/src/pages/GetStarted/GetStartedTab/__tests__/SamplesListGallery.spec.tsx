@@ -26,7 +26,7 @@ import { ConvertedState } from '@/store/FactoryResolver';
 
 const requestFactoryResolverMock = jest.fn().mockResolvedValue(undefined);
 
-jest.mock('../../../../store/FactoryResolver', () => {
+jest.mock('@/store/FactoryResolver', () => {
   return {
     actionCreators: {
       requestFactoryResolver:

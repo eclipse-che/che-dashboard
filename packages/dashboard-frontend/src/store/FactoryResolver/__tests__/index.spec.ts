@@ -38,18 +38,18 @@ jest.mock('../normalizeDevfileV2.ts');
   return devfile;
 });
 
-jest.mock('../../../services/devfile/converters');
+jest.mock('@/services/devfile/converters');
 (convertDevfileV1toDevfileV2 as jest.Mock).mockImplementation(async () => {
   return {
     schemaVersion: '2.0.0',
   } as devfileApi.Devfile;
 });
 
-jest.mock('../../../services/devfileApi');
-jest.mock('../../../services/devfileApi/typeguards.ts', () => {
+jest.mock('@/services/devfileApi');
+jest.mock('@/services/devfileApi/typeguards.ts', () => {
   return {
     // eslint-disable-next-line @typescript-eslint/ban-types
-    ...(jest.requireActual('../../../services/devfileApi/typeguards.ts') as Object),
+    ...(jest.requireActual('@/services/devfileApi/typeguards.ts') as Object),
     isDevfileV2: (devfile: unknown): boolean => {
       return (devfile as devfileApi.Devfile).schemaVersion !== undefined;
     },

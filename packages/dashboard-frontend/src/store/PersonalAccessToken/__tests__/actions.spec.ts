@@ -24,7 +24,7 @@ import { AUTHORIZED } from '@/store/sanityCheckMiddleware';
 import * as testStore from '..';
 
 jest.mock(
-  '../../../services/backend-client/kubernetesNamespaceApi',
+  '@/services/backend-client/kubernetesNamespaceApi',
   () =>
     ({
       provisionKubernetesNamespace: () => Promise.resolve({} as che.KubernetesNamespace),

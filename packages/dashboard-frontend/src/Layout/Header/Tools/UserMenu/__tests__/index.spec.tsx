@@ -27,7 +27,7 @@ import * as InfrastructureNamespacesStore from '@/store/InfrastructureNamespaces
 
 import UserMenu from '..';
 
-jest.mock('../../../../../store/InfrastructureNamespaces', () => {
+jest.mock('@/store/InfrastructureNamespaces', () => {
   return {
     actionCreators: {
       requestNamespaces:

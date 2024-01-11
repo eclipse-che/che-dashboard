@@ -32,7 +32,7 @@ jest.mock('gravatar-url', () => {
   };
 });
 
-jest.mock('../../../../../store/InfrastructureNamespaces', () => {
+jest.mock('@/store/InfrastructureNamespaces', () => {
   return {
     actionCreators: {
       requestNamespaces:
