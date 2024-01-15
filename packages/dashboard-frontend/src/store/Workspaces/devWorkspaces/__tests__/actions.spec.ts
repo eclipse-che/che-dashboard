@@ -803,7 +803,11 @@ describe('DevWorkspace store, actions', () => {
       mockOnStart.mockResolvedValueOnce(undefined);
 
       await store.dispatch(
-        testStore.actionCreators.createWorkspaceFromResources(devWorkspace, devWorkspaceTemplate),
+        testStore.actionCreators.createWorkspaceFromResources(
+          devWorkspace,
+          devWorkspaceTemplate,
+          {},
+        ),
       );
 
       const actions = store.getActions();
@@ -843,7 +847,11 @@ describe('DevWorkspace store, actions', () => {
 
       try {
         await store.dispatch(
-          testStore.actionCreators.createWorkspaceFromResources(devWorkspace, devWorkspaceTemplate),
+          testStore.actionCreators.createWorkspaceFromResources(
+            devWorkspace,
+            devWorkspaceTemplate,
+            {},
+          ),
         );
       } catch (e) {
         // no-op
@@ -891,7 +899,11 @@ describe('DevWorkspace store, actions', () => {
 
       it('should provide default editor id when creating a new workspace from resources', async () => {
         await store.dispatch(
-          testStore.actionCreators.createWorkspaceFromResources(devWorkspace, devWorkspaceTemplate),
+          testStore.actionCreators.createWorkspaceFromResources(
+            devWorkspace,
+            devWorkspaceTemplate,
+            {},
+          ),
         );
 
         expect(mockCreateDevWorkspace).toHaveBeenCalledWith(
@@ -906,6 +918,7 @@ describe('DevWorkspace store, actions', () => {
           testStore.actionCreators.createWorkspaceFromResources(
             devWorkspace,
             devWorkspaceTemplate,
+            {},
             'editorid',
           ),
         );

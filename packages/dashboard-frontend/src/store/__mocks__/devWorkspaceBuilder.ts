@@ -133,6 +133,11 @@ export class DevWorkspaceBuilder {
     return this;
   }
 
+  withTemplateAttributes(attributes: any): DevWorkspaceBuilder {
+    this.workspace.spec.template.attributes = attributes;
+    return this;
+  }
+
   build(): devfileApi.DevWorkspace {
     return this.workspace;
   }

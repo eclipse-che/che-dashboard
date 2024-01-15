@@ -59,6 +59,11 @@ import {
   selectPluginRegistryUrl,
 } from '@/store/ServerConfig/selectors';
 import { checkRunningWorkspacesLimit } from '@/store/Workspaces/devWorkspaces/checkRunningWorkspacesLimit';
+import {
+  getEditorImage,
+  updateDevWorkspaceTemplate,
+  updateEditorDevfile,
+} from '@/store/Workspaces/devWorkspaces/editorImage';
 import { selectDevWorkspacesResourceVersion } from '@/store/Workspaces/devWorkspaces/selectors';
 
 export const onStatusChangeCallbacks = new Map<string, (status: string) => void>();
@@ -184,6 +189,7 @@ export type ActionCreators = {
   createWorkspaceFromResources: (
     devWorkspace: devfileApi.DevWorkspace,
     devWorkspaceTemplate: devfileApi.DevWorkspaceTemplate,
+    attributes: Partial<FactoryParams>,
     // it could be editorId or editorContent
     editor?: string,
   ) => AppThunk<KnownAction, Promise<void>>;
@@ -533,6 +539,7 @@ export const actionCreators: ActionCreators = {
     (
       devWorkspaceResource: devfileApi.DevWorkspace,
       devWorkspaceTemplateResource: devfileApi.DevWorkspaceTemplate,
+      attributes: Partial<FactoryParams>,
       editor?: string,
     ): AppThunk<KnownAction, Promise<void>> =>
     async (dispatch, getState): Promise<void> => {
@@ -572,6 +579,12 @@ export const actionCreators: ActionCreators = {
           app => app.id === ApplicationId.CLUSTER_CONSOLE,
         );
 
+        if (attributes.editorImage) {
+          devWorkspaceTemplateResource = updateDevWorkspaceTemplate(
+            devWorkspaceTemplateResource,
+            attributes.editorImage,
+          );
+        }
         /* create a new DevWorkspaceTemplate */
         await getDevWorkspaceClient().createDevWorkspaceTemplate(
           defaultNamespace,
@@ -653,6 +666,11 @@ export const actionCreators: ActionCreators = {
 
         defaultsDevfile.metadata.name = workspace.metadata.name;
         delete defaultsDevfile.metadata.generateName;
+
+        const editorImage = getEditorImage(workspace);
+        if (editorImage) {
+          editorContent = updateEditorDevfile(editorContent, editorImage);
+        }
         const resourcesContent = await fetchResources({
           pluginRegistryUrl,
           devfileContent: dump(defaultsDevfile),
@@ -868,6 +886,9 @@ export const actionCreators: ActionCreators = {
           const error = selectSanityCheckError(getState());
           throw new Error(error);
         }
+        if (attributes.editorImage) {
+          editorContent = updateEditorDevfile(editorContent, attributes.editorImage);
+        }
         const resourcesContent = await fetchResources({
           pluginRegistryUrl,
           devfileContent: dump(devfile),
@@ -913,6 +934,7 @@ export const actionCreators: ActionCreators = {
         actionCreators.createWorkspaceFromResources(
           devWorkspaceResource,
           devWorkspaceTemplateResource,
+          attributes,
           editor ? editor : editorContent,
         ),
       );
