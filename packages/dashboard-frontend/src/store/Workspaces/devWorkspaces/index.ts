@@ -184,7 +184,7 @@ export type ActionCreators = {
   createWorkspaceFromResources: (
     devWorkspace: devfileApi.DevWorkspace,
     devWorkspaceTemplate: devfileApi.DevWorkspaceTemplate,
-    editorId?: string,
+    editor?: string,
   ) => AppThunk<KnownAction, Promise<void>>;
 
   handleWebSocketMessage: (
@@ -532,7 +532,7 @@ export const actionCreators: ActionCreators = {
     (
       devWorkspaceResource: devfileApi.DevWorkspace,
       devWorkspaceTemplateResource: devfileApi.DevWorkspaceTemplate,
-      editorId?: string,
+      editor?: string,
     ): AppThunk<KnownAction, Promise<void>> =>
     async (dispatch, getState): Promise<void> => {
       const state = getState();
@@ -540,7 +540,7 @@ export const actionCreators: ActionCreators = {
       const openVSXUrl = selectOpenVSXUrl(state);
       const pluginRegistryUrl = selectPluginRegistryUrl(state);
       const pluginRegistryInternalUrl = selectPluginRegistryInternalUrl(state);
-      const cheEditor = editorId ? editorId : selectDefaultEditor(state);
+      const cheEditor = editor ? editor : selectDefaultEditor(state);
       const defaultNamespace = defaultKubernetesNamespace.name;
 
       try {
@@ -912,7 +912,7 @@ export const actionCreators: ActionCreators = {
         actionCreators.createWorkspaceFromResources(
           devWorkspaceResource,
           devWorkspaceTemplateResource,
-          editor,
+          editor ? editor : editorContent,
         ),
       );
     },
