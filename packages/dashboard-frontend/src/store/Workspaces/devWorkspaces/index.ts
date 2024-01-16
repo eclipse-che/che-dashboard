@@ -184,6 +184,7 @@ export type ActionCreators = {
   createWorkspaceFromResources: (
     devWorkspace: devfileApi.DevWorkspace,
     devWorkspaceTemplate: devfileApi.DevWorkspaceTemplate,
+    // it could be editorId or editorContent
     editor?: string,
   ) => AppThunk<KnownAction, Promise<void>>;
 
