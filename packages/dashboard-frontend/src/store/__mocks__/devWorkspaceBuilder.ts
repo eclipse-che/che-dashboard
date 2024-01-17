@@ -14,6 +14,7 @@ import { V1alpha2DevWorkspaceStatus, V1alpha2DevWorkspaceStatusConditions } from
 
 import devfileApi from '@/services/devfileApi';
 import { DevWorkspacePlugin } from '@/services/devfileApi/devWorkspace';
+import { DevWorkspaceSpecTemplateAttribute } from '@/services/devfileApi/devWorkspace/spec/template';
 import getRandomString from '@/services/helpers/random';
 import { DevWorkspaceStatus } from '@/services/helpers/types';
 
@@ -132,8 +133,7 @@ export class DevWorkspaceBuilder {
     this.workspace.spec.template.projects = projects;
     return this;
   }
-
-  withTemplateAttributes(attributes: any): DevWorkspaceBuilder {
+  withTemplateAttributes(attributes: DevWorkspaceSpecTemplateAttribute): DevWorkspaceBuilder {
     this.workspace.spec.template.attributes = attributes;
     return this;
   }

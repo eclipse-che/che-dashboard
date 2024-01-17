@@ -15,13 +15,24 @@ import common from '@eclipse-che/common';
 import { dump, load } from 'js-yaml';
 import cloneDeep from 'lodash/cloneDeep';
 
+import { FactorySource } from '@/components/WorkspaceProgress/CreatingSteps/Apply/Devfile/prepareDevfile';
 import devfileApi from '@/services/devfileApi';
 import { buildFactoryParams } from '@/services/helpers/factoryFlow/buildFactoryParams';
 import { COMPONENT_UPDATE_POLICY } from '@/services/workspace-client/devworkspace/devWorkspaceClient';
+import {
+  DEVWORKSPACE_DEVFILE_SOURCE,
+  DEVWORKSPACE_METADATA_ANNOTATION,
+} from '@/services/workspace-client/devworkspace/devWorkspaceClient';
 
-export function updateEditorDevfile(editorContent: string, editorImage: string): string {
+export function updateEditorDevfile(
+  editorContent: string,
+  editorImage: string | undefined,
+): string {
+  if (editorImage === undefined) {
+    return editorContent;
+  }
   if (!editorContent) {
-    throw new Error('Editor content is empty');
+    throw new Error('Editor content is empty.');
   }
   try {
     const editorObj = load(editorContent) as devfileApi.Devfile;
@@ -34,10 +45,10 @@ export function updateEditorDevfile(editorContent: string, editorImage: string):
 
 export function updateDevWorkspaceTemplate(
   devWorkspaceTemplate: devfileApi.DevWorkspaceTemplate,
-  editorImage: string,
+  editorImage: string | undefined,
 ): devfileApi.DevWorkspaceTemplate {
-  if (!editorImage) {
-    throw new Error('Failed to update editor image. Editor image is empty.');
+  if (editorImage === undefined) {
+    return devWorkspaceTemplate;
   }
   const _devWorkspaceTemplate = cloneDeep(devWorkspaceTemplate);
   try {
@@ -56,19 +67,13 @@ export function updateDevWorkspaceTemplate(
 
 export function getEditorImage(workspace: devfileApi.DevWorkspace): string | undefined {
   const devfileSourceYaml =
-    workspace.spec.template.attributes?.['dw.metadata.annotations']?.[
-      'che.eclipse.org/devfile-source'
+    workspace.spec.template.attributes?.[DEVWORKSPACE_METADATA_ANNOTATION]?.[
+      DEVWORKSPACE_DEVFILE_SOURCE
     ];
   if (!devfileSourceYaml) {
     return undefined;
   }
-  const factorySearchParams = (
-    load(devfileSourceYaml) as {
-      factory?: {
-        params?: string;
-      };
-    }
-  )?.factory?.params;
+  const factorySearchParams = (load(devfileSourceYaml) as FactorySource)?.factory?.params;
   if (!factorySearchParams) {
     return undefined;
   }
@@ -81,11 +86,8 @@ function updateComponents(
   components: V222DevfileComponents[] | undefined,
   editorImage: string,
 ): boolean {
-  if (!editorImage) {
-    throw new Error('Editor image is empty.');
-  }
   if (!components) {
-    throw new Error('Editor components are empty');
+    throw new Error('Editor components is not defined.');
   }
   let isUpdated = false;
   for (let i = 0; i < components.length; i++) {

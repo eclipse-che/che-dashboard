@@ -6,9 +6,9 @@
 | [`@devfile/api@2.2.0-alpha-1637255314`](https://github.com/devfile/api.git) | EPL-2.0 | clearlydefined |
 | `@eclipse-che/api@7.76.0` | EPL-2.0 | ecd.che |
 | [`@eclipse-che/che-devworkspace-generator@7.79.0-next-1427c19`](git+https://github.com/eclipse-che/che-devfile-registry.git) | EPL-2.0 | ecd.che |
-| [`@eclipse-che/common@7.79.0-next`](https://github.com/eclipse-che/che-dashboard) | EPL-2.0 | ecd.che |
-| [`@eclipse-che/dashboard-backend@7.79.0-next`](https://github.com/eclipse-che/che-dashboard) | EPL-2.0 | ecd.che |
-| [`@eclipse-che/dashboard-frontend@7.79.0-next`](git://github.com/eclipse/che-dashboard.git) | EPL-2.0 | ecd.che |
+| [`@eclipse-che/common@7.81.0-next`](https://github.com/eclipse-che/che-dashboard) | EPL-2.0 | ecd.che |
+| [`@eclipse-che/dashboard-backend@7.81.0-next`](https://github.com/eclipse-che/che-dashboard) | EPL-2.0 | ecd.che |
+| [`@eclipse-che/dashboard-frontend@7.81.0-next`](git://github.com/eclipse/che-dashboard.git) | EPL-2.0 | ecd.che |
 | [`@eclipse-che/devfile-converter@0.0.1-0751ad2`](git+https://github.com/che-incubator/devfile-converter.git) | EPL-2.0 | ecd.che |
 | [`@fastify/accept-negotiator@1.1.0`](git+https://github.com/fastify/accept-negotiator.git) | MIT | clearlydefined |
 | [`@fastify/ajv-compiler@3.5.0`](git+https://github.com/fastify/ajv-compiler.git) | MIT | clearlydefined |
@@ -20,7 +20,7 @@
 | [`@fastify/fast-json-stringify-compiler@4.3.0`](git+https://github.com/fastify/fast-json-stringify-compiler.git) | MIT | clearlydefined |
 | [`@fastify/http-proxy@9.3.0`](git+https://github.com/fastify/fastify-http-proxy.git) | MIT | clearlydefined |
 | [`@fastify/oauth2@7.5.0`](git+https://github.com/fastify/fastify-oauth2.git) | MIT | clearlydefined |
-| [`@fastify/reply-from@9.4.0`](git+https://github.com/fastify/fastify-reply-from.git) | MIT | clearlydefined |
+| [`@fastify/reply-from@9.6.0`](git+https://github.com/fastify/fastify-reply-from.git) | MIT | clearlydefined |
 | [`@fastify/send@2.1.0`](git+https://github.com/fastify/send.git) | MIT | clearlydefined |
 | [`@fastify/static@6.12.0`](https://github.com/fastify/fastify-static.git) | MIT | clearlydefined |
 | [`@fastify/swagger-ui@1.9.2`](git+https://github.com/fastify/fastify-swagger-ui.git) | MIT | clearlydefined |
@@ -170,7 +170,7 @@
 | [`file-selector@0.1.19`](https://github.com/react-dropzone/file-selector.git) | MIT | [CQ22350](https://dev.eclipse.org/ipzilla/show_bug.cgi?id=22350) |
 | [`find-my-way@7.7.0`](git+https://github.com/delvedor/find-my-way.git) | MIT | clearlydefined |
 | [`focus-trap@6.9.2`](git+https://github.com/focus-trap/focus-trap.git) | MIT | clearlydefined |
-| [`follow-redirects@1.15.3`](git@github.com:follow-redirects/follow-redirects.git) | MIT | #10782 |
+| [`follow-redirects@1.15.4`](git@github.com:follow-redirects/follow-redirects.git) | MIT | #10782 |
 | [`forever-agent@0.6.1`](https://github.com/mikeal/forever-agent) | Apache-2.0 | clearlydefined |
 | [`form-data@4.0.0`](git://github.com/form-data/form-data.git) | MIT | clearlydefined |
 | [`forwarded@0.2.0`](https://github.com/jshttp/forwarded.git) | MIT | clearlydefined |

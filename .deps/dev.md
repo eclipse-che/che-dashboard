@@ -808,7 +808,7 @@
 | [`safe-regex-test@1.0.0`](git+https://github.com/ljharb/safe-regex-test.git) | MIT | clearlydefined |
 | [`saxes@6.0.0`](https://github.com/lddubeau/saxes.git) | ISC | clearlydefined |
 | [`schema-utils@4.2.0`](https://github.com/webpack/schema-utils.git) | MIT | #8986 |
-| [`serialize-javascript@6.0.1`](git+https://github.com/yahoo/serialize-javascript.git) | BSD-3-Clause | clearlydefined |
+| [`serialize-javascript@6.0.1`](git+https://github.com/yahoo/serialize-javascript.git) | BSD-3-Clause | #12680 |
 | [`set-blocking@2.0.0`](git+https://github.com/yargs/set-blocking.git) | ISC | #5899 |
 | [`set-function-name@2.0.1`](git+https://github.com/ljharb/set-function-name.git) | MIT | #10590 |
 | [`shallow-clone@3.0.1`](https://github.com/jonschlinkert/shallow-clone.git) | MIT | clearlydefined |
@@ -852,7 +852,7 @@
 | [`strip-final-newline@2.0.0`](https://github.com/sindresorhus/strip-final-newline.git) | MIT | clearlydefined |
 | [`strip-indent@3.0.0`](https://github.com/sindresorhus/strip-indent.git) | MIT | clearlydefined |
 | [`strong-log-transformer@2.1.0`](git://github.com/strongloop/strong-log-transformer) | Apache-2.0 | #1138 |
-| [`style-loader@3.3.3`](https://github.com/webpack-contrib/style-loader.git) | MIT | clearlydefined |
+| [`style-loader@3.3.3`](https://github.com/webpack-contrib/style-loader.git) | MIT | #12669 |
 | [`style-search@0.1.0`](git+https://github.com/davidtheclark/style-search.git) | ISC | clearlydefined |
 | [`stylehacks@6.0.0`](https://github.com/cssnano/cssnano.git) | MIT | clearlydefined |
 | [`stylelint-config-clean-order@5.2.0`](https://github.com/kutsan/stylelint-config-clean-order.git) | MIT | clearlydefined |
