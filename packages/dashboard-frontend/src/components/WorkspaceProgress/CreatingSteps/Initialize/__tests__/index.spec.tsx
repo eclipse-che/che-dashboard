@@ -23,7 +23,7 @@ import {
   FACTORY_URL_ATTR,
   POLICIES_CREATE_ATTR,
 } from '@/services/helpers/factoryFlow/buildFactoryParams';
-import { AlertItem } from '@/services/helpers/types';
+import { AlertItem, UserPreferencesTab } from '@/services/helpers/types';
 import { DevWorkspaceBuilder } from '@/store/__mocks__/devWorkspaceBuilder';
 import { FakeStoreBuilder } from '@/store/__mocks__/storeBuilder';
 
@@ -35,6 +35,12 @@ const mockOnNextStep = jest.fn();
 const mockOnRestart = jest.fn();
 const mockOnError = jest.fn();
 const mockOnHideError = jest.fn();
+
+// mock @/services/helpers/location
+jest.mock('@/services/helpers/location', () => ({
+  toHref: (_: unknown, location: string) => 'http://localhost/' + location,
+  buildUserPreferencesLocation: (tab: UserPreferencesTab) => 'user-preferences?tab=' + tab,
+}));
 
 describe('Creating steps, initializing', () => {
   const factoryUrl = 'https://factory-url';
@@ -258,6 +264,13 @@ describe('Creating steps, initializing', () => {
       [FACTORY_URL_ATTR]: factoryUrl,
     });
 
+    // this will help test the case when the user clicks on the "Add SSH Keys" button
+    mockOnError.mockImplementation((alertItem: AlertItem) => {
+      if (alertItem.actionCallbacks) {
+        alertItem.actionCallbacks[1].callback();
+      }
+    });
+
     renderComponent(store, searchParams);
 
     await jest.advanceTimersByTimeAsync(MIN_STEP_DURATION_MS);
@@ -278,6 +291,10 @@ describe('Creating steps, initializing', () => {
     });
     await waitFor(() => expect(mockOnError).toHaveBeenCalledWith(expectAlertItem));
 
+    expect(window.open).toHaveBeenCalledWith(
+      'http://localhost/user-preferences?tab=SshKeys',
+      '_blank',
+    );
     expect(mockOnNextStep).not.toHaveBeenCalled();
   });
 });
