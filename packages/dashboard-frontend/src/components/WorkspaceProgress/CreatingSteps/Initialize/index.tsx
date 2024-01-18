@@ -143,7 +143,7 @@ class CreatingStepInitialize extends ProgressStep<Props, State> {
   }
 
   private handleRestart(): void {
-    this.props.history.go(0);
+    window.location.reload();
   }
 
   private handleOpenUserPreferences(): void {
@@ -160,11 +160,7 @@ class CreatingStepInitialize extends ProgressStep<Props, State> {
         key,
         title: 'No SSH keys found',
         variant: AlertVariant.warning,
-        children: (
-          <React.Fragment>
-            <p>No SSH keys found. Please add your SSH keys and then try again.</p>
-          </React.Fragment>
-        ),
+        children: 'No SSH keys found. Please add your SSH keys and then try again.',
         actionCallbacks: [
           {
             title: 'Click to try again',
