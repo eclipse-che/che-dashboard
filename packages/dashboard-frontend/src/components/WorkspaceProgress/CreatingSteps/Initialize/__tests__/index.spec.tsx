@@ -36,7 +36,6 @@ const mockOnRestart = jest.fn();
 const mockOnError = jest.fn();
 const mockOnHideError = jest.fn();
 
-// mock @/services/helpers/location
 jest.mock('@/services/helpers/location', () => ({
   toHref: (_: unknown, location: string) => 'http://localhost/' + location,
   buildUserPreferencesLocation: (tab: UserPreferencesTab) => 'user-preferences?tab=' + tab,
