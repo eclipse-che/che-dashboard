@@ -264,6 +264,7 @@ class CreatingStepApplyDevfile extends ProgressStep<Props, State> {
         this.updateCurrentDevfile(_devfile);
       } else {
         try {
+          console.log('>>>>>>>>>> STEP 1 >>>>>>>>>> devfile', devfile);
           await this.createWorkspaceFromDevfile(devfile);
         } catch (e) {
           const errorMessage = common.helpers.errors.getMessage(e);
