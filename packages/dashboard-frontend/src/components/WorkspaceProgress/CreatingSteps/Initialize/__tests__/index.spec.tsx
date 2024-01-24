@@ -263,13 +263,6 @@ describe('Creating steps, initializing', () => {
       [FACTORY_URL_ATTR]: factoryUrl,
     });
 
-    // this will help test the case when the user clicks on the "Add SSH Keys" button
-    mockOnError.mockImplementation((alertItem: AlertItem) => {
-      if (alertItem.actionCallbacks) {
-        alertItem.actionCallbacks[1].callback();
-      }
-    });
-
     renderComponent(store, searchParams);
 
     await jest.advanceTimersByTimeAsync(MIN_STEP_DURATION_MS);
