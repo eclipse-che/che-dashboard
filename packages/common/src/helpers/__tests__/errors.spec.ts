@@ -14,7 +14,12 @@ import axios, { AxiosError, AxiosResponse } from 'axios';
 import { HttpError } from '@kubernetes/client-node';
 import AxiosMockAdapter from 'axios-mock-adapter';
 import * as http from 'http';
-import { getMessage, isAxiosError, isError } from '../errors';
+import {
+  getMessage,
+  isAxiosError,
+  isError,
+  isTokenNotFoundError,
+} from '../errors';
 
 const mockAxios = new AxiosMockAdapter(axios);
 
@@ -40,6 +45,30 @@ describe('Errors helper', () => {
       const error = new Error(message) as AxiosError;
       error.isAxiosError = true;
       expect(isAxiosError(error)).toEqual(true);
+    });
+
+    it('should check if token not found error', () => {
+      const expectedError = {
+        name: '',
+        config: {},
+        request: {},
+        response: {
+          data: {
+            message:
+              'OAuth token for user xxxxx-xxxxx-xxxxx-xxxxx was not found',
+          },
+          status: 401,
+          statusText: '',
+          headers: {},
+          config: {},
+          request: {},
+        },
+        message: '',
+      };
+
+      const unexpectedError = new Error('Unsupported OAuth provider xxxxx');
+      expect(isTokenNotFoundError(expectedError)).toEqual(true);
+      expect(isTokenNotFoundError(unexpectedError)).toEqual(false);
     });
   });
 

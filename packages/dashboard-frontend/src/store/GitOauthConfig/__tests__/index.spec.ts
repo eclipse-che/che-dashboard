@@ -46,6 +46,30 @@ const mockGetOAuthToken = jest.fn().mockImplementation(provider => {
   }
   return new Promise((_resolve, reject) => reject(new Error('Token not found')));
 });
+const mockDeleteOAuthToken = jest.fn().mockImplementation(provider => {
+  if (provider === 'github') {
+    return new Promise((_resolve, reject) => {
+      const expectedError = {
+        name: '',
+        config: {},
+        request: {},
+        response: {
+          data: {
+            message: 'OAuth token for user xxxxx-xxxxx-xxxxx-xxxxx was not found',
+          },
+          status: 401,
+          statusText: '',
+          headers: {},
+          config: {},
+          request: {},
+        },
+        message: '',
+      };
+      reject(expectedError);
+    });
+  }
+  return new Promise(resolve => resolve(undefined));
+});
 const mockFetchTokens = jest.fn().mockResolvedValue([
   {
     tokenName: 'github-personal-access-token',
@@ -68,6 +92,7 @@ jest.mock('@/services/backend-client/oAuthApi', () => {
   return {
     getOAuthProviders: (...args: unknown[]) => mockGetOAuthProviders(...args),
     getOAuthToken: (...args: unknown[]) => mockGetOAuthToken(...args),
+    deleteOAuthToken: (...args: unknown[]) => mockDeleteOAuthToken(...args),
     getDevWorkspacePreferences: (...args: unknown[]) => mockGetDevWorkspacePreferences(...args),
   };
 });
@@ -109,6 +134,32 @@ describe('GitOauthConfig store, actions', () => {
       supportedGitOauth: gitOauth,
       providersWithToken: ['github', 'azure-devops', 'bitbucket-server'],
       type: TestStore.Type.RECEIVE_GIT_OAUTH_PROVIDERS,
+    };
+
+    expect(actions).toContainEqual(expectedAction);
+  });
+
+  it('should request DeleteGitOauthToken', async () => {
+    await store.dispatch(TestStore.actionCreators.revokeOauth('gitlab'));
+
+    const actions = store.getActions();
+
+    const expectedAction: TestStore.KnownAction = {
+      provider: 'gitlab',
+      type: TestStore.Type.DELETE_GIT_OAUTH_TOKEN,
+    };
+
+    expect(actions).toContainEqual(expectedAction);
+  });
+
+  it('should request DeleteGitOauthToken in the case with token not found error', async () => {
+    await store.dispatch(TestStore.actionCreators.revokeOauth('github')); // this oauthProvider throws the token not found error
+
+    const actions = store.getActions();
+
+    const expectedAction: TestStore.KnownAction = {
+      provider: 'github',
+      type: TestStore.Type.DELETE_GIT_OAUTH_TOKEN,
     };
 
     expect(actions).toContainEqual(expectedAction);

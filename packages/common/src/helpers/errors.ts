@@ -123,3 +123,13 @@ export function isKubeClientError(error: unknown): error is HttpError {
     'body' in (error as HttpError)
   );
 }
+export function isTokenNotFoundError(
+  error: unknown,
+): error is ObjectWithAxiosResponse {
+  return (
+    includesAxiosResponse(error) &&
+    /^OAuth token for user .* was not found$/.test(
+      (error as ObjectWithAxiosResponse).response.data.message,
+    )
+  );
+}

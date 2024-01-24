@@ -219,18 +219,9 @@ export const actionCreators: ActionCreators = {
 
       try {
         await deleteOAuthToken(oauthProvider);
-        dispatch({
-          type: Type.DELETE_GIT_OAUTH_TOKEN,
-          provider: oauthProvider,
-        });
       } catch (e) {
-        const errorMessage = common.helpers.errors.getMessage(e);
-        if (new RegExp('^OAuth token for user .* was not found$').test(errorMessage)) {
-          dispatch({
-            type: Type.DELETE_GIT_OAUTH_TOKEN,
-            provider: oauthProvider,
-          });
-        } else {
+        if (!common.helpers.errors.isTokenNotFoundError(e)) {
+          const errorMessage = common.helpers.errors.getMessage(e);
           dispatch({
             type: Type.RECEIVE_GIT_OAUTH_ERROR,
             error: errorMessage,
@@ -238,6 +229,10 @@ export const actionCreators: ActionCreators = {
           throw e;
         }
       }
+      dispatch({
+        type: Type.DELETE_GIT_OAUTH_TOKEN,
+        provider: oauthProvider,
+      });
     },
 
   deleteSkipOauth:
