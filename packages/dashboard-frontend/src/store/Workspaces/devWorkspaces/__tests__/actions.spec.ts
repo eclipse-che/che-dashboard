@@ -134,6 +134,7 @@ const mockManagePvcStrategy = jest.fn();
 const mockOnStart = jest.fn();
 const mockUpdate = jest.fn();
 const mockUpdateAnnotation = jest.fn();
+const mockCheckForEditorUpdate = jest.fn();
 
 describe('DevWorkspace store, actions', () => {
   const devWorkspaceClient = container.get(DevWorkspaceClient);
@@ -155,6 +156,7 @@ describe('DevWorkspace store, actions', () => {
     devWorkspaceClient.onStart = mockOnStart;
     devWorkspaceClient.update = mockUpdate;
     devWorkspaceClient.updateAnnotation = mockUpdateAnnotation;
+    devWorkspaceClient.checkForTemplatesUpdate = mockCheckForEditorUpdate;
 
     storeBuilder = new FakeStoreBuilder().withInfrastructureNamespace([
       { name: 'user-che', attributes: { default: 'true', phase: 'Active' } },
@@ -334,6 +336,107 @@ describe('DevWorkspace store, actions', () => {
   });
 
   describe('startWorkspace', () => {
+    describe('updateEditor', () => {
+      it('should check for update if the target devWorkspase has an editor name and the lifeTime > 30s', async () => {
+        const devWorkspace = new DevWorkspaceBuilder()
+          .withMetadata({
+            creationTimestamp: new Date(Date.now() - 60 * 1000),
+          })
+          .withContributions([
+            {
+              name: 'editor',
+              kubernetes: {
+                name: 'che-code',
+              },
+            },
+          ])
+          .build();
+
+        (checkRunningWorkspacesLimit as jest.Mock).mockImplementation(() => undefined);
+
+        (fetchServerConfig as jest.Mock).mockResolvedValueOnce({});
+
+        mockChangeWorkspaceStatus.mockResolvedValueOnce(devWorkspace);
+        mockManageContainerBuildAttribute.mockResolvedValueOnce(devWorkspace);
+        mockManageDebugMode.mockResolvedValueOnce(devWorkspace);
+        mockManagePvcStrategy.mockResolvedValueOnce(devWorkspace);
+        mockOnStart.mockResolvedValueOnce(devWorkspace);
+        mockUpdate.mockResolvedValueOnce(devWorkspace);
+        mockOnStart.mockResolvedValueOnce(devWorkspace);
+        mockCheckForDevWorkspaceError.mockReturnValueOnce(devWorkspace);
+        mockCheckForEditorUpdate.mockResolvedValueOnce([]);
+
+        const store = storeBuilder.withDevWorkspaces({ workspaces: [devWorkspace] }).build();
+
+        await store.dispatch(testStore.actionCreators.startWorkspace(devWorkspace));
+
+        expect(mockCheckForEditorUpdate).toHaveBeenCalled();
+      });
+
+      it('should not check for update if the lifeTime less then 30s', async () => {
+        const devWorkspace = new DevWorkspaceBuilder()
+          .withMetadata({
+            creationTimestamp: new Date(Date.now() - 10 * 1000),
+          })
+          .withContributions([
+            {
+              name: 'editor',
+              kubernetes: {
+                name: 'che-code',
+              },
+            },
+          ])
+          .build();
+
+        (checkRunningWorkspacesLimit as jest.Mock).mockImplementation(() => undefined);
+
+        (fetchServerConfig as jest.Mock).mockResolvedValueOnce({});
+
+        mockChangeWorkspaceStatus.mockResolvedValueOnce(devWorkspace);
+        mockManageContainerBuildAttribute.mockResolvedValueOnce(devWorkspace);
+        mockManageDebugMode.mockResolvedValueOnce(devWorkspace);
+        mockManagePvcStrategy.mockResolvedValueOnce(devWorkspace);
+        mockOnStart.mockResolvedValueOnce(devWorkspace);
+        mockUpdate.mockResolvedValueOnce(devWorkspace);
+        mockOnStart.mockResolvedValueOnce(devWorkspace);
+        mockCheckForDevWorkspaceError.mockReturnValueOnce(devWorkspace);
+        mockCheckForEditorUpdate.mockResolvedValueOnce([]);
+
+        const store = storeBuilder.withDevWorkspaces({ workspaces: [devWorkspace] }).build();
+
+        await store.dispatch(testStore.actionCreators.startWorkspace(devWorkspace));
+
+        expect(mockCheckForEditorUpdate).not.toHaveBeenCalled();
+      });
+
+      it('should not check for update without editor name', async () => {
+        const devWorkspace = new DevWorkspaceBuilder()
+          .withMetadata({
+            creationTimestamp: new Date(Date.now() - 60 * 1000),
+          })
+          .build();
+
+        (checkRunningWorkspacesLimit as jest.Mock).mockImplementation(() => undefined);
+
+        (fetchServerConfig as jest.Mock).mockResolvedValueOnce({});
+
+        mockChangeWorkspaceStatus.mockResolvedValueOnce(devWorkspace);
+        mockManageContainerBuildAttribute.mockResolvedValueOnce(devWorkspace);
+        mockManageDebugMode.mockResolvedValueOnce(devWorkspace);
+        mockManagePvcStrategy.mockResolvedValueOnce(devWorkspace);
+        mockOnStart.mockResolvedValueOnce(devWorkspace);
+        mockUpdate.mockResolvedValueOnce(devWorkspace);
+        mockOnStart.mockResolvedValueOnce(devWorkspace);
+        mockCheckForDevWorkspaceError.mockReturnValueOnce(devWorkspace);
+        mockCheckForEditorUpdate.mockResolvedValueOnce([]);
+
+        const store = storeBuilder.withDevWorkspaces({ workspaces: [devWorkspace] }).build();
+
+        await store.dispatch(testStore.actionCreators.startWorkspace(devWorkspace));
+
+        expect(mockCheckForEditorUpdate).not.toHaveBeenCalled();
+      });
+    });
     it('should create REQUEST_DEVWORKSPACE and UPDATE_DEVWORKSPACE when starting DevWorkspace', async () => {
       const devWorkspace = new DevWorkspaceBuilder().build();
 

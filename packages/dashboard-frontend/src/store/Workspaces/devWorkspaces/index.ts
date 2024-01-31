@@ -65,6 +65,11 @@ import {
   updateEditorDevfile,
 } from '@/store/Workspaces/devWorkspaces/editorImage';
 import { selectDevWorkspacesResourceVersion } from '@/store/Workspaces/devWorkspaces/selectors';
+import {
+  getEditorName,
+  getLifeTime,
+  updateEditor,
+} from '@/store/Workspaces/devWorkspaces/updateEditor';
 
 export const onStatusChangeCallbacks = new Map<string, (status: string) => void>();
 
@@ -337,6 +342,12 @@ export const actionCreators: ActionCreators = {
         workspace = await getDevWorkspaceClient().manageContainerBuildAttribute(workspace, config);
 
         workspace = await getDevWorkspaceClient().manageDebugMode(workspace, debugWorkspace);
+
+        const editorName = getEditorName(workspace);
+        const lifeTime = getLifeTime(workspace);
+        if (editorName && lifeTime > 30) {
+          await updateEditor(editorName, getState);
+        }
 
         const startingWorkspace = await getDevWorkspaceClient().changeWorkspaceStatus(
           workspace,
