@@ -52,10 +52,10 @@ describe('DevWorkspaceTemplate API', () => {
 
   describe('fetch DevWorkspaceTemplates', () => {
     it('should call "/dashboard/api/namespace/test-name/devworkspacetemplates"', async () => {
-      mockGet.mockResolvedValueOnce(new Promise(resolve => resolve({ data: expect.anything() })));
+      mockGet.mockResolvedValueOnce(new Promise(resolve => resolve({ data: {} })));
       await getTemplates(namespace);
 
-      expect(mockGet).toBeCalledWith(
+      expect(mockGet).toHaveBeenCalledWith(
         '/dashboard/api/namespace/test-name/devworkspacetemplates',
         undefined,
       );
@@ -74,10 +74,10 @@ describe('DevWorkspaceTemplate API', () => {
 
   describe('fetch a DevWorkspaceTemplate by name', () => {
     it('should call "/dashboard/api/namespace/test-name/devworkspacetemplates/che-code"', async () => {
-      mockGet.mockResolvedValueOnce(new Promise(resolve => resolve({ data: expect.anything() })));
+      mockGet.mockResolvedValueOnce(new Promise(resolve => resolve({ data: {} })));
       await getTemplateByName(namespace, devWorkspaceTemplateName);
 
-      expect(mockGet).toBeCalledWith(
+      expect(mockGet).toHaveBeenCalledWith(
         '/dashboard/api/namespace/test-name/devworkspacetemplates/che-code',
         undefined,
       );
@@ -96,10 +96,10 @@ describe('DevWorkspaceTemplate API', () => {
 
   describe('create a DevWorkspaceTemplate', () => {
     it('should call "/dashboard/api/namespace/test-name/devworkspacetemplates"', async () => {
-      mockPost.mockResolvedValueOnce(new Promise(resolve => resolve({ data: expect.anything() })));
+      mockPost.mockResolvedValueOnce(new Promise(resolve => resolve({ data: {} })));
       await createTemplate(devWorkspaceTemplate);
 
-      expect(mockPost).toBeCalledWith(
+      expect(mockPost).toHaveBeenCalledWith(
         '/dashboard/api/namespace/test-name/devworkspacetemplates',
         { template: devWorkspaceTemplate },
         undefined,
@@ -119,10 +119,10 @@ describe('DevWorkspaceTemplate API', () => {
 
   describe('patch a DevWorkspaceTemplate', () => {
     it('should call "/dashboard/api/namespace/test-name/devworkspacetemplates/che-code"', async () => {
-      mockPatch.mockResolvedValueOnce(new Promise(resolve => resolve({ data: expect.anything() })));
+      mockPatch.mockResolvedValueOnce(new Promise(resolve => resolve({ data: {} })));
       await patchTemplate(namespace, devWorkspaceTemplateName, devWorkspaceTemplatePatch);
 
-      expect(mockPatch).toBeCalledWith(
+      expect(mockPatch).toHaveBeenCalledWith(
         '/dashboard/api/namespace/test-name/devworkspacetemplates/che-code',
         [{ op: 'replace', path: '/spec', value: {} }],
         undefined,

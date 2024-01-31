@@ -54,7 +54,7 @@ export async function getTemplateByName(
     return response.data;
   } catch (e) {
     throw new Error(
-      `Failed to fetch devWorkspaceTemplate by name. ${common.helpers.errors.getMessage(e)}`,
+      `Failed to fetch DevWorkspaceTemplate by name. ${common.helpers.errors.getMessage(e)}`,
     );
   }
 }

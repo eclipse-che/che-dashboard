@@ -191,7 +191,7 @@ describe('DevWorkspace client editor update', () => {
         value: template.spec,
       },
     ]);
-    expect(spyPatchWorkspace).toBeCalledWith(namespace, editorName, [
+    expect(spyPatchWorkspace).toHaveBeenCalledWith(namespace, editorName, [
       {
         op: 'replace',
         path: '/spec',
