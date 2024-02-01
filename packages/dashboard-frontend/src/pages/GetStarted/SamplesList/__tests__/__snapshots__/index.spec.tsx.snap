@@ -1,0 +1,143 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Samples List preferred storage: ephemeral snapshot 1`] = `
+[
+  <div
+    className="pf-l-flex pf-m-column"
+  >
+    <div
+      className="pf-m-spacer-lg"
+    >
+      <div
+        className="pf-c-content pf-u-m-md pf-u-mt-0"
+      >
+        <h3
+          className=""
+          data-ouia-component-id="OUIA-Generated-Text-7"
+          data-ouia-component-type="PF4/Text"
+          data-ouia-safe={true}
+          data-pf-content={true}
+        >
+          Select a Sample
+        </h3>
+        <small
+          className=""
+          data-ouia-component-id="OUIA-Generated-Text-8"
+          data-ouia-component-type="PF4/Text"
+          data-ouia-safe={true}
+          data-pf-content={true}
+        >
+          Select a sample to create your first workspace.
+        </small>
+      </div>
+    </div>
+    <div
+      className="pf-m-spacer-lg pf-m-grow"
+    >
+      <div>
+        <span>
+          Samples List Toolbar
+        </span>
+        <span
+          data-testid="isTemporary"
+        >
+          true
+        </span>
+        <button
+          onClick={[Function]}
+        >
+          Toggle isTemporary
+        </button>
+      </div>
+    </div>
+  </div>,
+  <div
+    data-testid="samples-list-gallery"
+  >
+    <div>
+      Samples List Gallery
+    </div>
+    <div
+      data-testid="sample-card"
+    >
+      Quarkus REST API
+      <button
+        onClick={[Function]}
+      >
+        Select Sample
+      </button>
+    </div>
+  </div>,
+]
+`;
+
+exports[`Samples List preferred storage: non-ephemeral snapshot 1`] = `
+[
+  <div
+    className="pf-l-flex pf-m-column"
+  >
+    <div
+      className="pf-m-spacer-lg"
+    >
+      <div
+        className="pf-c-content pf-u-m-md pf-u-mt-0"
+      >
+        <h3
+          className=""
+          data-ouia-component-id="OUIA-Generated-Text-1"
+          data-ouia-component-type="PF4/Text"
+          data-ouia-safe={true}
+          data-pf-content={true}
+        >
+          Select a Sample
+        </h3>
+        <small
+          className=""
+          data-ouia-component-id="OUIA-Generated-Text-2"
+          data-ouia-component-type="PF4/Text"
+          data-ouia-safe={true}
+          data-pf-content={true}
+        >
+          Select a sample to create your first workspace.
+        </small>
+      </div>
+    </div>
+    <div
+      className="pf-m-spacer-lg pf-m-grow"
+    >
+      <div>
+        <span>
+          Samples List Toolbar
+        </span>
+        <span
+          data-testid="isTemporary"
+        >
+          false
+        </span>
+        <button
+          onClick={[Function]}
+        >
+          Toggle isTemporary
+        </button>
+      </div>
+    </div>
+  </div>,
+  <div
+    data-testid="samples-list-gallery"
+  >
+    <div>
+      Samples List Gallery
+    </div>
+    <div
+      data-testid="sample-card"
+    >
+      Quarkus REST API
+      <button
+        onClick={[Function]}
+      >
+        Select Sample
+      </button>
+    </div>
+  </div>,
+]
+`;

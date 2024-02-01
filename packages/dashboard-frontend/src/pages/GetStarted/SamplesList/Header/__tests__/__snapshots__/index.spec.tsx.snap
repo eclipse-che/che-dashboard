@@ -1,0 +1,26 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`SamplesListHeader snapshot 1`] = `
+<div
+  className="pf-c-content pf-u-m-md pf-u-mt-0"
+>
+  <h3
+    className=""
+    data-ouia-component-id="OUIA-Generated-Text-1"
+    data-ouia-component-type="PF4/Text"
+    data-ouia-safe={true}
+    data-pf-content={true}
+  >
+    Select a Sample
+  </h3>
+  <small
+    className=""
+    data-ouia-component-id="OUIA-Generated-Text-2"
+    data-ouia-component-type="PF4/Text"
+    data-ouia-safe={true}
+    data-pf-content={true}
+  >
+    Select a sample to create your first workspace.
+  </small>
+</div>
+`;
