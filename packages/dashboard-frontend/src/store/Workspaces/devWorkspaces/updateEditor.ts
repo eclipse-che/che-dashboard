@@ -20,7 +20,11 @@ import { AppState } from '@/store';
 import { selectApplications } from '@/store/ClusterInfo/selectors';
 import { selectDefaultNamespace } from '@/store/InfrastructureNamespaces/selectors';
 import { selectDwEditorsPluginsList } from '@/store/Plugins/devWorkspacePlugins/selectors';
-import { selectOpenVSXUrl, selectPluginRegistryUrl } from '@/store/ServerConfig/selectors';
+import {
+  selectOpenVSXUrl,
+  selectPluginRegistryInternalUrl,
+  selectPluginRegistryUrl,
+} from '@/store/ServerConfig/selectors';
 
 const devWorkspaceClient = container.get(DevWorkspaceClient);
 
@@ -33,7 +37,7 @@ export async function updateEditor(editorName: string, getState: () => AppState)
   });
   const openVSXUrl = selectOpenVSXUrl(state);
   const pluginRegistryUrl = selectPluginRegistryUrl(state);
-  const pluginRegistryInternalUrl = state.dwServerConfig.config.pluginRegistryInternalURL;
+  const pluginRegistryInternalUrl = selectPluginRegistryInternalUrl(state);
   const clusterConsole = selectApplications(state).find(
     app => app.id === ApplicationId.CLUSTER_CONSOLE,
   );
@@ -52,7 +56,7 @@ export async function updateEditor(editorName: string, getState: () => AppState)
       await DwtApi.patchTemplate(namespace, editorName, updates);
     }
   } catch (e) {
-    console.error('Failed to update devWorkspaceTemplate.', e);
+    console.error(e);
   }
 }
 
@@ -73,14 +77,11 @@ export function getEditorName(workspace: devfileApi.DevWorkspace): string | unde
   return editorName;
 }
 
-export function getLifeTime(workspace: devfileApi.DevWorkspace): number {
+export function getLifeTimeMs(workspace: devfileApi.DevWorkspace): number {
   const creationTimestamp = workspace.metadata.creationTimestamp;
-
   if (creationTimestamp === undefined) {
     return 0;
   }
 
-  const lifeTimeInMs = new Date().getTime() - new Date(creationTimestamp).getTime();
-
-  return Math.floor(lifeTimeInMs / 1000);
+  return new Date().getTime() - new Date(creationTimestamp).getTime();
 }

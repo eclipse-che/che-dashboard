@@ -67,7 +67,7 @@ import {
 import { selectDevWorkspacesResourceVersion } from '@/store/Workspaces/devWorkspaces/selectors';
 import {
   getEditorName,
-  getLifeTime,
+  getLifeTimeMs,
   updateEditor,
 } from '@/store/Workspaces/devWorkspaces/updateEditor';
 
@@ -344,8 +344,8 @@ export const actionCreators: ActionCreators = {
         workspace = await getDevWorkspaceClient().manageDebugMode(workspace, debugWorkspace);
 
         const editorName = getEditorName(workspace);
-        const lifeTime = getLifeTime(workspace);
-        if (editorName && lifeTime > 30) {
+        const lifeTimeMs = getLifeTimeMs(workspace);
+        if (editorName && lifeTimeMs > 30000) {
           await updateEditor(editorName, getState);
         }
 
