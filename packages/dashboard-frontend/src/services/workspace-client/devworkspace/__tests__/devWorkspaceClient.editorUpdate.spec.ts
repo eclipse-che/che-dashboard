@@ -38,11 +38,9 @@ describe('DevWorkspace client editor update', () => {
       // if cpuLimit changed from '1000m' to '2000m'
       const newTemplate = getDevWorkspaceTemplate('2000m');
 
-      const url = newTemplate?.metadata?.annotations?.[
-        'che.eclipse.org/plugin-registry-url'
-      ] as string;
+      const url = newTemplate.metadata.annotations?.['che.eclipse.org/plugin-registry-url'];
 
-      const editorName = newTemplate?.metadata?.name as string;
+      const editorName = newTemplate.metadata.name;
 
       const patch = await client.checkForTemplatesUpdate(
         editorName,
@@ -76,11 +74,9 @@ describe('DevWorkspace client editor update', () => {
       // if nothing changed
       const newTemplate = getDevWorkspaceTemplate('1000m');
 
-      const url = newTemplate?.metadata?.annotations?.[
-        'che.eclipse.org/plugin-registry-url'
-      ] as string;
+      const url = newTemplate.metadata.annotations?.['che.eclipse.org/plugin-registry-url'];
 
-      const editorName = newTemplate?.metadata?.name as string;
+      const editorName = newTemplate.metadata.name;
 
       const patch = await client.checkForTemplatesUpdate(
         editorName,
@@ -113,11 +109,9 @@ describe('DevWorkspace client editor update', () => {
         new Promise(resolve => resolve({ data: JSON.stringify(newTemplate.spec) })),
       );
 
-      const url = newTemplate?.metadata?.annotations?.[
-        'che.eclipse.org/plugin-registry-url'
-      ] as string;
+      const url = newTemplate.metadata.annotations?.['che.eclipse.org/plugin-registry-url'];
 
-      const editorName = newTemplate?.metadata?.name as string;
+      const editorName = newTemplate.metadata.name;
 
       const patch = await client.checkForTemplatesUpdate(
         editorName,
@@ -153,11 +147,9 @@ describe('DevWorkspace client editor update', () => {
         new Promise(resolve => resolve({ data: JSON.stringify(newTemplate.spec) })),
       );
 
-      const url = newTemplate?.metadata?.annotations?.[
-        'che.eclipse.org/plugin-registry-url'
-      ] as string;
+      const url = newTemplate.metadata.annotations?.['che.eclipse.org/plugin-registry-url'];
 
-      const editorName = newTemplate?.metadata?.name as string;
+      const editorName = newTemplate.metadata.name;
 
       const patch = await client.checkForTemplatesUpdate(
         editorName,
@@ -180,7 +172,7 @@ describe('DevWorkspace client editor update', () => {
   it('should patch target template', async () => {
     const template = getDevWorkspaceTemplate('1000m');
 
-    const editorName = template?.metadata?.name as string;
+    const editorName = template.metadata.name;
 
     const spyPatchWorkspace = jest.spyOn(DwtApi, 'patchTemplate').mockResolvedValue(template);
 
