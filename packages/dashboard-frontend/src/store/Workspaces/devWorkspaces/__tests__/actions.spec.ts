@@ -336,6 +336,21 @@ describe('DevWorkspace store, actions', () => {
   });
 
   describe('startWorkspace', () => {
+    const prepareDevWorkspaceMocks = (devWorkspace: devfileApi.DevWorkspace) => {
+      mockChangeWorkspaceStatus.mockResolvedValueOnce(devWorkspace);
+      mockManageContainerBuildAttribute.mockResolvedValueOnce(devWorkspace);
+      mockManageDebugMode.mockResolvedValueOnce(devWorkspace);
+      mockManagePvcStrategy.mockResolvedValueOnce(devWorkspace);
+      mockOnStart.mockResolvedValueOnce(devWorkspace);
+      mockUpdate.mockResolvedValueOnce(devWorkspace);
+      mockOnStart.mockResolvedValueOnce(devWorkspace);
+      mockCheckForDevWorkspaceError.mockReturnValueOnce(devWorkspace);
+    };
+
+    beforeEach(() => {
+      (fetchServerConfig as jest.Mock).mockResolvedValueOnce({});
+    });
+
     describe('updateEditor', () => {
       it('should check for update if the target devWorkspase has an editor name and the lifeTime > 30s', async () => {
         const devWorkspace = new DevWorkspaceBuilder()
@@ -354,16 +369,8 @@ describe('DevWorkspace store, actions', () => {
 
         (checkRunningWorkspacesLimit as jest.Mock).mockImplementation(() => undefined);
 
-        (fetchServerConfig as jest.Mock).mockResolvedValueOnce({});
+        prepareDevWorkspaceMocks(devWorkspace);
 
-        mockChangeWorkspaceStatus.mockResolvedValueOnce(devWorkspace);
-        mockManageContainerBuildAttribute.mockResolvedValueOnce(devWorkspace);
-        mockManageDebugMode.mockResolvedValueOnce(devWorkspace);
-        mockManagePvcStrategy.mockResolvedValueOnce(devWorkspace);
-        mockOnStart.mockResolvedValueOnce(devWorkspace);
-        mockUpdate.mockResolvedValueOnce(devWorkspace);
-        mockOnStart.mockResolvedValueOnce(devWorkspace);
-        mockCheckForDevWorkspaceError.mockReturnValueOnce(devWorkspace);
         mockCheckForEditorUpdate.mockResolvedValueOnce([]);
 
         const store = storeBuilder.withDevWorkspaces({ workspaces: [devWorkspace] }).build();
@@ -390,16 +397,8 @@ describe('DevWorkspace store, actions', () => {
 
         (checkRunningWorkspacesLimit as jest.Mock).mockImplementation(() => undefined);
 
-        (fetchServerConfig as jest.Mock).mockResolvedValueOnce({});
+        prepareDevWorkspaceMocks(devWorkspace);
 
-        mockChangeWorkspaceStatus.mockResolvedValueOnce(devWorkspace);
-        mockManageContainerBuildAttribute.mockResolvedValueOnce(devWorkspace);
-        mockManageDebugMode.mockResolvedValueOnce(devWorkspace);
-        mockManagePvcStrategy.mockResolvedValueOnce(devWorkspace);
-        mockOnStart.mockResolvedValueOnce(devWorkspace);
-        mockUpdate.mockResolvedValueOnce(devWorkspace);
-        mockOnStart.mockResolvedValueOnce(devWorkspace);
-        mockCheckForDevWorkspaceError.mockReturnValueOnce(devWorkspace);
         mockCheckForEditorUpdate.mockResolvedValueOnce([]);
 
         const store = storeBuilder.withDevWorkspaces({ workspaces: [devWorkspace] }).build();
@@ -418,16 +417,8 @@ describe('DevWorkspace store, actions', () => {
 
         (checkRunningWorkspacesLimit as jest.Mock).mockImplementation(() => undefined);
 
-        (fetchServerConfig as jest.Mock).mockResolvedValueOnce({});
+        prepareDevWorkspaceMocks(devWorkspace);
 
-        mockChangeWorkspaceStatus.mockResolvedValueOnce(devWorkspace);
-        mockManageContainerBuildAttribute.mockResolvedValueOnce(devWorkspace);
-        mockManageDebugMode.mockResolvedValueOnce(devWorkspace);
-        mockManagePvcStrategy.mockResolvedValueOnce(devWorkspace);
-        mockOnStart.mockResolvedValueOnce(devWorkspace);
-        mockUpdate.mockResolvedValueOnce(devWorkspace);
-        mockOnStart.mockResolvedValueOnce(devWorkspace);
-        mockCheckForDevWorkspaceError.mockReturnValueOnce(devWorkspace);
         mockCheckForEditorUpdate.mockResolvedValueOnce([]);
 
         const store = storeBuilder.withDevWorkspaces({ workspaces: [devWorkspace] }).build();
@@ -442,16 +433,7 @@ describe('DevWorkspace store, actions', () => {
 
       (checkRunningWorkspacesLimit as jest.Mock).mockImplementation(() => undefined);
 
-      (fetchServerConfig as jest.Mock).mockResolvedValueOnce({});
-
-      mockChangeWorkspaceStatus.mockResolvedValueOnce(devWorkspace);
-      mockManageContainerBuildAttribute.mockResolvedValueOnce(devWorkspace);
-      mockManageDebugMode.mockResolvedValueOnce(devWorkspace);
-      mockManagePvcStrategy.mockResolvedValueOnce(devWorkspace);
-      mockOnStart.mockResolvedValueOnce(devWorkspace);
-      mockUpdate.mockResolvedValueOnce(devWorkspace);
-      mockOnStart.mockResolvedValueOnce(devWorkspace);
-      mockCheckForDevWorkspaceError.mockReturnValueOnce(devWorkspace);
+      prepareDevWorkspaceMocks(devWorkspace);
 
       const store = storeBuilder.withDevWorkspaces({ workspaces: [devWorkspace] }).build();
 
@@ -487,14 +469,7 @@ describe('DevWorkspace store, actions', () => {
         throw new Error('Limit reached.');
       });
 
-      mockChangeWorkspaceStatus.mockResolvedValueOnce(devWorkspace);
-      mockManageContainerBuildAttribute.mockResolvedValueOnce(devWorkspace);
-      mockManageDebugMode.mockResolvedValueOnce(devWorkspace);
-      mockManagePvcStrategy.mockResolvedValueOnce(devWorkspace);
-      mockOnStart.mockResolvedValueOnce(devWorkspace);
-      mockUpdate.mockResolvedValueOnce(devWorkspace);
-      mockOnStart.mockResolvedValueOnce(devWorkspace);
-      mockCheckForDevWorkspaceError.mockReturnValueOnce(devWorkspace);
+      prepareDevWorkspaceMocks(devWorkspace);
 
       const store = storeBuilder.withDevWorkspaces({ workspaces: [devWorkspace] }).build();
 
