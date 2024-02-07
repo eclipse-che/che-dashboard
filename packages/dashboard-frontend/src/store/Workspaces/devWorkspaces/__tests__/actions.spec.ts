@@ -358,21 +358,7 @@ describe('DevWorkspace store, actions', () => {
 
     describe('updateEditor', () => {
       it('should check for update if the target devWorkspase has an editor name and the lifeTime > 30s', async () => {
-        const devWorkspace = new DevWorkspaceBuilder()
-          .withMetadata({
-            creationTimestamp: new Date(Date.now() - 60 * 1000),
-          })
-          .withContributions([
-            {
-              name: 'editor',
-              kubernetes: {
-                name: 'che-code',
-              },
-            },
-          ])
-          .build();
-
-        (checkRunningWorkspacesLimit as jest.Mock).mockImplementation(() => undefined);
+        const devWorkspace = new DevWorkspaceBuilder().build();
 
         prepareDevWorkspaceMocks(devWorkspace);
 
@@ -385,27 +371,16 @@ describe('DevWorkspace store, actions', () => {
 
         await store.dispatch(testStore.actionCreators.startWorkspace(devWorkspace));
 
-        expect(mockCheckForEditorUpdate).toHaveBeenCalled();
+        expect(mockCheckForEditorUpdate).toHaveBeenCalledWith('che-code', store.getState);
       });
 
       it('should not check for update if the lifeTime less then 30s', async () => {
-        const devWorkspace = new DevWorkspaceBuilder()
-          .withMetadata({
-            creationTimestamp: new Date(Date.now() - 10 * 1000),
-          })
-          .withContributions([
-            {
-              name: 'editor',
-              kubernetes: {
-                name: 'che-code',
-              },
-            },
-          ])
-          .build();
-
-        (checkRunningWorkspacesLimit as jest.Mock).mockImplementation(() => undefined);
+        const devWorkspace = new DevWorkspaceBuilder().build();
 
         prepareDevWorkspaceMocks(devWorkspace);
+
+        mockGetEditorName.mockReturnValueOnce('che-code');
+        mockGetLifeTimeMs.mockReturnValueOnce(1000);
 
         mockCheckForEditorUpdate.mockResolvedValueOnce([]);
 
@@ -417,15 +392,12 @@ describe('DevWorkspace store, actions', () => {
       });
 
       it('should not check for update without editor name', async () => {
-        const devWorkspace = new DevWorkspaceBuilder()
-          .withMetadata({
-            creationTimestamp: new Date(Date.now() - 60 * 1000),
-          })
-          .build();
-
-        (checkRunningWorkspacesLimit as jest.Mock).mockImplementation(() => undefined);
+        const devWorkspace = new DevWorkspaceBuilder().build();
 
         prepareDevWorkspaceMocks(devWorkspace);
+
+        mockGetEditorName.mockReturnValueOnce(undefined);
+        mockGetLifeTimeMs.mockReturnValueOnce(60000);
 
         mockCheckForEditorUpdate.mockResolvedValueOnce([]);
 
