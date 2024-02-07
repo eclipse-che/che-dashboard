@@ -341,7 +341,12 @@ describe('DevWorkspace store, actions', () => {
   });
 
   describe('startWorkspace', () => {
-    const prepareDevWorkspaceMocks = (devWorkspace: devfileApi.DevWorkspace) => {
+    let devWorkspace: devfileApi.DevWorkspace;
+
+    beforeEach(() => {
+      (fetchServerConfig as jest.Mock).mockResolvedValueOnce({});
+
+      devWorkspace = new DevWorkspaceBuilder().build();
       mockChangeWorkspaceStatus.mockResolvedValueOnce(devWorkspace);
       mockManageContainerBuildAttribute.mockResolvedValueOnce(devWorkspace);
       mockManageDebugMode.mockResolvedValueOnce(devWorkspace);
@@ -350,18 +355,10 @@ describe('DevWorkspace store, actions', () => {
       mockUpdate.mockResolvedValueOnce(devWorkspace);
       mockOnStart.mockResolvedValueOnce(devWorkspace);
       mockCheckForDevWorkspaceError.mockReturnValueOnce(devWorkspace);
-    };
-
-    beforeEach(() => {
-      (fetchServerConfig as jest.Mock).mockResolvedValueOnce({});
     });
 
     describe('updateEditor', () => {
       it('should check for update if the target devWorkspase has an editor name and the lifeTime > 30s', async () => {
-        const devWorkspace = new DevWorkspaceBuilder().build();
-
-        prepareDevWorkspaceMocks(devWorkspace);
-
         mockGetEditorName.mockReturnValueOnce('che-code');
         mockGetLifeTimeMs.mockReturnValueOnce(60000);
 
@@ -375,10 +372,6 @@ describe('DevWorkspace store, actions', () => {
       });
 
       it('should not check for update if the lifeTime less then 30s', async () => {
-        const devWorkspace = new DevWorkspaceBuilder().build();
-
-        prepareDevWorkspaceMocks(devWorkspace);
-
         mockGetEditorName.mockReturnValueOnce('che-code');
         mockGetLifeTimeMs.mockReturnValueOnce(1000);
 
@@ -392,10 +385,6 @@ describe('DevWorkspace store, actions', () => {
       });
 
       it('should not check for update without editor name', async () => {
-        const devWorkspace = new DevWorkspaceBuilder().build();
-
-        prepareDevWorkspaceMocks(devWorkspace);
-
         mockGetEditorName.mockReturnValueOnce(undefined);
         mockGetLifeTimeMs.mockReturnValueOnce(60000);
 
@@ -409,11 +398,7 @@ describe('DevWorkspace store, actions', () => {
       });
     });
     it('should create REQUEST_DEVWORKSPACE and UPDATE_DEVWORKSPACE when starting DevWorkspace', async () => {
-      const devWorkspace = new DevWorkspaceBuilder().build();
-
       (checkRunningWorkspacesLimit as jest.Mock).mockImplementation(() => undefined);
-
-      prepareDevWorkspaceMocks(devWorkspace);
 
       const store = storeBuilder.withDevWorkspaces({ workspaces: [devWorkspace] }).build();
 
@@ -443,13 +428,9 @@ describe('DevWorkspace store, actions', () => {
     });
 
     it('should create REQUEST_DEVWORKSPACE and RECEIVE_DEVWORKSPACE_ERROR when failed to start a DevWorkspace', async () => {
-      const devWorkspace = new DevWorkspaceBuilder().build();
-
       (checkRunningWorkspacesLimit as jest.Mock).mockImplementation(() => {
         throw new Error('Limit reached.');
       });
-
-      prepareDevWorkspaceMocks(devWorkspace);
 
       const store = storeBuilder.withDevWorkspaces({ workspaces: [devWorkspace] }).build();
 
