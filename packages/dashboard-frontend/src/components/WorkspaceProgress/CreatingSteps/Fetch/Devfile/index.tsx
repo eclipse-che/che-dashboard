@@ -216,7 +216,7 @@ class CreatingStepFetchDevfile extends ProgressStep<Props, State> {
 
     let resolveDone = false;
     try {
-      // do not throw if git+SSH URL is provided
+      // do not resolve a devfile if git+SSH URL is provided
       if (FactoryLocationAdapter.isSshLocation(sourceUrl)) {
         this.handleDefaultDevfile('');
         return true;
