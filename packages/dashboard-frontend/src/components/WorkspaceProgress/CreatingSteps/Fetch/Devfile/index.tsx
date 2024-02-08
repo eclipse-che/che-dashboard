@@ -216,6 +216,11 @@ class CreatingStepFetchDevfile extends ProgressStep<Props, State> {
 
     let resolveDone = false;
     try {
+      // do not throw if git+SSH URL is provided
+      if (FactoryLocationAdapter.isSshLocation(sourceUrl)) {
+        this.handleDefaultDevfile('');
+        return true;
+      }
       // start resolving the devfile
       resolveDone = await this.resolveDevfile(sourceUrl);
     } catch (e) {
@@ -228,12 +233,6 @@ class CreatingStepFetchDevfile extends ProgressStep<Props, State> {
         errorMessage === 'Failed to fetch devfile' ||
         errorMessage.startsWith('Could not reach devfile')
       ) {
-        // do not throw if git+SSH URL is provided
-        if (FactoryLocationAdapter.isSshLocation(sourceUrl)) {
-          this.handleDefaultDevfile('');
-          return true;
-        }
-
         throw new UnsupportedGitProviderError(errorMessage);
       }
       throw e;
