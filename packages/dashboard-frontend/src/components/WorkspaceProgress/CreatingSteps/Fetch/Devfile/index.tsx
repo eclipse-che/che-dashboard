@@ -79,7 +79,9 @@ class CreatingStepFetchDevfile extends ProgressStep<Props, State> {
     super(props);
 
     const factoryParams = buildFactoryParams(props.searchParams);
-    const name = `Inspecting repo ${factoryParams.sourceUrl} for a devfile`;
+    const name = FactoryLocationAdapter.isHttpLocation(factoryParams.sourceUrl)
+      ? `Inspecting repo ${factoryParams.sourceUrl} for a devfile`
+      : 'Applying default devfile';
 
     this.state = {
       factoryParams,
