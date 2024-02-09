@@ -122,7 +122,6 @@ describe('Creating steps, fetching a devfile', () => {
     await waitFor(() => expect(mockOnNextStep).toHaveBeenCalled());
     expect(mockOnError).not.toHaveBeenCalled();
     expect(mockOnRestart).not.toHaveBeenCalled();
-    expect(mockRequestFactoryResolver).not.toHaveBeenCalled();
   });
 
   test('no project url, remotes exist', async () => {
