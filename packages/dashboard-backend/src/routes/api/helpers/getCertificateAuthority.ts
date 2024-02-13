@@ -10,7 +10,7 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
+import axios from 'axios';
 import * as fs from 'fs-extra';
 import https from 'https';
 import path from 'path';
@@ -22,21 +22,11 @@ const certificateAuthority = getCertificateAuthority(
   CHE_SELF_SIGNED_MOUNT_PATH ? CHE_SELF_SIGNED_MOUNT_PATH : DEFAULT_CHE_SELF_SIGNED_MOUNT_PATH,
 );
 
-export const axiosInstance = {
-  get: async (url: string, config?: AxiosRequestConfig): Promise<AxiosResponse> => {
-    try {
-      return axios.create().get(url, config);
-    } catch (error) {
-      return axios
-        .create({
-          httpsAgent: new https.Agent({
-            ca: certificateAuthority,
-          }),
-        })
-        .get(url, config);
-    }
-  },
-};
+export const axiosInstance = axios.create({
+  httpsAgent: new https.Agent({
+    ca: certificateAuthority,
+  }),
+});
 
 function searchCertificate(
   certPath: string,

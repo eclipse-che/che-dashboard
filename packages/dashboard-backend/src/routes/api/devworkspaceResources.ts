@@ -13,7 +13,6 @@
 import { V1alpha2DevWorkspaceTemplate } from '@devfile/api';
 import { Main as DevworkspaceGenerator } from '@eclipse-che/che-devworkspace-generator/lib/main';
 import { api } from '@eclipse-che/common';
-import { AxiosInstance } from 'axios';
 import { FastifyInstance, FastifyRequest } from 'fastify';
 import { dump } from 'js-yaml';
 
@@ -43,7 +42,7 @@ export function registerDevworkspaceResourcesRoute(instance: FastifyInstance) {
             editorContent,
             projects: [],
           },
-          axiosInstance as AxiosInstance,
+          axiosInstance,
         );
         // write templates and then DevWorkspace in a single file
         const allContentArray = context.devWorkspaceTemplates.map(
