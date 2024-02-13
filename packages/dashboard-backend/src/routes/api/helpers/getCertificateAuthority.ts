@@ -24,11 +24,10 @@ const certificateAuthority = getCertificateAuthority(
 
 export const axiosInstance = {
   get: async (url: string, config?: AxiosRequestConfig): Promise<AxiosResponse> => {
-    let response: AxiosResponse;
     try {
-      response = await axios.get(url, config);
+      return axios.create().get(url, config);
     } catch (error) {
-      response = await axios
+      return axios
         .create({
           httpsAgent: new https.Agent({
             ca: certificateAuthority,
@@ -36,7 +35,6 @@ export const axiosInstance = {
         })
         .get(url, config);
     }
-    return response;
   },
 };
 
