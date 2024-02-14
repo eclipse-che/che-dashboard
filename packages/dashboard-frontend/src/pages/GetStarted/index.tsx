@@ -16,6 +16,7 @@ import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 
 import Head from '@/components/Head';
+import EditorSelector from '@/pages/GetStarted/EditorSelector';
 import ImportFromGit from '@/pages/GetStarted/ImportFromGit';
 import SamplesList from '@/pages/GetStarted/SamplesList';
 
@@ -39,6 +40,12 @@ export class GetStarted extends React.PureComponent<Props> {
         <Divider />
         <PageSection variant={PageSectionVariants.default}>
           <PageSection variant={PageSectionVariants.light}>
+            <EditorSelector />
+          </PageSection>
+          <PageSection
+            variant={PageSectionVariants.light}
+            style={{ marginTop: 'var(--pf-c-page__main-section--PaddingTop)' }}
+          >
             <ImportFromGit history={history} />
           </PageSection>
           <PageSection

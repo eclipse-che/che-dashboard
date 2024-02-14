@@ -1,0 +1,199 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Editor Selector snapshot 1`] = `
+<div
+  className="pf-c-panel"
+>
+  <div
+    className="pf-c-panel__header"
+  >
+    <h3
+      className="pf-c-title pf-m-lg"
+      data-ouia-component-id="OUIA-Generated-Title-1"
+      data-ouia-component-type="PF4/Title"
+      data-ouia-safe={true}
+    >
+      Select an Editor
+    </h3>
+  </div>
+  <div
+    className="pf-c-panel__main"
+    style={
+      {
+        "--pf-c-panel__main--MaxHeight": undefined,
+      }
+    }
+  >
+    <div
+      className="pf-c-panel__main-body"
+    >
+      <div
+        className="pf-l-gallery pf-m-gutter"
+        style={
+          {
+            "--pf-l-gallery--GridTemplateColumns--max": "170px",
+            "--pf-l-gallery--GridTemplateColumns--min": "170px",
+          }
+        }
+      >
+        <div
+          data-testid="editor-selector-entry"
+        >
+          <div
+            data-testid="editor-group-name"
+          >
+            VS Code - Open Source
+          </div>
+          <div
+            data-testid="VS Code - Open Source"
+          >
+            <span>
+              che-code
+            </span>
+            <button
+              onClick={[Function]}
+            >
+              Select 
+              che-code
+               
+              insiders
+            </button>
+          </div>
+          <div
+            data-testid="VS Code - Open Source"
+          >
+            <span>
+              che-code
+            </span>
+            <button
+              onClick={[Function]}
+            >
+              Select 
+              che-code
+               
+              latest
+            </button>
+          </div>
+        </div>
+        <div
+          data-testid="editor-selector-entry"
+        >
+          <div
+            data-testid="editor-group-name"
+          >
+            IntelliJ IDEA Ultimate (desktop)
+          </div>
+          <div
+            data-testid="IntelliJ IDEA Ultimate (desktop)"
+          >
+            <span>
+              che-idea-server
+            </span>
+            <button
+              onClick={[Function]}
+            >
+              Select 
+              che-idea-server
+               
+              next
+            </button>
+          </div>
+          <div
+            data-testid="IntelliJ IDEA Ultimate (desktop)"
+          >
+            <span>
+              che-idea-server
+            </span>
+            <button
+              onClick={[Function]}
+            >
+              Select 
+              che-idea-server
+               
+              latest
+            </button>
+          </div>
+        </div>
+        <div
+          data-testid="editor-selector-entry"
+        >
+          <div
+            data-testid="editor-group-name"
+          >
+            IntelliJ IDEA Community
+          </div>
+          <div
+            data-testid="IntelliJ IDEA Community"
+          >
+            <span>
+              che-idea
+            </span>
+            <button
+              onClick={[Function]}
+            >
+              Select 
+              che-idea
+               
+              next
+            </button>
+          </div>
+          <div
+            data-testid="IntelliJ IDEA Community"
+          >
+            <span>
+              che-idea
+            </span>
+            <button
+              onClick={[Function]}
+            >
+              Select 
+              che-idea
+               
+              latest
+            </button>
+          </div>
+        </div>
+        <div
+          data-testid="editor-selector-entry"
+        >
+          <div
+            data-testid="editor-group-name"
+          >
+            JetBrains PyCharm Community
+          </div>
+          <div
+            data-testid="JetBrains PyCharm Community"
+          >
+            <span>
+              che-pycharm
+            </span>
+            <button
+              onClick={[Function]}
+            >
+              Select 
+              che-pycharm
+               
+              next
+            </button>
+          </div>
+          <div
+            data-testid="JetBrains PyCharm Community"
+          >
+            <span>
+              che-pycharm
+            </span>
+            <button
+              onClick={[Function]}
+            >
+              Select 
+              che-pycharm
+               
+              latest
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;
