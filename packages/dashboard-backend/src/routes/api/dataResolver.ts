@@ -10,6 +10,7 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
+import { helpers } from '@eclipse-che/common';
 import axios, { AxiosResponse } from 'axios';
 import { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify';
 
@@ -33,15 +34,23 @@ export function registerDataResolverRoute(instance: FastifyInstance) {
       async function (request: FastifyRequest, reply: FastifyReply): Promise<string | void> {
         const { url } = request.body as restParams.IYamlResolverParams;
 
-        let response: AxiosResponse;
         try {
-          response = await axios.get(url, config);
-        } catch (e) {
-          response = await axiosInstance.get(url, config);
+          let response: AxiosResponse;
+          try {
+            response = await axios.get(url, config);
+          } catch (error) {
+            if (helpers.errors.includesAxiosResponse(error) && error.response.status === 404) {
+              throw error;
+            }
+            response = await axiosInstance.get(url, config);
+          }
+          return response.data;
+        } catch (error) {
+          if (!helpers.errors.includesAxiosResponse(error)) {
+            throw error;
+          }
+          reply.code(error.response.status).send(error.response.data);
         }
-        reply.code(response.status);
-        reply.send(response.data);
-        return reply;
       },
     );
   });
