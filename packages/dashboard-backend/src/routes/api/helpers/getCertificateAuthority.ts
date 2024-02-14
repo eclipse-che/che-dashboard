@@ -22,7 +22,7 @@ const certificateAuthority = getCertificateAuthority(
   CHE_SELF_SIGNED_MOUNT_PATH ? CHE_SELF_SIGNED_MOUNT_PATH : DEFAULT_CHE_SELF_SIGNED_MOUNT_PATH,
 );
 
-export const defaultAxiosInstance = axios.create();
+export const axiosInstanceNoCert = axios.create();
 export const axiosInstance =
   certificateAuthority !== undefined
     ? axios.create({

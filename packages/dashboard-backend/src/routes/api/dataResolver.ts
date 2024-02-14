@@ -17,7 +17,7 @@ import { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify';
 import { baseApiPath } from '@/constants/config';
 import { dataResolverSchema } from '@/constants/schemas';
 import { restParams } from '@/models';
-import { axiosInstance, defaultAxiosInstance } from '@/routes/api/helpers/getCertificateAuthority';
+import { axiosInstance, axiosInstanceNoCert } from '@/routes/api/helpers/getCertificateAuthority';
 import { getSchema } from '@/services/helpers';
 
 const tags = ['Data Resolver'];
@@ -37,7 +37,7 @@ export function registerDataResolverRoute(instance: FastifyInstance) {
         try {
           let response: AxiosResponse;
           try {
-            response = await defaultAxiosInstance.get(url, config);
+            response = await axiosInstanceNoCert.get(url, config);
           } catch (error) {
             if (helpers.errors.includesAxiosResponse(error) && error.response.status === 404) {
               throw error;

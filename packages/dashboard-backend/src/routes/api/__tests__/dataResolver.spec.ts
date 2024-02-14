@@ -13,7 +13,7 @@
 import { FastifyInstance } from 'fastify';
 
 import { baseApiPath } from '@/constants/config';
-import { axiosInstance, defaultAxiosInstance } from '@/routes/api/helpers/getCertificateAuthority';
+import { axiosInstance, axiosInstanceNoCert } from '@/routes/api/helpers/getCertificateAuthority';
 import { createFastifyError } from '@/services/helpers';
 import { setup, teardown } from '@/utils/appBuilder';
 
@@ -21,7 +21,7 @@ jest.mock('@/routes/api/helpers/getCertificateAuthority');
 const axiosInstanceMock = jest.fn();
 (axiosInstance.get as jest.Mock).mockImplementation(axiosInstanceMock);
 const defaultAxiosInstanceMock = jest.fn();
-(defaultAxiosInstance.get as jest.Mock).mockImplementation(defaultAxiosInstanceMock);
+(axiosInstanceNoCert.get as jest.Mock).mockImplementation(defaultAxiosInstanceMock);
 
 describe('Data Resolver Route', () => {
   let app: FastifyInstance;
