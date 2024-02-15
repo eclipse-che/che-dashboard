@@ -92,7 +92,7 @@ function updateComponents(
   let isUpdated = false;
   for (let i = 0; i < components.length; i++) {
     if (
-      components[i].attributes?.['controller.devfile.io/container-contribution'] &&
+      components[i].attributes?.['controller.devfile.io/container-contribution'] === undefined &&
       components[i].container?.image
     ) {
       components[i].container!.image = editorImage;
