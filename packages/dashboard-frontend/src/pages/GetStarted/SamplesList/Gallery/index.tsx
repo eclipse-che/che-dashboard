@@ -25,16 +25,9 @@ import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 
 import { SampleCard } from '@/pages/GetStarted/SamplesList/Gallery/Card';
-import {
-  filterMostPrioritized,
-  sortByPriority,
-} from '@/pages/GetStarted/SamplesList/Gallery/filterEditors';
 import { che } from '@/services/models';
-import { AppState } from '@/store';
 import * as DevfileRegistriesStore from '@/store/DevfileRegistries';
 import { DevfileRegistryMetadata, EMPTY_WORKSPACE_TAG } from '@/store/DevfileRegistries/selectors';
-import { selectEditors } from '@/store/Plugins/chePlugins/selectors';
-import { selectDefaultEditor } from '@/store/Plugins/devWorkspacePlugins/selectors';
 
 export type PluginEditor = che.Plugin & {
   isDefault: boolean;
@@ -42,32 +35,14 @@ export type PluginEditor = che.Plugin & {
 
 export const VISIBLE_TAGS = ['Community', 'Tech-Preview', 'Devfile.io'];
 
-const EXCLUDED_TARGET_EDITOR_NAMES = ['dirigible', 'jupyter', 'eclipseide', 'code-server'];
-
 export type Props = MappedProps & {
   metadataFiltered: DevfileRegistryMetadata[];
-  onCardClick: (metadata: DevfileRegistryMetadata, editorId: string | undefined) => void;
+  onCardClick: (metadata: DevfileRegistryMetadata) => void;
 };
 
 export class SamplesListGallery extends React.PureComponent<Props> {
-  private handleCardClick(metadata: DevfileRegistryMetadata, editorId: string | undefined): void {
-    this.props.onCardClick(metadata, editorId);
-  }
-
-  private prepareEditors(): PluginEditor[] {
-    const { editors, defaultEditor } = this.props;
-
-    const allowed = editors
-      .filter(editor => !EXCLUDED_TARGET_EDITOR_NAMES.includes(editor.name))
-      .map(editor => ({
-        ...editor,
-        isDefault: defaultEditor === editor.id,
-      }));
-
-    const sorted = sortByPriority(allowed);
-    const filtered = filterMostPrioritized(sorted);
-
-    return filtered;
+  private handleCardClick(metadata: DevfileRegistryMetadata): void {
+    this.props.onCardClick(metadata);
   }
 
   private prepareMetadata(): DevfileRegistryMetadata[] {
@@ -118,16 +93,10 @@ export class SamplesListGallery extends React.PureComponent<Props> {
   }
 
   private buildCardsList(): React.ReactElement[] {
-    const pluginEditors = this.prepareEditors();
     const metadata = this.prepareMetadata();
 
     return metadata.map(meta => (
-      <SampleCard
-        key={meta.links.v2}
-        metadata={meta}
-        editors={pluginEditors}
-        onClick={(editorId: string | undefined) => this.handleCardClick(meta, editorId)}
-      />
+      <SampleCard key={meta.links.v2} metadata={meta} onClick={() => this.handleCardClick(meta)} />
     ));
   }
 
@@ -155,12 +124,7 @@ export class SamplesListGallery extends React.PureComponent<Props> {
   }
 }
 
-const mapStateToProps = (state: AppState) => ({
-  editors: selectEditors(state),
-  defaultEditor: selectDefaultEditor(state),
-});
-
-const connector = connect(mapStateToProps, {
+const connector = connect(null, {
   ...DevfileRegistriesStore.actionCreators,
 });
 

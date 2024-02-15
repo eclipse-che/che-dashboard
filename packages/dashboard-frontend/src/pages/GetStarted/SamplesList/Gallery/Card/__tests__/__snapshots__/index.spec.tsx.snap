@@ -28,32 +28,7 @@ exports[`Devfile Metadata Card snapshot 1`] = `
     </div>
     <div
       className="pf-c-card__actions"
-    >
-      <div
-        data-testid="card-actions-dropdown"
-      >
-        <div>
-          spanDropdownEditors
-        </div>
-        <button
-          data-testid="card-action"
-          onClick={[Function]}
-        >
-          che-code
-        </button>
-        <button
-          data-testid="card-action"
-          onClick={[Function]}
-        >
-          che-idea
-        </button>
-        <button
-          onClick={[Function]}
-        >
-          Select Editor
-        </button>
-      </div>
-    </div>
+    />
   </div>
   <div
     className="pf-c-card__header"

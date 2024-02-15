@@ -10,15 +10,6 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-.dropdownEditorGroup {
-  white-space: nowrap;
-}
-
-.editorTitle {
-  text-transform: capitalize;
-}
-
-.checkIcon {
-  margin: 0 0 3px 9px;
-  opacity: 0.6;
+.spacer {
+  margin-top: var(--pf-c-page__main-section--PaddingTop);
 }

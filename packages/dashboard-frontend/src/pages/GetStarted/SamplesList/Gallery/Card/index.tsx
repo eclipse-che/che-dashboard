@@ -22,8 +22,7 @@ import {
 import { CubesIcon } from '@patternfly/react-icons';
 import React from 'react';
 
-import { PluginEditor, VISIBLE_TAGS } from '@/pages/GetStarted/SamplesList/Gallery';
-import { DropdownEditors } from '@/pages/GetStarted/SamplesList/Gallery/Card/DropdownEditors';
+import { VISIBLE_TAGS } from '@/pages/GetStarted/SamplesList/Gallery';
 import styles from '@/pages/GetStarted/SamplesList/Gallery/Card/index.module.css';
 import { che } from '@/services/models';
 import { convertIconToSrc } from '@/services/registry/devfiles';
@@ -31,8 +30,7 @@ import { DevfileRegistryMetadata } from '@/store/DevfileRegistries/selectors';
 
 export type Props = {
   metadata: DevfileRegistryMetadata;
-  editors: PluginEditor[];
-  onClick: (editorId: string | undefined) => void;
+  onClick: () => void;
 };
 
 export class SampleCard extends React.PureComponent<Props> {
@@ -59,8 +57,8 @@ export class SampleCard extends React.PureComponent<Props> {
       .map((item: string, index: number) => createTag(item, index));
   }
 
-  private handleCardClick(editorId: string | undefined): void {
-    this.props.onClick(editorId);
+  private handleCardClick(): void {
+    this.props.onClick();
   }
 
   private buildIcon(metadata: che.DevfileMetaData): React.ReactElement {
@@ -78,7 +76,7 @@ export class SampleCard extends React.PureComponent<Props> {
   }
 
   render(): React.ReactElement {
-    const { metadata, editors } = this.props;
+    const { metadata } = this.props;
 
     const tags = this.getTags();
     const devfileIcon = this.buildIcon(metadata);
@@ -89,7 +87,7 @@ export class SampleCard extends React.PureComponent<Props> {
         isCompact
         isSelectable
         key={metadata.links.v2}
-        onClick={() => this.handleCardClick(undefined)}
+        onClick={() => this.handleCardClick()}
         className={'sample-card'}
         data-testid="sample-card"
       >
@@ -99,16 +97,10 @@ export class SampleCard extends React.PureComponent<Props> {
             'aria-label': 'toggle button',
             'aria-expanded': 'true',
           }}
-          onClick={() => this.handleCardClick(undefined)}
+          onClick={() => this.handleCardClick()}
         >
           <CardHeaderMain>{devfileIcon}</CardHeaderMain>
-          <CardActions>
-            {tags}
-            <DropdownEditors
-              onEditorSelect={editorId => this.handleCardClick(editorId)}
-              editors={editors}
-            />
-          </CardActions>
+          <CardActions>{tags}</CardActions>
         </CardHeader>
         <CardHeader>{metadata.displayName}</CardHeader>
         <CardBody>{metadata.description}</CardBody>

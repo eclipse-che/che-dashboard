@@ -21,7 +21,7 @@ export class SampleCard extends React.PureComponent<Props> {
     return (
       <div data-testid="sample-card">
         <div data-testid="sample-name">{metadata.displayName}</div>
-        <button onClick={() => onClick(undefined)}>Select Sample</button>
+        <button onClick={() => onClick()}>Select Sample</button>
       </div>
     );
   }

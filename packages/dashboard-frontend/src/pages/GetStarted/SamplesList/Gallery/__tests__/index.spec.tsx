@@ -84,7 +84,7 @@ describe('Samples List Gallery', () => {
     userEvent.click(button);
 
     expect(mockOnCardClick).toHaveBeenCalledTimes(1);
-    expect(mockOnCardClick).toHaveBeenCalledWith(metadata[0], undefined);
+    expect(mockOnCardClick).toHaveBeenCalledWith(metadata[0]);
   });
 });
 

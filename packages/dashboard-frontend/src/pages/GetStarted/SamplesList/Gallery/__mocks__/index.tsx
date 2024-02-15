@@ -26,7 +26,7 @@ export default class SamplesListGallery extends React.PureComponent<Props> {
 
             <button
               onClick={() => {
-                onCardClick(metadata, 'che-incubator/che-code/insiders');
+                onCardClick(metadata);
               }}
             >
               Select Sample

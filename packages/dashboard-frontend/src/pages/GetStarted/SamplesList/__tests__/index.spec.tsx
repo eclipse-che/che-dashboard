@@ -27,6 +27,8 @@ jest.mock('@/pages/GetStarted/SamplesList/Toolbar');
 
 const { createSnapshot, renderComponent } = getComponentRenderer(getComponent);
 
+const selectedEditorId = 'che-incubator/che-code/insiders';
+
 describe('Samples List', () => {
   const sampleUrl = 'https://github.com/che-samples/quarkus-quickstarts/tree/devfilev2';
   let storeBuilder: FakeStoreBuilder;
@@ -201,7 +203,7 @@ function getComponent(store: Store) {
 
   return (
     <Provider store={store}>
-      <SamplesList history={history} />
+      <SamplesList selectedEditorId={selectedEditorId} history={history} />
     </Provider>
   );
 }

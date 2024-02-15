@@ -20,29 +20,39 @@ exports[`GetStarted snapshot 1`] = `
   <section
     className="pf-c-page__main-section"
   >
-    <section
-      className="pf-c-page__main-section pf-m-light"
+    <div
+      data-testid="editor-selector"
     >
-      <div
-        data-testid="import-from-git"
+      Editor Selector
+      <button
+        onClick={[Function]}
       >
+        Select Editor
+      </button>
+    </div>
+    <div
+      className="spacer"
+    />
+    <div
+      data-testid="import-from-git"
+    >
+      <div>
         Import from Git
       </div>
-    </section>
-    <section
-      className="pf-c-page__main-section pf-m-light"
-      style={
-        {
-          "marginTop": "var(--pf-c-page__main-section--PaddingTop)",
-        }
-      }
-    >
       <div
-        data-testid="samples-list"
+        data-testid="selected-editor-id"
       >
-        Samples List
+        che-incubator/che-code/latest
       </div>
-    </section>
+    </div>
+    <div
+      className="spacer"
+    />
+    <div
+      data-testid="samples-list"
+    >
+      Samples List
+    </div>
   </section>,
 ]
 `;

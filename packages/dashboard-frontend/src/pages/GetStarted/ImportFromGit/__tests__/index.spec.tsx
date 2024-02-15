@@ -28,6 +28,8 @@ const history = createMemoryHistory({
 
 global.window.open = jest.fn();
 
+const selectedEditorId = 'che-incubator/che-code/insiders';
+
 describe('GitRepoLocationInput', () => {
   let store: Store;
 
@@ -42,31 +44,6 @@ describe('GitRepoLocationInput', () => {
   test('snapshot', () => {
     const component = createSnapshot(store);
     expect(component).toMatchSnapshot();
-  });
-
-  test('valid http:// location', () => {
-    renderComponent(store);
-
-    const input = screen.getByRole('textbox');
-    expect(input).toBeValid();
-
-    userEvent.paste(input, 'http://test-location/');
-
-    expect(input).toHaveValue('http://test-location/');
-    expect(input).toBeValid();
-
-    const button = screen.getByRole('button');
-    expect(button).toBeEnabled();
-
-    userEvent.click(button);
-    expect(window.open).toHaveBeenLastCalledWith(
-      'http://localhost/#http://test-location/',
-      '_blank',
-    );
-    expect(window.open).toHaveBeenCalledTimes(1);
-
-    userEvent.type(input, '{enter}');
-    expect(window.open).toHaveBeenCalledTimes(2);
   });
 
   test('invalid location', () => {
@@ -87,50 +64,140 @@ describe('GitRepoLocationInput', () => {
     expect(window.open).not.toHaveBeenCalled();
   });
 
-  test('valid Git+SSH location with SSH keys', () => {
-    const store = new FakeStoreBuilder()
-      .withSshKeys({ keys: [{ name: 'key1', keyPub: 'publicKey' }] })
-      .build();
-    renderComponent(store);
+  describe('valid HTTP location', () => {
+    test('factory URL without other parameters', () => {
+      renderComponent(store);
 
-    const input = screen.getByRole('textbox');
-    expect(input).toBeValid();
+      const input = screen.getByRole('textbox');
+      expect(input).toBeValid();
 
-    userEvent.paste(input, 'git@github.com:user/repo.git');
+      userEvent.paste(input, 'http://test-location/');
 
-    expect(input).toHaveValue('git@github.com:user/repo.git');
-    expect(input).toBeValid();
+      expect(input).toHaveValue('http://test-location/');
+      expect(input).toBeValid();
 
-    const buttonCreate = screen.getByRole('button', { name: 'Create & Open' });
-    expect(buttonCreate).toBeEnabled();
+      const button = screen.getByRole('button');
+      expect(button).toBeEnabled();
+
+      userEvent.click(button);
+      // the selected editor ID should be added to the URL
+      expect(window.open).toHaveBeenLastCalledWith(
+        'http://localhost/#http://test-location/?che-editor=che-incubator%2Fche-code%2Finsiders',
+        '_blank',
+      );
+      expect(window.open).toHaveBeenCalledTimes(1);
+
+      userEvent.type(input, '{enter}');
+      expect(window.open).toHaveBeenCalledTimes(2);
+    });
+
+    test('factory URL with the `che-editor` parameter', () => {
+      renderComponent(store);
+
+      const input = screen.getByRole('textbox');
+      expect(input).toBeValid();
+
+      userEvent.paste(input, 'http://test-location/?che-editor=other-editor-id');
+
+      expect(input).toHaveValue('http://test-location/?che-editor=other-editor-id');
+      expect(input).toBeValid();
+
+      const button = screen.getByRole('button');
+      expect(button).toBeEnabled();
+
+      userEvent.click(button);
+      // the selected editor ID should NOT be added to the URL, as the URL parameter has higher priority
+      expect(window.open).toHaveBeenLastCalledWith(
+        'http://localhost/#http://test-location/?che-editor=other-editor-id',
+        '_blank',
+      );
+      expect(window.open).toHaveBeenCalledTimes(1);
+
+      userEvent.type(input, '{enter}');
+      expect(window.open).toHaveBeenCalledTimes(2);
+    });
   });
 
-  test('valid Git+SSH location w/o SSH keys', () => {
-    renderComponent(store);
+  describe('valid Git+SSH location', () => {
+    test('w/o SSH keys', () => {
+      renderComponent(store);
 
-    const input = screen.getByRole('textbox');
-    expect(input).toBeValid();
+      const input = screen.getByRole('textbox');
+      expect(input).toBeValid();
 
-    userEvent.paste(input, 'git@github.com:user/repo.git');
+      userEvent.paste(input, 'git@github.com:user/repo.git');
 
-    expect(input).toHaveValue('git@github.com:user/repo.git');
-    expect(input).toBeInvalid();
+      expect(input).toHaveValue('git@github.com:user/repo.git');
+      expect(input).toBeInvalid();
 
-    const buttonCreate = screen.getByRole('button', { name: 'Create & Open' });
-    expect(buttonCreate).toBeDisabled();
+      const buttonCreate = screen.getByRole('button', { name: 'Create & Open' });
+      expect(buttonCreate).toBeDisabled();
 
-    const buttonUserPreferences = screen.getByRole('button', { name: 'here' });
+      const buttonUserPreferences = screen.getByRole('button', { name: 'here' });
 
-    userEvent.click(buttonUserPreferences);
-    expect(history.location.pathname).toBe('/user-preferences');
-    expect(history.location.search).toBe('?tab=SshKeys');
+      userEvent.click(buttonUserPreferences);
+      expect(history.location.pathname).toBe('/user-preferences');
+      expect(history.location.search).toBe('?tab=SshKeys');
+    });
+
+    test('with SSH keys, the `che-editor` parameter is omitted', () => {
+      const store = new FakeStoreBuilder()
+        .withSshKeys({ keys: [{ name: 'key1', keyPub: 'publicKey' }] })
+        .build();
+      renderComponent(store);
+
+      const input = screen.getByRole('textbox');
+      expect(input).toBeValid();
+
+      userEvent.paste(input, 'git@github.com:user/repo.git');
+
+      expect(input).toHaveValue('git@github.com:user/repo.git');
+      expect(input).toBeValid();
+
+      const buttonCreate = screen.getByRole('button', { name: 'Create & Open' });
+      expect(buttonCreate).toBeEnabled();
+
+      userEvent.click(buttonCreate);
+
+      expect(window.open).toHaveBeenCalledTimes(1);
+      expect(window.open).toHaveBeenLastCalledWith(
+        'http://localhost/#git@github.com:user/repo.git?che-editor=che-incubator%2Fche-code%2Finsiders',
+        '_blank',
+      );
+    });
+
+    test('with SSH keys, the `che-editor` parameter is set', () => {
+      const store = new FakeStoreBuilder()
+        .withSshKeys({ keys: [{ name: 'key1', keyPub: 'publicKey' }] })
+        .build();
+      renderComponent(store);
+
+      const input = screen.getByRole('textbox');
+      expect(input).toBeValid();
+
+      userEvent.paste(input, 'git@github.com:user/repo.git?che-editor=other-editor-id');
+
+      expect(input).toHaveValue('git@github.com:user/repo.git?che-editor=other-editor-id');
+      expect(input).toBeValid();
+
+      const buttonCreate = screen.getByRole('button', { name: 'Create & Open' });
+      expect(buttonCreate).toBeEnabled();
+
+      userEvent.click(buttonCreate);
+
+      expect(window.open).toHaveBeenCalledTimes(1);
+      expect(window.open).toHaveBeenLastCalledWith(
+        'http://localhost/#git@github.com:user/repo.git?che-editor=other-editor-id',
+        '_blank',
+      );
+    });
   });
 });
 
 function getComponent(store: Store) {
   return (
     <Provider store={store}>
-      <ImportFromGit history={history} />
+      <ImportFromGit history={history} selectedEditorId={selectedEditorId} />
     </Provider>
   );
 }

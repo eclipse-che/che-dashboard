@@ -10,13 +10,20 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import { Flex, FlexItem } from '@patternfly/react-core';
+import {
+  Panel,
+  PanelHeader,
+  PanelMain,
+  PanelMainBody,
+  Text,
+  TextContent,
+  Title,
+} from '@patternfly/react-core';
 import { History } from 'history';
 import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 
 import SamplesListGallery from '@/pages/GetStarted/SamplesList/Gallery';
-import { SamplesListHeader } from '@/pages/GetStarted/SamplesList/Header';
 import SamplesListToolbar from '@/pages/GetStarted/SamplesList/Toolbar';
 import { buildFactoryLocation, toHref } from '@/services/helpers/location';
 import { che } from '@/services/models';
@@ -29,6 +36,7 @@ import { selectPvcStrategy } from '@/store/ServerConfig/selectors';
 
 export type Props = {
   history: History;
+  selectedEditorId: string;
 } & MappedProps;
 
 type State = {
@@ -59,16 +67,15 @@ class SamplesList extends React.PureComponent<Props, State> {
     return preferredStorageType === 'ephemeral' ? 'persistent' : preferredStorageType;
   }
 
-  private async handleSampleCardClick(
-    metadata: DevfileRegistryMetadata,
-    editorId: string | undefined,
-  ): Promise<void> {
+  private async handleSampleCardClick(metadata: DevfileRegistryMetadata): Promise<void> {
+    const { selectedEditorId } = this.props;
+
     const factoryUrlParams = new URLSearchParams({ url: metadata.links.v2 });
 
-    if (editorId !== undefined) {
-      factoryUrlParams.append('che-editor', editorId);
+    if (selectedEditorId !== undefined) {
+      factoryUrlParams.append('che-editor', selectedEditorId);
 
-      const prebuiltDevWorkspace = metadata.links.devWorkspaces?.[editorId];
+      const prebuiltDevWorkspace = metadata.links.devWorkspaces?.[selectedEditorId];
       if (prebuiltDevWorkspace !== undefined) {
         factoryUrlParams.append('devWorkspace', prebuiltDevWorkspace);
       }
@@ -86,26 +93,32 @@ class SamplesList extends React.PureComponent<Props, State> {
 
   public render(): React.ReactElement {
     const { metadataFiltered } = this.props;
+
     return (
-      <>
-        <Flex direction={{ default: 'column' }}>
-          <FlexItem spacer={{ default: 'spacerLg' }}>
-            <SamplesListHeader />
-          </FlexItem>
-          <FlexItem grow={{ default: 'grow' }} spacer={{ default: 'spacerLg' }}>
+      <Panel>
+        <PanelHeader>
+          <Title headingLevel="h3">Select a Sample</Title>
+          <TextContent>
+            <Text component="small">Select a sample to create your first workspace.</Text>
+          </TextContent>
+        </PanelHeader>
+        <PanelMain>
+          <PanelMainBody>
             <SamplesListToolbar
               isTemporary={this.state.isTemporary}
               onTemporaryStorageChange={isTemporary =>
                 this.handleTemporaryStorageChange(isTemporary)
               }
             />
-          </FlexItem>
-        </Flex>
-        <SamplesListGallery
-          metadataFiltered={metadataFiltered}
-          onCardClick={(metadata, editorId) => this.handleSampleCardClick(metadata, editorId)}
-        />
-      </>
+          </PanelMainBody>
+          <PanelMainBody>
+            <SamplesListGallery
+              metadataFiltered={metadataFiltered}
+              onCardClick={metadata => this.handleSampleCardClick(metadata)}
+            />
+          </PanelMainBody>
+        </PanelMain>
+      </Panel>
     );
   }
 }

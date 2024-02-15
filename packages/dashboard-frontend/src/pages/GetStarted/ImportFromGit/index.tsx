@@ -18,8 +18,12 @@ import {
   Form,
   FormGroup,
   FormHelperText,
-  FormSection,
+  Panel,
+  PanelHeader,
+  PanelMain,
+  PanelMainBody,
   TextInput,
+  Title,
   ValidatedOptions,
 } from '@patternfly/react-core';
 import { ExclamationCircleIcon } from '@patternfly/react-icons';
@@ -28,6 +32,7 @@ import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 
 import { FactoryLocationAdapter } from '@/services/factory-location-adapter';
+import { EDITOR_ATTR } from '@/services/helpers/factoryFlow/buildFactoryParams';
 import { buildUserPreferencesLocation } from '@/services/helpers/location';
 import { UserPreferencesTab } from '@/services/helpers/types';
 import { AppState } from '@/store';
@@ -36,6 +41,7 @@ import * as WorkspacesStore from '@/store/Workspaces';
 
 export type Props = MappedProps & {
   history: History;
+  selectedEditorId: string;
 };
 export type State = {
   hasSshKeys: boolean;
@@ -55,7 +61,17 @@ class ImportFromGit extends React.PureComponent<Props, State> {
   }
 
   private handleCreate(): void {
-    const factory = new FactoryLocationAdapter(this.state.location);
+    const { selectedEditorId } = this.props;
+    const { location } = this.state;
+
+    const factory = new FactoryLocationAdapter(location);
+
+    // add the editor id to the URL
+    // if it's not already there
+    if (factory.searchParams.has(EDITOR_ATTR) === false) {
+      factory.searchParams.set(EDITOR_ATTR, selectedEditorId);
+    }
+
     // open a new page to handle that
     window.open(`${window.location.origin}/#${factory.toString()}`, '_blank');
   }
@@ -106,7 +122,7 @@ class ImportFromGit extends React.PureComponent<Props, State> {
     this.props.history.push(location);
   }
 
-  public render() {
+  public buildForm() {
     const { location, validated } = this.state;
 
     const fieldId = 'git-repo-url';
@@ -124,41 +140,52 @@ class ImportFromGit extends React.PureComponent<Props, State> {
           this.handleCreate();
         }}
       >
-        <FormSection title="Import from Git" titleElement="h3">
-          <FormGroup
-            fieldId={fieldId}
-            label="Git repo URL"
-            isRequired={true}
-            validated={validated}
-            helperTextInvalid={errorMessage}
-            helperTextInvalidIcon={<ExclamationCircleIcon />}
-            helperText="Import from a Git repository to create your first workspace."
-          >
-            <Flex>
-              <FlexItem grow={{ default: 'grow' }} style={{ maxWidth: '500px' }}>
-                <TextInput
-                  id={fieldId}
-                  aria-label="HTTPS or SSH URL"
-                  placeholder="Enter HTTPS or SSH URL"
-                  validated={validated}
-                  onChange={value => this.handleChange(value)}
-                  value={location}
-                />
-              </FlexItem>
-              <FlexItem>
-                <Button
-                  id="create-and-open-button"
-                  isDisabled={buttonDisabled}
-                  variant={ButtonVariant.secondary}
-                  onClick={() => this.handleCreate()}
-                >
-                  Create & Open
-                </Button>
-              </FlexItem>
-            </Flex>
-          </FormGroup>
-        </FormSection>
+        <FormGroup
+          fieldId={fieldId}
+          label="Git repo URL"
+          isRequired={true}
+          validated={validated}
+          helperTextInvalid={errorMessage}
+          helperTextInvalidIcon={<ExclamationCircleIcon />}
+          helperText="Import from a Git repository to create your first workspace."
+        >
+          <Flex>
+            <FlexItem grow={{ default: 'grow' }} style={{ maxWidth: '500px' }}>
+              <TextInput
+                id={fieldId}
+                aria-label="HTTPS or SSH URL"
+                placeholder="Enter HTTPS or SSH URL"
+                validated={validated}
+                onChange={value => this.handleChange(value)}
+                value={location}
+              />
+            </FlexItem>
+            <FlexItem>
+              <Button
+                id="create-and-open-button"
+                isDisabled={buttonDisabled}
+                variant={ButtonVariant.secondary}
+                onClick={() => this.handleCreate()}
+              >
+                Create & Open
+              </Button>
+            </FlexItem>
+          </Flex>
+        </FormGroup>
       </Form>
+    );
+  }
+
+  public render() {
+    return (
+      <Panel>
+        <PanelHeader>
+          <Title headingLevel="h3">Import from Git</Title>
+        </PanelHeader>
+        <PanelMain>
+          <PanelMainBody>{this.buildForm()}</PanelMainBody>
+        </PanelMain>
+      </Panel>
     );
   }
 }
