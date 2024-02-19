@@ -16,6 +16,13 @@ import { Props } from '@/pages/GetStarted/SamplesList';
 
 export default class SamplesList extends React.PureComponent<Props> {
   render() {
-    return <div data-testid="samples-list">Samples List</div>;
+    const { editorId, editorImage } = this.props;
+    return (
+      <div data-testid="samples-list">
+        <div data-testid="editor-id">{editorId}</div>
+        <div data-testid="editor-image">{editorImage}</div>
+        Samples List
+      </div>
+    );
   }
 }

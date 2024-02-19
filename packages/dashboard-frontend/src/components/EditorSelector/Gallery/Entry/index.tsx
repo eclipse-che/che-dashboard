@@ -22,8 +22,8 @@ import {
 import { CheckIcon } from '@patternfly/react-icons';
 import React from 'react';
 
+import styles from '@/components/EditorSelector/Gallery/Entry/index.module.css';
 import TagLabel from '@/components/TagLabel';
-import styles from '@/pages/GetStarted/EditorSelector/Entry/index.module.css';
 import { che } from '@/services/models';
 
 export type Props = {

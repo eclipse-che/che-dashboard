@@ -10,23 +10,14 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import {
-  Gallery,
-  Panel,
-  PanelHeader,
-  PanelMain,
-  PanelMainBody,
-  Title,
-} from '@patternfly/react-core';
+import { Gallery } from '@patternfly/react-core';
 import React from 'react';
-import { connect, ConnectedProps } from 'react-redux';
 
-import { EditorSelectorEntry } from '@/pages/GetStarted/EditorSelector/Entry';
+import { EditorSelectorEntry } from '@/components/EditorSelector/Gallery/Entry';
 import { che } from '@/services/models';
-import { AppState } from '@/store';
-import { selectEditors } from '@/store/Plugins/chePlugins/selectors';
 
-export type Props = MappedProps & {
+export type Props = {
+  editors: che.Plugin[];
   selectedEditorId: string;
   onSelect: (editorId: string) => void;
 };
@@ -34,7 +25,7 @@ export type State = {
   sortedEditorsByName: Map<string, che.Plugin[]>;
 };
 
-class EditorSelector extends React.PureComponent<Props, State> {
+export class EditorGallery extends React.PureComponent<Props, State> {
   constructor(props: Props) {
     super(props);
 
@@ -111,33 +102,11 @@ class EditorSelector extends React.PureComponent<Props, State> {
     });
   }
 
-  render(): React.ReactElement {
+  public render() {
     return (
-      <Panel>
-        <PanelHeader>
-          <Title headingLevel="h3">Select an Editor</Title>
-        </PanelHeader>
-        <PanelMain>
-          <PanelMainBody>
-            <Gallery
-              hasGutter={true}
-              minWidths={{ default: '170px' }}
-              maxWidths={{ default: '170px' }}
-            >
-              {this.buildEditorCards()}
-            </Gallery>
-          </PanelMainBody>
-        </PanelMain>
-      </Panel>
+      <Gallery hasGutter={true} minWidths={{ default: '170px' }} maxWidths={{ default: '170px' }}>
+        {this.buildEditorCards()}
+      </Gallery>
     );
   }
 }
-
-const mapStateToProps = (state: AppState) => ({
-  editors: selectEditors(state),
-});
-
-const connector = connect(mapStateToProps);
-
-type MappedProps = ConnectedProps<typeof connector>;
-export default connector(EditorSelector);

@@ -12,15 +12,10 @@
 
 import React from 'react';
 
-import { Props } from '@/pages/GetStarted/ImportFromGit';
+import styles from '@/components/Spacer/index.module.css';
 
-export default class ImportFromGit extends React.PureComponent<Props> {
+export class Spacer extends React.PureComponent {
   public render() {
-    return (
-      <div data-testid="import-from-git">
-        <div>Import from Git</div>
-        <div data-testid="selected-editor-id">{this.props.editorId}</div>
-      </div>
-    );
+    return <div data-testid="spacer" className={styles.spacer}></div>;
   }
 }

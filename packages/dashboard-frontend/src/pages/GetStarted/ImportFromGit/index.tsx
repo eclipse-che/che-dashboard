@@ -32,7 +32,7 @@ import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 
 import { FactoryLocationAdapter } from '@/services/factory-location-adapter';
-import { EDITOR_ATTR } from '@/services/helpers/factoryFlow/buildFactoryParams';
+import { EDITOR_ATTR, EDITOR_IMAGE_ATTR } from '@/services/helpers/factoryFlow/buildFactoryParams';
 import { buildUserPreferencesLocation } from '@/services/helpers/location';
 import { UserPreferencesTab } from '@/services/helpers/types';
 import { AppState } from '@/store';
@@ -41,7 +41,8 @@ import * as WorkspacesStore from '@/store/Workspaces';
 
 export type Props = MappedProps & {
   history: History;
-  selectedEditorId: string;
+  editorId: string;
+  editorImage: string | undefined;
 };
 export type State = {
   hasSshKeys: boolean;
@@ -61,15 +62,21 @@ class ImportFromGit extends React.PureComponent<Props, State> {
   }
 
   private handleCreate(): void {
-    const { selectedEditorId } = this.props;
+    const { editorId, editorImage } = this.props;
     const { location } = this.state;
 
     const factory = new FactoryLocationAdapter(location);
 
-    // add the editor id to the URL
-    // if it's not already there
-    if (factory.searchParams.has(EDITOR_ATTR) === false) {
-      factory.searchParams.set(EDITOR_ATTR, selectedEditorId);
+    // add the editor id and editor image to the URL
+    // if they are not already there
+    if (
+      factory.searchParams.has(EDITOR_ATTR) === false &&
+      factory.searchParams.has(EDITOR_IMAGE_ATTR) === false
+    ) {
+      factory.searchParams.set(EDITOR_ATTR, editorId);
+      if (editorImage) {
+        factory.searchParams.set(EDITOR_IMAGE_ATTR, editorImage);
+      }
     }
 
     // open a new page to handle that

@@ -19,7 +19,7 @@ import GetStarted from '@/pages/GetStarted';
 import getComponentRenderer from '@/services/__mocks__/getComponentRenderer';
 import { FakeStoreBuilder } from '@/store/__mocks__/storeBuilder';
 
-jest.mock('@/pages/GetStarted/EditorSelector');
+jest.mock('@/components/EditorSelector');
 jest.mock('@/pages/GetStarted/SamplesList');
 jest.mock('@/pages/GetStarted/ImportFromGit');
 

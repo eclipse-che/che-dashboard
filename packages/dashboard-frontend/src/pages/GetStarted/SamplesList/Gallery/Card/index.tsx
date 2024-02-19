@@ -91,14 +91,7 @@ export class SampleCard extends React.PureComponent<Props> {
         className={'sample-card'}
         data-testid="sample-card"
       >
-        <CardHeader
-          toggleButtonProps={{
-            id: 'toggle-button',
-            'aria-label': 'toggle button',
-            'aria-expanded': 'true',
-          }}
-          onClick={() => this.handleCardClick()}
-        >
+        <CardHeader>
           <CardHeaderMain>{devfileIcon}</CardHeaderMain>
           <CardActions>{tags}</CardActions>
         </CardHeader>

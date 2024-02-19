@@ -32,6 +32,7 @@ exports[`GetStarted snapshot 1`] = `
     </div>
     <div
       className="spacer"
+      data-testid="spacer"
     />
     <div
       data-testid="import-from-git"
@@ -47,10 +48,19 @@ exports[`GetStarted snapshot 1`] = `
     </div>
     <div
       className="spacer"
+      data-testid="spacer"
     />
     <div
       data-testid="samples-list"
     >
+      <div
+        data-testid="editor-id"
+      >
+        che-incubator/che-code/latest
+      </div>
+      <div
+        data-testid="editor-image"
+      />
       Samples List
     </div>
   </section>,

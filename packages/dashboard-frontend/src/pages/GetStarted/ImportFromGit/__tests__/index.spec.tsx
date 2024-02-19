@@ -28,7 +28,8 @@ const history = createMemoryHistory({
 
 global.window.open = jest.fn();
 
-const selectedEditorId = 'che-incubator/che-code/insiders';
+const editorId = 'che-incubator/che-code/insiders';
+const editorImage = 'custom-editor-image';
 
 describe('GitRepoLocationInput', () => {
   let store: Store;
@@ -82,7 +83,7 @@ describe('GitRepoLocationInput', () => {
       userEvent.click(button);
       // the selected editor ID should be added to the URL
       expect(window.open).toHaveBeenLastCalledWith(
-        'http://localhost/#http://test-location/?che-editor=che-incubator%2Fche-code%2Finsiders',
+        'http://localhost/#http://test-location/?che-editor=che-incubator%2Fche-code%2Finsiders&editor-image=custom-editor-image',
         '_blank',
       );
       expect(window.open).toHaveBeenCalledTimes(1);
@@ -161,7 +162,7 @@ describe('GitRepoLocationInput', () => {
 
       expect(window.open).toHaveBeenCalledTimes(1);
       expect(window.open).toHaveBeenLastCalledWith(
-        'http://localhost/#git@github.com:user/repo.git?che-editor=che-incubator%2Fche-code%2Finsiders',
+        'http://localhost/#git@github.com:user/repo.git?che-editor=che-incubator%2Fche-code%2Finsiders&editor-image=custom-editor-image',
         '_blank',
       );
     });
@@ -197,7 +198,7 @@ describe('GitRepoLocationInput', () => {
 function getComponent(store: Store) {
   return (
     <Provider store={store}>
-      <ImportFromGit history={history} selectedEditorId={selectedEditorId} />
+      <ImportFromGit history={history} editorId={editorId} editorImage={editorImage} />
     </Provider>
   );
 }

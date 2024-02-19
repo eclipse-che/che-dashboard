@@ -25,6 +25,7 @@ import { connect, ConnectedProps } from 'react-redux';
 
 import SamplesListGallery from '@/pages/GetStarted/SamplesList/Gallery';
 import SamplesListToolbar from '@/pages/GetStarted/SamplesList/Toolbar';
+import { EDITOR_ATTR, EDITOR_IMAGE_ATTR } from '@/services/helpers/factoryFlow/buildFactoryParams';
 import { buildFactoryLocation, toHref } from '@/services/helpers/location';
 import { che } from '@/services/models';
 import { AppState } from '@/store';
@@ -36,7 +37,8 @@ import { selectPvcStrategy } from '@/store/ServerConfig/selectors';
 
 export type Props = {
   history: History;
-  selectedEditorId: string;
+  editorId: string;
+  editorImage: string | undefined;
 } & MappedProps;
 
 type State = {
@@ -68,17 +70,18 @@ class SamplesList extends React.PureComponent<Props, State> {
   }
 
   private async handleSampleCardClick(metadata: DevfileRegistryMetadata): Promise<void> {
-    const { selectedEditorId } = this.props;
+    const { editorId, editorImage } = this.props;
 
     const factoryUrlParams = new URLSearchParams({ url: metadata.links.v2 });
 
-    if (selectedEditorId !== undefined) {
-      factoryUrlParams.append('che-editor', selectedEditorId);
+    factoryUrlParams.append(EDITOR_ATTR, editorId);
+    if (editorImage) {
+      factoryUrlParams.append(EDITOR_IMAGE_ATTR, editorImage);
+    }
 
-      const prebuiltDevWorkspace = metadata.links.devWorkspaces?.[selectedEditorId];
-      if (prebuiltDevWorkspace !== undefined) {
-        factoryUrlParams.append('devWorkspace', prebuiltDevWorkspace);
-      }
+    const prebuiltDevWorkspace = metadata.links.devWorkspaces?.[editorId];
+    if (prebuiltDevWorkspace !== undefined) {
+      factoryUrlParams.append('devWorkspace', prebuiltDevWorkspace);
     }
 
     const storageType = this.getStorageType();

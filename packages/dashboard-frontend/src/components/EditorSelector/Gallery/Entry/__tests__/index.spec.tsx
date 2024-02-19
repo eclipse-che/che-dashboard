@@ -14,7 +14,7 @@ import { StateMock } from '@react-mock/state';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
 
-import { EditorSelectorEntry, State } from '@/pages/GetStarted/EditorSelector/Entry';
+import { EditorSelectorEntry, State } from '@/components/EditorSelector/Gallery/Entry';
 import getComponentRenderer, { screen } from '@/services/__mocks__/getComponentRenderer';
 import { che } from '@/services/models';
 

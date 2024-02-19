@@ -12,14 +12,17 @@
 
 import React from 'react';
 
-import { Props } from '@/pages/GetStarted/ImportFromGit';
+import { Props } from '@/components/EditorSelector';
 
-export default class ImportFromGit extends React.PureComponent<Props> {
-  public render() {
+export default class EditorSelector extends React.PureComponent<Props> {
+  render() {
+    const { onSelect } = this.props;
     return (
-      <div data-testid="import-from-git">
-        <div>Import from Git</div>
-        <div data-testid="selected-editor-id">{this.props.editorId}</div>
+      <div data-testid="editor-selector">
+        Editor Selector
+        <button onClick={() => onSelect('che-incubator/che-code/latest', undefined)}>
+          Select Editor
+        </button>
       </div>
     );
   }

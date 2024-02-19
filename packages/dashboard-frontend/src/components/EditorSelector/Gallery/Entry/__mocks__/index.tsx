@@ -12,7 +12,7 @@
 
 import React from 'react';
 
-import { Props } from '@/pages/GetStarted/EditorSelector/Entry';
+import { Props } from '@/components/EditorSelector/Gallery/Entry';
 
 export class EditorSelectorEntry extends React.PureComponent<Props> {
   public render() {

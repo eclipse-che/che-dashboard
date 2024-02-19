@@ -12,14 +12,16 @@
 
 import React from 'react';
 
-import { Props } from '@/pages/GetStarted/ImportFromGit';
+import { Props } from '@/components/EditorSelector/Definition/DefinitionField';
 
-export default class ImportFromGit extends React.PureComponent<Props> {
+export class EditorDefinitionField extends React.PureComponent<Props> {
   public render() {
+    const { onChange } = this.props;
+
     return (
-      <div data-testid="import-from-git">
-        <div>Import from Git</div>
-        <div data-testid="selected-editor-id">{this.props.editorId}</div>
+      <div data-testid="editor-definition-field">
+        <button onClick={() => onChange('some/editor/id')}>Editor Definition Change</button>
+        Editor Definition Field
       </div>
     );
   }

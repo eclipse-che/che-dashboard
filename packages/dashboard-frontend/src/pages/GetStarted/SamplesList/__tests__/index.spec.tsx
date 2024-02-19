@@ -27,7 +27,8 @@ jest.mock('@/pages/GetStarted/SamplesList/Toolbar');
 
 const { createSnapshot, renderComponent } = getComponentRenderer(getComponent);
 
-const selectedEditorId = 'che-incubator/che-code/insiders';
+const editorId = 'che-incubator/che-code/insiders';
+const editorImage = 'custom-editor-image';
 
 describe('Samples List', () => {
   const sampleUrl = 'https://github.com/che-samples/quarkus-quickstarts/tree/devfilev2';
@@ -107,7 +108,7 @@ describe('Samples List', () => {
       expect(mockWindowOpen).toHaveBeenCalledWith(
         `/load-factory?url=${encodeURIComponent(
           sampleUrl,
-        )}&che-editor=che-incubator%2Fche-code%2Finsiders&devWorkspace=registry-url%2Fdevfile-registry%2Fdevfiles%2Fquarkus%2Fdevworkspace-che-code-insiders.yaml&storageType=${preferredPvcStrategy}`,
+        )}&che-editor=che-incubator%2Fche-code%2Finsiders&editor-image=custom-editor-image&devWorkspace=registry-url%2Fdevfile-registry%2Fdevfiles%2Fquarkus%2Fdevworkspace-che-code-insiders.yaml&storageType=${preferredPvcStrategy}`,
         '_blank',
       );
     });
@@ -127,7 +128,7 @@ describe('Samples List', () => {
       expect(mockWindowOpen).toHaveBeenCalledWith(
         `/load-factory?url=${encodeURIComponent(
           sampleUrl,
-        )}&che-editor=che-incubator%2Fche-code%2Finsiders&devWorkspace=registry-url%2Fdevfile-registry%2Fdevfiles%2Fquarkus%2Fdevworkspace-che-code-insiders.yaml&storageType=ephemeral`,
+        )}&che-editor=che-incubator%2Fche-code%2Finsiders&editor-image=custom-editor-image&devWorkspace=registry-url%2Fdevfile-registry%2Fdevfiles%2Fquarkus%2Fdevworkspace-che-code-insiders.yaml&storageType=ephemeral`,
         '_blank',
       );
       expect(mockWindowOpen).toHaveBeenCalledTimes(1);
@@ -170,7 +171,7 @@ describe('Samples List', () => {
       expect(mockWindowOpen).toHaveBeenCalledWith(
         `/load-factory?url=${encodeURIComponent(
           sampleUrl,
-        )}&che-editor=che-incubator%2Fche-code%2Finsiders&devWorkspace=registry-url%2Fdevfile-registry%2Fdevfiles%2Fquarkus%2Fdevworkspace-che-code-insiders.yaml&storageType=${preferredPvcStrategy}`,
+        )}&che-editor=che-incubator%2Fche-code%2Finsiders&editor-image=custom-editor-image&devWorkspace=registry-url%2Fdevfile-registry%2Fdevfiles%2Fquarkus%2Fdevworkspace-che-code-insiders.yaml&storageType=${preferredPvcStrategy}`,
         '_blank',
       );
     });
@@ -190,7 +191,7 @@ describe('Samples List', () => {
       expect(mockWindowOpen).toHaveBeenCalledWith(
         `/load-factory?url=${encodeURIComponent(
           sampleUrl,
-        )}&che-editor=che-incubator%2Fche-code%2Finsiders&devWorkspace=registry-url%2Fdevfile-registry%2Fdevfiles%2Fquarkus%2Fdevworkspace-che-code-insiders.yaml&storageType=persistent`,
+        )}&che-editor=che-incubator%2Fche-code%2Finsiders&editor-image=custom-editor-image&devWorkspace=registry-url%2Fdevfile-registry%2Fdevfiles%2Fquarkus%2Fdevworkspace-che-code-insiders.yaml&storageType=persistent`,
         '_blank',
       );
       expect(mockWindowOpen).toHaveBeenCalledTimes(1);
@@ -203,7 +204,7 @@ function getComponent(store: Store) {
 
   return (
     <Provider store={store}>
-      <SamplesList selectedEditorId={selectedEditorId} history={history} />
+      <SamplesList editorId={editorId} editorImage={editorImage} history={history} />
     </Provider>
   );
 }
