@@ -13,7 +13,6 @@ exports[`Devfile Metadata Card snapshot 1`] = `
 >
   <div
     className="pf-c-card__header"
-    onClick={[Function]}
   >
     <div
       className=""
