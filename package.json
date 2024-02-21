@@ -40,6 +40,8 @@
     "lerna": "^6"
   },
   "resolutions": {
-    "@adobe/css-tools": "^4.3.2"
+    "@adobe/css-tools": "^4.3.2",
+    "ip": "^2.0.1",
+    "undici": "^5.28.3"
   }
 }
