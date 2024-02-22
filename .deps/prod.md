@@ -389,7 +389,7 @@
 | [`type-fest@1.4.0`](https://github.com/sindresorhus/type-fest.git) | (MIT OR CC0-1.0) | clearlydefined |
 | [`underscore@1.13.6`](git://github.com/jashkenas/underscore.git) | MIT | clearlydefined |
 | [`undici-types@5.26.5`](git+https://github.com/nodejs/undici.git) | MIT | clearlydefined |
-| [`undici@5.27.2`](git+https://github.com/nodejs/undici.git) | MIT | clearlydefined |
+| [`undici@5.28.3`](git+https://github.com/nodejs/undici.git) | MIT | clearlydefined |
 | [`universalify@2.0.1`](git+https://github.com/RyanZim/universalify.git) | MIT | clearlydefined |
 | [`uri-js@4.4.1`](http://github.com/garycourt/uri-js) | BSD-2-Clause | #1086 |
 | [`url-parse@1.5.10`](https://github.com/unshiftio/url-parse.git) | MIT | clearlydefined |
