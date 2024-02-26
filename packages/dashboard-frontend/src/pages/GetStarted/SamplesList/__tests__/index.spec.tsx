@@ -204,7 +204,7 @@ function getComponent(store: Store) {
 
   return (
     <Provider store={store}>
-      <SamplesList editorId={editorId} editorImage={editorImage} history={history} />
+      <SamplesList editorDefinition={editorId} editorImage={editorImage} history={history} />
     </Provider>
   );
 }

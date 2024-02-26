@@ -32,8 +32,8 @@ import { selectEditors } from '@/store/Plugins/chePlugins/selectors';
 type AccordionId = 'selector' | 'definition';
 
 export type Props = MappedProps & {
-  selectedEditorId: string;
-  onSelect: (editorId: string | undefined, editorImage: string | undefined) => void;
+  selectedEditorDefinition: string;
+  onSelect: (editorDefinition: string | undefined, editorImage: string | undefined) => void;
 };
 export type State = {
   expandedId: AccordionId | undefined;
@@ -48,13 +48,16 @@ class EditorSelector extends React.PureComponent<Props, State> {
     };
   }
 
-  private handleEditorSelect(editorId: string | undefined, editorImage: string | undefined): void {
-    this.props.onSelect(editorId, editorImage);
+  private handleEditorSelect(
+    editorDefinition: string | undefined,
+    editorImage: string | undefined,
+  ): void {
+    this.props.onSelect(editorDefinition, editorImage);
   }
 
   private handleToggle(expandedId: AccordionId): void {
-    const { selectedEditorId, onSelect } = this.props;
-    onSelect(selectedEditorId, undefined);
+    const { selectedEditorDefinition, onSelect } = this.props;
+    onSelect(selectedEditorDefinition, undefined);
 
     this.setState({
       expandedId: this.state.expandedId === expandedId ? this.state.expandedId : expandedId,
@@ -62,7 +65,7 @@ class EditorSelector extends React.PureComponent<Props, State> {
   }
 
   render(): React.ReactElement {
-    const { editors, selectedEditorId } = this.props;
+    const { editors, selectedEditorDefinition } = this.props;
     const { expandedId } = this.state;
 
     return (
@@ -93,7 +96,7 @@ class EditorSelector extends React.PureComponent<Props, State> {
                       <PanelMainBody>
                         <EditorGallery
                           editors={editors}
-                          selectedEditorId={selectedEditorId}
+                          selectedEditorId={selectedEditorDefinition}
                           onSelect={editorId => this.handleEditorSelect(editorId, undefined)}
                         />
                       </PanelMainBody>
@@ -121,8 +124,8 @@ class EditorSelector extends React.PureComponent<Props, State> {
                     <PanelMain>
                       <PanelMainBody>
                         <EditorDefinition
-                          onChange={(editorId, editorImage) =>
-                            this.handleEditorSelect(editorId, editorImage)
+                          onChange={(editorDefinition, editorImage) =>
+                            this.handleEditorSelect(editorDefinition, editorImage)
                           }
                         />
                       </PanelMainBody>

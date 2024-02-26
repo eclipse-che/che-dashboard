@@ -27,7 +27,7 @@ type Props = MappedProps & {
   history: History;
 };
 type State = {
-  editorId: string;
+  editorDefinition: string;
   editorImage: string | undefined;
 };
 
@@ -36,21 +36,24 @@ export class GetStarted extends React.PureComponent<Props, State> {
     super(props);
 
     this.state = {
-      editorId: props.defaultEditor,
+      editorDefinition: props.defaultEditor,
       editorImage: undefined,
     };
   }
 
-  private handleSelectEditor(editorId: string | undefined, editorImage: string | undefined): void {
+  private handleSelectEditor(
+    editorDefinition: string | undefined,
+    editorImage: string | undefined,
+  ): void {
     this.setState({
-      editorId: editorId || this.props.defaultEditor,
+      editorDefinition: editorDefinition || this.props.defaultEditor,
       editorImage,
     });
   }
 
   render(): React.ReactNode {
     const { history } = this.props;
-    const { editorId, editorImage } = this.state;
+    const { editorDefinition, editorImage } = this.state;
 
     const title = 'Create Workspace';
 
@@ -66,17 +69,27 @@ export class GetStarted extends React.PureComponent<Props, State> {
 
         <PageSection variant={PageSectionVariants.default}>
           <EditorSelector
-            selectedEditorId={editorId}
-            onSelect={(editorId, editorImage) => this.handleSelectEditor(editorId, editorImage)}
+            selectedEditorDefinition={editorDefinition}
+            onSelect={(editorDefinition, editorImage) =>
+              this.handleSelectEditor(editorDefinition, editorImage)
+            }
           />
 
           <Spacer />
 
-          <ImportFromGit editorId={editorId} editorImage={editorImage} history={history} />
+          <ImportFromGit
+            editorDefinition={editorDefinition}
+            editorImage={editorImage}
+            history={history}
+          />
 
           <Spacer />
 
-          <SamplesList editorId={editorId} editorImage={editorImage} history={history} />
+          <SamplesList
+            editorDefinition={editorDefinition}
+            editorImage={editorImage}
+            history={history}
+          />
         </PageSection>
       </React.Fragment>
     );

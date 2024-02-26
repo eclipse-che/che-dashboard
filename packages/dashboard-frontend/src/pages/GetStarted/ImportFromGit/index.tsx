@@ -41,7 +41,7 @@ import * as WorkspacesStore from '@/store/Workspaces';
 
 export type Props = MappedProps & {
   history: History;
-  editorId: string;
+  editorDefinition: string;
   editorImage: string | undefined;
 };
 export type State = {
@@ -62,7 +62,7 @@ class ImportFromGit extends React.PureComponent<Props, State> {
   }
 
   private handleCreate(): void {
-    const { editorId, editorImage } = this.props;
+    const { editorDefinition, editorImage } = this.props;
     const { location } = this.state;
 
     const factory = new FactoryLocationAdapter(location);
@@ -73,7 +73,7 @@ class ImportFromGit extends React.PureComponent<Props, State> {
       factory.searchParams.has(EDITOR_ATTR) === false &&
       factory.searchParams.has(EDITOR_IMAGE_ATTR) === false
     ) {
-      factory.searchParams.set(EDITOR_ATTR, editorId);
+      factory.searchParams.set(EDITOR_ATTR, editorDefinition);
       if (editorImage) {
         factory.searchParams.set(EDITOR_IMAGE_ATTR, editorImage);
       }

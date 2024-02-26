@@ -198,7 +198,7 @@ describe('GitRepoLocationInput', () => {
 function getComponent(store: Store) {
   return (
     <Provider store={store}>
-      <ImportFromGit history={history} editorId={editorId} editorImage={editorImage} />
+      <ImportFromGit history={history} editorDefinition={editorId} editorImage={editorImage} />
     </Provider>
   );
 }

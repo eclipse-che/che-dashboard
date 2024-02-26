@@ -37,7 +37,7 @@ import { selectPvcStrategy } from '@/store/ServerConfig/selectors';
 
 export type Props = {
   history: History;
-  editorId: string;
+  editorDefinition: string;
   editorImage: string | undefined;
 } & MappedProps;
 
@@ -70,16 +70,16 @@ class SamplesList extends React.PureComponent<Props, State> {
   }
 
   private async handleSampleCardClick(metadata: DevfileRegistryMetadata): Promise<void> {
-    const { editorId, editorImage } = this.props;
+    const { editorDefinition, editorImage } = this.props;
 
     const factoryUrlParams = new URLSearchParams({ url: metadata.links.v2 });
 
-    factoryUrlParams.append(EDITOR_ATTR, editorId);
+    factoryUrlParams.append(EDITOR_ATTR, editorDefinition);
     if (editorImage) {
       factoryUrlParams.append(EDITOR_IMAGE_ATTR, editorImage);
     }
 
-    const prebuiltDevWorkspace = metadata.links.devWorkspaces?.[editorId];
+    const prebuiltDevWorkspace = metadata.links.devWorkspaces?.[editorDefinition];
     if (prebuiltDevWorkspace !== undefined) {
       factoryUrlParams.append('devWorkspace', prebuiltDevWorkspace);
     }

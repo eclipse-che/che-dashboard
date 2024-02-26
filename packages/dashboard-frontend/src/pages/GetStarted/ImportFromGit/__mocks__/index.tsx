@@ -19,7 +19,7 @@ export default class ImportFromGit extends React.PureComponent<Props> {
     return (
       <div data-testid="import-from-git">
         <div>Import from Git</div>
-        <div data-testid="selected-editor-id">{this.props.editorId}</div>
+        <div data-testid="selected-editor-id">{this.props.editorDefinition}</div>
       </div>
     );
   }

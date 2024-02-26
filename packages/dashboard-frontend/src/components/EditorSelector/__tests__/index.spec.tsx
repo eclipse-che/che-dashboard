@@ -100,7 +100,7 @@ function getComponent(localState?: State) {
     })
     .build();
 
-  const component = <EditorSelector selectedEditorId="some/editor/id" onSelect={mockOnSelect} />;
+  const component = <EditorSelector selectedEditorDefinition="some/editor/id" onSelect={mockOnSelect} />;
 
   if (localState) {
     return (
