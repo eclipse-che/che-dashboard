@@ -15,6 +15,9 @@ import {
   AccordionContent,
   AccordionItem,
   AccordionToggle,
+  Button,
+  Flex,
+  FlexItem,
   Panel,
   PanelHeader,
   PanelMain,
@@ -28,6 +31,9 @@ import { EditorDefinition } from '@/components/EditorSelector/Definition';
 import { EditorGallery } from '@/components/EditorSelector/Gallery';
 import { AppState } from '@/store';
 import { selectEditors } from '@/store/Plugins/chePlugins/selectors';
+
+const DOCS_DEFINING_A_COMMON_IDE =
+  'https://eclipse.dev/che/docs/stable/end-user-guide/defining-a-common-ide/';
 
 type AccordionId = 'selector' | 'definition';
 
@@ -134,6 +140,19 @@ class EditorSelector extends React.PureComponent<Props, State> {
                 </AccordionContent>
               </AccordionItem>
             </Accordion>
+            <Flex>
+              <FlexItem align={{ default: 'alignRight' }}>
+                <Button
+                  component="a"
+                  href={DOCS_DEFINING_A_COMMON_IDE}
+                  variant="link"
+                  isInline
+                  target="_blank"
+                >
+                  How to specify and use a custom editor
+                </Button>
+              </FlexItem>
+            </Flex>
           </PanelMainBody>
         </PanelMain>
       </Panel>

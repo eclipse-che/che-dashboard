@@ -182,6 +182,29 @@ exports[`Editor Selector snapshot 1`] = `
           </div>
         </div>
       </div>
+      <div
+        className="pf-l-flex"
+      >
+        <div
+          className="pf-m-align-right"
+        >
+          <a
+            aria-disabled={false}
+            aria-label={null}
+            className="pf-c-button pf-m-link pf-m-inline"
+            data-ouia-component-id="OUIA-Generated-Button-link-1"
+            data-ouia-component-type="PF4/Button"
+            data-ouia-safe={true}
+            disabled={null}
+            href="https://eclipse.dev/che/docs/stable/end-user-guide/defining-a-common-ide/"
+            role={null}
+            target="_blank"
+            type={null}
+          >
+            How to specify and use a custom editor
+          </a>
+        </div>
+      </div>
     </div>
   </div>
 </div>
