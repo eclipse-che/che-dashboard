@@ -142,6 +142,8 @@ export class EditorSelectorEntry extends React.PureComponent<Props, State> {
     const dropdownItems = this.buildDropdownItems();
     const areaLabel = `Select ${groupName} ${activeEditor.version} `;
 
+    const titleClassName = isSelectedGroup ? styles.activeCard : '';
+
     return (
       <Card
         hasSelectableInput={true}
@@ -169,7 +171,7 @@ export class EditorSelectorEntry extends React.PureComponent<Props, State> {
           </CardActions>
         </CardHeader>
         <CardBody>
-          {groupName}
+          <span className={titleClassName}>{groupName}</span>
           <TagLabel version={activeEditor.version}></TagLabel>
         </CardBody>
       </Card>
