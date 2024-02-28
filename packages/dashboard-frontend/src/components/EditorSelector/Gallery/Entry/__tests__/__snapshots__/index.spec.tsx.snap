@@ -73,7 +73,11 @@ exports[`Editor Selector Entry snapshot 1`] = `
     <div
       className="pf-c-card__body"
     >
-      VS Code - Open Source
+      <span
+        className=""
+      >
+        VS Code - Open Source
+      </span>
       <span
         className="pf-c-label pf-m-blue pf-m-outline versionLabel"
       >
