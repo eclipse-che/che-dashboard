@@ -27,7 +27,7 @@ type Props = MappedProps & {
   history: History;
 };
 type State = {
-  editorDefinition: string;
+  editorDefinition: string | undefined;
   editorImage: string | undefined;
 };
 
@@ -36,7 +36,7 @@ export class GetStarted extends React.PureComponent<Props, State> {
     super(props);
 
     this.state = {
-      editorDefinition: props.defaultEditor,
+      editorDefinition: undefined,
       editorImage: undefined,
     };
   }
@@ -46,13 +46,13 @@ export class GetStarted extends React.PureComponent<Props, State> {
     editorImage: string | undefined,
   ): void {
     this.setState({
-      editorDefinition: editorDefinition || this.props.defaultEditor,
+      editorDefinition,
       editorImage,
     });
   }
 
   render(): React.ReactNode {
-    const { history } = this.props;
+    const { defaultEditor, history } = this.props;
     const { editorDefinition, editorImage } = this.state;
 
     const title = 'Create Workspace';
@@ -69,7 +69,7 @@ export class GetStarted extends React.PureComponent<Props, State> {
 
         <PageSection variant={PageSectionVariants.default}>
           <EditorSelector
-            selectedEditorDefinition={editorDefinition}
+            defaultEditorId={defaultEditor}
             onSelect={(editorDefinition, editorImage) =>
               this.handleSelectEditor(editorDefinition, editorImage)
             }

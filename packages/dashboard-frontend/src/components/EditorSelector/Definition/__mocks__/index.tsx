@@ -16,14 +16,16 @@ import { Props } from '@/components/EditorSelector/Definition';
 
 export class EditorDefinition extends React.PureComponent<Props> {
   public render() {
-    const { onChange } = this.props;
+    const { editorDefinition, editorImage, onChange } = this.props;
 
     return (
-      <div data-testid="editor-definition">
+      <div data-testid="editor-definition-component">
+        <div>Editor Definition</div>
+        <div data-testid="editor-definition">{editorDefinition}</div>
+        <div data-testid="editor-image">{editorImage}</div>
         <button onClick={() => onChange('some/editor/id', 'editor-image')}>
           Editor Definition Change
         </button>
-        Editor Definition
       </div>
     );
   }

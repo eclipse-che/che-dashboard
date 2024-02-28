@@ -92,9 +92,21 @@ exports[`Editor Selector snapshot 1`] = `
                   className="pf-c-panel__main-body"
                 >
                   <div
-                    data-testid="editor-gallery"
+                    data-testid="editor-gallery-component"
                   >
-                    Editor Gallery
+                    <div>
+                      Editor Gallery
+                    </div>
+                    <div
+                      data-testid="default-editor-id"
+                    >
+                      default/editor/id
+                    </div>
+                    <div
+                      data-testid="selected-editor-id"
+                    >
+                      
+                    </div>
                     <button
                       onClick={[Function]}
                     >
@@ -167,14 +179,22 @@ exports[`Editor Selector snapshot 1`] = `
                   className="pf-c-panel__main-body"
                 >
                   <div
-                    data-testid="editor-definition"
+                    data-testid="editor-definition-component"
                   >
+                    <div>
+                      Editor Definition
+                    </div>
+                    <div
+                      data-testid="editor-definition"
+                    />
+                    <div
+                      data-testid="editor-image"
+                    />
                     <button
                       onClick={[Function]}
                     >
                       Editor Definition Change
                     </button>
-                    Editor Definition
                   </div>
                 </div>
               </div>

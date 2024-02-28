@@ -17,11 +17,13 @@ import { EditorSelectorEntry } from '@/components/EditorSelector/Gallery/Entry';
 import { che } from '@/services/models';
 
 export type Props = {
+  defaultEditorId: string;
   editors: che.Plugin[];
-  selectedEditorId: string;
+  selectedEditorId: string | undefined;
   onSelect: (editorId: string) => void;
 };
 export type State = {
+  selectedId: string;
   sortedEditorsByName: Map<string, che.Plugin[]>;
 };
 
@@ -30,6 +32,7 @@ export class EditorGallery extends React.PureComponent<Props, State> {
     super(props);
 
     this.state = {
+      selectedId: '', // will be set on component mount
       sortedEditorsByName: new Map<string, che.Plugin[]>(),
     };
   }
@@ -38,34 +41,52 @@ export class EditorGallery extends React.PureComponent<Props, State> {
     this.init();
   }
 
+  public componentDidUpdate(prevProps: Readonly<Props>): void {
+    if (prevProps.selectedEditorId !== this.props.selectedEditorId) {
+      this.init();
+    }
+  }
+
   private init(): void {
-    const { editors } = this.props;
+    const { defaultEditorId, editors, selectedEditorId, onSelect } = this.props;
 
-    const versionPriority = ['insider', 'next', 'latest'];
-    const sortedEditors = editors.sort((a, b) => {
-      if (a.name === b.name) {
-        const aPriority = versionPriority.indexOf(a.version);
-        const bPriority = versionPriority.indexOf(b.version);
-
-        if (aPriority !== -1 || bPriority !== -1) {
-          return aPriority - bPriority;
-        }
-      }
-
-      return a.id.localeCompare(b.id);
-    });
+    const sortedEditors = sortEditors(editors);
 
     const sortedEditorsByName = new Map<string, che.Plugin[]>();
 
+    let defaultEditor: che.Plugin | undefined;
+    let selectedEditor: che.Plugin | undefined;
     sortedEditors.forEach(editor => {
       const name = editor.name;
       if (!sortedEditorsByName.has(name)) {
         sortedEditorsByName.set(name, []);
       }
       sortedEditorsByName.get(name)?.push(editor);
+
+      // find the default editor
+      if (editor.id === defaultEditorId) {
+        defaultEditor = editor;
+      }
+      // find the selected editor
+      if (editor.id === selectedEditorId) {
+        selectedEditor = editor;
+      }
     });
 
+    let selectedId: string;
+    if (selectedEditor !== undefined) {
+      selectedId = selectedEditor.id;
+    } else {
+      if (defaultEditor !== undefined) {
+        selectedId = defaultEditor.id;
+      } else {
+        selectedId = sortedEditors[0].id;
+      }
+      onSelect(selectedId);
+    }
+
     this.setState({
+      selectedId,
       sortedEditorsByName,
     });
   }
@@ -75,16 +96,17 @@ export class EditorGallery extends React.PureComponent<Props, State> {
   }
 
   private buildEditorCards(): React.ReactNode[] {
-    const { selectedEditorId } = this.props;
-    const { sortedEditorsByName } = this.state;
+    const { selectedId, sortedEditorsByName } = this.state;
 
     return Array.from(sortedEditorsByName.keys()).map(editorName => {
       // editors same name, different version
       const editorsGroup = sortedEditorsByName.get(editorName);
 
+      /* c8 ignore start */
       if (editorsGroup === undefined) {
         return;
       }
+      /* c8 ignore end */
 
       const groupIcon = editorsGroup[0].icon;
       const groupName = editorsGroup[0].displayName || editorsGroup[0].name;
@@ -95,7 +117,7 @@ export class EditorGallery extends React.PureComponent<Props, State> {
           editorsGroup={editorsGroup}
           groupIcon={groupIcon}
           groupName={groupName}
-          selectedId={selectedEditorId}
+          selectedId={selectedId}
           onSelect={editorId => this.handleEditorSelect(editorId)}
         />
       );
@@ -109,4 +131,26 @@ export class EditorGallery extends React.PureComponent<Props, State> {
       </Gallery>
     );
   }
+}
+
+const VERSION_PRIORITY: ReadonlyArray<string> = ['insiders', 'next', 'latest'];
+export function sortEditors(editors: che.Plugin[]) {
+  const sorted = editors.sort((a, b) => {
+    if (a.name === b.name) {
+      const aPriority = VERSION_PRIORITY.indexOf(a.version);
+      const bPriority = VERSION_PRIORITY.indexOf(b.version);
+
+      if (aPriority !== -1 && bPriority !== -1) {
+        return aPriority - bPriority;
+      } else if (aPriority !== -1) {
+        return -1;
+      } else if (bPriority !== -1) {
+        return 1;
+      }
+    }
+
+    return a.id.localeCompare(b.id);
+  });
+
+  return sorted;
 }

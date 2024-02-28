@@ -19,8 +19,8 @@ export default class SamplesList extends React.PureComponent<Props> {
     const { editorDefinition, editorImage } = this.props;
     return (
       <div data-testid="samples-list">
-        <div data-testid="editor-id">{editorDefinition}</div>
-        <div data-testid="editor-image">{editorImage}</div>
+        <div data-testid="editor-definition">{editorDefinition ? editorDefinition : ''}</div>
+        <div data-testid="editor-image">{editorImage ? editorImage : ''}</div>
         Samples List
       </div>
     );

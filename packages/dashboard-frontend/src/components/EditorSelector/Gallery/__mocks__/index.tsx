@@ -16,11 +16,13 @@ import { Props } from '@/components/EditorSelector/Gallery';
 
 export class EditorGallery extends React.PureComponent<Props> {
   public render() {
-    const { onSelect } = this.props;
+    const { defaultEditorId, selectedEditorId, onSelect } = this.props;
 
     return (
-      <div data-testid="editor-gallery">
-        Editor Gallery
+      <div data-testid="editor-gallery-component">
+        <div>Editor Gallery</div>
+        <div data-testid="default-editor-id">{defaultEditorId}</div>
+        <div data-testid="selected-editor-id">{selectedEditorId}</div>
         <button onClick={() => onSelect('che-incubator/che-code/latest')}>Select Editor</button>
       </div>
     );

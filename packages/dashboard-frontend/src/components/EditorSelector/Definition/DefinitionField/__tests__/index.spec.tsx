@@ -42,8 +42,13 @@ describe('EditorDefinitionField', () => {
     const editorId = 'some/editor/id';
     userEvent.paste(input, editorId);
 
-    expect(mockOnChange).toHaveBeenCalledWith(editorId);
+    expect(mockOnChange).toHaveBeenNthCalledWith(1, editorId);
     expect(screen.queryByText(helperText)).toBeNull();
+
+    userEvent.clear(input);
+
+    expect(mockOnChange).toHaveBeenNthCalledWith(2, undefined);
+    expect(screen.queryByText(helperText)).not.toBeNull();
   });
 });
 

@@ -41,9 +41,14 @@ exports[`GetStarted snapshot 1`] = `
         Import from Git
       </div>
       <div
-        data-testid="selected-editor-id"
+        data-testid="editor-definition"
       >
-        che-incubator/che-code/latest
+        
+      </div>
+      <div
+        data-testid="editor-image"
+      >
+        
       </div>
     </div>
     <div
@@ -54,13 +59,15 @@ exports[`GetStarted snapshot 1`] = `
       data-testid="samples-list"
     >
       <div
-        data-testid="editor-id"
+        data-testid="editor-definition"
       >
-        che-incubator/che-code/latest
+        
       </div>
       <div
         data-testid="editor-image"
-      />
+      >
+        
+      </div>
       Samples List
     </div>
   </section>,

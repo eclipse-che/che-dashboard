@@ -14,12 +14,17 @@ exports[`EditorGallery snapshot 1`] = `
     data-testid="editor-selector-entry"
   >
     <div
+      data-testid="selected-editor-id"
+    >
+      che-incubator/che-code/latest
+    </div>
+    <div
       data-testid="editor-group-name"
     >
       VS Code - Open Source
     </div>
     <div
-      data-testid="VS Code - Open Source"
+      data-testid="che-code insiders"
     >
       <span>
         che-code
@@ -34,7 +39,7 @@ exports[`EditorGallery snapshot 1`] = `
       </button>
     </div>
     <div
-      data-testid="VS Code - Open Source"
+      data-testid="che-code latest"
     >
       <span>
         che-code
@@ -53,12 +58,17 @@ exports[`EditorGallery snapshot 1`] = `
     data-testid="editor-selector-entry"
   >
     <div
-      data-testid="editor-group-name"
+      data-testid="selected-editor-id"
     >
-      IntelliJ IDEA Ultimate (desktop)
+      che-incubator/che-code/latest
     </div>
     <div
-      data-testid="IntelliJ IDEA Ultimate (desktop)"
+      data-testid="editor-group-name"
+    >
+      che-idea-server
+    </div>
+    <div
+      data-testid="che-idea-server next"
     >
       <span>
         che-idea-server
@@ -73,7 +83,7 @@ exports[`EditorGallery snapshot 1`] = `
       </button>
     </div>
     <div
-      data-testid="IntelliJ IDEA Ultimate (desktop)"
+      data-testid="che-idea-server latest"
     >
       <span>
         che-idea-server

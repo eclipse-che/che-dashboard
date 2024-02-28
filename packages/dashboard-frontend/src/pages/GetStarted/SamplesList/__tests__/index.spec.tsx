@@ -108,7 +108,7 @@ describe('Samples List', () => {
       expect(mockWindowOpen).toHaveBeenCalledWith(
         `/load-factory?url=${encodeURIComponent(
           sampleUrl,
-        )}&che-editor=che-incubator%2Fche-code%2Finsiders&editor-image=custom-editor-image&devWorkspace=registry-url%2Fdevfile-registry%2Fdevfiles%2Fquarkus%2Fdevworkspace-che-code-insiders.yaml&storageType=${preferredPvcStrategy}`,
+        )}&che-editor=che-incubator%2Fche-code%2Finsiders&devWorkspace=registry-url%2Fdevfile-registry%2Fdevfiles%2Fquarkus%2Fdevworkspace-che-code-insiders.yaml&editor-image=custom-editor-image&storageType=${preferredPvcStrategy}`,
         '_blank',
       );
     });
@@ -128,7 +128,7 @@ describe('Samples List', () => {
       expect(mockWindowOpen).toHaveBeenCalledWith(
         `/load-factory?url=${encodeURIComponent(
           sampleUrl,
-        )}&che-editor=che-incubator%2Fche-code%2Finsiders&editor-image=custom-editor-image&devWorkspace=registry-url%2Fdevfile-registry%2Fdevfiles%2Fquarkus%2Fdevworkspace-che-code-insiders.yaml&storageType=ephemeral`,
+        )}&che-editor=che-incubator%2Fche-code%2Finsiders&devWorkspace=registry-url%2Fdevfile-registry%2Fdevfiles%2Fquarkus%2Fdevworkspace-che-code-insiders.yaml&editor-image=custom-editor-image&storageType=ephemeral`,
         '_blank',
       );
       expect(mockWindowOpen).toHaveBeenCalledTimes(1);
@@ -171,7 +171,7 @@ describe('Samples List', () => {
       expect(mockWindowOpen).toHaveBeenCalledWith(
         `/load-factory?url=${encodeURIComponent(
           sampleUrl,
-        )}&che-editor=che-incubator%2Fche-code%2Finsiders&editor-image=custom-editor-image&devWorkspace=registry-url%2Fdevfile-registry%2Fdevfiles%2Fquarkus%2Fdevworkspace-che-code-insiders.yaml&storageType=${preferredPvcStrategy}`,
+        )}&che-editor=che-incubator%2Fche-code%2Finsiders&devWorkspace=registry-url%2Fdevfile-registry%2Fdevfiles%2Fquarkus%2Fdevworkspace-che-code-insiders.yaml&editor-image=custom-editor-image&storageType=${preferredPvcStrategy}`,
         '_blank',
       );
     });
@@ -191,7 +191,7 @@ describe('Samples List', () => {
       expect(mockWindowOpen).toHaveBeenCalledWith(
         `/load-factory?url=${encodeURIComponent(
           sampleUrl,
-        )}&che-editor=che-incubator%2Fche-code%2Finsiders&editor-image=custom-editor-image&devWorkspace=registry-url%2Fdevfile-registry%2Fdevfiles%2Fquarkus%2Fdevworkspace-che-code-insiders.yaml&storageType=persistent`,
+        )}&che-editor=che-incubator%2Fche-code%2Finsiders&devWorkspace=registry-url%2Fdevfile-registry%2Fdevfiles%2Fquarkus%2Fdevworkspace-che-code-insiders.yaml&editor-image=custom-editor-image&storageType=persistent`,
         '_blank',
       );
       expect(mockWindowOpen).toHaveBeenCalledTimes(1);

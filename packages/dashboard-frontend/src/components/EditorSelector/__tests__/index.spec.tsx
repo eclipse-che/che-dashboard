@@ -61,32 +61,65 @@ describe('Editor Selector', () => {
     await expect(screen.findByTestId('editor-gallery-content')).resolves.toBeInTheDocument();
   });
 
-  test('select editor from gallery', async () => {
+  test('select editor from gallery', () => {
     renderComponent();
 
-    const editorGallery = await screen.findByTestId('editor-gallery-content');
+    const editorGallery = screen.queryByTestId('editor-gallery-content')!;
+    expect(editorGallery).not.toBeNull();
 
-    const selectEditorButton = within(editorGallery).getByRole('button', { name: 'Select Editor' });
+    // initial default editor ID
+    const defaultEditor = within(editorGallery).getByTestId('default-editor-id');
+    expect(defaultEditor).toHaveTextContent('default/editor/id');
+
+    // initial selected editor ID
+    const selectedEditor = within(editorGallery).getByTestId('selected-editor-id');
+    expect(selectedEditor).toHaveTextContent('');
+
+    const selectEditorButton = within(editorGallery).getByRole('button', {
+      name: 'Select Editor',
+    });
 
     userEvent.click(selectEditorButton);
 
     expect(mockOnSelect).toHaveBeenCalledWith('che-incubator/che-code/latest', undefined);
+
+    // next selected editor ID
+    expect(screen.queryByTestId('selected-editor-id')).toHaveTextContent(
+      'che-incubator/che-code/latest',
+    );
   });
 
-  test('define editor by ID and editor image', async () => {
+  test('define editor by ID and editor image', () => {
     renderComponent({
       expandedId: 'definition',
+      selectorEditorValue: 'some/editor/id',
+      definitionEditorValue: undefined,
+      definitionImageValue: undefined,
     });
 
-    const editorDefinition = await screen.findByTestId('editor-definition-content');
+    const editorDefinitionPanel = screen.queryByTestId('editor-definition-content')!;
+    expect(editorDefinitionPanel).not.toBeNull();
 
-    const changeDefinitionButton = within(editorDefinition).getByRole('button', {
+    // initial editor definition state
+    const editorDefinition = within(editorDefinitionPanel).getByTestId('editor-definition');
+    expect(editorDefinition).toHaveTextContent('');
+
+    // initial editor image
+    const editorImage = within(editorDefinitionPanel).getByTestId('editor-image');
+    expect(editorImage).toHaveTextContent('');
+
+    const changeDefinitionButton = within(editorDefinitionPanel).getByRole('button', {
       name: 'Editor Definition Change',
     });
 
     userEvent.click(changeDefinitionButton);
 
     expect(mockOnSelect).toHaveBeenCalledWith('some/editor/id', 'editor-image');
+
+    // next editor definition
+    expect(screen.getByTestId('editor-definition')).toHaveTextContent('some/editor/id');
+    // next editor image
+    expect(screen.getByTestId('editor-image')).toHaveTextContent('editor-image');
   });
 });
 
@@ -100,7 +133,7 @@ function getComponent(localState?: State) {
     })
     .build();
 
-  const component = <EditorSelector selectedEditorDefinition="some/editor/id" onSelect={mockOnSelect} />;
+  const component = <EditorSelector defaultEditorId="default/editor/id" onSelect={mockOnSelect} />;
 
   if (localState) {
     return (

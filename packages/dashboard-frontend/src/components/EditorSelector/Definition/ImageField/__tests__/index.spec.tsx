@@ -38,7 +38,10 @@ describe('EditorDefinitionField', () => {
     const editorId = 'editor-image';
     userEvent.paste(input, editorId);
 
-    expect(mockOnChange).toHaveBeenCalledWith(editorId);
+    expect(mockOnChange).toHaveBeenNthCalledWith(1, editorId);
+
+    userEvent.clear(input);
+    expect(mockOnChange).toHaveBeenNthCalledWith(2, undefined);
   });
 });
 

@@ -20,7 +20,7 @@ export default class EditorSelector extends React.PureComponent<Props> {
     return (
       <div data-testid="editor-selector">
         Editor Selector
-        <button onClick={() => onSelect('che-incubator/che-code/latest', undefined)}>
+        <button onClick={() => onSelect('some/editor/id', 'custom-editor-image')}>
           Select Editor
         </button>
       </div>

@@ -28,13 +28,18 @@ describe('EditorDefinition', () => {
     jest.clearAllMocks();
   });
 
-  test('snapshot', () => {
-    const snapshot = createSnapshot();
+  test('snapshot w/o initial values', () => {
+    const snapshot = createSnapshot(undefined, undefined);
+    expect(snapshot.toJSON()).toMatchSnapshot();
+  });
+
+  test('snapshot with initial values', () => {
+    const snapshot = createSnapshot('some/editor/id', 'editor-image');
     expect(snapshot.toJSON()).toMatchSnapshot();
   });
 
   it('should handle editor definition change', () => {
-    renderComponent();
+    renderComponent(undefined, undefined);
 
     const definitionChangeButton = screen.getByRole('button', { name: 'Editor Definition Change' });
     userEvent.click(definitionChangeButton);
@@ -43,7 +48,7 @@ describe('EditorDefinition', () => {
   });
 
   it('should handle editor image change', () => {
-    renderComponent();
+    renderComponent(undefined, undefined);
 
     const imageChangeButton = screen.getByRole('button', { name: 'Editor Image Change' });
     userEvent.click(imageChangeButton);
@@ -52,6 +57,12 @@ describe('EditorDefinition', () => {
   });
 });
 
-function getComponent() {
-  return <EditorDefinition onChange={mockOnChange} />;
+function getComponent(editorDefinition: string | undefined, editorImage: string | undefined) {
+  return (
+    <EditorDefinition
+      editorDefinition={editorDefinition}
+      editorImage={editorImage}
+      onChange={mockOnChange}
+    />
+  );
 }

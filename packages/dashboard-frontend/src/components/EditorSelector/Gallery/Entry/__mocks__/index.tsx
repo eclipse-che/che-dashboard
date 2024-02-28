@@ -16,12 +16,13 @@ import { Props } from '@/components/EditorSelector/Gallery/Entry';
 
 export class EditorSelectorEntry extends React.PureComponent<Props> {
   public render() {
-    const { editorsGroup, groupName, onSelect } = this.props;
+    const { selectedId, editorsGroup, groupName, onSelect } = this.props;
     return (
       <div data-testid="editor-selector-entry">
+        <div data-testid="selected-editor-id">{selectedId}</div>
         <div data-testid="editor-group-name">{groupName}</div>
         {editorsGroup.map(editor => (
-          <div key={editor.id} data-testid={editor.displayName}>
+          <div key={editor.id} data-testid={editor.name + ' ' + editor.version}>
             <span>{editor.name}</span>
             <button onClick={() => onSelect(editor.id)}>
               Select {editor.name} {editor.version}

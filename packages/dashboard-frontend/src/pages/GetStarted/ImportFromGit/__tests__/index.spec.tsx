@@ -28,6 +28,7 @@ const history = createMemoryHistory({
 
 global.window.open = jest.fn();
 
+const defaultEditorId = 'che-incubator/che-code/next';
 const editorId = 'che-incubator/che-code/insiders';
 const editorImage = 'custom-editor-image';
 
@@ -35,7 +36,16 @@ describe('GitRepoLocationInput', () => {
   let store: Store;
 
   beforeEach(() => {
-    store = new FakeStoreBuilder().build();
+    store = new FakeStoreBuilder()
+      .withDwServerConfig({
+        defaults: {
+          editor: defaultEditorId,
+          components: [],
+          plugins: [],
+          pvcStrategy: 'per-workspace',
+        },
+      })
+      .build();
   });
 
   afterEach(() => {
@@ -43,7 +53,7 @@ describe('GitRepoLocationInput', () => {
   });
 
   test('snapshot', () => {
-    const component = createSnapshot(store);
+    const component = createSnapshot(store, editorId, editorImage);
     expect(component).toMatchSnapshot();
   });
 
@@ -66,62 +76,167 @@ describe('GitRepoLocationInput', () => {
   });
 
   describe('valid HTTP location', () => {
-    test('factory URL without other parameters', () => {
-      renderComponent(store);
+    describe('factory URL w/o other parameters', () => {
+      test('editor definition and image are empty', () => {
+        renderComponent(store);
 
-      const input = screen.getByRole('textbox');
-      expect(input).toBeValid();
+        const input = screen.getByRole('textbox');
+        expect(input).toBeValid();
 
-      userEvent.paste(input, 'http://test-location/');
+        userEvent.paste(input, 'http://test-location/');
 
-      expect(input).toHaveValue('http://test-location/');
-      expect(input).toBeValid();
+        expect(input).toHaveValue('http://test-location/');
+        expect(input).toBeValid();
 
-      const button = screen.getByRole('button');
-      expect(button).toBeEnabled();
+        const button = screen.getByRole('button');
+        expect(button).toBeEnabled();
 
-      userEvent.click(button);
-      // the selected editor ID should be added to the URL
-      expect(window.open).toHaveBeenLastCalledWith(
-        'http://localhost/#http://test-location/?che-editor=che-incubator%2Fche-code%2Finsiders&editor-image=custom-editor-image',
-        '_blank',
-      );
-      expect(window.open).toHaveBeenCalledTimes(1);
+        userEvent.click(button);
+        // the selected editor ID should be added to the URL
+        expect(window.open).toHaveBeenLastCalledWith(
+          'http://localhost/#http://test-location/',
+          '_blank',
+        );
+        expect(window.open).toHaveBeenCalledTimes(1);
 
-      userEvent.type(input, '{enter}');
-      expect(window.open).toHaveBeenCalledTimes(2);
+        userEvent.type(input, '{enter}');
+        expect(window.open).toHaveBeenCalledTimes(2);
+      });
+
+      test('editor definition is defined, editor image is empty', () => {
+        renderComponent(store, editorId);
+
+        const input = screen.getByRole('textbox');
+        expect(input).toBeValid();
+
+        userEvent.paste(input, 'http://test-location/');
+
+        expect(input).toHaveValue('http://test-location/');
+        expect(input).toBeValid();
+
+        const button = screen.getByRole('button');
+        expect(button).toBeEnabled();
+
+        userEvent.click(button);
+        // the selected editor ID should be added to the URL
+        expect(window.open).toHaveBeenLastCalledWith(
+          'http://localhost/#http://test-location/?che-editor=che-incubator%2Fche-code%2Finsiders',
+          '_blank',
+        );
+        expect(window.open).toHaveBeenCalledTimes(1);
+
+        userEvent.type(input, '{enter}');
+        expect(window.open).toHaveBeenCalledTimes(2);
+      });
+
+      test('editor definition is empty, editor image is defined', () => {
+        renderComponent(store, undefined, editorImage);
+
+        const input = screen.getByRole('textbox');
+        expect(input).toBeValid();
+
+        userEvent.paste(input, 'http://test-location/');
+
+        expect(input).toHaveValue('http://test-location/');
+        expect(input).toBeValid();
+
+        const button = screen.getByRole('button');
+        expect(button).toBeEnabled();
+
+        userEvent.click(button);
+        // the selected editor ID should be added to the URL
+        expect(window.open).toHaveBeenLastCalledWith(
+          'http://localhost/#http://test-location/?editor-image=custom-editor-image',
+          '_blank',
+        );
+        expect(window.open).toHaveBeenCalledTimes(1);
+
+        userEvent.type(input, '{enter}');
+        expect(window.open).toHaveBeenCalledTimes(2);
+      });
+
+      test('editor definition and editor image are defined', () => {
+        renderComponent(store, editorId, editorImage);
+
+        const input = screen.getByRole('textbox');
+        expect(input).toBeValid();
+
+        userEvent.paste(input, 'http://test-location/');
+
+        expect(input).toHaveValue('http://test-location/');
+        expect(input).toBeValid();
+
+        const button = screen.getByRole('button');
+        expect(button).toBeEnabled();
+
+        userEvent.click(button);
+        // the selected editor ID should be added to the URL
+        expect(window.open).toHaveBeenLastCalledWith(
+          'http://localhost/#http://test-location/?che-editor=che-incubator%2Fche-code%2Finsiders&editor-image=custom-editor-image',
+          '_blank',
+        );
+        expect(window.open).toHaveBeenCalledTimes(1);
+
+        userEvent.type(input, '{enter}');
+        expect(window.open).toHaveBeenCalledTimes(2);
+      });
     });
 
-    test('factory URL with the `che-editor` parameter', () => {
-      renderComponent(store);
+    describe('factory URL with `che-editor` and/or `editor-image` parameters', () => {
+      test('editor definition and editor image are defined, and `che-editor` is provided', () => {
+        renderComponent(store, editorId, editorImage);
 
-      const input = screen.getByRole('textbox');
-      expect(input).toBeValid();
+        const input = screen.getByRole('textbox');
+        expect(input).toBeValid();
 
-      userEvent.paste(input, 'http://test-location/?che-editor=other-editor-id');
+        userEvent.paste(input, 'http://test-location/?che-editor=other-editor-id');
 
-      expect(input).toHaveValue('http://test-location/?che-editor=other-editor-id');
-      expect(input).toBeValid();
+        expect(input).toHaveValue('http://test-location/?che-editor=other-editor-id');
+        expect(input).toBeValid();
 
-      const button = screen.getByRole('button');
-      expect(button).toBeEnabled();
+        const button = screen.getByRole('button');
+        expect(button).toBeEnabled();
 
-      userEvent.click(button);
-      // the selected editor ID should NOT be added to the URL, as the URL parameter has higher priority
-      expect(window.open).toHaveBeenLastCalledWith(
-        'http://localhost/#http://test-location/?che-editor=other-editor-id',
-        '_blank',
-      );
-      expect(window.open).toHaveBeenCalledTimes(1);
+        userEvent.click(button);
+        // the selected editor ID should NOT be added to the URL, as the URL parameter has higher priority
+        expect(window.open).toHaveBeenLastCalledWith(
+          'http://localhost/#http://test-location/?che-editor=other-editor-id',
+          '_blank',
+        );
+        expect(window.open).toHaveBeenCalledTimes(1);
 
-      userEvent.type(input, '{enter}');
-      expect(window.open).toHaveBeenCalledTimes(2);
+        userEvent.type(input, '{enter}');
+        expect(window.open).toHaveBeenCalledTimes(2);
+      });
+
+      test('editor definition and editor image are defined, and `editor-image` is provided', () => {
+        renderComponent(store, editorId, editorImage);
+
+        const input = screen.getByRole('textbox');
+        expect(input).toBeValid();
+
+        userEvent.paste(input, 'http://test-location/?editor-image=custom-editor-image');
+
+        expect(input).toHaveValue('http://test-location/?editor-image=custom-editor-image');
+        expect(input).toBeValid();
+
+        const button = screen.getByRole('button');
+        expect(button).toBeEnabled();
+
+        userEvent.click(button);
+        // the selected editor ID should be added to the URL
+        expect(window.open).toHaveBeenLastCalledWith(
+          'http://localhost/#http://test-location/?editor-image=custom-editor-image',
+          '_blank',
+        );
+        expect(window.open).toHaveBeenCalledTimes(1);
+      });
     });
   });
 
   describe('valid Git+SSH location', () => {
     test('w/o SSH keys', () => {
-      renderComponent(store);
+      renderComponent(store, editorId, editorImage);
 
       const input = screen.getByRole('textbox');
       expect(input).toBeValid();
@@ -145,7 +260,7 @@ describe('GitRepoLocationInput', () => {
       const store = new FakeStoreBuilder()
         .withSshKeys({ keys: [{ name: 'key1', keyPub: 'publicKey' }] })
         .build();
-      renderComponent(store);
+      renderComponent(store, editorId, editorImage);
 
       const input = screen.getByRole('textbox');
       expect(input).toBeValid();
@@ -171,7 +286,7 @@ describe('GitRepoLocationInput', () => {
       const store = new FakeStoreBuilder()
         .withSshKeys({ keys: [{ name: 'key1', keyPub: 'publicKey' }] })
         .build();
-      renderComponent(store);
+      renderComponent(store, editorId, editorImage);
 
       const input = screen.getByRole('textbox');
       expect(input).toBeValid();
@@ -195,10 +310,18 @@ describe('GitRepoLocationInput', () => {
   });
 });
 
-function getComponent(store: Store) {
+function getComponent(
+  store: Store,
+  editorDefinition: string | undefined = undefined,
+  editorImage: string | undefined = undefined,
+) {
   return (
     <Provider store={store}>
-      <ImportFromGit history={history} editorDefinition={editorId} editorImage={editorImage} />
+      <ImportFromGit
+        history={history}
+        editorDefinition={editorDefinition}
+        editorImage={editorImage}
+      />
     </Provider>
   );
 }

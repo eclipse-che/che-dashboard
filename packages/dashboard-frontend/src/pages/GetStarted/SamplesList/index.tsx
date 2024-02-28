@@ -37,7 +37,7 @@ import { selectPvcStrategy } from '@/store/ServerConfig/selectors';
 
 export type Props = {
   history: History;
-  editorDefinition: string;
+  editorDefinition: string | undefined;
   editorImage: string | undefined;
 } & MappedProps;
 
@@ -74,14 +74,17 @@ class SamplesList extends React.PureComponent<Props, State> {
 
     const factoryUrlParams = new URLSearchParams({ url: metadata.links.v2 });
 
-    factoryUrlParams.append(EDITOR_ATTR, editorDefinition);
-    if (editorImage) {
-      factoryUrlParams.append(EDITOR_IMAGE_ATTR, editorImage);
+    if (editorDefinition !== undefined) {
+      factoryUrlParams.append(EDITOR_ATTR, editorDefinition);
+
+      const prebuiltDevWorkspace = metadata.links.devWorkspaces?.[editorDefinition];
+      if (prebuiltDevWorkspace !== undefined) {
+        factoryUrlParams.append('devWorkspace', prebuiltDevWorkspace);
+      }
     }
 
-    const prebuiltDevWorkspace = metadata.links.devWorkspaces?.[editorDefinition];
-    if (prebuiltDevWorkspace !== undefined) {
-      factoryUrlParams.append('devWorkspace', prebuiltDevWorkspace);
+    if (editorImage !== undefined) {
+      factoryUrlParams.append(EDITOR_IMAGE_ATTR, editorImage);
     }
 
     const storageType = this.getStorageType();
@@ -91,6 +94,7 @@ class SamplesList extends React.PureComponent<Props, State> {
     factoryLocation.search = factoryUrlParams.toString();
 
     const factoryLink = toHref(this.props.history, factoryLocation);
+
     window.open(factoryLink, '_blank');
   }
 

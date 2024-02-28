@@ -38,10 +38,15 @@ const DOCS_DEFINING_A_COMMON_IDE =
 type AccordionId = 'selector' | 'definition';
 
 export type Props = MappedProps & {
-  selectedEditorDefinition: string;
+  defaultEditorId: string;
   onSelect: (editorDefinition: string | undefined, editorImage: string | undefined) => void;
 };
 export type State = {
+  definitionEditorValue: string | undefined;
+  definitionImageValue: string | undefined;
+
+  selectorEditorValue: string;
+
   expandedId: AccordionId | undefined;
 };
 
@@ -50,29 +55,51 @@ class EditorSelector extends React.PureComponent<Props, State> {
     super(props);
 
     this.state = {
+      definitionEditorValue: undefined,
+      definitionImageValue: undefined,
+
+      selectorEditorValue: '',
+
       expandedId: 'selector',
     };
   }
 
-  private handleEditorSelect(
+  private handleSelectorValueChange(editorId: string): void {
+    this.setState({ selectorEditorValue: editorId });
+    this.props.onSelect(editorId, undefined);
+  }
+
+  private handleDefinitionValueChange(
     editorDefinition: string | undefined,
     editorImage: string | undefined,
   ): void {
+    this.setState({
+      definitionEditorValue: editorDefinition,
+      definitionImageValue: editorImage,
+    });
     this.props.onSelect(editorDefinition, editorImage);
   }
 
   private handleToggle(expandedId: AccordionId): void {
-    const { selectedEditorDefinition, onSelect } = this.props;
-    onSelect(selectedEditorDefinition, undefined);
+    const { onSelect } = this.props;
 
     this.setState({
       expandedId: this.state.expandedId === expandedId ? this.state.expandedId : expandedId,
     });
+
+    const { definitionEditorValue, definitionImageValue, selectorEditorValue } = this.state;
+
+    if (expandedId === 'selector') {
+      onSelect(selectorEditorValue, undefined);
+    } else {
+      onSelect(definitionEditorValue, definitionImageValue);
+    }
   }
 
   render(): React.ReactElement {
-    const { editors, selectedEditorDefinition } = this.props;
-    const { expandedId } = this.state;
+    const { defaultEditorId, editors } = this.props;
+    const { definitionEditorValue, definitionImageValue, selectorEditorValue, expandedId } =
+      this.state;
 
     return (
       <Panel>
@@ -101,9 +128,10 @@ class EditorSelector extends React.PureComponent<Props, State> {
                     <PanelMain>
                       <PanelMainBody>
                         <EditorGallery
+                          defaultEditorId={defaultEditorId}
                           editors={editors}
-                          selectedEditorId={selectedEditorDefinition}
-                          onSelect={editorId => this.handleEditorSelect(editorId, undefined)}
+                          selectedEditorId={selectorEditorValue}
+                          onSelect={editorId => this.handleSelectorValueChange(editorId)}
                         />
                       </PanelMainBody>
                     </PanelMain>
@@ -130,8 +158,10 @@ class EditorSelector extends React.PureComponent<Props, State> {
                     <PanelMain>
                       <PanelMainBody>
                         <EditorDefinition
+                          editorDefinition={definitionEditorValue}
+                          editorImage={definitionImageValue}
                           onChange={(editorDefinition, editorImage) =>
-                            this.handleEditorSelect(editorDefinition, editorImage)
+                            this.handleDefinitionValueChange(editorDefinition, editorImage)
                           }
                         />
                       </PanelMainBody>

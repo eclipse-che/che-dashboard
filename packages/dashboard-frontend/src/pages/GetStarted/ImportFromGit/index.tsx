@@ -41,7 +41,7 @@ import * as WorkspacesStore from '@/store/Workspaces';
 
 export type Props = MappedProps & {
   history: History;
-  editorDefinition: string;
+  editorDefinition: string | undefined;
   editorImage: string | undefined;
 };
 export type State = {
@@ -67,14 +67,16 @@ class ImportFromGit extends React.PureComponent<Props, State> {
 
     const factory = new FactoryLocationAdapter(location);
 
-    // add the editor id and editor image to the URL
+    // add the editor definition and editor image to the URL
     // if they are not already there
     if (
       factory.searchParams.has(EDITOR_ATTR) === false &&
       factory.searchParams.has(EDITOR_IMAGE_ATTR) === false
     ) {
-      factory.searchParams.set(EDITOR_ATTR, editorDefinition);
-      if (editorImage) {
+      if (editorDefinition !== undefined) {
+        factory.searchParams.set(EDITOR_ATTR, editorDefinition);
+      }
+      if (editorImage !== undefined) {
         factory.searchParams.set(EDITOR_IMAGE_ATTR, editorImage);
       }
     }

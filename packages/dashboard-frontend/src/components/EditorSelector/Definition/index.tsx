@@ -17,41 +17,46 @@ import { EditorDefinitionField } from '@/components/EditorSelector/Definition/De
 import { EditorImageField } from '@/components/EditorSelector/Definition/ImageField';
 
 export type Props = {
+  editorDefinition: string | undefined;
+  editorImage: string | undefined;
   onChange: (editorId: string | undefined, editorImage: string | undefined) => void;
 };
 
 export type State = {
-  editorId?: string;
-  editorImage?: string;
+  editorDefinition: string | undefined;
+  editorImage: string | undefined;
 };
 
 export class EditorDefinition extends React.PureComponent<Props, State> {
   constructor(props: Props) {
     super(props);
 
-    this.state = {};
+    this.state = {
+      editorDefinition: props.editorDefinition,
+      editorImage: props.editorImage,
+    };
   }
 
-  private handleEditorDefinition(editorId: string | undefined) {
+  private handleEditorDefinition(editorDefinition: string | undefined) {
     const { editorImage } = this.state;
-    this.setState({
-      editorId,
-    });
-    this.props.onChange(editorId, editorImage);
+
+    this.setState({ editorDefinition });
+    this.props.onChange(editorDefinition, editorImage);
   }
 
   private handleEditorImage(editorImage: string | undefined) {
-    const { editorId } = this.state;
-    this.setState({
-      editorImage,
-    });
-    this.props.onChange(editorId, editorImage);
+    const { editorDefinition } = this.state;
+
+    this.setState({ editorImage });
+    this.props.onChange(editorDefinition, editorImage);
   }
 
   public render() {
     return (
       <Form isHorizontal={true} onSubmit={e => e.preventDefault()}>
-        <EditorDefinitionField onChange={editorId => this.handleEditorDefinition(editorId)} />
+        <EditorDefinitionField
+          onChange={editorDefinition => this.handleEditorDefinition(editorDefinition)}
+        />
         <EditorImageField onChange={editorImage => this.handleEditorImage(editorImage)} />
       </Form>
     );
