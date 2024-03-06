@@ -51,7 +51,7 @@ describe('Samples List', () => {
                 tags: ['Community', 'Java', 'Quarkus', 'OpenJDK', 'Maven', 'Debian'],
                 icon: '/images/quarkus.svg',
                 links: {
-                  v2: `${sampleUrl}?df=devfile2.yaml'`,
+                  v2: `${sampleUrl}?df=devfile2.yaml`,
                   devWorkspaces: {
                     'che-incubator/che-code/insiders':
                       'registry-url/devfile-registry/devfiles/quarkus/devworkspace-che-code-insiders.yaml',
@@ -106,7 +106,7 @@ describe('Samples List', () => {
       userEvent.click(sampleCardButton);
 
       expect(mockWindowOpen).toHaveBeenCalledWith(
-        `/load-factory?df=devfile2.yaml%27&url=${encodeURIComponent(
+        `/load-factory?df=devfile2.yaml&url=${encodeURIComponent(
           sampleUrl,
         )}&che-editor=che-incubator%2Fche-code%2Finsiders&devWorkspace=registry-url%2Fdevfile-registry%2Fdevfiles%2Fquarkus%2Fdevworkspace-che-code-insiders.yaml&editor-image=custom-editor-image&storageType=${preferredPvcStrategy}`,
         '_blank',
@@ -126,7 +126,7 @@ describe('Samples List', () => {
       userEvent.click(sampleCardButton);
 
       expect(mockWindowOpen).toHaveBeenCalledWith(
-        `/load-factory?df=devfile2.yaml%27&url=${encodeURIComponent(
+        `/load-factory?df=devfile2.yaml&url=${encodeURIComponent(
           sampleUrl,
         )}&che-editor=che-incubator%2Fche-code%2Finsiders&devWorkspace=registry-url%2Fdevfile-registry%2Fdevfiles%2Fquarkus%2Fdevworkspace-che-code-insiders.yaml&editor-image=custom-editor-image&storageType=ephemeral`,
         '_blank',
@@ -169,7 +169,7 @@ describe('Samples List', () => {
       userEvent.click(sampleCardButton);
 
       expect(mockWindowOpen).toHaveBeenCalledWith(
-        `/load-factory?df=devfile2.yaml%27&url=${encodeURIComponent(
+        `/load-factory?df=devfile2.yaml&url=${encodeURIComponent(
           sampleUrl,
         )}&che-editor=che-incubator%2Fche-code%2Finsiders&devWorkspace=registry-url%2Fdevfile-registry%2Fdevfiles%2Fquarkus%2Fdevworkspace-che-code-insiders.yaml&editor-image=custom-editor-image&storageType=${preferredPvcStrategy}`,
         '_blank',
@@ -189,7 +189,7 @@ describe('Samples List', () => {
       userEvent.click(sampleCardButton);
 
       expect(mockWindowOpen).toHaveBeenCalledWith(
-        `/load-factory?df=devfile2.yaml%27&url=${encodeURIComponent(
+        `/load-factory?df=devfile2.yaml&url=${encodeURIComponent(
           sampleUrl,
         )}&che-editor=che-incubator%2Fche-code%2Finsiders&devWorkspace=registry-url%2Fdevfile-registry%2Fdevfiles%2Fquarkus%2Fdevworkspace-che-code-insiders.yaml&editor-image=custom-editor-image&storageType=persistent`,
         '_blank',
