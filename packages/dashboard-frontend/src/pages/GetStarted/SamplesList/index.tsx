@@ -25,7 +25,7 @@ import { connect, ConnectedProps } from 'react-redux';
 
 import SamplesListGallery from '@/pages/GetStarted/SamplesList/Gallery';
 import SamplesListToolbar from '@/pages/GetStarted/SamplesList/Toolbar';
-import { EDITOR_ATTR, EDITOR_IMAGE_ATTR } from '@/services/helpers/factoryFlow/buildFactoryParams';
+import { EDITOR_ATTR, EDITOR_IMAGE_ATTR, FACTORY_URL_ATTR } from "@/services/helpers/factoryFlow/buildFactoryParams";
 import { buildFactoryLocation, toHref } from '@/services/helpers/location';
 import { che } from '@/services/models';
 import { AppState } from '@/store';
@@ -72,7 +72,12 @@ class SamplesList extends React.PureComponent<Props, State> {
   private async handleSampleCardClick(metadata: DevfileRegistryMetadata): Promise<void> {
     const { editorDefinition, editorImage } = this.props;
 
-    const factoryUrlParams = new URLSearchParams({ url: metadata.links.v2 });
+    const url = new URL(metadata.links.v2);
+
+    const factoryUrlParams = new URLSearchParams(url.searchParams);
+
+    url.search = '';
+    factoryUrlParams.append(FACTORY_URL_ATTR, url.href);
 
     if (editorDefinition !== undefined) {
       factoryUrlParams.append(EDITOR_ATTR, editorDefinition);
