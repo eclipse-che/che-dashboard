@@ -25,7 +25,11 @@ import { connect, ConnectedProps } from 'react-redux';
 
 import SamplesListGallery from '@/pages/GetStarted/SamplesList/Gallery';
 import SamplesListToolbar from '@/pages/GetStarted/SamplesList/Toolbar';
-import { EDITOR_ATTR, EDITOR_IMAGE_ATTR, FACTORY_URL_ATTR } from "@/services/helpers/factoryFlow/buildFactoryParams";
+import {
+  EDITOR_ATTR,
+  EDITOR_IMAGE_ATTR,
+  FACTORY_URL_ATTR,
+} from '@/services/helpers/factoryFlow/buildFactoryParams';
 import { buildFactoryLocation, toHref } from '@/services/helpers/location';
 import { che } from '@/services/models';
 import { AppState } from '@/store';
