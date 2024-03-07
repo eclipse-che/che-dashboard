@@ -32,6 +32,7 @@ const editorImage = 'custom-editor-image';
 
 describe('Samples List', () => {
   const sampleUrl = 'https://github.com/che-samples/quarkus-quickstarts/tree/devfilev2';
+  const origin = window.location.origin;
   let storeBuilder: FakeStoreBuilder;
 
   beforeEach(() => {
@@ -106,9 +107,7 @@ describe('Samples List', () => {
       userEvent.click(sampleCardButton);
 
       expect(mockWindowOpen).toHaveBeenCalledWith(
-        `/load-factory?df=devfile2.yaml&url=${encodeURIComponent(
-          sampleUrl,
-        )}&che-editor=che-incubator%2Fche-code%2Finsiders&devWorkspace=registry-url%2Fdevfile-registry%2Fdevfiles%2Fquarkus%2Fdevworkspace-che-code-insiders.yaml&editor-image=custom-editor-image&storageType=${preferredPvcStrategy}`,
+        `${origin}#${sampleUrl}?df=devfile2.yaml&che-editor=che-incubator%2Fche-code%2Finsiders&devWorkspace=registry-url%2Fdevfile-registry%2Fdevfiles%2Fquarkus%2Fdevworkspace-che-code-insiders.yaml&editor-image=custom-editor-image&storageType=${preferredPvcStrategy}`,
         '_blank',
       );
     });
@@ -126,9 +125,7 @@ describe('Samples List', () => {
       userEvent.click(sampleCardButton);
 
       expect(mockWindowOpen).toHaveBeenCalledWith(
-        `/load-factory?df=devfile2.yaml&url=${encodeURIComponent(
-          sampleUrl,
-        )}&che-editor=che-incubator%2Fche-code%2Finsiders&devWorkspace=registry-url%2Fdevfile-registry%2Fdevfiles%2Fquarkus%2Fdevworkspace-che-code-insiders.yaml&editor-image=custom-editor-image&storageType=ephemeral`,
+        `${origin}#${sampleUrl}?df=devfile2.yaml&che-editor=che-incubator%2Fche-code%2Finsiders&devWorkspace=registry-url%2Fdevfile-registry%2Fdevfiles%2Fquarkus%2Fdevworkspace-che-code-insiders.yaml&editor-image=custom-editor-image&storageType=ephemeral`,
         '_blank',
       );
       expect(mockWindowOpen).toHaveBeenCalledTimes(1);
@@ -169,9 +166,7 @@ describe('Samples List', () => {
       userEvent.click(sampleCardButton);
 
       expect(mockWindowOpen).toHaveBeenCalledWith(
-        `/load-factory?df=devfile2.yaml&url=${encodeURIComponent(
-          sampleUrl,
-        )}&che-editor=che-incubator%2Fche-code%2Finsiders&devWorkspace=registry-url%2Fdevfile-registry%2Fdevfiles%2Fquarkus%2Fdevworkspace-che-code-insiders.yaml&editor-image=custom-editor-image&storageType=${preferredPvcStrategy}`,
+        `${origin}#${sampleUrl}?df=devfile2.yaml&che-editor=che-incubator%2Fche-code%2Finsiders&devWorkspace=registry-url%2Fdevfile-registry%2Fdevfiles%2Fquarkus%2Fdevworkspace-che-code-insiders.yaml&editor-image=custom-editor-image&storageType=${preferredPvcStrategy}`,
         '_blank',
       );
     });
@@ -189,9 +184,7 @@ describe('Samples List', () => {
       userEvent.click(sampleCardButton);
 
       expect(mockWindowOpen).toHaveBeenCalledWith(
-        `/load-factory?df=devfile2.yaml&url=${encodeURIComponent(
-          sampleUrl,
-        )}&che-editor=che-incubator%2Fche-code%2Finsiders&devWorkspace=registry-url%2Fdevfile-registry%2Fdevfiles%2Fquarkus%2Fdevworkspace-che-code-insiders.yaml&editor-image=custom-editor-image&storageType=persistent`,
+        `${origin}#${sampleUrl}?df=devfile2.yaml&che-editor=che-incubator%2Fche-code%2Finsiders&devWorkspace=registry-url%2Fdevfile-registry%2Fdevfiles%2Fquarkus%2Fdevworkspace-che-code-insiders.yaml&editor-image=custom-editor-image&storageType=persistent`,
         '_blank',
       );
       expect(mockWindowOpen).toHaveBeenCalledTimes(1);

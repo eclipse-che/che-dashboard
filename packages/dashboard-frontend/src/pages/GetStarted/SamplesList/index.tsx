@@ -25,12 +25,7 @@ import { connect, ConnectedProps } from 'react-redux';
 
 import SamplesListGallery from '@/pages/GetStarted/SamplesList/Gallery';
 import SamplesListToolbar from '@/pages/GetStarted/SamplesList/Toolbar';
-import {
-  EDITOR_ATTR,
-  EDITOR_IMAGE_ATTR,
-  FACTORY_URL_ATTR,
-} from '@/services/helpers/factoryFlow/buildFactoryParams';
-import { buildFactoryLocation, toHref } from '@/services/helpers/location';
+import { EDITOR_ATTR, EDITOR_IMAGE_ATTR } from '@/services/helpers/factoryFlow/buildFactoryParams';
 import { che } from '@/services/models';
 import { AppState } from '@/store';
 import {
@@ -80,9 +75,6 @@ class SamplesList extends React.PureComponent<Props, State> {
 
     const factoryUrlParams = new URLSearchParams(url.searchParams);
 
-    url.search = '';
-    factoryUrlParams.append(FACTORY_URL_ATTR, url.href);
-
     if (editorDefinition !== undefined) {
       factoryUrlParams.append(EDITOR_ATTR, editorDefinition);
 
@@ -99,10 +91,8 @@ class SamplesList extends React.PureComponent<Props, State> {
     const storageType = this.getStorageType();
     factoryUrlParams.append('storageType', storageType);
 
-    const factoryLocation = buildFactoryLocation();
-    factoryLocation.search = factoryUrlParams.toString();
-
-    const factoryLink = toHref(this.props.history, factoryLocation);
+    url.search = factoryUrlParams.toString();
+    const factoryLink = `${window.location.origin}#${url.toString()}`;
 
     window.open(factoryLink, '_blank');
   }
