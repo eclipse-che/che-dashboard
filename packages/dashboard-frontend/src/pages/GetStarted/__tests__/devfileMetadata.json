@@ -173,9 +173,7 @@
   {
     "displayName": "Empty Workspace",
     "description": "Start an empty remote development environment and create files or clone a git repository afterwards",
-    "tags": [
-      "Empty"
-    ],
+    "tags": ["Empty"],
     "icon": "/images/empty.svg",
     "links": {
       "v2": "/devfiles/empty.yaml"
@@ -187,22 +185,14 @@
     "displayName": ".NET 5.0",
     "description": ".NET 5.0 application",
     "type": "stack",
-    "tags": [
-      ".NET",
-      ".NET 5.0",
-      "Devfile.io"
-    ],
+    "tags": [".NET", ".NET 5.0", "Devfile.io"],
     "icon": "https://github.com/dotnet/brand/raw/main/logo/dotnet-logo.png",
     "projectType": "dotnet",
     "language": ".NET",
     "links": {
       "v2": "devfile-catalog/dotnet50:1.0.3"
     },
-    "resources": [
-      "devfile.yaml"
-    ],
-    "starterProjects": [
-      "dotnet50-example"
-    ]
+    "resources": ["devfile.yaml"],
+    "starterProjects": ["dotnet50-example"]
   }
 ]
