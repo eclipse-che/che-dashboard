@@ -28,8 +28,64 @@ env:
 
 jobs:
 
+  tag-release:
+    runs-on: ubuntu-22.04
+    steps:
+      -
+        name: "Checkout Che Dashboard source code"
+        uses: actions/checkout@v3
+      -
+        name: "Setup Node"
+        uses: actions/setup-node@v3
+        with:
+          node-version: "18"
+      -
+        name: "Install npm & lerna"
+        run: "npm install --global lerna"
+      -
+        name: Check existing tags
+        run: |
+          set +e
+          RECREATE_TAGS=${{ github.event.inputs.forceRecreateTags }}
+          VERSION=${{ github.event.inputs.version }}
+          EXISTING_TAG=$(git ls-remote --exit-code origin refs/tags/${VERSION})
+          if [[ -n ${EXISTING_TAG} ]]; then
+            if [[ ${RECREATE_TAGS} == "true" ]]; then
+              echo "[INFO] Removing tag for ${VERSION} version. New tag will be recreated during release."
+              git push origin :$VERSION
+            else
+              echo "[ERROR] Cannot proceed with release - tag ${EXISTING_TAG} already exists."
+              exit 1
+            fi
+          else
+            echo "[INFO] No existing tags detected for $VERSION"
+          fi
+      -
+        name: "Tag release"
+        run: |
+          git config --global user.name "Mykhailo Kuznietsov"
+          git config --global user.email "mkuznets@redhat.com"
+          git config --global pull.rebase true
+          export GITHUB_TOKEN=${{ secrets.CHE_BOT_GITHUB_TOKEN }}
+          /bin/bash make-release.sh --version ${{ github.event.inputs.version }} --tag-release
+      #- name: Create failure MM message
+        #if: ${{ failure() }}
+        #run: |
+          #echo "{\"text\":\":no_entry_sign: Che Dashboard ${{ github.event.inputs.version }} release has failed: https://github.com/eclipse/che-dashboard/actions/workflows/release.yml\"}" > mattermost.json
+      #- name: Create success MM message
+        #run: |
+          #echo "{\"text\":\":white_check_mark: Che Dashboard ${{ github.event.inputs.version }} has been released: https://quay.io/eclipse/che-dashboard:${{ github.event.inputs.version }}\"}" > mattermost.json
+      #- name: Send MM message
+        #if: ${{ success() }} || ${{ failure() }}
+        #uses: mattermost/action-mattermost-notify@1.1.0
+        #env:
+          #MATTERMOST_WEBHOOK_URL: ${{ secrets.MATTERMOST_WEBHOOK_URL }}
+          #MATTERMOST_CHANNEL: eclipse-che-releases
+          #MATTERMOST_USERNAME: che-bot
+
   build-images:
     runs-on: ubuntu-22.04
+    needs: tag-release
     strategy:
       fail-fast: false
       matrix:
@@ -41,6 +97,8 @@ jobs:
       -
         name: "Checkout Che Dashboard source code"
         uses: actions/checkout@v3
+        with:
+          ref: ${{ github.event.inputs.version }}
       -
         name: "Set up QEMU"
         uses: docker/setup-qemu-action@v2
@@ -105,58 +163,3 @@ jobs:
         if: ${{ success() }}
         run: echo "Manifest was created and pushed successfully"
 
-  tag-release:
-    needs: create-manifest
-    runs-on: ubuntu-22.04
-    steps:
-      -
-        name: "Checkout Che Dashboard source code"
-        uses: actions/checkout@v3
-      -
-        name: "Setup Node"
-        uses: actions/setup-node@v3
-        with:
-          node-version: "18"
-      -
-        name: "Install npm & lerna"
-        run: "npm install --global lerna"
-      -
-        name: Check existing tags
-        run: |
-          set +e
-          RECREATE_TAGS=${{ github.event.inputs.forceRecreateTags }}
-          VERSION=${{ github.event.inputs.version }}
-          EXISTING_TAG=$(git ls-remote --exit-code origin refs/tags/${VERSION})
-          if [[ -n ${EXISTING_TAG} ]]; then
-            if [[ ${RECREATE_TAGS} == "true" ]]; then
-              echo "[INFO] Removing tag for ${VERSION} version. New tag will be recreated during release."
-              git push origin :$VERSION
-            else
-              echo "[ERROR] Cannot proceed with release - tag ${EXISTING_TAG} already exists."
-              exit 1
-            fi
-          else
-            echo "[INFO] No existing tags detected for $VERSION"
-          fi
-      -
-        name: "Tag release"
-        run: |
-          git config --global user.name "Mykhailo Kuznietsov"
-          git config --global user.email "mkuznets@redhat.com"
-          git config --global pull.rebase true
-          export GITHUB_TOKEN=${{ secrets.CHE_BOT_GITHUB_TOKEN }}
-          /bin/bash make-release.sh --version ${{ github.event.inputs.version }} --tag-release
-      #- name: Create failure MM message
-        #if: ${{ failure() }}
-        #run: |
-          #echo "{\"text\":\":no_entry_sign: Che Dashboard ${{ github.event.inputs.version }} release has failed: https://github.com/eclipse/che-dashboard/actions/workflows/release.yml\"}" > mattermost.json
-      #- name: Create success MM message
-        #run: |
-          #echo "{\"text\":\":white_check_mark: Che Dashboard ${{ github.event.inputs.version }} has been released: https://quay.io/eclipse/che-dashboard:${{ github.event.inputs.version }}\"}" > mattermost.json
-      #- name: Send MM message
-        #if: ${{ success() }} || ${{ failure() }}
-        #uses: mattermost/action-mattermost-notify@1.1.0
-        #env:
-          #MATTERMOST_WEBHOOK_URL: ${{ secrets.MATTERMOST_WEBHOOK_URL }}
-          #MATTERMOST_CHANNEL: eclipse-che-releases
-          #MATTERMOST_USERNAME: che-bot
