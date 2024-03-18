@@ -48,6 +48,7 @@ describe('Helpers for Personal Access Token API', () => {
           annotations: {
             'che.eclipse.org/che-userid': 'che-user',
             'che.eclipse.org/scm-url': 'https://github.com',
+            'che.eclipse.org/scm-provider-name': 'github',
             'che.eclipse.org/scm-personal-access-token-name': 'github',
           },
           name: 'personal-access-token-asdf-1234',
@@ -84,6 +85,7 @@ describe('Helpers for Personal Access Token API', () => {
           annotations: {
             'che.eclipse.org/che-userid': 'che-user',
             'che.eclipse.org/scm-url': 'https://github.com',
+            'che.eclipse.org/scm-provider-name': 'github',
             'che.eclipse.org/scm-personal-access-token-name': 'github',
           },
           name: 'personal-access-token-asdf-1234',
@@ -138,7 +140,7 @@ describe('Helpers for Personal Access Token API', () => {
         metadata: {
           annotations: {
             'che.eclipse.org/che-userid': 'che-user',
-            'che.eclipse.org/scm-personal-access-token-name': 'github',
+            'che.eclipse.org/scm-provider-name': 'github',
             'che.eclipse.org/scm-url': 'https://github.com',
           },
           labels: {
@@ -172,7 +174,7 @@ describe('Helpers for Personal Access Token API', () => {
         metadata: {
           annotations: {
             'che.eclipse.org/che-userid': token.cheUserId,
-            'che.eclipse.org/scm-personal-access-token-name': token.gitProvider,
+            'che.eclipse.org/scm-provider-name': token.gitProvider,
             'che.eclipse.org/scm-url': token.gitProviderEndpoint,
             'che.eclipse.org/scm-organization': token.gitProviderOrganization,
           },
