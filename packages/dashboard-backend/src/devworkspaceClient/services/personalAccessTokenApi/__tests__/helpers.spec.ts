@@ -98,7 +98,7 @@ describe('Helpers for Personal Access Token API', () => {
       const token = toToken(secret);
 
       expect(token).toStrictEqual({
-        tokenName: 'asdf-1234',
+        tokenName: 'github',
         cheUserId: 'che-user',
         gitProvider: 'github',
         gitProviderEndpoint: 'https://github.com',
@@ -140,6 +140,7 @@ describe('Helpers for Personal Access Token API', () => {
         metadata: {
           annotations: {
             'che.eclipse.org/che-userid': 'che-user',
+            'che.eclipse.org/scm-personal-access-token-name': 'asdf-1234',
             'che.eclipse.org/scm-provider-name': 'github',
             'che.eclipse.org/scm-url': 'https://github.com',
           },
@@ -174,6 +175,7 @@ describe('Helpers for Personal Access Token API', () => {
         metadata: {
           annotations: {
             'che.eclipse.org/che-userid': token.cheUserId,
+            'che.eclipse.org/scm-personal-access-token-name': 'asdf-1234',
             'che.eclipse.org/scm-provider-name': token.gitProvider,
             'che.eclipse.org/scm-url': token.gitProviderEndpoint,
             'che.eclipse.org/scm-organization': token.gitProviderOrganization,
