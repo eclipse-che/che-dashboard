@@ -98,7 +98,7 @@ describe('Helpers for Personal Access Token API', () => {
       const token = toToken(secret);
 
       expect(token).toStrictEqual({
-        tokenName: 'github',
+        tokenName: 'asdf-1234',
         cheUserId: 'che-user',
         gitProvider: 'github',
         gitProviderEndpoint: 'https://github.com',

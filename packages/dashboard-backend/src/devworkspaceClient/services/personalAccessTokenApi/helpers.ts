@@ -25,7 +25,6 @@ export type TokenName = `personal-access-token-${string}`;
 export type CheUserId = string;
 export type GitProviderEndpoint = string;
 export type GitProviderOrganization = string;
-export type GitProviderName = string;
 export interface PersonalAccessTokenSecret extends k8s.V1Secret {
   metadata: k8s.V1ObjectMeta & {
     name: TokenName;
@@ -36,7 +35,6 @@ export interface PersonalAccessTokenSecret extends k8s.V1Secret {
     annotations: {
       'che.eclipse.org/che-userid': CheUserId;
       'che.eclipse.org/scm-url': GitProviderEndpoint;
-      'che.eclipse.org/scm-personal-access-token-name': GitProviderName;
     } & (
       | {
           'che.eclipse.org/scm-provider-name': Exclude<api.GitProvider, 'azure-devops'>;
@@ -77,7 +75,7 @@ export function toToken(secret: k8s.V1Secret): api.PersonalAccessToken {
   }
 
   return {
-    tokenName: secret.metadata.annotations['che.eclipse.org/scm-personal-access-token-name'],
+    tokenName: secret.metadata.name.replace('personal-access-token-', ''),
     cheUserId: secret.metadata.annotations['che.eclipse.org/che-userid'],
     gitProvider: secret.metadata.annotations['che.eclipse.org/scm-provider-name'],
     gitProviderEndpoint: secret.metadata.annotations['che.eclipse.org/scm-url'],
