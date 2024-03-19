@@ -6,9 +6,9 @@
 | [`@devfile/api@2.2.0-alpha-1637255314`](https://github.com/devfile/api.git) | EPL-2.0 | clearlydefined |
 | `@eclipse-che/api@7.76.0` | EPL-2.0 | ecd.che |
 | [`@eclipse-che/che-devworkspace-generator@7.79.0-next-1427c19`](git+https://github.com/eclipse-che/che-devfile-registry.git) | EPL-2.0 | ecd.che |
-| [`@eclipse-che/common@7.82.0-next`](https://github.com/eclipse-che/che-dashboard) | EPL-2.0 | ecd.che |
-| [`@eclipse-che/dashboard-backend@7.82.0-next`](https://github.com/eclipse-che/che-dashboard) | EPL-2.0 | ecd.che |
-| [`@eclipse-che/dashboard-frontend@7.82.0-next`](git://github.com/eclipse/che-dashboard.git) | EPL-2.0 | ecd.che |
+| [`@eclipse-che/common@7.83.0-next`](https://github.com/eclipse-che/che-dashboard) | EPL-2.0 | ecd.che |
+| [`@eclipse-che/dashboard-backend@7.83.0-next`](https://github.com/eclipse-che/che-dashboard) | EPL-2.0 | ecd.che |
+| [`@eclipse-che/dashboard-frontend@7.83.0-next`](git://github.com/eclipse/che-dashboard.git) | EPL-2.0 | ecd.che |
 | [`@eclipse-che/devfile-converter@0.0.1-0751ad2`](git+https://github.com/che-incubator/devfile-converter.git) | EPL-2.0 | ecd.che |
 | [`@fastify/accept-negotiator@1.1.0`](git+https://github.com/fastify/accept-negotiator.git) | MIT | clearlydefined |
 | [`@fastify/ajv-compiler@3.5.0`](git+https://github.com/fastify/ajv-compiler.git) | MIT | clearlydefined |
@@ -394,7 +394,7 @@
 | [`uri-js@4.4.1`](http://github.com/garycourt/uri-js) | BSD-2-Clause | #1086 |
 | [`url-parse@1.5.10`](https://github.com/unshiftio/url-parse.git) | MIT | clearlydefined |
 | [`util-deprecate@1.0.2`](git://github.com/TooTallNate/util-deprecate.git) | MIT | #5885 |
-| [`uuid@3.4.0`](https://github.com/uuidjs/uuid.git) | MIT | #2733 |
+| [`uuid@7.0.3`](https://github.com/uuidjs/uuid.git) | MIT | #57 |
 | [`value-equal@1.0.1`](https://github.com/mjackson/value-equal.git) | MIT | clearlydefined |
 | [`verror@1.10.0`](git://github.com/davepacheco/node-verror.git) | MIT | clearlydefined |
 | [`warning@4.0.3`](https://github.com/BerkeleyTrue/warning.git) | MIT | [CQ22359](https://dev.eclipse.org/ipzilla/show_bug.cgi?id=22359) |
