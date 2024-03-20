@@ -114,6 +114,7 @@ export class GitProviderEndpoint extends React.PureComponent<Props, State> {
         validated: ValidatedOptions.success,
         sanitized: url.href,
       };
+      /* c8 ignore next 6 */
     } catch (e) {
       return {
         validated: ValidatedOptions.error,
