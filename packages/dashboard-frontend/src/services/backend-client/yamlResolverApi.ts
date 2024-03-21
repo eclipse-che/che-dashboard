@@ -28,6 +28,6 @@ export async function getYamlResolver(location: string): Promise<FactoryResolver
       links: [],
     };
   } catch (e) {
-    throw new Error(`Failed to resolve yaml'. ${helpers.errors.getMessage(e)}`);
+    throw new Error(`Failed to resolve yaml. ${helpers.errors.getMessage(e)}`);
   }
 }

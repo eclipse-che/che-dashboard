@@ -31,7 +31,6 @@ jest.mock('@/services/registry/devfiles', () => ({
   fetchDevfile: (...args: unknown[]) => mockFetchDevfile(...args),
 }));
 
-// mock fetchData
 const mockFetchData = jest.fn();
 jest.mock('@/services/registry/fetchData', () => ({
   fetchData: (...args: unknown[]) => mockFetchData(...args),
