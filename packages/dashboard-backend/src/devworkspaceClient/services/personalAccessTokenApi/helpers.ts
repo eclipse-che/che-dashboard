@@ -97,16 +97,16 @@ export function toSecret(
     annotations = {
       'che.eclipse.org/che-userid': token.cheUserId,
       'che.eclipse.org/scm-provider-name': token.gitProvider,
-      'che.eclipse.org/scm-personal-access-token-name': token.tokenName,
-      'che.eclipse.org/scm-url': token.gitProviderEndpoint,
+      'che.eclipse.org/scm-personal-access-token-name': token.gitProvider,
+      'che.eclipse.org/scm-url': sanitizeEndpoint(token.gitProviderEndpoint),
       'che.eclipse.org/scm-organization': token.gitProviderOrganization,
     };
   } else {
     annotations = {
       'che.eclipse.org/che-userid': token.cheUserId,
       'che.eclipse.org/scm-provider-name': token.gitProvider,
-      'che.eclipse.org/scm-personal-access-token-name': token.tokenName,
-      'che.eclipse.org/scm-url': token.gitProviderEndpoint,
+      'che.eclipse.org/scm-personal-access-token-name': token.gitProvider,
+      'che.eclipse.org/scm-url': sanitizeEndpoint(token.gitProviderEndpoint),
     };
   }
 
@@ -123,4 +123,9 @@ export function toSecret(
       token: token.tokenData,
     },
   };
+}
+
+export function sanitizeEndpoint(endpoint: string): string {
+  const url = new URL(endpoint);
+  return url.href;
 }

@@ -322,6 +322,7 @@
 | [`convert-source-map@2.0.0`](git://github.com/thlorenz/convert-source-map.git) | MIT | clearlydefined |
 | [`copy-webpack-plugin@11.0.0`](https://github.com/webpack-contrib/copy-webpack-plugin.git) | MIT | clearlydefined |
 | [`core-js-pure@3.33.2`](https://github.com/zloirock/core-js.git) | MIT | #10961 |
+| [`core-util-is@1.0.3`](git://github.com/isaacs/core-util-is) | MIT | #5898 |
 | [`cosmiconfig@7.0.0`](git+https://github.com/davidtheclark/cosmiconfig.git) | MIT | clearlydefined |
 | [`create-jest@29.7.0`](https://github.com/jestjs/jest.git) | MIT | clearlydefined |
 | [`cross-spawn@7.0.3`](git@github.com:moxystudio/node-cross-spawn.git) | MIT | clearlydefined |
@@ -886,6 +887,7 @@
 | [`to-regex-range@5.0.1`](https://github.com/micromatch/to-regex-range.git) | MIT | clearlydefined |
 | [`totalist@3.0.1`](https://github.com/lukeed/totalist.git) | MIT | clearlydefined |
 | [`touch@3.1.0`](git://github.com/isaacs/node-touch.git) | ISC | clearlydefined |
+| [`tough-cookie@4.1.3`](git://github.com/salesforce/tough-cookie.git) | BSD-3-Clause | #8743 |
 | [`tr46@3.0.0`](https://github.com/jsdom/tr46) | MIT | clearlydefined |
 | [`treeverse@3.0.0`](https://github.com/npm/treeverse.git) | ISC | clearlydefined |
 | [`trim-newlines@3.0.1`](https://github.com/sindresorhus/trim-newlines.git) | MIT | clearlydefined |

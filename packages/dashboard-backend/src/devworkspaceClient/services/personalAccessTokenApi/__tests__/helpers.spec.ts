@@ -139,17 +139,17 @@ describe('Helpers for Personal Access Token API', () => {
         kind: 'Secret',
         metadata: {
           annotations: {
-            'che.eclipse.org/che-userid': 'che-user',
-            'che.eclipse.org/scm-personal-access-token-name': 'asdf-1234',
+            'che.eclipse.org/che-userid': token.cheUserId,
+            'che.eclipse.org/scm-personal-access-token-name': token.gitProvider,
             'che.eclipse.org/scm-provider-name': 'github',
-            'che.eclipse.org/scm-url': 'https://github.com',
+            'che.eclipse.org/scm-url': token.gitProviderEndpoint + '/',
           },
           labels: {
             'app.kubernetes.io/component': 'scm-personal-access-token',
             'app.kubernetes.io/part-of': 'che.eclipse.org',
           },
-          name: 'personal-access-token-asdf-1234',
-          namespace: 'user-che',
+          name: `personal-access-token-${token.tokenName}`,
+          namespace,
         },
       });
     });
@@ -175,9 +175,9 @@ describe('Helpers for Personal Access Token API', () => {
         metadata: {
           annotations: {
             'che.eclipse.org/che-userid': token.cheUserId,
-            'che.eclipse.org/scm-personal-access-token-name': 'asdf-1234',
+            'che.eclipse.org/scm-personal-access-token-name': token.gitProvider,
             'che.eclipse.org/scm-provider-name': token.gitProvider,
-            'che.eclipse.org/scm-url': token.gitProviderEndpoint,
+            'che.eclipse.org/scm-url': token.gitProviderEndpoint + '/',
             'che.eclipse.org/scm-organization': token.gitProviderOrganization,
           },
           labels: {
