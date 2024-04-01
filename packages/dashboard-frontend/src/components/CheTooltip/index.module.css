@@ -13,7 +13,3 @@
 .tooltip .pf-c-tooltip__content {
   border-radius: 3px;
 }
-
-.tooltip .pf-c-tooltip {
-  background-color: var(--pf-global--BackgroundColor--dark-200);
-}
