@@ -12,13 +12,13 @@ exports[`CheTooltip component snapshot, active item 1`] = `
   <div
     data-testid="tooltip-content"
   >
-    some-very-long-navigation-item-titlesome-very-long-navigation-item-titlesome-very-long-navigation-item-title
+    some-very-long-navigation-item-title
   </div>
   <div
     data-testid="tooltip-placed-to"
   >
     <span>
-      some-very-long-navigation-item-titlesome-very-long-navigation-item-titlesome-very-long-navigation-item-title
+      some-very-long-navigation-item-title
     </span>
   </div>
 </div>
@@ -36,13 +36,13 @@ exports[`CheTooltip component snapshot, non-active item 1`] = `
   <div
     data-testid="tooltip-content"
   >
-    some-very-long-navigation-item-titlesome-very-long-navigation-item-titlesome-very-long-navigation-item-title
+    some-very-long-navigation-item-title
   </div>
   <div
     data-testid="tooltip-placed-to"
   >
     <span>
-      some-very-long-navigation-item-titlesome-very-long-navigation-item-titlesome-very-long-navigation-item-title
+      some-very-long-navigation-item-title
     </span>
   </div>
 </div>

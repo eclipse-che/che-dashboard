@@ -40,13 +40,13 @@ exports[`Navigation Item snapshot with RUNNING correctly 1`] = `
           <div
             data-testid="tooltip-content"
           >
-            workspaceworkspaceworkspace
+            workspace
           </div>
           <div
             data-testid="tooltip-placed-to"
           >
             <span>
-              workspaceworkspaceworkspace
+              workspace
             </span>
           </div>
         </div>
@@ -99,13 +99,13 @@ exports[`Navigation Item snapshot with STOPPED status 1`] = `
           <div
             data-testid="tooltip-content"
           >
-            workspaceworkspaceworkspace
+            workspace
           </div>
           <div
             data-testid="tooltip-placed-to"
           >
             <span>
-              workspaceworkspaceworkspace
+              workspace
             </span>
           </div>
         </div>
