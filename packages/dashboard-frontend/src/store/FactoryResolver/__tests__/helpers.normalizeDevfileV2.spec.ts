@@ -14,7 +14,7 @@ import { V222DevfileComponents } from '@devfile/api';
 
 import devfileApi from '@/services/devfileApi';
 import { FactoryResolver } from '@/services/helpers/types';
-import normalizeDevfileV2 from '@/store/FactoryResolver/normalizeDevfileV2';
+import { normalizeDevfileV2 } from '@/store/FactoryResolver/helpers';
 
 describe('Normalize Devfile V2', () => {
   let defaultComponents: V222DevfileComponents[];

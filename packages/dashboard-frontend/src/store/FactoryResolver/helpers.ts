@@ -11,6 +11,8 @@
  */
 
 import { V222DevfileComponents } from '@devfile/api';
+import common, { api } from '@eclipse-che/common';
+import axios from 'axios';
 import { dump } from 'js-yaml';
 import { cloneDeep } from 'lodash';
 
@@ -20,10 +22,73 @@ import { FactoryParams } from '@/services/helpers/factoryFlow/buildFactoryParams
 import { generateWorkspaceName } from '@/services/helpers/generateName';
 import { getProjectName } from '@/services/helpers/getProjectName';
 import { DevfileV2ProjectSource, FactoryResolver } from '@/services/helpers/types';
+import { che } from '@/services/models';
 import {
   DEVWORKSPACE_DEVFILE_SOURCE,
   DEVWORKSPACE_METADATA_ANNOTATION,
 } from '@/services/workspace-client/devworkspace/devWorkspaceClient';
+import { DEFAULT_REGISTRY } from '@/store/DevfileRegistries';
+
+/**
+ * Grabs an editor devfile from the provided links.
+ */
+export async function grabLink(
+  links: che.api.core.rest.Link[],
+  filename: string,
+): Promise<string | undefined> {
+  // handle servers not yet providing links
+  if (links.length === 0) {
+    return undefined;
+  }
+  // grab the one matching
+  const foundLink = links.find(link => link.href?.includes(`file=${filename}`));
+  if (!foundLink || !foundLink.href) {
+    return undefined;
+  }
+
+  const url = new URL(foundLink.href);
+  url.searchParams.forEach((value, key) => url.searchParams.set(key, encodeURI(value)));
+
+  try {
+    // load it in raw format
+    // see https://github.com/axios/axios/issues/907
+    const response = await axios.get<string>(url.href, {
+      responseType: 'text',
+      transformResponse: [
+        data => {
+          return data;
+        },
+      ],
+    });
+    return response.data;
+  } catch (error) {
+    // content may not be there
+    if (common.helpers.errors.includesAxiosResponse(error) && error.response?.status == 404) {
+      return undefined;
+    }
+    throw error;
+  }
+}
+
+/**
+ * Checks if the location is a devfile registry location.
+ */
+export function isDevfileRegistryLocation(location: string, config: api.IServerConfig): boolean {
+  const devfileRegistries = [`${window.location.origin}${DEFAULT_REGISTRY}`];
+
+  if (config.devfileRegistryURL) {
+    devfileRegistries.push(config.devfileRegistryURL);
+  }
+
+  const externalDevfileRegistries = config.devfileRegistry.externalDevfileRegistries.map(
+    externalDevfileRegistry => externalDevfileRegistry.url,
+  );
+  if (externalDevfileRegistries.length) {
+    devfileRegistries.push(...externalDevfileRegistries);
+  }
+
+  return devfileRegistries.some(registry => location.startsWith(registry));
+}
 
 /**
  * Returns a devfile from the FactoryResolver object.
@@ -35,7 +100,8 @@ import {
  * @param namespace the namespace where the pod lives.
  * @param factoryParams a Partial<FactoryParams> object.
  */
-export default function normalizeDevfileV2(
+
+export function normalizeDevfileV2(
   devfileLike: devfileApi.DevfileLike,
   data: FactoryResolver,
   location: string,
@@ -118,7 +184,7 @@ export default function normalizeDevfileV2(
     devfileSource = dump({ url: { location } });
   }
 
-  const attributes = DevfileAdapter.getAttributesFromDevfileV2(devfile);
+  const attributes = DevfileAdapter.getAttributes(devfile);
 
   if (!attributes[DEVWORKSPACE_METADATA_ANNOTATION]) {
     attributes[DEVWORKSPACE_METADATA_ANNOTATION] = {};

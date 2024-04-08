@@ -32,7 +32,7 @@ export interface AlertItem {
 }
 
 export interface FactoryResolver extends Omit<che.api.factory.Factory, 'devfile'> {
-  devfile: che.api.workspace.devfile.Devfile | devfileApi.Devfile;
+  devfile?: devfileApi.Devfile;
   location?: string;
   scm_info?: FactoryResolverScmInfo;
 }
