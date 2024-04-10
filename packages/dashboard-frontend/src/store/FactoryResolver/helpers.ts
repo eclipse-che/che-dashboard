@@ -10,14 +10,14 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import { V222DevfileComponents } from '@devfile/api';
+import { V222DevfileComponents, V222DevfileProjects } from '@devfile/api';
 import common, { api } from '@eclipse-che/common';
 import axios from 'axios';
 import { dump } from 'js-yaml';
 import { cloneDeep } from 'lodash';
 
 import { DevfileAdapter } from '@/services/devfile/adapter';
-import devfileApi from '@/services/devfileApi';
+import devfileApi, { isDevfileV2 } from '@/services/devfileApi';
 import { FactoryParams } from '@/services/helpers/factoryFlow/buildFactoryParams';
 import { generateWorkspaceName } from '@/services/helpers/generateName';
 import { getProjectName } from '@/services/helpers/getProjectName';
@@ -91,8 +91,70 @@ export function isDevfileRegistryLocation(location: string, config: api.IServerC
 }
 
 /**
+ * Returns `true` if the devfile was resolved successfully.
+ */
+/* c8 ignore next 3 */
+export function isDevfileFoundInRepo(data: FactoryResolver): boolean {
+  return data.source !== 'repo';
+}
+
+/**
+ * Builds a Devfile V2 from a default Devfile V1 returned by che-server.
+ */
+export function buildDevfileV2(
+  devfileV1: che.api.workspace.devfile.Devfile | undefined,
+): devfileApi.DevfileLike {
+  const devfile = {
+    schemaVersion: '2.2.2',
+  } as devfileApi.DevfileLike;
+
+  const metadataV1 = devfileV1?.metadata;
+  if (metadataV1 !== undefined) {
+    devfile.metadata = metadataV1;
+  }
+
+  const projectV1 = devfileV1?.projects?.[0];
+  if (projectV1 !== undefined) {
+    const projectName = (projectV1.name || metadataV1?.name || metadataV1?.generateName || '')
+      // the name can't have spaces
+      // replace space by dash and then remove all special characters
+      .replace(/\s+/g, '-')
+      // names should not use _
+      .replace(/_/g, '-')
+      // names should not use .
+      .replace(/\./g, '-')
+      // trim '-' character from start or end
+      .replace(/^-+|-+$/g, '')
+      .toLowerCase();
+
+    const devfileV2Project: V222DevfileProjects = {
+      attributes: {},
+      name: projectName,
+    };
+    if (projectV1.clonePath) {
+      devfileV2Project.clonePath = projectV1.clonePath;
+    }
+
+    if (projectV1.source) {
+      const source = projectV1.source;
+      if (source.type === 'git' || source.type === 'github' || source.type === 'bitbucket') {
+        const remotes = { origin: source.location! };
+        devfileV2Project.git = {
+          remotes,
+        };
+      } else if (source.type === 'zip') {
+        devfileV2Project.zip = {
+          location: source.location,
+        };
+      }
+    }
+    devfile.projects = [devfileV2Project];
+  }
+  return devfile;
+}
+
+/**
  * Returns a devfile from the FactoryResolver object.
- * @param devfileLike a Devfile.
  * @param data a FactoryResolver object.
  * @param location a source location.
  * @param defaultComponents Default components. These default components
@@ -101,32 +163,43 @@ export function isDevfileRegistryLocation(location: string, config: api.IServerC
  * @param factoryParams a Partial<FactoryParams> object.
  */
 
-export function normalizeDevfileV2(
-  devfileLike: devfileApi.DevfileLike,
+export function normalizeDevfile(
   data: FactoryResolver,
   location: string,
   defaultComponents: V222DevfileComponents[],
   namespace: string,
   factoryParams: Partial<FactoryParams>,
 ): devfileApi.Devfile {
+  /* Validate object */
+
+  let _devfile: unknown = data.devfile;
+  if (isDevfileFoundInRepo(data) === true) {
+    _devfile = data.devfile;
+  } else if (!isDevfileV2(data.devfile)) {
+    _devfile = buildDevfileV2(data.devfile);
+  }
+  if (!isDevfileV2(_devfile)) {
+    throw new Error('Received object is not a Devfile V2.');
+  }
+
   const scmInfo = data['scm_info'];
+  const devfile = cloneDeep(_devfile);
+
+  /* Devfile Metadata */
 
   const projectName = getProjectName(scmInfo?.clone_url || location);
-  if (!devfileLike.metadata) {
-    devfileLike.metadata = {};
-  }
-  const prefix = devfileLike.metadata.generateName
-    ? devfileLike.metadata.generateName
-    : projectName;
-  const name = devfileLike.metadata.name || generateWorkspaceName(prefix);
+  const namePrefix = devfile.metadata?.generateName ? devfile.metadata?.generateName : projectName;
+  const name = devfile.metadata?.name || generateWorkspaceName(namePrefix);
 
-  // set mandatory fields
-  const devfile = cloneDeep(devfileLike) as devfileApi.Devfile;
-  devfile.metadata.name = name;
-  if (devfile.metadata.generateName) {
-    delete devfile.metadata.generateName;
-  }
-  devfile.metadata.namespace = namespace;
+  const metadata: devfileApi.DevfileMetadata = {
+    name,
+    namespace,
+  };
+
+  devfile.metadata = Object.assign({}, metadata, devfile.metadata);
+  delete devfile.metadata.generateName;
+
+  /* Devfile Components */
 
   // propagate default components
   if (!devfile.parent && (!devfile.components || devfile.components.length === 0)) {
@@ -146,6 +219,8 @@ export function normalizeDevfileV2(
       }
     });
   }
+
+  /* Devfile Projects */
 
   // add a default project
   const projects: DevfileV2ProjectSource[] = [];
@@ -183,6 +258,8 @@ export function normalizeDevfileV2(
   } else if (location) {
     devfileSource = dump({ url: { location } });
   }
+
+  /* Devfile Attributes */
 
   const attributes = DevfileAdapter.getAttributes(devfile);
 

@@ -14,7 +14,6 @@ import common from '@eclipse-che/common';
 
 import { getFactoryResolver } from '@/services/backend-client/factoryApi';
 import { getYamlResolver } from '@/services/backend-client/yamlResolverApi';
-import devfileApi, { isDevfileV2 } from '@/services/devfileApi';
 import { FactoryParams } from '@/services/helpers/factoryFlow/buildFactoryParams';
 import { FactoryResolver } from '@/services/helpers/types';
 import { isOAuthResponse } from '@/services/oauth';
@@ -22,7 +21,7 @@ import { CHE_EDITOR_YAML_PATH } from '@/services/workspace-client/helpers';
 import {
   grabLink,
   isDevfileRegistryLocation,
-  normalizeDevfileV2,
+  normalizeDevfile,
 } from '@/store/FactoryResolver/helpers';
 import { ActionCreators, KnownAction, Type } from '@/store/FactoryResolver/types';
 import { AppThunk } from '@/store/index';
@@ -70,23 +69,17 @@ export const actionCreators: ActionCreators = {
         }
 
         if (!data.devfile) {
-          throw new Error('The specified link does not contain a valid Devfile.');
+          throw new Error('The specified link does not contain any Devfile.');
         }
 
-        let devfile: devfileApi.Devfile;
         const defaultComponents = selectDefaultComponents(state);
-        if (isDevfileV2(data.devfile)) {
-          devfile = normalizeDevfileV2(
-            data.devfile,
-            data,
-            location,
-            defaultComponents,
-            namespace,
-            factoryParams,
-          );
-        } else {
-          throw new Error('Received object is not a Devfile V2.');
-        }
+        const devfile = normalizeDevfile(
+          data,
+          location,
+          defaultComponents,
+          namespace,
+          factoryParams,
+        );
 
         const resolver = {
           ...data,

@@ -20,27 +20,27 @@ import devfileApi from '@/services/devfileApi';
 import { AppState } from '@/store';
 import { FakeStoreBuilder } from '@/store/__mocks__/storeBuilder';
 import { actionCreators } from '@/store/FactoryResolver/actions';
-import { normalizeDevfileV2 } from '@/store/FactoryResolver/helpers';
+import { normalizeDevfile } from '@/store/FactoryResolver/helpers';
 import { KnownAction, Resolver, Type } from '@/store/FactoryResolver/types';
 import { AUTHORIZED } from '@/store/sanityCheckMiddleware';
 
 const mockGrabLink = jest.fn().mockResolvedValue(undefined);
 const mockIsDevfileRegistryLocation = jest.fn().mockReturnValue(false);
-const mockNormalizeDevfileV2 = jest
+const mockNormalizeDevfile = jest
   .fn()
-  .mockImplementation((...args: Parameters<typeof normalizeDevfileV2>) => args[0]);
+  .mockImplementation((...args: Parameters<typeof normalizeDevfile>) => args[0].devfile);
 jest.mock('@/store/FactoryResolver/helpers.ts', () => {
   return {
     grabLink: (...args: unknown[]) => mockGrabLink(...args),
     isDevfileRegistryLocation: (...args: unknown[]) => mockIsDevfileRegistryLocation(...args),
-    normalizeDevfileV2: (...args: unknown[]) => mockNormalizeDevfileV2(...args),
+    normalizeDevfile: (...args: unknown[]) => mockNormalizeDevfile(...args),
   };
 });
 
 jest.mock('@/services/devfileApi');
-jest.mock('@/services/devfileApi/typeguards.ts', () => {
+jest.mock('@/services/devfileApi/typeguards', () => {
   return {
-    ...jest.requireActual('@/services/devfileApi/typeguards.ts'),
+    ...jest.requireActual('@/services/devfileApi/typeguards'),
     isDevfileV2: (devfile: unknown): boolean => {
       return (devfile as devfileApi.Devfile).schemaVersion !== undefined;
     },
@@ -102,7 +102,7 @@ describe('FactoryResolver store, actions', () => {
     const location = 'http://factory-link';
     await expect(
       store.dispatch(actionCreators.requestFactoryResolver(location, {})),
-    ).rejects.toEqual('The specified link does not contain a valid Devfile.');
+    ).rejects.toEqual('The specified link does not contain any Devfile.');
 
     const actions = store.getActions();
     const expectedActions: KnownAction[] = [
@@ -111,7 +111,7 @@ describe('FactoryResolver store, actions', () => {
         check: AUTHORIZED,
       },
       {
-        error: 'The specified link does not contain a valid Devfile.',
+        error: 'The specified link does not contain any Devfile.',
         type: Type.RECEIVE_FACTORY_RESOLVER_ERROR,
       },
     ];
