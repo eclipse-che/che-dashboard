@@ -13,18 +13,23 @@
 import { helpers } from '@eclipse-che/common';
 import * as k8s from '@kubernetes/client-node';
 
+import { DockerConfigApiService } from '@/devworkspaceClient/services/dockerConfigApi';
 import { exec, ServerConfig } from '@/devworkspaceClient/services/helpers/exec';
-import {
-  CoreV1API,
-  prepareCoreV1API,
-} from '@/devworkspaceClient/services/helpers/prepareCoreV1API';
-import { IPodmanApi } from '@/devworkspaceClient/types';
+import { CoreV1API, prepareCoreV1API } from '@/devworkspaceClient/services/helpers/prepareCoreV1API';
+import { IDockerConfigApi, IPodmanApi } from '@/devworkspaceClient/types';
 import { logger } from '@/utils/logger';
 
 const EXCLUDED_CONTAINERS = ['che-gateway', 'che-machine-exec'];
 
+interface DockerRegistry {
+  username?: string;
+  password?: string;
+  registry?: string;
+}
+
 export class PodmanApiService implements IPodmanApi {
   private readonly corev1API: CoreV1API;
+  private dockerConfig: IDockerConfigApi;
   private readonly kubeConfig: string;
   private readonly getServerConfig: () => ServerConfig;
 
@@ -32,6 +37,7 @@ export class PodmanApiService implements IPodmanApi {
     this.corev1API = prepareCoreV1API(kc);
 
     this.kubeConfig = kc.exportConfig();
+    this.dockerConfig = new DockerConfigApiService(kc);
 
     const server = kc.getCurrentCluster()?.server || '';
     const opts = {};
@@ -51,6 +57,16 @@ export class PodmanApiService implements IPodmanApi {
     const currentPod = await this.getPodByDevWorkspaceId(namespace, devworkspaceId);
     const podName = currentPod.metadata?.name || '';
     const currentPodContainers = currentPod.spec?.containers || [];
+
+    let externalDockerRegistriesPodmanLoginCommand = '';
+    try {
+      externalDockerRegistriesPodmanLoginCommand =
+        await this.generateExternalDockerRegistriesPodmanLoginCommand(namespace);
+    } catch (e) {
+      logger.warn(e);
+    }
+
+    logger.info('>>>>>>>>>>>>>>>>>>>> ' + externalDockerRegistriesPodmanLoginCommand);
 
     let resolved = false;
     for (const container of currentPodContainers) {
@@ -77,6 +93,7 @@ export class PodmanApiService implements IPodmanApi {
             export OC_USER=$(oc whoami)
             [[ "$OC_USER" == "kube:admin" ]] && export OC_USER="kubeadmin"
             podman login -u "$OC_USER" -p $(oc whoami -t) image-registry.openshift-image-registry.svc:5000
+            ${externalDockerRegistriesPodmanLoginCommand}
             `,
           ],
           this.getServerConfig(),
@@ -123,5 +140,41 @@ export class PodmanApiService implements IPodmanApi {
         `Error occurred when attempting to retrieve pod. ${helpers.errors.getMessage(e)}`,
       );
     }
+  }
+
+  private async generateExternalDockerRegistriesPodmanLoginCommand(
+    namespace: string,
+  ): Promise<string> {
+    let externalDockerRegistriesPodmanLoginCommand = '';
+
+    const dockerConfig = await this.dockerConfig.read(namespace);
+    const dockerConfigJson = JSON.parse(dockerConfig.dockerconfig);
+
+    const auths = dockerConfigJson['auths'];
+    if (auths) {
+      for (const registry of auths) {
+        let username = '';
+        let password = '';
+
+        const credentials = auths[registry];
+        if (credentials) {
+          username = credentials['username'];
+          password = credentials['password'];
+        }
+
+        const auth = Buffer.from(credentials['auth'], 'base64').toString('binary');
+        if (auth && !username && !password) {
+          const usernamePassword = auth.split(':');
+          username = usernamePassword[0];
+          password = usernamePassword[1];
+        }
+
+        if (username && password) {
+          externalDockerRegistriesPodmanLoginCommand += `podman login ${registry} -u ${username} -p ${password}\n`;
+        }
+      }
+    }
+
+    return externalDockerRegistriesPodmanLoginCommand;
   }
 }
