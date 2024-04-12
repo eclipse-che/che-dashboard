@@ -15,17 +15,14 @@ import * as k8s from '@kubernetes/client-node';
 
 import { DockerConfigApiService } from '@/devworkspaceClient/services/dockerConfigApi';
 import { exec, ServerConfig } from '@/devworkspaceClient/services/helpers/exec';
-import { CoreV1API, prepareCoreV1API } from '@/devworkspaceClient/services/helpers/prepareCoreV1API';
+import {
+  CoreV1API,
+  prepareCoreV1API,
+} from '@/devworkspaceClient/services/helpers/prepareCoreV1API';
 import { IDockerConfigApi, IPodmanApi } from '@/devworkspaceClient/types';
 import { logger } from '@/utils/logger';
 
 const EXCLUDED_CONTAINERS = ['che-gateway', 'che-machine-exec'];
-
-interface DockerRegistry {
-  username?: string;
-  password?: string;
-  registry?: string;
-}
 
 export class PodmanApiService implements IPodmanApi {
   private readonly corev1API: CoreV1API;
@@ -65,8 +62,6 @@ export class PodmanApiService implements IPodmanApi {
     } catch (e) {
       logger.warn(e);
     }
-
-    logger.info('>>>>>>>>>>>>>>>>>>>> ' + externalDockerRegistriesPodmanLoginCommand);
 
     let resolved = false;
     for (const container of currentPodContainers) {
@@ -147,12 +142,14 @@ export class PodmanApiService implements IPodmanApi {
   ): Promise<string> {
     let externalDockerRegistriesPodmanLoginCommand = '';
 
-    const dockerConfig = await this.dockerConfig.read(namespace);
-    const dockerConfigJson = JSON.parse(dockerConfig.dockerconfig);
+    const dockerConfigBase64Encoded = await this.dockerConfig.read(namespace);
+    const dockerConfig = JSON.parse(
+      Buffer.from(dockerConfigBase64Encoded.dockerconfig, 'base64').toString('binary'),
+    );
 
-    const auths = dockerConfigJson['auths'];
+    const auths = dockerConfig['auths'];
     if (auths) {
-      for (const registry of auths) {
+      for (const registry of Object.keys(auths)) {
         let username = '';
         let password = '';
 
@@ -162,8 +159,9 @@ export class PodmanApiService implements IPodmanApi {
           password = credentials['password'];
         }
 
-        const auth = Buffer.from(credentials['auth'], 'base64').toString('binary');
-        if (auth && !username && !password) {
+        const authBase64Encoded = credentials['auth'];
+        if (!username && !password && authBase64Encoded) {
+          const auth = Buffer.from(authBase64Encoded, 'base64').toString('binary');
           const usernamePassword = auth.split(':');
           username = usernamePassword[0];
           password = usernamePassword[1];

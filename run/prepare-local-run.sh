@@ -40,6 +40,13 @@ CHECLUSTER_CR_NAME=$(grep -o 'CHECLUSTER_CR_NAME:.*' run/.che-dashboard-pod | gr
 
 kubectl get checluster -n "$CHE_NAMESPACE" "$CHECLUSTER_CR_NAME" -o=json > run/.custom-resources
 
+if [ ! -d "$CHE_SELF_SIGNED_MOUNT_PATH" ]; then
+  mkdir -p "$CHE_SELF_SIGNED_MOUNT_PATH"
+fi
+
+# copy certificate from the dashboard pod
+kubectl cp $CHE_NAMESPACE/$DASHBOARD_POD_NAME:/public-certs/che-self-signed/..data/ca.crt "$CHE_SELF_SIGNED_MOUNT_PATH/ca.crt"
+
 if [[ -n "$(oc whoami -t)" ]]; then
   echo 'Cluster access token found. Nothing needs to be patched.'
   echo 'Done.'
@@ -53,13 +60,6 @@ if [[ -z "$CHE_HOST_ORIGIN" ]]; then
   echo '[ERROR] Cannot find cheURL.'
   exit 1
 fi
-
-if [ ! -d "$CHE_SELF_SIGNED_MOUNT_PATH" ]; then
-  mkdir -p "$CHE_SELF_SIGNED_MOUNT_PATH"
-fi
-
-# copy certificate from the dashboard pod
-kubectl cp $CHE_NAMESPACE/$DASHBOARD_POD_NAME:/public-certs/che-self-signed/..data/ca.crt "$CHE_SELF_SIGNED_MOUNT_PATH/ca.crt"
 
 GATEWAY=$(kubectl get deployments.apps -n "$CHE_NAMESPACE" che-gateway --ignore-not-found -o=json | jq -e '.spec.template.spec.containers|any(.name == "oauth-proxy")')
 if [ "$GATEWAY" == "true" ]; then
@@ -86,7 +86,7 @@ if [ "$GATEWAY" == "true" ]; then
   fi
 
   echo 'Looking for redirect_url for local start'
-  if kubectl get configMaps che-gateway-config-oauth-proxy -o jsonpath="{.data}" -n "$CHE_NAMESPACE" | yq e ".[\"oauth-proxy.cfg\"]" - | grep $CHE_HOST/oauth/callback; then
+  if kubectl get configMaps che-gateway-config-oauth-proxy -o jsonpath="{.data}" -n "$CHE_NAMESPACE" | yq -r ".[\"oauth-proxy.cfg\"]" - | grep $CHE_HOST/oauth/callback; then
     echo 'Found the redirect_url for localStart'
   else
     if kubectl get deployment/che-operator -n "$CHE_NAMESPACE" -o jsonpath="{.spec.replicas}" | grep 1; then
@@ -98,7 +98,7 @@ if [ "$GATEWAY" == "true" ]; then
     fi
 
     echo 'Patching che-gateway-config-oauth-proxy config map...'
-    CONFIG_YAML=$(kubectl get configMaps che-gateway-config-oauth-proxy -o jsonpath="{.data}" -n "$CHE_NAMESPACE" | yq e ".[\"oauth-proxy.cfg\"]" - | sed "s/${CHE_HOST_ORIGIN//\//\\/}\/oauth\/callback/${CHE_HOST//\//\\/}\/oauth\/callback/g")
+    CONFIG_YAML=$(kubectl get configMaps che-gateway-config-oauth-proxy -o jsonpath="{.data}" -n "$CHE_NAMESPACE" | yq -r ".[\"oauth-proxy.cfg\"]" - | sed "s/${CHE_HOST_ORIGIN//\//\\/}\/oauth\/callback/${CHE_HOST//\//\\/}\/oauth\/callback/g")
     dq_mid=\\\"
     yaml_esc="${CONFIG_YAML//\"/$dq_mid}"
     kubectl get configMaps che-gateway-config-oauth-proxy -n "$CHE_NAMESPACE" -o json | jq ".data[\"oauth-proxy.cfg\"] |= \"${yaml_esc}\"" | kubectl replace -f -
