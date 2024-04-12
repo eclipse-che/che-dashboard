@@ -79,8 +79,13 @@ export class PodmanApiService implements IPodmanApi {
             'sh',
             '-c',
             `
+            command -v podman >/dev/null 2>&1 || { echo "podman is absent in the container"; exit 1; }
+
+            # Login to external docker registries configured by user on the dashboard
             ${externalDockerRegistriesPodmanLoginCommand}
-            command -v oc >/dev/null 2>&1 && command -v podman >/dev/null 2>&1 && [[ -n "$HOME" ]] || { echo "oc, podman, or HOME is not set"; exit 1; }
+
+            command -v oc >/dev/null 2>&1 || { echo "oc is absent in the container"; exit 1; }
+            [[ -n "$HOME" ]] || { echo "HOME is not set"; exit 1; }
             export CERTS_SRC="/var/run/secrets/kubernetes.io/serviceaccount"
             export CERTS_DEST="$HOME/.config/containers/certs.d/image-registry.openshift-image-registry.svc:5000"
             mkdir -p "$CERTS_DEST"
@@ -88,6 +93,8 @@ export class PodmanApiService implements IPodmanApi {
             ln -s "$CERTS_SRC/ca.crt" "$CERTS_DEST/ca.crt"
             export OC_USER=$(oc whoami)
             [[ "$OC_USER" == "kube:admin" ]] && export OC_USER="kubeadmin"
+
+            # Login to internal OpenShift registry
             podman login -u "$OC_USER" -p $(oc whoami -t) image-registry.openshift-image-registry.svc:5000
             `,
           ],
@@ -168,11 +175,12 @@ export class PodmanApiService implements IPodmanApi {
         }
 
         if (username && password) {
+          // `|| true` ensures that `podman login` won't fail if credentials are invalid
           externalDockerRegistriesPodmanLoginCommand += `podman login ${registry} -u ${username} -p ${password} || true\n`;
         }
       }
     }
 
-    return externalDockerRegistriesPodmanLoginCommand;
+    return externalDockerRegistriesPodmanLoginCommand.trimEnd();
   }
 }

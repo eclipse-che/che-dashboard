@@ -71,9 +71,13 @@ describe('podman Config API Service', () => {
         'sh',
         '-c',
         '\n' +
-          '            podman login registry1 -u user1 -p password1 || true\npodman login registry2 -u user2 -p password2 || true\n' +
+          '            command -v podman >/dev/null 2>&1 || { echo "podman is absent in the container"; exit 1; }\n' +
           '\n' +
-          '            command -v oc >/dev/null 2>&1 && command -v podman >/dev/null 2>&1 && [[ -n "$HOME" ]] || { echo "oc, podman, or HOME is not set"; exit 1; }\n' +
+          '            # Login to external docker registries configured by user on the dashboard\n' +
+          '            podman login registry1 -u user1 -p password1 >/dev/null 2>&1 || true\npodman login registry2 -u user2 -p password2 >/dev/null 2>&1 || true\n' +
+          '\n' +
+          '            command -v oc >/dev/null 2>&1 || { echo "oc is absent in the container"; exit 1; }\n' +
+          '            [[ -n "$HOME" ]] || { echo "HOME is not set"; exit 1; }\n' +
           '            export CERTS_SRC="/var/run/secrets/kubernetes.io/serviceaccount"\n' +
           '            export CERTS_DEST="$HOME/.config/containers/certs.d/image-registry.openshift-image-registry.svc:5000"\n' +
           '            mkdir -p "$CERTS_DEST"\n' +
@@ -81,6 +85,8 @@ describe('podman Config API Service', () => {
           '            ln -s "$CERTS_SRC/ca.crt" "$CERTS_DEST/ca.crt"\n' +
           '            export OC_USER=$(oc whoami)\n' +
           '            [[ "$OC_USER" == "kube:admin" ]] && export OC_USER="kubeadmin"\n' +
+          '\n' +
+          '            # Login to internal OpenShift registry\n' +
           '            podman login -u "$OC_USER" -p $(oc whoami -t) image-registry.openshift-image-registry.svc:5000\n' +
           '            ',
       ],
