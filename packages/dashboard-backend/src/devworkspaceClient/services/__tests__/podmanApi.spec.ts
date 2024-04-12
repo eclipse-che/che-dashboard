@@ -71,6 +71,8 @@ describe('podman Config API Service', () => {
         'sh',
         '-c',
         '\n' +
+          '            podman login registry1 -u user1 -p password1 || true\npodman login registry2 -u user2 -p password2 || true\n' +
+          '\n' +
           '            command -v oc >/dev/null 2>&1 && command -v podman >/dev/null 2>&1 && [[ -n "$HOME" ]] || { echo "oc, podman, or HOME is not set"; exit 1; }\n' +
           '            export CERTS_SRC="/var/run/secrets/kubernetes.io/serviceaccount"\n' +
           '            export CERTS_DEST="$HOME/.config/containers/certs.d/image-registry.openshift-image-registry.svc:5000"\n' +
@@ -80,7 +82,7 @@ describe('podman Config API Service', () => {
           '            export OC_USER=$(oc whoami)\n' +
           '            [[ "$OC_USER" == "kube:admin" ]] && export OC_USER="kubeadmin"\n' +
           '            podman login -u "$OC_USER" -p $(oc whoami -t) image-registry.openshift-image-registry.svc:5000\n' +
-          '            podman login registry1 -u user1 -p password1\npodman login registry2 -u user2 -p password2\n',
+          '            ',
       ],
       expect.anything(),
     );

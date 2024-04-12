@@ -79,6 +79,7 @@ export class PodmanApiService implements IPodmanApi {
             'sh',
             '-c',
             `
+            ${externalDockerRegistriesPodmanLoginCommand}
             command -v oc >/dev/null 2>&1 && command -v podman >/dev/null 2>&1 && [[ -n "$HOME" ]] || { echo "oc, podman, or HOME is not set"; exit 1; }
             export CERTS_SRC="/var/run/secrets/kubernetes.io/serviceaccount"
             export CERTS_DEST="$HOME/.config/containers/certs.d/image-registry.openshift-image-registry.svc:5000"
@@ -88,7 +89,7 @@ export class PodmanApiService implements IPodmanApi {
             export OC_USER=$(oc whoami)
             [[ "$OC_USER" == "kube:admin" ]] && export OC_USER="kubeadmin"
             podman login -u "$OC_USER" -p $(oc whoami -t) image-registry.openshift-image-registry.svc:5000
-            ${externalDockerRegistriesPodmanLoginCommand}`,
+            `,
           ],
           this.getServerConfig(),
         );
@@ -167,7 +168,7 @@ export class PodmanApiService implements IPodmanApi {
         }
 
         if (username && password) {
-          externalDockerRegistriesPodmanLoginCommand += `podman login ${registry} -u ${username} -p ${password}\n`;
+          externalDockerRegistriesPodmanLoginCommand += `podman login ${registry} -u ${username} -p ${password} || true\n`;
         }
       }
     }
