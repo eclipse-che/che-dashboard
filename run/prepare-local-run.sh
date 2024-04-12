@@ -40,9 +40,8 @@ CHECLUSTER_CR_NAME=$(grep -o 'CHECLUSTER_CR_NAME:.*' run/.che-dashboard-pod | gr
 
 kubectl get checluster -n "$CHE_NAMESPACE" "$CHECLUSTER_CR_NAME" -o=json > run/.custom-resources
 
-if [ ! -d "$CHE_SELF_SIGNED_MOUNT_PATH" ]; then
-  mkdir -p "$CHE_SELF_SIGNED_MOUNT_PATH"
-fi
+rm -rf "$CHE_SELF_SIGNED_MOUNT_PATH"
+mkdir -p "$CHE_SELF_SIGNED_MOUNT_PATH"
 
 # copy certificate from the dashboard pod
 kubectl cp $CHE_NAMESPACE/$DASHBOARD_POD_NAME:/public-certs/che-self-signed/..data/ca.crt "$CHE_SELF_SIGNED_MOUNT_PATH/ca.crt"

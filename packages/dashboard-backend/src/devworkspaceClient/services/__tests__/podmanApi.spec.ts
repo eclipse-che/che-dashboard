@@ -13,7 +13,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
 import * as mockClient from '@kubernetes/client-node';
-import { CoreV1Api, V1PodList, V1Secret } from '@kubernetes/client-node';
+import { CoreV1Api, HttpError, V1PodList, V1Secret } from '@kubernetes/client-node';
 
 import * as helper from '@/devworkspaceClient/services/helpers/exec';
 import { PodmanApiService } from '@/devworkspaceClient/services/podmanApi';
@@ -36,6 +36,7 @@ const spyExec = jest
 
 describe('podman Config API Service', () => {
   let podmanApiService: PodmanApiService;
+  const mockReadNamespaceSecret = jest.fn();
 
   beforeEach(() => {
     jest.resetModules();
@@ -48,9 +49,7 @@ describe('podman Config API Service', () => {
         listNamespacedPod: () => {
           return Promise.resolve(buildListNamespacedPod());
         },
-        readNamespacedSecret: () => {
-          return Promise.resolve(buildSecret());
-        },
+        readNamespacedSecret: () => mockReadNamespaceSecret(),
       } as unknown as CoreV1Api;
     });
 
@@ -61,40 +60,54 @@ describe('podman Config API Service', () => {
     jest.clearAllMocks();
   });
 
-  test('podman login', async () => {
+  test('Container registry secret contains correct data', async () => {
+    mockReadNamespaceSecret.mockResolvedValueOnce(buildSecretWithCorrectCredentials());
+
+    await podmanApiService.podmanLogin(userNamespace, workspaceId);
+
+    expect(spyExec).toHaveBeenCalledWith(
+      workspaceName,
+      userNamespace,
+      containerName,
+      expect.arrayContaining([
+        'sh',
+        '-c',
+        expect.stringContaining(
+          'podman login registry1 -u user1 -p password1 || true\npodman login registry2 -u user2 -p password2 || true',
+        ),
+      ]),
+      expect.anything(),
+    );
+  });
+
+  test('Container registry secret contains incorrect data', async () => {
+    mockReadNamespaceSecret.mockResolvedValueOnce(buildSecretWithIncorrectCredentials());
+
+    await podmanApiService.podmanLogin(userNamespace, workspaceId);
+
+    expect(spyExec).toHaveBeenCalledWith(
+      workspaceName,
+      userNamespace,
+      containerName,
+      expect.not.arrayContaining(['sh', '-c', expect.stringMatching('podman login registry')]),
+      expect.anything(),
+    );
+  });
+
+  test('Container registry secret not found', async () => {
+    mockReadNamespaceSecret.mockRejectedValueOnce(new HttpError({} as any, null, 404));
+
     await podmanApiService.podmanLogin(userNamespace, workspaceId);
     expect(spyExec).toHaveBeenCalledWith(
       workspaceName,
       userNamespace,
       containerName,
-      [
-        'sh',
-        '-c',
-        '\n' +
-          '            command -v podman >/dev/null 2>&1 || { echo "podman is absent in the container"; exit 1; }\n' +
-          '\n' +
-          '            # Login to external docker registries configured by user on the dashboard\n' +
-          '            podman login registry1 -u user1 -p password1 >/dev/null 2>&1 || true\npodman login registry2 -u user2 -p password2 >/dev/null 2>&1 || true\n' +
-          '\n' +
-          '            command -v oc >/dev/null 2>&1 || { echo "oc is absent in the container"; exit 1; }\n' +
-          '            [[ -n "$HOME" ]] || { echo "HOME is not set"; exit 1; }\n' +
-          '            export CERTS_SRC="/var/run/secrets/kubernetes.io/serviceaccount"\n' +
-          '            export CERTS_DEST="$HOME/.config/containers/certs.d/image-registry.openshift-image-registry.svc:5000"\n' +
-          '            mkdir -p "$CERTS_DEST"\n' +
-          '            ln -s "$CERTS_SRC/service-ca.crt" "$CERTS_DEST/service-ca.crt"\n' +
-          '            ln -s "$CERTS_SRC/ca.crt" "$CERTS_DEST/ca.crt"\n' +
-          '            export OC_USER=$(oc whoami)\n' +
-          '            [[ "$OC_USER" == "kube:admin" ]] && export OC_USER="kubeadmin"\n' +
-          '\n' +
-          '            # Login to internal OpenShift registry\n' +
-          '            podman login -u "$OC_USER" -p $(oc whoami -t) image-registry.openshift-image-registry.svc:5000\n' +
-          '            ',
-      ],
+      expect.not.arrayContaining(['sh', '-c', expect.stringMatching('podman login registry')]),
       expect.anything(),
     );
   });
 
-  function buildSecret(): { body: V1Secret } {
+  function buildSecretWithCorrectCredentials(): { body: V1Secret } {
     return {
       body: {
         apiVersion: 'v1',
@@ -106,6 +119,29 @@ describe('podman Config API Service', () => {
               '"registry2":{"auth":"' +
               Buffer.from('user2:password2', 'binary').toString('base64') +
               '"}}' +
+              '}',
+            'binary',
+          ).toString('base64'),
+        },
+        kind: 'Secret',
+      },
+    };
+  }
+
+  function buildSecretWithIncorrectCredentials(): { body: V1Secret } {
+    return {
+      body: {
+        apiVersion: 'v1',
+        data: {
+          '.dockerconfigjson': Buffer.from(
+            '{"auths":' +
+              '{' +
+              '"registry1":{"username":"user"},' +
+              '"registry2":{"password":"password"},' +
+              '"registry3":{"auth":"dXNlcg=="},' + // user
+              '"registry4":{"auth":"dXNlcjo="},' + // user:
+              '"registry5":{}' +
+              '}' +
               '}',
             'binary',
           ).toString('base64'),
