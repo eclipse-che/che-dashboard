@@ -86,7 +86,7 @@ if [ "$GATEWAY" == "true" ]; then
   fi
 
   echo 'Looking for redirect_url for local start'
-  if kubectl get configMaps che-gateway-config-oauth-proxy -o jsonpath="{.data}" -n "$CHE_NAMESPACE" | yq -r ".[\"oauth-proxy.cfg\"]" - | grep $CHE_HOST/oauth/callback; then
+  if kubectl get configMaps che-gateway-config-oauth-proxy -o jsonpath="{.data}" -n "$CHE_NAMESPACE" | yq e ".[\"oauth-proxy.cfg\"]" - | grep $CHE_HOST/oauth/callback; then
     echo 'Found the redirect_url for localStart'
   else
     if kubectl get deployment/che-operator -n "$CHE_NAMESPACE" -o jsonpath="{.spec.replicas}" | grep 1; then
@@ -98,7 +98,7 @@ if [ "$GATEWAY" == "true" ]; then
     fi
 
     echo 'Patching che-gateway-config-oauth-proxy config map...'
-    CONFIG_YAML=$(kubectl get configMaps che-gateway-config-oauth-proxy -o jsonpath="{.data}" -n "$CHE_NAMESPACE" | yq -r ".[\"oauth-proxy.cfg\"]" - | sed "s/${CHE_HOST_ORIGIN//\//\\/}\/oauth\/callback/${CHE_HOST//\//\\/}\/oauth\/callback/g")
+    CONFIG_YAML=$(kubectl get configMaps che-gateway-config-oauth-proxy -o jsonpath="{.data}" -n "$CHE_NAMESPACE" | yq e ".[\"oauth-proxy.cfg\"]" - | sed "s/${CHE_HOST_ORIGIN//\//\\/}\/oauth\/callback/${CHE_HOST//\//\\/}\/oauth\/callback/g")
     dq_mid=\\\"
     yaml_esc="${CONFIG_YAML//\"/$dq_mid}"
     kubectl get configMaps che-gateway-config-oauth-proxy -n "$CHE_NAMESPACE" -o json | jq ".data[\"oauth-proxy.cfg\"] |= \"${yaml_esc}\"" | kubectl replace -f -
