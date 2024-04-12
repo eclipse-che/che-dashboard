@@ -88,8 +88,7 @@ export class PodmanApiService implements IPodmanApi {
             export OC_USER=$(oc whoami)
             [[ "$OC_USER" == "kube:admin" ]] && export OC_USER="kubeadmin"
             podman login -u "$OC_USER" -p $(oc whoami -t) image-registry.openshift-image-registry.svc:5000
-            ${externalDockerRegistriesPodmanLoginCommand}
-            `,
+            ${externalDockerRegistriesPodmanLoginCommand}`,
           ],
           this.getServerConfig(),
         );
