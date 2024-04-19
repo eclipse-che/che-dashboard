@@ -43,6 +43,7 @@ describe('GitServicesList', () => {
       ],
       isDisabled: false,
       onRevokeServices: jest.fn(),
+      onClearService: jest.fn(),
       providersWithToken: ['github', 'gitlab'],
       skipOauthProviders: [],
     };
@@ -248,6 +249,7 @@ function getComponent(props: Props): React.ReactElement<Props> {
       gitOauth={props.gitOauth}
       isDisabled={props.isDisabled}
       onRevokeServices={props.onRevokeServices}
+      onClearService={props.onClearService}
       providersWithToken={props.providersWithToken}
       skipOauthProviders={props.skipOauthProviders}
     />
