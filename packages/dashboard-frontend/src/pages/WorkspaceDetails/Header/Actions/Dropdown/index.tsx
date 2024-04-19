@@ -30,7 +30,7 @@ type Props = {
   status: WorkspaceStatus | DevWorkspaceStatus | DeprecatedWorkspaceStatus;
   workspaceUID: string;
   workspaceName: string;
-  onAction: (action: WorkspaceAction, context: ActionContextType) => void;
+  onAction: (action: WorkspaceAction, context: ActionContextType) => Promise<void>;
 };
 
 type State = {
@@ -50,8 +50,16 @@ export default class DropdownActions extends React.PureComponent<Props, State> {
     this.setState({ isExpanded });
   }
 
+  private async handleSelect(action: WorkspaceAction): Promise<void> {
+    const { context } = this.props;
+
+    this.handleToggle(false);
+
+    return this.props.onAction(action, context);
+  }
+
   private getDropdownItems(): React.ReactNode[] {
-    const { context, status } = this.props;
+    const { status } = this.props;
     const isWorkspaceStopped =
       status === WorkspaceStatus.STOPPED || status === DevWorkspaceStatus.STOPPED;
 
@@ -59,37 +67,35 @@ export default class DropdownActions extends React.PureComponent<Props, State> {
       <DropdownItem
         key={`action-${WorkspaceAction.OPEN_IDE}`}
         isDisabled={status === DevWorkspaceStatus.TERMINATING}
-        onClick={async () => this.props.onAction(WorkspaceAction.OPEN_IDE, context)}
+        onClick={async () => await this.handleSelect(WorkspaceAction.OPEN_IDE)}
       >
         <div>{WorkspaceAction.OPEN_IDE}</div>
       </DropdownItem>,
       <DropdownItem
         key={`action-${WorkspaceAction.START_DEBUG_AND_OPEN_LOGS}`}
         isDisabled={status === DevWorkspaceStatus.TERMINATING || !isWorkspaceStopped}
-        onClick={async () =>
-          this.props.onAction(WorkspaceAction.START_DEBUG_AND_OPEN_LOGS, context)
-        }
+        onClick={async () => await this.handleSelect(WorkspaceAction.START_DEBUG_AND_OPEN_LOGS)}
       >
         <div>{WorkspaceAction.START_DEBUG_AND_OPEN_LOGS}</div>
       </DropdownItem>,
       <DropdownItem
         key={`action-${WorkspaceAction.START_IN_BACKGROUND}`}
         isDisabled={status === DevWorkspaceStatus.TERMINATING || !isWorkspaceStopped}
-        onClick={async () => this.props.onAction(WorkspaceAction.START_IN_BACKGROUND, context)}
+        onClick={async () => await this.handleSelect(WorkspaceAction.START_IN_BACKGROUND)}
       >
         <div>{WorkspaceAction.START_IN_BACKGROUND}</div>
       </DropdownItem>,
       <DropdownItem
         key={`action-${WorkspaceAction.RESTART_WORKSPACE}`}
         isDisabled={status === DevWorkspaceStatus.TERMINATING || isWorkspaceStopped}
-        onClick={async () => this.props.onAction(WorkspaceAction.RESTART_WORKSPACE, context)}
+        onClick={async () => await this.handleSelect(WorkspaceAction.RESTART_WORKSPACE)}
       >
         <div>{WorkspaceAction.RESTART_WORKSPACE}</div>
       </DropdownItem>,
       <DropdownItem
         key={`action-${WorkspaceAction.STOP_WORKSPACE}`}
         isDisabled={status === DevWorkspaceStatus.TERMINATING || isWorkspaceStopped}
-        onClick={async () => this.props.onAction(WorkspaceAction.STOP_WORKSPACE, context)}
+        onClick={async () => await this.handleSelect(WorkspaceAction.STOP_WORKSPACE)}
       >
         <div>{WorkspaceAction.STOP_WORKSPACE}</div>
       </DropdownItem>,
@@ -100,7 +106,7 @@ export default class DropdownActions extends React.PureComponent<Props, State> {
           status === WorkspaceStatus.STARTING ||
           status === WorkspaceStatus.STOPPING
         }
-        onClick={async () => this.props.onAction(WorkspaceAction.DELETE_WORKSPACE, context)}
+        onClick={async () => await this.handleSelect(WorkspaceAction.DELETE_WORKSPACE)}
       >
         <div>{WorkspaceAction.DELETE_WORKSPACE}</div>
       </DropdownItem>,
