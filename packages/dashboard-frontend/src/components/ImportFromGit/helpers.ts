@@ -133,6 +133,11 @@ export function getGitRepoOptionsFromLocation(location: string): {
   if (devfilePath === 'true') {
     searchParams.delete('override.devfileFilename');
     devfilePath = undefined;
+  } else if (devfilePath) {
+    searchParams.set('devfilePath', devfilePath);
+  }
+  if (searchParams.has('override.devfileFilename')) {
+    searchParams.delete('override.devfileFilename');
   }
   let remotes: GitRemote[] | undefined;
   const _remotes = searchParams.get('remotes') || undefined;
