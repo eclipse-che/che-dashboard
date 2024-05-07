@@ -185,13 +185,13 @@ export class DevWorkspaceApiService implements IDevWorkspaceApi {
           case api.webSocket.EventPhase.ERROR: {
             const status = apiObj as V1Status;
             listener({ eventPhase, status, params });
-            request.destroy();
             break;
           }
         }
       },
       (error: unknown) => {
         logger.warn(error, `Stopped watching ${path}.`);
+        request.destroy();
       },
     );
 
