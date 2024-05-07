@@ -52,7 +52,6 @@ export type Props = {
 export type State = {
   activeTabKey: WorkspaceDetailsTab;
   clickedTabIndex?: WorkspaceDetailsTab;
-  inlineAlertConversionError?: string;
   showInlineAlertRestartWarning: boolean;
 };
 
