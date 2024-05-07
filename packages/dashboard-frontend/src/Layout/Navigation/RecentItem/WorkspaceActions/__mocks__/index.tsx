@@ -12,16 +12,8 @@
 
 import React from 'react';
 
-import { Props } from '@/Layout/Header';
-
-export class Header extends React.PureComponent<Props> {
-  public render(): React.ReactElement {
-    return (
-      <div>
-        Mock Header component
-        <button onClick={() => this.props.toggleNav()}>toggleNav</button>
-        <button onClick={() => this.props.logout()}>logout</button>
-      </div>
-    );
+export class RecentItemWorkspaceActions extends React.PureComponent {
+  render(): React.ReactNode {
+    return <div>RecentItemWorkspaceActions</div>;
   }
 }
