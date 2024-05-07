@@ -17,6 +17,8 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 
 import { WorkspaceStatusIndicator } from '@/components/Workspace/Status/Indicator';
+import { WorkspaceActionsConsumer } from '@/contexts/WorkspaceActions';
+import { WorkspaceActionsDropdown } from '@/contexts/WorkspaceActions/Dropdown';
 import devfileApi from '@/services/devfileApi';
 import { formatDate, formatRelativeDate } from '@/services/helpers/dates';
 import { buildDetailsLocation, buildIdeLoaderLocation } from '@/services/helpers/location';
@@ -141,8 +143,10 @@ export function buildRow(
 
   const projectsList = projects.join(', \n') || '-';
 
+  /* action: Open */
   let action: React.ReactElement | string;
   if (workspace.isDeprecated) {
+    // todo remove
     action = (
       <Button
         variant="link"
@@ -183,6 +187,26 @@ export function buildRow(
     }
   }
 
+  /* Actions dropdown */
+  const actionsDropdown = (
+    <WorkspaceActionsConsumer>
+      {context => {
+        return (
+          <WorkspaceActionsDropdown
+            context={context}
+            isPlain
+            position="right"
+            toggle="kebab-toggle"
+            workspace={workspace}
+            onAction={async () => {
+              // no-op
+            }}
+          />
+        );
+      }}
+    </WorkspaceActionsConsumer>
+  );
+
   return {
     cells: [
       {
@@ -206,6 +230,10 @@ export function buildRow(
         // Cell is hidden only on Sm
         title: action,
         key: 'open-ide-hidden-sm',
+      },
+      {
+        title: actionsDropdown,
+        key: 'actions-dropdown',
       },
     ],
     props: {
