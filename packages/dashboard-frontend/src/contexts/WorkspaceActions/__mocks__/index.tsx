@@ -10,33 +10,21 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import { Location } from 'history';
 import React from 'react';
 
 import { WorkspaceAction } from '@/services/helpers/types';
 
-export type WantDelete = [string, ...string[]];
-export type ArrayNonempty<T> = [T, ...T[]];
+import { ActionContextType } from '..';
 
-export type ActionContextType = {
-  handleAction: (action: WorkspaceAction, uid: string) => Promise<Location | void>;
-  showConfirmation: (wantDelete: WantDelete) => Promise<void>;
-  toDelete: string[];
-};
-
-/* c8 ignore next 10 */
 const defaultValue: ActionContextType = {
-  handleAction: () => {
-    console.warn('Workspace actions context is not created yet');
-    return Promise.resolve();
+  handleAction: async (action: WorkspaceAction, uid: string) => {
+    console.info('Workspace action "%s" on workspace "%s" is handled', action, uid);
   },
-  showConfirmation: () => {
-    console.warn('Workspace actions context is not created yet');
-    return Promise.resolve();
+  showConfirmation: async (wantDelete: string[]) => {
+    console.info('Confirmation is shown for deleting workspaces: %s', wantDelete.join(', '));
   },
   toDelete: [],
 };
 
 export const WorkspaceActionsContext = React.createContext<ActionContextType>(defaultValue);
-
 export const WorkspaceActionsConsumer = WorkspaceActionsContext.Consumer;
