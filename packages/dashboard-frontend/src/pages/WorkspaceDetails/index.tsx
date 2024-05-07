@@ -30,7 +30,7 @@ import WorkspaceLogs from '@/components/WorkspaceLogs';
 import { lazyInject } from '@/inversify.config';
 import { DevfileEditorTab } from '@/pages/WorkspaceDetails/DevfileEditorTab';
 import Header from '@/pages/WorkspaceDetails/Header';
-import { HeaderActionSelect } from '@/pages/WorkspaceDetails/Header/Actions';
+import { WorkspaceDetailsHeaderActions } from '@/pages/WorkspaceDetails/Header/Actions';
 import styles from '@/pages/WorkspaceDetails/index.module.css';
 import { OverviewTab } from '@/pages/WorkspaceDetails/OverviewTab';
 import { AppAlerts } from '@/services/alerts/appAlerts';
@@ -172,12 +172,7 @@ export class WorkspaceDetails extends React.PureComponent<Props, State> {
               Show Original Devfile
             </Button>
           )}
-          <HeaderActionSelect
-            workspaceUID={workspace.uid}
-            workspaceName={workspaceName}
-            status={workspace.status}
-            history={this.props.history}
-          />
+          <WorkspaceDetailsHeaderActions workspace={workspace} />
         </Header>
         <PageSection variant={SECTION_THEME} className={styles.workspaceDetailsTabs}>
           <Tabs activeKey={this.state.activeTabKey} onSelect={this.handleTabClick}>
