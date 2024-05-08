@@ -65,7 +65,7 @@ export class WorkspaceActionsDropdown extends React.PureComponent<Props, State> 
     if (toggle === 'kebab-toggle') {
       return (
         <KebabToggle
-          aria-label="Workspace Actions"
+          aria-label="Actions"
           data-testid={`${workspace.uid}-action-dropdown`}
           data-testtype="kebab-toggle"
           isDisabled={isDisabled}
@@ -76,7 +76,7 @@ export class WorkspaceActionsDropdown extends React.PureComponent<Props, State> 
 
     return (
       <DropdownToggle
-        aria-label="Workspace Actions"
+        aria-label="Actions"
         data-testid={`${workspace.uid}-action-dropdown`}
         data-testtype="dropdown-toggle"
         isDisabled={isDisabled}

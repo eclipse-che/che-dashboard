@@ -56,20 +56,20 @@ describe('WorkspaceActionsDropdown', () => {
     test('open dropdown', () => {
       renderComponent(workspace, 'kebab-toggle');
 
-      const toggle = screen.queryByRole('button', { name: 'Workspace Actions' });
+      const toggle = screen.queryByRole('button', { name: 'Actions' });
 
       expect(toggle).toBeTruthy();
       expect(toggle).toHaveAttribute('data-testtype', 'kebab-toggle');
 
       // dropdown menu is not visible
-      expect(screen.queryByRole('menu', { name: 'Workspace Actions' })).toBeNull();
+      expect(screen.queryByRole('menu', { name: 'Actions' })).toBeNull();
 
       // toggle dropdown
       const kebabToggle = toggle!;
       kebabToggle.click();
 
       // now the dropdown menu is visible
-      expect(screen.queryByRole('menu', { name: 'Workspace Actions' })).not.toBeNull();
+      expect(screen.queryByRole('menu', { name: 'Actions' })).not.toBeNull();
     });
   });
 
@@ -82,20 +82,20 @@ describe('WorkspaceActionsDropdown', () => {
     test('open dropdown', () => {
       renderComponent(workspace, 'dropdown-toggle');
 
-      const toggle = screen.queryByRole('button', { name: 'Workspace Actions' });
+      const toggle = screen.queryByRole('button', { name: 'Actions' });
 
       expect(toggle).toBeTruthy();
       expect(toggle).toHaveAttribute('data-testtype', 'dropdown-toggle');
 
       // dropdown menu is not visible
-      expect(screen.queryByRole('menu', { name: 'Workspace Actions' })).toBeNull();
+      expect(screen.queryByRole('menu', { name: 'Actions' })).toBeNull();
 
       // toggle dropdown
       const dropdownToggle = toggle!;
       dropdownToggle.click();
 
       // now the dropdown menu is visible
-      expect(screen.queryByRole('menu', { name: 'Workspace Actions' })).not.toBeNull();
+      expect(screen.queryByRole('menu', { name: 'Actions' })).not.toBeNull();
     });
   });
 

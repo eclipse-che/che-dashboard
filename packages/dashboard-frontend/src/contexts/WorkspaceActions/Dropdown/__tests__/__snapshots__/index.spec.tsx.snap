@@ -10,7 +10,7 @@ exports[`WorkspaceActionsDropdown dropdown toggle snapshot 1`] = `
   <button
     aria-expanded={false}
     aria-haspopup={true}
-    aria-label="Workspace Actions"
+    aria-label="Actions"
     className="pf-c-dropdown__toggle pf-m-primary"
     data-ouia-component-id="OUIA-Generated-DropdownToggle-1"
     data-ouia-component-type="PF4/DropdownToggle"
@@ -64,7 +64,7 @@ exports[`WorkspaceActionsDropdown kebab toggle snapshot 1`] = `
   <button
     aria-expanded={false}
     aria-haspopup={true}
-    aria-label="Workspace Actions"
+    aria-label="Actions"
     className="pf-c-dropdown__toggle"
     data-testid="1234-action-dropdown"
     data-testtype="kebab-toggle"

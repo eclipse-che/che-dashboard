@@ -18,6 +18,8 @@ import { DevWorkspaceBuilder } from '@/store/__mocks__/devWorkspaceBuilder';
 
 import { WorkspaceDetailsHeaderActions } from '..';
 
+jest.mock('@/contexts/WorkspaceActions/Dropdown');
+
 const { createSnapshot } = getComponentRenderer(getComponent);
 
 describe('WorkspaceDetailsHeaderActions', () => {
