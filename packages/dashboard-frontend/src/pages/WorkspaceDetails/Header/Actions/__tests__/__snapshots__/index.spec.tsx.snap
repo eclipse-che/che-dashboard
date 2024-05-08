@@ -2,7 +2,7 @@
 
 exports[`WorkspaceDetailsHeaderActions snapshot 1`] = `
 <div
-  className="pf-c-dropdown workspaceActionSelector"
+  className="pf-c-dropdown pf-m-align-right workspaceActionSelector"
   data-ouia-component-id="OUIA-Generated-Dropdown-1"
   data-ouia-component-type="PF4/Dropdown"
   data-ouia-safe={true}
