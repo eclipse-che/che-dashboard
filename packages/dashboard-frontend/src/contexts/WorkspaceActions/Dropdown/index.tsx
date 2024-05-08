@@ -142,6 +142,7 @@ export class WorkspaceActionsDropdown extends React.PureComponent<Props, State> 
       return (
         <DropdownItem
           aria-label={`Action: ${action}`}
+          component="button"
           key={`action-${action}`}
           isDisabled={isDisabled}
           onClick={async e => {
@@ -151,7 +152,7 @@ export class WorkspaceActionsDropdown extends React.PureComponent<Props, State> 
             return this.handleSelect(action);
           }}
         >
-          <div>{action}</div>
+          {action}
         </DropdownItem>
       );
     };
