@@ -89,7 +89,7 @@ export class WorkspaceActionsDeleteConfirmation extends React.PureComponent<Prop
         <Button
           variant={ButtonVariant.danger}
           isDisabled={isConfirmed === false}
-          data-testid="confirm-button"
+          data-testid="delete-workspace-button"
           onClick={() => this.handleConfirm()}
         >
           Delete
