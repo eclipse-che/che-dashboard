@@ -25,7 +25,6 @@ const mockHandleAction = jest.fn();
 const mockShowConfirmation = jest.fn();
 const mockOnAction = jest.fn();
 
-
 const workspace = constructWorkspace(
   new DevWorkspaceBuilder().withName('my-workspace').withUID('1234').build(),
 );
