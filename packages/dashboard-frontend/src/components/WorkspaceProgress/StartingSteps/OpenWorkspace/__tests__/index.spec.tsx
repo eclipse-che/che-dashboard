@@ -192,7 +192,7 @@ describe('Starting steps, opening an editor', () => {
 
     await jest.advanceTimersByTimeAsync(MIN_STEP_DURATION_MS);
 
-    expect(mockLocationReplace).toHaveBeenCalledWith('main-url');
+    await waitFor(() => expect(tabManager.open).toHaveBeenCalledWith('main-url'));
 
     expect(mockOnNextStep).toHaveBeenCalled();
     expect(mockOnError).not.toHaveBeenCalled();
