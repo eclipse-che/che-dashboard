@@ -200,7 +200,7 @@
 | [`joycon@3.1.1`](https://github.com/egoist/joycon.git) | MIT | clearlydefined |
 | [`js-tokens@4.0.0`](https://github.com/lydell/js-tokens.git) | MIT | #2401 |
 | [`js-yaml@4.1.0`](https://github.com/nodeca/js-yaml.git) | MIT | clearlydefined |
-| [`jsbn@0.1.1`](https://github.com/andyperlitch/jsbn.git) | MIT |  |
+| [`jsbn@0.1.1`](https://github.com/andyperlitch/jsbn.git) | MIT | #14597 |
 | [`json-schema-ref-resolver@1.0.1`](git+https://github.com/fastify/json-schema-ref-resolver.git) | MIT | clearlydefined |
 | [`json-schema-resolver@2.0.0`](git+https://github.com/Eomm/json-schema-resolver.git) | MIT | clearlydefined |
 | [`json-schema-traverse@1.0.0`](git+https://github.com/epoberezkin/json-schema-traverse.git) | MIT | clearlydefined |

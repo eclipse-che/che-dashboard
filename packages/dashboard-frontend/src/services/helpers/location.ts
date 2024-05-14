@@ -105,5 +105,6 @@ function _buildLocationObject(pathAndQuery: string): Location {
 }
 
 export function toHref(history: History, location: Location): string {
-  return history.createHref(location);
+  const fragment = history.createHref(location);
+  return window.origin + window.location.pathname + fragment;
 }
