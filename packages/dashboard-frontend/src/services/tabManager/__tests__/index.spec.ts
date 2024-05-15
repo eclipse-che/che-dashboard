@@ -24,8 +24,12 @@ describe('TabManager', () => {
     window.open = mockWindowOpen;
     window.close = mockWindowClose;
 
+    const { location } = window;
     delete (window as Partial<Window>).location;
-    window.location = { replace: mockWindowReplace } as unknown as Window['location'];
+    window.location = {
+      origin: location.origin,
+      replace: mockWindowReplace,
+    } as unknown as Window['location'];
   });
 
   afterEach(() => {
@@ -36,7 +40,7 @@ describe('TabManager', () => {
     const stubWindowProxy1 = { focus: jest.fn(), closed: false };
     mockWindowOpen.mockReturnValueOnce(stubWindowProxy1);
 
-    const url = window.origin + '/new-path';
+    const url = window.location.origin + '/new-path';
 
     tabManager.open(url);
     expect(window.open).toHaveBeenCalledTimes(1);
@@ -50,7 +54,7 @@ describe('TabManager', () => {
     const stubWindowProxy2 = { focus: jest.fn(), closed: true };
     mockWindowOpen.mockReturnValueOnce(stubWindowProxy2);
 
-    const url = window.origin + '/new-path';
+    const url = window.location.origin + '/new-path';
 
     tabManager.open(url);
     expect(window.open).toHaveBeenCalledTimes(1);
@@ -63,7 +67,7 @@ describe('TabManager', () => {
   test('fail to open new tab', () => {
     mockWindowOpen.mockReturnValueOnce(null);
 
-    const url = window.origin + '/new-path';
+    const url = window.location.origin + '/new-path';
     tabManager.open(url);
 
     expect(window.open).toHaveBeenCalledWith(url, url);

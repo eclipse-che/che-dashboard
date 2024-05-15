@@ -50,7 +50,7 @@ export class TabManager {
   private isSameOrigin(_url: string): boolean {
     try {
       const url = new URL(_url);
-      return url.origin === window.origin;
+      return url.origin === window.location.origin;
     } catch (e) {
       // not a valid URL
       return false;
