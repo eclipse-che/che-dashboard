@@ -56,7 +56,7 @@ describe('Starting steps, opening an editor', () => {
   beforeEach(() => {
     container.snapshot();
     tabManager = container.get(TabManager);
-    tabManager.open = jest.fn();
+    tabManager.replace = jest.fn();
 
     jest.useFakeTimers();
   });
@@ -192,7 +192,7 @@ describe('Starting steps, opening an editor', () => {
 
     await jest.advanceTimersByTimeAsync(MIN_STEP_DURATION_MS);
 
-    await waitFor(() => expect(tabManager.open).toHaveBeenCalledWith('main-url'));
+    await waitFor(() => expect(tabManager.replace).toHaveBeenCalledWith('main-url'));
 
     expect(mockOnNextStep).toHaveBeenCalled();
     expect(mockOnError).not.toHaveBeenCalled();
@@ -260,7 +260,7 @@ describe('Starting steps, opening an editor', () => {
       await jest.advanceTimersByTimeAsync(MIN_STEP_DURATION_MS);
 
       // wait for opening IDE url
-      await waitFor(() => expect(tabManager.open).toHaveBeenCalledWith('main-url'));
+      await waitFor(() => expect(tabManager.replace).toHaveBeenCalledWith('main-url'));
     });
 
     test(`mainUrl is propagated after some time`, async () => {
@@ -299,7 +299,7 @@ describe('Starting steps, opening an editor', () => {
       await jest.advanceTimersByTimeAsync(MIN_STEP_DURATION_MS);
 
       // wait for opening IDE url
-      await waitFor(() => expect(tabManager.open).toHaveBeenCalledWith('main-url'));
+      await waitFor(() => expect(tabManager.replace).toHaveBeenCalledWith('main-url'));
 
       expect(mockOnError).not.toHaveBeenCalled();
     });
@@ -328,7 +328,7 @@ describe('Starting steps, opening an editor', () => {
       await jest.advanceTimersByTimeAsync(MIN_STEP_DURATION_MS);
 
       // IDE is not opened
-      expect(tabManager.open).not.toHaveBeenCalled();
+      expect(tabManager.replace).not.toHaveBeenCalled();
     });
 
     test('mainUrl is propagated after some time', async () => {
@@ -367,7 +367,7 @@ describe('Starting steps, opening an editor', () => {
       await jest.advanceTimersByTimeAsync(MIN_STEP_DURATION_MS);
 
       // IDE is not opened
-      expect(tabManager.open).not.toHaveBeenCalled();
+      expect(tabManager.replace).not.toHaveBeenCalled();
     });
   });
 

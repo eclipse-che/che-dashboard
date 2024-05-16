@@ -71,7 +71,7 @@ export class TabManager {
     }
   }
 
-  public closeThis(): void {
-    window.close();
+  public replace(url: string): void {
+    window.location.replace(url);
   }
 }

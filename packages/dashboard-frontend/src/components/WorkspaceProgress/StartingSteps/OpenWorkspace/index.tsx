@@ -158,7 +158,7 @@ class StartingStepOpenWorkspace extends ProgressStep<Props, State> {
 
     const isAvailable = await isAvailableEndpoint(workspace.ideUrl);
     if (isAvailable) {
-      this.tabManager.open(workspace.ideUrl);
+      this.tabManager.replace(workspace.ideUrl);
       return true;
     }
 
