@@ -71,7 +71,13 @@ export class TabManager {
     }
   }
 
+  // replace the current window with the new URL
   public replace(url: string): void {
     window.location.replace(url);
+  }
+
+  // set the current window browser context
+  public rename(url: string): void {
+    window.name = url;
   }
 }
