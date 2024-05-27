@@ -169,6 +169,7 @@
 | [`@types/react-router@5.1.20`](https://github.com/DefinitelyTyped/DefinitelyTyped.git) | MIT | clearlydefined |
 | [`@types/react-test-renderer@18.0.5`](https://github.com/DefinitelyTyped/DefinitelyTyped.git) | MIT | clearlydefined |
 | [`@types/redux-mock-store@1.0.5`](https://github.com/DefinitelyTyped/DefinitelyTyped.git) | MIT | clearlydefined |
+| [`@types/request@2.48.12`](https://github.com/DefinitelyTyped/DefinitelyTyped.git) | MIT | clearlydefined |
 | [`@types/sanitize-html@2.9.3`](https://github.com/DefinitelyTyped/DefinitelyTyped.git) | MIT | clearlydefined |
 | [`@types/semver@7.5.4`](https://github.com/DefinitelyTyped/DefinitelyTyped.git) | MIT | #10842 |
 | [`@types/stack-utils@2.0.2`](https://github.com/DefinitelyTyped/DefinitelyTyped.git) | MIT | clearlydefined |
@@ -311,6 +312,7 @@
 | [`convert-source-map@2.0.0`](git://github.com/thlorenz/convert-source-map.git) | MIT | clearlydefined |
 | [`copy-webpack-plugin@11.0.0`](https://github.com/webpack-contrib/copy-webpack-plugin.git) | MIT | clearlydefined |
 | [`core-js-pure@3.33.2`](https://github.com/zloirock/core-js.git) | MIT | #10961 |
+| [`core-util-is@1.0.3`](git://github.com/isaacs/core-util-is) | MIT | #5898 |
 | [`cosmiconfig@8.3.6`](git+https://github.com/cosmiconfig/cosmiconfig.git) | MIT | #10781 |
 | [`create-jest@29.7.0`](https://github.com/jestjs/jest.git) | MIT | clearlydefined |
 | [`css-declaration-sorter@6.4.1`](https://github.com/Siilwyn/css-declaration-sorter.git) | ISC | #9434 |
@@ -852,12 +854,12 @@
 | [`text-table@0.2.0`](git://github.com/substack/text-table.git) | MIT | clearlydefined |
 | [`through@2.3.8`](https://github.com/dominictarr/through.git) | MIT | #1036 |
 | [`titleize@3.0.0`](https://github.com/sindresorhus/titleize.git) | MIT | clearlydefined |
-| [`tmp-promise@3.0.3`](git://github.com/benjamingr/tmp-promise.git) | MIT | clearlydefined |
 | [`tmp@0.2.1`](https://github.com/raszi/node-tmp.git) | MIT | clearlydefined |
 | [`to-fast-properties@2.0.0`](https://github.com/sindresorhus/to-fast-properties.git) | MIT | clearlydefined |
 | [`to-regex-range@5.0.1`](https://github.com/micromatch/to-regex-range.git) | MIT | clearlydefined |
 | [`totalist@3.0.1`](https://github.com/lukeed/totalist.git) | MIT | clearlydefined |
 | [`touch@3.1.0`](git://github.com/isaacs/node-touch.git) | ISC | clearlydefined |
+| [`tough-cookie@4.1.3`](git://github.com/salesforce/tough-cookie.git) | BSD-3-Clause | #8743 |
 | [`tr46@3.0.0`](https://github.com/jsdom/tr46) | MIT | clearlydefined |
 | [`trim-newlines@3.0.1`](https://github.com/sindresorhus/trim-newlines.git) | MIT | clearlydefined |
 | [`ts-api-utils@1.0.3`](https://github.com/JoshuaKGoldberg/ts-api-utils) | MIT | clearlydefined |
@@ -876,7 +878,6 @@
 | [`uglify-js@3.17.4`](https://github.com/mishoo/UglifyJS.git) | BSD-2-Clause | clearlydefined |
 | [`unbox-primitive@1.0.2`](git+https://github.com/ljharb/unbox-primitive.git) | MIT | clearlydefined |
 | [`undefsafe@2.0.5`](https://github.com/remy/undefsafe.git) | MIT | clearlydefined |
-| [`underscore@1.13.6`](git://github.com/jashkenas/underscore.git) | MIT | clearlydefined |
 | [`unique-filename@3.0.0`](https://github.com/npm/unique-filename.git) | ISC | clearlydefined |
 | [`unique-slug@4.0.0`](https://github.com/npm/unique-slug.git) | ISC | clearlydefined |
 | [`universal-user-agent@6.0.1`](https://github.com/gr2m/universal-user-agent.git) | ISC | clearlydefined |
