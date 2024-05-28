@@ -73,7 +73,7 @@ export class EditorsApiService implements IEditorsApi {
           const editor = yaml.load(cm.data[key]) as V222Devfile;
           editors.push(editor);
         } catch (error) {
-          logger.error(error, 'Failed to parse editor: %s', cm.data[key]);
+          logger.error(error, 'Failed to parse editor: %s from %s Config Map', key, cm.metadata?.name);
         }
       }
     }
