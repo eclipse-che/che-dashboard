@@ -16,8 +16,8 @@ import { Action, Reducer } from 'redux';
 import { che } from '@/services/models';
 import { AppThunk } from '@/store';
 import { createObject } from '@/store/helpers';
+import * as devWorkspacePlugins from '@/store/Plugins/devWorkspacePlugins';
 import { SanityCheckAction } from '@/store/sanityCheckMiddleware';
-import * as devWorkspacePlugins from '../devWorkspacePlugins';
 
 export const EXCLUDED_TARGET_EDITOR_NAMES = ['dirigible', 'jupyter', 'eclipseide', 'code-server'];
 

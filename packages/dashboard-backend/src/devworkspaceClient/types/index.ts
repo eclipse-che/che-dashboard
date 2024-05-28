@@ -15,9 +15,9 @@ import {
   V1alpha2DevWorkspaceTemplate,
   V222DevfileComponents,
 } from '@devfile/api';
+import { V222Devfile } from '@devfile/api';
 import { api } from '@eclipse-che/common';
 import * as k8s from '@kubernetes/client-node';
-import { V222Devfile } from '@devfile/api';
 import { IncomingHttpHeaders } from 'http';
 
 import { MessageListener } from '@/services/types/Observer';

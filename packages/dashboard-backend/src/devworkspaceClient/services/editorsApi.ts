@@ -10,9 +10,11 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
+import { V222Devfile } from '@devfile/api';
 import * as k8s from '@kubernetes/client-node';
 import { V1ConfigMapList } from '@kubernetes/client-node/dist/gen/model/v1ConfigMapList';
 import http from 'http';
+import * as yaml from 'js-yaml';
 
 import { createError } from '@/devworkspaceClient/services/helpers/createError';
 import {
@@ -21,8 +23,6 @@ import {
 } from '@/devworkspaceClient/services/helpers/prepareCoreV1API';
 import { IEditorsApi } from '@/devworkspaceClient/types';
 import { logger } from '@/utils/logger';
-import { V222Devfile } from '@devfile/api';
-import * as yaml from 'js-yaml';
 
 const API_ERROR_LABEL = 'CORE_V1_API_ERROR';
 const EDITOR_METADATA_LABEL_SELECTOR =

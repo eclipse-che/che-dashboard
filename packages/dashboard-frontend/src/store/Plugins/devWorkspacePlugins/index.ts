@@ -14,13 +14,13 @@ import common from '@eclipse-che/common';
 import { load } from 'js-yaml';
 import { Action, Reducer } from 'redux';
 
+import { fetchEditors } from '@/services/backend-client/editorsApi';
 import devfileApi from '@/services/devfileApi';
 import { fetchDevfile } from '@/services/registry/devfiles';
 import { fetchData } from '@/services/registry/fetchData';
 import { AppThunk } from '@/store';
 import { createObject } from '@/store/helpers';
 import { AUTHORIZED, SanityCheckAction } from '@/store/sanityCheckMiddleware';
-import { fetchEditors } from '@/services/backend-client/editorsApi';
 
 export interface PluginDefinition {
   plugin?: devfileApi.Devfile;

@@ -11,12 +11,12 @@
  */
 
 import { FastifyInstance } from 'fastify';
+import { FastifyRequest } from 'fastify/types/request';
 
 import { baseApiPath } from '@/constants/config';
 import { getDevWorkspaceClient } from '@/routes/api/helpers/getDevWorkspaceClient';
-import { getSchema } from '@/services/helpers';
-import { FastifyRequest } from 'fastify/types/request';
 import { getToken } from '@/routes/api/helpers/getToken';
+import { getSchema } from '@/services/helpers';
 
 const tags = ['Editor Definitions'];
 

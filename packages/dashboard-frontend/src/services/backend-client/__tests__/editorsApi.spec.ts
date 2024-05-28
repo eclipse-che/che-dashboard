@@ -10,10 +10,11 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import devfileApi from '@/services/devfileApi';
-import { fetchEditors } from '@/services/backend-client/editorsApi';
-import { AxiosError } from 'axios';
 import common from '@eclipse-che/common';
+import { AxiosError } from 'axios';
+
+import { fetchEditors } from '@/services/backend-client/editorsApi';
+import devfileApi from '@/services/devfileApi';
 
 const editors = [
   {

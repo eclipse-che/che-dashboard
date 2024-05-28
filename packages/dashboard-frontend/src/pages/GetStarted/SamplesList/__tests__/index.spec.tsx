@@ -21,7 +21,6 @@ import SamplesList from '@/pages/GetStarted/SamplesList';
 import getComponentRenderer, { screen } from '@/services/__mocks__/getComponentRenderer';
 import { BrandingData } from '@/services/bootstrap/branding.constant';
 import { FakeStoreBuilder } from '@/store/__mocks__/storeBuilder';
-import devfileApi from '@/services/devfileApi';
 
 jest.mock('@/pages/GetStarted/SamplesList/Gallery');
 jest.mock('@/pages/GetStarted/SamplesList/Toolbar');

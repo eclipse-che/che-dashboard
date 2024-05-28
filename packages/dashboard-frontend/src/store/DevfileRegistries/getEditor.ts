@@ -10,12 +10,12 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
+import { dump } from 'js-yaml';
 import { ThunkDispatch } from 'redux-thunk';
 
-import { dump } from 'js-yaml';
+import devfileApi from '@/services/devfileApi';
 import { actionCreators, KnownAction } from '@/store/DevfileRegistries/index';
 import { AppState } from '@/store/index';
-import devfileApi from '@/services/devfileApi';
 
 export async function getEditor(
   editorIdOrPath: string,

@@ -28,9 +28,9 @@ import { registerDevworkspaceResourcesRoute } from '@/routes/api/devworkspaceRes
 import { registerDevworkspacesRoutes } from '@/routes/api/devworkspaces';
 import { registerDevWorkspaceTemplates } from '@/routes/api/devworkspaceTemplates';
 import { registerDockerConfigRoutes } from '@/routes/api/dockerConfig';
+import { registerEditorsRoutes } from '@/routes/api/editors';
 import { registerEventsRoutes } from '@/routes/api/events';
 import { registerGettingStartedSamplesRoutes } from '@/routes/api/gettingStartedSample';
-import { registerEditorsRoutes } from '@/routes/api/editors';
 import { registerGitConfigRoutes } from '@/routes/api/gitConfig';
 import { registerKubeConfigRoute } from '@/routes/api/kubeConfig';
 import { registerPersonalAccessTokenRoutes } from '@/routes/api/personalAccessToken';
