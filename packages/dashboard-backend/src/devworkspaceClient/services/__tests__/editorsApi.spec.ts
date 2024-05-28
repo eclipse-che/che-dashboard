@@ -15,10 +15,11 @@ import * as k8s from '@kubernetes/client-node';
 import { V1ConfigMapList } from '@kubernetes/client-node/dist/gen/model/v1ConfigMapList';
 import http from 'http';
 import * as yaml from 'js-yaml';
+
+import { EditorsApiService } from '@/devworkspaceClient/services/editorsApi';
 import { createError } from '@/devworkspaceClient/services/helpers/createError';
 import { prepareCoreV1API } from '@/devworkspaceClient/services/helpers/prepareCoreV1API';
 import { logger } from '@/utils/logger';
-import { EditorsApiService } from '@/devworkspaceClient/services/editorsApi';
 
 jest.mock('@kubernetes/client-node');
 jest.mock('@/devworkspaceClient/services/helpers/createError');
@@ -49,7 +50,9 @@ describe('EditorsApiService', () => {
     delete process.env.CHECLUSTER_CR_NAMESPACE;
     const result = await editorsApiService.list();
     expect(result).toEqual([]);
-    expect(logger.warn).toHaveBeenCalledWith('Mandatory environment variables are not defined: $CHECLUSTER_CR_NAMESPACE');
+    expect(logger.warn).toHaveBeenCalledWith(
+      'Mandatory environment variables are not defined: $CHECLUSTER_CR_NAMESPACE',
+    );
   });
 
   it('should return a list of editors', async () => {
@@ -76,7 +79,7 @@ describe('EditorsApiService', () => {
       undefined,
       undefined,
       undefined,
-      'app.kubernetes.io/component=editor-definition,app.kubernetes.io/part-of=che.eclipse.org'
+      'app.kubernetes.io/component=editor-definition,app.kubernetes.io/part-of=che.eclipse.org',
     );
   });
 
@@ -88,7 +91,7 @@ describe('EditorsApiService', () => {
     (createError as jest.Mock).mockReturnValue(new Error(`${additionalMessage}`));
 
     await expect(editorsApiService.list()).rejects.toThrow(`${additionalMessage}`);
-    expect(createError).toHaveBeenCalledWith(error, 'CORE_V1_API_ERROR' ,additionalMessage);
+    expect(createError).toHaveBeenCalledWith(error, 'CORE_V1_API_ERROR', additionalMessage);
   });
 
   it('should handle YAML parsing errors', async () => {
@@ -112,6 +115,11 @@ describe('EditorsApiService', () => {
 
     const result = await editorsApiService.list();
     expect(result).toEqual([]);
-    expect(logger.error).toHaveBeenCalledWith(parseError, 'Failed to parse editor: %s from %s Config Map', 'editor.yaml', 'editor-configmap');
+    expect(logger.error).toHaveBeenCalledWith(
+      parseError,
+      'Failed to parse editor: %s from %s Config Map',
+      'editor.yaml',
+      'editor-configmap',
+    );
   });
 });
