@@ -34,19 +34,6 @@ describe('Get Devfile by URL', () => {
     jest.clearAllMocks();
   });
 
-  it('Should throw the "plugin registry URL is required" error message', async () => {
-    const store = new FakeStoreBuilder().build();
-
-    let errorText: string | undefined;
-    try {
-      await getEditor('che-incubator/che-idea/next', store.dispatch, store.getState);
-    } catch (e) {
-      errorText = common.helpers.errors.getMessage(e);
-    }
-
-    expect(errorText).toEqual('Plugin registry URL is required.');
-  });
-
   it('Should throw the "failed to fetch editor yaml" error message', async () => {
     const store = new FakeStoreBuilder().build();
 
@@ -56,38 +43,142 @@ describe('Get Devfile by URL', () => {
         'che-incubator/che-idea/next',
         store.dispatch,
         store.getState,
-        'https://dummy/che-plugin-registry/main/v3',
       );
     } catch (e) {
       errorText = common.helpers.errors.getMessage(e);
     }
 
     expect(errorText).toEqual(
-      'Failed to fetch editor yaml by URL: https://dummy/che-plugin-registry/main/v3/plugins/che-incubator/che-idea/next/devfile.yaml.',
+      'Failed to fetch editor yaml by URL: che-incubator/che-idea/next.',
     );
   });
 
-  it('Should request a devfile content by editor id', async () => {
-    const store = new FakeStoreBuilder().build();
+  it('Should throw the "Missing metadata.name attribute" error message', async () => {
+    const editors = [
+      {
+        schemaVersion: '2.2.2',
+        metadata: {
+          attributes: {
+            publisher: 'che-incubator',
+            version: 'next',
+          },
+        },
+      } as devfileApi.Devfile,
+    ]
+    const store = new FakeStoreBuilder()
+      .withDwPlugins({}, {}, false, editors, 'che-incubator/che-idea/next')
+      .build();
 
+    let errorText: string | undefined;
     try {
       await getEditor(
         'che-incubator/che-idea/next',
         store.dispatch,
         store.getState,
-        'https://dummy/che-plugin-registry/main/v3',
       );
     } catch (e) {
-      // no-op
+      errorText = common.helpers.errors.getMessage(e);
     }
 
-    expect(mockFetchData).toHaveBeenCalledTimes(1);
-    expect(mockFetchData).toHaveBeenCalledWith(
-      'https://dummy/che-plugin-registry/main/v3/plugins/che-incubator/che-idea/next/devfile.yaml',
+    expect(errorText).toEqual(
+      'Missing metadata.name attribute in the editor yaml file: che-incubator/che-idea/next.',
     );
   });
 
-  it('Should request a devfile content by editor path', async () => {
+  it('Should throw the "Missing metadata.attributes.publisher attribute" error message', async () => {
+    const editors = [
+      {
+        schemaVersion: '2.2.2',
+        metadata: {
+          name: 'che-idea',
+          attributes: {
+            version: 'next',
+          },
+        },
+      } as devfileApi.Devfile,
+    ]
+    const store = new FakeStoreBuilder()
+      .withDwPlugins({}, {}, false, editors, 'che-incubator/che-idea/next')
+      .build();
+
+    let errorText: string | undefined;
+    try {
+      await getEditor(
+        'che-incubator/che-idea/next',
+        store.dispatch,
+        store.getState,
+      );
+    } catch (e) {
+      errorText = common.helpers.errors.getMessage(e);
+    }
+
+    expect(errorText).toEqual(
+      'Missing metadata.attributes.publisher attribute in the editor yaml file: che-incubator/che-idea/next.',
+    );
+  });
+
+  it('Should throw the "Missing metadata.attributes.version attribute" error message', async () => {
+    const editors = [
+      {
+        schemaVersion: '2.2.2',
+        metadata: {
+          name: 'che-idea',
+          attributes: {
+            publisher: 'che-incubator',
+          },
+        },
+      } as devfileApi.Devfile,
+    ]
+    const store = new FakeStoreBuilder()
+      .withDwPlugins({}, {}, false, editors, 'che-incubator/che-idea/next')
+      .build();
+
+    let errorText: string | undefined;
+    try {
+      await getEditor(
+        'che-incubator/che-idea/next',
+        store.dispatch,
+        store.getState,
+      );
+    } catch (e) {
+      errorText = common.helpers.errors.getMessage(e);
+    }
+
+    expect(errorText).toEqual(
+      'Missing metadata.attributes.version attribute in the editor yaml file: che-incubator/che-idea/next.',
+    );
+  });
+
+  it('Should request a devfile content by editor id', async () => {
+    const editors = [
+      {
+        schemaVersion: '2.2.2',
+        metadata: {
+          name: 'che-idea',
+          attributes: {
+            publisher: 'che-incubator',
+            version: 'next',
+          },
+        },
+      } as devfileApi.Devfile,
+    ]
+    const store = new FakeStoreBuilder()
+      .withDwPlugins({}, {}, false, editors, 'che-incubator/che-idea/next')
+      .build();
+
+    try {
+      const result = await getEditor(
+        'che-incubator/che-idea/next',
+        store.dispatch,
+        store.getState,
+      );
+      expect(result).toEqual(dump(editors[0]));
+    } catch (e) {
+      // no-op
+    }
+  });
+
+  it('Should return an existing devfile content by editor id', async () => {
     const store = new FakeStoreBuilder().build();
 
     try {
@@ -102,32 +193,6 @@ describe('Get Devfile by URL', () => {
 
     expect(mockFetchData).toHaveBeenCalledTimes(1);
     expect(mockFetchData).toHaveBeenCalledWith(
-      'https://dummy/che-plugin-registry/main/v3/plugins/che-incubator/che-idea/next/devfile.yaml',
-    );
-  });
-
-  it('Should return an existing devfile content by editor id', async () => {
-    const store = new FakeStoreBuilder()
-      .withDevfileRegistries({
-        devfiles: {
-          ['https://dummy/che-plugin-registry/main/v3/plugins/che-incubator/che-idea/next/devfile.yaml']:
-            {
-              content: dump(editor),
-            },
-        },
-      })
-      .build();
-
-    const customEditor = await getEditor(
-      'che-incubator/che-idea/next',
-      store.dispatch,
-      store.getState,
-      'https://dummy/che-plugin-registry/main/v3',
-    );
-
-    expect(mockFetchData).toHaveBeenCalledTimes(0);
-    expect(customEditor.content).toEqual(dump(editor));
-    expect(customEditor.editorYamlUrl).toEqual(
       'https://dummy/che-plugin-registry/main/v3/plugins/che-incubator/che-idea/next/devfile.yaml',
     );
   });

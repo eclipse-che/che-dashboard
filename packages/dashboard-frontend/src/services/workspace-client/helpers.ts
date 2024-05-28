@@ -153,7 +153,7 @@ export async function getCustomEditor(
       if (cheEditorYaml.registryUrl) {
         repositoryEditorYamlUrl = `${cheEditorYaml.registryUrl}/plugins/${cheEditorYaml.id}/devfile.yaml`;
       } else {
-        repositoryEditorYamlUrl = `${pluginRegistryUrl}/plugins/${cheEditorYaml.id}/devfile.yaml`;
+        repositoryEditorYamlUrl = cheEditorYaml.id;
       }
     } else if (cheEditorYaml.reference) {
       // load the content of this editor

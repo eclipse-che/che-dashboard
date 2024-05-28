@@ -21,6 +21,7 @@ import SamplesList from '@/pages/GetStarted/SamplesList';
 import getComponentRenderer, { screen } from '@/services/__mocks__/getComponentRenderer';
 import { BrandingData } from '@/services/bootstrap/branding.constant';
 import { FakeStoreBuilder } from '@/store/__mocks__/storeBuilder';
+import devfileApi from '@/services/devfileApi';
 
 jest.mock('@/pages/GetStarted/SamplesList/Gallery');
 jest.mock('@/pages/GetStarted/SamplesList/Toolbar');
@@ -227,7 +228,7 @@ describe('Samples List', () => {
 
     test('default editor matches some resource', () => {
       const store = storeBuilder
-        .withDwPlugins({}, {}, false, undefined, 'che-incubator/che-idea/next')
+        .withDwPlugins({}, {}, false, [], undefined, 'che-incubator/che-idea/next')
         .build();
       renderComponent(store, undefined, undefined);
 

@@ -17,6 +17,7 @@ import {
 } from '@devfile/api';
 import { api } from '@eclipse-che/common';
 import * as k8s from '@kubernetes/client-node';
+import { V222Devfile } from '@devfile/api';
 import { IncomingHttpHeaders } from 'http';
 
 import { MessageListener } from '@/services/types/Observer';
@@ -448,6 +449,13 @@ export interface IGettingStartedSampleApi {
    * Reads all the Getting Started Samples ConfigMaps.
    */
   list(): Promise<Array<api.IGettingStartedSample>>;
+}
+
+export interface IEditorsApi {
+  /**
+   * Reads all Editors from ConfigMaps.
+   */
+  list(): Promise<Array<V222Devfile>>;
 }
 
 export interface IShhKeysApi {

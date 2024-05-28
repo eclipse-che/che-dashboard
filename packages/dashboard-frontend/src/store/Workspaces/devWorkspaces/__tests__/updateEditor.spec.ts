@@ -140,7 +140,7 @@ describe('updateEditor, functions', () => {
           pluginRegistryInternalURL: 'https://internal.registry',
           pluginRegistryURL,
         })
-        .withDwPlugins({}, editors, false, undefined, editorId)
+        .withDwPlugins({}, editors, false, [], undefined, editorId)
         .build();
     });
 

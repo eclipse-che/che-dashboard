@@ -167,7 +167,7 @@ describe('DevWorkspace store, actions', () => {
       { name: 'user-che', attributes: { default: 'true', phase: 'Active' } },
     ]);
     store = storeBuilder
-      .withDwPlugins({}, {}, false, undefined, 'che-incubator/che-code/latest')
+      .withDwPlugins({}, {}, false, [], undefined, 'che-incubator/che-code/latest')
       .withDwServerConfig({
         defaults: {
           editor: 'che-incubator/che-code/latest',
@@ -479,6 +479,19 @@ describe('DevWorkspace store, actions', () => {
       mockPatchTemplate.mockResolvedValueOnce({});
       mockPatchWorkspace.mockResolvedValueOnce({ devWorkspace: devWorkspace });
 
+      const editors = [
+        {
+          metadata: {
+            name: 'che-code',
+            attributes: {
+              publisher: 'che-incubator',
+              version: 'latest',
+            },
+          },
+          schemaVersion: '2.2.2',
+        } as devfileApi.Devfile,
+      ]
+
       const store = storeBuilder
         .withDevWorkspaces({ workspaces: [devWorkspace] })
         .withDevfileRegistries({
@@ -520,7 +533,7 @@ describe('DevWorkspace store, actions', () => {
             },
           },
         })
-        .withDwPlugins({}, {}, false, undefined, 'che-incubator/che-code/latest')
+        .withDwPlugins({}, {}, false, editors, undefined, 'che-incubator/che-code/latest')
         .build();
 
       await store.dispatch(
@@ -544,11 +557,7 @@ describe('DevWorkspace store, actions', () => {
         {
           op: 'add',
           path: '/metadata/annotations',
-          value: {
-            'che.eclipse.org/components-update-policy': 'managed',
-            'che.eclipse.org/plugin-registry-url':
-              'https://dummy.registry/plugins/che-incubator/che-code/latest/devfile.yaml',
-          },
+          value: {},
         },
         {
           op: 'replace',
@@ -986,6 +995,23 @@ describe('DevWorkspace store, actions', () => {
         },
       };
 
+      const editors = [
+        {
+          metadata: {
+            name: 'che-code',
+            attributes: {
+              publisher: 'che-incubator',
+              version: 'latest',
+            },
+          },
+          schemaVersion: '2.2.2',
+        } as devfileApi.Devfile,
+      ]
+
+      const store = storeBuilder
+        .withDwPlugins({}, {}, false, editors, undefined, 'che-incubator/che-code/latest')
+        .build();
+
       mockCreateDevWorkspace.mockResolvedValueOnce({ headers: {}, devWorkspace });
       mockCreateDevWorkspaceTemplate.mockResolvedValueOnce({ headers: {}, devWorkspaceTemplate });
       mockUpdateDevWorkspace.mockResolvedValueOnce({ headers: {}, devWorkspace });
@@ -1050,11 +1076,6 @@ describe('DevWorkspace store, actions', () => {
             kind: 'DevWorkspaceTemplate',
             metadata: {
               name: 'che-code',
-              annotations: {
-                'che.eclipse.org/components-update-policy': 'managed',
-                'che.eclipse.org/plugin-registry-url':
-                  'https://dummy.registry/plugins/che-incubator/che-code/latest/devfile.yaml',
-              },
             },
           }),
         ]),
@@ -1074,6 +1095,23 @@ describe('DevWorkspace store, actions', () => {
       const attr: Partial<FactoryParams> = {};
 
       mockCreateDevWorkspace.mockRejectedValueOnce(new Error('Something unexpected happened.'));
+
+      const editors = [
+        {
+          metadata: {
+            name: 'che-code',
+            attributes: {
+              publisher: 'che-incubator',
+              version: 'latest',
+            },
+          },
+          schemaVersion: '2.2.2',
+        } as devfileApi.Devfile,
+      ]
+
+      const store = storeBuilder
+        .withDwPlugins({}, {}, false, editors, undefined, 'che-incubator/che-code/latest')
+        .build();
 
       try {
         await store.dispatch(
@@ -1141,7 +1179,37 @@ describe('DevWorkspace store, actions', () => {
         mockOnStart.mockResolvedValueOnce(undefined);
       });
 
+      const editors = [
+        {
+          metadata: {
+            name: 'che-code',
+            attributes: {
+              publisher: 'che-incubator',
+              version: 'latest',
+            },
+          },
+          schemaVersion: '2.2.2',
+        } as devfileApi.Devfile,
+      ]
+
       it('should provide default editor id to createDevWorkspace', async () => {
+        const editors = [
+          {
+            metadata: {
+              name: 'che-code',
+              attributes: {
+                publisher: 'che-incubator',
+                version: 'latest',
+              },
+            },
+            schemaVersion: '2.2.2',
+          } as devfileApi.Devfile,
+        ]
+  
+        const store = storeBuilder
+          .withDwPlugins({}, {}, false, editors, undefined, 'che-incubator/che-code/latest')
+          .build();
+
         await store.dispatch(testStore.actionCreators.createWorkspaceFromDevfile(devfile, {}, {}));
 
         expect(mockCreateDevWorkspace.mock.calls).toEqual([

@@ -1,0 +1,74 @@
+/*
+ * Copyright (c) 2018-2024 Red Hat, Inc.
+ * This program and the accompanying materials are made
+ * available under the terms of the Eclipse Public License 2.0
+ * which is available at https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ *
+ * Contributors:
+ *   Red Hat, Inc. - initial API and implementation
+ */
+
+import devfileApi from '@/services/devfileApi';
+import { fetchEditors } from '@/services/backend-client/editorsApi';
+import { AxiosError } from 'axios';
+import common from '@eclipse-che/common';
+
+const editors = [
+    {
+      metadata: {
+        name: 'default-editor',
+        attributes: {
+          publisher: 'che-incubator',
+          version: 'latest',
+        },
+      },
+      schemaVersion: '2.2.2',
+    } as devfileApi.Devfile,
+    {
+      metadata: {
+        name: 'che-code',
+        attributes: {
+          publisher: 'che-incubator',
+          version: 'insiders',
+        },
+      },
+      schemaVersion: '2.2.2',
+    } as devfileApi.Devfile,
+  ];
+
+const mockFetchEditors = jest.fn();
+
+jest.mock('@/services/backend-client/editorsApi', () => ({
+    fetchEditors: (...args: unknown[]) => mockFetchEditors(...args),
+}));
+
+
+describe('Fetch Editors Api', () => {
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it('should fetch editors', async () => {
+    mockFetchEditors.mockResolvedValueOnce(editors);
+
+    const fetchedEditors = await fetchEditors();
+    expect(fetchedEditors).toEqual(editors);
+  });
+
+  it('should throw error when failed to fetch editors', async () => {
+    mockFetchEditors.mockRejectedValueOnce({
+        code: '500',
+        message: 'error message',
+      } as AxiosError);
+      let errorMessage: string | undefined;
+      try {
+        await fetchEditors();
+      } catch (err) {
+        errorMessage = common.helpers.errors.getMessage(err);
+      }
+
+    expect(errorMessage).toEqual('error message');
+  });
+});

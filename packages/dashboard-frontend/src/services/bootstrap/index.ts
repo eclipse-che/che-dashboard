@@ -91,8 +91,7 @@ export default class Bootstrap {
 
     const results = await Promise.allSettled([
       this.fetchUserProfile(),
-      this.fetchPlugins(),
-      this.fetchDwPlugins(),
+      this.fetchPlugins().then(() => this.fetchDwPlugins()),
       this.fetchDefaultDwPlugins(),
       this.fetchRegistriesMetadata().then(() => this.fetchEmptyWorkspace()),
       this.fetchWorkspaces().then(() => {

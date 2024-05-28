@@ -18,6 +18,7 @@ import { DevWorkspaceTemplateApiService } from '@/devworkspaceClient/services/de
 import { DockerConfigApiService } from '@/devworkspaceClient/services/dockerConfigApi';
 import { EventApiService } from '@/devworkspaceClient/services/eventApi';
 import { GettingStartedSamplesApiService } from '@/devworkspaceClient/services/gettingStartedSamplesApi';
+import { EditorsApiService } from '@/devworkspaceClient/services/editorsApi';
 import { GitConfigApiService } from '@/devworkspaceClient/services/gitConfigApi';
 import { KubeConfigApiService } from '@/devworkspaceClient/services/kubeConfigApi';
 import { LogsApiService } from '@/devworkspaceClient/services/logsApi';
@@ -35,6 +36,7 @@ import {
   IDockerConfigApi,
   IEventApi,
   IGettingStartedSampleApi,
+  IEditorsApi,
   IGitConfigApi,
   IKubeConfigApi,
   ILogsApi,
@@ -105,6 +107,10 @@ export class DevWorkspaceClient implements IDevWorkspaceClient {
 
   get gettingStartedSampleApi(): IGettingStartedSampleApi {
     return new GettingStartedSamplesApiService(this.kubeConfig);
+  }
+
+  get editorsApi(): IEditorsApi {
+    return new EditorsApiService(this.kubeConfig);
   }
 
   get sshKeysApi(): IShhKeysApi {
