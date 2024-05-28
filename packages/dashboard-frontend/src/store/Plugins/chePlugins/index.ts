@@ -75,8 +75,8 @@ export const actionCreators: ActionCreators = {
             links: {
               devfile: '',
             },
-            icon: editor.metadata.attributes['icon-data'],
-            iconMediatype: editor.metadata.attributes['icon-mediatype'],
+            icon: editor.metadata.attributes.iconData,
+            iconMediatype: editor.metadata.attributes.iconMediatype,
           };
         });
         dispatch({
