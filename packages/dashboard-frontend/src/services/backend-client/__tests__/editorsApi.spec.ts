@@ -16,34 +16,33 @@ import { AxiosError } from 'axios';
 import common from '@eclipse-che/common';
 
 const editors = [
-    {
-      metadata: {
-        name: 'default-editor',
-        attributes: {
-          publisher: 'che-incubator',
-          version: 'latest',
-        },
+  {
+    metadata: {
+      name: 'default-editor',
+      attributes: {
+        publisher: 'che-incubator',
+        version: 'latest',
       },
-      schemaVersion: '2.2.2',
-    } as devfileApi.Devfile,
-    {
-      metadata: {
-        name: 'che-code',
-        attributes: {
-          publisher: 'che-incubator',
-          version: 'insiders',
-        },
+    },
+    schemaVersion: '2.2.2',
+  } as devfileApi.Devfile,
+  {
+    metadata: {
+      name: 'che-code',
+      attributes: {
+        publisher: 'che-incubator',
+        version: 'insiders',
       },
-      schemaVersion: '2.2.2',
-    } as devfileApi.Devfile,
-  ];
+    },
+    schemaVersion: '2.2.2',
+  } as devfileApi.Devfile,
+];
 
 const mockFetchEditors = jest.fn();
 
 jest.mock('@/services/backend-client/editorsApi', () => ({
-    fetchEditors: (...args: unknown[]) => mockFetchEditors(...args),
+  fetchEditors: (...args: unknown[]) => mockFetchEditors(...args),
 }));
-
 
 describe('Fetch Editors Api', () => {
   afterEach(() => {
@@ -59,15 +58,15 @@ describe('Fetch Editors Api', () => {
 
   it('should throw error when failed to fetch editors', async () => {
     mockFetchEditors.mockRejectedValueOnce({
-        code: '500',
-        message: 'error message',
-      } as AxiosError);
-      let errorMessage: string | undefined;
-      try {
-        await fetchEditors();
-      } catch (err) {
-        errorMessage = common.helpers.errors.getMessage(err);
-      }
+      code: '500',
+      message: 'error message',
+    } as AxiosError);
+    let errorMessage: string | undefined;
+    try {
+      await fetchEditors();
+    } catch (err) {
+      errorMessage = common.helpers.errors.getMessage(err);
+    }
 
     expect(errorMessage).toEqual('error message');
   });

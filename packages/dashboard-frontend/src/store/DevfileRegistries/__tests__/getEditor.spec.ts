@@ -39,18 +39,12 @@ describe('Get Devfile by URL', () => {
 
     let errorText: string | undefined;
     try {
-      await getEditor(
-        'che-incubator/che-idea/next',
-        store.dispatch,
-        store.getState,
-      );
+      await getEditor('che-incubator/che-idea/next', store.dispatch, store.getState);
     } catch (e) {
       errorText = common.helpers.errors.getMessage(e);
     }
 
-    expect(errorText).toEqual(
-      'Failed to fetch editor yaml by URL: che-incubator/che-idea/next.',
-    );
+    expect(errorText).toEqual('Failed to fetch editor yaml by URL: che-incubator/che-idea/next.');
   });
 
   it('Should throw the "Missing metadata.name attribute" error message', async () => {
@@ -64,18 +58,14 @@ describe('Get Devfile by URL', () => {
           },
         },
       } as devfileApi.Devfile,
-    ]
+    ];
     const store = new FakeStoreBuilder()
       .withDwPlugins({}, {}, false, editors, 'che-incubator/che-idea/next')
       .build();
 
     let errorText: string | undefined;
     try {
-      await getEditor(
-        'che-incubator/che-idea/next',
-        store.dispatch,
-        store.getState,
-      );
+      await getEditor('che-incubator/che-idea/next', store.dispatch, store.getState);
     } catch (e) {
       errorText = common.helpers.errors.getMessage(e);
     }
@@ -96,18 +86,14 @@ describe('Get Devfile by URL', () => {
           },
         },
       } as devfileApi.Devfile,
-    ]
+    ];
     const store = new FakeStoreBuilder()
       .withDwPlugins({}, {}, false, editors, 'che-incubator/che-idea/next')
       .build();
 
     let errorText: string | undefined;
     try {
-      await getEditor(
-        'che-incubator/che-idea/next',
-        store.dispatch,
-        store.getState,
-      );
+      await getEditor('che-incubator/che-idea/next', store.dispatch, store.getState);
     } catch (e) {
       errorText = common.helpers.errors.getMessage(e);
     }
@@ -128,18 +114,14 @@ describe('Get Devfile by URL', () => {
           },
         },
       } as devfileApi.Devfile,
-    ]
+    ];
     const store = new FakeStoreBuilder()
       .withDwPlugins({}, {}, false, editors, 'che-incubator/che-idea/next')
       .build();
 
     let errorText: string | undefined;
     try {
-      await getEditor(
-        'che-incubator/che-idea/next',
-        store.dispatch,
-        store.getState,
-      );
+      await getEditor('che-incubator/che-idea/next', store.dispatch, store.getState);
     } catch (e) {
       errorText = common.helpers.errors.getMessage(e);
     }
@@ -161,17 +143,13 @@ describe('Get Devfile by URL', () => {
           },
         },
       } as devfileApi.Devfile,
-    ]
+    ];
     const store = new FakeStoreBuilder()
       .withDwPlugins({}, {}, false, editors, 'che-incubator/che-idea/next')
       .build();
 
     try {
-      const result = await getEditor(
-        'che-incubator/che-idea/next',
-        store.dispatch,
-        store.getState,
-      );
+      const result = await getEditor('che-incubator/che-idea/next', store.dispatch, store.getState);
       expect(result).toEqual(dump(editors[0]));
     } catch (e) {
       // no-op

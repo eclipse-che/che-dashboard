@@ -140,7 +140,7 @@ describe('dwPlugins store', () => {
 
       expect(actions).toEqual(expectedActions);
     });
-    
+
     it('should create REQUEST_DW_PLUGIN and RECEIVE_DW_PLUGIN when fetching a plugin', async () => {
       mockFetchDevfile.mockResolvedValueOnce(JSON.stringify(plugin));
 
@@ -247,7 +247,7 @@ describe('dwPlugins store', () => {
           type: 'RECEIVE_DW_EDITOR',
           editorName: 'che-incubator/default-editor/latest',
           url: '',
-          plugin : {
+          plugin: {
             metadata: expect.objectContaining({ name: 'default-editor' }),
             schemaVersion: '2.2.2',
           },
@@ -413,7 +413,9 @@ describe('dwPlugins store', () => {
           type: 'RECEIVE_DW_EDITOR_ERROR',
           url: '',
           editorName: 'default-editor',
-          error: expect.stringContaining('The editor does not exist in the editors configuration map'),
+          error: expect.stringContaining(
+            'The editor does not exist in the editors configuration map',
+          ),
         },
       ];
       expect(actions).toEqual(expectedActions);

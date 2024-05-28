@@ -147,40 +147,41 @@ export type ActionCreators = {
 export const actionCreators: ActionCreators = {
   requestDwDevfile:
     (url: string): AppThunk<KnownAction, Promise<void>> =>
-      async (dispatch): Promise<void> => {
+    async (dispatch): Promise<void> => {
+      dispatch({
+        type: 'REQUEST_DW_PLUGIN',
+        check: AUTHORIZED,
+        url,
+      });
+
+      try {
+        const pluginContent = await fetchDevfile(url);
+        const plugin = load(pluginContent) as devfileApi.Devfile;
         dispatch({
-          type: 'REQUEST_DW_PLUGIN',
-          check: AUTHORIZED,
+          type: 'RECEIVE_DW_PLUGIN',
           url,
+          plugin,
         });
+      } catch (e) {
+        const errorMessage = common.helpers.errors.getMessage(e);
+        dispatch({
+          type: 'RECEIVE_DW_PLUGIN_ERROR',
+          url,
+          error: errorMessage,
+        });
+        throw errorMessage;
+      }
+    },
 
-        try {
-          const pluginContent = await fetchDevfile(url);
-          const plugin = load(pluginContent) as devfileApi.Devfile;
-          dispatch({
-            type: 'RECEIVE_DW_PLUGIN',
-            url,
-            plugin,
-          });
-        } catch (e) {
-          const errorMessage = common.helpers.errors.getMessage(e);
-          dispatch({
-            type: 'RECEIVE_DW_PLUGIN_ERROR',
-            url,
-            error: errorMessage,
-          });
-          throw errorMessage;
-        }
-      },
-
-  requestEditors: (): AppThunk<KnownAction, Promise<void>> =>
+  requestEditors:
+    (): AppThunk<KnownAction, Promise<void>> =>
     async (dispatch): Promise<void> => {
       dispatch({
         type: 'REQUEST_EDITORS',
       });
 
       try {
-        const editors = await fetchEditors() as devfileApi.Devfile[] ;
+        const editors = (await fetchEditors()) as devfileApi.Devfile[];
         dispatch({
           type: 'RECEIVE_EDITORS',
           editors,
@@ -195,126 +196,125 @@ export const actionCreators: ActionCreators = {
       }
     },
 
-
   requestDwEditor:
     (editorName: string): AppThunk<KnownAction, Promise<void>> =>
-      async (dispatch, getState): Promise<void> => {
-        let editorUrl: string;
-        // check if the editor is an id or URL to a given editor
-        if (editorName.startsWith('https://')) {
-          editorUrl = editorName;
-          try {
-            dispatch({
-              type: 'REQUEST_DW_EDITOR',
-              check: AUTHORIZED,
-              url: editorUrl,
-              editorName,
-            });
-            const pluginContent = await fetchData<string>(editorUrl);
-            const plugin = load(pluginContent) as devfileApi.Devfile;
-            dispatch({
-              type: 'RECEIVE_DW_EDITOR',
-              editorName,
-              url: editorUrl,
-              plugin,
-            });
-          } catch (error) {
-            const errorMessage = `Failed to load the editor ${editorName}. Invalid devfile. Check 'che-editor' param.`;
-            dispatch({
-              type: 'RECEIVE_DW_EDITOR_ERROR',
-              url: editorUrl,
-              editorName,
-              error: errorMessage,
-            });
-            throw common.helpers.errors.getMessage(error);
-          }
-        } else {
-          const editors = getState().dwPlugins.cmEditors || [];
-          const editor = editors.find(
-            editor =>
-              editor.metadata.attributes.publisher +
+    async (dispatch, getState): Promise<void> => {
+      let editorUrl: string;
+      // check if the editor is an id or URL to a given editor
+      if (editorName.startsWith('https://')) {
+        editorUrl = editorName;
+        try {
+          dispatch({
+            type: 'REQUEST_DW_EDITOR',
+            check: AUTHORIZED,
+            url: editorUrl,
+            editorName,
+          });
+          const pluginContent = await fetchData<string>(editorUrl);
+          const plugin = load(pluginContent) as devfileApi.Devfile;
+          dispatch({
+            type: 'RECEIVE_DW_EDITOR',
+            editorName,
+            url: editorUrl,
+            plugin,
+          });
+        } catch (error) {
+          const errorMessage = `Failed to load the editor ${editorName}. Invalid devfile. Check 'che-editor' param.`;
+          dispatch({
+            type: 'RECEIVE_DW_EDITOR_ERROR',
+            url: editorUrl,
+            editorName,
+            error: errorMessage,
+          });
+          throw common.helpers.errors.getMessage(error);
+        }
+      } else {
+        const editors = getState().dwPlugins.cmEditors || [];
+        const editor = editors.find(
+          editor =>
+            editor.metadata.attributes.publisher +
               '/' +
               editor.metadata.name +
               '/' +
               editor.metadata.attributes.version ===
-              editorName,
-          );
-          if (!editor) {
-            const errorMessage = `Failed to load editor ${editorName}. The editor does not exist in the editors configuration map.`;
-            dispatch({
-              type: 'RECEIVE_DW_EDITOR_ERROR',
-              url: '',
-              editorName,
-              error: errorMessage,
-            });
-            throw errorMessage;
-          } else {
-            dispatch({
-              type: 'RECEIVE_DW_EDITOR',
-              editorName,
-              url: '',
-              plugin: editor,
-            });
-          }
-        }
-      },
-
-  requestDwDefaultEditor:
-    (): AppThunk<KnownAction, Promise<void>> =>
-      async (dispatch, getState): Promise<void> => {
-        const config = getState().dwServerConfig.config;
-        const defaultEditor = config.defaults.editor;
-        dispatch({
-          type: 'REQUEST_DW_DEFAULT_EDITOR',
-          check: AUTHORIZED,
-        });
-
-        if (!defaultEditor) {
-          const errorMessage =
-            'Failed to load the default editor, reason: default editor ID is not provided by Che server.';
+            editorName,
+        );
+        if (!editor) {
+          const errorMessage = `Failed to load editor ${editorName}. The editor does not exist in the editors configuration map.`;
           dispatch({
-            type: 'RECEIVE_DW_DEFAULT_EDITOR_ERROR',
+            type: 'RECEIVE_DW_EDITOR_ERROR',
+            url: '',
+            editorName,
             error: errorMessage,
           });
           throw errorMessage;
+        } else {
+          dispatch({
+            type: 'RECEIVE_DW_EDITOR',
+            editorName,
+            url: '',
+            plugin: editor,
+          });
         }
+      }
+    },
 
-        const defaultEditorUrl = (defaultEditor as string).startsWith('https://')
-          ? defaultEditor
-          : '';
+  requestDwDefaultEditor:
+    (): AppThunk<KnownAction, Promise<void>> =>
+    async (dispatch, getState): Promise<void> => {
+      const config = getState().dwServerConfig.config;
+      const defaultEditor = config.defaults.editor;
+      dispatch({
+        type: 'REQUEST_DW_DEFAULT_EDITOR',
+        check: AUTHORIZED,
+      });
 
-        // request default editor
-        await dispatch(actionCreators.requestDwEditor(defaultEditor));
-
+      if (!defaultEditor) {
+        const errorMessage =
+          'Failed to load the default editor, reason: default editor ID is not provided by Che server.';
         dispatch({
-          type: 'RECEIVE_DW_DEFAULT_EDITOR',
-          defaultEditorName: defaultEditor,
-          url: defaultEditorUrl,
+          type: 'RECEIVE_DW_DEFAULT_EDITOR_ERROR',
+          error: errorMessage,
         });
-      },
+        throw errorMessage;
+      }
+
+      const defaultEditorUrl = (defaultEditor as string).startsWith('https://')
+        ? defaultEditor
+        : '';
+
+      // request default editor
+      await dispatch(actionCreators.requestDwEditor(defaultEditor));
+
+      dispatch({
+        type: 'RECEIVE_DW_DEFAULT_EDITOR',
+        defaultEditorName: defaultEditor,
+        url: defaultEditorUrl,
+      });
+    },
 
   requestDwDefaultPlugins:
     (): AppThunk<KnownAction, Promise<void>> =>
-      async (dispatch, getState): Promise<void> => {
-        dispatch({
-          type: 'REQUEST_DW_DEFAULT_PLUGINS',
-          check: AUTHORIZED,
-        });
+    async (dispatch, getState): Promise<void> => {
+      dispatch({
+        type: 'REQUEST_DW_DEFAULT_PLUGINS',
+        check: AUTHORIZED,
+      });
 
-        const defaultPlugins = {};
-        const defaults = getState().dwServerConfig.config.defaults;
-        (defaults.plugins || []).forEach(item => {
-          if (!defaultPlugins[item.editor]) {
-            defaultPlugins[item.editor] = [];
-          }
-          defaultPlugins[item.editor].push(...item.plugins);
-        });
+      const defaultPlugins = {};
+      const defaults = getState().dwServerConfig.config.defaults;
+      (defaults.plugins || []).forEach(item => {
+        if (!defaultPlugins[item.editor]) {
+          defaultPlugins[item.editor] = [];
+        }
+        defaultPlugins[item.editor].push(...item.plugins);
+      });
 
-        dispatch({
-          type: 'RECEIVE_DW_DEFAULT_PLUGINS',
-          defaultPlugins,
-        });
-      },
+      dispatch({
+        type: 'RECEIVE_DW_DEFAULT_PLUGINS',
+        defaultPlugins,
+      });
+    },
 };
 
 const unloadedState: State = {

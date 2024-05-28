@@ -50,51 +50,50 @@ export type ActionCreators = {
 export const actionCreators: ActionCreators = {
   requestPlugins:
     (registryUrl: string): AppThunk<KnownAction, Promise<void>> =>
-      async (dispatch, getState): Promise<void> => {
-        try {
+    async (dispatch, getState): Promise<void> => {
+      try {
+        // request editors from config map
+        await dispatch(devWorkspacePlugins.actionCreators.requestEditors());
 
-          // request editors from config map
-          await dispatch(devWorkspacePlugins.actionCreators.requestEditors());
-          
-          const state = getState();
-          const editors = state.dwPlugins.cmEditors || [];
-          const editorsPlugins: che.Plugin[] = editors.map(editor => {
-            return {
-              id:
-                editor.metadata.attributes.publisher +
-                '/' +
-                editor.metadata.name +
-                '/' +
-                editor.metadata.attributes.version,
-              name: editor.metadata.name,
-              description: editor.metadata.description,
-              displayName: editor.metadata.displayName,
-              publisher: editor.metadata.attributes.publisher,
-              type: 'Che Editor',
-              tags: editor.metadata.attributes.tags,
-              version: editor.metadata.attributes.version,
-              links: {
-                devfile: '',
-              },
-              icon: editor.metadata.attributes['icon-data'],
-              iconMediatype: editor.metadata.attributes['icon-mediatype'],
-            };
-          });
-          dispatch({
-            type: 'RECEIVE_PLUGINS',
-            plugins: editorsPlugins,
-          });
-        } catch (e) {
-          const errorMessage =
-            `Failed to fetch plugins from registry URL: ${registryUrl}, reason: ` +
-            common.helpers.errors.getMessage(e);
-          dispatch({
-            type: 'RECEIVE_PLUGINS_ERROR',
-            error: errorMessage,
-          });
-          throw errorMessage;
-        }
-      },
+        const state = getState();
+        const editors = state.dwPlugins.cmEditors || [];
+        const editorsPlugins: che.Plugin[] = editors.map(editor => {
+          return {
+            id:
+              editor.metadata.attributes.publisher +
+              '/' +
+              editor.metadata.name +
+              '/' +
+              editor.metadata.attributes.version,
+            name: editor.metadata.name,
+            description: editor.metadata.description,
+            displayName: editor.metadata.displayName,
+            publisher: editor.metadata.attributes.publisher,
+            type: 'Che Editor',
+            tags: editor.metadata.attributes.tags,
+            version: editor.metadata.attributes.version,
+            links: {
+              devfile: '',
+            },
+            icon: editor.metadata.attributes['icon-data'],
+            iconMediatype: editor.metadata.attributes['icon-mediatype'],
+          };
+        });
+        dispatch({
+          type: 'RECEIVE_PLUGINS',
+          plugins: editorsPlugins,
+        });
+      } catch (e) {
+        const errorMessage =
+          `Failed to fetch plugins from registry URL: ${registryUrl}, reason: ` +
+          common.helpers.errors.getMessage(e);
+        dispatch({
+          type: 'RECEIVE_PLUGINS_ERROR',
+          error: errorMessage,
+        });
+        throw errorMessage;
+      }
+    },
 };
 
 const unloadedState: State = {

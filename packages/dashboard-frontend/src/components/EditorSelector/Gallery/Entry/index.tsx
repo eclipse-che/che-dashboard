@@ -146,9 +146,10 @@ export class EditorSelectorEntry extends React.PureComponent<Props, State> {
 
     const titleClassName = isSelectedGroup ? styles.activeCard : '';
 
-    const icon = groupIconMediatype === 'image/svg+xml' ?
-      `data:image/svg+xml;charset=utf-8,${encodeURIComponent(groupIcon)}` :
-      groupIcon;
+    const icon =
+      groupIconMediatype === 'image/svg+xml'
+        ? `data:image/svg+xml;charset=utf-8,${encodeURIComponent(groupIcon)}`
+        : groupIcon;
     const hasTechPreviewTag =
       (activeEditor.tags || []).includes('tech-preview') === true ||
       /idea/i.test(activeEditor.id) === true;

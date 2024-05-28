@@ -346,7 +346,7 @@ describe('Workspace-client helpers', () => {
                 },
               ],
             } as devfileApi.Devfile,
-          ]
+          ];
           const store = new FakeStoreBuilder()
             .withDwPlugins({}, {}, false, editors, 'che-incubator/che-idea/next')
             .build();
@@ -396,7 +396,7 @@ describe('Workspace-client helpers', () => {
                 },
               ],
             } as devfileApi.Devfile,
-          ]
+          ];
 
           const store = new FakeStoreBuilder()
             .withDevfileRegistries({
@@ -448,7 +448,7 @@ describe('Workspace-client helpers', () => {
                 },
               ],
             } as devfileApi.Devfile,
-          ]
+          ];
 
           const store = new FakeStoreBuilder()
             .withDevfileRegistries({

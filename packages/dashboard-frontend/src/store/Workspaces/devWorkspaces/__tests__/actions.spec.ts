@@ -490,7 +490,7 @@ describe('DevWorkspace store, actions', () => {
           },
           schemaVersion: '2.2.2',
         } as devfileApi.Devfile,
-      ]
+      ];
 
       const store = storeBuilder
         .withDevWorkspaces({ workspaces: [devWorkspace] })
@@ -1006,7 +1006,7 @@ describe('DevWorkspace store, actions', () => {
           },
           schemaVersion: '2.2.2',
         } as devfileApi.Devfile,
-      ]
+      ];
 
       const store = storeBuilder
         .withDwPlugins({}, {}, false, editors, undefined, 'che-incubator/che-code/latest')
@@ -1107,7 +1107,7 @@ describe('DevWorkspace store, actions', () => {
           },
           schemaVersion: '2.2.2',
         } as devfileApi.Devfile,
-      ]
+      ];
 
       const store = storeBuilder
         .withDwPlugins({}, {}, false, editors, undefined, 'che-incubator/che-code/latest')
@@ -1190,7 +1190,7 @@ describe('DevWorkspace store, actions', () => {
           },
           schemaVersion: '2.2.2',
         } as devfileApi.Devfile,
-      ]
+      ];
 
       it('should provide default editor id to createDevWorkspace', async () => {
         const editors = [
@@ -1204,8 +1204,8 @@ describe('DevWorkspace store, actions', () => {
             },
             schemaVersion: '2.2.2',
           } as devfileApi.Devfile,
-        ]
-  
+        ];
+
         const store = storeBuilder
           .withDwPlugins({}, {}, false, editors, undefined, 'che-incubator/che-code/latest')
           .build();

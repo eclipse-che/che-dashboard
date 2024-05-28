@@ -35,7 +35,7 @@ export async function getEditor(
       return Object.assign({ content, editorYamlUrl, error });
     }
     await dispatch(actionCreators.requestDevfile(editorYamlUrl));
-  
+
     const nexState = getState();
     devfileObj = nexState.devfileRegistries.devfiles[editorYamlUrl];
     if (devfileObj) {
@@ -48,11 +48,24 @@ export async function getEditor(
     const editors = state.dwPlugins.cmEditors || [];
     let editor: devfileApi.Devfile | undefined;
     for (const e of editors) {
-      if (!e.metadata.name) throw new Error(`Missing metadata.name attribute in the editor yaml file: ${editorIdOrPath}.`);
-      if (!e.metadata.attributes.publisher) throw new Error(`Missing metadata.attributes.publisher attribute in the editor yaml file: ${editorIdOrPath}.`);
-      if (!e.metadata.attributes.version) throw new Error(`Missing metadata.attributes.version attribute in the editor yaml file: ${editorIdOrPath}.`);
+      if (!e.metadata.name)
+        throw new Error(
+          `Missing metadata.name attribute in the editor yaml file: ${editorIdOrPath}.`,
+        );
+      if (!e.metadata.attributes.publisher)
+        throw new Error(
+          `Missing metadata.attributes.publisher attribute in the editor yaml file: ${editorIdOrPath}.`,
+        );
+      if (!e.metadata.attributes.version)
+        throw new Error(
+          `Missing metadata.attributes.version attribute in the editor yaml file: ${editorIdOrPath}.`,
+        );
       if (
-        e.metadata.attributes.publisher + '/' + e.metadata.name + '/' + e.metadata.attributes.version ===
+        e.metadata.attributes.publisher +
+          '/' +
+          e.metadata.name +
+          '/' +
+          e.metadata.attributes.version ===
         editorIdOrPath
       ) {
         editor = e;
