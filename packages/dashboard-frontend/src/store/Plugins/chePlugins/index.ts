@@ -19,7 +19,7 @@ import { createObject } from '@/store/helpers';
 import * as devWorkspacePlugins from '@/store/Plugins/devWorkspacePlugins';
 import { SanityCheckAction } from '@/store/sanityCheckMiddleware';
 
-export const EXCLUDED_TARGET_EDITOR_NAMES = ['dirigible', 'jupyter', 'eclipseide', 'code-server'];
+export const EXCLUDED_TARGET_EDITOR_NAMES = [''];
 
 export interface State {
   isLoading: boolean;
@@ -44,12 +44,12 @@ interface ReceivePluginsErrorAction {
 type KnownAction = RequestPluginsAction | ReceivePluginsAction | ReceivePluginsErrorAction;
 
 export type ActionCreators = {
-  requestPlugins: (registryUrl: string) => AppThunk<KnownAction, Promise<void>>;
+  requestPlugins: () => AppThunk<KnownAction, Promise<void>>;
 };
 
 export const actionCreators: ActionCreators = {
   requestPlugins:
-    (registryUrl: string): AppThunk<KnownAction, Promise<void>> =>
+    (): AppThunk<KnownAction, Promise<void>> =>
     async (dispatch, getState): Promise<void> => {
       try {
         // request editors from config map
@@ -84,9 +84,7 @@ export const actionCreators: ActionCreators = {
           plugins: editorsPlugins,
         });
       } catch (e) {
-        const errorMessage =
-          `Failed to fetch plugins from registry URL: ${registryUrl}, reason: ` +
-          common.helpers.errors.getMessage(e);
+        const errorMessage = common.helpers.errors.getMessage(e);
         dispatch({
           type: 'RECEIVE_PLUGINS_ERROR',
           error: errorMessage,
