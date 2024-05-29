@@ -11,7 +11,6 @@
  */
 
 import { V222Devfile } from '@devfile/api';
-import * as k8s from '@kubernetes/client-node';
 import { V1ConfigMapList } from '@kubernetes/client-node/dist/gen/model/v1ConfigMapList';
 import http from 'http';
 import * as yaml from 'js-yaml';
@@ -22,6 +21,7 @@ import {
   prepareCoreV1API,
 } from '@/devworkspaceClient/services/helpers/prepareCoreV1API';
 import { IEditorsApi } from '@/devworkspaceClient/types';
+import { KubeConfigProvider } from '@/services/kubeclient/kubeConfigProvider';
 import { logger } from '@/utils/logger';
 
 const API_ERROR_LABEL = 'CORE_V1_API_ERROR';
@@ -30,7 +30,10 @@ const EDITOR_METADATA_LABEL_SELECTOR =
 
 export class EditorsApiService implements IEditorsApi {
   private readonly coreV1API: CoreV1API;
-  constructor(kubeConfig: k8s.KubeConfig) {
+  constructor() {
+    const kubeConfigProvider = new KubeConfigProvider();
+    const kubeConfig = kubeConfigProvider.getSAKubeConfig();
+
     this.coreV1API = prepareCoreV1API(kubeConfig);
   }
 

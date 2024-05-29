@@ -110,7 +110,7 @@ export class DevWorkspaceClient implements IDevWorkspaceClient {
   }
 
   get editorsApi(): IEditorsApi {
-    return new EditorsApiService(this.kubeConfig);
+    return new EditorsApiService();
   }
 
   get sshKeysApi(): IShhKeysApi {

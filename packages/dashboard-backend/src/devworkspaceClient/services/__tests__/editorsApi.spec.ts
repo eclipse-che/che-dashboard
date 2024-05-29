@@ -11,7 +11,6 @@
  */
 
 import { V222Devfile } from '@devfile/api';
-import * as k8s from '@kubernetes/client-node';
 import { V1ConfigMapList } from '@kubernetes/client-node/dist/gen/model/v1ConfigMapList';
 import http from 'http';
 import * as yaml from 'js-yaml';
@@ -28,17 +27,15 @@ jest.mock('js-yaml');
 jest.mock('@/utils/logger');
 
 describe('EditorsApiService', () => {
-  let kubeConfig: k8s.KubeConfig;
   let coreV1API: any;
   let editorsApiService: EditorsApiService;
 
   beforeEach(() => {
-    kubeConfig = new k8s.KubeConfig();
     coreV1API = {
       listNamespacedConfigMap: jest.fn(),
     };
     (prepareCoreV1API as jest.Mock).mockReturnValue(coreV1API);
-    editorsApiService = new EditorsApiService(kubeConfig);
+    editorsApiService = new EditorsApiService();
     process.env.CHECLUSTER_CR_NAMESPACE = 'test-namespace';
   });
 
