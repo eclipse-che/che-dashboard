@@ -93,6 +93,8 @@ describe('Dashboard bootstrap', () => {
     });
     expect(mockGet).toHaveBeenCalledWith('/dashboard/api/server-config', undefined);
     expect(mockGet).toHaveBeenCalledWith('/dashboard/api/cluster-info');
+    expect(mockGet).toHaveBeenCalledWith('/dashboard/api/userprofile/test-che', undefined);
+    expect(mockGet).toHaveBeenCalledWith('/dashboard/api/editors', undefined);
     expect(mockGet).toHaveBeenCalledWith(
       'http://localhost/dashboard/devfile-registry/devfiles/index.json',
     );

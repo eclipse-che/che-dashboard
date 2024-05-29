@@ -16,8 +16,8 @@ import { baseApiPath } from '@/constants/config';
 import { editorsArray } from '@/routes/api/helpers/__mocks__/getDevWorkspaceClient';
 import { setup, teardown } from '@/utils/appBuilder';
 
-jest.mock('../helpers/getToken.ts');
-jest.mock('../helpers/getDevWorkspaceClient.ts');
+jest.mock('@/routes/api/helpers/getToken');
+jest.mock('@/routes/api/helpers/getDevWorkspaceClient');
 
 describe('Editors Route', () => {
   let app: FastifyInstance;
