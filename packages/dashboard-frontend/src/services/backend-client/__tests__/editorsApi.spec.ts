@@ -12,6 +12,7 @@
 
 import common from '@eclipse-che/common';
 import { AxiosError } from 'axios';
+import mockAxios from 'axios';
 
 import { fetchEditors } from '@/services/backend-client/editorsApi';
 import devfileApi from '@/services/devfileApi';
@@ -39,11 +40,7 @@ const editors = [
   } as devfileApi.Devfile,
 ];
 
-const mockFetchEditors = jest.fn();
-
-jest.mock('@/services/backend-client/editorsApi', () => ({
-  fetchEditors: (...args: unknown[]) => mockFetchEditors(...args),
-}));
+const mockFetchEditors = mockAxios.get as jest.Mock;
 
 describe('Fetch Editors Api', () => {
   afterEach(() => {
@@ -51,7 +48,7 @@ describe('Fetch Editors Api', () => {
   });
 
   it('should fetch editors', async () => {
-    mockFetchEditors.mockResolvedValueOnce(editors);
+    mockFetchEditors.mockResolvedValueOnce({ data: editors });
 
     const fetchedEditors = await fetchEditors();
     expect(fetchedEditors).toEqual(editors);
@@ -69,6 +66,6 @@ describe('Fetch Editors Api', () => {
       errorMessage = common.helpers.errors.getMessage(err);
     }
 
-    expect(errorMessage).toEqual('error message');
+    expect(errorMessage).toEqual('Failed to fetch editors. error message');
   });
 });
