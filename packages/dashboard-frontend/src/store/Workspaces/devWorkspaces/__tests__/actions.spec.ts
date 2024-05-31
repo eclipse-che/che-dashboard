@@ -557,7 +557,10 @@ describe('DevWorkspace store, actions', () => {
         {
           op: 'add',
           path: '/metadata/annotations',
-          value: {},
+          value: {
+            'che.eclipse.org/components-update-policy': 'managed',
+            'che.eclipse.org/plugin-registry-url': 'che-incubator/che-code/latest',
+          },
         },
         {
           op: 'replace',
@@ -1075,6 +1078,10 @@ describe('DevWorkspace store, actions', () => {
             apiVersion: 'workspace.devfile.io/v1alpha2',
             kind: 'DevWorkspaceTemplate',
             metadata: {
+              annotations: {
+                'che.eclipse.org/components-update-policy': 'managed',
+                'che.eclipse.org/plugin-registry-url': 'che-incubator/che-code/latest',
+              },
               name: 'che-code',
             },
           }),

@@ -69,7 +69,7 @@ export async function getEditor(
         editorIdOrPath
       ) {
         editor = e;
-        return Object.assign({ content: dump(editor), editorIdOrPath });
+        return Object.assign({ content: dump(editor), editorYamlUrl: editorIdOrPath });
       }
     }
   }

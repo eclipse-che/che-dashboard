@@ -11,25 +11,20 @@
  */
 
 import { FastifyInstance } from 'fastify';
-import { FastifyRequest } from 'fastify/types/request';
 
 import { baseApiPath } from '@/constants/config';
 import { getDevWorkspaceClient } from '@/routes/api/helpers/getDevWorkspaceClient';
-import { getToken } from '@/routes/api/helpers/getToken';
+import { getServiceAccountToken } from '@/routes/api/helpers/getServiceAccountToken';
 import { getSchema } from '@/services/helpers';
 
 const tags = ['Editor Definitions'];
 
 export function registerEditorsRoutes(instance: FastifyInstance) {
   instance.register(async server => {
-    server.get(
-      `${baseApiPath}/editors`,
-      getSchema({ tags }),
-      async function (request: FastifyRequest) {
-        const token = getToken(request);
-        const { editorsApi } = getDevWorkspaceClient(token);
-        return editorsApi.list();
-      },
-    );
+    server.get(`${baseApiPath}/editors`, getSchema({ tags }), async () => {
+      const token = getServiceAccountToken();
+      const { editorsApi } = getDevWorkspaceClient(token);
+      return editorsApi.list();
+    });
   });
 }
