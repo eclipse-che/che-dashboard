@@ -182,9 +182,23 @@ export const actionCreators: ActionCreators = {
 
       try {
         const editors = (await fetchEditors()) as devfileApi.Devfile[];
+        const filteredEditors: devfileApi.Devfile[] = [];
+        editors.forEach(editor => {
+          if (
+            !editor.metadata.attributes.publisher ||
+            !editor.metadata.attributes.version ||
+            !editor.metadata.name
+          ) {
+            console.error(
+              `Missing metadata attributes in the editor yaml file: ${editor.metadata.name}. metadata.name, metadata.attributes.publisher and metadata.attributes.version should be set. Skipping this editor.`,
+            );
+          } else {
+            filteredEditors.push(editor);
+          }
+        });
         dispatch({
           type: 'RECEIVE_EDITORS',
-          editors,
+          editors: filteredEditors,
         });
       } catch (e) {
         const errorMessage = common.helpers.errors.getMessage(e);

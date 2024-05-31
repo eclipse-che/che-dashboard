@@ -420,7 +420,7 @@ describe('Workspace-client helpers', () => {
           expect(customEditor).toEqual(expect.stringContaining('memoryLimit: 1234Mi'));
         });
 
-        it('should throw the "missing metadata.name" error message', async () => {
+        it('should failed fetching editor without metadata.name attribute', async () => {
           // set an empty value as a name
           editor.metadata.name = '';
           optionalFilesContent[CHE_EDITOR_YAML_PATH] = dump({
@@ -475,7 +475,7 @@ describe('Workspace-client helpers', () => {
           }
 
           expect(errorText).toEqual(
-            'Missing metadata.name attribute in the editor yaml file: che-incubator/che-idea/next.',
+            'Failed to fetch editor yaml by id: che-incubator/che-idea/next.',
           );
         });
       });

@@ -108,6 +108,204 @@ describe('dwPlugins store', () => {
       expect(actions).toEqual(expectedActions);
     });
 
+    it('should filter editors from ConfigMap and exclude one without metadata.name', async () => {
+      const editors = [
+        {
+          metadata: {
+            attributes: {
+              publisher: 'che-incubator',
+              version: 'latest',
+            },
+          },
+          schemaVersion: '2.2.2',
+        } as devfileApi.Devfile,
+        {
+          metadata: {
+            name: 'che-code',
+            attributes: {
+              publisher: 'che-incubator',
+              version: 'insiders',
+            },
+          },
+          schemaVersion: '2.2.2',
+        } as devfileApi.Devfile,
+      ];
+
+      mockFetchEditors.mockResolvedValueOnce(editors);
+
+      const store = new FakeStoreBuilder()
+        .withDwServerConfig({
+          defaults: {
+            editor: 'che-incubator/default-editor/latest',
+          },
+        } as api.IServerConfig)
+        .build() as MockStoreEnhanced<
+        AppState,
+        ThunkDispatch<AppState, undefined, dwPluginsStore.KnownAction>
+      >;
+
+      await store.dispatch(dwPluginsStore.actionCreators.requestEditors());
+
+      const actions = store.getActions();
+
+      const expectedEditors = [
+        {
+          metadata: {
+            name: 'che-code',
+            attributes: {
+              publisher: 'che-incubator',
+              version: 'insiders',
+            },
+          },
+          schemaVersion: '2.2.2',
+        } as devfileApi.Devfile,
+      ];
+
+      const expectedActions: dwPluginsStore.KnownAction[] = [
+        {
+          type: 'REQUEST_EDITORS',
+        },
+        {
+          type: 'RECEIVE_EDITORS',
+          editors: expectedEditors,
+        },
+      ];
+
+      expect(actions).toEqual(expectedActions);
+    });
+
+    it('should filter editors from ConfigMap and exclude one without metadata.attributes.publisher', async () => {
+      const editors = [
+        {
+          metadata: {
+            name: 'che-idea',
+            attributes: {
+              version: 'latest',
+            },
+          },
+          schemaVersion: '2.2.2',
+        } as devfileApi.Devfile,
+        {
+          metadata: {
+            name: 'che-code',
+            attributes: {
+              publisher: 'che-incubator',
+              version: 'insiders',
+            },
+          },
+          schemaVersion: '2.2.2',
+        } as devfileApi.Devfile,
+      ];
+
+      mockFetchEditors.mockResolvedValueOnce(editors);
+
+      const store = new FakeStoreBuilder()
+        .withDwServerConfig({
+          defaults: {
+            editor: 'che-incubator/default-editor/latest',
+          },
+        } as api.IServerConfig)
+        .build() as MockStoreEnhanced<
+        AppState,
+        ThunkDispatch<AppState, undefined, dwPluginsStore.KnownAction>
+      >;
+
+      await store.dispatch(dwPluginsStore.actionCreators.requestEditors());
+
+      const actions = store.getActions();
+
+      const expectedEditors = [
+        {
+          metadata: {
+            name: 'che-code',
+            attributes: {
+              publisher: 'che-incubator',
+              version: 'insiders',
+            },
+          },
+          schemaVersion: '2.2.2',
+        } as devfileApi.Devfile,
+      ];
+
+      const expectedActions: dwPluginsStore.KnownAction[] = [
+        {
+          type: 'REQUEST_EDITORS',
+        },
+        {
+          type: 'RECEIVE_EDITORS',
+          editors: expectedEditors,
+        },
+      ];
+
+      expect(actions).toEqual(expectedActions);
+    });
+
+    it('should filter editors from ConfigMap and exclude one without metadata.attributes.version', async () => {
+      const editors = [
+        {
+          metadata: {
+            name: 'che-idea',
+            attributes: {
+              publisher: 'che-incubator',
+            },
+          },
+          schemaVersion: '2.2.2',
+        } as devfileApi.Devfile,
+        {
+          metadata: {
+            name: 'che-code',
+            attributes: {
+              publisher: 'che-incubator',
+              version: 'insiders',
+            },
+          },
+          schemaVersion: '2.2.2',
+        } as devfileApi.Devfile,
+      ];
+
+      mockFetchEditors.mockResolvedValueOnce(editors);
+
+      const store = new FakeStoreBuilder()
+        .withDwServerConfig({
+          defaults: {
+            editor: 'che-incubator/default-editor/latest',
+          },
+        } as api.IServerConfig)
+        .build() as MockStoreEnhanced<
+        AppState,
+        ThunkDispatch<AppState, undefined, dwPluginsStore.KnownAction>
+      >;
+
+      await store.dispatch(dwPluginsStore.actionCreators.requestEditors());
+
+      const actions = store.getActions();
+
+      const expectedEditors = [
+        {
+          metadata: {
+            name: 'che-code',
+            attributes: {
+              publisher: 'che-incubator',
+              version: 'insiders',
+            },
+          },
+          schemaVersion: '2.2.2',
+        } as devfileApi.Devfile,
+      ];
+
+      const expectedActions: dwPluginsStore.KnownAction[] = [
+        {
+          type: 'REQUEST_EDITORS',
+        },
+        {
+          type: 'RECEIVE_EDITORS',
+          editors: expectedEditors,
+        },
+      ];
+
+      expect(actions).toEqual(expectedActions);
+    });
+
     it('should create REQUEST_EDITORS and RECEIVE_EDITORS_ERROR when failed to fetch editors', async () => {
       mockFetchEditors.mockRejectedValueOnce({
         isAxiosError: true,

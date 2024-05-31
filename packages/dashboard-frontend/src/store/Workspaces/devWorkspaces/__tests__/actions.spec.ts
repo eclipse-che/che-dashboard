@@ -1186,19 +1186,6 @@ describe('DevWorkspace store, actions', () => {
         mockOnStart.mockResolvedValueOnce(undefined);
       });
 
-      const editors = [
-        {
-          metadata: {
-            name: 'che-code',
-            attributes: {
-              publisher: 'che-incubator',
-              version: 'latest',
-            },
-          },
-          schemaVersion: '2.2.2',
-        } as devfileApi.Devfile,
-      ];
-
       it('should provide default editor id to createDevWorkspace', async () => {
         const editors = [
           {

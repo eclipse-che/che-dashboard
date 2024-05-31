@@ -46,33 +46,20 @@ export async function getEditor(
     throw new Error(`Failed to fetch editor yaml by URL: ${editorYamlUrl}.`);
   } else {
     const editors = state.dwPlugins.cmEditors || [];
-    let editor: devfileApi.Devfile | undefined;
-    for (const e of editors) {
-      if (!e.metadata.name)
-        throw new Error(
-          `Missing metadata.name attribute in the editor yaml file: ${editorIdOrPath}.`,
-        );
-      if (!e.metadata.attributes.publisher)
-        throw new Error(
-          `Missing metadata.attributes.publisher attribute in the editor yaml file: ${editorIdOrPath}.`,
-        );
-      if (!e.metadata.attributes.version)
-        throw new Error(
-          `Missing metadata.attributes.version attribute in the editor yaml file: ${editorIdOrPath}.`,
-        );
-      if (
+    const editor: devfileApi.Devfile | undefined = editors.find(e => {
+      return (
         e.metadata.attributes.publisher +
           '/' +
           e.metadata.name +
           '/' +
           e.metadata.attributes.version ===
         editorIdOrPath
-      ) {
-        editor = e;
-        return Object.assign({ content: dump(editor), editorYamlUrl: editorIdOrPath });
-      }
+      );
+    });
+    if (editor) {
+      return Object.assign({ content: dump(editor), editorYamlUrl: editorIdOrPath });
+    } else {
+      throw new Error(`Failed to fetch editor yaml by id: ${editorIdOrPath}.`);
     }
   }
-
-  throw new Error(`Failed to fetch editor yaml by URL: ${editorIdOrPath}.`);
 }
