@@ -35,7 +35,14 @@ export function getErrorMessage(error: unknown): string {
       return 'Unexpected error type. Please report a bug.';
     }
 
-    errorMessage = `HTTP Error code ${code}. Endpoint which throws an error ${endpoint}. ${errorMessage}`;
+    const errorDetails = `HTTP Error code ${code}. Endpoint which throws an error ${endpoint}.`;
+    console.error(errorDetails);
+
+    if (common.helpers.errors.includesAxiosResponse(error) && error.response.data) {
+      errorMessage = error.response.data;
+    } else {
+      errorMessage = `${errorDetails} ${errorMessage}`;
+    }
   }
 
   if (isUnauthorized(error) || isForbidden(error)) {
