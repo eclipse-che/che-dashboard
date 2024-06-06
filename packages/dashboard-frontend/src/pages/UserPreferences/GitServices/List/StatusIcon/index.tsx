@@ -29,12 +29,18 @@ export type Props = {
 export class GitServiceStatusIcon extends React.PureComponent<Props> {
   private isSkipOauth(): boolean {
     const { gitProvider, skipOauthProviders } = this.props;
-    return skipOauthProviders.includes(gitProvider);
+    // Use includes filter to handle the bitbucket-server oauth 2 provider.
+    // The bitbucket server oauth2 provider name is 'bitbucket',
+    // but the corresponding 'skip oauth' item is 'bitbucket-server'.
+    return skipOauthProviders.some(s => s.includes(gitProvider));
   }
 
   private hasOauthToken(): boolean {
     const { gitProvider, providersWithToken } = this.props;
-    return providersWithToken.includes(gitProvider);
+    // Use includes filter to handle the bitbucket-server oauth 2 provider.
+    // The bitbucket server oauth2 provider name is 'bitbucket',
+    // but the corresponding 'provider with token' item is 'bitbucket-server'.
+    return providersWithToken.some(p => p.includes(gitProvider));
   }
 
   public render(): React.ReactElement {
