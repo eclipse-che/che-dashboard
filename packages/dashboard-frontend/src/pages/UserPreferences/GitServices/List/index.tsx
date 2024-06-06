@@ -191,7 +191,10 @@ export class GitServicesList extends React.PureComponent<Props, State> {
   }
 
   private hasSkipOauth(providerName: api.GitOauthProvider): boolean {
-    return this.props.skipOauthProviders.includes(providerName);
+    // Use includes filter to handle the bitbucket-server oauth 2 provider.
+    // The bitbucket server oauth2 provider name is 'bitbucket',
+    // but the corresponding 'skip oauth' item is 'bitbucket-server'.
+    return this.props.skipOauthProviders.some(s => s.includes(providerName));
   }
 
   private hasOauthToken(providerName: api.GitOauthProvider): boolean {
@@ -204,7 +207,10 @@ export class GitServicesList extends React.PureComponent<Props, State> {
   }
 
   private handleClearService(service: IGitOauth): void {
-    const serviceToClear = this.props.skipOauthProviders.find(s => s === service.name);
+    // Use includes filter to handle the bitbucket-server oauth 2 provider.
+    // The bitbucket server oauth2 provider name is 'bitbucket',
+    // but the corresponding 'skip oauth' item is 'bitbucket-server'.
+    const serviceToClear = this.props.skipOauthProviders.find(s => s.includes(service.name));
     if (serviceToClear != undefined) {
       this.props.onClearService(serviceToClear);
       this.deselectServices([service]);
