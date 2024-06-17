@@ -456,6 +456,13 @@ export interface IEditorsApi {
    * Reads all Editors from ConfigMaps.
    */
   list(): Promise<Array<V222Devfile>>;
+
+  /**
+   * Returns an Editor from ConfigMap by its editorId.
+   * @param id editorId in the format of publisher/name/version
+   * @throws EditorNotFoundError if editor is not found
+   */
+  get(id: string): Promise<V222Devfile>;
 }
 
 export interface IShhKeysApi {
