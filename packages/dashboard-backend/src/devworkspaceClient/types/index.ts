@@ -428,6 +428,7 @@ export interface IDevWorkspaceClient {
   gettingStartedSampleApi: IGettingStartedSampleApi;
   sshKeysApi: IShhKeysApi;
   devWorkspacePreferencesApi: IDevWorkspacePreferencesApi;
+  editorsApi: IEditorsApi;
 }
 
 export interface IWatcherService<T = Record<string, unknown>> {
