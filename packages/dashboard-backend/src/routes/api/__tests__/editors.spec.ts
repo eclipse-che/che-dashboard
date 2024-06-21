@@ -77,4 +77,19 @@ metadata:
       .get(`${baseApiPath}/editors/devfile?che-editor=che-incubator/che-code/latest`);
     expect(res.statusCode).toEqual(404);
   });
+
+  test('GET ${baseApiPath}/editors/devfile handle throw Error', async () => {
+    (getDevWorkspaceClient as jest.Mock).mockImplementation(() => {
+      return {
+        editorsApi: {
+          get: () => Promise.reject(new Error('Error')),
+        },
+      } as unknown as DevWorkspaceClient;
+    });
+
+    const res = await app
+      .inject()
+      .get(`${baseApiPath}/editors/devfile?che-editor=che-incubator/che-code/latest`);
+    expect(res.statusCode).toEqual(500);
+  });
 });
