@@ -55,7 +55,7 @@ export class GitConfigAddModal extends React.PureComponent<Props, State> {
     gitConfig: GitConfigStore.GitConfig | undefined,
     isValid: boolean,
   ): void {
-    const isSaveEnabled = isValid && !isEqual(this.state.gitConfig, gitConfig);
+    const isSaveEnabled = isValid && !isEqual(this.props.gitConfig, gitConfig);
     this.setState({
       gitConfig,
       isSaveEnabled,

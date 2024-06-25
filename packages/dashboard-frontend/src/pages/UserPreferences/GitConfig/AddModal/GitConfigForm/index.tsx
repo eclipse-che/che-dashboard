@@ -60,14 +60,16 @@ export class GitConfigForm extends React.Component<Props, State> {
     return gitConfig as GitConfigStore.GitConfig;
   }
 
-  private getContent(gitConfig: GitConfigStore.GitConfig): string {
+  private getContent(gitConfig: GitConfigStore.GitConfig | undefined): string | undefined {
+    if (gitConfig === undefined) {
+      return undefined;
+    }
     const serializer = new ini.Serializer();
-    return serializer.serialize(gitConfig);
+    return serializer.serialize(gitConfig).replace(/\n/g, '\n    ').replace(/ .\[/g, '[');
   }
 
   private onChange(gitConfigStr: string, isUpload: boolean): void {
     const { onChange } = this.props;
-
     try {
       const gitConfig = this.getGitConfig(gitConfigStr);
       const validated = this.validate(gitConfig);
@@ -108,14 +110,14 @@ export class GitConfigForm extends React.Component<Props, State> {
 
     const errorMessage = this.getErrorMessage(gitConfigStr, isUpload);
 
-    const content = this.props.gitConfig ? this.getContent(this.props.gitConfig) : undefined;
+    const content = this.getContent(this.props.gitConfig);
 
     return (
       <Form onSubmit={e => e.preventDefault()}>
         <FormGroup
           fieldId="gitconfig"
           helperTextInvalid={errorMessage}
-          label=".gitconfig"
+          label="gitconfig"
           validated={validated}
         >
           <GitConfigImport
