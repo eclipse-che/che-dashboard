@@ -65,7 +65,10 @@ export class GitConfigForm extends React.Component<Props, State> {
       return undefined;
     }
     const serializer = new ini.Serializer();
-    return serializer.serialize(gitConfig).replace(/\n/g, '\n    ').replace(/ .\[/g, '[');
+    return serializer
+      .serialize(gitConfig)
+      .replace(/\n/g, '\n    ')
+      .replace(/ {4}\[/g, '[');
   }
 
   private onChange(gitConfigStr: string, isUpload: boolean): void {
