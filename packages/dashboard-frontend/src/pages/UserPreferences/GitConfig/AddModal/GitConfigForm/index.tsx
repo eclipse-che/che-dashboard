@@ -46,6 +46,14 @@ export class GitConfigForm extends React.Component<Props, State> {
     };
   }
 
+  public componentDidMount() {
+    const { gitConfig } = this.props;
+    const gitConfigStr = this.getContent(gitConfig);
+    if (gitConfigStr !== undefined) {
+      this.onChange(gitConfigStr, false);
+    }
+  }
+
   public shouldComponentUpdate(nextProps: Readonly<Props>, nextState: Readonly<State>): boolean {
     const { gitConfig, validated } = this.state;
     const { gitConfig: nextGitConfig, validated: nextValidated } = nextState;
