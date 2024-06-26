@@ -27,22 +27,14 @@ export class OAuthService {
     }
   }
 
-  static async refreshTokenIfNeeded(workspace: devfileApi.DevWorkspace): Promise<void> {
-    // if workspace is not created yet, do not refresh token
-    if (!workspace.status || !workspace.status.mainUrl) {
-      return;
-    }
-    if (!workspace.spec.template.projects) {
-      return;
-    }
-
-    const project = workspace.spec.template.projects[0];
-    if (!project || !project.git) {
+  static async refreshTokenIfProjectExists(workspace: devfileApi.DevWorkspace): Promise<void> {
+    const gitProject = workspace.spec.template.projects?.[0]?.git;
+    if (!gitProject) {
       return;
     }
 
     try {
-      await refreshFactoryOauthToken(project.git.remotes.origin);
+      await refreshFactoryOauthToken(gitProject.remotes.origin);
     } catch (e) {
       if (!common.helpers.errors.includesAxiosResponse(e)) {
         return;
