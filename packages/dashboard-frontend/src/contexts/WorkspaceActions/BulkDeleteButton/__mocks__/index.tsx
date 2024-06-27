@@ -22,8 +22,7 @@ export class WorkspaceActionsBulkDeleteButton extends React.Component<Props> {
 
     const handleAction = () =>
       workspaces.map(
-        workspace =>
-          onAction?.(WorkspaceAction.DELETE_WORKSPACE, workspace.uid, true),
+        workspace => onAction?.(WorkspaceAction.DELETE_WORKSPACE, workspace.uid, true),
       );
 
     return (
