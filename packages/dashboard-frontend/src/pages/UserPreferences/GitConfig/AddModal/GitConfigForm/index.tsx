@@ -110,7 +110,7 @@ export class GitConfigForm extends React.Component<Props, State> {
     if (gitConfigStr && gitConfigStr.length > MAX_LENGTH) {
       return MAX_LENGTH_ERROR;
     }
-    if (isUpload === true) {
+    if (isUpload) {
       return WRONG_TYPE_ERROR;
     }
     return REQUIRED_ERROR;
