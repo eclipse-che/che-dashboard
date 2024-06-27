@@ -21,7 +21,10 @@ export class WorkspaceActionsBulkDeleteButton extends React.Component<Props> {
     const { isDisabled, onAction, workspaces } = this.props;
 
     const handleAction = () =>
-      workspaces.map(workspace => onAction?.(WorkspaceAction.DELETE_WORKSPACE, workspace.uid, true));
+      workspaces.map(
+        workspace =>
+          onAction?.(WorkspaceAction.DELETE_WORKSPACE, workspace.uid, true),
+      );
 
     return (
       <div data-testid="workspace-actions-bulk-delete">
