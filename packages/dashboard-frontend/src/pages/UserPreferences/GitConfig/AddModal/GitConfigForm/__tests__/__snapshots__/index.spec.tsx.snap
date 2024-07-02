@@ -27,9 +27,7 @@ exports[`GitConfigForm snapshot with predefined git configuration 1`] = `
     <div
       className="pf-c-form__group-control"
     >
-      <div
-        data-testid="import-git-config"
-      >
+      <div>
         <input
           data-testid="submit-invalid-git-config"
           onClick={[Function]}
@@ -78,9 +76,7 @@ exports[`GitConfigForm snapshot without predefined git configuration 1`] = `
     <div
       className="pf-c-form__group-control"
     >
-      <div
-        data-testid="import-git-config"
-      >
+      <div>
         <input
           data-testid="submit-invalid-git-config"
           onClick={[Function]}

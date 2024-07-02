@@ -24,7 +24,7 @@ const mockOnChange = jest.fn();
 jest.mock('@/pages/UserPreferences/GitConfig/GitConfigImport', () => ({
   GitConfigImport: (props: Props) => {
     return (
-      <div data-testid="import-git-config">
+      <div>
         <input
           data-testid="submit-invalid-git-config"
           type="button"
@@ -54,7 +54,6 @@ describe('GitConfigForm', () => {
     const snapshot = createSnapshot();
     expect(snapshot.toJSON()).toMatchSnapshot();
   });
-
   test('snapshot with predefined git configuration', () => {
     const snapshot = createSnapshot({ user: { email: 'user-1@chetest.com', name: 'User One' } });
     expect(snapshot.toJSON()).toMatchSnapshot();
