@@ -76,6 +76,11 @@ export class KubeConfigApiService implements IKubeConfigApi {
         );
 
         // if -f ${kubeConfigDirectory}/config is not found then sync kubeconfig to the container
+        // https://github.com/eclipse-che/che/issues/22924#issuecomment-2059944557
+        // TODO:
+        //  - Create a function that will check if the kubeconfig look's like one created by this function
+        //  - Check if the kubeconfig is mounted from a secret/configmap
+        //  - Check if the token is valid, if not replace the config
         const kubeConfig = this.setNamespaceInContext(this.kubeConfig, namespace);
         await exec(
           podName,
