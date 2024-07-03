@@ -14,14 +14,16 @@ import { ValidatedOptions } from '@patternfly/react-core';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
 
-import { GitConfigImport } from '@/pages/UserPreferences/GitConfig/GitConfigImport';
+import {
+  GitConfigImport,
+  fieldId,
+  fileNamePlaceholder,
+  textAreaPlaceholder,
+} from '@/pages/UserPreferences/GitConfig/GitConfigImport';
 import getComponentRenderer, { screen, waitFor } from '@/services/__mocks__/getComponentRenderer';
 
 const { renderComponent, createSnapshot } = getComponentRenderer(getComponent);
 
-const fieldId = 'text-file-upload-id';
-const fileNamePlaceholder = 'Drag end drop file here';
-const textAreaPlaceholder = 'Paste your content here';
 const mockOnChange = jest.fn();
 
 describe('GitConfigUpload', () => {
@@ -141,14 +143,5 @@ describe('GitConfigUpload', () => {
 });
 
 function getComponent(validated: ValidatedOptions, content?: string): React.ReactElement {
-  return (
-    <GitConfigImport
-      fieldId={fieldId}
-      content={content}
-      fileNamePlaceholder={fileNamePlaceholder}
-      textAreaPlaceholder={textAreaPlaceholder}
-      validated={validated}
-      onChange={mockOnChange}
-    />
-  );
+  return <GitConfigImport content={content} validated={validated} onChange={mockOnChange} />;
 }

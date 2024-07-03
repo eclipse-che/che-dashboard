@@ -10,14 +10,15 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
+export const fieldId = 'git-configuration';
+export const fileNamePlaceholder = 'Upload the .gitconfig file';
+export const textAreaPlaceholder = 'Or paste the Git Configuration here';
+
 import { FileUpload, FileUploadProps, ValidatedOptions } from '@patternfly/react-core';
 import React from 'react';
 
 export type Props = {
-  fieldId: string;
   content: string | undefined;
-  fileNamePlaceholder?: string;
-  textAreaPlaceholder?: string;
   validated: ValidatedOptions;
   onChange: (content: string, isUpload: boolean) => void;
 };
@@ -75,7 +76,7 @@ export class GitConfigImport extends React.PureComponent<Props, State> {
   }
 
   public render(): React.ReactElement {
-    const { fieldId, fileNamePlaceholder, textAreaPlaceholder, validated } = this.props;
+    const { validated } = this.props;
     const { content, filename, isLoading } = this.state;
 
     const fileUploadValidated: FileUploadProps['validated'] =

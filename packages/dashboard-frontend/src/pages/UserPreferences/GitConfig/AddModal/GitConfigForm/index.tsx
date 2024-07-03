@@ -48,7 +48,7 @@ export class GitConfigForm extends React.Component<Props, State> {
 
   public componentDidMount() {
     const { gitConfig } = this.props;
-    const gitConfigStr = this.getContent(gitConfig);
+    const gitConfigStr = this.stringifyGitConfig(gitConfig);
     if (gitConfigStr !== undefined) {
       this.onChange(gitConfigStr, false);
     }
@@ -61,14 +61,14 @@ export class GitConfigForm extends React.Component<Props, State> {
     return gitConfig !== nextGitConfig || validated !== nextValidated;
   }
 
-  private getGitConfig(gitConfigStr: string): GitConfigStore.GitConfig {
+  private parseGitConfig(gitConfigStr: string): GitConfigStore.GitConfig {
     const parser = new ini.Parser();
     const gitConfigLines = gitConfigStr.split(/\r?\n/);
     const gitConfig = parser.parse(gitConfigLines);
     return gitConfig as GitConfigStore.GitConfig;
   }
 
-  private getContent(gitConfig: GitConfigStore.GitConfig | undefined): string | undefined {
+  private stringifyGitConfig(gitConfig: GitConfigStore.GitConfig | undefined): string | undefined {
     if (gitConfig === undefined) {
       return undefined;
     }
@@ -82,7 +82,7 @@ export class GitConfigForm extends React.Component<Props, State> {
   private onChange(gitConfigStr: string, isUpload: boolean): void {
     const { onChange } = this.props;
     try {
-      const gitConfig = this.getGitConfig(gitConfigStr);
+      const gitConfig = this.parseGitConfig(gitConfigStr);
       const validated = this.validate(gitConfig);
       const isValid = validated === ValidatedOptions.success;
 
@@ -121,7 +121,7 @@ export class GitConfigForm extends React.Component<Props, State> {
 
     const errorMessage = this.getErrorMessage(gitConfigStr, isUpload);
 
-    const content = this.getContent(this.props.gitConfig);
+    const content = this.stringifyGitConfig(this.props.gitConfig);
 
     return (
       <Form onSubmit={e => e.preventDefault()}>
@@ -132,10 +132,7 @@ export class GitConfigForm extends React.Component<Props, State> {
           validated={validated}
         >
           <GitConfigImport
-            fieldId="git-configuration"
             content={content}
-            fileNamePlaceholder="Upload the .gitconfig file"
-            textAreaPlaceholder="Or paste the Git Configuration here"
             validated={validated}
             onChange={(gitConfig, isUpload) => this.onChange(gitConfig, isUpload)}
           />
