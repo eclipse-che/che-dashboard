@@ -20,7 +20,7 @@ import { GitConfigForm } from '..';
 
 const mockOnChange = jest.fn();
 
-jest.mock('@/pages/UserPreferences/GitConfig/AddModal/GitConfigForm');
+jest.mock('@/pages/UserPreferences/GitConfig/GitConfigImport');
 
 const { renderComponent, createSnapshot } = getComponentRenderer(getComponent);
 
