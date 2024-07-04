@@ -9,6 +9,8 @@
 #
 
 set -e
+echo 'Updating index.jsonv...'
+sed -i 's|CHECLUSTER_CR_NAMESPACE|'${CHECLUSTER_CR_NAMESPACE}'|g' "/public/dashboard/devfile-registry/devfiles/index.json"
 echo 'Starting Dashboard backend server...'
 start_server="node /backend/server/backend.js --publicFolder /public"
 $start_server &

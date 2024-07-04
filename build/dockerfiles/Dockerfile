@@ -11,7 +11,7 @@
 FROM docker.io/node:18.19.1-alpine3.19 as builder
 
 # hadolint ignore=DL3018
-RUN apk add --no-cache python3 make g++
+RUN apk add --no-cache python3 make g++ jq curl
 
 # hadolint ignore=DL3059,SC1072
 RUN if ! [ type "yarn" &> /dev/null ]; then \
@@ -40,6 +40,11 @@ RUN yarn build
 # leave only production dependencies
 RUN yarn workspace @eclipse-che/dashboard-backend install --production
 
+COPY build/dockerfiles/airgap.sh /dashboard/airgap.sh
+RUN /dashboard/airgap.sh \
+      -i /dashboard/packages/devfile-registry/devfiles/index.json \
+      -o /tmp/samples
+
 FROM docker.io/node:18.19.1-alpine3.19
 
 RUN apk --no-cache add curl
@@ -48,11 +53,13 @@ ENV FRONTEND_LIB=/dashboard/packages/dashboard-frontend/lib/public
 ENV BACKEND_LIB=/dashboard/packages/dashboard-backend/lib
 ENV BACKEND_NODE_MODULES=/dashboard/packages/dashboard-backend/node_modules/
 ENV DEVFILE_REGISTRY=/dashboard/packages/devfile-registry
+ENV SAMPLES=/tmp/samples
 
 COPY --from=builder ${BACKEND_LIB} /backend
 COPY --from=builder ${BACKEND_NODE_MODULES} /backend/node_modules
 COPY --from=builder ${FRONTEND_LIB} /public
 COPY --from=builder ${DEVFILE_REGISTRY} /public/dashboard/devfile-registry
+COPY --from=builder ${SAMPLES} /public/dashboard/devfile-registry/samples
 
 COPY build/dockerfiles/entrypoint.sh /entrypoint.sh
 

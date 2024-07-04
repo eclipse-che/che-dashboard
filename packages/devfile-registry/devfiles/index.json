@@ -1,11 +1,22 @@
-[{
-  "displayName": "Empty Workspace",
-  "description": "Start an empty remote development environment and create files or clone a git repository afterwards",
-  "tags": [
-    "Empty"
-  ],
-  "icon": "/images/empty.svg",
-  "links": {
-    "v2": "/devfiles/empty.yaml"
+[
+  {
+    "displayName": "Empty Workspace",
+    "description": "Start an empty remote development environment and create files or clone a git repository afterwards",
+    "tags": [
+      "Empty"
+    ],
+    "icon": "/images/empty.svg",
+    "links": {
+      "v2": "/devfiles/empty.yaml"
+    }
+  },
+  {
+    "displayName": "JBoss EAP 8",
+    "description": "Java stack with EAP 8, OpenJDK 17 and Maven 3.9",
+    "tags": [
+      "jboss",
+      "eap"
+    ],
+    "url": "https://github.com/jbossas/eap-devfile-examples/tree/eap-8.0.x"
   }
-}]
+]
