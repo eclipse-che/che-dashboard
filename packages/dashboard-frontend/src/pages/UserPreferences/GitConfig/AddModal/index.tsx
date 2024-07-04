@@ -55,7 +55,8 @@ export class GitConfigAddModal extends React.PureComponent<Props, State> {
     gitConfig: GitConfigStore.GitConfig | undefined,
     isValid: boolean,
   ): void {
-    const isSaveEnabled = isValid && !isEqual(this.props.gitConfig, gitConfig);
+    const isSaveEnabled =
+      isValid && gitConfig !== undefined && !isEqual(this.props.gitConfig, gitConfig);
     this.setState({
       gitConfig,
       isSaveEnabled,
@@ -63,13 +64,11 @@ export class GitConfigAddModal extends React.PureComponent<Props, State> {
   }
 
   private buildModalFooter(): React.ReactNode {
-    const isDisabled = !this.state.isSaveEnabled || !this.state.gitConfig;
-
     return (
       <React.Fragment>
         <Button
           variant={ButtonVariant.primary}
-          isDisabled={isDisabled}
+          isDisabled={!this.state.isSaveEnabled}
           onClick={() => this.handleSaveGitConfig()}
         >
           Add

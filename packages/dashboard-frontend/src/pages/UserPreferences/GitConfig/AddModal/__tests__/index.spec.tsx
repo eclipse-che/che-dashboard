@@ -15,36 +15,13 @@
 import userEvent from '@testing-library/user-event';
 import React from 'react';
 
-import { Props } from '@/pages/UserPreferences/GitConfig/AddModal/GitConfigForm';
 import getComponentRenderer, { screen } from '@/services/__mocks__/getComponentRenderer';
-import * as GitConfigStore from '@/store/GitConfig';
 
 import { GitConfigAddModal } from '..';
 
 const { renderComponent } = getComponentRenderer(getComponent);
 
-jest.mock('@/pages/UserPreferences/GitConfig/AddModal/GitConfigForm', () => ({
-  GitConfigForm: (props: Props) => {
-    return (
-      <div>
-        <input
-          data-testid="submit-invalid-git-config"
-          type="button"
-          onClick={() =>
-            props.onChange({ user: { name: 'User One' } } as GitConfigStore.GitConfig, false)
-          }
-        />
-        <input
-          data-testid="submit-valid-git-config"
-          type="button"
-          onClick={() =>
-            props.onChange({ user: { email: 'user-1@chetest.com', name: 'User One' } }, true)
-          }
-        />
-      </div>
-    );
-  },
-}));
+jest.mock('@/pages/UserPreferences/GitConfig/GitConfigImport');
 
 const mockOnSave = jest.fn();
 const mockOnClose = jest.fn();
