@@ -15,9 +15,9 @@ import userEvent from '@testing-library/user-event';
 import React from 'react';
 
 import {
-  GitConfigImport,
   fieldId,
   fileNamePlaceholder,
+  GitConfigImport,
   textAreaPlaceholder,
 } from '@/pages/UserPreferences/GitConfig/GitConfigImport';
 import getComponentRenderer, { screen, waitFor } from '@/services/__mocks__/getComponentRenderer';
