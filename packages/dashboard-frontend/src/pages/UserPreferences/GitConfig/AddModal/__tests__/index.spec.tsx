@@ -50,7 +50,7 @@ describe('AddModal', () => {
     expect(closeButton).toBeTruthy();
 
     userEvent.click(closeButton!);
-    expect(mockOnClose).toBeCalledTimes(1);
+    expect(mockOnClose).toHaveBeenCalledTimes(1);
   });
 
   it('should handle click on Cancel button', () => {
@@ -60,7 +60,7 @@ describe('AddModal', () => {
     expect(cancelButton).toBeTruthy();
 
     userEvent.click(cancelButton!);
-    expect(mockOnClose).toBeCalledTimes(1);
+    expect(mockOnClose).toHaveBeenCalledTimes(1);
   });
 
   describe('modal window', () => {
@@ -111,7 +111,7 @@ describe('AddModal', () => {
       userEvent.click(addButton);
 
       // expect onSave to be called
-      expect(mockOnSave).toBeCalledTimes(1);
+      expect(mockOnSave).toHaveBeenCalledTimes(1);
     });
 
     it('should handle invalid git configuration', () => {
