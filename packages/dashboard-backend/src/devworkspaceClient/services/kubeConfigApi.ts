@@ -76,7 +76,7 @@ export class KubeConfigApiService implements IKubeConfigApi {
         );
 
         // check if the kubeconfig is already mounted
-        if (container.volumeMounts?.some(vm => vm.mountPath.includes(kubeConfigDirectory))) {
+        if (container.volumeMounts?.some(vm => vm.mountPath === kubeConfigDirectory)) {
           logger.info(
             `Kubeconfig is already mounted in ${namespace}/${podName}/${containerName} skipping...`,
           );
