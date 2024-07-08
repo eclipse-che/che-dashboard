@@ -45,6 +45,23 @@ import { AppState } from '@/store';
 import { FakeStoreBuilder } from '@/store/__mocks__/storeBuilder';
 import { FactoryResolverStateResolver } from '@/store/FactoryResolver';
 
+const mockGet = jest.fn().mockReturnValue('all');
+const mockUpdate = jest.fn().mockReturnValue(undefined);
+const mockRemove = jest.fn().mockReturnValue(undefined);
+jest.mock('@/services/session-storage', () => {
+  return {
+    __esModule: true,
+    default: {
+      get: (...args: unknown[]) => mockGet(...args),
+      update: (...args: unknown[]) => mockUpdate(...args),
+      remove: (...args: unknown[]) => mockRemove(...args),
+    },
+    // enum
+    SessionStorageKey: {
+      TRUSTED_SOURCES: 'trusted-sources', // 'all' or 'repo1,repo2,...'
+    },
+  };
+});
 // mute the outputs
 console.error = jest.fn();
 console.warn = jest.fn();
@@ -202,6 +219,7 @@ describe('Workspace creation time', () => {
       ),
     );
 
+    await waitFor(() => expect(mockPost).toHaveBeenCalledTimes(3));
     await waitFor(
       () =>
         expect(mockPost.mock.calls).toEqual([
@@ -213,7 +231,6 @@ describe('Workspace creation time', () => {
         ]),
       { timeout: 1500 },
     );
-    expect(mockPost).toHaveBeenCalledTimes(3);
 
     await waitFor(
       () =>

@@ -14,6 +14,7 @@ export enum SessionStorageKey {
   PRIVATE_FACTORY_RELOADS = 'private-factory-reloads-number',
   ORIGINAL_LOCATION_PATH = 'original-location-path',
   EXTERNAL_REGISTRIES = 'external-registries',
+  TRUSTED_SOURCES = 'trusted-sources', // 'all' or 'repo1,repo2,...'
 }
 
 export default class SessionStorageService {

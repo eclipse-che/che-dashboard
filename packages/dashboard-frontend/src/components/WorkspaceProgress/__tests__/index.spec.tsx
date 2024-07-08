@@ -17,6 +17,7 @@ import React from 'react';
 import { Provider } from 'react-redux';
 import { Store } from 'redux';
 
+import { MIN_STEP_DURATION_MS } from '@/components/WorkspaceProgress/const';
 import { ROUTE } from '@/Routes/routes';
 import getComponentRenderer, {
   screen,
@@ -28,6 +29,7 @@ import {
   buildFactoryParams,
   DEV_WORKSPACE_ATTR,
   FACTORY_URL_ATTR,
+  FactoryParams,
 } from '@/services/helpers/factoryFlow/buildFactoryParams';
 import { buildIdeLoaderLocation } from '@/services/helpers/location';
 import { constructWorkspace } from '@/services/workspace-adapter';
@@ -49,6 +51,20 @@ jest.mock('../StartingSteps/OpenWorkspace');
 jest.mock('../StartingSteps/StartWorkspace');
 jest.mock('../StartingSteps/WorkspaceConditions');
 
+const mockGet = jest.fn();
+jest.mock('@/services/session-storage', () => {
+  return {
+    __esModule: true,
+    default: {
+      get: (...args: unknown[]) => mockGet(...args),
+    },
+    // enum
+    SessionStorageKey: {
+      TRUSTED_SOURCES: 'trusted-sources', // 'all' or 'repo1,repo2,...'
+    },
+  };
+});
+
 const { renderComponent, createSnapshot } = getComponentRenderer(getComponent);
 
 const mockOnTabChange = jest.fn();
@@ -56,6 +72,16 @@ const mockOnTabChange = jest.fn();
 describe('LoaderProgress', () => {
   let history: MemoryHistory;
   let searchParams: URLSearchParams;
+
+  beforeEach(() => {
+    mockGet.mockReturnValue('all');
+    jest.useFakeTimers();
+  });
+
+  afterEach(() => {
+    jest.clearAllTimers();
+    jest.clearAllMocks();
+  });
 
   describe('workspace creation flow', () => {
     const factoryUrl = 'https://factory-url';
@@ -366,12 +392,26 @@ describe('LoaderProgress', () => {
         });
       });
     });
+
+    test('untrusted source', async () => {
+      mockGet.mockReturnValue('some-trusted-source');
+      const store = new FakeStoreBuilder().build();
+
+      searchParams.append(DEV_WORKSPACE_ATTR, 'resources-location');
+      renderComponent(history, store, searchParams, false);
+
+      await jest.advanceTimersByTimeAsync(MIN_STEP_DURATION_MS);
+
+      const modal = await screen.findByRole('dialog');
+      expect(modal).not.toBeNull();
+    });
   });
 
-  describe('workspace staring flow', () => {
+  describe('workspace starting flow', () => {
     const namespace = 'che-user';
     const workspaceName = 'project-1';
     let devWorkspace: devfileApi.DevWorkspace;
+    const factoryUrl = 'https://factory-url';
 
     beforeEach(() => {
       devWorkspace = new DevWorkspaceBuilder()
@@ -443,6 +483,9 @@ describe('LoaderProgress', () => {
               workspaceName,
             },
           },
+          factoryParams: {
+            sourceUrl: factoryUrl,
+          } as FactoryParams,
         });
 
         const steps = getSteps();

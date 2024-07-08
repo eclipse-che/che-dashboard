@@ -16,7 +16,7 @@ import { Provider } from 'react-redux';
 import { Store } from 'redux';
 
 import { MIN_STEP_DURATION_MS } from '@/components/WorkspaceProgress/const';
-import getComponentRenderer, { waitFor } from '@/services/__mocks__/getComponentRenderer';
+import getComponentRenderer, { screen, waitFor } from '@/services/__mocks__/getComponentRenderer';
 import {
   DEV_WORKSPACE_ATTR,
   ERROR_CODE_ATTR,
@@ -40,6 +40,20 @@ jest.mock('@/services/helpers/location', () => ({
   toHref: (_: unknown, location: string) => 'http://localhost/' + location,
   buildUserPreferencesLocation: (tab: UserPreferencesTab) => 'user-preferences?tab=' + tab,
 }));
+
+const mockGet = jest.fn().mockReturnValue('all');
+jest.mock('@/services/session-storage', () => {
+  return {
+    __esModule: true,
+    default: {
+      get: (...args: unknown[]) => mockGet(...args),
+    },
+    // enum
+    SessionStorageKey: {
+      TRUSTED_SOURCES: 'trusted-sources', // 'all' or 'repo1,repo2,...'
+    },
+  };
+});
 
 describe('Creating steps, initializing', () => {
   const factoryUrl = 'https://factory-url';
@@ -312,6 +326,25 @@ describe('Creating steps, initializing', () => {
       'http://localhost/user-preferences?tab=SshKeys',
       '_blank',
     );
+    expect(mockOnNextStep).not.toHaveBeenCalled();
+  });
+
+  test('source URL is not trusted', async () => {
+    mockGet.mockReturnValue('some-trusted-source');
+    const searchParams = new URLSearchParams({
+      [FACTORY_URL_ATTR]: factoryUrl,
+    });
+
+    renderComponent(store, searchParams);
+
+    const stepTitle = screen.getByTestId('step-title');
+    expect(stepTitle.textContent).not.toContain('untrusted source');
+
+    await jest.advanceTimersByTimeAsync(MIN_STEP_DURATION_MS);
+
+    const stepTitleNext = screen.getByTestId('step-title');
+    expect(stepTitleNext.textContent).toContain('untrusted source');
+
     expect(mockOnNextStep).not.toHaveBeenCalled();
   });
 });

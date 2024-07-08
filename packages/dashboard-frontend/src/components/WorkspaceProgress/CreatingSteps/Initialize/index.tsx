@@ -32,6 +32,7 @@ import {
 } from '@/services/helpers/factoryFlow/buildFactoryParams';
 import { buildUserPreferencesLocation, toHref } from '@/services/helpers/location';
 import { AlertItem, UserPreferencesTab } from '@/services/helpers/types';
+import SessionStorageService, { SessionStorageKey } from '@/services/session-storage';
 import { AppState } from '@/store';
 import { selectAllWorkspacesLimit } from '@/store/ClusterConfig/selectors';
 import { selectInfrastructureNamespaces } from '@/store/InfrastructureNamespaces/selectors';
@@ -44,6 +45,8 @@ export type Props = MappedProps &
   };
 export type State = ProgressStepState & {
   factoryParams: FactoryParams;
+  isSourceTrusted: boolean;
+  isWarning: boolean;
 };
 
 class CreatingStepInitialize extends ProgressStep<Props, State> {
@@ -54,7 +57,9 @@ class CreatingStepInitialize extends ProgressStep<Props, State> {
 
     this.state = {
       factoryParams: buildFactoryParams(props.searchParams),
+      isSourceTrusted: false,
       name: this.name,
+      isWarning: false,
     };
   }
 
@@ -89,6 +94,17 @@ class CreatingStepInitialize extends ProgressStep<Props, State> {
       return true;
     }
 
+    // source URL trusted/untrusted
+    const { sourceUrl } = nextState.factoryParams;
+    if (this.state.isSourceTrusted !== this.isSourceTrusted(sourceUrl)) {
+      return true;
+    }
+
+    // name or warning changed
+    if (this.state.name !== nextState.name || this.state.isWarning !== nextState.isWarning) {
+      return true;
+    }
+
     return false;
   }
 
@@ -105,6 +121,23 @@ class CreatingStepInitialize extends ProgressStep<Props, State> {
       throw new Error(
         `Repository/Devfile URL is missing. Please specify it via url query param: ${window.location.origin}${window.location.pathname}#${factoryPath}`,
       );
+    }
+
+    // check if the source is trusted
+    const isSourceTrusted = this.isSourceTrusted(sourceUrl);
+    if (isSourceTrusted === true) {
+      this.setState({
+        isSourceTrusted,
+        isWarning: false,
+        name: this.name,
+      });
+    } else {
+      this.setState({
+        isSourceTrusted,
+        isWarning: true,
+        name: 'Warning: untrusted source',
+      });
+      return false;
     }
 
     // find error codes
@@ -200,28 +233,37 @@ class CreatingStepInitialize extends ProgressStep<Props, State> {
     }
   }
 
+  private isSourceTrusted(sourceUrl: string): boolean {
+    const trustedSources = SessionStorageService.get(SessionStorageKey.TRUSTED_SOURCES);
+    if (
+      trustedSources &&
+      (trustedSources === 'all' || trustedSources.split(',').includes(sourceUrl))
+    ) {
+      return true;
+    }
+    return false;
+  }
+
   render(): React.ReactElement {
     const { distance, hasChildren } = this.props;
     const { name, lastError } = this.state;
 
     let isError = lastError !== undefined;
     let isWarning = false;
-    if (lastError instanceof NoSshKeysError) {
+    if (lastError instanceof NoSshKeysError || this.state.isWarning) {
       isWarning = true;
       isError = false;
     }
 
     return (
-      <React.Fragment>
-        <ProgressStepTitle
-          distance={distance}
-          hasChildren={hasChildren}
-          isError={isError}
-          isWarning={isWarning}
-        >
-          {name}
-        </ProgressStepTitle>
-      </React.Fragment>
+      <ProgressStepTitle
+        distance={distance}
+        hasChildren={hasChildren}
+        isError={isError}
+        isWarning={isWarning}
+      >
+        {name}
+      </ProgressStepTitle>
     );
   }
 }
