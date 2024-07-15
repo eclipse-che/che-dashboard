@@ -11,6 +11,7 @@
  */
 
 import { V222DevfileComponents, V222DevfileProjects } from '@devfile/api';
+import { V222DevfileProjectsItemsGit } from '@devfile/api/models/V222DevfileProjectsItemsGit';
 import common, { api } from '@eclipse-che/common';
 import axios from 'axios';
 import { dump } from 'js-yaml';
@@ -139,9 +140,13 @@ export function buildDevfileV2(
       const source = projectV1.source;
       if (source.type === 'git' || source.type === 'github' || source.type === 'bitbucket') {
         const remotes = { origin: source.location! };
-        devfileV2Project.git = {
+        const git: V222DevfileProjectsItemsGit = {
           remotes,
         };
+        if (projectV1.source.branch) {
+          git.checkoutFrom = { revision: projectV1.source.branch };
+        }
+        devfileV2Project.git = git;
       } else if (source.type === 'zip') {
         devfileV2Project.zip = {
           location: source.location,

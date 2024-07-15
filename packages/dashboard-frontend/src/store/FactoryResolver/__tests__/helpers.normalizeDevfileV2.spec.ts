@@ -31,6 +31,7 @@ describe('buildDevfileV2', () => {
           source: {
             location: 'https://github.com/my/project.git',
             type: 'github',
+            branch: 'testBranch',
           },
         },
       ],
@@ -46,7 +47,7 @@ describe('buildDevfileV2', () => {
   it('should return a devfile with the correct metadata', () => {
     const devfile = buildDevfileV2(devfileV1);
 
-    expect(devfile.metadata).toStrictEqual(devfile.metadata);
+    expect(devfile.metadata).toStrictEqual(devfileV1.metadata);
   });
 
   it('should return a devfile with the correct projects', () => {
@@ -58,6 +59,9 @@ describe('buildDevfileV2', () => {
         git: {
           remotes: {
             origin: 'https://github.com/my/project.git',
+          },
+          checkoutFrom: {
+            revision: 'testBranch',
           },
         },
         name: 'my-project',
