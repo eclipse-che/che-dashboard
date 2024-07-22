@@ -14,6 +14,7 @@ import common from '@eclipse-che/common';
 import { ValidatedOptions } from '@patternfly/react-core';
 
 import * as helpers from '@/components/ImportFromGit/helpers';
+import { formatBytes, getBytes } from '@/components/ImportFromGit/helpers';
 
 describe('helpers', () => {
   afterEach(() => {
@@ -284,6 +285,70 @@ describe('helpers', () => {
           gitBranch: undefined,
           remotes: [{ name: 'test-1', url: 'http://test-1.git' }],
           devfilePath: 'devfile2.yaml',
+          containerImage: undefined,
+          temporaryStorage: undefined,
+          createNewIfExisting: undefined,
+          memoryLimit: undefined,
+          cpuLimit: undefined,
+        });
+      });
+    });
+  });
+
+  describe('getAdvancedOptionsFromLocation', () => {
+    describe('HTTP', () => {
+      test('should return options from location without parameters', () => {
+        const location = 'https://github.com/eclipse-che/che-dashboard.git';
+        const options = helpers.getAdvancedOptionsFromLocation(location);
+        expect(options).toEqual({
+          location: 'https://github.com/eclipse-che/che-dashboard.git',
+          containerImage: undefined,
+          temporaryStorage: undefined,
+          createNewIfExisting: undefined,
+          memoryLimit: undefined,
+          cpuLimit: undefined,
+        });
+      });
+      test('should return all supported options', () => {
+        const location =
+          'https://github.com/eclipse-che/che-dashboard/tree/main?image=custom-image&new&memoryLimit=2Gi&cpuLimit=1&storageType=ephemeral';
+        const options = helpers.getAdvancedOptionsFromLocation(location);
+        expect(options).toEqual({
+          location:
+            'https://github.com/eclipse-che/che-dashboard/tree/main?storageType=ephemeral&image=custom-image&cpuLimit=1&memoryLimit=2Gi&policies.create=perclick',
+          containerImage: 'custom-image',
+          temporaryStorage: true,
+          createNewIfExisting: true,
+          memoryLimit: 2147483648,
+          cpuLimit: 1,
+        });
+      });
+    });
+    describe('SSH', () => {
+      test('should return options from location without parameters', () => {
+        const location = 'git@github.com:eclipse-che/che-dashboard.git';
+        const options = helpers.getAdvancedOptionsFromLocation(location);
+        expect(options).toEqual({
+          location: 'git@github.com:eclipse-che/che-dashboard.git',
+          containerImage: undefined,
+          temporaryStorage: undefined,
+          createNewIfExisting: undefined,
+          memoryLimit: undefined,
+          cpuLimit: undefined,
+        });
+      });
+      test('should return all supported options', () => {
+        const location =
+          'git@github.com:eclipse-che/che-dashboard.git?image=custom-image&new&memoryLimit=2Gi&cpuLimit=1&storageType=ephemeral';
+        const options = helpers.getAdvancedOptionsFromLocation(location);
+        expect(options).toEqual({
+          location:
+            'git@github.com:eclipse-che/che-dashboard.git?storageType=ephemeral&image=custom-image&cpuLimit=1&memoryLimit=2Gi&policies.create=perclick',
+          containerImage: 'custom-image',
+          temporaryStorage: true,
+          createNewIfExisting: true,
+          memoryLimit: 2147483648,
+          cpuLimit: 1,
         });
       });
     });
@@ -362,6 +427,132 @@ describe('helpers', () => {
             devfilePath: 'devfile3.yaml',
           });
         });
+      });
+    });
+  });
+  describe('setAdvancedOptionsToLocation', () => {
+    describe('supported Git services', () => {
+      describe('HTTP', () => {
+        test('should return options with updated location', () => {
+          const newOptions = {
+            containerImage: 'custom-image',
+            temporaryStorage: true,
+            createNewIfExisting: true,
+            memoryLimit: 2147483648,
+            cpuLimit: 1,
+          };
+          const currentOptions = {
+            location: 'https://github.com/eclipse-che/che-dashboard.git',
+            containerImage: undefined,
+            temporaryStorage: undefined,
+            createNewIfExisting: undefined,
+            memoryLimit: undefined,
+            cpuLimit: undefined,
+          };
+          const options = helpers.setAdvancedOptionsToLocation(newOptions, currentOptions);
+          expect(options).toEqual({
+            location:
+              'https://github.com/eclipse-che/che-dashboard.git?image=custom-image&storageType=ephemeral&policies.create=perclick&memoryLimit=2Gi&cpuLimit=1',
+            containerImage: 'custom-image',
+            temporaryStorage: true,
+            createNewIfExisting: true,
+            memoryLimit: 2147483648,
+            cpuLimit: 1,
+          });
+        });
+      });
+      describe('SSH', () => {
+        test('should return options with updated location', () => {
+          const newOptions = {
+            containerImage: 'custom-image',
+            temporaryStorage: true,
+            createNewIfExisting: true,
+            memoryLimit: 2147483648,
+            cpuLimit: 1,
+          };
+          const currentOptions = {
+            location: 'git@github.com:eclipse-che/che-dashboard.git',
+            containerImage: undefined,
+            temporaryStorage: undefined,
+            createNewIfExisting: undefined,
+            memoryLimit: undefined,
+            cpuLimit: undefined,
+          };
+          const options = helpers.setAdvancedOptionsToLocation(newOptions, currentOptions);
+          expect(options).toEqual({
+            location:
+              'git@github.com:eclipse-che/che-dashboard.git?image=custom-image&storageType=ephemeral&policies.create=perclick&memoryLimit=2Gi&cpuLimit=1',
+            containerImage: 'custom-image',
+            temporaryStorage: true,
+            createNewIfExisting: true,
+            memoryLimit: 2147483648,
+            cpuLimit: 1,
+          });
+        });
+      });
+    });
+  });
+  describe('units of memory measurements', () => {
+    describe('getBytes', () => {
+      test('should return Bytes depends on measurements', () => {
+        const values = [
+          '', // error value
+          '534',
+          '1 KB',
+          '4.5Mi',
+          '10Gi',
+          '1.5 TiB',
+          '2.5 PiB',
+          '3.5 EB',
+          '0.2 ZiB',
+          '1 YiB',
+          '2QQQ', // error value
+        ].map(val => getBytes(val));
+
+        expect(values).toEqual([
+          undefined,
+          534,
+          1000,
+          4718592,
+          10737418240,
+          1649267441664,
+          2814749767106560,
+          3500000000000000000,
+          236118324143482270000,
+          1208925819614629174706176,
+          undefined,
+        ]);
+      });
+    });
+    describe('formatBytes', () => {
+      test('should return formated memory measurements', () => {
+        const values = [
+          0,
+          534,
+          1000,
+          4718592,
+          10737418240,
+          1649267441664,
+          2814749767106560,
+          3500000000000000000,
+          236118324143482270000,
+          1208925819614629174706176,
+          undefined,
+        ].map(val => formatBytes(val));
+
+        expect(values).toEqual([
+          undefined,
+          '534',
+          '1000',
+          '4.5Mi',
+          '10Gi',
+          '1.5Ti',
+          '2.5Pi',
+          '3.04Ei',
+          '204.8Ei',
+          '1Yi',
+          undefined,
+        ]);
       });
     });
   });

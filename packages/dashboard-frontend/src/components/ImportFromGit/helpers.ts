@@ -116,6 +116,21 @@ export function setBranchToLocation(location: string, branch: string | undefined
   return url.href;
 }
 
+function getFactoryParamsFromLocation(location: string): {
+  path: string;
+  searchParams: URLSearchParams;
+} {
+  const factory = new FactoryLocationAdapter(location);
+  const { path } = factory;
+  const factoryStr = factory.toString();
+  const factoryLoaderPath = buildFactoryLoaderPath(factoryStr, true);
+  const params = decodeURIComponent(factoryLoaderPath.split('?')[1] || '');
+  const searchParams = new URLSearchParams(params);
+  searchParams.delete('url');
+
+  return { path, searchParams };
+}
+
 export function getGitRepoOptionsFromLocation(location: string): {
   location: string | undefined;
   gitBranch: string | undefined;
@@ -123,12 +138,8 @@ export function getGitRepoOptionsFromLocation(location: string): {
   devfilePath: string | undefined;
   hasSupportedGitService: boolean;
 } {
-  const factory = new FactoryLocationAdapter(location);
-  const factoryStr = factory.toString();
-  const factoryLoaderPath = buildFactoryLoaderPath(factoryStr, true);
-  const params = decodeURIComponent(factoryLoaderPath.split('?')[1] || '');
-  const searchParams = new URLSearchParams(params);
-  searchParams.delete('url');
+  const { path, searchParams } = getFactoryParamsFromLocation(location);
+
   const devfilePath = searchParams.get('override.devfileFilename') || undefined;
   if (devfilePath !== 'true' && devfilePath) {
     searchParams.set('devfilePath', devfilePath);
@@ -148,34 +159,97 @@ export function getGitRepoOptionsFromLocation(location: string): {
   const gitBranch = hasSupportedGitService ? getBranchFromLocation(location) : undefined;
 
   location =
-    searchParams.toString().length === 0
-      ? `${factory.path}`
-      : `${factory.path}?${searchParams.toString()}`;
+    searchParams.toString().length === 0 ? `${path}` : `${path}?${searchParams.toString()}`;
 
   return { location, gitBranch, remotes, devfilePath, hasSupportedGitService };
 }
 
-type GitRepoOptions = {
+export function getAdvancedOptionsFromLocation(location: string): {
+  location: string | undefined;
+  containerImage: string | undefined;
+  temporaryStorage: boolean | undefined;
+  createNewIfExisting: boolean | undefined;
+  memoryLimit: number | undefined;
+  cpuLimit: number | undefined;
+} {
+  const { path, searchParams } = getFactoryParamsFromLocation(location);
+
+  let containerImage = searchParams.get('image') || undefined;
+  if (containerImage === '' || containerImage === 'true') {
+    searchParams.delete('image');
+    containerImage = undefined;
+  }
+
+  const _storageType = searchParams.get('storageType');
+  let temporaryStorage: boolean | undefined =
+    _storageType !== null ? _storageType === 'ephemeral' : undefined;
+  if (_storageType === '' || _storageType === 'true') {
+    searchParams.delete('storageType');
+    temporaryStorage = undefined;
+  }
+
+  const _policies_create = searchParams.get('policies.create');
+  let createNewIfExisting: boolean | undefined =
+    _policies_create !== null ? _policies_create === 'perclick' : undefined;
+  if (_policies_create === '' || _policies_create === 'true') {
+    searchParams.delete('policies.create');
+    createNewIfExisting = undefined;
+  }
+
+  let _memoryLimit = searchParams.get('memoryLimit') || undefined;
+
+  if (_memoryLimit === '' || _memoryLimit === 'true') {
+    searchParams.delete('memoryLimit');
+    _memoryLimit = undefined;
+  }
+  let memoryLimit = _memoryLimit ? getBytes(_memoryLimit) : undefined;
+
+  if (memoryLimit && isNaN(memoryLimit)) {
+    searchParams.delete('memoryLimit');
+    memoryLimit = undefined;
+  }
+
+  let _cpuLimit = searchParams.get('cpuLimit') || undefined;
+  if (_cpuLimit === 'true') {
+    searchParams.delete('cpuLimit');
+    _cpuLimit = undefined;
+  }
+  let cpuLimit = _cpuLimit ? parseInt(_cpuLimit) : undefined;
+  if (cpuLimit && isNaN(cpuLimit)) {
+    searchParams.delete('cpuLimit');
+    cpuLimit = undefined;
+  }
+
+  location =
+    searchParams.toString().length === 0 ? `${path}` : `${path}?${searchParams.toString()}`;
+
+  return {
+    location,
+    containerImage,
+    temporaryStorage,
+    createNewIfExisting,
+    memoryLimit,
+    cpuLimit,
+  };
+}
+
+export interface IGitRepoOptions {
   location?: string;
   gitBranch?: string | undefined;
   remotes?: GitRemote[] | undefined;
   devfilePath?: string | undefined;
-};
+}
 
 export function setGitRepoOptionsToLocation(
-  newOptions: GitRepoOptions,
-  currentOptions: GitRepoOptions,
-): GitRepoOptions {
-  const state: GitRepoOptions = {};
+  newOptions: IGitRepoOptions,
+  currentOptions: IGitRepoOptions,
+): IGitRepoOptions {
+  const state: IGitRepoOptions = {};
   let location = currentOptions.location;
   if (!location) {
     return newOptions;
   }
-  const factory = new FactoryLocationAdapter(location);
-  const factoryLoaderPath = buildFactoryLoaderPath(factory.toString(), true);
-  const params = decodeURIComponent(factoryLoaderPath.split('?')[1]);
-  const searchParams = new URLSearchParams(params);
-  searchParams.delete('url');
+  const { path, searchParams } = getFactoryParamsFromLocation(location);
 
   if (!isEqual(newOptions.remotes, currentOptions.remotes)) {
     state.remotes = newOptions.remotes;
@@ -210,19 +284,139 @@ export function setGitRepoOptionsToLocation(
   // update the location with the new gitBranch value
   if (isSupportedGitService(location)) {
     location = setBranchToLocation(
-      searchParams.toString().length > 0
-        ? `${factory.path}?${searchParams.toString()}`
-        : `${factory.path}`,
+      searchParams.toString().length > 0 ? `${path}?${searchParams.toString()}` : `${path}`,
       newOptions.gitBranch,
     );
   } else {
     location =
-      searchParams.toString().length > 0
-        ? `${factory.path}?${searchParams.toString()}`
-        : `${factory.path}`;
+      searchParams.toString().length > 0 ? `${path}?${searchParams.toString()}` : `${path}`;
   }
   // update the location in the state
   state.location = location;
 
   return state;
+}
+
+export interface IAdvancedOptions {
+  location?: string;
+  containerImage?: string | undefined;
+  temporaryStorage?: boolean | undefined;
+  createNewIfExisting?: boolean | undefined;
+  memoryLimit?: number | undefined;
+  cpuLimit?: number | undefined;
+}
+
+export function setAdvancedOptionsToLocation(
+  newOptions: IAdvancedOptions,
+  currentOptions: IAdvancedOptions,
+): IAdvancedOptions {
+  const state: IAdvancedOptions = {};
+  let location = currentOptions.location;
+  if (!location) {
+    return newOptions;
+  }
+  const { path, searchParams } = getFactoryParamsFromLocation(location);
+
+  if (newOptions.containerImage !== currentOptions.containerImage) {
+    state.containerImage = newOptions.containerImage;
+    if (newOptions.containerImage) {
+      searchParams.set('image', newOptions.containerImage);
+    } else {
+      searchParams.delete('image');
+    }
+  }
+
+  if (newOptions.temporaryStorage !== currentOptions.temporaryStorage) {
+    state.temporaryStorage = newOptions.temporaryStorage;
+    if (newOptions.temporaryStorage) {
+      searchParams.set('storageType', 'ephemeral');
+    } else if (searchParams.get('storageType') === 'ephemeral') {
+      searchParams.delete('storageType');
+    }
+  }
+
+  if (newOptions.createNewIfExisting !== currentOptions.createNewIfExisting) {
+    state.createNewIfExisting = newOptions.createNewIfExisting;
+    if (searchParams.has('new')) {
+      searchParams.delete('new');
+    }
+    if (newOptions.createNewIfExisting) {
+      searchParams.set('policies.create', 'perclick');
+    } else {
+      searchParams.delete('policies.create');
+    }
+  }
+
+  if (newOptions.memoryLimit !== currentOptions.memoryLimit) {
+    state.memoryLimit = newOptions.memoryLimit;
+    if (newOptions.memoryLimit) {
+      const formattedMemoryLimit = formatBytes(newOptions.memoryLimit, 3, true);
+      if (formattedMemoryLimit) {
+        searchParams.set('memoryLimit', formattedMemoryLimit);
+      } else {
+        searchParams.delete('memoryLimit');
+      }
+    } else {
+      searchParams.delete('memoryLimit');
+    }
+  }
+
+  if (newOptions.cpuLimit !== currentOptions.cpuLimit) {
+    state.cpuLimit = newOptions.cpuLimit;
+    if (newOptions.cpuLimit) {
+      searchParams.set('cpuLimit', newOptions.cpuLimit.toString());
+    } else {
+      searchParams.delete('cpuLimit');
+    }
+  }
+
+  // update the location with the new gitBranch value
+  location = searchParams.toString().length > 0 ? `${path}?${searchParams.toString()}` : `${path}`;
+  // update the location in the state
+  state.location = location;
+
+  return state;
+}
+
+const UNITS_OF_MEASUREMENT = ['', 'K', 'M', 'G', 'T', 'P', 'E', 'Z', 'Y'];
+
+export function formatBytes(
+  bytes: number | undefined,
+  decimals = 2,
+  binaryUnits = true,
+): string | undefined {
+  if (!bytes) {
+    return undefined;
+  }
+  const k = binaryUnits ? 1024 : 1000;
+  const dm = decimals < 0 ? 0 : decimals;
+  const unitsOfMeasurement = UNITS_OF_MEASUREMENT.map((unit, index) => {
+    if (index > 0 && binaryUnits) {
+      unit += 'i';
+    }
+    return unit;
+  });
+  const i = Math.floor(Math.log(bytes) / Math.log(k));
+  return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + unitsOfMeasurement[i];
+}
+
+export function getBytes(value: string): number | undefined {
+  value = value.trim();
+  if (value === '') {
+    return undefined;
+  }
+  const bytes = parseFloat(value);
+  if (isNaN(bytes)) {
+    return undefined;
+  }
+  const unitOfMeasurement = value.replace(bytes.toString(), '').trim().toLowerCase();
+  if (!unitOfMeasurement) {
+    return bytes;
+  }
+  const k = unitOfMeasurement.match(/ib?$/) !== null ? 1024 : 1000;
+  const i = UNITS_OF_MEASUREMENT.map(unit => unit.toLowerCase()).indexOf(unitOfMeasurement[0]);
+  if (i === -1) {
+    return undefined;
+  }
+  return bytes * Math.pow(k, i);
 }
