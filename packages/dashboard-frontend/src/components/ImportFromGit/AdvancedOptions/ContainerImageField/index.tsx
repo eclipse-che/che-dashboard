@@ -15,47 +15,47 @@ import React from 'react';
 
 export type Props = {
   onChange: (definition: string | undefined) => void;
-  gitBranch: string | undefined;
+  containerImage: string | undefined;
 };
 export type State = {
-  gitBranch: string | undefined;
+  containerImage: string | undefined;
 };
 
-export class GitBranchField extends React.PureComponent<Props, State> {
+export class ContainerImageField extends React.PureComponent<Props, State> {
   constructor(props: Props) {
     super(props);
 
     this.state = {
-      gitBranch: this.props.gitBranch,
+      containerImage: this.props.containerImage,
     };
   }
 
   public componentDidUpdate(prevProps: Readonly<Props>): void {
-    const { gitBranch } = this.props;
-    if (prevProps.gitBranch !== gitBranch) {
-      this.setState({ gitBranch });
+    const { containerImage } = this.props;
+    if (prevProps.containerImage !== containerImage) {
+      this.setState({ containerImage });
     }
   }
 
   private handleChange(value: string) {
-    let gitBranch: string | undefined = value.trim();
-    gitBranch = gitBranch !== '' ? gitBranch : undefined;
-    if (gitBranch !== this.state.gitBranch) {
-      this.setState({ gitBranch: value });
+    let containerImage: string | undefined = value.trim();
+    containerImage = containerImage !== '' ? containerImage : undefined;
+    if (containerImage !== this.state.containerImage) {
+      this.setState({ containerImage: value });
       this.props.onChange(value);
     }
   }
 
   public render() {
-    const gitBranch = this.state.gitBranch || '';
+    const containerImage = this.state.containerImage || '';
 
     return (
-      <FormGroup label="Git Branch">
+      <FormGroup label="Container Image">
         <TextInput
-          aria-label="Git Branch"
-          placeholder="Enter the branch of the Git Repository"
+          aria-label="Container Image"
+          placeholder="Enter the container image"
           onChange={value => this.handleChange(value)}
-          value={gitBranch}
+          value={containerImage}
         />
       </FormGroup>
     );
