@@ -18,26 +18,35 @@ import { baseApiPath } from '@/constants/config';
 import { getSchema } from '@/services/helpers';
 
 const tags = ['Download sample'];
+const airgapSamplesRootDir = '/public/dashboard/devfile-registry/devfiles/airgap-samples';
 
 export function registerSampleRoutes(instance: FastifyInstance) {
   instance.register(async server => {
     server.get(
-      `${baseApiPath}/sample/download`,
+      `${baseApiPath}/airgap-sample/download`,
       getSchema({ tags }),
       async function (request: FastifyRequest, reply: FastifyReply) {
-        const rootDir = '/public/dashboard/devfile-registry/samples';
-        const sampleFileName = (request.query as { path: string })['path'];
-
+        const sampleFileName = (request.query as { filename: string })['filename'];
         if (!sampleFileName) {
-          return reply.status(400).send('The path query parameter is required');
+          return reply.status(400).send("The 'filename' query parameter is required");
         }
 
-        if (!fs.existsSync(path.join(rootDir, sampleFileName))) {
-          return reply.status(404).send(`File ${sampleFileName} not found`);
+        const sampleFilePath = path.join(airgapSamplesRootDir, sampleFileName);
+        if (!fs.existsSync(sampleFilePath)) {
+          return reply.status(404).send(`File not found: ${sampleFileName}`);
         }
 
-        // TODO rework
-        reply.sendFile(sampleFileName);
+        try {
+          const stats = fs.statSync(sampleFilePath);
+          const readStream = fs.createReadStream(sampleFilePath);
+
+          reply.header('Content-Type', 'application/octet-stream');
+          reply.header('Content-Length', stats.size);
+          return reply.send(readStream);
+        } catch (err) {
+          console.error(`Error downloading sample file: ${sampleFilePath}`, err);
+          return reply.status(500).send(`Error downloading file: ${sampleFileName}`);
+        }
       },
     );
   });
