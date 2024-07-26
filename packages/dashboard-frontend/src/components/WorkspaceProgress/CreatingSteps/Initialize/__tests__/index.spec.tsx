@@ -347,6 +347,25 @@ describe('Creating steps, initializing', () => {
 
     expect(mockOnNextStep).not.toHaveBeenCalled();
   });
+
+  test('samples are trusted', async () => {
+    mockGet.mockReturnValue('some-trusted-source');
+    const searchParams = new URLSearchParams({
+      [DEV_WORKSPACE_ATTR]: 'devworkspace-resources-url',
+    });
+
+    renderComponent(store, searchParams);
+
+    const stepTitle = screen.getByTestId('step-title');
+    expect(stepTitle.textContent).not.toContain('untrusted source');
+
+    await jest.advanceTimersByTimeAsync(MIN_STEP_DURATION_MS);
+
+    const stepTitleNext = screen.getByTestId('step-title');
+    expect(stepTitleNext.textContent).not.toContain('untrusted source');
+
+    expect(mockOnNextStep).toHaveBeenCalled();
+  });
 });
 
 function getComponent(store: Store, searchParams: URLSearchParams): React.ReactElement {

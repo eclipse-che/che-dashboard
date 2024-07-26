@@ -145,9 +145,11 @@ class Progress extends React.Component<Props, State> {
     if (this.state.isSourceTrustedWarningOpen === true) {
       const { sourceUrl } = this.state.factoryParams;
       const trustedSources = SessionStorageService.get(SessionStorageKey.TRUSTED_SOURCES);
+      const { useDevWorkspaceResources } = this.state.factoryParams;
       if (
-        trustedSources &&
-        (trustedSources.split(',').includes(sourceUrl) || trustedSources === 'all')
+        useDevWorkspaceResources === true ||
+        (trustedSources &&
+          (trustedSources.split(',').includes(sourceUrl) || trustedSources === 'all'))
       ) {
         this.setState({
           isSourceTrustedWarningOpen: false,

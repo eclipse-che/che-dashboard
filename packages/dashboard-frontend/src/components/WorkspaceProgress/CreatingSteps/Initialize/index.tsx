@@ -123,21 +123,24 @@ class CreatingStepInitialize extends ProgressStep<Props, State> {
       );
     }
 
-    // check if the source is trusted
-    const isSourceTrusted = this.isSourceTrusted(sourceUrl);
-    if (isSourceTrusted === true) {
-      this.setState({
-        isSourceTrusted,
-        isWarning: false,
-        name: this.name,
-      });
-    } else {
-      this.setState({
-        isSourceTrusted,
-        isWarning: true,
-        name: 'Warning: untrusted source',
-      });
-      return false;
+    // skip source validation for devworkspace resources (samples)
+    if (useDevWorkspaceResources === false) {
+      // check if the source is trusted
+      const isSourceTrusted = this.isSourceTrusted(sourceUrl);
+      if (isSourceTrusted === true) {
+        this.setState({
+          isSourceTrusted,
+          isWarning: false,
+          name: this.name,
+        });
+      } else {
+        this.setState({
+          isSourceTrusted,
+          isWarning: true,
+          name: 'Warning: untrusted source',
+        });
+        return false;
+      }
     }
 
     // find error codes

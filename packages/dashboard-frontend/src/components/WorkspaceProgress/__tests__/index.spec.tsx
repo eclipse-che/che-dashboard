@@ -397,13 +397,26 @@ describe('LoaderProgress', () => {
       mockGet.mockReturnValue('some-trusted-source');
       const store = new FakeStoreBuilder().build();
 
+      searchParams.append(FACTORY_URL_ATTR, 'devfile-location');
+      renderComponent(history, store, searchParams, false);
+
+      await jest.advanceTimersByTimeAsync(MIN_STEP_DURATION_MS);
+
+      const modal = screen.queryByRole('dialog');
+      expect(modal).not.toBeNull();
+    });
+
+    test('samples are trusted', async () => {
+      mockGet.mockReturnValue('some-trusted-source');
+      const store = new FakeStoreBuilder().build();
+
       searchParams.append(DEV_WORKSPACE_ATTR, 'resources-location');
       renderComponent(history, store, searchParams, false);
 
       await jest.advanceTimersByTimeAsync(MIN_STEP_DURATION_MS);
 
-      const modal = await screen.findByRole('dialog');
-      expect(modal).not.toBeNull();
+      const modal = screen.queryByRole('dialog');
+      expect(modal).toBeNull();
     });
   });
 
