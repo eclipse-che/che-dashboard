@@ -89,7 +89,7 @@ export class KubeConfigApiService implements IKubeConfigApi {
           podName,
           namespace,
           containerName,
-          ['sh', '-c', `[ -f ${kubeConfigDirectory}/config ] || cat ${kubeConfigDirectory}/config`],
+          ['sh', '-c', `cat ${kubeConfigDirectory}/config`],
           this.getServerConfig(),
         );
 
@@ -104,11 +104,7 @@ export class KubeConfigApiService implements IKubeConfigApi {
           podName,
           namespace,
           containerName,
-          [
-            'sh',
-            '-c',
-            `[ -f ${kubeConfigDirectory}/config ] || echo '${kubeConfig}' > ${kubeConfigDirectory}/config`,
-          ],
+          ['sh', '-c', `echo '${kubeConfig}' > ${kubeConfigDirectory}/config`],
           this.getServerConfig(),
         );
 
@@ -256,7 +252,7 @@ export class KubeConfigApiService implements IKubeConfigApi {
       }
       return JSON.stringify(kubeConfigJson, undefined, '  ');
     } catch (e) {
-      logger.error(e, 'Failed to merge kubeconfig');
+      logger.error(e, 'Failed to merge kubeconfig, returning source');
       return kubeconfigSource;
     }
   }
