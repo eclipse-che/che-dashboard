@@ -58,7 +58,12 @@ describe('helpers', () => {
 
   describe('supportedProviders', () => {
     test('should includes "github", "gitlab" and "bitbucket"', () => {
-      expect(helpers.supportedProviders).toEqual(['github', 'gitlab', 'bitbucket']);
+      expect(helpers.supportedProviders).toEqual([
+        'github',
+        'gitlab',
+        'bitbucket-server',
+        'azure-devops',
+      ]);
     });
   });
 
@@ -66,7 +71,8 @@ describe('helpers', () => {
     test('should return provider', () => {
       expect(helpers.getSupportedGitService('https://github.com')).toBe('github');
       expect(helpers.getSupportedGitService('https://gitlab.com')).toBe('gitlab');
-      expect(helpers.getSupportedGitService('https://bitbucket.org')).toBe('bitbucket');
+      expect(helpers.getSupportedGitService('https://bitbucket.org')).toBe('bitbucket-server');
+      expect(helpers.getSupportedGitService('https://dev.azure.com')).toBe('azure-devops');
     });
 
     test('should throw error when provider is not supported', () => {
@@ -81,6 +87,7 @@ describe('helpers', () => {
       expect(helpers.isSupportedGitService('https://github.com')).toBe(true);
       expect(helpers.isSupportedGitService('https://gitlab.com')).toBe(true);
       expect(helpers.isSupportedGitService('https://bitbucket.org')).toBe(true);
+      expect(helpers.isSupportedGitService('https://dev.azure.com')).toBe(true);
     });
 
     test('should return false when provider is not supported', () => {
@@ -119,7 +126,7 @@ describe('helpers', () => {
           ).toBe(branch);
         });
       });
-      describe('bitbucket', () => {
+      describe('Bitbucket', () => {
         test('should return the empty value', () => {
           expect(
             helpers.getBranchFromLocation('https://bitbucket.org/eclipse-che/che-dashboard.git'),
@@ -129,6 +136,22 @@ describe('helpers', () => {
           expect(
             helpers.getBranchFromLocation(
               `https://bitbucket.org/eclipse-che/che-dashboard/src/${branch}`,
+            ),
+          ).toBe(branch);
+        });
+      });
+      describe('Azure', () => {
+        test('should return the empty value', () => {
+          expect(
+            helpers.getBranchFromLocation(
+              'https://dev.azure.com/marioloriedo/publicproject/_git/public-repo',
+            ),
+          ).toBeUndefined();
+        });
+        test('should return the branch', () => {
+          expect(
+            helpers.getBranchFromLocation(
+              `https://dev.azure.com/testuser/publicproject/_git/public-repo%3Fversion=GB${branch}`,
             ),
           ).toBe(branch);
         });
@@ -200,6 +223,26 @@ describe('helpers', () => {
               branch,
             ),
           ).toBe(`https://bitbucket.org/eclipse-che/che-dashboard.git/src/${branch}`);
+        });
+      });
+      describe('Azure', () => {
+        test('should return the location without branch', () => {
+          expect(
+            helpers.setBranchToLocation(
+              `https://dev.azure.com/testuser/publicproject/_git/public-repo%3Fpath=%2F&version=GB${branch}`,
+              undefined,
+            ),
+          ).toBe('https://dev.azure.com/testuser/publicproject/_git/public-repo%3Fpath%3D%252F');
+        });
+        test('should return the location with branch', () => {
+          expect(
+            helpers.setBranchToLocation(
+              'https://dev.azure.com/testuser/publicproject/_git/public-repo',
+              branch,
+            ),
+          ).toBe(
+            `https://dev.azure.com/testuser/publicproject/_git/public-repo%3Fversion%3DGB${branch}`,
+          );
         });
       });
     });
@@ -373,7 +416,7 @@ describe('helpers', () => {
           const options = helpers.setGitRepoOptionsToLocation(newOptions, currentOptions);
           expect(options).toEqual({
             location:
-              'https://github.com/eclipse-che/che-dashboard/tree/test-branch?remotes=%7B%7Btest-2%2Chttp%3A%2F%2Ftest-2.git%7D%7D&devfilePath=devfile3.yaml',
+              'https://github.com/eclipse-che/che-dashboard/tree/test-branch?remotes={{test-2,http://test-2.git}}&devfilePath=devfile3.yaml',
             gitBranch: 'test-branch',
             remotes: [{ name: 'test-2', url: 'http://test-2.git' }],
             devfilePath: 'devfile3.yaml',
@@ -397,7 +440,7 @@ describe('helpers', () => {
           const options = helpers.setGitRepoOptionsToLocation(newOptions, currentOptions);
           expect(options).toEqual({
             location:
-              'git@github.com:eclipse-che/che-dashboard.git?remotes=%7B%7Btest-2%2Chttp%3A%2F%2Ftest-2.git%7D%7D&devfilePath=devfile3.yaml',
+              'git@github.com:eclipse-che/che-dashboard.git?remotes={{test-2,http://test-2.git}}&devfilePath=devfile3.yaml',
             gitBranch: undefined,
             remotes: [{ name: 'test-2', url: 'http://test-2.git' }],
             devfilePath: 'devfile3.yaml',
@@ -421,7 +464,7 @@ describe('helpers', () => {
           const options = helpers.setGitRepoOptionsToLocation(newOptions, currentOptions);
           expect(options).toEqual({
             location:
-              'http://not-supported.com?remotes=%7B%7Btest-2%2Chttp%3A%2F%2Ftest-2.git%7D%7D&devfilePath=devfile3.yaml',
+              'http://not-supported.com?remotes={{test-2,http://test-2.git}}&devfilePath=devfile3.yaml',
             gitBranch: undefined,
             remotes: [{ name: 'test-2', url: 'http://test-2.git' }],
             devfilePath: 'devfile3.yaml',
@@ -503,9 +546,6 @@ describe('helpers', () => {
           '10Gi',
           '1.5 TiB',
           '2.5 PiB',
-          '3.5 EB',
-          '0.2 ZiB',
-          '1 YiB',
           '2QQQ', // error value
         ].map(val => getBytes(val));
 
@@ -517,9 +557,6 @@ describe('helpers', () => {
           10737418240,
           1649267441664,
           2814749767106560,
-          3500000000000000000,
-          236118324143482270000,
-          1208925819614629174706176,
           undefined,
         ]);
       });
@@ -534,9 +571,6 @@ describe('helpers', () => {
           10737418240,
           1649267441664,
           2814749767106560,
-          3500000000000000000,
-          236118324143482270000,
-          1208925819614629174706176,
           undefined,
         ].map(val => formatBytes(val));
 
@@ -548,9 +582,6 @@ describe('helpers', () => {
           '10Gi',
           '1.5Ti',
           '2.5Pi',
-          '3.04Ei',
-          '204.8Ei',
-          '1Yi',
           undefined,
         ]);
       });

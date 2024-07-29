@@ -44,11 +44,16 @@ export function validateLocation(location: string, hasSshKeys: boolean): Validat
   return ValidatedOptions.error;
 }
 
-export const supportedProviders: api.GitOauthProvider[] = ['github', 'gitlab', 'bitbucket'];
+export const supportedProviders: api.GitProvider[] = [
+  'github',
+  'gitlab',
+  'bitbucket-server',
+  'azure-devops',
+];
 
-export function getSupportedGitService(location: string): api.GitOauthProvider {
+export function getSupportedGitService(location: string): api.GitProvider {
   const url = new URL(location);
-  const provider = supportedProviders.find(p => url.host.includes(p));
+  const provider = supportedProviders.find(p => url.host.includes(p.split('-')[0]));
   if (!provider) {
     throw new Error(`Provider not supported: ${url.host}`);
   }
@@ -80,14 +85,51 @@ export function getBranchFromLocation(location: string): string | undefined {
         branch = pathname.slice(4).join('/');
       }
       break;
-    case 'bitbucket':
+    case 'bitbucket-server':
       if (pathname[2] === 'src') {
         branch = pathname.slice(3).join('/');
       }
       break;
+    case 'azure-devops':
+      branch = getBranchFromAzureDevOpsLocation(location);
+      break;
   }
 
   return branch;
+}
+
+function getBranchFromAzureDevOpsLocation(location: string): string | undefined {
+  const url = new URL(location);
+
+  const _location = decodeURIComponent(`${url.origin}${url.pathname}`);
+  const _url = new URL(_location);
+  const _searchParams = new URLSearchParams(_url.search);
+
+  const version = _searchParams.get('version') || '';
+  if (!version || !version.startsWith('GB')) {
+    return undefined;
+  }
+
+  return version.replace(/^GB/, '');
+}
+
+function setBranchToAzureDevOpsLocation(location: string, branch: string | undefined): string {
+  const url = new URL(location);
+  const searchParams = new URLSearchParams(url.search);
+  const [pathname, search] = url.pathname.split('%3F');
+  const _searchParams = new URLSearchParams(decodeURIComponent(search || ''));
+  if (!branch) {
+    _searchParams.delete('version');
+  } else {
+    _searchParams.set('version', `GB${branch}`);
+  }
+  const encodedParams =
+    _searchParams.toString().length === 0 ? '' : encodeURIComponent(`?${_searchParams.toString()}`);
+  url.pathname = _searchParams.toString().length === 0 ? pathname : `${pathname}${encodedParams}`;
+
+  return searchParams.toString().length === 0
+    ? `${url.origin}${url.pathname}`
+    : `${url.origin}${url.pathname}?${searchParams.toString()}`;
 }
 
 export function setBranchToLocation(location: string, branch: string | undefined): string {
@@ -96,10 +138,14 @@ export function setBranchToLocation(location: string, branch: string | undefined
 
   const [user, project] = pathname.replace(/^\//, '').replace(/\/$/, '').split('/');
 
+  const service = getSupportedGitService(location);
   if (!branch) {
-    url.pathname = `${user}/${project}`;
+    if (service === 'azure-devops') {
+      url.href = setBranchToAzureDevOpsLocation(location, branch);
+    } else {
+      url.pathname = `${user}/${project}`;
+    }
   } else {
-    const service = getSupportedGitService(location);
     switch (service) {
       case 'github':
         url.pathname = `${user}/${project}/tree/${branch}`;
@@ -107,26 +153,69 @@ export function setBranchToLocation(location: string, branch: string | undefined
       case 'gitlab':
         url.pathname = `${user}/${project}/-/tree/${branch}`;
         break;
-      case 'bitbucket':
+      case 'bitbucket-server':
         url.pathname = `${user}/${project}/src/${branch}`;
+        break;
+      case 'azure-devops':
+        url.href = setBranchToAzureDevOpsLocation(location, branch);
         break;
     }
   }
 
-  return url.href;
+  return `${url.origin}${url.pathname}${decodeURIComponent(url.search)}`;
 }
 
-function getFactoryParamsFromLocation(location: string): {
+function getFactoryParamsFromLocation(
+  location: string,
+  ignoreBranch?: boolean,
+): {
   path: string;
   searchParams: URLSearchParams;
 } {
+  if (
+    !ignoreBranch &&
+    isSupportedGitService(location) &&
+    getSupportedGitService(location) === 'azure-devops'
+  ) {
+    const url = new URL(location);
+    const searchParams = new URLSearchParams(url.search);
+    const path = searchParams.get('path');
+    const version = searchParams.get('version');
+    const repoSearchParams = new URLSearchParams();
+    if (path) {
+      searchParams.delete('path');
+      if (path !== 'true') {
+        repoSearchParams.set('path', path);
+      }
+    }
+    if (version) {
+      searchParams.delete('version');
+      if (version !== 'true') {
+        repoSearchParams.set('version', version);
+      }
+    }
+    if (repoSearchParams.toString().length > 0) {
+      const encodedParams = encodeURIComponent(`?${repoSearchParams.toString()}`);
+      location = `${url.origin}${url.pathname}${encodedParams}?${searchParams.toString()}`;
+    }
+  }
+
   const factory = new FactoryLocationAdapter(location);
   const { path } = factory;
   const factoryStr = factory.toString();
   const factoryLoaderPath = buildFactoryLoaderPath(factoryStr, true);
-  const params = decodeURIComponent(factoryLoaderPath.split('?')[1] || '');
+  const params = factoryLoaderPath.split('?')[1] || '';
   const searchParams = new URLSearchParams(params);
   searchParams.delete('url');
+
+  // from override.devfileFilename to devfilePath
+  const devfilePath = searchParams.get('override.devfileFilename') || undefined;
+  if (devfilePath !== 'true' && devfilePath) {
+    searchParams.set('devfilePath', devfilePath);
+  }
+  if (searchParams.has('override.devfileFilename')) {
+    searchParams.delete('override.devfileFilename');
+  }
 
   return { path, searchParams };
 }
@@ -139,14 +228,7 @@ export function getGitRepoOptionsFromLocation(location: string): {
   hasSupportedGitService: boolean;
 } {
   const { path, searchParams } = getFactoryParamsFromLocation(location);
-
-  const devfilePath = searchParams.get('override.devfileFilename') || undefined;
-  if (devfilePath !== 'true' && devfilePath) {
-    searchParams.set('devfilePath', devfilePath);
-  }
-  if (searchParams.has('override.devfileFilename')) {
-    searchParams.delete('override.devfileFilename');
-  }
+  const devfilePath = searchParams.get('devfilePath') || undefined;
   let remotes: GitRemote[] | undefined;
   const _remotes = searchParams.get('remotes') || undefined;
   if (_remotes === 'true' || _remotes === '{}') {
@@ -155,11 +237,10 @@ export function getGitRepoOptionsFromLocation(location: string): {
   } else {
     remotes = getGitRemotes(_remotes);
   }
-  const hasSupportedGitService = isSupportedGitService(location);
-  const gitBranch = hasSupportedGitService ? getBranchFromLocation(location) : undefined;
-
   location =
     searchParams.toString().length === 0 ? `${path}` : `${path}?${searchParams.toString()}`;
+  const hasSupportedGitService = isSupportedGitService(location);
+  const gitBranch = hasSupportedGitService ? getBranchFromLocation(location) : undefined;
 
   return { location, gitBranch, remotes, devfilePath, hasSupportedGitService };
 }
@@ -172,7 +253,7 @@ export function getAdvancedOptionsFromLocation(location: string): {
   memoryLimit: number | undefined;
   cpuLimit: number | undefined;
 } {
-  const { path, searchParams } = getFactoryParamsFromLocation(location);
+  const { path, searchParams } = getFactoryParamsFromLocation(location, true);
 
   let containerImage = searchParams.get('image') || undefined;
   if (containerImage === '' || containerImage === 'true') {
@@ -282,14 +363,18 @@ export function setGitRepoOptionsToLocation(
     state.gitBranch = newOptions.gitBranch;
   }
   // update the location with the new gitBranch value
+  let searchParamsStr = decodeURIComponent(searchParams.toString());
+  const hasSearchParams = searchParamsStr.length > 0;
+  if (hasSearchParams) {
+    searchParamsStr = decodeURIComponent(searchParamsStr);
+  }
   if (isSupportedGitService(location)) {
     location = setBranchToLocation(
-      searchParams.toString().length > 0 ? `${path}?${searchParams.toString()}` : `${path}`,
+      hasSearchParams ? `${path}?${searchParamsStr}` : `${path}`,
       newOptions.gitBranch,
     );
   } else {
-    location =
-      searchParams.toString().length > 0 ? `${path}?${searchParams.toString()}` : `${path}`;
+    location = hasSearchParams ? `${path}?${searchParamsStr}` : `${path}`;
   }
   // update the location in the state
   state.location = location;
@@ -315,7 +400,7 @@ export function setAdvancedOptionsToLocation(
   if (!location) {
     return newOptions;
   }
-  const { path, searchParams } = getFactoryParamsFromLocation(location);
+  const { path, searchParams } = getFactoryParamsFromLocation(location, true);
 
   if (newOptions.containerImage !== currentOptions.containerImage) {
     state.containerImage = newOptions.containerImage;
@@ -378,7 +463,7 @@ export function setAdvancedOptionsToLocation(
   return state;
 }
 
-const UNITS_OF_MEASUREMENT = ['', 'K', 'M', 'G', 'T', 'P', 'E', 'Z', 'Y'];
+const UNITS_OF_MEASUREMENT = ['', 'K', 'M', 'G', 'T', 'P'];
 
 export function formatBytes(
   bytes: number | undefined,

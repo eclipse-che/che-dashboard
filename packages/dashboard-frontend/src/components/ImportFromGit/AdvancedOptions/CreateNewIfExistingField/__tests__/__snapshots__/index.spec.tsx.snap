@@ -29,8 +29,8 @@ exports[`TemporaryStorageField switched off snapshot 1`] = `
       htmlFor="temporary-storage-switch"
     >
       <input
-        aria-label=""
-        aria-labelledby="temporary-storage-switch-off"
+        aria-label="Temporary Storage"
+        aria-labelledby={null}
         checked={false}
         className="pf-c-switch__input"
         disabled={false}
@@ -96,8 +96,8 @@ exports[`TemporaryStorageField switched on snapshot 1`] = `
       htmlFor="temporary-storage-switch"
     >
       <input
-        aria-label=""
-        aria-labelledby="temporary-storage-switch-on"
+        aria-label="Temporary Storage"
+        aria-labelledby={null}
         checked={true}
         className="pf-c-switch__input"
         disabled={false}

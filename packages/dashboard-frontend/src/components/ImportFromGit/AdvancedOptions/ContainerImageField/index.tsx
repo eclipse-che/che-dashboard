@@ -41,8 +41,8 @@ export class ContainerImageField extends React.PureComponent<Props, State> {
     let containerImage: string | undefined = value.trim();
     containerImage = containerImage !== '' ? containerImage : undefined;
     if (containerImage !== this.state.containerImage) {
-      this.setState({ containerImage: value });
-      this.props.onChange(value);
+      this.setState({ containerImage });
+      this.props.onChange(containerImage);
     }
   }
 

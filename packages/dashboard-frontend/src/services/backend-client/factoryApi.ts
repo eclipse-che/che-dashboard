@@ -22,6 +22,10 @@ export async function getFactoryResolver(
   if (url.indexOf(' ') !== -1) {
     url = encodeURI(url);
   }
+  if (url.indexOf('?') !== -1) {
+    const [path, search] = url.split('?');
+    url = `${path}?${decodeURIComponent(search)}`;
+  }
   const response = await axios.post(
     `${cheServerPrefix}/factory/resolver`,
     Object.assign({}, overrideParams, { url }),

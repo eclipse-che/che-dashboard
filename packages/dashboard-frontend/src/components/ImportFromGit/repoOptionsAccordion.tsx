@@ -83,20 +83,34 @@ class RepoOptionsAccordion extends React.PureComponent<Props, State> {
     };
   }
 
-  public componentDidUpdate() {
+  private updateStateFromLocation(): void {
     const { location } = this.props;
 
-    if (this.state.location === location.trim()) {
-      return;
-    }
     const validated = validateLocation(location, this.state.hasSshKeys);
     if (validated !== ValidatedOptions.success) {
       return;
     }
     const gitRepoOptions = getGitRepoOptionsFromLocation(location);
-    const advancedOptions = getAdvancedOptionsFromLocation(location);
+    if (!gitRepoOptions.location) {
+      return;
+    }
+    const advancedOptions = getAdvancedOptionsFromLocation(gitRepoOptions.location);
 
-    this.setState(Object.assign({}, gitRepoOptions, advancedOptions) as State);
+    const state = Object.assign(gitRepoOptions, advancedOptions) as State;
+
+    this.setState(state);
+  }
+
+  public componentDidMount() {
+    this.updateStateFromLocation();
+  }
+
+  public componentDidUpdate(prevProps: Readonly<Props>) {
+    const location = this.props.location.trim();
+    if (location === prevProps.location || location === this.state.location) {
+      return;
+    }
+    this.updateStateFromLocation();
   }
 
   private handleToggle(id: AccordionId): void {

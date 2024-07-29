@@ -52,7 +52,8 @@ describe('AdditionalGitRemotesField', () => {
     });
 
     test('valid remotes', async () => {
-      renderComponent([
+      const { reRenderComponent } = renderComponent();
+      reRenderComponent([
         { name: 'test-1', url: 'https://test-1.repo.git' },
         { name: 'test-2', url: 'https://test-2.repo.git' },
         { name: 'test-3', url: 'https://test-3.repo.git' },
