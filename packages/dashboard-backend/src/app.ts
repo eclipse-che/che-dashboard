@@ -43,7 +43,7 @@ import { registerWebsocket } from '@/routes/api/websocket';
 import { registerWorkspacePreferencesRoute } from '@/routes/api/workspacePreferences';
 import { registerFactoryAcceptanceRedirect } from '@/routes/factoryAcceptanceRedirect';
 import { registerWorkspaceRedirect } from '@/routes/workspaceRedirect';
-import { registerSampleRoutes } from '@/routes/api/samples';
+import { registerAirGappedSampleRoute } from '@/routes/api/airGappedSample';
 
 export default async function buildApp(server: FastifyInstance): Promise<unknown> {
   const cheHost = process.env.CHE_HOST as string;
@@ -125,6 +125,6 @@ export default async function buildApp(server: FastifyInstance): Promise<unknown
 
     registerWorkspacePreferencesRoute(server),
 
-    registerSampleRoutes(server),
+    registerAirGappedSampleRoute(server),
   ]);
 }

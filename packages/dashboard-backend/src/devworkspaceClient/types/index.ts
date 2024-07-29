@@ -452,6 +452,15 @@ export interface IGettingStartedSampleApi {
   list(): Promise<Array<api.IGettingStartedSample>>;
 }
 
+export interface IAirGappedSampleApi {
+  /**
+   * Reads all the Air Gap Samples.
+   */
+  list(): Promise<Array<api.IAirGappedSample>>;
+
+  download(name: string): Promise<api.IAirGappedProject>;
+}
+
 export interface IEditorsApi {
   /**
    * Reads all Editors from ConfigMaps.

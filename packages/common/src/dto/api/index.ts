@@ -17,6 +17,7 @@ import {
 } from '@devfile/api';
 import { CoreV1EventList, V1PodList } from '@kubernetes/client-node';
 import * as webSocket from './webSocket';
+import { ReadStream } from 'fs';
 
 export { webSocket };
 
@@ -188,4 +189,13 @@ export interface IGettingStartedSample {
   icon: { base64data: string; mediatype: string };
   url: string;
   tags?: Array<string>;
+}
+
+export interface IAirGappedSample extends IGettingStartedSample {
+  project?: { zip?: { filename?: string } };
+}
+
+export interface IAirGappedProject {
+  stream: ReadStream;
+  size: number;
 }

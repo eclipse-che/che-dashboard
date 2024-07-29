@@ -43,7 +43,7 @@ RUN yarn workspace @eclipse-che/dashboard-backend install --production
 COPY build/dockerfiles/airgap.sh /dashboard/airgap.sh
 RUN /dashboard/airgap.sh \
       -s /dashboard/packages/devfile-registry/devfiles/airgap.json \
-      -o /dashboard/packages/devfile-registry/devfiles/airgap-samples
+      -o /dashboard/packages/devfile-registry/devfiles/airgap-projects
 
 FROM docker.io/node:18.19.1-alpine3.19
 

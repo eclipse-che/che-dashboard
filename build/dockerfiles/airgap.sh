@@ -10,8 +10,6 @@
 
 # Script is used to download repositories specified in a JSON file
 # and save them as zip files in a specified output directory.
-# It also updates the URLs in the JSON file to point to the local zip files.
-# This is typically used in an air-gapped environment where internet access is not available.
 
 set -e
 
@@ -34,10 +32,12 @@ run() {
 
   i=0
   while [ "${i}" -lt "${samplesNum}" ]; do
-    repoURL=$(jq -r '.['${i}'].url' "${SAMPLES_JSON_PATH}")
+    url=$(jq -r '.['${i}'].url' "${SAMPLES_JSON_PATH}")
+    displayName=$(jq -r '.['${i}'].displayName' "${SAMPLES_JSON_PATH}")
+    encodedDisplayName=$(echo "${displayName}" | jq -Rr @uri)
 
-    if [ "${repoURL}" != "null" ]; then
-      strippedURL="${repoURL#https://github.com/}"
+    if [ "${url}" != "null" ]; then
+      strippedURL="${url#https://github.com/}"
       organization="$(echo "${strippedURL}" | cut -d '/' -f 1)"
       repository="$(echo "${strippedURL}" | cut -d '/' -f 2)"
       ref="$(echo "${strippedURL}" | cut -d '/' -f 4)"
@@ -50,7 +50,7 @@ run() {
         apiRequestLink="https://api.github.com/repos/${organization}/${repository}/zipball"
       fi
 
-      echo "[INFO] Downloading ${repoURL} into ${archiveFileName}"
+      echo "[INFO] Downloading ${url} into ${archiveFileName}"
 
       curl -L \
           -H "Accept: application/vnd.github+json" \
@@ -60,7 +60,11 @@ run() {
 
       # DASHBOARD_SERVICE_URL is a placeholder that will be replaced
       # by the actual URL in entrypoint.sh
-      echo "$(jq '(.['${i}'].url) = '\"DASHBOARD_SERVICE_URL/dashboard/api/airgap-sample/download?filename=${archiveFileName}\" ${SAMPLES_JSON_PATH})" > "${SAMPLES_JSON_PATH}"
+      echo "$(jq '(.['${i}'].url) = '\"DASHBOARD_SERVICE_URL/dashboard/api/airgap-sample/project/download?name=${encodedDisplayName}\" ${SAMPLES_JSON_PATH})" > "${SAMPLES_JSON_PATH}"
+      echo "$(jq '(.['${i}'].project.zip.filename) = '\"${archiveFileName}\" ${SAMPLES_JSON_PATH})" > "${SAMPLES_JSON_PATH}"
+
+      # Add AirGap tag to the sample to show on the dashboard
+      echo "$(jq '.['${i}'].tags += ["AirGap"]' ${SAMPLES_JSON_PATH})" > "${SAMPLES_JSON_PATH}"
     fi
 
     i=$((i+1))
