@@ -40,7 +40,7 @@ export class AdditionalGitRemotes extends React.PureComponent<Props, State> {
   constructor(props: Props) {
     super(props);
 
-    const remotes = this.props.remotes ? [...this.props.remotes] : [];
+    const remotes = this.props.remotes || [];
     if (remotes.length === 0) {
       remotes.push({ name: '', url: '' });
     }
@@ -61,7 +61,13 @@ export class AdditionalGitRemotes extends React.PureComponent<Props, State> {
     const remotes = this.props.remotes || [];
     const prevRemotes = prevProps.remotes || [];
 
-    if (!isEqual(remotes, prevRemotes) && !isEqual(remotes, this.state.remotes)) {
+    if (
+      !isEqual(remotes, prevRemotes) &&
+      !isEqual(
+        remotes,
+        this.state.remotes.filter(remote => remote.name !== '' && remote.url !== ''),
+      )
+    ) {
       this.setState({
         remotes,
       });

@@ -49,6 +49,7 @@ export class CreateNewIfExistingField extends React.PureComponent<Props, State> 
       <FormGroup label="Create New If Existing">
         <Switch
           id="create-new-if-existing-switch"
+          aria-label="Create New If Existing"
           isChecked={createNewIfExisting}
           onChange={value => this.handleChange(value)}
         />

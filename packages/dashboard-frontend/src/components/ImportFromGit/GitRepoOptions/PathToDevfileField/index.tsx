@@ -30,13 +30,6 @@ export class PathToDevfileField extends React.PureComponent<Props, State> {
     };
   }
 
-  public shouldComponentUpdate(nextProps: Readonly<Props>, nextState: Readonly<State>): boolean {
-    return (
-      this.state.devfilePath !== nextState.devfilePath ||
-      this.props.devfilePath !== nextProps.devfilePath
-    );
-  }
-
   public componentDidUpdate(prevProps: Readonly<Props>): void {
     const { devfilePath } = this.props;
     if (prevProps.devfilePath !== devfilePath) {

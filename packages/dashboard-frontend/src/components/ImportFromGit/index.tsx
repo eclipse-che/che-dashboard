@@ -74,16 +74,14 @@ class ImportFromGit extends React.PureComponent<Props, State> {
     if (!isFocused && (location !== prevState.location || prevState.isFocused)) {
       const inputElement = document.getElementById(FIELD_ID) as HTMLInputElement;
       if (inputElement) {
-        inputElement.value = decodeURIComponent(location);
+        inputElement.value = location;
       }
     }
   }
 
   private handleCreate(): void {
     const { editorDefinition, editorImage } = this.props;
-    const location = decodeURIComponent(this.state.location);
-
-    const factory = new FactoryLocationAdapter(location);
+    const factory = new FactoryLocationAdapter(this.state.location);
 
     // add the editor definition and editor image to the URL
     // if they are not already there
@@ -135,7 +133,7 @@ class ImportFromGit extends React.PureComponent<Props, State> {
   }
 
   public buildForm(): React.JSX.Element {
-    const location = decodeURIComponent(this.state.location);
+    const { location } = this.state;
     const { locationValidated, remotesValidated } = this.state;
 
     const buttonDisabled =

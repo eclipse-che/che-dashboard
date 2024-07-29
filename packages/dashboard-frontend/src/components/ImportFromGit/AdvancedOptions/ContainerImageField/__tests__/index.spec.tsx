@@ -49,7 +49,7 @@ describe('ContainerImageField', () => {
     expect(mockOnChange).toHaveBeenNthCalledWith(1, containerImage);
 
     userEvent.clear(input);
-    expect(mockOnChange).toHaveBeenNthCalledWith(2, '');
+    expect(mockOnChange).toHaveBeenNthCalledWith(2, undefined);
   });
 });
 

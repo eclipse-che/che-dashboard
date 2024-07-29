@@ -13,8 +13,6 @@
 import { FormGroup, Slider } from '@patternfly/react-core';
 import React from 'react';
 
-const STEP = 1;
-
 const steps = [
   { value: 0, label: 'default' },
   { value: 1, label: '1' },
@@ -78,7 +76,7 @@ export class CpuLimitField extends React.PureComponent<Props, State> {
         <Slider
           data-testid="cpu-limit-slider"
           value={cpuLimit}
-          onChange={value => this.handleChange(value * STEP)}
+          onChange={value => this.handleChange(value)}
           max={steps[steps.length - 1].value}
           customSteps={steps}
         />
