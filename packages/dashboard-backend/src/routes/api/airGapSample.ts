@@ -10,7 +10,6 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import { IStreamedFile } from '@eclipse-che/common/lib/dto/api';
 import { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify';
 
 import { baseApiPath } from '@/constants/config';
@@ -24,8 +23,8 @@ export function registerAirGapSampleRoute(instance: FastifyInstance) {
   instance.register(async server => {
     server.get(`${baseApiPath}/airgap-sample`, getSchema({ tags }), async () => {
       const token = getServiceAccountToken();
-      const { gettingAirGapSampleApi } = getDevWorkspaceClient(token);
-      return gettingAirGapSampleApi.list();
+      const { airGapSampleApi } = getDevWorkspaceClient(token);
+      return airGapSampleApi.list();
     });
 
     server.get(
@@ -35,9 +34,9 @@ export function registerAirGapSampleRoute(instance: FastifyInstance) {
         const name = (request.query as { name: string })['name'];
 
         const token = getServiceAccountToken();
-        const { gettingAirGapSampleApi } = getDevWorkspaceClient(token);
+        const { airGapSampleApi } = getDevWorkspaceClient(token);
 
-        return downloadFile(name, reply, gettingAirGapSampleApi.downloadDevfile);
+        return downloadFile(name, reply, airGapSampleApi.downloadDevfile);
       },
     );
 
@@ -48,9 +47,9 @@ export function registerAirGapSampleRoute(instance: FastifyInstance) {
         const name = (request.query as { name: string })['name'];
 
         const token = getServiceAccountToken();
-        const { gettingAirGapSampleApi } = getDevWorkspaceClient(token);
+        const { airGapSampleApi } = getDevWorkspaceClient(token);
 
-        return downloadFile(name, reply, gettingAirGapSampleApi.downloadProject);
+        return downloadFile(name, reply, airGapSampleApi.downloadProject);
       },
     );
   });

@@ -21,7 +21,6 @@ import * as k8s from '@kubernetes/client-node';
 import { IncomingHttpHeaders } from 'http';
 
 import { MessageListener } from '@/services/types/Observer';
-import { IStreamedFile } from '@eclipse-che/common/lib/dto/api';
 
 /**
  * Holds the methods for working with dockerconfig for devworkspace
@@ -427,6 +426,7 @@ export interface IDevWorkspaceClient {
   userProfileApi: IUserProfileApi;
   gitConfigApi: IGitConfigApi;
   gettingStartedSampleApi: IGettingStartedSampleApi;
+  airGapSampleApi: IAirGapSampleApi;
   sshKeysApi: IShhKeysApi;
   devWorkspacePreferencesApi: IDevWorkspacePreferencesApi;
   editorsApi: IEditorsApi;

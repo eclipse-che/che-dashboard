@@ -111,7 +111,7 @@ export class DevWorkspaceClient implements IDevWorkspaceClient {
     return new GettingStartedSamplesApiService(this.kubeConfig);
   }
 
-  get gettingAirGapSampleApi(): IAirGapSampleApi {
+  get airGapSampleApi(): IAirGapSampleApi {
     return new AirGapSampleApiService();
   }
 
