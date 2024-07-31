@@ -18,8 +18,8 @@ import path from 'path';
 import { IAirGapSampleApi } from '@/devworkspaceClient/types';
 import { isLocalRun } from '@/localRun';
 
-// See build/Dockerfile for the path
-const airGapDir = '/public/dashboard/devfile-registry/air-gap';
+// See build/dockerfiles/Dockerfile for the path
+const airGapResourcesDir = '/public/dashboard/devfile-registry/air-gap';
 
 export class AirGapSampleApiService implements IAirGapSampleApi {
   async list(): Promise<Array<api.IAirGapSample>> {
@@ -27,59 +27,35 @@ export class AirGapSampleApiService implements IAirGapSampleApi {
   }
 
   async downloadProject(name: string): Promise<api.IStreamedFile> {
-    for (const sample of readAirGapIndex()) {
-      if (sample.displayName === name) {
-        const projectPath = path.resolve(getAirGapDir(), sample.project.zip.filename);
-        if (!projectPath.startsWith(getAirGapDir())) {
-          throw new Error(`Invalid project path`);
-        }
-
-        try {
-          const stats = fs.statSync(projectPath);
-          return { stream: fs.createReadStream(projectPath), size: stats.size };
-        } catch (err) {
-          console.error(`Error downloading project`, err);
-          throw new Error(`Error downloading project`);
-        }
-      }
+    const sample = readAirGapIndex().find(sample => sample.displayName === name);
+    if (sample) {
+      return download(sample.project?.zip?.filename);
     }
 
-    throw new Error(`Sample not found`);
+    throw new Error(`Sample ${name} not found`);
   }
 
   async downloadDevfile(name: string): Promise<api.IStreamedFile> {
-    for (const sample of readAirGapIndex()) {
-      if (sample.displayName === name) {
-        const devfilePath = path.resolve(getAirGapDir(), sample.devfile.filename);
-        if (!devfilePath.startsWith(getAirGapDir())) {
-          throw new Error(`Invalid devfile path`);
-        }
-
-        try {
-          const stats = fs.statSync(devfilePath);
-          return { stream: fs.createReadStream(devfilePath), size: stats.size };
-        } catch (err) {
-          console.error(`Error reading devfile`, err);
-          throw new Error(`Error reading devfile`);
-        }
-      }
+    const sample = readAirGapIndex().find(sample => sample.displayName === name);
+    if (sample) {
+      return download(sample.devfile?.filename);
     }
 
-    throw new Error(`Sample not found`);
+    throw new Error(`Sample ${name} not found`);
   }
 }
 
-function getAirGapDir(): string {
+function getAirGapResourcesDir(): string {
   return isLocalRun()
     ? path.join(
         __dirname,
         '../../../dashboard-frontend/lib/public/dashboard/devfile-registry/air-gap',
       )
-    : airGapDir;
+    : airGapResourcesDir;
 }
 
 function getAirGapIndexFilePath(): string {
-  return path.join(getAirGapDir(), 'index.json');
+  return path.join(getAirGapResourcesDir(), 'index.json');
 }
 
 function readAirGapIndex(): Array<api.IAirGapSample> {
@@ -90,32 +66,37 @@ function readAirGapIndex(): Array<api.IAirGapSample> {
 
   try {
     const data = fs.readFileSync(airGapIndexFilePath, 'utf8');
-    const samples = JSON.parse(data) as api.IAirGapSample[];
-    return samples.filter(sample => {
-      if (!sample.project?.zip?.filename) {
-        console.error(`Sample ${sample.displayName} is missing project.zip.filename`);
-        return false;
-      }
-
-      if (!fs.existsSync(path.resolve(getAirGapDir(), sample.project.zip.filename))) {
-        console.error(`File ${sample.project.zip.filename} not found`);
-        return false;
-      }
-
-      if (!sample.devfile?.filename) {
-        console.error(`Sample ${sample.displayName} is missing devfile.filename`);
-        return false;
-      }
-
-      if (!fs.existsSync(path.resolve(getAirGapDir(), sample.devfile.filename))) {
-        console.error(`File ${sample.devfile.filename} not found`);
-        return false;
-      }
-
-      return true;
-    });
+    return JSON.parse(data) as api.IAirGapSample[];
   } catch (e) {
     console.error(e, 'Failed to read air-gap index.json');
     throw new Error('Failed to read air-gap index.json');
+  }
+}
+
+function download(filename: string): api.IStreamedFile {
+  if (!filename) {
+    console.error(`filename not defined`);
+    throw new Error(`filename not defined`);
+  }
+
+  const filepath = path.resolve(getAirGapResourcesDir(), filename);
+
+  // This is a security check to ensure that the file is within the airGapResourcesDir
+  if (!filepath.startsWith(getAirGapResourcesDir())) {
+    console.error(`Invalid devfile path ${filepath}`);
+    throw new Error(`Invalid devfile path`);
+  }
+
+  if (!fs.existsSync(filepath)) {
+    console.error(`File not found ${filename}`);
+    throw new Error(`File not found`);
+  }
+
+  try {
+    const stats = fs.statSync(filepath);
+    return { stream: fs.createReadStream(filepath), size: stats.size };
+  } catch (err) {
+    console.error(`Error reading devfile`, err);
+    throw new Error(`Error reading devfile`);
   }
 }
