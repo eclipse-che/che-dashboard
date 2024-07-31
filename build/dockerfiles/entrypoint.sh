@@ -10,10 +10,8 @@
 
 set -e
 
-echo 'Updating airgap.json...'
-sed -i 's|DASHBOARD_SERVICE_URL|'${DASHBOARD_SERVICE_URL}'|g' "/public/dashboard/devfile-registry/devfiles/airgap.json"
-
 echo 'Starting Dashboard backend server...'
+find /public/dashboard/devfile-registry/air-gap -type f \( -name "*.json" -o -name "*.yaml" \) -exec sed -i 's|CHE_DASHBOARD_INTERNAL_URL|'${CHE_DASHBOARD_INTERNAL_URL}'|g' {} \;
 start_server="node /backend/server/backend.js --publicFolder /public"
 $start_server &
 wait

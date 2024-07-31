@@ -8,33 +8,44 @@
 # SPDX-License-Identifier: EPL-2.0
 #
 
-# Script is used to download repositories specified in a JSON file
-# and save them as zip files in a specified output directory.
+# The script is used to download resources (projects and devfiles)
+# for air-gapped (offline) environments. Only https://github.com is supported for now.
 
 set -e
 
 init() {
-  unset SAMPLES_JSON_PATH
-  unset OUTPUT_DIR
+  unset AIRGAP_RESOURCES_DIR
 
   while [ "$#" -gt 0 ]; do
     case $1 in
-      '--samples-json-path'|'-s') SAMPLES_JSON_PATH=$2; shift 1;;
-      '--output-dir'|'-o') OUTPUT_DIR=$2; shift 1;;
+      '--airgap-resources-dir'|'-d') AIRGAP_RESOURCES_DIR=$2; shift 1;;
+      '--help'|'-h') usage; exit;;
     esac
     shift 1
   done
+
+  [ -z "${AIRGAP_RESOURCES_DIR}" ] && { usage; exit; }
+  SAMPLES_JSON_PATH="${AIRGAP_RESOURCES_DIR}/index.json"
+}
+
+usage() {
+  cat <<EOF
+  Usage: $0 [OPTIONS]
+
+  Options:
+    --airgap-resources-dir, -d  Directory where airgap resources are stored
+    --help, -h                  Show this help message
+EOF
 }
 
 run() {
-  mkdir -p "${OUTPUT_DIR}"
   samplesNum=$(jq -r '. | length' "${SAMPLES_JSON_PATH}")
 
   i=0
   while [ "${i}" -lt "${samplesNum}" ]; do
     url=$(jq -r '.['${i}'].url' "${SAMPLES_JSON_PATH}")
-    displayName=$(jq -r '.['${i}'].displayName' "${SAMPLES_JSON_PATH}")
-    encodedDisplayName=$(echo "${displayName}" | jq -Rr @uri)
+    name=$(jq -r '.['${i}'].displayName' "${SAMPLES_JSON_PATH}")
+    encodedName=$(echo "${name}" | jq -Rr @uri)
 
     if [ "${url}" != "null" ]; then
       strippedURL="${url#https://github.com/}"
@@ -44,31 +55,63 @@ run() {
 
       if [ -n "${ref}" ]; then
         archiveFileName="${organization}-${repository}-${ref}.zip"
-        apiRequestLink="https://api.github.com/repos/${organization}/${repository}/zipball/${ref}"
+        devfileFileName="${organization}-${repository}-${ref}-devfile.yaml"
+        projectDownloadLink="https://api.github.com/repos/${organization}/${repository}/zipball/${ref}"
+        devfileDownloadLink="https://api.github.com/repos/${organization}/${repository}/contents/devfile.yaml?ref=${ref}"
       else
         archiveFileName="${organization}-${repository}.zip"
-        apiRequestLink="https://api.github.com/repos/${organization}/${repository}/zipball"
+        devfileFileName="${organization}-${repository}-devfile.yaml"
+        projectDownloadLink="https://api.github.com/repos/${organization}/${repository}/zipball"
+        devfileDownloadLink="https://api.github.com/repos/${organization}/${repository}/contents/devfile.yaml"
       fi
 
       echo "[INFO] Downloading ${url} into ${archiveFileName}"
-
-      curl -L \
-          -H "Accept: application/vnd.github+json" \
-          -H "X-GitHub-Api-Version: 2022-11-28" \
-          "${apiRequestLink}" \
-          -o "${OUTPUT_DIR}/${archiveFileName}"
-
-      # DASHBOARD_SERVICE_URL is a placeholder that will be replaced
-      # by the actual URL in entrypoint.sh
-      echo "$(jq '(.['${i}'].url) = '\"DASHBOARD_SERVICE_URL/dashboard/api/airgap-sample/project/download?name=${encodedDisplayName}\" ${SAMPLES_JSON_PATH})" > "${SAMPLES_JSON_PATH}"
-      echo "$(jq '(.['${i}'].project.zip.filename) = '\"${archiveFileName}\" ${SAMPLES_JSON_PATH})" > "${SAMPLES_JSON_PATH}"
-
-      # Add AirGap tag to the sample to show on the dashboard
-      echo "$(jq '.['${i}'].tags += ["AirGap"]' ${SAMPLES_JSON_PATH})" > "${SAMPLES_JSON_PATH}"
+      processSample \
+        "${archiveFileName}" \
+        "${devfileFileName}" \
+        "${projectDownloadLink}" \
+        "${devfileDownloadLink}" \
+        "${encodedName}" \
+        "${repository}"
     fi
 
     i=$((i+1))
   done
+}
+
+processSample() {
+  archiveFileName=$1
+  devfileFileName=$2
+  projectDownloadLink=$3
+  devfileDownloadLink=$4
+  encodedName=$5
+  repository=$6
+
+  curl -L \
+      -H "Accept: application/vnd.github.raw+json" \
+      -H "X-GitHub-Api-Version: 2022-11-28" \
+      -H "Authorization: token ${GITHUB_TOKEN}" \
+      "${devfileDownloadLink}" \
+      -o "${AIRGAP_RESOURCES_DIR}/${devfileFileName}"
+
+  curl -L \
+      -H "Accept: application/vnd.github+json" \
+      -H "X-GitHub-Api-Version: 2022-11-28" \
+      -H "Authorization: token ${GITHUB_TOKEN}" \
+      "${projectDownloadLink}" \
+      -o "${AIRGAP_RESOURCES_DIR}/${archiveFileName}"
+
+  # CHE_DASHBOARD_INTERNAL_URL is a placeholder that will be replaced
+  # by the actual URL in entrypoint.sh
+  devfileLink="CHE_DASHBOARD_INTERNAL_URL/dashboard/api/airgap-sample/devfile/download?name=${encodedName}"
+  projectLink="CHE_DASHBOARD_INTERNAL_URL/dashboard/api/airgap-sample/project/download?name=${encodedName}"
+
+  echo "$(jq '(.['${i}'].url) = '\"${devfileLink}\" ${SAMPLES_JSON_PATH})" > "${SAMPLES_JSON_PATH}"
+  echo "$(jq '(.['${i}'].project.zip.filename) = '\"${archiveFileName}\" ${SAMPLES_JSON_PATH})" > "${SAMPLES_JSON_PATH}"
+  echo "$(jq '(.['${i}'].devfile.filename) = '\"${devfileFileName}\" ${SAMPLES_JSON_PATH})" > "${SAMPLES_JSON_PATH}"
+
+  # Update the devfile with the project link
+  yq -riY '.projects=[{name: "'${repository}'", zip: {location: "'${projectLink}'"}}]' "${AIRGAP_RESOURCES_DIR}/${devfileFileName}"
 }
 
 init "$@"

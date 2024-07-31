@@ -21,6 +21,7 @@ import * as k8s from '@kubernetes/client-node';
 import { IncomingHttpHeaders } from 'http';
 
 import { MessageListener } from '@/services/types/Observer';
+import { IStreamedFile } from '@eclipse-che/common/lib/dto/api';
 
 /**
  * Holds the methods for working with dockerconfig for devworkspace
@@ -452,13 +453,21 @@ export interface IGettingStartedSampleApi {
   list(): Promise<Array<api.IGettingStartedSample>>;
 }
 
-export interface IAirGappedSampleApi {
+export interface IAirGapSampleApi {
   /**
-   * Reads all the Air Gap Samples.
+   * Reads all the Air Gap samples.
    */
-  list(): Promise<Array<api.IAirGappedSample>>;
+  list(): Promise<Array<api.IAirGapSample>>;
 
-  download(name: string): Promise<api.IAirGappedProject>;
+  /**
+   * Downloads the Air Gap sample project by its name.
+   */
+  downloadProject(name: string): Promise<api.IStreamedFile>;
+
+  /**
+   * Reads the devfile content of the Air Gap sample by its name.
+   */
+  downloadDevfile(name: string): Promise<api.IStreamedFile>;
 }
 
 export interface IEditorsApi {

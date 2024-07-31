@@ -191,11 +191,12 @@ export interface IGettingStartedSample {
   tags?: Array<string>;
 }
 
-export interface IAirGappedSample extends IGettingStartedSample {
+export interface IAirGapSample extends IGettingStartedSample {
   project?: { zip?: { filename?: string } };
+  devfile?: { filename?: string };
 }
 
-export interface IAirGappedProject {
+export interface IStreamedFile {
   stream: ReadStream;
   size: number;
 }

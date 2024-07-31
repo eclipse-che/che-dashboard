@@ -12,7 +12,7 @@
 
 import * as k8s from '@kubernetes/client-node';
 
-import { AirGappedSampleApiService } from '@/devworkspaceClient/services/airGappedSampleApi';
+import { AirGapSampleApiService } from '@/devworkspaceClient/services/airGapSampleApi';
 import { DevWorkspaceApiService } from '@/devworkspaceClient/services/devWorkspaceApi';
 import { DevWorkspacePreferencesApiService } from '@/devworkspaceClient/services/devWorkspacePreferencesApi';
 import { DevWorkspaceTemplateApiService } from '@/devworkspaceClient/services/devWorkspaceTemplateApi';
@@ -30,7 +30,7 @@ import { ServerConfigApiService } from '@/devworkspaceClient/services/serverConf
 import { SshKeysService } from '@/devworkspaceClient/services/sshKeysApi';
 import { UserProfileApiService } from '@/devworkspaceClient/services/userProfileApi';
 import {
-  IAirGappedSampleApi,
+  IAirGapSampleApi,
   IDevWorkspaceApi,
   IDevWorkspaceClient,
   IDevWorkspacePreferencesApi,
@@ -111,8 +111,8 @@ export class DevWorkspaceClient implements IDevWorkspaceClient {
     return new GettingStartedSamplesApiService(this.kubeConfig);
   }
 
-  get gettingAirGappedSampleApi(): IAirGappedSampleApi {
-    return new AirGappedSampleApiService();
+  get gettingAirGapSampleApi(): IAirGapSampleApi {
+    return new AirGapSampleApiService();
   }
 
   get editorsApi(): IEditorsApi {
