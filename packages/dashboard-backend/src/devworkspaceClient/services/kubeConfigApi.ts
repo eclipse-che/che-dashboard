@@ -93,9 +93,11 @@ export class KubeConfigApiService implements IKubeConfigApi {
           this.getServerConfig(),
         );
 
+        // If there is no kubeconfig in the container, stdOut will be empty and stdError will container the error
         if (stdError !== '') {
           logger.warn(`Error reading kubeconfig from container: ${stdError}`);
         }
+        // If no error and stdout is not empty, merge the kubeconfig
         if (stdError === '' && stdOut !== '') {
           kubeConfig = this.mergeKubeConfig(stdOut, kubeConfig);
         }
@@ -224,6 +226,8 @@ export class KubeConfigApiService implements IKubeConfigApi {
     }
   }
 
+  // Merge the kubeconfig from the source into the generated kubeconfig
+  // If the inbounds kubeconfig match the kubeconfig format then merge them
   private mergeKubeConfig(kubeconfigSource: string, generatedKubeconfig: string): string {
     try {
       const kubeConfigJson = JSON.parse(kubeconfigSource);
