@@ -35,6 +35,7 @@ import { AlertItem, UserPreferencesTab } from '@/services/helpers/types';
 import SessionStorageService, { SessionStorageKey } from '@/services/session-storage';
 import { AppState } from '@/store';
 import { selectAllWorkspacesLimit } from '@/store/ClusterConfig/selectors';
+import { selectIsRegistryDevfile } from '@/store/DevfileRegistries/selectors';
 import { selectInfrastructureNamespaces } from '@/store/InfrastructureNamespaces/selectors';
 import { selectSshKeys } from '@/store/SshKeys/selectors';
 import { selectAllWorkspaces } from '@/store/Workspaces/selectors';
@@ -238,9 +239,11 @@ class CreatingStepInitialize extends ProgressStep<Props, State> {
 
   private isSourceTrusted(sourceUrl: string): boolean {
     const trustedSources = SessionStorageService.get(SessionStorageKey.TRUSTED_SOURCES);
+    const isRegistryDevfile = this.props.isRegistryDevfile(sourceUrl);
     if (
-      trustedSources &&
-      (trustedSources === 'all' || trustedSources.split(',').includes(sourceUrl))
+      isRegistryDevfile ||
+      (trustedSources &&
+        (trustedSources === 'all' || trustedSources.split(',').includes(sourceUrl)))
     ) {
       return true;
     }
@@ -286,9 +289,10 @@ export class NoSshKeysError extends Error {
 }
 
 const mapStateToProps = (state: AppState) => ({
-  infrastructureNamespaces: selectInfrastructureNamespaces(state),
   allWorkspaces: selectAllWorkspaces(state),
   allWorkspacesLimit: selectAllWorkspacesLimit(state),
+  infrastructureNamespaces: selectInfrastructureNamespaces(state),
+  isRegistryDevfile: selectIsRegistryDevfile(state),
   sshKeys: selectSshKeys(state),
 });
 

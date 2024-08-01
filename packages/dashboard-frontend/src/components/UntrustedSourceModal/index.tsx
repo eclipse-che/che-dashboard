@@ -34,7 +34,7 @@ export type State = {
   trustAllCheckbox: boolean;
 };
 
-export class UntrustedSourceModal extends React.PureComponent<Props, State> {
+export class UntrustedSourceModal extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props);
 
@@ -68,6 +68,51 @@ export class UntrustedSourceModal extends React.PureComponent<Props, State> {
       trustedSourcesSet.add(location);
       const nextArray = Array.from(trustedSourcesSet);
       SessionStorageService.update(SessionStorageKey.TRUSTED_SOURCES, nextArray.join(','));
+    }
+  }
+
+  public shouldComponentUpdate(nextProps: Readonly<Props>, nextState: Readonly<State>): boolean {
+    if (this.props.isOpen !== nextProps.isOpen) {
+      return true;
+    }
+
+    if (this.props.location !== nextProps.location) {
+      return true;
+    }
+
+    if (this.state.trustAllCheckbox !== nextState.trustAllCheckbox) {
+      return true;
+    }
+
+    const isTrusted = UntrustedSourceModal.isSourceTrusted(this.props.location);
+    if (isTrusted !== nextState.isTrusted) {
+      return true;
+    }
+
+    return false;
+  }
+
+  public componentDidMount(): void {
+    this.init();
+  }
+
+  public componentDidUpdate(): void {
+    this.init();
+  }
+
+  private init() {
+    const isTrusted = UntrustedSourceModal.isSourceTrusted(this.props.location);
+    if (this.props.isOpen && isTrusted) {
+      this.setState({
+        isTrusted,
+        trustAllCheckbox: false,
+      });
+
+      this.props.onContinue();
+    } else {
+      this.setState({
+        isTrusted,
+      });
     }
   }
 
@@ -127,11 +172,10 @@ export class UntrustedSourceModal extends React.PureComponent<Props, State> {
   }
 
   render(): React.ReactNode {
-    const { isOpen, onContinue } = this.props;
+    const { isOpen } = this.props;
     const { isTrusted } = this.state;
 
     if (isTrusted) {
-      onContinue();
       return null;
     }
 

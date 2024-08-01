@@ -13,16 +13,16 @@
 import React from 'react';
 
 import { UntrustedSourceModal } from '@/components/UntrustedSourceModal';
-import getComponentRenderer, { screen } from '@/services/__mocks__/getComponentRenderer';
+import getComponentRenderer, { screen, waitFor } from '@/services/__mocks__/getComponentRenderer';
 
-const mockGet = jest.fn();
-const mockUpdate = jest.fn();
+const mockGetItem = jest.fn();
+const mockUpdateItem = jest.fn();
 jest.mock('@/services/session-storage', () => {
   return {
     __esModule: true,
     default: {
-      get: (...args: unknown[]) => mockGet(...args),
-      update: (...args: unknown[]) => mockUpdate(...args),
+      get: (...args: unknown[]) => mockGetItem(...args),
+      update: (...args: unknown[]) => mockUpdateItem(...args),
     },
     // enum
     SessionStorageKey: {
@@ -43,29 +43,29 @@ describe('Untrusted Repo Warning Modal', () => {
 
   describe('isSourceTrusted', () => {
     test('some sources are trusted', () => {
-      mockGet.mockReturnValue('repo1,repo2');
+      mockGetItem.mockReturnValue('repo1,repo2');
       expect(UntrustedSourceModal.isSourceTrusted('repo1')).toBeTruthy();
       expect(UntrustedSourceModal.isSourceTrusted('repo2')).toBeTruthy();
       expect(UntrustedSourceModal.isSourceTrusted('repo3')).toBeFalsy();
     });
 
     test('all sources are trusted', () => {
-      mockGet.mockReturnValue('all');
+      mockGetItem.mockReturnValue('all');
       expect(UntrustedSourceModal.isSourceTrusted('repo1')).toBeTruthy();
     });
   });
 
   describe('updateTrustedSources', () => {
     test('trust all', () => {
-      mockGet.mockReturnValue('repo1,repo2');
+      mockGetItem.mockReturnValue('repo1,repo2');
       UntrustedSourceModal.updateTrustedSources('repo1', true);
-      expect(mockUpdate).toHaveBeenCalledWith('trusted-sources', 'all');
+      expect(mockUpdateItem).toHaveBeenCalledWith('trusted-sources', 'all');
     });
 
     test('trust one', () => {
-      mockGet.mockReturnValue('repo1,repo2');
+      mockGetItem.mockReturnValue('repo1,repo2');
       UntrustedSourceModal.updateTrustedSources('repo3', false);
-      expect(mockUpdate).toHaveBeenCalledWith('trusted-sources', 'repo1,repo2,repo3');
+      expect(mockUpdateItem).toHaveBeenCalledWith('trusted-sources', 'repo1,repo2,repo3');
     });
   });
 
@@ -76,7 +76,7 @@ describe('Untrusted Repo Warning Modal', () => {
   });
 
   test('modal is visible', () => {
-    mockGet.mockClear();
+    mockGetItem.mockClear();
     renderComponent('source-location');
     const modal = screen.queryByRole('dialog');
     expect(modal).not.toBeNull();
@@ -87,7 +87,7 @@ describe('Untrusted Repo Warning Modal', () => {
     const closeButton = screen.getByRole('button', { name: 'Close' });
 
     // button is enabled
-    expect(closeButton).not.toBeDisabled();
+    expect(closeButton).toBeEnabled();
 
     closeButton.click();
     expect(mockOnClose).toHaveBeenCalledTimes(1);
@@ -98,7 +98,7 @@ describe('Untrusted Repo Warning Modal', () => {
     const closeButton = screen.getByRole('button', { name: 'Cancel' });
 
     // button is enabled
-    expect(closeButton).not.toBeDisabled();
+    expect(closeButton).toBeEnabled();
 
     closeButton.click();
     expect(mockOnClose).toHaveBeenCalledTimes(1);
@@ -109,22 +109,53 @@ describe('Untrusted Repo Warning Modal', () => {
     const continueButton = screen.getByRole('button', { name: 'Continue' });
 
     // button is enabled
-    expect(continueButton).not.toBeDisabled();
+    expect(continueButton).toBeEnabled();
 
     continueButton.click();
     expect(mockOnContinue).toHaveBeenCalledTimes(1);
 
-    expect(mockUpdate).toHaveBeenCalledTimes(1);
-    expect(mockUpdate).toHaveBeenCalledWith('trusted-sources', 'source-location');
+    expect(mockUpdateItem).toHaveBeenCalledTimes(1);
+    expect(mockUpdateItem).toHaveBeenCalledWith('trusted-sources', 'source-location');
   });
 
-  test('source is trusted', () => {
-    mockGet.mockReturnValue('source-location');
+  test('trust all checkbox is clicked', () => {
+    renderComponent('source-location');
+
+    const checkbox = screen.getByRole('checkbox', { name: /do not ask me again/i });
+
+    // checkbox is unchecked
+    expect(checkbox).not.toBeChecked();
+
+    checkbox.click();
+
+    // checkbox is checked
+    expect(checkbox).toBeChecked();
+  });
+
+  test('source is trusted initially', () => {
+    mockGetItem.mockReturnValue('source-location');
     renderComponent('source-location');
 
     // no warning window
     const modal = screen.queryByRole('dialog');
     expect(modal).toBeNull();
+
+    expect(mockOnContinue).toHaveBeenCalledTimes(1);
+  });
+
+  test('source is untrusted initially', async () => {
+    mockGetItem.mockReturnValue('');
+    const { reRenderComponent } = renderComponent('source-location');
+
+    // warning window
+    expect(screen.queryByRole('dialog')).not.toBeNull();
+
+    expect(mockOnContinue).not.toHaveBeenCalled();
+
+    mockGetItem.mockReturnValue('source-location');
+    reRenderComponent('source-location');
+
+    await waitFor(() => expect(mockOnContinue).toHaveBeenCalledTimes(1));
   });
 });
 

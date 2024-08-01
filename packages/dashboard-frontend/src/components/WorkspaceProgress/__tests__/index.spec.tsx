@@ -408,9 +408,17 @@ describe('LoaderProgress', () => {
 
     test('samples are trusted', async () => {
       mockGet.mockReturnValue('some-trusted-source');
-      const store = new FakeStoreBuilder().build();
 
-      searchParams.append(DEV_WORKSPACE_ATTR, 'resources-location');
+      const registryLocation = 'https://external-registries-location/';
+      const store = new FakeStoreBuilder()
+        .withDevfileRegistries({
+          registries: {
+            [registryLocation]: {},
+          },
+        })
+        .build();
+
+      searchParams.set(FACTORY_URL_ATTR, `${registryLocation}devfile-location`);
       renderComponent(history, store, searchParams, false);
 
       await jest.advanceTimersByTimeAsync(MIN_STEP_DURATION_MS);

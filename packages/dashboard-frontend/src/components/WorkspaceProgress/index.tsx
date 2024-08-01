@@ -44,6 +44,7 @@ import { AlertItem, DevWorkspaceStatus, LoaderTab } from '@/services/helpers/typ
 import SessionStorageService, { SessionStorageKey } from '@/services/session-storage';
 import { Workspace } from '@/services/workspace-adapter';
 import { AppState } from '@/store';
+import { selectIsRegistryDevfile } from '@/store/DevfileRegistries/selectors';
 import * as WorkspaceStore from '@/store/Workspaces';
 import { selectAllWorkspaces } from '@/store/Workspaces/selectors';
 
@@ -145,9 +146,10 @@ class Progress extends React.Component<Props, State> {
     if (this.state.isSourceTrustedWarningOpen === true) {
       const { sourceUrl } = this.state.factoryParams;
       const trustedSources = SessionStorageService.get(SessionStorageKey.TRUSTED_SOURCES);
-      const { useDevWorkspaceResources } = this.state.factoryParams;
+      const isRegistryDevfile = this.props.isRegistryDevfile(sourceUrl);
+      // trust source if it is taken from the registry or it is in the list of trusted sources
       if (
-        useDevWorkspaceResources === true ||
+        isRegistryDevfile ||
         (trustedSources &&
           (trustedSources.split(',').includes(sourceUrl) || trustedSources === 'all'))
       ) {
@@ -693,6 +695,7 @@ class Progress extends React.Component<Props, State> {
 
 const mapStateToProps = (state: AppState) => ({
   allWorkspaces: selectAllWorkspaces(state),
+  isRegistryDevfile: selectIsRegistryDevfile(state),
 });
 
 const connector = connect(mapStateToProps, WorkspaceStore.actionCreators, null, {
