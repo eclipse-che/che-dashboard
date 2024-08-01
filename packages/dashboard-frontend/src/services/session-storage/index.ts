@@ -14,15 +14,20 @@ export enum SessionStorageKey {
   PRIVATE_FACTORY_RELOADS = 'private-factory-reloads-number',
   ORIGINAL_LOCATION_PATH = 'original-location-path',
   EXTERNAL_REGISTRIES = 'external-registries',
+  TRUSTED_SOURCES = 'trusted-sources', // 'all' or 'repo1,repo2,...'
 }
 
 export default class SessionStorageService {
   static update(key: SessionStorageKey, value: string): void {
-    window.sessionStorage.setItem(key, value);
+    window.sessionStorage.setItem(key, btoa(value));
   }
 
   static get(key: SessionStorageKey): string | undefined {
-    return window.sessionStorage.getItem(key) || undefined;
+    const value = window.sessionStorage.getItem(key);
+    if (value) {
+      return atob(value);
+    }
+    return;
   }
 
   static remove(key: SessionStorageKey): string | undefined {

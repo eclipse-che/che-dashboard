@@ -22,6 +22,20 @@ import { FakeStoreBuilder } from '@/store/__mocks__/storeBuilder';
 
 const { createSnapshot, renderComponent } = getComponentRenderer(getComponent);
 
+const mockGet = jest.fn();
+jest.mock('@/services/session-storage', () => {
+  return {
+    __esModule: true,
+    default: {
+      get: (...args: unknown[]) => mockGet(...args),
+    },
+    // enum
+    SessionStorageKey: {
+      TRUSTED_SOURCES: 'trusted-sources', // 'all' or 'repo1,repo2,...'
+    },
+  };
+});
+
 const history = createMemoryHistory({
   initialEntries: ['/'],
 });
@@ -36,6 +50,7 @@ describe('GitRepoLocationInput', () => {
   let store: Store;
 
   beforeEach(() => {
+    mockGet.mockReturnValue('all');
     store = new FakeStoreBuilder()
       .withDwServerConfig({
         defaults: {
@@ -73,6 +88,50 @@ describe('GitRepoLocationInput', () => {
 
     userEvent.type(input, '{enter}');
     expect(window.open).not.toHaveBeenCalled();
+  });
+
+  describe('trusted/untrusted source', () => {
+    jest.mock('@/components/UntrustedSourceModal');
+
+    test('untrusted source', () => {
+      mockGet.mockReturnValue('repo1,repo2');
+      renderComponent(store);
+
+      const input = screen.getByRole('textbox');
+      expect(input).toBeValid();
+
+      userEvent.paste(input, 'http://test-location');
+
+      expect(input).toHaveValue('http://test-location');
+
+      const button = screen.getByRole('button', { name: 'Create & Open' });
+      userEvent.click(button);
+
+      const untrustedSourceModal = screen.queryByRole('dialog', { name: /untrusted source/i });
+      expect(untrustedSourceModal).not.toBeNull();
+
+      expect(window.open).not.toHaveBeenCalled();
+    });
+
+    test('trusted source', () => {
+      mockGet.mockReturnValue('all');
+      renderComponent(store);
+
+      const input = screen.getByRole('textbox');
+      expect(input).toBeValid();
+
+      userEvent.paste(input, 'http://test-location');
+
+      expect(input).toHaveValue('http://test-location');
+
+      const button = screen.getByRole('button', { name: 'Create & Open' });
+      userEvent.click(button);
+
+      const untrustedSourceModal = screen.queryByRole('dialog', { name: /untrusted source/i });
+      expect(untrustedSourceModal).toBeNull();
+
+      expect(window.open).toHaveBeenCalledTimes(1);
+    });
   });
 
   describe('valid HTTP location', () => {

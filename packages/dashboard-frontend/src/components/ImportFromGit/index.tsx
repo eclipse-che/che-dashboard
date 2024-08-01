@@ -1,3 +1,4 @@
+/* eslint-disable simple-import-sort/imports */
 /*
  * Copyright (c) 2018-2024 Red Hat, Inc.
  * This program and the accompanying materials are made
@@ -33,7 +34,7 @@ import {
 import { ExclamationCircleIcon } from '@patternfly/react-icons';
 import { History } from 'history';
 import React from 'react';
-import { connect, ConnectedProps } from 'react-redux';
+import { ConnectedProps, connect } from 'react-redux';
 
 import { GitRepoOptions } from '@/components/ImportFromGit/GitRepoOptions';
 import {
@@ -41,6 +42,7 @@ import {
   setGitRepoOptionsToLocation,
   validateLocation,
 } from '@/components/ImportFromGit/helpers';
+import { UntrustedSourceModal } from '@/components/UntrustedSourceModal';
 import { GitRemote } from '@/components/WorkspaceProgress/CreatingSteps/Apply/Devfile/getGitRemotes';
 import { FactoryLocationAdapter } from '@/services/factory-location-adapter';
 import { EDITOR_ATTR, EDITOR_IMAGE_ATTR } from '@/services/helpers/factoryFlow/buildFactoryParams';
@@ -70,6 +72,7 @@ export type State = {
   devfilePath: string | undefined;
   isFocused: boolean;
   hasSupportedGitService: boolean;
+  isConfirmationOpen: boolean;
 };
 
 class ImportFromGit extends React.PureComponent<Props, State> {
@@ -87,6 +90,7 @@ class ImportFromGit extends React.PureComponent<Props, State> {
       devfilePath: undefined,
       isFocused: false,
       hasSupportedGitService: false,
+      isConfirmationOpen: false,
     };
   }
 
@@ -100,7 +104,24 @@ class ImportFromGit extends React.PureComponent<Props, State> {
     }
   }
 
+  private openConfirmationDialog(): void {
+    this.setState({ isConfirmationOpen: true });
+  }
+
+  private handleConfirmationOnClose(): void {
+    this.setState({ isConfirmationOpen: false });
+  }
+
+  private handleConfirmationOnContinue(): void {
+    this.setState({ isConfirmationOpen: false });
+    this.startFactory();
+  }
+
   private handleCreate(): void {
+    this.openConfirmationDialog();
+  }
+
+  private startFactory(): void {
     const { editorDefinition, editorImage } = this.props;
     const location = decodeURIComponent(this.state.location);
 
@@ -281,21 +302,31 @@ class ImportFromGit extends React.PureComponent<Props, State> {
   }
 
   public render() {
-    const { locationValidated } = this.state;
+    const { isConfirmationOpen, location, locationValidated } = this.state;
     return (
-      <Panel>
-        <PanelHeader>
-          <Title headingLevel="h3">Import from Git</Title>
-        </PanelHeader>
-        <PanelMain>
-          <PanelMainBody>{this.buildForm()}</PanelMainBody>
-        </PanelMain>
-        {locationValidated === ValidatedOptions.success && (
-          <PanelMain>
-            <PanelMainBody>{this.buildGitRepoOptions()}</PanelMainBody>
-          </PanelMain>
+      <>
+        {isConfirmationOpen && (
+          <UntrustedSourceModal
+            location={location}
+            isOpen={isConfirmationOpen}
+            onContinue={() => this.handleConfirmationOnContinue()}
+            onClose={() => this.handleConfirmationOnClose()}
+          />
         )}
-      </Panel>
+        <Panel>
+          <PanelHeader>
+            <Title headingLevel="h3">Import from Git</Title>
+          </PanelHeader>
+          <PanelMain>
+            <PanelMainBody>{this.buildForm()}</PanelMainBody>
+          </PanelMain>
+          {locationValidated === ValidatedOptions.success && (
+            <PanelMain>
+              <PanelMainBody>{this.buildGitRepoOptions()}</PanelMainBody>
+            </PanelMain>
+          )}
+        </Panel>
+      </>
     );
   }
 }
