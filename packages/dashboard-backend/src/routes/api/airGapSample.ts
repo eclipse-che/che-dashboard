@@ -10,7 +10,6 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import { IStreamedFile } from '@eclipse-che/common/lib/dto/api';
 import { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify';
 
 import { baseApiPath } from '@/constants/config';
@@ -19,60 +18,73 @@ import { getServiceAccountToken } from '@/routes/api/helpers/getServiceAccountTo
 import { getSchema } from '@/services/helpers';
 
 const tags = ['Air Gapped sample'];
+const rateLimitConfig = {
+  config: {
+    rateLimit: {
+      max: 30,
+      timeWindow: '1 minute',
+    },
+  },
+};
 
 export function registerAirGapSampleRoute(instance: FastifyInstance) {
   instance.register(async server => {
-    server.get(`${baseApiPath}/airgap-sample`, getSchema({ tags }), async () => {
-      const token = getServiceAccountToken();
-      const { airGapSampleApi } = getDevWorkspaceClient(token);
-      return airGapSampleApi.list();
-    });
+    server.get(
+      `${baseApiPath}/airgap-sample`,
+      Object.assign(rateLimitConfig, getSchema({ tags })),
+      async () => {
+        const token = getServiceAccountToken();
+        const { airGapSampleApi } = getDevWorkspaceClient(token);
+        return airGapSampleApi.list();
+      },
+    );
 
     server.get(
       `${baseApiPath}/airgap-sample/devfile/download`,
-      getSchema({ tags }),
+      Object.assign(rateLimitConfig, getSchema({ tags })),
       async function (request: FastifyRequest, reply: FastifyReply) {
         const name = (request.query as { name: string })['name'];
+        if (!name) {
+          return reply.status(400).send('Sample name is required.');
+        }
 
         const token = getServiceAccountToken();
         const { airGapSampleApi } = getDevWorkspaceClient(token);
 
-        return downloadFile(name, reply, airGapSampleApi.downloadDevfile);
+        try {
+          const iStreamedFile = await airGapSampleApi.downloadDevfile(name);
+          reply.header('Content-Type', 'application/octet-stream');
+          reply.header('Content-Length', iStreamedFile.size);
+          return reply.send(iStreamedFile.stream);
+        } catch (err: any) {
+          console.error(`Error downloading file`, err);
+          return reply.status(500).send(`Error downloading file`);
+        }
       },
     );
 
     server.get(
       `${baseApiPath}/airgap-sample/project/download`,
-      getSchema({ tags }),
+      Object.assign(rateLimitConfig, getSchema({ tags })),
       async function (request: FastifyRequest, reply: FastifyReply) {
         const name = (request.query as { name: string })['name'];
+        if (!name) {
+          return reply.status(400).send('Sample name is required.');
+        }
 
         const token = getServiceAccountToken();
         const { airGapSampleApi } = getDevWorkspaceClient(token);
 
-        return downloadFile(name, reply, airGapSampleApi.downloadProject);
+        try {
+          const iStreamedFile = await airGapSampleApi.downloadProject(name);
+          reply.header('Content-Type', 'application/octet-stream');
+          reply.header('Content-Length', iStreamedFile.size);
+          return reply.send(iStreamedFile.stream);
+        } catch (err: any) {
+          console.error(`Error downloading file`, err);
+          return reply.status(500).send(`Error downloading file`);
+        }
       },
     );
   });
-}
-
-async function downloadFile(
-  name: string,
-  reply: FastifyReply,
-  downloadFile: (name: string) => Promise<IStreamedFile>,
-): Promise<any> {
-  if (!name) {
-    return reply.status(400).send('Sample name is required.');
-  }
-
-  const decodedName = decodeURIComponent(name);
-  try {
-    const project = await downloadFile(decodedName);
-    reply.header('Content-Type', 'application/octet-stream');
-    reply.header('Content-Length', project.size);
-    return reply.send(project.stream);
-  } catch (err) {
-    console.error(`Error downloading file`, err);
-    return reply.status(500).send(`Error downloading file`);
-  }
 }

@@ -69,6 +69,8 @@ export default async function buildApp(server: FastifyInstance): Promise<unknown
     },
   );
 
+  server.register(import('@fastify/rate-limit'));
+
   return Promise.allSettled([
     registerWebSocket(server),
 

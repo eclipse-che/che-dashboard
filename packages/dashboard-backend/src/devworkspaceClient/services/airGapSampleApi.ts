@@ -22,6 +22,7 @@ import { isLocalRun } from '@/localRun';
 const airGapResourcesDir = '/public/dashboard/devfile-registry/air-gap';
 
 export class AirGapSampleApiService implements IAirGapSampleApi {
+
   async list(): Promise<Array<api.IAirGapSample>> {
     return this.readAirGapIndex();
   }
