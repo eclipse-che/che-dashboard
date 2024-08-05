@@ -275,6 +275,30 @@ describe('helpers', () => {
             devfilePath: undefined,
           });
         });
+        test('should return options from location with params with empty values', () => {
+          let options = helpers.getGitRepoOptionsFromLocation(
+            'https://github.com/eclipse-che/che-dashboard.git?remotes&devfilePath',
+          );
+          expect(options).toEqual({
+            location: 'https://github.com/eclipse-che/che-dashboard.git',
+            hasSupportedGitService: true,
+            gitBranch: undefined,
+            remotes: undefined,
+            devfilePath: undefined,
+          });
+
+          options = helpers.getGitRepoOptionsFromLocation(
+            'https://github.com/eclipse-che/che-dashboard.git?remotes={}&df',
+          );
+
+          expect(options).toEqual({
+            location: 'https://github.com/eclipse-che/che-dashboard.git',
+            hasSupportedGitService: true,
+            gitBranch: undefined,
+            remotes: undefined,
+            devfilePath: undefined,
+          });
+        });
         test('should return all supported options', () => {
           const location =
             'https://github.com/eclipse-che/che-dashboard/tree/main?remotes={{test-1,http://test-1.git}}&df=devfile2.yaml';
@@ -352,6 +376,19 @@ describe('helpers', () => {
           cpuLimit: undefined,
         });
       });
+      test('should return options from location with params with empty values', () => {
+        const location =
+          'https://github.com/eclipse-che/che-dashboard.git?image&policies.create&memoryLimit&storageType';
+        const options = helpers.getAdvancedOptionsFromLocation(location);
+        expect(options).toEqual({
+          location: 'https://github.com/eclipse-che/che-dashboard.git',
+          containerImage: undefined,
+          temporaryStorage: undefined,
+          createNewIfExisting: undefined,
+          memoryLimit: undefined,
+          cpuLimit: undefined,
+        });
+      });
       test('should return all supported options', () => {
         const location =
           'https://github.com/eclipse-che/che-dashboard/tree/main?image=custom-image&new&memoryLimit=2Gi&cpuLimit=1&storageType=ephemeral';
@@ -400,11 +437,32 @@ describe('helpers', () => {
   describe('setGitRepoOptionsToLocation', () => {
     describe('supported Git services', () => {
       describe('HTTP', () => {
-        test('should return options with updated location', () => {
+        test('should return options with updated location(set search params)', () => {
           const newOptions = {
             gitBranch: 'test-branch',
             remotes: [{ name: 'test-2', url: 'http://test-2.git' }],
             devfilePath: 'devfile3.yaml',
+          };
+          const currentOptions = {
+            location: 'https://github.com/eclipse-che/che-dashboard/tree/main',
+            gitBranch: undefined,
+            remotes: undefined,
+            devfilePath: undefined,
+          };
+          const options = helpers.setGitRepoOptionsToLocation(newOptions, currentOptions);
+          expect(options).toEqual({
+            location:
+              'https://github.com/eclipse-che/che-dashboard/tree/test-branch?remotes={{test-2,http://test-2.git}}&devfilePath=devfile3.yaml',
+            gitBranch: 'test-branch',
+            remotes: [{ name: 'test-2', url: 'http://test-2.git' }],
+            devfilePath: 'devfile3.yaml',
+          });
+        });
+        test('should return options with updated location(reset search params)', () => {
+          const newOptions = {
+            gitBranch: undefined,
+            remotes: undefined,
+            devfilePath: undefined,
           };
           const currentOptions = {
             location:
@@ -415,11 +473,10 @@ describe('helpers', () => {
           };
           const options = helpers.setGitRepoOptionsToLocation(newOptions, currentOptions);
           expect(options).toEqual({
-            location:
-              'https://github.com/eclipse-che/che-dashboard/tree/test-branch?remotes={{test-2,http://test-2.git}}&devfilePath=devfile3.yaml',
-            gitBranch: 'test-branch',
-            remotes: [{ name: 'test-2', url: 'http://test-2.git' }],
-            devfilePath: 'devfile3.yaml',
+            location: 'https://github.com/eclipse-che/che-dashboard',
+            gitBranch: undefined,
+            remotes: undefined,
+            devfilePath: undefined,
           });
         });
       });
@@ -476,7 +533,7 @@ describe('helpers', () => {
   describe('setAdvancedOptionsToLocation', () => {
     describe('supported Git services', () => {
       describe('HTTP', () => {
-        test('should return options with updated location', () => {
+        test('should return options with updated location(set search params)', () => {
           const newOptions = {
             containerImage: 'custom-image',
             temporaryStorage: true,
@@ -501,6 +558,32 @@ describe('helpers', () => {
             createNewIfExisting: true,
             memoryLimit: 2147483648,
             cpuLimit: 1,
+          });
+        });
+        test('should return options with updated location(reset search params)', () => {
+          const newOptions = {
+            containerImage: undefined,
+            temporaryStorage: undefined,
+            createNewIfExisting: undefined,
+            memoryLimit: undefined,
+            cpuLimit: undefined,
+          };
+          const currentOptions = {
+            location: 'https://github.com/eclipse-che/che-dashboard.git',
+            containerImage: 'custom-image',
+            temporaryStorage: true,
+            createNewIfExisting: true,
+            memoryLimit: 2147483648,
+            cpuLimit: undefined,
+          };
+          const options = helpers.setAdvancedOptionsToLocation(newOptions, currentOptions);
+          expect(options).toEqual({
+            location: 'https://github.com/eclipse-che/che-dashboard.git',
+            containerImage: undefined,
+            temporaryStorage: undefined,
+            createNewIfExisting: undefined,
+            memoryLimit: undefined,
+            cpuLimit: undefined,
           });
         });
       });
@@ -547,6 +630,7 @@ describe('helpers', () => {
           '1.5 TiB',
           '2.5 PiB',
           '2QQQ', // error value
+          'undefined', // error value
         ].map(val => getBytes(val));
 
         expect(values).toEqual([
@@ -558,11 +642,25 @@ describe('helpers', () => {
           1649267441664,
           2814749767106560,
           undefined,
+          undefined,
         ]);
       });
     });
     describe('formatBytes', () => {
       test('should return formated memory measurements', () => {
+        const values = [
+          0,
+          534,
+          4718592,
+          10737418240,
+          1649267441664,
+          2814749767106560,
+          undefined,
+        ].map(val => formatBytes(val, 2, false));
+
+        expect(values).toEqual([undefined, '534', '4.72M', '10.74G', '1.65T', '2.81P', undefined]);
+      });
+      test('should return formated memory measurements(binaryUnits)', () => {
         const values = [
           0,
           534,
