@@ -331,22 +331,24 @@ export default class Bootstrap {
       undefined,
     );
 
-    const airGapedSampleURL = new URL('/dashboard/api/airgap-sample', window.location.origin).href;
-    await requestRegistriesMetadata(airGapedSampleURL, false)(
-      this.store.dispatch,
-      this.store.getState,
-      undefined,
-    );
-
     const serverConfig = this.store.getState().dwServerConfig.config;
     const devfileRegistry = serverConfig.devfileRegistry;
     const internalDevfileRegistryUrl = serverConfig.devfileRegistryURL;
     if (
       devfileRegistry?.disableInternalRegistry !== undefined &&
-      devfileRegistry?.disableInternalRegistry !== true &&
-      internalDevfileRegistryUrl
+      devfileRegistry?.disableInternalRegistry !== true
     ) {
-      await requestRegistriesMetadata(internalDevfileRegistryUrl, false)(
+      if (internalDevfileRegistryUrl) {
+        await requestRegistriesMetadata(internalDevfileRegistryUrl, false)(
+          this.store.dispatch,
+          this.store.getState,
+          undefined,
+        );
+      }
+
+      const airGapedSampleURL = new URL('/dashboard/api/airgap-sample', window.location.origin)
+        .href;
+      await requestRegistriesMetadata(airGapedSampleURL, false)(
         this.store.dispatch,
         this.store.getState,
         undefined,
