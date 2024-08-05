@@ -474,7 +474,6 @@ export function formatBytes(
     return undefined;
   }
   const k = binaryUnits ? 1024 : 1000;
-  const dm = decimals < 0 ? 0 : decimals;
   const unitsOfMeasurement = UNITS_OF_MEASUREMENT.map((unit, index) => {
     if (index > 0 && binaryUnits) {
       unit += 'i';
@@ -482,7 +481,7 @@ export function formatBytes(
     return unit;
   });
   const i = Math.floor(Math.log(bytes) / Math.log(k));
-  return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + unitsOfMeasurement[i];
+  return parseFloat((bytes / Math.pow(k, i)).toFixed(decimals)) + unitsOfMeasurement[i];
 }
 
 export function getBytes(value: string): number | undefined {
