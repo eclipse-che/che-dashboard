@@ -19,10 +19,9 @@ describe('Getting Started Samples API Service', () => {
 
   beforeEach(() => {
     jest.resetModules();
-    airGapSampleApiService = new AirGapSampleApiService();
-    airGapSampleApiService.getAirGapResourcesDir = jest
-      .fn()
-      .mockReturnValue(path.join(__dirname, 'fixtures', 'air-gap'));
+    airGapSampleApiService = new AirGapSampleApiService(
+      path.join(__dirname, 'fixtures', 'air-gap'),
+    );
   });
 
   afterEach(() => {

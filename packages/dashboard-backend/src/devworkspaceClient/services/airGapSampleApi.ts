@@ -18,16 +18,29 @@ import path from 'path';
 import { IAirGapSampleApi } from '@/devworkspaceClient/types';
 import { isLocalRun } from '@/localRun';
 
-// See build/dockerfiles/Dockerfile for the path
-const airGapResourcesDir = '/public/dashboard/devfile-registry/air-gap';
-
 export class AirGapSampleApiService implements IAirGapSampleApi {
+  protected readonly airGapResourcesDir: string;
+  protected readonly airGapIndexFilePath: string;
+  protected readonly samples: Array<api.IAirGapSample>;
+  constructor(airGapResourcesDir?: string) {
+    this.airGapResourcesDir = airGapResourcesDir
+      ? airGapResourcesDir
+      : isLocalRun()
+        ? path.join(
+            __dirname,
+            '../../../dashboard-frontend/lib/public/dashboard/devfile-registry/air-gap',
+          )
+        : '/public/dashboard/devfile-registry/air-gap';
+    this.airGapIndexFilePath = path.join(this.airGapResourcesDir, 'index.json');
+    this.samples = this.readAirGapIndex();
+  }
+
   async list(): Promise<Array<api.IAirGapSample>> {
-    return this.readAirGapIndex();
+    return this.samples;
   }
 
   async downloadProject(name: string): Promise<api.IStreamedFile> {
-    const sample = this.readAirGapIndex().find(sample => sample.displayName === name);
+    const sample = this.samples.find(sample => sample.displayName === name);
     if (sample) {
       return this.download(sample.project?.zip?.filename);
     }
@@ -37,7 +50,7 @@ export class AirGapSampleApiService implements IAirGapSampleApi {
   }
 
   async downloadDevfile(name: string): Promise<api.IStreamedFile> {
-    const sample = this.readAirGapIndex().find(sample => sample.displayName === name);
+    const sample = this.samples.find(sample => sample.displayName === name);
     if (sample) {
       return this.download(sample.devfile?.filename);
     }
@@ -46,27 +59,13 @@ export class AirGapSampleApiService implements IAirGapSampleApi {
     throw new Error(`Sample not found`);
   }
 
-  getAirGapResourcesDir(): string {
-    return isLocalRun()
-      ? path.join(
-          __dirname,
-          '../../../dashboard-frontend/lib/public/dashboard/devfile-registry/air-gap',
-        )
-      : airGapResourcesDir;
-  }
-
-  private getAirGapIndexFilePath(): string {
-    return path.join(this.getAirGapResourcesDir(), 'index.json');
-  }
-
   private readAirGapIndex(): Array<api.IAirGapSample> {
-    const airGapIndexFilePath = this.getAirGapIndexFilePath();
-    if (!fs.existsSync(airGapIndexFilePath)) {
+    if (!fs.existsSync(this.airGapIndexFilePath)) {
       return [];
     }
 
     try {
-      const data = fs.readFileSync(airGapIndexFilePath, 'utf8');
+      const data = fs.readFileSync(this.airGapIndexFilePath, 'utf8');
       return JSON.parse(data) as api.IAirGapSample[];
     } catch (e) {
       console.error(e, 'Failed to read air-gap index.json');
@@ -80,10 +79,10 @@ export class AirGapSampleApiService implements IAirGapSampleApi {
       throw new Error(`filename not defined`);
     }
 
-    const filepath = path.resolve(this.getAirGapResourcesDir(), filename);
+    const filepath = path.resolve(this.airGapResourcesDir, filename);
 
     // This is a security check to ensure that the file is within the airGapResourcesDir
-    if (!filepath.startsWith(this.getAirGapResourcesDir())) {
+    if (!filepath.startsWith(this.airGapResourcesDir)) {
       console.error(`Invalid file path: ${filepath}`);
       throw new Error(`Invalid file path`);
     }
