@@ -218,7 +218,7 @@ describe('Normalize Devfile V2', () => {
           name: 'developer-image',
         },
       ],
-    } as V222Devfile;
+    } as V230Devfile;
     const factoryParams = {
       memoryLimit: '4Gi',
     };
@@ -262,7 +262,7 @@ describe('Normalize Devfile V2', () => {
           name: 'developer-image',
         },
       ],
-    } as V222Devfile;
+    } as V230Devfile;
     const factoryParams = {
       cpuLimit: '2',
     };
