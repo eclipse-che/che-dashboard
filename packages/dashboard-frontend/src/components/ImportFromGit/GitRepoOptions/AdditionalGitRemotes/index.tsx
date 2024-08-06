@@ -14,7 +14,6 @@ import {
   ActionGroup,
   Button,
   ButtonVariant,
-  Form,
   FormFieldGroup,
   FormSection,
 } from '@patternfly/react-core';
@@ -132,24 +131,22 @@ export class AdditionalGitRemotes extends React.PureComponent<Props, State> {
 
   public render() {
     return (
-      <Form isHorizontal={true}>
-        <FormSection title="Additional Git Remotes" className={styles.gitRemotesTitle}>
-          <FormFieldGroup className={styles.gitRemotesGroup}>
-            {this.buildGitRemotes()}
-            <ActionGroup style={{ marginTop: 0 }}>
-              <Button
-                onClick={() => this.handleAdd()}
-                variant={ButtonVariant.link}
-                style={{ textDecoration: 'none' }}
-                isInline
-                icon={<PlusCircleIcon />}
-              >
-                Add Remote
-              </Button>
-            </ActionGroup>
-          </FormFieldGroup>
-        </FormSection>
-      </Form>
+      <FormSection title="Additional Git Remotes" className={styles.gitRemotesTitle}>
+        <FormFieldGroup className={styles.gitRemotesGroup}>
+          {this.buildGitRemotes()}
+          <ActionGroup style={{ marginTop: 0 }}>
+            <Button
+              onClick={() => this.handleAdd()}
+              variant={ButtonVariant.link}
+              style={{ textDecoration: 'none' }}
+              isInline
+              icon={<PlusCircleIcon />}
+            >
+              Add Remote
+            </Button>
+          </ActionGroup>
+        </FormFieldGroup>
+      </FormSection>
     );
   }
 }
