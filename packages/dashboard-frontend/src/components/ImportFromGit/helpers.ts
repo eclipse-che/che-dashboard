@@ -10,7 +10,7 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import { api } from '@eclipse-che/common';
+import common, { api } from '@eclipse-che/common';
 import { ValidatedOptions } from '@patternfly/react-core';
 import { isEqual } from 'lodash';
 
@@ -235,13 +235,23 @@ export function getGitRepoOptionsFromLocation(location: string): {
     searchParams.delete('remotes');
     remotes = undefined;
   } else {
-    remotes = getGitRemotes(_remotes);
+    try {
+      remotes = getGitRemotes(_remotes);
+    } catch (e) {
+      console.log(common.helpers.errors.getMessage(e));
+    }
   }
   location =
     searchParams.toString().length === 0 ? `${path}` : `${path}?${searchParams.toString()}`;
   const hasSupportedGitService = isSupportedGitService(location);
-  const gitBranch = hasSupportedGitService ? getBranchFromLocation(location) : undefined;
-
+  let gitBranch = hasSupportedGitService ? getBranchFromLocation(location) : undefined;
+  if (hasSupportedGitService) {
+    try {
+      gitBranch = getBranchFromLocation(location);
+    } catch (e) {
+      console.log(`Unable to get branch from '${location}'.${common.helpers.errors.getMessage(e)}`);
+    }
+  }
   return { location, gitBranch, remotes, devfilePath, hasSupportedGitService };
 }
 

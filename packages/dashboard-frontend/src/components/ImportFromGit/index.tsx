@@ -99,14 +99,12 @@ class ImportFromGit extends React.PureComponent<Props, State> {
   }
 
   private handleChange(location: string): void {
-    if (this.state.location === location.trim()) {
+    location = location.trim();
+    if (this.state.location === location) {
       return;
     }
     const validated = validateLocation(location, this.state.hasSshKeys);
-    this.setState({ locationValidated: validated, location: location.trim() });
-    if (validated !== ValidatedOptions.success) {
-      return;
-    }
+    this.setState({ locationValidated: validated, location });
   }
 
   private getErrorMessage(location: string): string | React.ReactNode {
