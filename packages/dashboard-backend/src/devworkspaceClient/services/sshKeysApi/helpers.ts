@@ -89,7 +89,7 @@ export function toSecret(namespace: string, sshKey: api.NewSshKey): SshKeySecret
       'dwo_ssh_key.pub': sshKey.keyPub,
       dwo_ssh_key: sshKey.key,
       ssh_config: btoa(SSH_CONFIG),
-      ...(sshKey.passphrase && { passphrase: sshKey.passphrase }),
+      ...(sshKey.passphrase && { passphrase: btoa(sshKey.passphrase) }),
     },
   };
 }

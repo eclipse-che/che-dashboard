@@ -44,6 +44,7 @@ export class SshPassphrase extends React.Component<Props, State> {
           aria-label="Passphrase"
           placeholder="Enter passphrase (optional)"
           onChange={passphrase => this.onChange(passphrase)}
+          type="password"
         />
       </FormGroup>
     );
