@@ -39,7 +39,7 @@ exports[`SshPassphrase snapshot 1`] = `
         onFocus={[Function]}
         placeholder="Enter passphrase (optional)"
         required={false}
-        type="text"
+        type="password"
       />
       
     </div>

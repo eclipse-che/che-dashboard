@@ -142,7 +142,7 @@ describe('Helpers for SSH Keys API', () => {
         'dwo_ssh_key.pub': token.keyPub,
         dwo_ssh_key: token.key,
         ssh_config: btoa(SSH_CONFIG),
-        passphrase: 'passphrase',
+        passphrase: btoa('passphrase'),
       },
       kind: 'Secret',
       metadata: {
