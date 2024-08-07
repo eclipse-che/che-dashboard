@@ -19,7 +19,7 @@ export class ContainerImageField extends React.PureComponent<Props> {
     const { containerImage, onChange } = this.props;
 
     return (
-      <div data-testid="container-image-component">
+      <div>
         <div>Container Image</div>
         <div data-testid="container-image">{containerImage}</div>
         <button onClick={() => onChange('new-container-image')}>Container Image Change</button>

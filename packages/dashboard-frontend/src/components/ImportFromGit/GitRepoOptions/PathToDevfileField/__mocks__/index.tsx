@@ -12,17 +12,17 @@
 
 import React from 'react';
 
-import { Props } from '@/components/ImportFromGit/AdvancedOptions/CpuLimitField';
+import { Props } from '@/components/ImportFromGit/GitRepoOptions/PathToDevfileField';
 
-export class CpuLimitField extends React.PureComponent<Props> {
+export class PathToDevfileField extends React.PureComponent<Props> {
   public render() {
-    const { cpuLimit, onChange } = this.props;
+    const { devfilePath, onChange } = this.props;
 
     return (
       <div>
-        <div>Cpu Limit</div>
-        <div data-testid="cpu-limit">{cpuLimit.toString()}</div>
-        <button onClick={() => onChange(1)}>Cpu Limit Change</button>
+        <div>Devfile Path</div>
+        <div data-testid="devfile-path">{devfilePath}</div>
+        <button onClick={() => onChange('new-devfile-path')}>Devfile Path Change</button>
       </div>
     );
   }

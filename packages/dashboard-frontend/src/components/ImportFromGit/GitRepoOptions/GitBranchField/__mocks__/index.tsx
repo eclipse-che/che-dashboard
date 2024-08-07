@@ -22,7 +22,7 @@ export class GitBranchField extends React.PureComponent<Props> {
       <div data-testid="git-branch-component">
         <div>Git Branch</div>
         <div data-testid="git-branch">{gitBranch}</div>
-        <button onClick={() => onChange('test-branch')}>Git Branch Change</button>
+        <button onClick={() => onChange('new-branch')}>Git Branch Change</button>
       </div>
     );
   }

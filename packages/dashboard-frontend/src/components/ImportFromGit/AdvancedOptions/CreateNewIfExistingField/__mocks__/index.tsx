@@ -19,7 +19,7 @@ export class CreateNewIfExistingField extends React.PureComponent<Props> {
     const { createNewIfExisting, onChange } = this.props;
 
     return (
-      <div data-testid="create-new-if-existing-component">
+      <div>
         <div>Create New If Existing</div>
         <div data-testid="create-new-if-existing">
           {createNewIfExisting !== undefined ? createNewIfExisting.toString() : 'undefined'}

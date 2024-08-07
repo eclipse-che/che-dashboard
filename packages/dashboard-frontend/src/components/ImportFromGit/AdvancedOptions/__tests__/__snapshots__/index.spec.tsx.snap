@@ -6,9 +6,7 @@ exports[`AdvancedOptions snapshot with all values 1`] = `
   noValidate={true}
   onSubmit={[Function]}
 >
-  <div
-    data-testid="container-image-component"
-  >
+  <div>
     <div>
       Container Image
     </div>
@@ -23,9 +21,7 @@ exports[`AdvancedOptions snapshot with all values 1`] = `
       Container Image Change
     </button>
   </div>
-  <div
-    data-testid="temporary-storage-component"
-  >
+  <div>
     <div>
       Temporary Storage
     </div>
@@ -40,9 +36,7 @@ exports[`AdvancedOptions snapshot with all values 1`] = `
       Temporary Storage Change
     </button>
   </div>
-  <div
-    data-testid="create-new-if-existing-component"
-  >
+  <div>
     <div>
       Create New If Existing
     </div>
@@ -57,9 +51,7 @@ exports[`AdvancedOptions snapshot with all values 1`] = `
       Create New If Existing Change
     </button>
   </div>
-  <div
-    data-testid="memory-limit-component"
-  >
+  <div>
     <div>
       Memory Limit
     </div>
@@ -74,9 +66,7 @@ exports[`AdvancedOptions snapshot with all values 1`] = `
       Memory Limit Change
     </button>
   </div>
-  <div
-    data-testid="cpu-limit-component"
-  >
+  <div>
     <div>
       Cpu Limit
     </div>
@@ -100,9 +90,7 @@ exports[`AdvancedOptions snapshot with default values 1`] = `
   noValidate={true}
   onSubmit={[Function]}
 >
-  <div
-    data-testid="container-image-component"
-  >
+  <div>
     <div>
       Container Image
     </div>
@@ -115,9 +103,7 @@ exports[`AdvancedOptions snapshot with default values 1`] = `
       Container Image Change
     </button>
   </div>
-  <div
-    data-testid="temporary-storage-component"
-  >
+  <div>
     <div>
       Temporary Storage
     </div>
@@ -132,9 +118,7 @@ exports[`AdvancedOptions snapshot with default values 1`] = `
       Temporary Storage Change
     </button>
   </div>
-  <div
-    data-testid="create-new-if-existing-component"
-  >
+  <div>
     <div>
       Create New If Existing
     </div>
@@ -149,9 +133,7 @@ exports[`AdvancedOptions snapshot with default values 1`] = `
       Create New If Existing Change
     </button>
   </div>
-  <div
-    data-testid="memory-limit-component"
-  >
+  <div>
     <div>
       Memory Limit
     </div>
@@ -166,9 +148,7 @@ exports[`AdvancedOptions snapshot with default values 1`] = `
       Memory Limit Change
     </button>
   </div>
-  <div
-    data-testid="cpu-limit-component"
-  >
+  <div>
     <div>
       Cpu Limit
     </div>
