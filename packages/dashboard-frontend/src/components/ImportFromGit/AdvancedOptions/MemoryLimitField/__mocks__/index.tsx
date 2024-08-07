@@ -19,7 +19,7 @@ export class MemoryLimitField extends React.PureComponent<Props> {
     const { memoryLimit, onChange } = this.props;
 
     return (
-      <div data-testid="memory-limit-component">
+      <div>
         <div>Memory Limit</div>
         <div data-testid="memory-limit">{memoryLimit.toString()}</div>
         <button onClick={() => onChange(1073741824)}>Memory Limit Change</button>

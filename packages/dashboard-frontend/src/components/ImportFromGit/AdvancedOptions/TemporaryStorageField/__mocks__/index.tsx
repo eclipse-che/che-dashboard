@@ -19,7 +19,7 @@ export class TemporaryStorageField extends React.PureComponent<Props> {
     const { isTemporary, onChange } = this.props;
 
     return (
-      <div data-testid="temporary-storage-component">
+      <div>
         <div>Temporary Storage</div>
         <div data-testid="temporary-storage">
           {isTemporary !== undefined ? isTemporary.toString() : 'undefined'}
