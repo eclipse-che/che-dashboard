@@ -10,11 +10,11 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
+import userEvent from '@testing-library/user-event';
 import React from 'react';
 
 import { AdvancedOptions } from '@/components/ImportFromGit/AdvancedOptions';
 import getComponentRenderer, { screen } from '@/services/__mocks__/getComponentRenderer';
-import userEvent from '@testing-library/user-event';
 
 const { createSnapshot, renderComponent } = getComponentRenderer(getComponent);
 
@@ -76,13 +76,7 @@ describe('AdvancedOptions', () => {
 
     userEvent.click(updateCpuLimit);
 
-    expect(mockOnChange).toHaveBeenCalledWith(
-      undefined,
-      undefined,
-      undefined,
-      undefined,
-      1,
-    );
+    expect(mockOnChange).toHaveBeenCalledWith(undefined, undefined, undefined, undefined, 1);
   });
 
   test('update CreateNewIfExisting', () => {
