@@ -8,6 +8,10 @@ COMMITTERS: please include labels on each PR. Labels are listed here: https://gi
 ### What does this PR do?
 
 
+### Screenshot/screencast of this PR
+<!-- Please include a screenshot or a screencast explaining what is doing this PR -->
+
+
 ### What issues does this PR fix or reference?
 
 
@@ -20,7 +24,7 @@ needs to do the same.
 
 
 #### Release Notes
-<!-- markdown to be included in marketing announcement - N/A for bugs -->
+<!-- markdown to be included in marketing announcement -->
 
 
 #### Docs PR
