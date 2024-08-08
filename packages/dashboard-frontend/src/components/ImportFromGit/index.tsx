@@ -32,7 +32,7 @@ import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 
 import { validateLocation } from '@/components/ImportFromGit/helpers';
-import RepoOptionsAccordion from '@/components/ImportFromGit/repoOptionsAccordion';
+import RepoOptionsAccordion from '@/components/ImportFromGit/RepoOptionsAccordion';
 import { FactoryLocationAdapter } from '@/services/factory-location-adapter';
 import { EDITOR_ATTR, EDITOR_IMAGE_ATTR } from '@/services/helpers/factoryFlow/buildFactoryParams';
 import { buildUserPreferencesLocation } from '@/services/helpers/location';
