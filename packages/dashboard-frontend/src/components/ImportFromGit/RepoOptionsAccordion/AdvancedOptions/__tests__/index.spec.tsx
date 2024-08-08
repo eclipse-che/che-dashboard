@@ -18,18 +18,10 @@ import getComponentRenderer, { screen } from '@/services/__mocks__/getComponentR
 
 const { createSnapshot, renderComponent } = getComponentRenderer(getComponent);
 
-jest.mock(
-  '@/components/ImportFromGit/RepoOptionsAccordion/AdvancedOptions/ContainerImageField',
-);
-jest.mock(
-  '@/components/ImportFromGit/RepoOptionsAccordion/AdvancedOptions/CpuLimitField',
-);
-jest.mock(
-  '@/components/ImportFromGit/RepoOptionsAccordion/AdvancedOptions/MemoryLimitField',
-);
-jest.mock(
-  '@/components/ImportFromGit/RepoOptionsAccordion/AdvancedOptions/TemporaryStorageField',
-);
+jest.mock('@/components/ImportFromGit/RepoOptionsAccordion/AdvancedOptions/ContainerImageField');
+jest.mock('@/components/ImportFromGit/RepoOptionsAccordion/AdvancedOptions/CpuLimitField');
+jest.mock('@/components/ImportFromGit/RepoOptionsAccordion/AdvancedOptions/MemoryLimitField');
+jest.mock('@/components/ImportFromGit/RepoOptionsAccordion/AdvancedOptions/TemporaryStorageField');
 jest.mock(
   '@/components/ImportFromGit/RepoOptionsAccordion/AdvancedOptions/CreateNewIfExistingField',
 );
