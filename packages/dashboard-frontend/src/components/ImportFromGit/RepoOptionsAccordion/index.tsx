@@ -189,6 +189,7 @@ class RepoOptionsAccordion extends React.PureComponent<Props, State> {
             }}
             isExpanded={expanded.includes('git-repo-options')}
             id="accordion-item-git-repo-options"
+            data-testid="accordion-item-git-repo-options"
           >
             Git Repo Options
           </AccordionToggle>
@@ -221,6 +222,7 @@ class RepoOptionsAccordion extends React.PureComponent<Props, State> {
             }}
             isExpanded={expanded.includes('advanced-options')}
             id="accordion-item-advanced-options"
+            data-testid="accordion-item-advanced-options"
           >
             Advanced Options
           </AccordionToggle>

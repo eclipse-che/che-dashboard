@@ -98,6 +98,9 @@ export function getBranchFromLocation(location: string): string | undefined {
   return branch;
 }
 
+/**
+ * Returns git branch from the encoded Azure DevOps repo location.
+ */
 function getBranchFromAzureDevOpsLocation(location: string): string | undefined {
   const url = new URL(location);
 
@@ -113,6 +116,9 @@ function getBranchFromAzureDevOpsLocation(location: string): string | undefined 
   return version.replace(/^GB/, '');
 }
 
+/**
+ * Returns updated location which includes Azure DevOps repo location with an encoded version as a param.
+ */
 function setBranchToAzureDevOpsLocation(location: string, branch: string | undefined): string {
   const url = new URL(location);
   const searchParams = new URLSearchParams(url.search);
