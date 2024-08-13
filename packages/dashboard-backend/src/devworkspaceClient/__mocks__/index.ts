@@ -13,7 +13,6 @@
 import {
   IAirGapSampleApi,
   IDevWorkspaceApi,
-  IWorkspacePreferencesApi,
   IDevWorkspaceTemplateApi,
   IDockerConfigApi,
   IEditorsApi,
@@ -27,6 +26,7 @@ import {
   IServerConfigApi,
   IShhKeysApi,
   IUserProfileApi,
+  IWorkspacePreferencesApi,
 } from '@/devworkspaceClient/types';
 
 import { IDevWorkspaceClient } from '..';
