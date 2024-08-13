@@ -116,7 +116,7 @@ export class WorkspacePreferencesApiService implements IWorkspacePreferencesApi 
       [SKIP_AUTHORIZATION_KEY]: skipAuthorization,
     });
 
-    this.updateWorkspacePreferences(namespace, data);
+    await this.updateWorkspacePreferences(namespace, data);
   }
 
   public async addTrustedSource(
@@ -140,7 +140,7 @@ export class WorkspacePreferencesApiService implements IWorkspacePreferencesApi 
       });
     }
 
-    this.updateWorkspacePreferences(namespace, data);
+    await this.updateWorkspacePreferences(namespace, data);
   }
 
   public async removeTrustedSources(namespace: string): Promise<void> {
@@ -149,6 +149,6 @@ export class WorkspacePreferencesApiService implements IWorkspacePreferencesApi 
     const data = Object.assign({}, devWorkspacePreferences);
     delete data[TRUSTED_SOURCES_KEY];
 
-    this.updateWorkspacePreferences(namespace, data);
+    await this.updateWorkspacePreferences(namespace, data);
   }
 }
