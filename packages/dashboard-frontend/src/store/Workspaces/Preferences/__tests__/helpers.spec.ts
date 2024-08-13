@@ -245,105 +245,165 @@ describe('helpers', () => {
   });
 
   describe('isTrustedRepo', () => {
-    const trustedRepoURLs = [
-      'https://github.com/user/repo',
-      'https://gitlab.com/user/repo',
-      'https://bitbucket.org/user/repo',
-      'https://dev.azure.com/organization/project/_git/repo',
-      'git@github.com:user/repo.git',
-      'git@gitlab.com:user/repo.git',
-      'git@bitbucket.org:user/repo.git',
-      'git@ssh.dev.azure.com:v3/organization/project/repo',
-    ];
+    describe('GitHub', () => {
+      const trustedRepoHttpsUrls = ['https://github.com/user/repo'];
+      const trustedRepoGitSshUrls = ['git@github.com:user/repo.git'];
 
-    test('should return true for a trusted GitHub URL', () => {
-      expect(isTrustedRepo(trustedRepoURLs, 'https://github.com/user/repo/')).toBe(true);
+      test('trusted HTTPS URL', () => {
+        expect(isTrustedRepo(trustedRepoHttpsUrls, 'https://github.com/user/repo/')).toBe(true);
+        expect(isTrustedRepo(trustedRepoGitSshUrls, 'https://github.com/user/repo/')).toBe(true);
+      });
+
+      test('trusted GIT+SSH URL', () => {
+        expect(isTrustedRepo(trustedRepoHttpsUrls, 'git@github.com:user/repo.git')).toBe(true);
+        expect(isTrustedRepo(trustedRepoGitSshUrls, 'git@github.com:user/repo.git')).toBe(true);
+      });
+
+      test('untrusted HTTPS URL', () => {
+        expect(isTrustedRepo(trustedRepoHttpsUrls, 'https://github.com/another-user/repo/')).toBe(
+          false,
+        );
+        expect(isTrustedRepo(trustedRepoGitSshUrls, 'https://github.com/another-user/repo/')).toBe(
+          false,
+        );
+      });
+
+      test('untrusted GIT+SSH URL', () => {
+        expect(isTrustedRepo(trustedRepoHttpsUrls, 'git@github.com:another-user/repo.git')).toBe(
+          false,
+        );
+        expect(isTrustedRepo(trustedRepoGitSshUrls, 'git@github.com:another-user/repo.git')).toBe(
+          false,
+        );
+      });
     });
 
-    test('should return true for a trusted GitLab URL', () => {
-      expect(isTrustedRepo(trustedRepoURLs, 'https://gitlab.com/user/repo')).toBe(true);
+    describe('GitLab', () => {
+      const trustedRepoHttpsUrls = ['https://gitlab.com/user/repo'];
+      const trustedRepoGitSshUrls = ['git@gitlab.com:user/repo.git'];
+
+      test('trusted HTTPS URL', () => {
+        expect(isTrustedRepo(trustedRepoHttpsUrls, 'https://gitlab.com/user/repo')).toBe(true);
+        expect(isTrustedRepo(trustedRepoGitSshUrls, 'https://gitlab.com/user/repo')).toBe(true);
+      });
+
+      test('trusted GIT+SSH URL', () => {
+        expect(isTrustedRepo(trustedRepoHttpsUrls, 'git@gitlab.com:user/repo.git')).toBe(true);
+        expect(isTrustedRepo(trustedRepoGitSshUrls, 'git@gitlab.com:user/repo.git')).toBe(true);
+      });
+
+      test('untrusted HTTPS URL', () => {
+        expect(isTrustedRepo(trustedRepoHttpsUrls, 'https://gitlab.com/another-user/repo')).toBe(
+          false,
+        );
+        expect(isTrustedRepo(trustedRepoGitSshUrls, 'https://gitlab.com/another-user/repo')).toBe(
+          false,
+        );
+      });
+
+      test('untrusted GIT+SSH URL', () => {
+        expect(isTrustedRepo(trustedRepoHttpsUrls, 'git@gitlab.com:another-user/repo.git')).toBe(
+          false,
+        );
+        expect(isTrustedRepo(trustedRepoGitSshUrls, 'git@gitlab.com:another-user/repo.git')).toBe(
+          false,
+        );
+      });
     });
 
-    test('should return true for a trusted Bitbucket URL', () => {
-      expect(isTrustedRepo(trustedRepoURLs, 'https://bitbucket.org/user/repo')).toBe(true);
+    describe('Bitbucket', () => {
+      const trustedRepoHttpsUrls = ['https://bitbucket.org/user/repo'];
+      const trustedRepoGitSshUrls = ['git@bitbucket.org:user/repo.git'];
+
+      test('trusted HTTPS URL', () => {
+        expect(isTrustedRepo(trustedRepoHttpsUrls, 'https://bitbucket.org/user/repo')).toBe(true);
+        expect(isTrustedRepo(trustedRepoGitSshUrls, 'https://bitbucket.org/user/repo')).toBe(true);
+      });
+
+      test('trusted GIT+SSH URL', () => {
+        expect(isTrustedRepo(trustedRepoHttpsUrls, 'git@bitbucket.org:user/repo.git')).toBe(true);
+        expect(isTrustedRepo(trustedRepoGitSshUrls, 'git@bitbucket.org:user/repo.git')).toBe(true);
+      });
+
+      test('untrusted HTTPS URL', () => {
+        expect(isTrustedRepo(trustedRepoHttpsUrls, 'https://bitbucket.org/another-user/repo')).toBe(
+          false,
+        );
+        expect(
+          isTrustedRepo(trustedRepoGitSshUrls, 'https://bitbucket.org/another-user/repo'),
+        ).toBe(false);
+      });
+
+      test('untrusted GIT+SSH URL', () => {
+        expect(isTrustedRepo(trustedRepoHttpsUrls, 'git@bitbucket.org:another-user/repo.git')).toBe(
+          false,
+        );
+        expect(
+          isTrustedRepo(trustedRepoGitSshUrls, 'git@bitbucket.org:another-user/repo.git'),
+        ).toBe(false);
+      });
     });
 
-    test('should return true for a trusted Azure DevOps URL', () => {
-      expect(
-        isTrustedRepo(trustedRepoURLs, 'https://dev.azure.com/organization/project/_git/repo'),
-      ).toBe(true);
-    });
+    describe('Azure DevOps', () => {
+      const trustedRepoHttpsUrls = ['https://dev.azure.com/organization/project/_git/repo'];
+      const trustedRepoGitSshUrls = ['git@ssh.dev.azure.com:v3/organization/project/repo'];
 
-    test('should return true for a trusted GitHub SSH URL', () => {
-      expect(isTrustedRepo(trustedRepoURLs, 'git@github.com:user/repo.git')).toBe(true);
-    });
+      test('trusted HTTPS URL', () => {
+        expect(
+          isTrustedRepo(
+            trustedRepoHttpsUrls,
+            'https://dev.azure.com/organization/project/_git/repo',
+          ),
+        ).toBe(true);
+        expect(
+          isTrustedRepo(
+            trustedRepoGitSshUrls,
+            'https://dev.azure.com/organization/project/_git/repo',
+          ),
+        ).toBe(true);
+      });
 
-    test('should return true for a trusted GitLab SSH URL', () => {
-      expect(isTrustedRepo(trustedRepoURLs, 'git@gitlab.com:user/repo.git')).toBe(true);
-    });
+      test('trusted GIT+SSH URL', () => {
+        expect(
+          isTrustedRepo(trustedRepoHttpsUrls, 'git@ssh.dev.azure.com:v3/organization/project/repo'),
+        ).toBe(true);
+        expect(
+          isTrustedRepo(
+            trustedRepoGitSshUrls,
+            'git@ssh.dev.azure.com:v3/organization/project/repo',
+          ),
+        ).toBe(true);
+      });
 
-    test('should return true for a trusted Bitbucket SSH URL', () => {
-      expect(isTrustedRepo(trustedRepoURLs, 'git@bitbucket.org:user/repo.git')).toBe(true);
-    });
+      test('untrusted HTTPS URL', () => {
+        expect(
+          isTrustedRepo(
+            trustedRepoHttpsUrls,
+            'https://dev.azure.com/another-organization/project/_git/repo',
+          ),
+        ).toBe(false);
+        expect(
+          isTrustedRepo(
+            trustedRepoGitSshUrls,
+            'https://dev.azure.com/another-organization/project/_git/repo',
+          ),
+        ).toBe(false);
+      });
 
-    test('should return true for a trusted Azure DevOps SSH URL', () => {
-      expect(
-        isTrustedRepo(trustedRepoURLs, 'git@ssh.dev.azure.com:v3/organization/project/repo'),
-      ).toBe(true);
-    });
-
-    test('should return false for an untrusted GitHub URL', () => {
-      expect(isTrustedRepo(trustedRepoURLs, 'https://github.com/anotheruser/anotherrepo')).toBe(
-        false,
-      );
-    });
-
-    test('should return false for an untrusted GitLab URL', () => {
-      expect(isTrustedRepo(trustedRepoURLs, 'https://gitlab.com/anotheruser/anotherrepo')).toBe(
-        false,
-      );
-    });
-
-    test('should return false for an untrusted Bitbucket URL', () => {
-      expect(isTrustedRepo(trustedRepoURLs, 'https://bitbucket.org/anotheruser/anotherrepo')).toBe(
-        false,
-      );
-    });
-
-    test('should return false for an untrusted Azure DevOps URL', () => {
-      expect(
-        isTrustedRepo(
-          trustedRepoURLs,
-          'https://dev.azure.com/anotherorg/anotherproject/_git/anotherrepo',
-        ),
-      ).toBe(false);
-    });
-
-    test('should return false for an untrusted GitHub SSH URL', () => {
-      expect(isTrustedRepo(trustedRepoURLs, 'git@github.com:anotheruser/anotherrepo.git')).toBe(
-        false,
-      );
-    });
-
-    test('should return false for an untrusted GitLab SSH URL', () => {
-      expect(isTrustedRepo(trustedRepoURLs, 'git@gitlab.com:anotheruser/anotherrepo.git')).toBe(
-        false,
-      );
-    });
-
-    test('should return false for an untrusted Bitbucket SSH URL', () => {
-      expect(isTrustedRepo(trustedRepoURLs, 'git@bitbucket.org:anotheruser/anotherrepo.git')).toBe(
-        false,
-      );
-    });
-
-    test('should return false for an untrusted Azure DevOps SSH URL', () => {
-      expect(
-        isTrustedRepo(
-          trustedRepoURLs,
-          'git@ssh.dev.azure.com:v3/anotherorg/anotherproject/anotherrepo',
-        ),
-      ).toBe(false);
+      test('untrusted GIT+SSH URL', () => {
+        expect(
+          isTrustedRepo(
+            trustedRepoHttpsUrls,
+            'git@ssh.dev.azure.com:v3/another-organization/project/repo',
+          ),
+        ).toBe(false);
+        expect(
+          isTrustedRepo(
+            trustedRepoGitSshUrls,
+            'git@ssh.dev.azure.com:v3/another-organization/project/repo',
+          ),
+        ).toBe(false);
+      });
     });
   });
 });

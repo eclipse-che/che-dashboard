@@ -66,9 +66,12 @@ export function isAzureDevOpsRepo(url: string): boolean {
 /**
  * Extracts the repository name from a URL using a regular expression pattern.
  */
-export function extractRepo(url: string, pattern: RegExp): string | null {
-  const match = url.match(pattern);
+export function extractRepo(url: string, pattern: RegExp | undefined): string | null {
+  if (pattern === undefined) {
+    return null;
+  }
 
+  const match = url.match(pattern);
   if (!match) {
     return null;
   }
@@ -76,41 +79,43 @@ export function extractRepo(url: string, pattern: RegExp): string | null {
   return isAzureDevOpsRepo(url) ? match[1].replace('/_git', '') : match[1];
 }
 
-export function isTrustedRepo(trustedRepoURLs: string[], url: string | URL): boolean {
+function getRepoPattern(url: string): RegExp | undefined {
+  url = url.replace(/^(?:(?:git\+)?ssh:\/\/)/, '');
+  if (url.startsWith('https://github.com/')) {
+    return gitProviderPatterns.github.https;
+  } else if (url.startsWith('https://gitlab.com/')) {
+    return gitProviderPatterns.gitlab.https;
+  } else if (url.startsWith('https://bitbucket.org/')) {
+    return gitProviderPatterns.bitbucket.https;
+  } else if (url.startsWith('https://dev.azure.com/')) {
+    return gitProviderPatterns.azureDevOps.https;
+  } else if (url.startsWith('git@github.com:')) {
+    return gitProviderPatterns.github.ssh;
+  } else if (url.startsWith('git@gitlab.com:')) {
+    return gitProviderPatterns.gitlab.ssh;
+  } else if (url.startsWith('git@bitbucket.org:')) {
+    return gitProviderPatterns.bitbucket.ssh;
+  } else if (url.startsWith('git@ssh.dev.azure.com:')) {
+    return gitProviderPatterns.azureDevOps.ssh;
+  }
+}
+
+export function isTrustedRepo(trustedUrls: string[], url: string | URL): boolean {
   const urlString = url.toString();
+  const urlPattern = getRepoPattern(urlString);
+  const urlRepo = extractRepo(urlString, urlPattern);
 
   // Check if the URL matches any of the trusted repositories
-  return trustedRepoURLs.some(repoURL => {
-    let repoPattern: RegExp | null = null;
+  return trustedUrls.some(trustedUrl => {
+    const trustedUrlPattern = getRepoPattern(trustedUrl);
+    const trustedUrlRepo = extractRepo(trustedUrl, trustedUrlPattern);
 
-    if (repoURL.startsWith('https://github.com/')) {
-      repoPattern = gitProviderPatterns.github.https;
-    } else if (repoURL.startsWith('https://gitlab.com/')) {
-      repoPattern = gitProviderPatterns.gitlab.https;
-    } else if (repoURL.startsWith('https://bitbucket.org/')) {
-      repoPattern = gitProviderPatterns.bitbucket.https;
-    } else if (repoURL.startsWith('https://dev.azure.com/')) {
-      repoPattern = gitProviderPatterns.azureDevOps.https;
-    } else if (repoURL.startsWith('git@github.com:')) {
-      repoPattern = gitProviderPatterns.github.ssh;
-    } else if (repoURL.startsWith('git@gitlab.com:')) {
-      repoPattern = gitProviderPatterns.gitlab.ssh;
-    } else if (repoURL.startsWith('git@bitbucket.org:')) {
-      repoPattern = gitProviderPatterns.bitbucket.ssh;
-    } else if (repoURL.startsWith('git@ssh.dev.azure.com:')) {
-      repoPattern = gitProviderPatterns.azureDevOps.ssh;
+    if (urlRepo !== null && trustedUrlRepo !== null) {
+      // compare repository names
+      return urlRepo === trustedUrlRepo;
     } else {
-      // For generic URLs, match the base URL directly
-      return urlString.startsWith(repoURL);
+      // compare URLs as is
+      return urlString === trustedUrl;
     }
-
-    if (repoPattern) {
-      const trustedRepo = extractRepo(repoURL, repoPattern);
-      const testRepo = extractRepo(urlString, repoPattern);
-
-      return trustedRepo && testRepo && trustedRepo === testRepo;
-    }
-
-    return false;
   });
 }

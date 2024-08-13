@@ -15,8 +15,8 @@
 import {
   V1alpha2DevWorkspace,
   V1alpha2DevWorkspaceTemplate,
-  V222Devfile,
-  V222DevfileComponents,
+  V230Devfile,
+  V230DevfileComponents,
 } from '@devfile/api';
 import { api } from '@eclipse-che/common';
 import { IncomingHttpHeaders } from 'http';
@@ -44,7 +44,7 @@ export const stubContainerBuild = {
   disableContainerBuildCapabilities: true,
 };
 export const stubDashboardWarning = 'Dashboard warning';
-export const stubDefaultComponents: V222DevfileComponents[] = [];
+export const stubDefaultComponents: V230DevfileComponents[] = [];
 export const stubDefaultEditor = undefined;
 export const stubDefaultPlugins: api.IWorkspacesDefaultPlugins[] = [];
 export const stubPluginRegistry = { openVSXURL: 'openvsx-url' };
@@ -54,7 +54,6 @@ export const stubAllWorkspacesLimit = 1;
 export const stubWorkspaceInactivityTimeout = 0;
 export const stubWorkspaceRunTimeout = 0;
 export const stubWorkspaceStartupTimeout = 0;
-export const defaultDevfileRegistryUrl = 'http://devfile-registry.eclipse-che.svc';
 export const defaultPluginRegistryUrl = 'http://plugin-registry.eclipse-che.svc/v3';
 export const internalRegistryDisableStatus = true;
 export const externalDevfileRegistries = [{ url: 'https://devfile.registry.test.org/' }];
@@ -104,7 +103,7 @@ export const stubEventsList: api.IEventList = {
   items: [],
 };
 
-export const editorsArray: V222Devfile[] = [
+export const editorsArray: V230Devfile[] = [
   {
     schemaVersion: '2.2.2',
     metadata: {
@@ -177,7 +176,6 @@ export const getDevWorkspaceClient = jest.fn(
         getWorkspaceInactivityTimeout: _cheCustomResource => stubWorkspaceInactivityTimeout,
         getWorkspaceRunTimeout: _cheCustomResource => stubWorkspaceRunTimeout,
         getWorkspaceStartTimeout: _cheCustomResource => stubWorkspaceStartupTimeout,
-        getDefaultDevfileRegistryUrl: _cheCustomResource => defaultDevfileRegistryUrl,
         getDefaultPluginRegistryUrl: _cheCustomResource => defaultPluginRegistryUrl,
         getExternalDevfileRegistries: _cheCustomResource => externalDevfileRegistries,
         getInternalRegistryDisableStatus: _cheCustomResource => internalRegistryDisableStatus,

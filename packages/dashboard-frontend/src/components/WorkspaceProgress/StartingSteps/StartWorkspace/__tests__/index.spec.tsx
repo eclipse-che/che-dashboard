@@ -84,8 +84,6 @@ const serverConfig: api.IServerConfig = {
     disableInternalRegistry: false,
     externalDevfileRegistries: [],
   },
-  devfileRegistryURL: '',
-  devfileRegistryInternalURL: '',
   pluginRegistryURL: '',
   pluginRegistryInternalURL: '',
 };
@@ -400,66 +398,6 @@ describe('Starting steps, starting a workspace', () => {
 
     // should not report any error
     expect(mockOnError).not.toHaveBeenCalled();
-
-    // should not start the workspace
-    expect(mockStartWorkspace).not.toHaveBeenCalled();
-
-    expect(mockOnNextStep).not.toHaveBeenCalled();
-    expect(mockOnRestart).not.toHaveBeenCalled();
-  });
-
-  test('workspace is STARTING then STOPPED', async () => {
-    const store = new FakeStoreBuilder()
-      .withDwServerConfig(serverConfig)
-      .withDevWorkspaces({
-        workspaces: [
-          new DevWorkspaceBuilder()
-            .withName(workspaceName)
-            .withNamespace(namespace)
-            .withStatus({ phase: 'STARTING' })
-            .build(),
-        ],
-      })
-      .build();
-
-    const { reRenderComponent } = renderComponent(store);
-
-    await jest.advanceTimersByTimeAsync(MIN_STEP_DURATION_MS);
-
-    // no errors at this moment
-    expect(mockOnError).not.toHaveBeenCalled();
-
-    const nextStore = new FakeStoreBuilder()
-      .withDevWorkspaces({
-        workspaces: [
-          new DevWorkspaceBuilder()
-            .withName(workspaceName)
-            .withNamespace(namespace)
-            .withStatus({ phase: 'STOPPED' })
-            .build(),
-        ],
-      })
-      .build();
-    reRenderComponent(nextStore);
-
-    await jest.advanceTimersByTimeAsync(MIN_STEP_DURATION_MS);
-
-    // should report the error
-    const expectAlertItem = expect.objectContaining({
-      title: 'Failed to open the workspace',
-      children: 'The workspace status changed unexpectedly to "Stopped".',
-      actionCallbacks: [
-        expect.objectContaining({
-          title: 'Restart',
-          callback: expect.any(Function),
-        }),
-        expect.objectContaining({
-          title: 'Restart with default devfile',
-          callback: expect.any(Function),
-        }),
-      ],
-    });
-    await waitFor(() => expect(mockOnError).toHaveBeenCalledWith(expectAlertItem));
 
     // should not start the workspace
     expect(mockStartWorkspace).not.toHaveBeenCalled();

@@ -1,6 +1,6 @@
 {
   "name": "@eclipse-che/common",
-  "version": "7.89.0-next",
+  "version": "7.90.0-next",
   "repository": "https://github.com/eclipse-che/che-dashboard",
   "license": "EPL-2.0",
   "private": true,
@@ -17,7 +17,7 @@
     "test:watch": "yarn test --watch"
   },
   "devDependencies": {
-    "@devfile/api": "2.2.2-1715367693",
+    "@devfile/api": "2.3.0-1721400636",
     "@kubernetes/client-node": "^0.21.0",
     "@types/jest": "^29.5.3",
     "@typescript-eslint/eslint-plugin": "^6.3.0",

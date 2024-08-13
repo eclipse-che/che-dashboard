@@ -10,7 +10,7 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import { V222DevfileComponents } from '@devfile/api';
+import { V230DevfileComponents } from '@devfile/api';
 import { api } from '@eclipse-che/common';
 import * as k8s from '@kubernetes/client-node';
 import { readFileSync } from 'fs';
@@ -111,15 +111,6 @@ export class ServerConfigApiService implements IServerConfigApi {
     return cheCustomResource.spec.devEnvironments?.defaultPlugins || [];
   }
 
-  getDefaultDevfileRegistryUrl(cheCustomResource: CheClusterCustomResource): string {
-    let devfileRegistryURL = cheCustomResource.status?.devfileRegistryURL || '';
-    if (devfileRegistryURL && !devfileRegistryURL.endsWith('/')) {
-      devfileRegistryURL += '/';
-    }
-
-    return devfileRegistryURL;
-  }
-
   getDefaultPluginRegistryUrl(cheCustomResource: CheClusterCustomResource): string {
     return cheCustomResource.status?.pluginRegistryURL || '';
   }
@@ -131,7 +122,7 @@ export class ServerConfigApiService implements IServerConfigApi {
     );
   }
 
-  getDefaultComponents(cheCustomResource: CheClusterCustomResource): V222DevfileComponents[] {
+  getDefaultComponents(cheCustomResource: CheClusterCustomResource): V230DevfileComponents[] {
     if (cheCustomResource.spec.devEnvironments?.defaultComponents) {
       return cheCustomResource.spec.devEnvironments.defaultComponents;
     }

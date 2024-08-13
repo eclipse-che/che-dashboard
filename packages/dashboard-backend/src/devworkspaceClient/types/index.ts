@@ -13,9 +13,9 @@
 import {
   V1alpha2DevWorkspace,
   V1alpha2DevWorkspaceTemplate,
-  V222DevfileComponents,
+  V230DevfileComponents,
 } from '@devfile/api';
-import { V222Devfile } from '@devfile/api';
+import { V230Devfile } from '@devfile/api';
 import { api } from '@eclipse-che/common';
 import * as k8s from '@kubernetes/client-node';
 import { IncomingHttpHeaders } from 'http';
@@ -127,7 +127,6 @@ export type CheClusterCustomResource = k8s.V1CustomResourceDefinition & {
     };
   };
   status: {
-    devfileRegistryURL: string;
     pluginRegistryURL: string;
   };
 };
@@ -150,7 +149,7 @@ export type CheClusterCustomResourceSpecDevEnvironments = {
   containerBuildConfiguration?: {
     openShiftSecurityContextConstraint?: string;
   };
-  defaultComponents?: V222DevfileComponents[];
+  defaultComponents?: V230DevfileComponents[];
   defaultNamespace?: {
     autoProvision?: boolean;
     template?: string;
@@ -265,10 +264,6 @@ export interface IServerConfigApi {
    */
   getDefaultPlugins(cheCustomResource: CheClusterCustomResource): api.IWorkspacesDefaultPlugins[];
   /**
-   * Returns the default devfile registry URL.
-   */
-  getDefaultDevfileRegistryUrl(cheCustomResource: CheClusterCustomResource): string;
-  /**
    * Returns the plugin registry URL.
    */
   getDefaultPluginRegistryUrl(cheCustomResource: CheClusterCustomResource): string;
@@ -280,7 +275,7 @@ export interface IServerConfigApi {
    * Returns the default components applied to DevWorkspaces.
    * These default components are meant to be used when a Devfile does not contain any components.
    */
-  getDefaultComponents(cheCustomResource: CheClusterCustomResource): V222DevfileComponents[];
+  getDefaultComponents(cheCustomResource: CheClusterCustomResource): V230DevfileComponents[];
   /**
    * Returns the plugin registry.
    */
@@ -439,6 +434,7 @@ export interface IDevWorkspaceClient {
   userProfileApi: IUserProfileApi;
   gitConfigApi: IGitConfigApi;
   gettingStartedSampleApi: IGettingStartedSampleApi;
+  airGapSampleApi: IAirGapSampleApi;
   sshKeysApi: IShhKeysApi;
   workspacePreferencesApi: IWorkspacePreferencesApi;
   editorsApi: IEditorsApi;
@@ -465,18 +461,35 @@ export interface IGettingStartedSampleApi {
   list(): Promise<Array<api.IGettingStartedSample>>;
 }
 
+export interface IAirGapSampleApi {
+  /**
+   * Reads all the Air Gap samples.
+   */
+  list(): Promise<Array<api.IAirGapSample>>;
+
+  /**
+   * Downloads the Air Gap sample project by its id.
+   */
+  downloadProject(id: string): Promise<api.IStreamedFile>;
+
+  /**
+   * Reads the devfile content of the Air Gap sample by its id.
+   */
+  downloadDevfile(id: string): Promise<api.IStreamedFile>;
+}
+
 export interface IEditorsApi {
   /**
    * Reads all Editors from ConfigMaps.
    */
-  list(): Promise<Array<V222Devfile>>;
+  list(): Promise<Array<V230Devfile>>;
 
   /**
    * Returns an Editor from ConfigMap by its editorId.
    * @param id editorId in the format of publisher/name/version
    * @throws EditorNotFoundError if editor is not found
    */
-  get(id: string): Promise<V222Devfile>;
+  get(id: string): Promise<V230Devfile>;
 }
 
 export interface IShhKeysApi {

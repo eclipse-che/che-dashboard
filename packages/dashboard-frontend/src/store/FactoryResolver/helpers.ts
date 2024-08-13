@@ -10,7 +10,7 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import { V222DevfileComponents, V222DevfileProjects } from '@devfile/api';
+import { V230DevfileComponents, V230DevfileProjects } from '@devfile/api';
 import common, { api } from '@eclipse-che/common';
 import axios from 'axios';
 import { dump } from 'js-yaml';
@@ -76,10 +76,6 @@ export async function grabLink(
 export function isDevfileRegistryLocation(location: string, config: api.IServerConfig): boolean {
   const devfileRegistries = [`${window.location.origin}${DEFAULT_REGISTRY}`];
 
-  if (config.devfileRegistryURL) {
-    devfileRegistries.push(config.devfileRegistryURL);
-  }
-
   const externalDevfileRegistries = config.devfileRegistry.externalDevfileRegistries.map(
     externalDevfileRegistry => externalDevfileRegistry.url,
   );
@@ -127,7 +123,7 @@ export function buildDevfileV2(
       .replace(/^-+|-+$/g, '')
       .toLowerCase();
 
-    const devfileV2Project: V222DevfileProjects = {
+    const devfileV2Project: V230DevfileProjects = {
       attributes: {},
       name: projectName,
     };
@@ -166,7 +162,7 @@ export function buildDevfileV2(
 export function normalizeDevfile(
   data: FactoryResolver,
   location: string,
-  defaultComponents: V222DevfileComponents[],
+  defaultComponents: V230DevfileComponents[],
   namespace: string,
   factoryParams: Partial<FactoryParams>,
 ): devfileApi.Devfile {
@@ -207,11 +203,20 @@ export function normalizeDevfile(
   }
 
   if (devfile.components && devfile.components.length > 0) {
-    // apply the custom image from factory params
-    if (factoryParams.image && devfile.components[0].container?.image) {
-      devfile.components[0].container.image = factoryParams.image;
+    if (devfile.components[0].container) {
+      // apply the custom image from factory params
+      if (factoryParams.image && devfile.components[0].container.image) {
+        devfile.components[0].container.image = factoryParams.image;
+      }
+      // apply the custom memoryLimit from factory params
+      if (factoryParams.memoryLimit) {
+        devfile.components[0].container.memoryLimit = factoryParams.memoryLimit;
+      }
+      // apply the custom cpuLimit from factory params
+      if (factoryParams.cpuLimit) {
+        devfile.components[0].container.cpuLimit = factoryParams.cpuLimit;
+      }
     }
-
     // temporary solution for fix che-server serialization bug with empty volume
     devfile.components.forEach(component => {
       if (Object.keys(component).length === 1 && component.name) {
