@@ -14,7 +14,7 @@ import React from 'react';
 
 import { Props } from '@/components/UntrustedSourceModal';
 
-export class UntrustedSourceModal extends React.PureComponent<Props> {
+export default class UntrustedSourceModal extends React.PureComponent<Props> {
   render(): React.ReactNode {
     const { isOpen, onContinue, onClose } = this.props;
     if (isOpen === false) {

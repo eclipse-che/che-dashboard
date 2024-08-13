@@ -16,7 +16,7 @@ import isEqual from 'lodash/isEqual';
 import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 
-import { UntrustedSourceModal } from '@/components/UntrustedSourceModal';
+import UntrustedSourceModal from '@/components/UntrustedSourceModal';
 import { ProgressAlert } from '@/components/WorkspaceProgress/Alert';
 import CommonStepCheckRunningWorkspacesLimit from '@/components/WorkspaceProgress/CommonSteps/CheckRunningWorkspacesLimit';
 import CreatingStepApplyDevfile from '@/components/WorkspaceProgress/CreatingSteps/Apply/Devfile';
@@ -41,11 +41,11 @@ import {
 import { findTargetWorkspace } from '@/services/helpers/factoryFlow/findTargetWorkspace';
 import { getLoaderMode, LoaderMode } from '@/services/helpers/factoryFlow/getLoaderMode';
 import { AlertItem, DevWorkspaceStatus, LoaderTab } from '@/services/helpers/types';
-import SessionStorageService, { SessionStorageKey } from '@/services/session-storage';
 import { Workspace } from '@/services/workspace-adapter';
 import { AppState } from '@/store';
 import { selectIsRegistryDevfile } from '@/store/DevfileRegistries/selectors';
 import * as WorkspaceStore from '@/store/Workspaces';
+import { selectPreferencesIsTrustedSource } from '@/store/Workspaces/Preferences';
 import { selectAllWorkspaces } from '@/store/Workspaces/selectors';
 
 export type Props = MappedProps & {
@@ -145,14 +145,10 @@ class Progress extends React.Component<Props, State> {
   private init(props: Props, state: State, prevProps: Props | undefined): void {
     if (this.state.isSourceTrustedWarningOpen === true) {
       const { sourceUrl } = this.state.factoryParams;
-      const trustedSources = SessionStorageService.get(SessionStorageKey.TRUSTED_SOURCES);
+      const isTrustedSource = this.props.isTrustedSource(sourceUrl);
       const isRegistryDevfile = this.props.isRegistryDevfile(sourceUrl);
       // trust source if it is taken from the registry or it is in the list of trusted sources
-      if (
-        isRegistryDevfile ||
-        (trustedSources &&
-          (trustedSources.split(',').includes(sourceUrl) || trustedSources === 'all'))
-      ) {
+      if (isRegistryDevfile || isTrustedSource) {
         this.setState({
           isSourceTrustedWarningOpen: false,
         });
@@ -696,6 +692,7 @@ class Progress extends React.Component<Props, State> {
 const mapStateToProps = (state: AppState) => ({
   allWorkspaces: selectAllWorkspaces(state),
   isRegistryDevfile: selectIsRegistryDevfile(state),
+  isTrustedSource: selectPreferencesIsTrustedSource(state),
 });
 
 const connector = connect(mapStateToProps, WorkspaceStore.actionCreators, null, {

@@ -11,6 +11,7 @@
  */
 
 import {
+  AlertVariant,
   Button,
   ButtonVariant,
   Checkbox,
@@ -19,11 +20,19 @@ import {
   Text,
   TextContent,
 } from '@patternfly/react-core';
+import { inject } from 'inversify';
 import React from 'react';
+import { connect, ConnectedProps } from 'react-redux';
 
-import SessionStorageService, { SessionStorageKey } from '@/services/session-storage';
+import { AppAlerts } from '@/services/alerts/appAlerts';
+import { AppState } from '@/store';
+import { workspacePreferencesActionCreators } from '@/store/Workspaces/Preferences';
+import {
+  selectPreferencesIsTrustedSource,
+  selectPreferencesTrustedSources,
+} from '@/store/Workspaces/Preferences/selectors';
 
-export type Props = {
+export type Props = MappedProps & {
   location: string;
   isOpen: boolean;
   onClose?: () => void;
@@ -34,44 +43,26 @@ export type State = {
   trustAllCheckbox: boolean;
 };
 
-export class UntrustedSourceModal extends React.Component<Props, State> {
+class UntrustedSourceModal extends React.Component<Props, State> {
+  @inject(AppAlerts)
+  private readonly appAlerts: AppAlerts;
+
   constructor(props: Props) {
     super(props);
 
     this.state = {
-      isTrusted: UntrustedSourceModal.isSourceTrusted(props.location),
+      isTrusted: this.props.isTrusted(props.location),
       trustAllCheckbox: false,
     };
   }
 
-  static isSourceTrusted(location: string): boolean {
-    const trustedSources = SessionStorageService.get(SessionStorageKey.TRUSTED_SOURCES);
-    if (!trustedSources) {
-      return false;
-    } else if (trustedSources === 'all') {
+  public shouldComponentUpdate(nextProps: Readonly<Props>, nextState: Readonly<State>): boolean {
+    const isTrusted = this.props.isTrusted(this.props.location);
+    const nextIsTrusted = nextProps.isTrusted(nextProps.location);
+    if (isTrusted !== nextIsTrusted || this.state.isTrusted !== nextState.isTrusted) {
       return true;
     }
 
-    const trustedSourcesArray = trustedSources.split(',');
-    return trustedSourcesArray.includes(location);
-  }
-
-  static updateTrustedSources(location: string, trustAll: boolean): void {
-    const trustedSources = SessionStorageService.get(SessionStorageKey.TRUSTED_SOURCES);
-    if (trustedSources === 'all') {
-      return;
-    } else if (trustAll) {
-      SessionStorageService.update(SessionStorageKey.TRUSTED_SOURCES, 'all');
-    } else {
-      const prevArray = trustedSources ? trustedSources.split(',') : [];
-      const trustedSourcesSet = new Set(prevArray);
-      trustedSourcesSet.add(location);
-      const nextArray = Array.from(trustedSourcesSet);
-      SessionStorageService.update(SessionStorageKey.TRUSTED_SOURCES, nextArray.join(','));
-    }
-  }
-
-  public shouldComponentUpdate(nextProps: Readonly<Props>, nextState: Readonly<State>): boolean {
     if (this.props.isOpen !== nextProps.isOpen) {
       return true;
     }
@@ -81,11 +72,6 @@ export class UntrustedSourceModal extends React.Component<Props, State> {
     }
 
     if (this.state.trustAllCheckbox !== nextState.trustAllCheckbox) {
-      return true;
-    }
-
-    const isTrusted = UntrustedSourceModal.isSourceTrusted(this.props.location);
-    if (isTrusted !== nextState.isTrusted) {
       return true;
     }
 
@@ -101,7 +87,7 @@ export class UntrustedSourceModal extends React.Component<Props, State> {
   }
 
   private init() {
-    const isTrusted = UntrustedSourceModal.isSourceTrusted(this.props.location);
+    const isTrusted = this.props.isTrusted(this.props.location);
     if (this.props.isOpen && isTrusted) {
       this.setState({
         isTrusted,
@@ -126,13 +112,35 @@ export class UntrustedSourceModal extends React.Component<Props, State> {
     this.props.onClose?.();
   }
 
-  private handleContinue(): void {
-    UntrustedSourceModal.updateTrustedSources(this.props.location, this.state.trustAllCheckbox);
+  private async handleContinue(): Promise<void> {
+    try {
+      await this.updateTrustedSources();
 
-    this.setState({ trustAllCheckbox: false });
+      this.setState({ trustAllCheckbox: false });
 
-    this.props.onContinue();
+      this.props.onContinue();
+    } catch (e) {
+      this.appAlerts.showAlert({
+        key: 'update-trusted-sources',
+        title: 'Failed to update trusted sources',
+        variant: AlertVariant.danger,
+      });
+    }
+
     this.props.onClose?.();
+  }
+
+  private async updateTrustedSources(): Promise<void> {
+    const { location, trustedSources } = this.props;
+    const { trustAllCheckbox } = this.state;
+
+    if (trustedSources === 'all') {
+      return;
+    } else if (trustAllCheckbox) {
+      await this.props.addTrustedSource('all');
+    } else {
+      await this.props.addTrustedSource(location);
+    }
   }
 
   private buildModalFooter(): React.ReactNode {
@@ -162,7 +170,7 @@ export class UntrustedSourceModal extends React.Component<Props, State> {
         <Checkbox
           id="trust-all-repos-checkbox"
           isChecked={isChecked}
-          label="Do not ask me again (within this session)"
+          label="Do not ask me again"
           onChange={(checked: boolean) => {
             this.handleTrustAllToggle(checked);
           }}
@@ -197,3 +205,16 @@ export class UntrustedSourceModal extends React.Component<Props, State> {
     );
   }
 }
+
+const mapStateToProps = (state: AppState) => ({
+  trustedSources: selectPreferencesTrustedSources(state),
+  isTrusted: selectPreferencesIsTrustedSource(state),
+});
+
+const connector = connect(mapStateToProps, workspacePreferencesActionCreators, null, {
+  // forwardRef is mandatory for using `@react-mock/state` in unit tests
+  forwardRef: true,
+});
+
+type MappedProps = ConnectedProps<typeof connector>;
+export default connector(UntrustedSourceModal);

@@ -113,6 +113,12 @@ export class FakeStoreBuilder {
       workspaceUID: '',
       recentNumber: 5,
     } as WorkspacesState,
+    workspacePreferences: {
+      isLoading: false,
+      preferences: {
+        'skip-authorisation': [],
+      },
+    },
     devWorkspaces: {
       isLoading: false,
       workspaces: [],
@@ -476,6 +482,24 @@ export class FakeStoreBuilder {
     this.state.sshKeys.error = options.error;
 
     this.state.sshKeys.isLoading = isLoading;
+    return this;
+  }
+
+  public withWorkspacePreferences(
+    options: {
+      'skip-authorisation'?: api.GitProvider[];
+      'trusted-sources'?: api.TrustedSources;
+      error?: string;
+    },
+    isLoading = false,
+  ) {
+    if (options['skip-authorisation']) {
+      this.state.workspacePreferences.preferences['skip-authorisation'] =
+        options['skip-authorisation'];
+    }
+    this.state.workspacePreferences.preferences['trusted-sources'] = options['trusted-sources'];
+    this.state.workspacePreferences.error = options.error;
+    this.state.workspacePreferences.isLoading = isLoading;
     return this;
   }
 

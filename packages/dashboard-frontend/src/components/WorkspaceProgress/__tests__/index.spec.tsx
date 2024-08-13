@@ -51,20 +51,6 @@ jest.mock('../StartingSteps/OpenWorkspace');
 jest.mock('../StartingSteps/StartWorkspace');
 jest.mock('../StartingSteps/WorkspaceConditions');
 
-const mockGet = jest.fn();
-jest.mock('@/services/session-storage', () => {
-  return {
-    __esModule: true,
-    default: {
-      get: (...args: unknown[]) => mockGet(...args),
-    },
-    // enum
-    SessionStorageKey: {
-      TRUSTED_SOURCES: 'trusted-sources', // 'all' or 'repo1,repo2,...'
-    },
-  };
-});
-
 const { renderComponent, createSnapshot } = getComponentRenderer(getComponent);
 
 const mockOnTabChange = jest.fn();
@@ -72,9 +58,14 @@ const mockOnTabChange = jest.fn();
 describe('LoaderProgress', () => {
   let history: MemoryHistory;
   let searchParams: URLSearchParams;
+  let store: Store;
 
   beforeEach(() => {
-    mockGet.mockReturnValue('all');
+    store = new FakeStoreBuilder()
+      .withWorkspacePreferences({
+        'trusted-sources': 'all',
+      })
+      .build();
     jest.useFakeTimers();
   });
 
@@ -97,15 +88,12 @@ describe('LoaderProgress', () => {
     });
 
     test('snapshot', () => {
-      const store = new FakeStoreBuilder().build();
       const snapshot = createSnapshot(history, store, searchParams, false);
       expect(snapshot).toMatchSnapshot();
     });
 
     describe('steps number', () => {
       test('flow with devfile', () => {
-        const store = new FakeStoreBuilder().build();
-
         renderComponent(history, store, searchParams, false);
 
         const steps = getSteps();
@@ -127,8 +115,6 @@ describe('LoaderProgress', () => {
       });
 
       test('flow with resources', () => {
-        const store = new FakeStoreBuilder().build();
-
         searchParams.append(DEV_WORKSPACE_ATTR, 'resources-location');
         renderComponent(history, store, searchParams, false);
 
@@ -163,8 +149,6 @@ describe('LoaderProgress', () => {
 
       describe('onError', () => {
         test('alert notification for the active step', () => {
-          const store = new FakeStoreBuilder().build();
-
           renderComponent(history, store, searchParams, false);
 
           /* no alert notification */
@@ -187,8 +171,6 @@ describe('LoaderProgress', () => {
         });
 
         test('handle error for an non-active step', () => {
-          const store = new FakeStoreBuilder().build();
-
           renderComponent(history, store, searchParams, false);
 
           /* no alert notification */
@@ -206,8 +188,6 @@ describe('LoaderProgress', () => {
 
       describe('onNextStep', () => {
         test('on active step', async () => {
-          const store = new FakeStoreBuilder().build();
-
           renderComponent(history, store, searchParams, false);
 
           const steps = getSteps();
@@ -232,8 +212,6 @@ describe('LoaderProgress', () => {
         });
 
         test('on non-active step', async () => {
-          const store = new FakeStoreBuilder().build();
-
           renderComponent(history, store, searchParams, false);
 
           const steps = getSteps();
@@ -260,8 +238,6 @@ describe('LoaderProgress', () => {
 
       describe('onRestart', () => {
         test('on active step, during creation flow', async () => {
-          const store = new FakeStoreBuilder().build();
-
           const factoryParams = buildFactoryParams(searchParams);
           const localState: Partial<State> = {
             alertItems: [],
@@ -308,8 +284,6 @@ describe('LoaderProgress', () => {
             initialEntries: [location],
           });
 
-          const store = new FakeStoreBuilder().build();
-
           const factoryParams = buildFactoryParams(searchParams);
           const localState: Partial<State> = {
             alertItems: [],
@@ -354,8 +328,6 @@ describe('LoaderProgress', () => {
         });
 
         test('on non-active step', async () => {
-          const store = new FakeStoreBuilder().build();
-
           const factoryParams = buildFactoryParams(searchParams);
           const localState: Partial<State> = {
             alertItems: [],
@@ -394,8 +366,11 @@ describe('LoaderProgress', () => {
     });
 
     test('untrusted source', async () => {
-      mockGet.mockReturnValue('some-trusted-source');
-      const store = new FakeStoreBuilder().build();
+      const store = new FakeStoreBuilder()
+        .withWorkspacePreferences({
+          'trusted-sources': ['some-trusted-source'],
+        })
+        .build();
 
       searchParams.append(FACTORY_URL_ATTR, 'devfile-location');
       renderComponent(history, store, searchParams, false);
@@ -407,14 +382,15 @@ describe('LoaderProgress', () => {
     });
 
     test('samples are trusted', async () => {
-      mockGet.mockReturnValue('some-trusted-source');
-
       const registryLocation = 'https://external-registries-location/';
       const store = new FakeStoreBuilder()
         .withDevfileRegistries({
           registries: {
             [registryLocation]: {},
           },
+        })
+        .withWorkspacePreferences({
+          'trusted-sources': ['some-trusted-source'],
         })
         .build();
 
@@ -463,7 +439,6 @@ describe('LoaderProgress', () => {
     });
 
     test('snapshot', () => {
-      const store = new FakeStoreBuilder().build();
       const snapshot = createSnapshot(history, store, searchParams, false);
       expect(snapshot).toMatchSnapshot();
     });

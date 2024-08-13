@@ -11,23 +11,27 @@
  */
 
 import React from 'react';
+import { Provider } from 'react-redux';
+import { Action, Store } from 'redux';
 
-import { UntrustedSourceModal } from '@/components/UntrustedSourceModal';
+import UntrustedSourceModal from '@/components/UntrustedSourceModal';
 import getComponentRenderer, { screen, waitFor } from '@/services/__mocks__/getComponentRenderer';
+import { AppThunk } from '@/store';
+import { FakeStoreBuilder } from '@/store/__mocks__/storeBuilder';
+import { WorkspacePreferencesActionCreators } from '@/store/Workspaces/Preferences';
 
-const mockGetItem = jest.fn();
-const mockUpdateItem = jest.fn();
-jest.mock('@/services/session-storage', () => {
+const mockRequestPreferences = jest.fn();
+const mockAddTrustedSource = jest.fn();
+jest.mock('@/store/Workspaces/Preferences', () => {
   return {
-    __esModule: true,
-    default: {
-      get: (...args: unknown[]) => mockGetItem(...args),
-      update: (...args: unknown[]) => mockUpdateItem(...args),
-    },
-    // enum
-    SessionStorageKey: {
-      TRUSTED_SOURCES: 'trusted-sources', // 'all' or 'repo1,repo2,...'
-    },
+    ...jest.requireActual('@/store/Workspaces/Preferences'),
+    workspacePreferencesActionCreators: {
+      requestPreferences: () => () => mockRequestPreferences(),
+      addTrustedSource:
+        (source: unknown): AppThunk<Action, Promise<void>> =>
+        async (): Promise<void> =>
+          mockAddTrustedSource(source),
+    } as WorkspacePreferencesActionCreators,
   };
 });
 
@@ -37,53 +41,46 @@ const mockOnClose = jest.fn();
 const { renderComponent } = getComponentRenderer(getComponent);
 
 describe('Untrusted Repo Warning Modal', () => {
+  let storeBuilder: FakeStoreBuilder;
+
+  beforeEach(() => {
+    storeBuilder = new FakeStoreBuilder();
+  });
+
   afterEach(() => {
-    jest.resetAllMocks();
-  });
-
-  describe('isSourceTrusted', () => {
-    test('some sources are trusted', () => {
-      mockGetItem.mockReturnValue('repo1,repo2');
-      expect(UntrustedSourceModal.isSourceTrusted('repo1')).toBeTruthy();
-      expect(UntrustedSourceModal.isSourceTrusted('repo2')).toBeTruthy();
-      expect(UntrustedSourceModal.isSourceTrusted('repo3')).toBeFalsy();
-    });
-
-    test('all sources are trusted', () => {
-      mockGetItem.mockReturnValue('all');
-      expect(UntrustedSourceModal.isSourceTrusted('repo1')).toBeTruthy();
-    });
-  });
-
-  describe('updateTrustedSources', () => {
-    test('trust all', () => {
-      mockGetItem.mockReturnValue('repo1,repo2');
-      UntrustedSourceModal.updateTrustedSources('repo1', true);
-      expect(mockUpdateItem).toHaveBeenCalledWith('trusted-sources', 'all');
-    });
-
-    test('trust one', () => {
-      mockGetItem.mockReturnValue('repo1,repo2');
-      UntrustedSourceModal.updateTrustedSources('repo3', false);
-      expect(mockUpdateItem).toHaveBeenCalledWith('trusted-sources', 'repo1,repo2,repo3');
-    });
+    jest.clearAllMocks();
   });
 
   test('modal is hidden', () => {
-    renderComponent('source-location', false);
+    const store = storeBuilder
+      .withWorkspacePreferences({
+        'trusted-sources': ['repo1', 'repo2'],
+      })
+      .build();
+    renderComponent(store, 'source-location', false);
     const modal = screen.queryByRole('dialog');
     expect(modal).toBeNull();
   });
 
   test('modal is visible', () => {
-    mockGetItem.mockClear();
-    renderComponent('source-location');
+    const store = storeBuilder
+      .withWorkspacePreferences({
+        'trusted-sources': ['repo1', 'repo2'],
+      })
+      .build();
+    renderComponent(store, 'source-location');
     const modal = screen.queryByRole('dialog');
     expect(modal).not.toBeNull();
   });
 
-  test('close button is clicked', () => {
-    renderComponent('source-location');
+  test('click the close button', () => {
+    const store = storeBuilder
+      .withWorkspacePreferences({
+        'trusted-sources': ['repo1', 'repo2'],
+      })
+      .build();
+    renderComponent(store, 'source-location');
+
     const closeButton = screen.getByRole('button', { name: 'Close' });
 
     // button is enabled
@@ -93,8 +90,14 @@ describe('Untrusted Repo Warning Modal', () => {
     expect(mockOnClose).toHaveBeenCalledTimes(1);
   });
 
-  test('cancel button is clicked', () => {
-    renderComponent('source-location');
+  test('click the cancel button', () => {
+    const store = storeBuilder
+      .withWorkspacePreferences({
+        'trusted-sources': ['repo1', 'repo2'],
+      })
+      .build();
+    renderComponent(store, 'source-location');
+
     const closeButton = screen.getByRole('button', { name: 'Cancel' });
 
     // button is enabled
@@ -104,22 +107,34 @@ describe('Untrusted Repo Warning Modal', () => {
     expect(mockOnClose).toHaveBeenCalledTimes(1);
   });
 
-  test('continue button is clicked', () => {
-    renderComponent('source-location');
+  test('click the continue button', async () => {
+    const store = storeBuilder
+      .withWorkspacePreferences({
+        'trusted-sources': ['repo1', 'repo2'],
+      })
+      .build();
+    renderComponent(store, 'source-location');
+
     const continueButton = screen.getByRole('button', { name: 'Continue' });
 
     // button is enabled
     expect(continueButton).toBeEnabled();
 
     continueButton.click();
-    expect(mockOnContinue).toHaveBeenCalledTimes(1);
 
-    expect(mockUpdateItem).toHaveBeenCalledTimes(1);
-    expect(mockUpdateItem).toHaveBeenCalledWith('trusted-sources', 'source-location');
+    await waitFor(() => expect(mockOnContinue).toHaveBeenCalled());
+
+    expect(mockAddTrustedSource).toHaveBeenCalledTimes(1);
+    expect(mockAddTrustedSource).toHaveBeenCalledWith('source-location');
   });
 
   test('trust all checkbox is clicked', () => {
-    renderComponent('source-location');
+    const store = storeBuilder
+      .withWorkspacePreferences({
+        'trusted-sources': ['repo1', 'repo2'],
+      })
+      .build();
+    renderComponent(store, 'source-location');
 
     const checkbox = screen.getByRole('checkbox', { name: /do not ask me again/i });
 
@@ -133,8 +148,12 @@ describe('Untrusted Repo Warning Modal', () => {
   });
 
   test('source is trusted initially', () => {
-    mockGetItem.mockReturnValue('source-location');
-    renderComponent('source-location');
+    const store = storeBuilder
+      .withWorkspacePreferences({
+        'trusted-sources': ['source-location'],
+      })
+      .build();
+    renderComponent(store, 'source-location');
 
     // no warning window
     const modal = screen.queryByRole('dialog');
@@ -142,30 +161,17 @@ describe('Untrusted Repo Warning Modal', () => {
 
     expect(mockOnContinue).toHaveBeenCalledTimes(1);
   });
-
-  test('source is untrusted initially', async () => {
-    mockGetItem.mockReturnValue('');
-    const { reRenderComponent } = renderComponent('source-location');
-
-    // warning window
-    expect(screen.queryByRole('dialog')).not.toBeNull();
-
-    expect(mockOnContinue).not.toHaveBeenCalled();
-
-    mockGetItem.mockReturnValue('source-location');
-    reRenderComponent('source-location');
-
-    await waitFor(() => expect(mockOnContinue).toHaveBeenCalledTimes(1));
-  });
 });
 
-function getComponent(location: string, isOpen = true): React.ReactElement {
+function getComponent(store: Store, location: string, isOpen = true): React.ReactElement {
   return (
-    <UntrustedSourceModal
-      location={location}
-      isOpen={isOpen}
-      onContinue={mockOnContinue}
-      onClose={mockOnClose}
-    />
+    <Provider store={store}>
+      <UntrustedSourceModal
+        location={location}
+        isOpen={isOpen}
+        onContinue={mockOnContinue}
+        onClose={mockOnClose}
+      />
+    </Provider>
   );
 }

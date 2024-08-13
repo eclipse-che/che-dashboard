@@ -13,7 +13,6 @@
 import * as k8s from '@kubernetes/client-node';
 
 import { DevWorkspaceApiService } from '@/devworkspaceClient/services/devWorkspaceApi';
-import { DevWorkspacePreferencesApiService } from '@/devworkspaceClient/services/devWorkspacePreferencesApi';
 import { DevWorkspaceTemplateApiService } from '@/devworkspaceClient/services/devWorkspaceTemplateApi';
 import { DockerConfigApiService } from '@/devworkspaceClient/services/dockerConfigApi';
 import { EditorsApiService } from '@/devworkspaceClient/services/editorsApi';
@@ -28,10 +27,10 @@ import { PodmanApiService } from '@/devworkspaceClient/services/podmanApi';
 import { ServerConfigApiService } from '@/devworkspaceClient/services/serverConfigApi';
 import { SshKeysService } from '@/devworkspaceClient/services/sshKeysApi';
 import { UserProfileApiService } from '@/devworkspaceClient/services/userProfileApi';
+import { WorkspacePreferencesApiService } from '@/devworkspaceClient/services/workspacePreferencesApi';
 import {
   IDevWorkspaceApi,
   IDevWorkspaceClient,
-  IDevWorkspacePreferencesApi,
   IDevWorkspaceTemplateApi,
   IDockerConfigApi,
   IEditorsApi,
@@ -46,6 +45,7 @@ import {
   IServerConfigApi,
   IShhKeysApi,
   IUserProfileApi,
+  IWorkspacePreferencesApi,
 } from '@/devworkspaceClient/types';
 
 export * from './types';
@@ -117,7 +117,7 @@ export class DevWorkspaceClient implements IDevWorkspaceClient {
     return new SshKeysService(this.kubeConfig);
   }
 
-  get devWorkspacePreferencesApi(): IDevWorkspacePreferencesApi {
-    return new DevWorkspacePreferencesApiService(this.kubeConfig);
+  get workspacePreferencesApi(): IWorkspacePreferencesApi {
+    return new WorkspacePreferencesApiService(this.kubeConfig);
   }
 }

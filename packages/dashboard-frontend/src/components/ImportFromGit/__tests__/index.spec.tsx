@@ -22,20 +22,6 @@ import { FakeStoreBuilder } from '@/store/__mocks__/storeBuilder';
 
 const { createSnapshot, renderComponent } = getComponentRenderer(getComponent);
 
-const mockGet = jest.fn();
-jest.mock('@/services/session-storage', () => {
-  return {
-    __esModule: true,
-    default: {
-      get: (...args: unknown[]) => mockGet(...args),
-    },
-    // enum
-    SessionStorageKey: {
-      TRUSTED_SOURCES: 'trusted-sources', // 'all' or 'repo1,repo2,...'
-    },
-  };
-});
-
 const history = createMemoryHistory({
   initialEntries: ['/'],
 });
@@ -50,7 +36,6 @@ describe('GitRepoLocationInput', () => {
   let store: Store;
 
   beforeEach(() => {
-    mockGet.mockReturnValue('all');
     store = new FakeStoreBuilder()
       .withDwServerConfig({
         defaults: {
@@ -59,6 +44,9 @@ describe('GitRepoLocationInput', () => {
           plugins: [],
           pvcStrategy: 'per-workspace',
         },
+      })
+      .withWorkspacePreferences({
+        'trusted-sources': 'all',
       })
       .build();
   });
@@ -94,7 +82,19 @@ describe('GitRepoLocationInput', () => {
     jest.mock('@/components/UntrustedSourceModal');
 
     test('untrusted source', () => {
-      mockGet.mockReturnValue('repo1,repo2');
+      const store = new FakeStoreBuilder()
+        .withDwServerConfig({
+          defaults: {
+            editor: defaultEditorId,
+            components: [],
+            plugins: [],
+            pvcStrategy: 'per-workspace',
+          },
+        })
+        .withWorkspacePreferences({
+          'trusted-sources': ['repo1', 'repo2'],
+        })
+        .build();
       renderComponent(store);
 
       const input = screen.getByRole('textbox');
@@ -114,7 +114,6 @@ describe('GitRepoLocationInput', () => {
     });
 
     test('trusted source', () => {
-      mockGet.mockReturnValue('all');
       renderComponent(store);
 
       const input = screen.getByRole('textbox');
@@ -346,6 +345,9 @@ describe('GitRepoLocationInput', () => {
     test('with SSH keys, the `che-editor` parameter is omitted', () => {
       const store = new FakeStoreBuilder()
         .withSshKeys({ keys: [{ name: 'key1', keyPub: 'publicKey' }] })
+        .withWorkspacePreferences({
+          'trusted-sources': 'all',
+        })
         .build();
       renderComponent(store, editorId, editorImage);
 
@@ -372,6 +374,9 @@ describe('GitRepoLocationInput', () => {
     test('with SSH keys, the `che-editor` parameter is set', () => {
       const store = new FakeStoreBuilder()
         .withSshKeys({ keys: [{ name: 'key1', keyPub: 'publicKey' }] })
+        .withWorkspacePreferences({
+          'trusted-sources': 'all',
+        })
         .build();
       renderComponent(store, editorId, editorImage);
 

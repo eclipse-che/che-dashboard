@@ -25,7 +25,7 @@ import { ThunkDispatch } from 'redux-thunk';
 import {
   CREATE_DEVWORKSPACE_DELAY,
   CREATE_DEVWORKSPACETEMPLATE_DELAY,
-  DEVWORKSPACE_RESOURSES_DELAY,
+  DEVWORKSPACE_RESOURCES_DELAY,
   devworkspaceResources,
   editors,
   FACTORY_RESOLVER_DELAY,
@@ -45,23 +45,6 @@ import { AppState } from '@/store';
 import { FakeStoreBuilder } from '@/store/__mocks__/storeBuilder';
 import { FactoryResolverStateResolver } from '@/store/FactoryResolver';
 
-const mockGet = jest.fn().mockReturnValue('all');
-const mockUpdate = jest.fn().mockReturnValue(undefined);
-const mockRemove = jest.fn().mockReturnValue(undefined);
-jest.mock('@/services/session-storage', () => {
-  return {
-    __esModule: true,
-    default: {
-      get: (...args: unknown[]) => mockGet(...args),
-      update: (...args: unknown[]) => mockUpdate(...args),
-      remove: (...args: unknown[]) => mockRemove(...args),
-    },
-    // enum
-    SessionStorageKey: {
-      TRUSTED_SOURCES: 'trusted-sources', // 'all' or 'repo1,repo2,...'
-    },
-  };
-});
 // mute the outputs
 console.error = jest.fn();
 console.warn = jest.fn();
@@ -113,6 +96,10 @@ describe('Workspace creation time', () => {
               },
             ],
           })
+          .withWorkspacePreferences({
+            'skip-authorisation': ['github'],
+            'trusted-sources': 'all',
+          })
           .build(),
       ),
     );
@@ -134,7 +121,7 @@ describe('Workspace creation time', () => {
             resolve({
               data: devworkspaceResources,
             }),
-          DEVWORKSPACE_RESOURSES_DELAY,
+          DEVWORKSPACE_RESOURCES_DELAY,
         ),
       ),
     );

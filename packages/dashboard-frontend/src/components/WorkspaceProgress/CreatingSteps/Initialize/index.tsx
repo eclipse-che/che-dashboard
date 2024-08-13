@@ -32,12 +32,12 @@ import {
 } from '@/services/helpers/factoryFlow/buildFactoryParams';
 import { buildUserPreferencesLocation, toHref } from '@/services/helpers/location';
 import { AlertItem, UserPreferencesTab } from '@/services/helpers/types';
-import SessionStorageService, { SessionStorageKey } from '@/services/session-storage';
 import { AppState } from '@/store';
 import { selectAllWorkspacesLimit } from '@/store/ClusterConfig/selectors';
 import { selectIsRegistryDevfile } from '@/store/DevfileRegistries/selectors';
 import { selectInfrastructureNamespaces } from '@/store/InfrastructureNamespaces/selectors';
 import { selectSshKeys } from '@/store/SshKeys/selectors';
+import { selectPreferencesIsTrustedSource } from '@/store/Workspaces/Preferences';
 import { selectAllWorkspaces } from '@/store/Workspaces/selectors';
 
 export type Props = MappedProps &
@@ -238,13 +238,9 @@ class CreatingStepInitialize extends ProgressStep<Props, State> {
   }
 
   private isSourceTrusted(sourceUrl: string): boolean {
-    const trustedSources = SessionStorageService.get(SessionStorageKey.TRUSTED_SOURCES);
+    const isTrustedSource = this.props.isTrustedSource(sourceUrl);
     const isRegistryDevfile = this.props.isRegistryDevfile(sourceUrl);
-    if (
-      isRegistryDevfile ||
-      (trustedSources &&
-        (trustedSources === 'all' || trustedSources.split(',').includes(sourceUrl)))
-    ) {
+    if (isRegistryDevfile || isTrustedSource) {
       return true;
     }
     return false;
@@ -293,6 +289,7 @@ const mapStateToProps = (state: AppState) => ({
   allWorkspacesLimit: selectAllWorkspacesLimit(state),
   infrastructureNamespaces: selectInfrastructureNamespaces(state),
   isRegistryDevfile: selectIsRegistryDevfile(state),
+  isTrustedSource: selectPreferencesIsTrustedSource(state),
   sshKeys: selectSshKeys(state),
 });
 

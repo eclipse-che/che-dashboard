@@ -155,10 +155,14 @@ export interface IUserProfile {
   email: string;
   username: string;
 }
-export interface IDevWorkspacePreferences {
+export interface IWorkspacePreferences {
   'skip-authorisation': GitProvider[];
-  [key: string]: string | string[];
+  'trusted-sources'?: TrustedSources;
+  [key: string]: unknown;
 }
+export type TrustedSourceAll = 'all';
+export type TrustedSourceUrl = string;
+export type TrustedSources = TrustedSourceAll | TrustedSourceUrl[];
 
 export type IEditors = Array<V222Devfile>;
 

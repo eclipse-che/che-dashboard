@@ -42,7 +42,7 @@ import {
   setGitRepoOptionsToLocation,
   validateLocation,
 } from '@/components/ImportFromGit/helpers';
-import { UntrustedSourceModal } from '@/components/UntrustedSourceModal';
+import UntrustedSourceModal from '@/components/UntrustedSourceModal';
 import { GitRemote } from '@/components/WorkspaceProgress/CreatingSteps/Apply/Devfile/getGitRemotes';
 import { FactoryLocationAdapter } from '@/services/factory-location-adapter';
 import { EDITOR_ATTR, EDITOR_IMAGE_ATTR } from '@/services/helpers/factoryFlow/buildFactoryParams';
