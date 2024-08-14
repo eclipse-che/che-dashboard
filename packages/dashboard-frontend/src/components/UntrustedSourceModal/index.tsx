@@ -145,10 +145,10 @@ class UntrustedSourceModal extends React.Component<Props, State> {
     const { location, trustedSources } = this.props;
     const { trustAllCheckbox } = this.state;
 
-    if (trustedSources === 'all') {
+    if (trustedSources === '*') {
       return;
     } else if (trustAllCheckbox) {
-      await this.props.addTrustedSource('all');
+      await this.props.addTrustedSource('*');
     } else {
       await this.props.addTrustedSource(location);
     }
@@ -184,7 +184,7 @@ class UntrustedSourceModal extends React.Component<Props, State> {
         <Checkbox
           id="trust-all-repos-checkbox"
           isChecked={isChecked}
-          label="Do not ask me again"
+          label="Do not ask me again for other repositories"
           onChange={(checked: boolean) => {
             this.handleTrustAllToggle(checked);
           }}
@@ -201,7 +201,7 @@ class UntrustedSourceModal extends React.Component<Props, State> {
       return null;
     }
 
-    const title = 'Untrusted Source';
+    const title = 'Do you trust the authors of this repository?';
     const footer = this.buildModalFooter();
     const body = this.buildModalBody();
 
@@ -211,7 +211,7 @@ class UntrustedSourceModal extends React.Component<Props, State> {
         isOpen={isOpen}
         title={title}
         titleIconVariant="warning"
-        variant={ModalVariant.small}
+        variant={ModalVariant.medium}
         onClose={() => this.handleClose()}
       >
         {body}

@@ -38,7 +38,7 @@ export const selectPreferencesIsTrustedSource = createSelector(
       if (!trustedSources || (Array.isArray(trustedSources) && trustedSources.length === 0)) {
         // no trusted sources yet
         return false;
-      } else if (trustedSources === 'all') {
+      } else if (trustedSources === '*') {
         // all sources are trusted
         return true;
       }

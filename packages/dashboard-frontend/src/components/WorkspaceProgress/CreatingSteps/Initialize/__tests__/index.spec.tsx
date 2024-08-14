@@ -41,20 +41,6 @@ jest.mock('@/services/helpers/location', () => ({
   buildUserPreferencesLocation: (tab: UserPreferencesTab) => 'user-preferences?tab=' + tab,
 }));
 
-// const mockGet = jest.fn().mockReturnValue('all');
-// jest.mock('@/services/session-storage', () => {
-//   return {
-//     __esModule: true,
-//     default: {
-//       get: (...args: unknown[]) => mockGet(...args),
-//     },
-//     // enum
-//     SessionStorageKey: {
-//       TRUSTED_SOURCES: 'trusted-sources', // 'all' or 'repo1,repo2,...'
-//     },
-//   };
-// });
-
 describe('Creating steps, initializing', () => {
   const factoryUrl = 'https://factory-url';
   const { reload } = window.location;
@@ -68,7 +54,7 @@ describe('Creating steps, initializing', () => {
         keys: [{ name: 'key1', keyPub: 'ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQD' }],
       })
       .withWorkspacePreferences({
-        'trusted-sources': 'all',
+        'trusted-sources': '*',
       })
       .build();
 
@@ -215,7 +201,7 @@ describe('Creating steps, initializing', () => {
 
   test('no pre-created infrastructure namespaces', async () => {
     const storeNoNamespace = new FakeStoreBuilder()
-      .withWorkspacePreferences({ 'trusted-sources': 'all' })
+      .withWorkspacePreferences({ 'trusted-sources': '*' })
       .build();
     const searchParams = new URLSearchParams({
       [FACTORY_URL_ATTR]: factoryUrl,
@@ -250,7 +236,7 @@ describe('Creating steps, initializing', () => {
       .withSshKeys({
         keys: [{ name: 'key1', keyPub: 'ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQD' }],
       })
-      .withWorkspacePreferences({ 'trusted-sources': 'all' })
+      .withWorkspacePreferences({ 'trusted-sources': '*' })
       .build();
     const searchParams = new URLSearchParams({
       [FACTORY_URL_ATTR]: factoryUrl,
@@ -278,7 +264,7 @@ describe('Creating steps, initializing', () => {
   test('no SSH keys with Git+HTTPS factory URL', async () => {
     const store = new FakeStoreBuilder()
       .withInfrastructureNamespace([{ name: 'user-che', attributes: { phase: 'Active' } }])
-      .withWorkspacePreferences({ 'trusted-sources': 'all' })
+      .withWorkspacePreferences({ 'trusted-sources': '*' })
       .build();
     const searchParams = new URLSearchParams({
       [FACTORY_URL_ATTR]: factoryUrl,
@@ -297,7 +283,7 @@ describe('Creating steps, initializing', () => {
     const factoryUrl = 'git@github.com:eclipse-che/che-dashboard.git';
     const store = new FakeStoreBuilder()
       .withInfrastructureNamespace([{ name: 'user-che', attributes: { phase: 'Active' } }])
-      .withWorkspacePreferences({ 'trusted-sources': 'all' })
+      .withWorkspacePreferences({ 'trusted-sources': '*' })
       .build();
     const searchParams = new URLSearchParams({
       [FACTORY_URL_ATTR]: factoryUrl,

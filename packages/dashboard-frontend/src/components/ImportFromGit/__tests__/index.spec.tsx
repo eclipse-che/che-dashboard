@@ -49,7 +49,7 @@ describe('GitRepoLocationInput', () => {
         },
       })
       .withWorkspacePreferences({
-        'trusted-sources': 'all',
+        'trusted-sources': '*',
       })
       .build();
   });
@@ -110,7 +110,9 @@ describe('GitRepoLocationInput', () => {
       const button = screen.getByRole('button', { name: 'Create & Open' });
       userEvent.click(button);
 
-      const untrustedSourceModal = screen.queryByRole('dialog', { name: /untrusted source/i });
+      const untrustedSourceModal = screen.queryByRole('dialog', {
+        name: /Do you trust the authors of this repository/i,
+      });
       expect(untrustedSourceModal).not.toBeNull();
 
       expect(window.open).not.toHaveBeenCalled();
@@ -349,7 +351,7 @@ describe('GitRepoLocationInput', () => {
       const store = new FakeStoreBuilder()
         .withSshKeys({ keys: [{ name: 'key1', keyPub: 'publicKey' }] })
         .withWorkspacePreferences({
-          'trusted-sources': 'all',
+          'trusted-sources': '*',
         })
         .build();
       renderComponent(store, editorId, editorImage);
@@ -378,7 +380,7 @@ describe('GitRepoLocationInput', () => {
       const store = new FakeStoreBuilder()
         .withSshKeys({ keys: [{ name: 'key1', keyPub: 'publicKey' }] })
         .withWorkspacePreferences({
-          'trusted-sources': 'all',
+          'trusted-sources': '*',
         })
         .build();
       renderComponent(store, editorId, editorImage);

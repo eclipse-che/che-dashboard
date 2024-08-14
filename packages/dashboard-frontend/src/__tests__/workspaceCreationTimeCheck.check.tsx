@@ -98,7 +98,7 @@ describe('Workspace creation time', () => {
           })
           .withWorkspacePreferences({
             'skip-authorisation': ['github'],
-            'trusted-sources': 'all',
+            'trusted-sources': '*',
           })
           .build(),
       ),

@@ -27,7 +27,7 @@ jest.mock('@/store/Workspaces/Preferences/helpers', () => ({
 
 const mockGetWorkspacePreferences = jest.fn().mockResolvedValue({
   'skip-authorisation': [],
-  'trusted-sources': 'all',
+  'trusted-sources': '*',
 } as api.IWorkspacePreferences);
 const mockAddTrustedSource = jest.fn().mockResolvedValue(undefined);
 jest.mock('@/services/backend-client/workspacePreferencesApi', () => ({
@@ -78,7 +78,7 @@ describe('workspace preferences, actionCreators', () => {
           type: 'RECEIVE_PREFERENCES',
           preferences: {
             'skip-authorisation': [],
-            'trusted-sources': 'all',
+            'trusted-sources': '*',
           },
         },
       ];
@@ -159,7 +159,7 @@ describe('workspace preferences, actionCreators', () => {
           type: 'RECEIVE_PREFERENCES',
           preferences: {
             'skip-authorisation': [],
-            'trusted-sources': 'all',
+            'trusted-sources': '*',
           },
         },
       ];

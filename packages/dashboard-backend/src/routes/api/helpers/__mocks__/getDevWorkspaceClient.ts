@@ -156,7 +156,7 @@ export const stubAdvancedAuthorization = {};
 
 export const stubWorkspacePreferences: api.IWorkspacePreferences = {
   'skip-authorisation': ['github'],
-  'trusted-sources': 'all',
+  'trusted-sources': '*',
 };
 
 export const getDevWorkspaceClient = jest.fn(

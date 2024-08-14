@@ -85,7 +85,7 @@ describe('Workspace preferences, selectors', () => {
       const store = new FakeStoreBuilder()
         .withWorkspacePreferences({
           'skip-authorisation': mockState.preferences['skip-authorisation'],
-          'trusted-sources': 'all',
+          'trusted-sources': '*',
           error: mockState.error,
         })
         .build();

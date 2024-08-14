@@ -159,7 +159,7 @@ export interface IWorkspacePreferences {
   'trusted-sources'?: TrustedSources;
   [key: string]: unknown;
 }
-export type TrustedSourceAll = 'all';
+export type TrustedSourceAll = '*';
 export type TrustedSourceUrl = string;
 export type TrustedSources = TrustedSourceAll | TrustedSourceUrl[];
 

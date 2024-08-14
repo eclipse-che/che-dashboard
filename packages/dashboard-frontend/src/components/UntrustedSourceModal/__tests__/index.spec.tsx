@@ -136,7 +136,9 @@ describe('Untrusted Repo Warning Modal', () => {
       .build();
     renderComponent(store, 'source-location');
 
-    const checkbox = screen.getByRole('checkbox', { name: /do not ask me again/i });
+    const checkbox = screen.getByRole('checkbox', {
+      name: 'Do not ask me again for other repositories',
+    });
 
     // checkbox is unchecked
     expect(checkbox).not.toBeChecked();

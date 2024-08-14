@@ -191,7 +191,7 @@ describe('Workspace Preferences API Service', () => {
       response: {} as IncomingMessage,
     });
 
-    await workspacePreferencesApiService.addTrustedSource(namespace, 'all');
+    await workspacePreferencesApiService.addTrustedSource(namespace, '*');
 
     expect(spyReadNamespacedConfigMap).toHaveBeenCalled();
     expect(spyPatchNamespacedConfigMap).toHaveBeenCalled();
@@ -201,7 +201,7 @@ describe('Workspace Preferences API Service', () => {
       {
         data: {
           [SKIP_AUTHORIZATION_KEY]: '[]',
-          [TRUSTED_SOURCES_KEY]: '"all"',
+          [TRUSTED_SOURCES_KEY]: '"*"',
         },
       },
       undefined,

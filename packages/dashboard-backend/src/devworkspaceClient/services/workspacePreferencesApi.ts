@@ -128,7 +128,7 @@ export class WorkspacePreferencesApiService implements IWorkspacePreferencesApi 
     const _trustedSources = devWorkspacePreferences[TRUSTED_SOURCES_KEY] as api.TrustedSources;
 
     let data: api.IWorkspacePreferences;
-    if (trustedSource === 'all') {
+    if (trustedSource === '*') {
       data = Object.assign({}, devWorkspacePreferences, {
         [TRUSTED_SOURCES_KEY]: trustedSource,
       });

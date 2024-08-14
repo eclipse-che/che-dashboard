@@ -63,7 +63,7 @@ describe('LoaderProgress', () => {
   beforeEach(() => {
     store = new FakeStoreBuilder()
       .withWorkspacePreferences({
-        'trusted-sources': 'all',
+        'trusted-sources': '*',
       })
       .build();
     jest.useFakeTimers();
