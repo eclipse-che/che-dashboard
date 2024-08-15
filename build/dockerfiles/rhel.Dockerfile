@@ -30,6 +30,16 @@ RUN \
     yum -y -q clean all && rm -rf /var/cache/yum && \
     echo "Installed Packages" && rpm -qa | sort -V && echo "End Of Installed Packages"
 
+# Install Python 3.9, upgrade setuptools, and remove older Python versions
+RUN yum install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm && \
+    yum install -y python39 python39-pip && \
+    yum remove -y python3 python3-pip python2 python2-pip && \
+    yum clean all && \
+    rm -rf /var/cache/yum && \
+    pip3.9 install --user --no-cache-dir --upgrade "setuptools>=70.0.0" && \
+    alternatives --set python /usr/bin/python3.9 && \
+    alternatives --set python3 /usr/bin/python3.9
+
 ENV FRONTEND_LIB=/dashboard/packages/dashboard-frontend/lib/public
 ENV BACKEND_LIB=/dashboard/packages/dashboard-backend/lib
 ENV BACKEND_NODE_MODULES=/dashboard/packages/dashboard-backend/node_modules/
