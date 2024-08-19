@@ -97,7 +97,7 @@ class Progress extends React.Component<Props, State> {
       doneSteps: [],
       factoryParams,
       initialLoaderMode,
-      isSourceTrustedWarningOpen: true,
+      isSourceTrustedWarningOpen: false,
     };
   }
 
