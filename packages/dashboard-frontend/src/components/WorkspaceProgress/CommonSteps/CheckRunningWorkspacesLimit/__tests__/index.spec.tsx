@@ -358,12 +358,14 @@ describe('Common steps, check running workspaces limit', () => {
   describe('start a workspace above the cluster limit, limit equals 2', () => {
     let storeBuilder: FakeStoreBuilder;
     let runningDevworkspace1: devfileApi.DevWorkspace;
+    let runningDevworkspace2: devfileApi.DevWorkspace;
 
     beforeEach(() => {
       runningDevworkspace1 = runningDevworkspaceBuilder1.build();
+      runningDevworkspace2 = runningDevworkspaceBuilder1.build();
       storeBuilder = new FakeStoreBuilder()
         .withDevWorkspaces({
-          workspaces: [targetDevworkspace, runningDevworkspace1],
+          workspaces: [targetDevworkspace, runningDevworkspace1, runningDevworkspace2],
         })
         .withClusterConfig({
           runningWorkspacesLimit: 10,
