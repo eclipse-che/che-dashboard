@@ -13,6 +13,7 @@
 import {
   IAirGapSampleApi,
   IDevWorkspaceApi,
+  IDevWorkspaceClusterApi,
   IDevWorkspaceTemplateApi,
   IDockerConfigApi,
   IEditorsApi,
@@ -33,6 +34,9 @@ import { IDevWorkspaceClient } from '..';
 
 export class DevWorkspaceClient implements IDevWorkspaceClient {
   get eventApi(): IEventApi {
+    throw new Error('Method not implemented.');
+  }
+  get devWorkspaceClusterApi(): IDevWorkspaceClusterApi {
     throw new Error('Method not implemented.');
   }
   get devworkspaceApi(): IDevWorkspaceApi {

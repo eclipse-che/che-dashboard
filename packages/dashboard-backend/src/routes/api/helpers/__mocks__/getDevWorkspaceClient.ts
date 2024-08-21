@@ -159,6 +159,8 @@ export const stubWorkspacePreferences: api.IWorkspacePreferences = {
   'trusted-sources': '*',
 };
 
+export const stubIsRunningWorkspaceClusterLimitExceeded = true;
+
 export const getDevWorkspaceClient = jest.fn(
   (..._args: Parameters<typeof helper>): ReturnType<typeof helper> => {
     return {
@@ -183,6 +185,10 @@ export const getDevWorkspaceClient = jest.fn(
         getAutoProvision: _cheCustomResource => stubAutoProvision,
         getAdvancedAuthorization: _cheCustomResource => stubAdvancedAuthorization,
       } as IServerConfigApi,
+      devWorkspaceClusterApi: {
+        isRunningWorkspacesClusterLimitExceeded: () =>
+          Promise.resolve(stubIsRunningWorkspaceClusterLimitExceeded),
+      },
       devworkspaceApi: {
         create: (_devworkspace, _namespace) =>
           Promise.resolve({ devWorkspace: stubDevWorkspace, headers: stubHeaders }),

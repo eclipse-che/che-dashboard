@@ -192,6 +192,10 @@ export class ServerConfigApiService implements IServerConfigApi {
     );
   }
 
+  getRunningWorkspacesClusterLimit(cheCustomResource: CheClusterCustomResource): number {
+    return cheCustomResource.spec.devEnvironments?.maxNumberOfRunningWorkspaces || -1;
+  }
+
   getAllWorkspacesLimit(cheCustomResource: CheClusterCustomResource): number {
     return cheCustomResource.spec.devEnvironments?.maxNumberOfWorkspacesPerUser || -1;
   }

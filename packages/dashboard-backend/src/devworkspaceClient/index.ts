@@ -14,6 +14,7 @@ import * as k8s from '@kubernetes/client-node';
 
 import { AirGapSampleApiService } from '@/devworkspaceClient/services/airGapSampleApi';
 import { DevWorkspaceApiService } from '@/devworkspaceClient/services/devWorkspaceApi';
+import { DevWorkspaceClusterApi } from '@/devworkspaceClient/services/devWorkspaceClusterApi';
 import { DevWorkspaceTemplateApiService } from '@/devworkspaceClient/services/devWorkspaceTemplateApi';
 import { DockerConfigApiService } from '@/devworkspaceClient/services/dockerConfigApi';
 import { EditorsApiService } from '@/devworkspaceClient/services/editorsApi';
@@ -33,6 +34,7 @@ import {
   IAirGapSampleApi,
   IDevWorkspaceApi,
   IDevWorkspaceClient,
+  IDevWorkspaceClusterApi,
   IDevWorkspaceTemplateApi,
   IDockerConfigApi,
   IEditorsApi,
@@ -69,6 +71,10 @@ export class DevWorkspaceClient implements IDevWorkspaceClient {
 
   get devWorkspaceTemplateApi(): IDevWorkspaceTemplateApi {
     return new DevWorkspaceTemplateApiService(this.kubeConfig);
+  }
+
+  get devWorkspaceClusterApi(): IDevWorkspaceClusterApi {
+    return new DevWorkspaceClusterApi(this.kubeConfig);
   }
 
   get devworkspaceApi(): IDevWorkspaceApi {

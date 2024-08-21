@@ -13,9 +13,9 @@
 import {
   V1alpha2DevWorkspace,
   V1alpha2DevWorkspaceTemplate,
+  V230Devfile,
   V230DevfileComponents,
 } from '@devfile/api';
-import { V230Devfile } from '@devfile/api';
 import { api } from '@eclipse-che/common';
 import * as k8s from '@kubernetes/client-node';
 import { IncomingHttpHeaders } from 'http';
@@ -48,6 +48,13 @@ export interface IGitConfigApi {
    * Replace gitconfig in configmap in the specified namespace
    */
   patch(namespace: string, gitconfig: api.IGitConfig): Promise<api.IGitConfig>;
+}
+
+export interface IDevWorkspaceClusterApi {
+  /**
+   * Checks if the limit of concurrent running DevWorkspaces by all users is exceeded.
+   */
+  isRunningWorkspacesClusterLimitExceeded(): Promise<boolean>;
 }
 
 export interface IDevWorkspaceApi extends IWatcherService<api.webSocket.SubscribeParams> {
@@ -165,6 +172,7 @@ export type CheClusterCustomResourceSpecDevEnvironments = {
   };
   maxNumberOfRunningWorkspacesPerUser?: number;
   maxNumberOfWorkspacesPerUser?: number;
+  maxNumberOfRunningWorkspaces?: number;
 };
 
 export function isCheClusterCustomResourceSpecDevEnvironments(
@@ -186,6 +194,7 @@ export function isCheClusterCustomResourceSpecDevEnvironments(
     storage,
     maxNumberOfRunningWorkspacesPerUser,
     maxNumberOfWorkspacesPerUser,
+    maxNumberOfRunningWorkspaces,
   } = object as CheClusterCustomResourceSpecDevEnvironments;
   return (
     containerBuildConfiguration !== undefined ||
@@ -198,7 +207,8 @@ export function isCheClusterCustomResourceSpecDevEnvironments(
     startTimeoutSeconds !== undefined ||
     storage !== undefined ||
     maxNumberOfRunningWorkspacesPerUser !== undefined ||
-    maxNumberOfWorkspacesPerUser !== undefined
+    maxNumberOfWorkspacesPerUser !== undefined ||
+    maxNumberOfRunningWorkspaces !== undefined
   );
 }
 
@@ -303,6 +313,11 @@ export interface IServerConfigApi {
    * Returns limit of running workspaces per user.
    */
   getRunningWorkspacesLimit(cheCustomResource: CheClusterCustomResource): number;
+
+  /**
+   * Returns limit of running workspaces by all users.
+   */
+  getRunningWorkspacesClusterLimit(cheCustomResource: CheClusterCustomResource): number;
 
   /**
    * Returns the total number of workspaces, both stopped and running, that a user can keep.
@@ -423,6 +438,7 @@ export interface IPersonalAccessTokenApi {
 
 export interface IDevWorkspaceClient {
   devWorkspaceTemplateApi: IDevWorkspaceTemplateApi;
+  devWorkspaceClusterApi: IDevWorkspaceClusterApi;
   devworkspaceApi: IDevWorkspaceApi;
   dockerConfigApi: IDockerConfigApi;
   eventApi: IEventApi;

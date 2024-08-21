@@ -355,6 +355,56 @@ describe('Common steps, check running workspaces limit', () => {
     });
   });
 
+  describe('start a workspace above the cluster limit, limit equals 2', () => {
+    let storeBuilder: FakeStoreBuilder;
+    let runningDevworkspace1: devfileApi.DevWorkspace;
+
+    beforeEach(() => {
+      runningDevworkspace1 = runningDevworkspaceBuilder1.build();
+      storeBuilder = new FakeStoreBuilder()
+        .withDevWorkspaces({
+          workspaces: [targetDevworkspace, runningDevworkspace1],
+        })
+        .withClusterConfig({
+          runningWorkspacesLimit: 10,
+        });
+    });
+
+    test.only('alert notification', async () => {
+      const store = storeBuilder
+        .withDevWorkspacesCluster({ isRunningDevWorkspacesClusterLimitExceeded: true })
+        .build();
+      renderComponent(store);
+      await jest.runAllTimersAsync();
+
+      const expectAlertItem = expect.objectContaining({
+        title: 'Running workspace(s) found.',
+        children: 'Exceeded the cluster limit for running DevWorkspaces',
+        actionCallbacks: [
+          expect.objectContaining({
+            title: 'Return to dashboard',
+            callback: expect.any(Function),
+          }),
+        ],
+      });
+      await waitFor(() => expect(mockOnError).toHaveBeenCalledWith(expectAlertItem));
+      expect(mockOnNextStep).not.toHaveBeenCalled();
+      expect(mockOnRestart).not.toHaveBeenCalled();
+    });
+
+    test.only('start a workspace', async () => {
+      const store = storeBuilder
+        .withDevWorkspacesCluster({ isRunningDevWorkspacesClusterLimitExceeded: false })
+        .build();
+      renderComponent(store);
+      await jest.runAllTimersAsync();
+
+      expect(mockOnError).not.toHaveBeenCalled();
+      expect(mockOnNextStep).toHaveBeenCalled();
+      expect(mockOnRestart).not.toHaveBeenCalled();
+    });
+  });
+
   describe('start a workspace above the limit, limit equals 2', () => {
     let store: Store;
     let runningDevworkspace1: devfileApi.DevWorkspace;
