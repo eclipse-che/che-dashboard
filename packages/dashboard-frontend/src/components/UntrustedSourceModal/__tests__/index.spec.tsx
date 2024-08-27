@@ -15,7 +15,7 @@ import { Provider } from 'react-redux';
 import { Action, Store } from 'redux';
 
 import UntrustedSourceModal from '@/components/UntrustedSourceModal';
-import getComponentRenderer, { screen, waitFor } from '@/services/__mocks__/getComponentRenderer';
+import getComponentRenderer, { screen } from '@/services/__mocks__/getComponentRenderer';
 import { AppThunk } from '@/store';
 import { FakeStoreBuilder } from '@/store/__mocks__/storeBuilder';
 import { WorkspacePreferencesActionCreators } from '@/store/Workspaces/Preferences';
