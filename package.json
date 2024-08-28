@@ -13,7 +13,6 @@
   },
   "homepage": "https://github.com/eclipse-che/che-dashboard",
   "engines": {
-    "yarn": "3.8.3",
     "node": ">=18"
   },
   "license": "EPL-2.0",
