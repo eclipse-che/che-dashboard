@@ -14,7 +14,7 @@ import * as k8s from '@kubernetes/client-node';
 
 import { AirGapSampleApiService } from '@/devworkspaceClient/services/airGapSampleApi';
 import { DevWorkspaceApiService } from '@/devworkspaceClient/services/devWorkspaceApi';
-import { DevWorkspaceClusterApi } from '@/devworkspaceClient/services/devWorkspaceClusterApi';
+import { DevWorkspaceClusterApiService } from '@/devworkspaceClient/services/devWorkspaceClusterApiService';
 import { DevWorkspaceTemplateApiService } from '@/devworkspaceClient/services/devWorkspaceTemplateApi';
 import { DockerConfigApiService } from '@/devworkspaceClient/services/dockerConfigApi';
 import { EditorsApiService } from '@/devworkspaceClient/services/editorsApi';
@@ -35,6 +35,7 @@ import {
   IDevWorkspaceApi,
   IDevWorkspaceClient,
   IDevWorkspaceClusterApi,
+  IDevWorkspaceSingletonClient,
   IDevWorkspaceTemplateApi,
   IDockerConfigApi,
   IEditorsApi,
@@ -71,10 +72,6 @@ export class DevWorkspaceClient implements IDevWorkspaceClient {
 
   get devWorkspaceTemplateApi(): IDevWorkspaceTemplateApi {
     return new DevWorkspaceTemplateApiService(this.kubeConfig);
-  }
-
-  get devWorkspaceClusterApi(): IDevWorkspaceClusterApi {
-    return new DevWorkspaceClusterApi(this.kubeConfig);
   }
 
   get devworkspaceApi(): IDevWorkspaceApi {
@@ -131,5 +128,24 @@ export class DevWorkspaceClient implements IDevWorkspaceClient {
 
   get workspacePreferencesApi(): IWorkspacePreferencesApi {
     return new WorkspacePreferencesApiService(this.kubeConfig);
+  }
+}
+
+let devWorkspaceSingletonClient: DevWorkspaceSingletonClient;
+
+/**
+ * Singleton client for devworkspace services.
+ */
+export class DevWorkspaceSingletonClient implements IDevWorkspaceSingletonClient {
+  static getInstance(kc: k8s.KubeConfig): DevWorkspaceSingletonClient {
+    if (!devWorkspaceSingletonClient) {
+      devWorkspaceSingletonClient = new DevWorkspaceSingletonClient(kc);
+    }
+    return devWorkspaceSingletonClient;
+  }
+
+  public readonly devWorkspaceClusterServiceApi: IDevWorkspaceClusterApi;
+  private constructor(kc: k8s.KubeConfig) {
+    this.devWorkspaceClusterServiceApi = new DevWorkspaceClusterApiService(kc);
   }
 }

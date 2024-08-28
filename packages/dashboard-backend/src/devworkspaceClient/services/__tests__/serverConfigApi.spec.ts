@@ -217,7 +217,7 @@ function buildCustomResource(options?: { openVSXURL?: string }): CheClusterCusto
         defaultEditor: 'eclipse/che-theia/latest',
         secondsOfInactivityBeforeIdling: 1800,
         secondsOfRunBeforeIdling: -1,
-        maxNumberOfRunningWorkspaces: 100,
+        maxNumberOfRunningWorkspacesPerCluster: 100,
         storage: { pvcStrategy: 'per-user' },
       },
       networking: {

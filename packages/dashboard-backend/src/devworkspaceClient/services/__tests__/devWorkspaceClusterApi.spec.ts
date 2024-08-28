@@ -12,7 +12,8 @@
 
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
-import { api } from '@eclipse-che/common';
+import { V1alpha2DevWorkspace } from '@devfile/api';
+import { devworkspaceGroup, devworkspaceLatestVersion, devworkspacePlural } from '@devfile/api/api';
 import * as mockClient from '@kubernetes/client-node';
 import { CustomObjectsApi } from '@kubernetes/client-node';
 
@@ -21,13 +22,14 @@ import {
   CustomResourceDefinitionList,
   IDevWorkspaceClusterApi,
 } from '@/devworkspaceClient';
-import { DevWorkspaceClusterApi } from '@/devworkspaceClient/services/devWorkspaceClusterApi';
+import { DevWorkspaceClusterApiService } from '@/devworkspaceClient/services/devWorkspaceClusterApiService';
+import { logger } from '@/utils/logger';
 
-jest.mock('@/helpers/getUserName.ts');
+jest.mock('../helpers/prepareCustomObjectWatch');
 
 describe('DevWorkspace Cluster API Service', () => {
-  let devWorkspaceClusterApi: IDevWorkspaceClusterApi;
-  let devWorkspaceCustomResourceList: { body: api.IDevWorkspaceList };
+  let devWorkspaceClusterApiService: IDevWorkspaceClusterApi;
+  let cheClusterCustomResourcesList: { body: CustomResourceDefinitionList };
 
   beforeEach(() => {
     jest.resetModules();
@@ -41,38 +43,192 @@ describe('DevWorkspace Cluster API Service', () => {
 
     kubeConfig.makeApiClient = jest.fn().mockImplementation((_api: unknown) => {
       return {
-        listClusterCustomObject: (group: string) => {
-          if (group === 'workspace.devfile.io') {
-            return Promise.resolve(devWorkspaceCustomResourceList);
-          } else if (group === 'org.eclipse.che') {
-            return Promise.resolve(buildCheClusterCustomResourceList());
-          }
-          throw new Error('Unknown group');
-        },
+        listClusterCustomObject: () => Promise.resolve(cheClusterCustomResourcesList),
       } as unknown as CustomObjectsApi;
     });
 
-    devWorkspaceClusterApi = new DevWorkspaceClusterApi(kubeConfig);
+    devWorkspaceClusterApiService = new DevWorkspaceClusterApiService(kubeConfig);
   });
 
   afterEach(() => {
     jest.clearAllMocks();
   });
 
-  test('Running workspace cluster limit exceeded', async () => {
-    devWorkspaceCustomResourceList = buildDevWorkspacesCustomResourceList(2);
-    const res = await devWorkspaceClusterApi.isRunningWorkspacesClusterLimitExceeded();
+  test('Running workspace cluster limit exceeded, limit 2', async () => {
+    cheClusterCustomResourcesList = buildCheClusterCustomResourceList(2);
+    const runningDW1 = getDWObject('devworkspace1', 'Running');
+    const runningDW2 = getDWObject('devworkspace2', 'Running');
+    (devWorkspaceClusterApiService as any).handleWatchMessage('ADDED', runningDW1);
+    (devWorkspaceClusterApiService as any).handleWatchMessage('ADDED', runningDW2);
+
+    const res = await devWorkspaceClusterApiService.isRunningWorkspacesClusterLimitExceeded();
+
     expect(res).toBeTruthy();
   });
 
-  test('Running workspace cluster limit NOT exceeded', async () => {
-    devWorkspaceCustomResourceList = buildDevWorkspacesCustomResourceList(1);
-    const res = await devWorkspaceClusterApi.isRunningWorkspacesClusterLimitExceeded();
+  test('Running workspace cluster limit NOT exceeded, limit 2', async () => {
+    cheClusterCustomResourcesList = buildCheClusterCustomResourceList(2);
+    const runningDW1 = getDWObject('devworkspace1', 'Running');
+    (devWorkspaceClusterApiService as any).handleWatchMessage('ADDED', runningDW1);
+
+    const res = await devWorkspaceClusterApiService.isRunningWorkspacesClusterLimitExceeded();
+
     expect(res).toBeFalsy();
+  });
+
+  test('Running workspace cluster limit NOT exceeded, limit -1', async () => {
+    cheClusterCustomResourcesList = buildCheClusterCustomResourceList(-1);
+    const runningDW1 = getDWObject('devworkspace1', 'Running');
+    const runningDW2 = getDWObject('devworkspace2', 'Running');
+    (devWorkspaceClusterApiService as any).handleWatchMessage('ADDED', runningDW1);
+    (devWorkspaceClusterApiService as any).handleWatchMessage('ADDED', runningDW2);
+
+    const res = await devWorkspaceClusterApiService.isRunningWorkspacesClusterLimitExceeded();
+
+    expect(res).toBeFalsy();
+  });
+
+  test('Running workspace cluster limit NOT exceeded, limit undefined', async () => {
+    cheClusterCustomResourcesList = buildCheClusterCustomResourceList(undefined);
+    const runningDW1 = getDWObject('devworkspace1', 'Running');
+    (devWorkspaceClusterApiService as any).handleWatchMessage('ADDED', runningDW1);
+
+    const res = await devWorkspaceClusterApiService.isRunningWorkspacesClusterLimitExceeded();
+
+    expect(res).toBeFalsy();
+  });
+
+  it('ADDED event, DW no phase, do not increase NofRDW', async () => {
+    const dwObject = getDWObject('devworkspace1', undefined);
+    (devWorkspaceClusterApiService as any).handleWatchMessage('ADDED', dwObject);
+
+    expect((devWorkspaceClusterApiService as any).getNumberOfRunningWorkspaces()).toEqual(0);
+  });
+
+  it('MODIFIED event, DW no phase, do not increase NofRDW', async () => {
+    const dwObject = getDWObject('devworkspace1', undefined);
+    (devWorkspaceClusterApiService as any).handleWatchMessage('ADDED', dwObject);
+
+    expect((devWorkspaceClusterApiService as any).getNumberOfRunningWorkspaces()).toEqual(0);
+  });
+
+  it('ADDED event, increase NofRDW by 1', async () => {
+    const runningDW1 = getDWObject('devworkspace1', 'Running');
+    (devWorkspaceClusterApiService as any).handleWatchMessage('ADDED', runningDW1);
+
+    expect((devWorkspaceClusterApiService as any).getNumberOfRunningWorkspaces()).toEqual(1);
+  });
+
+  it('MODIFIED event, increase NofRDW by 1', async () => {
+    const runningDW1 = getDWObject('devworkspace1', 'Running');
+    (devWorkspaceClusterApiService as any).handleWatchMessage('MODIFIED', runningDW1);
+
+    expect((devWorkspaceClusterApiService as any).getNumberOfRunningWorkspaces()).toEqual(1);
+  });
+
+  it('ADDED events, different Ids, increase NofRDW by 2', async () => {
+    const runningDW1 = getDWObject('devworkspace1', 'Running');
+    const runningDW2 = getDWObject('devworkspace2', 'Running');
+    (devWorkspaceClusterApiService as any).handleWatchMessage('ADDED', runningDW1);
+    (devWorkspaceClusterApiService as any).handleWatchMessage('ADDED', runningDW2);
+
+    expect((devWorkspaceClusterApiService as any).getNumberOfRunningWorkspaces()).toEqual(2);
+  });
+
+  it('ADDED events, same Ids, increase NofRDW by 1', async () => {
+    const runningDW1 = getDWObject('devworkspace1', 'Running');
+    (devWorkspaceClusterApiService as any).handleWatchMessage('ADDED', runningDW1);
+    (devWorkspaceClusterApiService as any).handleWatchMessage('ADDED', runningDW1);
+
+    expect((devWorkspaceClusterApiService as any).getNumberOfRunningWorkspaces()).toEqual(1);
+  });
+
+  it('MODIFIED events, different Ids, increase NofRDW by 2', async () => {
+    const runningDW1 = getDWObject('devworkspace1', 'Running');
+    const runningDW2 = getDWObject('devworkspace2', 'Running');
+    (devWorkspaceClusterApiService as any).handleWatchMessage('MODIFIED', runningDW1);
+    (devWorkspaceClusterApiService as any).handleWatchMessage('MODIFIED', runningDW2);
+
+    expect((devWorkspaceClusterApiService as any).getNumberOfRunningWorkspaces()).toEqual(2);
+  });
+
+  it('MODIFIED events, same Ids, increase NofRDW by 1', async () => {
+    const runningDW1 = getDWObject('devworkspace1', 'Running');
+    (devWorkspaceClusterApiService as any).handleWatchMessage('MODIFIED', runningDW1);
+
+    expect((devWorkspaceClusterApiService as any).getNumberOfRunningWorkspaces()).toEqual(1);
+  });
+
+  it('ADDED and MODIFIED events, different Ids, increase NofRDW by 2', async () => {
+    const runningDW1 = getDWObject('devworkspace1', 'Running');
+    const runningDW2 = getDWObject('devworkspace2', 'Running');
+    (devWorkspaceClusterApiService as any).handleWatchMessage('ADDED', runningDW1);
+    (devWorkspaceClusterApiService as any).handleWatchMessage('MODIFIED', runningDW2);
+
+    expect((devWorkspaceClusterApiService as any).getNumberOfRunningWorkspaces()).toEqual(2);
+  });
+
+  it('ADDED and MODIFIED events, same Ids, increase NofRDW by 1', async () => {
+    const runningDW1 = getDWObject('devworkspace1', 'Running');
+    (devWorkspaceClusterApiService as any).handleWatchMessage('ADDED', runningDW1);
+    (devWorkspaceClusterApiService as any).handleWatchMessage('MODIFIED', runningDW1);
+
+    expect((devWorkspaceClusterApiService as any).getNumberOfRunningWorkspaces()).toEqual(1);
+  });
+
+  it('ADDED and DELETED events, same Ids, do not increase NofRDW', async () => {
+    const runningDW1 = getDWObject('devworkspace1', 'Running');
+    (devWorkspaceClusterApiService as any).handleWatchMessage('ADDED', runningDW1);
+    (devWorkspaceClusterApiService as any).handleWatchMessage('DELETED', runningDW1);
+
+    expect((devWorkspaceClusterApiService as any).getNumberOfRunningWorkspaces()).toEqual(0);
+  });
+
+  it('MODIFIED and DELETED events, same Ids, do not increase NofRDW', async () => {
+    const runningDW1 = getDWObject('devworkspace1', 'Running');
+    (devWorkspaceClusterApiService as any).handleWatchMessage('MODIFIED', runningDW1);
+    (devWorkspaceClusterApiService as any).handleWatchMessage('DELETED', runningDW1);
+
+    expect((devWorkspaceClusterApiService as any).getNumberOfRunningWorkspaces()).toEqual(0);
+  });
+
+  it('should handle the watch messages of ERROR phase', async () => {
+    (devWorkspaceClusterApiService as any).handleWatchMessage('ERROR', {
+      message: 'error message',
+    });
+
+    expect(logger.info).toHaveBeenCalledWith('Watching DevWorkspace ERROR phase: error message');
+  });
+
+  it('should handle the watch error', async () => {
+    const path = `/apis/${devworkspaceGroup}/${devworkspaceLatestVersion}/watch/${devworkspacePlural}`;
+    const error = new Error('watch error');
+
+    (devWorkspaceClusterApiService as any).handleWatchError(error, path);
+    expect(logger.warn).toHaveBeenCalledWith(error, `Stopped watching ${path}.`);
+  });
+
+  it('should watch events', async () => {
+    const spyWatch = jest.spyOn((devWorkspaceClusterApiService as any).customObjectWatch, 'watch');
+
+    await (devWorkspaceClusterApiService as any).watchInAllNamespaces();
+
+    expect(spyWatch).toHaveBeenCalledWith(
+      `/apis/${devworkspaceGroup}/${devworkspaceLatestVersion}/watch/${devworkspacePlural}`,
+      { watch: true },
+      expect.any(Function),
+      expect.any(Function),
+    );
+
+    await (devWorkspaceClusterApiService as any).watchInAllNamespaces();
+
+    expect(spyWatch).toHaveBeenCalledTimes(1);
   });
 });
 
-function buildCheClusterCustomResourceList(): { body: CustomResourceDefinitionList } {
+function buildCheClusterCustomResourceList(maxNumberOfRunningWorkspacesPerCluster?: number): {
+  body: CustomResourceDefinitionList;
+} {
   return {
     body: {
       apiVersion: 'org.eclipse.che/v2',
@@ -86,7 +242,7 @@ function buildCheClusterCustomResourceList(): { body: CustomResourceDefinitionLi
           },
           spec: {
             devEnvironments: {
-              maxNumberOfRunningWorkspaces: 2,
+              maxNumberOfRunningWorkspacesPerCluster,
             },
           },
         } as CheClusterCustomResource,
@@ -96,30 +252,13 @@ function buildCheClusterCustomResourceList(): { body: CustomResourceDefinitionLi
   };
 }
 
-function buildDevWorkspacesCustomResourceList(numOfRunningDevWorkspace: number): {
-  body: api.IDevWorkspaceList;
-} {
-  const items = [];
-  for (let i = 0; i < numOfRunningDevWorkspace; i++) {
-    items.push(getRunningDevWorkspace());
-  }
-
-  return {
-    body: {
-      apiVersion: 'workspace.devfile.io/v1alpha2',
-      items: items,
-      kind: 'DevWorkspaceList',
-    },
-  };
-}
-
-function getRunningDevWorkspace() {
+function getDWObject(devworkspaceId: string, phase?: string): V1alpha2DevWorkspace {
   return {
     apiVersion: 'workspace.devfile.io/v1alpha2',
     kind: 'DevWorkspace',
     status: {
-      devworkspaceId: 'devworkspace-id',
-      phase: 'Running',
+      devworkspaceId,
+      phase,
     },
   };
 }

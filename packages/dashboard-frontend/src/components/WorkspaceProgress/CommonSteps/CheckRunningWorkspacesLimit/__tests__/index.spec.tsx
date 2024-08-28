@@ -372,7 +372,7 @@ describe('Common steps, check running workspaces limit', () => {
         });
     });
 
-    test.only('alert notification', async () => {
+    test('alert notification', async () => {
       const store = storeBuilder
         .withDevWorkspacesCluster({ isRunningDevWorkspacesClusterLimitExceeded: true })
         .build();
@@ -394,7 +394,7 @@ describe('Common steps, check running workspaces limit', () => {
       expect(mockOnRestart).not.toHaveBeenCalled();
     });
 
-    test.only('start a workspace', async () => {
+    test('start a workspace', async () => {
       const store = storeBuilder
         .withDevWorkspacesCluster({ isRunningDevWorkspacesClusterLimitExceeded: false })
         .build();

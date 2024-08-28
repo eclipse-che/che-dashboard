@@ -18,7 +18,7 @@ import { dashboardBackendPrefix } from '@/services/backend-client/const';
 
 export type Headers = RawAxiosResponseHeaders | AxiosResponseHeaders;
 
-export async function IsRunningDevWorkspacesClusterLimitExceeded(): Promise<boolean> {
+export async function isRunningDevWorkspacesClusterLimitExceeded(): Promise<boolean> {
   try {
     const response = await AxiosWrapper.createToRetryAnyErrors().get(
       `${dashboardBackendPrefix}/devworkspace/running-workspaces-cluster-limit-exceeded`,

@@ -171,8 +171,8 @@ export type CheClusterCustomResourceSpecDevEnvironments = {
     pvcStrategy?: string;
   };
   maxNumberOfRunningWorkspacesPerUser?: number;
+  maxNumberOfRunningWorkspacesPerCluster?: number;
   maxNumberOfWorkspacesPerUser?: number;
-  maxNumberOfRunningWorkspaces?: number;
 };
 
 export function isCheClusterCustomResourceSpecDevEnvironments(
@@ -193,8 +193,8 @@ export function isCheClusterCustomResourceSpecDevEnvironments(
     startTimeoutSeconds,
     storage,
     maxNumberOfRunningWorkspacesPerUser,
+    maxNumberOfRunningWorkspacesPerCluster,
     maxNumberOfWorkspacesPerUser,
-    maxNumberOfRunningWorkspaces,
   } = object as CheClusterCustomResourceSpecDevEnvironments;
   return (
     containerBuildConfiguration !== undefined ||
@@ -207,8 +207,8 @@ export function isCheClusterCustomResourceSpecDevEnvironments(
     startTimeoutSeconds !== undefined ||
     storage !== undefined ||
     maxNumberOfRunningWorkspacesPerUser !== undefined ||
-    maxNumberOfWorkspacesPerUser !== undefined ||
-    maxNumberOfRunningWorkspaces !== undefined
+    maxNumberOfRunningWorkspacesPerCluster !== undefined ||
+    maxNumberOfWorkspacesPerUser !== undefined
   );
 }
 
@@ -438,7 +438,6 @@ export interface IPersonalAccessTokenApi {
 
 export interface IDevWorkspaceClient {
   devWorkspaceTemplateApi: IDevWorkspaceTemplateApi;
-  devWorkspaceClusterApi: IDevWorkspaceClusterApi;
   devworkspaceApi: IDevWorkspaceApi;
   dockerConfigApi: IDockerConfigApi;
   eventApi: IEventApi;
@@ -454,6 +453,10 @@ export interface IDevWorkspaceClient {
   sshKeysApi: IShhKeysApi;
   workspacePreferencesApi: IWorkspacePreferencesApi;
   editorsApi: IEditorsApi;
+}
+
+export interface IDevWorkspaceSingletonClient {
+  devWorkspaceClusterServiceApi: IDevWorkspaceClusterApi;
 }
 
 export interface IWatcherService<T = Record<string, unknown>> {

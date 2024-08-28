@@ -13,8 +13,7 @@
 import { FastifyInstance } from 'fastify';
 
 import { baseApiPath } from '@/constants/config';
-import { getDevWorkspaceClient } from '@/routes/api/helpers/getDevWorkspaceClient';
-import { getServiceAccountToken } from '@/routes/api/helpers/getServiceAccountToken';
+import { getDevWorkspaceSingletonClient } from '@/routes/api/helpers/getDevWorkspaceClient';
 import { getSchema } from '@/services/helpers';
 
 const tags = ['Devworkspace Cluster'];
@@ -25,9 +24,8 @@ export function registerDevWorkspaceClusterRoutes(instance: FastifyInstance) {
       `${baseApiPath}/devworkspace/running-workspaces-cluster-limit-exceeded`,
       getSchema({ tags }),
       async function () {
-        const token = getServiceAccountToken();
-        const { devWorkspaceClusterApi } = getDevWorkspaceClient(token);
-        return await devWorkspaceClusterApi.isRunningWorkspacesClusterLimitExceeded();
+        const { devWorkspaceClusterServiceApi } = getDevWorkspaceSingletonClient();
+        return await devWorkspaceClusterServiceApi.isRunningWorkspacesClusterLimitExceeded();
       },
     );
   });

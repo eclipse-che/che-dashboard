@@ -13,11 +13,12 @@
 import common from '@eclipse-che/common';
 import { Action, Reducer } from 'redux';
 
-import { IsRunningDevWorkspacesClusterLimitExceeded } from '@/services/backend-client/devWorkspaceClusterApi';
+import { isRunningDevWorkspacesClusterLimitExceeded } from '@/services/backend-client/devWorkspaceClusterApi';
+import { selectRunningDevWorkspacesClusterLimitExceeded } from '@/store/DevWorkspacesCluster/selectors';
 import { createObject } from '@/store/helpers';
 import { AUTHORIZED, SanityCheckAction } from '@/store/sanityCheckMiddleware';
 
-import { AppThunk } from '..';
+import { AppState, AppThunk } from '..';
 
 export interface State {
   isLoading: boolean;
@@ -32,10 +33,25 @@ export class RunningDevWorkspacesClusterLimitExceededError extends Error {
   }
 }
 
+export function checkRunningDevWorkspacesClusterLimitExceeded(state: AppState) {
+  const runningLimitExceeded = selectRunningDevWorkspacesClusterLimitExceeded(state);
+  if (runningLimitExceeded === false) {
+    return;
+  }
+
+  throwRunningDevWorkspacesClusterLimitExceededError();
+}
+
 export function throwRunningDevWorkspacesClusterLimitExceededError() {
   throw new RunningDevWorkspacesClusterLimitExceededError(
     'Exceeded the cluster limit for running DevWorkspaces',
   );
+}
+
+export enum Type {
+  REQUEST_DEVWORKSPACES_CLUSTER = 'REQUEST_DEVWORKSPACES_CLUSTER',
+  RECEIVED_DEVWORKSPACES_CLUSTER = 'RECEIVED_DEVWORKSPACES_CLUSTER',
+  RECEIVED_DEVWORKSPACES_CLUSTER_ERROR = 'RECEIVED_DEVWORKSPACES_CLUSTER_ERROR',
 }
 
 export interface RequestDevWorkspacesClusterAction extends Action, SanityCheckAction {
@@ -52,7 +68,7 @@ export interface ReceivedDevWorkspacesClusterErrorAction {
   error: string;
 }
 
-type KnownAction =
+export type KnownAction =
   | RequestDevWorkspacesClusterAction
   | ReceivedDevWorkspacesClusterAction
   | ReceivedDevWorkspacesClusterErrorAction;
@@ -71,11 +87,10 @@ export const actionCreators: ActionCreators = {
       });
 
       try {
-        const isRunningDevWorkspacesClusterLimitExceeded =
-          await IsRunningDevWorkspacesClusterLimitExceeded();
+        const isLimitExceeded = await isRunningDevWorkspacesClusterLimitExceeded();
         dispatch({
           type: 'RECEIVED_DEVWORKSPACES_CLUSTER',
-          isRunningDevWorkspacesClusterLimitExceeded,
+          isRunningDevWorkspacesClusterLimitExceeded: isLimitExceeded,
         });
       } catch (e) {
         dispatch({
@@ -87,7 +102,7 @@ export const actionCreators: ActionCreators = {
     },
 };
 
-const unloadedState: State = {
+export const unloadedState: State = {
   isLoading: false,
   isRunningDevWorkspacesClusterLimitExceeded: false,
 };
