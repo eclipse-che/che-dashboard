@@ -192,6 +192,15 @@ describe('DevWorkspace Cluster API Service', () => {
     expect((devWorkspaceClusterApiService as any).getNumberOfRunningWorkspaces()).toEqual(0);
   });
 
+  it('MODIFIED events, same Ids, do not increase NofRDW if workspace not running/starting', async () => {
+    const runningDW1 = getDWObject('devworkspace1', 'Running');
+    const stoppingDW2 = getDWObject('devworkspace1', 'Stopping');
+    (devWorkspaceClusterApiService as any).handleWatchMessage('MODIFIED', runningDW1);
+    (devWorkspaceClusterApiService as any).handleWatchMessage('MODIFIED', stoppingDW2);
+
+    expect((devWorkspaceClusterApiService as any).getNumberOfRunningWorkspaces()).toEqual(0);
+  });
+
   it('should handle the watch messages of ERROR phase', async () => {
     (devWorkspaceClusterApiService as any).handleWatchMessage('ERROR', {
       message: 'error message',

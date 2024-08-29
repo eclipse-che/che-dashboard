@@ -80,15 +80,19 @@ export class DevWorkspaceClusterApiService implements IDevWorkspaceClusterApi {
       case api.webSocket.EventPhase.ADDED:
       case api.webSocket.EventPhase.MODIFIED: {
         const devWorkspace = apiObj as V1alpha2DevWorkspace;
-        if (this.isDevWorkspaceRunning(devWorkspace) && this.isDevWorkspaceHasId(devWorkspace)) {
-          this.runningDevWorkspaceIds.add(devWorkspace.status!.devworkspaceId);
+        if (this.isDevWorkspaceHasId(devWorkspace)) {
+          if (this.isDevWorkspaceRunning(devWorkspace)) {
+            this.runningDevWorkspaceIds.add(devWorkspace.status!.devworkspaceId);
+          } else {
+            this.runningDevWorkspaceIds.delete(devWorkspace.status!.devworkspaceId);
+          }
         }
         break;
       }
       case api.webSocket.EventPhase.DELETED: {
         const devWorkspace = apiObj as V1alpha2DevWorkspace;
-        if (devWorkspace.status?.devworkspaceId) {
-          this.runningDevWorkspaceIds.delete(devWorkspace.status.devworkspaceId);
+        if (this.isDevWorkspaceHasId(devWorkspace)) {
+          this.runningDevWorkspaceIds.delete(devWorkspace.status!.devworkspaceId);
         }
         break;
       }
