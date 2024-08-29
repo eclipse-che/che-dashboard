@@ -17,4 +17,8 @@ yarn-error.log
 
 run/.che-dashboard-pod
 run/.custom-resources
-run/public-certs
+run/public-certsg
+
+scripts/yarn/tmp
+scripts/yarn/old_version/.yarn/cache
+scripts/yarn/old_version/node_modules/

@@ -5,7 +5,9 @@
   "private": true,
   "workspaces": {
     "packages": [
-      "packages/*"
+      "packages/common",
+      "packages/dashboard-backend",
+      "packages/dashboard-frontend"
     ]
   },
   "bugs": {
