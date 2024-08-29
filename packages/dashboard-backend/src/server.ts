@@ -17,7 +17,7 @@ import process from 'process';
 
 import buildApp from '@/app';
 import { isLocalRun } from '@/localRun';
-import { watchLogLevel } from '@/services/logWatcher';
+import { watchInAllNamespaces, watchLogLevel } from '@/services/logWatcher';
 import { stream } from '@/utils/logger';
 
 (async function startServer() {
@@ -53,6 +53,9 @@ import { stream } from '@/utils/logger';
       includeHooks: false,
     }),
   );
+
+  // Start watching resources across all namespaces
+  await watchInAllNamespaces();
 
   // set initial log level and watch for changes
   watchLogLevel(server);

@@ -16,7 +16,10 @@ import { FastifyInstance } from 'fastify';
 import { isCheClusterCustomResource } from '@/devworkspaceClient';
 import { prepareCustomObjectWatch } from '@/devworkspaceClient/services/helpers/prepareCustomObjectWatch';
 import { isLocalRun } from '@/localRun';
-import { getDevWorkspaceClient } from '@/routes/api/helpers/getDevWorkspaceClient';
+import {
+  getDevWorkspaceClient,
+  getDevWorkspaceSingletonClient,
+} from '@/routes/api/helpers/getDevWorkspaceClient';
 import { getServiceAccountToken } from '@/routes/api/helpers/getServiceAccountToken';
 import { KubeConfigProvider } from '@/services/kubeclient/kubeConfigProvider';
 import { logger, updateLogLevel } from '@/utils/logger';
@@ -74,6 +77,11 @@ export async function watchCR(kubeConfig: k8s.KubeConfig, server: FastifyInstanc
   stream.on('close', () => {
     logger.error('Log level watcher: Stream closed.');
   });
+}
+
+export async function watchInAllNamespaces(): Promise<void> {
+  const { devWorkspaceClusterServiceApi } = getDevWorkspaceSingletonClient();
+  await (devWorkspaceClusterServiceApi as any).watchInAllNamespaces();
 }
 
 function getEnv(): {
