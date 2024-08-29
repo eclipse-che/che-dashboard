@@ -17,7 +17,7 @@ yarn-error.log
 
 run/.che-dashboard-pod
 run/.custom-resources
-run/public-certsg
+run/public-certs
 
 scripts/yarn/tmp
 scripts/yarn/old_version/.yarn/cache
