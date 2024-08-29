@@ -175,6 +175,28 @@ describe('Untrusted Repo Warning Modal', () => {
 
     expect(mockOnContinue).toHaveBeenCalledTimes(1);
   });
+
+  test('re-check if source is trusted', () => {
+    const store = storeBuilder
+      .withWorkspacePreferences({
+        'trusted-sources': ['source-location'],
+      })
+      .build();
+    const { reRenderComponent } = renderComponent(store, 'source-location', false);
+
+    // no warning window
+    expect(screen.queryByRole('dialog')).toBeNull();
+
+    // should not call onContinue
+    expect(mockOnContinue).not.toHaveBeenCalled();
+
+    // open the modal
+    reRenderComponent(store, 'source-location', true);
+
+    // should call mockOnContinue
+    expect(mockOnContinue).toHaveBeenCalledTimes(1);
+    expect(screen.queryByRole('dialog')).toBeNull();
+  });
 });
 
 function getComponent(store: Store, location: string, isOpen = true): React.ReactElement {

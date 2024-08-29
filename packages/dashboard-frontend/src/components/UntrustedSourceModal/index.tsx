@@ -96,6 +96,26 @@ class UntrustedSourceModal extends React.Component<Props, State> {
     }
   }
 
+  public componentDidUpdate(prevProps: Readonly<Props>): void {
+    const isTrusted = this.props.isTrustedSource(this.props.location);
+
+    this.setState({
+      isTrusted,
+    });
+
+    if (
+      prevProps.isOpen === false &&
+      this.props.isOpen === true &&
+      isTrusted === true &&
+      this.state.canContinue === true
+    ) {
+      this.setState({
+        canContinue: false,
+      });
+      this.props.onContinue();
+    }
+  }
+
   private handleTrustAllToggle(checked: boolean): void {
     this.setState({ trustAllCheckbox: checked });
   }
