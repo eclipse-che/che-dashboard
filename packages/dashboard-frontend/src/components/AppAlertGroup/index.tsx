@@ -36,6 +36,7 @@ class AppAlertGroup extends React.PureComponent<Props, State> {
       alerts: [],
     };
     this.showAlertHandler = (alerts: AlertItem[]) => {
+      console.error('>>> showAlertHandler', alerts);
       this.setState({ alerts });
     };
   }
