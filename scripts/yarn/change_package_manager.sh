@@ -10,46 +10,46 @@
 
 # The script is used to change current package manager(yarn 1 vs yarn 3)
 
-export OLD_VERSION_DIR=$(PWD)/scripts/yarn/old_version
-export TMP_DIR=$(PWD)/scripts/yarn/tmp
+export OLD_VERSION_DIR=$(pwd)/scripts/yarn/old_version
+export TMP_DIR=$(pwd)/scripts/yarn/tmp
 
 #==========================Clean temporary directory============================
 if [ -d $TMP_DIR ]; then
     echo "[INFO]: Clean temporary directory"
-    rm -rf $(PWD)/scripts/yarn/tmp
+    rm -rf $(pwd)/scripts/yarn/tmp
 else
     echo "[INFO]: Create temporary directory"
 fi
 mkdir -p $TMP_DIR
 #==========================Store origin files==================================
-if [ -f "$(PWD)/.yarnrc.yml" ]; then
+if [ -f "$(pwd)/.yarnrc.yml" ]; then
     echo "[INFO]: Move '.yarnrc.yml' file to the temporary directory"
-    mv -f $(PWD)/.yarnrc.yml $TMP_DIR
+    mv -f $(pwd)/.yarnrc.yml $TMP_DIR
 fi
 
-if [ -f "$(PWD)/.yarnrc" ]; then
+if [ -f "$(pwd)/.yarnrc" ]; then
     echo "[INFO]: Move '.yarnrc' file to the temporary directory"
-    mv -f $(PWD)/.yarnrc $TMP_DIR
+    mv -f $(pwd)/.yarnrc $TMP_DIR
 fi
 
-if [ -d "$(PWD)/.yarn" ]; then
+if [ -d "$(pwd)/.yarn" ]; then
     echo "[INFO]: Move '.yarn' dir to the temporary directory"
-    mv -f $(PWD)/.yarn $TMP_DIR/
+    mv -f $(pwd)/.yarn $TMP_DIR/
 fi
 
-if [ -f "$(PWD)/yarn.lock" ]; then
+if [ -f "$(pwd)/yarn.lock" ]; then
     echo "[INFO]: Move 'yarn.lock' file to the temporary directory"
-    mv -f $(PWD)/yarn.lock $TMP_DIR
+    mv -f $(pwd)/yarn.lock $TMP_DIR
 fi
 
-if [ -d "$(PWD)/.deps" ]; then
+if [ -d "$(pwd)/.deps" ]; then
     echo "[INFO]: Move '.deps' dir to the temporary directory"
-    mv -f $(PWD)/.deps $TMP_DIR/
+    mv -f $(pwd)/.deps $TMP_DIR/
 fi
 #==========================Restore old version=================================
 if [ -d $OLD_VERSION_DIR ]; then
     echo "[INFO]: Restore old package manager version"
-    mv -f $OLD_VERSION_DIR/{*,.*} $(PWD)/ > /dev/null 2>&1
+    mv -f $OLD_VERSION_DIR/{*,.*} $(pwd)/ > /dev/null 2>&1
 fi
 #==========================Cleanup=============================================
 if [ -d $TMP_DIR ]; then
@@ -57,7 +57,7 @@ if [ -d $TMP_DIR ]; then
     mv -f $TMP_DIR/{*,.*} $OLD_VERSION_DIR/ > /dev/null 2>&1
 fi
 
-VER=$(yarn --cwd $(PWD) -v | sed -e s/\\./\\n/g | sed -n 1p)
+VER=$(yarn --cwd $(pwd) -v | sed -e s/\\./\\n/g | sed -n 1p)
 
 echo
 echo "**********************"
