@@ -9,7 +9,7 @@
 #   Red Hat, Inc. - initial API and implementation
 
 # https://registry.access.redhat.com/ubi8/nodejs-18
-FROM registry.access.redhat.com/ubi8/nodejs-18:1-122 as builder
+FROM registry.access.redhat.com/ubi8/nodejs-18:1-122.1724180044 as builder
 # hadolint ignore=DL3002
 USER 0
 RUN dnf -y -q update --exclude=unbound-libs 
@@ -18,10 +18,9 @@ COPY . /dashboard/
 WORKDIR /dashboard/
 RUN npm i -g yarn; yarn install
 RUN yarn build
-RUN yarn workspace @eclipse-che/dashboard-backend install --production
 
 # https://registry.access.redhat.com/ubi8/nodejs-18
-FROM registry.access.redhat.com/ubi8/nodejs-18:1-122
+FROM registry.access.redhat.com/ubi8/nodejs-18:1-122.1724180044
 # hadolint ignore=DL3002
 USER 0
 # hadolint ignore=DL4006
@@ -32,11 +31,9 @@ RUN \
 
 ENV FRONTEND_LIB=/dashboard/packages/dashboard-frontend/lib/public
 ENV BACKEND_LIB=/dashboard/packages/dashboard-backend/lib
-ENV BACKEND_NODE_MODULES=/dashboard/packages/dashboard-backend/node_modules/
 ENV DEVFILE_REGISTRY=/dashboard/packages/devfile-registry
 
 COPY --from=builder ${BACKEND_LIB} /backend
-COPY --from=builder ${BACKEND_NODE_MODULES} /backend/node_modules
 COPY --from=builder ${FRONTEND_LIB} /public
 COPY --from=builder ${DEVFILE_REGISTRY} /public/dashboard/devfile-registry
 
