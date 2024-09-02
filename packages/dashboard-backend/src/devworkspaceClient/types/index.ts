@@ -55,6 +55,11 @@ export interface IDevWorkspaceClusterApi {
    * Checks if the limit of concurrent running DevWorkspaces by all users is exceeded.
    */
   isRunningWorkspacesClusterLimitExceeded(): Promise<boolean>;
+
+  /**
+   * Watch DevWorkspaces in all namespaces.
+   */
+  watchInAllNamespaces(): Promise<void>;
 }
 
 export interface IDevWorkspaceApi extends IWatcherService<api.webSocket.SubscribeParams> {

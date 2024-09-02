@@ -10,8 +10,6 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-/* eslint-disable @typescript-eslint/no-unused-vars */
-
 import { V1alpha2DevWorkspace } from '@devfile/api';
 import { devworkspaceGroup, devworkspaceLatestVersion, devworkspacePlural } from '@devfile/api/api';
 import * as mockClient from '@kubernetes/client-node';
@@ -25,7 +23,7 @@ import {
 import { DevWorkspaceClusterApiService } from '@/devworkspaceClient/services/devWorkspaceClusterApiService';
 import { logger } from '@/utils/logger';
 
-jest.mock('../helpers/prepareCustomObjectWatch');
+jest.mock('@/devworkspaceClient/services/helpers/prepareCustomObjectWatch');
 
 describe('DevWorkspace Cluster API Service', () => {
   let devWorkspaceClusterApiService: IDevWorkspaceClusterApi;
@@ -41,7 +39,7 @@ describe('DevWorkspace Cluster API Service', () => {
     const { KubeConfig } = mockClient;
     const kubeConfig = new KubeConfig();
 
-    kubeConfig.makeApiClient = jest.fn().mockImplementation((_api: unknown) => {
+    kubeConfig.makeApiClient = jest.fn().mockImplementation(() => {
       return {
         listClusterCustomObject: () => Promise.resolve(cheClusterCustomResourcesList),
       } as unknown as CustomObjectsApi;

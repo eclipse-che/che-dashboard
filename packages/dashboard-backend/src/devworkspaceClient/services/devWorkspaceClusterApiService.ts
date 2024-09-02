@@ -47,7 +47,7 @@ export class DevWorkspaceClusterApiService implements IDevWorkspaceClusterApi {
     return this.getNumberOfRunningWorkspaces() >= runningWorkspacesClusterLimit;
   }
 
-  protected async watchInAllNamespaces(): Promise<void> {
+  async watchInAllNamespaces(): Promise<void> {
     if (this.watcherInProgress) {
       return;
     }

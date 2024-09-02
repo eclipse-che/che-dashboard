@@ -262,6 +262,9 @@ export const getDevWorkspaceSingletonClient = jest.fn(
       devWorkspaceClusterServiceApi: {
         isRunningWorkspacesClusterLimitExceeded: () =>
           Promise.resolve(stubIsRunningWorkspaceClusterLimitExceeded),
+        watchInAllNamespaces(): Promise<void> {
+          return Promise.resolve();
+        },
       } as IDevWorkspaceClusterApi,
     };
   },

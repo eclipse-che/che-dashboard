@@ -16,6 +16,7 @@ import { FastifyInstance } from 'fastify';
 import { baseApiPath } from '@/constants/config';
 import { setup, teardown } from '@/utils/appBuilder';
 
+jest.mock('../helpers/getDevWorkspaceClient.ts');
 describe('Cluster Info Route', () => {
   let app: FastifyInstance;
   const clusterConsoleUrl = 'cluster-console-url';
