@@ -342,7 +342,7 @@ describe('GitRepoLocationInput', () => {
 
       // trust the resource
       const continueButton = screen.getByRole('button', { name: 'Continue' });
-      userEvent.click(continueButton);
+      await userEvent.click(continueButton);
 
       expect(window.open).toHaveBeenCalledTimes(1);
       expect(window.open).toHaveBeenLastCalledWith(
@@ -376,7 +376,7 @@ describe('GitRepoLocationInput', () => {
 
       // trust the resource
       const continueButton = screen.getByRole('button', { name: 'Continue' });
-      userEvent.click(continueButton);
+      await userEvent.click(continueButton);
 
       expect(window.open).toHaveBeenCalledTimes(1);
       expect(window.open).toHaveBeenLastCalledWith(
