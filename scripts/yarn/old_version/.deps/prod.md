@@ -5,9 +5,9 @@
 | [`@babel/runtime@7.23.2`](https://github.com/babel/babel.git) | MIT | #10718 |
 | [`@devfile/api@2.3.0-1721400636`](https://github.com/GIT_USER_ID/GIT_REPO_ID.git) | Apache-2.0 | clearlydefined |
 | [`@eclipse-che/che-devworkspace-generator@7.90.0-next-4510df7`](git+https://github.com/devfile/devworkspace-generator.git) | EPL-2.0 | ecd.che |
-| [`@eclipse-che/common@7.91.0-next`](https://github.com/eclipse-che/che-dashboard) | EPL-2.0 | ecd.che |
-| [`@eclipse-che/dashboard-backend@7.91.0-next`](https://github.com/eclipse-che/che-dashboard) | EPL-2.0 | ecd.che |
-| [`@eclipse-che/dashboard-frontend@7.91.0-next`](git://github.com/eclipse/che-dashboard.git) | EPL-2.0 | ecd.che |
+| [`@eclipse-che/common@7.92.0-next`](https://github.com/eclipse-che/che-dashboard) | EPL-2.0 | ecd.che |
+| [`@eclipse-che/dashboard-backend@7.92.0-next`](https://github.com/eclipse-che/che-dashboard) | EPL-2.0 | ecd.che |
+| [`@eclipse-che/dashboard-frontend@7.92.0-next`](git://github.com/eclipse/che-dashboard.git) | EPL-2.0 | ecd.che |
 | [`@fastify/accept-negotiator@1.1.0`](git+https://github.com/fastify/accept-negotiator.git) | MIT | clearlydefined |
 | [`@fastify/ajv-compiler@3.5.0`](git+https://github.com/fastify/ajv-compiler.git) | MIT | clearlydefined |
 | [`@fastify/busboy@2.0.0`](https://github.com/fastify/busboy.git) | MIT | clearlydefined |
@@ -291,7 +291,7 @@
 | [`randombytes@2.1.0`](git@github.com:crypto-browserify/randombytes.git) | MIT | clearlydefined |
 | [`randomfill@1.0.4`](https://github.com/crypto-browserify/randomfill.git) | MIT | clearlydefined |
 | [`react-copy-to-clipboard@5.1.0`](https://github.com/nkbt/react-copy-to-clipboard.git) | MIT | clearlydefined |
-| [`react-dom@16.14.0`](git+https://github.com/facebook/react.git) | MIT | clearlydefined |
+| [`react-dom@18.3.1`](https://github.com/facebook/react.git) | MIT | clearlydefined |
 | [`react-dropzone@9.0.0`](https://github.com/react-dropzone/react-dropzone.git) | MIT | [CQ22355](https://dev.eclipse.org/ipzilla/show_bug.cgi?id=22355) |
 | [`react-fast-compare@3.2.2`](https://github.com/FormidableLabs/react-fast-compare) | MIT | clearlydefined |
 | [`react-helmet@6.1.0`](https://github.com/nfl/react-helmet) | MIT | clearlydefined |
@@ -302,7 +302,7 @@
 | [`react-router@5.3.4`](https://github.com/remix-run/react-router.git) | MIT | #3024 |
 | [`react-side-effect@2.1.2`](https://github.com/gaearon/react-side-effect.git) | MIT | clearlydefined |
 | [`react-tooltip@4.5.1`](https://github.com/ReactTooltip/react-tooltip) | MIT | #5006 |
-| [`react@16.14.0`](git+https://github.com/facebook/react.git) | MIT | clearlydefined |
+| [`react@18.3.1`](https://github.com/facebook/react.git) | MIT | clearlydefined |
 | [`readable-stream@3.6.2`](git://github.com/nodejs/readable-stream) | MIT | [CQ22627](https://dev.eclipse.org/ipzilla/show_bug.cgi?id=22627) |
 | [`real-require@0.2.0`](git+https://github.com/pinojs/real-require.git) | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/real-require/0.2.0) |
 | [`reconnecting-websocket@4.4.0`](git+https://github.com/pladaria/reconnecting-websocket.git) | MIT | #940 |
@@ -326,7 +326,7 @@
 | [`safe-stable-stringify@2.4.3`](git+https://github.com/BridgeAR/safe-stable-stringify.git) | MIT | clearlydefined |
 | [`safer-buffer@2.1.2`](git+https://github.com/ChALkeR/safer-buffer.git) | MIT | clearlydefined |
 | [`sanitize-html@2.13.0`](https://github.com/apostrophecms/sanitize-html.git) | MIT | clearlydefined |
-| [`scheduler@0.19.1`](https://github.com/facebook/react.git) | MIT | clearlydefined |
+| [`scheduler@0.23.2`](https://github.com/facebook/react.git) | MIT | #14588 |
 | [`seamless-immutable@7.1.4`](https://github.com/rtfeldman/seamless-immutable.git) | BSD-3-Clause | clearlydefined |
 | [`secure-json-parse@2.7.0`](git+https://github.com/fastify/secure-json-parse.git) | BSD-3-Clause | clearlydefined |
 | [`semver@7.5.4`](https://github.com/npm/node-semver.git) | ISC | clearlydefined |
