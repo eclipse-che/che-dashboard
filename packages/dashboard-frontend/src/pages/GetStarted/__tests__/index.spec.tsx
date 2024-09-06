@@ -16,7 +16,11 @@ import React from 'react';
 import { Provider } from 'react-redux';
 
 import GetStarted from '@/pages/GetStarted';
-import getComponentRenderer, { screen, waitFor, within } from '@/services/__mocks__/getComponentRenderer';
+import getComponentRenderer, {
+  screen,
+  waitFor,
+  within,
+} from '@/services/__mocks__/getComponentRenderer';
 import { FakeStoreBuilder } from '@/store/__mocks__/storeBuilder';
 
 jest.mock('@/components/EditorSelector');
