@@ -19,7 +19,7 @@ import { Provider } from 'react-redux';
 import { Action, Store } from 'redux';
 
 import { MIN_STEP_DURATION_MS, TIMEOUT_TO_STOP_SEC } from '@/components/WorkspaceProgress/const';
-import { WorkspaceParams } from '@/Routes/routes';
+import { WorkspaceRouteParams } from '@/Routes';
 import getComponentRenderer, { screen } from '@/services/__mocks__/getComponentRenderer';
 import devfileApi from '@/services/devfileApi';
 import { getDefer } from '@/services/helpers/deferred';
@@ -81,7 +81,7 @@ const { renderComponent } = getComponentRenderer(getComponent);
 const namespace = 'che-user';
 
 const workspaceName = 'test-workspace';
-const matchParams: WorkspaceParams = {
+const matchParams: WorkspaceRouteParams = {
   namespace,
   workspaceName,
 };

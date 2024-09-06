@@ -23,7 +23,7 @@ import {
   ProgressStepState,
 } from '@/components/WorkspaceProgress/ProgressStep';
 import { ProgressStepTitle } from '@/components/WorkspaceProgress/StepTitle';
-import { ROUTE } from '@/Routes/routes';
+import { ROUTE } from '@/Routes';
 import { FactoryLocationAdapter } from '@/services/factory-location-adapter';
 import {
   buildFactoryParams,
@@ -188,7 +188,7 @@ class CreatingStepInitialize extends ProgressStep<Props, State> {
 
   private handleOpenUserPreferences(): void {
     const location = buildUserPreferencesLocation(UserPreferencesTab.SSH_KEYS);
-    const link = toHref(this.props.history, location);
+    const link = toHref(location);
     window.open(link, '_blank');
   }
 

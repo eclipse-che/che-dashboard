@@ -11,11 +11,13 @@
  */
 
 import { helpers } from '@eclipse-che/common';
+import { createHashHistory, History } from 'history';
 import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
-import { RouteComponentProps } from 'react-router-dom';
+import { Location, NavigateFunction, useLocation, useNavigate, useParams } from 'react-router-dom';
 
 import { LoaderPage } from '@/pages/Loader';
+import { WorkspaceRouteParams } from '@/Routes';
 import { findTargetWorkspace } from '@/services/helpers/factoryFlow/findTargetWorkspace';
 import { getLoaderMode } from '@/services/helpers/factoryFlow/getLoaderMode';
 import { LoaderTab } from '@/services/helpers/types';
@@ -23,7 +25,15 @@ import { Workspace } from '@/services/workspace-adapter';
 import { AppState } from '@/store';
 import { selectAllWorkspaces } from '@/store/Workspaces/selectors';
 
-export type Props = MappedProps & RouteComponentProps;
+type RouteParams = Partial<WorkspaceRouteParams> | undefined;
+
+export type Props = MappedProps & {
+  routeParams: RouteParams;
+  history: History;
+  location: Location;
+  navigate: NavigateFunction;
+};
+
 export type State = {
   searchParams: URLSearchParams;
   tabParam: string | undefined;
@@ -33,7 +43,7 @@ class LoaderContainer extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props);
 
-    const { location: dirtyLocation } = this.props.history;
+    const dirtyLocation = this.props.location;
     const { search } = helpers.sanitizeLocation(dirtyLocation);
     const searchParams = new URLSearchParams(search);
     const tabParam = searchParams.get('tab') || undefined;
@@ -45,7 +55,7 @@ class LoaderContainer extends React.Component<Props, State> {
   }
 
   private findTargetWorkspace(props: Props): Workspace | undefined {
-    const loaderMode = getLoaderMode(props.history.location);
+    const loaderMode = getLoaderMode(props.location);
     if (loaderMode.mode !== 'workspace') {
       return;
     }
@@ -57,7 +67,7 @@ class LoaderContainer extends React.Component<Props, State> {
       tabParam: tab,
     });
 
-    const { location } = this.props.history;
+    const { location } = this.props;
     const searchParams = new URLSearchParams(location.search);
     searchParams.set('tab', LoaderTab[tab]);
     location.search = searchParams.toString();
@@ -82,6 +92,32 @@ class LoaderContainer extends React.Component<Props, State> {
   }
 }
 
+function ContainerWrapper(props: MappedProps) {
+  const params = useParams();
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  // Create a history-like object
+  // todo - this is a workaround for the fact that we can't pass a history object to the component
+  // todo get rid of this when we have a better solution
+  const history: History = {
+    ...createHashHistory(),
+    push: navigate,
+    replace: path => navigate(path, { replace: true }),
+    location,
+  };
+
+  return (
+    <LoaderContainer
+      {...props}
+      history={history}
+      location={location}
+      navigate={navigate}
+      routeParams={params}
+    />
+  );
+}
+
 const mapStateToProps = (state: AppState) => ({
   allWorkspaces: selectAllWorkspaces(state),
 });
@@ -91,4 +127,4 @@ const connector = connect(mapStateToProps, null, null, {
   forwardRef: true,
 });
 type MappedProps = ConnectedProps<typeof connector>;
-export default connector(LoaderContainer);
+export default connector(ContainerWrapper);

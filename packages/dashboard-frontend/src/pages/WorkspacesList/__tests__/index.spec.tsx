@@ -14,7 +14,7 @@ import { render, RenderResult, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { createMemoryHistory } from 'history';
 import React from 'react';
-import { Router } from 'react-router';
+import { MemoryRouter } from 'react-router-dom';
 
 import { BrandingData } from '@/services/bootstrap/branding.constant';
 import { constructWorkspace, Workspace } from '@/services/workspace-adapter';
@@ -194,13 +194,13 @@ describe('Workspaces List Page', () => {
 
 function getComponent(_workspaces = workspaces): React.ReactElement {
   return (
-    <Router history={history}>
+    <MemoryRouter>
       <WorkspacesList
         branding={brandingData}
         history={history}
         workspaces={_workspaces}
       ></WorkspacesList>
-    </Router>
+    </MemoryRouter>
   );
 }
 function renderComponent(workspaces?: Workspace[]): RenderResult {

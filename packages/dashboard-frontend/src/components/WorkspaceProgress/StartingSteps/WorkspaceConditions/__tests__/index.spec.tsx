@@ -23,7 +23,7 @@ import {
   conditionStatusTrue,
 } from '@/components/WorkspaceProgress/StartingSteps/WorkspaceConditions/__tests__/fixtures';
 import { ConditionType } from '@/components/WorkspaceProgress/utils';
-import { WorkspaceParams } from '@/Routes/routes';
+import { WorkspaceRouteParams } from '@/Routes';
 import getComponentRenderer from '@/services/__mocks__/getComponentRenderer';
 
 import StartingStepWorkspaceConditions from '..';
@@ -40,7 +40,7 @@ const { renderComponent, createSnapshot } = getComponentRenderer(getComponent);
 
 const namespace = 'che-user';
 const workspaceName = 'test-workspace';
-const matchParams: WorkspaceParams = {
+const matchParams: WorkspaceRouteParams = {
   namespace,
   workspaceName,
 };

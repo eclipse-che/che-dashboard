@@ -127,10 +127,10 @@ export default class WorkspacesList extends React.PureComponent<Props, State> {
   }
 
   private buildRows(): RowData[] {
-    const { history, workspaces } = this.props;
+    const { workspaces } = this.props;
     const { filtered, selected, sortBy } = this.state;
 
-    return buildRows(history, workspaces, [], filtered, selected, sortBy);
+    return buildRows(workspaces, [], filtered, selected, sortBy);
   }
 
   private handleFilter(filtered: Workspace[]): void {

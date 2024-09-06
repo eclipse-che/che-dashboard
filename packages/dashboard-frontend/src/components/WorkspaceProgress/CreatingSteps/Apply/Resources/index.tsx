@@ -198,7 +198,7 @@ class CreatingStepApplyResources extends ProgressStep<Props, State> {
       this.props.history.location.pathname = nextLocation.pathname;
       this.props.history.location.search = tabName ? `?tab=${tabName}` : '';
 
-      const url = toHref(this.props.history, nextLocation);
+      const url = toHref(nextLocation);
       this.tabManager.rename(url);
 
       return true;

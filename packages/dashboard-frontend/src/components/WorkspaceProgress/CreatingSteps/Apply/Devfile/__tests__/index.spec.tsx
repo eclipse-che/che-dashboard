@@ -26,7 +26,7 @@ import CreatingStepApplyDevfile, {
   State,
 } from '@/components/WorkspaceProgress/CreatingSteps/Apply/Devfile';
 import { prepareDevfile } from '@/components/WorkspaceProgress/CreatingSteps/Apply/Devfile/prepareDevfile';
-import { ROUTE } from '@/Routes/routes';
+import { ROUTE } from '@/Routes';
 import getComponentRenderer from '@/services/__mocks__/getComponentRenderer';
 import devfileApi from '@/services/devfileApi';
 import { getDefer } from '@/services/helpers/deferred';

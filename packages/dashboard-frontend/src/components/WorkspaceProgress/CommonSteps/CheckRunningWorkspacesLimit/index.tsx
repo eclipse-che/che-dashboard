@@ -26,7 +26,7 @@ import { ProgressStepTitle } from '@/components/WorkspaceProgress/StepTitle';
 import { TimeLimit } from '@/components/WorkspaceProgress/TimeLimit';
 import workspaceStatusIs from '@/components/WorkspaceProgress/workspaceStatusIs';
 import { ToggleBarsContext } from '@/contexts/ToggleBars';
-import { WorkspaceParams } from '@/Routes/routes';
+import { WorkspaceRouteParams } from '@/Routes';
 import { findTargetWorkspace } from '@/services/helpers/factoryFlow/findTargetWorkspace';
 import { buildHomeLocation, buildIdeLoaderLocation } from '@/services/helpers/location';
 import { AlertItem, DevWorkspaceStatus, LoaderTab } from '@/services/helpers/types';
@@ -47,7 +47,7 @@ import { selectAllWorkspaces, selectRunningWorkspaces } from '@/store/Workspaces
 
 export type Props = MappedProps &
   ProgressStepProps & {
-    matchParams: WorkspaceParams | undefined;
+    matchParams: WorkspaceRouteParams | undefined;
   };
 export type State = ProgressStepState & {
   shouldStop: boolean; // should the loader to stop another workspace if the running workspaces limit is exceeded

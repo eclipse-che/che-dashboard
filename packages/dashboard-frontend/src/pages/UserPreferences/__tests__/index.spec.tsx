@@ -14,7 +14,7 @@ import userEvent from '@testing-library/user-event';
 import { createMemoryHistory } from 'history';
 import React from 'react';
 import { Provider } from 'react-redux';
-import { Router } from 'react-router';
+import { MemoryRouter } from 'react-router-dom';
 
 import getComponentRenderer, { screen } from '@/services/__mocks__/getComponentRenderer';
 import { UserPreferencesTab } from '@/services/helpers/types';
@@ -35,11 +35,11 @@ const history = createMemoryHistory();
 function getComponent(): React.ReactElement {
   const store = new FakeStoreBuilder().build();
   return (
-    <Router history={history}>
+    <MemoryRouter>
       <Provider store={store}>
         <UserPreferences history={history} />
       </Provider>
-    </Router>
+    </MemoryRouter>
   );
 }
 

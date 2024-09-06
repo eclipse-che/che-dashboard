@@ -10,9 +10,10 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import { History, Location } from 'history';
+import { createBrowserHistory, createHashHistory } from 'history';
+import { Location } from 'react-router-dom';
 
-import { ROUTE } from '@/Routes/routes';
+import { ROUTE } from '@/Routes';
 import { LoaderTab, WorkspaceDetailsTab } from '@/services/helpers/types';
 import { UserPreferencesTab } from '@/services/helpers/types';
 import { Workspace } from '@/services/workspace-adapter';
@@ -97,6 +98,7 @@ export function buildFactoryLocation(): Location {
 function _buildLocationObject(pathAndQuery: string): Location {
   const tmpUrl = new URL(pathAndQuery, window.location.origin);
   return {
+    key: tmpUrl.toString(),
     pathname: tmpUrl.pathname,
     search: tmpUrl.search,
     hash: tmpUrl.hash,
@@ -104,7 +106,12 @@ function _buildLocationObject(pathAndQuery: string): Location {
   };
 }
 
-export function toHref(history: History, location: Location): string {
+// todo test refactored
+export function toHref(location: Location): string {
+  // todo test performance
+  const history = createHashHistory();
+
   const fragment = history.createHref(location);
-  return window.location.origin + window.location.pathname + fragment;
+  // return window.location.origin + window.location.pathname + fragment;
+  return new URL(fragment, window.location.origin).toString();
 }

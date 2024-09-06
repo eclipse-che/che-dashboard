@@ -26,6 +26,7 @@ export default function <T extends Array<unknown>>(
 } {
   return {
     createSnapshot: (...args: T) => {
+      // todo
       return renderer.create(getComponent(...args));
     },
     renderComponent: (...args: T) => {

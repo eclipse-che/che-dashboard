@@ -15,7 +15,7 @@ import userEvent from '@testing-library/user-event';
 import { createHashHistory, History, Location } from 'history';
 import React from 'react';
 import { Provider } from 'react-redux';
-import { Router } from 'react-router';
+import { MemoryRouter } from 'react-router-dom';
 
 import { Props, WorkspaceDetails } from '@/pages/WorkspaceDetails';
 import devfileApi from '@/services/devfileApi';
@@ -141,7 +141,7 @@ function renderComponent(props?: Partial<Props>): void {
   const workspaces = props?.workspace ? [props.workspace.ref as devfileApi.DevWorkspace] : [];
   const store = new FakeStoreBuilder().withDevWorkspaces({ workspaces }).build();
   render(
-    <Router history={history}>
+    <MemoryRouter>
       <Provider store={store}>
         <WorkspaceDetails
           history={history}
@@ -152,6 +152,6 @@ function renderComponent(props?: Partial<Props>): void {
           onSave={mockOnSave}
         />
       </Provider>
-    </Router>,
+    </MemoryRouter>,
   );
 }

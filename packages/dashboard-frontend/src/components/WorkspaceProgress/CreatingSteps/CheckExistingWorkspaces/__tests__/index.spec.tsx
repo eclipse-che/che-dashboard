@@ -17,7 +17,7 @@ import { Provider } from 'react-redux';
 import { Store } from 'redux';
 
 import { MIN_STEP_DURATION_MS } from '@/components/WorkspaceProgress/const';
-import { ROUTE } from '@/Routes/routes';
+import { ROUTE } from '@/Routes';
 import getComponentRenderer from '@/services/__mocks__/getComponentRenderer';
 import devfileApi from '@/services/devfileApi';
 import { getDefer } from '@/services/helpers/deferred';

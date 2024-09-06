@@ -19,7 +19,7 @@ import { Provider } from 'react-redux';
 import { Action, Store } from 'redux';
 
 import { MIN_STEP_DURATION_MS } from '@/components/WorkspaceProgress/const';
-import { WorkspaceParams } from '@/Routes/routes';
+import { WorkspaceRouteParams } from '@/Routes';
 import getComponentRenderer from '@/services/__mocks__/getComponentRenderer';
 import { getDefer } from '@/services/helpers/deferred';
 import { AlertItem } from '@/services/helpers/types';
@@ -54,7 +54,7 @@ const { renderComponent } = getComponentRenderer(getComponent);
 
 const namespace = 'che-user';
 const workspaceName = 'test-workspace';
-const matchParams: WorkspaceParams = {
+const matchParams: WorkspaceRouteParams = {
   namespace,
   workspaceName,
 };
@@ -106,7 +106,7 @@ describe('Starting steps, starting a workspace', () => {
   describe('workspace not found', () => {
     const wrongWorkspaceName = 'wrong-workspace-name';
     let store: Store;
-    let paramsWithWrongName: WorkspaceParams;
+    let paramsWithWrongName: WorkspaceRouteParams;
 
     beforeEach(() => {
       store = new FakeStoreBuilder()
@@ -692,10 +692,7 @@ describe('Starting steps, starting a workspace', () => {
   });
 });
 
-function getComponent(
-  store: Store,
-  params: { namespace: string; workspaceName: string } = matchParams,
-): React.ReactElement {
+function getComponent(store: Store, params: WorkspaceRouteParams = matchParams): React.ReactElement {
   const history = createMemoryHistory();
   return (
     <Provider store={store}>

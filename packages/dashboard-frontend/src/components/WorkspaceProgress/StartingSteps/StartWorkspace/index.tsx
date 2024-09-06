@@ -31,7 +31,7 @@ import { ProgressStepTitle } from '@/components/WorkspaceProgress/StepTitle';
 import { TimeLimit } from '@/components/WorkspaceProgress/TimeLimit';
 import workspaceStatusIs from '@/components/WorkspaceProgress/workspaceStatusIs';
 import { lazyInject } from '@/inversify.config';
-import { WorkspaceParams } from '@/Routes/routes';
+import { WorkspaceRouteParams } from '@/Routes';
 import { AppAlerts } from '@/services/alerts/appAlerts';
 import { findTargetWorkspace } from '@/services/helpers/factoryFlow/findTargetWorkspace';
 import { AlertItem, DevWorkspaceStatus, LoaderTab } from '@/services/helpers/types';
@@ -45,7 +45,7 @@ import { selectAllWorkspaces } from '@/store/Workspaces/selectors';
 
 export type Props = MappedProps &
   ProgressStepProps & {
-    matchParams: WorkspaceParams | undefined;
+    matchParams: WorkspaceRouteParams | undefined;
   };
 export type State = ProgressStepState & {
   shouldStart: boolean; // should the loader start a workspace?

@@ -21,7 +21,7 @@ import GitConfig from '@/pages/UserPreferences/GitConfig';
 import GitServices from '@/pages/UserPreferences/GitServices';
 import PersonalAccessTokens from '@/pages/UserPreferences/PersonalAccessTokens';
 import SshKeys from '@/pages/UserPreferences/SshKeys';
-import { ROUTE } from '@/Routes/routes';
+import { ROUTE } from '@/Routes';
 import { UserPreferencesTab } from '@/services/helpers/types';
 import { AppState } from '@/store';
 import { actionCreators } from '@/store/GitOauthConfig';
