@@ -112,6 +112,5 @@ export function toHref(location: Location): string {
   const history = createHashHistory();
 
   const fragment = history.createHref(location);
-  // return window.location.origin + window.location.pathname + fragment;
-  return new URL(fragment, window.location.origin).toString();
+  return new URL(fragment, window.location.href).toString();
 }
