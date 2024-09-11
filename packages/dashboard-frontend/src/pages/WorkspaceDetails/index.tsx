@@ -51,23 +51,14 @@ export type Props = {
 
 export type State = {
   activeTabKey: WorkspaceDetailsTab;
-  clickedTabIndex?: WorkspaceDetailsTab;
   showInlineAlertRestartWarning: boolean;
 };
 
 export class WorkspaceDetails extends React.PureComponent<Props, State> {
-  private unregisterLocationCallback: UnregisterCallback;
+  private readonly overviewTabPageRef: React.RefObject<OverviewTab>;
 
   @lazyInject(AppAlerts)
   private readonly appAlerts: AppAlerts;
-
-  public showAlert: (variant: AlertVariant, title: string) => void;
-  private readonly handleTabClick: (
-    event: React.MouseEvent<HTMLElement, MouseEvent>,
-    tabIndex: string | number,
-  ) => void;
-
-  private readonly overviewTabPageRef: React.RefObject<OverviewTab>;
 
   constructor(props: Props) {
     super(props);
@@ -75,30 +66,16 @@ export class WorkspaceDetails extends React.PureComponent<Props, State> {
     this.overviewTabPageRef = React.createRef<OverviewTab>();
 
     this.state = {
-      activeTabKey: this.getActiveTabKey(this.props.history.location.search),
+      activeTabKey: this.getActiveTabKey(),
       showInlineAlertRestartWarning: false,
     };
+  }
 
-    // Toggle currently active tab
-    this.handleTabClick = (
-      _event: React.MouseEvent<HTMLElement, MouseEvent>,
-      tabIndex: React.ReactText,
-    ): void => {
-      const searchParams = new window.URLSearchParams(this.props.history.location.search);
-      this.setState({ clickedTabIndex: tabIndex as WorkspaceDetailsTab });
-
-      const tab = tabIndex as WorkspaceDetailsTab;
-      searchParams.set('tab', tab);
-      this.props.history.location.search = searchParams.toString();
-      this.props.history.push(this.props.history.location);
-    };
-
-    this.showAlert = (variant: AlertVariant, title: string): void => {
-      const key = `wrks-details-${(
-        '0000' + ((Math.random() * Math.pow(36, 4)) << 0).toString(36)
-      ).slice(-4)}`;
-      this.appAlerts.showAlert({ key, title, variant });
-    };
+  private showAlert(variant: AlertVariant, title: string): void {
+    const key = `wrks-details-${(
+      '0000' + ((Math.random() * Math.pow(36, 4)) << 0).toString(36)
+    ).slice(-4)}`;
+    this.appAlerts.showAlert({ key, title, variant });
   }
 
   private handleCloseRestartWarning(): void {
@@ -107,37 +84,34 @@ export class WorkspaceDetails extends React.PureComponent<Props, State> {
     });
   }
 
-  private getActiveTabKey(search: History.Search): WorkspaceDetailsTab {
+  private getActiveTabKey(): WorkspaceDetailsTab {
+    const { pathname, search } = this.props.history.location;
+
     if (search) {
-      const searchParam = new URLSearchParams(search.substring(1));
-      const tab = searchParam.get('tab') || '';
-      switch (tab) {
-        case WorkspaceDetailsTab.OVERVIEW:
-          return WorkspaceDetailsTab.OVERVIEW;
-        case WorkspaceDetailsTab.DEVFILE:
-          return WorkspaceDetailsTab.DEVFILE;
-        case WorkspaceDetailsTab.EVENTS:
-          return WorkspaceDetailsTab.EVENTS;
-        case WorkspaceDetailsTab.LOGS:
-          return WorkspaceDetailsTab.LOGS;
+      const searchParam = new URLSearchParams(search);
+      const tab = searchParam.get('tab');
+      if (
+        pathname === '/workspace' &&
+        (tab === WorkspaceDetailsTab.OVERVIEW ||
+          tab === WorkspaceDetailsTab.DEVFILE ||
+          tab === WorkspaceDetailsTab.EVENTS ||
+          tab === WorkspaceDetailsTab.LOGS)
+      ) {
+        return tab as WorkspaceDetailsTab;
       }
     }
+
     return WorkspaceDetailsTab.OVERVIEW;
   }
 
-  public componentDidMount(): void {
-    this.unregisterLocationCallback = this.props.history.listen(location => {
-      const activeTabKey = this.getActiveTabKey(location.search);
-      if (activeTabKey !== this.state.activeTabKey) {
-        this.setState({ activeTabKey });
-      }
-    });
-  }
+  private handleTabClick(
+    event: React.MouseEvent<HTMLElement, MouseEvent>,
+    activeTabKey: string | number,
+  ): void {
+    event.stopPropagation();
+    this.props.history.push(`${this.props.history.location.pathname}?tab=${activeTabKey}`);
 
-  public componentWillUnmount() {
-    if (this.unregisterLocationCallback) {
-      this.unregisterLocationCallback();
-    }
+    this.setState({ activeTabKey: activeTabKey as WorkspaceDetailsTab });
   }
 
   public componentDidUpdate(): void {
@@ -174,7 +148,10 @@ export class WorkspaceDetails extends React.PureComponent<Props, State> {
           <WorkspaceDetailsHeaderActions workspace={workspace} />
         </Header>
         <PageSection variant={SECTION_THEME} className={styles.workspaceDetailsTabs}>
-          <Tabs activeKey={this.state.activeTabKey} onSelect={this.handleTabClick}>
+          <Tabs
+            activeKey={this.state.activeTabKey}
+            onSelect={(event, eventKey) => this.handleTabClick(event, eventKey)}
+          >
             <Tab eventKey={WorkspaceDetailsTab.OVERVIEW} title={WorkspaceDetailsTab.OVERVIEW}>
               <ProgressIndicator isLoading={this.props.isLoading} />
               <OverviewTab
