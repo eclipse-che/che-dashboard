@@ -14,8 +14,8 @@ import { InitialEntry } from 'history';
 import React from 'react';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 
-import { Redirects } from '@/Routes/Redirects';
 import { ROUTE } from '@/Routes';
+import { Redirects } from '@/Routes/Redirects';
 import getComponentRenderer, { screen } from '@/services/__mocks__/getComponentRenderer';
 
 const { renderComponent } = getComponentRenderer(getComponent);

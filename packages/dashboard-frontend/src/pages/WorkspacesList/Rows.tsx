@@ -13,7 +13,6 @@
 import { Button } from '@patternfly/react-core';
 import { IRow, SortByDirection } from '@patternfly/react-table';
 import { Location } from 'history';
-import { History } from 'history';
 import React from 'react';
 import { Link } from 'react-router-dom';
 

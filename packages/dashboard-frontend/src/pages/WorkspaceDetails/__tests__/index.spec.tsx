@@ -12,10 +12,10 @@
 
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { createHashHistory, History, Location } from 'history';
+import { createHashHistory, History } from 'history';
 import React from 'react';
 import { Provider } from 'react-redux';
-import { MemoryRouter } from 'react-router-dom';
+import { Location, MemoryRouter } from 'react-router-dom';
 
 import { Props, WorkspaceDetails } from '@/pages/WorkspaceDetails';
 import devfileApi from '@/services/devfileApi';
@@ -111,6 +111,7 @@ describe('Workspace Details page', () => {
     it('should show the link', () => {
       const workspace = constructWorkspace(devWorkspaceBuilder.build());
       const oldWorkspacePath: Location = {
+        key: 'old-workspace-key',
         hash: '',
         pathname: '/workspace/che-user/che-wksp',
         search: '',

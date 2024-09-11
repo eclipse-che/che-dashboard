@@ -10,12 +10,11 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import { createBrowserHistory, createHashHistory } from 'history';
+import { createHashHistory } from 'history';
 import { Location } from 'react-router-dom';
 
 import { ROUTE } from '@/Routes';
-import { LoaderTab, WorkspaceDetailsTab } from '@/services/helpers/types';
-import { UserPreferencesTab } from '@/services/helpers/types';
+import { LoaderTab, UserPreferencesTab, WorkspaceDetailsTab } from '@/services/helpers/types';
 import { Workspace } from '@/services/workspace-adapter';
 
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
@@ -106,9 +105,7 @@ function _buildLocationObject(pathAndQuery: string): Location {
   };
 }
 
-// todo test refactored
 export function toHref(location: Location): string {
-  // todo test performance
   const history = createHashHistory();
 
   const fragment = history.createHref(location);

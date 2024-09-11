@@ -16,7 +16,6 @@ import { useLocation, useNavigate } from 'react-router-dom';
 
 import GetStarted from '@/pages/GetStarted';
 
-// todo tests
 export default function GetStartedContainer(): React.ReactElement {
   const location = useLocation();
   const navigate = useNavigate();

@@ -20,7 +20,7 @@ import { Store } from 'redux';
 
 import { ROUTE } from '@/Routes';
 import getComponentRenderer from '@/services/__mocks__/getComponentRenderer';
-import { constructWorkspace, WorkspaceAdapter } from '@/services/workspace-adapter';
+import { constructWorkspace } from '@/services/workspace-adapter';
 import { DevWorkspaceBuilder } from '@/store/__mocks__/devWorkspaceBuilder';
 import { FakeStoreBuilder } from '@/store/__mocks__/storeBuilder';
 import { actionCreators as workspacesActionCreators } from '@/store/Workspaces';
@@ -140,36 +140,6 @@ describe('Workspace Details container', () => {
 
     expect(workspaceId).toBeInTheDocument();
     expect(mockNavigate).not.toHaveBeenCalled();
-  });
-
-  // todo
-  xit('should change location when fetching data is done', async () => {
-    const initialEntry = `/workspace/${namespace}/${workspaceName_1}`;
-    const newEntry = `/workspace/${namespace}/${workspaceName_2}`;
-
-    const prevWorkspace = workspaceBuilder_1.build();
-    const prevStore = prevStoreBuilder.withDevWorkspaces({ workspaces: [prevWorkspace] }).build();
-
-    // render an existing workspace page
-    const { reRenderComponent } = renderComponent(prevStore, [initialEntry]);
-
-    expect(screen.getByTestId('props-workspace-id')).toHaveTextContent(
-      WorkspaceAdapter.getId(prevWorkspace),
-    );
-
-    // change location to another workspace page
-    const nextWorkspace = workspaceBuilder_2.build();
-    const nextStore = nextStoreBuilder
-      // the next workspace is fetched
-      .withDevWorkspaces({ workspaces: [prevWorkspace, nextWorkspace] })
-      .build();
-
-    reRenderComponent(nextStore, [newEntry]);
-
-    expect(screen.getByTestId('props-workspace-id')).toHaveTextContent(
-      WorkspaceAdapter.getId(nextWorkspace),
-    );
-    expect(mockNavigate).toHaveBeenCalledWith(`/workspace/${namespace}/${workspaceName_2}`);
   });
 
   it('should update the workspace', async () => {

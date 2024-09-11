@@ -19,9 +19,9 @@ import {
   Tab,
   Tabs,
 } from '@patternfly/react-core';
-import { History, Location, UnregisterCallback } from 'history';
+import { History } from 'history';
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, Location } from 'react-router-dom';
 
 import Head from '@/components/Head';
 import ProgressIndicator from '@/components/Progress';

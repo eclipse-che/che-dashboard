@@ -692,7 +692,10 @@ describe('Starting steps, starting a workspace', () => {
   });
 });
 
-function getComponent(store: Store, params: WorkspaceRouteParams = matchParams): React.ReactElement {
+function getComponent(
+  store: Store,
+  params: WorkspaceRouteParams = matchParams,
+): React.ReactElement {
   const history = createMemoryHistory();
   return (
     <Provider store={store}>

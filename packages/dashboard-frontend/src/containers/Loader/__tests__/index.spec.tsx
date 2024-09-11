@@ -20,8 +20,6 @@ import { Store } from 'redux';
 
 import { ROUTE } from '@/Routes';
 import getComponentRenderer from '@/services/__mocks__/getComponentRenderer';
-import { constructWorkspace } from '@/services/workspace-adapter';
-import { DevWorkspaceBuilder } from '@/store/__mocks__/devWorkspaceBuilder';
 import { FakeStoreBuilder } from '@/store/__mocks__/storeBuilder';
 
 import LoaderContainer from '..';
@@ -77,34 +75,6 @@ describe('Loader container', () => {
     await waitFor(() => {
       expect(screen.getByTestId('loader-tab')).toHaveTextContent('Events');
     });
-  });
-
-  // todo - fix this test
-  xit('should re-render the loader page when the location changes', async () => {
-    const entry = `/load-factory?url=${factoryUrl}`;
-
-    const { reRenderComponent } = renderComponent(emptyStore, [entry]);
-
-    expect(screen.getByTestId('workspace')).toHaveTextContent('unknown');
-
-    const namespace = 'user-che';
-    const workspaceName = 'my-wksp';
-    const nextDevWorkspace = new DevWorkspaceBuilder()
-      .withNamespace(namespace)
-      .withName(workspaceName)
-      .build();
-    const nextStore = new FakeStoreBuilder()
-      .withDevWorkspaces({ workspaces: [nextDevWorkspace] })
-      .build();
-
-    const newEntry = `/ide/${namespace}/${workspaceName}`;
-
-    mockFindTargetWorkspace.mockClear();
-    mockFindTargetWorkspace.mockReturnValueOnce(constructWorkspace(nextDevWorkspace));
-
-    reRenderComponent(nextStore, [newEntry]);
-
-    expect(screen.getByTestId('workspace')).toHaveTextContent(workspaceName);
   });
 });
 
