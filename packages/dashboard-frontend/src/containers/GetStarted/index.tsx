@@ -10,25 +10,13 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import { createHashHistory, History } from 'history';
 import React from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 import GetStarted from '@/pages/GetStarted';
 
 export default function GetStartedContainer(): React.ReactElement {
-  const location = useLocation();
   const navigate = useNavigate();
 
-  // Create a history-like object
-  // todo - this is a workaround for the fact that we can't pass a history object to the component
-  // todo get rid of this when we have a better solution
-  const history: History = {
-    ...createHashHistory(),
-    push: navigate,
-    replace: path => navigate(path, { replace: true }),
-    location,
-  };
-
-  return <GetStarted history={history} />;
+  return <GetStarted navigate={navigate} />;
 }

@@ -12,6 +12,6 @@
 
 import React from 'react';
 
-const GetStarted = () => <div>Get Started 2222</div>;
+const GetStarted = () => <div>Get Started page</div>;
 
 export default GetStarted;
