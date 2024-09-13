@@ -18,11 +18,10 @@ import { Provider } from 'react-redux';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { Store } from 'redux';
 
+import LoaderContainer from '@/containers/Loader';
 import { ROUTE } from '@/Routes';
 import getComponentRenderer from '@/services/__mocks__/getComponentRenderer';
 import { FakeStoreBuilder } from '@/store/__mocks__/storeBuilder';
-
-import LoaderContainer from '..';
 
 jest.mock('@/pages/Loader');
 

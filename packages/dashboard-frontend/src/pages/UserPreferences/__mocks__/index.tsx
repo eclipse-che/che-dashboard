@@ -11,14 +11,9 @@
  */
 
 import React from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
 
-import UserPreferences from '@/pages/UserPreferences';
-
-// todo tests
-export default function UserPreferencesContainer(): React.ReactElement {
-  const location = useLocation();
-  const navigate = useNavigate();
-
-  return <UserPreferences location={location} navigate={navigate} />;
+export default class UserPreferences extends React.PureComponent {
+  render() {
+    return <div>User Preferences page</div>;
+  }
 }

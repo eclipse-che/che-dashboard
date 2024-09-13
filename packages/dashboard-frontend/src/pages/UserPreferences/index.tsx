@@ -11,9 +11,9 @@
  */
 
 import { PageSection, PageSectionVariants, Tab, Tabs, Title } from '@patternfly/react-core';
-import { History } from 'history';
 import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
+import { Location, NavigateFunction } from 'react-router-dom';
 
 import Head from '@/components/Head';
 import ContainerRegistries from '@/pages/UserPreferences/ContainerRegistriesTab';
@@ -28,14 +28,15 @@ import { actionCreators } from '@/store/GitOauthConfig';
 import { selectIsLoading } from '@/store/GitOauthConfig/selectors';
 
 export type Props = {
-  history: History;
+  location: Location;
+  navigate: NavigateFunction;
 } & MappedProps;
 
 export type State = {
   activeTabKey: UserPreferencesTab;
 };
 
-export class UserPreferences extends React.PureComponent<Props, State> {
+class UserPreferences extends React.PureComponent<Props, State> {
   constructor(props: Props) {
     super(props);
 
@@ -47,7 +48,7 @@ export class UserPreferences extends React.PureComponent<Props, State> {
   }
 
   private getActiveTabKey(): UserPreferencesTab {
-    const { pathname, search } = this.props.history.location;
+    const { pathname, search } = this.props.location;
 
     if (search) {
       const searchParam = new URLSearchParams(search);
@@ -72,7 +73,7 @@ export class UserPreferences extends React.PureComponent<Props, State> {
     activeTabKey: string | number,
   ): void {
     event.stopPropagation();
-    this.props.history.push(`${ROUTE.USER_PREFERENCES}?tab=${activeTabKey}`);
+    this.props.navigate(`${ROUTE.USER_PREFERENCES}?tab=${activeTabKey}`);
 
     this.setState({
       activeTabKey: activeTabKey as UserPreferencesTab,
