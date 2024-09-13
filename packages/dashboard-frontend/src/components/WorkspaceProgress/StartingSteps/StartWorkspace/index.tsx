@@ -75,7 +75,7 @@ class StartingStepStartWorkspace extends ProgressStep<Props, State> {
   }
 
   public async componentDidUpdate() {
-    const safeMode = resetRestartInSafeModeLocation(this.props.history.location);
+    const safeMode = resetRestartInSafeModeLocation(this.props.location);
     if (safeMode) {
       this.setState({ shouldUpdateWithDefaultDevfile: safeMode });
       return;
@@ -116,7 +116,7 @@ class StartingStepStartWorkspace extends ProgressStep<Props, State> {
       return true;
     }
 
-    if (this.props.history.location.search !== nextProps.history.location.search) {
+    if (this.props.location.search !== nextProps.location.search) {
       return true;
     }
 
@@ -229,7 +229,7 @@ class StartingStepStartWorkspace extends ProgressStep<Props, State> {
       this.state.shouldStart &&
       workspaceStatusIs(workspace, DevWorkspaceStatus.STOPPED, DevWorkspaceStatus.FAILED)
     ) {
-      await this.props.startWorkspace(workspace, getStartParams(this.props.history.location));
+      await this.props.startWorkspace(workspace, getStartParams(this.props.location));
     }
 
     // do not switch to the next step
@@ -249,14 +249,14 @@ class StartingStepStartWorkspace extends ProgressStep<Props, State> {
       {
         title: 'Restart',
         callback: () => {
-          applyRestartDefaultLocation(this.props.history.location);
+          applyRestartDefaultLocation(this.props.location);
           this.handleRestart(key, LoaderTab.Progress);
         },
       },
       {
         title: 'Restart with default devfile',
         callback: () => {
-          applyRestartInSafeModeLocation(this.props.history.location);
+          applyRestartInSafeModeLocation(this.props.location);
           this.handleRestart(key, LoaderTab.Progress);
         },
       },

@@ -11,10 +11,10 @@
  */
 
 import { V1alpha2DevWorkspaceStatusConditions } from '@devfile/api';
-import { History } from 'history';
 import isEqual from 'lodash/isEqual';
 import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
+import { Location, NavigateFunction } from 'react-router-dom';
 
 import UntrustedSourceModal from '@/components/UntrustedSourceModal';
 import { ProgressAlert } from '@/components/WorkspaceProgress/Alert';
@@ -49,7 +49,8 @@ import { selectPreferencesIsTrustedSource } from '@/store/Workspaces/Preferences
 import { selectAllWorkspaces } from '@/store/Workspaces/selectors';
 
 export type Props = MappedProps & {
-  history: History;
+  location: Location;
+  navigate: NavigateFunction;
   searchParams: URLSearchParams;
   showToastAlert: boolean;
   onTabChange: (tab: LoaderTab) => void;
@@ -85,7 +86,7 @@ class Progress extends React.Component<Props, State> {
     super(props);
     this.wizardRef = React.createRef();
 
-    const initialLoaderMode = getLoaderMode(props.history.location);
+    const initialLoaderMode = getLoaderMode(props.location);
 
     const factoryParams = buildFactoryParams(this.props.searchParams);
 
@@ -102,6 +103,10 @@ class Progress extends React.Component<Props, State> {
   }
 
   public shouldComponentUpdate(nextProps: Readonly<Props>, nextState: Readonly<State>): boolean {
+    if (this.props.location.key !== nextProps.location.key) {
+      return true;
+    }
+
     if (this.state.activeStepId !== nextState.activeStepId) {
       return true;
     }
@@ -204,8 +209,8 @@ class Progress extends React.Component<Props, State> {
       return;
     }
 
-    const { allWorkspaces, history } = props;
-    const loaderMode = getLoaderMode(history.location);
+    const { allWorkspaces, location } = props;
+    const loaderMode = getLoaderMode(location);
 
     if (loaderMode.mode !== 'workspace') {
       return;
@@ -281,9 +286,9 @@ class Progress extends React.Component<Props, State> {
       return;
     }
 
-    const { history } = this.props;
+    const { location } = this.props;
     const { doneSteps, initialLoaderMode } = this.state;
-    const loaderMode = getLoaderMode(history.location);
+    const loaderMode = getLoaderMode(location);
 
     let newActiveStep: StepId;
     let newDoneSteps: StepId[];
@@ -329,7 +334,7 @@ class Progress extends React.Component<Props, State> {
   }
 
   private getCreationInitStep(): WorkspaceProgressWizardStep {
-    const { history, searchParams } = this.props;
+    const { location, navigate, searchParams } = this.props;
 
     return {
       id: Step.INITIALIZE,
@@ -337,7 +342,8 @@ class Progress extends React.Component<Props, State> {
         <CreatingStepInitialize
           distance={this.getDistance(Step.INITIALIZE)}
           hasChildren={false}
-          history={history}
+          location={location}
+          navigate={navigate}
           searchParams={searchParams}
           onError={alertItem => this.handleStepsShowAlert(Step.INITIALIZE, alertItem)}
           onHideError={key => this.handleCloseStepAlert(key)}
@@ -350,9 +356,9 @@ class Progress extends React.Component<Props, State> {
   }
 
   private getStartingInitStep(): WorkspaceProgressWizardStep {
-    const { history } = this.props;
+    const { location, navigate } = this.props;
 
-    const loaderMode = getLoaderMode(history.location);
+    const loaderMode = getLoaderMode(location);
     const matchParams = loaderMode.mode === 'workspace' ? loaderMode.workspaceParams : undefined;
 
     return {
@@ -361,7 +367,8 @@ class Progress extends React.Component<Props, State> {
         <StartingStepInitialize
           distance={this.getDistance(Step.INITIALIZE)}
           hasChildren={false}
-          history={history}
+          location={location}
+          navigate={navigate}
           matchParams={matchParams}
           onError={alertItem => this.handleStepsShowAlert(Step.INITIALIZE, alertItem)}
           onHideError={key => this.handleCloseStepAlert(key)}
@@ -374,9 +381,9 @@ class Progress extends React.Component<Props, State> {
   }
 
   private getCommonSteps(): WorkspaceProgressWizardStep[] {
-    const { history } = this.props;
+    const { location, navigate } = this.props;
 
-    const loaderMode = getLoaderMode(history.location);
+    const loaderMode = getLoaderMode(location);
     const matchParams = loaderMode.mode === 'workspace' ? loaderMode.workspaceParams : undefined;
 
     return [
@@ -386,7 +393,8 @@ class Progress extends React.Component<Props, State> {
           <CommonStepCheckRunningWorkspacesLimit
             distance={this.getDistance(Step.LIMIT_CHECK)}
             hasChildren={false}
-            history={history}
+            location={location}
+            navigate={navigate}
             matchParams={matchParams}
             onError={alertItem => this.handleStepsShowAlert(Step.LIMIT_CHECK, alertItem)}
             onHideError={key => this.handleCloseStepAlert(key)}
@@ -400,7 +408,7 @@ class Progress extends React.Component<Props, State> {
   }
 
   private getCreationSteps(): WorkspaceProgressWizardStep[] {
-    const { history, searchParams } = this.props;
+    const { location, navigate, searchParams } = this.props;
     const { factoryParams } = this.state;
 
     const usePrebuiltResources = factoryParams.useDevWorkspaceResources;
@@ -420,7 +428,8 @@ class Progress extends React.Component<Props, State> {
           <CreatingStepCreateWorkspace
             distance={distance}
             hasChildren={true}
-            history={history}
+            location={location}
+            navigate={navigate}
             searchParams={searchParams}
             onError={alertItem => this.handleStepsShowAlert(Step.CREATE, alertItem)}
             onHideError={key => this.handleCloseStepAlert(key)}
@@ -435,7 +444,7 @@ class Progress extends React.Component<Props, State> {
   }
 
   private getCheckExistingWorkspacesStep(): WorkspaceProgressWizardStep {
-    const { history, searchParams } = this.props;
+    const { location, navigate, searchParams } = this.props;
     const distance = this.getDistance(Step.CONFLICT_CHECK);
 
     return {
@@ -445,7 +454,8 @@ class Progress extends React.Component<Props, State> {
         <CreatingStepCheckExistingWorkspaces
           distance={distance}
           hasChildren={false}
-          history={history}
+          location={location}
+          navigate={navigate}
           searchParams={searchParams}
           onError={alertItem => this.handleStepsShowAlert(Step.CONFLICT_CHECK, alertItem)}
           onHideError={alertId => this.handleCloseStepAlert(alertId)}
@@ -458,7 +468,7 @@ class Progress extends React.Component<Props, State> {
   }
 
   private getFactoryFetchResources(): WorkspaceProgressWizardStep {
-    const { history, searchParams } = this.props;
+    const { location, navigate, searchParams } = this.props;
     const distance = this.getDistance(Step.FETCH);
 
     return {
@@ -468,7 +478,8 @@ class Progress extends React.Component<Props, State> {
         <CreatingStepFetchResources
           distance={distance}
           hasChildren={false}
-          history={history}
+          location={location}
+          navigate={navigate}
           searchParams={searchParams}
           onError={alertItem => this.handleStepsShowAlert(Step.FETCH, alertItem)}
           onHideError={key => this.handleCloseStepAlert(key)}
@@ -481,7 +492,7 @@ class Progress extends React.Component<Props, State> {
   }
 
   private getFactoryApplyResources(): WorkspaceProgressWizardStep {
-    const { history, searchParams } = this.props;
+    const { location, navigate, searchParams } = this.props;
     const distance = this.getDistance(Step.APPLY);
 
     return {
@@ -491,7 +502,8 @@ class Progress extends React.Component<Props, State> {
         <CreatingStepApplyResources
           distance={distance}
           hasChildren={false}
-          history={history}
+          location={location}
+          navigate={navigate}
           searchParams={searchParams}
           onError={alertItem => this.handleStepsShowAlert(Step.APPLY, alertItem)}
           onHideError={key => this.handleCloseStepAlert(key)}
@@ -504,7 +516,7 @@ class Progress extends React.Component<Props, State> {
   }
 
   private getFactoryFetchDevfile(): WorkspaceProgressWizardStep {
-    const { history, searchParams } = this.props;
+    const { location, navigate, searchParams } = this.props;
     const distance = this.getDistance(Step.FETCH);
 
     return {
@@ -514,7 +526,8 @@ class Progress extends React.Component<Props, State> {
         <CreatingStepFetchDevfile
           distance={distance}
           hasChildren={false}
-          history={history}
+          location={location}
+          navigate={navigate}
           searchParams={searchParams}
           onError={alertItem => this.handleStepsShowAlert(Step.FETCH, alertItem)}
           onHideError={key => this.handleCloseStepAlert(key)}
@@ -527,7 +540,7 @@ class Progress extends React.Component<Props, State> {
   }
 
   private getFactoryApplyDevfile(): WorkspaceProgressWizardStep {
-    const { history, searchParams } = this.props;
+    const { location, navigate, searchParams } = this.props;
     const distance = this.getDistance(Step.APPLY);
 
     return {
@@ -537,7 +550,8 @@ class Progress extends React.Component<Props, State> {
         <CreatingStepApplyDevfile
           distance={distance}
           hasChildren={false}
-          history={history}
+          location={location}
+          navigate={navigate}
           searchParams={searchParams}
           onError={alertItem => this.handleStepsShowAlert(Step.APPLY, alertItem)}
           onHideError={key => this.handleCloseStepAlert(key)}
@@ -550,9 +564,9 @@ class Progress extends React.Component<Props, State> {
   }
 
   private getStartingSteps(): WorkspaceProgressWizardStep[] {
-    const { history } = this.props;
+    const { location, navigate } = this.props;
 
-    const loaderMode = getLoaderMode(history.location);
+    const loaderMode = getLoaderMode(location);
 
     const matchParams = loaderMode.mode === 'workspace' ? loaderMode.workspaceParams : undefined;
 
@@ -575,7 +589,8 @@ class Progress extends React.Component<Props, State> {
             onHideError={key => this.handleCloseStepAlert(key)}
             onNextStep={() => this.handleStepsGoToNext(Step.START)}
             onRestart={tab => this.handleStepsRestart(Step.START, tab)}
-            history={history}
+            location={location}
+            navigate={navigate}
             matchParams={matchParams}
           />
         ),
@@ -591,7 +606,8 @@ class Progress extends React.Component<Props, State> {
             onHideError={key => this.handleCloseStepAlert(key)}
             onNextStep={() => this.handleStepsGoToNext(Step.OPEN)}
             onRestart={tab => this.handleStepsRestart(Step.OPEN, tab)}
-            history={history}
+            location={location}
+            navigate={navigate}
             matchParams={matchParams}
           />
         ),
@@ -600,9 +616,9 @@ class Progress extends React.Component<Props, State> {
   }
 
   private buildConditionSteps(): WorkspaceProgressWizardStep[] {
-    const { history } = this.props;
+    const { location, navigate } = this.props;
     const { conditions } = this.state;
-    const loaderMode = getLoaderMode(history.location);
+    const loaderMode = getLoaderMode(location);
 
     if (loaderMode.mode !== 'workspace') {
       return [];
@@ -638,7 +654,8 @@ class Progress extends React.Component<Props, State> {
               hasChildren={false}
               condition={condition}
               matchParams={loaderMode.workspaceParams}
-              history={history}
+              location={location}
+              navigate={navigate}
               onError={alertItem => this.handleStepsShowAlert(stepId, alertItem)}
               onHideError={key => this.handleCloseStepAlert(key)}
               onNextStep={() => this.handleStepsGoToNext(stepId)}

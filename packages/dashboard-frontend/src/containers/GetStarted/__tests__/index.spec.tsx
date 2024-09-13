@@ -25,7 +25,6 @@ describe('GetStarted container', () => {
   it('should render GetStarted page', () => {
     renderComponent();
 
-    screen.debug();
     expect(screen.getByText('Get Started page')).toBeInTheDocument();
   });
 });

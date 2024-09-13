@@ -178,14 +178,14 @@ class StartingStepOpenWorkspace extends ProgressStep<Props, State> {
       {
         title: 'Restart',
         callback: () => {
-          applyRestartDefaultLocation(this.props.history.location);
+          applyRestartDefaultLocation(this.props.location);
           this.handleRestart(key, LoaderTab.Progress);
         },
       },
       {
         title: 'Restart with default devfile',
         callback: () => {
-          applyRestartInSafeModeLocation(this.props.history.location);
+          applyRestartInSafeModeLocation(this.props.location);
           this.handleRestart(key, LoaderTab.Progress);
         },
       },

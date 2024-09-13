@@ -10,9 +10,9 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import { createMemoryHistory } from 'history';
 import React from 'react';
 import { Provider } from 'react-redux';
+import { Location } from 'react-router-dom';
 import { Store } from 'redux';
 
 import { MIN_STEP_DURATION_MS } from '@/components/WorkspaceProgress/const';
@@ -407,13 +407,13 @@ describe('Creating steps, initializing', () => {
 });
 
 function getComponent(store: Store, searchParams: URLSearchParams): React.ReactElement {
-  const history = createMemoryHistory();
   return (
     <Provider store={store}>
       <CreatingStepInitialize
         distance={0}
         hasChildren={false}
-        history={history}
+        location={{} as Location}
+        navigate={jest.fn()}
         searchParams={searchParams}
         onNextStep={mockOnNextStep}
         onRestart={mockOnRestart}

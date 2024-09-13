@@ -12,9 +12,9 @@
 
 import { screen, waitFor } from '@testing-library/react';
 import userEvent, { UserEvent } from '@testing-library/user-event';
-import { createMemoryHistory } from 'history';
 import React from 'react';
 import { Provider } from 'react-redux';
+import { Location } from 'react-router-dom';
 import { Store } from 'redux';
 
 import { MIN_STEP_DURATION_MS, TIMEOUT_TO_STOP_SEC } from '@/components/WorkspaceProgress/const';
@@ -461,13 +461,13 @@ function getComponent(
   store: Store,
   params: WorkspaceRouteParams = matchParams,
 ): React.ReactElement {
-  const history = createMemoryHistory();
   return (
     <Provider store={store}>
       <StartingStepInitialize
         distance={0}
         hasChildren={false}
-        history={history}
+        location={{} as Location}
+        navigate={jest.fn()}
         matchParams={params}
         onNextStep={mockOnNextStep}
         onRestart={mockOnRestart}

@@ -11,7 +11,6 @@
  */
 
 import { helpers } from '@eclipse-che/common';
-import { createHashHistory, History } from 'history';
 import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { Location, NavigateFunction, useLocation, useNavigate, useParams } from 'react-router-dom';
@@ -29,7 +28,6 @@ type RouteParams = Partial<WorkspaceRouteParams> | undefined;
 
 export type Props = MappedProps & {
   routeParams: RouteParams;
-  history: History;
   location: Location;
   navigate: NavigateFunction;
 };
@@ -71,20 +69,21 @@ class LoaderContainer extends React.Component<Props, State> {
     const searchParams = new URLSearchParams(location.search);
     searchParams.set('tab', LoaderTab[tab]);
     location.search = searchParams.toString();
-    this.props.history.push(location);
+    this.props.navigate(location);
   }
 
   render(): React.ReactElement {
-    const { history } = this.props;
+    const { location, navigate } = this.props;
     const { tabParam, searchParams } = this.state;
 
     const workspace = this.findTargetWorkspace(this.props);
 
     return (
       <LoaderPage
-        history={history}
-        tabParam={tabParam}
+        location={location}
+        navigate={navigate}
         searchParams={searchParams}
+        tabParam={tabParam}
         workspace={workspace}
         onTabChange={tab => this.handleTabChange(tab)}
       />
@@ -97,24 +96,8 @@ function ContainerWrapper(props: MappedProps) {
   const location = useLocation();
   const navigate = useNavigate();
 
-  // Create a history-like object
-  // todo - this is a workaround for the fact that we can't pass a history object to the component
-  // todo get rid of this when we have a better solution
-  const history: History = {
-    ...createHashHistory(),
-    push: navigate,
-    replace: path => navigate(path, { replace: true }),
-    location,
-  };
-
   return (
-    <LoaderContainer
-      {...props}
-      history={history}
-      location={location}
-      navigate={navigate}
-      routeParams={params}
-    />
+    <LoaderContainer {...props} location={location} navigate={navigate} routeParams={params} />
   );
 }
 
