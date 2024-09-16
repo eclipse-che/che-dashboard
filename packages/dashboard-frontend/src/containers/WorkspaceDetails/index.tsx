@@ -10,7 +10,6 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import { createHashHistory, History } from 'history';
 import { isEqual } from 'lodash';
 import React, { useEffect } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
@@ -32,7 +31,6 @@ type RouteParams = Partial<WorkspaceRouteParams>;
 
 type Props = MappedProps & {
   routeParams: RouteParams;
-  history: History;
   location: Location;
   navigate: NavigateFunction;
 };
@@ -100,7 +98,7 @@ class WorkspaceDetailsContainer extends React.Component<Props, State> {
     );
     if (!workspace) {
       const workspacesListLocation = buildWorkspacesLocation();
-      this.props.history.push(workspacesListLocation);
+      this.props.navigate(workspacesListLocation);
     } else if (
       this.props.location.pathname !== prevProps.location.pathname ||
       !isEqual(workspace, this.state.workspace)
@@ -110,13 +108,15 @@ class WorkspaceDetailsContainer extends React.Component<Props, State> {
   }
 
   render() {
+    const { location, navigate } = this.props;
     const { workspace } = this.state;
 
     const oldWorkspaceLocation = this.getOldWorkspaceLocation(workspace);
 
     return (
       <WorkspaceDetails
-        history={this.props.history}
+        location={location}
+        navigate={navigate}
         isLoading={this.props.isLoading}
         oldWorkspaceLocation={oldWorkspaceLocation}
         workspace={workspace}
@@ -145,20 +145,9 @@ function ContainerWrapper(props: MappedProps) {
     }
   }, [params, location.pathname, navigate]);
 
-  // Create a history-like object
-  // todo - this is a workaround for the fact that we can't pass a history object to the component
-  // todo get rid of this when we have a better solution
-  const history: History = {
-    ...createHashHistory(),
-    push: navigate,
-    replace: path => navigate(path, { replace: true }),
-    location,
-  };
-
   return (
     <WorkspaceDetailsContainer
       {...props}
-      history={history}
       location={location}
       navigate={navigate}
       routeParams={params}

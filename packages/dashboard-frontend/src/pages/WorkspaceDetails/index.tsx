@@ -19,9 +19,8 @@ import {
   Tab,
   Tabs,
 } from '@patternfly/react-core';
-import { History } from 'history';
 import React from 'react';
-import { Link, Location } from 'react-router-dom';
+import { Link, Location, NavigateFunction } from 'react-router-dom';
 
 import Head from '@/components/Head';
 import ProgressIndicator from '@/components/Progress';
@@ -41,7 +40,8 @@ import { Workspace } from '@/services/workspace-adapter';
 export const SECTION_THEME = PageSectionVariants.light;
 
 export type Props = {
-  history: History;
+  location: Location;
+  navigate: NavigateFunction;
   isLoading: boolean;
   oldWorkspaceLocation?: Location;
   workspace: Workspace | undefined;
@@ -85,7 +85,7 @@ export class WorkspaceDetails extends React.PureComponent<Props, State> {
   }
 
   private getActiveTabKey(): WorkspaceDetailsTab {
-    const { pathname, search } = this.props.history.location;
+    const { pathname, search } = this.props.location;
 
     if (search) {
       const searchParam = new URLSearchParams(search);
@@ -109,7 +109,7 @@ export class WorkspaceDetails extends React.PureComponent<Props, State> {
     activeTabKey: string | number,
   ): void {
     event.stopPropagation();
-    this.props.history.push(`${this.props.history.location.pathname}?tab=${activeTabKey}`);
+    this.props.navigate(`${this.props.location.pathname}?tab=${activeTabKey}`);
 
     this.setState({ activeTabKey: activeTabKey as WorkspaceDetailsTab });
   }
@@ -185,7 +185,7 @@ export class WorkspaceDetails extends React.PureComponent<Props, State> {
       this.showAlert(AlertVariant.success, 'Workspace has been updated');
 
       const location = buildDetailsLocation(workspace, this.state.activeTabKey);
-      this.props.history.replace(location);
+      this.props.navigate(location, { replace: true });
     } catch (e) {
       const errorMessage = common.helpers.errors.getMessage(e);
       if (this.state.activeTabKey === WorkspaceDetailsTab.DEVFILE) {
