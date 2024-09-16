@@ -178,6 +178,9 @@ export type CheClusterCustomResourceSpecDevEnvironments = {
   maxNumberOfRunningWorkspacesPerUser?: number;
   maxNumberOfRunningWorkspacesPerCluster?: number;
   maxNumberOfWorkspacesPerUser?: number;
+  allowedSource?: {
+    urls?: string[];
+  };
 };
 
 export function isCheClusterCustomResourceSpecDevEnvironments(
@@ -362,6 +365,11 @@ export interface IServerConfigApi {
    * Returns the autoProvision value
    */
   getAutoProvision(cheCustomResource: CheClusterCustomResource): boolean;
+
+  /**
+   * Returns the allowed source URLs
+   */
+  getAllowedSourceUrls(cheCustomResource: CheClusterCustomResource): string[];
 }
 
 export interface IKubeConfigApi {

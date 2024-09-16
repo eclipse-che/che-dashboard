@@ -136,6 +136,7 @@ export interface IServerConfig {
   pluginRegistryURL: string;
   pluginRegistryInternalURL: string;
   dashboardLogo?: { base64data: string; mediatype: string };
+  allowedSourceUrls: string[];
 }
 
 export interface IAdvancedAuthorization {
@@ -158,11 +159,15 @@ export interface IUserProfile {
 export interface IWorkspacePreferences {
   'skip-authorisation': GitProvider[];
   'trusted-sources'?: TrustedSources;
+  'allowed-sources'?: AllowedSources;
   [key: string]: unknown;
 }
 export type TrustedSourceAll = '*';
 export type TrustedSourceUrl = string;
 export type TrustedSources = TrustedSourceAll | TrustedSourceUrl[];
+
+export type AllowedSourceUrl = string;
+export type AllowedSources = AllowedSourceUrl[];
 
 export type IEditors = Array<V230Devfile>;
 
