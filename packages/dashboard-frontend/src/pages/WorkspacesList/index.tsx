@@ -32,8 +32,8 @@ import {
   TableVariant,
   Visibility,
 } from '@patternfly/react-table';
-import { History } from 'history';
 import React from 'react';
+import { Location, NavigateFunction } from 'react-router-dom';
 
 import Head from '@/components/Head';
 import NothingFoundEmptyState from '@/pages/WorkspacesList/EmptyState/NothingFound';
@@ -47,7 +47,8 @@ import { Workspace } from '@/services/workspace-adapter';
 
 type Props = {
   branding: BrandingData;
-  history: History;
+  location: Location;
+  navigate: NavigateFunction;
   workspaces: Workspace[];
 };
 type State = {
@@ -190,7 +191,7 @@ export default class WorkspacesList extends React.PureComponent<Props, State> {
 
   private handleAddWorkspace(): void {
     const location = buildGettingStartedLocation();
-    this.props.history.push(location);
+    this.props.navigate(location);
   }
 
   private handleSort(event: React.MouseEvent, index: number, direction: SortByDirection): void {

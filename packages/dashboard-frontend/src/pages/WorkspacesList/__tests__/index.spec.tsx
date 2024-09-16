@@ -12,9 +12,8 @@
 
 import { render, RenderResult, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { createMemoryHistory } from 'history';
 import React from 'react';
-import { MemoryRouter } from 'react-router-dom';
+import { Location, MemoryRouter } from 'react-router-dom';
 
 import { BrandingData } from '@/services/bootstrap/branding.constant';
 import { constructWorkspace, Workspace } from '@/services/workspace-adapter';
@@ -33,8 +32,6 @@ jest.mock('@/components/Workspace/Status/Indicator');
 jest.mock('@/contexts/WorkspaceActions');
 jest.mock('@/contexts/WorkspaceActions/BulkDeleteButton');
 jest.mock('@/contexts/WorkspaceActions/Dropdown');
-
-const history = createMemoryHistory();
 
 const brandingData = {
   docs: {
@@ -197,7 +194,8 @@ function getComponent(_workspaces = workspaces): React.ReactElement {
     <MemoryRouter>
       <WorkspacesList
         branding={brandingData}
-        history={history}
+        location={{} as Location}
+        navigate={jest.fn()}
         workspaces={_workspaces}
       ></WorkspacesList>
     </MemoryRouter>

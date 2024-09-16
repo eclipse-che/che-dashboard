@@ -10,7 +10,6 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import { createHashHistory, History } from 'history';
 import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { Location, NavigateFunction, useLocation, useNavigate } from 'react-router-dom';
@@ -23,20 +22,26 @@ import * as WorkspacesStore from '@/store/Workspaces';
 import { selectAllWorkspaces, selectIsLoading } from '@/store/Workspaces/selectors';
 
 type Props = MappedProps & {
-  history: History;
   location: Location;
   navigate: NavigateFunction;
 };
 
 export class WorkspacesListContainer extends React.PureComponent<Props> {
   render() {
-    const { branding, history, allWorkspaces, isLoading } = this.props;
+    const { branding, allWorkspaces, isLoading, location, navigate } = this.props;
 
     if (isLoading) {
       return Fallback;
     }
 
-    return <WorkspacesList branding={branding} history={history} workspaces={allWorkspaces} />;
+    return (
+      <WorkspacesList
+        branding={branding}
+        location={location}
+        navigate={navigate}
+        workspaces={allWorkspaces}
+      />
+    );
   }
 }
 
@@ -44,19 +49,7 @@ function ContainerWrapper(props: MappedProps) {
   const location = useLocation();
   const navigate = useNavigate();
 
-  // Create a history-like object
-  // todo - this is a workaround for the fact that we can't pass a history object to the component
-  // todo get rid of this when we have a better solution
-  const history: History = {
-    ...createHashHistory(),
-    push: navigate,
-    replace: path => navigate(path, { replace: true }),
-    location,
-  };
-
-  return (
-    <WorkspacesListContainer {...props} history={history} location={location} navigate={navigate} />
-  );
+  return <WorkspacesListContainer {...props} location={location} navigate={navigate} />;
 }
 
 const mapStateToProps = (state: AppState) => {

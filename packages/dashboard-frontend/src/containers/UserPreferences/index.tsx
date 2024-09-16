@@ -15,7 +15,6 @@ import { useLocation, useNavigate } from 'react-router-dom';
 
 import UserPreferences from '@/pages/UserPreferences';
 
-// todo tests
 export default function UserPreferencesContainer(): React.ReactElement {
   const location = useLocation();
   const navigate = useNavigate();
