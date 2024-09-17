@@ -224,7 +224,7 @@ function buildCustomResource(options?: { openVSXURL?: string }): CheClusterCusto
         secondsOfRunBeforeIdling: -1,
         maxNumberOfRunningWorkspacesPerCluster: 100,
         storage: { pvcStrategy: 'per-user' },
-        allowedSource: {
+        allowedSourced: {
           urls: ['https://github.com'],
         },
       },
