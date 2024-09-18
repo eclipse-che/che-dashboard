@@ -29,10 +29,10 @@ jobs:
         name: "Checkout Che Dashboard source code"
         uses: actions/checkout@v4
       -
-        name: "Use Node 18"
+        name: "Use Node 20"
         uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: 20
       -
         name: "Install dependencies"
         run: yarn install
@@ -114,7 +114,7 @@ jobs:
     runs-on: ubuntu-22.04
     strategy:
       matrix:
-        node-version: [20.x]
+        node-version: [18.x, 20.x]
     steps:
       -
         name: "Checkout Che Dashboard source code"
@@ -129,22 +129,16 @@ jobs:
         run: scripts/yarn/change_package_manager.sh
       -
         name: "Install dependencies"
-        run: yarn install --force
+        run: yarn
       -
-        name: "Build common"
-        run: yarn --cwd packages/common build
+        name: "Build"
+        run: yarn build
       -
-        name: "Build frontend"
-        run: yarn --cwd packages/dashboard-frontend build
+        name: "Run linters"
+        run: yarn lint:check
       -
-        name: "Test frontend"
-        run: yarn --cwd packages/dashboard-frontend test
-      -
-        name: "Build backend"
-        run: yarn --cwd packages/dashboard-backend build
-      -
-        name: "Test backend"
-        run: yarn --cwd packages/dashboard-backend test
+        name: "Run unit tests"
+        run: yarn test
 
   docker-build:
     needs: build-and-test

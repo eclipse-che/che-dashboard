@@ -49,22 +49,25 @@ fi
 #==========================Restore old version=================================
 if [ -d $OLD_VERSION_DIR ]; then
     echo "[INFO]: Restore old package manager version"
-    # mv -f $OLD_VERSION_DIR/{*,.[!.]*} $(pwd)/
     find "$OLD_VERSION_DIR" -mindepth 1 -maxdepth 1 -exec mv -f {} $(pwd)/ \;
 fi
 #==========================Cleanup=============================================
 if [ -d $TMP_DIR ]; then
     echo "[INFO]: Cleanup"
-    # mv -f $TMP_DIR/{*,.[!.]*} $OLD_VERSION_DIR/
     find "$TMP_DIR" -mindepth 1 -maxdepth 1 -exec mv -f {} "$OLD_VERSION_DIR"/ \;
 fi
 
 #==========================Check current version================================
 VER=$(yarn --cwd $(pwd) -v | sed -e s/\\./\\n/g | sed -n 1p)
 
-echo
-echo "**********************"
-echo "*****   Yarn $VER   *****"
-echo "**********************"
+if [ -z "$VER" ]; then
+   echo
+   echo "**********************"
+   echo "*****   Yarn $VER   *****"
+   echo "**********************"
+else
+    echo "[ERROR]: Unable to get the current version of yarn. Please check the yarn installation."
+    exit 1
+fi
 
 exit 0
