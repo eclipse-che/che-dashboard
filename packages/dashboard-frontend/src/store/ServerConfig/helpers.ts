@@ -12,7 +12,7 @@
 
 export function isSourceAllowed(allowedSourceUrls: string[], url: string): boolean {
   for (const allowedSourceUrl of allowedSourceUrls) {
-    if (allowedSourceUrl.indexOf('*') !== -1) {
+    if (allowedSourceUrl.includes('*')) {
       let pattern = allowedSourceUrl.trim();
       if (!pattern.startsWith('*')) {
         pattern = `^${pattern}`;
