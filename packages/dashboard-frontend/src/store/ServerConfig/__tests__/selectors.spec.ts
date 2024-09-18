@@ -315,7 +315,7 @@ describe('serverConfig selectors', () => {
       expect(isAllowedSourcesConfigured).toBeTruthy();
     });
 
-    it('allowed sources NOTE configured', () => {
+    it('allowed sources NOT configured', () => {
       const fakeStore = new FakeStoreBuilder().build() as MockStoreEnhanced<
         AppState,
         ThunkDispatch<AppState, undefined, AnyAction>

@@ -146,10 +146,9 @@ class CreatingStepInitialize extends ProgressStep<Props, State> {
         );
       }
 
-      const allowedSources = this.getAllowedSources();
-
       // check if the source is trusted
-      const isSourceTrusted = this.isSourceTrusted(sourceUrl) || allowedSources.length > 0;
+      const isSourceTrusted =
+        this.isSourceTrusted(sourceUrl) || this.props.allowedSources.length > 0;
 
       if (isSourceTrusted === true) {
         this.setState({
@@ -272,20 +271,11 @@ class CreatingStepInitialize extends ProgressStep<Props, State> {
   }
 
   private isSourceAllowed(sourceUrl: string): boolean {
-    if (this.props.allowedSources.length === 0) {
-      return true;
-    }
-
     const isRegistryDevfile = this.props.isRegistryDevfile(sourceUrl);
     const isAllowed = isSourceAllowed(this.props.allowedSources, sourceUrl);
 
     return isRegistryDevfile || isAllowed;
   }
-
-  private getAllowedSources(): string[] {
-    return this.props.allowedSources;
-  }
-
   render(): React.ReactElement {
     const { distance, hasChildren } = this.props;
     const { name, lastError } = this.state;

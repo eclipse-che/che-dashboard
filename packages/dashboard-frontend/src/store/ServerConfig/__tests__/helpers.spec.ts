@@ -19,10 +19,11 @@ describe('helpers', () => {
       expect(isSourceAllowed(['https://a/*/c'], 'https://a/b/c')).toBe(true);
       expect(isSourceAllowed(['https://a/b/c'], 'https://a/b/c')).toBe(true);
       expect(isSourceAllowed(['*'], 'https://a/b/c/')).toBe(true);
+      expect(isSourceAllowed(undefined, 'https://a/b/c')).toBe(true);
+      expect(isSourceAllowed([], 'https://a/b/c')).toBe(true);
     });
 
     test('disallowed urls', () => {
-      expect(isSourceAllowed([], 'https://a/b/c')).toBe(false);
       expect(isSourceAllowed(['https://a'], 'https://a/b/c/')).toBe(false);
     });
   });

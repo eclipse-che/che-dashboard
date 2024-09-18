@@ -10,7 +10,11 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-export function isSourceAllowed(allowedSourceUrls: string[], url: string): boolean {
+export function isSourceAllowed(allowedSourceUrls: string[] | undefined, url: string): boolean {
+  if (allowedSourceUrls === undefined || allowedSourceUrls.length === 0) {
+    return true;
+  }
+
   for (const allowedSourceUrl of allowedSourceUrls) {
     if (allowedSourceUrl.includes('*')) {
       let pattern = allowedSourceUrl.trim();
