@@ -1,0 +1,26 @@
+diff --git a/packages/dashboard-frontend/src/components/WorkspaceProgress/index.tsx b/packages/dashboard-frontend/src/components/WorkspaceProgress/index.tsx
+index 57bd1d178..bd65530a6 100644
+--- a/packages/dashboard-frontend/src/components/WorkspaceProgress/index.tsx
++++ b/packages/dashboard-frontend/src/components/WorkspaceProgress/index.tsx
+@@ -612,6 +612,21 @@ class Progress extends React.Component<Props, State> {
+       return [];
+     }
+ 
++    const workspace = this.findTargetWorkspace(this.props);
++    if (workspace === undefined) {
++      return [];
++    }
++
++    if (workspace.status === DevWorkspaceStatus.STARTING) {
++      // hide steps if one of them has type 'FailedStart'
++      // this is a special condition that is shown when workspace start failed
++      // and it means that all the conditions are from the previous start
++      const failedStart = conditions.find(condition => condition.type === 'FailedStart');
++      if (failedStart !== undefined) {
++        return [];
++      }
++    }
++
+     // Children steps get hidden when all of them are finished. This usually
+     // happens in the middle of a devWorkspace starting flow and makes
+     // the condition sub-steps to flicker. The fix is to wait until
