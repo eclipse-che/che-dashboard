@@ -230,6 +230,6 @@ export class ServerConfigApiService implements IServerConfigApi {
   }
 
   getAllowedSourceUrls(cheCustomResource: CheClusterCustomResource): string[] {
-    return cheCustomResource.spec.devEnvironments?.allowedSourced?.urls || [];
+    return cheCustomResource.spec.devEnvironments?.allowedSources?.urls || [];
   }
 }

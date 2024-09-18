@@ -178,7 +178,7 @@ export type CheClusterCustomResourceSpecDevEnvironments = {
   maxNumberOfRunningWorkspacesPerUser?: number;
   maxNumberOfRunningWorkspacesPerCluster?: number;
   maxNumberOfWorkspacesPerUser?: number;
-  allowedSourced?: {
+  allowedSources?: {
     urls?: string[];
   };
 };
