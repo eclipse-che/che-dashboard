@@ -13,6 +13,7 @@
 OLD_VERSION_DIR=$(pwd)/scripts/yarn/old_version
 TMP_DIR=$(pwd)/scripts/yarn/tmp
 
+BLUE='\033[0;34m'
 GREEN='\033[0;32m'
 RED='\033[0;31m'
 NC='\033[0m'
@@ -65,7 +66,7 @@ fi
 VER=$(yarn --cwd $(pwd) -v | sed -e s/\\./\\n/g | sed -n 1p)
 
 if [ -z "$VER" ]; then
-    echo "${RED}[ERROR]: Unable to get the current version of yarn. Please check the yarn installation${NC}"
+    echo "${RED}[ERROR]: Unable to get the current version of yarn. Please check the yarn installation.${NC}"
     exit 1
 else
     echo "${GREEN}**********************${NC}"
