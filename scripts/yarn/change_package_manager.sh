@@ -13,6 +13,10 @@
 OLD_VERSION_DIR=$(pwd)/scripts/yarn/old_version
 TMP_DIR=$(pwd)/scripts/yarn/tmp
 
+GREEN='\033[0;32m'
+RED='\033[0;31m'
+NC='\033[0m'
+
 #==========================Clean temporary directory============================
 if [ -d $TMP_DIR ]; then
     echo "[INFO]: Clean temporary directory"
@@ -61,13 +65,12 @@ fi
 VER=$(yarn --cwd $(pwd) -v | sed -e s/\\./\\n/g | sed -n 1p)
 
 if [ -z "$VER" ]; then
-   echo
-   echo "**********************"
-   echo "*****   Yarn $VER   *****"
-   echo "**********************"
-else
-    echo "[ERROR]: Unable to get the current version of yarn. Please check the yarn installation."
+    echo "${RED}[ERROR]: Unable to get the current version of yarn. Please check the yarn installation${NC}"
     exit 1
+else
+    echo "${GREEN}**********************${NC}"
+    echo "${GREEN}*****   Yarn $VER   *****${NC}"
+    echo "${GREEN}**********************${NC}"
 fi
 
 exit 0
