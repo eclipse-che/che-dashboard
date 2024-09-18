@@ -56,7 +56,7 @@ fi
 if [ -d $TMP_DIR ]; then
     echo "[INFO]: Cleanup"
     # mv -f $TMP_DIR/{*,.[!.]*} $OLD_VERSION_DIR/
-    find "$TMP_DIR" -mindepth 1 -maxdepth 1 -exec mv -f {} $($OLD_VERSION_DIR)/ \;
+    find "$TMP_DIR" -mindepth 1 -maxdepth 1 -exec mv -f {} "$OLD_VERSION_DIR"/ \;
 fi
 
 #==========================Check current version================================
