@@ -76,7 +76,8 @@ function update_pkgs_versions() {
   # update root `package.json` version
   npm --no-git-tag-version version --allow-same-version "${VER}"
   # update each package version
-  lerna version --no-git-tag-version -y "${VER}"
+  yarn install --frozen-lockfile
+  npx lerna version --no-git-tag-version -y "${VER}"
   if [[ ${VER} != *"-next" ]]; then
     # update devworkspace generator version for release
     jq ".\"dependencies\".\"@eclipse-che/che-devworkspace-generator\" = \"${VER}\"" packages/dashboard-backend/package.json > packages/dashboard-backend/package.json.update
