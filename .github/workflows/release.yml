@@ -40,9 +40,6 @@ jobs:
         with:
           node-version: "20"
       -
-        name: "Install npm & lerna"
-        run: "npm install --global lerna@6.6.2"
-      -
         name: Check existing tags
         run: |
           set +e
