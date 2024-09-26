@@ -275,20 +275,20 @@ email="user-2@che"
           resourceVersion: '1',
         } as api.IGitConfig;
 
-      let isPatched = false;
-      let errorMessage = '';
+        let isPatched = false;
+        let errorMessage = '';
 
-      try {
-        await gitConfigApiService.patch(namespace, newGitConfig);
-        isPatched = true;
-      } catch (e: unknown) {
-        errorMessage = (e as Error).message;
-      }
+        try {
+          await gitConfigApiService.patch(namespace, newGitConfig);
+          isPatched = true;
+        } catch (e: unknown) {
+          errorMessage = (e as Error).message;
+        }
 
-      expect(isPatched).toBe(false);
-      expect(errorMessage).toBe(
-        'Conflict detected. The gitconfig was modified in the namespace "user-che".',
-      );
+        expect(isPatched).toBe(false);
+        expect(errorMessage).toBe(
+          'Conflict detected. The gitconfig was modified in the namespace "user-che".',
+        );
 
         expect(spyReadNamespacedConfigMap).toHaveBeenCalledTimes(1);
         expect(spyPatchNamespacedConfigMap).toHaveBeenCalledTimes(0);
