@@ -13,7 +13,6 @@
 import { api } from '@eclipse-che/common';
 import * as mockClient from '@kubernetes/client-node';
 import { CoreV1Api, V1ConfigMap } from '@kubernetes/client-node';
-import { exec } from 'child_process';
 import { IncomingMessage } from 'http';
 
 import { GitConfigApiService } from '..';
