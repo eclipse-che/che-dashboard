@@ -151,7 +151,7 @@ export class EditorSelectorEntry extends React.PureComponent<Props, State> {
         ? `data:image/svg+xml;charset=utf-8,${encodeURIComponent(groupIcon)}`
         : groupIcon;
     const hasTechPreviewTag =
-      (activeEditor.tags || []).includes('tech-preview') === true ||
+      (activeEditor.tags || []).map(tag => tag.toLowerCase()).includes('tech-preview') ||
       /idea/i.test(activeEditor.id) === true;
     const tagsGroup = (
       <LabelGroup isVertical>
