@@ -233,8 +233,12 @@ class StartingStepOpenWorkspace extends ProgressStep<Props, State> {
   render(): React.ReactNode {
     const { distance, hasChildren } = this.props;
     const { name, lastError } = this.state;
+
+    // status may flicker from starting to running and back to starting
+    // but we need to run the timer only when the workspace is running
     const workspace = this.findTargetWorkspace(this.props);
     const isActive = workspace?.isRunning && distance === 0;
+
     const isError = false;
     const isWarning = lastError !== undefined;
 
