@@ -233,8 +233,8 @@ class StartingStepOpenWorkspace extends ProgressStep<Props, State> {
   render(): React.ReactNode {
     const { distance, hasChildren } = this.props;
     const { name, lastError } = this.state;
-
-    const isActive = distance === 0;
+    const workspace = this.findTargetWorkspace(this.props);
+    const isActive = workspace?.isRunning && distance === 0;
     const isError = false;
     const isWarning = lastError !== undefined;
 
