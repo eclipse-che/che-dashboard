@@ -11,11 +11,19 @@
  */
 
 import { api } from '@eclipse-che/common';
-import { Action, Reducer } from 'redux';
+import { createReducer } from '@reduxjs/toolkit';
 
-import { KnownAction } from '@/store/Workspaces/Preferences/types';
-import { Type } from '@/store/Workspaces/Preferences/types';
-import { State } from '@/store/Workspaces/Preferences/types';
+import {
+  preferencesErrorAction,
+  preferencesReceiveAction,
+  preferencesRequestAction,
+} from '@/store/Workspaces/Preferences/actions';
+
+export interface State {
+  isLoading: boolean;
+  preferences: api.IWorkspacePreferences;
+  error?: string;
+}
 
 export const unloadedState: State = {
   isLoading: false,
@@ -24,34 +32,23 @@ export const unloadedState: State = {
   } as api.IWorkspacePreferences,
 };
 
-export const reducer: Reducer<State> = (
-  state: State | undefined,
-  incomingAction: Action,
-): State => {
-  if (state === undefined) {
-    return unloadedState;
-  }
-
-  const action = incomingAction as KnownAction;
-  switch (action.type) {
-    case Type.REQUEST_PREFERENCES:
-      return {
-        ...state,
-        isLoading: true,
-      };
-    case Type.RECEIVE_PREFERENCES:
-      return {
-        ...state,
-        isLoading: false,
-        preferences: action.preferences,
-      };
-    case Type.ERROR_PREFERENCES:
-      return {
-        ...state,
-        isLoading: false,
-        error: action.error,
-      };
-    default:
-      return state;
-  }
-};
+export const reducer = createReducer(unloadedState, builder =>
+  builder
+    .addCase(preferencesRequestAction, state => {
+      state.isLoading = true;
+    })
+    .addCase(preferencesReceiveAction, (state, action) => {
+      state.isLoading = false;
+      if (action.payload) {
+        state.preferences = action.payload;
+      } else {
+        // trusted resources update
+        // no-op
+      }
+    })
+    .addCase(preferencesErrorAction, (state, action) => {
+      state.isLoading = false;
+      state.error = action.payload;
+    })
+    .addDefaultCase(state => state),
+);

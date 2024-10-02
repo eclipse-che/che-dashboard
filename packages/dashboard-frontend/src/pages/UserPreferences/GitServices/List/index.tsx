@@ -29,7 +29,7 @@ import { GIT_OAUTH_PROVIDERS } from '@/pages/UserPreferences/const';
 import { GitServiceStatusIcon } from '@/pages/UserPreferences/GitServices/List/StatusIcon';
 import { GitServiceTooltip } from '@/pages/UserPreferences/GitServices/List/Tooltip';
 import { GitServicesToolbar } from '@/pages/UserPreferences/GitServices/Toolbar';
-import { IGitOauth } from '@/store/GitOauthConfig/types';
+import { IGitOauth } from '@/store/GitOauthConfig';
 
 export const CAN_REVOKE_FROM_DASHBOARD: ReadonlyArray<api.GitOauthProvider> = [
   'github',

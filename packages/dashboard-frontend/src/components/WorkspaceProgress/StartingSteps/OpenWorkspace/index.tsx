@@ -35,9 +35,9 @@ import { findTargetWorkspace } from '@/services/helpers/factoryFlow/findTargetWo
 import { AlertItem, DevWorkspaceStatus, LoaderTab } from '@/services/helpers/types';
 import { TabManager } from '@/services/tabManager';
 import { Workspace, WorkspaceAdapter } from '@/services/workspace-adapter';
-import { AppState } from '@/store';
+import { RootState } from '@/store';
 import { selectApplications } from '@/store/ClusterInfo/selectors';
-import * as WorkspaceStore from '@/store/Workspaces';
+import { workspacesActionCreators } from '@/store/Workspaces';
 import { selectAllWorkspaces } from '@/store/Workspaces/selectors';
 
 export type Props = MappedProps &
@@ -260,12 +260,12 @@ class StartingStepOpenWorkspace extends ProgressStep<Props, State> {
   }
 }
 
-const mapStateToProps = (state: AppState) => ({
+const mapStateToProps = (state: RootState) => ({
   allWorkspaces: selectAllWorkspaces(state),
   applications: selectApplications(state),
 });
 
-const connector = connect(mapStateToProps, WorkspaceStore.actionCreators, null, {
+const connector = connect(mapStateToProps, workspacesActionCreators, null, {
   // forwardRef is mandatory for using `@react-mock/state` in unit tests
   forwardRef: true,
 });

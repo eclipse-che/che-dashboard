@@ -18,7 +18,7 @@ import userEvent, { UserEvent } from '@testing-library/user-event';
 import React from 'react';
 import { Provider } from 'react-redux';
 import { Location } from 'react-router-dom';
-import { Action, Store } from 'redux';
+import { Store } from 'redux';
 
 import ExpandableWarning from '@/components/ExpandableWarning';
 import { MIN_STEP_DURATION_MS, TIMEOUT_TO_RESOLVE_SEC } from '@/components/WorkspaceProgress/const';
@@ -33,23 +33,23 @@ import {
 } from '@/services/helpers/factoryFlow/buildFactoryParams';
 import { AlertItem } from '@/services/helpers/types';
 import { AppThunk } from '@/store';
-import { FakeStoreBuilder } from '@/store/__mocks__/storeBuilder';
-import { FactoryResolverActionCreators, OAuthResponse } from '@/store/FactoryResolver';
+import { MockStoreBuilder } from '@/store/__mocks__/mockStore';
+import { factoryResolverActionCreators, OAuthResponse } from '@/store/FactoryResolver';
 
 jest.mock('@/components/WorkspaceProgress/TimeLimit');
 
 const mockRequestFactoryResolver = jest.fn();
-jest.mock('@/store/FactoryResolver/actions', () => {
+jest.mock('@/store/FactoryResolver', () => {
   return {
     ...jest.requireActual('@/store/FactoryResolver'),
-    actionCreators: {
+    factoryResolverActionCreators: {
       requestFactoryResolver:
         (
-          ...args: Parameters<FactoryResolverActionCreators['requestFactoryResolver']>
-        ): AppThunk<Action, Promise<void>> =>
-        async (): Promise<void> =>
+          ...args: Parameters<(typeof factoryResolverActionCreators)['requestFactoryResolver']>
+        ): AppThunk =>
+        async () =>
           mockRequestFactoryResolver(...args),
-    } as FactoryResolverActionCreators,
+    } as typeof factoryResolverActionCreators,
   };
 });
 
@@ -90,7 +90,7 @@ describe('Creating steps, fetching a devfile', () => {
         generateName: 'my-project-',
       },
     };
-    store = new FakeStoreBuilder()
+    store = new MockStoreBuilder()
       .withFactoryResolver({
         resolver: {
           devfile,
@@ -125,7 +125,7 @@ describe('Creating steps, fetching a devfile', () => {
   });
 
   test('no project url, remotes exist', async () => {
-    const store = new FakeStoreBuilder().build();
+    const store = new MockStoreBuilder().build();
 
     const remotesAttr =
       '{{test-1,http://git-test-1.git},{test-2,http://git-test-2.git},{test-3,http://git-test-3.git}}';
@@ -146,7 +146,7 @@ describe('Creating steps, fetching a devfile', () => {
     const rejectReason = '... schema validation failed ...';
 
     beforeEach(() => {
-      emptyStore = new FakeStoreBuilder().build();
+      emptyStore = new MockStoreBuilder().build();
       mockRequestFactoryResolver.mockRejectedValueOnce(rejectReason);
     });
 
@@ -268,12 +268,12 @@ describe('Creating steps, fetching a devfile', () => {
     let emptyStore: Store;
 
     beforeEach(() => {
-      emptyStore = new FakeStoreBuilder().build();
+      emptyStore = new MockStoreBuilder().build();
     });
 
     test('notification alert', async () => {
       renderComponent(emptyStore, searchParams);
-      jest.runAllTimers();
+      await jest.runAllTimersAsync();
 
       // trigger timeout
       const timeoutButton = screen.getByRole('button', {
@@ -350,7 +350,7 @@ describe('Creating steps, fetching a devfile', () => {
     const rejectReason = 'Failed to fetch devfile';
 
     beforeEach(() => {
-      emptyStore = new FakeStoreBuilder().build();
+      emptyStore = new MockStoreBuilder().build();
       mockRequestFactoryResolver.mockRejectedValueOnce(rejectReason);
     });
 
@@ -467,7 +467,7 @@ describe('Creating steps, fetching a devfile', () => {
     });
 
     test('request factory resolver', async () => {
-      const emptyStore = new FakeStoreBuilder().build();
+      const emptyStore = new MockStoreBuilder().build();
       renderComponent(emptyStore, searchParams);
 
       await jest.advanceTimersByTimeAsync(MIN_STEP_DURATION_MS);
@@ -481,7 +481,7 @@ describe('Creating steps, fetching a devfile', () => {
       const expectedOverrideParams = { [attrName]: attrValue };
       // add override param
       searchParams.append(attrName, attrValue);
-      const emptyStore = new FakeStoreBuilder().build();
+      const emptyStore = new MockStoreBuilder().build();
 
       renderComponent(emptyStore, searchParams);
 
@@ -498,7 +498,7 @@ describe('Creating steps, fetching a devfile', () => {
     });
 
     test('devfile resolved successfully', async () => {
-      const emptyStore = new FakeStoreBuilder().build();
+      const emptyStore = new MockStoreBuilder().build();
 
       const { reRenderComponent } = renderComponent(emptyStore, searchParams);
 
@@ -513,7 +513,7 @@ describe('Creating steps, fetching a devfile', () => {
       await jest.advanceTimersByTimeAsync(time);
 
       // build next store
-      const nextStore = new FakeStoreBuilder()
+      const nextStore = new MockStoreBuilder()
         .withFactoryResolver({
           resolver: {
             location: factoryUrl,
@@ -565,7 +565,7 @@ describe('Creating steps, fetching a devfile', () => {
     });
 
     test('redirect to an authentication URL', async () => {
-      const emptyStore = new FakeStoreBuilder().build();
+      const emptyStore = new MockStoreBuilder().build();
 
       renderComponent(emptyStore, searchParams, location);
 
@@ -584,7 +584,7 @@ describe('Creating steps, fetching a devfile', () => {
     });
 
     test('authentication fails', async () => {
-      const emptyStore = new FakeStoreBuilder().build();
+      const emptyStore = new MockStoreBuilder().build();
 
       renderComponent(emptyStore, searchParams, location);
 
@@ -645,7 +645,7 @@ describe('Creating steps, fetching a devfile', () => {
     });
 
     test('authentication passes', async () => {
-      const emptyStore = new FakeStoreBuilder().build();
+      const emptyStore = new MockStoreBuilder().build();
 
       renderComponent(emptyStore, searchParams, location);
 
@@ -667,7 +667,7 @@ describe('Creating steps, fetching a devfile', () => {
       await waitFor(() => expect(mockRequestFactoryResolver).toHaveBeenCalled());
 
       // build next store
-      const nextStore = new FakeStoreBuilder()
+      const nextStore = new MockStoreBuilder()
         .withFactoryResolver({
           resolver: {
             location: factoryUrl,
@@ -698,7 +698,7 @@ describe('Creating steps, fetching a devfile', () => {
     let location: Location;
 
     beforeEach(() => {
-      store = new FakeStoreBuilder().build();
+      store = new MockStoreBuilder().build();
 
       searchParams = new URLSearchParams({
         [FACTORY_URL_ATTR]: factoryUrl,
@@ -719,7 +719,7 @@ describe('Creating steps, fetching a devfile', () => {
     });
 
     it('should go to next step', async () => {
-      const nextStore = new FakeStoreBuilder()
+      const nextStore = new MockStoreBuilder()
         .withFactoryResolver({
           resolver: {
             location: factoryUrl,

@@ -10,41 +10,55 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import { Action, Reducer } from 'redux';
+import { createReducer } from '@reduxjs/toolkit';
 
-import { KnownAction, State } from '@/store/FactoryResolver/types';
-import { createObject } from '@/store/helpers';
+import devfileApi from '@/services/devfileApi';
+import { FactoryResolver } from '@/services/helpers/types';
+import {
+  factoryResolverErrorAction,
+  factoryResolverReceiveAction,
+  factoryResolverRequestAction,
+} from '@/store/FactoryResolver/actions';
 
-const unloadedState: State = {
+export type OAuthResponse = {
+  attributes: {
+    oauth_provider: string;
+    oauth_version: string;
+    oauth_authentication_url: string;
+  };
+  errorCode: number;
+  message: string | undefined;
+};
+
+export interface Resolver extends FactoryResolver {
+  devfile: devfileApi.Devfile;
+  optionalFilesContent?: {
+    [fileName: string]: string;
+  };
+}
+
+export interface State {
+  isLoading: boolean;
+  resolver?: Resolver;
+  error?: string;
+}
+
+export const unloadedState: State = {
   isLoading: false,
 };
 
-export const reducer: Reducer<State> = (
-  state: State | undefined,
-  incomingAction: Action,
-): State => {
-  if (state === undefined) {
-    return unloadedState;
-  }
-
-  const action = incomingAction as KnownAction;
-  switch (action.type) {
-    case 'REQUEST_FACTORY_RESOLVER':
-      return createObject<State>(state, {
-        isLoading: true,
-        error: undefined,
-      });
-    case 'RECEIVE_FACTORY_RESOLVER':
-      return createObject<State>(state, {
-        isLoading: false,
-        resolver: action.resolver,
-      });
-    case 'RECEIVE_FACTORY_RESOLVER_ERROR':
-      return createObject<State>(state, {
-        isLoading: false,
-        error: action.error,
-      });
-    default:
-      return state;
-  }
-};
+export const reducer = createReducer(unloadedState, builder =>
+  builder
+    .addCase(factoryResolverRequestAction, state => {
+      state.isLoading = true;
+      state.error = undefined;
+    })
+    .addCase(factoryResolverReceiveAction, (state, action) => {
+      state.isLoading = false;
+      state.resolver = action.payload;
+    })
+    .addCase(factoryResolverErrorAction, (state, action) => {
+      state.isLoading = false;
+      state.error = action.payload;
+    }),
+);

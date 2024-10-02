@@ -10,131 +10,59 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import { AnyAction } from 'redux';
+import { api } from '@eclipse-che/common';
+import { UnknownAction } from 'redux';
 
-import * as unloadedState from '@/store/GitConfig/reducer';
-import { AUTHORIZED } from '@/store/sanityCheckMiddleware';
+import {
+  gitConfigErrorAction,
+  gitConfigReceiveAction,
+  gitConfigRequestAction,
+} from '@/store/GitConfig/actions';
+import { reducer, State, unloadedState } from '@/store/GitConfig/reducer';
 
-import * as TestStore from '..';
+describe('GitConfig, reducer', () => {
+  let initialState: State;
 
-describe('GitConfig store, reducer', () => {
-  it('should return initial state', () => {
-    const incomingAction: TestStore.RequestGitConfigAction = {
-      type: TestStore.Type.REQUEST_GITCONFIG,
-      check: AUTHORIZED,
-    };
-    const initialState = unloadedState.reducer(undefined, incomingAction);
-
-    const expectedState: TestStore.State = {
-      isLoading: false,
-      config: undefined,
-      error: undefined,
-    };
-
-    expect(initialState).toEqual(expectedState);
+  beforeEach(() => {
+    initialState = { ...unloadedState };
   });
 
-  it('should return state if action type is not matched', () => {
-    const initialState: TestStore.State = {
-      isLoading: false,
-      config: undefined,
-      error: undefined,
-    };
-    const incomingAction = {
-      type: 'OTHER_ACTION',
+  it('should handle gitConfigRequestAction', () => {
+    const action = gitConfigRequestAction();
+    const expectedState: State = {
+      ...initialState,
       isLoading: true,
-      registries: [],
-      resourceVersion: undefined,
-    } as AnyAction;
-    const newState = unloadedState.reducer(initialState, incomingAction);
-
-    const expectedState: TestStore.State = {
-      isLoading: false,
-      config: undefined,
-      error: undefined,
     };
-    expect(newState).toEqual(expectedState);
+
+    expect(reducer(initialState, action)).toEqual(expectedState);
   });
 
-  it('should handle REQUEST_GITCONFIG', () => {
-    const initialState: TestStore.State = {
+  it('should handle gitConfigReceiveAction', () => {
+    const config = { gitconfig: {} } as api.IGitConfig;
+    const action = gitConfigReceiveAction(config);
+    const expectedState: State = {
+      ...initialState,
       isLoading: false,
-      config: undefined,
-      error: undefined,
-    };
-    const incomingAction: TestStore.RequestGitConfigAction = {
-      type: TestStore.Type.REQUEST_GITCONFIG,
-      check: AUTHORIZED,
+      config,
     };
 
-    const newState = unloadedState.reducer(initialState, incomingAction);
-
-    const expectedState: TestStore.State = {
-      isLoading: true,
-      config: undefined,
-      error: undefined,
-    };
-
-    expect(newState).toEqual(expectedState);
+    expect(reducer(initialState, action)).toEqual(expectedState);
   });
 
-  it('should handle RECEIVE_GITCONFIG', () => {
-    const initialState: TestStore.State = {
-      isLoading: true,
-      config: undefined,
-      error: undefined,
-    };
-    const incomingAction: TestStore.ReceiveGitConfigAction = {
-      type: TestStore.Type.RECEIVE_GITCONFIG,
-      config: {
-        gitconfig: {
-          user: {
-            email: 'user@che',
-            name: 'user-che',
-          },
-        },
-        resourceVersion: '345',
-      },
-    };
-
-    const newState = unloadedState.reducer(initialState, incomingAction);
-
-    const expectedState: TestStore.State = {
+  it('should handle gitConfigErrorAction', () => {
+    const error = 'Error message';
+    const action = gitConfigErrorAction(error);
+    const expectedState: State = {
+      ...initialState,
       isLoading: false,
-      config: {
-        gitconfig: {
-          user: {
-            email: 'user@che',
-            name: 'user-che',
-          },
-        },
-        resourceVersion: '345',
-      },
-      error: undefined,
+      error,
     };
 
-    expect(newState).toEqual(expectedState);
+    expect(reducer(initialState, action)).toEqual(expectedState);
   });
 
-  it('should handle RECEIVE_GITCONFIG_ERROR', () => {
-    const initialState: TestStore.State = {
-      isLoading: true,
-      config: undefined,
-      error: undefined,
-    };
-    const incomingAction: TestStore.ReceiveGitConfigErrorAction = {
-      type: TestStore.Type.RECEIVE_GITCONFIG_ERROR,
-      error: 'unexpected error',
-    };
-
-    const newState = unloadedState.reducer(initialState, incomingAction);
-
-    const expectedState: TestStore.State = {
-      isLoading: false,
-      config: undefined,
-      error: 'unexpected error',
-    };
-
-    expect(newState).toEqual(expectedState);
+  it('should return the current state for unknown actions', () => {
+    const unknownAction = { type: 'UNKNOWN_ACTION' } as UnknownAction;
+    expect(reducer(initialState, unknownAction)).toEqual(initialState);
   });
 });

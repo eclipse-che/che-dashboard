@@ -35,15 +35,14 @@ import { buildIdeLoaderLocation, toHref } from '@/services/helpers/location';
 import { AlertItem } from '@/services/helpers/types';
 import { TabManager } from '@/services/tabManager';
 import { Workspace } from '@/services/workspace-adapter';
-import { AppState } from '@/store';
-import * as DevfileRegistriesStore from '@/store/DevfileRegistries';
-import { DevWorkspaceResources } from '@/store/DevfileRegistries';
+import { RootState } from '@/store';
+import { devfileRegistriesActionCreators, DevWorkspaceResources } from '@/store/DevfileRegistries';
 import { selectDevWorkspaceResources } from '@/store/DevfileRegistries/selectors';
 import { factoryResolverActionCreators } from '@/store/FactoryResolver';
 import { selectFactoryResolver } from '@/store/FactoryResolver/selectors';
 import { selectDefaultNamespace } from '@/store/InfrastructureNamespaces/selectors';
-import * as WorkspacesStore from '@/store/Workspaces';
-import * as DevWorkspacesStore from '@/store/Workspaces/devWorkspaces';
+import { workspacesActionCreators } from '@/store/Workspaces';
+import { devWorkspacesActionCreators } from '@/store/Workspaces/devWorkspaces';
 import { selectDevWorkspaceWarnings } from '@/store/Workspaces/devWorkspaces/selectors';
 import { selectAllWorkspaces } from '@/store/Workspaces/selectors';
 
@@ -293,7 +292,7 @@ class CreatingStepApplyResources extends ProgressStep<Props, State> {
   }
 }
 
-const mapStateToProps = (state: AppState) => ({
+const mapStateToProps = (state: RootState) => ({
   allWorkspaces: selectAllWorkspaces(state),
   defaultNamespace: selectDefaultNamespace(state),
   factoryResolver: selectFactoryResolver(state),
@@ -304,10 +303,10 @@ const mapStateToProps = (state: AppState) => ({
 const connector = connect(
   mapStateToProps,
   {
-    ...DevfileRegistriesStore.actionCreators,
+    ...devfileRegistriesActionCreators,
     ...factoryResolverActionCreators,
-    ...WorkspacesStore.actionCreators,
-    createWorkspaceFromResources: DevWorkspacesStore.actionCreators.createWorkspaceFromResources,
+    ...workspacesActionCreators,
+    createWorkspaceFromResources: devWorkspacesActionCreators.createWorkspaceFromResources,
   },
   null,
   {

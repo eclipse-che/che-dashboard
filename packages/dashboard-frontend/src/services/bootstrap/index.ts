@@ -30,30 +30,33 @@ import { isAvailableEndpoint } from '@/services/helpers/api-ping';
 import { buildDetailsLocation, buildIdeLoaderLocation } from '@/services/helpers/location';
 import { ResourceFetcherService } from '@/services/resource-fetcher';
 import { Workspace } from '@/services/workspace-adapter';
-import { AppState } from '@/store';
-import * as BannerAlertStore from '@/store/BannerAlert';
-import * as BrandingStore from '@/store/Branding';
-import * as ClusterConfigStore from '@/store/ClusterConfig';
-import { selectDashboardFavicon } from '@/store/ClusterConfig/selectors';
-import * as ClusterInfoStore from '@/store/ClusterInfo';
-import * as DevfileRegistriesStore from '@/store/DevfileRegistries';
-import { DEFAULT_REGISTRY } from '@/store/DevfileRegistries';
-import { selectEmptyWorkspaceUrl } from '@/store/DevfileRegistries/selectors';
-import * as EventsStore from '@/store/Events';
-import { selectEventsResourceVersion } from '@/store/Events/selectors';
-import * as InfrastructureNamespacesStore from '@/store/InfrastructureNamespaces';
-import { selectDefaultNamespace } from '@/store/InfrastructureNamespaces/selectors';
-import * as PluginsStore from '@/store/Plugins/chePlugins';
-import * as DwPluginsStore from '@/store/Plugins/devWorkspacePlugins';
-import * as PodsStore from '@/store/Pods';
-import { selectPodsResourceVersion } from '@/store/Pods/selectors';
-import * as SanityCheckStore from '@/store/SanityCheck';
-import * as ServerConfigStore from '@/store/ServerConfig';
-import * as SshKeysStore from '@/store/SshKeys';
-import * as UserProfileStore from '@/store/User/Profile';
-import * as WorkspacesStore from '@/store/Workspaces';
-import * as DevWorkspacesStore from '@/store/Workspaces/devWorkspaces';
-import { selectDevWorkspacesResourceVersion } from '@/store/Workspaces/devWorkspaces/selectors';
+import { RootState } from '@/store';
+import { bannerAlertActionCreators } from '@/store/BannerAlert';
+import { brandingActionCreators } from '@/store/Branding';
+import { clusterConfigActionCreators, selectDashboardFavicon } from '@/store/ClusterConfig';
+import { clusterInfoActionCreators } from '@/store/ClusterInfo';
+import {
+  DEFAULT_REGISTRY,
+  devfileRegistriesActionCreators,
+  selectEmptyWorkspaceUrl,
+} from '@/store/DevfileRegistries';
+import { eventsActionCreators, selectEventsResourceVersion } from '@/store/Events';
+import {
+  infrastructureNamespacesActionCreators,
+  selectDefaultNamespace,
+} from '@/store/InfrastructureNamespaces';
+import { chePluginsActionCreators } from '@/store/Plugins/chePlugins';
+import { devWorkspacePluginsActionCreators } from '@/store/Plugins/devWorkspacePlugins';
+import { podsActionCreators, selectPodsResourceVersion } from '@/store/Pods';
+import { sanityCheckActionCreators } from '@/store/SanityCheck';
+import { serverConfigActionCreators } from '@/store/ServerConfig';
+import { sshKeysActionCreators } from '@/store/SshKeys';
+import { userProfileActionCreators } from '@/store/User/Profile';
+import { workspacesActionCreators } from '@/store/Workspaces';
+import {
+  devWorkspacesActionCreators,
+  selectDevWorkspacesResourceVersion,
+} from '@/store/Workspaces/devWorkspaces';
 import { workspacePreferencesActionCreators } from '@/store/Workspaces/Preferences';
 
 /**
@@ -70,11 +73,11 @@ export default class Bootstrap {
   @lazyInject(WorkspaceStoppedDetector)
   private readonly workspaceStoppedDetector: WorkspaceStoppedDetector;
 
-  private store: Store<AppState>;
+  private store: Store<RootState>;
 
   private resourceFetcher: ResourceFetcherService;
 
-  constructor(store: Store<AppState>) {
+  constructor(store: Store<RootState>) {
     this.store = store;
     this.resourceFetcher = new ResourceFetcherService();
   }
@@ -91,7 +94,7 @@ export default class Bootstrap {
 
     const results = await Promise.allSettled([
       this.fetchUserProfile(),
-      this.fetchPlugins().then(() => this.fetchDwPlugins()),
+      this.fetchPlugins().then(() => this.fetchDwDefaultEditor()),
       this.fetchDefaultDwPlugins(),
       this.fetchRegistriesMetadata().then(() => this.fetchEmptyWorkspace()),
       this.fetchWorkspaces().then(() => {
@@ -125,7 +128,7 @@ export default class Bootstrap {
   }
 
   private async doBackendsSanityCheck(): Promise<void> {
-    const { testBackends } = SanityCheckStore.actionCreators;
+    const { testBackends } = sanityCheckActionCreators;
     try {
       await testBackends()(this.store.dispatch, this.store.getState, undefined);
     } catch (e) {
@@ -140,7 +143,7 @@ export default class Bootstrap {
   }
 
   private async fetchClusterConfig(): Promise<void> {
-    const { requestClusterConfig } = ClusterConfigStore.actionCreators;
+    const { requestClusterConfig } = clusterConfigActionCreators;
     try {
       await requestClusterConfig()(this.store.dispatch, this.store.getState, undefined);
     } catch (e) {
@@ -151,7 +154,7 @@ export default class Bootstrap {
   }
 
   private async fetchClusterInfo(): Promise<void> {
-    const { requestClusterInfo } = ClusterInfoStore.actionCreators;
+    const { requestClusterInfo } = clusterInfoActionCreators;
     try {
       await requestClusterInfo()(this.store.dispatch, this.store.getState, undefined);
     } catch (e) {
@@ -162,7 +165,7 @@ export default class Bootstrap {
   }
 
   private async fetchBranding(): Promise<void> {
-    const { requestBranding } = BrandingStore.actionCreators;
+    const { requestBranding } = brandingActionCreators;
     try {
       await requestBranding()(this.store.dispatch, this.store.getState, undefined);
     } catch (e) {
@@ -174,7 +177,7 @@ export default class Bootstrap {
   private async watchWebSocketDevWorkspaces(): Promise<void> {
     const defaultKubernetesNamespace = selectDefaultNamespace(this.store.getState());
     const namespace = defaultKubernetesNamespace.name;
-    const { handleWebSocketMessage } = DevWorkspacesStore.actionCreators;
+    const { handleWebSocketMessage } = devWorkspacesActionCreators;
     const dispatch = this.store.dispatch;
     const getState = this.store.getState;
 
@@ -201,7 +204,7 @@ export default class Bootstrap {
   private async watchWebSocketEvents(): Promise<void> {
     const defaultKubernetesNamespace = selectDefaultNamespace(this.store.getState());
     const namespace = defaultKubernetesNamespace.name;
-    const { handleWebSocketMessage } = EventsStore.actionCreators;
+    const { handleWebSocketMessage } = eventsActionCreators;
     const dispatch = this.store.dispatch;
     const getState = this.store.getState;
 
@@ -228,7 +231,7 @@ export default class Bootstrap {
   private async watchWebSocketPods(): Promise<void> {
     const defaultKubernetesNamespace = selectDefaultNamespace(this.store.getState());
     const namespace = defaultKubernetesNamespace.name;
-    const { handleWebSocketMessage } = PodsStore.actionCreators;
+    const { handleWebSocketMessage } = podsActionCreators;
     const dispatch = this.store.dispatch;
     const getState = this.store.getState;
 
@@ -253,32 +256,32 @@ export default class Bootstrap {
   }
 
   private async fetchWorkspaces(): Promise<void> {
-    const { requestWorkspaces } = WorkspacesStore.actionCreators;
+    const { requestWorkspaces } = workspacesActionCreators;
     await requestWorkspaces()(this.store.dispatch, this.store.getState, undefined);
   }
 
   private async fetchEvents(): Promise<void> {
-    const { requestEvents } = EventsStore.actionCreators;
+    const { requestEvents } = eventsActionCreators;
     await requestEvents()(this.store.dispatch, this.store.getState, undefined);
   }
 
   private async fetchPods(): Promise<void> {
-    const { requestPods } = PodsStore.actionCreators;
+    const { requestPods } = podsActionCreators;
     await requestPods()(this.store.dispatch, this.store.getState, undefined);
   }
 
   private async fetchPlugins(): Promise<void> {
-    const { requestPlugins } = PluginsStore.actionCreators;
+    const { requestPlugins } = chePluginsActionCreators;
     await requestPlugins()(this.store.dispatch, this.store.getState, undefined);
   }
 
-  private async fetchDwPlugins(): Promise<void> {
-    const { requestDwDefaultEditor } = DwPluginsStore.actionCreators;
+  private async fetchDwDefaultEditor(): Promise<void> {
+    const { requestDwDefaultEditor } = devWorkspacePluginsActionCreators;
     try {
       await requestDwDefaultEditor()(this.store.dispatch, this.store.getState, undefined);
     } catch (e) {
       const message = `Required sources failed when trying to create the workspace: ${e}`;
-      const { addBanner } = BannerAlertStore.actionCreators;
+      const { addBanner } = bannerAlertActionCreators;
       addBanner(message)(this.store.dispatch, this.store.getState, undefined);
 
       throw e;
@@ -286,7 +289,7 @@ export default class Bootstrap {
   }
 
   private async fetchDefaultDwPlugins(): Promise<void> {
-    const { requestDwDefaultPlugins } = DwPluginsStore.actionCreators;
+    const { requestDwDefaultPlugins } = devWorkspacePluginsActionCreators;
     try {
       await requestDwDefaultPlugins()(this.store.dispatch, this.store.getState, undefined);
     } catch (e) {
@@ -295,7 +298,7 @@ export default class Bootstrap {
   }
 
   private async fetchInfrastructureNamespaces(): Promise<void> {
-    const { requestNamespaces } = InfrastructureNamespacesStore.actionCreators;
+    const { requestNamespaces } = infrastructureNamespacesActionCreators;
     try {
       await requestNamespaces()(this.store.dispatch, this.store.getState, undefined);
     } catch (e) {
@@ -304,7 +307,7 @@ export default class Bootstrap {
   }
 
   private async fetchServerConfig(): Promise<void> {
-    const { requestServerConfig } = ServerConfigStore.actionCreators;
+    const { requestServerConfig } = serverConfigActionCreators;
     try {
       await requestServerConfig()(this.store.dispatch, this.store.getState, undefined);
     } catch (e) {
@@ -313,7 +316,7 @@ export default class Bootstrap {
   }
 
   private async fetchRegistriesMetadata(): Promise<void> {
-    const { requestRegistriesMetadata } = DevfileRegistriesStore.actionCreators;
+    const { requestRegistriesMetadata } = devfileRegistriesActionCreators;
     const defaultRegistry = DEFAULT_REGISTRY.startsWith('http')
       ? DEFAULT_REGISTRY
       : new URL(DEFAULT_REGISTRY, window.location.origin).href;
@@ -361,7 +364,7 @@ export default class Bootstrap {
   }
 
   private async fetchEmptyWorkspace(): Promise<void> {
-    const { requestDevfile } = DevfileRegistriesStore.actionCreators;
+    const { requestDevfile } = devfileRegistriesActionCreators;
     const state = this.store.getState();
     const emptyWorkspaceUrl = selectEmptyWorkspaceUrl(state);
     if (emptyWorkspaceUrl) {
@@ -373,7 +376,7 @@ export default class Bootstrap {
     const defaultKubernetesNamespace = selectDefaultNamespace(this.store.getState());
     const defaultNamespace = defaultKubernetesNamespace.name;
 
-    const { requestUserProfile } = UserProfileStore.actionCreators;
+    const { requestUserProfile } = userProfileActionCreators;
     return requestUserProfile(defaultNamespace)(
       this.store.dispatch,
       this.store.getState,
@@ -443,7 +446,7 @@ export default class Bootstrap {
   }
 
   private async fetchSshKeys(): Promise<void> {
-    const { requestSshKeys } = SshKeysStore.actionCreators;
+    const { requestSshKeys } = sshKeysActionCreators;
     await requestSshKeys()(this.store.dispatch, this.store.getState, undefined);
   }
 

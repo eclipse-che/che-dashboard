@@ -16,26 +16,22 @@ import { createHashHistory } from 'history';
 import React from 'react';
 import { Provider } from 'react-redux';
 import renderer from 'react-test-renderer';
-import { Action, Store } from 'redux';
+import { Store } from 'redux';
 
+import UserMenu from '@/Layout/Header/Tools/UserMenu';
 import { BRANDING_DEFAULT, BrandingData } from '@/services/bootstrap/branding.constant';
-import { che } from '@/services/models';
 import { AppThunk } from '@/store';
-import { FakeStoreBuilder } from '@/store/__mocks__/storeBuilder';
+import { MockStoreBuilder } from '@/store/__mocks__/mockStore';
 import { selectBranding } from '@/store/Branding/selectors';
-import * as InfrastructureNamespacesStore from '@/store/InfrastructureNamespaces';
-
-import UserMenu from '..';
+import { infrastructureNamespacesActionCreators } from '@/store/InfrastructureNamespaces';
 
 jest.mock('@/store/InfrastructureNamespaces', () => {
   return {
     actionCreators: {
-      requestNamespaces:
-        (): AppThunk<Action, Promise<che.KubernetesNamespace[]>> =>
-        async (): Promise<che.KubernetesNamespace[]> => {
-          return Promise.resolve([]);
-        },
-    } as InfrastructureNamespacesStore.ActionCreators,
+      requestNamespaces: (): AppThunk => async () => {
+        return Promise.resolve();
+      },
+    } as typeof infrastructureNamespacesActionCreators,
   };
 });
 
@@ -87,7 +83,7 @@ describe('User Menu', () => {
 });
 
 function createStore(name: string, email: string): Store {
-  return new FakeStoreBuilder()
+  return new MockStoreBuilder()
     .withUserProfile({
       username: name,
       email,

@@ -22,7 +22,7 @@ import devfileApi from '@/services/devfileApi';
 import { LoaderTab } from '@/services/helpers/types';
 import { constructWorkspace, Workspace } from '@/services/workspace-adapter';
 import { DevWorkspaceBuilder } from '@/store/__mocks__/devWorkspaceBuilder';
-import { FakeStoreBuilder } from '@/store/__mocks__/storeBuilder';
+import { MockStoreBuilder } from '@/store/__mocks__/mockStore';
 
 import { LoaderPage, Props } from '..';
 
@@ -55,7 +55,7 @@ describe('Loader page', () => {
       .withName(workspaceName)
       .withStatus({ phase: 'STARTING' })
       .build();
-    store = new FakeStoreBuilder()
+    store = new MockStoreBuilder()
       .withDevWorkspaces({
         workspaces: [devWorkspace],
       })
@@ -95,7 +95,7 @@ describe('Loader page', () => {
   });
 
   it('should update the section header when the workspace is ready', () => {
-    const store = new FakeStoreBuilder().build();
+    const store = new MockStoreBuilder().build();
     const { reRenderComponent } = renderComponent(store, {
       tabParam,
       workspace: undefined,
@@ -108,7 +108,7 @@ describe('Loader page', () => {
       .withName(workspaceName)
       .withStatus({ phase: 'RUNNING' })
       .build();
-    const storeReady = new FakeStoreBuilder()
+    const storeReady = new MockStoreBuilder()
       .withDevWorkspaces({
         workspaces: [devWorkspaceReady],
       })

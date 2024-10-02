@@ -17,7 +17,7 @@ import { Store } from 'redux';
 
 import ImportFromGit from '@/components/ImportFromGit';
 import getComponentRenderer, { screen, waitFor } from '@/services/__mocks__/getComponentRenderer';
-import { FakeStoreBuilder } from '@/store/__mocks__/storeBuilder';
+import { MockStoreBuilder } from '@/store/__mocks__/mockStore';
 
 const { createSnapshot, renderComponent } = getComponentRenderer(getComponent);
 
@@ -38,7 +38,7 @@ describe('GitRepoLocationInput', () => {
   let store: Store;
 
   beforeEach(() => {
-    store = new FakeStoreBuilder()
+    store = new MockStoreBuilder()
       .withDwServerConfig({
         defaults: {
           editor: defaultEditorId,
@@ -319,7 +319,7 @@ describe('GitRepoLocationInput', () => {
     });
 
     test('with SSH keys, the `che-editor` parameter is omitted', async () => {
-      const store = new FakeStoreBuilder()
+      const store = new MockStoreBuilder()
         .withSshKeys({ keys: [{ name: 'key1', keyPub: 'publicKey' }] })
         .withWorkspacePreferences({
           'trusted-sources': '*',
@@ -353,7 +353,7 @@ describe('GitRepoLocationInput', () => {
     });
 
     test('with SSH keys, the `che-editor` parameter is set', async () => {
-      const store = new FakeStoreBuilder()
+      const store = new MockStoreBuilder()
         .withSshKeys({ keys: [{ name: 'key1', keyPub: 'publicKey' }] })
         .withWorkspacePreferences({
           'trusted-sources': '*',

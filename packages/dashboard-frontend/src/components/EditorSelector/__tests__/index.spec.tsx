@@ -20,7 +20,7 @@ import EditorSelector, { State } from '@/components/EditorSelector';
 import mockPlugins from '@/pages/GetStarted/__tests__/plugins.json';
 import getComponentRenderer, { screen, within } from '@/services/__mocks__/getComponentRenderer';
 import { che } from '@/services/models';
-import { FakeStoreBuilder } from '@/store/__mocks__/storeBuilder';
+import { MockStoreBuilder } from '@/store/__mocks__/mockStore';
 
 jest.mock('@/components/EditorSelector/Definition');
 jest.mock('@/components/EditorSelector/Gallery');
@@ -162,7 +162,7 @@ describe('Editor Selector', () => {
 });
 
 function getComponent(localState?: State) {
-  const store = new FakeStoreBuilder()
+  const store = new MockStoreBuilder()
     .withPlugins(plugins)
     .withDwServerConfig({
       defaults: {

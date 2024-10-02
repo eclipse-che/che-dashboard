@@ -23,7 +23,7 @@ import React from 'react';
 import { RegistryPasswordFormGroup } from '@/pages/UserPreferences/ContainerRegistriesTab/RegistryPassword';
 import { RegistryUrlFormGroup } from '@/pages/UserPreferences/ContainerRegistriesTab/RegistryUrl';
 import { RegistryUsernameFormGroup } from '@/pages/UserPreferences/ContainerRegistriesTab/RegistryUsername';
-import { RegistryEntry } from '@/store/DockerConfig/types';
+import { RegistryEntry } from '@/store/DockerConfig';
 
 type Props = {
   registry: RegistryEntry;

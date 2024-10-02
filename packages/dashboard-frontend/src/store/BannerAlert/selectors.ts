@@ -10,10 +10,10 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import { createSelector } from 'reselect';
+import { createSelector } from '@reduxjs/toolkit';
 
-import { AppState } from '..';
+import { RootState } from '@/store';
 
-const selectState = (state: AppState) => state.bannerAlert;
+const selectState = (state: RootState) => state.bannerAlert;
 
 export const selectBannerAlertMessages = createSelector(selectState, state => state.messages);

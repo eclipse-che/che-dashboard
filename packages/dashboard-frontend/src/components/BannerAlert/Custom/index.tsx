@@ -16,7 +16,7 @@ import { connect, ConnectedProps } from 'react-redux';
 import sanitizeHtml from 'sanitize-html';
 
 import styles from '@/components/BannerAlert/Custom/index.module.css';
-import { AppState } from '@/store';
+import { RootState } from '@/store';
 import { selectBannerAlertMessages } from '@/store/BannerAlert/selectors';
 
 type Props = MappedProps;
@@ -48,7 +48,7 @@ class BannerAlertCustomWarning extends React.PureComponent<Props> {
   }
 }
 
-const mapStateToProps = (state: AppState) => ({
+const mapStateToProps = (state: RootState) => ({
   bannerAlertMessages: selectBannerAlertMessages(state),
 });
 

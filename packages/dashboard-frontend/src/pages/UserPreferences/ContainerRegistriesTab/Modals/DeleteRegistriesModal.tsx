@@ -21,7 +21,7 @@ import {
 } from '@patternfly/react-core';
 import React from 'react';
 
-import { RegistryEntry } from '@/store/DockerConfig/types';
+import { RegistryEntry } from '@/store/DockerConfig';
 
 type Props = {
   registry?: RegistryEntry;

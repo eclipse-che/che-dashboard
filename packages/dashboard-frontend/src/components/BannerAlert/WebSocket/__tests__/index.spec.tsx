@@ -17,13 +17,13 @@ import { Provider } from 'react-redux';
 import { container } from '@/inversify.config';
 import { ConnectionEvent, WebsocketClient } from '@/services/backend-client/websocketClient';
 import { BrandingData } from '@/services/bootstrap/branding.constant';
-import { FakeStoreBuilder } from '@/store/__mocks__/storeBuilder';
+import { MockStoreBuilder } from '@/store/__mocks__/mockStore';
 
 import BannerAlertWebSocket from '..';
 
 const failingMessage = 'WebSocket connections are failing';
 
-const store = new FakeStoreBuilder()
+const store = new MockStoreBuilder()
   .withBranding({
     docs: {
       webSocketTroubleshooting: 'http://sample_documentation',

@@ -10,14 +10,10 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
+import { V230DevfileComponents } from '@devfile/api';
 import { api } from '@eclipse-che/common';
-import { AnyAction } from 'redux';
-import { MockStoreEnhanced } from 'redux-mock-store';
-import { ThunkDispatch } from 'redux-thunk';
 
-import { AppState } from '@/store';
-import { FakeStoreBuilder } from '@/store/__mocks__/storeBuilder';
-import { serverConfig } from '@/store/ServerConfig/__tests__/stubs';
+import { RootState } from '@/store';
 import {
   selectAdvancedAuthorization,
   selectAllowedSources,
@@ -30,300 +26,255 @@ import {
   selectOpenVSXUrl,
   selectPluginRegistryInternalUrl,
   selectPluginRegistryUrl,
+  selectPvcStrategy,
+  selectServerConfigError,
+  selectServerConfigState,
+  selectStartTimeout,
 } from '@/store/ServerConfig/selectors';
 
-describe('serverConfig selectors', () => {
-  describe('selectDefaultComponents', () => {
-    it('should return provided value', () => {
-      const fakeStore = new FakeStoreBuilder()
-        .withDwServerConfig(serverConfig)
-        .build() as MockStoreEnhanced<AppState, ThunkDispatch<AppState, undefined, AnyAction>>;
-      const state = fakeStore.getState();
-
-      const selectedDefaultComponents = selectDefaultComponents(state);
-      expect(selectedDefaultComponents).toEqual([
-        {
-          container: {
-            image: 'quay.io/devfile/universal-developer-image:ubi8-latest',
+describe('ServerConfig Selectors', () => {
+  const mockState = {
+    dwServerConfig: {
+      config: {
+        defaults: {
+          components: [
+            {
+              name: 'component1',
+            },
+            {
+              name: 'component2',
+            },
+          ] as V230DevfileComponents[],
+          editor: 'che-incubator/che-code/latest',
+          plugins: [
+            {
+              plugins: ['plugin1'],
+            },
+            {
+              plugins: ['plugin2'],
+            },
+          ] as api.IWorkspacesDefaultPlugins[],
+          pvcStrategy: 'strategy',
+        },
+        pluginRegistry: {
+          disableInternalRegistry: false,
+          openVSXURL: 'https://openvsx.org',
+        },
+        pluginRegistryURL: 'https://plugin.registry',
+        pluginRegistryInternalURL: 'https://internal.plugin.registry',
+        timeouts: {
+          startTimeout: 300,
+        },
+        dashboardLogo: {
+          base64data: 'base64data',
+          mediatype: 'image/png',
+        },
+        networking: {
+          auth: {
+            advancedAuthorization: {
+              allowUsers: ['user1'],
+            },
           },
-          name: 'universal-developer-image',
         },
-      ]);
-    });
-
-    it('should return default value', () => {
-      const fakeStore = new FakeStoreBuilder().build() as MockStoreEnhanced<
-        AppState,
-        ThunkDispatch<AppState, undefined, AnyAction>
-      >;
-      const state = fakeStore.getState();
-
-      const selectedDefaultComponents = selectDefaultComponents(state);
-      expect(selectedDefaultComponents).toEqual([]);
-    });
-  });
-
-  describe('selectDefaultEditor', () => {
-    it('should return provided value', () => {
-      const fakeStore = new FakeStoreBuilder()
-        .withDwServerConfig(serverConfig)
-        .build() as MockStoreEnhanced<AppState, ThunkDispatch<AppState, undefined, AnyAction>>;
-      const state = fakeStore.getState();
-
-      const selectedDefaultEditor = selectDefaultEditor(state);
-      expect(selectedDefaultEditor).toEqual('eclipse/theia/next');
-    });
-
-    it('should return default value', () => {
-      const fakeStore = new FakeStoreBuilder().build() as MockStoreEnhanced<
-        AppState,
-        ThunkDispatch<AppState, undefined, AnyAction>
-      >;
-      const state = fakeStore.getState();
-
-      const selectedDefaultEditor = selectDefaultEditor(state);
-      expect(selectedDefaultEditor).toEqual('che-incubator/che-code/latest');
-    });
-  });
-
-  describe('selectDefaultPlugins', () => {
-    it('should return provided value', () => {
-      const fakeStore = new FakeStoreBuilder()
-        .withDwServerConfig(serverConfig)
-        .build() as MockStoreEnhanced<AppState, ThunkDispatch<AppState, undefined, AnyAction>>;
-      const state = fakeStore.getState();
-
-      const selectedDefaultPlugins = selectDefaultPlugins(state);
-      expect(selectedDefaultPlugins).toEqual([
-        {
-          editor: 'eclipse/theia/next',
-          plugins: ['https://test.com/devfile.yaml'],
+        defaultNamespace: {
+          autoProvision: true,
         },
-      ]);
-    });
+        allowedSourceUrls: ['https://allowed.source'],
+      },
+      isLoading: false,
+      error: 'Something went wrong',
+    },
+  } as RootState;
 
-    it('should return default value', () => {
-      const fakeStore = new FakeStoreBuilder().build() as MockStoreEnhanced<
-        AppState,
-        ThunkDispatch<AppState, undefined, AnyAction>
-      >;
-      const state = fakeStore.getState();
-
-      const selectedDefaultPlugins = selectDefaultPlugins(state);
-      expect(selectedDefaultPlugins).toEqual([]);
-    });
+  it('should select the server config state', () => {
+    const result = selectServerConfigState(mockState);
+    expect(result).toEqual(mockState.dwServerConfig);
   });
 
-  describe('selectPluginRegistryUrl', () => {
-    it('should return provided value', () => {
-      const fakeStore = new FakeStoreBuilder()
-        .withDwServerConfig(serverConfig)
-        .build() as MockStoreEnhanced<AppState, ThunkDispatch<AppState, undefined, AnyAction>>;
-      const state = fakeStore.getState();
-
-      const selectedPluginRegistryUrl = selectPluginRegistryUrl(state);
-      expect(selectedPluginRegistryUrl).toEqual('https://test/plugin-registry/v3');
-    });
-
-    it('should return default value', () => {
-      const fakeStore = new FakeStoreBuilder().build() as MockStoreEnhanced<
-        AppState,
-        ThunkDispatch<AppState, undefined, AnyAction>
-      >;
-      const state = fakeStore.getState();
-
-      const selectedPluginRegistryUrl = selectPluginRegistryUrl(state);
-      expect(selectedPluginRegistryUrl).toEqual('');
-    });
+  it('should select default components', () => {
+    const result = selectDefaultComponents(mockState);
+    expect(result).toEqual([{ name: 'component1' }, { name: 'component2' }]);
   });
 
-  describe('selectPluginRegistryInternalUrl', () => {
-    it('should return provided value', () => {
-      const fakeStore = new FakeStoreBuilder()
-        .withDwServerConfig(serverConfig)
-        .build() as MockStoreEnhanced<AppState, ThunkDispatch<AppState, undefined, AnyAction>>;
-      const state = fakeStore.getState();
-
-      const selectedPluginRegistryInternalUrl = selectPluginRegistryInternalUrl(state);
-      expect(selectedPluginRegistryInternalUrl).toEqual(
-        'http://plugin-registry.eclipse-che.svc:8080/v3',
-      );
-    });
-
-    it('should return default value', () => {
-      const fakeStore = new FakeStoreBuilder().build() as MockStoreEnhanced<
-        AppState,
-        ThunkDispatch<AppState, undefined, AnyAction>
-      >;
-      const state = fakeStore.getState();
-
-      const selectedPluginRegistryInternalUrl = selectPluginRegistryInternalUrl(state);
-      expect(selectedPluginRegistryInternalUrl).toEqual('');
-    });
+  it('should select default editor', () => {
+    const result = selectDefaultEditor(mockState);
+    expect(result).toEqual('che-incubator/che-code/latest');
   });
 
-  describe('selectOpenVSXUrl', () => {
-    it('should return provided value', () => {
-      const fakeStore = new FakeStoreBuilder()
-        .withDwServerConfig(serverConfig)
-        .build() as MockStoreEnhanced<AppState, ThunkDispatch<AppState, undefined, AnyAction>>;
-      const state = fakeStore.getState();
-
-      const selectedOpenVSXUr = selectOpenVSXUrl(state);
-      expect(selectedOpenVSXUr).toEqual('https://open-vsx.org');
-    });
-
-    it('should return default value', () => {
-      const fakeStore = new FakeStoreBuilder().build() as MockStoreEnhanced<
-        AppState,
-        ThunkDispatch<AppState, undefined, AnyAction>
-      >;
-      const state = fakeStore.getState();
-
-      const selectedOpenVSXUr = selectOpenVSXUrl(state);
-      expect(selectedOpenVSXUr).toEqual('');
-    });
+  it('should select default plugins', () => {
+    const result = selectDefaultPlugins(mockState);
+    expect(result).toEqual([{ plugins: ['plugin1'] }, { plugins: ['plugin2'] }]);
   });
 
-  describe('selectDashboardLogo', () => {
-    it('should return provided value', () => {
-      const fakeStore = new FakeStoreBuilder()
-        .withDwServerConfig(serverConfig)
-        .build() as MockStoreEnhanced<AppState, ThunkDispatch<AppState, undefined, AnyAction>>;
-      const state = fakeStore.getState();
-
-      const selectedDashboardLogo = selectDashboardLogo(state);
-      expect(selectedDashboardLogo).toEqual({
-        base64data: 'base64-encoded-data',
-        mediatype: 'image/png',
-      });
-    });
-
-    it('should return default value', () => {
-      const fakeStore = new FakeStoreBuilder().build() as MockStoreEnhanced<
-        AppState,
-        ThunkDispatch<AppState, undefined, AnyAction>
-      >;
-      const state = fakeStore.getState();
-
-      const selectedDashboardLogo = selectDashboardLogo(state);
-      expect(selectedDashboardLogo).toBeUndefined();
-    });
+  it('should select plugin registry URL', () => {
+    const result = selectPluginRegistryUrl(mockState);
+    expect(result).toEqual('https://plugin.registry');
   });
 
-  describe('selectAdvancedAuthorization', () => {
-    it('should return provided value', () => {
-      const fakeStore = new FakeStoreBuilder()
-        .withDwServerConfig(
-          Object.assign({}, serverConfig, {
-            networking: {
-              auth: {
-                advancedAuthorization: {
-                  allowUsers: ['user0'],
-                },
-              },
-            },
-          } as api.IServerConfig),
-        )
-        .build() as MockStoreEnhanced<AppState, ThunkDispatch<AppState, undefined, AnyAction>>;
-      const state = fakeStore.getState();
-
-      const selectedAdvancedAuthorization = selectAdvancedAuthorization(state);
-      expect(selectedAdvancedAuthorization).toEqual({ allowUsers: ['user0'] });
-    });
-
-    it('should return default value', () => {
-      const fakeStore = new FakeStoreBuilder().build() as MockStoreEnhanced<
-        AppState,
-        ThunkDispatch<AppState, undefined, AnyAction>
-      >;
-      const state = fakeStore.getState();
-
-      const selectedAdvancedAuthorization = selectAdvancedAuthorization(state);
-      expect(selectedAdvancedAuthorization).toBeUndefined();
-    });
+  it('should select plugin registry internal URL', () => {
+    const result = selectPluginRegistryInternalUrl(mockState);
+    expect(result).toEqual('https://internal.plugin.registry');
   });
 
-  describe('selectAutoProvision', () => {
-    it('should return provided value', () => {
-      const fakeStore = new FakeStoreBuilder()
-        .withDwServerConfig(
-          Object.assign({}, serverConfig, {
-            defaultNamespace: {
-              autoProvision: false,
-            },
-          } as api.IServerConfig),
-        )
-        .build() as MockStoreEnhanced<AppState, ThunkDispatch<AppState, undefined, AnyAction>>;
-      const state = fakeStore.getState();
-
-      const selectedDashboardLogo = selectAutoProvision(state);
-      expect(selectedDashboardLogo).toBeFalsy();
-    });
-
-    it('should return default value', () => {
-      const fakeStore = new FakeStoreBuilder().build() as MockStoreEnhanced<
-        AppState,
-        ThunkDispatch<AppState, undefined, AnyAction>
-      >;
-      const state = fakeStore.getState();
-
-      const selectedDashboardLogo = selectAutoProvision(state);
-      expect(selectedDashboardLogo).toBeTruthy();
-    });
+  it('should select OpenVSX URL', () => {
+    const result = selectOpenVSXUrl(mockState);
+    expect(result).toEqual('https://openvsx.org');
   });
 
-  describe('selectAllowedSources', () => {
-    it('should return provided value', () => {
-      const fakeStore = new FakeStoreBuilder()
-        .withDwServerConfig(
-          Object.assign({}, serverConfig, {
-            allowedSourceUrls: ['https://test.com'],
-          } as api.IServerConfig),
-        )
-        .build() as MockStoreEnhanced<AppState, ThunkDispatch<AppState, undefined, AnyAction>>;
-      const state = fakeStore.getState();
-
-      const allowedSourceUrls = selectAllowedSources(state);
-      expect(allowedSourceUrls).toEqual(['https://test.com']);
-    });
-
-    it('should return default value', () => {
-      const fakeStore = new FakeStoreBuilder().build() as MockStoreEnhanced<
-        AppState,
-        ThunkDispatch<AppState, undefined, AnyAction>
-      >;
-      const state = fakeStore.getState();
-
-      const allowedSourceUrls = selectAllowedSources(state);
-      expect(allowedSourceUrls).toEqual([]);
-    });
+  it('should select PVC strategy', () => {
+    const result = selectPvcStrategy(mockState);
+    expect(result).toEqual('strategy');
   });
 
-  describe('selectIsAllowedSourcesConfigured', () => {
-    it('allowed sources configured', () => {
-      const fakeStore = new FakeStoreBuilder()
-        .withDwServerConfig(
-          Object.assign({}, serverConfig, {
-            allowedSourceUrls: ['https://test.com'],
-          } as api.IServerConfig),
-        )
-        .build() as MockStoreEnhanced<AppState, ThunkDispatch<AppState, undefined, AnyAction>>;
-      const state = fakeStore.getState();
+  it('should select start timeout', () => {
+    const result = selectStartTimeout(mockState);
+    expect(result).toEqual(300);
+  });
 
-      const isAllowedSourcesConfigured = selectIsAllowedSourcesConfigured(state);
-      expect(isAllowedSourcesConfigured).toBeTruthy();
-    });
+  it('should select dashboard logo', () => {
+    const result = selectDashboardLogo(mockState);
+    expect(result).toEqual({ base64data: 'base64data', mediatype: 'image/png' });
+  });
 
-    it('allowed sources NOT configured', () => {
-      const fakeStore = new FakeStoreBuilder().build() as MockStoreEnhanced<
-        AppState,
-        ThunkDispatch<AppState, undefined, AnyAction>
-      >;
-      const state = fakeStore.getState();
+  it('should select advanced authorization', () => {
+    const result = selectAdvancedAuthorization(mockState);
+    expect(result).toEqual({ allowUsers: ['user1'] });
+  });
 
-      const isAllowedSourcesConfigured = selectIsAllowedSourcesConfigured(state);
-      expect(isAllowedSourcesConfigured).toBeFalsy();
-    });
+  it('should select auto provision', () => {
+    const result = selectAutoProvision(mockState);
+    expect(result).toEqual(true);
+  });
+
+  it('should select allowed sources', () => {
+    const result = selectAllowedSources(mockState);
+    expect(result).toEqual(['https://allowed.source']);
+  });
+
+  it('should select if allowed sources are configured', () => {
+    const result = selectIsAllowedSourcesConfigured(mockState);
+    expect(result).toEqual(true);
+  });
+
+  it('should select server config error', () => {
+    const result = selectServerConfigError(mockState);
+    expect(result).toEqual('Something went wrong');
+  });
+
+  it('should return an empty array if default components are not set', () => {
+    const stateWithoutComponents = {
+      ...mockState,
+      dwServerConfig: {
+        ...mockState.dwServerConfig,
+        config: {
+          ...mockState.dwServerConfig.config,
+          defaults: {
+            ...mockState.dwServerConfig.config.defaults,
+            components: undefined as unknown,
+          },
+        },
+      },
+    } as Partial<RootState> as RootState;
+    const result = selectDefaultComponents(stateWithoutComponents);
+    expect(result).toEqual([]);
+  });
+
+  it('should return default editor if not set', () => {
+    const stateWithoutEditor = {
+      ...mockState,
+      dwServerConfig: {
+        ...mockState.dwServerConfig,
+        config: {
+          ...mockState.dwServerConfig.config,
+          defaults: {
+            ...mockState.dwServerConfig.config.defaults,
+            editor: undefined,
+          },
+        },
+      },
+    } as RootState;
+    const result = selectDefaultEditor(stateWithoutEditor);
+    expect(result).toEqual('che-incubator/che-code/latest');
+  });
+
+  it('should return an empty array if default plugins are not set', () => {
+    const stateWithoutPlugins = {
+      ...mockState,
+      dwServerConfig: {
+        ...mockState.dwServerConfig,
+        config: {
+          ...mockState.dwServerConfig.config,
+          defaults: {
+            ...mockState.dwServerConfig.config.defaults,
+            plugins: undefined as unknown,
+          },
+        },
+      },
+    } as RootState;
+    const result = selectDefaultPlugins(stateWithoutPlugins);
+    expect(result).toEqual([]);
+  });
+
+  it('should return an empty string if plugin registry URL is not set', () => {
+    const stateWithoutPluginRegistryUrl = {
+      ...mockState,
+      dwServerConfig: {
+        ...mockState.dwServerConfig,
+        config: {
+          ...mockState.dwServerConfig.config,
+          pluginRegistryURL: undefined as unknown,
+        },
+      },
+    } as RootState;
+    const result = selectPluginRegistryUrl(stateWithoutPluginRegistryUrl);
+    expect(result).toEqual('');
+  });
+
+  it('should return an empty string if PVC strategy is not set', () => {
+    const stateWithoutPvcStrategy = {
+      ...mockState,
+      dwServerConfig: {
+        ...mockState.dwServerConfig,
+        config: {
+          ...mockState.dwServerConfig.config,
+          defaults: {
+            ...mockState.dwServerConfig.config.defaults,
+            pvcStrategy: undefined,
+          },
+        },
+      },
+    } as RootState;
+    const result = selectPvcStrategy(stateWithoutPvcStrategy);
+    expect(result).toEqual('');
+  });
+
+  it('should return an empty array if allowed sources are not set', () => {
+    const stateWithoutAllowedSources = {
+      ...mockState,
+      dwServerConfig: {
+        ...mockState.dwServerConfig,
+        config: {
+          ...mockState.dwServerConfig.config,
+          allowedSourceUrls: undefined as unknown,
+        },
+      },
+    } as RootState;
+    const result = selectAllowedSources(stateWithoutAllowedSources);
+    expect(result).toEqual([]);
+  });
+
+  it('should return false if allowed sources are not configured', () => {
+    const stateWithoutAllowedSources = {
+      ...mockState,
+      dwServerConfig: {
+        ...mockState.dwServerConfig,
+        config: {
+          ...mockState.dwServerConfig.config,
+          allowedSourceUrls: [],
+        },
+      },
+    } as RootState;
+    const result = selectIsAllowedSourcesConfigured(stateWithoutAllowedSources);
+    expect(result).toEqual(false);
   });
 });

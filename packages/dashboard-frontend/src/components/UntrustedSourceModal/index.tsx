@@ -25,7 +25,7 @@ import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 
 import { AppAlerts } from '@/services/alerts/appAlerts';
-import { AppState } from '@/store';
+import { RootState } from '@/store';
 import { selectIsAllowedSourcesConfigured } from '@/store/ServerConfig/selectors';
 import { workspacePreferencesActionCreators } from '@/store/Workspaces/Preferences';
 import { isTrustedRepo } from '@/store/Workspaces/Preferences/helpers';
@@ -233,7 +233,7 @@ class UntrustedSourceModal extends React.Component<Props, State> {
   }
 }
 
-const mapStateToProps = (state: AppState) => ({
+const mapStateToProps = (state: RootState) => ({
   trustedSources: selectPreferencesTrustedSources(state),
   isAllowedSourcesConfigured: selectIsAllowedSourcesConfigured(state),
 });

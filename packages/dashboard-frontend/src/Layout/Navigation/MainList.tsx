@@ -16,7 +16,7 @@ import { connect, ConnectedProps } from 'react-redux';
 
 import NavigationMainItem from '@/Layout/Navigation/MainItem';
 import { ROUTE } from '@/Routes';
-import { AppState } from '@/store';
+import { RootState } from '@/store';
 import { selectAllWorkspaces } from '@/store/Workspaces/selectors';
 
 import { NavigationItemObject } from '.';
@@ -48,7 +48,7 @@ export class NavigationMainList extends React.PureComponent<Props> {
   }
 }
 
-const mapStateToProps = (state: AppState) => ({
+const mapStateToProps = (state: RootState) => ({
   allWorkspaces: selectAllWorkspaces(state),
 });
 

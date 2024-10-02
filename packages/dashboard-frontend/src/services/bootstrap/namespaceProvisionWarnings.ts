@@ -12,12 +12,12 @@
 
 import { container } from '@/inversify.config';
 import { WarningsReporterService } from '@/services/bootstrap/warningsReporter';
-import { AppState } from '@/store';
+import { RootState } from '@/store';
 import { selectAutoProvision } from '@/store/ServerConfig/selectors';
 
 const warningsReporterService = container.get(WarningsReporterService);
 
-export function checkNamespaceProvisionWarnings(getState: () => AppState): void {
+export function checkNamespaceProvisionWarnings(getState: () => RootState): void {
   const state = getState();
   const autoProvision = selectAutoProvision(state);
   if (autoProvision === false) {

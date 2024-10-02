@@ -29,8 +29,8 @@ import {
   FactoryParams,
 } from '@/services/helpers/factoryFlow/buildFactoryParams';
 import { AlertItem } from '@/services/helpers/types';
-import { AppState } from '@/store';
-import * as DevfileRegistriesStore from '@/store/DevfileRegistries';
+import { RootState } from '@/store';
+import { devfileRegistriesActionCreators } from '@/store/DevfileRegistries';
 import { selectDevWorkspaceResources } from '@/store/DevfileRegistries/selectors';
 import { selectAllWorkspaces } from '@/store/Workspaces/selectors';
 
@@ -197,7 +197,7 @@ class CreatingStepFetchResources extends ProgressStep<Props, State> {
   }
 }
 
-const mapStateToProps = (state: AppState) => ({
+const mapStateToProps = (state: RootState) => ({
   allWorkspaces: selectAllWorkspaces(state),
   devWorkspaceResources: selectDevWorkspaceResources(state),
 });
@@ -205,7 +205,7 @@ const mapStateToProps = (state: AppState) => ({
 const connector = connect(
   mapStateToProps,
   {
-    ...DevfileRegistriesStore.actionCreators,
+    ...devfileRegistriesActionCreators,
   },
   null,
   {

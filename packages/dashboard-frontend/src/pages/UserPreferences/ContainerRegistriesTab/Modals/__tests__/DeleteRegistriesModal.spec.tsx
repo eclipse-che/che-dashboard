@@ -17,7 +17,7 @@ import renderer from 'react-test-renderer';
 
 import { FakeRegistryBuilder } from '@/pages/UserPreferences/ContainerRegistriesTab/__tests__/__mocks__/registryRowBuilder';
 import DeleteRegistriesModal from '@/pages/UserPreferences/ContainerRegistriesTab/Modals/DeleteRegistriesModal';
-import { RegistryEntry } from '@/store/DockerConfig/types';
+import { RegistryEntry } from '@/store/DockerConfig';
 
 describe('Delete Registries Modal', () => {
   const mockOnDelete = jest.fn();

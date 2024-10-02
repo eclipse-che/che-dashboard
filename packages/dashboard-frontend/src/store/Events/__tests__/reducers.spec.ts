@@ -11,176 +11,104 @@
  */
 
 import { CoreV1Event } from '@kubernetes/client-node';
-import { cloneDeep } from 'lodash';
-import { AnyAction } from 'redux';
+import { UnknownAction } from 'redux';
 
-import * as stub from '@/store/Events/__tests__/stubs';
-import { AUTHORIZED } from '@/store/sanityCheckMiddleware';
+import {
+  eventDeleteAction,
+  eventErrorAction,
+  eventModifyAction,
+  eventsReceiveAction,
+  eventsRequestAction,
+} from '@/store/Events/actions';
+import { reducer, State, unloadedState } from '@/store/Events/reducer';
 
-import * as testStore from '..';
-
-describe('Events store, reducers', () => {
-  let event1: CoreV1Event;
-  let event2: CoreV1Event;
+describe('Events, reducer', () => {
+  let initialState: State;
 
   beforeEach(() => {
-    event1 = cloneDeep(stub.event1);
-    event2 = cloneDeep(stub.event2);
+    initialState = { ...unloadedState };
   });
 
-  it('should return initial state', () => {
-    const incomingAction: testStore.RequestEventsAction = {
-      type: testStore.Type.REQUEST_EVENTS,
-      check: AUTHORIZED,
-    };
-    const initialState = testStore.reducer(undefined, incomingAction);
-
-    const expectedState: testStore.State = {
-      isLoading: false,
-      events: [],
-      resourceVersion: '0',
-    };
-
-    expect(initialState).toEqual(expectedState);
-  });
-
-  it('should return state if action type is not matched', () => {
-    const initialState: testStore.State = {
+  it('should handle eventsRequestAction', () => {
+    const action = eventsRequestAction();
+    const expectedState: State = {
+      ...initialState,
       isLoading: true,
-      events: [event1, event2],
-      resourceVersion: '0',
+      error: undefined,
     };
-    const incomingAction = {
-      type: 'OTHER_ACTION',
-    } as AnyAction;
-    const newState = testStore.reducer(initialState, incomingAction);
 
-    const expectedState: testStore.State = {
-      isLoading: true,
-      events: [event1, event2],
-      resourceVersion: '0',
-    };
-    expect(newState).toEqual(expectedState);
+    expect(reducer(initialState, action)).toEqual(expectedState);
   });
 
-  it('should handle REQUEST_EVENTS', () => {
-    const initialState: testStore.State = {
+  it('should handle eventsReceiveAction', () => {
+    const events = [{ metadata: { name: 'event1' } }] as CoreV1Event[];
+    const resourceVersion = '12345';
+    const action = eventsReceiveAction({ events, resourceVersion });
+    const expectedState: State = {
+      ...initialState,
       isLoading: false,
-      events: [],
-      error: 'unexpected error',
-      resourceVersion: '0',
-    };
-    const incomingAction: testStore.RequestEventsAction = {
-      type: testStore.Type.REQUEST_EVENTS,
-      check: AUTHORIZED,
+      events,
+      resourceVersion,
     };
 
-    const newState = testStore.reducer(initialState, incomingAction);
-
-    const expectedState: testStore.State = {
-      isLoading: true,
-      events: [],
-      resourceVersion: '0',
-    };
-
-    expect(newState).toEqual(expectedState);
+    expect(reducer(initialState, action)).toEqual(expectedState);
   });
 
-  it('should handle RECEIVE_EVENTS', () => {
-    const initialState: testStore.State = {
-      isLoading: true,
-      events: [event1],
-      resourceVersion: '1',
+  it('should handle eventModifyAction', () => {
+    const initialStateWithEvents: State = {
+      ...initialState,
+      events: [
+        { metadata: { name: 'event1', uid: 'uid1', resourceVersion: '123' } },
+        { metadata: { name: 'event2', uid: 'uid2', resourceVersion: '124' } },
+      ] as CoreV1Event[],
     };
-    const incomingAction: testStore.ReceiveEventsAction = {
-      type: testStore.Type.RECEIVE_EVENTS,
-      events: [event2],
-      resourceVersion: '2',
+    const modifiedEvent = {
+      metadata: { name: 'event1', uid: 'uid1', resourceVersion: '125' },
+    } as CoreV1Event;
+
+    const action = eventModifyAction({ event: modifiedEvent });
+    const expectedState: State = {
+      ...initialStateWithEvents,
+      events: [modifiedEvent, initialStateWithEvents.events[1]],
+      resourceVersion: '125',
     };
 
-    const newState = testStore.reducer(initialState, incomingAction);
-
-    const expectedState: testStore.State = {
-      isLoading: false,
-      events: [event1, event2],
-      resourceVersion: '2',
-    };
-
-    expect(newState).toEqual(expectedState);
+    expect(reducer(initialStateWithEvents, action)).toEqual(expectedState);
   });
 
-  it('should handle MODIFY_EVENT', () => {
-    const initialState: testStore.State = {
-      isLoading: false,
-      events: [event1, event2],
-      resourceVersion: '1',
+  it('should handle eventDeleteAction', () => {
+    const initialStateWithEvents: State = {
+      ...initialState,
+      events: [
+        { metadata: { name: 'event1', uid: 'uid1' } },
+        { metadata: { name: 'event2', uid: 'uid2' } },
+      ] as CoreV1Event[],
+    };
+    const action = eventDeleteAction({
+      event: { metadata: { name: 'event1', uid: 'uid1' } } as CoreV1Event,
+    });
+    const expectedState: State = {
+      ...initialStateWithEvents,
+      events: [initialStateWithEvents.events[1]],
     };
 
-    const modifiedEvent = cloneDeep(event1);
-    modifiedEvent.message = 'modified message';
-    const incomingAction: testStore.ModifyEventAction = {
-      type: testStore.Type.MODIFY_EVENT,
-      event: modifiedEvent,
-    };
-
-    const newState = testStore.reducer(initialState, incomingAction);
-
-    const expectedState: testStore.State = {
-      isLoading: false,
-      events: [modifiedEvent, event2],
-      resourceVersion: '1',
-    };
-
-    expect(newState).toEqual(expectedState);
+    expect(reducer(initialStateWithEvents, action)).toEqual(expectedState);
   });
 
-  it('should handle RECEIVE_ERROR', () => {
-    const initialState: testStore.State = {
-      isLoading: true,
-      events: [],
-      resourceVersion: '0',
-    };
-    const incomingAction: testStore.ReceiveErrorAction = {
-      type: testStore.Type.RECEIVE_ERROR,
-      error: 'unexpected error',
-    };
-
-    const newState = testStore.reducer(initialState, incomingAction);
-
-    const expectedState: testStore.State = {
+  it('should handle eventErrorAction', () => {
+    const error = 'Error message';
+    const action = eventErrorAction({ error });
+    const expectedState: State = {
+      ...initialState,
       isLoading: false,
-      events: [],
-      error: 'unexpected error',
-      resourceVersion: '0',
+      error,
     };
 
-    expect(newState).toEqual(expectedState);
+    expect(reducer(initialState, action)).toEqual(expectedState);
   });
 
-  it('should handle DELETE_EVENTS', () => {
-    event1.metadata.resourceVersion = '1';
-    event2.metadata.resourceVersion = '2';
-    const initialState: testStore.State = {
-      isLoading: false,
-      events: [event1, event2],
-      resourceVersion: '2',
-    };
-
-    const nextEvent1 = cloneDeep(event1);
-    nextEvent1.metadata.resourceVersion = '3';
-    const incomingAction: testStore.DeleteEventAction = {
-      type: testStore.Type.DELETE_EVENT,
-      event: nextEvent1,
-    };
-
-    const newState = testStore.reducer(initialState, incomingAction);
-
-    const expectedState: testStore.State = {
-      isLoading: false,
-      events: [event2],
-      resourceVersion: '3',
-    };
-
-    expect(newState).toEqual(expectedState);
+  it('should return the current state for unknown actions', () => {
+    const unknownAction = { type: 'UNKNOWN_ACTION' } as UnknownAction;
+    expect(reducer(initialState, unknownAction)).toEqual(initialState);
   });
 });

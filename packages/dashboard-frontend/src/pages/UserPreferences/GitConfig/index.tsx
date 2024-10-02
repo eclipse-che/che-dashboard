@@ -22,8 +22,9 @@ import { GitConfigEmptyState } from '@/pages/UserPreferences/GitConfig/EmptyStat
 import { GitConfigForm } from '@/pages/UserPreferences/GitConfig/Form';
 import { GitConfigToolbar } from '@/pages/UserPreferences/GitConfig/Toolbar';
 import { AppAlerts } from '@/services/alerts/appAlerts';
-import { AppState } from '@/store';
+import { RootState } from '@/store';
 import * as GitConfigStore from '@/store/GitConfig';
+import { gitConfigActionCreators } from '@/store/GitConfig';
 import {
   selectGitConfig,
   selectGitConfigError,
@@ -146,13 +147,13 @@ class GitConfig extends React.PureComponent<Props, State> {
   }
 }
 
-const mapStateToProps = (state: AppState) => ({
+const mapStateToProps = (state: RootState) => ({
   gitConfig: selectGitConfig(state),
   gitConfigIsLoading: selectGitConfigIsLoading(state),
   gitConfigError: selectGitConfigError(state),
 });
 
-const connector = connect(mapStateToProps, GitConfigStore.actionCreators, null, {
+const connector = connect(mapStateToProps, gitConfigActionCreators, null, {
   // forwardRef is mandatory for using `@react-mock/state` in unit tests
   forwardRef: true,
 });

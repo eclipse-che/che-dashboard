@@ -20,19 +20,19 @@ import getComponentRenderer from '@/services/__mocks__/getComponentRenderer';
 import devfileApi from '@/services/devfileApi';
 import { constructWorkspace, Workspace } from '@/services/workspace-adapter';
 import { DevWorkspaceBuilder } from '@/store/__mocks__/devWorkspaceBuilder';
-import { FakeStoreBuilder } from '@/store/__mocks__/storeBuilder';
+import { MockStoreBuilder } from '@/store/__mocks__/mockStore';
 
 const { createSnapshot } = getComponentRenderer(getComponent);
 
 describe('WorkspaceNameLink', () => {
-  let storeBuilder: FakeStoreBuilder;
+  let storeBuilder: MockStoreBuilder;
   let devWorkspace: devfileApi.DevWorkspace;
   let workspace: Workspace;
 
   beforeEach(() => {
     devWorkspace = new DevWorkspaceBuilder().withName('my-project').build();
     workspace = constructWorkspace(devWorkspace);
-    storeBuilder = new FakeStoreBuilder().withDevWorkspaces({ workspaces: [devWorkspace] });
+    storeBuilder = new MockStoreBuilder().withDevWorkspaces({ workspaces: [devWorkspace] });
   });
 
   test('screenshot when cluster console is available', () => {

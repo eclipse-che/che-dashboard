@@ -15,7 +15,7 @@ import React from 'react';
 
 import { GitServicesRevokeModal } from '@/pages/UserPreferences/GitServices/RevokeModal';
 import getComponentRenderer, { screen } from '@/services/__mocks__/getComponentRenderer';
-import { IGitOauth } from '@/store/GitOauthConfig/types';
+import { IGitOauth } from '@/store/GitOauthConfig';
 
 const mockOnRevoke = jest.fn();
 const mockOnCancel = jest.fn();

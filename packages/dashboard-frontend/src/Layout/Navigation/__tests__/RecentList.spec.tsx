@@ -21,7 +21,7 @@ import NavigationRecentList from '@/Layout/Navigation/RecentList';
 import devfileApi from '@/services/devfileApi';
 import { constructWorkspace, Workspace } from '@/services/workspace-adapter';
 import { DevWorkspaceBuilder } from '@/store/__mocks__/devWorkspaceBuilder';
-import { FakeStoreBuilder } from '@/store/__mocks__/storeBuilder';
+import { MockStoreBuilder } from '@/store/__mocks__/mockStore';
 
 jest.mock('react-tooltip', () => {
   return function DummyTooltip(): React.ReactElement {
@@ -99,5 +99,5 @@ describe('Navigation Recent List', () => {
 });
 
 function createFakeStore(): Store {
-  return new FakeStoreBuilder().withDevWorkspaces({ workspaces: devWorkspaces }).build();
+  return new MockStoreBuilder().withDevWorkspaces({ workspaces: devWorkspaces }).build();
 }

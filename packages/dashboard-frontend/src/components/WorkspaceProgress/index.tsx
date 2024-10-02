@@ -46,9 +46,9 @@ import { findTargetWorkspace } from '@/services/helpers/factoryFlow/findTargetWo
 import { getLoaderMode, LoaderMode } from '@/services/helpers/factoryFlow/getLoaderMode';
 import { AlertItem, DevWorkspaceStatus, LoaderTab } from '@/services/helpers/types';
 import { Workspace } from '@/services/workspace-adapter';
-import { AppState } from '@/store';
+import { RootState } from '@/store';
 import { selectIsRegistryDevfile } from '@/store/DevfileRegistries/selectors';
-import * as WorkspaceStore from '@/store/Workspaces';
+import { workspacesActionCreators } from '@/store/Workspaces';
 import { selectPreferencesTrustedSources } from '@/store/Workspaces/Preferences';
 import { isTrustedRepo } from '@/store/Workspaces/Preferences/helpers';
 import { selectAllWorkspaces } from '@/store/Workspaces/selectors';
@@ -720,13 +720,13 @@ class Progress extends React.Component<Props, State> {
   }
 }
 
-const mapStateToProps = (state: AppState) => ({
+const mapStateToProps = (state: RootState) => ({
   allWorkspaces: selectAllWorkspaces(state),
   isRegistryDevfile: selectIsRegistryDevfile(state),
   trustedSources: selectPreferencesTrustedSources(state),
 });
 
-const connector = connect(mapStateToProps, WorkspaceStore.actionCreators, null, {
+const connector = connect(mapStateToProps, workspacesActionCreators, null, {
   // forwardRef is mandatory for using `@react-mock/state` in unit tests
   forwardRef: true,
 });

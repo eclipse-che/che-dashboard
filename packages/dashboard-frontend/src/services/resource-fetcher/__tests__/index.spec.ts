@@ -11,7 +11,7 @@
  */
 
 import { BrandingData } from '@/services/bootstrap/branding.constant';
-import { FakeStoreBuilder } from '@/store/__mocks__/storeBuilder';
+import { MockStoreBuilder } from '@/store/__mocks__/mockStore';
 
 import { ResourceFetcherService } from '..';
 
@@ -42,7 +42,7 @@ describe('Resource fetcher', () => {
 
   it('should not request resources if nothing configured', () => {
     const service = new ResourceFetcherService();
-    const store = new FakeStoreBuilder()
+    const store = new MockStoreBuilder()
       .withBranding({
         configuration: {},
       } as BrandingData)
@@ -64,7 +64,7 @@ describe('Resource fetcher', () => {
       ],
     });
 
-    const store = new FakeStoreBuilder()
+    const store = new MockStoreBuilder()
       .withBranding({
         configuration: {
           prefetch: {
@@ -87,7 +87,7 @@ describe('Resource fetcher', () => {
   it('should request other resources', async () => {
     const service = new ResourceFetcherService();
 
-    const store = new FakeStoreBuilder()
+    const store = new MockStoreBuilder()
       .withBranding({
         configuration: {
           prefetch: {

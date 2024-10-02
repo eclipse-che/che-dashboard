@@ -10,38 +10,27 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import devfileApi from '@/services/devfileApi';
-import { AppState } from '@/store';
+import { RootState } from '@/store';
 import {
   selectFactoryResolver,
   selectFactoryResolverError,
 } from '@/store/FactoryResolver/selectors';
-import { State } from '@/store/FactoryResolver/types';
 
-describe('FactoryResolver, selectors', () => {
-  test('selectFactoryResolver', () => {
-    const state = {
-      resolver: {
-        devfile: {
-          schemaVersion: '2.2.2',
-        } as devfileApi.Devfile,
-      },
-      isLoading: false,
-    } as State;
+describe('FactoryResolver Selectors', () => {
+  const mockState = {
+    factoryResolver: {
+      resolver: { devfile: { metadata: { name: 'test-devfile' } } },
+      error: 'Something went wrong',
+    },
+  } as RootState;
 
-    const resolver = selectFactoryResolver({ factoryResolver: state } as AppState);
-
-    expect(resolver).toEqual(state.resolver);
+  it('should select the factory resolver', () => {
+    const result = selectFactoryResolver(mockState);
+    expect(result).toEqual(mockState.factoryResolver.resolver);
   });
 
-  test('selectFactoryResolverError', () => {
-    const state = {
-      error: 'error',
-      isLoading: false,
-    } as State;
-
-    const error = selectFactoryResolverError({ factoryResolver: state } as AppState);
-
-    expect(error).toEqual(state.error);
+  it('should select the factory resolver error', () => {
+    const result = selectFactoryResolverError(mockState);
+    expect(result).toEqual(mockState.factoryResolver.error);
   });
 });

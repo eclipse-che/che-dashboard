@@ -20,7 +20,7 @@ import { Props, WorkspaceDetails } from '@/pages/WorkspaceDetails';
 import devfileApi from '@/services/devfileApi';
 import { constructWorkspace } from '@/services/workspace-adapter';
 import { DevWorkspaceBuilder } from '@/store/__mocks__/devWorkspaceBuilder';
-import { FakeStoreBuilder } from '@/store/__mocks__/storeBuilder';
+import { MockStoreBuilder } from '@/store/__mocks__/mockStore';
 
 const mockOnSave = jest.fn();
 
@@ -138,7 +138,7 @@ describe('Workspace Details page', () => {
 
 function renderComponent(props?: Partial<Props>): void {
   const workspaces = props?.workspace ? [props.workspace.ref as devfileApi.DevWorkspace] : [];
-  const store = new FakeStoreBuilder().withDevWorkspaces({ workspaces }).build();
+  const store = new MockStoreBuilder().withDevWorkspaces({ workspaces }).build();
   const location = {
     key: 'workspace-details-key',
     pathname: `/workspace/${namespace}/${workspaceName}`,

@@ -11,6 +11,7 @@
  */
 
 import { api } from '@eclipse-che/common';
+import { Store } from '@reduxjs/toolkit';
 import { render, screen, waitFor } from '@testing-library/react';
 import mockAxios from 'axios';
 import { Location } from 'history';
@@ -18,9 +19,6 @@ import { dump } from 'js-yaml';
 import React, { Suspense } from 'react';
 import { Provider } from 'react-redux';
 import { MemoryRouter } from 'react-router-dom';
-import { AnyAction } from 'redux';
-import { MockStoreEnhanced } from 'redux-mock-store';
-import { ThunkDispatch } from 'redux-thunk';
 
 import {
   CREATE_DEVWORKSPACE_DELAY,
@@ -41,8 +39,7 @@ import {
 import Fallback from '@/components/Fallback';
 import { AppRoutes } from '@/Routes';
 import devfileApi from '@/services/devfileApi';
-import { AppState } from '@/store';
-import { FakeStoreBuilder } from '@/store/__mocks__/storeBuilder';
+import { MockStoreBuilder } from '@/store/__mocks__/mockStore';
 import { FactoryResolverStateResolver } from '@/store/FactoryResolver';
 
 // mute the outputs
@@ -91,7 +88,7 @@ describe('Workspace creation time', () => {
     const { rerender } = render(
       getComponent(
         `/load-factory?url=${url}`,
-        new FakeStoreBuilder()
+        new MockStoreBuilder()
           .withInfrastructureNamespace([namespace])
           .withDevWorkspacesCluster({
             isRunningDevWorkspacesClusterLimitExceeded: false,
@@ -180,7 +177,7 @@ describe('Workspace creation time', () => {
     rerender(
       getComponent(
         `/load-factory?url=${url}`,
-        new FakeStoreBuilder()
+        new MockStoreBuilder()
           .withInfrastructureNamespace([namespace])
           .withDevWorkspacesCluster({ isRunningDevWorkspacesClusterLimitExceeded: false })
           .withFactoryResolver({
@@ -245,10 +242,7 @@ describe('Workspace creation time', () => {
   }, 15000);
 });
 
-function getComponent(
-  locationOrPath: Location | string,
-  store: MockStoreEnhanced<AppState, ThunkDispatch<AppState, undefined, AnyAction>>,
-): React.ReactElement {
+function getComponent(locationOrPath: Location | string, store: Store): React.ReactElement {
   return (
     <Provider store={store}>
       <MemoryRouter initialEntries={[locationOrPath]}>

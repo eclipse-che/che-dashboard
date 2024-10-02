@@ -14,7 +14,7 @@ import { api } from '@eclipse-che/common';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
 import { Provider } from 'react-redux';
-import { Action, Store } from 'redux';
+import { Store } from 'redux';
 
 import { container } from '@/inversify.config';
 import GitServices from '@/pages/UserPreferences/GitServices';
@@ -26,8 +26,8 @@ import getComponentRenderer, {
 import { AppAlerts } from '@/services/alerts/appAlerts';
 import { AlertItem } from '@/services/helpers/types';
 import { AppThunk } from '@/store';
-import { FakeStoreBuilder } from '@/store/__mocks__/storeBuilder';
-import * as GitOauthConfigStore from '@/store/GitOauthConfig';
+import { MockStoreBuilder } from '@/store/__mocks__/mockStore';
+import { gitOauthConfigActionCreators } from '@/store/GitOauthConfig';
 
 const { createSnapshot, renderComponent } = getComponentRenderer(getComponent);
 
@@ -41,14 +41,13 @@ const mockRevokeOauth = jest.fn().mockImplementation(() => Promise.resolve());
 const mockDeleteSkipOauth = jest.fn().mockImplementation(() => Promise.resolve());
 jest.mock('@/store/GitOauthConfig', () => {
   return {
-    actionCreators: {
+    ...jest.requireActual('@/store/GitOauthConfig'),
+    gitOauthConfigActionCreators: {
       requestGitOauthConfig: () => async () => mockRequestGitOauthConfig(),
       requestSkipAuthorizationProviders: () => async () => mockRequestSkipAuthorizationProviders(),
       revokeOauth:
-        (
-          ...args: Parameters<GitOauthConfigStore.ActionCreators['revokeOauth']>
-        ): AppThunk<Action, Promise<void>> =>
-        async (): Promise<void> =>
+        (...args: Parameters<(typeof gitOauthConfigActionCreators)['revokeOauth']>): AppThunk =>
+        async () =>
           mockRevokeOauth(...args),
       deleteSkipOauth: () => async () => mockDeleteSkipOauth,
     },
@@ -61,7 +60,7 @@ describe('GitServices', () => {
   let store: Store;
 
   beforeEach(() => {
-    store = new FakeStoreBuilder()
+    store = new MockStoreBuilder()
       .withGitOauthConfig(
         [
           {
@@ -110,7 +109,7 @@ describe('GitServices', () => {
   });
 
   test('empty state text', () => {
-    const emptyStore = new FakeStoreBuilder().build();
+    const emptyStore = new MockStoreBuilder().build();
     renderComponent(emptyStore);
 
     const emptyStateText = screen.queryByText('No Git Services');

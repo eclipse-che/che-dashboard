@@ -10,278 +10,140 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import { AnyAction } from 'redux';
+import { UnknownAction } from 'redux';
 
-import * as testStore from '..';
+import { podLogsDeleteAction, podLogsReceiveAction } from '@/store/Pods/Logs/actions';
+import { reducer, State, unloadedState } from '@/store/Pods/Logs/reducer';
 
-describe('Logs store, reducers', () => {
-  const podName = 'pod1';
-  const containerName = 'container1';
+describe('Pods Logs, reducer', () => {
+  let initialState: State;
 
-  it('should return state if action type is not matched', () => {
-    const initialState: testStore.State = {
-      logs: {},
-    };
-    const incomingAction = {
-      type: 'OTHER_ACTION',
-    } as AnyAction;
-    const newState = testStore.reducer(initialState, incomingAction);
-
-    const expectedState: testStore.State = {
-      logs: {},
-    };
-    expect(newState).toEqual(expectedState);
+  beforeEach(() => {
+    initialState = { ...unloadedState };
   });
 
-  it('should handle RECEIVE_LOGS when no state', () => {
-    const incomingAction: testStore.ReceiveLogsAction = {
-      type: testStore.Type.RECEIVE_LOGS,
-      podName,
-      containerName,
-      logs: 'new logs',
+  it('should handle podLogsReceiveAction', () => {
+    const action = podLogsReceiveAction({
+      podName: 'pod1',
+      containerName: 'container1',
+      logs: 'log message',
       failure: false,
-    };
-
-    const newState = testStore.reducer(undefined, incomingAction);
-
-    const expectedState: testStore.State = {
+    });
+    const expectedState: State = {
       logs: {
-        [podName]: {
+        pod1: {
           containers: {
-            [containerName]: {
-              logs: 'new logs',
+            container1: {
+              logs: 'log message',
               failure: false,
             },
           },
+          error: undefined,
         },
       },
     };
 
-    expect(newState).toEqual(expectedState);
+    expect(reducer(initialState, action)).toEqual(expectedState);
   });
 
-  describe('should handle RECEIVE_LOGS', () => {
-    it('when no other logs', () => {
-      const initialState: testStore.State = {
-        logs: {
-          [podName]: {
-            containers: {
-              [containerName]: {
-                logs: '',
-                failure: false,
-              },
-            },
-          },
-        },
-      };
-      const incomingAction: testStore.ReceiveLogsAction = {
-        type: testStore.Type.RECEIVE_LOGS,
-        podName,
-        containerName,
-        logs: 'new logs',
-        failure: false,
-      };
-
-      const newState = testStore.reducer(initialState, incomingAction);
-
-      const expectedState: testStore.State = {
-        logs: {
-          [podName]: {
-            containers: {
-              [containerName]: {
-                logs: 'new logs',
-                failure: false,
-              },
-            },
-          },
-        },
-      };
-
-      expect(newState).toEqual(expectedState);
-    });
-
-    it('when have some logs', () => {
-      const initialState: testStore.State = {
-        logs: {
-          [podName]: {
-            containers: {
-              [containerName]: {
-                logs: 'prev logs\n',
-                failure: false,
-              },
-            },
-          },
-        },
-      };
-      const incomingAction: testStore.ReceiveLogsAction = {
-        type: testStore.Type.RECEIVE_LOGS,
-        podName,
-        containerName,
-        logs: 'new logs',
-        failure: false,
-      };
-
-      const newState = testStore.reducer(initialState, incomingAction);
-
-      const expectedState: testStore.State = {
-        logs: {
-          [podName]: {
-            containers: {
-              [containerName]: {
-                logs: 'prev logs\nnew logs',
-                failure: false,
-              },
-            },
-          },
-        },
-      };
-
-      expect(newState).toEqual(expectedState);
-    });
-
-    it('when have failure and received logs', () => {
-      const initialState: testStore.State = {
-        logs: {
-          [podName]: {
-            containers: {
-              [containerName]: {
-                logs: 'something went wrong',
-                failure: true,
-              },
-            },
-          },
-        },
-      };
-      const incomingAction: testStore.ReceiveLogsAction = {
-        type: testStore.Type.RECEIVE_LOGS,
-        podName,
-        containerName,
-        logs: 'new logs',
-        failure: false,
-      };
-
-      const newState = testStore.reducer(initialState, incomingAction);
-
-      const expectedState: testStore.State = {
-        logs: {
-          [podName]: {
-            containers: {
-              [containerName]: {
-                logs: 'new logs',
-                failure: false,
-              },
-            },
-          },
-        },
-      };
-
-      expect(newState).toEqual(expectedState);
-    });
-
-    it('when no other logs and receive failure', () => {
-      const initialState: testStore.State = {
-        logs: {
-          [podName]: {
-            containers: {
-              [containerName]: {
-                logs: '',
-                failure: false,
-              },
-            },
-          },
-        },
-      };
-      const incomingAction: testStore.ReceiveLogsAction = {
-        type: testStore.Type.RECEIVE_LOGS,
-        podName,
-        containerName,
-        logs: 'something went wrong',
-        failure: true,
-      };
-
-      const newState = testStore.reducer(initialState, incomingAction);
-
-      const expectedState: testStore.State = {
-        logs: {
-          [podName]: {
-            containers: {
-              [containerName]: {
-                logs: 'something went wrong',
-                failure: true,
-              },
-            },
-          },
-        },
-      };
-
-      expect(newState).toEqual(expectedState);
-    });
-
-    it('when no have some logs and receive failure', () => {
-      const initialState: testStore.State = {
-        logs: {
-          [podName]: {
-            containers: {
-              [containerName]: {
-                logs: 'prev logs\n',
-                failure: false,
-              },
-            },
-          },
-        },
-      };
-      const incomingAction: testStore.ReceiveLogsAction = {
-        type: testStore.Type.RECEIVE_LOGS,
-        podName,
-        containerName,
-        logs: 'something went wrong',
-        failure: true,
-      };
-
-      const newState = testStore.reducer(initialState, incomingAction);
-
-      const expectedState: testStore.State = {
-        logs: {
-          [podName]: {
-            containers: {
-              [containerName]: {
-                logs: 'something went wrong',
-                failure: true,
-              },
-            },
-          },
-        },
-      };
-
-      expect(newState).toEqual(expectedState);
-    });
-  });
-
-  it('should handle DELETE_LOGS', () => {
-    const initialState: testStore.State = {
+  it('should append logs if failure status is the same', () => {
+    const initialStateWithLogs: State = {
       logs: {
-        [podName]: {
+        pod1: {
           containers: {
-            [containerName]: {
-              logs: 'some logs\n',
+            container1: {
+              logs: 'previous log message',
               failure: false,
             },
           },
+          error: undefined,
+        },
+      },
+    };
+    const action = podLogsReceiveAction({
+      podName: 'pod1',
+      containerName: 'container1',
+      logs: ' new log message',
+      failure: false,
+    });
+    const expectedState: State = {
+      logs: {
+        pod1: {
+          containers: {
+            container1: {
+              logs: 'previous log message new log message',
+              failure: false,
+            },
+          },
+          error: undefined,
         },
       },
     };
 
-    const incomingAction: testStore.DeleteLogsAction = {
-      type: testStore.Type.DELETE_LOGS,
-      podName,
+    expect(reducer(initialStateWithLogs, action)).toEqual(expectedState);
+  });
+
+  it('should replace logs if failure status is different', () => {
+    const initialStateWithLogs: State = {
+      logs: {
+        pod1: {
+          containers: {
+            container1: {
+              logs: 'previous log message',
+              failure: false,
+            },
+          },
+          error: undefined,
+        },
+      },
+    };
+    const action = podLogsReceiveAction({
+      podName: 'pod1',
+      containerName: 'container1',
+      logs: ' new log message',
+      failure: true,
+    });
+    const expectedState: State = {
+      logs: {
+        pod1: {
+          containers: {
+            container1: {
+              logs: ' new log message',
+              failure: true,
+            },
+          },
+          error: undefined,
+        },
+      },
     };
 
-    const newState = testStore.reducer(initialState, incomingAction);
+    expect(reducer(initialStateWithLogs, action)).toEqual(expectedState);
+  });
 
-    const expectedState: testStore.State = {
+  it('should handle podLogsDeleteAction', () => {
+    const initialStateWithLogs: State = {
+      logs: {
+        pod1: {
+          containers: {
+            container1: {
+              logs: 'log message',
+              failure: false,
+            },
+          },
+          error: undefined,
+        },
+      },
+    };
+    const action = podLogsDeleteAction('pod1');
+    const expectedState: State = {
       logs: {},
     };
 
-    expect(newState).toEqual(expectedState);
+    expect(reducer(initialStateWithLogs, action)).toEqual(expectedState);
+  });
+
+  it('should return the current state for unknown actions', () => {
+    const unknownAction = { type: 'UNKNOWN_ACTION' } as UnknownAction;
+    expect(reducer(initialState, unknownAction)).toEqual(initialState);
   });
 });

@@ -21,16 +21,15 @@ import { GitServicesEmptyState } from '@/pages/UserPreferences/GitServices/Empty
 import { GitServicesList } from '@/pages/UserPreferences/GitServices/List';
 import { GitServicesRevokeModal } from '@/pages/UserPreferences/GitServices/RevokeModal';
 import { AppAlerts } from '@/services/alerts/appAlerts';
-import { AppState } from '@/store';
-import * as GitOauthConfigStore from '@/store/GitOauthConfig';
+import { RootState } from '@/store';
+import { gitOauthConfigActionCreators, IGitOauth } from '@/store/GitOauthConfig';
 import {
   selectGitOauth,
   selectIsLoading,
   selectProvidersWithToken,
   selectSkipOauthProviders,
 } from '@/store/GitOauthConfig/selectors';
-import { IGitOauth } from '@/store/GitOauthConfig/types';
-import * as PersonalAccessTokenStore from '@/store/PersonalAccessToken';
+import { personalAccessTokenActionCreators } from '@/store/PersonalAccessTokens';
 
 type Props = MappedProps;
 
@@ -166,7 +165,7 @@ export class GitServices extends React.PureComponent<Props, State> {
   }
 }
 
-const mapStateToProps = (state: AppState) => ({
+const mapStateToProps = (state: RootState) => ({
   gitOauth: selectGitOauth(state),
   isLoading: selectIsLoading(state),
   providersWithToken: selectProvidersWithToken(state),
@@ -174,8 +173,8 @@ const mapStateToProps = (state: AppState) => ({
 });
 
 const connector = connect(mapStateToProps, {
-  ...GitOauthConfigStore.actionCreators,
-  ...PersonalAccessTokenStore.actionCreators,
+  ...gitOauthConfigActionCreators,
+  ...personalAccessTokenActionCreators,
 });
 
 type MappedProps = ConnectedProps<typeof connector>;

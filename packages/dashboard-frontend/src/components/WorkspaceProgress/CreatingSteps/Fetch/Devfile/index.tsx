@@ -34,7 +34,7 @@ import {
 import { AlertItem } from '@/services/helpers/types';
 import { isOAuthResponse, OAuthService } from '@/services/oauth';
 import SessionStorageService, { SessionStorageKey } from '@/services/session-storage';
-import { AppState } from '@/store';
+import { RootState } from '@/store';
 import { factoryResolverActionCreators, selectFactoryResolver } from '@/store/FactoryResolver';
 import { selectAllWorkspaces } from '@/store/Workspaces/selectors';
 
@@ -414,7 +414,7 @@ class CreatingStepFetchDevfile extends ProgressStep<Props, State> {
   }
 }
 
-const mapStateToProps = (state: AppState) => ({
+const mapStateToProps = (state: RootState) => ({
   allWorkspaces: selectAllWorkspaces(state),
   factoryResolver: selectFactoryResolver(state),
 });

@@ -10,11 +10,11 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import { createSelector } from 'reselect';
+import { createSelector } from '@reduxjs/toolkit';
 
-import { AppState } from '@/store';
+import { RootState } from '@/store';
 
-const selectState = (state: AppState) => state.userId;
+const selectState = (state: RootState) => state.userId;
 
 export const selectCheUserIsLoading = createSelector(selectState, state => state.isLoading);
 

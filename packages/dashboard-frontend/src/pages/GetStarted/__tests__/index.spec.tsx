@@ -20,7 +20,7 @@ import getComponentRenderer, {
   waitFor,
   within,
 } from '@/services/__mocks__/getComponentRenderer';
-import { FakeStoreBuilder } from '@/store/__mocks__/storeBuilder';
+import { MockStoreBuilder } from '@/store/__mocks__/mockStore';
 
 jest.mock('@/components/EditorSelector');
 jest.mock('@/pages/GetStarted/SamplesList');
@@ -79,7 +79,7 @@ describe('GetStarted', () => {
 });
 
 function getComponent() {
-  const store = new FakeStoreBuilder().build();
+  const store = new MockStoreBuilder().build();
   return (
     <Provider store={store}>
       <GetStarted navigate={jest.fn()} />

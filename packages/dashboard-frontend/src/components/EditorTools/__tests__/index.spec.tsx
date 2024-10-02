@@ -18,7 +18,7 @@ import { Store } from 'redux';
 
 import getComponentRenderer, { screen } from '@/services/__mocks__/getComponentRenderer';
 import devfileApi from '@/services/devfileApi';
-import { FakeStoreBuilder } from '@/store/__mocks__/storeBuilder';
+import { MockStoreBuilder } from '@/store/__mocks__/mockStore';
 
 import EditorTools from '..';
 
@@ -57,7 +57,7 @@ describe('EditorTools', () => {
   };
 
   beforeEach(() => {
-    store = new FakeStoreBuilder()
+    store = new MockStoreBuilder()
       .withClusterInfo({
         applications: [clusterConsole],
       })

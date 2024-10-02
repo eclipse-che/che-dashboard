@@ -17,7 +17,7 @@ import {
   getOAuthProviders,
   getOAuthToken,
 } from '@/services/backend-client/oAuthApi';
-import { IGitOauth } from '@/store/GitOauthConfig/types';
+import { IGitOauth } from '@/store/GitOauthConfig';
 
 describe('Open Authorization API', () => {
   const mockGet = mockAxios.get as jest.Mock;

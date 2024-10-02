@@ -15,16 +15,14 @@ import { fireEvent, render, screen } from '@testing-library/react';
 import React from 'react';
 import { Provider } from 'react-redux';
 import renderer from 'react-test-renderer';
-import { Action, Store } from 'redux';
+import { Store } from 'redux';
 
+import { AboutMenu } from '@/Layout/Header/Tools/AboutMenu';
 import { BRANDING_DEFAULT, BrandingData } from '@/services/bootstrap/branding.constant';
-import { che } from '@/services/models';
 import { AppThunk } from '@/store';
-import { FakeStoreBuilder } from '@/store/__mocks__/storeBuilder';
+import { MockStoreBuilder } from '@/store/__mocks__/mockStore';
 import { selectBranding } from '@/store/Branding/selectors';
-import * as InfrastructureNamespacesStore from '@/store/InfrastructureNamespaces';
-
-import { AboutMenu } from '..';
+import { infrastructureNamespacesActionCreators } from '@/store/InfrastructureNamespaces';
 
 jest.mock('gravatar-url', () => {
   return function () {
@@ -35,12 +33,10 @@ jest.mock('gravatar-url', () => {
 jest.mock('@/store/InfrastructureNamespaces', () => {
   return {
     actionCreators: {
-      requestNamespaces:
-        (): AppThunk<Action, Promise<che.KubernetesNamespace[]>> =>
-        async (): Promise<che.KubernetesNamespace[]> => {
-          return Promise.resolve([]);
-        },
-    } as InfrastructureNamespacesStore.ActionCreators,
+      requestNamespaces: (): AppThunk => async (): Promise<void> => {
+        return Promise.resolve();
+      },
+    } as typeof infrastructureNamespacesActionCreators,
   };
 });
 
@@ -131,7 +127,7 @@ describe('About Menu', () => {
 });
 
 function createStore(cheCliTool: string, name: string, email: string): Store {
-  return new FakeStoreBuilder()
+  return new MockStoreBuilder()
     .withUserProfile({
       username: name,
       email,

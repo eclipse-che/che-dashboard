@@ -106,15 +106,19 @@
 | [`@types/lodash@4.14.200`](https://github.com/DefinitelyTyped/DefinitelyTyped.git) | MIT | #4131 |
 | [`@types/minimist@1.2.4`](https://github.com/DefinitelyTyped/DefinitelyTyped.git) | MIT | #10839 |
 | [`@types/normalize-package-data@2.4.3`](https://github.com/DefinitelyTyped/DefinitelyTyped.git) | MIT | #10792 |
+| [`@types/prop-types@15.7.9`](https://github.com/DefinitelyTyped/DefinitelyTyped.git) | MIT | #16176 |
 | [`@types/qs@6.9.9`](https://github.com/DefinitelyTyped/DefinitelyTyped.git) | MIT | #13991 |
 | [`@types/react-copy-to-clipboard@5.0.7`](https://github.com/DefinitelyTyped/DefinitelyTyped.git) | MIT | clearlydefined |
 | [`@types/react-dom@18.3.0`](https://github.com/DefinitelyTyped/DefinitelyTyped.git) | MIT | clearlydefined |
 | [`@types/react-router-dom@5.3.3`](https://github.com/DefinitelyTyped/DefinitelyTyped.git) | MIT | clearlydefined |
 | [`@types/react-router@5.1.20`](https://github.com/DefinitelyTyped/DefinitelyTyped.git) | MIT | clearlydefined |
 | [`@types/react-test-renderer@18.3.0`](https://github.com/DefinitelyTyped/DefinitelyTyped.git) | MIT | clearlydefined |
-| [`@types/redux-mock-store@1.0.5`](https://github.com/DefinitelyTyped/DefinitelyTyped.git) | MIT | clearlydefined |
+| [`@types/react@18.2.36`](https://github.com/DefinitelyTyped/DefinitelyTyped.git) | MIT | #8234 |
+| [`@types/redux-logger@3.0.13`](https://github.com/DefinitelyTyped/DefinitelyTyped.git) | MIT | clearlydefined |
+| [`@types/redux-mock-store@1.0.6`](https://github.com/DefinitelyTyped/DefinitelyTyped.git) | MIT | clearlydefined |
 | [`@types/request@2.48.12`](https://github.com/DefinitelyTyped/DefinitelyTyped.git) | MIT | clearlydefined |
 | [`@types/sanitize-html@2.9.3`](https://github.com/DefinitelyTyped/DefinitelyTyped.git) | MIT | clearlydefined |
+| [`@types/scheduler@0.16.5`](https://github.com/DefinitelyTyped/DefinitelyTyped.git) | MIT | #7582 |
 | [`@types/semver@7.5.4`](https://github.com/DefinitelyTyped/DefinitelyTyped.git) | MIT | #10842 |
 | [`@types/stack-utils@2.0.2`](https://github.com/DefinitelyTyped/DefinitelyTyped.git) | MIT | clearlydefined |
 | [`@types/webpack@5.28.5`](https://github.com/DefinitelyTyped/DefinitelyTyped.git) | MIT | clearlydefined |
@@ -242,6 +246,7 @@
 | `cssom@0.3.8` | MIT | clearlydefined |
 | `cssom@0.5.0` | MIT | clearlydefined |
 | [`cssstyle@2.3.0`](https://github.com/jsdom/cssstyle) | MIT | clearlydefined |
+| `csstype@3.1.2` | MIT | #11847 |
 | `data-urls@3.0.2` | MIT | clearlydefined |
 | `debounce@1.2.1` | MIT | clearlydefined |
 | [`debug@4.3.4`](git://github.com/debug-js/debug.git) | MIT | clearlydefined |
@@ -250,6 +255,7 @@
 | `decamelize@5.0.1` | MIT | clearlydefined |
 | [`decimal.js@10.4.3`](https://github.com/MikeMcl/decimal.js.git) | MIT | clearlydefined |
 | [`dedent@1.5.1`](git://github.com/dmnd/dedent.git) | MIT | #14381 |
+| [`deep-diff@0.3.8`](git://github.com/flitbit/diff.git) | MIT | clearlydefined |
 | [`deep-is@0.1.4`](http://github.com/thlorenz/deep-is.git) | MIT | #2130 |
 | `default-browser-id@3.0.0` | MIT | clearlydefined |
 | `default-browser@4.0.0` | MIT | clearlydefined |
@@ -610,6 +616,7 @@
 | [`pure-rand@6.0.4`](git+https://github.com/dubzzz/pure-rand.git) | MIT | #8423 |
 | [`queue-microtask@1.2.3`](git://github.com/feross/queue-microtask.git) | MIT | clearlydefined |
 | `quick-lru@5.1.1` | MIT | clearlydefined |
+| [`react-is@17.0.2`](https://github.com/facebook/react.git) | MIT | clearlydefined |
 | [`react-is@18.2.0`](https://github.com/facebook/react.git) | MIT | clearlydefined |
 | [`react-is@18.3.1`](https://github.com/facebook/react.git) | MIT | clearlydefined |
 | [`react-shallow-renderer@16.15.0`](https://reactjs.org/) | MIT | clearlydefined |
@@ -620,7 +627,9 @@
 | `rechoir@0.8.0` | MIT | clearlydefined |
 | `redent@3.0.0` | MIT | clearlydefined |
 | `redent@4.0.0` | MIT | clearlydefined |
+| [`redux-logger@3.0.6`](git+https://github.com/theaqua/redux-logger.git) | MIT | clearlydefined |
 | [`redux-mock-store@1.5.4`](git+https://github.com/arnaudbenard/redux-mock-store.git) | MIT | clearlydefined |
+| [`redux@4.2.1`](http://redux.js.org) | MIT | #7046 |
 | [`reflect.getprototypeof@1.0.4`](git+https://github.com/es-shims/Reflect.getPrototypeOf.git) | MIT | #13910 |
 | [`regexp.prototype.flags@1.5.1`](git://github.com/es-shims/RegExp.prototype.flags.git) | MIT | #8199 |
 | [`relateurl@0.2.7`](git://github.com/stevenvachon/relateurl.git) | MIT | clearlydefined |

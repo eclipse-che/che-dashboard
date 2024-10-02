@@ -17,7 +17,7 @@ import { Store } from 'redux';
 
 import RepoOptionsAccordion from '@/components/ImportFromGit/RepoOptionsAccordion';
 import getComponentRenderer, { screen } from '@/services/__mocks__/getComponentRenderer';
-import { FakeStoreBuilder } from '@/store/__mocks__/storeBuilder';
+import { MockStoreBuilder } from '@/store/__mocks__/mockStore';
 
 const { createSnapshot, renderComponent } = getComponentRenderer(getComponent);
 
@@ -30,7 +30,7 @@ describe('RepoOptionsAccordion', () => {
   let store: Store;
 
   beforeEach(() => {
-    store = new FakeStoreBuilder()
+    store = new MockStoreBuilder()
       .withSshKeys({
         keys: [{ name: 'key1', keyPub: 'ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQD' }],
       })

@@ -14,7 +14,7 @@ import userEvent, { UserEvent } from '@testing-library/user-event';
 import { createMemoryHistory } from 'history';
 import React from 'react';
 import { Provider } from 'react-redux';
-import { Action, Store } from 'redux';
+import { Store } from 'redux';
 
 import {
   ActionContextType,
@@ -28,8 +28,8 @@ import { WorkspaceAction } from '@/services/helpers/types';
 import { TabManager } from '@/services/tabManager';
 import { AppThunk } from '@/store';
 import { DevWorkspaceBuilder } from '@/store/__mocks__/devWorkspaceBuilder';
-import { FakeStoreBuilder } from '@/store/__mocks__/storeBuilder';
-import { ActionCreators } from '@/store/Workspaces';
+import { MockStoreBuilder } from '@/store/__mocks__/mockStore';
+import { workspacesActionCreators } from '@/store/Workspaces';
 
 jest.mock('@/contexts/WorkspaceActions/DeleteConfirmation');
 
@@ -40,26 +40,24 @@ const mockRestartWorkspace = jest.fn();
 jest.mock('@/store/Workspaces', () => {
   return {
     ...jest.requireActual('@/store/Workspaces'),
-    actionCreators: {
+    workspacesActionCreators: {
       deleteWorkspace:
-        (...args: Parameters<ActionCreators['deleteWorkspace']>): AppThunk<Action, Promise<void>> =>
-        async (): Promise<void> =>
+        (...args: Parameters<(typeof workspacesActionCreators)['deleteWorkspace']>): AppThunk =>
+        async () =>
           mockDeleteWorkspace(...args),
       startWorkspace:
-        (...args: Parameters<ActionCreators['startWorkspace']>): AppThunk<Action, Promise<void>> =>
-        async (): Promise<void> =>
+        (...args: Parameters<(typeof workspacesActionCreators)['startWorkspace']>): AppThunk =>
+        async () =>
           mockStartWorkspace(...args),
       stopWorkspace:
-        (...args: Parameters<ActionCreators['stopWorkspace']>): AppThunk<Action, Promise<void>> =>
-        async (): Promise<void> =>
+        (...args: Parameters<(typeof workspacesActionCreators)['stopWorkspace']>): AppThunk =>
+        async () =>
           mockStopWorkspace(...args),
       restartWorkspace:
-        (
-          ...args: Parameters<ActionCreators['restartWorkspace']>
-        ): AppThunk<Action, Promise<void>> =>
-        async (): Promise<void> =>
+        (...args: Parameters<(typeof workspacesActionCreators)['restartWorkspace']>): AppThunk =>
+        async () =>
           mockRestartWorkspace(...args),
-    } as ActionCreators,
+    } as typeof workspacesActionCreators,
   };
 });
 
@@ -78,7 +76,7 @@ describe('WorkspaceActionsProvider', () => {
   let user: UserEvent;
 
   beforeEach(() => {
-    store = new FakeStoreBuilder()
+    store = new MockStoreBuilder()
       .withDevWorkspaces({
         workspaces: [
           new DevWorkspaceBuilder()

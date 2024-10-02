@@ -10,13 +10,13 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import { createSelector } from 'reselect';
+import { createSelector } from '@reduxjs/toolkit';
 
 import { DevWorkspaceStatus } from '@/services/helpers/types';
-import { AppState } from '@/store';
+import { RootState } from '@/store';
 import { selectRunningWorkspacesLimit } from '@/store/ClusterConfig/selectors';
 
-const selectState = (state: AppState) => state.devWorkspaces;
+const selectState = (state: RootState) => state.devWorkspaces;
 export const selectDevWorkspacesState = selectState;
 
 export const selectDevWorkspacesResourceVersion = createSelector(

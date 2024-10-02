@@ -10,63 +10,57 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import { MockStoreEnhanced } from 'redux-mock-store';
-import { ThunkDispatch } from 'redux-thunk';
-
-import { AppState } from '@/store';
-import { FakeStoreBuilder } from '@/store/__mocks__/storeBuilder';
+import { RootState } from '@/store';
 import { selectAllLogs, selectPodLogs } from '@/store/Pods/Logs/selectors';
 
-import * as store from '..';
-
-describe('Logs store, selectors', () => {
-  let logs: store.State['logs'];
-
-  beforeEach(() => {
-    logs = {
-      pod1: {
-        containers: {
-          container1: {
-            logs: 'container1 logs',
-            failure: false,
+describe('Pods Logs, selectors', () => {
+  const mockState = {
+    logs: {
+      logs: {
+        pod1: {
+          containers: {
+            container1: {
+              logs: 'log message 1',
+              failure: false,
+            },
+            container2: {
+              logs: 'log message 2',
+              failure: true,
+            },
           },
-          initContainer1: {
-            logs: 'initContainer1 logs',
-            failure: false,
+        },
+        pod2: {
+          containers: {
+            container1: {
+              logs: 'log message 3',
+              failure: false,
+            },
           },
         },
       },
-      pod2: {
-        containers: {
-          container2: {
-            logs: 'something went wrong',
-            failure: true,
-          },
-        },
-      },
-    };
+    },
+  } as Partial<RootState> as RootState;
+
+  it('should select all logs', () => {
+    const result = selectAllLogs(mockState);
+    expect(result).toEqual(mockState.logs.logs);
   });
 
-  it('should return all logs', () => {
-    const fakeStore = new FakeStoreBuilder().withLogs(logs).build() as MockStoreEnhanced<
-      AppState,
-      ThunkDispatch<AppState, undefined, store.KnownAction>
-    >;
-    const state = fakeStore.getState();
-
-    const allPods = selectAllLogs(state);
-    expect(allPods).toStrictEqual(logs);
+  it('should select pod logs for a specific pod', () => {
+    const selectLogsForPod = selectPodLogs(mockState);
+    const result = selectLogsForPod('pod1');
+    expect(result).toEqual(mockState.logs.logs.pod1?.containers);
   });
 
-  it('should return logs for a specified pod', () => {
-    const fakeStore = new FakeStoreBuilder().withLogs(logs).build() as MockStoreEnhanced<
-      AppState,
-      ThunkDispatch<AppState, undefined, store.KnownAction>
-    >;
-    const state = fakeStore.getState();
+  it('should return undefined if pod name is undefined', () => {
+    const selectLogsForPod = selectPodLogs(mockState);
+    const result = selectLogsForPod(undefined);
+    expect(result).toBeUndefined();
+  });
 
-    const podLogsFn = selectPodLogs(state);
-    const podLogs = podLogsFn('pod1');
-    expect(podLogs).toStrictEqual(logs['pod1']?.containers);
+  it('should return undefined if pod does not exist', () => {
+    const selectLogsForPod = selectPodLogs(mockState);
+    const result = selectLogsForPod('nonexistent-pod');
+    expect(result).toBeUndefined();
   });
 });

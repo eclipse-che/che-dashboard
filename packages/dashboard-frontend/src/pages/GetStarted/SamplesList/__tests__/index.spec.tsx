@@ -19,7 +19,7 @@ import { Store } from 'redux';
 import SamplesList from '@/pages/GetStarted/SamplesList';
 import getComponentRenderer, { screen } from '@/services/__mocks__/getComponentRenderer';
 import { BrandingData } from '@/services/bootstrap/branding.constant';
-import { FakeStoreBuilder } from '@/store/__mocks__/storeBuilder';
+import { MockStoreBuilder } from '@/store/__mocks__/mockStore';
 
 jest.mock('@/pages/GetStarted/SamplesList/Gallery');
 jest.mock('@/pages/GetStarted/SamplesList/Toolbar');
@@ -32,11 +32,11 @@ const editorImage = 'custom-editor-image';
 describe('Samples List', () => {
   const sampleUrl = 'https://github.com/che-samples/quarkus-quickstarts/tree/devfilev2';
   const origin = window.location.origin;
-  let storeBuilder: FakeStoreBuilder;
+  let storeBuilder: MockStoreBuilder;
   let mockWindowOpen: jest.Mock;
 
   beforeEach(() => {
-    storeBuilder = new FakeStoreBuilder()
+    storeBuilder = new MockStoreBuilder()
       .withBranding({
         docs: {
           storageTypes: 'storage-types-docs',

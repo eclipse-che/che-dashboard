@@ -18,7 +18,7 @@ import {
 import SessionStorageService, { SessionStorageKey } from '@/services/session-storage';
 import { constructWorkspace } from '@/services/workspace-adapter';
 import { DevWorkspaceBuilder } from '@/store/__mocks__/devWorkspaceBuilder';
-import { FakeStoreBuilder } from '@/store/__mocks__/storeBuilder';
+import { MockStoreBuilder } from '@/store/__mocks__/mockStore';
 
 describe('WorkspaceStoppedDetector', () => {
   describe('checkWorkspaceStopped()', () => {
@@ -42,7 +42,7 @@ describe('WorkspaceStoppedDetector', () => {
           .build(),
       ];
 
-      const store = new FakeStoreBuilder().withDevWorkspaces({ workspaces: devWorkspaces }).build();
+      const store = new MockStoreBuilder().withDevWorkspaces({ workspaces: devWorkspaces }).build();
 
       const workspace = new WorkspaceStoppedDetector().checkWorkspaceStopped(store.getState());
 
@@ -62,7 +62,7 @@ describe('WorkspaceStoppedDetector', () => {
           .build(),
       ];
 
-      const store = new FakeStoreBuilder().withDevWorkspaces({ workspaces: devWorkspaces }).build();
+      const store = new MockStoreBuilder().withDevWorkspaces({ workspaces: devWorkspaces }).build();
 
       const workspace = new WorkspaceStoppedDetector().checkWorkspaceStopped(store.getState());
 
@@ -84,7 +84,7 @@ describe('WorkspaceStoppedDetector', () => {
           .build(),
       ];
 
-      const store = new FakeStoreBuilder().withDevWorkspaces({ workspaces: devWorkspaces }).build();
+      const store = new MockStoreBuilder().withDevWorkspaces({ workspaces: devWorkspaces }).build();
 
       const workspace = new WorkspaceStoppedDetector().checkWorkspaceStopped(store.getState());
 
@@ -103,7 +103,7 @@ describe('WorkspaceStoppedDetector', () => {
         .build();
       devWorkspace.spec.started = true;
 
-      const store = new FakeStoreBuilder()
+      const store = new MockStoreBuilder()
         .withDevWorkspaces({ workspaces: [devWorkspace] })
         .build();
       const checkWorkspaceStopped = () => {
@@ -126,7 +126,7 @@ describe('WorkspaceStoppedDetector', () => {
       .build();
     devWorkspace.spec.started = true;
 
-    const store = new FakeStoreBuilder().withDevWorkspaces({ workspaces: [devWorkspace] }).build();
+    const store = new MockStoreBuilder().withDevWorkspaces({ workspaces: [devWorkspace] }).build();
     const checkWorkspaceStopped = () => {
       new WorkspaceStoppedDetector().checkWorkspaceStopped(store.getState());
     };

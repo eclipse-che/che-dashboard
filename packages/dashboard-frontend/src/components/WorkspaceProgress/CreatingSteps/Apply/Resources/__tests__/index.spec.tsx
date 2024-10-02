@@ -15,7 +15,7 @@ import userEvent, { UserEvent } from '@testing-library/user-event';
 import React from 'react';
 import { Provider } from 'react-redux';
 import { Location } from 'react-router-dom';
-import { Action, Store } from 'redux';
+import { Store } from 'redux';
 
 import { MIN_STEP_DURATION_MS, TIMEOUT_TO_CREATE_SEC } from '@/components/WorkspaceProgress/const';
 import prepareResources from '@/components/WorkspaceProgress/CreatingSteps/Apply/Resources/prepareResources';
@@ -33,9 +33,9 @@ import { AlertItem } from '@/services/helpers/types';
 import { TabManager } from '@/services/tabManager';
 import { AppThunk } from '@/store';
 import { DevWorkspaceBuilder } from '@/store/__mocks__/devWorkspaceBuilder';
-import { FakeStoreBuilder } from '@/store/__mocks__/storeBuilder';
+import { MockStoreBuilder } from '@/store/__mocks__/mockStore';
 import { DevWorkspaceResources } from '@/store/DevfileRegistries';
-import { ActionCreators } from '@/store/Workspaces/devWorkspaces';
+import { devWorkspacesActionCreators } from '@/store/Workspaces/devWorkspaces';
 
 import CreatingStepApplyResources from '..';
 
@@ -45,14 +45,15 @@ jest.mock('@/components/WorkspaceProgress/CreatingSteps/Apply/Resources/prepareR
 const mockCreateWorkspaceFromResources = jest.fn().mockResolvedValue(undefined);
 jest.mock('@/store/Workspaces/devWorkspaces', () => {
   return {
-    actionCreators: {
+    ...jest.requireActual('@/store/Workspaces/devWorkspaces'),
+    devWorkspacesActionCreators: {
       createWorkspaceFromResources:
         (
-          ...args: Parameters<ActionCreators['createWorkspaceFromResources']>
-        ): AppThunk<Action, Promise<void>> =>
+          ...args: Parameters<(typeof devWorkspacesActionCreators)['createWorkspaceFromResources']>
+        ): AppThunk =>
         async (): Promise<void> =>
           mockCreateWorkspaceFromResources(...args),
-    } as ActionCreators,
+    } as typeof devWorkspacesActionCreators,
   };
 });
 
@@ -218,12 +219,12 @@ describe('Creating steps, applying resources', () => {
     let emptyStore: Store;
 
     beforeEach(() => {
-      emptyStore = new FakeStoreBuilder().build();
+      emptyStore = new MockStoreBuilder().build();
     });
 
     test('notification alert', async () => {
       renderComponent(emptyStore, searchParams);
-      jest.runAllTimers();
+      await jest.runAllTimersAsync();
 
       // trigger timeout
       const timeoutButton = screen.getByRole('button', {
@@ -391,8 +392,8 @@ describe('Creating steps, applying resources', () => {
   });
 });
 
-function getStoreBuilder(): FakeStoreBuilder {
-  return new FakeStoreBuilder().withInfrastructureNamespace([
+function getStoreBuilder(): MockStoreBuilder {
+  return new MockStoreBuilder().withInfrastructureNamespace([
     {
       attributes: { phase: 'Active' },
       name: 'user-che',

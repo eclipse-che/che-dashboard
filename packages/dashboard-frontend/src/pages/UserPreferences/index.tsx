@@ -23,8 +23,8 @@ import PersonalAccessTokens from '@/pages/UserPreferences/PersonalAccessTokens';
 import SshKeys from '@/pages/UserPreferences/SshKeys';
 import { ROUTE } from '@/Routes';
 import { UserPreferencesTab } from '@/services/helpers/types';
-import { AppState } from '@/store';
-import { actionCreators } from '@/store/GitOauthConfig';
+import { RootState } from '@/store';
+import { gitOauthConfigActionCreators } from '@/store/GitOauthConfig';
 import { selectIsLoading } from '@/store/GitOauthConfig/selectors';
 
 export type Props = {
@@ -118,11 +118,11 @@ class UserPreferences extends React.PureComponent<Props, State> {
   }
 }
 
-const mapStateToProps = (state: AppState) => ({
+const mapStateToProps = (state: RootState) => ({
   isLoading: selectIsLoading(state),
 });
 
-const connector = connect(mapStateToProps, actionCreators);
+const connector = connect(mapStateToProps, gitOauthConfigActionCreators);
 
 type MappedProps = ConnectedProps<typeof connector>;
 export default connector(UserPreferences);

@@ -10,297 +10,216 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import { cloneDeep } from 'lodash';
-import { AnyAction } from 'redux';
+import { UnknownAction } from 'redux';
 
 import devfileApi from '@/services/devfileApi';
 import { DevWorkspaceStatus } from '@/services/helpers/types';
-import { WorkspaceAdapter } from '@/services/workspace-adapter';
-import { DevWorkspaceBuilder } from '@/store/__mocks__/devWorkspaceBuilder';
-import { AUTHORIZED } from '@/store/sanityCheckMiddleware';
+import * as actions from '@/store/Workspaces/devWorkspaces/actions/actions';
+import { reducer, State, unloadedState } from '@/store/Workspaces/devWorkspaces/reducer';
 
-import * as testStore from '..';
-
-describe('DevWorkspace, reducers', () => {
-  let devWorkspace: devfileApi.DevWorkspace;
+describe('devWorkspaces reducer', () => {
+  let initialState: State;
 
   beforeEach(() => {
-    devWorkspace = new DevWorkspaceBuilder()
-      .withStatus({ devworkspaceId: 'devworkspaceId' })
-      .build();
+    initialState = { ...unloadedState };
   });
 
-  it('should return initial state', () => {
-    const incomingAction: testStore.RequestDevWorkspacesAction = {
-      type: testStore.Type.REQUEST_DEVWORKSPACE,
-      check: AUTHORIZED,
-    };
-    const initialState = testStore.reducer(undefined, incomingAction);
-
-    const expectedState: testStore.State = {
-      isLoading: false,
-      workspaces: [],
-      startedWorkspaces: {},
-      resourceVersion: '0',
-      warnings: {},
-    };
-
-    expect(initialState).toStrictEqual(expectedState);
-  });
-
-  it('should return state if action type is not matched', () => {
-    const initialState: testStore.State = {
+  it('should handle devWorkspacesRequestAction', () => {
+    const action = actions.devWorkspacesRequestAction();
+    const expectedState: State = {
+      ...initialState,
       isLoading: true,
-      workspaces: [devWorkspace],
-      startedWorkspaces: {},
-      resourceVersion: '0',
-      warnings: {},
-    };
-    const incomingAction = {
-      type: 'OTHER_ACTION',
-    } as AnyAction;
-    const newState = testStore.reducer(initialState, incomingAction);
-
-    const expectedState: testStore.State = {
-      isLoading: true,
-      workspaces: [devWorkspace],
-      startedWorkspaces: {},
-      resourceVersion: '0',
-      warnings: {},
-    };
-    expect(newState).toStrictEqual(expectedState);
-  });
-
-  it('should handle REQUEST_DEVWORKSPACE', () => {
-    const initialState: testStore.State = {
-      isLoading: false,
-      workspaces: [],
-      startedWorkspaces: {},
-      error: 'unexpected error',
-      resourceVersion: '0',
-      warnings: {},
-    };
-    const incomingAction: testStore.RequestDevWorkspacesAction = {
-      type: testStore.Type.REQUEST_DEVWORKSPACE,
-      check: AUTHORIZED,
-    };
-
-    const newState = testStore.reducer(initialState, incomingAction);
-
-    const expectedState: testStore.State = {
-      isLoading: true,
-      workspaces: [],
-      startedWorkspaces: {},
-      resourceVersion: '0',
-      warnings: {},
       error: undefined,
     };
 
-    expect(newState).toStrictEqual(expectedState);
+    const newState = reducer(initialState, action);
+
+    expect(newState).toEqual(expectedState);
   });
 
-  it('should handle RECEIVE_DEVWORKSPACE', () => {
-    const initialState: testStore.State = {
-      isLoading: true,
-      workspaces: [],
-      startedWorkspaces: {},
-      resourceVersion: '0',
-      warnings: {},
-    };
-    const incomingAction: testStore.ReceiveWorkspacesAction = {
-      type: testStore.Type.RECEIVE_DEVWORKSPACE,
-      workspaces: [devWorkspace],
+  it('should handle devWorkspacesReceiveAction', () => {
+    const workspaces = [
+      { metadata: { uid: '1', resourceVersion: '1' } },
+    ] as devfileApi.DevWorkspace[];
+    const action = actions.devWorkspacesReceiveAction({
+      workspaces,
+      resourceVersion: '1',
+    });
+    const expectedState: State = {
+      ...initialState,
+      isLoading: false,
+      workspaces,
       resourceVersion: '1',
     };
 
-    const newState = testStore.reducer(initialState, incomingAction);
+    const newState = reducer(initialState, action);
 
-    const expectedState: testStore.State = {
+    expect(newState).toEqual(expectedState);
+  });
+
+  it('should handle devWorkspacesErrorAction', () => {
+    const errorMessage = 'An error occurred';
+    const action = actions.devWorkspacesErrorAction(errorMessage);
+    const expectedState: State = {
+      ...initialState,
       isLoading: false,
-      workspaces: [devWorkspace],
-      startedWorkspaces: {},
+      error: errorMessage,
+    };
+
+    const newState = reducer(initialState, action);
+
+    expect(newState).toEqual(expectedState);
+  });
+
+  it('should handle devWorkspacesUpdateAction with undefined payload', () => {
+    const action = actions.devWorkspacesUpdateAction(undefined);
+    const expectedState: State = {
+      ...initialState,
+      isLoading: false,
+    };
+
+    const newState = reducer(initialState, action);
+
+    expect(newState).toEqual(expectedState);
+  });
+
+  it('should handle devWorkspacesUpdateAction with valid payload', () => {
+    const existingWorkspace = {
+      metadata: { uid: '1', resourceVersion: '1' },
+    } as devfileApi.DevWorkspace;
+    const updatedWorkspace = {
+      metadata: { uid: '1', resourceVersion: '2' },
+    } as devfileApi.DevWorkspace;
+    const initialStateWithWorkspaces = {
+      ...initialState,
+      workspaces: [existingWorkspace],
+    };
+    const action = actions.devWorkspacesUpdateAction(updatedWorkspace);
+    const expectedState: State = {
+      ...initialStateWithWorkspaces,
+      isLoading: false,
+      workspaces: [updatedWorkspace],
+      resourceVersion: '2',
+    };
+
+    const newState = reducer(initialStateWithWorkspaces, action);
+
+    expect(newState).toEqual(expectedState);
+  });
+
+  it('should handle devWorkspacesAddAction', () => {
+    const workspace = { metadata: { uid: '1', resourceVersion: '1' } } as devfileApi.DevWorkspace;
+    const action = actions.devWorkspacesAddAction(workspace);
+    const expectedState: State = {
+      ...initialState,
+      isLoading: false,
+      workspaces: [workspace],
       resourceVersion: '1',
-      warnings: {},
     };
 
-    expect(newState).toStrictEqual(expectedState);
+    const newState = reducer(initialState, action);
+
+    expect(newState).toEqual(expectedState);
   });
 
-  it('should handle RECEIVE_DEVWORKSPACE_ERROR', () => {
-    const initialState: testStore.State = {
-      isLoading: true,
-      workspaces: [],
-      startedWorkspaces: {},
-      resourceVersion: '0',
-      warnings: {},
+  it('should handle devWorkspacesTerminateAction', () => {
+    const workspace = {
+      metadata: { uid: '1', resourceVersion: '1' },
+      status: {
+        phase: DevWorkspaceStatus.RUNNING,
+        message: '',
+      },
+    } as devfileApi.DevWorkspace;
+    const initialStateWithWorkspaces = {
+      ...initialState,
+      workspaces: [workspace],
     };
-    const incomingAction: testStore.ReceiveErrorAction = {
-      type: testStore.Type.RECEIVE_DEVWORKSPACE_ERROR,
-      error: 'Error',
-    };
-
-    const newState = testStore.reducer(initialState, incomingAction);
-
-    const expectedState: testStore.State = {
+    const action = actions.devWorkspacesTerminateAction({
+      workspaceUID: '1',
+      message: 'Terminating workspace',
+    });
+    const expectedWorkspace = {
+      ...workspace,
+      status: {
+        phase: DevWorkspaceStatus.TERMINATING,
+        message: 'Terminating workspace',
+      },
+    } as devfileApi.DevWorkspace;
+    const expectedState: State = {
+      ...initialStateWithWorkspaces,
       isLoading: false,
-      workspaces: [],
-      startedWorkspaces: {},
-      error: 'Error',
-      resourceVersion: '0',
-      warnings: {},
+      workspaces: [expectedWorkspace],
     };
 
-    expect(newState).toStrictEqual(expectedState);
+    const newState = reducer(initialStateWithWorkspaces, action);
+
+    expect(newState).toEqual(expectedState);
   });
 
-  it('should handle UPDATE_DEVWORKSPACE', () => {
-    const initialState: testStore.State = {
-      isLoading: true,
-      workspaces: [devWorkspace],
-      startedWorkspaces: {},
-      resourceVersion: '0',
-      warnings: {},
+  it('should handle devWorkspacesDeleteAction', () => {
+    const workspaceToDelete = {
+      metadata: { uid: '1', resourceVersion: '1' },
+    } as devfileApi.DevWorkspace;
+    const workspaceToKeep = {
+      metadata: { uid: '2', resourceVersion: '1' },
+    } as devfileApi.DevWorkspace;
+    const initialStateWithWorkspaces = {
+      ...initialState,
+      workspaces: [workspaceToDelete, workspaceToKeep],
     };
-
-    const updatedWorkspace = cloneDeep(devWorkspace);
-    updatedWorkspace.status = {
-      phase: 'Running',
-      devworkspaceId: WorkspaceAdapter.getId(devWorkspace),
-    };
-
-    const incomingAction: testStore.UpdateWorkspaceAction = {
-      type: testStore.Type.UPDATE_DEVWORKSPACE,
-      workspace: updatedWorkspace,
-    };
-
-    const newState = testStore.reducer(initialState, incomingAction);
-
-    const expectedState: testStore.State = {
+    const action = actions.devWorkspacesDeleteAction(workspaceToDelete);
+    const expectedState: State = {
+      ...initialStateWithWorkspaces,
       isLoading: false,
-      workspaces: [updatedWorkspace],
-      startedWorkspaces: {},
-      resourceVersion: '0',
-      warnings: {},
+      workspaces: [workspaceToKeep],
+      resourceVersion: '1',
     };
 
-    expect(newState).toStrictEqual(expectedState);
+    const newState = reducer(initialStateWithWorkspaces, action);
+
+    expect(newState).toEqual(expectedState);
   });
 
-  it('should handle ADD_DEVWORKSPACE', () => {
-    const initialState: testStore.State = {
-      isLoading: true,
-      workspaces: [],
-      startedWorkspaces: {},
-      resourceVersion: '0',
-      warnings: {},
-    };
-
-    const incomingAction: testStore.AddWorkspaceAction = {
-      type: testStore.Type.ADD_DEVWORKSPACE,
-      workspace: devWorkspace,
-    };
-
-    const newState = testStore.reducer(initialState, incomingAction);
-
-    const expectedState: testStore.State = {
-      isLoading: false,
-      workspaces: [devWorkspace],
-      startedWorkspaces: {},
-      resourceVersion: '0',
-      warnings: {},
-    };
-
-    expect(newState).toStrictEqual(expectedState);
-  });
-
-  it('should handle TERMINATE_DEVWORKSPACE', () => {
-    const initialState: testStore.State = {
-      isLoading: true,
-      workspaces: [devWorkspace],
-      startedWorkspaces: {},
-      resourceVersion: '0',
-      warnings: {},
-    };
-
-    const incomingAction: testStore.TerminateWorkspaceAction = {
-      type: testStore.Type.TERMINATE_DEVWORKSPACE,
-      workspaceUID: WorkspaceAdapter.getUID(devWorkspace),
-      message: 'Terminated',
-    };
-
-    const newState = testStore.reducer(initialState, incomingAction);
-
-    const updatedWorkspace = cloneDeep(devWorkspace);
-    updatedWorkspace.status = {
-      phase: DevWorkspaceStatus.TERMINATING,
-      devworkspaceId: WorkspaceAdapter.getId(devWorkspace),
-      message: 'Terminated',
-    };
-    const expectedState: testStore.State = {
-      isLoading: false,
-      workspaces: [updatedWorkspace],
-      startedWorkspaces: {},
-      resourceVersion: '0',
-      warnings: {},
-    };
-
-    expect(newState).toStrictEqual(expectedState);
-  });
-
-  it('should handle DELETE_DEVWORKSPACE', () => {
-    const initialState: testStore.State = {
-      isLoading: true,
-      workspaces: [devWorkspace],
-      startedWorkspaces: {},
-      resourceVersion: '0',
-      warnings: {},
-    };
-
-    const incomingAction: testStore.DeleteWorkspaceAction = {
-      type: testStore.Type.DELETE_DEVWORKSPACE,
-      workspace: devWorkspace,
-    };
-
-    const newState = testStore.reducer(initialState, incomingAction);
-
-    const expectedState: testStore.State = {
-      isLoading: false,
-      workspaces: [],
-      startedWorkspaces: {},
-      resourceVersion: '0',
-      warnings: {},
-    };
-
-    expect(newState).toStrictEqual(expectedState);
-  });
-
-  it('should handle UPDATE_WARNING', () => {
-    const initialState: testStore.State = {
-      isLoading: false,
-      workspaces: [],
-      startedWorkspaces: {},
-      resourceVersion: '0',
-      warnings: {},
-    };
-
-    const incomingAction: testStore.UpdateWarningAction = {
-      type: testStore.Type.UPDATE_WARNING,
-      workspace: devWorkspace,
-      warning: 'Unsupported Devfile feature',
-    };
-
-    const newState = testStore.reducer(initialState, incomingAction);
-
-    const expectedState: testStore.State = {
-      isLoading: false,
-      workspaces: [],
-      startedWorkspaces: {},
-      resourceVersion: '0',
-      warnings: {
-        [WorkspaceAdapter.getUID(devWorkspace)]: 'Unsupported Devfile feature',
+  it('should handle devWorkspacesUpdateStartedAction', () => {
+    const workspace = {
+      metadata: { uid: '1', resourceVersion: '1' },
+      spec: { started: true },
+    } as devfileApi.DevWorkspace;
+    const action = actions.devWorkspacesUpdateStartedAction([workspace]);
+    const expectedState: State = {
+      ...initialState,
+      startedWorkspaces: {
+        '1': '1',
       },
     };
 
-    expect(newState).toStrictEqual(expectedState);
+    const newState = reducer(initialState, action);
+
+    expect(newState).toEqual(expectedState);
+  });
+
+  it('should handle devWorkspaceWarningUpdateAction', () => {
+    const workspace = { metadata: { uid: '1' } } as devfileApi.DevWorkspace;
+    const action = actions.devWorkspaceWarningUpdateAction({
+      workspace,
+      warning: 'This is a warning',
+    });
+    const expectedState: State = {
+      ...initialState,
+      warnings: {
+        '1': 'This is a warning',
+      },
+    };
+
+    const newState = reducer(initialState, action);
+
+    expect(newState).toEqual(expectedState);
+  });
+
+  it('should return the current state for unknown actions', () => {
+    const unknownAction = { type: 'UNKNOWN_ACTION' } as UnknownAction;
+    const newState = reducer(initialState, unknownAction);
+
+    expect(newState).toEqual(initialState);
   });
 });

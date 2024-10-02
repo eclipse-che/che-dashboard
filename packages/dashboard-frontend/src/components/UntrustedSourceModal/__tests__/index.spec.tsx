@@ -12,13 +12,13 @@
 
 import React from 'react';
 import { Provider } from 'react-redux';
-import { Action, Store } from 'redux';
+import { Store } from 'redux';
 
 import UntrustedSourceModal from '@/components/UntrustedSourceModal';
 import getComponentRenderer, { screen } from '@/services/__mocks__/getComponentRenderer';
 import { AppThunk } from '@/store';
-import { FakeStoreBuilder } from '@/store/__mocks__/storeBuilder';
-import { WorkspacePreferencesActionCreators } from '@/store/Workspaces/Preferences';
+import { MockStoreBuilder } from '@/store/__mocks__/mockStore';
+import { workspacePreferencesActionCreators } from '@/store/Workspaces/Preferences';
 
 const mockRequestPreferences = jest.fn();
 const mockAddTrustedSource = jest.fn();
@@ -28,10 +28,10 @@ jest.mock('@/store/Workspaces/Preferences', () => {
     workspacePreferencesActionCreators: {
       requestPreferences: () => () => mockRequestPreferences(),
       addTrustedSource:
-        (source: unknown): AppThunk<Action, Promise<void>> =>
-        async (): Promise<void> =>
+        (source: unknown): AppThunk =>
+        async () =>
           mockAddTrustedSource(source),
-    } as WorkspacePreferencesActionCreators,
+    } as typeof workspacePreferencesActionCreators,
   };
 });
 
@@ -41,10 +41,10 @@ const mockOnClose = jest.fn();
 const { renderComponent } = getComponentRenderer(getComponent);
 
 describe('Untrusted Repo Warning Modal', () => {
-  let storeBuilder: FakeStoreBuilder;
+  let storeBuilder: MockStoreBuilder;
 
   beforeEach(() => {
-    storeBuilder = new FakeStoreBuilder();
+    storeBuilder = new MockStoreBuilder();
   });
 
   afterEach(() => {
@@ -135,7 +135,7 @@ describe('Untrusted Repo Warning Modal', () => {
 
     continueButton.click();
 
-    const nextStore = new FakeStoreBuilder()
+    const nextStore = new MockStoreBuilder()
       .withWorkspacePreferences({
         'trusted-sources': ['repo1', 'repo2', 'source-location'],
       })

@@ -18,8 +18,8 @@ import { connect, ConnectedProps } from 'react-redux';
 
 import overviewStyles from '@/pages/WorkspaceDetails/OverviewTab/index.module.css';
 import { Workspace, WorkspaceAdapter } from '@/services/workspace-adapter';
-import { AppState } from '@/store';
-import { actionCreators } from '@/store/BannerAlert';
+import { RootState } from '@/store';
+import { bannerAlertActionCreators } from '@/store/BannerAlert';
 import { selectApplications } from '@/store/ClusterInfo/selectors';
 
 export type Props = MappedProps & {
@@ -65,11 +65,11 @@ class WorkspaceNameFormGroup extends React.PureComponent<Props> {
   }
 }
 
-const mapStateToProps = (state: AppState) => ({
+const mapStateToProps = (state: RootState) => ({
   applications: selectApplications(state),
 });
 
-const connector = connect(mapStateToProps, actionCreators);
+const connector = connect(mapStateToProps, bannerAlertActionCreators);
 
 type MappedProps = ConnectedProps<typeof connector>;
 

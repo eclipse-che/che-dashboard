@@ -17,7 +17,7 @@ import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import UserPreferencesContainer from '@/containers/UserPreferences';
 import { ROUTE } from '@/Routes';
 import getComponentRenderer, { screen } from '@/services/__mocks__/getComponentRenderer';
-import { FakeStoreBuilder } from '@/store/__mocks__/storeBuilder';
+import { MockStoreBuilder } from '@/store/__mocks__/mockStore';
 
 const { renderComponent } = getComponentRenderer(getComponent);
 
@@ -32,7 +32,7 @@ describe('UserPreferencesContainer', () => {
 });
 
 function getComponent(): React.ReactElement {
-  const store = new FakeStoreBuilder().build();
+  const store = new MockStoreBuilder().build();
   return (
     <Provider store={store}>
       <MemoryRouter initialEntries={[ROUTE.USER_PREFERENCES]}>

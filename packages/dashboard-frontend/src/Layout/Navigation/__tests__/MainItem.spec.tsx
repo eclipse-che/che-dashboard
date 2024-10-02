@@ -18,7 +18,7 @@ import { MemoryRouter } from 'react-router-dom';
 
 import NavigationMainItem from '@/Layout/Navigation/MainItem';
 import devfileApi from '@/services/devfileApi';
-import { FakeStoreBuilder } from '@/store/__mocks__/storeBuilder';
+import { MockStoreBuilder } from '@/store/__mocks__/mockStore';
 
 import { NavigationItemObject } from '..';
 
@@ -31,7 +31,7 @@ describe('Navigation Item', () => {
   };
 
   function renderComponent(workspaces: devfileApi.DevWorkspace[] = []): RenderResult {
-    const store = new FakeStoreBuilder().withDevWorkspaces({ workspaces }).build();
+    const store = new MockStoreBuilder().withDevWorkspaces({ workspaces }).build();
     return render(
       <Provider store={store}>
         <MemoryRouter>
@@ -69,7 +69,7 @@ describe('Navigation Item', () => {
       const { rerender } = renderComponent();
 
       activeItem = '/home';
-      const store = new FakeStoreBuilder().build();
+      const store = new MockStoreBuilder().build();
       rerender(
         <Provider store={store}>
           <MemoryRouter>

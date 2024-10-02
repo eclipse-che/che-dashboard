@@ -18,7 +18,7 @@ import { Provider } from 'react-redux';
 import AdditionalGitRemote from '@/components/ImportFromGit/RepoOptionsAccordion/GitRepoOptions/AdditionalGitRemotes/gitRemote';
 import { GitRemote } from '@/components/WorkspaceProgress/CreatingSteps/Apply/Devfile/getGitRemotes';
 import getComponentRenderer, { screen } from '@/services/__mocks__/getComponentRenderer';
-import { FakeStoreBuilder } from '@/store/__mocks__/storeBuilder';
+import { MockStoreBuilder } from '@/store/__mocks__/mockStore';
 
 const { createSnapshot, renderComponent } = getComponentRenderer(getComponent);
 
@@ -150,7 +150,7 @@ describe('AdditionalGitRemote', () => {
 });
 
 function getComponent(remote: GitRemote, keys: api.SshKey[] = []) {
-  const store = new FakeStoreBuilder().withSshKeys({ keys }).build();
+  const store = new MockStoreBuilder().withSshKeys({ keys }).build();
   return (
     <Provider store={store}>
       <AdditionalGitRemote

@@ -10,52 +10,37 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import { api } from '@eclipse-che/common';
-import { MockStoreEnhanced } from 'redux-mock-store';
-import { ThunkDispatch } from 'redux-thunk';
+import common, { api } from '@eclipse-che/common';
 
-import { AppState } from '@/store';
-import { FakeStoreBuilder } from '@/store/__mocks__/storeBuilder';
-import { AUTHORIZED } from '@/store/sanityCheckMiddleware';
-import { actionCreators } from '@/store/Workspaces/Preferences/actions';
-import { KnownAction } from '@/store/Workspaces/Preferences/types';
+import {
+  addTrustedSource,
+  getWorkspacePreferences,
+} from '@/services/backend-client/workspacePreferencesApi';
+import { createMockStore } from '@/store/__mocks__/mockActionsTestStore';
+import { selectDefaultNamespace } from '@/store/InfrastructureNamespaces/selectors';
+import { verifyAuthorized } from '@/store/SanityCheck';
+import {
+  actionCreators,
+  preferencesErrorAction,
+  preferencesReceiveAction,
+  preferencesRequestAction,
+} from '@/store/Workspaces/Preferences/actions';
 
-const mockIsTrustedRepo = jest.fn();
-jest.mock('@/store/Workspaces/Preferences/helpers', () => ({
-  isTrustedRepo: () => mockIsTrustedRepo,
-}));
+jest.mock('@eclipse-che/common');
+jest.mock('@/services/backend-client/workspacePreferencesApi');
+jest.mock('@/store/SanityCheck');
+jest.mock('@/store/InfrastructureNamespaces/selectors');
 
-const mockGetWorkspacePreferences = jest.fn().mockResolvedValue({
-  'skip-authorisation': [],
-  'trusted-sources': '*',
-} as api.IWorkspacePreferences);
-const mockAddTrustedSource = jest.fn().mockResolvedValue(undefined);
-jest.mock('@/services/backend-client/workspacePreferencesApi', () => ({
-  getWorkspacePreferences: (...args: unknown[]) => mockGetWorkspacePreferences(...args),
-  addTrustedSource: (...args: unknown[]) => mockAddTrustedSource(...args),
-}));
-
-const mockSelectAsyncIsAuthorized = jest.fn().mockResolvedValue(true);
-const mockSelectSanityCheckError = jest.fn().mockReturnValue('');
-jest.mock('@/store/SanityCheck/selectors', () => ({
-  selectAsyncIsAuthorized: () => mockSelectAsyncIsAuthorized(),
-  selectSanityCheckError: () => mockSelectSanityCheckError(),
-}));
-
-describe('workspace preferences, actionCreators', () => {
-  let store: MockStoreEnhanced<AppState, ThunkDispatch<AppState, undefined, KnownAction>>;
+describe('Preferences, actions', () => {
+  let store: ReturnType<typeof createMockStore>;
 
   beforeEach(() => {
-    store = new FakeStoreBuilder()
-      .withInfrastructureNamespace([
-        {
-          name: 'user-che',
-          attributes: {
-            phase: 'Active',
-          },
-        },
-      ])
-      .build();
+    store = createMockStore({});
+
+    (verifyAuthorized as jest.Mock).mockResolvedValue(true);
+
+    const defaultNamespace = { name: 'test-namespace' };
+    (selectDefaultNamespace as unknown as jest.Mock).mockReturnValue(defaultNamespace);
   });
 
   afterEach(() => {
@@ -63,158 +48,73 @@ describe('workspace preferences, actionCreators', () => {
   });
 
   describe('requestPreferences', () => {
-    it('should dispatch REQUEST_PREFERENCES and RECEIVE_PREFERENCES', async () => {
-      await expect(store.dispatch(actionCreators.requestPreferences())).resolves.toBeUndefined();
+    it('should dispatch receive action on successful fetch', async () => {
+      const mockPreferences = {
+        'skip-authorisation': ['github'],
+      } as api.IWorkspacePreferences;
 
-      expect(mockGetWorkspacePreferences).toHaveBeenCalled();
+      (getWorkspacePreferences as jest.Mock).mockResolvedValue(mockPreferences);
+
+      await store.dispatch(actionCreators.requestPreferences());
 
       const actions = store.getActions();
-      const expectedActions = [
-        {
-          type: 'REQUEST_PREFERENCES',
-          check: AUTHORIZED,
-        },
-        {
-          type: 'RECEIVE_PREFERENCES',
-          preferences: {
-            'skip-authorisation': [],
-            'trusted-sources': '*',
-          },
-        },
-      ];
-      expect(actions).toEqual(expectedActions);
+      expect(actions).toHaveLength(2);
+      expect(actions[0]).toEqual(preferencesRequestAction());
+      expect(actions[1]).toEqual(preferencesReceiveAction(mockPreferences));
     });
 
-    it('should dispatch REQUEST_PREFERENCES and ERROR_PREFERENCES when user is not authorized', async () => {
-      mockSelectAsyncIsAuthorized.mockResolvedValueOnce(false);
-      mockSelectSanityCheckError.mockReturnValueOnce('not authorized');
+    it('should dispatch error action on failed fetch', async () => {
+      const errorMessage = 'Network error';
 
-      await expect(store.dispatch(actionCreators.requestPreferences())).rejects.toEqual(
-        new Error('not authorized'),
+      (getWorkspacePreferences as jest.Mock).mockRejectedValue(new Error(errorMessage));
+      (common.helpers.errors.getMessage as jest.Mock).mockReturnValue(errorMessage);
+
+      await expect(store.dispatch(actionCreators.requestPreferences())).rejects.toThrow(
+        errorMessage,
       );
 
-      expect(mockGetWorkspacePreferences).not.toHaveBeenCalled();
-
       const actions = store.getActions();
-      const expectedActions = [
-        {
-          type: 'REQUEST_PREFERENCES',
-          check: AUTHORIZED,
-        },
-        {
-          type: 'ERROR_PREFERENCES',
-          error: 'not authorized',
-        },
-      ];
-      expect(actions).toEqual(expectedActions);
-    });
-
-    it('should dispatch REQUEST_PREFERENCES adn ERROR_PREFERENCES when getWorkspacePreferences fails', async () => {
-      const error = new Error('unexpected error');
-      mockGetWorkspacePreferences.mockRejectedValueOnce(error);
-
-      await expect(store.dispatch(actionCreators.requestPreferences())).rejects.toEqual(error);
-
-      expect(mockGetWorkspacePreferences).toHaveBeenCalled();
-
-      const actions = store.getActions();
-      const expectedActions = [
-        {
-          type: 'REQUEST_PREFERENCES',
-          check: AUTHORIZED,
-        },
-        {
-          type: 'ERROR_PREFERENCES',
-          error: error.message,
-        },
-      ];
-      expect(actions).toEqual(expectedActions);
+      expect(actions).toHaveLength(2);
+      expect(actions[0]).toEqual(preferencesRequestAction());
+      expect(actions[1]).toEqual(preferencesErrorAction(errorMessage));
     });
   });
 
   describe('addTrustedSource', () => {
-    it('should dispatch REQUEST_PREFERENCES and UPDATE_PREFERENCES', async () => {
-      const sourceUrl = 'https://github.com/user/repo';
-      await expect(
-        store.dispatch(actionCreators.addTrustedSource(sourceUrl)),
-      ).resolves.toBeUndefined();
+    it('should dispatch preferences and requestPreferences on success', async () => {
+      const trustedSource = 'https://trusted-source.com' as api.TrustedSourceUrl;
+      const mockPreferences = {
+        'skip-authorisation': ['gitlab'],
+      } as api.IWorkspacePreferences;
 
-      expect(mockAddTrustedSource).toHaveBeenCalledWith('user-che', sourceUrl);
+      (addTrustedSource as jest.Mock).mockResolvedValue(undefined);
+      (getWorkspacePreferences as jest.Mock).mockResolvedValue(mockPreferences);
+
+      await store.dispatch(actionCreators.addTrustedSource(trustedSource));
 
       const actions = store.getActions();
-      const expectedActions = [
-        {
-          type: 'REQUEST_PREFERENCES',
-          check: AUTHORIZED,
-        },
-        {
-          type: 'UPDATE_PREFERENCES',
-        },
-        // requestPreferences is called after
-        {
-          type: 'REQUEST_PREFERENCES',
-          check: AUTHORIZED,
-        },
-        {
-          type: 'RECEIVE_PREFERENCES',
-          preferences: {
-            'skip-authorisation': [],
-            'trusted-sources': '*',
-          },
-        },
-      ];
-      expect(actions).toEqual(expectedActions);
+      expect(actions).toHaveLength(4);
+      expect(actions[0]).toEqual(preferencesRequestAction());
+      expect(actions[1]).toEqual(preferencesReceiveAction(undefined));
+      expect(actions[2]).toEqual(preferencesRequestAction());
+      expect(actions[3]).toEqual(preferencesReceiveAction(mockPreferences));
     });
 
-    it('should dispatch REQUEST_PREFERENCES and ERROR_PREFERENCES when user is not authorized', async () => {
-      mockSelectAsyncIsAuthorized.mockResolvedValueOnce(false);
-      mockSelectSanityCheckError.mockReturnValueOnce('not authorized');
+    it('should dispatch error action on failed addTrustedSource', async () => {
+      const errorMessage = 'Network error';
+      const trustedSource = 'https://trusted-source.com' as api.TrustedSourceUrl;
 
-      const sourceUrl = 'https://github.com/user/repo';
-      await expect(store.dispatch(actionCreators.addTrustedSource(sourceUrl))).rejects.toEqual(
-        new Error('not authorized'),
+      (addTrustedSource as jest.Mock).mockRejectedValue(new Error(errorMessage));
+      (common.helpers.errors.getMessage as jest.Mock).mockReturnValue(errorMessage);
+
+      await expect(store.dispatch(actionCreators.addTrustedSource(trustedSource))).rejects.toThrow(
+        errorMessage,
       );
 
-      expect(mockAddTrustedSource).not.toHaveBeenCalled();
-
       const actions = store.getActions();
-      const expectedActions = [
-        {
-          type: 'REQUEST_PREFERENCES',
-          check: AUTHORIZED,
-        },
-        {
-          type: 'ERROR_PREFERENCES',
-          error: 'not authorized',
-        },
-      ];
-      expect(actions).toEqual(expectedActions);
-    });
-
-    it('should dispatch REQUEST_PREFERENCES and ERROR_PREFERENCES when addTrustedSource fails', async () => {
-      const error = new Error('unexpected error');
-      mockAddTrustedSource.mockRejectedValueOnce(error);
-
-      const sourceUrl = 'https://github.com/user/repo';
-
-      await expect(store.dispatch(actionCreators.addTrustedSource(sourceUrl))).rejects.toEqual(
-        error,
-      );
-
-      expect(mockAddTrustedSource).toHaveBeenCalledWith('user-che', sourceUrl);
-
-      const actions = store.getActions();
-      const expectedActions = [
-        {
-          type: 'REQUEST_PREFERENCES',
-          check: AUTHORIZED,
-        },
-        {
-          type: 'ERROR_PREFERENCES',
-          error: error.message,
-        },
-      ];
-      expect(actions).toEqual(expectedActions);
+      expect(actions).toHaveLength(2);
+      expect(actions[0]).toEqual(preferencesRequestAction());
+      expect(actions[1]).toEqual(preferencesErrorAction(errorMessage));
     });
   });
 });

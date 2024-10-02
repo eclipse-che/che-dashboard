@@ -10,78 +10,72 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import { Action } from 'redux';
+import { api } from '@eclipse-che/common';
+import { UnknownAction } from 'redux';
 
-import { reducer, unloadedState } from '@/store/Workspaces/Preferences/reducer';
-import { KnownAction, State, Type } from '@/store/Workspaces/Preferences/types';
+import {
+  preferencesErrorAction,
+  preferencesReceiveAction,
+  preferencesRequestAction,
+} from '@/store/Workspaces/Preferences/actions';
+import { reducer, State, unloadedState } from '@/store/Workspaces/Preferences/reducer';
 
-describe('Workspace preferences, reducer', () => {
-  afterEach(() => {
-    jest.clearAllMocks();
+describe('Preferences, reducer', () => {
+  let initialState: State;
+
+  beforeEach(() => {
+    initialState = { ...unloadedState };
   });
 
-  const initialState = unloadedState;
-
-  it('should return the initial state when an unknown action is provided', () => {
-    const unknownAction: Action = { type: 'UNKNOWN_ACTION' };
-
-    const expectedState = initialState;
-
-    const state = reducer(undefined, unknownAction);
-
-    expect(state).toEqual(expectedState);
-  });
-
-  it('should handle REQUEST_PREFERENCES action', () => {
-    const action: Action = {
-      type: Type.REQUEST_PREFERENCES,
-    };
-
+  it('should handle preferencesRequestAction', () => {
+    const action = preferencesRequestAction();
     const expectedState: State = {
       ...initialState,
       isLoading: true,
     };
-
-    const state = reducer(initialState, action);
-
-    expect(state).toEqual(expectedState);
+    const newState = reducer(initialState, action);
+    expect(newState).toEqual(expectedState);
   });
 
-  it('should handle RECEIVE_PREFERENCES action', () => {
-    const preferences = {
-      'skip-authorisation': [],
-    };
-    const action: KnownAction = {
-      type: Type.RECEIVE_PREFERENCES,
-      preferences,
-    };
-
+  it('should handle preferencesReceiveAction with payload', () => {
+    const mockPreferences = {
+      'skip-authorisation': ['azure-devops'],
+    } as api.IWorkspacePreferences;
+    const action = preferencesReceiveAction(mockPreferences);
     const expectedState: State = {
       ...initialState,
       isLoading: false,
-      preferences,
+      preferences: mockPreferences,
     };
-
-    const state = reducer(initialState, action);
-
-    expect(state).toEqual(expectedState);
+    const newState = reducer(initialState, action);
+    expect(newState).toEqual(expectedState);
   });
 
-  it('should handle ERROR_PREFERENCES action', () => {
-    const error = 'error';
-    const action: KnownAction = {
-      type: Type.ERROR_PREFERENCES,
-      error,
-    };
-
+  it('should handle preferencesReceiveAction without payload', () => {
+    const action = preferencesReceiveAction(undefined);
     const expectedState: State = {
       ...initialState,
       isLoading: false,
-      error,
     };
+    const newState = reducer(initialState, action);
+    expect(newState).toEqual(expectedState);
+  });
 
-    const state = reducer(initialState, action);
+  it('should handle preferencesErrorAction', () => {
+    const errorMessage = 'An error occurred';
+    const action = preferencesErrorAction(errorMessage);
+    const expectedState: State = {
+      ...initialState,
+      isLoading: false,
+      error: errorMessage,
+    };
+    const newState = reducer(initialState, action);
+    expect(newState).toEqual(expectedState);
+  });
 
-    expect(state).toEqual(expectedState);
+  it('should return the current state for unknown actions', () => {
+    const unknownAction = { type: 'UNKNOWN_ACTION' } as UnknownAction;
+    const newState = reducer(initialState, unknownAction);
+    expect(newState).toEqual(initialState);
   });
 });

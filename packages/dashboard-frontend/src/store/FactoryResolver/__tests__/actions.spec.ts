@@ -10,224 +10,234 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import { AxiosError } from 'axios';
-import { MockStoreEnhanced } from 'redux-mock-store';
-import { ThunkDispatch } from 'redux-thunk';
+import common from '@eclipse-che/common';
 
-import * as factoryResolver from '@/services/backend-client/factoryApi';
-import * as yamlResolver from '@/services/backend-client/yamlResolverApi';
+import { getFactoryResolver } from '@/services/backend-client/factoryApi';
+import { getYamlResolver } from '@/services/backend-client/yamlResolverApi';
 import devfileApi from '@/services/devfileApi';
-import { AppState } from '@/store';
-import { FakeStoreBuilder } from '@/store/__mocks__/storeBuilder';
-import { actionCreators } from '@/store/FactoryResolver/actions';
-import { normalizeDevfile } from '@/store/FactoryResolver/helpers';
-import { KnownAction, Resolver, Type } from '@/store/FactoryResolver/types';
-import { AUTHORIZED } from '@/store/sanityCheckMiddleware';
+import { isOAuthResponse } from '@/services/oauth';
+import { createMockStore } from '@/store/__mocks__/mockActionsTestStore';
+import { FactoryResolverStateResolver } from '@/store/FactoryResolver';
+import {
+  actionCreators,
+  factoryResolverErrorAction,
+  factoryResolverReceiveAction,
+  factoryResolverRequestAction,
+} from '@/store/FactoryResolver/actions';
+import {
+  grabLink,
+  isDevfileRegistryLocation,
+  normalizeDevfile,
+} from '@/store/FactoryResolver/helpers';
+import * as infrastructureNamespaces from '@/store/InfrastructureNamespaces/selectors';
+import { verifyAuthorized } from '@/store/SanityCheck';
+import { ServerConfigState } from '@/store/ServerConfig';
+import * as serverConfig from '@/store/ServerConfig/selectors';
 
-const mockGrabLink = jest.fn().mockResolvedValue(undefined);
-const mockIsDevfileRegistryLocation = jest.fn().mockReturnValue(false);
-const mockNormalizeDevfile = jest
-  .fn()
-  .mockImplementation((...args: Parameters<typeof normalizeDevfile>) => args[0].devfile);
-jest.mock('@/store/FactoryResolver/helpers.ts', () => {
-  return {
-    grabLink: (...args: unknown[]) => mockGrabLink(...args),
-    isDevfileRegistryLocation: (...args: unknown[]) => mockIsDevfileRegistryLocation(...args),
-    normalizeDevfile: (...args: unknown[]) => mockNormalizeDevfile(...args),
-  };
-});
+jest.mock('@/services/backend-client/factoryApi');
+jest.mock('@/services/backend-client/yamlResolverApi');
+jest.mock('@/store/SanityCheck');
+jest.mock('@/store/FactoryResolver/helpers');
+jest.mock('@eclipse-che/common');
+jest.mock('@/services/oauth');
 
-jest.mock('@/services/devfileApi');
-jest.mock('@/services/devfileApi/typeguards', () => {
-  return {
-    ...jest.requireActual('@/services/devfileApi/typeguards'),
-    isDevfileV2: (devfile: unknown): boolean => {
-      return (devfile as devfileApi.Devfile).schemaVersion !== undefined;
-    },
-  };
-});
+describe('FactoryResolver, actions', () => {
+  let store: ReturnType<typeof createMockStore>;
 
-const getFactoryResolverSpy = jest.spyOn(factoryResolver, 'getFactoryResolver');
-const getYamlResolverSpy = jest.spyOn(yamlResolver, 'getYamlResolver');
-
-describe('FactoryResolver store, actions', () => {
-  afterEach(() => {
+  beforeEach(() => {
+    store = createMockStore({
+      dwServerConfig: {
+        config: {},
+        isLoading: false,
+      } as ServerConfigState,
+    });
     jest.clearAllMocks();
   });
 
-  let store: MockStoreEnhanced<AppState, ThunkDispatch<AppState, undefined, KnownAction>>;
+  describe('requestFactoryResolver', () => {
+    describe('from a devfile registry', () => {
+      it('should dispatch receive action on successful fetch from a devfile registry', async () => {
+        const mockNamespace = 'test-namespace';
+        const mockLocation = 'https://example.com/devfile.yaml';
+        const mockFactoryParams = {};
+        const mockYamlResolver = { devfile: {} };
+        const mockDefaultComponents = [];
+        const mockNormalizedDevfile = {};
 
-  beforeEach(() => {
-    store = new FakeStoreBuilder().build();
-  });
+        jest
+          .spyOn(infrastructureNamespaces, 'selectDefaultNamespace')
+          .mockReturnValue({ name: mockNamespace, attributes: { phase: 'Active' } });
+        (verifyAuthorized as jest.Mock).mockResolvedValue(true);
+        (isDevfileRegistryLocation as jest.Mock).mockReturnValue(true);
+        (getYamlResolver as jest.Mock).mockResolvedValue(mockYamlResolver);
+        jest.spyOn(serverConfig, 'selectDefaultComponents').mockReturnValue(mockDefaultComponents);
+        (normalizeDevfile as jest.Mock).mockReturnValue(mockNormalizedDevfile);
 
-  it('should create REQUEST_FACTORY_RESOLVER and RECEIVE_FACTORY_RESOLVER_ERROR if factory resolver fails', async () => {
-    getFactoryResolverSpy.mockRejectedValueOnce({
-      isAxiosError: true,
-      code: '500',
-      response: {
-        data: {
-          message: 'Something unexpected happened.',
-        },
-      },
-    } as AxiosError);
+        await store.dispatch(
+          actionCreators.requestFactoryResolver(mockLocation, mockFactoryParams),
+        );
 
-    const location = 'http://factory-link';
-    await expect(
-      store.dispatch(actionCreators.requestFactoryResolver(location, {})),
-    ).rejects.toEqual(
-      'Unexpected error. Check DevTools console and network tabs for more information.',
-    );
-
-    const actions = store.getActions();
-    const expectedActions: KnownAction[] = [
-      {
-        type: Type.REQUEST_FACTORY_RESOLVER,
-        check: AUTHORIZED,
-      },
-      {
-        type: Type.RECEIVE_FACTORY_RESOLVER_ERROR,
-        error: expect.stringContaining('Unexpected error'),
-      },
-    ];
-
-    expect(actions).toEqual(expectedActions);
-  });
-
-  it('should create REQUEST_FACTORY_RESOLVER and RECEIVE_FACTORY_RESOLVER_ERROR if resolver returns no devfile', async () => {
-    getFactoryResolverSpy.mockResolvedValueOnce({
-      devfile: undefined,
-    });
-
-    const location = 'http://factory-link';
-    await expect(
-      store.dispatch(actionCreators.requestFactoryResolver(location, {})),
-    ).rejects.toEqual('The specified link does not contain any Devfile.');
-
-    const actions = store.getActions();
-    const expectedActions: KnownAction[] = [
-      {
-        type: Type.REQUEST_FACTORY_RESOLVER,
-        check: AUTHORIZED,
-      },
-      {
-        error: 'The specified link does not contain any Devfile.',
-        type: Type.RECEIVE_FACTORY_RESOLVER_ERROR,
-      },
-    ];
-
-    expect(actions).toEqual(expectedActions);
-  });
-
-  it('should create REQUEST_FACTORY_RESOLVER if authentication is needed', async () => {
-    getFactoryResolverSpy.mockRejectedValueOnce({
-      isAxiosError: true,
-      code: '401',
-      response: {
-        headers: {},
-        status: 401,
-        statusText: 'Unauthorized',
-        config: {},
-        data: {
-          attributes: {
-            oauth_provider: 'oauth_provider',
-            oauth_authentication_url: 'oauth_authentication_url',
-          },
-        },
-      },
-    } as AxiosError);
-
-    const location = 'http://factory-link';
-    await expect(
-      store.dispatch(actionCreators.requestFactoryResolver(location, {})),
-    ).rejects.toStrictEqual({
-      attributes: {
-        oauth_provider: 'oauth_provider',
-        oauth_authentication_url: 'oauth_authentication_url',
-      },
-    });
-
-    const actions = store.getActions();
-    const expectedActions: KnownAction[] = [
-      {
-        type: Type.REQUEST_FACTORY_RESOLVER,
-        check: AUTHORIZED,
-      },
-    ];
-
-    expect(actions).toEqual(expectedActions);
-  });
-
-  it('should create REQUEST_FACTORY_RESOLVER and RECEIVE_FACTORY_RESOLVER', async () => {
-    const devfile = {
-      schemaVersion: '2.0.0',
-    } as devfileApi.Devfile;
-    getFactoryResolverSpy.mockResolvedValueOnce({
-      devfile,
-    });
-
-    const location = 'http://factory-link';
-    await expect(
-      store.dispatch(actionCreators.requestFactoryResolver(location, {})),
-    ).resolves.toBeUndefined();
-
-    const actions = store.getActions();
-    const expectedActions: KnownAction[] = [
-      {
-        type: Type.REQUEST_FACTORY_RESOLVER,
-        check: AUTHORIZED,
-      },
-      {
-        resolver: {
-          devfile,
-          location,
-          optionalFilesContent: {},
-        },
-        type: Type.RECEIVE_FACTORY_RESOLVER,
-      },
-    ];
-
-    expect(actions).toEqual(expectedActions);
-  });
-
-  describe('check resolver types', () => {
-    const resolver = {
-      devfile: {
-        schemaVersion: '2.0.0',
-      } as devfileApi.Devfile,
-    } as Resolver;
-
-    beforeEach(() => {
-      getFactoryResolverSpy.mockResolvedValueOnce(resolver);
-      getYamlResolverSpy.mockResolvedValueOnce(resolver);
-    });
-
-    it('should call the yaml resolver for a devfile registry', async () => {
-      const location = 'http://registry/devfile.yaml';
-
-      mockIsDevfileRegistryLocation.mockReturnValueOnce(true);
-
-      await expect(
-        store.dispatch(actionCreators.requestFactoryResolver(location, {})),
-      ).resolves.toBeUndefined();
-
-      expect(getYamlResolverSpy).toHaveBeenCalledWith(location);
-      expect(getFactoryResolverSpy).not.toHaveBeenCalled();
-    });
-
-    it('should call the factory resolver for non-registry devfiles', async () => {
-      const location = 'https://github.com/eclipse-che/che-dashboard.git';
-
-      mockIsDevfileRegistryLocation.mockReturnValueOnce(false);
-
-      await expect(
-        store.dispatch(actionCreators.requestFactoryResolver(location, {})),
-      ).resolves.toBeUndefined();
-
-      expect(getYamlResolverSpy).not.toHaveBeenCalledWith();
-      expect(getFactoryResolverSpy).toHaveBeenCalledWith(location, {
-        error_code: undefined,
+        const actions = store.getActions();
+        expect(actions[0]).toEqual(factoryResolverRequestAction());
+        expect(actions[1]).toEqual(
+          factoryResolverReceiveAction({
+            ...mockYamlResolver,
+            devfile: mockNormalizedDevfile as devfileApi.Devfile,
+            location: mockLocation,
+            optionalFilesContent: {},
+          }),
+        );
       });
+
+      it('should throw an error if the specified link does not contain any Devfile', async () => {
+        const mockNamespace = 'test-namespace';
+        const mockLocation = 'https://example.com/devfile.yaml';
+        const mockFactoryParams = {};
+        const mockYamlResolver = { devfile: undefined };
+
+        jest
+          .spyOn(infrastructureNamespaces, 'selectDefaultNamespace')
+          .mockReturnValue({ name: mockNamespace, attributes: { phase: 'Active' } });
+        (verifyAuthorized as jest.Mock).mockResolvedValue(true);
+        (isDevfileRegistryLocation as jest.Mock).mockReturnValue(true);
+        (getYamlResolver as jest.Mock).mockResolvedValue(mockYamlResolver);
+
+        await expect(
+          store.dispatch(actionCreators.requestFactoryResolver(mockLocation, mockFactoryParams)),
+        ).rejects.toThrow('The specified link does not contain any Devfile');
+
+        const actions = store.getActions();
+        expect(actions[0]).toEqual(factoryResolverRequestAction());
+        expect(actions).not.toContainEqual(
+          factoryResolverReceiveAction(mockYamlResolver as unknown as FactoryResolverStateResolver),
+        );
+      });
+    });
+
+    describe('from another location', () => {
+      it('should dispatch receive action on successful fetch', async () => {
+        const mockNamespace = 'test-namespace';
+        const mockLocation = 'https://example.com/devfile.yaml';
+        const mockFactoryParams = {};
+        const mockFactoryResolver = { devfile: {} };
+        const mockDefaultComponents = [];
+        const mockNormalizedDevfile = {};
+
+        jest
+          .spyOn(infrastructureNamespaces, 'selectDefaultNamespace')
+          .mockReturnValue({ name: mockNamespace, attributes: { phase: 'Active' } });
+        (verifyAuthorized as jest.Mock).mockResolvedValue(true);
+        (isDevfileRegistryLocation as jest.Mock).mockReturnValue(false);
+        (getFactoryResolver as jest.Mock).mockResolvedValue(mockFactoryResolver);
+        (grabLink as jest.Mock).mockResolvedValue(undefined);
+        jest.spyOn(serverConfig, 'selectDefaultComponents').mockReturnValue(mockDefaultComponents);
+        (normalizeDevfile as jest.Mock).mockReturnValue(mockNormalizedDevfile);
+
+        await store.dispatch(
+          actionCreators.requestFactoryResolver(mockLocation, mockFactoryParams),
+        );
+
+        const actions = store.getActions();
+        expect(actions[0]).toEqual(factoryResolverRequestAction());
+        expect(actions[1]).toEqual(
+          factoryResolverReceiveAction({
+            ...mockFactoryResolver,
+            devfile: mockNormalizedDevfile as devfileApi.Devfile,
+            location: mockLocation,
+            optionalFilesContent: {},
+          }),
+        );
+      });
+
+      it('should dispatch receive action on successful fetch with optional files content', async () => {
+        const mockNamespace = 'test-namespace';
+        const mockLocation = 'https://example.com/devfile.yaml';
+        const mockFactoryParams = {};
+        const mockFactoryResolver = { devfile: {}, links: [] };
+        const mockDefaultComponents = [];
+        const mockNormalizedDevfile = {};
+        const mockOptionalFilesContent = { '.che/che-editor.yaml': 'content' };
+
+        jest
+          .spyOn(infrastructureNamespaces, 'selectDefaultNamespace')
+          .mockReturnValue({ name: mockNamespace, attributes: { phase: 'Active' } });
+        (verifyAuthorized as jest.Mock).mockResolvedValue(true);
+        (isDevfileRegistryLocation as jest.Mock).mockReturnValue(false);
+        (getFactoryResolver as jest.Mock).mockResolvedValue(mockFactoryResolver);
+        (grabLink as jest.Mock).mockResolvedValue('content');
+        jest.spyOn(serverConfig, 'selectDefaultComponents').mockReturnValue(mockDefaultComponents);
+        (normalizeDevfile as jest.Mock).mockReturnValue(mockNormalizedDevfile);
+
+        await store.dispatch(
+          actionCreators.requestFactoryResolver(mockLocation, mockFactoryParams),
+        );
+
+        const actions = store.getActions();
+        expect(actions[0]).toEqual(factoryResolverRequestAction());
+        expect(actions[1]).toEqual(
+          factoryResolverReceiveAction({
+            ...mockFactoryResolver,
+            devfile: mockNormalizedDevfile as devfileApi.Devfile,
+            location: mockLocation,
+            optionalFilesContent: mockOptionalFilesContent,
+          }),
+        );
+      });
+
+      it('should dispatch error action on failed fetch', async () => {
+        const mockNamespace = 'test-namespace';
+        const mockLocation = 'https://example.com/devfile.yaml';
+        const mockFactoryParams = {};
+        const errorMessage = 'Network error';
+
+        jest
+          .spyOn(infrastructureNamespaces, 'selectDefaultNamespace')
+          .mockReturnValue({ name: mockNamespace, attributes: { phase: 'Active' } });
+        (verifyAuthorized as jest.Mock).mockResolvedValue(true);
+        (isDevfileRegistryLocation as jest.Mock).mockReturnValue(false);
+        (getFactoryResolver as jest.Mock).mockRejectedValue(new Error(errorMessage));
+        (common.helpers.errors.getMessage as jest.Mock).mockReturnValue(errorMessage);
+
+        await expect(
+          store.dispatch(actionCreators.requestFactoryResolver(mockLocation, mockFactoryParams)),
+        ).rejects.toThrow(errorMessage);
+
+        const actions = store.getActions();
+        expect(actions[0]).toEqual(factoryResolverRequestAction());
+        expect(actions[1]).toEqual(factoryResolverErrorAction(errorMessage));
+      });
+    });
+
+    it('should handle OAuth response error', async () => {
+      const mockNamespace = 'test-namespace';
+      const mockLocation = 'https://example.com/devfile.yaml';
+      const mockFactoryParams = {};
+      const mockOAuthResponse = { error: 'unauthorized' };
+      const mockError = {
+        response: {
+          status: 401,
+          data: mockOAuthResponse,
+        },
+      };
+
+      jest.spyOn(infrastructureNamespaces, 'selectDefaultNamespace').mockReturnValue({
+        name: mockNamespace,
+        attributes: { phase: 'Active' },
+      });
+      (verifyAuthorized as jest.Mock).mockResolvedValue(true);
+      (isDevfileRegistryLocation as jest.Mock).mockReturnValue(false);
+      (getFactoryResolver as jest.Mock).mockRejectedValue(mockError);
+      (common.helpers.errors.includesAxiosResponse as unknown as jest.Mock).mockReturnValue(true);
+      (common.helpers.errors.getMessage as jest.Mock).mockReturnValue('Unauthorized');
+      (isOAuthResponse as unknown as jest.Mock).mockImplementation(() => true);
+
+      await expect(
+        store.dispatch(actionCreators.requestFactoryResolver(mockLocation, mockFactoryParams)),
+      ).rejects.toEqual(mockOAuthResponse);
+
+      const actions = store.getActions();
+      expect(actions[0]).toEqual(factoryResolverRequestAction());
+      expect(actions).not.toContainEqual(factoryResolverErrorAction('Unauthorized'));
     });
   });
 });

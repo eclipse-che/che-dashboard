@@ -33,7 +33,7 @@ import {
 import { buildFactoryLocation, buildIdeLoaderLocation } from '@/services/helpers/location';
 import { constructWorkspace } from '@/services/workspace-adapter';
 import { DevWorkspaceBuilder } from '@/store/__mocks__/devWorkspaceBuilder';
-import { FakeStoreBuilder } from '@/store/__mocks__/storeBuilder';
+import { MockStoreBuilder } from '@/store/__mocks__/mockStore';
 
 import Progress, { State, Step } from '..';
 
@@ -61,7 +61,7 @@ describe('LoaderProgress', () => {
   let user: UserEvent;
 
   beforeEach(() => {
-    store = new FakeStoreBuilder()
+    store = new MockStoreBuilder()
       .withWorkspacePreferences({
         'trusted-sources': '*',
       })
@@ -366,7 +366,7 @@ describe('LoaderProgress', () => {
     });
 
     test('untrusted source', async () => {
-      const store = new FakeStoreBuilder()
+      const store = new MockStoreBuilder()
         .withWorkspacePreferences({
           'trusted-sources': ['some-trusted-source'],
         })
@@ -384,7 +384,7 @@ describe('LoaderProgress', () => {
 
     test('samples are trusted', async () => {
       const registryLocation = 'https://external-registries-location/';
-      const store = new FakeStoreBuilder()
+      const store = new MockStoreBuilder()
         .withDevfileRegistries({
           registries: {
             [registryLocation]: {},
@@ -446,7 +446,7 @@ describe('LoaderProgress', () => {
 
     describe('steps number', () => {
       test('no condition steps', () => {
-        const store = new FakeStoreBuilder().build();
+        const store = new MockStoreBuilder().build();
 
         renderComponent(location, store, searchParams, false);
 
@@ -463,7 +463,7 @@ describe('LoaderProgress', () => {
       });
 
       test('with condition steps', async () => {
-        const store = new FakeStoreBuilder()
+        const store = new MockStoreBuilder()
           .withDevWorkspaces({ workspaces: [devWorkspace] })
           .build();
 

@@ -15,7 +15,7 @@ import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import sanitizeHtml from 'sanitize-html';
 
-import { AppState } from '@/store';
+import { RootState } from '@/store';
 import { selectBranding } from '@/store/Branding/selectors';
 
 type Props = MappedProps;
@@ -43,7 +43,7 @@ class BannerAlertBranding extends React.PureComponent<Props> {
   }
 }
 
-const mapStateToProps = (state: AppState) => ({
+const mapStateToProps = (state: RootState) => ({
   branding: selectBranding(state),
 });
 

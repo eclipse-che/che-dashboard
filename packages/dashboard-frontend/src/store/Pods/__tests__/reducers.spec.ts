@@ -10,197 +10,121 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import { cloneDeep } from 'lodash';
-import { AnyAction } from 'redux';
+import { V1Pod } from '@kubernetes/client-node';
+import { UnknownAction } from 'redux';
 
-import { pod1, pod2 } from '@/store/Pods/__tests__/stub';
-import { AUTHORIZED } from '@/store/sanityCheckMiddleware';
+import { getNewerResourceVersion } from '@/services/helpers/resourceVersion';
+import {
+  podDeleteAction,
+  podListErrorAction,
+  podListReceiveAction,
+  podListRequestAction,
+  podModifyAction,
+  podReceiveAction,
+} from '@/store/Pods/actions';
+import isSamePod from '@/store/Pods/isSamePod';
+import { reducer, State, unloadedState } from '@/store/Pods/reducer';
 
-import * as testStore from '..';
+jest.mock('@/services/helpers/resourceVersion');
+jest.mock('@/store/Pods/isSamePod');
 
-describe('Pods store, reducers', () => {
-  it('should return initial state', () => {
-    const incomingAction: testStore.RequestPodsAction = {
-      type: testStore.Type.REQUEST_PODS,
-      check: AUTHORIZED,
-    };
-    const initialState = testStore.reducer(undefined, incomingAction);
+describe('Pods reducer', () => {
+  let initialState: State;
 
-    const expectedState: testStore.State = {
-      isLoading: false,
-      pods: [],
-      resourceVersion: '0',
-    };
-
-    expect(initialState).toEqual(expectedState);
+  beforeEach(() => {
+    initialState = { ...unloadedState };
+    jest.clearAllMocks();
   });
 
-  it('should return state if action type is not matched', () => {
-    const initialState: testStore.State = {
+  it('should handle podListRequestAction', () => {
+    const action = podListRequestAction();
+    const expectedState: State = {
+      ...initialState,
       isLoading: true,
-      pods: [pod1, pod2],
-      resourceVersion: '0',
+      error: undefined,
     };
-    const incomingAction = {
-      type: 'OTHER_ACTION',
-    } as AnyAction;
-    const newState = testStore.reducer(initialState, incomingAction);
 
-    const expectedState: testStore.State = {
-      isLoading: true,
-      pods: [pod1, pod2],
-      resourceVersion: '0',
-    };
-    expect(newState).toEqual(expectedState);
+    expect(reducer(initialState, action)).toEqual(expectedState);
   });
 
-  it('should handle REQUEST_PODS', () => {
-    const initialState: testStore.State = {
+  it('should handle podListReceiveAction', () => {
+    const pods = [{ metadata: { name: 'pod1' } }] as V1Pod[];
+    const resourceVersion = '12345';
+    (getNewerResourceVersion as jest.Mock).mockReturnValue(resourceVersion);
+    const action = podListReceiveAction({ pods, resourceVersion });
+    const expectedState: State = {
+      ...initialState,
       isLoading: false,
+      pods,
+      resourceVersion,
+    };
+
+    expect(reducer(initialState, action)).toEqual(expectedState);
+  });
+
+  it('should handle podListErrorAction', () => {
+    const error = 'Error message';
+    const action = podListErrorAction(error);
+    const expectedState: State = {
+      ...initialState,
+      isLoading: false,
+      error,
+    };
+
+    expect(reducer(initialState, action)).toEqual(expectedState);
+  });
+
+  it('should handle podReceiveAction', () => {
+    const pod = { metadata: { name: 'pod1', resourceVersion: '12345' } } as V1Pod;
+    (getNewerResourceVersion as jest.Mock).mockReturnValue('12345');
+    const action = podReceiveAction(pod);
+    const expectedState: State = {
+      ...initialState,
+      pods: [pod],
+      resourceVersion: '12345',
+    };
+
+    expect(reducer(initialState, action)).toEqual(expectedState);
+  });
+
+  it('should handle podModifyAction', () => {
+    const initialStateWithPods: State = {
+      ...initialState,
+      pods: [{ metadata: { name: 'pod1' } }, { metadata: { name: 'pod2' } }] as V1Pod[],
+    };
+    const modifiedPod = { metadata: { name: 'pod1', resourceVersion: '12345' } } as V1Pod;
+    (isSamePod as jest.Mock).mockReturnValueOnce(true).mockReturnValue(false);
+    (getNewerResourceVersion as jest.Mock).mockReturnValue('12345');
+    const action = podModifyAction(modifiedPod);
+    const expectedState: State = {
+      ...initialStateWithPods,
+      pods: [modifiedPod, initialStateWithPods.pods[1]],
+      resourceVersion: '12345',
+    };
+
+    expect(reducer(initialStateWithPods, action)).toEqual(expectedState);
+  });
+
+  it('should handle podDeleteAction', () => {
+    const initialStateWithPods: State = {
+      ...initialState,
+      pods: [{ metadata: { name: 'pod1' } }] as V1Pod[],
+    };
+    const podToDelete = { metadata: { name: 'pod1', resourceVersion: '12345' } } as V1Pod;
+    (isSamePod as jest.Mock).mockReturnValue(true);
+    (getNewerResourceVersion as jest.Mock).mockReturnValue('12345');
+    const action = podDeleteAction(podToDelete);
+    const expectedState: State = {
+      ...initialStateWithPods,
       pods: [],
-      error: 'unexpected error',
-      resourceVersion: '0',
-    };
-    const incomingAction: testStore.RequestPodsAction = {
-      type: testStore.Type.REQUEST_PODS,
-      check: AUTHORIZED,
+      resourceVersion: '12345',
     };
 
-    const newState = testStore.reducer(initialState, incomingAction);
-
-    const expectedState: testStore.State = {
-      isLoading: true,
-      pods: [],
-      resourceVersion: '0',
-    };
-
-    expect(newState).toEqual(expectedState);
+    expect(reducer(initialStateWithPods, action)).toEqual(expectedState);
   });
 
-  it('should handle RECEIVE_PODS', () => {
-    const initialState: testStore.State = {
-      isLoading: true,
-      pods: [],
-      resourceVersion: '0',
-    };
-    const incomingAction: testStore.ReceivePodsAction = {
-      type: testStore.Type.RECEIVE_PODS,
-      pods: [pod1, pod2],
-      resourceVersion: '1',
-    };
-
-    const newState = testStore.reducer(initialState, incomingAction);
-
-    const expectedState: testStore.State = {
-      isLoading: false,
-      pods: [pod1, pod2],
-      resourceVersion: '1',
-    };
-
-    expect(newState).toEqual(expectedState);
-  });
-
-  it('should handle RECEIVE_ERROR', () => {
-    const initialState: testStore.State = {
-      isLoading: true,
-      pods: [],
-      resourceVersion: '0',
-    };
-    const incomingAction: testStore.ReceiveErrorAction = {
-      type: testStore.Type.RECEIVE_ERROR,
-      error: 'unexpected error',
-    };
-
-    const newState = testStore.reducer(initialState, incomingAction);
-
-    const expectedState: testStore.State = {
-      isLoading: false,
-      pods: [],
-      error: 'unexpected error',
-      resourceVersion: '0',
-    };
-
-    expect(newState).toEqual(expectedState);
-  });
-
-  it('should handle RECEIVE_POD', () => {
-    const initialState: testStore.State = {
-      isLoading: false,
-      pods: [pod1],
-      resourceVersion: '0',
-    };
-
-    const newPod = cloneDeep(pod2);
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    newPod.metadata!.resourceVersion = '1234';
-
-    const incomingAction: testStore.ReceivePodAction = {
-      type: testStore.Type.RECEIVE_POD,
-      pod: newPod,
-    };
-
-    const newState = testStore.reducer(initialState, incomingAction);
-
-    const expectedState: testStore.State = {
-      isLoading: false,
-      pods: [pod1, newPod],
-      resourceVersion: '1234',
-    };
-
-    expect(newState).toEqual(expectedState);
-  });
-
-  it('should handle MODIFY_POD', () => {
-    const initialState: testStore.State = {
-      isLoading: false,
-      pods: [pod1, pod2],
-      resourceVersion: '0',
-    };
-
-    const modifiedPod = cloneDeep(pod1);
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    modifiedPod.metadata!.resourceVersion = '2345';
-
-    const incomingAction: testStore.ModifyPodAction = {
-      type: testStore.Type.MODIFY_POD,
-      pod: modifiedPod,
-    };
-
-    const newState = testStore.reducer(initialState, incomingAction);
-
-    const expectedState: testStore.State = {
-      isLoading: false,
-      pods: [modifiedPod, pod2],
-      resourceVersion: '2345',
-    };
-
-    expect(newState).toEqual(expectedState);
-  });
-
-  it('should handle DELETE_POD', () => {
-    const initialState: testStore.State = {
-      isLoading: false,
-      pods: [pod1, pod2],
-      resourceVersion: '0',
-    };
-
-    const deletedPod = cloneDeep(pod1);
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    deletedPod.metadata!.resourceVersion = '3456';
-
-    const incomingAction: testStore.DeletePodAction = {
-      type: testStore.Type.DELETE_POD,
-      pod: deletedPod,
-    };
-
-    const newState = testStore.reducer(initialState, incomingAction);
-
-    const expectedState: testStore.State = {
-      isLoading: false,
-      pods: [pod2],
-      resourceVersion: '3456',
-    };
-
-    expect(newState).toEqual(expectedState);
+  it('should return the current state for unknown actions', () => {
+    const unknownAction = { type: 'UNKNOWN_ACTION' } as UnknownAction;
+    expect(reducer(initialState, unknownAction)).toEqual(initialState);
   });
 });

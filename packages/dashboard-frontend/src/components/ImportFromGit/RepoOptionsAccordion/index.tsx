@@ -33,7 +33,7 @@ import {
 import { AdvancedOptions } from '@/components/ImportFromGit/RepoOptionsAccordion/AdvancedOptions';
 import { GitRepoOptions } from '@/components/ImportFromGit/RepoOptionsAccordion/GitRepoOptions';
 import { GitRemote } from '@/components/WorkspaceProgress/CreatingSteps/Apply/Devfile/getGitRemotes';
-import { AppState } from '@/store';
+import { RootState } from '@/store';
 import { selectSshKeys } from '@/store/SshKeys/selectors';
 
 type AccordionId = 'git-repo-options' | 'advanced-options';
@@ -264,7 +264,7 @@ class RepoOptionsAccordion extends React.PureComponent<Props, State> {
   }
 }
 
-const mapStateToProps = (state: AppState) => ({
+const mapStateToProps = (state: RootState) => ({
   sshKeys: selectSshKeys(state),
 });
 

@@ -10,44 +10,41 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import { Action, Reducer } from 'redux';
+import { api } from '@eclipse-che/common';
+import { createReducer } from '@reduxjs/toolkit';
 
-import { KnownAction, State, Type } from '@/store/GitConfig/types';
-import { createObject } from '@/store/helpers';
+import {
+  gitConfigErrorAction,
+  gitConfigReceiveAction,
+  gitConfigRequestAction,
+} from '@/store/GitConfig/actions';
 
-const unloadedState: State = {
+export type GitConfig = api.IGitConfig['gitconfig'];
+
+export interface State {
+  isLoading: boolean;
+  config?: api.IGitConfig;
+  error: string | undefined;
+}
+
+export const unloadedState: State = {
   isLoading: false,
   config: undefined,
   error: undefined,
 };
 
-export const reducer: Reducer<State> = (
-  state: State | undefined,
-  incomingAction: Action,
-): State => {
-  if (state === undefined) {
-    return unloadedState;
-  }
-
-  const action = incomingAction as KnownAction;
-  switch (action.type) {
-    case Type.REQUEST_GITCONFIG:
-      return createObject(state, {
-        isLoading: true,
-        error: undefined,
-      });
-    case Type.RECEIVE_GITCONFIG:
-      return createObject(state, {
-        isLoading: false,
-        error: undefined,
-        config: action.config,
-      });
-    case Type.RECEIVE_GITCONFIG_ERROR:
-      return createObject(state, {
-        isLoading: false,
-        error: action.error,
-      });
-    default:
-      return state;
-  }
-};
+export const reducer = createReducer(unloadedState, builder => {
+  builder
+    .addCase(gitConfigRequestAction, state => {
+      state.isLoading = true;
+    })
+    .addCase(gitConfigReceiveAction, (state, action) => {
+      state.isLoading = false;
+      state.config = action.payload;
+    })
+    .addCase(gitConfigErrorAction, (state, action) => {
+      state.isLoading = false;
+      state.error = action.payload;
+    })
+    .addDefaultCase(state => state);
+});

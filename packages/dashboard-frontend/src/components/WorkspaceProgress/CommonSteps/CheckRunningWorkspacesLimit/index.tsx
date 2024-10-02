@@ -33,17 +33,17 @@ import { buildHomeLocation, buildIdeLoaderLocation, toHref } from '@/services/he
 import { AlertItem, DevWorkspaceStatus, LoaderTab } from '@/services/helpers/types';
 import { TabManager } from '@/services/tabManager';
 import { Workspace } from '@/services/workspace-adapter';
-import { AppState } from '@/store';
+import { RootState } from '@/store';
 import { selectRunningWorkspacesLimit } from '@/store/ClusterConfig/selectors';
 import {
-  actionCreators as DevWorkspaceClusterActionCreators,
+  devWorkspacesClusterActionCreators,
   RunningDevWorkspacesClusterLimitExceededError,
   throwRunningDevWorkspacesClusterLimitExceededError,
 } from '@/store/DevWorkspacesCluster';
 import { selectRunningDevWorkspacesClusterLimitExceeded } from '@/store/DevWorkspacesCluster/selectors';
-import * as WorkspaceStore from '@/store/Workspaces';
+import { workspacesActionCreators } from '@/store/Workspaces';
 import { RunningWorkspacesExceededError } from '@/store/Workspaces/devWorkspaces';
-import { throwRunningWorkspacesExceededError } from '@/store/Workspaces/devWorkspaces/checkRunningWorkspacesLimit';
+import { throwRunningWorkspacesExceededError } from '@/store/Workspaces/devWorkspaces';
 import { selectRunningDevWorkspacesLimitExceeded } from '@/store/Workspaces/devWorkspaces/selectors';
 import { selectAllWorkspaces, selectRunningWorkspaces } from '@/store/Workspaces/selectors';
 
@@ -373,7 +373,7 @@ class CommonStepCheckRunningWorkspacesLimit extends ProgressStep<Props, State> {
   }
 }
 
-const mapStateToProps = (state: AppState) => ({
+const mapStateToProps = (state: RootState) => ({
   allWorkspaces: selectAllWorkspaces(state),
   runningDevWorkspacesLimitExceeded: selectRunningDevWorkspacesLimitExceeded(state),
   runningDevWorkspacesClusterLimitExceeded: selectRunningDevWorkspacesClusterLimitExceeded(state),
@@ -383,7 +383,7 @@ const mapStateToProps = (state: AppState) => ({
 
 const connector = connect(
   mapStateToProps,
-  { ...WorkspaceStore.actionCreators, ...DevWorkspaceClusterActionCreators },
+  { ...workspacesActionCreators, ...devWorkspacesClusterActionCreators },
   null,
   {
     // forwardRef is mandatory for using `@react-mock/state` in unit tests

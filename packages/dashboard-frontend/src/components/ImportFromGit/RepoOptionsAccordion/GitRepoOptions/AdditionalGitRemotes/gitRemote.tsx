@@ -31,9 +31,9 @@ import { GitRemote } from '@/components/WorkspaceProgress/CreatingSteps/Apply/De
 import { ROUTE } from '@/Routes';
 import { FactoryLocationAdapter } from '@/services/factory-location-adapter';
 import { UserPreferencesTab } from '@/services/helpers/types';
-import { AppState } from '@/store';
+import { RootState } from '@/store';
 import { selectSshKeys } from '@/store/SshKeys/selectors';
-import * as WorkspacesStore from '@/store/Workspaces';
+import { workspacesActionCreators } from '@/store/Workspaces';
 
 export type Props = MappedProps & {
   onDelete: () => void;
@@ -226,11 +226,11 @@ class AdditionalGitRemote extends React.PureComponent<Props, State> {
   }
 }
 
-const mapStateToProps = (state: AppState) => ({
+const mapStateToProps = (state: RootState) => ({
   sshKeys: selectSshKeys(state),
 });
 
-const connector = connect(mapStateToProps, WorkspacesStore.actionCreators);
+const connector = connect(mapStateToProps, workspacesActionCreators);
 
 type MappedProps = ConnectedProps<typeof connector>;
 export default connector(AdditionalGitRemote);

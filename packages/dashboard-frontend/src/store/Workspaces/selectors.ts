@@ -10,18 +10,17 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import { createSelector } from 'reselect';
+import { createSelector } from '@reduxjs/toolkit';
 
 import { constructWorkspace, Workspace } from '@/services/workspace-adapter';
+import { RootState } from '@/store';
 import {
   selectDevWorkspacesError,
   selectRunningDevWorkspaces,
 } from '@/store/Workspaces/devWorkspaces/selectors';
 
-import { AppState } from '..';
-
-const selectState = (state: AppState) => state.workspaces;
-const selectDevWorkspacesState = (state: AppState) => state.devWorkspaces;
+const selectState = (state: RootState) => state.workspaces;
+const selectDevWorkspacesState = (state: RootState) => state.devWorkspaces;
 
 export const selectIsLoading = createSelector(selectDevWorkspacesState, devWorkspacesState => {
   return devWorkspacesState.isLoading;

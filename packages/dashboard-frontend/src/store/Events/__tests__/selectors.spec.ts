@@ -10,14 +10,7 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import { CoreV1Event } from '@kubernetes/client-node';
-import { cloneDeep } from 'lodash';
-import { MockStoreEnhanced } from 'redux-mock-store';
-import { ThunkDispatch } from 'redux-thunk';
-
-import { AppState } from '@/store';
-import { FakeStoreBuilder } from '@/store/__mocks__/storeBuilder';
-import * as stub from '@/store/Events/__tests__/stubs';
+import { RootState } from '@/store';
 import {
   selectAllEvents,
   selectEventsError,
@@ -25,71 +18,47 @@ import {
   selectEventsResourceVersion,
 } from '@/store/Events/selectors';
 
-import * as store from '..';
+describe('Events Selectors', () => {
+  const mockState = {
+    events: {
+      events: [
+        { metadata: { name: 'event0' } },
+        { metadata: { name: 'event1', resourceVersion: '123' } },
+        { metadata: { name: 'event2', resourceVersion: '124' } },
+        { metadata: { name: 'event3', resourceVersion: '125' } },
+      ],
+      error: 'Something went wrong',
+      resourceVersion: '125',
+    },
+  } as RootState;
 
-describe('Events store, selectors', () => {
-  let event1: CoreV1Event;
-  let event2: CoreV1Event;
-
-  beforeEach(() => {
-    event1 = cloneDeep(stub.event1);
-    event2 = cloneDeep(stub.event2);
+  it('should select all events', () => {
+    const result = selectAllEvents(mockState);
+    expect(result).toEqual(mockState.events.events);
   });
 
-  it('should return the error', () => {
-    const fakeStore = new FakeStoreBuilder()
-      .withEvents({ events: [], error: 'Something unexpected' }, false)
-      .build() as MockStoreEnhanced<
-      AppState,
-      ThunkDispatch<AppState, undefined, store.KnownAction>
-    >;
-    const state = fakeStore.getState();
-
-    const selectedError = selectEventsError(state);
-    expect(selectedError).toEqual('Something unexpected');
+  it('should select events from a specific resource version', () => {
+    const selectFromResourceVersion = selectEventsFromResourceVersion(mockState);
+    const result = selectFromResourceVersion('124');
+    expect(result).toEqual([
+      { metadata: { name: 'event2', resourceVersion: '124' } },
+      { metadata: { name: 'event3', resourceVersion: '125' } },
+    ]);
   });
 
-  it('should return all events', () => {
-    const fakeStore = new FakeStoreBuilder()
-      .withEvents({ events: [event1, event2] }, false)
-      .build() as MockStoreEnhanced<
-      AppState,
-      ThunkDispatch<AppState, undefined, store.KnownAction>
-    >;
-    const state = fakeStore.getState();
-
-    const allEvents = selectAllEvents(state);
-    expect(allEvents).toEqual([event1, event2]);
+  it('should return an empty array if resource version is invalid', () => {
+    const selectFromResourceVersion = selectEventsFromResourceVersion(mockState);
+    const result = selectFromResourceVersion('invalid');
+    expect(result).toEqual([]);
   });
 
-  it('should return the resource version', () => {
-    const fakeStore = new FakeStoreBuilder()
-      .withEvents({ events: [event1, event2], resourceVersion: '1234' }, false)
-      .build() as MockStoreEnhanced<
-      AppState,
-      ThunkDispatch<AppState, undefined, store.KnownAction>
-    >;
-    const state = fakeStore.getState();
-
-    const resourceVersion = selectEventsResourceVersion(state);
-    expect(resourceVersion).toEqual('1234');
+  it('should select events error', () => {
+    const result = selectEventsError(mockState);
+    expect(result).toEqual(mockState.events.error);
   });
 
-  it('should return events starting from a resource version', () => {
-    event1.metadata.resourceVersion = '1';
-    event2.metadata.resourceVersion = '5';
-    const fakeStore = new FakeStoreBuilder()
-      .withEvents({ events: [event1, event2], resourceVersion: '1' }, false)
-      .build() as MockStoreEnhanced<
-      AppState,
-      ThunkDispatch<AppState, undefined, store.KnownAction>
-    >;
-    const state = fakeStore.getState();
-
-    const selectEventsFn = selectEventsFromResourceVersion(state);
-    expect(typeof selectEventsFn).toEqual('function');
-
-    const events = selectEventsFn('3');
-    expect(events).toEqual([event2]);
+  it('should select events resource version', () => {
+    const result = selectEventsResourceVersion(mockState);
+    expect(result).toEqual(mockState.events.resourceVersion);
   });
 });

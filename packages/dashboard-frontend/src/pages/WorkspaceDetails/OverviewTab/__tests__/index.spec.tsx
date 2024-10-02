@@ -18,7 +18,7 @@ import { OverviewTab } from '@/pages/WorkspaceDetails/OverviewTab';
 import getComponentRenderer, { screen } from '@/services/__mocks__/getComponentRenderer';
 import { constructWorkspace, Workspace } from '@/services/workspace-adapter';
 import { DevWorkspaceBuilder } from '@/store/__mocks__/devWorkspaceBuilder';
-import { FakeStoreBuilder } from '@/store/__mocks__/storeBuilder';
+import { MockStoreBuilder } from '@/store/__mocks__/mockStore';
 
 jest.mock('@/pages/WorkspaceDetails/OverviewTab/InfrastructureNamespace');
 jest.mock('@/pages/WorkspaceDetails/OverviewTab/Projects');
@@ -61,7 +61,7 @@ describe('OverviewTab', () => {
 });
 
 function getComponent(workspace: Workspace) {
-  const store = new FakeStoreBuilder().build();
+  const store = new MockStoreBuilder().build();
   return (
     <Provider store={store}>
       <OverviewTab onSave={mockOnSave} workspace={workspace} />

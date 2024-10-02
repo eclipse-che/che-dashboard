@@ -16,7 +16,7 @@ import { Provider } from 'react-redux';
 import { Store } from 'redux';
 
 import { BrandingData } from '@/services/bootstrap/branding.constant';
-import { FakeStoreBuilder } from '@/store/__mocks__/storeBuilder';
+import { MockStoreBuilder } from '@/store/__mocks__/mockStore';
 
 import BannerAlertBranding from '..';
 
@@ -33,7 +33,7 @@ describe('BannerAlertBranding component', () => {
   });
 
   it('should not show header warning message when no warning option is present', () => {
-    const component = renderComponent(<BannerAlertBranding />, new FakeStoreBuilder().build());
+    const component = renderComponent(<BannerAlertBranding />, new MockStoreBuilder().build());
     expect(
       component.queryAllByText(scheduledMaintenance, {
         exact: false,
@@ -58,7 +58,7 @@ function renderComponent(component: React.ReactElement, store: Store<any, any>):
 }
 
 function storeBuilder(message: string): Store {
-  return new FakeStoreBuilder()
+  return new MockStoreBuilder()
     .withBranding({
       header: {
         warning: message,

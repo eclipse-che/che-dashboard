@@ -10,14 +10,13 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
+import { createSelector } from '@reduxjs/toolkit';
 import { cloneDeep } from 'lodash';
-import { createSelector } from 'reselect';
 
 import devfileApi from '@/services/devfileApi';
-import { AppState } from '@/store';
+import { RootState } from '@/store';
 
-const selectState = (state: AppState) => state.dwPlugins;
-export const selectPluginsState = selectState;
+const selectState = (state: RootState) => state.dwPlugins;
 
 export const selectDwPlugins = createSelector(selectState, state => state.plugins);
 

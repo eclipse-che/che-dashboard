@@ -13,9 +13,10 @@
 import { StateMock } from '@react-mock/state';
 import React from 'react';
 import { Provider } from 'react-redux';
-import { Action, Store } from 'redux';
+import { Store } from 'redux';
 
 import { container } from '@/inversify.config';
+import SshKeys, { State } from '@/pages/UserPreferences/SshKeys';
 import { sshKey1, sshKey2 } from '@/pages/UserPreferences/SshKeys/__tests__/stub';
 import {
   MODAL_ADD_CLOSE_BUTTON_TEST_ID,
@@ -31,14 +32,12 @@ import getComponentRenderer, {
 import { AppAlerts } from '@/services/alerts/appAlerts';
 import { AlertItem } from '@/services/helpers/types';
 import { AppThunk } from '@/store';
-import { FakeStoreBuilder } from '@/store/__mocks__/storeBuilder';
-import { ActionCreators } from '@/store/SshKeys';
+import { MockStoreBuilder } from '@/store/__mocks__/mockStore';
+import { sshKeysActionCreators } from '@/store/SshKeys';
 
-import SshKeys, { State } from '..';
-
-jest.mock('../AddModal');
-jest.mock('../DeleteModal');
-jest.mock('../List');
+jest.mock('@/pages/UserPreferences/SshKeys/AddModal');
+jest.mock('@/pages/UserPreferences/SshKeys/DeleteModal');
+jest.mock('@/pages/UserPreferences/SshKeys/List');
 
 // mute console.error
 console.error = jest.fn();
@@ -49,30 +48,31 @@ const mockRequestSshKeys = jest.fn();
 const mockAddSshKeys = jest.fn();
 const mockRemoveSshKey = jest.fn();
 jest.mock('@/store/SshKeys', () => ({
-  actionCreators: {
+  ...jest.requireActual('@/store/SshKeys'),
+  sshKeysActionCreators: {
     addSshKey:
-      (...args): AppThunk<Action, Promise<void>> =>
-      async (): Promise<void> =>
+      (...args): AppThunk =>
+      async () =>
         mockAddSshKeys(...args),
     requestSshKeys:
-      (...args): AppThunk<Action, Promise<void>> =>
-      async (): Promise<void> =>
+      (...args): AppThunk =>
+      async () =>
         mockRequestSshKeys(...args),
     removeSshKey:
-      (...args): AppThunk<Action, Promise<void>> =>
-      async (): Promise<void> =>
+      (...args): AppThunk =>
+      async () =>
         mockRemoveSshKey(...args),
-  } as ActionCreators,
+  } as typeof sshKeysActionCreators,
 }));
 
 const { createSnapshot, renderComponent } = getComponentRenderer(getComponent);
 
 describe('SshKeys', () => {
-  let storeBuilder: FakeStoreBuilder;
+  let storeBuilder: MockStoreBuilder;
   let localState: Partial<State>;
 
   beforeEach(() => {
-    storeBuilder = new FakeStoreBuilder();
+    storeBuilder = new MockStoreBuilder();
 
     class MockAppAlerts extends AppAlerts {
       showAlert(alert: AlertItem): void {
@@ -277,7 +277,7 @@ describe('SshKeys', () => {
       const { reRenderComponent } = renderComponent(store);
 
       const errorMessage = 'fetch-ssh-keys-error';
-      const nextStore = new FakeStoreBuilder()
+      const nextStore = new MockStoreBuilder()
         .withSshKeys({ keys: [], error: errorMessage }, false)
         .build();
       reRenderComponent(nextStore);

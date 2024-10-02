@@ -26,7 +26,7 @@ import { connect, ConnectedProps } from 'react-redux';
 
 import { SampleCard } from '@/pages/GetStarted/SamplesList/Gallery/Card';
 import { che } from '@/services/models';
-import * as DevfileRegistriesStore from '@/store/DevfileRegistries';
+import { devfileRegistriesActionCreators } from '@/store/DevfileRegistries';
 import { DevfileRegistryMetadata, EMPTY_WORKSPACE_TAG } from '@/store/DevfileRegistries/selectors';
 
 export type PluginEditor = che.Plugin & {
@@ -124,9 +124,7 @@ export class SamplesListGallery extends React.PureComponent<Props> {
   }
 }
 
-const connector = connect(null, {
-  ...DevfileRegistriesStore.actionCreators,
-});
+const connector = connect(null, devfileRegistriesActionCreators);
 
 type MappedProps = ConnectedProps<typeof connector>;
 export default connector(SamplesListGallery);

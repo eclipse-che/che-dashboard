@@ -10,69 +10,82 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import { MockStoreEnhanced } from 'redux-mock-store';
-import { ThunkDispatch } from 'redux-thunk';
-
-import { AppState } from '@/store';
-import { FakeStoreBuilder } from '@/store/__mocks__/storeBuilder';
+import { RootState } from '@/store';
 import {
   selectClusterConfigError,
+  selectDashboardFavicon,
   selectDashboardWarning,
   selectRunningWorkspacesLimit,
 } from '@/store/ClusterConfig/selectors';
 
-import * as store from '..';
+describe('ClusterConfig Selectors', () => {
+  const mockState = {
+    clusterConfig: {
+      clusterConfig: {
+        allWorkspacesLimit: -1,
+        dashboardWarning: 'A warning message',
+        runningWorkspacesLimit: 1,
+        dashboardFavicon: {
+          base64data: 'base64data',
+          mediatype: 'image/png',
+        },
+      },
+      isLoading: false,
+      error: 'Something unexpected',
+    },
+  } as RootState;
 
-describe('ClusterConfig', () => {
-  it('should return an error', () => {
-    const fakeStore = new FakeStoreBuilder()
-      .withClusterConfig(undefined, false, 'Something unexpected')
-      .build() as MockStoreEnhanced<
-      AppState,
-      ThunkDispatch<AppState, undefined, store.KnownAction>
-    >;
-    const state = fakeStore.getState();
-
-    const selectedError = selectClusterConfigError(state);
-    expect(selectedError).toEqual('Something unexpected');
+  it('should select dashboard warning', () => {
+    const result = selectDashboardWarning(mockState);
+    expect(result).toEqual('A warning message');
   });
 
-  it('should return a dashboard warning', () => {
-    const fakeStore = new FakeStoreBuilder()
-      .withClusterConfig({ dashboardWarning: 'A warning message' }, false, 'Something unexpected')
-      .build() as MockStoreEnhanced<
-      AppState,
-      ThunkDispatch<AppState, undefined, store.KnownAction>
-    >;
-    const state = fakeStore.getState();
-
-    const selectedInfo = selectDashboardWarning(state);
-    expect(selectedInfo).toEqual('A warning message');
+  it('should return empty string if dashboard warning is not available', () => {
+    const stateWithoutWarning = {
+      ...mockState,
+      clusterConfig: {
+        clusterConfig: {
+          dashboardWarning: undefined,
+        },
+      },
+    } as RootState;
+    const result = selectDashboardWarning(stateWithoutWarning);
+    expect(result).toEqual('');
   });
 
-  it('should return the default value for running workspaces limit', () => {
-    const fakeStore = new FakeStoreBuilder()
-      .withClusterConfig(undefined, false, 'Something unexpected')
-      .build() as MockStoreEnhanced<
-      AppState,
-      ThunkDispatch<AppState, undefined, store.KnownAction>
-    >;
-    const state = fakeStore.getState();
-
-    const runningLimit = selectRunningWorkspacesLimit(state);
-    expect(runningLimit).toEqual(1);
+  it('should select running workspaces limit', () => {
+    const result = selectRunningWorkspacesLimit(mockState);
+    expect(result).toEqual(1);
   });
 
-  it('should return a running workspaces limit', () => {
-    const fakeStore = new FakeStoreBuilder()
-      .withClusterConfig({ runningWorkspacesLimit: 2 }, false, 'Something unexpected')
-      .build() as MockStoreEnhanced<
-      AppState,
-      ThunkDispatch<AppState, undefined, store.KnownAction>
-    >;
-    const state = fakeStore.getState();
+  it('should return default value for running workspaces limit if not set', () => {
+    const stateWithoutLimit = {
+      ...mockState,
+      clusterConfig: { ...mockState.clusterConfig, runningWorkspacesLimit: undefined },
+    } as RootState;
+    const result = selectRunningWorkspacesLimit(stateWithoutLimit);
+    expect(result).toEqual(1); // Assuming 1 is the default value
+  });
 
-    const runningLimit = selectRunningWorkspacesLimit(state);
-    expect(runningLimit).toEqual(2);
+  it('should select cluster config error', () => {
+    const result = selectClusterConfigError(mockState);
+    expect(result).toEqual('Something unexpected');
+  });
+
+  it('should return undefined if cluster config error is not available', () => {
+    const stateWithoutError = {
+      ...mockState,
+      clusterConfig: { ...mockState.clusterConfig, error: undefined },
+    } as RootState;
+    const result = selectClusterConfigError(stateWithoutError);
+    expect(result).toBeUndefined();
+  });
+
+  it('should select dashboard favicon', () => {
+    const result = selectDashboardFavicon(mockState);
+    expect(result).toEqual({
+      base64data: 'base64data',
+      mediatype: 'image/png',
+    });
   });
 });

@@ -19,7 +19,7 @@ import getRandomString from '@/services/helpers/random';
 import { DevWorkspaceStatus } from '@/services/helpers/types';
 
 export class DevWorkspaceBuilder {
-  private workspace: devfileApi.DevWorkspace = {
+  private workspace: any = {
     kind: 'DevWorkspace',
     apiVersion: 'workspace.devfile.io/v1alpha2',
     metadata: {

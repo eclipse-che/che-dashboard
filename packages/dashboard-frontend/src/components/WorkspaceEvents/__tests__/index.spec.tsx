@@ -20,7 +20,7 @@ import getComponentRenderer from '@/services/__mocks__/getComponentRenderer';
 import devfileApi from '@/services/devfileApi';
 import { constructWorkspace, Workspace, WorkspaceAdapter } from '@/services/workspace-adapter';
 import { DevWorkspaceBuilder } from '@/store/__mocks__/devWorkspaceBuilder';
-import { FakeStoreBuilder } from '@/store/__mocks__/storeBuilder';
+import { MockStoreBuilder } from '@/store/__mocks__/mockStore';
 
 import WorkspaceEvents from '..';
 
@@ -74,21 +74,21 @@ describe('The WorkspaceEvents component', () => {
   });
 
   test('snapshot - empty state', () => {
-    const store = new FakeStoreBuilder().withDevWorkspaces({ workspaces: [] }).build();
+    const store = new MockStoreBuilder().withDevWorkspaces({ workspaces: [] }).build();
     const snapshot = createSnapshot(store, undefined);
     expect(snapshot.toJSON()).toMatchSnapshot();
   });
 
   test('snapshot - no events', () => {
     const devWorkspace = devWorkspaceBuilder.withStatus({ phase: 'STARTING' }).build();
-    const store = new FakeStoreBuilder().withDevWorkspaces({ workspaces: [devWorkspace] }).build();
+    const store = new MockStoreBuilder().withDevWorkspaces({ workspaces: [devWorkspace] }).build();
     const component = createSnapshot(store, devWorkspace);
     expect(component.toJSON()).toMatchSnapshot();
   });
 
   test('snapshot - with events', () => {
     const devWorkspace = devWorkspaceBuilder.withStatus({ phase: 'STARTING' }).build();
-    const store = new FakeStoreBuilder()
+    const store = new MockStoreBuilder()
       .withDevWorkspaces({
         workspaces: [devWorkspace],
         startedWorkspaces: { [WorkspaceAdapter.getUID(devWorkspace)]: '1' },
@@ -101,7 +101,7 @@ describe('The WorkspaceEvents component', () => {
 
   it('should show a correct number of events', () => {
     const devWorkspace = devWorkspaceBuilder.withStatus({ phase: 'STARTING' }).build();
-    const store = new FakeStoreBuilder()
+    const store = new MockStoreBuilder()
       .withDevWorkspaces({
         workspaces: [devWorkspace],
         startedWorkspaces: { [WorkspaceAdapter.getUID(devWorkspace)]: '1' },
@@ -113,7 +113,7 @@ describe('The WorkspaceEvents component', () => {
     expect(screen.getByText('1 event')).toBeTruthy();
     expect(screen.getAllByTestId('event-item').length).toEqual(1);
 
-    const nextStore = new FakeStoreBuilder()
+    const nextStore = new MockStoreBuilder()
       .withDevWorkspaces({
         workspaces: [devWorkspace],
         startedWorkspaces: { [WorkspaceAdapter.getUID(devWorkspace)]: '1' },
@@ -128,7 +128,7 @@ describe('The WorkspaceEvents component', () => {
 
   it('should sort events by timestamp', () => {
     const devWorkspace = devWorkspaceBuilder.withStatus({ phase: 'STARTING' }).build();
-    const store = new FakeStoreBuilder()
+    const store = new MockStoreBuilder()
       .withDevWorkspaces({
         workspaces: [devWorkspace],
         startedWorkspaces: { [WorkspaceAdapter.getUID(devWorkspace)]: '1' },
@@ -148,7 +148,7 @@ describe('The WorkspaceEvents component', () => {
     event2.lastTimestamp = undefined;
 
     const devWorkspace = devWorkspaceBuilder.withStatus({ phase: 'STARTING' }).build();
-    const store = new FakeStoreBuilder()
+    const store = new MockStoreBuilder()
       .withDevWorkspaces({
         workspaces: [devWorkspace],
         startedWorkspaces: { [WorkspaceAdapter.getUID(devWorkspace)]: '1' },

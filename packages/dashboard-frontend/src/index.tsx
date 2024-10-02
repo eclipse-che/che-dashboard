@@ -22,13 +22,12 @@ import { Provider } from 'react-redux';
 import App from '@/App';
 import WorkspaceActionsProvider from '@/contexts/WorkspaceActions/Provider';
 import PreloadData from '@/services/bootstrap';
-import configureStore from '@/store/configureStore';
+import { store } from '@/store';
 
 startApp();
 
 async function startApp(): Promise<void> {
   const history = createHashHistory();
-  const store = configureStore(history);
 
   const container = document.getElementById('ui-container')!;
   const root = ReactDOM.createRoot(container);

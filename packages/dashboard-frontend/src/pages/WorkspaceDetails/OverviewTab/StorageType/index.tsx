@@ -30,7 +30,7 @@ import overviewStyles from '@/pages/WorkspaceDetails/OverviewTab/index.module.cs
 import styles from '@/pages/WorkspaceDetails/OverviewTab/StorageType/index.module.css';
 import { che } from '@/services/models';
 import * as storageTypeService from '@/services/storageTypes';
-import { AppState } from '@/store';
+import { RootState } from '@/store';
 import { selectBranding } from '@/store/Branding/selectors';
 import { selectPvcStrategy } from '@/store/ServerConfig/selectors';
 
@@ -356,7 +356,7 @@ class StorageTypeFormGroup extends React.PureComponent<Props, State> {
   }
 }
 
-const mapStateToProps = (state: AppState) => ({
+const mapStateToProps = (state: RootState) => ({
   branding: selectBranding(state),
   preferredStorageType: selectPvcStrategy(state),
 });

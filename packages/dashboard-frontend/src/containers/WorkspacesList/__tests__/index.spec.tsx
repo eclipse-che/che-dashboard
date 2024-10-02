@@ -17,23 +17,23 @@ import { InitialEntry } from 'history';
 import React from 'react';
 import { Provider } from 'react-redux';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
-import { Action, Store } from 'redux';
+import { Store } from 'redux';
 
 import WorkspacesList from '@/containers/WorkspacesList';
 import getComponentRenderer from '@/services/__mocks__/getComponentRenderer';
 import { Workspace } from '@/services/workspace-adapter';
 import { AppThunk } from '@/store';
 import { DevWorkspaceBuilder } from '@/store/__mocks__/devWorkspaceBuilder';
-import { FakeStoreBuilder } from '@/store/__mocks__/storeBuilder';
-import { ActionCreators } from '@/store/Workspaces';
+import { MockStoreBuilder } from '@/store/__mocks__/mockStore';
+import { workspacesActionCreators } from '@/store/Workspaces';
 
 jest.mock('@/store/Workspaces/index', () => {
   return {
     actionCreators: {
-      requestWorkspaces: (): AppThunk<Action, Promise<void>> => async (): Promise<void> => {
+      requestWorkspaces: (): AppThunk => async () => {
         return Promise.resolve();
       },
-    } as ActionCreators,
+    } as typeof workspacesActionCreators,
   };
 });
 jest.mock('@/pages/WorkspacesList', () => {
@@ -70,7 +70,7 @@ describe('Workspaces List Container', () => {
           .withName('workspace-' + i)
           .build(),
       );
-      const store = new FakeStoreBuilder()
+      const store = new MockStoreBuilder()
         .withDevWorkspaces({ workspaces }, false)
         .withWorkspaces({}, false)
         .build();
@@ -82,7 +82,7 @@ describe('Workspaces List Container', () => {
 
   describe('while fetching workspaces', () => {
     it('should show the fallback', () => {
-      const store = new FakeStoreBuilder()
+      const store = new MockStoreBuilder()
         .withDevWorkspaces({ workspaces: [] }, true)
         .withWorkspaces({}, true)
         .build();

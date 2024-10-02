@@ -23,7 +23,7 @@ import getComponentRenderer from '@/services/__mocks__/getComponentRenderer';
 import { getDefer } from '@/services/helpers/deferred';
 import { AlertItem } from '@/services/helpers/types';
 import { DevWorkspaceBuilder } from '@/store/__mocks__/devWorkspaceBuilder';
-import { FakeStoreBuilder } from '@/store/__mocks__/storeBuilder';
+import { MockStoreBuilder } from '@/store/__mocks__/mockStore';
 
 import StartingStepInitialize from '..';
 
@@ -64,7 +64,7 @@ describe('Starting steps, initializing', () => {
     let paramsWithWrongName: WorkspaceRouteParams;
 
     beforeEach(() => {
-      store = new FakeStoreBuilder()
+      store = new MockStoreBuilder()
         .withDevWorkspaces({
           workspaces: [
             new DevWorkspaceBuilder()
@@ -143,7 +143,7 @@ describe('Starting steps, initializing', () => {
   });
 
   test('workspace is STOPPING then STOPPED', async () => {
-    const store = new FakeStoreBuilder()
+    const store = new MockStoreBuilder()
       .withDevWorkspaces({
         workspaces: [
           new DevWorkspaceBuilder()
@@ -162,7 +162,7 @@ describe('Starting steps, initializing', () => {
     // no errors at this moment
     expect(mockOnError).not.toHaveBeenCalled();
 
-    const nextStore = new FakeStoreBuilder()
+    const nextStore = new MockStoreBuilder()
       .withDevWorkspaces({
         workspaces: [
           new DevWorkspaceBuilder()
@@ -186,7 +186,7 @@ describe('Starting steps, initializing', () => {
   });
 
   test('workspace is STOPPED', async () => {
-    const store = new FakeStoreBuilder()
+    const store = new MockStoreBuilder()
       .withDevWorkspaces({
         workspaces: [
           new DevWorkspaceBuilder()
@@ -212,7 +212,7 @@ describe('Starting steps, initializing', () => {
   });
 
   test('workspace is FAILING then FAILED', async () => {
-    const store = new FakeStoreBuilder()
+    const store = new MockStoreBuilder()
       .withDevWorkspaces({
         workspaces: [
           new DevWorkspaceBuilder()
@@ -231,7 +231,7 @@ describe('Starting steps, initializing', () => {
     // no errors at this moment
     expect(mockOnError).not.toHaveBeenCalled();
 
-    const nextStore = new FakeStoreBuilder()
+    const nextStore = new MockStoreBuilder()
       .withDevWorkspaces({
         workspaces: [
           new DevWorkspaceBuilder()
@@ -254,7 +254,7 @@ describe('Starting steps, initializing', () => {
   });
 
   test('workspace is FAILED', async () => {
-    const store = new FakeStoreBuilder()
+    const store = new MockStoreBuilder()
       .withDevWorkspaces({
         workspaces: [
           new DevWorkspaceBuilder()
@@ -282,7 +282,7 @@ describe('Starting steps, initializing', () => {
   });
 
   test('workspace is TERMINATING', async () => {
-    const store = new FakeStoreBuilder()
+    const store = new MockStoreBuilder()
       .withDevWorkspaces({
         workspaces: [
           new DevWorkspaceBuilder()
@@ -316,7 +316,7 @@ describe('Starting steps, initializing', () => {
   });
 
   test('workspace is RUNNING', async () => {
-    const store = new FakeStoreBuilder()
+    const store = new MockStoreBuilder()
       .withDevWorkspaces({
         workspaces: [
           new DevWorkspaceBuilder()
@@ -344,7 +344,7 @@ describe('Starting steps, initializing', () => {
   });
 
   test('workspace is STARTING', async () => {
-    const store = new FakeStoreBuilder()
+    const store = new MockStoreBuilder()
       .withDevWorkspaces({
         workspaces: [
           new DevWorkspaceBuilder()
@@ -375,7 +375,7 @@ describe('Starting steps, initializing', () => {
     let store: Store;
 
     beforeEach(() => {
-      store = new FakeStoreBuilder()
+      store = new MockStoreBuilder()
         .withDevWorkspaces({
           workspaces: [
             new DevWorkspaceBuilder()

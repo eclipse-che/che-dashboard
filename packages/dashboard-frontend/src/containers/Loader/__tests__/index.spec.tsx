@@ -21,7 +21,7 @@ import { Store } from 'redux';
 import LoaderContainer from '@/containers/Loader';
 import { ROUTE } from '@/Routes';
 import getComponentRenderer from '@/services/__mocks__/getComponentRenderer';
-import { FakeStoreBuilder } from '@/store/__mocks__/storeBuilder';
+import { MockStoreBuilder } from '@/store/__mocks__/mockStore';
 
 jest.mock('@/pages/Loader');
 
@@ -40,7 +40,7 @@ describe('Loader container', () => {
   let emptyStore: Store;
 
   beforeEach(() => {
-    emptyStore = new FakeStoreBuilder().build();
+    emptyStore = new MockStoreBuilder().build();
   });
 
   afterEach(() => {

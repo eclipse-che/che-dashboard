@@ -22,7 +22,7 @@ import {
 import React from 'react';
 
 import { GIT_OAUTH_PROVIDERS } from '@/pages/UserPreferences/const';
-import { IGitOauth } from '@/store/GitOauthConfig/types';
+import { IGitOauth } from '@/store/GitOauthConfig';
 
 export type Props = {
   selectedItems: IGitOauth[];

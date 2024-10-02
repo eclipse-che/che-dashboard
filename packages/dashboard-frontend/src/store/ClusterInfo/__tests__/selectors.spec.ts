@@ -10,51 +10,47 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import { MockStoreEnhanced } from 'redux-mock-store';
-import { ThunkDispatch } from 'redux-thunk';
-
-import { AppState } from '@/store';
-import { FakeStoreBuilder } from '@/store/__mocks__/storeBuilder';
+import { RootState } from '@/store';
 import { selectApplications, selectClusterInfoError } from '@/store/ClusterInfo/selectors';
 
-import * as store from '..';
-
-const applications = [
-  {
-    title: 'App1',
-    url: 'my/app/1',
-    icon: 'my/app/1/logo',
-  },
-  {
-    title: 'App2',
-    url: 'my/app/2',
-    icon: 'my/app/2/logo',
-  },
-];
 describe('ClusterInfo', () => {
-  it('should return an error', () => {
-    const fakeStore = new FakeStoreBuilder()
-      .withClusterInfo({ applications }, false, 'Something unexpected')
-      .build() as MockStoreEnhanced<
-      AppState,
-      ThunkDispatch<AppState, undefined, store.KnownAction>
-    >;
-    const state = fakeStore.getState();
-
-    const selectedError = selectClusterInfoError(state);
-    expect(selectedError).toEqual('Something unexpected');
-  });
+  const applications = [
+    {
+      title: 'App1',
+      url: 'my/app/1',
+      icon: 'my/app/1/logo',
+    },
+  ];
+  const mockState = {
+    clusterInfo: {
+      clusterInfo: {
+        applications,
+      },
+      isLoading: false,
+      error: 'Something unexpected',
+    },
+  } as Partial<RootState> as RootState;
 
   it('should return all applications', () => {
-    const fakeStore = new FakeStoreBuilder()
-      .withClusterInfo({ applications }, false, 'Something unexpected')
-      .build() as MockStoreEnhanced<
-      AppState,
-      ThunkDispatch<AppState, undefined, store.KnownAction>
-    >;
-    const state = fakeStore.getState();
-
-    const selectedApps = selectApplications(state);
+    const selectedApps = selectApplications(mockState);
     expect(selectedApps).toEqual(applications);
+  });
+
+  it('should return an empty array if there are no applications', () => {
+    const stateWithoutApps = {
+      ...mockState,
+      clusterInfo: {
+        clusterInfo: {
+          applications: undefined,
+        } as unknown,
+      },
+    } as RootState;
+    const selectedApps = selectApplications(stateWithoutApps);
+    expect(selectedApps).toEqual([]);
+  });
+
+  it('should return an error', () => {
+    const selectedError = selectClusterInfoError(mockState);
+    expect(selectedError).toEqual('Something unexpected');
   });
 });

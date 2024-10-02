@@ -19,7 +19,7 @@ import { lazyInject } from '@/inversify.config';
 import { ROUTE } from '@/Routes';
 import { AppAlerts } from '@/services/alerts/appAlerts';
 import { BrandingData } from '@/services/bootstrap/branding.constant';
-import * as InfrastructureNamespacesStore from '@/store/InfrastructureNamespaces';
+import { infrastructureNamespacesActionCreators } from '@/store/InfrastructureNamespaces';
 
 type Props = MappedProps & {
   branding: BrandingData;
@@ -104,7 +104,7 @@ export class UserMenu extends React.PureComponent<Props, State> {
 
 const mapStateToProps = () => ({});
 
-const connector = connect(mapStateToProps, InfrastructureNamespacesStore.actionCreators);
+const connector = connect(mapStateToProps, infrastructureNamespacesActionCreators);
 
 type MappedProps = ConnectedProps<typeof connector>;
 export default connector(UserMenu);

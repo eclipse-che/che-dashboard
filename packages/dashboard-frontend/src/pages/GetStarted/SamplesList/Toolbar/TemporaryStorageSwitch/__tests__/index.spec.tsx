@@ -18,7 +18,7 @@ import { Store } from 'redux';
 import TemporaryStorageSwitch from '@/pages/GetStarted/SamplesList/Toolbar/TemporaryStorageSwitch';
 import getComponentRenderer from '@/services/__mocks__/getComponentRenderer';
 import { BrandingData } from '@/services/bootstrap/branding.constant';
-import { FakeStoreBuilder } from '@/store/__mocks__/storeBuilder';
+import { MockStoreBuilder } from '@/store/__mocks__/mockStore';
 
 const { renderComponent, createSnapshot } = getComponentRenderer(getComponent);
 
@@ -28,7 +28,7 @@ describe('Temporary Storage Switch', () => {
   let store: Store;
 
   beforeEach(() => {
-    store = new FakeStoreBuilder()
+    store = new MockStoreBuilder()
       .withBranding({
         docs: {
           storageTypes: 'https://docs.location',

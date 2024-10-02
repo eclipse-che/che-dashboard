@@ -24,7 +24,7 @@ import { connect, ConnectedProps } from 'react-redux';
 import { AboutMenu } from '@/Layout/Header/Tools/AboutMenu';
 import { ApplicationsMenu } from '@/Layout/Header/Tools/ApplicationsMenu';
 import UserMenu from '@/Layout/Header/Tools/UserMenu';
-import { AppState } from '@/store';
+import { RootState } from '@/store';
 import { selectBranding } from '@/store/Branding/selectors';
 import { selectApplications } from '@/store/ClusterInfo/selectors';
 import { selectDashboardLogo } from '@/store/ServerConfig/selectors';
@@ -76,7 +76,7 @@ export class HeaderTools extends React.PureComponent<Props> {
   }
 }
 
-const mapStateToProps = (state: AppState) => ({
+const mapStateToProps = (state: RootState) => ({
   userProfile: selectUserProfile(state),
   branding: selectBranding(state),
   dashboardLogo: selectDashboardLogo(state),

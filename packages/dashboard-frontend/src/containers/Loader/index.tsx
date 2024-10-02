@@ -21,7 +21,7 @@ import { findTargetWorkspace } from '@/services/helpers/factoryFlow/findTargetWo
 import { getLoaderMode } from '@/services/helpers/factoryFlow/getLoaderMode';
 import { LoaderTab } from '@/services/helpers/types';
 import { Workspace } from '@/services/workspace-adapter';
-import { AppState } from '@/store';
+import { RootState } from '@/store';
 import { selectAllWorkspaces } from '@/store/Workspaces/selectors';
 
 type RouteParams = Partial<WorkspaceRouteParams> | undefined;
@@ -101,7 +101,7 @@ function ContainerWrapper(props: MappedProps) {
   );
 }
 
-const mapStateToProps = (state: AppState) => ({
+const mapStateToProps = (state: RootState) => ({
   allWorkspaces: selectAllWorkspaces(state),
 });
 

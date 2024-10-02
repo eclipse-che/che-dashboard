@@ -19,7 +19,7 @@ import {
 } from '@patternfly/react-core';
 import React from 'react';
 
-import { IGitOauth } from '@/store/GitOauthConfig/types';
+import { IGitOauth } from '@/store/GitOauthConfig';
 
 export type Props = {
   isDisabled: boolean;

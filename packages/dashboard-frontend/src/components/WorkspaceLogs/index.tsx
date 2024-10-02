@@ -28,8 +28,8 @@ import { WorkspaceLogsToolsPanel } from '@/components/WorkspaceLogs/ToolsPanel';
 import { WorkspaceLogsViewer } from '@/components/WorkspaceLogs/Viewer';
 import { WorkspaceLogsViewerTools } from '@/components/WorkspaceLogs/ViewerTools';
 import { Workspace } from '@/services/workspace-adapter';
-import { AppState } from '@/store';
-import * as LogsStore from '@/store/Pods/Logs';
+import { RootState } from '@/store';
+import { ContainerLogs, podLogsActionCreators } from '@/store/Pods/Logs';
 import { selectPodLogs } from '@/store/Pods/Logs/selectors';
 import { selectAllPods } from '@/store/Pods/selectors';
 import { selectAllWorkspaces } from '@/store/Workspaces/selectors';
@@ -130,7 +130,7 @@ class WorkspaceLogs extends React.PureComponent<Props, State> {
     this.setState({ containerName });
   }
 
-  private getContainerLogs(props: Props, state: State): LogsStore.ContainerLogs | undefined {
+  private getContainerLogs(props: Props, state: State): ContainerLogs | undefined {
     const { pod, containerName } = state;
     if (pod === undefined || containerName === undefined) {
       return;
@@ -216,13 +216,13 @@ class WorkspaceLogs extends React.PureComponent<Props, State> {
   }
 }
 
-const mapStateToProps = (state: AppState) => ({
+const mapStateToProps = (state: RootState) => ({
   allWorkspaces: selectAllWorkspaces(state),
   allPods: selectAllPods(state),
   podLogsFn: selectPodLogs(state),
 });
 
-const connector = connect(mapStateToProps, LogsStore.actionCreators);
+const connector = connect(mapStateToProps, podLogsActionCreators);
 
 type MappedProps = ConnectedProps<typeof connector>;
 export default connector(WorkspaceLogs);

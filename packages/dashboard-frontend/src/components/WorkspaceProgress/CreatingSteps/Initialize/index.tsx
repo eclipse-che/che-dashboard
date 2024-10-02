@@ -32,7 +32,7 @@ import {
 } from '@/services/helpers/factoryFlow/buildFactoryParams';
 import { buildUserPreferencesLocation, toHref } from '@/services/helpers/location';
 import { AlertItem, UserPreferencesTab } from '@/services/helpers/types';
-import { AppState } from '@/store';
+import { RootState } from '@/store';
 import { selectAllWorkspacesLimit } from '@/store/ClusterConfig/selectors';
 import { selectIsRegistryDevfile } from '@/store/DevfileRegistries/selectors';
 import { selectInfrastructureNamespaces } from '@/store/InfrastructureNamespaces/selectors';
@@ -324,7 +324,7 @@ export class NoSshKeysError extends Error {
   }
 }
 
-const mapStateToProps = (state: AppState) => ({
+const mapStateToProps = (state: RootState) => ({
   allWorkspaces: selectAllWorkspaces(state),
   allWorkspacesLimit: selectAllWorkspacesLimit(state),
   infrastructureNamespaces: selectInfrastructureNamespaces(state),

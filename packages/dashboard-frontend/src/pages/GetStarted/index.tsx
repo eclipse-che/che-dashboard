@@ -20,7 +20,7 @@ import Head from '@/components/Head';
 import ImportFromGit from '@/components/ImportFromGit';
 import { Spacer } from '@/components/Spacer';
 import SamplesList from '@/pages/GetStarted/SamplesList';
-import { AppState } from '@/store';
+import { RootState } from '@/store';
 import { selectDefaultEditor } from '@/store/ServerConfig/selectors';
 
 type Props = MappedProps & {
@@ -92,7 +92,7 @@ export class GetStarted extends React.PureComponent<Props, State> {
   }
 }
 
-const mapStateToProps = (state: AppState) => ({
+const mapStateToProps = (state: RootState) => ({
   defaultEditor: selectDefaultEditor(state),
 });
 

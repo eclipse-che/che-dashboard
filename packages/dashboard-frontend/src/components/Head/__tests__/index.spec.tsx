@@ -16,7 +16,7 @@ import { Provider } from 'react-redux';
 import Head from '@/components/Head';
 import getComponentRenderer from '@/services/__mocks__/getComponentRenderer';
 import { BrandingData } from '@/services/bootstrap/branding.constant';
-import { FakeStoreBuilder } from '@/store/__mocks__/storeBuilder';
+import { MockStoreBuilder } from '@/store/__mocks__/mockStore';
 
 const { createSnapshot } = getComponentRenderer(getComponent);
 
@@ -45,7 +45,7 @@ describe('The head component for setting document title', () => {
 });
 
 function getComponent(pageName?: string): React.ReactElement {
-  const store = new FakeStoreBuilder()
+  const store = new MockStoreBuilder()
     .withBranding({ title: 'Dummy product title' } as BrandingData)
     .build();
 

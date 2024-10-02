@@ -18,7 +18,7 @@ import { Store } from 'redux';
 import BannerAlertNoNodeAvailable from '@/components/BannerAlert/NoNodeAvailable';
 import getComponentRenderer from '@/services/__mocks__/getComponentRenderer';
 import { DevWorkspaceBuilder } from '@/store/__mocks__/devWorkspaceBuilder';
-import { FakeStoreBuilder } from '@/store/__mocks__/storeBuilder';
+import { MockStoreBuilder } from '@/store/__mocks__/mockStore';
 
 const { renderComponent } = getComponentRenderer(getComponent);
 const text =
@@ -26,7 +26,7 @@ const text =
 
 describe('BannerAlertNoNodeAvailable component', () => {
   it('should show alert when failedScheduling event is received and hide alert when workspace has started', async () => {
-    const { reRenderComponent } = renderComponent(new FakeStoreBuilder().build());
+    const { reRenderComponent } = renderComponent(new MockStoreBuilder().build());
 
     const events = [
       {
@@ -35,14 +35,14 @@ describe('BannerAlertNoNodeAvailable component', () => {
         metadata: { uid: 'uid' },
       } as any,
     ];
-    const store = new FakeStoreBuilder().withEvents({ events }).build();
+    const store = new MockStoreBuilder().withEvents({ events }).build();
     reRenderComponent(store);
 
     await waitFor(() => expect(screen.queryAllByText(text).length).toEqual(1));
   });
 
   it('should hide alert when workspace has started', async () => {
-    const { reRenderComponent } = renderComponent(new FakeStoreBuilder().build());
+    const { reRenderComponent } = renderComponent(new MockStoreBuilder().build());
 
     const events = [
       {
@@ -54,7 +54,7 @@ describe('BannerAlertNoNodeAvailable component', () => {
     const workspaces = [
       new DevWorkspaceBuilder().withStatus({ phase: 'STARTING', devworkspaceId: 'id' }).build(),
     ];
-    const store = new FakeStoreBuilder()
+    const store = new MockStoreBuilder()
       .withEvents({ events })
       .withDevWorkspaces({ workspaces })
       .build();
@@ -65,7 +65,7 @@ describe('BannerAlertNoNodeAvailable component', () => {
     const nextWorkspaces = [
       new DevWorkspaceBuilder().withStatus({ phase: 'RUNNING', devworkspaceId: 'id' }).build(),
     ];
-    const nextStore = new FakeStoreBuilder()
+    const nextStore = new MockStoreBuilder()
       .withEvents({ events })
       .withDevWorkspaces({ workspaces: nextWorkspaces })
       .build();

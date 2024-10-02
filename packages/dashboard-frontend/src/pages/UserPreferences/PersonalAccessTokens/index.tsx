@@ -23,14 +23,14 @@ import { PersonalAccessTokenEmptyState } from '@/pages/UserPreferences/PersonalA
 import { PersonalAccessTokenList } from '@/pages/UserPreferences/PersonalAccessTokens/List';
 import { EditTokenProps } from '@/pages/UserPreferences/PersonalAccessTokens/types';
 import { AppAlerts } from '@/services/alerts/appAlerts';
-import { AppState } from '@/store';
-import * as PersonalAccessTokenStore from '@/store/PersonalAccessToken';
+import { RootState } from '@/store';
+import { personalAccessTokenActionCreators } from '@/store/PersonalAccessTokens';
 import {
   selectPersonalAccessTokens,
   selectPersonalAccessTokensError,
   selectPersonalAccessTokensIsLoading,
-} from '@/store/PersonalAccessToken/selectors';
-import * as UserIdStore from '@/store/User/Id';
+} from '@/store/PersonalAccessTokens/selectors';
+import { userIdActionCreators } from '@/store/User/Id';
 import {
   selectCheUserId,
   selectCheUserIdError,
@@ -258,7 +258,7 @@ class PersonalAccessTokens extends React.PureComponent<Props, State> {
   }
 }
 
-const mapStateToProps = (state: AppState) => ({
+const mapStateToProps = (state: RootState) => ({
   patState: state.personalAccessToken,
   cheUserId: selectCheUserId(state),
   cheUserIdError: selectCheUserIdError(state),
@@ -270,7 +270,7 @@ const mapStateToProps = (state: AppState) => ({
 
 const connector = connect(
   mapStateToProps,
-  { ...PersonalAccessTokenStore.actionCreators, ...UserIdStore.actionCreators },
+  { ...personalAccessTokenActionCreators, ...userIdActionCreators },
   null,
   {
     // forwardRef is mandatory for using `@react-mock/state` in unit tests

@@ -10,101 +10,63 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
+import { UnknownAction } from 'redux';
+
 import devfileApi from '@/services/devfileApi';
-import { reducer } from '@/store/FactoryResolver/reducer';
-import { KnownAction, Resolver, State, Type } from '@/store/FactoryResolver/types';
-import { AUTHORIZED } from '@/store/sanityCheckMiddleware';
+import {
+  factoryResolverErrorAction,
+  factoryResolverReceiveAction,
+  factoryResolverRequestAction,
+} from '@/store/FactoryResolver/actions';
+import { reducer, State, unloadedState } from '@/store/FactoryResolver/reducer';
 
-describe('FactoryResolver store, reducers', () => {
-  afterEach(() => {
-    jest.clearAllMocks();
+describe('FactoryResolver reducer', () => {
+  let initialState: State;
+
+  beforeEach(() => {
+    initialState = { ...unloadedState };
   });
 
-  it('should return initial state', () => {
-    const incomingAction: KnownAction = {
-      type: Type.REQUEST_FACTORY_RESOLVER,
-      check: AUTHORIZED,
-    };
-
-    const initialState = reducer(undefined, incomingAction);
+  it('should handle factoryResolverRequestAction', () => {
+    const action = factoryResolverRequestAction();
     const expectedState: State = {
-      isLoading: false,
+      ...initialState,
+      isLoading: true,
+      error: undefined,
     };
 
-    expect(initialState).toEqual(expectedState);
+    expect(reducer(initialState, action)).toEqual(expectedState);
   });
 
-  it('should return state if action is not matched', () => {
-    const initialState: State = {
-      isLoading: true,
-    };
-    const incomingAction = {
-      type: 'OTHER_ACTION',
-    };
-
-    const newState = reducer(initialState, incomingAction);
-    const expectedState: State = {
-      isLoading: true,
-    };
-
-    expect(newState).toEqual(expectedState);
-  });
-
-  it('should handle REQUEST_FACTORY_RESOLVER', () => {
-    const initialState: State = {
-      isLoading: false,
-    };
-    const incomingAction: KnownAction = {
-      type: Type.REQUEST_FACTORY_RESOLVER,
-      check: AUTHORIZED,
-    };
-
-    const newState = reducer(initialState, incomingAction);
-    const expectedState: State = {
-      isLoading: true,
-    };
-
-    expect(newState).toEqual(expectedState);
-  });
-
-  it('should handle RECEIVE_FACTORY_RESOLVER', () => {
-    const initialState: State = {
-      isLoading: true,
-    };
+  it('should handle factoryResolverReceiveAction', () => {
     const resolver = {
-      devfile: {
-        schemaVersion: '2.0.0',
-      } as devfileApi.Devfile,
-    } as Resolver;
-    const incomingAction: KnownAction = {
-      type: Type.RECEIVE_FACTORY_RESOLVER,
-      resolver,
+      devfile: {} as devfileApi.Devfile,
+      optionalFilesContent: { 'README.md': 'Content' },
     };
-
-    const newState = reducer(initialState, incomingAction);
+    const action = factoryResolverReceiveAction(resolver);
     const expectedState: State = {
+      ...initialState,
       isLoading: false,
       resolver,
     };
 
-    expect(newState).toEqual(expectedState);
+    expect(reducer(initialState, action)).toEqual(expectedState);
   });
 
-  it('should handle RECEIVE_FACTORY_RESOLVER_ERROR', () => {
-    const initialState: State = {
-      isLoading: true,
-    };
-    const incomingAction: KnownAction = {
-      type: Type.RECEIVE_FACTORY_RESOLVER_ERROR,
-      error: 'Unexpected error',
-    };
-
-    const newState = reducer(initialState, incomingAction);
+  it('should handle factoryResolverErrorAction', () => {
+    const error = 'Error message';
+    const action = factoryResolverErrorAction(error);
     const expectedState: State = {
+      ...initialState,
       isLoading: false,
-      error: 'Unexpected error',
+      error,
     };
 
-    expect(newState).toEqual(expectedState);
+    expect(reducer(initialState, action)).toEqual(expectedState);
+  });
+
+  it('should return the current state for unknown actions', () => {
+    const unknownAction = { type: 'UNKNOWN_ACTION' } as UnknownAction;
+    expect(reducer(initialState, unknownAction)).toEqual(initialState);
   });
 });

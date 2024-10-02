@@ -10,14 +10,14 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import { createSelector } from 'reselect';
+import { createSelector } from '@reduxjs/toolkit';
 
-import { AppState } from '@/store';
-import { EXCLUDED_TARGET_EDITOR_NAMES } from '@/store/Plugins/chePlugins';
+import { RootState } from '@/store';
 
+export const EXCLUDED_TARGET_EDITOR_NAMES = [''];
 const CHE_EDITOR = 'Che Editor';
 
-const selectState = (state: AppState) => state.plugins;
+const selectState = (state: RootState) => state.plugins;
 export const selectPluginsState = selectState;
 
 export const selectPlugins = createSelector(selectState, state =>

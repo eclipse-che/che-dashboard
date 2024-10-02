@@ -31,8 +31,8 @@ import devfileApi, { isDevfileV2, isDevWorkspace } from '@/services/devfileApi';
 import stringify from '@/services/helpers/editor';
 import { AlertItem } from '@/services/helpers/types';
 import { WorkspaceAdapter } from '@/services/workspace-adapter';
-import { AppState } from '@/store';
-import { actionCreators } from '@/store/BannerAlert';
+import { RootState } from '@/store';
+import { bannerAlertActionCreators } from '@/store/BannerAlert';
 import { selectApplications } from '@/store/ClusterInfo/selectors';
 
 export type Props = MappedProps & {
@@ -213,11 +213,11 @@ class EditorTools extends React.PureComponent<Props, State> {
   }
 }
 
-const mapStateToProps = (state: AppState) => ({
+const mapStateToProps = (state: RootState) => ({
   applications: selectApplications(state),
 });
 
-const connector = connect(mapStateToProps, actionCreators);
+const connector = connect(mapStateToProps, bannerAlertActionCreators);
 
 type MappedProps = ConnectedProps<typeof connector>;
 

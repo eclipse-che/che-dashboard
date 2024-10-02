@@ -30,9 +30,9 @@ import { AppAlerts } from '@/services/alerts/appAlerts';
 import { IssuesReporterService } from '@/services/bootstrap/issuesReporter';
 import { WarningsReporterService } from '@/services/bootstrap/warningsReporter';
 import { signOut } from '@/services/helpers/login';
-import { AppState } from '@/store';
+import { RootState } from '@/store';
 import { selectBranding } from '@/store/Branding/selectors';
-import * as SanityCheckStore from '@/store/SanityCheck';
+import { sanityCheckActionCreators } from '@/store/SanityCheck';
 import { selectSanityCheckError } from '@/store/SanityCheck/selectors';
 import { selectDashboardLogo } from '@/store/ServerConfig/selectors';
 
@@ -179,13 +179,13 @@ export class Layout extends React.PureComponent<Props, State> {
   }
 }
 
-const mapStateToProps = (state: AppState) => ({
+const mapStateToProps = (state: RootState) => ({
   branding: selectBranding(state),
   dashboardLogo: selectDashboardLogo(state),
   sanityCheckError: selectSanityCheckError(state),
 });
 
-const connector = connect(mapStateToProps, SanityCheckStore.actionCreators);
+const connector = connect(mapStateToProps, sanityCheckActionCreators);
 
 type MappedProps = ConnectedProps<typeof connector>;
 export default connector(Layout);

@@ -10,17 +10,17 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
+import { ThunkDispatch, UnknownAction } from '@reduxjs/toolkit';
 import { dump } from 'js-yaml';
-import { ThunkDispatch } from 'redux-thunk';
 
 import devfileApi from '@/services/devfileApi';
-import { actionCreators, KnownAction } from '@/store/DevfileRegistries/index';
-import { AppState } from '@/store/index';
+import { RootState } from '@/store';
+import { actionCreators } from '@/store/DevfileRegistries/actions';
 
 export async function getEditor(
   editorIdOrPath: string,
-  dispatch: ThunkDispatch<AppState, unknown, KnownAction>,
-  getState: () => AppState,
+  dispatch: ThunkDispatch<RootState, unknown, UnknownAction>,
+  getState: () => RootState,
 ): Promise<{ content?: string; editorYamlUrl: string; error?: string }> {
   let editorYamlUrl: string;
 
