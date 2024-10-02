@@ -108,7 +108,8 @@ export function isTrustedRepo(
 ): boolean {
   if (trustedSources === undefined) {
     return false;
-  } else if (trustedSources === '*') {
+  }
+  if (trustedSources === '*') {
     return true;
   }
 
