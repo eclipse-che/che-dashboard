@@ -22,7 +22,7 @@ import { FakeStoreBuilder } from '@/store/__mocks__/storeBuilder';
 
 const websocketClient = container.get(WebsocketClient);
 const text =
-  'Cluster autoscaler is provisioning a new node at the moment. Please be patient, workspace startup will be taking longer than usual.';
+  '"FailedScheduling" event occurred. If cluster autoscaler is enabled it might be provisioning a new node now and workspace startup will take longer than usual.';
 
 describe('BannerAlertNoNodeAvailable component', () => {
   it('should show alert when failedScheduling event is received and hide alert when workspace has started', async () => {

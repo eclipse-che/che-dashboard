@@ -74,8 +74,8 @@ class BannerAlertNoNodeAvailable extends React.PureComponent<Props, State> {
 
     return (
       <Banner className="pf-u-text-align-center" variant="warning">
-        Cluster autoscaler is provisioning a new node at the moment. Please be patient, workspace
-        startup will be taking longer than usual.
+        &quot;FailedScheduling&quot; event occurred. If cluster autoscaler is enabled it might be
+        provisioning a new node now and workspace startup will take longer than usual.
       </Banner>
     );
   }
