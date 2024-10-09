@@ -11,35 +11,38 @@
  */
 
 import { api } from '@eclipse-che/common';
+import { EventPhase } from '@eclipse-che/common/lib/dto/api/webSocket';
 import { render, RenderResult, screen, waitFor } from '@testing-library/react';
 import React from 'react';
 import { Provider } from 'react-redux';
+import { Store } from 'redux';
 
 import BannerAlertNoNodeAvailable from '@/components/BannerAlert/NoNodeAvailable';
 import { container } from '@/inversify.config';
 import { WebsocketClient } from '@/services/backend-client/websocketClient';
 import { FakeStoreBuilder } from '@/store/__mocks__/storeBuilder';
 
-const websocketClient = container.get(WebsocketClient);
 const text =
   '"FailedScheduling" event occurred. If cluster autoscaler is enabled it might be provisioning a new node now and workspace startup will take longer than usual.';
-
+const websocketClient = container.get(WebsocketClient);
 describe('BannerAlertNoNodeAvailable component', () => {
   it('should show alert when failedScheduling event is received and hide alert when workspace has started', async () => {
-    renderComponent();
-
-    // Dispatch FailedScheduling event to add workspace to the state.
-    (websocketClient as any).messageHandler.listeners.get(api.webSocket.Channel.EVENT)![0]({
-      event: {
+    const events = [
+      {
         reason: 'FailedScheduling',
         message: 'No preemption victims found for incoming pod',
         metadata: { uid: 'uid' },
-      },
-    } as any);
+      } as any,
+    ];
+
+    renderComponent(new FakeStoreBuilder().withEvents({ events }).build());
+
     await waitFor(() => expect(screen.queryAllByText(text).length).toEqual(1));
 
     // Dispatch workspace started event to clear the state.
-    (websocketClient as any).messageHandler.listeners.get(api.webSocket.Channel.DEV_WORKSPACE)![0]({
+    await (websocketClient as any).messageHandler.listeners.get(
+      api.webSocket.Channel.DEV_WORKSPACE,
+    )![0]({
       devWorkspace: { status: { phase: 'Running' } },
     } as any);
 
@@ -50,16 +53,15 @@ describe('BannerAlertNoNodeAvailable component', () => {
   });
 
   it('should not show alert if user namespace event is undefined', async () => {
-    renderComponent();
-    (websocketClient as any).messageHandler.listeners.get(api.webSocket.Channel.EVENT)![0]({
-      event: {} as any,
-    });
+    const events = [{} as any];
+
+    renderComponent(new FakeStoreBuilder().withEvents({ events }).build());
+
     await waitFor(() => expect(screen.queryAllByText(text).length).toEqual(0));
   });
 });
 
-function renderComponent(): RenderResult {
-  const store = new FakeStoreBuilder().build();
+function renderComponent(store: Store<any, any>): RenderResult {
   const component = (
     <Provider store={store}>
       <BannerAlertNoNodeAvailable />

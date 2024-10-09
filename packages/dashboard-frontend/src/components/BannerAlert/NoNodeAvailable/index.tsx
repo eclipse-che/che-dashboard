@@ -19,11 +19,14 @@ import { container } from '@/inversify.config';
 import { WebsocketClient } from '@/services/backend-client/websocketClient';
 import { ChannelListener } from '@/services/backend-client/websocketClient/messageHandler';
 import { AppState } from '@/store';
-import { selectBranding } from '@/store/Branding/selectors';
+import { selectAllEvents } from '@/store/Events/selectors';
+import { selectAllWorkspaces } from '@/store/Workspaces/selectors';
+
 type Props = MappedProps;
 
 type State = {
   startingWorkspaces: string[];
+  eventsLength: number;
 };
 
 class BannerAlertNoNodeAvailable extends React.PureComponent<Props, State> {
@@ -34,6 +37,7 @@ class BannerAlertNoNodeAvailable extends React.PureComponent<Props, State> {
     this.websocketClient = container.get(WebsocketClient);
     this.state = {
       startingWorkspaces: [],
+      eventsLength: 0,
     };
   }
 
@@ -49,25 +53,33 @@ class BannerAlertNoNodeAvailable extends React.PureComponent<Props, State> {
         this.setState({ startingWorkspaces: [] });
       }
     };
-    const eventListener: ChannelListener = message => {
-      const event = (message as api.webSocket.EventMessage).event;
-      if (event.reason === undefined || event.message === undefined) {
-        return;
-      } else if (
-        event.reason === 'FailedScheduling' &&
-        event.message.indexOf('No preemption victims found for incoming pod') > -1
-      ) {
-        this.setState({ startingWorkspaces: [event.metadata!.uid!] });
-      }
-    };
-    this.websocketClient.addChannelMessageListener(api.webSocket.Channel.EVENT, eventListener);
     this.websocketClient.addChannelMessageListener(
       api.webSocket.Channel.DEV_WORKSPACE,
       devWorkspaceListener,
     );
   }
 
+  private handleAllEventsChange() {
+    const allEvents = this.props.allEvents;
+    if (allEvents.length === this.state.eventsLength) {
+      return;
+    }
+    const event = allEvents[allEvents.length - 1];
+    if (event.message === undefined) {
+      return;
+    } else if (
+      event.reason === 'FailedScheduling' &&
+      event.message.indexOf('No preemption victims found for incoming pod') > -1 &&
+      this.state.startingWorkspaces.length === 0
+    ) {
+      this.setState({ startingWorkspaces: [event.metadata!.uid!] });
+      this.setState({ eventsLength: allEvents.length });
+    }
+  }
+
   render() {
+    this.handleAllEventsChange();
+
     if (this.state.startingWorkspaces.length === 0) {
       return null;
     }
@@ -82,7 +94,8 @@ class BannerAlertNoNodeAvailable extends React.PureComponent<Props, State> {
 }
 
 const mapStateToProps = (state: AppState) => ({
-  branding: selectBranding(state),
+  allEvents: selectAllEvents(state),
+  allWorkspaces: selectAllWorkspaces(state),
 });
 
 const connector = connect(mapStateToProps);
