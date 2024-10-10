@@ -10,9 +10,9 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import { createMemoryHistory } from 'history';
 import React from 'react';
 import { Provider } from 'react-redux';
+import { Location } from 'react-router-dom';
 import { Store } from 'redux';
 
 import { MIN_STEP_DURATION_MS } from '@/components/WorkspaceProgress/const';
@@ -37,7 +37,7 @@ const mockOnError = jest.fn();
 const mockOnHideError = jest.fn();
 
 jest.mock('@/services/helpers/location', () => ({
-  toHref: (_: unknown, location: string) => 'http://localhost/' + location,
+  toHref: (location: string) => 'http://localhost/' + location,
   buildUserPreferencesLocation: (tab: UserPreferencesTab) => 'user-preferences?tab=' + tab,
 }));
 
@@ -338,7 +338,7 @@ describe('Creating steps, initializing', () => {
       [FACTORY_URL_ATTR]: factoryUrl,
     });
 
-    renderComponent(store, searchParams);
+    const { reRenderComponent } = renderComponent(store, searchParams);
 
     const stepTitle = screen.getByTestId('step-title');
     expect(stepTitle.textContent).not.toContain('untrusted source');
@@ -349,6 +349,26 @@ describe('Creating steps, initializing', () => {
     expect(stepTitleNext.textContent).toContain('untrusted source');
 
     expect(mockOnNextStep).not.toHaveBeenCalled();
+
+    // add factory URL to trusted sources
+    const nextStore = new FakeStoreBuilder()
+      .withInfrastructureNamespace([{ name: 'user-che', attributes: { phase: 'Active' } }])
+      .withSshKeys({
+        keys: [{ name: 'key1', keyPub: 'ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQD' }],
+      })
+      .withWorkspacePreferences({
+        'trusted-sources': ['some-trusted-source', factoryUrl],
+      })
+      .build();
+
+    reRenderComponent(nextStore, searchParams);
+
+    await jest.runOnlyPendingTimersAsync();
+
+    const _stepTitleNext = screen.getByTestId('step-title');
+    await waitFor(() => expect(_stepTitleNext.textContent).not.toContain('untrusted source'));
+
+    await waitFor(() => expect(mockOnNextStep).toHaveBeenCalled());
   });
 
   test('source URL is not allowed', async () => {
@@ -433,13 +453,13 @@ describe('Creating steps, initializing', () => {
 });
 
 function getComponent(store: Store, searchParams: URLSearchParams): React.ReactElement {
-  const history = createMemoryHistory();
   return (
     <Provider store={store}>
       <CreatingStepInitialize
         distance={0}
         hasChildren={false}
-        history={history}
+        location={{} as Location}
+        navigate={jest.fn()}
         searchParams={searchParams}
         onNextStep={mockOnNextStep}
         onRestart={mockOnRestart}
