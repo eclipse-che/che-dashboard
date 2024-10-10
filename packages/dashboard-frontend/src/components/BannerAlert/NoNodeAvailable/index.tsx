@@ -10,14 +10,13 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import { api } from '@eclipse-che/common';
 import { Banner } from '@patternfly/react-core';
 import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 
 import { container } from '@/inversify.config';
 import { WebsocketClient } from '@/services/backend-client/websocketClient';
-import { ChannelListener } from '@/services/backend-client/websocketClient/messageHandler';
+import { DevWorkspaceStatus } from '@/services/helpers/types';
 import { AppState } from '@/store';
 import { selectAllEvents } from '@/store/Events/selectors';
 import { selectAllWorkspaces } from '@/store/Workspaces/selectors';
@@ -26,7 +25,6 @@ type Props = MappedProps;
 
 type State = {
   startingWorkspaces: string[];
-  eventsLength: number;
 };
 
 class BannerAlertNoNodeAvailable extends React.PureComponent<Props, State> {
@@ -37,49 +35,57 @@ class BannerAlertNoNodeAvailable extends React.PureComponent<Props, State> {
     this.websocketClient = container.get(WebsocketClient);
     this.state = {
       startingWorkspaces: [],
-      eventsLength: 0,
     };
   }
 
-  public async componentDidMount() {
-    const devWorkspaceListener: ChannelListener = message => {
-      const devWorkspace = (message as api.webSocket.DevWorkspaceMessage).devWorkspace;
-      if (devWorkspace.status === undefined) {
-        return;
-      } else if (
-        devWorkspace.status.phase === 'Running' &&
-        this.state.startingWorkspaces.length > 0
-      ) {
-        this.setState({ startingWorkspaces: [] });
-      }
-    };
-    this.websocketClient.addChannelMessageListener(
-      api.webSocket.Channel.DEV_WORKSPACE,
-      devWorkspaceListener,
-    );
+  componentDidUpdate(prevProps: Readonly<Props>) {
+    this.handleAllEventsChange(prevProps);
+    this.handleAllWorkspacesChange(prevProps);
   }
 
-  private handleAllEventsChange() {
+  private handleAllEventsChange(prevProps: Readonly<Props>) {
     const allEvents = this.props.allEvents;
-    if (allEvents.length === this.state.eventsLength) {
+    const prevAllEvents = prevProps.allEvents;
+
+    if (JSON.stringify(allEvents) === JSON.stringify(prevAllEvents)) {
       return;
     }
+
     const event = allEvents[allEvents.length - 1];
-    if (event.message === undefined) {
-      return;
-    } else if (
+    if (
+      event.message !== undefined &&
       event.reason === 'FailedScheduling' &&
       event.message.indexOf('No preemption victims found for incoming pod') > -1 &&
       this.state.startingWorkspaces.length === 0
     ) {
       this.setState({ startingWorkspaces: [event.metadata!.uid!] });
-      this.setState({ eventsLength: allEvents.length });
+    }
+  }
+
+  private handleAllWorkspacesChange(prevProps: Readonly<Props>) {
+    const prevAllWorkspaces = prevProps.allWorkspaces;
+    const allWorkspaces = this.props.allWorkspaces;
+
+    if (JSON.stringify(allWorkspaces) === JSON.stringify(prevAllWorkspaces)) {
+      return;
+    }
+
+    if (
+      allWorkspaces.some(
+        workspace =>
+          workspace.status === DevWorkspaceStatus.RUNNING &&
+          prevAllWorkspaces.find(
+            prevWorkspace =>
+              prevWorkspace.id === workspace.id &&
+              prevWorkspace.status === DevWorkspaceStatus.STARTING,
+          ),
+      )
+    ) {
+      this.setState({ startingWorkspaces: [] });
     }
   }
 
   render() {
-    this.handleAllEventsChange();
-
     if (this.state.startingWorkspaces.length === 0) {
       return null;
     }
