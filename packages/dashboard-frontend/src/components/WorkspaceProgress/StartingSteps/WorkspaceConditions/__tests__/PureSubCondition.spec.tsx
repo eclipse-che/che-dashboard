@@ -13,38 +13,66 @@
 import React from 'react';
 
 import { PureSubCondition } from '@/components/WorkspaceProgress/StartingSteps/WorkspaceConditions/PureSubCondition';
-import getComponentRenderer from '@/services/__mocks__/getComponentRenderer';
+import getComponentRenderer, { screen } from '@/services/__mocks__/getComponentRenderer';
 
-const { createSnapshot } = getComponentRenderer(getComponent);
+const { createSnapshot, renderComponent } = getComponentRenderer(getComponent);
+
+jest.mock('@/components/WorkspaceProgress/StepTitle');
 
 describe('Starting sub-steps, checking rendering', () => {
   afterEach(() => {
     jest.clearAllMocks();
   });
 
-  it('should not render without title', () => {
-    const snapshot = createSnapshot(undefined);
-    expect(snapshot.toJSON()).toMatchSnapshot();
+  test('snapshot with no title', () => {
+    expect(createSnapshot(undefined)).toMatchSnapshot();
   });
 
-  it('should render with a title correctly', () => {
-    const snapshot = createSnapshot('Test sub-step...');
-    expect(snapshot.toJSON()).toMatchSnapshot();
+  test('snapshot with a title', () => {
+    expect(createSnapshot('sub-step test', 1)).toMatchSnapshot();
   });
 
-  it('should render with a title and `distance=1` correctly', () => {
-    const snapshot = createSnapshot('Test sub-step...distance=1', 1);
-    expect(snapshot.toJSON()).toMatchSnapshot();
-  });
+  it('should show the title and a proper icon(depends on the distance value)', () => {
+    let distanceElement: HTMLElement | null;
+    let stepTitle: HTMLElement | null;
 
-  it('should render with a title and `distance=0` correctly', () => {
-    const snapshot = createSnapshot('Test sub-step...distance=0', 0);
-    expect(snapshot.toJSON()).toMatchSnapshot();
-  });
+    const { reRenderComponent } = renderComponent('sub-step test 1', -1);
 
-  it('should render with a title and `distance=-1` correctly', () => {
-    const snapshot = createSnapshot('Test sub-step...distance=-1', -1);
-    expect(snapshot.toJSON()).toMatchSnapshot();
+    distanceElement = screen.queryByTestId('distance');
+    expect(distanceElement).not.toBeNull();
+    expect(distanceElement).toHaveTextContent('-1');
+
+    stepTitle = screen.queryByTestId('step-title');
+    expect(stepTitle).not.toBeNull();
+    expect(stepTitle).toHaveTextContent('sub-step test 1');
+
+    reRenderComponent('sub-step test 2', 0);
+
+    distanceElement = screen.queryByTestId('distance');
+    expect(distanceElement).not.toBeNull();
+    expect(distanceElement).toHaveTextContent('0');
+
+    stepTitle = screen.queryByTestId('step-title');
+    expect(stepTitle).not.toBeNull();
+    expect(stepTitle).toHaveTextContent('sub-step test 2');
+
+    reRenderComponent('sub-step test 3', 1);
+
+    distanceElement = screen.queryByTestId('distance');
+    expect(distanceElement).not.toBeNull();
+    expect(distanceElement).toHaveTextContent('1');
+
+    stepTitle = screen.queryByTestId('step-title');
+    expect(stepTitle).not.toBeNull();
+    expect(stepTitle).toHaveTextContent('sub-step test 3');
+
+    reRenderComponent(undefined, 1);
+
+    distanceElement = screen.queryByTestId('distance');
+    expect(distanceElement).toBeNull();
+
+    stepTitle = screen.queryByTestId('step-title');
+    expect(stepTitle).toBeNull();
   });
 });
 
