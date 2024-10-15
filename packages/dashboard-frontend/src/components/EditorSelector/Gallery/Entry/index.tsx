@@ -163,9 +163,7 @@ export class EditorSelectorEntry extends React.PureComponent<Props, State> {
       <LabelGroup isVertical>
         <TagLabel type="version" text={activeEditor.version} />
         {tags.length > 0 ? (
-          tags.map((tag: string, index: number) => (
-            <TagLabel key={`tag-${index}`} type="tag" text={tag} />
-          ))
+          tags.map(tag => <TagLabel key={tag} type="tag" text={tag} />)
         ) : (
           <span style={{ padding: '0 5px', lineHeight: '12px', visibility: 'hidden' }}>&nbsp;</span>
         )}
