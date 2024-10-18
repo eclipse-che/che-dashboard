@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 #
 # Copyright (c) 2021-2024 Red Hat, Inc.
 # This program and the accompanying materials are made
@@ -7,6 +7,9 @@
 #
 # SPDX-License-Identifier: EPL-2.0
 #
+
+# The script is used to backward compatibility between yarn3 and yarn1 package managers.
+# It will be removed with yarn1 support.
 
 set -e
 

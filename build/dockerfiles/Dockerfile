@@ -22,6 +22,7 @@ RUN if ! [ type "yarn" &> /dev/null ]; then \
 COPY package.json /dashboard/
 COPY yarn.lock /dashboard/
 COPY tsconfig.json /dashboard/
+COPY run/wrksps.sh /dashboard/run/
 
 ENV COMMON=packages/common
 COPY ${COMMON}/package.json /dashboard/${COMMON}/
@@ -37,9 +38,7 @@ COPY .yarnrc.yml /dashboard/
 WORKDIR /dashboard
 RUN yarn install --network-timeout 3600000
 COPY packages/ /dashboard/packages
-RUN yarn workspace @eclipse-che/common build && \
-    yarn workspace @eclipse-che/dashboard-frontend build && \
-    yarn workspace @eclipse-che/dashboard-backend build
+RUN yarn build
 
 # Prepare air-gapped resources
 COPY scripts/airgap.sh /dashboard/airgap.sh
