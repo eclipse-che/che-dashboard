@@ -32,9 +32,6 @@ RUN ln -s "$REMOTE_SOURCES_DIR"/devspaces-images-dashboard/app/devspaces-dashboa
 # see https://source.redhat.com/groups/public/container-build-system/container_build_system_wiki/containers_from_source_multistage_builds_in_osbs#jive_content_id_Cachito_Integration_for_yarn
 RUN yarn config set nodedir /usr; yarn config set unsafe-perm true && yarn install
 
-# cachito:yarn step 4: lerna installed to $REMOTE_SOURCES_DIR/devspaces-images-dashboard/app/devspaces-dashboard/node_modules/.bin/lerna - add to path
-RUN ln -s "$REMOTE_SOURCES_DIR"/devspaces-images-dashboard/app/devspaces-dashboard/node_modules/.bin/lerna /usr/local/bin/lerna
-
 # cachito:yarn step 5: the actual build!
 # hadolint ignore=DL3059
 RUN yarn build
