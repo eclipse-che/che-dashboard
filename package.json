@@ -30,7 +30,7 @@
     "test": "yarn run pretest && yarn wrksps test --no-cache",
     "test:check": "yarn run pretest && yarn workspace @eclipse-che/dashboard-frontend test --config=jest.config.check.js",
     "pretest": "yarn workspace @eclipse-che/common run build",
-    "test:coverage": "yarn wrksps test --coverage",
+    "test:coverage": "yarn run pretest && yarn wrksps test --coverage",
     "format:check": "yarn wrksps format:check",
     "format:fix": "yarn wrksps format:fix",
     "lint:check": "yarn wrksps lint:check",
