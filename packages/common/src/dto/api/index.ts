@@ -25,6 +25,7 @@ export type GitOauthProvider =
   | 'github'
   | 'github_2'
   | 'gitlab'
+  | 'gitlab_2'
   | 'bitbucket'
   | 'bitbucket-server'
   | 'azure-devops';
