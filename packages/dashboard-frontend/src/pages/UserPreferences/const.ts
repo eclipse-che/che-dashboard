@@ -23,6 +23,7 @@ export const GIT_OAUTH_PROVIDERS: Record<api.GitOauthProvider, string> = {
   github: 'GitHub',
   github_2: 'GitHub (The second provider)',
   gitlab: 'GitLab',
+  gitlab_2: 'GitLab (The second provider)',
 } as const;
 
 export const DEFAULT_GIT_OAUTH_PROVIDER: api.GitOauthProvider = 'github';

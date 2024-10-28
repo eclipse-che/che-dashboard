@@ -35,6 +35,7 @@ export const CAN_REVOKE_FROM_DASHBOARD: ReadonlyArray<api.GitOauthProvider> = [
   'github',
   'github_2',
   'gitlab',
+  'gitlab_2',
 ];
 
 export type Props = {

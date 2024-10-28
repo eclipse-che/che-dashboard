@@ -32,8 +32,6 @@ import {
 import { IGitOauth } from '@/store/GitOauthConfig/types';
 import * as PersonalAccessTokenStore from '@/store/PersonalAccessToken';
 
-export const enabledProviders: api.GitOauthProvider[] = ['github', 'github_2', 'gitlab'];
-
 type Props = MappedProps;
 
 type State = {
