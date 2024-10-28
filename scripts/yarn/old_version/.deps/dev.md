@@ -409,7 +409,6 @@
 | [`istanbul-lib-source-maps@4.0.1`](git+ssh://git@github.com/istanbuljs/istanbuljs.git) | BSD-3-Clause | clearlydefined |
 | [`istanbul-reports@3.1.6`](git+ssh://git@github.com/istanbuljs/istanbuljs.git) | BSD-3-Clause | #1710 |
 | [`iterator.prototype@1.1.2`](git+https://github.com/ljharb/Iterator.prototype.git) | MIT | clearlydefined |
-| [`jackspeak@2.3.6`](git+https://github.com/isaacs/jackspeak.git) | BlueOak-1.0.0 | #10783 |
 | [`jest-changed-files@29.7.0`](https://github.com/jestjs/jest.git) | MIT | clearlydefined |
 | [`jest-circus@29.7.0`](https://github.com/jestjs/jest.git) | MIT | clearlydefined |
 | [`jest-cli@29.7.0`](https://github.com/jestjs/jest.git) | MIT | clearlydefined |
@@ -505,7 +504,6 @@
 | [`open@9.1.0`](https://github.com/sindresorhus/open.git) | MIT | clearlydefined |
 | [`opener@1.5.2`](https://github.com/domenic/opener.git) | (WTFPL OR MIT) | #11619 |
 | [`optionator@0.9.3`](git://github.com/gkz/optionator.git) | MIT | #9208 |
-| [`p-limit@3.1.0`](https://github.com/sindresorhus/p-limit.git) | MIT | clearlydefined |
 | [`p-locate@4.1.0`](https://github.com/sindresorhus/p-locate.git) | MIT | clearlydefined |
 | [`p-try@2.2.0`](https://github.com/sindresorhus/p-try.git) | MIT | clearlydefined |
 | [`param-case@3.0.4`](git://github.com/blakeembrey/change-case.git) | MIT | clearlydefined |
@@ -516,7 +514,6 @@
 | [`path-exists@4.0.0`](https://github.com/sindresorhus/path-exists.git) | MIT | clearlydefined |
 | [`path-is-absolute@1.0.1`](https://github.com/sindresorhus/path-is-absolute.git) | MIT | clearlydefined |
 | [`path-parse@1.0.7`](https://github.com/jbgutierrez/path-parse.git) | MIT | clearlydefined |
-| [`path-scurry@1.10.1`](git+https://github.com/isaacs/path-scurry) | BlueOak-1.0.0 | #9370 |
 | [`path-type@4.0.0`](https://github.com/sindresorhus/path-type.git) | MIT | clearlydefined |
 | [`picomatch@2.3.1`](https://github.com/micromatch/picomatch.git) | MIT | clearlydefined |
 | [`pify@3.0.0`](https://github.com/sindresorhus/pify.git) | MIT | clearlydefined |
@@ -592,7 +589,6 @@
 | [`safe-regex-test@1.0.0`](git+https://github.com/ljharb/safe-regex-test.git) | MIT | clearlydefined |
 | [`saxes@6.0.0`](https://github.com/lddubeau/saxes.git) | ISC | clearlydefined |
 | [`schema-utils@4.2.0`](https://github.com/webpack/schema-utils.git) | MIT | #8986 |
-| [`semver@7.5.4`](https://github.com/npm/node-semver.git) | ISC | clearlydefined |
 | [`serialize-javascript@6.0.1`](git+https://github.com/yahoo/serialize-javascript.git) | BSD-3-Clause | #12680 |
 | [`set-function-length@1.1.1`](git+https://github.com/ljharb/set-function-length.git) | MIT | #11090 |
 | [`set-function-name@2.0.1`](git+https://github.com/ljharb/set-function-name.git) | MIT | #10590 |
@@ -697,7 +693,5 @@
 | [`xml-name-validator@4.0.0`](https://github.com/jsdom/xml-name-validator.git) | Apache-2.0 | clearlydefined |
 | [`xmlchars@2.2.0`](https://github.com/lddubeau/xmlchars.git) | MIT | clearlydefined |
 | [`y18n@5.0.8`](https://github.com/yargs/y18n.git) | ISC | clearlydefined |
-| [`yallist@4.0.0`](git+https://github.com/isaacs/yallist.git) | ISC | clearlydefined |
 | [`yargs-parser@21.1.1`](https://github.com/yargs/yargs-parser.git) | ISC | clearlydefined |
 | [`yargs@17.7.2`](https://github.com/yargs/yargs.git) | MIT | #8222 |
-| [`yocto-queue@0.1.0`](https://github.com/sindresorhus/yocto-queue.git) | MIT | clearlydefined |

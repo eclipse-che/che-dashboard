@@ -153,7 +153,6 @@
 | [`acorn-walk@8.3.0`](https://github.com/acornjs/acorn.git) | MIT | #11942 |
 | [`acorn@8.11.2`](https://github.com/acornjs/acorn.git) | MIT | clearlydefined |
 | [`agent-base@6.0.2`](git://github.com/TooTallNate/node-agent-base.git) | MIT | clearlydefined |
-| [`ajv-formats@2.1.1`](git+https://github.com/ajv-validator/ajv-formats.git) | MIT | clearlydefined |
 | [`ajv-keywords@3.5.2`](git+https://github.com/epoberezkin/ajv-keywords.git) | MIT | clearlydefined |
 | [`ajv-keywords@5.1.0`](git+https://github.com/epoberezkin/ajv-keywords.git) | MIT | clearlydefined |
 | `ansi-escapes@4.3.2` | MIT | clearlydefined |
@@ -541,7 +540,6 @@
 | `opener@1.5.2` | (WTFPL OR MIT) | #11619 |
 | [`optionator@0.9.3`](git://github.com/gkz/optionator.git) | MIT | #9208 |
 | `p-limit@2.3.0` | MIT | clearlydefined |
-| `p-limit@3.1.0` | MIT | clearlydefined |
 | `p-locate@3.0.0` | MIT | clearlydefined |
 | `p-locate@4.1.0` | MIT | clearlydefined |
 | `p-locate@5.0.0` | MIT | clearlydefined |
@@ -765,4 +763,3 @@
 | [`yargs-parser@20.2.9`](https://github.com/yargs/yargs-parser.git) | ISC | clearlydefined |
 | [`yargs-parser@21.1.1`](https://github.com/yargs/yargs-parser.git) | ISC | clearlydefined |
 | [`yargs@17.7.2`](https://github.com/yargs/yargs.git) | MIT | #8222 |
-| `yocto-queue@0.1.0` | MIT | clearlydefined |
