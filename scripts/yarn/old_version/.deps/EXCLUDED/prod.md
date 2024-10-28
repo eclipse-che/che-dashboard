@@ -2,7 +2,8 @@ This file lists dependencies that do not need CQs or auto-detection does not wor
 
 | Packages | Resolved CQs |
 | --- | --- |
-| `@fastify/cors@10.0.1` | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@fastify/cors/10.0.1) |
+| `@fastify/cors@9.0.1` | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@fastify/cors/9.0.1) |
+| `@fastify/swagger-ui@4.2.0` | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@fastify/swagger-ui/4.2.0) |
 | `@hapi/hoek@10.0.1` | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@hapi/hoek/10.0.1) |
 | `@patternfly/react-core@4.278.0` | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@patternfly/react-core/4.278.0) |
 | `@patternfly/react-icons@4.93.7` | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@patternfly/react-icons/4.93.7) |
@@ -11,8 +12,7 @@ This file lists dependencies that do not need CQs or auto-detection does not wor
 | `codemirror@5.65.16` | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/codemirror/5.65.16) |
 | `cookie-signature@1.2.1` | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/cookie-signature/1.2.1) |
 | `fast-uri@2.4.0` | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/fast-uri/2.4.0) |
-| `fastify@5.0.0` | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/fastify/5.0.0) |
-| `glob@11.0.0` | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/glob/11.0.0) |
-| `jackspeak@4.0.2` | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/jackspeak/4.0.2) |
+| `fastify@4.28.1` | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/fastify/4.28.1) |
+| `jsep@1.3.9` | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/jsep/1.3.9) |
 | `real-require@0.2.0` | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/real-require/0.2.0) |
-| `light-my-request@6.0.0` | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/light-my-request/6.0.0) |
+| `light-my-request@5.14.0` | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/light-my-request/5.14.0) |
