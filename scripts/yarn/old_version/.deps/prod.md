@@ -34,7 +34,7 @@
 | [`@isaacs/fs-minipass@4.0.1`](https://github.com/npm/fs-minipass.git) | ISC | clearlydefined |
 | [`@jsep-plugin/assignment@1.2.1`](https://github.com/EricSmekens/jsep.git) | MIT | clearlydefined |
 | [`@jsep-plugin/regex@1.0.3`](https://github.com/EricSmekens/jsep.git) | MIT | clearlydefined |
-| [`@kubernetes/client-node@0.21.0`](https://github.com/kubernetes-client/javascript.git) | Apache-2.0 | clearlydefined |
+| [`@kubernetes/client-node@0.22.1`](https://github.com/kubernetes-client/javascript.git) | Apache-2.0 | clearlydefined |
 | [`@lukeed/ms@2.0.2`](https://github.com/lukeed/ms.git) | MIT | clearlydefined |
 | [`@patternfly/react-core@4.278.0`](https://github.com/patternfly/patternfly-react.git) | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@patternfly/react-core/4.278.0) |
 | [`@patternfly/react-icons@4.93.7`](https://github.com/patternfly/patternfly-react.git) | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@patternfly/react-icons/4.93.7) |
@@ -148,7 +148,6 @@
 | [`domhandler@5.0.3`](git://github.com/fb55/domhandler.git) | BSD-2-Clause | clearlydefined |
 | [`domutils@3.1.0`](git://github.com/fb55/domutils.git) | BSD-2-Clause | #8391 |
 | [`duplexify@4.1.3`](git://github.com/mafintosh/duplexify) | MIT | clearlydefined |
-| [`eastasianwidth@0.2.0`](git://github.com/komagata/eastasianwidth.git) | MIT | clearlydefined |
 | [`ecc-jsbn@0.1.2`](https://github.com/quartzjer/ecc-jsbn.git) | MIT | clearlydefined |
 | [`elliptic@6.5.7`](git@github.com:indutny/elliptic) | MIT | [CQ23022](https://dev.eclipse.org/ipzilla/show_bug.cgi?id=23022) |
 | [`emoji-regex@8.0.0`](https://github.com/mathiasbynens/emoji-regex.git) | MIT | clearlydefined |
@@ -411,11 +410,11 @@
 | [`stream-buffers@3.0.2`](https://github.com/samcday/node-stream-buffer.git) | Unlicense | clearlydefined |
 | [`stream-shift@1.0.3`](https://github.com/mafintosh/stream-shift.git) | MIT | clearlydefined |
 | [`string-width-cjs@4.2.3`](https://github.com/sindresorhus/string-width.git) | MIT | #11627 |
-| [`string-width@5.1.2`](https://github.com/sindresorhus/string-width.git) | MIT | clearlydefined |
+| [`string-width@4.2.3`](https://github.com/sindresorhus/string-width.git) | MIT | clearlydefined |
 | [`string_decoder@1.3.0`](git://github.com/nodejs/string_decoder.git) | MIT | clearlydefined |
 | [`stringify-entities@4.0.4`](https://github.com/wooorm/stringify-entities.git) | MIT | clearlydefined |
 | [`strip-ansi-cjs@6.0.1`](https://github.com/chalk/strip-ansi.git) | MIT | #11643 |
-| [`strip-ansi@7.1.0`](https://github.com/chalk/strip-ansi.git) | MIT | #8735 |
+| [`strip-ansi@6.0.1`](https://github.com/chalk/strip-ansi.git) | MIT | clearlydefined |
 | [`strip-json-comments@3.1.1`](https://github.com/sindresorhus/strip-json-comments.git) | MIT | clearlydefined |
 | [`style-to-object@1.0.8`](https://github.com/remarkablemark/style-to-object) | MIT | #16187 |
 | [`supports-color@5.5.0`](https://github.com/chalk/supports-color.git) | MIT | clearlydefined |
