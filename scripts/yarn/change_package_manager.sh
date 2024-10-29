@@ -32,16 +32,6 @@ if [ -f "$(pwd)/.yarnrc.yml" ]; then
     mv -f $(pwd)/.yarnrc.yml $TMP_DIR
 fi
 
-if [ -f "$(pwd)/.yarnrc" ]; then
-    echo "[INFO]: Move '.yarnrc' file to the temporary directory"
-    mv -f $(pwd)/.yarnrc $TMP_DIR
-fi
-
-if [ -d "$(pwd)/.yarn" ]; then
-    echo "[INFO]: Move '.yarn' dir to the temporary directory"
-    mv -f $(pwd)/.yarn $TMP_DIR/
-fi
-
 if [ -f "$(pwd)/yarn.lock" ]; then
     echo "[INFO]: Move 'yarn.lock' file to the temporary directory"
     mv -f $(pwd)/yarn.lock $TMP_DIR
