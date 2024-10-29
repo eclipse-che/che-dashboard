@@ -37,7 +37,7 @@
     "@fastify/swagger": "^8.14.0",
     "@fastify/swagger-ui": "3.0.0",
     "@fastify/websocket": "^10.0.1",
-    "@kubernetes/client-node": "^0.21.0",
+    "@kubernetes/client-node": "^0.22.1",
     "args": "^5.0.3",
     "axios": "^1.7.0",
     "fastify": "^4.27.0",

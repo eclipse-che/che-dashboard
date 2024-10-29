@@ -14,11 +14,8 @@ FROM docker.io/node:18.19.1-alpine3.19 as builder
 RUN apk add --no-cache python3 py3-pip make g++ jq curl
 RUN pip3 install yq --break-system-packages
 
-# hadolint ignore=DL3059,SC1072
-RUN if ! [ type "yarn" &> /dev/null ]; then \
-        apk add yarn --no-cache; \
-    fi
-
+COPY .yarn/releases /dashboard/.yarn/releases/
+COPY .yarnrc.yml /dashboard/.yarnrc.yml
 COPY package.json /dashboard/
 COPY yarn.lock /dashboard/
 COPY tsconfig.json /dashboard/
@@ -33,8 +30,6 @@ COPY ${FRONTEND}/package.json /dashboard/${FRONTEND}/
 ENV BACKEND=packages/dashboard-backend
 COPY ${BACKEND}/package.json /dashboard/${BACKEND}/
 
-COPY .yarn/releases/yarn-*.cjs /dashboard/.yarn/releases/
-COPY .yarnrc.yml /dashboard/
 WORKDIR /dashboard
 RUN yarn install --network-timeout 3600000
 COPY packages/ /dashboard/packages
