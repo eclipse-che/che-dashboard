@@ -613,12 +613,10 @@
 | [`sprintf-js@1.0.3`](https://github.com/alexei/sprintf.js.git) | BSD-3-Clause | #949 |
 | [`stack-utils@2.0.6`](https://github.com/tapjs/stack-utils.git) | MIT | clearlydefined |
 | [`string-length@4.0.2`](https://github.com/sindresorhus/string-length.git) | MIT | clearlydefined |
-| [`string-width@4.2.3`](https://github.com/sindresorhus/string-width.git) | MIT | clearlydefined |
 | [`string.prototype.matchall@4.0.10`](git+https://github.com/es-shims/String.prototype.matchAll.git) | MIT | #4571 |
 | [`string.prototype.trim@1.2.8`](git://github.com/es-shims/String.prototype.trim.git) | MIT | #10361 |
 | [`string.prototype.trimend@1.0.7`](git://github.com/es-shims/String.prototype.trimEnd.git) | MIT | #4564 |
 | [`string.prototype.trimstart@1.0.7`](git://github.com/es-shims/String.prototype.trimStart.git) | MIT | #4647 |
-| [`strip-ansi@6.0.1`](https://github.com/chalk/strip-ansi.git) | MIT | clearlydefined |
 | [`strip-bom@4.0.0`](https://github.com/sindresorhus/strip-bom.git) | MIT | clearlydefined |
 | [`strip-final-newline@2.0.0`](https://github.com/sindresorhus/strip-final-newline.git) | MIT | clearlydefined |
 | [`strip-indent@3.0.0`](https://github.com/sindresorhus/strip-indent.git) | MIT | clearlydefined |

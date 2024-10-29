@@ -10,7 +10,7 @@
 | [`@fastify/ajv-compiler@3.6.0`](git+https://github.com/fastify/ajv-compiler.git) | MIT | clearlydefined |
 | [`@fastify/busboy@2.0.0`](https://github.com/fastify/busboy.git) | MIT | clearlydefined |
 | [`@fastify/cookie@11.0.1`](git+ssh://git@github.com/fastify/fastify-cookie.git) | MIT | clearlydefined |
-| [`@fastify/cors@9.0.1`](git+https://github.com/fastify/fastify-cors.git) | MIT |  |
+| [`@fastify/cors@9.0.1`](git+https://github.com/fastify/fastify-cors.git) | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@fastify/cors/9.0.1) |
 | [`@fastify/error@3.4.1`](git+https://github.com/fastify/fastify-error.git) | MIT | clearlydefined |
 | [`@fastify/fast-json-stringify-compiler@4.3.0`](git+https://github.com/fastify/fast-json-stringify-compiler.git) | MIT | clearlydefined |
 | [`@fastify/http-proxy@9.5.0`](git+https://github.com/fastify/fastify-http-proxy.git) | MIT | clearlydefined |
@@ -33,7 +33,7 @@
 | [`@isaacs/fs-minipass@4.0.1`](https://github.com/npm/fs-minipass.git) | ISC | clearlydefined |
 | [`@jsep-plugin/assignment@1.2.1`](EricSmekens/jsep) | MIT | clearlydefined |
 | [`@jsep-plugin/regex@1.0.3`](EricSmekens/jsep) | MIT | clearlydefined |
-| [`@kubernetes/client-node@0.21.0`](https://github.com/kubernetes-client/javascript.git) | Apache-2.0 | clearlydefined |
+| [`@kubernetes/client-node@0.22.1`](https://github.com/kubernetes-client/javascript.git) | Apache-2.0 | clearlydefined |
 | `@lukeed/ms@2.0.2` | MIT | clearlydefined |
 | [`@npmcli/agent@2.2.2`](https://github.com/npm/agent.git) | ISC | clearlydefined |
 | [`@npmcli/fs@3.1.0`](https://github.com/npm/fs.git) | ISC | #14656 |
@@ -58,8 +58,8 @@
 | [`@types/mdast@4.0.4`](https://github.com/DefinitelyTyped/DefinitelyTyped.git) | MIT | clearlydefined |
 | [`@types/ms@0.7.34`](https://github.com/DefinitelyTyped/DefinitelyTyped.git) | MIT | #10811 |
 | [`@types/node-fetch@2.6.9`](https://github.com/DefinitelyTyped/DefinitelyTyped.git) | MIT | #11004 |
-| [`@types/node@20.12.12`](https://github.com/DefinitelyTyped/DefinitelyTyped.git) | MIT | clearlydefined |
 | [`@types/node@20.8.10`](https://github.com/DefinitelyTyped/DefinitelyTyped.git) | MIT | #10804 |
+| [`@types/node@22.8.2`](https://github.com/DefinitelyTyped/DefinitelyTyped.git) | MIT | clearlydefined |
 | [`@types/prop-types@15.7.9`](https://github.com/DefinitelyTyped/DefinitelyTyped.git) | MIT | #16176 |
 | [`@types/react-redux@7.1.33`](https://github.com/DefinitelyTyped/DefinitelyTyped.git) | MIT | #10970 |
 | [`@types/react@18.2.36`](https://github.com/DefinitelyTyped/DefinitelyTyped.git) | MIT | #8234 |
@@ -167,11 +167,9 @@
 | [`domhandler@5.0.3`](git://github.com/fb55/domhandler.git) | BSD-2-Clause | clearlydefined |
 | [`domutils@3.1.0`](git://github.com/fb55/domutils.git) | BSD-2-Clause | #8391 |
 | [`duplexify@4.1.3`](git://github.com/mafintosh/duplexify) | MIT | clearlydefined |
-| `eastasianwidth@0.2.0` | MIT | clearlydefined |
 | [`ecc-jsbn@0.1.2`](https://github.com/quartzjer/ecc-jsbn.git) | MIT | clearlydefined |
 | [`elliptic@6.5.7`](git@github.com:indutny/elliptic) | MIT | [CQ23022](https://dev.eclipse.org/ipzilla/show_bug.cgi?id=23022) |
 | [`emoji-regex@8.0.0`](https://github.com/mathiasbynens/emoji-regex.git) | MIT | clearlydefined |
-| [`emoji-regex@9.2.2`](https://github.com/mathiasbynens/emoji-regex.git) | MIT | clearlydefined |
 | `encoding@0.1.13` | MIT | #1016 |
 | [`end-of-stream@1.4.4`](git://github.com/mafintosh/end-of-stream.git) | MIT | clearlydefined |
 | [`entities@4.5.0`](git://github.com/fb55/entities.git) | BSD-2-Clause | #7910 |
@@ -204,7 +202,7 @@
 | [`fast-uri@3.0.2`](git+https://github.com/fastify/fast-uri.git) | MIT | #15703 |
 | [`fastify-plugin@4.5.1`](git+https://github.com/fastify/fastify-plugin.git) | MIT | clearlydefined |
 | [`fastify-plugin@5.0.1`](git+https://github.com/fastify/fastify-plugin.git) | MIT | clearlydefined |
-| [`fastify@4.28.1`](git+https://github.com/fastify/fastify.git) | MIT |  |
+| [`fastify@4.28.1`](git+https://github.com/fastify/fastify.git) | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/fastify/4.28.1) |
 | [`fastq@1.17.1`](git+https://github.com/mcollina/fastq.git) | ISC | clearlydefined |
 | [`file-selector@0.1.19`](https://github.com/react-dropzone/file-selector.git) | MIT | [CQ22350](https://dev.eclipse.org/ipzilla/show_bug.cgi?id=22350) |
 | [`find-my-way@9.0.1`](git+https://github.com/delvedor/find-my-way.git) | MIT | clearlydefined |
@@ -299,7 +297,7 @@
 | [`jsonschema@1.4.1`](git://github.com/tdegrunt/jsonschema.git) | MIT | clearlydefined |
 | [`jsprim@1.4.2`](git://github.com/joyent/node-jsprim.git) | MIT | clearlydefined |
 | `leven@2.1.0` | MIT | clearlydefined |
-| [`light-my-request@5.14.0`](git+https://github.com/fastify/light-my-request.git) | BSD-3-Clause |  |
+| [`light-my-request@5.14.0`](git+https://github.com/fastify/light-my-request.git) | BSD-3-Clause | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/light-my-request/5.14.0) |
 | [`lodash@4.17.21`](https://lodash.com/) | MIT | #2096 |
 | `longest-streak@3.1.0` | MIT | clearlydefined |
 | [`loose-envify@1.4.0`](git://github.com/zertosh/loose-envify.git) | MIT | clearlydefined |
@@ -494,7 +492,6 @@
 | [`stream-buffers@3.0.2`](https://github.com/samcday/node-stream-buffer.git) | Unlicense | clearlydefined |
 | [`stream-shift@1.0.3`](https://github.com/mafintosh/stream-shift.git) | MIT | clearlydefined |
 | `string-width@4.2.3` | MIT | clearlydefined |
-| `string-width@5.1.2` | MIT | clearlydefined |
 | [`string_decoder@1.3.0`](git://github.com/nodejs/string_decoder.git) | MIT | clearlydefined |
 | `stringify-entities@4.0.4` | MIT | clearlydefined |
 | `strip-ansi@6.0.1` | MIT | clearlydefined |
@@ -524,6 +521,7 @@
 | [`tweetnacl@0.14.5`](https://github.com/dchest/tweetnacl-js.git) | Unlicense | #1035 |
 | `type-fest@1.4.0` | (MIT OR CC0-1.0) | clearlydefined |
 | [`undici-types@5.26.5`](git+https://github.com/nodejs/undici.git) | MIT | clearlydefined |
+| [`undici-types@6.19.8`](git+https://github.com/nodejs/undici.git) | MIT | clearlydefined |
 | [`undici@5.28.4`](git+https://github.com/nodejs/undici.git) | MIT | clearlydefined |
 | [`unified@11.0.5`](https://unifiedjs.com) | MIT | clearlydefined |
 | [`unique-filename@3.0.0`](https://github.com/npm/unique-filename.git) | ISC | clearlydefined |
