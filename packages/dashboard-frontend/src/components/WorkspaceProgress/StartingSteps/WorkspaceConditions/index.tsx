@@ -89,7 +89,7 @@ export default class StartingStepWorkspaceConditions extends ProgressStep<Props,
       this.timerId = window.setTimeout(() => {
         this.setState({
           subConditionTitle:
-            'Downloading IDE binaries... (it can take a few minutes depending on your connection)',
+            'Downloading IDE binaries... (it can take a few minutes)',
         });
       }, 20000);
     }
