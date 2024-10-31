@@ -88,8 +88,7 @@ export default class StartingStepWorkspaceConditions extends ProgressStep<Props,
       // Show sub-condition after 20 seconds
       this.timerId = window.setTimeout(() => {
         this.setState({
-          subConditionTitle:
-            'Downloading IDE binaries... (it can take a few minutes)',
+          subConditionTitle: 'Downloading IDE binaries... (it can take a few minutes)',
         });
       }, 20000);
     }
