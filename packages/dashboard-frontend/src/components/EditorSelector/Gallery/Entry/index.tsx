@@ -14,6 +14,7 @@ import {
   Card,
   CardActions,
   CardBody,
+  CardFooter,
   CardHeader,
   Dropdown,
   DropdownItem,
@@ -45,6 +46,8 @@ export type State = {
 const allowedTags = ['Tech Preview', 'Deprecated'];
 
 export class EditorSelectorEntry extends React.PureComponent<Props, State> {
+  private timerId: number | undefined;
+
   constructor(props: Props) {
     super(props);
 
@@ -59,7 +62,38 @@ export class EditorSelectorEntry extends React.PureComponent<Props, State> {
     };
   }
 
+  // TODO temporary solution for making links open in a new browser tab (should be fixed with https://github.com/eclipse-che/che/issues/23219)
+  private setAttribute(
+    widgetId: string,
+    querySelector: string = 'a',
+    attributeName: string = 'target',
+    attributeValue: string = '_blank',
+  ): void {
+    clearTimeout(this.timerId);
+    this.timerId = window.setTimeout(() => {
+      const widget = document.getElementById(widgetId);
+      if (widget) {
+        widget.querySelectorAll(querySelector).forEach(targetElement => {
+          targetElement.setAttribute(attributeName, attributeValue);
+        });
+      }
+    }, 500);
+  }
+
+  private get id(): string {
+    return `editor-selector-card-${this.state.activeEditor.id}`;
+  }
+
+  public componentDidMount(): void {
+    if (this.state.activeEditor.provider) {
+      this.setAttribute(this.id);
+    }
+  }
+
   public componentDidUpdate(prevProps: Props): void {
+    if (this.state.activeEditor.provider) {
+      this.setAttribute(this.id);
+    }
     if (prevProps.selectedId !== this.props.selectedId) {
       const selectedEditor = this.props.editorsGroup.find(
         editor => editor.id === this.props.selectedId,
@@ -176,7 +210,7 @@ export class EditorSelectorEntry extends React.PureComponent<Props, State> {
     return (
       <Card
         hasSelectableInput={true}
-        id={'editor-selector-card-' + activeEditor.id}
+        id={this.id}
         isCompact={true}
         isFlat={true}
         isSelectableRaised
@@ -202,12 +236,12 @@ export class EditorSelectorEntry extends React.PureComponent<Props, State> {
         </CardHeader>
         <CardBody>
           <span className={titleClassName}>{groupName}</span>
-          {activeEditor.provider && (
-            <div style={{ fontSize: '75%' }}>
-              <ReactMarkdown>{activeEditor.provider}</ReactMarkdown>
-            </div>
-          )}
         </CardBody>
+        {activeEditor.provider && (
+          <CardFooter>
+            <ReactMarkdown className={styles.provider}>{activeEditor.provider}</ReactMarkdown>
+          </CardFooter>
+        )}
       </Card>
     );
   }
