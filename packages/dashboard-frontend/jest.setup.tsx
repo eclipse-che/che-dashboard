@@ -41,6 +41,6 @@ jest.mock('@/components/CheTooltip', () => {
 
 jest.mock('react-markdown', () => {
   return jest.fn(props => {
-    return React.createElement('div', null, props.children, props.content);
+    return React.createElement('a', null, props.children, props.content);
   });
 });
