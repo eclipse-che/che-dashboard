@@ -130,6 +130,34 @@ describe('EditorGallery', () => {
       expect(sortedEditors[1].version).toEqual('1.0.0');
     });
 
+    test('1.0.0(Deprecated) <=> latest', () => {
+      const editorA = editors[0];
+      editorA.tags = ['Deprecated'];
+      editorA.version = '1.0.0';
+      editorA.id = `${editorA.publisher}/${editorA.name}/${editorA.version}`;
+
+      const editorB = editors[1]; // latest
+
+      const sortedEditors = sortEditors([editorA, editorB]);
+
+      expect(sortedEditors[0].version).toEqual('latest');
+      expect(sortedEditors[1].version).toEqual('1.0.0'); // Deprecated
+    });
+
+    test('1.0.0 <=> latest(Deprecated)', () => {
+      const editorA = editors[0];
+      editorA.version = '1.0.0';
+      editorA.id = `${editorA.publisher}/${editorA.name}/${editorA.version}`;
+
+      const editorB = editors[1]; // latest
+      editorB.tags = ['Deprecated'];
+
+      const sortedEditors = sortEditors([editorA, editorB]);
+
+      expect(sortedEditors[0].version).toEqual('1.0.0');
+      expect(sortedEditors[1].version).toEqual('latest'); // Deprecated
+    });
+
     test('insiders <=> 1.0.0', () => {
       const editorA = editors[0]; // insiders
       const editorB = editors[1];
@@ -140,6 +168,34 @@ describe('EditorGallery', () => {
 
       expect(sortedEditors[0].version).toEqual('insiders');
       expect(sortedEditors[1].version).toEqual('1.0.0');
+    });
+
+    test('insiders(Deprecated) <=> 1.0.0', () => {
+      const editorA = editors[0]; // insiders
+      editorA.id = `${editorA.publisher}/${editorA.name}/${editorA.version}`;
+      editorA.tags = ['Deprecated'];
+
+      const editorB = editors[1];
+      editorB.version = '1.0.0';
+
+      const sortedEditors = sortEditors([editorA, editorB]);
+
+      expect(sortedEditors[0].version).toEqual('1.0.0');
+      expect(sortedEditors[1].version).toEqual('insiders'); // Deprecated
+    });
+
+    test('insiders <=> 1.0.0(Deprecated)', () => {
+      const editorA = editors[0]; // insiders
+      editorA.id = `${editorA.publisher}/${editorA.name}/${editorA.version}`;
+
+      const editorB = editors[1];
+      editorB.version = '1.0.0';
+      editorB.tags = ['Deprecated'];
+
+      const sortedEditors = sortEditors([editorA, editorB]);
+
+      expect(sortedEditors[0].version).toEqual('insiders');
+      expect(sortedEditors[1].version).toEqual('1.0.0'); // Deprecated
     });
   });
 
