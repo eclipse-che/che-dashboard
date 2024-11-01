@@ -135,23 +135,41 @@ export class EditorGallery extends React.PureComponent<Props, State> {
 }
 
 const VERSION_PRIORITY: ReadonlyArray<string> = ['insiders', 'next', 'latest'];
+const DEPRECATED_TAG = 'Deprecated';
 export function sortEditors(editors: che.Plugin[]) {
-  const sorted = editors.sort((a, b) => {
-    if (a.name === b.name) {
-      const aPriority = VERSION_PRIORITY.indexOf(a.version);
-      const bPriority = VERSION_PRIORITY.indexOf(b.version);
+  const sorted = editors
+    .sort((a, b) => {
+      if (a.name === b.name) {
+        const aPriority = VERSION_PRIORITY.indexOf(a.version);
+        const bPriority = VERSION_PRIORITY.indexOf(b.version);
 
-      if (aPriority !== -1 && bPriority !== -1) {
-        return aPriority - bPriority;
-      } else if (aPriority !== -1) {
-        return -1;
-      } else if (bPriority !== -1) {
-        return 1;
+        if (aPriority !== -1 && bPriority !== -1) {
+          return aPriority - bPriority;
+        } else if (aPriority !== -1) {
+          return -1;
+        } else if (bPriority !== -1) {
+          return 1;
+        }
       }
-    }
 
-    return a.id.localeCompare(b.id);
-  });
+      return a.id.localeCompare(b.id);
+    })
+    .sort((a, b) => {
+      if (a.name === b.name) {
+        const aPriority = a.tags?.includes(DEPRECATED_TAG) ? -1 : 1;
+        const bPriority = b.tags?.includes(DEPRECATED_TAG) ? -1 : 1;
+
+        if (aPriority !== -1 && bPriority !== -1) {
+          return 0;
+        } else if (aPriority !== -1) {
+          return -1;
+        } else if (bPriority !== -1) {
+          return 1;
+        }
+      }
+
+      return a.id.localeCompare(b.id);
+    });
 
   return sorted;
 }
