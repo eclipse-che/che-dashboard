@@ -39,7 +39,7 @@ describe('SshPassphrase', () => {
 
       expect(mockOnChange).not.toHaveBeenCalled();
 
-      const input = screen.getByPlaceholderText('Enter passphrase (optional)');
+      const input = screen.getByPlaceholderText('Enter passphrase (experimental)');
       const passphrase = 'passphrase';
       await userEvent.click(input);
       await userEvent.paste(passphrase);
@@ -52,7 +52,7 @@ describe('SshPassphrase', () => {
 
       expect(mockOnChange).not.toHaveBeenCalled();
 
-      const input = screen.getByPlaceholderText('Enter passphrase (optional)');
+      const input = screen.getByPlaceholderText('Enter passphrase (experimental)');
 
       // fill the SSH key data field
       await userEvent.click(input);

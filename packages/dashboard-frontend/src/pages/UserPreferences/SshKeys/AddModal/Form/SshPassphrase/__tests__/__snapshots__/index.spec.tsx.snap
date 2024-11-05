@@ -37,7 +37,7 @@ exports[`SshPassphrase snapshot 1`] = `
         onBlur={[Function]}
         onChange={[Function]}
         onFocus={[Function]}
-        placeholder="Enter passphrase (optional)"
+        placeholder="Enter passphrase (experimental)"
         required={false}
         type="password"
       />
