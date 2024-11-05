@@ -15,7 +15,7 @@ import { dump } from 'js-yaml';
 import { cloneDeep } from 'lodash';
 import React from 'react';
 
-import { DevfileEditorTab, prepareDevfile } from '@/pages/WorkspaceDetails/DevfileEditorTab';
+import DevfileEditorTab, { prepareDevfile } from '@/pages/WorkspaceDetails/DevfileEditorTab';
 import getComponentRenderer, { screen } from '@/services/__mocks__/getComponentRenderer';
 import devfileApi from '@/services/devfileApi';
 import { constructWorkspace, Workspace } from '@/services/workspace-adapter';

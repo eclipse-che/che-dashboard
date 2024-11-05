@@ -36,7 +36,7 @@ export type State = {
   copied?: boolean;
 };
 
-export class DevfileEditorTab extends React.PureComponent<Props, State> {
+export default class DevfileEditorTab extends React.PureComponent<Props, State> {
   constructor(props: Props) {
     super(props);
 
