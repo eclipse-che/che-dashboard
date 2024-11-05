@@ -507,7 +507,7 @@
 | `mimic-fn@2.1.0` | MIT | clearlydefined |
 | `mimic-fn@4.0.0` | MIT | clearlydefined |
 | `min-indent@1.0.1` | MIT | clearlydefined |
-| [`mini-css-extract-plugin@2.9.0`](https://github.com/webpack-contrib/mini-css-extract-plugin) | MIT | clearlydefined |
+| [`mini-css-extract-plugin@2.9.0`](https://github.com/webpack-contrib/mini-css-extract-plugin) | MIT | #17035 |
 | [`minimatch@3.1.2`](git://github.com/isaacs/minimatch.git) | ISC | clearlydefined |
 | `minimist-options@4.1.0` | MIT | clearlydefined |
 | [`mkdirp@0.5.6`](https://github.com/substack/node-mkdirp.git) | MIT | clearlydefined |

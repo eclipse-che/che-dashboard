@@ -4,6 +4,11 @@
 | --- | --- | --- |
 | [`@babel/runtime@7.23.2`](https://github.com/babel/babel.git) | MIT | #10718 |
 | [`@babel/runtime@7.24.5`](https://github.com/babel/babel.git) | MIT | #13900 |
+| [`@codemirror/autocomplete@6.18.1`](https://github.com/codemirror/autocomplete.git) | MIT | clearlydefined |
+| [`@codemirror/lang-yaml@6.1.1`](git+https://github.com/codemirror/lang-yaml.git) | MIT | clearlydefined |
+| [`@codemirror/language@6.10.3`](https://github.com/codemirror/language.git) | MIT | clearlydefined |
+| [`@codemirror/state@6.4.1`](https://github.com/codemirror/state.git) | MIT | clearlydefined |
+| [`@codemirror/view@6.34.2`](https://github.com/codemirror/view.git) | MIT | clearlydefined |
 | [`@devfile/api@2.3.0-1721400636`](https://github.com/GIT_USER_ID/GIT_REPO_ID.git) | Apache-2.0 | clearlydefined |
 | [`@eclipse-che/che-devworkspace-generator@7.90.0-next-4510df7`](git+https://github.com/devfile/devworkspace-generator.git) | EPL-2.0 | ecd.che |
 | [`@fastify/accept-negotiator@1.1.0`](git+https://github.com/fastify/accept-negotiator.git) | MIT | clearlydefined |
@@ -34,6 +39,10 @@
 | [`@jsep-plugin/assignment@1.2.1`](EricSmekens/jsep) | MIT | clearlydefined |
 | [`@jsep-plugin/regex@1.0.3`](EricSmekens/jsep) | MIT | clearlydefined |
 | [`@kubernetes/client-node@0.22.1`](https://github.com/kubernetes-client/javascript.git) | Apache-2.0 | clearlydefined |
+| [`@lezer/common@1.2.3`](https://github.com/lezer-parser/common.git) | MIT | clearlydefined |
+| [`@lezer/highlight@1.2.1`](https://github.com/lezer-parser/highlight.git) | MIT | clearlydefined |
+| [`@lezer/lr@1.4.2`](https://github.com/lezer-parser/lr.git) | MIT | clearlydefined |
+| [`@lezer/yaml@1.0.3`](https://github.com/lezer-parser/yaml.git) | MIT | clearlydefined |
 | `@lukeed/ms@2.0.2` | MIT | clearlydefined |
 | [`@npmcli/agent@2.2.2`](https://github.com/npm/agent.git) | ISC | clearlydefined |
 | [`@npmcli/fs@3.1.0`](https://github.com/npm/fs.git) | ISC | #14656 |
@@ -128,7 +137,6 @@
 | [`chownr@3.0.0`](git://github.com/isaacs/chownr.git) | BlueOak-1.0.0 | clearlydefined |
 | [`cipher-base@1.0.4`](git+https://github.com/crypto-browserify/cipher-base.git) | MIT | clearlydefined |
 | `clean-stack@2.2.0` | MIT | clearlydefined |
-| [`codemirror@5.65.16`](https://github.com/codemirror/CodeMirror.git) | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/codemirror/5.65.16) |
 | `color-convert@1.9.3` | MIT | clearlydefined |
 | `color-convert@2.0.1` | MIT | clearlydefined |
 | [`color-name@1.1.3`](git@github.com:dfcreative/color-name.git) | MIT | clearlydefined |
@@ -167,7 +175,7 @@
 | [`domhandler@5.0.3`](git://github.com/fb55/domhandler.git) | BSD-2-Clause | clearlydefined |
 | [`domutils@3.1.0`](git://github.com/fb55/domutils.git) | BSD-2-Clause | #8391 |
 | [`duplexify@4.1.3`](git://github.com/mafintosh/duplexify) | MIT | clearlydefined |
-| [`ecc-jsbn@0.1.2`](https://github.com/quartzjer/ecc-jsbn.git) | MIT | clearlydefined |
+| [`ecc-jsbn@0.1.2`](https://github.com/quartzjer/ecc-jsbn.git) | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/ecc-jsbn/0.1.2) |
 | [`elliptic@6.5.7`](git@github.com:indutny/elliptic) | MIT | [CQ23022](https://dev.eclipse.org/ipzilla/show_bug.cgi?id=23022) |
 | [`emoji-regex@8.0.0`](https://github.com/mathiasbynens/emoji-regex.git) | MIT | clearlydefined |
 | `encoding@0.1.13` | MIT | #1016 |
@@ -497,6 +505,7 @@
 | `strip-ansi@6.0.1` | MIT | clearlydefined |
 | `strip-ansi@7.1.0` | MIT | #8735 |
 | `strip-json-comments@3.1.1` | MIT | clearlydefined |
+| [`style-mod@4.1.2`](git+https://github.com/marijnh/style-mod.git) | MIT | clearlydefined |
 | [`style-to-object@1.0.8`](https://github.com/remarkablemark/style-to-object) | MIT | #16187 |
 | `supports-color@5.5.0` | MIT | clearlydefined |
 | [`tabbable@5.3.3`](git+https://github.com/focus-trap/tabbable.git) | MIT | clearlydefined |
@@ -541,6 +550,7 @@
 | [`verror@1.10.0`](git://github.com/davepacheco/node-verror.git) | MIT | clearlydefined |
 | `vfile-message@4.0.2` | MIT | clearlydefined |
 | `vfile@6.0.3` | MIT | clearlydefined |
+| [`w3c-keyname@2.2.8`](git+https://github.com/marijnh/w3c-keyname.git) | MIT | clearlydefined |
 | [`warning@4.0.3`](https://github.com/BerkeleyTrue/warning.git) | MIT | [CQ22359](https://dev.eclipse.org/ipzilla/show_bug.cgi?id=22359) |
 | `webidl-conversions@3.0.1` | BSD-2-Clause | clearlydefined |
 | `whatwg-url@5.0.0` | MIT | clearlydefined |

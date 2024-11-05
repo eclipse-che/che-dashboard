@@ -62,7 +62,6 @@ export class EditorSelectorEntry extends React.PureComponent<Props, State> {
     };
   }
 
-  // TODO temporary solution for making links open in a new browser tab (should be fixed with https://github.com/eclipse-che/che/issues/23219)
   private setAttribute(
     widgetId: string,
     querySelector: string = 'a',

@@ -54,14 +54,13 @@ describe('Workspace Details page', () => {
   });
 
   describe('Tabs', () => {
-    it('should activate the Overview tab by default', () => {
+    it('should activate the Overview tab by default', async () => {
       const workspace = constructWorkspace(devWorkspaceBuilder.build());
       renderComponent({
         workspace,
       });
 
-      const tabpanel = screen.queryByRole('tabpanel', { name: 'Overview' });
-      expect(tabpanel).not.toBeNull();
+      expect(await screen.findByRole('tabpanel', { name: 'Overview' })).not.toBeNull();
     });
 
     it('should have four tabs visible', () => {
