@@ -67,8 +67,8 @@ jest
   .mockImplementation(() => jest.fn());
 jest.spyOn(devfileRegistriesActionCreators, 'requestDevfile').mockImplementation(() => jest.fn());
 jest.spyOn(workspacesActionCreators, 'requestWorkspaces').mockImplementation(() => jest.fn());
-jest.mock('@/store/Workspaces/DevWorkspaces', () => ({
-  ...jest.requireActual('@/store/Workspaces/DevWorkspaces'),
+jest.mock('@/store/Workspaces/devWorkspaces', () => ({
+  ...jest.requireActual('@/store/Workspaces/devWorkspaces'),
   selectDevWorkspacesResourceVersion: jest.fn(),
 }));
 jest.mock('@/store/Events', () => ({
