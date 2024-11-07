@@ -26,7 +26,6 @@ import {
 } from '@/components/WorkspaceProgress/ProgressStep';
 import { ProgressStepTitle } from '@/components/WorkspaceProgress/StepTitle';
 import { TimeLimit } from '@/components/WorkspaceProgress/TimeLimit';
-import { FactoryLocationAdapter } from '@/services/factory-location-adapter';
 import {
   buildFactoryParams,
   FactoryParams,
@@ -75,9 +74,7 @@ class CreatingStepFetchDevfile extends ProgressStep<Props, State> {
     super(props);
 
     const factoryParams = buildFactoryParams(props.searchParams);
-    const name = FactoryLocationAdapter.isHttpLocation(factoryParams.sourceUrl)
-      ? `Inspecting repo ${factoryParams.sourceUrl} for a devfile`
-      : 'Applying default devfile';
+    const name = `Inspecting repo ${factoryParams.sourceUrl} for a devfile`;
 
     this.state = {
       factoryParams,
@@ -206,12 +203,6 @@ class CreatingStepFetchDevfile extends ProgressStep<Props, State> {
 
     if (shouldResolve === false && useDefaultDevfile) {
       // go to the next step
-      return true;
-    }
-
-    // do not resolve a devfile if git+SSH URL is provided
-    if (FactoryLocationAdapter.isSshLocation(sourceUrl)) {
-      this.handleDefaultDevfile('');
       return true;
     }
 
