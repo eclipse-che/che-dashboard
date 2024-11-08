@@ -334,10 +334,10 @@
   resolved "https://registry.yarnpkg.com/@csstools/selector-specificity/-/selector-specificity-3.0.0.tgz#798622546b63847e82389e473fd67f2707d82247"
   integrity sha512-hBI9tfBtuPIi885ZsZ32IMEU/5nlZH/KOVYJCOh7gyMxaVLGmLedYqFN6Ui1LXkI8JlC8IsuC0rF0btcRZKd5g==
 
-"@devfile/api@2.3.0-1733171449":
-  version "2.3.0-1733171449"
-  resolved "https://registry.yarnpkg.com/@devfile/api/-/api-2.3.0-1733171449.tgz#39ad1c5c22801d20af5403e240f04dab96d1d733"
-  integrity sha512-NQo6rooa69MFzYZl1ox8Dh2qQ9kpm2UHik0Rz8ilKNHyRrFrWqNr0jw9CrPyWLs6N6O55ONVwwHmuU9GvffWkQ==
+"@devfile/api@2.3.0-1738342178":
+  version "2.3.0-1738342178"
+  resolved "https://registry.yarnpkg.com/@devfile/api/-/api-2.3.0-1738342178.tgz#682f0097cae39267e32426cf52bfd4a0e71e7a55"
+  integrity sha512-asgIDvCeBoSjk9cufBEZaJac5VHTaehaVBjxAyeehR4NZir2HOtgLMf26BYWLs2/PObmuen06PJgjr70kO3oGA==
   dependencies:
     "@types/node" "*"
     "@types/node-fetch" "^2.5.7"
@@ -356,18 +356,19 @@
   resolved "https://registry.yarnpkg.com/@eclipse-che/api/-/api-7.86.0.tgz#c4bfe23fb0a34e864ba5a45cd3d5b7f3332cef13"
   integrity sha512-WDmnzopqKXPO3jozfrZ8mXVxdy/7KnzOv/+o3SzIqKYfEXXcmulG2+FYxzWUAA37T3wgqE1lQ+MACwO7v4PhtA==
 
-"@eclipse-che/che-devworkspace-generator@7.96.0-next-da9f364":
-  version "7.96.0-next-da9f364"
-  resolved "https://registry.yarnpkg.com/@eclipse-che/che-devworkspace-generator/-/che-devworkspace-generator-7.96.0-next-da9f364.tgz#139cec49025b0df4dda20a42d1f67a437e93e255"
-  integrity sha512-ZfSd7xgOXN24RI5F/2FdOe9OOhr1uaes7CZw/AU4j27nY2pYsS1SCEAFSbEiP4qAse5Yxp5bg37NpGQXFcvflA==
+"@eclipse-che/che-devworkspace-generator@7.99.0-next-1ccb963":
+  version "7.99.0-next-1ccb963"
+  resolved "https://registry.yarnpkg.com/@eclipse-che/che-devworkspace-generator/-/che-devworkspace-generator-7.99.0-next-1ccb963.tgz#3519e05c4699b6dced1d2e76bd9ae75f5c152c38"
+  integrity sha512-YpM2D7LH1tkAFwaAYUoOSQN2zL7l+c0oXfu05hrwXode3ghhhw+rDcz/QCJ1TKEAaIiJdB+qyQ2oOGGWU6Ax1A==
   dependencies:
-    "@devfile/api" "2.3.0-1733171449"
+    "@devfile/api" "2.3.0-1738342178"
     axios "^1.7.4"
     fs-extra "^11.2.0"
     inversify "^6.0.2"
     js-yaml "^4.0.0"
     jsonc-parser "^3.0.0"
     jsonschema "^1.4.1"
+    lodash "^4.17.21"
     reflect-metadata "^0.2.2"
 
 "@eslint-community/eslint-utils@^4.2.0", "@eslint-community/eslint-utils@^4.4.0":

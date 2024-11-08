@@ -27,6 +27,7 @@ import ProgressIndicator from '@/components/Progress';
 import WorkspaceEvents from '@/components/WorkspaceEvents';
 import WorkspaceLogs from '@/components/WorkspaceLogs';
 import { lazyInject } from '@/inversify.config';
+import DevfileEditorTab from '@/pages/WorkspaceDetails/DevfileEditorTab';
 import Header from '@/pages/WorkspaceDetails/Header';
 import { WorkspaceDetailsHeaderActions } from '@/pages/WorkspaceDetails/Header/Actions';
 import styles from '@/pages/WorkspaceDetails/index.module.css';
@@ -35,8 +36,6 @@ import { AppAlerts } from '@/services/alerts/appAlerts';
 import { buildDetailsLocation } from '@/services/helpers/location';
 import { WorkspaceDetailsTab } from '@/services/helpers/types';
 import { Workspace } from '@/services/workspace-adapter';
-
-const DevfileEditorTab = React.lazy(() => import('@/pages/WorkspaceDetails/DevfileEditorTab'));
 
 export const SECTION_THEME = PageSectionVariants.light;
 

@@ -5,9 +5,9 @@
 | [`@babel/runtime@7.23.2`](https://github.com/babel/babel.git) | MIT | #10718 |
 | [`@devfile/api@2.3.0-1738342178`](https://github.com/GIT_USER_ID/GIT_REPO_ID.git) | Apache-2.0 | N/A |
 | [`@eclipse-che/che-devworkspace-generator@7.99.0-next-1ccb963`](git+https://github.com/devfile/devworkspace-generator.git) | EPL-2.0 | ecd.che |
-| [`@eclipse-che/common@7.99.0-next`](https://github.com/eclipse-che/che-dashboard) | EPL-2.0 | ecd.che |
-| [`@eclipse-che/dashboard-backend@7.99.0-next`](https://github.com/eclipse-che/che-dashboard) | EPL-2.0 | ecd.che |
-| [`@eclipse-che/dashboard-frontend@7.99.0-next`](git://github.com/eclipse/che-dashboard.git) | EPL-2.0 | ecd.che |
+| [`@eclipse-che/common@7.100.0-next`](https://github.com/eclipse-che/che-dashboard) | EPL-2.0 | ecd.che |
+| [`@eclipse-che/dashboard-backend@7.100.0-next`](https://github.com/eclipse-che/che-dashboard) | EPL-2.0 | ecd.che |
+| [`@eclipse-che/dashboard-frontend@7.100.0-next`](git://github.com/eclipse/che-dashboard.git) | EPL-2.0 | ecd.che |
 | [`@fastify/accept-negotiator@1.1.0`](git+https://github.com/fastify/accept-negotiator.git) | MIT | clearlydefined |
 | [`@fastify/ajv-compiler@3.6.0`](git+https://github.com/fastify/ajv-compiler.git) | MIT | clearlydefined |
 | [`@fastify/busboy@2.0.0`](https://github.com/fastify/busboy.git) | MIT | clearlydefined |
