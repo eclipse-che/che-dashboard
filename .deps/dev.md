@@ -163,7 +163,7 @@
 | [`acorn-jsx@5.3.2`](https://github.com/acornjs/acorn-jsx) | MIT | clearlydefined |
 | [`acorn-walk@8.3.0`](https://github.com/acornjs/acorn.git) | MIT | #11942 |
 | [`acorn@8.11.2`](https://github.com/acornjs/acorn.git) | MIT | clearlydefined |
-| [`acorn@8.14.0`](git+https://github.com/acornjs/acorn.git) | MIT | clearlydefined |
+| [`acorn@8.14.0`](git+https://github.com/acornjs/acorn.git) | MIT | #19983 |
 | [`agent-base@6.0.2`](git://github.com/TooTallNate/node-agent-base.git) | MIT | clearlydefined |
 | [`ajv-keywords@3.5.2`](git+https://github.com/epoberezkin/ajv-keywords.git) | MIT | clearlydefined |
 | [`ajv-keywords@5.1.0`](git+https://github.com/epoberezkin/ajv-keywords.git) | MIT | clearlydefined |
@@ -780,7 +780,7 @@
 | [`write-file-atomic@4.0.2`](https://github.com/npm/write-file-atomic.git) | ISC | clearlydefined |
 | [`write-file-atomic@5.0.1`](https://github.com/npm/write-file-atomic.git) | ISC | #8219 |
 | `write-json-file@2.3.0` | MIT | clearlydefined |
-| [`ws@8.18.0`](git+https://github.com/websockets/ws.git) | MIT | clearlydefined |
+| [`ws@8.18.0`](git+https://github.com/websockets/ws.git) | MIT | #19631 |
 | `xml-name-validator@4.0.0` | Apache-2.0 | clearlydefined |
 | `xmlchars@2.2.0` | MIT | clearlydefined |
 | [`y18n@5.0.8`](https://github.com/yargs/y18n) | ISC | clearlydefined |

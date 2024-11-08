@@ -152,6 +152,8 @@ jobs:
         include:
           - platform: linux/arm64
             default: false
+          - platform: linux/s390x
+            default: false
     steps:
       -
         name: "Checkout Che Dashboard source code"

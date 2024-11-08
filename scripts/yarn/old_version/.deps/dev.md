@@ -337,7 +337,7 @@
 | [`get-symbol-description@1.0.0`](git+https://github.com/inspect-js/get-symbol-description.git) | MIT | clearlydefined |
 | [`glob-parent@5.1.2`](https://github.com/gulpjs/glob-parent.git) | ISC | clearlydefined |
 | [`glob-to-regexp@0.4.1`](https://github.com/fitzgen/glob-to-regexp.git) | BSD-2-Clause | clearlydefined |
-| [`glob@7.2.3`](git://github.com/isaacs/node-glob.git) | ISC | clearlydefined |
+| [`glob@7.2.3`](git://github.com/isaacs/node-glob.git) | ISC | #19366 |
 | [`global-modules@2.0.0`](https://github.com/jonschlinkert/global-modules.git) | MIT | clearlydefined |
 | [`global-prefix@3.0.0`](https://github.com/jonschlinkert/global-prefix.git) | MIT | clearlydefined |
 | [`globals@13.23.0`](https://github.com/sindresorhus/globals.git) | MIT | clearlydefined |
@@ -368,7 +368,7 @@
 | [`identity-obj-proxy@3.0.0`](git+https://github.com/keyanzhang/identity-obj-proxy.git) | MIT | clearlydefined |
 | [`ignore-by-default@1.0.1`](git+https://github.com/novemberborn/ignore-by-default.git) | ISC | clearlydefined |
 | [`ignore@5.2.4`](git@github.com:kaelzhang/node-ignore.git) | MIT | #5907 |
-| [`import-fresh@3.3.0`](https://github.com/sindresorhus/import-fresh.git) | MIT | clearlydefined |
+| [`import-fresh@3.3.0`](https://github.com/sindresorhus/import-fresh.git) | MIT | #19299 |
 | [`import-lazy@4.0.0`](https://github.com/sindresorhus/import-lazy.git) | MIT | clearlydefined |
 | [`import-local@3.1.0`](https://github.com/sindresorhus/import-local.git) | MIT | clearlydefined |
 | [`imurmurhash@0.1.4`](https://github.com/jensyt/imurmurhash-js) | MIT | clearlydefined |
