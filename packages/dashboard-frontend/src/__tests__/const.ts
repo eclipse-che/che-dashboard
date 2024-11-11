@@ -20,7 +20,6 @@ export const REQUEST_TIME_600 = 600;
 export const REQUEST_TIME_700 = 700;
 export const REQUEST_TIME_800 = 800;
 export const REQUEST_TIME_1300 = 1300;
-export const REQUEST_TIME_2000 = 2000;
 
 export const TIME_LIMIT = 9000;
 

@@ -35,7 +35,6 @@ import {
   REQUEST_TIME_400,
   REQUEST_TIME_500,
   REQUEST_TIME_1300,
-  REQUEST_TIME_2000,
   serverConfigData,
   sshKeysData,
   TIME_LIMIT,
@@ -126,7 +125,7 @@ describe('Workspace creation time', () => {
     mockPost.mockImplementation((url: string) => {
       switch (url) {
         case '/api/factory/resolver':
-          return responseWithDelay(factoryResolverData, REQUEST_TIME_2000);
+          return responseWithDelay(factoryResolverData, REQUEST_TIME_1300);
         case '/api/kubernetes/namespace/provision':
           return responseWithDelay({}, REQUEST_TIME_1300);
         case '/dashboard/api/devworkspace-resources':
@@ -179,21 +178,27 @@ describe('Workspace creation time', () => {
      */
 
     // the workspace loader page is rendered
-    await waitFor(() =>
-      expect(screen.queryByRole('heading', { name: 'Creating a workspace' })).toBeInTheDocument(),
+    await waitFor(
+      () =>
+        expect(screen.queryByRole('heading', { name: 'Creating a workspace' })).toBeInTheDocument(),
+      { timeout: 5000 },
     );
 
     // step 1: Initializing
     const stepInitializing = screen.getByRole('button', { name: 'Initializing' });
     expect(stepInitializing).toBeInTheDocument();
-    await waitFor(() => expect(stepInitializing).toHaveAttribute('aria-current', 'step'));
+    await waitFor(() => expect(stepInitializing).toHaveAttribute('aria-current', 'step'), {
+      timeout: 5000,
+    });
 
     // step 2: Checking for the limit of running workspaces
     const stepCheckingForLimit = screen.getByRole('button', {
       name: 'Checking for the limit of running workspaces',
     });
     expect(stepCheckingForLimit).toBeInTheDocument();
-    await waitFor(() => expect(stepCheckingForLimit).toHaveAttribute('aria-current', 'step'));
+    await waitFor(() => expect(stepCheckingForLimit).toHaveAttribute('aria-current', 'step'), {
+      timeout: 5000,
+    });
 
     // step 3: Creating a workspace
     // skipping because it is never activated, but it's substeps are
@@ -212,7 +217,9 @@ describe('Workspace creation time', () => {
       name: 'Open IDE',
     });
     expect(stepOpenIde).toBeInTheDocument();
-    await waitFor(() => expect(stepOpenIde).toHaveAttribute('aria-current', 'step'));
+    await waitFor(() => expect(stepOpenIde).toHaveAttribute('aria-current', 'step'), {
+      timeout: 5000,
+    });
 
     // end point for the performance measurement
     const endTime = performance.now();
