@@ -98,11 +98,25 @@ export class MockStoreBuilder {
     this.state = {
       ...this.state,
       clusterConfig: {
-        clusterConfig,
+        clusterConfig: {
+          allWorkspacesLimit:
+            clusterConfig.allWorkspacesLimit ??
+            this.state.clusterConfig?.clusterConfig.allWorkspacesLimit,
+          runningWorkspacesLimit:
+            clusterConfig.runningWorkspacesLimit ??
+            this.state.clusterConfig?.clusterConfig.runningWorkspacesLimit,
+          dashboardFavicon:
+            clusterConfig.dashboardFavicon ??
+            this.state.clusterConfig?.clusterConfig.dashboardFavicon,
+          dashboardWarning:
+            clusterConfig.dashboardWarning ??
+            this.state.clusterConfig?.clusterConfig.dashboardWarning,
+        },
         isLoading,
         error,
       },
     } as RootState;
+
     return this;
   }
 
@@ -114,7 +128,10 @@ export class MockStoreBuilder {
     this.state = {
       ...this.state,
       clusterInfo: {
-        clusterInfo,
+        clusterInfo: {
+          applications:
+            clusterInfo.applications ?? this.state.clusterInfo?.clusterInfo.applications,
+        },
         isLoading,
         error,
       },
@@ -205,11 +222,11 @@ export class MockStoreBuilder {
       ...this.state,
       devfileRegistries: {
         isLoading,
-        devfiles: options.devfiles || this.state.devfileRegistries?.devfiles || {},
-        registries: options.registries || this.state.devfileRegistries?.registries || {},
+        devfiles: options.devfiles ?? this.state.devfileRegistries?.devfiles ?? {},
+        registries: options.registries ?? this.state.devfileRegistries?.registries ?? {},
         devWorkspaceResources:
-          options.devWorkspaceResources ||
-          this.state.devfileRegistries?.devWorkspaceResources ||
+          options.devWorkspaceResources ??
+          this.state.devfileRegistries?.devWorkspaceResources ??
           {},
         filter: options.filter || '',
       },
@@ -246,10 +263,10 @@ export class MockStoreBuilder {
     this.state = {
       ...this.state,
       devWorkspaces: {
-        workspaces: options.workspaces || this.state.devWorkspaces?.workspaces || [],
+        workspaces: options.workspaces ?? this.state.devWorkspaces?.workspaces ?? [],
         startedWorkspaces:
-          options.startedWorkspaces || this.state.devWorkspaces?.startedWorkspaces || {},
-        warnings: options.warnings || this.state.devWorkspaces?.warnings || {},
+          options.startedWorkspaces ?? this.state.devWorkspaces?.startedWorkspaces ?? {},
+        warnings: options.warnings ?? this.state.devWorkspaces?.warnings ?? {},
         isLoading,
         error,
       },
@@ -269,10 +286,10 @@ export class MockStoreBuilder {
     this.state = {
       ...this.state,
       workspaces: {
-        namespace: options.namespace || '',
-        workspaceName: options.workspaceName || '',
-        workspaceUID: options.workspaceUID || '',
-        recentNumber: options.recentNumber || 0,
+        namespace: options.namespace ?? '',
+        workspaceName: options.workspaceName ?? '',
+        workspaceUID: options.workspaceUID ?? '',
+        recentNumber: options.recentNumber ?? 0,
         isLoading,
       },
     };

@@ -32,7 +32,7 @@ export async function verifyAuthorized(
 ): Promise<void> {
   await dispatch(actionCreators.testBackends());
   const state = getState();
-  const authorized = await state.sanityCheck.authorized;
+  const authorized = state.sanityCheck.authorized;
   if (authorized === false) {
     const error = state.sanityCheck.error || '';
     throw new Error(error);
