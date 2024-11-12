@@ -10,7 +10,7 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import { render, screen } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
 import { Provider } from 'react-redux';
@@ -36,7 +36,6 @@ describe('Workspace Details page', () => {
   let devWorkspaceBuilder: DevWorkspaceBuilder;
 
   beforeEach(() => {
-    // history = createHashHistory();
     devWorkspaceBuilder = new DevWorkspaceBuilder()
       .withName(workspaceName)
       .withNamespace(namespace);
@@ -60,7 +59,9 @@ describe('Workspace Details page', () => {
         workspace,
       });
 
-      expect(await screen.findByRole('tabpanel', { name: 'Overview' })).not.toBeNull();
+      await waitFor(() =>
+        expect(screen.queryByRole('tabpanel', { name: 'Overview' })).not.toBeNull(),
+      );
     });
 
     it('should have four tabs visible', () => {
