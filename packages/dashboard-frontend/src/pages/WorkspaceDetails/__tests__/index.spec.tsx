@@ -26,6 +26,7 @@ const mockOnSave = jest.fn();
 
 jest.mock('@/pages/WorkspaceDetails/DevfileEditorTab');
 jest.mock('@/pages/WorkspaceDetails/OverviewTab');
+jest.mock('@/pages/WorkspaceDetails/Header');
 jest.mock('@/components/WorkspaceLogs');
 jest.mock('@/components/WorkspaceEvents');
 
@@ -95,32 +96,6 @@ describe('Workspace Details page', () => {
 
       const tabpanel = screen.getByRole('tabpanel', { name: 'Devfile' });
       expect(tabpanel).not.toBeNull();
-    });
-  });
-
-  describe('Old workspace link', () => {
-    it('should NOT show the link', () => {
-      const workspace = constructWorkspace(devWorkspaceBuilder.build());
-      renderComponent({
-        workspace,
-      });
-      expect(screen.queryByRole('link', { name: 'Show Original Devfile' })).toBeFalsy();
-    });
-
-    it('should show the link', () => {
-      const workspace = constructWorkspace(devWorkspaceBuilder.build());
-      const oldWorkspacePath: Location = {
-        key: 'old-workspace-key',
-        hash: '',
-        pathname: '/workspace/che-user/che-wksp',
-        search: '',
-        state: undefined,
-      };
-      renderComponent({
-        workspace,
-        oldWorkspaceLocation: oldWorkspacePath,
-      });
-      expect(screen.queryByRole('link', { name: 'Show Original Devfile' })).toBeTruthy();
     });
   });
 
