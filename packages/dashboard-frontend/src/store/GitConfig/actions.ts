@@ -54,7 +54,7 @@ export const actionCreators = {
       const state = getState();
       const namespace = selectDefaultNamespace(state).name;
       const { gitConfig } = state;
-      const gitconfig = Object.assign(gitConfig.config || {}, {
+      const gitconfig = Object.assign({}, gitConfig.config || {}, {
         gitconfig: changedGitConfig,
       } as api.IGitConfig);
 

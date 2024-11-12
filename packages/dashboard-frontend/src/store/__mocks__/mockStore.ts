@@ -457,6 +457,13 @@ export class MockStoreBuilder {
 
   public build() {
     return configureStore({
+      middleware: getDefaultMiddleware => {
+        const middleware = getDefaultMiddleware({
+          serializableCheck: true,
+          immutableCheck: true,
+        });
+        return middleware;
+      },
       reducer: rootReducer,
       preloadedState: this.state,
     });
