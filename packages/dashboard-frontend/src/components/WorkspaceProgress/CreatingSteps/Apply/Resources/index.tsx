@@ -42,7 +42,6 @@ import { factoryResolverActionCreators } from '@/store/FactoryResolver';
 import { selectFactoryResolver } from '@/store/FactoryResolver/selectors';
 import { selectDefaultNamespace } from '@/store/InfrastructureNamespaces/selectors';
 import { workspacesActionCreators } from '@/store/Workspaces';
-import { devWorkspacesActionCreators } from '@/store/Workspaces/devWorkspaces';
 import { selectDevWorkspaceWarnings } from '@/store/Workspaces/devWorkspaces/selectors';
 import { selectAllWorkspaces } from '@/store/Workspaces/selectors';
 
@@ -306,7 +305,6 @@ const connector = connect(
     ...devfileRegistriesActionCreators,
     ...factoryResolverActionCreators,
     ...workspacesActionCreators,
-    createWorkspaceFromResources: devWorkspacesActionCreators.createWorkspaceFromResources,
   },
   null,
   {

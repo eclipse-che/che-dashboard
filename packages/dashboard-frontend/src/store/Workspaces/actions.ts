@@ -88,6 +88,14 @@ export const actionCreators = {
       );
     },
 
+  createWorkspaceFromResources:
+    (
+      ...args: Parameters<typeof devWorkspacesActionCreators.createWorkspaceFromResources>
+    ): AppThunk =>
+    async dispatch => {
+      await dispatch(devWorkspacesActionCreators.createWorkspaceFromResources(...args));
+    },
+
   createWorkspaceFromDevfile:
     (
       devfile: devfileApi.Devfile,
