@@ -471,16 +471,9 @@ const mapStateToProps = (state: RootState) => ({
   devWorkspaceWarnings: selectDevWorkspaceWarnings(state),
 });
 
-const connector = connect(
-  mapStateToProps,
-  {
-    ...workspacesActionCreators,
-  },
-  null,
-  {
-    // forwardRef is mandatory for using `@react-mock/state` in unit tests
-    forwardRef: true,
-  },
-);
+const connector = connect(mapStateToProps, workspacesActionCreators, null, {
+  // forwardRef is mandatory for using `@react-mock/state` in unit tests
+  forwardRef: true,
+});
 type MappedProps = ConnectedProps<typeof connector>;
 export default connector(CreatingStepApplyDevfile);

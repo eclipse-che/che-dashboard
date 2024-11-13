@@ -26,16 +26,16 @@ import { updateWorkspaceWithDefaultDevfile } from '@/store/Workspaces/devWorkspa
 export const onStatusChangeCallbacks = new Map<string, (status: string) => void>();
 
 export const actionCreators = {
-  requestWorkspaces,
+  createWorkspaceFromDevfile: createWorkspaceFromDevfile,
+  createWorkspaceFromResources,
+  handleWebSocketMessage,
   requestWorkspace,
-  startWorkspace,
+  requestWorkspaces,
   restartWorkspace,
+  startWorkspace,
   stopWorkspace,
   terminateWorkspace,
-  updateWorkspaceAnnotation,
   updateWorkspace,
-  createWorkspaceFromResources,
+  updateWorkspaceAnnotation,
   updateWorkspaceWithDefaultDevfile,
-  createWorkspaceFromDevfile,
-  handleWebSocketMessage,
 };

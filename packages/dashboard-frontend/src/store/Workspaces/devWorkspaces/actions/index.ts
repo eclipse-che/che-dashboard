@@ -12,5 +12,4 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-export * from '@/store/Workspaces/devWorkspaces/actions';
 export * from '@/store/Workspaces/devWorkspaces/actions/actionCreators';
