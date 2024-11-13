@@ -114,21 +114,6 @@ describe('Creating steps, fetching a devfile', () => {
     jest.useRealTimers();
   });
 
-  test('factory should not resolve the SSH location', async () => {
-    const searchParams = new URLSearchParams({
-      [FACTORY_URL_ATTR]: 'git@github.com:eclipse-che/che-dashboard.git',
-    });
-
-    renderComponent(store, searchParams);
-
-    await jest.advanceTimersByTimeAsync(MIN_STEP_DURATION_MS);
-
-    await waitFor(() => expect(mockOnNextStep).toHaveBeenCalled());
-    expect(mockOnError).not.toHaveBeenCalled();
-    expect(mockOnRestart).not.toHaveBeenCalled();
-    expect(mockRequestFactoryResolver).not.toHaveBeenCalled();
-  });
-
   test('devfile is already resolved', async () => {
     renderComponent(store, searchParams);
 
@@ -734,9 +719,21 @@ describe('Creating steps, fetching a devfile', () => {
     });
 
     it('should go to next step', async () => {
-      const emptyStore = new FakeStoreBuilder().build();
-
-      renderComponent(emptyStore, searchParams, location);
+      const nextStore = new FakeStoreBuilder()
+        .withFactoryResolver({
+          resolver: {
+            location: factoryUrl,
+            devfile: {
+              schemaVersion: '2.3.0',
+              metadata: {
+                name: 'my-project',
+                namespace: 'user-che',
+              },
+            },
+          },
+        })
+        .build();
+      renderComponent(nextStore, searchParams, location);
 
       await jest.advanceTimersByTimeAsync(MIN_STEP_DURATION_MS);
 

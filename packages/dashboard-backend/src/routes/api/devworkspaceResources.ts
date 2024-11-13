@@ -37,8 +37,6 @@ export function registerDevworkspaceResourcesRoute(instance: FastifyInstance) {
           {
             devfileContent,
             editorPath,
-            pluginRegistryUrl: undefined,
-            editorEntry: undefined,
             editorContent,
             projects: [],
           },
