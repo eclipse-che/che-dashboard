@@ -10,13 +10,12 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import { createSelector } from 'reselect';
+import { createSelector } from '@reduxjs/toolkit';
 
 import { che } from '@/services/models';
+import { RootState } from '@/store';
 
-import { AppState } from '..';
-
-const selectState = (state: AppState) => state.infrastructureNamespaces;
+const selectState = (state: RootState) => state.infrastructureNamespaces;
 
 export const selectDefaultNamespace = createSelector(
   selectState,

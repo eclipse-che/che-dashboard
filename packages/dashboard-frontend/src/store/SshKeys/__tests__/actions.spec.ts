@@ -10,205 +10,127 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import { MockStoreEnhanced } from 'redux-mock-store';
-import { ThunkDispatch } from 'redux-thunk';
+import { api, helpers } from '@eclipse-che/common';
 
-import * as KubernetesNamespaceApi from '@/services/backend-client/kubernetesNamespaceApi';
-import * as sshKeysApi from '@/services/backend-client/sshKeysApi';
-import { che } from '@/services/models';
-import { AppState } from '@/store';
-import { FakeStoreBuilder } from '@/store/__mocks__/storeBuilder';
-import { AUTHORIZED } from '@/store/sanityCheckMiddleware';
-import { key1, key2, newKey } from '@/store/SshKeys/__tests__/stub';
+import { addSshKey, fetchSshKeys, removeSshKey } from '@/services/backend-client/sshKeysApi';
+import { createMockStore } from '@/store/__mocks__/mockActionsTestStore';
+import * as infrastructureNamespacesSelectors from '@/store/InfrastructureNamespaces/selectors';
+import { verifyAuthorized } from '@/store/SanityCheck';
+import {
+  actionCreators,
+  keysAddAction,
+  keysErrorAction,
+  keysReceiveAction,
+  keysRemoveAction,
+  keysRequestAction,
+} from '@/store/SshKeys/actions';
 
-import * as testStore from '..';
+jest.mock('@eclipse-che/common');
+jest.mock('@/services/backend-client/sshKeysApi');
+jest.mock('@/store/SanityCheck');
 
-jest.mock(
-  '@/services/backend-client/kubernetesNamespaceApi',
-  () =>
-    ({
-      provisionKubernetesNamespace: () => Promise.resolve({} as che.KubernetesNamespace),
-    }) as typeof KubernetesNamespaceApi,
-);
+const mockNamespace = 'test-namespace';
+jest
+  .spyOn(infrastructureNamespacesSelectors, 'selectDefaultNamespace')
+  .mockReturnValue({ name: mockNamespace, attributes: { default: 'true', phase: 'Active' } });
 
-const mockFetchSshKeys = jest.fn();
-const mockAddSshKey = jest.fn();
-const mockRemoveSshKey = jest.fn();
-jest.mock(
-  '@/services/backend-client/sshKeysApi',
-  () =>
-    ({
-      fetchSshKeys: (...args) => mockFetchSshKeys(...args),
-      addSshKey: (...args) => mockAddSshKey(...args),
-      removeSshKey: (...args) => mockRemoveSshKey(...args),
-    }) as typeof sshKeysApi,
-);
+describe('SshKeys, actions', () => {
+  let store: ReturnType<typeof createMockStore>;
 
-// mute the outputs
-console.error = jest.fn();
-
-describe('SSH keys, actions', () => {
-  afterEach(() => {
+  beforeEach(() => {
+    store = createMockStore({});
     jest.clearAllMocks();
   });
 
-  it('should create REQUEST_KEYS and RECEIVE_KEYS when requesting SSH keys', async () => {
-    mockFetchSshKeys.mockResolvedValueOnce([key1, key2]);
+  describe('requestSshKeys', () => {
+    it('should dispatch receive action on successful fetch', async () => {
+      const mockKeys = [{ name: 'key1' }] as api.SshKey[];
 
-    const store = new FakeStoreBuilder().build() as MockStoreEnhanced<
-      AppState,
-      ThunkDispatch<AppState, undefined, testStore.KnownAction>
-    >;
+      (verifyAuthorized as jest.Mock).mockResolvedValue(true);
+      (fetchSshKeys as jest.Mock).mockResolvedValue(mockKeys);
 
-    await store.dispatch(testStore.actionCreators.requestSshKeys());
+      await store.dispatch(actionCreators.requestSshKeys());
 
-    const actions = store.getActions();
-    const expectedActions: testStore.KnownAction[] = [
-      {
-        type: testStore.Type.REQUEST_KEYS,
-        check: AUTHORIZED,
-      },
-      {
-        type: testStore.Type.RECEIVE_KEYS,
-        keys: [key1, key2],
-      },
-    ];
-    expect(actions).toEqual(expectedActions);
+      const actions = store.getActions();
+      expect(actions[0]).toEqual(keysRequestAction());
+      expect(actions[1]).toEqual(keysReceiveAction(mockKeys));
+    });
+
+    it('should dispatch error action on failed fetch', async () => {
+      const errorMessage = 'Network error';
+
+      (verifyAuthorized as jest.Mock).mockResolvedValue(true);
+      (fetchSshKeys as jest.Mock).mockRejectedValue(new Error(errorMessage));
+      (helpers.errors.getMessage as jest.Mock).mockReturnValue(errorMessage);
+
+      await expect(store.dispatch(actionCreators.requestSshKeys())).rejects.toThrow(errorMessage);
+
+      const actions = store.getActions();
+      expect(actions[0]).toEqual(keysRequestAction());
+      expect(actions[1]).toEqual(keysErrorAction(errorMessage));
+    });
   });
 
-  it('should create REQUEST_KEYS and RECEIVE_ERROR when requesting SSH keys', async () => {
-    const errorMessage = 'Something bad happened';
-    mockFetchSshKeys.mockRejectedValueOnce(new Error(errorMessage));
+  describe('addSshKey', () => {
+    it('should dispatch add action on successful add', async () => {
+      const mockKey = { name: 'key1' } as api.NewSshKey;
+      const mockNewKey = { name: 'key1' } as api.SshKey;
 
-    const store = new FakeStoreBuilder().build() as MockStoreEnhanced<
-      AppState,
-      ThunkDispatch<AppState, undefined, testStore.KnownAction>
-    >;
+      (verifyAuthorized as jest.Mock).mockResolvedValue(true);
+      (addSshKey as jest.Mock).mockResolvedValue(mockNewKey);
 
-    try {
-      await store.dispatch(testStore.actionCreators.requestSshKeys());
-    } catch (e) {
-      // no-op
-    }
+      await store.dispatch(actionCreators.addSshKey(mockKey));
 
-    const actions = store.getActions();
-    const expectedActions: testStore.KnownAction[] = [
-      {
-        type: testStore.Type.REQUEST_KEYS,
-        check: AUTHORIZED,
-      },
-      {
-        type: testStore.Type.RECEIVE_ERROR,
-        error: errorMessage,
-      },
-    ];
-    expect(actions).toEqual(expectedActions);
+      const actions = store.getActions();
+      expect(actions[0]).toEqual(keysRequestAction());
+      expect(actions[1]).toEqual(keysAddAction(mockNewKey));
+    });
+
+    it('should dispatch error action on failed add', async () => {
+      const mockKey = { name: 'key1' } as api.NewSshKey;
+      const errorMessage = 'Network error';
+
+      (verifyAuthorized as jest.Mock).mockResolvedValue(true);
+      (addSshKey as jest.Mock).mockRejectedValue(new Error(errorMessage));
+      (helpers.errors.getMessage as jest.Mock).mockReturnValue(errorMessage);
+
+      await expect(store.dispatch(actionCreators.addSshKey(mockKey))).rejects.toThrow(errorMessage);
+
+      const actions = store.getActions();
+      expect(actions[0]).toEqual(keysRequestAction());
+      expect(actions[1]).toEqual(keysErrorAction(errorMessage));
+    });
   });
 
-  it('should create REQUEST_KEYS and ADD_KEY when adding SSH keys', async () => {
-    mockAddSshKey.mockResolvedValueOnce(key1);
-    mockFetchSshKeys.mockResolvedValueOnce([key1]);
+  describe('removeSshKey', () => {
+    it('should dispatch remove action on successful remove', async () => {
+      const mockKey = { name: 'key1' } as api.SshKey;
 
-    const store = new FakeStoreBuilder().build() as MockStoreEnhanced<
-      AppState,
-      ThunkDispatch<AppState, undefined, testStore.KnownAction>
-    >;
+      (verifyAuthorized as jest.Mock).mockResolvedValue(true);
+      (removeSshKey as jest.Mock).mockResolvedValue(undefined);
 
-    await store.dispatch(testStore.actionCreators.addSshKey(newKey));
+      await store.dispatch(actionCreators.removeSshKey(mockKey));
 
-    const actions = store.getActions();
-    const expectedActions: testStore.KnownAction[] = [
-      {
-        type: testStore.Type.REQUEST_KEYS,
-        check: AUTHORIZED,
-      },
-      {
-        type: testStore.Type.ADD_KEY,
-        key: key1,
-      },
-    ];
-    expect(actions).toEqual(expectedActions);
-  });
+      const actions = store.getActions();
+      expect(actions[0]).toEqual(keysRequestAction());
+      expect(actions[1]).toEqual(keysRemoveAction(mockKey));
+    });
 
-  it('should create REQUEST_KEYS and RECEIVE_ERROR when adding SSH keys', async () => {
-    const errorMessage = 'Something bad happened';
-    mockAddSshKey.mockRejectedValueOnce(new Error(errorMessage));
+    it('should dispatch error action on failed remove', async () => {
+      const mockKey = { name: 'key1' } as api.SshKey;
+      const errorMessage = 'Network error';
 
-    const store = new FakeStoreBuilder().build() as MockStoreEnhanced<
-      AppState,
-      ThunkDispatch<AppState, undefined, testStore.KnownAction>
-    >;
+      (verifyAuthorized as jest.Mock).mockResolvedValue(true);
+      (removeSshKey as jest.Mock).mockRejectedValue(new Error(errorMessage));
+      (helpers.errors.getMessage as jest.Mock).mockReturnValue(errorMessage);
 
-    try {
-      await store.dispatch(testStore.actionCreators.addSshKey(newKey));
-    } catch (e) {
-      // no-op
-    }
+      await expect(store.dispatch(actionCreators.removeSshKey(mockKey))).rejects.toThrow(
+        errorMessage,
+      );
 
-    const actions = store.getActions();
-    const expectedActions: testStore.KnownAction[] = [
-      {
-        type: testStore.Type.REQUEST_KEYS,
-        check: AUTHORIZED,
-      },
-      {
-        type: testStore.Type.RECEIVE_ERROR,
-        error: errorMessage,
-      },
-    ];
-    expect(actions).toEqual(expectedActions);
-  });
-
-  it('should create REQUEST_KEYS and REMOVE_KEY when deleting SSH key', async () => {
-    mockRemoveSshKey.mockResolvedValueOnce(key1);
-
-    const store = new FakeStoreBuilder().build() as MockStoreEnhanced<
-      AppState,
-      ThunkDispatch<AppState, undefined, testStore.KnownAction>
-    >;
-
-    await store.dispatch(testStore.actionCreators.removeSshKey(key1));
-
-    const actions = store.getActions();
-    const expectedActions: testStore.KnownAction[] = [
-      {
-        type: testStore.Type.REQUEST_KEYS,
-        check: AUTHORIZED,
-      },
-      {
-        type: testStore.Type.REMOVE_KEY,
-        key: key1,
-      },
-    ];
-    expect(actions).toEqual(expectedActions);
-  });
-
-  it('should create REQUEST_KEYS and RECEIVE_ERROR when deleting SSH key', async () => {
-    const errorMessage = 'Something bad happened';
-    mockRemoveSshKey.mockRejectedValueOnce(new Error(errorMessage));
-
-    const store = new FakeStoreBuilder().build() as MockStoreEnhanced<
-      AppState,
-      ThunkDispatch<AppState, undefined, testStore.KnownAction>
-    >;
-
-    try {
-      await store.dispatch(testStore.actionCreators.removeSshKey(key1));
-    } catch (e) {
-      // no-op
-    }
-
-    const actions = store.getActions();
-    const expectedActions: testStore.KnownAction[] = [
-      {
-        type: testStore.Type.REQUEST_KEYS,
-        check: AUTHORIZED,
-      },
-      {
-        type: testStore.Type.RECEIVE_ERROR,
-        error: errorMessage,
-      },
-    ];
-    expect(actions).toEqual(expectedActions);
+      const actions = store.getActions();
+      expect(actions[0]).toEqual(keysRequestAction());
+      expect(actions[1]).toEqual(keysErrorAction(errorMessage));
+    });
   });
 });

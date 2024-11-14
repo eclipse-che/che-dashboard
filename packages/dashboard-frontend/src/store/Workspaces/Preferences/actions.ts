@@ -11,6 +11,7 @@
  */
 
 import common, { api } from '@eclipse-che/common';
+import { createAction } from '@reduxjs/toolkit';
 
 import {
   addTrustedSource,
@@ -18,71 +19,48 @@ import {
 } from '@/services/backend-client/workspacePreferencesApi';
 import { AppThunk } from '@/store';
 import { selectDefaultNamespace } from '@/store/InfrastructureNamespaces/selectors';
-import { selectAsyncIsAuthorized, selectSanityCheckError } from '@/store/SanityCheck/selectors';
-import { AUTHORIZED } from '@/store/sanityCheckMiddleware';
-import { Type } from '@/store/Workspaces/Preferences/types';
-import { ActionCreators, KnownAction } from '@/store/Workspaces/Preferences/types';
+import { verifyAuthorized } from '@/store/SanityCheck';
+export const preferencesRequestAction = createAction('preferences/request');
+export const preferencesReceiveAction = createAction<api.IWorkspacePreferences | undefined>(
+  'preferences/receive',
+);
+export const preferencesErrorAction = createAction<string>('preferences/Error');
 
-export const actionCreators: ActionCreators = {
-  requestPreferences:
-    (): AppThunk<KnownAction, Promise<void>> =>
-    async (dispatch, getState): Promise<void> => {
-      dispatch({
-        type: Type.REQUEST_PREFERENCES,
-        check: AUTHORIZED,
-      });
-      if (!(await selectAsyncIsAuthorized(getState()))) {
-        const error = selectSanityCheckError(getState());
-        dispatch({
-          type: Type.ERROR_PREFERENCES,
-          error,
-        });
-        throw new Error(error);
-      }
+export const actionCreators = {
+  requestPreferences: (): AppThunk => async (dispatch, getState) => {
+    const defaultKubernetesNamespace = selectDefaultNamespace(getState());
 
-      const defaultKubernetesNamespace = selectDefaultNamespace(getState());
-      try {
-        const preferences = await getWorkspacePreferences(defaultKubernetesNamespace.name);
-        dispatch({
-          type: Type.RECEIVE_PREFERENCES,
-          preferences,
-        });
-      } catch (error) {
-        const errorMessage = common.helpers.errors.getMessage(error);
-        dispatch({ type: Type.ERROR_PREFERENCES, error: errorMessage });
-        throw error;
-      }
-    },
+    try {
+      await verifyAuthorized(dispatch, getState);
+
+      dispatch(preferencesRequestAction());
+
+      const preferences = await getWorkspacePreferences(defaultKubernetesNamespace.name);
+      dispatch(preferencesReceiveAction(preferences));
+    } catch (error) {
+      const errorMessage = common.helpers.errors.getMessage(error);
+      dispatch(preferencesErrorAction(errorMessage));
+      throw error;
+    }
+  },
 
   addTrustedSource:
-    (
-      trustedSource: api.TrustedSourceAll | api.TrustedSourceUrl,
-    ): AppThunk<KnownAction, Promise<void>> =>
-    async (dispatch, getState): Promise<void> => {
-      dispatch({
-        type: Type.REQUEST_PREFERENCES,
-        check: AUTHORIZED,
-      });
-      if (!(await selectAsyncIsAuthorized(getState()))) {
-        const error = selectSanityCheckError(getState());
-        dispatch({
-          type: Type.ERROR_PREFERENCES,
-          error,
-        });
-        throw new Error(error);
-      }
-
+    (trustedSource: api.TrustedSourceAll | api.TrustedSourceUrl): AppThunk =>
+    async (dispatch, getState) => {
       const state = getState();
       const defaultKubernetesNamespace = selectDefaultNamespace(state);
+
       try {
+        await verifyAuthorized(dispatch, getState);
+
+        dispatch(preferencesRequestAction());
+
         await addTrustedSource(defaultKubernetesNamespace.name, trustedSource);
 
-        dispatch({
-          type: Type.UPDATE_PREFERENCES,
-        });
+        dispatch(preferencesReceiveAction(undefined));
       } catch (error) {
         const errorMessage = common.helpers.errors.getMessage(error);
-        dispatch({ type: Type.ERROR_PREFERENCES, error: errorMessage });
+        dispatch(preferencesErrorAction(errorMessage));
         throw error;
       }
 

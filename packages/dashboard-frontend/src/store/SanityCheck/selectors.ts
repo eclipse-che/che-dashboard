@@ -10,17 +10,18 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import { createSelector } from 'reselect';
+import { createSelector } from '@reduxjs/toolkit';
 
-import { AppState } from '..';
+import { RootState } from '@/store';
 
-const selectState = (state: AppState) => state.sanityCheck;
+const selectState = (state: RootState) => state.sanityCheck;
 
 export const selectAsyncIsAuthorized = createSelector(
   selectState,
   async (state): Promise<boolean> => {
     try {
-      return state.authorized;
+      const isAuthorized = await state.authorized;
+      return isAuthorized;
     } catch (e) {
       return false;
     }

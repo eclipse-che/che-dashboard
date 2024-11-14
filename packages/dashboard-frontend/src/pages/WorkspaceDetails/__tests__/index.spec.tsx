@@ -10,7 +10,7 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import { render, screen } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
 import { Provider } from 'react-redux';
@@ -20,12 +20,13 @@ import { Props, WorkspaceDetails } from '@/pages/WorkspaceDetails';
 import devfileApi from '@/services/devfileApi';
 import { constructWorkspace } from '@/services/workspace-adapter';
 import { DevWorkspaceBuilder } from '@/store/__mocks__/devWorkspaceBuilder';
-import { FakeStoreBuilder } from '@/store/__mocks__/storeBuilder';
+import { MockStoreBuilder } from '@/store/__mocks__/mockStore';
 
 const mockOnSave = jest.fn();
 
 jest.mock('@/pages/WorkspaceDetails/DevfileEditorTab');
 jest.mock('@/pages/WorkspaceDetails/OverviewTab');
+jest.mock('@/pages/WorkspaceDetails/Header');
 jest.mock('@/components/WorkspaceLogs');
 jest.mock('@/components/WorkspaceEvents');
 
@@ -36,7 +37,6 @@ describe('Workspace Details page', () => {
   let devWorkspaceBuilder: DevWorkspaceBuilder;
 
   beforeEach(() => {
-    // history = createHashHistory();
     devWorkspaceBuilder = new DevWorkspaceBuilder()
       .withName(workspaceName)
       .withNamespace(namespace);
@@ -60,7 +60,9 @@ describe('Workspace Details page', () => {
         workspace,
       });
 
-      expect(await screen.findByRole('tabpanel', { name: 'Overview' })).not.toBeNull();
+      await waitFor(() =>
+        expect(screen.queryByRole('tabpanel', { name: 'Overview' })).not.toBeNull(),
+      );
     });
 
     it('should have four tabs visible', () => {
@@ -97,32 +99,6 @@ describe('Workspace Details page', () => {
     });
   });
 
-  describe('Old workspace link', () => {
-    it('should NOT show the link', () => {
-      const workspace = constructWorkspace(devWorkspaceBuilder.build());
-      renderComponent({
-        workspace,
-      });
-      expect(screen.queryByRole('link', { name: 'Show Original Devfile' })).toBeFalsy();
-    });
-
-    it('should show the link', () => {
-      const workspace = constructWorkspace(devWorkspaceBuilder.build());
-      const oldWorkspacePath: Location = {
-        key: 'old-workspace-key',
-        hash: '',
-        pathname: '/workspace/che-user/che-wksp',
-        search: '',
-        state: undefined,
-      };
-      renderComponent({
-        workspace,
-        oldWorkspaceLocation: oldWorkspacePath,
-      });
-      expect(screen.queryByRole('link', { name: 'Show Original Devfile' })).toBeTruthy();
-    });
-  });
-
   it('should handle the onSave event', async () => {
     const workspace = constructWorkspace(devWorkspaceBuilder.build());
     renderComponent({
@@ -138,7 +114,7 @@ describe('Workspace Details page', () => {
 
 function renderComponent(props?: Partial<Props>): void {
   const workspaces = props?.workspace ? [props.workspace.ref as devfileApi.DevWorkspace] : [];
-  const store = new FakeStoreBuilder().withDevWorkspaces({ workspaces }).build();
+  const store = new MockStoreBuilder().withDevWorkspaces({ workspaces }).build();
   const location = {
     key: 'workspace-details-key',
     pathname: `/workspace/${namespace}/${workspaceName}`,

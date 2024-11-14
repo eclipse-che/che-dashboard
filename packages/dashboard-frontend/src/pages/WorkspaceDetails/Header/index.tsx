@@ -33,7 +33,7 @@ import {
   WorkspaceStatus,
 } from '@/services/helpers/types';
 
-type Props = {
+export type Props = {
   workspacesLink: string;
   status: WorkspaceStatus | DevWorkspaceStatus | DeprecatedWorkspaceStatus;
   workspaceName: string;

@@ -14,7 +14,7 @@ import { api } from '@eclipse-che/common';
 import axios from 'axios';
 
 import { cheServerPrefix } from '@/services/backend-client/const';
-import { IGitOauth } from '@/store/GitOauthConfig/types';
+import { IGitOauth } from '@/store/GitOauthConfig';
 
 export async function getOAuthProviders(): Promise<IGitOauth[]> {
   const response = await axios.get(`${cheServerPrefix}/oauth`);

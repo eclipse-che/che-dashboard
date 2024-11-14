@@ -10,19 +10,18 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
+import { createSelector } from '@reduxjs/toolkit';
 import { load } from 'js-yaml';
-import { createSelector } from 'reselect';
 
 import devfileApi from '@/services/devfileApi';
 import match from '@/services/helpers/filter';
 import { che } from '@/services/models';
+import { RootState } from '@/store';
 import { selectDefaultComponents } from '@/store/ServerConfig/selectors';
-
-import { AppState } from '..';
 
 export const EMPTY_WORKSPACE_TAG = 'Empty';
 
-const selectState = (state: AppState) => state.devfileRegistries;
+const selectState = (state: RootState) => state.devfileRegistries;
 
 export const selectRegistriesMetadata = createSelector(selectState, devfileRegistriesState => {
   const registriesMetadata = Object.keys(devfileRegistriesState.registries).map(registry => {
@@ -78,15 +77,11 @@ export const selectMetadataFiltered = createSelector(
   },
 );
 
-export const selectEmptyWorkspaceUrl = createSelector(
-  selectState,
-  selectRegistriesMetadata,
-  (state, metadata) => {
-    const v2Metadata = filterDevfileV2Metadata(metadata);
-    const emptyWorkspaceMetadata = v2Metadata.find(meta => meta.tags.includes(EMPTY_WORKSPACE_TAG));
-    return emptyWorkspaceMetadata?.links?.v2;
-  },
-);
+export const selectEmptyWorkspaceUrl = createSelector(selectRegistriesMetadata, metadata => {
+  const v2Metadata = filterDevfileV2Metadata(metadata);
+  const emptyWorkspaceMetadata = v2Metadata.find(meta => meta.tags.includes(EMPTY_WORKSPACE_TAG));
+  return emptyWorkspaceMetadata?.links?.v2;
+});
 
 export const selectDefaultDevfile = createSelector(
   selectState,

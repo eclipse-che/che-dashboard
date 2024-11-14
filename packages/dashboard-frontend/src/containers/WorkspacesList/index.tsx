@@ -16,9 +16,9 @@ import { Location, NavigateFunction, useLocation, useNavigate } from 'react-rout
 
 import Fallback from '@/components/Fallback';
 import WorkspacesList from '@/pages/WorkspacesList';
-import { AppState } from '@/store';
+import { RootState } from '@/store';
 import { selectBranding } from '@/store/Branding/selectors';
-import * as WorkspacesStore from '@/store/Workspaces';
+import { workspacesActionCreators } from '@/store/Workspaces';
 import { selectAllWorkspaces, selectIsLoading } from '@/store/Workspaces/selectors';
 
 type Props = MappedProps & {
@@ -52,7 +52,7 @@ function ContainerWrapper(props: MappedProps) {
   return <WorkspacesListContainer {...props} location={location} navigate={navigate} />;
 }
 
-const mapStateToProps = (state: AppState) => {
+const mapStateToProps = (state: RootState) => {
   return {
     branding: selectBranding(state),
     allWorkspaces: selectAllWorkspaces(state),
@@ -60,7 +60,7 @@ const mapStateToProps = (state: AppState) => {
   };
 };
 
-const connector = connect(mapStateToProps, WorkspacesStore.actionCreators);
+const connector = connect(mapStateToProps, workspacesActionCreators);
 
 type MappedProps = ConnectedProps<typeof connector>;
 export default connector(ContainerWrapper);

@@ -10,11 +10,11 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import { createSelector } from 'reselect';
+import { createSelector } from '@reduxjs/toolkit';
 
-import { AppState } from '..';
+import { RootState } from '@/store';
 
-const selectState = (state: AppState) => state.clusterInfo;
+const selectState = (state: RootState) => state.clusterInfo;
 
 export const selectApplications = createSelector(
   selectState,

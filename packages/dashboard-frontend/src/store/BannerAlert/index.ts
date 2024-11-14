@@ -1,3 +1,5 @@
+/* c8 ignore start */
+
 /*
  * Copyright (c) 2018-2024 Red Hat, Inc.
  * This program and the accompanying materials are made
@@ -10,81 +12,9 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import { Action, Reducer } from 'redux';
-
-import { createObject } from '@/store/helpers';
-
-import { AppThunk } from '..';
-
-export interface State {
-  messages: string[];
-}
-
-export interface AddBannerAction {
-  type: 'ADD_BANNER';
-  message: string;
-}
-
-export interface RemoveBannerAction {
-  type: 'REMOVE_BANNER';
-  message: string;
-}
-
-type KnownAction = AddBannerAction | RemoveBannerAction;
-
-export type ActionCreators = {
-  addBanner: (message: string) => AppThunk<AddBannerAction>;
-  removeBanner: (message: string) => AppThunk<RemoveBannerAction>;
-};
-
-export const actionCreators: ActionCreators = {
-  addBanner:
-    (message: string): AppThunk<AddBannerAction> =>
-    dispatch => {
-      dispatch({
-        type: 'ADD_BANNER',
-        message,
-      });
-    },
-
-  removeBanner:
-    (message: string): AppThunk<RemoveBannerAction> =>
-    dispatch => {
-      dispatch({
-        type: 'REMOVE_BANNER',
-        message,
-      });
-    },
-};
-
-const unloadedState: State = {
-  messages: [],
-};
-
-export const reducer: Reducer<State> = (
-  state: State | undefined,
-  incomingAction: Action,
-): State => {
-  if (state === undefined) {
-    return unloadedState;
-  }
-
-  const action = incomingAction as KnownAction;
-
-  switch (action.type) {
-    case 'ADD_BANNER':
-      return createObject<State>(state, {
-        messages: state.messages.includes(action.message)
-          ? state.messages
-          : state.messages.concat([action.message]),
-      });
-    case 'REMOVE_BANNER':
-      return createObject<State>(state, {
-        messages: state.messages.includes(action.message)
-          ? state.messages.filter(message => message !== action.message)
-          : state.messages,
-      });
-    default:
-      return state;
-  }
-};
+export { actionCreators as bannerAlertActionCreators } from '@/store/BannerAlert/actions';
+export {
+  reducer as bannerAlertReducer,
+  State as BannerAlertState,
+} from '@/store/BannerAlert/reducer';
+export * from '@/store/BannerAlert/selectors';

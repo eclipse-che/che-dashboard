@@ -10,39 +10,34 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import { MockStoreEnhanced } from 'redux-mock-store';
-import { ThunkDispatch } from 'redux-thunk';
+import { RootState } from '@/store';
+import {
+  selectCheUserId,
+  selectCheUserIdError,
+  selectCheUserIsLoading,
+} from '@/store/User/Id/selectors';
 
-import { AppState } from '@/store';
-import { FakeStoreBuilder } from '@/store/__mocks__/storeBuilder';
-import { selectCheUserId, selectCheUserIdError } from '@/store/User/Id/selectors';
+describe('CheUserId, selectors', () => {
+  const mockState = {
+    userId: {
+      isLoading: true,
+      cheUserId: 'test-user-id',
+      error: 'Something went wrong',
+    },
+  } as RootState;
 
-import * as store from '..';
-
-describe('Pods store, selectors', () => {
-  it('should return the error', () => {
-    const fakeStore = new FakeStoreBuilder()
-      .withCheUserId({ error: 'Something unexpected', cheUserId: 'che-user-id' }, false)
-      .build() as MockStoreEnhanced<
-      AppState,
-      ThunkDispatch<AppState, undefined, store.KnownAction>
-    >;
-    const state = fakeStore.getState();
-
-    const selectedError = selectCheUserIdError(state);
-    expect(selectedError).toEqual('Something unexpected');
+  it('should select isLoading', () => {
+    const result = selectCheUserIsLoading(mockState);
+    expect(result).toBe(true);
   });
 
-  it('should return Che user ID', () => {
-    const fakeStore = new FakeStoreBuilder()
-      .withCheUserId({ cheUserId: 'che-user-id' }, false)
-      .build() as MockStoreEnhanced<
-      AppState,
-      ThunkDispatch<AppState, undefined, store.KnownAction>
-    >;
-    const state = fakeStore.getState();
+  it('should select cheUserId', () => {
+    const result = selectCheUserId(mockState);
+    expect(result).toEqual('test-user-id');
+  });
 
-    const allPods = selectCheUserId(state);
-    expect(allPods).toEqual('che-user-id');
+  it('should select cheUserId error', () => {
+    const result = selectCheUserIdError(mockState);
+    expect(result).toEqual('Something went wrong');
   });
 });

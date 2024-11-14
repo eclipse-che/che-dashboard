@@ -31,7 +31,7 @@ import { buildIdeLoaderLocation, toHref } from '@/services/helpers/location';
 import { AlertItem } from '@/services/helpers/types';
 import { TabManager } from '@/services/tabManager';
 import { Workspace } from '@/services/workspace-adapter';
-import { AppState } from '@/store';
+import { RootState } from '@/store';
 import { selectDevWorkspaceResources } from '@/store/DevfileRegistries/selectors';
 import { selectFactoryResolver } from '@/store/FactoryResolver/selectors';
 import { selectAllWorkspaces } from '@/store/Workspaces/selectors';
@@ -236,7 +236,7 @@ class CreatingStepCheckExistingWorkspaces extends ProgressStep<Props, State> {
   }
 }
 
-const mapStateToProps = (state: AppState) => ({
+const mapStateToProps = (state: RootState) => ({
   allWorkspaces: selectAllWorkspaces(state),
   devWorkspaceResources: selectDevWorkspaceResources(state),
   factoryResolver: selectFactoryResolver(state),

@@ -16,7 +16,7 @@ import userEvent, { UserEvent } from '@testing-library/user-event';
 import React from 'react';
 import { Provider } from 'react-redux';
 import { Location } from 'react-router-dom';
-import { Action, Store } from 'redux';
+import { Store } from 'redux';
 
 import { MIN_STEP_DURATION_MS, TIMEOUT_TO_STOP_SEC } from '@/components/WorkspaceProgress/const';
 import { container } from '@/inversify.config';
@@ -29,9 +29,9 @@ import { TabManager } from '@/services/tabManager';
 import { constructWorkspace } from '@/services/workspace-adapter';
 import { AppThunk } from '@/store';
 import { DevWorkspaceBuilder } from '@/store/__mocks__/devWorkspaceBuilder';
-import { FakeStoreBuilder } from '@/store/__mocks__/storeBuilder';
-import { ActionCreators as DevWorkspaceClusterActionCreators } from '@/store/DevWorkspacesCluster';
-import { ActionCreators } from '@/store/Workspaces';
+import { MockStoreBuilder } from '@/store/__mocks__/mockStore';
+import { devWorkspacesClusterActionCreators } from '@/store/DevWorkspacesCluster';
+import { workspacesActionCreators } from '@/store/Workspaces';
 
 import CommonStepCheckRunningWorkspacesLimit, { State } from '..';
 
@@ -41,33 +41,33 @@ const mockStartWorkspace = jest.fn();
 const mockStopWorkspace = jest.fn();
 const mockRequestRunningDevWorkspacesClusterLimitExceeded = jest.fn();
 
-jest.mock('@/store/Workspaces/index', () => {
+jest.mock('@/store/Workspaces', () => {
   return {
-    actionCreators: {
+    ...jest.requireActual('@/store/Workspaces'),
+    workspacesActionCreators: {
       startWorkspace:
-        (...args: Parameters<ActionCreators['startWorkspace']>): AppThunk<Action, Promise<void>> =>
+        (...args: Parameters<(typeof workspacesActionCreators)['startWorkspace']>): AppThunk =>
         async (): Promise<void> => {
           return mockStartWorkspace(...args);
         },
       stopWorkspace:
-        (...args: Parameters<ActionCreators['startWorkspace']>): AppThunk<Action, Promise<void>> =>
+        (...args: Parameters<(typeof workspacesActionCreators)['startWorkspace']>): AppThunk =>
         async (): Promise<void> => {
           return mockStopWorkspace(...args);
         },
-    } as ActionCreators,
+    } as typeof workspacesActionCreators,
   };
 });
 
 jest.mock('@/store/DevWorkspacesCluster', () => {
-  const requireActual = jest.requireActual('@/store/DevWorkspacesCluster');
+  const realModule = jest.requireActual('@/store/DevWorkspacesCluster');
   return {
-    ...requireActual,
-    actionCreators: {
-      requestRunningDevWorkspacesClusterLimitExceeded:
-        (): AppThunk<Action, Promise<void>> => async (): Promise<void> => {
-          return mockRequestRunningDevWorkspacesClusterLimitExceeded();
-        },
-    } as DevWorkspaceClusterActionCreators,
+    ...realModule,
+    devWorkspacesClusterActionCreators: {
+      requestRunningDevWorkspacesClusterLimitExceeded: (): AppThunk => async (): Promise<void> => {
+        return mockRequestRunningDevWorkspacesClusterLimitExceeded();
+      },
+    } as typeof devWorkspacesClusterActionCreators,
   };
 });
 
@@ -141,7 +141,7 @@ describe('Common steps, check running workspaces limit', () => {
   test('number of running workspaces is below the limit', async () => {
     const runningDevworkspace = runningDevworkspaceBuilder1.build();
     const stoppedDevworkspace = stoppedDevworkspaceBuilder.build();
-    const store = new FakeStoreBuilder()
+    const store = new MockStoreBuilder()
       .withDevWorkspaces({
         workspaces: [runningDevworkspace, stoppedDevworkspace],
       })
@@ -165,7 +165,7 @@ describe('Common steps, check running workspaces limit', () => {
   test('should check cluster limit of running workspaces', async () => {
     const runningDevworkspace = runningDevworkspaceBuilder1.build();
     const stoppedDevworkspace = stoppedDevworkspaceBuilder.build();
-    const store = new FakeStoreBuilder()
+    const store = new MockStoreBuilder()
       .withDevWorkspaces({
         workspaces: [runningDevworkspace, stoppedDevworkspace],
       })
@@ -189,7 +189,7 @@ describe('Common steps, check running workspaces limit', () => {
   test('should throw error if cluster limit of running workspaces exceeded', async () => {
     const runningDevworkspace = runningDevworkspaceBuilder1.build();
     const stoppedDevworkspace = stoppedDevworkspaceBuilder.build();
-    const store = new FakeStoreBuilder()
+    const store = new MockStoreBuilder()
       .withDevWorkspaces({
         workspaces: [runningDevworkspace, stoppedDevworkspace],
       })
@@ -204,7 +204,7 @@ describe('Common steps, check running workspaces limit', () => {
       name: 'Checking for the limit of running workspaces',
     });
 
-    jest.runAllTimers();
+    await jest.runAllTimersAsync();
 
     // need to flush promises
     await Promise.resolve();
@@ -237,7 +237,7 @@ describe('Common steps, check running workspaces limit', () => {
     beforeEach(() => {
       runningDevworkspace = runningDevworkspaceBuilder1.build();
       stoppedDevworkspace = stoppedDevworkspaceBuilder.build();
-      store = new FakeStoreBuilder()
+      store = new MockStoreBuilder()
         .withDevWorkspaces({
           workspaces: [targetDevworkspace, runningDevworkspace, stoppedDevworkspace],
         })
@@ -253,7 +253,7 @@ describe('Common steps, check running workspaces limit', () => {
         shouldStop: false,
         name: 'Checking for the limit of running workspaces',
       });
-      jest.runAllTimers();
+      await jest.runAllTimersAsync();
 
       // need to flush promises
       await Promise.resolve();
@@ -359,20 +359,27 @@ describe('Common steps, check running workspaces limit', () => {
     describe('stopping the redundant workspace', () => {
       let localState: Partial<State>;
       let redundantDevworkspace: devfileApi.DevWorkspace;
+      let workspaceLimitStore: Store;
 
       beforeEach(() => {
-        redundantDevworkspace = runningDevworkspaceBuilder1
+        redundantDevworkspace = new DevWorkspaceBuilder()
           .withStatus({ phase: 'STOPPING' })
+          .withId(runningDevworkspace.metadata.uid)
           .build();
         localState = {
           shouldStop: true,
           shouldCheckLimits: false,
           redundantWorkspaceUID: constructWorkspace(redundantDevworkspace).uid,
         };
+        workspaceLimitStore = new MockStoreBuilder(store.getState())
+          .withDevWorkspaces({
+            workspaces: [targetDevworkspace, redundantDevworkspace, stoppedDevworkspace],
+          })
+          .build();
       });
 
       test('timeout expired alert notification', async () => {
-        renderComponent(store, localState);
+        renderComponent(workspaceLimitStore, localState);
 
         // imitate the timeout has been expired
         const timeoutButton = screen.getByRole('button', { name: 'onTimeout' });
@@ -437,7 +444,7 @@ describe('Common steps, check running workspaces limit', () => {
       test('the redundant workspace has been stopped', async () => {
         mockStopWorkspace.mockResolvedValue(undefined);
 
-        store = new FakeStoreBuilder()
+        store = new MockStoreBuilder()
           .withDevWorkspaces({
             workspaces: [targetDevworkspace, redundantDevworkspace, stoppedDevworkspace],
           })
@@ -448,11 +455,12 @@ describe('Common steps, check running workspaces limit', () => {
         const { reRenderComponent } = renderComponent(store, localState);
         await jest.advanceTimersByTimeAsync(MIN_STEP_DURATION_MS);
 
-        const nextRedundantDevworkspace = runningDevworkspaceBuilder1
+        const nextRedundantDevworkspace = new DevWorkspaceBuilder()
           .withStatus({ phase: 'STOPPED' })
+          .withId(redundantDevworkspace.metadata.uid)
           .withSpec({ started: false })
           .build();
-        const nextStore = new FakeStoreBuilder()
+        const nextStore = new MockStoreBuilder()
           .withDevWorkspaces({
             workspaces: [targetDevworkspace, nextRedundantDevworkspace, stoppedDevworkspace],
           })
@@ -474,14 +482,14 @@ describe('Common steps, check running workspaces limit', () => {
   });
 
   describe('start a workspace above the cluster limit, limit equals 2', () => {
-    let storeBuilder: FakeStoreBuilder;
+    let storeBuilder: MockStoreBuilder;
     let runningDevworkspace1: devfileApi.DevWorkspace;
     let runningDevworkspace2: devfileApi.DevWorkspace;
 
     beforeEach(() => {
       runningDevworkspace1 = runningDevworkspaceBuilder1.build();
       runningDevworkspace2 = runningDevworkspaceBuilder1.build();
-      storeBuilder = new FakeStoreBuilder()
+      storeBuilder = new MockStoreBuilder()
         .withDevWorkspaces({
           workspaces: [targetDevworkspace, runningDevworkspace1, runningDevworkspace2],
         })
@@ -543,7 +551,7 @@ describe('Common steps, check running workspaces limit', () => {
       runningDevworkspace1 = runningDevworkspaceBuilder1.build();
       runningDevworkspace2 = runningDevworkspaceBuilder2.build();
       stoppedDevworkspace = stoppedDevworkspaceBuilder.build();
-      store = new FakeStoreBuilder()
+      store = new MockStoreBuilder()
         .withDevWorkspaces({
           workspaces: [
             targetDevworkspace,

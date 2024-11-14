@@ -18,7 +18,7 @@ import {
   buildFactoryParams,
   FACTORY_URL_ATTR,
 } from '@/services/helpers/factoryFlow/buildFactoryParams';
-import { FakeStoreBuilder } from '@/store/__mocks__/storeBuilder';
+import { MockStoreBuilder } from '@/store/__mocks__/mockStore';
 
 const factoryUrl = 'https://factory-url';
 
@@ -42,7 +42,7 @@ describe('Factory flow: step Fetch Devfile', () => {
 
   describe('step title', () => {
     test('direct link to devfile', async () => {
-      const store = new FakeStoreBuilder()
+      const store = new MockStoreBuilder()
         .withFactoryResolver({
           resolver: {
             devfile,
@@ -62,7 +62,7 @@ describe('Factory flow: step Fetch Devfile', () => {
     });
 
     test('devfile not found', async () => {
-      const store = new FakeStoreBuilder()
+      const store = new MockStoreBuilder()
         .withFactoryResolver({
           resolver: {
             devfile,
@@ -84,7 +84,7 @@ describe('Factory flow: step Fetch Devfile', () => {
     });
 
     test('devfile found', async () => {
-      const store = new FakeStoreBuilder()
+      const store = new MockStoreBuilder()
         .withFactoryResolver({
           resolver: {
             devfile,

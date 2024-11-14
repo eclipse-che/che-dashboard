@@ -16,8 +16,8 @@ import Pluralize from 'react-pluralize';
 import { connect, ConnectedProps } from 'react-redux';
 
 import TemporaryStorageSwitch from '@/pages/GetStarted/SamplesList/Toolbar/TemporaryStorageSwitch';
-import { AppState } from '@/store';
-import * as DevfileRegistriesStore from '@/store/DevfileRegistries';
+import { RootState } from '@/store';
+import { devfileRegistriesActionCreators } from '@/store/DevfileRegistries';
 import { selectFilterValue, selectMetadataFiltered } from '@/store/DevfileRegistries/selectors';
 
 export type Props = MappedProps & {
@@ -74,12 +74,12 @@ class SamplesListToolbar extends React.PureComponent<Props> {
   }
 }
 
-const mapStateToProps = (state: AppState) => ({
+const mapStateToProps = (state: RootState) => ({
   filterValue: selectFilterValue(state),
   metadataFiltered: selectMetadataFiltered(state),
 });
 
-const connector = connect(mapStateToProps, DevfileRegistriesStore.actionCreators);
+const connector = connect(mapStateToProps, devfileRegistriesActionCreators);
 
 type MappedProps = ConnectedProps<typeof connector>;
 export default connector(SamplesListToolbar);

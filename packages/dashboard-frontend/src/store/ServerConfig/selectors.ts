@@ -10,13 +10,12 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import { createSelector } from 'reselect';
+import { createSelector } from '@reduxjs/toolkit';
 
 import { che } from '@/services/models';
+import { RootState } from '@/store';
 
-import { AppState } from '..';
-
-const selectState = (state: AppState) => state.dwServerConfig;
+const selectState = (state: RootState) => state.dwServerConfig;
 export const selectServerConfigState = selectState;
 
 export const selectDefaultComponents = createSelector(
@@ -58,7 +57,7 @@ export const selectPvcStrategy = createSelector(
 
 export const selectStartTimeout = createSelector(
   selectState,
-  state => (state.config.timeouts as any)?.startTimeout,
+  state => state.config.timeouts?.startTimeout,
 );
 
 export const selectDashboardLogo = createSelector(selectState, state => state.config.dashboardLogo);
@@ -70,7 +69,7 @@ export const selectAdvancedAuthorization = createSelector(
 
 export const selectAutoProvision = createSelector(
   selectState,
-  state => state.config.defaultNamespace.autoProvision,
+  state => state.config.defaultNamespace?.autoProvision,
 );
 
 export const selectAllowedSources = createSelector(

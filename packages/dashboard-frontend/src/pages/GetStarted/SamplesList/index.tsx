@@ -26,7 +26,7 @@ import SamplesListGallery from '@/pages/GetStarted/SamplesList/Gallery';
 import SamplesListToolbar from '@/pages/GetStarted/SamplesList/Toolbar';
 import { EDITOR_ATTR, EDITOR_IMAGE_ATTR } from '@/services/helpers/factoryFlow/buildFactoryParams';
 import { che } from '@/services/models';
-import { AppState } from '@/store';
+import { RootState } from '@/store';
 import {
   DevfileRegistryMetadata,
   selectMetadataFiltered,
@@ -130,7 +130,7 @@ class SamplesList extends React.PureComponent<Props, State> {
   }
 }
 
-const mapStateToProps = (state: AppState) => ({
+const mapStateToProps = (state: RootState) => ({
   metadataFiltered: selectMetadataFiltered(state),
   preferredStorageType: selectPvcStrategy(state),
   defaultEditorId: selectDefaultEditor(state),

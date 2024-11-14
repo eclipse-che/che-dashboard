@@ -22,6 +22,7 @@ import {
 } from '@patternfly/react-core';
 import { PlusCircleIcon } from '@patternfly/react-icons';
 import { Table, TableBody, TableHeader } from '@patternfly/react-table';
+import { cloneDeep } from 'lodash';
 import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 
@@ -32,10 +33,9 @@ import DeleteRegistriesModal from '@/pages/UserPreferences/ContainerRegistriesTa
 import EditRegistryModal from '@/pages/UserPreferences/ContainerRegistriesTab/Modals/EditRegistryModal';
 import { AppAlerts } from '@/services/alerts/appAlerts';
 import { AlertItem } from '@/services/helpers/types';
-import { AppState } from '@/store';
-import * as DockerConfigStore from '@/store/DockerConfig';
+import { RootState } from '@/store';
+import { dockerConfigActionCreators, RegistryEntry } from '@/store/DockerConfig';
 import { selectIsLoading, selectRegistries } from '@/store/DockerConfig/selectors';
-import { RegistryEntry } from '@/store/DockerConfig/types';
 
 type Props = MappedProps;
 
@@ -246,7 +246,7 @@ export class ContainerRegistries extends React.PureComponent<Props, State> {
   }
 
   private handleRegistryChange(editRegistry: RegistryEntry): void {
-    const { registries } = this.props;
+    const registries = cloneDeep(this.props.registries);
     const { currentRegistryIndex } = this.state;
     if (this.isEditMode) {
       registries[currentRegistryIndex] = editRegistry;
@@ -366,12 +366,12 @@ export class ContainerRegistries extends React.PureComponent<Props, State> {
   }
 }
 
-const mapStateToProps = (state: AppState) => ({
+const mapStateToProps = (state: RootState) => ({
   registries: selectRegistries(state),
   isLoading: selectIsLoading(state),
 });
 
-const connector = connect(mapStateToProps, DockerConfigStore.actionCreators);
+const connector = connect(mapStateToProps, dockerConfigActionCreators);
 
 type MappedProps = ConnectedProps<typeof connector>;
 export default connector(ContainerRegistries);

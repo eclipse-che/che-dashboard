@@ -19,7 +19,7 @@ import UserPreferences from '@/pages/UserPreferences';
 import getComponentRenderer, { screen } from '@/services/__mocks__/getComponentRenderer';
 import { buildUserPreferencesLocation } from '@/services/helpers/location';
 import { UserPreferencesTab } from '@/services/helpers/types';
-import { FakeStoreBuilder } from '@/store/__mocks__/storeBuilder';
+import { MockStoreBuilder } from '@/store/__mocks__/mockStore';
 
 jest.mock('../ContainerRegistriesTab');
 jest.mock('../GitConfig');
@@ -32,7 +32,7 @@ const { renderComponent } = getComponentRenderer(getComponent);
 const mockNavigate = jest.fn();
 
 function getComponent(location: Location): React.ReactElement {
-  const store = new FakeStoreBuilder().build();
+  const store = new MockStoreBuilder().build();
   return (
     <Provider store={store}>
       <UserPreferences location={location} navigate={mockNavigate} />

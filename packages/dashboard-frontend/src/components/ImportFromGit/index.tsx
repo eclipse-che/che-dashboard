@@ -38,9 +38,9 @@ import { FactoryLocationAdapter } from '@/services/factory-location-adapter';
 import { EDITOR_ATTR, EDITOR_IMAGE_ATTR } from '@/services/helpers/factoryFlow/buildFactoryParams';
 import { buildUserPreferencesLocation } from '@/services/helpers/location';
 import { UserPreferencesTab } from '@/services/helpers/types';
-import { AppState } from '@/store';
+import { RootState } from '@/store';
 import { selectSshKeys } from '@/store/SshKeys/selectors';
-import * as WorkspacesStore from '@/store/Workspaces';
+import { workspacesActionCreators } from '@/store/Workspaces';
 
 const FIELD_ID = 'git-repo-url';
 
@@ -246,11 +246,11 @@ class ImportFromGit extends React.PureComponent<Props, State> {
   }
 }
 
-const mapStateToProps = (state: AppState) => ({
+const mapStateToProps = (state: RootState) => ({
   sshKeys: selectSshKeys(state),
 });
 
-const connector = connect(mapStateToProps, WorkspacesStore.actionCreators);
+const connector = connect(mapStateToProps, workspacesActionCreators);
 
 type MappedProps = ConnectedProps<typeof connector>;
 export default connector(ImportFromGit);

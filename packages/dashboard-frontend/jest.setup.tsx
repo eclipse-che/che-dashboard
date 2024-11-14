@@ -44,3 +44,9 @@ jest.mock('react-markdown', () => {
     return React.createElement('a', null, props.children, props.content);
   });
 });
+
+jest.mock('gravatar-url', () => {
+  return function () {
+    return 'avatar/source/location';
+  };
+});

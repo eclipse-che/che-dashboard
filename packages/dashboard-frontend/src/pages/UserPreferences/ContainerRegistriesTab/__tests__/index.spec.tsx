@@ -10,7 +10,7 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import { render, screen } from '@testing-library/react';
+import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
 import { Provider } from 'react-redux';
@@ -18,7 +18,7 @@ import renderer from 'react-test-renderer';
 import { Store } from 'redux';
 
 import { FakeRegistryBuilder } from '@/pages/UserPreferences/ContainerRegistriesTab/__tests__/__mocks__/registryRowBuilder';
-import { FakeStoreBuilder } from '@/store/__mocks__/storeBuilder';
+import { MockStoreBuilder } from '@/store/__mocks__/mockStore';
 import { selectIsLoading, selectRegistries } from '@/store/DockerConfig/selectors';
 
 import { ContainerRegistries } from '..';
@@ -48,7 +48,7 @@ describe('ContainerRegistries', () => {
   });
 
   it('should correctly render the component without registries', () => {
-    const component = getComponent(new FakeStoreBuilder().build());
+    const component = getComponent(new MockStoreBuilder().build());
     render(component);
 
     const addRegistryButton = screen.queryByLabelText('add-registry');
@@ -61,7 +61,7 @@ describe('ContainerRegistries', () => {
 
   it('should correctly render the component which contains two registries', () => {
     const component = getComponent(
-      new FakeStoreBuilder()
+      new MockStoreBuilder()
         .withDockerConfig([
           new FakeRegistryBuilder().withUrl('http://test.reg').withPassword('qwerty').build(),
           new FakeRegistryBuilder().withUrl('https://tstreg.com').withPassword('123').build(),
@@ -79,19 +79,21 @@ describe('ContainerRegistries', () => {
   });
 
   it('should add a new registry', async () => {
-    const component = getComponent(new FakeStoreBuilder().build());
+    const component = getComponent(new MockStoreBuilder().build());
     render(component);
 
-    const addRegistryButton = screen.getByLabelText('add-registry');
+    const addRegistryButton = screen.getByRole('button', { name: 'add-registry' });
     await userEvent.click(addRegistryButton);
 
-    const editButton = screen.getByTestId('edit-button');
+    const dialog = await screen.findByRole('dialog');
+
+    const editButton = screen.getByRole('button', { name: 'Add' });
     expect(editButton).toBeDisabled();
 
-    const urlInput = screen.getByLabelText('Url input');
+    const urlInput = within(dialog).getByRole('textbox', { name: 'Url input' });
     await userEvent.type(urlInput, 'http://tst');
 
-    const passwordInput = screen.getByTestId('registry-password-input');
+    const passwordInput = within(dialog).getByTestId('registry-password-input');
     await userEvent.type(passwordInput, 'qwe');
 
     expect(editButton).toBeEnabled();
@@ -108,7 +110,7 @@ describe('ContainerRegistries', () => {
 
   it('should delete a registry', async () => {
     const component = getComponent(
-      new FakeStoreBuilder()
+      new MockStoreBuilder()
         .withDockerConfig([
           new FakeRegistryBuilder().withUrl('http://test.reg').withPassword('qwerty').build(),
         ])

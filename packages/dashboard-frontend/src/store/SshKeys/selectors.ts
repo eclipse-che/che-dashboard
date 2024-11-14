@@ -10,16 +10,14 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import { createSelector } from 'reselect';
+import { createSelector } from '@reduxjs/toolkit';
 
-import { State } from '@/store/SshKeys/state';
+import { RootState } from '@/store';
 
-import { AppState } from '..';
-
-const selectState = (state: AppState) => state.sshKeys;
+const selectState = (state: RootState) => state.sshKeys;
 
 export const selectSshKeysIsLoading = createSelector(selectState, state => state.isLoading);
 
-export const selectSshKeys = createSelector(selectState, (state: State) => state.keys);
+export const selectSshKeys = createSelector(selectState, state => state.keys);
 
 export const selectSshKeysError = createSelector(selectState, state => state.error);

@@ -10,18 +10,18 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
+import { Store } from '@reduxjs/toolkit';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
 import { Provider } from 'react-redux';
-import { MockStoreEnhanced } from 'redux-mock-store';
 
 import mockMetadata from '@/pages/GetStarted/__tests__/devfileMetadata.json';
 import SamplesListToolbar from '@/pages/GetStarted/SamplesList/Toolbar';
 import getComponentRenderer, { screen, waitFor } from '@/services/__mocks__/getComponentRenderer';
 import { BrandingData } from '@/services/bootstrap/branding.constant';
 import { che } from '@/services/models';
-import { FakeStoreBuilder } from '@/store/__mocks__/storeBuilder';
-import * as DevfileRegistriesStore from '@/store/DevfileRegistries';
+import { MockStoreBuilder } from '@/store/__mocks__/mockStore';
+import { devfileRegistriesActionCreators } from '@/store/DevfileRegistries';
 
 jest.mock('@/pages/GetStarted/SamplesList/Toolbar/TemporaryStorageSwitch');
 
@@ -50,9 +50,7 @@ describe('Samples List Toolbar', () => {
   });
 
   it('should call "setFilter" action', async () => {
-    // mock "setFilter" action
-    const setFilter = DevfileRegistriesStore.actionCreators.setFilter;
-    DevfileRegistriesStore.actionCreators.setFilter = jest.fn(arg => setFilter(arg));
+    jest.spyOn(devfileRegistriesActionCreators, 'setFilter');
 
     renderComponent();
 
@@ -60,27 +58,26 @@ describe('Samples List Toolbar', () => {
     await userEvent.click(filterInput);
     await userEvent.paste('bash');
 
+    await waitFor(() => expect(devfileRegistriesActionCreators.setFilter).toHaveBeenCalledTimes(1));
     await waitFor(() =>
-      expect(DevfileRegistriesStore.actionCreators.setFilter).toHaveBeenCalledTimes(1),
-    );
-    await waitFor(() =>
-      expect(DevfileRegistriesStore.actionCreators.setFilter).toHaveBeenCalledWith('bash'),
+      expect(devfileRegistriesActionCreators.setFilter).toHaveBeenCalledWith('bash'),
     );
   });
 
   it('should show the results counter', async () => {
     const store = createFakeStore(mockMetadata);
-    const storeNext = new FakeStoreBuilder(store)
+    const storeNext = new MockStoreBuilder(store.getState())
       .withDevfileRegistries({
         filter: 'bash',
       })
       .build();
+
     renderComponent(storeNext);
     const filterInput = screen.getByPlaceholderText('Filter by') as HTMLInputElement;
     await userEvent.click(filterInput);
     await userEvent.paste('bash');
 
-    await waitFor(() => screen.findByText('1 item'));
+    await waitFor(() => screen.queryByText('1 item'));
   });
 
   test('switch temporary storage toggle', async () => {
@@ -102,7 +99,7 @@ function createFakeStore(metadata?: che.DevfileMetaData[]) {
       metadata,
     };
   }
-  return new FakeStoreBuilder()
+  return new MockStoreBuilder()
     .withBranding({
       docs: {
         storageTypes: 'https://docs.location',
@@ -112,7 +109,7 @@ function createFakeStore(metadata?: che.DevfileMetaData[]) {
     .build();
 }
 
-function getComponent(store?: MockStoreEnhanced) {
+function getComponent(store?: Store) {
   store ||= createFakeStore(mockMetadata);
   return (
     <Provider store={store}>

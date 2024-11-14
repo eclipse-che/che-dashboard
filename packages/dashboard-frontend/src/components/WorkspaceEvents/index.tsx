@@ -36,7 +36,7 @@ import styles from '@/components/WorkspaceEvents/index.module.css';
 import { WorkspaceEventsItem } from '@/components/WorkspaceEvents/Item';
 import { DevWorkspaceStatus } from '@/services/helpers/types';
 import { Workspace } from '@/services/workspace-adapter';
-import { AppState } from '@/store';
+import { RootState } from '@/store';
 import { selectAllEvents, selectEventsFromResourceVersion } from '@/store/Events/selectors';
 import { selectStartedWorkspaces } from '@/store/Workspaces/devWorkspaces/selectors';
 import { selectAllWorkspaces } from '@/store/Workspaces/selectors';
@@ -135,7 +135,7 @@ class WorkspaceEvents extends React.PureComponent<Props> {
   }
 }
 
-const mapStateToProps = (state: AppState) => ({
+const mapStateToProps = (state: RootState) => ({
   allEvents: selectAllEvents(state),
   allWorkspaces: selectAllWorkspaces(state),
   eventsFromResourceVersionFn: selectEventsFromResourceVersion(state),

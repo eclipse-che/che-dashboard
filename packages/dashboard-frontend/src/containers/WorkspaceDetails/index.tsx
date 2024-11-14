@@ -22,9 +22,9 @@ import { DEVWORKSPACE_ID_OVERRIDE_ANNOTATION } from '@/services/devfileApi/devWo
 import { buildDetailsLocation, buildWorkspacesLocation, toHref } from '@/services/helpers/location';
 import { WorkspaceDetailsTab } from '@/services/helpers/types';
 import { Workspace } from '@/services/workspace-adapter';
-import { AppState } from '@/store';
+import { RootState } from '@/store';
 import { selectDefaultNamespace } from '@/store/InfrastructureNamespaces/selectors';
-import * as WorkspacesStore from '@/store/Workspaces';
+import { workspacesActionCreators } from '@/store/Workspaces';
 import { selectAllWorkspaces, selectIsLoading } from '@/store/Workspaces/selectors';
 
 type RouteParams = Partial<WorkspaceRouteParams>;
@@ -155,13 +155,13 @@ function ContainerWrapper(props: MappedProps) {
   );
 }
 
-const mapStateToProps = (state: AppState) => ({
+const mapStateToProps = (state: RootState) => ({
   allWorkspaces: selectAllWorkspaces(state),
   defaultNamespace: selectDefaultNamespace(state),
   isLoading: selectIsLoading(state),
 });
 
-const connector = connect(mapStateToProps, WorkspacesStore.actionCreators, null, {
+const connector = connect(mapStateToProps, workspacesActionCreators, null, {
   forwardRef: true,
 });
 

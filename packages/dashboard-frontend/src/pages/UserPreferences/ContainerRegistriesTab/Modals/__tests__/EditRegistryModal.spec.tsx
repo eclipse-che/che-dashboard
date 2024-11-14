@@ -17,7 +17,7 @@ import renderer from 'react-test-renderer';
 
 import { FakeRegistryBuilder } from '@/pages/UserPreferences/ContainerRegistriesTab/__tests__/__mocks__/registryRowBuilder';
 import EditRegistryModal from '@/pages/UserPreferences/ContainerRegistriesTab/Modals/EditRegistryModal';
-import { RegistryEntry } from '@/store/DockerConfig/types';
+import { RegistryEntry } from '@/store/DockerConfig';
 
 describe('Edit Registry Modal', () => {
   const mockOnChange = jest.fn();

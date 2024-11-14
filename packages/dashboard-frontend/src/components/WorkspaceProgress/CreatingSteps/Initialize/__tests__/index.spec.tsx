@@ -25,7 +25,7 @@ import {
 } from '@/services/helpers/factoryFlow/buildFactoryParams';
 import { AlertItem, UserPreferencesTab } from '@/services/helpers/types';
 import { DevWorkspaceBuilder } from '@/store/__mocks__/devWorkspaceBuilder';
-import { FakeStoreBuilder } from '@/store/__mocks__/storeBuilder';
+import { MockStoreBuilder } from '@/store/__mocks__/mockStore';
 
 import CreatingStepInitialize from '..';
 
@@ -48,7 +48,7 @@ describe('Creating steps, initializing', () => {
   let store: Store;
 
   beforeEach(() => {
-    store = new FakeStoreBuilder()
+    store = new MockStoreBuilder()
       .withInfrastructureNamespace([{ name: 'user-che', attributes: { phase: 'Active' } }])
       .withSshKeys({
         keys: [{ name: 'key1', keyPub: 'ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQD' }],
@@ -201,7 +201,7 @@ describe('Creating steps, initializing', () => {
   });
 
   test('no pre-created infrastructure namespaces', async () => {
-    const storeNoNamespace = new FakeStoreBuilder()
+    const storeNoNamespace = new MockStoreBuilder()
       .withWorkspacePreferences({ 'trusted-sources': '*' })
       .build();
     const searchParams = new URLSearchParams({
@@ -230,7 +230,7 @@ describe('Creating steps, initializing', () => {
   });
 
   test('all workspaces limit exceeded', async () => {
-    const store = new FakeStoreBuilder()
+    const store = new MockStoreBuilder()
       .withInfrastructureNamespace([{ name: 'user-che', attributes: { phase: 'Active' } }])
       .withClusterConfig({ allWorkspacesLimit: 1 })
       .withDevWorkspaces({ workspaces: [new DevWorkspaceBuilder().build()] })
@@ -263,7 +263,7 @@ describe('Creating steps, initializing', () => {
   });
 
   test('no SSH keys with Git+HTTPS factory URL', async () => {
-    const store = new FakeStoreBuilder()
+    const store = new MockStoreBuilder()
       .withInfrastructureNamespace([{ name: 'user-che', attributes: { phase: 'Active' } }])
       .withWorkspacePreferences({ 'trusted-sources': '*' })
       .build();
@@ -282,7 +282,7 @@ describe('Creating steps, initializing', () => {
 
   test('no SSH keys with Git+SSH factory URL', async () => {
     const factoryUrl = 'git@github.com:eclipse-che/che-dashboard.git';
-    const store = new FakeStoreBuilder()
+    const store = new MockStoreBuilder()
       .withInfrastructureNamespace([{ name: 'user-che', attributes: { phase: 'Active' } }])
       .withWorkspacePreferences({ 'trusted-sources': '*' })
       .build();
@@ -325,7 +325,7 @@ describe('Creating steps, initializing', () => {
   });
 
   test('source URL is not trusted', async () => {
-    const store = new FakeStoreBuilder()
+    const store = new MockStoreBuilder()
       .withInfrastructureNamespace([{ name: 'user-che', attributes: { phase: 'Active' } }])
       .withSshKeys({
         keys: [{ name: 'key1', keyPub: 'ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQD' }],
@@ -351,7 +351,7 @@ describe('Creating steps, initializing', () => {
     expect(mockOnNextStep).not.toHaveBeenCalled();
 
     // add factory URL to trusted sources
-    const nextStore = new FakeStoreBuilder()
+    const nextStore = new MockStoreBuilder()
       .withInfrastructureNamespace([{ name: 'user-che', attributes: { phase: 'Active' } }])
       .withSshKeys({
         keys: [{ name: 'key1', keyPub: 'ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQD' }],
@@ -372,7 +372,7 @@ describe('Creating steps, initializing', () => {
   });
 
   test('source URL is not allowed', async () => {
-    const store = new FakeStoreBuilder()
+    const store = new MockStoreBuilder()
       .withDwServerConfig({ allowedSourceUrls: ['allowed-source'] })
       .withInfrastructureNamespace([{ name: 'user-che', attributes: { phase: 'Active' } }])
       .withSshKeys({
@@ -398,7 +398,7 @@ describe('Creating steps, initializing', () => {
   });
 
   test('samples are trusted', async () => {
-    const store = new FakeStoreBuilder()
+    const store = new MockStoreBuilder()
       .withInfrastructureNamespace([{ name: 'user-che', attributes: { phase: 'Active' } }])
       .withSshKeys({
         keys: [{ name: 'key1', keyPub: 'ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQD' }],

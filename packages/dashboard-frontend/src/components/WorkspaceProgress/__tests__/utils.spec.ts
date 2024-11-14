@@ -50,7 +50,7 @@ describe('WorkspaceProgress utils', () => {
   });
   it('should return default value if one of conditions has special type that is shown when workspace start failed', () => {
     const status = {
-      phase: 'Starting',
+      phase: 'STARTING',
       conditions: [
         {
           message: 'Resolved plugins and parents from DevWorkspace',

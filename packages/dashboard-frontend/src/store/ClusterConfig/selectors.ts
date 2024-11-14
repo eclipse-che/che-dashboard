@@ -10,21 +10,20 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import { createSelector } from 'reselect';
+import { createSelector } from '@reduxjs/toolkit';
 
-import { AppState } from '..';
+import { RootState } from '@/store';
 
-const selectState = (state: AppState) => state.clusterConfig;
+const selectState = (state: RootState) => state.clusterConfig;
 
 export const selectDashboardWarning = createSelector(
   selectState,
-  state => state.clusterConfig.dashboardWarning || [],
+  state => state.clusterConfig.dashboardWarning || '',
 );
 
-export const selectRunningWorkspacesLimit = createSelector(
-  selectState,
-  state => state.clusterConfig.runningWorkspacesLimit,
-);
+export const selectRunningWorkspacesLimit = createSelector(selectState, state => {
+  return state.clusterConfig.runningWorkspacesLimit;
+});
 
 export const selectAllWorkspacesLimit = createSelector(
   selectState,

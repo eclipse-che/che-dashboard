@@ -10,86 +10,34 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import { api } from '@eclipse-che/common';
-import { MockStoreEnhanced } from 'redux-mock-store';
-import { ThunkDispatch } from 'redux-thunk';
-
-import { AppState } from '@/store';
-import { FakeStoreBuilder } from '@/store/__mocks__/storeBuilder';
-import * as TestStore from '@/store/GitConfig';
+import { RootState } from '@/store';
 import {
   selectGitConfig,
   selectGitConfigError,
   selectGitConfigIsLoading,
 } from '@/store/GitConfig/selectors';
 
-describe('GitConfig store, selectors', () => {
-  afterEach(() => {
-    jest.clearAllMocks();
+describe('GitConfig Selectors', () => {
+  const mockState = {
+    gitConfig: {
+      isLoading: true,
+      config: { gitconfig: 'mockConfig' },
+      error: 'Something went wrong',
+    },
+  } as unknown as RootState;
+
+  it('should select isLoading', () => {
+    const result = selectGitConfigIsLoading(mockState);
+    expect(result).toBe(true);
   });
 
-  it('should return the error', () => {
-    const fakeStore = new FakeStoreBuilder()
-      .withGitConfig({ config: {} as api.IGitConfig, error: 'Something unexpected' }, false)
-      .build() as MockStoreEnhanced<
-      AppState,
-      ThunkDispatch<AppState, undefined, TestStore.KnownAction>
-    >;
-    const state = fakeStore.getState();
-
-    const selectedError = selectGitConfigError(state);
-    expect(selectedError).toEqual('Something unexpected');
+  it('should select gitConfig', () => {
+    const result = selectGitConfig(mockState);
+    expect(result).toEqual('mockConfig');
   });
 
-  it('should return the gitconfig', () => {
-    const fakeStore = new FakeStoreBuilder()
-      .withGitConfig({
-        config: {
-          gitconfig: {
-            user: {
-              name: 'user-che',
-              email: 'user@che',
-            },
-          },
-        },
-      })
-      .build() as MockStoreEnhanced<
-      AppState,
-      ThunkDispatch<AppState, undefined, TestStore.KnownAction>
-    >;
-    const state = fakeStore.getState();
-
-    const gitconfig = selectGitConfig(state);
-    expect(gitconfig).toEqual({
-      user: {
-        name: 'user-che',
-        email: 'user@che',
-      },
-    });
-  });
-
-  it('should return isLoading state', () => {
-    const fakeStore = new FakeStoreBuilder()
-      .withGitConfig(
-        {
-          config: {
-            gitconfig: {
-              user: {
-                name: 'user-che',
-                email: 'user@che',
-              },
-            },
-          },
-        },
-        true,
-      )
-      .build() as MockStoreEnhanced<
-      AppState,
-      ThunkDispatch<AppState, undefined, TestStore.KnownAction>
-    >;
-    const state = fakeStore.getState();
-
-    const isLoading = selectGitConfigIsLoading(state);
-    expect(isLoading).toEqual(true);
+  it('should select error', () => {
+    const result = selectGitConfigError(mockState);
+    expect(result).toEqual('Something went wrong');
   });
 });

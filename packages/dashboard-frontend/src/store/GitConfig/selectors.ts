@@ -10,19 +10,14 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import { createSelector } from 'reselect';
+import { createSelector } from '@reduxjs/toolkit';
 
-import { State } from '@/store/GitConfig/types';
+import { RootState } from '@/store';
 
-import { AppState } from '..';
-
-const selectState = (state: AppState) => state.gitConfig;
+const selectState = (state: RootState) => state.gitConfig;
 
 export const selectGitConfigIsLoading = createSelector(selectState, state => state.isLoading);
 
-export const selectGitConfig = createSelector(
-  selectState,
-  (state: State) => state.config?.gitconfig,
-);
+export const selectGitConfig = createSelector(selectState, state => state.config?.gitconfig);
 
 export const selectGitConfigError = createSelector(selectState, state => state.error);

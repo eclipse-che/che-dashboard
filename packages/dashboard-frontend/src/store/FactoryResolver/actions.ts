@@ -11,6 +11,7 @@
  */
 
 import common from '@eclipse-che/common';
+import { createAction } from '@reduxjs/toolkit';
 
 import { getFactoryResolver } from '@/services/backend-client/factoryApi';
 import { getYamlResolver } from '@/services/backend-client/yamlResolverApi';
@@ -18,24 +19,25 @@ import { FactoryParams } from '@/services/helpers/factoryFlow/buildFactoryParams
 import { FactoryResolver } from '@/services/helpers/types';
 import { isOAuthResponse } from '@/services/oauth';
 import { CHE_EDITOR_YAML_PATH } from '@/services/workspace-client/helpers';
+import { AppThunk } from '@/store';
+import { FactoryResolverStateResolver } from '@/store/FactoryResolver';
 import {
   grabLink,
   isDevfileRegistryLocation,
   normalizeDevfile,
 } from '@/store/FactoryResolver/helpers';
-import { ActionCreators, KnownAction, Type } from '@/store/FactoryResolver/types';
-import { AppThunk } from '@/store/index';
 import { selectDefaultNamespace } from '@/store/InfrastructureNamespaces/selectors';
-import { selectAsyncIsAuthorized, selectSanityCheckError } from '@/store/SanityCheck/selectors';
-import { AUTHORIZED } from '@/store/sanityCheckMiddleware';
+import { verifyAuthorized } from '@/store/SanityCheck';
 import { selectDefaultComponents } from '@/store/ServerConfig/selectors';
 
-export const actionCreators: ActionCreators = {
+export const factoryResolverRequestAction = createAction('factoryResolver/request');
+export const factoryResolverReceiveAction =
+  createAction<FactoryResolverStateResolver>('factoryResolver/receive');
+export const factoryResolverErrorAction = createAction<string>('factoryResolver/error');
+
+export const actionCreators = {
   requestFactoryResolver:
-    (
-      location: string,
-      factoryParams: Partial<FactoryParams> = {},
-    ): AppThunk<KnownAction, Promise<void>> =>
+    (location: string, factoryParams: Partial<FactoryParams> = {}): AppThunk =>
     async (dispatch, getState): Promise<void> => {
       const state = getState();
       const namespace = selectDefaultNamespace(state).name;
@@ -48,16 +50,11 @@ export const actionCreators: ActionCreators = {
         : undefined;
 
       try {
-        await dispatch({
-          type: Type.REQUEST_FACTORY_RESOLVER,
-          check: AUTHORIZED,
-        });
-        if (!(await selectAsyncIsAuthorized(getState()))) {
-          const error = selectSanityCheckError(getState());
-          throw new Error(error);
-        }
-        let data: FactoryResolver;
+        await verifyAuthorized(dispatch, getState);
 
+        dispatch(factoryResolverRequestAction());
+
+        let data: FactoryResolver;
         if (isDevfileRegistryLocation(location, state.dwServerConfig.config)) {
           data = await getYamlResolver(location);
         } else {
@@ -87,11 +84,7 @@ export const actionCreators: ActionCreators = {
           location,
           optionalFilesContent,
         };
-
-        dispatch({
-          type: Type.RECEIVE_FACTORY_RESOLVER,
-          resolver,
-        });
+        dispatch(factoryResolverReceiveAction(resolver));
         return;
       } catch (e) {
         if (common.helpers.errors.includesAxiosResponse(e)) {
@@ -101,11 +94,8 @@ export const actionCreators: ActionCreators = {
           }
         }
         const errorMessage = common.helpers.errors.getMessage(e);
-        dispatch({
-          type: Type.RECEIVE_FACTORY_RESOLVER_ERROR,
-          error: errorMessage,
-        });
-        throw errorMessage;
+        dispatch(factoryResolverErrorAction(errorMessage));
+        throw e;
       }
     },
 };

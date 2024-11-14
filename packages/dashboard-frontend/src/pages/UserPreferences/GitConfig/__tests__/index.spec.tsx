@@ -12,20 +12,19 @@
 
 import { AlertVariant } from '@patternfly/react-core';
 import userEvent from '@testing-library/user-event';
-import * as React from 'react';
+import React from 'react';
 import { Provider } from 'react-redux';
-import { Action, Store } from 'redux';
+import { Store } from 'redux';
 
 import { container } from '@/inversify.config';
+import GitConfig from '@/pages/UserPreferences/GitConfig';
 import { mockShowAlert } from '@/pages/WorkspaceDetails/__mocks__';
 import getComponentRenderer, { screen, waitFor } from '@/services/__mocks__/getComponentRenderer';
 import { AppAlerts } from '@/services/alerts/appAlerts';
 import { AlertItem } from '@/services/helpers/types';
 import { AppThunk } from '@/store';
-import { FakeStoreBuilder } from '@/store/__mocks__/storeBuilder';
-import { ActionCreators } from '@/store/GitConfig';
-
-import GitConfig from '..';
+import { MockStoreBuilder } from '@/store/__mocks__/mockStore';
+import { gitConfigActionCreators } from '@/store/GitConfig';
 
 jest.mock('@/pages/UserPreferences/GitConfig/Form');
 
@@ -35,16 +34,17 @@ console.error = jest.fn();
 const mockRequestGitConfig = jest.fn();
 const mockUpdateGitConfig = jest.fn();
 jest.mock('@/store/GitConfig', () => ({
-  actionCreators: {
+  ...jest.requireActual('@/store/GitConfig'),
+  gitConfigActionCreators: {
     requestGitConfig:
-      (...args): AppThunk<Action, Promise<void>> =>
-      async (): Promise<void> =>
+      (...args): AppThunk =>
+      async () =>
         mockRequestGitConfig(...args),
     updateGitConfig:
-      (...args): AppThunk<Action, Promise<void>> =>
-      async (): Promise<void> =>
+      (...args): AppThunk =>
+      async () =>
         mockUpdateGitConfig(...args),
-  } as ActionCreators,
+  } as typeof gitConfigActionCreators,
 }));
 
 const { createSnapshot, renderComponent } = getComponentRenderer(getComponent);
@@ -54,7 +54,7 @@ let storeEmpty: Store;
 
 describe('GitConfig', () => {
   beforeEach(() => {
-    store = new FakeStoreBuilder()
+    store = new MockStoreBuilder()
       .withGitConfig({
         config: {
           gitconfig: {
@@ -66,7 +66,7 @@ describe('GitConfig', () => {
         },
       })
       .build();
-    storeEmpty = new FakeStoreBuilder().build();
+    storeEmpty = new MockStoreBuilder().build();
 
     class MockAppAlerts extends AppAlerts {
       showAlert(alert: AlertItem): void {
@@ -111,7 +111,7 @@ describe('GitConfig', () => {
 
   describe('while loading', () => {
     it('should not request gitconfig', () => {
-      const store = new FakeStoreBuilder()
+      const store = new MockStoreBuilder()
         .withGitConfig(
           {
             config: undefined,
@@ -159,7 +159,7 @@ describe('GitConfig', () => {
       // error alert should not be shown
       expect(mockShowAlert).not.toHaveBeenCalled();
 
-      const nextStore = new FakeStoreBuilder()
+      const nextStore = new MockStoreBuilder()
         .withGitConfig({
           config: {
             gitconfig: {

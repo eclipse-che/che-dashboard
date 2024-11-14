@@ -10,205 +10,194 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import { api } from '@eclipse-che/common';
-import { V1Status } from '@kubernetes/client-node';
-import mockAxios, { AxiosError } from 'axios';
-import { MockStoreEnhanced } from 'redux-mock-store';
-import { ThunkDispatch } from 'redux-thunk';
+import { api, helpers } from '@eclipse-che/common';
+import { V1Pod } from '@kubernetes/client-node';
 
 import { container } from '@/inversify.config';
+import { fetchPods } from '@/services/backend-client/podsApi';
 import { WebsocketClient } from '@/services/backend-client/websocketClient';
-import { AppState } from '@/store';
-import { FakeStoreBuilder } from '@/store/__mocks__/storeBuilder';
-import { pod1, pod2 } from '@/store/Pods/__tests__/stub';
-import { AUTHORIZED } from '@/store/sanityCheckMiddleware';
+import { createMockStore } from '@/store/__mocks__/mockActionsTestStore';
+import * as infrastructureNamespacesSelector from '@/store/InfrastructureNamespaces/selectors';
+import {
+  actionCreators,
+  podDeleteAction,
+  podListErrorAction,
+  podListReceiveAction,
+  podListRequestAction,
+  podModifyAction,
+  podReceiveAction,
+} from '@/store/Pods/actions';
+import { verifyAuthorized } from '@/store/SanityCheck';
 
-import * as testStore from '..';
+jest.mock('@/services/backend-client/podsApi');
+jest.mock('@/store/SanityCheck');
 
-describe('Pods store, actions', () => {
-  let appStore: MockStoreEnhanced<
-    AppState,
-    ThunkDispatch<AppState, undefined, testStore.KnownAction>
-  >;
+const mockNamespace = 'test-namespace';
+jest.spyOn(infrastructureNamespacesSelector, 'selectDefaultNamespace').mockReturnValue({
+  name: mockNamespace,
+  attributes: { phase: 'Active' },
+});
+(verifyAuthorized as jest.Mock).mockResolvedValue(true);
+
+describe('Pods Actions', () => {
+  let store: ReturnType<typeof createMockStore>;
 
   beforeEach(() => {
-    appStore = new FakeStoreBuilder().build() as MockStoreEnhanced<
-      AppState,
-      ThunkDispatch<AppState, undefined, testStore.KnownAction>
-    >;
-  });
-
-  afterEach(() => {
+    store = createMockStore({
+      pods: {
+        pods: [],
+        isLoading: false,
+        error: undefined,
+        resourceVersion: '1234',
+      },
+    });
     jest.clearAllMocks();
   });
 
-  it('should create REQUEST_PODS and RECEIVE_PODS when fetching pods', async () => {
-    (mockAxios.get as jest.Mock).mockResolvedValueOnce({
-      data: { items: [pod1, pod2], metadata: { resourceVersion: '123' } },
-    });
+  describe('requestPods', () => {
+    it('should dispatch receive action on successful fetch', async () => {
+      const mockPods = [{ metadata: { name: 'pod1' } }] as V1Pod[];
+      const mockResourceVersion = '12345';
 
-    await appStore.dispatch(testStore.actionCreators.requestPods());
-
-    const actions = appStore.getActions();
-
-    const expectedActions: testStore.KnownAction[] = [
-      {
-        type: testStore.Type.REQUEST_PODS,
-        check: AUTHORIZED,
-      },
-      {
-        type: testStore.Type.RECEIVE_PODS,
-        pods: [pod1, pod2],
-        resourceVersion: '123',
-      },
-    ];
-
-    expect(actions).toEqual(expectedActions);
-  });
-
-  it('should create REQUEST_PODS and RECEIVE_ERROR when fails to fetch pods', async () => {
-    (mockAxios.get as jest.Mock).mockRejectedValueOnce({
-      isAxiosError: true,
-      code: '500',
-      message: 'Something unexpected happened.',
-    } as AxiosError);
-
-    try {
-      await appStore.dispatch(testStore.actionCreators.requestPods());
-    } catch (e) {
-      // noop
-    }
-
-    const actions = appStore.getActions();
-
-    const expectedActions: testStore.KnownAction[] = [
-      {
-        type: testStore.Type.REQUEST_PODS,
-        check: AUTHORIZED,
-      },
-      {
-        type: testStore.Type.RECEIVE_ERROR,
-        error: expect.stringContaining('Something unexpected happened.'),
-      },
-    ];
-
-    expect(actions).toEqual(expectedActions);
-  });
-
-  describe('handle WebSocket messages', () => {
-    it('should create RECEIVE_POD in case of ADDED event phase', () => {
-      appStore.dispatch(
-        testStore.actionCreators.handleWebSocketMessage({
-          pod: pod1,
-          eventPhase: api.webSocket.EventPhase.ADDED,
-        }),
-      );
-
-      const actions = appStore.getActions();
-
-      const expectedActions: testStore.KnownAction[] = [
-        {
-          type: testStore.Type.RECEIVE_POD,
-          pod: pod1,
-        },
-      ];
-
-      expect(actions).toEqual(expectedActions);
-    });
-
-    it('should create MODIFY_POD in case of MODIFIED event phase', () => {
-      appStore.dispatch(
-        testStore.actionCreators.handleWebSocketMessage({
-          pod: pod1,
-          eventPhase: api.webSocket.EventPhase.MODIFIED,
-        }),
-      );
-
-      const actions = appStore.getActions();
-
-      const expectedActions: testStore.KnownAction[] = [
-        {
-          type: testStore.Type.MODIFY_POD,
-          pod: pod1,
-        },
-      ];
-
-      expect(actions).toEqual(expectedActions);
-    });
-
-    it('should create DELETE_POD and DELETE_EVENTS in case of DELETED event phase', () => {
-      appStore.dispatch(
-        testStore.actionCreators.handleWebSocketMessage({
-          pod: pod1,
-          eventPhase: api.webSocket.EventPhase.DELETED,
-        }),
-      );
-
-      const actions = appStore.getActions();
-
-      const expectedActions: testStore.KnownAction[] = [
-        {
-          type: testStore.Type.DELETE_POD,
-          pod: pod1,
-        },
-      ];
-
-      expect(actions).toEqual(expectedActions);
-    });
-
-    it('should create REQUEST_PODS and RECEIVE_PODS and resubscribe to channel', async () => {
-      (mockAxios.get as jest.Mock).mockResolvedValueOnce({
-        data: { items: [pod1, pod2], metadata: { resourceVersion: '123' } },
+      (fetchPods as jest.Mock).mockResolvedValue({
+        items: mockPods,
+        metadata: { resourceVersion: mockResourceVersion },
       });
 
-      const websocketClient = container.get(WebsocketClient);
-      const unsubscribeFromChannelSpy = jest
-        .spyOn(websocketClient, 'unsubscribeFromChannel')
-        .mockReturnValue(undefined);
-      const subscribeToChannelSpy = jest
-        .spyOn(websocketClient, 'subscribeToChannel')
-        .mockReturnValue(undefined);
+      await store.dispatch(actionCreators.requestPods());
 
-      const namespace = 'user-che';
-      const appStoreWithNamespace = new FakeStoreBuilder()
-        .withInfrastructureNamespace([{ name: namespace, attributes: { phase: 'Active' } }])
-        .build() as MockStoreEnhanced<
-        AppState,
-        ThunkDispatch<AppState, undefined, testStore.KnownAction>
-      >;
-      await appStoreWithNamespace.dispatch(
-        testStore.actionCreators.handleWebSocketMessage({
-          status: {
-            code: 410,
-            message: 'The resourceVersion for the provided watch is too old.',
-          } as V1Status,
-          eventPhase: api.webSocket.EventPhase.ERROR,
-          params: {
-            namespace,
-            resourceVersion: '123',
-          },
+      const actions = store.getActions();
+      expect(actions).toHaveLength(2);
+      expect(actions[0]).toEqual(podListRequestAction());
+      expect(actions[1]).toEqual(
+        podListReceiveAction({
+          pods: mockPods,
+          resourceVersion: mockResourceVersion,
         }),
       );
+    });
 
-      const actions = appStoreWithNamespace.getActions();
+    it('should dispatch error action on failed fetch', async () => {
+      const errorMessage = 'Network error';
 
-      const expectedActions: testStore.KnownAction[] = [
-        {
-          check: AUTHORIZED,
-          type: testStore.Type.REQUEST_PODS,
-        },
-        {
-          type: testStore.Type.RECEIVE_PODS,
-          pods: [pod1, pod2],
-          resourceVersion: '123',
-        },
-      ];
+      (fetchPods as jest.Mock).mockRejectedValue(new Error(errorMessage));
+      jest.spyOn(helpers.errors, 'getMessage').mockReturnValue(errorMessage);
 
-      expect(actions).toEqual(expectedActions);
-      expect(unsubscribeFromChannelSpy).toHaveBeenCalledWith(api.webSocket.Channel.POD);
-      expect(subscribeToChannelSpy).toHaveBeenCalledWith(api.webSocket.Channel.POD, namespace, {
-        getResourceVersion: expect.any(Function),
+      await expect(store.dispatch(actionCreators.requestPods())).rejects.toThrow(errorMessage);
+
+      const actions = store.getActions();
+      expect(actions).toHaveLength(2);
+      expect(actions[0]).toEqual(podListRequestAction());
+      expect(actions[1]).toEqual(
+        podListErrorAction(`Failed to fetch pods, reason: ${errorMessage}`),
+      );
+    });
+  });
+
+  describe('handleWebSocketMessage', () => {
+    let mockUnsubscribeFromChannel: jest.Mock;
+    let mockSubscribeToChannel: jest.Mock;
+
+    beforeEach(() => {
+      mockUnsubscribeFromChannel = jest.fn();
+      mockSubscribeToChannel = jest.fn();
+
+      class MockWebsocketClient extends WebsocketClient {
+        public unsubscribeFromChannel(
+          ...args: Parameters<WebsocketClient['unsubscribeFromChannel']>
+        ) {
+          mockUnsubscribeFromChannel(...args);
+        }
+        public subscribeToChannel(...args: Parameters<WebsocketClient['subscribeToChannel']>) {
+          mockSubscribeToChannel(...args);
+        }
+      }
+
+      container.snapshot();
+      container.rebind(WebsocketClient).to(MockWebsocketClient).inSingletonScope();
+    });
+
+    afterEach(() => {
+      container.restore();
+    });
+
+    it('should handle status message and re-subscribe on error status', async () => {
+      const mockMessage = {
+        status: { code: 500, message: 'Internal Server Error' },
+        eventPhase: api.webSocket.EventPhase.ERROR,
+      } as api.webSocket.StatusMessage;
+      (fetchPods as jest.Mock).mockResolvedValue({
+        items: [],
       });
+
+      await store.dispatch(actionCreators.handleWebSocketMessage(mockMessage));
+
+      const actions = store.getActions();
+      expect(actions).toHaveLength(2);
+      expect(actions[0]).toEqual(podListRequestAction());
+      expect(actions[1]).toEqual(
+        podListReceiveAction({
+          pods: [],
+          resourceVersion: undefined,
+        }),
+      );
+      expect(mockUnsubscribeFromChannel).toHaveBeenCalledWith(api.webSocket.Channel.POD);
+      expect(mockSubscribeToChannel).toHaveBeenCalledWith(
+        api.webSocket.Channel.POD,
+        mockNamespace,
+        expect.any(Object),
+      );
+    });
+
+    it('should handle pod message with ADDED phase', async () => {
+      const mockPod = { metadata: { name: 'pod1', resourceVersion: '12345' } } as V1Pod;
+      const mockMessage = {
+        pod: mockPod,
+        eventPhase: api.webSocket.EventPhase.ADDED,
+      } as api.webSocket.NotificationMessage;
+
+      await store.dispatch(actionCreators.handleWebSocketMessage(mockMessage));
+
+      const actions = store.getActions();
+      expect(actions[0]).toEqual(podReceiveAction(mockPod));
+    });
+
+    it('should handle pod message with MODIFIED phase', async () => {
+      const mockPod = { metadata: { name: 'pod1' } } as V1Pod;
+      const mockMessage = {
+        pod: mockPod,
+        eventPhase: api.webSocket.EventPhase.MODIFIED,
+      } as api.webSocket.NotificationMessage;
+
+      await store.dispatch(actionCreators.handleWebSocketMessage(mockMessage));
+
+      const actions = store.getActions();
+      expect(actions[0]).toEqual(podModifyAction(mockPod));
+    });
+
+    it('should handle pod message with DELETED phase', async () => {
+      const mockPod = { metadata: { name: 'pod1' } } as V1Pod;
+      const mockMessage = {
+        pod: mockPod,
+        eventPhase: api.webSocket.EventPhase.DELETED,
+      } as api.webSocket.NotificationMessage;
+
+      await store.dispatch(actionCreators.handleWebSocketMessage(mockMessage));
+
+      const actions = store.getActions();
+      expect(actions[0]).toEqual(podDeleteAction(mockPod));
+    });
+
+    it('should log unexpected message', async () => {
+      const mockMessage = {
+        unexpectedField: 'unexpectedValue',
+      } as unknown as api.webSocket.NotificationMessage;
+
+      console.warn = jest.fn();
+
+      await store.dispatch(actionCreators.handleWebSocketMessage(mockMessage));
+
+      expect(console.warn).toHaveBeenCalledWith('WebSocket: unexpected message:', mockMessage);
     });
   });
 });

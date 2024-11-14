@@ -21,7 +21,7 @@ import SamplesListGallery from '@/pages/GetStarted/SamplesList/Gallery';
 import getComponentRenderer, { screen, within } from '@/services/__mocks__/getComponentRenderer';
 import { BrandingData } from '@/services/bootstrap/branding.constant';
 import { che } from '@/services/models';
-import { FakeStoreBuilder } from '@/store/__mocks__/storeBuilder';
+import { MockStoreBuilder } from '@/store/__mocks__/mockStore';
 import { DevfileRegistryMetadata } from '@/store/DevfileRegistries/selectors';
 
 jest.mock('@/pages/GetStarted/SamplesList/Gallery/Card');
@@ -37,7 +37,7 @@ describe('Samples List Gallery', () => {
   let store: Store;
 
   beforeEach(() => {
-    store = new FakeStoreBuilder()
+    store = new MockStoreBuilder()
       .withBranding({
         docs: {
           storageTypes: 'https://docs.location',

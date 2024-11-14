@@ -25,7 +25,7 @@ import { getDefer } from '@/services/helpers/deferred';
 import { AlertItem } from '@/services/helpers/types';
 import { TabManager } from '@/services/tabManager';
 import { DevWorkspaceBuilder } from '@/store/__mocks__/devWorkspaceBuilder';
-import { FakeStoreBuilder } from '@/store/__mocks__/storeBuilder';
+import { MockStoreBuilder } from '@/store/__mocks__/mockStore';
 
 import StartingStepOpenWorkspace from '..';
 
@@ -77,7 +77,7 @@ describe('Starting steps, opening an editor', () => {
     let paramsWithWrongName: WorkspaceRouteParams;
 
     beforeEach(() => {
-      store = new FakeStoreBuilder()
+      store = new MockStoreBuilder()
         .withDevWorkspaces({
           workspaces: [
             new DevWorkspaceBuilder()
@@ -161,7 +161,7 @@ describe('Starting steps, opening an editor', () => {
   test('workspace status change from STOPPING to RUNNING', async () => {
     isAvailableEndpointMock.mockResolvedValue(true);
 
-    const store = new FakeStoreBuilder()
+    const store = new MockStoreBuilder()
       .withDevWorkspaces({
         workspaces: [
           new DevWorkspaceBuilder()
@@ -180,7 +180,7 @@ describe('Starting steps, opening an editor', () => {
     expect(mockOnNextStep).not.toHaveBeenCalled();
     expect(mockOnRestart).not.toHaveBeenCalled();
 
-    const storeNext = new FakeStoreBuilder()
+    const storeNext = new MockStoreBuilder()
       .withDevWorkspaces({
         workspaces: [
           new DevWorkspaceBuilder()
@@ -203,7 +203,7 @@ describe('Starting steps, opening an editor', () => {
   });
 
   test('workspace is FAILED', async () => {
-    const store = new FakeStoreBuilder()
+    const store = new MockStoreBuilder()
       .withDevWorkspaces({
         workspaces: [
           new DevWorkspaceBuilder()
@@ -246,7 +246,7 @@ describe('Starting steps, opening an editor', () => {
     });
 
     test('mainUrl is present', async () => {
-      const store = new FakeStoreBuilder()
+      const store = new MockStoreBuilder()
         .withDevWorkspaces({
           workspaces: [
             new DevWorkspaceBuilder()
@@ -267,7 +267,7 @@ describe('Starting steps, opening an editor', () => {
     });
 
     test(`mainUrl is propagated after some time`, async () => {
-      const store = new FakeStoreBuilder()
+      const store = new MockStoreBuilder()
         .withDevWorkspaces({
           workspaces: [
             new DevWorkspaceBuilder()
@@ -286,7 +286,7 @@ describe('Starting steps, opening an editor', () => {
       // no errors at this moment
       expect(mockOnError).not.toHaveBeenCalled();
 
-      const nextStore = new FakeStoreBuilder()
+      const nextStore = new MockStoreBuilder()
         .withDevWorkspaces({
           workspaces: [
             new DevWorkspaceBuilder()
@@ -314,7 +314,7 @@ describe('Starting steps, opening an editor', () => {
     });
 
     test('mainUrl is present', async () => {
-      const store = new FakeStoreBuilder()
+      const store = new MockStoreBuilder()
         .withDevWorkspaces({
           workspaces: [
             new DevWorkspaceBuilder()
@@ -335,7 +335,7 @@ describe('Starting steps, opening an editor', () => {
     });
 
     test('mainUrl is propagated after some time', async () => {
-      const store = new FakeStoreBuilder()
+      const store = new MockStoreBuilder()
         .withDevWorkspaces({
           workspaces: [
             new DevWorkspaceBuilder()
@@ -354,7 +354,7 @@ describe('Starting steps, opening an editor', () => {
       // no errors at this moment
       expect(mockOnError).not.toHaveBeenCalled();
 
-      const nextStore = new FakeStoreBuilder()
+      const nextStore = new MockStoreBuilder()
         .withDevWorkspaces({
           workspaces: [
             new DevWorkspaceBuilder()
@@ -378,7 +378,7 @@ describe('Starting steps, opening an editor', () => {
     let store: Store;
 
     beforeEach(() => {
-      store = new FakeStoreBuilder()
+      store = new MockStoreBuilder()
         .withDevWorkspaces({
           workspaces: [
             new DevWorkspaceBuilder()
@@ -392,7 +392,7 @@ describe('Starting steps, opening an editor', () => {
     });
 
     test('should not show notification alert if STARTING', async () => {
-      store = new FakeStoreBuilder()
+      store = new MockStoreBuilder()
         .withDevWorkspaces({
           workspaces: [
             new DevWorkspaceBuilder()
@@ -404,7 +404,7 @@ describe('Starting steps, opening an editor', () => {
         })
         .build();
       renderComponent(store);
-      jest.runAllTimers();
+      await jest.runAllTimersAsync();
 
       // trigger timeout
       const timeoutButton = screen.queryByRole('button', {
@@ -416,7 +416,7 @@ describe('Starting steps, opening an editor', () => {
 
     test('notification alert', async () => {
       renderComponent(store);
-      jest.runAllTimers();
+      await jest.runAllTimersAsync();
 
       // trigger timeout
       const timeoutButton = screen.getByRole('button', {

@@ -15,9 +15,10 @@ import userEvent, { UserEvent } from '@testing-library/user-event';
 import React from 'react';
 import { Provider } from 'react-redux';
 import { Location } from 'react-router-dom';
-import { Action, Store } from 'redux';
+import { Store } from 'redux';
 
 import { MIN_STEP_DURATION_MS, TIMEOUT_TO_RESOLVE_SEC } from '@/components/WorkspaceProgress/const';
+import CreatingStepFetchResources from '@/components/WorkspaceProgress/CreatingSteps/Fetch/Resources';
 import getComponentRenderer from '@/services/__mocks__/getComponentRenderer';
 import devfileApi from '@/services/devfileApi';
 import { getDefer } from '@/services/helpers/deferred';
@@ -27,27 +28,24 @@ import {
 } from '@/services/helpers/factoryFlow/buildFactoryParams';
 import { AlertItem } from '@/services/helpers/types';
 import { AppThunk } from '@/store';
-import { FakeStoreBuilder } from '@/store/__mocks__/storeBuilder';
-import { ActionCreators } from '@/store/DevfileRegistries';
-
-import CreatingStepFetchResources from '..';
+import { MockStoreBuilder } from '@/store/__mocks__/mockStore';
+import { devfileRegistriesActionCreators } from '@/store/DevfileRegistries';
 
 jest.mock('@/components/WorkspaceProgress/TimeLimit');
 
 const mockRequestResources = jest.fn();
 jest.mock('@/store/DevfileRegistries', () => {
-  /* eslint-disable @typescript-eslint/no-unused-vars */
   return {
-    actionCreators: {
+    ...jest.requireActual('@/store/DevfileRegistries'),
+    devfileRegistriesActionCreators: {
       requestResources:
         (
-          ...args: Parameters<ActionCreators['requestResources']>
-        ): AppThunk<Action, Promise<void>> =>
+          ...args: Parameters<(typeof devfileRegistriesActionCreators)['requestResources']>
+        ): AppThunk =>
         async (): Promise<void> =>
           mockRequestResources(...args),
-    } as ActionCreators,
+    } as typeof devfileRegistriesActionCreators,
   };
-  /* eslint-enable @typescript-eslint/no-unused-vars */
 });
 
 const { renderComponent } = getComponentRenderer(getComponent);
@@ -82,7 +80,7 @@ describe('Creating steps, fetching resources', () => {
   });
 
   test('resources are already resolved', async () => {
-    const store = new FakeStoreBuilder()
+    const store = new MockStoreBuilder()
       .withDevfileRegistries({
         devWorkspaceResources: {
           [resourcesUrl]: {
@@ -104,7 +102,7 @@ describe('Creating steps, fetching resources', () => {
   });
 
   test('fetch pre-built resources', async () => {
-    const store = new FakeStoreBuilder().build();
+    const store = new MockStoreBuilder().build();
     renderComponent(store, searchParams);
 
     await jest.advanceTimersByTimeAsync(MIN_STEP_DURATION_MS);
@@ -117,7 +115,7 @@ describe('Creating steps, fetching resources', () => {
   });
 
   test('fetch a broken url', async () => {
-    const store = new FakeStoreBuilder().build();
+    const store = new MockStoreBuilder().build();
 
     const rejectReason = 'Not found.';
     mockRequestResources.mockRejectedValueOnce(rejectReason);
@@ -143,7 +141,7 @@ describe('Creating steps, fetching resources', () => {
   });
 
   test('resources fetched successfully', async () => {
-    const store = new FakeStoreBuilder().build();
+    const store = new MockStoreBuilder().build();
 
     const { reRenderComponent } = renderComponent(store, searchParams);
 
@@ -156,7 +154,7 @@ describe('Creating steps, fetching resources', () => {
     expect(mockOnError).not.toHaveBeenCalled();
 
     // build next store
-    const nextStore = new FakeStoreBuilder()
+    const nextStore = new MockStoreBuilder()
       .withDevfileRegistries({
         devWorkspaceResources: {
           [resourcesUrl]: {
@@ -178,12 +176,12 @@ describe('Creating steps, fetching resources', () => {
     let emptyStore: Store;
 
     beforeEach(() => {
-      emptyStore = new FakeStoreBuilder().build();
+      emptyStore = new MockStoreBuilder().build();
     });
 
     test('notification alert', async () => {
       renderComponent(emptyStore, searchParams);
-      jest.runAllTimers();
+      await jest.runAllTimersAsync();
 
       // trigger timeout
       const timeoutButton = screen.getByRole('button', {

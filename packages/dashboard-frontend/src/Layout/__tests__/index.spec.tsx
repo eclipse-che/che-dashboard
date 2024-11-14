@@ -22,8 +22,8 @@ import Layout from '@/Layout';
 import getComponentRenderer, { screen } from '@/services/__mocks__/getComponentRenderer';
 import { BrandingData } from '@/services/bootstrap/branding.constant';
 import { IssuesReporterService } from '@/services/bootstrap/issuesReporter';
-import { FakeStoreBuilder } from '@/store/__mocks__/storeBuilder';
-import * as SanityCheckStore from '@/store/SanityCheck';
+import { MockStoreBuilder } from '@/store/__mocks__/mockStore';
+import { sanityCheckActionCreators } from '@/store/SanityCheck';
 
 const issuesReporterService = container.get(IssuesReporterService);
 
@@ -42,9 +42,9 @@ jest.mock('@/services/helpers/login.ts', () => ({
 const mockTestBackends = jest.fn();
 jest.mock('@/store/SanityCheck/index', () => ({
   ...jest.requireActual('@/store/SanityCheck/index'),
-  actionCreators: {
+  sanityCheckActionCreators: {
     testBackends: () => async () => mockTestBackends(),
-  } as SanityCheckStore.ActionCreators,
+  } as typeof sanityCheckActionCreators,
 }));
 
 const { createSnapshot, renderComponent } = getComponentRenderer(getComponent);
@@ -53,7 +53,7 @@ describe('Layout component', () => {
   let store: Store;
 
   beforeEach(() => {
-    store = new FakeStoreBuilder()
+    store = new MockStoreBuilder()
       .withBranding({
         logoFile: 'logo-File',
       } as BrandingData)

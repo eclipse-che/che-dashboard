@@ -10,61 +10,34 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import { MockStoreEnhanced } from 'redux-mock-store';
-import { ThunkDispatch } from 'redux-thunk';
-
-import { AppState } from '@/store';
-import { FakeStoreBuilder } from '@/store/__mocks__/storeBuilder';
-import { key1, key2 } from '@/store/SshKeys/__tests__/stub';
+import { RootState } from '@/store';
 import {
   selectSshKeys,
   selectSshKeysError,
   selectSshKeysIsLoading,
 } from '@/store/SshKeys/selectors';
 
-import * as store from '..';
+describe('SshKeys, selectors', () => {
+  const mockState = {
+    sshKeys: {
+      isLoading: true,
+      keys: [{ name: 'key1' }, { name: 'key2' }],
+      error: 'Something went wrong',
+    },
+  } as RootState;
 
-describe('SSH Keys, selectors', () => {
-  afterEach(() => {
-    jest.clearAllMocks();
+  it('should select isLoading', () => {
+    const result = selectSshKeysIsLoading(mockState);
+    expect(result).toBe(true);
   });
 
-  it('should return the error', () => {
-    const fakeStore = new FakeStoreBuilder()
-      .withSshKeys({ keys: [], error: 'Something unexpected' }, false)
-      .build() as MockStoreEnhanced<
-      AppState,
-      ThunkDispatch<AppState, undefined, store.KnownAction>
-    >;
-    const state = fakeStore.getState();
-
-    const selectedError = selectSshKeysError(state);
-    expect(selectedError).toEqual('Something unexpected');
+  it('should select ssh keys', () => {
+    const result = selectSshKeys(mockState);
+    expect(result).toEqual([{ name: 'key1' }, { name: 'key2' }]);
   });
 
-  it('should return all tokens', () => {
-    const fakeStore = new FakeStoreBuilder()
-      .withSshKeys({ keys: [key1, key2] }, false)
-      .build() as MockStoreEnhanced<
-      AppState,
-      ThunkDispatch<AppState, undefined, store.KnownAction>
-    >;
-    const state = fakeStore.getState();
-
-    const allSshKeys = selectSshKeys(state);
-    expect(allSshKeys).toEqual([key1, key2]);
-  });
-
-  it('should return isLoading state', () => {
-    const fakeStore = new FakeStoreBuilder()
-      .withSshKeys({ keys: [key1, key2] }, true)
-      .build() as MockStoreEnhanced<
-      AppState,
-      ThunkDispatch<AppState, undefined, store.KnownAction>
-    >;
-    const state = fakeStore.getState();
-
-    const isLoading = selectSshKeysIsLoading(state);
-    expect(isLoading).toEqual(true);
+  it('should select ssh keys error', () => {
+    const result = selectSshKeysError(mockState);
+    expect(result).toEqual('Something went wrong');
   });
 });

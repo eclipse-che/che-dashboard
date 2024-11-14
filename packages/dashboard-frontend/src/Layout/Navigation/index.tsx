@@ -20,8 +20,8 @@ import NavigationRecentList from '@/Layout/Navigation/RecentList';
 import { ROUTE } from '@/Routes';
 import { buildGettingStartedLocation, buildWorkspacesLocation } from '@/services/helpers/location';
 import { Workspace } from '@/services/workspace-adapter';
-import { AppState } from '@/store';
-import * as WorkspacesStore from '@/store/Workspaces';
+import { RootState } from '@/store';
+import { workspacesActionCreators } from '@/store/Workspaces';
 import { selectAllWorkspaces, selectRecentWorkspaces } from '@/store/Workspaces/selectors';
 
 export interface NavigationItemObject {
@@ -113,11 +113,11 @@ export class Navigation extends React.PureComponent<Props, State> {
   }
 }
 
-const mapStateToProps = (state: AppState) => ({
+const mapStateToProps = (state: RootState) => ({
   recentWorkspaces: selectRecentWorkspaces(state),
   allWorkspaces: selectAllWorkspaces(state),
 });
-const connector = connect(mapStateToProps, WorkspacesStore.actionCreators);
+const connector = connect(mapStateToProps, workspacesActionCreators);
 
 type MappedProps = ConnectedProps<typeof connector>;
 

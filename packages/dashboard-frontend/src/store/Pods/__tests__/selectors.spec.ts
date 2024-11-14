@@ -10,53 +10,41 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import { MockStoreEnhanced } from 'redux-mock-store';
-import { ThunkDispatch } from 'redux-thunk';
+import { RootState } from '@/store';
+import {
+  selectAllPods,
+  selectPodsError,
+  selectPodsIsLoading,
+  selectPodsResourceVersion,
+} from '@/store/Pods';
 
-import { AppState } from '@/store';
-import { FakeStoreBuilder } from '@/store/__mocks__/storeBuilder';
-import { pod1, pod2 } from '@/store/Pods/__tests__/stub';
-import { selectAllPods, selectPodsError, selectPodsResourceVersion } from '@/store/Pods/selectors';
+describe('Pods Selectors', () => {
+  const mockState = {
+    pods: {
+      pods: [{ metadata: { name: 'pod1' } }, { metadata: { name: 'pod2' } }],
+      error: 'Something went wrong',
+      isLoading: true,
+      resourceVersion: '12345',
+    },
+  } as RootState;
 
-import * as store from '..';
-
-describe('Pods store, selectors', () => {
-  it('should return the error', () => {
-    const fakeStore = new FakeStoreBuilder()
-      .withPods({ error: 'Something unexpected', pods: [] }, false)
-      .build() as MockStoreEnhanced<
-      AppState,
-      ThunkDispatch<AppState, undefined, store.KnownAction>
-    >;
-    const state = fakeStore.getState();
-
-    const selectedError = selectPodsError(state);
-    expect(selectedError).toEqual('Something unexpected');
+  it('should select all pods', () => {
+    const result = selectAllPods(mockState);
+    expect(result).toEqual([{ metadata: { name: 'pod1' } }, { metadata: { name: 'pod2' } }]);
   });
 
-  it('should return all pods', () => {
-    const fakeStore = new FakeStoreBuilder()
-      .withPods({ pods: [pod1, pod2] }, false)
-      .build() as MockStoreEnhanced<
-      AppState,
-      ThunkDispatch<AppState, undefined, store.KnownAction>
-    >;
-    const state = fakeStore.getState();
-
-    const allPods = selectAllPods(state);
-    expect(allPods).toEqual([pod1, pod2]);
+  it('should select pods error', () => {
+    const result = selectPodsError(mockState);
+    expect(result).toEqual('Something went wrong');
   });
 
-  it('should return the resource version', () => {
-    const fakeStore = new FakeStoreBuilder()
-      .withPods({ pods: [pod1, pod2], resourceVersion: '1234' }, false)
-      .build() as MockStoreEnhanced<
-      AppState,
-      ThunkDispatch<AppState, undefined, store.KnownAction>
-    >;
-    const state = fakeStore.getState();
+  it('should select pods isLoading', () => {
+    const result = selectPodsIsLoading(mockState);
+    expect(result).toBe(true);
+  });
 
-    const resourceVersion = selectPodsResourceVersion(state);
-    expect(resourceVersion).toEqual('1234');
+  it('should select pods resource version', () => {
+    const result = selectPodsResourceVersion(mockState);
+    expect(result).toEqual('12345');
   });
 });

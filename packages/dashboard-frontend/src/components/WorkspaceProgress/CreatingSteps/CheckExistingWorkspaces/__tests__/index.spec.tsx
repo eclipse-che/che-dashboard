@@ -30,7 +30,7 @@ import { buildFactoryLocation } from '@/services/helpers/location';
 import { AlertItem } from '@/services/helpers/types';
 import { TabManager } from '@/services/tabManager';
 import { DevWorkspaceBuilder } from '@/store/__mocks__/devWorkspaceBuilder';
-import { FakeStoreBuilder } from '@/store/__mocks__/storeBuilder';
+import { MockStoreBuilder } from '@/store/__mocks__/mockStore';
 import { DevWorkspaceResources } from '@/store/DevfileRegistries';
 
 import CreatingStepCheckExistingWorkspaces from '..';
@@ -89,7 +89,7 @@ describe('Creating steps, checking existing workspaces', () => {
         [POLICIES_CREATE_ATTR]: 'perclick',
         [DEV_WORKSPACE_ATTR]: resourcesUrl,
       });
-      const store = new FakeStoreBuilder().build();
+      const store = new MockStoreBuilder().build();
       renderComponent(store, searchParams);
 
       await jest.advanceTimersByTimeAsync(MIN_STEP_DURATION_MS);
@@ -112,7 +112,7 @@ describe('Creating steps, checking existing workspaces', () => {
           } as devfileApi.DevWorkspace,
           {} as devfileApi.DevWorkspaceTemplate,
         ];
-        store = new FakeStoreBuilder()
+        store = new MockStoreBuilder()
           .withDevWorkspaces({
             workspaces: [
               new DevWorkspaceBuilder().withName('project-1').withNamespace('user-che').build(),
@@ -134,7 +134,7 @@ describe('Creating steps, checking existing workspaces', () => {
 
         await jest.advanceTimersByTimeAsync(MIN_STEP_DURATION_MS);
 
-        jest.runOnlyPendingTimers();
+        await jest.runOnlyPendingTimersAsync();
 
         await waitFor(() => expect(mockOnNextStep).toHaveBeenCalled());
         expect(mockOnError).not.toHaveBeenCalled();
@@ -155,7 +155,7 @@ describe('Creating steps, checking existing workspaces', () => {
           } as devfileApi.DevWorkspace,
           {} as devfileApi.DevWorkspaceTemplate,
         ];
-        store = new FakeStoreBuilder()
+        store = new MockStoreBuilder()
           .withDevWorkspaces({
             workspaces: [
               new DevWorkspaceBuilder().withName(workspaceName).withNamespace('user-che').build(),
@@ -291,7 +291,7 @@ describe('Creating steps, checking existing workspaces', () => {
           [FACTORY_URL_ATTR]: factoryUrl,
         });
 
-        store = new FakeStoreBuilder()
+        store = new MockStoreBuilder()
           .withDevWorkspaces({
             workspaces: [
               new DevWorkspaceBuilder().withName(workspaceName).withNamespace('user-che').build(),

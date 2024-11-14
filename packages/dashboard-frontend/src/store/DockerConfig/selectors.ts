@@ -10,19 +10,17 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import { createSelector } from 'reselect';
+import { createSelector } from '@reduxjs/toolkit';
 
-import { State } from '@/store/DockerConfig/index';
+import { RootState } from '@/store';
 
-import { AppState } from '..';
-
-const selectState = (state: AppState) => state.dockerConfig;
+const selectState = (state: RootState) => state.dockerConfig;
 
 export const selectIsLoading = createSelector(selectState, state => {
   return state.isLoading;
 });
 
-export const selectRegistries = createSelector(selectState, (state: State) => {
+export const selectRegistries = createSelector(selectState, state => {
   return state.registries;
 });
 

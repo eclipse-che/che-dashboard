@@ -10,99 +10,77 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import { MockStoreEnhanced } from 'redux-mock-store';
-import { ThunkDispatch } from 'redux-thunk';
-
 import devfileApi from '@/services/devfileApi';
-import { AppState } from '@/store';
-import { FakeStoreBuilder } from '@/store/__mocks__/storeBuilder';
+import { RootState } from '@/store';
 import {
+  selectDefaultEditor,
   selectDwDefaultEditorError,
+  selectDwEditorsPluginsList,
   selectDwPlugins,
   selectDwPluginsList,
 } from '@/store/Plugins/devWorkspacePlugins/selectors';
 
-import * as store from '..';
-
-const url = 'devworkspace-devfile-location';
-
-describe('dwPlugins selectors', () => {
-  const plugins = {
-    'plugin-location-1': {
-      url,
-      plugin: {
-        schemaVersion: '2.1.0',
-        metadata: {
-          name: 'void-sample-1',
+describe('Plugins Selectors', () => {
+  const mockState = {
+    dwPlugins: {
+      plugins: {
+        'https://example.com/plugin1.yaml': {
+          plugin: { metadata: { name: 'plugin1' } } as devfileApi.Devfile,
+          url: 'https://example.com/plugin1.yaml',
         },
-      } as devfileApi.Devfile,
-    },
-    'plugin-location-2': {
-      url,
-      plugin: {
-        schemaVersion: '2.1.0',
-        metadata: {
-          name: 'void-sample-2',
+        'https://example.com/plugin2.yaml': {
+          plugin: { metadata: { name: 'plugin2' } } as devfileApi.Devfile,
+          url: 'https://example.com/plugin2.yaml',
         },
-      } as devfileApi.Devfile,
+      },
+      editors: {
+        editor1: {
+          plugin: { metadata: { name: 'editor1' } } as devfileApi.Devfile,
+          url: 'https://example.com/editor1.yaml',
+        },
+        editor2: {
+          plugin: { metadata: { name: 'editor2' } } as devfileApi.Devfile,
+          url: 'https://example.com/editor2.yaml',
+        },
+      },
+      defaultEditorName: 'editor1',
+      defaultEditorError: 'Error message',
+      defaultPlugins: {},
+      isLoading: false,
     },
-    'plugin-location-3': {
-      url,
-      error: 'unexpected error',
-    },
-  };
+  } as Partial<RootState> as RootState;
 
-  it('should return all plugins and errors', () => {
-    const fakeStore = new FakeStoreBuilder()
-      .withDwPlugins(plugins, {}, false, [], 'default editor fetching error')
-      .build() as MockStoreEnhanced<
-      AppState,
-      ThunkDispatch<AppState, undefined, store.KnownAction>
-    >;
-    const state = fakeStore.getState();
-
-    const expectedPlugins = plugins;
-    const selectedPlugins = selectDwPlugins(state);
-    expect(selectedPlugins).toEqual(expectedPlugins);
+  it('should select dwPlugins', () => {
+    const result = selectDwPlugins(mockState);
+    expect(result).toEqual(mockState.dwPlugins.plugins);
   });
 
-  it('should return array of plugins', () => {
-    const fakeStore = new FakeStoreBuilder()
-      .withDwPlugins(plugins, {}, false, [], 'default editor fetching error')
-      .build() as MockStoreEnhanced<
-      AppState,
-      ThunkDispatch<AppState, undefined, store.KnownAction>
-    >;
-    const state = fakeStore.getState();
-
-    const expectedPlugins = [
-      {
-        schemaVersion: '2.1.0',
-        metadata: {
-          name: 'void-sample-1',
-        },
-      } as devfileApi.Devfile,
-      {
-        schemaVersion: '2.1.0',
-        metadata: {
-          name: 'void-sample-2',
-        },
-      } as devfileApi.Devfile,
-    ];
-    const selectedPlugins = selectDwPluginsList(state);
-    expect(selectedPlugins).toEqual(expectedPlugins);
+  it('should select dwPluginsList', () => {
+    const result = selectDwPluginsList(mockState);
+    expect(result).toEqual([{ metadata: { name: 'plugin1' } }, { metadata: { name: 'plugin2' } }]);
   });
 
-  it('should return an error related to default editor fetching', () => {
-    const fakeStore = new FakeStoreBuilder()
-      .withDwPlugins(plugins, {}, false, [], 'default editor fetching error')
-      .build() as MockStoreEnhanced<
-      AppState,
-      ThunkDispatch<AppState, undefined, store.KnownAction>
-    >;
-    const state = fakeStore.getState();
+  it('should select dwEditorsPluginsList for a specific editor', () => {
+    const selectEditorPlugins = selectDwEditorsPluginsList('editor1');
+    const result = selectEditorPlugins(mockState);
+    expect(result).toEqual([
+      { devfile: { metadata: { name: 'editor1' } }, url: 'https://example.com/editor1.yaml' },
+    ]);
+  });
 
-    const selectedError = selectDwDefaultEditorError(state);
-    expect(selectedError).toEqual('default editor fetching error');
+  it('should select dwEditorsPluginsList for an editor that does not exist', () => {
+    const selectEditorPlugins = selectDwEditorsPluginsList('nonexistent-editor');
+    const result = selectEditorPlugins(mockState);
+    expect(result).toEqual([]);
+  });
+
+  it('should select the default editor', () => {
+    const result = selectDefaultEditor(mockState);
+    expect(result).toEqual('editor1');
+  });
+
+  it('should select the default editor error', () => {
+    const result = selectDwDefaultEditorError(mockState);
+    expect(result).toEqual('Error message');
   });
 });

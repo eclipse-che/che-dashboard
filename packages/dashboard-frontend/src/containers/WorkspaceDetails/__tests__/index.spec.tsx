@@ -22,20 +22,18 @@ import { ROUTE } from '@/Routes';
 import getComponentRenderer from '@/services/__mocks__/getComponentRenderer';
 import { constructWorkspace } from '@/services/workspace-adapter';
 import { DevWorkspaceBuilder } from '@/store/__mocks__/devWorkspaceBuilder';
-import { FakeStoreBuilder } from '@/store/__mocks__/storeBuilder';
-import { actionCreators as workspacesActionCreators } from '@/store/Workspaces';
+import { MockStoreBuilder } from '@/store/__mocks__/mockStore';
+import { workspacesActionCreators } from '@/store/Workspaces';
 
 import WorkspaceDetailsContainer from '..';
 
-const mockUpdateWorkspace = jest.fn();
-
 const { renderComponent } = getComponentRenderer(getComponent);
 
-jest.mock('@/store/Workspaces');
-(workspacesActionCreators.requestWorkspaces as jest.Mock).mockImplementation(() => async () => {
+jest.spyOn(workspacesActionCreators, 'requestWorkspaces').mockImplementation(() => async () => {
   // no-op
 });
-(workspacesActionCreators.updateWorkspace as jest.Mock).mockImplementation(
+const mockUpdateWorkspace = jest.fn();
+jest.spyOn(workspacesActionCreators, 'updateWorkspace').mockImplementation(
   (...args) =>
     async () =>
       mockUpdateWorkspace(...args),
@@ -61,8 +59,8 @@ describe('Workspace Details container', () => {
 
   let workspaceBuilder_1: DevWorkspaceBuilder;
   let workspaceBuilder_2: DevWorkspaceBuilder;
-  let prevStoreBuilder: FakeStoreBuilder;
-  let nextStoreBuilder: FakeStoreBuilder;
+  let prevStoreBuilder: MockStoreBuilder;
+  let nextStoreBuilder: MockStoreBuilder;
 
   beforeEach(() => {
     workspaceBuilder_1 = new DevWorkspaceBuilder()
@@ -73,11 +71,11 @@ describe('Workspace Details container', () => {
       .withId(workspaceId_2)
       .withName(workspaceName_2)
       .withNamespace(namespace);
-    prevStoreBuilder = new FakeStoreBuilder().withInfrastructureNamespace(
+    prevStoreBuilder = new MockStoreBuilder().withInfrastructureNamespace(
       [{ name: namespace, attributes: { phase: 'Active' } }],
       false,
     );
-    nextStoreBuilder = new FakeStoreBuilder().withInfrastructureNamespace(
+    nextStoreBuilder = new MockStoreBuilder().withInfrastructureNamespace(
       [{ name: namespace, attributes: { phase: 'Active' } }],
       false,
     );
@@ -159,7 +157,7 @@ describe('Workspace Details container', () => {
       const workspace1 = workspaceBuilder_1.build();
       const workspace2 = workspaceBuilder_2.build();
 
-      const prevStore = new FakeStoreBuilder()
+      const prevStore = new MockStoreBuilder()
         .withInfrastructureNamespace([{ name: namespace, attributes: { phase: 'Active' } }], false)
         .withDevWorkspaces({ workspaces: [workspace1, workspace2] })
         .build();
@@ -168,7 +166,7 @@ describe('Workspace Details container', () => {
       ]);
 
       // remove workspace1 from store
-      const nextStore = new FakeStoreBuilder()
+      const nextStore = new MockStoreBuilder()
         .withInfrastructureNamespace([{ name: namespace, attributes: { phase: 'Active' } }], false)
         .withDevWorkspaces({ workspaces: [workspace2] })
         .build();

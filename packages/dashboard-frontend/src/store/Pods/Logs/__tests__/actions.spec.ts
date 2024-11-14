@@ -10,283 +10,247 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-/* eslint-disable @typescript-eslint/no-non-null-assertion */
-
 import { api } from '@eclipse-che/common';
-import { CoreV1Event, V1Pod, V1Status } from '@kubernetes/client-node';
-import { MockStoreEnhanced } from 'redux-mock-store';
-import { ThunkDispatch } from 'redux-thunk';
+import { V1Pod } from '@kubernetes/client-node';
 
 import { container } from '@/inversify.config';
 import { WebsocketClient } from '@/services/backend-client/websocketClient';
-import { AppState } from '@/store';
-import { FakeStoreBuilder } from '@/store/__mocks__/storeBuilder';
+import { createMockStore } from '@/store/__mocks__/mockActionsTestStore';
+import * as infrastructureNamespacesSelectors from '@/store/InfrastructureNamespaces/selectors';
+import {
+  actionCreators,
+  podLogsDeleteAction,
+  podLogsReceiveAction,
+} from '@/store/Pods/Logs/actions';
 
-import * as testStore from '..';
+jest
+  .spyOn(infrastructureNamespacesSelectors, 'selectDefaultNamespace')
+  .mockReturnValue({ name: 'test-namespace', attributes: { phase: 'Active' } });
 
-describe('Pod logs store, actions', () => {
-  const podName = 'pod1';
-  const containerName = 'container1';
-  const initContainerName = 'initContainer1';
-  const namespace = 'user-che';
-  let pod: V1Pod;
+describe('Pods, actions', () => {
+  const mockAddChannelMessageListener = jest.fn();
+  const mockUnsubscribeFromChannel = jest.fn();
+  const mockSubscribeToChannel = jest.fn();
 
-  let appStore: MockStoreEnhanced<
-    AppState,
-    ThunkDispatch<AppState, undefined, testStore.KnownAction>
-  >;
+  const mockPod = { metadata: { name: 'pod1' } } as V1Pod;
+
+  let store: ReturnType<typeof createMockStore>;
 
   beforeEach(() => {
-    pod = {
-      kind: 'Pod',
-      metadata: {
-        name: podName,
-        namespace: 'user-che',
+    store = createMockStore({
+      pods: {
+        pods: [mockPod],
+        isLoading: false,
+        resourceVersion: '1234',
       },
-      spec: {
-        containers: [
-          {
-            name: containerName,
-          },
-        ],
-        initContainers: [
-          {
-            name: initContainerName,
-          },
-        ],
-      },
-    } as V1Pod;
+    });
 
-    appStore = new FakeStoreBuilder()
-      .withInfrastructureNamespace([{ attributes: { phase: 'Active' }, name: namespace }])
-      .build() as MockStoreEnhanced<
-      AppState,
-      ThunkDispatch<AppState, undefined, testStore.KnownAction>
-    >;
+    class MockWebsocketClient extends WebsocketClient {
+      async connect() {
+        return;
+      }
+      hasChannelMessageListener() {
+        return false;
+      }
+      addChannelMessageListener(...args: unknown[]): void {
+        mockAddChannelMessageListener(...args);
+      }
+      public unsubscribeFromChannel(...args: unknown[]): void {
+        mockUnsubscribeFromChannel(...args);
+      }
+      public subscribeToChannel(...args: unknown[]): void {
+        mockSubscribeToChannel(...args);
+      }
+    }
+
+    container.snapshot();
+    container.rebind(WebsocketClient).to(MockWebsocketClient).inSingletonScope();
   });
 
   afterEach(() => {
     jest.clearAllMocks();
+    container.restore();
   });
 
-  describe('start/stop watching logs', () => {
-    beforeEach(() => {
-      container.snapshot();
-    });
+  describe('watchPodLogs', () => {
+    it('should dispatch podLogsReceiveAction on receiving logs message', async () => {
+      const mockPod = { metadata: { name: 'pod1' } } as V1Pod;
 
-    afterEach(() => {
-      container.restore();
-    });
+      await store.dispatch(actionCreators.watchPodLogs(mockPod));
 
-    it('should throw an error when start watching logs', async () => {
-      delete pod.metadata;
+      const actions = store.getActions();
+      expect(actions).toHaveLength(0);
 
-      console.warn = jest.fn();
-
-      const watch = () => appStore.dispatch(testStore.actionCreators.watchPodLogs(pod));
-
-      expect(watch).rejects.toThrowError(`Can't watch pod logs: pod name is undefined`);
-    });
-
-    test('start watching pod logs', async () => {
-      const websocketClient = container.get(WebsocketClient);
-
-      jest.spyOn(websocketClient, 'connect').mockImplementation(() => Promise.resolve());
-      jest.spyOn(websocketClient, 'addChannelMessageListener').mockImplementation(() => undefined);
-      jest.spyOn(websocketClient, 'subscribeToChannel').mockImplementation(() => undefined);
-      jest.spyOn(websocketClient, 'unsubscribeFromChannel').mockImplementation(() => undefined);
-
-      await appStore.dispatch(testStore.actionCreators.watchPodLogs(pod));
-
-      expect(websocketClient.connect).toHaveBeenCalled();
-      expect(websocketClient.addChannelMessageListener).toHaveBeenCalledWith(
+      expect(mockAddChannelMessageListener).toHaveBeenCalledWith(
         api.webSocket.Channel.LOGS,
         expect.any(Function),
       );
-      expect(websocketClient.unsubscribeFromChannel).toHaveBeenCalledWith(
+      expect(mockUnsubscribeFromChannel).toHaveBeenCalledWith(api.webSocket.Channel.LOGS);
+      expect(mockSubscribeToChannel).toHaveBeenCalledWith(
         api.webSocket.Channel.LOGS,
-      );
-      expect(websocketClient.subscribeToChannel).toHaveBeenCalledWith(
-        api.webSocket.Channel.LOGS,
-        namespace,
-        { podName },
+        'test-namespace',
+        {
+          podName: 'pod1',
+        },
       );
     });
 
-    it('should throw an error when stop watching logs', async () => {
-      delete pod.metadata;
+    it('should throw an error if pod name is undefined', async () => {
+      const mockPod = { metadata: {} } as V1Pod;
 
-      const fetch = () => appStore.dispatch(testStore.actionCreators.stopWatchingPodLogs(pod));
-
-      expect(fetch).rejects.toThrowError(`Can't stop watching pod logs: pod name is undefined`);
-    });
-
-    test('stop watching logs', async () => {
-      const websocketClient = container.get(WebsocketClient);
-
-      jest.spyOn(websocketClient, 'unsubscribeFromChannel').mockImplementation(() => undefined);
-
-      await appStore.dispatch(testStore.actionCreators.stopWatchingPodLogs(pod));
-
-      expect(websocketClient.unsubscribeFromChannel).toHaveBeenCalledWith(
-        api.webSocket.Channel.LOGS,
+      await expect(store.dispatch(actionCreators.watchPodLogs(mockPod))).rejects.toThrow(
+        `Can't watch pod logs: pod name is undefined`,
       );
     });
   });
 
-  describe('handle WebSocket messages', () => {
-    describe('ADDED event phase', () => {
-      it('should create RECEIVE_LOGS', () => {
-        const logsMessage = {
-          eventPhase: api.webSocket.EventPhase.ADDED,
-          containerName,
-          podName,
-          logs: 'a few logs',
-        } as api.webSocket.LogsMessage;
+  describe('stopWatchingPodLogs', () => {
+    it('should dispatch podLogsDeleteAction on stop watching logs', async () => {
+      const mockPod = { metadata: { name: 'pod1' } } as V1Pod;
 
-        appStore.dispatch(testStore.actionCreators.handleWebSocketMessage(logsMessage));
+      await store.dispatch(actionCreators.stopWatchingPodLogs(mockPod));
 
-        const actions = appStore.getActions();
-
-        const expectedActions: testStore.KnownAction[] = [
-          {
-            type: testStore.Type.RECEIVE_LOGS,
-            containerName,
-            podName,
-            logs: logsMessage.logs,
-            failure: false,
-          },
-        ];
-
-        expect(actions).toStrictEqual(expectedActions);
-      });
+      const actions = store.getActions();
+      expect(actions).toHaveLength(1);
+      expect(actions[0]).toEqual(podLogsDeleteAction('pod1'));
     });
 
-    describe('ERROR event phase', () => {
-      it('should create RECEIVE_LOGS action if `containerName` is defined', () => {
-        const statusMessage = {
-          eventPhase: api.webSocket.EventPhase.ERROR,
-          params: {
-            containerName,
-            podName,
-            namespace,
-          },
-          status: {
-            kind: 'Status',
-            message: 'an error message',
-          } as V1Status,
-        } as api.webSocket.StatusMessage;
+    it('should throw an error if pod name is undefined', async () => {
+      const mockPod = { metadata: {} } as V1Pod;
 
-        appStore.dispatch(testStore.actionCreators.handleWebSocketMessage(statusMessage));
+      await expect(store.dispatch(actionCreators.stopWatchingPodLogs(mockPod))).rejects.toThrow(
+        `Can't stop watching pod logs: pod name is undefined`,
+      );
+    });
+  });
 
-        const actions = appStore.getActions();
+  describe('handleWebSocketMessage', () => {
+    it('should handle WebSocket status message and resubscribe if pod exists', async () => {
+      const mockMessage = {
+        status: { code: 500, message: 'Internal Server Error' },
+        eventPhase: api.webSocket.EventPhase.ERROR,
+        // no `containerName` field
+        params: { podName: 'pod1', namespace: 'test-namespace' },
+      } as api.webSocket.StatusMessage;
 
-        const expectedActions: testStore.KnownAction[] = [
-          {
-            type: testStore.Type.RECEIVE_LOGS,
-            containerName,
-            podName,
-            logs: statusMessage.status.message!,
-            failure: true,
-          },
-        ];
+      await store.dispatch(actionCreators.handleWebSocketMessage(mockMessage));
 
-        expect(actions).toStrictEqual(expectedActions);
-      });
+      const actions = store.getActions();
+      expect(actions).toHaveLength(0);
 
-      describe('resubscribe if failure', () => {
-        it('should not resubscribe if pod not found', () => {
-          const statusMessage = {
-            eventPhase: api.webSocket.EventPhase.ERROR,
-            params: {
-              podName,
-              namespace,
-            },
-            status: {
-              kind: 'Status',
-              message: 'an error message',
-            } as V1Status,
-          } as api.webSocket.StatusMessage;
-
-          const websocketClient = container.get(WebsocketClient);
-          const unsubscribeFromChannelSpy = jest
-            .spyOn(websocketClient, 'unsubscribeFromChannel')
-            .mockReturnValue(undefined);
-          const subscribeToChannelSpy = jest
-            .spyOn(websocketClient, 'subscribeToChannel')
-            .mockReturnValue(undefined);
-
-          /* no such pod in the store */
-          appStore.dispatch(testStore.actionCreators.handleWebSocketMessage(statusMessage));
-
-          const actions = appStore.getActions();
-
-          const expectedActions: testStore.KnownAction[] = [];
-          expect(actions).toStrictEqual(expectedActions);
-
-          expect(unsubscribeFromChannelSpy).toHaveBeenCalledWith(api.webSocket.Channel.LOGS);
-          expect(subscribeToChannelSpy).not.toHaveBeenCalledWith();
-        });
-
-        it('should not resubscribe if pod not found', () => {
-          const statusMessage = {
-            eventPhase: api.webSocket.EventPhase.ERROR,
-            params: {
-              podName,
-              namespace,
-            },
-            status: {
-              kind: 'Status',
-              message: 'an error message',
-            } as V1Status,
-          } as api.webSocket.StatusMessage;
-
-          const websocketClient = container.get(WebsocketClient);
-          const unsubscribeFromChannelSpy = jest
-            .spyOn(websocketClient, 'unsubscribeFromChannel')
-            .mockReturnValue(undefined);
-          const subscribeToChannelSpy = jest
-            .spyOn(websocketClient, 'subscribeToChannel')
-            .mockReturnValue(undefined);
-
-          /* adding the pod in the store */
-          const _appStore = new FakeStoreBuilder(appStore).withPods({ pods: [pod] }).build();
-
-          _appStore.dispatch(testStore.actionCreators.handleWebSocketMessage(statusMessage));
-
-          const actions = _appStore.getActions();
-
-          const expectedActions: testStore.KnownAction[] = [];
-          expect(actions).toStrictEqual(expectedActions);
-
-          expect(unsubscribeFromChannelSpy).toHaveBeenCalledWith(api.webSocket.Channel.LOGS);
-          expect(subscribeToChannelSpy).toHaveBeenCalledWith(
-            api.webSocket.Channel.LOGS,
-            namespace,
-            {
-              podName,
-            },
-          );
-        });
-      });
+      expect(mockUnsubscribeFromChannel).toHaveBeenCalledWith(api.webSocket.Channel.LOGS);
+      expect(mockSubscribeToChannel).toHaveBeenCalledWith(
+        api.webSocket.Channel.LOGS,
+        'test-namespace',
+        { podName: 'pod1' },
+      );
     });
 
-    it('should skip messages that are neither `LogsMessage` nor `StatusMessage`', () => {
-      const message = {
-        eventPhase: api.webSocket.EventPhase.DELETED,
-        event: {} as CoreV1Event,
-      } as api.webSocket.EventMessage;
+    it('should handle WebSocket status message and not resubscribe if pod does not exist', async () => {
+      const mockMessage = {
+        status: { code: 500, message: 'Internal Server Error' },
+        eventPhase: api.webSocket.EventPhase.ERROR,
+        // no `containerName` field
+        params: { podName: 'pod1', namespace: 'test-namespace' },
+      } as api.webSocket.NotificationMessage;
+
+      const storeNoPods = createMockStore({
+        pods: {
+          pods: [],
+          isLoading: false,
+          resourceVersion: '1234',
+        },
+      });
+
+      await storeNoPods.dispatch(actionCreators.handleWebSocketMessage(mockMessage));
+
+      const actions = store.getActions();
+      expect(actions).toHaveLength(0);
+
+      expect(mockUnsubscribeFromChannel).toHaveBeenCalledWith(api.webSocket.Channel.LOGS);
+      expect(mockSubscribeToChannel).not.toHaveBeenCalled();
+    });
+
+    it('should handle WebSocket message with unexpected params', async () => {
+      const mockMessage = {
+        status: { code: 500, message: 'Internal Server Error' },
+        eventPhase: api.webSocket.EventPhase.ERROR,
+        params: { unexpectedField: 'unexpectedValue' } as unknown,
+      } as api.webSocket.NotificationMessage;
+
+      console.debug = jest.fn();
+
+      await store.dispatch(actionCreators.handleWebSocketMessage(mockMessage));
+
+      expect(console.debug).toHaveBeenCalledWith(
+        'WebSocket(LOGS): unexpected message:',
+        mockMessage,
+      );
+
+      expect(mockUnsubscribeFromChannel).not.toHaveBeenCalled();
+      expect(mockSubscribeToChannel).not.toHaveBeenCalled();
+    });
+
+    it('should handle WebSocket status message and dispatch podLogsReceiveAction with failure=`true`', async () => {
+      const mockMessage = {
+        status: {
+          code: 500,
+          // no `message` field to test default message as well
+          // message: 'Internal Server Error',
+        },
+        eventPhase: api.webSocket.EventPhase.ERROR,
+        params: { podName: 'pod1', namespace: 'test-namespace', containerName: 'container1' },
+      } as api.webSocket.StatusMessage;
+
+      await store.dispatch(actionCreators.handleWebSocketMessage(mockMessage));
+
+      const actions = store.getActions();
+      expect(actions).toHaveLength(1);
+      expect(actions[0]).toEqual(
+        podLogsReceiveAction({
+          podName: 'pod1',
+          containerName: 'container1',
+          logs: 'Unknown error while watching logs',
+          failure: true,
+        }),
+      );
+
+      expect(mockUnsubscribeFromChannel).not.toHaveBeenCalled();
+      expect(mockSubscribeToChannel).not.toHaveBeenCalled();
+    });
+
+    it('should handle WebSocket logs message', async () => {
+      const mockMessage = {
+        eventPhase: api.webSocket.EventPhase.ADDED,
+        containerName: 'container1',
+        podName: 'pod1',
+        logs: 'log message',
+      } as api.webSocket.LogsMessage;
+
+      await store.dispatch(actionCreators.handleWebSocketMessage(mockMessage));
+
+      const actions = store.getActions();
+      expect(actions).toHaveLength(1);
+      expect(actions[0]).toEqual(
+        podLogsReceiveAction({
+          podName: 'pod1',
+          containerName: 'container1',
+          logs: 'log message',
+          failure: false,
+        }),
+      );
+    });
+
+    it('should log unexpected WebSocket message', async () => {
+      const mockMessage = {
+        unexpectedField: 'unexpectedValue',
+      } as unknown as api.webSocket.NotificationMessage;
 
       console.warn = jest.fn();
 
-      appStore.dispatch(testStore.actionCreators.handleWebSocketMessage(message));
+      await store.dispatch(actionCreators.handleWebSocketMessage(mockMessage));
 
-      const actions = appStore.getActions();
-
-      const expectedActions: testStore.KnownAction[] = [];
-
-      expect(actions).toStrictEqual(expectedActions);
-      expect(console.warn).toHaveBeenCalledWith('WebSocket: unexpected message:', message);
+      expect(console.warn).toHaveBeenCalledWith('WebSocket: unexpected message:', mockMessage);
     });
   });
 });

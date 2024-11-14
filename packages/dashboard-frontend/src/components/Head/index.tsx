@@ -14,7 +14,7 @@ import React from 'react';
 import { Helmet } from 'react-helmet';
 import { connect, ConnectedProps } from 'react-redux';
 
-import { AppState } from '@/store';
+import { RootState } from '@/store';
 import { selectBranding } from '@/store/Branding/selectors';
 
 type Props = MappedProps & {
@@ -36,7 +36,7 @@ class Head extends React.PureComponent<Props> {
   }
 }
 
-const mapStateToProps = (state: AppState) => ({
+const mapStateToProps = (state: RootState) => ({
   branding: selectBranding(state),
 });
 

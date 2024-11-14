@@ -15,7 +15,7 @@ import React from 'react';
 import { Provider } from 'react-redux';
 import { Store } from 'redux';
 
-import { FakeStoreBuilder } from '@/store/__mocks__/storeBuilder';
+import { MockStoreBuilder } from '@/store/__mocks__/mockStore';
 
 import BannerAlertCustomWarning from '..';
 
@@ -51,5 +51,5 @@ function renderComponent(store: Store<any, any>): RenderResult {
 }
 
 function storeBuilder(messages: string[]): Store {
-  return new FakeStoreBuilder().withBannerAlert(messages).build();
+  return new MockStoreBuilder().withBannerAlert(messages).build();
 }

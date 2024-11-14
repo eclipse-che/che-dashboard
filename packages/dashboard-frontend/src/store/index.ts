@@ -10,98 +10,32 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import { Action } from 'redux';
-import { ThunkAction } from 'redux-thunk';
+import { configureStore, ThunkAction, UnknownAction } from '@reduxjs/toolkit';
+import logger from 'redux-logger';
 
-import * as BannerAlertStore from '@/store/BannerAlert';
-import * as BrandingStore from '@/store/Branding';
-import * as ClusterConfig from '@/store/ClusterConfig';
-import * as ClusterInfo from '@/store/ClusterInfo';
-import * as DevfileRegistriesStore from '@/store/DevfileRegistries';
-import * as DevWorkspacesClusterStore from '@/store/DevWorkspacesCluster';
-import * as DockerConfigStore from '@/store/DockerConfig';
-import * as EventsStore from '@/store/Events';
-import { factoryResolverReducer, FactoryResolverState } from '@/store/FactoryResolver';
-import * as GitConfigStore from '@/store/GitConfig';
-import * as GitOauthConfigStore from '@/store/GitOauthConfig';
-import * as InfrastructureNamespacesStore from '@/store/InfrastructureNamespaces';
-import * as PersonalAccessToken from '@/store/PersonalAccessToken';
-import * as PluginsStore from '@/store/Plugins/chePlugins';
-import * as DwPluginsStore from '@/store/Plugins/devWorkspacePlugins';
-import * as PodsStore from '@/store/Pods';
-import * as LogsStore from '@/store/Pods/Logs';
-import * as SanityCheckStore from '@/store/SanityCheck';
-import * as DwServerConfigStore from '@/store/ServerConfig';
-import * as SshKeysStore from '@/store/SshKeys';
-import * as UserIdStore from '@/store/User/Id';
-import * as UserProfileStore from '@/store/User/Profile';
-import * as WorkspacesStore from '@/store/Workspaces';
-import * as DevWorkspacesStore from '@/store/Workspaces/devWorkspaces';
-import {
-  workspacePreferencesReducer,
-  WorkspacePreferencesState,
-} from '@/store/Workspaces/Preferences';
+import { rootReducer } from '@/store/rootReducer';
 
-// the top-level state object
-export interface AppState {
-  bannerAlert: BannerAlertStore.State;
-  branding: BrandingStore.State;
-  clusterConfig: ClusterConfig.State;
-  clusterInfo: ClusterInfo.State;
-  devfileRegistries: DevfileRegistriesStore.State;
-  devWorkspaces: DevWorkspacesStore.State;
-  devWorkspacesCluster: DevWorkspacesClusterStore.State;
-  dockerConfig: DockerConfigStore.State;
-  dwPlugins: DwPluginsStore.State;
-  dwServerConfig: DwServerConfigStore.State;
-  events: EventsStore.State;
-  factoryResolver: FactoryResolverState;
-  gitConfig: GitConfigStore.State;
-  gitOauthConfig: GitOauthConfigStore.State;
-  infrastructureNamespaces: InfrastructureNamespacesStore.State;
-  logs: LogsStore.State;
-  personalAccessToken: PersonalAccessToken.State;
-  plugins: PluginsStore.State;
-  pods: PodsStore.State;
-  sanityCheck: SanityCheckStore.State;
-  sshKeys: SshKeysStore.State;
-  userId: UserIdStore.State;
-  userProfile: UserProfileStore.State;
-  workspaces: WorkspacesStore.State;
-  workspacePreferences: WorkspacePreferencesState;
-}
+export const store = configureStore({
+  reducer: rootReducer,
+  middleware: getDefaultMiddleware => {
+    const middlewares = getDefaultMiddleware({
+      serializableCheck: true,
+      immutableCheck: true,
+    });
+    if (process.env.NODE_ENV === 'development') {
+      middlewares.push(logger);
+    }
+    return middlewares;
+  },
+  devTools: process.env.NODE_ENV === 'development',
+});
 
-export const reducers = {
-  bannerAlert: BannerAlertStore.reducer,
-  branding: BrandingStore.reducer,
-  clusterConfig: ClusterConfig.reducer,
-  clusterInfo: ClusterInfo.reducer,
-  devfileRegistries: DevfileRegistriesStore.reducer,
-  devWorkspaces: DevWorkspacesStore.reducer,
-  devWorkspacesCluster: DevWorkspacesClusterStore.reducer,
-  dockerConfig: DockerConfigStore.reducer,
-  dwPlugins: DwPluginsStore.reducer,
-  dwServerConfig: DwServerConfigStore.reducer,
-  events: EventsStore.reducer,
-  factoryResolver: factoryResolverReducer,
-  gitConfig: GitConfigStore.reducer,
-  gitOauthConfig: GitOauthConfigStore.reducer,
-  infrastructureNamespaces: InfrastructureNamespacesStore.reducer,
-  logs: LogsStore.reducer,
-  personalAccessToken: PersonalAccessToken.reducer,
-  plugins: PluginsStore.reducer,
-  pods: PodsStore.reducer,
-  sanityCheck: SanityCheckStore.reducer,
-  sshKeys: SshKeysStore.reducer,
-  userId: UserIdStore.reducer,
-  userProfile: UserProfileStore.reducer,
-  workspacePreferences: workspacePreferencesReducer,
-  workspaces: WorkspacesStore.reducer,
-};
+export type RootState = ReturnType<typeof store.getState>;
 
-export type AppThunk<ActionType extends Action, ReturnType = void> = ThunkAction<
+export type AppDispatch = typeof store.dispatch;
+export type AppThunk<ReturnType = Promise<void>> = ThunkAction<
   ReturnType,
-  AppState,
+  RootState,
   unknown,
-  ActionType
+  UnknownAction
 >;

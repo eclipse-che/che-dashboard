@@ -25,8 +25,8 @@ import {
 import { LoaderTab, WorkspaceAction } from '@/services/helpers/types';
 import { TabManager } from '@/services/tabManager';
 import { Workspace } from '@/services/workspace-adapter';
-import { AppState } from '@/store';
-import * as WorkspacesStore from '@/store/Workspaces';
+import { RootState } from '@/store';
+import { workspacesActionCreators } from '@/store/Workspaces';
 import { selectAllWorkspaces } from '@/store/Workspaces/selectors';
 
 import { WantDelete, WorkspaceActionsContext } from '.';
@@ -230,11 +230,11 @@ class WorkspaceActionsProvider extends React.Component<Props, State> {
   }
 }
 
-const mapStateToProps = (state: AppState) => ({
+const mapStateToProps = (state: RootState) => ({
   allWorkspaces: selectAllWorkspaces(state),
 });
 
-const connector = connect(mapStateToProps, WorkspacesStore.actionCreators);
+const connector = connect(mapStateToProps, workspacesActionCreators);
 
 type MappedProps = ConnectedProps<typeof connector>;
 export default connector(WorkspaceActionsProvider);

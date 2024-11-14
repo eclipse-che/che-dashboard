@@ -10,129 +10,154 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import common from '@eclipse-che/common';
+import { ThunkDispatch, UnknownAction } from '@reduxjs/toolkit';
 import { dump } from 'js-yaml';
 
 import devfileApi from '@/services/devfileApi';
-import { FakeStoreBuilder } from '@/store/__mocks__/storeBuilder';
+import { RootState } from '@/store';
+import { actionCreators } from '@/store/DevfileRegistries/actions';
 import { getEditor } from '@/store/DevfileRegistries/getEditor';
+import { State } from '@/store/DevfileRegistries/reducer';
 
-const mockFetchData = jest.fn();
-jest.mock('@/services/registry/fetchData', () => ({
-  fetchData: (...args: unknown[]) => mockFetchData(...args),
+jest.mock('js-yaml', () => ({
+  dump: jest.fn(),
 }));
 
-describe('Get Devfile by URL', () => {
-  let editor: devfileApi.Devfile;
+jest.mock('@/store/DevfileRegistries/actions', () => ({
+  actionCreators: {
+    requestDevfile: jest.fn(),
+  },
+}));
+
+describe('getEditor', () => {
+  let dispatch: ThunkDispatch<RootState, unknown, UnknownAction>;
+  let getState: () => RootState;
 
   beforeEach(() => {
-    editor = buildEditor();
-    mockFetchData.mockResolvedValueOnce(dump(editor));
-  });
-
-  afterEach(() => {
+    dispatch = jest.fn();
+    getState = jest.fn();
     jest.clearAllMocks();
   });
 
-  it('Should throw the "failed to fetch editor yaml" error message', async () => {
-    const store = new FakeStoreBuilder().build();
-
-    let errorText: string | undefined;
-    try {
-      await getEditor('che-incubator/che-idea/next', store.dispatch, store.getState);
-    } catch (e) {
-      errorText = common.helpers.errors.getMessage(e);
-    }
-
-    expect(errorText).toEqual('Failed to fetch editor yaml by id: che-incubator/che-idea/next.');
-  });
-
-  it('Should request a devfile content by editor id', async () => {
-    const editors = [
-      {
-        schemaVersion: '2.2.2',
-        metadata: {
-          name: 'che-idea',
-          attributes: {
-            publisher: 'che-incubator',
-            version: 'next',
+  it('should return existing devfile content by URL', async () => {
+    const mockState = {
+      devfileRegistries: {
+        devfiles: {
+          'https://registry.com/devfile.yaml': {
+            content: 'devfile content',
           },
         },
-      } as devfileApi.Devfile,
-    ];
-    const store = new FakeStoreBuilder()
-      .withDwPlugins({}, {}, false, editors, 'che-incubator/che-idea/next')
-      .build();
+      } as Partial<State> as State,
+    } as RootState;
 
-    try {
-      const result = await getEditor('che-incubator/che-idea/next', store.dispatch, store.getState);
-      expect(result).toEqual(dump(editors[0]));
-    } catch (e) {
-      // no-op
-    }
+    (getState as jest.Mock).mockReturnValue(mockState);
+
+    const result = await getEditor('https://registry.com/devfile.yaml', dispatch, getState);
+
+    expect(result).toEqual({
+      content: 'devfile content',
+      editorYamlUrl: 'https://registry.com/devfile.yaml',
+    });
+    expect(dispatch).not.toHaveBeenCalled();
   });
 
-  it('Should return an existing devfile content by editor id', async () => {
-    const store = new FakeStoreBuilder().build();
+  it('should fetch devfile content by URL if not in state', async () => {
+    const mockState = {
+      devfileRegistries: {
+        devfiles: {},
+      },
+    } as RootState;
 
-    try {
-      await getEditor(
-        'https://dummy/che-plugin-registry/main/v3/plugins/che-incubator/che-idea/next/devfile.yaml',
-        store.dispatch,
-        store.getState,
-      );
-    } catch (e) {
-      // no-op
-    }
-
-    expect(mockFetchData).toHaveBeenCalledTimes(1);
-    expect(mockFetchData).toHaveBeenCalledWith(
-      'https://dummy/che-plugin-registry/main/v3/plugins/che-incubator/che-idea/next/devfile.yaml',
-    );
-  });
-
-  it('Should return an existing devfile content by editor path', async () => {
-    const store = new FakeStoreBuilder()
-      .withDevfileRegistries({
+    const mockNextState = {
+      devfileRegistries: {
         devfiles: {
-          ['https://dummy/che-plugin-registry/main/v3/plugins/che-incubator/che-idea/next/devfile.yaml']:
-            {
-              content: dump(editor),
-            },
+          'https://registry.com/devfile.yaml': {
+            content: 'fetched devfile content',
+          },
         },
-      })
-      .build();
+      } as Partial<State> as State,
+    } as RootState;
 
-    const customEditor = await getEditor(
-      'https://dummy/che-plugin-registry/main/v3/plugins/che-incubator/che-idea/next/devfile.yaml',
-      store.dispatch,
-      store.getState,
+    (getState as jest.Mock).mockReturnValueOnce(mockState).mockReturnValueOnce(mockNextState);
+
+    const result = await getEditor('https://registry.com/devfile.yaml', dispatch, getState);
+
+    expect(dispatch).toHaveBeenCalledWith(
+      actionCreators.requestDevfile('https://registry.com/devfile.yaml'),
     );
+    expect(result).toEqual({
+      content: 'fetched devfile content',
+      editorYamlUrl: 'https://registry.com/devfile.yaml',
+    });
+  });
 
-    expect(mockFetchData).toHaveBeenCalledTimes(0);
-    expect(customEditor.content).toEqual(dump(editor));
-    expect(customEditor.editorYamlUrl).toEqual(
-      'https://dummy/che-plugin-registry/main/v3/plugins/che-incubator/che-idea/next/devfile.yaml',
+  it('should throw error if devfile content cannot be fetched by URL', async () => {
+    const mockState = {
+      devfileRegistries: {
+        devfiles: {},
+      },
+    } as RootState;
+
+    const mockNextState = {
+      devfileRegistries: {
+        devfiles: {},
+      },
+    } as RootState;
+
+    (getState as jest.Mock).mockReturnValueOnce(mockState).mockReturnValueOnce(mockNextState);
+
+    await expect(
+      getEditor('https://registry.com/devfile.yaml', dispatch, getState),
+    ).rejects.toThrow('Failed to fetch editor yaml by URL: https://registry.com/devfile.yaml.');
+
+    expect(dispatch).toHaveBeenCalledWith(
+      actionCreators.requestDevfile('https://registry.com/devfile.yaml'),
     );
   });
-});
 
-function buildEditor(): devfileApi.Devfile {
-  return {
-    schemaVersion: '2.1.0',
-    metadata: {
-      name: 'ws-skeleton/eclipseide/4.9.0',
-      namespace: 'che',
-    },
-    components: [
-      {
-        name: 'eclipse-ide',
-        container: {
-          image: 'docker.io/wsskeleton/eclipse-broadway',
-          mountSources: true,
-          memoryLimit: '2048M',
+  it('should return existing devfile content by editor ID', async () => {
+    const mockEditor = {
+      schemaVersion: '2.1.0',
+      metadata: {
+        name: 'che-idea',
+        attributes: {
+          publisher: 'che-incubator',
+          version: 'next',
         },
       },
-    ],
-  };
-}
+    } as devfileApi.Devfile;
+
+    const mockState = {
+      dwPlugins: {
+        cmEditors: [mockEditor],
+      },
+    } as RootState;
+
+    (getState as jest.Mock).mockReturnValue(mockState);
+    (dump as jest.Mock).mockReturnValue('dumped devfile content');
+
+    const result = await getEditor('che-incubator/che-idea/next', dispatch, getState);
+
+    expect(result).toEqual({
+      content: 'dumped devfile content',
+      editorYamlUrl: 'che-incubator/che-idea/next',
+    });
+    expect(dispatch).not.toHaveBeenCalled();
+  });
+
+  it('should throw error if devfile content cannot be fetched by editor ID', async () => {
+    const mockState = {
+      dwPlugins: {
+        cmEditors: [],
+      } as Partial<State>,
+    } as RootState;
+
+    (getState as jest.Mock).mockReturnValue(mockState);
+
+    await expect(getEditor('che-incubator/che-idea/next', dispatch, getState)).rejects.toThrow(
+      'Failed to fetch editor yaml by id: che-incubator/che-idea/next.',
+    );
+
+    expect(dispatch).not.toHaveBeenCalled();
+  });
+});

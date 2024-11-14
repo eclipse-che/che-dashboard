@@ -18,7 +18,7 @@ import { RecentItemWorkspaceActions } from '@/Layout/Navigation/RecentItem/Works
 import getComponentRenderer from '@/services/__mocks__/getComponentRenderer';
 import { constructWorkspace } from '@/services/workspace-adapter';
 import { DevWorkspaceBuilder } from '@/store/__mocks__/devWorkspaceBuilder';
-import { FakeStoreBuilder } from '@/store/__mocks__/storeBuilder';
+import { MockStoreBuilder } from '@/store/__mocks__/mockStore';
 
 jest.mock('@/contexts/WorkspaceActions/Dropdown');
 
@@ -44,7 +44,7 @@ describe('RecentItemWorkspaceActions', () => {
 });
 
 function getComponent(item: NavigationRecentItemObject): React.ReactElement {
-  const store = new FakeStoreBuilder().build();
+  const store = new MockStoreBuilder().build();
   return (
     <Provider store={store}>
       <RecentItemWorkspaceActions item={item} />

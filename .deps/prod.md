@@ -3,7 +3,6 @@
 | Packages | License | Resolved CQs |
 | --- | --- | --- |
 | [`@babel/runtime@7.23.2`](https://github.com/babel/babel.git) | MIT | #10718 |
-| [`@babel/runtime@7.24.5`](https://github.com/babel/babel.git) | MIT | #13900 |
 | [`@codemirror/autocomplete@6.18.1`](https://github.com/codemirror/autocomplete.git) | MIT | clearlydefined |
 | [`@codemirror/lang-yaml@6.1.1`](git+https://github.com/codemirror/lang-yaml.git) | MIT | clearlydefined |
 | [`@codemirror/language@6.10.3`](https://github.com/codemirror/language.git) | MIT | clearlydefined |
@@ -52,6 +51,7 @@
 | [`@patternfly/react-table@4.113.6`](https://github.com/patternfly/patternfly-react.git) | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@patternfly/react-table/4.113.6) |
 | [`@patternfly/react-tokens@4.94.7`](https://github.com/patternfly/patternfly-react.git) | MIT | clearlydefined |
 | [`@pkgjs/parseargs@0.11.0`](git@github.com:pkgjs/parseargs.git) | MIT | #8236 |
+| [`@reduxjs/toolkit@2.2.7`](git+https://github.com/reduxjs/redux-toolkit.git) | MIT | #14170 |
 | [`@remix-run/router@1.19.1`](https://github.com/remix-run/react-router) | MIT | clearlydefined |
 | `@sideway/address@4.1.5` | BSD-3-Clause | #3098 |
 | `@sideway/formula@3.0.1` | BSD-3-Clause | clearlydefined |
@@ -62,21 +62,17 @@
 | [`@types/estree@1.0.4`](https://github.com/DefinitelyTyped/DefinitelyTyped.git) | MIT | #8266 |
 | [`@types/estree@1.0.6`](https://github.com/DefinitelyTyped/DefinitelyTyped.git) | MIT | #8266 |
 | [`@types/hast@3.0.4`](https://github.com/DefinitelyTyped/DefinitelyTyped.git) | MIT | clearlydefined |
-| [`@types/hoist-non-react-statics@3.3.5`](https://github.com/DefinitelyTyped/DefinitelyTyped.git) | MIT | clearlydefined |
 | [`@types/js-yaml@4.0.8`](https://github.com/DefinitelyTyped/DefinitelyTyped.git) | MIT | clearlydefined |
 | [`@types/mdast@4.0.4`](https://github.com/DefinitelyTyped/DefinitelyTyped.git) | MIT | clearlydefined |
 | [`@types/ms@0.7.34`](https://github.com/DefinitelyTyped/DefinitelyTyped.git) | MIT | #10811 |
 | [`@types/node-fetch@2.6.9`](https://github.com/DefinitelyTyped/DefinitelyTyped.git) | MIT | #11004 |
 | [`@types/node@20.8.10`](https://github.com/DefinitelyTyped/DefinitelyTyped.git) | MIT | #10804 |
 | [`@types/node@22.8.2`](https://github.com/DefinitelyTyped/DefinitelyTyped.git) | MIT | clearlydefined |
-| [`@types/prop-types@15.7.9`](https://github.com/DefinitelyTyped/DefinitelyTyped.git) | MIT | #16176 |
-| [`@types/react-redux@7.1.33`](https://github.com/DefinitelyTyped/DefinitelyTyped.git) | MIT | #10970 |
-| [`@types/react@18.2.36`](https://github.com/DefinitelyTyped/DefinitelyTyped.git) | MIT | #8234 |
 | [`@types/request@2.48.11`](https://github.com/DefinitelyTyped/DefinitelyTyped.git) | MIT | clearlydefined |
-| [`@types/scheduler@0.16.5`](https://github.com/DefinitelyTyped/DefinitelyTyped.git) | MIT | #7582 |
 | [`@types/tough-cookie@4.0.4`](https://github.com/DefinitelyTyped/DefinitelyTyped.git) | MIT | #10798 |
 | [`@types/unist@2.0.11`](https://github.com/DefinitelyTyped/DefinitelyTyped.git) | MIT | clearlydefined |
 | [`@types/unist@3.0.3`](https://github.com/DefinitelyTyped/DefinitelyTyped.git) | MIT | clearlydefined |
+| [`@types/use-sync-external-store@0.0.3`](https://github.com/DefinitelyTyped/DefinitelyTyped.git) | MIT | clearlydefined |
 | [`@types/ws@8.5.8`](https://github.com/DefinitelyTyped/DefinitelyTyped.git) | MIT | #6016 |
 | [`@ungap/structured-clone@1.2.0`](git+https://github.com/ungap/structured-clone.git) | ISC | clearlydefined |
 | [`abbrev@2.0.0`](https://github.com/npm/abbrev-js.git) | ISC | clearlydefined |
@@ -153,9 +149,8 @@
 | [`create-ecdh@4.0.4`](https://github.com/crypto-browserify/createECDH.git) | MIT | clearlydefined |
 | [`create-hash@1.2.0`](git@github.com:crypto-browserify/createHash.git) | MIT | clearlydefined |
 | [`create-hmac@1.1.7`](https://github.com/crypto-browserify/createHmac.git) | MIT | clearlydefined |
-| [`cross-spawn@7.0.3`](git@github.com:moxystudio/node-cross-spawn.git) | MIT | clearlydefined |
+| [`cross-spawn@7.0.3`](git@github.com:moxystudio/node-cross-spawn.git) | MIT | #17146 |
 | [`crypto-browserify@3.12.0`](git://github.com/crypto-browserify/crypto-browserify.git) | MIT | #1033 |
-| `csstype@3.1.2` | MIT | #11847 |
 | [`dashdash@1.14.1`](git://github.com/trentm/node-dashdash.git) | MIT | #14596 |
 | `date-fns@3.6.0` | MIT | #14000 |
 | [`dateformat@4.6.3`](https://github.com/felixge/node-dateformat.git) | MIT | clearlydefined |
@@ -250,7 +245,6 @@
 | [`help-me@4.2.0`](https://github.com/mcollina/help-me.git) | MIT | clearlydefined |
 | `history@4.10.1` | MIT | clearlydefined |
 | [`hmac-drbg@1.0.1`](git+ssh://git@github.com/indutny/hmac-drbg.git) | MIT | clearlydefined |
-| [`hoist-non-react-statics@3.3.2`](git://github.com/mridgway/hoist-non-react-statics.git) | BSD-3-Clause | clearlydefined |
 | `html-url-attributes@3.0.1` | MIT | clearlydefined |
 | [`htmlparser2@8.0.2`](git://github.com/fb55/htmlparser2.git) | MIT | clearlydefined |
 | `http-cache-semantics@4.1.1` | BSD-2-Clause | clearlydefined |
@@ -261,6 +255,7 @@
 | `https@1.0.0` | ISC | clearlydefined |
 | [`iconv-lite@0.6.3`](git://github.com/ashtuchkin/iconv-lite.git) | MIT | clearlydefined |
 | [`ieee754@1.2.1`](git://github.com/feross/ieee754.git) | BSD-3-Clause | clearlydefined |
+| [`immer@10.1.1`](https://github.com/immerjs/immer.git) | MIT | clearlydefined |
 | [`imurmurhash@0.1.4`](https://github.com/jensyt/imurmurhash-js) | MIT | clearlydefined |
 | `indent-string@4.0.0` | MIT | clearlydefined |
 | [`inflight@1.0.6`](https://github.com/npm/inflight.git) | ISC | clearlydefined |
@@ -434,10 +429,9 @@
 | [`react-fast-compare@3.2.2`](https://github.com/FormidableLabs/react-fast-compare) | MIT | clearlydefined |
 | [`react-helmet@6.1.0`](https://github.com/nfl/react-helmet) | MIT | clearlydefined |
 | [`react-is@16.13.1`](https://github.com/facebook/react.git) | MIT | clearlydefined |
-| [`react-is@17.0.2`](https://github.com/facebook/react.git) | MIT | clearlydefined |
 | `react-markdown@9.0.1` | MIT | clearlydefined |
 | [`react-pluralize@1.6.3`](https://github.com/tsmith123/react-pluralize) | MIT | clearlydefined |
-| [`react-redux@7.2.9`](https://github.com/reduxjs/react-redux) | MIT | #2978 |
+| [`react-redux@9.1.2`](https://github.com/reduxjs/react-redux) | MIT | #13913 |
 | [`react-router-dom@6.26.1`](https://github.com/remix-run/react-router) | MIT | #15860 |
 | [`react-router@6.26.1`](https://github.com/remix-run/react-router) | MIT | clearlydefined |
 | [`react-side-effect@2.1.2`](https://github.com/gaearon/react-side-effect.git) | MIT | clearlydefined |
@@ -447,8 +441,8 @@
 | [`readable-stream@4.4.2`](git://github.com/nodejs/readable-stream) | MIT | #8426 |
 | [`real-require@0.2.0`](git+https://github.com/pinojs/real-require.git) | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/real-require/0.2.0) |
 | [`reconnecting-websocket@4.4.0`](git+https://github.com/pladaria/reconnecting-websocket.git) | MIT | #940 |
-| [`redux-thunk@2.4.2`](https://github.com/reduxjs/redux-thunk) | MIT | clearlydefined |
-| [`redux@4.2.1`](http://redux.js.org) | MIT | #7046 |
+| [`redux-thunk@3.1.0`](https://github.com/reduxjs/redux-thunk) | MIT | clearlydefined |
+| [`redux@5.0.1`](http://redux.js.org) | MIT | clearlydefined |
 | [`reflect-metadata@0.1.13`](https://github.com/rbuckton/reflect-metadata.git) | Apache-2.0 | clearlydefined |
 | [`reflect-metadata@0.1.14`](https://github.com/rbuckton/reflect-metadata.git) | Apache-2.0 | clearlydefined |
 | [`reflect-metadata@0.2.2`](https://github.com/rbuckton/reflect-metadata.git) | Apache-2.0 | clearlydefined |
@@ -458,7 +452,7 @@
 | [`request@2.88.2`](https://github.com/request/request.git) | Apache-2.0 | #997 |
 | `require-from-string@2.0.2` | MIT | clearlydefined |
 | [`requires-port@1.0.0`](https://github.com/unshiftio/requires-port) | MIT | clearlydefined |
-| [`reselect@4.1.8`](https://github.com/reduxjs/reselect.git) | MIT | clearlydefined |
+| [`reselect@5.1.1`](https://github.com/reduxjs/reselect.git) | MIT | clearlydefined |
 | `resolve-pathname@3.0.0` | MIT | clearlydefined |
 | [`ret@0.5.0`](git://github.com/fent/ret.js.git) | MIT | clearlydefined |
 | [`retry@0.12.0`](git://github.com/tim-kos/node-retry.git) | MIT | clearlydefined |
@@ -543,6 +537,7 @@
 | [`universalify@2.0.1`](git+https://github.com/RyanZim/universalify.git) | MIT | clearlydefined |
 | [`uri-js@4.4.1`](http://github.com/garycourt/uri-js) | BSD-2-Clause | #1086 |
 | [`url-parse@1.5.10`](https://github.com/unshiftio/url-parse.git) | MIT | clearlydefined |
+| [`use-sync-external-store@1.2.2`](https://github.com/facebook/react.git) | MIT | clearlydefined |
 | [`util-deprecate@1.0.2`](git://github.com/TooTallNate/util-deprecate.git) | MIT | #5885 |
 | [`uuid@3.4.0`](https://github.com/uuidjs/uuid.git) | MIT | #2733 |
 | [`uuid@7.0.3`](https://github.com/uuidjs/uuid.git) | MIT | #57 |

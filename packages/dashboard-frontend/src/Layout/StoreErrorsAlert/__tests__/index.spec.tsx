@@ -17,7 +17,7 @@ import { Store } from 'redux';
 
 import AppAlertGroup from '@/components/AppAlertGroup';
 import { container } from '@/inversify.config';
-import { FakeStoreBuilder } from '@/store/__mocks__/storeBuilder';
+import { MockStoreBuilder } from '@/store/__mocks__/mockStore';
 
 import StoreErrorsAlert from '..';
 
@@ -31,7 +31,7 @@ describe('StoreErrorAlert component', () => {
   });
 
   it('should not show any alerts', () => {
-    const store = new FakeStoreBuilder().build();
+    const store = new MockStoreBuilder().build();
     renderComponent(store);
 
     const alertHeading = screen.queryByRole('heading', { name: /danger alert/i });
@@ -39,7 +39,7 @@ describe('StoreErrorAlert component', () => {
   });
 
   it('should show other preload alerts when sanity check passes', () => {
-    const store = new FakeStoreBuilder()
+    const store = new MockStoreBuilder()
       .withDevWorkspaces({}, false, 'expected error 1')
       .withDevfileRegistries({
         registries: {
@@ -89,7 +89,7 @@ describe('StoreErrorAlert component', () => {
   });
 
   it('should show sanity check error and hide other errors', () => {
-    const store = new FakeStoreBuilder()
+    const store = new MockStoreBuilder()
       .withDevWorkspaces({}, false, 'expected error 1')
       .withDevfileRegistries({
         registries: {

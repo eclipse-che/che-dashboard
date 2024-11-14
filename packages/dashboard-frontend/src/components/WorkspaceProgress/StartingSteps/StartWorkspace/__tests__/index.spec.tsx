@@ -16,7 +16,7 @@ import userEvent, { UserEvent } from '@testing-library/user-event';
 import React from 'react';
 import { Provider } from 'react-redux';
 import { Location } from 'react-router-dom';
-import { Action, Store } from 'redux';
+import { Store } from 'redux';
 
 import { MIN_STEP_DURATION_MS } from '@/components/WorkspaceProgress/const';
 import { WorkspaceRouteParams } from '@/Routes';
@@ -25,23 +25,24 @@ import { getDefer } from '@/services/helpers/deferred';
 import { AlertItem } from '@/services/helpers/types';
 import { AppThunk } from '@/store';
 import { DevWorkspaceBuilder } from '@/store/__mocks__/devWorkspaceBuilder';
-import { FakeStoreBuilder } from '@/store/__mocks__/storeBuilder';
-import { ActionCreators } from '@/store/Workspaces';
+import { MockStoreBuilder } from '@/store/__mocks__/mockStore';
+import { workspacesActionCreators } from '@/store/Workspaces';
 
 import StartingStepStartWorkspace from '..';
 
 jest.mock('@/components/WorkspaceProgress/TimeLimit');
 
 const mockStartWorkspace = jest.fn();
-jest.mock('@/store/Workspaces/index', () => {
+jest.mock('@/store/Workspaces', () => {
   return {
-    actionCreators: {
+    ...jest.requireActual('@/store/Workspaces'),
+    workspacesActionCreators: {
       startWorkspace:
-        (...args: Parameters<ActionCreators['startWorkspace']>): AppThunk<Action, Promise<void>> =>
-        async (): Promise<void> => {
+        (...args: Parameters<(typeof workspacesActionCreators)['startWorkspace']>): AppThunk =>
+        async () => {
           return mockStartWorkspace(...args);
         },
-    } as ActionCreators,
+    } as typeof workspacesActionCreators,
   };
 });
 
@@ -110,7 +111,7 @@ describe('Starting steps, starting a workspace', () => {
     let paramsWithWrongName: WorkspaceRouteParams;
 
     beforeEach(() => {
-      store = new FakeStoreBuilder()
+      store = new MockStoreBuilder()
         .withDevWorkspaces({
           workspaces: [
             new DevWorkspaceBuilder()
@@ -192,7 +193,7 @@ describe('Starting steps, starting a workspace', () => {
   });
 
   test('workspace is STOPPED', async () => {
-    const store = new FakeStoreBuilder()
+    const store = new MockStoreBuilder()
       .withDevWorkspaces({
         workspaces: [
           new DevWorkspaceBuilder()
@@ -219,7 +220,7 @@ describe('Starting steps, starting a workspace', () => {
   });
 
   test('workspace is STOPPED and it fails to start', async () => {
-    const store = new FakeStoreBuilder()
+    const store = new MockStoreBuilder()
       .withDevWorkspaces({
         workspaces: [
           new DevWorkspaceBuilder()
@@ -264,7 +265,7 @@ describe('Starting steps, starting a workspace', () => {
   });
 
   test('workspace is FAILED', async () => {
-    const store = new FakeStoreBuilder()
+    const store = new MockStoreBuilder()
       .withDevWorkspaces({
         workspaces: [
           new DevWorkspaceBuilder()
@@ -291,7 +292,7 @@ describe('Starting steps, starting a workspace', () => {
   });
 
   test('workspace is RUNNING', async () => {
-    const store = new FakeStoreBuilder()
+    const store = new MockStoreBuilder()
       .withDevWorkspaces({
         workspaces: [
           new DevWorkspaceBuilder()
@@ -320,7 +321,7 @@ describe('Starting steps, starting a workspace', () => {
   });
 
   test('workspace is STARTING then RUNNING', async () => {
-    const store = new FakeStoreBuilder()
+    const store = new MockStoreBuilder()
       .withDwServerConfig(serverConfig)
       .withDevWorkspaces({
         workspaces: [
@@ -342,7 +343,7 @@ describe('Starting steps, starting a workspace', () => {
     expect(mockOnRestart).not.toHaveBeenCalled();
     expect(mockOnNextStep).not.toHaveBeenCalled();
 
-    const nextStore = new FakeStoreBuilder()
+    const nextStore = new MockStoreBuilder()
       .withDevWorkspaces({
         workspaces: [
           new DevWorkspaceBuilder()
@@ -364,7 +365,7 @@ describe('Starting steps, starting a workspace', () => {
   });
 
   test('workspace is STARTING then STOPPING', async () => {
-    const store = new FakeStoreBuilder()
+    const store = new MockStoreBuilder()
       .withDwServerConfig(serverConfig)
       .withDevWorkspaces({
         workspaces: [
@@ -386,7 +387,7 @@ describe('Starting steps, starting a workspace', () => {
     expect(mockOnRestart).not.toHaveBeenCalled();
     expect(mockOnNextStep).not.toHaveBeenCalled();
 
-    const nextStore = new FakeStoreBuilder()
+    const nextStore = new MockStoreBuilder()
       .withDevWorkspaces({
         workspaces: [
           new DevWorkspaceBuilder()
@@ -412,7 +413,7 @@ describe('Starting steps, starting a workspace', () => {
   });
 
   test('workspace is STARTING then FAILING', async () => {
-    const store = new FakeStoreBuilder()
+    const store = new MockStoreBuilder()
       .withDwServerConfig(serverConfig)
       .withDevWorkspaces({
         workspaces: [
@@ -432,7 +433,7 @@ describe('Starting steps, starting a workspace', () => {
     // no errors at this moment
     expect(mockOnError).not.toHaveBeenCalled();
 
-    const nextStore = new FakeStoreBuilder()
+    const nextStore = new MockStoreBuilder()
       .withDevWorkspaces({
         workspaces: [
           new DevWorkspaceBuilder()
@@ -456,7 +457,7 @@ describe('Starting steps, starting a workspace', () => {
   });
 
   test('workspace is STARTING then FAILED', async () => {
-    const store = new FakeStoreBuilder()
+    const store = new MockStoreBuilder()
       .withDwServerConfig(serverConfig)
       .withDevWorkspaces({
         workspaces: [
@@ -476,7 +477,7 @@ describe('Starting steps, starting a workspace', () => {
     // no errors at this moment
     expect(mockOnError).not.toHaveBeenCalled();
 
-    const nextStore = new FakeStoreBuilder()
+    const nextStore = new MockStoreBuilder()
       .withDevWorkspaces({
         workspaces: [
           new DevWorkspaceBuilder()
@@ -516,7 +517,7 @@ describe('Starting steps, starting a workspace', () => {
   });
 
   test('workspace is FAILING', async () => {
-    const store = new FakeStoreBuilder()
+    const store = new MockStoreBuilder()
       .withDevWorkspaces({
         workspaces: [
           new DevWorkspaceBuilder()
@@ -540,7 +541,7 @@ describe('Starting steps, starting a workspace', () => {
   });
 
   test('workspace is STOPPING', async () => {
-    const store = new FakeStoreBuilder()
+    const store = new MockStoreBuilder()
       .withDevWorkspaces({
         workspaces: [
           new DevWorkspaceBuilder()
@@ -564,7 +565,7 @@ describe('Starting steps, starting a workspace', () => {
   });
 
   test('workspace is TERMINATING', async () => {
-    const store = new FakeStoreBuilder()
+    const store = new MockStoreBuilder()
       .withDevWorkspaces({
         workspaces: [
           new DevWorkspaceBuilder()
@@ -605,7 +606,7 @@ describe('Starting steps, starting a workspace', () => {
     let store: Store;
 
     beforeEach(() => {
-      store = new FakeStoreBuilder()
+      store = new MockStoreBuilder()
         .withDevWorkspaces({
           workspaces: [
             new DevWorkspaceBuilder()
@@ -620,7 +621,7 @@ describe('Starting steps, starting a workspace', () => {
 
     test('notification alert', async () => {
       renderComponent(store);
-      jest.runAllTimers();
+      await jest.runAllTimersAsync();
 
       // trigger timeout
       const timeoutButton = screen.getByRole('button', {

@@ -13,7 +13,7 @@
 import { container } from '@/inversify.config';
 import { checkNamespaceProvisionWarnings } from '@/services/bootstrap/namespaceProvisionWarnings';
 import { WarningsReporterService } from '@/services/bootstrap/warningsReporter';
-import { FakeStoreBuilder } from '@/store/__mocks__/storeBuilder';
+import { MockStoreBuilder } from '@/store/__mocks__/mockStore';
 
 const warningsReporterService = container.get(WarningsReporterService);
 
@@ -24,13 +24,13 @@ describe('Check namespace provision warnings', () => {
   });
 
   it('should not register any warning', () => {
-    let store = new FakeStoreBuilder().build();
+    const store = new MockStoreBuilder().build();
 
     checkNamespaceProvisionWarnings(store.getState);
 
     expect(warningsReporterService.hasWarning).toBeFalsy();
 
-    store = new FakeStoreBuilder()
+    const nextStore = new MockStoreBuilder()
       .withDwServerConfig({
         networking: {
           auth: {
@@ -40,13 +40,13 @@ describe('Check namespace provision warnings', () => {
       })
       .build();
 
-    checkNamespaceProvisionWarnings(store.getState);
+    checkNamespaceProvisionWarnings(nextStore.getState);
 
     expect(warningsReporterService.hasWarning).toBeFalsy();
   });
 
   it('should register the autoProvision warning', () => {
-    const store = new FakeStoreBuilder()
+    const store = new MockStoreBuilder()
       .withDwServerConfig({
         defaultNamespace: {
           autoProvision: false,

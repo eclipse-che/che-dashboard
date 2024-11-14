@@ -15,10 +15,20 @@ import { BrandingData } from '@/services/bootstrap/branding.constant';
 
 export async function fetchBranding(url: string): Promise<BrandingData> {
   const axiosInstance = getAxiosInstance();
-  try {
-    const response = await axiosInstance.get<BrandingData>(url);
-    return response.data;
-  } catch (e) {
-    throw new Error(`Failed to fetch branding data by URL: ${url}`);
-  }
+  const response = await axiosInstance.get<BrandingData>(url);
+  return response.data;
+}
+
+export async function fetchApiInfo(): Promise<{
+  buildInfo: string;
+  implementationVendor: string;
+  implementationVersion: string;
+  scmRevision: string;
+  specificationTitle: string;
+  specificationVendor: string;
+  specificationVersion: string;
+}> {
+  const axiosInstance = getAxiosInstance();
+  const { data } = await axiosInstance.options('/api/');
+  return data;
 }

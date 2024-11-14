@@ -27,7 +27,7 @@ export type Props = EditTokenProps & {
   onChange: (token: api.PersonalAccessToken, isValid: boolean) => void;
 };
 export type State = {
-  gitProvider: api.GitProvider;
+  gitProvider: api.PersonalAccessToken['gitProvider'];
   defaultGitProviderEndpoint: string;
   gitProviderEndpoint: string | undefined;
   gitProviderEndpointIsValid: boolean;

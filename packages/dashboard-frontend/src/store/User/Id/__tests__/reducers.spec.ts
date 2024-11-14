@@ -10,108 +10,58 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import { AnyAction } from 'redux';
+import { UnknownAction } from 'redux';
 
-import { AUTHORIZED } from '@/store/sanityCheckMiddleware';
+import {
+  cheUserIdErrorAction,
+  cheUserIdReceiveAction,
+  cheUserIdRequestAction,
+} from '@/store/User/Id/actions';
+import { reducer, State, unloadedState } from '@/store/User/Id/reducer';
 
-import * as testStore from '..';
+describe('CheUserId, reducer', () => {
+  let initialState: State;
 
-const cheUserId = 'che-user-id';
-
-describe('UserId store, reducers', () => {
-  // let userProfile: api.IUserProfile;
-
-  it('should return initial state', () => {
-    const incomingAction: testStore.RequestCheUserIdAction = {
-      type: testStore.Type.REQUEST_CHE_USER_ID,
-      check: AUTHORIZED,
-    };
-    const initialState = testStore.reducer(undefined, incomingAction);
-
-    const expectedState: testStore.State = {
-      isLoading: false,
-      cheUserId: '',
-    };
-
-    expect(initialState).toEqual(expectedState);
+  beforeEach(() => {
+    initialState = { ...unloadedState };
   });
 
-  it('should return state if action type is not matched', () => {
-    const initialState: testStore.State = {
+  it('should handle cheUserIdRequestAction', () => {
+    const action = cheUserIdRequestAction();
+    const expectedState: State = {
+      ...initialState,
       isLoading: true,
-      cheUserId: '',
     };
-    const incomingAction = {
-      type: 'OTHER_ACTION',
-    } as AnyAction;
-    const newState = testStore.reducer(initialState, incomingAction);
 
-    const expectedState: testStore.State = {
-      isLoading: true,
-      cheUserId: '',
-    };
-    expect(newState).toEqual(expectedState);
+    expect(reducer(initialState, action)).toEqual(expectedState);
   });
 
-  it('should handle REQUEST_CHE_USER_ID', () => {
-    const initialState: testStore.State = {
-      isLoading: false,
-      cheUserId: '',
-      error: 'unexpected error',
-    };
-    const incomingAction: testStore.RequestCheUserIdAction = {
-      type: testStore.Type.REQUEST_CHE_USER_ID,
-      check: AUTHORIZED,
-    };
-
-    const newState = testStore.reducer(initialState, incomingAction);
-
-    const expectedState: testStore.State = {
-      isLoading: true,
-      cheUserId: '',
-    };
-
-    expect(newState).toEqual(expectedState);
-  });
-
-  it('should handle RECEIVE_CHE_USER_ID', () => {
-    const initialState: testStore.State = {
-      isLoading: true,
-      cheUserId: '',
-    };
-    const incomingAction: testStore.ReceiveCheUserAction = {
-      type: testStore.Type.RECEIVE_CHE_USER_ID,
-      cheUserId,
-    };
-
-    const newState = testStore.reducer(initialState, incomingAction);
-
-    const expectedState: testStore.State = {
+  it('should handle cheUserIdReceiveAction', () => {
+    const cheUserId = 'test-user-id';
+    const action = cheUserIdReceiveAction(cheUserId);
+    const expectedState: State = {
+      ...initialState,
       isLoading: false,
       cheUserId,
     };
 
-    expect(newState).toEqual(expectedState);
+    expect(reducer(initialState, action)).toEqual(expectedState);
   });
 
-  it('should handle RECEIVE_CHE_USER_ID_ERROR', () => {
-    const initialState: testStore.State = {
-      isLoading: true,
-      cheUserId: '',
-    };
-    const incomingAction: testStore.ReceiveCheUserErrorAction = {
-      type: testStore.Type.RECEIVE_CHE_USER_ID_ERROR,
-      error: 'unexpected error',
-    };
-
-    const newState = testStore.reducer(initialState, incomingAction);
-
-    const expectedState: testStore.State = {
+  it('should handle cheUserIdErrorAction', () => {
+    const error = 'Error message';
+    const action = cheUserIdErrorAction(error);
+    const expectedState: State = {
+      ...initialState,
       isLoading: false,
-      cheUserId: '',
-      error: 'unexpected error',
+      error,
     };
 
-    expect(newState).toEqual(expectedState);
+    expect(reducer(initialState, action)).toEqual(expectedState);
+  });
+
+  it('should return the current state for unknown actions', () => {
+    const unknownAction = { type: 'UNKNOWN_ACTION' } as UnknownAction;
+    expect(reducer(initialState, unknownAction)).toEqual(initialState);
   });
 });

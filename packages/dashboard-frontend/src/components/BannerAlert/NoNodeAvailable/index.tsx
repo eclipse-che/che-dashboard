@@ -17,7 +17,7 @@ import { connect, ConnectedProps } from 'react-redux';
 import { container } from '@/inversify.config';
 import { WebsocketClient } from '@/services/backend-client/websocketClient';
 import { DevWorkspaceStatus } from '@/services/helpers/types';
-import { AppState } from '@/store';
+import { RootState } from '@/store';
 import { selectAllEvents } from '@/store/Events/selectors';
 import { selectAllWorkspaces } from '@/store/Workspaces/selectors';
 
@@ -99,7 +99,7 @@ class BannerAlertNoNodeAvailable extends React.PureComponent<Props, State> {
   }
 }
 
-const mapStateToProps = (state: AppState) => ({
+const mapStateToProps = (state: RootState) => ({
   allEvents: selectAllEvents(state),
   allWorkspaces: selectAllWorkspaces(state),
 });

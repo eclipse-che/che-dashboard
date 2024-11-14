@@ -10,142 +10,232 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import { api } from '@eclipse-che/common';
-import { dump } from 'js-yaml';
-import { AnyAction } from 'redux';
-import { MockStoreEnhanced } from 'redux-mock-store';
-import { ThunkDispatch } from 'redux-thunk';
+import { load } from 'js-yaml';
 
 import devfileApi from '@/services/devfileApi';
 import { che } from '@/services/models';
-import { AppState } from '@/store';
-import { FakeStoreBuilder } from '@/store/__mocks__/storeBuilder';
+import { RootState } from '@/store';
 import {
   selectDefaultDevfile,
+  selectDevWorkspaceResources,
+  selectEmptyWorkspaceUrl,
+  selectFilterValue,
   selectIsRegistryDevfile,
+  selectMetadataFiltered,
   selectRegistriesErrors,
+  selectRegistriesMetadata,
 } from '@/store/DevfileRegistries/selectors';
 
-describe('devfileRegistries selectors', () => {
-  const registryUrl = 'https://registry-url';
-  const sampleResourceUrl = 'https://resources-url/devfile.yaml';
-  const registryMetadata = {
-    displayName: 'Empty Workspace',
-    description: 'Start an empty remote development environment',
-    tags: ['Empty'],
-    icon: '/images/empty.svg',
-    links: {
-      v2: sampleResourceUrl,
-    },
-  } as che.DevfileMetaData;
-  const sampleContent = dump({
-    schemaVersion: '2.1.0',
-    metadata: {
-      generateName: 'empty',
-    },
-  } as devfileApi.Devfile);
-  const defaultComponents = [
-    {
-      name: 'universal-developer-image',
-      container: {
-        image: 'quay.io/devfile/universal-developer-image:ubi8-latest',
-      },
-    },
-  ];
+jest.mock('js-yaml', () => ({
+  load: jest.fn(),
+}));
+jest.mock('@/store/ServerConfig/selectors', () => {
+  return {
+    selectDefaultComponents: jest.fn().mockReturnValue([]),
+  };
+});
 
-  it('should return the default devfile', () => {
-    const fakeStore = new FakeStoreBuilder()
-      .withDevfileRegistries({
+describe('DevfileRegistries, selectors', () => {
+  let mockState: RootState;
+
+  beforeEach(() => {
+    mockState = {
+      devfileRegistries: {
         registries: {
-          [registryUrl]: {
-            metadata: [registryMetadata],
+          'https://registry1.com': {
+            metadata: [
+              {
+                displayName: 'Devfile 1',
+                description: 'Description 1',
+                links: { v2: 'https://registry1.com/devfile1' },
+                tags: ['tag1'],
+              } as che.DevfileMetaData,
+            ],
+          },
+          'https://registry2.com': {
+            metadata: [
+              {
+                displayName: 'Devfile 2',
+                description: 'Description 2',
+                links: { v2: 'https://registry2.com/devfile2' },
+                tags: ['Empty'],
+              } as che.DevfileMetaData,
+            ],
+            error: 'Error message',
           },
         },
         devfiles: {
-          [sampleResourceUrl]: {
-            content: sampleContent,
+          'https://registry2.com/devfile2': {
+            content: 'devfile content',
           },
         },
-      })
-      .withDwServerConfig({
-        defaults: {
-          components: defaultComponents,
+        devWorkspaceResources: {
+          'https://registry2.com/devfile2': {
+            resources: [
+              { kind: 'DevWorkspace', metadata: { name: 'workspace1' } } as devfileApi.DevWorkspace,
+              {
+                kind: 'DevWorkspaceTemplate',
+                metadata: { name: 'template1' },
+              } as devfileApi.DevWorkspaceTemplate,
+            ],
+          },
         },
-      } as api.IServerConfig)
-      .build() as MockStoreEnhanced<AppState, ThunkDispatch<AppState, undefined, AnyAction>>;
-    const state = fakeStore.getState();
-
-    const defaultDevfile = selectDefaultDevfile(state);
-    expect(defaultDevfile).toEqual({
-      schemaVersion: '2.1.0',
-      metadata: {
-        generateName: 'empty',
+        filter: 'Devfile 1',
+        isLoading: false,
       },
-      components: [
+    } as Partial<RootState> as RootState;
+  });
+
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it('should select registries metadata', () => {
+    const result = selectRegistriesMetadata(mockState);
+    expect(result).toEqual([
+      {
+        displayName: 'Devfile 1',
+        description: 'Description 1',
+        links: { v2: 'https://registry1.com/devfile1' },
+        tags: ['tag1'],
+        registry: 'https://registry1.com',
+      },
+      {
+        displayName: 'Devfile 2',
+        description: 'Description 2',
+        links: { v2: 'https://registry2.com/devfile2' },
+        tags: ['Empty'],
+        registry: 'https://registry2.com',
+      },
+    ]);
+  });
+
+  it('should select if a URL is a registry devfile', () => {
+    const result = selectIsRegistryDevfile(mockState)('https://registry2.com/devfile2');
+    expect(result).toBe(true);
+  });
+
+  it('should select registries errors', () => {
+    const result = selectRegistriesErrors(mockState);
+    expect(result).toEqual([
+      {
+        url: 'https://registry2.com',
+        errorMessage: 'Error message',
+      },
+    ]);
+  });
+
+  it('should select filter value', () => {
+    const result = selectFilterValue(mockState);
+    expect(result).toEqual('Devfile 1');
+  });
+
+  describe('selectMetadataFiltered', () => {
+    it('should select metadata filtered by filter value', () => {
+      const result = selectMetadataFiltered(mockState);
+      expect(result).toEqual([
         {
-          name: 'universal-developer-image',
-          container: {
-            image: 'quay.io/devfile/universal-developer-image:ubi8-latest',
-          },
+          displayName: 'Devfile 1',
+          description: 'Description 1',
+          links: { v2: 'https://registry1.com/devfile1' },
+          tags: ['tag1'],
+          registry: 'https://registry1.com',
         },
-      ],
+      ]);
+    });
+
+    it('should select all metadata if filter value is empty', () => {
+      const mockStateWithoutFilterValue = {
+        ...mockState,
+        devfileRegistries: {
+          ...mockState.devfileRegistries,
+          filter: '',
+        },
+      } as RootState;
+
+      const result = selectMetadataFiltered(mockStateWithoutFilterValue);
+      expect(result).toEqual([
+        {
+          displayName: 'Devfile 1',
+          description: 'Description 1',
+          links: { v2: 'https://registry1.com/devfile1' },
+          tags: ['tag1'],
+          registry: 'https://registry1.com',
+        },
+        {
+          displayName: 'Devfile 2',
+          description: 'Description 2',
+          links: { v2: 'https://registry2.com/devfile2' },
+          tags: ['Empty'],
+          registry: 'https://registry2.com',
+        },
+      ]);
     });
   });
 
-  test('if devfile is from registry or not', () => {
-    const fakeStore = new FakeStoreBuilder()
-      .withDevfileRegistries({
-        registries: {
-          [registryUrl]: {
-            metadata: [registryMetadata],
-          },
-        },
-        devfiles: {
-          [sampleResourceUrl]: {
-            content: sampleContent,
-          },
-        },
-      })
-      .withDwServerConfig({
-        defaults: {
-          components: defaultComponents,
-        },
-      } as api.IServerConfig)
-      .build() as MockStoreEnhanced<AppState, ThunkDispatch<AppState, undefined, AnyAction>>;
-    const state = fakeStore.getState();
-
-    const ifRegistryDevfileFn = selectIsRegistryDevfile(state);
-
-    const registryDevfileUrl = `${registryUrl}/devfile.yaml`;
-    expect(ifRegistryDevfileFn(registryDevfileUrl)).toBeTruthy();
-
-    const registryDevfileUrl2 = sampleResourceUrl;
-    expect(ifRegistryDevfileFn(registryDevfileUrl2)).toBeTruthy();
-
-    const otherDevfileUrl = 'https://other-url/devfile.yaml';
-    expect(ifRegistryDevfileFn(otherDevfileUrl)).toBeFalsy();
+  it('should select empty workspace URL', () => {
+    const result = selectEmptyWorkspaceUrl(mockState);
+    expect(result).toEqual('https://registry2.com/devfile2');
   });
 
-  it('should return error', () => {
-    const error = `Failed to fetch registry metadata.`;
-    const fakeStore = new FakeStoreBuilder()
-      .withDevfileRegistries({
-        registries: {
-          [registryUrl]: {
-            error,
+  describe('selectDefaultDevfile', () => {
+    it('should select default devfile', () => {
+      const mockDevfile = { components: [] };
+      (load as jest.Mock).mockReturnValue(mockDevfile);
+
+      const result = selectDefaultDevfile(mockState);
+      expect(result).toEqual(mockDevfile);
+    });
+
+    it('should return undefined if the empty workspace URL is not found', () => {
+      const mockStateWithoutEmptyWorkspaceUrl = {
+        ...mockState,
+        devfileRegistries: {
+          ...mockState.devfileRegistries,
+          registries: {
+            'https://registry1.com':
+              mockState.devfileRegistries.registries['https://registry1.com'],
           },
         },
-      })
-      .withDwServerConfig({
-        defaults: {
-          components: defaultComponents,
-        },
-      } as api.IServerConfig)
-      .build() as MockStoreEnhanced<AppState, ThunkDispatch<AppState, undefined, AnyAction>>;
-    const state = fakeStore.getState();
+      } as RootState;
 
-    expect(selectRegistriesErrors(state)).toStrictEqual([
-      { url: registryUrl, errorMessage: error },
-    ]);
+      const result = selectDefaultDevfile(mockStateWithoutEmptyWorkspaceUrl);
+      expect(result).toBeUndefined();
+    });
+
+    it('should return undefined if the devfile content is not found', () => {
+      const mockStateWithoutDevfileContent = {
+        ...mockState,
+        devfileRegistries: {
+          ...mockState.devfileRegistries,
+          devfiles: {},
+        },
+      } as RootState;
+
+      const result = selectDefaultDevfile(mockStateWithoutDevfileContent);
+      expect(result).toBeUndefined();
+    });
+
+    it('should return undefined if the devfile content is not valid', () => {
+      console.error = jest.fn();
+      (load as jest.Mock).mockImplementation(() => {
+        throw new Error('Invalid devfile content');
+      });
+
+      const result = selectDefaultDevfile(mockState);
+      expect(result).toBeUndefined();
+    });
+  });
+
+  it('should select dev workspace resources', () => {
+    const result = selectDevWorkspaceResources(mockState);
+    expect(result).toEqual({
+      'https://registry2.com/devfile2': {
+        resources: [
+          { kind: 'DevWorkspace', metadata: { name: 'workspace1' } },
+          { kind: 'DevWorkspaceTemplate', metadata: { name: 'template1' } },
+        ],
+      },
+    });
   });
 });

@@ -10,27 +10,25 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import { createSelector } from 'reselect';
+import { createSelector } from '@reduxjs/toolkit';
 
-import { State } from '@/store/GitOauthConfig/index';
+import { RootState } from '@/store';
 
-import { AppState } from '..';
-
-const selectState = (state: AppState) => state.gitOauthConfig;
+const selectState = (state: RootState) => state.gitOauthConfig;
 
 export const selectIsLoading = createSelector(selectState, state => {
   return state.isLoading;
 });
 
-export const selectGitOauth = createSelector(selectState, (state: State) => {
+export const selectGitOauth = createSelector(selectState, state => {
   return state.gitOauth;
 });
 
-export const selectProvidersWithToken = createSelector(selectState, (state: State) => {
+export const selectProvidersWithToken = createSelector(selectState, state => {
   return state.providersWithToken;
 });
 
-export const selectSkipOauthProviders = createSelector(selectState, (state: State) => {
+export const selectSkipOauthProviders = createSelector(selectState, state => {
   return state.skipOauthProviders;
 });
 

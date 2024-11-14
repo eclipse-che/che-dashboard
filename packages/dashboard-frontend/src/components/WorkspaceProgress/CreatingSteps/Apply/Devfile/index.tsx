@@ -42,11 +42,11 @@ import { buildIdeLoaderLocation, toHref } from '@/services/helpers/location';
 import { AlertItem } from '@/services/helpers/types';
 import { TabManager } from '@/services/tabManager';
 import { Workspace } from '@/services/workspace-adapter';
-import { AppState } from '@/store';
+import { RootState } from '@/store';
 import { selectDefaultDevfile } from '@/store/DevfileRegistries/selectors';
 import { selectFactoryResolver } from '@/store/FactoryResolver/selectors';
 import { selectDefaultNamespace } from '@/store/InfrastructureNamespaces/selectors';
-import * as WorkspacesStore from '@/store/Workspaces';
+import { workspacesActionCreators } from '@/store/Workspaces';
 import { selectDevWorkspaceWarnings } from '@/store/Workspaces/devWorkspaces/selectors';
 import { selectAllWorkspaces } from '@/store/Workspaces/selectors';
 
@@ -463,7 +463,7 @@ class CreatingStepApplyDevfile extends ProgressStep<Props, State> {
   }
 }
 
-const mapStateToProps = (state: AppState) => ({
+const mapStateToProps = (state: RootState) => ({
   allWorkspaces: selectAllWorkspaces(state),
   defaultNamespace: selectDefaultNamespace(state),
   factoryResolver: selectFactoryResolver(state),
@@ -471,16 +471,9 @@ const mapStateToProps = (state: AppState) => ({
   devWorkspaceWarnings: selectDevWorkspaceWarnings(state),
 });
 
-const connector = connect(
-  mapStateToProps,
-  {
-    ...WorkspacesStore.actionCreators,
-  },
-  null,
-  {
-    // forwardRef is mandatory for using `@react-mock/state` in unit tests
-    forwardRef: true,
-  },
-);
+const connector = connect(mapStateToProps, workspacesActionCreators, null, {
+  // forwardRef is mandatory for using `@react-mock/state` in unit tests
+  forwardRef: true,
+});
 type MappedProps = ConnectedProps<typeof connector>;
 export default connector(CreatingStepApplyDevfile);

@@ -29,7 +29,7 @@ import { connect, ConnectedProps } from 'react-redux';
 import { EditorDefinition } from '@/components/EditorSelector/Definition';
 import { DocsLink } from '@/components/EditorSelector/DocsLink';
 import { EditorGallery } from '@/components/EditorSelector/Gallery';
-import { AppState } from '@/store';
+import { RootState } from '@/store';
 import { selectEditors } from '@/store/Plugins/chePlugins/selectors';
 
 type AccordionId = 'default' | 'selector' | 'definition';
@@ -215,7 +215,7 @@ class EditorSelector extends React.PureComponent<Props, State> {
   }
 }
 
-const mapStateToProps = (state: AppState) => ({
+const mapStateToProps = (state: RootState) => ({
   editors: selectEditors(state),
 });
 

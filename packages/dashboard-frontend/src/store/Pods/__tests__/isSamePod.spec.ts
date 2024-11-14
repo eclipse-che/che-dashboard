@@ -10,8 +10,6 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-/* eslint-disable @typescript-eslint/no-non-null-assertion */
-
 import { pod1, pod2 } from '@/store/Pods/__tests__/stub';
 import isSamePod from '@/store/Pods/isSamePod';
 

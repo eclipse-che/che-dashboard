@@ -16,7 +16,7 @@ import { connect, ConnectedProps } from 'react-redux';
 
 import { lazyInject } from '@/inversify.config';
 import { AppAlerts } from '@/services/alerts/appAlerts';
-import { AppState } from '@/store';
+import { RootState } from '@/store';
 import { selectRegistriesErrors } from '@/store/DevfileRegistries/selectors';
 import { selectInfrastructureNamespacesError } from '@/store/InfrastructureNamespaces/selectors';
 import { selectPluginsError } from '@/store/Plugins/chePlugins/selectors';
@@ -115,7 +115,7 @@ export class StoreErrorsAlert extends React.PureComponent<Props> {
   }
 }
 
-const mapStateToProps = (state: AppState) => ({
+const mapStateToProps = (state: RootState) => ({
   registriesErrors: selectRegistriesErrors(state),
   pluginsError: selectPluginsError(state),
   sanityCheckError: selectSanityCheckError(state),

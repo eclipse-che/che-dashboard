@@ -21,7 +21,7 @@ import getComponentRenderer, { screen } from '@/services/__mocks__/getComponentR
 import { WorkspaceStatus } from '@/services/helpers/types';
 import { constructWorkspace } from '@/services/workspace-adapter';
 import { DevWorkspaceBuilder } from '@/store/__mocks__/devWorkspaceBuilder';
-import { FakeStoreBuilder } from '@/store/__mocks__/storeBuilder';
+import { MockStoreBuilder } from '@/store/__mocks__/mockStore';
 
 jest.mock('@/components/Workspace/Status/Indicator');
 jest.mock('@/Layout/Navigation/RecentItem/WorkspaceActions');
@@ -111,7 +111,7 @@ describe('Navigation Item', () => {
 });
 
 function getComponent(item: NavigationRecentItemObject, activeItem = ''): React.ReactElement {
-  const store = new FakeStoreBuilder().build();
+  const store = new MockStoreBuilder().build();
   return (
     <Provider store={store}>
       <MemoryRouter>

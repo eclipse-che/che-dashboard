@@ -18,7 +18,7 @@ import { dump } from 'js-yaml';
 import React from 'react';
 import { Provider } from 'react-redux';
 import { Location } from 'react-router-dom';
-import { Action, Store } from 'redux';
+import { Store } from 'redux';
 
 import ExpandableWarning from '@/components/ExpandableWarning';
 import { MIN_STEP_DURATION_MS } from '@/components/WorkspaceProgress/const';
@@ -39,23 +39,24 @@ import { AlertItem } from '@/services/helpers/types';
 import { che } from '@/services/models';
 import { AppThunk } from '@/store';
 import { DevWorkspaceBuilder } from '@/store/__mocks__/devWorkspaceBuilder';
-import { FakeStoreBuilder } from '@/store/__mocks__/storeBuilder';
-import { ActionCreators } from '@/store/Workspaces';
+import { MockStoreBuilder } from '@/store/__mocks__/mockStore';
+import { workspacesActionCreators } from '@/store/Workspaces';
 
 jest.mock('@/components/WorkspaceProgress/TimeLimit');
 jest.mock('@/components/WorkspaceProgress/CreatingSteps/Apply/Devfile/prepareDevfile.ts');
 
 let mockCreateWorkspaceFromDevfile;
-jest.mock('@/store/Workspaces/index', () => {
+jest.mock('@/store/Workspaces', () => {
   return {
-    actionCreators: {
+    ...jest.requireActual('@/store/Workspaces'),
+    workspacesActionCreators: {
       createWorkspaceFromDevfile:
         (
-          ...args: Parameters<ActionCreators['createWorkspaceFromDevfile']>
-        ): AppThunk<Action, Promise<void>> =>
+          ...args: Parameters<(typeof workspacesActionCreators)['createWorkspaceFromDevfile']>
+        ): AppThunk =>
         async (): Promise<void> =>
           mockCreateWorkspaceFromDevfile(...args),
-    } as ActionCreators,
+    } as typeof workspacesActionCreators,
   };
 });
 
@@ -115,7 +116,7 @@ describe('Creating steps, applying a devfile', () => {
 
       const expectAlertItem = expect.objectContaining({
         title: 'Failed to create the workspace',
-        children: 'Failed to resolve the devfile.',
+        children: 'Failed to resolve the default devfile.',
         actionCallbacks: [
           expect.objectContaining({
             title: 'Continue with default devfile',
@@ -224,8 +225,14 @@ describe('Creating steps, applying a devfile', () => {
         } as api.IServerConfig)
         .build();
 
-      renderComponent(store, searchParams);
-      jest.runAllTimers();
+      const { reRenderComponent } = renderComponent(store, searchParams);
+      await jest.runAllTimersAsync();
+
+      reRenderComponent(store, searchParams, {
+        // user has chosen to continue with the default devfile
+        continueWithDefaultDevfile: true,
+        factoryParams: buildFactoryParams(searchParams),
+      });
 
       await waitFor(() =>
         expect(prepareDevfile).toHaveBeenCalledWith(
@@ -305,8 +312,16 @@ describe('Creating steps, applying a devfile', () => {
         } as api.IServerConfig)
         .build();
 
-      renderComponent(store, searchParams);
-      jest.runAllTimers();
+      const { reRenderComponent } = renderComponent(store, searchParams);
+      await jest.runAllTimersAsync();
+
+      reRenderComponent(store, searchParams, {
+        // user has chosen to continue with the default devfile
+        continueWithDefaultDevfile: true,
+        factoryParams: buildFactoryParams(searchParams),
+      });
+
+      await jest.runAllTimersAsync();
 
       await waitFor(() =>
         expect(prepareDevfile).toHaveBeenCalledWith(
@@ -381,7 +396,7 @@ describe('Creating steps, applying a devfile', () => {
         .build();
 
       renderComponent(store, searchParams);
-      jest.runAllTimers();
+      await jest.runAllTimersAsync();
 
       await waitFor(() =>
         expect(prepareDevfile).toHaveBeenCalledWith(
@@ -460,7 +475,7 @@ describe('Creating steps, applying a devfile', () => {
       };
 
       renderComponent(store, searchParams, localState);
-      jest.runAllTimers();
+      await jest.runAllTimersAsync();
 
       await waitFor(() =>
         expect(prepareDevfile).toHaveBeenCalledWith(
@@ -827,8 +842,8 @@ describe('Creating steps, applying a devfile', () => {
   });
 });
 
-function getStoreBuilder(): FakeStoreBuilder {
-  return new FakeStoreBuilder().withInfrastructureNamespace([
+function getStoreBuilder(): MockStoreBuilder {
+  return new MockStoreBuilder().withInfrastructureNamespace([
     {
       attributes: { phase: 'Active' },
       name: 'user-che',

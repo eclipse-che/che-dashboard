@@ -18,7 +18,7 @@ import { Store } from 'redux';
 
 import { MIN_STEP_DURATION_MS } from '@/components/WorkspaceProgress/const';
 import getComponentRenderer from '@/services/__mocks__/getComponentRenderer';
-import { FakeStoreBuilder } from '@/store/__mocks__/storeBuilder';
+import { MockStoreBuilder } from '@/store/__mocks__/mockStore';
 
 import CreateWorkspace from '..';
 
@@ -43,7 +43,7 @@ describe('Creating steps, creating a workspace', () => {
   });
 
   it('should switch to the next step', async () => {
-    const store = new FakeStoreBuilder().build();
+    const store = new MockStoreBuilder().build();
 
     renderComponent(store, searchParams);
 

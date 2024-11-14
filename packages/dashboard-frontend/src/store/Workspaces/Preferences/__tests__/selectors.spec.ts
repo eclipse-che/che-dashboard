@@ -10,9 +10,7 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import { api } from '@eclipse-che/common';
-
-import { FakeStoreBuilder } from '@/store/__mocks__/storeBuilder';
+import { RootState } from '@/store';
 import {
   selectPreferences,
   selectPreferencesError,
@@ -20,47 +18,35 @@ import {
   selectPreferencesTrustedSources,
 } from '@/store/Workspaces/Preferences/selectors';
 
-describe('Workspace preferences, selectors', () => {
+describe('Preferences, selectors', () => {
   const mockState = {
-    preferences: {
-      'skip-authorisation': ['github'] as api.GitProvider[],
-      'trusted-sources': ['source1', 'source2'],
+    workspacePreferences: {
+      isLoading: false,
+      error: 'Test error',
+      preferences: {
+        'skip-authorisation': ['azure-devops', 'bitbucket-server'],
+        'trusted-sources': ['https://trusted-source.com'],
+      },
     },
-    error: 'Some error',
-  };
-  const store = new FakeStoreBuilder()
-    .withWorkspacePreferences({
-      'skip-authorisation': mockState.preferences['skip-authorisation'],
-      'trusted-sources': mockState.preferences['trusted-sources'],
-      error: mockState.error,
-    })
-    .build();
+  } as Partial<RootState> as RootState;
 
   it('should select preferences', () => {
-    const state = store.getState();
-    const result = selectPreferences(state);
-
-    expect(result).toEqual(mockState.preferences);
+    const result = selectPreferences(mockState);
+    expect(result).toEqual(mockState.workspacePreferences.preferences);
   });
 
   it('should select preferences error', () => {
-    const state = store.getState();
-    const result = selectPreferencesError(state);
-
-    expect(result).toEqual(mockState.error);
+    const result = selectPreferencesError(mockState);
+    expect(result).toEqual('Test error');
   });
 
-  it('should select skip-authorization preference', () => {
-    const state = store.getState();
-    const result = selectPreferencesSkipAuthorization(state);
-
-    expect(result).toEqual(mockState.preferences['skip-authorisation']);
+  it('should select preferences skip authorization', () => {
+    const result = selectPreferencesSkipAuthorization(mockState);
+    expect(result).toEqual(['azure-devops', 'bitbucket-server']);
   });
 
-  it('should select trusted sources preference', () => {
-    const state = store.getState();
-    const result = selectPreferencesTrustedSources(state);
-
-    expect(result).toEqual(mockState.preferences['trusted-sources']);
+  it('should select preferences trusted sources', () => {
+    const result = selectPreferencesTrustedSources(mockState);
+    expect(result).toEqual(['https://trusted-source.com']);
   });
 });

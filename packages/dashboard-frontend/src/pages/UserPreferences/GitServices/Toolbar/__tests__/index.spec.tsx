@@ -15,7 +15,7 @@ import React from 'react';
 
 import { GitServicesToolbar } from '@/pages/UserPreferences/GitServices/Toolbar';
 import getComponentRenderer, { screen, waitFor } from '@/services/__mocks__/getComponentRenderer';
-import { IGitOauth } from '@/store/GitOauthConfig/types';
+import { IGitOauth } from '@/store/GitOauthConfig';
 
 const mockOnRevokeButton = jest.fn();
 

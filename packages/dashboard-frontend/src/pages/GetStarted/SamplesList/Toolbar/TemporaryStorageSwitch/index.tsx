@@ -15,7 +15,7 @@ import { OutlinedQuestionCircleIcon } from '@patternfly/react-icons';
 import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 
-import { AppState } from '@/store';
+import { RootState } from '@/store';
 import { selectBranding } from '@/store/Branding/selectors';
 
 export type Props = MappedProps & {
@@ -79,7 +79,7 @@ class TemporaryStorageSwitch extends React.PureComponent<Props, State> {
   }
 }
 
-const mapStateToProps = (state: AppState) => ({
+const mapStateToProps = (state: RootState) => ({
   branding: selectBranding(state),
 });
 

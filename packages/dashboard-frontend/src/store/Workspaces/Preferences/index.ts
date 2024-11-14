@@ -1,3 +1,5 @@
+/* c8 ignore start */
+
 /*
  * Copyright (c) 2018-2024 Red Hat, Inc.
  * This program and the accompanying materials are made
@@ -11,9 +13,8 @@
  */
 
 export { actionCreators as workspacePreferencesActionCreators } from '@/store/Workspaces/Preferences/actions';
-export { reducer as workspacePreferencesReducer } from '@/store/Workspaces/Preferences/reducer';
-export * from '@/store/Workspaces/Preferences/selectors';
 export {
-  ActionCreators as WorkspacePreferencesActionCreators,
+  reducer as workspacePreferencesReducer,
   State as WorkspacePreferencesState,
-} from '@/store/Workspaces/Preferences/types';
+} from '@/store/Workspaces/Preferences/reducer';
+export * from '@/store/Workspaces/Preferences/selectors';

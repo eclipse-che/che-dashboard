@@ -10,82 +10,58 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import mockAxios, { AxiosError } from 'axios';
-import { MockStoreEnhanced } from 'redux-mock-store';
-import { ThunkDispatch } from 'redux-thunk';
+import common from '@eclipse-che/common';
 
-import { AppState } from '@/store';
-import { FakeStoreBuilder } from '@/store/__mocks__/storeBuilder';
-import { AUTHORIZED } from '@/store/sanityCheckMiddleware';
+import { fetchCheUserId } from '@/services/che-user-id';
+import { createMockStore } from '@/store/__mocks__/mockActionsTestStore';
+import { verifyAuthorized } from '@/store/SanityCheck';
+import {
+  actionCreators,
+  cheUserIdErrorAction,
+  cheUserIdReceiveAction,
+  cheUserIdRequestAction,
+} from '@/store/User/Id/actions';
 
-import * as testStore from '..';
+jest.mock('@eclipse-che/common');
+jest.mock('@/services/che-user-id');
+jest.mock('@/store/SanityCheck');
 
-const cheUserId = 'che-user-id';
-
-describe('UserId store, actions', () => {
-  let appStore: MockStoreEnhanced<
-    AppState,
-    ThunkDispatch<AppState, undefined, testStore.KnownAction>
-  >;
+describe('CheUserId, actions', () => {
+  let store: ReturnType<typeof createMockStore>;
 
   beforeEach(() => {
-    appStore = new FakeStoreBuilder().build() as MockStoreEnhanced<
-      AppState,
-      ThunkDispatch<AppState, undefined, testStore.KnownAction>
-    >;
-  });
-
-  afterEach(() => {
+    store = createMockStore({});
     jest.clearAllMocks();
   });
 
-  it('should create REQUEST_CHE_USER_ID and RECEIVE_CHE_USER_ID when fetching user ID', async () => {
-    (mockAxios.get as jest.Mock).mockResolvedValueOnce({
-      data: cheUserId,
+  describe('requestCheUserId', () => {
+    it('should dispatch receive action on successful fetch', async () => {
+      const mockCheUserId = 'test-user-id';
+
+      (verifyAuthorized as jest.Mock).mockResolvedValue(true);
+      (fetchCheUserId as jest.Mock).mockResolvedValue(mockCheUserId);
+
+      await store.dispatch(actionCreators.requestCheUserId());
+
+      const actions = store.getActions();
+      expect(actions).toHaveLength(2);
+      expect(actions[0]).toEqual(cheUserIdRequestAction());
+      expect(actions[1]).toEqual(cheUserIdReceiveAction(mockCheUserId));
     });
 
-    await appStore.dispatch(testStore.actionCreators.requestCheUserId());
+    it('should dispatch error action on failed fetch', async () => {
+      const errorMessage = 'Network error';
 
-    const actions = appStore.getActions();
-    const expectedActions: testStore.KnownAction[] = [
-      {
-        type: testStore.Type.REQUEST_CHE_USER_ID,
-        check: AUTHORIZED,
-      },
-      {
-        type: testStore.Type.RECEIVE_CHE_USER_ID,
-        cheUserId,
-      },
-    ];
+      (verifyAuthorized as jest.Mock).mockResolvedValue(true);
+      (fetchCheUserId as jest.Mock).mockRejectedValue(new Error(errorMessage));
+      (common.helpers.errors.getMessage as jest.Mock).mockReturnValue(errorMessage);
 
-    expect(actions).toEqual(expectedActions);
-  });
+      await expect(store.dispatch(actionCreators.requestCheUserId())).rejects.toThrow(errorMessage);
 
-  it('should create REQUEST_CHE_USER_ID and RECEIVE_CHE_USER_ID_ERROR when fails to fetch user ID', async () => {
-    (mockAxios.get as jest.Mock).mockRejectedValueOnce({
-      isAxiosError: true,
-      code: '500',
-      message: 'Something unexpected happened.',
-    } as AxiosError);
-
-    try {
-      await appStore.dispatch(testStore.actionCreators.requestCheUserId());
-    } catch (e) {
-      // noop
-    }
-
-    const actions = appStore.getActions();
-    const expectedActions: testStore.KnownAction[] = [
-      {
-        type: testStore.Type.REQUEST_CHE_USER_ID,
-        check: AUTHORIZED,
-      },
-      {
-        type: testStore.Type.RECEIVE_CHE_USER_ID_ERROR,
-        error: expect.stringContaining('Something unexpected happened.'),
-      },
-    ];
-
-    expect(actions).toEqual(expectedActions);
+      const actions = store.getActions();
+      expect(actions).toHaveLength(2);
+      expect(actions[0]).toEqual(cheUserIdRequestAction());
+      expect(actions[1]).toEqual(cheUserIdErrorAction(errorMessage));
+    });
   });
 });

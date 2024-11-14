@@ -19,11 +19,11 @@ import { Store } from 'redux';
 
 import NavigationMainList from '@/Layout/Navigation/MainList';
 import { DevWorkspaceBuilder } from '@/store/__mocks__/devWorkspaceBuilder';
-import { FakeStoreBuilder } from '@/store/__mocks__/storeBuilder';
+import { MockStoreBuilder } from '@/store/__mocks__/mockStore';
 
 describe('Navigation Main List', () => {
   it('should have correct number of main navigation items', () => {
-    const store = new FakeStoreBuilder().build();
+    const store = new MockStoreBuilder().build();
     renderComponent(store);
 
     const navLinks = screen.getAllByRole('link');
@@ -31,7 +31,7 @@ describe('Navigation Main List', () => {
   });
 
   it('should have correct navigation item labels', () => {
-    const store = new FakeStoreBuilder().build();
+    const store = new MockStoreBuilder().build();
     renderComponent(store);
 
     const navLinks = screen.getAllByRole('link');
@@ -47,7 +47,7 @@ describe('Navigation Main List', () => {
         .withName('wksp-' + i)
         .build(),
     );
-    let store = new FakeStoreBuilder().withDevWorkspaces({ workspaces }).build();
+    let store = new MockStoreBuilder().withDevWorkspaces({ workspaces }).build();
     const { rerender } = renderComponent(store);
 
     expect(screen.queryByRole('link', { name: 'Workspaces (5)' })).toBeInTheDocument();
@@ -58,7 +58,7 @@ describe('Navigation Main List', () => {
         .withName('wksp-' + i)
         .build(),
     );
-    store = new FakeStoreBuilder().withDevWorkspaces({ workspaces }).build();
+    store = new MockStoreBuilder().withDevWorkspaces({ workspaces }).build();
     rerender(buildElement(store));
 
     expect(screen.queryByRole('link', { name: 'Workspaces (3)' })).toBeInTheDocument();

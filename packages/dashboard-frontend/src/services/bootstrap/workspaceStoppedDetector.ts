@@ -17,7 +17,7 @@ import devfileApi from '@/services/devfileApi';
 import { DevWorkspaceStatus } from '@/services/helpers/types';
 import SessionStorageService, { SessionStorageKey } from '@/services/session-storage';
 import { Workspace } from '@/services/workspace-adapter';
-import { AppState } from '@/store';
+import { RootState } from '@/store';
 import { selectAllWorkspaces } from '@/store/Workspaces/selectors';
 
 export class WorkspaceRunningError extends Error {
@@ -64,7 +64,7 @@ export class WorkspaceStoppedDetector {
    * @param state the current app state
    * @returns the non-running (stopped) workspace
    */
-  public checkWorkspaceStopped(state: AppState): Workspace | undefined {
+  public checkWorkspaceStopped(state: RootState): Workspace | undefined {
     if (!this.isRedirectedFromNonDashboardUrl()) {
       return;
     }

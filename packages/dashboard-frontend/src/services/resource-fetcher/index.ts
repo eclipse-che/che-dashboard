@@ -12,7 +12,7 @@
 
 import { getAxiosInstance } from '@/services/axios-wrapper/getAxiosInstance';
 import { appendLink } from '@/services/resource-fetcher/appendLink';
-import { AppState } from '@/store';
+import { RootState } from '@/store';
 
 // source: https://github.com/eclipse/che-dashboard/blob/381ff548a9fff3537f1a29ce8e9b228f6c145338/src/components/service/resource-fetcher/resource-fetcher.service.ts
 
@@ -22,7 +22,7 @@ export type ResourceEntry = {
 };
 
 export class ResourceFetcherService {
-  public async prefetchResources(state: AppState): Promise<void> {
+  public async prefetchResources(state: RootState): Promise<void> {
     const prefetch = state.branding.data.configuration.prefetch;
     if (!prefetch) {
       return;

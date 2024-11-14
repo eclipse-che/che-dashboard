@@ -22,14 +22,14 @@ import { SshKeysDeleteModal } from '@/pages/UserPreferences/SshKeys/DeleteModal'
 import { SshKeysEmptyState } from '@/pages/UserPreferences/SshKeys/EmptyState';
 import { SshKeysList } from '@/pages/UserPreferences/SshKeys/List';
 import { AppAlerts } from '@/services/alerts/appAlerts';
-import { AppState } from '@/store';
-import * as SshKeysStore from '@/store/SshKeys';
+import { RootState } from '@/store';
+import { sshKeysActionCreators } from '@/store/SshKeys';
 import {
   selectSshKeys,
   selectSshKeysError,
   selectSshKeysIsLoading,
 } from '@/store/SshKeys/selectors';
-import * as UserIdStore from '@/store/User/Id';
+import { userIdActionCreators } from '@/store/User/Id';
 
 export type Props = MappedProps;
 export type State = {
@@ -209,7 +209,7 @@ class SshKeys extends React.PureComponent<Props, State> {
   }
 }
 
-const mapStateToProps = (state: AppState) => ({
+const mapStateToProps = (state: RootState) => ({
   sshKeys: selectSshKeys(state),
   sshKeysError: selectSshKeysError(state),
   sshKeysIsLoading: selectSshKeysIsLoading(state),
@@ -217,7 +217,7 @@ const mapStateToProps = (state: AppState) => ({
 
 const connector = connect(
   mapStateToProps,
-  { ...SshKeysStore.actionCreators, ...UserIdStore.actionCreators },
+  { ...sshKeysActionCreators, ...userIdActionCreators },
   null,
   {
     // forwardRef is mandatory for using `@react-mock/state` in unit tests

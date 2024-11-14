@@ -16,7 +16,7 @@ import { Provider } from 'react-redux';
 import renderer from 'react-test-renderer';
 import { Store } from 'redux';
 
-import { FakeStoreBuilder } from '@/store/__mocks__/storeBuilder';
+import { MockStoreBuilder } from '@/store/__mocks__/mockStore';
 import { selectApplications } from '@/store/ClusterInfo/selectors';
 
 import { ApplicationsMenu } from '..';
@@ -89,7 +89,7 @@ describe('About Menu', () => {
 });
 
 function createStore(): Store {
-  return new FakeStoreBuilder()
+  return new MockStoreBuilder()
     .withClusterInfo({
       applications: [
         {

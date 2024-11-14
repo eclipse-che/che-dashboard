@@ -20,7 +20,7 @@ import {
   ConnectionListener,
   WebsocketClient,
 } from '@/services/backend-client/websocketClient';
-import { AppState } from '@/store';
+import { RootState } from '@/store';
 import { selectBranding } from '@/store/Branding/selectors';
 
 type Props = MappedProps;
@@ -90,7 +90,7 @@ class BannerAlertWebSocket extends React.PureComponent<Props, State> {
   }
 }
 
-const mapStateToProps = (state: AppState) => ({
+const mapStateToProps = (state: RootState) => ({
   branding: selectBranding(state),
 });
 

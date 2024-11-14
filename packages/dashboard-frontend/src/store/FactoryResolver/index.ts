@@ -1,3 +1,5 @@
+/* c8 ignore start */
+
 /*
  * Copyright (c) 2018-2024 Red Hat, Inc.
  * This program and the accompanying materials are made
@@ -11,11 +13,10 @@
  */
 
 export { actionCreators as factoryResolverActionCreators } from '@/store/FactoryResolver/actions';
-export { reducer as factoryResolverReducer } from '@/store/FactoryResolver/reducer';
-export * from '@/store/FactoryResolver/selectors';
 export {
-  ActionCreators as FactoryResolverActionCreators,
+  reducer as factoryResolverReducer,
   State as FactoryResolverState,
   Resolver as FactoryResolverStateResolver,
   OAuthResponse,
-} from '@/store/FactoryResolver/types';
+} from '@/store/FactoryResolver/reducer';
+export * from '@/store/FactoryResolver/selectors';
