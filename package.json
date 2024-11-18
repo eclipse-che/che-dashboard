@@ -49,7 +49,6 @@
     "micromatch": "^4.0.8",
     "undici": "^5.28.3",
     "find-my-way": "9.0.1",
-    "webpack": "^5.94.0",
     "ws": "^8.17.1",
     "jsonpath-plus": "10.1.0"
   }
