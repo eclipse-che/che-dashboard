@@ -47,7 +47,6 @@
     "elliptic": "^6.6.1",
     "ip": "^2.0.1",
     "micromatch": "^4.0.8",
-    "string-width": "^4.2.3",
     "undici": "^5.28.3",
     "find-my-way": "9.0.1",
     "webpack": "^5.94.0",

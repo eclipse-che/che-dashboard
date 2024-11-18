@@ -152,6 +152,7 @@
 | [`domhandler@5.0.3`](git://github.com/fb55/domhandler.git) | BSD-2-Clause | clearlydefined |
 | [`domutils@3.1.0`](git://github.com/fb55/domutils.git) | BSD-2-Clause | #8391 |
 | [`duplexify@4.1.3`](git://github.com/mafintosh/duplexify) | MIT | clearlydefined |
+| [`eastasianwidth@0.2.0`](git://github.com/komagata/eastasianwidth.git) | MIT | clearlydefined |
 | [`ecc-jsbn@0.1.2`](https://github.com/quartzjer/ecc-jsbn.git) | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/ecc-jsbn/0.1.2) |
 | [`elliptic@6.6.1`](git@github.com:indutny/elliptic) | MIT | clearlydefined |
 | [`emoji-regex@8.0.0`](https://github.com/mathiasbynens/emoji-regex.git) | MIT | clearlydefined |
@@ -414,7 +415,7 @@
 | [`stream-buffers@3.0.2`](https://github.com/samcday/node-stream-buffer.git) | Unlicense | clearlydefined |
 | [`stream-shift@1.0.3`](https://github.com/mafintosh/stream-shift.git) | MIT | clearlydefined |
 | [`string-width-cjs@4.2.3`](https://github.com/sindresorhus/string-width.git) | MIT | #11627 |
-| [`string-width@4.2.3`](https://github.com/sindresorhus/string-width.git) | MIT | clearlydefined |
+| [`string-width@5.1.2`](https://github.com/sindresorhus/string-width.git) | MIT | clearlydefined |
 | [`string_decoder@1.3.0`](git://github.com/nodejs/string_decoder.git) | MIT | clearlydefined |
 | [`stringify-entities@4.0.4`](https://github.com/wooorm/stringify-entities.git) | MIT | clearlydefined |
 | [`strip-ansi-cjs@6.0.1`](https://github.com/chalk/strip-ansi.git) | MIT | #11643 |
