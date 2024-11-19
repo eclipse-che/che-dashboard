@@ -390,7 +390,7 @@ class CreatingStepFetchDevfile extends ProgressStep<Props, State> {
           <ExpandableWarning
             textBefore="Devfile resolve from a privatre repositry via an SSH url is not supported."
             errorMessage={helpers.errors.getMessage(error)}
-            textAfter="You can apply a Personal Access Token to be able to fetch the devfile.yaml content."
+            textAfter="Apply a Personal Access Token to fetch the devfile.yaml content."
           />
         ),
         actionCallbacks: [
