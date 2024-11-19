@@ -149,7 +149,7 @@
 | [`create-ecdh@4.0.4`](https://github.com/crypto-browserify/createECDH.git) | MIT | clearlydefined |
 | [`create-hash@1.2.0`](git@github.com:crypto-browserify/createHash.git) | MIT | clearlydefined |
 | [`create-hmac@1.1.7`](https://github.com/crypto-browserify/createHmac.git) | MIT | clearlydefined |
-| [`cross-spawn@7.0.3`](git@github.com:moxystudio/node-cross-spawn.git) | MIT | #17146 |
+| [`cross-spawn@7.0.6`](git@github.com:moxystudio/node-cross-spawn.git) | MIT | #17146 |
 | [`crypto-browserify@3.12.0`](git://github.com/crypto-browserify/crypto-browserify.git) | MIT | #1033 |
 | [`dashdash@1.14.1`](git://github.com/trentm/node-dashdash.git) | MIT | #14596 |
 | `date-fns@3.6.0` | MIT | #14000 |
@@ -170,9 +170,11 @@
 | [`domhandler@5.0.3`](git://github.com/fb55/domhandler.git) | BSD-2-Clause | clearlydefined |
 | [`domutils@3.1.0`](git://github.com/fb55/domutils.git) | BSD-2-Clause | #8391 |
 | [`duplexify@4.1.3`](git://github.com/mafintosh/duplexify) | MIT | clearlydefined |
+| `eastasianwidth@0.2.0` | MIT | clearlydefined |
 | [`ecc-jsbn@0.1.2`](https://github.com/quartzjer/ecc-jsbn.git) | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/ecc-jsbn/0.1.2) |
-| [`elliptic@6.5.7`](git@github.com:indutny/elliptic) | MIT | [CQ23022](https://dev.eclipse.org/ipzilla/show_bug.cgi?id=23022) |
+| [`elliptic@6.6.1`](git@github.com:indutny/elliptic) | MIT | clearlydefined |
 | [`emoji-regex@8.0.0`](https://github.com/mathiasbynens/emoji-regex.git) | MIT | clearlydefined |
+| [`emoji-regex@9.2.2`](https://github.com/mathiasbynens/emoji-regex.git) | MIT | clearlydefined |
 | `encoding@0.1.13` | MIT | #1016 |
 | [`end-of-stream@1.4.4`](git://github.com/mafintosh/end-of-stream.git) | MIT | clearlydefined |
 | [`entities@4.5.0`](git://github.com/fb55/entities.git) | BSD-2-Clause | #7910 |
@@ -494,6 +496,7 @@
 | [`stream-buffers@3.0.2`](https://github.com/samcday/node-stream-buffer.git) | Unlicense | clearlydefined |
 | [`stream-shift@1.0.3`](https://github.com/mafintosh/stream-shift.git) | MIT | clearlydefined |
 | `string-width@4.2.3` | MIT | clearlydefined |
+| `string-width@5.1.2` | MIT | clearlydefined |
 | [`string_decoder@1.3.0`](git://github.com/nodejs/string_decoder.git) | MIT | clearlydefined |
 | `stringify-entities@4.0.4` | MIT | clearlydefined |
 | `strip-ansi@6.0.1` | MIT | clearlydefined |

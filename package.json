@@ -44,14 +44,13 @@
     "@hapi/hoek": "^10.0.1",
     "axios": "^1.7.4",
     "braces": "^3.0.3",
-    "elliptic": "^6.5.7",
-    "ip": "^2.0.1",
-    "micromatch": "^4.0.8",
-    "string-width": "^4.2.3",
-    "undici": "^5.28.3",
+    "cross-spawn": "^7.0.6",
+    "elliptic": "^6.6.1",
     "find-my-way": "9.0.1",
-    "webpack": "^5.94.0",
-    "ws": "^8.17.1",
-    "jsonpath-plus": "10.1.0"
+    "ip": "^2.0.1",
+    "jsonpath-plus": "10.1.0",
+    "micromatch": "^4.0.8",
+    "undici": "^5.28.3",
+    "ws": "^8.17.1"
   }
 }

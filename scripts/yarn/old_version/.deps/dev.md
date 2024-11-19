@@ -620,6 +620,7 @@
 | [`sprintf-js@1.0.3`](https://github.com/alexei/sprintf.js.git) | BSD-3-Clause | #949 |
 | [`stack-utils@2.0.6`](https://github.com/tapjs/stack-utils.git) | MIT | clearlydefined |
 | [`string-length@4.0.2`](https://github.com/sindresorhus/string-length.git) | MIT | clearlydefined |
+| [`string-width@4.2.3`](https://github.com/sindresorhus/string-width.git) | MIT | clearlydefined |
 | [`string.prototype.matchall@4.0.10`](git+https://github.com/es-shims/String.prototype.matchAll.git) | MIT | #4571 |
 | [`string.prototype.trim@1.2.8`](git://github.com/es-shims/String.prototype.trim.git) | MIT | #10361 |
 | [`string.prototype.trimend@1.0.7`](git://github.com/es-shims/String.prototype.trimEnd.git) | MIT | #4564 |
