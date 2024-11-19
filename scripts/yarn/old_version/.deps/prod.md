@@ -131,7 +131,7 @@
 | [`create-ecdh@4.0.4`](https://github.com/crypto-browserify/createECDH.git) | MIT | clearlydefined |
 | [`create-hash@1.2.0`](git@github.com:crypto-browserify/createHash.git) | MIT | clearlydefined |
 | [`create-hmac@1.1.7`](https://github.com/crypto-browserify/createHmac.git) | MIT | clearlydefined |
-| [`cross-spawn@7.0.3`](git@github.com:moxystudio/node-cross-spawn.git) | MIT | #17146 |
+| [`cross-spawn@7.0.6`](git@github.com:moxystudio/node-cross-spawn.git) | MIT | #17146 |
 | [`crypto-browserify@3.12.0`](git://github.com/crypto-browserify/crypto-browserify.git) | MIT | #1033 |
 | [`dashdash@1.14.1`](git://github.com/trentm/node-dashdash.git) | MIT | #14596 |
 | [`date-fns@3.6.0`](https://github.com/date-fns/date-fns) | MIT | #14000 |
