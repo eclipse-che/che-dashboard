@@ -188,7 +188,7 @@ class CreatingStepFetchDevfile extends ProgressStep<Props, State> {
   }
 
   protected handleOpenDocumentationPage(): void {
-    window.open(this.props.branding.docs.startingAWorkspaceFromAGitRepositoryURL, '_blank');
+    window.open(this.props.branding.docs.startWorkspaceFromGit, '_blank');
   }
 
   protected handleTimeout(): void {

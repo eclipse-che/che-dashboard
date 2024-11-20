@@ -33,7 +33,7 @@ export type BrandingDocs = {
   faq?: string;
   storageTypes: string;
   webSocketTroubleshooting: string;
-  startingAWorkspaceFromAGitRepositoryURL: string;
+  startWorkspaceFromGit: string;
 };
 
 export type BrandingConfiguration = {
@@ -84,7 +84,7 @@ export const BRANDING_DEFAULT: BrandingData = {
       'https://www.eclipse.org/che/docs/stable/end-user-guide/url-parameter-for-the-workspace-storage/',
     webSocketTroubleshooting:
       'https://www.eclipse.org/che/docs/stable/end-user-guide/troubleshooting-network-problems/',
-    startingAWorkspaceFromAGitRepositoryURL:
+    startWorkspaceFromGit:
       'https://eclipse.dev/che/docs/stable/end-user-guide/starting-a-workspace-from-a-git-repository-url/',
   },
   configuration: {},
