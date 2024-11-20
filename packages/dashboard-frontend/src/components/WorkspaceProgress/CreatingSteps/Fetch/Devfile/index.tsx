@@ -35,6 +35,7 @@ import { AlertItem } from '@/services/helpers/types';
 import { isOAuthResponse, OAuthService } from '@/services/oauth';
 import SessionStorageService, { SessionStorageKey } from '@/services/session-storage';
 import { RootState } from '@/store';
+import { selectBranding } from '@/store/Branding';
 import { factoryResolverActionCreators, selectFactoryResolver } from '@/store/FactoryResolver';
 import { selectAllWorkspaces } from '@/store/Workspaces/selectors';
 
@@ -46,6 +47,13 @@ export class ApplyingDevfileError extends Error {
 }
 
 export class UnsupportedGitProviderError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = 'UnsupportedGitProviderError';
+  }
+}
+
+export class SSHPrivateRepositoryUrlError extends Error {
   constructor(message: string) {
     super(message);
     this.name = 'UnsupportedGitProviderError';
@@ -179,6 +187,10 @@ class CreatingStepFetchDevfile extends ProgressStep<Props, State> {
     this.clearStepError();
   }
 
+  protected handleOpenDocumentationPage(): void {
+    window.open(this.props.branding.docs.startWorkspaceFromGit, '_blank');
+  }
+
   protected handleTimeout(): void {
     const timeoutError = new Error(
       `Devfile hasn't been resolved in the last ${TIMEOUT_TO_RESOLVE_SEC} seconds.`,
@@ -220,7 +232,11 @@ class CreatingStepFetchDevfile extends ProgressStep<Props, State> {
         errorMessage === 'Failed to fetch devfile' ||
         errorMessage.startsWith('Could not reach devfile')
       ) {
-        throw new UnsupportedGitProviderError(errorMessage);
+        if (sourceUrl.startsWith('git@')) {
+          throw new SSHPrivateRepositoryUrlError(errorMessage);
+        } else {
+          throw new UnsupportedGitProviderError(errorMessage);
+        }
       }
       throw e;
     }
@@ -365,6 +381,34 @@ class CreatingStepFetchDevfile extends ProgressStep<Props, State> {
         ],
       };
     }
+    if (error instanceof SSHPrivateRepositoryUrlError) {
+      return {
+        key,
+        title: 'Warning',
+        variant: AlertVariant.warning,
+        children: (
+          <ExpandableWarning
+            textBefore="Devfile resolve from a privatre repositry via an SSH url is not supported."
+            errorMessage={helpers.errors.getMessage(error)}
+            textAfter="Apply a Personal Access Token to fetch the devfile.yaml content."
+          />
+        ),
+        actionCallbacks: [
+          {
+            title: 'Continue with default devfile',
+            callback: () => this.handleDefaultDevfile(key),
+          },
+          {
+            title: 'Reload',
+            callback: () => this.handleRestart(key),
+          },
+          {
+            title: 'Open Documentation page',
+            callback: () => this.handleOpenDocumentationPage(),
+          },
+        ],
+      };
+    }
     return {
       key,
       title: 'Failed to create the workspace',
@@ -417,6 +461,7 @@ class CreatingStepFetchDevfile extends ProgressStep<Props, State> {
 const mapStateToProps = (state: RootState) => ({
   allWorkspaces: selectAllWorkspaces(state),
   factoryResolver: selectFactoryResolver(state),
+  branding: selectBranding(state),
 });
 
 const connector = connect(mapStateToProps, factoryResolverActionCreators, null, {
