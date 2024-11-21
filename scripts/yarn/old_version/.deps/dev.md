@@ -521,6 +521,7 @@
 | [`path-is-absolute@1.0.1`](https://github.com/sindresorhus/path-is-absolute.git) | MIT | clearlydefined |
 | [`path-parse@1.0.7`](https://github.com/jbgutierrez/path-parse.git) | MIT | clearlydefined |
 | [`path-type@4.0.0`](https://github.com/sindresorhus/path-type.git) | MIT | clearlydefined |
+| [`picocolors@1.0.0`](https://github.com/alexeyraspopov/picocolors.git) | ISC | #14718 |
 | [`picomatch@2.3.1`](https://github.com/micromatch/picomatch.git) | MIT | clearlydefined |
 | [`pify@3.0.0`](https://github.com/sindresorhus/pify.git) | MIT | clearlydefined |
 | [`pirates@4.0.6`](https://github.com/danez/pirates.git) | MIT | #680 |
@@ -609,6 +610,7 @@
 | [`slice-ansi@4.0.0`](https://github.com/chalk/slice-ansi.git) | MIT | clearlydefined |
 | [`sort-keys@2.0.0`](https://github.com/sindresorhus/sort-keys.git) | MIT | clearlydefined |
 | [`source-list-map@2.0.1`](https://github.com/webpack/source-list-map.git) | MIT | #978 |
+| [`source-map-js@1.0.2`](https://github.com/7rulnik/source-map-js.git) | BSD-3-Clause | #15401 |
 | [`source-map-loader@4.0.1`](https://github.com/webpack-contrib/source-map-loader.git) | MIT | clearlydefined |
 | [`source-map-support@0.5.21`](https://github.com/evanw/node-source-map-support) | MIT | clearlydefined |
 | [`source-map@0.6.1`](http://github.com/mozilla/source-map.git) | BSD-3-Clause | #2417 |

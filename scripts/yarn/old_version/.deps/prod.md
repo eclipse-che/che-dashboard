@@ -330,13 +330,13 @@
 | [`path-scurry@1.11.1`](git+https://github.com/isaacs/path-scurry) | BlueOak-1.0.0 | clearlydefined |
 | [`pbkdf2@3.1.2`](https://github.com/crypto-browserify/pbkdf2.git) | MIT | clearlydefined |
 | [`performance-now@2.1.0`](git://github.com/braveg1rl/performance-now.git) | MIT | clearlydefined |
-| [`picocolors@1.0.0`](https://github.com/alexeyraspopov/picocolors.git) | ISC | #14718 |
+| [`picocolors@1.1.1`](https://github.com/alexeyraspopov/picocolors.git) | ISC | clearlydefined |
 | [`pino-abstract-transport@1.1.0`](git+https://github.com/pinojs/pino-abstract-transport.git) | MIT | clearlydefined |
 | [`pino-pretty@10.2.3`](git+ssh://git@github.com/pinojs/pino-pretty.git) | MIT | clearlydefined |
 | [`pino-std-serializers@6.2.2`](git+ssh://git@github.com/pinojs/pino-std-serializers.git) | MIT | clearlydefined |
 | [`pino@8.16.1`](git+https://github.com/pinojs/pino.git) | MIT | clearlydefined |
 | [`popper.js@1.16.1`](git+https://github.com/FezVrasta/popper.js.git) | MIT | [CQ22353](https://dev.eclipse.org/ipzilla/show_bug.cgi?id=22353) |
-| [`postcss@8.4.31`](https://github.com/postcss/postcss.git) | MIT | #3545 |
+| [`postcss@8.4.49`](https://github.com/postcss/postcss.git) | MIT | #3545 |
 | [`process-nextick-args@2.0.1`](https://github.com/calvinmetcalf/process-nextick-args.git) | MIT | clearlydefined |
 | [`process-warning@3.0.0`](git+https://github.com/fastify/process-warning.git) | MIT | clearlydefined |
 | [`process@0.11.10`](git://github.com/shtylman/node-process.git) | MIT | [CQ23452](https://dev.eclipse.org/ipzilla/show_bug.cgi?id=23452) |
@@ -407,7 +407,7 @@
 | [`signal-exit@4.1.0`](https://github.com/tapjs/signal-exit.git) | ISC | clearlydefined |
 | [`simple-oauth2@5.0.0`](https://github.com/lelylan/simple-oauth2) | Apache-2.0 | clearlydefined |
 | [`sonic-boom@3.7.0`](git+https://github.com/pinojs/sonic-boom.git) | MIT | clearlydefined |
-| [`source-map-js@1.0.2`](https://github.com/7rulnik/source-map-js.git) | BSD-3-Clause | #15401 |
+| [`source-map-js@1.2.1`](https://github.com/7rulnik/source-map-js.git) | BSD-3-Clause | #15272 |
 | [`space-separated-tokens@2.0.2`](https://github.com/wooorm/space-separated-tokens.git) | MIT | clearlydefined |
 | [`split2@4.2.0`](https://github.com/mcollina/split2.git) | ISC | clearlydefined |
 | [`sshpk@1.18.0`](git+https://github.com/joyent/node-sshpk.git) | MIT | clearlydefined |
