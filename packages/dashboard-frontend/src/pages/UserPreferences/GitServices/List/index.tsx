@@ -50,6 +50,7 @@ export type Props = {
 
 type State = {
   selectedItems: IGitOauth[];
+  sortedGitOauth: IGitOauth[];
 };
 
 export class GitServicesList extends React.PureComponent<Props, State> {
@@ -58,7 +59,18 @@ export class GitServicesList extends React.PureComponent<Props, State> {
 
     this.state = {
       selectedItems: [],
+      sortedGitOauth: this.sortServices(props.gitOauth),
     };
+  }
+
+  /**
+   * Sort by display name
+   */
+  private sortServices(gitOauth: IGitOauth[]): IGitOauth[] {
+    const services = cloneDeep(gitOauth);
+    return services.sort((serviceA, serviceB) => {
+      return GIT_OAUTH_PROVIDERS[serviceA.name].localeCompare(GIT_OAUTH_PROVIDERS[serviceB.name]);
+    });
   }
 
   private buildHeadRow(): React.ReactElement {
@@ -74,19 +86,19 @@ export class GitServicesList extends React.PureComponent<Props, State> {
   }
 
   private handleSelectItem(isSelected: boolean, rowIndex: number): void {
-    const { gitOauth } = this.props;
+    const { sortedGitOauth } = this.state;
 
     /* c8 ignore start */
     if (rowIndex === -1) {
       // Select all (header row checked)
-      const selectedItems = isSelected && gitOauth.length > 0 ? gitOauth : [];
+      const selectedItems = isSelected && sortedGitOauth.length > 0 ? sortedGitOauth : [];
       this.setState({ selectedItems });
       return;
     }
     /* c8 ignore stop */
 
     // Select single row
-    const selectedItem = gitOauth[rowIndex];
+    const selectedItem = sortedGitOauth[rowIndex];
     this.setState((prevState: State) => {
       return {
         selectedItems: isSelected
@@ -104,18 +116,9 @@ export class GitServicesList extends React.PureComponent<Props, State> {
   }
 
   private buildBody(): React.ReactNode[] {
-    const gitOauth = cloneDeep(this.props.gitOauth);
+    const { sortedGitOauth } = this.state;
 
-    return (
-      gitOauth
-        // sort by display name
-        .sort((serviceA, serviceB) => {
-          return GIT_OAUTH_PROVIDERS[serviceA.name].localeCompare(
-            GIT_OAUTH_PROVIDERS[serviceB.name],
-          );
-        })
-        .map((service, rowIndex) => this.buildBodyRow(service, rowIndex))
-    );
+    return sortedGitOauth.map((service, rowIndex) => this.buildBodyRow(service, rowIndex));
   }
 
   private buildBodyRow(service: IGitOauth, rowIndex: number) {
