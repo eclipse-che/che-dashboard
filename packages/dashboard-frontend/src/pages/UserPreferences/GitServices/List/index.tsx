@@ -23,6 +23,7 @@ import {
   Thead,
   Tr,
 } from '@patternfly/react-table';
+import cloneDeep from 'lodash/cloneDeep';
 import React from 'react';
 
 import { GIT_OAUTH_PROVIDERS } from '@/pages/UserPreferences/const';
@@ -49,6 +50,7 @@ export type Props = {
 
 type State = {
   selectedItems: IGitOauth[];
+  sortedGitOauth: IGitOauth[];
 };
 
 export class GitServicesList extends React.PureComponent<Props, State> {
@@ -57,7 +59,18 @@ export class GitServicesList extends React.PureComponent<Props, State> {
 
     this.state = {
       selectedItems: [],
+      sortedGitOauth: this.sortServices(props.gitOauth),
     };
+  }
+
+  /**
+   * Sort by display name
+   */
+  private sortServices(gitOauth: IGitOauth[]): IGitOauth[] {
+    const services = cloneDeep(gitOauth);
+    return services.sort((serviceA, serviceB) => {
+      return GIT_OAUTH_PROVIDERS[serviceA.name].localeCompare(GIT_OAUTH_PROVIDERS[serviceB.name]);
+    });
   }
 
   private buildHeadRow(): React.ReactElement {
@@ -73,19 +86,19 @@ export class GitServicesList extends React.PureComponent<Props, State> {
   }
 
   private handleSelectItem(isSelected: boolean, rowIndex: number): void {
-    const { gitOauth } = this.props;
+    const { sortedGitOauth } = this.state;
 
     /* c8 ignore start */
     if (rowIndex === -1) {
       // Select all (header row checked)
-      const selectedItems = isSelected && gitOauth.length > 0 ? gitOauth : [];
+      const selectedItems = isSelected && sortedGitOauth.length > 0 ? sortedGitOauth : [];
       this.setState({ selectedItems });
       return;
     }
     /* c8 ignore stop */
 
     // Select single row
-    const selectedItem = gitOauth[rowIndex];
+    const selectedItem = sortedGitOauth[rowIndex];
     this.setState((prevState: State) => {
       return {
         selectedItems: isSelected
@@ -102,71 +115,65 @@ export class GitServicesList extends React.PureComponent<Props, State> {
     });
   }
 
-  private buildBodyRows(): React.ReactNode[] {
-    const { isDisabled, gitOauth, providersWithToken, skipOauthProviders } = this.props;
+  private buildBody(): React.ReactNode[] {
+    const { sortedGitOauth } = this.state;
+
+    return sortedGitOauth.map((service, rowIndex) => this.buildBodyRow(service, rowIndex));
+  }
+
+  private buildBodyRow(service: IGitOauth, rowIndex: number) {
+    const { isDisabled, providersWithToken, skipOauthProviders } = this.props;
     const { selectedItems } = this.state;
 
+    const hasWarningMessage =
+      this.isRevokeEnabled(service.name) === false && this.hasOauthToken(service.name) === true;
+
+    const canRevoke = this.isRevokeEnabled(service.name) === true;
+    const canClear = this.hasSkipOauth(service.name) === true;
+    const hasToken = this.hasOauthToken(service.name) === true;
+    const rowDisabled = isDisabled || canRevoke === false || hasToken === false;
+    const kebabDisabled = (isDisabled || !canRevoke || !hasToken) && !canClear;
+
+    const actionItems = this.buildActionItems(service);
+
     return (
-      gitOauth
-        // sort by display name
-        .sort((serviceA, serviceB) => {
-          return GIT_OAUTH_PROVIDERS[serviceA.name].localeCompare(
-            GIT_OAUTH_PROVIDERS[serviceB.name],
-          );
-        })
-        .map((service, rowIndex) => {
-          const hasWarningMessage =
-            this.isRevokeEnabled(service.name) === false &&
-            this.hasOauthToken(service.name) === true;
-
-          const canRevoke = this.isRevokeEnabled(service.name) === true;
-          const canClear = this.hasSkipOauth(service.name) === true;
-          const hasToken = this.hasOauthToken(service.name) === true;
-          const rowDisabled = isDisabled || canRevoke === false || hasToken === false;
-          const kebabDisabled = (isDisabled || !canRevoke || !hasToken) && !canClear;
-
-          const actionItems = this.buildActionItems(service);
-
-          return (
-            <Tr key={service.name} data-testid={service.name}>
-              <Td
-                dataLabel="Git Service Checkbox"
-                select={{
-                  rowIndex,
-                  onSelect: (_event, isSelected) => this.handleSelectItem(isSelected, rowIndex),
-                  isSelected: selectedItems.includes(service),
-                  disable: rowDisabled,
-                }}
-              />
-              <Td dataLabel="Git Service Name">
-                {GIT_OAUTH_PROVIDERS[service.name]}{' '}
-                <GitServiceTooltip isVisible={hasWarningMessage} serverURI={service.endpointUrl} />
-              </Td>
-              <Td dataLabel="Git Service Endpoint URL">
-                <Button
-                  component="a"
-                  variant={ButtonVariant.link}
-                  href={service.endpointUrl}
-                  isInline={true}
-                  target="_blank"
-                  rel="noreferer"
-                >
-                  {service.endpointUrl}
-                </Button>
-              </Td>
-              <Td dataLabel="Git Service Authorization">
-                <GitServiceStatusIcon
-                  gitProvider={service.name}
-                  providersWithToken={providersWithToken}
-                  skipOauthProviders={skipOauthProviders}
-                />
-              </Td>
-              <Td dataLabel="Git Service Actions" isActionCell={true}>
-                <ActionsColumn isDisabled={kebabDisabled} items={actionItems} />
-              </Td>
-            </Tr>
-          );
-        })
+      <Tr key={service.name} data-testid={service.name}>
+        <Td
+          dataLabel="Git Service Checkbox"
+          select={{
+            rowIndex,
+            onSelect: (_event, isSelected) => this.handleSelectItem(isSelected, rowIndex),
+            isSelected: selectedItems.includes(service),
+            disable: rowDisabled,
+          }}
+        />
+        <Td dataLabel="Git Service Name">
+          {GIT_OAUTH_PROVIDERS[service.name]}{' '}
+          <GitServiceTooltip isVisible={hasWarningMessage} serverURI={service.endpointUrl} />
+        </Td>
+        <Td dataLabel="Git Service Endpoint URL">
+          <Button
+            component="a"
+            variant={ButtonVariant.link}
+            href={service.endpointUrl}
+            isInline={true}
+            target="_blank"
+            rel="noreferer"
+          >
+            {service.endpointUrl}
+          </Button>
+        </Td>
+        <Td dataLabel="Git Service Authorization">
+          <GitServiceStatusIcon
+            gitProvider={service.name}
+            providersWithToken={providersWithToken}
+            skipOauthProviders={skipOauthProviders}
+          />
+        </Td>
+        <Td dataLabel="Git Service Actions" isActionCell={true}>
+          <ActionsColumn isDisabled={kebabDisabled} items={actionItems} />
+        </Td>
+      </Tr>
     );
   }
 
@@ -224,7 +231,7 @@ export class GitServicesList extends React.PureComponent<Props, State> {
     const { selectedItems } = this.state;
 
     const headRow = this.buildHeadRow();
-    const bodyRows = this.buildBodyRows();
+    const bodyRows = this.buildBody();
 
     return (
       <React.Fragment>
