@@ -30,7 +30,7 @@ export function registerKubeConfigRoute(instance: FastifyInstance) {
         params: namespacedKubeConfigSchema,
         response: {
           204: {
-            description: 'The cube config file is successfully injected',
+            description: 'The Kube config file is successfully injected',
             type: 'null',
           },
         },
