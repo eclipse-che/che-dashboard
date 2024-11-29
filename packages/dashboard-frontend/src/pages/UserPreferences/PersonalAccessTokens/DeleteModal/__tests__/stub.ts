@@ -18,6 +18,7 @@ export const token1: api.PersonalAccessToken = {
   gitProviderEndpoint: 'https://github.com',
   tokenData: 'token-data-1',
   tokenName: 'token-name-1',
+  isOauth: false,
 };
 
 export const token2: api.PersonalAccessToken = {
@@ -26,4 +27,5 @@ export const token2: api.PersonalAccessToken = {
   gitProviderEndpoint: 'https://github.com',
   tokenData: 'token-data-2',
   tokenName: 'token-name-2',
+  isOauth: false,
 };

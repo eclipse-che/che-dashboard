@@ -80,6 +80,10 @@ export function toToken(secret: k8s.V1Secret): api.PersonalAccessToken {
     gitProvider: secret.metadata.annotations['che.eclipse.org/scm-provider-name'],
     gitProviderEndpoint: secret.metadata.annotations['che.eclipse.org/scm-url'],
     gitProviderOrganization: secret.metadata.annotations['che.eclipse.org/scm-organization'],
+    isOauth:
+      secret.metadata.annotations['che.eclipse.org/scm-personal-access-token-name'].startsWith(
+        'oauth2-',
+      ),
     tokenData: DUMMY_TOKEN_DATA,
   };
 }

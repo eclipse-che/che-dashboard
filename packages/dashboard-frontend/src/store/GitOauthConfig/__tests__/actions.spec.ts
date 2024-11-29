@@ -26,12 +26,11 @@ import {
 import { createMockStore } from '@/store/__mocks__/mockActionsTestStore';
 import {
   actionCreators,
-  findUserToken,
+  findOauthToken,
   gitOauthDeleteAction,
   gitOauthErrorAction,
   gitOauthReceiveAction,
   gitOauthRequestAction,
-  isTokenGitProvider,
   skipOauthReceiveAction,
 } from '@/store/GitOauthConfig/actions';
 import { IGitOauth } from '@/store/GitOauthConfig/reducer';
@@ -111,6 +110,7 @@ describe('GitOauthConfig', () => {
             gitProviderEndpoint: 'https://github.com',
             tokenData: 'test-token-data',
             tokenName: 'test-token',
+            isOauth: true,
           },
         ] as api.PersonalAccessToken[];
         const mockOauthProviders = ['github'] as api.GitOauthProvider[];
@@ -294,32 +294,6 @@ describe('GitOauthConfig', () => {
     });
   });
 
-  describe('isTokenGitProvider', () => {
-    it('should return true for oauth2 git provider', () => {
-      const gitProvider = 'oauth2-provider';
-      const result = isTokenGitProvider(gitProvider);
-      expect(result).toBe(true);
-    });
-
-    it('should return true for bitbucket-server token format', () => {
-      const gitProvider = `che-token-<user-id>-<${window.location.hostname}>`;
-      const result = isTokenGitProvider(gitProvider);
-      expect(result).toBe(true);
-    });
-
-    it('should return false for non-oauth2 and non-bitbucket-server token format', () => {
-      const gitProvider = 'github';
-      const result = isTokenGitProvider(gitProvider);
-      expect(result).toBe(false);
-    });
-
-    it('should return false for invalid bitbucket-server token format', () => {
-      const gitProvider = `che-token-<user-id>-<invalid-hostname>`;
-      const result = isTokenGitProvider(gitProvider);
-      expect(result).toBe(false);
-    });
-  });
-
   describe('findUserToken', () => {
     const mockGitOauth = {
       name: 'github',
@@ -330,20 +304,26 @@ describe('GitOauthConfig', () => {
     const mockTokens = [
       {
         gitProviderEndpoint: 'https://github.com/',
-        gitProvider: 'oauth2-provider',
+        gitProvider: 'github',
+        tokenName: 'oauth2-provider',
+        isOauth: true,
       },
       {
         gitProviderEndpoint: 'https://bitbucket.org/',
-        gitProvider: 'oauth2-provider',
+        gitProvider: 'bitbucket',
+        tokenName: 'oauth2-provider',
+        isOauth: true,
       },
       {
-        gitProviderEndpoint: 'https://github.com/',
-        gitProvider: `che-token-<user-id>-<${window.location.hostname}>`,
+        gitProviderEndpoint: 'https://bitbucket-server.com/',
+        gitProvider: 'bitbucket-server',
+        tokenName: `che-token-<user-id>-<${window.location.hostname}>`,
+        isOauth: true,
       },
     ] as unknown as api.PersonalAccessToken[];
 
     it('should return providers with token when matching token is found', () => {
-      const result = findUserToken(mockGitOauth, mockTokens);
+      const result = findOauthToken(mockGitOauth, mockTokens);
       expect(result).toEqual(['github']);
     });
 
@@ -353,7 +333,20 @@ describe('GitOauthConfig', () => {
         endpointUrl: 'https://gitlab.com/',
       } as IGitOauth;
 
-      const result = findUserToken(mockGitOauthNoMatch, mockTokens);
+      const result = findOauthToken(mockGitOauthNoMatch, mockTokens);
+      expect(result).toEqual([]);
+    });
+
+    it('should return an empty array with PAT', () => {
+      const mockTokens = [
+        {
+          gitProviderEndpoint: 'https://github.com/',
+          gitProvider: 'github',
+          tokenName: 'token-name',
+        },
+      ] as unknown as api.PersonalAccessToken[];
+
+      const result = findOauthToken(mockGitOauth, mockTokens);
       expect(result).toEqual([]);
     });
 
@@ -369,28 +362,31 @@ describe('GitOauthConfig', () => {
           gitProvider: 'oauth2-provider',
           cheUserId: 'test-user',
           tokenData: 'test-token-data',
-          tokenName: 'test-token',
+          tokenName: 'oauth2-token-name',
+          isOauth: true,
         } as unknown as api.PersonalAccessToken,
       ];
 
-      const result = findUserToken(mockGitOauthWithTrailingSlash, mockTokensWithTrailingSlash);
+      const result = findOauthToken(mockGitOauthWithTrailingSlash, mockTokensWithTrailingSlash);
       expect(result).toEqual(['github']);
     });
 
     it('should handle bitbucket-server token format', () => {
       const mockGitOauthBitbucket = {
         name: 'bitbucket',
-        endpointUrl: 'https://bitbucket.org/',
+        endpointUrl: 'https://bitbucket-server.org/',
       } as IGitOauth;
 
       const mockTokensBitbucket = [
         {
-          gitProviderEndpoint: 'https://bitbucket.org/',
-          gitProvider: `che-token-<user-id>-<${window.location.hostname}>`,
+          gitProviderEndpoint: 'https://bitbucket-server.org/',
+          gitProvider: 'bitbucket-server',
+          tokenName: `che-token-<user-id>-<${window.location.hostname}>`,
+          isOauth: true,
         } as unknown as api.PersonalAccessToken,
       ];
 
-      const result = findUserToken(mockGitOauthBitbucket, mockTokensBitbucket);
+      const result = findOauthToken(mockGitOauthBitbucket, mockTokensBitbucket);
       expect(result).toEqual(['bitbucket']);
     });
   });

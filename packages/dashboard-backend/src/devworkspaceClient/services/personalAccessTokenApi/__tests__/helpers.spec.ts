@@ -104,6 +104,7 @@ describe('Helpers for Personal Access Token API', () => {
         gitProviderEndpoint: 'https://github.com',
         gitProviderOrganization: undefined,
         tokenData: DUMMY_TOKEN_DATA,
+        isOauth: false,
       });
     });
 
@@ -128,6 +129,7 @@ describe('Helpers for Personal Access Token API', () => {
         gitProvider: 'github',
         gitProviderEndpoint: 'https://github.com',
         tokenData: 'base64-encoded-token-data',
+        isOauth: false,
       };
 
       const secret = toSecret(namespace, token);
@@ -163,6 +165,7 @@ describe('Helpers for Personal Access Token API', () => {
         gitProviderEndpoint: 'https://dev.azure.com',
         gitProviderOrganization: 'azure-org',
         tokenData: 'base64-encoded-token-data',
+        isOauth: false,
       };
 
       const secret = toSecret(namespace, token);
@@ -198,6 +201,7 @@ describe('Helpers for Personal Access Token API', () => {
         gitProvider: 'github',
         gitProviderEndpoint: 'https://github.com',
         tokenData: DUMMY_TOKEN_DATA,
+        isOauth: false,
       };
 
       expect(() => toSecret(namespace, token)).toThrowError();
