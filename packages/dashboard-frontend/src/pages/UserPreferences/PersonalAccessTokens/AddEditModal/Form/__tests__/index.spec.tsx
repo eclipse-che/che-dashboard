@@ -71,6 +71,7 @@ describe('AddEditModalForm', () => {
       tokenData,
       gitProvider,
       gitProviderEndpoint,
+      isOauth: false,
     };
     patWithOrganization = {
       ...pat,

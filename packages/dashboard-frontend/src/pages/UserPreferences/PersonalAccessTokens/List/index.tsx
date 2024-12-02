@@ -29,7 +29,7 @@ import { PersonalAccessTokenListToolbar } from '@/pages/UserPreferences/Personal
 
 const COLUMN_NAMES: Omit<
   Record<keyof api.PersonalAccessToken, string>,
-  'cheUserId' | 'tokenData'
+  'cheUserId' | 'tokenData' | 'isOauth'
 > = {
   tokenName: 'Name',
   gitProvider: 'Provider',

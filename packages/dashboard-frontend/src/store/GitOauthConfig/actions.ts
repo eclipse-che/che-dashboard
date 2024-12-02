@@ -14,11 +14,7 @@ import common, { api } from '@eclipse-che/common';
 import { createAction } from '@reduxjs/toolkit';
 
 import { provisionKubernetesNamespace } from '@/services/backend-client/kubernetesNamespaceApi';
-import {
-  deleteOAuthToken,
-  getOAuthProviders,
-  getOAuthToken,
-} from '@/services/backend-client/oAuthApi';
+import { deleteOAuthToken, getOAuthProviders } from '@/services/backend-client/oAuthApi';
 import { fetchTokens } from '@/services/backend-client/personalAccessTokenApi';
 import {
   deleteSkipOauthProvider,
@@ -80,22 +76,11 @@ export const actionCreators = {
         const defaultKubernetesNamespace = selectDefaultNamespace(getState());
         const tokens = await fetchTokens(defaultKubernetesNamespace.name);
 
-        const promises: Promise<void>[] = [];
         for (const gitOauth of supportedGitOauth) {
-          promises.push(
-            getOAuthToken(gitOauth.name)
-              .then(() => {
-                providersWithToken.push(gitOauth.name);
-              })
-              .catch(() => {
-                // if `api/oauth/token` doesn't return a user's token,
-                // then check if there is the user's token in a Kubernetes Secret
-                providersWithToken.push(...findUserToken(gitOauth, tokens));
-              }),
-          );
+          // check if there is an oAuth token in a Kubernetes Secret
+          providersWithToken.push(...findOauthToken(gitOauth, tokens));
         }
-        promises.push(dispatch(actionCreators.requestSkipAuthorizationProviders()));
-        await Promise.allSettled(promises);
+        await dispatch(actionCreators.requestSkipAuthorizationProviders());
 
         dispatch(
           gitOauthReceiveAction({
@@ -162,7 +147,7 @@ export const actionCreators = {
 /**
  * Check the user's token in a Kubernetes Secret
  */
-export function findUserToken(gitOauth: IGitOauth, tokens: api.PersonalAccessToken[]) {
+export function findOauthToken(gitOauth: IGitOauth, tokens: api.PersonalAccessToken[]) {
   const providersWithToken: api.GitOauthProvider[] = [];
 
   const normalizedGitOauthEndpoint = gitOauth.endpointUrl.endsWith('/')
@@ -175,25 +160,10 @@ export function findUserToken(gitOauth: IGitOauth, tokens: api.PersonalAccessTok
       : token.gitProviderEndpoint;
 
     // compare Git OAuth Endpoint url ONLY with OAuth tokens
-    const gitProvider = token.gitProvider;
-    if (
-      isTokenGitProvider(gitProvider) &&
-      normalizedGitOauthEndpoint === normalizedTokenGitProviderEndpoint
-    ) {
+    if (token.isOauth && normalizedGitOauthEndpoint === normalizedTokenGitProviderEndpoint) {
       providersWithToken.push(gitOauth.name);
       break;
     }
   }
   return providersWithToken;
-}
-
-/**
- * For compatibility with the old format of the git provider value
- */
-export function isTokenGitProvider(gitProvider: string): boolean {
-  return (
-    gitProvider.startsWith('oauth2') ||
-    // The git provider value format of a bitbucket-server token is 'che-token-<user id>-<che hostname>'
-    new RegExp(`^che-token-<.*>-<${window.location.hostname}>$`).test(gitProvider)
-  );
 }

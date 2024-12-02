@@ -92,6 +92,7 @@ export class AddEditModalForm extends React.PureComponent<Props, State> {
         gitProviderOrganization,
         tokenName,
         tokenData,
+        isOauth: false,
       };
       const isValid =
         gitProviderEndpointIsValid &&
@@ -106,6 +107,7 @@ export class AddEditModalForm extends React.PureComponent<Props, State> {
         gitProvider,
         tokenName,
         tokenData,
+        isOauth: false,
       };
       const isValid = gitProviderEndpointIsValid && tokenNameIsValid && tokenDataIsValid;
       this.props.onChange(token, isValid);
