@@ -294,7 +294,7 @@ describe('GitOauthConfig', () => {
     });
   });
 
-  describe('findUserToken', () => {
+  describe('findOauthToken', () => {
     const mockGitOauth = {
       name: 'github',
       endpointUrl: 'https://github.com/',
