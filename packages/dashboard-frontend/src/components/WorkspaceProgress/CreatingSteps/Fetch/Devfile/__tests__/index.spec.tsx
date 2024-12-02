@@ -694,6 +694,32 @@ describe('Creating steps, fetching a devfile', () => {
     const host = 'che-host';
     const protocol = 'http://';
     const factoryUrl = 'git@github.com:user/repository-name.git';
+    const emptyStore = new MockStoreBuilder().build();
+    const sshPrivateRepoAllertItem = expect.objectContaining({
+      title: 'Warning',
+      variant: AlertVariant.warning,
+      children: (
+        <ExpandableWarning
+          textBefore="Devfile resolve from a privatre repositry via an SSH url is not supported."
+          errorMessage="Could not reach devfile"
+          textAfter="Apply a Personal Access Token to fetch the devfile.yaml content."
+        />
+      ),
+      actionCallbacks: [
+        expect.objectContaining({
+          title: 'Continue with default devfile',
+          callback: expect.any(Function),
+        }),
+        expect.objectContaining({
+          title: 'Reload',
+          callback: expect.any(Function),
+        }),
+        expect.objectContaining({
+          title: 'Open Documentation page',
+          callback: expect.any(Function),
+        }),
+      ],
+    });
 
     let spyWindowLocation: jest.SpyInstance;
     let location: Location;
@@ -746,43 +772,31 @@ describe('Creating steps, fetching a devfile', () => {
     });
 
     it('should show warning on SSH url', async () => {
-      const expectAlertItem = expect.objectContaining({
-        title: 'Warning',
-        variant: AlertVariant.warning,
-        children: (
-          <ExpandableWarning
-            textBefore="Devfile resolve from a privatre repositry via an SSH url is not supported."
-            errorMessage="Could not reach devfile"
-            textAfter="Apply a Personal Access Token to fetch the devfile.yaml content."
-          />
-        ),
-        actionCallbacks: [
-          expect.objectContaining({
-            title: 'Continue with default devfile',
-            callback: expect.any(Function),
-          }),
-          expect.objectContaining({
-            title: 'Reload',
-            callback: expect.any(Function),
-          }),
-          expect.objectContaining({
-            title: 'Open Documentation page',
-            callback: expect.any(Function),
-          }),
-        ],
-      });
       searchParams = new URLSearchParams({
         [FACTORY_URL_ATTR]: 'git@github.com:user/repository.git',
       });
-      const emptyStore = new MockStoreBuilder().build();
+
       renderComponent(emptyStore, searchParams, location);
 
       await jest.advanceTimersByTimeAsync(MIN_STEP_DURATION_MS);
-
       await waitFor(() => expect(mockOnNextStep).not.toHaveBeenCalled);
 
       expect(mockOpenOAuthPage).not.toHaveBeenCalled();
-      expect(mockOnError).toHaveBeenCalledWith(expectAlertItem);
+      expect(mockOnError).toHaveBeenCalledWith(sshPrivateRepoAllertItem);
+    });
+
+    it('should show warning on bitbucket-server SSH url', async () => {
+      searchParams = new URLSearchParams({
+        [FACTORY_URL_ATTR]: 'ssh://git@bitbucket-server.com/~user/repository.git',
+      });
+
+      renderComponent(emptyStore, searchParams, location);
+
+      await jest.advanceTimersByTimeAsync(MIN_STEP_DURATION_MS);
+      await waitFor(() => expect(mockOnNextStep).not.toHaveBeenCalled);
+
+      expect(mockOpenOAuthPage).not.toHaveBeenCalled();
+      expect(mockOnError).toHaveBeenCalledWith(sshPrivateRepoAllertItem);
     });
   });
 });

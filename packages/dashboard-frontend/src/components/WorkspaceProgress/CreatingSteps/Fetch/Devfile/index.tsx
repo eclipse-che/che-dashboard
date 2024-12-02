@@ -77,6 +77,7 @@ export type State = ProgressStepState & {
 
 class CreatingStepFetchDevfile extends ProgressStep<Props, State> {
   protected readonly name = 'Inspecting repo';
+  private readonly sshPattern = new RegExp('(git@|(ssh|git)://).*');
 
   constructor(props: Props) {
     super(props);
@@ -232,7 +233,8 @@ class CreatingStepFetchDevfile extends ProgressStep<Props, State> {
         errorMessage === 'Failed to fetch devfile' ||
         errorMessage.startsWith('Could not reach devfile')
       ) {
-        if (sourceUrl.startsWith('git@')) {
+        // check if the source url is an SSH url
+        if (this.sshPattern.test(sourceUrl)) {
           throw new SSHPrivateRepositoryUrlError(errorMessage);
         } else {
           throw new UnsupportedGitProviderError(errorMessage);
