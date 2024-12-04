@@ -1,0 +1,11 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`BasicViewer snapshot 1`] = `
+<div
+  className="basicViewer"
+>
+  <div
+    id="basic-viewer-id"
+  />
+</div>
+`;

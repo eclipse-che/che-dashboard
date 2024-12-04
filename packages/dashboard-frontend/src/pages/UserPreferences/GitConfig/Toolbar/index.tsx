@@ -17,19 +17,47 @@ import {
   ToolbarContent,
   ToolbarItem,
 } from '@patternfly/react-core';
-import { PlusCircleIcon } from '@patternfly/react-icons';
+import { CodeIcon, ListIcon, PlusCircleIcon } from '@patternfly/react-icons';
 import React from 'react';
 
 export type Props = {
+  mode: 'form' | 'viewer';
   onAdd: () => void;
+  onChangeMode: (mode: 'form' | 'viewer') => void;
 };
 
 export class GitConfigToolbar extends React.PureComponent<Props> {
+  private handleModeChange(mode: 'form' | 'viewer'): void {
+    this.setState({ mode });
+    this.props.onChangeMode(mode);
+  }
+
   public render(): React.ReactElement {
+    const { mode } = this.props;
+
     return (
       <Toolbar style={{ paddingBottom: 0 }}>
         <ToolbarContent>
           <ToolbarItem alignment={{ default: 'alignRight' }}>
+            {mode === 'form' ? (
+              <Button
+                variant={ButtonVariant.link}
+                icon={<CodeIcon />}
+                iconPosition="left"
+                onClick={() => this.handleModeChange('viewer')}
+              >
+                Switch to Viewer
+              </Button>
+            ) : (
+              <Button
+                variant={ButtonVariant.link}
+                icon={<ListIcon />}
+                iconPosition="left"
+                onClick={() => this.handleModeChange('form')}
+              >
+                Switch to Form
+              </Button>
+            )}
             <Button
               variant={ButtonVariant.link}
               icon={<PlusCircleIcon />}
