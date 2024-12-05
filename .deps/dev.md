@@ -570,7 +570,7 @@
 | `path-key@4.0.0` | MIT | clearlydefined |
 | [`path-parse@1.0.7`](https://github.com/jbgutierrez/path-parse.git) | MIT | clearlydefined |
 | `path-type@4.0.0` | MIT | clearlydefined |
-| `picocolors@1.1.1` | ISC | clearlydefined |
+| `picocolors@1.0.0` | ISC | #14718 |
 | [`picomatch@2.3.1`](https://github.com/micromatch/picomatch) | MIT | clearlydefined |
 | `pify@3.0.0` | MIT | clearlydefined |
 | `pify@4.0.1` | MIT | clearlydefined |
@@ -613,7 +613,6 @@
 | [`postcss-svgo@6.0.0`](https://github.com/cssnano/cssnano) | MIT | clearlydefined |
 | [`postcss-unique-selectors@6.0.0`](https://github.com/cssnano/cssnano) | MIT | clearlydefined |
 | [`postcss-value-parser@4.2.0`](https://github.com/TrySound/postcss-value-parser.git) | MIT | clearlydefined |
-| [`postcss@8.4.38`](https://postcss.org/) | MIT | #3545 |
 | [`prelude-ls@1.2.1`](git://github.com/gkz/prelude-ls.git) | MIT | clearlydefined |
 | [`prettier-linter-helpers@1.0.0`](git+https://github.com/prettier/prettier-linter-helpers.git) | MIT | clearlydefined |
 | [`prettier@3.2.5`](https://prettier.io) | MIT | #13320 |
@@ -674,7 +673,7 @@
 | `slice-ansi@4.0.0` | MIT | clearlydefined |
 | `sort-keys@2.0.0` | MIT | clearlydefined |
 | [`source-list-map@2.0.1`](https://github.com/webpack/source-list-map.git) | MIT | #978 |
-| [`source-map-js@1.2.0`](https://github.com/7rulnik/source-map-js) | BSD-3-Clause | #15272 |
+| [`source-map-js@1.0.2`](https://github.com/7rulnik/source-map-js) | BSD-3-Clause | #15401 |
 | [`source-map-loader@4.0.1`](https://github.com/webpack-contrib/source-map-loader) | MIT | clearlydefined |
 | [`source-map-loader@5.0.0`](https://github.com/webpack-contrib/source-map-loader) | MIT | clearlydefined |
 | [`source-map-support@0.5.13`](https://github.com/evanw/node-source-map-support) | MIT | clearlydefined |

@@ -394,7 +394,7 @@
 | [`path-scurry@1.11.1`](git+https://github.com/isaacs/path-scurry) | BlueOak-1.0.0 | clearlydefined |
 | [`pbkdf2@3.1.2`](https://github.com/crypto-browserify/pbkdf2.git) | MIT | clearlydefined |
 | [`performance-now@2.1.0`](git://github.com/braveg1rl/performance-now.git) | MIT | clearlydefined |
-| `picocolors@1.0.0` | ISC | #14718 |
+| `picocolors@1.1.1` | ISC | clearlydefined |
 | [`pino-abstract-transport@1.1.0`](git+https://github.com/pinojs/pino-abstract-transport.git) | MIT | clearlydefined |
 | [`pino-abstract-transport@1.2.0`](git+https://github.com/pinojs/pino-abstract-transport.git) | MIT | clearlydefined |
 | [`pino-pretty@10.2.3`](git+ssh://git@github.com/pinojs/pino-pretty.git) | MIT | clearlydefined |
@@ -403,7 +403,7 @@
 | [`pino@8.16.1`](git+https://github.com/pinojs/pino.git) | MIT | clearlydefined |
 | [`pino@9.1.0`](git+https://github.com/pinojs/pino.git) | MIT | clearlydefined |
 | [`popper.js@1.16.1`](git+https://github.com/FezVrasta/popper.js.git) | MIT | [CQ22353](https://dev.eclipse.org/ipzilla/show_bug.cgi?id=22353) |
-| [`postcss@8.4.31`](https://postcss.org/) | MIT | #3545 |
+| [`postcss@8.4.49`](https://postcss.org/) | MIT | #3545 |
 | [`proc-log@4.2.0`](https://github.com/npm/proc-log.git) | ISC | clearlydefined |
 | [`process-warning@2.3.0`](git+https://github.com/fastify/process-warning.git) | MIT | clearlydefined |
 | [`process-warning@3.0.0`](git+https://github.com/fastify/process-warning.git) | MIT | clearlydefined |
@@ -486,7 +486,7 @@
 | [`socks@2.8.3`](https://github.com/JoshGlazebrook/socks.git) | MIT | #13459 |
 | [`sonic-boom@3.7.0`](git+https://github.com/pinojs/sonic-boom.git) | MIT | clearlydefined |
 | [`sonic-boom@4.0.1`](git+https://github.com/pinojs/sonic-boom.git) | MIT | clearlydefined |
-| [`source-map-js@1.0.2`](https://github.com/7rulnik/source-map-js) | BSD-3-Clause | #15401 |
+| [`source-map-js@1.2.1`](https://github.com/7rulnik/source-map-js) | BSD-3-Clause | #15272 |
 | `space-separated-tokens@2.0.2` | MIT | clearlydefined |
 | [`split2@4.2.0`](https://github.com/mcollina/split2.git) | ISC | clearlydefined |
 | [`sprintf-js@1.1.3`](https://github.com/alexei/sprintf.js.git) | BSD-3-Clause | clearlydefined |
