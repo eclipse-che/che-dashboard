@@ -29,7 +29,10 @@ export class GitConfigViewer extends React.PureComponent<Props> {
    */
   private fromGitConfig(gitConfig: api.IGitConfig['gitconfig']): string {
     const serializer = new ini.Serializer();
-    const gitconfigStr = serializer.serialize(gitConfig);
+    const gitconfigStr = serializer
+      .serialize(gitConfig)
+      .replace(/\n/g, '\n    ')
+      .replace(/ {4}\[/g, '[');
     return gitconfigStr;
   }
 

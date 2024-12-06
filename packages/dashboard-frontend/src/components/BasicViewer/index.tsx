@@ -12,7 +12,7 @@
 
 import { defaultHighlightStyle, syntaxHighlighting } from '@codemirror/language';
 import { EditorState } from '@codemirror/state';
-import { EditorView, lineNumbers } from '@codemirror/view';
+import { EditorView } from '@codemirror/view';
 import React from 'react';
 
 import styles from '@/components/BasicViewer/index.module.css';
@@ -52,11 +52,7 @@ export class BasicViewer extends React.PureComponent<Props> {
   private getEditorState(): EditorState {
     return EditorState.create({
       doc: this.props.value,
-      extensions: [
-        lineNumbers(),
-        syntaxHighlighting(defaultHighlightStyle),
-        EditorState.readOnly.of(true),
-      ],
+      extensions: [syntaxHighlighting(defaultHighlightStyle), EditorState.readOnly.of(true)],
     });
   }
 
