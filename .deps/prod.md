@@ -171,7 +171,7 @@
 | [`domutils@3.1.0`](git://github.com/fb55/domutils.git) | BSD-2-Clause | #8391 |
 | [`duplexify@4.1.3`](git://github.com/mafintosh/duplexify) | MIT | clearlydefined |
 | `eastasianwidth@0.2.0` | MIT | clearlydefined |
-| [`ecc-jsbn@0.1.2`](https://github.com/quartzjer/ecc-jsbn.git) | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/ecc-jsbn/0.1.2) |
+| [`ecc-jsbn@0.1.2`](https://github.com/quartzjer/ecc-jsbn.git) | MIT | #17389 |
 | [`elliptic@6.6.1`](git@github.com:indutny/elliptic) | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/elliptic/6.6.1) |
 | [`emoji-regex@8.0.0`](https://github.com/mathiasbynens/emoji-regex.git) | MIT | clearlydefined |
 | [`emoji-regex@9.2.2`](https://github.com/mathiasbynens/emoji-regex.git) | MIT | clearlydefined |
@@ -559,6 +559,6 @@
 | [`wrappy@1.0.2`](https://github.com/npm/wrappy) | ISC | clearlydefined |
 | [`yallist@4.0.0`](git+https://github.com/isaacs/yallist.git) | ISC | clearlydefined |
 | [`yallist@5.0.0`](git+https://github.com/isaacs/yallist.git) | BlueOak-1.0.0 | clearlydefined |
-| [`yaml@2.6.0`](https://eemeli.org/yaml/) | ISC | clearlydefined |
+| [`yaml@2.6.0`](https://eemeli.org/yaml/) | ISC | #17714 |
 | `yocto-queue@0.1.0` | MIT | clearlydefined |
 | `zwitch@2.0.4` | MIT | clearlydefined |
