@@ -27,6 +27,8 @@ import { MockStoreBuilder } from '@/store/__mocks__/mockStore';
 import { gitConfigActionCreators } from '@/store/GitConfig';
 
 jest.mock('@/pages/UserPreferences/GitConfig/Form');
+jest.mock('@/pages/UserPreferences/GitConfig/Viewer');
+jest.mock('@/pages/UserPreferences/GitConfig/Toolbar');
 
 // mute output
 console.error = jest.fn();
@@ -193,6 +195,17 @@ describe('GitConfig', () => {
       // mock should be called
       expect(mockRequestGitConfig).toHaveBeenCalled();
     });
+  });
+
+  test('switch to viewer mode', async () => {
+    renderComponent(store);
+
+    expect(screen.getByTestId('toolbar-mode')).toHaveTextContent('form');
+
+    const switchModeButton = screen.getByRole('button', { name: 'Switch Mode' });
+    await userEvent.click(switchModeButton);
+
+    await waitFor(() => expect(screen.getByTestId('toolbar-mode')).toHaveTextContent('viewer'));
   });
 });
 

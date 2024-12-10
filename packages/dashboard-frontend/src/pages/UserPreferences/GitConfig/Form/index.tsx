@@ -14,17 +14,17 @@ import { Button, Flex, Form, PageSection, PageSectionVariants } from '@patternfl
 import React, { FormEvent } from 'react';
 
 import { GitConfigSectionUser } from '@/pages/UserPreferences/GitConfig/Form/SectionUser';
-import * as GitConfigStore from '@/store/GitConfig';
+import { GitConfig } from '@/store/GitConfig';
 
 export type Props = {
   isLoading: boolean;
-  gitConfig: GitConfigStore.GitConfig;
-  onSave: (gitConfig: GitConfigStore.GitConfig) => Promise<void>;
+  gitConfig: GitConfig;
+  onSave: (gitConfig: GitConfig) => Promise<void>;
   onReload: () => Promise<void>;
 };
 export type State = {
   isValid: boolean;
-  nextGitConfig: GitConfigStore.GitConfig | undefined;
+  nextGitConfig: GitConfig | undefined;
 };
 
 export class GitConfigForm extends React.PureComponent<Props, State> {
@@ -62,7 +62,7 @@ export class GitConfigForm extends React.PureComponent<Props, State> {
     }
   }
 
-  private handleChangeConfig(gitConfig: GitConfigStore.GitConfig, isValid: boolean): void {
+  private handleChangeConfig(gitConfig: GitConfig, isValid: boolean): void {
     this.setState({
       nextGitConfig: gitConfig,
       isValid,

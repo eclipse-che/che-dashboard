@@ -89,30 +89,35 @@ class UserPreferences extends React.PureComponent<Props, State> {
         <PageSection variant={PageSectionVariants.light}>
           <Title headingLevel={'h1'}>User Preferences</Title>
         </PageSection>
-        <Tabs
-          id="user-preferences-tabs"
-          style={{ backgroundColor: 'var(--pf-global--BackgroundColor--100)' }}
-          activeKey={activeTabKey}
-          onSelect={(event, tabKey) => this.handleTabClick(event, tabKey)}
-          mountOnEnter={true}
-          unmountOnExit={true}
-        >
-          <Tab eventKey={UserPreferencesTab.CONTAINER_REGISTRIES} title="Container Registries">
-            <ContainerRegistries />
-          </Tab>
-          <Tab eventKey={UserPreferencesTab.GIT_SERVICES} title="Git Services">
-            <GitServices />
-          </Tab>
-          <Tab eventKey={UserPreferencesTab.PERSONAL_ACCESS_TOKENS} title="Personal Access Tokens">
-            <PersonalAccessTokens />
-          </Tab>
-          <Tab eventKey={UserPreferencesTab.GITCONFIG} title="Gitconfig">
-            <GitConfig />
-          </Tab>
-          <Tab eventKey={UserPreferencesTab.SSH_KEYS} title="SSH Keys">
-            <SshKeys />
-          </Tab>
-        </Tabs>
+        <PageSection type={'tabs'}>
+          <Tabs
+            id="user-preferences-tabs"
+            style={{ backgroundColor: 'var(--pf-global--BackgroundColor--100)' }}
+            activeKey={activeTabKey}
+            onSelect={(event, tabKey) => this.handleTabClick(event, tabKey)}
+            mountOnEnter={true}
+            unmountOnExit={true}
+          >
+            <Tab eventKey={UserPreferencesTab.CONTAINER_REGISTRIES} title="Container Registries">
+              <ContainerRegistries />
+            </Tab>
+            <Tab eventKey={UserPreferencesTab.GIT_SERVICES} title="Git Services">
+              <GitServices />
+            </Tab>
+            <Tab
+              eventKey={UserPreferencesTab.PERSONAL_ACCESS_TOKENS}
+              title="Personal Access Tokens"
+            >
+              <PersonalAccessTokens />
+            </Tab>
+            <Tab eventKey={UserPreferencesTab.GITCONFIG} title="Gitconfig">
+              <GitConfig />
+            </Tab>
+            <Tab eventKey={UserPreferencesTab.SSH_KEYS} title="SSH Keys">
+              <SshKeys />
+            </Tab>
+          </Tabs>
+        </PageSection>
       </React.Fragment>
     );
   }

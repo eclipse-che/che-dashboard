@@ -11,7 +11,7 @@
  */
 
 import { helpers } from '@eclipse-che/common';
-import { AlertVariant, PageSection } from '@patternfly/react-core';
+import { AlertVariant, PageSection, PageSectionVariants } from '@patternfly/react-core';
 import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 
@@ -21,6 +21,7 @@ import { GitConfigAddModal } from '@/pages/UserPreferences/GitConfig/AddModal';
 import { GitConfigEmptyState } from '@/pages/UserPreferences/GitConfig/EmptyState';
 import { GitConfigForm } from '@/pages/UserPreferences/GitConfig/Form';
 import { GitConfigToolbar } from '@/pages/UserPreferences/GitConfig/Toolbar';
+import { GitConfigViewer } from '@/pages/UserPreferences/GitConfig/Viewer';
 import { AppAlerts } from '@/services/alerts/appAlerts';
 import { RootState } from '@/store';
 import * as GitConfigStore from '@/store/GitConfig';
@@ -35,6 +36,7 @@ export type Props = MappedProps;
 
 export type State = {
   isAddEditOpen: boolean;
+  mode: 'form' | 'viewer';
 };
 
 class GitConfig extends React.PureComponent<Props, State> {
@@ -46,6 +48,7 @@ class GitConfig extends React.PureComponent<Props, State> {
 
     this.state = {
       isAddEditOpen: false,
+      mode: 'form',
     };
   }
 
@@ -105,43 +108,62 @@ class GitConfig extends React.PureComponent<Props, State> {
     });
   }
 
+  private handleModeChange(mode: 'form' | 'viewer'): void {
+    this.setState({ mode });
+  }
+
   public render(): React.ReactElement {
     const { gitConfigIsLoading, gitConfig } = this.props;
-    const { isAddEditOpen } = this.state;
+    const { isAddEditOpen, mode } = this.state;
 
     const isEmpty = gitConfig === undefined;
 
+    let gitConfigViewer = <></>;
+    if (gitConfig !== undefined) {
+      if (mode === 'form') {
+        gitConfigViewer = (
+          <GitConfigForm
+            gitConfig={gitConfig}
+            isLoading={gitConfigIsLoading}
+            onSave={async gitConfig => await this.handleSave(gitConfig)}
+            onReload={async () => await this.handleReload()}
+          />
+        );
+      } else {
+        gitConfigViewer = <GitConfigViewer config={gitConfig} />;
+      }
+    }
+
     return (
       <React.Fragment>
-        <ProgressIndicator isLoading={gitConfigIsLoading} />
-        <GitConfigAddModal
-          gitConfig={gitConfig}
-          isOpen={isAddEditOpen}
-          onCloseModal={() => this.handleCloseAddEditModal()}
-          onSave={async gitConfig => {
-            await this.handleSave(gitConfig);
-            this.handleCloseAddEditModal();
-          }}
-        />
-        {isEmpty ? (
-          <GitConfigEmptyState />
-        ) : (
-          <PageSection>
-            <GitConfigToolbar
-              onAdd={() => {
-                this.setState({
-                  isAddEditOpen: true,
-                });
-              }}
-            />
-            <GitConfigForm
-              gitConfig={gitConfig}
-              isLoading={gitConfigIsLoading}
-              onSave={async gitConfig => await this.handleSave(gitConfig)}
-              onReload={async () => await this.handleReload()}
-            />
-          </PageSection>
-        )}
+        <PageSection variant={PageSectionVariants.default}>
+          <ProgressIndicator isLoading={gitConfigIsLoading} />
+          <GitConfigAddModal
+            gitConfig={gitConfig}
+            isOpen={isAddEditOpen}
+            onCloseModal={() => this.handleCloseAddEditModal()}
+            onSave={async gitConfig => {
+              await this.handleSave(gitConfig);
+              this.handleCloseAddEditModal();
+            }}
+          />
+          {isEmpty ? (
+            <GitConfigEmptyState />
+          ) : (
+            <PageSection variant={PageSectionVariants.light}>
+              <GitConfigToolbar
+                mode={mode}
+                onAdd={() => {
+                  this.setState({
+                    isAddEditOpen: true,
+                  });
+                }}
+                onChangeMode={mode => this.handleModeChange(mode)}
+              />
+              {gitConfigViewer}
+            </PageSection>
+          )}
+        </PageSection>
       </React.Fragment>
     );
   }
