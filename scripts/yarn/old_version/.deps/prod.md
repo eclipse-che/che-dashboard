@@ -153,7 +153,7 @@
 | [`domutils@3.1.0`](git://github.com/fb55/domutils.git) | BSD-2-Clause | #8391 |
 | [`duplexify@4.1.3`](git://github.com/mafintosh/duplexify) | MIT | clearlydefined |
 | [`eastasianwidth@0.2.0`](git://github.com/komagata/eastasianwidth.git) | MIT | clearlydefined |
-| [`ecc-jsbn@0.1.2`](https://github.com/quartzjer/ecc-jsbn.git) | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/ecc-jsbn/0.1.2) |
+| [`ecc-jsbn@0.1.2`](https://github.com/quartzjer/ecc-jsbn.git) | MIT | #17389 |
 | [`elliptic@6.6.1`](git@github.com:indutny/elliptic) | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/elliptic/6.6.1) |
 | [`emoji-regex@8.0.0`](https://github.com/mathiasbynens/emoji-regex.git) | MIT | clearlydefined |
 | [`end-of-stream@1.4.4`](git://github.com/mafintosh/end-of-stream.git) | MIT | clearlydefined |
@@ -309,7 +309,7 @@
 | [`mri@1.1.4`](https://github.com/lukeed/mri.git) | MIT | clearlydefined |
 | [`ms@2.1.2`](https://github.com/zeit/ms.git) | MIT | #5895 |
 | [`multi-ini@2.3.2`](git://github.com/evangelion1204/multi-ini.git) | MIT | clearlydefined |
-| [`nanoid@3.3.7`](https://github.com/ai/nanoid.git) | MIT | #7571 |
+| [`nanoid@3.3.8`](https://github.com/ai/nanoid.git) | MIT | #7571 |
 | [`node-fetch@2.7.0`](https://github.com/bitinn/node-fetch.git) | MIT | #10509 |
 | [`oauth-sign@0.9.0`](https://github.com/mikeal/oauth-sign) | Apache-2.0 | clearlydefined |
 | [`object-assign@4.1.1`](https://github.com/sindresorhus/object-assign.git) | MIT | clearlydefined |
@@ -469,6 +469,6 @@
 | [`wrappy@1.0.2`](https://github.com/npm/wrappy) | ISC | clearlydefined |
 | [`ws@8.17.1`](git+https://github.com/websockets/ws.git) | MIT | clearlydefined |
 | [`yallist@4.0.0`](git+https://github.com/isaacs/yallist.git) | ISC | clearlydefined |
-| [`yaml@2.6.0`](https://github.com/eemeli/yaml.git) | ISC | clearlydefined |
+| [`yaml@2.6.0`](https://github.com/eemeli/yaml.git) | ISC | #17714 |
 | [`yocto-queue@0.1.0`](https://github.com/sindresorhus/yocto-queue.git) | MIT | clearlydefined |
 | [`zwitch@2.0.4`](https://github.com/wooorm/zwitch.git) | MIT | clearlydefined |
