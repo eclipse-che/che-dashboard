@@ -11,10 +11,9 @@ This file lists dependencies that do not need CQs or auto-detection does not wor
 | `blueimp-md5@2.19.0` | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/blueimp-md5/2.19.0) |
 | `codemirror@5.65.16` | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/codemirror/5.65.16) |
 | `cookie-signature@1.2.1` | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/cookie-signature/1.2.1) |
-| `elliptic@6.6.1` | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/elliptic/6.6.1) |
+| `ecc-jsbn@0.1.2` | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/ecc-jsbn/0.1.2) |
 | `fast-uri@2.4.0` | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/fast-uri/2.4.0) |
 | `fastify@4.28.1` | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/fastify/4.28.1) |
 | `jsep@1.3.9` | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/jsep/1.3.9) |
-| `light-my-request@5.14.0` | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/light-my-request/5.14.0) |
 | `real-require@0.2.0` | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/real-require/0.2.0) |
-| `devfile-api@0.0.1` | monorepo package |
+| `light-my-request@5.14.0` | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/light-my-request/5.14.0) |
