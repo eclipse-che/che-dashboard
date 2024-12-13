@@ -10,7 +10,7 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import { V1alpha2DevWorkspaceSpec } from '@devfile/api';
+import { V1alpha2DevWorkspaceSpec } from 'devfile-api';
 
 import { DevWorkspaceSpecTemplate } from '@/services/devfileApi/devWorkspace/spec/template';
 

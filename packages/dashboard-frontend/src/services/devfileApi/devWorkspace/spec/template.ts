@@ -10,7 +10,7 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import { V1alpha2DevWorkspaceSpecTemplate } from '@devfile/api';
+import { V1alpha2DevWorkspaceSpecTemplate } from 'devfile-api';
 
 export const DEVWORKSPACE_CONFIG_ATTR = 'controller.devfile.io/devworkspace-config';
 export const DEVWORKSPACE_CONTAINER_BUILD_ATTR = 'controller.devfile.io/scc';

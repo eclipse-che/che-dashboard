@@ -10,8 +10,8 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import { V1alpha2DevWorkspaceStatus } from '@devfile/api';
 import { createReducer } from '@reduxjs/toolkit';
+import { V1alpha2DevWorkspaceStatus } from 'devfile-api';
 
 import devfileApi from '@/services/devfileApi';
 import { getNewerResourceVersion } from '@/services/helpers/resourceVersion';

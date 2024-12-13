@@ -8,8 +8,8 @@
 | [`@codemirror/language@6.10.3`](https://github.com/codemirror/language.git) | MIT | clearlydefined |
 | [`@codemirror/state@6.4.1`](https://github.com/codemirror/state.git) | MIT | clearlydefined |
 | [`@codemirror/view@6.34.2`](https://github.com/codemirror/view.git) | MIT | clearlydefined |
-| [`@devfile/api@2.3.0-1721400636`](https://github.com/GIT_USER_ID/GIT_REPO_ID.git) | Apache-2.0 | clearlydefined |
-| [`@eclipse-che/che-devworkspace-generator@7.90.0-next-4510df7`](git+https://github.com/devfile/devworkspace-generator.git) | EPL-2.0 | ecd.che |
+| [`@devfile/api@2.3.0-1725380172`](https://github.com/GIT_USER_ID/GIT_REPO_ID.git) | Apache-2.0 | clearlydefined |
+| [`@eclipse-che/che-devworkspace-generator@7.95.0`](git+https://github.com/devfile/devworkspace-generator.git) | EPL-2.0 | ecd.che |
 | [`@fastify/accept-negotiator@1.1.0`](git+https://github.com/fastify/accept-negotiator.git) | MIT | clearlydefined |
 | [`@fastify/ajv-compiler@3.6.0`](git+https://github.com/fastify/ajv-compiler.git) | MIT | clearlydefined |
 | [`@fastify/busboy@2.0.0`](https://github.com/fastify/busboy.git) | MIT | clearlydefined |
@@ -78,7 +78,7 @@
 | [`abbrev@2.0.0`](https://github.com/npm/abbrev-js.git) | ISC | clearlydefined |
 | [`abort-controller@3.0.0`](git+https://github.com/mysticatea/abort-controller.git) | MIT | #7592 |
 | [`abstract-logging@2.0.1`](git+https://github.com/jsumners/abstract-logging.git) | MIT | clearlydefined |
-| [`agent-base@7.1.1`](https://github.com/TooTallNate/proxy-agents.git) | MIT | clearlydefined |
+| [`agent-base@7.1.1`](https://github.com/TooTallNate/proxy-agents.git) | MIT | #17896 |
 | `aggregate-error@3.1.0` | MIT | clearlydefined |
 | [`ajv-formats@2.1.1`](git+https://github.com/ajv-validator/ajv-formats.git) | MIT | clearlydefined |
 | [`ajv-formats@3.0.1`](git+https://github.com/ajv-validator/ajv-formats.git) | MIT | clearlydefined |
@@ -172,7 +172,7 @@
 | [`duplexify@4.1.3`](git://github.com/mafintosh/duplexify) | MIT | clearlydefined |
 | `eastasianwidth@0.2.0` | MIT | clearlydefined |
 | [`ecc-jsbn@0.1.2`](https://github.com/quartzjer/ecc-jsbn.git) | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/ecc-jsbn/0.1.2) |
-| [`elliptic@6.6.1`](git@github.com:indutny/elliptic) | MIT | clearlydefined |
+| [`elliptic@6.6.1`](git@github.com:indutny/elliptic) | MIT |  |
 | [`emoji-regex@8.0.0`](https://github.com/mathiasbynens/emoji-regex.git) | MIT | clearlydefined |
 | [`emoji-regex@9.2.2`](https://github.com/mathiasbynens/emoji-regex.git) | MIT | clearlydefined |
 | `encoding@0.1.13` | MIT | #1016 |
@@ -253,7 +253,7 @@
 | `http-errors@2.0.0` | MIT | clearlydefined |
 | [`http-proxy-agent@7.0.2`](https://github.com/TooTallNate/proxy-agents.git) | MIT | clearlydefined |
 | [`http-signature@1.2.0`](git://github.com/joyent/node-http-signature.git) | MIT | #2732 |
-| [`https-proxy-agent@7.0.5`](https://github.com/TooTallNate/proxy-agents.git) | MIT | clearlydefined |
+| [`https-proxy-agent@7.0.5`](https://github.com/TooTallNate/proxy-agents.git) | MIT | #17900 |
 | `https@1.0.0` | ISC | clearlydefined |
 | [`iconv-lite@0.6.3`](git://github.com/ashtuchkin/iconv-lite.git) | MIT | clearlydefined |
 | [`ieee754@1.2.1`](git://github.com/feross/ieee754.git) | BSD-3-Clause | clearlydefined |
@@ -326,20 +326,20 @@
 | `micromark-factory-space@2.0.0` | MIT | clearlydefined |
 | `micromark-factory-title@2.0.0` | MIT | clearlydefined |
 | `micromark-factory-whitespace@2.0.0` | MIT | clearlydefined |
-| `micromark-util-character@2.1.0` | MIT | clearlydefined |
+| `micromark-util-character@2.1.0` | MIT | #17409 |
 | `micromark-util-chunked@2.0.0` | MIT | clearlydefined |
 | `micromark-util-classify-character@2.0.0` | MIT | clearlydefined |
 | `micromark-util-combine-extensions@2.0.0` | MIT | clearlydefined |
 | `micromark-util-decode-numeric-character-reference@2.0.1` | MIT | clearlydefined |
 | `micromark-util-decode-string@2.0.0` | MIT | clearlydefined |
-| `micromark-util-encode@2.0.0` | MIT | clearlydefined |
+| `micromark-util-encode@2.0.0` | MIT | #17395 |
 | `micromark-util-html-tag-name@2.0.0` | MIT | clearlydefined |
 | `micromark-util-normalize-identifier@2.0.0` | MIT | clearlydefined |
 | `micromark-util-resolve-all@2.0.0` | MIT | clearlydefined |
-| `micromark-util-sanitize-uri@2.0.0` | MIT | clearlydefined |
+| `micromark-util-sanitize-uri@2.0.0` | MIT | #17416 |
 | `micromark-util-subtokenize@2.0.1` | MIT | clearlydefined |
-| `micromark-util-symbol@2.0.0` | MIT | clearlydefined |
-| `micromark-util-types@2.0.0` | MIT | clearlydefined |
+| `micromark-util-symbol@2.0.0` | MIT | #17394 |
+| `micromark-util-types@2.0.0` | MIT | #17405 |
 | `micromark@4.0.0` | MIT | clearlydefined |
 | [`miller-rabin@4.0.1`](git@github.com:indutny/miller-rabin) | MIT | clearlydefined |
 | `mime-db@1.52.0` | MIT | clearlydefined |
@@ -559,6 +559,6 @@
 | [`wrappy@1.0.2`](https://github.com/npm/wrappy) | ISC | clearlydefined |
 | [`yallist@4.0.0`](git+https://github.com/isaacs/yallist.git) | ISC | clearlydefined |
 | [`yallist@5.0.0`](git+https://github.com/isaacs/yallist.git) | BlueOak-1.0.0 | clearlydefined |
-| [`yaml@2.6.0`](https://eemeli.org/yaml/) | ISC | clearlydefined |
+| [`yaml@2.6.0`](https://eemeli.org/yaml/) | ISC | #17714 |
 | `yocto-queue@0.1.0` | MIT | clearlydefined |
 | `zwitch@2.0.4` | MIT | clearlydefined |

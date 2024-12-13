@@ -3,7 +3,7 @@
 | Packages | License | Resolved CQs |
 | --- | --- | --- |
 | [`@aashutoshrathi/word-wrap@1.2.6`](git+https://github.com/aashutoshrathi/word-wrap.git) | MIT | #9212 |
-| [`@adobe/css-tools@4.4.0`](https://github.com/adobe/css-tools.git) | MIT | clearlydefined |
+| [`@adobe/css-tools@4.4.1`](https://github.com/adobe/css-tools.git) | MIT | transitive dependency |
 | [`@ampproject/remapping@2.2.1`](git+https://github.com/ampproject/remapping.git) | Apache-2.0 | clearlydefined |
 | [`@babel/code-frame@7.22.13`](https://github.com/babel/babel.git) | MIT | #8946 |
 | [`@babel/compat-data@7.23.2`](https://github.com/babel/babel.git) | MIT | #11554 |
@@ -276,6 +276,7 @@
 | [`electron-to-chromium@1.4.576`](https://github.com/kilian/electron-to-chromium/) | ISC | #1950 |
 | [`emittery@0.13.1`](https://github.com/sindresorhus/emittery.git) | MIT | clearlydefined |
 | [`emojis-list@3.0.0`](git+https://github.com/kikobeats/emojis-list.git) | MIT | clearlydefined |
+| [`encoding@0.1.13`](https://github.com/andris9/encoding.git) | MIT | #1016 |
 | [`enhanced-resolve@5.15.0`](git://github.com/webpack/enhanced-resolve.git) | MIT | #8939 |
 | [`envinfo@7.11.0`](https://github.com/tabrindle/envinfo) | MIT | #13100 |
 | [`error-ex@1.3.2`](https://github.com/qix-/node-error-ex.git) | MIT | clearlydefined |
@@ -609,7 +610,7 @@
 | [`slice-ansi@4.0.0`](https://github.com/chalk/slice-ansi.git) | MIT | clearlydefined |
 | [`sort-keys@2.0.0`](https://github.com/sindresorhus/sort-keys.git) | MIT | clearlydefined |
 | [`source-list-map@2.0.1`](https://github.com/webpack/source-list-map.git) | MIT | #978 |
-| [`source-map-loader@4.0.1`](https://github.com/webpack-contrib/source-map-loader.git) | MIT | clearlydefined |
+| [`source-map-loader@5.0.0`](https://github.com/webpack-contrib/source-map-loader.git) | MIT | clearlydefined |
 | [`source-map-support@0.5.21`](https://github.com/evanw/node-source-map-support) | MIT | clearlydefined |
 | [`source-map@0.6.1`](http://github.com/mozilla/source-map.git) | BSD-3-Clause | #2417 |
 | [`spdx-correct@3.2.0`](https://github.com/jslicense/spdx-correct.js.git) | Apache-2.0 | #7493 |
@@ -693,7 +694,6 @@
 | [`which-collection@1.0.1`](git+https://github.com/inspect-js/which-collection.git) | MIT | clearlydefined |
 | [`which-typed-array@1.1.13`](git://github.com/inspect-js/which-typed-array.git) | MIT | #4864 |
 | [`wildcard@2.0.1`](git://github.com/DamonOehlman/wildcard.git) | MIT | #8274 |
-| [`wrap-ansi@7.0.0`](https://github.com/chalk/wrap-ansi.git) | MIT | clearlydefined |
 | [`write-file-atomic@5.0.1`](https://github.com/npm/write-file-atomic.git) | ISC | #8219 |
 | [`write-json-file@2.3.0`](https://github.com/sindresorhus/write-json-file.git) | MIT | clearlydefined |
 | [`xml-name-validator@4.0.0`](https://github.com/jsdom/xml-name-validator.git) | Apache-2.0 | clearlydefined |

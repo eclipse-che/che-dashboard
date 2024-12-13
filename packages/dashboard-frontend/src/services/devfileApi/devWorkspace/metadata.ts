@@ -10,7 +10,7 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import { V1alpha2DevWorkspaceMetadata } from '@devfile/api';
+import { V1alpha2DevWorkspaceMetadata } from 'devfile-api';
 
 export const DEVWORKSPACE_CHE_EDITOR = 'che.eclipse.org/che-editor';
 // used by devworkspace-controller to allow to mount the corresponding Che7 workspace folder

@@ -10,8 +10,8 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import { V1alpha2DevWorkspaceSpecTemplateComponents } from '@devfile/api';
 import { helpers } from '@eclipse-che/common';
+import { V1alpha2DevWorkspaceSpecTemplateComponents } from 'devfile-api';
 import { load } from 'js-yaml';
 
 import devfileApi, { isDevfileV2 } from '@/services/devfileApi';

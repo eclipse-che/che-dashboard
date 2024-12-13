@@ -10,7 +10,7 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import { V230Devfile, V230DevfileComponents } from '@devfile/api';
+import { V230Devfile, V230DevfileComponents } from 'devfile-api';
 
 import { FactoryResolver } from '@/services/helpers/types';
 import { che } from '@/services/models';

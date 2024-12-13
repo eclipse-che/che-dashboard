@@ -8,9 +8,9 @@
   integrity sha512-1Yjs2SvM8TflER/OD3cOjhWWOZb58A2t7wpE2S9XfBYTiIl+XFhQG2bjy4Pu1I+EAlCNUzRDYDdFwFYUKvXcIA==
 
 "@adobe/css-tools@^4.3.2", "@adobe/css-tools@^4.4.0":
-  version "4.4.0"
-  resolved "https://registry.yarnpkg.com/@adobe/css-tools/-/css-tools-4.4.0.tgz#728c484f4e10df03d5a3acd0d8adcbbebff8ad63"
-  integrity sha512-Ff9+ksdQQB3rMncgqDK78uLznstjyfIf2Arnh22pW8kBpLs6rpKDwgnZT46hin5Hl1WzazzK64DOrhSwYpS7bQ==
+  version "4.4.1"
+  resolved "https://registry.yarnpkg.com/@adobe/css-tools/-/css-tools-4.4.1.tgz#2447a230bfe072c1659e6815129c03cf170710e3"
+  integrity sha512-12WGKBQzjUAI4ayyF4IAtfw2QR/IDoqk6jTddXDhtYTJF9ASmoE1zst7cVtP0aL/F1jUJL5r+JxKXKEgHNbEUQ==
 
 "@ampproject/remapping@^2.2.0":
   version "2.2.1"
@@ -382,10 +382,10 @@
   resolved "https://registry.yarnpkg.com/@csstools/selector-specificity/-/selector-specificity-3.0.0.tgz#798622546b63847e82389e473fd67f2707d82247"
   integrity sha512-hBI9tfBtuPIi885ZsZ32IMEU/5nlZH/KOVYJCOh7gyMxaVLGmLedYqFN6Ui1LXkI8JlC8IsuC0rF0btcRZKd5g==
 
-"@devfile/api@2.3.0-1721400636":
-  version "2.3.0-1721400636"
-  resolved "https://registry.yarnpkg.com/@devfile/api/-/api-2.3.0-1721400636.tgz#94f7ba0f45b294beb8cd023ffeaa8aa5ff228b44"
-  integrity sha512-W6g9uYSo22VcAeLj49YyVzOWTWZh5sRWP8fzgRcao6DRLd7FwkG3w4ZWCMTY5tMgyfcpaNBBoV1mqlRJuCvhTA==
+"@devfile/api@2.3.0-1725380172":
+  version "2.3.0-1725380172"
+  resolved "https://registry.yarnpkg.com/@devfile/api/-/api-2.3.0-1725380172.tgz#516b91e95c84d46468afd1fff4dc68e124a5fb41"
+  integrity sha512-J0O2h81M3kcbkwLnod64aHH9PAUzHRJyOvfDyOE8LSv62Yj+3tf0MYHPXOFWMwQWFUFTymMK2fHPnINWaV6MxQ==
   dependencies:
     "@types/node" "*"
     "@types/node-fetch" "^2.5.7"
@@ -404,13 +404,13 @@
   resolved "https://registry.yarnpkg.com/@eclipse-che/api/-/api-7.86.0.tgz#c4bfe23fb0a34e864ba5a45cd3d5b7f3332cef13"
   integrity sha512-WDmnzopqKXPO3jozfrZ8mXVxdy/7KnzOv/+o3SzIqKYfEXXcmulG2+FYxzWUAA37T3wgqE1lQ+MACwO7v4PhtA==
 
-"@eclipse-che/che-devworkspace-generator@7.90.0-next-4510df7":
-  version "7.90.0-next-4510df7"
-  resolved "https://registry.yarnpkg.com/@eclipse-che/che-devworkspace-generator/-/che-devworkspace-generator-7.90.0-next-4510df7.tgz#62b4966c39542f9b96a1d6c260cdaa4eb500340a"
-  integrity sha512-i5tReZa6snaZ7A0hbP+iowZecdOyXdK8crnbIkM+kMKZmElDehxDFuwHZ/I2B/QliAt/2LiBXAk0TBaG8Xm21w==
+"@eclipse-che/che-devworkspace-generator@7.95.0":
+  version "7.95.0"
+  resolved "https://registry.yarnpkg.com/@eclipse-che/che-devworkspace-generator/-/che-devworkspace-generator-7.95.0.tgz#bda08714a703ddf1604ae5f2a3aca5af6eb9a0af"
+  integrity sha512-uvvDG4i08/AysxAdWK8vRQBa6/2bud7od7hb11D4P1Iaa69lOtwlbCqRV36q0VGyGtEspvLbPuUVouGtrx89hg==
   dependencies:
-    "@devfile/api" "2.3.0-1721400636"
-    axios "^1.7.0"
+    "@devfile/api" "2.3.0-1725380172"
+    axios "^1.7.4"
     fs-extra "^11.2.0"
     inversify "^6.0.2"
     js-yaml "^4.0.0"
@@ -3421,6 +3421,13 @@ emojis-list@^3.0.0:
   resolved "https://registry.yarnpkg.com/emojis-list/-/emojis-list-3.0.0.tgz#5570662046ad29e2e916e71aae260abdff4f6a78"
   integrity sha512-/kyM18EfinwXZbno9FyUGeFh87KC8HRQBQGildHZbEuRyWFOmv1U10o9BBp8XVZDVNNuQKyIGIu5ZYAAXJ0V2Q==
 
+encoding@^0.1.13:
+  version "0.1.13"
+  resolved "https://registry.yarnpkg.com/encoding/-/encoding-0.1.13.tgz#56574afdd791f54a8e9b2785c0582a2d26210fa9"
+  integrity sha512-ETBauow1T35Y/WZMkio9jiM0Z5xjHHmJ4XmjZOq1l/dXz3lr2sRn87nJy20RupqSh1F2m3HHPSp8ShIPQJrJ3A==
+  dependencies:
+    iconv-lite "^0.6.2"
+
 end-of-stream@^1.1.0, end-of-stream@^1.4.1, end-of-stream@^1.4.4:
   version "1.4.4"
   resolved "https://registry.yarnpkg.com/end-of-stream/-/end-of-stream-1.4.4.tgz#5ae64a5f45057baf3626ec14da0ca5e4b2431eb0"
@@ -4745,7 +4752,7 @@ human-signals@^4.3.0:
   resolved "https://registry.yarnpkg.com/human-signals/-/human-signals-4.3.1.tgz#ab7f811e851fca97ffbd2c1fe9a958964de321b2"
   integrity sha512-nZXjEF2nbo7lIw3mgYjItAfgQXog3OjJogSbKa2CQIIvSGWcKgeJnQlNXip6NglNzYH45nSRiEVimMvYL8DDqQ==
 
-iconv-lite@0.6.3, iconv-lite@^0.6.3:
+iconv-lite@0.6.3, iconv-lite@^0.6.2, iconv-lite@^0.6.3:
   version "0.6.3"
   resolved "https://registry.yarnpkg.com/iconv-lite/-/iconv-lite-0.6.3.tgz#a52f80bf38da1952eb5c681790719871a1a72501"
   integrity sha512-4fCk79wshMdzMp2rH06qWrJE4iolqLhCUH+OiuIgU++RB0+94NlDL81atO7GX55uUKueo0txHNtvEyI6D7WdMw==

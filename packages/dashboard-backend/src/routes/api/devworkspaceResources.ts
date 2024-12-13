@@ -10,9 +10,9 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import { V1alpha2DevWorkspaceTemplate } from '@devfile/api';
 import { Main as DevworkspaceGenerator } from '@eclipse-che/che-devworkspace-generator/lib/main';
 import { api } from '@eclipse-che/common';
+import { V1alpha2DevWorkspaceTemplate } from 'devfile-api';
 import { FastifyInstance, FastifyRequest } from 'fastify';
 import { dump } from 'js-yaml';
 
@@ -37,8 +37,6 @@ export function registerDevworkspaceResourcesRoute(instance: FastifyInstance) {
           {
             devfileContent,
             editorPath,
-            pluginRegistryUrl: undefined,
-            editorEntry: undefined,
             editorContent,
             projects: [],
           },

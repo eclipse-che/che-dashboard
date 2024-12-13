@@ -10,12 +10,4 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import { V230DevfileMetadata } from 'devfile-api';
-
-export type DevfileMetadataLike = V230DevfileMetadata & {
-  namespace?: string;
-  generateName?: string;
-};
-
-export type DevfileMetadata = DevfileMetadataLike &
-  Required<Pick<DevfileMetadataLike, 'name' | 'namespace'>>;
+export * from '@devfile/api';

@@ -1,0 +1,27 @@
+{
+  "name": "devfile-api",
+  "version": "0.0.1",
+  "license": "EPL-2.0",
+  "main": "./lib/index.js",
+  "description": "Devfile API re-export",
+  "scripts": {
+    "clean": "rimraf lib tsconfig.tsbuildinfo",
+    "build": "yarn clean && webpack --color --config webpack.config.js",
+    "build:dev": "yarn build",
+    "test": "echo \"no test specified\"",
+    "format:check": "echo \"no format check specified\"",
+    "format:fix": "yarn format:check",
+    "lint:check": "echo \"no lint check specified\"",
+    "lint:fix": "yarn lint:check"
+  },
+  "dependencies": {
+    "@devfile/api": "2.3.0-1725380172"
+  },
+  "devDependencies": {
+    "encoding": "^0.1.13",
+    "rimraf": "^5.0.1",
+    "source-map-loader": "^5.0.0",
+    "ts-loader": "^9.4.4",
+    "webpack": "^5.94.0"
+  }
+}

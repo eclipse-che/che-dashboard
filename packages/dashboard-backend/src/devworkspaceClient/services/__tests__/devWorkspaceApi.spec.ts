@@ -12,11 +12,15 @@
 
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
-import { V1alpha2DevWorkspace } from '@devfile/api';
-import { devworkspaceGroup, devworkspaceLatestVersion, devworkspacePlural } from '@devfile/api/api';
 import { api } from '@eclipse-che/common';
 import * as mockClient from '@kubernetes/client-node';
 import { CustomObjectsApi } from '@kubernetes/client-node';
+import {
+  devworkspaceGroup,
+  devworkspaceLatestVersion,
+  devworkspacePlural,
+  V1alpha2DevWorkspace,
+} from 'devfile-api';
 import { IncomingMessage } from 'http';
 
 import { DevWorkspaceApiService } from '@/devworkspaceClient/services/devWorkspaceApi';

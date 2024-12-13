@@ -10,12 +10,12 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
+import { api } from '@eclipse-che/common';
+import { createHash } from 'crypto';
 import {
   V1alpha2DevWorkspaceSpecContributions,
   V1alpha2DevWorkspaceSpecTemplateComponents,
-} from '@devfile/api';
-import { api } from '@eclipse-che/common';
-import { createHash } from 'crypto';
+} from 'devfile-api';
 import { injectable } from 'inversify';
 
 import * as DwApi from '@/services/backend-client/devWorkspaceApi';

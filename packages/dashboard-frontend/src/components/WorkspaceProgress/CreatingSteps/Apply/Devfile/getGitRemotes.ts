@@ -10,8 +10,8 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import { V230DevfileProjects, V230DevfileProjectsItemsGit } from '@devfile/api';
 import common from '@eclipse-che/common';
+import { V230DevfileProjects, V230DevfileProjectsItemsGit } from 'devfile-api';
 
 import { getProjectFromLocation } from '@/components/WorkspaceProgress/CreatingSteps/Apply/Devfile/getProjectFromLocation';
 import devfileApi from '@/services/devfileApi';
