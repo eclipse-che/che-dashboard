@@ -694,7 +694,6 @@
 | [`which-collection@1.0.1`](git+https://github.com/inspect-js/which-collection.git) | MIT | clearlydefined |
 | [`which-typed-array@1.1.13`](git://github.com/inspect-js/which-typed-array.git) | MIT | #4864 |
 | [`wildcard@2.0.1`](git://github.com/DamonOehlman/wildcard.git) | MIT | #8274 |
-| [`wrap-ansi@7.0.0`](https://github.com/chalk/wrap-ansi.git) | MIT | clearlydefined |
 | [`write-file-atomic@5.0.1`](https://github.com/npm/write-file-atomic.git) | ISC | #8219 |
 | [`write-json-file@2.3.0`](https://github.com/sindresorhus/write-json-file.git) | MIT | clearlydefined |
 | [`xml-name-validator@4.0.0`](https://github.com/jsdom/xml-name-validator.git) | Apache-2.0 | clearlydefined |

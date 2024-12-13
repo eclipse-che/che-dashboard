@@ -354,7 +354,6 @@
 | `glob-parent@5.1.2` | ISC | clearlydefined |
 | `glob-parent@6.0.2` | ISC | clearlydefined |
 | [`glob-to-regexp@0.4.1`](https://github.com/fitzgen/glob-to-regexp.git) | BSD-2-Clause | clearlydefined |
-| [`glob@11.0.0`](git://github.com/isaacs/node-glob.git) | ISC |  |
 | [`glob@7.2.3`](git://github.com/isaacs/node-glob.git) | ISC | clearlydefined |
 | [`global-modules@2.0.0`](https://github.com/jonschlinkert/global-modules) | MIT | clearlydefined |
 | [`global-prefix@3.0.0`](https://github.com/jonschlinkert/global-prefix) | MIT | clearlydefined |
@@ -443,7 +442,6 @@
 | [`istanbul-lib-source-maps@4.0.1`](git+ssh://git@github.com/istanbuljs/istanbuljs.git) | BSD-3-Clause | clearlydefined |
 | [`istanbul-reports@3.1.6`](git+ssh://git@github.com/istanbuljs/istanbuljs.git) | BSD-3-Clause | #1710 |
 | [`iterator.prototype@1.1.2`](git+https://github.com/ljharb/Iterator.prototype.git) | MIT | clearlydefined |
-| [`jackspeak@4.0.2`](git+https://github.com/isaacs/jackspeak.git) | BlueOak-1.0.0 | clearlydefined |
 | [`jest-changed-files@29.7.0`](https://github.com/jestjs/jest.git) | MIT | clearlydefined |
 | [`jest-circus@29.7.0`](https://github.com/jestjs/jest.git) | MIT | clearlydefined |
 | [`jest-cli@29.7.0`](https://github.com/jestjs/jest.git) | MIT | clearlydefined |
@@ -502,7 +500,6 @@
 | [`lodash.truncate@4.4.2`](https://lodash.com/) | MIT | clearlydefined |
 | [`lodash.uniq@4.5.0`](https://lodash.com/) | MIT | clearlydefined |
 | [`lower-case@2.0.2`](git://github.com/blakeembrey/change-case.git) | MIT | clearlydefined |
-| [`lru-cache@11.0.2`](git://github.com/isaacs/node-lru-cache.git) | ISC | clearlydefined |
 | `lru-cache@5.1.1` | ISC | clearlydefined |
 | [`lz-string@1.5.0`](https://github.com/pieroxy/lz-string.git) | MIT | #8398 |
 | `make-dir@1.3.0` | MIT | clearlydefined |
@@ -524,7 +521,6 @@
 | `mimic-fn@4.0.0` | MIT | clearlydefined |
 | `min-indent@1.0.1` | MIT | clearlydefined |
 | [`mini-css-extract-plugin@2.9.0`](https://github.com/webpack-contrib/mini-css-extract-plugin) | MIT | #17035 |
-| [`minimatch@10.0.1`](git://github.com/isaacs/minimatch.git) | ISC | clearlydefined |
 | [`minimatch@3.1.2`](git://github.com/isaacs/minimatch.git) | ISC | clearlydefined |
 | `minimist-options@4.1.0` | MIT | clearlydefined |
 | [`mkdirp@0.5.6`](https://github.com/substack/node-mkdirp.git) | MIT | clearlydefined |
@@ -573,7 +569,6 @@
 | `path-is-absolute@1.0.1` | MIT | clearlydefined |
 | `path-key@4.0.0` | MIT | clearlydefined |
 | [`path-parse@1.0.7`](https://github.com/jbgutierrez/path-parse.git) | MIT | clearlydefined |
-| [`path-scurry@2.0.0`](git+https://github.com/isaacs/path-scurry) | BlueOak-1.0.0 | clearlydefined |
 | `path-type@4.0.0` | MIT | clearlydefined |
 | `picocolors@1.1.1` | ISC | clearlydefined |
 | [`picomatch@2.3.1`](https://github.com/micromatch/picomatch) | MIT | clearlydefined |
@@ -656,7 +651,6 @@
 | `rimraf@2.7.1` | ISC | clearlydefined |
 | `rimraf@3.0.2` | ISC | clearlydefined |
 | `rimraf@5.0.5` | ISC | #10787 |
-| `rimraf@6.0.1` | ISC | clearlydefined |
 | `run-applescript@5.0.0` | MIT | clearlydefined |
 | [`run-parallel@1.2.0`](git://github.com/feross/run-parallel.git) | MIT | clearlydefined |
 | [`safe-array-concat@1.0.1`](git+https://github.com/ljharb/safe-array-concat.git) | MIT | #10335 |
