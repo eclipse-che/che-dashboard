@@ -30,6 +30,9 @@ COPY ${FRONTEND}/package.json /dashboard/${FRONTEND}/
 ENV BACKEND=packages/dashboard-backend
 COPY ${BACKEND}/package.json /dashboard/${BACKEND}/
 
+ENV DEVFILE_API=packages/devfile-api
+COPY ${DEVFILE_API}/package.json /dashboard/${DEVFILE_API}/
+
 WORKDIR /dashboard
 RUN yarn install --network-timeout 3600000
 COPY packages/ /dashboard/packages
