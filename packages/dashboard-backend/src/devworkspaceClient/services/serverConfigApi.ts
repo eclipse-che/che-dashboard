@@ -10,9 +10,9 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import { V230DevfileComponents } from '@devfile/api';
 import { api } from '@eclipse-che/common';
 import * as k8s from '@kubernetes/client-node';
+import { V230DevfileComponents } from 'devfile-api';
 import { readFileSync } from 'fs';
 import path from 'path';
 

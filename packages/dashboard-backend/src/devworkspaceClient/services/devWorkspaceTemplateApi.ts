@@ -10,14 +10,14 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import { V1alpha2DevWorkspaceTemplate } from '@devfile/api';
+import { api } from '@eclipse-che/common';
+import * as k8s from '@kubernetes/client-node';
 import {
   devworkspacetemplateGroup,
   devworkspacetemplateLatestVersion,
   devworkspacetemplatePlural,
-} from '@devfile/api/api';
-import { api } from '@eclipse-che/common';
-import * as k8s from '@kubernetes/client-node';
+  V1alpha2DevWorkspaceTemplate,
+} from 'devfile-api';
 
 import { createError } from '@/devworkspaceClient/services/helpers/createError';
 import {

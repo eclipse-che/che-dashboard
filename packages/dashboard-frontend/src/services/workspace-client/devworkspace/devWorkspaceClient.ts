@@ -10,13 +10,13 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
+import { api } from '@eclipse-che/common';
 import {
   V1alpha2DevWorkspaceSpecTemplateComponents,
   V1alpha2DevWorkspaceTemplateSpec,
   V1alpha2DevWorkspaceTemplateSpecComponents,
   V230DevfileComponentsItemsContainer,
-} from '@devfile/api';
-import { api } from '@eclipse-che/common';
+} from 'devfile-api';
 import { inject, injectable } from 'inversify';
 import { cloneDeep, isEqual } from 'lodash';
 

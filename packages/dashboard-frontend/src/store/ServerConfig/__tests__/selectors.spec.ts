@@ -10,8 +10,8 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import { V230DevfileComponents } from '@devfile/api';
 import { api } from '@eclipse-che/common';
+import { V230DevfileComponents } from 'devfile-api';
 
 import { RootState } from '@/store';
 import {

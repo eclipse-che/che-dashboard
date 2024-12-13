@@ -12,13 +12,13 @@
 
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
+import { api } from '@eclipse-che/common';
 import {
   V1alpha2DevWorkspace,
   V1alpha2DevWorkspaceTemplate,
   V230Devfile,
   V230DevfileComponents,
-} from '@devfile/api';
-import { api } from '@eclipse-che/common';
+} from 'devfile-api';
 import { IncomingHttpHeaders } from 'http';
 
 import {

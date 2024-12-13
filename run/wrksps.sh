@@ -13,6 +13,7 @@
 
 set -e
 
+yarn workspace devfile-api "$@"
 yarn workspace @eclipse-che/common "$@"
 yarn workspace @eclipse-che/dashboard-frontend "$@"
 yarn workspace @eclipse-che/dashboard-backend "$@"

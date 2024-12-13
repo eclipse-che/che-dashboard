@@ -7,7 +7,8 @@
     "packages": [
       "packages/common",
       "packages/dashboard-backend",
-      "packages/dashboard-frontend"
+      "packages/dashboard-frontend",
+      "packages/devfile-api"
     ]
   },
   "bugs": {
@@ -29,7 +30,7 @@
     "license:generate": "$PWD/scripts/container_tool.sh run --rm -t -v $PWD/:/workspace/project quay.io/che-incubator/dash-licenses:next",
     "test": "yarn run pretest && yarn wrksps test --no-cache",
     "test:check": "yarn run pretest && yarn workspace @eclipse-che/dashboard-frontend test --config=jest.config.check.js",
-    "pretest": "yarn workspace @eclipse-che/common run build",
+    "pretest": "yarn workspace @eclipse-che/common run build && yarn workspace devfile-api run build",
     "test:coverage": "yarn run pretest && yarn wrksps test --coverage",
     "format:check": "yarn wrksps format:check",
     "format:fix": "yarn wrksps format:fix",

@@ -10,8 +10,8 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import { V230Devfile } from '@devfile/api';
 import { V1ConfigMapList } from '@kubernetes/client-node/dist/gen/model/v1ConfigMapList';
+import { V230Devfile } from 'devfile-api';
 import http from 'http';
 import * as yaml from 'js-yaml';
 

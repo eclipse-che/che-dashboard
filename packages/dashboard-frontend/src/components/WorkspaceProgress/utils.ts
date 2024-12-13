@@ -10,7 +10,7 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import { V1alpha2DevWorkspaceStatusConditions } from '@devfile/api';
+import { V1alpha2DevWorkspaceStatusConditions } from 'devfile-api';
 
 import devfileApi from '@/services/devfileApi';
 import { DevWorkspaceStatus } from '@/services/helpers/types';

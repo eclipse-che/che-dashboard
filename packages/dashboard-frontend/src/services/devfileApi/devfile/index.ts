@@ -10,7 +10,7 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import { V230Devfile } from '@devfile/api';
+import { V230Devfile } from 'devfile-api';
 
 import { DevfileMetadata, DevfileMetadataLike } from '@/services/devfileApi/devfile/metadata';
 

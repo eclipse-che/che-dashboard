@@ -10,14 +10,14 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
+import { api } from '@eclipse-che/common';
+import * as k8s from '@kubernetes/client-node';
 import {
   V1alpha2DevWorkspace,
   V1alpha2DevWorkspaceTemplate,
   V230Devfile,
   V230DevfileComponents,
-} from '@devfile/api';
-import { api } from '@eclipse-che/common';
-import * as k8s from '@kubernetes/client-node';
+} from 'devfile-api';
 import { IncomingHttpHeaders } from 'http';
 
 import { MessageListener } from '@/services/types/Observer';

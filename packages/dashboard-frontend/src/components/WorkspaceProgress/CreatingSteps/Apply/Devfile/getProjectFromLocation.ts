@@ -10,7 +10,7 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import { V230DevfileProjects } from '@devfile/api';
+import { V230DevfileProjects } from 'devfile-api';
 
 import { FactoryLocationAdapter } from '@/services/factory-location-adapter';
 import { getProjectName } from '@/services/helpers/getProjectName';

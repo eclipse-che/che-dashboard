@@ -10,9 +10,9 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import { V230DevfileComponents, V230DevfileProjects } from '@devfile/api';
 import common, { api } from '@eclipse-che/common';
 import axios from 'axios';
+import { V230DevfileComponents, V230DevfileProjects } from 'devfile-api';
 import { dump } from 'js-yaml';
 import { cloneDeep } from 'lodash';
 

@@ -10,7 +10,7 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import { V230Devfile } from '@devfile/api';
+import { V230Devfile } from 'devfile-api';
 
 const getVSCodeEditorDefinition = (): V230Devfile => {
   return {
