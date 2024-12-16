@@ -11,16 +11,16 @@
  */
 
 import { V1alpha2DevWorkspace } from '@devfile/api';
-import {
-  devworkspaceGroup,
-  devworkspaceLatestVersion,
-  devworkspacePlural,
-} from '@/constants/devfile';
 import { api } from '@eclipse-che/common';
 import * as k8s from '@kubernetes/client-node';
 import { V1Status } from '@kubernetes/client-node';
 import http, { IncomingHttpHeaders } from 'http';
 
+import {
+  devworkspaceGroup,
+  devworkspaceLatestVersion,
+  devworkspacePlural,
+} from '@/constants/devfile';
 import { createError } from '@/devworkspaceClient/services/helpers/createError';
 import {
   CustomObjectAPI,
