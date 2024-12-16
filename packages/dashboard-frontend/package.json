@@ -71,7 +71,7 @@
     "sanitize-html": "^2.11.0"
   },
   "devDependencies": {
-    "@devfile/api": "2.3.0-1721400636",
+    "@devfile/api": "2.3.0-1733171449",
     "@eclipse-che/api": "^7.86.0",
     "@kubernetes/client-node": "^0.22.1",
     "@react-mock/state": "^0.1.8",

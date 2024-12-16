@@ -8,8 +8,8 @@
 | [`@codemirror/language@6.10.3`](https://github.com/codemirror/language.git) | MIT | clearlydefined |
 | [`@codemirror/state@6.4.1`](https://github.com/codemirror/state.git) | MIT | clearlydefined |
 | [`@codemirror/view@6.34.2`](https://github.com/codemirror/view.git) | MIT | clearlydefined |
-| [`@devfile/api@2.3.0-1721400636`](https://github.com/GIT_USER_ID/GIT_REPO_ID.git) | Apache-2.0 | clearlydefined |
-| [`@eclipse-che/che-devworkspace-generator@7.90.0-next-4510df7`](git+https://github.com/devfile/devworkspace-generator.git) | EPL-2.0 | ecd.che |
+| [`@devfile/api@2.3.0-1733171449`](https://github.com/GIT_USER_ID/GIT_REPO_ID.git) | Apache-2.0 |  |
+| [`@eclipse-che/che-devworkspace-generator@7.96.0-next-da9f364`](git+https://github.com/devfile/devworkspace-generator.git) | EPL-2.0 | ecd.che |
 | [`@fastify/accept-negotiator@1.1.0`](git+https://github.com/fastify/accept-negotiator.git) | MIT | clearlydefined |
 | [`@fastify/ajv-compiler@3.6.0`](git+https://github.com/fastify/ajv-compiler.git) | MIT | clearlydefined |
 | [`@fastify/busboy@2.0.0`](https://github.com/fastify/busboy.git) | MIT | clearlydefined |
@@ -78,7 +78,7 @@
 | [`abbrev@2.0.0`](https://github.com/npm/abbrev-js.git) | ISC | clearlydefined |
 | [`abort-controller@3.0.0`](git+https://github.com/mysticatea/abort-controller.git) | MIT | #7592 |
 | [`abstract-logging@2.0.1`](git+https://github.com/jsumners/abstract-logging.git) | MIT | clearlydefined |
-| [`agent-base@7.1.1`](https://github.com/TooTallNate/proxy-agents.git) | MIT | clearlydefined |
+| [`agent-base@7.1.1`](https://github.com/TooTallNate/proxy-agents.git) | MIT | #17896 |
 | `aggregate-error@3.1.0` | MIT | clearlydefined |
 | [`ajv-formats@2.1.1`](git+https://github.com/ajv-validator/ajv-formats.git) | MIT | clearlydefined |
 | [`ajv-formats@3.0.1`](git+https://github.com/ajv-validator/ajv-formats.git) | MIT | clearlydefined |
@@ -253,7 +253,7 @@
 | `http-errors@2.0.0` | MIT | clearlydefined |
 | [`http-proxy-agent@7.0.2`](https://github.com/TooTallNate/proxy-agents.git) | MIT | clearlydefined |
 | [`http-signature@1.2.0`](git://github.com/joyent/node-http-signature.git) | MIT | #2732 |
-| [`https-proxy-agent@7.0.5`](https://github.com/TooTallNate/proxy-agents.git) | MIT | clearlydefined |
+| [`https-proxy-agent@7.0.5`](https://github.com/TooTallNate/proxy-agents.git) | MIT | #17900 |
 | `https@1.0.0` | ISC | clearlydefined |
 | [`iconv-lite@0.6.3`](git://github.com/ashtuchkin/iconv-lite.git) | MIT | clearlydefined |
 | [`ieee754@1.2.1`](git://github.com/feross/ieee754.git) | BSD-3-Clause | clearlydefined |

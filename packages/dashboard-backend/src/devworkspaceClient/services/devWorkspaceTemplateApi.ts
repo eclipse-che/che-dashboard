@@ -15,7 +15,7 @@ import {
   devworkspacetemplateGroup,
   devworkspacetemplateLatestVersion,
   devworkspacetemplatePlural,
-} from '@devfile/api/api';
+} from '@/constants/devfile';
 import { api } from '@eclipse-che/common';
 import * as k8s from '@kubernetes/client-node';
 
