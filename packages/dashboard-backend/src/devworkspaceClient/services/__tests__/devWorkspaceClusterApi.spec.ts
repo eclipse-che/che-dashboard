@@ -11,10 +11,14 @@
  */
 
 import { V1alpha2DevWorkspace } from '@devfile/api';
-import { devworkspaceGroup, devworkspaceLatestVersion, devworkspacePlural } from '@devfile/api/api';
 import * as mockClient from '@kubernetes/client-node';
 import { CustomObjectsApi } from '@kubernetes/client-node';
 
+import {
+  devworkspaceGroup,
+  devworkspaceLatestVersion,
+  devworkspacePlural,
+} from '@/constants/devfile';
 import {
   CheClusterCustomResource,
   CustomResourceDefinitionList,

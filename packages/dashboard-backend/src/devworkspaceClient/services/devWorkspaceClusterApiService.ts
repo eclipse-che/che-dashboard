@@ -11,12 +11,16 @@
  */
 
 import { V1alpha2DevWorkspace } from '@devfile/api';
-import { devworkspaceGroup, devworkspaceLatestVersion, devworkspacePlural } from '@devfile/api/api';
 import { api } from '@eclipse-che/common';
 import * as k8s from '@kubernetes/client-node';
 import { V1Status } from '@kubernetes/client-node';
 import http from 'http';
 
+import {
+  devworkspaceGroup,
+  devworkspaceLatestVersion,
+  devworkspacePlural,
+} from '@/constants/devfile';
 import { prepareCustomObjectWatch } from '@/devworkspaceClient/services/helpers/prepareCustomObjectWatch';
 import { ServerConfigApiService } from '@/devworkspaceClient/services/serverConfigApi';
 import { IDevWorkspaceClusterApi } from '@/devworkspaceClient/types';

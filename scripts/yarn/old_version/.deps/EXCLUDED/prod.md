@@ -2,6 +2,7 @@ This file lists dependencies that do not need CQs or auto-detection does not wor
 
 | Packages | Resolved CQs |
 | --- | --- |
+| `@devfile/api@2.3.0-1733171449` | N/A |
 | `@fastify/cors@9.0.1` | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@fastify/cors/9.0.1) |
 | `@fastify/swagger-ui@4.2.0` | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@fastify/swagger-ui/4.2.0) |
 | `@hapi/hoek@10.0.1` | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@hapi/hoek/10.0.1) |
