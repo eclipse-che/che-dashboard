@@ -13,15 +13,15 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
 import { V1alpha2DevWorkspaceTemplate } from '@devfile/api';
-import { api } from '@eclipse-che/common';
-import * as mockClient from '@kubernetes/client-node';
-import { CustomObjectsApi } from '@kubernetes/client-node';
-
 import {
   devworkspacetemplateGroup,
   devworkspacetemplateLatestVersion,
   devworkspacetemplatePlural,
-} from '@/constants/devfile';
+} from '@devfile/api/constants/constants';
+import { api } from '@eclipse-che/common';
+import * as mockClient from '@kubernetes/client-node';
+import { CustomObjectsApi } from '@kubernetes/client-node';
+
 import {
   DevWorkspaceTemplateApiService,
   DevWorkspaceTemplateList,
