@@ -39,7 +39,7 @@
 | [`@isaacs/fs-minipass@4.0.1`](https://github.com/npm/fs-minipass.git) | ISC | clearlydefined |
 | [`@jsep-plugin/assignment@1.2.1`](https://github.com/EricSmekens/jsep.git) | MIT | clearlydefined |
 | [`@jsep-plugin/regex@1.0.3`](https://github.com/EricSmekens/jsep.git) | MIT | clearlydefined |
-| [`@kubernetes/client-node@0.22.1`](https://github.com/kubernetes-client/javascript.git) | Apache-2.0 | clearlydefined |
+| [`@kubernetes/client-node@0.22.1`](https://github.com/kubernetes-client/javascript.git) | Apache-2.0 | #17950 |
 | [`@lezer/common@1.2.3`](https://github.com/lezer-parser/common.git) | MIT | clearlydefined |
 | [`@lezer/highlight@1.2.1`](https://github.com/lezer-parser/highlight.git) | MIT | clearlydefined |
 | [`@lezer/lr@1.4.2`](https://github.com/lezer-parser/lr.git) | MIT | clearlydefined |
@@ -71,7 +71,7 @@
 | [`@types/unist@3.0.3`](https://github.com/DefinitelyTyped/DefinitelyTyped.git) | MIT | clearlydefined |
 | [`@types/use-sync-external-store@0.0.3`](https://github.com/DefinitelyTyped/DefinitelyTyped.git) | MIT | clearlydefined |
 | [`@types/ws@8.5.8`](https://github.com/DefinitelyTyped/DefinitelyTyped.git) | MIT | #6016 |
-| [`@ungap/structured-clone@1.2.0`](git+https://github.com/ungap/structured-clone.git) | ISC | clearlydefined |
+| [`@ungap/structured-clone@1.2.0`](git+https://github.com/ungap/structured-clone.git) | ISC | #18522 |
 | [`abort-controller@3.0.0`](git+https://github.com/mysticatea/abort-controller.git) | MIT | #7592 |
 | [`abstract-logging@2.0.1`](git+https://github.com/jsumners/abstract-logging.git) | MIT | clearlydefined |
 | [`ajv-formats@2.1.1`](git+https://github.com/ajv-validator/ajv-formats.git) | MIT | clearlydefined |
@@ -310,7 +310,7 @@
 | [`mri@1.1.4`](https://github.com/lukeed/mri.git) | MIT | clearlydefined |
 | [`ms@2.1.2`](https://github.com/zeit/ms.git) | MIT | #5895 |
 | [`multi-ini@2.3.2`](git://github.com/evangelion1204/multi-ini.git) | MIT | clearlydefined |
-| [`nanoid@3.3.7`](https://github.com/ai/nanoid.git) | MIT | #7571 |
+| [`nanoid@3.3.8`](https://github.com/ai/nanoid.git) | MIT | #7571 |
 | [`node-fetch@2.7.0`](https://github.com/bitinn/node-fetch.git) | MIT | #10509 |
 | [`oauth-sign@0.9.0`](https://github.com/mikeal/oauth-sign) | Apache-2.0 | clearlydefined |
 | [`object-assign@4.1.1`](https://github.com/sindresorhus/object-assign.git) | MIT | clearlydefined |
