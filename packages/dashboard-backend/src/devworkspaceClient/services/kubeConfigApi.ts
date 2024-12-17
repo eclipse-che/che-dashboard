@@ -12,6 +12,7 @@
 
 import { helpers } from '@eclipse-che/common';
 import * as k8s from '@kubernetes/client-node';
+import { parse, stringify } from 'yaml';
 
 import { exec, ServerConfig } from '@/devworkspaceClient/services/helpers/exec';
 import {
@@ -215,11 +216,11 @@ export class KubeConfigApiService implements IKubeConfigApi {
 
   private setNamespaceInContext(kubeConfig: string, namespace: string): string {
     try {
-      const kubeConfigJson = JSON.parse(kubeConfig);
-      for (const context of kubeConfigJson.contexts) {
+      const kubeConfigYaml = parse(kubeConfig);
+      for (const context of kubeConfigYaml.contexts) {
         context.context.namespace = namespace;
       }
-      return JSON.stringify(kubeConfigJson, undefined, '  ');
+      return stringify(kubeConfigYaml);
     } catch (e) {
       logger.error(e, 'Failed to parse kubeconfig');
       return kubeConfig;
@@ -230,31 +231,27 @@ export class KubeConfigApiService implements IKubeConfigApi {
   // If the inbounds kubeconfig match the kubeconfig format then merge them
   private mergeKubeConfig(kubeconfigSource: string, generatedKubeconfig: string): string {
     try {
-      const kubeConfigJson = JSON.parse(kubeconfigSource);
-      const generatedKubeConfigJson = JSON.parse(generatedKubeconfig);
-      for (const context of generatedKubeConfigJson.contexts) {
-        if (kubeConfigJson.contexts.find((c: any) => c.name === context.name)) {
-          kubeConfigJson.contexts = kubeConfigJson.contexts.filter(
-            (c: any) => c.name !== context.name,
-          );
+      const kubeConfig = parse(kubeconfigSource);
+      const generatedKubeConfig = parse(generatedKubeconfig);
+      for (const context of generatedKubeConfig.contexts) {
+        if (kubeConfig.contexts.find((c: any) => c.name === context.name)) {
+          kubeConfig.contexts = kubeConfig.contexts.filter((c: any) => c.name !== context.name);
         }
-        kubeConfigJson.contexts.push(context);
+        kubeConfig.contexts.push(context);
       }
-      for (const cluster of generatedKubeConfigJson.clusters) {
-        if (kubeConfigJson.clusters.find((c: any) => c.name === cluster.name)) {
-          kubeConfigJson.clusters = kubeConfigJson.clusters.filter(
-            (c: any) => c.name !== cluster.name,
-          );
+      for (const cluster of generatedKubeConfig.clusters) {
+        if (kubeConfig.clusters.find((c: any) => c.name === cluster.name)) {
+          kubeConfig.clusters = kubeConfig.clusters.filter((c: any) => c.name !== cluster.name);
         }
-        kubeConfigJson.clusters.push(cluster);
+        kubeConfig.clusters.push(cluster);
       }
-      for (const user of generatedKubeConfigJson.users) {
-        if (kubeConfigJson.users.find((c: any) => c.name === user.name)) {
-          kubeConfigJson.users = kubeConfigJson.users.filter((c: any) => c.name !== user.name);
+      for (const user of generatedKubeConfig.users) {
+        if (kubeConfig.users.find((c: any) => c.name === user.name)) {
+          kubeConfig.users = kubeConfig.users.filter((c: any) => c.name !== user.name);
         }
-        kubeConfigJson.users.push(user);
+        kubeConfig.users.push(user);
       }
-      return JSON.stringify(kubeConfigJson, undefined, '  ');
+      return stringify(kubeConfig);
     } catch (e) {
       logger.error(e, 'Failed to merge kubeconfig, returning source');
       return kubeconfigSource;
