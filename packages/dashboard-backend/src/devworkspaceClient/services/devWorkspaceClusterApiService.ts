@@ -10,15 +10,15 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import { api } from '@eclipse-che/common';
-import * as k8s from '@kubernetes/client-node';
-import { V1Status } from '@kubernetes/client-node';
+import { V1alpha2DevWorkspace } from '@devfile/api';
 import {
   devworkspaceGroup,
   devworkspaceLatestVersion,
   devworkspacePlural,
-  V1alpha2DevWorkspace,
-} from 'devfile-api';
+} from '@devfile/api/constants/constants';
+import { api } from '@eclipse-che/common';
+import * as k8s from '@kubernetes/client-node';
+import { V1Status } from '@kubernetes/client-node';
 import http from 'http';
 
 import { prepareCustomObjectWatch } from '@/devworkspaceClient/services/helpers/prepareCustomObjectWatch';

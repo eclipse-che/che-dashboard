@@ -21,7 +21,14 @@ module.exports = {
   moduleNameMapper: {
     // mapping for absolute imports (see tsconfig.json)
     '^@/(.*)$': '<rootDir>/src/$1',
+
+    // not everything we need is exported from the package
+    // so we need to alias the rest
+    '@devfile/api/constants(.*)$': '<rootDir>/../../node_modules/@devfile/api/constants/$1.ts',
   },
+  transformIgnorePatterns: [
+    'node_modules/(?!@devfile/api/constants/constants)',
+  ],
   collectCoverageFrom: [
     ...base.collectCoverageFrom,
 

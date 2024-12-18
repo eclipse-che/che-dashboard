@@ -10,14 +10,14 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import * as mockClient from '@kubernetes/client-node';
-import { CustomObjectsApi } from '@kubernetes/client-node';
+import { V1alpha2DevWorkspace } from '@devfile/api';
 import {
   devworkspaceGroup,
   devworkspaceLatestVersion,
   devworkspacePlural,
-  V1alpha2DevWorkspace,
-} from 'devfile-api';
+} from '@devfile/api/constants/constants';
+import * as mockClient from '@kubernetes/client-node';
+import { CustomObjectsApi } from '@kubernetes/client-node';
 
 import {
   CheClusterCustomResource,
