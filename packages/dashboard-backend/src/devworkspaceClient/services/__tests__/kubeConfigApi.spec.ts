@@ -14,6 +14,8 @@
 
 import * as mockClient from '@kubernetes/client-node';
 import { CoreV1Api, V1PodList } from '@kubernetes/client-node';
+import fs from 'fs';
+import { parse, stringify } from 'yaml';
 
 import * as helper from '@/devworkspaceClient/services/helpers/exec';
 import { KubeConfigApiService } from '@/devworkspaceClient/services/kubeConfigApi';
@@ -28,7 +30,7 @@ const mockExecPrintenvHome = jest.fn().mockReturnValue({
   stdError: '',
 });
 
-const mockExecCatKubeConfig = jest.fn().mockReturnValue({
+let mockExecCatKubeConfig = jest.fn().mockReturnValue({
   stdOut: '',
   stdError: '',
 });
@@ -61,11 +63,14 @@ const spyExec = jest
 const namespace = 'user-che';
 const workspaceName = 'workspace-1';
 const containerName = 'container-1';
-const config = JSON.stringify({
+const config = {
   apiVersion: 'v1',
   kind: 'Config',
   'current-context': 'logged-user',
-});
+  contexts: [],
+  clusters: [],
+  users: [],
+};
 
 describe('Kubernetes Config API Service', () => {
   let kubeConfigService: KubeConfigApiService;
@@ -81,7 +86,7 @@ describe('Kubernetes Config API Service', () => {
         },
       } as CoreV1Api;
     });
-    kubeConfig.exportConfig = jest.fn().mockReturnValue(config);
+    kubeConfig.exportConfig = jest.fn().mockReturnValue(JSON.stringify(config));
     kubeConfig.getCurrentCluster = jest.fn().mockReturnValue('');
     kubeConfig.applyToRequest = jest.fn();
 
@@ -142,7 +147,24 @@ describe('Kubernetes Config API Service', () => {
       workspaceName,
       namespace,
       containerName,
-      ['sh', '-c', `echo '${config}' > ${kubeConfigDir}/config`],
+      ['sh', '-c', `echo '${stringify(config)}' > ${kubeConfigDir}/config`],
+      expect.anything(),
+    );
+  });
+  test('should merge configs', async () => {
+    const configContent = fs.readFileSync(__dirname + '/fixtures/kubeconfig.yaml', 'utf-8');
+    mockExecCatKubeConfig = jest.fn().mockReturnValue({
+      stdOut: configContent,
+      stdError: '',
+    });
+    await kubeConfigService.injectKubeConfig(namespace, 'wksp-id');
+
+    expect(spyExec).toHaveBeenNthCalledWith(
+      5,
+      workspaceName,
+      namespace,
+      containerName,
+      ['sh', '-c', `echo '${configContent}' > ${kubeConfigDir}/config`],
       expect.anything(),
     );
   });

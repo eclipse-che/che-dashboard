@@ -104,8 +104,7 @@ export async function exec(
           return;
         }
 
-        let message = Buffer.from(event.data.substr(1), 'base64').toString('utf-8');
-        message = message.replace(/\n/g, ' ').trim();
+        const message = Buffer.from(event.data.substr(1), 'base64').toString('utf-8').trim();
 
         if (channel === CHANNELS[CHANNELS.STD_OUT]) {
           stdOut += message;
