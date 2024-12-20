@@ -10,9 +10,7 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import { defaultHighlightStyle, syntaxHighlighting } from '@codemirror/language';
-import { EditorState } from '@codemirror/state';
-import { EditorView } from '@codemirror/view';
+import CodeMirror from 'codemirror';
 import React from 'react';
 
 import styles from '@/components/BasicViewer/index.module.css';
@@ -23,43 +21,37 @@ export type Props = {
 };
 
 export class BasicViewer extends React.PureComponent<Props> {
-  private editor: EditorView | undefined;
+  private editor: CodeMirror.Editor | undefined;
 
   public componentDidMount(): void {
     const parent = window.document.querySelector(`#${this.props.id}`);
     if (parent) {
-      const state = this.getEditorState();
-      this.editor = new EditorView({
-        state,
-        parent,
+      const editor = new CodeMirror.fromTextArea(parent, {
+        lineNumbers: false,
+        lineWrapping: false,
+        readOnly: true,
+        autoRefresh: true,
+        autofocus: true,
       });
-    }
-  }
+      editor.setSize(`100%`, `100%`);
+      editor.setValue(this.props.value);
+      editor.save();
 
-  public componentWillUnmount(): void {
-    if (this.editor) {
-      this.editor.destroy();
+      this.editor = editor;
     }
   }
 
   componentDidUpdate(prevProps: Readonly<Props>): void {
     if (this.editor && this.props.value !== prevProps.value) {
-      const state = this.getEditorState();
-      this.editor.setState(state);
+      this.editor.setValue(this.props.value);
+      this.editor.save();
     }
-  }
-
-  private getEditorState(): EditorState {
-    return EditorState.create({
-      doc: this.props.value,
-      extensions: [syntaxHighlighting(defaultHighlightStyle), EditorState.readOnly.of(true)],
-    });
   }
 
   public render(): React.ReactElement {
     return (
       <div className={styles.basicViewer}>
-        <div id={this.props.id}></div>
+        <textarea id={this.props.id} value={this.props.value}></textarea>
       </div>
     );
   }

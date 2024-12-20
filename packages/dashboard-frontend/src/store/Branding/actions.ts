@@ -12,7 +12,7 @@
 
 import common from '@eclipse-che/common';
 import { createAction } from '@reduxjs/toolkit';
-import { merge } from 'lodash';
+import merge from 'lodash/merge';
 
 import { fetchApiInfo, fetchBranding } from '@/services/assets/branding';
 import { BRANDING_DEFAULT, BrandingData } from '@/services/bootstrap/branding.constant';

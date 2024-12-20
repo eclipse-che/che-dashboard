@@ -11,7 +11,7 @@
  */
 
 import { createSelector } from '@reduxjs/toolkit';
-import { cloneDeep } from 'lodash';
+import cloneDeep from 'lodash/cloneDeep';
 
 import devfileApi from '@/services/devfileApi';
 import { RootState } from '@/store';

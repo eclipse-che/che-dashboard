@@ -11,7 +11,7 @@
  */
 
 import { dump } from 'js-yaml';
-import { cloneDeep } from 'lodash';
+import cloneDeep from 'lodash/cloneDeep';
 
 import { DevWorkspaceTemplate } from '@/services/devfileApi/devfileApi';
 import { DevWorkspace } from '@/services/devfileApi/devWorkspace';

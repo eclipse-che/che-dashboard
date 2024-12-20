@@ -10,7 +10,7 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import { isEqual } from 'lodash';
+import isEqual from 'lodash/isEqual';
 import React, { useEffect } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { Location, NavigateFunction, useLocation, useNavigate, useParams } from 'react-router-dom';

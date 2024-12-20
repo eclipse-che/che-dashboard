@@ -18,7 +18,7 @@ import {
   FormSection,
 } from '@patternfly/react-core';
 import { PlusCircleIcon } from '@patternfly/react-icons';
-import { isEqual } from 'lodash';
+import isEqual from 'lodash/isEqual';
 import React from 'react';
 
 import AdditionalGitRemote from '@/components/ImportFromGit/RepoOptionsAccordion/GitRepoOptions/AdditionalGitRemotes/gitRemote';
