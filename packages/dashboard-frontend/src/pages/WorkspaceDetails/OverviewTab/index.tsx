@@ -11,7 +11,7 @@
  */
 
 import { Form, PageSection, PageSectionVariants } from '@patternfly/react-core';
-import { cloneDeep } from 'lodash';
+import cloneDeep from 'lodash/cloneDeep';
 import React from 'react';
 
 import { InfrastructureNamespaceFormGroup } from '@/pages/WorkspaceDetails/OverviewTab/InfrastructureNamespace';

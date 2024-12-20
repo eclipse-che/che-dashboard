@@ -14,7 +14,7 @@ import { V230DevfileComponents, V230DevfileProjects } from '@devfile/api';
 import common, { api } from '@eclipse-che/common';
 import axios from 'axios';
 import { dump } from 'js-yaml';
-import { cloneDeep } from 'lodash';
+import cloneDeep from 'lodash/cloneDeep';
 
 import { DevfileAdapter } from '@/services/devfile/adapter';
 import devfileApi, { isDevfileV2 } from '@/services/devfileApi';

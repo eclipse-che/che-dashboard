@@ -12,7 +12,7 @@
 
 import common from '@eclipse-che/common';
 import { AlertVariant } from '@patternfly/react-core';
-import { isEqual } from 'lodash';
+import isEqual from 'lodash/isEqual';
 import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 

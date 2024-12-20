@@ -18,7 +18,8 @@ import {
 } from '@devfile/api';
 import { api } from '@eclipse-che/common';
 import { inject, injectable } from 'inversify';
-import { cloneDeep, isEqual } from 'lodash';
+import cloneDeep from 'lodash/cloneDeep';
+import isEqual from 'lodash/isEqual';
 
 import * as DwApi from '@/services/backend-client/devWorkspaceApi';
 import * as DwtApi from '@/services/backend-client/devWorkspaceTemplateApi';

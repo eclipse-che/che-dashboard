@@ -12,7 +12,7 @@
 
 import common, { api } from '@eclipse-che/common';
 import { ValidatedOptions } from '@patternfly/react-core';
-import { isEqual } from 'lodash';
+import isEqual from 'lodash/isEqual';
 
 import {
   getGitRemotes,

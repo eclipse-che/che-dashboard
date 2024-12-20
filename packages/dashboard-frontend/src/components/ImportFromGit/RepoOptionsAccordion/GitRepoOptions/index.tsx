@@ -11,7 +11,7 @@
  */
 
 import { Form } from '@patternfly/react-core';
-import { isEqual } from 'lodash';
+import isEqual from 'lodash/isEqual';
 import React from 'react';
 
 import { AdditionalGitRemotes } from '@/components/ImportFromGit/RepoOptionsAccordion/GitRepoOptions/AdditionalGitRemotes';

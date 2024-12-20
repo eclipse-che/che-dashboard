@@ -11,7 +11,7 @@
  */
 
 import { dump, load } from 'js-yaml';
-import { cloneDeep } from 'lodash';
+import cloneDeep from 'lodash/cloneDeep';
 
 import { DevfileAdapter } from '@/services/devfile/adapter';
 import devfileApi from '@/services/devfileApi';
