@@ -23,7 +23,7 @@ import {
 } from '@patternfly/react-core';
 import { CheckIcon } from '@patternfly/react-icons';
 import React from 'react';
-import ReactMarkdown from 'react-markdown';
+import sanitizeHtml from 'sanitize-html';
 
 import styles from '@/components/EditorSelector/Gallery/Entry/index.module.css';
 import { TagLabel } from '@/components/TagLabel';
@@ -62,37 +62,11 @@ export class EditorSelectorEntry extends React.PureComponent<Props, State> {
     };
   }
 
-  private setAttribute(
-    widgetId: string,
-    querySelector: string = 'a',
-    attributeName: string = 'target',
-    attributeValue: string = '_blank',
-  ): void {
-    clearTimeout(this.timerId);
-    this.timerId = window.setTimeout(() => {
-      const widget = document.getElementById(widgetId);
-      if (widget) {
-        widget.querySelectorAll(querySelector).forEach(targetElement => {
-          targetElement.setAttribute(attributeName, attributeValue);
-        });
-      }
-    }, 500);
-  }
-
   private get id(): string {
     return `editor-selector-card-${this.state.activeEditor.id}`;
   }
 
-  public componentDidMount(): void {
-    if (this.state.activeEditor.provider) {
-      this.setAttribute(this.id);
-    }
-  }
-
   public componentDidUpdate(prevProps: Props): void {
-    if (this.state.activeEditor.provider) {
-      this.setAttribute(this.id);
-    }
     if (prevProps.selectedId !== this.props.selectedId) {
       const selectedEditor = this.props.editorsGroup.find(
         editor => editor.id === this.props.selectedId,
@@ -238,7 +212,25 @@ export class EditorSelectorEntry extends React.PureComponent<Props, State> {
         </CardBody>
         {activeEditor.provider && (
           <CardFooter>
-            <ReactMarkdown className={styles.provider}>{activeEditor.provider}</ReactMarkdown>
+            <div data-testid="providerInfo" className={styles.provider}>
+              {React.createElement('p', {
+                dangerouslySetInnerHTML: {
+                  __html: sanitizeHtml(
+                    activeEditor.provider.replace(
+                      /\[([^\]]+)\]\(([^)]+)\)/g,
+                      '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>',
+                    ),
+                    {
+                      allowedTags: ['a'],
+                      allowedAttributes: {
+                        a: ['href', 'target', 'rel'],
+                      },
+                      allowedSchemes: ['http', 'https'],
+                    },
+                  ),
+                },
+              })}
+            </div>
           </CardFooter>
         )}
       </Card>

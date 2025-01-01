@@ -39,10 +39,19 @@ jest.mock('@/components/CheTooltip', () => {
   };
 });
 
-jest.mock('react-markdown', () => {
-  return jest.fn(props => {
-    return React.createElement('a', null, props.children, props.content);
-  });
+jest.mock('@/components/BasicViewer', () => {
+  return {
+    BasicViewer: jest.fn(props => {
+      return (
+        <textarea
+          id={props.id}
+          data-testid={props['data-testid']}
+          value={props.value}
+          readOnly={true}
+        />
+      );
+    }),
+  };
 });
 
 jest.mock('gravatar-url', () => {

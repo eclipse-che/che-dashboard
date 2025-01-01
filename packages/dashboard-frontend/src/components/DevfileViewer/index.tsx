@@ -48,23 +48,21 @@ export class DevfileViewer extends React.PureComponent<Props> {
       });
       editor.setSize(`100%`, `100%`);
       editor.setValue(this.props.value);
-      editor.save();
+      editor.focus();
 
       this.editor = editor;
     }
   }
 
-  componentDidUpdate(prevProps: Readonly<Props>): void {
-    if (this.editor && this.props.value !== prevProps.value) {
-      this.editor.setValue(this.props.value);
-      this.editor.save();
-    }
+  componentDidUpdate(): void {
+    this.editor.setValue(this.props.value);
+    this.editor.focus();
   }
 
   public render(): React.ReactElement {
     return (
       <div className={styles.devfileViewer}>
-        <textarea id={this.props.id}></textarea>
+        <textarea id={this.props.id} readOnly={true}></textarea>
       </div>
     );
   }

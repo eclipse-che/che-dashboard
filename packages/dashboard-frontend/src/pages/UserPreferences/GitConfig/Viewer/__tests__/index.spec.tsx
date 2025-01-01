@@ -30,7 +30,7 @@ describe('GitConfigViewer', () => {
     };
     renderComponent(config);
 
-    const viewerContent = screen.getByTestId('basic-viewer-value');
+    const viewerContent = screen.getByRole('textbox');
     expect(viewerContent).toHaveTextContent('[user] name="John Doe" email="johndoe@example.com"');
   });
 });

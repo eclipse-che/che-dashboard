@@ -10,7 +10,7 @@ This file lists dependencies that do not need CQs or auto-detection does not wor
 | `@patternfly/react-icons@4.93.7` | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@patternfly/react-icons/4.93.7) |
 | `@patternfly/react-table@4.113.6` | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@patternfly/react-table/4.113.6) |
 | `blueimp-md5@2.19.0` | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/blueimp-md5/2.19.0) |
-| `codemirror@5.65.16` | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/codemirror/5.65.16) |
+| `codemirror@5.65.18` | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/codemirror/5.65.18) |
 | `cookie-signature@1.2.1` | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/cookie-signature/1.2.1) |
 | `elliptic@6.6.1` | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/elliptic/6.6.1) |
 | `fast-uri@2.4.0` | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/fast-uri/2.4.0) |
