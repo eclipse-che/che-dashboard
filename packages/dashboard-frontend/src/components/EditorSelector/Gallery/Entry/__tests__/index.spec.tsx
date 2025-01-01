@@ -144,13 +144,41 @@ describe('Editor Selector Entry', () => {
   });
 
   describe('provider info', () => {
-    test('show text', () => {
+    test('convert markdown links into html', () => {
       renderComponent(
         editorGroup[0].id,
-        [...editorGroup].map(editor => Object.assign({}, editor, { provider: 'Provided by...' })),
+        [...editorGroup].map(editor =>
+          Object.assign({}, editor, {
+            provider:
+              'Provided by [DummyProvider](https://dummy.test-provider.com/) under [DummyLicense](https://www.dummy.test-licence.com/docs/)',
+          }),
+        ),
       );
 
-      expect(screen.queryByText('Provided by...')).not.toBeNull();
+      const providerInfo = screen.getByTestId('providerInfo');
+
+      expect(providerInfo).not.toBeNull();
+      expect(providerInfo.innerHTML).toEqual(
+        '<p>Provided by <a href="https://dummy.test-provider.com/" target="_blank" rel="noopener noreferrer">DummyProvider</a> under <a href="https://www.dummy.test-licence.com/docs/" target="_blank" rel="noopener noreferrer">DummyLicense</a></p>',
+      );
+    });
+    test('convert text into html', () => {
+      renderComponent(
+        editorGroup[0].id,
+        [...editorGroup].map(editor =>
+          Object.assign({}, editor, {
+            provider:
+              'Provided by <a href="https://dummy.test-provider.com/">DummyProvider</a> under <a href="https://www.dummy.test-licence.com/docs/">DummyLicense</a>',
+          }),
+        ),
+      );
+
+      const providerInfo = screen.getByTestId('providerInfo');
+
+      expect(providerInfo).not.toBeNull();
+      expect(providerInfo.innerHTML).toEqual(
+        '<p>Provided by <a href="https://dummy.test-provider.com/">DummyProvider</a> under <a href="https://www.dummy.test-licence.com/docs/">DummyLicense</a></p>',
+      );
     });
   });
 

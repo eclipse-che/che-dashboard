@@ -29,12 +29,12 @@ describe('BasicViewer', () => {
     const textbox = screen.getByRole('textbox');
 
     // no new line character
-    expect(textbox).toHaveTextContent('line 1line 2line 3');
+    expect(textbox).toHaveTextContent('line 1 line 2 line 3');
 
     reRenderComponent('line 4\nline 5\nline 6');
 
     // no new line character
-    expect(textbox).toHaveTextContent('line 4line 5line 6');
+    expect(textbox).toHaveTextContent('line 4 line 5 line 6');
   });
 });
 

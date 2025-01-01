@@ -1,11 +1,11 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`BasicViewer snapshot 1`] = `
-<div
-  className="basicViewer"
->
-  <div
-    id="basic-viewer-id"
-  />
-</div>
+<textarea
+  id="basic-viewer-id"
+  readOnly={true}
+  value="line 1
+line 2
+line 3"
+/>
 `;
