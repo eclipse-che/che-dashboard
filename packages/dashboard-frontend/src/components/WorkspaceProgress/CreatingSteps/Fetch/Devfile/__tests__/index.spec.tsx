@@ -13,7 +13,6 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 
 import { FACTORY_LINK_ATTR } from '@eclipse-che/common';
-import { AlertVariant } from '@patternfly/react-core';
 import { cleanup, screen, waitFor } from '@testing-library/react';
 import userEvent, { UserEvent } from '@testing-library/user-event';
 import React from 'react';
@@ -695,31 +694,6 @@ describe('Creating steps, fetching a devfile', () => {
     const protocol = 'http://';
     const factoryUrl = 'git@github.com:user/repository-name.git';
     const emptyStore = new MockStoreBuilder().build();
-    const sshPrivateRepoAllertItem = expect.objectContaining({
-      title: 'Warning',
-      variant: AlertVariant.warning,
-      children: (
-        <ExpandableWarning
-          textBefore="Devfile resolve from a privatre repositry via an SSH url is not supported."
-          errorMessage="Could not reach devfile"
-          textAfter="Apply a Personal Access Token to fetch the devfile.yaml content."
-        />
-      ),
-      actionCallbacks: [
-        expect.objectContaining({
-          title: 'Continue with default devfile',
-          callback: expect.any(Function),
-        }),
-        expect.objectContaining({
-          title: 'Reload',
-          callback: expect.any(Function),
-        }),
-        expect.objectContaining({
-          title: 'Open Documentation page',
-          callback: expect.any(Function),
-        }),
-      ],
-    });
 
     let spyWindowLocation: jest.SpyInstance;
     let location: Location;
@@ -771,7 +745,7 @@ describe('Creating steps, fetching a devfile', () => {
       expect(mockOnError).not.toHaveBeenCalled();
     });
 
-    it('should show warning on SSH url', async () => {
+    it('should use default devfile on private SSH url', async () => {
       searchParams = new URLSearchParams({
         [FACTORY_URL_ATTR]: 'git@github.com:user/repository.git',
       });
@@ -779,13 +753,13 @@ describe('Creating steps, fetching a devfile', () => {
       renderComponent(emptyStore, searchParams, location);
 
       await jest.advanceTimersByTimeAsync(MIN_STEP_DURATION_MS);
-      await waitFor(() => expect(mockOnNextStep).not.toHaveBeenCalled);
+      await waitFor(() => expect(mockOnNextStep).toHaveBeenCalled());
 
       expect(mockOpenOAuthPage).not.toHaveBeenCalled();
-      expect(mockOnError).toHaveBeenCalledWith(sshPrivateRepoAllertItem);
+      expect(mockOnError).not.toHaveBeenCalled();
     });
 
-    it('should show warning on bitbucket-server SSH url', async () => {
+    it('should use default devfile on bitbucket-server SSH url', async () => {
       searchParams = new URLSearchParams({
         [FACTORY_URL_ATTR]: 'ssh://git@bitbucket-server.com/~user/repository.git',
       });
@@ -793,10 +767,10 @@ describe('Creating steps, fetching a devfile', () => {
       renderComponent(emptyStore, searchParams, location);
 
       await jest.advanceTimersByTimeAsync(MIN_STEP_DURATION_MS);
-      await waitFor(() => expect(mockOnNextStep).not.toHaveBeenCalled);
+      await waitFor(() => expect(mockOnNextStep).toHaveBeenCalled);
 
       expect(mockOpenOAuthPage).not.toHaveBeenCalled();
-      expect(mockOnError).toHaveBeenCalledWith(sshPrivateRepoAllertItem);
+      expect(mockOnError).not.toHaveBeenCalled();
     });
   });
 });
