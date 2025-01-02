@@ -17,6 +17,7 @@ import { baseApiPath } from '@/constants/config';
 import { setup, teardown } from '@/utils/appBuilder';
 
 jest.mock('../helpers/getDevWorkspaceClient.ts');
+jest.mock('../helpers/getServiceAccountToken.ts');
 describe('Cluster Info Route', () => {
   let app: FastifyInstance;
   const clusterConsoleUrl = 'cluster-console-url';
