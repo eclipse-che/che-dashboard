@@ -18,6 +18,7 @@ import { setup, teardown } from '@/utils/appBuilder';
 
 jest.mock('../helpers/getDevWorkspaceClient.ts');
 jest.mock('../helpers/getToken.ts');
+jest.mock('../helpers/getServiceAccountToken.ts');
 
 describe('Docker Config Routes', () => {
   let app: FastifyInstance;

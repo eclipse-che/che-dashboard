@@ -25,13 +25,12 @@ jest.mock('../helpers/getDevWorkspaceClient.ts', () => ({
       read: mockRead,
       patch: mockPatch,
     },
-  }),
-  getDevWorkspaceSingletonClient: () => ({
-    devWorkspaceClusterServiceApi: {
+    devWorkspaceClusterApi: {
       watchInAllNamespaces: jest.fn().mockResolvedValueOnce(true),
     },
   }),
 }));
+jest.mock('../helpers/getServiceAccountToken.ts');
 jest.mock('../helpers/getToken.ts');
 
 describe('Gitconfig Routes', () => {

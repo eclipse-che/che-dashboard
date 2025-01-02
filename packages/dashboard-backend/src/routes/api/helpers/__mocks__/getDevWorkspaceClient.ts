@@ -23,7 +23,6 @@ import { IncomingHttpHeaders } from 'http';
 
 import {
   DevWorkspaceClient,
-  DevWorkspaceSingletonClient,
   IDevWorkspaceApi,
   IDevWorkspaceClusterApi,
   IDevWorkspaceTemplateApi,
@@ -244,6 +243,13 @@ export const getDevWorkspaceClient = jest.fn(
         read: _namespace => Promise.resolve({} as api.IGitConfig),
         patch: (_namespace, _gitconfig) => Promise.resolve({} as api.IGitConfig),
       } as IGitConfigApi,
+      devWorkspaceClusterApi: {
+        isRunningWorkspacesClusterLimitExceeded: () =>
+          Promise.resolve(stubIsRunningWorkspaceClusterLimitExceeded),
+        watchInAllNamespaces(): Promise<void> {
+          return Promise.resolve();
+        },
+      } as IDevWorkspaceClusterApi,
       sshKeysApi: {
         add: (_namespace, _sshKey) => Promise.resolve({} as api.SshKey),
         delete: (_namespace, _name) => Promise.resolve(),
@@ -256,19 +262,5 @@ export const getDevWorkspaceClient = jest.fn(
         removeTrustedSources: _namespace => Promise.resolve(),
       } as IWorkspacePreferencesApi,
     } as DevWorkspaceClient;
-  },
-);
-
-export const getDevWorkspaceSingletonClient = jest.fn(
-  (..._args: Parameters<typeof helper>): DevWorkspaceSingletonClient => {
-    return {
-      devWorkspaceClusterServiceApi: {
-        isRunningWorkspacesClusterLimitExceeded: () =>
-          Promise.resolve(stubIsRunningWorkspaceClusterLimitExceeded),
-        watchInAllNamespaces(): Promise<void> {
-          return Promise.resolve();
-        },
-      } as IDevWorkspaceClusterApi,
-    };
   },
 );

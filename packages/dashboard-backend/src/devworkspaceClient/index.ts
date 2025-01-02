@@ -35,7 +35,6 @@ import {
   IDevWorkspaceApi,
   IDevWorkspaceClient,
   IDevWorkspaceClusterApi,
-  IDevWorkspaceSingletonClient,
   IDevWorkspaceTemplateApi,
   IDockerConfigApi,
   IEditorsApi,
@@ -110,6 +109,10 @@ export class DevWorkspaceClient implements IDevWorkspaceClient {
     return new GitConfigApiService(this.kubeConfig);
   }
 
+  get devWorkspaceClusterApi(): IDevWorkspaceClusterApi {
+    return new DevWorkspaceClusterApiService(this.kubeConfig);
+  }
+
   get gettingStartedSampleApi(): IGettingStartedSampleApi {
     return new GettingStartedSamplesApiService(this.kubeConfig);
   }
@@ -128,24 +131,5 @@ export class DevWorkspaceClient implements IDevWorkspaceClient {
 
   get workspacePreferencesApi(): IWorkspacePreferencesApi {
     return new WorkspacePreferencesApiService(this.kubeConfig);
-  }
-}
-
-let devWorkspaceSingletonClient: DevWorkspaceSingletonClient;
-
-/**
- * Singleton client for devworkspace services.
- */
-export class DevWorkspaceSingletonClient implements IDevWorkspaceSingletonClient {
-  static getInstance(kc: k8s.KubeConfig): DevWorkspaceSingletonClient {
-    if (!devWorkspaceSingletonClient) {
-      devWorkspaceSingletonClient = new DevWorkspaceSingletonClient(kc);
-    }
-    return devWorkspaceSingletonClient;
-  }
-
-  public readonly devWorkspaceClusterServiceApi: IDevWorkspaceClusterApi;
-  private constructor(kc: k8s.KubeConfig) {
-    this.devWorkspaceClusterServiceApi = new DevWorkspaceClusterApiService(kc);
   }
 }

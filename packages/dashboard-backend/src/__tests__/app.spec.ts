@@ -20,6 +20,7 @@ const mockProcessExit = jest.fn();
 });
 
 jest.mock('../routes/api/helpers/getDevWorkspaceClient.ts');
+jest.mock('../routes/api/helpers/getServiceAccountToken.ts');
 describe('App', () => {
   afterEach(() => {
     jest.clearAllMocks();
