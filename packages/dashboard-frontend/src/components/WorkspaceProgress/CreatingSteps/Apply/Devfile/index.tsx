@@ -31,7 +31,6 @@ import { ProgressStepTitle } from '@/components/WorkspaceProgress/StepTitle';
 import { TimeLimit } from '@/components/WorkspaceProgress/TimeLimit';
 import { lazyInject } from '@/inversify.config';
 import devfileApi from '@/services/devfileApi';
-import { FactoryLocationAdapter } from '@/services/factory-location-adapter';
 import {
   buildFactoryParams,
   FactoryParams,
@@ -181,13 +180,11 @@ class CreatingStepApplyDevfile extends ProgressStep<Props, State> {
 
     // when using the default devfile instead of a user devfile
     if (factoryResolver === undefined && isEqual(devfile, defaultDevfile)) {
-      if (FactoryLocationAdapter.isSshLocation(factoryParams.sourceUrl)) {
-        if (!devfile.attributes) {
-          devfile.attributes = {};
-        }
-
-        devfile.attributes['controller.devfile.io/bootstrap-devworkspace'] = true;
+      if (!devfile.attributes) {
+        devfile.attributes = {};
       }
+
+      devfile.attributes['controller.devfile.io/bootstrap-devworkspace'] = true;
 
       if (devfile.projects === undefined) {
         devfile.projects = [];
@@ -203,13 +200,11 @@ class CreatingStepApplyDevfile extends ProgressStep<Props, State> {
         }
       }
     } else if (factoryResolver?.source === 'repo') {
-      if (FactoryLocationAdapter.isSshLocation(factoryParams.sourceUrl)) {
-        if (!devfile.attributes) {
-          devfile.attributes = {};
-        }
-
-        devfile.attributes['controller.devfile.io/bootstrap-devworkspace'] = true;
+      if (!devfile.attributes) {
+        devfile.attributes = {};
       }
+
+      devfile.attributes['controller.devfile.io/bootstrap-devworkspace'] = true;
     }
 
     if (remotes) {

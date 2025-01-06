@@ -345,7 +345,7 @@ describe('Creating steps, fetching a devfile', () => {
     });
   });
 
-  describe('unsupported git provider error', () => {
+  describe('unsupported git provider', () => {
     let emptyStore: Store;
     const rejectReason = 'Failed to fetch devfile';
 
@@ -354,110 +354,13 @@ describe('Creating steps, fetching a devfile', () => {
       mockRequestFactoryResolver.mockRejectedValueOnce(rejectReason);
     });
 
-    test('alert title', async () => {
+    test('should continue with the default devfile', async () => {
       renderComponent(emptyStore, searchParams);
 
       await jest.advanceTimersByTimeAsync(MIN_STEP_DURATION_MS);
 
-      const expectAlertItem = expect.objectContaining({
-        title: 'Warning',
-        actionCallbacks: [
-          expect.objectContaining({
-            title: 'Continue with default devfile',
-            callback: expect.any(Function),
-          }),
-          expect.objectContaining({
-            title: 'Reload',
-            callback: expect.any(Function),
-          }),
-        ],
-      });
-      await waitFor(() => expect(mockOnError).toHaveBeenCalledWith(expectAlertItem));
-
-      expect(mockOnNextStep).not.toHaveBeenCalled();
-    });
-
-    test('action "Continue with default devfile"', async () => {
-      // this deferred object will help run the callback at the right time
-      const deferred = getDefer();
-
-      const actionTitle = 'Continue with default devfile';
-      mockOnError.mockImplementationOnce((alertItem: AlertItem) => {
-        const action = alertItem.actionCallbacks?.find(_action =>
-          _action.title.startsWith(actionTitle),
-        );
-        expect(action).toBeDefined();
-
-        if (action) {
-          deferred.promise.then(action.callback);
-        } else {
-          throw new Error('Action not found');
-        }
-      });
-
-      renderComponent(emptyStore, searchParams);
-      await jest.runAllTimersAsync();
-
-      await waitFor(() => expect(mockOnError).toHaveBeenCalled());
-      expect(mockOnRestart).not.toHaveBeenCalled();
-      expect(mockOnNextStep).not.toHaveBeenCalled();
-
-      mockOnError.mockClear();
-
-      /* test the action */
-      await jest.runOnlyPendingTimersAsync();
-
-      // resolve deferred to trigger the callback
-      deferred.resolve();
-
-      await waitFor(() => expect(mockOnNextStep).toHaveBeenCalled());
-      expect(mockOnRestart).not.toHaveBeenCalled();
-      expect(mockOnError).not.toHaveBeenCalled();
-    });
-
-    test('action "Reload"', async () => {
-      // this deferred object will help run the callback at the right time
-      const deferred = getDefer();
-
-      const actionTitle = 'Reload';
-      mockOnError.mockImplementationOnce(async (alertItem: AlertItem) => {
-        const action = alertItem.actionCallbacks?.find(_action =>
-          _action.title.startsWith(actionTitle),
-        );
-        expect(action).toBeDefined();
-
-        if (action) {
-          deferred.promise.then(action.callback);
-        } else {
-          throw new Error('Action not found');
-        }
-      });
-
-      renderComponent(emptyStore, searchParams);
-      await jest.runAllTimersAsync();
-
-      await waitFor(() => expect(mockOnError).toHaveBeenCalled());
-      expect(mockOnRestart).not.toHaveBeenCalled();
-      expect(mockOnNextStep).not.toHaveBeenCalled();
-
-      // first call resolves with error
-      expect(mockRequestFactoryResolver).toHaveBeenCalledTimes(1);
-
-      mockOnError.mockClear();
-
-      /* test the action */
-
-      await jest.runAllTimersAsync();
-
-      // resolve deferred to trigger the callback
-      deferred.resolve();
-
-      await waitFor(() => expect(mockOnRestart).toHaveBeenCalled());
-      expect(mockOnNextStep).not.toHaveBeenCalled();
-      expect(mockOnError).not.toHaveBeenCalled();
-
-      // should request the factory resolver for the second time
-      await waitFor(() => expect(mockRequestFactoryResolver).toHaveBeenCalledTimes(2));
+      await waitFor(() => expect(mockOnError).not.toHaveBeenCalled());
+      expect(mockOnNextStep).toHaveBeenCalled();
     });
   });
 

@@ -46,13 +46,6 @@ export class ApplyingDevfileError extends Error {
   }
 }
 
-export class UnsupportedGitProviderError extends Error {
-  constructor(message: string) {
-    super(message);
-    this.name = 'UnsupportedGitProviderError';
-  }
-}
-
 const RELOADS_LIMIT = 2;
 type ReloadsInfo = {
   [url: string]: number;
@@ -70,7 +63,6 @@ export type State = ProgressStepState & {
 
 class CreatingStepFetchDevfile extends ProgressStep<Props, State> {
   protected readonly name = 'Inspecting repo';
-  private readonly sshPattern = new RegExp('(git@|(ssh|git)://).*');
 
   constructor(props: Props) {
     super(props);
@@ -220,15 +212,12 @@ class CreatingStepFetchDevfile extends ProgressStep<Props, State> {
       }
       if (
         errorMessage === 'Failed to fetch devfile' ||
+        errorMessage ===
+          'Cannot build factory with any of the provided parameters. Please check parameters correctness, and resend query.' ||
         errorMessage.startsWith('Could not reach devfile')
       ) {
-        // check if the source url is an SSH url
-        if (this.sshPattern.test(sourceUrl)) {
-          this.setState({ useDefaultDevfile: true });
-          return true;
-        } else {
-          throw new UnsupportedGitProviderError(errorMessage);
-        }
+        this.setState({ useDefaultDevfile: true });
+        return true;
       }
       throw e;
     }
@@ -335,30 +324,6 @@ class CreatingStepFetchDevfile extends ProgressStep<Props, State> {
             errorMessage={helpers.errors.getMessage(error)}
             textAfter="If you continue it will be ignored and a regular workspace will be created.
             You will have a chance to fix the Devfile from the IDE once it is started."
-          />
-        ),
-        actionCallbacks: [
-          {
-            title: 'Continue with default devfile',
-            callback: () => this.handleDefaultDevfile(key),
-          },
-          {
-            title: 'Reload',
-            callback: () => this.handleRestart(key),
-          },
-        ],
-      };
-    }
-    if (error instanceof UnsupportedGitProviderError) {
-      return {
-        key,
-        title: 'Warning',
-        variant: AlertVariant.warning,
-        children: (
-          <ExpandableWarning
-            textBefore="Could not find any devfile in the Git repository"
-            errorMessage={helpers.errors.getMessage(error)}
-            textAfter="The Git provider is not supported."
           />
         ),
         actionCallbacks: [
