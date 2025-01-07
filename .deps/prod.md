@@ -8,7 +8,7 @@
 | [`@codemirror/language@6.10.3`](https://github.com/codemirror/language.git) | MIT | clearlydefined |
 | [`@codemirror/state@6.4.1`](https://github.com/codemirror/state.git) | MIT | clearlydefined |
 | [`@codemirror/view@6.34.2`](https://github.com/codemirror/view.git) | MIT | clearlydefined |
-| [`@devfile/api@2.3.0-1733171449`](https://github.com/GIT_USER_ID/GIT_REPO_ID.git) | Apache-2.0 |  |
+| [`@devfile/api@2.3.0-1733171449`](https://github.com/GIT_USER_ID/GIT_REPO_ID.git) | Apache-2.0 | N/A |
 | [`@eclipse-che/che-devworkspace-generator@7.96.0-next-da9f364`](git+https://github.com/devfile/devworkspace-generator.git) | EPL-2.0 | ecd.che |
 | [`@fastify/accept-negotiator@1.1.0`](git+https://github.com/fastify/accept-negotiator.git) | MIT | clearlydefined |
 | [`@fastify/ajv-compiler@3.6.0`](git+https://github.com/fastify/ajv-compiler.git) | MIT | clearlydefined |
