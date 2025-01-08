@@ -13,6 +13,7 @@
 import * as mockClientNode from '@kubernetes/client-node';
 import { KubeConfig } from '@kubernetes/client-node';
 
+import { DevWorkspaceClient } from '@/devworkspaceClient';
 import { DevWorkspaceApiService } from '@/devworkspaceClient/services/devWorkspaceApi';
 import { DevWorkspaceClusterApiService } from '@/devworkspaceClient/services/devWorkspaceClusterApiService';
 import { DevWorkspaceTemplateApiService } from '@/devworkspaceClient/services/devWorkspaceTemplateApi';
@@ -27,9 +28,7 @@ import { ServerConfigApiService } from '@/devworkspaceClient/services/serverConf
 import { SshKeysService } from '@/devworkspaceClient/services/sshKeysApi';
 import { UserProfileApiService } from '@/devworkspaceClient/services/userProfileApi';
 
-import { DevWorkspaceClient, DevWorkspaceSingletonClient } from '..';
-
-jest.mock('../services/devWorkspaceApi.ts');
+jest.mock('@/devworkspaceClient/services/devWorkspaceApi.ts');
 
 describe('DevWorkspace client', () => {
   let config: KubeConfig;
@@ -50,6 +49,7 @@ describe('DevWorkspace client', () => {
     expect(client.devworkspaceApi).toBeInstanceOf(DevWorkspaceApiService);
     expect(client.dockerConfigApi).toBeInstanceOf(DockerConfigApiService);
     expect(client.eventApi).toBeInstanceOf(EventApiService);
+    expect(client.devWorkspaceClusterApi).toBeInstanceOf(DevWorkspaceClusterApiService);
     expect(client.kubeConfigApi).toBeInstanceOf(KubeConfigApiService);
     expect(client.logsApi).toBeInstanceOf(LogsApiService);
     expect(client.podApi).toBeInstanceOf(PodApiService);
@@ -58,30 +58,5 @@ describe('DevWorkspace client', () => {
     expect(client.gitConfigApi).toBeInstanceOf(GitConfigApiService);
     expect(client.gettingStartedSampleApi).toBeInstanceOf(GettingStartedSamplesApiService);
     expect(client.sshKeysApi).toBeInstanceOf(SshKeysService);
-  });
-});
-
-describe('DevWorkspace singleton client', () => {
-  let config: KubeConfig;
-  beforeEach(() => {
-    const { KubeConfig } = mockClientNode;
-    config = new KubeConfig();
-    config.makeApiClient = jest.fn().mockImplementation(() => ({}));
-  });
-
-  afterEach(() => {
-    jest.clearAllMocks();
-  });
-
-  test('client', () => {
-    const client = DevWorkspaceSingletonClient.getInstance(config);
-
-    expect(client.devWorkspaceClusterServiceApi).toBeInstanceOf(DevWorkspaceClusterApiService);
-  });
-
-  test('return same instance', () => {
-    const client = DevWorkspaceSingletonClient.getInstance(config);
-
-    expect(client.devWorkspaceClusterServiceApi).toEqual(client.devWorkspaceClusterServiceApi);
   });
 });

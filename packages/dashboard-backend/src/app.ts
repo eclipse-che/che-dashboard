@@ -34,7 +34,8 @@ import { registerEditorsRoutes } from '@/routes/api/editors';
 import { registerEventsRoutes } from '@/routes/api/events';
 import { registerGettingStartedSamplesRoutes } from '@/routes/api/gettingStartedSample';
 import { registerGitConfigRoutes } from '@/routes/api/gitConfig';
-import { getDevWorkspaceSingletonClient } from '@/routes/api/helpers/getDevWorkspaceClient';
+import { getDevWorkspaceClient } from '@/routes/api/helpers/getDevWorkspaceClient';
+import { getServiceAccountToken } from '@/routes/api/helpers/getServiceAccountToken';
 import { registerKubeConfigRoute } from '@/routes/api/kubeConfig';
 import { registerPersonalAccessTokenRoutes } from '@/routes/api/personalAccessToken';
 import { registerPodmanLoginRoute } from '@/routes/api/podmanLogin';
@@ -71,8 +72,8 @@ export default async function buildApp(server: FastifyInstance): Promise<unknown
     },
   );
 
-  const { devWorkspaceClusterServiceApi } = getDevWorkspaceSingletonClient();
-  await devWorkspaceClusterServiceApi.watchInAllNamespaces();
+  const devWorkspaceClient = getDevWorkspaceClient(getServiceAccountToken());
+  await devWorkspaceClient.devWorkspaceClusterApi.watchInAllNamespaces();
 
   server.register(import('@fastify/rate-limit'));
 
