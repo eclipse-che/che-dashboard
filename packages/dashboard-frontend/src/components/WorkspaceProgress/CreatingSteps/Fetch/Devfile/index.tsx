@@ -46,20 +46,6 @@ export class ApplyingDevfileError extends Error {
   }
 }
 
-export class UnsupportedGitProviderError extends Error {
-  constructor(message: string) {
-    super(message);
-    this.name = 'UnsupportedGitProviderError';
-  }
-}
-
-export class SSHPrivateRepositoryUrlError extends Error {
-  constructor(message: string) {
-    super(message);
-    this.name = 'UnsupportedGitProviderError';
-  }
-}
-
 const RELOADS_LIMIT = 2;
 type ReloadsInfo = {
   [url: string]: number;
@@ -187,10 +173,6 @@ class CreatingStepFetchDevfile extends ProgressStep<Props, State> {
     this.clearStepError();
   }
 
-  protected handleOpenDocumentationPage(): void {
-    window.open(this.props.branding.docs.startWorkspaceFromGit, '_blank');
-  }
-
   protected handleTimeout(): void {
     const timeoutError = new Error(
       `Devfile hasn't been resolved in the last ${TIMEOUT_TO_RESOLVE_SEC} seconds.`,
@@ -230,13 +212,12 @@ class CreatingStepFetchDevfile extends ProgressStep<Props, State> {
       }
       if (
         errorMessage === 'Failed to fetch devfile' ||
+        errorMessage ===
+          'Cannot build factory with any of the provided parameters. Please check parameters correctness, and resend query.' ||
         errorMessage.startsWith('Could not reach devfile')
       ) {
-        if (sourceUrl.startsWith('git@')) {
-          throw new SSHPrivateRepositoryUrlError(errorMessage);
-        } else {
-          throw new UnsupportedGitProviderError(errorMessage);
-        }
+        this.setState({ useDefaultDevfile: true });
+        return true;
       }
       throw e;
     }
@@ -353,58 +334,6 @@ class CreatingStepFetchDevfile extends ProgressStep<Props, State> {
           {
             title: 'Reload',
             callback: () => this.handleRestart(key),
-          },
-        ],
-      };
-    }
-    if (error instanceof UnsupportedGitProviderError) {
-      return {
-        key,
-        title: 'Warning',
-        variant: AlertVariant.warning,
-        children: (
-          <ExpandableWarning
-            textBefore="Could not find any devfile in the Git repository"
-            errorMessage={helpers.errors.getMessage(error)}
-            textAfter="The Git provider is not supported."
-          />
-        ),
-        actionCallbacks: [
-          {
-            title: 'Continue with default devfile',
-            callback: () => this.handleDefaultDevfile(key),
-          },
-          {
-            title: 'Reload',
-            callback: () => this.handleRestart(key),
-          },
-        ],
-      };
-    }
-    if (error instanceof SSHPrivateRepositoryUrlError) {
-      return {
-        key,
-        title: 'Warning',
-        variant: AlertVariant.warning,
-        children: (
-          <ExpandableWarning
-            textBefore="Devfile resolve from a privatre repositry via an SSH url is not supported."
-            errorMessage={helpers.errors.getMessage(error)}
-            textAfter="Apply a Personal Access Token to fetch the devfile.yaml content."
-          />
-        ),
-        actionCallbacks: [
-          {
-            title: 'Continue with default devfile',
-            callback: () => this.handleDefaultDevfile(key),
-          },
-          {
-            title: 'Reload',
-            callback: () => this.handleRestart(key),
-          },
-          {
-            title: 'Open Documentation page',
-            callback: () => this.handleOpenDocumentationPage(),
           },
         ],
       };

@@ -238,6 +238,7 @@ describe('Creating steps, applying a devfile', () => {
         expect(prepareDevfile).toHaveBeenCalledWith(
           expect.objectContaining({
             attributes: {
+              'controller.devfile.io/bootstrap-devworkspace': true,
               defaultDevfile: true,
             },
           }),
