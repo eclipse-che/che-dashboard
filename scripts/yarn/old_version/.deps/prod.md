@@ -8,11 +8,11 @@
 | [`@codemirror/language@6.10.3`](https://github.com/codemirror/language.git) | MIT | clearlydefined |
 | [`@codemirror/state@6.4.1`](https://github.com/codemirror/state.git) | MIT | clearlydefined |
 | [`@codemirror/view@6.34.2`](https://github.com/codemirror/view.git) | MIT | clearlydefined |
-| [`@devfile/api@2.3.0-1721400636`](https://github.com/GIT_USER_ID/GIT_REPO_ID.git) | Apache-2.0 | clearlydefined |
-| [`@eclipse-che/che-devworkspace-generator@7.90.0-next-4510df7`](git+https://github.com/devfile/devworkspace-generator.git) | EPL-2.0 | ecd.che |
-| [`@eclipse-che/common@7.96.0-next`](https://github.com/eclipse-che/che-dashboard) | EPL-2.0 | ecd.che |
-| [`@eclipse-che/dashboard-backend@7.96.0-next`](https://github.com/eclipse-che/che-dashboard) | EPL-2.0 | ecd.che |
-| [`@eclipse-che/dashboard-frontend@7.96.0-next`](git://github.com/eclipse/che-dashboard.git) | EPL-2.0 | ecd.che |
+| [`@devfile/api@2.3.0-1733171449`](https://github.com/GIT_USER_ID/GIT_REPO_ID.git) | Apache-2.0 | N/A |
+| [`@eclipse-che/che-devworkspace-generator@7.96.0-next-da9f364`](git+https://github.com/devfile/devworkspace-generator.git) | EPL-2.0 | ecd.che |
+| [`@eclipse-che/common@7.97.0-next`](https://github.com/eclipse-che/che-dashboard) | EPL-2.0 | ecd.che |
+| [`@eclipse-che/dashboard-backend@7.97.0-next`](https://github.com/eclipse-che/che-dashboard) | EPL-2.0 | ecd.che |
+| [`@eclipse-che/dashboard-frontend@7.97.0-next`](git://github.com/eclipse/che-dashboard.git) | EPL-2.0 | ecd.che |
 | [`@fastify/accept-negotiator@1.1.0`](git+https://github.com/fastify/accept-negotiator.git) | MIT | clearlydefined |
 | [`@fastify/ajv-compiler@3.6.0`](git+https://github.com/fastify/ajv-compiler.git) | MIT | clearlydefined |
 | [`@fastify/busboy@2.0.0`](https://github.com/fastify/busboy.git) | MIT | clearlydefined |
@@ -39,7 +39,7 @@
 | [`@isaacs/fs-minipass@4.0.1`](https://github.com/npm/fs-minipass.git) | ISC | clearlydefined |
 | [`@jsep-plugin/assignment@1.2.1`](https://github.com/EricSmekens/jsep.git) | MIT | clearlydefined |
 | [`@jsep-plugin/regex@1.0.3`](https://github.com/EricSmekens/jsep.git) | MIT | clearlydefined |
-| [`@kubernetes/client-node@0.22.1`](https://github.com/kubernetes-client/javascript.git) | Apache-2.0 | clearlydefined |
+| [`@kubernetes/client-node@0.22.1`](https://github.com/kubernetes-client/javascript.git) | Apache-2.0 | #17950 |
 | [`@lezer/common@1.2.3`](https://github.com/lezer-parser/common.git) | MIT | clearlydefined |
 | [`@lezer/highlight@1.2.1`](https://github.com/lezer-parser/highlight.git) | MIT | clearlydefined |
 | [`@lezer/lr@1.4.2`](https://github.com/lezer-parser/lr.git) | MIT | clearlydefined |
@@ -71,7 +71,7 @@
 | [`@types/unist@3.0.3`](https://github.com/DefinitelyTyped/DefinitelyTyped.git) | MIT | clearlydefined |
 | [`@types/use-sync-external-store@0.0.3`](https://github.com/DefinitelyTyped/DefinitelyTyped.git) | MIT | clearlydefined |
 | [`@types/ws@8.5.8`](https://github.com/DefinitelyTyped/DefinitelyTyped.git) | MIT | #6016 |
-| [`@ungap/structured-clone@1.2.0`](git+https://github.com/ungap/structured-clone.git) | ISC | clearlydefined |
+| [`@ungap/structured-clone@1.2.0`](git+https://github.com/ungap/structured-clone.git) | ISC | #18522 |
 | [`abort-controller@3.0.0`](git+https://github.com/mysticatea/abort-controller.git) | MIT | #7592 |
 | [`abstract-logging@2.0.1`](git+https://github.com/jsumners/abstract-logging.git) | MIT | clearlydefined |
 | [`ajv-formats@2.1.1`](git+https://github.com/ajv-validator/ajv-formats.git) | MIT | clearlydefined |

@@ -111,7 +111,7 @@
 | [`@types/prop-types@15.7.9`](https://github.com/DefinitelyTyped/DefinitelyTyped.git) | MIT | #16176 |
 | [`@types/qs@6.9.9`](https://github.com/DefinitelyTyped/DefinitelyTyped.git) | MIT | #13991 |
 | [`@types/react-copy-to-clipboard@5.0.7`](https://github.com/DefinitelyTyped/DefinitelyTyped.git) | MIT | clearlydefined |
-| [`@types/react-dom@18.3.0`](https://github.com/DefinitelyTyped/DefinitelyTyped.git) | MIT | clearlydefined |
+| [`@types/react-dom@18.3.0`](https://github.com/DefinitelyTyped/DefinitelyTyped.git) | MIT | #18409 |
 | [`@types/react-router-dom@5.3.3`](https://github.com/DefinitelyTyped/DefinitelyTyped.git) | MIT | clearlydefined |
 | [`@types/react-router@5.1.20`](https://github.com/DefinitelyTyped/DefinitelyTyped.git) | MIT | clearlydefined |
 | [`@types/react-test-renderer@18.3.0`](https://github.com/DefinitelyTyped/DefinitelyTyped.git) | MIT | clearlydefined |
@@ -311,7 +311,7 @@
 | `eslint-plugin-simple-import-sort@10.0.0` | MIT | clearlydefined |
 | [`eslint-scope@5.1.1`](http://github.com/eslint/eslint-scope) | BSD-2-Clause | clearlydefined |
 | [`eslint-scope@7.2.2`](http://github.com/eslint/eslint-scope) | BSD-2-Clause | #9916 |
-| [`eslint-visitor-keys@3.4.3`](https://github.com/eslint/eslint-visitor-keys#readme) | Apache-2.0 | #15274 |
+| [`eslint-visitor-keys@3.4.3`](https://github.com/eslint/eslint-visitor-keys#readme) | Apache-2.0 | #18264 |
 | [`eslint-webpack-plugin@4.0.1`](https://github.com/webpack-contrib/eslint-webpack-plugin) | MIT | clearlydefined |
 | [`eslint@8.53.0`](https://eslint.org) | MIT | #11437 |
 | [`espree@9.6.1`](https://github.com/eslint/espree) | BSD-2-Clause | #15293 |
@@ -431,7 +431,7 @@
 | [`is-typed-array@1.1.12`](git://github.com/inspect-js/is-typed-array.git) | MIT | #4853 |
 | [`is-weakmap@2.0.1`](git+https://github.com/inspect-js/is-weakmap.git) | MIT | clearlydefined |
 | [`is-weakref@1.0.2`](git+https://github.com/inspect-js/is-weakref.git) | MIT | clearlydefined |
-| [`is-weakset@2.0.2`](git+https://github.com/inspect-js/is-weakset.git) | MIT | clearlydefined |
+| [`is-weakset@2.0.2`](git+https://github.com/inspect-js/is-weakset.git) | MIT | #18388 |
 | `is-wsl@2.2.0` | MIT | clearlydefined |
 | [`isarray@2.0.5`](git://github.com/juliangruber/isarray.git) | MIT | clearlydefined |
 | [`isobject@3.0.1`](https://github.com/jonschlinkert/isobject) | MIT | clearlydefined |
@@ -441,7 +441,7 @@
 | [`istanbul-lib-report@3.0.1`](git+ssh://git@github.com/istanbuljs/istanbuljs.git) | BSD-3-Clause | clearlydefined |
 | [`istanbul-lib-source-maps@4.0.1`](git+ssh://git@github.com/istanbuljs/istanbuljs.git) | BSD-3-Clause | clearlydefined |
 | [`istanbul-reports@3.1.6`](git+ssh://git@github.com/istanbuljs/istanbuljs.git) | BSD-3-Clause | #1710 |
-| [`iterator.prototype@1.1.2`](git+https://github.com/ljharb/Iterator.prototype.git) | MIT | clearlydefined |
+| [`iterator.prototype@1.1.2`](git+https://github.com/ljharb/Iterator.prototype.git) | MIT | #18395 |
 | [`jest-changed-files@29.7.0`](https://github.com/jestjs/jest.git) | MIT | clearlydefined |
 | [`jest-circus@29.7.0`](https://github.com/jestjs/jest.git) | MIT | clearlydefined |
 | [`jest-cli@29.7.0`](https://github.com/jestjs/jest.git) | MIT | clearlydefined |
