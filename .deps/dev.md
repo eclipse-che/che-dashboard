@@ -116,7 +116,7 @@
 | [`@types/react-dom@18.3.0`](https://github.com/DefinitelyTyped/DefinitelyTyped.git) | MIT | #18409 |
 | [`@types/react-router-dom@5.3.3`](https://github.com/DefinitelyTyped/DefinitelyTyped.git) | MIT | clearlydefined |
 | [`@types/react-router@5.1.20`](https://github.com/DefinitelyTyped/DefinitelyTyped.git) | MIT | clearlydefined |
-| [`@types/react-test-renderer@18.3.0`](https://github.com/DefinitelyTyped/DefinitelyTyped.git) | MIT | clearlydefined |
+| [`@types/react-test-renderer@18.3.0`](https://github.com/DefinitelyTyped/DefinitelyTyped.git) | MIT | #18692 |
 | [`@types/react@18.2.36`](https://github.com/DefinitelyTyped/DefinitelyTyped.git) | MIT | #8234 |
 | [`@types/redux-logger@3.0.13`](https://github.com/DefinitelyTyped/DefinitelyTyped.git) | MIT | clearlydefined |
 | [`@types/redux-mock-store@1.0.6`](https://github.com/DefinitelyTyped/DefinitelyTyped.git) | MIT | clearlydefined |
@@ -136,7 +136,7 @@
 | [`@typescript-eslint/typescript-estree@6.10.0`](https://github.com/typescript-eslint/typescript-eslint.git) | BSD-2-Clause | #14423 |
 | [`@typescript-eslint/utils@6.10.0`](https://github.com/typescript-eslint/typescript-eslint.git) | MIT | clearlydefined |
 | [`@typescript-eslint/visitor-keys@6.10.0`](https://github.com/typescript-eslint/typescript-eslint.git) | MIT | clearlydefined |
-| [`@ungap/structured-clone@1.2.0`](git+https://github.com/ungap/structured-clone.git) | ISC | clearlydefined |
+| [`@ungap/structured-clone@1.2.0`](git+https://github.com/ungap/structured-clone.git) | ISC | #18522 |
 | [`@webassemblyjs/ast@1.12.1`](https://github.com/xtuc/webassemblyjs.git) | MIT | clearlydefined |
 | [`@webassemblyjs/floating-point-hex-parser@1.11.6`](https://github.com/xtuc/webassemblyjs.git) | MIT | #7959 |
 | [`@webassemblyjs/helper-api-error@1.11.6`](https://github.com/xtuc/webassemblyjs.git) | MIT | #7969 |
@@ -650,7 +650,7 @@
 | `resolve-cwd@3.0.0` | MIT | clearlydefined |
 | `resolve-from@4.0.0` | MIT | clearlydefined |
 | `resolve-from@5.0.0` | MIT | clearlydefined |
-| `resolve.exports@2.0.2` | MIT | clearlydefined |
+| `resolve.exports@2.0.2` | MIT | #18688 |
 | `rimraf@2.7.1` | ISC | clearlydefined |
 | `rimraf@3.0.2` | ISC | clearlydefined |
 | `rimraf@5.0.5` | ISC | #10787 |

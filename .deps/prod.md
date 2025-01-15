@@ -58,7 +58,6 @@
 | [`@types/tough-cookie@4.0.4`](https://github.com/DefinitelyTyped/DefinitelyTyped.git) | MIT | #10798 |
 | [`@types/use-sync-external-store@0.0.3`](https://github.com/DefinitelyTyped/DefinitelyTyped.git) | MIT | clearlydefined |
 | [`@types/ws@8.5.8`](https://github.com/DefinitelyTyped/DefinitelyTyped.git) | MIT | #6016 |
-| [`@ungap/structured-clone@1.2.0`](git+https://github.com/ungap/structured-clone.git) | ISC | #18522 |
 | [`abbrev@2.0.0`](https://github.com/npm/abbrev-js.git) | ISC | clearlydefined |
 | [`abort-controller@3.0.0`](git+https://github.com/mysticatea/abort-controller.git) | MIT | #7592 |
 | [`abstract-logging@2.0.1`](git+https://github.com/jsumners/abstract-logging.git) | MIT | clearlydefined |
@@ -110,7 +109,7 @@
 | [`chownr@3.0.0`](git://github.com/isaacs/chownr.git) | BlueOak-1.0.0 | clearlydefined |
 | [`cipher-base@1.0.4`](git+https://github.com/crypto-browserify/cipher-base.git) | MIT | clearlydefined |
 | `clean-stack@2.2.0` | MIT | clearlydefined |
-| [`codemirror@5.65.18`](https://github.com/codemirror/CodeMirror.git) | MIT |  |
+| [`codemirror@5.65.18`](https://github.com/codemirror/CodeMirror.git) | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/codemirror/5.65.18) |
 | `color-convert@1.9.3` | MIT | clearlydefined |
 | `color-convert@2.0.1` | MIT | clearlydefined |
 | [`color-name@1.1.3`](git@github.com:dfcreative/color-name.git) | MIT | clearlydefined |
