@@ -37,7 +37,7 @@
 | [`@isaacs/fs-minipass@4.0.1`](https://github.com/npm/fs-minipass.git) | ISC | clearlydefined |
 | [`@jsep-plugin/assignment@1.2.1`](EricSmekens/jsep) | MIT | clearlydefined |
 | [`@jsep-plugin/regex@1.0.3`](EricSmekens/jsep) | MIT | clearlydefined |
-| [`@kubernetes/client-node@0.22.1`](https://github.com/kubernetes-client/javascript.git) | Apache-2.0 | clearlydefined |
+| [`@kubernetes/client-node@0.22.1`](https://github.com/kubernetes-client/javascript.git) | Apache-2.0 | #17950 |
 | [`@lezer/common@1.2.3`](https://github.com/lezer-parser/common.git) | MIT | clearlydefined |
 | [`@lezer/highlight@1.2.1`](https://github.com/lezer-parser/highlight.git) | MIT | clearlydefined |
 | [`@lezer/lr@1.4.2`](https://github.com/lezer-parser/lr.git) | MIT | clearlydefined |
@@ -74,7 +74,7 @@
 | [`@types/unist@3.0.3`](https://github.com/DefinitelyTyped/DefinitelyTyped.git) | MIT | clearlydefined |
 | [`@types/use-sync-external-store@0.0.3`](https://github.com/DefinitelyTyped/DefinitelyTyped.git) | MIT | clearlydefined |
 | [`@types/ws@8.5.8`](https://github.com/DefinitelyTyped/DefinitelyTyped.git) | MIT | #6016 |
-| [`@ungap/structured-clone@1.2.0`](git+https://github.com/ungap/structured-clone.git) | ISC | clearlydefined |
+| [`@ungap/structured-clone@1.2.0`](git+https://github.com/ungap/structured-clone.git) | ISC | #18522 |
 | [`abbrev@2.0.0`](https://github.com/npm/abbrev-js.git) | ISC | clearlydefined |
 | [`abort-controller@3.0.0`](git+https://github.com/mysticatea/abort-controller.git) | MIT | #7592 |
 | [`abstract-logging@2.0.1`](git+https://github.com/jsumners/abstract-logging.git) | MIT | clearlydefined |
@@ -369,7 +369,7 @@
 | `ms@2.1.2` | MIT | #5895 |
 | `ms@2.1.3` | MIT | #5895 |
 | [`multi-ini@2.3.2`](git://github.com/evangelion1204/multi-ini.git) | MIT | clearlydefined |
-| `nanoid@3.3.7` | MIT | #7571 |
+| `nanoid@3.3.8` | MIT | #7571 |
 | `negotiator@0.6.3` | MIT | clearlydefined |
 | [`node-fetch@2.7.0`](https://github.com/bitinn/node-fetch.git) | MIT | #10509 |
 | [`node-gyp@10.2.0`](git://github.com/nodejs/node-gyp.git) | MIT | #15698 |
@@ -482,7 +482,7 @@
 | [`signal-exit@4.1.0`](https://github.com/tapjs/signal-exit.git) | ISC | clearlydefined |
 | [`simple-oauth2@5.0.0`](https://github.com/lelylan/simple-oauth2) | Apache-2.0 | clearlydefined |
 | [`smart-buffer@4.2.0`](https://github.com/JoshGlazebrook/smart-buffer.git) | MIT | clearlydefined |
-| [`socks-proxy-agent@8.0.4`](https://github.com/TooTallNate/proxy-agents.git) | MIT | clearlydefined |
+| [`socks-proxy-agent@8.0.4`](https://github.com/TooTallNate/proxy-agents.git) | MIT | #18498 |
 | [`socks@2.8.3`](https://github.com/JoshGlazebrook/socks.git) | MIT | #13459 |
 | [`sonic-boom@3.7.0`](git+https://github.com/pinojs/sonic-boom.git) | MIT | clearlydefined |
 | [`sonic-boom@4.0.1`](git+https://github.com/pinojs/sonic-boom.git) | MIT | clearlydefined |
