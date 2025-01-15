@@ -99,7 +99,7 @@
 | [`@types/babel__template@7.4.3`](https://github.com/DefinitelyTyped/DefinitelyTyped.git) | MIT | clearlydefined |
 | [`@types/babel__traverse@7.20.3`](https://github.com/DefinitelyTyped/DefinitelyTyped.git) | MIT | #8935 |
 | [`@types/eslint@8.44.6`](https://github.com/DefinitelyTyped/DefinitelyTyped.git) | MIT | #9382 |
-| [`@types/estree@1.0.4`](https://github.com/DefinitelyTyped/DefinitelyTyped.git) | MIT | #8266 |
+| [`@types/estree@1.0.5`](https://github.com/DefinitelyTyped/DefinitelyTyped.git) | MIT | #8266 |
 | [`@types/fs-extra@11.0.3`](https://github.com/DefinitelyTyped/DefinitelyTyped.git) | MIT | clearlydefined |
 | [`@types/graceful-fs@4.1.8`](https://github.com/DefinitelyTyped/DefinitelyTyped.git) | MIT | clearlydefined |
 | [`@types/history@4.7.11`](https://github.com/DefinitelyTyped/DefinitelyTyped.git) | MIT | clearlydefined |
@@ -120,7 +120,7 @@
 | [`@types/react-dom@18.3.0`](https://github.com/DefinitelyTyped/DefinitelyTyped.git) | MIT | #18409 |
 | [`@types/react-router-dom@5.3.3`](https://github.com/DefinitelyTyped/DefinitelyTyped.git) | MIT | clearlydefined |
 | [`@types/react-router@5.1.20`](https://github.com/DefinitelyTyped/DefinitelyTyped.git) | MIT | clearlydefined |
-| [`@types/react-test-renderer@18.3.0`](https://github.com/DefinitelyTyped/DefinitelyTyped.git) | MIT | clearlydefined |
+| [`@types/react-test-renderer@18.3.0`](https://github.com/DefinitelyTyped/DefinitelyTyped.git) | MIT | #18692 |
 | [`@types/react@18.2.36`](https://github.com/DefinitelyTyped/DefinitelyTyped.git) | MIT | #8234 |
 | [`@types/redux-logger@3.0.13`](https://github.com/DefinitelyTyped/DefinitelyTyped.git) | MIT | clearlydefined |
 | [`@types/redux-mock-store@1.0.6`](https://github.com/DefinitelyTyped/DefinitelyTyped.git) | MIT | clearlydefined |
@@ -140,6 +140,7 @@
 | [`@typescript-eslint/typescript-estree@6.10.0`](https://github.com/typescript-eslint/typescript-eslint.git) | BSD-2-Clause | #14423 |
 | [`@typescript-eslint/utils@6.10.0`](https://github.com/typescript-eslint/typescript-eslint.git) | MIT | clearlydefined |
 | [`@typescript-eslint/visitor-keys@6.10.0`](https://github.com/typescript-eslint/typescript-eslint.git) | MIT | clearlydefined |
+| [`@ungap/structured-clone@1.2.0`](git+https://github.com/ungap/structured-clone.git) | ISC | #18522 |
 | [`@webassemblyjs/ast@1.12.1`](https://github.com/xtuc/webassemblyjs.git) | MIT | clearlydefined |
 | [`@webassemblyjs/floating-point-hex-parser@1.11.6`](https://github.com/xtuc/webassemblyjs.git) | MIT | #7959 |
 | [`@webassemblyjs/helper-api-error@1.11.6`](https://github.com/xtuc/webassemblyjs.git) | MIT | #7969 |
@@ -260,6 +261,7 @@
 | [`define-data-property@1.1.1`](git+https://github.com/ljharb/define-data-property.git) | MIT | #10591 |
 | [`define-lazy-prop@3.0.0`](https://github.com/sindresorhus/define-lazy-prop.git) | MIT | clearlydefined |
 | [`define-properties@1.2.1`](git://github.com/ljharb/define-properties.git) | MIT | #7116 |
+| [`dequal@2.0.3`](https://github.com/lukeed/dequal.git) | MIT | clearlydefined |
 | [`detect-indent@5.0.0`](https://github.com/sindresorhus/detect-indent.git) | MIT | clearlydefined |
 | [`detect-newline@3.1.0`](https://github.com/sindresorhus/detect-newline.git) | MIT | clearlydefined |
 | [`diff-sequences@29.6.3`](https://github.com/jestjs/jest.git) | MIT | clearlydefined |
@@ -588,7 +590,7 @@
 | [`require-directory@2.1.1`](git://github.com/troygoode/node-require-directory.git) | MIT | clearlydefined |
 | [`resolve-cwd@3.0.0`](https://github.com/sindresorhus/resolve-cwd.git) | MIT | clearlydefined |
 | [`resolve-from@5.0.0`](https://github.com/sindresorhus/resolve-from.git) | MIT | clearlydefined |
-| [`resolve.exports@2.0.2`](https://github.com/lukeed/resolve.exports.git) | MIT | clearlydefined |
+| [`resolve.exports@2.0.2`](https://github.com/lukeed/resolve.exports.git) | MIT | #18688 |
 | [`resolve@1.22.8`](git://github.com/browserify/resolve.git) | MIT | #15315 |
 | [`rimraf@5.0.5`](git://github.com/isaacs/rimraf.git) | ISC | #10787 |
 | [`run-applescript@5.0.0`](https://github.com/sindresorhus/run-applescript.git) | MIT | clearlydefined |
