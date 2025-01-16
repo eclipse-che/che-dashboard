@@ -43,12 +43,9 @@ export class DevfileViewer extends React.PureComponent<Props> {
         lineWrapping: true,
         readOnly: true,
         autoRefresh: true,
-        autofocus: true,
-        gooters: true,
       });
       editor.setSize(`100%`, `100%`);
       editor.setValue(this.props.value);
-      editor.focus();
 
       this.editor = editor;
     }
@@ -56,7 +53,6 @@ export class DevfileViewer extends React.PureComponent<Props> {
 
   componentDidUpdate(): void {
     this.editor.setValue(this.props.value);
-    this.editor.focus();
   }
 
   public render(): React.ReactElement {
