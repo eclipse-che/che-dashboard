@@ -11,7 +11,7 @@
 FROM docker.io/node:18.19.1-alpine3.19 as builder
 
 # hadolint ignore=DL3018
-RUN apk add --no-cache python3 py3-pip make g++ jq curl
+RUN apk add --no-cache python3 py3-pip make g++ jq curl git zip
 RUN pip3 install yq --break-system-packages
 
 COPY .yarn/releases /dashboard/.yarn/releases/
