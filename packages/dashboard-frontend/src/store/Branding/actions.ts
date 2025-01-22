@@ -12,7 +12,8 @@
 
 import common from '@eclipse-che/common';
 import { createAction } from '@reduxjs/toolkit';
-import { merge } from 'lodash';
+import cloneDeep from 'lodash/cloneDeep';
+import merge from 'lodash/merge';
 
 import { fetchApiInfo, fetchBranding } from '@/services/assets/branding';
 import { BRANDING_DEFAULT, BrandingData } from '@/services/bootstrap/branding.constant';
@@ -71,7 +72,7 @@ export const actionCreators = {
 };
 
 export function getBrandingData(receivedBranding?: { [key: string]: any }): BrandingData {
-  let branding: BrandingData = Object.assign({}, BRANDING_DEFAULT);
+  let branding: BrandingData = cloneDeep(BRANDING_DEFAULT);
 
   if (receivedBranding && Object.keys(receivedBranding).length > 0) {
     branding = merge(branding, receivedBranding);
