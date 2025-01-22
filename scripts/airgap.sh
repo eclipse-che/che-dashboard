@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-# Copyright (c) 2021-2024 Red Hat, Inc.
+# Copyright (c) 2021-2025 Red Hat, Inc.
 # This program and the accompanying materials are made
 # available under the terms of the Eclipse Public License 2.0
 # which is available at https://www.eclipse.org/legal/epl-2.0/
@@ -28,8 +28,8 @@ init() {
 
 
   if [ -z "${SRC_INDEX_JSON_PATH}" ]; then
-      usage
-      exit
+    usage
+    exit
   fi
 
   if [ -z "${OUTPUT_DIR}" ]; then
@@ -65,26 +65,22 @@ run() {
       strippedURL="${url#https://github.com/}"
       organization="$(echo "${strippedURL}" | cut -d '/' -f 1)"
       repository="$(echo "${strippedURL}" | cut -d '/' -f 2)"
-      ref="$(echo "${strippedURL}" | cut -d '/' -f 4)"
+      branch="$(echo "${strippedURL}" | cut -d '/' -f 4)"
 
-      if [ -n "${ref}" ]; then
-        archiveFileName="${organization}-${repository}-${ref}.zip"
-        devfileFileName="${organization}-${repository}-${ref}-devfile.yaml"
-        projectDownloadLink="https://api.github.com/repos/${organization}/${repository}/zipball/${ref}"
-        devfileDownloadLink="https://api.github.com/repos/${organization}/${repository}/contents/devfile.yaml?ref=${ref}"
+      if [ -n "${branch}" ]; then
+        archiveFileName="${organization}-${repository}-${branch}.zip"
+        devfileFileName="${organization}-${repository}-${branch}-devfile.yaml"
       else
         archiveFileName="${organization}-${repository}.zip"
         devfileFileName="${organization}-${repository}-devfile.yaml"
-        projectDownloadLink="https://api.github.com/repos/${organization}/${repository}/zipball"
-        devfileDownloadLink="https://api.github.com/repos/${organization}/${repository}/contents/devfile.yaml"
       fi
 
-      echo "[INFO] Downloading ${url} into ${archiveFileName}"
+      echo "[INFO] Processing ${url}"
       processSample \
         "${archiveFileName}" \
         "${devfileFileName}" \
-        "${projectDownloadLink}" \
-        "${devfileDownloadLink}" \
+        "${url}" \
+        "${branch}" \
         "${sampleId}" \
         "${repository}"
     fi
@@ -96,41 +92,41 @@ run() {
 processSample() {
   archiveFileName=$1
   devfileFileName=$2
-  projectDownloadLink=$3
-  devfileDownloadLink=$4
+  repoURL=$3
+  branch=$4
   sampleId=$5
   repository=$6
 
-  if [ -z ${GITHUB_TOKEN} ]; then
-      curl -L \
-          -H "Accept: application/vnd.github.raw+json" \
-          -H "X-GitHub-Api-Version: 2022-11-28" \
-          "${devfileDownloadLink}" \
-          -o "${OUTPUT_DIR}/${devfileFileName}"
+  # Remove '/tree/<branch>' from the URL if present
+  cleanRepoURL=$(echo "${repoURL}" | sed -E 's/\/tree\/[^/]+$//')
 
-      curl -L \
-          -H "Accept: application/vnd.github+json" \
-          -H "X-GitHub-Api-Version: 2022-11-28" \
-          "${projectDownloadLink}" \
-          -o "${OUTPUT_DIR}/${archiveFileName}"
+  tempDir="${OUTPUT_DIR}/${repository}-clone"
+
+  echo "[INFO] Cloning ${cleanRepoURL} branch ${branch} into ${tempDir}"
+  if [ -n "${branch}" ]; then
+    git clone --branch "${branch}" --depth 1 "${cleanRepoURL}.git" "${tempDir}"
   else
-      curl -L \
-          -H "Authorization: token ${GITHUB_TOKEN}" \
-          -H "Accept: application/vnd.github.raw+json" \
-          -H "X-GitHub-Api-Version: 2022-11-28" \
-          "${devfileDownloadLink}" \
-          -o "${OUTPUT_DIR}/${devfileFileName}"
-
-      curl -L \
-          -H "Authorization: token ${GITHUB_TOKEN}" \
-          -H "Accept: application/vnd.github+json" \
-          -H "X-GitHub-Api-Version: 2022-11-28" \
-          "${projectDownloadLink}" \
-          -o "${OUTPUT_DIR}/${archiveFileName}"
+    git clone --depth 1 "${cleanRepoURL}.git" "${tempDir}"
   fi
 
-  # CHE_DASHBOARD_INTERNAL_URL is a placeholder that will be replaced
-  # by the actual URL in entrypoint.sh
+  # Archive the repository
+  echo "[INFO] Zipping cloned repository into ${archiveFileName}"
+  # Remove the .git and .github folders
+  rm -rf "${tempDir}/.git" "${tempDir}/.github"
+  (cd "${tempDir}" && zip -rq "${OUTPUT_DIR}/${archiveFileName}" .)
+
+  # Copy devfile.yaml if it exists
+  if [ -f "${tempDir}/devfile.yaml" ]; then
+    echo "[INFO] Found devfile.yaml. Copying to ${devfileFileName}"
+    cp "${tempDir}/devfile.yaml" "${OUTPUT_DIR}/${devfileFileName}"
+  else
+    echo "[WARN] devfile.yaml not found in ${tempDir}"
+  fi
+
+  # Cleanup
+  rm -rf "${tempDir}"
+
+  # Update the index.json
   devfileLink="CHE_DASHBOARD_INTERNAL_URL/dashboard/api/airgap-sample/devfile/download?id=${sampleId}"
   projectLink="CHE_DASHBOARD_INTERNAL_URL/dashboard/api/airgap-sample/project/download?id=${sampleId}"
 
