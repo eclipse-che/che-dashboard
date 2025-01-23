@@ -100,8 +100,8 @@ if [ ! -d $DASHBOARD_FRONTEND/lib/public/dashboard/devfile-registry ]; then
 
   echo "[INFO] Downloading airgap projects"
   . "${SCRIPT_DIR}/../scripts/airgap.sh" \
-      -o "$DASHBOARD_FRONTEND/lib/public/dashboard/devfile-registry/air-gap" \
-      -i "packages/devfile-registry/air-gap/index.json"
+      -o "$(pwd)/$DASHBOARD_FRONTEND/lib/public/dashboard/devfile-registry/air-gap" \
+      -i "$(pwd)/packages/devfile-registry/air-gap/index.json"
 
   if [ -s "$DASHBOARD_FRONTEND/lib/public/dashboard/devfile-registry/air-gap/index.json" ]; then
     $(pwd)/scripts/sed_in_place.sh 's|CHE_DASHBOARD_INTERNAL_URL|http://localhost:8080|g' "$DASHBOARD_FRONTEND/lib/public/dashboard/devfile-registry/air-gap/index.json"
