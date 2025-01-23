@@ -679,7 +679,7 @@ describe('Creating steps, applying a devfile', () => {
       expect(mockOnNextStep).not.toHaveBeenCalled();
       expect(mockOnError).not.toHaveBeenCalled();
 
-      expect(mockCreateWorkspaceFromDevfile).toHaveBeenCalledTimes(1);
+      await waitFor(() => expect(mockCreateWorkspaceFromDevfile).toHaveBeenCalledTimes(1));
     });
 
     test('action callback to continue with default devfile', async () => {

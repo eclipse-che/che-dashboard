@@ -41,6 +41,7 @@ import { selectDevWorkspaceResources } from '@/store/DevfileRegistries/selectors
 import { factoryResolverActionCreators } from '@/store/FactoryResolver';
 import { selectFactoryResolver } from '@/store/FactoryResolver/selectors';
 import { selectDefaultNamespace } from '@/store/InfrastructureNamespaces/selectors';
+import { selectPvcStrategy } from '@/store/ServerConfig';
 import { workspacesActionCreators } from '@/store/Workspaces';
 import { selectDevWorkspaceWarnings } from '@/store/Workspaces/devWorkspaces/selectors';
 import { selectAllWorkspaces } from '@/store/Workspaces/selectors';
@@ -174,7 +175,7 @@ class CreatingStepApplyResources extends ProgressStep<Props, State> {
   protected async runStep(): Promise<boolean> {
     const { devWorkspaceResources } = this.props;
     const { factoryParams, shouldCreate, resources, warning } = this.state;
-    const { cheEditor, factoryId, sourceUrl, storageType, policiesCreate } = factoryParams;
+    const { cheEditor, factoryId, sourceUrl, policiesCreate } = factoryParams;
 
     if (warning) {
       const newName = `Warning: ${warning}`;
@@ -202,7 +203,7 @@ class CreatingStepApplyResources extends ProgressStep<Props, State> {
       return true;
     }
 
-    if (shouldCreate === false) {
+    if (!shouldCreate) {
       throw new Error('The workspace creation unexpectedly failed.');
     }
 
@@ -218,6 +219,7 @@ class CreatingStepApplyResources extends ProgressStep<Props, State> {
       );
       const appendSuffix = policiesCreate === 'perclick' || nameConflict;
 
+      const storageType = factoryParams.storageType || this.props.preferredStorageType || undefined;
       // create a workspace using pre-generated resources
       const [devWorkspace, devWorkspaceTemplate] = prepareResources(
         _resources,
@@ -297,6 +299,7 @@ const mapStateToProps = (state: RootState) => ({
   factoryResolver: selectFactoryResolver(state),
   devWorkspaceResources: selectDevWorkspaceResources(state),
   devWorkspaceWarnings: selectDevWorkspaceWarnings(state),
+  preferredStorageType: selectPvcStrategy(state),
 });
 
 const connector = connect(

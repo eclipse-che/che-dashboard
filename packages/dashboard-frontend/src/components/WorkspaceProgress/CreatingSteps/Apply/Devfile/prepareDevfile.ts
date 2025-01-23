@@ -13,8 +13,9 @@
 import { dump, load } from 'js-yaml';
 import cloneDeep from 'lodash/cloneDeep';
 
+import { getDataResolver } from '@/services/backend-client/dataResolverApi';
 import { DevfileAdapter } from '@/services/devfile/adapter';
-import devfileApi from '@/services/devfileApi';
+import devfileApi, { isDevfileV2 } from '@/services/devfileApi';
 import { DEVWORKSPACE_STORAGE_TYPE_ATTR } from '@/services/devfileApi/devWorkspace/spec/template';
 import { generateWorkspaceName } from '@/services/helpers/generateName';
 import sanitizeName from '@/services/helpers/sanitizeName';
@@ -26,12 +27,12 @@ import {
 
 export type FactorySource = { factory?: { params: string } };
 
-export function prepareDevfile(
+export async function prepareDevfile(
   _devfile: devfileApi.Devfile,
   factoryId: string,
   storageType: che.WorkspaceStorageType | undefined,
   appendSuffix: boolean,
-): devfileApi.Devfile {
+): Promise<devfileApi.Devfile> {
   const devfile = cloneDeep(_devfile);
   const attributes = DevfileAdapter.getAttributes(devfile);
   if (
@@ -60,8 +61,29 @@ export function prepareDevfile(
   devfile.metadata.name = sanitizeName(devfile.metadata.name);
 
   // propagate storage type
-  if (storageType === 'ephemeral') {
-    attributes[DEVWORKSPACE_STORAGE_TYPE_ATTR] = 'ephemeral';
+  if (storageType) {
+    attributes[DEVWORKSPACE_STORAGE_TYPE_ATTR] = storageType;
+  }
+  if (devfile.parent && attributes[DEVWORKSPACE_STORAGE_TYPE_ATTR]) {
+    let uri: string | undefined;
+    if (devfile.parent.uri) {
+      uri = devfile.parent.uri;
+    } else if (devfile.parent.id && devfile.parent.registryUrl) {
+      uri = `${devfile.parent.registryUrl}/devfiles/${devfile.parent.id}`;
+    }
+    if (uri) {
+      const data = await getDataResolver(uri);
+      if (typeof data === 'string') {
+        const parentDevfile = load(data);
+        if (isDevfileV2(parentDevfile)) {
+          const parentDevfileAttributes = DevfileAdapter.getAttributes(parentDevfile);
+          if (parentDevfileAttributes[DEVWORKSPACE_STORAGE_TYPE_ATTR]) {
+            delete attributes[DEVWORKSPACE_STORAGE_TYPE_ATTR];
+            console.warn(`Unable to apply ${DEVWORKSPACE_STORAGE_TYPE_ATTR} attribute.`);
+          }
+        }
+      }
+    }
   }
 
   return devfile;

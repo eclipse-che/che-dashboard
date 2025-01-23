@@ -45,6 +45,7 @@ import { RootState } from '@/store';
 import { selectDefaultDevfile } from '@/store/DevfileRegistries/selectors';
 import { selectFactoryResolver } from '@/store/FactoryResolver/selectors';
 import { selectDefaultNamespace } from '@/store/InfrastructureNamespaces/selectors';
+import { selectPvcStrategy } from '@/store/ServerConfig';
 import { workspacesActionCreators } from '@/store/Workspaces';
 import { selectDevWorkspaceWarnings } from '@/store/Workspaces/devWorkspaces/selectors';
 import { selectAllWorkspaces } from '@/store/Workspaces/selectors';
@@ -173,10 +174,10 @@ class CreatingStepApplyDevfile extends ProgressStep<Props, State> {
     this.prepareAndRun();
   }
 
-  private updateCurrentDevfile(devfile: devfileApi.Devfile): void {
+  private async updateCurrentDevfile(devfile: devfileApi.Devfile): Promise<void> {
     const { factoryResolver, allWorkspaces, defaultDevfile } = this.props;
     const { factoryParams } = this.state;
-    const { factoryId, policiesCreate, sourceUrl, storageType, remotes } = factoryParams;
+    const { factoryId, policiesCreate, sourceUrl, remotes } = factoryParams;
 
     // when using the default devfile instead of a user devfile
     if (factoryResolver === undefined && isEqual(devfile, defaultDevfile)) {
@@ -214,8 +215,9 @@ class CreatingStepApplyDevfile extends ProgressStep<Props, State> {
     // test the devfile name to decide if we need to append a suffix to is
     const nameConflict = allWorkspaces.some(w => devfile.metadata.name === w.name);
 
+    const storageType = factoryParams.storageType || this.props.preferredStorageType || undefined;
     const appendSuffix = policiesCreate === 'perclick' || nameConflict;
-    const updatedDevfile = prepareDevfile(devfile, factoryId, storageType, appendSuffix);
+    const updatedDevfile = await prepareDevfile(devfile, factoryId, storageType, appendSuffix);
 
     this.setState({
       devfile: updatedDevfile,
@@ -265,7 +267,7 @@ class CreatingStepApplyDevfile extends ProgressStep<Props, State> {
           throw new Error('Failed to resolve the default devfile.');
         }
         const _devfile = cloneDeep(defaultDevfile);
-        this.updateCurrentDevfile(_devfile);
+        await this.updateCurrentDevfile(_devfile);
       } else {
         try {
           await this.createWorkspaceFromDevfile(devfile);
@@ -296,7 +298,7 @@ class CreatingStepApplyDevfile extends ProgressStep<Props, State> {
           _devfile.metadata.generateName = metadata.generateName;
         }
 
-        this.updateCurrentDevfile(_devfile);
+        await this.updateCurrentDevfile(_devfile);
         return false;
       }
 
@@ -317,7 +319,7 @@ class CreatingStepApplyDevfile extends ProgressStep<Props, State> {
         throw new Error('Failed to resolve the devfile.');
       }
       const _devfile = cloneDeep(resolvedDevfile);
-      this.updateCurrentDevfile(_devfile);
+      await this.updateCurrentDevfile(_devfile);
     } else {
       const { devfile } = this.state;
       if (devfile) {
@@ -465,6 +467,7 @@ const mapStateToProps = (state: RootState) => ({
   factoryResolver: selectFactoryResolver(state),
   defaultDevfile: selectDefaultDevfile(state),
   devWorkspaceWarnings: selectDevWorkspaceWarnings(state),
+  preferredStorageType: selectPvcStrategy(state),
 });
 
 const connector = connect(mapStateToProps, workspacesActionCreators, null, {
