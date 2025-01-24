@@ -505,6 +505,20 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@devfile/api@npm:2.3.0-1737452847":
+  version: 2.3.0-1737452847
+  resolution: "@devfile/api@npm:2.3.0-1737452847"
+  dependencies:
+    "@types/node": "*"
+    "@types/node-fetch": ^2.5.7
+    es6-promise: ^4.2.4
+    form-data: ^2.5.0
+    node-fetch: ^2.6.0
+    url-parse: ^1.4.3
+  checksum: dc01757f910756471f0cccfd1f5f106e32cb5bd4dbc14276b42aaf1bbacf1b6dba5c68b64655b293f35473a9b1ea2f850a2ddd5872c67c18ea1d67441d6dca3a
+  languageName: node
+  linkType: hard
+
 "@discoveryjs/json-ext@npm:0.5.7, @discoveryjs/json-ext@npm:^0.5.0":
   version: 0.5.7
   resolution: "@discoveryjs/json-ext@npm:0.5.7"
@@ -519,11 +533,11 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@eclipse-che/che-devworkspace-generator@npm:7.96.0-next-da9f364":
-  version: 7.96.0-next-da9f364
-  resolution: "@eclipse-che/che-devworkspace-generator@npm:7.96.0-next-da9f364"
+"@eclipse-che/che-devworkspace-generator@npm:7.98.0":
+  version: 7.98.0
+  resolution: "@eclipse-che/che-devworkspace-generator@npm:7.98.0"
   dependencies:
-    "@devfile/api": 2.3.0-1733171449
+    "@devfile/api": 2.3.0-1737452847
     axios: ^1.7.4
     fs-extra: ^11.2.0
     inversify: ^6.0.2
@@ -533,7 +547,7 @@ __metadata:
     reflect-metadata: ^0.2.2
   bin:
     che-devworkspace-generator: lib/entrypoint.js
-  checksum: 37806af3c7d6e511354409ac0e484c635235aa7b7b57fb5feeaf7f028860066d22f00c3e74f49f1a28df5914f5d4d429bd5f9efc0b717e08fcff8252ed86858e
+  checksum: 4e2e916ee6ba9011c8e5ff8c0a798f2859cdecf47736fe32a9d4a93693ae965b8511db9d6f3bf24dcb3653143475f905b9dcac4757f95ecd1e4acc4a4fbf1696
   languageName: node
   linkType: hard
 
@@ -565,7 +579,7 @@ __metadata:
   resolution: "@eclipse-che/dashboard-backend@workspace:packages/dashboard-backend"
   dependencies:
     "@devfile/api": 2.3.0-1733171449
-    "@eclipse-che/che-devworkspace-generator": 7.96.0-next-da9f364
+    "@eclipse-che/che-devworkspace-generator": 7.98.0
     "@fastify/cors": ^9.0.1
     "@fastify/error": ^3.4.1
     "@fastify/http-proxy": ^9.5.0
