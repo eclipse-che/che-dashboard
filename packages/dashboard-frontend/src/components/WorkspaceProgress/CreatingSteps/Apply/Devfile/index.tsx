@@ -316,7 +316,8 @@ class CreatingStepApplyDevfile extends ProgressStep<Props, State> {
       if (resolvedDevfile === undefined) {
         throw new Error('Failed to resolve the devfile.');
       }
-      this.updateCurrentDevfile(resolvedDevfile);
+      const _devfile = cloneDeep(resolvedDevfile);
+      this.updateCurrentDevfile(_devfile);
     } else {
       const { devfile } = this.state;
       if (devfile) {
