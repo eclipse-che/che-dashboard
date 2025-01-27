@@ -89,34 +89,6 @@ describe('DevWorkspace client, managePvcStrategy', () => {
     ]);
   });
 
-  it('should update devWorkspace storage type', async () => {
-    const devWorkspace = devWorkspaceBuilder
-      .withSpec({
-        template: {
-          attributes: {
-            [DEVWORKSPACE_CONFIG_ATTR]: 'custom-config',
-          },
-        },
-      })
-      .build();
-    const config = {
-      defaults: {
-        pvcStrategy: 'custom-pvc-strategy',
-      },
-      cheNamespace: namespace,
-    } as api.IServerConfig;
-
-    await client.managePvcStrategy(devWorkspace, config);
-
-    expect(spyPatchWorkspace).toHaveBeenCalledWith(namespace, name, [
-      {
-        op: 'add',
-        path: '/spec/template/attributes/controller.devfile.io~1storage-type',
-        value: 'custom-pvc-strategy',
-      },
-    ]);
-  });
-
   it('should update devWorkspace template components', async () => {
     const devWorkspace = devWorkspaceBuilder
       .withSpec({

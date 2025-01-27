@@ -37,6 +37,7 @@ export interface AlertItem {
 //  - any other - devfile is found in repository as filename from the value
 export interface FactoryResolver extends Omit<che.api.factory.Factory, 'devfile'> {
   devfile?: che.api.workspace.devfile.Devfile | devfileApi.Devfile;
+  parentDevfile?: devfileApi.Devfile;
   location?: string;
   scm_info?: FactoryResolverScmInfo;
 }

@@ -32,7 +32,6 @@ import {
 import {
   DEVWORKSPACE_CONFIG_ATTR,
   DEVWORKSPACE_CONTAINER_BUILD_ATTR,
-  DEVWORKSPACE_STORAGE_TYPE_ATTR,
 } from '@/services/devfileApi/devWorkspace/spec/template';
 import { delay } from '@/services/helpers/delay';
 import { isWebTerminal } from '@/services/helpers/devworkspace';
@@ -212,7 +211,7 @@ export class DevWorkspaceClient {
       {
         op: 'replace',
         path: '/spec/template/components',
-        value: devWorkspace.spec.template.components,
+        value: devWorkspace.spec.template.components || [],
       },
     ]);
   }
@@ -455,26 +454,6 @@ export class DevWorkspaceClient {
           op: 'add',
           path: '/spec/template/attributes',
           value: { [DEVWORKSPACE_CONFIG_ATTR]: devworkspaceConfig },
-        });
-        attributes = {};
-      }
-    }
-
-    const currentPvcStrategy = config.defaults.pvcStrategy;
-    if (currentPvcStrategy) {
-      const devworkspaceStorageTypePath = `/spec/template/attributes/${this.escape(
-        DEVWORKSPACE_STORAGE_TYPE_ATTR,
-      )}`;
-
-      if (attributes) {
-        if (!attributes[DEVWORKSPACE_STORAGE_TYPE_ATTR]) {
-          patch.push({ op: 'add', path: devworkspaceStorageTypePath, value: currentPvcStrategy });
-        }
-      } else {
-        patch.push({
-          op: 'add',
-          path: '/spec/template/attributes',
-          value: { [DEVWORKSPACE_STORAGE_TYPE_ATTR]: currentPvcStrategy },
         });
         attributes = {};
       }

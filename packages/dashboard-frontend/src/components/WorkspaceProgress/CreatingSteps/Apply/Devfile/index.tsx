@@ -45,6 +45,7 @@ import { RootState } from '@/store';
 import { selectDefaultDevfile } from '@/store/DevfileRegistries/selectors';
 import { selectFactoryResolver } from '@/store/FactoryResolver/selectors';
 import { selectDefaultNamespace } from '@/store/InfrastructureNamespaces/selectors';
+import { selectPvcStrategy } from '@/store/ServerConfig';
 import { workspacesActionCreators } from '@/store/Workspaces';
 import { selectDevWorkspaceWarnings } from '@/store/Workspaces/devWorkspaces/selectors';
 import { selectAllWorkspaces } from '@/store/Workspaces/selectors';
@@ -176,7 +177,7 @@ class CreatingStepApplyDevfile extends ProgressStep<Props, State> {
   private updateCurrentDevfile(devfile: devfileApi.Devfile): void {
     const { factoryResolver, allWorkspaces, defaultDevfile } = this.props;
     const { factoryParams } = this.state;
-    const { factoryId, policiesCreate, sourceUrl, storageType, remotes } = factoryParams;
+    const { factoryId, policiesCreate, sourceUrl, remotes } = factoryParams;
 
     // when using the default devfile instead of a user devfile
     if (factoryResolver === undefined && isEqual(devfile, defaultDevfile)) {
@@ -214,8 +215,16 @@ class CreatingStepApplyDevfile extends ProgressStep<Props, State> {
     // test the devfile name to decide if we need to append a suffix to is
     const nameConflict = allWorkspaces.some(w => devfile.metadata.name === w.name);
 
+    const storageType = factoryParams.storageType || this.props.preferredStorageType || undefined;
     const appendSuffix = policiesCreate === 'perclick' || nameConflict;
-    const updatedDevfile = prepareDevfile(devfile, factoryId, storageType, appendSuffix);
+    const parentDevfile = factoryResolver?.parentDevfile;
+    const updatedDevfile = prepareDevfile(
+      devfile,
+      factoryId,
+      storageType,
+      appendSuffix,
+      parentDevfile,
+    );
 
     this.setState({
       devfile: updatedDevfile,
@@ -465,6 +474,7 @@ const mapStateToProps = (state: RootState) => ({
   factoryResolver: selectFactoryResolver(state),
   defaultDevfile: selectDefaultDevfile(state),
   devWorkspaceWarnings: selectDevWorkspaceWarnings(state),
+  preferredStorageType: selectPvcStrategy(state),
 });
 
 const connector = connect(mapStateToProps, workspacesActionCreators, null, {

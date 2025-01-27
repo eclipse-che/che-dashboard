@@ -191,12 +191,14 @@ export class DevWorkspaceDefaultPluginsHandler {
     return true;
   }
 
-  private async patchWorkspaceComponents(workspace: devfileApi.DevWorkspace) {
+  private async patchWorkspaceComponents(
+    workspace: devfileApi.DevWorkspace,
+  ): Promise<{ headers: DwApi.Headers; devWorkspace: devfileApi.DevWorkspace }> {
     const patch: api.IPatch[] = [
       {
         op: 'replace',
         path: '/spec/template/components',
-        value: workspace.spec.template.components,
+        value: workspace.spec.template.components || [],
       },
     ];
     return DwApi.patchWorkspace(workspace.metadata.namespace, workspace.metadata.name, patch);
