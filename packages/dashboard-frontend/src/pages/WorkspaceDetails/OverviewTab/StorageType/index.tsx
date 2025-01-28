@@ -214,7 +214,7 @@ class StorageTypeFormGroup extends React.PureComponent<Props, State> {
           <Button
             key="confirm"
             variant="primary"
-            isDisabled={originSelection === selected}
+            isDisabled={originSelection === selected || isDisabled}
             onClick={() => this.handleConfirmChanges()}
           >
             Save
