@@ -26,7 +26,7 @@ jest.mock('@/services/helpers/generateName');
 
 describe('FactoryLoaderContainer/prepareDevfile', () => {
   describe('DEVWORKSPACE_METADATA_ANNOTATION attribute', () => {
-    test('add the attribute with annotation', async () => {
+    test('add the attribute with annotation', () => {
       const devfile = {
         schemaVersion: '2.2.0',
         metadata: {
@@ -49,7 +49,7 @@ describe('FactoryLoaderContainer/prepareDevfile', () => {
       });
     });
 
-    test('update the attribute with annotation', async () => {
+    test('update the attribute with annotation', () => {
       const customAnnotation = {
         'custom-annotation': 'value',
       };
@@ -229,7 +229,7 @@ describe('FactoryLoaderContainer/prepareDevfile', () => {
 
     describe('has parent', () => {
       describe('with registryUrl', () => {
-        it('with storage-type attribute', async () => {
+        it('with storage-type attribute', () => {
           // mute console logs
           console.warn = jest.fn();
           const devfile = {
@@ -259,7 +259,7 @@ describe('FactoryLoaderContainer/prepareDevfile', () => {
           expect(newDevfile.attributes?.[DEVWORKSPACE_STORAGE_TYPE_ATTR]).toBeUndefined();
         });
 
-        it('without storage-type attribute', async () => {
+        it('without storage-type attribute', () => {
           const devfile = {
             schemaVersion: '2.2.0',
             metadata: {
@@ -282,7 +282,7 @@ describe('FactoryLoaderContainer/prepareDevfile', () => {
         });
       });
       describe('with uri', () => {
-        it('with storage-type attribute', async () => {
+        it('with storage-type attribute', () => {
           // mute console logs
           console.warn = jest.fn();
           const devfile = {
@@ -311,7 +311,7 @@ describe('FactoryLoaderContainer/prepareDevfile', () => {
           expect(newDevfile.attributes?.[DEVWORKSPACE_STORAGE_TYPE_ATTR]).toBeUndefined();
         });
 
-        it('without storage-type attribute', async () => {
+        it('without storage-type attribute', () => {
           const devfile = {
             schemaVersion: '2.2.0',
             metadata: {

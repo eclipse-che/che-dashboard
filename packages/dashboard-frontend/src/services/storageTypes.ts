@@ -31,15 +31,3 @@ export function toTitle(type: che.WorkspaceStorageType): string {
 export function getAvailable(): che.WorkspaceStorageType[] {
   return ['per-user', 'per-workspace', 'ephemeral'];
 }
-
-export function attributesToType(
-  attrs: che.WorkspaceDevfileAttributes | undefined,
-): che.WorkspaceStorageType {
-  if (attrs?.persistVolumes === 'false') {
-    if (attrs.asyncPersist === 'true') {
-      return 'async';
-    }
-    return 'ephemeral';
-  }
-  return 'persistent';
-}
