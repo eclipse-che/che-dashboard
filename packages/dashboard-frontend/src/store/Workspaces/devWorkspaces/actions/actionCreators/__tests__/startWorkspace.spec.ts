@@ -201,6 +201,34 @@ describe('devWorkspaces, actions', () => {
       expect(actions[2]).toEqual(devWorkspacesErrorAction(expect.any(String)));
     });
 
+    it('should not dispatch a warning for unsupported provider', async () => {
+      const mockError = {
+        response: {
+          data: {
+            message: 'Invalid token',
+          },
+        },
+      };
+
+      (OAuthService.refreshTokenIfProjectExists as jest.Mock).mockRejectedValueOnce(mockError);
+      (getWarningFromResponse as jest.Mock).mockReturnValueOnce(
+        'Cannot build factory with any of the provided parameters. Please check parameters correctness, and resend query.',
+      );
+
+      // let's stop the workspace start at this point
+      // as we want to test the warning dispatch only
+      (checkRunningDevWorkspacesClusterLimitExceeded as jest.Mock).mockImplementationOnce(() => {
+        throw new Error('Cluster limit exceeded');
+      });
+
+      await expect(store.dispatch(startWorkspace(mockWorkspace))).rejects.toThrow();
+
+      const actions = store.getActions();
+      expect(actions).toHaveLength(2);
+      expect(actions[0]).toEqual(devWorkspacesRequestAction());
+      expect(actions[1]).toEqual(devWorkspacesErrorAction(expect.any(String)));
+    });
+
     it('should dispatch update action on successful start', async () => {
       await store.dispatch(startWorkspace(mockWorkspace));
 
