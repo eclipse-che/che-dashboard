@@ -78,6 +78,9 @@ const devfile = {
   },
 } as devfileApi.Devfile;
 
+// mute console.error
+console.error = jest.fn();
+
 describe('Creating steps, applying a devfile', () => {
   let searchParams: URLSearchParams;
   let factoryId: string;
@@ -245,6 +248,7 @@ describe('Creating steps, applying a devfile', () => {
           factoryId,
           undefined,
           false,
+          undefined,
         ),
       );
       await waitFor(() => expect(mockCreateWorkspaceFromDevfile).toHaveBeenCalled());
@@ -334,6 +338,7 @@ describe('Creating steps, applying a devfile', () => {
           factoryId,
           undefined,
           false,
+          undefined,
         ),
       );
       await waitFor(() => expect(mockCreateWorkspaceFromDevfile).toHaveBeenCalled());
@@ -410,6 +415,7 @@ describe('Creating steps, applying a devfile', () => {
           factoryId,
           undefined,
           false,
+          undefined,
         ),
       );
       await waitFor(() => expect(mockCreateWorkspaceFromDevfile).toHaveBeenCalled());
@@ -488,6 +494,7 @@ describe('Creating steps, applying a devfile', () => {
           factoryId,
           undefined,
           false,
+          undefined,
         ),
       );
       await waitFor(() => expect(mockCreateWorkspaceFromDevfile).toHaveBeenCalled());
@@ -511,7 +518,7 @@ describe('Creating steps, applying a devfile', () => {
       await jest.advanceTimersByTimeAsync(MIN_STEP_DURATION_MS);
 
       await waitFor(() =>
-        expect(prepareDevfile).toHaveBeenCalledWith(devfile, factoryId, undefined, true),
+        expect(prepareDevfile).toHaveBeenCalledWith(devfile, factoryId, undefined, true, undefined),
       );
     });
 
@@ -534,7 +541,7 @@ describe('Creating steps, applying a devfile', () => {
       await jest.advanceTimersByTimeAsync(MIN_STEP_DURATION_MS);
 
       await waitFor(() =>
-        expect(prepareDevfile).toHaveBeenCalledWith(devfile, factoryId, undefined, true),
+        expect(prepareDevfile).toHaveBeenCalledWith(devfile, factoryId, undefined, true, undefined),
       );
     });
 
@@ -554,7 +561,13 @@ describe('Creating steps, applying a devfile', () => {
       await jest.advanceTimersByTimeAsync(MIN_STEP_DURATION_MS);
 
       await waitFor(() =>
-        expect(prepareDevfile).toHaveBeenCalledWith(devfile, factoryId, undefined, false),
+        expect(prepareDevfile).toHaveBeenCalledWith(
+          devfile,
+          factoryId,
+          undefined,
+          false,
+          undefined,
+        ),
       );
     });
   });
@@ -679,7 +692,7 @@ describe('Creating steps, applying a devfile', () => {
       expect(mockOnNextStep).not.toHaveBeenCalled();
       expect(mockOnError).not.toHaveBeenCalled();
 
-      expect(mockCreateWorkspaceFromDevfile).toHaveBeenCalledTimes(1);
+      await waitFor(() => expect(mockCreateWorkspaceFromDevfile).toHaveBeenCalledTimes(1));
     });
 
     test('action callback to continue with default devfile', async () => {

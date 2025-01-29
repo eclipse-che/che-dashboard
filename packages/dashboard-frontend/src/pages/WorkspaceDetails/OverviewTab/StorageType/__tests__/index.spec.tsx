@@ -102,52 +102,141 @@ describe('StorageTypeFormGroup', () => {
     });
 
     describe('change storage type modal dialog', () => {
-      test('show modal', async () => {
-        renderComponent(store, { readonly });
+      describe('with parent', () => {
+        test('show modal', async () => {
+          renderComponent(store, { readonly, parentStorageType: 'ephemeral' });
 
-        const button = screen.queryByRole('button', { name: 'Change Storage Type' });
-        expect(button).not.toBeNull();
+          const button = screen.queryByRole('button', { name: 'Change Storage Type' });
+          expect(button).not.toBeNull();
 
-        await userEvent.click(button!);
+          await userEvent.click(button!);
 
-        const modal = screen.queryByRole('dialog', { name: 'Change Storage Type' });
-        const buttonSave = screen.queryByRole('button', { name: 'Save' });
-        const buttonClose = screen.queryByRole('button', { name: 'Close' });
-        const buttonCancel = screen.queryByRole('button', { name: 'Cancel' });
+          const modal = screen.queryByRole('dialog', { name: 'Change Storage Type' });
+          const buttonSave = screen.queryByRole('button', { name: 'Save' });
+          const buttonClose = screen.queryByRole('button', { name: 'Close' });
+          const buttonCancel = screen.queryByRole('button', { name: 'Cancel' });
 
-        expect(modal).not.toBeNull();
-        expect(buttonSave).not.toBeNull();
-        expect(buttonClose).not.toBeNull();
-        expect(buttonCancel).not.toBeNull();
+          expect(modal).not.toBeNull();
+          expect(buttonSave).not.toBeNull();
+          expect(buttonClose).not.toBeNull();
+          expect(buttonCancel).not.toBeNull();
+        });
+
+        test('close modal dialog', async () => {
+          renderComponent(
+            store,
+            { readonly, parentStorageType: 'ephemeral' },
+            { isSelectorOpen: true },
+          );
+
+          // modal is opened
+          expect(screen.queryByRole('dialog', { name: 'Change Storage Type' })).not.toBeNull();
+
+          const buttonClose = screen.getByRole('button', { name: 'Close' });
+
+          await userEvent.click(buttonClose!);
+
+          // modal is closed
+          expect(screen.queryByRole('dialog', { name: 'Change Storage Type' })).toBeNull();
+        });
+
+        test('check the warning message', () => {
+          renderComponent(
+            store,
+            { readonly, parentStorageType: 'ephemeral' },
+            { isSelectorOpen: true },
+          );
+
+          let warninrMessage = screen.queryByText(
+            'Note that after changing the storage type you may lose workspace data.',
+          );
+          expect(warninrMessage).toBeNull();
+
+          warninrMessage = screen.queryByText(
+            'Storage type is already defined in parent, you cannot change it.',
+          );
+          expect(warninrMessage).not.toBeNull();
+        });
+
+        test('change storage type disabled', () => {
+          renderComponent(
+            store,
+            { readonly, parentStorageType: 'ephemeral' },
+            { isSelectorOpen: true },
+          );
+
+          const radioPerWorkspace = screen.getByRole('radio', { name: 'Per-workspace' });
+          const radioPerUser = screen.getByRole('radio', { name: 'Per-user' });
+          const radioEphemeral = screen.getByRole('radio', { name: 'Ephemeral' });
+
+          expect(radioPerWorkspace).toBeDisabled();
+          expect(radioPerUser).toBeDisabled();
+          expect(radioEphemeral).toBeDisabled();
+        });
       });
 
-      test('close modal dialog', async () => {
-        renderComponent(store, { readonly }, { isSelectorOpen: true });
+      describe('without parent', () => {
+        test('show modal', async () => {
+          renderComponent(store, { readonly });
 
-        // modal is opened
-        expect(screen.queryByRole('dialog', { name: 'Change Storage Type' })).not.toBeNull();
+          const button = screen.queryByRole('button', { name: 'Change Storage Type' });
+          expect(button).not.toBeNull();
 
-        const buttonClose = screen.getByRole('button', { name: 'Close' });
+          await userEvent.click(button!);
 
-        await userEvent.click(buttonClose!);
+          const modal = screen.queryByRole('dialog', { name: 'Change Storage Type' });
+          const buttonSave = screen.queryByRole('button', { name: 'Save' });
+          const buttonClose = screen.queryByRole('button', { name: 'Close' });
+          const buttonCancel = screen.queryByRole('button', { name: 'Cancel' });
 
-        // modal is closed
-        expect(screen.queryByRole('dialog', { name: 'Change Storage Type' })).toBeNull();
-      });
+          expect(modal).not.toBeNull();
+          expect(buttonSave).not.toBeNull();
+          expect(buttonClose).not.toBeNull();
+          expect(buttonCancel).not.toBeNull();
+        });
 
-      test('change storage type', async () => {
-        renderComponent(store, { readonly, storageType: 'ephemeral' }, { isSelectorOpen: true });
+        test('close modal dialog', async () => {
+          renderComponent(store, { readonly }, { isSelectorOpen: true });
 
-        const radioPerWorkspace = screen.getByRole('radio', { name: 'Per-workspace' });
-        const buttonSave = screen.getByRole('button', { name: 'Save' });
+          // modal is opened
+          expect(screen.queryByRole('dialog', { name: 'Change Storage Type' })).not.toBeNull();
 
-        await userEvent.click(radioPerWorkspace);
-        await userEvent.click(buttonSave);
+          const buttonClose = screen.getByRole('button', { name: 'Close' });
 
-        // modal is closed
-        expect(screen.queryByRole('dialog', { name: 'Change Storage Type' })).toBeNull();
+          await userEvent.click(buttonClose!);
 
-        expect(mockOnSave).toHaveBeenCalledWith('per-workspace');
+          // modal is closed
+          expect(screen.queryByRole('dialog', { name: 'Change Storage Type' })).toBeNull();
+        });
+
+        test('check the warning message', () => {
+          renderComponent(store, { readonly }, { isSelectorOpen: true });
+
+          let warninrMessage = screen.queryByText(
+            'Note that after changing the storage type you may lose workspace data.',
+          );
+          expect(warninrMessage).not.toBeNull();
+
+          warninrMessage = screen.queryByText(
+            'Storage type is already defined in parent, you cannot change it.',
+          );
+          expect(warninrMessage).toBeNull();
+        });
+
+        test('change storage type', async () => {
+          renderComponent(store, { readonly, storageType: 'ephemeral' }, { isSelectorOpen: true });
+
+          const radioPerWorkspace = screen.getByRole('radio', { name: 'Per-workspace' });
+          const buttonSave = screen.getByRole('button', { name: 'Save' });
+
+          await userEvent.click(radioPerWorkspace);
+          await userEvent.click(buttonSave);
+
+          // modal is closed
+          expect(screen.queryByRole('dialog', { name: 'Change Storage Type' })).toBeNull();
+
+          expect(mockOnSave).toHaveBeenCalledWith('per-workspace');
+        });
       });
     });
   });
@@ -155,7 +244,11 @@ describe('StorageTypeFormGroup', () => {
 
 function getComponent(
   store: Store,
-  props: { readonly: boolean; storageType?: che.WorkspaceStorageType },
+  props: {
+    readonly: boolean;
+    storageType?: che.WorkspaceStorageType;
+    parentStorageType?: che.WorkspaceStorageType;
+  },
   state?: Partial<State>,
 ) {
   if (state) {
@@ -166,6 +259,7 @@ function getComponent(
             onSave={mockOnSave}
             readonly={props.readonly}
             storageType={props.storageType}
+            parentStorageType={props.parentStorageType}
           />
         </StateMock>
       </Provider>
@@ -177,6 +271,7 @@ function getComponent(
           onSave={mockOnSave}
           readonly={props.readonly}
           storageType={props.storageType}
+          parentStorageType={props.parentStorageType}
         />
       </Provider>
     );

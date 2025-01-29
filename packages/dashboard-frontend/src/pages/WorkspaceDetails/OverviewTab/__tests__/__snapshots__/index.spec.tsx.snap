@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`OverviewTab screenshot 1`] = `
+exports[`OverviewTab With parent screenshot 1`] = `
 <section
   className="pf-c-page__main-section pf-m-light"
 >
@@ -22,6 +22,42 @@ exports[`OverviewTab screenshot 1`] = `
       >
         Change storage type
       </button>
+      <span>
+        StorageType: 
+      </span>
+    </div>
+    <div>
+      Mock Projects Form
+    </div>
+  </form>
+</section>
+`;
+
+exports[`OverviewTab Without parent screenshot 1`] = `
+<section
+  className="pf-c-page__main-section pf-m-light"
+>
+  <form
+    className="pf-c-form pf-m-horizontal"
+    noValidate={true}
+    onSubmit={[Function]}
+  >
+    <div>
+      Mock Workspace Name Form
+    </div>
+    <div>
+      Mock Infrastructure Namespace Form
+    </div>
+    <div>
+      Mock Storage Type Form
+      <button
+        onClick={[Function]}
+      >
+        Change storage type
+      </button>
+      <span>
+        StorageType: 
+      </span>
     </div>
     <div>
       Mock Projects Form

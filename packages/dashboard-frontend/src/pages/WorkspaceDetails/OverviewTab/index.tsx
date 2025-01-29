@@ -18,6 +18,9 @@ import { InfrastructureNamespaceFormGroup } from '@/pages/WorkspaceDetails/Overv
 import { ProjectsFormGroup } from '@/pages/WorkspaceDetails/OverviewTab/Projects';
 import StorageTypeFormGroup from '@/pages/WorkspaceDetails/OverviewTab/StorageType';
 import WorkspaceNameFormGroup from '@/pages/WorkspaceDetails/OverviewTab/WorkspaceName';
+import { getParentDevfile } from '@/services/backend-client/parentDevfileApi';
+import { DevfileAdapter } from '@/services/devfile/adapter';
+import { DEVWORKSPACE_STORAGE_TYPE_ATTR } from '@/services/devfileApi/devWorkspace/spec/template';
 import { DevWorkspaceStatus } from '@/services/helpers/types';
 import { che } from '@/services/models';
 import { constructWorkspace, Workspace } from '@/services/workspace-adapter';
@@ -29,6 +32,7 @@ export type Props = {
 
 export type State = {
   storageType: che.WorkspaceStorageType;
+  parentStorageType: che.WorkspaceStorageType | undefined;
 };
 
 export class OverviewTab extends React.Component<Props, State> {
@@ -39,7 +43,26 @@ export class OverviewTab extends React.Component<Props, State> {
 
     this.state = {
       storageType: workspace.storageType,
+      parentStorageType: undefined,
     };
+  }
+
+  async componentDidMount(): Promise<void> {
+    const { workspace } = this.props;
+    const parent = workspace.ref.spec.template.parent;
+    if (!parent) {
+      return;
+    }
+    const parentDevfile = await getParentDevfile({ schemaVersion: '2.2.2', parent });
+    if (parentDevfile) {
+      const parentDevfileAttributes = DevfileAdapter.getAttributes(parentDevfile);
+      const parentStorageType = parentDevfileAttributes[DEVWORKSPACE_STORAGE_TYPE_ATTR];
+      if (parentStorageType) {
+        this.setState({
+          parentStorageType,
+        });
+      }
+    }
   }
 
   public componentDidUpdate(): void {
@@ -61,7 +84,7 @@ export class OverviewTab extends React.Component<Props, State> {
   }
 
   public render(): React.ReactElement {
-    const { storageType } = this.state;
+    const { storageType, parentStorageType } = this.state;
     const { workspace } = this.props;
     const namespace = workspace.namespace;
     const projects = workspace.projects;
@@ -76,6 +99,7 @@ export class OverviewTab extends React.Component<Props, State> {
             <StorageTypeFormGroup
               readonly={isDeprecated || workspace.status === DevWorkspaceStatus.TERMINATING}
               storageType={storageType}
+              parentStorageType={parentStorageType}
               onSave={storageType => this.handleStorageSave(storageType)}
             />
             <ProjectsFormGroup projects={projects} />

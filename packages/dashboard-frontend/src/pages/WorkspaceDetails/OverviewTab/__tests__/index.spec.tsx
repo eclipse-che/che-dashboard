@@ -27,36 +27,88 @@ jest.mock('@/pages/WorkspaceDetails/OverviewTab/WorkspaceName');
 
 const { createSnapshot, renderComponent } = getComponentRenderer(getComponent);
 
+const mockFetchParentDevfile = jest.fn();
+jest.mock('@/services/backend-client/parentDevfileApi', () => {
+  return {
+    getParentDevfile: async (href: string) => {
+      return mockFetchParentDevfile(href);
+    },
+  };
+});
+
 const mockOnSave = jest.fn();
 
 describe('OverviewTab', () => {
   let workspace: Workspace;
 
-  beforeEach(() => {
-    const devWorkspace = new DevWorkspaceBuilder().withName('my-project').build();
-    workspace = constructWorkspace(devWorkspace);
-  });
-
   afterEach(() => {
     jest.clearAllMocks();
   });
 
-  test('screenshot', () => {
-    const snapshot = createSnapshot(workspace);
-    expect(snapshot.toJSON()).toMatchSnapshot();
+  describe('With parent', () => {
+    // mute the outputs
+    console.error = jest.fn();
+    beforeEach(() => {
+      const devWorkspace = new DevWorkspaceBuilder()
+        .withName('my-project')
+        .withTemplate({
+          parent: {
+            uri: 'https://dummy-registry/devfile.yaml',
+          },
+        })
+        .build();
+      workspace = constructWorkspace(devWorkspace);
+
+      mockFetchParentDevfile.mockResolvedValueOnce({
+        schemaVersion: '2.2.2',
+        attributes: {
+          'controller.devfile.io/storage-type': 'ephemeral',
+        },
+      });
+    });
+
+    test('screenshot', () => {
+      const snapshot = createSnapshot(workspace);
+      expect(snapshot.toJSON()).toMatchSnapshot();
+    });
+
+    test('change storage type', async () => {
+      renderComponent(workspace);
+      expect(mockFetchParentDevfile).toHaveBeenCalled();
+      expect(mockOnSave).not.toHaveBeenCalled();
+
+      const changeStorageType = screen.getByRole('button', { name: 'Change storage type' });
+
+      expect(changeStorageType).not.toBeDisabled();
+    });
   });
 
-  test('change storage type', async () => {
-    renderComponent(workspace);
-    expect(mockOnSave).not.toHaveBeenCalled();
+  describe('Without parent', () => {
+    beforeEach(() => {
+      const devWorkspace = new DevWorkspaceBuilder().withName('my-project').build();
+      workspace = constructWorkspace(devWorkspace);
+    });
 
-    const changeStorageType = screen.getByRole('button', { name: 'Change storage type' });
+    test('screenshot', () => {
+      const snapshot = createSnapshot(workspace);
+      expect(snapshot.toJSON()).toMatchSnapshot();
+    });
 
-    await userEvent.click(changeStorageType);
+    test('change storage type', async () => {
+      renderComponent(workspace);
+      expect(mockFetchParentDevfile).not.toHaveBeenCalled();
+      expect(mockOnSave).not.toHaveBeenCalled();
 
-    expect(mockOnSave).toHaveBeenCalledWith(
-      expect.objectContaining({ storageType: 'per-workspace' }),
-    );
+      const changeStorageType = screen.getByRole('button', { name: 'Change storage type' });
+
+      expect(changeStorageType).not.toBeDisabled();
+
+      await userEvent.click(changeStorageType);
+
+      expect(mockOnSave).toHaveBeenCalledWith(
+        expect.objectContaining({ storageType: 'per-workspace' }),
+      );
+    });
   });
 });
 

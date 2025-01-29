@@ -226,5 +226,112 @@ describe('FactoryLoaderContainer/prepareDevfile', () => {
       expect(newDevfile.metadata.attributes?.[DEVWORKSPACE_STORAGE_TYPE_ATTR]).toBeUndefined();
       expect(newDevfile.attributes?.[DEVWORKSPACE_STORAGE_TYPE_ATTR]).toEqual('ephemeral');
     });
+
+    describe('has parent', () => {
+      describe('with registryUrl', () => {
+        it('with storage-type attribute', () => {
+          // mute console logs
+          console.warn = jest.fn();
+          const devfile = {
+            schemaVersion: '2.2.0',
+            metadata: {
+              name: 'wksp-test',
+            },
+            parent: {
+              id: 'nodejs',
+              registryUrl: 'https://registry.devfile.io/',
+            },
+          } as devfileApi.Devfile;
+
+          const newDevfile = prepareDevfile(devfile, factoryId, 'ephemeral', false, {
+            schemaVersion: '2.2.2',
+            metadata: {
+              generateName: 'nodejs',
+            },
+            attributes: {
+              'controller.devfile.io/storage-type': 'ephemeral',
+            },
+          } as devfileApi.Devfile);
+
+          expect(console.warn).toHaveBeenCalledWith(
+            'Unable to apply controller.devfile.io/storage-type attribute.',
+          );
+          expect(newDevfile.attributes?.[DEVWORKSPACE_STORAGE_TYPE_ATTR]).toBeUndefined();
+        });
+
+        it('without storage-type attribute', () => {
+          const devfile = {
+            schemaVersion: '2.2.0',
+            metadata: {
+              name: 'wksp-test',
+            },
+            parent: {
+              id: 'nodejs',
+              registryUrl: 'https://registry.devfile.io/',
+            },
+          } as devfileApi.Devfile;
+
+          const newDevfile = prepareDevfile(devfile, factoryId, 'ephemeral', false, {
+            schemaVersion: '2.2.2',
+            metadata: {
+              generateName: 'nodejs',
+            },
+          } as devfileApi.Devfile);
+
+          expect(newDevfile.attributes?.[DEVWORKSPACE_STORAGE_TYPE_ATTR]).toEqual('ephemeral');
+        });
+      });
+      describe('with uri', () => {
+        it('with storage-type attribute', () => {
+          // mute console logs
+          console.warn = jest.fn();
+          const devfile = {
+            schemaVersion: '2.2.0',
+            metadata: {
+              name: 'wksp-test',
+            },
+            parent: {
+              uri: 'https://raw.githubusercontent.com/test/devfile.yaml',
+            },
+          } as devfileApi.Devfile;
+
+          const newDevfile = prepareDevfile(devfile, factoryId, 'ephemeral', false, {
+            schemaVersion: '2.2.2',
+            metadata: {
+              generateName: 'nodejs',
+            },
+            attributes: {
+              'controller.devfile.io/storage-type': 'ephemeral',
+            },
+          } as devfileApi.Devfile);
+
+          expect(console.warn).toHaveBeenCalledWith(
+            'Unable to apply controller.devfile.io/storage-type attribute.',
+          );
+          expect(newDevfile.attributes?.[DEVWORKSPACE_STORAGE_TYPE_ATTR]).toBeUndefined();
+        });
+
+        it('without storage-type attribute', () => {
+          const devfile = {
+            schemaVersion: '2.2.0',
+            metadata: {
+              name: 'wksp-test',
+            },
+            parent: {
+              uri: 'https://raw.githubusercontent.com/test/devfile.yaml',
+            },
+          } as devfileApi.Devfile;
+
+          const newDevfile = prepareDevfile(devfile, factoryId, 'ephemeral', false, {
+            schemaVersion: '2.2.2',
+            metadata: {
+              generateName: 'nodejs',
+            },
+          } as devfileApi.Devfile);
+
+          expect(newDevfile.attributes?.[DEVWORKSPACE_STORAGE_TYPE_ATTR]).toEqual('ephemeral');
+        });
+      });
+    });
   });
 });

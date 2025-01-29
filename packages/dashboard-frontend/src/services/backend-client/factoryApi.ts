@@ -13,6 +13,7 @@
 import axios from 'axios';
 
 import { cheServerPrefix } from '@/services/backend-client/const';
+import { getParentDevfile } from '@/services/backend-client/parentDevfileApi';
 import { FactoryResolver } from '@/services/helpers/types';
 
 export async function getFactoryResolver(
@@ -32,7 +33,13 @@ export async function getFactoryResolver(
     Object.assign({}, overrideParams, { url }),
   );
 
-  return response.data;
+  const factoryResolver: FactoryResolver = response.data;
+
+  if (factoryResolver) {
+    factoryResolver.parentDevfile = await getParentDevfile(factoryResolver.devfile);
+  }
+
+  return factoryResolver;
 }
 
 export async function refreshFactoryOauthToken(url: string): Promise<void> {
