@@ -37,6 +37,7 @@ import SessionStorageService, { SessionStorageKey } from '@/services/session-sto
 import { RootState } from '@/store';
 import { selectBranding } from '@/store/Branding';
 import { factoryResolverActionCreators, selectFactoryResolver } from '@/store/FactoryResolver';
+import { FACTORY_RESOLVER_NOT_FOUND_ERROR_MESSAGE } from '@/store/Workspaces/devWorkspaces/actions/actionCreators/const';
 import { selectAllWorkspaces } from '@/store/Workspaces/selectors';
 
 export class ApplyingDevfileError extends Error {
@@ -212,8 +213,7 @@ class CreatingStepFetchDevfile extends ProgressStep<Props, State> {
       }
       if (
         errorMessage === 'Failed to fetch devfile' ||
-        errorMessage ===
-          'Cannot build factory with any of the provided parameters. Please check parameters correctness, and resend query.' ||
+        errorMessage === FACTORY_RESOLVER_NOT_FOUND_ERROR_MESSAGE ||
         errorMessage.startsWith('Could not reach devfile')
       ) {
         this.setState({ useDefaultDevfile: true });
