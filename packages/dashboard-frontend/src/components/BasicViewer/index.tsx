@@ -10,7 +10,7 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import CodeMirror from 'codemirror';
+import CodeMirror from '@uiw/react-codemirror';
 import React from 'react';
 
 import styles from '@/components/BasicViewer/index.module.css';
@@ -21,35 +21,15 @@ export type Props = {
 };
 
 export class BasicViewer extends React.PureComponent<Props> {
-  private editor: CodeMirror.Editor | undefined;
-
-  public componentDidMount(): void {
-    const parent = window.document.querySelector(`#${this.props.id}`);
-    if (parent) {
-      const editor = new CodeMirror.fromTextArea(parent, {
-        lineNumbers: false,
-        lineWrapping: false,
-        readOnly: true,
-        autoRefresh: true,
-        autofocus: true,
-      });
-      editor.setSize(`100%`, `100%`);
-      editor.setValue(this.props.value);
-
-      this.editor = editor;
-    }
-  }
-
-  componentDidUpdate(prevProps: Readonly<Props>): void {
-    if (this.editor && this.props.value !== prevProps.value) {
-      this.editor.setValue(this.props.value);
-    }
-  }
-
   public render(): React.ReactElement {
     return (
       <div className={styles.basicViewer}>
-        <textarea id={this.props.id} value={this.props.value} readOnly={true}></textarea>
+        <CodeMirror
+          id={this.props.id}
+          readOnly={true}
+          basicSetup={false}
+          value={this.props.value}
+        />
       </div>
     );
   }
