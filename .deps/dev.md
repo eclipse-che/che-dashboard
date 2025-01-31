@@ -75,7 +75,7 @@
 | [`@pkgr/utils@2.4.2`](https://github.com/un-ts/pkgr/blob/master/packages/utils) | MIT | clearlydefined |
 | `@polka/url@1.0.0-next.23` | MIT | #16183 |
 | `@react-mock/state@0.1.8` | MIT | clearlydefined |
-| [`@sinclair/typebox@0.27.8`](https://github.com/sinclairzx81/typebox) | MIT | clearlydefined |
+| [`@sinclair/typebox@0.27.8`](https://github.com/sinclairzx81/typebox) | MIT | #19220 |
 | [`@sinonjs/commons@3.0.0`](git+https://github.com/sinonjs/commons.git) | BSD-3-Clause | #12905 |
 | [`@sinonjs/fake-timers@10.3.0`](https://github.com/sinonjs/fake-timers.git) | BSD-3-Clause | #9214 |
 | [`@testing-library/dom@10.4.0`](https://github.com/testing-library/dom-testing-library) | MIT | #15966 |

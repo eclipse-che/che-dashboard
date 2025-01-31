@@ -22,6 +22,7 @@ import devfileApi from '@/services/devfileApi';
 import stringify from '@/services/helpers/editor';
 import { Workspace } from '@/services/workspace-adapter';
 import {
+  DEVWORKSPACE_BOOTSTRAP,
   DEVWORKSPACE_DEVFILE,
   DEVWORKSPACE_METADATA_ANNOTATION,
 } from '@/services/workspace-client/devworkspace/devWorkspaceClient';
@@ -81,6 +82,9 @@ export function prepareDevfile(workspace: Workspace): devfileApi.Devfile {
   const attrs = DevfileAdapter.getAttributes(devfile);
   if (attrs?.[DEVWORKSPACE_METADATA_ANNOTATION]) {
     delete attrs[DEVWORKSPACE_METADATA_ANNOTATION];
+  }
+  if (attrs?.[DEVWORKSPACE_BOOTSTRAP]) {
+    delete attrs[DEVWORKSPACE_BOOTSTRAP];
   }
   if (Object.keys(attrs).length === 0) {
     delete devfile.attributes;
