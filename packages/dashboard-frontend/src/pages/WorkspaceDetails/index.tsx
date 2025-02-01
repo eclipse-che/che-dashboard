@@ -92,7 +92,7 @@ export class WorkspaceDetails extends React.PureComponent<Props, State> {
       const searchParam = new URLSearchParams(search);
       const tab = searchParam.get('tab');
       if (
-        pathname === '/workspace' &&
+        pathname.startsWith('/workspace/') &&
         (tab === WorkspaceDetailsTab.OVERVIEW ||
           tab === WorkspaceDetailsTab.DEVFILE ||
           tab === WorkspaceDetailsTab.EVENTS ||

@@ -5,9 +5,9 @@
 | [`@babel/runtime@7.23.2`](https://github.com/babel/babel.git) | MIT | #10718 |
 | [`@devfile/api@2.3.0-1733171449`](https://github.com/GIT_USER_ID/GIT_REPO_ID.git) | Apache-2.0 | N/A |
 | [`@eclipse-che/che-devworkspace-generator@7.96.0-next-da9f364`](git+https://github.com/devfile/devworkspace-generator.git) | EPL-2.0 | ecd.che |
-| [`@eclipse-che/common@7.98.0-next`](https://github.com/eclipse-che/che-dashboard) | EPL-2.0 | ecd.che |
-| [`@eclipse-che/dashboard-backend@7.98.0-next`](https://github.com/eclipse-che/che-dashboard) | EPL-2.0 | ecd.che |
-| [`@eclipse-che/dashboard-frontend@7.98.0-next`](git://github.com/eclipse/che-dashboard.git) | EPL-2.0 | ecd.che |
+| [`@eclipse-che/common@7.99.0-next`](https://github.com/eclipse-che/che-dashboard) | EPL-2.0 | ecd.che |
+| [`@eclipse-che/dashboard-backend@7.99.0-next`](https://github.com/eclipse-che/che-dashboard) | EPL-2.0 | ecd.che |
+| [`@eclipse-che/dashboard-frontend@7.99.0-next`](git://github.com/eclipse/che-dashboard.git) | EPL-2.0 | ecd.che |
 | [`@fastify/accept-negotiator@1.1.0`](git+https://github.com/fastify/accept-negotiator.git) | MIT | clearlydefined |
 | [`@fastify/ajv-compiler@3.6.0`](git+https://github.com/fastify/ajv-compiler.git) | MIT | clearlydefined |
 | [`@fastify/busboy@2.0.0`](https://github.com/fastify/busboy.git) | MIT | clearlydefined |
@@ -65,7 +65,7 @@
 | [`ansi-styles@3.2.1`](https://github.com/chalk/ansi-styles.git) | MIT | clearlydefined |
 | [`argparse@2.0.1`](https://github.com/nodeca/argparse.git) | Python-2.0 | [CQ22954](https://dev.eclipse.org/ipzilla/show_bug.cgi?id=22954) |
 | [`args@5.0.3`](https://github.com/leo/args.git) | MIT | clearlydefined |
-| [`asn1.js@4.10.1`](git@github.com:indutny/asn1.js) | MIT | clearlydefined |
+| [`asn1.js@4.10.1`](git@github.com:indutny/asn1.js) | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/asn1.js/4.10.1) |
 | [`asn1@0.2.6`](https://github.com/joyent/node-asn1.git) | MIT | clearlydefined |
 | [`assert-plus@1.0.0`](https://github.com/mcavage/node-assert-plus.git) | MIT | clearlydefined |
 | [`asynckit@0.4.0`](git+https://github.com/alexindigo/asynckit.git) | MIT | clearlydefined |
