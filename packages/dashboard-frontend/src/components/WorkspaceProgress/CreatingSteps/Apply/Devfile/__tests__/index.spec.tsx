@@ -37,6 +37,7 @@ import {
 import { buildFactoryLocation } from '@/services/helpers/location';
 import { AlertItem } from '@/services/helpers/types';
 import { che } from '@/services/models';
+import { DEVWORKSPACE_BOOTSTRAP } from '@/services/workspace-client/devworkspace/devWorkspaceClient';
 import { AppThunk } from '@/store';
 import { DevWorkspaceBuilder } from '@/store/__mocks__/devWorkspaceBuilder';
 import { MockStoreBuilder } from '@/store/__mocks__/mockStore';
@@ -241,7 +242,7 @@ describe('Creating steps, applying a devfile', () => {
         expect(prepareDevfile).toHaveBeenCalledWith(
           expect.objectContaining({
             attributes: {
-              'controller.devfile.io/bootstrap-devworkspace': true,
+              [DEVWORKSPACE_BOOTSTRAP]: true,
               defaultDevfile: true,
             },
           }),
@@ -332,7 +333,7 @@ describe('Creating steps, applying a devfile', () => {
         expect(prepareDevfile).toHaveBeenCalledWith(
           expect.objectContaining({
             attributes: {
-              'controller.devfile.io/bootstrap-devworkspace': true,
+              [DEVWORKSPACE_BOOTSTRAP]: true,
             },
           }),
           factoryId,
@@ -409,7 +410,7 @@ describe('Creating steps, applying a devfile', () => {
           expect.objectContaining({
             attributes: {
               defaultDevfile: true,
-              'controller.devfile.io/bootstrap-devworkspace': true,
+              [DEVWORKSPACE_BOOTSTRAP]: true,
             },
           }),
           factoryId,

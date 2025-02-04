@@ -36,29 +36,28 @@ export class DevfileViewer extends React.PureComponent<Props> {
   public componentDidMount(): void {
     const parent = window.document.querySelector(`#${this.props.id}`);
     if (parent) {
-      const editor = new CodeMirror.fromTextArea(parent, {
+      this.editor = CodeMirror.fromTextArea(parent as HTMLTextAreaElement, {
         mode: 'yaml',
         theme: 'eclipse-che',
         lineNumbers: true,
         lineWrapping: true,
         readOnly: true,
-        autoRefresh: true,
+        value: this.props.value,
       });
-      editor.setSize(`100%`, `100%`);
-      editor.setValue(this.props.value);
-
-      this.editor = editor;
     }
   }
 
   componentDidUpdate(): void {
-    this.editor.setValue(this.props.value);
+    if (this.editor) {
+      this.editor.setValue(this.props.value);
+      this.editor.refresh();
+    }
   }
 
   public render(): React.ReactElement {
     return (
       <div className={styles.devfileViewer}>
-        <textarea id={this.props.id} readOnly={true}></textarea>
+        <textarea id={this.props.id} value={this.props.value} readOnly={true}></textarea>
       </div>
     );
   }

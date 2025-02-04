@@ -75,7 +75,7 @@
 | [`@pkgr/utils@2.4.2`](https://github.com/un-ts/pkgr/blob/master/packages/utils) | MIT | clearlydefined |
 | `@polka/url@1.0.0-next.23` | MIT | #16183 |
 | `@react-mock/state@0.1.8` | MIT | clearlydefined |
-| [`@sinclair/typebox@0.27.8`](https://github.com/sinclairzx81/typebox) | MIT | clearlydefined |
+| [`@sinclair/typebox@0.27.8`](https://github.com/sinclairzx81/typebox) | MIT | #19220 |
 | [`@sinonjs/commons@3.0.0`](git+https://github.com/sinonjs/commons.git) | BSD-3-Clause | #12905 |
 | [`@sinonjs/fake-timers@10.3.0`](https://github.com/sinonjs/fake-timers.git) | BSD-3-Clause | #9214 |
 | [`@testing-library/dom@10.4.0`](https://github.com/testing-library/dom-testing-library) | MIT | #15966 |
@@ -90,6 +90,7 @@
 | [`@types/babel__generator@7.6.6`](https://github.com/DefinitelyTyped/DefinitelyTyped.git) | MIT | clearlydefined |
 | [`@types/babel__template@7.4.3`](https://github.com/DefinitelyTyped/DefinitelyTyped.git) | MIT | clearlydefined |
 | [`@types/babel__traverse@7.20.3`](https://github.com/DefinitelyTyped/DefinitelyTyped.git) | MIT | #8935 |
+| [`@types/codemirror@5.60.15`](https://github.com/DefinitelyTyped/DefinitelyTyped.git) | MIT | clearlydefined |
 | [`@types/eslint-scope@3.7.7`](https://github.com/DefinitelyTyped/DefinitelyTyped.git) | MIT | #10812 |
 | [`@types/eslint@8.44.6`](https://github.com/DefinitelyTyped/DefinitelyTyped.git) | MIT | #9382 |
 | [`@types/eslint@9.6.1`](https://github.com/DefinitelyTyped/DefinitelyTyped.git) | MIT | #15963 |
@@ -125,6 +126,7 @@
 | [`@types/scheduler@0.16.5`](https://github.com/DefinitelyTyped/DefinitelyTyped.git) | MIT | #7582 |
 | [`@types/semver@7.5.4`](https://github.com/DefinitelyTyped/DefinitelyTyped.git) | MIT | #10842 |
 | [`@types/stack-utils@2.0.2`](https://github.com/DefinitelyTyped/DefinitelyTyped.git) | MIT | clearlydefined |
+| [`@types/tern@0.23.9`](https://github.com/DefinitelyTyped/DefinitelyTyped.git) | MIT | clearlydefined |
 | [`@types/webpack@5.28.5`](https://github.com/DefinitelyTyped/DefinitelyTyped.git) | MIT | clearlydefined |
 | [`@types/yargs-parser@21.0.2`](https://github.com/DefinitelyTyped/DefinitelyTyped.git) | MIT | clearlydefined |
 | [`@types/yargs@17.0.29`](https://github.com/DefinitelyTyped/DefinitelyTyped.git) | MIT | #7054 |

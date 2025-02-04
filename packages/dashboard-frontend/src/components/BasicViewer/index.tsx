@@ -26,30 +26,31 @@ export class BasicViewer extends React.PureComponent<Props> {
   public componentDidMount(): void {
     const parent = window.document.querySelector(`#${this.props.id}`);
     if (parent) {
-      const editor = new CodeMirror.fromTextArea(parent, {
+      this.editor = CodeMirror.fromTextArea(parent as HTMLTextAreaElement, {
         lineNumbers: false,
         lineWrapping: false,
         readOnly: true,
-        autoRefresh: true,
-        autofocus: true,
+        value: this.props.value,
       });
-      editor.setSize(`100%`, `100%`);
-      editor.setValue(this.props.value);
-
-      this.editor = editor;
     }
   }
 
-  componentDidUpdate(prevProps: Readonly<Props>): void {
-    if (this.editor && this.props.value !== prevProps.value) {
+  componentDidUpdate(): void {
+    if (this.editor) {
       this.editor.setValue(this.props.value);
+      this.editor.refresh();
     }
   }
 
   public render(): React.ReactElement {
     return (
       <div className={styles.basicViewer}>
-        <textarea id={this.props.id} value={this.props.value} readOnly={true}></textarea>
+        <textarea
+          id={this.props.id}
+          data-testid={this.props.id}
+          value={this.props.value}
+          readOnly={true}
+        ></textarea>
       </div>
     );
   }

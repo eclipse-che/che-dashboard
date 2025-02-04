@@ -80,7 +80,7 @@ export async function checkDevWorkspaceNextStartAnnotation(
     delete workspace.metadata.annotations[DEVWORKSPACE_NEXT_START_ANNOTATION];
     workspace.spec.template = storedDevWorkspace.spec.template;
     workspace.spec.started = false;
-    workspace = await devWorkspaceClient.update(workspace);
+    await devWorkspaceClient.update(workspace);
   }
 }
 
