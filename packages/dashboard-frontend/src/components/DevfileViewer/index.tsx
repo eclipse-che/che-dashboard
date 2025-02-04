@@ -10,14 +10,48 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import 'codemirror/mode/yaml/yaml';
-import 'codemirror/lib/codemirror.css';
-import '@/components/DevfileViewer/theme/eclipse-che.css';
-
-import CodeMirror from 'codemirror';
+import { yaml } from '@codemirror/lang-yaml';
+import { HighlightStyle, syntaxHighlighting } from '@codemirror/language';
+import { EditorView } from '@codemirror/view';
+import { tags as t } from '@lezer/highlight';
+import CodeMirror from '@uiw/react-codemirror';
 import React from 'react';
 
 import styles from '@/components/DevfileViewer/index.module.css';
+
+const base00 = '#2e3440'; // black
+const base01 = '#999'; // grey
+const base02 = '#f7f7f7'; // white
+const base03 = '#5e81ac'; // deep blue
+const base04 = '#008080'; // teal
+const base05 = '#fff'; // white
+
+const basicLightTheme = EditorView.theme(
+  {
+    '&': {
+      color: base00,
+      backgroundColor: base05,
+    },
+    '.cm-gutters': {
+      backgroundColor: base02,
+      color: base01,
+    },
+    '.cm-activeLineGutter': {
+      backgroundColor: base02,
+    },
+  },
+  { dark: false },
+);
+
+const basicLightHighlightStyle = HighlightStyle.define([
+  { tag: t.keyword, color: base03 },
+  { tag: [t.string], color: base03 },
+  { tag: [t.variableName], color: base04 },
+  {
+    tag: [t.name, t.deleted, t.character, t.propertyName, t.macroName],
+    color: base04,
+  },
+]);
 
 export type Props = {
   isActive: boolean;
@@ -27,38 +61,16 @@ export type Props = {
 };
 
 export class DevfileViewer extends React.PureComponent<Props> {
-  private editor: CodeMirror.Editor | undefined;
-
-  constructor(props: Props) {
-    super(props);
-  }
-
-  public componentDidMount(): void {
-    const parent = window.document.querySelector(`#${this.props.id}`);
-    if (parent) {
-      const editor = new CodeMirror.fromTextArea(parent, {
-        mode: 'yaml',
-        theme: 'eclipse-che',
-        lineNumbers: true,
-        lineWrapping: true,
-        readOnly: true,
-        autoRefresh: true,
-      });
-      editor.setSize(`100%`, `100%`);
-      editor.setValue(this.props.value);
-
-      this.editor = editor;
-    }
-  }
-
-  componentDidUpdate(): void {
-    this.editor.setValue(this.props.value);
-  }
-
   public render(): React.ReactElement {
     return (
       <div className={styles.devfileViewer}>
-        <textarea id={this.props.id} readOnly={true}></textarea>
+        <CodeMirror
+          readOnly={true}
+          height="60vh"
+          id={this.props.id}
+          value={this.props.value}
+          extensions={[basicLightTheme, syntaxHighlighting(basicLightHighlightStyle), yaml()]}
+        />
       </div>
     );
   }

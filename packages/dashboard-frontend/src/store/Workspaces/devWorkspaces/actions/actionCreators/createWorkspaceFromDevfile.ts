@@ -117,6 +117,7 @@ export const createWorkspaceFromDevfile =
           devWorkspaceTemplateResource.metadata.annotations = {};
         }
         devWorkspaceTemplateResource.metadata.annotations[COMPONENT_UPDATE_POLICY] = 'managed';
+        // add the registry URL to the template
         devWorkspaceTemplateResource.metadata.annotations[REGISTRY_URL] = editorYamlUrl;
       }
     } catch (e) {

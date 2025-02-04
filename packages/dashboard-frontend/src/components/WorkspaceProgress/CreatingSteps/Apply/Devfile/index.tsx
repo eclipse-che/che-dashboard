@@ -41,6 +41,7 @@ import { buildIdeLoaderLocation, toHref } from '@/services/helpers/location';
 import { AlertItem } from '@/services/helpers/types';
 import { TabManager } from '@/services/tabManager';
 import { Workspace } from '@/services/workspace-adapter';
+import { DEVWORKSPACE_BOOTSTRAP } from '@/services/workspace-client/devworkspace/devWorkspaceClient';
 import { RootState } from '@/store';
 import { selectDefaultDevfile } from '@/store/DevfileRegistries/selectors';
 import { selectFactoryResolver } from '@/store/FactoryResolver/selectors';
@@ -185,7 +186,7 @@ class CreatingStepApplyDevfile extends ProgressStep<Props, State> {
         devfile.attributes = {};
       }
 
-      devfile.attributes['controller.devfile.io/bootstrap-devworkspace'] = true;
+      devfile.attributes[DEVWORKSPACE_BOOTSTRAP] = true;
 
       if (devfile.projects === undefined) {
         devfile.projects = [];
@@ -205,7 +206,7 @@ class CreatingStepApplyDevfile extends ProgressStep<Props, State> {
         devfile.attributes = {};
       }
 
-      devfile.attributes['controller.devfile.io/bootstrap-devworkspace'] = true;
+      devfile.attributes[DEVWORKSPACE_BOOTSTRAP] = true;
     }
 
     if (remotes) {
