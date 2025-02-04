@@ -140,7 +140,8 @@ describe('getEditor', () => {
 
     expect(result).toEqual({
       content: 'dumped devfile content',
-      editorYamlUrl: 'che-incubator/che-idea/next',
+      editorYamlUrl:
+        'http://127.0.0.1:8080/dashboard/api/editors/devfile?che-editor=che-incubator/che-idea/next',
     });
     expect(dispatch).not.toHaveBeenCalled();
   });

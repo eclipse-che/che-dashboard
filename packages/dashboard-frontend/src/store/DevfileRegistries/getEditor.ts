@@ -41,11 +41,13 @@ export async function getEditor(
     if (devfileObj) {
       const content = devfileObj.content;
       const error = devfileObj.error;
-      return Object.assign({ content, editorYamlUrl, error });
+      return { content, editorYamlUrl, error };
     }
     throw new Error(`Failed to fetch editor yaml by URL: ${editorYamlUrl}.`);
   } else {
     const editors = state.dwPlugins.cmEditors || [];
+    const editorId = editorIdOrPath;
+    // Find the editor by id
     const editor: devfileApi.Devfile | undefined = editors.find(e => {
       return (
         e.metadata.attributes.publisher +
@@ -53,11 +55,14 @@ export async function getEditor(
           e.metadata.name +
           '/' +
           e.metadata.attributes.version ===
-        editorIdOrPath
+        editorId
       );
     });
     if (editor) {
-      return Object.assign({ content: dump(editor), editorYamlUrl: editorIdOrPath });
+      return {
+        content: dump(editor),
+        editorYamlUrl: `http://127.0.0.1:8080/dashboard/api/editors/devfile?che-editor=${editorId}`,
+      };
     } else {
       throw new Error(`Failed to fetch editor yaml by id: ${editorIdOrPath}.`);
     }

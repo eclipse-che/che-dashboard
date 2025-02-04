@@ -19,7 +19,8 @@ const getVSCodeDevWorkspaceTemplate = (cpuLimit = '1500m'): devfileApi.DevWorksp
     metadata: {
       annotations: {
         'che.eclipse.org/components-update-policy': 'managed',
-        'che.eclipse.org/plugin-registry-url': 'che-incubator/che-code/latest',
+        'che.eclipse.org/plugin-registry-url':
+          'http://127.0.0.1:8080/dashboard/api/editors/devfile?che-editor=che-incubator/che-code/latest',
       },
       creationTimestamp: new Date('2024-05-30T12:51:45Z'),
       generation: 1,
