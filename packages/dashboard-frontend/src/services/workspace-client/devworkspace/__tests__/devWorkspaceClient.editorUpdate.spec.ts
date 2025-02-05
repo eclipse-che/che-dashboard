@@ -24,6 +24,7 @@ import {
   DevWorkspaceClient,
   REGISTRY_URL,
 } from '@/services/workspace-client/devworkspace/devWorkspaceClient';
+import { EDITOR_DEVFILE_API_QUERY } from '@/store/DevfileRegistries/const';
 
 describe('DevWorkspace client editor update', () => {
   const namespace = 'admin-che';
@@ -257,8 +258,7 @@ describe('DevWorkspace client editor update', () => {
           path: '/metadata/annotations',
           value: {
             [COMPONENT_UPDATE_POLICY]: 'managed',
-            [REGISTRY_URL]:
-              'http://127.0.0.1:8080/dashboard/api/editors/devfile?che-editor=che-incubator/che-code/latest',
+            [REGISTRY_URL]: `${EDITOR_DEVFILE_API_QUERY}che-incubator/che-code/latest`,
           },
         },
       ]);
@@ -305,8 +305,7 @@ describe('DevWorkspace client editor update', () => {
           path: '/metadata/annotations',
           value: {
             [COMPONENT_UPDATE_POLICY]: 'managed',
-            [REGISTRY_URL]:
-              'http://127.0.0.1:8080/dashboard/api/editors/devfile?che-editor=che-incubator/custom-editor/latest',
+            [REGISTRY_URL]: `${EDITOR_DEVFILE_API_QUERY}che-incubator/custom-editor/latest`,
           },
         },
       ]);

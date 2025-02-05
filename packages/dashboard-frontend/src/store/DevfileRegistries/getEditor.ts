@@ -16,6 +16,7 @@ import { dump } from 'js-yaml';
 import devfileApi from '@/services/devfileApi';
 import { RootState } from '@/store';
 import { actionCreators } from '@/store/DevfileRegistries/actions';
+import { EDITOR_DEVFILE_API_QUERY } from '@/store/DevfileRegistries/const';
 
 export async function getEditor(
   editorIdOrPath: string,
@@ -61,7 +62,7 @@ export async function getEditor(
     if (editor) {
       return {
         content: dump(editor),
-        editorYamlUrl: `http://127.0.0.1:8080/dashboard/api/editors/devfile?che-editor=${editorId}`,
+        editorYamlUrl: `${EDITOR_DEVFILE_API_QUERY}${editorId}`,
       };
     } else {
       throw new Error(`Failed to fetch editor yaml by id: ${editorIdOrPath}.`);
