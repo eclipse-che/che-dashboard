@@ -671,19 +671,21 @@ export class DevWorkspaceClient {
   ): Promise<api.IPatch[]> {
     const patch: api.IPatch[] = [];
     const managedTemplate = await DwtApi.getTemplateByName(namespace, editorName);
-    const editorIdOrPath = managedTemplate.metadata?.annotations?.[REGISTRY_URL];
+    const _editorIdOrPath = managedTemplate.metadata?.annotations?.[REGISTRY_URL];
     const updatePolicy = managedTemplate.metadata?.annotations?.[COMPONENT_UPDATE_POLICY];
 
-    if (!editorIdOrPath || updatePolicy !== 'managed') {
+    if (!_editorIdOrPath || updatePolicy !== 'managed') {
       console.log('Template is not managed');
       return patch;
     }
 
-    if (/^(https?:\/\/)/.test(editorIdOrPath)) {
+    let url: string | undefined;
+    if (/^(https?:\/\/)/.test(_editorIdOrPath)) {
+      url = _editorIdOrPath;
       // Define a regular expression pattern to match URLs containing 'plugin-registry/v3/plugins'
       // and ending with 'devfile.yaml'. The part between 'v3/plugins/' and '/devfile.yaml' is captured.
       const pluginRegistryURLPattern = /plugin-registry\/v3\/plugins\/(.+?)\/devfile\.yaml$/;
-      const match = editorIdOrPath.match(pluginRegistryURLPattern);
+      const match = url.match(pluginRegistryURLPattern);
 
       if (match) {
         const annotations = {
@@ -698,9 +700,10 @@ export class DevWorkspaceClient {
         });
       }
     } else {
+      url = `${EDITOR_DEVFILE_API_QUERY}${_editorIdOrPath}`;
       const annotations = {
         [COMPONENT_UPDATE_POLICY]: 'managed',
-        [REGISTRY_URL]: `${EDITOR_DEVFILE_API_QUERY}${editorIdOrPath}`,
+        [REGISTRY_URL]: url,
       };
       patch.push({
         op: 'replace',
@@ -711,8 +714,8 @@ export class DevWorkspaceClient {
 
     let editor: devfileApi.Devfile | undefined = undefined;
     // Found the target editors
-    if (editorIdOrPath.startsWith(EDITOR_DEVFILE_API_QUERY)) {
-      const editorReference = editorIdOrPath.replace(EDITOR_DEVFILE_API_QUERY, '');
+    if (url.startsWith(EDITOR_DEVFILE_API_QUERY)) {
+      const editorReference = url.replace(EDITOR_DEVFILE_API_QUERY, '');
 
       const _editor = editors.find(e => {
         return (
@@ -728,7 +731,7 @@ export class DevWorkspaceClient {
         editor = cloneDeep(_editor);
       }
     } else {
-      const editorContent = await fetchData<string | devfileApi.Devfile>(editorIdOrPath);
+      const editorContent = await fetchData<string | devfileApi.Devfile>(url);
       if (typeof editorContent === 'string') {
         editor = load(editorContent) as devfileApi.Devfile;
       } else if (typeof editorContent === 'object') {
