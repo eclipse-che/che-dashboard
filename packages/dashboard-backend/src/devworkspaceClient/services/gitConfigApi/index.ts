@@ -21,7 +21,7 @@ import {
 } from '@/devworkspaceClient/services/helpers/prepareCoreV1API';
 import { IGitConfigApi } from '@/devworkspaceClient/types';
 
-const GITCONFIG_CONFIGMAP = 'workspace-userdata-gitconfig-configmap';
+const GITCONFIG_SECRET = 'devworkspace-gitconfig-automaunt-secret';
 const GITCONFIG_API_ERROR_LABEL = 'CORE_V1_API_ERROR';
 
 export class GitConfigApiService implements IGitConfigApi {
@@ -37,13 +37,13 @@ export class GitConfigApiService implements IGitConfigApi {
    */
   public async read(namespace: string): Promise<api.IGitConfig> {
     try {
-      const response = await this.coreV1API.readNamespacedConfigMap(GITCONFIG_CONFIGMAP, namespace);
+      const response = await this.coreV1API.readNamespacedSecret(GITCONFIG_SECRET, namespace);
 
       return this.toGitConfig(response.body);
     } catch (error) {
       if (helpers.errors.isKubeClientError(error) && error.statusCode === 404) {
-        // Create gitconfig configmap if it does not exist
-        return this.createGitConfigMap(namespace);
+        // Create gitconfig secret if it does not exist
+        return this.createGitConfigSecret(namespace);
       }
 
       const message = `Unable to read gitconfig in the namespace "${namespace}"`;
@@ -53,35 +53,37 @@ export class GitConfigApiService implements IGitConfigApi {
 
   /**
    * @throws
-   * Creates `gitconfig` ConfigMap in the given `namespace`.
+   * Creates `gitconfig` Secret in the given `namespace`.
    */
-  private async createGitConfigMap(namespace: string): Promise<api.IGitConfig> {
-    const configMap = new k8s.V1ConfigMap();
-    configMap.metadata = {
-      name: GITCONFIG_CONFIGMAP,
+  private async createGitConfigSecret(namespace: string): Promise<api.IGitConfig> {
+    const secret = new k8s.V1Secret();
+    secret.metadata = {
+      name: GITCONFIG_SECRET,
       namespace,
       labels: {
         'controller.devfile.io/mount-to-devworkspace': 'true',
-        'controller.devfile.io/watch-configmap': 'true',
+        'controller.devfile.io/watch-secret': 'true',
       },
       annotations: {
         'controller.devfile.io/mount-as': 'subpath',
         'controller.devfile.io/mount-path': '/etc/',
       },
     };
-    configMap.data = {
-      gitconfig: this.fromGitConfig({
-        gitconfig: {
-          user: {
-            name: '',
-            email: '',
+    secret.data = {
+      gitconfig: btoa(
+        this.fromGitConfig({
+          gitconfig: {
+            user: {
+              name: '',
+              email: '',
+            },
           },
-        },
-      }),
+        }),
+      ),
     };
 
     try {
-      const response = await this.coreV1API.createNamespacedConfigMap(namespace, configMap);
+      const response = await this.coreV1API.createNamespacedSecret(namespace, secret);
       return this.toGitConfig(response.body);
     } catch (error) {
       const message = `Unable to create gitconfig in the namespace "${namespace}"`;
@@ -114,12 +116,12 @@ export class GitConfigApiService implements IGitConfigApi {
 
     try {
       const gitconfigStr = this.fromGitConfig(gitConfig);
-      const response = await this.coreV1API.patchNamespacedConfigMap(
-        GITCONFIG_CONFIGMAP,
+      const response = await this.coreV1API.patchNamespacedSecret(
+        GITCONFIG_SECRET,
         namespace,
         {
           data: {
-            gitconfig: gitconfigStr,
+            gitconfig: btoa(gitconfigStr),
           },
         },
         undefined,
@@ -153,11 +155,11 @@ export class GitConfigApiService implements IGitConfigApi {
 
   /**
    * @throws
-   * Extracts `resourceVersion` and `data.gitconfig` from given `ConfigMap`.
+   * Extracts `resourceVersion` and `data.gitconfig` from given `Secret`.
    */
-  private toGitConfig(configMapBody: k8s.V1ConfigMap): api.IGitConfig {
-    const resourceVersion = configMapBody.metadata?.resourceVersion;
-    const gitconfigStr = configMapBody.data?.gitconfig;
+  private toGitConfig(secretBody: k8s.V1ConfigMap): api.IGitConfig {
+    const resourceVersion = secretBody.metadata?.resourceVersion;
+    const gitconfigStr = secretBody.data?.gitconfig;
 
     const parser = new ini.Parser();
 
@@ -165,7 +167,7 @@ export class GitConfigApiService implements IGitConfigApi {
       throw new Error('Unexpected data type');
     }
 
-    const gitconfigLines = gitconfigStr.split(/\r?\n/);
+    const gitconfigLines = atob(gitconfigStr).split(/\r?\n/);
 
     const gitconfig = parser.parse(gitconfigLines);
     if (!isGitConfig(gitconfig)) {

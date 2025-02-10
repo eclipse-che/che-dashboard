@@ -12,7 +12,7 @@
 
 import { api } from '@eclipse-che/common';
 import * as mockClient from '@kubernetes/client-node';
-import { CoreV1Api, V1ConfigMap } from '@kubernetes/client-node';
+import { CoreV1Api, V1Secret } from '@kubernetes/client-node';
 import { IncomingMessage } from 'http';
 
 import { GitConfigApiService } from '..';
@@ -22,22 +22,22 @@ jest.mock('@/devworkspaceClient/services/helpers/retryableExec.ts');
 const namespace = 'user-che';
 const responseBody = {
   data: {
-    gitconfig: `[user]\n\tname = User One\n\temail = user-1@che`,
+    gitconfig: btoa(`[user]\n\tname = User One\n\temail = user-1@che`),
   },
 };
 
 describe('Gitconfig API', () => {
   let gitConfigApiService: GitConfigApiService;
 
-  describe('configmap not found', () => {
+  describe('secret not found', () => {
     const stubCoreV1Api = {
-      createNamespacedConfigMap: () => {
+      createNamespacedSecret: () => {
         return Promise.resolve({
-          body: responseBody as V1ConfigMap,
+          body: responseBody as V1Secret,
           response: {} as IncomingMessage,
         });
       },
-      readNamespacedConfigMap: () => {
+      readNamespacedSecret: () => {
         return Promise.reject({
           body: {},
           response: {} as IncomingMessage,
@@ -47,7 +47,7 @@ describe('Gitconfig API', () => {
         });
       },
     } as unknown as CoreV1Api;
-    const spyCreateNamespacedConfigMap = jest.spyOn(stubCoreV1Api, 'createNamespacedConfigMap');
+    const spyCreateNamespacedSecret = jest.spyOn(stubCoreV1Api, 'createNamespacedSecret');
 
     beforeEach(() => {
       const { KubeConfig } = mockClient;
@@ -61,7 +61,7 @@ describe('Gitconfig API', () => {
       jest.clearAllMocks();
     });
 
-    it('should create the configmap and return gitconfig', async () => {
+    it('should create the secret and return gitconfig', async () => {
       const resp = await gitConfigApiService.read(namespace);
 
       expect(resp.gitconfig).toStrictEqual({
@@ -71,13 +71,13 @@ describe('Gitconfig API', () => {
         },
       });
 
-      expect(spyCreateNamespacedConfigMap).toHaveBeenCalledTimes(1);
-      expect(spyCreateNamespacedConfigMap).toHaveBeenCalledWith(namespace, {
+      expect(spyCreateNamespacedSecret).toHaveBeenCalledTimes(1);
+      expect(spyCreateNamespacedSecret).toHaveBeenCalledWith(namespace, {
         data: {
-          gitconfig: `[user]
+          gitconfig: btoa(`[user]
 name=""
 email=""
-`,
+`),
         },
         metadata: {
           annotations: {
@@ -86,32 +86,32 @@ email=""
           },
           labels: {
             'controller.devfile.io/mount-to-devworkspace': 'true',
-            'controller.devfile.io/watch-configmap': 'true',
+            'controller.devfile.io/watch-secret': 'true',
           },
-          name: 'workspace-userdata-gitconfig-configmap',
+          name: 'devworkspace-gitconfig-automaunt-secret',
           namespace,
         },
       });
     });
   });
 
-  describe('configmap found', () => {
+  describe('secret found', () => {
     const stubCoreV1Api = {
-      readNamespacedConfigMap: () => {
+      readNamespacedSecret: () => {
         return Promise.resolve({
-          body: responseBody as V1ConfigMap,
+          body: responseBody as V1Secret,
           response: {} as IncomingMessage,
         });
       },
-      patchNamespacedConfigMap: () => {
+      patchNamespacedSecret: () => {
         return Promise.resolve({
-          body: responseBody as V1ConfigMap,
+          body: responseBody as V1Secret,
           response: {} as IncomingMessage,
         });
       },
     } as unknown as CoreV1Api;
-    const spyReadNamespacedConfigMap = jest.spyOn(stubCoreV1Api, 'readNamespacedConfigMap');
-    const spyPatchNamespacedConfigMap = jest.spyOn(stubCoreV1Api, 'patchNamespacedConfigMap');
+    const spyReadNamespacedSecret = jest.spyOn(stubCoreV1Api, 'readNamespacedSecret');
+    const spyPatchNamespacedSecret = jest.spyOn(stubCoreV1Api, 'patchNamespacedSecret');
 
     beforeEach(() => {
       const { KubeConfig } = mockClient;
@@ -138,12 +138,12 @@ email=""
           }),
         );
 
-        expect(spyReadNamespacedConfigMap).toHaveBeenCalledTimes(1);
-        expect(spyPatchNamespacedConfigMap).not.toHaveBeenCalled();
+        expect(spyReadNamespacedSecret).toHaveBeenCalledTimes(1);
+        expect(spyPatchNamespacedSecret).not.toHaveBeenCalled();
       });
 
       it('should throw', async () => {
-        spyReadNamespacedConfigMap.mockRejectedValueOnce('404 not found');
+        spyReadNamespacedSecret.mockRejectedValueOnce('404 not found');
 
         try {
           await gitConfigApiService.read(namespace);
@@ -156,8 +156,8 @@ email=""
           );
         }
 
-        expect(spyReadNamespacedConfigMap).toHaveBeenCalledTimes(1);
-        expect(spyPatchNamespacedConfigMap).not.toHaveBeenCalled();
+        expect(spyReadNamespacedSecret).toHaveBeenCalledTimes(1);
+        expect(spyPatchNamespacedSecret).not.toHaveBeenCalled();
       });
     });
 
@@ -173,17 +173,17 @@ email=""
         } as api.IGitConfig;
         await gitConfigApiService.patch(namespace, newGitConfig);
 
-        expect(spyReadNamespacedConfigMap).toHaveBeenCalledTimes(1);
-        expect(spyPatchNamespacedConfigMap).toHaveBeenCalledTimes(1);
-        expect(spyPatchNamespacedConfigMap).toHaveBeenCalledWith(
-          'workspace-userdata-gitconfig-configmap',
+        expect(spyReadNamespacedSecret).toHaveBeenCalledTimes(1);
+        expect(spyPatchNamespacedSecret).toHaveBeenCalledTimes(1);
+        expect(spyPatchNamespacedSecret).toHaveBeenCalledWith(
+          'devworkspace-gitconfig-automaunt-secret',
           'user-che',
           {
             data: {
-              gitconfig: `[user]
+              gitconfig: btoa(`[user]
 email="user-2@che"
 name="User Two"
-`,
+`),
             },
           },
           undefined,
@@ -195,8 +195,8 @@ name="User Two"
         );
       });
 
-      it('should throw when can`t read the ConfigMap', async () => {
-        spyReadNamespacedConfigMap.mockRejectedValueOnce('404 not found');
+      it('should throw when can`t read the secret', async () => {
+        spyReadNamespacedSecret.mockRejectedValueOnce('404 not found');
 
         const newGitConfig = {
           gitconfig: {
@@ -218,12 +218,12 @@ name="User Two"
           );
         }
 
-        expect(spyReadNamespacedConfigMap).toHaveBeenCalledTimes(1);
-        expect(spyPatchNamespacedConfigMap).toHaveBeenCalledTimes(0);
+        expect(spyReadNamespacedSecret).toHaveBeenCalledTimes(1);
+        expect(spyPatchNamespacedSecret).toHaveBeenCalledTimes(0);
       });
 
-      it('should throw when failed to patch the ConfigMap', async () => {
-        spyPatchNamespacedConfigMap.mockRejectedValueOnce('some error');
+      it('should throw when failed to patch the secret', async () => {
+        spyPatchNamespacedSecret.mockRejectedValueOnce('some error');
 
         const newGitConfig = {
           gitconfig: {
@@ -245,23 +245,23 @@ name="User Two"
           );
         }
 
-        expect(spyReadNamespacedConfigMap).toHaveBeenCalledTimes(1);
-        expect(spyPatchNamespacedConfigMap).toHaveBeenCalledTimes(1);
+        expect(spyReadNamespacedSecret).toHaveBeenCalledTimes(1);
+        expect(spyPatchNamespacedSecret).toHaveBeenCalledTimes(1);
       });
 
       it('should throw when conflict detected', async () => {
-        spyReadNamespacedConfigMap.mockResolvedValueOnce({
+        spyReadNamespacedSecret.mockResolvedValueOnce({
           body: {
             metadata: {
               resourceVersion: '2',
             },
             data: {
-              gitconfig: `[user]
+              gitconfig: btoa(`[user]
 name="User Two"
 email="user-2@che"
-`,
+`),
             },
-          } as V1ConfigMap,
+          } as V1Secret,
           response: {} as IncomingMessage,
         });
 
@@ -290,8 +290,8 @@ email="user-2@che"
           'Conflict detected. The gitconfig was modified in the namespace "user-che".',
         );
 
-        expect(spyReadNamespacedConfigMap).toHaveBeenCalledTimes(1);
-        expect(spyPatchNamespacedConfigMap).toHaveBeenCalledTimes(0);
+        expect(spyReadNamespacedSecret).toHaveBeenCalledTimes(1);
+        expect(spyPatchNamespacedSecret).toHaveBeenCalledTimes(0);
       });
     });
   });
