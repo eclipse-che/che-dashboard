@@ -18,6 +18,7 @@ import {
 } from '@devfile/api';
 import { api } from '@eclipse-che/common';
 import { inject, injectable } from 'inversify';
+import { load } from 'js-yaml';
 import cloneDeep from 'lodash/cloneDeep';
 import isEqual from 'lodash/isEqual';
 
@@ -36,6 +37,7 @@ import {
 import { delay } from '@/services/helpers/delay';
 import { isWebTerminal } from '@/services/helpers/devworkspace';
 import { DevWorkspaceStatus } from '@/services/helpers/types';
+import { fetchData } from '@/services/registry/fetchData';
 import { WorkspaceAdapter } from '@/services/workspace-adapter';
 import {
   devWorkspaceApiGroup,
@@ -43,6 +45,7 @@ import {
   devWorkspaceVersion,
 } from '@/services/workspace-client/devworkspace/converters';
 import { DevWorkspaceDefaultPluginsHandler } from '@/services/workspace-client/devworkspace/DevWorkspaceDefaultPluginsHandler';
+import { EDITOR_DEVFILE_API_QUERY } from '@/store/DevfileRegistries/const';
 import { WorkspacesDefaultPlugins } from '@/store/Plugins/devWorkspacePlugins';
 
 export const COMPONENT_UPDATE_POLICY = 'che.eclipse.org/components-update-policy';
@@ -668,31 +671,28 @@ export class DevWorkspaceClient {
       title: string;
     },
   ): Promise<api.IPatch[]> {
-    const managedTemplate = await DwtApi.getTemplateByName(namespace, editorName);
-
     const patch: api.IPatch[] = [];
+    const managedTemplate = await DwtApi.getTemplateByName(namespace, editorName);
+    const _editorIdOrPath = managedTemplate.metadata?.annotations?.[REGISTRY_URL];
+    const updatePolicy = managedTemplate.metadata?.annotations?.[COMPONENT_UPDATE_POLICY];
 
-    let editorReference = managedTemplate.metadata?.annotations?.[REGISTRY_URL];
-
-    if (
-      !editorReference ||
-      managedTemplate.metadata?.annotations?.[COMPONENT_UPDATE_POLICY] !== 'managed'
-    ) {
+    if (!_editorIdOrPath || updatePolicy !== 'managed') {
       console.log('Template is not managed');
       return patch;
     }
 
-    if (/^(https?:\/\/)/.test(editorReference)) {
+    let url: string | undefined;
+    if (/^(https?:\/\/)/.test(_editorIdOrPath)) {
+      url = _editorIdOrPath;
       // Define a regular expression pattern to match URLs containing 'plugin-registry/v3/plugins'
       // and ending with 'devfile.yaml'. The part between 'v3/plugins/' and '/devfile.yaml' is captured.
       const pluginRegistryURLPattern = /plugin-registry\/v3\/plugins\/(.+?)\/devfile\.yaml$/;
-      const match = editorReference.match(pluginRegistryURLPattern);
+      const match = url.match(pluginRegistryURLPattern);
 
       if (match) {
-        editorReference = match[1];
         const annotations = {
           [COMPONENT_UPDATE_POLICY]: 'managed',
-          [REGISTRY_URL]: editorReference,
+          [REGISTRY_URL]: `${EDITOR_DEVFILE_API_QUERY}${match[1]}`,
         };
         // Create a patch to update the annotations by replacing plugin registry URL with the editor reference
         patch.push({
@@ -700,36 +700,62 @@ export class DevWorkspaceClient {
           path: '/metadata/annotations',
           value: annotations,
         });
-      } else {
-        console.log('Template is not managed');
-        return patch;
+      }
+    } else {
+      url = `${EDITOR_DEVFILE_API_QUERY}${_editorIdOrPath}`;
+      const annotations = {
+        [COMPONENT_UPDATE_POLICY]: 'managed',
+        [REGISTRY_URL]: url,
+      };
+      patch.push({
+        op: 'replace',
+        path: '/metadata/annotations',
+        value: annotations,
+      });
+    }
+
+    let editor: devfileApi.Devfile | undefined = undefined;
+    // Found the target editors
+    if (url.startsWith(EDITOR_DEVFILE_API_QUERY)) {
+      const editorReference = url.replace(EDITOR_DEVFILE_API_QUERY, '');
+
+      const _editor = editors.find(e => {
+        return (
+          e.metadata?.attributes?.publisher +
+            '/' +
+            e.metadata?.name +
+            '/' +
+            e.metadata?.attributes?.version ===
+          editorReference
+        );
+      });
+      if (_editor !== undefined) {
+        editor = cloneDeep(_editor);
+      }
+    } else {
+      const editorContent = await fetchData<string | devfileApi.Devfile>(url);
+      if (typeof editorContent === 'string') {
+        editor = load(editorContent) as devfileApi.Devfile;
+      } else if (typeof editorContent === 'object') {
+        editor = editorContent;
       }
     }
 
-    const originalEditor: devfileApi.Devfile | undefined = editors.find(editor => {
-      return (
-        editor.metadata?.attributes?.publisher +
-          '/' +
-          editor.metadata?.name +
-          '/' +
-          editor.metadata?.attributes?.version ===
-        editorReference
-      );
-    });
-    if (!originalEditor) {
+    if (editor === undefined) {
+      console.warn('Failed to get editor');
       return patch;
     }
 
     const spec: Partial<V1alpha2DevWorkspaceTemplateSpec> = {};
-    for (const key in originalEditor) {
+    for (const key in editor) {
       if (key !== 'schemaVersion' && key !== 'metadata') {
         if (key === 'components') {
-          originalEditor.components?.forEach(component => {
+          editor.components?.forEach(component => {
             if (component.container && !component.container.sourceMapping) {
               component.container.sourceMapping = '/projects';
             }
           });
-          spec.components = originalEditor.components;
+          spec.components = editor.components;
           this.addEnvVarsToContainers(
             spec.components,
             pluginRegistryUrl,
@@ -738,7 +764,7 @@ export class DevWorkspaceClient {
             clusterConsole,
           );
         } else {
-          spec[key] = originalEditor[key];
+          spec[key] = editor[key];
         }
       }
     }
