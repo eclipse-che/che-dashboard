@@ -10,22 +10,21 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import { TextContent } from '@patternfly/react-core';
-import { load } from 'js-yaml';
+import {
+  EmptyState,
+  EmptyStateIcon,
+  EmptyStateVariant,
+  TextContent,
+  Title,
+} from '@patternfly/react-core';
+import { CogIcon } from '@patternfly/react-icons';
 import React from 'react';
 
 import { DevfileViewer } from '@/components/DevfileViewer';
 import EditorTools from '@/components/EditorTools';
 import styles from '@/pages/WorkspaceDetails/DevfileEditorTab/index.module.css';
-import { DevfileAdapter } from '@/services/devfile/adapter';
-import devfileApi from '@/services/devfileApi';
-import stringify from '@/services/helpers/editor';
 import { Workspace } from '@/services/workspace-adapter';
-import {
-  DEVWORKSPACE_BOOTSTRAP,
-  DEVWORKSPACE_DEVFILE,
-  DEVWORKSPACE_METADATA_ANNOTATION,
-} from '@/services/workspace-client/devworkspace/devWorkspaceClient';
+import { DEVWORKSPACE_DEVFILE } from '@/services/workspace-client/devworkspace/devWorkspaceClient';
 
 export type Props = {
   workspace: Workspace;
@@ -49,47 +48,40 @@ export default class DevfileEditorTab extends React.PureComponent<Props, State> 
   public render(): React.ReactElement {
     const { isExpanded } = this.state;
     const editorTabStyle = isExpanded ? styles.editorTabExpanded : styles.editorTab;
-
-    const devfile = prepareDevfile(this.props.workspace);
-    const devfileStr = stringify(devfile);
+    const devfileStr = this.props.workspace.ref.metadata?.annotations?.[DEVWORKSPACE_DEVFILE] || '';
+    const name = this.props.workspace.name;
 
     return (
       <React.Fragment>
         <br />
         <TextContent className={editorTabStyle}>
-          <EditorTools
-            devfileOrDevWorkspace={devfile}
-            handleExpand={isExpanded => {
-              this.setState({ isExpanded });
-            }}
-          />
-          <DevfileViewer
-            isActive={this.props.isActive}
-            isExpanded={isExpanded}
-            value={devfileStr}
-            id="devfileViewerId"
-          />
+          {devfileStr && (
+            <>
+              <EditorTools
+                contentText={devfileStr}
+                workspaceName={name}
+                handleExpand={isExpanded => {
+                  this.setState({ isExpanded });
+                }}
+              />
+              <DevfileViewer
+                isActive={this.props.isActive}
+                isExpanded={isExpanded}
+                value={devfileStr}
+                id="devfileViewerId"
+              />
+            </>
+          )}
+          {!devfileStr && (
+            <EmptyState isFullHeight={true} variant={EmptyStateVariant.small}>
+              <EmptyStateIcon icon={CogIcon} />
+              <Title headingLevel="h4" size="lg">
+                No Data Found
+              </Title>
+            </EmptyState>
+          )}
         </TextContent>
       </React.Fragment>
     );
   }
-}
-
-export function prepareDevfile(workspace: Workspace): devfileApi.Devfile {
-  const devfileStr = workspace.ref.metadata?.annotations?.[DEVWORKSPACE_DEVFILE];
-  const devfile = devfileStr ? (load(devfileStr) as devfileApi.Devfile) : workspace.devfile;
-
-  const attrs = DevfileAdapter.getAttributes(devfile);
-  if (attrs?.[DEVWORKSPACE_METADATA_ANNOTATION]) {
-    delete attrs[DEVWORKSPACE_METADATA_ANNOTATION];
-  }
-  if (attrs?.[DEVWORKSPACE_BOOTSTRAP]) {
-    delete attrs[DEVWORKSPACE_BOOTSTRAP];
-  }
-  if (Object.keys(attrs).length === 0) {
-    delete devfile.attributes;
-    delete devfile.metadata.attributes;
-  }
-
-  return devfile;
 }

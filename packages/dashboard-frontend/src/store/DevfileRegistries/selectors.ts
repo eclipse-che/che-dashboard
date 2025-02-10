@@ -12,10 +12,17 @@
 
 import { createSelector } from '@reduxjs/toolkit';
 import { load } from 'js-yaml';
+import cloneDeep from 'lodash/cloneDeep';
 
+import { DevfileAdapter } from '@/services/devfile/adapter';
 import devfileApi from '@/services/devfileApi';
+import stringify from '@/services/helpers/editor';
 import match from '@/services/helpers/filter';
 import { che } from '@/services/models';
+import {
+  DEVWORKSPACE_DEVFILE,
+  DEVWORKSPACE_METADATA_ANNOTATION,
+} from '@/services/workspace-client/devworkspace/devWorkspaceClient';
 import { RootState } from '@/store';
 import { selectDefaultComponents } from '@/store/ServerConfig/selectors';
 
@@ -94,7 +101,13 @@ export const selectDefaultDevfile = createSelector(
     const devfileContent = state.devfiles[devfileLocation]?.content;
     if (devfileContent) {
       try {
-        const devfile = load(devfileContent) as devfileApi.Devfile;
+        const _devfile = load(devfileContent) as devfileApi.Devfile;
+        const devfile = cloneDeep(_devfile);
+        const devfileAttr = DevfileAdapter.getAttributes(devfile);
+        if (!devfileAttr[DEVWORKSPACE_METADATA_ANNOTATION]) {
+          devfileAttr[DEVWORKSPACE_METADATA_ANNOTATION] = {};
+        }
+        devfileAttr[DEVWORKSPACE_METADATA_ANNOTATION][DEVWORKSPACE_DEVFILE] = stringify(_devfile);
         // propagate default components
         if (!devfile.components || devfile.components.length === 0) {
           devfile.components = defaultComponents;

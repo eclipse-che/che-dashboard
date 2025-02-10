@@ -31,9 +31,7 @@ exports[`DevfileEditorTab component snapshot 1`] = `
       >
         schemaVersion: 2.2.0
 metadata:
-  name: wksp
-  namespace: ''
-components: []
+ generateName: dev-wksp
 
       </span>
     </div>

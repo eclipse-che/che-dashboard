@@ -88,6 +88,10 @@ class CreatingStepFetchDevfile extends ProgressStep<Props, State> {
   }
 
   public shouldComponentUpdate(nextProps: Props, nextState: State): boolean {
+    if (this.state.name !== nextState.name) {
+      return true;
+    }
+
     // active step changed
     if (this.props.distance !== nextProps.distance) {
       return true;

@@ -46,16 +46,10 @@ describe('for DevWorkspace', () => {
     const workspace = constructWorkspace(devWorkspace);
 
     expect(workspace.storageType).toEqual('per-workspace');
-    expect(workspace.devfile.attributes).toEqual({
-      [DEVWORKSPACE_STORAGE_TYPE_ATTR]: 'per-workspace',
-    });
 
     workspace.storageType = 'ephemeral';
 
     expect(workspace.storageType).toEqual('ephemeral');
-    expect(workspace.devfile.attributes).toEqual({
-      [DEVWORKSPACE_STORAGE_TYPE_ATTR]: 'ephemeral',
-    });
   });
 
   it('should set "per-workspace" storage type', () => {
@@ -66,16 +60,10 @@ describe('for DevWorkspace', () => {
     const workspace = constructWorkspace(devWorkspace);
 
     expect(workspace.storageType).toEqual('ephemeral');
-    expect(workspace.devfile.attributes).toEqual({
-      [DEVWORKSPACE_STORAGE_TYPE_ATTR]: 'ephemeral',
-    });
 
     workspace.storageType = 'per-workspace';
 
     expect(workspace.storageType).toEqual('per-workspace');
-    expect(workspace.devfile.attributes).toEqual({
-      [DEVWORKSPACE_STORAGE_TYPE_ATTR]: 'per-workspace',
-    });
   });
 
   it('should set "per-user" storage type', () => {
@@ -86,16 +74,10 @@ describe('for DevWorkspace', () => {
     const workspace = constructWorkspace(devWorkspace);
 
     expect(workspace.storageType).toEqual('per-workspace');
-    expect(workspace.devfile.attributes).toEqual({
-      [DEVWORKSPACE_STORAGE_TYPE_ATTR]: 'per-workspace',
-    });
 
     workspace.storageType = 'per-user';
 
     expect(workspace.storageType).toEqual('per-user');
-    expect(workspace.devfile.attributes).toEqual({
-      [DEVWORKSPACE_STORAGE_TYPE_ATTR]: 'per-user',
-    });
   });
 
   it('should return reference to the workspace', () => {
@@ -205,22 +187,6 @@ describe('for DevWorkspace', () => {
     };
     const workspace = constructWorkspace(devWorkspace);
     expect(StorageTypeTitle[workspace.storageType as 'per-workspace']).toEqual('Per-workspace');
-  });
-
-  it('should return devfile', () => {
-    const devfile = {
-      schemaVersion: '2.2.0',
-      metadata: {
-        name: 'my-wksp',
-        namespace: 'my-namespace',
-      },
-    };
-    const devWorkspace = new DevWorkspaceBuilder()
-      .withName('my-wksp')
-      .withNamespace('my-namespace')
-      .build();
-    const workspace = constructWorkspace(devWorkspace);
-    expect(workspace.devfile).toMatchObject(devfile);
   });
 
   it('should return list of project names', () => {

@@ -18,12 +18,14 @@ import cloneDeep from 'lodash/cloneDeep';
 
 import { DevfileAdapter } from '@/services/devfile/adapter';
 import devfileApi, { isDevfileV2 } from '@/services/devfileApi';
+import stringify from '@/services/helpers/editor';
 import { FactoryParams } from '@/services/helpers/factoryFlow/buildFactoryParams';
 import { generateWorkspaceName } from '@/services/helpers/generateName';
 import { getProjectName } from '@/services/helpers/getProjectName';
 import { DevfileV2ProjectSource, FactoryResolver } from '@/services/helpers/types';
 import { che } from '@/services/models';
 import {
+  DEVWORKSPACE_DEVFILE,
   DEVWORKSPACE_DEVFILE_SOURCE,
   DEVWORKSPACE_METADATA_ANNOTATION,
 } from '@/services/workspace-client/devworkspace/devWorkspaceClient';
@@ -63,7 +65,10 @@ export async function grabLink(
     return response.data;
   } catch (error) {
     // content may not be there
-    if (common.helpers.errors.includesAxiosResponse(error) && error.response?.status == 404) {
+    if (
+      (common.helpers.errors.includesAxiosResponse(error) && error.response?.status == 404) ||
+      error?.['code'] === 'ERR_NETWORK'
+    ) {
       return undefined;
     }
     throw error;
@@ -155,7 +160,6 @@ export function buildDevfileV2(
  * @param location a source location.
  * @param defaultComponents Default components. These default components
  * are meant to be used when a Devfile does not contain any components.
- * @param namespace the namespace where the pod lives.
  * @param factoryParams a Partial<FactoryParams> object.
  */
 
@@ -163,23 +167,15 @@ export function normalizeDevfile(
   data: FactoryResolver,
   location: string,
   defaultComponents: V230DevfileComponents[],
-  namespace: string,
   factoryParams: Partial<FactoryParams>,
 ): devfileApi.Devfile {
   /* Validate object */
-
-  let _devfile: unknown = data.devfile;
-  if (isDevfileFoundInRepo(data) === true) {
-    _devfile = data.devfile;
-  } else if (!isDevfileV2(data.devfile)) {
-    _devfile = buildDevfileV2(data.devfile);
-  }
-  if (!isDevfileV2(_devfile)) {
+  if (!isDevfileV2(data.devfile)) {
     throw new Error('Received object is not a Devfile V2.');
   }
 
   const scmInfo = data['scm_info'];
-  const devfile = cloneDeep(_devfile);
+  const devfile = cloneDeep(data.devfile);
 
   /* Devfile Metadata */
 
@@ -187,13 +183,14 @@ export function normalizeDevfile(
   const namePrefix = devfile.metadata?.generateName ? devfile.metadata?.generateName : projectName;
   const name = devfile.metadata?.name || generateWorkspaceName(namePrefix);
 
-  const metadata: devfileApi.DevfileMetadata = {
-    name,
-    namespace,
-  };
-
-  devfile.metadata = Object.assign({}, metadata, devfile.metadata);
-  delete devfile.metadata.generateName;
+  if (!devfile.metadata) {
+    devfile.metadata = { name };
+  } else {
+    devfile.metadata.name = devfile.metadata?.name || generateWorkspaceName(namePrefix);
+    if (devfile.metadata.generateName) {
+      delete devfile.metadata.generateName;
+    }
+  }
 
   /* Devfile Components */
 
@@ -272,6 +269,6 @@ export function normalizeDevfile(
     attributes[DEVWORKSPACE_METADATA_ANNOTATION] = {};
   }
   attributes[DEVWORKSPACE_METADATA_ANNOTATION][DEVWORKSPACE_DEVFILE_SOURCE] = devfileSource;
-
+  attributes[DEVWORKSPACE_METADATA_ANNOTATION][DEVWORKSPACE_DEVFILE] = stringify(data.devfile);
   return devfile;
 }

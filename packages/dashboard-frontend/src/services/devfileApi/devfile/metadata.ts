@@ -17,5 +17,4 @@ export type DevfileMetadataLike = V230DevfileMetadata & {
   generateName?: string;
 };
 
-export type DevfileMetadata = DevfileMetadataLike &
-  Required<Pick<DevfileMetadataLike, 'name' | 'namespace'>>;
+export type DevfileMetadata = DevfileMetadataLike & Required<Pick<DevfileMetadataLike, 'name'>>;

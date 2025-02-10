@@ -196,6 +196,7 @@ describe('FactoryResolver, actions', () => {
         (verifyAuthorized as jest.Mock).mockResolvedValue(true);
         (isDevfileRegistryLocation as jest.Mock).mockReturnValue(false);
         (getFactoryResolver as jest.Mock).mockRejectedValue(new Error(errorMessage));
+        (getYamlResolver as jest.Mock).mockResolvedValue(new Error(errorMessage));
         (common.helpers.errors.getMessage as jest.Mock).mockReturnValue(errorMessage);
 
         await expect(
@@ -227,6 +228,7 @@ describe('FactoryResolver, actions', () => {
       (verifyAuthorized as jest.Mock).mockResolvedValue(true);
       (isDevfileRegistryLocation as jest.Mock).mockReturnValue(false);
       (getFactoryResolver as jest.Mock).mockRejectedValue(mockError);
+      (getYamlResolver as jest.Mock).mockResolvedValue(mockError);
       (common.helpers.errors.includesAxiosResponse as unknown as jest.Mock).mockReturnValue(true);
       (common.helpers.errors.getMessage as jest.Mock).mockReturnValue('Unauthorized');
       (isOAuthResponse as unknown as jest.Mock).mockImplementation(() => true);

@@ -102,7 +102,6 @@ describe('Normalize Devfile V2', () => {
       } as FactoryResolver,
       'http://dummy-registry/devfiles/empty.yaml',
       defaultComponents,
-      'che',
       {},
     );
 
@@ -138,7 +137,6 @@ describe('Normalize Devfile V2', () => {
       } as FactoryResolver,
       'http://dummy-registry/devfiles/empty.yaml',
       defaultComponents,
-      'che',
       {},
     );
 
@@ -154,7 +152,7 @@ describe('Normalize Devfile V2', () => {
     );
   });
 
-  it('should apply metadata name and namespace', () => {
+  it('should apply metadata name', () => {
     const devfile = {
       schemaVersion: '2.2.2',
     } as V230Devfile;
@@ -165,12 +163,10 @@ describe('Normalize Devfile V2', () => {
       } as FactoryResolver,
       'http://dummy-registry/devfiles/empty.yaml',
       [],
-      'che',
       {},
     );
 
     expect(targetDevfile.metadata.name).toEqual(expect.stringContaining('empty-yaml'));
-    expect(targetDevfile.metadata.namespace).toEqual(expect.stringContaining('che'));
   });
 
   it('should apply defaultComponents', () => {
@@ -188,7 +184,6 @@ describe('Normalize Devfile V2', () => {
       } as FactoryResolver,
       'http://dummy-registry/devfiles/empty.yaml',
       defaultComponents,
-      'che',
       {},
     );
 
@@ -229,7 +224,6 @@ describe('Normalize Devfile V2', () => {
       } as FactoryResolver,
       'http://dummy-registry/devfiles/empty.yaml',
       defaultComponents,
-      'che',
       factoryParams,
     );
 
@@ -273,7 +267,6 @@ describe('Normalize Devfile V2', () => {
       } as FactoryResolver,
       'http://dummy-registry/devfiles/empty.yaml',
       defaultComponents,
-      'che',
       factoryParams,
     );
 
@@ -317,7 +310,6 @@ describe('Normalize Devfile V2', () => {
       } as FactoryResolver,
       'http://dummy-registry/devfiles/empty.yaml',
       defaultComponents,
-      'che',
       factoryParams,
     );
 
@@ -352,7 +344,6 @@ describe('Normalize Devfile V2', () => {
       } as FactoryResolver,
       'http://dummy-registry/devfiles/empty.yaml',
       defaultComponents,
-      'che',
       factoryParams,
     );
 

@@ -13,20 +13,20 @@
 import devfileApi from '.';
 
 export function isDevfileV2Like(devfile: unknown): devfile is devfileApi.DevfileLike {
-  return (devfile as devfileApi.DevfileLike).schemaVersion !== undefined;
+  return (devfile as devfileApi.DevfileLike)?.schemaVersion !== undefined;
 }
 
 const schemaVersionRe =
   /^([2-9])\.([0-9]+)\.([0-9]+)(-[0-9a-z-]+(\.[0-9a-z-]+)*)?(\+[0-9A-Za-z-]+(\.[0-9A-Za-z-]+)*)?$/;
 export function isDevfileV2(devfile: unknown): devfile is devfileApi.Devfile {
   return (
-    (devfile as devfileApi.Devfile).schemaVersion !== undefined &&
+    (devfile as devfileApi.Devfile)?.schemaVersion !== undefined &&
     schemaVersionRe.test((devfile as devfileApi.Devfile).schemaVersion)
   );
 }
 
 export function isDevWorkspaceLike(workspace: unknown): workspace is devfileApi.DevWorkspaceLike {
-  return (workspace as devfileApi.DevWorkspaceLike).kind === 'DevWorkspace';
+  return (workspace as devfileApi.DevWorkspaceLike)?.kind === 'DevWorkspace';
 }
 
 export function isDevWorkspace(workspace: unknown): workspace is devfileApi.DevWorkspace {

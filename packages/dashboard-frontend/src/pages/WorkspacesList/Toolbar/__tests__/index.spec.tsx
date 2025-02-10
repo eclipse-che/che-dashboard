@@ -100,7 +100,7 @@ describe('Workspaces List Toolbar', () => {
     const searchbox = screen.getByRole('searchbox');
     const searchButton = screen.getByRole('button', { name: /filter workspaces/i });
 
-    await userEvent.type(searchbox, workspaces[0].devfile.metadata.name!);
+    await userEvent.type(searchbox, workspaces[0].name!);
     await userEvent.click(searchButton);
 
     expect(mockOnFilter).toHaveBeenCalledWith([workspaces[0]]);
@@ -132,7 +132,7 @@ describe('Workspaces List Toolbar', () => {
 
     const searchbox = screen.getByRole('searchbox');
 
-    await userEvent.type(searchbox, workspaces[2].devfile.metadata.name!);
+    await userEvent.type(searchbox, workspaces[2].name!);
     const enterKeydown = new KeyboardEvent('keydown', { code: 'Enter', key: 'a' });
     fireEvent(searchbox, enterKeydown);
 
@@ -144,7 +144,7 @@ describe('Workspaces List Toolbar', () => {
 
     const searchbox = screen.getByRole('searchbox');
 
-    await userEvent.type(searchbox, workspaces[2].devfile.metadata.name!);
+    await userEvent.type(searchbox, workspaces[2].name!);
     const escapeKeydown = new KeyboardEvent('keydown', { code: 'Escape', key: 'a' });
     fireEvent(searchbox, escapeKeydown);
 
