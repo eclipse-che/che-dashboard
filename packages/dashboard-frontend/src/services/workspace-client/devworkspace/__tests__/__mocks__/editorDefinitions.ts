@@ -12,7 +12,7 @@
 
 import { V230Devfile } from '@devfile/api';
 
-const getVSCodeEditorDefinition = (): V230Devfile => {
+const getVSCodeEditorDefinition = (cpuLimit = '500m'): V230Devfile => {
   return {
     attributes: {
       version: null,
@@ -36,7 +36,7 @@ const getVSCodeEditorDefinition = (): V230Devfile => {
       {
         container: {
           command: ['/entrypoint-init-container.sh'],
-          cpuLimit: '500m',
+          cpuLimit,
           cpuRequest: '30m',
           image: 'quay.io/che-incubator/che-code:latest',
           memoryLimit: '256Mi',

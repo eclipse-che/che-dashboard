@@ -16,6 +16,7 @@ import { dump } from 'js-yaml';
 import devfileApi from '@/services/devfileApi';
 import { RootState } from '@/store';
 import { actionCreators } from '@/store/DevfileRegistries/actions';
+import { EDITOR_DEVFILE_API_QUERY } from '@/store/DevfileRegistries/const';
 
 export async function getEditor(
   editorIdOrPath: string,
@@ -41,11 +42,13 @@ export async function getEditor(
     if (devfileObj) {
       const content = devfileObj.content;
       const error = devfileObj.error;
-      return Object.assign({ content, editorYamlUrl, error });
+      return { content, editorYamlUrl, error };
     }
     throw new Error(`Failed to fetch editor yaml by URL: ${editorYamlUrl}.`);
   } else {
     const editors = state.dwPlugins.cmEditors || [];
+    const editorId = editorIdOrPath;
+    // Find the editor by id
     const editor: devfileApi.Devfile | undefined = editors.find(e => {
       return (
         e.metadata.attributes.publisher +
@@ -53,11 +56,14 @@ export async function getEditor(
           e.metadata.name +
           '/' +
           e.metadata.attributes.version ===
-        editorIdOrPath
+        editorId
       );
     });
     if (editor) {
-      return Object.assign({ content: dump(editor), editorYamlUrl: editorIdOrPath });
+      return {
+        content: dump(editor),
+        editorYamlUrl: `${EDITOR_DEVFILE_API_QUERY}${editorId}`,
+      };
     } else {
       throw new Error(`Failed to fetch editor yaml by id: ${editorIdOrPath}.`);
     }
