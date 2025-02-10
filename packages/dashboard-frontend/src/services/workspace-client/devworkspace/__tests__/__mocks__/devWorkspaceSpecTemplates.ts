@@ -11,6 +11,7 @@
  */
 
 import devfileApi from '@/services/devfileApi';
+import { EDITOR_DEVFILE_API_QUERY } from '@/store/DevfileRegistries/const';
 
 const getVSCodeDevWorkspaceTemplate = (cpuLimit = '1500m'): devfileApi.DevWorkspaceTemplate => {
   return {
@@ -19,7 +20,7 @@ const getVSCodeDevWorkspaceTemplate = (cpuLimit = '1500m'): devfileApi.DevWorksp
     metadata: {
       annotations: {
         'che.eclipse.org/components-update-policy': 'managed',
-        'che.eclipse.org/plugin-registry-url': 'che-incubator/che-code/latest',
+        'che.eclipse.org/plugin-registry-url': `${EDITOR_DEVFILE_API_QUERY}che-incubator/che-code/latest`,
       },
       creationTimestamp: new Date('2024-05-30T12:51:45Z'),
       generation: 1,

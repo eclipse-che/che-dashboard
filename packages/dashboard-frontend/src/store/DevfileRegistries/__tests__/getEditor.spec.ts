@@ -16,6 +16,7 @@ import { dump } from 'js-yaml';
 import devfileApi from '@/services/devfileApi';
 import { RootState } from '@/store';
 import { actionCreators } from '@/store/DevfileRegistries/actions';
+import { EDITOR_DEVFILE_API_QUERY } from '@/store/DevfileRegistries/const';
 import { getEditor } from '@/store/DevfileRegistries/getEditor';
 import { State } from '@/store/DevfileRegistries/reducer';
 
@@ -140,7 +141,7 @@ describe('getEditor', () => {
 
     expect(result).toEqual({
       content: 'dumped devfile content',
-      editorYamlUrl: 'che-incubator/che-idea/next',
+      editorYamlUrl: `${EDITOR_DEVFILE_API_QUERY}che-incubator/che-idea/next`,
     });
     expect(dispatch).not.toHaveBeenCalled();
   });
