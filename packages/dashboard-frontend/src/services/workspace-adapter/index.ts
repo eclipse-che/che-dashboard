@@ -231,7 +231,25 @@ export class WorkspaceAdapter<T extends devfileApi.DevWorkspace> implements Work
   }
 
   get projects(): string[] {
-    return (this.workspace.spec.template.projects || []).map(project => project.name);
+    const template = this.workspace.spec.template;
+    if (!template) {
+      return [];
+    }
+    const projects = template.projects || [];
+    if (projects.length > 0) {
+      return projects.map(project => project.name);
+    }
+    const starterProjectName = template.attributes?.['controller.devfile.io/use-starter-project'];
+    if (starterProjectName && Array.isArray(template?.starterProjects)) {
+      if (
+        template.starterProjects.findIndex(
+          starterProject => starterProject.name === starterProjectName,
+        ) !== -1
+      ) {
+        return [starterProjectName];
+      }
+    }
+    return [];
   }
 }
 

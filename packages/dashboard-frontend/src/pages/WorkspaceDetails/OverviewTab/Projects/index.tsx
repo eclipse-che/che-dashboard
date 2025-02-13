@@ -22,6 +22,9 @@ type Props = {
 export class ProjectsFormGroup extends React.PureComponent<Props> {
   public render(): React.ReactElement {
     const projects = this.props.projects.join(', ');
+    if (projects.length === 0) {
+      return <></>;
+    }
     return (
       <FormGroup label="Projects" fieldId="projects">
         <div className={overviewStyles.readonly}>{projects}</div>
