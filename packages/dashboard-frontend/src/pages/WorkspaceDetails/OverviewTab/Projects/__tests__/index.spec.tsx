@@ -18,8 +18,13 @@ import getComponentRenderer, { screen } from '@/services/__mocks__/getComponentR
 const { createSnapshot, renderComponent } = getComponentRenderer(getComponent);
 
 describe('ProjectsFormGroup', () => {
-  test('screenshot', () => {
+  test('screenshot with projects', () => {
     const snapshot = createSnapshot(['project1', 'project2']);
+    expect(snapshot.toJSON()).toMatchSnapshot();
+  });
+
+  test('screenshot without projects', () => {
+    const snapshot = createSnapshot([]);
     expect(snapshot.toJSON()).toMatchSnapshot();
   });
 

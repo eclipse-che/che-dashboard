@@ -26,18 +26,48 @@ const { createSnapshot, renderComponent } = getComponentRenderer(getComponent);
 describe('DevfileEditorTab', () => {
   let workspace: Workspace;
 
-  beforeEach(() => {
-    const devWorkspace = new DevWorkspaceBuilder().withName('wksp').build();
-    workspace = constructWorkspace(devWorkspace);
-  });
-
   describe('component', () => {
-    test('snapshot', () => {
+    test('snapshot with devfile content', () => {
+      const devWorkspace = new DevWorkspaceBuilder()
+        .withMetadata({
+          name: 'wksp',
+          annotations: {
+            'che.eclipse.org/devfile': `schemaVersion: 2.2.0\nmetadata:\n generateName: dev-wksp\n`,
+          },
+        })
+        .build();
+      workspace = constructWorkspace(devWorkspace);
+
+      const snapshot = createSnapshot(true, workspace);
+      expect(snapshot.toJSON()).toMatchSnapshot();
+    });
+
+    test('snapshot without devfile content', () => {
+      const devWorkspace = new DevWorkspaceBuilder()
+        .withMetadata({
+          name: 'wksp',
+          annotations: {
+            'che.eclipse.org/devfile': '',
+          },
+        })
+        .build();
+      workspace = constructWorkspace(devWorkspace);
+
       const snapshot = createSnapshot(true, workspace);
       expect(snapshot.toJSON()).toMatchSnapshot();
     });
 
     test('expanded state', async () => {
+      const devWorkspace = new DevWorkspaceBuilder()
+        .withMetadata({
+          name: 'wksp',
+          annotations: {
+            'che.eclipse.org/devfile': `schemaVersion: 2.2.0\nmetadata:\n generateName: dev-wksp\n`,
+          },
+        })
+        .build();
+      workspace = constructWorkspace(devWorkspace);
+
       renderComponent(true, workspace);
 
       const buttonExpand = screen.getByRole('button', { name: 'Expand Editor' });
