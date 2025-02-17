@@ -180,7 +180,7 @@ class ImportFromGit extends React.PureComponent<Props, State> {
           validated={validated}
           helperTextInvalid={errorMessage}
           helperTextInvalidIcon={<ExclamationCircleIcon />}
-          helperText="Import from a Git repository to create your first workspace."
+          helperText="Import from a Git repository to launch a Cloud Development Environment."
         >
           <Flex>
             <FlexItem grow={{ default: 'grow' }} style={{ maxWidth: '500px', minWidth: '70%' }}>
