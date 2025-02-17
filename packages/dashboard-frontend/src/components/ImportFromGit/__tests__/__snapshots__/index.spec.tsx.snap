@@ -115,7 +115,7 @@ exports[`GitRepoLocationInput snapshot 1`] = `
               className="pf-c-form__helper-text"
               id="git-repo-url-helper"
             >
-              Import from a Git repository to create your first workspace.
+              Import from a Git repository to launch a Cloud Development Environment.
             </div>
           </div>
         </div>
