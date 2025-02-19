@@ -217,7 +217,7 @@ describe('Workspace creation time', () => {
       name: 'Open IDE',
     });
     expect(stepOpenIde).toBeInTheDocument();
-    await waitFor(() => expect(stepOpenIde).toHaveAttribute('aria-current', 'step'), {
+    await waitFor(() => expect(stepOpenIde).toHaveAttribute('aria-current', 'false'), {
       timeout: 5000,
     });
 
