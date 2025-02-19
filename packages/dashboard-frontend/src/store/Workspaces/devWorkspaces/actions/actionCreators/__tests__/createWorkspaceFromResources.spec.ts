@@ -40,6 +40,25 @@ jest.mock('@/store/InfrastructureNamespaces');
 jest.mock('@/store/ClusterInfo');
 
 describe('devWorkspaces, actions', () => {
+  let mockWorkspace: devfileApi.DevWorkspace;
+
+  beforeEach(() => {
+    mockWorkspace = {
+      metadata: {
+        namespace: 'test-namespace',
+        name: 'test-workspace',
+        uid: '1',
+      },
+      spec: {
+        template: {
+          attributes: {
+            'controller.devfile.io/storage-type': 'per-user',
+          },
+        },
+      },
+    } as devfileApi.DevWorkspace;
+  });
+
   afterEach(() => {
     jest.clearAllMocks();
   });
@@ -48,19 +67,11 @@ describe('devWorkspaces, actions', () => {
     let store: ReturnType<typeof createMockStore>;
     const mockCreateDevWorkspace = jest.fn();
     const mockCreateDevWorkspaceTemplate = jest.fn();
-    const mockUpdateDevWorkspace = jest.fn();
+    const mockUpdateDevWorkspaceStorageType = jest.fn();
     const mockVerifyAuthorized = verifyAuthorized as jest.MockedFunction<typeof verifyAuthorized>;
     const mockUpdateDevWorkspaceTemplate = updateDevWorkspaceTemplate as jest.MockedFunction<
       typeof updateDevWorkspaceTemplate
     >;
-
-    const mockWorkspace = {
-      metadata: {
-        namespace: 'test-namespace',
-        name: 'test-workspace',
-        uid: '1',
-      },
-    } as devfileApi.DevWorkspace;
 
     const mockWorkspaceTemplate = {} as devfileApi.DevWorkspaceTemplate;
 
@@ -92,7 +103,7 @@ describe('devWorkspaces, actions', () => {
       (getDevWorkspaceClient as jest.Mock).mockReturnValue({
         createDevWorkspace: mockCreateDevWorkspace,
         createDevWorkspaceTemplate: mockCreateDevWorkspaceTemplate,
-        updateDevWorkspace: mockUpdateDevWorkspace,
+        updateDevWorkspaceStorageType: mockUpdateDevWorkspaceStorageType,
       });
 
       mockCreateDevWorkspace.mockResolvedValue({
@@ -100,7 +111,7 @@ describe('devWorkspaces, actions', () => {
         headers: {},
       });
 
-      mockUpdateDevWorkspace.mockResolvedValue({
+      mockUpdateDevWorkspaceStorageType.mockResolvedValue({
         devWorkspace: mockWorkspace,
         headers: {},
       });
@@ -132,7 +143,11 @@ describe('devWorkspaces, actions', () => {
 
       expect(mockCreateDevWorkspaceTemplate).toHaveBeenCalled();
 
-      expect(mockUpdateDevWorkspace).toHaveBeenCalledWith(mockWorkspace);
+      expect(mockUpdateDevWorkspaceStorageType).toHaveBeenCalledWith(
+        'test-namespace',
+        'test-workspace',
+        'per-user',
+      );
     });
 
     it('should handle warnings from createDevWorkspace and dispatch warning action', async () => {
@@ -159,8 +174,8 @@ describe('devWorkspaces, actions', () => {
       expect(actions[2]).toEqual(devWorkspacesAddAction(mockWorkspace));
     });
 
-    it('should handle warnings from updateDevWorkspace and dispatch warning action', async () => {
-      mockUpdateDevWorkspace.mockResolvedValueOnce({
+    it('should handle warnings from updateDevWorkspaceStorageType and dispatch warning action', async () => {
+      mockUpdateDevWorkspaceStorageType.mockResolvedValueOnce({
         devWorkspace: mockWorkspace,
         headers: {
           warning: '299 - Another warning message',
