@@ -31,9 +31,10 @@ export function prepareDevfile(
   factoryId: string,
   storageType: che.WorkspaceStorageType | undefined,
   appendSuffix: boolean,
-  parentDevfile?: devfileApi.Devfile | undefined,
+  _parentDevfile?: devfileApi.Devfile | undefined,
 ): devfileApi.Devfile {
   const devfile = cloneDeep(_devfile);
+  const parentDevfile = cloneDeep(_parentDevfile);
   const attributes = DevfileAdapter.getAttributes(devfile);
   if (
     !attributes[DEVWORKSPACE_METADATA_ANNOTATION] ||
