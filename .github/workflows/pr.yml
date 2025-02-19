@@ -22,7 +22,7 @@ env:
 jobs:
 
   dash-licenses:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     if: ${{ github.base_ref == 'main' }}
     steps:
       -
@@ -41,7 +41,7 @@ jobs:
         run: yarn license:check
 
   dash-licenses-yarn-v1:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     if: ${{ github.base_ref == 'main' }}
     steps:
       -
@@ -63,7 +63,7 @@ jobs:
         run: yarn license:check
 
   time-check:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     strategy:
       matrix:
         node-version: [18.x]
@@ -84,7 +84,7 @@ jobs:
         run: yarn test:check
 
   build-and-test:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     strategy:
       matrix:
         node-version: [18.x, 20.x]
@@ -111,7 +111,7 @@ jobs:
         run: yarn test
 
   build-and-test-yarn-v1:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     strategy:
       matrix:
         node-version: [18.x, 20.x]
@@ -142,7 +142,7 @@ jobs:
 
   docker-build:
     needs: build-and-test
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     continue-on-error: ${{ matrix.default == false }}
     strategy:
       fail-fast: false

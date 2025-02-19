@@ -29,7 +29,7 @@ env:
 jobs:
 
   tag-release:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     steps:
       -
         name: "Checkout Che Dashboard source code"
@@ -81,7 +81,7 @@ jobs:
           #MATTERMOST_USERNAME: che-bot
 
   build-images:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     needs: tag-release
     strategy:
       fail-fast: false
@@ -127,7 +127,7 @@ jobs:
 
   create-manifest:
     needs: build-images
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     steps:
       -
         name: "Docker quay.io Login"
