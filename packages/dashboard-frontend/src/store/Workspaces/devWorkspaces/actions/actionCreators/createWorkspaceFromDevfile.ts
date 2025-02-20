@@ -14,14 +14,11 @@ import common from '@eclipse-che/common';
 import { dump } from 'js-yaml';
 
 import { fetchResources } from '@/services/backend-client/devworkspaceResourcesApi';
-import { DevfileAdapter } from '@/services/devfile/adapter';
 import devfileApi from '@/services/devfileApi';
 import { FactoryParams } from '@/services/helpers/factoryFlow/buildFactoryParams';
 import { loadResourcesContent } from '@/services/registry/resources';
 import {
   COMPONENT_UPDATE_POLICY,
-  DEVWORKSPACE_DEVFILE,
-  DEVWORKSPACE_METADATA_ANNOTATION,
   REGISTRY_URL,
 } from '@/services/workspace-client/devworkspace/devWorkspaceClient';
 import { AppThunk } from '@/store';
@@ -126,18 +123,6 @@ export const createWorkspaceFromDevfile =
       const errorMessage = common.helpers.errors.getMessage(e);
       dispatch(devWorkspacesErrorAction(errorMessage));
       throw e;
-    }
-
-    // TODO: remove this after merge of https://github.com/devfile/devworkspace-generator/pull/118
-    if (!devWorkspaceResource.metadata.annotations) {
-      devWorkspaceResource.metadata.annotations = {};
-    }
-    const originDevfileStr =
-      DevfileAdapter.getAttributes(devfile)?.[DEVWORKSPACE_METADATA_ANNOTATION]?.[
-        DEVWORKSPACE_DEVFILE
-      ];
-    if (originDevfileStr) {
-      devWorkspaceResource.metadata.annotations[DEVWORKSPACE_DEVFILE] = originDevfileStr;
     }
 
     await dispatch(

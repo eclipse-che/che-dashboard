@@ -166,41 +166,6 @@ describe('devWorkspaces, actions', () => {
       expect(actionCreators.createWorkspaceFromResources).toHaveBeenCalled();
     });
 
-    // TODO: remove this after merge of https://github.com/devfile/devworkspace-generator/pull/118
-    it('should store original devfile content from devfile into devworkspace', async () => {
-      const devfile = {
-        schemaVersion: '2.0.0',
-        metadata: {
-          name: 'dev-wksp',
-          attributes: {
-            'dw.metadata.annotations': {
-              'che.eclipse.org/devfile':
-                'schemaVersion: 2.2.0\nmetadata:\n generateName: dev-wksp\n',
-            },
-          },
-        },
-      };
-
-      await store.dispatch(
-        createWorkspaceFromDevfile(devfile, mockParams, mockOptionalFilesContent),
-      );
-
-      expect(actionCreators.createWorkspaceFromResources).toHaveBeenCalledWith(
-        {
-          kind: 'DevWorkspace',
-          metadata: {
-            annotations: {
-              'che.eclipse.org/devfile':
-                'schemaVersion: 2.2.0\nmetadata:\n generateName: dev-wksp\n',
-            },
-          },
-        },
-        { kind: 'DevWorkspaceTemplate', metadata: { annotations: {} } },
-        {},
-        'updated-editor-content',
-      );
-    });
-
     it('should throw error if default editor is not defined', async () => {
       const storeWithNoDefaults = createMockStore({
         dwServerConfig: {

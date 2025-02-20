@@ -17,6 +17,7 @@ import React from 'react';
 import GitRepoFormGroup from '@/pages/WorkspaceDetails/OverviewTab/GitRepo';
 import getComponentRenderer, { screen } from '@/services/__mocks__/getComponentRenderer';
 import { constructWorkspace, Workspace } from '@/services/workspace-adapter';
+import { DEVWORKSPACE_DEVFILE_SOURCE } from '@/services/workspace-client/devworkspace/devWorkspaceClient';
 import { DevWorkspaceBuilder } from '@/store/__mocks__/devWorkspaceBuilder';
 
 const { createSnapshot, renderComponent } = getComponentRenderer(getComponent);
@@ -63,9 +64,10 @@ describe('GitRepoURL', () => {
 
   test('screenshot when factory params is available', () => {
     const devWorkspace = new DevWorkspaceBuilder()
-      .withTemplateAttributes({
-        'dw.metadata.annotations': {
-          'che.eclipse.org/devfile-source': dump({
+      .withMetadata({
+        name: 'test-workspace',
+        annotations: {
+          [DEVWORKSPACE_DEVFILE_SOURCE]: dump({
             factory: {
               params:
                 'editor-image=test-images/che-code:tag&url=https://github.com/eclipse-che/che-dashboard',
@@ -82,9 +84,10 @@ describe('GitRepoURL', () => {
 
   test('copy to clipboard', async () => {
     const devWorkspace = new DevWorkspaceBuilder()
-      .withTemplateAttributes({
-        'dw.metadata.annotations': {
-          'che.eclipse.org/devfile-source': dump({
+      .withMetadata({
+        name: 'test-workspace',
+        annotations: {
+          [DEVWORKSPACE_DEVFILE_SOURCE]: dump({
             factory: {
               params:
                 'editor-image=test-images/che-code:tag&url=https://github.com/eclipse-che/che-dashboard',

@@ -20,10 +20,7 @@ import { CheTooltip } from '@/components/CheTooltip';
 import overviewStyles from '@/pages/WorkspaceDetails/OverviewTab/index.module.css';
 import devfileApi from '@/services/devfileApi';
 import { Workspace } from '@/services/workspace-adapter';
-import {
-  DEVWORKSPACE_DEVFILE_SOURCE,
-  DEVWORKSPACE_METADATA_ANNOTATION,
-} from '@/services/workspace-client/devworkspace/devWorkspaceClient';
+import { DEVWORKSPACE_DEVFILE_SOURCE } from '@/services/workspace-client/devworkspace/devWorkspaceClient';
 
 export type Props = {
   workspace: Workspace;
@@ -66,17 +63,7 @@ class GitRepoFormGroup extends React.PureComponent<Props, State> {
       fieldName: '',
     };
 
-    let devfileSourseStr =
-      workspace.metadata.annotations?.[DEVWORKSPACE_METADATA_ANNOTATION]?.[
-        DEVWORKSPACE_DEVFILE_SOURCE
-      ];
-
-    if (devfileSourseStr === undefined) {
-      devfileSourseStr =
-        workspace.spec?.template?.attributes?.[DEVWORKSPACE_METADATA_ANNOTATION]?.[
-          DEVWORKSPACE_DEVFILE_SOURCE
-        ];
-    }
+    const devfileSourseStr = workspace.metadata.annotations?.[DEVWORKSPACE_DEVFILE_SOURCE];
 
     if (devfileSourseStr === undefined) {
       return source;
