@@ -14,6 +14,7 @@ import { Form, PageSection, PageSectionVariants } from '@patternfly/react-core';
 import cloneDeep from 'lodash/cloneDeep';
 import React from 'react';
 
+import GitRepoFormGroup from '@/pages/WorkspaceDetails/OverviewTab/GitRepo';
 import { InfrastructureNamespaceFormGroup } from '@/pages/WorkspaceDetails/OverviewTab/InfrastructureNamespace';
 import { ProjectsFormGroup } from '@/pages/WorkspaceDetails/OverviewTab/Projects';
 import StorageTypeFormGroup from '@/pages/WorkspaceDetails/OverviewTab/StorageType';
@@ -103,6 +104,7 @@ export class OverviewTab extends React.Component<Props, State> {
               onSave={storageType => this.handleStorageSave(storageType)}
             />
             <ProjectsFormGroup projects={projects} />
+            <GitRepoFormGroup workspace={workspace} />
           </Form>
         </PageSection>
       </React.Fragment>

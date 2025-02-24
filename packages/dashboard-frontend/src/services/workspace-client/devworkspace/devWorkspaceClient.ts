@@ -39,14 +39,13 @@ import { isWebTerminal } from '@/services/helpers/devworkspace';
 import { DevWorkspaceStatus } from '@/services/helpers/types';
 import { fetchData } from '@/services/registry/fetchData';
 import { WorkspaceAdapter } from '@/services/workspace-adapter';
-import {
-  devWorkspaceApiGroup,
-  devWorkspaceSingularSubresource,
-  devWorkspaceVersion,
-} from '@/services/workspace-client/devworkspace/converters';
 import { DevWorkspaceDefaultPluginsHandler } from '@/services/workspace-client/devworkspace/DevWorkspaceDefaultPluginsHandler';
 import { EDITOR_DEVFILE_API_QUERY } from '@/store/DevfileRegistries/const';
 import { WorkspacesDefaultPlugins } from '@/store/Plugins/devWorkspacePlugins';
+
+export const devWorkspaceVersion = 'v1alpha2';
+export const devWorkspaceApiGroup = 'workspace.devfile.io';
+export const devWorkspaceSingularSubresource = 'devworkspace';
 
 export const COMPONENT_UPDATE_POLICY = 'che.eclipse.org/components-update-policy';
 export const REGISTRY_URL = 'che.eclipse.org/plugin-registry-url';

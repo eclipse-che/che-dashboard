@@ -10,7 +10,7 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import devfileApi, { isDevfileV2, isDevWorkspace } from '@/services/devfileApi';
+import devfileApi, { isDevWorkspace } from '@/services/devfileApi';
 import { DEVWORKSPACE_UPDATING_TIMESTAMP_ANNOTATION } from '@/services/devfileApi/devWorkspace/metadata';
 import { DEVWORKSPACE_STORAGE_TYPE_ATTR } from '@/services/devfileApi/devWorkspace/spec/template';
 import {
@@ -19,11 +19,6 @@ import {
   WorkspaceStatus,
 } from '@/services/helpers/types';
 import { che } from '@/services/models';
-import {
-  devfileToDevWorkspace,
-  devWorkspaceToDevfile,
-} from '@/services/workspace-client/devworkspace/converters';
-import { DEVWORKSPACE_NEXT_START_ANNOTATION } from '@/services/workspace-client/devworkspace/devWorkspaceClient';
 
 export interface Workspace {
   readonly ref: devfileApi.DevWorkspace;
@@ -37,7 +32,6 @@ export interface Workspace {
   readonly updated: number;
   status: WorkspaceStatus | DevWorkspaceStatus | DeprecatedWorkspaceStatus;
   readonly ideUrl?: string;
-  devfile: devfileApi.Devfile;
   storageType: che.WorkspaceStorageType;
   readonly projects: string[];
   readonly isStarting: boolean;
@@ -236,38 +230,26 @@ export class WorkspaceAdapter<T extends devfileApi.DevWorkspace> implements Work
     }
   }
 
-  get devfile(): devfileApi.Devfile {
-    if (
-      this.workspace.metadata.annotations &&
-      this.workspace.metadata.annotations[DEVWORKSPACE_NEXT_START_ANNOTATION]
-    ) {
-      const devfile = devWorkspaceToDevfile(
-        JSON.parse(this.workspace.metadata.annotations[DEVWORKSPACE_NEXT_START_ANNOTATION]),
-      );
-      if (isDevfileV2(devfile)) {
-        return devfile;
+  get projects(): string[] {
+    const template = this.workspace.spec.template;
+    if (!template) {
+      return [];
+    }
+    const projects = template.projects || [];
+    if (projects.length > 0) {
+      return projects.map(project => project.name);
+    }
+    const starterProjectName = template.attributes?.['controller.devfile.io/use-starter-project'];
+    if (starterProjectName && Array.isArray(template?.starterProjects)) {
+      if (
+        template.starterProjects.findIndex(
+          starterProject => starterProject.name === starterProjectName,
+        ) !== -1
+      ) {
+        return [starterProjectName];
       }
     }
-    return devWorkspaceToDevfile(this.workspace) as devfileApi.Devfile;
-  }
-
-  set devfile(devfile: devfileApi.Devfile) {
-    const plugins = this.workspace.spec.contributions || [];
-    const converted = devfileToDevWorkspace(
-      devfile as devfileApi.Devfile,
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      this.workspace.spec.routingClass!,
-      this.workspace.spec.started,
-    );
-    if (converted.spec.contributions === undefined) {
-      converted.spec.contributions = [];
-    }
-    converted.spec.contributions.push(...plugins);
-    (this.workspace as devfileApi.DevWorkspace) = converted;
-  }
-
-  get projects(): string[] {
-    return (this.workspace.spec.template.projects || []).map(project => project.name);
+    return [];
   }
 }
 

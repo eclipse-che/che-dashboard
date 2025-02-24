@@ -10,7 +10,7 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import { load } from 'js-yaml';
+import { dump, load } from 'js-yaml';
 
 import devfileApi from '@/services/devfileApi';
 import { che } from '@/services/models';
@@ -28,6 +28,7 @@ import {
 
 jest.mock('js-yaml', () => ({
   load: jest.fn(),
+  dump: jest.fn(),
 }));
 jest.mock('@/store/ServerConfig/selectors', () => {
   return {
@@ -180,11 +181,28 @@ describe('DevfileRegistries, selectors', () => {
 
   describe('selectDefaultDevfile', () => {
     it('should select default devfile', () => {
-      const mockDevfile = { components: [] };
+      const mockDevfile = {
+        schemaVersion: '2.2.0',
+        metadata: {
+          name: 'empty',
+        },
+      };
+      const mockDevfileStr = 'schemaVersion: 2.2.0\nmetadata:\n  name: empty\n';
+
       (load as jest.Mock).mockReturnValue(mockDevfile);
+      (dump as jest.Mock).mockReturnValue(mockDevfileStr);
 
       const result = selectDefaultDevfile(mockState);
-      expect(result).toEqual(mockDevfile);
+      expect(result).toEqual(
+        Object.assign({}, mockDevfile, {
+          attributes: {
+            'dw.metadata.annotations': {
+              'che.eclipse.org/devfile': mockDevfileStr,
+            },
+          },
+          components: [],
+        }),
+      );
     });
 
     it('should return undefined if the empty workspace URL is not found', () => {

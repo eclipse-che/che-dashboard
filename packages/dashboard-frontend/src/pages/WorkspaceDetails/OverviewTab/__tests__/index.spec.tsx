@@ -24,6 +24,7 @@ jest.mock('@/pages/WorkspaceDetails/OverviewTab/InfrastructureNamespace');
 jest.mock('@/pages/WorkspaceDetails/OverviewTab/Projects');
 jest.mock('@/pages/WorkspaceDetails/OverviewTab/StorageType');
 jest.mock('@/pages/WorkspaceDetails/OverviewTab/WorkspaceName');
+jest.mock('@/pages/WorkspaceDetails/OverviewTab/GitRepo');
 
 const { createSnapshot, renderComponent } = getComponentRenderer(getComponent);
 

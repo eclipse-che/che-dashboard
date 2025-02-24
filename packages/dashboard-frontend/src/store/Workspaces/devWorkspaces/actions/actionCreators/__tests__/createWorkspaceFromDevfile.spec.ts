@@ -60,6 +60,9 @@ describe('devWorkspaces, actions', () => {
             },
           },
         },
+        devWorkspaces: {
+          workspaces: [],
+        } as any,
       } as RootState);
 
       (getEditor as jest.Mock).mockResolvedValue({

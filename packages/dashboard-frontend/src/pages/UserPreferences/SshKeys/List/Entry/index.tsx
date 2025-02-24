@@ -37,7 +37,7 @@ export type Props = {
   onDeleteSshKey: (sshKey: api.SshKey) => void;
 };
 export type State = {
-  isCopyTimerId: number | undefined;
+  timerId: number | undefined;
   isOpenDropdown: boolean;
 };
 
@@ -46,7 +46,7 @@ export class SshKeysListEntry extends React.PureComponent<Props, State> {
     super(props);
 
     this.state = {
-      isCopyTimerId: undefined,
+      timerId: undefined,
       isOpenDropdown: false,
     };
   }
@@ -60,26 +60,21 @@ export class SshKeysListEntry extends React.PureComponent<Props, State> {
   }
 
   private handleCopyToClipboard(): void {
-    const { isCopyTimerId } = this.state;
-
-    if (isCopyTimerId !== undefined) {
-      clearTimeout(isCopyTimerId);
+    let { timerId } = this.state;
+    if (timerId !== undefined) {
+      window.clearTimeout(timerId);
     }
-
-    const nextTimerId = window.setTimeout(() => {
+    timerId = window.setTimeout(() => {
       this.setState({
-        isCopyTimerId: undefined,
+        timerId: undefined,
       });
     }, 3000);
-
-    this.setState({
-      isCopyTimerId: nextTimerId,
-    });
+    this.setState({ timerId });
   }
 
   render(): React.ReactNode {
     const { sshKey } = this.props;
-    const { isCopyTimerId, isOpenDropdown } = this.state;
+    const { timerId, isOpenDropdown } = this.state;
 
     const publicKey = atob(sshKey.keyPub);
     const addedOn = getFormattedDate(sshKey.creationTimestamp);
@@ -95,7 +90,7 @@ export class SshKeysListEntry extends React.PureComponent<Props, State> {
         <CardHeader>
           <CardTitle data-testid="title">{sshKey.name}</CardTitle>
           <CardActions>
-            <Tooltip content={isCopyTimerId ? 'Copied!' : 'Copy to clipboard'}>
+            <Tooltip content={timerId ? 'Copied!' : 'Copy to clipboard'}>
               <CopyToClipboard text={publicKey} onCopy={() => this.handleCopyToClipboard()}>
                 <Button
                   variant="link"

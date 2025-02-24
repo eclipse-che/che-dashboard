@@ -26,7 +26,6 @@ import {
   isDevfileRegistryLocation,
   normalizeDevfile,
 } from '@/store/FactoryResolver/helpers';
-import { selectDefaultNamespace } from '@/store/InfrastructureNamespaces/selectors';
 import { verifyAuthorized } from '@/store/SanityCheck';
 import { selectDefaultComponents } from '@/store/ServerConfig/selectors';
 
@@ -40,7 +39,6 @@ export const actionCreators = {
     (location: string, factoryParams: Partial<FactoryParams> = {}): AppThunk =>
     async (dispatch, getState): Promise<void> => {
       const state = getState();
-      const namespace = selectDefaultNamespace(state).name;
       const optionalFilesContent = {};
 
       const overrideParams = factoryParams
@@ -54,29 +52,36 @@ export const actionCreators = {
 
         dispatch(factoryResolverRequestAction());
 
-        let data: FactoryResolver;
+        let data: FactoryResolver | undefined = undefined;
         if (isDevfileRegistryLocation(location, state.dwServerConfig.config)) {
           data = await getYamlResolver(location);
         } else {
-          data = await getFactoryResolver(location, overrideParams);
-          const cheEditor = await grabLink(data.links || [], CHE_EDITOR_YAML_PATH);
-          if (cheEditor) {
-            optionalFilesContent[CHE_EDITOR_YAML_PATH] = cheEditor;
+          try {
+            data = await getFactoryResolver(location, overrideParams);
+            const cheEditor = await grabLink(data.links || [], CHE_EDITOR_YAML_PATH);
+            if (cheEditor) {
+              optionalFilesContent[CHE_EDITOR_YAML_PATH] = cheEditor;
+            }
+          } catch (error) {
+            if (location.endsWith('.yaml') || location.endsWith('.yml')) {
+              try {
+                data = await getYamlResolver(location);
+              } catch (e) {
+                console.log(e);
+              }
+            }
+            if (!data?.devfile) {
+              throw error;
+            }
           }
         }
 
-        if (!data.devfile) {
+        if (!data?.devfile) {
           throw new Error('The specified link does not contain any Devfile.');
         }
 
         const defaultComponents = selectDefaultComponents(state);
-        const devfile = normalizeDevfile(
-          data,
-          location,
-          defaultComponents,
-          namespace,
-          factoryParams,
-        );
+        const devfile = normalizeDevfile(data, location, defaultComponents, factoryParams);
 
         const resolver = {
           ...data,

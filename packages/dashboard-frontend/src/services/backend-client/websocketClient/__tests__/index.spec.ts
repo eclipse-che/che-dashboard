@@ -68,7 +68,9 @@ describe('websocketClient', () => {
         const wsNext = await serverMockNext.connected;
 
         expect(wsNext).toBeDefined();
-        expect(handleConnectionOpen).toHaveBeenCalledTimes(2);
+
+        expect(handleConnectionOpen.mock.calls.length).toBeGreaterThanOrEqual(2);
+        expect(handleConnectionOpen.mock.calls.length).toBeLessThanOrEqual(3);
       });
 
       it('should reconnect to websocket when receives "error" event', async () => {

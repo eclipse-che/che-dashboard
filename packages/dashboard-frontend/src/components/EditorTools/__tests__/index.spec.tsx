@@ -10,17 +10,18 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import { ApplicationId } from '@eclipse-che/common';
 import userEvent from '@testing-library/user-event';
+import { dump } from 'js-yaml';
 import React from 'react';
 import { Provider } from 'react-redux';
 import { Store } from 'redux';
 
+import EditorTools from '@/components/EditorTools';
 import getComponentRenderer, { screen } from '@/services/__mocks__/getComponentRenderer';
-import devfileApi from '@/services/devfileApi';
 import { MockStoreBuilder } from '@/store/__mocks__/mockStore';
 
-import EditorTools from '..';
+// mute console.error
+console.error = jest.fn();
 
 jest.mock('@/contexts/ToggleBars');
 
@@ -49,19 +50,8 @@ const mockOnExpand = jest.fn();
 let store: Store;
 
 describe('EditorTools', () => {
-  const clusterConsole = {
-    id: ApplicationId.CLUSTER_CONSOLE,
-    url: 'https://console-url',
-    icon: 'https://console-icon-url',
-    title: 'Cluster console',
-  };
-
   beforeEach(() => {
-    store = new MockStoreBuilder()
-      .withClusterInfo({
-        applications: [clusterConsole],
-      })
-      .build();
+    store = new MockStoreBuilder().build();
 
     jest.useFakeTimers();
   });
@@ -72,26 +62,22 @@ describe('EditorTools', () => {
   });
 
   describe('Devfile', () => {
-    let devfile: devfileApi.Devfile;
-
-    beforeEach(() => {
-      devfile = {
-        schemaVersion: '2.1.0',
-        metadata: {
-          name: 'my-project',
-          namespace: 'user-che',
-        },
-      };
+    const name = 'my-project';
+    const devfileContent = dump({
+      schemaVersion: '2.1.0',
+      metadata: {
+        name,
+      },
     });
 
     test('snapshot', () => {
-      const snapshot = createSnapshot(devfile);
+      const snapshot = createSnapshot(devfileContent, name);
       expect(snapshot.toJSON()).toMatchSnapshot();
     });
 
     test('expand and compress', async () => {
       const user = userEvent.setup({ advanceTimers: jest.advanceTimersByTime });
-      renderComponent(devfile);
+      renderComponent(devfileContent, name);
 
       /* expand the editor */
 
@@ -120,7 +106,7 @@ describe('EditorTools', () => {
       const mockCreateObjectURL = jest.fn().mockReturnValue('blob-url');
       URL.createObjectURL = mockCreateObjectURL;
 
-      renderComponent(devfile);
+      renderComponent(devfileContent, name);
 
       const copyButtonName = 'Copy to clipboard';
       expect(screen.queryByRole('button', { name: copyButtonName })).toBeTruthy;
@@ -129,7 +115,7 @@ describe('EditorTools', () => {
       await user.click(copyButton);
 
       expect(mockClipboard).toHaveBeenCalledWith(
-        'schemaVersion: 2.1.0\nmetadata:\n  name: my-project\n  namespace: user-che\n',
+        'schemaVersion: 2.1.0\nmetadata:\n  name: my-project\n',
       );
 
       /* 'Copy to clipboard' should be hidden for a while */
@@ -146,46 +132,16 @@ describe('EditorTools', () => {
       expect(screen.queryByRole('button', { name: copyButtonNameAfter })).toBeFalsy;
     });
   });
-
-  describe('DevWorkspace', () => {
-    let devWorkspace: devfileApi.DevWorkspace;
-
-    beforeEach(() => {
-      devWorkspace = {
-        apiVersion: '1.0.0',
-        metadata: {
-          name: 'my-project',
-          namespace: 'user-che',
-          labels: {},
-          uid: '123',
-        },
-        kind: 'DevWorkspace',
-        spec: {
-          template: {},
-          started: true,
-        },
-      };
-    });
-
-    test('snapshot', () => {
-      const snapshot = createSnapshot(devWorkspace);
-      expect(snapshot.toJSON()).toMatchSnapshot();
-    });
-
-    test('Cluster Console', () => {
-      renderComponent(devWorkspace);
-
-      const clusterConsoleButton = screen.getByRole('link', { name: clusterConsole.title });
-
-      expect(clusterConsoleButton.textContent).toEqual(clusterConsole.title);
-    });
-  });
 });
 
-function getComponent(devfileOrDevWorkspace: devfileApi.Devfile | devfileApi.DevWorkspace) {
+function getComponent(contentText: string, workspaceName: string) {
   return (
     <Provider store={store}>
-      <EditorTools devfileOrDevWorkspace={devfileOrDevWorkspace} handleExpand={mockOnExpand} />
+      <EditorTools
+        contentText={contentText}
+        workspaceName={workspaceName}
+        handleExpand={mockOnExpand}
+      />
     </Provider>
   );
 }

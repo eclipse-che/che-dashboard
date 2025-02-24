@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`ProjectsFormGroup screenshot 1`] = `
+exports[`ProjectsFormGroup screenshot with projects 1`] = `
 <div
   className="pf-c-form__group"
 >
@@ -30,3 +30,5 @@ exports[`ProjectsFormGroup screenshot 1`] = `
   </div>
 </div>
 `;
+
+exports[`ProjectsFormGroup screenshot without projects 1`] = `null`;

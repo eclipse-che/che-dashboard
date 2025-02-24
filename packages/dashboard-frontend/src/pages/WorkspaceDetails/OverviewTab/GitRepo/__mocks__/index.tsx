@@ -10,11 +10,10 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import { V230DevfileMetadata } from '@devfile/api';
+import React from 'react';
 
-export type DevfileMetadataLike = V230DevfileMetadata & {
-  namespace?: string;
-  generateName?: string;
-};
-
-export type DevfileMetadata = DevfileMetadataLike & Required<Pick<DevfileMetadataLike, 'name'>>;
+export default class GitRepoFormGroups extends React.PureComponent {
+  render() {
+    return <div>Mock Git Repo Form</div>;
+  }
+}

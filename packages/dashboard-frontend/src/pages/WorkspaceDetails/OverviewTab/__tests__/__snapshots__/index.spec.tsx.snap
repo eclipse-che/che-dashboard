@@ -29,6 +29,9 @@ exports[`OverviewTab With parent screenshot 1`] = `
     <div>
       Mock Projects Form
     </div>
+    <div>
+      Mock Git Repo Form
+    </div>
   </form>
 </section>
 `;
@@ -61,6 +64,9 @@ exports[`OverviewTab Without parent screenshot 1`] = `
     </div>
     <div>
       Mock Projects Form
+    </div>
+    <div>
+      Mock Git Repo Form
     </div>
   </form>
 </section>

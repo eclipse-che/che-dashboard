@@ -360,7 +360,7 @@
 | `glob-parent@5.1.2` | ISC | clearlydefined |
 | `glob-parent@6.0.2` | ISC | clearlydefined |
 | [`glob-to-regexp@0.4.1`](https://github.com/fitzgen/glob-to-regexp.git) | BSD-2-Clause | clearlydefined |
-| [`glob@7.2.3`](git://github.com/isaacs/node-glob.git) | ISC | clearlydefined |
+| [`glob@7.2.3`](git://github.com/isaacs/node-glob.git) | ISC | #19366 |
 | [`global-modules@2.0.0`](https://github.com/jonschlinkert/global-modules) | MIT | clearlydefined |
 | [`global-prefix@3.0.0`](https://github.com/jonschlinkert/global-prefix) | MIT | clearlydefined |
 | `globals@11.12.0` | MIT | clearlydefined |
@@ -394,7 +394,7 @@
 | [`identity-obj-proxy@3.0.0`](git+https://github.com/keyanzhang/identity-obj-proxy.git) | MIT | clearlydefined |
 | [`ignore-by-default@1.0.1`](git+https://github.com/novemberborn/ignore-by-default.git) | ISC | clearlydefined |
 | [`ignore@5.2.4`](git@github.com:kaelzhang/node-ignore.git) | MIT | #5907 |
-| `import-fresh@3.3.0` | MIT | clearlydefined |
+| `import-fresh@3.3.0` | MIT | #19299 |
 | `import-lazy@4.0.0` | MIT | clearlydefined |
 | `import-local@3.1.0` | MIT | clearlydefined |
 | `indent-string@5.0.0` | MIT | clearlydefined |

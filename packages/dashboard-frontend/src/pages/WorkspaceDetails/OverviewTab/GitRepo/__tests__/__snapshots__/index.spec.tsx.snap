@@ -1,0 +1,51 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`GitRepoURL screenshot when factory params is available 1`] = `
+<div
+  className="pf-c-form__group"
+>
+  <div
+    className="pf-c-form__group-label"
+  >
+    <label
+      className="pf-c-form__label"
+    >
+      <span
+        className="pf-c-form__label-text"
+      >
+        Git repo URL
+      </span>
+    </label>
+     
+  </div>
+  <div
+    className="pf-c-form__group-control"
+  >
+    <a
+      aria-disabled={false}
+      aria-label={null}
+      className="pf-c-button pf-m-link pf-m-inline"
+      data-ouia-component-id="OUIA-Generated-Button-link-1"
+      data-ouia-component-type="PF4/Button"
+      data-ouia-safe={true}
+      disabled={null}
+      href="https://github.com/eclipse-che/che-dashboard?editor-image=test-images/che-code:tag"
+      role={null}
+      target="_blank"
+      type={null}
+    >
+      eclipse-che/che-dashboard
+    </a>
+    <div>
+      <button
+        onClick={[Function]}
+      >
+        Copy to clipboard
+      </button>
+      Copy to clipboard
+    </div>
+  </div>
+</div>
+`;
+
+exports[`GitRepoURL screenshot when factory params is not available 1`] = `null`;
