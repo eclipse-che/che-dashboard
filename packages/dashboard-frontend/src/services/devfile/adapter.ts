@@ -20,18 +20,19 @@ export class DevfileAdapter {
   }
 
   public static getAttributes(devfile: devfileApi.Devfile) {
-    const attributes = {};
+    const attributes = {} as any;
+
     if (devfile.schemaVersion?.startsWith('2.0')) {
       if (!devfile.metadata.attributes) {
         devfile.metadata.attributes = attributes;
       }
       return devfile.metadata.attributes;
-    } else {
-      if (!devfile.attributes) {
-        devfile.attributes = attributes;
-      }
-      return devfile.attributes;
     }
+    if (!devfile.attributes) {
+      devfile.attributes = attributes;
+    }
+
+    return devfile.attributes;
   }
 
   get attributes() {

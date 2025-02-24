@@ -11,6 +11,7 @@
  */
 
 import { dump } from 'js-yaml';
+import cloneDeep from 'lodash/cloneDeep';
 
 import { prepareDevfile } from '@/components/WorkspaceProgress/CreatingSteps/Apply/Devfile/prepareDevfile';
 import devfileApi from '@/services/devfileApi';
@@ -228,31 +229,72 @@ describe('FactoryLoaderContainer/prepareDevfile', () => {
     });
 
     describe('has parent', () => {
+      let devfile: devfileApi.Devfile;
+      let parentDevfile: devfileApi.Devfile;
+      // mute console logs
+      console.warn = jest.fn();
+
+      beforeEach(() => {
+        devfile = {
+          schemaVersion: '2.2.2',
+          metadata: {
+            generateName: 'nodejs',
+          },
+          parent: {},
+        } as devfileApi.Devfile;
+
+        parentDevfile = {
+          schemaVersion: '2.2.0',
+          metadata: {
+            name: 'sample-using-parent',
+          },
+          components: [
+            {
+              name: 'tools',
+              container: {
+                env: [
+                  {
+                    name: 'DEVFILE_ENV_VAR',
+                    value: 'true',
+                  },
+                ],
+              },
+            },
+          ],
+          commands: [
+            {
+              id: 'parent-command',
+              exec: {
+                label: '2. This command from the parent',
+                component: 'tools',
+                commandLine: 'echo "Hello from parent"',
+              },
+            },
+          ],
+        } as devfileApi.Devfile;
+      });
+
       describe('with registryUrl', () => {
         it('with storage-type attribute', () => {
-          // mute console logs
-          console.warn = jest.fn();
-          const devfile = {
-            schemaVersion: '2.2.0',
-            metadata: {
-              name: 'wksp-test',
-            },
-            parent: {
-              id: 'nodejs',
-              registryUrl: 'https://registry.devfile.io/',
-            },
-          } as devfileApi.Devfile;
+          devfile.parent!.id = 'nodejs';
+          devfile.parent!.registryUrl = 'https://registry.devfile.io/';
+          const _devfile = cloneDeep(devfile);
 
-          const newDevfile = prepareDevfile(devfile, factoryId, 'ephemeral', false, {
-            schemaVersion: '2.2.2',
-            metadata: {
-              generateName: 'nodejs',
-            },
-            attributes: {
-              'controller.devfile.io/storage-type': 'ephemeral',
-            },
-          } as devfileApi.Devfile);
+          parentDevfile.attributes = {
+            'controller.devfile.io/storage-type': 'ephemeral',
+          };
+          const _parentDevfile = cloneDeep(parentDevfile);
 
+          const newDevfile = prepareDevfile(
+            _devfile,
+            factoryId,
+            'ephemeral',
+            false,
+            _parentDevfile,
+          );
+
+          expect(_devfile).toEqual(devfile);
+          expect(_parentDevfile).toEqual(parentDevfile);
           expect(console.warn).toHaveBeenCalledWith(
             'Unable to apply controller.devfile.io/storage-type attribute.',
           );
@@ -260,51 +302,45 @@ describe('FactoryLoaderContainer/prepareDevfile', () => {
         });
 
         it('without storage-type attribute', () => {
-          const devfile = {
-            schemaVersion: '2.2.0',
-            metadata: {
-              name: 'wksp-test',
-            },
-            parent: {
-              id: 'nodejs',
-              registryUrl: 'https://registry.devfile.io/',
-            },
-          } as devfileApi.Devfile;
+          devfile.parent!.id = 'nodejs';
+          devfile.parent!.registryUrl = 'https://registry.devfile.io/';
+          const _devfile = cloneDeep(devfile);
 
-          const newDevfile = prepareDevfile(devfile, factoryId, 'ephemeral', false, {
-            schemaVersion: '2.2.2',
-            metadata: {
-              generateName: 'nodejs',
-            },
-          } as devfileApi.Devfile);
+          const _parentDevfile = cloneDeep(parentDevfile);
 
+          const newDevfile = prepareDevfile(
+            _devfile,
+            factoryId,
+            'ephemeral',
+            false,
+            _parentDevfile,
+          );
+
+          expect(_devfile).toEqual(devfile);
+          expect(_parentDevfile).toEqual(parentDevfile);
           expect(newDevfile.attributes?.[DEVWORKSPACE_STORAGE_TYPE_ATTR]).toEqual('ephemeral');
         });
       });
       describe('with uri', () => {
         it('with storage-type attribute', () => {
-          // mute console logs
-          console.warn = jest.fn();
-          const devfile = {
-            schemaVersion: '2.2.0',
-            metadata: {
-              name: 'wksp-test',
-            },
-            parent: {
-              uri: 'https://raw.githubusercontent.com/test/devfile.yaml',
-            },
-          } as devfileApi.Devfile;
+          devfile.parent!.uri = 'https://raw.githubusercontent.com/test/devfile.yaml';
+          const _devfile = cloneDeep(devfile);
 
-          const newDevfile = prepareDevfile(devfile, factoryId, 'ephemeral', false, {
-            schemaVersion: '2.2.2',
-            metadata: {
-              generateName: 'nodejs',
-            },
-            attributes: {
-              'controller.devfile.io/storage-type': 'ephemeral',
-            },
-          } as devfileApi.Devfile);
+          parentDevfile.attributes = {
+            'controller.devfile.io/storage-type': 'ephemeral',
+          };
+          const _parentDevfile = cloneDeep(parentDevfile);
 
+          const newDevfile = prepareDevfile(
+            _devfile,
+            factoryId,
+            'ephemeral',
+            false,
+            _parentDevfile,
+          );
+
+          expect(_devfile).toEqual(devfile);
+          expect(_parentDevfile).toEqual(parentDevfile);
           expect(console.warn).toHaveBeenCalledWith(
             'Unable to apply controller.devfile.io/storage-type attribute.',
           );
@@ -312,23 +348,21 @@ describe('FactoryLoaderContainer/prepareDevfile', () => {
         });
 
         it('without storage-type attribute', () => {
-          const devfile = {
-            schemaVersion: '2.2.0',
-            metadata: {
-              name: 'wksp-test',
-            },
-            parent: {
-              uri: 'https://raw.githubusercontent.com/test/devfile.yaml',
-            },
-          } as devfileApi.Devfile;
+          devfile.parent!.uri = 'https://raw.githubusercontent.com/test/devfile.yaml';
+          const _devfile = cloneDeep(devfile);
 
-          const newDevfile = prepareDevfile(devfile, factoryId, 'ephemeral', false, {
-            schemaVersion: '2.2.2',
-            metadata: {
-              generateName: 'nodejs',
-            },
-          } as devfileApi.Devfile);
+          const _parentDevfile = cloneDeep(parentDevfile);
 
+          const newDevfile = prepareDevfile(
+            _devfile,
+            factoryId,
+            'ephemeral',
+            false,
+            _parentDevfile,
+          );
+
+          expect(_devfile).toEqual(devfile);
+          expect(_parentDevfile).toEqual(parentDevfile);
           expect(newDevfile.attributes?.[DEVWORKSPACE_STORAGE_TYPE_ATTR]).toEqual('ephemeral');
         });
       });
