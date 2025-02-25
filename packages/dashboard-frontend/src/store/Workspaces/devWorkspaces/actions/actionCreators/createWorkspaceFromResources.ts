@@ -13,6 +13,7 @@
 import common, { ApplicationId } from '@eclipse-che/common';
 
 import devfileApi from '@/services/devfileApi';
+import { DEVWORKSPACE_STORAGE_TYPE_ATTR } from '@/services/devfileApi/devWorkspace/spec/template';
 import { FactoryParams } from '@/services/helpers/factoryFlow/buildFactoryParams';
 import { AppThunk } from '@/store';
 import { selectApplications } from '@/store/ClusterInfo';
@@ -54,6 +55,10 @@ export const createWorkspaceFromResources =
 
       dispatch(devWorkspacesRequestAction());
 
+      const storageType = devWorkspace.spec?.template?.attributes?.[DEVWORKSPACE_STORAGE_TYPE_ATTR];
+      if (storageType && storageType !== 'ephemeral') {
+        devWorkspace.spec.template.attributes[DEVWORKSPACE_STORAGE_TYPE_ATTR] = 'ephemeral';
+      }
       /* create a new DevWorkspace */
       const createResp = await getDevWorkspaceClient().createDevWorkspace(
         defaultNamespace,
@@ -90,18 +95,27 @@ export const createWorkspaceFromResources =
 
       /* update the DevWorkspace */
 
-      const updateResp = await getDevWorkspaceClient().updateDevWorkspace(createResp.devWorkspace);
-
-      if (updateResp.headers.warning) {
-        dispatch(
-          devWorkspaceWarningUpdateAction({
-            warning: cleanupMessage(updateResp.headers.warning),
-            workspace: updateResp.devWorkspace,
-          }),
+      if (storageType && storageType !== 'ephemeral') {
+        const { namespace, name } = devWorkspace.metadata;
+        const updateResp = await getDevWorkspaceClient().updateDevWorkspaceStorageType(
+          namespace,
+          name,
+          storageType,
         );
-      }
 
-      dispatch(devWorkspacesAddAction(updateResp.devWorkspace));
+        if (updateResp.headers.warning) {
+          dispatch(
+            devWorkspaceWarningUpdateAction({
+              warning: cleanupMessage(updateResp.headers.warning),
+              workspace: updateResp.devWorkspace,
+            }),
+          );
+        }
+
+        dispatch(devWorkspacesAddAction(updateResp.devWorkspace));
+      } else {
+        dispatch(devWorkspacesAddAction(createResp.devWorkspace));
+      }
     } catch (e) {
       const errorMessage =
         'Failed to create a new workspace, reason: ' + common.helpers.errors.getMessage(e);

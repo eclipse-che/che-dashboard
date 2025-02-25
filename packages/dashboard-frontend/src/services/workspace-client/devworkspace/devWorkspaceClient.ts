@@ -33,6 +33,7 @@ import {
 import {
   DEVWORKSPACE_CONFIG_ATTR,
   DEVWORKSPACE_CONTAINER_BUILD_ATTR,
+  DEVWORKSPACE_STORAGE_TYPE_ATTR,
 } from '@/services/devfileApi/devWorkspace/spec/template';
 import { delay } from '@/services/helpers/delay';
 import { isWebTerminal } from '@/services/helpers/devworkspace';
@@ -208,14 +209,22 @@ export class DevWorkspaceClient {
     return DwtApi.createTemplate(devWorkspaceTemplateResource);
   }
 
-  async updateDevWorkspace(
-    devWorkspace: devfileApi.DevWorkspace,
+  /**
+   * Update the storage-type of a devworkspace
+   * @param namespace
+   * @param name
+   * @param storageType
+   */
+  async updateDevWorkspaceStorageType(
+    namespace,
+    name,
+    storageType,
   ): Promise<{ headers: DwApi.Headers; devWorkspace: devfileApi.DevWorkspace }> {
-    return await DwApi.patchWorkspace(devWorkspace.metadata.namespace, devWorkspace.metadata.name, [
+    return await DwApi.patchWorkspace(namespace, name, [
       {
         op: 'replace',
-        path: '/spec/template/components',
-        value: devWorkspace.spec.template.components || [],
+        path: '/spec/template/attributes/' + DEVWORKSPACE_STORAGE_TYPE_ATTR.replace(/\//g, '~1'),
+        value: storageType,
       },
     ]);
   }
