@@ -205,10 +205,9 @@ class CreatingStepFetchDevfile extends ProgressStep<Props, State> {
       return true;
     }
 
-    let resolveDone = false;
     try {
       // start resolving the devfile
-      resolveDone = await this.resolveDevfile(sourceUrl);
+      await this.resolveDevfile(sourceUrl);
     } catch (e) {
       const errorMessage = common.helpers.errors.getMessage(e);
       // check if it is a scheme validation error
@@ -224,9 +223,6 @@ class CreatingStepFetchDevfile extends ProgressStep<Props, State> {
         return true;
       }
       throw e;
-    }
-    if (!resolveDone) {
-      return false;
     }
 
     // wait for the devfile resolving to complete
