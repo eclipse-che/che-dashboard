@@ -76,6 +76,7 @@ const serverConfig: api.IServerConfig = {
     inactivityTimeout: -1,
     runTimeout: -1,
     startTimeout,
+    axiosRequestTimeout: 30000,
   },
   defaultNamespace: {
     autoProvision: true,

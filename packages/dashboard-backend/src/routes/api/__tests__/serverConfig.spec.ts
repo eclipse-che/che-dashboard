@@ -44,7 +44,12 @@ describe('Server Config Route', () => {
       },
       defaults: { components: [], plugins: [], pvcStrategy: '' },
       pluginRegistry: { openVSXURL: 'openvsx-url' },
-      timeouts: { inactivityTimeout: 0, runTimeout: 0, startTimeout: 0 },
+      timeouts: {
+        inactivityTimeout: 0,
+        runTimeout: 0,
+        startTimeout: 0,
+        axiosRequestTimeout: 0,
+      },
       networking: {
         auth: {
           advancedAuthorization: {},

@@ -223,6 +223,7 @@ export function isCheClusterCustomResourceSpecDevEnvironments(
 export type CheClusterCustomResourceSpecComponents = {
   cheServer?: Record<string, unknown>;
   dashboard?: {
+    requestTimeout?: number;
     branding?: {
       logo?: {
         base64data: string;
@@ -346,6 +347,11 @@ export interface IServerConfigApi {
    * Returns the workspace start timeout
    */
   getWorkspaceStartTimeout(cheCustomResource: CheClusterCustomResource): number;
+
+  /**
+   * Returns the axios request timeout
+   */
+  getAxiosRequestTimeout(): number;
 
   /**
    * Returns the dashboard branding logo

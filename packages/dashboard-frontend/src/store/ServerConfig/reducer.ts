@@ -46,6 +46,7 @@ export const unloadedState: State = {
       inactivityTimeout: -1,
       runTimeout: -1,
       startTimeout: 300,
+      axiosRequestTimeout: 30000,
     },
     defaultNamespace: {
       autoProvision: true,

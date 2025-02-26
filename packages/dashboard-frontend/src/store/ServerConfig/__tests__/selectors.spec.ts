@@ -64,6 +64,7 @@ describe('ServerConfig Selectors', () => {
         pluginRegistryInternalURL: 'https://internal.plugin.registry',
         timeouts: {
           startTimeout: 300,
+          axiosRequestTimeout: 30000,
         },
         dashboardLogo: {
           base64data: 'base64data',
