@@ -66,6 +66,7 @@ describe('ServerConfig, reducer', () => {
         inactivityTimeout: 100,
         runTimeout: 200,
         startTimeout: 300,
+        axiosRequestTimeout: 30000,
       },
       defaultNamespace: {
         autoProvision: false,

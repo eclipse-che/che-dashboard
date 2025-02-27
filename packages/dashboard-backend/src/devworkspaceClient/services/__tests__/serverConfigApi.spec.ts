@@ -165,6 +165,18 @@ describe('Server Config API Service', () => {
     const res = serverConfigService.getAllowedSourceUrls(buildCustomResource());
     expect(res).toEqual(['https://github.com']);
   });
+
+  describe('Axios Request Timeout', () => {
+    test('getting default value', () => {
+      const res = serverConfigService.getAxiosRequestTimeout();
+      expect(res).toEqual(30000);
+    });
+    test('getting custom value', () => {
+      process.env['CHE_DASHBOARD_CHE_API_AXIOS_REQUEST_TIMEOUT'] = '55000';
+      const res = serverConfigService.getAxiosRequestTimeout();
+      expect(res).toEqual(55000);
+    });
+  });
 });
 
 function buildCustomResourceList(): { body: CustomResourceDefinitionList } {

@@ -16,7 +16,7 @@ import * as k8s from '@kubernetes/client-node';
 import { readFileSync } from 'fs';
 import path from 'path';
 
-import { startTimeoutSeconds } from '@/constants/server-config';
+import { requestTimeoutSeconds, startTimeoutSeconds } from '@/constants/server-config';
 import { createError } from '@/devworkspaceClient/services/helpers/createError';
 import {
   CustomObjectAPI,
@@ -211,6 +211,17 @@ export class ServerConfigApiService implements IServerConfigApi {
 
   getWorkspaceStartTimeout(cheCustomResource: CheClusterCustomResource): number {
     return cheCustomResource.spec.devEnvironments?.startTimeoutSeconds || startTimeoutSeconds;
+  }
+
+  getAxiosRequestTimeout(): number {
+    const requestTimeoutStr = process.env['CHE_DASHBOARD_CHE_API_AXIOS_REQUEST_TIMEOUT'];
+    if (requestTimeoutStr === undefined) {
+      return requestTimeoutSeconds * 1000;
+    }
+
+    const requestTimeout = parseInt(requestTimeoutStr, 10);
+
+    return isNaN(requestTimeout) ? requestTimeoutSeconds * 1000 : requestTimeout;
   }
 
   getDashboardLogo(

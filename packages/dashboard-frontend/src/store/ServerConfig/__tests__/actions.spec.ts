@@ -41,10 +41,11 @@ describe('ServerConfig, actions', () => {
         // ...
       } as api.IServerConfig;
 
-      (verifyAuthorized as jest.Mock).mockResolvedValue(true);
       (ServerConfigApi.fetchServerConfig as jest.Mock).mockResolvedValue(mockConfig);
 
       await store.dispatch(actionCreators.requestServerConfig());
+
+      expect(verifyAuthorized).not.toHaveBeenCalled();
 
       const actions = store.getActions();
       expect(actions).toHaveLength(2);
@@ -55,13 +56,15 @@ describe('ServerConfig, actions', () => {
     it('should dispatch error action on failed fetch', async () => {
       const errorMessage = 'Network error';
 
-      (verifyAuthorized as jest.Mock).mockResolvedValue(true);
       (ServerConfigApi.fetchServerConfig as jest.Mock).mockRejectedValue(new Error(errorMessage));
       (common.helpers.errors.getMessage as jest.Mock).mockReturnValue(errorMessage);
+      (verifyAuthorized as jest.Mock).mockResolvedValue(true);
 
       await expect(store.dispatch(actionCreators.requestServerConfig())).rejects.toThrow(
         `Failed to fetch workspace defaults. ${errorMessage}`,
       );
+
+      expect(verifyAuthorized).toHaveBeenCalled();
 
       const actions = store.getActions();
       expect(actions).toHaveLength(2);

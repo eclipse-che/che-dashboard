@@ -48,6 +48,7 @@ export function registerServerConfigRoute(instance: FastifyInstance) {
       const advancedAuthorization = serverConfigApi.getAdvancedAuthorization(cheCustomResource);
       const autoProvision = serverConfigApi.getAutoProvision(cheCustomResource);
       const allowedSourceUrls = serverConfigApi.getAllowedSourceUrls(cheCustomResource);
+      const axiosRequestTimeout = serverConfigApi.getAxiosRequestTimeout();
 
       const serverConfig: api.IServerConfig = {
         containerBuild,
@@ -61,6 +62,7 @@ export function registerServerConfigRoute(instance: FastifyInstance) {
           inactivityTimeout,
           runTimeout,
           startTimeout,
+          axiosRequestTimeout,
         },
         devfileRegistry: {
           disableInternalRegistry,

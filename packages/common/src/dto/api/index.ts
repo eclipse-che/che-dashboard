@@ -125,6 +125,7 @@ export interface IServerConfig {
     inactivityTimeout: number;
     runTimeout: number;
     startTimeout: number;
+    axiosRequestTimeout: number;
   };
   networking?: {
     auth?: {
