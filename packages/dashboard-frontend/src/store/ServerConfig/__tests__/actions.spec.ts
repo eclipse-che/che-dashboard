@@ -12,6 +12,7 @@
 
 import common, { api } from '@eclipse-che/common';
 
+import { getAxiosInstance } from '@/services/axios-wrapper/getAxiosInstance';
 import * as ServerConfigApi from '@/services/backend-client/serverConfigApi';
 import { createMockStore } from '@/store/__mocks__/mockActionsTestStore';
 import { verifyAuthorized } from '@/store/SanityCheck';
@@ -38,13 +39,19 @@ describe('ServerConfig, actions', () => {
     it('should dispatch receive action on successful fetch', async () => {
       const mockConfig = {
         allowedSourceUrls: ['https://github.com'],
+        timeouts: {
+          axiosRequestTimeout: 30000,
+        },
         // ...
       } as api.IServerConfig;
+
+      expect(getAxiosInstance().defaults.timeout).toEqual(15000);
 
       (ServerConfigApi.fetchServerConfig as jest.Mock).mockResolvedValue(mockConfig);
 
       await store.dispatch(actionCreators.requestServerConfig());
 
+      expect(getAxiosInstance().defaults.timeout).toEqual(30000);
       expect(verifyAuthorized).not.toHaveBeenCalled();
 
       const actions = store.getActions();

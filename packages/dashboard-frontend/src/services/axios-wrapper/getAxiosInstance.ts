@@ -17,7 +17,8 @@ class CheAxiosInstance {
   private readonly axiosInstance: AxiosInstance;
 
   private constructor() {
-    this.axiosInstance = axios.create({ timeout: 15000 });
+    this.axiosInstance = axios.create();
+    this.axiosInstance.defaults.timeout = 15000;
   }
 
   public static getInstance(): CheAxiosInstance {
@@ -26,10 +27,6 @@ class CheAxiosInstance {
     }
 
     return CheAxiosInstance.instance;
-  }
-
-  public static setDefaultTimeout(timeout: number): void {
-    CheAxiosInstance.getInstance().axiosInstance.defaults.timeout = timeout;
   }
 
   public getAxiosInstance(): AxiosInstance {
