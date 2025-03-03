@@ -12,6 +12,7 @@
 
 import common, { api } from '@eclipse-che/common';
 
+import { getAxiosInstance } from '@/services/axios-wrapper/getAxiosInstance';
 import * as ServerConfigApi from '@/services/backend-client/serverConfigApi';
 import { createMockStore } from '@/store/__mocks__/mockActionsTestStore';
 import { verifyAuthorized } from '@/store/SanityCheck';
@@ -38,13 +39,20 @@ describe('ServerConfig, actions', () => {
     it('should dispatch receive action on successful fetch', async () => {
       const mockConfig = {
         allowedSourceUrls: ['https://github.com'],
+        timeouts: {
+          axiosRequestTimeout: 30000,
+        },
         // ...
       } as api.IServerConfig;
 
-      (verifyAuthorized as jest.Mock).mockResolvedValue(true);
+      expect(getAxiosInstance().defaults.timeout).toEqual(15000);
+
       (ServerConfigApi.fetchServerConfig as jest.Mock).mockResolvedValue(mockConfig);
 
       await store.dispatch(actionCreators.requestServerConfig());
+
+      expect(getAxiosInstance().defaults.timeout).toEqual(30000);
+      expect(verifyAuthorized).not.toHaveBeenCalled();
 
       const actions = store.getActions();
       expect(actions).toHaveLength(2);
@@ -55,13 +63,15 @@ describe('ServerConfig, actions', () => {
     it('should dispatch error action on failed fetch', async () => {
       const errorMessage = 'Network error';
 
-      (verifyAuthorized as jest.Mock).mockResolvedValue(true);
       (ServerConfigApi.fetchServerConfig as jest.Mock).mockRejectedValue(new Error(errorMessage));
       (common.helpers.errors.getMessage as jest.Mock).mockReturnValue(errorMessage);
+      (verifyAuthorized as jest.Mock).mockResolvedValue(true);
 
       await expect(store.dispatch(actionCreators.requestServerConfig())).rejects.toThrow(
         `Failed to fetch workspace defaults. ${errorMessage}`,
       );
+
+      expect(verifyAuthorized).toHaveBeenCalled();
 
       const actions = store.getActions();
       expect(actions).toHaveLength(2);
