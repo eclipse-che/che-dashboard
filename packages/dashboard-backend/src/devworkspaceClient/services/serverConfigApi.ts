@@ -214,7 +214,7 @@ export class ServerConfigApiService implements IServerConfigApi {
   }
 
   getAxiosRequestTimeout(): number {
-    const requestTimeoutStr = process.env['CHE_DASHBOARD_CHE_API_AXIOS_REQUEST_TIMEOUT'];
+    const requestTimeoutStr = process.env['CHE_DASHBOARD_AXIOS_REQUEST_TIMEOUT'];
     if (requestTimeoutStr === undefined) {
       return requestTimeoutSeconds * 1000;
     }

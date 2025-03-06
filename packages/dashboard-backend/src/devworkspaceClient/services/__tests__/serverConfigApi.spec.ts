@@ -172,7 +172,7 @@ describe('Server Config API Service', () => {
       expect(res).toEqual(30000);
     });
     test('getting custom value', () => {
-      process.env['CHE_DASHBOARD_CHE_API_AXIOS_REQUEST_TIMEOUT'] = '55000';
+      process.env['CHE_DASHBOARD_AXIOS_REQUEST_TIMEOUT'] = '55000';
       const res = serverConfigService.getAxiosRequestTimeout();
       expect(res).toEqual(55000);
     });
