@@ -90,10 +90,10 @@ describe('fetch registry metadata', () => {
       await fetchRegistryMetadata(baseUrl, true);
 
       expect(mockFetchData).toHaveBeenCalledWith(
-        'https://eclipse-che.github.io/che-devfile-registry/7.71.0/index',
+        'https://eclipse-che.github.io/che-devfile-registry/7.71.0/index/all',
       );
       expect(mockFetchRemoteData.mock.calls).toEqual([
-        [`https://eclipse-che.github.io/che-devfile-registry/7.71.0/index`],
+        [`https://eclipse-che.github.io/che-devfile-registry/7.71.0/index/all`],
         [`https://eclipse-che.github.io/che-devfile-registry/7.71.0/devfiles/index.json`],
       ]);
     });
@@ -117,12 +117,12 @@ describe('fetch registry metadata', () => {
         SessionStorageKey.EXTERNAL_REGISTRIES,
       );
       expect(mockFetchRemoteData).toHaveBeenCalledWith(
-        'https://eclipse-che.github.io/che-devfile-registry/7.71.0/index',
+        'https://eclipse-che.github.io/che-devfile-registry/7.71.0/index/all',
       );
       expect(mockSessionStorageServiceUpdate).toHaveBeenCalledWith(
         SessionStorageKey.EXTERNAL_REGISTRIES,
         JSON.stringify({
-          'https://eclipse-che.github.io/che-devfile-registry/7.71.0/index': {
+          'https://eclipse-che.github.io/che-devfile-registry/7.71.0/index/all': {
             metadata: [metadata],
             lastFetched: 1555555555555,
           },
@@ -174,7 +174,7 @@ describe('fetch registry metadata', () => {
         SessionStorageKey.EXTERNAL_REGISTRIES,
       );
       expect(mockFetchRemoteData.mock.calls).toEqual([
-        ['https://eclipse-che.github.io/che-devfile-registry/7.71.0/index'],
+        ['https://eclipse-che.github.io/che-devfile-registry/7.71.0/index/all'],
         ['https://eclipse-che.github.io/che-devfile-registry/7.71.0/devfiles/index.json'],
       ]);
       expect(mockSessionStorageServiceUpdate).not.toHaveBeenCalled();
@@ -214,13 +214,13 @@ describe('fetch registry metadata', () => {
         SessionStorageKey.EXTERNAL_REGISTRIES,
       );
       expect(mockFetchRemoteData).toHaveBeenCalledWith(
-        'https://eclipse-che.github.io/che-devfile-registry/7.71.0/index',
+        'https://eclipse-che.github.io/che-devfile-registry/7.71.0/index/all',
       );
       expect(console.warn).toHaveBeenCalledTimes(2);
       expect(mockSessionStorageServiceUpdate).toHaveBeenCalledWith(
         SessionStorageKey.EXTERNAL_REGISTRIES,
         JSON.stringify({
-          'https://eclipse-che.github.io/che-devfile-registry/7.71.0/index': {
+          'https://eclipse-che.github.io/che-devfile-registry/7.71.0/index/all': {
             metadata: [metadata],
             lastFetched: 1555555555555,
           },
@@ -244,7 +244,7 @@ describe('fetch registry metadata', () => {
       mockFetchRemoteData.mockResolvedValue([metadata]);
       mockSessionStorageServiceGet.mockReturnValue(
         JSON.stringify({
-          'https://eclipse-che.github.io/che-devfile-registry/7.71.0/index': {
+          'https://eclipse-che.github.io/che-devfile-registry/7.71.0/index/all': {
             metadata: [metadata],
             lastFetched: time,
           },
@@ -276,7 +276,7 @@ describe('fetch registry metadata', () => {
       mockFetchRemoteData.mockResolvedValue([metadata]);
       mockSessionStorageServiceGet.mockReturnValue(
         JSON.stringify({
-          'https://eclipse-che.github.io/che-devfile-registry/7.71.0/index': {
+          'https://eclipse-che.github.io/che-devfile-registry/7.71.0/index/all': {
             metadata: [metadata],
             lastFetched: time,
           },
@@ -289,12 +289,12 @@ describe('fetch registry metadata', () => {
         SessionStorageKey.EXTERNAL_REGISTRIES,
       );
       expect(mockFetchRemoteData).toHaveBeenCalledWith(
-        'https://eclipse-che.github.io/che-devfile-registry/7.71.0/index',
+        'https://eclipse-che.github.io/che-devfile-registry/7.71.0/index/all',
       );
       expect(mockSessionStorageServiceUpdate).toHaveBeenCalledWith(
         SessionStorageKey.EXTERNAL_REGISTRIES,
         JSON.stringify({
-          'https://eclipse-che.github.io/che-devfile-registry/7.71.0/index': {
+          'https://eclipse-che.github.io/che-devfile-registry/7.71.0/index/all': {
             metadata: [metadata],
             lastFetched: time + elapsedTime,
           },
@@ -325,11 +325,11 @@ describe('fetch registry metadata', () => {
       expect(mockSessionStorageServiceGet).toHaveBeenCalledWith(
         SessionStorageKey.EXTERNAL_REGISTRIES,
       );
-      expect(mockFetchRemoteData).toHaveBeenCalledWith('https://registry.devfile.io/index');
+      expect(mockFetchRemoteData).toHaveBeenCalledWith('https://registry.devfile.io/index/all');
       expect(mockSessionStorageServiceUpdate).toHaveBeenCalledWith(
         SessionStorageKey.EXTERNAL_REGISTRIES,
         JSON.stringify({
-          'https://registry.devfile.io/index': {
+          'https://registry.devfile.io/index/all': {
             metadata: [metadata],
             lastFetched: 1555555555555,
           },
@@ -353,7 +353,7 @@ describe('fetch registry metadata', () => {
       expect(mockSessionStorageServiceGet).toHaveBeenCalledWith(
         SessionStorageKey.EXTERNAL_REGISTRIES,
       );
-      expect(mockFetchRemoteData).toHaveBeenCalledWith('https://registry.devfile.io/index');
+      expect(mockFetchRemoteData).toHaveBeenCalledWith('https://registry.devfile.io/index/all');
       expect(mockSessionStorageServiceUpdate).not.toHaveBeenCalled();
       expect(errorMessage).toEqual(
         'Failed to fetch devfiles metadata from registry URL: https://registry.devfile.io/, reason: Returned value is not array.',
@@ -390,12 +390,12 @@ describe('fetch registry metadata', () => {
       expect(mockSessionStorageServiceGet).toHaveBeenCalledWith(
         SessionStorageKey.EXTERNAL_REGISTRIES,
       );
-      expect(mockFetchRemoteData).toHaveBeenCalledWith('https://registry.devfile.io/index');
+      expect(mockFetchRemoteData).toHaveBeenCalledWith('https://registry.devfile.io/index/all');
       expect(console.warn).toHaveBeenCalledTimes(2);
       expect(mockSessionStorageServiceUpdate).toHaveBeenCalledWith(
         SessionStorageKey.EXTERNAL_REGISTRIES,
         JSON.stringify({
-          'https://registry.devfile.io/index': {
+          'https://registry.devfile.io/index/all': {
             metadata: [metadata],
             lastFetched: 1555555555555,
           },
@@ -419,7 +419,7 @@ describe('fetch registry metadata', () => {
       mockFetchRemoteData.mockResolvedValue([metadata]);
       mockSessionStorageServiceGet.mockReturnValue(
         JSON.stringify({
-          'https://registry.devfile.io/index': {
+          'https://registry.devfile.io/index/all': {
             metadata: [metadata],
             lastFetched: time,
           },
@@ -451,7 +451,7 @@ describe('fetch registry metadata', () => {
       mockFetchRemoteData.mockResolvedValue([metadata]);
       mockSessionStorageServiceGet.mockReturnValue(
         JSON.stringify({
-          'https://registry.devfile.io/index': {
+          'https://registry.devfile.io/index/all': {
             metadata: [metadata],
             lastFetched: time,
           },
@@ -463,11 +463,11 @@ describe('fetch registry metadata', () => {
       expect(mockSessionStorageServiceGet).toHaveBeenCalledWith(
         SessionStorageKey.EXTERNAL_REGISTRIES,
       );
-      expect(mockFetchRemoteData).toHaveBeenCalledWith('https://registry.devfile.io/index');
+      expect(mockFetchRemoteData).toHaveBeenCalledWith('https://registry.devfile.io/index/all');
       expect(mockSessionStorageServiceUpdate).toHaveBeenCalledWith(
         SessionStorageKey.EXTERNAL_REGISTRIES,
         JSON.stringify({
-          'https://registry.devfile.io/index': {
+          'https://registry.devfile.io/index/all': {
             metadata: [metadata],
             lastFetched: time + elapsedTime,
           },

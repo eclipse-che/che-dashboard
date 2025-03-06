@@ -122,7 +122,7 @@ export function getRegistryIndexLocations(registryUrl: string, isExternal: boole
   registryUrl = registryUrl[registryUrl.length - 1] === '/' ? registryUrl : registryUrl + '/';
   const registryIndexLocations: Array<string> = [];
   if (isExternal) {
-    const indexUrl = new URL('index', registryUrl);
+    const indexUrl = new URL('index/all', registryUrl);
     registryIndexLocations.push(indexUrl.href);
 
     const deprecatedIndexUrl = new URL('devfiles/index.json', registryUrl);
