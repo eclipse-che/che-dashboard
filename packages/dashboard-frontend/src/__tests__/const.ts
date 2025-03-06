@@ -98,6 +98,7 @@ export const serverConfigData = {
     inactivityTimeout: 10800,
     runTimeout: 86400,
     startTimeout: 300,
+    axiosRequestTimeout: 30000,
   },
   devfileRegistry: {
     disableInternalRegistry: false,

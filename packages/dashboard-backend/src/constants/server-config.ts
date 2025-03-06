@@ -11,3 +11,4 @@
  */
 
 export const startTimeoutSeconds = 300; // 5 minutes
+export const requestTimeoutSeconds = 30; // 30 seconds
