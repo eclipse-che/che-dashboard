@@ -31,6 +31,9 @@ export const devfile = {
     name: 'che-dashboard',
     namespace: namespace.name,
   },
+  attributes: {
+    'controller.devfile.io/storage-type': 'ephemeral',
+  },
   components: [
     {
       name: 'universal-developer-image',
