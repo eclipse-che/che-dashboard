@@ -12,6 +12,7 @@
 
 import { FactoryResolver } from '@/services/helpers/types';
 
+export const REQUEST_TIME_100 = 100;
 export const REQUEST_TIME_200 = 200;
 export const REQUEST_TIME_300 = 300;
 export const REQUEST_TIME_400 = 400;

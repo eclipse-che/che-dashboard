@@ -48,7 +48,6 @@ describe('devWorkspaces, actions', () => {
     let store: ReturnType<typeof createMockStore>;
     const mockCreateDevWorkspace = jest.fn();
     const mockCreateDevWorkspaceTemplate = jest.fn();
-    const mockUpdateDevWorkspace = jest.fn();
     const mockVerifyAuthorized = verifyAuthorized as jest.MockedFunction<typeof verifyAuthorized>;
     const mockUpdateDevWorkspaceTemplate = updateDevWorkspaceTemplate as jest.MockedFunction<
       typeof updateDevWorkspaceTemplate
@@ -92,15 +91,9 @@ describe('devWorkspaces, actions', () => {
       (getDevWorkspaceClient as jest.Mock).mockReturnValue({
         createDevWorkspace: mockCreateDevWorkspace,
         createDevWorkspaceTemplate: mockCreateDevWorkspaceTemplate,
-        updateDevWorkspace: mockUpdateDevWorkspace,
       });
 
       mockCreateDevWorkspace.mockResolvedValue({
-        devWorkspace: mockWorkspace,
-        headers: {},
-      });
-
-      mockUpdateDevWorkspace.mockResolvedValue({
         devWorkspace: mockWorkspace,
         headers: {},
       });
@@ -131,8 +124,6 @@ describe('devWorkspaces, actions', () => {
       );
 
       expect(mockCreateDevWorkspaceTemplate).toHaveBeenCalled();
-
-      expect(mockUpdateDevWorkspace).toHaveBeenCalledWith(mockWorkspace);
     });
 
     it('should handle warnings from createDevWorkspace and dispatch warning action', async () => {
@@ -153,30 +144,6 @@ describe('devWorkspaces, actions', () => {
       expect(actions[1]).toEqual(
         devWorkspaceWarningUpdateAction({
           warning: 'Some warning message',
-          workspace: mockWorkspace,
-        }),
-      );
-      expect(actions[2]).toEqual(devWorkspacesAddAction(mockWorkspace));
-    });
-
-    it('should handle warnings from updateDevWorkspace and dispatch warning action', async () => {
-      mockUpdateDevWorkspace.mockResolvedValueOnce({
-        devWorkspace: mockWorkspace,
-        headers: {
-          warning: '299 - Another warning message',
-        },
-      });
-
-      await store.dispatch(
-        createWorkspaceFromResources(mockWorkspace, mockWorkspaceTemplate, mockFactoryParams),
-      );
-
-      const actions = store.getActions();
-      expect(actions).toHaveLength(3);
-      expect(actions[0]).toEqual(devWorkspacesRequestAction());
-      expect(actions[1]).toEqual(
-        devWorkspaceWarningUpdateAction({
-          warning: 'Another warning message',
           workspace: mockWorkspace,
         }),
       );
