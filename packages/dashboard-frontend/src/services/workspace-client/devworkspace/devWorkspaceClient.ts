@@ -208,18 +208,6 @@ export class DevWorkspaceClient {
     return DwtApi.createTemplate(devWorkspaceTemplateResource);
   }
 
-  async updateDevWorkspace(
-    devWorkspace: devfileApi.DevWorkspace,
-  ): Promise<{ headers: DwApi.Headers; devWorkspace: devfileApi.DevWorkspace }> {
-    return await DwApi.patchWorkspace(devWorkspace.metadata.namespace, devWorkspace.metadata.name, [
-      {
-        op: 'replace',
-        path: '/spec/template/components',
-        value: devWorkspace.spec.template.components || [],
-      },
-    ]);
-  }
-
   /**
    * propagate the plugin registry, plugin internal registry,
    * and dashboard URLs into the components containers

@@ -35,7 +35,7 @@
     "format:fix": "yarn wrksps format:fix",
     "lint:check": "yarn wrksps lint:check",
     "lint:fix": "yarn wrksps lint:fix",
-    "patch": "$PWD/run/patch.sh $@",
+    "patch": "$PWD/run/patch.sh",
     "wrksps": "$PWD/run/wrksps.sh $*"
   },
   "resolutions": {
