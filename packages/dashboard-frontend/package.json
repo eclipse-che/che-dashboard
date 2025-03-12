@@ -37,7 +37,7 @@
     "@patternfly/react-icons": "^4.93.7",
     "@patternfly/react-table": "^4.113.3",
     "@reduxjs/toolkit": "^2.2.7",
-    "axios": "^1.7.0",
+    "axios": "^1.8.2",
     "buffer": "^6.0.3",
     "codemirror": "^5.65.18",
     "crypto-browserify": "^3.12.0",
