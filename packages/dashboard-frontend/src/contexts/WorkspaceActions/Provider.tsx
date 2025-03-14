@@ -16,6 +16,7 @@ import { connect, ConnectedProps } from 'react-redux';
 import { Location } from 'react-router-dom';
 
 import { WorkspaceActionsDeleteConfirmation } from '@/contexts/WorkspaceActions/DeleteConfirmation';
+import { WorkspaceActionsDeleteWarning } from '@/contexts/WorkspaceActions/DeleteWarning';
 import { lazyInject } from '@/inversify.config';
 import {
   buildIdeLoaderLocation,
@@ -201,19 +202,43 @@ class WorkspaceActionsProvider extends React.Component<Props, State> {
   }
 
   public render(): React.ReactElement {
+    const { allWorkspaces } = this.props;
     const { isOpen, toDelete, wantDelete } = this.state;
 
-    const confirmationDialog =
-      wantDelete === undefined ? (
-        <></>
-      ) : (
-        <WorkspaceActionsDeleteConfirmation
-          isOpen={isOpen}
-          wantDelete={wantDelete}
-          onConfirm={() => this.handleAcceptConfirmation()}
-          onClose={() => this.handleDeclineConfirmation()}
-        />
-      );
+    let confirmationDialog: React.ReactElement = <></>;
+
+    if (wantDelete) {
+      const hasPerUserWorkspaceToDelete =
+        allWorkspaces.find(
+          workspace =>
+            wantDelete.indexOf(workspace.name) !== -1 && workspace.storageType === 'per-user',
+        ) !== undefined;
+      const hasRunningPerUserWorkspace =
+        allWorkspaces.find(
+          workspace =>
+            wantDelete.indexOf(workspace.name) === -1 &&
+            workspace.storageType === 'per-user' &&
+            (workspace.isStarting || workspace.isRunning || workspace.isStopping),
+        ) !== undefined;
+      if (hasPerUserWorkspaceToDelete && hasRunningPerUserWorkspace) {
+        confirmationDialog = (
+          <WorkspaceActionsDeleteWarning
+            isOpen={isOpen}
+            wantDelete={wantDelete}
+            onClose={() => this.handleDeclineConfirmation()}
+          />
+        );
+      } else {
+        confirmationDialog = (
+          <WorkspaceActionsDeleteConfirmation
+            isOpen={isOpen}
+            wantDelete={wantDelete}
+            onConfirm={() => this.handleAcceptConfirmation()}
+            onClose={() => this.handleDeclineConfirmation()}
+          />
+        );
+      }
+    }
 
     return (
       <WorkspaceActionsContext.Provider

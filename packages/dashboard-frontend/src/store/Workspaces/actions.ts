@@ -68,6 +68,7 @@ export const actionCreators = {
     (workspace: Workspace): AppThunk =>
     async dispatch => {
       await dispatch(devWorkspacesActionCreators.terminateWorkspace(workspace.ref));
+      // ----> The following line is the one that is being tested
     },
 
   updateWorkspace:
