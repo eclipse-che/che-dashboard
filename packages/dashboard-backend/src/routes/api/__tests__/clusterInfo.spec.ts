@@ -41,7 +41,7 @@ describe('Cluster Info Route', () => {
     expect(res.json()).toEqual({
       applications: [
         {
-          icon: `${clusterConsoleUrl}/static/assets/redhat.svg`,
+          icon: `${clusterConsoleUrl}/static/assets/public/imgs/openshift-favicon.png`,
           title: 'OpenShift console',
           url: clusterConsoleUrl,
           id: ApplicationId.CLUSTER_CONSOLE,
