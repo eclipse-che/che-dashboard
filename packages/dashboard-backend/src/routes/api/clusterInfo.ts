@@ -31,7 +31,9 @@ function buildApplicationInfo(): ClusterInfo {
   const clusterConsoleTitle = process.env['OPENSHIFT_CONSOLE_TITLE'] || 'OpenShift console';
   const clusterConsoleIcon =
     process.env['OPENSHIFT_CONSOLE_ICON'] ||
-    (clusterConsoleUrl ? clusterConsoleUrl + '/static/assets/redhat.svg' : '');
+    (clusterConsoleUrl
+      ? clusterConsoleUrl + '/static/assets/public/imgs/openshift-favicon.png'
+      : '');
   const clusterConsoleGroup = process.env['OPENSHIFT_CONSOLE_GROUP'];
 
   const applications: ApplicationInfo[] = [];
