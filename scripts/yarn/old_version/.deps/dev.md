@@ -5,7 +5,7 @@
 | [`@aashutoshrathi/word-wrap@1.2.6`](git+https://github.com/aashutoshrathi/word-wrap.git) | MIT | #9212 |
 | [`@adobe/css-tools@4.4.0`](https://github.com/adobe/css-tools.git) | MIT | clearlydefined |
 | [`@ampproject/remapping@2.2.1`](git+https://github.com/ampproject/remapping.git) | Apache-2.0 | clearlydefined |
-| [`@babel/code-frame@7.22.13`](https://github.com/babel/babel.git) | MIT | #8946 |
+| [`@babel/code-frame@7.26.2`](https://github.com/babel/babel.git) | MIT | clearlydefined |
 | [`@babel/compat-data@7.23.2`](https://github.com/babel/babel.git) | MIT | #11554 |
 | [`@babel/core@7.23.2`](https://github.com/babel/babel.git) | MIT | #11570 |
 | [`@babel/generator@7.23.0`](https://github.com/babel/babel.git) | MIT | #11522 |
@@ -18,12 +18,11 @@
 | [`@babel/helper-plugin-utils@7.22.5`](https://github.com/babel/babel.git) | MIT | #9012 |
 | [`@babel/helper-simple-access@7.22.5`](https://github.com/babel/babel.git) | MIT | #9048 |
 | [`@babel/helper-split-export-declaration@7.22.6`](https://github.com/babel/babel.git) | MIT | #8938 |
-| [`@babel/helper-string-parser@7.22.5`](https://github.com/babel/babel.git) | MIT | #8962 |
-| [`@babel/helper-validator-identifier@7.22.20`](https://github.com/babel/babel.git) | MIT | #8955 |
+| [`@babel/helper-string-parser@7.25.9`](https://github.com/babel/babel.git) | MIT | clearlydefined |
+| [`@babel/helper-validator-identifier@7.25.9`](https://github.com/babel/babel.git) | MIT | clearlydefined |
 | [`@babel/helper-validator-option@7.22.15`](https://github.com/babel/babel.git) | MIT | #8961 |
-| [`@babel/helpers@7.23.2`](https://github.com/babel/babel.git) | MIT | #11662 |
-| [`@babel/highlight@7.22.20`](https://github.com/babel/babel.git) | MIT | #9073 |
-| [`@babel/parser@7.23.0`](https://github.com/babel/babel.git) | MIT | #10663 |
+| [`@babel/helpers@7.26.10`](https://github.com/babel/babel.git) | MIT | clearlydefined |
+| [`@babel/parser@7.26.10`](https://github.com/babel/babel.git) | MIT | #16882 |
 | [`@babel/plugin-syntax-async-generators@7.8.4`](https://github.com/babel/babel/tree/master/packages/babel-plugin-syntax-async-generators) | MIT | #1973 |
 | [`@babel/plugin-syntax-bigint@7.8.3`](https://github.com/babel/babel/tree/master/packages/babel-plugin-syntax-bigint) | MIT | clearlydefined |
 | [`@babel/plugin-syntax-class-properties@7.12.13`](https://github.com/babel/babel.git) | MIT | clearlydefined |
@@ -38,9 +37,9 @@
 | [`@babel/plugin-syntax-optional-chaining@7.8.3`](https://github.com/babel/babel/tree/master/packages/babel-plugin-syntax-optional-chaining) | MIT | clearlydefined |
 | [`@babel/plugin-syntax-top-level-await@7.14.5`](https://github.com/babel/babel.git) | MIT | clearlydefined |
 | [`@babel/plugin-syntax-typescript@7.22.5`](https://github.com/babel/babel.git) | MIT | #8994 |
-| [`@babel/template@7.22.15`](https://github.com/babel/babel.git) | MIT | #9017 |
+| [`@babel/template@7.26.9`](https://github.com/babel/babel.git) | MIT | clearlydefined |
 | [`@babel/traverse@7.23.2`](https://github.com/babel/babel.git) | MIT | #11520 |
-| [`@babel/types@7.23.0`](https://github.com/babel/babel.git) | MIT | #11521 |
+| [`@babel/types@7.26.10`](https://github.com/babel/babel.git) | MIT | #17734 |
 | [`@bcoe/v8-coverage@0.2.3`](git://github.com/demurgos/v8-coverage.git) | MIT | clearlydefined |
 | [`@csstools/css-parser-algorithms@2.3.2`](https://github.com/csstools/postcss-plugins.git) | MIT | clearlydefined |
 | [`@csstools/css-tokenizer@2.2.1`](https://github.com/csstools/postcss-plugins.git) | MIT | clearlydefined |
@@ -601,7 +600,7 @@
 | [`safe-regex-test@1.0.0`](git+https://github.com/ljharb/safe-regex-test.git) | MIT | clearlydefined |
 | [`saxes@6.0.0`](https://github.com/lddubeau/saxes.git) | ISC | clearlydefined |
 | [`schema-utils@4.2.0`](https://github.com/webpack/schema-utils.git) | MIT | #8986 |
-| [`serialize-javascript@6.0.1`](git+https://github.com/yahoo/serialize-javascript.git) | BSD-3-Clause | #12680 |
+| [`serialize-javascript@6.0.2`](git+https://github.com/yahoo/serialize-javascript.git) | BSD-3-Clause | #12680 |
 | [`set-function-length@1.1.1`](git+https://github.com/ljharb/set-function-length.git) | MIT | #11090 |
 | [`set-function-name@2.0.1`](git+https://github.com/ljharb/set-function-name.git) | MIT | #10590 |
 | [`shallow-clone@3.0.1`](https://github.com/jonschlinkert/shallow-clone.git) | MIT | clearlydefined |
@@ -658,7 +657,6 @@
 | [`text-table@0.2.0`](git://github.com/substack/text-table.git) | MIT | clearlydefined |
 | [`titleize@3.0.0`](https://github.com/sindresorhus/titleize.git) | MIT | clearlydefined |
 | [`tmpl@1.0.5`](https://github.com/daaku/nodejs-tmpl) | BSD-3-Clause | clearlydefined |
-| [`to-fast-properties@2.0.0`](https://github.com/sindresorhus/to-fast-properties.git) | MIT | clearlydefined |
 | [`to-regex-range@5.0.1`](https://github.com/micromatch/to-regex-range.git) | MIT | clearlydefined |
 | [`totalist@3.0.1`](https://github.com/lukeed/totalist.git) | MIT | clearlydefined |
 | [`touch@3.1.0`](git://github.com/isaacs/node-touch.git) | ISC | clearlydefined |
