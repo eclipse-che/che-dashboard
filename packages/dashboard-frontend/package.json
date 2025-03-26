@@ -119,7 +119,7 @@
     "source-map-loader": "^4.0.1",
     "speed-measure-webpack-plugin": "^1.5.0",
     "style-loader": "^3.3.3",
-    "stylelint": "^15.10.2",
+    "stylelint": "^16.15.0",
     "stylelint-config-clean-order": "^5.2.0",
     "stylelint-config-standard": "^34.0.0",
     "stylelint-webpack-plugin": "^4.1.1",

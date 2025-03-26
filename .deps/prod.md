@@ -2,7 +2,7 @@
 
 | Packages | License | Resolved CQs |
 | --- | --- | --- |
-| [`@babel/runtime@7.26.10`](https://github.com/babel/babel.git) | MIT | clearlydefined |
+| [`@babel/runtime@7.27.0`](https://github.com/babel/babel.git) | MIT | clearlydefined |
 | [`@devfile/api@2.3.0-1738342178`](https://github.com/GIT_USER_ID/GIT_REPO_ID.git) | Apache-2.0 | clearlydefined |
 | [`@eclipse-che/che-devworkspace-generator@7.99.0-next-1ccb963`](git+https://github.com/devfile/devworkspace-generator.git) | EPL-2.0 | ecd.che |
 | [`@fastify/accept-negotiator@1.1.0`](git+https://github.com/fastify/accept-negotiator.git) | MIT | clearlydefined |

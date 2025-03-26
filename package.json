@@ -39,14 +39,8 @@
     "wrksps": "$PWD/run/wrksps.sh $*"
   },
   "resolutions": {
-    "@babel/code-frame": "^7.26.2",
-    "@babel/helper-string-parser": "^7.25.9",
-    "@babel/helper-validator-identifier": "^7.25.9",
     "@babel/helpers": "^7.26.10",
-    "@babel/parser": "^7.26.10",
     "@babel/runtime": "^7.26.10",
-    "@babel/template": "^7.26.9",
-    "@babel/types": "^7.26.10",
     "@adobe/css-tools": "^4.3.2",
     "@hapi/hoek": "^10.0.1",
     "axios": "^1.8.2",
