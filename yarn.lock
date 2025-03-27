@@ -491,6 +491,20 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@devfile/api@npm:2.3.0-1741179368":
+  version: 2.3.0-1741179368
+  resolution: "@devfile/api@npm:2.3.0-1741179368"
+  dependencies:
+    "@types/node": "npm:*"
+    "@types/node-fetch": "npm:^2.5.7"
+    es6-promise: "npm:^4.2.4"
+    form-data: "npm:^2.5.0"
+    node-fetch: "npm:^2.6.0"
+    url-parse: "npm:^1.4.3"
+  checksum: 10/4b4579c566df2e9843d2b659f975f53da74e2f0765b78deff8fb7fc2b680134e5ffc16a4d3b7d41dfa67daef0efff33e34e7e4ebaf729e9f6b71163201f251ba
+  languageName: node
+  linkType: hard
+
 "@discoveryjs/json-ext@npm:0.5.7, @discoveryjs/json-ext@npm:^0.5.0":
   version: 0.5.7
   resolution: "@discoveryjs/json-ext@npm:0.5.7"
@@ -512,12 +526,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@eclipse-che/che-devworkspace-generator@npm:7.99.0-next-1ccb963":
-  version: 7.99.0-next-1ccb963
-  resolution: "@eclipse-che/che-devworkspace-generator@npm:7.99.0-next-1ccb963"
+"@eclipse-che/che-devworkspace-generator@npm:7.101.0":
+  version: 7.101.0
+  resolution: "@eclipse-che/che-devworkspace-generator@npm:7.101.0"
   dependencies:
-    "@devfile/api": "npm:2.3.0-1738342178"
-    axios: "npm:^1.7.4"
+    "@devfile/api": "npm:2.3.0-1741179368"
+    axios: "npm:^1.8.3"
     fs-extra: "npm:^11.2.0"
     inversify: "npm:^6.0.2"
     js-yaml: "npm:^4.0.0"
@@ -527,7 +541,7 @@ __metadata:
     reflect-metadata: "npm:^0.2.2"
   bin:
     che-devworkspace-generator: lib/entrypoint.js
-  checksum: 10/668243d8182351ede8648e643726f83aee4520e4bc7f0298b423726b98472d804603ed059257f8e83c0d8d1af4c7fba148a29fdfe7fd580ff6e7897836f5ca10
+  checksum: 10/bc6d072a114102e51e1603865c6f7464ef99a29f7a049658a373f0be36d2472a86dfc64745c587956aca49ce40e702001bb7c535b88f125696155b7f843b635d
   languageName: node
   linkType: hard
 
@@ -559,7 +573,7 @@ __metadata:
   resolution: "@eclipse-che/dashboard-backend@workspace:packages/dashboard-backend"
   dependencies:
     "@devfile/api": "npm:2.3.0-1738342178"
-    "@eclipse-che/che-devworkspace-generator": "npm:7.99.0-next-1ccb963"
+    "@eclipse-che/che-devworkspace-generator": "npm:7.101.0"
     "@fastify/cors": "npm:^9.0.1"
     "@fastify/error": "npm:^3.4.1"
     "@fastify/http-proxy": "npm:^9.5.0"
