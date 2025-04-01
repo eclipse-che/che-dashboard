@@ -59,7 +59,7 @@ describe('DevfileRegistries, selectors', () => {
                 displayName: 'Devfile 2',
                 description: 'Description 2',
                 links: { v2: 'https://registry2.com/devfile2' },
-                tags: ['Empty'],
+                tags: ['tag2', 'Empty'],
               } as che.DevfileMetaData,
             ],
             error: 'Error message',
@@ -105,7 +105,7 @@ describe('DevfileRegistries, selectors', () => {
         displayName: 'Devfile 2',
         description: 'Description 2',
         links: { v2: 'https://registry2.com/devfile2' },
-        tags: ['Empty'],
+        tags: ['tag2', 'Empty'],
         registry: 'https://registry2.com',
       },
     ]);
@@ -132,8 +132,11 @@ describe('DevfileRegistries, selectors', () => {
   });
 
   describe('selectMetadataFiltered', () => {
-    it('should select metadata filtered by filter value', () => {
+    it('should select metadata filtered by filter value by displayName', () => {
+      mockState.devfileRegistries.filter = 'Devfile 1';
+
       const result = selectMetadataFiltered(mockState);
+
       expect(result).toEqual([
         {
           displayName: 'Devfile 1',
@@ -141,6 +144,54 @@ describe('DevfileRegistries, selectors', () => {
           links: { v2: 'https://registry1.com/devfile1' },
           tags: ['tag1'],
           registry: 'https://registry1.com',
+        },
+      ]);
+    });
+
+    it('should select metadata filtered by filter value by description', () => {
+      mockState.devfileRegistries.filter = 'Description 1';
+
+      const result = selectMetadataFiltered(mockState);
+
+      expect(result).toEqual([
+        {
+          displayName: 'Devfile 1',
+          description: 'Description 1',
+          links: { v2: 'https://registry1.com/devfile1' },
+          tags: ['tag1'],
+          registry: 'https://registry1.com',
+        },
+      ]);
+    });
+
+    it('should select metadata filtered by filter value by tags', () => {
+      mockState.devfileRegistries.filter = 'Empty';
+
+      const result = selectMetadataFiltered(mockState);
+
+      expect(result).toEqual([
+        {
+          displayName: 'Devfile 2',
+          description: 'Description 2',
+          links: { v2: 'https://registry2.com/devfile2' },
+          tags: ['tag2', 'Empty'],
+          registry: 'https://registry2.com',
+        },
+      ]);
+    });
+
+    it('should select metadata filtered by filter value by link', () => {
+      mockState.devfileRegistries.filter = 'registry2.com';
+
+      const result = selectMetadataFiltered(mockState);
+
+      expect(result).toEqual([
+        {
+          displayName: 'Devfile 2',
+          description: 'Description 2',
+          links: { v2: 'https://registry2.com/devfile2' },
+          tags: ['tag2', 'Empty'],
+          registry: 'https://registry2.com',
         },
       ]);
     });
@@ -167,7 +218,7 @@ describe('DevfileRegistries, selectors', () => {
           displayName: 'Devfile 2',
           description: 'Description 2',
           links: { v2: 'https://registry2.com/devfile2' },
-          tags: ['Empty'],
+          tags: ['tag2', 'Empty'],
           registry: 'https://registry2.com',
         },
       ]);

@@ -122,7 +122,12 @@ export const selectDefaultDevfile = createSelector(
 );
 
 function matches(meta: che.DevfileMetaData, filterValue: string): boolean {
-  return match(meta.displayName, filterValue) || match(meta.description || '', filterValue);
+  return (
+    match(meta.displayName, filterValue) ||
+    match(meta.description || '', filterValue) ||
+    match(meta.tags.join(' '), filterValue) ||
+    match(meta?.links?.v2 || '', filterValue)
+  );
 }
 
 function mergeRegistriesMetadata(
