@@ -28,9 +28,9 @@ import { LoaderTab, WorkspaceAction } from '@/services/helpers/types';
 import { TabManager } from '@/services/tabManager';
 import { Workspace } from '@/services/workspace-adapter';
 import { RootState } from '@/store';
+import { selectPvcStrategy } from '@/store/ServerConfig';
 import { workspacesActionCreators } from '@/store/Workspaces';
 import { selectAllWorkspaces } from '@/store/Workspaces/selectors';
-import { selectPvcStrategy } from '@/store/ServerConfig';
 
 import { WantDelete, WorkspaceActionsContext } from '.';
 
