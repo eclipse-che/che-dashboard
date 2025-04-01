@@ -17,6 +17,7 @@ import { Location } from 'react-router-dom';
 
 import { WorkspaceActionsDeleteConfirmation } from '@/contexts/WorkspaceActions/DeleteConfirmation';
 import { WorkspaceActionsDeleteWarning } from '@/contexts/WorkspaceActions/DeleteWarning';
+import { hasDeleteWarning } from '@/contexts/WorkspaceActions/helpers';
 import { lazyInject } from '@/inversify.config';
 import {
   buildIdeLoaderLocation,
@@ -201,50 +202,29 @@ class WorkspaceActionsProvider extends React.Component<Props, State> {
     });
   }
 
-  private get confirmationDialog(): React.ReactElement {
+  public render(): React.ReactElement {
     const { allWorkspaces } = this.props;
-    const { isOpen, wantDelete } = this.state;
+    const { isOpen, toDelete, wantDelete } = this.state;
 
-    if (!wantDelete) {
-      return <></>;
-    }
+    const _hasDeleteConfirmation = wantDelete !== undefined;
+    const _hasDeleteWarning = _hasDeleteConfirmation && hasDeleteWarning(allWorkspaces, wantDelete);
 
-    const hasPerUserWorkspaceToDelete =
-      allWorkspaces.find(
-        workspace =>
-          wantDelete.indexOf(workspace.name) !== -1 && workspace.storageType === 'per-user',
-      ) !== undefined;
-
-    const hasRunningPerUserWorkspace =
-      allWorkspaces.find(
-        workspace =>
-          wantDelete.indexOf(workspace.name) === -1 &&
-          workspace.storageType === 'per-user' &&
-          (workspace.isStarting || workspace.isRunning || workspace.isStopping),
-      ) !== undefined;
-
-    if (hasPerUserWorkspaceToDelete && hasRunningPerUserWorkspace) {
-      return (
-        <WorkspaceActionsDeleteWarning
-          isOpen={isOpen}
-          wantDelete={wantDelete}
-          onClose={() => this.handleDeclineConfirmation()}
-        />
-      );
-    }
-
-    return (
+    const dialog: React.ReactElement = _hasDeleteWarning ? (
+      <WorkspaceActionsDeleteWarning
+        isOpen={isOpen}
+        wantDelete={wantDelete}
+        onClose={() => this.handleDeclineConfirmation()}
+      />
+    ) : _hasDeleteConfirmation ? (
       <WorkspaceActionsDeleteConfirmation
         isOpen={isOpen}
         wantDelete={wantDelete}
         onConfirm={() => this.handleAcceptConfirmation()}
         onClose={() => this.handleDeclineConfirmation()}
       />
+    ) : (
+      <></>
     );
-  }
-
-  public render(): React.ReactElement {
-    const { toDelete } = this.state;
 
     return (
       <WorkspaceActionsContext.Provider
@@ -255,7 +235,7 @@ class WorkspaceActionsProvider extends React.Component<Props, State> {
         }}
       >
         {this.props.children}
-        {this.confirmationDialog}
+        {dialog}
       </WorkspaceActionsContext.Provider>
     );
   }
