@@ -11,22 +11,40 @@
  */
 
 import { WantDelete } from '@/contexts/WorkspaceActions/index';
+import { WorkspaceStorageType } from '@/services/models/che';
 import { Workspace } from '@/services/workspace-adapter';
 
-export function hasDeleteWarning(allWorkspaces: Workspace[], wantDelete: WantDelete): boolean {
-  const hasPerUserWorkspaceToDelete =
-    allWorkspaces.find(
-      workspace =>
-        wantDelete.indexOf(workspace.name) !== -1 && workspace.storageType === 'per-user',
-    ) !== undefined;
+export function hasDeleteWarning(
+  allWorkspaces: Workspace[],
+  wantDelete: WantDelete,
+  defaultPvcStrategy: WorkspaceStorageType,
+): boolean {
+  const isPerUserStorageType = (workspace: Workspace) => {
+    const storageType = workspace.storageType ? workspace.storageType : defaultPvcStrategy;
+    return storageType === 'per-user';
+  };
+
+  const perUserWorkspaceToDelete = allWorkspaces.filter(
+    workspace => wantDelete.indexOf(workspace.name) !== -1 && isPerUserStorageType(workspace),
+  );
+
+  const hasPerUserWorkspaceToDelete = perUserWorkspaceToDelete.length > 0;
+
+  const moreThanOneRunningPerUserWorkspaceToDelete =
+    perUserWorkspaceToDelete.filter(
+      workspace => workspace.isStarting || workspace.isRunning || workspace.isStopping,
+    ).length > 1;
 
   const hasRunningPerUserWorkspace =
     allWorkspaces.find(
       workspace =>
         wantDelete.indexOf(workspace.name) === -1 &&
-        workspace.storageType === 'per-user' &&
+        isPerUserStorageType(workspace) &&
         (workspace.isStarting || workspace.isRunning || workspace.isStopping),
     ) !== undefined;
 
-  return hasPerUserWorkspaceToDelete && hasRunningPerUserWorkspace;
+  return (
+    moreThanOneRunningPerUserWorkspaceToDelete ||
+    (hasPerUserWorkspaceToDelete && hasRunningPerUserWorkspace)
+  );
 }

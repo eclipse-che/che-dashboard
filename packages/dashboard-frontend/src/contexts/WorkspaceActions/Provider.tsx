@@ -30,6 +30,7 @@ import { Workspace } from '@/services/workspace-adapter';
 import { RootState } from '@/store';
 import { workspacesActionCreators } from '@/store/Workspaces';
 import { selectAllWorkspaces } from '@/store/Workspaces/selectors';
+import { selectPvcStrategy } from '@/store/ServerConfig';
 
 import { WantDelete, WorkspaceActionsContext } from '.';
 
@@ -203,11 +204,12 @@ class WorkspaceActionsProvider extends React.Component<Props, State> {
   }
 
   public render(): React.ReactElement {
-    const { allWorkspaces } = this.props;
+    const { allWorkspaces, defaultPvcStrategy } = this.props;
     const { isOpen, toDelete, wantDelete } = this.state;
 
     const _hasDeleteConfirmation = wantDelete !== undefined;
-    const _hasDeleteWarning = _hasDeleteConfirmation && hasDeleteWarning(allWorkspaces, wantDelete);
+    const _hasDeleteWarning =
+      wantDelete && hasDeleteWarning(allWorkspaces, wantDelete, defaultPvcStrategy);
 
     const dialog: React.ReactElement = _hasDeleteWarning ? (
       <WorkspaceActionsDeleteWarning
@@ -243,6 +245,7 @@ class WorkspaceActionsProvider extends React.Component<Props, State> {
 
 const mapStateToProps = (state: RootState) => ({
   allWorkspaces: selectAllWorkspaces(state),
+  defaultPvcStrategy: selectPvcStrategy(state),
 });
 
 const connector = connect(mapStateToProps, workspacesActionCreators);

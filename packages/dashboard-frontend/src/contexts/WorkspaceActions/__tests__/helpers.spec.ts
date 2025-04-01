@@ -62,7 +62,7 @@ describe('Workspace actions helpers', () => {
       it('should return false if other running workspaces does`t have Per-user storage type', () => {
         wantDelete = ['dev-wksp-1'];
 
-        const _hasDeleteWarning = hasDeleteWarning(allWorkspaces, wantDelete);
+        const _hasDeleteWarning = hasDeleteWarning(allWorkspaces, wantDelete, 'per-user');
 
         expect(_hasDeleteWarning).toBeFalsy();
       });
@@ -70,27 +70,34 @@ describe('Workspace actions helpers', () => {
       it('should return true if other running workspaces have Per-user storage type', () => {
         wantDelete = ['dev-wksp-0'];
 
-        const _hasDeleteWarning = hasDeleteWarning(allWorkspaces, wantDelete);
+        const _hasDeleteWarning = hasDeleteWarning(allWorkspaces, wantDelete, 'per-user');
 
         expect(_hasDeleteWarning).toBeTruthy();
       });
 
       it('should return true if deleting several running workspaces with Per-user storage type', () => {
-        wantDelete = ['dev-wksp-1', 'dev-wksp-4'];
+        wantDelete = ['dev-wksp-0', 'dev-wksp-1'];
 
-        allWorkspaces.push(
+        allWorkspaces = [
           constructWorkspace(
             new DevWorkspaceBuilder()
-              .withName('dev-wksp-4')
+              .withName('dev-wksp-0')
               .withStatus({ phase: DevWorkspaceStatus.RUNNING })
               .withTemplateAttributes({ [DEVWORKSPACE_STORAGE_TYPE_ATTR]: 'per-user' })
               .build(),
           ),
-        );
+          constructWorkspace(
+            new DevWorkspaceBuilder()
+              .withName('dev-wksp-1')
+              .withStatus({ phase: DevWorkspaceStatus.RUNNING })
+              .withTemplateAttributes({ [DEVWORKSPACE_STORAGE_TYPE_ATTR]: 'per-user' })
+              .build(),
+          ),
+        ];
 
-        const _hasDeleteWarning = hasDeleteWarning(allWorkspaces, wantDelete);
+        const _hasDeleteWarning = hasDeleteWarning(allWorkspaces, wantDelete, 'per-user');
 
-        expect(_hasDeleteWarning).toBeFalsy();
+        expect(_hasDeleteWarning).toBeTruthy();
       });
     });
 
@@ -98,7 +105,7 @@ describe('Workspace actions helpers', () => {
       it('should return false', () => {
         wantDelete = ['dev-wksp-2'];
 
-        const _hasDeleteWarning = hasDeleteWarning(allWorkspaces, wantDelete);
+        const _hasDeleteWarning = hasDeleteWarning(allWorkspaces, wantDelete, 'per-user');
 
         expect(_hasDeleteWarning).toBeFalsy();
       });
@@ -108,7 +115,7 @@ describe('Workspace actions helpers', () => {
       it('should return false', () => {
         wantDelete = ['dev-wksp-3'];
 
-        const _hasDeleteWarning = hasDeleteWarning(allWorkspaces, wantDelete);
+        const _hasDeleteWarning = hasDeleteWarning(allWorkspaces, wantDelete, 'per-user');
 
         expect(_hasDeleteWarning).toBeFalsy();
       });
