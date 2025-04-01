@@ -43,7 +43,7 @@ describe('WorkspaceActionsDeleteWarning', () => {
 
       expect(dialog).toBeTruthy();
       expect(dialog).toHaveTextContent(
-        `${oneWorkspace[0]} workspace has Per-user storage type. The Per-usertype e.g. one common PVC is used for all workspaces and that PVC has the RWO access mode. Learn more You need to stop other workspaces with Per-user storage type before deleting.`,
+        `${oneWorkspace[0]} workspace has Per-user storage type. The Per-user type e.g. one common PVC is used for all workspaces and that PVC has the RWO access mode. Learn more You need to stop other workspaces with Per-user storage type before deleting.`,
       );
     });
 

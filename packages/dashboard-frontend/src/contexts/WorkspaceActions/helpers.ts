@@ -17,7 +17,7 @@ import { Workspace } from '@/services/workspace-adapter';
 export function hasDeleteWarning(
   allWorkspaces: Workspace[],
   wantDelete: WantDelete,
-  defaultPvcStrategy: WorkspaceStorageType,
+  defaultPvcStrategy: WorkspaceStorageType = '',
 ): boolean {
   const isPerUserStorageType = (workspace: Workspace) => {
     const storageType = workspace.storageType ? workspace.storageType : defaultPvcStrategy;
