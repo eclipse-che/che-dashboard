@@ -31,16 +31,15 @@ export function hasDeleteWarning(
   const hasPerUserWorkspaceToDelete = perUserWorkspaceToDelete.length > 0;
 
   const moreThanOneRunningPerUserWorkspaceToDelete =
-    perUserWorkspaceToDelete.filter(
-      workspace => workspace.isStarting || workspace.isRunning || workspace.isStopping,
-    ).length > 1;
+    perUserWorkspaceToDelete.filter(workspace => workspace.isStarting || workspace.isRunning)
+      .length > 1;
 
   const hasRunningPerUserWorkspace =
     allWorkspaces.find(
       workspace =>
         wantDelete.indexOf(workspace.name) === -1 &&
         isPerUserStorageType(workspace) &&
-        (workspace.isStarting || workspace.isRunning || workspace.isStopping),
+        (workspace.isStarting || workspace.isRunning),
     ) !== undefined;
 
   return (
