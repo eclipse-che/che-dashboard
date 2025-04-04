@@ -215,6 +215,7 @@ class WorkspaceActionsProvider extends React.Component<Props, State> {
       <WorkspaceActionsDeleteWarning
         isOpen={isOpen}
         wantDelete={wantDelete}
+        onProceedAnyway={() => this.handleAcceptConfirmation()}
         onClose={() => this.handleDeclineConfirmation()}
       />
     ) : _hasDeleteConfirmation ? (

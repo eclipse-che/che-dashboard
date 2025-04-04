@@ -20,6 +20,7 @@ import getComponentRenderer, { screen } from '@/services/__mocks__/getComponentR
 const { renderComponent } = getComponentRenderer(getComponent);
 
 const mockOnClose = jest.fn();
+const mockProceedAnyway = jest.fn();
 
 describe('WorkspaceActionsDeleteWarning', () => {
   const oneWorkspace: WantDelete = ['workspace1'];
@@ -43,7 +44,7 @@ describe('WorkspaceActionsDeleteWarning', () => {
 
       expect(dialog).toBeTruthy();
       expect(dialog).toHaveTextContent(
-        `${oneWorkspace[0]} workspace has Per-user storage type. The Per-user type e.g. one common PVC is used for all workspaces and that PVC has the RWO access mode. Learn more You need to stop other workspaces with Per-user storage type before deleting.`,
+        `${oneWorkspace[0]} workspace has Per-user storage type. There is a possibility that the Per-user storage type e.g. common PVC is used for all workspaces and that PVC has the RWO access mode. Learn more To prevent possible problems with removal, you need to stop other workspaces with Per-user storage type before deleting.`,
       );
     });
 
@@ -54,7 +55,7 @@ describe('WorkspaceActionsDeleteWarning', () => {
 
       expect(dialog).toBeTruthy();
       expect(dialog).toHaveTextContent(
-        `One of deleting workspaces has Per-user storage type. The Per-user type e.g. common PVC is used for all workspaces and that PVC has the RWO access mode. Learn more You need to stop other workspaces with Per-user storage type before deleting.`,
+        'One of deleting workspaces has Per-user storage type. There is a possibility that Per-user storage type e.g. common PVC is used for all workspaces and that PVC has the RWO access mode. Learn more To prevent possible problems with removal, you need to stop other workspaces with Per-user storage type before deleting.',
       );
     });
   });
@@ -69,6 +70,18 @@ describe('WorkspaceActionsDeleteWarning', () => {
     await userEvent.click(closeButton!);
 
     expect(mockOnClose).toHaveBeenCalledTimes(1);
+  });
+
+  test('click on Proceed Anyway button', async () => {
+    renderComponent(true, oneWorkspace);
+
+    const cancelButton = screen.queryByRole('button', { name: /proceed anyway/i });
+
+    expect(cancelButton).toBeTruthy();
+
+    await userEvent.click(cancelButton!);
+
+    expect(mockProceedAnyway).toHaveBeenCalledTimes(1);
   });
 
   test('click on Cancel button', async () => {
@@ -86,6 +99,11 @@ describe('WorkspaceActionsDeleteWarning', () => {
 
 function getComponent(isOpen: boolean, wantDelete: [string, ...string[]]): React.ReactElement {
   return (
-    <WorkspaceActionsDeleteWarning isOpen={isOpen} wantDelete={wantDelete} onClose={mockOnClose} />
+    <WorkspaceActionsDeleteWarning
+      isOpen={isOpen}
+      wantDelete={wantDelete}
+      onProceedAnyway={mockProceedAnyway}
+      onClose={mockOnClose}
+    />
   );
 }
