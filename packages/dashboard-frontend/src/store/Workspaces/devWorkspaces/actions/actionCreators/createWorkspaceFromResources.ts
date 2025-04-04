@@ -88,20 +88,7 @@ export const createWorkspaceFromResources =
         clusterConsole,
       );
 
-      /* update the DevWorkspace */
-
-      const updateResp = await getDevWorkspaceClient().updateDevWorkspace(createResp.devWorkspace);
-
-      if (updateResp.headers.warning) {
-        dispatch(
-          devWorkspaceWarningUpdateAction({
-            warning: cleanupMessage(updateResp.headers.warning),
-            workspace: updateResp.devWorkspace,
-          }),
-        );
-      }
-
-      dispatch(devWorkspacesAddAction(updateResp.devWorkspace));
+      dispatch(devWorkspacesAddAction(createResp.devWorkspace));
     } catch (e) {
       const errorMessage =
         'Failed to create a new workspace, reason: ' + common.helpers.errors.getMessage(e);

@@ -30,6 +30,7 @@ import {
   factoryResolverData,
   kubernetesNamespacesData,
   podsData,
+  REQUEST_TIME_100,
   REQUEST_TIME_200,
   REQUEST_TIME_300,
   REQUEST_TIME_400,
@@ -134,9 +135,12 @@ describe('Workspace creation time', () => {
           return responseWithDelay([], REQUEST_TIME_300);
         case '/dashboard/api/namespace/user-che/devworkspaces':
           // send WebSocket message to simulate the workspace creation
-          setTimeout(() => mockWS.send(JSON.stringify(devWorkspaceWebSocketData)), 0);
+          setTimeout(
+            () => mockWS.send(JSON.stringify(devWorkspaceWebSocketData)),
+            REQUEST_TIME_100,
+          );
 
-          return responseWithDelay(devworkspacesPostData, REQUEST_TIME_200);
+          return responseWithDelay(devworkspacesPostData, REQUEST_TIME_400);
         case '/dashboard/api/namespace/user-che/devworkspacetemplates':
           return responseWithDelay(devworkspaceTemplatesData, REQUEST_TIME_200);
         case '/api/factory/token/refresh?url=https://github.com/eclipse-che/che-dashboard.git':
