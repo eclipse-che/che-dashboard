@@ -48,7 +48,7 @@ export class WorkspaceActionsDeleteWarning extends React.PureComponent<Props> {
       const workspaceName = wantDelete[0];
       warningMessage = (
         <TextContent>
-          <Text component="small">
+          <Text>
             <b>{workspaceName}</b> workspace has <b>Per-user</b> storage type. There is a
             possibility that the&nbsp;<b>Per-user</b>&nbsp;storage type e.g. common PVC is used for
             all workspaces and that PVC has the RWO access mode.&emsp;
@@ -61,7 +61,7 @@ export class WorkspaceActionsDeleteWarning extends React.PureComponent<Props> {
               <ExternalLinkAltIcon />
             </a>
           </Text>
-          <Text component="small">
+          <Text>
             To prevent possible problems with removal, you need to stop other workspaces with&nbsp;
             <b>Per-user</b>&nbsp;storage type before deleting.
           </Text>
@@ -70,7 +70,7 @@ export class WorkspaceActionsDeleteWarning extends React.PureComponent<Props> {
     } else {
       warningMessage = (
         <TextContent>
-          <Text component="small">
+          <Text>
             One of deleting workspaces has <b>Per-user</b> storage type. There is a possibility
             that&nbsp;<b>Per-user</b>&nbsp;storage type e.g. common PVC is used for all workspaces
             and that PVC has the RWO access mode.&emsp;
@@ -83,7 +83,7 @@ export class WorkspaceActionsDeleteWarning extends React.PureComponent<Props> {
               <ExternalLinkAltIcon />
             </a>
           </Text>
-          <Text component="small">
+          <Text>
             To prevent possible problems with removal, you need to stop other workspaces with&nbsp;
             <b>Per-user</b>&nbsp;storage type before deleting.
           </Text>
@@ -93,7 +93,7 @@ export class WorkspaceActionsDeleteWarning extends React.PureComponent<Props> {
 
     const body = (
       <TextContent>
-        <Text component="small">{warningMessage}</Text>
+        <Text>{warningMessage}</Text>
       </TextContent>
     );
 
