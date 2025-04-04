@@ -10,7 +10,7 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import { IServerConfig } from '@eclipse-che/common/lib/dto/api';
+import { api } from '@eclipse-che/common';
 
 import { DEFAULT_REGISTRY } from '@/store/DevfileRegistries';
 import { isDevfileRegistryLocation } from '@/store/FactoryResolver/helpers';
@@ -25,7 +25,7 @@ describe('isDevfileRegistryLocation', () => {
         },
       ],
     },
-  } as unknown as IServerConfig;
+  } as unknown as api.IServerConfig;
 
   test('default registry', () => {
     const location = `${window.location.origin}${DEFAULT_REGISTRY}devfiles/devfile.yaml`;
