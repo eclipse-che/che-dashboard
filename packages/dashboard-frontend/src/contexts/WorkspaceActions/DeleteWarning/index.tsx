@@ -50,15 +50,15 @@ export class WorkspaceActionsDeleteWarning extends React.PureComponent<Props> {
         <TextContent>
           <Text>
             <b>{workspaceName}</b> workspace has <b>Per-user</b> storage type. There is a
-            possibility that the&nbsp;<b>Per-user</b>&nbsp;storage type e.g. common PVC is used for
-            all workspaces and that PVC has the RWO access mode.&emsp;
+            possibility that the <b>Per-user</b> storage type e.g. common PVC is used for all
+            workspaces and that PVC has the RWO access mode.&emsp;
             <a
-              href="https://kubernetes.io/docs/concepts/storage/persistent-volumes/#access-modes"
               target="_blank"
               rel="noopener noreferrer"
+              style={{ whiteSpace: 'nowrap' }}
+              href="https://kubernetes.io/docs/concepts/storage/persistent-volumes/#access-modes"
             >
-              Learn&nbsp;more&nbsp;
-              <ExternalLinkAltIcon />
+              Learn more <ExternalLinkAltIcon />
             </a>
           </Text>
           <Text>
@@ -71,16 +71,16 @@ export class WorkspaceActionsDeleteWarning extends React.PureComponent<Props> {
       warningMessage = (
         <TextContent>
           <Text>
-            One of deleting workspaces has <b>Per-user</b> storage type. There is a possibility
-            that&nbsp;<b>Per-user</b>&nbsp;storage type e.g. common PVC is used for all workspaces
-            and that PVC has the RWO access mode.&emsp;
+            One of deleting workspaces has <b>Per-user</b> storage type. There is a possibility that
+            the <b>Per-user</b> storage type e.g. common PVC is used for all workspaces and that PVC
+            has the RWO access mode.&emsp;
             <a
-              href="https://kubernetes.io/docs/concepts/storage/persistent-volumes/#access-modes"
               target="_blank"
               rel="noopener noreferrer"
+              style={{ whiteSpace: 'nowrap' }}
+              href="https://kubernetes.io/docs/concepts/storage/persistent-volumes/#access-modes"
             >
-              Learn&nbsp;more&nbsp;
-              <ExternalLinkAltIcon />
+              Learn more <ExternalLinkAltIcon />
             </a>
           </Text>
           <Text>
