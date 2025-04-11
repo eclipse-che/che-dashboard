@@ -40,28 +40,6 @@ jobs:
         name: "Check dependencies usage restrictions"
         run: yarn license:check
 
-  dash-licenses-yarn-v1:
-    runs-on: ubuntu-22.04
-    if: ${{ github.base_ref == 'main' }}
-    steps:
-      -
-        name: "Checkout Che Dashboard source code"
-        uses: actions/checkout@v4
-      -
-        name: "Use Node 20"
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-      -
-        name: "Switch to Yarn 1"
-        run: scripts/yarn/change_package_manager.sh
-      -
-        name: "Install dependencies"
-        run: yarn
-      -
-        name: "Check dependencies usage restrictions"
-        run: yarn license:check
-
   time-check:
     runs-on: ubuntu-22.04
     strategy:
@@ -97,36 +75,6 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
-      -
-        name: "Install dependencies"
-        run: yarn
-      -
-        name: "Build"
-        run: yarn build
-      -
-        name: "Run linters"
-        run: yarn lint:check
-      -
-        name: "Run unit tests"
-        run: yarn test
-
-  build-and-test-yarn-v1:
-    runs-on: ubuntu-22.04
-    strategy:
-      matrix:
-        node-version: [18.x, 20.x]
-    steps:
-      -
-        name: "Checkout Che Dashboard source code"
-        uses: actions/checkout@v4
-      -
-        name: "Use Node.js ${{ matrix.node-version }}"
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ matrix.node-version }}
-      -
-        name: "Switch to Yarn 1"
-        run: scripts/yarn/change_package_manager.sh
       -
         name: "Install dependencies"
         run: yarn
