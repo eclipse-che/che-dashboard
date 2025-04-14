@@ -1,290 +1,305 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`Samples List Gallery snapshot w/ metadata 1`] = `
-<div
-  className="pf-l-gallery pf-m-gutter"
->
+[
   <div
-    data-testid="sample-card"
+    className="pf-l-gallery pf-m-gutter"
   >
     <div
-      data-testid="sample-name"
+      data-testid="sample-card"
     >
-      Empty Workspace
+      <div
+        data-testid="sample-name"
+      >
+        Empty Workspace
+      </div>
+      <button
+        onClick={[Function]}
+      >
+        Select Sample
+      </button>
     </div>
-    <button
-      onClick={[Function]}
+    <div
+      data-testid="sample-card"
     >
-      Select Sample
-    </button>
-  </div>
+      <div
+        data-testid="sample-name"
+      >
+        ASP.NET Core Web Application
+      </div>
+      <button
+        onClick={[Function]}
+      >
+        Select Sample
+      </button>
+    </div>
+    <div
+      data-testid="sample-card"
+    >
+      <div
+        data-testid="sample-name"
+      >
+        Apache Camel K
+      </div>
+      <button
+        onClick={[Function]}
+      >
+        Select Sample
+      </button>
+    </div>
+    <div
+      data-testid="sample-card"
+    >
+      <div
+        data-testid="sample-name"
+      >
+        Bash
+      </div>
+      <button
+        onClick={[Function]}
+      >
+        Select Sample
+      </button>
+    </div>
+    <div
+      data-testid="sample-card"
+    >
+      <div
+        data-testid="sample-name"
+      >
+        C/C++
+      </div>
+      <button
+        onClick={[Function]}
+      >
+        Select Sample
+      </button>
+    </div>
+    <div
+      data-testid="sample-card"
+    >
+      <div
+        data-testid="sample-name"
+      >
+        Node.js Angular Web Application
+      </div>
+      <button
+        onClick={[Function]}
+      >
+        Select Sample
+      </button>
+    </div>
+    <div
+      data-testid="sample-card"
+    >
+      <div
+        data-testid="sample-name"
+      >
+        Node.js Express Web Application
+      </div>
+      <button
+        onClick={[Function]}
+      >
+        Select Sample
+      </button>
+    </div>
+    <div
+      data-testid="sample-card"
+    >
+      <div
+        data-testid="sample-name"
+      >
+        Node.js MongoDB Web Application
+      </div>
+      <button
+        onClick={[Function]}
+      >
+        Select Sample
+      </button>
+    </div>
+    <div
+      data-testid="sample-card"
+    >
+      <div
+        data-testid="sample-name"
+      >
+        Node.js React Web Application
+      </div>
+      <button
+        onClick={[Function]}
+      >
+        Select Sample
+      </button>
+    </div>
+    <div
+      data-testid="sample-card"
+    >
+      <div
+        data-testid="sample-name"
+      >
+        Node.js Web Application based on Yarn
+      </div>
+      <button
+        onClick={[Function]}
+      >
+        Select Sample
+      </button>
+    </div>
+    <div
+      data-testid="sample-card"
+    >
+      <div
+        data-testid="sample-name"
+      >
+        PHP Symfony
+      </div>
+      <button
+        onClick={[Function]}
+      >
+        Select Sample
+      </button>
+    </div>
+    <div
+      data-testid="sample-card"
+    >
+      <div
+        data-testid="sample-name"
+      >
+        Python Django
+      </div>
+      <button
+        onClick={[Function]}
+      >
+        Select Sample
+      </button>
+    </div>
+    <div
+      data-testid="sample-card"
+    >
+      <div
+        data-testid="sample-name"
+      >
+        Scala
+      </div>
+      <button
+        onClick={[Function]}
+      >
+        Select Sample
+      </button>
+    </div>
+    <div
+      data-testid="sample-card"
+    >
+      <div
+        data-testid="sample-name"
+      >
+        .NET 5.0
+      </div>
+      <button
+        onClick={[Function]}
+      >
+        Select Sample
+      </button>
+    </div>
+    <div
+      data-testid="sample-card"
+    >
+      <div
+        data-testid="sample-name"
+      >
+        Rust
+      </div>
+      <button
+        onClick={[Function]}
+      >
+        Select Sample
+      </button>
+    </div>
+  </div>,
+  <hr
+    className="pf-c-divider"
+    style={
+      {
+        "marginBottom": "15px",
+        "marginTop": "15px",
+      }
+    }
+  />,
   <div
-    data-testid="sample-card"
+    className="pf-l-gallery pf-m-gutter"
   >
     <div
-      data-testid="sample-name"
+      data-testid="sample-card"
     >
-      ASP.NET Core Web Application
+      <div
+        data-testid="sample-name"
+      >
+        Apache Camel based on Spring Boot
+      </div>
+      <button
+        onClick={[Function]}
+      >
+        Select Sample
+      </button>
     </div>
-    <button
-      onClick={[Function]}
-    >
-      Select Sample
-    </button>
-  </div>
-  <div
-    data-testid="sample-card"
-  >
     <div
-      data-testid="sample-name"
+      data-testid="sample-card"
     >
-      Apache Camel K
+      <div
+        data-testid="sample-name"
+      >
+        Java Lombok
+      </div>
+      <button
+        onClick={[Function]}
+      >
+        Select Sample
+      </button>
     </div>
-    <button
-      onClick={[Function]}
-    >
-      Select Sample
-    </button>
-  </div>
-  <div
-    data-testid="sample-card"
-  >
     <div
-      data-testid="sample-name"
+      data-testid="sample-card"
     >
-      Apache Camel based on Spring Boot
+      <div
+        data-testid="sample-name"
+      >
+        Java Spring Boot
+      </div>
+      <button
+        onClick={[Function]}
+      >
+        Select Sample
+      </button>
     </div>
-    <button
-      onClick={[Function]}
-    >
-      Select Sample
-    </button>
-  </div>
-  <div
-    data-testid="sample-card"
-  >
     <div
-      data-testid="sample-name"
+      data-testid="sample-card"
     >
-      Bash
+      <div
+        data-testid="sample-name"
+      >
+        Java with Spring Boot and MongoDB
+      </div>
+      <button
+        onClick={[Function]}
+      >
+        Select Sample
+      </button>
     </div>
-    <button
-      onClick={[Function]}
-    >
-      Select Sample
-    </button>
-  </div>
-  <div
-    data-testid="sample-card"
-  >
     <div
-      data-testid="sample-name"
+      data-testid="sample-card"
     >
-      C/C++
+      <div
+        data-testid="sample-name"
+      >
+        Quarkus REST API
+      </div>
+      <button
+        onClick={[Function]}
+      >
+        Select Sample
+      </button>
     </div>
-    <button
-      onClick={[Function]}
-    >
-      Select Sample
-    </button>
-  </div>
-  <div
-    data-testid="sample-card"
-  >
-    <div
-      data-testid="sample-name"
-    >
-      Java Lombok
-    </div>
-    <button
-      onClick={[Function]}
-    >
-      Select Sample
-    </button>
-  </div>
-  <div
-    data-testid="sample-card"
-  >
-    <div
-      data-testid="sample-name"
-    >
-      Java Spring Boot
-    </div>
-    <button
-      onClick={[Function]}
-    >
-      Select Sample
-    </button>
-  </div>
-  <div
-    data-testid="sample-card"
-  >
-    <div
-      data-testid="sample-name"
-    >
-      Java with Spring Boot and MongoDB
-    </div>
-    <button
-      onClick={[Function]}
-    >
-      Select Sample
-    </button>
-  </div>
-  <div
-    data-testid="sample-card"
-  >
-    <div
-      data-testid="sample-name"
-    >
-      Node.js Angular Web Application
-    </div>
-    <button
-      onClick={[Function]}
-    >
-      Select Sample
-    </button>
-  </div>
-  <div
-    data-testid="sample-card"
-  >
-    <div
-      data-testid="sample-name"
-    >
-      Node.js Express Web Application
-    </div>
-    <button
-      onClick={[Function]}
-    >
-      Select Sample
-    </button>
-  </div>
-  <div
-    data-testid="sample-card"
-  >
-    <div
-      data-testid="sample-name"
-    >
-      Node.js MongoDB Web Application
-    </div>
-    <button
-      onClick={[Function]}
-    >
-      Select Sample
-    </button>
-  </div>
-  <div
-    data-testid="sample-card"
-  >
-    <div
-      data-testid="sample-name"
-    >
-      Node.js React Web Application
-    </div>
-    <button
-      onClick={[Function]}
-    >
-      Select Sample
-    </button>
-  </div>
-  <div
-    data-testid="sample-card"
-  >
-    <div
-      data-testid="sample-name"
-    >
-      Node.js Web Application based on Yarn
-    </div>
-    <button
-      onClick={[Function]}
-    >
-      Select Sample
-    </button>
-  </div>
-  <div
-    data-testid="sample-card"
-  >
-    <div
-      data-testid="sample-name"
-    >
-      PHP Symfony
-    </div>
-    <button
-      onClick={[Function]}
-    >
-      Select Sample
-    </button>
-  </div>
-  <div
-    data-testid="sample-card"
-  >
-    <div
-      data-testid="sample-name"
-    >
-      Python Django
-    </div>
-    <button
-      onClick={[Function]}
-    >
-      Select Sample
-    </button>
-  </div>
-  <div
-    data-testid="sample-card"
-  >
-    <div
-      data-testid="sample-name"
-    >
-      Quarkus REST API
-    </div>
-    <button
-      onClick={[Function]}
-    >
-      Select Sample
-    </button>
-  </div>
-  <div
-    data-testid="sample-card"
-  >
-    <div
-      data-testid="sample-name"
-    >
-      Scala
-    </div>
-    <button
-      onClick={[Function]}
-    >
-      Select Sample
-    </button>
-  </div>
-  <div
-    data-testid="sample-card"
-  >
-    <div
-      data-testid="sample-name"
-    >
-      .NET 5.0
-    </div>
-    <button
-      onClick={[Function]}
-    >
-      Select Sample
-    </button>
-  </div>
-  <div
-    data-testid="sample-card"
-  >
-    <div
-      data-testid="sample-name"
-    >
-      Rust
-    </div>
-    <button
-      onClick={[Function]}
-    >
-      Select Sample
-    </button>
-  </div>
-</div>
+  </div>,
+]
 `;
 
 exports[`Samples List Gallery snapshot w/o metadata 1`] = `
