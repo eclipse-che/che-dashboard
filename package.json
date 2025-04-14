@@ -58,5 +58,6 @@
     "sha.js": "^2.4.8",
     "undici": "^5.28.3",
     "ws": "^8.17.1"
-  }
+  },
+  "packageManager": "yarn@4.5.1"
 }

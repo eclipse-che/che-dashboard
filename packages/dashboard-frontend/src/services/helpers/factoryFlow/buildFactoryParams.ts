@@ -111,7 +111,11 @@ function getPoliciesCreate(searchParams: URLSearchParams): PoliciesCreate {
 
 function getStorageType(searchParams: URLSearchParams): che.WorkspaceStorageType | undefined {
   const storageType = searchParams.get(STORAGE_TYPE_ATTR) as che.WorkspaceStorageType;
-  if (storageType === 'async' || storageType === 'ephemeral' || storageType === 'persistent') {
+  if (
+    storageType === 'per-workspace' ||
+    storageType === 'ephemeral' ||
+    storageType === 'per-user'
+  ) {
     return storageType;
   }
 }

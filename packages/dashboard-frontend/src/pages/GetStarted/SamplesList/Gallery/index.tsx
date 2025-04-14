@@ -12,6 +12,7 @@
 
 import {
   Button,
+  Divider,
   EmptyState,
   EmptyStateBody,
   EmptyStateIcon,
@@ -33,6 +34,7 @@ export type PluginEditor = che.Plugin & {
   isDefault: boolean;
 };
 
+export const UNGROUPED_LANGUAGES_KEY = '...';
 export const VISIBLE_TAGS = ['Community', 'Tech-Preview', 'Devfile.io', 'AirGap'];
 
 export type Props = MappedProps & {
@@ -45,7 +47,7 @@ export class SamplesListGallery extends React.PureComponent<Props> {
     this.props.onCardClick(metadata);
   }
 
-  private prepareMetadata(): DevfileRegistryMetadata[] {
+  private prepareMetadataMap(): Map<string, DevfileRegistryMetadata[]> {
     function sortByVisibleTag(a: DevfileRegistryMetadata, b: DevfileRegistryMetadata): -1 | 0 | 1 {
       const getVisibleTag = (metadata: DevfileRegistryMetadata) =>
         metadata.tags.filter(tag => VISIBLE_TAGS.includes(tag))[0];
@@ -76,6 +78,25 @@ export class SamplesListGallery extends React.PureComponent<Props> {
       return 0;
     }
 
+    function getLanguage(metadata: DevfileRegistryMetadata): string {
+      if (metadata.language) {
+        return metadata.language;
+      }
+      const languages = [
+        '.NET',
+        'C++',
+        'Go',
+        'Java',
+        'JavaScript',
+        'NodeJS',
+        'PHP',
+        'Python',
+        'Rust',
+        'TypeScript',
+      ];
+      return languages.find(lang => metadata.tags.includes(lang)) || UNGROUPED_LANGUAGES_KEY;
+    }
+
     function sortByDisplayName(a: DevfileRegistryMetadata, b: DevfileRegistryMetadata): -1 | 0 | 1 {
       if (a.displayName < b.displayName) {
         return -1;
@@ -86,18 +107,66 @@ export class SamplesListGallery extends React.PureComponent<Props> {
       return 0;
     }
 
-    return this.props.metadataFiltered
-      .sort(sortByDisplayName)
-      .sort(sortByVisibleTag)
-      .sort(sortByEmptyWorkspaceTag);
+    const metadataMap = new Map<string, DevfileRegistryMetadata[]>();
+    this.props.metadataFiltered.forEach(meta => {
+      const language = getLanguage(meta);
+      if (!metadataMap[language]) {
+        metadataMap[language] = [];
+      }
+      metadataMap[language].push(meta);
+    });
+
+    Object.keys(metadataMap).forEach(key => {
+      const metadatas = metadataMap[key];
+      if (metadatas.length > 2) {
+        metadatas.sort(sortByDisplayName);
+        metadatas.sort(sortByVisibleTag);
+        metadatas.sort(sortByEmptyWorkspaceTag);
+      } else if (key !== UNGROUPED_LANGUAGES_KEY) {
+        if (!metadataMap[UNGROUPED_LANGUAGES_KEY]) {
+          metadataMap[UNGROUPED_LANGUAGES_KEY] = [];
+        }
+        metadataMap[UNGROUPED_LANGUAGES_KEY].push(...metadatas);
+        delete metadataMap[key];
+      }
+    });
+
+    if (metadataMap[UNGROUPED_LANGUAGES_KEY]) {
+      metadataMap[UNGROUPED_LANGUAGES_KEY].sort(sortByDisplayName)
+        .sort(sortByVisibleTag)
+        .sort(sortByEmptyWorkspaceTag);
+    }
+
+    return metadataMap;
   }
 
   private buildCardsList(): React.ReactElement[] {
-    const metadata = this.prepareMetadata();
+    const metadataMap = this.prepareMetadataMap();
 
-    return metadata.map(meta => (
-      <SampleCard key={meta.links.v2} metadata={meta} onClick={() => this.handleCardClick(meta)} />
-    ));
+    const cardsList: React.ReactElement[] = [];
+
+    Object.keys(metadataMap)
+      .sort()
+      .forEach(key => {
+        const cards = metadataMap[key].map(meta => (
+          <SampleCard
+            key={meta.links.v2}
+            metadata={meta}
+            onClick={() => this.handleCardClick(meta)}
+          />
+        ));
+
+        if (cardsList.length > 0) {
+          cardsList.push(<Divider style={{ marginTop: '15px', marginBottom: '15px' }} />);
+        }
+        cardsList.push(
+          <Gallery hasGutter={true} key={key}>
+            {cards}
+          </Gallery>,
+        );
+      });
+
+    return cardsList;
   }
 
   render(): React.ReactElement {
@@ -120,7 +189,7 @@ export class SamplesListGallery extends React.PureComponent<Props> {
       );
     }
 
-    return <Gallery hasGutter={true}>{cards}</Gallery>;
+    return <>{cards}</>;
   }
 }
 

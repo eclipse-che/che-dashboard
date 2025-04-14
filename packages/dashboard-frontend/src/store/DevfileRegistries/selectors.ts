@@ -123,6 +123,7 @@ export const selectDefaultDevfile = createSelector(
 
 function matches(meta: che.DevfileMetaData, filterValue: string): boolean {
   return (
+    match(meta.language || '', filterValue) ||
     match(meta.displayName, filterValue) ||
     match(meta.description || '', filterValue) ||
     match(meta.tags.join(' '), filterValue) ||
