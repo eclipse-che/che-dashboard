@@ -249,6 +249,10 @@ export class ServerConfigApiService implements IServerConfigApi {
   }
 
   gеtHideEditorsById(): string[] {
-    return process.env['CHE_HIDE_EDITORS_BY_ID']?.split(',').map(val => val.trim()) || [];
+    const editorsId = process.env['CHE_HIDE_EDITORS_BY_ID'];
+    if (!editorsId) {
+      return [];
+    }
+    return editorsId.split(',').map(val => val.trim());
   }
 }
