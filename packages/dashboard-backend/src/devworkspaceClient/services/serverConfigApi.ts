@@ -243,4 +243,12 @@ export class ServerConfigApiService implements IServerConfigApi {
   getAllowedSourceUrls(cheCustomResource: CheClusterCustomResource): string[] {
     return cheCustomResource.spec.devEnvironments?.allowedSources?.urls || [];
   }
+
+  getShowDeprecatedEditors(): boolean {
+    return process.env['CHE_SHOW_DEPRECATED_EDITORS'] === 'true';
+  }
+
+  gеtHideEditorsById(): string[] {
+    return process.env['CHE_HIDE_EDITORS_BY_ID']?.split(',').map(val => val.trim()) || [];
+  }
 }

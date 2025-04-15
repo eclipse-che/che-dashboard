@@ -376,6 +376,16 @@ export interface IServerConfigApi {
    * Returns the allowed source URLs
    */
   getAllowedSourceUrls(cheCustomResource: CheClusterCustomResource): string[];
+
+  /**
+   * Returns the showDeprecatedEditors value
+   */
+  getShowDeprecatedEditors(): boolean;
+
+  /**
+   * Returns the hideEditorsById value
+   */
+  gеtHideEditorsById(): string[];
 }
 
 export interface IKubeConfigApi {

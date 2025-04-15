@@ -177,6 +177,34 @@ describe('Server Config API Service', () => {
       expect(res).toEqual(55000);
     });
   });
+
+  describe('Show deprecated editors', () => {
+    test('getting default value', () => {
+      const res = serverConfigService.getShowDeprecatedEditors();
+      expect(res).toBeFalsy();
+    });
+    test('getting custom value', () => {
+      process.env['CHE_SHOW_DEPRECATED_EDITORS'] = 'true';
+      const res = serverConfigService.getShowDeprecatedEditors();
+      expect(res).toBeTruthy();
+    });
+  });
+
+  describe('Hide editors by name array', () => {
+    test('getting showDeprecated value', () => {
+      const res = serverConfigService.gеtHideEditorsById();
+      expect(res).toEqual([]);
+    });
+    test('getting hideByName value', () => {
+      process.env['CHE_HIDE_EDITORS_BY_ID'] =
+        'che-incubator/che-idea-server/latest, che-incubator/che-idea-server/next';
+      const res = serverConfigService.gеtHideEditorsById();
+      expect(res).toEqual([
+        'che-incubator/che-idea-server/latest',
+        'che-incubator/che-idea-server/next',
+      ]);
+    });
+  });
 });
 
 function buildCustomResourceList(): { body: CustomResourceDefinitionList } {

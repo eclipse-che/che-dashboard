@@ -144,6 +144,9 @@ export OPENSHIFT_CONSOLE_TITLE=$(grep -o 'OPENSHIFT_CONSOLE_TITLE:.*' run/.che-d
 export OPENSHIFT_CONSOLE_ICON=$(grep -o 'OPENSHIFT_CONSOLE_ICON:.*' run/.che-dashboard-pod | grep -o '\S*$')
 export OPENSHIFT_CONSOLE_GROUP=$(grep -o 'OPENSHIFT_CONSOLE_GROUP:.*' run/.che-dashboard-pod | grep -o '\S*$')
 
+export CHE_SHOW_DEPRECATED_EDITORS=$(grep -o 'CHE_SHOW_DEPRECATED_EDITORS:.*' run/.che-dashboard-pod | grep -o '\S*$')
+export CHE_HIDE_EDITORS_BY_ID=$(grep -o 'CHE_HIDE_EDITORS_BY_ID:.*' run/.che-dashboard-pod | grep -o '\S*$')
+
 if [ "$CHE_IN_CHE" == "true" ]; then
   export CHE_INTERNAL_URL=$(grep -o 'CHE_INTERNAL_URL:.*' run/.che-dashboard-pod | grep -o '\S*$')
 else

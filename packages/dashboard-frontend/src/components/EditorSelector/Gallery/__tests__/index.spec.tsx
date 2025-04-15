@@ -12,7 +12,7 @@
 
 import React from 'react';
 
-import { EditorGallery, sortEditors } from '@/components/EditorSelector/Gallery';
+import { EditorGallery, filterEditors, sortEditors } from '@/components/EditorSelector/Gallery';
 import getComponentRenderer, { screen } from '@/services/__mocks__/getComponentRenderer';
 import { che } from '@/services/models';
 
@@ -95,6 +95,88 @@ describe('EditorGallery', () => {
   test('snapshot', () => {
     const snapshot = createSnapshot(editors, defaultEditorId, selectedEditorId);
     expect(snapshot.toJSON()).toMatchSnapshot();
+  });
+
+  describe('filterEditors function', () => {
+    describe('filtered by Deprecated tag', () => {
+      beforeEach(() => {
+        editors[0].tags = ['Deprecated'];
+        editors[2].tags = ['Deprecated'];
+      });
+
+      test('default filtering', () => {
+        const filteredIds = filterEditors(editors, undefined).map(editor => editor.id);
+
+        expect(filteredIds).toEqual([
+          'che-incubator/che-code/latest',
+          'che-incubator/che-idea-server/next',
+        ]);
+      });
+
+      test('show deprecated editors', () => {
+        const filteredIds = filterEditors(editors, {
+          showDeprecated: true,
+          hideById: [],
+        }).map(editor => editor.id);
+
+        expect(filteredIds).toEqual([
+          'che-incubator/che-code/insiders',
+          'che-incubator/che-code/latest',
+          'che-incubator/che-idea-server/latest',
+          'che-incubator/che-idea-server/next',
+        ]);
+      });
+
+      test('hide deprecated editors', () => {
+        const filteredIds = filterEditors(editors, {
+          showDeprecated: false,
+          hideById: [],
+        }).map(editor => editor.id);
+
+        expect(filteredIds).toEqual([
+          'che-incubator/che-code/latest',
+          'che-incubator/che-idea-server/next',
+        ]);
+      });
+    });
+
+    describe('filtered by editorId', () => {
+      test('default filtering', () => {
+        const filteredIds = filterEditors(editors, undefined).map(editor => editor.id);
+
+        expect(filteredIds).toEqual([
+          'che-incubator/che-code/insiders',
+          'che-incubator/che-code/latest',
+          'che-incubator/che-idea-server/latest',
+          'che-incubator/che-idea-server/next',
+        ]);
+      });
+
+      test("hide 'che-incubator/che-code/insiders' editor", () => {
+        const filteredIds = filterEditors(editors, {
+          showDeprecated: false,
+          hideById: ['che-incubator/che-code/insiders'],
+        }).map(editor => editor.id);
+
+        expect(filteredIds).toEqual([
+          'che-incubator/che-code/latest',
+          'che-incubator/che-idea-server/latest',
+          'che-incubator/che-idea-server/next',
+        ]);
+      });
+
+      test("hide 'che-incubator/che-code/insiders' and 'che-incubator/che-idea-server/next' editors", () => {
+        const filteredIds = filterEditors(editors, {
+          showDeprecated: false,
+          hideById: ['che-incubator/che-code/insiders', 'che-incubator/che-idea-server/next'],
+        }).map(editor => editor.id);
+
+        expect(filteredIds).toEqual([
+          'che-incubator/che-code/latest',
+          'che-incubator/che-idea-server/latest',
+        ]);
+      });
+    });
   });
 
   describe('sortEditors function', () => {
@@ -287,6 +369,7 @@ function getComponent(
 ) {
   return (
     <EditorGallery
+      selectorConfig={undefined}
       defaultEditorId={defaultId}
       editors={editors}
       selectedEditorId={selectedId}
