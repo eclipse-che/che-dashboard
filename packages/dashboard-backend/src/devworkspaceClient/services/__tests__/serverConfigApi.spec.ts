@@ -16,7 +16,10 @@ import * as mockClient from '@kubernetes/client-node';
 import { CustomObjectsApi } from '@kubernetes/client-node';
 
 import { CheClusterCustomResource, CustomResourceDefinitionList } from '@/devworkspaceClient';
-import { ServerConfigApiService } from '@/devworkspaceClient/services/serverConfigApi';
+import {
+  getEnvVarValue,
+  ServerConfigApiService,
+} from '@/devworkspaceClient/services/serverConfigApi';
 
 jest.mock('@/helpers/getUserName.ts');
 
@@ -180,29 +183,52 @@ describe('Server Config API Service', () => {
 
   describe('Show deprecated editors', () => {
     test('getting default value', () => {
-      const res = serverConfigService.getShowDeprecatedEditors();
+      const res = serverConfigService.getShowDeprecatedEditors(buildCustomResource());
       expect(res).toBeFalsy();
     });
     test('getting custom value', () => {
       process.env['CHE_SHOW_DEPRECATED_EDITORS'] = 'true';
-      const res = serverConfigService.getShowDeprecatedEditors();
+      const res = serverConfigService.getShowDeprecatedEditors(buildCustomResource());
       expect(res).toBeTruthy();
     });
   });
 
   describe('Hide editors by name array', () => {
     test('getting showDeprecated value', () => {
-      const res = serverConfigService.gеtHideEditorsById();
+      const res = serverConfigService.gеtHideEditorsById(buildCustomResource());
       expect(res).toEqual([]);
     });
     test('getting hideByName value', () => {
       process.env['CHE_HIDE_EDITORS_BY_ID'] =
         'che-incubator/che-idea-server/latest, che-incubator/che-idea-server/next';
-      const res = serverConfigService.gеtHideEditorsById();
+      const res = serverConfigService.gеtHideEditorsById(buildCustomResource());
       expect(res).toEqual([
         'che-incubator/che-idea-server/latest',
         'che-incubator/che-idea-server/next',
       ]);
+    });
+  });
+
+  describe('getEnvVarValue', () => {
+    test('getting value from custom resource', () => {
+      const res = getEnvVarValue('CHE_SHOW_DEPRECATED_EDITORS', {
+        spec: {
+          components: {
+            dashboard: {
+              deployment: {
+                containers: [{ env: [{ name: 'CHE_SHOW_DEPRECATED_EDITORS', value: 'true' }] }],
+              },
+            },
+          },
+        },
+      } as CheClusterCustomResource);
+      expect(res).toEqual('true');
+    });
+
+    test('getting value from env variable', () => {
+      process.env['CHE_SHOW_DEPRECATED_EDITORS'] = 'true';
+      const res = getEnvVarValue('CHE_SHOW_DEPRECATED_EDITORS', buildCustomResource());
+      expect(res).toEqual(true);
     });
   });
 });

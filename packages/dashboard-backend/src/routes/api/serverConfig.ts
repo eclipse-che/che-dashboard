@@ -49,8 +49,8 @@ export function registerServerConfigRoute(instance: FastifyInstance) {
       const autoProvision = serverConfigApi.getAutoProvision(cheCustomResource);
       const allowedSourceUrls = serverConfigApi.getAllowedSourceUrls(cheCustomResource);
       const axiosRequestTimeout = serverConfigApi.getAxiosRequestTimeout();
-      const showDeprecated = serverConfigApi.getShowDeprecatedEditors();
-      const hideById = serverConfigApi.gеtHideEditorsById();
+      const showDeprecated = serverConfigApi.getShowDeprecatedEditors(cheCustomResource);
+      const hideById = serverConfigApi.gеtHideEditorsById(cheCustomResource);
 
       const serverConfig: api.IServerConfig = {
         containerBuild,

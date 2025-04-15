@@ -244,15 +244,37 @@ export class ServerConfigApiService implements IServerConfigApi {
     return cheCustomResource.spec.devEnvironments?.allowedSources?.urls || [];
   }
 
-  getShowDeprecatedEditors(): boolean {
-    return process.env['CHE_SHOW_DEPRECATED_EDITORS'] === 'true';
+  getShowDeprecatedEditors(cheCustomResource: CheClusterCustomResource): boolean {
+    const value = getEnvVarValue('CHE_SHOW_DEPRECATED_EDITORS', cheCustomResource);
+    return value === 'true';
   }
 
-  gеtHideEditorsById(): string[] {
-    const editorsId = process.env['CHE_HIDE_EDITORS_BY_ID'];
-    if (!editorsId) {
+  gеtHideEditorsById(cheCustomResource: CheClusterCustomResource): string[] {
+    const value = getEnvVarValue('CHE_HIDE_EDITORS_BY_ID', cheCustomResource);
+    if (!value) {
       return [];
     }
-    return editorsId.split(',').map(val => val.trim());
+    return value.split(',').map(val => val.trim());
   }
+}
+
+export function getEnvVarValue(
+  envVarName: string | undefined,
+  cheCustomResource: CheClusterCustomResource,
+): string {
+  if (!envVarName) {
+    return '';
+  }
+  const containers = cheCustomResource.spec.components?.dashboard?.deployment?.containers || [];
+  const targetContainer = containers.find(
+    container => container.env?.find(env => env.name === envVarName) !== undefined,
+  );
+  if (targetContainer) {
+    const envVar = targetContainer.env?.find(env => env.name === envVarName);
+    if (envVar) {
+      return envVar.value;
+    }
+  }
+  // If the environment variable is not found in the containers, return the value from process.env
+  return process.env[envVarName] || '';
 }
