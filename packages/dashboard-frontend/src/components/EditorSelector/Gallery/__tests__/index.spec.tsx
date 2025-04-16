@@ -369,7 +369,7 @@ function getComponent(
 ) {
   return (
     <EditorGallery
-      selectorConfig={undefined}
+      editorsVisibilityConfig={undefined}
       defaultEditorId={defaultId}
       editors={editors}
       selectedEditorId={selectedId}

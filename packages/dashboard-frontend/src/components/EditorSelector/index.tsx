@@ -42,9 +42,7 @@ export type Props = MappedProps & {
 export type State = {
   definitionEditorValue: string | undefined;
   definitionImageValue: string | undefined;
-
   selectorEditorValue: string;
-
   expandedId: AccordionId | undefined;
 };
 
@@ -105,7 +103,7 @@ class EditorSelector extends React.PureComponent<Props, State> {
   }
 
   render(): React.ReactElement {
-    const { selectorConfig, defaultEditorId, editors } = this.props;
+    const { editorsVisibilityConfig, defaultEditorId, editors } = this.props;
     const { definitionEditorValue, definitionImageValue, selectorEditorValue, expandedId } =
       this.state;
 
@@ -165,7 +163,7 @@ class EditorSelector extends React.PureComponent<Props, State> {
                     <PanelMain>
                       <PanelMainBody>
                         <EditorGallery
-                          selectorConfig={selectorConfig}
+                          editorsVisibilityConfig={editorsVisibilityConfig}
                           defaultEditorId={defaultEditorId}
                           editors={editors}
                           selectedEditorId={selectorEditorValue}
@@ -217,7 +215,7 @@ class EditorSelector extends React.PureComponent<Props, State> {
 
 const mapStateToProps = (state: RootState) => ({
   editors: selectEditors(state),
-  selectorConfig: selectEditorsVisibility(state),
+  editorsVisibilityConfig: selectEditorsVisibility(state),
 });
 
 const connector = connect(mapStateToProps, null, null, {

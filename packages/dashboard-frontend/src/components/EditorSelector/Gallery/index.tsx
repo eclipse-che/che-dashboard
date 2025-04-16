@@ -20,7 +20,7 @@ export type Props = {
   defaultEditorId: string;
   editors: che.Plugin[];
   selectedEditorId: string | undefined;
-  selectorConfig: { showDeprecated: boolean; hideById: string[] } | undefined;
+  editorsVisibilityConfig: { showDeprecated: boolean; hideById: string[] } | undefined;
   onSelect: (editorId: string) => void;
 };
 export type State = {
@@ -49,9 +49,10 @@ export class EditorGallery extends React.PureComponent<Props, State> {
   }
 
   private init(): void {
-    const { selectorConfig, defaultEditorId, editors, selectedEditorId, onSelect } = this.props;
+    const { editorsVisibilityConfig, defaultEditorId, editors, selectedEditorId, onSelect } =
+      this.props;
     // filter and sort editors
-    const filteredEditors = filterEditors(editors, selectorConfig);
+    const filteredEditors = filterEditors(editors, editorsVisibilityConfig);
     const sortedEditors = sortEditors(filteredEditors);
 
     const sortedEditorsByName = new Map<string, che.Plugin[]>();
@@ -141,14 +142,14 @@ const DEPRECATED_TAG = 'Deprecated';
 
 export function filterEditors(
   editors: che.Plugin[],
-  selectorConfig: { showDeprecated: boolean; hideById: string[] } | undefined,
+  editorsVisibilityConfig: { showDeprecated: boolean; hideById: string[] } | undefined,
 ) {
   return editors.filter(editor => {
-    if (!selectorConfig?.showDeprecated && editor.tags?.includes(DEPRECATED_TAG)) {
+    if (!editorsVisibilityConfig?.showDeprecated && editor.tags?.includes(DEPRECATED_TAG)) {
       return false;
     }
 
-    const hideById = selectorConfig?.hideById || [];
+    const hideById = editorsVisibilityConfig?.hideById || [];
     if (hideById.includes(editor.id)) {
       return false;
     }
