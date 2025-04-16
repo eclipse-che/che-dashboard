@@ -20,8 +20,8 @@ import getComponentRenderer, {
   waitFor,
   within,
 } from '@/services/__mocks__/getComponentRenderer';
-import { MockStoreBuilder } from '@/store/__mocks__/mockStore';
 import { buildFactoryLocation } from '@/services/helpers/location';
+import { MockStoreBuilder } from '@/store/__mocks__/mockStore';
 
 jest.mock('@/components/EditorSelector');
 jest.mock('@/pages/GetStarted/SamplesList');

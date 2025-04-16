@@ -20,6 +20,7 @@ import Head from '@/components/Head';
 import ImportFromGit from '@/components/ImportFromGit';
 import { Spacer } from '@/components/Spacer';
 import SamplesList from '@/pages/GetStarted/SamplesList';
+import { ROUTE } from '@/Routes';
 import { RootState } from '@/store';
 import { selectDefaultEditor } from '@/store/ServerConfig/selectors';
 
@@ -58,15 +59,11 @@ export class GetStarted extends React.PureComponent<Props, State> {
 
   private getPresetFilter(): string | undefined {
     const { pathname, search } = this.props.location;
-
-    if (search) {
-      if (pathname.startsWith('/create-workspace/')) {
-        const searchParam = new URLSearchParams(search);
-        return searchParam.get('filter') || undefined;
-      }
+    if (!search || pathname !== ROUTE.GET_STARTED) {
+      return undefined;
     }
-
-    return undefined;
+    const searchParam = new URLSearchParams(search);
+    return searchParam.get('filter') || undefined;
   }
 
   private handleSelectEditor(
