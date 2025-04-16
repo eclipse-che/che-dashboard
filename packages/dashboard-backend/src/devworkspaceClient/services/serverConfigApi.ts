@@ -261,9 +261,9 @@ export class ServerConfigApiService implements IServerConfigApi {
 export function getEnvVarValue(
   envVarName: string | undefined,
   cheCustomResource: CheClusterCustomResource,
-): string {
+): string | undefined {
   if (!envVarName) {
-    return '';
+    return undefined;
   }
   const containers = cheCustomResource.spec.components?.dashboard?.deployment?.containers || [];
   const targetContainer = containers.find(
@@ -276,5 +276,5 @@ export function getEnvVarValue(
     }
   }
   // If the environment variable is not found in the containers, return the value from process.env
-  return process.env[envVarName] || '';
+  return process.env[envVarName];
 }

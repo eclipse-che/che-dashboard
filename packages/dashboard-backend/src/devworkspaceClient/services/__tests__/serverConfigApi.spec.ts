@@ -210,6 +210,13 @@ describe('Server Config API Service', () => {
   });
 
   describe('getEnvVarValue', () => {
+    test('getting default value', () => {
+      const res = getEnvVarValue('CHE_SHOW_DEPRECATED_EDITORS', {
+        spec: {},
+      } as CheClusterCustomResource);
+      expect(res).toBeUndefined();
+    });
+
     test('getting value from custom resource', () => {
       const res = getEnvVarValue('CHE_SHOW_DEPRECATED_EDITORS', {
         spec: {
@@ -228,7 +235,31 @@ describe('Server Config API Service', () => {
     test('getting value from env variable', () => {
       process.env['CHE_SHOW_DEPRECATED_EDITORS'] = 'true';
       const res = getEnvVarValue('CHE_SHOW_DEPRECATED_EDITORS', buildCustomResource());
-      expect(res).toEqual(true);
+      expect(res).toEqual('true');
+    });
+
+    test('preferred value from custom resource', () => {
+      process.env['CHE_SHOW_DEPRECATED_EDITORS'] = 'true';
+
+      let res = getEnvVarValue('CHE_SHOW_DEPRECATED_EDITORS', {
+        spec: {},
+      } as CheClusterCustomResource);
+
+      expect(res).toEqual('true');
+
+      res = getEnvVarValue('CHE_SHOW_DEPRECATED_EDITORS', {
+        spec: {
+          components: {
+            dashboard: {
+              deployment: {
+                containers: [{ env: [{ name: 'CHE_SHOW_DEPRECATED_EDITORS', value: 'false' }] }],
+              },
+            },
+          },
+        },
+      } as CheClusterCustomResource);
+
+      expect(res).toEqual('false');
     });
   });
 });
