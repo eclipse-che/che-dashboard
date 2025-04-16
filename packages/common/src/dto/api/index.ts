@@ -116,7 +116,7 @@ export interface IServerConfig {
     plugins: IWorkspacesDefaultPlugins[];
     pvcStrategy: string | undefined;
   };
-  editorSelector?: {
+  editorsVisibility?: {
     showDeprecated: boolean;
     hideById: string[];
   };

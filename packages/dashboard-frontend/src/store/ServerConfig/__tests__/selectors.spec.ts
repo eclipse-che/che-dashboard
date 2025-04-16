@@ -22,6 +22,7 @@ import {
   selectDefaultComponents,
   selectDefaultEditor,
   selectDefaultPlugins,
+  selectEditorsVisibility,
   selectIsAllowedSourcesConfigured,
   selectOpenVSXUrl,
   selectPluginRegistryInternalUrl,
@@ -81,6 +82,10 @@ describe('ServerConfig Selectors', () => {
           autoProvision: true,
         },
         allowedSourceUrls: ['https://allowed.source'],
+        editorsVisibility: {
+          showDeprecated: true,
+          hideById: ['che-incubator/che-clion-server/latest, che-incubator/che-clion-server/next'],
+        },
       },
       isLoading: false,
       error: 'Something went wrong',
@@ -277,5 +282,13 @@ describe('ServerConfig Selectors', () => {
     } as RootState;
     const result = selectIsAllowedSourcesConfigured(stateWithoutAllowedSources);
     expect(result).toEqual(false);
+  });
+
+  it('should select editors visibility', () => {
+    const result = selectEditorsVisibility(mockState);
+    expect(result).toEqual({
+      hideById: ['che-incubator/che-clion-server/latest, che-incubator/che-clion-server/next'],
+      showDeprecated: true,
+    });
   });
 });

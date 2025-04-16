@@ -31,7 +31,7 @@ import { DocsLink } from '@/components/EditorSelector/DocsLink';
 import { EditorGallery } from '@/components/EditorSelector/Gallery';
 import { RootState } from '@/store';
 import { selectEditors } from '@/store/Plugins/chePlugins/selectors';
-import { selectEditorSelectorConfig } from '@/store/ServerConfig';
+import { selectEditorsVisibility } from '@/store/ServerConfig';
 
 type AccordionId = 'default' | 'selector' | 'definition';
 
@@ -55,9 +55,7 @@ class EditorSelector extends React.PureComponent<Props, State> {
     this.state = {
       definitionEditorValue: undefined,
       definitionImageValue: undefined,
-
       selectorEditorValue: '',
-
       expandedId: 'default',
     };
   }
@@ -219,7 +217,7 @@ class EditorSelector extends React.PureComponent<Props, State> {
 
 const mapStateToProps = (state: RootState) => ({
   editors: selectEditors(state),
-  selectorConfig: selectEditorSelectorConfig(state),
+  selectorConfig: selectEditorsVisibility(state),
 });
 
 const connector = connect(mapStateToProps, null, null, {

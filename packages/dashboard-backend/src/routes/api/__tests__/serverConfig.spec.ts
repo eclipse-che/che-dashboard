@@ -50,7 +50,7 @@ describe('Server Config Route', () => {
         startTimeout: 0,
         axiosRequestTimeout: 0,
       },
-      editorSelector: {
+      editorsVisibility: {
         hideById: ['che-incubator/che-idea-server/next'],
         showDeprecated: true,
       },

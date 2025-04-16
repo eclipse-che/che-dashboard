@@ -77,9 +77,9 @@ export const selectAllowedSources = createSelector(
   state => state.config.allowedSourceUrls || [],
 );
 
-export const selectEditorSelectorConfig = createSelector(
+export const selectEditorsVisibility = createSelector(
   selectState,
-  state => state.config.editorSelector,
+  state => state.config.editorsVisibility,
 );
 
 export const selectIsAllowedSourcesConfigured = createSelector(

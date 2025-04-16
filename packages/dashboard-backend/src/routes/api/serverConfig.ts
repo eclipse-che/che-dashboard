@@ -93,7 +93,7 @@ export function registerServerConfigRoute(instance: FastifyInstance) {
       }
 
       if (showDeprecated || hideById.length > 0) {
-        serverConfig.editorSelector = {
+        serverConfig.editorsVisibility = {
           showDeprecated,
           hideById,
         };
