@@ -21,6 +21,7 @@ import getComponentRenderer, {
   within,
 } from '@/services/__mocks__/getComponentRenderer';
 import { MockStoreBuilder } from '@/store/__mocks__/mockStore';
+import { buildFactoryLocation } from '@/services/helpers/location';
 
 jest.mock('@/components/EditorSelector');
 jest.mock('@/pages/GetStarted/SamplesList');
@@ -80,9 +81,10 @@ describe('GetStarted', () => {
 
 function getComponent() {
   const store = new MockStoreBuilder().build();
+  const location = buildFactoryLocation();
   return (
     <Provider store={store}>
-      <GetStarted navigate={jest.fn()} />
+      <GetStarted location={location} navigate={jest.fn()} />
     </Provider>
   );
 }

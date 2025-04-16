@@ -11,12 +11,13 @@
  */
 
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 import GetStarted from '@/pages/GetStarted';
 
 export default function GetStartedContainer(): React.ReactElement {
   const navigate = useNavigate();
+  const location = useLocation();
 
-  return <GetStarted navigate={navigate} />;
+  return <GetStarted location={location} navigate={navigate} />;
 }

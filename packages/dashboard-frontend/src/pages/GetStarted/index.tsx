@@ -13,7 +13,7 @@
 import { Divider, PageSection, PageSectionVariants, Title } from '@patternfly/react-core';
 import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
-import { NavigateFunction } from 'react-router-dom';
+import { Location, NavigateFunction } from 'react-router-dom';
 
 import EditorSelector from '@/components/EditorSelector';
 import Head from '@/components/Head';
@@ -24,11 +24,13 @@ import { RootState } from '@/store';
 import { selectDefaultEditor } from '@/store/ServerConfig/selectors';
 
 type Props = MappedProps & {
+  location: Location;
   navigate: NavigateFunction;
 };
 type State = {
   editorDefinition: string | undefined;
   editorImage: string | undefined;
+  presetFilter: string | undefined;
 };
 
 export class GetStarted extends React.PureComponent<Props, State> {
@@ -38,7 +40,33 @@ export class GetStarted extends React.PureComponent<Props, State> {
     this.state = {
       editorDefinition: undefined,
       editorImage: undefined,
+      presetFilter: this.getPresetFilter(),
     };
+  }
+
+  componentDidUpdate(prevProps: Readonly<Props>) {
+    const { presetFilter } = this.state;
+    const { location } = this.props;
+
+    if (location !== prevProps.location) {
+      const newPresetFilter = this.getPresetFilter();
+      if (newPresetFilter !== presetFilter) {
+        this.setState({ presetFilter: newPresetFilter });
+      }
+    }
+  }
+
+  private getPresetFilter(): string | undefined {
+    const { pathname, search } = this.props.location;
+
+    if (search) {
+      if (pathname.startsWith('/create-workspace/')) {
+        const searchParam = new URLSearchParams(search);
+        return searchParam.get('filter') || undefined;
+      }
+    }
+
+    return undefined;
   }
 
   private handleSelectEditor(
@@ -53,7 +81,7 @@ export class GetStarted extends React.PureComponent<Props, State> {
 
   render(): React.ReactNode {
     const { defaultEditor, navigate } = this.props;
-    const { editorDefinition, editorImage } = this.state;
+    const { editorDefinition, editorImage, presetFilter } = this.state;
 
     const title = 'Create Workspace';
 
@@ -85,7 +113,11 @@ export class GetStarted extends React.PureComponent<Props, State> {
 
           <Spacer />
 
-          <SamplesList editorDefinition={editorDefinition} editorImage={editorImage} />
+          <SamplesList
+            editorDefinition={editorDefinition}
+            editorImage={editorImage}
+            presetFilter={presetFilter}
+          />
         </PageSection>
       </React.Fragment>
     );

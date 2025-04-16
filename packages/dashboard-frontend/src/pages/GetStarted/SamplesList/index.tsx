@@ -37,6 +37,7 @@ import { selectPvcStrategy } from '@/store/ServerConfig/selectors';
 export type Props = {
   editorDefinition: string | undefined;
   editorImage: string | undefined;
+  presetFilter: string | undefined;
 } & MappedProps;
 
 type State = {
@@ -99,7 +100,7 @@ class SamplesList extends React.PureComponent<Props, State> {
   }
 
   public render(): React.ReactElement {
-    const { metadataFiltered } = this.props;
+    const { metadataFiltered, presetFilter } = this.props;
 
     return (
       <Panel>
@@ -112,6 +113,7 @@ class SamplesList extends React.PureComponent<Props, State> {
         <PanelMain>
           <PanelMainBody>
             <SamplesListToolbar
+              presetFilter={presetFilter}
               isTemporary={this.state.isTemporary}
               onTemporaryStorageChange={isTemporary =>
                 this.handleTemporaryStorageChange(isTemporary)
