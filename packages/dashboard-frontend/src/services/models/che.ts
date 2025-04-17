@@ -12,14 +12,7 @@
 
 export { che as api } from '@eclipse-che/api';
 
-export type WorkspaceStorageType =
-  | 'async'
-  | 'ephemeral'
-  | 'persistent'
-  | 'per-workspace'
-  | 'per-user'
-  | 'common'
-  | '';
+export type WorkspaceStorageType = 'ephemeral' | 'per-workspace' | 'per-user' | '';
 
 export interface Plugin {
   id: string;
@@ -45,6 +38,7 @@ export interface WorkspaceDevfileAttributes {
 export interface DevfileMetaData {
   displayName: string;
   description?: string;
+  language?: string;
   globalMemoryLimit?: string;
   registry?: string;
   icon: string | { base64data: string; mediatype: string };

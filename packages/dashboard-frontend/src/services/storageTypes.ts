@@ -13,9 +13,7 @@
 import { che } from '@/services/models';
 
 export enum StorageTypeTitle {
-  async = 'Asynchronous',
   ephemeral = 'Ephemeral',
-  persistent = 'Persistent',
   'per-user' = 'Per-user',
   'per-workspace' = 'Per-workspace',
   '' = 'Not defined',

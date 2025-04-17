@@ -22,7 +22,7 @@ import getComponentRenderer, { screen, within } from '@/services/__mocks__/getCo
 import { BrandingData } from '@/services/bootstrap/branding.constant';
 import { che } from '@/services/models';
 import { MockStoreBuilder } from '@/store/__mocks__/mockStore';
-import { DevfileRegistryMetadata } from '@/store/DevfileRegistries/selectors';
+import { DevfileRegistryMetadata, EMPTY_WORKSPACE_TAG } from '@/store/DevfileRegistries/selectors';
 
 jest.mock('@/pages/GetStarted/SamplesList/Gallery/Card');
 
@@ -84,7 +84,9 @@ describe('Samples List Gallery', () => {
     await userEvent.click(button);
 
     expect(mockOnCardClick).toHaveBeenCalledTimes(1);
-    expect(mockOnCardClick).toHaveBeenCalledWith(metadata[0]);
+    expect(mockOnCardClick).toHaveBeenCalledWith(
+      metadata.find(meta => meta.tags.includes(EMPTY_WORKSPACE_TAG)),
+    );
   });
 });
 
