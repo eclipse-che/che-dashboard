@@ -49,6 +49,8 @@ export function registerServerConfigRoute(instance: FastifyInstance) {
       const autoProvision = serverConfigApi.getAutoProvision(cheCustomResource);
       const allowedSourceUrls = serverConfigApi.getAllowedSourceUrls(cheCustomResource);
       const axiosRequestTimeout = serverConfigApi.getAxiosRequestTimeout();
+      const showDeprecated = serverConfigApi.getShowDeprecatedEditors(cheCustomResource);
+      const hideById = serverConfigApi.gеtHideEditorsById(cheCustomResource);
 
       const serverConfig: api.IServerConfig = {
         containerBuild,
@@ -89,6 +91,14 @@ export function registerServerConfigRoute(instance: FastifyInstance) {
           },
         };
       }
+
+      if (showDeprecated || hideById.length > 0) {
+        serverConfig.editorsVisibility = {
+          showDeprecated,
+          hideById,
+        };
+      }
+
       return serverConfig;
     });
   });

@@ -165,6 +165,10 @@ export const stubWorkspacePreferences: api.IWorkspacePreferences = {
 
 export const stubIsRunningWorkspaceClusterLimitExceeded = true;
 
+export const stubShowDeprecatedEditors = true;
+
+export const stubHideEditorsById: string[] = ['che-incubator/che-idea-server/next'];
+
 export const getDevWorkspaceClient = jest.fn(
   (..._args: Parameters<typeof helper>): ReturnType<typeof helper> => {
     return {
@@ -190,6 +194,8 @@ export const getDevWorkspaceClient = jest.fn(
         getAutoProvision: _cheCustomResource => stubAutoProvision,
         getAdvancedAuthorization: _cheCustomResource => stubAdvancedAuthorization,
         getAllowedSourceUrls: _cheCustomResource => stubAllowedSourceUrls,
+        getShowDeprecatedEditors: _cheCustomResource => stubShowDeprecatedEditors,
+        gеtHideEditorsById: _cheCustomResource => stubHideEditorsById,
       } as IServerConfigApi,
       devworkspaceApi: {
         create: (_devworkspace, _namespace) =>

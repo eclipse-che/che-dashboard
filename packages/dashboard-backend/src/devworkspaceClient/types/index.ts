@@ -223,6 +223,14 @@ export function isCheClusterCustomResourceSpecDevEnvironments(
 export type CheClusterCustomResourceSpecComponents = {
   cheServer?: Record<string, unknown>;
   dashboard?: {
+    deployment?: {
+      containers: {
+        env?: Array<{
+          name: string;
+          value: string;
+        }>;
+      }[];
+    };
     requestTimeout?: number;
     branding?: {
       logo?: {
@@ -376,6 +384,16 @@ export interface IServerConfigApi {
    * Returns the allowed source URLs
    */
   getAllowedSourceUrls(cheCustomResource: CheClusterCustomResource): string[];
+
+  /**
+   * Returns the showDeprecatedEditors value
+   */
+  getShowDeprecatedEditors(cheCustomResource: CheClusterCustomResource): boolean;
+
+  /**
+   * Returns the hideEditorsById value
+   */
+  gеtHideEditorsById(cheCustomResource: CheClusterCustomResource): string[];
 }
 
 export interface IKubeConfigApi {

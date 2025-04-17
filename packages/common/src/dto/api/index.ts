@@ -116,6 +116,10 @@ export interface IServerConfig {
     plugins: IWorkspacesDefaultPlugins[];
     pvcStrategy: string | undefined;
   };
+  editorsVisibility?: {
+    showDeprecated: boolean;
+    hideById: string[];
+  };
   devfileRegistry: {
     disableInternalRegistry: boolean;
     externalDevfileRegistries: IExternalDevfileRegistry[];
