@@ -23,9 +23,24 @@ import { selectFilterValue, selectMetadataFiltered } from '@/store/DevfileRegist
 export type Props = MappedProps & {
   isTemporary: boolean;
   onTemporaryStorageChange: (isTemporary: boolean) => void;
+  presetFilter: string | undefined;
 };
 
 class SamplesListToolbar extends React.PureComponent<Props> {
+  componentDidMount() {
+    const searchValue = this.props.presetFilter;
+    if (searchValue) {
+      this.props.setFilter(searchValue);
+    }
+  }
+
+  componentDidUpdate(prevProps: Readonly<Props>) {
+    const { presetFilter } = this.props;
+    if (presetFilter && presetFilter !== prevProps.presetFilter) {
+      this.props.setFilter(presetFilter);
+    }
+  }
+
   componentWillUnmount(): void {
     this.props.clearFilter();
   }

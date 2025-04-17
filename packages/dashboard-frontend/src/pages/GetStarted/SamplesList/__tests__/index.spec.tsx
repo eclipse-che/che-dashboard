@@ -248,7 +248,11 @@ function getComponent(
 ) {
   return (
     <Provider store={store}>
-      <SamplesList editorDefinition={editorDefinition} editorImage={editorImage} />
+      <SamplesList
+        presetFilter={undefined}
+        editorDefinition={editorDefinition}
+        editorImage={editorImage}
+      />
     </Provider>
   );
 }

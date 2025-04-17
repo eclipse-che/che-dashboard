@@ -43,6 +43,18 @@ describe('Samples List Toolbar', () => {
     expect(filterInput.value).toEqual('');
   });
 
+  it('should initially have presetFilter filter value', () => {
+    const store = createFakeStore(mockMetadata);
+    const { reRenderComponent } = renderComponent(store, 'bash');
+
+    const filterInput = screen.getByLabelText('Filter samples list') as HTMLInputElement;
+
+    expect(filterInput.value).toEqual('bash');
+    reRenderComponent(store, 'java');
+
+    expect(filterInput.value).toEqual('java');
+  });
+
   it('should not initially show the results counter', () => {
     renderComponent();
     const resultsCount = screen.queryByTestId('toolbar-results-count');
@@ -109,11 +121,15 @@ function createFakeStore(metadata?: che.DevfileMetaData[]) {
     .build();
 }
 
-function getComponent(store?: Store) {
+function getComponent(store?: Store, presetFilter: string | undefined = undefined) {
   store ||= createFakeStore(mockMetadata);
   return (
     <Provider store={store}>
-      <SamplesListToolbar isTemporary={true} onTemporaryStorageChange={jest.fn()} />
+      <SamplesListToolbar
+        presetFilter={presetFilter}
+        isTemporary={true}
+        onTemporaryStorageChange={jest.fn()}
+      />
     </Provider>
   );
 }
