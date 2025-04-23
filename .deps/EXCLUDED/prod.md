@@ -2,6 +2,7 @@ This file lists dependencies that do not need CQs or auto-detection does not wor
 
 | Packages | Resolved CQs |
 | --- | --- |
+| `@devfile/api@2.3.0-1738854228` | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@devfile/api/2.3.0-1738854228) |
 | `@fastify/cors@9.0.1` | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@fastify/cors/9.0.1) |
 | `@hapi/hoek@10.0.1` | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@hapi/hoek/10.0.1) |
 | `@patternfly/react-core@4.278.0` | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@patternfly/react-core/4.278.0) |
