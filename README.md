@@ -24,7 +24,18 @@ To report or address issues and actively contribute to the codebase, please refe
 
 ## Branding
 
-Default branding data for the User Dashboard is located in [branding.constant.ts](/packages/dashboard-frontend/src/services/bootstrap/branding.constant.ts)#BRANDING_DEFAULT. It can be overridden without re-building the project in [product.json](/packages/dashboard-frontend/assets/branding/product.json) file which should contain only values that should overwrite default ones.
+The default branding data is in [branding.constant.ts](https://github.com/eclipse-che/che-dashboard/tree/main/packages/dashboard-frontend/src/services/bootstrap/branding.constant.ts).
+It could be overridden with [product.json](https://github.com/eclipse-che/che-dashboard/tree/main/packages/dashboard-frontend/assets/branding/product.json) file, without rebuilding the project, just
+replace `assets/branding/product.json` file in the public folder.
+
+Example:
+
+```json
+{
+  "title": "Custom Che",
+  "name": "Custom Che"
+}
+```
 
 ### Configurability
 
