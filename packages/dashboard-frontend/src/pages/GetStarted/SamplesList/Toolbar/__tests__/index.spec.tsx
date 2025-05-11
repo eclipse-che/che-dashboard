@@ -81,6 +81,8 @@ describe('Samples List Toolbar', () => {
     const storeNext = new MockStoreBuilder(store.getState())
       .withDevfileRegistries({
         filter: 'bash',
+        tagsFilter: [],
+        languagesFilter: [],
       })
       .build();
 
@@ -117,7 +119,12 @@ function createFakeStore(metadata?: che.DevfileMetaData[]) {
         storageTypes: 'https://docs.location',
       },
     } as BrandingData)
-    .withDevfileRegistries({ registries })
+    .withDevfileRegistries({
+      registries,
+      filter: '',
+      tagsFilter: [],
+      languagesFilter: [],
+    })
     .build();
 }
 
