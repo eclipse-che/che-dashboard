@@ -81,6 +81,8 @@ describe('DevfileRegistries, selectors', () => {
             ],
           },
         },
+        tagsFilter: [],
+        languagesFilter: [],
         filter: 'Devfile 1',
         isLoading: false,
       },

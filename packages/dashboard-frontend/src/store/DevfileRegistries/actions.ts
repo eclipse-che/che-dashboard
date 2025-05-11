@@ -72,6 +72,14 @@ export const resourcesErrorAction = createAction<resourcesErrorAction>('resource
 export const filterSetAction = createAction<string>('devfileRegistries/setFilter');
 export const filterClearAction = createAction('devfileRegistries/clearFilter');
 
+export const tagsFilterSetAction = createAction<string[]>('devfileRegistries/setTagsFilter');
+export const tagsFilterClearAction = createAction('devfileRegistries/clearTagsFilter');
+
+export const languagesFilterSetAction = createAction<string[]>(
+  'devfileRegistries/setLanguagesFilter',
+);
+export const languagesFilterClearAction = createAction('devfileRegistries/clearLanguagesFilter');
+
 export const actionCreators = {
   /**
    * Request devfile metadata from available registries. `registryUrls` is space-separated list of urls.
@@ -164,4 +172,16 @@ export const actionCreators = {
     dispatch =>
       dispatch(filterSetAction(value)),
   clearFilter: (): AppThunk<void> => dispatch => dispatch(filterClearAction()),
+
+  setTagsFilter:
+    (value: string[]): AppThunk<void> =>
+    dispatch =>
+      dispatch(tagsFilterSetAction(value)),
+  clearTagsFilter: (): AppThunk<void> => dispatch => dispatch(tagsFilterClearAction()),
+
+  setLanguagesFilter:
+    (value: string[]): AppThunk<void> =>
+    dispatch =>
+      dispatch(languagesFilterSetAction(value)),
+  clearLanguagesFilter: (): AppThunk<void> => dispatch => dispatch(languagesFilterClearAction()),
 };
