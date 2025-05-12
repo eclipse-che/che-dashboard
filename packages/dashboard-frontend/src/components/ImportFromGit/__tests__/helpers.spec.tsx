@@ -206,6 +206,19 @@ describe('helpers', () => {
             helpers.setBranchToLocation('https://gitlab.com/eclipse-che/che-dashboard.git', branch),
           ).toBe(`https://gitlab.com/eclipse-che/che-dashboard.git/-/tree/${branch}`);
         });
+        test('repository with subgroups', () => {
+          expect(
+            helpers.setBranchToLocation('https://gitlab.com/group/subgroup/repository.git', branch),
+          ).toBe(`https://gitlab.com/group/subgroup/repository.git/-/tree/${branch}`);
+        });
+        test('repository with subgroups and branch', () => {
+          expect(
+            helpers.setBranchToLocation(
+              'https://gitlab.com/group/subgroup/repository.git/-/tree/branch',
+              branch,
+            ),
+          ).toBe(`https://gitlab.com/group/subgroup/repository.git/-/tree/${branch}`);
+        });
       });
       describe('Bitbucket', () => {
         test('should return the location without branch', () => {

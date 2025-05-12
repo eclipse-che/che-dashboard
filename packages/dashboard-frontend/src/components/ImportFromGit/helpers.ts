@@ -140,9 +140,9 @@ function setBranchToAzureDevOpsLocation(location: string, branch: string | undef
 
 export function setBranchToLocation(location: string, branch: string | undefined): string {
   const url = new URL(location);
-  const pathname = url.pathname;
+  const pathname = url.pathname.replace(/^\//, '').replace(/\/$/, '');
 
-  const [user, project] = pathname.replace(/^\//, '').replace(/\/$/, '').split('/');
+  const [user, project] = pathname.split('/');
 
   const service = getSupportedGitService(location);
   if (!branch) {
@@ -157,7 +157,7 @@ export function setBranchToLocation(location: string, branch: string | undefined
         url.pathname = `${user}/${project}/tree/${branch}`;
         break;
       case 'gitlab':
-        url.pathname = `${user}/${project}/-/tree/${branch}`;
+        url.pathname = `${pathname.replace(/\/-\/tree\/.*$/, '')}/-/tree/${branch}`;
         break;
       case 'bitbucket-server':
         url.pathname = `${user}/${project}/src/${branch}`;
