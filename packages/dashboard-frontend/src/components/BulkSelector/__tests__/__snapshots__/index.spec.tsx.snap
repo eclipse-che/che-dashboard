@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`Selector kebab toggle snapshot 1`] = `
+exports[`BulkSelector kebab toggle snapshot with elements 1`] = `
 <div
   className="pf-c-select selector"
   data-ouia-component-id="OUIA-Generated-Select-checkbox-1"
@@ -53,3 +53,5 @@ exports[`Selector kebab toggle snapshot 1`] = `
   </button>
 </div>
 `;
+
+exports[`BulkSelector kebab toggle snapshot with empty list 1`] = `null`;

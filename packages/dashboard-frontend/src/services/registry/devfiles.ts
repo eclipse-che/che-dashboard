@@ -228,6 +228,9 @@ export function getLanguage(metadata: che.DevfileMetaData): string | undefined {
   if (metadata.language) {
     return metadata.language;
   }
+  if (metadata.tags.length === 0) {
+    return undefined;
+  }
   const languages = [
     '.NET',
     'C++',
@@ -240,7 +243,7 @@ export function getLanguage(metadata: che.DevfileMetaData): string | undefined {
     'Rust',
     'TypeScript',
   ];
-  return languages.find(lang => metadata.tags.includes(lang));
+  return metadata.tags.find(tag => languages.includes(tag));
 }
 
 function getExternalRegistryMetadataFromStorage(url: string): che.DevfileMetaData[] | undefined {

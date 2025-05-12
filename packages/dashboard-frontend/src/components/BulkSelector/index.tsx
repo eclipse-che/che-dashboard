@@ -13,7 +13,7 @@
 import { Select, SelectOption, SelectOptionObject, SelectVariant } from '@patternfly/react-core';
 import React from 'react';
 
-import styles from '@/pages/GetStarted/SamplesList/Gallery/Selector/index.module.css';
+import styles from '@/components/BulkSelector/index.module.css';
 
 export type Props = {
   onChange: (tags: string[]) => void;
@@ -27,21 +27,22 @@ export type State = {
   options: React.ReactElement[];
 };
 
-export class Selector extends React.PureComponent<Props, State> {
+export class BulkSelector extends React.PureComponent<Props, State> {
   constructor(props: Props) {
     super(props);
-
-    const options = this.getOptions(props.list);
 
     this.state = {
       isOpen: false,
       selected: [],
-      options,
+      options: [],
     };
   }
 
-  private getOptions(list: string[]): React.ReactElement[] {
-    return list.map(tag => <SelectOption key={tag} value={tag} />);
+  public componentDidMount(): void {
+    const options = this.getOptions(this.props.list);
+    this.setState({
+      options,
+    });
   }
 
   public componentDidUpdate(prevProps: Props): void {
@@ -52,6 +53,10 @@ export class Selector extends React.PureComponent<Props, State> {
         options,
       });
     }
+  }
+
+  private getOptions(list: string[]): React.ReactElement[] {
+    return list.map(tag => <SelectOption key={tag} value={tag} />);
   }
 
   private onToggle(isOpen: boolean): void {
@@ -82,7 +87,6 @@ export class Selector extends React.PureComponent<Props, State> {
 
     return (
       <Select
-        style={{ minWidth: '200px' }}
         className={styles.selector}
         variant={SelectVariant.checkbox}
         onToggle={isOpen => this.onToggle(isOpen)}

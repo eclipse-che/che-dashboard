@@ -19,12 +19,16 @@ import {
   devfileRequestAction,
   filterClearAction,
   filterSetAction,
+  languagesFilterClearAction,
+  languagesFilterSetAction,
   registryMetadataErrorAction,
   registryMetadataReceiveAction,
   registryMetadataRequestAction,
   resourcesErrorAction,
   resourcesReceiveAction,
   resourcesRequestAction,
+  tagsFilterClearAction,
+  tagsFilterSetAction,
 } from '@/store/DevfileRegistries/actions';
 import { reducer, State, unloadedState } from '@/store/DevfileRegistries/reducer';
 
@@ -161,6 +165,54 @@ describe('DevfileRegistries, reducer', () => {
     const expectedState: State = {
       ...initialState,
       filter: '',
+    };
+
+    expect(reducer(stateWithFilter, action)).toEqual(expectedState);
+  });
+
+  it('should handle tagsFilterSetAction', () => {
+    const action = tagsFilterSetAction(['new filter']);
+    const expectedState: State = {
+      ...initialState,
+      tagsFilter: ['new filter'],
+    };
+
+    expect(reducer(initialState, action)).toEqual(expectedState);
+  });
+
+  it('should handle tagsFilterClearAction', () => {
+    const stateWithFilter: State = {
+      ...initialState,
+      tagsFilter: ['some filter'],
+    };
+    const action = tagsFilterClearAction();
+    const expectedState: State = {
+      ...initialState,
+      tagsFilter: [],
+    };
+
+    expect(reducer(stateWithFilter, action)).toEqual(expectedState);
+  });
+
+  it('should handle languagesFilterSetAction', () => {
+    const action = languagesFilterSetAction(['new filter']);
+    const expectedState: State = {
+      ...initialState,
+      languagesFilter: ['new filter'],
+    };
+
+    expect(reducer(initialState, action)).toEqual(expectedState);
+  });
+
+  it('should handle languagesFilterClearAction', () => {
+    const stateWithFilter: State = {
+      ...initialState,
+      languagesFilter: ['some filter'],
+    };
+    const action = languagesFilterClearAction();
+    const expectedState: State = {
+      ...initialState,
+      languagesFilter: [],
     };
 
     expect(reducer(stateWithFilter, action)).toEqual(expectedState);

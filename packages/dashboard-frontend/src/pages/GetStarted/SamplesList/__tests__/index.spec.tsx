@@ -177,7 +177,7 @@ describe('Samples List', () => {
       await userEvent.click(sampleCardButton);
 
       expect(mockWindowOpen).toHaveBeenCalledWith(
-        `${origin}#${sampleUrl}?df=devfile2.yaml&che-editor=che-incubator%2Fche-code%2Finsiders&devWorkspace=registry-url%2Fdevfile-registry%2Fdevfiles%2Fquarkus%2Fdevworkspace-che-code-insiders.yaml&editor-image=custom-editor-image&storageType=ephemeral`,
+        `${origin}#${sampleUrl}?df=devfile2.yaml&che-editor=che-incubator%2Fche-code%2Finsiders&devWorkspace=registry-url%2Fdevfile-registry%2Fdevfiles%2Fquarkus%2Fdevworkspace-che-code-insiders.yaml&editor-image=custom-editor-image&storageType=per-workspace`,
         '_blank',
       );
       expect(mockWindowOpen).toHaveBeenCalledTimes(1);

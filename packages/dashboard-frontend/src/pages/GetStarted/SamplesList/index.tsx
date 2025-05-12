@@ -65,7 +65,7 @@ class SamplesList extends React.PureComponent<Props, State> {
       return 'ephemeral';
     }
 
-    return preferredStorageType;
+    return preferredStorageType === 'ephemeral' ? 'per-workspace' : preferredStorageType;
   }
 
   private async handleSampleCardClick(metadata: DevfileRegistryMetadata): Promise<void> {

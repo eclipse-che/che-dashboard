@@ -16,7 +16,7 @@ import React from 'react';
 import Pluralize from 'react-pluralize';
 import { connect, ConnectedProps } from 'react-redux';
 
-import { Selector } from '@/pages/GetStarted/SamplesList/Gallery/Selector';
+import { BulkSelector } from '@/components/BulkSelector';
 import TemporaryStorageSwitch from '@/pages/GetStarted/SamplesList/Toolbar/TemporaryStorageSwitch';
 import { RootState } from '@/store';
 import {
@@ -48,6 +48,28 @@ class SamplesListToolbar extends React.PureComponent<Props, State> {
     };
   }
 
+  public componentDidMount() {
+    const searchValue = this.props.presetFilter;
+    if (searchValue) {
+      this.props.setFilter(searchValue);
+    }
+  }
+
+  public componentDidUpdate(prevProps: Readonly<Props>): void {
+    const { presetFilter, registriesMetadata } = this.props;
+    if (presetFilter && presetFilter !== prevProps.presetFilter) {
+      this.props.setFilter(presetFilter);
+    }
+    if (!isEqual(registriesMetadata, prevProps.registriesMetadata)) {
+      const { tags, languages } = this.getTagsAndLanguages(registriesMetadata);
+      this.setState({ tags, languages });
+    }
+  }
+
+  public componentWillUnmount(): void {
+    this.props.clearFilter();
+  }
+
   private getTagsAndLanguages(registriesMetadata: DevfileRegistryMetadata[]): {
     languages: string[];
     tags: string[];
@@ -73,38 +95,12 @@ class SamplesListToolbar extends React.PureComponent<Props, State> {
     return { tags, languages };
   }
 
-  componentDidMount() {
-    const searchValue = this.props.presetFilter;
-    if (searchValue) {
-      this.props.setFilter(searchValue);
-    }
-  }
-
-  componentDidUpdate(prevProps: Readonly<Props>) {
-    const { presetFilter, registriesMetadata } = this.props;
-    if (presetFilter && presetFilter !== prevProps.presetFilter) {
-      this.props.setFilter(presetFilter);
-    }
-    if (!isEqual(registriesMetadata, prevProps.registriesMetadata)) {
-      const { tags, languages } = this.getTagsAndLanguages(registriesMetadata);
-      this.setState({ tags, languages });
-    }
-  }
-
-  componentWillUnmount(): void {
-    this.props.clearFilter();
-  }
-
   private handleTextInputChange(searchValue: string): void {
     this.props.setFilter(searchValue);
   }
 
-  private buildCount(
-    foundCount: number,
-    searchValue: string,
-    allCount: number,
-  ): React.ReactElement {
-    return searchValue === '' && foundCount === allCount ? (
+  private buildCount(foundCount: number, allCount: number): React.ReactElement {
+    return foundCount === allCount ? (
       <></>
     ) : (
       <Pluralize singular={'item'} count={foundCount} zero={'Nothing found'} />
@@ -131,7 +127,7 @@ class SamplesListToolbar extends React.PureComponent<Props, State> {
           />
         </FlexItem>
         <FlexItem>
-          <Selector
+          <BulkSelector
             list={tags}
             placeholderText={'Filter by tags'}
             onChange={tags => {
@@ -140,7 +136,7 @@ class SamplesListToolbar extends React.PureComponent<Props, State> {
           />
         </FlexItem>
         <FlexItem>
-          <Selector
+          <BulkSelector
             list={languages}
             placeholderText={'Filter by languages'}
             onChange={languages => {
@@ -150,7 +146,7 @@ class SamplesListToolbar extends React.PureComponent<Props, State> {
         </FlexItem>
         <FlexItem>
           <TextContent>
-            <Text>{this.buildCount(foundCount, filterValue, allCount)}</Text>
+            <Text>{this.buildCount(foundCount, allCount)}</Text>
           </TextContent>
         </FlexItem>
         <FlexItem align={{ default: 'alignRight' }}>

@@ -13,14 +13,14 @@
 import userEvent, { UserEvent } from '@testing-library/user-event';
 import React from 'react';
 
-import { Selector } from '@/pages/GetStarted/SamplesList/Gallery/Selector';
+import { BulkSelector } from '@/components/BulkSelector';
 import getComponentRenderer, { screen } from '@/services/__mocks__/getComponentRenderer';
 
 const { createSnapshot, renderComponent } = getComponentRenderer(getComponent);
 
 const mockOnChange = jest.fn();
 
-describe('Selector', () => {
+describe('BulkSelector', () => {
   let list: string[];
   let user: UserEvent;
 
@@ -35,13 +35,18 @@ describe('Selector', () => {
   });
 
   describe('kebab toggle', () => {
-    test('snapshot', () => {
+    test('snapshot with empty list', () => {
+      const snapshot = createSnapshot([]);
+      expect(snapshot.toJSON()).toMatchSnapshot();
+    });
+
+    test('snapshot with elements', () => {
       const snapshot = createSnapshot(list, 'Bulk Selector');
       expect(snapshot.toJSON()).toMatchSnapshot();
     });
 
     test('open dropdown', async () => {
-      renderComponent(list);
+      const { reRenderComponent } = renderComponent(list);
       const toggle = screen.queryByRole('button');
 
       expect(toggle).toBeTruthy();
@@ -57,6 +62,12 @@ describe('Selector', () => {
 
       // now the dropdown menu is visible
       expect(toggle).toHaveAttribute('aria-expanded', 'true');
+      list.forEach(tag => {
+        expect(screen.queryByText(tag)).toBeTruthy();
+      });
+      // update menu items
+      list = ['newTag1', 'newTag2'];
+      reRenderComponent(list);
       list.forEach(tag => {
         expect(screen.queryByText(tag)).toBeTruthy();
       });
@@ -87,7 +98,7 @@ function getComponent(
   placeholderText: string = '-- Select --',
 ): React.ReactElement {
   const component = (
-    <Selector list={list} placeholderText={placeholderText} onChange={mockOnChange} />
+    <BulkSelector list={list} placeholderText={placeholderText} onChange={mockOnChange} />
   );
 
   return component;
