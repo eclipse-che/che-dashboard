@@ -215,6 +215,8 @@ export class MockStoreBuilder {
         [location: string]: { resources?: DevWorkspaceResources; error?: string };
       };
       filter?: string;
+      tagsFilter?: string[];
+      languagesFilter?: string[];
     },
     isLoading = false,
   ): MockStoreBuilder {
@@ -229,6 +231,8 @@ export class MockStoreBuilder {
           this.state.devfileRegistries?.devWorkspaceResources ??
           {},
         filter: options.filter || '',
+        tagsFilter: options.tagsFilter || [],
+        languagesFilter: options.languagesFilter || [],
       },
     } as RootState;
     return this;

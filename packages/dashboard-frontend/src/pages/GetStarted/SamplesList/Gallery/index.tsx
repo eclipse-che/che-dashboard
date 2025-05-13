@@ -105,7 +105,7 @@ export class SamplesListGallery extends React.PureComponent<Props> {
 
     if (cards.length === 0) {
       return (
-        <EmptyState variant={EmptyStateVariant.full}>
+        <EmptyState style={{ minHeight: '275px' }} variant={EmptyStateVariant.full}>
           <EmptyStateIcon icon={SearchIcon} />
           <Title headingLevel="h1">No results found</Title>
           <EmptyStateBody>
@@ -120,7 +120,11 @@ export class SamplesListGallery extends React.PureComponent<Props> {
       );
     }
 
-    return <Gallery hasGutter={true}>{cards}</Gallery>;
+    return (
+      <Gallery style={{ minHeight: '275px' }} hasGutter={true}>
+        {cards}
+      </Gallery>
+    );
   }
 }
 

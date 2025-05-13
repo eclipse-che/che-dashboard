@@ -71,16 +71,34 @@ export const selectRegistriesErrors = createSelector(selectState, state => {
 });
 
 export const selectFilterValue = createSelector(selectState, state => state.filter);
+export const selectLanguagesFilterValue = createSelector(
+  selectState,
+  state => state.languagesFilter,
+);
+export const selectTagsFilterValue = createSelector(selectState, state => state.tagsFilter);
 
 export const selectMetadataFiltered = createSelector(
-  selectState,
+  selectLanguagesFilterValue,
+  selectTagsFilterValue,
   selectFilterValue,
   selectRegistriesMetadata,
-  (state, filterValue, metadata) => {
-    if (!filterValue) {
-      return metadata;
+  (selectLanguagesFilterValue, selectTagsFilterValue, filterValue, metadata) => {
+    let _metadata: DevfileRegistryMetadata[] = [...metadata];
+    if (selectLanguagesFilterValue && selectLanguagesFilterValue.length > 0) {
+      _metadata = _metadata.filter(
+        meta => meta.language && selectLanguagesFilterValue.includes(meta.language),
+      );
     }
-    return metadata.filter(meta => matches(meta, filterValue));
+    if (selectTagsFilterValue && selectTagsFilterValue.length > 0) {
+      _metadata = _metadata.filter(meta =>
+        meta.tags.some(tag => selectTagsFilterValue.includes(tag)),
+      );
+    }
+    if (filterValue) {
+      _metadata = _metadata.filter(meta => matches(meta, filterValue));
+    }
+
+    return _metadata;
   },
 );
 
@@ -133,7 +151,8 @@ function matches(meta: che.DevfileMetaData, filterValue: string): boolean {
 function mergeRegistriesMetadata(
   registriesMetadata: Array<Array<che.DevfileMetaData>>,
 ): Array<che.DevfileMetaData> {
-  return registriesMetadata.reduce((mergedMetadata, registryMetadata) => {
+  const _registriesMetadata = cloneDeep(registriesMetadata);
+  return _registriesMetadata.reduce((mergedMetadata, registryMetadata) => {
     return mergedMetadata.concat(registryMetadata);
   }, []);
 }

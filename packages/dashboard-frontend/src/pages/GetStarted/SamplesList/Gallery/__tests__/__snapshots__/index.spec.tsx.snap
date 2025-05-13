@@ -3,6 +3,11 @@
 exports[`Samples List Gallery snapshot w/ metadata 1`] = `
 <div
   className="pf-l-gallery pf-m-gutter"
+  style={
+    {
+      "minHeight": "275px",
+    }
+  }
 >
   <div
     data-testid="sample-card"
@@ -290,6 +295,11 @@ exports[`Samples List Gallery snapshot w/ metadata 1`] = `
 exports[`Samples List Gallery snapshot w/o metadata 1`] = `
 <div
   className="pf-c-empty-state"
+  style={
+    {
+      "minHeight": "275px",
+    }
+  }
 >
   <div
     className="pf-c-empty-state__content"

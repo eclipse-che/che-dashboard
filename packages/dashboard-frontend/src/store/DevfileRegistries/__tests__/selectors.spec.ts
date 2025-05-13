@@ -50,6 +50,7 @@ describe('DevfileRegistries, selectors', () => {
                 description: 'Description 1',
                 links: { v2: 'https://registry1.com/devfile1' },
                 tags: ['tag1'],
+                language: 'Java',
               } as che.DevfileMetaData,
             ],
           },
@@ -81,6 +82,8 @@ describe('DevfileRegistries, selectors', () => {
             ],
           },
         },
+        tagsFilter: [],
+        languagesFilter: [],
         filter: 'Devfile 1',
         isLoading: false,
       },
@@ -99,6 +102,7 @@ describe('DevfileRegistries, selectors', () => {
         description: 'Description 1',
         links: { v2: 'https://registry1.com/devfile1' },
         tags: ['tag1'],
+        language: 'Java',
         registry: 'https://registry1.com',
       },
       {
@@ -143,6 +147,7 @@ describe('DevfileRegistries, selectors', () => {
           description: 'Description 1',
           links: { v2: 'https://registry1.com/devfile1' },
           tags: ['tag1'],
+          language: 'Java',
           registry: 'https://registry1.com',
         },
       ]);
@@ -159,6 +164,7 @@ describe('DevfileRegistries, selectors', () => {
           description: 'Description 1',
           links: { v2: 'https://registry1.com/devfile1' },
           tags: ['tag1'],
+          language: 'Java',
           registry: 'https://registry1.com',
         },
       ]);
@@ -196,12 +202,14 @@ describe('DevfileRegistries, selectors', () => {
       ]);
     });
 
-    it('should select all metadata if filter value is empty', () => {
+    it('should select by languages filter', () => {
       const mockStateWithoutFilterValue = {
         ...mockState,
         devfileRegistries: {
           ...mockState.devfileRegistries,
           filter: '',
+          tagsFilter: [],
+          languagesFilter: ['Java'],
         },
       } as RootState;
 
@@ -212,6 +220,54 @@ describe('DevfileRegistries, selectors', () => {
           description: 'Description 1',
           links: { v2: 'https://registry1.com/devfile1' },
           tags: ['tag1'],
+          language: 'Java',
+          registry: 'https://registry1.com',
+        },
+      ]);
+    });
+
+    it('should select by tags filter', () => {
+      const mockStateWithoutFilterValue = {
+        ...mockState,
+        devfileRegistries: {
+          ...mockState.devfileRegistries,
+          filter: '',
+          tagsFilter: ['tag2'],
+          languagesFilter: [],
+        },
+      } as RootState;
+
+      const result = selectMetadataFiltered(mockStateWithoutFilterValue);
+      expect(result).toEqual([
+        {
+          displayName: 'Devfile 2',
+          description: 'Description 2',
+          links: { v2: 'https://registry2.com/devfile2' },
+          tags: ['tag2', 'Empty'],
+          registry: 'https://registry2.com',
+        },
+      ]);
+    });
+
+    it('should select all metadata if filter value is empty', () => {
+      const mockStateWithoutFilterValue = {
+        ...mockState,
+        devfileRegistries: {
+          ...mockState.devfileRegistries,
+          filter: '',
+          tagsFilter: [],
+          languagesFilter: [],
+        },
+      } as RootState;
+
+      const result = selectMetadataFiltered(mockStateWithoutFilterValue);
+      expect(result).toEqual([
+        {
+          displayName: 'Devfile 1',
+          description: 'Description 1',
+          links: { v2: 'https://registry1.com/devfile1' },
+          tags: ['tag1'],
+          language: 'Java',
           registry: 'https://registry1.com',
         },
         {

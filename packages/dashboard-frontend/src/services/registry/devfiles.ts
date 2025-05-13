@@ -203,6 +203,12 @@ export async function fetchRegistryMetadata(
       meta.icon = resolveIconUrl(meta, registryUrl);
       meta.links = resolveLinks(meta, registryUrl, isExternal);
       meta.tags = resolveTags(meta, registryUrl, isExternal);
+      if (!meta.language) {
+        const language = getLanguage(meta);
+        if (language) {
+          meta.language = language;
+        }
+      }
       return meta;
     });
     if (isExternal) {
@@ -216,6 +222,28 @@ export async function fetchRegistryMetadata(
     console.error(errorMessage);
     throw errorMessage;
   }
+}
+
+export function getLanguage(metadata: che.DevfileMetaData): string | undefined {
+  if (metadata.language) {
+    return metadata.language;
+  }
+  if (metadata.tags.length === 0) {
+    return undefined;
+  }
+  const languages = [
+    '.NET',
+    'C++',
+    'Go',
+    'Java',
+    'JavaScript',
+    'NodeJS',
+    'PHP',
+    'Python',
+    'Rust',
+    'TypeScript',
+  ];
+  return metadata.tags.find(tag => languages.includes(tag));
 }
 
 function getExternalRegistryMetadataFromStorage(url: string): che.DevfileMetaData[] | undefined {

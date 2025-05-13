@@ -307,7 +307,7 @@ describe('PersonalAccessTokens', () => {
       fireEvent.click(deleteButton);
 
       // mock onRemoveToken should be called
-      expect(mockRemoveToken).toHaveBeenCalledTimes(2);
+      await waitFor(() => expect(mockRemoveToken).toHaveBeenCalledTimes(2));
 
       // modal should be closed
       expect(

@@ -23,6 +23,9 @@ import { che } from '@/services/models';
 import { MockStoreBuilder } from '@/store/__mocks__/mockStore';
 import { devfileRegistriesActionCreators } from '@/store/DevfileRegistries';
 
+// mute the outputs
+console.error = jest.fn();
+
 jest.mock('@/pages/GetStarted/SamplesList/Toolbar/TemporaryStorageSwitch');
 
 const { renderComponent, createSnapshot } = getComponentRenderer(getComponent);
@@ -76,20 +79,93 @@ describe('Samples List Toolbar', () => {
     );
   });
 
-  it('should show the results counter', async () => {
-    const store = createFakeStore(mockMetadata);
-    const storeNext = new MockStoreBuilder(store.getState())
-      .withDevfileRegistries({
-        filter: 'bash',
-      })
-      .build();
+  it('should update balk selectors', async () => {
+    // render the component with tags and languages
+    const { reRenderComponent } = renderComponent();
+    // check that the tags and languages filters are present
+    expect(screen.queryByLabelText('Filter by tags')).toBeTruthy();
+    expect(screen.queryByLabelText('Filter by languages')).toBeTruthy();
+    // re-render the component without tags and languages
+    reRenderComponent(new MockStoreBuilder().build());
+    // remove the tags and languages filters
+    expect(screen.queryByLabelText('Filter by tags')).toBeFalsy();
+    expect(screen.queryByLabelText('Filter by languages')).toBeFalsy();
+  });
 
-    renderComponent(storeNext);
-    const filterInput = screen.getByPlaceholderText('Filter by') as HTMLInputElement;
-    await userEvent.click(filterInput);
-    await userEvent.paste('bash');
+  it('should call "setTagsFilter" action', async () => {
+    jest.spyOn(devfileRegistriesActionCreators, 'setTagsFilter');
+
+    renderComponent();
+
+    const balkSelector = screen.getByLabelText('Filter by tags');
+    expect(balkSelector).toBeTruthy();
+    await userEvent.click(balkSelector);
+
+    const filterCheckbox = screen.getByLabelText('Empty');
+    await userEvent.click(filterCheckbox);
+
+    await waitFor(() =>
+      expect(devfileRegistriesActionCreators.setTagsFilter).toHaveBeenCalledTimes(1),
+    );
+    await waitFor(() =>
+      expect(devfileRegistriesActionCreators.setTagsFilter).toHaveBeenCalledWith(['Empty']),
+    );
+  });
+
+  it('should call "setLanguagesFilter" action', async () => {
+    jest.spyOn(devfileRegistriesActionCreators, 'setLanguagesFilter');
+
+    renderComponent();
+
+    const balkSelector = screen.getByLabelText('Filter by languages');
+    expect(balkSelector).toBeTruthy();
+    await userEvent.click(balkSelector);
+
+    const filterCheckbox = screen.getByLabelText('.NET');
+    await userEvent.click(filterCheckbox);
+
+    await waitFor(() =>
+      expect(devfileRegistriesActionCreators.setLanguagesFilter).toHaveBeenCalledTimes(1),
+    );
+    await waitFor(() =>
+      expect(devfileRegistriesActionCreators.setLanguagesFilter).toHaveBeenCalledWith(['.NET']),
+    );
+  });
+
+  it('should show the results counter with filter', async () => {
+    const store = createFakeStore(mockMetadata, {
+      filter: 'bash',
+      tagsFilter: [],
+      languagesFilter: [],
+    });
+
+    renderComponent(store);
 
     await waitFor(() => screen.queryByText('1 item'));
+  });
+
+  it('should show the results counter with tagsFilter', async () => {
+    const store = createFakeStore(mockMetadata, {
+      filter: '',
+      tagsFilter: ['ubi8', 'Empty'],
+      languagesFilter: [],
+    });
+
+    renderComponent(store);
+
+    await waitFor(() => screen.queryByText('2 items'));
+  });
+
+  it('should show the results counter with languagesFilter', async () => {
+    const store = createFakeStore(mockMetadata, {
+      filter: '',
+      tagsFilter: [],
+      languagesFilter: ['Python', 'PHP'],
+    });
+
+    renderComponent(store);
+
+    await waitFor(() => screen.queryByText('2 items'));
   });
 
   test('switch temporary storage toggle', async () => {
@@ -104,20 +180,33 @@ describe('Samples List Toolbar', () => {
   });
 });
 
-function createFakeStore(metadata?: che.DevfileMetaData[]) {
+function createFakeStore(
+  metadata: che.DevfileMetaData[] | undefined,
+  options: {
+    filter: string;
+    tagsFilter: string[];
+    languagesFilter: string[];
+  } = { filter: '', tagsFilter: [], languagesFilter: [] },
+) {
   const registries = {};
   if (metadata) {
     registries['registry-location'] = {
       metadata,
     };
   }
+  const { filter, tagsFilter, languagesFilter } = options;
   return new MockStoreBuilder()
     .withBranding({
       docs: {
         storageTypes: 'https://docs.location',
       },
     } as BrandingData)
-    .withDevfileRegistries({ registries })
+    .withDevfileRegistries({
+      registries,
+      filter,
+      tagsFilter,
+      languagesFilter,
+    })
     .build();
 }
 

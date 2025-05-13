@@ -23,12 +23,16 @@ import {
   devfileRequestAction,
   filterClearAction,
   filterSetAction,
+  languagesFilterClearAction,
+  languagesFilterSetAction,
   registryMetadataErrorAction,
   registryMetadataReceiveAction,
   registryMetadataRequestAction,
   resourcesErrorAction,
   resourcesReceiveAction,
   resourcesRequestAction,
+  tagsFilterClearAction,
+  tagsFilterSetAction,
 } from '@/store/DevfileRegistries/actions';
 import { verifyAuthorized } from '@/store/SanityCheck';
 
@@ -200,6 +204,34 @@ describe('DevfileRegistries, actions', () => {
 
       const actions = store.getActions();
       expect(actions[0]).toEqual(filterClearAction());
+    });
+
+    it('should dispatch setTagsFilter action', () => {
+      store.dispatch(actionCreators.setTagsFilter(['tag1', 'tag2']));
+
+      const actions = store.getActions();
+      expect(actions[0]).toEqual(tagsFilterSetAction(['tag1', 'tag2']));
+    });
+
+    it('should dispatch clearTagsFilter action', () => {
+      store.dispatch(actionCreators.clearTagsFilter());
+
+      const actions = store.getActions();
+      expect(actions[0]).toEqual(tagsFilterClearAction());
+    });
+
+    it('should dispatch setLanguagesFilter action', () => {
+      store.dispatch(actionCreators.setLanguagesFilter(['JavaScript', 'TypeScript']));
+
+      const actions = store.getActions();
+      expect(actions[0]).toEqual(languagesFilterSetAction(['JavaScript', 'TypeScript']));
+    });
+
+    it('should dispatch clearLanguagesFilter action', () => {
+      store.dispatch(actionCreators.clearLanguagesFilter());
+
+      const actions = store.getActions();
+      expect(actions[0]).toEqual(languagesFilterClearAction());
     });
   });
 });

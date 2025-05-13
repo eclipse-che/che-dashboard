@@ -15,6 +15,7 @@ import common from '@eclipse-che/common';
 import { che } from '@/services/models';
 import {
   fetchRegistryMetadata,
+  getLanguage,
   resolveLinks,
   resolveTags,
   updateObjectLinks,
@@ -73,7 +74,17 @@ describe('fetch registry metadata', () => {
       expect(mockFetchData).toHaveBeenCalledTimes(1);
       expect(mockFetchData).toHaveBeenCalledWith('http://this.is.my.base.url/devfiles/index.json');
       expect(mockSessionStorageServiceUpdate).not.toHaveBeenCalled();
-      expect(resolved).toEqual([metadata]);
+      expect(resolved).toEqual([
+        {
+          displayName: 'java-maven',
+          icon: 'http://this.is.my.base.url/icon.png',
+          language: 'Java',
+          tags: ['Java'],
+          links: {
+            self: 'http://this.is.my.base.url/devfiles/java-maven/1.2.0',
+          },
+        },
+      ]);
     });
   });
 
@@ -106,7 +117,7 @@ describe('fetch registry metadata', () => {
         links: {
           self: 'devfile-catalog/java-maven:1.2.0',
         },
-      };
+      } as che.DevfileMetaData;
       mockDateNow.mockReturnValue(1555555555555);
       mockFetchRemoteData.mockResolvedValue([metadata]);
       mockSessionStorageServiceGet.mockReturnValue(undefined);
@@ -128,7 +139,17 @@ describe('fetch registry metadata', () => {
           },
         }),
       );
-      expect(resolved).toEqual([metadata]);
+      expect(resolved).toEqual([
+        {
+          displayName: 'java-maven',
+          icon: 'https://eclipse-che.github.io/che-devfile-registry/7.71.0/icon.png',
+          language: 'Java',
+          tags: ['Java', 'Eclipse-che.github.io'],
+          links: {
+            v2: 'https://eclipse-che.github.io/che-devfile-registry/7.71.0/devfiles/java-maven/1.2.0',
+          },
+        },
+      ]);
     });
 
     describe('getting started samples', () => {
@@ -154,7 +175,17 @@ describe('fetch registry metadata', () => {
           `${baseUrl}/dashboard/api/getting-started-sample`,
         );
         expect(mockSessionStorageServiceUpdate).not.toHaveBeenCalled();
-        expect(resolved).toEqual([metadata]);
+        expect(resolved).toEqual([
+          {
+            displayName: 'java-maven',
+            language: 'Java',
+            links: {
+              v2: 'http://this.is.my.base.url/dashboard/api/some-url',
+            },
+            tags: ['Java'],
+            icon: { mediatype: 'image/png', base64data: 'some-data' },
+          },
+        ]);
       });
     });
 
@@ -602,5 +633,66 @@ describe('devfile links', () => {
     expect(updated.link1).toBe(`${baseUrl}/devfile/foo.yaml`);
     expect(updated.links.link2).toBe(`${baseUrl}/devfile/bar.yaml`);
     expect(updated.otherLinks.subLinks.subSubLinks.link3).toBe(`${baseUrl}/devfile/baz.yaml`);
+  });
+
+  describe('detect language', () => {
+    it('should return preset value', () => {
+      const metadata = {
+        displayName: 'some-name',
+        language: 'Java',
+        links: {
+          v2: 'some-url',
+        },
+        tags: [],
+        icon: { mediatype: 'image/png', base64data: 'some-data' },
+      } as che.DevfileMetaData;
+
+      const language = getLanguage(metadata);
+
+      expect(language).toBe('Java');
+    });
+
+    it('should return the value from tags', () => {
+      const metadata = {
+        displayName: 'some-name',
+        links: {
+          v2: 'some-url',
+        },
+        tags: [],
+        icon: { mediatype: 'image/png', base64data: 'some-data' },
+      } as che.DevfileMetaData;
+
+      expect(getLanguage(metadata)).toBeUndefined();
+
+      metadata.tags[0] = '.NET';
+      expect(getLanguage(metadata)).toBe('.NET');
+
+      metadata.tags[0] = 'C++';
+      expect(getLanguage(metadata)).toBe('C++');
+
+      metadata.tags[0] = 'Go';
+      expect(getLanguage(metadata)).toBe('Go');
+
+      metadata.tags[0] = 'Java';
+      expect(getLanguage(metadata)).toBe('Java');
+
+      metadata.tags[0] = 'JavaScript';
+      expect(getLanguage(metadata)).toBe('JavaScript');
+
+      metadata.tags[0] = 'NodeJS';
+      expect(getLanguage(metadata)).toBe('NodeJS');
+
+      metadata.tags[0] = 'PHP';
+      expect(getLanguage(metadata)).toBe('PHP');
+
+      metadata.tags[0] = 'Python';
+      expect(getLanguage(metadata)).toBe('Python');
+
+      metadata.tags[0] = 'Rust';
+      expect(getLanguage(metadata)).toBe('Rust');
+
+      metadata.tags[0] = 'TypeScript';
+      expect(getLanguage(metadata)).toBe('TypeScript');
+    });
   });
 });

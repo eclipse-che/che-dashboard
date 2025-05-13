@@ -19,12 +19,16 @@ import {
   devfileRequestAction,
   filterClearAction,
   filterSetAction,
+  languagesFilterClearAction,
+  languagesFilterSetAction,
   registryMetadataErrorAction,
   registryMetadataReceiveAction,
   registryMetadataRequestAction,
   resourcesErrorAction,
   resourcesReceiveAction,
   resourcesRequestAction,
+  tagsFilterClearAction,
+  tagsFilterSetAction,
 } from '@/store/DevfileRegistries/actions';
 
 export type DevWorkspaceResources = [devfileApi.DevWorkspace, devfileApi.DevWorkspaceTemplate];
@@ -52,6 +56,8 @@ export interface State {
 
   // current filter value
   filter: string;
+  tagsFilter: string[];
+  languagesFilter: string[];
 }
 
 export const unloadedState: State = {
@@ -61,6 +67,8 @@ export const unloadedState: State = {
   devWorkspaceResources: {},
 
   filter: '',
+  tagsFilter: [],
+  languagesFilter: [],
 };
 
 export const reducer = createReducer(unloadedState, builder =>
@@ -110,6 +118,18 @@ export const reducer = createReducer(unloadedState, builder =>
     })
     .addCase(filterClearAction, state => {
       state.filter = '';
+    })
+    .addCase(tagsFilterSetAction, (state, action) => {
+      state.tagsFilter = action.payload;
+    })
+    .addCase(tagsFilterClearAction, state => {
+      state.tagsFilter = [];
+    })
+    .addCase(languagesFilterSetAction, (state, action) => {
+      state.languagesFilter = action.payload;
+    })
+    .addCase(languagesFilterClearAction, state => {
+      state.languagesFilter = [];
     })
     .addDefaultCase(state => state),
 );
