@@ -16,6 +16,7 @@ import cloneDeep from 'lodash/cloneDeep';
 import { DevfileAdapter } from '@/services/devfile/adapter';
 import devfileApi from '@/services/devfileApi';
 import { DEVWORKSPACE_STORAGE_TYPE_ATTR } from '@/services/devfileApi/devWorkspace/spec/template';
+import { FactoryParams } from '@/services/helpers/factoryFlow/buildFactoryParams';
 import { generateWorkspaceName } from '@/services/helpers/generateName';
 import sanitizeName from '@/services/helpers/sanitizeName';
 import { che } from '@/services/models';
@@ -74,4 +75,24 @@ export function prepareDevfile(
   }
 
   return devfile;
+}
+
+export function getStorageType(
+  factoryParams: FactoryParams,
+  devfile: devfileApi.Devfile | undefined,
+  preferredStorageType: che.WorkspaceStorageType,
+): che.WorkspaceStorageType | undefined {
+  let attributes: {
+    DEVWORKSPACE_STORAGE_TYPE_ATTR?: che.WorkspaceStorageType;
+  } = {};
+  if (devfile) {
+    attributes = DevfileAdapter.getAttributes(cloneDeep(devfile));
+  }
+
+  return (
+    factoryParams.storageType ||
+    attributes[DEVWORKSPACE_STORAGE_TYPE_ATTR] ||
+    preferredStorageType ||
+    undefined
+  );
 }

@@ -22,6 +22,7 @@ import { TIMEOUT_TO_CREATE_SEC } from '@/components/WorkspaceProgress/const';
 import { configureProjectRemotes } from '@/components/WorkspaceProgress/CreatingSteps/Apply/Devfile/getGitRemotes';
 import { getProjectFromLocation } from '@/components/WorkspaceProgress/CreatingSteps/Apply/Devfile/getProjectFromLocation';
 import { prepareDevfile } from '@/components/WorkspaceProgress/CreatingSteps/Apply/Devfile/prepareDevfile';
+import { getStorageType } from '@/components/WorkspaceProgress/CreatingSteps/Apply/Devfile/prepareDevfile';
 import {
   ProgressStep,
   ProgressStepProps,
@@ -176,7 +177,7 @@ class CreatingStepApplyDevfile extends ProgressStep<Props, State> {
   }
 
   private updateCurrentDevfile(devfile: devfileApi.Devfile): void {
-    const { factoryResolver, allWorkspaces, defaultDevfile } = this.props;
+    const { factoryResolver, allWorkspaces, defaultDevfile, preferredStorageType } = this.props;
     const { factoryParams } = this.state;
     const { factoryId, policiesCreate, sourceUrl, remotes } = factoryParams;
 
@@ -216,7 +217,8 @@ class CreatingStepApplyDevfile extends ProgressStep<Props, State> {
     // test the devfile name to decide if we need to append a suffix to is
     const nameConflict = allWorkspaces.some(w => devfile.metadata.name === w.name);
 
-    const storageType = factoryParams.storageType || this.props.preferredStorageType || undefined;
+    const storageType = getStorageType(factoryParams, devfile, preferredStorageType);
+
     const appendSuffix = policiesCreate === 'perclick' || nameConflict;
     const parentDevfile = factoryResolver?.parentDevfile;
     const updatedDevfile = prepareDevfile(
