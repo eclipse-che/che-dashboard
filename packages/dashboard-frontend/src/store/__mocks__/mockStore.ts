@@ -215,8 +215,8 @@ export class MockStoreBuilder {
         [location: string]: { resources?: DevWorkspaceResources; error?: string };
       };
       filter?: string;
-      tagsFilter?: [];
-      languagesFilter?: [];
+      tagsFilter?: string[];
+      languagesFilter?: string[];
     },
     isLoading = false,
   ): MockStoreBuilder {
