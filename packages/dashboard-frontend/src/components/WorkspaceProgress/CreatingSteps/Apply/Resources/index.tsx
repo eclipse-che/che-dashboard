@@ -17,7 +17,9 @@ import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 
 import { TIMEOUT_TO_CREATE_SEC } from '@/components/WorkspaceProgress/const';
-import prepareResources from '@/components/WorkspaceProgress/CreatingSteps/Apply/Resources/prepareResources';
+import prepareResources, {
+  getStorageType,
+} from '@/components/WorkspaceProgress/CreatingSteps/Apply/Resources/prepareResources';
 import {
   ProgressStep,
   ProgressStepProps,
@@ -173,7 +175,7 @@ class CreatingStepApplyResources extends ProgressStep<Props, State> {
   }
 
   protected async runStep(): Promise<boolean> {
-    const { devWorkspaceResources } = this.props;
+    const { devWorkspaceResources, preferredStorageType } = this.props;
     const { factoryParams, shouldCreate, resources, warning } = this.state;
     const { cheEditor, factoryId, sourceUrl, policiesCreate } = factoryParams;
 
@@ -219,7 +221,7 @@ class CreatingStepApplyResources extends ProgressStep<Props, State> {
       );
       const appendSuffix = policiesCreate === 'perclick' || nameConflict;
 
-      const storageType = factoryParams.storageType || this.props.preferredStorageType || undefined;
+      const storageType = getStorageType(factoryParams, _resources[0], preferredStorageType);
       // create a workspace using pre-generated resources
       const [devWorkspace, devWorkspaceTemplate] = prepareResources(
         _resources,

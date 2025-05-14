@@ -13,8 +13,12 @@
 import { V1alpha2DevWorkspace } from '@devfile/api';
 
 import prepareResources from '@/components/WorkspaceProgress/CreatingSteps/Apply/Resources/prepareResources';
+import { getStorageType } from '@/components/WorkspaceProgress/CreatingSteps/Apply/Resources/prepareResources';
+import devfileApi from '@/services/devfileApi';
 import { DEVWORKSPACE_STORAGE_TYPE_ATTR } from '@/services/devfileApi/devWorkspace/spec/template';
+import { FactoryParams } from '@/services/helpers/factoryFlow/buildFactoryParams';
 import { generateSuffix } from '@/services/helpers/generateName';
+import { che } from '@/services/models';
 import { DEVWORKSPACE_DEVFILE_SOURCE } from '@/services/workspace-client/devworkspace/devWorkspaceClient';
 import { DevWorkspaceResources } from '@/store/DevfileRegistries';
 
@@ -177,6 +181,55 @@ describe('FactoryLoaderContainer/prepareResources', () => {
           },
         ]),
       );
+    });
+  });
+
+  describe('get storageType', () => {
+    let devWorkspace: devfileApi.DevWorkspace;
+    beforeEach(() => {
+      devWorkspace = resources[0];
+      devWorkspace.spec.template.attributes = {};
+    });
+    test('apply storageType from factoryParams', () => {
+      devWorkspace.spec.template.attributes = {
+        [DEVWORKSPACE_STORAGE_TYPE_ATTR]: 'per-workspace',
+      };
+      const factoryParams = { storageType: 'ephemeral' } as FactoryParams;
+      const preferredStorageType = 'per-user' as che.WorkspaceStorageType;
+
+      const storageType = getStorageType(factoryParams, devWorkspace, preferredStorageType);
+
+      expect(storageType).toEqual('ephemeral');
+    });
+
+    test('apply storageType from Devfile', () => {
+      devWorkspace.spec.template.attributes = {
+        [DEVWORKSPACE_STORAGE_TYPE_ATTR]: 'per-workspace',
+      };
+      const factoryParams = {} as FactoryParams;
+      const preferredStorageType = 'per-user' as che.WorkspaceStorageType;
+
+      const storageType = getStorageType(factoryParams, devWorkspace, preferredStorageType);
+
+      expect(storageType).toEqual('per-workspace');
+    });
+
+    test('apply storageType from preferredStorageType', () => {
+      const factoryParams = {} as FactoryParams;
+      const preferredStorageType = 'per-user' as che.WorkspaceStorageType;
+
+      const storageType = getStorageType(factoryParams, devWorkspace, preferredStorageType);
+
+      expect(storageType).toEqual('per-user');
+    });
+
+    test('should return undefined', () => {
+      const factoryParams = {} as FactoryParams;
+      const preferredStorageType = '' as che.WorkspaceStorageType;
+
+      const storageType = getStorageType(factoryParams, devWorkspace, preferredStorageType);
+
+      expect(storageType).toBeUndefined();
     });
   });
 });

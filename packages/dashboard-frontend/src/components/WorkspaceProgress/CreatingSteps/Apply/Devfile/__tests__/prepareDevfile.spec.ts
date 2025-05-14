@@ -13,10 +13,15 @@
 import { dump } from 'js-yaml';
 import cloneDeep from 'lodash/cloneDeep';
 
-import { prepareDevfile } from '@/components/WorkspaceProgress/CreatingSteps/Apply/Devfile/prepareDevfile';
+import {
+  getStorageType,
+  prepareDevfile,
+} from '@/components/WorkspaceProgress/CreatingSteps/Apply/Devfile/prepareDevfile';
 import devfileApi from '@/services/devfileApi';
 import { DEVWORKSPACE_STORAGE_TYPE_ATTR } from '@/services/devfileApi/devWorkspace/spec/template';
+import { FactoryParams } from '@/services/helpers/factoryFlow/buildFactoryParams';
 import { generateWorkspaceName } from '@/services/helpers/generateName';
+import { che } from '@/services/models';
 import {
   DEVWORKSPACE_DEVFILE_SOURCE,
   DEVWORKSPACE_METADATA_ANNOTATION,
@@ -148,7 +153,7 @@ describe('FactoryLoaderContainer/prepareDevfile', () => {
   });
 
   describe('DevWorkspace name', () => {
-    it('should not change the name', () => {
+    test('should not change the name', () => {
       const factoryId = 'url=https://devfile-location';
       const devfile = {
         schemaVersion: '2.2.0',
@@ -162,7 +167,7 @@ describe('FactoryLoaderContainer/prepareDevfile', () => {
       expect(newDevfile.metadata.name).toEqual('wksp-test');
     });
 
-    it('should append a suffix to the name', () => {
+    test('should append a suffix to the name', () => {
       const factoryId = 'url=https://devfile-location';
       const devfile = {
         schemaVersion: '2.2.0',
@@ -176,7 +181,7 @@ describe('FactoryLoaderContainer/prepareDevfile', () => {
       expect(newDevfile.metadata.name).toEqual('wksp-test1234');
     });
 
-    it('should generate a new name #1', () => {
+    test('should generate a new name #1', () => {
       const factoryId = 'url=https://devfile-location';
       const devfile = {
         schemaVersion: '2.2.0',
@@ -190,7 +195,7 @@ describe('FactoryLoaderContainer/prepareDevfile', () => {
       expect(newDevfile.metadata.name).toEqual('wksp-1234');
     });
 
-    it('should generate a new name #2', () => {
+    test('should generate a new name #2', () => {
       const factoryId = 'url=https://devfile-location';
       const devfile = {
         schemaVersion: '2.2.0',
@@ -275,7 +280,7 @@ describe('FactoryLoaderContainer/prepareDevfile', () => {
       });
 
       describe('with registryUrl', () => {
-        it('with storage-type attribute', () => {
+        test('with storage-type attribute', () => {
           devfile.parent!.id = 'nodejs';
           devfile.parent!.registryUrl = 'https://registry.devfile.io/';
           const _devfile = cloneDeep(devfile);
@@ -301,7 +306,7 @@ describe('FactoryLoaderContainer/prepareDevfile', () => {
           expect(newDevfile.attributes?.[DEVWORKSPACE_STORAGE_TYPE_ATTR]).toBeUndefined();
         });
 
-        it('without storage-type attribute', () => {
+        test('without storage-type attribute', () => {
           devfile.parent!.id = 'nodejs';
           devfile.parent!.registryUrl = 'https://registry.devfile.io/';
           const _devfile = cloneDeep(devfile);
@@ -322,7 +327,7 @@ describe('FactoryLoaderContainer/prepareDevfile', () => {
         });
       });
       describe('with uri', () => {
-        it('with storage-type attribute', () => {
+        test('with storage-type attribute', () => {
           devfile.parent!.uri = 'https://raw.githubusercontent.com/test/devfile.yaml';
           const _devfile = cloneDeep(devfile);
 
@@ -347,7 +352,7 @@ describe('FactoryLoaderContainer/prepareDevfile', () => {
           expect(newDevfile.attributes?.[DEVWORKSPACE_STORAGE_TYPE_ATTR]).toBeUndefined();
         });
 
-        it('without storage-type attribute', () => {
+        test('without storage-type attribute', () => {
           devfile.parent!.uri = 'https://raw.githubusercontent.com/test/devfile.yaml';
           const _devfile = cloneDeep(devfile);
 
@@ -365,6 +370,52 @@ describe('FactoryLoaderContainer/prepareDevfile', () => {
           expect(_parentDevfile).toEqual(parentDevfile);
           expect(newDevfile.attributes?.[DEVWORKSPACE_STORAGE_TYPE_ATTR]).toEqual('ephemeral');
         });
+      });
+    });
+    describe('get storageType', () => {
+      beforeEach(() => {
+        devfile.attributes = {};
+      });
+      test('apply storageType from factoryParams', () => {
+        devfile.attributes = {
+          [DEVWORKSPACE_STORAGE_TYPE_ATTR]: 'per-workspace',
+        };
+        const factoryParams = { storageType: 'ephemeral' } as FactoryParams;
+        const preferredStorageType = 'per-user' as che.WorkspaceStorageType;
+
+        const storageType = getStorageType(factoryParams, devfile, preferredStorageType);
+
+        expect(storageType).toEqual('ephemeral');
+      });
+
+      test('apply storageType from Devfile', () => {
+        devfile.attributes = {
+          [DEVWORKSPACE_STORAGE_TYPE_ATTR]: 'per-workspace',
+        };
+        const factoryParams = {} as FactoryParams;
+        const preferredStorageType = 'per-user' as che.WorkspaceStorageType;
+
+        const storageType = getStorageType(factoryParams, devfile, preferredStorageType);
+
+        expect(storageType).toEqual('per-workspace');
+      });
+
+      test('apply storageType from preferredStorageType', () => {
+        const factoryParams = {} as FactoryParams;
+        const preferredStorageType = 'per-user' as che.WorkspaceStorageType;
+
+        const storageType = getStorageType(factoryParams, devfile, preferredStorageType);
+
+        expect(storageType).toEqual('per-user');
+      });
+
+      test('should return undefined', () => {
+        const factoryParams = {} as FactoryParams;
+        const preferredStorageType = '' as che.WorkspaceStorageType;
+
+        const storageType = getStorageType(factoryParams, devfile, preferredStorageType);
+
+        expect(storageType).toBeUndefined();
       });
     });
   });

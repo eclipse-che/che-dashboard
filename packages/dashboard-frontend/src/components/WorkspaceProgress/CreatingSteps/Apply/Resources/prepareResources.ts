@@ -13,9 +13,11 @@
 import { dump } from 'js-yaml';
 import cloneDeep from 'lodash/cloneDeep';
 
+import devfileApi from '@/services/devfileApi';
 import { DevWorkspaceTemplate } from '@/services/devfileApi/devfileApi';
 import { DevWorkspace } from '@/services/devfileApi/devWorkspace';
 import { DEVWORKSPACE_STORAGE_TYPE_ATTR } from '@/services/devfileApi/devWorkspace/spec/template';
+import { FactoryParams } from '@/services/helpers/factoryFlow/buildFactoryParams';
 import { generateSuffix } from '@/services/helpers/generateName';
 import { che } from '@/services/models';
 import { DEVWORKSPACE_DEVFILE_SOURCE } from '@/services/workspace-client/devworkspace/devWorkspaceClient';
@@ -93,4 +95,17 @@ function addSuffix(devWorkspace: DevWorkspace, devWorkspaceTemplate: DevWorkspac
       }
     });
   }
+}
+
+export function getStorageType(
+  factoryParams: FactoryParams,
+  devWorkspace: devfileApi.DevWorkspace,
+  preferredStorageType: che.WorkspaceStorageType,
+): che.WorkspaceStorageType | undefined {
+  return (
+    factoryParams.storageType ||
+    devWorkspace.spec?.template?.attributes?.[DEVWORKSPACE_STORAGE_TYPE_ATTR] ||
+    preferredStorageType ||
+    undefined
+  );
 }
