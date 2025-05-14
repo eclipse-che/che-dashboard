@@ -102,10 +102,9 @@ export function getStorageType(
   devWorkspace: devfileApi.DevWorkspace,
   preferredStorageType: che.WorkspaceStorageType,
 ): che.WorkspaceStorageType | undefined {
-  const attributes = devWorkspace.spec.template.attributes || {};
   return (
     factoryParams.storageType ||
-    attributes[DEVWORKSPACE_STORAGE_TYPE_ATTR] ||
+    devWorkspace.spec?.template?.attributes?.[DEVWORKSPACE_STORAGE_TYPE_ATTR] ||
     preferredStorageType ||
     undefined
   );
