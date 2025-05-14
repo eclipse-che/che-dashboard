@@ -3,9 +3,8 @@
 | Packages | License | Resolved CQs |
 | --- | --- | --- |
 | [`@babel/runtime@7.27.0`](https://github.com/babel/babel.git) | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@babel/runtime/7.27.0) |
-| [`@devfile/api@2.3.0-1738342178`](https://github.com/GIT_USER_ID/GIT_REPO_ID.git) | Apache-2.0 | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@devfile/api/2.3.0-1738342178) |
-| [`@devfile/api@2.3.0-1738854228`](https://github.com/devfile/api) | Apache-2.0 | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@devfile/api/2.3.0-1738854228) |
-| [`@eclipse-che/che-devworkspace-generator@7.99.0-next-1ccb963`](git+https://github.com/devfile/devworkspace-generator.git) | EPL-2.0 | ecd.che |
+| [`@devfile/api@2.3.0-1746644330`](https://github.com/devfile/api) | Apache-2.0 | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@devfile/api/2.3.0-1746644330) |
+| [`@eclipse-che/che-devworkspace-generator@7.103.0-next-4e46cbe`](git+https://github.com/devfile/devworkspace-generator.git) | EPL-2.0 | ecd.che |
 | [`@fastify/accept-negotiator@1.1.0`](git+https://github.com/fastify/accept-negotiator.git) | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@fastify/accept-negotiator/1.1.0) |
 | [`@fastify/ajv-compiler@3.6.0`](git+https://github.com/fastify/ajv-compiler.git) | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@fastify/ajv-compiler/3.6.0) |
 | [`@fastify/busboy@2.0.0`](https://github.com/fastify/busboy.git) | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@fastify/busboy/2.0.0) |
@@ -29,6 +28,11 @@
 | `@hapi/hoek@10.0.1` | BSD-3-Clause | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@hapi/hoek/10.0.1) |
 | `@hapi/topo@5.1.0` | BSD-3-Clause | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@hapi/topo/5.1.0) |
 | `@hapi/wreck@18.0.1` | BSD-3-Clause | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@hapi/wreck/18.0.1) |
+| [`@inversifyjs/common@1.5.0`](git+https://github.com/inversify/monorepo.git) | MIT | transitive dependency |
+| [`@inversifyjs/container@1.9.1`](git+https://github.com/inversify/monorepo.git) | MIT | transitive dependency |
+| [`@inversifyjs/core@5.2.0`](git+https://github.com/inversify/monorepo.git) | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@inversifyjs/core/5.2.0) |
+| [`@inversifyjs/prototype-utils@0.1.0`](git+https://github.com/inversify/monorepo.git) | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@inversifyjs/prototype-utils/0.1.0) |
+| [`@inversifyjs/reflect-metadata-utils@1.1.0`](git+https://github.com/inversify/monorepo.git) | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@inversifyjs/reflect-metadata-utils/1.1.0) |
 | `@isaacs/cliui@8.0.2` | ISC | #8260 |
 | [`@isaacs/fs-minipass@4.0.1`](https://github.com/npm/fs-minipass.git) | ISC | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@isaacs/fs-minipass/4.0.1) |
 | [`@jsep-plugin/assignment@1.2.1`](EricSmekens/jsep) | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@jsep-plugin/assignment/1.2.1) |
@@ -234,6 +238,7 @@
 | [`inversify-inject-decorators@3.1.0`](git+https://github.com/inversify/inversify-inject-decorators.git) | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/inversify-inject-decorators/3.1.0) |
 | [`inversify-react@1.1.1`](https://github.com/Kukkimonsuta/inversify-react.git) | Apache-2.0 | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/inversify-react/1.1.1) |
 | [`inversify@6.0.2`](https://github.com/inversify/InversifyJS.git) | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/inversify/6.0.2) |
+| [`inversify@7.5.1`](https://github.com/inversify/InversifyJS.git) | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/inversify/7.5.1) |
 | [`ip-address@9.0.5`](git://github.com/beaugunderson/ip-address.git) | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/ip-address/9.0.5) |
 | `ipaddr.js@1.9.1` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/ipaddr.js/1.9.1) |
 | `is-fullwidth-code-point@3.0.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/is-fullwidth-code-point/3.0.0) |
@@ -418,7 +423,7 @@
 | [`sprintf-js@1.1.3`](https://github.com/alexei/sprintf.js.git) | BSD-3-Clause | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/sprintf-js/1.1.3) |
 | [`sshpk@1.18.0`](git+https://github.com/joyent/node-sshpk.git) | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/sshpk/1.18.0) |
 | [`ssri@10.0.5`](https://github.com/npm/ssri.git) | ISC | #5768 |
-| `statuses@2.0.1` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/statuses/2.0.1) |
+| `statuses@2.0.1` | MIT | #20906 |
 | [`stream-buffers@3.0.2`](https://github.com/samcday/node-stream-buffer.git) | Unlicense | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/stream-buffers/3.0.2) |
 | [`stream-shift@1.0.3`](https://github.com/mafintosh/stream-shift.git) | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/stream-shift/1.0.3) |
 | `string-width@4.2.3` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/string-width/4.2.3) |
