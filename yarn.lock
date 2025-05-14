@@ -477,9 +477,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@devfile/api@npm:2.3.0-1738342178":
-  version: 2.3.0-1738342178
-  resolution: "@devfile/api@npm:2.3.0-1738342178"
+"@devfile/api@npm:2.3.0-1746644330":
+  version: 2.3.0-1746644330
+  resolution: "@devfile/api@npm:2.3.0-1746644330"
   dependencies:
     "@types/node": "npm:*"
     "@types/node-fetch": "npm:^2.5.7"
@@ -487,21 +487,7 @@ __metadata:
     form-data: "npm:^2.5.0"
     node-fetch: "npm:^2.6.0"
     url-parse: "npm:^1.4.3"
-  checksum: 10/50327603722c710ef9585d523fb680cab466e1aa20eebd1e6ee31ce0a85f3c26b1b7df6969dbdb43b55f9405975248dcf3e7cf19ecdb734d956727b646702f2b
-  languageName: node
-  linkType: hard
-
-"@devfile/api@npm:2.3.0-1738854228":
-  version: 2.3.0-1738854228
-  resolution: "@devfile/api@npm:2.3.0-1738854228"
-  dependencies:
-    "@types/node": "npm:*"
-    "@types/node-fetch": "npm:^2.5.7"
-    es6-promise: "npm:^4.2.4"
-    form-data: "npm:^2.5.0"
-    node-fetch: "npm:^2.6.0"
-    url-parse: "npm:^1.4.3"
-  checksum: 10/d0e740b91f25d4369b40ffdb5bde5af8338b0c38ecf0aaf67599a4174370e62a2c6a7d7a57f6e23ec5130352d1d38cd7ded236e98a2a11e3dce460f9289b6518
+  checksum: 10/cb9f3caa8b849a74cbb6f99f221a66baf1932bee0a7b390a03ada62bfcb69a725ae63886931470b89610845bd88ddec1c779fc11ca2bc39ab6b3eb0a86463a97
   languageName: node
   linkType: hard
 
@@ -526,14 +512,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@eclipse-che/che-devworkspace-generator@npm:7.99.0-next-1ccb963":
-  version: 7.99.0-next-1ccb963
-  resolution: "@eclipse-che/che-devworkspace-generator@npm:7.99.0-next-1ccb963"
+"@eclipse-che/che-devworkspace-generator@npm:7.103.0-next-4e46cbe":
+  version: 7.103.0-next-4e46cbe
+  resolution: "@eclipse-che/che-devworkspace-generator@npm:7.103.0-next-4e46cbe"
   dependencies:
-    "@devfile/api": "npm:2.3.0-1738342178"
-    axios: "npm:^1.7.4"
+    "@devfile/api": "npm:2.3.0-1746644330"
+    axios: "npm:^1.8.3"
     fs-extra: "npm:^11.2.0"
-    inversify: "npm:^6.0.2"
+    inversify: "npm:^7.1.0"
     js-yaml: "npm:^4.0.0"
     jsonc-parser: "npm:^3.0.0"
     jsonschema: "npm:^1.4.1"
@@ -541,7 +527,7 @@ __metadata:
     reflect-metadata: "npm:^0.2.2"
   bin:
     che-devworkspace-generator: lib/entrypoint.js
-  checksum: 10/668243d8182351ede8648e643726f83aee4520e4bc7f0298b423726b98472d804603ed059257f8e83c0d8d1af4c7fba148a29fdfe7fd580ff6e7897836f5ca10
+  checksum: 10/e8febe6421405e4ce7eba4a4d4f695b1930337f36c002b04691ce12c1857a9e33ee396aea308d434e85b0fa796f8a6874fc88d3dc647a8b7cd407334afba175f
   languageName: node
   linkType: hard
 
@@ -549,7 +535,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@eclipse-che/common@workspace:packages/common"
   dependencies:
-    "@devfile/api": "npm:2.3.0-1738854228"
+    "@devfile/api": "npm:2.3.0-1746644330"
     "@kubernetes/client-node": "npm:^0.22.1"
     "@types/jest": "npm:^29.5.3"
     "@typescript-eslint/eslint-plugin": "npm:^6.3.0"
@@ -572,8 +558,8 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@eclipse-che/dashboard-backend@workspace:packages/dashboard-backend"
   dependencies:
-    "@devfile/api": "npm:2.3.0-1738854228"
-    "@eclipse-che/che-devworkspace-generator": "npm:7.99.0-next-1ccb963"
+    "@devfile/api": "npm:2.3.0-1746644330"
+    "@eclipse-che/che-devworkspace-generator": "npm:7.103.0-next-4e46cbe"
     "@fastify/cors": "npm:^9.0.1"
     "@fastify/error": "npm:^3.4.1"
     "@fastify/http-proxy": "npm:^9.5.0"
@@ -632,7 +618,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@eclipse-che/dashboard-frontend@workspace:packages/dashboard-frontend"
   dependencies:
-    "@devfile/api": "npm:2.3.0-1738854228"
+    "@devfile/api": "npm:2.3.0-1746644330"
     "@eclipse-che/api": "npm:^7.86.0"
     "@kubernetes/client-node": "npm:^0.22.1"
     "@lezer/highlight": "npm:^1.2.1"
@@ -1041,6 +1027,55 @@ __metadata:
   version: 2.0.1
   resolution: "@humanwhocodes/object-schema@npm:2.0.1"
   checksum: 10/dbddfd0465aecf92ed845ec30d06dba3f7bb2496d544b33b53dac7abc40370c0e46b8787b268d24a366730d5eeb5336ac88967232072a183905ee4abf7df4dab
+  languageName: node
+  linkType: hard
+
+"@inversifyjs/common@npm:1.5.0":
+  version: 1.5.0
+  resolution: "@inversifyjs/common@npm:1.5.0"
+  checksum: 10/3f4e484e45522684c0565399a4e4dc3fbd24133ee2405e6b8970e3188e3073765ae73331f3b0dd37a6df995c4537568650bcfec37ef386dc2dfdbdc89b839d80
+  languageName: node
+  linkType: hard
+
+"@inversifyjs/container@npm:1.9.1":
+  version: 1.9.1
+  resolution: "@inversifyjs/container@npm:1.9.1"
+  dependencies:
+    "@inversifyjs/common": "npm:1.5.0"
+    "@inversifyjs/core": "npm:5.2.0"
+    "@inversifyjs/reflect-metadata-utils": "npm:1.1.0"
+  peerDependencies:
+    reflect-metadata: ~0.2.2
+  checksum: 10/036cd679b650dde3a7e0130cbe7a5500cceb5dd1f822abf24fa1faa4515ee33e9cb39228a0bbe186037b0041fca3e4b94c1c5ee35250561b4b2657145b4d01ec
+  languageName: node
+  linkType: hard
+
+"@inversifyjs/core@npm:5.2.0":
+  version: 5.2.0
+  resolution: "@inversifyjs/core@npm:5.2.0"
+  dependencies:
+    "@inversifyjs/common": "npm:1.5.0"
+    "@inversifyjs/prototype-utils": "npm:0.1.0"
+    "@inversifyjs/reflect-metadata-utils": "npm:1.1.0"
+  checksum: 10/a553eb0d3f3147ff9c7504e35db43442a6c17ebf09cb7bdb2db5b44232c9589fbcfa26245bcf6dd8529918469d8f4e27c97a8b93c1ccc9f4147dc927f5ff8ae4
+  languageName: node
+  linkType: hard
+
+"@inversifyjs/prototype-utils@npm:0.1.0":
+  version: 0.1.0
+  resolution: "@inversifyjs/prototype-utils@npm:0.1.0"
+  dependencies:
+    "@inversifyjs/common": "npm:1.5.0"
+  checksum: 10/726a301a7f1a588de2eda8a8ffcc808bdc91897098e1ec17a7e343009e023a22dce102684bd3e99df22b259c2139b35e41fe66ac87c26ded3bd77649797d1b5d
+  languageName: node
+  linkType: hard
+
+"@inversifyjs/reflect-metadata-utils@npm:1.1.0":
+  version: 1.1.0
+  resolution: "@inversifyjs/reflect-metadata-utils@npm:1.1.0"
+  peerDependencies:
+    reflect-metadata: 0.2.2
+  checksum: 10/b543e34a0f70133239a5634635ec9567f8fe8c7f8501c01acdeb49c96777d1c6d0d680dfad5c67b4b823d1f4750f890621190da15486c9d814d698fff6bfef95
   languageName: node
   linkType: hard
 
@@ -6637,6 +6672,19 @@ __metadata:
   version: 6.0.2
   resolution: "inversify@npm:6.0.2"
   checksum: 10/0e4d07fb2dac82d21f55c711cdf35f9f75656c3f4651b8dd27f5aa3dcb154ad492ebdd0a66fbe394ac090aac0728da999d2a1c7ed62b5d8c772cad06e1684483
+  languageName: node
+  linkType: hard
+
+"inversify@npm:^7.1.0":
+  version: 7.5.1
+  resolution: "inversify@npm:7.5.1"
+  dependencies:
+    "@inversifyjs/common": "npm:1.5.0"
+    "@inversifyjs/container": "npm:1.9.1"
+    "@inversifyjs/core": "npm:5.2.0"
+  peerDependencies:
+    reflect-metadata: ~0.2.2
+  checksum: 10/3ce73d09611a947e601d86f025517d83c5187c1b8287c244d8955f297ba2850fbdffaa509a5e5c7f98617875cea68fde7d4ca23775b68edca4c197222cf9913e
   languageName: node
   linkType: hard
 
