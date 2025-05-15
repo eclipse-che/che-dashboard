@@ -16,6 +16,7 @@ import cloneDeep from 'lodash/cloneDeep';
 
 import { DevfileAdapter } from '@/services/devfile/adapter';
 import devfileApi from '@/services/devfileApi';
+import { DEVWORKSPACE_STORAGE_TYPE_ATTR } from '@/services/devfileApi/devWorkspace/spec/template';
 import stringify from '@/services/helpers/editor';
 import match from '@/services/helpers/filter';
 import { che } from '@/services/models';
@@ -24,11 +25,13 @@ import {
   DEVWORKSPACE_METADATA_ANNOTATION,
 } from '@/services/workspace-client/devworkspace/devWorkspaceClient';
 import { RootState } from '@/store';
+import { getPvcStrategy } from '@/store/ServerConfig/helpers';
 import { selectDefaultComponents } from '@/store/ServerConfig/selectors';
 
 export const EMPTY_WORKSPACE_TAG = 'Empty';
 
 const selectState = (state: RootState) => state.devfileRegistries;
+const selectServerConfigState = (state: RootState) => state.dwServerConfig;
 
 export const selectRegistriesMetadata = createSelector(selectState, devfileRegistriesState => {
   const registriesMetadata = Object.keys(devfileRegistriesState.registries).map(registry => {
@@ -108,11 +111,16 @@ export const selectEmptyWorkspaceUrl = createSelector(selectRegistriesMetadata, 
   return emptyWorkspaceMetadata?.links?.v2;
 });
 
+export const selectPvcStrategy = createSelector(selectServerConfigState, state =>
+  getPvcStrategy(state),
+);
+
 export const selectDefaultDevfile = createSelector(
   selectState,
+  selectPvcStrategy,
   selectDefaultComponents,
   selectEmptyWorkspaceUrl,
-  (state, defaultComponents, devfileLocation) => {
+  (state, pvcStrategy, defaultComponents, devfileLocation) => {
     if (!devfileLocation) {
       return undefined;
     }
@@ -126,6 +134,10 @@ export const selectDefaultDevfile = createSelector(
           devfileAttr[DEVWORKSPACE_METADATA_ANNOTATION] = {};
         }
         devfileAttr[DEVWORKSPACE_METADATA_ANNOTATION][DEVWORKSPACE_DEVFILE] = stringify(_devfile);
+        // set default storage type if not set
+        if (!devfileAttr[DEVWORKSPACE_STORAGE_TYPE_ATTR] && pvcStrategy) {
+          devfileAttr[DEVWORKSPACE_STORAGE_TYPE_ATTR] = pvcStrategy;
+        }
         // propagate default components
         if (!devfile.components || devfile.components.length === 0) {
           devfile.components = defaultComponents;

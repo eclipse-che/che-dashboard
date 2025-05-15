@@ -12,8 +12,8 @@
 
 import { createSelector } from '@reduxjs/toolkit';
 
-import { che } from '@/services/models';
 import { RootState } from '@/store';
+import { getPvcStrategy } from '@/store/ServerConfig/helpers';
 
 const selectState = (state: RootState) => state.dwServerConfig;
 export const selectServerConfigState = selectState;
@@ -50,10 +50,7 @@ export const selectOpenVSXUrl = createSelector(
   state => state.config.pluginRegistry?.openVSXURL,
 );
 
-export const selectPvcStrategy = createSelector(
-  selectState,
-  state => (state.config.defaults.pvcStrategy || '') as che.WorkspaceStorageType,
-);
+export const selectPvcStrategy = createSelector(selectState, state => getPvcStrategy(state));
 
 export const selectStartTimeout = createSelector(
   selectState,
