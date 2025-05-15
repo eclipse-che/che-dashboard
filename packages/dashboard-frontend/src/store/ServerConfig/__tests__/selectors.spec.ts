@@ -55,7 +55,7 @@ describe('ServerConfig Selectors', () => {
               plugins: ['plugin2'],
             },
           ] as api.IWorkspacesDefaultPlugins[],
-          pvcStrategy: 'strategy',
+          pvcStrategy: 'per-user',
         },
         pluginRegistry: {
           disableInternalRegistry: false,
@@ -129,7 +129,7 @@ describe('ServerConfig Selectors', () => {
 
   it('should select PVC strategy', () => {
     const result = selectPvcStrategy(mockState);
-    expect(result).toEqual('strategy');
+    expect(result).toEqual('per-user');
   });
 
   it('should select start timeout', () => {
