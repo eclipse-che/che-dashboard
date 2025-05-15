@@ -10,6 +10,9 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
+import { che } from '@/services/models';
+import { ServerConfigState } from '@/store/ServerConfig/index';
+
 export function isSourceAllowed(allowedSourceUrls: string[] | undefined, url: string): boolean {
   if (allowedSourceUrls === undefined || allowedSourceUrls.length === 0) {
     return true;
@@ -37,4 +40,20 @@ export function isSourceAllowed(allowedSourceUrls: string[] | undefined, url: st
   }
 
   return false;
+}
+
+export function getPvcStrategy(state?: Partial<ServerConfigState>): che.WorkspaceStorageType {
+  const pvcStrategy = state?.config?.defaults?.pvcStrategy;
+  switch (pvcStrategy) {
+    case 'per-user':
+      return pvcStrategy;
+    case 'per-workspace':
+      return pvcStrategy;
+    case 'ephemeral':
+      return pvcStrategy;
+    case 'common':
+      return 'per-user';
+    default:
+      return '';
+  }
 }
