@@ -22,7 +22,7 @@
 | [`@babel/helper-validator-identifier@7.25.9`](https://github.com/babel/babel.git) | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@babel/helper-validator-identifier/7.25.9) |
 | [`@babel/helper-validator-option@7.22.15`](https://github.com/babel/babel.git) | MIT | #8961 |
 | [`@babel/helpers@7.26.10`](https://github.com/babel/babel.git) | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@babel/helpers/7.26.10) |
-| [`@babel/parser@7.27.0`](https://github.com/babel/babel.git) | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@babel/parser/7.27.0) |
+| [`@babel/parser@7.27.0`](https://github.com/babel/babel.git) | MIT | #21023 |
 | [`@babel/plugin-syntax-jsx@7.22.5`](https://github.com/babel/babel.git) | MIT | #9014 |
 | [`@babel/plugin-syntax-typescript@7.22.5`](https://github.com/babel/babel.git) | MIT | #8994 |
 | [`@babel/template@7.26.9`](https://github.com/babel/babel.git) | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@babel/template/7.26.9) |

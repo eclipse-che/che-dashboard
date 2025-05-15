@@ -18,7 +18,7 @@
     "test:watch": "yarn test --watch"
   },
   "devDependencies": {
-    "@devfile/api": "2.3.0-1738854228",
+    "@devfile/api": "2.3.0-1746644330",
     "@kubernetes/client-node": "^0.22.1",
     "@types/jest": "^29.5.3",
     "@typescript-eslint/eslint-plugin": "^6.3.0",
