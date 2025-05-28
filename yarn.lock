@@ -491,6 +491,20 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@devfile/api@npm:2.3.0-1747843475":
+  version: 2.3.0-1747843475
+  resolution: "@devfile/api@npm:2.3.0-1747843475"
+  dependencies:
+    "@types/node": "npm:*"
+    "@types/node-fetch": "npm:^2.5.7"
+    es6-promise: "npm:^4.2.4"
+    form-data: "npm:^2.5.0"
+    node-fetch: "npm:^2.6.0"
+    url-parse: "npm:^1.4.3"
+  checksum: 10/ab038f932f13722ae0796cd257398b184fd81366dcdddc1ee1ba95496612d4fa3f4fbeb0af802ce0c32df81d1601c499f9aae3e6b153bbc2761a5fb708823997
+  languageName: node
+  linkType: hard
+
 "@discoveryjs/json-ext@npm:0.5.7, @discoveryjs/json-ext@npm:^0.5.0":
   version: 0.5.7
   resolution: "@discoveryjs/json-ext@npm:0.5.7"
@@ -512,11 +526,11 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@eclipse-che/che-devworkspace-generator@npm:7.103.0-next-4e46cbe":
-  version: 7.103.0-next-4e46cbe
-  resolution: "@eclipse-che/che-devworkspace-generator@npm:7.103.0-next-4e46cbe"
+"@eclipse-che/che-devworkspace-generator@npm:7.104.0":
+  version: 7.104.0
+  resolution: "@eclipse-che/che-devworkspace-generator@npm:7.104.0"
   dependencies:
-    "@devfile/api": "npm:2.3.0-1746644330"
+    "@devfile/api": "npm:2.3.0-1747843475"
     axios: "npm:^1.8.3"
     fs-extra: "npm:^11.2.0"
     inversify: "npm:^7.1.0"
@@ -527,7 +541,7 @@ __metadata:
     reflect-metadata: "npm:^0.2.2"
   bin:
     che-devworkspace-generator: lib/entrypoint.js
-  checksum: 10/e8febe6421405e4ce7eba4a4d4f695b1930337f36c002b04691ce12c1857a9e33ee396aea308d434e85b0fa796f8a6874fc88d3dc647a8b7cd407334afba175f
+  checksum: 10/b33c7ebc2900b298fb7c50551ef69e40b236b85e6dff90fa603562874096e8e3bfac0aae93469e6fb3c4c6e132f3afe99e7a55c0b7c5721b80b406e3c34f9665
   languageName: node
   linkType: hard
 
@@ -559,7 +573,7 @@ __metadata:
   resolution: "@eclipse-che/dashboard-backend@workspace:packages/dashboard-backend"
   dependencies:
     "@devfile/api": "npm:2.3.0-1746644330"
-    "@eclipse-che/che-devworkspace-generator": "npm:7.103.0-next-4e46cbe"
+    "@eclipse-che/che-devworkspace-generator": "npm:7.104.0"
     "@fastify/cors": "npm:^9.0.1"
     "@fastify/error": "npm:^3.4.1"
     "@fastify/http-proxy": "npm:^9.5.0"
