@@ -251,6 +251,10 @@ export class KubeConfigApiService implements IKubeConfigApi {
         }
         kubeConfig.users.push(user);
       }
+
+      // Preserve the current context from the generated kubeconfig
+      // Ensures that user always has access to the cluster
+      kubeConfig['current-context'] = generatedKubeConfig['current-context'];
       return stringify(kubeConfig);
     } catch (e) {
       logger.error(e, 'Failed to merge kubeconfig, returning source');
