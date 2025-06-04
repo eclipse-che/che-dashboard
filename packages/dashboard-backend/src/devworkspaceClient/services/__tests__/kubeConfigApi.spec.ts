@@ -63,14 +63,6 @@ const spyExec = jest
 const namespace = 'user-che';
 const workspaceName = 'workspace-1';
 const containerName = 'container-1';
-const config = {
-  apiVersion: 'v1',
-  kind: 'Config',
-  'current-context': 'logged-user',
-  contexts: [],
-  clusters: [],
-  users: [],
-};
 
 describe('Kubernetes Config API Service', () => {
   let kubeConfigService: KubeConfigApiService;
@@ -79,6 +71,29 @@ describe('Kubernetes Config API Service', () => {
     const { KubeConfig } = mockClient;
     const kubeConfig = new KubeConfig();
 
+    kubeConfig.clusters = [
+      {
+        name: 'cluster',
+        server: 'server',
+        caFile: 'ca-file',
+        skipTLSVerify: false,
+      },
+    ];
+    kubeConfig.users = [
+      {
+        name: 'dev',
+        token: 'dev-token',
+      },
+    ];
+    kubeConfig.contexts = [
+      {
+        name: 'dev-context',
+        user: 'dev',
+        cluster: 'cluster',
+      },
+    ];
+    kubeConfig.currentContext = 'dev-context';
+
     kubeConfig.makeApiClient = jest.fn().mockImplementation(_api => {
       return {
         listNamespacedPod: namespace => {
@@ -86,7 +101,7 @@ describe('Kubernetes Config API Service', () => {
         },
       } as CoreV1Api;
     });
-    kubeConfig.exportConfig = jest.fn().mockReturnValue(JSON.stringify(config));
+    // kubeConfig.exportConfig = jest.fn().mockReturnValue(JSON.stringify(config));
     kubeConfig.getCurrentCluster = jest.fn().mockReturnValue('');
     kubeConfig.applyToRequest = jest.fn();
 
@@ -98,6 +113,7 @@ describe('Kubernetes Config API Service', () => {
   });
 
   test('injecting kubeconfig', async () => {
+    const configContent = fs.readFileSync(__dirname + '/fixtures/kubeconfig.yaml', 'utf-8');
     await kubeConfigService.injectKubeConfig(namespace, 'wksp-id');
     expect(spyExec).toHaveBeenCalledTimes(5);
 
@@ -147,14 +163,22 @@ describe('Kubernetes Config API Service', () => {
       workspaceName,
       namespace,
       containerName,
-      ['sh', '-c', `echo '${stringify(config)}' > ${kubeConfigDir}/config`],
+      ['sh', '-c', `echo '${configContent}' > ${kubeConfigDir}/config`],
       expect.anything(),
     );
   });
+
   test('should merge configs', async () => {
-    const configContent = fs.readFileSync(__dirname + '/fixtures/kubeconfig.yaml', 'utf-8');
+    const mountedConfigContent = fs.readFileSync(
+      __dirname + '/fixtures/mounted_kubeconfig.yaml',
+      'utf-8',
+    );
+    const mergedConfigContent = fs.readFileSync(
+      __dirname + '/fixtures/merged_kubeconfig.yaml',
+      'utf-8',
+    );
     mockExecCatKubeConfig = jest.fn().mockReturnValue({
-      stdOut: configContent,
+      stdOut: mountedConfigContent,
       stdError: '',
     });
     await kubeConfigService.injectKubeConfig(namespace, 'wksp-id');
@@ -164,7 +188,7 @@ describe('Kubernetes Config API Service', () => {
       workspaceName,
       namespace,
       containerName,
-      ['sh', '-c', `echo '${configContent}' > ${kubeConfigDir}/config`],
+      ['sh', '-c', `echo '${mergedConfigContent}' > ${kubeConfigDir}/config`],
       expect.anything(),
     );
   });
