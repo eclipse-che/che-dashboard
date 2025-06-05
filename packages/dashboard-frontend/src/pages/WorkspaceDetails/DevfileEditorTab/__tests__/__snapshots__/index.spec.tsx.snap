@@ -76,7 +76,7 @@ exports[`DevfileEditorTab component snapshot without devfile content 1`] = `
           data-ouia-component-type="PF4/Title"
           data-ouia-safe={true}
         >
-          No Data Found
+          Devfile content is not available
         </h4>
       </div>
     </div>
