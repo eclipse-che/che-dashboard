@@ -21,3 +21,7 @@
   height: 100%;
   border: 1px solid var(--pf-global--BorderColor--100);
 }
+
+.devfileViewer .codeMirror > div {
+  height: 100%;
+}

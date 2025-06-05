@@ -42,6 +42,8 @@
     "@babel/helpers": "^7.26.10",
     "@babel/runtime": "^7.26.10",
     "@adobe/css-tools": "^4.3.2",
+    "@codemirror/language": "6.10.3",
+    "@codemirror/search": "6.5.6",
     "@hapi/hoek": "^10.0.1",
     "axios": "^1.8.2",
     "bn.js": "^5.2.0",
