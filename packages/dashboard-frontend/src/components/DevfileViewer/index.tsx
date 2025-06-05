@@ -10,11 +10,11 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import 'codemirror/mode/yaml/yaml';
-import 'codemirror/lib/codemirror.css';
-import '@/components/DevfileViewer/theme/eclipse-che.css';
-
-import CodeMirror from 'codemirror';
+import { yaml } from '@codemirror/lang-yaml';
+import { HighlightStyle, syntaxHighlighting } from '@codemirror/language';
+import { EditorView } from '@codemirror/view';
+import { tags as t } from '@lezer/highlight';
+import CodeMirror from '@uiw/react-codemirror';
 import React from 'react';
 
 import styles from '@/components/DevfileViewer/index.module.css';
@@ -27,37 +27,50 @@ export type Props = {
 };
 
 export class DevfileViewer extends React.PureComponent<Props> {
-  private editor: CodeMirror.Editor | undefined;
+  public static theme = EditorView.theme(
+    {
+      '&': {
+        color: '#2e3440',
+        backgroundColor: '#fff',
+      },
+      '.cm-activeLine': {
+        backgroundColor: 'inherit',
+      },
+      '.cm-gutters': {
+        backgroundColor: '#f7f7f7',
+        color: '#999',
+      },
+      '.cm-activeLineGutter': {
+        backgroundColor: '#f7f7f7',
+      },
+    },
+    { dark: false },
+  );
 
-  constructor(props: Props) {
-    super(props);
-  }
-
-  public componentDidMount(): void {
-    const parent = window.document.querySelector(`#${this.props.id}`);
-    if (parent) {
-      this.editor = CodeMirror.fromTextArea(parent as HTMLTextAreaElement, {
-        mode: 'yaml',
-        theme: 'eclipse-che',
-        lineNumbers: true,
-        lineWrapping: true,
-        readOnly: true,
-        value: this.props.value,
-      });
-    }
-  }
-
-  componentDidUpdate(): void {
-    if (this.editor) {
-      this.editor.setValue(this.props.value);
-      this.editor.refresh();
-    }
-  }
+  public static highlightStyle = HighlightStyle.define([
+    { tag: t.keyword, color: '#5e81ac' },
+    { tag: [t.string], color: '#5e81ac' },
+    { tag: [t.variableName], color: '#008080' },
+    {
+      tag: [t.name, t.deleted, t.character, t.propertyName, t.macroName],
+      color: '#008080',
+    },
+  ]);
 
   public render(): React.ReactElement {
     return (
       <div className={styles.devfileViewer}>
-        <textarea id={this.props.id} value={this.props.value} readOnly={true}></textarea>
+        <CodeMirror
+          className={styles.codeMirror}
+          readOnly={true}
+          id={this.props.id}
+          value={this.props.value}
+          extensions={[
+            DevfileViewer.theme,
+            syntaxHighlighting(DevfileViewer.highlightStyle),
+            yaml(),
+          ]}
+        />
       </div>
     );
   }

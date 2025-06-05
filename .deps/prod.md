@@ -3,6 +3,15 @@
 | Packages | License | Resolved CQs |
 | --- | --- | --- |
 | [`@babel/runtime@7.27.0`](https://github.com/babel/babel.git) | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@babel/runtime/7.27.0) |
+| [`@codemirror/autocomplete@6.18.6`](https://github.com/codemirror/autocomplete.git) | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@codemirror/autocomplete/6.18.6) |
+| [`@codemirror/commands@6.8.1`](https://github.com/codemirror/commands.git) | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@codemirror/commands/6.8.1) |
+| [`@codemirror/lang-yaml@6.1.2`](git+https://github.com/codemirror/lang-yaml.git) | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@codemirror/lang-yaml/6.1.2) |
+| [`@codemirror/language@6.10.3`](https://github.com/codemirror/language.git) | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@codemirror/language/6.10.3) |
+| [`@codemirror/lint@6.8.5`](https://github.com/codemirror/lint.git) | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@codemirror/lint/6.8.5) |
+| [`@codemirror/search@6.5.6`](https://github.com/codemirror/search.git) | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@codemirror/search/6.5.6) |
+| [`@codemirror/state@6.5.2`](https://github.com/codemirror/state.git) | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@codemirror/state/6.5.2) |
+| [`@codemirror/theme-one-dark@6.1.2`](https://github.com/codemirror/theme-one-dark.git) | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@codemirror/theme-one-dark/6.1.2) |
+| [`@codemirror/view@6.37.1`](https://github.com/codemirror/view.git) | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@codemirror/view/6.37.1) |
 | [`@devfile/api@2.3.0-1746644330`](https://github.com/devfile/api) | Apache-2.0 | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@devfile/api/2.3.0-1746644330) |
 | [`@eclipse-che/che-devworkspace-generator@7.103.0-next-4e46cbe`](git+https://github.com/devfile/devworkspace-generator.git) | EPL-2.0 | ecd.che |
 | [`@fastify/accept-negotiator@1.1.0`](git+https://github.com/fastify/accept-negotiator.git) | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@fastify/accept-negotiator/1.1.0) |
@@ -40,7 +49,10 @@
 | [`@kubernetes/client-node@0.22.1`](https://github.com/kubernetes-client/javascript.git) | Apache-2.0 | #17950 |
 | [`@lezer/common@1.2.3`](https://github.com/lezer-parser/common.git) | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@lezer/common/1.2.3) |
 | [`@lezer/highlight@1.2.1`](https://github.com/lezer-parser/highlight.git) | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@lezer/highlight/1.2.1) |
+| [`@lezer/lr@1.4.2`](https://github.com/lezer-parser/lr.git) | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@lezer/lr/1.4.2) |
+| [`@lezer/yaml@1.0.3`](https://github.com/lezer-parser/yaml.git) | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@lezer/yaml/1.0.3) |
 | `@lukeed/ms@2.0.2` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@lukeed/ms/2.0.2) |
+| [`@marijn/find-cluster-break@1.0.2`](git+https://github.com/marijnh/find-cluster-break.git) | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@marijn/find-cluster-break/1.0.2) |
 | [`@npmcli/agent@2.2.2`](https://github.com/npm/agent.git) | ISC | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@npmcli/agent/2.2.2) |
 | [`@npmcli/fs@3.1.0`](https://github.com/npm/fs.git) | ISC | #14656 |
 | [`@patternfly/react-core@4.278.0`](https://github.com/patternfly/patternfly-react.git) | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@patternfly/react-core/4.278.0) |
@@ -63,6 +75,8 @@
 | [`@types/tough-cookie@4.0.4`](https://github.com/DefinitelyTyped/DefinitelyTyped.git) | MIT | #10798 |
 | [`@types/use-sync-external-store@0.0.3`](https://github.com/DefinitelyTyped/DefinitelyTyped.git) | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@types/use-sync-external-store/0.0.3) |
 | [`@types/ws@8.5.8`](https://github.com/DefinitelyTyped/DefinitelyTyped.git) | MIT | #6016 |
+| [`@uiw/codemirror-extensions-basic-setup@4.23.5`](https://github.com/uiwjs/react-codemirror.git) | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@uiw/codemirror-extensions-basic-setup/4.23.5) |
+| [`@uiw/react-codemirror@4.23.5`](https://github.com/uiwjs/react-codemirror.git) | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@uiw/react-codemirror/4.23.5) |
 | [`abbrev@2.0.0`](https://github.com/npm/abbrev-js.git) | ISC | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/abbrev/2.0.0) |
 | [`abort-controller@3.0.0`](git+https://github.com/mysticatea/abort-controller.git) | MIT | #7592 |
 | [`abstract-logging@2.0.1`](git+https://github.com/jsumners/abstract-logging.git) | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/abstract-logging/2.0.1) |
@@ -118,7 +132,7 @@
 | [`chownr@3.0.0`](git://github.com/isaacs/chownr.git) | BlueOak-1.0.0 | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/chownr/3.0.0) |
 | [`cipher-base@1.0.6`](git+https://github.com/crypto-browserify/cipher-base.git) | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/cipher-base/1.0.6) |
 | `clean-stack@2.2.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/clean-stack/2.2.0) |
-| [`codemirror@5.65.18`](https://github.com/codemirror/CodeMirror.git) | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/codemirror/5.65.18) |
+| [`codemirror@6.0.1`](https://github.com/codemirror/basic-setup.git) | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/codemirror/6.0.1) |
 | `color-convert@1.9.3` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/color-convert/1.9.3) |
 | `color-convert@2.0.1` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/color-convert/2.0.1) |
 | [`color-name@1.1.3`](git@github.com:dfcreative/color-name.git) | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/color-name/1.1.3) |
@@ -135,6 +149,7 @@
 | [`create-hash@1.1.3`](git@github.com:crypto-browserify/createHash.git) | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/create-hash/1.1.3) |
 | [`create-hash@1.2.0`](git@github.com:crypto-browserify/createHash.git) | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/create-hash/1.2.0) |
 | [`create-hmac@1.1.7`](https://github.com/crypto-browserify/createHmac.git) | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/create-hmac/1.1.7) |
+| [`crelt@1.0.6`](git+https://github.com/marijnh/crelt.git) | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/crelt/1.0.6) |
 | [`cross-spawn@7.0.6`](git@github.com:moxystudio/node-cross-spawn.git) | MIT | #17146 |
 | [`crypto-browserify@3.12.0`](git://github.com/crypto-browserify/crypto-browserify.git) | MIT | #1033 |
 | [`dashdash@1.14.1`](git://github.com/trentm/node-dashdash.git) | MIT | #14596 |
@@ -454,6 +469,7 @@
 | `strip-ansi@6.0.1` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/strip-ansi/6.0.1) |
 | `strip-ansi@7.1.0` | MIT | #8735 |
 | `strip-json-comments@3.1.1` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/strip-json-comments/3.1.1) |
+| [`style-mod@4.1.2`](git+https://github.com/marijnh/style-mod.git) | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/style-mod/4.1.2) |
 | `supports-color@5.5.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/supports-color/5.5.0) |
 | [`tabbable@5.3.3`](git+https://github.com/focus-trap/tabbable.git) | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/tabbable/5.3.3) |
 | [`tar@6.2.0`](https://github.com/isaacs/node-tar.git) | ISC | #10508 |
@@ -490,6 +506,7 @@
 | [`uuid@7.0.3`](https://github.com/uuidjs/uuid.git) | MIT | #57 |
 | `value-equal@1.0.1` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/value-equal/1.0.1) |
 | [`verror@1.10.0`](git://github.com/davepacheco/node-verror.git) | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/verror/1.10.0) |
+| [`w3c-keyname@2.2.8`](git+https://github.com/marijnh/w3c-keyname.git) | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/w3c-keyname/2.2.8) |
 | [`warning@4.0.3`](https://github.com/BerkeleyTrue/warning.git) | MIT | CQ22359 |
 | `webidl-conversions@3.0.1` | BSD-2-Clause | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/webidl-conversions/3.0.1) |
 | `whatwg-url@5.0.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/whatwg-url/5.0.0) |
