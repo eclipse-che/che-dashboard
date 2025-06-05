@@ -11,14 +11,22 @@
  */
 
 import { helpers } from '@eclipse-che/common';
+import cloneDeep from 'lodash/cloneDeep';
 
 import { container } from '@/inversify.config';
 import devfileApi, { isDevWorkspace } from '@/services/devfileApi';
 import { devWorkspaceKind } from '@/services/devfileApi/devWorkspace';
+import { FactoryLocationAdapter } from '@/services/factory-location-adapter';
+import { FactoryParams } from '@/services/helpers/factoryFlow/buildFactoryParams';
 import { compareStringsAsNumbers } from '@/services/helpers/resourceVersion';
+import { PreBuiltResources } from '@/services/registry/resources';
 import {
+  COMPONENT_UPDATE_POLICY,
+  DEVWORKSPACE_BOOTSTRAP,
+  DEVWORKSPACE_DEVFILE,
   DEVWORKSPACE_NEXT_START_ANNOTATION,
   DevWorkspaceClient,
+  REGISTRY_URL,
 } from '@/services/workspace-client/devworkspace/devWorkspaceClient';
 import { RootState } from '@/store';
 import { selectRunningWorkspacesLimit } from '@/store/ClusterConfig/selectors';
@@ -121,4 +129,62 @@ export function shouldUpdateDevWorkspace(
     return true;
   }
   return false;
+}
+
+export function getDevWorkspaceFromResources(
+  resources: PreBuiltResources,
+  params: Partial<FactoryParams>,
+): devfileApi.DevWorkspace {
+  const _devWorkspaceResource = resources.find(
+    resource => resource.kind === 'DevWorkspace',
+  ) as devfileApi.DevWorkspace; // Ensure we are working with a clone to avoid mutating the original object
+  if (_devWorkspaceResource === undefined) {
+    throw new Error('Failed to find a DevWorkspace in the fetched resources.');
+  }
+  if (_devWorkspaceResource.metadata === undefined) {
+    throw new Error('Fetched resource includes not a valid DevWorkspace.');
+  }
+  const devWorkspaceResource = cloneDeep(_devWorkspaceResource);
+
+  if (!devWorkspaceResource.metadata.annotations) {
+    devWorkspaceResource.metadata.annotations = {};
+  }
+  // for SSH location only
+  if (params.sourceUrl && FactoryLocationAdapter.isSshLocation(params.sourceUrl)) {
+    // if the Devfile resolution is not supported by che-server({...'controller.devfile.io/bootstrap-devworkspace': true ...})
+    if (devWorkspaceResource?.spec?.template?.attributes?.[DEVWORKSPACE_BOOTSTRAP] === true) {
+      // remove the default devfile content from the DevWorkspace resources
+      devWorkspaceResource.metadata.annotations[DEVWORKSPACE_DEVFILE] = '';
+    }
+  }
+
+  return devWorkspaceResource;
+}
+
+export function getDevWorkspaceTemplateFromResources(
+  resources: PreBuiltResources,
+  editorYamlUrl: string | undefined,
+): devfileApi.DevWorkspaceTemplate {
+  const _devWorkspaceTemplateResource = resources.find(
+    resource => resource.kind === 'DevWorkspaceTemplate',
+  ) as devfileApi.DevWorkspaceTemplate;
+  if (_devWorkspaceTemplateResource === undefined) {
+    throw new Error('Failed to find a DevWorkspaceTemplate in the fetched resources.');
+  }
+  if (_devWorkspaceTemplateResource.metadata === undefined) {
+    throw new Error('Failed to find a DevWorkspaceTemplate in the fetched resources.');
+  }
+  const devWorkspaceTemplateResource: devfileApi.DevWorkspaceTemplate = cloneDeep(
+    _devWorkspaceTemplateResource,
+  );
+  // Add the editor YAML URL to the annotations if it exists and mark the template as managed
+  if (editorYamlUrl) {
+    if (!devWorkspaceTemplateResource.metadata.annotations) {
+      devWorkspaceTemplateResource.metadata.annotations = {};
+    }
+    devWorkspaceTemplateResource.metadata.annotations[COMPONENT_UPDATE_POLICY] = 'managed';
+    devWorkspaceTemplateResource.metadata.annotations[REGISTRY_URL] = editorYamlUrl;
+  }
+
+  return devWorkspaceTemplateResource;
 }

@@ -76,7 +76,7 @@ export default class DevfileEditorTab extends React.PureComponent<Props, State> 
             <EmptyState isFullHeight={true} variant={EmptyStateVariant.small}>
               <EmptyStateIcon icon={CogIcon} />
               <Title headingLevel="h4" size="lg">
-                No Data Found
+                Devfile content is not available
               </Title>
             </EmptyState>
           )}

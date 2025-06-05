@@ -17,14 +17,14 @@ import { fetchResources } from '@/services/backend-client/devworkspaceResourcesA
 import devfileApi from '@/services/devfileApi';
 import { FactoryParams } from '@/services/helpers/factoryFlow/buildFactoryParams';
 import { loadResourcesContent } from '@/services/registry/resources';
-import {
-  COMPONENT_UPDATE_POLICY,
-  REGISTRY_URL,
-} from '@/services/workspace-client/devworkspace/devWorkspaceClient';
 import { AppThunk } from '@/store';
 import { getEditor } from '@/store/DevfileRegistries/getEditor';
 import { verifyAuthorized } from '@/store/SanityCheck';
 import { actionCreators } from '@/store/Workspaces/devWorkspaces/actions';
+import {
+  getDevWorkspaceFromResources,
+  getDevWorkspaceTemplateFromResources,
+} from '@/store/Workspaces/devWorkspaces/actions/actionCreators/helpers';
 import { updateEditorDevfile } from '@/store/Workspaces/devWorkspaces/actions/actionCreators/helpers/editorImage';
 import { getCustomEditor } from '@/store/Workspaces/devWorkspaces/actions/actionCreators/helpers/getCustomEditor';
 import {
@@ -95,30 +95,8 @@ export const createWorkspaceFromDevfile =
         editorContent: editorContent,
       });
       const resources = loadResourcesContent(resourcesContent);
-      devWorkspaceResource = resources.find(
-        resource => resource.kind === 'DevWorkspace',
-      ) as devfileApi.DevWorkspace;
-      if (devWorkspaceResource === undefined) {
-        throw new Error('Failed to find a DevWorkspace in the fetched resources.');
-      }
-      if (devWorkspaceResource.metadata) {
-        if (!devWorkspaceResource.metadata.annotations) {
-          devWorkspaceResource.metadata.annotations = {};
-        }
-      }
-      devWorkspaceTemplateResource = resources.find(
-        resource => resource.kind === 'DevWorkspaceTemplate',
-      ) as devfileApi.DevWorkspaceTemplate;
-      if (devWorkspaceTemplateResource === undefined) {
-        throw new Error('Failed to find a DevWorkspaceTemplate in the fetched resources.');
-      }
-      if (editorYamlUrl && devWorkspaceTemplateResource.metadata) {
-        if (!devWorkspaceTemplateResource.metadata.annotations) {
-          devWorkspaceTemplateResource.metadata.annotations = {};
-        }
-        devWorkspaceTemplateResource.metadata.annotations[COMPONENT_UPDATE_POLICY] = 'managed';
-        devWorkspaceTemplateResource.metadata.annotations[REGISTRY_URL] = editorYamlUrl;
-      }
+      devWorkspaceResource = getDevWorkspaceFromResources(resources, params);
+      devWorkspaceTemplateResource = getDevWorkspaceTemplateFromResources(resources, editorYamlUrl);
     } catch (e) {
       const errorMessage = common.helpers.errors.getMessage(e);
       dispatch(devWorkspacesErrorAction(errorMessage));
