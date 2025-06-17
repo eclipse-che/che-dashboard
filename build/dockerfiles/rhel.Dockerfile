@@ -37,7 +37,7 @@ COPY --from=builder ${BACKEND_LIB} /backend
 COPY --from=builder ${FRONTEND_LIB} /public
 COPY --from=builder ${DEVFILE_REGISTRY} /public/dashboard/devfile-registry
 
-RUN chmod -R ugo+rw /public/dashboard/devfile-registry
+RUN chmod -R ug+rw /public/dashboard/devfile-registry
 
 COPY build/dockerfiles/rhel.entrypoint.sh /usr/local/bin
 CMD ["/usr/local/bin/rhel.entrypoint.sh"]
