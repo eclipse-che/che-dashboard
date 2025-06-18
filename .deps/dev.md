@@ -29,7 +29,7 @@
 | [`@babel/template@7.27.0`](https://github.com/babel/babel.git) | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@babel/template/7.27.0) |
 | [`@babel/traverse@7.23.2`](https://github.com/babel/babel.git) | MIT | #11520 |
 | [`@babel/types@7.26.10`](https://github.com/babel/babel.git) | MIT | #17734 |
-| [`@babel/types@7.27.0`](https://github.com/babel/babel.git) | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@babel/types/7.27.0) |
+| [`@babel/types@7.27.0`](https://github.com/babel/babel.git) | MIT | #21827 |
 | [`@bcoe/v8-coverage@0.2.3`](git://github.com/demurgos/v8-coverage.git) | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@bcoe/v8-coverage/0.2.3) |
 | [`@csstools/css-parser-algorithms@3.0.4`](git+https://github.com/csstools/postcss-plugins.git) | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@csstools/css-parser-algorithms/3.0.4) |
 | [`@csstools/css-tokenizer@3.0.3`](git+https://github.com/csstools/postcss-plugins.git) | MIT | #19008 |
