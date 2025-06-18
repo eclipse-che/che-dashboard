@@ -13,12 +13,19 @@
 import { InitialEntry } from 'history';
 import React from 'react';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
+import { Navigate } from 'react-router-dom';
 
 import { ROUTE } from '@/Routes';
 import { Redirects } from '@/Routes/Redirects';
 import getComponentRenderer, { screen } from '@/services/__mocks__/getComponentRenderer';
 
 const { renderComponent } = getComponentRenderer(getComponent);
+
+jest.mock('@/Routes/NavigateHome', () => {
+  return function NavigateHome() {
+    return <Navigate key="redirect-to-home" to={ROUTE.HOME} />;
+  };
+});
 
 describe('Redirects', () => {
   it('should handle paths started with `/http://`', () => {

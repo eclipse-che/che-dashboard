@@ -21,7 +21,6 @@ import { ROUTE } from '@/Routes';
 import { buildGettingStartedLocation, buildWorkspacesLocation } from '@/services/helpers/location';
 import { Workspace } from '@/services/workspace-adapter';
 import { RootState } from '@/store';
-import { workspacesActionCreators } from '@/store/Workspaces';
 import { selectAllWorkspaces, selectRecentWorkspaces } from '@/store/Workspaces/selectors';
 
 export interface NavigationItemObject {
@@ -117,7 +116,7 @@ const mapStateToProps = (state: RootState) => ({
   recentWorkspaces: selectRecentWorkspaces(state),
   allWorkspaces: selectAllWorkspaces(state),
 });
-const connector = connect(mapStateToProps, workspacesActionCreators);
+const connector = connect(mapStateToProps);
 
 type MappedProps = ConnectedProps<typeof connector>;
 
