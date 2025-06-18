@@ -15,6 +15,7 @@ import { Navigate, useLocation } from 'react-router-dom';
 
 import { buildFactoryLoaderPath } from '@/preload/main';
 import { ROUTE } from '@/Routes';
+import NavigateHome from '@/Routes/NavigateHome';
 
 /**
  * Redirects to the correct page based on the path.
@@ -40,5 +41,5 @@ export function Redirects(): React.ReactElement {
     return <Navigate key="redirect-to-factory" to={factoryLoaderPath} />;
   }
 
-  return <Navigate key="redirect-to-home" to={ROUTE.HOME} />;
+  return <NavigateHome />;
 }

@@ -31,20 +31,16 @@ export enum ROUTE {
   FACTORY_LOADER_URL = '/load-factory?url=:url',
   USER_PREFERENCES = '/user-preferences',
   USER_PREFERENCES_TAB = '/user-preferences?tab=:tabId',
-  USER_ACCOUNT = '/user-account',
 }
 
 export type WorkspaceRouteParams = Params<'namespace' | 'workspaceName'>;
 
 const LoaderContainer = React.lazy(() => import('../containers/Loader'));
-// temporary hidden, https://github.com/eclipse/che/issues/21595
-// const UserAccount = React.lazy(() => import('../pages/UserAccount'));
 
 export function AppRoutes(): React.ReactElement {
   return (
     <Routes>
       <Route key="get-started" path={ROUTE.GET_STARTED} element={<GetStartedContainer />} />
-      <Route key="home" path={ROUTE.HOME} element={<GetStartedContainer />} />
       <Route key="workspaces-list" path={ROUTE.WORKSPACES} element={<WorkspacesListContainer />} />
       <Route
         key="workspace-details"
@@ -58,10 +54,6 @@ export function AppRoutes(): React.ReactElement {
         path={ROUTE.USER_PREFERENCES}
         element={<UserPreferencesContainer />}
       />
-
-      {/* temporary hidden, https://github.com/eclipse/che/issues/21595
-      <Route key="user-account" path={ROUTE.USER_ACCOUNT} element={<UserAccount />} /> */}
-
       <Route key="redirects" path="*" element={<Redirects />} />
     </Routes>
   );

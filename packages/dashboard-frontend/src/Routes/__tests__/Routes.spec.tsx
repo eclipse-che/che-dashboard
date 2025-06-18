@@ -52,6 +52,11 @@ jest.mock('@/pages/UserPreferences', () => {
     return <span>User Preferences</span>;
   };
 });
+jest.mock('@/Routes/NavigateHome', () => {
+  return function NavigateHome() {
+    return <span>Navigate Home</span>;
+  };
+});
 
 describe('Routes', () => {
   afterEach(() => {
@@ -63,7 +68,7 @@ describe('Routes', () => {
       const path = ROUTE.HOME;
       render(getComponent(path));
 
-      await waitFor(() => expect(screen.queryByText('Create Workspace')).toBeTruthy());
+      await waitFor(() => expect(screen.queryByText('Navigate Home')).toBeTruthy());
 
       expect(screen.queryByTestId('fallback-spinner')).not.toBeInTheDocument();
     });
