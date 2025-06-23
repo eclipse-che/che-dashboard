@@ -37,7 +37,7 @@ async function buildClusterConfig(): Promise<ClusterConfig> {
   const runningWorkspacesLimit = serverConfigApi.getRunningWorkspacesLimit(cheCustomResource);
   const allWorkspacesLimit = serverConfigApi.getAllWorkspacesLimit(cheCustomResource);
   const dashboardFavicon = serverConfigApi.getDashboardLogo(cheCustomResource);
-  const supportedArchitectures = ['amd64', 's390x'];
+  const supportedArchitectures = ['amd64'];
 
   return { dashboardWarning, dashboardFavicon, allWorkspacesLimit, runningWorkspacesLimit, infrastructure: { 
     supportedArchitectures } };
