@@ -51,7 +51,7 @@ export class EditorGallery extends React.PureComponent<Props, State> {
   private init(): void {
     const { editorsVisibilityConfig, defaultEditorId, editors, selectedEditorId, onSelect } =
       this.props;
-    const supportedArchitectures = ['amd64', 's390x']; 
+    const supportedArchitectures = ['amd64']; 
 
     // filter and sort editors
     const filteredEditors = filterEditors(editors, editorsVisibilityConfig, supportedArchitectures);
