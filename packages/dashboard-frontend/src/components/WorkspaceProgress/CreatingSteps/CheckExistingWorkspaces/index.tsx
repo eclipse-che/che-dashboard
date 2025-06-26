@@ -125,15 +125,18 @@ class CreatingStepCheckExistingWorkspaces extends ProgressStep<Props, State> {
       this.clearStepError();
       return;
     }
+    this.openWorkspace(this.state.existingWorkspace);
+  }
 
-    // open workspace flow for the existing workspace
-    // at this moment existing workspace must be defined
-
-    const { existingWorkspace } = this.state;
-
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    const workspaceLocation = buildIdeLoaderLocation(existingWorkspace!);
-
+  /**
+   * Opens the workspace in the IDE.
+   * If the workspace is undefined, it does nothing.
+   */
+  private openWorkspace(workspace: Workspace | undefined): void {
+    if (workspace === undefined) {
+      return;
+    }
+    const workspaceLocation = buildIdeLoaderLocation(workspace);
     const url = toHref(workspaceLocation);
     this.tabManager.replace(url);
     this.tabManager.reload();
@@ -176,7 +179,26 @@ class CreatingStepCheckExistingWorkspaces extends ProgressStep<Props, State> {
       newWorkspaceName = devfile.metadata.name;
     }
 
-    // check existing workspaces to avoid name conflicts
+    // check if there are existing workspaces created from the same repo
+    const existingWorkspacesFromTheSameRepo = this.props.allWorkspaces.filter(
+      workspace => workspace.source === factoryParams.sourceUrl,
+    );
+    // if there are existing workspaces from the same repo, open one of them
+    if (existingWorkspacesFromTheSameRepo.length > 0) {
+      let existingWorkspace: Workspace | undefined;
+      if (factoryParams.existing) {
+        // if the factory params specify an existing workspace, use it
+        existingWorkspace = existingWorkspacesFromTheSameRepo.find(
+          workspace => workspace.name === factoryParams.existing,
+        );
+      } else {
+        // otherwise, use the first one
+        existingWorkspace = existingWorkspacesFromTheSameRepo[0];
+      }
+      this.openWorkspace(existingWorkspace);
+      return false;
+    }
+    // check existing workspaces with the same name to avoid name conflicts
     const existingWorkspace = this.props.allWorkspaces.find(w => newWorkspaceName === w.name);
     if (existingWorkspace) {
       // detected workspaces name conflict
