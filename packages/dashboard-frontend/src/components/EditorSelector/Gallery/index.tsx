@@ -21,8 +21,10 @@ export type Props = {
   editors: che.Plugin[];
   selectedEditorId: string | undefined;
   editorsVisibilityConfig: { showDeprecated: boolean; hideById: string[] } | undefined;
+  supportedArchitectures: string[]; 
   onSelect: (editorId: string) => void;
 };
+
 export type State = {
   selectedId: string;
   sortedEditorsByName: Map<string, che.Plugin[]>;
@@ -33,7 +35,7 @@ export class EditorGallery extends React.PureComponent<Props, State> {
     super(props);
 
     this.state = {
-      selectedId: '', // will be set on component mount
+      selectedId: '', 
       sortedEditorsByName: new Map<string, che.Plugin[]>(),
     };
   }
@@ -49,9 +51,8 @@ export class EditorGallery extends React.PureComponent<Props, State> {
   }
 
   private init(): void {
-    const { editorsVisibilityConfig, defaultEditorId, editors, selectedEditorId, onSelect } =
+    const { editorsVisibilityConfig, defaultEditorId, editors, selectedEditorId, onSelect, supportedArchitectures } =
       this.props;
-    const supportedArchitectures = ['amd64']; 
 
     // filter and sort editors
     const filteredEditors = filterEditors(editors, editorsVisibilityConfig, supportedArchitectures);
@@ -145,6 +146,7 @@ const DEPRECATED_TAG = 'Deprecated';
 export function filterEditors(
   editors: che.Plugin[],
   editorsVisibilityConfig: { showDeprecated: boolean; hideById: string[] } | undefined,
+  supportedArchitectures: string[] 
 ) {
   return editors.filter(editor => {
     if (!editorsVisibilityConfig?.showDeprecated && editor.tags?.includes(DEPRECATED_TAG)) {
@@ -153,6 +155,11 @@ export function filterEditors(
 
     const hideById = editorsVisibilityConfig?.hideById || [];
     if (hideById.includes(editor.id)) {
+      return false;
+    }
+
+    // Filter by supported architecture
+    if (editor.architecture && !supportedArchitectures.includes(editor.architecture)) {
       return false;
     }
 
