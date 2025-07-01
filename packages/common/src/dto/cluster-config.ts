@@ -18,4 +18,5 @@ export interface ClusterConfig {
   };
   allWorkspacesLimit: number;
   runningWorkspacesLimit: number;
+  currentArchitecture?: string;
 }

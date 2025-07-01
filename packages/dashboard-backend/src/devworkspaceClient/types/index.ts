@@ -394,6 +394,11 @@ export interface IServerConfigApi {
    * Returns the hideEditorsById value
    */
   gеtHideEditorsById(cheCustomResource: CheClusterCustomResource): string[];
+
+  /**
+   * Returns the current architecture.
+   */
+  getCurrentArchitecture(): Promise<string | undefined>;
 }
 
 export interface IKubeConfigApi {

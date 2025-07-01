@@ -18,6 +18,7 @@ import path from 'path';
 
 import { requestTimeoutSeconds, startTimeoutSeconds } from '@/constants/server-config';
 import { createError } from '@/devworkspaceClient/services/helpers/createError';
+import { run } from '@/devworkspaceClient/services/helpers/exec';
 import {
   CustomObjectAPI,
   prepareCustomObjectAPI,
@@ -39,9 +40,28 @@ const PLURAL = 'checlusters';
 
 export class ServerConfigApiService implements IServerConfigApi {
   private readonly customObjectAPI: CustomObjectAPI;
+  private static currentArchitecture: string | undefined;
 
   constructor(kc: k8s.KubeConfig) {
     this.customObjectAPI = prepareCustomObjectAPI(kc);
+  }
+  /**
+   * Returns the current architecture.
+   * The value is determined by executing the `arch` command.
+   */
+  async getCurrentArchitecture(): Promise<string | undefined> {
+    if (!ServerConfigApiService.currentArchitecture) {
+      try {
+        ServerConfigApiService.currentArchitecture = await run('arch');
+      } catch (error) {
+        ServerConfigApiService.currentArchitecture = undefined;
+        logger.error(
+          error,
+          'Failed to determine the current architecture using the `arch` command.',
+        );
+      }
+    }
+    return ServerConfigApiService.currentArchitecture;
   }
 
   private get env(): { NAME?: string; NAMESPACE?: string } {

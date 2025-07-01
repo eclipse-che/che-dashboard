@@ -16,6 +16,7 @@ import { baseApiPath } from '@/constants/config';
 import {
   dashboardLogo,
   stubAllWorkspacesLimit,
+  stubCurrentArchitecture,
   stubDashboardWarning,
   stubRunningWorkspacesLimit,
 } from '@/routes/api/helpers/__mocks__/getDevWorkspaceClient';
@@ -45,6 +46,7 @@ describe('Cluster Config Route', () => {
       dashboardFavicon: dashboardLogo,
       runningWorkspacesLimit: stubRunningWorkspacesLimit,
       allWorkspacesLimit: stubAllWorkspacesLimit,
+      currentArchitecture: stubCurrentArchitecture,
     });
   });
 });
