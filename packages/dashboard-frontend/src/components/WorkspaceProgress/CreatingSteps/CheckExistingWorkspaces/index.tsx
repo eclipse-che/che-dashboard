@@ -155,6 +155,27 @@ class CreatingStepCheckExistingWorkspaces extends ProgressStep<Props, State> {
       return true;
     }
 
+    // check if there are existing workspaces created from the same repo
+    const existingWorkspacesFromTheSameRepo = this.props.allWorkspaces.filter(
+      workspace => workspace.source === factoryParams.sourceUrl,
+    );
+    if (existingWorkspacesFromTheSameRepo.length > 0) {
+      let existingWorkspace: Workspace | undefined = undefined;
+      if (factoryParams.existing) {
+        // if the factory params specify an existing workspace, use it
+        existingWorkspace = existingWorkspacesFromTheSameRepo.find(
+          workspace => workspace.name === factoryParams.existing,
+        );
+      }
+      if (existingWorkspace === undefined) {
+        // otherwise, use the first one
+        existingWorkspace = existingWorkspacesFromTheSameRepo[0];
+      }
+      this.openWorkspace(existingWorkspace);
+      // stop the step execution
+      return false;
+    }
+
     let newWorkspaceName: string;
     if (factoryParams.useDevWorkspaceResources === true) {
       const resources = devWorkspaceResources[factoryParams.sourceUrl]?.resources;
@@ -177,26 +198,6 @@ class CreatingStepCheckExistingWorkspaces extends ProgressStep<Props, State> {
 
       const devfile = factoryResolver.devfile;
       newWorkspaceName = devfile.metadata.name;
-    }
-
-    // check if there are existing workspaces created from the same repo
-    const existingWorkspacesFromTheSameRepo = this.props.allWorkspaces.filter(
-      workspace => workspace.source === factoryParams.sourceUrl,
-    );
-    // if there are existing workspaces from the same repo, open one of them
-    if (existingWorkspacesFromTheSameRepo.length > 0) {
-      let existingWorkspace: Workspace | undefined;
-      if (factoryParams.existing) {
-        // if the factory params specify an existing workspace, use it
-        existingWorkspace = existingWorkspacesFromTheSameRepo.find(
-          workspace => workspace.name === factoryParams.existing,
-        );
-      } else {
-        // otherwise, use the first one
-        existingWorkspace = existingWorkspacesFromTheSameRepo[0];
-      }
-      this.openWorkspace(existingWorkspace);
-      return false;
     }
     // check existing workspaces with the same name to avoid name conflicts
     const existingWorkspace = this.props.allWorkspaces.find(w => newWorkspaceName === w.name);
