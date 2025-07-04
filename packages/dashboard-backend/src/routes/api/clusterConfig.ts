@@ -17,6 +17,7 @@ import { baseApiPath } from '@/constants/config';
 import { getDevWorkspaceClient } from '@/routes/api/helpers/getDevWorkspaceClient';
 import { getServiceAccountToken } from '@/routes/api/helpers/getServiceAccountToken';
 import { getSchema } from '@/services/helpers';
+import serverConfigApi from './ServerConfigApiService';
 
 const tags = ['Cluster Config'];
 
@@ -28,7 +29,7 @@ export function registerClusterConfigRoute(instance: FastifyInstance) {
   });
 }
 
-async function buildClusterConfig(): Promise<ClusterConfig> {
+async function buildClusterConfig(): Promise<ClusterConfig & { currentArchitecture: string }> {
   const token = getServiceAccountToken();
   const { serverConfigApi } = getDevWorkspaceClient(token);
 
@@ -37,6 +38,7 @@ async function buildClusterConfig(): Promise<ClusterConfig> {
   const runningWorkspacesLimit = serverConfigApi.getRunningWorkspacesLimit(cheCustomResource);
   const allWorkspacesLimit = serverConfigApi.getAllWorkspacesLimit(cheCustomResource);
   const dashboardFavicon = serverConfigApi.getDashboardLogo(cheCustomResource);
+  const currentArchitecture = serverConfigApi.getCurrentArchitecture();
 
-  return { dashboardWarning, dashboardFavicon, allWorkspacesLimit, runningWorkspacesLimit };
+  return { dashboardWarning, dashboardFavicon, allWorkspacesLimit, runningWorkspacesLimit, currentArchitecture };
 }
