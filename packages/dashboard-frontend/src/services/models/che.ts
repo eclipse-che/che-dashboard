@@ -29,6 +29,9 @@ export interface Plugin {
   icon: string;
   iconMediatype?: string;
   tags?: string[];
+  arch?: {
+    [key: string]: 'supported' | 'unsupported';
+  };
 }
 
 export interface WorkspaceDevfileAttributes {

@@ -94,6 +94,29 @@ describe('convertToEditorPlugin', () => {
       version: 'insiders',
     });
   });
+
+  test('returns correct editor plugin with unsupported arch attribute', async () => {
+    const editor = {
+      commands: [],
+      components: [],
+      metadata: {
+        attributes: {
+          publisher: 'che-incubator',
+          version: 'latest',
+        },
+        name: 'che-clion-server',
+      },
+      schemaVersion: '2.2.2',
+    } as devfileApi.Devfile;
+
+    expect(editor.metadata.attributes.arch).toBeUndefined();
+
+    const plugin = convertToEditorPlugin(editor);
+
+    expect(plugin.arch).toEqual({
+      s390x: 'unsupported',
+    });
+  });
 });
 
 function getEditor(): devfileApi.Devfile {
