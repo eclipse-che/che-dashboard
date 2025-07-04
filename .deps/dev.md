@@ -29,7 +29,7 @@
 | [`@babel/template@7.27.0`](https://github.com/babel/babel.git) | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@babel/template/7.27.0) |
 | [`@babel/traverse@7.23.2`](https://github.com/babel/babel.git) | MIT | #11520 |
 | [`@babel/types@7.26.10`](https://github.com/babel/babel.git) | MIT | #17734 |
-| [`@babel/types@7.27.0`](https://github.com/babel/babel.git) | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@babel/types/7.27.0) |
+| [`@babel/types@7.27.0`](https://github.com/babel/babel.git) | MIT | #21827 |
 | [`@bcoe/v8-coverage@0.2.3`](git://github.com/demurgos/v8-coverage.git) | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@bcoe/v8-coverage/0.2.3) |
 | [`@csstools/css-parser-algorithms@3.0.4`](git+https://github.com/csstools/postcss-plugins.git) | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@csstools/css-parser-algorithms/3.0.4) |
 | [`@csstools/css-tokenizer@3.0.3`](git+https://github.com/csstools/postcss-plugins.git) | MIT | #19008 |
@@ -405,7 +405,6 @@
 | `is-binary-path@2.1.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/is-binary-path/2.1.0) |
 | [`is-boolean-object@1.1.2`](git://github.com/inspect-js/is-boolean-object.git) | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/is-boolean-object/1.1.2) |
 | [`is-buffer@2.0.5`](git://github.com/feross/is-buffer.git) | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/is-buffer/2.0.5) |
-| [`is-callable@1.2.7`](git://github.com/inspect-js/is-callable.git) | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/is-callable/1.2.7) |
 | [`is-core-module@2.13.1`](git+https://github.com/inspect-js/is-core-module.git) | MIT | #9885 |
 | [`is-date-object@1.0.5`](git://github.com/inspect-js/is-date-object.git) | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/is-date-object/1.0.5) |
 | `is-docker@2.2.1` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/is-docker/2.2.1) |
@@ -436,7 +435,6 @@
 | [`is-weakref@1.0.2`](git+https://github.com/inspect-js/is-weakref.git) | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/is-weakref/1.0.2) |
 | [`is-weakset@2.0.2`](git+https://github.com/inspect-js/is-weakset.git) | MIT | #18388 |
 | `is-wsl@2.2.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/is-wsl/2.2.0) |
-| [`isarray@2.0.5`](git://github.com/juliangruber/isarray.git) | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/isarray/2.0.5) |
 | [`isobject@3.0.1`](https://github.com/jonschlinkert/isobject) | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/isobject/3.0.1) |
 | [`istanbul-lib-coverage@3.2.1`](git+ssh://git@github.com/istanbuljs/istanbuljs.git) | BSD-3-Clause | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/istanbul-lib-coverage/3.2.1) |
 | [`istanbul-lib-instrument@5.2.1`](git+ssh://git@github.com/istanbuljs/istanbuljs.git) | BSD-3-Clause | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/istanbul-lib-instrument/5.2.1) |
