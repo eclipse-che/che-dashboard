@@ -115,6 +115,7 @@ describe('convertToEditorPlugin', () => {
 
     expect(plugin.arch).toEqual({
       s390x: 'unsupported',
+      ppc64le: 'unsupported',
     });
   });
 });

@@ -13,8 +13,8 @@
 import devfileApi from '@/services/devfileApi';
 import { che } from '@/services/models';
 
-// unsupported by default editors for s390x architecture
-const S390X_UNSUPPORTED_BY_DEFAULT = [
+// unsupported by default editors for IBM Power/Z
+const UNSUPPORTED_BY_DEFAULT = [
   'che-webstorm-server',
   'che-rubymine-server',
   'che-pycharm-server',
@@ -59,8 +59,8 @@ export function convertToEditorPlugin(editor: devfileApi.Devfile): che.Plugin {
 
   if (editor.metadata.attributes?.arch !== undefined) {
     plugin.arch = editor.metadata.attributes.arch;
-  } else if (S390X_UNSUPPORTED_BY_DEFAULT.includes(plugin.name)) {
-    plugin.arch = { s390x: 'unsupported' };
+  } else if (UNSUPPORTED_BY_DEFAULT.includes(plugin.name)) {
+    plugin.arch = { s390x: 'unsupported', ppc64le: 'unsupported' };
   }
 
   return plugin;
