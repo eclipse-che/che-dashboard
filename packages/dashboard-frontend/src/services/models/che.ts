@@ -10,6 +10,8 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
+import { Architecture } from '@eclipse-che/common';
+
 export { che as api } from '@eclipse-che/api';
 
 export type WorkspaceStorageType = 'ephemeral' | 'per-workspace' | 'per-user' | '';
@@ -29,9 +31,7 @@ export interface Plugin {
   icon: string;
   iconMediatype?: string;
   tags?: string[];
-  arch?: {
-    [key: string]: 'supported' | 'unsupported';
-  };
+  arch?: Architecture[];
 }
 
 export interface WorkspaceDevfileAttributes {

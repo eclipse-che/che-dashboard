@@ -13,16 +13,6 @@
 import devfileApi from '@/services/devfileApi';
 import { che } from '@/services/models';
 
-// unsupported by default editors for s390x architecture
-const S390X_UNSUPPORTED_BY_DEFAULT = [
-  'che-webstorm-server',
-  'che-rubymine-server',
-  'che-pycharm-server',
-  'che-clion-server',
-  'che-idea-server',
-  'che-idea',
-];
-
 /** Convert devfile to editor plugin */
 export function convertToEditorPlugin(editor: devfileApi.Devfile): che.Plugin {
   if (
@@ -51,16 +41,11 @@ export function convertToEditorPlugin(editor: devfileApi.Devfile): che.Plugin {
     },
     icon: editor.metadata.attributes.iconData,
     iconMediatype: editor.metadata.attributes.iconMediatype,
+    arch: editor.metadata.attributes.arch,
   };
 
   if (editor.metadata.attributes?.provider) {
     plugin.provider = editor.metadata.attributes.provider;
-  }
-
-  if (editor.metadata.attributes?.arch !== undefined) {
-    plugin.arch = editor.metadata.attributes.arch;
-  } else if (S390X_UNSUPPORTED_BY_DEFAULT.includes(plugin.name)) {
-    plugin.arch = { s390x: 'unsupported' };
   }
 
   return plugin;

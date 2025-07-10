@@ -10,6 +10,21 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
+export type Architecture = 'x86_64' | 'amd64' | 'arm64' | 's390x' | 'ppc64le';
+
+export function isArchitecture(response: unknown): response is Architecture {
+  if (response === null || response === undefined) {
+    return false;
+  }
+  return (
+    response === 'x86_64' ||
+    response === 'amd64' ||
+    response === 'arm64' ||
+    response === 's390x' ||
+    response === 'ppc64le'
+  );
+}
+
 export interface ClusterConfig {
   dashboardWarning?: string;
   dashboardFavicon?: {
@@ -18,5 +33,5 @@ export interface ClusterConfig {
   };
   allWorkspacesLimit: number;
   runningWorkspacesLimit: number;
-  currentArchitecture?: string;
+  currentArchitecture?: Architecture;
 }

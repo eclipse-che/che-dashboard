@@ -30,6 +30,7 @@ export const unloadedState: State = {
   clusterConfig: {
     runningWorkspacesLimit: 1,
     allWorkspacesLimit: -1,
+    currentArchitecture: undefined,
   },
 };
 

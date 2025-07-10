@@ -102,12 +102,12 @@ describe('ClusterConfig Selectors', () => {
     expect(result).toEqual('amd64');
   });
 
-  it('should return "unknown" if current architecture is not set', () => {
+  it('should return "undefined" if current architecture is not set', () => {
     const result = selectCurrentArchitecture({
       clusterConfig: {
         clusterConfig: {},
       },
     } as RootState);
-    expect(result).toEqual('unknown');
+    expect(result).toBeUndefined();
   });
 });

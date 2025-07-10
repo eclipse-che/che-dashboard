@@ -10,6 +10,7 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
+import { Architecture } from '@eclipse-che/common';
 import { createSelector } from '@reduxjs/toolkit';
 
 import { RootState } from '@/store';
@@ -39,5 +40,5 @@ export const selectDashboardFavicon = createSelector(
 
 export const selectCurrentArchitecture = createSelector(
   selectState,
-  state => state.clusterConfig.currentArchitecture || 'unknown', // Default to 'unknown' if not set
+  state => state.clusterConfig.currentArchitecture as Architecture,
 );

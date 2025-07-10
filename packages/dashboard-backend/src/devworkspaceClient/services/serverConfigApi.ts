@@ -11,7 +11,7 @@
  */
 
 import { V230DevfileComponents } from '@devfile/api';
-import { api } from '@eclipse-che/common';
+import { api, Architecture, isArchitecture } from '@eclipse-che/common';
 import * as k8s from '@kubernetes/client-node';
 import { readFileSync } from 'fs';
 import path from 'path';
@@ -40,19 +40,31 @@ const PLURAL = 'checlusters';
 
 export class ServerConfigApiService implements IServerConfigApi {
   private readonly customObjectAPI: CustomObjectAPI;
-  private static currentArchitecture: string | undefined;
+  private static currentArchitecture: Architecture | undefined;
 
   constructor(kc: k8s.KubeConfig) {
     this.customObjectAPI = prepareCustomObjectAPI(kc);
+
+    if (isLocalRun()) {
+      ServerConfigApiService.currentArchitecture = process.env[
+        'CHECLUSTER_ARCHITECTURE'
+      ] as Architecture;
+    }
   }
-  /**
-   * Returns the current architecture.
-   * The value is determined by executing the `arch` command.
-   */
-  async getCurrentArchitecture(): Promise<string | undefined> {
+
+  async getCurrentArchitecture(): Promise<Architecture | undefined> {
     if (!ServerConfigApiService.currentArchitecture) {
       try {
-        ServerConfigApiService.currentArchitecture = await run('arch');
+        const currentArchitecture = await run('uname', ['-m']);
+        const isValidArchitecture = isArchitecture(currentArchitecture);
+        if (!isValidArchitecture) {
+          throw createError(
+            undefined,
+            CUSTOM_RESOURCE_DEFINITIONS_API_ERROR_LABEL,
+            `Invalid architecture detected: ${currentArchitecture}. Supported architectures are: x86_64, amd64, arm64, s390x, ppc64le.`,
+          );
+        }
+        ServerConfigApiService.currentArchitecture = currentArchitecture;
       } catch (error) {
         ServerConfigApiService.currentArchitecture = undefined;
         logger.error(

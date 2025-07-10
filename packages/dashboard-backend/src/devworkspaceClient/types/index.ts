@@ -16,7 +16,7 @@ import {
   V230Devfile,
   V230DevfileComponents,
 } from '@devfile/api';
-import { api } from '@eclipse-che/common';
+import { api, Architecture } from '@eclipse-che/common';
 import * as k8s from '@kubernetes/client-node';
 import { IncomingHttpHeaders } from 'http';
 
@@ -396,9 +396,10 @@ export interface IServerConfigApi {
   gеtHideEditorsById(cheCustomResource: CheClusterCustomResource): string[];
 
   /**
-   * Returns the current architecture.
+   * Returns the Machine (hardware) type.
+   * The value is determined by executing the `uname -m` command.
    */
-  getCurrentArchitecture(): Promise<string | undefined>;
+  getCurrentArchitecture(): Promise<Architecture | undefined>;
 }
 
 export interface IKubeConfigApi {

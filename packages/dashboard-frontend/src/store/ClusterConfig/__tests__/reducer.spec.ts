@@ -45,6 +45,7 @@ describe('ClusterConfig, reducer', () => {
       dashboardWarning: 'Maintenance warning info',
       allWorkspacesLimit: -1,
       runningWorkspacesLimit: 1,
+      currentArchitecture: 'amd64',
     };
 
     const action = clusterConfigReceiveAction(clusterConfig);

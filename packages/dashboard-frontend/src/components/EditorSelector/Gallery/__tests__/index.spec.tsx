@@ -44,6 +44,7 @@ describe('EditorGallery', () => {
         type: 'Che Editor',
         version: 'insiders',
         icon: '/v3/images/vscode.svg',
+        arch: [currentArchitecture],
       },
       {
         id: 'che-incubator/che-code/latest',
@@ -57,6 +58,7 @@ describe('EditorGallery', () => {
         type: 'Che Editor',
         version: 'latest',
         icon: '/v3/images/vscode.svg',
+        arch: [currentArchitecture],
       },
       {
         id: 'che-incubator/che-idea-server/latest',
@@ -71,6 +73,7 @@ describe('EditorGallery', () => {
         type: 'Che Editor',
         version: 'latest',
         icon: '/v3/images/intllij-idea.svg',
+        arch: [currentArchitecture],
       },
       {
         id: 'che-incubator/che-idea-server/next',
@@ -85,6 +88,7 @@ describe('EditorGallery', () => {
         type: 'Che Editor',
         version: 'next',
         icon: '/v3/images/intllij-idea.svg',
+        arch: [currentArchitecture],
       },
     ];
   });
@@ -145,8 +149,8 @@ describe('EditorGallery', () => {
 
     describe('filtered by unsupported architecture', () => {
       beforeEach(() => {
-        editors[2].arch = { s390x: 'unsupported' };
-        editors[3].arch = { s390x: 'unsupported' };
+        editors[0].arch = [currentArchitecture, 's390x'];
+        editors[1].arch = [currentArchitecture, 's390x'];
       });
 
       test('default filtering', () => {
