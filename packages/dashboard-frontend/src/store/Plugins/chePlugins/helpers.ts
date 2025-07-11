@@ -14,6 +14,7 @@ import devfileApi from '@/services/devfileApi';
 import { che } from '@/services/models';
 
 // unsupported by default editors for IBM Power/Z
+// TODO Remove these defaults when https://github.com/eclipse-che/che-operator/pull/2010 is merged.
 const UNSUPPORTED_BY_DEFAULT = [
   'che-webstorm-server',
   'che-rubymine-server',
@@ -60,6 +61,7 @@ export function convertToEditorPlugin(editor: devfileApi.Devfile): che.Plugin {
   if (editor.metadata.attributes?.arch !== undefined) {
     plugin.arch = editor.metadata.attributes.arch;
   } else if (UNSUPPORTED_BY_DEFAULT.includes(plugin.name)) {
+    // TODO Remove these defaults when https://github.com/eclipse-che/che-operator/pull/2010 is merged.
     plugin.arch = { s390x: 'unsupported', ppc64le: 'unsupported' };
   }
 
