@@ -101,7 +101,9 @@ jobs:
           - platform: linux/arm64
             default: false
           - platform: linux/s390x
-            default: false
+            default: true
+          - platform: linux/ppc64le
+            default: true
     steps:
       -
         name: "Checkout Che Dashboard source code"
@@ -130,6 +132,15 @@ jobs:
           registry: quay.io
           username: ${{ secrets.QUAY_USERNAME }}
           password: ${{ secrets.QUAY_PASSWORD }}
+
+      -
+        name: "Set platform tag"
+        id: platform_tag
+        run: |
+          PLATFORM=${{ matrix.platform }}
+          ARCH=${PLATFORM#linux/}
+          echo "IMAGE_TAG=${{ env.ORGANIZATION }}/che-dashboard:${{ env.IMAGE_VERSION }}-${ARCH}" >> $GITHUB_ENV
+
       -
         name: "Build and push ${{ matrix.platform }}"
         uses: docker/build-push-action@v5
@@ -141,7 +152,7 @@ jobs:
           platforms: ${{ matrix.platform }}
           push: ${{ matrix.default == true }}
           provenance: false
-          tags: ${{ env.ORGANIZATION }}/che-dashboard:${{ env.IMAGE_VERSION }}
+          tags: ${{ env.IMAGE_TAG }}
       -
         name: "Comment with image name"
         uses: actions/github-script@v7
@@ -149,7 +160,7 @@ jobs:
         with:
           script: |
             const { issue: { number: issue_number }, repo: { owner, repo } } = context;
-            const dashboardImage = "${{ env.ORGANIZATION }}/che-dashboard:${{ env.IMAGE_VERSION }}";
+            const dashboardImage = "${{ env.IMAGE_TAG }}";
             const patchCommand = `kubectl patch -n eclipse-che "checluster/eclipse-che" --type=json -p="[{\"op\": \"replace\", \"path\": \"/spec/components/dashboard/deployment\", \"value\": {containers: [{image: \"${dashboardImage}\", name: che-dashboard}]}}]"`;
             const text = `
             Docker image build succeeded: **${dashboardImage}**

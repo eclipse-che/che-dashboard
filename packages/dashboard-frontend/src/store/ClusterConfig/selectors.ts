@@ -36,3 +36,8 @@ export const selectDashboardFavicon = createSelector(
   selectState,
   state => state.clusterConfig.dashboardFavicon,
 );
+
+export const selectCurrentArchitecture = createSelector(
+  selectState,
+  state => state.clusterConfig.currentArchitecture || 'unknown', // Default to 'unknown' if not set
+);
