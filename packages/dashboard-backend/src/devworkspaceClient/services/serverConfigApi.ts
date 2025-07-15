@@ -15,6 +15,7 @@ import { api } from '@eclipse-che/common';
 import * as k8s from '@kubernetes/client-node';
 import { readFileSync } from 'fs';
 import path from 'path';
+import os from 'os';
 
 import { requestTimeoutSeconds, startTimeoutSeconds } from '@/constants/server-config';
 import { createError } from '@/devworkspaceClient/services/helpers/createError';
@@ -224,6 +225,9 @@ export class ServerConfigApiService implements IServerConfigApi {
     return isNaN(requestTimeout) ? requestTimeoutSeconds * 1000 : requestTimeout;
   }
 
+  getCurrentArchitecture(): string {
+  return os.arch();
+}
   getDashboardLogo(
     cheCustomResource: CheClusterCustomResource,
   ): { base64data: string; mediatype: string } | undefined {

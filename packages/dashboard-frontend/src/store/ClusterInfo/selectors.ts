@@ -22,3 +22,4 @@ export const selectApplications = createSelector(
 );
 
 export const selectClusterInfoError = createSelector(selectState, state => state.error);
+export const selectCurrentArchitecture = createSelector(selectState, state => state.clusterInfo.currentArchitecture);
