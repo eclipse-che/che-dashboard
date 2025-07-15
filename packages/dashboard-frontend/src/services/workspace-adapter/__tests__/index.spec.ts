@@ -10,10 +10,13 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
+import { dump } from 'js-yaml';
+
 import { DEVWORKSPACE_UPDATING_TIMESTAMP_ANNOTATION } from '@/services/devfileApi/devWorkspace/metadata';
 import { DEVWORKSPACE_STORAGE_TYPE_ATTR } from '@/services/devfileApi/devWorkspace/spec/template';
 import { DevWorkspaceStatus } from '@/services/helpers/types';
 import { StorageTypeTitle } from '@/services/storageTypes';
+import { DEVWORKSPACE_DEVFILE_SOURCE } from '@/services/workspace-client/devworkspace/devWorkspaceClient';
 import { DevWorkspaceBuilder } from '@/store/__mocks__/devWorkspaceBuilder';
 
 import { constructWorkspace, WorkspaceAdapter } from '..';
@@ -211,5 +214,61 @@ describe('for DevWorkspace', () => {
     const devWorkspace = new DevWorkspaceBuilder().withProjects(projects).build();
     const workspace = constructWorkspace(devWorkspace);
     expect(workspace.projects).toEqual([projects[0].name, projects[1].name]);
+  });
+
+  describe('source', () => {
+    it('should return undefined if devfile source is not define', () => {
+      const devWorkspace = new DevWorkspaceBuilder().build();
+      const workspace = constructWorkspace(devWorkspace);
+      expect(workspace.source).toBeUndefined();
+    });
+    it('should return factory url param if existing', () => {
+      const devWorkspace = new DevWorkspaceBuilder()
+        .withMetadata({
+          name: 'test-workspace',
+          annotations: {
+            [DEVWORKSPACE_DEVFILE_SOURCE]: dump({
+              factory: {
+                params: 'editor-image=test-images/che-code:tag&url=https://dummy.repo',
+              },
+            }),
+          },
+        })
+        .build();
+      const workspace = constructWorkspace(devWorkspace);
+      expect(workspace.source).toEqual('https://dummy.repo');
+    });
+    it('should return scm repo if existing', () => {
+      const devWorkspace = new DevWorkspaceBuilder()
+        .withMetadata({
+          name: 'test-workspace',
+          annotations: {
+            [DEVWORKSPACE_DEVFILE_SOURCE]: dump({
+              scm: {
+                repo: 'https://dummy.repo.git',
+              },
+            }),
+          },
+        })
+        .build();
+      const workspace = constructWorkspace(devWorkspace);
+      expect(workspace.source).toEqual('https://dummy.repo.git');
+    });
+    it('should return url location if existing', () => {
+      const devWorkspace = new DevWorkspaceBuilder()
+        .withMetadata({
+          name: 'test-workspace',
+          annotations: {
+            [DEVWORKSPACE_DEVFILE_SOURCE]: dump({
+              url: {
+                location: 'https://dummy.repo/devfile.yaml',
+              },
+            }),
+          },
+        })
+        .build();
+      const workspace = constructWorkspace(devWorkspace);
+      expect(workspace.source).toEqual('https://dummy.repo/devfile.yaml');
+    });
   });
 });
