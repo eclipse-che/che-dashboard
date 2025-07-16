@@ -30,7 +30,7 @@ import { stream } from '@/utils/logger';
   await buildApp(server);
 
   try {
-    const address = await server.listen({ port: 8080, host: '0.0.0.0' });
+    const address = await server.listen({ port: 8080, host: '::' });
 
     if (isLocalRun()) {
       // when we're running against keycloak, 0.0.0.0 is not allowed
