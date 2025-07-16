@@ -92,7 +92,7 @@ describe('convertToEditorPlugin', () => {
       tags: ['Tech-Preview'],
       type: 'Che Editor',
       version: 'insiders',
-      arch: ['amd64'],
+      arch: ['x86_64'],
     });
   });
 
@@ -104,18 +104,18 @@ describe('convertToEditorPlugin', () => {
         attributes: {
           publisher: 'che-incubator',
           version: 'latest',
-          arch: ['amd64', 'arm64'],
+          arch: ['x86_64', 'arm64'],
         },
         name: 'che-clion-server',
       },
       schemaVersion: '2.2.2',
     } as devfileApi.Devfile;
 
-    expect(editor.metadata.attributes.arch).toEqual(['amd64', 'arm64']);
+    expect(editor.metadata.attributes.arch).toEqual(['x86_64', 'arm64']);
 
     const plugin = convertToEditorPlugin(editor);
 
-    expect(plugin.arch).toEqual(['amd64', 'arm64']);
+    expect(plugin.arch).toEqual(['x86_64', 'arm64']);
   });
 });
 
@@ -149,7 +149,7 @@ function getEditor(): devfileApi.Devfile {
         title: 'Open Source IDE for Eclipse Che ....',
         version: 'insiders',
         provider: 'Provided by ....',
-        arch: ['amd64'],
+        arch: ['x86_64'],
       },
       description: 'Open Source IDE for Eclipse Che....',
       displayName: 'VS Code - Open Source',

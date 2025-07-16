@@ -24,7 +24,7 @@ const { createSnapshot, renderComponent } = getComponentRenderer(getComponent);
 
 const defaultEditorId = 'che-incubator/che-code/insiders';
 const selectedEditorId = 'che-incubator/che-code/latest';
-const currentArchitecture = 'amd64';
+const currentArchitecture = 'x86_64';
 
 describe('EditorGallery', () => {
   let editors: che.Plugin[];
@@ -409,7 +409,7 @@ function getComponent(
     <EditorGallery
       editorsVisibilityConfig={undefined}
       defaultEditorId={defaultId}
-      currentArchitecture="amd64"
+      currentArchitecture="x86_64"
       editors={editors}
       selectedEditorId={selectedId}
       onSelect={mockOnSelect}

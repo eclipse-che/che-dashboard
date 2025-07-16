@@ -30,7 +30,7 @@ describe('ClusterConfig Selectors', () => {
           base64data: 'base64data',
           mediatype: 'image/png',
         },
-        currentArchitecture: 'amd64',
+        currentArchitecture: 'x86_64',
       },
       isLoading: false,
       error: 'Something unexpected',
@@ -95,11 +95,11 @@ describe('ClusterConfig Selectors', () => {
     const result = selectCurrentArchitecture({
       clusterConfig: {
         clusterConfig: {
-          currentArchitecture: 'amd64',
+          currentArchitecture: 'x86_64',
         },
       },
     } as RootState);
-    expect(result).toEqual('amd64');
+    expect(result).toEqual('x86_64');
   });
 
   it('should return "undefined" if current architecture is not set', () => {

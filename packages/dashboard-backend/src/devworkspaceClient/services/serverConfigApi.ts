@@ -11,7 +11,7 @@
  */
 
 import { V230DevfileComponents } from '@devfile/api';
-import { api, Architecture, isArchitecture } from '@eclipse-che/common';
+import { api, Architecture } from '@eclipse-che/common';
 import * as k8s from '@kubernetes/client-node';
 import { readFileSync } from 'fs';
 import path from 'path';
@@ -56,20 +56,14 @@ export class ServerConfigApiService implements IServerConfigApi {
     if (!ServerConfigApiService.currentArchitecture) {
       try {
         const currentArchitecture = await run('uname', ['-m']);
-        const isValidArchitecture = isArchitecture(currentArchitecture);
-        if (!isValidArchitecture) {
-          throw createError(
-            undefined,
-            CUSTOM_RESOURCE_DEFINITIONS_API_ERROR_LABEL,
-            `Invalid architecture detected: ${currentArchitecture}. Supported architectures are: x86_64, amd64, arm64, s390x, ppc64le.`,
-          );
-        }
-        ServerConfigApiService.currentArchitecture = currentArchitecture;
+        // 'amd64' is an alias for 'x86_64'
+        ServerConfigApiService.currentArchitecture =
+          currentArchitecture === 'amd64' ? 'x86_64' : (currentArchitecture as Architecture);
       } catch (error) {
-        ServerConfigApiService.currentArchitecture = undefined;
-        logger.error(
+        throw createError(
           error,
-          'Failed to determine the current architecture using the `arch` command.',
+          CUSTOM_RESOURCE_DEFINITIONS_API_ERROR_LABEL,
+          'Failed to determine the current architecture using the `uname -m` command.',
         );
       }
     }
