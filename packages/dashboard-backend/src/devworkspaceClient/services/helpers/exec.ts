@@ -11,6 +11,7 @@
  */
 
 import { helpers } from '@eclipse-che/common';
+import { spawn } from 'child_process';
 import { stringify } from 'querystring';
 import WebSocket from 'ws';
 
@@ -120,4 +121,20 @@ export async function exec(
     throw helpers.errors.getMessage(e);
   }
   return { stdOut, stdError };
+}
+
+export function run(cmd: string, args?: string[]): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const command = spawn(cmd, args);
+    let result = '';
+    command.stdout.on('data', data => {
+      result += data.toString();
+    });
+    command.on('close', () => {
+      resolve(result.replace(/\n/g, ' ').trim());
+    });
+    command.on('error', err => {
+      reject(err);
+    });
+  });
 }

@@ -46,8 +46,6 @@ export type State = {
 const allowedTags = ['Tech Preview', 'Deprecated'];
 
 export class EditorSelectorEntry extends React.PureComponent<Props, State> {
-  private timerId: number | undefined;
-
   constructor(props: Props) {
     super(props);
 

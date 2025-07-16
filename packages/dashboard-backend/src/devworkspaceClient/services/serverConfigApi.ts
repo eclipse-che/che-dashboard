@@ -11,13 +11,14 @@
  */
 
 import { V230DevfileComponents } from '@devfile/api';
-import { api } from '@eclipse-che/common';
+import { api, Architecture } from '@eclipse-che/common';
 import * as k8s from '@kubernetes/client-node';
 import { readFileSync } from 'fs';
 import path from 'path';
 
 import { requestTimeoutSeconds, startTimeoutSeconds } from '@/constants/server-config';
 import { createError } from '@/devworkspaceClient/services/helpers/createError';
+import { run } from '@/devworkspaceClient/services/helpers/exec';
 import {
   CustomObjectAPI,
   prepareCustomObjectAPI,
@@ -39,9 +40,34 @@ const PLURAL = 'checlusters';
 
 export class ServerConfigApiService implements IServerConfigApi {
   private readonly customObjectAPI: CustomObjectAPI;
+  private static currentArchitecture: Architecture | undefined;
 
   constructor(kc: k8s.KubeConfig) {
     this.customObjectAPI = prepareCustomObjectAPI(kc);
+
+    if (isLocalRun()) {
+      ServerConfigApiService.currentArchitecture = process.env[
+        'CHECLUSTER_ARCHITECTURE'
+      ] as Architecture;
+    }
+  }
+
+  async getCurrentArchitecture(): Promise<Architecture | undefined> {
+    if (!ServerConfigApiService.currentArchitecture) {
+      try {
+        const currentArchitecture = await run('uname', ['-m']);
+        // 'amd64' is an alias for 'x86_64'
+        ServerConfigApiService.currentArchitecture =
+          currentArchitecture === 'amd64' ? 'x86_64' : (currentArchitecture as Architecture);
+      } catch (error) {
+        throw createError(
+          error,
+          CUSTOM_RESOURCE_DEFINITIONS_API_ERROR_LABEL,
+          'Failed to determine the current architecture using the `uname -m` command.',
+        );
+      }
+    }
+    return ServerConfigApiService.currentArchitecture;
   }
 
   private get env(): { NAME?: string; NAMESPACE?: string } {

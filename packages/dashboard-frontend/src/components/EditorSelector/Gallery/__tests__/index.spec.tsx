@@ -24,6 +24,7 @@ const { createSnapshot, renderComponent } = getComponentRenderer(getComponent);
 
 const defaultEditorId = 'che-incubator/che-code/insiders';
 const selectedEditorId = 'che-incubator/che-code/latest';
+const currentArchitecture = 'x86_64';
 
 describe('EditorGallery', () => {
   let editors: che.Plugin[];
@@ -43,6 +44,7 @@ describe('EditorGallery', () => {
         type: 'Che Editor',
         version: 'insiders',
         icon: '/v3/images/vscode.svg',
+        arch: [currentArchitecture],
       },
       {
         id: 'che-incubator/che-code/latest',
@@ -56,6 +58,7 @@ describe('EditorGallery', () => {
         type: 'Che Editor',
         version: 'latest',
         icon: '/v3/images/vscode.svg',
+        arch: [currentArchitecture],
       },
       {
         id: 'che-incubator/che-idea-server/latest',
@@ -70,6 +73,7 @@ describe('EditorGallery', () => {
         type: 'Che Editor',
         version: 'latest',
         icon: '/v3/images/intllij-idea.svg',
+        arch: [currentArchitecture],
       },
       {
         id: 'che-incubator/che-idea-server/next',
@@ -84,6 +88,7 @@ describe('EditorGallery', () => {
         type: 'Che Editor',
         version: 'next',
         icon: '/v3/images/intllij-idea.svg',
+        arch: [currentArchitecture],
       },
     ];
   });
@@ -105,7 +110,9 @@ describe('EditorGallery', () => {
       });
 
       test('default filtering', () => {
-        const filteredIds = filterEditors(editors, undefined).map(editor => editor.id);
+        const filteredIds = filterEditors(editors, currentArchitecture, undefined).map(
+          editor => editor.id,
+        );
 
         expect(filteredIds).toEqual([
           'che-incubator/che-code/latest',
@@ -114,7 +121,7 @@ describe('EditorGallery', () => {
       });
 
       test('show deprecated editors', () => {
-        const filteredIds = filterEditors(editors, {
+        const filteredIds = filterEditors(editors, currentArchitecture, {
           showDeprecated: true,
           hideById: [],
         }).map(editor => editor.id);
@@ -128,7 +135,7 @@ describe('EditorGallery', () => {
       });
 
       test('hide deprecated editors', () => {
-        const filteredIds = filterEditors(editors, {
+        const filteredIds = filterEditors(editors, currentArchitecture, {
           showDeprecated: false,
           hideById: [],
         }).map(editor => editor.id);
@@ -140,9 +147,40 @@ describe('EditorGallery', () => {
       });
     });
 
+    describe('filtered by unsupported architecture', () => {
+      beforeEach(() => {
+        editors[0].arch = [currentArchitecture, 's390x'];
+        editors[1].arch = [currentArchitecture, 's390x'];
+      });
+
+      test('default filtering', () => {
+        const filteredIds = filterEditors(editors, currentArchitecture, undefined).map(
+          editor => editor.id,
+        );
+
+        expect(filteredIds).toEqual([
+          'che-incubator/che-code/insiders',
+          'che-incubator/che-code/latest',
+          'che-incubator/che-idea-server/latest',
+          'che-incubator/che-idea-server/next',
+        ]);
+      });
+
+      test('filter by unsupported architecture', () => {
+        const filteredIds = filterEditors(editors, 's390x', undefined).map(editor => editor.id);
+
+        expect(filteredIds).toEqual([
+          'che-incubator/che-code/insiders',
+          'che-incubator/che-code/latest',
+        ]);
+      });
+    });
+
     describe('filtered by editorId', () => {
       test('default filtering', () => {
-        const filteredIds = filterEditors(editors, undefined).map(editor => editor.id);
+        const filteredIds = filterEditors(editors, currentArchitecture, undefined).map(
+          editor => editor.id,
+        );
 
         expect(filteredIds).toEqual([
           'che-incubator/che-code/insiders',
@@ -153,7 +191,7 @@ describe('EditorGallery', () => {
       });
 
       test("hide 'che-incubator/che-code/insiders' editor", () => {
-        const filteredIds = filterEditors(editors, {
+        const filteredIds = filterEditors(editors, currentArchitecture, {
           showDeprecated: false,
           hideById: ['che-incubator/che-code/insiders'],
         }).map(editor => editor.id);
@@ -166,7 +204,7 @@ describe('EditorGallery', () => {
       });
 
       test("hide 'che-incubator/che-code/insiders' and 'che-incubator/che-idea-server/next' editors", () => {
-        const filteredIds = filterEditors(editors, {
+        const filteredIds = filterEditors(editors, currentArchitecture, {
           showDeprecated: false,
           hideById: ['che-incubator/che-code/insiders', 'che-incubator/che-idea-server/next'],
         }).map(editor => editor.id);
@@ -371,6 +409,7 @@ function getComponent(
     <EditorGallery
       editorsVisibilityConfig={undefined}
       defaultEditorId={defaultId}
+      currentArchitecture="x86_64"
       editors={editors}
       selectedEditorId={selectedId}
       onSelect={mockOnSelect}

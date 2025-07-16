@@ -10,6 +10,7 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
+import { Architecture } from '@eclipse-che/common';
 import { Gallery } from '@patternfly/react-core';
 import React from 'react';
 
@@ -19,6 +20,7 @@ import { che } from '@/services/models';
 export type Props = {
   defaultEditorId: string;
   editors: che.Plugin[];
+  currentArchitecture: Architecture;
   selectedEditorId: string | undefined;
   editorsVisibilityConfig: { showDeprecated: boolean; hideById: string[] } | undefined;
   onSelect: (editorId: string) => void;
@@ -49,10 +51,16 @@ export class EditorGallery extends React.PureComponent<Props, State> {
   }
 
   private init(): void {
-    const { editorsVisibilityConfig, defaultEditorId, editors, selectedEditorId, onSelect } =
-      this.props;
+    const {
+      editorsVisibilityConfig,
+      defaultEditorId,
+      editors,
+      currentArchitecture,
+      selectedEditorId,
+      onSelect,
+    } = this.props;
     // filter and sort editors
-    const filteredEditors = filterEditors(editors, editorsVisibilityConfig);
+    const filteredEditors = filterEditors(editors, currentArchitecture, editorsVisibilityConfig);
     const sortedEditors = sortEditors(filteredEditors);
 
     const sortedEditorsByName = new Map<string, che.Plugin[]>();
@@ -76,13 +84,14 @@ export class EditorGallery extends React.PureComponent<Props, State> {
       }
     });
 
-    let selectedId: string;
+    let selectedId: string = '';
     if (selectedEditor !== undefined) {
       selectedId = selectedEditor.id;
     } else {
       if (defaultEditor !== undefined) {
         selectedId = defaultEditor.id;
-      } else {
+      } else if (sortedEditors.length > 0) {
+        // if no default editor is set, select the first editor from the sorted list
         selectedId = sortedEditors[0].id;
       }
       onSelect(selectedId);
@@ -142,9 +151,14 @@ const DEPRECATED_TAG = 'Deprecated';
 
 export function filterEditors(
   editors: che.Plugin[],
+  currentArchitecture: Architecture,
   editorsVisibilityConfig: { showDeprecated: boolean; hideById: string[] } | undefined,
 ) {
   return editors.filter(editor => {
+    if (!editor.arch || editor.arch.indexOf(currentArchitecture) === -1) {
+      return false; // Skip if editor does not support the current architecture
+    }
+
     if (!editorsVisibilityConfig?.showDeprecated && editor.tags?.includes(DEPRECATED_TAG)) {
       return false;
     }
@@ -159,6 +173,9 @@ export function filterEditors(
 }
 
 export function sortEditors(editors: che.Plugin[]) {
+  if (editors.length === 0) {
+    return editors; // No editors to sort
+  }
   const sorted = editors
     .sort((a, b) => {
       if (a.name === b.name) {

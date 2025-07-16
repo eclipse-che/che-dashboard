@@ -30,6 +30,7 @@ import { EditorDefinition } from '@/components/EditorSelector/Definition';
 import { DocsLink } from '@/components/EditorSelector/DocsLink';
 import { EditorGallery } from '@/components/EditorSelector/Gallery';
 import { RootState } from '@/store';
+import { selectCurrentArchitecture } from '@/store/ClusterConfig/selectors';
 import { selectEditors } from '@/store/Plugins/chePlugins/selectors';
 import { selectEditorsVisibility } from '@/store/ServerConfig';
 
@@ -103,7 +104,7 @@ class EditorSelector extends React.PureComponent<Props, State> {
   }
 
   render(): React.ReactElement {
-    const { editorsVisibilityConfig, defaultEditorId, editors } = this.props;
+    const { editorsVisibilityConfig, defaultEditorId, editors, currentArchitecture } = this.props;
     const { definitionEditorValue, definitionImageValue, selectorEditorValue, expandedId } =
       this.state;
 
@@ -166,6 +167,7 @@ class EditorSelector extends React.PureComponent<Props, State> {
                           editorsVisibilityConfig={editorsVisibilityConfig}
                           defaultEditorId={defaultEditorId}
                           editors={editors}
+                          currentArchitecture={currentArchitecture}
                           selectedEditorId={selectorEditorValue}
                           onSelect={editorId => this.handleSelectorValueChange(editorId)}
                         />
@@ -216,6 +218,7 @@ class EditorSelector extends React.PureComponent<Props, State> {
 const mapStateToProps = (state: RootState) => ({
   editors: selectEditors(state),
   editorsVisibilityConfig: selectEditorsVisibility(state),
+  currentArchitecture: selectCurrentArchitecture(state),
 });
 
 const connector = connect(mapStateToProps, null, null, {
