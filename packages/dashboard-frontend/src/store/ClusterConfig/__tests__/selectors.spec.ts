@@ -13,6 +13,7 @@
 import { RootState } from '@/store';
 import {
   selectClusterConfigError,
+  selectCurrentArchitecture,
   selectDashboardFavicon,
   selectDashboardWarning,
   selectRunningWorkspacesLimit,
@@ -29,6 +30,7 @@ describe('ClusterConfig Selectors', () => {
           base64data: 'base64data',
           mediatype: 'image/png',
         },
+        currentArchitecture: 'x86_64',
       },
       isLoading: false,
       error: 'Something unexpected',
@@ -87,5 +89,25 @@ describe('ClusterConfig Selectors', () => {
       base64data: 'base64data',
       mediatype: 'image/png',
     });
+  });
+
+  it('should return cluster architecture', () => {
+    const result = selectCurrentArchitecture({
+      clusterConfig: {
+        clusterConfig: {
+          currentArchitecture: 'x86_64',
+        },
+      },
+    } as RootState);
+    expect(result).toEqual('x86_64');
+  });
+
+  it('should return "undefined" if current architecture is not set', () => {
+    const result = selectCurrentArchitecture({
+      clusterConfig: {
+        clusterConfig: {},
+      },
+    } as RootState);
+    expect(result).toBeUndefined();
   });
 });

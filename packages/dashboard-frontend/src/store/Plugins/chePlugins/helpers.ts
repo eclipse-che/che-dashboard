@@ -41,6 +41,7 @@ export function convertToEditorPlugin(editor: devfileApi.Devfile): che.Plugin {
     },
     icon: editor.metadata.attributes.iconData,
     iconMediatype: editor.metadata.attributes.iconMediatype,
+    arch: editor.metadata.attributes.arch,
   };
 
   if (editor.metadata.attributes?.provider) {

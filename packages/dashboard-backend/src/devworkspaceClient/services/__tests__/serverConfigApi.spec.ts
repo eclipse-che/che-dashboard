@@ -23,6 +23,12 @@ import {
 
 jest.mock('@/helpers/getUserName.ts');
 
+const mockRun = jest.fn();
+jest.mock('@/devworkspaceClient/services/helpers/exec', () => ({
+  run: (command: string, args: string[]) => mockRun(command, args),
+  runWithOutput: jest.fn(),
+}));
+
 describe('Server Config API Service', () => {
   const env = process.env;
   let serverConfigService: ServerConfigApiService;
@@ -206,6 +212,61 @@ describe('Server Config API Service', () => {
         'che-incubator/che-idea-server/latest',
         'che-incubator/che-idea-server/next',
       ]);
+    });
+
+    describe('Get Current Architecture', () => {
+      beforeEach(() => {
+        // setting the initial value of cached architecture to undefined
+        (ServerConfigApiService as any).currentArchitecture = undefined;
+      });
+      afterEach(() => {
+        // Reset the mock after each test
+        mockRun.mockReset();
+      });
+
+      test('getting value and check that the architecture was cached', async () => {
+        // Mocking the run function to simulate the command execution
+        mockRun.mockResolvedValue('ppc64le');
+
+        let res = await serverConfigService.getCurrentArchitecture();
+        // Verifying that the run function was called with the correct command and arguments
+        expect(mockRun).toHaveBeenCalledWith('uname', ['-m']);
+        // Checking the result of the getCurrentArchitecture method
+        expect(res).toEqual('ppc64le');
+        // Clearing the mock to ensure it doesn't affect subsequent tests
+        mockRun.mockClear();
+
+        res = await serverConfigService.getCurrentArchitecture();
+        // Verifying that the run function was not called again
+        expect(mockRun).not.toHaveBeenCalled();
+        // Checking the cached value
+        expect(res).toEqual('ppc64le');
+      });
+
+      test('getting value and change "amd64" to "x86_64"', async () => {
+        // Mocking the run function to simulate the command execution
+        mockRun.mockResolvedValue('amd64');
+
+        const res = await serverConfigService.getCurrentArchitecture();
+        // Verifying that the run function was called with the correct command and arguments
+        expect(mockRun).toHaveBeenCalledWith('uname', ['-m']);
+        // Checking the result of the getCurrentArchitecture method
+        expect(res).toEqual('x86_64');
+      });
+
+      test('error on execution command "uname -m"', async () => {
+        // Mocking the run function to simulate the command execution error
+        mockRun.mockRejectedValueOnce(new Error('Command failed'));
+        try {
+          await serverConfigService.getCurrentArchitecture();
+          // If the error is not thrown, the test should fail
+          fail('should throw an error');
+        } catch (e) {
+          expect((e as Error).message).toBe(
+            'Failed to determine the current architecture using the `uname -m` command.: Command failed',
+          );
+        }
+      });
     });
   });
 

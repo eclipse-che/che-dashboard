@@ -10,6 +10,8 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
+export type Architecture = 'x86_64' | 'arm64' | 's390x' | 'ppc64le';
+
 export interface ClusterConfig {
   dashboardWarning?: string;
   dashboardFavicon?: {
@@ -18,4 +20,5 @@ export interface ClusterConfig {
   };
   allWorkspacesLimit: number;
   runningWorkspacesLimit: number;
+  currentArchitecture?: Architecture;
 }

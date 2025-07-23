@@ -10,6 +10,7 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
+import { Architecture } from '@eclipse-che/common';
 import { createSelector } from '@reduxjs/toolkit';
 
 import { RootState } from '@/store';
@@ -35,4 +36,9 @@ export const selectClusterConfigError = createSelector(selectState, state => sta
 export const selectDashboardFavicon = createSelector(
   selectState,
   state => state.clusterConfig.dashboardFavicon,
+);
+
+export const selectCurrentArchitecture = createSelector(
+  selectState,
+  state => state.clusterConfig.currentArchitecture as Architecture,
 );
