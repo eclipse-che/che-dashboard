@@ -12,6 +12,8 @@
 
 import React from 'react';
 
+import { isActionGroup } from '@/services/helpers/types';
+
 import { Props } from '..';
 
 export class LoaderAlert extends React.PureComponent<Props> {
@@ -23,6 +25,17 @@ export class LoaderAlert extends React.PureComponent<Props> {
 
     const items = alertItems.map(item => {
       const actionLinks = item.actionCallbacks?.map(entry => {
+        if (isActionGroup(entry)) {
+          return (
+            <div key={entry.title} data-testid={`action-group-${entry.title}`}>
+              {entry.actionCallbacks.map(action => (
+                <button key={action.title} onClick={() => action.callback()}>
+                  {action.title}
+                </button>
+              ))}
+            </div>
+          );
+        }
         return (
           <button key={entry.title} onClick={() => entry.callback()}>
             {entry.title}

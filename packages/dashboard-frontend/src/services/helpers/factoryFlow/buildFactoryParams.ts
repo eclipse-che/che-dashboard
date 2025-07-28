@@ -25,6 +25,7 @@ export const MEMORY_LIMIT_ATTR = 'memoryLimit';
 export const EDITOR_IMAGE_ATTR = 'editor-image';
 export const USE_DEFAULT_DEVFILE = 'useDefaultDevfile';
 export const DEBUG_WORKSPACE_START = 'debugWorkspaceStart';
+export const EXISTING_WORKSPACE_NAME = 'existing';
 export const PROPAGATE_FACTORY_ATTRS = [
   'workspaceDeploymentAnnotations',
   'workspaceDeploymentLabels',
@@ -38,6 +39,7 @@ export const PROPAGATE_FACTORY_ATTRS = [
   CPU_LIMIT_ATTR,
   MEMORY_LIMIT_ATTR,
   EDITOR_IMAGE_ATTR,
+  EXISTING_WORKSPACE_NAME,
 ];
 export const OVERRIDE_ATTR_PREFIX = 'override.';
 export const DEFAULT_POLICIES_CREATE = 'peruser';
@@ -59,6 +61,7 @@ export type FactoryParams = {
   memoryLimit: string | undefined;
   useDefaultDevfile: boolean;
   debugWorkspaceStart: boolean;
+  existing: string | undefined;
 };
 
 export type PoliciesCreate = 'perclick' | 'peruser';
@@ -83,6 +86,7 @@ export function buildFactoryParams(searchParams: URLSearchParams): FactoryParams
     memoryLimit: getMemoryLimit(searchParams),
     useDefaultDevfile: isSafeWorkspaceStart(searchParams) !== undefined,
     debugWorkspaceStart: isDebugWorkspaceStart(searchParams) !== undefined,
+    existing: getExistingWorkspaceName(searchParams),
   };
 }
 
@@ -191,4 +195,8 @@ function isDebugWorkspaceStart(searchParams: URLSearchParams): string | undefine
   return searchParams.get(DEBUG_WORKSPACE_START) === null
     ? undefined
     : (searchParams.get(DEBUG_WORKSPACE_START) as string);
+}
+
+function getExistingWorkspaceName(searchParams: URLSearchParams): string | undefined {
+  return searchParams.get(EXISTING_WORKSPACE_NAME) || undefined;
 }

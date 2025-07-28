@@ -24,7 +24,11 @@ import { connect, ConnectedProps } from 'react-redux';
 
 import SamplesListGallery from '@/pages/GetStarted/SamplesList/Gallery';
 import SamplesListToolbar from '@/pages/GetStarted/SamplesList/Toolbar';
-import { EDITOR_ATTR, EDITOR_IMAGE_ATTR } from '@/services/helpers/factoryFlow/buildFactoryParams';
+import {
+  EDITOR_ATTR,
+  EDITOR_IMAGE_ATTR,
+  POLICIES_CREATE_ATTR,
+} from '@/services/helpers/factoryFlow/buildFactoryParams';
 import { che } from '@/services/models';
 import { RootState } from '@/store';
 import {
@@ -42,6 +46,7 @@ export type Props = {
 
 type State = {
   isTemporary: boolean;
+  isCreateNewIfExist: boolean;
 };
 
 class SamplesList extends React.PureComponent<Props, State> {
@@ -50,6 +55,7 @@ class SamplesList extends React.PureComponent<Props, State> {
 
     this.state = {
       isTemporary: this.props.preferredStorageType === 'ephemeral',
+      isCreateNewIfExist: false,
     };
   }
 
@@ -66,6 +72,16 @@ class SamplesList extends React.PureComponent<Props, State> {
     }
 
     return preferredStorageType === 'ephemeral' ? 'per-workspace' : preferredStorageType;
+  }
+
+  private handleCreateNewIfExistChange(isCreateNewIfExist: boolean): void {
+    this.setState({ isCreateNewIfExist });
+  }
+
+  private getPoliciesCreate(): string {
+    const { isCreateNewIfExist } = this.state;
+
+    return isCreateNewIfExist ? 'perclick' : 'peruser';
   }
 
   private async handleSampleCardClick(metadata: DevfileRegistryMetadata): Promise<void> {
@@ -88,6 +104,12 @@ class SamplesList extends React.PureComponent<Props, State> {
 
     if (editorImage !== undefined) {
       factoryUrlParams.append(EDITOR_IMAGE_ATTR, editorImage);
+    }
+
+    const policiesCreate = this.getPoliciesCreate();
+    // This is to avoid sending the default value in the URL('peruser' is the default value)
+    if (policiesCreate !== 'peruser') {
+      factoryUrlParams.set(POLICIES_CREATE_ATTR, policiesCreate);
     }
 
     const storageType = this.getStorageType();
@@ -117,6 +139,9 @@ class SamplesList extends React.PureComponent<Props, State> {
               isTemporary={this.state.isTemporary}
               onTemporaryStorageChange={isTemporary =>
                 this.handleTemporaryStorageChange(isTemporary)
+              }
+              onCreateNewIfExistChange={isCreateNewIfExist =>
+                this.handleCreateNewIfExistChange(isCreateNewIfExist)
               }
             />
           </PanelMainBody>

@@ -40,16 +40,26 @@ class TemporaryStorageSwitch extends React.PureComponent<Props, State> {
     this.props.onChange(isChecked);
   }
 
+  private getLabelNode(text: string): React.ReactNode {
+    return <div style={{ minWidth: '170px' }}>{text}</div>;
+  }
+
   render(): React.ReactElement {
-    const storageTypesDocLink = this.props.branding.docs.storageTypes;
-    const isChecked = this.state.isChecked;
+    const { branding } = this.props;
+    const { isChecked } = this.state;
+
+    // Using getLabelNode to ensure consistent styling
+    const labelOn = this.getLabelNode('Temporary Storage On');
+    const labelOff = this.getLabelNode('Temporary Storage Off');
+
+    const storageTypesDocLink = branding.docs.storageTypes;
 
     return (
       <React.Fragment>
         <Switch
           id="temporary-storage-switch"
-          label="Temporary Storage On"
-          labelOff="Temporary Storage Off"
+          label={labelOn}
+          labelOff={labelOff}
           isChecked={isChecked}
           onChange={isChecked => this.handleChange(isChecked)}
           aria-describedby="temporary-storage-tooltip"

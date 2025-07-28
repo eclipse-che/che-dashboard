@@ -11,6 +11,7 @@
  */
 
 import { waitFor } from '@testing-library/react';
+import { dump } from 'js-yaml';
 import React from 'react';
 import { Provider } from 'react-redux';
 import { Location } from 'react-router-dom';
@@ -23,12 +24,14 @@ import devfileApi from '@/services/devfileApi';
 import { getDefer } from '@/services/helpers/deferred';
 import {
   DEV_WORKSPACE_ATTR,
+  EXISTING_WORKSPACE_NAME,
   FACTORY_URL_ATTR,
   POLICIES_CREATE_ATTR,
 } from '@/services/helpers/factoryFlow/buildFactoryParams';
 import { buildFactoryLocation } from '@/services/helpers/location';
-import { AlertItem } from '@/services/helpers/types';
+import { AlertItem, isActionCallback } from '@/services/helpers/types';
 import { TabManager } from '@/services/tabManager';
+import { DEVWORKSPACE_DEVFILE_SOURCE } from '@/services/workspace-client/devworkspace/devWorkspaceClient';
 import { DevWorkspaceBuilder } from '@/store/__mocks__/devWorkspaceBuilder';
 import { MockStoreBuilder } from '@/store/__mocks__/mockStore';
 import { DevWorkspaceResources } from '@/store/DevfileRegistries';
@@ -49,6 +52,9 @@ const mockOnHideError = jest.fn();
 
 const resourcesUrl = 'https://resources-url';
 const factoryUrl = 'https://factory-url';
+
+// mute console.error
+console.error = jest.fn();
 
 describe('Creating steps, checking existing workspaces', () => {
   beforeEach(() => {
@@ -115,8 +121,32 @@ describe('Creating steps, checking existing workspaces', () => {
         store = new MockStoreBuilder()
           .withDevWorkspaces({
             workspaces: [
-              new DevWorkspaceBuilder().withName('project-1').withNamespace('user-che').build(),
-              new DevWorkspaceBuilder().withName('project-2').withNamespace('user-che').build(),
+              new DevWorkspaceBuilder()
+                .withMetadata({
+                  name: 'project-1',
+                  namespace: 'user-che',
+                  annotations: {
+                    [DEVWORKSPACE_DEVFILE_SOURCE]: dump({
+                      factory: {
+                        params: 'url=https://github.com/eclipse-che/che-dashboard',
+                      },
+                    }),
+                  },
+                })
+                .build(),
+              new DevWorkspaceBuilder()
+                .withMetadata({
+                  name: 'project-2',
+                  namespace: 'user-che',
+                  annotations: {
+                    [DEVWORKSPACE_DEVFILE_SOURCE]: dump({
+                      factory: {
+                        params: 'url=https://github.com/eclipse-che/che-dashboard',
+                      },
+                    }),
+                  },
+                })
+                .build(),
             ],
           })
           .withDevfileRegistries({
@@ -126,7 +156,78 @@ describe('Creating steps, checking existing workspaces', () => {
               },
             },
           })
+          .withFactoryResolver({
+            resolver: {
+              location: 'https://github.com/eclipse-che/che-dashboard',
+              devfile: {
+                schemaVersion: '2.1.0',
+                metadata: {
+                  name: workspaceName,
+                },
+              } as devfileApi.Devfile,
+            },
+          })
           .build();
+      });
+
+      it('should open the warning message with the existing workspaces created from the same repo list', async () => {
+        searchParams.delete(DEV_WORKSPACE_ATTR);
+        searchParams.set(FACTORY_URL_ATTR, 'https://github.com/eclipse-che/che-dashboard');
+
+        renderComponent(store, searchParams);
+
+        await waitFor(() =>
+          expect(mockOnError).toHaveBeenCalledWith(
+            expect.objectContaining({
+              actionCallbacks: expect.arrayContaining([
+                {
+                  isGroup: true,
+                  title: 'Open the existing workspace',
+                  actionCallbacks: [
+                    {
+                      title: 'project-1',
+                      callback: expect.any(Function),
+                    },
+                    {
+                      title: 'project-2',
+                      callback: expect.any(Function),
+                    },
+                  ],
+                },
+              ]),
+            }),
+          ),
+        );
+
+        expect(mockTabManagerReplace).not.toHaveBeenCalled();
+      });
+
+      it('should open the existing workspace created from the same repo with the name project-1', async () => {
+        searchParams.delete(DEV_WORKSPACE_ATTR);
+        searchParams.set(EXISTING_WORKSPACE_NAME, 'project-1');
+        searchParams.set(FACTORY_URL_ATTR, 'https://github.com/eclipse-che/che-dashboard');
+
+        renderComponent(store, searchParams);
+
+        await waitFor(() =>
+          expect(mockTabManagerReplace).toHaveBeenCalledWith(
+            expect.stringContaining(`/ide/user-che/project-1`),
+          ),
+        );
+      });
+
+      it('should open the existing workspace created from the same repo with the name project-2', async () => {
+        searchParams.delete(DEV_WORKSPACE_ATTR);
+        searchParams.set(EXISTING_WORKSPACE_NAME, 'project-2');
+        searchParams.set(FACTORY_URL_ATTR, 'https://github.com/eclipse-che/che-dashboard');
+
+        renderComponent(store, searchParams);
+
+        await waitFor(() =>
+          expect(mockTabManagerReplace).toHaveBeenCalledWith(
+            expect.stringContaining(`/ide/user-che/project-2`),
+          ),
+        );
       });
 
       it('should proceed to the next step', async () => {
@@ -207,7 +308,7 @@ describe('Creating steps, checking existing workspaces', () => {
           );
           expect(openExistingWorkspaceAction).toBeDefined();
 
-          if (openExistingWorkspaceAction) {
+          if (openExistingWorkspaceAction && isActionCallback(openExistingWorkspaceAction)) {
             deferred.promise.then(openExistingWorkspaceAction.callback);
           } else {
             throw new Error('Action not found');
@@ -251,7 +352,7 @@ describe('Creating steps, checking existing workspaces', () => {
           );
           expect(createWorkspaceAction).toBeDefined();
 
-          if (createWorkspaceAction) {
+          if (createWorkspaceAction && isActionCallback(createWorkspaceAction)) {
             deferred.promise.then(createWorkspaceAction.callback);
           } else {
             throw new Error('Action not found');

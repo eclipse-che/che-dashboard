@@ -24,6 +24,9 @@ const { renderComponent, createSnapshot } = getComponentRenderer(getComponent);
 
 const mockOnChange = jest.fn();
 
+// mute console.error
+console.error = jest.fn();
+
 describe('Temporary Storage Switch', () => {
   let store: Store;
 

@@ -22,7 +22,7 @@ import { MIN_STEP_DURATION_MS } from '@/components/WorkspaceProgress/const';
 import { WorkspaceRouteParams } from '@/Routes';
 import getComponentRenderer from '@/services/__mocks__/getComponentRenderer';
 import { getDefer } from '@/services/helpers/deferred';
-import { AlertItem } from '@/services/helpers/types';
+import { AlertItem, isActionCallback } from '@/services/helpers/types';
 import { AppThunk } from '@/store';
 import { DevWorkspaceBuilder } from '@/store/__mocks__/devWorkspaceBuilder';
 import { MockStoreBuilder } from '@/store/__mocks__/mockStore';
@@ -166,7 +166,7 @@ describe('Starting steps, starting a workspace', () => {
         );
         expect(action).toBeDefined();
 
-        if (action) {
+        if (action && isActionCallback(action)) {
           deferred.promise.then(action.callback);
         } else {
           throw new Error('Action not found');
@@ -661,7 +661,7 @@ describe('Starting steps, starting a workspace', () => {
         );
         expect(action).toBeDefined();
 
-        if (action) {
+        if (action && isActionCallback(action)) {
           deferred.promise.then(action.callback);
         } else {
           throw new Error('Action not found');

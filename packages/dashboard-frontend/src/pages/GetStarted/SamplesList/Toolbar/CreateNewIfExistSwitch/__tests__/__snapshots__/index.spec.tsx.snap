@@ -1,0 +1,55 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Create New If Exist Switch snapshot 1`] = `
+<label
+  className="pf-c-switch"
+  data-ouia-component-id="OUIA-Generated-Switch-1"
+  data-ouia-component-type="PF4/Switch"
+  data-ouia-safe={true}
+  htmlFor="create-new-if-exist-switch"
+>
+  <input
+    aria-label=""
+    aria-labelledby="create-new-if-exist-switch-off"
+    checked={false}
+    className="pf-c-switch__input"
+    disabled={false}
+    id="create-new-if-exist-switch"
+    onChange={[Function]}
+    type="checkbox"
+  />
+  <span
+    className="pf-c-switch__toggle"
+  />
+  <span
+    aria-hidden="true"
+    className="pf-c-switch__label pf-m-on"
+    id="create-new-if-exist-switch-on"
+  >
+    <div
+      style={
+        {
+          "minWidth": "200px",
+        }
+      }
+    >
+      Create New If Existing On
+    </div>
+  </span>
+  <span
+    aria-hidden="true"
+    className="pf-c-switch__label pf-m-off"
+    id="create-new-if-exist-switch-off"
+  >
+    <div
+      style={
+        {
+          "minWidth": "200px",
+        }
+      }
+    >
+      Create New If Existing Off
+    </div>
+  </span>
+</label>
+`;

@@ -28,14 +28,30 @@ exports[`Temporary Storage Switch snapshot 1`] = `
       className="pf-c-switch__label pf-m-on"
       id="temporary-storage-switch-on"
     >
-      Temporary Storage On
+      <div
+        style={
+          {
+            "minWidth": "170px",
+          }
+        }
+      >
+        Temporary Storage On
+      </div>
     </span>
     <span
       aria-hidden="true"
       className="pf-c-switch__label pf-m-off"
       id="temporary-storage-switch-off"
     >
-      Temporary Storage Off
+      <div
+        style={
+          {
+            "minWidth": "170px",
+          }
+        }
+      >
+        Temporary Storage Off
+      </div>
     </span>
   </label>,
   <span
