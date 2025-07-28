@@ -10,7 +10,8 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import { Switch } from '@patternfly/react-core';
+import { Switch, Tooltip } from '@patternfly/react-core';
+import { OutlinedQuestionCircleIcon } from '@patternfly/react-icons';
 import React from 'react';
 
 export type Props = {
@@ -25,7 +26,7 @@ export class CreateNewIfExistSwitch extends React.PureComponent<Props, State> {
     super(props);
 
     this.state = {
-      isChecked: false, // Default state is unchecked
+      isChecked: true, // Default state is checked (create new workspace)
     };
   }
 
@@ -34,21 +35,20 @@ export class CreateNewIfExistSwitch extends React.PureComponent<Props, State> {
     this.props.onChange(isChecked);
   }
 
-  private getLabelNode(text: string): React.ReactNode {
-    return <div style={{ minWidth: '200px' }}>{text}</div>;
-  }
-
   render(): React.ReactElement {
     const { isChecked } = this.state;
-    // Using getLabelNode to ensure consistent styling
-    const labelOn = this.getLabelNode('Create New If Existing On');
-    const labelOff = this.getLabelNode('Create New If Existing Off');
 
     return (
       <Switch
         id="create-new-if-exist-switch"
-        label={labelOn}
-        labelOff={labelOff}
+        label={
+          <div style={{ minWidth: '125px' }}>
+            Create New
+            <Tooltip content="Create a new workspace each time when ON; reuse an existing one when OFF.">
+              <OutlinedQuestionCircleIcon style={{ margin: '0 10px' }} />
+            </Tooltip>
+          </div>
+        }
         isChecked={isChecked}
         onChange={isChecked => this.handleChange(isChecked)}
       />

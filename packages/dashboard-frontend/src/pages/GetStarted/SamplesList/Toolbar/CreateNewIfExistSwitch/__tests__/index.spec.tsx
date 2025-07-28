@@ -33,13 +33,13 @@ describe('Create New If Exist Switch', () => {
     expect(snapshot.toJSON()).toMatchSnapshot();
   });
 
-  it('should be initially switched off', () => {
+  it('should be initially switched on', () => {
     renderComponent();
     const switchInput = screen.getByRole('checkbox') as HTMLInputElement;
-    expect(switchInput.checked).toBeFalsy();
+    expect(switchInput.checked).toBeTruthy();
 
     switchInput.click();
-    expect(switchInput.checked).toBeTruthy();
+    expect(switchInput.checked).toBeFalsy();
     expect(mockOnChange).toHaveBeenCalledTimes(1);
   });
 });
