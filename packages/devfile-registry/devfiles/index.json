@@ -7,7 +7,7 @@
     ],
     "icon": "/images/empty.svg",
     "links": {
-      "v2": "/devfiles/empty.yaml"
+      "v2": "/devfiles/empty.yaml?new"
     }
   }
 ]
