@@ -10,9 +10,11 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import { Switch, Tooltip } from '@patternfly/react-core';
+import { Switch } from '@patternfly/react-core';
 import { OutlinedQuestionCircleIcon } from '@patternfly/react-icons';
 import React from 'react';
+
+import { CheTooltip } from '@/components/CheTooltip';
 
 export type Props = {
   onChange: (isCreateNewIfExist: boolean) => void;
@@ -42,11 +44,11 @@ export class CreateNewIfExistSwitch extends React.PureComponent<Props, State> {
       <Switch
         id="create-new-if-exist-switch"
         label={
-          <div style={{ minWidth: '125px' }}>
+          <div style={{ width: '125px' }}>
             Create New
-            <Tooltip content="Create a new workspace each time when ON; reuse an existing one when OFF.">
+            <CheTooltip content="Create a new workspace each time when ON; reuse an existing one when OFF.">
               <OutlinedQuestionCircleIcon style={{ margin: '0 10px' }} />
-            </Tooltip>
+            </CheTooltip>
           </div>
         }
         isChecked={isChecked}
