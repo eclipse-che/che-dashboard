@@ -44,10 +44,10 @@ export class CreateNewIfExistSwitch extends React.PureComponent<Props, State> {
       <Switch
         id="create-new-if-exist-switch"
         label={
-          <div style={{ width: '125px' }}>
+          <div style={{ minWidth: '125px' }}>
             Create New
             <CheTooltip content="Create a new workspace each time when ON; reuse an existing one when OFF.">
-              <OutlinedQuestionCircleIcon style={{ margin: '0 10px' }} />
+              <OutlinedQuestionCircleIcon style={{ margin: '0 5px' }} />
             </CheTooltip>
           </div>
         }

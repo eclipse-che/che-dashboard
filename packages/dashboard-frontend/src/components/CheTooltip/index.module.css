@@ -13,3 +13,12 @@
 .tooltip .pf-c-tooltip__content {
   border-radius: 3px;
 }
+
+.tooltip .pf-c-tooltip__content a,
+.tooltip .pf-c-tooltip__content a:visited {
+  color: #73BCF7FF;
+}
+
+.tooltip .pf-c-tooltip__content a:hover {
+  color: #1FA7F8FF;
+}
