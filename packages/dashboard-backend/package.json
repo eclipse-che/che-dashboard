@@ -1,6 +1,6 @@
 {
   "name": "@eclipse-che/dashboard-backend",
-  "version": "7.107.0",
+  "version": "7.107.1-next",
   "description": "Dashboard backend for Eclipse Che",
   "scripts": {
     "build": "webpack --color --config webpack.config.prod.js",
