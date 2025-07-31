@@ -16,6 +16,7 @@ import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 
 import { CheTooltip } from '@/components/CheTooltip';
+import { Navigation } from '@/Layout/Navigation';
 import { RootState } from '@/store';
 import { selectBranding } from '@/store/Branding/selectors';
 
@@ -31,12 +32,19 @@ class TemporaryStorageSwitch extends React.PureComponent<Props, State> {
   constructor(props: Props) {
     super(props);
 
+    const isChecked = Navigation.pageState?.['temporary-storage-switch']?.['isChecked'];
+
     this.state = {
-      isChecked: this.props.isTemporary,
+      isChecked: isChecked !== undefined ? isChecked === 'true' : this.props.isTemporary,
     };
   }
 
+  componentDidMount() {
+    this.handleChange(this.state.isChecked);
+  }
+
   private handleChange(isChecked: boolean): void {
+    Navigation.pageState['temporary-storage-switch'] = { isChecked: String(isChecked) };
     this.setState({ isChecked });
     this.props.onChange(isChecked);
   }

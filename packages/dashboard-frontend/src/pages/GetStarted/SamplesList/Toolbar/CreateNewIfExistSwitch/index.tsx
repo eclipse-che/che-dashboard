@@ -15,6 +15,7 @@ import { OutlinedQuestionCircleIcon } from '@patternfly/react-icons';
 import React from 'react';
 
 import { CheTooltip } from '@/components/CheTooltip';
+import { Navigation } from '@/Layout/Navigation';
 
 export type Props = {
   onChange: (isCreateNewIfExist: boolean) => void;
@@ -28,11 +29,16 @@ export class CreateNewIfExistSwitch extends React.PureComponent<Props, State> {
     super(props);
 
     this.state = {
-      isChecked: true, // Default state is checked (create new workspace)
+      isChecked: Navigation.pageState?.['create-new-if-exist-switch']?.['isChecked'] !== 'false',
     };
   }
 
+  componentDidMount() {
+    this.handleChange(this.state.isChecked);
+  }
+
   private handleChange(isChecked: boolean): void {
+    Navigation.pageState['create-new-if-exist-switch'] = { isChecked: String(isChecked) };
     this.setState({ isChecked });
     this.props.onChange(isChecked);
   }

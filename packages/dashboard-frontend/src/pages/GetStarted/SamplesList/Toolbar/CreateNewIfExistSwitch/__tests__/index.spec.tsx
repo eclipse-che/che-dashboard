@@ -13,6 +13,7 @@
 import { screen } from '@testing-library/react';
 import React from 'react';
 
+import { Navigation } from '@/Layout/Navigation';
 import { CreateNewIfExistSwitch } from '@/pages/GetStarted/SamplesList/Toolbar/CreateNewIfExistSwitch';
 import getComponentRenderer from '@/services/__mocks__/getComponentRenderer';
 
@@ -24,6 +25,10 @@ const mockOnChange = jest.fn();
 console.error = jest.fn();
 
 describe('Create New If Exist Switch', () => {
+  beforeEach(() => {
+    Navigation.pageState = {};
+  });
+
   afterEach(() => {
     jest.clearAllMocks();
   });
@@ -37,10 +42,18 @@ describe('Create New If Exist Switch', () => {
     renderComponent();
     const switchInput = screen.getByRole('checkbox') as HTMLInputElement;
     expect(switchInput.checked).toBeTruthy();
+    expect(mockOnChange).toHaveBeenCalledTimes(1);
+    expect(Navigation.pageState['create-new-if-exist-switch']).toEqual({
+      isChecked: 'true',
+    });
+    mockOnChange.mockReset();
 
     switchInput.click();
     expect(switchInput.checked).toBeFalsy();
     expect(mockOnChange).toHaveBeenCalledTimes(1);
+    expect(Navigation.pageState['create-new-if-exist-switch']).toEqual({
+      isChecked: 'false',
+    });
   });
 });
 

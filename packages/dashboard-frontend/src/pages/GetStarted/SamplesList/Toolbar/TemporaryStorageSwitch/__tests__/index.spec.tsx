@@ -15,6 +15,7 @@ import React from 'react';
 import { Provider } from 'react-redux';
 import { Store } from 'redux';
 
+import { Navigation } from '@/Layout/Navigation';
 import TemporaryStorageSwitch from '@/pages/GetStarted/SamplesList/Toolbar/TemporaryStorageSwitch';
 import getComponentRenderer from '@/services/__mocks__/getComponentRenderer';
 import { BrandingData } from '@/services/bootstrap/branding.constant';
@@ -38,6 +39,7 @@ describe('Temporary Storage Switch', () => {
         },
       } as BrandingData)
       .build();
+    Navigation.pageState = {};
   });
 
   afterEach(() => {
@@ -54,20 +56,36 @@ describe('Temporary Storage Switch', () => {
 
     const switchInput = screen.getByRole('checkbox') as HTMLInputElement;
     expect(switchInput.checked).toBeTruthy();
+    expect(mockOnChange).toHaveBeenCalledTimes(1);
+    expect(Navigation.pageState['temporary-storage-switch']).toEqual({
+      isChecked: 'true',
+    });
+    mockOnChange.mockReset();
 
     switchInput.click();
     expect(switchInput.checked).toBeFalsy();
     expect(mockOnChange).toHaveBeenCalledTimes(1);
+    expect(Navigation.pageState['temporary-storage-switch']).toEqual({
+      isChecked: 'false',
+    });
   });
 
   it('should be initially switched off', () => {
     renderComponent(store, false);
     const switchInput = screen.getByRole('checkbox') as HTMLInputElement;
     expect(switchInput.checked).toBeFalsy();
+    expect(mockOnChange).toHaveBeenCalledTimes(1);
+    expect(Navigation.pageState['temporary-storage-switch']).toEqual({
+      isChecked: 'false',
+    });
+    mockOnChange.mockReset();
 
     switchInput.click();
     expect(switchInput.checked).toBeTruthy();
     expect(mockOnChange).toHaveBeenCalledTimes(1);
+    expect(Navigation.pageState['temporary-storage-switch']).toEqual({
+      isChecked: 'true',
+    });
   });
 });
 

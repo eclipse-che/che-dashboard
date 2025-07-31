@@ -167,6 +167,14 @@ class CreatingStepCheckExistingWorkspaces extends ProgressStep<Props, State> {
         existingWorkspace = existingWorkspacesFromTheSameRepo.find(
           workspace => workspace.name === factoryParams.existing,
         );
+        if (existingWorkspace === undefined) {
+          this.handleError(
+            new Error(
+              `Several workspaces created from the same repository have been found. Should you want to open one of the existing workspaces or create a new one, please choose the corresponding action.`,
+            ),
+          );
+          return false;
+        }
       } else if (existingWorkspacesFromTheSameRepo.length > 1) {
         // detected existing workspaces created from the same repo conflict
         this.handleError(
@@ -175,10 +183,6 @@ class CreatingStepCheckExistingWorkspaces extends ProgressStep<Props, State> {
           ),
         );
         return false;
-      }
-      if (existingWorkspace === undefined) {
-        // otherwise, use the first one
-        existingWorkspace = existingWorkspacesFromTheSameRepo[0];
       }
       this.openWorkspace(existingWorkspace);
       // stop the step execution
