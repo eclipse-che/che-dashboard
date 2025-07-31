@@ -184,6 +184,10 @@ class CreatingStepCheckExistingWorkspaces extends ProgressStep<Props, State> {
         );
         return false;
       }
+      if (existingWorkspace === undefined) {
+        // otherwise, use the first one
+        existingWorkspace = existingWorkspacesFromTheSameRepo[0];
+      }
       this.openWorkspace(existingWorkspace);
       // stop the step execution
       return false;
