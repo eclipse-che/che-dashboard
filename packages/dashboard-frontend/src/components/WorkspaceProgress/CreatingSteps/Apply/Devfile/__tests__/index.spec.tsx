@@ -548,7 +548,6 @@ describe('Creating steps, applying a devfile', () => {
         .build();
 
       searchParams.append(POLICIES_CREATE_ATTR, 'perclick');
-      factoryId = `${POLICIES_CREATE_ATTR}=perclick&` + factoryId;
 
       renderComponent(store, searchParams);
       await jest.advanceTimersByTimeAsync(MIN_STEP_DURATION_MS);

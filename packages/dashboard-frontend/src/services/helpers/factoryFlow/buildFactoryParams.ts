@@ -43,6 +43,7 @@ export const PROPAGATE_FACTORY_ATTRS = [
 ];
 export const OVERRIDE_ATTR_PREFIX = 'override.';
 export const DEFAULT_POLICIES_CREATE = 'peruser';
+export const FACTORY_ID_IGNORE_ATTRS = [EXISTING_WORKSPACE_NAME, POLICIES_CREATE_ATTR];
 
 export type FactoryParams = {
   factoryId: string;
@@ -113,9 +114,7 @@ function getPoliciesCreate(searchParams: URLSearchParams): PoliciesCreate {
     : (searchParams.get(POLICIES_CREATE_ATTR) as PoliciesCreate);
 }
 
-export function getStorageType(
-  searchParams: URLSearchParams,
-): che.WorkspaceStorageType | undefined {
+function getStorageType(searchParams: URLSearchParams): che.WorkspaceStorageType | undefined {
   const storageType = searchParams.get(STORAGE_TYPE_ATTR) as che.WorkspaceStorageType;
   if (
     storageType === 'per-workspace' ||
@@ -148,6 +147,10 @@ function buildFactoryId(searchParams: URLSearchParams): string {
   searchParams.sort();
   const factoryParams = new window.URLSearchParams();
   searchParams.forEach((val: string, key: string) => {
+    // Skip attributes that are not part of the workspace creation flow
+    if (FACTORY_ID_IGNORE_ATTRS.includes(key)) {
+      return;
+    }
     factoryParams.append(key, val);
   });
 

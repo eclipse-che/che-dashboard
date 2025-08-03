@@ -181,7 +181,7 @@ describe('Creating steps, applying resources', () => {
         })
         .build();
 
-      factoryId = `${DEV_WORKSPACE_ATTR}=${resourcesUrl}&${POLICIES_CREATE_ATTR}=perclick&${FACTORY_URL_ATTR}=${factoryUrl}`;
+      factoryId = `${DEV_WORKSPACE_ATTR}=${resourcesUrl}&${FACTORY_URL_ATTR}=${factoryUrl}`;
       searchParams.append(POLICIES_CREATE_ATTR, 'perclick');
 
       renderComponent(store, searchParams);
