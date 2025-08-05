@@ -25,7 +25,7 @@ describe('sanitize', () => {
     it('sanitizeLocation', () => {
       const location = {
         search:
-          'url=https%3A%2F%2Fgithub.com%2Ftest-samples&storageType=persistent',
+          'url=https%3A%2F%2Fgithub.com%2Ftest-samples&&iss=456789&storageType=persistent',
         pathname: '/f',
       };
 
@@ -44,7 +44,7 @@ describe('sanitize', () => {
   describe('sanitizeSearchParams', () => {
     it('should return sanitized value of location.search if it is without encoding)', () => {
       const search =
-        'url=https://github.com/test-samples&state=9284564475&session=98765&session_state=45645654567&code=9844646765&storageType=persistent&new';
+        'url=https://github.com/test-samples&state=9284564475&iss=456789&session=98765&session_state=45645654567&code=9844646765&storageType=persistent&new';
 
       const searchParams = new URLSearchParams(search);
       const sanitizedSearchParams = sanitizeSearchParams(searchParams);

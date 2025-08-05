@@ -10,7 +10,7 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-const oauthParams = ['state', 'session', 'session_state', 'code'];
+const oauthParams = ['state', 'session', 'session_state', 'code', 'iss'];
 
 /**
  * Remove oauth params.
