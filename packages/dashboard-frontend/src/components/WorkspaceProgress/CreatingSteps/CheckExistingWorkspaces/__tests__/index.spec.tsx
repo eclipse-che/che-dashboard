@@ -21,7 +21,6 @@ import { MIN_STEP_DURATION_MS } from '@/components/WorkspaceProgress/const';
 import { container } from '@/inversify.config';
 import getComponentRenderer from '@/services/__mocks__/getComponentRenderer';
 import devfileApi from '@/services/devfileApi';
-import { getDefer } from '@/services/helpers/deferred';
 import {
   DEV_WORKSPACE_ATTR,
   EXISTING_WORKSPACE_NAME,
@@ -29,7 +28,6 @@ import {
   POLICIES_CREATE_ATTR,
 } from '@/services/helpers/factoryFlow/buildFactoryParams';
 import { buildFactoryLocation } from '@/services/helpers/location';
-import { AlertItem, isActionCallback } from '@/services/helpers/types';
 import { TabManager } from '@/services/tabManager';
 import { DEVWORKSPACE_DEVFILE_SOURCE } from '@/services/workspace-client/devworkspace/devWorkspaceClient';
 import { DevWorkspaceBuilder } from '@/store/__mocks__/devWorkspaceBuilder';
@@ -272,106 +270,17 @@ describe('Creating steps, checking existing workspaces', () => {
           .build();
       });
 
-      test('notification alert', async () => {
+      test('should not show notification alert', async () => {
         renderComponent(store, searchParams);
 
         await jest.advanceTimersByTimeAsync(MIN_STEP_DURATION_MS);
 
-        const expectAlertItem = expect.objectContaining({
-          title: 'Existing workspace found',
-          children: `A workspace with the same name (${workspaceName}) has been found. Should you want to open the existing workspace or proceed to create a new one, please choose the corresponding action.`,
-          actionCallbacks: [
-            expect.objectContaining({
-              title: 'Open the existing workspace',
-              callback: expect.any(Function),
-            }),
-            expect.objectContaining({
-              title: 'Create a new workspace',
-              callback: expect.any(Function),
-            }),
-          ],
-        });
-        await waitFor(() => expect(mockOnError).toHaveBeenCalledWith(expectAlertItem));
-
-        expect(mockOnNextStep).not.toHaveBeenCalled();
-        expect(mockOnRestart).not.toHaveBeenCalled();
-      });
-
-      test('action callback to open the existing workspace', async () => {
-        // this deferred object will help run the callback at the right time
-        const deferred = getDefer();
-
-        const openExistingWorkspaceActionTitle = 'Open the existing workspace';
-        mockOnError.mockImplementationOnce(async (alertItem: AlertItem) => {
-          const openExistingWorkspaceAction = alertItem.actionCallbacks?.find(action =>
-            action.title.startsWith(openExistingWorkspaceActionTitle),
-          );
-          expect(openExistingWorkspaceAction).toBeDefined();
-
-          if (openExistingWorkspaceAction && isActionCallback(openExistingWorkspaceAction)) {
-            deferred.promise.then(openExistingWorkspaceAction.callback);
-          } else {
-            throw new Error('Action not found');
-          }
-        });
-
-        renderComponent(store, searchParams);
-        await jest.runAllTimersAsync();
-
-        await waitFor(() => expect(mockOnError).toHaveBeenCalled());
-        expect(mockOnNextStep).not.toHaveBeenCalled();
-        expect(mockOnRestart).not.toHaveBeenCalled();
-
-        mockOnError.mockClear();
-
-        /* test the action */
-
-        // resolve deferred to trigger the callback
-        deferred.resolve();
-        await jest.runOnlyPendingTimersAsync();
-
-        await waitFor(() =>
-          expect(mockTabManagerReplace).toHaveBeenCalledWith(
-            expect.stringContaining(`/ide/user-che/my-project`),
-          ),
-        );
-
-        expect(mockOnNextStep).not.toHaveBeenCalled();
-        expect(mockOnRestart).not.toHaveBeenCalled();
-        expect(mockOnError).not.toHaveBeenCalled();
+        await waitFor(() => expect(mockOnError).not.toHaveBeenCalled());
       });
 
       test('action callback to create a new workspace', async () => {
-        // this deferred object will help run the callback at the right time
-        const deferred = getDefer();
-
-        const createWorkspaceActionTitle = 'Create a new workspace';
-        mockOnError.mockImplementationOnce(async (alertItem: AlertItem) => {
-          const createWorkspaceAction = alertItem.actionCallbacks?.find(action =>
-            action.title.startsWith(createWorkspaceActionTitle),
-          );
-          expect(createWorkspaceAction).toBeDefined();
-
-          if (createWorkspaceAction && isActionCallback(createWorkspaceAction)) {
-            deferred.promise.then(createWorkspaceAction.callback);
-          } else {
-            throw new Error('Action not found');
-          }
-        });
-
         renderComponent(store, searchParams);
-        await jest.runAllTimersAsync();
 
-        await waitFor(() => expect(mockOnError).toHaveBeenCalled());
-        expect(mockOnNextStep).not.toHaveBeenCalled();
-        expect(mockOnRestart).not.toHaveBeenCalled();
-
-        mockOnError.mockClear();
-
-        /* test the action */
-
-        // resolve deferred to trigger the callback
-        deferred.resolve();
         await jest.runOnlyPendingTimersAsync();
 
         await waitFor(() => expect(mockOnNextStep).toHaveBeenCalled());
@@ -382,57 +291,159 @@ describe('Creating steps, checking existing workspaces', () => {
   });
 
   describe('creating workspace from devfiles', () => {
-    describe('workspace names conflict faced', () => {
-      let store: Store;
-      let searchParams: URLSearchParams;
-      const workspaceName = 'my-project';
+    let store: Store;
+    let searchParams: URLSearchParams;
+    const workspaceName = 'my-project';
+    describe('with one existing workspace created from the same repository', () => {
+      describe('DEVWORKSPACE_DEVFILE_SOURCE conflict faced', () => {
+        beforeEach(() => {
+          searchParams = new URLSearchParams({
+            [FACTORY_URL_ATTR]: factoryUrl,
+            [EXISTING_WORKSPACE_NAME]: 'dummy-workspace-name',
+          });
 
-      beforeEach(() => {
-        searchParams = new URLSearchParams({
-          [FACTORY_URL_ATTR]: factoryUrl,
+          store = new MockStoreBuilder()
+            .withDevWorkspaces({
+              workspaces: [
+                new DevWorkspaceBuilder()
+                  .withMetadata({
+                    name: workspaceName,
+                    namespace: 'user-che',
+                    annotations: {
+                      [DEVWORKSPACE_DEVFILE_SOURCE]: dump({
+                        factory: {
+                          params: `url=${factoryUrl}`,
+                        },
+                      }),
+                    },
+                  })
+                  .build(),
+              ],
+            })
+            .withFactoryResolver({
+              resolver: {
+                location: factoryUrl,
+                devfile: {
+                  schemaVersion: '2.1.0',
+                  metadata: {
+                    name: workspaceName,
+                  },
+                } as devfileApi.Devfile,
+              },
+            })
+            .build();
         });
 
-        store = new MockStoreBuilder()
-          .withDevWorkspaces({
-            workspaces: [
-              new DevWorkspaceBuilder().withName(workspaceName).withNamespace('user-che').build(),
+        test('notification alert with one existing workspace created from the same repository', async () => {
+          renderComponent(store, searchParams);
+          await jest.advanceTimersByTimeAsync(MIN_STEP_DURATION_MS);
+
+          const expectAlertItem = expect.objectContaining({
+            title: 'Existing workspace found',
+            children: `An existing workspace ${workspaceName} created from the same repository has been found. Should you want to open the existing workspace or proceed to create a new one, please choose the corresponding action.`,
+            actionCallbacks: [
+              expect.objectContaining({
+                title: 'Open the existing workspace',
+                callback: expect.any(Function),
+              }),
+              expect.objectContaining({
+                title: 'Create a new workspace',
+                callback: expect.any(Function),
+              }),
             ],
-          })
-          .withFactoryResolver({
-            resolver: {
-              location: factoryUrl,
-              devfile: {
-                schemaVersion: '2.1.0',
-                metadata: {
-                  name: workspaceName,
-                },
-              } as devfileApi.Devfile,
-            },
-          })
-          .build();
-      });
-
-      test('notification alert', async () => {
-        renderComponent(store, searchParams);
-        await jest.advanceTimersByTimeAsync(MIN_STEP_DURATION_MS);
-
-        const expectAlertItem = expect.objectContaining({
-          title: 'Existing workspace found',
-          children: `A workspace with the same name (${workspaceName}) has been found. Should you want to open the existing workspace or proceed to create a new one, please choose the corresponding action.`,
-          actionCallbacks: [
-            expect.objectContaining({
-              title: 'Open the existing workspace',
-              callback: expect.any(Function),
-            }),
-            expect.objectContaining({
-              title: 'Create a new workspace',
-              callback: expect.any(Function),
-            }),
-          ],
+          });
+          await waitFor(() => expect(mockOnError).toHaveBeenCalledWith(expectAlertItem));
+          expect(mockOnNextStep).not.toHaveBeenCalled();
+          expect(mockOnRestart).not.toHaveBeenCalled();
         });
-        await waitFor(() => expect(mockOnError).toHaveBeenCalledWith(expectAlertItem));
-        expect(mockOnNextStep).not.toHaveBeenCalled();
-        expect(mockOnRestart).not.toHaveBeenCalled();
+      });
+    });
+    describe('with several existing workspace created from the same repository', () => {
+      describe('DEVWORKSPACE_DEVFILE_SOURCE conflict faced', () => {
+        beforeEach(() => {
+          searchParams = new URLSearchParams({
+            [FACTORY_URL_ATTR]: factoryUrl,
+            [EXISTING_WORKSPACE_NAME]: 'dummy-workspace-name',
+          });
+
+          store = new MockStoreBuilder()
+            .withDevWorkspaces({
+              workspaces: [
+                new DevWorkspaceBuilder()
+                  .withMetadata({
+                    name: workspaceName,
+                    namespace: 'user-che',
+                    annotations: {
+                      [DEVWORKSPACE_DEVFILE_SOURCE]: dump({
+                        factory: {
+                          params: `url=${factoryUrl}`,
+                        },
+                      }),
+                    },
+                  })
+                  .build(),
+                new DevWorkspaceBuilder()
+                  .withMetadata({
+                    name: `${workspaceName}-2`,
+                    namespace: 'user-che',
+                    annotations: {
+                      [DEVWORKSPACE_DEVFILE_SOURCE]: dump({
+                        factory: {
+                          params: `url=${factoryUrl}`,
+                        },
+                      }),
+                    },
+                  })
+                  .build(),
+              ],
+            })
+            .withFactoryResolver({
+              resolver: {
+                location: factoryUrl,
+                devfile: {
+                  schemaVersion: '2.1.0',
+                  metadata: {
+                    name: workspaceName,
+                  },
+                } as devfileApi.Devfile,
+              },
+            })
+            .build();
+        });
+
+        test('notification alert with one existing workspace created from the same repository', async () => {
+          renderComponent(store, searchParams);
+          await jest.advanceTimersByTimeAsync(MIN_STEP_DURATION_MS);
+
+          const expectAlertItem = expect.objectContaining({
+            title: 'Existing workspaces created from the same repository are found',
+            children: `Several workspaces created from the same repository have been found. Should you want to open one of the existing workspaces or create a new one, please choose the corresponding action.`,
+            actionCallbacks: [
+              expect.objectContaining({
+                title: 'Open the existing workspace',
+                isGroup: true,
+                actionCallbacks: [
+                  expect.objectContaining({
+                    title: workspaceName,
+                    callback: expect.any(Function),
+                  }),
+                  expect.objectContaining({
+                    title: `${workspaceName}-2`,
+                    callback: expect.any(Function),
+                  }),
+                ],
+              }),
+              expect.objectContaining({
+                title: 'Create a new workspace',
+                callback: expect.any(Function),
+              }),
+            ],
+          });
+
+          await waitFor(() => expect(mockOnError).toHaveBeenCalledWith(expectAlertItem));
+          expect(mockOnNextStep).not.toHaveBeenCalled();
+          expect(mockOnRestart).not.toHaveBeenCalled();
+        });
       });
     });
   });

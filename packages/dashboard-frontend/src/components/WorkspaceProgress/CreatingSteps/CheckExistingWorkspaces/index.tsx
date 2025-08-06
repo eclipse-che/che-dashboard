@@ -156,26 +156,23 @@ class CreatingStepCheckExistingWorkspaces extends ProgressStep<Props, State> {
     }
 
     // check if there are existing workspaces created from the same repo
-    const existingWorkspacesFromTheSameRepo = this.getExistingWorkspacesFromTheSameRepo(
-      allWorkspaces,
-      factoryParams,
-    );
-    if (existingWorkspacesFromTheSameRepo.length > 0) {
+    const sameRepoWorkspaces = this.getSameRepoWorkspaces(allWorkspaces, factoryParams);
+    if (sameRepoWorkspaces.length > 0) {
       let existingWorkspace: Workspace | undefined = undefined;
       if (factoryParams.existing) {
         // if the factory params specify an existing workspace, use it
-        existingWorkspace = existingWorkspacesFromTheSameRepo.find(
-          workspace => workspace.name === factoryParams.existing,
-        );
+        existingWorkspace = sameRepoWorkspaces.find(w => w.name === factoryParams.existing);
         if (existingWorkspace === undefined) {
           this.handleError(
             new Error(
-              `Several workspaces created from the same repository have been found. Should you want to open one of the existing workspaces or create a new one, please choose the corresponding action.`,
+              sameRepoWorkspaces.length > 1
+                ? `Several workspaces created from the same repository have been found. Should you want to open one of the existing workspaces or create a new one, please choose the corresponding action.`
+                : `An existing workspace ${sameRepoWorkspaces[0].name} created from the same repository has been found. Should you want to open the existing workspace or proceed to create a new one, please choose the corresponding action.`,
             ),
           );
           return false;
         }
-      } else if (existingWorkspacesFromTheSameRepo.length > 1) {
+      } else if (sameRepoWorkspaces.length > 1) {
         // detected existing workspaces created from the same repo conflict
         this.handleError(
           new Error(
@@ -186,7 +183,7 @@ class CreatingStepCheckExistingWorkspaces extends ProgressStep<Props, State> {
       }
       if (existingWorkspace === undefined) {
         // otherwise, use the first one
-        existingWorkspace = existingWorkspacesFromTheSameRepo[0];
+        existingWorkspace = sameRepoWorkspaces[0];
       }
       this.openWorkspace(existingWorkspace);
       // stop the step execution
@@ -221,21 +218,13 @@ class CreatingStepCheckExistingWorkspaces extends ProgressStep<Props, State> {
     const existingWorkspace = this.props.allWorkspaces.find(w => newWorkspaceName === w.name);
     if (existingWorkspace) {
       // detected workspaces name conflict
-      this.handleError(
-        new Error(
-          `A workspace with the same name (${existingWorkspace.name}) has been found. Should you want to open the existing workspace or proceed to create a new one, please choose the corresponding action.`,
-        ),
-      );
-      this.setState({
-        existingWorkspace,
-      });
-      return false;
+      this.handleNameConflict(newWorkspaceName, 'create-new');
     }
 
     return true;
   }
 
-  private getExistingWorkspacesFromTheSameRepo(
+  private getSameRepoWorkspaces(
     workspaces: Workspace[],
     factoryParams: FactoryParams,
   ): Workspace[] {
@@ -243,22 +232,22 @@ class CreatingStepCheckExistingWorkspaces extends ProgressStep<Props, State> {
   }
 
   protected buildAlertItem(error: Error): AlertItem {
+    const { allWorkspaces, onHideError } = this.props;
+    const { factoryParams } = this.state;
     const key = this.name;
-    const existingWorkspacesFromTheSameRepo = this.getExistingWorkspacesFromTheSameRepo(
-      this.props.allWorkspaces,
-      this.state.factoryParams,
-    );
+
+    const sameRepoWorkspaces = this.getSameRepoWorkspaces(allWorkspaces, factoryParams);
     let title: string;
     let openExistingWorkspaceAction: ActionCallback | ActionGroup;
-    if (existingWorkspacesFromTheSameRepo.length > 0) {
+    if (sameRepoWorkspaces.length > 1) {
       title = 'Existing workspaces created from the same repository are found';
       openExistingWorkspaceAction = {
         isGroup: true,
         title: 'Open the existing workspace',
-        actionCallbacks: existingWorkspacesFromTheSameRepo.map(workspace => ({
+        actionCallbacks: sameRepoWorkspaces.map(workspace => ({
           title: workspace.name,
           callback: () => {
-            this.props.onHideError(key);
+            onHideError(key);
             this.openWorkspace(workspace);
           },
         })),
