@@ -1,20 +1,20 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`Temporary Storage Switch snapshot 1`] = `
+exports[`Create New If Exist Switch snapshot 1`] = `
 <label
   className="pf-c-switch"
   data-ouia-component-id="OUIA-Generated-Switch-1"
   data-ouia-component-type="PF4/Switch"
   data-ouia-safe={true}
-  htmlFor="temporary-storage-switch"
+  htmlFor="create-new-if-exist-switch"
 >
   <input
     aria-label=""
-    aria-labelledby="temporary-storage-switch-off"
-    checked={false}
+    aria-labelledby="create-new-if-exist-switch-on"
+    checked={true}
     className="pf-c-switch__input"
     disabled={false}
-    id="temporary-storage-switch"
+    id="create-new-if-exist-switch"
     onChange={[Function]}
     type="checkbox"
   />
@@ -24,16 +24,16 @@ exports[`Temporary Storage Switch snapshot 1`] = `
   <span
     aria-hidden="true"
     className="pf-c-switch__label pf-m-on"
-    id="temporary-storage-switch-on"
+    id="create-new-if-exist-switch-on"
   >
     <div
       style={
         {
-          "minWidth": "170px",
+          "minWidth": "125px",
         }
       }
     >
-      Temporary Storage
+      Create New
       <div
         data-testid="patternfly-tooltip"
       >
@@ -45,22 +45,7 @@ exports[`Temporary Storage Switch snapshot 1`] = `
         <div
           data-testid="tooltip-content"
         >
-          Temporary Storage allows for faster I/O but may have limited storage and is not persistent.
-          <p
-            className=""
-            data-ouia-component-id="OUIA-Generated-Text-1"
-            data-ouia-component-type="PF4/Text"
-            data-ouia-safe={true}
-            data-pf-content={true}
-          >
-            <a
-              href="https://docs.location"
-              rel="noreferrer"
-              target="_blank"
-            >
-              Open documentation page
-            </a>
-          </p>
+          Create a new workspace each time when ON; reuse an existing one when OFF.
         </div>
         <div
           data-testid="tooltip-placed-to"
@@ -90,16 +75,16 @@ exports[`Temporary Storage Switch snapshot 1`] = `
   <span
     aria-hidden="true"
     className="pf-c-switch__label pf-m-off"
-    id="temporary-storage-switch-off"
+    id="create-new-if-exist-switch-off"
   >
     <div
       style={
         {
-          "minWidth": "170px",
+          "minWidth": "125px",
         }
       }
     >
-      Temporary Storage
+      Create New
       <div
         data-testid="patternfly-tooltip"
       >
@@ -111,22 +96,7 @@ exports[`Temporary Storage Switch snapshot 1`] = `
         <div
           data-testid="tooltip-content"
         >
-          Temporary Storage allows for faster I/O but may have limited storage and is not persistent.
-          <p
-            className=""
-            data-ouia-component-id="OUIA-Generated-Text-2"
-            data-ouia-component-type="PF4/Text"
-            data-ouia-safe={true}
-            data-pf-content={true}
-          >
-            <a
-              href="https://docs.location"
-              rel="noreferrer"
-              target="_blank"
-            >
-              Open documentation page
-            </a>
-          </p>
+          Create a new workspace each time when ON; reuse an existing one when OFF.
         </div>
         <div
           data-testid="tooltip-placed-to"

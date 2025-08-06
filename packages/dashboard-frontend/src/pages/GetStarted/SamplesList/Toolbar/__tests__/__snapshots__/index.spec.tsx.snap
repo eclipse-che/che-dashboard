@@ -157,9 +157,24 @@ exports[`Samples List Toolbar snapshot 1`] = `
   <div
     className="pf-m-align-right"
   >
-    <div>
+    <div
+      data-testid="create-new-if-exist"
+    >
+      Create New If Existing Off
+      <input
+        data-testid="create-new-if-exist-switch"
+        name="Toggle Create New If Existing"
+        onClick={[Function]}
+        type="checkbox"
+      />
+    </div>
+     
+    <div
+      data-testid="temporary-storage"
+    >
       Temporary Storage On
       <input
+        data-testid="temporary-storage-switch"
         name="Toggle Temporary Storage"
         onClick={[Function]}
         type="checkbox"

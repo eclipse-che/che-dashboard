@@ -31,14 +31,6 @@ jest.mock('@patternfly/react-core', () => {
   };
 });
 
-jest.mock('@/components/CheTooltip', () => {
-  return {
-    CheTooltip: jest.fn(props => {
-      return React.createElement('div', null, props.children, props.content);
-    }),
-  };
-});
-
 jest.mock('@/components/BasicViewer', () => {
   return {
     BasicViewer: jest.fn(props => {

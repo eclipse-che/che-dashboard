@@ -35,7 +35,7 @@ import {
   POLICIES_CREATE_ATTR,
 } from '@/services/helpers/factoryFlow/buildFactoryParams';
 import { buildFactoryLocation } from '@/services/helpers/location';
-import { AlertItem } from '@/services/helpers/types';
+import { AlertItem, isActionCallback } from '@/services/helpers/types';
 import { che } from '@/services/models';
 import { DEVWORKSPACE_BOOTSTRAP } from '@/services/workspace-client/devworkspace/devWorkspaceClient';
 import { AppThunk } from '@/store';
@@ -152,7 +152,7 @@ describe('Creating steps, applying a devfile', () => {
         );
         expect(restartAction).toBeDefined();
 
-        if (restartAction) {
+        if (restartAction && isActionCallback(restartAction)) {
           deferred.promise.then(restartAction.callback);
         } else {
           throw new Error('Action not found');
@@ -548,7 +548,6 @@ describe('Creating steps, applying a devfile', () => {
         .build();
 
       searchParams.append(POLICIES_CREATE_ATTR, 'perclick');
-      factoryId = `${POLICIES_CREATE_ATTR}=perclick&` + factoryId;
 
       renderComponent(store, searchParams);
       await jest.advanceTimersByTimeAsync(MIN_STEP_DURATION_MS);
@@ -677,7 +676,7 @@ describe('Creating steps, applying a devfile', () => {
         );
         expect(reloadAction).toBeDefined();
 
-        if (reloadAction) {
+        if (reloadAction && isActionCallback(reloadAction)) {
           deferred.promise.then(reloadAction.callback);
         } else {
           throw new Error('Action not found');
@@ -719,7 +718,7 @@ describe('Creating steps, applying a devfile', () => {
         );
         expect(continueAction).toBeDefined();
 
-        if (continueAction) {
+        if (continueAction && isActionCallback(continueAction)) {
           deferred.promise.then(continueAction.callback);
         } else {
           throw new Error('Action not found');

@@ -21,12 +21,37 @@ export type ActionCallback = {
   callback: () => void;
 };
 
+export function isActionCallback(action: unknown): action is ActionCallback {
+  return (
+    action !== undefined &&
+    (action as ActionCallback).title !== undefined &&
+    (action as ActionCallback).callback !== undefined &&
+    typeof (action as ActionCallback).callback === 'function'
+  );
+}
+
+export type ActionGroup = {
+  isGroup: boolean;
+  title: string;
+  actionCallbacks: ActionCallback[];
+};
+
+export function isActionGroup(action: unknown): action is ActionGroup {
+  return (
+    action !== undefined &&
+    (action as ActionGroup).isGroup &&
+    (action as ActionGroup).title !== undefined &&
+    (action as ActionGroup).actionCallbacks !== undefined &&
+    Array.isArray((action as ActionGroup).actionCallbacks)
+  );
+}
+
 export interface AlertItem {
   key: string;
   title: string;
   variant: AlertVariant;
   children?: React.ReactNode;
-  actionCallbacks?: ActionCallback[];
+  actionCallbacks?: (ActionCallback | ActionGroup)[];
   error?: never;
   timeout?: boolean | number;
 }

@@ -25,6 +25,7 @@ export const MEMORY_LIMIT_ATTR = 'memoryLimit';
 export const EDITOR_IMAGE_ATTR = 'editor-image';
 export const USE_DEFAULT_DEVFILE = 'useDefaultDevfile';
 export const DEBUG_WORKSPACE_START = 'debugWorkspaceStart';
+export const EXISTING_WORKSPACE_NAME = 'existing';
 export const PROPAGATE_FACTORY_ATTRS = [
   'workspaceDeploymentAnnotations',
   'workspaceDeploymentLabels',
@@ -38,9 +39,11 @@ export const PROPAGATE_FACTORY_ATTRS = [
   CPU_LIMIT_ATTR,
   MEMORY_LIMIT_ATTR,
   EDITOR_IMAGE_ATTR,
+  EXISTING_WORKSPACE_NAME,
 ];
 export const OVERRIDE_ATTR_PREFIX = 'override.';
 export const DEFAULT_POLICIES_CREATE = 'peruser';
+export const FACTORY_ID_IGNORE_ATTRS = [EXISTING_WORKSPACE_NAME, POLICIES_CREATE_ATTR];
 
 export type FactoryParams = {
   factoryId: string;
@@ -59,6 +62,7 @@ export type FactoryParams = {
   memoryLimit: string | undefined;
   useDefaultDevfile: boolean;
   debugWorkspaceStart: boolean;
+  existing: string | undefined;
 };
 
 export type PoliciesCreate = 'perclick' | 'peruser';
@@ -83,6 +87,7 @@ export function buildFactoryParams(searchParams: URLSearchParams): FactoryParams
     memoryLimit: getMemoryLimit(searchParams),
     useDefaultDevfile: isSafeWorkspaceStart(searchParams) !== undefined,
     debugWorkspaceStart: isDebugWorkspaceStart(searchParams) !== undefined,
+    existing: getExistingWorkspaceName(searchParams),
   };
 }
 
@@ -109,9 +114,7 @@ function getPoliciesCreate(searchParams: URLSearchParams): PoliciesCreate {
     : (searchParams.get(POLICIES_CREATE_ATTR) as PoliciesCreate);
 }
 
-export function getStorageType(
-  searchParams: URLSearchParams,
-): che.WorkspaceStorageType | undefined {
+function getStorageType(searchParams: URLSearchParams): che.WorkspaceStorageType | undefined {
   const storageType = searchParams.get(STORAGE_TYPE_ATTR) as che.WorkspaceStorageType;
   if (
     storageType === 'per-workspace' ||
@@ -144,6 +147,10 @@ function buildFactoryId(searchParams: URLSearchParams): string {
   searchParams.sort();
   const factoryParams = new window.URLSearchParams();
   searchParams.forEach((val: string, key: string) => {
+    // Skip attributes that are not part of the workspace creation flow
+    if (FACTORY_ID_IGNORE_ATTRS.includes(key)) {
+      return;
+    }
     factoryParams.append(key, val);
   });
 
@@ -191,4 +198,8 @@ function isDebugWorkspaceStart(searchParams: URLSearchParams): string | undefine
   return searchParams.get(DEBUG_WORKSPACE_START) === null
     ? undefined
     : (searchParams.get(DEBUG_WORKSPACE_START) as string);
+}
+
+function getExistingWorkspaceName(searchParams: URLSearchParams): string | undefined {
+  return searchParams.get(EXISTING_WORKSPACE_NAME) || undefined;
 }

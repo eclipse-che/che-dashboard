@@ -29,6 +29,20 @@ const alertItem1: AlertItem = {
   variant: AlertVariant.danger,
   actionCallbacks: [
     {
+      isGroup: true,
+      title: 'Action Group',
+      actionCallbacks: [
+        {
+          title: 'Action 1',
+          callback: () => console.log('Action 1 executed'),
+        },
+        {
+          title: 'Action 2',
+          callback: () => console.log('Action 2 executed'),
+        },
+      ],
+    },
+    {
       title: 'Close',
       callback: mockOnClose,
     },

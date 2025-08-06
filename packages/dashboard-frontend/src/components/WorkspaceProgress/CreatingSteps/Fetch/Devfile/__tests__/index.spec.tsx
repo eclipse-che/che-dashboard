@@ -31,7 +31,7 @@ import {
   OVERRIDE_ATTR_PREFIX,
   REMOTES_ATTR,
 } from '@/services/helpers/factoryFlow/buildFactoryParams';
-import { AlertItem } from '@/services/helpers/types';
+import { AlertItem, isActionCallback } from '@/services/helpers/types';
 import { AppThunk } from '@/store';
 import { MockStoreBuilder } from '@/store/__mocks__/mockStore';
 import { factoryResolverActionCreators, OAuthResponse } from '@/store/FactoryResolver';
@@ -192,7 +192,7 @@ describe('Creating steps, fetching a devfile', () => {
         );
         expect(action).toBeDefined();
 
-        if (action) {
+        if (action && isActionCallback(action)) {
           deferred.promise.then(action.callback);
         } else {
           throw new Error('Action not found');
@@ -230,7 +230,7 @@ describe('Creating steps, fetching a devfile', () => {
         );
         expect(reloadAction).toBeDefined();
 
-        if (reloadAction) {
+        if (reloadAction && isActionCallback(reloadAction)) {
           deferred.promise.then(reloadAction.callback);
         } else {
           throw new Error('Action not found');
@@ -312,7 +312,7 @@ describe('Creating steps, fetching a devfile', () => {
         );
         expect(action).toBeDefined();
 
-        if (action) {
+        if (action && isActionCallback(action)) {
           deferred.promise.then(action.callback);
         } else {
           throw new Error('Action not found');

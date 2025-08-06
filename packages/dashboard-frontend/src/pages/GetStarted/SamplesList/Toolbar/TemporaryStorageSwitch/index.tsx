@@ -10,11 +10,13 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import { Switch, Text, Tooltip, TooltipPosition } from '@patternfly/react-core';
+import { Switch, Text } from '@patternfly/react-core';
 import { OutlinedQuestionCircleIcon } from '@patternfly/react-icons';
 import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 
+import { CheTooltip } from '@/components/CheTooltip';
+import { Navigation } from '@/Layout/Navigation';
 import { RootState } from '@/store';
 import { selectBranding } from '@/store/Branding/selectors';
 
@@ -30,51 +32,53 @@ class TemporaryStorageSwitch extends React.PureComponent<Props, State> {
   constructor(props: Props) {
     super(props);
 
+    const isChecked = Navigation.pageState?.['temporary-storage-switch']?.['isChecked'];
+
     this.state = {
-      isChecked: this.props.isTemporary,
+      isChecked: isChecked !== undefined ? isChecked === 'true' : this.props.isTemporary,
     };
   }
 
+  componentDidMount() {
+    this.handleChange(this.state.isChecked);
+  }
+
   private handleChange(isChecked: boolean): void {
+    Navigation.pageState['temporary-storage-switch'] = { isChecked: String(isChecked) };
     this.setState({ isChecked });
     this.props.onChange(isChecked);
   }
 
   render(): React.ReactElement {
-    const storageTypesDocLink = this.props.branding.docs.storageTypes;
-    const isChecked = this.state.isChecked;
+    const { branding } = this.props;
+    const { isChecked } = this.state;
 
     return (
-      <React.Fragment>
-        <Switch
-          id="temporary-storage-switch"
-          label="Temporary Storage On"
-          labelOff="Temporary Storage Off"
-          isChecked={isChecked}
-          onChange={isChecked => this.handleChange(isChecked)}
-          aria-describedby="temporary-storage-tooltip"
-        />
-        <span style={{ marginLeft: '10px' }}>
-          <Tooltip
-            id="temporary-storage-tooltip"
-            isContentLeftAligned={true}
-            position={TooltipPosition.top}
-            content={
-              <React.Fragment>
-                Temporary Storage allows for faster I/O but may have limited storage and is not
-                persistent.
-                <Text>
-                  <a rel="noreferrer" target="_blank" href={storageTypesDocLink}>
-                    Open documentation page
-                  </a>
-                </Text>
-              </React.Fragment>
-            }
-          >
-            <OutlinedQuestionCircleIcon />
-          </Tooltip>
-        </span>
-      </React.Fragment>
+      <Switch
+        id="temporary-storage-switch"
+        label={
+          <div style={{ minWidth: '170px' }}>
+            Temporary Storage
+            <CheTooltip
+              content={
+                <>
+                  Temporary Storage allows for faster I/O but may have limited storage and is not
+                  persistent.
+                  <Text>
+                    <a rel="noreferrer" target="_blank" href={branding.docs.storageTypes}>
+                      Open documentation page
+                    </a>
+                  </Text>
+                </>
+              }
+            >
+              <OutlinedQuestionCircleIcon style={{ margin: '0 5px' }} />
+            </CheTooltip>
+          </div>
+        }
+        isChecked={isChecked}
+        onChange={isChecked => this.handleChange(isChecked)}
+      />
     );
   }
 }

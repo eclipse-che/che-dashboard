@@ -36,13 +36,28 @@ exports[`GitRepoURL screenshot when factory params is available 1`] = `
     >
       eclipse-che/che-dashboard
     </a>
-    <div>
-      <button
-        onClick={[Function]}
+    <div
+      data-testid="patternfly-tooltip"
+    >
+      <span
+        data-testid="tooltip-props"
+      >
+        {"isContentLeftAligned":true,"className":"tooltip"}
+      </span>
+      <div
+        data-testid="tooltip-content"
       >
         Copy to clipboard
-      </button>
-      Copy to clipboard
+      </div>
+      <div
+        data-testid="tooltip-placed-to"
+      >
+        <button
+          onClick={[Function]}
+        >
+          Copy to clipboard
+        </button>
+      </div>
     </div>
   </div>
 </div>

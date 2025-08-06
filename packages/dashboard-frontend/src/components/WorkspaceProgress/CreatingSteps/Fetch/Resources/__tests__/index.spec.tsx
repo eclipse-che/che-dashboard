@@ -26,7 +26,7 @@ import {
   DEV_WORKSPACE_ATTR,
   FACTORY_URL_ATTR,
 } from '@/services/helpers/factoryFlow/buildFactoryParams';
-import { AlertItem } from '@/services/helpers/types';
+import { AlertItem, isActionCallback } from '@/services/helpers/types';
 import { AppThunk } from '@/store';
 import { MockStoreBuilder } from '@/store/__mocks__/mockStore';
 import { devfileRegistriesActionCreators } from '@/store/DevfileRegistries';
@@ -216,7 +216,7 @@ describe('Creating steps, fetching resources', () => {
         );
         expect(action).toBeDefined();
 
-        if (action) {
+        if (action && isActionCallback(action)) {
           deferred.promise.then(action.callback);
         } else {
           throw new Error('Action not found');

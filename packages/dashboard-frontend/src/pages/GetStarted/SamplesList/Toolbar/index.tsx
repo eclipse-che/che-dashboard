@@ -17,6 +17,7 @@ import Pluralize from 'react-pluralize';
 import { connect, ConnectedProps } from 'react-redux';
 
 import { BulkSelector } from '@/components/BulkSelector';
+import { CreateNewIfExistSwitch } from '@/pages/GetStarted/SamplesList/Toolbar/CreateNewIfExistSwitch';
 import TemporaryStorageSwitch from '@/pages/GetStarted/SamplesList/Toolbar/TemporaryStorageSwitch';
 import { RootState } from '@/store';
 import {
@@ -29,6 +30,7 @@ import { selectFilterValue, selectMetadataFiltered } from '@/store/DevfileRegist
 export type Props = MappedProps & {
   isTemporary: boolean;
   onTemporaryStorageChange: (isTemporary: boolean) => void;
+  onCreateNewIfExistChange: (isCreateNewIfExist: boolean) => void;
   presetFilter: string | undefined;
 };
 
@@ -150,6 +152,10 @@ class SamplesListToolbar extends React.PureComponent<Props, State> {
           </TextContent>
         </FlexItem>
         <FlexItem align={{ default: 'alignRight' }}>
+          <CreateNewIfExistSwitch
+            onChange={isCreateNewIfExist => this.props.onCreateNewIfExistChange(isCreateNewIfExist)}
+          />
+          &nbsp;
           <TemporaryStorageSwitch
             isTemporary={isTemporary}
             onChange={isTemporary => this.props.onTemporaryStorageChange(isTemporary)}

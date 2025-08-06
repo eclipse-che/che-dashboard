@@ -13,8 +13,9 @@
 import { Alert, AlertActionLink, AlertGroup } from '@patternfly/react-core';
 import React from 'react';
 
+import { ActionGroupSelector } from '@/components/WorkspaceProgress/Alert/ActionGroupSelector';
 import styles from '@/components/WorkspaceProgress/Alert/index.module.css';
-import { AlertItem } from '@/services/helpers/types';
+import { AlertItem, isActionGroup } from '@/services/helpers/types';
 
 export type Props = {
   isToast: boolean;
@@ -25,6 +26,9 @@ export class ProgressAlert extends React.PureComponent<Props> {
   private buildAlerts(alertItems: AlertItem[], isInline: boolean): React.ReactNode[] {
     return alertItems.map(alertItem => {
       const alertActionLinks = alertItem.actionCallbacks?.map(entry => {
+        if (isActionGroup(entry)) {
+          return <ActionGroupSelector key={entry.title} actionGroup={entry} />;
+        }
         return (
           <AlertActionLink key={entry.title} onClick={() => entry.callback()}>
             {entry.title}

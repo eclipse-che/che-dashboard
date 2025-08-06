@@ -27,6 +27,7 @@ import { devfileRegistriesActionCreators } from '@/store/DevfileRegistries';
 console.error = jest.fn();
 
 jest.mock('@/pages/GetStarted/SamplesList/Toolbar/TemporaryStorageSwitch');
+jest.mock('@/pages/GetStarted/SamplesList/Toolbar/CreateNewIfExistSwitch');
 
 const { renderComponent, createSnapshot } = getComponentRenderer(getComponent);
 
@@ -170,7 +171,18 @@ describe('Samples List Toolbar', () => {
 
   test('switch temporary storage toggle', async () => {
     renderComponent();
-    const switchInput = screen.getByRole('checkbox') as HTMLInputElement;
+    const switchInput = screen.getByTestId('temporary-storage-switch') as HTMLInputElement;
+
+    expect(switchInput.checked).toBeFalsy();
+
+    await userEvent.click(switchInput);
+
+    expect(switchInput.checked).toBeTruthy();
+  });
+
+  test('switch create new if exist toggle', async () => {
+    renderComponent();
+    const switchInput = screen.getByTestId('create-new-if-exist-switch') as HTMLInputElement;
 
     expect(switchInput.checked).toBeFalsy();
 
@@ -218,6 +230,7 @@ function getComponent(store?: Store, presetFilter: string | undefined = undefine
         presetFilter={presetFilter}
         isTemporary={true}
         onTemporaryStorageChange={jest.fn()}
+        onCreateNewIfExistChange={jest.fn()}
       />
     </Provider>
   );

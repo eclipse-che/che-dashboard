@@ -23,7 +23,7 @@ import {
   FACTORY_URL_ATTR,
   POLICIES_CREATE_ATTR,
 } from '@/services/helpers/factoryFlow/buildFactoryParams';
-import { AlertItem, UserPreferencesTab } from '@/services/helpers/types';
+import { AlertItem, isActionCallback, UserPreferencesTab } from '@/services/helpers/types';
 import { DevWorkspaceBuilder } from '@/store/__mocks__/devWorkspaceBuilder';
 import { MockStoreBuilder } from '@/store/__mocks__/mockStore';
 
@@ -81,7 +81,7 @@ describe('Creating steps, initializing', () => {
 
     // this will help test the case when the user clicks on the "Click to try again" button
     mockOnError.mockImplementation((alertItem: AlertItem) => {
-      if (alertItem.actionCallbacks) {
+      if (alertItem.actionCallbacks && isActionCallback(alertItem.actionCallbacks[0])) {
         alertItem.actionCallbacks[0].callback();
       }
     });
@@ -292,7 +292,7 @@ describe('Creating steps, initializing', () => {
 
     // this will help test the case when the user clicks on the "Add SSH Keys" button
     mockOnError.mockImplementation((alertItem: AlertItem) => {
-      if (alertItem.actionCallbacks) {
+      if (alertItem.actionCallbacks && isActionCallback(alertItem.actionCallbacks[1])) {
         alertItem.actionCallbacks[1].callback();
       }
     });

@@ -14,17 +14,21 @@ import React from 'react';
 
 import { Props } from '..';
 
-export default class TemporaryStorageSwitch extends React.PureComponent<Props> {
+export class CreateNewIfExistSwitch extends React.PureComponent<Props> {
+  private isChecked = false;
+
   render(): React.ReactNode {
-    const { isTemporary } = this.props;
     return (
-      <div data-testid="temporary-storage">
-        {isTemporary ? 'Temporary Storage On' : 'Temporary Storage Off'}
+      <div data-testid="create-new-if-exist">
+        {this.isChecked ? 'Create New If Existing On' : 'Create New If Existing Off'}
         <input
-          data-testid="temporary-storage-switch"
+          data-testid="create-new-if-exist-switch"
           type="checkbox"
-          onClick={() => this.props.onChange(!isTemporary)}
-          name="Toggle Temporary Storage"
+          onClick={() => {
+            this.isChecked = !this.isChecked;
+            this.props.onChange(this.isChecked);
+          }}
+          name="Toggle Create New If Existing"
         />
       </div>
     );

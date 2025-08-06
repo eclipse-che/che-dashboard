@@ -43,6 +43,7 @@ type State = {
 };
 
 export class Navigation extends React.PureComponent<Props, State> {
+  public static pageState: { [locationOrId: string]: { [key: string]: string | boolean } } = {};
   private readonly unregisterFn: UnregisterCallback;
 
   constructor(props: Props) {
