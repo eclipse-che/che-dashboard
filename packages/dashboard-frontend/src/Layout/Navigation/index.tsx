@@ -17,6 +17,8 @@ import { connect, ConnectedProps } from 'react-redux';
 
 import NavigationMainList from '@/Layout/Navigation/MainList';
 import NavigationRecentList from '@/Layout/Navigation/RecentList';
+import { CREATE_NEW_IF_EXIST_SWITCH_ID } from '@/pages/GetStarted/SamplesList/Toolbar/CreateNewIfExistSwitch';
+import { TEMPORARY_STORAGE_SWITCH_ID } from '@/pages/GetStarted/SamplesList/Toolbar/TemporaryStorageSwitch';
 import { ROUTE } from '@/Routes';
 import { buildGettingStartedLocation, buildWorkspacesLocation } from '@/services/helpers/location';
 import { Workspace } from '@/services/workspace-adapter';
@@ -43,7 +45,53 @@ type State = {
 };
 
 export class Navigation extends React.PureComponent<Props, State> {
-  public static pageState: { [locationOrId: string]: { [key: string]: string | boolean } } = {};
+  private static createNew: { isChecked: boolean | undefined } = { isChecked: undefined };
+  private static temporaryStorage: { isChecked: boolean | undefined } = { isChecked: undefined };
+  private static pageStateCallbacks: {
+    [CREATE_NEW_IF_EXIST_SWITCH_ID]: ((isChecked: boolean | undefined) => void)[];
+    [TEMPORARY_STORAGE_SWITCH_ID]: ((isChecked: boolean | undefined) => void)[];
+  } = {
+    [CREATE_NEW_IF_EXIST_SWITCH_ID]: [],
+    [TEMPORARY_STORAGE_SWITCH_ID]: [],
+  };
+  // Static page state to store the state of switches across the application
+  public static pageState: {
+    [CREATE_NEW_IF_EXIST_SWITCH_ID]: { isChecked: boolean | undefined };
+    [TEMPORARY_STORAGE_SWITCH_ID]: { isChecked: boolean | undefined };
+    subscribe: (callback: (isChecked: boolean | undefined) => void, id: string) => void;
+    unsubscribe: (callback: (isChecked: boolean | undefined) => void, id: string) => void;
+  } = Object.freeze({
+    get [CREATE_NEW_IF_EXIST_SWITCH_ID](): { isChecked: boolean | undefined } {
+      return Navigation.createNew;
+    },
+    set [CREATE_NEW_IF_EXIST_SWITCH_ID](value: { isChecked: boolean | undefined }) {
+      Navigation.createNew = value;
+      Navigation.pageStateCallbacks[CREATE_NEW_IF_EXIST_SWITCH_ID].forEach(callback => {
+        callback(value.isChecked);
+      });
+    },
+    get [TEMPORARY_STORAGE_SWITCH_ID](): { isChecked: boolean | undefined } {
+      return Navigation.temporaryStorage;
+    },
+    set [TEMPORARY_STORAGE_SWITCH_ID](value: { isChecked: boolean | undefined }) {
+      Navigation.temporaryStorage = value;
+      Navigation.pageStateCallbacks[TEMPORARY_STORAGE_SWITCH_ID].forEach(callback =>
+        callback(value.isChecked),
+      );
+    },
+    subscribe: (callback: (isChecked: boolean | undefined) => void, id: string): void => {
+      if (Navigation.pageStateCallbacks[id]) {
+        Navigation.pageStateCallbacks[id].push(callback);
+      }
+    },
+    unsubscribe: (callback: (isChecked: boolean | undefined) => void, id: string): void => {
+      if (Navigation.pageStateCallbacks[id]) {
+        Navigation.pageStateCallbacks[id] = Navigation.pageStateCallbacks[id].filter(
+          (cb: (isChecked: boolean | undefined) => void) => cb !== callback,
+        );
+      }
+    },
+  });
   private readonly unregisterFn: UnregisterCallback;
 
   constructor(props: Props) {

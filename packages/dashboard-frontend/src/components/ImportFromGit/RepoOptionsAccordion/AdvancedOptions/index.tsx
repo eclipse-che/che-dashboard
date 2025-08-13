@@ -18,6 +18,7 @@ import { CpuLimitField } from '@/components/ImportFromGit/RepoOptionsAccordion/A
 import { CreateNewIfExistingField } from '@/components/ImportFromGit/RepoOptionsAccordion/AdvancedOptions/CreateNewIfExistingField';
 import { MemoryLimitField } from '@/components/ImportFromGit/RepoOptionsAccordion/AdvancedOptions/MemoryLimitField';
 import { TemporaryStorageField } from '@/components/ImportFromGit/RepoOptionsAccordion/AdvancedOptions/TemporaryStorageField';
+import { CREATE_NEW_IF_EXIST_SWITCH_ID } from '@/pages/GetStarted/SamplesList/Toolbar/CreateNewIfExistSwitch';
 
 export type Props = {
   containerImage: string | undefined;
@@ -43,6 +44,8 @@ export type State = {
 };
 
 export class AdvancedOptions extends React.PureComponent<Props, State> {
+  private readonly hasCreateNewIfExistSwitch: boolean;
+
   constructor(props: Props) {
     super(props);
 
@@ -53,6 +56,9 @@ export class AdvancedOptions extends React.PureComponent<Props, State> {
       memoryLimit: props.memoryLimit,
       cpuLimit: props.cpuLimit,
     };
+
+    this.hasCreateNewIfExistSwitch =
+      window.document.getElementById(CREATE_NEW_IF_EXIST_SWITCH_ID) !== null;
   }
 
   public componentDidUpdate(prevProps: Readonly<Props>): void {
@@ -161,6 +167,7 @@ export class AdvancedOptions extends React.PureComponent<Props, State> {
         <CreateNewIfExistingField
           onChange={createNewIfExisting => this.handleCreateNewIfExisting(createNewIfExisting)}
           createNewIfExisting={createNewIfExisting}
+          isHidden={this.hasCreateNewIfExistSwitch}
         />
         <MemoryLimitField
           onChange={memoryLimit => this.handleMemoryLimit(memoryLimit)}

@@ -16,6 +16,10 @@ import isEqual from 'lodash/isEqual';
 import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 
+import {
+  checkCreateFlow,
+  checkFactoryFlow,
+} from '@/components/WorkspaceProgress/CommonSteps/CheckRunningWorkspacesLimit/helpers';
 import { TIMEOUT_TO_STOP_SEC } from '@/components/WorkspaceProgress/const';
 import {
   ProgressStep,
@@ -147,9 +151,16 @@ class CommonStepCheckRunningWorkspacesLimit extends ProgressStep<Props, State> {
    * The resolved boolean indicates whether to go to the next step or not
    */
   protected async runStep(): Promise<boolean> {
-    const { runningWorkspacesLimit, runningDevWorkspacesClusterLimitExceeded } = this.props;
+    const {
+      location,
+      runningWorkspacesLimit,
+      runningDevWorkspacesClusterLimitExceeded,
+      allWorkspaces,
+    } = this.props;
     const { shouldStop, redundantWorkspaceUID } = this.state;
 
+    const hasFactoryFlow = checkFactoryFlow(location);
+    const shouldCreate = checkCreateFlow(location, allWorkspaces);
     if (this.state.shouldCheckLimits === true) {
       await this.props.requestRunningDevWorkspacesClusterLimitExceeded();
       this.setState({
@@ -169,7 +180,9 @@ class CommonStepCheckRunningWorkspacesLimit extends ProgressStep<Props, State> {
       return true;
     }
 
-    if (redundantWorkspaceUID === undefined) {
+    // const hasFactoryFlow = checkFactoryFlow(location);
+    // const shouldCreate = checkCreateFlow(location, allWorkspaces);
+    if ((!hasFactoryFlow || shouldCreate) && redundantWorkspaceUID === undefined) {
       // this will show a notification with action links
       // to ask user which workspace to stop or to switch
       throwRunningWorkspacesExceededError(runningWorkspacesLimit);

@@ -20,6 +20,8 @@ import { Navigation } from '@/Layout/Navigation';
 import { RootState } from '@/store';
 import { selectBranding } from '@/store/Branding/selectors';
 
+export const TEMPORARY_STORAGE_SWITCH_ID = 'temporary-storage-switch';
+
 export type Props = MappedProps & {
   isTemporary: boolean;
   onChange: (isTemporary: boolean) => void;
@@ -32,10 +34,10 @@ class TemporaryStorageSwitch extends React.PureComponent<Props, State> {
   constructor(props: Props) {
     super(props);
 
-    const isChecked = Navigation.pageState?.['temporary-storage-switch']?.['isChecked'];
+    const { isChecked } = Navigation.pageState[TEMPORARY_STORAGE_SWITCH_ID];
 
     this.state = {
-      isChecked: isChecked !== undefined ? isChecked === 'true' : this.props.isTemporary,
+      isChecked: isChecked !== undefined ? isChecked : this.props.isTemporary,
     };
   }
 
@@ -44,7 +46,6 @@ class TemporaryStorageSwitch extends React.PureComponent<Props, State> {
   }
 
   private handleChange(isChecked: boolean): void {
-    Navigation.pageState['temporary-storage-switch'] = { isChecked: String(isChecked) };
     this.setState({ isChecked });
     this.props.onChange(isChecked);
   }
@@ -55,7 +56,7 @@ class TemporaryStorageSwitch extends React.PureComponent<Props, State> {
 
     return (
       <Switch
-        id="temporary-storage-switch"
+        id={TEMPORARY_STORAGE_SWITCH_ID}
         label={
           <div style={{ minWidth: '170px' }}>
             Temporary Storage
@@ -77,7 +78,10 @@ class TemporaryStorageSwitch extends React.PureComponent<Props, State> {
           </div>
         }
         isChecked={isChecked}
-        onChange={isChecked => this.handleChange(isChecked)}
+        onChange={isChecked => {
+          this.handleChange(isChecked);
+          Navigation.pageState[TEMPORARY_STORAGE_SWITCH_ID] = { isChecked };
+        }}
       />
     );
   }

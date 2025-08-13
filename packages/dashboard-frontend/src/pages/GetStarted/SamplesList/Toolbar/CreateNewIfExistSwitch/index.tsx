@@ -17,6 +17,8 @@ import React from 'react';
 import { CheTooltip } from '@/components/CheTooltip';
 import { Navigation } from '@/Layout/Navigation';
 
+export const CREATE_NEW_IF_EXIST_SWITCH_ID = 'create-new-if-exist-switch';
+
 export type Props = {
   onChange: (isCreateNewIfExist: boolean) => void;
 };
@@ -25,20 +27,30 @@ type State = {
 };
 
 export class CreateNewIfExistSwitch extends React.PureComponent<Props, State> {
+  private readonly subscribeCallback: (isChecked: boolean | undefined) => void;
   constructor(props: Props) {
     super(props);
 
+    const { isChecked } = Navigation.pageState[CREATE_NEW_IF_EXIST_SWITCH_ID];
+
     this.state = {
-      isChecked: Navigation.pageState?.['create-new-if-exist-switch']?.['isChecked'] !== 'false',
+      isChecked: isChecked !== false, // Default to true if not set
     };
+
+    this.subscribeCallback = (isChecked: boolean | undefined) =>
+      this.handleChange(isChecked === true);
   }
 
   componentDidMount() {
     this.handleChange(this.state.isChecked);
+    Navigation.pageState.subscribe(this.subscribeCallback, CREATE_NEW_IF_EXIST_SWITCH_ID);
+  }
+
+  componentWillUnmount() {
+    Navigation.pageState.unsubscribe(this.subscribeCallback, CREATE_NEW_IF_EXIST_SWITCH_ID);
   }
 
   private handleChange(isChecked: boolean): void {
-    Navigation.pageState['create-new-if-exist-switch'] = { isChecked: String(isChecked) };
     this.setState({ isChecked });
     this.props.onChange(isChecked);
   }
@@ -48,7 +60,7 @@ export class CreateNewIfExistSwitch extends React.PureComponent<Props, State> {
 
     return (
       <Switch
-        id="create-new-if-exist-switch"
+        id={CREATE_NEW_IF_EXIST_SWITCH_ID}
         label={
           <div style={{ minWidth: '125px' }}>
             Create New
@@ -58,7 +70,12 @@ export class CreateNewIfExistSwitch extends React.PureComponent<Props, State> {
           </div>
         }
         isChecked={isChecked}
-        onChange={isChecked => this.handleChange(isChecked)}
+        onChange={isChecked => {
+          this.handleChange(isChecked);
+          if (Navigation.pageState[CREATE_NEW_IF_EXIST_SWITCH_ID].isChecked !== isChecked) {
+            Navigation.pageState[CREATE_NEW_IF_EXIST_SWITCH_ID] = { isChecked };
+          }
+        }}
       />
     );
   }
