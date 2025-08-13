@@ -55,6 +55,9 @@ export class CreateNewIfExistingField extends React.PureComponent<Props, State> 
     const createNewIfExisting = this.props.createNewIfExisting || false;
     if (prevProps.createNewIfExisting !== createNewIfExisting) {
       this.setState({ createNewIfExisting });
+      if (Navigation.pageState[CREATE_NEW_IF_EXIST_SWITCH_ID].isChecked !== createNewIfExisting) {
+        Navigation.pageState[CREATE_NEW_IF_EXIST_SWITCH_ID] = { isChecked: createNewIfExisting };
+      }
     }
   }
 
