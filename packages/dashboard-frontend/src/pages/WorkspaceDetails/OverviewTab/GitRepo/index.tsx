@@ -63,13 +63,13 @@ class GitRepoFormGroup extends React.PureComponent<Props, State> {
       fieldName: '',
     };
 
-    const devfileSourseStr = workspace.metadata.annotations?.[DEVWORKSPACE_DEVFILE_SOURCE];
+    const devfileSourceStr = workspace.metadata.annotations?.[DEVWORKSPACE_DEVFILE_SOURCE];
 
-    if (devfileSourseStr === undefined) {
+    if (devfileSourceStr === undefined) {
       return source;
     }
 
-    const devfileSourse = load(devfileSourseStr) as {
+    const devfileSourse = load(devfileSourceStr) as {
       scm?: {
         repo?: string;
         fileName?: string;

@@ -24,7 +24,7 @@ import { WorkspaceRouteParams } from '@/Routes';
 import getComponentRenderer, { screen } from '@/services/__mocks__/getComponentRenderer';
 import devfileApi from '@/services/devfileApi';
 import { getDefer } from '@/services/helpers/deferred';
-import { AlertItem } from '@/services/helpers/types';
+import { AlertItem, isActionCallback } from '@/services/helpers/types';
 import { TabManager } from '@/services/tabManager';
 import { constructWorkspace } from '@/services/workspace-adapter';
 import { AppThunk } from '@/store';
@@ -288,7 +288,7 @@ describe('Common steps, check running workspaces limit', () => {
         );
         expect(closeWorkspaceAction).toBeDefined();
 
-        if (closeWorkspaceAction) {
+        if (closeWorkspaceAction && isActionCallback(closeWorkspaceAction)) {
           deferred.promise.then(closeWorkspaceAction.callback);
         } else {
           throw new Error('Action not found');
@@ -325,7 +325,7 @@ describe('Common steps, check running workspaces limit', () => {
         );
         expect(switchWorkspaceAction).toBeDefined();
 
-        if (switchWorkspaceAction) {
+        if (switchWorkspaceAction && isActionCallback(switchWorkspaceAction)) {
           deferred.promise.then(switchWorkspaceAction.callback);
         } else {
           throw new Error('Action not found');
@@ -411,7 +411,7 @@ describe('Common steps, check running workspaces limit', () => {
           );
           expect(restartAction).toBeDefined();
 
-          if (restartAction) {
+          if (restartAction && isActionCallback(restartAction)) {
             deferred.promise.then(restartAction.callback);
           } else {
             throw new Error('Action not found');
@@ -599,7 +599,7 @@ describe('Common steps, check running workspaces limit', () => {
         );
         expect(returnToDashboardAction).toBeDefined();
 
-        if (returnToDashboardAction) {
+        if (returnToDashboardAction && isActionCallback(returnToDashboardAction)) {
           deferred.promise.then(returnToDashboardAction.callback);
         } else {
           throw new Error('Action not found');

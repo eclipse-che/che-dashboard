@@ -29,7 +29,7 @@ import {
   POLICIES_CREATE_ATTR,
 } from '@/services/helpers/factoryFlow/buildFactoryParams';
 import { buildFactoryLocation } from '@/services/helpers/location';
-import { AlertItem } from '@/services/helpers/types';
+import { AlertItem, isActionCallback } from '@/services/helpers/types';
 import { TabManager } from '@/services/tabManager';
 import { AppThunk } from '@/store';
 import { DevWorkspaceBuilder } from '@/store/__mocks__/devWorkspaceBuilder';
@@ -181,7 +181,7 @@ describe('Creating steps, applying resources', () => {
         })
         .build();
 
-      factoryId = `${DEV_WORKSPACE_ATTR}=${resourcesUrl}&${POLICIES_CREATE_ATTR}=perclick&${FACTORY_URL_ATTR}=${factoryUrl}`;
+      factoryId = `${DEV_WORKSPACE_ATTR}=${resourcesUrl}&${FACTORY_URL_ATTR}=${factoryUrl}`;
       searchParams.append(POLICIES_CREATE_ATTR, 'perclick');
 
       renderComponent(store, searchParams);
@@ -259,7 +259,7 @@ describe('Creating steps, applying resources', () => {
         );
         expect(action).toBeDefined();
 
-        if (action) {
+        if (action && isActionCallback(action)) {
           deferred.promise.then(action.callback);
         } else {
           throw new Error('Action not found');

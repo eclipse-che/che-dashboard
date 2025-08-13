@@ -10,6 +10,8 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
+import { load } from 'js-yaml';
+
 import devfileApi, { isDevWorkspace } from '@/services/devfileApi';
 import { DEVWORKSPACE_UPDATING_TIMESTAMP_ANNOTATION } from '@/services/devfileApi/devWorkspace/metadata';
 import { DEVWORKSPACE_STORAGE_TYPE_ATTR } from '@/services/devfileApi/devWorkspace/spec/template';
@@ -19,6 +21,7 @@ import {
   WorkspaceStatus,
 } from '@/services/helpers/types';
 import { che } from '@/services/models';
+import { DEVWORKSPACE_DEVFILE_SOURCE } from '@/services/workspace-client/devworkspace/devWorkspaceClient';
 
 export interface Workspace {
   readonly ref: devfileApi.DevWorkspace;
@@ -29,6 +32,7 @@ export interface Workspace {
   readonly namespace: string;
   readonly infrastructureNamespace: string;
   readonly created: number;
+  readonly source?: string; // the repository URL or the factory URL
   readonly updated: number;
   status: WorkspaceStatus | DevWorkspaceStatus | DeprecatedWorkspaceStatus;
   readonly ideUrl?: string;
@@ -152,6 +156,55 @@ export class WorkspaceAdapter<T extends devfileApi.DevWorkspace> implements Work
       return new Date(this.workspace.metadata.creationTimestamp).getTime();
     }
     return new Date().getTime();
+  }
+
+  /**
+   * Returns a workspace source.
+   * It can be an HTTPS or SSH URL.
+   */
+  get source(): string | undefined {
+    const devfileSourseStr = this.workspace.metadata.annotations?.[DEVWORKSPACE_DEVFILE_SOURCE];
+    if (!devfileSourseStr) {
+      return undefined;
+    }
+    // Parse the devfile source annotation to extract the repository URL
+    const devfileSourse = load(devfileSourseStr) as {
+      factory?: {
+        params?: string;
+      };
+      scm?: {
+        repo?: string;
+        fileName?: string;
+      };
+      url?: {
+        location?: string;
+      };
+    };
+    // Check if the devfile source has a factory with parameters
+    const factoryParams = devfileSourse?.factory?.params;
+    if (factoryParams) {
+      // Split the factory params string into an array of parameters
+      const paramsArr = factoryParams.split('&');
+      if (paramsArr.length > 0) {
+        // Find the URL parameter in the factory params
+        const targetParam = paramsArr.find(param => param.startsWith('url='));
+        if (targetParam) {
+          return targetParam.split('=')[1];
+        }
+      }
+    }
+    // Check if the devfile source has a repository URL
+    const repo = devfileSourse?.scm?.repo;
+    if (repo) {
+      return repo;
+    }
+    // Check if the devfile source has a URL location
+    const location = devfileSourse?.url?.location;
+    if (location) {
+      return location;
+    }
+    // If no URL found, return undefined
+    return undefined;
   }
 
   /**

@@ -68,6 +68,15 @@ describe('test buildFactoryLoaderPath()', () => {
       );
     });
 
+    test('existing parameter', () => {
+      const result = buildFactoryLoaderPath(
+        'git@github.com:eclipse-che/che-dashboard.git?existing=che-dashboard',
+      );
+      expect(result).toEqual(
+        '/f?existing=che-dashboard&url=git%40github.com%3Aeclipse-che%2Fche-dashboard.git',
+      );
+    });
+
     test('unsupported parameter', () => {
       const result = buildFactoryLoaderPath(
         'git@github.com:eclipse-che/che-dashboard.git?unsupportedParameter=foo',
