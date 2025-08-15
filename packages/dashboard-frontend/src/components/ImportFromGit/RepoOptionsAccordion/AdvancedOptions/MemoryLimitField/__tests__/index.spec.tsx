@@ -10,7 +10,7 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import { SliderProps } from '@patternfly/react-core';
+import { NumberInputProps } from '@patternfly/react-core';
 import { fireEvent, screen } from '@testing-library/react';
 import React from 'react';
 
@@ -21,18 +21,20 @@ import {
 import getComponentRenderer from '@/services/__mocks__/getComponentRenderer';
 
 const { createSnapshot, renderComponent } = getComponentRenderer(getComponent);
+// mute the outputs
+console.error = jest.fn();
 
 jest.mock('@patternfly/react-core', () => {
   return {
     ...jest.requireActual('@patternfly/react-core'),
-    Slider: (obj: SliderProps) => (
+    NumberInput: (obj: NumberInputProps) => (
       <input
         type="range"
         data-testid={obj['data-testid']}
         value={obj.value}
         onChange={event => {
           if (obj.onChange) {
-            obj.onChange(event.target.value ? parseInt(event.target.value) : 0);
+            obj.onChange(event);
           }
         }}
       />
@@ -54,13 +56,13 @@ describe('MemoryLimitField', () => {
 
   it('should be init with 8Gi and switched to 32Gi', () => {
     renderComponent(8 * STEP);
-    const slider = screen.getByTestId('memory-limit-slider') as HTMLInputElement;
-    const getVal = () => parseInt(slider.value);
+    const element = screen.getByTestId('memory-limit-input') as HTMLInputElement;
+    const getVal = () => parseInt(element.value);
 
-    expect(slider).toBeDefined();
+    expect(element).toBeDefined();
     expect(getVal()).toEqual(8);
 
-    fireEvent.change(slider, { target: { value: 32 } });
+    fireEvent.change(element, { target: { value: 32 } });
 
     expect(getVal()).toEqual(32);
     expect(mockOnChange).toHaveBeenCalledTimes(1);

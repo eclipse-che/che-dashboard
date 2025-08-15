@@ -10,7 +10,7 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import { SliderProps } from '@patternfly/react-core';
+import { NumberInputProps } from '@patternfly/react-core';
 import { fireEvent, screen } from '@testing-library/react';
 import React from 'react';
 
@@ -18,18 +18,20 @@ import { CpuLimitField } from '@/components/ImportFromGit/RepoOptionsAccordion/A
 import getComponentRenderer from '@/services/__mocks__/getComponentRenderer';
 
 const { createSnapshot, renderComponent } = getComponentRenderer(getComponent);
+// mute the outputs
+console.error = jest.fn();
 
 jest.mock('@patternfly/react-core', () => {
   return {
     ...jest.requireActual('@patternfly/react-core'),
-    Slider: (obj: SliderProps) => (
+    NumberInput: (obj: NumberInputProps) => (
       <input
         type="range"
         data-testid={obj['data-testid']}
         value={obj.value}
         onChange={event => {
           if (obj.onChange) {
-            obj.onChange(event.target.value ? parseInt(event.target.value) : 0);
+            obj.onChange(event);
           }
         }}
       />
@@ -51,13 +53,13 @@ describe('CpuLimitField', () => {
 
   it('should be init with 2Gi and switched to 8Gi', () => {
     renderComponent(2);
-    const slider = screen.getByTestId('cpu-limit-slider') as HTMLInputElement;
-    const getVal = () => parseInt(slider.value);
+    const element = screen.getByTestId('cpu-limit-input') as HTMLInputElement;
+    const getVal = () => parseInt(element.value);
 
-    expect(slider).toBeDefined();
+    expect(element).toBeDefined();
     expect(getVal()).toEqual(2);
 
-    fireEvent.change(slider, { target: { value: 8 } });
+    fireEvent.change(element, { target: { value: 8 } });
 
     expect(getVal()).toEqual(8);
     expect(mockOnChange).toHaveBeenCalledTimes(1);
