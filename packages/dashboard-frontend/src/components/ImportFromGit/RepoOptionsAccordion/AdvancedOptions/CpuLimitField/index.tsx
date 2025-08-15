@@ -10,20 +10,10 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import { FormGroup, Slider } from '@patternfly/react-core';
+import { FormGroup, NumberInput } from '@patternfly/react-core';
 import React from 'react';
 
-const steps = [
-  { value: 0, label: 'default' },
-  { value: 1, label: '1' },
-  { value: 2, label: '2', isLabelHidden: true },
-  { value: 3, label: '3', isLabelHidden: true },
-  { value: 4, label: '4' },
-  { value: 5, label: '5', isLabelHidden: true },
-  { value: 6, label: '6', isLabelHidden: true },
-  { value: 7, label: '7', isLabelHidden: true },
-  { value: 8, label: '8' },
-];
+const MAX_CPU_LIMIT = 64;
 
 export type Props = {
   onChange: (cpuLimit: number) => void;
@@ -45,21 +35,45 @@ export class CpuLimitField extends React.PureComponent<Props, State> {
   public componentDidUpdate(prevProps: Readonly<Props>): void {
     const { cpuLimit } = this.props;
     if (prevProps.cpuLimit !== cpuLimit && cpuLimit !== this.state.cpuLimit) {
+      if (this.props.cpuLimit < 0) {
+        this.props.onChange(0); // Reset to 0 if negative value
+        return;
+      }
       this.setState({ cpuLimit });
     }
   }
 
-  private handleChange(cpuLimit: number) {
+  private handleChange(event: React.FormEvent<HTMLInputElement>) {
+    let cpuLimit = parseInt((event.target as HTMLInputElement).value, 10);
+    if (cpuLimit < 0 || isNaN(cpuLimit)) {
+      cpuLimit = 0;
+    } else if (cpuLimit > MAX_CPU_LIMIT) {
+      cpuLimit = MAX_CPU_LIMIT;
+    }
+    this.updateCpuLimit(cpuLimit);
+  }
+
+  private updateCpuLimit(cpuLimit: number) {
     if (cpuLimit !== this.state.cpuLimit) {
       this.setState({ cpuLimit });
       this.props.onChange(cpuLimit);
     }
   }
 
+  private onPlus = () => {
+    const cpuLimit = Math.min(MAX_CPU_LIMIT, this.state.cpuLimit + 1);
+    this.updateCpuLimit(cpuLimit);
+  };
+
+  private onMinus = () => {
+    const cpuLimit = Math.max(0, this.state.cpuLimit - 1);
+    this.updateCpuLimit(cpuLimit);
+  };
+
   private getLabel(cpuLimit: number): string {
     const label = 'CPU Limit';
     if (cpuLimit === 0) {
-      return label;
+      return `${label} (default)`;
     } else if (cpuLimit === 1) {
       return `${label} (1 core)`;
     }
@@ -73,12 +87,17 @@ export class CpuLimitField extends React.PureComponent<Props, State> {
 
     return (
       <FormGroup label={label}>
-        <Slider
-          data-testid="cpu-limit-slider"
-          value={cpuLimit}
-          onChange={value => this.handleChange(value)}
-          max={steps[steps.length - 1].value}
-          customSteps={steps}
+        <NumberInput
+          value={cpuLimit === 0 ? '' : cpuLimit}
+          min={0}
+          step={1}
+          max={MAX_CPU_LIMIT}
+          onMinus={() => this.onMinus()}
+          onPlus={() => this.onPlus()}
+          onChange={event => this.handleChange(event)}
+          inputName="cpu-limit"
+          data-testid="cpu-limit-input"
+          allowEmptyInput
         />
       </FormGroup>
     );

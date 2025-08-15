@@ -13,7 +13,9 @@ exports[`MemoryLimitField 8Gi snapshot 1`] = `
       <span
         className="pf-c-form__label-text"
       >
-        Memory Limit
+        Memory Limit (
+        default
+        )
       </span>
     </label>
      
@@ -22,10 +24,10 @@ exports[`MemoryLimitField 8Gi snapshot 1`] = `
     className="pf-c-form__group-control"
   >
     <input
-      data-testid="memory-limit-slider"
+      data-testid="memory-limit-input"
       onChange={[Function]}
       type="range"
-      value={0}
+      value=""
     />
   </div>
 </div>
