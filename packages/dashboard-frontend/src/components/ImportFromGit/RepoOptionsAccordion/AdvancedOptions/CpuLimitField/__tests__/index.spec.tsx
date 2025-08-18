@@ -29,6 +29,9 @@ jest.mock('@patternfly/react-core', () => {
         type="range"
         data-testid={obj['data-testid']}
         value={obj.value}
+        min={obj.min}
+        max={obj.max}
+        step={obj.step}
         onChange={event => {
           if (obj.onChange) {
             obj.onChange(event);
@@ -62,7 +65,25 @@ describe('CpuLimitField', () => {
     fireEvent.change(element, { target: { value: 8 } });
 
     expect(getVal()).toEqual(8);
-    expect(mockOnChange).toHaveBeenCalledTimes(1);
+    expect(mockOnChange).toHaveBeenCalledWith(8);
+  });
+
+  it('should limit minimum value as 0', () => {
+    renderComponent(1);
+    const element = screen.getByTestId('cpu-limit-input') as HTMLInputElement;
+
+    fireEvent.change(element, { target: { value: -99 } });
+
+    expect(mockOnChange).toHaveBeenCalledWith(0);
+  });
+
+  it('should limit maximum value as 64', () => {
+    renderComponent(1);
+    const element = screen.getByTestId('cpu-limit-input') as HTMLInputElement;
+
+    fireEvent.change(element, { target: { value: 9999 } });
+
+    expect(mockOnChange).toHaveBeenCalledWith(64);
   });
 });
 

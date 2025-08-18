@@ -32,6 +32,9 @@ jest.mock('@patternfly/react-core', () => {
         type="range"
         data-testid={obj['data-testid']}
         value={obj.value}
+        min={obj.min}
+        max={obj.max}
+        step={obj.step}
         onChange={event => {
           if (obj.onChange) {
             obj.onChange(event);
@@ -65,7 +68,25 @@ describe('MemoryLimitField', () => {
     fireEvent.change(element, { target: { value: 32 } });
 
     expect(getVal()).toEqual(32);
-    expect(mockOnChange).toHaveBeenCalledTimes(1);
+    expect(mockOnChange).toHaveBeenCalledWith(32 * STEP);
+  });
+
+  it('should limit minimum value as 0', () => {
+    renderComponent(STEP);
+    const element = screen.getByTestId('memory-limit-input') as HTMLInputElement;
+
+    fireEvent.change(element, { target: { value: -99 } });
+
+    expect(mockOnChange).toHaveBeenCalledWith(0);
+  });
+
+  it('should limit maximum value as 512', () => {
+    renderComponent(STEP);
+    const element = screen.getByTestId('memory-limit-input') as HTMLInputElement;
+
+    fireEvent.change(element, { target: { value: 999 } });
+
+    expect(mockOnChange).toHaveBeenCalledWith(512 * STEP);
   });
 });
 

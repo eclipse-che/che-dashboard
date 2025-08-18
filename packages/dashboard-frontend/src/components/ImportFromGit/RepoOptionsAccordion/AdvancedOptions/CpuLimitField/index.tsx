@@ -20,7 +20,7 @@ export type Props = {
   cpuLimit: number;
 };
 export type State = {
-  cpuLimit: number;
+  cpuLimit: number | '';
 };
 
 export class CpuLimitField extends React.PureComponent<Props, State> {
@@ -28,7 +28,7 @@ export class CpuLimitField extends React.PureComponent<Props, State> {
     super(props);
 
     this.state = {
-      cpuLimit: this.props.cpuLimit,
+      cpuLimit: this.props.cpuLimit > 0 ? this.props.cpuLimit : '',
     };
   }
 
@@ -53,26 +53,28 @@ export class CpuLimitField extends React.PureComponent<Props, State> {
     this.updateCpuLimit(cpuLimit);
   }
 
-  private updateCpuLimit(cpuLimit: number) {
+  private updateCpuLimit(cpuLimit: number | '') {
     if (cpuLimit !== this.state.cpuLimit) {
       this.setState({ cpuLimit });
-      this.props.onChange(cpuLimit);
+      this.props.onChange(cpuLimit ? cpuLimit : 0); // Ensure we pass 0 if empty
     }
   }
 
   private onPlus = () => {
-    const cpuLimit = Math.min(MAX_CPU_LIMIT, this.state.cpuLimit + 1);
-    this.updateCpuLimit(cpuLimit);
+    const { cpuLimit } = this.state;
+    const newCpuLimit = cpuLimit ? Math.min(MAX_CPU_LIMIT, cpuLimit + 1) : 1;
+    this.updateCpuLimit(newCpuLimit);
   };
 
   private onMinus = () => {
-    const cpuLimit = Math.max(0, this.state.cpuLimit - 1);
-    this.updateCpuLimit(cpuLimit);
+    const { cpuLimit } = this.state;
+    const newCpuLimit = cpuLimit ? Math.max(0, cpuLimit - 1) : 0;
+    this.updateCpuLimit(newCpuLimit);
   };
 
-  private getLabel(cpuLimit: number): string {
+  private getLabel(cpuLimit: number | ''): string {
     const label = 'CPU Limit';
-    if (cpuLimit === 0) {
+    if (!cpuLimit) {
       return `${label} (default)`;
     } else if (cpuLimit === 1) {
       return `${label} (1 core)`;
@@ -95,6 +97,11 @@ export class CpuLimitField extends React.PureComponent<Props, State> {
           onMinus={() => this.onMinus()}
           onPlus={() => this.onPlus()}
           onChange={event => this.handleChange(event)}
+          onBlur={() => {
+            if (cpuLimit === 0) {
+              this.setState({ cpuLimit: '' });
+            }
+          }}
           inputName="cpu-limit"
           data-testid="cpu-limit-input"
           allowEmptyInput

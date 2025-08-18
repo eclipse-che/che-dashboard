@@ -25,7 +25,10 @@ exports[`MemoryLimitField 8Gi snapshot 1`] = `
   >
     <input
       data-testid="memory-limit-input"
+      max={512}
+      min={0}
       onChange={[Function]}
+      step={1}
       type="range"
       value=""
     />

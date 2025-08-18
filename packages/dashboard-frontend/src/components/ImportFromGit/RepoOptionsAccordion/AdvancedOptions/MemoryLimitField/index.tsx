@@ -22,7 +22,7 @@ export type Props = {
   memoryLimit: number; // Memory limit in bytes
 };
 export type State = {
-  memoryLimitGi: number; // Memory limitin in GiB
+  memoryLimitGi: number | ''; // Memory limit in GiB
 };
 
 export class MemoryLimitField extends React.PureComponent<Props, State> {
@@ -68,25 +68,32 @@ export class MemoryLimitField extends React.PureComponent<Props, State> {
   }
 
   private onPlus = () => {
+    if (this.state.memoryLimitGi === '') {
+      this.updateMemoryLimit(1);
+      return;
+    }
     const newMemoryLimit = Math.min(MAX_MEMORY_LIMIT_GI, this.state.memoryLimitGi + 1);
     this.updateMemoryLimit(newMemoryLimit);
   };
 
   private onMinus = () => {
+    if (this.state.memoryLimitGi === '') {
+      return;
+    }
     const newMemoryLimit = Math.max(0, this.state.memoryLimitGi - 1);
     this.updateMemoryLimit(newMemoryLimit);
   };
 
-  private getMemoryLimitGi(): number {
+  private getMemoryLimitGi(): number | '' {
     const memoryLimitGi = this.props.memoryLimit / STEP; // Convert bytes to GiB
     if (memoryLimitGi <= 0) {
-      return 0; // Default value
+      return ''; // Default value
     }
 
     return Math.round(memoryLimitGi); // Convert bytes to GiB
   }
 
-  private getLabel(memoryLimitGi: number): React.ReactNode {
+  private getLabel(memoryLimitGi: number | ''): React.ReactNode {
     return <>Memory&nbsp;Limit&nbsp;({memoryLimitGi ? `${memoryLimitGi}Gi` : 'default'})</>;
   }
 
@@ -99,9 +106,15 @@ export class MemoryLimitField extends React.PureComponent<Props, State> {
         <NumberInput
           value={memoryLimitGi === 0 ? '' : memoryLimitGi}
           min={0}
+          step={1}
           max={MAX_MEMORY_LIMIT_GI}
           onMinus={() => this.onMinus()}
           onPlus={() => this.onPlus()}
+          onBlur={() => {
+            if (memoryLimitGi === 0) {
+              this.setState({ memoryLimitGi: '' });
+            }
+          }}
           onChange={event => this.handleChange(event)}
           inputName="memory-limit"
           data-testid="memory-limit-input"
