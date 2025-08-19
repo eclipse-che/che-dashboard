@@ -38,9 +38,10 @@ export class MemoryLimitField extends React.PureComponent<Props, State> {
 
   public componentDidUpdate(prevProps: Readonly<Props>): void {
     if (prevProps.memoryLimit !== this.props.memoryLimit) {
-      if (this.props.memoryLimit < 0) {
-        this.props.onChange(0); // Reset to 0 if negative value
-        return;
+      if (this.props.memoryLimit < STEP) {
+        this.props.onChange(0);
+      } else if (this.props.memoryLimit > MAX_MEMORY_LIMIT_GI * STEP) {
+        this.props.onChange(MAX_MEMORY_LIMIT_GI * STEP);
       }
       const memoryLimitGi = this.getMemoryLimitGi();
       if (memoryLimitGi !== this.state.memoryLimitGi) {
@@ -88,6 +89,8 @@ export class MemoryLimitField extends React.PureComponent<Props, State> {
     const memoryLimitGi = this.props.memoryLimit / STEP; // Convert bytes to GiB
     if (memoryLimitGi <= 0) {
       return ''; // Default value
+    } else if (memoryLimitGi > MAX_MEMORY_LIMIT_GI) {
+      return MAX_MEMORY_LIMIT_GI; // Cap at maximum limit
     }
 
     return Math.round(memoryLimitGi); // Convert bytes to GiB

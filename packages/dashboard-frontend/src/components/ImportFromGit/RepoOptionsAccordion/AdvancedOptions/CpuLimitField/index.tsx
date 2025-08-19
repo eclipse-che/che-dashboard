@@ -35,8 +35,14 @@ export class CpuLimitField extends React.PureComponent<Props, State> {
   public componentDidUpdate(prevProps: Readonly<Props>): void {
     const { cpuLimit } = this.props;
     if (prevProps.cpuLimit !== cpuLimit && cpuLimit !== this.state.cpuLimit) {
-      if (this.props.cpuLimit < 0) {
-        this.props.onChange(0); // Reset to 0 if negative value
+      if (cpuLimit < 0) {
+        this.props.onChange(0);
+        this.setState({ cpuLimit: 0 });
+        return;
+      }
+      if (cpuLimit > MAX_CPU_LIMIT) {
+        this.props.onChange(MAX_CPU_LIMIT);
+        this.setState({ cpuLimit: MAX_CPU_LIMIT });
         return;
       }
       this.setState({ cpuLimit });
