@@ -22,8 +22,11 @@ exports[`CpuLimitField 2Gi snapshot 1`] = `
     className="pf-c-form__group-control"
   >
     <input
-      data-testid="cpu-limit-slider"
+      data-testid="cpu-limit-input"
+      max={99999}
+      min={0}
       onChange={[Function]}
+      step={1}
       type="range"
       value={2}
     />

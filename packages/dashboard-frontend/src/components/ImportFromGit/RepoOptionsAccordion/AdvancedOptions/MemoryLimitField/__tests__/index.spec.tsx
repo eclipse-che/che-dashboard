@@ -10,29 +10,35 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import { SliderProps } from '@patternfly/react-core';
+import { NumberInputProps } from '@patternfly/react-core';
 import { fireEvent, screen } from '@testing-library/react';
 import React from 'react';
 
 import {
+  MAX_MEMORY_LIMIT_GI,
   MemoryLimitField,
   STEP,
 } from '@/components/ImportFromGit/RepoOptionsAccordion/AdvancedOptions/MemoryLimitField';
 import getComponentRenderer from '@/services/__mocks__/getComponentRenderer';
 
 const { createSnapshot, renderComponent } = getComponentRenderer(getComponent);
+// mute the outputs
+console.error = jest.fn();
 
 jest.mock('@patternfly/react-core', () => {
   return {
     ...jest.requireActual('@patternfly/react-core'),
-    Slider: (obj: SliderProps) => (
+    NumberInput: (obj: NumberInputProps) => (
       <input
         type="range"
         data-testid={obj['data-testid']}
         value={obj.value}
+        min={obj.min}
+        max={obj.max}
+        step={obj.step}
         onChange={event => {
           if (obj.onChange) {
-            obj.onChange(event.target.value ? parseInt(event.target.value) : 0);
+            obj.onChange(event);
           }
         }}
       />
@@ -54,16 +60,35 @@ describe('MemoryLimitField', () => {
 
   it('should be init with 8Gi and switched to 32Gi', () => {
     renderComponent(8 * STEP);
-    const slider = screen.getByTestId('memory-limit-slider') as HTMLInputElement;
-    const getVal = () => parseInt(slider.value);
+    const element = screen.getByTestId('memory-limit-input') as HTMLInputElement;
+    const getVal = () => parseInt(element.value);
 
-    expect(slider).toBeDefined();
+    expect(element).toBeDefined();
     expect(getVal()).toEqual(8);
 
-    fireEvent.change(slider, { target: { value: 32 } });
+    fireEvent.change(element, { target: { value: 32 } });
 
     expect(getVal()).toEqual(32);
-    expect(mockOnChange).toHaveBeenCalledTimes(1);
+    expect(mockOnChange).toHaveBeenCalledWith(32 * STEP);
+  });
+
+  it('should limit minimum value as 0', () => {
+    renderComponent(STEP);
+    const element = screen.getByTestId('memory-limit-input') as HTMLInputElement;
+
+    fireEvent.change(element, { target: { value: -99 } });
+
+    expect(mockOnChange).toHaveBeenCalledWith(0);
+  });
+
+  it('should limit maximum value as MAX_MEMORY_LIMIT_GI=99999', () => {
+    renderComponent(STEP);
+    const element = screen.getByTestId('memory-limit-input') as HTMLInputElement;
+
+    fireEvent.change(element, { target: { value: 1111111 } });
+
+    expect(MAX_MEMORY_LIMIT_GI).toEqual(99999);
+    expect(mockOnChange).toHaveBeenCalledWith(99999 * STEP);
   });
 });
 
