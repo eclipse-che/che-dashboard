@@ -23,7 +23,7 @@ exports[`CpuLimitField 2Gi snapshot 1`] = `
   >
     <input
       data-testid="cpu-limit-input"
-      max={64}
+      max={99999}
       min={0}
       onChange={[Function]}
       step={1}
