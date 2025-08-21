@@ -14,7 +14,10 @@ import { NumberInputProps } from '@patternfly/react-core';
 import { fireEvent, screen } from '@testing-library/react';
 import React from 'react';
 
-import { CpuLimitField } from '@/components/ImportFromGit/RepoOptionsAccordion/AdvancedOptions/CpuLimitField';
+import {
+  CpuLimitField,
+  MAX_CPU_LIMIT,
+} from '@/components/ImportFromGit/RepoOptionsAccordion/AdvancedOptions/CpuLimitField';
 import getComponentRenderer from '@/services/__mocks__/getComponentRenderer';
 
 const { createSnapshot, renderComponent } = getComponentRenderer(getComponent);
@@ -77,13 +80,14 @@ describe('CpuLimitField', () => {
     expect(mockOnChange).toHaveBeenCalledWith(0);
   });
 
-  it('should limit maximum value as 64', () => {
+  it('should limit maximum value as MAX_CPU_LIMIT=99999', () => {
     renderComponent(1);
     const element = screen.getByTestId('cpu-limit-input') as HTMLInputElement;
 
-    fireEvent.change(element, { target: { value: 9999 } });
+    fireEvent.change(element, { target: { value: 11111111 } });
 
-    expect(mockOnChange).toHaveBeenCalledWith(64);
+    expect(MAX_CPU_LIMIT).toEqual(99999);
+    expect(mockOnChange).toHaveBeenCalledWith(99999);
   });
 });
 

@@ -15,7 +15,7 @@ import React from 'react';
 
 export const STEP = 1073741824;
 
-const MAX_MEMORY_LIMIT_GI = 512;
+export const MAX_MEMORY_LIMIT_GI = 99999; // Maximum memory limit in GiB
 
 export type Props = {
   onChange: (memoryLimit: number) => void;

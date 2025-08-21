@@ -15,6 +15,7 @@ import { fireEvent, screen } from '@testing-library/react';
 import React from 'react';
 
 import {
+  MAX_MEMORY_LIMIT_GI,
   MemoryLimitField,
   STEP,
 } from '@/components/ImportFromGit/RepoOptionsAccordion/AdvancedOptions/MemoryLimitField';
@@ -80,13 +81,14 @@ describe('MemoryLimitField', () => {
     expect(mockOnChange).toHaveBeenCalledWith(0);
   });
 
-  it('should limit maximum value as 512', () => {
+  it('should limit maximum value as MAX_MEMORY_LIMIT_GI=99999', () => {
     renderComponent(STEP);
     const element = screen.getByTestId('memory-limit-input') as HTMLInputElement;
 
-    fireEvent.change(element, { target: { value: 999 } });
+    fireEvent.change(element, { target: { value: 1111111 } });
 
-    expect(mockOnChange).toHaveBeenCalledWith(512 * STEP);
+    expect(MAX_MEMORY_LIMIT_GI).toEqual(99999);
+    expect(mockOnChange).toHaveBeenCalledWith(99999 * STEP);
   });
 });
 

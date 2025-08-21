@@ -13,7 +13,7 @@
 import { FormGroup, NumberInput } from '@patternfly/react-core';
 import React from 'react';
 
-const MAX_CPU_LIMIT = 64;
+export const MAX_CPU_LIMIT = 99999; // Maximum CPU limit allowed
 
 export type Props = {
   onChange: (cpuLimit: number) => void;
