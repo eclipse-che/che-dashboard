@@ -116,7 +116,7 @@
 | `chalk@2.4.2` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/chalk/2.4.2) |
 | [`chownr@2.0.0`](git://github.com/isaacs/chownr.git) | ISC | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/chownr/2.0.0) |
 | [`chownr@3.0.0`](git://github.com/isaacs/chownr.git) | BlueOak-1.0.0 | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/chownr/3.0.0) |
-| [`cipher-base@1.0.4`](git+https://github.com/crypto-browserify/cipher-base.git) | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/cipher-base/1.0.4) |
+| [`cipher-base@1.0.6`](git+https://github.com/crypto-browserify/cipher-base.git) | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/cipher-base/1.0.6) |
 | `clean-stack@2.2.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/clean-stack/2.2.0) |
 | [`codemirror@5.65.18`](https://github.com/codemirror/CodeMirror.git) | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/codemirror/5.65.18) |
 | `color-convert@1.9.3` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/color-convert/1.9.3) |
@@ -429,7 +429,7 @@
 | [`set-cookie-parser@2.7.1`](https://github.com/nfriedly/set-cookie-parser) | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/set-cookie-parser/2.7.1) |
 | [`set-function-length@1.2.2`](git+https://github.com/ljharb/set-function-length.git) | MIT | #12772 |
 | [`setprototypeof@1.2.0`](https://github.com/wesleytodd/setprototypeof.git) | ISC | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/setprototypeof/1.2.0) |
-| [`sha.js@2.4.11`](git://github.com/crypto-browserify/sha.js.git) | (MIT AND BSD-3-Clause) | #1031 |
+| [`sha.js@2.4.12`](git://github.com/crypto-browserify/sha.js.git) | (MIT AND BSD-3-Clause) | #1031 |
 | `shebang-command@2.0.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/shebang-command/2.0.0) |
 | `shebang-regex@3.0.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/shebang-regex/3.0.0) |
 | [`side-channel@1.0.6`](git+https://github.com/ljharb/side-channel.git) | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/side-channel/1.0.6) |
