@@ -61,7 +61,7 @@
 | [`@jest/test-sequencer@29.7.0`](https://github.com/jestjs/jest.git) | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@jest/test-sequencer/29.7.0) |
 | [`@jest/transform@29.7.0`](https://github.com/jestjs/jest.git) | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@jest/transform/29.7.0) |
 | [`@jest/types@29.6.3`](https://github.com/jestjs/jest.git) | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@jest/types/29.6.3) |
-| `@jridgewell/gen-mapping@0.3.3` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@jridgewell/gen-mapping/0.3.3) |
+| `@jridgewell/gen-mapping@0.3.3` | MIT | #22834 |
 | `@jridgewell/resolve-uri@3.1.1` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@jridgewell/resolve-uri/3.1.1) |
 | `@jridgewell/set-array@1.1.2` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@jridgewell/set-array/1.1.2) |
 | `@jridgewell/source-map@0.3.5` | MIT | #9304 |
@@ -192,7 +192,7 @@
 | `binary-extensions@2.2.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/binary-extensions/2.2.0) |
 | [`boolbase@1.0.0`](https://github.com/fb55/boolbase) | ISC | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/boolbase/1.0.0) |
 | [`bplist-parser@0.2.0`](https://github.com/nearinfinity/node-bplist-parser.git) | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/bplist-parser/0.2.0) |
-| [`brace-expansion@1.1.11`](git://github.com/juliangruber/brace-expansion.git) | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/brace-expansion/1.1.11) |
+| [`brace-expansion@1.1.12`](git://github.com/juliangruber/brace-expansion.git) | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/brace-expansion/1.1.12) |
 | [`braces@3.0.3`](https://github.com/micromatch/braces) | MIT | #14866 |
 | `browserslist@4.22.1` | MIT | #10780 |
 | `browserslist@4.23.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/browserslist/4.23.0) |
