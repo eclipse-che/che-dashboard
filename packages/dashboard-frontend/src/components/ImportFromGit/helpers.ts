@@ -139,6 +139,9 @@ function setBranchToAzureDevOpsLocation(location: string, branch: string | undef
 }
 
 export function setBranchToLocation(location: string, branch: string | undefined): string {
+  if (!location.startsWith('http')) {
+    return branch ? `${location}?revision=${branch}` : location;
+  }
   const url = new URL(location);
   const pathname = url.pathname.replace(/^\//, '').replace(/\/$/, '');
 

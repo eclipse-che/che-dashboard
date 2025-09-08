@@ -87,16 +87,13 @@ export class GitRepoOptions extends React.PureComponent<Props, State> {
     this.props.onChange(gitBranch, remotes, devfilePath, isValid);
   }
   public render() {
-    const { hasSupportedGitService } = this.props;
     const { gitBranch, remotes, devfilePath } = this.state;
     return (
       <Form isHorizontal={true} onSubmit={e => e.preventDefault()}>
-        {hasSupportedGitService && (
-          <GitBranchField
-            onChange={gitBranch => this.handleGitBranch(gitBranch)}
-            gitBranch={gitBranch}
-          />
-        )}
+        <GitBranchField
+          onChange={gitBranch => this.handleGitBranch(gitBranch)}
+          gitBranch={gitBranch}
+        />
         <AdditionalGitRemotes
           onChange={(remotes: GitRemote[] | undefined, isValid: boolean) =>
             this.handleRemotes(remotes, isValid)

@@ -40,7 +40,11 @@ type AccordionId = 'git-repo-options' | 'advanced-options';
 
 export type Props = MappedProps & {
   location: string;
-  onChange: (location: string, remotesValidated: ValidatedOptions) => void;
+  onChange: (
+    location: string,
+    remotesValidated: ValidatedOptions,
+    gitBranch: string | undefined,
+  ) => void;
 };
 export type State = {
   location: string;
@@ -141,7 +145,7 @@ class RepoOptionsAccordion extends React.PureComponent<Props, State> {
     ) as State;
     state.remotesValidated = isValid ? ValidatedOptions.success : ValidatedOptions.error;
     this.setState(state);
-    this.props.onChange(state.location, state.remotesValidated);
+    this.props.onChange(state.location, state.remotesValidated, gitBranch);
   }
 
   private handleAdvancedOptionsOptionsChange(
@@ -170,7 +174,7 @@ class RepoOptionsAccordion extends React.PureComponent<Props, State> {
     ) as State;
 
     this.setState(state);
-    this.props.onChange(state.location, state.remotesValidated);
+    this.props.onChange(state.location, state.remotesValidated, this.state.gitBranch);
   }
 
   public render() {

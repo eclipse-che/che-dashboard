@@ -44,20 +44,6 @@ describe('GitRepoOptions', () => {
     expect(snapshot.toJSON()).toMatchSnapshot();
   });
 
-  it('should remove "Git Branch" component when it is not supported', () => {
-    const { reRenderComponent } = renderComponent(
-      'test-git-branch',
-      [{ name: 'test', url: 'http://test' }],
-      'test-devfile-path',
-    );
-
-    expect(screen.queryByTestId('git-branch-component')).not.toBeNull();
-
-    reRenderComponent(undefined, undefined, undefined, false);
-
-    expect(screen.queryByTestId('git-branch-component')).toBeNull();
-  });
-
   test('update Git Branch', async () => {
     renderComponent('test-git-branch');
 

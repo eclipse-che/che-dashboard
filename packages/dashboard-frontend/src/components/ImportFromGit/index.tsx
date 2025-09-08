@@ -35,7 +35,11 @@ import { validateLocation } from '@/components/ImportFromGit/helpers';
 import RepoOptionsAccordion from '@/components/ImportFromGit/RepoOptionsAccordion';
 import UntrustedSourceModal from '@/components/UntrustedSourceModal';
 import { FactoryLocationAdapter } from '@/services/factory-location-adapter';
-import { EDITOR_ATTR, EDITOR_IMAGE_ATTR } from '@/services/helpers/factoryFlow/buildFactoryParams';
+import {
+  EDITOR_ATTR,
+  EDITOR_IMAGE_ATTR,
+  REVISION_ATTR,
+} from '@/services/helpers/factoryFlow/buildFactoryParams';
 import { buildUserPreferencesLocation } from '@/services/helpers/location';
 import { UserPreferencesTab } from '@/services/helpers/types';
 import { RootState } from '@/store';
@@ -56,6 +60,7 @@ export type State = {
   remotesValidated: ValidatedOptions;
   isFocused: boolean;
   isConfirmationOpen: boolean;
+  gitBranch: string | undefined;
 };
 
 class ImportFromGit extends React.PureComponent<Props, State> {
@@ -69,6 +74,7 @@ class ImportFromGit extends React.PureComponent<Props, State> {
       remotesValidated: ValidatedOptions.default,
       isFocused: false,
       isConfirmationOpen: false,
+      gitBranch: undefined,
     };
   }
 
@@ -112,6 +118,9 @@ class ImportFromGit extends React.PureComponent<Props, State> {
       if (editorImage !== undefined) {
         factory.searchParams.set(EDITOR_IMAGE_ATTR, editorImage);
       }
+    }
+    if (this.state.gitBranch && !this.state.location.startsWith('http')) {
+      factory.searchParams.set(REVISION_ATTR, this.state.gitBranch);
     }
 
     // open a new page to handle that
@@ -232,9 +241,13 @@ class ImportFromGit extends React.PureComponent<Props, State> {
               <PanelMainBody>
                 <RepoOptionsAccordion
                   location={location}
-                  onChange={(location: string, remotesValidated: ValidatedOptions) => {
+                  onChange={(
+                    location: string,
+                    remotesValidated: ValidatedOptions,
+                    gitBranch: string | undefined,
+                  ) => {
                     const locationValidated = validateLocation(location, this.state.hasSshKeys);
-                    this.setState({ location, remotesValidated, locationValidated });
+                    this.setState({ location, remotesValidated, locationValidated, gitBranch });
                   }}
                 />
               </PanelMainBody>
