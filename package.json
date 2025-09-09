@@ -49,6 +49,7 @@
     "cross-spawn": "^7.0.6",
     "elliptic": "^6.6.1",
     "find-my-way": "9.0.1",
+    "glob-parent": "^6.0.2",
     "ip": "^2.0.1",
     "jsonpath-plus": "10.1.0",
     "micromatch": "^4.0.8",
