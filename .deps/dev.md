@@ -328,7 +328,6 @@
 | [`exit@0.1.2`](git://github.com/cowboy/node-exit.git) | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/exit/0.1.2) |
 | [`expect@29.7.0`](https://github.com/jestjs/jest.git) | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/expect/29.7.0) |
 | [`fast-diff@1.3.0`](https://github.com/jhchen/fast-diff) | Apache-2.0 | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/fast-diff/1.3.0) |
-| `fast-glob@3.3.2` | MIT | #9307 |
 | `fast-glob@3.3.3` | MIT | #9307 |
 | [`fast-levenshtein@2.0.6`](https://github.com/hiddentao/fast-levenshtein.git) | MIT | #15236 |
 | [`fastest-levenshtein@1.0.16`](git+https://github.com/ka-weihe/fastest-levenshtein.git) | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/fastest-levenshtein/1.0.16) |
@@ -356,7 +355,6 @@
 | [`get-package-type@0.1.0`](git+https://github.com/cfware/get-package-type.git) | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/get-package-type/0.1.0) |
 | `get-stream@6.0.1` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/get-stream/6.0.1) |
 | [`get-symbol-description@1.0.0`](git+https://github.com/inspect-js/get-symbol-description.git) | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/get-symbol-description/1.0.0) |
-| `glob-parent@5.1.2` | ISC | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/glob-parent/5.1.2) |
 | `glob-parent@6.0.2` | ISC | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/glob-parent/6.0.2) |
 | [`glob-to-regexp@0.4.1`](https://github.com/fitzgen/glob-to-regexp.git) | BSD-2-Clause | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/glob-to-regexp/0.4.1) |
 | [`glob@7.2.3`](git://github.com/isaacs/node-glob.git) | ISC | #19366 |
