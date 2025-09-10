@@ -118,7 +118,12 @@ describe('devWorkspaces, actions', () => {
 
       const actions = store.getActions();
       expect(actions).toHaveLength(1);
-      expect(actions[0]).toEqual(devWorkspacesAddAction(workspace));
+      expect(actions[0]).toEqual(
+        devWorkspacesAddAction({
+          ...workspace,
+          spec: { started: false, template: {} },
+        }),
+      );
     });
 
     it('should handle dev workspace modified event and update workspace', async () => {
@@ -155,7 +160,12 @@ describe('devWorkspaces, actions', () => {
 
       const actions = storeWithWorkspace.getActions();
       expect(actions).toHaveLength(1);
-      expect(actions[0]).toEqual(devWorkspacesUpdateAction(workspace));
+      expect(actions[0]).toEqual(
+        devWorkspacesUpdateAction({
+          ...workspace,
+          spec: { started: false, template: {} },
+        }),
+      );
     });
 
     it('should handle dev workspace deleted event', async () => {
@@ -172,7 +182,12 @@ describe('devWorkspaces, actions', () => {
 
       const actions = store.getActions();
       expect(actions).toHaveLength(1);
-      expect(actions[0]).toEqual(devWorkspacesDeleteAction(workspace));
+      expect(actions[0]).toEqual(
+        devWorkspacesDeleteAction({
+          ...workspace,
+          spec: { started: false, template: {} },
+        }),
+      );
     });
 
     it('should not dispatch if dev workspace is invalid', async () => {
