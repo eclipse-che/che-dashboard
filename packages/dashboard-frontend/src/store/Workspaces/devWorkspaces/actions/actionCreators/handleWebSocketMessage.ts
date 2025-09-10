@@ -18,6 +18,7 @@ import { WebsocketClient } from '@/services/backend-client/websocketClient';
 import devfileApi, { isDevWorkspace } from '@/services/devfileApi';
 import { DevWorkspaceStatus } from '@/services/helpers/types';
 import { WorkspaceAdapter } from '@/services/workspace-adapter';
+import { normaliseDevWorkspace } from '@/services/workspace-client/helpers';
 import { AppThunk } from '@/store';
 import { selectDefaultNamespace } from '@/store/InfrastructureNamespaces';
 import {
@@ -70,7 +71,7 @@ export const handleWebSocketMessage =
         return;
       }
 
-      const workspace = devWorkspace as devfileApi.DevWorkspace;
+      const workspace = normaliseDevWorkspace(devWorkspace as devfileApi.DevWorkspace);
 
       // previous state of the workspace is needed for notifying about workspace status changes.
       const prevWorkspace = getState().devWorkspaces.workspaces.find(
