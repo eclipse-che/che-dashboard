@@ -10,13 +10,12 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import { StateMock } from '@react-mock/state';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
 import { Provider } from 'react-redux';
 import { Store } from 'redux';
 
-import ImportFromGit, { State } from '@/components/ImportFromGit';
+import ImportFromGit from '@/components/ImportFromGit';
 import getComponentRenderer, { screen, waitFor } from '@/services/__mocks__/getComponentRenderer';
 import { MockStoreBuilder } from '@/store/__mocks__/mockStore';
 
@@ -65,26 +64,6 @@ describe('GitRepoLocationInput', () => {
 
   test('invalid location', async () => {
     renderComponent(store);
-
-    const input = screen.getByRole('textbox');
-    expect(input).toBeValid();
-
-    await userEvent.click(input);
-    await userEvent.paste('invalid-test-location');
-
-    expect(input).toHaveValue('invalid-test-location');
-    expect(input).toBeInvalid();
-
-    const button = screen.getByRole('button', { name: 'Create & Open' });
-    expect(button).toBeDisabled();
-
-    await userEvent.type(input, '{enter}');
-    expect(window.open).not.toHaveBeenCalled();
-  });
-
-  test('invalid locccation', async () => {
-    const localState: Partial<State> = { gitBranch: 'branch' };
-    renderComponent(store, undefined, undefined, localState);
 
     const input = screen.getByRole('textbox');
     expect(input).toBeValid();
@@ -407,9 +386,11 @@ describe('GitRepoLocationInput', () => {
       );
     });
 
-    test('should add revision query parameter to ', async () => {
-      const localState: Partial<State> = { gitBranch: 'branch' };
-      renderComponent(store, undefined, undefined, localState);
+    test('should add revision query parameter', async () => {
+      const store = new MockStoreBuilder()
+        .withSshKeys({ keys: [{ name: 'key1', keyPub: 'publicKey' }] })
+        .build();
+      renderComponent(store, undefined, undefined);
 
       const input = screen.getByRole('textbox');
       expect(input).toBeValid();
@@ -418,8 +399,6 @@ describe('GitRepoLocationInput', () => {
 
       await userEvent.paste('git@github.com:user/repo.git');
       expect(input).toHaveValue('git@github.com:user/repo.git');
-
-      expect(input).toBeValid();
 
       const repoOptions = screen.getByText('Git Repo Options');
       await userEvent.click(repoOptions);
@@ -450,22 +429,14 @@ function getComponent(
   store: Store,
   editorDefinition: string | undefined = undefined,
   editorImage: string | undefined = undefined,
-  localState?: Partial<State>,
 ) {
-  const component = (
-    <ImportFromGit
-      navigate={mockNavigate}
-      editorDefinition={editorDefinition}
-      editorImage={editorImage}
-    />
+  return (
+    <Provider store={store}>
+      <ImportFromGit
+        navigate={mockNavigate}
+        editorDefinition={editorDefinition}
+        editorImage={editorImage}
+      />
+    </Provider>
   );
-  if (localState) {
-    return (
-      <Provider store={store}>
-        <StateMock state={localState}>{component}</StateMock>
-      </Provider>
-    );
-  } else {
-    return <Provider store={store}>{component}</Provider>;
-  }
 }

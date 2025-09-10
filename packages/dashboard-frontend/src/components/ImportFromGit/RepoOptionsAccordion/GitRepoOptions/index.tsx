@@ -21,6 +21,7 @@ import { GitRemote } from '@/components/WorkspaceProgress/CreatingSteps/Apply/De
 
 export type Props = {
   gitBranch: string | undefined;
+  location: string;
   remotes: GitRemote[] | undefined;
   devfilePath: string | undefined;
   hasSupportedGitService: boolean;
@@ -87,13 +88,17 @@ export class GitRepoOptions extends React.PureComponent<Props, State> {
     this.props.onChange(gitBranch, remotes, devfilePath, isValid);
   }
   public render() {
+    const { hasSupportedGitService, location } = this.props;
     const { gitBranch, remotes, devfilePath } = this.state;
+    const isSSHUrl = location.startsWith('git@') || location.startsWith('ssh://');
     return (
       <Form isHorizontal={true} onSubmit={e => e.preventDefault()}>
-        <GitBranchField
-          onChange={gitBranch => this.handleGitBranch(gitBranch)}
-          gitBranch={gitBranch}
-        />
+        {(hasSupportedGitService || isSSHUrl) && (
+          <GitBranchField
+            onChange={gitBranch => this.handleGitBranch(gitBranch)}
+            gitBranch={gitBranch}
+          />
+        )}
         <AdditionalGitRemotes
           onChange={(remotes: GitRemote[] | undefined, isValid: boolean) =>
             this.handleRemotes(remotes, isValid)

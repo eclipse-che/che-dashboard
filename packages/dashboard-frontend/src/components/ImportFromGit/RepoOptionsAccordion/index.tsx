@@ -180,8 +180,14 @@ class RepoOptionsAccordion extends React.PureComponent<Props, State> {
   public render() {
     const { hasSupportedGitService } = this.state;
     const { expanded, remotes, devfilePath, gitBranch } = this.state;
-    const { containerImage, temporaryStorage, createNewIfExisting, memoryLimit, cpuLimit } =
-      this.state;
+    const {
+      containerImage,
+      temporaryStorage,
+      createNewIfExisting,
+      memoryLimit,
+      cpuLimit,
+      location,
+    } = this.state;
     return (
       <Accordion asDefinitionList={false}>
         <AccordionItem>
@@ -204,6 +210,7 @@ class RepoOptionsAccordion extends React.PureComponent<Props, State> {
               <PanelMain>
                 <PanelMainBody>
                   <GitRepoOptions
+                    location={location}
                     gitBranch={gitBranch}
                     remotes={remotes}
                     devfilePath={devfilePath}

@@ -44,6 +44,53 @@ describe('GitRepoOptions', () => {
     expect(snapshot.toJSON()).toMatchSnapshot();
   });
 
+  it('should remove "Git Branch" component when it is not supported', () => {
+    const { reRenderComponent } = renderComponent(
+      'test-git-branch',
+      [{ name: 'test', url: 'http://test' }],
+      'test-devfile-path',
+      false,
+    );
+
+    expect(screen.queryByTestId('git-branch-component')).toBeNull();
+
+    reRenderComponent(undefined, undefined, undefined, false);
+
+    expect(screen.queryByTestId('git-branch-component')).toBeNull();
+  });
+
+  it('should not remove "Git Branch" component when URL is SSH', () => {
+    const { reRenderComponent } = renderComponent(
+      'test-git-branch',
+      [{ name: 'test', url: 'http://test' }],
+      'test-devfile-path',
+      false,
+      'git@ssh-url',
+    );
+
+    expect(screen.queryByTestId('git-branch-component')).not.toBeNull();
+
+    reRenderComponent(undefined, undefined, undefined, false);
+
+    expect(screen.queryByTestId('git-branch-component')).toBeNull();
+  });
+
+  it('should not remove "Git Branch" component when URL is SSH and has ssh protocol', () => {
+    const { reRenderComponent } = renderComponent(
+      'test-git-branch',
+      [{ name: 'test', url: 'http://test' }],
+      'test-devfile-path',
+      false,
+      'ssh://git@ssh-url',
+    );
+
+    expect(screen.queryByTestId('git-branch-component')).not.toBeNull();
+
+    reRenderComponent(undefined, undefined, undefined, false);
+
+    expect(screen.queryByTestId('git-branch-component')).toBeNull();
+  });
+
   test('update Git Branch', async () => {
     renderComponent('test-git-branch');
 
@@ -103,10 +150,12 @@ function getComponent(
   remotes?: GitRemote[] | undefined,
   devfilePath?: string | undefined,
   hasSupportedGitService: boolean = true,
+  location: string = 'url',
 ) {
   return (
     <GitRepoOptions
       gitBranch={gitBranch}
+      location={location}
       remotes={remotes}
       devfilePath={devfilePath}
       hasSupportedGitService={hasSupportedGitService}
