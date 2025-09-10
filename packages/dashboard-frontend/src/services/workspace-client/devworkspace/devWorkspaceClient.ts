@@ -117,9 +117,8 @@ export class DevWorkspaceClient {
     const workspaces: devfileApi.DevWorkspace[] = [];
     for (const item of items) {
       if (!isWebTerminal(item)) {
-        workspaces.push(item);
+        workspaces.push(normaliseDevWorkspace(item));
       }
-      normaliseDevWorkspace(item);
     }
     return { workspaces, resourceVersion };
   }
