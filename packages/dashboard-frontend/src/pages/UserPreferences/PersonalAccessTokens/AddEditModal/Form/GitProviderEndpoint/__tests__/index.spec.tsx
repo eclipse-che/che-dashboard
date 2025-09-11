@@ -40,7 +40,7 @@ describe('GitProviderEndpoint', () => {
   });
 
   it('should handle a correct endpoint', async () => {
-    const endpoint = 'https://provider.test/endpoint';
+    const endpoint = 'https://provider.test:8080/endpoint';
     renderComponent(undefined);
 
     expect(mockOnChange).not.toHaveBeenCalled();
