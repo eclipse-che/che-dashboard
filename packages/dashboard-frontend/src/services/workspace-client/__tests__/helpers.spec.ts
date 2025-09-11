@@ -10,12 +10,14 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
+import devfileApi from '@/services/devfileApi';
 import {
   getErrorMessage,
   hasLoginPage,
   isForbidden,
   isInternalServerError,
   isUnauthorized,
+  normaliseDevWorkspace,
 } from '@/services/workspace-client/helpers';
 
 // mute console.error
@@ -258,6 +260,72 @@ describe('Workspace-client helpers', () => {
           body: '...Status code 500...',
         }),
       ).toBeTruthy();
+    });
+  });
+  describe('checks normaliseDevWorkspace method', () => {
+    it('should return an equal workspace object if it has "spec" and "template"', () => {
+      const devWorkspace = {
+        apiVersion: 'workspace.devfile.io/v1alpha2',
+        kind: 'DevWorkspace',
+        metadata: {
+          name: 'hello-world',
+        },
+        spec: {
+          started: true,
+          template: {
+            attributes: {
+              'controller.devfile.io/storage-type': 'ephemeral',
+            },
+          },
+        },
+      } as devfileApi.DevWorkspace;
+
+      const normalisedDevWorkspace = normaliseDevWorkspace(devWorkspace);
+
+      expect(normalisedDevWorkspace).toEqual(devWorkspace);
+    });
+
+    it('should return the a workspace object with an empty value for "template"', () => {
+      const devWorkspace = {
+        apiVersion: 'workspace.devfile.io/v1alpha2',
+        kind: 'DevWorkspace',
+        metadata: {
+          name: 'hello-world',
+        },
+        spec: {
+          started: true,
+          // template is missing
+        },
+      } as devfileApi.DevWorkspace;
+
+      const normalisedDevWorkspace = normaliseDevWorkspace(devWorkspace);
+
+      expect(normalisedDevWorkspace).not.toEqual(devWorkspace);
+      // but "template" is added as an empty object
+      expect(normalisedDevWorkspace).toEqual({
+        ...devWorkspace,
+        spec: { ...devWorkspace.spec, template: {} },
+      });
+    });
+
+    it('should return the a workspace object with "spec" and "template"', () => {
+      const devWorkspace = {
+        apiVersion: 'workspace.devfile.io/v1alpha2',
+        kind: 'DevWorkspace',
+        metadata: {
+          name: 'hello-world',
+        },
+        // spec is missing
+      } as devfileApi.DevWorkspace;
+
+      const normalisedDevWorkspace = normaliseDevWorkspace(devWorkspace);
+
+      expect(normalisedDevWorkspace).not.toEqual(devWorkspace);
+      // but "spec" is added with "started" as false and "template" as an empty object
+      expect(normalisedDevWorkspace).toEqual({
+        ...devWorkspace,
+        spec: { started: false, template: {} },
+      });
     });
   });
 });

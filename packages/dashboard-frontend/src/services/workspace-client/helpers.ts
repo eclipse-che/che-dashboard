@@ -12,6 +12,9 @@
 
 import common from '@eclipse-che/common';
 import { AxiosResponse } from 'axios';
+import cloneDeep from 'lodash/cloneDeep';
+
+import devfileApi from '@/services/devfileApi';
 
 export const CHE_EDITOR_YAML_PATH = '.che/che-editor.yaml';
 
@@ -123,4 +126,18 @@ function hasStatus(error: unknown, _status: number): boolean {
     }
   }
   return false;
+}
+
+export function normaliseDevWorkspace(workspace: devfileApi.DevWorkspace): devfileApi.DevWorkspace {
+  const _workspace = cloneDeep(workspace);
+  if (_workspace.spec === undefined) {
+    _workspace.spec = {
+      started: false,
+      template: {},
+    };
+  }
+  if (_workspace.spec.template === undefined) {
+    _workspace.spec.template = {};
+  }
+  return _workspace;
 }

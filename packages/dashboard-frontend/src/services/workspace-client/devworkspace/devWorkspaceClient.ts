@@ -40,6 +40,7 @@ import { DevWorkspaceStatus } from '@/services/helpers/types';
 import { fetchData } from '@/services/registry/fetchData';
 import { WorkspaceAdapter } from '@/services/workspace-adapter';
 import { DevWorkspaceDefaultPluginsHandler } from '@/services/workspace-client/devworkspace/DevWorkspaceDefaultPluginsHandler';
+import { normaliseDevWorkspace } from '@/services/workspace-client/helpers';
 import { EDITOR_DEVFILE_API_QUERY } from '@/store/DevfileRegistries/const';
 import { WorkspacesDefaultPlugins } from '@/store/Plugins/devWorkspacePlugins';
 
@@ -116,7 +117,7 @@ export class DevWorkspaceClient {
     const workspaces: devfileApi.DevWorkspace[] = [];
     for (const item of items) {
       if (!isWebTerminal(item)) {
-        workspaces.push(item);
+        workspaces.push(normaliseDevWorkspace(item));
       }
     }
     return { workspaces, resourceVersion };
@@ -143,7 +144,8 @@ export class DevWorkspaceClient {
     } else if (workspaceStatus.phase === DevWorkspaceStatus.RUNNING && !workspaceStatus?.mainUrl) {
       console.warn('Could not retrieve mainUrl for the running workspace');
     }
-    return workspace;
+
+    return normaliseDevWorkspace(workspace);
   }
 
   async createDevWorkspace(
