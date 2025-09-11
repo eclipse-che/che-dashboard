@@ -44,6 +44,7 @@ export const actionCreators = {
       const overrideParams = factoryParams
         ? Object.assign({}, factoryParams.overrides, {
             error_code: factoryParams?.errorCode,
+            revision: factoryParams?.revision,
           })
         : undefined;
 

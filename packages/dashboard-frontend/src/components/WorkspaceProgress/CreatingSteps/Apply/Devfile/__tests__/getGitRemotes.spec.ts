@@ -163,7 +163,7 @@ describe('getGitRemotes functions', () => {
 
     test('remotes configured with urls', () => {
       const remotes = '{http://git-test-1.git,http://git-test-2.git,http://git-test-3.git}';
-      configureProjectRemotes(dashboardDevfile, remotes, false);
+      configureProjectRemotes(dashboardDevfile, remotes, false, 'HEAD');
 
       expect(dashboardDevfile.projects).not.toBe(undefined);
       expect(dashboardDevfile.projects?.length).toBe(1);
@@ -184,7 +184,7 @@ describe('getGitRemotes functions', () => {
     test('remotes configured with urls and names', () => {
       const remotes =
         '{{test1,http://git-test-1.git},{test2,http://git-test-2.git},{test3,http://git-test-3.git}}';
-      configureProjectRemotes(dashboardDevfile, remotes, false);
+      configureProjectRemotes(dashboardDevfile, remotes, false, 'HEAD');
 
       expect(dashboardDevfile.projects).not.toBe(undefined);
       expect(dashboardDevfile.projects?.length).toBe(1);
@@ -206,7 +206,7 @@ describe('getGitRemotes functions', () => {
     test('keep origin remote if origin remote not provided as a parameter', () => {
       const remotes =
         '{{upstream,https://github.com/eclipse-che/che-dashboard.git},{fork,https://github.com/fork/che-dashboard.git}}';
-      configureProjectRemotes(dashboardDevfile, remotes, false);
+      configureProjectRemotes(dashboardDevfile, remotes, false, 'HEAD');
 
       expect(dashboardDevfile.projects).not.toBe(undefined);
       expect(dashboardDevfile.projects?.length).toBe(1);
@@ -240,7 +240,7 @@ describe('getGitRemotes functions', () => {
       ];
       const remotes =
         '{{upstream,https://github.com/eclipse-che/che-dashboard.git},{fork,https://github.com/fork/che-dashboard.git}}';
-      configureProjectRemotes(dashboardDevfile, remotes, false);
+      configureProjectRemotes(dashboardDevfile, remotes, false, 'HEAD');
 
       expect(dashboardDevfile.projects).not.toBe(undefined);
       expect(dashboardDevfile.projects?.length).toBe(1);
@@ -248,7 +248,7 @@ describe('getGitRemotes functions', () => {
         git: {
           checkoutFrom: {
             remote: 'origin',
-            revision: 'branch',
+            revision: 'HEAD',
           },
           remotes: {
             origin: 'https://github.com/user/che-dashboard.git',
@@ -262,7 +262,7 @@ describe('getGitRemotes functions', () => {
     test('use new origin remote if provided as a parameter', () => {
       const remotes =
         '{{origin,https://github.com/other-user/che-dashboard.git},{upstream,https://github.com/eclipse-che/che-dashboard.git},{fork,https://github.com/fork/che-dashboard.git}}';
-      configureProjectRemotes(dashboardDevfile, remotes, false);
+      configureProjectRemotes(dashboardDevfile, remotes, false, 'HEAD');
 
       expect(dashboardDevfile.projects).not.toBe(undefined);
       expect(dashboardDevfile.projects?.length).toBe(1);
@@ -288,7 +288,7 @@ describe('getGitRemotes functions', () => {
         },
       } as devfileApi.Devfile;
       const remotes = '{https://github.com/eclipse-che/che-dashboard.git}';
-      configureProjectRemotes(defaultDevfile, remotes, true);
+      configureProjectRemotes(defaultDevfile, remotes, true, 'HEAD');
 
       const expectedDevfile = {
         schemaVersion: '2.1.0',
@@ -299,7 +299,7 @@ describe('getGitRemotes functions', () => {
         projects: [
           {
             git: {
-              checkoutFrom: { remote: 'origin' },
+              checkoutFrom: { remote: 'origin', revision: 'HEAD' },
               remotes: {
                 origin: 'https://github.com/eclipse-che/che-dashboard.git',
               },

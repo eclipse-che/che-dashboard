@@ -273,6 +273,17 @@ describe('helpers', () => {
         }
       });
     });
+    describe('ssh url', () => {
+      test('should return url with branch', () => {
+        const branch = 'branch';
+        expect(helpers.setBranchToLocation('git@ssh-url.git', branch)).toBe(
+          `git@ssh-url.git?revision=${branch}`,
+        );
+      });
+      test('should return url without branch', () => {
+        expect(helpers.setBranchToLocation('git@ssh-url.git', undefined)).toBe('git@ssh-url.git');
+      });
+    });
   });
   describe('getGitRepoOptionsFromLocation', () => {
     describe('supported Git services', () => {

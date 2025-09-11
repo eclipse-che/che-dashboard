@@ -133,8 +133,9 @@ function parseUrls(remotesArray: unknown[], remotesString: string): GitRemote[] 
 
 export function configureProjectRemotes(
   devfile: devfileApi.Devfile,
-  remotes: string,
+  remotes: string | undefined,
   isDefaultDevfile: boolean,
+  revision: string,
 ): void {
   const parsedRemotes = getGitRemotes(remotes);
 
@@ -156,7 +157,7 @@ export function configureProjectRemotes(
     checkoutRemote = { name: 'origin', url: gitProject.remotes.origin };
   }
   if (gitProject) {
-    addRemotesToProject(gitProject, checkoutRemote, parsedRemotes);
+    addRemotesToProject(gitProject, checkoutRemote, parsedRemotes, revision);
   } else {
     console.warn('Failed to configure the project remotes.');
   }
@@ -195,11 +196,13 @@ function getGitProjectForConfiguringRemotes(projects: V230DevfileProjects[] | un
  * @param gitProject The Git project to add the new remotes to
  * @param checkoutRemote The Git remote to set checkoutFrom.remote to
  * @param newRemotes The array of new Git remotes to add
+ * @param revision Git branch or tag
  */
 function addRemotesToProject(
   gitProject: V230DevfileProjectsItemsGit,
   checkoutRemote: GitRemote,
   newRemotes: GitRemote[],
+  revision: string,
 ): void {
   const gitRemotes = newRemotes.reduce((map, remote) => {
     map[remote.name] = remote.url;
@@ -209,5 +212,6 @@ function addRemotesToProject(
   gitProject.remotes = Object.assign(gitProject.remotes, gitRemotes);
   gitProject.checkoutFrom = Object.assign(gitProject.checkoutFrom || {}, {
     remote: checkoutRemote.name,
+    revision,
   });
 }

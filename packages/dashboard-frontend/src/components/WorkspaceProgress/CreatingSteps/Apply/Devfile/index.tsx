@@ -179,7 +179,7 @@ class CreatingStepApplyDevfile extends ProgressStep<Props, State> {
   private updateCurrentDevfile(devfile: devfileApi.Devfile): void {
     const { factoryResolver, allWorkspaces, defaultDevfile, preferredStorageType } = this.props;
     const { factoryParams } = this.state;
-    const { factoryId, policiesCreate, sourceUrl, remotes } = factoryParams;
+    const { factoryId, policiesCreate, sourceUrl, remotes, revision } = factoryParams;
 
     // when using the default devfile instead of a user devfile
     if (factoryResolver === undefined && isEqual(devfile, defaultDevfile)) {
@@ -210,8 +210,13 @@ class CreatingStepApplyDevfile extends ProgressStep<Props, State> {
       devfile.attributes[DEVWORKSPACE_BOOTSTRAP] = true;
     }
 
-    if (remotes) {
-      configureProjectRemotes(devfile, remotes, isEqual(devfile, defaultDevfile));
+    if (remotes || revision) {
+      configureProjectRemotes(
+        devfile,
+        remotes,
+        isEqual(devfile, defaultDevfile),
+        revision || 'HEAD',
+      );
     }
 
     // test the devfile name to decide if we need to append a suffix to is

@@ -19,6 +19,7 @@ export const FACTORY_URL_ATTR = 'url';
 export const POLICIES_CREATE_ATTR = 'policies.create';
 export const STORAGE_TYPE_ATTR = 'storageType';
 export const REMOTES_ATTR = 'remotes';
+export const REVISION_ATTR = 'revision';
 export const IMAGE_ATTR = 'image';
 export const CPU_LIMIT_ATTR = 'cpuLimit';
 export const MEMORY_LIMIT_ATTR = 'memoryLimit';
@@ -57,6 +58,7 @@ export type FactoryParams = {
   cheEditor: string | undefined;
   editorImage: string | undefined;
   remotes: string | undefined;
+  revision: string | undefined;
   image: string | undefined;
   cpuLimit: string | undefined;
   memoryLimit: string | undefined;
@@ -81,6 +83,7 @@ export function buildFactoryParams(searchParams: URLSearchParams): FactoryParams
     sourceUrl: getSourceUrl(searchParams),
     storageType: getStorageType(searchParams),
     remotes: getRemotes(searchParams),
+    revision: getRevision(searchParams),
     useDevWorkspaceResources: getDevworkspaceResourcesUrl(searchParams) !== undefined,
     image: getImage(searchParams),
     cpuLimit: getCpuLimit(searchParams),
@@ -141,6 +144,10 @@ function getErrorCode(searchParams: URLSearchParams): ErrorCode | undefined {
 
 function getRemotes(searchParams: URLSearchParams): string | undefined {
   return searchParams.get(REMOTES_ATTR) || undefined;
+}
+
+function getRevision(searchParams: URLSearchParams): string | undefined {
+  return searchParams.get(REVISION_ATTR) || undefined;
 }
 
 function buildFactoryId(searchParams: URLSearchParams): string {
