@@ -77,6 +77,7 @@ describe('RepoOptionsAccordion', () => {
     expect(mockOnChange).toHaveBeenCalledWith(
       'https://testlocation?image=newContainerImage&storageType=ephemeral&policies.create=perclick&memoryLimit=1Gi&cpuLimit=1',
       undefined,
+      undefined,
     );
   });
 
@@ -109,6 +110,7 @@ describe('RepoOptionsAccordion', () => {
     expect(mockOnChange).toHaveBeenCalledWith(
       'https://testlocation?remotes={{test-updated,http://test}}&devfilePath=newDevfilePath',
       'success',
+      'newBranch',
     );
   });
 
@@ -141,6 +143,7 @@ describe('RepoOptionsAccordion', () => {
     expect(mockOnChange).toHaveBeenCalledWith(
       'https://github.com/testlocation/undefined/tree/newBranch?remotes={{test-updated,http://test}}&devfilePath=newDevfilePath',
       'success',
+      'newBranch',
     );
   });
 });

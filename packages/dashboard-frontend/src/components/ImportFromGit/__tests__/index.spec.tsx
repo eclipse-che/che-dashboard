@@ -385,6 +385,43 @@ describe('GitRepoLocationInput', () => {
         '_blank',
       );
     });
+
+    test('should add revision query parameter', async () => {
+      const store = new MockStoreBuilder()
+        .withSshKeys({ keys: [{ name: 'key1', keyPub: 'publicKey' }] })
+        .build();
+      renderComponent(store, undefined, undefined);
+
+      const input = screen.getByRole('textbox');
+      expect(input).toBeValid();
+
+      await userEvent.click(input);
+
+      await userEvent.paste('git@github.com:user/repo.git');
+      expect(input).toHaveValue('git@github.com:user/repo.git');
+
+      const repoOptions = screen.getByText('Git Repo Options');
+      await userEvent.click(repoOptions);
+
+      const gitBranch = screen.getByRole('textbox', { name: 'Git Branch' });
+      await userEvent.click(gitBranch);
+      await userEvent.paste('test');
+
+      const buttonCreate = screen.getByRole('button', { name: 'Create & Open' });
+      expect(buttonCreate).toBeEnabled();
+
+      await userEvent.click(buttonCreate);
+
+      // trust the resource
+      const continueButton = screen.getByRole('button', { name: 'Continue' });
+      await userEvent.click(continueButton);
+
+      expect(window.open).toHaveBeenCalledTimes(1);
+      expect(window.open).toHaveBeenLastCalledWith(
+        'http://localhost/#git@github.com:user/repo.git?revision=test',
+        '_blank',
+      );
+    });
   });
 });
 

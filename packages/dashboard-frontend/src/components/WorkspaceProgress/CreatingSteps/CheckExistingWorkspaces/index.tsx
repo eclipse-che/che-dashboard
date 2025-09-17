@@ -228,7 +228,19 @@ class CreatingStepCheckExistingWorkspaces extends ProgressStep<Props, State> {
     workspaces: Workspace[],
     factoryParams: FactoryParams,
   ): Workspace[] {
-    return workspaces.filter(workspace => workspace.source === factoryParams.sourceUrl);
+    return workspaces.filter(workspace => {
+      let revision: string | undefined;
+      const projects = workspace.ref.spec.template.projects;
+      if (projects && projects.length > 0) {
+        const git = projects[0].git;
+        if (git && git.checkoutFrom && git.checkoutFrom.revision) {
+          if (git.checkoutFrom.revision) {
+            revision = git.checkoutFrom.revision;
+          }
+        }
+      }
+      return workspace.source === factoryParams.sourceUrl && revision === factoryParams.revision;
+    });
   }
 
   protected buildAlertItem(error: Error): AlertItem {

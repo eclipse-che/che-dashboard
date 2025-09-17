@@ -26,6 +26,7 @@ import {
   EXISTING_WORKSPACE_NAME,
   FACTORY_URL_ATTR,
   POLICIES_CREATE_ATTR,
+  REVISION_ATTR,
 } from '@/services/helpers/factoryFlow/buildFactoryParams';
 import { buildFactoryLocation } from '@/services/helpers/location';
 import { TabManager } from '@/services/tabManager';
@@ -209,6 +210,257 @@ describe('Creating steps, checking existing workspaces', () => {
 
         await waitFor(() =>
           expect(mockTabManagerReplace).toHaveBeenCalledWith(
+            expect.stringContaining(`/ide/user-che/project-1`),
+          ),
+        );
+      });
+
+      it('should open the existing workspace created from the same repo and revision', async () => {
+        searchParams.delete(DEV_WORKSPACE_ATTR);
+        searchParams.set(EXISTING_WORKSPACE_NAME, 'project-1');
+        searchParams.set(FACTORY_URL_ATTR, 'https://github.com/eclipse-che/che-dashboard');
+        searchParams.set(REVISION_ATTR, 'revision');
+
+        const resources: DevWorkspaceResources = [
+          {
+            metadata: {
+              name: workspaceName,
+            },
+          } as devfileApi.DevWorkspace,
+          {} as devfileApi.DevWorkspaceTemplate,
+        ];
+        store = new MockStoreBuilder()
+          .withDevWorkspaces({
+            workspaces: [
+              new DevWorkspaceBuilder()
+                .withMetadata({
+                  name: 'project-1',
+                  namespace: 'user-che',
+                  annotations: {
+                    [DEVWORKSPACE_DEVFILE_SOURCE]: dump({
+                      factory: {
+                        params: 'url=https://github.com/eclipse-che/che-dashboard',
+                      },
+                    }),
+                  },
+                })
+                .withSpec({
+                  template: {
+                    projects: [
+                      {
+                        git: {
+                          remotes: {
+                            origin: 'remote',
+                          },
+                          checkoutFrom: { revision: 'revision' },
+                        },
+                        name: 'project-1',
+                      },
+                    ],
+                  },
+                })
+                .build(),
+              new DevWorkspaceBuilder()
+                .withMetadata({
+                  name: 'project-2',
+                  namespace: 'user-che',
+                  annotations: {
+                    [DEVWORKSPACE_DEVFILE_SOURCE]: dump({
+                      factory: {
+                        params: 'url=https://github.com/eclipse-che/che-dashboard',
+                      },
+                    }),
+                  },
+                })
+                .build(),
+            ],
+          })
+          .withDevfileRegistries({
+            devWorkspaceResources: {
+              [resourcesUrl]: {
+                resources,
+              },
+            },
+          })
+          .withFactoryResolver({
+            resolver: {
+              location: 'https://github.com/eclipse-che/che-dashboard',
+              devfile: {
+                schemaVersion: '2.1.0',
+                metadata: {
+                  name: workspaceName,
+                },
+              } as devfileApi.Devfile,
+            },
+          })
+          .build();
+
+        renderComponent(store, searchParams);
+
+        await waitFor(() =>
+          expect(mockTabManagerReplace).toHaveBeenCalledWith(
+            expect.stringContaining(`/ide/user-che/project-1`),
+          ),
+        );
+      });
+
+      it('should not open the existing workspace created from the same repo with revision in workspace', async () => {
+        searchParams.delete(DEV_WORKSPACE_ATTR);
+        searchParams.set(EXISTING_WORKSPACE_NAME, 'project-1');
+        searchParams.set(FACTORY_URL_ATTR, 'https://github.com/eclipse-che/che-dashboard');
+
+        const resources: DevWorkspaceResources = [
+          {
+            metadata: {
+              name: workspaceName,
+            },
+          } as devfileApi.DevWorkspace,
+          {} as devfileApi.DevWorkspaceTemplate,
+        ];
+        store = new MockStoreBuilder()
+          .withDevWorkspaces({
+            workspaces: [
+              new DevWorkspaceBuilder()
+                .withMetadata({
+                  name: 'project-1',
+                  namespace: 'user-che',
+                  annotations: {
+                    [DEVWORKSPACE_DEVFILE_SOURCE]: dump({
+                      factory: {
+                        params: 'url=https://github.com/eclipse-che/che-dashboard',
+                      },
+                    }),
+                  },
+                })
+                .withSpec({
+                  template: {
+                    projects: [
+                      {
+                        git: {
+                          remotes: {
+                            origin: 'remote',
+                          },
+                          checkoutFrom: { revision: 'revision' },
+                        },
+                        name: 'project-1',
+                      },
+                    ],
+                  },
+                })
+                .build(),
+              new DevWorkspaceBuilder()
+                .withMetadata({
+                  name: 'project-2',
+                  namespace: 'user-che',
+                  annotations: {
+                    [DEVWORKSPACE_DEVFILE_SOURCE]: dump({
+                      factory: {
+                        params: 'url=https://github.com/eclipse-che/che-dashboard',
+                      },
+                    }),
+                  },
+                })
+                .build(),
+            ],
+          })
+          .withDevfileRegistries({
+            devWorkspaceResources: {
+              [resourcesUrl]: {
+                resources,
+              },
+            },
+          })
+          .withFactoryResolver({
+            resolver: {
+              location: 'https://github.com/eclipse-che/che-dashboard',
+              devfile: {
+                schemaVersion: '2.1.0',
+                metadata: {
+                  name: workspaceName,
+                },
+              } as devfileApi.Devfile,
+            },
+          })
+          .build();
+
+        renderComponent(store, searchParams);
+
+        await waitFor(() =>
+          expect(mockTabManagerReplace).not.toHaveBeenCalledWith(
+            expect.stringContaining(`/ide/user-che/project-1`),
+          ),
+        );
+      });
+
+      it('should not open the existing workspace created from the same repo with revision in parameters', async () => {
+        searchParams.delete(DEV_WORKSPACE_ATTR);
+        searchParams.set(EXISTING_WORKSPACE_NAME, 'project-1');
+        searchParams.set(FACTORY_URL_ATTR, 'https://github.com/eclipse-che/che-dashboard');
+        searchParams.set(REVISION_ATTR, 'revision');
+
+        const resources: DevWorkspaceResources = [
+          {
+            metadata: {
+              name: workspaceName,
+            },
+          } as devfileApi.DevWorkspace,
+          {} as devfileApi.DevWorkspaceTemplate,
+        ];
+        store = new MockStoreBuilder()
+          .withDevWorkspaces({
+            workspaces: [
+              new DevWorkspaceBuilder()
+                .withMetadata({
+                  name: 'project-1',
+                  namespace: 'user-che',
+                  annotations: {
+                    [DEVWORKSPACE_DEVFILE_SOURCE]: dump({
+                      factory: {
+                        params: 'url=https://github.com/eclipse-che/che-dashboard',
+                      },
+                    }),
+                  },
+                })
+                .build(),
+              new DevWorkspaceBuilder()
+                .withMetadata({
+                  name: 'project-2',
+                  namespace: 'user-che',
+                  annotations: {
+                    [DEVWORKSPACE_DEVFILE_SOURCE]: dump({
+                      factory: {
+                        params: 'url=https://github.com/eclipse-che/che-dashboard',
+                      },
+                    }),
+                  },
+                })
+                .build(),
+            ],
+          })
+          .withDevfileRegistries({
+            devWorkspaceResources: {
+              [resourcesUrl]: {
+                resources,
+              },
+            },
+          })
+          .withFactoryResolver({
+            resolver: {
+              location: 'https://github.com/eclipse-che/che-dashboard',
+              devfile: {
+                schemaVersion: '2.1.0',
+                metadata: {
+                  name: workspaceName,
+                },
+              } as devfileApi.Devfile,
+            },
+          })
+          .build();
+
+        renderComponent(store, searchParams);
+
+        await waitFor(() =>
+          expect(mockTabManagerReplace).not.toHaveBeenCalledWith(
             expect.stringContaining(`/ide/user-che/project-1`),
           ),
         );
