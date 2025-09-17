@@ -32,9 +32,7 @@ export type OAuthResponse = {
 
 export interface Resolver extends FactoryResolver {
   devfile: devfileApi.Devfile;
-  optionalFilesContent?: {
-    [fileName: string]: string;
-  };
+  optionalFilesContent?: { [fileName: string]: { location: string; content: string } | undefined };
 }
 
 export interface State {

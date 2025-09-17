@@ -39,7 +39,9 @@ export const actionCreators = {
     (location: string, factoryParams: Partial<FactoryParams> = {}): AppThunk =>
     async (dispatch, getState): Promise<void> => {
       const state = getState();
-      const optionalFilesContent = {};
+      const optionalFilesContent: {
+        [fileName: string]: { location: string; content: string } | undefined;
+      } = {};
 
       const overrideParams = factoryParams
         ? Object.assign({}, factoryParams.overrides, {
@@ -59,10 +61,10 @@ export const actionCreators = {
         } else {
           try {
             data = await getFactoryResolver(location, overrideParams);
-            const cheEditor = await grabLink(data.links || [], CHE_EDITOR_YAML_PATH);
-            if (cheEditor) {
-              optionalFilesContent[CHE_EDITOR_YAML_PATH] = cheEditor;
-            }
+            optionalFilesContent[CHE_EDITOR_YAML_PATH] = await grabLink(
+              data.links,
+              CHE_EDITOR_YAML_PATH,
+            );
           } catch (error) {
             if (location.endsWith('.yaml') || location.endsWith('.yml')) {
               try {

@@ -18,7 +18,6 @@ import {
 } from '@devfile/api';
 import { api } from '@eclipse-che/common';
 import { inject, injectable } from 'inversify';
-import { load } from 'js-yaml';
 import cloneDeep from 'lodash/cloneDeep';
 import isEqual from 'lodash/isEqual';
 
@@ -40,7 +39,9 @@ import { DevWorkspaceStatus } from '@/services/helpers/types';
 import { fetchData } from '@/services/registry/fetchData';
 import { WorkspaceAdapter } from '@/services/workspace-adapter';
 import { DevWorkspaceDefaultPluginsHandler } from '@/services/workspace-client/devworkspace/DevWorkspaceDefaultPluginsHandler';
+import { fetchEditor } from '@/services/workspace-client/devworkspace/devWorkspaceEditor';
 import { normaliseDevWorkspace } from '@/services/workspace-client/helpers';
+import { isCheEditorYamlPath } from '@/services/workspace-client/helpers';
 import { EDITOR_DEVFILE_API_QUERY } from '@/store/DevfileRegistries/const';
 import { WorkspacesDefaultPlugins } from '@/store/Plugins/devWorkspacePlugins';
 
@@ -655,10 +656,7 @@ export class DevWorkspaceClient {
     pluginRegistryUrl: string | undefined,
     pluginRegistryInternalUrl: string | undefined,
     openVSXUrl: string | undefined,
-    clusterConsole?: {
-      url: string;
-      title: string;
-    },
+    clusterConsole?: { url: string; title: string },
   ): Promise<api.IPatch[]> {
     const patch: api.IPatch[] = [];
     const managedTemplate = await DwtApi.getTemplateByName(namespace, editorName);
@@ -722,12 +720,8 @@ export class DevWorkspaceClient {
         editor = cloneDeep(_editor);
       }
     } else {
-      const editorContent = await fetchData<string | devfileApi.Devfile>(url);
-      if (typeof editorContent === 'string') {
-        editor = load(editorContent) as devfileApi.Devfile;
-      } else if (typeof editorContent === 'object') {
-        editor = editorContent;
-      }
+      const isCheEditorYamlFile = isCheEditorYamlPath(url);
+      editor = await fetchEditor(url, fetchData, isCheEditorYamlFile);
     }
 
     if (editor === undefined) {

@@ -45,9 +45,12 @@ describe('grabLink', () => {
     const links = getLinks();
     const link = await grabLink(links, '.che/che-editor.yaml');
 
-    expect(link).toEqual(
-      'inline:\n  schemaVersion: 2.1.0\n  metadata:\n    name: che-code\n    displayName: VS Code - Open Source',
-    );
+    expect(link).toEqual({
+      location:
+        'https://che-host/api/scm/resolve?repository=https%3A%2F%2Fgithub.com%2Fusername%2Fweb-nodejs-sample%2Ftree%2Fubi9-devspaces-editor&file=.che%2Fche-editor.yaml',
+      content:
+        'inline:\n  schemaVersion: 2.1.0\n  metadata:\n    name: che-code\n    displayName: VS Code - Open Source',
+    });
   });
 
   test('link is found but devfile is not found', async () => {

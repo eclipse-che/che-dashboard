@@ -35,9 +35,9 @@ import { DEFAULT_REGISTRY } from '@/store/DevfileRegistries';
  * Grabs an editor devfile from the provided links.
  */
 export async function grabLink(
-  links: che.api.core.rest.Link[],
+  links: che.api.core.rest.Link[] = [],
   filename: string,
-): Promise<string | undefined> {
+): Promise<{ location: string; content: string } | undefined> {
   // handle servers not yet providing links
   if (links.length === 0) {
     return undefined;
@@ -52,9 +52,14 @@ export async function grabLink(
   url.searchParams.forEach((value, key) => url.searchParams.set(key, encodeURI(value)));
 
   try {
+    // in dev mode, we need to replace the localhost by the current origin
+    const location = url.href.replace(
+      /^http:\/\/localhost:8081\/api\//,
+      `${window.location.origin}/api/`,
+    );
     // load it in raw format
     // see https://github.com/axios/axios/issues/907
-    const response = await axios.get<string>(url.href, {
+    const response = await axios.get<string>(location, {
       responseType: 'text',
       transformResponse: [
         data => {
@@ -62,7 +67,7 @@ export async function grabLink(
         },
       ],
     });
-    return response.data;
+    return { location, content: response.data };
   } catch (error) {
     // content may not be there
     if (
