@@ -37,28 +37,18 @@ export async function getCustomEditor(
   if (!cheEditorYaml) {
     return undefined;
   }
-  // check the content of cheEditor file
-  console.debug('Using the repository .che/che-editor.yaml file', cheEditorYaml);
-
   let repositoryEditorYaml: devfileApi.Devfile | undefined;
   let editorReference: string | undefined;
   // it's an inlined editor, use the inline content
   if (cheEditorYaml.inline) {
-    console.debug('Using the inline content of the repository editor');
     repositoryEditorYaml = cheEditorYaml.inline;
   } else if (cheEditorYaml.id) {
-    // load the content of this editor
-    console.debug(`Loading editor from its id ${cheEditorYaml.id}`);
-
-    // registryUrl ?
     if (cheEditorYaml.registryUrl) {
       editorReference = `${cheEditorYaml.registryUrl}/plugins/${cheEditorYaml.id}/devfile.yaml`;
     } else {
       editorReference = cheEditorYaml.id;
     }
   } else if (cheEditorYaml.reference) {
-    // load the content of this editor
-    console.debug(`Loading editor from reference ${cheEditorYaml.reference}`);
     editorReference = cheEditorYaml.reference;
   }
   if (editorReference) {
@@ -73,7 +63,6 @@ export async function getCustomEditor(
 
   // if there are some overrides, apply them
   if (cheEditorYaml.override) {
-    console.debug(`Applying overrides ${JSON.stringify(cheEditorYaml.override)}...`);
     cheEditorYaml.override.containers?.forEach(container => {
       // search matching component
       const matchingComponent = repositoryEditorYaml?.components
@@ -83,9 +72,6 @@ export async function getCustomEditor(
         // apply overrides except the name
         Object.keys(container).forEach(property => {
           if (matchingComponent.container?.[property] && property !== 'name') {
-            console.debug(
-              `Updating property from ${matchingComponent.container[property]} to ${container[property]}`,
-            );
             matchingComponent.container[property] = container[property];
           }
         });
