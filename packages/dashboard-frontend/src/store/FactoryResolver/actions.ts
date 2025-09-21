@@ -66,12 +66,10 @@ export const actionCreators = {
               CHE_EDITOR_YAML_PATH,
             );
           } catch (error) {
-            if (location.endsWith('.yaml') || location.endsWith('.yml')) {
-              try {
-                data = await getYamlResolver(location);
-              } catch (e) {
-                console.log(e);
-              }
+            try {
+              data = await getYamlResolver(location);
+            } catch (e) {
+              console.log(e);
             }
             if (!data?.devfile) {
               throw error;

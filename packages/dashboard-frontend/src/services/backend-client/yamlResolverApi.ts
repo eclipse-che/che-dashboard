@@ -11,7 +11,7 @@
  */
 
 import { helpers } from '@eclipse-che/common';
-import * as yaml from 'js-yaml';
+import { load } from 'js-yaml';
 
 import devfileApi from '@/services/devfileApi';
 import { FactoryResolver } from '@/services/helpers/types';
@@ -23,7 +23,7 @@ export async function getYamlResolver(location: string): Promise<FactoryResolver
 
     return {
       v: 'yaml-resolver',
-      devfile: yaml.load(data) as devfileApi.Devfile,
+      devfile: load(data) as devfileApi.Devfile,
       location,
       links: [],
     };
