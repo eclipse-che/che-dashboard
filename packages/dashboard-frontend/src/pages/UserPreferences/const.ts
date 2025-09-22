@@ -33,6 +33,7 @@ export const GIT_PROVIDERS: Record<api.GitProvider, string> = {
   'bitbucket-server': 'Bitbucket Server',
   github: 'GitHub',
   gitlab: 'GitLab',
+  bitbucket: 'Bitbucket',
 } as const;
 
 export const DEFAULT_GIT_PROVIDER: api.GitProvider = 'github';
@@ -42,4 +43,5 @@ export const GIT_PROVIDER_ENDPOINTS: Record<api.GitProvider, string> = {
   'bitbucket-server': 'https://bitbucket.org',
   github: 'https://github.com',
   gitlab: 'https://gitlab.com',
+  bitbucket: 'https://bitbucket.org/',
 } as const;

@@ -66,6 +66,10 @@ export class GitProviderSelector extends React.PureComponent<Props, State> {
         const providerNameB = providerEntryB[1];
         return providerNameA.localeCompare(providerNameB);
       })
+      .filter(providerEntry => {
+        // Exclude Bitbucket from the list as it does not provide PAT.
+        return providerEntry[0] !== 'bitbucket';
+      })
       .map(providerEntry => {
         const [provider, providerName] = providerEntry as [api.GitProvider, string];
         return (
