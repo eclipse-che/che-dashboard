@@ -27,8 +27,6 @@ export async function getCustomEditor(
   dispatch: ThunkDispatch<RootState, unknown, UnknownAction>,
   getState: () => RootState,
 ): Promise<string | undefined> {
-  // let editorsDevfile: devfileApi.Devfile | undefined;
-
   // do we have a custom editor specified in the repository ?
   const cheEditorYaml = optionalFilesContent[CHE_EDITOR_YAML_PATH]?.content
     ? (load(optionalFilesContent[CHE_EDITOR_YAML_PATH].content) as ICheEditorYaml)
