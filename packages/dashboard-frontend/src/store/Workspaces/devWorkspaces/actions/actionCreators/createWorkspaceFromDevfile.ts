@@ -17,6 +17,7 @@ import { fetchResources } from '@/services/backend-client/devworkspaceResourcesA
 import devfileApi from '@/services/devfileApi';
 import { FactoryParams } from '@/services/helpers/factoryFlow/buildFactoryParams';
 import { loadResourcesContent } from '@/services/registry/resources';
+import { CHE_EDITOR_YAML_PATH } from '@/services/workspace-client/helpers';
 import { AppThunk } from '@/store';
 import { getEditor } from '@/store/DevfileRegistries/getEditor';
 import { verifyAuthorized } from '@/store/SanityCheck';
@@ -37,7 +38,7 @@ export const createWorkspaceFromDevfile =
     devfile: devfileApi.Devfile,
     params: Partial<FactoryParams>,
     optionalFilesContent: {
-      [fileName: string]: string;
+      [fileName: string]: { location: string; content: string } | undefined;
     },
   ): AppThunk =>
   async (dispatch, getState) => {
@@ -60,7 +61,10 @@ export const createWorkspaceFromDevfile =
       // do we have the custom editor in `.che/che-editor.yaml` ?
       try {
         editorContent = await getCustomEditor(optionalFilesContent, dispatch, getState);
-        if (!editorContent) {
+        if (editorContent) {
+          // keep the URL of the editor.yaml for later use
+          editorYamlUrl = optionalFilesContent[CHE_EDITOR_YAML_PATH]?.location;
+        } else {
           console.warn('No custom editor found');
         }
       } catch (e) {

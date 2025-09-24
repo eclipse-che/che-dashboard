@@ -210,7 +210,9 @@ describe('Workspaces Actions', () => {
     it('should dispatch createWorkspaceFromDevfile action', async () => {
       const mockDevfile = {} as devfileApi.Devfile;
       const mockAttributes = {} as Partial<FactoryParams>;
-      const mockOptionalFilesContent = { 'README.md': 'Content' };
+      const mockOptionalFilesContent = {
+        'README.md': { location: 'location', content: 'Content' },
+      };
 
       const mockCreateWorkspace = jest.fn();
       jest.spyOn(devWorkspacesActionCreators, 'createWorkspaceFromDevfile').mockImplementationOnce(

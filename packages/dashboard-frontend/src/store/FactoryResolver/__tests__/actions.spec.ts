@@ -156,7 +156,9 @@ describe('FactoryResolver, actions', () => {
         const mockFactoryResolver = { devfile: {}, links: [] };
         const mockDefaultComponents = [];
         const mockNormalizedDevfile = {};
-        const mockOptionalFilesContent = { '.che/che-editor.yaml': 'content' };
+        const mockOptionalFilesContent = {
+          '.che/che-editor.yaml': { location: 'location', content: 'content' },
+        };
 
         jest
           .spyOn(infrastructureNamespaces, 'selectDefaultNamespace')
@@ -164,7 +166,7 @@ describe('FactoryResolver, actions', () => {
         (verifyAuthorized as jest.Mock).mockResolvedValue(true);
         (isDevfileRegistryLocation as jest.Mock).mockReturnValue(false);
         (getFactoryResolver as jest.Mock).mockResolvedValue(mockFactoryResolver);
-        (grabLink as jest.Mock).mockResolvedValue('content');
+        (grabLink as jest.Mock).mockResolvedValue({ location: 'location', content: 'content' });
         jest.spyOn(serverConfig, 'selectDefaultComponents').mockReturnValue(mockDefaultComponents);
         (normalizeDevfile as jest.Mock).mockReturnValue(mockNormalizedDevfile);
 

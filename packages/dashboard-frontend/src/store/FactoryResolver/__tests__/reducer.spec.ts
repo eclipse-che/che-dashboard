@@ -41,7 +41,7 @@ describe('FactoryResolver reducer', () => {
   it('should handle factoryResolverReceiveAction', () => {
     const resolver = {
       devfile: {} as devfileApi.Devfile,
-      optionalFilesContent: { 'README.md': 'Content' },
+      optionalFilesContent: { 'README.md': { location: 'location', content: 'Content' } },
     };
     const action = factoryResolverReceiveAction(resolver);
     const expectedState: State = {

@@ -101,7 +101,7 @@ export const actionCreators = {
       devfile: devfileApi.Devfile,
       attributes: Partial<FactoryParams>,
       optionalFilesContent?: {
-        [fileName: string]: string;
+        [fileName: string]: { location: string; content: string } | undefined;
       },
     ): AppThunk =>
     async dispatch => {

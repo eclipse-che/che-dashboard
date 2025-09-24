@@ -141,3 +141,10 @@ export function normaliseDevWorkspace(workspace: devfileApi.DevWorkspace): devfi
   }
   return _workspace;
 }
+
+export function isCheEditorYamlPath(path: string): boolean {
+  const regex = new RegExp('file=.che/che-editor.yaml');
+  const decodedPath = decodeURIComponent(path);
+
+  return regex.test(decodedPath);
+}

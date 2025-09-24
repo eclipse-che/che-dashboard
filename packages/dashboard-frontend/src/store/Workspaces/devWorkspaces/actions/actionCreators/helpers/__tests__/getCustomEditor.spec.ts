@@ -19,7 +19,9 @@ import { MockStoreBuilder } from '@/store/__mocks__/mockStore';
 import { getCustomEditor } from '@/store/Workspaces/devWorkspaces/actions/actionCreators/helpers/getCustomEditor';
 
 describe('Look for the custom editor', () => {
-  let optionalFilesContent: { [fileName: string]: string };
+  let optionalFilesContent: {
+    [fileName: string]: { location: string; content: string } | undefined;
+  };
   let editor: devfileApi.Devfile;
 
   beforeEach(() => {
@@ -44,7 +46,10 @@ describe('Look for the custom editor', () => {
 
   describe('inlined editor', () => {
     it('should return inlined editor without changes', async () => {
-      optionalFilesContent[CHE_EDITOR_YAML_PATH] = dump({ inline: editor });
+      optionalFilesContent[CHE_EDITOR_YAML_PATH] = {
+        location: 'location',
+        content: dump({ inline: editor }),
+      };
       const store = new MockStoreBuilder().build();
 
       const customEditor = await getCustomEditor(
@@ -57,17 +62,20 @@ describe('Look for the custom editor', () => {
     });
 
     it('should return an overridden devfile', async () => {
-      optionalFilesContent[CHE_EDITOR_YAML_PATH] = dump({
-        inline: editor,
-        override: {
-          containers: [
-            {
-              name: 'eclipse-ide',
-              memoryLimit: '1234Mi',
-            },
-          ],
-        },
-      });
+      optionalFilesContent[CHE_EDITOR_YAML_PATH] = {
+        location: 'location',
+        content: dump({
+          inline: editor,
+          override: {
+            containers: [
+              {
+                name: 'eclipse-ide',
+                memoryLimit: '1234Mi',
+              },
+            ],
+          },
+        }),
+      };
       const store = new MockStoreBuilder().build();
 
       const customEditor = await getCustomEditor(
@@ -82,7 +90,10 @@ describe('Look for the custom editor', () => {
     it('should throw the "missing metadata.name" error message', async () => {
       // set an empty value as a name
       editor.metadata.name = '';
-      optionalFilesContent[CHE_EDITOR_YAML_PATH] = dump({ inline: editor });
+      optionalFilesContent[CHE_EDITOR_YAML_PATH] = {
+        location: 'location',
+        content: dump({ inline: editor }),
+      };
       const store = new MockStoreBuilder().build();
 
       let errorText: string | undefined;
@@ -102,9 +113,12 @@ describe('Look for the custom editor', () => {
   describe('get editor by id ', () => {
     describe('from the default registry', () => {
       it('should return an editor without changes', async () => {
-        optionalFilesContent[CHE_EDITOR_YAML_PATH] = dump({
-          id: 'che-incubator/che-idea/next',
-        });
+        optionalFilesContent[CHE_EDITOR_YAML_PATH] = {
+          location: 'location',
+          content: dump({
+            id: 'che-incubator/che-idea/next',
+          }),
+        };
 
         const editors = [
           {
@@ -143,17 +157,20 @@ describe('Look for the custom editor', () => {
       });
 
       it('should return an overridden devfile', async () => {
-        optionalFilesContent[CHE_EDITOR_YAML_PATH] = dump({
-          id: 'che-incubator/che-idea/next',
-          override: {
-            containers: [
-              {
-                name: 'eclipse-ide',
-                memoryLimit: '1234Mi',
-              },
-            ],
-          },
-        });
+        optionalFilesContent[CHE_EDITOR_YAML_PATH] = {
+          location: 'location',
+          content: dump({
+            id: 'che-incubator/che-idea/next',
+            override: {
+              containers: [
+                {
+                  name: 'eclipse-ide',
+                  memoryLimit: '1234Mi',
+                },
+              ],
+            },
+          }),
+        };
 
         const editors = [
           {
@@ -202,9 +219,12 @@ describe('Look for the custom editor', () => {
       it('should failed fetching editor without metadata.name attribute', async () => {
         // set an empty value as a name
         editor.metadata.name = '';
-        optionalFilesContent[CHE_EDITOR_YAML_PATH] = dump({
-          id: 'che-incubator/che-idea/next',
-        });
+        optionalFilesContent[CHE_EDITOR_YAML_PATH] = {
+          location: 'location',
+          content: dump({
+            id: 'che-incubator/che-idea/next',
+          }),
+        };
 
         const editors = [
           {
@@ -255,10 +275,13 @@ describe('Look for the custom editor', () => {
 
     describe('from the custom registry', () => {
       it('should return an editor without changes', async () => {
-        optionalFilesContent[CHE_EDITOR_YAML_PATH] = dump({
-          id: 'che-incubator/che-idea/next',
-          registryUrl: 'https://dummy/che-plugin-registry/main/v3',
-        });
+        optionalFilesContent[CHE_EDITOR_YAML_PATH] = {
+          location: 'location',
+          content: dump({
+            id: 'che-incubator/che-idea/next',
+            registryUrl: 'https://dummy/che-plugin-registry/main/v3',
+          }),
+        };
         const store = new MockStoreBuilder()
           .withDevfileRegistries({
             devfiles: {
@@ -280,18 +303,21 @@ describe('Look for the custom editor', () => {
       });
 
       it('should return an overridden devfile', async () => {
-        optionalFilesContent[CHE_EDITOR_YAML_PATH] = dump({
-          id: 'che-incubator/che-idea/next',
-          registryUrl: 'https://dummy/che-plugin-registry/main/v3',
-          override: {
-            containers: [
-              {
-                name: 'eclipse-ide',
-                memoryLimit: '1234Mi',
-              },
-            ],
-          },
-        });
+        optionalFilesContent[CHE_EDITOR_YAML_PATH] = {
+          location: 'location',
+          content: dump({
+            id: 'che-incubator/che-idea/next',
+            registryUrl: 'https://dummy/che-plugin-registry/main/v3',
+            override: {
+              containers: [
+                {
+                  name: 'eclipse-ide',
+                  memoryLimit: '1234Mi',
+                },
+              ],
+            },
+          }),
+        };
         const store = new MockStoreBuilder()
           .withDevfileRegistries({
             devfiles: {
@@ -315,10 +341,13 @@ describe('Look for the custom editor', () => {
       it('should throw the "missing metadata.name" error message', async () => {
         // set an empty value as a name
         editor.metadata.name = '';
-        optionalFilesContent[CHE_EDITOR_YAML_PATH] = dump({
-          id: 'che-incubator/che-idea/next',
-          registryUrl: 'https://dummy/che-plugin-registry/main/v3',
-        });
+        optionalFilesContent[CHE_EDITOR_YAML_PATH] = {
+          location: 'location',
+          content: dump({
+            id: 'che-incubator/che-idea/next',
+            registryUrl: 'https://dummy/che-plugin-registry/main/v3',
+          }),
+        };
         const store = new MockStoreBuilder()
           .withDevfileRegistries({
             devfiles: {

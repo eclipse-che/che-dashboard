@@ -14,6 +14,7 @@ import devfileApi from '@/services/devfileApi';
 import {
   getErrorMessage,
   hasLoginPage,
+  isCheEditorYamlPath,
   isForbidden,
   isInternalServerError,
   isUnauthorized,
@@ -325,6 +326,32 @@ describe('Workspace-client helpers', () => {
       expect(normalisedDevWorkspace).toEqual({
         ...devWorkspace,
         spec: { started: false, template: {} },
+      });
+    });
+  });
+
+  describe('checks isCheEditorYamlPath method', () => {
+    it('should return the false', () => {
+      const editors = [
+        'http://127.0.0.1:8080/dashboard/api/editors/devfile?che-editor=che-incubator/che-code/insider',
+        'https://dummy-host/che-plugin-registry/main/v3/plugins/che-incubator/che-code/insiders/devfile.yaml',
+      ];
+
+      editors.forEach(editor => {
+        const hasCheEditorYamlPath = isCheEditorYamlPath(editor);
+        expect(hasCheEditorYamlPath).toBeFalsy();
+      });
+    });
+
+    it('should return the true', () => {
+      const editors = [
+        'http://dummy-host/api/scm/resolve?repository=https%3A%2F%2Fdummy-repo%2Freference-editor.git&file=.che%2Fche-editor.yaml',
+        'http://dummy-host/api/scm/resolve?repository=https://dummy-repo/dashboard&file=.che/che-editor.yaml',
+      ];
+
+      editors.forEach(editor => {
+        const hasCheEditorYamlPath = isCheEditorYamlPath(editor);
+        expect(hasCheEditorYamlPath).toBeTruthy();
       });
     });
   });
