@@ -52,6 +52,7 @@ describe('Registry Username Input', () => {
     expect(screen.queryByRole('menuitem', { name: 'GitHub' })).toBeTruthy();
     expect(screen.queryByRole('menuitem', { name: 'GitLab' })).toBeTruthy();
     expect(screen.queryByRole('menuitem', { name: 'Microsoft Azure DevOps' })).toBeTruthy();
+    expect(screen.queryByRole('menuitem', { name: 'Bitbucket' })).not.toBeTruthy();
   });
 
   it('should select a provider', async () => {
@@ -69,11 +70,23 @@ describe('Registry Username Input', () => {
     expect(screen.queryByRole('button', { name: 'Bitbucket Server' })).toBeTruthy();
   });
 
-  it('should handle component update', () => {
+  it('should handle component update Bitbucket Server', () => {
     const { reRenderComponent } = renderComponent('bitbucket-server');
 
-    // expect Bitbucket to be selected by default
+    // expect Bitbucket Server to be selected by default
     expect(screen.queryByRole('button', { name: 'Bitbucket Server' })).toBeTruthy();
+
+    reRenderComponent('gitlab');
+
+    // expect the dropdown button to be updated
+    expect(screen.queryByRole('button', { name: 'GitLab' })).toBeTruthy();
+  });
+
+  it('should handle component update Bitbucket SAAS', () => {
+    const { reRenderComponent } = renderComponent('bitbucket');
+
+    // expect Bitbucket to be selected by default
+    expect(screen.queryByRole('button', { name: 'Bitbucket' })).toBeTruthy();
 
     reRenderComponent('gitlab');
 
