@@ -29,7 +29,7 @@ parse_args() {
 
 parse_args "$@"
 
-if [[ "$(uname)" == "Linux" ]]; then
+if [[ "$(uname)" == "Linux" || ("$(uname)" == "Darwin" && "$(uname -p)" == "arm" )]]; then
     YQ_FLAGS="-r"
 else
     YQ_FLAGS="e"
