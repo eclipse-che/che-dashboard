@@ -24,10 +24,14 @@ import { connect, ConnectedProps } from 'react-redux';
 
 import SamplesListGallery from '@/pages/GetStarted/SamplesList/Gallery';
 import SamplesListToolbar from '@/pages/GetStarted/SamplesList/Toolbar';
+import { ROUTE } from '@/Routes';
 import {
+  DEV_WORKSPACE_ATTR,
   EDITOR_ATTR,
   EDITOR_IMAGE_ATTR,
+  FACTORY_URL_ATTR,
   POLICIES_CREATE_ATTR,
+  STORAGE_TYPE_ATTR,
 } from '@/services/helpers/factoryFlow/buildFactoryParams';
 import { che } from '@/services/models';
 import { RootState } from '@/store';
@@ -86,37 +90,34 @@ class SamplesList extends React.PureComponent<Props, State> {
 
   private async handleSampleCardClick(metadata: DevfileRegistryMetadata): Promise<void> {
     const { editorDefinition, editorImage } = this.props;
-
     const url = new URL(metadata.links.v2);
-
-    const factoryUrlParams = new URLSearchParams(url.searchParams);
+    const factoryParams: { [key: string]: string } = {
+      [FACTORY_URL_ATTR]: `${url.origin}${url.pathname}${encodeURIComponent(url.search)}`,
+    };
 
     const _editorDefinition = editorDefinition || this.props.defaultEditorId;
-
-    if (_editorDefinition !== undefined) {
-      factoryUrlParams.append(EDITOR_ATTR, _editorDefinition);
+    if (_editorDefinition) {
+      factoryParams[EDITOR_ATTR] = _editorDefinition;
 
       const prebuiltDevWorkspace = metadata.links.devWorkspaces?.[_editorDefinition];
       if (prebuiltDevWorkspace !== undefined) {
-        factoryUrlParams.append('devWorkspace', prebuiltDevWorkspace);
+        factoryParams[DEV_WORKSPACE_ATTR] = prebuiltDevWorkspace;
       }
     }
 
     if (editorImage !== undefined) {
-      factoryUrlParams.append(EDITOR_IMAGE_ATTR, editorImage);
+      factoryParams[EDITOR_IMAGE_ATTR] = editorImage;
     }
 
     const policiesCreate = this.getPoliciesCreate();
     // This is to avoid sending the default value in the URL('peruser' is the default value)
     if (policiesCreate !== 'peruser') {
-      factoryUrlParams.set(POLICIES_CREATE_ATTR, policiesCreate);
+      factoryParams[POLICIES_CREATE_ATTR] = policiesCreate;
     }
 
-    const storageType = this.getStorageType();
-    factoryUrlParams.append('storageType', storageType);
+    factoryParams[STORAGE_TYPE_ATTR] = this.getStorageType();
 
-    url.search = factoryUrlParams.toString();
-    const factoryLink = `${window.location.origin}#${url.toString()}`;
+    const factoryLink = `${window.location.origin}/dashboard/#${ROUTE.FACTORY_LOADER}?${new URLSearchParams(factoryParams).toString()}`;
 
     window.open(factoryLink, '_blank');
   }
