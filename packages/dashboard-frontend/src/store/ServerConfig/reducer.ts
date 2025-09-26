@@ -29,6 +29,7 @@ export const unloadedState: State = {
   isLoading: false,
   config: {
     containerBuild: {},
+    containerRun: {},
     defaults: {
       editor: undefined,
       components: [],

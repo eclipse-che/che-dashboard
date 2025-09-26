@@ -83,8 +83,8 @@ export const startWorkspace =
       const config = getState().dwServerConfig.config;
       workspace = await getDevWorkspaceClient().managePvcStrategy(workspace, config);
 
-      // inject or remove the container build attribute
-      workspace = await getDevWorkspaceClient().manageContainerBuildAttribute(workspace, config);
+      // inject or remove the container scc attribute
+      workspace = await getDevWorkspaceClient().manageContainerSccAttribute(workspace, config);
 
       workspace = await getDevWorkspaceClient().manageDebugMode(workspace, debugWorkspace);
 

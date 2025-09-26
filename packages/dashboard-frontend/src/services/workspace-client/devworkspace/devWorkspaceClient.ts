@@ -31,7 +31,7 @@ import {
 } from '@/services/devfileApi/devWorkspace/metadata';
 import {
   DEVWORKSPACE_CONFIG_ATTR,
-  DEVWORKSPACE_CONTAINER_BUILD_ATTR,
+  DEVWORKSPACE_CONTAINER_SCC_ATTR,
 } from '@/services/devfileApi/devWorkspace/spec/template';
 import { delay } from '@/services/helpers/delay';
 import { isWebTerminal } from '@/services/helpers/devworkspace';
@@ -514,51 +514,77 @@ export class DevWorkspaceClient {
   }
 
   /**
-   * Injects or removes the container build attribute depending on the CR `disableContainerBuildCapabilities` field value.
+   * Injects or removes the container scc attribute depending
+   * on the CR `disableContainerBuildCapabilities` or `disableContainerRunCapabilities`
+   * fields value.
    */
-  async manageContainerBuildAttribute(
+  async manageContainerSccAttribute(
     workspace: devfileApi.DevWorkspace,
     config: api.IServerConfig,
   ): Promise<devfileApi.DevWorkspace> {
-    const patch: api.IPatch[] = [];
-    if (config.containerBuild.disableContainerBuildCapabilities) {
-      if (workspace.spec.template.attributes?.[DEVWORKSPACE_CONTAINER_BUILD_ATTR]) {
-        // remove the attribute
-        const path = `/spec/template/attributes/${this.escape(DEVWORKSPACE_CONTAINER_BUILD_ATTR)}`;
-        patch.push({ op: 'remove', path });
-      }
-    } else if (
-      !config.containerBuild.containerBuildConfiguration?.openShiftSecurityContextConstraint
-    ) {
-      console.warn(
-        'Skip injecting the container build attribute: "openShiftSecurityContextConstraint" is undefined',
-      );
-    } else {
-      // add the attribute
-      if (!workspace.spec.template.attributes) {
-        const path = '/spec/template/attributes';
-        const value = {
-          [DEVWORKSPACE_CONTAINER_BUILD_ATTR]:
-            config.containerBuild.containerBuildConfiguration.openShiftSecurityContextConstraint,
-        };
-        patch.push({ op: 'add', path, value });
+    let patch: api.IPatch | undefined;
+
+    // container run capabilities is enabled.
+    if (!config.containerRun.disableContainerRunCapabilities) {
+      // `controller.devfile.io/scc` attribute exists
+      if (workspace.spec.template.attributes?.[DEVWORKSPACE_CONTAINER_SCC_ATTR]) {
+        // Do nothing, as attribute modification is blocked by DWO WebHook.
+        // Retaining the existing value ensures the workspace can start.
       } else {
-        const path = `/spec/template/attributes/${this.escape(DEVWORKSPACE_CONTAINER_BUILD_ATTR)}`;
-        const value =
-          config.containerBuild.containerBuildConfiguration.openShiftSecurityContextConstraint;
-        patch.push({ op: 'add', path, value });
+        patch = this.addSccAttribute(
+          workspace,
+          config.containerRun.containerRunConfiguration?.openShiftSecurityContextConstraint,
+        );
       }
+      // container build capabilities is enabled.
+    } else if (!config.containerBuild.disableContainerBuildCapabilities) {
+      // `controller.devfile.io/scc` attribute exists
+      if (workspace.spec.template.attributes?.[DEVWORKSPACE_CONTAINER_SCC_ATTR]) {
+        // Do nothing, as attribute modification is blocked by DWO WebHook.
+        // Retaining the existing value ensures the workspace can start.
+      } else {
+        patch = this.addSccAttribute(
+          workspace,
+          config.containerBuild.containerBuildConfiguration?.openShiftSecurityContextConstraint,
+        );
+      }
+      // container capabilities disabled
+    } else {
+      const path = `/spec/template/attributes/${this.escape(DEVWORKSPACE_CONTAINER_SCC_ATTR)}`;
+      patch = { op: 'remove', path };
     }
 
-    if (patch.length === 0) {
+    if (!patch) {
       return workspace;
     }
+
     const { devWorkspace } = await DwApi.patchWorkspace(
       workspace.metadata.namespace,
       workspace.metadata.name,
-      patch,
+      [patch],
     );
     return devWorkspace;
+  }
+
+  addSccAttribute(workspace: devfileApi.DevWorkspace, scc?: string): api.IPatch | undefined {
+    if (scc === undefined) {
+      console.warn(
+        'Skip injecting the `controller.devfile.io/scc` attribute: "openShiftSecurityContextConstraint" is undefined',
+      );
+      return undefined;
+    }
+
+    if (!workspace.spec.template.attributes) {
+      const path = '/spec/template/attributes';
+      const value = {
+        [DEVWORKSPACE_CONTAINER_SCC_ATTR]: scc,
+      };
+      return { op: 'add', path, value };
+    } else {
+      const path = `/spec/template/attributes/${this.escape(DEVWORKSPACE_CONTAINER_SCC_ATTR)}`;
+      const value = scc;
+      return { op: 'add', path, value };
+    }
   }
 
   async changeWorkspaceStatus(

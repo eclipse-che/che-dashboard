@@ -13,13 +13,13 @@
 import { V1alpha2DevWorkspaceSpecTemplate } from '@devfile/api';
 
 export const DEVWORKSPACE_CONFIG_ATTR = 'controller.devfile.io/devworkspace-config';
-export const DEVWORKSPACE_CONTAINER_BUILD_ATTR = 'controller.devfile.io/scc';
+export const DEVWORKSPACE_CONTAINER_SCC_ATTR = 'controller.devfile.io/scc';
 export const DEVWORKSPACE_DEPLOYMENT_ATTR = 'controller.devfile.io/deployment-annotations';
 export const DEVWORKSPACE_DEPLOYMENT_LABEL_ATTR = 'controller.devfile.io/deployment-labels';
 export const DEVWORKSPACE_STORAGE_TYPE_ATTR = 'controller.devfile.io/storage-type';
 
 export type DevWorkspaceSpecTemplateAttribute = {
-  [DEVWORKSPACE_CONTAINER_BUILD_ATTR]?: string;
+  [DEVWORKSPACE_CONTAINER_SCC_ATTR]?: string;
   [DEVWORKSPACE_STORAGE_TYPE_ATTR]?: string;
   [DEVWORKSPACE_DEPLOYMENT_LABEL_ATTR]?: string;
   [DEVWORKSPACE_DEPLOYMENT_ATTR]?: string;

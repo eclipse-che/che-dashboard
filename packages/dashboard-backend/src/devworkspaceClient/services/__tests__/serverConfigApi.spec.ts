@@ -74,6 +74,16 @@ describe('Server Config API Service', () => {
     expect(res.disableContainerBuildCapabilities).toEqual(false);
   });
 
+  test('getting container run options', () => {
+    const res = serverConfigService.getContainerRun(buildCustomResource());
+    expect(res.containerRunConfiguration).toEqual(
+      expect.objectContaining({
+        openShiftSecurityContextConstraint: 'container-run',
+      }),
+    );
+    expect(res.disableContainerRunCapabilities).toEqual(false);
+  });
+
   test('getting default plugins', () => {
     const res = serverConfigService.getDefaultPlugins(buildCustomResource());
     expect(res).toEqual([]);
@@ -362,6 +372,10 @@ function buildCustomResource(options?: { openVSXURL?: string }): CheClusterCusto
         },
       },
       devEnvironments: {
+        disableContainerRunCapabilities: false,
+        containerRunConfiguration: {
+          openShiftSecurityContextConstraint: 'container-run',
+        },
         disableContainerBuildCapabilities: false,
         containerBuildConfiguration: {
           openShiftSecurityContextConstraint: 'container-build',

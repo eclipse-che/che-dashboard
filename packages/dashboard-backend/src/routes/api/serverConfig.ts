@@ -31,6 +31,7 @@ export function registerServerConfigRoute(instance: FastifyInstance) {
       const cheCustomResource = await serverConfigApi.fetchCheCustomResource();
 
       const containerBuild = serverConfigApi.getContainerBuild(cheCustomResource);
+      const containerRun = serverConfigApi.getContainerRun(cheCustomResource);
       const plugins = serverConfigApi.getDefaultPlugins(cheCustomResource);
       const editor = serverConfigApi.getDefaultEditor(cheCustomResource);
       const components = serverConfigApi.getDefaultComponents(cheCustomResource);
@@ -54,6 +55,7 @@ export function registerServerConfigRoute(instance: FastifyInstance) {
 
       const serverConfig: api.IServerConfig = {
         containerBuild,
+        containerRun,
         defaults: {
           editor,
           plugins,

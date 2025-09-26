@@ -44,6 +44,9 @@ import { getDevWorkspaceClient as helper } from '@/routes/api/helpers/getDevWork
 export const stubContainerBuild = {
   disableContainerBuildCapabilities: true,
 };
+export const stubContainerRun = {
+  disableContainerRunCapabilities: true,
+};
 export const stubDashboardWarning = 'Dashboard warning';
 export const stubDefaultComponents: V230DevfileComponents[] = [];
 export const stubDefaultEditor = undefined;
@@ -177,6 +180,7 @@ export const getDevWorkspaceClient = jest.fn(
         fetchCheCustomResource: () => ({}),
         getDashboardWarning: _cheCustomResource => stubDashboardWarning,
         getContainerBuild: _cheCustomResource => stubContainerBuild,
+        getContainerRun: _cheCustomResource => stubContainerRun,
         getDefaultComponents: _cheCustomResource => stubDefaultComponents,
         getDefaultEditor: _cheCustomResource => stubDefaultEditor,
         getDefaultPlugins: _cheCustomResource => stubDefaultPlugins,

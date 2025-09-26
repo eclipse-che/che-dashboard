@@ -161,6 +161,9 @@ export type CheClusterCustomResourceSpecDevEnvironments = {
   containerBuildConfiguration?: {
     openShiftSecurityContextConstraint?: string;
   };
+  containerRunConfiguration?: {
+    openShiftSecurityContextConstraint?: string;
+  };
   defaultComponents?: V230DevfileComponents[];
   defaultNamespace?: {
     autoProvision?: boolean;
@@ -169,6 +172,7 @@ export type CheClusterCustomResourceSpecDevEnvironments = {
   defaultEditor?: string;
   defaultPlugins?: api.IWorkspacesDefaultPlugins[];
   disableContainerBuildCapabilities?: boolean;
+  disableContainerRunCapabilities?: boolean;
   secondsOfInactivityBeforeIdling: number;
   secondsOfRunBeforeIdling?: number;
   startTimeoutSeconds?: number;
@@ -192,10 +196,12 @@ export function isCheClusterCustomResourceSpecDevEnvironments(
 
   const {
     containerBuildConfiguration,
+    containerRunConfiguration,
     defaultComponents,
     defaultEditor,
     defaultPlugins,
     disableContainerBuildCapabilities,
+    disableContainerRunCapabilities,
     secondsOfInactivityBeforeIdling,
     secondsOfRunBeforeIdling,
     startTimeoutSeconds,
@@ -206,10 +212,12 @@ export function isCheClusterCustomResourceSpecDevEnvironments(
   } = object as CheClusterCustomResourceSpecDevEnvironments;
   return (
     containerBuildConfiguration !== undefined ||
+    containerRunConfiguration === undefined ||
     defaultComponents !== undefined ||
     defaultEditor !== undefined ||
     defaultPlugins !== undefined ||
     disableContainerBuildCapabilities !== undefined ||
+    disableContainerRunCapabilities !== undefined ||
     secondsOfInactivityBeforeIdling !== undefined ||
     secondsOfRunBeforeIdling !== undefined ||
     startTimeoutSeconds !== undefined ||
@@ -285,6 +293,15 @@ export interface IServerConfigApi {
   ): Pick<
     CheClusterCustomResourceSpecDevEnvironments,
     'containerBuildConfiguration' | 'disableContainerBuildCapabilities'
+  >;
+  /**
+   * Returns the container run capabilities and configuration.
+   */
+  getContainerRun(
+    cheCustomResource: CheClusterCustomResource,
+  ): Pick<
+    CheClusterCustomResourceSpecDevEnvironments,
+    'containerRunConfiguration' | 'disableContainerRunCapabilities'
   >;
   /**
    * Returns default plugins
