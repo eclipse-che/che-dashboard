@@ -69,18 +69,19 @@ export function buildFactoryLoaderPath(location: string, appendUrl = true): stri
     factory = helpers.sanitizeLocation<URL>(new window.URL(location));
   }
 
+  const repoParams = new URLSearchParams(factory.searchParams.toString());
+  // Extract and remove parameters that should be propagated to the factory loader URL
   const initParams = PROPAGATE_FACTORY_ATTRS.map(paramName => {
-    const paramValue = extractUrlParam(factory.searchParams, paramName);
+    const paramValue = extractUrlParam(repoParams, paramName);
     return [paramName, paramValue];
   }).filter(([, paramValue]) => paramValue);
 
   const devfilePath =
-    extractUrlParam(factory.searchParams, 'devfilePath') ||
-    extractUrlParam(factory.searchParams, 'df');
+    extractUrlParam(repoParams, 'devfilePath') || extractUrlParam(repoParams, 'df');
   if (devfilePath) {
     initParams.push(['override.devfileFilename', devfilePath]);
   }
-  const newWorkspace = extractUrlParam(factory.searchParams, 'new');
+  const newWorkspace = extractUrlParam(repoParams, 'new');
   if (newWorkspace) {
     initParams.push(['policies.create', 'perclick']);
   }
@@ -88,7 +89,11 @@ export function buildFactoryLoaderPath(location: string, appendUrl = true): stri
   const searchParams = new URLSearchParams(initParams);
 
   if (appendUrl) {
-    searchParams.append('url', factory.toString());
+    let url = factory.toString().split('?')[0];
+    if (repoParams.toString()) {
+      url += encodeURIComponent('?' + repoParams.toString());
+    }
+    searchParams.set('url', encodeURIComponent(url));
   }
 
   return '/f?' + searchParams.toString();
