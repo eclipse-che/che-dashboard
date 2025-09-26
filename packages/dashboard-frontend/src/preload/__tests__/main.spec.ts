@@ -15,11 +15,21 @@ import { REMOTES_ATTR } from '@/services/helpers/factoryFlow/buildFactoryParams'
 import SessionStorageService, { SessionStorageKey } from '@/services/session-storage';
 
 describe('test buildFactoryLoaderPath()', () => {
+  describe('URL', () => {
+    test('unsupported parameter', () => {
+      const result = buildFactoryLoaderPath(
+        'https://github.com/che-samples/java-spring-petclinic/tree/devfilev2?unsupportedParameter=foo',
+      );
+      expect(result).toEqual(
+        '/f?url=https%253A%252F%252Fgithub.com%252Fche-samples%252Fjava-spring-petclinic%252Ftree%252Fdevfilev2%25253FunsupportedParameter%25253Dfoo',
+      );
+    });
+  });
   describe('SSHLocation', () => {
     test('new policy', () => {
       const result = buildFactoryLoaderPath('git@github.com:eclipse-che/che-dashboard.git?new=');
       expect(result).toEqual(
-        '/f?policies.create=perclick&url=git%40github.com%3Aeclipse-che%2Fche-dashboard.git',
+        '/f?policies.create=perclick&url=git%2540github.com%253Aeclipse-che%252Fche-dashboard.git',
       );
     });
 
@@ -28,7 +38,7 @@ describe('test buildFactoryLoaderPath()', () => {
         'git@github.com:eclipse-che/che-dashboard.git?che-editor=che-incubator/checode/insiders',
       );
       expect(result).toEqual(
-        '/f?che-editor=che-incubator%2Fchecode%2Finsiders&url=git%40github.com%3Aeclipse-che%2Fche-dashboard.git',
+        '/f?che-editor=che-incubator%2Fchecode%2Finsiders&url=git%2540github.com%253Aeclipse-che%252Fche-dashboard.git',
       );
     });
 
@@ -37,7 +47,7 @@ describe('test buildFactoryLoaderPath()', () => {
         'git@github.com:eclipse-che/che-dashboard.git?editor-image=quay.io/mloriedo/che-code:copilot-builtin',
       );
       expect(result).toEqual(
-        '/f?editor-image=quay.io%2Fmloriedo%2Fche-code%3Acopilot-builtin&url=git%40github.com%3Aeclipse-che%2Fche-dashboard.git',
+        '/f?editor-image=quay.io%2Fmloriedo%2Fche-code%3Acopilot-builtin&url=git%2540github.com%253Aeclipse-che%252Fche-dashboard.git',
       );
     });
 
@@ -46,7 +56,7 @@ describe('test buildFactoryLoaderPath()', () => {
         'git@github.com:eclipse-che/che-dashboard.git?devfilePath=devfilev2.yaml',
       );
       expect(result).toEqual(
-        '/f?override.devfileFilename=devfilev2.yaml&url=git%40github.com%3Aeclipse-che%2Fche-dashboard.git',
+        '/f?override.devfileFilename=devfilev2.yaml&url=git%2540github.com%253Aeclipse-che%252Fche-dashboard.git',
       );
     });
 
@@ -55,7 +65,7 @@ describe('test buildFactoryLoaderPath()', () => {
         'git@github.com:eclipse-che/che-dashboard.git?devWorkspace=/devfiles/devworkspace-che-theia-latest.yaml',
       );
       expect(result).toEqual(
-        '/f?devWorkspace=%2Fdevfiles%2Fdevworkspace-che-theia-latest.yaml&url=git%40github.com%3Aeclipse-che%2Fche-dashboard.git',
+        '/f?devWorkspace=%2Fdevfiles%2Fdevworkspace-che-theia-latest.yaml&url=git%2540github.com%253Aeclipse-che%252Fche-dashboard.git',
       );
     });
 
@@ -64,7 +74,7 @@ describe('test buildFactoryLoaderPath()', () => {
         'git@github.com:eclipse-che/che-dashboard.git?storageType=ephemeral',
       );
       expect(result).toEqual(
-        '/f?storageType=ephemeral&url=git%40github.com%3Aeclipse-che%2Fche-dashboard.git',
+        '/f?storageType=ephemeral&url=git%2540github.com%253Aeclipse-che%252Fche-dashboard.git',
       );
     });
 
@@ -73,7 +83,7 @@ describe('test buildFactoryLoaderPath()', () => {
         'git@github.com:eclipse-che/che-dashboard.git?existing=che-dashboard',
       );
       expect(result).toEqual(
-        '/f?existing=che-dashboard&url=git%40github.com%3Aeclipse-che%2Fche-dashboard.git',
+        '/f?existing=che-dashboard&url=git%2540github.com%253Aeclipse-che%252Fche-dashboard.git',
       );
     });
 
@@ -82,7 +92,7 @@ describe('test buildFactoryLoaderPath()', () => {
         'git@github.com:eclipse-che/che-dashboard.git?unsupportedParameter=foo',
       );
       expect(result).toEqual(
-        '/f?url=git%40github.com%3Aeclipse-che%2Fche-dashboard.git%3FunsupportedParameter%3Dfoo',
+        '/f?url=git%2540github.com%253Aeclipse-che%252Fche-dashboard.git%25253FunsupportedParameter%25253Dfoo',
       );
     });
   });
@@ -93,7 +103,7 @@ describe('test buildFactoryLoaderPath()', () => {
         'https://github.com/che-samples/java-spring-petclinic/tree/devfilev2?new=',
       );
       expect(result).toEqual(
-        '/f?policies.create=perclick&url=https%3A%2F%2Fgithub.com%2Fche-samples%2Fjava-spring-petclinic%2Ftree%2Fdevfilev2',
+        '/f?policies.create=perclick&url=https%253A%252F%252Fgithub.com%252Fche-samples%252Fjava-spring-petclinic%252Ftree%252Fdevfilev2',
       );
     });
 
@@ -102,7 +112,7 @@ describe('test buildFactoryLoaderPath()', () => {
         'https://github.com/che-samples/java-spring-petclinic/tree/devfilev2?che-editor=che-incubator/checode/insiders',
       );
       expect(result).toEqual(
-        '/f?che-editor=che-incubator%2Fchecode%2Finsiders&url=https%3A%2F%2Fgithub.com%2Fche-samples%2Fjava-spring-petclinic%2Ftree%2Fdevfilev2',
+        '/f?che-editor=che-incubator%2Fchecode%2Finsiders&url=https%253A%252F%252Fgithub.com%252Fche-samples%252Fjava-spring-petclinic%252Ftree%252Fdevfilev2',
       );
     });
 
@@ -111,7 +121,7 @@ describe('test buildFactoryLoaderPath()', () => {
         'https://github.com/che-samples/java-spring-petclinic/tree/devfilev2?devfilePath=devfilev2.yaml',
       );
       expect(result).toEqual(
-        '/f?override.devfileFilename=devfilev2.yaml&url=https%3A%2F%2Fgithub.com%2Fche-samples%2Fjava-spring-petclinic%2Ftree%2Fdevfilev2',
+        '/f?override.devfileFilename=devfilev2.yaml&url=https%253A%252F%252Fgithub.com%252Fche-samples%252Fjava-spring-petclinic%252Ftree%252Fdevfilev2',
       );
     });
 
@@ -120,7 +130,7 @@ describe('test buildFactoryLoaderPath()', () => {
         'https://github.com/che-samples/java-spring-petclinic/tree/devfilev2?devWorkspace=/devfiles/devworkspace-che-theia-latest.yaml',
       );
       expect(result).toEqual(
-        '/f?devWorkspace=%2Fdevfiles%2Fdevworkspace-che-theia-latest.yaml&url=https%3A%2F%2Fgithub.com%2Fche-samples%2Fjava-spring-petclinic%2Ftree%2Fdevfilev2',
+        '/f?devWorkspace=%2Fdevfiles%2Fdevworkspace-che-theia-latest.yaml&url=https%253A%252F%252Fgithub.com%252Fche-samples%252Fjava-spring-petclinic%252Ftree%252Fdevfilev2',
       );
     });
 
@@ -129,7 +139,7 @@ describe('test buildFactoryLoaderPath()', () => {
         'https://github.com/che-samples/java-spring-petclinic/tree/devfilev2?storageType=ephemeral',
       );
       expect(result).toEqual(
-        '/f?storageType=ephemeral&url=https%3A%2F%2Fgithub.com%2Fche-samples%2Fjava-spring-petclinic%2Ftree%2Fdevfilev2',
+        '/f?storageType=ephemeral&url=https%253A%252F%252Fgithub.com%252Fche-samples%252Fjava-spring-petclinic%252Ftree%252Fdevfilev2',
       );
     });
 
@@ -138,7 +148,7 @@ describe('test buildFactoryLoaderPath()', () => {
         'https://github.com/che-samples/java-spring-petclinic/tree/devfilev2?image=quay.io/devfile/universal-developer-image:latest',
       );
       expect(result).toEqual(
-        '/f?image=quay.io%2Fdevfile%2Funiversal-developer-image%3Alatest&url=https%3A%2F%2Fgithub.com%2Fche-samples%2Fjava-spring-petclinic%2Ftree%2Fdevfilev2',
+        '/f?image=quay.io%2Fdevfile%2Funiversal-developer-image%3Alatest&url=https%253A%252F%252Fgithub.com%252Fche-samples%252Fjava-spring-petclinic%252Ftree%252Fdevfilev2',
       );
     });
 
@@ -147,7 +157,7 @@ describe('test buildFactoryLoaderPath()', () => {
         'https://github.com/che-samples/java-spring-petclinic/tree/devfilev2?unsupportedParameter=foo',
       );
       expect(result).toEqual(
-        '/f?url=https%3A%2F%2Fgithub.com%2Fche-samples%2Fjava-spring-petclinic%2Ftree%2Fdevfilev2%3FunsupportedParameter%3Dfoo',
+        '/f?url=https%253A%252F%252Fgithub.com%252Fche-samples%252Fjava-spring-petclinic%252Ftree%252Fdevfilev2%25253FunsupportedParameter%25253Dfoo',
       );
     });
   });
@@ -201,7 +211,9 @@ describe('test redirectToDashboard()', () => {
 
       redirectToDashboard();
       expect(spyWindowLocation).toHaveBeenCalledWith(
-        origin + '/dashboard/f?policies.create=perclick&url=' + encodeURIComponent(repoUrl),
+        origin +
+          '/dashboard/f?policies.create=perclick&url=' +
+          encodeURIComponent(encodeURIComponent(repoUrl)),
       );
     });
 
@@ -214,7 +226,7 @@ describe('test redirectToDashboard()', () => {
       expect(spyWindowLocation).toHaveBeenCalledWith(
         origin +
           '/dashboard/f?override.devfileFilename=my-devfile.yaml&url=' +
-          encodeURIComponent(repoUrl),
+          encodeURIComponent(encodeURIComponent(repoUrl)),
       );
     });
   });

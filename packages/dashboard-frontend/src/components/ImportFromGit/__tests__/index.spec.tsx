@@ -106,7 +106,7 @@ describe('GitRepoLocationInput', () => {
 
         // the selected editor ID should be added to the URL
         expect(window.open).toHaveBeenLastCalledWith(
-          'http://localhost/#http://test-location/',
+          'http://localhost/f?url=http%253A%252F%252Ftest-location%252F',
           '_blank',
         );
         expect(window.open).toHaveBeenCalledTimes(1);
@@ -135,7 +135,7 @@ describe('GitRepoLocationInput', () => {
 
         // the selected editor ID should be added to the URL
         expect(window.open).toHaveBeenLastCalledWith(
-          'http://localhost/#http://test-location/',
+          'http://localhost/f?url=http%253A%252F%252Ftest-location%252F',
           '_blank',
         );
         expect(window.open).toHaveBeenCalledTimes(1);
@@ -164,7 +164,7 @@ describe('GitRepoLocationInput', () => {
 
         // the selected editor ID should be added to the URL
         expect(window.open).toHaveBeenLastCalledWith(
-          'http://localhost/#http://test-location/?che-editor=che-incubator%2Fche-code%2Finsiders',
+          'http://localhost/f?che-editor=che-incubator%2Fche-code%2Finsiders&url=http%253A%252F%252Ftest-location%252F',
           '_blank',
         );
         expect(window.open).toHaveBeenCalledTimes(1);
@@ -193,7 +193,7 @@ describe('GitRepoLocationInput', () => {
 
         // the selected editor ID should be added to the URL
         expect(window.open).toHaveBeenLastCalledWith(
-          'http://localhost/#http://test-location/?editor-image=custom-editor-image',
+          'http://localhost/f?editor-image=custom-editor-image&url=http%253A%252F%252Ftest-location%252F',
           '_blank',
         );
         expect(window.open).toHaveBeenCalledTimes(1);
@@ -222,7 +222,7 @@ describe('GitRepoLocationInput', () => {
 
         // the selected editor ID should be added to the URL
         expect(window.open).toHaveBeenLastCalledWith(
-          'http://localhost/#http://test-location/?che-editor=che-incubator%2Fche-code%2Finsiders&editor-image=custom-editor-image',
+          'http://localhost/f?che-editor=che-incubator%2Fche-code%2Finsiders&editor-image=custom-editor-image&url=http%253A%252F%252Ftest-location%252F',
           '_blank',
         );
         expect(window.open).toHaveBeenCalledTimes(1);
@@ -253,7 +253,7 @@ describe('GitRepoLocationInput', () => {
 
         // the selected editor ID should NOT be added to the URL, as the URL parameter has higher priority
         expect(window.open).toHaveBeenLastCalledWith(
-          'http://localhost/#http://test-location/?che-editor=other-editor-id',
+          'http://localhost/f?che-editor=other-editor-id&url=http%253A%252F%252Ftest-location%252F',
           '_blank',
         );
         expect(window.open).toHaveBeenCalledTimes(1);
@@ -282,7 +282,7 @@ describe('GitRepoLocationInput', () => {
 
         // the selected editor ID should be added to the URL
         expect(window.open).toHaveBeenLastCalledWith(
-          'http://localhost/#http://test-location/?editor-image=custom-editor-image',
+          'http://localhost/f?editor-image=custom-editor-image&url=http%253A%252F%252Ftest-location%252F',
           '_blank',
         );
         expect(window.open).toHaveBeenCalledTimes(1);
@@ -347,7 +347,7 @@ describe('GitRepoLocationInput', () => {
 
       expect(window.open).toHaveBeenCalledTimes(1);
       expect(window.open).toHaveBeenLastCalledWith(
-        'http://localhost/#git@github.com:user/repo.git?che-editor=che-incubator%2Fche-code%2Finsiders&editor-image=custom-editor-image',
+        'http://localhost/f?che-editor=che-incubator%2Fche-code%2Finsiders&editor-image=custom-editor-image&url=git%2540github.com%253Auser%252Frepo.git',
         '_blank',
       );
     });
@@ -381,7 +381,7 @@ describe('GitRepoLocationInput', () => {
 
       expect(window.open).toHaveBeenCalledTimes(1);
       expect(window.open).toHaveBeenLastCalledWith(
-        'http://localhost/#git@github.com:user/repo.git?che-editor=other-editor-id',
+        'http://localhost/f?che-editor=other-editor-id&url=git%2540github.com%253Auser%252Frepo.git',
         '_blank',
       );
     });
@@ -418,7 +418,7 @@ describe('GitRepoLocationInput', () => {
 
       expect(window.open).toHaveBeenCalledTimes(1);
       expect(window.open).toHaveBeenLastCalledWith(
-        'http://localhost/#git@github.com:user/repo.git?revision=test',
+        'http://localhost/f?url=git%2540github.com%253Auser%252Frepo.git%25253Frevision%25253Dtest',
         '_blank',
       );
     });
