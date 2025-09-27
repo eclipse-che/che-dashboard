@@ -82,6 +82,12 @@ export const serverConfigData = {
     },
     disableContainerBuildCapabilities: false,
   },
+  containerRun: {
+    containerRunConfiguration: {
+      openShiftSecurityContextConstraint: 'container-run',
+    },
+    disableContainerRunCapabilities: false,
+  },
   defaults: {
     editor: 'che-incubator/che-code/insiders',
     plugins: [],

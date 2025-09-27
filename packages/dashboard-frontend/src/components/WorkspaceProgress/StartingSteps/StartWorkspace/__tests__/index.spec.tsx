@@ -63,6 +63,7 @@ const matchParams: WorkspaceRouteParams = {
 const startTimeout = 300;
 const serverConfig: api.IServerConfig = {
   containerBuild: {},
+  containerRun: {},
   defaults: {
     editor: undefined,
     components: [],

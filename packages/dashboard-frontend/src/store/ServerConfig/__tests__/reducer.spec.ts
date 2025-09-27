@@ -41,6 +41,7 @@ describe('ServerConfig, reducer', () => {
   it('should handle serverConfigReceiveAction', () => {
     const config = {
       containerBuild: {},
+      containerRun: {},
       defaults: {
         editor: 'editor',
         components: [
