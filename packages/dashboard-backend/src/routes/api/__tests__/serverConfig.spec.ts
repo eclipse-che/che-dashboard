@@ -42,6 +42,9 @@ describe('Server Config Route', () => {
       containerBuild: {
         disableContainerBuildCapabilities: true,
       },
+      containerRun: {
+        disableContainerRunCapabilities: true,
+      },
       defaults: { components: [], plugins: [], pvcStrategy: '' },
       pluginRegistry: { openVSXURL: 'openvsx-url' },
       timeouts: {

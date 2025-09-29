@@ -19,6 +19,12 @@ export const serverConfig: api.IServerConfig = {
       openShiftSecurityContextConstraint: 'container-build',
     },
   },
+  containerRun: {
+    disableContainerRunCapabilities: false,
+    containerRunConfiguration: {
+      openShiftSecurityContextConstraint: 'container-run',
+    },
+  },
   defaults: {
     editor: 'eclipse/theia/next',
     components: [

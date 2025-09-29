@@ -111,6 +111,12 @@ export interface IServerConfig {
     };
     disableContainerBuildCapabilities?: boolean;
   };
+  containerRun: {
+    containerRunConfiguration?: {
+      openShiftSecurityContextConstraint?: string;
+    };
+    disableContainerRunCapabilities?: boolean;
+  };
   defaults: {
     editor: string | undefined;
     components: V230DevfileComponents[];

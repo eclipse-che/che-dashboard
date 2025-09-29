@@ -133,6 +133,21 @@ export class ServerConfigApiService implements IServerConfigApi {
     };
   }
 
+  getContainerRun(
+    cheCustomResource: CheClusterCustomResource,
+  ): Pick<
+    CheClusterCustomResourceSpecDevEnvironments,
+    'containerRunConfiguration' | 'disableContainerRunCapabilities'
+  > {
+    const { devEnvironments } = cheCustomResource.spec;
+    return {
+      containerRunConfiguration: devEnvironments?.containerRunConfiguration,
+      disableContainerRunCapabilities:
+        devEnvironments?.disableContainerRunCapabilities === undefined ||
+        devEnvironments?.disableContainerRunCapabilities,
+    };
+  }
+
   getDefaultPlugins(cheCustomResource: CheClusterCustomResource): api.IWorkspacesDefaultPlugins[] {
     return cheCustomResource.spec.devEnvironments?.defaultPlugins || [];
   }
