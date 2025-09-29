@@ -34,6 +34,7 @@ import { NavigateFunction } from 'react-router-dom';
 import { validateLocation } from '@/components/ImportFromGit/helpers';
 import RepoOptionsAccordion from '@/components/ImportFromGit/RepoOptionsAccordion';
 import UntrustedSourceModal from '@/components/UntrustedSourceModal';
+import { buildFactoryLoaderPath } from '@/preload/main';
 import { FactoryLocationAdapter } from '@/services/factory-location-adapter';
 import {
   EDITOR_ATTR,
@@ -123,8 +124,9 @@ class ImportFromGit extends React.PureComponent<Props, State> {
       factory.searchParams.set(REVISION_ATTR, this.state.gitBranch);
     }
 
+    const factoryLoaderPath = buildFactoryLoaderPath(factory.toString());
     // open a new page to handle that
-    window.open(`${window.location.origin}/#${factory.toString()}`, '_blank');
+    window.open(`${window.location.origin}${factoryLoaderPath}`, '_blank');
   }
 
   private handleChange(location: string): void {
