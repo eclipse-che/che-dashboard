@@ -550,8 +550,10 @@ export class DevWorkspaceClient {
       }
       // container capabilities disabled
     } else {
-      const path = `/spec/template/attributes/${this.escape(DEVWORKSPACE_CONTAINER_SCC_ATTR)}`;
-      patch = { op: 'remove', path };
+      if (workspace.spec.template.attributes?.[DEVWORKSPACE_CONTAINER_SCC_ATTR]) {
+        const path = `/spec/template/attributes/${this.escape(DEVWORKSPACE_CONTAINER_SCC_ATTR)}`;
+        patch = { op: 'remove', path };
+      }
     }
 
     if (!patch) {
