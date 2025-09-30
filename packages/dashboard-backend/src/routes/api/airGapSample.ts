@@ -26,6 +26,15 @@ const rateLimitConfig = {
     },
   },
 };
+const querystring = {
+  type: 'object',
+  required: ['id'],
+  properties: {
+    id: {
+      type: 'string',
+    },
+  },
+};
 
 export function registerAirGapSampleRoute(instance: FastifyInstance) {
   instance.register(async server => {
@@ -41,7 +50,7 @@ export function registerAirGapSampleRoute(instance: FastifyInstance) {
 
     server.get(
       `${baseApiPath}/airgap-sample/devfile/download`,
-      Object.assign({}, rateLimitConfig, getSchema({ tags })),
+      Object.assign({}, rateLimitConfig, getSchema({ tags, querystring })),
       async function (request: FastifyRequest, reply: FastifyReply) {
         const sampleId = (request.query as { id: string })['id'];
         if (!sampleId) {
@@ -65,7 +74,7 @@ export function registerAirGapSampleRoute(instance: FastifyInstance) {
 
     server.get(
       `${baseApiPath}/airgap-sample/project/download`,
-      Object.assign({}, rateLimitConfig, getSchema({ tags })),
+      Object.assign({}, rateLimitConfig, getSchema({ tags, querystring })),
       async function (request: FastifyRequest, reply: FastifyReply) {
         const sampleId = (request.query as { id: string })['id'];
         if (!sampleId) {
