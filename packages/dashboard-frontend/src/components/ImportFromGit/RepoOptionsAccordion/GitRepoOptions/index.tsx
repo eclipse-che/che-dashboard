@@ -18,6 +18,7 @@ import { AdditionalGitRemotes } from '@/components/ImportFromGit/RepoOptionsAcco
 import { GitBranchField } from '@/components/ImportFromGit/RepoOptionsAccordion/GitRepoOptions/GitBranchField';
 import { PathToDevfileField } from '@/components/ImportFromGit/RepoOptionsAccordion/GitRepoOptions/PathToDevfileField';
 import { GitRemote } from '@/components/WorkspaceProgress/CreatingSteps/Apply/Devfile/getGitRemotes';
+import { FactoryLocationAdapter } from '@/services/factory-location-adapter';
 
 export type Props = {
   gitBranch: string | undefined;
@@ -90,10 +91,9 @@ export class GitRepoOptions extends React.PureComponent<Props, State> {
   public render() {
     const { hasSupportedGitService, location } = this.props;
     const { gitBranch, remotes, devfilePath } = this.state;
-    const isSSHUrl = location.startsWith('git@') || location.startsWith('ssh://');
     return (
       <Form isHorizontal={true} onSubmit={e => e.preventDefault()}>
-        {(hasSupportedGitService || isSSHUrl) && (
+        {(hasSupportedGitService || FactoryLocationAdapter.isSshLocation(location)) && (
           <GitBranchField
             onChange={gitBranch => this.handleGitBranch(gitBranch)}
             gitBranch={gitBranch}
