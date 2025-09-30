@@ -43,7 +43,9 @@ class LoaderContainer extends React.Component<Props, State> {
 
     const dirtyLocation = this.props.location;
     const { search } = helpers.sanitizeLocation(dirtyLocation);
-    const searchParams = new URLSearchParams(decodeURIComponent(search).replaceAll('?', '&'));
+    const searchParams = new URLSearchParams(
+      decodeURIComponent(decodeURIComponent(search)).replaceAll('?', '&'),
+    );
     const tabParam = searchParams.get('tab') || undefined;
 
     this.state = {
