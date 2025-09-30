@@ -27,6 +27,7 @@ export const EDITOR_IMAGE_ATTR = 'editor-image';
 export const USE_DEFAULT_DEVFILE = 'useDefaultDevfile';
 export const DEBUG_WORKSPACE_START = 'debugWorkspaceStart';
 export const EXISTING_WORKSPACE_NAME = 'existing';
+export const REVISION = 'revision';
 export const PROPAGATE_FACTORY_ATTRS = [
   'workspaceDeploymentAnnotations',
   'workspaceDeploymentLabels',
@@ -41,6 +42,7 @@ export const PROPAGATE_FACTORY_ATTRS = [
   MEMORY_LIMIT_ATTR,
   EDITOR_IMAGE_ATTR,
   EXISTING_WORKSPACE_NAME,
+  REVISION,
 ];
 export const OVERRIDE_ATTR_PREFIX = 'override.';
 export const DEFAULT_POLICIES_CREATE = 'peruser';
