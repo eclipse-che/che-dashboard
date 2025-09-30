@@ -418,7 +418,7 @@ describe('GitRepoLocationInput', () => {
 
       expect(window.open).toHaveBeenCalledTimes(1);
       expect(window.open).toHaveBeenLastCalledWith(
-        'http://localhost/f?url=git%2540github.com%253Auser%252Frepo.git%25253Frevision%25253Dtest',
+        'http://localhost/f?revision=test&url=git%2540github.com%253Auser%252Frepo.git',
         '_blank',
       );
     });

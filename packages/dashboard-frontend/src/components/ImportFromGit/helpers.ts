@@ -21,6 +21,7 @@ import {
 } from '@/components/WorkspaceProgress/CreatingSteps/Apply/Devfile/getGitRemotes';
 import { buildFactoryLoaderPath } from '@/preload/main';
 import { FactoryLocationAdapter } from '@/services/factory-location-adapter';
+import { REVISION } from '@/services/helpers/factoryFlow/buildFactoryParams';
 
 const BR_NAME_REGEX = /^[0-9A-Za-z-./_]{1,256}$/;
 
@@ -139,7 +140,7 @@ function setBranchToAzureDevOpsLocation(location: string, branch: string | undef
 }
 
 export function setBranchToLocation(location: string, branch: string | undefined): string {
-  if (!location.startsWith('http')) {
+  if (!FactoryLocationAdapter.isHttpLocation(location)) {
     return branch ? `${location}?revision=${branch}` : location;
   }
   const url = new URL(location);
@@ -215,6 +216,12 @@ function getFactoryParamsFromLocation(
   const factoryLoaderPath = buildFactoryLoaderPath(factoryStr, true);
   const params = factoryLoaderPath.split('?')[1] || '';
   const searchParams = new URLSearchParams(params);
+  // merge searchParams from the url param
+  new URLSearchParams(
+    decodeURIComponent(decodeURIComponent(searchParams.get('url') || '').split('%3F')[1] || ''),
+  ).forEach((val, key) => {
+    searchParams.set(key, val);
+  });
   searchParams.delete('url');
 
   // from override.devfileFilename to devfilePath
@@ -260,6 +267,8 @@ export function getGitRepoOptionsFromLocation(location: string): {
     } catch (e) {
       console.log(`Unable to get branch from '${location}'.${common.helpers.errors.getMessage(e)}`);
     }
+  } else if (!FactoryLocationAdapter.isHttpLocation(location)) {
+    gitBranch = searchParams.get(REVISION) || undefined;
   }
   return { location, gitBranch, remotes, devfilePath, hasSupportedGitService };
 }
@@ -380,6 +389,9 @@ export function setGitRepoOptionsToLocation(
 
   if (newOptions.gitBranch !== currentOptions.gitBranch) {
     state.gitBranch = newOptions.gitBranch;
+  }
+  if (!FactoryLocationAdapter.isHttpLocation(location) && newOptions.gitBranch) {
+    searchParams.set(REVISION, newOptions.gitBranch);
   }
   // update the location with the new gitBranch value
   let searchParamsStr = decodeURIComponent(searchParams.toString());

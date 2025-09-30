@@ -65,7 +65,7 @@ describe('GitRepoOptions', () => {
       [{ name: 'test', url: 'http://test' }],
       'test-devfile-path',
       false,
-      'git@ssh-url',
+      'git@ssh-url:dummy/che.git',
     );
 
     expect(screen.queryByTestId('git-branch-component')).not.toBeNull();
