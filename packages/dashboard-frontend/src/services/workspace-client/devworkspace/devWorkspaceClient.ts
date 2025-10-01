@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018-2024 Red Hat, Inc.
+ * Copyright (c) 2018-2025 Red Hat, Inc.
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
  * which is available at https://www.eclipse.org/legal/epl-2.0/
@@ -89,6 +89,7 @@ export class DevWorkspaceClient {
   private readonly clusterConsoleTitleEnvName: string;
   private readonly openVSXUrlEnvName: string;
   private readonly dashboardUrlEnvName: string;
+  private readonly hostUsersEnvName: string;
   private readonly defaultPluginsHandler: DevWorkspaceDefaultPluginsHandler;
 
   constructor(
@@ -102,6 +103,7 @@ export class DevWorkspaceClient {
     this.dashboardUrlEnvName = 'CHE_DASHBOARD_URL';
     this.clusterConsoleUrlEnvName = 'CLUSTER_CONSOLE_URL';
     this.clusterConsoleTitleEnvName = 'CLUSTER_CONSOLE_TITLE';
+    this.hostUsersEnvName = 'HOST_USERS';
     this.defaultPluginsHandler = defaultPluginsHandler;
   }
 
@@ -522,60 +524,89 @@ export class DevWorkspaceClient {
     workspace: devfileApi.DevWorkspace,
     config: api.IServerConfig,
   ): Promise<devfileApi.DevWorkspace> {
-    let patch: api.IPatch | undefined;
+    const patch: api.IPatch[] = [];
 
-    // container run capabilities is enabled.
-    if (!config.containerRun.disableContainerRunCapabilities) {
-      // `controller.devfile.io/scc` attribute exists
-      if (workspace.spec.template.attributes?.[DEVWORKSPACE_CONTAINER_SCC_ATTR]) {
-        // Do nothing, as attribute modification is blocked by DWO WebHook.
-        // Retaining the existing value ensures the workspace can start.
-      } else {
-        patch = this.addSccAttribute(
+    if (!config.containerRun?.disableContainerRunCapabilities) {
+      // container run capabilities is enabled.
+      patch.push(
+        ...this.manageContainerSccAttributeForCapability(
           workspace,
-          config.containerRun.containerRunConfiguration?.openShiftSecurityContextConstraint,
-        );
-      }
+          config.containerRun.containerRunConfiguration,
+          false,
+        ),
+      );
+    } else if (!config.containerBuild?.disableContainerBuildCapabilities) {
       // container build capabilities is enabled.
-    } else if (!config.containerBuild.disableContainerBuildCapabilities) {
-      // `controller.devfile.io/scc` attribute exists
-      if (workspace.spec.template.attributes?.[DEVWORKSPACE_CONTAINER_SCC_ATTR]) {
-        // Do nothing, as attribute modification is blocked by DWO WebHook.
-        // Retaining the existing value ensures the workspace can start.
-      } else {
-        patch = this.addSccAttribute(
+      patch.push(
+        ...this.manageContainerSccAttributeForCapability(
           workspace,
-          config.containerBuild.containerBuildConfiguration?.openShiftSecurityContextConstraint,
-        );
-      }
-      // container capabilities disabled
+          config.containerBuild.containerBuildConfiguration,
+          true,
+        ),
+      );
     } else {
-      if (workspace.spec.template.attributes?.[DEVWORKSPACE_CONTAINER_SCC_ATTR]) {
-        const path = `/spec/template/attributes/${this.escape(DEVWORKSPACE_CONTAINER_SCC_ATTR)}`;
-        patch = { op: 'remove', path };
-      }
+      // container capabilities are disabled.
+      patch.push(...this.deleteSccAttribute(workspace));
     }
 
-    if (!patch) {
+    if (patch.length === 0) {
       return workspace;
     }
 
     const { devWorkspace } = await DwApi.patchWorkspace(
       workspace.metadata.namespace,
       workspace.metadata.name,
-      [patch],
+      patch,
     );
     return devWorkspace;
   }
 
-  addSccAttribute(workspace: devfileApi.DevWorkspace, scc?: string): api.IPatch | undefined {
-    if (scc === undefined) {
+  manageContainerSccAttributeForCapability(
+    workspace: devfileApi.DevWorkspace,
+    capabilityConfig: { openShiftSecurityContextConstraint?: string } | undefined,
+    hostUsers: boolean,
+  ): api.IPatch[] {
+    const patch: api.IPatch[] = [];
+
+    const sccName = capabilityConfig?.openShiftSecurityContextConstraint;
+    if (!sccName) {
       console.warn(
         'Skip injecting the `controller.devfile.io/scc` attribute: "openShiftSecurityContextConstraint" is undefined',
       );
-      return undefined;
+      return patch;
     }
 
+    if (workspace.spec.template.attributes?.[DEVWORKSPACE_CONTAINER_SCC_ATTR]) {
+      // if `controller.devfile.io/scc` attribute exists, then don't update it,
+      // as its modification is blocked by DWO WebHook.
+      // Retaining the existing value ensures the workspace can start.
+      // Ensures, that HOST_USERS set correctly
+      if (workspace.spec.template.attributes?.[DEVWORKSPACE_CONTAINER_SCC_ATTR] === sccName) {
+        patch.push(...this.setHostUsersEnvVar(workspace, hostUsers));
+      }
+    } else {
+      // if `controller.devfile.io/scc` attribute doesn't exist, then add it.
+      // Ensures, that HOST_USERS set correctly
+      patch.push(this.addSccAttribute(workspace, sccName));
+      patch.push(...this.setHostUsersEnvVar(workspace, hostUsers));
+    }
+
+    return patch;
+  }
+
+  deleteSccAttribute(workspace: devfileApi.DevWorkspace): api.IPatch[] {
+    const patch: api.IPatch[] = [];
+
+    if (workspace.spec.template.attributes?.[DEVWORKSPACE_CONTAINER_SCC_ATTR]) {
+      const path = `/spec/template/attributes/${this.escape(DEVWORKSPACE_CONTAINER_SCC_ATTR)}`;
+      patch.push({ op: 'remove', path });
+    }
+    patch.push(...this.removeHostUsersEnvVar(workspace));
+
+    return patch;
+  }
+
+  addSccAttribute(workspace: devfileApi.DevWorkspace, scc: string): api.IPatch {
     if (!workspace.spec.template.attributes) {
       const path = '/spec/template/attributes';
       const value = {
@@ -587,6 +618,69 @@ export class DevWorkspaceClient {
       const value = scc;
       return { op: 'add', path, value };
     }
+  }
+
+  setHostUsersEnvVar(workspace: devfileApi.DevWorkspace, hostUsers: boolean): api.IPatch[] {
+    const patch: api.IPatch[] = [];
+
+    const value = { name: this.hostUsersEnvName, value: hostUsers.toString() };
+    const components = workspace.spec.template.components;
+    if (!components) {
+      return patch;
+    }
+
+    for (let cmpIndex = 0; cmpIndex < components.length; cmpIndex++) {
+      const container = components[cmpIndex].container;
+      if (container === undefined) {
+        continue;
+      }
+
+      if (!container.env) {
+        const path = `/spec/template/components/${cmpIndex}/container/env`;
+        patch.push({ op: 'add', path, value: [value] });
+        continue;
+      }
+
+      const envIndex = container.env.findIndex(value => value.name === this.hostUsersEnvName);
+      if (envIndex >= 0) {
+        const env = container.env[envIndex];
+        // If value is different, that replace it
+        if (env.value !== hostUsers.toString()) {
+          const path = `/spec/template/components/${cmpIndex}/container/env/${envIndex}`;
+          patch.push({ op: 'replace', path, value });
+        }
+      } else {
+        // If environment variable is absent, then add it
+        const path = `/spec/template/components/${cmpIndex}/container/env/-`;
+        patch.push({ op: 'add', path, value });
+      }
+    }
+
+    return patch;
+  }
+
+  removeHostUsersEnvVar(workspace: devfileApi.DevWorkspace): api.IPatch[] {
+    const patch: api.IPatch[] = [];
+
+    const components = workspace.spec.template.components;
+    if (!components) {
+      return patch;
+    }
+
+    for (let cmpIndex = 0; cmpIndex < components.length; cmpIndex++) {
+      const container = components[cmpIndex].container;
+      if (!container?.env) {
+        continue;
+      }
+
+      const envIndex = container.env.findIndex(value => value.name === this.hostUsersEnvName);
+      if (envIndex >= 0) {
+        const path = `/spec/template/components/${cmpIndex}/container/env/${envIndex}`;
+        patch.push({ op: 'remove', path });
+      }
+    }
+
+    return patch;
   }
 
   async changeWorkspaceStatus(
