@@ -644,7 +644,7 @@ export class DevWorkspaceClient {
       const envIndex = container.env.findIndex(value => value.name === this.hostUsersEnvName);
       if (envIndex >= 0) {
         const env = container.env[envIndex];
-        // If value is different, that replace it
+        // If value is different, then replace it
         if (env.value !== hostUsers.toString()) {
           const path = `/spec/template/components/${cmpIndex}/container/env/${envIndex}`;
           patch.push({ op: 'replace', path, value });
