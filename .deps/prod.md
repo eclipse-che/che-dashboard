@@ -6,14 +6,15 @@
 | [`@codemirror/autocomplete@6.18.6`](https://github.com/codemirror/autocomplete.git) | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@codemirror/autocomplete/6.18.6) |
 | [`@codemirror/commands@6.8.1`](https://github.com/codemirror/commands.git) | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@codemirror/commands/6.8.1) |
 | [`@codemirror/lang-yaml@6.1.2`](git+https://github.com/codemirror/lang-yaml.git) | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@codemirror/lang-yaml/6.1.2) |
-| [`@codemirror/language@6.10.3`](https://github.com/codemirror/language.git) | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@codemirror/language/6.10.3) |
+| [`@codemirror/language@6.11.3`](https://github.com/codemirror/language.git) | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@codemirror/language/6.11.3) |
 | [`@codemirror/lint@6.8.5`](https://github.com/codemirror/lint.git) | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@codemirror/lint/6.8.5) |
-| [`@codemirror/search@6.5.6`](https://github.com/codemirror/search.git) | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@codemirror/search/6.5.6) |
+| [`@codemirror/search@6.5.11`](https://github.com/codemirror/search.git) | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@codemirror/search/6.5.11) |
 | [`@codemirror/state@6.5.2`](https://github.com/codemirror/state.git) | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@codemirror/state/6.5.2) |
 | [`@codemirror/theme-one-dark@6.1.2`](https://github.com/codemirror/theme-one-dark.git) | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@codemirror/theme-one-dark/6.1.2) |
 | [`@codemirror/view@6.37.1`](https://github.com/codemirror/view.git) | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@codemirror/view/6.37.1) |
-| [`@devfile/api@2.3.0-1746644330`](https://github.com/devfile/api) | Apache-2.0 | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@devfile/api/2.3.0-1746644330) |
-| [`@eclipse-che/che-devworkspace-generator@7.103.0-next-4e46cbe`](git+https://github.com/devfile/devworkspace-generator.git) | EPL-2.0 | ecd.che |
+| [`@devfile/api@2.3.0-1747843475`](https://github.com/devfile/api) | Apache-2.0 | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@devfile/api/2.3.0-1747843475) |
+| [`@devfile/api@2.3.0-1757407014`](https://github.com/devfile/api) | Apache-2.0 | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@devfile/api/2.3.0-1757407014) |
+| [`@eclipse-che/che-devworkspace-generator@7.109.0-next-324d7f6`](git+https://github.com/devfile/devworkspace-generator.git) | EPL-2.0 | ecd.che |
 | [`@fastify/accept-negotiator@1.1.0`](git+https://github.com/fastify/accept-negotiator.git) | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@fastify/accept-negotiator/1.1.0) |
 | [`@fastify/ajv-compiler@3.6.0`](git+https://github.com/fastify/ajv-compiler.git) | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@fastify/ajv-compiler/3.6.0) |
 | [`@fastify/busboy@2.0.0`](https://github.com/fastify/busboy.git) | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@fastify/busboy/2.0.0) |
@@ -29,7 +30,7 @@
 | [`@fastify/send@2.1.0`](git+https://github.com/fastify/send.git) | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@fastify/send/2.1.0) |
 | [`@fastify/static@6.12.0`](https://github.com/fastify/fastify-static.git) | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@fastify/static/6.12.0) |
 | [`@fastify/static@7.0.4`](git+https://github.com/fastify/fastify-static.git) | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@fastify/static/7.0.4) |
-| [`@fastify/swagger-ui@3.0.0`](git+https://github.com/fastify/fastify-swagger-ui.git) | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@fastify/swagger-ui/3.0.0) |
+| [`@fastify/swagger-ui@3.1.0`](git+https://github.com/fastify/fastify-swagger-ui.git) | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@fastify/swagger-ui/3.1.0) |
 | [`@fastify/swagger@8.15.0`](git+https://github.com/fastify/fastify-swagger.git) | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@fastify/swagger/8.15.0) |
 | [`@fastify/websocket@10.0.1`](git+https://github.com/fastify/fastify-websocket.git) | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@fastify/websocket/10.0.1) |
 | `@hapi/boom@10.0.1` | BSD-3-Clause | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@hapi/boom/10.0.1) |
@@ -55,10 +56,10 @@
 | [`@marijn/find-cluster-break@1.0.2`](git+https://github.com/marijnh/find-cluster-break.git) | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@marijn/find-cluster-break/1.0.2) |
 | [`@npmcli/agent@2.2.2`](https://github.com/npm/agent.git) | ISC | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@npmcli/agent/2.2.2) |
 | [`@npmcli/fs@3.1.0`](https://github.com/npm/fs.git) | ISC | #14656 |
-| [`@patternfly/react-core@4.278.0`](https://github.com/patternfly/patternfly-react.git) | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@patternfly/react-core/4.278.0) |
+| [`@patternfly/react-core@4.278.1`](https://github.com/patternfly/patternfly-react.git) | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@patternfly/react-core/4.278.1) |
 | [`@patternfly/react-icons@4.93.7`](https://github.com/patternfly/patternfly-react.git) | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@patternfly/react-icons/4.93.7) |
 | `@patternfly/react-styles@4.92.8` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@patternfly/react-styles/4.92.8) |
-| [`@patternfly/react-table@4.113.6`](https://github.com/patternfly/patternfly-react.git) | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@patternfly/react-table/4.113.6) |
+| [`@patternfly/react-table@4.113.7`](https://github.com/patternfly/patternfly-react.git) | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@patternfly/react-table/4.113.7) |
 | [`@patternfly/react-tokens@4.94.7`](https://github.com/patternfly/patternfly-react.git) | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@patternfly/react-tokens/4.94.7) |
 | [`@pkgjs/parseargs@0.11.0`](git@github.com:pkgjs/parseargs.git) | MIT | #8236 |
 | [`@reduxjs/toolkit@2.2.7`](git+https://github.com/reduxjs/redux-toolkit.git) | MIT | #14170 |
@@ -97,6 +98,8 @@
 | [`asn1.js@5.4.1`](git@github.com:indutny/asn1.js) | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/asn1.js/5.4.1) |
 | [`asn1@0.2.6`](https://github.com/joyent/node-asn1.git) | MIT | #21125 |
 | [`assert-plus@1.0.0`](https://github.com/mcavage/node-assert-plus.git) | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/assert-plus/1.0.0) |
+| [`async-function@1.0.0`](git+https://github.com/ljharb/async-function.git) | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/async-function/1.0.0) |
+| [`async-generator-function@1.0.0`](git+https://github.com/ljharb/async-generator-function.git) | MIT | #23714 |
 | [`asynckit@0.4.0`](git+https://github.com/alexindigo/asynckit.git) | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/asynckit/0.4.0) |
 | [`atomic-sleep@1.0.0`](git+https://github.com/davidmarkclements/atomic-sleep.git) | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/atomic-sleep/1.0.0) |
 | [`attr-accept@1.1.3`](https://github.com/okonet/attr-accept.git) | MIT | CQ22348 |
@@ -122,7 +125,6 @@
 | [`byline@5.0.0`](https://github.com/jahewson/node-byline) | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/byline/5.0.0) |
 | [`cacache@18.0.4`](git+https://github.com/npm/cacache.git) | ISC | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/cacache/18.0.4) |
 | [`call-bind-apply-helpers@1.0.2`](git+https://github.com/ljharb/call-bind-apply-helpers.git) | MIT | #17826 |
-| [`call-bind@1.0.7`](git+https://github.com/ljharb/call-bind.git) | MIT | #11092 |
 | [`call-bind@1.0.8`](git+https://github.com/ljharb/call-bind.git) | MIT | #11092 |
 | [`call-bound@1.0.4`](git+https://github.com/ljharb/call-bound.git) | MIT | #17832 |
 | `camelcase@5.0.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/camelcase/5.0.0) |
@@ -206,7 +208,7 @@
 | [`fast-uri@3.0.2`](git+https://github.com/fastify/fast-uri.git) | MIT | #15703 |
 | [`fastify-plugin@4.5.1`](git+https://github.com/fastify/fastify-plugin.git) | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/fastify-plugin/4.5.1) |
 | [`fastify-plugin@5.0.1`](git+https://github.com/fastify/fastify-plugin.git) | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/fastify-plugin/5.0.1) |
-| [`fastify@4.28.1`](git+https://github.com/fastify/fastify.git) | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/fastify/4.28.1) |
+| [`fastify@4.29.1`](git+https://github.com/fastify/fastify.git) | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/fastify/4.29.1) |
 | [`fastq@1.17.1`](git+https://github.com/mcollina/fastq.git) | ISC | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/fastq/1.17.1) |
 | [`file-selector@0.1.19`](https://github.com/react-dropzone/file-selector.git) | MIT | CQ22350 |
 | [`find-my-way@9.0.1`](git+https://github.com/delvedor/find-my-way.git) | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/find-my-way/9.0.1) |
@@ -225,9 +227,11 @@
 | [`fs-minipass@3.0.3`](https://github.com/npm/fs-minipass.git) | ISC | #8277 |
 | [`fs.realpath@1.0.0`](git+https://github.com/isaacs/fs.realpath.git) | ISC | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/fs.realpath/1.0.0) |
 | [`function-bind@1.1.2`](https://github.com/Raynos/function-bind.git) | MIT | #11063 |
+| [`generator-function@2.0.1`](git+https://github.com/TimothyGu/generator-function.git) | MIT | #23713 |
 | [`get-intrinsic@1.2.2`](git+https://github.com/ljharb/get-intrinsic.git) | MIT | #8453 |
 | [`get-intrinsic@1.2.4`](git+https://github.com/ljharb/get-intrinsic.git) | MIT | #8453 |
 | [`get-intrinsic@1.3.0`](git+https://github.com/ljharb/get-intrinsic.git) | MIT | #19525 |
+| [`get-intrinsic@1.3.1`](git+https://github.com/ljharb/get-intrinsic.git) | MIT | #19525 |
 | [`get-proto@1.0.1`](git+https://github.com/ljharb/get-proto.git) | MIT | #18351 |
 | [`getpass@0.1.7`](https://github.com/arekinath/node-getpass.git) | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/getpass/0.1.7) |
 | [`glob@10.4.5`](git://github.com/isaacs/node-glob.git) | ISC | #15059 |
@@ -343,13 +347,12 @@
 | [`multi-ini@2.3.2`](git://github.com/evangelion1204/multi-ini.git) | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/multi-ini/2.3.2) |
 | `nanoid@3.3.8` | MIT | #7571 |
 | `negotiator@0.6.3` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/negotiator/0.6.3) |
-| [`node-fetch@2.7.0`](https://github.com/bitinn/node-fetch.git) | MIT | #10509 |
 | [`node-gyp@10.2.0`](git://github.com/nodejs/node-gyp.git) | MIT | #15698 |
 | [`nopt@7.2.0`](https://github.com/npm/nopt.git) | ISC | #9086 |
 | [`oauth-sign@0.9.0`](https://github.com/mikeal/oauth-sign) | Apache-2.0 | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/oauth-sign/0.9.0) |
 | `object-assign@4.1.1` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/object-assign/4.1.1) |
 | [`object-hash@2.2.0`](https://github.com/puleos/object-hash) | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/object-hash/2.2.0) |
-| [`object-inspect@1.13.1`](git://github.com/inspect-js/object-inspect.git) | MIT | #11078 |
+| [`object-inspect@1.13.4`](git://github.com/inspect-js/object-inspect.git) | MIT | #11078 |
 | [`obliterator@2.0.4`](git+https://github.com/yomguithereal/obliterator.git) | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/obliterator/2.0.4) |
 | [`oidc-token-hash@5.0.3`](https://github.com/panva/oidc-token-hash) | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/oidc-token-hash/5.0.3) |
 | [`on-exit-leak-free@2.1.2`](git+https://github.com/mcollina/on-exit-or-gc.git) | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/on-exit-leak-free/2.1.2) |
@@ -389,7 +392,7 @@
 | [`public-encrypt@4.0.3`](https://github.com/crypto-browserify/publicEncrypt.git) | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/public-encrypt/4.0.3) |
 | `pump@3.0.0` | MIT | #21946 |
 | [`punycode@2.3.1`](https://github.com/mathiasbynens/punycode.js.git) | MIT | #6373 |
-| [`qs@6.12.1`](https://github.com/ljharb/qs.git) | BSD-3-Clause | #14380 |
+| [`qs@6.14.0`](https://github.com/ljharb/qs.git) | BSD-3-Clause | #18871 |
 | [`qs@6.5.3`](https://github.com/ljharb/qs.git) | BSD-3-Clause | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/qs/6.5.3) |
 | [`querystring@0.2.1`](git://github.com/Gozala/querystring.git) | MIT | #1054 |
 | [`querystringify@2.2.0`](https://github.com/unshiftio/querystringify) | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/querystringify/2.2.0) |
@@ -407,7 +410,6 @@
 | [`react-router-dom@6.26.1`](https://github.com/remix-run/react-router) | MIT | #15860 |
 | [`react-router@6.26.1`](https://github.com/remix-run/react-router) | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/react-router/6.26.1) |
 | [`react-side-effect@2.1.2`](https://github.com/gaearon/react-side-effect.git) | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/react-side-effect/2.1.2) |
-| [`react-tooltip@4.5.1`](https://github.com/ReactTooltip/react-tooltip#readme) | MIT | #5006 |
 | [`react@18.3.1`](https://github.com/facebook/react.git) | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/react/18.3.1) |
 | [`readable-stream@3.6.2`](git://github.com/nodejs/readable-stream) | MIT | CQ22627 |
 | [`readable-stream@4.4.2`](git://github.com/nodejs/readable-stream) | MIT | #8426 |
@@ -437,7 +439,7 @@
 | [`safe-regex2@4.0.0`](git://github.com/fastify/safe-regex.git) | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/safe-regex2/4.0.0) |
 | [`safe-stable-stringify@2.4.3`](git+https://github.com/BridgeAR/safe-stable-stringify.git) | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/safe-stable-stringify/2.4.3) |
 | [`safer-buffer@2.1.2`](git+https://github.com/ChALkeR/safer-buffer.git) | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/safer-buffer/2.1.2) |
-| [`sanitize-html@2.13.0`](https://github.com/apostrophecms/sanitize-html.git) | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/sanitize-html/2.13.0) |
+| [`sanitize-html@2.17.0`](https://github.com/apostrophecms/sanitize-html.git) | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/sanitize-html/2.17.0) |
 | [`scheduler@0.23.2`](https://github.com/facebook/react.git) | MIT | #14588 |
 | [`secure-json-parse@2.7.0`](git+https://github.com/fastify/secure-json-parse.git) | BSD-3-Clause | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/secure-json-parse/2.7.0) |
 | [`semver@7.5.4`](https://github.com/npm/node-semver.git) | ISC | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/semver/7.5.4) |
@@ -447,7 +449,10 @@
 | [`sha.js@2.4.12`](git://github.com/crypto-browserify/sha.js.git) | (MIT AND BSD-3-Clause) | #1031 |
 | `shebang-command@2.0.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/shebang-command/2.0.0) |
 | `shebang-regex@3.0.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/shebang-regex/3.0.0) |
-| [`side-channel@1.0.6`](git+https://github.com/ljharb/side-channel.git) | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/side-channel/1.0.6) |
+| [`side-channel-list@1.0.0`](git+https://github.com/ljharb/side-channel-list.git) | MIT | #18387 |
+| [`side-channel-map@1.0.1`](git+https://github.com/ljharb/side-channel-map.git) | MIT | #18386 |
+| [`side-channel-weakmap@1.0.2`](git+https://github.com/ljharb/side-channel-weakmap.git) | MIT | #18384 |
+| [`side-channel@1.1.0`](git+https://github.com/ljharb/side-channel.git) | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/side-channel/1.1.0) |
 | [`signal-exit@4.1.0`](https://github.com/tapjs/signal-exit.git) | ISC | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/signal-exit/4.1.0) |
 | [`simple-oauth2@5.0.0`](https://github.com/lelylan/simple-oauth2) | Apache-2.0 | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/simple-oauth2/5.0.0) |
 | [`smart-buffer@4.2.0`](https://github.com/JoshGlazebrook/smart-buffer.git) | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/smart-buffer/4.2.0) |
@@ -494,7 +499,7 @@
 | [`typed-array-buffer@1.0.3`](git+https://github.com/inspect-js/typed-array-buffer.git) | MIT | #9658 |
 | [`undici-types@5.26.5`](git+https://github.com/nodejs/undici.git) | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/undici-types/5.26.5) |
 | [`undici-types@6.19.8`](git+https://github.com/nodejs/undici.git) | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/undici-types/6.19.8) |
-| [`undici@5.28.4`](git+https://github.com/nodejs/undici.git) | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/undici/5.28.4) |
+| [`undici@5.29.0`](git+https://github.com/nodejs/undici.git) | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/undici/5.29.0) |
 | [`unique-filename@3.0.0`](https://github.com/npm/unique-filename.git) | ISC | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/unique-filename/3.0.0) |
 | [`unique-slug@4.0.0`](https://github.com/npm/unique-slug.git) | ISC | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/unique-slug/4.0.0) |
 | [`universalify@2.0.1`](git+https://github.com/RyanZim/universalify.git) | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/universalify/2.0.1) |
@@ -503,7 +508,6 @@
 | [`use-sync-external-store@1.2.2`](https://github.com/facebook/react.git) | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/use-sync-external-store/1.2.2) |
 | [`util-deprecate@1.0.2`](git://github.com/TooTallNate/util-deprecate.git) | MIT | #5885 |
 | [`uuid@3.4.0`](https://github.com/uuidjs/uuid.git) | MIT | #2733 |
-| [`uuid@7.0.3`](https://github.com/uuidjs/uuid.git) | MIT | #57 |
 | `value-equal@1.0.1` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/value-equal/1.0.1) |
 | [`verror@1.10.0`](git://github.com/davepacheco/node-verror.git) | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/verror/1.10.0) |
 | [`w3c-keyname@2.2.8`](git+https://github.com/marijnh/w3c-keyname.git) | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/w3c-keyname/2.2.8) |

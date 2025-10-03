@@ -19,7 +19,6 @@ COPY .yarnrc.yml /dashboard/.yarnrc.yml
 COPY package.json /dashboard/
 COPY yarn.lock /dashboard/
 COPY tsconfig.json /dashboard/
-COPY run/wrksps.sh /dashboard/run/
 
 ENV COMMON=packages/common
 COPY ${COMMON}/package.json /dashboard/${COMMON}/

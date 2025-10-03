@@ -26,12 +26,6 @@ import { MockStoreBuilder } from '@/store/__mocks__/mockStore';
 
 import { LoaderPage, Props } from '..';
 
-jest.mock('react-tooltip', () => {
-  return function DummyTooltip(): React.ReactElement {
-    return <div>Dummy Tooltip</div>;
-  };
-});
-
 jest.mock('@/components/WorkspaceProgress');
 jest.mock('@/components/WorkspaceLogs');
 jest.mock('@/components/WorkspaceEvents');

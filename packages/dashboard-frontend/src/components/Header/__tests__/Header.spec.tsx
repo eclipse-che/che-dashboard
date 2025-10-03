@@ -17,12 +17,6 @@ import { WorkspaceStatus } from '@/services/helpers/types';
 
 import Header from '..';
 
-jest.mock('react-tooltip', () => {
-  return function DummyTooltip(): React.ReactElement {
-    return <div>Dummy Tooltip</div>;
-  };
-});
-
 describe('The header component for IDE-loader and Factory-loader pages', () => {
   it('should render start workspace correctly', () => {
     const element = <Header title="Start workspace" status={WorkspaceStatus.STARTING} />;

@@ -35,6 +35,7 @@
 | [`@csstools/css-tokenizer@3.0.3`](git+https://github.com/csstools/postcss-plugins.git) | MIT | #19008 |
 | [`@csstools/media-query-list-parser@4.0.2`](git+https://github.com/csstools/postcss-plugins.git) | MIT | #18961 |
 | [`@csstools/selector-specificity@5.0.0`](git+https://github.com/csstools/postcss-plugins.git) | MIT-0 | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@csstools/selector-specificity/5.0.0) |
+| [`@devfile/api@2.3.0-1746644330`](https://github.com/devfile/api) | Apache-2.0 | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@devfile/api/2.3.0-1746644330) |
 | `@discoveryjs/json-ext@0.5.7` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@discoveryjs/json-ext/0.5.7) |
 | `@dual-bundle/import-meta-resolve@4.1.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@dual-bundle/import-meta-resolve/4.1.0) |
 | `@eclipse-che/api@7.86.0` | EPL-2.0 | ecd.che |
@@ -108,7 +109,7 @@
 | [`@types/jsdom@20.0.1`](https://github.com/DefinitelyTyped/DefinitelyTyped.git) | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@types/jsdom/20.0.1) |
 | [`@types/json-schema@7.0.14`](https://github.com/DefinitelyTyped/DefinitelyTyped.git) | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@types/json-schema/7.0.14) |
 | [`@types/jsonfile@6.1.3`](https://github.com/DefinitelyTyped/DefinitelyTyped.git) | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@types/jsonfile/6.1.3) |
-| [`@types/lodash@4.14.200`](https://github.com/DefinitelyTyped/DefinitelyTyped.git) | MIT | #4131 |
+| [`@types/lodash@4.17.20`](https://github.com/DefinitelyTyped/DefinitelyTyped.git) | MIT | #18358 |
 | [`@types/prop-types@15.7.9`](https://github.com/DefinitelyTyped/DefinitelyTyped.git) | MIT | #16176 |
 | [`@types/qs@6.9.9`](https://github.com/DefinitelyTyped/DefinitelyTyped.git) | MIT | #13991 |
 | [`@types/react-copy-to-clipboard@5.0.7`](https://github.com/DefinitelyTyped/DefinitelyTyped.git) | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@types/react-copy-to-clipboard/5.0.7) |
@@ -375,7 +376,7 @@
 | [`has-property-descriptors@1.0.1`](git+https://github.com/inspect-js/has-property-descriptors.git) | MIT | #11098 |
 | [`has-tostringtag@1.0.0`](git+https://github.com/inspect-js/has-tostringtag.git) | MIT | #13161 |
 | [`he@1.2.0`](https://github.com/mathiasbynens/he.git) | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/he/1.2.0) |
-| [`hookified@1.8.1`](git+https://github.com/jaredwray/hookified.git) | MIT | transitive dependency |
+| [`hookified@1.8.1`](git+https://github.com/jaredwray/hookified.git) | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/hookified/1.8.1) |
 | `html-encoding-sniffer@3.0.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/html-encoding-sniffer/3.0.0) |
 | [`html-escaper@2.0.2`](https://github.com/WebReflection/html-escaper.git) | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/html-escaper/2.0.2) |
 | [`html-minifier-terser@6.1.0`](git+https://github.com/terser/html-minifier-terser.git) | MIT | #2968 |
@@ -480,7 +481,7 @@
 | [`json5@2.2.3`](git+https://github.com/json5/json5.git) | MIT | #15226 |
 | [`jsx-ast-utils@3.3.5`](https://github.com/jsx-eslint/jsx-ast-utils) | MIT | #9209 |
 | [`keyv@4.5.4`](git+https://github.com/jaredwray/keyv.git) | MIT | #4674 |
-| [`keyv@5.3.2`](git+https://github.com/jaredwray/keyv.git) | MIT | transitive dependency |
+| [`keyv@5.3.2`](git+https://github.com/jaredwray/keyv.git) | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/keyv/5.3.2) |
 | [`kind-of@6.0.3`](https://github.com/jonschlinkert/kind-of) | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/kind-of/6.0.3) |
 | `kleur@3.0.3` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/kleur/3.0.3) |
 | [`known-css-properties@0.35.0`](https://github.com/known-css/known-css-properties#readme) | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/known-css-properties/0.35.0) |
@@ -528,6 +529,7 @@
 | `natural-compare@1.4.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/natural-compare/1.4.0) |
 | [`neo-async@2.6.2`](git@github.com:suguru03/neo-async.git) | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/neo-async/2.6.2) |
 | [`no-case@3.0.4`](git://github.com/blakeembrey/change-case.git) | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/no-case/3.0.4) |
+| [`node-fetch@2.7.0`](https://github.com/bitinn/node-fetch.git) | MIT | #10509 |
 | [`node-int64@0.4.0`](https://github.com/broofa/node-int64) | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/node-int64/0.4.0) |
 | [`node-object-hash@1.4.2`](git@github.com:SkeLLLa/node-object-hash.git) | ISC | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/node-object-hash/1.4.2) |
 | `node-releases@2.0.13` | MIT | #1954 |
@@ -540,6 +542,7 @@
 | `npm-run-path@5.1.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/npm-run-path/5.1.0) |
 | [`nth-check@2.1.1`](https://github.com/fb55/nth-check) | BSD-2-Clause | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/nth-check/2.1.1) |
 | [`nwsapi@2.2.7`](git://github.com/dperini/nwsapi.git) | MIT | #7909 |
+| [`object-inspect@1.13.1`](git://github.com/inspect-js/object-inspect.git) | MIT | #11078 |
 | [`object-keys@1.1.1`](git://github.com/ljharb/object-keys.git) | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/object-keys/1.1.1) |
 | [`object.assign@4.1.4`](git://github.com/ljharb/object.assign.git) | MIT | #15306 |
 | [`object.entries@1.1.7`](git://github.com/es-shims/Object.entries.git) | MIT | #4671 |
