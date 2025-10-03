@@ -16,12 +16,6 @@ import renderer, { ReactTestRendererJSON } from 'react-test-renderer';
 import { WorkspaceStatusIndicator } from '@/components/Workspace/Status/Indicator';
 import { DevWorkspaceStatus, WorkspaceStatus } from '@/services/helpers/types';
 
-jest.mock('react-tooltip', () => {
-  return function DummyTooltip(): React.ReactElement {
-    return <div>Dummy Tooltip</div>;
-  };
-});
-
 describe('Workspace indicator component', () => {
   it('should render default status correctly', () => {
     const element = <WorkspaceStatusIndicator status={WorkspaceStatus.STOPPING} />;
