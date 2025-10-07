@@ -37,7 +37,10 @@ import {
 import { buildFactoryLocation } from '@/services/helpers/location';
 import { AlertItem, isActionCallback } from '@/services/helpers/types';
 import { che } from '@/services/models';
-import { DEVWORKSPACE_BOOTSTRAP } from '@/services/workspace-client/devworkspace/devWorkspaceClient';
+import {
+  DEVWORKSPACE_BOOTSTRAP,
+  DEVWORKSPACE_LABEL_METADATA_NAME,
+} from '@/services/workspace-client/devworkspace/devWorkspaceClient';
 import { AppThunk } from '@/store';
 import { DevWorkspaceBuilder } from '@/store/__mocks__/devWorkspaceBuilder';
 import { MockStoreBuilder } from '@/store/__mocks__/mockStore';
@@ -515,10 +518,39 @@ describe('Creating steps, applying a devfile', () => {
   });
 
   describe('handle name conflicts', () => {
-    test('with name conflict', async () => {
+    test('with name conflict from the "metadata.name"', async () => {
       const store = getStoreBuilder()
         .withDevWorkspaces({
           workspaces: [new DevWorkspaceBuilder().withName(devfileName).build()],
+        })
+        .withFactoryResolver({
+          resolver: {
+            devfile,
+          },
+        })
+        .build();
+
+      renderComponent(store, searchParams);
+      await jest.advanceTimersByTimeAsync(MIN_STEP_DURATION_MS);
+
+      await waitFor(() =>
+        expect(prepareDevfile).toHaveBeenCalledWith(devfile, factoryId, undefined, true, undefined),
+      );
+    });
+
+    test('with name conflict from the "kubernetes.io/metadata.name" label', async () => {
+      const store = getStoreBuilder()
+        .withDevWorkspaces({
+          workspaces: [
+            new DevWorkspaceBuilder()
+              .withMetadata({
+                labels: {
+                  [DEVWORKSPACE_LABEL_METADATA_NAME]: devfileName,
+                },
+                name: 'unique-name',
+              })
+              .build(),
+          ],
         })
         .withFactoryResolver({
           resolver: {

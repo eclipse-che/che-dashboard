@@ -52,15 +52,14 @@ export const devWorkspaceSingularSubresource = 'devworkspace';
 export const COMPONENT_UPDATE_POLICY = 'che.eclipse.org/components-update-policy';
 export const REGISTRY_URL = 'che.eclipse.org/plugin-registry-url';
 
-export const DEVWORKSPACE_NEXT_START_ANNOTATION = 'che.eclipse.org/next-start-cfg';
+export const DEVWORKSPACE_LABEL_METADATA_NAME = 'kubernetes.io/metadata.name';
 
-export const DEVWORKSPACE_DEBUG_START_ANNOTATION = 'controller.devfile.io/debug-start';
+export const DEVWORKSPACE_NEXT_START_ANNOTATION = 'che.eclipse.org/next-start-cfg';
+export const DEVWORKSPACE_DEVFILE_SOURCE = 'che.eclipse.org/devfile-source';
+export const DEVWORKSPACE_DEVFILE = 'che.eclipse.org/devfile';
 
 export const DEVWORKSPACE_BOOTSTRAP = 'controller.devfile.io/bootstrap-devworkspace';
-
-export const DEVWORKSPACE_DEVFILE_SOURCE = 'che.eclipse.org/devfile-source';
-
-export const DEVWORKSPACE_DEVFILE = 'che.eclipse.org/devfile';
+export const DEVWORKSPACE_DEBUG_START_ANNOTATION = 'controller.devfile.io/debug-start';
 
 export const DEVWORKSPACE_METADATA_ANNOTATION = 'dw.metadata.annotations';
 
