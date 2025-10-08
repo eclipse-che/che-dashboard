@@ -342,6 +342,10 @@ export function getAdvancedOptionsFromLocation(location: string): {
   };
 }
 
+export function getRepoLocation(factoryLocation: string): string {
+  return factoryLocation.split('?')[0];
+}
+
 export interface IGitRepoOptions {
   location?: string;
   gitBranch?: string | undefined;

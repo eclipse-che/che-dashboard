@@ -20,6 +20,19 @@ describe('helpers', () => {
   afterEach(() => {
     jest.clearAllMocks();
   });
+  describe('getRepoLocation', () => {
+    test('with parameters', () => {
+      const location = helpers.getRepoLocation('https://dummy-repo.git?policies.create=perclick');
+
+      expect(location).toEqual('https://dummy-repo.git');
+    });
+
+    test('without parameters', () => {
+      const location = helpers.getRepoLocation('https://dummy-repo.git');
+
+      expect(location).toEqual('https://dummy-repo.git');
+    });
+  });
 
   describe('validateLocation', () => {
     describe('has SSH key', () => {
