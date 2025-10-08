@@ -31,7 +31,7 @@ import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { NavigateFunction } from 'react-router-dom';
 
-import { validateLocation } from '@/components/ImportFromGit/helpers';
+import { getRepoLocation, validateLocation } from '@/components/ImportFromGit/helpers';
 import RepoOptionsAccordion from '@/components/ImportFromGit/RepoOptionsAccordion';
 import UntrustedSourceModal from '@/components/UntrustedSourceModal';
 import { buildFactoryLoaderPath } from '@/preload/main';
@@ -223,10 +223,11 @@ class ImportFromGit extends React.PureComponent<Props, State> {
 
   public render() {
     const { isConfirmationOpen, location, locationValidated } = this.state;
+    const repoLocation = getRepoLocation(location) || location;
     return (
       <>
         <UntrustedSourceModal
-          location={location}
+          location={repoLocation}
           isOpen={isConfirmationOpen}
           onContinue={() => this.handleConfirmationOnContinue()}
           onClose={() => this.handleConfirmationOnClose()}
