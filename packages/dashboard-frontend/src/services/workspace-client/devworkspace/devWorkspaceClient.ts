@@ -40,8 +40,7 @@ import { fetchData } from '@/services/registry/fetchData';
 import { WorkspaceAdapter } from '@/services/workspace-adapter';
 import { DevWorkspaceDefaultPluginsHandler } from '@/services/workspace-client/devworkspace/DevWorkspaceDefaultPluginsHandler';
 import { fetchEditor } from '@/services/workspace-client/devworkspace/devWorkspaceEditor';
-import { normaliseDevWorkspace } from '@/services/workspace-client/helpers';
-import { isCheEditorYamlPath } from '@/services/workspace-client/helpers';
+import { isCheEditorYamlPath, normaliseDevWorkspace } from '@/services/workspace-client/helpers';
 import { EDITOR_DEVFILE_API_QUERY } from '@/store/DevfileRegistries/const';
 import { WorkspacesDefaultPlugins } from '@/store/Plugins/devWorkspacePlugins';
 
@@ -577,19 +576,14 @@ export class DevWorkspaceClient {
     }
 
     if (workspace.spec.template.attributes?.[DEVWORKSPACE_CONTAINER_SCC_ATTR]) {
-      // if `controller.devfile.io/scc` attribute exists, then don't update it,
-      // as its modification is blocked by DWO WebHook.
-      // Retaining the existing value ensures the workspace can start.
-      // Ensures, that HOST_USERS set correctly
-      if (workspace.spec.template.attributes?.[DEVWORKSPACE_CONTAINER_SCC_ATTR] === sccName) {
-        patch.push(...this.setHostUsersEnvVar(workspace, hostUsers));
-      }
+      // if `controller.devfile.io/scc` attribute exists, then replace it
+      patch.push(...this.replaceSccAttribute(workspace, sccName));
     } else {
       // if `controller.devfile.io/scc` attribute doesn't exist, then add it.
-      // Ensures, that HOST_USERS set correctly
-      patch.push(this.addSccAttribute(workspace, sccName));
-      patch.push(...this.setHostUsersEnvVar(workspace, hostUsers));
+      patch.push(...this.addSccAttribute(workspace, sccName));
     }
+    // Ensures, that HOST_USERS set correspondingly to `controller.devfile.io/scc` attribute
+    patch.push(...this.setHostUsersEnvVar(workspace, hostUsers));
 
     return patch;
   }
@@ -606,18 +600,34 @@ export class DevWorkspaceClient {
     return patch;
   }
 
-  addSccAttribute(workspace: devfileApi.DevWorkspace, scc: string): api.IPatch {
+  addSccAttribute(workspace: devfileApi.DevWorkspace, scc: string): api.IPatch[] {
+    const patch: api.IPatch[] = [];
+
     if (!workspace.spec.template.attributes) {
       const path = '/spec/template/attributes';
       const value = {
         [DEVWORKSPACE_CONTAINER_SCC_ATTR]: scc,
       };
-      return { op: 'add', path, value };
+      patch.push({ op: 'add', path, value });
     } else {
       const path = `/spec/template/attributes/${this.escape(DEVWORKSPACE_CONTAINER_SCC_ATTR)}`;
       const value = scc;
-      return { op: 'add', path, value };
+      patch.push({ op: 'add', path, value });
     }
+
+    return patch;
+  }
+
+  replaceSccAttribute(workspace: devfileApi.DevWorkspace, scc: string): api.IPatch[] {
+    const patch: api.IPatch[] = [];
+
+    if (workspace.spec.template.attributes?.[DEVWORKSPACE_CONTAINER_SCC_ATTR] !== scc) {
+      const path = `/spec/template/attributes/${this.escape(DEVWORKSPACE_CONTAINER_SCC_ATTR)}`;
+      const value = scc;
+      patch.push({ op: 'replace', path, value });
+    }
+
+    return patch;
   }
 
   setHostUsersEnvVar(workspace: devfileApi.DevWorkspace, hostUsers: boolean): api.IPatch[] {

@@ -150,7 +150,7 @@ describe('DevWorkspace client', () => {
     expect(spyPatchWorkspace).not.toHaveBeenCalled();
   });
 
-  it('Keep attribute, keep env var because scc does not match', async () => {
+  it('Update attribute, update env var because scc does not match', async () => {
     const config = {
       containerRun: {
         disableContainerRunCapabilities: false,
@@ -180,7 +180,18 @@ describe('DevWorkspace client', () => {
       .build();
 
     await client.manageContainerSccAttribute(workspace, config);
-    expect(spyPatchWorkspace).not.toHaveBeenCalled();
+    expect(spyPatchWorkspace).toHaveBeenCalledWith(namespace, name, [
+      {
+        op: 'replace',
+        path: '/spec/template/attributes/controller.devfile.io~1scc',
+        value: 'container-run',
+      },
+      {
+        op: 'replace',
+        path: '/spec/template/components/0/container/env/0',
+        value: { name: 'HOST_USERS', value: 'false' },
+      },
+    ]);
   });
 
   it('Keep attribute, add env var', async () => {
@@ -333,7 +344,18 @@ describe('DevWorkspace client', () => {
       .build();
 
     await client.manageContainerSccAttribute(workspace, config);
-    expect(spyPatchWorkspace).not.toHaveBeenCalled();
+    expect(spyPatchWorkspace).toHaveBeenCalledWith(namespace, name, [
+      {
+        op: 'replace',
+        path: '/spec/template/attributes/controller.devfile.io~1scc',
+        value: 'container-build',
+      },
+      {
+        op: 'replace',
+        path: '/spec/template/components/0/container/env/0',
+        value: { name: 'HOST_USERS', value: 'true' },
+      },
+    ]);
   });
 
   it('Delete attribute, delete env var', async () => {
