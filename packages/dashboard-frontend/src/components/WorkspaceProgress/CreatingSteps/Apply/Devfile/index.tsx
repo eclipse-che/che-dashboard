@@ -219,7 +219,7 @@ class CreatingStepApplyDevfile extends ProgressStep<Props, State> {
       );
     }
 
-    // test the devfile name to decide if we need to append a suffix to is
+    // test the devfile name to see if a suffix should be added
     const nameConflict = allWorkspaces.some(
       w => devfile.metadata.name === w.name || devfile.metadata.name === w.ref.metadata.name,
     );
