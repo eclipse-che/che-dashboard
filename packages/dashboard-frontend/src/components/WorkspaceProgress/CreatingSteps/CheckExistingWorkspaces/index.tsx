@@ -161,7 +161,9 @@ class CreatingStepCheckExistingWorkspaces extends ProgressStep<Props, State> {
       let existingWorkspace: Workspace | undefined = undefined;
       if (factoryParams.existing) {
         // if the factory params specify an existing workspace, use it
-        existingWorkspace = sameRepoWorkspaces.find(w => w.name === factoryParams.existing);
+        existingWorkspace = sameRepoWorkspaces.find(
+          w => w.name === factoryParams.existing || w.ref.metadata.name === factoryParams.existing,
+        );
         if (existingWorkspace === undefined) {
           this.handleError(
             new Error(
@@ -215,7 +217,9 @@ class CreatingStepCheckExistingWorkspaces extends ProgressStep<Props, State> {
     }
 
     // check existing workspaces to avoid name conflicts
-    const existingWorkspace = this.props.allWorkspaces.find(w => newWorkspaceName === w.name);
+    const existingWorkspace = this.props.allWorkspaces.find(
+      w => newWorkspaceName === w.name || newWorkspaceName === w.ref.metadata.name,
+    );
     if (existingWorkspace) {
       // detected workspaces name conflict
       this.handleNameConflict(newWorkspaceName, 'create-new');

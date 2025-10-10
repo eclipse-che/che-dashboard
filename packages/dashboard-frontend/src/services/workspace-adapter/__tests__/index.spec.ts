@@ -16,7 +16,10 @@ import { DEVWORKSPACE_UPDATING_TIMESTAMP_ANNOTATION } from '@/services/devfileAp
 import { DEVWORKSPACE_STORAGE_TYPE_ATTR } from '@/services/devfileApi/devWorkspace/spec/template';
 import { DevWorkspaceStatus } from '@/services/helpers/types';
 import { StorageTypeTitle } from '@/services/storageTypes';
-import { DEVWORKSPACE_DEVFILE_SOURCE } from '@/services/workspace-client/devworkspace/devWorkspaceClient';
+import {
+  DEVWORKSPACE_DEVFILE_SOURCE,
+  DEVWORKSPACE_LABEL_METADATA_NAME,
+} from '@/services/workspace-client/devworkspace/devWorkspaceClient';
 import { DevWorkspaceBuilder } from '@/store/__mocks__/devWorkspaceBuilder';
 
 import { constructWorkspace, WorkspaceAdapter } from '..';
@@ -104,11 +107,27 @@ describe('for DevWorkspace', () => {
     expect(workspace.uid).toMatch(/^uid-/);
   });
 
-  it('should return name', () => {
+  it('should return name from the "metadata.name"', () => {
     const name = 'wksp-1234';
     const devWorkspace = new DevWorkspaceBuilder().withName(name).build();
     const workspace = constructWorkspace(devWorkspace);
     expect(workspace.name).toEqual(name);
+  });
+
+  it('should return name from the "kubernetes.io/metadata.name" label', () => {
+    const name = 'wksp-1234';
+    const overrideName = 'override-name';
+    const devWorkspace = new DevWorkspaceBuilder()
+      .withMetadata({
+        labels: {
+          [DEVWORKSPACE_LABEL_METADATA_NAME]: overrideName,
+        },
+        name,
+      })
+      .build();
+    const workspace = constructWorkspace(devWorkspace);
+    expect(workspace.name).not.toEqual(name);
+    expect(workspace.name).toEqual(overrideName);
   });
 
   it('should return namespace', () => {

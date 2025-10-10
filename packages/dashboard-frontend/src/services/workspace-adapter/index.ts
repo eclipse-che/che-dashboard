@@ -21,7 +21,10 @@ import {
   WorkspaceStatus,
 } from '@/services/helpers/types';
 import { che } from '@/services/models';
-import { DEVWORKSPACE_DEVFILE_SOURCE } from '@/services/workspace-client/devworkspace/devWorkspaceClient';
+import {
+  DEVWORKSPACE_DEVFILE_SOURCE,
+  DEVWORKSPACE_LABEL_METADATA_NAME,
+} from '@/services/workspace-client/devworkspace/devWorkspaceClient';
 
 export interface Workspace {
   readonly ref: devfileApi.DevWorkspace;
@@ -128,7 +131,10 @@ export class WorkspaceAdapter<T extends devfileApi.DevWorkspace> implements Work
   }
 
   get name(): string {
-    return this.workspace.metadata.name;
+    return (
+      this.workspace.metadata.labels?.[DEVWORKSPACE_LABEL_METADATA_NAME] ||
+      this.workspace.metadata.name
+    );
   }
 
   set name(name: string) {
