@@ -30,7 +30,10 @@ import {
 } from '@/services/helpers/factoryFlow/buildFactoryParams';
 import { buildFactoryLocation } from '@/services/helpers/location';
 import { TabManager } from '@/services/tabManager';
-import { DEVWORKSPACE_DEVFILE_SOURCE } from '@/services/workspace-client/devworkspace/devWorkspaceClient';
+import {
+  DEVWORKSPACE_DEVFILE_SOURCE,
+  DEVWORKSPACE_LABEL_METADATA_NAME,
+} from '@/services/workspace-client/devworkspace/devWorkspaceClient';
 import { DevWorkspaceBuilder } from '@/store/__mocks__/devWorkspaceBuilder';
 import { MockStoreBuilder } from '@/store/__mocks__/mockStore';
 import { DevWorkspaceResources } from '@/store/DevfileRegistries';
@@ -122,7 +125,7 @@ describe('Creating steps, checking existing workspaces', () => {
             workspaces: [
               new DevWorkspaceBuilder()
                 .withMetadata({
-                  name: 'project-1',
+                  name: 'empty-4ccb-7qbk',
                   namespace: 'user-che',
                   annotations: {
                     [DEVWORKSPACE_DEVFILE_SOURCE]: dump({
@@ -130,6 +133,9 @@ describe('Creating steps, checking existing workspaces', () => {
                         params: 'url=https://github.com/eclipse-che/che-dashboard',
                       },
                     }),
+                  },
+                  labels: {
+                    [DEVWORKSPACE_LABEL_METADATA_NAME]: 'project-1',
                   },
                 })
                 .build(),
@@ -493,7 +499,7 @@ describe('Creating steps, checking existing workspaces', () => {
       });
     });
 
-    describe('workspace names conflict faced', () => {
+    describe('workspace names conflict faced with the "metadata.name"', () => {
       let store: Store;
       const workspaceName = 'my-project';
 
@@ -510,6 +516,62 @@ describe('Creating steps, checking existing workspaces', () => {
           .withDevWorkspaces({
             workspaces: [
               new DevWorkspaceBuilder().withName(workspaceName).withNamespace('user-che').build(),
+            ],
+          })
+          .withDevfileRegistries({
+            devWorkspaceResources: {
+              [resourcesUrl]: {
+                resources,
+              },
+            },
+          })
+          .build();
+      });
+
+      test('should not show notification alert', async () => {
+        renderComponent(store, searchParams);
+
+        await jest.advanceTimersByTimeAsync(MIN_STEP_DURATION_MS);
+
+        await waitFor(() => expect(mockOnError).not.toHaveBeenCalled());
+      });
+
+      test('action callback to create a new workspace', async () => {
+        renderComponent(store, searchParams);
+
+        await jest.runOnlyPendingTimersAsync();
+
+        await waitFor(() => expect(mockOnNextStep).toHaveBeenCalled());
+        expect(mockOnRestart).not.toHaveBeenCalled();
+        expect(mockOnError).not.toHaveBeenCalled();
+      });
+    });
+
+    describe('workspace names conflict faced with the "kubernetes.io/metadata.name" label', () => {
+      let store: Store;
+      const workspaceName = 'my-project';
+
+      beforeEach(() => {
+        const resources: DevWorkspaceResources = [
+          {
+            metadata: {
+              name: workspaceName,
+            },
+          } as devfileApi.DevWorkspace,
+          {} as devfileApi.DevWorkspaceTemplate,
+        ];
+        store = new MockStoreBuilder()
+          .withDevWorkspaces({
+            workspaces: [
+              new DevWorkspaceBuilder()
+                .withMetadata({
+                  name: 'empty-4ccb-7qbk',
+                  namespace: 'user-che',
+                  labels: {
+                    [DEVWORKSPACE_LABEL_METADATA_NAME]: workspaceName,
+                  },
+                })
+                .build(),
             ],
           })
           .withDevfileRegistries({
