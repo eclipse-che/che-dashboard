@@ -44,7 +44,7 @@ export function registerDockerConfigRoutes(instance: FastifyInstance) {
         const token = getToken(request);
         const { dockerConfigApi } = getDevWorkspaceClient(token);
 
-        return dockerConfigApi.update(namespace, dockerCfg);
+        return dockerConfigApi.update(namespace, dockerCfg.dockerconfig);
       },
     );
   });

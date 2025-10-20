@@ -208,9 +208,7 @@
 | `camelcase@5.3.1` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/camelcase/5.3.1) |
 | `camelcase@6.3.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/camelcase/6.3.0) |
 | `caniuse-api@3.0.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/caniuse-api/3.0.0) |
-| `caniuse-lite@1.0.30001561` | CC-BY-4.0 | #1196 |
-| `caniuse-lite@1.0.30001620` | CC-BY-4.0 | #1196 |
-| `caniuse-lite@1.0.30001680` | CC-BY-4.0 | #1196 |
+| `caniuse-lite@1.0.30001751` | CC-BY-4.0 | #1196 |
 | `chalk@3.0.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/chalk/3.0.0) |
 | `chalk@4.1.2` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/chalk/4.1.2) |
 | `char-regex@1.0.2` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/char-regex/1.0.2) |

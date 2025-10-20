@@ -47,14 +47,13 @@ describe('DockerConfig', () => {
         const mockRegistries = [
           { url: 'https://registry.com', username: 'user', password: 'pass' },
         ];
-        const mockResourceVersion = '12345';
 
         jest
           .spyOn(namespaceSelectors, 'selectDefaultNamespace')
           .mockReturnValue({ name: mockNamespace, attributes: { phase: 'Active' } });
         (verifyAuthorized as jest.Mock).mockResolvedValue(true);
-        (DwApi.getDockerConfig as jest.Mock).mockResolvedValue({
-          dockerconfig: window.btoa(
+        (DwApi.getDockerConfig as jest.Mock).mockResolvedValue(
+          window.btoa(
             JSON.stringify({
               auths: {
                 'https://registry.com': {
@@ -63,8 +62,7 @@ describe('DockerConfig', () => {
               },
             }),
           ),
-          resourceVersion: mockResourceVersion,
-        });
+        );
 
         await store.dispatch(actionCreators.requestCredentials());
 
@@ -73,7 +71,6 @@ describe('DockerConfig', () => {
         expect(actions[1]).toEqual(
           dockerConfigReceiveAction({
             registries: mockRegistries,
-            resourceVersion: mockResourceVersion,
           }),
         );
       });
@@ -103,15 +100,12 @@ describe('DockerConfig', () => {
         const mockRegistries = [
           { url: 'https://registry.com', username: 'user', password: 'pass' },
         ];
-        const mockResourceVersion = '12345';
 
         jest
           .spyOn(namespaceSelectors, 'selectDefaultNamespace')
           .mockReturnValue({ name: mockNamespace, attributes: { phase: 'Active' } });
         (verifyAuthorized as jest.Mock).mockResolvedValue(true);
-        (DwApi.putDockerConfig as jest.Mock).mockResolvedValue({
-          resourceVersion: mockResourceVersion,
-        });
+        (DwApi.putDockerConfig as jest.Mock).mockResolvedValue({});
 
         await store.dispatch(actionCreators.updateCredentials(mockRegistries));
 
@@ -120,7 +114,6 @@ describe('DockerConfig', () => {
         expect(actions[1]).toEqual(
           dockerConfigReceiveAction({
             registries: mockRegistries,
-            resourceVersion: mockResourceVersion,
           }),
         );
       });
@@ -161,18 +154,13 @@ describe('DockerConfig', () => {
           },
         }),
       );
-      const mockResourceVersion = '12345';
 
-      (DwApi.getDockerConfig as jest.Mock).mockResolvedValue({
-        dockerconfig: mockDockerConfig,
-        resourceVersion: mockResourceVersion,
-      });
+      (DwApi.getDockerConfig as jest.Mock).mockResolvedValue(mockDockerConfig);
 
       const result = await getDockerConfig(mockNamespace);
 
       expect(result).toEqual({
         registries: [{ url: 'https://registry.com', username: 'user', password: 'pass' }],
-        resourceVersion: mockResourceVersion,
       });
     });
 
@@ -204,19 +192,15 @@ describe('DockerConfig', () => {
       );
     });
 
-    it('should return empty registries if dockerconfig is not provided', async () => {
+    it('should return empty registries if dockerconfig returns undefined', async () => {
       const mockNamespace = 'test-namespace';
 
-      (DwApi.getDockerConfig as jest.Mock).mockResolvedValue({
-        dockerconfig: undefined,
-        resourceVersion: '12345',
-      });
+      (DwApi.getDockerConfig as jest.Mock).mockResolvedValue(undefined);
 
       const result = await getDockerConfig(mockNamespace);
 
       expect(result).toEqual({
         registries: [],
-        resourceVersion: '12345',
       });
     });
   });
@@ -225,19 +209,16 @@ describe('DockerConfig', () => {
     it('should update docker config successfully', async () => {
       const mockNamespace = 'test-namespace';
       const mockRegistries = [{ url: 'https://registry.com', username: 'user', password: 'pass' }];
-      const mockResourceVersion = '12345';
-      const mockResponse = {
-        dockerconfig: 'mockDockerConfig',
-        resourceVersion: mockResourceVersion,
-      };
+      const mockResponse = 'mockDockerConfig';
 
       (DwApi.putDockerConfig as jest.Mock).mockResolvedValue(mockResponse);
 
-      const result = await putDockerConfig(mockNamespace, mockRegistries, mockResourceVersion);
+      const result = await putDockerConfig(mockNamespace, mockRegistries);
 
       expect(result).toEqual(mockResponse);
-      expect(DwApi.putDockerConfig).toHaveBeenCalledWith(mockNamespace, {
-        dockerconfig: window.btoa(
+      expect(DwApi.putDockerConfig).toHaveBeenCalledWith(
+        mockNamespace,
+        window.btoa(
           JSON.stringify({
             auths: {
               'https://registry.com': {
@@ -248,8 +229,7 @@ describe('DockerConfig', () => {
             },
           }),
         ),
-        resourceVersion: mockResourceVersion,
-      });
+      );
     });
 
     it('should throw an error if updating docker config fails', async () => {

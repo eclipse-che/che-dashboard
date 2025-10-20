@@ -151,7 +151,7 @@ export class PodmanApiService implements IPodmanApi {
 
     const dockerConfigBase64Encoded = await this.dockerConfig.read(namespace);
     const dockerConfig = JSON.parse(
-      Buffer.from(dockerConfigBase64Encoded.dockerconfig, 'base64').toString('binary'),
+      Buffer.from(dockerConfigBase64Encoded, 'base64').toString('binary'),
     );
 
     const auths = dockerConfig['auths'];

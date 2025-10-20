@@ -30,12 +30,12 @@ export interface IDockerConfigApi {
   /**
    * Get DockerConfig in the specified namespace
    */
-  read(namespace: string): Promise<api.IDockerConfig>;
+  read(namespace: string): Promise<string>;
 
   /**
    * Replace DockerConfig in the specified namespace
    */
-  update(namespace: string, dockerCfg: api.IDockerConfig): Promise<api.IDockerConfig>;
+  update(namespace: string, dockerCfg: string): Promise<string>;
 }
 
 export interface IGitConfigApi {

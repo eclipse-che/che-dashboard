@@ -77,11 +77,6 @@ export interface IPatch {
   value?: any;
 }
 
-export interface IDockerConfig {
-  dockerconfig: string;
-  resourceVersion?: string;
-}
-
 export interface IGitConfig {
   resourceVersion?: string;
   gitconfig: {

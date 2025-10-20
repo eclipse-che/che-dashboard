@@ -27,14 +27,12 @@ export type RegistryEntry = {
 export interface State {
   isLoading: boolean;
   registries: RegistryEntry[];
-  resourceVersion?: string;
   error: string | undefined;
 }
 
 export const unloadedState: State = {
   isLoading: false,
   registries: [],
-  resourceVersion: undefined,
   error: undefined,
 };
 
@@ -47,7 +45,6 @@ export const reducer = createReducer(unloadedState, builder =>
     .addCase(dockerConfigReceiveAction, (state, action) => {
       state.isLoading = false;
       state.registries = action.payload.registries;
-      state.resourceVersion = action.payload.resourceVersion;
     })
     .addCase(dockerConfigErrorAction, (state, action) => {
       state.isLoading = false;

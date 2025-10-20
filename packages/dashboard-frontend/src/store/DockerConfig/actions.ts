@@ -10,7 +10,7 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import { api, helpers } from '@eclipse-che/common';
+import { helpers } from '@eclipse-che/common';
 import { createAction } from '@reduxjs/toolkit';
 
 import * as DwApi from '@/services/backend-client/devWorkspaceApi';
@@ -22,7 +22,6 @@ import { verifyAuthorized } from '@/store/SanityCheck';
 export const dockerConfigRequestAction = createAction('dockerConfig/request');
 type DockerConfigReceivePayload = {
   registries: RegistryEntry[];
-  resourceVersion: string | undefined;
 };
 export const dockerConfigReceiveAction =
   createAction<DockerConfigReceivePayload>('dockerConfig/receive');
@@ -38,8 +37,8 @@ export const actionCreators = {
 
         dispatch(dockerConfigRequestAction());
 
-        const { registries, resourceVersion } = await getDockerConfig(namespace);
-        dispatch(dockerConfigReceiveAction({ registries, resourceVersion }));
+        const { registries } = await getDockerConfig(namespace);
+        dispatch(dockerConfigReceiveAction({ registries }));
       } catch (e) {
         const errorMessage = helpers.errors.getMessage(e);
         dispatch(dockerConfigErrorAction(errorMessage));
@@ -58,12 +57,8 @@ export const actionCreators = {
 
         dispatch(dockerConfigRequestAction());
 
-        const { resourceVersion } = await putDockerConfig(
-          namespace,
-          registries,
-          state.dockerConfig?.resourceVersion,
-        );
-        dispatch(dockerConfigReceiveAction({ registries, resourceVersion }));
+        await putDockerConfig(namespace, registries);
+        dispatch(dockerConfigReceiveAction({ registries }));
       } catch (e) {
         const errorMessage = helpers.errors.getMessage(e);
         dispatch(dockerConfigErrorAction(errorMessage));
@@ -72,14 +67,10 @@ export const actionCreators = {
     },
 };
 
-export async function getDockerConfig(
-  namespace: string,
-): Promise<{ registries: RegistryEntry[]; resourceVersion?: string }> {
-  let dockerconfig, resourceVersion: string | undefined;
+export async function getDockerConfig(namespace: string): Promise<{ registries: RegistryEntry[] }> {
+  let dockerconfig: string | undefined;
   try {
-    const resp = await DwApi.getDockerConfig(namespace);
-    dockerconfig = resp.dockerconfig;
-    resourceVersion = resp.resourceVersion;
+    dockerconfig = await DwApi.getDockerConfig(namespace);
   } catch (e) {
     throw new Error('Failed to request the docker config. Reason: ' + helpers.errors.getMessage(e));
   }
@@ -96,34 +87,28 @@ export async function getDockerConfig(
       throw new Error('Unable to decode and parse data. Reason: ' + helpers.errors.getMessage(e));
     }
   }
-  return { registries, resourceVersion };
+  return { registries };
 }
 
 export async function putDockerConfig(
   namespace: string,
   registries: RegistryEntry[],
-  resourceVersion?: string,
-): Promise<api.IDockerConfig> {
-  const config: api.IDockerConfig = { dockerconfig: '' };
+): Promise<string> {
+  let config = '';
 
   try {
     const authInfo = { auths: {} };
     registries.forEach(item => {
       const { url, username, password } = item;
-      authInfo.auths[url] = { username, password };
-      authInfo.auths[url].auth = window.btoa(username + ':' + password);
+      authInfo.auths[url] = { username, password, auth: window.btoa(username + ':' + password) };
     });
-    config.dockerconfig = window.btoa(JSON.stringify(authInfo));
-    if (resourceVersion) {
-      config.resourceVersion = resourceVersion;
-    }
+    config = window.btoa(JSON.stringify(authInfo));
   } catch (e) {
     throw new Error('Unable to parse and code data. Reason: ' + helpers.errors.getMessage(e));
   }
 
   try {
-    const dockerConfig = await DwApi.putDockerConfig(namespace, config);
-    return dockerConfig;
+    return await DwApi.putDockerConfig(namespace, config);
   } catch (err) {
     throw new Error(
       'Failed to update the docker config. Reason: ' + helpers.errors.getMessage(err),
