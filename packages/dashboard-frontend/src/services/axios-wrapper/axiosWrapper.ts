@@ -20,7 +20,7 @@ type AxiosFunc = (url: string, config?: AxiosRequestConfig) => Promise<any>;
 type AxiosFuncWithData = (url: string, data?: any, config?: AxiosRequestConfig) => Promise<any>;
 
 export const bearerTokenAuthorizationIsRequiredErrorMsg = 'Bearer Token Authorization is required';
-export const SSLErrorMsg = 'SSL handshake failed. Please contact your administrator.';
+export const SSL_ERROR_MSG = 'SSL handshake failed. Please contact your administrator.';
 
 export class AxiosWrapper {
   protected readonly retryCount = 3;
@@ -49,7 +49,7 @@ export class AxiosWrapper {
   }
 
   static createToRetryAnyErrorsButNotSSLError(): AxiosWrapper {
-    return new AxiosWrapper(getAxiosInstance(), undefined, SSLErrorMsg);
+    return new AxiosWrapper(getAxiosInstance(), undefined, SSL_ERROR_MSG);
   }
 
   get<T = any, R = AxiosResponse<T>>(url: string, config?: AxiosRequestConfig): Promise<R> {
