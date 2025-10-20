@@ -10,7 +10,7 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import { api, helpers } from '@eclipse-che/common';
+import { helpers } from '@eclipse-che/common';
 import * as k8s from '@kubernetes/client-node';
 import { V1Secret } from '@kubernetes/client-node/dist/gen/model/v1Secret';
 
@@ -28,6 +28,7 @@ const SECRET_LABELS = {
   'controller.devfile.io/watch-secret': 'true',
 };
 const DOCKER_CONFIG_API_ERROR_LABEL = 'CORE_V1_API_ERROR';
+const EMPTY_DOCKERCONFIG = 'eyJhdXRocyI6IFtdfQ=='; // base64 for '{"auths": []}'
 
 export class DockerConfigApiService implements IDockerConfigApi {
   private readonly coreV1API: CoreV1API;
@@ -36,51 +37,49 @@ export class DockerConfigApiService implements IDockerConfigApi {
     this.coreV1API = prepareCoreV1API(kc);
   }
 
-  async read(namespace: string): Promise<api.IDockerConfig> {
+  async read(namespace: string): Promise<string> {
     try {
-      const secret = await this.coreV1API.readNamespacedSecret(SECRET_NAME, namespace);
-      return this.toDockerConfig(secret.body);
+      const { body } = await this.coreV1API.readNamespacedSecret(SECRET_NAME, namespace);
+      return this.getDockerConfig(body);
     } catch (error) {
       if (helpers.errors.isKubeClientError(error) && error.statusCode === 404) {
-        return this.toDockerConfig();
+        return EMPTY_DOCKERCONFIG;
       }
-
       const additionalMessage = `Unable to read dockerConfig in the specified namespace "${namespace}"`;
       throw createError(error, DOCKER_CONFIG_API_ERROR_LABEL, additionalMessage);
     }
   }
 
-  async update(namespace: string, dockerCfg: api.IDockerConfig): Promise<api.IDockerConfig> {
+  async update(namespace: string, dockerCfg: string): Promise<string> {
     try {
-      let secret: V1Secret | undefined;
-      try {
-        const resp = await this.coreV1API.readNamespacedSecret(SECRET_NAME, namespace);
-        secret = resp.body;
-      } catch (e) {
-        if (helpers.errors.isKubeClientError(e) && e.statusCode === 404) {
-          const dockerConfigSecret = this.toDockerConfigSecret(dockerCfg);
-          const { body } = await this.coreV1API.createNamespacedSecret(
-            namespace,
-            dockerConfigSecret,
-          );
-          return this.toDockerConfig(body);
-        }
-        throw e;
-      }
-      this.updateDockerConfigSecret(secret, dockerCfg);
+      const secret = this.toDockerConfigSecret(dockerCfg);
       const { body } = await this.coreV1API.replaceNamespacedSecret(SECRET_NAME, namespace, secret);
-      return this.toDockerConfig(body);
+      return this.getDockerConfig(body);
     } catch (error) {
+      if (helpers.errors.isKubeClientError(error) && error.statusCode === 404) {
+        return this.createNamespacedSecret(namespace);
+      }
       const additionalMessage = `Unable to update dockerConfig in the specified namespace "${namespace}"`;
       throw createError(error, DOCKER_CONFIG_API_ERROR_LABEL, additionalMessage);
     }
   }
 
-  private toDockerConfigSecret(dockerCfg: api.IDockerConfig): V1Secret {
+  private async createNamespacedSecret(namespace: string, dockerCfg?: string): Promise<string> {
+    const dockerConfigSecret = this.toDockerConfigSecret(dockerCfg);
+    try {
+      const { body } = await this.coreV1API.createNamespacedSecret(namespace, dockerConfigSecret);
+      return this.getDockerConfig(body);
+    } catch (error) {
+      const additionalMessage = `Unable to create dockerConfig in the specified namespace "${namespace}"`;
+      throw createError(error, DOCKER_CONFIG_API_ERROR_LABEL, additionalMessage);
+    }
+  }
+
+  private toDockerConfigSecret(dockerCfg: string = EMPTY_DOCKERCONFIG): V1Secret {
     return {
       apiVersion: 'v1',
       data: {
-        [SECRET_KEY]: dockerCfg.dockerconfig,
+        [SECRET_KEY]: dockerCfg,
       },
       kind: 'Secret',
       metadata: {
@@ -91,25 +90,7 @@ export class DockerConfigApiService implements IDockerConfigApi {
     };
   }
 
-  private getDockerConfig(secret?: V1Secret): string {
-    return secret?.data?.[SECRET_KEY] || '';
-  }
-
-  private toDockerConfig(secret?: V1Secret): api.IDockerConfig {
-    const dockerconfig = this.getDockerConfig(secret);
-    const resourceVersion = secret?.metadata?.resourceVersion;
-
-    return { dockerconfig, resourceVersion };
-  }
-
-  private updateDockerConfigSecret(secret: V1Secret, dockerCfg: api.IDockerConfig): void {
-    if (!secret.metadata) {
-      secret.metadata = {};
-    }
-    secret.data = { [SECRET_KEY]: dockerCfg.dockerconfig };
-    secret.metadata.labels = SECRET_LABELS;
-    if (dockerCfg.resourceVersion) {
-      secret.metadata.resourceVersion = dockerCfg.resourceVersion;
-    }
+  private getDockerConfig(secret: V1Secret): string {
+    return secret.data?.[SECRET_KEY] || EMPTY_DOCKERCONFIG;
   }
 }

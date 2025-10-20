@@ -41,13 +41,11 @@ describe('DockerConfig, reducer', () => {
     const registries = [
       { url: 'https://registry.com', username: 'user', password: 'pass' },
     ] as RegistryEntry[];
-    const resourceVersion = '12345';
-    const action = dockerConfigReceiveAction({ registries, resourceVersion });
+    const action = dockerConfigReceiveAction({ registries });
     const expectedState: State = {
       ...initialState,
       isLoading: false,
       registries,
-      resourceVersion,
     };
 
     expect(reducer(initialState, action)).toEqual(expectedState);

@@ -75,9 +75,6 @@ export const dockerConfigSchema: JSONSchema7 = {
     dockerconfig: {
       type: 'string',
     },
-    resourceVersion: {
-      type: 'string',
-    },
   },
   examples: [dockerConfigExample],
   required: ['dockerconfig'],

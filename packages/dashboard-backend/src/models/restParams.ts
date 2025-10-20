@@ -36,7 +36,6 @@ export interface IWorkspacePreferencesParams {
 
 export interface IDockerConfigParams {
   dockerconfig: string;
-  resourceVersion?: string;
 }
 
 export interface IEditorsDevfileParams {

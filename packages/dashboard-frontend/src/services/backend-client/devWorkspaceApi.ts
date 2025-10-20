@@ -97,7 +97,7 @@ export async function deleteWorkspace(namespace: string, workspaceName: string):
   }
 }
 
-export async function getDockerConfig(namespace: string): Promise<api.IDockerConfig> {
+export async function getDockerConfig(namespace: string): Promise<string> {
   try {
     const response = await AxiosWrapper.createToRetryMissedBearerTokenError().get(
       `${dashboardBackendPrefix}/namespace/${namespace}/dockerconfig`,
@@ -108,14 +108,11 @@ export async function getDockerConfig(namespace: string): Promise<api.IDockerCon
   }
 }
 
-export async function putDockerConfig(
-  namespace: string,
-  dockerconfig: api.IDockerConfig,
-): Promise<api.IDockerConfig> {
+export async function putDockerConfig(namespace: string, dockerconfig: string): Promise<string> {
   try {
     const response = await AxiosWrapper.createToRetryMissedBearerTokenError().put(
       `${dashboardBackendPrefix}/namespace/${namespace}/dockerconfig`,
-      dockerconfig,
+      { dockerconfig },
     );
     return response.data;
   } catch (e) {

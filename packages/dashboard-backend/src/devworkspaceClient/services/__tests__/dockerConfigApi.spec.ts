@@ -55,16 +55,14 @@ describe('Docker Config API Service', () => {
   });
 
   test('reading dockerconfig', async () => {
-    const result = await dockerConfigService.read(namespace);
-    expect(result.dockerconfig).toEqual(emptyConfig);
+    const dockerconfig = await dockerConfigService.read(namespace);
+    expect(dockerconfig).toEqual(emptyConfig);
     expect(spyReadNamespacedSecret).toHaveBeenCalled();
   });
 
   test('updating dockerconfig', async () => {
-    const result = await dockerConfigService.update(namespace, {
-      dockerconfig: updatedConfig,
-    });
-    expect(result.dockerconfig).toEqual(updatedConfig);
+    const dockerconfig = await dockerConfigService.update(namespace, updatedConfig);
+    expect(dockerconfig).toEqual(updatedConfig);
     expect(spyReplaceNamespacedSecret).toHaveBeenCalledWith(
       SECRET_NAME,
       namespace,
