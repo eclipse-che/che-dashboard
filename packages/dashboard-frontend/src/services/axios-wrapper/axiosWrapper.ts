@@ -20,7 +20,8 @@ type AxiosFunc = (url: string, config?: AxiosRequestConfig) => Promise<any>;
 type AxiosFuncWithData = (url: string, data?: any, config?: AxiosRequestConfig) => Promise<any>;
 
 export const bearerTokenAuthorizationIsRequiredErrorMsg = 'Bearer Token Authorization is required';
-export const SSL_ERROR_MSG = 'SSL handshake failed. Please contact your administrator.';
+export const SSL_ERROR_MSG =
+  'The required SSL certificate is missing or not trusted by the system. Please contact your administrator.';
 
 export class AxiosWrapper {
   protected readonly retryCount = 3;
