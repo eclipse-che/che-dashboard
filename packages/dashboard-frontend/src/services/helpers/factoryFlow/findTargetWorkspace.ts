@@ -18,6 +18,8 @@ export function findTargetWorkspace(
   matchParams: WorkspaceRouteParams,
 ): Workspace | undefined {
   return workspaces.find(
-    w => w.name === matchParams.workspaceName && w.namespace === matchParams.namespace,
+    w =>
+      (w.name === matchParams.workspaceName || w.ref.metadata.name === matchParams.workspaceName) &&
+      w.namespace === matchParams.namespace,
   );
 }

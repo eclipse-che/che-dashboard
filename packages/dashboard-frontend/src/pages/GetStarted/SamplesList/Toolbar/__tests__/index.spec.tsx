@@ -231,6 +231,7 @@ function getComponent(store?: Store, presetFilter: string | undefined = undefine
         isTemporary={true}
         onTemporaryStorageChange={jest.fn()}
         onCreateNewIfExistChange={jest.fn()}
+        onWorkspaceNameChange={jest.fn()}
       />
     </Provider>
   );

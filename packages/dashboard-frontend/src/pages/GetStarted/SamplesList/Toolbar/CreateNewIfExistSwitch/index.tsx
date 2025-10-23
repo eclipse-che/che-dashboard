@@ -20,6 +20,7 @@ import { Navigation } from '@/Layout/Navigation';
 export const CREATE_NEW_IF_EXIST_SWITCH_ID = 'create-new-if-exist-switch';
 
 export type Props = {
+  isDisabled?: boolean;
   onChange: (isCreateNewIfExist: boolean) => void;
 };
 type State = {
@@ -56,10 +57,12 @@ export class CreateNewIfExistSwitch extends React.PureComponent<Props, State> {
   }
 
   render(): React.ReactElement {
+    const { isDisabled } = this.props;
     const { isChecked } = this.state;
 
     return (
       <Switch
+        isDisabled={isDisabled === true}
         id={CREATE_NEW_IF_EXIST_SWITCH_ID}
         label={
           <div style={{ minWidth: '125px' }}>
@@ -69,7 +72,7 @@ export class CreateNewIfExistSwitch extends React.PureComponent<Props, State> {
             </CheTooltip>
           </div>
         }
-        isChecked={isChecked}
+        isChecked={isChecked || isDisabled === true}
         onChange={isChecked => {
           this.handleChange(isChecked);
           if (Navigation.pageState[CREATE_NEW_IF_EXIST_SWITCH_ID].isChecked !== isChecked) {

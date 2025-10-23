@@ -30,6 +30,7 @@ import {
   EDITOR_ATTR,
   EDITOR_IMAGE_ATTR,
   FACTORY_URL_ATTR,
+  NAME_ATTR,
   POLICIES_CREATE_ATTR,
   STORAGE_TYPE_ATTR,
 } from '@/services/helpers/factoryFlow/buildFactoryParams';
@@ -51,6 +52,7 @@ export type Props = {
 type State = {
   isTemporary: boolean;
   isCreateNewIfExist: boolean;
+  customWorkspaceName: string;
 };
 
 class SamplesList extends React.PureComponent<Props, State> {
@@ -60,6 +62,7 @@ class SamplesList extends React.PureComponent<Props, State> {
     this.state = {
       isTemporary: this.props.preferredStorageType === 'ephemeral',
       isCreateNewIfExist: false,
+      customWorkspaceName: '',
     };
   }
 
@@ -80,6 +83,10 @@ class SamplesList extends React.PureComponent<Props, State> {
 
   private handleCreateNewIfExistChange(isCreateNewIfExist: boolean): void {
     this.setState({ isCreateNewIfExist });
+  }
+
+  private handleWorkspaceNameChange(customWorkspaceName: string): void {
+    this.setState({ customWorkspaceName });
   }
 
   private getPoliciesCreate(): string {
@@ -117,6 +124,10 @@ class SamplesList extends React.PureComponent<Props, State> {
 
     factoryParams[STORAGE_TYPE_ATTR] = this.getStorageType();
 
+    if (this.state.customWorkspaceName) {
+      factoryParams[NAME_ATTR] = this.state.customWorkspaceName;
+    }
+
     const factoryLink = `${window.location.origin}/dashboard/#${ROUTE.FACTORY_LOADER}?${new URLSearchParams(factoryParams).toString()}`;
 
     window.open(factoryLink, '_blank');
@@ -124,6 +135,7 @@ class SamplesList extends React.PureComponent<Props, State> {
 
   public render(): React.ReactElement {
     const { metadataFiltered, presetFilter } = this.props;
+    const callbacks: { reset?: () => void } = {};
 
     return (
       <Panel>
@@ -144,12 +156,19 @@ class SamplesList extends React.PureComponent<Props, State> {
               onCreateNewIfExistChange={isCreateNewIfExist =>
                 this.handleCreateNewIfExistChange(isCreateNewIfExist)
               }
+              onWorkspaceNameChange={customWorkspaceName =>
+                this.handleWorkspaceNameChange(customWorkspaceName)
+              }
+              callbacks={callbacks}
             />
           </PanelMainBody>
           <PanelMainBody>
             <SamplesListGallery
               metadataFiltered={metadataFiltered}
-              onCardClick={metadata => this.handleSampleCardClick(metadata)}
+              onCardClick={async metadata => {
+                await this.handleSampleCardClick(metadata);
+                callbacks.reset?.();
+              }}
             />
           </PanelMainBody>
         </PanelMain>

@@ -48,6 +48,7 @@ export const createWorkspaceFromResources =
     const pluginRegistryInternalUrl = selectPluginRegistryInternalUrl(state);
     const cheEditor = editor ? editor : selectDefaultEditor(state);
     const defaultNamespace = defaultKubernetesNamespace.name;
+    const customName = params.name;
 
     try {
       await verifyAuthorized(dispatch, getState);
@@ -59,6 +60,7 @@ export const createWorkspaceFromResources =
         defaultNamespace,
         devWorkspace,
         cheEditor,
+        customName,
       );
 
       if (createResp.headers.warning) {

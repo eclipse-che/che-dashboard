@@ -12,6 +12,7 @@
 
 import { che } from '@/services/models';
 
+export const NAME_ATTR = 'name';
 export const DEV_WORKSPACE_ATTR = 'devWorkspace';
 export const EDITOR_ATTR = 'che-editor';
 export const ERROR_CODE_ATTR = 'error_code';
@@ -28,6 +29,7 @@ export const USE_DEFAULT_DEVFILE = 'useDefaultDevfile';
 export const DEBUG_WORKSPACE_START = 'debugWorkspaceStart';
 export const EXISTING_WORKSPACE_NAME = 'existing';
 export const REVISION = 'revision';
+
 export const PROPAGATE_FACTORY_ATTRS = [
   'workspaceDeploymentAnnotations',
   'workspaceDeploymentLabels',
@@ -43,6 +45,7 @@ export const PROPAGATE_FACTORY_ATTRS = [
   EDITOR_IMAGE_ATTR,
   EXISTING_WORKSPACE_NAME,
   REVISION,
+  NAME_ATTR,
 ];
 export const OVERRIDE_ATTR_PREFIX = 'override.';
 export const DEFAULT_POLICIES_CREATE = 'peruser';
@@ -67,6 +70,7 @@ export type FactoryParams = {
   useDefaultDevfile: boolean;
   debugWorkspaceStart: boolean;
   existing: string | undefined;
+  name: string | undefined;
 };
 
 export type PoliciesCreate = 'perclick' | 'peruser';
@@ -93,6 +97,7 @@ export function buildFactoryParams(searchParams: URLSearchParams): FactoryParams
     useDefaultDevfile: isSafeWorkspaceStart(searchParams) !== undefined,
     debugWorkspaceStart: isDebugWorkspaceStart(searchParams) !== undefined,
     existing: getExistingWorkspaceName(searchParams),
+    name: getName(searchParams),
   };
 }
 
@@ -211,4 +216,8 @@ function isDebugWorkspaceStart(searchParams: URLSearchParams): string | undefine
 
 function getExistingWorkspaceName(searchParams: URLSearchParams): string | undefined {
   return searchParams.get(EXISTING_WORKSPACE_NAME) || undefined;
+}
+
+function getName(searchParams: URLSearchParams): string | undefined {
+  return searchParams.get(NAME_ATTR) || undefined;
 }
