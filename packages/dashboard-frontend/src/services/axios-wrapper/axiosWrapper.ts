@@ -20,6 +20,8 @@ type AxiosFunc = (url: string, config?: AxiosRequestConfig) => Promise<any>;
 type AxiosFuncWithData = (url: string, data?: any, config?: AxiosRequestConfig) => Promise<any>;
 
 export const bearerTokenAuthorizationIsRequiredErrorMsg = 'Bearer Token Authorization is required';
+export const SSL_ERROR_MSG =
+  'The required SSL certificate is missing or not trusted by the system. Please contact your administrator.';
 
 export class AxiosWrapper {
   protected readonly retryCount = 3;
@@ -27,10 +29,16 @@ export class AxiosWrapper {
   protected readonly initialDelay = 500;
   protected readonly axiosInstance: AxiosInstance;
   protected readonly errorMessagesToRetry?: string;
+  protected readonly errorMessagesNotToRetry?: string;
 
-  constructor(axiosInstance: AxiosInstance, errorMessagesToRetry?: string) {
+  constructor(
+    axiosInstance: AxiosInstance,
+    errorMessagesToRetry?: string,
+    errorMessagesNotToRetry?: string,
+  ) {
     this.axiosInstance = axiosInstance;
     this.errorMessagesToRetry = errorMessagesToRetry;
+    this.errorMessagesNotToRetry = errorMessagesNotToRetry;
   }
 
   static createToRetryMissedBearerTokenError(): AxiosWrapper {
@@ -39,6 +47,10 @@ export class AxiosWrapper {
 
   static createToRetryAnyErrors(): AxiosWrapper {
     return new AxiosWrapper(getAxiosInstance());
+  }
+
+  static createToRetryAnyErrorsButNotSSLError(): AxiosWrapper {
+    return new AxiosWrapper(getAxiosInstance(), undefined, SSL_ERROR_MSG);
   }
 
   get<T = any, R = AxiosResponse<T>>(url: string, config?: AxiosRequestConfig): Promise<R> {
@@ -98,10 +110,11 @@ export class AxiosWrapper {
     try {
       return await fun();
     } catch (err) {
+      const message = common.helpers.errors.getMessage(err);
       if (
         !retry ||
-        (this.errorMessagesToRetry &&
-          !common.helpers.errors.getMessage(err).includes(this.errorMessagesToRetry))
+        (this.errorMessagesToRetry && !this.errorMessagesToRetry.includes(message)) ||
+        (this.errorMessagesNotToRetry && this.errorMessagesNotToRetry.includes(message))
       ) {
         throw err;
       }
