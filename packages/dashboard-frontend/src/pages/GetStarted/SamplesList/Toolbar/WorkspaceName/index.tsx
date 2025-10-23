@@ -23,11 +23,11 @@ import { selectAllWorkspaces } from '@/store/Workspaces';
 
 const MAX_LENGTH = 63;
 const ERROR_MAX_LENGTH = 'The name is not valid.';
-const ERROR_TOOLTIP_MAX_LENGTH = `The name is not valid. The name is too long. The maximum length is ${MAX_LENGTH} characters.`;
+const ERROR_TOOLTIP_MAX_LENGTH = `The maximum length is ${MAX_LENGTH} characters.`;
 const PATTERN = `^(([A-Za-z0-9][-A-Za-z0-9_.]*)?[A-Za-z0-9])?$`;
 const ERROR_PATTERN_MISMATCH = 'The name is not valid.';
 const ERROR_TOOLTIP_PATTERN_MISMATCH =
-  'The name is not valid. The name can contain digits, latin letters, scores, underscores and it should not contain special characters like space, dollar, etc. It should start and end only with digit or latin letter.';
+  'The name is invalid. It can contain only digits, latin letters, scores, underscores. It must start and end with a letter or digit and cannot include special characters such as spaces or symbols (e.g., $, @, #, etc.).';
 const ERROR_PATTERN_EXISTING_NAME = 'The name is already in use.';
 const ERROR_TOOLTIP_PATTERN_EXISTING_NAME =
   'The name is already in use. Please choose another name.';
