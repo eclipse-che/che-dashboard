@@ -94,6 +94,20 @@ describe('axiosWrapper', () => {
     expect(axiosGetSpy).toHaveBeenCalledTimes(2);
   });
 
+  it('should not retry with error message not to retry', async () => {
+    const expectedData = { data: 'some-data' };
+    axiosGetMock
+      .mockRejectedValueOnce(createAxiosResponseError('error'))
+      .mockReturnValue(new Promise(resolve => resolve(expectedData)));
+
+    try {
+      await new AxiosWrapper(axiosInstance, undefined, 'error').get('some-url');
+    } catch (e: any) {
+      expect(e.response.data).toEqual('error');
+    }
+    expect(axiosGetSpy).toHaveBeenCalledTimes(1);
+  });
+
   it('should retry 1 time without specifc error message', async () => {
     const expectedData = { data: 'some-data' };
     axiosGetMock
