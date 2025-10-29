@@ -121,6 +121,7 @@ describe('devWorkspaces, actions', () => {
         'default-namespace',
         mockWorkspace,
         'che-editor',
+        undefined,
       );
 
       expect(mockCreateDevWorkspaceTemplate).toHaveBeenCalled();
@@ -164,6 +165,7 @@ describe('devWorkspaces, actions', () => {
         'default-namespace',
         mockWorkspace,
         'custom-editor',
+        undefined,
       );
     });
 

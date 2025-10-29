@@ -19,6 +19,7 @@ import { connect, ConnectedProps } from 'react-redux';
 import { BulkSelector } from '@/components/BulkSelector';
 import { CreateNewIfExistSwitch } from '@/pages/GetStarted/SamplesList/Toolbar/CreateNewIfExistSwitch';
 import TemporaryStorageSwitch from '@/pages/GetStarted/SamplesList/Toolbar/TemporaryStorageSwitch';
+import WorkspaceNameFormGroup from '@/pages/GetStarted/SamplesList/Toolbar/WorkspaceName';
 import { RootState } from '@/store';
 import {
   devfileRegistriesActionCreators,
@@ -31,12 +32,17 @@ export type Props = MappedProps & {
   isTemporary: boolean;
   onTemporaryStorageChange: (isTemporary: boolean) => void;
   onCreateNewIfExistChange: (isCreateNewIfExist: boolean) => void;
+  onWorkspaceNameChange: (workspaceName: string) => void;
   presetFilter: string | undefined;
+  callbacks?: {
+    reset?: () => void;
+  };
 };
 
 export type State = {
   languages: string[];
   tags: string[];
+  workspaceName: string;
 };
 
 class SamplesListToolbar extends React.PureComponent<Props, State> {
@@ -47,6 +53,7 @@ class SamplesListToolbar extends React.PureComponent<Props, State> {
     this.state = {
       tags,
       languages,
+      workspaceName: '',
     };
   }
 
@@ -97,8 +104,16 @@ class SamplesListToolbar extends React.PureComponent<Props, State> {
     return { tags, languages };
   }
 
-  private handleTextInputChange(searchValue: string): void {
+  private handleFilterInputChange(searchValue: string): void {
     this.props.setFilter(searchValue);
+  }
+
+  private handleWorkspaceNameChange(workspaceName: string): void {
+    this.setState({ workspaceName });
+    this.props.onWorkspaceNameChange(workspaceName);
+    if (this.state.workspaceName.length > 0) {
+      this.props.onCreateNewIfExistChange(true);
+    }
   }
 
   private buildCount(foundCount: number, allCount: number): React.ReactElement {
@@ -110,7 +125,8 @@ class SamplesListToolbar extends React.PureComponent<Props, State> {
   }
 
   render(): React.ReactElement {
-    const { filterValue, isTemporary, metadataFiltered, registriesMetadata } = this.props;
+    const { filterValue, isTemporary, metadataFiltered, registriesMetadata, callbacks } =
+      this.props;
     const { tags, languages } = this.state;
 
     const foundCount = metadataFiltered.length;
@@ -119,11 +135,17 @@ class SamplesListToolbar extends React.PureComponent<Props, State> {
     return (
       <Flex>
         <FlexItem>
+          <WorkspaceNameFormGroup
+            onChange={workspaceName => this.handleWorkspaceNameChange(workspaceName)}
+            callbacks={callbacks}
+          ></WorkspaceNameFormGroup>
+        </FlexItem>
+        <FlexItem>
           <TextInput
             style={{ minWidth: '200px' }}
             value={filterValue}
             type="search"
-            onChange={value => this.handleTextInputChange(value)}
+            onChange={value => this.handleFilterInputChange(value)}
             aria-label="Filter samples list"
             placeholder="Filter by"
           />
@@ -153,6 +175,7 @@ class SamplesListToolbar extends React.PureComponent<Props, State> {
         </FlexItem>
         <FlexItem align={{ default: 'alignRight' }}>
           <CreateNewIfExistSwitch
+            isDisabled={this.state.workspaceName.length > 0}
             onChange={isCreateNewIfExist => this.props.onCreateNewIfExistChange(isCreateNewIfExist)}
           />
           &nbsp;

@@ -14,7 +14,10 @@ import { container } from '@/inversify.config';
 import * as DwApi from '@/services/backend-client/devWorkspaceApi';
 import * as DwtApi from '@/services/backend-client/devWorkspaceTemplateApi';
 import devfileApi from '@/services/devfileApi';
-import { DevWorkspaceClient } from '@/services/workspace-client/devworkspace/devWorkspaceClient';
+import {
+  DEVWORKSPACE_LABEL_METADATA_NAME,
+  DevWorkspaceClient,
+} from '@/services/workspace-client/devworkspace/devWorkspaceClient';
 
 describe('DevWorkspace client, create', () => {
   let client: DevWorkspaceClient;
@@ -209,11 +212,11 @@ describe('DevWorkspace client, create', () => {
 
     it('should add routingClass if it does not exist', async () => {
       const routingClass = 'che';
-      const responce = {
+      const response = {
         headers: {},
         devWorkspace: testDevWorkspace,
       };
-      spyCreateWorkspace = jest.spyOn(DwApi, 'createWorkspace').mockResolvedValueOnce(responce);
+      spyCreateWorkspace = jest.spyOn(DwApi, 'createWorkspace').mockResolvedValueOnce(response);
 
       await client.createDevWorkspace(namespace, testDevWorkspace, undefined);
 
@@ -221,6 +224,27 @@ describe('DevWorkspace client, create', () => {
         expect.objectContaining({
           spec: expect.objectContaining({
             routingClass: routingClass,
+          }),
+        }),
+      );
+    });
+
+    it('should add overrideName as a metadata label', async () => {
+      const overrideName = 'test-override';
+
+      spyCreateWorkspace = jest.spyOn(DwApi, 'createWorkspace').mockResolvedValueOnce({
+        headers: {},
+        devWorkspace: testDevWorkspace,
+      });
+
+      await client.createDevWorkspace(namespace, testDevWorkspace, undefined, overrideName);
+
+      expect(spyCreateWorkspace).toHaveBeenCalledWith(
+        expect.objectContaining({
+          metadata: expect.objectContaining({
+            labels: expect.objectContaining({
+              [DEVWORKSPACE_LABEL_METADATA_NAME]: overrideName,
+            }),
           }),
         }),
       );
