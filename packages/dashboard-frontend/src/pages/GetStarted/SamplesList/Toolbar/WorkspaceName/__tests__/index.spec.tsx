@@ -10,6 +10,7 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
+import * as mockClient from '@kubernetes/client-node';
 import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
@@ -86,6 +87,35 @@ describe('Workspace Name', () => {
     });
   });
   describe('invalid value', () => {
+    test('used workspace name value', async () => {
+      const workspaceName = 'new-workspace';
+      const callbacks: { reset?: () => void } = {};
+
+      renderComponent(store, callbacks);
+
+      const input = screen.getByRole('textbox');
+
+      await userEvent.click(input);
+      await userEvent.paste(workspaceName);
+
+      expect(mockOnChange).toHaveBeenNthCalledWith(1, workspaceName);
+      mockOnChange.mockReset();
+
+      callbacks.reset?.();
+
+      expect(mockOnChange).toHaveBeenNthCalledWith(1, '');
+      mockOnChange.mockReset();
+
+      await userEvent.click(input);
+      await userEvent.paste(workspaceName);
+
+      expect(mockOnChange).toHaveBeenNthCalledWith(1, '');
+      mockOnChange.mockReset();
+
+      await userEvent.paste('-new');
+
+      expect(mockOnChange).toHaveBeenNthCalledWith(1, `${workspaceName}-new`);
+    });
     test('change to too long value', async () => {
       renderComponent(store);
 
@@ -122,11 +152,12 @@ describe('Workspace Name', () => {
   });
 });
 
-function getComponent(store: Store) {
+function getComponent(store: Store, callbacks?: { reset?: () => void }) {
   return (
     <Provider store={store}>
       <WorkspaceNameFormGroup
         onChange={workspaceName => mockOnChange(workspaceName)}
+        callbacks={callbacks}
       ></WorkspaceNameFormGroup>
     </Provider>
   );

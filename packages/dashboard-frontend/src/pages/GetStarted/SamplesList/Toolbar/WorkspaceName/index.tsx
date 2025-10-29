@@ -44,6 +44,7 @@ export type State = {
   errorMessage?: string;
   errorTooltipMessage?: string;
   validated: ValidatedOptions;
+  usedNames: string[];
 };
 
 class WorkspaceNameFormGroup extends React.PureComponent<Props, State> {
@@ -53,12 +54,13 @@ class WorkspaceNameFormGroup extends React.PureComponent<Props, State> {
     this.state = {
       workspaceName: '',
       validated: ValidatedOptions.default,
+      usedNames: [],
     };
   }
 
   public componentDidUpdate(prevProps: Readonly<Props>): void {
+    const { workspaceName } = this.state;
     if (!isEqual(this.props.allWorkspaces, prevProps.allWorkspaces)) {
-      const { workspaceName } = this.state;
       const { validated, errorMessage, errorTooltipMessage } = this.validate(workspaceName);
       if (
         validated !== this.state.validated ||
@@ -73,15 +75,27 @@ class WorkspaceNameFormGroup extends React.PureComponent<Props, State> {
     if (
       this.props.callbacks !== undefined &&
       this.props.callbacks.reset === undefined &&
-      this.state.workspaceName.length > 0
+      workspaceName.length > 0
     ) {
       this.props.callbacks.reset = () => {
+        const { workspaceName, usedNames } = this.state;
+        if (workspaceName.length > 0 && !usedNames.includes(workspaceName)) {
+          usedNames.push(workspaceName);
+        }
         this.setState({
           workspaceName: '',
           validated: ValidatedOptions.default,
           errorMessage: undefined,
           errorTooltipMessage: undefined,
+          usedNames,
         });
+        window.setTimeout(() => {
+          const index = usedNames.indexOf(workspaceName);
+          if (index > -1) {
+            usedNames.splice(index, 1);
+            this.setState({ usedNames });
+          }
+        }, 30000);
         this.handleWorkspaceNameChange('');
       };
     }
@@ -112,7 +126,10 @@ class WorkspaceNameFormGroup extends React.PureComponent<Props, State> {
         validated: ValidatedOptions.error,
       };
     }
-    if (this.props.allWorkspaces.some(w => name === w.name || name === w.ref.metadata.name)) {
+    if (
+      this.state.usedNames.includes(name) ||
+      this.props.allWorkspaces.some(w => name === w.name || name === w.ref.metadata.name)
+    ) {
       return {
         errorMessage: ERROR_PATTERN_EXISTING_NAME,
         errorTooltipMessage: ERROR_TOOLTIP_PATTERN_EXISTING_NAME,

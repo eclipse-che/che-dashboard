@@ -26,7 +26,7 @@ export type Props = MappedProps & {
   workspace: Workspace;
 };
 
-class WorkspaceNameFormGroup extends React.PureComponent<Props> {
+export class WorkspaceNameFormGroup extends React.PureComponent<Props> {
   private buildOpenShiftConsoleLink(): React.ReactElement | undefined {
     const { applications, workspace } = this.props;
     const clusterConsole = applications.find(app => app.id === ApplicationId.CLUSTER_CONSOLE);
