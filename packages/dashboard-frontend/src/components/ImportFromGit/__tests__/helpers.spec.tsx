@@ -432,7 +432,7 @@ describe('helpers', () => {
         const options = helpers.getAdvancedOptionsFromLocation(location);
         expect(options).toEqual({
           location:
-            'https://github.com/eclipse-che/che-dashboard/tree/main?storageType=ephemeral&image=custom-image&cpuLimit=1&memoryLimit=2Gi&policies.create=perclick',
+            'https://github.com/eclipse-che/che-dashboard/tree/main?storageType=ephemeral&image=custom-image&cpuLimit=1&memoryLimit=2Gi&new',
           containerImage: 'custom-image',
           temporaryStorage: true,
           createNewIfExisting: true,
@@ -460,7 +460,7 @@ describe('helpers', () => {
         const options = helpers.getAdvancedOptionsFromLocation(location);
         expect(options).toEqual({
           location:
-            'git@github.com:eclipse-che/che-dashboard.git?storageType=ephemeral&image=custom-image&cpuLimit=1&memoryLimit=2Gi&policies.create=perclick',
+            'git@github.com:eclipse-che/che-dashboard.git?storageType=ephemeral&image=custom-image&cpuLimit=1&memoryLimit=2Gi&new',
           containerImage: 'custom-image',
           temporaryStorage: true,
           createNewIfExisting: true,
@@ -589,7 +589,7 @@ describe('helpers', () => {
           const options = helpers.setAdvancedOptionsToLocation(newOptions, currentOptions);
           expect(options).toEqual({
             location:
-              'https://github.com/eclipse-che/che-dashboard.git?image=custom-image&storageType=ephemeral&policies.create=perclick&memoryLimit=2Gi&cpuLimit=1',
+              'https://github.com/eclipse-che/che-dashboard.git?image=custom-image&storageType=ephemeral&new&memoryLimit=2Gi&cpuLimit=1',
             containerImage: 'custom-image',
             temporaryStorage: true,
             createNewIfExisting: true,
@@ -644,7 +644,7 @@ describe('helpers', () => {
           const options = helpers.setAdvancedOptionsToLocation(newOptions, currentOptions);
           expect(options).toEqual({
             location:
-              'git@github.com:eclipse-che/che-dashboard.git?image=custom-image&storageType=ephemeral&policies.create=perclick&memoryLimit=2Gi&cpuLimit=1',
+              'git@github.com:eclipse-che/che-dashboard.git?image=custom-image&storageType=ephemeral&new&memoryLimit=2Gi&cpuLimit=1',
             containerImage: 'custom-image',
             temporaryStorage: true,
             createNewIfExisting: true,
@@ -719,6 +719,17 @@ describe('helpers', () => {
           '2.5Pi',
           undefined,
         ]);
+      });
+    });
+    describe('searchParamsToString', () => {
+      test('should return the string without empty values', () => {
+        const params = new URLSearchParams();
+        params.set('key1', 'value1');
+        params.set('key2', 'value2');
+        params.set('key3', '');
+        params.set('key4', '');
+        const paramsStr = helpers.searchParamsToString(params);
+        expect(paramsStr).toEqual('key1=value1&key2=value2&key3&key4');
       });
     });
   });
