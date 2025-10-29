@@ -69,7 +69,7 @@ class GitRepoFormGroup extends React.PureComponent<Props, State> {
       return source;
     }
 
-    const devfileSourse = load(devfileSourceStr) as {
+    const devfileSource = load(devfileSourceStr) as {
       scm?: {
         repo?: string;
         fileName?: string;
@@ -79,7 +79,7 @@ class GitRepoFormGroup extends React.PureComponent<Props, State> {
       };
     };
 
-    const factoryParams = devfileSourse?.factory?.params;
+    const factoryParams = devfileSource?.factory?.params;
     if (factoryParams === undefined) {
       return source;
     }
@@ -97,7 +97,7 @@ class GitRepoFormGroup extends React.PureComponent<Props, State> {
         } else {
           source.gitRepo = value + '?' + source.gitRepo;
         }
-        source.isUrl = new RegExp('^http[s]?://').test(value);
+        source.isUrl = new RegExp('^https?://').test(value);
         source.fieldName = source.isUrl ? new URL(value).pathname.replace(/^\//, '') : value;
         if (source.fieldName.length > 50) {
           source.fieldName = source.fieldName.substring(0, 50) + '...';
