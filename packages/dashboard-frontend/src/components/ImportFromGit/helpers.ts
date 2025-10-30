@@ -131,12 +131,15 @@ function setBranchToAzureDevOpsLocation(location: string, branch: string | undef
     _searchParams.set('version', `GB${branch}`);
   }
   const encodedParams =
-    _searchParams.toString().length === 0 ? '' : encodeURIComponent(`?${_searchParams.toString()}`);
-  url.pathname = _searchParams.toString().length === 0 ? pathname : `${pathname}${encodedParams}`;
+    searchParamsToString(_searchParams).length === 0
+      ? ''
+      : encodeURIComponent(`?${searchParamsToString(_searchParams)}`);
+  url.pathname =
+    searchParamsToString(_searchParams).length === 0 ? pathname : `${pathname}${encodedParams}`;
 
-  return searchParams.toString().length === 0
+  return searchParamsToString(searchParams).length === 0
     ? `${url.origin}${url.pathname}`
-    : `${url.origin}${url.pathname}?${searchParams.toString()}`;
+    : `${url.origin}${url.pathname}?${searchParamsToString(searchParams)}`;
 }
 
 export function setBranchToLocation(location: string, branch: string | undefined): string {
@@ -204,9 +207,9 @@ function getFactoryParamsFromLocation(
         repoSearchParams.set('version', version);
       }
     }
-    if (repoSearchParams.toString().length > 0) {
-      const encodedParams = encodeURIComponent(`?${repoSearchParams.toString()}`);
-      location = `${url.origin}${url.pathname}${encodedParams}?${searchParams.toString()}`;
+    if (searchParamsToString(repoSearchParams).length > 0) {
+      const encodedParams = encodeURIComponent(`?${searchParamsToString(repoSearchParams)}`);
+      location = `${url.origin}${url.pathname}${encodedParams}?${searchParamsToString(searchParams)}`;
     }
   }
 
@@ -224,12 +227,20 @@ function getFactoryParamsFromLocation(
   });
   searchParams.delete('url');
 
-  // from override.devfileFilename to devfilePath
-  const devfilePath = searchParams.get('override.devfileFilename') || undefined;
-  if (devfilePath !== 'true' && devfilePath) {
-    searchParams.set('devfilePath', devfilePath);
+  // from policies.create to new
+  if (searchParams.has('policies.create')) {
+    if (searchParams.get('policies.create') === 'perclick') {
+      searchParams.set('new', '');
+    }
+    searchParams.delete('policies.create');
   }
+
+  // from override.devfileFilename to devfilePath
   if (searchParams.has('override.devfileFilename')) {
+    const devfilePath = searchParams.get('override.devfileFilename');
+    if (devfilePath !== 'true' && devfilePath) {
+      searchParams.set('devfilePath', devfilePath);
+    }
     searchParams.delete('override.devfileFilename');
   }
 
@@ -258,7 +269,9 @@ export function getGitRepoOptionsFromLocation(location: string): {
     }
   }
   location =
-    searchParams.toString().length === 0 ? `${path}` : `${path}?${searchParams.toString()}`;
+    searchParamsToString(searchParams).length === 0
+      ? `${path}`
+      : `${path}?${searchParamsToString(searchParams)}`;
   const hasSupportedGitService = isSupportedGitService(location);
   let gitBranch: string | undefined = undefined;
   if (hasSupportedGitService) {
@@ -297,13 +310,7 @@ export function getAdvancedOptionsFromLocation(location: string): {
     temporaryStorage = undefined;
   }
 
-  const _policies_create = searchParams.get('policies.create');
-  let createNewIfExisting: boolean | undefined =
-    _policies_create !== null ? _policies_create === 'perclick' : undefined;
-  if (_policies_create === '' || _policies_create === 'true') {
-    searchParams.delete('policies.create');
-    createNewIfExisting = undefined;
-  }
+  const createNewIfExisting = searchParams.has('new') || undefined;
 
   let _memoryLimit = searchParams.get('memoryLimit') || undefined;
 
@@ -330,7 +337,9 @@ export function getAdvancedOptionsFromLocation(location: string): {
   }
 
   location =
-    searchParams.toString().length === 0 ? `${path}` : `${path}?${searchParams.toString()}`;
+    searchParamsToString(searchParams).length === 0
+      ? `${path}`
+      : `${path}?${searchParamsToString(searchParams)}`;
 
   return {
     location,
@@ -398,7 +407,7 @@ export function setGitRepoOptionsToLocation(
     searchParams.set(REVISION, newOptions.gitBranch);
   }
   // update the location with the new gitBranch value
-  let searchParamsStr = decodeURIComponent(searchParams.toString());
+  let searchParamsStr = decodeURIComponent(searchParamsToString(searchParams));
   const hasSearchParams = searchParamsStr.length > 0;
   if (hasSearchParams) {
     searchParamsStr = decodeURIComponent(searchParamsStr);
@@ -457,13 +466,10 @@ export function setAdvancedOptionsToLocation(
 
   if (newOptions.createNewIfExisting !== currentOptions.createNewIfExisting) {
     state.createNewIfExisting = newOptions.createNewIfExisting;
-    if (searchParams.has('new')) {
-      searchParams.delete('new');
-    }
     if (newOptions.createNewIfExisting) {
-      searchParams.set('policies.create', 'perclick');
+      searchParams.set('new', '');
     } else {
-      searchParams.delete('policies.create');
+      searchParams.delete('new');
     }
   }
 
@@ -491,7 +497,10 @@ export function setAdvancedOptionsToLocation(
   }
 
   // update the location with the new gitBranch value
-  location = searchParams.toString().length > 0 ? `${path}?${searchParams.toString()}` : `${path}`;
+  location =
+    searchParamsToString(searchParams).length > 0
+      ? `${path}?${searchParamsToString(searchParams)}`
+      : `${path}`;
   // update the location in the state
   state.location = location;
 
@@ -538,4 +547,8 @@ export function getBytes(value: string): number | undefined {
     return undefined;
   }
   return bytes * Math.pow(k, i);
+}
+
+export function searchParamsToString(params: URLSearchParams): string {
+  return params.toString().replace(/=&/g, '&').replace(/=$/, '');
 }

@@ -75,7 +75,7 @@ describe('RepoOptionsAccordion', () => {
     await userEvent.click(updateAdvancedOptions as HTMLElement);
 
     expect(mockOnChange).toHaveBeenCalledWith(
-      'https://testlocation?image=newContainerImage&storageType=ephemeral&policies.create=perclick&memoryLimit=1Gi&cpuLimit=1',
+      'https://testlocation?image=newContainerImage&storageType=ephemeral&new&memoryLimit=1Gi&cpuLimit=1',
       undefined,
       undefined,
     );
