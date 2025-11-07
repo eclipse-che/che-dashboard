@@ -14,18 +14,7 @@ import { WorkspaceRouteParams } from '@/Routes';
 import { DEVWORKSPACE_CHE_EDITOR } from '@/services/devfileApi/devWorkspace/metadata';
 import { Workspace } from '@/services/workspace-adapter';
 
-export const EDITORS_WITH_BINARIES = [
-  'che-code-sshd',
-  'che-code-server',
-  'che-clion-server',
-  'che-webstorm-server',
-  'che-rubymine-server',
-  'che-rider-server',
-  'che-pycharm-server',
-  'che-phpstorm-server',
-  'che-idea-server',
-  'che-goland-server',
-];
+export const EDITORS_WITHOUT_BINARIES = ['che-code'];
 
 export function hasDownloadBinaries(
   allWorkspaces: Workspace[],
@@ -51,6 +40,6 @@ export function hasDownloadBinaries(
   }
   // extract editor name from annotation
   const name = cheEditor.split('/')[1];
-  // check if editor is in the list of editors with binaries
-  return EDITORS_WITH_BINARIES.includes(name);
+  // check if editor is in the list of editors without binaries
+  return !EDITORS_WITHOUT_BINARIES.includes(name);
 }

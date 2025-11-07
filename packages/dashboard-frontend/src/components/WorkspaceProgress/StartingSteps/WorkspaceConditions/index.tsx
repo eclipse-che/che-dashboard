@@ -90,7 +90,8 @@ class StartingStepWorkspaceConditions extends ProgressStep<Props, State> {
 
     // Show sub-condition only for DeploymentReady
     if (condition.type === 'DeploymentReady') {
-      if (hasDownloadBinaries(this.props.allWorkspaces, this.props.matchParams)) {
+      const { allWorkspaces, matchParams } = this.props;
+      if (hasDownloadBinaries(allWorkspaces, matchParams)) {
         this.setState({
           subConditionTitle: 'Downloading IDE binaries... (it can take a few minutes)',
         });

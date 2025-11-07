@@ -11,7 +11,7 @@
  */
 
 import {
-  EDITORS_WITH_BINARIES,
+  EDITORS_WITHOUT_BINARIES,
   hasDownloadBinaries,
 } from '@/components/WorkspaceProgress/StartingSteps/WorkspaceConditions/helpers';
 import { DEVWORKSPACE_CHE_EDITOR } from '@/services/devfileApi/devWorkspace/metadata';
@@ -63,7 +63,7 @@ describe('hasDownloadBinaries', () => {
       hasDownloadBinaries([workspaceWithEditorId], { namespace, workspaceName: 'wrong-name' }),
     ).toEqual(false);
 
-    // skip if editor name is not in the list of editors with binaries
+    // skip if editor name is in the list of editors without binaries
     expect(
       hasDownloadBinaries([workspaceWithEditorId], { namespace, workspaceName: name }),
     ).toEqual(false);
@@ -131,7 +131,7 @@ describe('hasDownloadBinaries', () => {
   it('should return true', () => {
     const name = 'test';
     const namespace = 'che-user';
-    const editorId = `che-incubator/${EDITORS_WITH_BINARIES[0]}/latest`;
+    const editorId = 'che-incubator/che-idea-server/latest';
     const workspace = constructWorkspace(
       devWorkspaceBuilder
         .withMetadata({
@@ -143,20 +143,9 @@ describe('hasDownloadBinaries', () => {
         })
         .build(),
     );
-    // verify the list of editors with binaries is not modified
-    expect(EDITORS_WITH_BINARIES).toEqual([
-      'che-code-sshd',
-      'che-code-server',
-      'che-clion-server',
-      'che-webstorm-server',
-      'che-rubymine-server',
-      'che-rider-server',
-      'che-pycharm-server',
-      'che-phpstorm-server',
-      'che-idea-server',
-      'che-goland-server',
-    ]);
-    // if editor name is in the list of editors with binaries
+    // verify the list of editors without binaries
+    expect(EDITORS_WITHOUT_BINARIES).toEqual(['che-code']);
+    // if editor name is not in the list of editors without binaries
     expect(hasDownloadBinaries([workspace], { namespace, workspaceName: name })).toEqual(true);
   });
 });
