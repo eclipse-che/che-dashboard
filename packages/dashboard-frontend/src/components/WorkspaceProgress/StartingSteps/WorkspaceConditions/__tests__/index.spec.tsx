@@ -14,7 +14,9 @@
 
 import { screen, waitFor } from '@testing-library/react';
 import React from 'react';
+import { Provider } from 'react-redux';
 import { Location } from 'react-router-dom';
+import { Store } from 'redux';
 
 import {
   conditionChangedTo,
@@ -25,6 +27,7 @@ import {
 import { ConditionType } from '@/components/WorkspaceProgress/utils';
 import { WorkspaceRouteParams } from '@/Routes';
 import getComponentRenderer from '@/services/__mocks__/getComponentRenderer';
+import { MockStoreBuilder } from '@/store/__mocks__/mockStore';
 
 import StartingStepWorkspaceConditions from '..';
 
@@ -45,8 +48,11 @@ const matchParams: WorkspaceRouteParams = {
   workspaceName,
 };
 
+let store: Store;
+
 describe('Starting steps, checking workspace conditions', () => {
   beforeEach(() => {
+    store = new MockStoreBuilder().build();
     jest.useFakeTimers();
   });
 
@@ -168,19 +174,21 @@ describe('Starting steps, checking workspace conditions', () => {
 
 function getComponent(condition: ConditionType, _matchParams = matchParams): React.ReactElement {
   return (
-    <React.Fragment>
-      <StartingStepWorkspaceConditions
-        distance={0}
-        hasChildren={false}
-        condition={condition}
-        location={{} as Location}
-        navigate={jest.fn()}
-        matchParams={_matchParams}
-        onNextStep={mockOnNextStep}
-        onRestart={mockOnRestart}
-        onError={mockOnError}
-        onHideError={mockOnHideError}
-      />
-    </React.Fragment>
+    <Provider store={store}>
+      <React.Fragment>
+        <StartingStepWorkspaceConditions
+          distance={0}
+          hasChildren={false}
+          condition={condition}
+          location={{} as Location}
+          navigate={jest.fn()}
+          matchParams={_matchParams}
+          onNextStep={mockOnNextStep}
+          onRestart={mockOnRestart}
+          onError={mockOnError}
+          onHideError={mockOnHideError}
+        />
+      </React.Fragment>
+    </Provider>
   );
 }

@@ -14,12 +14,14 @@ import common from '@eclipse-che/common';
 import { AlertVariant } from '@patternfly/react-core';
 import isEqual from 'lodash/isEqual';
 import React from 'react';
+import { connect, ConnectedProps } from 'react-redux';
 
 import {
   ProgressStep,
   ProgressStepProps,
   ProgressStepState,
 } from '@/components/WorkspaceProgress/ProgressStep';
+import { hasDownloadBinaries } from '@/components/WorkspaceProgress/StartingSteps/WorkspaceConditions/helpers';
 import styles from '@/components/WorkspaceProgress/StartingSteps/WorkspaceConditions/index.module.css';
 import { PureSubCondition } from '@/components/WorkspaceProgress/StartingSteps/WorkspaceConditions/PureSubCondition';
 import { ProgressStepTitle } from '@/components/WorkspaceProgress/StepTitle';
@@ -30,11 +32,14 @@ import {
 } from '@/components/WorkspaceProgress/utils';
 import { WorkspaceRouteParams } from '@/Routes';
 import { AlertItem, LoaderTab } from '@/services/helpers/types';
+import { RootState } from '@/store';
+import { selectAllWorkspaces } from '@/store/Workspaces';
 
-export type Props = ProgressStepProps & {
-  condition: ConditionType;
-  matchParams: WorkspaceRouteParams;
-};
+export type Props = ProgressStepProps &
+  MappedProps & {
+    condition: ConditionType;
+    matchParams: WorkspaceRouteParams;
+  };
 export type State = ProgressStepState & {
   isWarning: boolean;
   isReady: boolean;
@@ -42,7 +47,7 @@ export type State = ProgressStepState & {
   subConditionTitle: string;
 };
 
-export default class StartingStepWorkspaceConditions extends ProgressStep<Props, State> {
+class StartingStepWorkspaceConditions extends ProgressStep<Props, State> {
   private timerId: number | undefined;
 
   constructor(props: Props) {
@@ -85,12 +90,12 @@ export default class StartingStepWorkspaceConditions extends ProgressStep<Props,
 
     // Show sub-condition only for DeploymentReady
     if (condition.type === 'DeploymentReady') {
-      // Show sub-condition after 20 seconds
-      this.timerId = window.setTimeout(() => {
+      const { allWorkspaces, matchParams } = this.props;
+      if (hasDownloadBinaries(allWorkspaces, matchParams)) {
         this.setState({
           subConditionTitle: 'Downloading IDE binaries... (it can take a few minutes)',
         });
-      }, 20000);
+      }
     }
   }
 
@@ -179,3 +184,11 @@ export default class StartingStepWorkspaceConditions extends ProgressStep<Props,
     );
   }
 }
+
+const connector = connect((state: RootState) => ({
+  allWorkspaces: selectAllWorkspaces(state),
+}));
+
+type MappedProps = ConnectedProps<typeof connector>;
+
+export default connector(StartingStepWorkspaceConditions);
