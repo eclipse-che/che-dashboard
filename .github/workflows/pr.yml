@@ -161,7 +161,9 @@ jobs:
             </details>
             `;
             github.rest.issues.createComment({ issue_number, owner, repo, body: text });
-
+#########################################################################################################
+#  Multi-arch Docker build, please uncomment if you need images for arm64, s390x, ppc64le.
+#########################################################################################################
 #  docker-build:
 #    needs: build-and-test
 #    runs-on: ubuntu-22.04
@@ -248,4 +250,3 @@ jobs:
 #            </details>
 #            `;
 #            github.rest.issues.createComment({ issue_number, owner, repo, body: text });
-#
