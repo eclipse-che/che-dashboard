@@ -101,7 +101,10 @@ export class EditorGallery extends React.PureComponent<Props, State> {
   private buildEditorCards(): React.ReactNode[] {
     const { selectedId, sortedEditorsByName } = this.state;
 
-    return Array.from(sortedEditorsByName.keys()).map(editorName => {
+    const sortedEditorsNames = sortEditorsNames(
+      Array.from(sortedEditorsByName.keys()), // editor names
+    );
+    return sortedEditorsNames.map(editorName => {
       // editors same name, different version
       const editorsGroup = sortedEditorsByName.get(editorName);
 
@@ -139,6 +142,7 @@ export class EditorGallery extends React.PureComponent<Props, State> {
 
 const VERSION_PRIORITY: ReadonlyArray<string> = ['insiders', 'next', 'latest'];
 const DEPRECATED_TAG = 'Deprecated';
+const GROUP_PRIORITY = 'che-code';
 
 export function filterEditors(
   editors: che.Plugin[],
@@ -194,4 +198,24 @@ export function sortEditors(editors: che.Plugin[]) {
     });
 
   return sorted;
+}
+
+export function sortEditorsNames(editorsNames: string[]) {
+  return editorsNames.sort((a, b) => {
+    if (a.startsWith(GROUP_PRIORITY) && !b.startsWith(GROUP_PRIORITY)) {
+      return -1;
+    }
+    if (b.startsWith(GROUP_PRIORITY) && !a.startsWith(GROUP_PRIORITY)) {
+      return 1;
+    }
+    if (a.startsWith(GROUP_PRIORITY) && b.startsWith(GROUP_PRIORITY)) {
+      if (a === GROUP_PRIORITY) {
+        return -1;
+      }
+      if (b === GROUP_PRIORITY) {
+        return 1;
+      }
+    }
+    return a.localeCompare(b);
+  });
 }
