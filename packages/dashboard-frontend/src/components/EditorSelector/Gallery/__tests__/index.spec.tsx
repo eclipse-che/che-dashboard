@@ -12,7 +12,12 @@
 
 import React from 'react';
 
-import { EditorGallery, filterEditors, sortEditors } from '@/components/EditorSelector/Gallery';
+import {
+  EditorGallery,
+  filterEditors,
+  sortEditors,
+  sortEditorsNames,
+} from '@/components/EditorSelector/Gallery';
 import getComponentRenderer, { screen } from '@/services/__mocks__/getComponentRenderer';
 import { che } from '@/services/models';
 
@@ -214,6 +219,22 @@ describe('EditorGallery', () => {
           'che-incubator/che-idea-server/latest',
         ]);
       });
+    });
+  });
+
+  describe('sortEditorsNames function', () => {
+    test('with che-code and che-code-server editors', () => {
+      const editorNameA = 'che-phpstorm-server';
+      const editorNameB = 'che-clion-server';
+      const editorNameC = 'che-code-server';
+      const editorNameD = 'che-code';
+
+      const editorsNames = sortEditorsNames([editorNameA, editorNameB, editorNameC, editorNameD]);
+
+      expect(editorsNames[0]).toEqual('che-code');
+      expect(editorsNames[1]).toEqual('che-code-server');
+      expect(editorsNames[2]).toEqual('che-clion-server');
+      expect(editorsNames[3]).toEqual('che-phpstorm-server');
     });
   });
 
