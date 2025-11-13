@@ -119,6 +119,7 @@ Currently, Dashboard uses the following che-server API:
 | GET    | /oauth/token                    |
 | DELETE | /oauth/token                    |
 | GET    | /scm/resolve                    |
+| GET    | /user/id                        |
 
 
 # Builds
