@@ -122,12 +122,9 @@ export function isTrustedRepo(
     const trustedUrlPattern = getRepoPattern(trustedUrl);
     const trustedUrlRepo = extractRepo(trustedUrl, trustedUrlPattern);
 
-    if (urlRepo !== null && trustedUrlRepo !== null) {
-      // compare repository names
-      return urlRepo === trustedUrlRepo;
-    } else {
-      // compare URLs as is
-      return urlString === trustedUrl;
-    }
+    return (
+      (urlRepo && trustedUrlRepo && urlRepo === trustedUrlRepo) ||
+      urlString.split('?')[0] === trustedUrl.split('?')[0]
+    );
   });
 }
