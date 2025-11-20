@@ -94,10 +94,7 @@ export class WorkspaceLogsContainerSelector extends React.PureComponent<Props, S
     }
 
     const { containers, initContainers } = this.state;
-    if (
-      containers.includes(currentName) === false &&
-      initContainers.includes(currentName) === false
-    ) {
+    if (!containers.includes(currentName) && !initContainers.includes(currentName)) {
       console.error('Container name is not in the pod containers or initContainers:', currentName);
       return;
     }

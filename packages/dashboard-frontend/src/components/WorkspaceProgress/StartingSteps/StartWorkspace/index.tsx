@@ -11,6 +11,7 @@
  */
 
 import common, { ApplicationId } from '@eclipse-che/common';
+import { CoreV1Event } from '@kubernetes/client-node';
 import { AlertVariant } from '@patternfly/react-core';
 import isEqual from 'lodash/isEqual';
 import React from 'react';
@@ -38,9 +39,13 @@ import { AlertItem, DevWorkspaceStatus, LoaderTab } from '@/services/helpers/typ
 import { Workspace, WorkspaceAdapter } from '@/services/workspace-adapter';
 import { RootState } from '@/store';
 import { selectApplications } from '@/store/ClusterInfo/selectors';
+import { selectEventsFromResourceVersion } from '@/store/Events';
 import { selectStartTimeout } from '@/store/ServerConfig/selectors';
 import { workspacesActionCreators } from '@/store/Workspaces';
-import { selectDevWorkspaceWarnings } from '@/store/Workspaces/devWorkspaces/selectors';
+import {
+  selectDevWorkspaceWarnings,
+  selectStartedWorkspaces,
+} from '@/store/Workspaces/devWorkspaces/selectors';
 import { selectAllWorkspaces } from '@/store/Workspaces/selectors';
 
 export type Props = MappedProps &
@@ -129,11 +134,50 @@ class StartingStepStartWorkspace extends ProgressStep<Props, State> {
       return true;
     }
 
-    return false;
+    const hasPVCErrors = this.hasPVCErrors(workspace, this.props);
+    const nextHasPVCErrors = this.hasPVCErrors(nextWorkspace, nextProps);
+    return hasPVCErrors !== nextHasPVCErrors;
   }
 
   public componentWillUnmount(): void {
     this.toDispose.dispose();
+  }
+
+  private hasPVCErrors(
+    workspace: Workspace | undefined,
+    props: {
+      startedWorkspaces: { [key: string]: string };
+      eventsFromResourceVersionFn: (resourceVersion: string) => CoreV1Event[];
+    },
+  ): boolean {
+    const { startedWorkspaces, eventsFromResourceVersionFn } = props;
+    // no PVC to check
+    if (workspace === undefined || workspace.storageType === 'ephemeral') {
+      return false;
+    }
+    // get the resource version when the workspace was started
+    const resourceVersion = startedWorkspaces[workspace.uid];
+    if (resourceVersion === undefined) {
+      return false;
+    }
+    // get events since the workspace was started
+    const events = eventsFromResourceVersionFn(resourceVersion);
+    // filter events for the target workspace
+    const eventsForWorkspace = events.filter((event: CoreV1Event) =>
+      event.metadata.name?.startsWith(workspace.id),
+    );
+
+    const PVC_ERRORS_SUBSTR = [
+      'failed to create subPath directory for volumeMount',
+      'error for volume',
+    ];
+    const PVCErrorEvents = eventsForWorkspace.filter(
+      (event: CoreV1Event) =>
+        event.reason === 'Failed' &&
+        PVC_ERRORS_SUBSTR.find(str => event.message?.includes(str)) !== undefined,
+    );
+
+    return PVCErrorEvents.length > 0;
   }
 
   private init() {
@@ -156,6 +200,10 @@ class StartingStepStartWorkspace extends ProgressStep<Props, State> {
           warning,
         });
       }
+      const hasPVCErrors = this.hasPVCErrors(workspace, this.props);
+      if (hasPVCErrors) {
+        this.handlePVCError(workspace);
+      }
     }
 
     this.prepareAndRun();
@@ -176,6 +224,12 @@ class StartingStepStartWorkspace extends ProgressStep<Props, State> {
         : `The workspace status remains "${workspace.status}" in the last ${this.props.startTimeout} seconds.`;
     const timeoutError = new Error(message);
     this.handleError(timeoutError);
+  }
+
+  protected handlePVCError(workspace: Workspace | undefined): void {
+    const message = `PVC is full, workspace "${workspace?.name}" will fail to start.`;
+    const pvcError = new Error(message);
+    this.handleError(pvcError);
   }
 
   /**
@@ -334,6 +388,8 @@ const mapStateToProps = (state: RootState) => ({
   applications: selectApplications(state),
   startTimeout: selectStartTimeout(state),
   devWorkspaceWarnings: selectDevWorkspaceWarnings(state),
+  eventsFromResourceVersionFn: selectEventsFromResourceVersion(state),
+  startedWorkspaces: selectStartedWorkspaces(state),
 });
 
 const connector = connect(mapStateToProps, workspacesActionCreators, null, {
