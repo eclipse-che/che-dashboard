@@ -11,6 +11,7 @@
  */
 
 import common from '@eclipse-che/common';
+import { isErrorLike } from '@eclipse-che/common/lib/helpers/errors';
 import { AxiosResponse } from 'axios';
 import cloneDeep from 'lodash/cloneDeep';
 
@@ -30,7 +31,7 @@ export function getErrorMessage(error: unknown): string {
     const endpoint = request?.responseURL ? request?.responseURL : response?.request?.responseURL;
 
     if (!code || !endpoint) {
-      return 'Unexpected error type. Please report a bug.';
+      return isErrorLike(error) ? error.message : 'Unexpected error type. Please report a bug.';
     }
 
     const errorDetails = `HTTP Error code ${code}. Endpoint which throws an error ${endpoint}.`;
