@@ -30,6 +30,18 @@ describe('Workspace-client helpers', () => {
       expect(getErrorMessage(undefined)).toEqual('Check the browser logs message.');
     });
 
+    it('should return the the error message', () => {
+      expect(
+        getErrorMessage({
+          errorCode: 0,
+          message:
+            'User is not authorized to create a project. Please contact your system administrator.',
+        }),
+      ).toEqual(
+        'User is not authorized to create a project. Please contact your system administrator.',
+      );
+    });
+
     it('should return the unknown error message', () => {
       expect(getErrorMessage({})).toEqual('Unexpected error type. Please report a bug.');
     });
