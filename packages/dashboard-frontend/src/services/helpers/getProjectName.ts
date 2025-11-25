@@ -14,6 +14,7 @@ export const PROJECT_NAME_MAX_LENGTH = 63;
 
 export function getProjectName(cloneUrl: string): string {
   let name = cloneUrl
+    .split('?')[0]
     .split('/')
     .reverse()[0]
     .replace(/(?:\.git)$/, '');
