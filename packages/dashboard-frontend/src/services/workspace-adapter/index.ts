@@ -18,7 +18,6 @@ import { DEVWORKSPACE_STORAGE_TYPE_ATTR } from '@/services/devfileApi/devWorkspa
 import {
   FACTORY_URL_ATTR,
   PROPAGATE_FACTORY_ATTRS,
-  REVISION_ATTR,
 } from '@/services/helpers/factoryFlow/buildFactoryParams';
 import {
   DeprecatedWorkspaceStatus,
@@ -209,24 +208,6 @@ export class WorkspaceAdapter<T extends devfileApi.DevWorkspace> implements Work
             location += `${attr}=${factoryParams.get(attr)}`;
           }
         });
-
-        // Add revision from git projects if not already present in factory params
-        if (!factoryParams.has(REVISION_ATTR)) {
-          const projects = this.workspace.spec.template.projects;
-          if (projects && projects.length > 0) {
-            const git = projects[0].git;
-            if (git && git.checkoutFrom && git.checkoutFrom.revision) {
-              if (git.checkoutFrom.revision) {
-                if (location?.includes('?')) {
-                  location += '&';
-                } else {
-                  location += '?';
-                }
-                location += `${REVISION_ATTR}=${git.checkoutFrom.revision}`;
-              }
-            }
-          }
-        }
 
         return location;
       }
