@@ -241,53 +241,333 @@ describe('for DevWorkspace', () => {
       const workspace = constructWorkspace(devWorkspace);
       expect(workspace.source).toBeUndefined();
     });
-    it('should return factory url param if existing', () => {
-      const devWorkspace = new DevWorkspaceBuilder()
-        .withMetadata({
-          name: 'test-workspace',
-          annotations: {
-            [DEVWORKSPACE_DEVFILE_SOURCE]: dump({
-              factory: {
-                params: 'editor-image=test-images/che-code:tag&url=https://dummy.repo',
-              },
-            }),
-          },
-        })
-        .build();
-      const workspace = constructWorkspace(devWorkspace);
-      expect(workspace.source).toEqual('https://dummy.repo');
+
+    describe('factory params handling', () => {
+      it('should return factory url param if existing', () => {
+        const devWorkspace = new DevWorkspaceBuilder()
+          .withMetadata({
+            name: 'test-workspace',
+            annotations: {
+              [DEVWORKSPACE_DEVFILE_SOURCE]: dump({
+                factory: {
+                  params:
+                    'che-editor=che-incubator/che-code/latest&storageType=per-workspace&url=dummy.repo?id=java-lombok',
+                },
+              }),
+            },
+          })
+          .build();
+        const workspace = constructWorkspace(devWorkspace);
+        expect(workspace.source).toEqual(
+          'dummy.repo?id=java-lombok&che-editor=che-incubator/che-code/latest&storageType=per-workspace',
+        );
+      });
+
+      it('should propagate factory attributes in sorted order', () => {
+        const devWorkspace = new DevWorkspaceBuilder()
+          .withMetadata({
+            name: 'test-workspace',
+            annotations: {
+              [DEVWORKSPACE_DEVFILE_SOURCE]: dump({
+                factory: {
+                  params:
+                    'url=https://github.com/test/repo&storageType=ephemeral&che-editor=che-code/latest&devWorkspace=myspace',
+                },
+              }),
+            },
+          })
+          .build();
+        const workspace = constructWorkspace(devWorkspace);
+        // Attributes should be sorted alphabetically
+        expect(workspace.source).toEqual(
+          'https://github.com/test/repo?che-editor=che-code/latest&devWorkspace=myspace&storageType=ephemeral',
+        );
+      });
+
+      it('should handle url with existing query parameters', () => {
+        const devWorkspace = new DevWorkspaceBuilder()
+          .withMetadata({
+            name: 'test-workspace',
+            annotations: {
+              [DEVWORKSPACE_DEVFILE_SOURCE]: dump({
+                factory: {
+                  params:
+                    'url=https://repo.test?param1=value1&storageType=per-user&che-editor=code',
+                },
+              }),
+            },
+          })
+          .build();
+        const workspace = constructWorkspace(devWorkspace);
+        expect(workspace.source).toEqual(
+          'https://repo.test?param1=value1&che-editor=code&storageType=per-user',
+        );
+      });
+
+      it('should handle url without protocol', () => {
+        const devWorkspace = new DevWorkspaceBuilder()
+          .withMetadata({
+            name: 'test-workspace',
+            annotations: {
+              [DEVWORKSPACE_DEVFILE_SOURCE]: dump({
+                factory: {
+                  params: 'url=github.com/user/repo&che-editor=code',
+                },
+              }),
+            },
+          })
+          .build();
+        const workspace = constructWorkspace(devWorkspace);
+        expect(workspace.source).toEqual('github.com/user/repo?che-editor=code');
+      });
+
+      it('should only propagate attributes from PROPAGATE_FACTORY_ATTRS list', () => {
+        const devWorkspace = new DevWorkspaceBuilder()
+          .withMetadata({
+            name: 'test-workspace',
+            annotations: {
+              [DEVWORKSPACE_DEVFILE_SOURCE]: dump({
+                factory: {
+                  params:
+                    'url=https://github.com/test/repo&storageType=ephemeral&unknownParam=value&che-editor=code',
+                },
+              }),
+            },
+          })
+          .build();
+        const workspace = constructWorkspace(devWorkspace);
+        // unknownParam should not be propagated
+        expect(workspace.source).not.toContain('unknownParam');
+        expect(workspace.source).toEqual(
+          'https://github.com/test/repo?che-editor=code&storageType=ephemeral',
+        );
+      });
     });
-    it('should return scm repo if existing', () => {
-      const devWorkspace = new DevWorkspaceBuilder()
-        .withMetadata({
-          name: 'test-workspace',
-          annotations: {
-            [DEVWORKSPACE_DEVFILE_SOURCE]: dump({
-              scm: {
-                repo: 'https://dummy.repo.git',
+
+    describe('SSH location with revision handling', () => {
+      it('should extract revision from project git spec for SSH location', () => {
+        const devWorkspace = new DevWorkspaceBuilder()
+          .withMetadata({
+            name: 'test-workspace',
+            annotations: {
+              [DEVWORKSPACE_DEVFILE_SOURCE]: dump({
+                factory: {
+                  params: 'url=git@github.com:user/repo.git&storageType=per-workspace',
+                },
+              }),
+            },
+          })
+          .withProjects([
+            {
+              name: 'test-project',
+              git: {
+                remotes: {
+                  origin: 'git@github.com:user/repo.git',
+                },
+                checkoutFrom: {
+                  revision: 'feature-branch',
+                },
               },
-            }),
+            },
+          ])
+          .build();
+        const workspace = constructWorkspace(devWorkspace);
+        // Propagated attributes (sorted) are added first, then revision
+        expect(workspace.source).toEqual(
+          'git@github.com:user/repo.git?storageType=per-workspace&revision=feature-branch',
+        );
+      });
+
+      it('should not extract revision if revision is already in params for SSH location', () => {
+        const devWorkspace = new DevWorkspaceBuilder()
+          .withMetadata({
+            name: 'test-workspace',
+            annotations: {
+              [DEVWORKSPACE_DEVFILE_SOURCE]: dump({
+                factory: {
+                  params: 'url=git@github.com:user/repo.git&revision=main&storageType=per-user',
+                },
+              }),
+            },
+          })
+          .withProjects([
+            {
+              name: 'test-project',
+              git: {
+                remotes: {
+                  origin: 'git@github.com:user/repo.git',
+                },
+                checkoutFrom: {
+                  revision: 'feature-branch',
+                },
+              },
+            },
+          ])
+          .build();
+        const workspace = constructWorkspace(devWorkspace);
+        // Should use the revision from params, not from project
+        expect(workspace.source).toEqual(
+          'git@github.com:user/repo.git?revision=main&storageType=per-user',
+        );
+      });
+
+      it('should extract revision from projects for HTTP location', () => {
+        const devWorkspace = new DevWorkspaceBuilder()
+          .withMetadata({
+            name: 'test-workspace',
+            annotations: {
+              [DEVWORKSPACE_DEVFILE_SOURCE]: dump({
+                factory: {
+                  params: 'url=https://github.com/user/repo.git&storageType=ephemeral',
+                },
+              }),
+            },
+          })
+          .withProjects([
+            {
+              name: 'test-project',
+              git: {
+                remotes: {
+                  origin: 'https://github.com/user/repo.git',
+                },
+                checkoutFrom: {
+                  revision: 'feature-branch',
+                },
+              },
+            },
+          ])
+          .build();
+        const workspace = constructWorkspace(devWorkspace);
+        // HTTP location should also extract revision from projects
+        expect(workspace.source).toContain('revision=feature-branch');
+        expect(workspace.source).toEqual(
+          'https://github.com/user/repo.git?storageType=ephemeral&revision=feature-branch',
+        );
+      });
+
+      it('should handle SSH location without projects', () => {
+        const devWorkspace = new DevWorkspaceBuilder()
+          .withMetadata({
+            name: 'test-workspace',
+            annotations: {
+              [DEVWORKSPACE_DEVFILE_SOURCE]: dump({
+                factory: {
+                  params: 'url=ssh://git@bitbucket.org:user/repo.git&storageType=per-user',
+                },
+              }),
+            },
+          })
+          .build();
+        const workspace = constructWorkspace(devWorkspace);
+        expect(workspace.source).toEqual(
+          'ssh://git@bitbucket.org:user/repo.git?storageType=per-user',
+        );
+      });
+
+      it('should handle SSH location with empty checkoutFrom', () => {
+        const devWorkspace = new DevWorkspaceBuilder()
+          .withMetadata({
+            name: 'test-workspace',
+            annotations: {
+              [DEVWORKSPACE_DEVFILE_SOURCE]: dump({
+                factory: {
+                  params: 'url=git@gitlab.com:user/repo.git',
+                },
+              }),
+            },
+          })
+          .withProjects([
+            {
+              name: 'test-project',
+              git: {
+                remotes: {
+                  origin: 'git@gitlab.com:user/repo.git',
+                },
+              },
+            },
+          ])
+          .build();
+        const workspace = constructWorkspace(devWorkspace);
+        expect(workspace.source).toEqual('git@gitlab.com:user/repo.git');
+      });
+
+      it('should handle SSH location with various formats', () => {
+        const testCases = [
+          {
+            url: 'user@repository.example.com:/home/user/repo.git',
+            revision: 'develop',
+            expected: 'user@repository.example.com:/home/user/repo.git?revision=develop',
           },
-        })
-        .build();
-      const workspace = constructWorkspace(devWorkspace);
-      expect(workspace.source).toEqual('https://dummy.repo.git');
+          {
+            url: 'ssh://azuredevops.user.prv:22/tfs/collection/tools/git/ocp.gitops',
+            revision: 'main',
+            expected:
+              'ssh://azuredevops.user.prv:22/tfs/collection/tools/git/ocp.gitops?revision=main',
+          },
+        ];
+
+        testCases.forEach(({ url, revision, expected }) => {
+          const devWorkspace = new DevWorkspaceBuilder()
+            .withMetadata({
+              name: 'test-workspace',
+              annotations: {
+                [DEVWORKSPACE_DEVFILE_SOURCE]: dump({
+                  factory: {
+                    params: `url=${url}`,
+                  },
+                }),
+              },
+            })
+            .withProjects([
+              {
+                name: 'test-project',
+                git: {
+                  remotes: { origin: url },
+                  checkoutFrom: { revision },
+                },
+              },
+            ])
+            .build();
+          const workspace = constructWorkspace(devWorkspace);
+          expect(workspace.source).toEqual(expected);
+        });
+      });
     });
-    it('should return url location if existing', () => {
-      const devWorkspace = new DevWorkspaceBuilder()
-        .withMetadata({
-          name: 'test-workspace',
-          annotations: {
-            [DEVWORKSPACE_DEVFILE_SOURCE]: dump({
-              url: {
-                location: 'https://dummy.repo/devfile.yaml',
-              },
-            }),
-          },
-        })
-        .build();
-      const workspace = constructWorkspace(devWorkspace);
-      expect(workspace.source).toEqual('https://dummy.repo/devfile.yaml');
+
+    describe('non-factory sources', () => {
+      it('should return scm repo if existing', () => {
+        const devWorkspace = new DevWorkspaceBuilder()
+          .withMetadata({
+            name: 'test-workspace',
+            annotations: {
+              [DEVWORKSPACE_DEVFILE_SOURCE]: dump({
+                scm: {
+                  repo: 'https://dummy.repo.git',
+                },
+              }),
+            },
+          })
+          .build();
+        const workspace = constructWorkspace(devWorkspace);
+        expect(workspace.source).toEqual('https://dummy.repo.git');
+      });
+
+      it('should return url location if existing', () => {
+        const devWorkspace = new DevWorkspaceBuilder()
+          .withMetadata({
+            name: 'test-workspace',
+            annotations: {
+              [DEVWORKSPACE_DEVFILE_SOURCE]: dump({
+                url: {
+                  location: 'https://dummy.repo/devfile.yaml',
+                },
+              }),
+            },
+          })
+          .build();
+        const workspace = constructWorkspace(devWorkspace);
+        expect(workspace.source).toEqual('https://dummy.repo/devfile.yaml');
+      });
     });
   });
 });

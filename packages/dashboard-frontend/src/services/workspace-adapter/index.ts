@@ -16,6 +16,11 @@ import devfileApi, { isDevWorkspace } from '@/services/devfileApi';
 import { DEVWORKSPACE_UPDATING_TIMESTAMP_ANNOTATION } from '@/services/devfileApi/devWorkspace/metadata';
 import { DEVWORKSPACE_STORAGE_TYPE_ATTR } from '@/services/devfileApi/devWorkspace/spec/template';
 import {
+  FACTORY_URL_ATTR,
+  PROPAGATE_FACTORY_ATTRS,
+  REVISION_ATTR,
+} from '@/services/helpers/factoryFlow/buildFactoryParams';
+import {
   DeprecatedWorkspaceStatus,
   DevWorkspaceStatus,
   WorkspaceStatus,
@@ -169,12 +174,12 @@ export class WorkspaceAdapter<T extends devfileApi.DevWorkspace> implements Work
    * It can be an HTTPS or SSH URL.
    */
   get source(): string | undefined {
-    const devfileSourseStr = this.workspace.metadata.annotations?.[DEVWORKSPACE_DEVFILE_SOURCE];
-    if (!devfileSourseStr) {
+    const devfileSourceStr = this.workspace.metadata.annotations?.[DEVWORKSPACE_DEVFILE_SOURCE];
+    if (!devfileSourceStr) {
       return undefined;
     }
     // Parse the devfile source annotation to extract the repository URL
-    const devfileSourse = load(devfileSourseStr) as {
+    const devfileSource = load(devfileSourceStr) as {
       factory?: {
         params?: string;
       };
@@ -187,25 +192,52 @@ export class WorkspaceAdapter<T extends devfileApi.DevWorkspace> implements Work
       };
     };
     // Check if the devfile source has a factory with parameters
-    const factoryParams = devfileSourse?.factory?.params;
-    if (factoryParams) {
-      // Split the factory params string into an array of parameters
-      const paramsArr = factoryParams.split('&');
-      if (paramsArr.length > 0) {
-        // Find the URL parameter in the factory params
-        const targetParam = paramsArr.find(param => param.startsWith('url='));
-        if (targetParam) {
-          return targetParam.split('=')[1];
+    const factoryParams = new URLSearchParams(devfileSource?.factory?.params);
+    if (factoryParams.has(FACTORY_URL_ATTR)) {
+      let location = factoryParams.get(FACTORY_URL_ATTR);
+      factoryParams.delete(FACTORY_URL_ATTR);
+      if (location) {
+        const attrs = [...PROPAGATE_FACTORY_ATTRS].sort();
+
+        attrs.forEach(attr => {
+          if (factoryParams.has(attr)) {
+            if (location?.includes('?')) {
+              location += '&';
+            } else {
+              location += '?';
+            }
+            location += `${attr}=${factoryParams.get(attr)}`;
+          }
+        });
+
+        // Add revision from git projects if not already present in factory params
+        if (!factoryParams.has(REVISION_ATTR)) {
+          const projects = this.workspace.spec.template.projects;
+          if (projects && projects.length > 0) {
+            const git = projects[0].git;
+            if (git && git.checkoutFrom && git.checkoutFrom.revision) {
+              if (git.checkoutFrom.revision) {
+                if (location?.includes('?')) {
+                  location += '&';
+                } else {
+                  location += '?';
+                }
+                location += `${REVISION_ATTR}=${git.checkoutFrom.revision}`;
+              }
+            }
+          }
         }
+
+        return location;
       }
     }
     // Check if the devfile source has a repository URL
-    const repo = devfileSourse?.scm?.repo;
+    const repo = devfileSource?.scm?.repo;
     if (repo) {
       return repo;
     }
     // Check if the devfile source has a URL location
-    const location = devfileSourse?.url?.location;
+    const location = devfileSource?.url?.location;
     if (location) {
       return location;
     }
@@ -258,7 +290,7 @@ export class WorkspaceAdapter<T extends devfileApi.DevWorkspace> implements Work
   }
 
   get error(): string | undefined {
-    if (this.hasError === false) {
+    if (!this.hasError) {
       return;
     }
     return this.workspace.status?.message;
