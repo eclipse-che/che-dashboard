@@ -15,9 +15,11 @@ import { load } from 'js-yaml';
 import devfileApi, { isDevWorkspace } from '@/services/devfileApi';
 import { DEVWORKSPACE_UPDATING_TIMESTAMP_ANNOTATION } from '@/services/devfileApi/devWorkspace/metadata';
 import { DEVWORKSPACE_STORAGE_TYPE_ATTR } from '@/services/devfileApi/devWorkspace/spec/template';
+import { FactoryLocationAdapter } from '@/services/factory-location-adapter';
 import {
   FACTORY_URL_ATTR,
   PROPAGATE_FACTORY_ATTRS,
+  REVISION_ATTR,
 } from '@/services/helpers/factoryFlow/buildFactoryParams';
 import {
   DeprecatedWorkspaceStatus,
@@ -196,6 +198,7 @@ export class WorkspaceAdapter<T extends devfileApi.DevWorkspace> implements Work
       let location = factoryParams.get(FACTORY_URL_ATTR);
       factoryParams.delete(FACTORY_URL_ATTR);
       if (location) {
+        const isSshLocation = FactoryLocationAdapter.isSshLocation(location);
         const attrs = [...PROPAGATE_FACTORY_ATTRS].sort();
 
         attrs.forEach(attr => {
@@ -208,6 +211,23 @@ export class WorkspaceAdapter<T extends devfileApi.DevWorkspace> implements Work
             location += `${attr}=${factoryParams.get(attr)}`;
           }
         });
+
+        if (isSshLocation && !factoryParams.has(REVISION_ATTR)) {
+          const projects = this.workspace.spec.template.projects;
+          if (projects && projects.length > 0) {
+            const git = projects[0].git;
+            if (git && git.checkoutFrom && git.checkoutFrom.revision) {
+              if (git.checkoutFrom.revision) {
+                if (location?.includes('?')) {
+                  location += '&';
+                } else {
+                  location += '?';
+                }
+                location += `${REVISION_ATTR}=${git.checkoutFrom.revision}`;
+              }
+            }
+          }
+        }
 
         return location;
       }

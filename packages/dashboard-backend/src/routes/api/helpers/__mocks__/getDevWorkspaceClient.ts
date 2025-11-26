@@ -201,7 +201,7 @@ export const getDevWorkspaceClient = jest.fn(
         getAdvancedAuthorization: _cheCustomResource => stubAdvancedAuthorization,
         getAllowedSourceUrls: _cheCustomResource => stubAllowedSourceUrls,
         getShowDeprecatedEditors: _cheCustomResource => stubShowDeprecatedEditors,
-        gеtHideEditorsById: _cheCustomResource => stubHideEditorsById,
+        getHideEditorsById: _cheCustomResource => stubHideEditorsById,
       } as IServerConfigApi,
       devworkspaceApi: {
         create: (_devworkspace, _namespace) =>
