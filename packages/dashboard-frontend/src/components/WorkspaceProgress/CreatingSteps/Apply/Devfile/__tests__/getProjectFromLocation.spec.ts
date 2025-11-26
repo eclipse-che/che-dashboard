@@ -93,7 +93,8 @@ describe('FactoryLoaderContainer/getProjectFromLocation', () => {
             origin: 'https://github.com/test/rest-repo.git',
           },
         },
-        name: 'a4f1949c33ddab5f66c19c27a844af1c46aa0820',
+        // Project name now correctly extracts repo name instead of commit hash
+        name: 'rest-repo',
       });
     });
   });
