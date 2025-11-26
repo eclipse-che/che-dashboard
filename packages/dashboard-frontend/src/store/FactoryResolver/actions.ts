@@ -15,6 +15,7 @@ import { createAction } from '@reduxjs/toolkit';
 
 import { getFactoryResolver } from '@/services/backend-client/factoryApi';
 import { getYamlResolver } from '@/services/backend-client/yamlResolverApi';
+import { FactoryLocationAdapter } from '@/services/factory-location-adapter';
 import { FactoryParams } from '@/services/helpers/factoryFlow/buildFactoryParams';
 import { FactoryResolver } from '@/services/helpers/types';
 import { isOAuthResponse } from '@/services/oauth';
@@ -43,11 +44,19 @@ export const actionCreators = {
         [fileName: string]: { location: string; content: string } | undefined;
       } = {};
 
+      // For SSH locations, revision is extracted and added in factoryApi.ts
+      // For HTTP locations, we add it here from factoryParams
+      const isSshLocation = FactoryLocationAdapter.isSshLocation(location);
       const overrideParams = factoryParams
-        ? Object.assign({}, factoryParams.overrides, {
-            error_code: factoryParams?.errorCode,
-            revision: factoryParams?.revision,
-          })
+        ? Object.assign(
+            {},
+            factoryParams.overrides,
+            {
+              error_code: factoryParams?.errorCode,
+            },
+            // Only add revision for HTTP locations; SSH locations handle it in factoryApi
+            !isSshLocation && factoryParams?.revision ? { revision: factoryParams.revision } : {},
+          )
         : undefined;
 
       try {

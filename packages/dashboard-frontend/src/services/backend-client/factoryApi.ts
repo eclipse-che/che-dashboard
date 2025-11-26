@@ -32,6 +32,11 @@ export async function getFactoryResolver(
       url = `${path}?${decodeURIComponent(search)}`;
     } else {
       const searchParams = new URLSearchParams(decodeURIComponent(search));
+      // Extract revision before deleting it and add to overrideParams for SSH locations
+      const revision = searchParams.get(REVISION_ATTR);
+      if (revision) {
+        overrideParams = { ...overrideParams, revision };
+      }
       searchParams.delete(REVISION_ATTR);
       const queryString = searchParams.toString();
       url = queryString ? `${path}?${queryString}` : path;
