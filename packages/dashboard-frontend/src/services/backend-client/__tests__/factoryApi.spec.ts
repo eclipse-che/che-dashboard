@@ -79,6 +79,51 @@ describe('Factory API', () => {
       expect(mockFetchParentDevfile).toHaveBeenCalled();
       expect(res).toEqual(factoryResolver);
     });
+
+    it('should remove revision parameter from SSH URL and not leave trailing "?"', async () => {
+      mockPost.mockResolvedValueOnce({
+        data: factoryResolver,
+      });
+
+      await getFactoryResolver('git@github.com:svor/python-hello-world.git?revision=my-branch', {});
+
+      expect(mockPost).toHaveBeenCalledWith('/api/factory/resolver', {
+        url: 'git@github.com:svor/python-hello-world.git',
+      });
+      expect(mockFetchParentDevfile).toHaveBeenCalled();
+    });
+
+    it('should remove revision parameter from SSH URL but keep other parameters', async () => {
+      mockPost.mockResolvedValueOnce({
+        data: factoryResolver,
+      });
+
+      await getFactoryResolver(
+        'git@github.com:svor/python-hello-world.git?revision=my-branch&sparse=1',
+        {},
+      );
+
+      expect(mockPost).toHaveBeenCalledWith('/api/factory/resolver', {
+        url: 'git@github.com:svor/python-hello-world.git?sparse=1',
+      });
+      expect(mockFetchParentDevfile).toHaveBeenCalled();
+    });
+
+    it('should preserve HTTP location parameters as-is', async () => {
+      mockPost.mockResolvedValueOnce({
+        data: factoryResolver,
+      });
+
+      await getFactoryResolver(
+        'https://github.com/eclipse-che/che-dashboard.git?revision=my-branch',
+        {},
+      );
+
+      expect(mockPost).toHaveBeenCalledWith('/api/factory/resolver', {
+        url: 'https://github.com/eclipse-che/che-dashboard.git?revision=my-branch',
+      });
+      expect(mockFetchParentDevfile).toHaveBeenCalled();
+    });
   });
 
   describe('refresh factory OAuth token', () => {
