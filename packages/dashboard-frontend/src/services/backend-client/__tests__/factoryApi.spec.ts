@@ -118,7 +118,7 @@ describe('Factory API', () => {
           {},
         );
 
-        // Expected output: url without revision, revision in overrideParams
+        // For SSH: ALL params extracted to overrideParams, URL is only the path
         expect(mockPost).toHaveBeenCalledWith('/api/factory/resolver', {
           url: 'git@github.com:svor/python-hello-world.git',
           revision: 'my-branch',
@@ -126,13 +126,33 @@ describe('Factory API', () => {
         expect(mockFetchParentDevfile).toHaveBeenCalled();
       });
 
-      it('should extract revision and merge with existing overrideParams', async () => {
+      it('should extract all parameters from SSH URL to overrideParams', async () => {
         mockPost.mockResolvedValueOnce({
           data: factoryResolver,
         });
 
         await getFactoryResolver(
-          'git@github.com:svor/python-hello-world.git?revision=feature-branch',
+          'git@github.com:svor/python-hello-world.git?revision=my-branch&sparse=1&df=custom.yaml',
+          {},
+        );
+
+        // For SSH: ALL parameters go to overrideParams, URL has no query string
+        expect(mockPost).toHaveBeenCalledWith('/api/factory/resolver', {
+          url: 'git@github.com:svor/python-hello-world.git',
+          revision: 'my-branch',
+          sparse: '1',
+          df: 'custom.yaml',
+        });
+        expect(mockFetchParentDevfile).toHaveBeenCalled();
+      });
+
+      it('should extract parameters and merge with existing overrideParams', async () => {
+        mockPost.mockResolvedValueOnce({
+          data: factoryResolver,
+        });
+
+        await getFactoryResolver(
+          'git@github.com:svor/python-hello-world.git?revision=feature-branch&sparse=1',
           { someParam: 'value', anotherParam: 'test' },
         );
 
@@ -141,45 +161,12 @@ describe('Factory API', () => {
           someParam: 'value',
           anotherParam: 'test',
           revision: 'feature-branch',
+          sparse: '1',
         });
         expect(mockFetchParentDevfile).toHaveBeenCalled();
       });
 
-      it('should extract revision from SSH URL and keep other parameters in URL', async () => {
-        mockPost.mockResolvedValueOnce({
-          data: factoryResolver,
-        });
-
-        await getFactoryResolver(
-          'git@github.com:svor/python-hello-world.git?revision=my-branch&sparse=1',
-          {},
-        );
-
-        expect(mockPost).toHaveBeenCalledWith('/api/factory/resolver', {
-          url: 'git@github.com:svor/python-hello-world.git?sparse=1',
-          revision: 'my-branch',
-        });
-        expect(mockFetchParentDevfile).toHaveBeenCalled();
-      });
-
-      it('should extract revision and preserve multiple other parameters', async () => {
-        mockPost.mockResolvedValueOnce({
-          data: factoryResolver,
-        });
-
-        await getFactoryResolver(
-          'git@gitlab.com:team/project.git?sparse=1&revision=develop&df=custom.yaml',
-          {},
-        );
-
-        expect(mockPost).toHaveBeenCalledWith('/api/factory/resolver', {
-          url: 'git@gitlab.com:team/project.git?sparse=1&df=custom.yaml',
-          revision: 'develop',
-        });
-        expect(mockFetchParentDevfile).toHaveBeenCalled();
-      });
-
-      it('should handle SSH URL without revision parameter', async () => {
+      it('should handle SSH URL without any parameters', async () => {
         mockPost.mockResolvedValueOnce({
           data: factoryResolver,
         });
@@ -192,7 +179,7 @@ describe('Factory API', () => {
         expect(mockFetchParentDevfile).toHaveBeenCalled();
       });
 
-      it('should handle SSH URL with revision containing special characters', async () => {
+      it('should decode URL-encoded parameters correctly', async () => {
         mockPost.mockResolvedValueOnce({
           data: factoryResolver,
         });
@@ -209,20 +196,59 @@ describe('Factory API', () => {
         expect(mockFetchParentDevfile).toHaveBeenCalled();
       });
 
-      it('should not override existing revision in overrideParams', async () => {
+      it('should override existing params with URL params', async () => {
+        mockPost.mockResolvedValueOnce({
+          data: factoryResolver,
+        });
+
+        await getFactoryResolver('git@github.com:user/repo.git?revision=from-url&sparse=2', {
+          revision: 'from-params',
+          sparse: '1',
+          keepThis: 'value',
+        });
+
+        // URL params should override existing overrideParams
+        expect(mockPost).toHaveBeenCalledWith('/api/factory/resolver', {
+          url: 'git@github.com:user/repo.git',
+          revision: 'from-url',
+          sparse: '2',
+          keepThis: 'value',
+        });
+        expect(mockFetchParentDevfile).toHaveBeenCalled();
+      });
+
+      it('should handle complex SSH URL with multiple parameters', async () => {
         mockPost.mockResolvedValueOnce({
           data: factoryResolver,
         });
 
         await getFactoryResolver(
-          'git@github.com:user/repo.git?revision=from-url',
-          { revision: 'from-params' },
+          'git@gitlab.com:team/project.git?revision=develop&sparse=1&df=custom.yaml&storageType=ephemeral',
+          {},
         );
 
-        // URL revision should override the existing revision in overrideParams
+        // All parameters extracted, URL is clean path only
+        expect(mockPost).toHaveBeenCalledWith('/api/factory/resolver', {
+          url: 'git@gitlab.com:team/project.git',
+          revision: 'develop',
+          sparse: '1',
+          df: 'custom.yaml',
+          storageType: 'ephemeral',
+        });
+        expect(mockFetchParentDevfile).toHaveBeenCalled();
+      });
+
+      it('should handle SSH URL with only non-revision parameters', async () => {
+        mockPost.mockResolvedValueOnce({
+          data: factoryResolver,
+        });
+
+        await getFactoryResolver('git@github.com:user/repo.git?sparse=1&df=devfile.yaml', {});
+
         expect(mockPost).toHaveBeenCalledWith('/api/factory/resolver', {
           url: 'git@github.com:user/repo.git',
-          revision: 'from-url',
+          sparse: '1',
+          df: 'devfile.yaml',
         });
         expect(mockFetchParentDevfile).toHaveBeenCalled();
       });
