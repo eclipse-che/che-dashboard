@@ -344,6 +344,233 @@ describe('for DevWorkspace', () => {
       });
     });
 
+    describe('SSH location revision handling', () => {
+      it('should extract revision from git projects for SSH location', () => {
+        const devWorkspace = new DevWorkspaceBuilder()
+          .withMetadata({
+            name: 'test-workspace',
+            annotations: {
+              [DEVWORKSPACE_DEVFILE_SOURCE]: dump({
+                factory: {
+                  params: 'url=git@github.com:user/repo.git&storageType=per-workspace',
+                },
+              }),
+            },
+          })
+          .withProjects([
+            {
+              name: 'test-project',
+              git: {
+                remotes: {
+                  origin: 'git@github.com:user/repo.git',
+                },
+                checkoutFrom: {
+                  revision: 'feature-branch',
+                },
+              },
+            },
+          ])
+          .build();
+        const workspace = constructWorkspace(devWorkspace);
+        // For SSH, revision should be extracted from git projects and appended after propagated attrs
+        expect(workspace.source).toEqual(
+          'git@github.com:user/repo.git?storageType=per-workspace&revision=feature-branch',
+        );
+      });
+
+      it('should not extract revision for SSH if already in params', () => {
+        const devWorkspace = new DevWorkspaceBuilder()
+          .withMetadata({
+            name: 'test-workspace',
+            annotations: {
+              [DEVWORKSPACE_DEVFILE_SOURCE]: dump({
+                factory: {
+                  params: 'url=git@github.com:user/repo.git&revision=main&storageType=per-user',
+                },
+              }),
+            },
+          })
+          .withProjects([
+            {
+              name: 'test-project',
+              git: {
+                remotes: {
+                  origin: 'git@github.com:user/repo.git',
+                },
+                checkoutFrom: {
+                  revision: 'feature-branch',
+                },
+              },
+            },
+          ])
+          .build();
+        const workspace = constructWorkspace(devWorkspace);
+        // Should use revision from params, not from project
+        expect(workspace.source).toEqual(
+          'git@github.com:user/repo.git?revision=main&storageType=per-user',
+        );
+      });
+
+      it('should not extract revision from git projects for HTTP location', () => {
+        const devWorkspace = new DevWorkspaceBuilder()
+          .withMetadata({
+            name: 'test-workspace',
+            annotations: {
+              [DEVWORKSPACE_DEVFILE_SOURCE]: dump({
+                factory: {
+                  params: 'url=https://github.com/user/repo.git&storageType=ephemeral',
+                },
+              }),
+            },
+          })
+          .withProjects([
+            {
+              name: 'test-project',
+              git: {
+                remotes: {
+                  origin: 'https://github.com/user/repo.git',
+                },
+                checkoutFrom: {
+                  revision: 'feature-branch',
+                },
+              },
+            },
+          ])
+          .build();
+        const workspace = constructWorkspace(devWorkspace);
+        // HTTP location should NOT extract revision from projects
+        expect(workspace.source).not.toContain('revision=feature-branch');
+        expect(workspace.source).toEqual('https://github.com/user/repo.git?storageType=ephemeral');
+      });
+
+      it('should not extract revision from git projects for HTTPS location', () => {
+        const devWorkspace = new DevWorkspaceBuilder()
+          .withMetadata({
+            name: 'test-workspace',
+            annotations: {
+              [DEVWORKSPACE_DEVFILE_SOURCE]: dump({
+                factory: {
+                  params: 'url=https://gitlab.com/user/repo.git',
+                },
+              }),
+            },
+          })
+          .withProjects([
+            {
+              name: 'test-project',
+              git: {
+                remotes: {
+                  origin: 'https://gitlab.com/user/repo.git',
+                },
+                checkoutFrom: {
+                  revision: 'develop',
+                },
+              },
+            },
+          ])
+          .build();
+        const workspace = constructWorkspace(devWorkspace);
+        // HTTPS location should NOT extract revision from projects
+        expect(workspace.source).not.toContain('revision=develop');
+        expect(workspace.source).toEqual('https://gitlab.com/user/repo.git');
+      });
+
+      it('should handle SSH location without projects', () => {
+        const devWorkspace = new DevWorkspaceBuilder()
+          .withMetadata({
+            name: 'test-workspace',
+            annotations: {
+              [DEVWORKSPACE_DEVFILE_SOURCE]: dump({
+                factory: {
+                  params: 'url=ssh://git@bitbucket.org:user/repo.git&storageType=per-user',
+                },
+              }),
+            },
+          })
+          .build();
+        const workspace = constructWorkspace(devWorkspace);
+        // No projects, so no revision to extract
+        expect(workspace.source).toEqual(
+          'ssh://git@bitbucket.org:user/repo.git?storageType=per-user',
+        );
+      });
+
+      it('should handle SSH location with empty checkoutFrom', () => {
+        const devWorkspace = new DevWorkspaceBuilder()
+          .withMetadata({
+            name: 'test-workspace',
+            annotations: {
+              [DEVWORKSPACE_DEVFILE_SOURCE]: dump({
+                factory: {
+                  params: 'url=git@gitlab.com:user/repo.git',
+                },
+              }),
+            },
+          })
+          .withProjects([
+            {
+              name: 'test-project',
+              git: {
+                remotes: {
+                  origin: 'git@gitlab.com:user/repo.git',
+                },
+              },
+            },
+          ])
+          .build();
+        const workspace = constructWorkspace(devWorkspace);
+        // No checkoutFrom, so no revision
+        expect(workspace.source).toEqual('git@gitlab.com:user/repo.git');
+      });
+
+      it('should handle various SSH URL formats', () => {
+        const testCases = [
+          {
+            url: 'user@repository.example.com:/home/user/repo.git',
+            revision: 'develop',
+            expected: 'user@repository.example.com:/home/user/repo.git?revision=develop',
+          },
+          {
+            url: 'ssh://azuredevops.user.prv:22/tfs/collection/tools/git/ocp.gitops',
+            revision: 'main',
+            expected:
+              'ssh://azuredevops.user.prv:22/tfs/collection/tools/git/ocp.gitops?revision=main',
+          },
+          {
+            url: 'ssh://git@github.com:2222/user/repo.git',
+            revision: 'feature-1',
+            expected: 'ssh://git@github.com:2222/user/repo.git?revision=feature-1',
+          },
+        ];
+
+        testCases.forEach(({ url, revision, expected }) => {
+          const devWorkspace = new DevWorkspaceBuilder()
+            .withMetadata({
+              name: 'test-workspace',
+              annotations: {
+                [DEVWORKSPACE_DEVFILE_SOURCE]: dump({
+                  factory: {
+                    params: `url=${url}`,
+                  },
+                }),
+              },
+            })
+            .withProjects([
+              {
+                name: 'test-project',
+                git: {
+                  remotes: { origin: url },
+                  checkoutFrom: { revision },
+                },
+              },
+            ])
+            .build();
+          const workspace = constructWorkspace(devWorkspace);
+          expect(workspace.source).toEqual(expected);
+        });
+      });
+    });
+
     describe('non-factory sources', () => {
       it('should return scm repo if existing', () => {
         const devWorkspace = new DevWorkspaceBuilder()

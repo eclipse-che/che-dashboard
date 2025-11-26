@@ -14,6 +14,8 @@ import axios from 'axios';
 
 import { cheServerPrefix } from '@/services/backend-client/const';
 import { getParentDevfile } from '@/services/backend-client/parentDevfileApi';
+import { FactoryLocationAdapter } from '@/services/factory-location-adapter';
+import { REVISION } from '@/services/helpers/factoryFlow/buildFactoryParams';
 import { FactoryResolver } from '@/services/helpers/types';
 
 export async function getFactoryResolver(
@@ -26,7 +28,13 @@ export async function getFactoryResolver(
   // In the case of the Azure repository, the search parameters are encoded twice and need to be decoded.
   if (url.indexOf('?') !== -1) {
     const [path, search] = url.split('?');
-    url = `${path}?${decodeURIComponent(search)}`;
+    if (FactoryLocationAdapter.isHttpLocation(url)) {
+      url = `${path}?${decodeURIComponent(search)}`;
+    } else {
+      const searchParams = new URLSearchParams(decodeURIComponent(search));
+      searchParams.delete(REVISION);
+      url = `${path}?${searchParams.toString()}`;
+    }
   }
   const response = await axios.post(
     `${cheServerPrefix}/factory/resolver`,
