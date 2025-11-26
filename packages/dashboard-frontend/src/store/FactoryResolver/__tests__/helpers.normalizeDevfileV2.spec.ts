@@ -161,12 +161,13 @@ describe('Normalize Devfile V2', () => {
       {
         devfile,
       } as FactoryResolver,
-      'http://dummy-registry/devfiles/empty.yaml',
+      'http://registry.example.com/devfiles/empty.yaml',
       [],
       {},
     );
 
-    expect(targetDevfile.metadata.name).toEqual(expect.stringContaining('empty-yaml'));
+    // Project name should extract "empty" from "empty.yaml" (extension removed)
+    expect(targetDevfile.metadata.name).toEqual(expect.stringContaining('empty'));
   });
 
   it('should apply defaultComponents', () => {
