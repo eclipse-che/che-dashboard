@@ -15,7 +15,7 @@ import axios from 'axios';
 import { cheServerPrefix } from '@/services/backend-client/const';
 import { getParentDevfile } from '@/services/backend-client/parentDevfileApi';
 import { FactoryLocationAdapter } from '@/services/factory-location-adapter';
-import { REVISION } from '@/services/helpers/factoryFlow/buildFactoryParams';
+import { REVISION_ATTR } from '@/services/helpers/factoryFlow/buildFactoryParams';
 import { FactoryResolver } from '@/services/helpers/types';
 
 export async function getFactoryResolver(
@@ -32,7 +32,7 @@ export async function getFactoryResolver(
       url = `${path}?${decodeURIComponent(search)}`;
     } else {
       const searchParams = new URLSearchParams(decodeURIComponent(search));
-      searchParams.delete(REVISION);
+      searchParams.delete(REVISION_ATTR);
       url = `${path}?${searchParams.toString()}`;
     }
   }

@@ -28,7 +28,6 @@ export const EDITOR_IMAGE_ATTR = 'editor-image';
 export const USE_DEFAULT_DEVFILE = 'useDefaultDevfile';
 export const DEBUG_WORKSPACE_START = 'debugWorkspaceStart';
 export const EXISTING_WORKSPACE_NAME = 'existing';
-export const REVISION = 'revision';
 
 export const PROPAGATE_FACTORY_ATTRS = [
   'workspaceDeploymentAnnotations',
