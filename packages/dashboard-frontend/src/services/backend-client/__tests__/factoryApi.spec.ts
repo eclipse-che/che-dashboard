@@ -197,10 +197,7 @@ describe('Factory API', () => {
           data: factoryResolver,
         });
 
-        await getFactoryResolver(
-          'git@github.com:user/repo.git?revision=feature%2Fmy-branch',
-          {},
-        );
+        await getFactoryResolver('git@github.com:user/repo.git?revision=feature%2Fmy-branch', {});
 
         expect(mockPost).toHaveBeenCalledWith('/api/factory/resolver', {
           url: 'git@github.com:user/repo.git',
@@ -214,10 +211,9 @@ describe('Factory API', () => {
           data: factoryResolver,
         });
 
-        await getFactoryResolver(
-          'git@github.com:user/repo.git?revision=from-url',
-          { revision: 'from-params' },
-        );
+        await getFactoryResolver('git@github.com:user/repo.git?revision=from-url', {
+          revision: 'from-params',
+        });
 
         // URL revision should override the existing revision in overrideParams
         expect(mockPost).toHaveBeenCalledWith('/api/factory/resolver', {
