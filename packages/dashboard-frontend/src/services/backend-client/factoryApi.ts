@@ -15,7 +15,6 @@ import axios from 'axios';
 import { cheServerPrefix } from '@/services/backend-client/const';
 import { getParentDevfile } from '@/services/backend-client/parentDevfileApi';
 import { FactoryLocationAdapter } from '@/services/factory-location-adapter';
-import { REVISION_ATTR } from '@/services/helpers/factoryFlow/buildFactoryParams';
 import { FactoryResolver } from '@/services/helpers/types';
 
 export async function getFactoryResolver(
@@ -31,15 +30,13 @@ export async function getFactoryResolver(
     if (FactoryLocationAdapter.isHttpLocation(url)) {
       url = `${path}?${decodeURIComponent(search)}`;
     } else {
+      // For SSH locations: extract ALL parameters to overrideParams and use only the path
       const searchParams = new URLSearchParams(decodeURIComponent(search));
-      // Extract revision before deleting it and add to overrideParams for SSH locations
-      const revision = searchParams.get(REVISION_ATTR);
-      if (revision) {
-        overrideParams = { ...overrideParams, revision };
-      }
-      searchParams.delete(REVISION_ATTR);
-      const queryString = searchParams.toString();
-      url = queryString ? `${path}?${queryString}` : path;
+      searchParams.forEach((value, key) => {
+        overrideParams = { ...overrideParams, [key]: value };
+      });
+      // SSH URLs should not have query parameters - use only the path
+      url = path;
     }
   }
   const response = await axios.post(
