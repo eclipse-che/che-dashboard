@@ -33,7 +33,8 @@ export async function getFactoryResolver(
     } else {
       const searchParams = new URLSearchParams(decodeURIComponent(search));
       searchParams.delete(REVISION_ATTR);
-      url = `${path}?${searchParams.toString()}`;
+      const queryString = searchParams.toString();
+      url = queryString ? `${path}?${queryString}` : path;
     }
   }
   const response = await axios.post(
