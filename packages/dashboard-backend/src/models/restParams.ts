@@ -42,6 +42,10 @@ export interface IEditorsDevfileParams {
   'che-editor': string;
 }
 
+export interface IUrlParams {
+  url: string;
+}
+
 // --- Namespaced Params ---
 export interface INamespacedParams {
   namespace: string;

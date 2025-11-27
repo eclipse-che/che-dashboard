@@ -33,6 +33,7 @@ import { registerDockerConfigRoutes } from '@/routes/api/dockerConfig';
 import { registerEditorsRoutes } from '@/routes/api/editors';
 import { registerEventsRoutes } from '@/routes/api/events';
 import { registerGettingStartedSamplesRoutes } from '@/routes/api/gettingStartedSample';
+import { registerGitBranchesRoute } from '@/routes/api/gitBranches';
 import { registerGitConfigRoutes } from '@/routes/api/gitConfig';
 import { getDevWorkspaceClient } from '@/routes/api/helpers/getDevWorkspaceClient';
 import { getServiceAccountToken } from '@/routes/api/helpers/getServiceAccountToken';
@@ -118,6 +119,8 @@ export default async function buildApp(server: FastifyInstance): Promise<unknown
     registerServerConfigRoute(server),
 
     registerUserProfileRoute(server),
+
+    registerGitBranchesRoute(server),
 
     registerDataResolverRoute(server),
 

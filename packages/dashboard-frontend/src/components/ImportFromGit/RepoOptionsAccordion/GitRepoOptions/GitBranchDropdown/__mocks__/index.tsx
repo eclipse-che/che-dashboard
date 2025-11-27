@@ -12,9 +12,9 @@
 
 import React from 'react';
 
-import { Props } from '@/components/ImportFromGit/RepoOptionsAccordion/GitRepoOptions/GitBranchField';
+import { Props } from '@/components/ImportFromGit/RepoOptionsAccordion/GitRepoOptions/GitBranchDropdown';
 
-export class GitBranchField extends React.PureComponent<Props> {
+export class GitBranchDropdown extends React.PureComponent<Props> {
   public render() {
     const { gitBranch, onChange } = this.props;
 
