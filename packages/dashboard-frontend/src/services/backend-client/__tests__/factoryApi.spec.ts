@@ -184,10 +184,7 @@ describe('Factory API', () => {
           data: factoryResolver,
         });
 
-        await getFactoryResolver(
-          'git@github.com:user/repo.git?revision=feature%2Fmy-branch',
-          {},
-        );
+        await getFactoryResolver('git@github.com:user/repo.git?revision=feature%2Fmy-branch', {});
 
         expect(mockPost).toHaveBeenCalledWith('/api/factory/resolver', {
           url: 'git@github.com:user/repo.git',
