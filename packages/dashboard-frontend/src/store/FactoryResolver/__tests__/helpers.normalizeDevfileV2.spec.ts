@@ -161,12 +161,13 @@ describe('Normalize Devfile V2', () => {
       {
         devfile,
       } as FactoryResolver,
-      'http://dummy-registry/devfiles/empty.yaml',
+      'http://registry.example.com/devfiles/empty.yaml',
       [],
       {},
     );
 
-    expect(targetDevfile.metadata.name).toEqual(expect.stringContaining('empty-yaml'));
+    // Project name should extract "empty" from "empty.yaml" (extension removed)
+    expect(targetDevfile.metadata.name).toEqual(expect.stringContaining('empty'));
   });
 
   it('should apply defaultComponents', () => {
@@ -359,5 +360,147 @@ describe('Normalize Devfile V2', () => {
         ],
       }),
     );
+  });
+
+  describe('location URL with query parameters', () => {
+    it('should strip query parameters from location when generating workspace name', () => {
+      const devfile = {
+        schemaVersion: '2.2.2',
+      } as V230Devfile;
+
+      const targetDevfile = normalizeDevfile(
+        {
+          devfile,
+        } as FactoryResolver,
+        'git@github.com:svor/python-hello-world.git?revision=my-branch',
+        defaultComponents,
+        {},
+      );
+
+      // The workspace name should be based on 'python-hello-world', not include 'revision-my-branch'
+      expect(targetDevfile.metadata.name).toEqual(expect.stringContaining('python-hello-world'));
+      expect(targetDevfile.metadata.name).not.toEqual(expect.stringContaining('revision'));
+      expect(targetDevfile.metadata.name).not.toEqual(expect.stringContaining('my-branch'));
+    });
+
+    it('should handle HTTPS URL with revision query parameter', () => {
+      const devfile = {
+        schemaVersion: '2.2.2',
+      } as V230Devfile;
+
+      const targetDevfile = normalizeDevfile(
+        {
+          devfile,
+        } as FactoryResolver,
+        'https://github.com/user/test-repo.git?revision=feature-branch',
+        defaultComponents,
+        {},
+      );
+
+      expect(targetDevfile.metadata.name).toEqual(expect.stringContaining('test-repo'));
+      expect(targetDevfile.metadata.name).not.toEqual(expect.stringContaining('revision'));
+      expect(targetDevfile.metadata.name).not.toEqual(expect.stringContaining('feature-branch'));
+    });
+
+    it('should handle SSH URL with multiple query parameters', () => {
+      const devfile = {
+        schemaVersion: '2.2.2',
+      } as V230Devfile;
+
+      const targetDevfile = normalizeDevfile(
+        {
+          devfile,
+        } as FactoryResolver,
+        'git@github.com:eclipse-che/che-dashboard.git?revision=main&che-editor=che-code',
+        defaultComponents,
+        {},
+      );
+
+      expect(targetDevfile.metadata.name).toEqual(expect.stringContaining('che-dashboard'));
+      expect(targetDevfile.metadata.name).not.toEqual(expect.stringContaining('revision'));
+      expect(targetDevfile.metadata.name).not.toEqual(expect.stringContaining('che-editor'));
+    });
+
+    it('should prioritize scm_info clone_url over location with query params', () => {
+      const devfile = {
+        schemaVersion: '2.2.2',
+      } as V230Devfile;
+
+      const targetDevfile = normalizeDevfile(
+        {
+          devfile,
+          scm_info: {
+            clone_url: 'https://github.com/user/actual-repo.git',
+            scm_provider: 'github',
+          },
+        } as FactoryResolver,
+        'https://github.com/user/factory-url-repo.git?revision=branch',
+        defaultComponents,
+        {},
+      );
+
+      // Should use scm_info.clone_url (actual-repo), not location (factory-url-repo)
+      expect(targetDevfile.metadata.name).toEqual(expect.stringContaining('actual-repo'));
+      expect(targetDevfile.metadata.name).not.toEqual(expect.stringContaining('factory-url-repo'));
+    });
+
+    it('should handle URL without query parameters correctly', () => {
+      const devfile = {
+        schemaVersion: '2.2.2',
+      } as V230Devfile;
+
+      const targetDevfile = normalizeDevfile(
+        {
+          devfile,
+        } as FactoryResolver,
+        'https://github.com/user/simple-repo.git',
+        defaultComponents,
+        {},
+      );
+
+      expect(targetDevfile.metadata.name).toEqual(expect.stringContaining('simple-repo'));
+    });
+
+    it('should handle devfile with generateName and location with query params', () => {
+      const devfile = {
+        schemaVersion: '2.2.2',
+        metadata: {
+          generateName: 'custom-prefix-',
+        },
+      } as V230Devfile;
+
+      const targetDevfile = normalizeDevfile(
+        {
+          devfile,
+        } as FactoryResolver,
+        'git@github.com:user/repo.git?revision=test',
+        defaultComponents,
+        {},
+      );
+
+      // Should use generateName prefix, not project name
+      expect(targetDevfile.metadata.name).toEqual(expect.stringContaining('custom-prefix-'));
+      expect(targetDevfile.metadata.generateName).toBeUndefined();
+    });
+
+    it('should preserve existing devfile metadata name even with query params in location', () => {
+      const devfile = {
+        schemaVersion: '2.2.2',
+        metadata: {
+          name: 'predefined-workspace-name',
+        },
+      } as V230Devfile;
+
+      const targetDevfile = normalizeDevfile(
+        {
+          devfile,
+        } as FactoryResolver,
+        'git@github.com:user/repo.git?revision=branch&new',
+        defaultComponents,
+        {},
+      );
+
+      expect(targetDevfile.metadata.name).toEqual('predefined-workspace-name');
+    });
   });
 });
