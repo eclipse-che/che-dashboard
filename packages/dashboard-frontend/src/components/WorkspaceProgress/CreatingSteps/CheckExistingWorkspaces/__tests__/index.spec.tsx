@@ -81,6 +81,349 @@ describe('Creating steps, checking existing workspaces', () => {
     jest.useRealTimers();
   });
 
+  describe('getSameRepoWorkspaces method', () => {
+    it('should match workspace with propagated factory attributes (real data scenario)', async () => {
+      // This test uses the EXACT data structure from the bug report
+      const baseUrl =
+        'http://localhost:8080/dashboard/api/airgap-sample/devfile/download?id=java-lombok';
+
+      // The workspace has factory params with propagated attributes
+      // This causes workspace.source to include: che-editor and storageType parameters
+      const javaLombokWorkspace = new DevWorkspaceBuilder()
+        .withMetadata({
+          name: 'java-lombok',
+          namespace: 'admin-devspaces',
+          annotations: {
+            'che.eclipse.org/che-editor': 'che-incubator/che-code/latest',
+            [DEVWORKSPACE_DEVFILE_SOURCE]: dump({
+              url: {
+                location: baseUrl,
+              },
+              factory: {
+                params: `che-editor=che-incubator/che-code/latest&storageType=per-workspace&url=${baseUrl}`,
+              },
+            }),
+          },
+        })
+        .build();
+
+      // factoryParams.sourceUrl will now also include propagated attributes
+      const searchParams = new URLSearchParams({
+        [FACTORY_URL_ATTR]: baseUrl,
+        'che-editor': 'che-incubator/che-code/latest',
+        storageType: 'per-workspace',
+        [EXISTING_WORKSPACE_NAME]: 'dummy-workspace-name', // Trigger the existing workspace check
+      });
+
+      const store = new MockStoreBuilder()
+        .withDevWorkspaces({
+          workspaces: [javaLombokWorkspace],
+        })
+        .withFactoryResolver({
+          resolver: {
+            location: baseUrl,
+            devfile: {
+              schemaVersion: '2.2.2',
+              metadata: {
+                name: 'java-lombok',
+              },
+            } as devfileApi.Devfile,
+          },
+        })
+        .build();
+
+      renderComponent(store, searchParams);
+      await jest.advanceTimersByTimeAsync(MIN_STEP_DURATION_MS);
+
+      // Should find the workspace - both URLs now have propagated attributes
+      // - workspace.source = "baseUrl?id=java-lombok&che-editor=...&storageType=..."
+      // - factoryParams.sourceUrl = "baseUrl?id=java-lombok&che-editor=...&storageType=..."
+      const expectAlertItem = expect.objectContaining({
+        title: 'Existing workspace found',
+        children: `An existing workspace java-lombok created from the same repository has been found. Should you want to open the existing workspace or proceed to create a new one, please choose the corresponding action.`,
+        actionCallbacks: [
+          expect.objectContaining({
+            title: 'Open the existing workspace',
+            callback: expect.any(Function),
+          }),
+          expect.objectContaining({
+            title: 'Create a new workspace',
+            callback: expect.any(Function),
+          }),
+        ],
+      });
+
+      await waitFor(() => expect(mockOnError).toHaveBeenCalledWith(expectAlertItem));
+      expect(mockOnNextStep).not.toHaveBeenCalled();
+      expect(mockOnRestart).not.toHaveBeenCalled();
+    });
+
+    it('should filter workspaces by matching source URL with airgap sample data', () => {
+      const airgapSourceUrl =
+        'http://localhost:8080/dashboard/api/airgap-sample/devfile/download?id=java-lombok';
+
+      // Create workspace using the exact structure from the provided data
+      const javaLombokWorkspace = new DevWorkspaceBuilder()
+        .withMetadata({
+          name: 'java-lombok',
+          namespace: 'admin-devspaces',
+          annotations: {
+            'che.eclipse.org/che-editor': 'che-incubator/che-code/latest',
+            [DEVWORKSPACE_DEVFILE_SOURCE]: dump({
+              url: {
+                location: airgapSourceUrl,
+              },
+              factory: {
+                params: `che-editor=che-incubator/che-code/latest&storageType=per-workspace&url=${airgapSourceUrl}`,
+              },
+            }),
+          },
+        })
+        .withSpec({
+          template: {
+            projects: [
+              {
+                name: 'lombok-project-sample',
+                zip: {
+                  location:
+                    'CHE_DASHBOARD_INTERNAL_URL/dashboard/api/airgap-sample/project/download?id=java-lombok',
+                },
+              },
+            ],
+          },
+        })
+        .build();
+
+      // Create another workspace with a different source
+      const differentWorkspace = new DevWorkspaceBuilder()
+        .withMetadata({
+          name: 'different-project',
+          namespace: 'admin-devspaces',
+          annotations: {
+            [DEVWORKSPACE_DEVFILE_SOURCE]: dump({
+              factory: {
+                params: 'url=https://github.com/different/repo',
+              },
+            }),
+          },
+        })
+        .build();
+
+      // Create another workspace with the same source
+      const anotherJavaLombokWorkspace = new DevWorkspaceBuilder()
+        .withMetadata({
+          name: 'java-lombok-2',
+          namespace: 'admin-devspaces',
+          annotations: {
+            [DEVWORKSPACE_DEVFILE_SOURCE]: dump({
+              factory: {
+                params: `url=${airgapSourceUrl}&storageType=ephemeral`,
+              },
+            }),
+          },
+        })
+        .build();
+
+      const searchParams = new URLSearchParams({
+        [FACTORY_URL_ATTR]: airgapSourceUrl,
+        'che-editor': 'che-incubator/che-code/latest',
+        storageType: 'per-workspace',
+      });
+
+      const store = new MockStoreBuilder()
+        .withDevWorkspaces({
+          workspaces: [javaLombokWorkspace, differentWorkspace, anotherJavaLombokWorkspace],
+        })
+        .withFactoryResolver({
+          resolver: {
+            location: airgapSourceUrl,
+            devfile: {
+              schemaVersion: '2.2.2',
+              metadata: {
+                name: 'java-lombok',
+              },
+            } as devfileApi.Devfile,
+          },
+        })
+        .build();
+
+      renderComponent(store, searchParams);
+
+      // The component should find 2 workspaces with matching sources
+      // and show an alert with options to open them
+      waitFor(() => {
+        expect(mockOnError).toHaveBeenCalledWith(
+          expect.objectContaining({
+            title: expect.stringContaining('Existing workspace'),
+          }),
+        );
+      });
+    });
+
+    it('should return empty array when no workspaces match the source URL', () => {
+      const factoryUrl =
+        'http://localhost:8080/dashboard/api/airgap-sample/devfile/download?id=new';
+
+      // Create workspace with different source
+      const existingWorkspace = new DevWorkspaceBuilder()
+        .withMetadata({
+          name: 'existing-project',
+          namespace: 'admin-devspaces',
+          annotations: {
+            [DEVWORKSPACE_DEVFILE_SOURCE]: dump({
+              factory: {
+                params: 'url=https://github.com/different/repo',
+              },
+            }),
+          },
+        })
+        .build();
+
+      const searchParams = new URLSearchParams({
+        [FACTORY_URL_ATTR]: factoryUrl,
+        [POLICIES_CREATE_ATTR]: 'perclick',
+      });
+
+      const store = new MockStoreBuilder()
+        .withDevWorkspaces({
+          workspaces: [existingWorkspace],
+        })
+        .withFactoryResolver({
+          resolver: {
+            location: factoryUrl,
+            devfile: {
+              schemaVersion: '2.2.2',
+              metadata: {
+                name: 'new-project',
+              },
+            } as devfileApi.Devfile,
+          },
+        })
+        .build();
+
+      renderComponent(store, searchParams);
+
+      // With perclick policy, should proceed to next step without showing error
+      jest.advanceTimersByTimeAsync(MIN_STEP_DURATION_MS);
+
+      waitFor(() => {
+        expect(mockOnNextStep).toHaveBeenCalled();
+        expect(mockOnError).not.toHaveBeenCalled();
+      });
+    });
+
+    it('should handle workspaces with propagated factory attributes in source URL', () => {
+      const baseUrl = 'http://localhost:8080/dashboard/api/airgap-sample/devfile/download';
+      const fullSourceUrl = `${baseUrl}?id=java-lombok&che-editor=che-incubator/che-code/latest&storageType=per-workspace`;
+
+      // Workspace with propagated attributes in source
+      const workspaceWithAttrs = new DevWorkspaceBuilder()
+        .withMetadata({
+          name: 'java-lombok-with-attrs',
+          namespace: 'admin-devspaces',
+          annotations: {
+            [DEVWORKSPACE_DEVFILE_SOURCE]: dump({
+              factory: {
+                params: `che-editor=che-incubator/che-code/latest&storageType=per-workspace&url=${baseUrl}?id=java-lombok`,
+              },
+            }),
+          },
+        })
+        .build();
+
+      const searchParams = new URLSearchParams({
+        [FACTORY_URL_ATTR]: `${baseUrl}?id=java-lombok`,
+        'che-editor': 'che-incubator/che-code/latest',
+        storageType: 'per-workspace',
+      });
+
+      const store = new MockStoreBuilder()
+        .withDevWorkspaces({
+          workspaces: [workspaceWithAttrs],
+        })
+        .withFactoryResolver({
+          resolver: {
+            location: fullSourceUrl,
+            devfile: {
+              schemaVersion: '2.2.2',
+              metadata: {
+                name: 'java-lombok',
+              },
+            } as devfileApi.Devfile,
+          },
+        })
+        .build();
+
+      renderComponent(store, searchParams);
+
+      // Should find the workspace despite the propagated attributes
+      waitFor(() => {
+        expect(mockOnError).toHaveBeenCalledWith(
+          expect.objectContaining({
+            title: 'Existing workspace found',
+            actionCallbacks: expect.arrayContaining([
+              expect.objectContaining({
+                title: 'Open the existing workspace',
+              }),
+            ]),
+          }),
+        );
+      });
+    });
+
+    it('should correctly match URL location source type', () => {
+      const urlLocation =
+        'http://localhost:8080/dashboard/api/airgap-sample/devfile/download?id=test';
+
+      // Workspace with url.location source (not factory params)
+      const workspaceWithUrlLocation = new DevWorkspaceBuilder()
+        .withMetadata({
+          name: 'url-location-workspace',
+          namespace: 'admin-devspaces',
+          annotations: {
+            [DEVWORKSPACE_DEVFILE_SOURCE]: dump({
+              url: {
+                location: urlLocation,
+              },
+            }),
+          },
+        })
+        .build();
+
+      const searchParams = new URLSearchParams({
+        [FACTORY_URL_ATTR]: urlLocation,
+      });
+
+      const store = new MockStoreBuilder()
+        .withDevWorkspaces({
+          workspaces: [workspaceWithUrlLocation],
+        })
+        .withFactoryResolver({
+          resolver: {
+            location: urlLocation,
+            devfile: {
+              schemaVersion: '2.2.2',
+              metadata: {
+                name: 'test-project',
+              },
+            } as devfileApi.Devfile,
+          },
+        })
+        .build();
+
+      renderComponent(store, searchParams);
+
+      // Should find the workspace with url.location source
+      waitFor(() => {
+        expect(mockOnError).toHaveBeenCalledWith(
+          expect.objectContaining({
+            title: 'Existing workspace found',
+          }),
+        );
+      });
+    });
+  });
+
   describe('creating workspace from resources', () => {
     let searchParams: URLSearchParams;
 
@@ -221,11 +564,11 @@ describe('Creating steps, checking existing workspaces', () => {
         );
       });
 
-      it('should open the existing workspace created from the same repo and revision', async () => {
+      it('should open the existing workspace created from the same SSH repo with revision', async () => {
         searchParams.delete(DEV_WORKSPACE_ATTR);
         searchParams.set(EXISTING_WORKSPACE_NAME, 'project-1');
-        searchParams.set(FACTORY_URL_ATTR, 'https://github.com/eclipse-che/che-dashboard');
-        searchParams.set(REVISION_ATTR, 'revision');
+        searchParams.set(FACTORY_URL_ATTR, 'git@github.com:eclipse-che/che-dashboard.git');
+        searchParams.set(REVISION_ATTR, 'feature-branch');
 
         const resources: DevWorkspaceResources = [
           {
@@ -245,7 +588,7 @@ describe('Creating steps, checking existing workspaces', () => {
                   annotations: {
                     [DEVWORKSPACE_DEVFILE_SOURCE]: dump({
                       factory: {
-                        params: 'url=https://github.com/eclipse-che/che-dashboard',
+                        params: 'url=git@github.com:eclipse-che/che-dashboard.git',
                       },
                     }),
                   },
@@ -256,9 +599,9 @@ describe('Creating steps, checking existing workspaces', () => {
                       {
                         git: {
                           remotes: {
-                            origin: 'remote',
+                            origin: 'git@github.com:eclipse-che/che-dashboard.git',
                           },
-                          checkoutFrom: { revision: 'revision' },
+                          checkoutFrom: { revision: 'feature-branch' },
                         },
                         name: 'project-1',
                       },
@@ -273,7 +616,7 @@ describe('Creating steps, checking existing workspaces', () => {
                   annotations: {
                     [DEVWORKSPACE_DEVFILE_SOURCE]: dump({
                       factory: {
-                        params: 'url=https://github.com/eclipse-che/che-dashboard',
+                        params: 'url=git@github.com:eclipse-che/che-dashboard.git',
                       },
                     }),
                   },
@@ -290,7 +633,7 @@ describe('Creating steps, checking existing workspaces', () => {
           })
           .withFactoryResolver({
             resolver: {
-              location: 'https://github.com/eclipse-che/che-dashboard',
+              location: 'git@github.com:eclipse-che/che-dashboard.git',
               devfile: {
                 schemaVersion: '2.1.0',
                 metadata: {

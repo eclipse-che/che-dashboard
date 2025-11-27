@@ -14,6 +14,7 @@ import axios from 'axios';
 
 import { cheServerPrefix } from '@/services/backend-client/const';
 import { getParentDevfile } from '@/services/backend-client/parentDevfileApi';
+import { FactoryLocationAdapter } from '@/services/factory-location-adapter';
 import { FactoryResolver } from '@/services/helpers/types';
 
 export async function getFactoryResolver(
@@ -26,7 +27,17 @@ export async function getFactoryResolver(
   // In the case of the Azure repository, the search parameters are encoded twice and need to be decoded.
   if (url.indexOf('?') !== -1) {
     const [path, search] = url.split('?');
-    url = `${path}?${decodeURIComponent(search)}`;
+    if (FactoryLocationAdapter.isHttpLocation(url)) {
+      url = `${path}?${decodeURIComponent(search)}`;
+    } else {
+      // For SSH locations: extract ALL parameters to overrideParams and use only the path
+      const searchParams = new URLSearchParams(decodeURIComponent(search));
+      searchParams.forEach((value, key) => {
+        overrideParams = { ...overrideParams, [key]: value };
+      });
+      // SSH URLs should not have query parameters - use only the path
+      url = path;
+    }
   }
   const response = await axios.post(
     `${cheServerPrefix}/factory/resolver`,
