@@ -187,6 +187,88 @@ describe('fetch registry metadata', () => {
           },
         ]);
       });
+
+      it('should fetch getting started sample with SSH URL', async () => {
+        const metadata = {
+          displayName: 'Test Sample',
+          tags: [],
+          url: 'git@github.com:testuser/testdev.git',
+          icon: { mediatype: 'image/png', base64data: 'some-data' },
+        } as any as che.DevfileMetaData;
+        mockFetchData.mockResolvedValue([metadata]);
+
+        const resolved = await fetchRegistryMetadata(
+          `${baseUrl}/dashboard/api/getting-started-sample`,
+          false,
+        );
+
+        expect(mockFetchData).toHaveBeenCalledTimes(1);
+        expect(mockFetchData).toHaveBeenCalledWith(
+          `${baseUrl}/dashboard/api/getting-started-sample`,
+        );
+        expect(resolved).toEqual([
+          {
+            displayName: 'Test Sample',
+            tags: [],
+            links: {
+              v2: 'git@github.com:testuser/testdev.git',
+            },
+            icon: { mediatype: 'image/png', base64data: 'some-data' },
+          },
+        ]);
+      });
+
+      it('should fetch getting started sample with SSH URL without .git extension', async () => {
+        const metadata = {
+          displayName: 'Test Sample',
+          tags: [],
+          url: 'git@gitlab.com:namespace/project',
+          icon: { mediatype: 'image/png', base64data: 'some-data' },
+        } as any as che.DevfileMetaData;
+        mockFetchData.mockResolvedValue([metadata]);
+
+        const resolved = await fetchRegistryMetadata(
+          `${baseUrl}/dashboard/api/getting-started-sample`,
+          false,
+        );
+
+        expect(resolved).toEqual([
+          {
+            displayName: 'Test Sample',
+            tags: [],
+            links: {
+              v2: 'git@gitlab.com:namespace/project',
+            },
+            icon: { mediatype: 'image/png', base64data: 'some-data' },
+          },
+        ]);
+      });
+
+      it('should fetch getting started sample with HTTPS URL', async () => {
+        const metadata = {
+          displayName: 'Test Sample HTTPS',
+          tags: [],
+          url: 'https://github.com/testuser/testdev.git',
+          icon: { mediatype: 'image/png', base64data: 'some-data' },
+        } as any as che.DevfileMetaData;
+        mockFetchData.mockResolvedValue([metadata]);
+
+        const resolved = await fetchRegistryMetadata(
+          `${baseUrl}/dashboard/api/getting-started-sample`,
+          false,
+        );
+
+        expect(resolved).toEqual([
+          {
+            displayName: 'Test Sample HTTPS',
+            tags: [],
+            links: {
+              v2: 'https://github.com/testuser/testdev.git',
+            },
+            icon: { mediatype: 'image/png', base64data: 'some-data' },
+          },
+        ]);
+      });
     });
 
     it('should throw an error if fetched data is not array', async () => {
@@ -611,6 +693,30 @@ describe('devfile links', () => {
 
     // this one is not updated as already absolute
     expect(updated).toBe('http://asbolute.link');
+  });
+
+  it('should not update SSH URL with git@github.com', () => {
+    const object = 'git@github.com:testuser/testdev.git';
+    const updated = updateObjectLinks(object, baseUrl);
+
+    // SSH URLs should remain unchanged
+    expect(updated).toBe('git@github.com:testuser/testdev.git');
+  });
+
+  it('should not update SSH URL with git@gitlab.com', () => {
+    const object = 'git@gitlab.com:namespace/project.git';
+    const updated = updateObjectLinks(object, baseUrl);
+
+    // SSH URLs should remain unchanged
+    expect(updated).toBe('git@gitlab.com:namespace/project.git');
+  });
+
+  it('should not update SSH URL without .git extension', () => {
+    const object = 'git@github.com:user/repo';
+    const updated = updateObjectLinks(object, baseUrl);
+
+    // SSH URLs should remain unchanged
+    expect(updated).toBe('git@github.com:user/repo');
   });
 
   it('should update complex objects', () => {
