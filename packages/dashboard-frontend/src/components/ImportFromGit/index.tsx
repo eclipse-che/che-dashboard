@@ -36,6 +36,7 @@ import RepoOptionsAccordion from '@/components/ImportFromGit/RepoOptionsAccordio
 import UntrustedSourceModal from '@/components/UntrustedSourceModal';
 import { buildFactoryLoaderPath } from '@/preload/main';
 import { FactoryLocationAdapter } from '@/services/factory-location-adapter';
+import { Debounce } from '@/services/helpers/debounce';
 import {
   EDITOR_ATTR,
   EDITOR_IMAGE_ATTR,
@@ -65,9 +66,15 @@ export type State = {
 };
 
 class ImportFromGit extends React.PureComponent<Props, State> {
+  debounce: Debounce;
+  validated: ValidatedOptions;
+  location: string;
   constructor(props: Props) {
     super(props);
-
+    this.debounce = new Debounce();
+    this.debounce.subscribe(() => {
+      this.setState({ locationValidated: this.validated, location: this.location });
+    });
     this.state = {
       hasSshKeys: this.props.sshKeys.length > 0,
       locationValidated: ValidatedOptions.default,
@@ -134,8 +141,9 @@ class ImportFromGit extends React.PureComponent<Props, State> {
     if (this.state.location === location) {
       return;
     }
-    const validated = validateLocation(location, this.state.hasSshKeys);
-    this.setState({ locationValidated: validated, location });
+    this.validated = validateLocation(location, this.state.hasSshKeys);
+    this.location = location;
+    this.debounce.execute();
   }
 
   private getErrorMessage(location: string): string | React.ReactNode {

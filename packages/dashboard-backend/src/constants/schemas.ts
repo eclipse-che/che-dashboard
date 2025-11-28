@@ -273,6 +273,16 @@ export const namespacedSchema: JSONSchema7 = {
   required: ['namespace'],
 };
 
+export const gitBranchSchema: JSONSchema7 = {
+  type: 'object',
+  properties: {
+    url: {
+      type: 'string',
+    },
+  },
+  required: ['url'],
+};
+
 export const namespacedKubeConfigSchema: JSONSchema7 = {
   type: 'object',
   properties: {

@@ -70,6 +70,42 @@ export function isSupportedGitService(location: string): boolean {
   }
 }
 
+export function getRepositoryUrlFromLocation(location: string): string {
+  let repo: string = location;
+  let indexOf: number = 0;
+  let service: string = '';
+  try {
+    service = getSupportedGitService(location);
+  } catch (error) {
+    return repo;
+  }
+  switch (service) {
+    case 'github':
+      indexOf = location.indexOf('/tree');
+      if (indexOf > 0) {
+        repo = location.substring(0, indexOf);
+      }
+      break;
+    case 'gitlab':
+      indexOf = location.indexOf('/-/tree');
+      if (indexOf > 0) {
+        repo = location.substring(0, indexOf);
+      }
+      break;
+    case 'bitbucket-server':
+      repo = location.replace('users/', 'scm/~').replace('repos/', '');
+      break;
+    case 'azure-devops':
+      indexOf = location.indexOf('?');
+      if (indexOf > 0) {
+        repo = location.substring(0, indexOf);
+      }
+      break;
+  }
+
+  return repo;
+}
+
 export function getBranchFromLocation(location: string): string | undefined {
   let branch: string | undefined = undefined;
   const pathname = new URL(location).pathname.replace(/^\//, '').replace(/\/$/, '').split('/');

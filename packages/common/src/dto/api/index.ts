@@ -90,6 +90,10 @@ export interface IGitConfig {
   };
 }
 
+export interface IGitBranches {
+  branches: string[];
+}
+
 export interface IWorkspacesDefaultPlugins {
   editor: string;
   plugins: string[];
