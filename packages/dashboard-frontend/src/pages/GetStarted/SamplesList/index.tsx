@@ -25,6 +25,7 @@ import { connect, ConnectedProps } from 'react-redux';
 import SamplesListGallery from '@/pages/GetStarted/SamplesList/Gallery';
 import SamplesListToolbar from '@/pages/GetStarted/SamplesList/Toolbar';
 import { ROUTE } from '@/Routes';
+import { FactoryLocationAdapter } from '@/services/factory-location-adapter';
 import {
   DEV_WORKSPACE_ATTR,
   EDITOR_ATTR,
@@ -97,9 +98,20 @@ class SamplesList extends React.PureComponent<Props, State> {
 
   private async handleSampleCardClick(metadata: DevfileRegistryMetadata): Promise<void> {
     const { editorDefinition, editorImage } = this.props;
-    const url = new URL(metadata.links.v2);
+
+    // Handle SSH URLs (git@...) and HTTP(S) URLs differently
+    let factoryUrl: string;
+    if (FactoryLocationAdapter.isSshLocation(metadata.links.v2)) {
+      // SSH URLs should be used as-is
+      factoryUrl = metadata.links.v2;
+    } else {
+      // HTTP(S) URLs need to be parsed and encoded properly
+      const url = new URL(metadata.links.v2);
+      factoryUrl = `${url.origin}${url.pathname}${encodeURIComponent(url.search)}`;
+    }
+
     const factoryParams: { [key: string]: string } = {
-      [FACTORY_URL_ATTR]: `${url.origin}${url.pathname}${encodeURIComponent(url.search)}`,
+      [FACTORY_URL_ATTR]: factoryUrl,
     };
 
     const _editorDefinition = editorDefinition || this.props.defaultEditorId;

@@ -13,6 +13,7 @@
 import common from '@eclipse-che/common';
 
 import { getDataResolver } from '@/services/backend-client/dataResolverApi';
+import { FactoryLocationAdapter } from '@/services/factory-location-adapter';
 import { che } from '@/services/models';
 import { fetchData } from '@/services/registry/fetchData';
 import { isDevfileMetaData } from '@/services/registry/types';
@@ -107,7 +108,8 @@ export function resolveLinks(
 
 export function updateObjectLinks(object: any, baseUrl): any {
   if (typeof object === 'string') {
-    if (!object.startsWith('http')) {
+    // Don't modify absolute URLs (http/https) or SSH URLs (git@...)
+    if (!object.startsWith('http') && !FactoryLocationAdapter.isSshLocation(object)) {
       object = createURL(object, baseUrl).href;
     }
   } else {
