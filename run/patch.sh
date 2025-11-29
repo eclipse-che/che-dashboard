@@ -15,13 +15,81 @@ fi
 TAG=$(git branch --show-current)'_'$(date '+%Y_%m_%d_%H_%M_%S')
 CHE_DASHBOARD_IMAGE="${IMAGE_REGISTRY_HOST}/${IMAGE_REGISTRY_USER_NAME}/che-dashboard:${TAG}"
 
-echo "[INFO] Build a new image '${CHE_DASHBOARD_IMAGE}'..."
+# Detect container engine using container_tool.sh
+echo "[INFO] Detecting container engine..."
+CONTAINER_ENGINE=$("${PWD}/scripts/container_tool.sh" detect)
 
-"${PWD}/scripts/container_tool.sh" build . -f build/dockerfiles/skaffold.Dockerfile -t $CHE_DASHBOARD_IMAGE
+if [ $? -ne 0 ] || [ -z "$CONTAINER_ENGINE" ]; then
+  echo "[ERROR] Failed to detect container engine."
+  echo "[ERROR] Please install Docker or Podman and ensure it's running."
+  exit 1
+fi
 
-echo "[INFO] Push the image '${CHE_DASHBOARD_IMAGE}'..."
+echo "[INFO] Using container engine: ${CONTAINER_ENGINE}"
 
-"${PWD}/scripts/container_tool.sh" push $CHE_DASHBOARD_IMAGE
+# Determine if multiarch build is requested
+PLATFORMS="${PLATFORMS:-linux/amd64,linux/arm64}"
+MULTIARCH="${MULTIARCH:-true}"
+
+if [[ "$MULTIARCH" == "true" ]]; then
+  echo "[INFO] Building multi-architecture image for platforms: ${PLATFORMS}"
+  
+  if [[ "$CONTAINER_ENGINE" == "docker" ]]; then
+    # Docker buildx for multiarch
+    echo "[INFO] Setting up Docker buildx..."
+    
+    # Create buildx builder if it doesn't exist
+    if ! docker buildx ls | grep -q multiarch-builder; then
+      echo "[INFO] Creating multiarch-builder..."
+      docker buildx create --name multiarch-builder --use --platform "${PLATFORMS}"
+    else
+      echo "[INFO] Using existing multiarch-builder..."
+      docker buildx use multiarch-builder
+    fi
+    
+    # Bootstrap the builder
+    docker buildx inspect --bootstrap
+    
+    # Build and push in one command for multiarch
+    echo "[INFO] Building and pushing multi-arch image '${CHE_DASHBOARD_IMAGE}'..."
+    docker buildx build . \
+      -f build/dockerfiles/skaffold.Dockerfile \
+      --platform "${PLATFORMS}" \
+      -t "${CHE_DASHBOARD_IMAGE}" \
+      --push
+      
+  elif [[ "$CONTAINER_ENGINE" == "podman" ]]; then
+    # Podman multiarch build
+    echo "[INFO] Building and pushing multi-arch image '${CHE_DASHBOARD_IMAGE}'..."
+    
+    # Create manifest
+    podman manifest create "${CHE_DASHBOARD_IMAGE}" || true
+    
+    # Build for each platform
+    IFS=',' read -ra PLATFORM_ARRAY <<< "$PLATFORMS"
+    for PLATFORM in "${PLATFORM_ARRAY[@]}"; do
+      echo "[INFO] Building for platform: ${PLATFORM}"
+      podman build . \
+        -f build/dockerfiles/skaffold.Dockerfile \
+        --platform "${PLATFORM}" \
+        --manifest "${CHE_DASHBOARD_IMAGE}"
+    done
+    
+    # Push manifest
+    echo "[INFO] Pushing manifest..."
+    podman manifest push "${CHE_DASHBOARD_IMAGE}" "docker://${CHE_DASHBOARD_IMAGE}"
+  fi
+  
+else
+  # Single architecture build (legacy mode)
+  echo "[INFO] Building single-architecture image '${CHE_DASHBOARD_IMAGE}'..."
+  
+  "${PWD}/scripts/container_tool.sh" build . -f build/dockerfiles/skaffold.Dockerfile -t $CHE_DASHBOARD_IMAGE
+  
+  echo "[INFO] Pushing the image '${CHE_DASHBOARD_IMAGE}'..."
+  
+  "${PWD}/scripts/container_tool.sh" push $CHE_DASHBOARD_IMAGE
+fi
 
 echo "[INFO] Patching checluster with the new dashboard image '${CHE_DASHBOARD_IMAGE}'..."
 

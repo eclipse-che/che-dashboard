@@ -17,6 +17,7 @@ import { DEVWORKSPACE_UPDATING_TIMESTAMP_ANNOTATION } from '@/services/devfileAp
 import { DEVWORKSPACE_STORAGE_TYPE_ATTR } from '@/services/devfileApi/devWorkspace/spec/template';
 import { FactoryLocationAdapter } from '@/services/factory-location-adapter';
 import {
+  EXISTING_WORKSPACE_NAME,
   FACTORY_URL_ATTR,
   PROPAGATE_FACTORY_ATTRS,
   REVISION_ATTR,
@@ -199,7 +200,11 @@ export class WorkspaceAdapter<T extends devfileApi.DevWorkspace> implements Work
       factoryParams.delete(FACTORY_URL_ATTR);
       if (location) {
         const isSshLocation = FactoryLocationAdapter.isSshLocation(location);
-        const attrs = [...PROPAGATE_FACTORY_ATTRS].sort();
+        // Filter out attributes that should not be part of source URL comparison
+        // EXISTING_WORKSPACE_NAME is for flow control, not source identification
+        const attrs = [...PROPAGATE_FACTORY_ATTRS]
+          .filter(attr => attr !== EXISTING_WORKSPACE_NAME)
+          .sort();
 
         attrs.forEach(attr => {
           if (factoryParams.has(attr)) {

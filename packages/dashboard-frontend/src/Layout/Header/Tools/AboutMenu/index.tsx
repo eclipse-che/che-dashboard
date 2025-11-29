@@ -20,6 +20,7 @@ import React from 'react';
 
 import { AboutModal } from '@/Layout/Header/Tools/AboutMenu/Modal';
 import { BrandingData } from '@/services/bootstrap/branding.constant';
+import { buildLogoSrc } from '@/services/helpers/brandingLogo';
 
 type Props = {
   branding: BrandingData;
@@ -95,10 +96,7 @@ export class AboutMenu extends React.PureComponent<Props, State> {
 
     const { logoFile, name, productVersion } = this.props.branding;
 
-    const logoSrc =
-      dashboardLogo !== undefined
-        ? `data:${dashboardLogo.mediatype};base64,${dashboardLogo.base64data}`
-        : logoFile;
+    const logoSrc = buildLogoSrc(dashboardLogo, logoFile);
 
     return (
       <>

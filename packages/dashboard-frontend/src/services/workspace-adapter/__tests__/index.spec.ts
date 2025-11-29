@@ -342,6 +342,31 @@ describe('for DevWorkspace', () => {
           'https://github.com/test/repo?che-editor=code&storageType=ephemeral',
         );
       });
+
+      it('should exclude EXISTING_WORKSPACE_NAME from propagated attributes', () => {
+        // This test verifies the fix for workspace source URL comparison
+        // EXISTING_WORKSPACE_NAME should be excluded to match buildFactoryParams behavior
+        const devWorkspace = new DevWorkspaceBuilder()
+          .withMetadata({
+            name: 'test-workspace',
+            annotations: {
+              [DEVWORKSPACE_DEVFILE_SOURCE]: dump({
+                factory: {
+                  params:
+                    'url=https://github.com/test/repo&che-editor=code&existing=test-ws&storageType=per-workspace',
+                },
+              }),
+            },
+          })
+          .build();
+        const workspace = constructWorkspace(devWorkspace);
+        // EXISTING_WORKSPACE_NAME (existing) should NOT be included in source
+        expect(workspace.source).not.toContain('existing=test-ws');
+        // Other propagated attributes should still be included
+        expect(workspace.source).toEqual(
+          'https://github.com/test/repo?che-editor=code&storageType=per-workspace',
+        );
+      });
     });
 
     describe('SSH location revision handling', () => {
