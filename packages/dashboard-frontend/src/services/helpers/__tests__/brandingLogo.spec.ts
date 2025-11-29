@@ -10,7 +10,7 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import { buildLogoSrc } from '../brandingLogo';
+import { buildLogoSrc } from '@/services/helpers/brandingLogo';
 
 describe('brandingLogo helper', () => {
   const fallbackLogo = './assets/branding/che-logo.svg';
@@ -61,7 +61,8 @@ describe('brandingLogo helper', () => {
 
   describe('when dashboardLogo is PNG', () => {
     it('should return base64 data URL', () => {
-      const base64data = 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==';
+      const base64data =
+        'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==';
       const dashboardLogo = {
         base64data,
         mediatype: 'image/png',
@@ -75,7 +76,8 @@ describe('brandingLogo helper', () => {
 
   describe('when dashboardLogo is JPEG', () => {
     it('should return base64 data URL', () => {
-      const base64data = '/9j/4AAQSkZJRgABAQEASABIAAD/2wBDAP//////////////////////////////////////////////////////////////////////////////////////wgALCAABAAEBAREA/8QAFAABAAAAAAAAAAAAAAAAAAAAA//aAAgBAQABPxA=';
+      const base64data =
+        '/9j/4AAQSkZJRgABAQEASABIAAD/2wBDAP//////////////////////////////////////////////////////////////////////////////////////wgALCAABAAEBAREA/8QAFAABAAAAAAAAAAAAAAAAAAAAA//aAAgBAQABPxA=';
       const dashboardLogo = {
         base64data,
         mediatype: 'image/jpeg',
@@ -89,7 +91,8 @@ describe('brandingLogo helper', () => {
 
   describe('SVG encoding quality', () => {
     it('should preserve SVG structure after encoding/decoding', () => {
-      const svgContent = '<svg width="100" height="100"><rect x="10" y="10" width="80" height="80" fill="red"/></svg>';
+      const svgContent =
+        '<svg width="100" height="100"><rect x="10" y="10" width="80" height="80" fill="red"/></svg>';
       const base64Svg = btoa(svgContent);
       const dashboardLogo = {
         base64data: base64Svg,
@@ -97,7 +100,7 @@ describe('brandingLogo helper', () => {
       };
 
       const result = buildLogoSrc(dashboardLogo, fallbackLogo);
-      
+
       // Extract the encoded part
       const encodedPart = result.replace('data:image/svg+xml;charset=utf-8,', '');
       const decoded = decodeURIComponent(encodedPart);
@@ -106,4 +109,3 @@ describe('brandingLogo helper', () => {
     });
   });
 });
-

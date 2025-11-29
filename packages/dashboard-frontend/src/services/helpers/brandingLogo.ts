@@ -42,4 +42,3 @@ export function buildLogoSrc(
   // For non-SVG formats (PNG, JPEG, etc.), use base64 as-is
   return `data:${dashboardLogo.mediatype};base64,${dashboardLogo.base64data}`;
 }
-
