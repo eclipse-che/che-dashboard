@@ -148,6 +148,21 @@ div.main-page-loader .ide-page-loader-content img {
 
 .pf-c-page__header-brand-link .pf-c-brand {
   height: 3.17rem;
+  max-width: 200px;
+  width: auto;
+  object-fit: contain;
+  /* Improve rendering quality for scaled images */
+  image-rendering: -webkit-optimize-contrast;
+  image-rendering: crisp-edges;
+}
+
+/* Ensure About modal logo renders with high quality */
+.pf-c-about-modal-box__brand img {
+  max-width: 100%;
+  height: auto;
+  object-fit: contain;
+  image-rendering: -webkit-optimize-contrast;
+  image-rendering: crisp-edges;
 }
 
 @keyframes hide {

@@ -29,6 +29,7 @@ import { ROUTE } from '@/Routes';
 import { AppAlerts } from '@/services/alerts/appAlerts';
 import { IssuesReporterService } from '@/services/bootstrap/issuesReporter';
 import { WarningsReporterService } from '@/services/bootstrap/warningsReporter';
+import { buildLogoSrc } from '@/services/helpers/brandingLogo';
 import { signOut } from '@/services/helpers/login';
 import { RootState } from '@/store';
 import { selectBranding } from '@/store/Branding/selectors';
@@ -137,10 +138,7 @@ export class Layout extends React.PureComponent<Props, State> {
     const { isHeaderVisible, isSidebarVisible } = this.state;
     const { history, branding, dashboardLogo } = this.props;
 
-    const logoSrc =
-      dashboardLogo !== undefined
-        ? `data:${dashboardLogo.mediatype};base64,${dashboardLogo.base64data}`
-        : branding.logoFile;
+    const logoSrc = buildLogoSrc(dashboardLogo, branding.logoFile);
 
     return (
       <ToggleBarsContext.Provider
