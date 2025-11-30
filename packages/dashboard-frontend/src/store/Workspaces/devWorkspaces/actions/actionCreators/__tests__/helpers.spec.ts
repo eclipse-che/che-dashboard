@@ -13,13 +13,11 @@
 import { helpers } from '@eclipse-che/common';
 
 import { container } from '@/inversify.config';
-import devfileApi, * as devfileApiService from '@/services/devfileApi';
-import { devWorkspaceKind } from '@/services/devfileApi/devWorkspace';
+import devfileApi from '@/services/devfileApi';
 import { compareStringsAsNumbers } from '@/services/helpers/resourceVersion';
 import {
   COMPONENT_UPDATE_POLICY,
   DEVWORKSPACE_DEVFILE,
-  DEVWORKSPACE_NEXT_START_ANNOTATION,
   DevWorkspaceClient,
   REGISTRY_URL,
 } from '@/services/workspace-client/devworkspace/devWorkspaceClient';
@@ -28,7 +26,6 @@ import { DevWorkspaceBuilder } from '@/store/__mocks__/devWorkspaceBuilder';
 import { selectRunningWorkspacesLimit } from '@/store/ClusterConfig/selectors';
 import { RunningWorkspacesExceededError } from '@/store/Workspaces/devWorkspaces';
 import {
-  checkDevWorkspaceNextStartAnnotation,
   checkRunningWorkspacesLimit,
   getDevWorkspaceClient,
   getDevWorkspaceFromResources,
@@ -40,10 +37,6 @@ import { selectRunningDevWorkspacesLimitExceeded } from '@/store/Workspaces/devW
 
 jest.mock('@eclipse-che/common');
 jest.mock('@/inversify.config');
-jest.mock('@/services/devfileApi', () => ({
-  ...jest.requireActual('@/services/devfileApi'),
-  isDevWorkspace: jest.fn(),
-}));
 jest.mock('@/services/helpers/resourceVersion');
 jest.mock('@/store/ClusterConfig/selectors');
 jest.mock('@/store/Workspaces/devWorkspaces/selectors');
@@ -129,67 +122,6 @@ describe('devWorkspaces, helpers', () => {
 
       const result = getWarningFromResponse(error);
       expect(result).toBe('Error message without attributes');
-    });
-  });
-
-  describe('checkDevWorkspaceNextStartAnnotation', () => {
-    let devWorkspaceClient: DevWorkspaceClient;
-    let workspace: devfileApi.DevWorkspace;
-
-    beforeEach(() => {
-      devWorkspaceClient = {
-        update: jest.fn().mockResolvedValue({}),
-      } as unknown as DevWorkspaceClient;
-
-      workspace = {
-        metadata: {
-          annotations: {},
-        },
-        spec: {
-          template: {},
-          started: false,
-        },
-      } as devfileApi.DevWorkspace;
-    });
-
-    it('should not update workspace if annotation is not present', async () => {
-      await checkDevWorkspaceNextStartAnnotation(devWorkspaceClient, workspace);
-      expect(devWorkspaceClient.update).not.toHaveBeenCalled();
-    });
-
-    it('should update workspace when annotation is present and valid', async () => {
-      const storedDevWorkspace = {
-        kind: devWorkspaceKind,
-        spec: {
-          template: { components: [] },
-        },
-      };
-      workspace.metadata.annotations![DEVWORKSPACE_NEXT_START_ANNOTATION] =
-        JSON.stringify(storedDevWorkspace);
-      jest.spyOn(devfileApiService, 'isDevWorkspace').mockReturnValueOnce(true);
-
-      await checkDevWorkspaceNextStartAnnotation(devWorkspaceClient, workspace);
-
-      expect(devWorkspaceClient.update).toHaveBeenCalledWith(workspace);
-      expect(workspace.spec.template).toEqual(storedDevWorkspace.spec.template);
-      expect(workspace.spec.started).toBe(false);
-      expect(workspace.metadata.annotations![DEVWORKSPACE_NEXT_START_ANNOTATION]).toBeUndefined();
-    });
-
-    it('should throw error if storedDevWorkspace is invalid', async () => {
-      const storedDevWorkspace = {};
-      workspace.metadata.annotations![DEVWORKSPACE_NEXT_START_ANNOTATION] =
-        JSON.stringify(storedDevWorkspace);
-      jest.spyOn(devfileApiService, 'isDevWorkspace').mockReturnValueOnce(false);
-      console.error = jest.fn();
-
-      await expect(
-        checkDevWorkspaceNextStartAnnotation(devWorkspaceClient, workspace),
-      ).rejects.toThrow(
-        'Unexpected error happened. Please check the Console tab of Developer tools.',
-      );
-
-      expect(devWorkspaceClient.update).not.toHaveBeenCalled();
     });
   });
 

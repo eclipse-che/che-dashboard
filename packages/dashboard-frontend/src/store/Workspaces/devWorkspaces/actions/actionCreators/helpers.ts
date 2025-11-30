@@ -14,8 +14,7 @@ import { helpers } from '@eclipse-che/common';
 import cloneDeep from 'lodash/cloneDeep';
 
 import { container } from '@/inversify.config';
-import devfileApi, { isDevWorkspace } from '@/services/devfileApi';
-import { devWorkspaceKind } from '@/services/devfileApi/devWorkspace';
+import devfileApi from '@/services/devfileApi';
 import { FactoryLocationAdapter } from '@/services/factory-location-adapter';
 import { FactoryParams } from '@/services/helpers/factoryFlow/buildFactoryParams';
 import { compareStringsAsNumbers } from '@/services/helpers/resourceVersion';
@@ -24,7 +23,6 @@ import {
   COMPONENT_UPDATE_POLICY,
   DEVWORKSPACE_BOOTSTRAP,
   DEVWORKSPACE_DEVFILE,
-  DEVWORKSPACE_NEXT_START_ANNOTATION,
   DevWorkspaceClient,
   REGISTRY_URL,
 } from '@/services/workspace-client/devworkspace/devWorkspaceClient';
@@ -61,34 +59,6 @@ export function getWarningFromResponse(e: unknown): string | undefined {
     return `${provider} might not be operational, please check the provider's status page.`;
   } else {
     return response.data.message;
-  }
-}
-
-/**
- * Update the DevWorkspace with the next start annotation if it exists.
- */
-export async function checkDevWorkspaceNextStartAnnotation(
-  devWorkspaceClient: DevWorkspaceClient,
-  workspace: devfileApi.DevWorkspace,
-) {
-  if (workspace.metadata.annotations?.[DEVWORKSPACE_NEXT_START_ANNOTATION]) {
-    const storedDevWorkspace = JSON.parse(
-      workspace.metadata.annotations[DEVWORKSPACE_NEXT_START_ANNOTATION],
-    ) as unknown;
-    if (!isDevWorkspace(storedDevWorkspace)) {
-      console.error(
-        `The stored DevWorkspace either has wrong "kind" (not ${devWorkspaceKind}) or lacks some of mandatory fields: `,
-        storedDevWorkspace,
-      );
-      throw new Error(
-        'Unexpected error happened. Please check the Console tab of Developer tools.',
-      );
-    }
-
-    delete workspace.metadata.annotations[DEVWORKSPACE_NEXT_START_ANNOTATION];
-    workspace.spec.template = storedDevWorkspace.spec.template;
-    workspace.spec.started = false;
-    await devWorkspaceClient.update(workspace);
   }
 }
 

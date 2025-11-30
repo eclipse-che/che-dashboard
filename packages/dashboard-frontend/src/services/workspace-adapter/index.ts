@@ -144,7 +144,19 @@ export class WorkspaceAdapter<T extends devfileApi.DevWorkspace> implements Work
   }
 
   set name(name: string) {
-    console.error('Not implemented: set name of the devworkspace.');
+    if (name) {
+      if (!this.workspace.metadata.labels) {
+        this.workspace.metadata.labels = {};
+      }
+      this.workspace.metadata.labels[DEVWORKSPACE_LABEL_METADATA_NAME] = name;
+    } else {
+      if (this.workspace.metadata.labels?.[DEVWORKSPACE_LABEL_METADATA_NAME]) {
+        delete this.workspace.metadata.labels[DEVWORKSPACE_LABEL_METADATA_NAME];
+        if (Object.keys(this.workspace.metadata.labels).length === 0) {
+          delete this.workspace.metadata.labels;
+        }
+      }
+    }
   }
 
   get namespace(): string {

@@ -13,6 +13,7 @@
 import { FormGroup } from '@patternfly/react-core';
 import React from 'react';
 
+import { CheCopyToClipboard } from '@/components/CheCopyToClipboard';
 import overviewStyles from '@/pages/WorkspaceDetails/OverviewTab/index.module.css';
 
 type Props = {
@@ -21,9 +22,12 @@ type Props = {
 
 export class InfrastructureNamespaceFormGroup extends React.PureComponent<Props> {
   public render(): React.ReactElement {
+    const { namespace } = this.props;
+
     return (
       <FormGroup label="Kubernetes Namespace" fieldId="infrastructure-namespace">
-        <div className={overviewStyles.readonly}>{this.props.namespace}</div>
+        <div className={overviewStyles.readonly}>{namespace}</div>
+        <CheCopyToClipboard text={namespace} />
       </FormGroup>
     );
   }

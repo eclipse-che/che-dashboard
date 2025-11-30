@@ -28,11 +28,13 @@ describe('WorkspaceNameLink', () => {
   let storeBuilder: MockStoreBuilder;
   let devWorkspace: devfileApi.DevWorkspace;
   let workspace: Workspace;
+  const mockOnSave = jest.fn();
 
   beforeEach(() => {
     devWorkspace = new DevWorkspaceBuilder().withName('my-project').build();
     workspace = constructWorkspace(devWorkspace);
     storeBuilder = new MockStoreBuilder().withDevWorkspaces({ workspaces: [devWorkspace] });
+    mockOnSave.mockClear();
   });
 
   test('screenshot when cluster console is available', () => {
@@ -48,21 +50,26 @@ describe('WorkspaceNameLink', () => {
         ],
       })
       .build();
-    const snapshot = createSnapshot(store, workspace);
+    const snapshot = createSnapshot(store, workspace, true, mockOnSave);
     expect(snapshot.toJSON()).toMatchSnapshot();
   });
 
   test('screenshot when cluster console is NOT available', () => {
     const store = storeBuilder.build();
-    const snapshot = createSnapshot(store, workspace);
+    const snapshot = createSnapshot(store, workspace, true, mockOnSave);
     expect(snapshot.toJSON()).toMatchSnapshot();
   });
 });
 
-function getComponent(store: Store, workspace: Workspace) {
+function getComponent(
+  store: Store,
+  workspace: Workspace,
+  readonly: boolean,
+  onSave: (workspaceName: string) => void,
+) {
   return (
     <Provider store={store}>
-      <WorkspaceNameLink workspace={workspace} />
+      <WorkspaceNameLink workspace={workspace} readonly={readonly} onSave={onSave} />
     </Provider>
   );
 }

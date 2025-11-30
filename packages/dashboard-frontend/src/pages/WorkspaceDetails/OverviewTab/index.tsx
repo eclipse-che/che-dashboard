@@ -84,21 +84,36 @@ export class OverviewTab extends React.Component<Props, State> {
     this.setState({ storageType });
   }
 
+  private async handleWorkspaceNameSave(workspaceName: string): Promise<void> {
+    const workspaceClone = constructWorkspace(cloneDeep(this.props.workspace.ref));
+    workspaceClone.name = workspaceName;
+    await this.props.onSave(workspaceClone);
+  }
+
   public render(): React.ReactElement {
     const { storageType, parentStorageType } = this.state;
     const { workspace } = this.props;
     const namespace = workspace.namespace;
     const projects = workspace.projects;
     const isDeprecated = workspace.isDeprecated;
+    const isReadonly =
+      isDeprecated ||
+      workspace.status === DevWorkspaceStatus.TERMINATING ||
+      (workspace.status !== DevWorkspaceStatus.STOPPED &&
+        workspace.status !== DevWorkspaceStatus.FAILED);
 
     return (
       <React.Fragment>
         <PageSection variant={PageSectionVariants.light}>
           <Form isHorizontal onSubmit={e => e.preventDefault()}>
-            <WorkspaceNameFormGroup workspace={workspace} />
+            <WorkspaceNameFormGroup
+              workspace={workspace}
+              readonly={isReadonly}
+              onSave={workspaceName => this.handleWorkspaceNameSave(workspaceName)}
+            />
             <InfrastructureNamespaceFormGroup namespace={namespace} />
             <StorageTypeFormGroup
-              readonly={isDeprecated || workspace.status === DevWorkspaceStatus.TERMINATING}
+              readonly={isReadonly}
               storageType={storageType}
               parentStorageType={parentStorageType}
               onSave={storageType => this.handleStorageSave(storageType)}
