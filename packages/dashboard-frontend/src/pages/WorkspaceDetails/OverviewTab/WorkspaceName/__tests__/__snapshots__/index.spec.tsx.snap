@@ -53,11 +53,6 @@ exports[`WorkspaceNameLink screenshot when cluster console is NOT available 1`] 
           name="Copy to Clipboard"
           onClick={[Function]}
           role={null}
-          style={
-            {
-              "paddingLeft": "8px",
-            }
-          }
           type="button"
         >
           <span
@@ -178,11 +173,6 @@ exports[`WorkspaceNameLink screenshot when cluster console is available 1`] = `
           name="Copy to Clipboard"
           onClick={[Function]}
           role={null}
-          style={
-            {
-              "paddingLeft": "8px",
-            }
-          }
           type="button"
         >
           <span

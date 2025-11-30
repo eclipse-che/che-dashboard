@@ -313,7 +313,10 @@ class WorkspaceNameFormGroup extends React.PureComponent<Props, State> {
             </Button>
           </span>
         )}
-        <CheCopyToClipboard text={metadataName} style={{ paddingLeft: '8px' }} />
+        <CheCopyToClipboard
+          text={metadataName}
+          style={readonly ? undefined : { paddingLeft: '8px' }}
+        />
         {this.getEditModal()}
       </FormGroup>
     );
