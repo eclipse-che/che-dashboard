@@ -393,6 +393,44 @@ export class DevWorkspaceClient {
           path: nextStartAnnotationPath,
         });
       }
+
+      // Update workspace custom name if it has changed
+      const currentCustomName =
+        onClusterWorkspace.metadata.labels?.[DEVWORKSPACE_LABEL_METADATA_NAME];
+      const newCustomName = workspace.metadata.labels?.[DEVWORKSPACE_LABEL_METADATA_NAME];
+      if (newCustomName !== currentCustomName) {
+        const customNamePath = '/metadata/labels/' + this.escape(DEVWORKSPACE_LABEL_METADATA_NAME);
+        if (newCustomName) {
+          // Ensure labels object exists
+          if (!onClusterWorkspace.metadata.labels) {
+            patch.push({
+              op: 'add',
+              path: '/metadata/labels',
+              value: {},
+            });
+          }
+          // Add or replace the custom name label
+          if (currentCustomName === undefined) {
+            patch.push({
+              op: 'add',
+              path: customNamePath,
+              value: newCustomName,
+            });
+          } else {
+            patch.push({
+              op: 'replace',
+              path: customNamePath,
+              value: newCustomName,
+            });
+          }
+        } else if (currentCustomName !== undefined) {
+          // Remove the custom name label if it was cleared
+          patch.push({
+            op: 'remove',
+            path: customNamePath,
+          });
+        }
+      }
     }
 
     const { devWorkspace } = await DwApi.patchWorkspace(namespace, name, patch);
@@ -404,6 +442,20 @@ export class DevWorkspaceClient {
       op: 'replace',
       path: '/metadata/annotations',
       value: workspace.metadata.annotations || {},
+    };
+    const { devWorkspace } = await DwApi.patchWorkspace(
+      workspace.metadata.namespace,
+      workspace.metadata.name,
+      [patch],
+    );
+    return devWorkspace;
+  }
+
+  async updateLabels(workspace: devfileApi.DevWorkspace): Promise<devfileApi.DevWorkspace> {
+    const patch: api.IPatch = {
+      op: 'replace',
+      path: '/metadata/labels',
+      value: workspace.metadata.labels || {},
     };
     const { devWorkspace } = await DwApi.patchWorkspace(
       workspace.metadata.namespace,
