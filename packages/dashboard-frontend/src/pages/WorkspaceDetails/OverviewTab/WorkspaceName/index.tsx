@@ -12,21 +12,48 @@
 
 import { ApplicationId } from '@eclipse-che/common';
 import { Button, FormGroup } from '@patternfly/react-core';
-import { ExternalLinkSquareAltIcon } from '@patternfly/react-icons';
+import { CopyIcon, ExternalLinkSquareAltIcon } from '@patternfly/react-icons';
 import React from 'react';
+import CopyToClipboard from 'react-copy-to-clipboard';
 import { connect, ConnectedProps } from 'react-redux';
 
+import { CheTooltip } from '@/components/CheTooltip';
 import overviewStyles from '@/pages/WorkspaceDetails/OverviewTab/index.module.css';
 import { Workspace, WorkspaceAdapter } from '@/services/workspace-adapter';
 import { RootState } from '@/store';
 import { bannerAlertActionCreators } from '@/store/BannerAlert';
 import { selectApplications } from '@/store/ClusterInfo/selectors';
 
-export type Props = MappedProps & {
+type Props = MappedProps & {
   workspace: Workspace;
 };
 
-export class WorkspaceNameFormGroup extends React.PureComponent<Props> {
+type State = {
+  timerId: number | undefined;
+};
+
+class WorkspaceNameFormGroup extends React.PureComponent<Props, State> {
+  constructor(props: Props) {
+    super(props);
+
+    this.state = {
+      timerId: undefined,
+    };
+  }
+
+  private handleCopyToClipboard(): void {
+    let { timerId } = this.state;
+    if (timerId !== undefined) {
+      window.clearTimeout(timerId);
+    }
+    timerId = window.setTimeout(() => {
+      this.setState({
+        timerId: undefined,
+      });
+    }, 3000);
+    this.setState({ timerId });
+  }
+
   private buildOpenShiftConsoleLink(): React.ReactElement | undefined {
     const { applications, workspace } = this.props;
     const clusterConsole = applications.find(app => app.id === ApplicationId.CLUSTER_CONSOLE);
@@ -56,10 +83,43 @@ export class WorkspaceNameFormGroup extends React.PureComponent<Props> {
   }
 
   public render(): React.ReactNode {
-    const workspaceName = this.buildOpenShiftConsoleLink() || this.props.workspace.name;
+    const { workspace } = this.props;
+    const { timerId } = this.state;
+    const workspaceName = this.buildOpenShiftConsoleLink() || workspace.name;
+    const metadataName = workspace.ref.metadata.name;
+    if (workspace.name !== metadataName) {
+      return (
+        <>
+          <FormGroup label="Workspace">{workspaceName}</FormGroup>
+          <FormGroup label="Metadata Name">
+            {metadataName}
+            <CheTooltip content={timerId ? 'Copied!' : 'Copy to clipboard'}>
+              <CopyToClipboard text={metadataName} onCopy={() => this.handleCopyToClipboard()}>
+                <Button
+                  variant="link"
+                  icon={<CopyIcon />}
+                  name="Copy to Clipboard"
+                  data-testid="copy-to-clipboard"
+                />
+              </CopyToClipboard>
+            </CheTooltip>
+          </FormGroup>
+        </>
+      );
+    }
     return (
       <FormGroup label="Workspace">
         <span className={overviewStyles.readonly}>{workspaceName}</span>
+        <CheTooltip content={timerId ? 'Copied!' : 'Copy to clipboard'}>
+          <CopyToClipboard text={metadataName} onCopy={() => this.handleCopyToClipboard()}>
+            <Button
+              variant="link"
+              icon={<CopyIcon />}
+              name="Copy to Clipboard"
+              data-testid="copy-to-clipboard"
+            />
+          </CopyToClipboard>
+        </CheTooltip>
       </FormGroup>
     );
   }
