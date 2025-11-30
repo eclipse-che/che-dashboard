@@ -130,6 +130,42 @@ describe('for DevWorkspace', () => {
     expect(workspace.name).toEqual(overrideName);
   });
 
+  it('should set workspace name in "kubernetes.io/metadata.name" label', () => {
+    const name = 'wksp-1234';
+    const newName = 'new-workspace-name';
+    const devWorkspace = new DevWorkspaceBuilder().withName(name).build();
+    const workspace = constructWorkspace(devWorkspace);
+
+    expect(workspace.name).toEqual(name);
+
+    workspace.name = newName;
+
+    expect(workspace.name).toEqual(newName);
+    expect(workspace.ref.metadata.labels?.[DEVWORKSPACE_LABEL_METADATA_NAME]).toEqual(newName);
+  });
+
+  it('should update workspace name when label already exists', () => {
+    const name = 'wksp-1234';
+    const initialOverrideName = 'initial-override';
+    const newName = 'updated-name';
+    const devWorkspace = new DevWorkspaceBuilder()
+      .withMetadata({
+        labels: {
+          [DEVWORKSPACE_LABEL_METADATA_NAME]: initialOverrideName,
+        },
+        name,
+      })
+      .build();
+    const workspace = constructWorkspace(devWorkspace);
+
+    expect(workspace.name).toEqual(initialOverrideName);
+
+    workspace.name = newName;
+
+    expect(workspace.name).toEqual(newName);
+    expect(workspace.ref.metadata.labels?.[DEVWORKSPACE_LABEL_METADATA_NAME]).toEqual(newName);
+  });
+
   it('should return namespace', () => {
     const namespace = 'test-namespace';
     const devWorkspace = new DevWorkspaceBuilder().withNamespace(namespace).build();
