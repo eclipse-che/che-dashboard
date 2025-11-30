@@ -53,7 +53,6 @@ export const REGISTRY_URL = 'che.eclipse.org/plugin-registry-url';
 
 export const DEVWORKSPACE_LABEL_METADATA_NAME = 'kubernetes.io/metadata.name';
 
-export const DEVWORKSPACE_NEXT_START_ANNOTATION = 'che.eclipse.org/next-start-cfg';
 export const DEVWORKSPACE_DEVFILE_SOURCE = 'che.eclipse.org/devfile-source';
 export const DEVWORKSPACE_DEVFILE = 'che.eclipse.org/devfile';
 
@@ -313,11 +312,6 @@ export class DevWorkspaceClient {
 
   /**
    * Update a devworkspace.
-   * If the workspace you want to update has the DEVWORKSPACE_NEXT_START_ANNOTATION then
-   * patch the cluster object with the value of DEVWORKSPACE_NEXT_START_ANNOTATION and don't restart the devworkspace.
-   *
-   * If the workspace does not specify DEVWORKSPACE_NEXT_START_ANNOTATION then
-   * update the spec of the devworkspace and remove DEVWORKSPACE_NEXT_START_ANNOTATION if it exists.
    *
    * @param workspace The DevWorkspace you want to update
    * @param plugins The plugins you want to inject into the devworkspace
@@ -361,75 +355,50 @@ export class DevWorkspaceClient {
       });
     }
 
-    const nextStartAnnotationPath =
-      '/metadata/annotations/' + this.escape(DEVWORKSPACE_NEXT_START_ANNOTATION);
-    if (workspace.metadata.annotations?.[DEVWORKSPACE_NEXT_START_ANNOTATION]) {
-      /**
-       * This is the case when you are annotating a devworkspace and will restart it later
-       */
-      patch.push({
-        op: 'add',
-        path: nextStartAnnotationPath,
-        value: workspace.metadata.annotations[DEVWORKSPACE_NEXT_START_ANNOTATION],
-      });
-    } else {
-      /**
-       * This is the case when you are updating a devworkspace normally
-       */
-      patch.push({
-        op: 'replace',
-        path: '/spec',
-        value: workspace.spec,
-      });
-      const onClusterWorkspace = await this.getWorkspaceByName(namespace, name);
+    // Update the workspace spec
+    patch.push({
+      op: 'replace',
+      path: '/spec',
+      value: workspace.spec,
+    });
 
-      // If the workspace currently has DEVWORKSPACE_NEXT_START_ANNOTATION then delete it since we are starting a devworkspace normally
-      if (
-        onClusterWorkspace.metadata.annotations &&
-        onClusterWorkspace.metadata.annotations[DEVWORKSPACE_NEXT_START_ANNOTATION]
-      ) {
-        patch.push({
-          op: 'remove',
-          path: nextStartAnnotationPath,
-        });
-      }
+    const onClusterWorkspace = await this.getWorkspaceByName(namespace, name);
 
-      // Update workspace custom name if it has changed
-      const currentCustomName =
-        onClusterWorkspace.metadata.labels?.[DEVWORKSPACE_LABEL_METADATA_NAME];
-      const newCustomName = workspace.metadata.labels?.[DEVWORKSPACE_LABEL_METADATA_NAME];
-      if (newCustomName !== currentCustomName) {
-        const customNamePath = '/metadata/labels/' + this.escape(DEVWORKSPACE_LABEL_METADATA_NAME);
-        if (newCustomName) {
-          // Ensure labels object exists
-          if (!onClusterWorkspace.metadata.labels) {
-            patch.push({
-              op: 'add',
-              path: '/metadata/labels',
-              value: {},
-            });
-          }
-          // Add or replace the custom name label
-          if (currentCustomName === undefined) {
-            patch.push({
-              op: 'add',
-              path: customNamePath,
-              value: newCustomName,
-            });
-          } else {
-            patch.push({
-              op: 'replace',
-              path: customNamePath,
-              value: newCustomName,
-            });
-          }
-        } else if (currentCustomName !== undefined) {
-          // Remove the custom name label if it was cleared
+    // Update workspace custom name if it has changed
+    const currentCustomName =
+      onClusterWorkspace.metadata.labels?.[DEVWORKSPACE_LABEL_METADATA_NAME];
+    const newCustomName = workspace.metadata.labels?.[DEVWORKSPACE_LABEL_METADATA_NAME];
+    if (newCustomName !== currentCustomName) {
+      const customNamePath = '/metadata/labels/' + this.escape(DEVWORKSPACE_LABEL_METADATA_NAME);
+      if (newCustomName) {
+        // Ensure labels object exists
+        if (!onClusterWorkspace.metadata.labels) {
           patch.push({
-            op: 'remove',
-            path: customNamePath,
+            op: 'add',
+            path: '/metadata/labels',
+            value: {},
           });
         }
+        // Add or replace the custom name label
+        if (currentCustomName === undefined) {
+          patch.push({
+            op: 'add',
+            path: customNamePath,
+            value: newCustomName,
+          });
+        } else {
+          patch.push({
+            op: 'replace',
+            path: customNamePath,
+            value: newCustomName,
+          });
+        }
+      } else if (currentCustomName !== undefined) {
+        // Remove the custom name label if it was cleared
+        patch.push({
+          op: 'remove',
+          path: customNamePath,
+        });
       }
     }
 
@@ -442,20 +411,6 @@ export class DevWorkspaceClient {
       op: 'replace',
       path: '/metadata/annotations',
       value: workspace.metadata.annotations || {},
-    };
-    const { devWorkspace } = await DwApi.patchWorkspace(
-      workspace.metadata.namespace,
-      workspace.metadata.name,
-      [patch],
-    );
-    return devWorkspace;
-  }
-
-  async updateLabels(workspace: devfileApi.DevWorkspace): Promise<devfileApi.DevWorkspace> {
-    const patch: api.IPatch = {
-      op: 'replace',
-      path: '/metadata/labels',
-      value: workspace.metadata.labels || {},
     };
     const { devWorkspace } = await DwApi.patchWorkspace(
       workspace.metadata.namespace,

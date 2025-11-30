@@ -35,17 +35,6 @@ describe('CheCopyToClipboard component', () => {
     expect(button).toHaveAttribute('name', 'Copy to Clipboard');
   });
 
-  test('should copy text to clipboard on click', async () => {
-    const user = userEvent.setup({ delay: null });
-    render(<CheCopyToClipboard text="test-text-to-copy" />);
-
-    const button = screen.getByRole('button');
-    await user.click(button);
-
-    // react-copy-to-clipboard should copy text to clipboard
-    // We can't easily test clipboard in jsdom, but we can verify the callback
-  });
-
   test('should call onCopy callback when clicked', async () => {
     const user = userEvent.setup({ delay: null });
     const onCopy = jest.fn();

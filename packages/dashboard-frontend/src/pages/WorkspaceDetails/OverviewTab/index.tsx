@@ -99,7 +99,8 @@ export class OverviewTab extends React.Component<Props, State> {
     const isReadonly =
       isDeprecated ||
       workspace.status === DevWorkspaceStatus.TERMINATING ||
-      workspace.status !== DevWorkspaceStatus.STOPPED;
+      (workspace.status !== DevWorkspaceStatus.STOPPED &&
+        workspace.status !== DevWorkspaceStatus.FAILED);
 
     return (
       <React.Fragment>

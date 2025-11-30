@@ -23,7 +23,6 @@ import {
 import { verifyAuthorized } from '@/store/SanityCheck';
 import { FACTORY_RESOLVER_NOT_FOUND_ERROR_MESSAGE } from '@/store/Workspaces/devWorkspaces/actions/actionCreators/const';
 import {
-  checkDevWorkspaceNextStartAnnotation,
   checkRunningWorkspacesLimit,
   getDevWorkspaceClient,
   getWarningFromResponse,
@@ -77,8 +76,6 @@ export const startWorkspace =
 
       checkRunningDevWorkspacesClusterLimitExceeded(getState());
       checkRunningWorkspacesLimit(getState());
-
-      await checkDevWorkspaceNextStartAnnotation(getDevWorkspaceClient(), workspace);
 
       const config = getState().dwServerConfig.config;
       workspace = await getDevWorkspaceClient().managePvcStrategy(workspace, config);

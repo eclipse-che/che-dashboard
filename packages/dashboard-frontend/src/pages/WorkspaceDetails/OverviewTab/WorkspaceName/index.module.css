@@ -15,8 +15,6 @@
 }
 
 .helperTextInvalid {
-  cursor: help;
-
   overflow: hidden;
 
   font-size: small;
