@@ -10,61 +10,24 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import { Button, FormGroup } from '@patternfly/react-core';
-import { CopyIcon } from '@patternfly/react-icons';
+import { FormGroup } from '@patternfly/react-core';
 import React from 'react';
-import CopyToClipboard from 'react-copy-to-clipboard';
 
-import { CheTooltip } from '@/components/CheTooltip';
+import { CheCopyToClipboard } from '@/components/CheCopyToClipboard';
 import overviewStyles from '@/pages/WorkspaceDetails/OverviewTab/index.module.css';
 
 type Props = {
   namespace: string;
 };
 
-type State = {
-  timerId: number | undefined;
-};
-
-export class InfrastructureNamespaceFormGroup extends React.PureComponent<Props, State> {
-  constructor(props: Props) {
-    super(props);
-
-    this.state = {
-      timerId: undefined,
-    };
-  }
-
-  private handleCopyToClipboard(): void {
-    let { timerId } = this.state;
-    if (timerId !== undefined) {
-      window.clearTimeout(timerId);
-    }
-    timerId = window.setTimeout(() => {
-      this.setState({
-        timerId: undefined,
-      });
-    }, 3000);
-    this.setState({ timerId });
-  }
-
+export class InfrastructureNamespaceFormGroup extends React.PureComponent<Props> {
   public render(): React.ReactElement {
-    const { timerId } = this.state;
     const { namespace } = this.props;
 
     return (
       <FormGroup label="Kubernetes Namespace" fieldId="infrastructure-namespace">
         <div className={overviewStyles.readonly}>{namespace}</div>
-        <CheTooltip content={timerId ? 'Copied!' : 'Copy to clipboard'}>
-          <CopyToClipboard text={namespace} onCopy={() => this.handleCopyToClipboard()}>
-            <Button
-              variant="link"
-              icon={<CopyIcon />}
-              name="Copy to Clipboard"
-              data-testid="copy-to-clipboard"
-            />
-          </CopyToClipboard>
-        </CheTooltip>
+        <CheCopyToClipboard text={namespace} />
       </FormGroup>
     );
   }

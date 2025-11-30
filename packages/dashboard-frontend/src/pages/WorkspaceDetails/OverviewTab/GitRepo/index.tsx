@@ -11,11 +11,9 @@
  */
 
 import { Button, FormGroup } from '@patternfly/react-core';
-import { CopyIcon } from '@patternfly/react-icons';
 import React from 'react';
-import CopyToClipboard from 'react-copy-to-clipboard';
 
-import { CheTooltip } from '@/components/CheTooltip';
+import { CheCopyToClipboard } from '@/components/CheCopyToClipboard';
 import overviewStyles from '@/pages/WorkspaceDetails/OverviewTab/index.module.css';
 import devfileApi from '@/services/devfileApi';
 import { FactoryLocationAdapter } from '@/services/factory-location-adapter';
@@ -25,32 +23,7 @@ export type Props = {
   workspace: Workspace;
 };
 
-export type State = {
-  timerId: number | undefined;
-};
-
-class GitRepoFormGroup extends React.PureComponent<Props, State> {
-  constructor(props: Props) {
-    super(props);
-
-    this.state = {
-      timerId: undefined,
-    };
-  }
-
-  private handleCopyToClipboard(): void {
-    let { timerId } = this.state;
-    if (timerId !== undefined) {
-      window.clearTimeout(timerId);
-    }
-    timerId = window.setTimeout(() => {
-      this.setState({
-        timerId: undefined,
-      });
-    }, 3000);
-    this.setState({ timerId });
-  }
-
+class GitRepoFormGroup extends React.PureComponent<Props> {
   public getSource(devWorkspace: devfileApi.DevWorkspace): {
     isUrl: boolean;
     gitRepo: string;
@@ -78,7 +51,6 @@ class GitRepoFormGroup extends React.PureComponent<Props, State> {
 
   public render(): React.ReactNode {
     const { workspace } = this.props;
-    const { timerId } = this.state;
 
     const { gitRepo, fieldName, isUrl } = this.getSource(workspace.ref);
     if (!gitRepo || !fieldName) {
@@ -94,16 +66,7 @@ class GitRepoFormGroup extends React.PureComponent<Props, State> {
         ) : (
           <span className={overviewStyles.readonly}>{fieldName}</span>
         )}
-        <CheTooltip content={timerId ? 'Copied!' : 'Copy to clipboard'}>
-          <CopyToClipboard text={gitRepo} onCopy={() => this.handleCopyToClipboard()}>
-            <Button
-              variant="link"
-              icon={<CopyIcon />}
-              name="Copy to Clipboard"
-              data-testid="copy-to-clipboard"
-            />
-          </CopyToClipboard>
-        </CheTooltip>
+        <CheCopyToClipboard text={gitRepo} />
       </FormGroup>
     );
   }
