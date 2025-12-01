@@ -290,7 +290,7 @@ export class ServerConfigApiService implements IServerConfigApi {
     return value === 'true';
   }
 
-  getHideEditorsById(cheCustomResource: CheClusterCustomResource): string[] {
+  gеtHideEditorsById(cheCustomResource: CheClusterCustomResource): string[] {
     const value = getEnvVarValue('CHE_HIDE_EDITORS_BY_ID', cheCustomResource);
     if (!value) {
       return [];
