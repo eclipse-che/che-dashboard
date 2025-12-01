@@ -211,13 +211,13 @@ describe('Server Config API Service', () => {
 
   describe('Hide editors by name array', () => {
     test('getting showDeprecated value', () => {
-      const res = serverConfigService.getHideEditorsById(buildCustomResource());
+      const res = serverConfigService.gеtHideEditorsById(buildCustomResource());
       expect(res).toEqual([]);
     });
     test('getting hideByName value', () => {
       process.env['CHE_HIDE_EDITORS_BY_ID'] =
         'che-incubator/che-idea-server/latest, che-incubator/che-idea-server/next';
-      const res = serverConfigService.getHideEditorsById(buildCustomResource());
+      const res = serverConfigService.gеtHideEditorsById(buildCustomResource());
       expect(res).toEqual([
         'che-incubator/che-idea-server/latest',
         'che-incubator/che-idea-server/next',

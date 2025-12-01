@@ -12,15 +12,6 @@
 
 import { api } from '@eclipse-che/common';
 
-/**
- * Regex pattern to match airgap sample URLs that should be automatically trusted.
- * Matches URLs containing: /dashboard/api/airgap-sample/devfile/download
- * Examples:
- * - http://che-dashboard.eclipse-che.svc:8080/dashboard/api/airgap-sample/devfile/download?name=JBoss+EAP+8
- * - http://localhost:8080/dashboard/api/airgap-sample/devfile/download?id=java-lombok&che-editor=...
- */
-export const AIRGAP_SAMPLE_PATTERN = /\/dashboard\/api\/airgap-sample\/devfile\/download/;
-
 export const gitProviderPatterns = {
   github: {
     https: /^https:\/\/github\.com\/([^\\/]+\/[^\\/]+)(?:\/.*)?$/,
@@ -115,13 +106,6 @@ export function isTrustedRepo(
   trustedSources: api.TrustedSources | undefined,
   url: string | URL,
 ): boolean {
-  const urlString = url.toString();
-
-  // Always trust airgap sample URLs (internal samples)
-  if (AIRGAP_SAMPLE_PATTERN.test(urlString)) {
-    return true;
-  }
-
   if (trustedSources === undefined) {
     return false;
   }
@@ -129,6 +113,7 @@ export function isTrustedRepo(
     return true;
   }
 
+  const urlString = url.toString();
   const urlPattern = getRepoPattern(urlString);
   const urlRepo = extractRepo(urlString, urlPattern);
 
