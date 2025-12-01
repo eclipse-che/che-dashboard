@@ -47,6 +47,17 @@ div.tippy-popper a:hover {
   --pf-global--link--Color: #2b9af3;
 }
 
+/* Ensure About modal logo renders with high quality */
+.pf-c-about-modal-box__brand img {
+  max-width: 100%;
+  height: auto;
+
+  object-fit: contain;
+
+  image-rendering: -webkit-optimize-contrast;
+  image-rendering: crisp-edges;
+}
+
 div.main-page-loader {
   position: absolute;
   z-index: 80;
@@ -147,20 +158,13 @@ div.main-page-loader .ide-page-loader-content img {
 }
 
 .pf-c-page__header-brand-link .pf-c-brand {
-  height: 3.17rem;
-  max-width: 200px;
   width: auto;
-  object-fit: contain;
-  /* Improve rendering quality for scaled images */
-  image-rendering: -webkit-optimize-contrast;
-  image-rendering: crisp-edges;
-}
+  max-width: 200px;
+  height: 3.17rem;
 
-/* Ensure About modal logo renders with high quality */
-.pf-c-about-modal-box__brand img {
-  max-width: 100%;
-  height: auto;
   object-fit: contain;
+
+  /* Improve rendering quality for scaled images */
   image-rendering: -webkit-optimize-contrast;
   image-rendering: crisp-edges;
 }
