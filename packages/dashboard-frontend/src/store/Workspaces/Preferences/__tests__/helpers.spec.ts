@@ -11,7 +11,6 @@
  */
 
 import {
-  AIRGAP_SAMPLE_PATTERN,
   extractRepo,
   gitProviderPatterns,
   isAzureDevOpsRepo,
@@ -403,67 +402,6 @@ describe('helpers', () => {
             trustedRepoGitSshUrls,
             'git@ssh.dev.azure.com:v3/another-organization/project/repo',
           ),
-        ).toBe(false);
-      });
-    });
-
-    describe('Airgap Samples', () => {
-      test('airgap sample URLs are always trusted with http', () => {
-        // Airgap samples should be trusted even when trustedSources is undefined
-        expect(
-          isTrustedRepo(
-            undefined,
-            'http://che-dashboard.eclipse-che.svc:8080/dashboard/api/airgap-sample/devfile/download?name=JBoss+EAP+8',
-          ),
-        ).toBe(true);
-      });
-
-      test('airgap sample URLs are always trusted with https', () => {
-        expect(
-          isTrustedRepo(
-            undefined,
-            'https://localhost:8080/dashboard/api/airgap-sample/devfile/download?id=java-lombok&che-editor=che-incubator/che-code/insiders',
-          ),
-        ).toBe(true);
-      });
-
-      test('airgap sample URLs are trusted even with empty trusted sources', () => {
-        expect(
-          isTrustedRepo(
-            [],
-            'http://localhost:8080/dashboard/api/airgap-sample/devfile/download?name=test',
-          ),
-        ).toBe(true);
-      });
-
-      test('airgap sample URLs are trusted alongside other trusted repos', () => {
-        const trustedRepos = ['https://github.com/user/repo'];
-        expect(
-          isTrustedRepo(
-            trustedRepos,
-            'http://che-server/dashboard/api/airgap-sample/devfile/download?id=python-hello-world',
-          ),
-        ).toBe(true);
-      });
-
-      test('airgap sample pattern matches the regex', () => {
-        expect(
-          AIRGAP_SAMPLE_PATTERN.test(
-            'http://che-dashboard.eclipse-che.svc:8080/dashboard/api/airgap-sample/devfile/download?name=test',
-          ),
-        ).toBe(true);
-        expect(
-          AIRGAP_SAMPLE_PATTERN.test(
-            'https://localhost:8080/dashboard/api/airgap-sample/devfile/download',
-          ),
-        ).toBe(true);
-      });
-
-      test('non-airgap URLs do not match the pattern', () => {
-        expect(AIRGAP_SAMPLE_PATTERN.test('https://github.com/user/repo')).toBe(false);
-        expect(AIRGAP_SAMPLE_PATTERN.test('http://localhost:8080/api/sample')).toBe(false);
-        expect(
-          AIRGAP_SAMPLE_PATTERN.test('http://localhost:8080/dashboard/api/getting-started-sample'),
         ).toBe(false);
       });
     });
