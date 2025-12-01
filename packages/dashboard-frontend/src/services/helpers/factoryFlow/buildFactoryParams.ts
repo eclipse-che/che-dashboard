@@ -28,6 +28,7 @@ export const EDITOR_IMAGE_ATTR = 'editor-image';
 export const USE_DEFAULT_DEVFILE = 'useDefaultDevfile';
 export const DEBUG_WORKSPACE_START = 'debugWorkspaceStart';
 export const EXISTING_WORKSPACE_NAME = 'existing';
+export const REVISION = 'revision';
 
 export const PROPAGATE_FACTORY_ATTRS = [
   'workspaceDeploymentAnnotations',
@@ -43,7 +44,7 @@ export const PROPAGATE_FACTORY_ATTRS = [
   MEMORY_LIMIT_ATTR,
   EDITOR_IMAGE_ATTR,
   EXISTING_WORKSPACE_NAME,
-  REVISION_ATTR,
+  REVISION,
   NAME_ATTR,
 ];
 export const OVERRIDE_ATTR_PREFIX = 'override.';
@@ -102,32 +103,9 @@ export function buildFactoryParams(searchParams: URLSearchParams): FactoryParams
 
 function getSourceUrl(searchParams: URLSearchParams): string {
   const devworkspaceResourcesUrl = getDevworkspaceResourcesUrl(searchParams);
-  if (devworkspaceResourcesUrl !== undefined) {
-    return devworkspaceResourcesUrl;
-  }
-
-  // Build source URL with propagated factory attributes to match workspace.source format
-  let sourceUrl = getFactoryUrl(searchParams);
-  if (!sourceUrl) {
-    return sourceUrl;
-  }
-
-  // Get propagated factory attributes (excluding FACTORY_URL_ATTR and EXISTING_WORKSPACE_NAME)
-  // EXISTING_WORKSPACE_NAME is excluded because it's used for flow control, not source identification
-  const propagatedAttrsToAdd = [...PROPAGATE_FACTORY_ATTRS]
-    .filter(attr => attr !== FACTORY_URL_ATTR && attr !== EXISTING_WORKSPACE_NAME)
-    .sort();
-
-  // Append propagated attributes that are present in searchParams
-  propagatedAttrsToAdd.forEach(attr => {
-    const value = searchParams.get(attr);
-    if (value !== null && value !== undefined) {
-      const separator = sourceUrl.includes('?') ? '&' : '?';
-      sourceUrl += `${separator}${attr}=${value}`;
-    }
-  });
-
-  return sourceUrl;
+  return devworkspaceResourcesUrl !== undefined
+    ? devworkspaceResourcesUrl
+    : getFactoryUrl(searchParams);
 }
 
 function getDevworkspaceResourcesUrl(searchParams: URLSearchParams): string | undefined {
