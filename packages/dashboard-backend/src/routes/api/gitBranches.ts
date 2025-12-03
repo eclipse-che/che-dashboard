@@ -15,7 +15,7 @@ import { FastifyInstance, FastifyRequest } from 'fastify';
 import { baseApiPath } from '@/constants/config';
 import { gitBranchSchema } from '@/constants/schemas';
 import { restParams } from '@/models';
-import { getBranches } from '@/routes/api/helpers/getGitBranches';
+import { getBranches } from '@/services/gitClient';
 import { getSchema } from '@/services/helpers';
 
 const tags = ['GitBranches'];
