@@ -89,7 +89,7 @@ class RepoOptionsAccordion extends React.PureComponent<Props, State> {
     };
   }
 
-  private updateStateFromLocation(): void {
+  private async updateStateFromLocation(): Promise<void> {
     const { location } = this.props;
 
     const validated = validateLocation(location, this.state.hasSshKeys);
@@ -104,22 +104,16 @@ class RepoOptionsAccordion extends React.PureComponent<Props, State> {
 
     const state = Object.assign(gitRepoOptions, advancedOptions) as State;
 
-    fetchGitBranches(getRepositoryUrlFromLocation(location))
-      .then(branches => {
-        state.branchList = branches.branches;
-        this.setState(state);
-      })
-      .catch(() => {
-        state.branchList = undefined;
-        this.setState(state);
-      });
+    const branchRequest = await fetchGitBranches(getRepositoryUrlFromLocation(location));
+    state.branchList = branchRequest.branches;
+    this.setState(state);
   }
 
   public componentDidMount() {
     this.updateStateFromLocation();
   }
 
-  public componentDidUpdate(prevProps: Readonly<Props>) {
+  public async componentDidUpdate(prevProps: Readonly<Props>) {
     const location = this.props.location.trim();
     if (location === prevProps.location || location === this.state.location) {
       return;
