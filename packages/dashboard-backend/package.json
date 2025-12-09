@@ -33,7 +33,7 @@
     "@fastify/http-proxy": "^9.5.0",
     "@fastify/oauth2": "^8.0.0",
     "@fastify/rate-limit": "^9.1.0",
-    "@fastify/static": "^6.10.2",
+    "@fastify/static": "^7.0.4",
     "@fastify/swagger": "^8.15.0",
     "@fastify/swagger-ui": "3.1.0",
     "@fastify/websocket": "^10.0.1",
