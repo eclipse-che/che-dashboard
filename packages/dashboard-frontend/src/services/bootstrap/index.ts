@@ -14,7 +14,6 @@ import common, { api } from '@eclipse-che/common';
 import { Store } from 'redux';
 
 import { lazyInject } from '@/inversify.config';
-import { provisionKubernetesNamespace } from '@/services/backend-client/kubernetesNamespaceApi';
 import { WebsocketClient } from '@/services/backend-client/websocketClient';
 import { ChannelListener } from '@/services/backend-client/websocketClient/messageHandler';
 import {
@@ -49,7 +48,7 @@ import {
 import { chePluginsActionCreators } from '@/store/Plugins/chePlugins';
 import { devWorkspacePluginsActionCreators } from '@/store/Plugins/devWorkspacePlugins';
 import { podsActionCreators, selectPodsResourceVersion } from '@/store/Pods';
-import { backendCheckRequestAction } from '@/store/SanityCheck/actions';
+import { sanityCheckActionCreators } from '@/store/SanityCheck';
 import { serverConfigActionCreators } from '@/store/ServerConfig';
 import { sshKeysActionCreators } from '@/store/SshKeys';
 import { userProfileActionCreators } from '@/store/User/Profile';
@@ -129,11 +128,9 @@ export default class Bootstrap {
   }
 
   private async doBackendsSanityCheck(): Promise<void> {
+    const { testBackends } = sanityCheckActionCreators;
     try {
-      await provisionKubernetesNamespace();
-      backendCheckRequestAction({
-        lastFetched: Date.now(),
-      });
+      await testBackends()(this.store.dispatch, this.store.getState, undefined);
     } catch (e) {
       checkNamespaceProvisionWarnings(this.store.getState);
       const errorMessage = common.helpers.errors.getMessage(e);

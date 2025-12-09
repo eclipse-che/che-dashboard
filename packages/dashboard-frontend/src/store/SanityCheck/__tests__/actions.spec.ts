@@ -116,14 +116,7 @@ describe('SanityCheck, actions', () => {
       jest.spyOn(helpers.errors, 'includesAxiosResponse').mockReturnValueOnce(true);
       console.error = jest.fn();
 
-      let err: unknown = undefined;
-      try {
-        await store.dispatch(actionCreators.testBackends());
-      } catch (e) {
-        err = e;
-      }
-
-      expect(err).toEqual(errorMessage);
+      await expect(store.dispatch(actionCreators.testBackends())).rejects.toThrow(errorMessage);
 
       const actions = store.getActions();
       expect(actions).toHaveLength(2);
@@ -150,14 +143,7 @@ describe('SanityCheck, actions', () => {
       (helpers.errors.getMessage as jest.Mock).mockReturnValueOnce(errorMessage);
       console.error = jest.fn();
 
-      let err: unknown = undefined;
-      try {
-        await store.dispatch(actionCreators.testBackends());
-      } catch (e) {
-        err = e;
-      }
-
-      expect(err).toEqual(errorMessage);
+      await expect(store.dispatch(actionCreators.testBackends())).rejects.toThrow(errorMessage);
 
       expect(signIn).toHaveBeenCalled();
 

@@ -11,7 +11,6 @@
  */
 
 import { container } from '@/inversify.config';
-import { provisionKubernetesNamespace } from '@/services/backend-client/kubernetesNamespaceApi';
 import { WebsocketClient } from '@/services/backend-client/websocketClient';
 import Bootstrap from '@/services/bootstrap';
 import { ResourceFetcherService } from '@/services/resource-fetcher';
@@ -26,6 +25,7 @@ import { infrastructureNamespacesActionCreators } from '@/store/InfrastructureNa
 import { chePluginsActionCreators } from '@/store/Plugins/chePlugins';
 import { devWorkspacePluginsActionCreators } from '@/store/Plugins/devWorkspacePlugins';
 import { podsActionCreators } from '@/store/Pods';
+import { sanityCheckActionCreators } from '@/store/SanityCheck';
 import { serverConfigActionCreators } from '@/store/ServerConfig';
 import { sshKeysActionCreators } from '@/store/SshKeys';
 import { userProfileActionCreators } from '@/store/User/Profile';
@@ -38,15 +38,7 @@ jest.spyOn(ResourceFetcherService.prototype, 'prefetchResources').mockImplementa
 });
 
 jest.spyOn(serverConfigActionCreators, 'requestServerConfig').mockImplementation(() => jest.fn());
-jest.mock('@/services/backend-client/kubernetesNamespaceApi', () => {
-  const originalModule = jest.requireActual(
-    '@/services/backend-client/kubernetesNamespaceApi',
-  ) as Record<string, unknown>;
-  return {
-    ...originalModule,
-    provisionKubernetesNamespace: jest.fn(),
-  };
-});
+jest.spyOn(sanityCheckActionCreators, 'testBackends').mockImplementation(() => jest.fn());
 jest.spyOn(brandingActionCreators, 'requestBranding').mockImplementation(() => jest.fn());
 jest.mock('@/store/InfrastructureNamespaces', () => ({
   ...jest.requireActual('@/store/InfrastructureNamespaces'),
@@ -128,7 +120,7 @@ describe('Dashboard bootstrap', () => {
     // await bootstrap.init();
 
     expect(serverConfigActionCreators.requestServerConfig).toHaveBeenCalledTimes(1);
-    expect(provisionKubernetesNamespace).toHaveBeenCalledTimes(1);
+    expect(sanityCheckActionCreators.testBackends).toHaveBeenCalledTimes(1);
 
     expect(mockPrefetchResources).toHaveBeenCalledTimes(1);
 

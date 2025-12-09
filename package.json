@@ -25,7 +25,7 @@
     "start": "$PWD/run/local-run.sh $@",
     "start:prepare": "$PWD/run/prepare-local-run.sh",
     "start:cleanup": "$PWD/run/revert-local-run.sh",
-    "license:check": "$PWD/scripts/container_tool.sh run --rm -t -v $PWD/:/workspace/project quay.io/che-incubator/dash-licenses:next --check --batch 200",
+    "license:check": "$PWD/scripts/container_tool.sh run --rm -t -v $PWD/:/workspace/project quay.io/che-incubator/dash-licenses:next --check",
     "license:generate": "$PWD/scripts/container_tool.sh run --rm -t -v $PWD/:/workspace/project quay.io/che-incubator/dash-licenses:next",
     "test": "yarn run pretest && yarn workspaces foreach -A run test --no-cache",
     "test:check": "yarn run pretest && yarn workspace @eclipse-che/dashboard-frontend test --config=jest.config.check.js",
