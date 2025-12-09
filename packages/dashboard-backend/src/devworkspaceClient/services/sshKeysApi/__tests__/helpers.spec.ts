@@ -95,7 +95,7 @@ describe('Helpers for SSH Keys API', () => {
         },
       };
 
-      expect(() => fromSecret(secret)).toThrowError();
+      expect(() => fromSecret(secret)).toThrow();
     });
   });
 

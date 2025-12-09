@@ -43,7 +43,7 @@ describe('DevWorkspace client', () => {
         phase: 'FAILED',
       })
       .build();
-    expect(() => client.checkForDevWorkspaceError(devWorkspace2)).toThrowError(
+    expect(() => client.checkForDevWorkspaceError(devWorkspace2)).toThrow(
       new Error('Unknown error occurred when trying to process the devworkspace'),
     );
 
@@ -56,7 +56,7 @@ describe('DevWorkspace client', () => {
         message: 'failure reason if any',
       })
       .build();
-    expect(() => client.checkForDevWorkspaceError(devWorkspace3)).toThrowError(
+    expect(() => client.checkForDevWorkspaceError(devWorkspace3)).toThrow(
       new Error('failure reason if any'),
     );
   });

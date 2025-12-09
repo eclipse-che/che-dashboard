@@ -38,8 +38,8 @@ describe('Fetch editor by url', () => {
 
     const customEditor = await fetchEditor(editorUrl, mockFetchData);
 
-    expect(mockFetchData).toBeCalledTimes(1);
-    expect(mockFetchData).toBeCalledWith(editorUrl);
+    expect(mockFetchData).toHaveBeenCalledTimes(1);
+    expect(mockFetchData).toHaveBeenCalledWith(editorUrl);
     expect(customEditor).toBeUndefined();
     expect(console.warn).toHaveBeenCalledWith(`Failed to fetch editor yaml by URL: ${editorUrl}.`);
   });
@@ -52,8 +52,8 @@ describe('Fetch editor by url', () => {
 
       const customEditor = await fetchEditor(editorUrl, mockFetchData);
 
-      expect(mockFetchData).toBeCalledTimes(1);
-      expect(mockFetchData).toBeCalledWith(editorUrl);
+      expect(mockFetchData).toHaveBeenCalledTimes(1);
+      expect(mockFetchData).toHaveBeenCalledWith(editorUrl);
       expect(customEditor).toBeUndefined();
     });
     it('should return the same object if it is a Devfile', async () => {
@@ -61,8 +61,8 @@ describe('Fetch editor by url', () => {
 
       const customEditor = await fetchEditor(editorUrl, mockFetchData);
 
-      expect(mockFetchData).toBeCalledTimes(1);
-      expect(mockFetchData).toBeCalledWith(editorUrl);
+      expect(mockFetchData).toHaveBeenCalledTimes(1);
+      expect(mockFetchData).toHaveBeenCalledWith(editorUrl);
       expect(customEditor).toEqual(editor);
     });
   });
@@ -74,8 +74,8 @@ describe('Fetch editor by url', () => {
 
       const customEditor = await fetchEditor(editorUrl, mockFetchData, false);
 
-      expect(mockFetchData).toBeCalledTimes(1);
-      expect(mockFetchData).toBeCalledWith(editorUrl);
+      expect(mockFetchData).toHaveBeenCalledTimes(1);
+      expect(mockFetchData).toHaveBeenCalledWith(editorUrl);
       expect(customEditor).toEqual(editor);
     });
     describe('inlined editor', () => {
@@ -85,8 +85,8 @@ describe('Fetch editor by url', () => {
 
         const customEditor = await fetchEditor(editorUrl, mockFetchData, true);
 
-        expect(mockFetchData).toBeCalledTimes(1);
-        expect(mockFetchData).toBeCalledWith(editorUrl);
+        expect(mockFetchData).toHaveBeenCalledTimes(1);
+        expect(mockFetchData).toHaveBeenCalledWith(editorUrl);
         expect(customEditor).toEqual(editor);
       });
 
@@ -106,7 +106,7 @@ describe('Fetch editor by url', () => {
 
         const customEditor = await fetchEditor(editorUrl, mockFetchData, true);
 
-        expect(mockFetchData).toBeCalledTimes(1);
+        expect(mockFetchData).toHaveBeenCalledTimes(1);
         expect(mockFetchData.mock.calls).toEqual([['http://dummy-repo']]);
         expect(customEditor).toEqual(
           expect.objectContaining({
@@ -131,7 +131,7 @@ describe('Fetch editor by url', () => {
 
           const customEditor = await fetchEditor(editorUrl, mockFetchData, true);
 
-          expect(mockFetchData).toBeCalledTimes(2);
+          expect(mockFetchData).toHaveBeenCalledTimes(2);
           expect(mockFetchData.mock.calls).toEqual([
             ['http://dummy-repo'],
             [
@@ -150,7 +150,7 @@ describe('Fetch editor by url', () => {
 
           const customEditor = await fetchEditor(editorUrl, mockFetchData, true);
 
-          expect(mockFetchData).toBeCalledTimes(2);
+          expect(mockFetchData).toHaveBeenCalledTimes(2);
           expect(mockFetchData.mock.calls).toEqual([
             ['http://dummy-repo'],
             [
@@ -178,7 +178,7 @@ describe('Fetch editor by url', () => {
 
           const customEditor = await fetchEditor(editorUrl, mockFetchData, true);
 
-          expect(mockFetchData).toBeCalledTimes(2);
+          expect(mockFetchData).toHaveBeenCalledTimes(2);
           expect(mockFetchData.mock.calls).toEqual([
             ['http://dummy-repo'],
             [
@@ -209,7 +209,7 @@ describe('Fetch editor by url', () => {
 
           const customEditor = await fetchEditor(editorUrl, mockFetchData, true);
 
-          expect(mockFetchData).toBeCalledTimes(2);
+          expect(mockFetchData).toHaveBeenCalledTimes(2);
           expect(mockFetchData.mock.calls).toEqual([
             ['http://dummy-repo'],
             [
@@ -237,7 +237,7 @@ describe('Fetch editor by url', () => {
 
           const customEditor = await fetchEditor(editorUrl, mockFetchData, true);
 
-          expect(mockFetchData).toBeCalledTimes(2);
+          expect(mockFetchData).toHaveBeenCalledTimes(2);
           expect(mockFetchData.mock.calls).toEqual([
             ['http://dummy-repo'],
             [

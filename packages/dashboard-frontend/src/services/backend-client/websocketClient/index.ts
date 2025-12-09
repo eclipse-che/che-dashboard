@@ -90,12 +90,14 @@ export class WebsocketClient {
   /**
    * Performs connection to the pointed entrypoint.
    */
-  public async connect(): Promise<void> {
+  public connect(): Promise<void> {
     if (this.connectDeferred) {
       return this.connectDeferred.promise;
     }
 
     const deferred = getDefer<void>();
+    // Set connectDeferred before creating websocket to avoid race condition
+    this.connectDeferred = deferred;
 
     const origin = new URL(window.location.href).origin;
     const location = origin.replace('http', 'ws') + this.websocketContext;
@@ -121,7 +123,6 @@ export class WebsocketClient {
       this.messageHandler.notifyListeners(event);
     });
 
-    this.connectDeferred = deferred;
     return this.connectDeferred.promise;
   }
 

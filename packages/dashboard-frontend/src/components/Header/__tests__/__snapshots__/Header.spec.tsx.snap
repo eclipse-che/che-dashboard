@@ -1,4 +1,4 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
 exports[`The header component for IDE-loader and Factory-loader pages should render start workspace correctly 1`] = `
 <section

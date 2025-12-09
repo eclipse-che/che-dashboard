@@ -46,6 +46,7 @@ describe('Pod API Service', () => {
   afterEach(() => {
     jest.clearAllTimers();
     jest.clearAllMocks();
+    jest.useFakeTimers();
   });
 
   it('should list pods', async () => {
@@ -55,12 +56,19 @@ describe('Pod API Service', () => {
   });
 
   it('should throw when getting pods list', async () => {
+    // Temporarily disable fake timers for this async rejection test
+    jest.useRealTimers();
+
     const failureReason = 'failed to get pods list';
-    spyListNamespacedPod.mockRejectedValue(new Error(failureReason));
+    // Reset the mock and set up rejection - must use mockRejectedValueOnce to override default implementation
+    spyListNamespacedPod.mockReset();
+    spyListNamespacedPod.mockRejectedValueOnce(new Error(failureReason));
 
-    const list = async () => await podApiService.listInNamespace(namespace);
+    // The error is wrapped by createError, so check for the wrapped message
+    await expect(podApiService.listInNamespace(namespace)).rejects.toThrow('Unable to list pods.');
 
-    expect(list).rejects.toThrowError(failureReason);
+    // Restore fake timers for subsequent tests
+    jest.useFakeTimers();
   });
 
   it('should watch pods', async () => {

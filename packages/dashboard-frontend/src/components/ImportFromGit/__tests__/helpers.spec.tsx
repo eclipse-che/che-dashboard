@@ -89,7 +89,7 @@ describe('helpers', () => {
     });
 
     test('should throw error when provider is not supported', () => {
-      expect(() => helpers.getSupportedGitService('https://not-supported.com')).toThrowError(
+      expect(() => helpers.getSupportedGitService('https://not-supported.com')).toThrow(
         'Provider not supported: not-supported.com',
       );
     });
