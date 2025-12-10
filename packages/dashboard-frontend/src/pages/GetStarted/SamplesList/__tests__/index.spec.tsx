@@ -239,6 +239,96 @@ describe('Samples List', () => {
       );
     });
   });
+
+  describe('SSH URL handling', () => {
+    const preferredPvcStrategy = 'per-workspace';
+
+    test('should handle SSH URL with .git extension', async () => {
+      const sshUrl = 'git@github.com:eclipse-che/che-dashboard.git';
+      const store = new MockStoreBuilder()
+        .withBranding({
+          docs: {
+            storageTypes: 'storage-types-docs',
+          },
+        } as BrandingData)
+        .withDwServerConfig({
+          defaults: {
+            pvcStrategy: preferredPvcStrategy,
+          } as api.IServerConfig['defaults'],
+        })
+        .withDevfileRegistries({
+          registries: {
+            ['registry-url']: {
+              metadata: [
+                {
+                  displayName: 'Test Sample SSH',
+                  description: 'Test sample with SSH URL',
+                  tags: ['Test'],
+                  icon: '/images/test.svg',
+                  links: {
+                    v2: sshUrl,
+                  },
+                },
+              ],
+            },
+          },
+        })
+        .build();
+
+      renderComponent(store, editorDefinition, editorImage);
+
+      const sampleCardButton = screen.getByRole('button', { name: 'Select Sample' });
+      await userEvent.click(sampleCardButton);
+
+      expect(mockWindowOpen).toHaveBeenCalledWith(
+        `${origin}/dashboard/#/load-factory?url=git%40github.com%3Aeclipse-che%2Fche-dashboard.git&che-editor=che-incubator%2Fche-code%2Finsiders&editor-image=custom-editor-image&storageType=${preferredPvcStrategy}`,
+        '_blank',
+      );
+    });
+
+    test('should handle SSH URL with revision parameter', async () => {
+      const sshUrl = 'git@github.com:eclipse-che/che-dashboard.git?revision=test';
+      const store = new MockStoreBuilder()
+        .withBranding({
+          docs: {
+            storageTypes: 'storage-types-docs',
+          },
+        } as BrandingData)
+        .withDwServerConfig({
+          defaults: {
+            pvcStrategy: preferredPvcStrategy,
+          } as api.IServerConfig['defaults'],
+        })
+        .withDevfileRegistries({
+          registries: {
+            ['registry-url']: {
+              metadata: [
+                {
+                  displayName: 'Test Sample SSH with Branch',
+                  description: 'Test sample with SSH URL and revision',
+                  tags: ['Test'],
+                  icon: '/images/test.svg',
+                  links: {
+                    v2: sshUrl,
+                  },
+                },
+              ],
+            },
+          },
+        })
+        .build();
+
+      renderComponent(store, editorDefinition, editorImage);
+
+      const sampleCardButton = screen.getByRole('button', { name: 'Select Sample' });
+      await userEvent.click(sampleCardButton);
+
+      expect(mockWindowOpen).toHaveBeenCalledWith(
+        `${origin}/dashboard/#/load-factory?url=git%40github.com%3Aeclipse-che%2Fche-dashboard.git%3Frevision%3Dtest&che-editor=che-incubator%2Fche-code%2Finsiders&editor-image=custom-editor-image&storageType=${preferredPvcStrategy}`,
+        '_blank',
+      );
+    });
+  });
 });
 
 function getComponent(

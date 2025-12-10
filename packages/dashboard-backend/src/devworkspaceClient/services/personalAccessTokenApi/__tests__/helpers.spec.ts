@@ -116,7 +116,7 @@ describe('Helpers for Personal Access Token API', () => {
         },
       };
 
-      expect(() => toToken(secret)).toThrowError();
+      expect(() => toToken(secret)).toThrow();
     });
   });
 
@@ -204,7 +204,7 @@ describe('Helpers for Personal Access Token API', () => {
         isOauth: false,
       };
 
-      expect(() => toSecret(namespace, token)).toThrowError();
+      expect(() => toSecret(namespace, token)).toThrow();
     });
   });
 });
