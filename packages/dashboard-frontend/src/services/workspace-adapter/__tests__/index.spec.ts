@@ -130,6 +130,42 @@ describe('for DevWorkspace', () => {
     expect(workspace.name).toEqual(overrideName);
   });
 
+  it('should set workspace name in "kubernetes.io/metadata.name" label', () => {
+    const name = 'wksp-1234';
+    const newName = 'new-workspace-name';
+    const devWorkspace = new DevWorkspaceBuilder().withName(name).build();
+    const workspace = constructWorkspace(devWorkspace);
+
+    expect(workspace.name).toEqual(name);
+
+    workspace.name = newName;
+
+    expect(workspace.name).toEqual(newName);
+    expect(workspace.ref.metadata.labels?.[DEVWORKSPACE_LABEL_METADATA_NAME]).toEqual(newName);
+  });
+
+  it('should update workspace name when label already exists', () => {
+    const name = 'wksp-1234';
+    const initialOverrideName = 'initial-override';
+    const newName = 'updated-name';
+    const devWorkspace = new DevWorkspaceBuilder()
+      .withMetadata({
+        labels: {
+          [DEVWORKSPACE_LABEL_METADATA_NAME]: initialOverrideName,
+        },
+        name,
+      })
+      .build();
+    const workspace = constructWorkspace(devWorkspace);
+
+    expect(workspace.name).toEqual(initialOverrideName);
+
+    workspace.name = newName;
+
+    expect(workspace.name).toEqual(newName);
+    expect(workspace.ref.metadata.labels?.[DEVWORKSPACE_LABEL_METADATA_NAME]).toEqual(newName);
+  });
+
   it('should return namespace', () => {
     const namespace = 'test-namespace';
     const devWorkspace = new DevWorkspaceBuilder().withNamespace(namespace).build();
@@ -241,22 +277,163 @@ describe('for DevWorkspace', () => {
       const workspace = constructWorkspace(devWorkspace);
       expect(workspace.source).toBeUndefined();
     });
-    it('should return factory url param if existing', () => {
-      const devWorkspace = new DevWorkspaceBuilder()
-        .withMetadata({
-          name: 'test-workspace',
-          annotations: {
-            [DEVWORKSPACE_DEVFILE_SOURCE]: dump({
-              factory: {
-                params: 'editor-image=test-images/che-code:tag&url=https://dummy.repo',
-              },
-            }),
-          },
-        })
-        .build();
-      const workspace = constructWorkspace(devWorkspace);
-      expect(workspace.source).toEqual('https://dummy.repo');
+
+    describe('factory params', () => {
+      it('should return factory url with all params (including factory attributes)', () => {
+        const devWorkspace = new DevWorkspaceBuilder()
+          .withMetadata({
+            name: 'test-workspace',
+            annotations: {
+              [DEVWORKSPACE_DEVFILE_SOURCE]: dump({
+                factory: {
+                  params:
+                    'che-editor=che-incubator/che-code/latest&storageType=per-workspace&url=https://github.com/user/repo',
+                },
+              }),
+            },
+          })
+          .build();
+        const workspace = constructWorkspace(devWorkspace);
+        expect(workspace.source).toEqual(
+          'https://github.com/user/repo?che-editor=che-incubator/che-code/latest&storageType=per-workspace',
+        );
+      });
+
+      it('should return factory url without non-propagated params', () => {
+        const devWorkspace = new DevWorkspaceBuilder()
+          .withMetadata({
+            name: 'test-workspace',
+            annotations: {
+              [DEVWORKSPACE_DEVFILE_SOURCE]: dump({
+                factory: {
+                  params: 'url=https://github.com/user/repo',
+                },
+              }),
+            },
+          })
+          .build();
+        const workspace = constructWorkspace(devWorkspace);
+        expect(workspace.source).toEqual('https://github.com/user/repo');
+      });
+
+      it('should handle factory params with che-editor only', () => {
+        const devWorkspace = new DevWorkspaceBuilder()
+          .withMetadata({
+            name: 'test-workspace',
+            annotations: {
+              [DEVWORKSPACE_DEVFILE_SOURCE]: dump({
+                factory: {
+                  params: 'che-editor=che-code&url=https://gitlab.com/project/repo',
+                },
+              }),
+            },
+          })
+          .build();
+        const workspace = constructWorkspace(devWorkspace);
+        expect(workspace.source).toEqual('https://gitlab.com/project/repo?che-editor=che-code');
+      });
+
+      it('should handle factory params with multiple propagated attributes', () => {
+        const devWorkspace = new DevWorkspaceBuilder()
+          .withMetadata({
+            name: 'test-workspace',
+            annotations: {
+              [DEVWORKSPACE_DEVFILE_SOURCE]: dump({
+                factory: {
+                  params:
+                    'che-editor=che-incubator/che-idea/latest&image=custom-image:tag&policies.create=peruser&storageType=ephemeral&url=https://bitbucket.org/team/project',
+                },
+              }),
+            },
+          })
+          .build();
+        const workspace = constructWorkspace(devWorkspace);
+        // Should include all propagated factory attributes
+        expect(workspace.source).toContain('che-editor=che-incubator/che-idea/latest');
+        expect(workspace.source).toContain('image=custom-image:tag');
+        expect(workspace.source).toContain('policies.create=peruser');
+        expect(workspace.source).toContain('storageType=ephemeral');
+        expect(workspace.source).toContain('https://bitbucket.org/team/project');
+      });
+
+      it('should handle airgap sample URLs with propagated attributes', () => {
+        const devWorkspace = new DevWorkspaceBuilder()
+          .withMetadata({
+            name: 'test-workspace',
+            annotations: {
+              [DEVWORKSPACE_DEVFILE_SOURCE]: dump({
+                factory: {
+                  params:
+                    'che-editor=che-incubator/che-code/latest&storageType=per-user&url=http://localhost:8080/dashboard/api/airgap-sample/devfile/download?id=java-maven',
+                },
+              }),
+            },
+          })
+          .build();
+        const workspace = constructWorkspace(devWorkspace);
+        expect(workspace.source).toEqual(
+          'http://localhost:8080/dashboard/api/airgap-sample/devfile/download?id=java-maven&che-editor=che-incubator/che-code/latest&storageType=per-user',
+        );
+      });
+
+      it('should return base URL when no propagated params present', () => {
+        const devWorkspace = new DevWorkspaceBuilder()
+          .withMetadata({
+            name: 'test-workspace',
+            annotations: {
+              [DEVWORKSPACE_DEVFILE_SOURCE]: dump({
+                factory: {
+                  params: 'url=https://github.com/eclipse-che/che-dashboard',
+                },
+              }),
+            },
+          })
+          .build();
+        const workspace = constructWorkspace(devWorkspace);
+        expect(workspace.source).toEqual('https://github.com/eclipse-che/che-dashboard');
+      });
+
+      it('should handle legacy factory params format', () => {
+        const devWorkspace = new DevWorkspaceBuilder()
+          .withMetadata({
+            name: 'test-workspace',
+            annotations: {
+              [DEVWORKSPACE_DEVFILE_SOURCE]: dump({
+                factory: {
+                  params: 'editor-image=test-images/che-code:tag&url=https://dummy.repo',
+                },
+              }),
+            },
+          })
+          .build();
+        const workspace = constructWorkspace(devWorkspace);
+        // Should include the editor-image param (it's a propagated attribute)
+        expect(workspace.source).toEqual(
+          'https://dummy.repo?editor-image=test-images/che-code:tag',
+        );
+      });
+
+      it('should not include "existing" param in source', () => {
+        const devWorkspace = new DevWorkspaceBuilder()
+          .withMetadata({
+            name: 'test-workspace',
+            annotations: {
+              [DEVWORKSPACE_DEVFILE_SOURCE]: dump({
+                factory: {
+                  params:
+                    'che-editor=che-code&existing=some-workspace&url=https://github.com/user/repo',
+                },
+              }),
+            },
+          })
+          .build();
+        const workspace = constructWorkspace(devWorkspace);
+        // "existing" should not be in source (it's flow control, not source identification)
+        expect(workspace.source).toEqual('https://github.com/user/repo?che-editor=che-code');
+        expect(workspace.source).not.toContain('existing=');
+      });
     });
+
     it('should return scm repo if existing', () => {
       const devWorkspace = new DevWorkspaceBuilder()
         .withMetadata({
