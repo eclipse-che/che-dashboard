@@ -12,7 +12,7 @@
 
 import React from 'react';
 
-export default class GitRepoFormGroups extends React.PureComponent {
+export default class GitRepoFormGroup extends React.PureComponent {
   render() {
     return <div>Mock Git Repo Form</div>;
   }
