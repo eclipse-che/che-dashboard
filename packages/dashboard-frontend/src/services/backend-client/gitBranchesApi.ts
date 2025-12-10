@@ -11,8 +11,8 @@
  */
 
 import common, { api } from '@eclipse-che/common';
+import axios from 'axios';
 
-import { AxiosWrapper } from '@/services/axios-wrapper/axiosWrapper';
 import { dashboardBackendPrefix } from '@/services/backend-client/const';
 import SessionStorageService, { SessionStorageKey } from '@/services/session-storage';
 
@@ -22,14 +22,14 @@ const EXPIRATION_TIME_FOR_STORED_BRANCHES = 60 * 60 * 1000; // expiration time i
  * Returns object with git branches list.
  */
 export async function fetchGitBranches(url: string): Promise<api.IGitBranches> {
-  const requestUrl = `${dashboardBackendPrefix}/gitbranches/${encodeURIComponent(encodeURIComponent(url))}`;
   try {
     const branchesFromStorage = getBranchesFromStorage(url);
     if (branchesFromStorage) {
       return { branches: branchesFromStorage } as api.IGitBranches;
     }
-    const response =
-      await AxiosWrapper.createToRetryMissedBearerTokenError().get<api.IGitBranches>(requestUrl);
+    const response = await axios.post<api.IGitBranches>(`${dashboardBackendPrefix}/gitbranches`, {
+      url,
+    });
     const data = response.data;
     setGitBranchesToStorage(url, data.branches);
     return data;

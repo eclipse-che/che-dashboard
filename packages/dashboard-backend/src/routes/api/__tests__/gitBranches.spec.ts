@@ -25,7 +25,7 @@ jest.mock('@/devworkspaceClient/services/helpers/exec', () => {
 
 describe('GitBranches Route', () => {
   let app: FastifyInstance;
-  const url = encodeURIComponent('https://github.com/username/repository.git');
+  const url = 'https://github.com/username/repository.git';
 
   beforeEach(async () => {
     app = await setup();
@@ -35,8 +35,8 @@ describe('GitBranches Route', () => {
     teardown(app);
   });
 
-  test('GET ${baseApiPath}/gitbranches:url', async () => {
-    const res = await app.inject().get(`${baseApiPath}/gitbranches/${url}`);
+  test('POST ${baseApiPath}/gitbranches', async () => {
+    const res = await app.inject().post(`${baseApiPath}/gitbranches`).payload({ url });
 
     expect(res.statusCode).toEqual(200);
   });

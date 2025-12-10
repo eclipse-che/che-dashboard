@@ -22,12 +22,12 @@ const tags = ['GitBranches'];
 
 export function registerGitBranchesRoute(instance: FastifyInstance) {
   instance.register(async server => {
-    server.get(
-      `${baseApiPath}/gitbranches/:url`,
-      getSchema({ tags, params: gitBranchSchema }),
+    server.post(
+      `${baseApiPath}/gitbranches`,
+      getSchema({ tags, body: gitBranchSchema }),
       async function (request: FastifyRequest) {
-        const { url } = request.params as restParams.IUrlParams;
-        return getBranches(decodeURIComponent(decodeURIComponent(url)));
+        const { url } = request.body as restParams.IYamlResolverParams;
+        return getBranches(url);
       },
     );
   });

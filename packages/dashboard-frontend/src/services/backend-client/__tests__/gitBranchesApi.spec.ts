@@ -29,8 +29,8 @@ describe('fetch git branches', () => {
 
   it('should set branches to storage', async () => {
     const branches = ['branch1', 'branch2'];
-    const mockGet = mockAxios.get as jest.Mock;
-    mockGet.mockResolvedValue({ data: { branches } });
+    const mockPost = mockAxios.post as jest.Mock;
+    mockPost.mockResolvedValue({ data: { branches } });
     mockDateNow.mockReturnValue(0);
 
     await fetchGitBranches('url');

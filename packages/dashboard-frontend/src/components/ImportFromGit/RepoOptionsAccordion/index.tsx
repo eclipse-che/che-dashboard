@@ -104,9 +104,14 @@ class RepoOptionsAccordion extends React.PureComponent<Props, State> {
 
     const state = Object.assign(gitRepoOptions, advancedOptions) as State;
 
-    const branchRequest = await fetchGitBranches(getRepositoryUrlFromLocation(location));
-    state.branchList = branchRequest.branches;
-    this.setState(state);
+    let branchList: string[] | undefined = undefined;
+    try {
+      const branchRequest = await fetchGitBranches(getRepositoryUrlFromLocation(location));
+      branchList = branchRequest.branches;
+    } finally {
+      state.branchList = branchList;
+      this.setState(state);
+    }
   }
 
   public componentDidMount() {
