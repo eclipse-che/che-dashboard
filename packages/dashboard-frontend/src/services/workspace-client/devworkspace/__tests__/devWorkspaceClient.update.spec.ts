@@ -12,7 +12,10 @@
 
 import { container } from '@/inversify.config';
 import * as DwApi from '@/services/backend-client/devWorkspaceApi';
-import { DevWorkspaceClient } from '@/services/workspace-client/devworkspace/devWorkspaceClient';
+import {
+  DEVWORKSPACE_LABEL_METADATA_NAME,
+  DevWorkspaceClient,
+} from '@/services/workspace-client/devworkspace/devWorkspaceClient';
 import { DevWorkspaceBuilder } from '@/store/__mocks__/devWorkspaceBuilder';
 
 describe('DevWorkspace client, update', () => {
@@ -131,5 +134,205 @@ describe('DevWorkspace client, update', () => {
         },
       ]),
     );
+  });
+
+  it('should add custom name label when it does not exist', async () => {
+    const onClusterWorkspace = new DevWorkspaceBuilder()
+      .withName('wksp-test')
+      .withMetadata({
+        annotations: {
+          'che.eclipse.org/last-updated-timestamp': timestampOld,
+        },
+      })
+      .withStatus({
+        phase: 'RUNNING',
+        mainUrl: 'link/ide',
+      })
+      .build();
+
+    const updatedWorkspace = new DevWorkspaceBuilder()
+      .withName('wksp-test')
+      .withMetadata({
+        labels: {
+          [DEVWORKSPACE_LABEL_METADATA_NAME]: 'my-custom-name',
+        },
+        annotations: {
+          'che.eclipse.org/last-updated-timestamp': timestampOld,
+        },
+      })
+      .withStatus({
+        phase: 'RUNNING',
+        mainUrl: 'link/ide',
+      })
+      .build();
+
+    jest.spyOn(DwApi, 'getWorkspaceByName').mockResolvedValueOnce(onClusterWorkspace);
+    const spyPatchWorkspace = jest
+      .spyOn(DwApi, 'patchWorkspace')
+      .mockResolvedValueOnce({ devWorkspace: updatedWorkspace, headers: {} });
+
+    await client.update(updatedWorkspace);
+
+    expect(spyPatchWorkspace).toHaveBeenCalledWith(
+      expect.any(String),
+      expect.any(String),
+      expect.arrayContaining([
+        {
+          op: 'add',
+          path: '/metadata/labels/kubernetes.io~1metadata.name',
+          value: 'my-custom-name',
+        },
+      ]),
+    );
+  });
+
+  it('should replace custom name label when it already exists', async () => {
+    const onClusterWorkspace = new DevWorkspaceBuilder()
+      .withName('wksp-test')
+      .withMetadata({
+        labels: {
+          [DEVWORKSPACE_LABEL_METADATA_NAME]: 'old-name',
+        },
+        annotations: {
+          'che.eclipse.org/last-updated-timestamp': timestampOld,
+        },
+      })
+      .withStatus({
+        phase: 'RUNNING',
+        mainUrl: 'link/ide',
+      })
+      .build();
+
+    const updatedWorkspace = new DevWorkspaceBuilder()
+      .withName('wksp-test')
+      .withMetadata({
+        labels: {
+          [DEVWORKSPACE_LABEL_METADATA_NAME]: 'new-name',
+        },
+        annotations: {
+          'che.eclipse.org/last-updated-timestamp': timestampOld,
+        },
+      })
+      .withStatus({
+        phase: 'RUNNING',
+        mainUrl: 'link/ide',
+      })
+      .build();
+
+    jest.spyOn(DwApi, 'getWorkspaceByName').mockResolvedValueOnce(onClusterWorkspace);
+    const spyPatchWorkspace = jest
+      .spyOn(DwApi, 'patchWorkspace')
+      .mockResolvedValueOnce({ devWorkspace: updatedWorkspace, headers: {} });
+
+    await client.update(updatedWorkspace);
+
+    expect(spyPatchWorkspace).toHaveBeenCalledWith(
+      expect.any(String),
+      expect.any(String),
+      expect.arrayContaining([
+        {
+          op: 'replace',
+          path: '/metadata/labels/kubernetes.io~1metadata.name',
+          value: 'new-name',
+        },
+      ]),
+    );
+  });
+
+  it('should remove custom name label when it is cleared', async () => {
+    const onClusterWorkspace = new DevWorkspaceBuilder()
+      .withName('wksp-test')
+      .withMetadata({
+        labels: {
+          [DEVWORKSPACE_LABEL_METADATA_NAME]: 'custom-name',
+        },
+        annotations: {
+          'che.eclipse.org/last-updated-timestamp': timestampOld,
+        },
+      })
+      .withStatus({
+        phase: 'RUNNING',
+        mainUrl: 'link/ide',
+      })
+      .build();
+
+    const updatedWorkspace = new DevWorkspaceBuilder()
+      .withName('wksp-test')
+      .withMetadata({
+        annotations: {
+          'che.eclipse.org/last-updated-timestamp': timestampOld,
+        },
+      })
+      .withStatus({
+        phase: 'RUNNING',
+        mainUrl: 'link/ide',
+      })
+      .build();
+
+    jest.spyOn(DwApi, 'getWorkspaceByName').mockResolvedValueOnce(onClusterWorkspace);
+    const spyPatchWorkspace = jest
+      .spyOn(DwApi, 'patchWorkspace')
+      .mockResolvedValueOnce({ devWorkspace: updatedWorkspace, headers: {} });
+
+    await client.update(updatedWorkspace);
+
+    expect(spyPatchWorkspace).toHaveBeenCalledWith(
+      expect.any(String),
+      expect.any(String),
+      expect.arrayContaining([
+        {
+          op: 'remove',
+          path: '/metadata/labels/kubernetes.io~1metadata.name',
+        },
+      ]),
+    );
+  });
+
+  it('should not patch custom name label when it has not changed', async () => {
+    const onClusterWorkspace = new DevWorkspaceBuilder()
+      .withName('wksp-test')
+      .withMetadata({
+        labels: {
+          [DEVWORKSPACE_LABEL_METADATA_NAME]: 'same-name',
+        },
+        annotations: {
+          'che.eclipse.org/last-updated-timestamp': timestampOld,
+        },
+      })
+      .withStatus({
+        phase: 'RUNNING',
+        mainUrl: 'link/ide',
+      })
+      .build();
+
+    const updatedWorkspace = new DevWorkspaceBuilder()
+      .withName('wksp-test')
+      .withMetadata({
+        labels: {
+          [DEVWORKSPACE_LABEL_METADATA_NAME]: 'same-name',
+        },
+        annotations: {
+          'che.eclipse.org/last-updated-timestamp': timestampOld,
+        },
+      })
+      .withStatus({
+        phase: 'RUNNING',
+        mainUrl: 'link/ide',
+      })
+      .build();
+
+    jest.spyOn(DwApi, 'getWorkspaceByName').mockResolvedValueOnce(onClusterWorkspace);
+    const spyPatchWorkspace = jest
+      .spyOn(DwApi, 'patchWorkspace')
+      .mockResolvedValueOnce({ devWorkspace: updatedWorkspace, headers: {} });
+
+    await client.update(updatedWorkspace);
+
+    const patchCalls = spyPatchWorkspace.mock.calls[0][2];
+    const customNamePatches = patchCalls.filter(
+      (p: any) => p.path === '/metadata/labels/kubernetes.io~1metadata.name',
+    );
+
+    expect(customNamePatches).toHaveLength(0);
   });
 });
