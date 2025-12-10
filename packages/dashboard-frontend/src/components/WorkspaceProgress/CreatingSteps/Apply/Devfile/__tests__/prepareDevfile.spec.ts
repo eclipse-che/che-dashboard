@@ -113,7 +113,7 @@ describe('FactoryLoaderContainer/prepareDevfile', () => {
 
       const newDevfile = prepareDevfile(devfile, factoryId, undefined, false);
 
-      expect(newDevfile.attributes?.[DEVWORKSPACE_METADATA_ANNOTATION]).not.toContain(
+      expect(newDevfile.attributes?.[DEVWORKSPACE_METADATA_ANNOTATION]).not.toEqual(
         badMetadataAnnotation,
       );
       expect(newDevfile.attributes?.[DEVWORKSPACE_METADATA_ANNOTATION]).toEqual(factorySource);
@@ -145,7 +145,7 @@ describe('FactoryLoaderContainer/prepareDevfile', () => {
 
       const newDevfile = prepareDevfile(devfile, factoryId, undefined, false);
 
-      expect(newDevfile.attributes?.[DEVWORKSPACE_METADATA_ANNOTATION]).not.toContain(
+      expect(newDevfile.attributes?.[DEVWORKSPACE_METADATA_ANNOTATION]).not.toEqual(
         expect.objectContaining(badDevworkspaceDevfileSource),
       );
       expect(newDevfile.attributes?.[DEVWORKSPACE_METADATA_ANNOTATION]).toEqual(factorySource);

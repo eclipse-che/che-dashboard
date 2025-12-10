@@ -111,12 +111,13 @@ describe('websocketClient', () => {
         const readyPromise1 = websocketClient.connect();
         const readyPromise2 = websocketClient.connect();
 
-        expect(readyPromise1).toStrictEqual(readyPromise2);
+        expect(readyPromise1).toBe(readyPromise2);
 
         await serverMock.connected;
+        await readyPromise1;
         const readyPromise3 = websocketClient.connect();
 
-        expect(readyPromise1).toStrictEqual(readyPromise3);
+        expect(readyPromise1).toBe(readyPromise3);
       });
     });
 

@@ -10,7 +10,7 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-const devfileApiMock = jest.genMockFromModule('..');
+const devfileApiMock = jest.createMockFromModule('..');
 export default devfileApiMock;
 
 export * from '../typeguards';

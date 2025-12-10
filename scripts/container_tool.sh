@@ -20,7 +20,7 @@ detect_container_engine() {
     # Check for Podman
     if command_exists "podman"; then
         # Check if Podman machine is running
-        if podman info &>/dev/null; then
+        if podman info >/dev/null 2>&1; then
             engine="podman"
         fi
     fi
@@ -29,7 +29,7 @@ detect_container_engine() {
     if [ -z "$engine" ]; then
         if command_exists "docker"; then
             # Check if Docker daemon is running
-            if docker info &>/dev/null; then
+            if docker info >/dev/null 2>&1; then
                 engine="docker"
             fi
         fi

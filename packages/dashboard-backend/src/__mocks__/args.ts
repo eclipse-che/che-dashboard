@@ -13,7 +13,7 @@
 import args from 'args';
 import path from 'path';
 
-const mockArgs = jest.genMockFromModule('args');
+const mockArgs = jest.createMockFromModule<typeof args>('args');
 (mockArgs as typeof args).parse = jest.fn(() => {
   return {
     publicFolder: path.join(__dirname, 'src/__mocks__/dashboard'),

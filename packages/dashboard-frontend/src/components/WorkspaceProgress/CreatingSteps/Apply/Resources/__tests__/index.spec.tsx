@@ -253,16 +253,20 @@ describe('Creating steps, applying resources', () => {
       const deferred = getDefer();
 
       const actionTitle = 'Click to try again';
-      mockOnError.mockImplementationOnce((alertItem: AlertItem) => {
-        const action = alertItem.actionCallbacks?.find(action =>
-          action.title.startsWith(actionTitle),
-        );
-        expect(action).toBeDefined();
+      let callCount = 0;
+      mockOnError.mockImplementation((alertItem: AlertItem) => {
+        callCount++;
+        if (callCount === 1) {
+          const action = alertItem.actionCallbacks?.find(action =>
+            action.title.startsWith(actionTitle),
+          );
+          expect(action).toBeDefined();
 
-        if (action && isActionCallback(action)) {
-          deferred.promise.then(action.callback);
-        } else {
-          throw new Error('Action not found');
+          if (action && isActionCallback(action)) {
+            deferred.promise.then(action.callback);
+          } else {
+            throw new Error('Action not found');
+          }
         }
       });
 
@@ -288,7 +292,9 @@ describe('Creating steps, applying resources', () => {
 
       await waitFor(() => expect(mockOnRestart).toHaveBeenCalled());
       expect(mockOnNextStep).not.toHaveBeenCalled();
-      expect(mockOnError).toHaveBeenCalled();
+      // After restart, the step runs again and should fail again, calling onError
+      await jest.advanceTimersByTimeAsync(MIN_STEP_DURATION_MS);
+      await waitFor(() => expect(mockOnError).toHaveBeenCalled());
     });
   });
 
