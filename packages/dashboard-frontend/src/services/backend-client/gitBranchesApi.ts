@@ -22,7 +22,7 @@ const EXPIRATION_TIME_FOR_STORED_BRANCHES = 60 * 60 * 1000; // expiration time i
  * Returns object with git branches list.
  */
 export async function fetchGitBranches(url: string): Promise<api.IGitBranches> {
-  const requestUrl = `${dashboardBackendPrefix}/gitbranches/${encodeURIComponent(url)}`;
+  const requestUrl = `${dashboardBackendPrefix}/gitbranches/${encodeURIComponent(encodeURIComponent(url))}`;
   try {
     const branchesFromStorage = getBranchesFromStorage(url);
     if (branchesFromStorage) {

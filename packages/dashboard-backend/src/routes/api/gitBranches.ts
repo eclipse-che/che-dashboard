@@ -27,7 +27,7 @@ export function registerGitBranchesRoute(instance: FastifyInstance) {
       getSchema({ tags, params: gitBranchSchema }),
       async function (request: FastifyRequest) {
         const { url } = request.params as restParams.IUrlParams;
-        return getBranches(url);
+        return getBranches(decodeURIComponent(decodeURIComponent(url)));
       },
     );
   });
