@@ -69,12 +69,23 @@ export class GitConfigForm extends React.PureComponent<Props, State> {
     });
   }
 
+  private isGitConfigEqual(config1: GitConfig, config2: GitConfig): boolean {
+    if (!config1 || !config2 || !config1.user || !config2.user) {
+      return false;
+    }
+    return config1.user.email === config2.user.email && config1.user.name === config2.user.name;
+  }
+
   public render(): React.ReactElement {
     const { gitConfig, isLoading } = this.props;
     const { isValid, nextGitConfig } = this.state;
 
     const config = { ...gitConfig, ...(nextGitConfig || {}) };
-    const isSaveDisabled = isLoading || isValid === false || nextGitConfig === undefined;
+    const isSaveDisabled =
+      isLoading ||
+      !isValid ||
+      nextGitConfig === undefined ||
+      this.isGitConfigEqual(gitConfig, nextGitConfig);
 
     return (
       <PageSection variant={PageSectionVariants.light}>

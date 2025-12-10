@@ -96,6 +96,33 @@ describe('GitConfigForm', () => {
       expect(screen.getByRole('button', { name: 'Save' })).toBeEnabled();
       expect(screen.getByRole('button', { name: 'Reload' })).toBeEnabled();
     });
+
+    test('with gitconfig not changed', () => {
+      renderComponent(
+        { gitConfig: { user: { name: 'name', email: 'test@che' } } },
+        { isValid: true, nextGitConfig: { user: { name: 'name', email: 'test@che' } } },
+      );
+
+      expect(screen.getByRole('button', { name: 'Save' })).toBeDisabled();
+    });
+
+    test('with gitconfig name changed', () => {
+      renderComponent(
+        { gitConfig: { user: { name: 'name', email: 'test@che' } } },
+        { isValid: true, nextGitConfig: { user: { name: 'new name', email: 'test@che' } } },
+      );
+
+      expect(screen.getByRole('button', { name: 'Save' })).toBeEnabled();
+    });
+
+    test('with gitconfig email changed', () => {
+      renderComponent(
+        { gitConfig: { user: { name: 'name', email: 'test@che' } } },
+        { isValid: true, nextGitConfig: { user: { name: 'name', email: 'new-test@che' } } },
+      );
+
+      expect(screen.getByRole('button', { name: 'Save' })).toBeEnabled();
+    });
   });
 
   test('handle the Reload button click', async () => {
