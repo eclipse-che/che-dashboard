@@ -77,7 +77,7 @@ export const actionCreators = {
       ) {
         console.error(e.response.data.trace.join('\n'));
       }
-      throw errorMessage;
+      throw new Error(errorMessage);
     }
   },
 };
