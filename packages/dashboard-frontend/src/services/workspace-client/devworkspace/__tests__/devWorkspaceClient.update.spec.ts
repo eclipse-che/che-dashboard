@@ -100,4 +100,36 @@ describe('DevWorkspace client, update', () => {
       ]),
     );
   });
+
+  it('should ensure metadata annotations exist before patching', async () => {
+    const testWorkspace = new DevWorkspaceBuilder()
+      .withName('wksp-test')
+      .withStatus({
+        phase: 'RUNNING',
+        mainUrl: 'link/ide',
+      })
+      .build();
+
+    // Remove annotations to test the ensure logic
+    delete testWorkspace.metadata.annotations;
+
+    jest.spyOn(DwApi, 'getWorkspaceByName').mockResolvedValueOnce(testWorkspace);
+    const spyPatchWorkspace = jest
+      .spyOn(DwApi, 'patchWorkspace')
+      .mockResolvedValueOnce({ devWorkspace: testWorkspace, headers: {} });
+
+    await client.update(testWorkspace);
+
+    expect(spyPatchWorkspace).toHaveBeenCalledWith(
+      expect.any(String),
+      expect.any(String),
+      expect.arrayContaining([
+        {
+          op: 'add',
+          path: '/metadata/annotations',
+          value: {},
+        },
+      ]),
+    );
+  });
 });
