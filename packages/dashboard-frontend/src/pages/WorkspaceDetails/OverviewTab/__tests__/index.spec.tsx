@@ -112,7 +112,7 @@ describe('OverviewTab', () => {
     });
 
     test('should update state when workspace storageType changes', () => {
-      const { rerender } = renderComponent(workspace);
+      const { reRenderComponent } = renderComponent(workspace);
       const updatedDevWorkspace = new DevWorkspaceBuilder()
         .withName('my-project')
         .withSpec({
@@ -125,7 +125,7 @@ describe('OverviewTab', () => {
         .build();
       const updatedWorkspace = constructWorkspace(updatedDevWorkspace);
 
-      rerender(getComponent(updatedWorkspace));
+      reRenderComponent(updatedWorkspace);
 
       // Component should update its state when storageType changes
       expect(mockOnSave).not.toHaveBeenCalled();
@@ -133,7 +133,7 @@ describe('OverviewTab', () => {
 
     test('should handle workspace name save', async () => {
       renderComponent(workspace);
-      
+
       // The handleWorkspaceNameSave method is tested indirectly through
       // the WorkspaceName component integration. This test ensures the
       // component renders and can accept workspace name changes.
@@ -152,10 +152,10 @@ describe('OverviewTab', () => {
         })
         .build();
       const workspaceWithStorage = constructWorkspace(devWorkspace);
-      const { rerender } = renderComponent(workspaceWithStorage);
+      const { reRenderComponent } = renderComponent(workspaceWithStorage);
 
       // Re-render with same storage type
-      rerender(getComponent(workspaceWithStorage));
+      reRenderComponent(workspaceWithStorage);
 
       expect(mockOnSave).not.toHaveBeenCalled();
     });
