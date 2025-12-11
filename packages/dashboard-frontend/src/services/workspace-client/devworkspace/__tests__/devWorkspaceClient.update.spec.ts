@@ -335,4 +335,97 @@ describe('DevWorkspace client, update', () => {
 
     expect(customNamePatches).toHaveLength(0);
   });
+
+  it('should add custom name label when labels object does not exist', async () => {
+    const onClusterWorkspace = new DevWorkspaceBuilder()
+      .withName('wksp-test')
+      .withMetadata({
+        annotations: {
+          'che.eclipse.org/last-updated-timestamp': timestampOld,
+        },
+      })
+      .withStatus({
+        phase: 'RUNNING',
+        mainUrl: 'link/ide',
+      })
+      .build();
+
+    const updatedWorkspace = new DevWorkspaceBuilder()
+      .withName('wksp-test')
+      .withMetadata({
+        labels: {
+          [DEVWORKSPACE_LABEL_METADATA_NAME]: 'new-custom-name',
+        },
+        annotations: {
+          'che.eclipse.org/last-updated-timestamp': timestampOld,
+        },
+      })
+      .withStatus({
+        phase: 'RUNNING',
+        mainUrl: 'link/ide',
+      })
+      .build();
+
+    jest.spyOn(DwApi, 'getWorkspaceByName').mockResolvedValueOnce(onClusterWorkspace);
+    const spyPatchWorkspace = jest
+      .spyOn(DwApi, 'patchWorkspace')
+      .mockResolvedValueOnce({ devWorkspace: updatedWorkspace, headers: {} });
+
+    await client.update(updatedWorkspace);
+
+    expect(spyPatchWorkspace).toHaveBeenCalledWith(
+      expect.any(String),
+      expect.any(String),
+      expect.arrayContaining([
+        {
+          op: 'add',
+          path: '/metadata/labels',
+          value: {},
+        },
+        {
+          op: 'add',
+          path: '/metadata/labels/kubernetes.io~1metadata.name',
+          value: 'new-custom-name',
+        },
+      ]),
+    );
+  });
+
+  it('should handle DEVWORKSPACE_NEXT_START_ANNOTATION when present', async () => {
+    const testWorkspace = new DevWorkspaceBuilder()
+      .withName('wksp-test')
+      .withMetadata({
+        annotations: {
+          'che.eclipse.org/next-start-cfg': JSON.stringify({
+            apiVersion: 'workspace.devfile.io/v1alpha2',
+            kind: 'DevWorkspace',
+            metadata: { name: 'wksp-test' },
+            spec: { template: { components: [] } },
+          }),
+        },
+      })
+      .withStatus({
+        phase: 'RUNNING',
+        mainUrl: 'link/ide',
+      })
+      .build();
+
+    const spyPatchWorkspace = jest
+      .spyOn(DwApi, 'patchWorkspace')
+      .mockResolvedValueOnce({ devWorkspace: testWorkspace, headers: {} });
+
+    await client.update(testWorkspace);
+
+    expect(spyPatchWorkspace).toHaveBeenCalledWith(
+      expect.any(String),
+      expect.any(String),
+      expect.arrayContaining([
+        {
+          op: 'add',
+          path: '/metadata/annotations/che.eclipse.org~1next-start-cfg',
+          value: testWorkspace.metadata.annotations?.['che.eclipse.org/next-start-cfg'],
+        },
+      ]),
+    );
+  });
 });

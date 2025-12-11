@@ -360,4 +360,36 @@ describe('Normalize Devfile V2', () => {
       }),
     );
   });
+
+  it('should handle devfile source with branch in scm info', () => {
+    const devfile = {
+      schemaVersion: '2.2.2',
+      metadata: {
+        generateName: 'empty',
+      },
+    } as V230Devfile;
+
+    const factoryResolver: FactoryResolver = {
+      devfile,
+      source: 'devfile.yaml',
+      scm_info: {
+        clone_url: 'https://github.com/user/repo.git',
+        branch: 'main',
+      },
+    };
+
+    const targetDevfile = normalizeDevfile(
+      factoryResolver,
+      'http://dummy-registry/devfiles/empty.yaml',
+      defaultComponents,
+      {},
+    );
+
+    expect(targetDevfile.attributes?.['dw.metadata.annotations']?.[
+      'che.eclipse.org/devfile-source'
+    ]).toContain('branch: main');
+    expect(targetDevfile.attributes?.['dw.metadata.annotations']?.[
+      'che.eclipse.org/devfile-source'
+    ]).toContain('repo: https://github.com/user/repo.git');
+  });
 });

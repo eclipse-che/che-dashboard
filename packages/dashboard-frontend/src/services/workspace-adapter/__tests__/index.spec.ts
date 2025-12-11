@@ -86,6 +86,37 @@ describe('for DevWorkspace', () => {
     expect(workspace.storageType).toEqual('per-user');
   });
 
+  it('should remove storage type when set to empty string', () => {
+    const devWorkspace = new DevWorkspaceBuilder().build();
+    devWorkspace.spec.template.attributes = {
+      [DEVWORKSPACE_STORAGE_TYPE_ATTR]: 'per-workspace',
+    };
+    const workspace = constructWorkspace(devWorkspace);
+
+    expect(workspace.storageType).toEqual('per-workspace');
+
+    // Test edge case: set storageType to falsy value to trigger removal
+    workspace.storageType = undefined as any;
+
+    expect(workspace.storageType).toEqual('');
+    expect(
+      workspace.ref.spec.template.attributes?.[DEVWORKSPACE_STORAGE_TYPE_ATTR],
+    ).toBeUndefined();
+  });
+
+  it('should remove attributes object when clearing storage type and attributes become empty', () => {
+    const devWorkspace = new DevWorkspaceBuilder().build();
+    devWorkspace.spec.template.attributes = {
+      [DEVWORKSPACE_STORAGE_TYPE_ATTR]: 'per-workspace',
+    };
+    const workspace = constructWorkspace(devWorkspace);
+
+    // Test edge case: set storageType to falsy value to trigger removal
+    workspace.storageType = undefined as any;
+
+    expect(workspace.ref.spec.template.attributes).toBeUndefined();
+  });
+
   it('should return reference to the workspace', () => {
     const devWorkspace = new DevWorkspaceBuilder().build();
     const workspace = constructWorkspace(devWorkspace);
@@ -164,6 +195,45 @@ describe('for DevWorkspace', () => {
 
     expect(workspace.name).toEqual(newName);
     expect(workspace.ref.metadata.labels?.[DEVWORKSPACE_LABEL_METADATA_NAME]).toEqual(newName);
+  });
+
+  it('should remove workspace name label when set to empty string', () => {
+    const name = 'wksp-1234';
+    const overrideName = 'override-name';
+    const devWorkspace = new DevWorkspaceBuilder()
+      .withMetadata({
+        labels: {
+          [DEVWORKSPACE_LABEL_METADATA_NAME]: overrideName,
+        },
+        name,
+      })
+      .build();
+    const workspace = constructWorkspace(devWorkspace);
+
+    expect(workspace.name).toEqual(overrideName);
+
+    workspace.name = '';
+
+    expect(workspace.name).toEqual(name);
+    expect(workspace.ref.metadata.labels?.[DEVWORKSPACE_LABEL_METADATA_NAME]).toBeUndefined();
+  });
+
+  it('should remove labels object when clearing name and labels become empty', () => {
+    const name = 'wksp-1234';
+    const overrideName = 'override-name';
+    const devWorkspace = new DevWorkspaceBuilder()
+      .withMetadata({
+        labels: {
+          [DEVWORKSPACE_LABEL_METADATA_NAME]: overrideName,
+        },
+        name,
+      })
+      .build();
+    const workspace = constructWorkspace(devWorkspace);
+
+    workspace.name = '';
+
+    expect(workspace.ref.metadata.labels).toBeUndefined();
   });
 
   it('should return namespace', () => {
@@ -269,6 +339,69 @@ describe('for DevWorkspace', () => {
     const devWorkspace = new DevWorkspaceBuilder().withProjects(projects).build();
     const workspace = constructWorkspace(devWorkspace);
     expect(workspace.projects).toEqual([projects[0].name, projects[1].name]);
+  });
+
+  it('should return empty array when no projects and no starter projects', () => {
+    const devWorkspace = new DevWorkspaceBuilder().build();
+    const workspace = constructWorkspace(devWorkspace);
+    expect(workspace.projects).toEqual([]);
+  });
+
+  it('should return starter project name when use-starter-project attribute is set', () => {
+    const starterProjectName = 'my-starter-project';
+    const devWorkspace = new DevWorkspaceBuilder()
+      .withSpec({
+        template: {
+          attributes: {
+            'controller.devfile.io/use-starter-project': starterProjectName,
+          },
+          starterProjects: [
+            {
+              name: starterProjectName,
+              git: {
+                remotes: {
+                  origin: 'https://github.com/user/repo.git',
+                },
+              },
+            },
+          ],
+        },
+      })
+      .build();
+    const workspace = constructWorkspace(devWorkspace);
+    expect(workspace.projects).toEqual([starterProjectName]);
+  });
+
+  it('should return empty array when starter project name does not match', () => {
+    const starterProjectName = 'my-starter-project';
+    const devWorkspace = new DevWorkspaceBuilder()
+      .withSpec({
+        template: {
+          attributes: {
+            'controller.devfile.io/use-starter-project': starterProjectName,
+          },
+          starterProjects: [
+            {
+              name: 'different-starter-project',
+              git: {
+                remotes: {
+                  origin: 'https://github.com/user/repo.git',
+                },
+              },
+            },
+          ],
+        },
+      })
+      .build();
+    const workspace = constructWorkspace(devWorkspace);
+    expect(workspace.projects).toEqual([]);
+  });
+
+  it('should return empty array when template is undefined', () => {
+    const devWorkspace = new DevWorkspaceBuilder().build();
+    devWorkspace.spec.template = undefined as any;
+    const workspace = constructWorkspace(devWorkspace);
+    expect(workspace.projects).toEqual([]);
   });
 
   describe('source', () => {
@@ -431,6 +564,59 @@ describe('for DevWorkspace', () => {
         // "existing" should not be in source (it's flow control, not source identification)
         expect(workspace.source).toEqual('https://github.com/user/repo?che-editor=che-code');
         expect(workspace.source).not.toContain('existing=');
+      });
+
+      it('should return undefined when factory params array is empty', () => {
+        const devWorkspace = new DevWorkspaceBuilder()
+          .withMetadata({
+            name: 'test-workspace',
+            annotations: {
+              [DEVWORKSPACE_DEVFILE_SOURCE]: dump({
+                factory: {
+                  params: '',
+                },
+              }),
+            },
+          })
+          .build();
+        const workspace = constructWorkspace(devWorkspace);
+        expect(workspace.source).toBeUndefined();
+      });
+
+      it('should return undefined when factory params do not contain url param', () => {
+        const devWorkspace = new DevWorkspaceBuilder()
+          .withMetadata({
+            name: 'test-workspace',
+            annotations: {
+              [DEVWORKSPACE_DEVFILE_SOURCE]: dump({
+                factory: {
+                  params: 'che-editor=che-code&storageType=per-workspace',
+                },
+              }),
+            },
+          })
+          .build();
+        const workspace = constructWorkspace(devWorkspace);
+        expect(workspace.source).toBeUndefined();
+      });
+
+      it('should handle URL with existing query params', () => {
+        const devWorkspace = new DevWorkspaceBuilder()
+          .withMetadata({
+            name: 'test-workspace',
+            annotations: {
+              [DEVWORKSPACE_DEVFILE_SOURCE]: dump({
+                factory: {
+                  params:
+                    'che-editor=che-code&url=https://github.com/user/repo?branch=main&path=/src',
+                },
+              }),
+            },
+          })
+          .build();
+        const workspace = constructWorkspace(devWorkspace);
+        expect(workspace.source).toContain('https://github.com/user/repo?branch=main&path=/src');
+        expect(workspace.source).toContain('che-editor=che-code');
       });
     });
 

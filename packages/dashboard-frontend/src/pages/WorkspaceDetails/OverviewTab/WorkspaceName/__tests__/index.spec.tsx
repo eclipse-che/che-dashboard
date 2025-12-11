@@ -402,6 +402,105 @@ describe('WorkspaceNameFormGroup', () => {
       expect(screen.queryByRole('link', { name: workspace.name })).not.toBeInTheDocument();
     });
   });
+
+  describe('edge cases', () => {
+    test('should handle name matching ref.metadata.name in validation', async () => {
+      const user = userEvent.setup();
+
+      // Create a workspace with a custom name label
+      const customNameWorkspace = new DevWorkspaceBuilder()
+        .withName('original-name')
+        .withMetadata({
+          labels: {
+            'kubernetes.io/metadata.name': 'custom-name',
+          },
+        })
+        .build();
+      const workspaceWithCustomName = constructWorkspace(customNameWorkspace);
+
+      // Create another workspace with the same metadata.name
+      const existingDevWorkspace = new DevWorkspaceBuilder()
+        .withName('original-name')
+        .withUID('different-uid')
+        .build();
+
+      const store = new MockStoreBuilder()
+        .withDevWorkspaces({ workspaces: [customNameWorkspace, existingDevWorkspace] })
+        .build();
+
+      renderComponent(store, workspaceWithCustomName, false, mockOnSave);
+
+      // Open modal
+      const editButton = screen.getByTestId('edit-workspace-name-button');
+      await user.click(editButton);
+
+      await waitFor(() => {
+        expect(screen.getByTestId('edit-workspace-name-input')).toBeInTheDocument();
+      });
+
+      // Try to use the original metadata.name
+      const input = screen.getByTestId('edit-workspace-name-input');
+      await user.clear(input);
+      await user.type(input, 'original-name');
+
+      await waitFor(() => {
+        expect(screen.getByText('The name is already in use.')).toBeInTheDocument();
+      });
+    });
+
+    test('should not save when name is only whitespace', async () => {
+      const user = userEvent.setup();
+      const store = storeBuilder.build();
+      renderComponent(store, workspace, false, mockOnSave);
+
+      // Open modal
+      const editButton = screen.getByTestId('edit-workspace-name-button');
+      await user.click(editButton);
+
+      await waitFor(() => {
+        expect(screen.getByTestId('edit-workspace-name-input')).toBeInTheDocument();
+      });
+
+      // Enter only whitespace
+      const input = screen.getByTestId('edit-workspace-name-input');
+      await user.clear(input);
+      await user.type(input, '   ');
+
+      // Save button should be disabled
+      const saveButton = screen.getByTestId('edit-workspace-name-save');
+      expect(saveButton).toBeDisabled();
+
+      // onSave should not be called
+      expect(mockOnSave).not.toHaveBeenCalled();
+    });
+
+    test('should trim whitespace when saving valid name', async () => {
+      const user = userEvent.setup();
+      const store = storeBuilder.build();
+      renderComponent(store, workspace, false, mockOnSave);
+
+      // Open modal
+      const editButton = screen.getByTestId('edit-workspace-name-button');
+      await user.click(editButton);
+
+      await waitFor(() => {
+        expect(screen.getByTestId('edit-workspace-name-input')).toBeInTheDocument();
+      });
+
+      // Enter name with whitespace
+      const input = screen.getByTestId('edit-workspace-name-input');
+      await user.clear(input);
+      await user.type(input, '  valid-name  ');
+
+      // Save
+      const saveButton = screen.getByTestId('edit-workspace-name-save');
+      await user.click(saveButton);
+
+      await waitFor(() => {
+        expect(mockOnSave).toHaveBeenCalledWith('valid-name');
+      });
+    });
+  });
 });
 
 function getComponent(
