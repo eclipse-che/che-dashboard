@@ -15,7 +15,7 @@ import isEqual from 'lodash/isEqual';
 import React from 'react';
 
 import { AdditionalGitRemotes } from '@/components/ImportFromGit/RepoOptionsAccordion/GitRepoOptions/AdditionalGitRemotes';
-import { GitBranchDropdown } from '@/components/ImportFromGit/RepoOptionsAccordion/GitRepoOptions/GitBranchDropdown';
+import { GitBranchSelect } from '@/components/ImportFromGit/RepoOptionsAccordion/GitRepoOptions/GitBranchSelect';
 import { PathToDevfileField } from '@/components/ImportFromGit/RepoOptionsAccordion/GitRepoOptions/PathToDevfileField';
 import { GitRemote } from '@/components/WorkspaceProgress/CreatingSteps/Apply/Devfile/getGitRemotes';
 import { FactoryLocationAdapter } from '@/services/factory-location-adapter';
@@ -101,7 +101,7 @@ export class GitRepoOptions extends React.PureComponent<Props, State> {
     return (
       <Form isHorizontal={true} onSubmit={e => e.preventDefault()}>
         {(hasSupportedGitService || FactoryLocationAdapter.isSshLocation(location)) && (
-          <GitBranchDropdown
+          <GitBranchSelect
             onChange={gitBranch => this.handleGitBranch(gitBranch)}
             gitBranch={gitBranch}
             branchList={branchList}

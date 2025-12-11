@@ -10,7 +10,7 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-.selector .pf-c-dropdown__menu {
+.selector .pf-c-select__menu {
   overflow-y: auto;
   min-width: 200px;
   max-height: 310px;

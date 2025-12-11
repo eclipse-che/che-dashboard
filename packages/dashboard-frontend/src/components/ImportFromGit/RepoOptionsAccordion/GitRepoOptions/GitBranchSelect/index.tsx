@@ -11,15 +11,15 @@
  */
 
 import {
-  Dropdown,
-  DropdownItem,
-  DropdownToggle,
   FormGroup,
+  Select,
+  SelectOption,
+  SelectVariant,
   ValidatedOptions,
 } from '@patternfly/react-core';
 import React from 'react';
 
-import styles from '@/components/ImportFromGit/RepoOptionsAccordion/GitRepoOptions/GitBranchDropdown/index.module.css';
+import styles from '@/components/ImportFromGit/RepoOptionsAccordion/GitRepoOptions/GitBranchSelect/index.module.css';
 
 export type Props = {
   onChange: (definition: string | undefined) => void;
@@ -31,8 +31,7 @@ export type State = {
   gitBranch: string | undefined;
 };
 
-export class GitBranchDropdown extends React.PureComponent<Props, State> {
-  private toggleElementId = 'toggle-initial-selection';
+export class GitBranchSelect extends React.PureComponent<Props, State> {
   constructor(props: Props) {
     super(props);
 
@@ -67,50 +66,36 @@ export class GitBranchDropdown extends React.PureComponent<Props, State> {
     this.setState({ isOpen: false });
   }
 
-  private buildDropdownItems(): React.ReactElement[] | undefined {
+  private buildSelectOptions(): React.ReactElement[] | undefined {
     const branchList = this.props.branchList;
     if (branchList) {
       return branchList.map(branch => {
-        return (
-          <DropdownItem
-            key={branch}
-            id={branch}
-            component="button"
-            onClick={() => this.onClick(branch)}
-          >
-            {branch}
-          </DropdownItem>
-        );
+        return <SelectOption key={branch} id={branch} value={branch} />;
       });
     }
   }
 
   public render() {
-    const dropdownItems = this.buildDropdownItems();
+    const { isOpen, gitBranch } = this.state;
+    const selectOptions = this.buildSelectOptions();
 
     return (
       <FormGroup
         label="Git Branch"
-        validated={dropdownItems ? ValidatedOptions.default : ValidatedOptions.error}
+        validated={selectOptions ? ValidatedOptions.default : ValidatedOptions.error}
         helperTextInvalid={'No branch found. Please check the Git repository URL.'}
       >
-        <Dropdown
+        <Select
           className={styles.selector}
-          onChange={value => this.handleChange(value.type)}
-          value={this.state.gitBranch}
-          toggle={
-            <DropdownToggle
-              aria-label="Git Branch"
-              id={this.toggleElementId}
-              onToggle={isOpen => this.setState({ isOpen })}
-            >
-              {this.state.gitBranch}
-            </DropdownToggle>
-          }
-          isOpen={this.state.isOpen}
-          placeholder={this.state.gitBranch}
-          dropdownItems={dropdownItems}
-        />
+          variant={SelectVariant.single}
+          hasInlineFilter={true}
+          onToggle={isOpen => this.setState({ isOpen })}
+          isOpen={isOpen}
+          onSelect={(_, value) => this.onClick(value.toString())}
+          placeholderText={gitBranch ? gitBranch : ' '}
+        >
+          {selectOptions}
+        </Select>
       </FormGroup>
     );
   }

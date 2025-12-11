@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
-exports[`GitBranchDropdown snapshot 1`] = `
+exports[`GitBranchSelect snapshot 1`] = `
 <div
   className="pf-c-form__group"
 >
@@ -22,28 +22,34 @@ exports[`GitBranchDropdown snapshot 1`] = `
     className="pf-c-form__group-control"
   >
     <div
-      className="pf-c-dropdown selector"
-      data-ouia-component-id="OUIA-Generated-Dropdown-1"
-      data-ouia-component-type="PF4/Dropdown"
+      className="pf-c-select selector"
+      data-ouia-component-id="OUIA-Generated-Select-single-1"
+      data-ouia-component-type="PF4/Select"
       data-ouia-safe={true}
-      onChange={[Function]}
     >
       <button
         aria-expanded={false}
-        aria-haspopup={false}
-        aria-label="Git Branch"
-        className="pf-c-dropdown__toggle"
-        data-ouia-component-id="OUIA-Generated-DropdownToggle-1"
-        data-ouia-component-type="PF4/DropdownToggle"
-        data-ouia-safe={true}
+        aria-haspopup="listbox"
+        aria-label="Options menu"
+        aria-labelledby=" pf-select-toggle-id-0"
+        className="pf-c-select__toggle"
         disabled={false}
-        id="toggle-initial-selection"
+        id="pf-select-toggle-id-0"
         onClick={[Function]}
         onKeyDown={[Function]}
         type="button"
       >
+        <div
+          className="pf-c-select__toggle-wrapper"
+        >
+          <span
+            className="pf-c-select__toggle-text"
+          >
+             
+          </span>
+        </div>
         <span
-          className="pf-c-dropdown__toggle-icon"
+          className="pf-c-select__toggle-arrow"
         >
           <svg
             aria-hidden={true}

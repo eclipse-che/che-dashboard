@@ -433,7 +433,7 @@ describe('GitRepoLocationInput', () => {
       const repoOptions = await waitFor(() => screen.getByText('Git Repo Options'));
       await userEvent.click(repoOptions);
 
-      const gitBranch = screen.getByRole('button', { name: 'Git Branch' });
+      const gitBranch = screen.getByRole('button', { name: 'Options menu' });
       await userEvent.click(gitBranch);
       await userEvent.click(screen.getByText('test'));
 

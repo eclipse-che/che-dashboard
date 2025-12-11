@@ -13,14 +13,14 @@
 import userEvent from '@testing-library/user-event';
 import React from 'react';
 
-import { GitBranchDropdown } from '@/components/ImportFromGit/RepoOptionsAccordion/GitRepoOptions/GitBranchDropdown';
+import { GitBranchSelect } from '@/components/ImportFromGit/RepoOptionsAccordion/GitRepoOptions/GitBranchSelect';
 import getComponentRenderer, { screen } from '@/services/__mocks__/getComponentRenderer';
 
 const { createSnapshot, renderComponent } = getComponentRenderer(getComponent);
 
 const mockOnChange = jest.fn();
 
-describe('GitBranchDropdown', () => {
+describe('GitBranchSelect', () => {
   afterEach(() => {
     jest.clearAllMocks();
   });
@@ -44,13 +44,13 @@ describe('GitBranchDropdown', () => {
 
     renderComponent(undefined, [gitBranch, gitBranchNew]);
 
-    const dropdown = screen.getByRole('button');
+    const select = screen.getByRole('button');
 
-    await userEvent.click(dropdown);
+    await userEvent.click(select);
     await userEvent.click(screen.getByText(gitBranch));
     expect(mockOnChange).toHaveBeenNthCalledWith(1, gitBranch);
 
-    await userEvent.click(dropdown);
+    await userEvent.click(select);
     await userEvent.click(screen.getByText(gitBranchNew));
     expect(mockOnChange).toHaveBeenNthCalledWith(2, gitBranchNew);
   });
@@ -65,7 +65,5 @@ describe('GitBranchDropdown', () => {
 });
 
 function getComponent(gitBranch?: string, branchList?: string[]) {
-  return (
-    <GitBranchDropdown gitBranch={gitBranch} branchList={branchList} onChange={mockOnChange} />
-  );
+  return <GitBranchSelect gitBranch={gitBranch} branchList={branchList} onChange={mockOnChange} />;
 }

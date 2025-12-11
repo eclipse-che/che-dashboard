@@ -20,7 +20,7 @@ import getComponentRenderer, { screen } from '@/services/__mocks__/getComponentR
 const { createSnapshot, renderComponent } = getComponentRenderer(getComponent);
 
 jest.mock('@/components/ImportFromGit/RepoOptionsAccordion/GitRepoOptions/AdditionalGitRemotes');
-jest.mock('@/components/ImportFromGit/RepoOptionsAccordion/GitRepoOptions/GitBranchDropdown');
+jest.mock('@/components/ImportFromGit/RepoOptionsAccordion/GitRepoOptions/GitBranchSelect');
 jest.mock('@/components/ImportFromGit/RepoOptionsAccordion/GitRepoOptions/PathToDevfileField');
 
 const mockOnChange = jest.fn();
