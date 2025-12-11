@@ -389,7 +389,7 @@ describe('Normalize Devfile V2', () => {
 
     expect(
       targetDevfile.attributes?.['dw.metadata.annotations']?.['che.eclipse.org/devfile-source'],
-    ).toContain('branch: main');
+    ).toContain('revision: main');
     expect(
       targetDevfile.attributes?.['dw.metadata.annotations']?.['che.eclipse.org/devfile-source'],
     ).toContain('repo: https://github.com/user/repo.git');

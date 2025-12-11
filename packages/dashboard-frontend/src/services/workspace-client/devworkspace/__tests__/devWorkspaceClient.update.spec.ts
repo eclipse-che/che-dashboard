@@ -379,11 +379,6 @@ describe('DevWorkspace client, update', () => {
       expect.arrayContaining([
         {
           op: 'add',
-          path: '/metadata/labels',
-          value: {},
-        },
-        {
-          op: 'add',
           path: '/metadata/labels/kubernetes.io~1metadata.name',
           value: 'new-custom-name',
         },
