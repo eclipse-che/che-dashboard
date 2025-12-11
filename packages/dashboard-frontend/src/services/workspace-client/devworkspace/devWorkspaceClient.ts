@@ -343,6 +343,15 @@ export class DevWorkspaceClient {
 
     const patch: api.IPatch[] = [];
 
+    // Ensure /metadata/annotations exists before patching nested paths
+    if (!workspace.metadata.annotations) {
+      patch.push({
+        op: 'add',
+        path: '/metadata/annotations',
+        value: {},
+      });
+    }
+
     const updatingTimeAnnotationPath =
       '/metadata/annotations/' + this.escape(DEVWORKSPACE_UPDATING_TIMESTAMP_ANNOTATION);
     if (
@@ -498,6 +507,15 @@ export class DevWorkspaceClient {
     const patch: api.IPatch[] = [];
     const currentDebugMode = this.getDebugMode(workspace);
     if (currentDebugMode !== debugMode) {
+      // Ensure /metadata/annotations exists before patching nested paths
+      if (!workspace.metadata.annotations) {
+        patch.push({
+          op: 'add',
+          path: '/metadata/annotations',
+          value: {},
+        });
+      }
+
       const path = `/metadata/annotations/${this.escape(DEVWORKSPACE_DEBUG_START_ANNOTATION)}`;
       if (!debugMode) {
         patch.push({ op: 'remove', path });
@@ -714,6 +732,15 @@ export class DevWorkspaceClient {
     ];
 
     if (started) {
+      // Ensure /metadata/annotations exists before patching nested paths
+      if (!workspace.metadata.annotations) {
+        patch.push({
+          op: 'add',
+          path: '/metadata/annotations',
+          value: {},
+        });
+      }
+
       const updatingTimeAnnotationPath =
         '/metadata/annotations/' + this.escape(DEVWORKSPACE_UPDATING_TIMESTAMP_ANNOTATION);
       if (
