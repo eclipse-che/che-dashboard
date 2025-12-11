@@ -40,17 +40,6 @@
   animation-iteration-count: infinite;
 }
 
-.main-page-loader .ide-page-loader-content .loader-text {
-  font-size: 24px;
-  color: #fff;
-  text-align: center;
-
-  animation-name: opacity;
-  animation-duration: 2s;
-  animation-timing-function: ease-in-out;
-  animation-iteration-count: infinite;
-}
-
 @keyframes opacity {
   0%,
   100% {
