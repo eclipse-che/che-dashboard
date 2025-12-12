@@ -30,8 +30,6 @@
     </div>
   </div>
 </div>
-<script>
-  (function(){const e=['jpg','jpeg','png','gif','webp','svg'],t='/dashboard/assets/branding/',n=document.querySelector('.ide-page-loader-content img');if(!n)return;async function o(){for(let i=0;i<e.length;i++){try{const r=await fetch(`${t}loader.${e[i]}`,{method:'HEAD'});if(r.ok){n.src=`${t}loader.${e[i]}`;return}}catch{}}}o()})();
-</script>
+<script src="/dashboard/static/preload/branding-loader.js"></script>
 </body>
 </html>

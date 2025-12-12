@@ -18,7 +18,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <link rel="shortcut icon">
-  <link rel="stylesheet" type="text/css" href="../assets/branding/branding.css">
+  <link rel="stylesheet" type="text/css" href="/dashboard/assets/branding/branding.css">
   <title></title>
 </head>
 <body>
@@ -29,8 +29,6 @@
     </div>
   </div>
 </div>
-<script>
-(function(){const e=['jpg','jpeg','png','gif','webp','svg'],t='../assets/branding/',n=document.querySelector('.ide-page-loader-content img');if(!n)return;async function o(){for(let i=0;i<e.length;i++){try{const r=await fetch(`${t}loader.${e[i]}`,{method:'HEAD'});if(r.ok){n.src=`${t}loader.${e[i]}`;return}}catch{}}}o()})();
-</script>
+<script src="/dashboard/static/preload/branding-loader.js"></script>
 </body>
 </html>
