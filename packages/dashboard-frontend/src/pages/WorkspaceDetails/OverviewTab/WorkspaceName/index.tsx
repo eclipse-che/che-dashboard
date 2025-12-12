@@ -102,13 +102,14 @@ class WorkspaceNameFormGroup extends React.PureComponent<Props, State> {
     errorTooltipMessage: string | undefined;
     validated: ValidatedOptions;
   } {
-    if (name.length === 0) {
+    const trimmedName = name.trim();
+    if (trimmedName.length === 0) {
       return {
         errorMessage: ERROR_EMPTY_NAME,
         errorTooltipMessage: undefined,
         validated: ValidatedOptions.error,
       };
-    } else if (name.length > MAX_LENGTH) {
+    } else if (trimmedName.length > MAX_LENGTH) {
       return {
         errorMessage: ERROR_MAX_LENGTH,
         errorTooltipMessage: ERROR_TOOLTIP_MAX_LENGTH,
@@ -119,7 +120,8 @@ class WorkspaceNameFormGroup extends React.PureComponent<Props, State> {
     if (
       this.props.allWorkspaces.some(
         w =>
-          w.uid !== this.props.workspace.uid && (name === w.name || name === w.ref.metadata.name),
+          w.uid !== this.props.workspace.uid &&
+          (trimmedName === w.name || trimmedName === w.ref.metadata.name),
       )
     ) {
       return {
@@ -128,7 +130,7 @@ class WorkspaceNameFormGroup extends React.PureComponent<Props, State> {
         validated: ValidatedOptions.error,
       };
     }
-    if (!new RegExp(PATTERN).test(name)) {
+    if (!new RegExp(PATTERN).test(trimmedName)) {
       return {
         errorMessage: ERROR_PATTERN_MISMATCH,
         errorTooltipMessage: ERROR_TOOLTIP_PATTERN_MISMATCH,
@@ -210,7 +212,8 @@ class WorkspaceNameFormGroup extends React.PureComponent<Props, State> {
   private getEditModal(): React.ReactNode {
     const { isEditModalOpen, editedName, validated } = this.state;
     const { workspace } = this.props;
-    const isNameChanged = editedName.trim() !== workspace.name;
+    const trimmedName = editedName.trim();
+    const isNameChanged = trimmedName !== workspace.name;
     const isDisabled = validated === ValidatedOptions.error || !isNameChanged;
     const helperTextInvalid = this.getHelperTextInvalid();
 
