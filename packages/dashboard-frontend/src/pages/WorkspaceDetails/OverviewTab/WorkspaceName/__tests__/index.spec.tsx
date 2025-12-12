@@ -492,8 +492,13 @@ describe('WorkspaceNameFormGroup', () => {
       await user.clear(input);
       await user.type(input, '  valid-name  ');
 
-      // Save
+      // Wait for save button to be enabled
       const saveButton = screen.getByTestId('edit-workspace-name-save');
+      await waitFor(() => {
+        expect(saveButton).not.toBeDisabled();
+      });
+
+      // Save
       await user.click(saveButton);
 
       await waitFor(() => {
