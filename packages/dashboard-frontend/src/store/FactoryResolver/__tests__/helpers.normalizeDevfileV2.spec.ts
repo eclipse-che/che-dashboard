@@ -12,6 +12,7 @@
 
 import { V230Devfile, V230DevfileComponents } from '@devfile/api';
 
+import devfileApi from '@/services/devfileApi';
 import { FactoryResolver } from '@/services/helpers/types';
 import { che } from '@/services/models';
 import { buildDevfileV2, normalizeDevfile } from '@/store/FactoryResolver/helpers';
@@ -359,5 +360,38 @@ describe('Normalize Devfile V2', () => {
         ],
       }),
     );
+  });
+
+  it('should handle devfile source with branch in scm info', () => {
+    const devfile = {
+      schemaVersion: '2.2.2',
+      metadata: {
+        generateName: 'empty',
+      },
+    } as devfileApi.Devfile;
+
+    const factoryResolver: FactoryResolver = {
+      devfile,
+      source: 'devfile.yaml',
+      scm_info: {
+        clone_url: 'https://github.com/user/repo.git',
+        scm_provider: 'github',
+        branch: 'main',
+      },
+    };
+
+    const targetDevfile = normalizeDevfile(
+      factoryResolver,
+      'http://dummy-registry/devfiles/empty.yaml',
+      defaultComponents,
+      {},
+    );
+
+    expect(
+      targetDevfile.attributes?.['dw.metadata.annotations']?.['che.eclipse.org/devfile-source'],
+    ).toContain('revision: main');
+    expect(
+      targetDevfile.attributes?.['dw.metadata.annotations']?.['che.eclipse.org/devfile-source'],
+    ).toContain('repo: https://github.com/user/repo.git');
   });
 });

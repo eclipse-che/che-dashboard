@@ -10,10 +10,15 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import React from 'react';
+.inputFormGroup {
+  min-height: 55px;
+}
 
-export default class GitRepoFormGroup extends React.PureComponent {
-  render() {
-    return <div>Mock Git Repo Form</div>;
-  }
+.helperTextInvalid {
+  overflow: hidden;
+
+  font-size: small;
+  color: #c9190b;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }

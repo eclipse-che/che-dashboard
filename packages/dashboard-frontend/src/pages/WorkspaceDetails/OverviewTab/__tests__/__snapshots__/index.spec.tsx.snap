@@ -11,6 +11,15 @@ exports[`OverviewTab With parent screenshot 1`] = `
   >
     <div>
       Mock Workspace Name Form
+      <button
+        onClick={[Function]}
+      >
+        Edit Workspace Name
+      </button>
+      <span>
+        Workspace: 
+        my-project
+      </span>
     </div>
     <div>
       Mock Infrastructure Namespace Form
@@ -47,6 +56,15 @@ exports[`OverviewTab Without parent screenshot 1`] = `
   >
     <div>
       Mock Workspace Name Form
+      <button
+        onClick={[Function]}
+      >
+        Edit Workspace Name
+      </button>
+      <span>
+        Workspace: 
+        my-project
+      </span>
     </div>
     <div>
       Mock Infrastructure Namespace Form

@@ -16,6 +16,11 @@ import devfileApi, { isDevWorkspace } from '@/services/devfileApi';
 import { DEVWORKSPACE_UPDATING_TIMESTAMP_ANNOTATION } from '@/services/devfileApi/devWorkspace/metadata';
 import { DEVWORKSPACE_STORAGE_TYPE_ATTR } from '@/services/devfileApi/devWorkspace/spec/template';
 import {
+  EXISTING_WORKSPACE_NAME,
+  FACTORY_URL_ATTR,
+  PROPAGATE_FACTORY_ATTRS,
+} from '@/services/helpers/factoryFlow/buildFactoryParams';
+import {
   DeprecatedWorkspaceStatus,
   DevWorkspaceStatus,
   WorkspaceStatus,
@@ -138,7 +143,19 @@ export class WorkspaceAdapter<T extends devfileApi.DevWorkspace> implements Work
   }
 
   set name(name: string) {
-    console.error('Not implemented: set name of the devworkspace.');
+    if (name) {
+      if (!this.workspace.metadata.labels) {
+        this.workspace.metadata.labels = {};
+      }
+      this.workspace.metadata.labels[DEVWORKSPACE_LABEL_METADATA_NAME] = name;
+    } else {
+      if (this.workspace.metadata.labels?.[DEVWORKSPACE_LABEL_METADATA_NAME]) {
+        delete this.workspace.metadata.labels[DEVWORKSPACE_LABEL_METADATA_NAME];
+        if (Object.keys(this.workspace.metadata.labels).length === 0) {
+          delete this.workspace.metadata.labels;
+        }
+      }
+    }
   }
 
   get namespace(): string {
@@ -165,16 +182,21 @@ export class WorkspaceAdapter<T extends devfileApi.DevWorkspace> implements Work
   }
 
   /**
-   * Returns a workspace source.
-   * It can be an HTTPS or SSH URL.
+   * Returns a workspace source with propagated factory attributes.
+   * This matches the format used by factoryParams.sourceUrl to ensure
+   * workspaces with different factory configurations are treated as separate sources.
+   *
+   * Example:
+   * - Base URL: https://github.com/user/repo
+   * - With params: https://github.com/user/repo?che-editor=che-code&storageType=per-user
    */
   get source(): string | undefined {
-    const devfileSourseStr = this.workspace.metadata.annotations?.[DEVWORKSPACE_DEVFILE_SOURCE];
-    if (!devfileSourseStr) {
+    const devfileSourceStr = this.workspace.metadata.annotations?.[DEVWORKSPACE_DEVFILE_SOURCE];
+    if (!devfileSourceStr) {
       return undefined;
     }
     // Parse the devfile source annotation to extract the repository URL
-    const devfileSourse = load(devfileSourseStr) as {
+    const devfileSource = load(devfileSourceStr) as {
       factory?: {
         params?: string;
       };
@@ -187,25 +209,61 @@ export class WorkspaceAdapter<T extends devfileApi.DevWorkspace> implements Work
       };
     };
     // Check if the devfile source has a factory with parameters
-    const factoryParams = devfileSourse?.factory?.params;
+    const factoryParams = devfileSource?.factory?.params;
     if (factoryParams) {
       // Split the factory params string into an array of parameters
       const paramsArr = factoryParams.split('&');
-      if (paramsArr.length > 0) {
-        // Find the URL parameter in the factory params
-        const targetParam = paramsArr.find(param => param.startsWith('url='));
-        if (targetParam) {
-          return targetParam.split('=')[1];
-        }
+      if (paramsArr.length === 0) {
+        return undefined;
       }
+
+      // Find the URL parameter in the factory params
+      const targetParam = paramsArr.find(param => param.startsWith('url='));
+      if (!targetParam) {
+        return undefined;
+      }
+
+      // Split on first '=' only (URL may contain '=' in query params)
+      let sourceUrl = targetParam.substring(4); // Remove 'url=' prefix
+
+      // Propagated factory attributes (excluding 'url' and 'existing')
+      // These match PROPAGATE_FACTORY_ATTRS from buildFactoryParams
+      const propagatedAttrs = PROPAGATE_FACTORY_ATTRS.filter(
+        attr => attr !== EXISTING_WORKSPACE_NAME && attr !== FACTORY_URL_ATTR,
+      );
+
+      // Collect factory params that should be propagated
+      const paramsToAppend: Array<{ key: string; value: string }> = [];
+      paramsArr.forEach(param => {
+        const equalIndex = param.indexOf('=');
+        if (equalIndex === -1) return;
+
+        const key = param.substring(0, equalIndex);
+        const value = param.substring(equalIndex + 1);
+
+        if (key !== 'url' && key !== 'existing' && propagatedAttrs.includes(key)) {
+          paramsToAppend.push({ key, value });
+        }
+      });
+
+      // Sort params alphabetically by key
+      paramsToAppend.sort((a, b) => a.key.localeCompare(b.key));
+
+      // Append factory params to source URL
+      paramsToAppend.forEach(({ key, value }) => {
+        const separator = sourceUrl.includes('?') ? '&' : '?';
+        sourceUrl += `${separator}${key}=${value}`;
+      });
+
+      return sourceUrl;
     }
     // Check if the devfile source has a repository URL
-    const repo = devfileSourse?.scm?.repo;
+    const repo = devfileSource?.scm?.repo;
     if (repo) {
       return repo;
     }
     // Check if the devfile source has a URL location
-    const location = devfileSourse?.url?.location;
+    const location = devfileSource?.url?.location;
     if (location) {
       return location;
     }
