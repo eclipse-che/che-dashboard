@@ -32,8 +32,8 @@ exports[`GitBranchSelect snapshot 1`] = `
         aria-haspopup="listbox"
         aria-label="Options menu"
         aria-labelledby=" pf-select-toggle-id-0"
-        className="pf-c-select__toggle"
-        disabled={false}
+        className="pf-c-select__toggle pf-m-disabled"
+        disabled={true}
         id="pf-select-toggle-id-0"
         onClick={[Function]}
         onKeyDown={[Function]}
@@ -77,7 +77,7 @@ exports[`GitBranchSelect snapshot 1`] = `
       className="pf-c-form__helper-text pf-m-error"
       id="undefined-helper"
     >
-      No branch found. Please check the Git repository URL.
+      No branch found. The Git repository is not available at the given URL.
     </div>
   </div>
 </div>

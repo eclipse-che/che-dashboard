@@ -78,14 +78,17 @@ export class GitBranchSelect extends React.PureComponent<Props, State> {
   public render() {
     const { isOpen, gitBranch } = this.state;
     const selectOptions = this.buildSelectOptions();
+    const isDisabled = selectOptions === undefined || selectOptions.length === 0;
 
     return (
       <FormGroup
         label="Git Branch"
-        validated={selectOptions ? ValidatedOptions.default : ValidatedOptions.error}
-        helperTextInvalid={'No branch found. Please check the Git repository URL.'}
+        validated={!isDisabled ? ValidatedOptions.default : ValidatedOptions.error}
+        helperText={!gitBranch ? 'Select the branch of the Git Repository' : undefined}
+        helperTextInvalid={'No branch found. The Git repository is not available at the given URL.'}
       >
         <Select
+          isDisabled={isDisabled}
           className={styles.selector}
           variant={SelectVariant.single}
           hasInlineFilter={true}

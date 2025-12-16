@@ -10,8 +10,6 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import { ChildProcessWithoutNullStreams } from 'node:child_process';
-
 import { helpers } from '@eclipse-che/common';
 import { spawn } from 'child_process';
 import { stringify } from 'querystring';
@@ -125,10 +123,9 @@ export async function exec(
   return { stdOut, stdError };
 }
 
-export function run(cmd: string, args?: string[], timeOut?: number): Promise<string> {
-  let command: ChildProcessWithoutNullStreams;
-  const promise: Promise<string> = new Promise((resolve, reject) => {
-    command = spawn(cmd, args);
+export function run(cmd: string, args?: string[], options?: any): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const command = spawn(cmd, args, options);
     let result = '';
     command.stdout.on('data', data => {
       result += data.toString();
@@ -140,17 +137,4 @@ export function run(cmd: string, args?: string[], timeOut?: number): Promise<str
       reject(err);
     });
   });
-  if (timeOut && timeOut > 0) {
-    const timeoutPromise: Promise<string> = new Promise((_, reject) => {
-      setTimeout(() => {
-        if (command && command.exitCode == null) {
-          command.kill();
-          reject(new Error('Timeout exceeded'));
-        }
-      }, timeOut);
-    });
-    return Promise.race([promise, timeoutPromise]);
-  } else {
-    return promise;
-  }
 }

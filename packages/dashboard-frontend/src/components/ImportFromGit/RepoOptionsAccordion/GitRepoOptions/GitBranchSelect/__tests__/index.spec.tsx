@@ -58,7 +58,9 @@ describe('GitBranchSelect', () => {
   test('empty git branch list', async () => {
     renderComponent();
 
-    const error = screen.getByText('No branch found. Please check the Git repository URL.');
+    const error = screen.getByText(
+      'No branch found. The Git repository is not available at the given URL.',
+    );
 
     expect(error).not.toBeNull();
   });
