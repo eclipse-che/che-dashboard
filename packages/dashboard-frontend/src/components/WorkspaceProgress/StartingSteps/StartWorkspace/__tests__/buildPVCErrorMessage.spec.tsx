@@ -15,6 +15,7 @@ import { render, screen } from '@testing-library/react';
 import React from 'react';
 
 import { buildPVCErrorMessage } from '@/components/WorkspaceProgress/StartingSteps/StartWorkspace/buildPVCErrorMessage';
+import { DEVWORKSPACE_STORAGE_TYPE_ATTR } from '@/services/devfileApi/devWorkspace/spec/template';
 import { constructWorkspace, Workspace } from '@/services/workspace-adapter';
 import { DevWorkspaceBuilder } from '@/store/__mocks__/devWorkspaceBuilder';
 
@@ -72,10 +73,7 @@ describe('buildPVCErrorMessage', () => {
     const message = buildPVCErrorMessage(workspace, applications);
     render(<>{message}</>);
 
-    expect(screen.getByText(/To fix this issue:/)).toBeInTheDocument();
-    expect(
-      screen.getByText(/Delete old or unused workspaces to free up PVC storage space/),
-    ).toBeInTheDocument();
+    expect(screen.getByText(/Ways to fix this issue:/)).toBeInTheDocument();
     expect(screen.getByText(/Manually expand PVC size by updating the YAML:/)).toBeInTheDocument();
     expect(
       screen.getByText(/Restart the workspace once PVC definition is updated/),
@@ -86,32 +84,100 @@ describe('buildPVCErrorMessage', () => {
     const message = buildPVCErrorMessage(workspace, applications);
     render(<>{message}</>);
 
-    const yamlSnippet = screen.getByText(/resources:/);
+    const yamlSnippet = screen.getByText(/spec:/);
     expect(yamlSnippet).toBeInTheDocument();
+    expect(screen.getByText(/resources:/)).toBeInTheDocument();
     expect(screen.getByText(/requests:/)).toBeInTheDocument();
-    expect(screen.getByText(/storage: <new-size>/)).toBeInTheDocument();
+    expect(screen.getByText(/storage: ①/)).toBeInTheDocument();
+    expect(screen.getByText(/① - expand PVC size e.g., 10Gi, 20Gi/)).toBeInTheDocument();
   });
 
-  it('should render as ordered list with three items', () => {
-    const message = buildPVCErrorMessage(workspace, applications);
-    const { container } = render(<>{message}</>);
+  describe('storage type specific messages', () => {
+    it('should include "delete workspaces" suggestion for per-user storage', () => {
+      // Per-user storage: all workspaces share one PVC, so deleting old workspaces frees space
+      const devWorkspace = new DevWorkspaceBuilder()
+        .withName('my-workspace')
+        .withNamespace('user-che')
+        .build();
+      devWorkspace.spec.template.attributes = {
+        [DEVWORKSPACE_STORAGE_TYPE_ATTR]: 'per-user',
+      };
+      workspace = constructWorkspace(devWorkspace);
 
-    const orderedList = container.querySelector('ol');
-    expect(orderedList).toBeInTheDocument();
-    expect(orderedList?.children).toHaveLength(3);
-  });
+      const message = buildPVCErrorMessage(workspace, applications);
+      render(<>{message}</>);
 
-  it('should include suggestion to delete old workspaces', () => {
-    const message = buildPVCErrorMessage(workspace, applications);
-    render(<>{message}</>);
+      // Should show delete workspaces suggestion for per-user storage
+      expect(
+        screen.getByText(/Delete old or unused workspaces to free up PVC storage space/),
+      ).toBeInTheDocument();
+      expect(
+        screen.getByText(
+          /This will automatically clean up associated PVC resources and free storage/,
+        ),
+      ).toBeInTheDocument();
 
-    expect(
-      screen.getByText(/Delete old or unused workspaces to free up PVC storage space/),
-    ).toBeInTheDocument();
-    expect(
-      screen.getByText(
-        /This will automatically clean up associated PVC resources and free storage/,
-      ),
-    ).toBeInTheDocument();
+      // Should also show expand PVC suggestion
+      expect(screen.getByText(/- Manually expand PVC size/)).toBeInTheDocument();
+    });
+
+    it('should NOT include "delete workspaces" suggestion for per-workspace storage', () => {
+      // Per-workspace storage: each workspace has its own PVC, deleting others won't help
+      const devWorkspace = new DevWorkspaceBuilder()
+        .withName('my-workspace')
+        .withNamespace('user-che')
+        .build();
+      devWorkspace.spec.template.attributes = {
+        [DEVWORKSPACE_STORAGE_TYPE_ATTR]: 'per-workspace',
+      };
+      workspace = constructWorkspace(devWorkspace);
+
+      const message = buildPVCErrorMessage(workspace, applications);
+      render(<>{message}</>);
+
+      // Should NOT show delete workspaces suggestion for per-workspace storage
+      expect(
+        screen.queryByText(/Delete old or unused workspaces to free up PVC storage space/),
+      ).not.toBeInTheDocument();
+
+      // Should still show expand PVC suggestion
+      expect(screen.getByText(/- Manually expand PVC size/)).toBeInTheDocument();
+    });
+
+    it('should render both fix options with dash prefixes for per-user storage', () => {
+      const devWorkspace = new DevWorkspaceBuilder()
+        .withName('my-workspace')
+        .withNamespace('user-che')
+        .build();
+      devWorkspace.spec.template.attributes = {
+        [DEVWORKSPACE_STORAGE_TYPE_ATTR]: 'per-user',
+      };
+      workspace = constructWorkspace(devWorkspace);
+
+      const message = buildPVCErrorMessage(workspace, applications);
+      render(<>{message}</>);
+
+      // Check that both fix options are present with dash prefixes
+      expect(screen.getByText(/- Delete old or unused workspaces/)).toBeInTheDocument();
+      expect(screen.getByText(/- Manually expand PVC size/)).toBeInTheDocument();
+    });
+
+    it('should NOT include "delete workspaces" suggestion when storage type is not set', () => {
+      // Workspace with no storage type attribute - "delete workspaces" should NOT appear
+      // because we can't determine if it's per-user storage
+      const devWorkspace = new DevWorkspaceBuilder()
+        .withName('my-workspace')
+        .withNamespace('user-che')
+        .build();
+      workspace = constructWorkspace(devWorkspace);
+
+      const message = buildPVCErrorMessage(workspace, applications);
+      render(<>{message}</>);
+
+      // Should NOT show delete workspaces suggestion when storage type is unknown
+      expect(
+        screen.queryByText(/Delete old or unused workspaces to free up PVC storage space/),
+      ).not.toBeInTheDocument();
+    });
   });
 });

@@ -25,15 +25,22 @@ const PVC_ERRORS_SUBSTR = [
  * @param workspace The workspace to check for PVC errors
  * @param startedWorkspaces Map of workspace UIDs to resource versions when they were started
  * @param eventsFromResourceVersionFn Function to retrieve events since a given resource version
+ * @param restartInitiatedSet Optional set of workspace UIDs with pending restart (skip detection if present)
  * @returns true if PVC errors are detected, false otherwise
  */
 export function hasPVCErrors(
   workspace: Workspace | undefined,
   startedWorkspaces: { [key: string]: string },
   eventsFromResourceVersionFn: (resourceVersion: string) => CoreV1Event[],
+  restartInitiatedSet?: Set<string>,
 ): boolean {
   // no PVC to check
   if (workspace === undefined || workspace.storageType === 'ephemeral') {
+    return false;
+  }
+
+  // skip PVC error detection if restart was initiated for this workspace
+  if (restartInitiatedSet?.has(workspace.uid)) {
     return false;
   }
 

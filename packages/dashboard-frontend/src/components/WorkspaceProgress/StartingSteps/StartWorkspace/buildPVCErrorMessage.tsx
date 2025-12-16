@@ -32,6 +32,9 @@ export function buildPVCErrorMessage(
 
   const clusterConsole = applications.find(app => app.id === ApplicationId.CLUSTER_CONSOLE);
   const namespace = workspace.namespace;
+  // Per-user storage: all workspaces share one PVC, so deleting old workspaces frees space
+  // Per-workspace storage: each workspace has its own PVC, so deleting others won't help
+  const isPerUserStorage = workspace.storageType === 'per-user';
 
   let pvcLink: React.ReactNode = null;
   if (clusterConsole) {
@@ -49,28 +52,23 @@ export function buildPVCErrorMessage(
 
   return (
     <div>
-      <p>
-        <strong>PVC is full, workspace &quot;{workspace.name}&quot; will fail to start.</strong>
+      <p>PVC is full, workspace &quot;{workspace.name}&quot; will fail to start.</p>
+      {pvcLink && <p style={{ margin: '0 0 10px 0' }}>{pvcLink}</p>}
+      <p style={{ margin: '5px 0 0 0' }}>
+        <strong>Ways to fix this issue:</strong>
       </p>
-      {pvcLink && <p>{pvcLink}</p>}
-      <p>
-        <strong>To fix this issue:</strong>
-      </p>
-      <ol>
-        <li>
-          Delete old or unused workspaces to free up PVC storage space. This will automatically
+      {isPerUserStorage && (
+        <p>
+          - Delete old or unused workspaces to free up PVC storage space. This will automatically
           clean up associated PVC resources and free storage.
-        </li>
-        <li>
-          Manually expand PVC size by updating the YAML:
-          <pre>
-            {`resources:
-  requests:
-    storage: <new-size>  # e.g., 10Gi, 20Gi`}
-          </pre>
-        </li>
-        <li>Restart the workspace once PVC definition is updated</li>
-      </ol>
+        </p>
+      )}
+      <p>- Manually expand PVC size by updating the YAML:</p>
+      <pre style={{ backgroundColor: 'rgb(246, 248, 250, 0.6)', padding: '5px 0' }}>
+        {`spec:\n  resources:\n    requests:\n      storage: ①`}
+      </pre>
+      <p style={{ margin: '5px 0 0 0' }}>① - expand PVC size e.g., 10Gi, 20Gi</p>
+      <p style={{ margin: '10px 0 0 0' }}>Restart the workspace once PVC definition is updated.</p>
     </div>
   );
 }

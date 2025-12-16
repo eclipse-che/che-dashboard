@@ -139,5 +139,70 @@ describe('detectPVCErrors', () => {
       const result = hasPVCErrors(workspace, startedWorkspaces, eventsFromResourceVersionFn);
       expect(result).toBe(false);
     });
+
+    describe('restartInitiatedSet', () => {
+      it('should return false when restart was initiated for this workspace', () => {
+        const events: CoreV1Event[] = [
+          {
+            metadata: { name: 'workspace-id-123-pod' },
+            reason: 'Failed',
+            message: 'failed to create subPath directory for volumeMount',
+          } as CoreV1Event,
+        ];
+        eventsFromResourceVersionFn.mockReturnValue(events);
+
+        const restartInitiatedSet = new Set<string>();
+        restartInitiatedSet.add('uid-123');
+
+        const result = hasPVCErrors(
+          workspace,
+          startedWorkspaces,
+          eventsFromResourceVersionFn,
+          restartInitiatedSet,
+        );
+        expect(result).toBe(false);
+      });
+
+      it('should return true when restart was not initiated for this workspace', () => {
+        const events: CoreV1Event[] = [
+          {
+            metadata: { name: 'workspace-id-123-pod' },
+            reason: 'Failed',
+            message: 'failed to create subPath directory for volumeMount',
+          } as CoreV1Event,
+        ];
+        eventsFromResourceVersionFn.mockReturnValue(events);
+
+        const restartInitiatedSet = new Set<string>();
+        // Set is empty - restart not initiated
+
+        const result = hasPVCErrors(
+          workspace,
+          startedWorkspaces,
+          eventsFromResourceVersionFn,
+          restartInitiatedSet,
+        );
+        expect(result).toBe(true);
+      });
+
+      it('should return true when restartInitiatedSet is undefined', () => {
+        const events: CoreV1Event[] = [
+          {
+            metadata: { name: 'workspace-id-123-pod' },
+            reason: 'Failed',
+            message: 'failed to create subPath directory for volumeMount',
+          } as CoreV1Event,
+        ];
+        eventsFromResourceVersionFn.mockReturnValue(events);
+
+        const result = hasPVCErrors(
+          workspace,
+          startedWorkspaces,
+          eventsFromResourceVersionFn,
+          undefined,
+        );
+        expect(result).toBe(true);
+      });
+    });
   });
 });
