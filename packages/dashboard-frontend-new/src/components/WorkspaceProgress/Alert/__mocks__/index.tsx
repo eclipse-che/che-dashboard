@@ -1,0 +1,56 @@
+/*
+ * Copyright (c) 2018-2025 Red Hat, Inc.
+ * This program and the accompanying materials are made
+ * available under the terms of the Eclipse Public License 2.0
+ * which is available at https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ *
+ * Contributors:
+ *   Red Hat, Inc. - initial API and implementation
+ */
+
+import React from 'react';
+
+import { isActionGroup } from '@/services/helpers/types';
+
+import { Props } from '..';
+
+export class LoaderAlert extends React.PureComponent<Props> {
+  render(): React.ReactNode {
+    const { alertItems } = this.props;
+    if (alertItems.length === 0) {
+      return <></>;
+    }
+
+    const items = alertItems.map(item => {
+      const actionLinks = item.actionCallbacks?.map(entry => {
+        if (isActionGroup(entry)) {
+          return (
+            <div key={entry.title} data-testid={`action-group-${entry.title}`}>
+              {entry.actionCallbacks.map(action => (
+                <button key={action.title} onClick={() => action.callback()}>
+                  {action.title}
+                </button>
+              ))}
+            </div>
+          );
+        }
+        return (
+          <button key={entry.title} onClick={() => entry.callback()}>
+            {entry.title}
+          </button>
+        );
+      });
+      return (
+        <div data-testid="loader-alert" key={item.key}>
+          {actionLinks}
+          <span data-testid="alert-title">{item.title}</span>
+          <span data-testid="alert-body">{item.children}</span>
+        </div>
+      );
+    });
+
+    return <div data-testid="loader-alerts">{items}</div>;
+  }
+}

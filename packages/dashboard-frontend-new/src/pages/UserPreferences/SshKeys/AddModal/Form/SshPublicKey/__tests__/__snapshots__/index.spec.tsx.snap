@@ -1,0 +1,58 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`SshPublicKey snapshot 1`] = `
+<form
+  className="pf-v6-c-form"
+  noValidate={true}
+>
+  <div
+    className="pf-v6-c-form__group"
+  >
+    <div
+      className="pf-v6-c-form__group-label"
+    >
+      <label
+        className="pf-v6-c-form__label"
+        htmlFor="ssh-public-key"
+      >
+        <span
+          className="pf-v6-c-form__label-text"
+        >
+          Public Key
+        </span>
+        <span
+          aria-hidden="true"
+          className="pf-v6-c-form__label-required"
+        >
+           
+          *
+        </span>
+      </label>
+        
+    </div>
+    <div
+      className="pf-v6-c-form__group-control"
+    >
+      <div>
+        <span
+          data-testid="ssh-public-key-validated"
+        >
+          default
+        </span>
+        <input
+          data-testid="ssh-public-key-upload"
+          id="ssh-public-key-upload"
+          onChange={[Function]}
+          placeholder="Upload the PUBLIC key"
+        />
+        <input
+          data-testid="ssh-public-key-textarea"
+          id="ssh-public-key-textarea"
+          onChange={[Function]}
+          placeholder="Or paste the PUBLIC key"
+        />
+      </div>
+    </div>
+  </div>
+</form>
+`;

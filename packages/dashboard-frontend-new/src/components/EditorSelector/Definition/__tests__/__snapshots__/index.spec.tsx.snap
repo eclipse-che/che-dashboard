@@ -1,0 +1,109 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`EditorDefinition snapshot w/o initial values 1`] = `
+<form
+  className="pf-v6-c-form pf-m-horizontal"
+  noValidate={true}
+  onSubmit={[Function]}
+>
+  <div
+    data-testid="editor-definition-field"
+  >
+    <button
+      onClick={[Function]}
+    >
+      Editor Definition Change
+    </button>
+    Editor Definition Field
+  </div>
+  <div
+    data-testid="editor-image-field"
+  >
+    <button
+      onClick={[Function]}
+    >
+      Editor Image Change
+    </button>
+    Editor Definition Field
+  </div>
+  <div
+    className="pf-v6-l-flex"
+  >
+    <div
+      className="pf-m-align-right"
+    >
+      <a
+        aria-label={null}
+        className="pf-v6-c-button pf-m-link pf-m-inline"
+        data-ouia-component-id="OUIA-Generated-Button-link-1"
+        data-ouia-component-type="PF6/Button"
+        data-ouia-safe={true}
+        disabled={null}
+        href="https://eclipse.dev/che/docs/stable/end-user-guide/defining-a-common-ide/"
+        target="_blank"
+        type={null}
+      >
+        <span
+          className="pf-v6-c-button__text"
+        >
+          How to specify and use a custom editor
+        </span>
+      </a>
+    </div>
+  </div>
+</form>
+`;
+
+exports[`EditorDefinition snapshot with initial values 1`] = `
+<form
+  className="pf-v6-c-form pf-m-horizontal"
+  noValidate={true}
+  onSubmit={[Function]}
+>
+  <div
+    data-testid="editor-definition-field"
+  >
+    <button
+      onClick={[Function]}
+    >
+      Editor Definition Change
+    </button>
+    Editor Definition Field
+  </div>
+  <div
+    data-testid="editor-image-field"
+  >
+    <button
+      onClick={[Function]}
+    >
+      Editor Image Change
+    </button>
+    Editor Definition Field
+  </div>
+  <div
+    className="pf-v6-l-flex"
+  >
+    <div
+      className="pf-m-align-right"
+    >
+      <a
+        aria-label={null}
+        className="pf-v6-c-button pf-m-link pf-m-inline"
+        data-ouia-component-id="OUIA-Generated-Button-link-2"
+        data-ouia-component-type="PF6/Button"
+        data-ouia-safe={true}
+        disabled={null}
+        href="https://eclipse.dev/che/docs/stable/end-user-guide/defining-a-common-ide/"
+        target="_blank"
+        type={null}
+      >
+        <span
+          className="pf-v6-c-button__text"
+        >
+          How to specify and use a custom editor
+        </span>
+      </a>
+    </div>
+  </div>
+</form>
+`;

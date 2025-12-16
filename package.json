@@ -7,7 +7,8 @@
     "packages": [
       "packages/common",
       "packages/dashboard-backend",
-      "packages/dashboard-frontend"
+      "packages/dashboard-frontend",
+      "packages/dashboard-frontend-new"
     ]
   },
   "bugs": {

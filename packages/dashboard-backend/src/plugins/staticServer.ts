@@ -12,6 +12,7 @@
 
 import fastifyStatic from '@fastify/static';
 import { DoneFuncWithErrOrRes, FastifyInstance, FastifyReply, FastifyRequest } from 'fastify';
+import fs from 'fs';
 import path from 'path';
 
 import { logger } from '@/utils/logger';
@@ -25,6 +26,35 @@ export function registerStaticServer(publicFolder: string, server: FastifyInstan
     maxAge: 24 * 60 * 60 * 1000,
     lastModified: true,
     prefix: '/',
+    index: ['index.html'],
+  });
+
+  // SPA routing for v6 dashboard - serve index.html for any non-static routes
+  server.setNotFoundHandler((request: FastifyRequest, reply: FastifyReply) => {
+    const url = request.url;
+
+    // Check if this is a v6 dashboard route (SPA routing)
+    if (url.startsWith('/dashboard/v6/') || url === '/dashboard/v6') {
+      const v6IndexPath = path.join(rootPath, 'dashboard', 'v6', 'index.html');
+      if (fs.existsSync(v6IndexPath)) {
+        reply.header('cache-control', 'no-store, max-age=0');
+        return reply.sendFile('dashboard/v6/index.html');
+      }
+    }
+
+    // Check if this is a main dashboard route (SPA routing)
+    if (url.startsWith('/dashboard/') || url === '/dashboard') {
+      const indexPath = path.join(rootPath, 'dashboard', 'index.html');
+      if (fs.existsSync(indexPath)) {
+        reply.header('cache-control', 'no-store, max-age=0');
+        return reply.sendFile('dashboard/index.html');
+      }
+    }
+
+    // Default 404 response
+    reply
+      .code(404)
+      .send({ error: 'Not Found', message: `Route ${request.method}:${url} not found` });
   });
 
   const doNotCache = [
@@ -32,6 +62,10 @@ export function registerStaticServer(publicFolder: string, server: FastifyInstan
     '/dashboard/index.html',
     '/dashboard/service-worker.js',
     '/dashboard/assets/branding/product.json',
+    '/dashboard/v6/',
+    '/dashboard/v6/index.html',
+    '/dashboard/v6/service-worker.js',
+    '/dashboard/v6/assets/branding/product.json',
   ];
   server.addHook(
     'onSend',

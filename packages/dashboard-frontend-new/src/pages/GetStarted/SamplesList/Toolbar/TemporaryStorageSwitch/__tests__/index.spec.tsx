@@ -1,0 +1,100 @@
+/*
+ * Copyright (c) 2018-2025 Red Hat, Inc.
+ * This program and the accompanying materials are made
+ * available under the terms of the Eclipse Public License 2.0
+ * which is available at https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ *
+ * Contributors:
+ *   Red Hat, Inc. - initial API and implementation
+ */
+
+import { screen } from '@testing-library/react';
+import React from 'react';
+import { Provider } from 'react-redux';
+import { Store } from 'redux';
+
+import { Navigation } from '@/Layout/Navigation';
+import TemporaryStorageSwitch, {
+  TEMPORARY_STORAGE_SWITCH_ID,
+} from '@/pages/GetStarted/SamplesList/Toolbar/TemporaryStorageSwitch';
+import getComponentRenderer from '@/services/__mocks__/getComponentRenderer';
+import { BrandingData } from '@/services/bootstrap/branding.constant';
+import { MockStoreBuilder } from '@/store/__mocks__/mockStore';
+
+const { renderComponent, createSnapshot } = getComponentRenderer(getComponent);
+
+const mockOnChange = jest.fn();
+
+// mute console.error
+console.error = jest.fn();
+
+describe('Temporary Storage Switch', () => {
+  let store: Store;
+
+  beforeEach(() => {
+    store = new MockStoreBuilder()
+      .withBranding({
+        docs: {
+          storageTypes: 'https://docs.location',
+        },
+      } as BrandingData)
+      .build();
+    Navigation.pageState[TEMPORARY_STORAGE_SWITCH_ID] = { isChecked: undefined };
+  });
+
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
+  test('snapshot', () => {
+    const snapshot = createSnapshot(store, false);
+    expect(snapshot.toJSON()).toMatchSnapshot();
+  });
+
+  it('should be initially switched on', () => {
+    renderComponent(store, true);
+
+    const switchInput = screen.getByRole('checkbox') as HTMLInputElement;
+    expect(switchInput.checked).toBeTruthy();
+    expect(mockOnChange).toHaveBeenCalledTimes(1);
+    expect(Navigation.pageState[TEMPORARY_STORAGE_SWITCH_ID]).toEqual({
+      isChecked: undefined,
+    });
+    mockOnChange.mockReset();
+
+    switchInput.click();
+    expect(switchInput.checked).toBeFalsy();
+    expect(mockOnChange).toHaveBeenCalledTimes(1);
+    expect(Navigation.pageState[TEMPORARY_STORAGE_SWITCH_ID]).toEqual({
+      isChecked: false,
+    });
+  });
+
+  it('should be initially switched off', () => {
+    renderComponent(store, false);
+    const switchInput = screen.getByRole('checkbox') as HTMLInputElement;
+    expect(switchInput.checked).toBeFalsy();
+    expect(mockOnChange).toHaveBeenCalledTimes(1);
+    expect(Navigation.pageState[TEMPORARY_STORAGE_SWITCH_ID]).toEqual({
+      isChecked: undefined,
+    });
+    mockOnChange.mockReset();
+
+    switchInput.click();
+    expect(switchInput.checked).toBeTruthy();
+    expect(mockOnChange).toHaveBeenCalledTimes(1);
+    expect(Navigation.pageState[TEMPORARY_STORAGE_SWITCH_ID]).toEqual({
+      isChecked: true,
+    });
+  });
+});
+
+function getComponent(store: Store, isTemporary: boolean) {
+  return (
+    <Provider store={store}>
+      <TemporaryStorageSwitch isTemporary={isTemporary} onChange={mockOnChange} />
+    </Provider>
+  );
+}

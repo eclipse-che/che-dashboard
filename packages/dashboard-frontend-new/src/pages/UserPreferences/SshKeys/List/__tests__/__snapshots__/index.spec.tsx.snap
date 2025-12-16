@@ -1,0 +1,36 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`SSH keys list snapshot 1`] = `
+<section
+  className="pf-v6-c-page__main-section"
+>
+  <div
+    className="pf-v6-c-page__main-body"
+  >
+    <div
+      data-testid="ssh-keys-list-entry"
+    >
+      <span>
+        key-name-1
+      </span>
+      <button
+        onClick={[Function]}
+      >
+        Delete
+      </button>
+    </div>
+    <div
+      data-testid="ssh-keys-list-entry"
+    >
+      <span>
+        key-name-2
+      </span>
+      <button
+        onClick={[Function]}
+      >
+        Delete
+      </button>
+    </div>
+  </div>
+</section>
+`;

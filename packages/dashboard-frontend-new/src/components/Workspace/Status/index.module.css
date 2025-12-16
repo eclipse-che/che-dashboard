@@ -1,0 +1,32 @@
+.statusLabel {
+  text-transform: capitalize;
+}
+
+.statusIndicator {
+  margin-right: 10px;
+}
+
+.statusIndicator svg {
+  overflow: visible;
+}
+
+svg.rotate {
+  width: 17px;
+}
+
+.rotate {
+  animation-name: spinnerRotate;
+  animation-duration: 1s;
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
+}
+
+@keyframes spinnerRotate {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}

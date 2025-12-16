@@ -1,0 +1,34 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`ProjectsFormGroup screenshot with projects 1`] = `
+<div
+  className="pf-v6-c-form__group"
+>
+  <div
+    className="pf-v6-c-form__group-label"
+  >
+    <label
+      className="pf-v6-c-form__label"
+      htmlFor="projects"
+    >
+      <span
+        className="pf-v6-c-form__label-text"
+      >
+        Projects
+      </span>
+    </label>
+      
+  </div>
+  <div
+    className="pf-v6-c-form__group-control"
+  >
+    <div
+      className="readonly"
+    >
+      project1, project2
+    </div>
+  </div>
+</div>
+`;
+
+exports[`ProjectsFormGroup screenshot without projects 1`] = `null`;

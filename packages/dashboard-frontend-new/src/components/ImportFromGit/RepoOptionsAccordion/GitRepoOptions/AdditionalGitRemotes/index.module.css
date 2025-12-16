@@ -1,0 +1,28 @@
+.remoteName :global(.pf-v6-c-form__group-label) {
+  text-align: end;
+}
+
+.remoteURL :global(.pf-v6-c-form__group-label) {
+  text-align: end;
+}
+
+.removeRemoteButton {
+  vertical-align: middle;
+}
+
+button.addRemoteButton {
+  text-decoration: none;
+}
+
+.gitRemotesTitle {
+  font-size: var(--pf-v6-c-form__label--FontSize, var(--pf-t--global--font--size--body--sm));
+}
+
+.gitRemotesGroup {
+  border: 0;
+}
+
+.gitRemotesGroup :global(.pf-v6-c-form__field-group-body) {
+  padding-top: 0;
+  padding-bottom: 0;
+}

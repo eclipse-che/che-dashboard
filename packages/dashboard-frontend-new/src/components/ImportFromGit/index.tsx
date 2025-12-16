@@ -1,0 +1,279 @@
+/*
+ * Copyright (c) 2018-2025 Red Hat, Inc.
+ * This program and the accompanying materials are made
+ * available under the terms of the Eclipse Public License 2.0
+ * which is available at https://www.eclipse.org/legal/epl-2.0/
+ *
+ * SPDX-License-Identifier: EPL-2.0
+ *
+ * Contributors:
+ *   Red Hat, Inc. - initial API and implementation
+ */
+
+import {
+  Button,
+  ButtonVariant,
+  Flex,
+  FlexItem,
+  Form,
+  FormGroup,
+  FormHelperText,
+  HelperText,
+  HelperTextItem,
+  Panel,
+  PanelHeader,
+  PanelMain,
+  PanelMainBody,
+  TextInput,
+  Title,
+  ValidatedOptions,
+} from '@patternfly/react-core';
+import { ExclamationCircleIcon } from '@patternfly/react-icons';
+import React from 'react';
+import { connect, ConnectedProps } from 'react-redux';
+import { NavigateFunction } from 'react-router-dom';
+
+import { getRepoLocation, validateLocation } from '@/components/ImportFromGit/helpers';
+import RepoOptionsAccordion from '@/components/ImportFromGit/RepoOptionsAccordion';
+import UntrustedSourceModal from '@/components/UntrustedSourceModal';
+import { buildFactoryLoaderPath } from '@/preload/main';
+import { FactoryLocationAdapter } from '@/services/factory-location-adapter';
+import {
+  EDITOR_ATTR,
+  EDITOR_IMAGE_ATTR,
+  REVISION_ATTR,
+} from '@/services/helpers/factoryFlow/buildFactoryParams';
+import { buildUserPreferencesLocation } from '@/services/helpers/location';
+import { UserPreferencesTab } from '@/services/helpers/types';
+import { RootState } from '@/store';
+import { selectSshKeys } from '@/store/SshKeys/selectors';
+import { workspacesActionCreators } from '@/store/Workspaces';
+
+const FIELD_ID = 'git-repo-url';
+
+export type Props = MappedProps & {
+  editorDefinition: string | undefined;
+  editorImage: string | undefined;
+  navigate: NavigateFunction;
+};
+export type State = {
+  hasSshKeys: boolean;
+  location: string;
+  locationValidated: ValidatedOptions;
+  remotesValidated: ValidatedOptions;
+  isFocused: boolean;
+  isConfirmationOpen: boolean;
+  gitBranch: string | undefined;
+};
+
+class ImportFromGit extends React.PureComponent<Props, State> {
+  constructor(props: Props) {
+    super(props);
+
+    this.state = {
+      hasSshKeys: this.props.sshKeys.length > 0,
+      locationValidated: ValidatedOptions.default,
+      location: '',
+      remotesValidated: ValidatedOptions.default,
+      isFocused: false,
+      isConfirmationOpen: false,
+      gitBranch: undefined,
+    };
+  }
+
+  public componentDidUpdate(prevProps: Readonly<Props>, prevState: Readonly<State>): void {
+    const { location, isFocused } = this.state;
+    if (!isFocused && (location !== prevState.location || prevState.isFocused)) {
+      const inputElement = document.getElementById(FIELD_ID) as HTMLInputElement;
+      if (inputElement) {
+        inputElement.value = location;
+      }
+    }
+  }
+
+  private openConfirmationDialog(): void {
+    this.setState({ isConfirmationOpen: true });
+  }
+
+  private handleConfirmationOnClose(): void {
+    this.setState({ isConfirmationOpen: false });
+  }
+
+  private handleConfirmationOnContinue(): void {
+    this.setState({ isConfirmationOpen: false });
+    this.startFactory();
+  }
+
+  private handleCreate(): void {
+    this.openConfirmationDialog();
+  }
+
+  private startFactory(): void {
+    const { editorDefinition, editorImage } = this.props;
+    const factory = new FactoryLocationAdapter(this.state.location);
+
+    // add the editor definition and editor image to the URL
+    // if they are not already there
+    if (!factory.searchParams.has(EDITOR_ATTR) && !factory.searchParams.has(EDITOR_IMAGE_ATTR)) {
+      if (editorDefinition !== undefined) {
+        factory.searchParams.set(EDITOR_ATTR, editorDefinition);
+      }
+      if (editorImage !== undefined) {
+        factory.searchParams.set(EDITOR_IMAGE_ATTR, editorImage);
+      }
+    }
+    if (this.state.gitBranch && !this.state.location.startsWith('http')) {
+      factory.searchParams.set(REVISION_ATTR, this.state.gitBranch);
+    }
+
+    const factoryLoaderPath = buildFactoryLoaderPath(factory.toString());
+    // open a new page to handle that
+    window.open(`${window.location.origin}${factoryLoaderPath}`, '_blank');
+  }
+
+  private handleChange(location: string): void {
+    location = location.trim();
+    if (this.state.location === location) {
+      return;
+    }
+    const validated = validateLocation(location, this.state.hasSshKeys);
+    this.setState({ locationValidated: validated, location });
+  }
+
+  private getErrorMessage(location: string): React.ReactNode {
+    const isValidGitSsh = FactoryLocationAdapter.isSshLocation(location);
+
+    if (isValidGitSsh && !this.state.hasSshKeys) {
+      return (
+        <>
+          No SSH keys found. Please add your SSH keys in the{' '}
+          <Button variant="link" isInline onClick={() => this.openUserPreferences()}>
+            User Preferences
+          </Button>{' '}
+          and then try again.
+        </>
+      );
+    }
+
+    return 'The URL or SSHLocation is not valid.';
+  }
+
+  private openUserPreferences(): void {
+    const location = buildUserPreferencesLocation(UserPreferencesTab.SSH_KEYS);
+    this.props.navigate(location);
+  }
+
+  public buildForm(): React.JSX.Element {
+    const { location } = this.state;
+    const { locationValidated, remotesValidated } = this.state;
+
+    const buttonDisabled =
+      !location ||
+      locationValidated === ValidatedOptions.error ||
+      remotesValidated === ValidatedOptions.error;
+    const errorMessage = this.getErrorMessage(location);
+    const validated =
+      remotesValidated === ValidatedOptions.error ? ValidatedOptions.error : locationValidated;
+
+    return (
+      <Form
+        isHorizontal={true}
+        onSubmit={e => {
+          e.preventDefault();
+          if (buttonDisabled) {
+            return false;
+          }
+          this.handleCreate();
+        }}
+      >
+        <FormGroup fieldId={FIELD_ID} label="Git repo URL" isRequired={true}>
+          <Flex>
+            <FlexItem grow={{ default: 'grow' }} style={{ maxWidth: '500px', minWidth: '70%' }}>
+              <TextInput
+                id={FIELD_ID}
+                aria-label="HTTPS or SSH URL"
+                placeholder="Enter HTTPS or SSH URL"
+                validated={validated}
+                onFocus={() => this.setState({ isFocused: true })}
+                onBlur={() => this.setState({ isFocused: false })}
+                onChange={(_event, value) => this.handleChange(value)}
+              />
+            </FlexItem>
+            <FlexItem>
+              <Button
+                id="create-and-open-button"
+                isDisabled={buttonDisabled}
+                variant={ButtonVariant.secondary}
+                onClick={() => this.handleCreate()}
+              >
+                Create & Open
+              </Button>
+            </FlexItem>
+          </Flex>
+          <FormHelperText>
+            <HelperText>
+              {validated === ValidatedOptions.error ? (
+                <HelperTextItem icon={<ExclamationCircleIcon />} variant="error">
+                  {errorMessage}
+                </HelperTextItem>
+              ) : (
+                <HelperTextItem>
+                  Import from a Git repository to launch a Cloud Development Environment.
+                </HelperTextItem>
+              )}
+            </HelperText>
+          </FormHelperText>
+        </FormGroup>
+      </Form>
+    );
+  }
+
+  public render() {
+    const { isConfirmationOpen, location, locationValidated } = this.state;
+    const repoLocation = getRepoLocation(location) || location;
+    return (
+      <>
+        <UntrustedSourceModal
+          location={repoLocation}
+          isOpen={isConfirmationOpen}
+          onContinue={() => this.handleConfirmationOnContinue()}
+          onClose={() => this.handleConfirmationOnClose()}
+        />
+        <Panel>
+          <PanelHeader>
+            <Title headingLevel="h3">Import from Git</Title>
+          </PanelHeader>
+          <PanelMain>
+            <PanelMainBody>{this.buildForm()}</PanelMainBody>
+          </PanelMain>
+          {locationValidated === ValidatedOptions.success && (
+            <PanelMain>
+              <PanelMainBody>
+                <RepoOptionsAccordion
+                  location={location}
+                  onChange={(
+                    location: string,
+                    remotesValidated: ValidatedOptions,
+                    gitBranch: string | undefined,
+                  ) => {
+                    const locationValidated = validateLocation(location, this.state.hasSshKeys);
+                    this.setState({ location, remotesValidated, locationValidated, gitBranch });
+                  }}
+                />
+              </PanelMainBody>
+            </PanelMain>
+          )}
+        </Panel>
+      </>
+    );
+  }
+}
+
+const mapStateToProps = (state: RootState) => ({
+  sshKeys: selectSshKeys(state),
+});
+
+const connector = connect(mapStateToProps, workspacesActionCreators);
+
+type MappedProps = ConnectedProps<typeof connector>;
+export default connector(ImportFromGit);
