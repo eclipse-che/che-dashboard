@@ -146,5 +146,42 @@ describe('DevWorkspaceClient debug mode', () => {
       ]);
       expect(resultData).toEqual(devWorkspaceNoDebug);
     });
+
+    it('should ensure metadata annotations exist before enabling debug mode', async () => {
+      const mockPatch = mockAxios.patch as jest.Mock;
+      mockPatch.mockResolvedValue(new Promise(resolve => resolve({ data: devWorkspaceWithDebug })));
+
+      const devWorkspaceWithoutAnnotations = new DevWorkspaceBuilder()
+        .withMetadata({
+          name,
+          namespace,
+        })
+        .build();
+
+      // Remove annotations to test the ensure logic
+      delete devWorkspaceWithoutAnnotations.metadata.annotations;
+
+      const resultData: devfileApi.DevWorkspace = await devWorkspaceClient.manageDebugMode(
+        devWorkspaceWithoutAnnotations,
+        true,
+      );
+
+      expect(mockPatch.mock.calls[mockPatch.mock.calls.length - 1]).toEqual([
+        `/dashboard/api/namespace/${namespace}/devworkspaces/${name}`,
+        [
+          {
+            op: 'add',
+            path: '/metadata/annotations',
+            value: {},
+          },
+          {
+            op: 'add',
+            path: '/metadata/annotations/controller.devfile.io~1debug-start',
+            value: 'true',
+          },
+        ],
+      ]);
+      expect(resultData).toEqual(devWorkspaceWithDebug);
+    });
   });
 });
