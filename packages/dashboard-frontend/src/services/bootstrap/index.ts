@@ -29,8 +29,10 @@ import {
 } from '@/services/bootstrap/workspaceStoppedDetector';
 import { isAvailableEndpoint } from '@/services/helpers/api-ping';
 import { buildDetailsLocation, buildIdeLoaderLocation } from '@/services/helpers/location';
+import { signIn } from '@/services/helpers/login';
 import { ResourceFetcherService } from '@/services/resource-fetcher';
 import { Workspace } from '@/services/workspace-adapter';
+import { hasLoginPage, isForbidden, isUnauthorized } from '@/services/workspace-client/helpers';
 import { RootState } from '@/store';
 import { bannerAlertActionCreators } from '@/store/BannerAlert';
 import { brandingActionCreators } from '@/store/Branding';
@@ -135,6 +137,9 @@ export default class Bootstrap {
         lastFetched: Date.now(),
       });
     } catch (e) {
+      if (isUnauthorized(e) || (isForbidden(e) && hasLoginPage(e))) {
+        signIn();
+      }
       checkNamespaceProvisionWarnings(this.store.getState);
       const errorMessage = common.helpers.errors.getMessage(e);
       this.issuesReporterService.registerIssue(
