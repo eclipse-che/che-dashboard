@@ -316,7 +316,7 @@ export class WorkspaceAdapter<T extends devfileApi.DevWorkspace> implements Work
   }
 
   get error(): string | undefined {
-    if (this.hasError === false) {
+    if (!this.hasError) {
       return;
     }
     return this.workspace.status?.message;
