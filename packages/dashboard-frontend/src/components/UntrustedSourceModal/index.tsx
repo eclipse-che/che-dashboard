@@ -25,6 +25,7 @@ import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 
 import { AppAlerts } from '@/services/alerts/appAlerts';
+import { getRepoFromLocation } from '@/services/helpers/factoryFlow/getRepoFromLocation';
 import { RootState } from '@/store';
 import { selectIsAllowedSourcesConfigured } from '@/store/ServerConfig/selectors';
 import { workspacePreferencesActionCreators } from '@/store/Workspaces/Preferences';
@@ -163,7 +164,10 @@ class UntrustedSourceModal extends React.Component<Props, State> {
     } else if (trustAllCheckbox) {
       await this.props.addTrustedSource('*');
     } else {
-      await this.props.addTrustedSource(location);
+      // Extract clean repository URL without branches and factory parameters
+      // This ensures we store only the base repo URL for comparison
+      const repoUrl = getRepoFromLocation(location);
+      await this.props.addTrustedSource(repoUrl);
     }
   }
 
