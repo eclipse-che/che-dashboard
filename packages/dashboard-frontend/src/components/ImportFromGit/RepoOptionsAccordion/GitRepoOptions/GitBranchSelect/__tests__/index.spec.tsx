@@ -30,8 +30,16 @@ describe('GitBranchSelect', () => {
     expect(snapshot.toJSON()).toMatchSnapshot();
   });
 
-  test('git branch preset value', () => {
+  test('git branch select preset', () => {
     renderComponent('preset-git-branch');
+
+    const input = screen.getByRole('textbox');
+
+    expect(input).toHaveValue('preset-git-branch');
+  });
+
+  test('git branch input preset', () => {
+    renderComponent('preset-git-branch', ['branch']);
 
     const branch = screen.getByText('preset-git-branch');
 
@@ -53,16 +61,6 @@ describe('GitBranchSelect', () => {
     await userEvent.click(select);
     await userEvent.click(screen.getByText(gitBranchNew));
     expect(mockOnChange).toHaveBeenNthCalledWith(2, gitBranchNew);
-  });
-
-  test('empty git branch list', async () => {
-    renderComponent();
-
-    const error = screen.getByText(
-      'No branch found. The Git repository is not available at the given URL.',
-    );
-
-    expect(error).not.toBeNull();
   });
 });
 

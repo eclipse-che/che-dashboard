@@ -10,13 +10,7 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import {
-  FormGroup,
-  Select,
-  SelectOption,
-  SelectVariant,
-  ValidatedOptions,
-} from '@patternfly/react-core';
+import { FormGroup, Select, SelectOption, SelectVariant, TextInput } from '@patternfly/react-core';
 import React from 'react';
 
 import styles from '@/components/ImportFromGit/RepoOptionsAccordion/GitRepoOptions/GitBranchSelect/index.module.css';
@@ -83,22 +77,31 @@ export class GitBranchSelect extends React.PureComponent<Props, State> {
     return (
       <FormGroup
         label="Git Branch"
-        validated={!isDisabled ? ValidatedOptions.default : ValidatedOptions.error}
-        helperText={!gitBranch ? 'Select the branch of the Git Repository' : undefined}
-        helperTextInvalid={'No branch found. The Git repository is not available at the given URL.'}
+        helperText={
+          !gitBranch && !isDisabled ? 'Select the branch of the Git Repository' : undefined
+        }
       >
-        <Select
-          isDisabled={isDisabled}
-          className={styles.selector}
-          variant={SelectVariant.single}
-          hasInlineFilter={true}
-          onToggle={isOpen => this.setState({ isOpen })}
-          isOpen={isOpen}
-          onSelect={(_, value) => this.onClick(value.toString())}
-          placeholderText={gitBranch ? gitBranch : ' '}
-        >
-          {selectOptions}
-        </Select>
+        {!isDisabled ? (
+          <Select
+            isDisabled={isDisabled}
+            className={styles.selector}
+            variant={SelectVariant.single}
+            hasInlineFilter={true}
+            onToggle={isOpen => this.setState({ isOpen })}
+            isOpen={isOpen}
+            onSelect={(_, value) => this.onClick(value.toString())}
+            placeholderText={gitBranch ? gitBranch : ' '}
+          >
+            {selectOptions}
+          </Select>
+        ) : (
+          <TextInput
+            aria-label="Git Branch"
+            placeholder="Enter the branch of the Git Repository"
+            onChange={value => this.handleChange(value)}
+            value={gitBranch}
+          />
+        )}
       </FormGroup>
     );
   }
