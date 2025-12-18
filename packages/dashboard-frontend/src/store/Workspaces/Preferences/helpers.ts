@@ -12,6 +12,13 @@
 
 import { api } from '@eclipse-che/common';
 
+import { getRepoFromLocation } from '@/services/helpers/factoryFlow/getRepoFromLocation';
+
+/**
+ * Regex pattern to match air-gap sample URLs that should be automatically trusted.
+ */
+export const AIRGAP_SAMPLE_PATTERN = /\/dashboard\/api\/airgap-sample\/devfile\/download/;
+
 export const gitProviderPatterns = {
   github: {
     https: /^https:\/\/github\.com\/([^\\/]+\/[^\\/]+)(?:\/.*)?$/,
@@ -106,6 +113,13 @@ export function isTrustedRepo(
   trustedSources: api.TrustedSources | undefined,
   url: string | URL,
 ): boolean {
+  const urlString = url.toString();
+
+  // Air-gap sample URLs are always trusted
+  if (AIRGAP_SAMPLE_PATTERN.test(urlString)) {
+    return true;
+  }
+
   if (trustedSources === undefined) {
     return false;
   }
@@ -113,18 +127,26 @@ export function isTrustedRepo(
     return true;
   }
 
-  const urlString = url.toString();
-  const urlPattern = getRepoPattern(urlString);
-  const urlRepo = extractRepo(urlString, urlPattern);
+  // Extract clean repo URL without branches and factory parameters
+  // This ensures we compare base repository URLs
+  const repoUrl = getRepoFromLocation(urlString);
+
+  const urlPattern = getRepoPattern(repoUrl);
+  const urlRepo = extractRepo(repoUrl, urlPattern);
 
   // Check if the URL matches any of the trusted repositories
   return trustedSources.some(trustedUrl => {
-    const trustedUrlPattern = getRepoPattern(trustedUrl);
-    const trustedUrlRepo = extractRepo(trustedUrl, trustedUrlPattern);
+    // Also extract clean repo from trusted URL
+    const trustedRepoUrl = getRepoFromLocation(trustedUrl);
+    const trustedUrlPattern = getRepoPattern(trustedRepoUrl);
+    const trustedUrlRepo = extractRepo(trustedRepoUrl, trustedUrlPattern);
 
-    return (
-      (urlRepo && trustedUrlRepo && urlRepo === trustedUrlRepo) ||
-      urlString.split('?')[0] === trustedUrl.split('?')[0]
-    );
+    if (urlRepo && trustedUrlRepo) {
+      // compare repository names
+      return urlRepo === trustedUrlRepo;
+    } else {
+      // compare URLs as is (both as repos without branches)
+      return repoUrl === trustedRepoUrl;
+    }
   });
 }
