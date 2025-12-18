@@ -410,7 +410,7 @@ export interface IServerConfigApi {
   /**
    * Returns the hideEditorsById value
    */
-  gеtHideEditorsById(cheCustomResource: CheClusterCustomResource): string[];
+  getHideEditorsById(cheCustomResource: CheClusterCustomResource): string[];
 
   /**
    * Returns the Machine (hardware) type.
