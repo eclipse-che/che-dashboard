@@ -10,7 +10,7 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import { gitProviderPatterns } from '@/store/Workspaces/Preferences/helpers';
+import { FactoryLocationAdapter } from '@/services/factory-location-adapter';
 
 /**
  * Securely checks if a hostname belongs to an Azure DevOps instance.
@@ -40,60 +40,37 @@ export function getRepoFromLocation(location: string): string {
   let cleanLocation =
     questionMarkIndex !== -1 ? location.substring(0, questionMarkIndex) : location;
 
-  // Try to parse as URL (for HTTP/HTTPS)
-  try {
-    const url = new URL(cleanLocation);
-    const pathname = url.pathname;
-
-    // Check which Git provider and remove branch-specific path segments
-    if (url.hostname === 'github.com') {
-      // GitHub: remove /tree/*, /blob/*, /commits/*
-      cleanLocation = cleanLocation.replace(/\/(tree|blob|commits)\/[^/]+.*$/, '');
-    } else if (url.hostname === 'gitlab.com') {
-      // GitLab: remove /-/tree/*, /-/blob/*, /-/commits/*
-      cleanLocation = cleanLocation.replace(/\/-\/(tree|blob|commits)\/[^/]+.*$/, '');
-    } else if (url.hostname === 'bitbucket.org') {
-      // Bitbucket: remove /src/*
-      cleanLocation = cleanLocation.replace(/\/src\/[^/]+.*$/, '');
-    } else if (isAzureDevOpsHost(url.hostname)) {
-      // Azure DevOps: URL already clean, just remove query params (already done above)
-      // Pattern: https://dev.azure.com/org/project/_git/repo
-      cleanLocation = `${url.origin}${pathname}`;
-    } else {
-      // Unknown provider, return origin + pathname (without query)
-      cleanLocation = `${url.origin}${pathname}`;
-    }
-
-    // Remove trailing slashes
-    cleanLocation = cleanLocation.replace(/\/+$/, '');
-
-    return cleanLocation;
-  } catch (e) {
-    // Not a valid URL (e.g., SSH format like git@github.com:user/repo.git)
-    // For SSH URLs, just remove query parameters (already done)
+  // Check if it's an HTTP/HTTPS location before parsing
+  if (!FactoryLocationAdapter.isHttpLocation(cleanLocation)) {
+    // Not an HTTP URL (e.g., SSH format like git@github.com:user/repo.git)
     return cleanLocation;
   }
-}
 
-/**
- * Checks if a Git service is supported based on URL.
- */
-export function isSupportedGitService(location: string): boolean {
-  try {
-    const url = new URL(location);
-    return (
-      url.hostname === 'github.com' ||
-      url.hostname === 'gitlab.com' ||
-      url.hostname === 'bitbucket.org' ||
-      isAzureDevOpsHost(url.hostname)
-    );
-  } catch (e) {
-    // Check SSH patterns
-    for (const provider of Object.values(gitProviderPatterns)) {
-      if (provider.ssh.test(location)) {
-        return true;
-      }
-    }
-    return false;
+  // Parse HTTP/HTTPS URL
+  const url = new URL(cleanLocation);
+  const pathname = url.pathname;
+
+  // Check which Git provider and remove branch-specific path segments
+  if (url.hostname === 'github.com') {
+    // GitHub: remove /tree/*, /blob/*, /commits/*
+    cleanLocation = cleanLocation.replace(/\/(tree|blob|commits)\/[^/]+.*$/, '');
+  } else if (url.hostname === 'gitlab.com') {
+    // GitLab: remove /-/tree/*, /-/blob/*, /-/commits/*
+    cleanLocation = cleanLocation.replace(/\/-\/(tree|blob|commits)\/[^/]+.*$/, '');
+  } else if (url.hostname === 'bitbucket.org') {
+    // Bitbucket: remove /src/*
+    cleanLocation = cleanLocation.replace(/\/src\/[^/]+.*$/, '');
+  } else if (isAzureDevOpsHost(url.hostname)) {
+    // Azure DevOps: URL already clean, just remove query params (already done above)
+    // Pattern: https://dev.azure.com/org/project/_git/repo
+    cleanLocation = `${url.origin}${pathname}`;
+  } else {
+    // Unknown provider, return origin + pathname (without query)
+    cleanLocation = `${url.origin}${pathname}`;
   }
+
+  // Remove trailing slashes
+  cleanLocation = cleanLocation.replace(/\/+$/, '');
+
+  return cleanLocation;
 }
