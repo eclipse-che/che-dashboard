@@ -15,11 +15,71 @@ import {
   EDITOR_ATTR,
   EXISTING_WORKSPACE_NAME,
   FACTORY_ID_IGNORE_ATTRS,
+  FACTORY_URL_ATTR,
   POLICIES_CREATE_ATTR,
+  REVISION_ATTR,
   STORAGE_TYPE_ATTR,
 } from '@/services/helpers/factoryFlow/buildFactoryParams';
 
 describe('buildFactoryParams', () => {
+  describe('source', () => {
+    it('should return base URL when no factory params', () => {
+      const searchParams = new URLSearchParams({
+        [FACTORY_URL_ATTR]: 'https://github.com/user/repo',
+      });
+
+      expect(buildFactoryParams(searchParams).source).toBe('https://github.com/user/repo');
+    });
+
+    it('should include revision in source', () => {
+      const searchParams = new URLSearchParams({
+        [FACTORY_URL_ATTR]: 'https://github.com/user/repo',
+        [REVISION_ATTR]: 'main',
+      });
+
+      expect(buildFactoryParams(searchParams).source).toBe(
+        'https://github.com/user/repo?revision=main',
+      );
+    });
+
+    it('should include multiple factory params sorted alphabetically', () => {
+      const searchParams = new URLSearchParams({
+        [FACTORY_URL_ATTR]: 'https://github.com/user/repo',
+        [STORAGE_TYPE_ATTR]: 'per-user',
+        [EDITOR_ATTR]: 'che-code',
+        [REVISION_ATTR]: 'feature',
+      });
+
+      const source = buildFactoryParams(searchParams).source;
+      expect(source).toContain('https://github.com/user/repo');
+      expect(source).toContain('che-editor=che-code');
+      expect(source).toContain('revision=feature');
+      expect(source).toContain('storageType=per-user');
+    });
+
+    it('should not include existing param in source', () => {
+      const searchParams = new URLSearchParams({
+        [FACTORY_URL_ATTR]: 'https://github.com/user/repo',
+        [EXISTING_WORKSPACE_NAME]: 'my-workspace',
+        [REVISION_ATTR]: 'main',
+      });
+
+      const source = buildFactoryParams(searchParams).source;
+      expect(source).not.toContain('existing=');
+      expect(source).toContain('revision=main');
+    });
+
+    it('should include policies.create in source', () => {
+      const searchParams = new URLSearchParams({
+        [FACTORY_URL_ATTR]: 'https://github.com/user/repo',
+        [POLICIES_CREATE_ATTR]: 'perclick',
+      });
+
+      const source = buildFactoryParams(searchParams).source;
+      expect(source).toContain('policies.create=perclick');
+    });
+  });
+
   describe('getStorageType', () => {
     it('should return undefined', () => {
       const searchParams = new URLSearchParams({
