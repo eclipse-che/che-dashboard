@@ -245,24 +245,10 @@ describe('Creating steps, checking existing workspaces', () => {
                   annotations: {
                     [DEVWORKSPACE_DEVFILE_SOURCE]: dump({
                       factory: {
-                        params: 'url=https://github.com/eclipse-che/che-dashboard',
+                        params:
+                          'url=https://github.com/eclipse-che/che-dashboard&revision=revision',
                       },
                     }),
-                  },
-                })
-                .withSpec({
-                  template: {
-                    projects: [
-                      {
-                        git: {
-                          remotes: {
-                            origin: 'remote',
-                          },
-                          checkoutFrom: { revision: 'revision' },
-                        },
-                        name: 'project-1',
-                      },
-                    ],
                   },
                 })
                 .build(),
@@ -310,10 +296,11 @@ describe('Creating steps, checking existing workspaces', () => {
         );
       });
 
-      it('should not open the existing workspace created from the same repo with revision in workspace', async () => {
+      it('should not open workspace when factory params have revision but workspace does not', async () => {
         searchParams.delete(DEV_WORKSPACE_ATTR);
         searchParams.set(EXISTING_WORKSPACE_NAME, 'project-1');
         searchParams.set(FACTORY_URL_ATTR, 'https://github.com/eclipse-che/che-dashboard');
+        searchParams.set(REVISION_ATTR, 'feature-branch');
 
         const resources: DevWorkspaceResources = [
           {
@@ -329,34 +316,6 @@ describe('Creating steps, checking existing workspaces', () => {
               new DevWorkspaceBuilder()
                 .withMetadata({
                   name: 'project-1',
-                  namespace: 'user-che',
-                  annotations: {
-                    [DEVWORKSPACE_DEVFILE_SOURCE]: dump({
-                      factory: {
-                        params: 'url=https://github.com/eclipse-che/che-dashboard',
-                      },
-                    }),
-                  },
-                })
-                .withSpec({
-                  template: {
-                    projects: [
-                      {
-                        git: {
-                          remotes: {
-                            origin: 'remote',
-                          },
-                          checkoutFrom: { revision: 'revision' },
-                        },
-                        name: 'project-1',
-                      },
-                    ],
-                  },
-                })
-                .build(),
-              new DevWorkspaceBuilder()
-                .withMetadata({
-                  name: 'project-2',
                   namespace: 'user-che',
                   annotations: {
                     [DEVWORKSPACE_DEVFILE_SOURCE]: dump({
@@ -398,11 +357,11 @@ describe('Creating steps, checking existing workspaces', () => {
         );
       });
 
-      it('should not open the existing workspace created from the same repo with revision in parameters', async () => {
+      it('should not open workspace when workspace has revision but factory params do not', async () => {
         searchParams.delete(DEV_WORKSPACE_ATTR);
         searchParams.set(EXISTING_WORKSPACE_NAME, 'project-1');
         searchParams.set(FACTORY_URL_ATTR, 'https://github.com/eclipse-che/che-dashboard');
-        searchParams.set(REVISION_ATTR, 'revision');
+        // No REVISION_ATTR set
 
         const resources: DevWorkspaceResources = [
           {
@@ -422,20 +381,7 @@ describe('Creating steps, checking existing workspaces', () => {
                   annotations: {
                     [DEVWORKSPACE_DEVFILE_SOURCE]: dump({
                       factory: {
-                        params: 'url=https://github.com/eclipse-che/che-dashboard',
-                      },
-                    }),
-                  },
-                })
-                .build(),
-              new DevWorkspaceBuilder()
-                .withMetadata({
-                  name: 'project-2',
-                  namespace: 'user-che',
-                  annotations: {
-                    [DEVWORKSPACE_DEVFILE_SOURCE]: dump({
-                      factory: {
-                        params: 'url=https://github.com/eclipse-che/che-dashboard',
+                        params: 'url=https://github.com/eclipse-che/che-dashboard&revision=main',
                       },
                     }),
                   },
