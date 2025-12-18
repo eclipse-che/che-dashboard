@@ -21,7 +21,7 @@ import {
 } from '@/components/WorkspaceProgress/CreatingSteps/Apply/Devfile/getGitRemotes';
 import { buildFactoryLoaderPath } from '@/preload/main';
 import { FactoryLocationAdapter } from '@/services/factory-location-adapter';
-import { REVISION } from '@/services/helpers/factoryFlow/buildFactoryParams';
+import { REVISION_ATTR } from '@/services/helpers/factoryFlow/buildFactoryParams';
 
 const BR_NAME_REGEX = /^[0-9A-Za-z-./_]{1,256}$/;
 
@@ -317,7 +317,7 @@ export function getGitRepoOptionsFromLocation(location: string): {
       console.log(`Unable to get branch from '${location}'.${common.helpers.errors.getMessage(e)}`);
     }
   } else if (!FactoryLocationAdapter.isHttpLocation(location)) {
-    gitBranch = searchParams.get(REVISION) || undefined;
+    gitBranch = searchParams.get(REVISION_ATTR) || undefined;
   }
   return { location, gitBranch, remotes, devfilePath, hasSupportedGitService };
 }
@@ -440,7 +440,7 @@ export function setGitRepoOptionsToLocation(
     state.gitBranch = newOptions.gitBranch;
   }
   if (!FactoryLocationAdapter.isHttpLocation(location) && newOptions.gitBranch) {
-    searchParams.set(REVISION, newOptions.gitBranch);
+    searchParams.set(REVISION_ATTR, newOptions.gitBranch);
   }
   // update the location with the new gitBranch value
   let searchParamsStr = decodeURIComponent(searchParamsToString(searchParams));
