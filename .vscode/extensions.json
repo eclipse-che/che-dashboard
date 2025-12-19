@@ -4,6 +4,7 @@
     "recommendations": [
       "dbaeumer.vscode-eslint",
       "github.vscode-pull-request-github",
-      "wix.vscode-import-cost"
+      "wix.vscode-import-cost",
+      "RooVeterinaryInc.roo-cline"
     ]
 }
