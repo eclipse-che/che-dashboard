@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
-exports[`GitBranchField snapshot 1`] = `
+exports[`GitBranchSelect snapshot 1`] = `
 <div
   className="pf-c-form__group"
 >
@@ -35,7 +35,6 @@ exports[`GitBranchField snapshot 1`] = `
       placeholder="Enter the branch of the Git Repository"
       required={false}
       type="text"
-      value=""
     />
   </div>
 </div>

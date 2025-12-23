@@ -123,9 +123,9 @@ export async function exec(
   return { stdOut, stdError };
 }
 
-export function run(cmd: string, args?: string[]): Promise<string> {
+export function run(cmd: string, args?: string[], options?: any): Promise<string> {
   return new Promise((resolve, reject) => {
-    const command = spawn(cmd, args);
+    const command = spawn(cmd, args, options);
     let result = '';
     command.stdout.on('data', data => {
       result += data.toString();

@@ -13,14 +13,14 @@
 import userEvent from '@testing-library/user-event';
 import React from 'react';
 
-import { GitBranchField } from '@/components/ImportFromGit/RepoOptionsAccordion/GitRepoOptions/GitBranchField';
+import { GitBranchSelect } from '@/components/ImportFromGit/RepoOptionsAccordion/GitRepoOptions/GitBranchSelect';
 import getComponentRenderer, { screen } from '@/services/__mocks__/getComponentRenderer';
 
 const { createSnapshot, renderComponent } = getComponentRenderer(getComponent);
 
 const mockOnChange = jest.fn();
 
-describe('GitBranchField', () => {
+describe('GitBranchSelect', () => {
   afterEach(() => {
     jest.clearAllMocks();
   });
@@ -30,7 +30,7 @@ describe('GitBranchField', () => {
     expect(snapshot.toJSON()).toMatchSnapshot();
   });
 
-  test('git branch preset value', () => {
+  test('git branch select preset', () => {
     renderComponent('preset-git-branch');
 
     const input = screen.getByRole('textbox');
@@ -38,23 +38,32 @@ describe('GitBranchField', () => {
     expect(input).toHaveValue('preset-git-branch');
   });
 
+  test('git branch input preset', () => {
+    renderComponent('preset-git-branch', ['branch']);
+
+    const branch = screen.getByText('preset-git-branch');
+
+    expect(branch).not.toBeNull();
+  });
+
   test('git branch change', async () => {
-    renderComponent();
+    const gitBranch = 'branch';
+    const gitBranchNew = 'new-branch';
 
-    const input = screen.getByRole('textbox');
+    renderComponent(undefined, [gitBranch, gitBranchNew]);
 
-    const gitBranch = 'new-git-branch';
+    const select = screen.getByRole('button');
 
-    await userEvent.click(input);
-    await userEvent.paste(gitBranch);
-
+    await userEvent.click(select);
+    await userEvent.click(screen.getByText(gitBranch));
     expect(mockOnChange).toHaveBeenNthCalledWith(1, gitBranch);
 
-    await userEvent.clear(input);
-    expect(mockOnChange).toHaveBeenNthCalledWith(2, '');
+    await userEvent.click(select);
+    await userEvent.click(screen.getByText(gitBranchNew));
+    expect(mockOnChange).toHaveBeenNthCalledWith(2, gitBranchNew);
   });
 });
 
-function getComponent(gitBranch?: string) {
-  return <GitBranchField gitBranch={gitBranch} onChange={mockOnChange} />;
+function getComponent(gitBranch?: string, branchList?: string[]) {
+  return <GitBranchSelect gitBranch={gitBranch} branchList={branchList} onChange={mockOnChange} />;
 }

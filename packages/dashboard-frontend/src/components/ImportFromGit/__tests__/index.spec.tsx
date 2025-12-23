@@ -10,6 +10,7 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
+import { api } from '@eclipse-che/common';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
 import { Provider } from 'react-redux';
@@ -17,11 +18,13 @@ import { Store } from 'redux';
 
 import ImportFromGit from '@/components/ImportFromGit';
 import getComponentRenderer, { screen, waitFor } from '@/services/__mocks__/getComponentRenderer';
+import { fetchGitBranches } from '@/services/backend-client/gitBranchesApi';
 import { MockStoreBuilder } from '@/store/__mocks__/mockStore';
 
 const { createSnapshot, renderComponent } = getComponentRenderer(getComponent);
 
 jest.mock('@/components/UntrustedSourceModal');
+jest.mock('@/services/backend-client/gitBranchesApi');
 
 const mockNavigate = jest.fn();
 
@@ -38,6 +41,8 @@ describe('GitRepoLocationInput', () => {
   let store: Store;
 
   beforeEach(() => {
+    (fetchGitBranches as jest.Mock).mockResolvedValue({ branches: [] } as api.IGitBranches);
+
     store = new MockStoreBuilder()
       .withDwServerConfig({
         defaults: {
@@ -72,7 +77,9 @@ describe('GitRepoLocationInput', () => {
     await userEvent.paste('invalid-test-location');
 
     expect(input).toHaveValue('invalid-test-location');
-    expect(input).toBeInvalid();
+    await waitFor(() => {
+      expect(input).toBeInvalid();
+    });
 
     const button = screen.getByRole('button', { name: 'Create & Open' });
     expect(button).toBeDisabled();
@@ -125,7 +132,9 @@ describe('GitRepoLocationInput', () => {
         expect(input).toBeValid();
 
         const button = screen.getByRole('button', { name: 'Create & Open' });
-        expect(button).toBeEnabled();
+        await waitFor(() => {
+          expect(button).toBeEnabled();
+        });
 
         await userEvent.click(button);
 
@@ -154,7 +163,9 @@ describe('GitRepoLocationInput', () => {
         expect(input).toBeValid();
 
         const button = screen.getByRole('button', { name: 'Create & Open' });
-        expect(button).toBeEnabled();
+        await waitFor(() => {
+          expect(button).toBeEnabled();
+        });
 
         await userEvent.click(button);
 
@@ -183,7 +194,9 @@ describe('GitRepoLocationInput', () => {
         expect(input).toBeValid();
 
         const button = screen.getByRole('button', { name: 'Create & Open' });
-        expect(button).toBeEnabled();
+        await waitFor(() => {
+          expect(button).toBeEnabled();
+        });
 
         await userEvent.click(button);
 
@@ -212,7 +225,9 @@ describe('GitRepoLocationInput', () => {
         expect(input).toBeValid();
 
         const button = screen.getByRole('button', { name: 'Create & Open' });
-        expect(button).toBeEnabled();
+        await waitFor(() => {
+          expect(button).toBeEnabled();
+        });
 
         await userEvent.click(button);
 
@@ -243,7 +258,9 @@ describe('GitRepoLocationInput', () => {
         expect(input).toBeValid();
 
         const button = screen.getByRole('button', { name: 'Create & Open' });
-        expect(button).toBeEnabled();
+        await waitFor(() => {
+          expect(button).toBeEnabled();
+        });
 
         await userEvent.click(button);
 
@@ -272,7 +289,9 @@ describe('GitRepoLocationInput', () => {
         expect(input).toBeValid();
 
         const button = screen.getByRole('button', { name: 'Create & Open' });
-        expect(button).toBeEnabled();
+        await waitFor(() => {
+          expect(button).toBeEnabled();
+        });
 
         await userEvent.click(button);
 
@@ -302,7 +321,9 @@ describe('GitRepoLocationInput', () => {
       input.blur();
 
       expect(input).toHaveValue('git@github.com:user/repo.git');
-      expect(input).toBeInvalid();
+      await waitFor(() => {
+        expect(input).toBeInvalid();
+      });
 
       const buttonCreate = screen.getByRole('button', { name: 'Create & Open' });
       expect(buttonCreate).toBeDisabled();
@@ -334,10 +355,14 @@ describe('GitRepoLocationInput', () => {
       await userEvent.paste('git@github.com:user/repo.git');
 
       expect(input).toHaveValue('git@github.com:user/repo.git');
-      expect(input).toBeValid();
+      await waitFor(() => {
+        expect(input).toBeValid();
+      });
 
       const buttonCreate = screen.getByRole('button', { name: 'Create & Open' });
-      expect(buttonCreate).toBeEnabled();
+      await waitFor(() => {
+        expect(buttonCreate).toBeEnabled();
+      });
 
       await userEvent.click(buttonCreate);
 
@@ -371,7 +396,9 @@ describe('GitRepoLocationInput', () => {
       expect(input).toBeValid();
 
       const buttonCreate = screen.getByRole('button', { name: 'Create & Open' });
-      expect(buttonCreate).toBeEnabled();
+      await waitFor(() => {
+        expect(buttonCreate).toBeEnabled();
+      });
 
       await userEvent.click(buttonCreate);
 
@@ -387,6 +414,9 @@ describe('GitRepoLocationInput', () => {
     });
 
     test('should add revision query parameter', async () => {
+      (fetchGitBranches as jest.Mock).mockResolvedValue({
+        branches: ['test'],
+      } as api.IGitBranches);
       const store = new MockStoreBuilder()
         .withSshKeys({ keys: [{ name: 'key1', keyPub: 'publicKey' }] })
         .build();
@@ -400,12 +430,12 @@ describe('GitRepoLocationInput', () => {
       await userEvent.paste('git@github.com:user/repo.git');
       expect(input).toHaveValue('git@github.com:user/repo.git');
 
-      const repoOptions = screen.getByText('Git Repo Options');
+      const repoOptions = await waitFor(() => screen.getByText('Git Repo Options'));
       await userEvent.click(repoOptions);
 
-      const gitBranch = screen.getByRole('textbox', { name: 'Git Branch' });
+      const gitBranch = screen.getByRole('button', { name: 'Options menu' });
       await userEvent.click(gitBranch);
-      await userEvent.paste('test');
+      await userEvent.click(screen.getByText('test'));
 
       const buttonCreate = screen.getByRole('button', { name: 'Create & Open' });
       expect(buttonCreate).toBeEnabled();
