@@ -91,9 +91,13 @@ export class ServerConfigApiService implements IServerConfigApi {
       );
     }
 
-    const { body } = await this.customObjectAPI.listClusterCustomObject(GROUP, VERSION, PLURAL);
+    const resp = await this.customObjectAPI.listClusterCustomObject({
+      group: GROUP,
+      version: VERSION,
+      plural: PLURAL,
+    });
 
-    const customResourceDefinitionsList = body as CustomResourceDefinitionList;
+    const customResourceDefinitionsList = resp as CustomResourceDefinitionList;
 
     const cheCustomResource = customResourceDefinitionsList.items?.find(
       (item: CheClusterCustomResource) =>

@@ -39,15 +39,11 @@ export class SshKeysService implements IShhKeysApi {
 
   private async listSecrets(namespace: string): Promise<k8s.V1Secret[]> {
     const labelSelector = buildLabelSelector();
-    const resp = await this.coreV1API.listNamespacedSecret(
+    const resp = await this.coreV1API.listNamespacedSecret({
       namespace,
-      undefined,
-      undefined,
-      undefined,
-      undefined,
       labelSelector,
-    );
-    return resp.body.items;
+    });
+    return resp.items;
   }
 
   async list(namespace: string): Promise<Array<api.SshKey>> {
@@ -84,7 +80,10 @@ export class SshKeysService implements IShhKeysApi {
 
     try {
       const secret = toSecret(namespace, sshKey);
-      const { body } = await this.coreV1API.createNamespacedSecret(namespace, secret);
+      const body = await this.coreV1API.createNamespacedSecret({
+        namespace,
+        body: secret,
+      });
       return fromSecret(body);
     } catch (error) {
       const additionalMessage = `Unable to add SSH key "${sshKey.name}"`;
@@ -94,7 +93,10 @@ export class SshKeysService implements IShhKeysApi {
 
   async delete(namespace: string, name: string): Promise<void> {
     try {
-      await this.coreV1API.deleteNamespacedSecret(name, namespace);
+      await this.coreV1API.deleteNamespacedSecret({
+        name,
+        namespace,
+      });
     } catch (error) {
       const additionalMessage = `Unable to delete SSH key "${name}" in the namespace "${namespace}"`;
       throw createError(error, API_ERROR_LABEL, additionalMessage);

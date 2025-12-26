@@ -26,8 +26,13 @@ module.exports = {
     // so we need to alias the rest
     '@devfile/api/constants(.*)$': '<rootDir>/../../node_modules/@devfile/api/constants/$1.ts',
   },
+  transform: {
+    ...base.transform,
+    // Transform ESM packages from node_modules
+    '^.+\\.(ts|tsx|js)$': ['ts-jest', { useESM: true }],
+  },
   transformIgnorePatterns: [
-    'node_modules/(?!@devfile/api/constants/constants)',
+    'node_modules/(?!(@devfile/api/constants/constants|@kubernetes/client-node|openid-client|oauth4webapi|jose))',
   ],
   collectCoverageFrom: [
     ...base.collectCoverageFrom,
