@@ -29,7 +29,7 @@ describe('Event API Service', () => {
 
   const stubCoreV1Api = {
     listNamespacedEvent: () => {
-      return Promise.resolve({ body: buildListNamespacedEvent() });
+      return Promise.resolve(buildListNamespacedEvent());
     },
   } as unknown as CoreV1Api;
   const spyListNamespacedEvent = jest.spyOn(stubCoreV1Api, 'listNamespacedEvent');
@@ -50,7 +50,7 @@ describe('Event API Service', () => {
   it('should list events', async () => {
     const res = await eventApiService.listInNamespace(namespace);
     expect(res).toEqual(buildListNamespacedEvent());
-    expect(spyListNamespacedEvent).toHaveBeenCalledWith(namespace);
+    expect(spyListNamespacedEvent).toHaveBeenCalledWith({ namespace });
   });
 
   it('should throw when getting events list', async () => {
@@ -89,17 +89,17 @@ describe('Event API Service', () => {
       namespace,
       resourceVersion: '123',
     };
-    const mockDestroy = jest.fn();
+    const mockAbort = jest.fn();
 
     const spyWatch = jest
       .spyOn((eventApiService as any).customObjectWatch, 'watch')
-      .mockReturnValue({ body: {}, destroy: mockDestroy });
+      .mockResolvedValue({ abort: mockAbort } as unknown as AbortController);
 
     await eventApiService.watchInNamespace(jest.fn(), params);
     eventApiService.stopWatching();
 
     expect(spyWatch).toHaveBeenCalledTimes(1);
-    expect(mockDestroy).toHaveBeenCalledTimes(1);
+    expect(mockAbort).toHaveBeenCalledTimes(1);
   });
 
   it('should handle the watch messages of ADDED phase', async () => {

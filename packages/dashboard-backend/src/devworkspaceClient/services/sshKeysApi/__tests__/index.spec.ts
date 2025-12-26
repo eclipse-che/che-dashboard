@@ -15,7 +15,6 @@
 import { api } from '@eclipse-che/common';
 import * as mockClient from '@kubernetes/client-node';
 import { CoreV1Api, V1Secret, V1SecretList } from '@kubernetes/client-node';
-import { IncomingMessage } from 'http';
 
 import { SshKeysService } from '..';
 
@@ -44,33 +43,22 @@ describe('SSH Keys API', () => {
   const stubCoreV1Api = {
     listNamespacedSecret: () => {
       return Promise.resolve({
-        body: {
-          apiVersion: 'workspace.devfile.io/v1alpha2',
-          items: [{} as V1Secret, {} as V1Secret],
-          kind: 'SecretList',
-          metadata: {
-            resourceVersion: '12345',
-          },
+        apiVersion: 'workspace.devfile.io/v1alpha2',
+        items: [{} as V1Secret, {} as V1Secret],
+        kind: 'SecretList',
+        metadata: {
+          resourceVersion: '12345',
         },
       });
     },
     createNamespacedSecret: () => {
-      return Promise.resolve({
-        body: {} as V1Secret,
-        response: {} as IncomingMessage,
-      });
+      return Promise.resolve({} as V1Secret);
     },
     readNamespacedSecret: () => {
-      return Promise.resolve({
-        body: {} as V1Secret,
-        response: {} as IncomingMessage,
-      });
+      return Promise.resolve({} as V1Secret);
     },
     deleteNamespacedSecret: () => {
-      return Promise.resolve({
-        body: undefined,
-        response: {} as IncomingMessage,
-      });
+      return Promise.resolve(undefined);
     },
   } as unknown as CoreV1Api;
   const spyListNamespacedSecret = jest.spyOn(stubCoreV1Api, 'listNamespacedSecret');
@@ -101,14 +89,11 @@ describe('SSH Keys API', () => {
       // only one SSH key secret is returned
       expect(resp.length).toEqual(1);
 
-      expect(spyListNamespacedSecret).toHaveBeenCalledWith(
+      expect(spyListNamespacedSecret).toHaveBeenCalledWith({
         namespace,
-        undefined,
-        undefined,
-        undefined,
-        undefined,
-        'controller.devfile.io/mount-to-devworkspace=true,controller.devfile.io/watch-secret=true',
-      );
+        labelSelector:
+          'controller.devfile.io/mount-to-devworkspace=true,controller.devfile.io/watch-secret=true',
+      });
     });
 
     it('should return error', async () => {
@@ -150,17 +135,14 @@ describe('SSH Keys API', () => {
 
       spyListNamespacedSecret.mockImplementationOnce(() => {
         return Promise.resolve({
-          response: {} as IncomingMessage,
-          body: {
-            items: [
-              {
-                metadata: {
-                  name: 'git-ssh-key',
-                },
-              } as V1Secret,
-            ],
-          } as V1SecretList,
-        });
+          items: [
+            {
+              metadata: {
+                name: 'git-ssh-key',
+              },
+            } as V1Secret,
+          ],
+        } as V1SecretList);
       });
 
       expect.assertions(1);

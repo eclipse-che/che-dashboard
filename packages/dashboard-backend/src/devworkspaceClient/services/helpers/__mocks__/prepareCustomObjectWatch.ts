@@ -13,21 +13,14 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
 import * as k8s from '@kubernetes/client-node';
-import * as request from 'request';
 
-export function prepareCustomObjectWatch(_kc: k8s.KubeConfig): k8s.Watch {
+export function prepareCustomObjectWatch(kc: k8s.KubeConfig): k8s.Watch {
   const watch = async (..._args: Parameters<k8s.Watch['watch']>) => {
-    return {
-      body: {},
-      destroy: () => {
-        /* no-op */
-      },
-      on: (_event: string, _callback: (data: unknown) => void) => {
-        /* no-op */
-      },
-    } as request.Request;
+    // Return an AbortController to match the new API
+    return new AbortController();
   };
   return {
+    config: kc,
     watch: (...args: Parameters<k8s.Watch['watch']>) => watch(...args),
   } as k8s.Watch;
 }

@@ -11,7 +11,16 @@
  */
 
 import { AxiosError, AxiosResponse } from 'axios';
-import { HttpError } from '@kubernetes/client-node';
+import * as http from 'http';
+
+/**
+ * Custom HttpError interface to replace the removed export from @kubernetes/client-node v1.x
+ */
+export interface HttpError extends Error {
+  response: http.IncomingMessage;
+  body: unknown;
+  statusCode?: number;
+}
 
 /**
  * This helper function does its best to get an error message from the provided object.
@@ -32,9 +41,10 @@ export function getMessage(error: unknown): string {
         // pure http response body without message available
         return error.body;
       }
-      if (error.body.message) {
+      const body = error.body as { message?: string };
+      if (body.message) {
         // body is from K8s in JSON form with message present
-        return error.body.message;
+        return body.message;
       }
     }
     if ((error.response as any).body) {

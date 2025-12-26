@@ -13,7 +13,6 @@
 import { api } from '@eclipse-che/common';
 import * as mockClient from '@kubernetes/client-node';
 import { CoreV1Api, V1ConfigMap } from '@kubernetes/client-node';
-import { IncomingMessage } from 'http';
 
 import { GitConfigApiService } from '..';
 
@@ -32,18 +31,15 @@ describe('Gitconfig API', () => {
   describe('configmap not found', () => {
     const stubCoreV1Api = {
       createNamespacedConfigMap: () => {
-        return Promise.resolve({
-          body: responseBody as V1ConfigMap,
-          response: {} as IncomingMessage,
-        });
+        return Promise.resolve(responseBody as V1ConfigMap);
       },
       readNamespacedConfigMap: () => {
         return Promise.reject({
-          body: {},
-          response: {} as IncomingMessage,
           statusCode: 404,
           name: 'HttpError',
           message: 'Not Found',
+          response: { statusCode: 404 },
+          body: {},
         });
       },
     } as unknown as CoreV1Api;
@@ -72,24 +68,27 @@ describe('Gitconfig API', () => {
       });
 
       expect(spyCreateNamespacedConfigMap).toHaveBeenCalledTimes(1);
-      expect(spyCreateNamespacedConfigMap).toHaveBeenCalledWith(namespace, {
-        data: {
-          gitconfig: `[user]
+      expect(spyCreateNamespacedConfigMap).toHaveBeenCalledWith({
+        namespace,
+        body: {
+          data: {
+            gitconfig: `[user]
 name=""
 email=""
 `,
-        },
-        metadata: {
-          annotations: {
-            'controller.devfile.io/mount-as': 'subpath',
-            'controller.devfile.io/mount-path': '/etc/',
           },
-          labels: {
-            'controller.devfile.io/mount-to-devworkspace': 'true',
-            'controller.devfile.io/watch-configmap': 'true',
+          metadata: {
+            annotations: {
+              'controller.devfile.io/mount-as': 'subpath',
+              'controller.devfile.io/mount-path': '/etc/',
+            },
+            labels: {
+              'controller.devfile.io/mount-to-devworkspace': 'true',
+              'controller.devfile.io/watch-configmap': 'true',
+            },
+            name: 'workspace-userdata-gitconfig-configmap',
+            namespace,
           },
-          name: 'workspace-userdata-gitconfig-configmap',
-          namespace,
         },
       });
     });
@@ -98,16 +97,10 @@ email=""
   describe('configmap found', () => {
     const stubCoreV1Api = {
       readNamespacedConfigMap: () => {
-        return Promise.resolve({
-          body: responseBody as V1ConfigMap,
-          response: {} as IncomingMessage,
-        });
+        return Promise.resolve(responseBody as V1ConfigMap);
       },
       patchNamespacedConfigMap: () => {
-        return Promise.resolve({
-          body: responseBody as V1ConfigMap,
-          response: {} as IncomingMessage,
-        });
+        return Promise.resolve(responseBody as V1ConfigMap);
       },
     } as unknown as CoreV1Api;
     const spyReadNamespacedConfigMap = jest.spyOn(stubCoreV1Api, 'readNamespacedConfigMap');
@@ -175,10 +168,10 @@ email=""
 
         expect(spyReadNamespacedConfigMap).toHaveBeenCalledTimes(1);
         expect(spyPatchNamespacedConfigMap).toHaveBeenCalledTimes(1);
-        expect(spyPatchNamespacedConfigMap).toHaveBeenCalledWith(
-          'workspace-userdata-gitconfig-configmap',
-          'user-che',
-          {
+        expect(spyPatchNamespacedConfigMap).toHaveBeenCalledWith({
+          name: 'workspace-userdata-gitconfig-configmap',
+          namespace: 'user-che',
+          body: {
             data: {
               gitconfig: `[user]
 email="user-2@che"
@@ -186,13 +179,7 @@ name="User Two"
 `,
             },
           },
-          undefined,
-          undefined,
-          undefined,
-          undefined,
-          undefined,
-          { headers: { 'content-type': 'application/strategic-merge-patch+json' } },
-        );
+        });
       });
 
       it('should throw when can`t read the ConfigMap', async () => {
@@ -251,19 +238,16 @@ name="User Two"
 
       it('should throw when conflict detected', async () => {
         spyReadNamespacedConfigMap.mockResolvedValueOnce({
-          body: {
-            metadata: {
-              resourceVersion: '2',
-            },
-            data: {
-              gitconfig: `[user]
+          metadata: {
+            resourceVersion: '2',
+          },
+          data: {
+            gitconfig: `[user]
 name="User Two"
 email="user-2@che"
 `,
-            },
-          } as V1ConfigMap,
-          response: {} as IncomingMessage,
-        });
+          },
+        } as V1ConfigMap);
 
         const newGitConfig = {
           gitconfig: {

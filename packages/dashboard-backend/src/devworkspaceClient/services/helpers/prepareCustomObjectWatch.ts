@@ -17,6 +17,7 @@ import { retryableExec } from '@/devworkspaceClient/services/helpers/retryableEx
 export function prepareCustomObjectWatch(kc: k8s.KubeConfig): k8s.Watch {
   const customObjectWatch = new k8s.Watch(kc);
   return {
+    config: kc,
     watch: (...args: Parameters<typeof customObjectWatch.watch>) =>
       retryableExec(() => customObjectWatch.watch(...args)),
   } as k8s.Watch;

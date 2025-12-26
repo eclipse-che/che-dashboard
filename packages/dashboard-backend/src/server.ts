@@ -10,6 +10,23 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
+// Polyfill for AbortSignal.any (required for Node.js < 20.3.0)
+// Used by @kubernetes/client-node 1.4.x
+if (typeof (AbortSignal as typeof AbortSignal & { any?: unknown }).any !== 'function') {
+  (AbortSignal as typeof AbortSignal & { any: (signals: AbortSignal[]) => AbortSignal }).any =
+    function (signals: AbortSignal[]): AbortSignal {
+      const controller = new AbortController();
+      for (const signal of signals) {
+        if (signal.aborted) {
+          controller.abort(signal.reason);
+          break;
+        }
+        signal.addEventListener('abort', () => controller.abort(signal.reason), { once: true });
+      }
+      return controller.signal;
+    };
+}
+
 import 'reflect-metadata';
 
 import fastify from 'fastify';

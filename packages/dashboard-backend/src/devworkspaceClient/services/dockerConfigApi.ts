@@ -12,7 +12,7 @@
 
 import { helpers } from '@eclipse-che/common';
 import * as k8s from '@kubernetes/client-node';
-import { V1Secret } from '@kubernetes/client-node/dist/gen/model/v1Secret';
+import { V1Secret } from '@kubernetes/client-node';
 
 import { createError } from '@/devworkspaceClient/services/helpers/createError';
 import {
@@ -39,7 +39,10 @@ export class DockerConfigApiService implements IDockerConfigApi {
 
   async read(namespace: string): Promise<string> {
     try {
-      const { body } = await this.coreV1API.readNamespacedSecret(SECRET_NAME, namespace);
+      const body = await this.coreV1API.readNamespacedSecret({
+        name: SECRET_NAME,
+        namespace,
+      });
       return this.getDockerConfig(body);
     } catch (error) {
       if (helpers.errors.isKubeClientError(error) && error.statusCode === 404) {
@@ -53,7 +56,11 @@ export class DockerConfigApiService implements IDockerConfigApi {
   async update(namespace: string, dockerCfg: string): Promise<string> {
     try {
       const secret = this.toDockerConfigSecret(dockerCfg);
-      const { body } = await this.coreV1API.replaceNamespacedSecret(SECRET_NAME, namespace, secret);
+      const body = await this.coreV1API.replaceNamespacedSecret({
+        name: SECRET_NAME,
+        namespace,
+        body: secret,
+      });
       return this.getDockerConfig(body);
     } catch (error) {
       if (helpers.errors.isKubeClientError(error) && error.statusCode === 404) {
@@ -67,7 +74,10 @@ export class DockerConfigApiService implements IDockerConfigApi {
   private async createNamespacedSecret(namespace: string, dockerCfg?: string): Promise<string> {
     const dockerConfigSecret = this.toDockerConfigSecret(dockerCfg);
     try {
-      const { body } = await this.coreV1API.createNamespacedSecret(namespace, dockerConfigSecret);
+      const body = await this.coreV1API.createNamespacedSecret({
+        namespace,
+        body: dockerConfigSecret,
+      });
       return this.getDockerConfig(body);
     } catch (error) {
       const additionalMessage = `Unable to create dockerConfig in the specified namespace "${namespace}"`;

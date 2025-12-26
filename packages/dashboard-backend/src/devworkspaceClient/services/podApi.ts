@@ -13,7 +13,6 @@
 import { api } from '@eclipse-che/common';
 import * as k8s from '@kubernetes/client-node';
 import { V1Pod, V1Status } from '@kubernetes/client-node';
-import { Request } from 'request';
 
 import { createError } from '@/devworkspaceClient/services/helpers/createError';
 import {
@@ -39,8 +38,8 @@ export class PodApiService implements IPodApi {
 
   async listInNamespace(namespace: string): Promise<api.IPodList> {
     try {
-      const resp = await this.coreV1API.listNamespacedPod(namespace);
-      return resp.body;
+      const resp = await this.coreV1API.listNamespacedPod({ namespace });
+      return resp;
     } catch (e) {
       throw createError(e, EVENT_API_ERROR_LABEL, 'Unable to list pods.');
     }
@@ -55,18 +54,18 @@ export class PodApiService implements IPodApi {
 
     this.stopWatching();
 
-    const request: Request = await this.customObjectWatch.watch(
+    const abortController: AbortController = await this.customObjectWatch.watch(
       path,
       queryParams,
       (eventPhase: string, apiObj: V1Pod | V1Status) =>
         this.handleWatchMessage(eventPhase, apiObj, listener, params),
       (error: unknown) => {
         this.handleWatchError(error, path);
-        request.destroy();
+        abortController.abort();
       },
     );
 
-    this.stopWatch = () => request.destroy();
+    this.stopWatch = () => abortController.abort();
   }
 
   private handleWatchError(error: unknown, path: string): void {

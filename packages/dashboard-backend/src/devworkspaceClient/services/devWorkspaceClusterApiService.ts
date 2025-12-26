@@ -19,7 +19,6 @@ import {
 import { api } from '@eclipse-che/common';
 import * as k8s from '@kubernetes/client-node';
 import { V1Status } from '@kubernetes/client-node';
-import http from 'http';
 
 import { prepareCustomObjectWatch } from '@/devworkspaceClient/services/helpers/prepareCustomObjectWatch';
 import { ServerConfigApiService } from '@/devworkspaceClient/services/serverConfigApi';
@@ -62,7 +61,7 @@ export class DevWorkspaceClusterApiService implements IDevWorkspaceClusterApi {
     const path = `/apis/${devworkspaceGroup}/${devworkspaceLatestVersion}/watch/${devworkspacePlural}`;
     const queryParams = { watch: true };
 
-    const request: http.ServerResponse = await this.customObjectWatch.watch(
+    const abortController: AbortController = await this.customObjectWatch.watch(
       path,
       queryParams,
       (eventPhase: string, apiObj: V1alpha2DevWorkspace | V1Status) => {
@@ -70,7 +69,7 @@ export class DevWorkspaceClusterApiService implements IDevWorkspaceClusterApi {
       },
       (error: unknown) => {
         this.handleWatchError(error, path);
-        request.destroy();
+        abortController.abort();
         this.watcherInProgress = false;
       },
     );

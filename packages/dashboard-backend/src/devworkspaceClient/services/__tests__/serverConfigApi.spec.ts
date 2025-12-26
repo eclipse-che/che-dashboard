@@ -46,7 +46,7 @@ describe('Server Config API Service', () => {
     kubeConfig.makeApiClient = jest.fn().mockImplementation((_api: unknown) => {
       return {
         listClusterCustomObject: () => {
-          return Promise.resolve(buildCustomResourceList());
+          return Promise.resolve(buildCustomResourceList().body);
         },
       } as unknown as CustomObjectsApi;
     });

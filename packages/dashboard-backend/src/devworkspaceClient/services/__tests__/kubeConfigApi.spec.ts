@@ -103,7 +103,7 @@ describe('Kubernetes Config API Service', () => {
     });
     // kubeConfig.exportConfig = jest.fn().mockReturnValue(JSON.stringify(config));
     kubeConfig.getCurrentCluster = jest.fn().mockReturnValue('');
-    kubeConfig.applyToRequest = jest.fn();
+    kubeConfig.applyToHTTPSOptions = jest.fn();
 
     kubeConfigService = new KubeConfigApiService(kubeConfig);
   });
@@ -194,22 +194,20 @@ describe('Kubernetes Config API Service', () => {
   });
 });
 
-function buildListNamespacedPod(): { body: V1PodList } {
+function buildListNamespacedPod(): V1PodList {
   return {
-    body: {
-      apiVersion: 'v1',
-      items: [
-        {
-          metadata: {
-            name: workspaceName,
-            namespace,
-          },
-          spec: {
-            containers: [{ name: containerName }],
-          },
+    apiVersion: 'v1',
+    items: [
+      {
+        metadata: {
+          name: workspaceName,
+          namespace,
         },
-      ],
-      kind: 'PodList',
-    },
+        spec: {
+          containers: [{ name: containerName }],
+        },
+      },
+    ],
+    kind: 'PodList',
   };
 }

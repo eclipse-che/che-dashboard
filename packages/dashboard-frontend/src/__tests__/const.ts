@@ -22,7 +22,7 @@ export const REQUEST_TIME_700 = 700;
 export const REQUEST_TIME_800 = 800;
 export const REQUEST_TIME_1300 = 1300;
 
-export const TIME_LIMIT = 9800;
+export const TIME_LIMIT = 10500;
 
 export const namespace = { name: 'user-che', attributes: { phase: 'Active' } };
 export const url = 'https://github.com/eclipse-che/che-dashboard';

@@ -55,7 +55,7 @@ export async function watchCR(kubeConfig: k8s.KubeConfig, server: FastifyInstanc
   const customObjectWatch = prepareCustomObjectWatch(kubeConfig);
 
   // Watch for changes to the Che Cluster Custom Resource object
-  const stream = await customObjectWatch.watch(
+  await customObjectWatch.watch(
     `/apis/${GROUP}/${VERSION}/namespaces/${env.CHECLUSTER_CR_NAMESPACE}/${PLURAL}`,
     { watch: true },
     (type, apiObj) => {
@@ -70,10 +70,6 @@ export async function watchCR(kubeConfig: k8s.KubeConfig, server: FastifyInstanc
       logger.error(err, 'Log level watcher: Watch failed.');
     },
   );
-
-  stream.on('close', () => {
-    logger.error('Log level watcher: Stream closed.');
-  });
 }
 
 function getEnv(): {

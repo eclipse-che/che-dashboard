@@ -35,8 +35,10 @@ export class KubeConfigApiService implements IKubeConfigApi {
     this.kubeConfig = kc.exportConfig();
 
     const server = kc.getCurrentCluster()?.server || '';
-    const opts = {};
-    kc.applyToRequest(opts as any);
+    // Note: applyToRequest was removed in @kubernetes/client-node 1.4.0
+    // Using applyToHTTPSOptions instead
+    const opts: Record<string, unknown> = {};
+    kc.applyToHTTPSOptions(opts);
     this.getServerConfig = () => ({ opts, server });
   }
 
@@ -134,20 +136,16 @@ export class KubeConfigApiService implements IKubeConfigApi {
     devworkspaceId: string,
   ): Promise<k8s.V1Pod> {
     try {
-      const resp = await this.corev1API.listNamespacedPod(
+      const resp = await this.corev1API.listNamespacedPod({
         namespace,
-        undefined,
-        false,
-        undefined,
-        undefined,
-        `controller.devfile.io/devworkspace_id=${devworkspaceId}`,
-      );
-      if (resp.body.items.length === 0) {
+        labelSelector: `controller.devfile.io/devworkspace_id=${devworkspaceId}`,
+      });
+      if (resp.items.length === 0) {
         throw new Error(
           `Could not find requested devworkspace with id ${devworkspaceId} in ${namespace}`,
         );
       }
-      return resp.body.items[0];
+      return resp.items[0];
     } catch (e: any) {
       throw new Error(
         `Error occurred when attempting to retrieve pod. ${helpers.errors.getMessage(e)}`,

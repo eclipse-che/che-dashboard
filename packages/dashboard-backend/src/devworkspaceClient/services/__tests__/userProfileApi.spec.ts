@@ -30,10 +30,10 @@ describe('UserProfile API Service', () => {
 
     kubeConfig.makeApiClient = jest.fn().mockImplementation(_api => {
       return {
-        readNamespacedSecret: (_name, _namespace) => {
-          return Promise.resolve(buildSecret());
+        readNamespacedSecret: (_params: { name: string; namespace: string }) => {
+          return Promise.resolve(buildSecret().body);
         },
-      } as CoreV1Api;
+      } as unknown as CoreV1Api;
     });
 
     userProfileService = new UserProfileApiService(kubeConfig);

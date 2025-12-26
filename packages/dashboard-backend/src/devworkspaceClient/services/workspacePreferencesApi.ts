@@ -35,17 +35,17 @@ export class WorkspacePreferencesApiService implements IWorkspacePreferencesApi 
 
   async getWorkspacePreferences(namespace: string): Promise<api.IWorkspacePreferences> {
     try {
-      const response = await this.coreV1API.readNamespacedConfigMap(
-        DEV_WORKSPACE_PREFERENCES_CONFIGMAP,
+      const response = await this.coreV1API.readNamespacedConfigMap({
+        name: DEV_WORKSPACE_PREFERENCES_CONFIGMAP,
         namespace,
-      );
-      const data = response.body.data || {};
+      });
+      const data = response.data || {};
 
       if (!data[SKIP_AUTHORIZATION_KEY]) {
         data[SKIP_AUTHORIZATION_KEY] = '[]';
       }
 
-      const preferences = Object.keys(data).reduce((acc, key) => {
+      return Object.keys(data).reduce((acc, key) => {
         if (key === SKIP_AUTHORIZATION_KEY) {
           if (data[key] === '[]') {
             acc[key] = [];
@@ -58,8 +58,6 @@ export class WorkspacePreferencesApiService implements IWorkspacePreferencesApi 
         }
         return acc;
       }, {} as api.IWorkspacePreferences);
-
-      return preferences;
     } catch (e) {
       throw createError(e, ERROR_LABEL, 'Unable to get workspace preferences data');
     }
@@ -81,21 +79,11 @@ export class WorkspacePreferencesApiService implements IWorkspacePreferencesApi 
       {} as Record<string, string>,
     );
     try {
-      await this.coreV1API.patchNamespacedConfigMap(
-        DEV_WORKSPACE_PREFERENCES_CONFIGMAP,
+      await this.coreV1API.patchNamespacedConfigMap({
+        name: DEV_WORKSPACE_PREFERENCES_CONFIGMAP,
         namespace,
-        { data },
-        undefined,
-        undefined,
-        undefined,
-        undefined,
-        undefined,
-        {
-          headers: {
-            'content-type': k8s.PatchUtils.PATCH_FORMAT_STRATEGIC_MERGE_PATCH,
-          },
-        },
-      );
+        body: { data },
+      });
     } catch (error) {
       const message = `Unable to update workspace preferences in the namespace "${namespace}"`;
       throw createError(undefined, ERROR_LABEL, message);

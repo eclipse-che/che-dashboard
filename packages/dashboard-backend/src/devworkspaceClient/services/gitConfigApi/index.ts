@@ -37,9 +37,12 @@ export class GitConfigApiService implements IGitConfigApi {
    */
   public async read(namespace: string): Promise<api.IGitConfig> {
     try {
-      const response = await this.coreV1API.readNamespacedConfigMap(GITCONFIG_CONFIGMAP, namespace);
+      const response = await this.coreV1API.readNamespacedConfigMap({
+        name: GITCONFIG_CONFIGMAP,
+        namespace,
+      });
 
-      return this.toGitConfig(response.body);
+      return this.toGitConfig(response);
     } catch (error) {
       if (helpers.errors.isKubeClientError(error) && error.statusCode === 404) {
         // Create gitconfig configmap if it does not exist
@@ -81,8 +84,11 @@ export class GitConfigApiService implements IGitConfigApi {
     };
 
     try {
-      const response = await this.coreV1API.createNamespacedConfigMap(namespace, configMap);
-      return this.toGitConfig(response.body);
+      const response = await this.coreV1API.createNamespacedConfigMap({
+        namespace,
+        body: configMap,
+      });
+      return this.toGitConfig(response);
     } catch (error) {
       const message = `Unable to create gitconfig in the namespace "${namespace}"`;
       throw createError(error, GITCONFIG_API_ERROR_LABEL, message);
@@ -114,27 +120,17 @@ export class GitConfigApiService implements IGitConfigApi {
 
     try {
       const gitconfigStr = this.fromGitConfig(gitConfig);
-      const response = await this.coreV1API.patchNamespacedConfigMap(
-        GITCONFIG_CONFIGMAP,
+      const response = await this.coreV1API.patchNamespacedConfigMap({
+        name: GITCONFIG_CONFIGMAP,
         namespace,
-        {
+        body: {
           data: {
             gitconfig: gitconfigStr,
           },
         },
-        undefined,
-        undefined,
-        undefined,
-        undefined,
-        undefined,
-        {
-          headers: {
-            'content-type': k8s.PatchUtils.PATCH_FORMAT_STRATEGIC_MERGE_PATCH,
-          },
-        },
-      );
+      });
 
-      return this.toGitConfig(response.body);
+      return this.toGitConfig(response);
     } catch (error) {
       const message = `Unable to update gitconfig in the namespace "${namespace}"`;
       throw createError(error, GITCONFIG_API_ERROR_LABEL, message);

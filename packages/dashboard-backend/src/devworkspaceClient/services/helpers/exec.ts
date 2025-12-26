@@ -81,14 +81,14 @@ export async function exec(
         }
       };
 
-      client.onerror = err => {
+      client.onerror = (err: WebSocket.ErrorEvent) => {
         const message = helpers.errors.getMessage(err);
         stdError += message;
         reject(message);
         client.close();
       };
 
-      client.onmessage = event => {
+      client.onmessage = (event: WebSocket.MessageEvent) => {
         if (typeof event.data !== 'string') {
           return;
         }

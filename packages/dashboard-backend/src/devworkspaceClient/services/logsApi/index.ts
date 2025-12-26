@@ -21,7 +21,13 @@ import {
 } from '@/devworkspaceClient/services/helpers/prepareCoreV1API';
 import { RETRY_DELAY_SECONDS, RETRY_NUMBER } from '@/devworkspaceClient/services/logsApi/const';
 import { ILogsApi } from '@/devworkspaceClient/types';
-import { isHttpError, isResponse, isV1Status } from '@/helpers/typeguards';
+import {
+  isApiException,
+  isHttpError,
+  isNoContentResponse,
+  isResponse,
+  isV1Status,
+} from '@/helpers/typeguards';
 import { delay } from '@/services/helpers';
 import { MessageListener } from '@/services/types/Observer';
 import { logger } from '@/utils/logger';
@@ -178,11 +184,17 @@ export class LogsApiService implements ILogsApi {
     };
 
     try {
-      const request = await this.log.log(namespace, podName, containerName, logStream, {
+      const abortController = await this.log.log(namespace, podName, containerName, logStream, {
         follow: true,
       });
-      this.storeStopWatchCallback(params, containerName, () => request.destroy());
+      this.storeStopWatchCallback(params, containerName, () => abortController.abort());
     } catch (e) {
+      // 204 No Content is not an error - it means there are no logs yet
+      if (isNoContentResponse(e)) {
+        logger.debug(`No logs available yet for ${containerName} in ${podName}.`);
+        return;
+      }
+
       const status = this.buildStatus(e);
 
       listener({
@@ -206,7 +218,10 @@ export class LogsApiService implements ILogsApi {
     let code: number;
     let message: string;
 
-    if (helpers.errors.isError(e)) {
+    if (isApiException(e)) {
+      code = e.code;
+      message = e.message;
+    } else if (helpers.errors.isError(e)) {
       code = 400;
       message = e.message;
     } else if (isResponse(e)) {
@@ -226,7 +241,10 @@ export class LogsApiService implements ILogsApi {
   }
 
   public async _getPod(params: api.webSocket.SubscribeLogsParams): Promise<V1Pod> {
-    const resp = await this.coreV1API.readNamespacedPod(params.podName, params.namespace);
-    return resp.body;
+    const resp = await this.coreV1API.readNamespacedPod({
+      name: params.podName,
+      namespace: params.namespace,
+    });
+    return resp;
   }
 }

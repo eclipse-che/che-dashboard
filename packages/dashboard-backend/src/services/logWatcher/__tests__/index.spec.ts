@@ -21,12 +21,11 @@ const name = 'user-che';
 const namespace = 'che-namespace';
 
 let watchCallback: Parameters<k8s.Watch['watch']>[2];
+const mockAbortController = new AbortController();
 const mockWatch = jest.fn().mockImplementation((...args: Parameters<k8s.Watch['watch']>) => {
   const [, , _callback] = args;
   watchCallback = _callback;
-  return Promise.resolve({
-    on: jest.fn(),
-  }) as ReturnType<k8s.Watch['watch']>;
+  return Promise.resolve(mockAbortController) as ReturnType<k8s.Watch['watch']>;
 });
 
 jest.mock('@/devworkspaceClient/services/helpers/prepareCustomObjectWatch', () => {

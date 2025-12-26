@@ -14,11 +14,12 @@
 
 import { api } from '@eclipse-che/common';
 import * as mockClient from '@kubernetes/client-node';
-import { CoreV1Api, HttpError, V1Pod, V1Status } from '@kubernetes/client-node';
+import { CoreV1Api, V1Pod, V1Status } from '@kubernetes/client-node';
 import * as request from 'request';
 import { Writable } from 'stream';
 
 import { LogsApiService } from '@/devworkspaceClient/services/logsApi';
+import { HttpError } from '@/helpers/typeguards';
 
 jest.mock('../const', () => ({
   RETRY_DELAY_SECONDS: 0.1,
@@ -53,9 +54,7 @@ describe('Logs API Service', () => {
 
   const stubCoreV1Api = {
     readNamespacedPod: () => {
-      return Promise.resolve({
-        body: getPod(podName, namespace, containerName, initContainerName),
-      });
+      return Promise.resolve(getPod(podName, namespace, containerName, initContainerName));
     },
   } as unknown as CoreV1Api;
   const spyReadNamespacedPod = jest.spyOn(stubCoreV1Api, 'readNamespacedPod');
@@ -367,8 +366,8 @@ describe('Logs API Service', () => {
     };
     const listener = jest.fn();
 
-    const mockDestroy = jest.fn();
-    mockLog.mockResolvedValue({ destroy: () => mockDestroy() } as request.Request);
+    const mockAbort = jest.fn();
+    mockLog.mockResolvedValue({ abort: mockAbort } as unknown as AbortController);
     const spyStopWatching = jest.spyOn(logsApiService, 'stopWatching');
 
     await logsApiService.watchInNamespace(listener, params1);

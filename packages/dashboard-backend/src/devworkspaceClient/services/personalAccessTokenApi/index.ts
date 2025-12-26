@@ -42,15 +42,11 @@ export class PersonalAccessTokenService implements IPersonalAccessTokenApi {
 
   private async listSecrets(namespace: string): Promise<k8s.V1Secret[]> {
     const labelSelector = buildLabelSelector();
-    const resp = await this.coreV1API.listNamespacedSecret(
+    const resp = await this.coreV1API.listNamespacedSecret({
       namespace,
-      undefined,
-      undefined,
-      undefined,
-      undefined,
       labelSelector,
-    );
-    return resp.body.items;
+    });
+    return resp.items;
   }
 
   async listInNamespace(namespace: string): Promise<Array<api.PersonalAccessToken>> {
@@ -92,7 +88,10 @@ export class PersonalAccessTokenService implements IPersonalAccessTokenApi {
 
     try {
       const secret = toSecret(namespace, personalAccessToken);
-      const { body } = await this.coreV1API.createNamespacedSecret(namespace, secret);
+      const body = await this.coreV1API.createNamespacedSecret({
+        namespace,
+        body: secret,
+      });
       return toToken(body);
     } catch (error) {
       const additionalMessage = `Unable to add personal access token "${personalAccessToken.tokenName}"`;
@@ -110,8 +109,10 @@ export class PersonalAccessTokenService implements IPersonalAccessTokenApi {
 
     let existingSecret: k8s.V1Secret;
     try {
-      const resp = await this.coreV1API.readNamespacedSecret(secretName, namespace);
-      existingSecret = resp.body;
+      existingSecret = await this.coreV1API.readNamespacedSecret({
+        name: secretName,
+        namespace,
+      });
     } catch (error) {
       const additionalMessage = `Unable to find personal access token "${token.tokenName}" in the namespace "${namespace}"`;
       throw createError(error, API_ERROR_LABEL, additionalMessage);
@@ -126,11 +127,11 @@ export class PersonalAccessTokenService implements IPersonalAccessTokenApi {
     /* replace the existing secret with the new one */
 
     try {
-      const { body } = await this.coreV1API.replaceNamespacedSecret(
-        secretName,
+      const body = await this.coreV1API.replaceNamespacedSecret({
+        name: secretName,
         namespace,
-        toSecret(namespace, token),
-      );
+        body: toSecret(namespace, token),
+      });
       const newSecret = body as PersonalAccessTokenSecret;
       return toToken(newSecret);
     } catch (error) {
@@ -142,7 +143,10 @@ export class PersonalAccessTokenService implements IPersonalAccessTokenApi {
   async delete(namespace: string, tokenName: string): Promise<void> {
     const secretName = toSecretName(tokenName);
     try {
-      await this.coreV1API.deleteNamespacedSecret(secretName, namespace);
+      await this.coreV1API.deleteNamespacedSecret({
+        name: secretName,
+        namespace,
+      });
     } catch (error) {
       const additionalMessage = `Unable to delete personal access token "${tokenName}" in the namespace "${namespace}"`;
       throw createError(error, API_ERROR_LABEL, additionalMessage);
