@@ -21,7 +21,6 @@ import {
 import { api } from '@eclipse-che/common';
 import * as mockClient from '@kubernetes/client-node';
 import { CustomObjectsApi } from '@kubernetes/client-node';
-import { IncomingMessage } from 'http';
 
 import { DevWorkspaceApiService } from '@/devworkspaceClient/services/devWorkspaceApi';
 
@@ -33,28 +32,22 @@ describe('DevWorkspace API Service', () => {
 
   const stubCustomObjectsApi = {
     createNamespacedCustomObject: () => {
-      return Promise.resolve({
-        body: getDevWorkspace(),
-        response: { headers: {} } as IncomingMessage,
-      });
+      return Promise.resolve(getDevWorkspace());
     },
     deleteNamespacedCustomObject: () => {
-      return Promise.resolve({ body: {} });
+      return Promise.resolve({});
     },
     getNamespacedCustomObject: () => {
-      return Promise.resolve({ body: getDevWorkspace() });
+      return Promise.resolve(getDevWorkspace());
     },
     listNamespacedCustomObject: () => {
-      return Promise.resolve({ body: buildListNamespacesCustomObject() });
+      return Promise.resolve(buildListNamespacesCustomObject());
     },
     patchNamespacedCustomObject: () => {
-      return Promise.resolve({
-        body: getDevWorkspace(),
-        response: { headers: {} } as IncomingMessage,
-      });
+      return Promise.resolve(getDevWorkspace());
     },
     replaceNamespacedCustomObject: () => {
-      return Promise.resolve({ body: getDevWorkspace() });
+      return Promise.resolve(getDevWorkspace());
     },
   } as unknown as CustomObjectsApi;
 
@@ -95,24 +88,24 @@ describe('DevWorkspace API Service', () => {
   test('getting devWorkspaces list', async () => {
     const res = await devWorkspaceService.listInNamespace(namespace);
     expect(res).toEqual(buildListNamespacesCustomObject());
-    expect(spyListNamespacedCustomObject).toHaveBeenCalledWith(
-      devworkspaceGroup,
-      devworkspaceLatestVersion,
+    expect(spyListNamespacedCustomObject).toHaveBeenCalledWith({
+      group: devworkspaceGroup,
+      version: devworkspaceLatestVersion,
       namespace,
-      devworkspacePlural,
-    );
+      plural: devworkspacePlural,
+    });
   });
 
   test('getting by name', async () => {
     const res = await devWorkspaceService.getByName(namespace, name);
     expect(res).toEqual(getDevWorkspace());
-    expect(spyGetNamespacedCustomObject).toHaveBeenCalledWith(
-      devworkspaceGroup,
-      devworkspaceLatestVersion,
+    expect(spyGetNamespacedCustomObject).toHaveBeenCalledWith({
+      group: devworkspaceGroup,
+      version: devworkspaceLatestVersion,
       namespace,
-      devworkspacePlural,
+      plural: devworkspacePlural,
       name,
-    );
+    });
   });
 
   test('creating', async () => {
@@ -128,13 +121,13 @@ describe('DevWorkspace API Service', () => {
     const res = await devWorkspaceService.create(devWorkspace, namespace);
     expect(res.devWorkspace).toStrictEqual(getDevWorkspace());
     expect(res.headers).toStrictEqual({});
-    expect(spyCreateNamespacedCustomObject).toHaveBeenCalledWith(
-      devworkspaceGroup,
-      devworkspaceLatestVersion,
+    expect(spyCreateNamespacedCustomObject).toHaveBeenCalledWith({
+      group: devworkspaceGroup,
+      version: devworkspaceLatestVersion,
       namespace,
-      devworkspacePlural,
-      devWorkspace,
-    );
+      plural: devworkspacePlural,
+      body: devWorkspace,
+    });
   });
 
   test('patching', async () => {
@@ -149,29 +142,25 @@ describe('DevWorkspace API Service', () => {
     const res = await devWorkspaceService.patch(namespace, name, patches);
     expect(res.devWorkspace).toStrictEqual(getDevWorkspace());
     expect(res.headers).toStrictEqual({});
-    expect(spyPatchNamespacedCustomObject).toHaveBeenCalledWith(
-      devworkspaceGroup,
-      devworkspaceLatestVersion,
+    expect(spyPatchNamespacedCustomObject).toHaveBeenCalledWith({
+      group: devworkspaceGroup,
+      version: devworkspaceLatestVersion,
       namespace,
-      devworkspacePlural,
+      plural: devworkspacePlural,
       name,
-      patches,
-      undefined,
-      undefined,
-      undefined,
-      expect.anything(),
-    );
+      body: patches,
+    });
   });
 
   test('deleting', async () => {
     await devWorkspaceService.delete(namespace, name);
-    expect(spyDeleteNamespacedCustomObject).toHaveBeenCalledWith(
-      devworkspaceGroup,
-      devworkspaceLatestVersion,
+    expect(spyDeleteNamespacedCustomObject).toHaveBeenCalledWith({
+      group: devworkspaceGroup,
+      version: devworkspaceLatestVersion,
       namespace,
-      devworkspacePlural,
+      plural: devworkspacePlural,
       name,
-    );
+    });
   });
 });
 

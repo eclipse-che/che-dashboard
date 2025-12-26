@@ -32,7 +32,7 @@ describe('Getting Started Samples API Service', () => {
       return {
         listNamespacedConfigMap: () => {
           return Promise.resolve({
-            body: { items: [{ data: { mySample: JSON.stringify(getGettingStartedSample()) } }] },
+            items: [{ data: { mySample: JSON.stringify(getGettingStartedSample()) } }],
           });
         },
       };

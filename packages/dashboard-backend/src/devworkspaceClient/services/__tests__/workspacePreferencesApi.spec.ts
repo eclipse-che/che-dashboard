@@ -13,8 +13,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
 import * as mockClient from '@kubernetes/client-node';
-import { CustomObjectsApi } from '@kubernetes/client-node';
-import { IncomingMessage } from 'http';
 
 import {
   DEV_WORKSPACE_PREFERENCES_CONFIGMAP,
@@ -32,16 +30,10 @@ describe('Workspace Preferences API Service', () => {
 
   const stubCoreV1Api = {
     readNamespacedConfigMap: () => {
-      return Promise.resolve({
-        body: {} as mockClient.V1ConfigMap,
-        response: {} as IncomingMessage,
-      });
+      return Promise.resolve({} as mockClient.V1ConfigMap);
     },
     patchNamespacedConfigMap: () => {
-      return Promise.resolve({
-        body: {} as mockClient.V1ConfigMap,
-        response: {} as IncomingMessage,
-      });
+      return Promise.resolve({} as mockClient.V1ConfigMap);
     },
   };
 
@@ -70,9 +62,8 @@ describe('Workspace Preferences API Service', () => {
 
   test('get skip-authorisation workspace preferences from configmap with empty skip-authorisation', async () => {
     spyReadNamespacedConfigMap.mockResolvedValueOnce({
-      body: { data: { [SKIP_AUTHORIZATION_KEY]: '[]' } },
-      response: {} as IncomingMessage,
-    });
+      data: { [SKIP_AUTHORIZATION_KEY]: '[]' },
+    } as mockClient.V1ConfigMap);
     const res = await workspacePreferencesApiService.getWorkspacePreferences(namespace);
 
     expect(res[SKIP_AUTHORIZATION_KEY]).toEqual([]);
@@ -82,9 +73,8 @@ describe('Workspace Preferences API Service', () => {
 
   test('get skip-authorisation workspace preferences from configmap with skip-authorisation values', async () => {
     spyReadNamespacedConfigMap.mockResolvedValueOnce({
-      body: { data: { [SKIP_AUTHORIZATION_KEY]: '[github, gitlab, bitbucket]' } },
-      response: {} as IncomingMessage,
-    });
+      data: { [SKIP_AUTHORIZATION_KEY]: '[github, gitlab, bitbucket]' },
+    } as mockClient.V1ConfigMap);
 
     const res = await workspacePreferencesApiService.getWorkspacePreferences(namespace);
 
@@ -95,9 +85,8 @@ describe('Workspace Preferences API Service', () => {
 
   test('remove a provider from skip-authorisation workspace preferences', async () => {
     spyReadNamespacedConfigMap.mockResolvedValueOnce({
-      body: { data: { [SKIP_AUTHORIZATION_KEY]: '[github, gitlab, bitbucket]' } },
-      response: {} as IncomingMessage,
-    });
+      data: { [SKIP_AUTHORIZATION_KEY]: '[github, gitlab, bitbucket]' },
+    } as mockClient.V1ConfigMap);
 
     await workspacePreferencesApiService.removeProviderFromSkipAuthorizationList(
       namespace,
@@ -106,141 +95,101 @@ describe('Workspace Preferences API Service', () => {
 
     expect(spyReadNamespacedConfigMap).toHaveBeenCalled();
     expect(spyPatchNamespacedConfigMap).toHaveBeenCalled();
-    expect(spyPatchNamespacedConfigMap).toHaveBeenCalledWith(
-      DEV_WORKSPACE_PREFERENCES_CONFIGMAP,
-      'user-che',
-      {
+    expect(spyPatchNamespacedConfigMap).toHaveBeenCalledWith({
+      name: DEV_WORKSPACE_PREFERENCES_CONFIGMAP,
+      namespace: 'user-che',
+      body: {
         data: { [SKIP_AUTHORIZATION_KEY]: '[github, bitbucket]' },
       },
-      undefined,
-      undefined,
-      undefined,
-      undefined,
-      undefined,
-      { headers: { 'content-type': 'application/strategic-merge-patch+json' } },
-    );
+    });
   });
 
   test('add a very first trusted source URL to trusted-source workspace preferences', async () => {
     spyReadNamespacedConfigMap.mockResolvedValueOnce({
-      body: { data: {} },
-      response: {} as IncomingMessage,
-    });
+      data: {},
+    } as mockClient.V1ConfigMap);
 
     await workspacePreferencesApiService.addTrustedSource(namespace, 'source-url');
 
     expect(spyReadNamespacedConfigMap).toHaveBeenCalled();
     expect(spyPatchNamespacedConfigMap).toHaveBeenCalled();
-    expect(spyPatchNamespacedConfigMap).toHaveBeenCalledWith(
-      DEV_WORKSPACE_PREFERENCES_CONFIGMAP,
+    expect(spyPatchNamespacedConfigMap).toHaveBeenCalledWith({
+      name: DEV_WORKSPACE_PREFERENCES_CONFIGMAP,
       namespace,
-      {
+      body: {
         data: {
           [SKIP_AUTHORIZATION_KEY]: '[]',
           [TRUSTED_SOURCES_KEY]: '["source-url"]',
         },
       },
-      undefined,
-      undefined,
-      undefined,
-      undefined,
-      undefined,
-      { headers: { 'content-type': 'application/strategic-merge-patch+json' } },
-    );
+    });
   });
 
   test('add a new trusted source URL to trusted-source workspace preferences', async () => {
     spyReadNamespacedConfigMap.mockResolvedValueOnce({
-      body: {
-        data: {
-          [TRUSTED_SOURCES_KEY]: '["source1", "source2"]',
-        },
+      data: {
+        [TRUSTED_SOURCES_KEY]: '["source1", "source2"]',
       },
-      response: {} as IncomingMessage,
-    });
+    } as mockClient.V1ConfigMap);
 
     await workspacePreferencesApiService.addTrustedSource(namespace, 'source3');
 
     expect(spyReadNamespacedConfigMap).toHaveBeenCalled();
     expect(spyPatchNamespacedConfigMap).toHaveBeenCalled();
-    expect(spyPatchNamespacedConfigMap).toHaveBeenCalledWith(
-      DEV_WORKSPACE_PREFERENCES_CONFIGMAP,
+    expect(spyPatchNamespacedConfigMap).toHaveBeenCalledWith({
+      name: DEV_WORKSPACE_PREFERENCES_CONFIGMAP,
       namespace,
-      {
+      body: {
         data: {
           [SKIP_AUTHORIZATION_KEY]: '[]',
           [TRUSTED_SOURCES_KEY]: '["source1","source2","source3"]',
         },
       },
-      undefined,
-      undefined,
-      undefined,
-      undefined,
-      undefined,
-      { headers: { 'content-type': 'application/strategic-merge-patch+json' } },
-    );
+    });
   });
 
   test('add trust all to trusted-source workspace preferences when there is some trusted URLs', async () => {
     spyReadNamespacedConfigMap.mockResolvedValueOnce({
-      body: {
-        data: {
-          [TRUSTED_SOURCES_KEY]: '["source1", "source2"]',
-        },
+      data: {
+        [TRUSTED_SOURCES_KEY]: '["source1", "source2"]',
       },
-      response: {} as IncomingMessage,
-    });
+    } as mockClient.V1ConfigMap);
 
     await workspacePreferencesApiService.addTrustedSource(namespace, '*');
 
     expect(spyReadNamespacedConfigMap).toHaveBeenCalled();
     expect(spyPatchNamespacedConfigMap).toHaveBeenCalled();
-    expect(spyPatchNamespacedConfigMap).toHaveBeenCalledWith(
-      DEV_WORKSPACE_PREFERENCES_CONFIGMAP,
+    expect(spyPatchNamespacedConfigMap).toHaveBeenCalledWith({
+      name: DEV_WORKSPACE_PREFERENCES_CONFIGMAP,
       namespace,
-      {
+      body: {
         data: {
           [SKIP_AUTHORIZATION_KEY]: '[]',
           [TRUSTED_SOURCES_KEY]: '"*"',
         },
       },
-      undefined,
-      undefined,
-      undefined,
-      undefined,
-      undefined,
-      { headers: { 'content-type': 'application/strategic-merge-patch+json' } },
-    );
+    });
   });
 
   test('delete all trusted sources from trusted-source workspace preferences', async () => {
     spyReadNamespacedConfigMap.mockResolvedValueOnce({
-      body: {
-        data: {
-          [TRUSTED_SOURCES_KEY]: '["source1", "source2"]',
-        },
+      data: {
+        [TRUSTED_SOURCES_KEY]: '["source1", "source2"]',
       },
-      response: {} as IncomingMessage,
-    });
+    } as mockClient.V1ConfigMap);
 
     await workspacePreferencesApiService.removeTrustedSources(namespace);
 
     expect(spyReadNamespacedConfigMap).toHaveBeenCalled();
     expect(spyPatchNamespacedConfigMap).toHaveBeenCalled();
-    expect(spyPatchNamespacedConfigMap).toHaveBeenCalledWith(
-      DEV_WORKSPACE_PREFERENCES_CONFIGMAP,
+    expect(spyPatchNamespacedConfigMap).toHaveBeenCalledWith({
+      name: DEV_WORKSPACE_PREFERENCES_CONFIGMAP,
       namespace,
-      {
+      body: {
         data: {
           [SKIP_AUTHORIZATION_KEY]: '[]',
         },
       },
-      undefined,
-      undefined,
-      undefined,
-      undefined,
-      undefined,
-      { headers: { 'content-type': 'application/strategic-merge-patch+json' } },
-    );
+    });
   });
 });

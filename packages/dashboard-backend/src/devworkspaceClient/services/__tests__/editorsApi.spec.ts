@@ -11,8 +11,7 @@
  */
 
 import { V230Devfile } from '@devfile/api';
-import { V1ConfigMapList } from '@kubernetes/client-node/dist/gen/model/v1ConfigMapList';
-import http from 'http';
+import { V1ConfigMapList } from '@kubernetes/client-node';
 import * as yaml from 'js-yaml';
 
 import { EditorNotFoundError, EditorsApiService } from '@/devworkspaceClient/services/editorsApi';
@@ -64,21 +63,17 @@ describe('EditorsApiService', () => {
       const configMapList = {
         items: [configMap],
       } as V1ConfigMapList;
-      const response = { response: {} as http.IncomingMessage, body: configMapList };
 
-      (coreV1API.listNamespacedConfigMap as jest.Mock).mockResolvedValue(response);
+      (coreV1API.listNamespacedConfigMap as jest.Mock).mockResolvedValue(configMapList);
       (yaml.load as jest.Mock).mockReturnValue({ schemaVersion: '2.2.2' });
 
       const result = await editorsApiService.list();
       expect(result).toEqual([{ schemaVersion: '2.2.2' } as V230Devfile]);
-      expect(coreV1API.listNamespacedConfigMap).toHaveBeenCalledWith(
-        'test-namespace',
-        undefined,
-        undefined,
-        undefined,
-        undefined,
-        'app.kubernetes.io/component=editor-definition,app.kubernetes.io/part-of=che.eclipse.org',
-      );
+      expect(coreV1API.listNamespacedConfigMap).toHaveBeenCalledWith({
+        namespace: 'test-namespace',
+        labelSelector:
+          'app.kubernetes.io/component=editor-definition,app.kubernetes.io/part-of=che.eclipse.org',
+      });
     });
 
     it('should handle errors from the Kubernetes API', async () => {
@@ -103,10 +98,9 @@ describe('EditorsApiService', () => {
       const configMapList = {
         items: [configMap],
       } as V1ConfigMapList;
-      const response = { response: {} as http.IncomingMessage, body: configMapList };
       const parseError = new Error('YAML parse error');
 
-      (coreV1API.listNamespacedConfigMap as jest.Mock).mockResolvedValue(response);
+      (coreV1API.listNamespacedConfigMap as jest.Mock).mockResolvedValue(configMapList);
       (yaml.load as jest.Mock).mockImplementation(() => {
         throw parseError;
       });
@@ -142,9 +136,8 @@ describe('EditorsApiService', () => {
       const configMapList = {
         items: [configMap],
       } as V1ConfigMapList;
-      const response = { response: {} as http.IncomingMessage, body: configMapList };
 
-      (coreV1API.listNamespacedConfigMap as jest.Mock).mockResolvedValue(response);
+      (coreV1API.listNamespacedConfigMap as jest.Mock).mockResolvedValue(configMapList);
       (yaml.load as jest.Mock).mockReturnValue({
         schemaVersion: '2.2.2',
         metadata: {
@@ -197,9 +190,8 @@ describe('EditorsApiService', () => {
       const configMapList = {
         items: [configMap],
       } as V1ConfigMapList;
-      const response = { response: {} as http.IncomingMessage, body: configMapList };
 
-      (coreV1API.listNamespacedConfigMap as jest.Mock).mockResolvedValue(response);
+      (coreV1API.listNamespacedConfigMap as jest.Mock).mockResolvedValue(configMapList);
       (yaml.load as jest.Mock)
         .mockReturnValueOnce({
           schemaVersion: '2.2.2',
@@ -254,9 +246,8 @@ describe('EditorsApiService', () => {
       const configMapList = {
         items: [configMap],
       } as V1ConfigMapList;
-      const response = { response: {} as http.IncomingMessage, body: configMapList };
 
-      (coreV1API.listNamespacedConfigMap as jest.Mock).mockResolvedValue(response);
+      (coreV1API.listNamespacedConfigMap as jest.Mock).mockResolvedValue(configMapList);
       (yaml.load as jest.Mock).mockReturnValue({
         schemaVersion: '2.2.2',
         metadata: {
