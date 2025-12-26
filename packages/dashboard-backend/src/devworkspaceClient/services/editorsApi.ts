@@ -11,8 +11,7 @@
  */
 
 import { V230Devfile } from '@devfile/api';
-import { V1ConfigMapList } from '@kubernetes/client-node/dist/gen/model/v1ConfigMapList';
-import http from 'http';
+import { V1ConfigMapList } from '@kubernetes/client-node';
 import * as yaml from 'js-yaml';
 
 import { createError } from '@/devworkspaceClient/services/helpers/createError';
@@ -56,16 +55,12 @@ export class EditorsApiService implements IEditorsApi {
       return [];
     }
 
-    let response: { response: http.IncomingMessage; body: V1ConfigMapList };
+    let response: V1ConfigMapList;
     try {
-      response = await this.coreV1API.listNamespacedConfigMap(
-        this.env.NAMESPACE,
-        undefined,
-        undefined,
-        undefined,
-        undefined,
-        EDITOR_METADATA_LABEL_SELECTOR,
-      );
+      response = await this.coreV1API.listNamespacedConfigMap({
+        namespace: this.env.NAMESPACE,
+        labelSelector: EDITOR_METADATA_LABEL_SELECTOR,
+      });
     } catch (error) {
       const additionalMessage = 'Unable to list editors ConfigMap';
       throw createError(error, API_ERROR_LABEL, additionalMessage);
@@ -73,7 +68,7 @@ export class EditorsApiService implements IEditorsApi {
 
     const editors: V230Devfile[] = [];
 
-    for (const cm of response.body.items) {
+    for (const cm of response.items) {
       if (cm.data === undefined) {
         continue;
       }

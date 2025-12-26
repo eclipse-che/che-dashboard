@@ -32,8 +32,11 @@ export class UserProfileApiService implements IUserProfileApi {
 
   async getUserProfile(namespace: string): Promise<api.IUserProfile | undefined> {
     try {
-      const result = await this.coreV1API.readNamespacedSecret(USER_PROFILE_SECRET_NAME, namespace);
-      const data = result.body.data;
+      const result = await this.coreV1API.readNamespacedSecret({
+        name: USER_PROFILE_SECRET_NAME,
+        namespace,
+      });
+      const data = result.data;
       if (data === undefined) {
         throw new Error('Data is empty');
       }

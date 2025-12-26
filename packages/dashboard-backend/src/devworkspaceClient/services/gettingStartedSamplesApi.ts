@@ -12,8 +12,7 @@
 
 import { api } from '@eclipse-che/common';
 import * as k8s from '@kubernetes/client-node';
-import { V1ConfigMapList } from '@kubernetes/client-node/dist/gen/model/v1ConfigMapList';
-import http from 'http';
+import { V1ConfigMapList } from '@kubernetes/client-node';
 
 import { createError } from '@/devworkspaceClient/services/helpers/createError';
 import { getIcon } from '@/devworkspaceClient/services/helpers/getSampleIcon';
@@ -46,16 +45,12 @@ export class GettingStartedSamplesApiService implements IGettingStartedSampleApi
       return [];
     }
 
-    let response: { response: http.IncomingMessage; body: V1ConfigMapList };
+    let response: V1ConfigMapList;
     try {
-      response = await this.coreV1API.listNamespacedConfigMap(
-        this.env.NAMESPACE,
-        undefined,
-        undefined,
-        undefined,
-        undefined,
-        DEVFILE_METADATA_LABEL_SELECTOR,
-      );
+      response = await this.coreV1API.listNamespacedConfigMap({
+        namespace: this.env.NAMESPACE,
+        labelSelector: DEVFILE_METADATA_LABEL_SELECTOR,
+      });
     } catch (error) {
       const additionalMessage = 'Unable to list getting started samples ConfigMap';
       throw createError(error, API_ERROR_LABEL, additionalMessage);
@@ -63,7 +58,7 @@ export class GettingStartedSamplesApiService implements IGettingStartedSampleApi
 
     const samples: api.IGettingStartedSample[] = [];
 
-    for (const cm of response.body.items) {
+    for (const cm of response.items) {
       if (cm.data === undefined) {
         continue;
       }

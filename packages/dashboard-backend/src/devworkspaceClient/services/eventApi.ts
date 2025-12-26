@@ -13,7 +13,6 @@
 import { api } from '@eclipse-che/common';
 import * as k8s from '@kubernetes/client-node';
 import { CoreV1Event, V1Status } from '@kubernetes/client-node';
-import { Request } from 'request';
 
 import { createError } from '@/devworkspaceClient/services/helpers/createError';
 import {
@@ -39,8 +38,8 @@ export class EventApiService implements IEventApi {
 
   async listInNamespace(namespace: string): Promise<api.IEventList> {
     try {
-      const resp = await this.coreV1API.listNamespacedEvent(namespace);
-      return resp.body;
+      const resp = await this.coreV1API.listNamespacedEvent({ namespace });
+      return resp;
     } catch (e) {
       throw createError(e, EVENT_API_ERROR_LABEL, 'Unable to list events');
     }
@@ -55,18 +54,18 @@ export class EventApiService implements IEventApi {
 
     this.stopWatching();
 
-    const request: Request = await this.customObjectWatch.watch(
+    const abortController: AbortController = await this.customObjectWatch.watch(
       path,
       queryParams,
       (eventPhase: string, apiObj: CoreV1Event | V1Status) =>
         this.handleWatchMessage(eventPhase, apiObj, listener, params),
       (error: unknown) => {
         this.handleWatchError(error, path);
-        request.destroy();
+        abortController.abort();
       },
     );
 
-    this.stopWatch = () => request.destroy();
+    this.stopWatch = () => abortController.abort();
   }
 
   private handleWatchMessage(

@@ -18,7 +18,7 @@ export async function findApi(
   version?: string,
 ): Promise<boolean> {
   const resp = await apisApi.getAPIVersions();
-  const groups = resp.body.groups;
+  const groups = resp.groups;
   return groups.some((apiGroup: k8s.V1APIGroup) => {
     if (version) {
       return (

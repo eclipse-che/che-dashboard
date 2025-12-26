@@ -19,7 +19,7 @@ import {
 import { api } from '@eclipse-che/common';
 import * as k8s from '@kubernetes/client-node';
 import { V1Status } from '@kubernetes/client-node';
-import http, { IncomingHttpHeaders } from 'http';
+import { IncomingHttpHeaders } from 'http';
 
 import { createError } from '@/devworkspaceClient/services/helpers/createError';
 import {
@@ -45,13 +45,13 @@ export class DevWorkspaceApiService implements IDevWorkspaceApi {
 
   async listInNamespace(namespace: string): Promise<api.IDevWorkspaceList> {
     try {
-      const resp = await this.customObjectAPI.listNamespacedCustomObject(
-        devworkspaceGroup,
-        devworkspaceLatestVersion,
+      const resp = await this.customObjectAPI.listNamespacedCustomObject({
+        group: devworkspaceGroup,
+        version: devworkspaceLatestVersion,
         namespace,
-        devworkspacePlural,
-      );
-      return resp.body as api.IDevWorkspaceList;
+        plural: devworkspacePlural,
+      });
+      return resp as api.IDevWorkspaceList;
     } catch (e) {
       throw createError(e, DEV_WORKSPACE_API_ERROR_LABEL, 'Unable to list devworkspaces');
     }
@@ -59,14 +59,14 @@ export class DevWorkspaceApiService implements IDevWorkspaceApi {
 
   async getByName(namespace: string, name: string): Promise<V1alpha2DevWorkspace> {
     try {
-      const resp = await this.customObjectAPI.getNamespacedCustomObject(
-        devworkspaceGroup,
-        devworkspaceLatestVersion,
+      const resp = await this.customObjectAPI.getNamespacedCustomObject({
+        group: devworkspaceGroup,
+        version: devworkspaceLatestVersion,
         namespace,
-        devworkspacePlural,
+        plural: devworkspacePlural,
         name,
-      );
-      return resp.body as V1alpha2DevWorkspace;
+      });
+      return resp as V1alpha2DevWorkspace;
     } catch (e) {
       throw createError(
         e,
@@ -76,15 +76,14 @@ export class DevWorkspaceApiService implements IDevWorkspaceApi {
     }
   }
 
-  private propagateHeaders(resp: { response: http.IncomingMessage; body: unknown }) {
-    const propagateHeaders = ['warning'];
-    const headers = Object.entries(resp.response.headers).reduce((acc, [key, value]) => {
-      if (propagateHeaders.includes(key)) {
-        acc[key] = value;
-      }
-      return acc;
-    }, {} as Partial<IncomingHttpHeaders>);
-    return headers;
+  /**
+   * Note: Headers propagation is not supported in the new @kubernetes/client-node 1.4+ API
+   * The new Object API returns just the body without response metadata
+   */
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  private propagateHeaders(_resp: unknown): Partial<IncomingHttpHeaders> {
+    // The new API returns just the body, headers are not accessible
+    return {};
   }
 
   async create(
@@ -98,14 +97,14 @@ export class DevWorkspaceApiService implements IDevWorkspaceApi {
         );
       }
 
-      const resp = await this.customObjectAPI.createNamespacedCustomObject(
-        devworkspaceGroup,
-        devworkspaceLatestVersion,
+      const resp = await this.customObjectAPI.createNamespacedCustomObject({
+        group: devworkspaceGroup,
+        version: devworkspaceLatestVersion,
         namespace,
-        devworkspacePlural,
-        devworkspace,
-      );
-      const devWorkspace = resp.body as V1alpha2DevWorkspace;
+        plural: devworkspacePlural,
+        body: devworkspace,
+      });
+      const devWorkspace = resp as V1alpha2DevWorkspace;
       const headers = this.propagateHeaders(resp);
       return { devWorkspace, headers };
     } catch (e) {
@@ -115,13 +114,13 @@ export class DevWorkspaceApiService implements IDevWorkspaceApi {
 
   async delete(namespace: string, name: string): Promise<void> {
     try {
-      await this.customObjectAPI.deleteNamespacedCustomObject(
-        devworkspaceGroup,
-        devworkspaceLatestVersion,
+      await this.customObjectAPI.deleteNamespacedCustomObject({
+        group: devworkspaceGroup,
+        version: devworkspaceLatestVersion,
         namespace,
-        devworkspacePlural,
+        plural: devworkspacePlural,
         name,
-      );
+      });
     } catch (e) {
       throw createError(
         e,
@@ -140,24 +139,15 @@ export class DevWorkspaceApiService implements IDevWorkspaceApi {
     patches: api.IPatch[],
   ): Promise<{ devWorkspace: V1alpha2DevWorkspace; headers: Partial<IncomingHttpHeaders> }> {
     try {
-      const options = {
-        headers: {
-          'Content-type': k8s.PatchUtils.PATCH_FORMAT_JSON_PATCH,
-        },
-      };
-      const resp = await this.customObjectAPI.patchNamespacedCustomObject(
-        devworkspaceGroup,
-        devworkspaceLatestVersion,
+      const resp = await this.customObjectAPI.patchNamespacedCustomObject({
+        group: devworkspaceGroup,
+        version: devworkspaceLatestVersion,
         namespace,
-        devworkspacePlural,
+        plural: devworkspacePlural,
         name,
-        patches,
-        undefined,
-        undefined,
-        undefined,
-        options,
-      );
-      const devWorkspace = resp.body as V1alpha2DevWorkspace;
+        body: patches,
+      });
+      const devWorkspace = resp as V1alpha2DevWorkspace;
       const headers = this.propagateHeaders(resp);
       return { devWorkspace, headers };
     } catch (e) {
@@ -174,7 +164,7 @@ export class DevWorkspaceApiService implements IDevWorkspaceApi {
 
     this.stopWatching();
 
-    const request: http.ServerResponse = await this.customObjectWatch.watch(
+    const abortController: AbortController = await this.customObjectWatch.watch(
       path,
       queryParams,
       (eventPhase: string, apiObj: V1alpha2DevWorkspace | V1Status) => {
@@ -195,11 +185,11 @@ export class DevWorkspaceApiService implements IDevWorkspaceApi {
       },
       (error: unknown) => {
         logger.warn(error, `Stopped watching ${path}.`);
-        request.destroy();
+        abortController.abort();
       },
     );
 
-    this.stopWatch = () => request.destroy();
+    this.stopWatch = () => abortController.abort();
   }
 
   /**
