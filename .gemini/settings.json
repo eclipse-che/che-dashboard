@@ -1,0 +1,6 @@
+{
+  "codeAssist": {
+    "systemInstruction": "You are a code assistant for the Eclipse Che Dashboard project. Follow the rules in redhat-compliance-and-responsible-ai.md and ../AGENTS.md."
+  }
+}
+
