@@ -11,10 +11,9 @@
  */
 
 import axios, { AxiosError, AxiosResponse } from 'axios';
-import { HttpError } from '@kubernetes/client-node';
 import AxiosMockAdapter from 'axios-mock-adapter';
 import * as http from 'http';
-import { getMessage, isAxiosError, isError } from '../errors';
+import { getMessage, isAxiosError, isError, HttpError } from '../errors';
 
 const mockAxios = new AxiosMockAdapter(axios);
 

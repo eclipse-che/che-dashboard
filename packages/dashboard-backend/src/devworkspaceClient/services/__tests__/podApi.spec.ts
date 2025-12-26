@@ -20,6 +20,7 @@ import { PodApiService } from '@/devworkspaceClient/services/podApi';
 import { logger } from '@/utils/logger';
 
 jest.mock('../helpers/prepareCustomObjectWatch');
+jest.mock('../helpers/retryableExec');
 
 const namespace = 'user-che';
 
@@ -28,7 +29,7 @@ describe('Pod API Service', () => {
 
   const stubCoreV1Api = {
     listNamespacedPod: () => {
-      return Promise.resolve({ body: buildListNamespacedPod() });
+      return Promise.resolve(buildListNamespacedPod());
     },
   } as unknown as CoreV1Api;
   const spyListNamespacedPod = jest.spyOn(stubCoreV1Api, 'listNamespacedPod');
@@ -52,7 +53,7 @@ describe('Pod API Service', () => {
   it('should list pods', async () => {
     const res = await podApiService.listInNamespace(namespace);
     expect(res).toEqual(buildListNamespacedPod());
-    expect(spyListNamespacedPod).toHaveBeenCalledWith(namespace);
+    expect(spyListNamespacedPod).toHaveBeenCalledWith({ namespace });
   });
 
   it('should throw when getting pods list', async () => {
@@ -60,12 +61,20 @@ describe('Pod API Service', () => {
     jest.useRealTimers();
 
     const failureReason = 'failed to get pods list';
-    // Reset the mock and set up rejection - must use mockRejectedValueOnce to override default implementation
-    spyListNamespacedPod.mockReset();
-    spyListNamespacedPod.mockRejectedValueOnce(new Error(failureReason));
+
+    // Create a new service with a mock that rejects
+    const { KubeConfig } = mockClient;
+    const kubeConfig = new KubeConfig();
+    const rejectingStubCoreV1Api = {
+      listNamespacedPod: jest.fn().mockRejectedValue(new Error(failureReason)),
+    } as unknown as CoreV1Api;
+    kubeConfig.makeApiClient = jest.fn().mockImplementation(_api => rejectingStubCoreV1Api);
+    const rejectingPodApiService = new PodApiService(kubeConfig);
 
     // The error is wrapped by createError, so check for the wrapped message
-    await expect(podApiService.listInNamespace(namespace)).rejects.toThrow('Unable to list pods.');
+    await expect(rejectingPodApiService.listInNamespace(namespace)).rejects.toThrow(
+      'Unable to list pods.',
+    );
 
     // Restore fake timers for subsequent tests
     jest.useFakeTimers();
@@ -97,17 +106,17 @@ describe('Pod API Service', () => {
       namespace,
       resourceVersion: '123',
     };
-    const mockDestroy = jest.fn();
+    const mockAbort = jest.fn();
 
     const spyWatch = jest
       .spyOn((podApiService as any).customObjectWatch, 'watch')
-      .mockReturnValue({ body: {}, destroy: mockDestroy });
+      .mockResolvedValue({ abort: mockAbort } as unknown as AbortController);
 
     await podApiService.watchInNamespace(jest.fn(), params);
     podApiService.stopWatching();
 
     expect(spyWatch).toHaveBeenCalledTimes(1);
-    expect(mockDestroy).toHaveBeenCalledTimes(1);
+    expect(mockAbort).toHaveBeenCalledTimes(1);
   });
 
   it('should handle the watch messages of ADDED phase', async () => {

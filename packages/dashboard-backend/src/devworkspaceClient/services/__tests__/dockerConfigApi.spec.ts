@@ -30,13 +30,13 @@ describe('Docker Config API Service', () => {
     'eyJhdXRocyI6eyJzb21lLXJlZ2lzdHJ5Ijp7InVzZXJuYW1lIjoidXNlcjEiLCJwYXNzd29yZCI6InBhc3N3b3JkMSIsImF1dGgiOiJkWE5sY2pFNmNHRnpjM2R2Y21ReCJ9fX0=';
 
   const stubCoreV1Api = {
-    readNamespacedSecret: (_name, _namespace) => {
-      return Promise.resolve(buildSecret(namespace, emptyConfig));
+    readNamespacedSecret: (_params: { name: string; namespace: string }) => {
+      return Promise.resolve(buildSecret(namespace, emptyConfig).body);
     },
-    replaceNamespacedSecret: (_name, _namespace, _body) => {
-      return Promise.resolve(buildSecret(namespace, updatedConfig));
+    replaceNamespacedSecret: (_params: { name: string; namespace: string; body: V1Secret }) => {
+      return Promise.resolve(buildSecret(namespace, updatedConfig).body);
     },
-  } as CoreV1Api;
+  } as unknown as CoreV1Api;
 
   const spyReadNamespacedSecret = jest.spyOn(stubCoreV1Api, 'readNamespacedSecret');
   const spyReplaceNamespacedSecret = jest.spyOn(stubCoreV1Api, 'replaceNamespacedSecret');
@@ -63,15 +63,15 @@ describe('Docker Config API Service', () => {
   test('updating dockerconfig', async () => {
     const dockerconfig = await dockerConfigService.update(namespace, updatedConfig);
     expect(dockerconfig).toEqual(updatedConfig);
-    expect(spyReplaceNamespacedSecret).toHaveBeenCalledWith(
-      SECRET_NAME,
+    expect(spyReplaceNamespacedSecret).toHaveBeenCalledWith({
+      name: SECRET_NAME,
       namespace,
-      expect.objectContaining({
+      body: expect.objectContaining({
         data: {
           [SECRET_KEY]: updatedConfig,
         },
       }),
-    );
+    });
   });
 });
 

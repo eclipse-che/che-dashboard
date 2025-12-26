@@ -13,7 +13,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
 import * as mockClient from '@kubernetes/client-node';
-import { CoreV1Api, HttpError, V1PodList, V1Secret } from '@kubernetes/client-node';
+import { CoreV1Api, V1PodList, V1Secret } from '@kubernetes/client-node';
 
 import * as helper from '@/devworkspaceClient/services/helpers/exec';
 import { PodmanApiService } from '@/devworkspaceClient/services/podmanApi';
@@ -95,7 +95,14 @@ describe('podman Config API Service', () => {
   });
 
   test('Container registry secret not found', async () => {
-    mockReadNamespaceSecret.mockRejectedValueOnce(new HttpError({} as any, null, 404));
+    // Create an error object that matches the ApiException interface
+    const apiException = {
+      name: 'ApiException',
+      message: 'Not Found',
+      code: 404,
+      body: { kind: 'Status', code: 404, message: 'Not Found' },
+    };
+    mockReadNamespaceSecret.mockRejectedValueOnce(apiException);
 
     await podmanApiService.podmanLogin(userNamespace, workspaceId);
     expect(spyExec).toHaveBeenCalledWith(
@@ -107,67 +114,61 @@ describe('podman Config API Service', () => {
     );
   });
 
-  function buildSecretWithCorrectCredentials(): { body: V1Secret } {
+  function buildSecretWithCorrectCredentials(): V1Secret {
     return {
-      body: {
-        apiVersion: 'v1',
-        data: {
-          '.dockerconfigjson': Buffer.from(
-            '{"auths":' +
-              '{' +
-              '"registry1":{"username":"user1","password":"password1"},' +
-              '"registry2":{"auth":"' +
-              Buffer.from('user2:password2', 'binary').toString('base64') +
-              '"}}' +
-              '}',
-            'binary',
-          ).toString('base64'),
-        },
-        kind: 'Secret',
+      apiVersion: 'v1',
+      data: {
+        '.dockerconfigjson': Buffer.from(
+          '{"auths":' +
+            '{' +
+            '"registry1":{"username":"user1","password":"password1"},' +
+            '"registry2":{"auth":"' +
+            Buffer.from('user2:password2', 'binary').toString('base64') +
+            '"}}' +
+            '}',
+          'binary',
+        ).toString('base64'),
       },
+      kind: 'Secret',
     };
   }
 
-  function buildSecretWithIncorrectCredentials(): { body: V1Secret } {
+  function buildSecretWithIncorrectCredentials(): V1Secret {
     return {
-      body: {
-        apiVersion: 'v1',
-        data: {
-          '.dockerconfigjson': Buffer.from(
-            '{"auths":' +
-              '{' +
-              '"registry1":{"username":"user"},' +
-              '"registry2":{"password":"password"},' +
-              '"registry3":{"auth":"dXNlcg=="},' + // user
-              '"registry4":{"auth":"dXNlcjo="},' + // user:
-              '"registry5":{}' +
-              '}' +
-              '}',
-            'binary',
-          ).toString('base64'),
-        },
-        kind: 'Secret',
+      apiVersion: 'v1',
+      data: {
+        '.dockerconfigjson': Buffer.from(
+          '{"auths":' +
+            '{' +
+            '"registry1":{"username":"user"},' +
+            '"registry2":{"password":"password"},' +
+            '"registry3":{"auth":"dXNlcg=="},' + // user
+            '"registry4":{"auth":"dXNlcjo="},' + // user:
+            '"registry5":{}' +
+            '}' +
+            '}',
+          'binary',
+        ).toString('base64'),
       },
+      kind: 'Secret',
     };
   }
 
-  function buildListNamespacedPod(): { body: V1PodList } {
+  function buildListNamespacedPod(): V1PodList {
     return {
-      body: {
-        apiVersion: 'v1',
-        items: [
-          {
-            metadata: {
-              name: workspaceName,
-              namespace: userNamespace,
-            },
-            spec: {
-              containers: [{ name: containerName }],
-            },
+      apiVersion: 'v1',
+      items: [
+        {
+          metadata: {
+            name: workspaceName,
+            namespace: userNamespace,
           },
-        ],
-        kind: 'PodList',
-      },
+          spec: {
+            containers: [{ name: containerName }],
+          },
+        },
+      ],
+      kind: 'PodList',
     };
   }
 });

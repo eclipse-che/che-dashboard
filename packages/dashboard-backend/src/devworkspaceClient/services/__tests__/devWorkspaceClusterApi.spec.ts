@@ -31,7 +31,7 @@ jest.mock('@/devworkspaceClient/services/helpers/prepareCustomObjectWatch');
 
 describe('DevWorkspace Cluster API Service', () => {
   let devWorkspaceClusterApiService: IDevWorkspaceClusterApi;
-  let cheClusterCustomResourcesList: { body: CustomResourceDefinitionList };
+  let cheClusterCustomResourcesList: CustomResourceDefinitionList;
 
   beforeEach(() => {
     jest.resetModules();
@@ -237,29 +237,27 @@ describe('DevWorkspace Cluster API Service', () => {
   });
 });
 
-function buildCheClusterCustomResourceList(maxNumberOfRunningWorkspacesPerCluster?: number): {
-  body: CustomResourceDefinitionList;
-} {
+function buildCheClusterCustomResourceList(
+  maxNumberOfRunningWorkspacesPerCluster?: number,
+): CustomResourceDefinitionList {
   return {
-    body: {
-      apiVersion: 'org.eclipse.che/v2',
-      items: [
-        {
-          apiVersion: 'org.eclipse.che/v2',
-          kind: 'CheCluster',
-          metadata: {
-            name: 'eclipse-che',
-            namespace: 'eclipse-che',
+    apiVersion: 'org.eclipse.che/v2',
+    items: [
+      {
+        apiVersion: 'org.eclipse.che/v2',
+        kind: 'CheCluster',
+        metadata: {
+          name: 'eclipse-che',
+          namespace: 'eclipse-che',
+        },
+        spec: {
+          devEnvironments: {
+            maxNumberOfRunningWorkspacesPerCluster,
           },
-          spec: {
-            devEnvironments: {
-              maxNumberOfRunningWorkspacesPerCluster,
-            },
-          },
-        } as CheClusterCustomResource,
-      ],
-      kind: 'CheClusterList',
-    },
+        },
+      } as CheClusterCustomResource,
+    ],
+    kind: 'CheClusterList',
   };
 }
 

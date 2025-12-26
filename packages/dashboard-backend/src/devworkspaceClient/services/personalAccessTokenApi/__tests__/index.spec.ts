@@ -15,7 +15,6 @@
 import { api } from '@eclipse-che/common';
 import * as mockClient from '@kubernetes/client-node';
 import { CoreV1Api, V1Secret, V1SecretList } from '@kubernetes/client-node';
-import { IncomingMessage } from 'http';
 
 import {
   DUMMY_TOKEN_DATA,
@@ -48,39 +47,25 @@ describe('Personal Access Token API', () => {
   const stubCoreV1Api = {
     listNamespacedSecret: () => {
       return Promise.resolve({
-        body: {
-          apiVersion: 'workspace.devfile.io/v1alpha2',
-          items: [{} as V1Secret, {} as V1Secret],
-          kind: 'SecretList',
-          metadata: {
-            resourceVersion: '12345',
-          },
+        apiVersion: 'workspace.devfile.io/v1alpha2',
+        items: [{} as V1Secret, {} as V1Secret],
+        kind: 'SecretList',
+        metadata: {
+          resourceVersion: '12345',
         },
       });
     },
     createNamespacedSecret: () => {
-      return Promise.resolve({
-        body: {} as V1Secret,
-        response: {} as IncomingMessage,
-      });
+      return Promise.resolve({} as V1Secret);
     },
     readNamespacedSecret: () => {
-      return Promise.resolve({
-        body: {} as V1Secret,
-        response: {} as IncomingMessage,
-      });
+      return Promise.resolve({} as V1Secret);
     },
     replaceNamespacedSecret: () => {
-      return Promise.resolve({
-        body: {} as V1Secret,
-        response: {} as IncomingMessage,
-      });
+      return Promise.resolve({} as V1Secret);
     },
     deleteNamespacedSecret: () => {
-      return Promise.resolve({
-        body: undefined,
-        response: {} as IncomingMessage,
-      });
+      return Promise.resolve(undefined);
     },
   } as unknown as CoreV1Api;
   const spyListNamespacedSecret = jest.spyOn(stubCoreV1Api, 'listNamespacedSecret');
@@ -111,14 +96,11 @@ describe('Personal Access Token API', () => {
       // only one PAT secret is returned
       expect(resp.length).toEqual(1);
 
-      expect(spyListNamespacedSecret).toHaveBeenCalledWith(
+      expect(spyListNamespacedSecret).toHaveBeenCalledWith({
         namespace,
-        undefined,
-        undefined,
-        undefined,
-        undefined,
-        'app.kubernetes.io/component=scm-personal-access-token,app.kubernetes.io/part-of=che.eclipse.org',
-      );
+        labelSelector:
+          'app.kubernetes.io/component=scm-personal-access-token,app.kubernetes.io/part-of=che.eclipse.org',
+      });
     });
 
     it('should return error', async () => {
@@ -158,17 +140,14 @@ describe('Personal Access Token API', () => {
 
       spyListNamespacedSecret.mockImplementationOnce(() => {
         return Promise.resolve({
-          response: {} as IncomingMessage,
-          body: {
-            items: [
-              {
-                metadata: {
-                  name: `personal-access-token-${token.tokenName}`,
-                },
-              } as V1Secret,
-            ],
-          } as V1SecretList,
-        });
+          items: [
+            {
+              metadata: {
+                name: `personal-access-token-${token.tokenName}`,
+              },
+            } as V1Secret,
+          ],
+        } as V1SecretList);
       });
 
       try {
@@ -267,13 +246,10 @@ describe('Personal Access Token API', () => {
     it('should replace token with keeping existing data', async () => {
       spyReadNamespacedSecret.mockImplementationOnce(() => {
         return Promise.resolve({
-          body: {
-            data: {
-              token: 'token-data',
-            },
-          } as V1Secret,
-          response: {} as IncomingMessage,
-        });
+          data: {
+            token: 'token-data',
+          },
+        } as V1Secret);
       });
 
       const token = {

@@ -35,19 +35,19 @@ describe('DevWorkspaceTemplate API Service', () => {
 
   const stubCustomObjectsApi = {
     createNamespacedCustomObject: () => {
-      return Promise.resolve({ body: getDevWorkspaceTemplate() });
+      return Promise.resolve(getDevWorkspaceTemplate());
     },
     deleteNamespacedCustomObject: () => {
-      return Promise.resolve({ body: {} });
+      return Promise.resolve({});
     },
     getNamespacedCustomObject: () => {
-      return Promise.resolve({ body: getDevWorkspaceTemplate() });
+      return Promise.resolve(getDevWorkspaceTemplate());
     },
     listNamespacedCustomObject: () => {
-      return Promise.resolve({ body: buildListNamespacesCustomObject() });
+      return Promise.resolve(buildListNamespacesCustomObject());
     },
     patchNamespacedCustomObject: () => {
-      return Promise.resolve({ body: getDevWorkspaceTemplate() });
+      return Promise.resolve(getDevWorkspaceTemplate());
     },
   } as unknown as CustomObjectsApi;
 
@@ -88,24 +88,24 @@ describe('DevWorkspaceTemplate API Service', () => {
   test('getting devWorkspaceTemplates', async () => {
     const res = await templateService.listInNamespace(namespace);
     expect(res).toEqual(buildDevWorkspaceTemplatesList());
-    expect(spyListNamespacedCustomObject).toHaveBeenCalledWith(
-      devworkspacetemplateGroup,
-      devworkspacetemplateLatestVersion,
+    expect(spyListNamespacedCustomObject).toHaveBeenCalledWith({
+      group: devworkspacetemplateGroup,
+      version: devworkspacetemplateLatestVersion,
       namespace,
-      devworkspacetemplatePlural,
-    );
+      plural: devworkspacetemplatePlural,
+    });
   });
 
   test('getting by name', async () => {
     const res = await templateService.getByName(namespace, name);
     expect(res).toEqual(getDevWorkspaceTemplate());
-    expect(spyGetNamespacedCustomObject).toHaveBeenCalledWith(
-      devworkspacetemplateGroup,
-      devworkspacetemplateLatestVersion,
+    expect(spyGetNamespacedCustomObject).toHaveBeenCalledWith({
+      group: devworkspacetemplateGroup,
+      version: devworkspacetemplateLatestVersion,
       namespace,
-      devworkspacetemplatePlural,
+      plural: devworkspacetemplatePlural,
       name,
-    );
+    });
   });
 
   test('creating', async () => {
@@ -119,13 +119,13 @@ describe('DevWorkspaceTemplate API Service', () => {
 
     const res = await templateService.create(devWorkspaceTemplate);
     expect(res).toEqual(getDevWorkspaceTemplate());
-    expect(spyCreateNamespacedCustomObject).toHaveBeenCalledWith(
-      devworkspacetemplateGroup,
-      devworkspacetemplateLatestVersion,
+    expect(spyCreateNamespacedCustomObject).toHaveBeenCalledWith({
+      group: devworkspacetemplateGroup,
+      version: devworkspacetemplateLatestVersion,
       namespace,
-      devworkspacetemplatePlural,
-      devWorkspaceTemplate,
-    );
+      plural: devworkspacetemplatePlural,
+      body: devWorkspaceTemplate,
+    });
   });
 
   test('patching', async () => {
@@ -139,29 +139,25 @@ describe('DevWorkspaceTemplate API Service', () => {
 
     const res = await templateService.patch(namespace, name, patches);
     expect(res).toEqual(getDevWorkspaceTemplate());
-    expect(spyPatchNamespacedCustomObject).toHaveBeenCalledWith(
-      devworkspacetemplateGroup,
-      devworkspacetemplateLatestVersion,
+    expect(spyPatchNamespacedCustomObject).toHaveBeenCalledWith({
+      group: devworkspacetemplateGroup,
+      version: devworkspacetemplateLatestVersion,
       namespace,
-      devworkspacetemplatePlural,
+      plural: devworkspacetemplatePlural,
       name,
-      patches,
-      undefined,
-      undefined,
-      undefined,
-      expect.anything(),
-    );
+      body: patches,
+    });
   });
 
   test('deleting', async () => {
     await templateService.delete(namespace, name);
-    expect(spyDeleteNamespacedCustomObject).toHaveBeenCalledWith(
-      devworkspacetemplateGroup,
-      devworkspacetemplateLatestVersion,
+    expect(spyDeleteNamespacedCustomObject).toHaveBeenCalledWith({
+      group: devworkspacetemplateGroup,
+      version: devworkspacetemplateLatestVersion,
       namespace,
-      devworkspacetemplatePlural,
+      plural: devworkspacetemplatePlural,
       name,
-    );
+    });
   });
 });
 
