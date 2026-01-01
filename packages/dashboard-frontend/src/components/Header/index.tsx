@@ -38,6 +38,7 @@ const SECTION_THEME = PageSectionVariants.light;
 type Props = {
   hideBreadcrumbs?: boolean;
   status: WorkspaceStatus | DevWorkspaceStatus | DeprecatedWorkspaceStatus;
+  containerScc: string | undefined;
   title: string;
 };
 
@@ -48,7 +49,7 @@ class Header extends React.PureComponent<Props> {
   }
 
   public render(): React.ReactElement {
-    const { title, status, hideBreadcrumbs } = this.props;
+    const { title, status, containerScc, hideBreadcrumbs } = this.props;
 
     return (
       <PageSection variant={SECTION_THEME}>
@@ -71,7 +72,7 @@ class Header extends React.PureComponent<Props> {
                 </TextContent>
               </FlexItem>
               <FlexItem>
-                <WorkspaceStatusLabel status={status} />
+                <WorkspaceStatusLabel status={status} containerScc={containerScc} />
               </FlexItem>
             </Flex>
           </StackItem>

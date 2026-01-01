@@ -22,7 +22,7 @@ import { TitleWithHover } from '@/Layout/Navigation/RecentItem/TitleWithHover';
 import { RecentItemWorkspaceActions } from '@/Layout/Navigation/RecentItem/WorkspaceActions';
 import { buildIdeLoaderLocation, toHref } from '@/services/helpers/location';
 import { TabManager } from '@/services/tabManager';
-import { Workspace } from '@/services/workspace-adapter';
+import { Workspace, WorkspaceAdapter } from '@/services/workspace-adapter';
 
 export type Props = {
   item: NavigationRecentItemObject;
@@ -55,7 +55,10 @@ export class NavigationRecentItem extends React.PureComponent<Props> {
         onClick={() => this.handleClick(item.workspace)}
       >
         <span data-testid="recent-workspace-item">
-          <WorkspaceStatusIndicator status={item.workspace.status} />
+          <WorkspaceStatusIndicator
+            status={item.workspace.status}
+            containerScc={WorkspaceAdapter.getContainerScc(item.workspace.ref)}
+          />
           <TitleWithHover text={item.label} isActive={isActive} />
         </span>
         <RecentItemWorkspaceActions item={item} />

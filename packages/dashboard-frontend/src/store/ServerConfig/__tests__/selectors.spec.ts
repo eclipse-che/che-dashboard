@@ -18,6 +18,7 @@ import {
   selectAdvancedAuthorization,
   selectAllowedSources,
   selectAutoProvision,
+  selectCurrentScc,
   selectDashboardLogo,
   selectDefaultComponents,
   selectDefaultEditor,
@@ -289,6 +290,118 @@ describe('ServerConfig Selectors', () => {
     expect(result).toEqual({
       hideById: ['che-incubator/che-clion-server/latest, che-incubator/che-clion-server/next'],
       showDeprecated: true,
+    });
+  });
+
+  describe('selectCurrentScc', () => {
+    it('should return SCC from containerRun when containerRun is enabled', () => {
+      const stateWithContainerRun = {
+        ...mockState,
+        dwServerConfig: {
+          ...mockState.dwServerConfig,
+          config: {
+            ...mockState.dwServerConfig.config,
+            containerRun: {
+              disableContainerRunCapabilities: false,
+              containerRunConfiguration: {
+                openShiftSecurityContextConstraint: 'anyuid',
+              },
+            },
+          },
+        },
+      } as RootState;
+      const result = selectCurrentScc(stateWithContainerRun);
+      expect(result).toEqual('anyuid');
+    });
+
+    it('should return SCC from containerBuild when containerRun is disabled', () => {
+      const stateWithContainerBuild = {
+        ...mockState,
+        dwServerConfig: {
+          ...mockState.dwServerConfig,
+          config: {
+            ...mockState.dwServerConfig.config,
+            containerRun: {
+              disableContainerRunCapabilities: true,
+            },
+            containerBuild: {
+              disableContainerBuildCapabilities: false,
+              containerBuildConfiguration: {
+                openShiftSecurityContextConstraint: 'container-build',
+              },
+            },
+          },
+        },
+      } as RootState;
+      const result = selectCurrentScc(stateWithContainerBuild);
+      expect(result).toEqual('container-build');
+    });
+
+    it('should return undefined when both container capabilities are disabled', () => {
+      const stateWithBothDisabled = {
+        ...mockState,
+        dwServerConfig: {
+          ...mockState.dwServerConfig,
+          config: {
+            ...mockState.dwServerConfig.config,
+            containerRun: {
+              disableContainerRunCapabilities: true,
+            },
+            containerBuild: {
+              disableContainerBuildCapabilities: true,
+            },
+          },
+        },
+      } as RootState;
+      const result = selectCurrentScc(stateWithBothDisabled);
+      expect(result).toBeUndefined();
+    });
+
+    it('should return SCC from containerRun when both are enabled (containerRun has priority)', () => {
+      const stateWithBothEnabled = {
+        ...mockState,
+        dwServerConfig: {
+          ...mockState.dwServerConfig,
+          config: {
+            ...mockState.dwServerConfig.config,
+            containerRun: {
+              disableContainerRunCapabilities: false,
+              containerRunConfiguration: {
+                openShiftSecurityContextConstraint: 'anyuid',
+              },
+            },
+            containerBuild: {
+              disableContainerBuildCapabilities: false,
+              containerBuildConfiguration: {
+                openShiftSecurityContextConstraint: 'container-build',
+              },
+            },
+          },
+        },
+      } as RootState;
+      const result = selectCurrentScc(stateWithBothEnabled);
+      expect(result).toEqual('anyuid');
+    });
+
+    it('should return undefined when containerRun is enabled but has no SCC configured', () => {
+      const stateWithNoScc = {
+        ...mockState,
+        dwServerConfig: {
+          ...mockState.dwServerConfig,
+          config: {
+            ...mockState.dwServerConfig.config,
+            containerRun: {
+              disableContainerRunCapabilities: false,
+              containerRunConfiguration: {},
+            },
+            containerBuild: {
+              disableContainerBuildCapabilities: true,
+            },
+          },
+        },
+      } as RootState;
+      const result = selectCurrentScc(stateWithNoScc);
+      expect(result).toBeUndefined();
     });
   });
 });

@@ -10,6 +10,8 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
+import { api } from '@eclipse-che/common';
+
 import { che } from '@/services/models';
 import { ServerConfigState } from '@/store/ServerConfig/index';
 
@@ -56,4 +58,35 @@ export function getPvcStrategy(state?: Partial<ServerConfigState>): che.Workspac
     default:
       return '';
   }
+}
+
+export function getDefaultEditor(config: api.IServerConfig): string {
+  return config.defaults?.editor || 'che-incubator/che-code/latest';
+}
+
+/**
+ * Returns the current SCC (Security Context Constraint) name based on container capabilities configuration.
+ * Priority: containerRun > containerBuild
+ * Returns undefined if no SCC is required (all container capabilities are disabled).
+ */
+export function getCurrentScc(config: api.IServerConfig): string | undefined {
+  const { containerRun, containerBuild } = config;
+
+  // Check containerRun first (higher priority)
+  if (!containerRun?.disableContainerRunCapabilities) {
+    const scc = containerRun?.containerRunConfiguration?.openShiftSecurityContextConstraint;
+    if (scc) {
+      return scc;
+    }
+  }
+
+  // Check containerBuild if containerRun is disabled or has no SCC
+  if (!containerBuild?.disableContainerBuildCapabilities) {
+    const scc = containerBuild?.containerBuildConfiguration?.openShiftSecurityContextConstraint;
+    if (scc) {
+      return scc;
+    }
+  }
+
+  return undefined;
 }

@@ -26,7 +26,7 @@ import {
 import { ToggleBarsContext } from '@/contexts/ToggleBars';
 import styles from '@/pages/Loader/index.module.css';
 import { DevWorkspaceStatus, LoaderTab } from '@/services/helpers/types';
-import { Workspace } from '@/services/workspace-adapter';
+import { Workspace, WorkspaceAdapter } from '@/services/workspace-adapter';
 
 export type Props = {
   location: Location;
@@ -92,10 +92,12 @@ export class LoaderPage extends React.PureComponent<Props, State> {
     const isLogsTabDisabled = workspace === undefined;
     const isEventsTabDisabled = workspace === undefined;
 
+    const containerScc = workspace ? WorkspaceAdapter.getContainerScc(workspace.ref) : undefined;
+
     return (
       <React.Fragment>
         <Head pageName={pageTitle} />
-        <Header title={pageTitle} status={workspaceStatus} />
+        <Header title={pageTitle} status={workspaceStatus} containerScc={containerScc} />
         <PageSection
           variant={PageSectionVariants.light}
           isFilled={true}

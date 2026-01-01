@@ -12,9 +12,18 @@
 
 import React from 'react';
 
-import { Props } from '@/components/Workspace/Status/Indicator';
+import {
+  DeprecatedWorkspaceStatus,
+  DevWorkspaceStatus,
+  WorkspaceStatus,
+} from '@/services/helpers/types';
 
-export class WorkspaceStatusIndicator extends React.PureComponent<Props> {
+type MockProps = {
+  status: WorkspaceStatus | DevWorkspaceStatus | DeprecatedWorkspaceStatus;
+  containerScc: string | undefined;
+};
+
+export class WorkspaceStatusIndicator extends React.PureComponent<MockProps> {
   public render(): React.ReactElement {
     return <div>Mock Workspace status indicator, status: {this.props.status}</div>;
   }
