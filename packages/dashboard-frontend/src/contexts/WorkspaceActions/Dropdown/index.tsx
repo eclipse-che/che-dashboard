@@ -21,6 +21,7 @@ import {
 } from '@patternfly/react-core';
 import { CaretDownIcon } from '@patternfly/react-icons';
 import React from 'react';
+import { connect, ConnectedProps } from 'react-redux';
 
 import { ActionContextType } from '@/contexts/WorkspaceActions';
 import styles from '@/contexts/WorkspaceActions/Dropdown/index.module.css';
@@ -28,9 +29,11 @@ import { lazyInject } from '@/inversify.config';
 import { AppAlerts } from '@/services/alerts/appAlerts';
 import getRandomString from '@/services/helpers/random';
 import { DevWorkspaceStatus, WorkspaceAction, WorkspaceStatus } from '@/services/helpers/types';
-import { Workspace } from '@/services/workspace-adapter';
+import { Workspace, WorkspaceAdapter } from '@/services/workspace-adapter';
+import { RootState } from '@/store';
+import { selectCurrentScc } from '@/store/ServerConfig/selectors';
 
-export type Props = {
+type OwnProps = {
   context: ActionContextType;
   isDisabled?: boolean;
   toggle: 'kebab-toggle' | 'dropdown-toggle';
@@ -43,11 +46,13 @@ export type Props = {
   ) => Promise<void>;
 } & Pick<DropdownProps, 'menuAppendTo' | 'position' | 'isPlain'>;
 
+export type Props = OwnProps & MappedProps;
+
 export type State = {
   isExpanded: boolean;
 };
 
-export class WorkspaceActionsDropdown extends React.PureComponent<Props, State> {
+class WorkspaceActionsDropdownComponent extends React.PureComponent<Props, State> {
   @lazyInject(AppAlerts)
   private appAlerts: AppAlerts;
 
@@ -134,6 +139,15 @@ export class WorkspaceActionsDropdown extends React.PureComponent<Props, State> 
     });
   }
 
+  private hasSccMismatch(): boolean {
+    const { currentScc, workspace } = this.props;
+    if (!currentScc) {
+      return false;
+    }
+    const containerScc = WorkspaceAdapter.getContainerScc(workspace.ref);
+    return containerScc !== currentScc;
+  }
+
   private getDropdownItems(): React.ReactNode[] {
     const { workspace } = this.props;
     const isStopped =
@@ -141,6 +155,7 @@ export class WorkspaceActionsDropdown extends React.PureComponent<Props, State> 
       workspace.status === DevWorkspaceStatus.STOPPED ||
       workspace.status === DevWorkspaceStatus.FAILED;
     const isTerminating = workspace.status === DevWorkspaceStatus.TERMINATING;
+    const hasSccMismatch = this.hasSccMismatch();
 
     const getItem = (action: WorkspaceAction, isDisabled: boolean) => {
       return (
@@ -162,10 +177,13 @@ export class WorkspaceActionsDropdown extends React.PureComponent<Props, State> 
     };
 
     const items = [
-      getItem(WorkspaceAction.OPEN_IDE, isTerminating),
-      getItem(WorkspaceAction.START_DEBUG_AND_OPEN_LOGS, isTerminating || !isStopped),
-      getItem(WorkspaceAction.START_IN_BACKGROUND, isTerminating || !isStopped),
-      getItem(WorkspaceAction.RESTART_WORKSPACE, isTerminating || isStopped),
+      getItem(WorkspaceAction.OPEN_IDE, isTerminating || hasSccMismatch),
+      getItem(
+        WorkspaceAction.START_DEBUG_AND_OPEN_LOGS,
+        isTerminating || !isStopped || hasSccMismatch,
+      ),
+      getItem(WorkspaceAction.START_IN_BACKGROUND, isTerminating || !isStopped || hasSccMismatch),
+      getItem(WorkspaceAction.RESTART_WORKSPACE, isTerminating || isStopped || hasSccMismatch),
       getItem(WorkspaceAction.STOP_WORKSPACE, isTerminating || isStopped),
       getItem(WorkspaceAction.DELETE_WORKSPACE, isTerminating),
     ];
@@ -198,3 +216,15 @@ export class WorkspaceActionsDropdown extends React.PureComponent<Props, State> 
     );
   }
 }
+
+const mapStateToProps = (state: RootState) => ({
+  currentScc: selectCurrentScc(state),
+});
+
+const connector = connect(mapStateToProps);
+
+type MappedProps = ConnectedProps<typeof connector>;
+export const WorkspaceActionsDropdown = connector(WorkspaceActionsDropdownComponent);
+
+// Export unconnected component for testing
+export { WorkspaceActionsDropdownComponent };

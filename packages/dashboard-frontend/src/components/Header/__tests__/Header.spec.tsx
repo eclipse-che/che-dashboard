@@ -11,21 +11,37 @@
  */
 
 import React from 'react';
+import { Provider } from 'react-redux';
 import renderer from 'react-test-renderer';
 
 import { WorkspaceStatus } from '@/services/helpers/types';
+import { MockStoreBuilder } from '@/store/__mocks__/mockStore';
 
 import Header from '..';
 
 describe('The header component for IDE-loader and Factory-loader pages', () => {
   it('should render start workspace correctly', () => {
-    const element = <Header title="Start workspace" status={WorkspaceStatus.STARTING} />;
+    const store = new MockStoreBuilder().build();
+    const element = (
+      <Provider store={store}>
+        <Header
+          title="Start workspace"
+          status={WorkspaceStatus.STARTING}
+          containerScc={undefined}
+        />
+      </Provider>
+    );
 
     expect(renderer.create(element).toJSON()).toMatchSnapshot();
   });
 
   it('should render workspace error correctly', () => {
-    const element = <Header title="Workspace error" status={WorkspaceStatus.ERROR} />;
+    const store = new MockStoreBuilder().build();
+    const element = (
+      <Provider store={store}>
+        <Header title="Workspace error" status={WorkspaceStatus.ERROR} containerScc={undefined} />
+      </Provider>
+    );
 
     expect(renderer.create(element).toJSON()).toMatchSnapshot();
   });
