@@ -13,7 +13,7 @@
 import { createSelector } from '@reduxjs/toolkit';
 
 import { RootState } from '@/store';
-import { getPvcStrategy } from '@/store/ServerConfig/helpers';
+import { getCurrentScc, getDefaultEditor, getPvcStrategy } from '@/store/ServerConfig/helpers';
 
 const selectState = (state: RootState) => state.dwServerConfig;
 export const selectServerConfigState = selectState;
@@ -23,9 +23,8 @@ export const selectDefaultComponents = createSelector(
   state => state.config.defaults?.components || [],
 );
 
-export const selectDefaultEditor = createSelector(
-  selectState,
-  state => state.config.defaults?.editor || 'che-incubator/che-code/latest',
+export const selectDefaultEditor = createSelector(selectState, state =>
+  getDefaultEditor(state.config),
 );
 
 export const selectDefaultPlugins = createSelector(
@@ -87,3 +86,10 @@ export const selectIsAllowedSourcesConfigured = createSelector(
 );
 
 export const selectServerConfigError = createSelector(selectState, state => state.error);
+
+/**
+ * Returns the current SCC (Security Context Constraint) name based on container capabilities configuration.
+ * Priority: containerRun > containerBuild
+ * Returns undefined if no SCC is required (all container capabilities are disabled).
+ */
+export const selectCurrentScc = createSelector(selectState, state => getCurrentScc(state.config));
