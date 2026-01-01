@@ -12,6 +12,7 @@
 
 import { Label, LabelProps } from '@patternfly/react-core';
 import React from 'react';
+import { connect, ConnectedProps } from 'react-redux';
 
 import { CheTooltip } from '@/components/CheTooltip';
 import { useStatusIcon } from '@/components/Workspace/Status/getStatusIcon';
@@ -21,16 +22,29 @@ import {
   DevWorkspaceStatus,
   WorkspaceStatus,
 } from '@/services/helpers/types';
+import { RootState } from '@/store';
+import { selectBranding } from '@/store/Branding/selectors';
+import { selectCurrentScc } from '@/store/ServerConfig/selectors';
 
-type Props = {
+export type Props = MappedProps & {
   status: WorkspaceStatus | DevWorkspaceStatus | DeprecatedWorkspaceStatus;
+  containerScc: string | undefined;
 };
 
-export const WorkspaceStatusLabel: React.FC<Props> = ({ status }) => {
-  const icon = useStatusIcon(status);
+const WorkspaceStatusLabelComponent: React.FC<Props> = ({
+  status,
+  containerScc,
+  currentScc,
+  branding,
+}) => {
+  const hasSccMismatch = currentScc ? containerScc !== currentScc : false;
+
+  // Use Failed status if SCC mismatch
+  const displayStatus = hasSccMismatch ? DevWorkspaceStatus.FAILED : status;
+  const icon = useStatusIcon(displayStatus);
 
   let statusLabelColor: LabelProps['color'];
-  switch (status) {
+  switch (displayStatus) {
     case WorkspaceStatus.RUNNING:
     case DevWorkspaceStatus.RUNNING:
       statusLabelColor = 'green';
@@ -53,11 +67,51 @@ export const WorkspaceStatusLabel: React.FC<Props> = ({ status }) => {
       statusLabelColor = 'grey';
   }
 
+  // Build tooltip content
+  let tooltipContent: React.ReactNode;
+  if (hasSccMismatch) {
+    const documentationUrl = branding.docs.containerRunCapabilities;
+    tooltipContent = (
+      <span>
+        Cannot start: Administrator enabled nested container capabilities. This workspace was created
+        before this change and cannot be started.
+        {documentationUrl && (
+          <>
+            {' '}
+            <a
+              href={documentationUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={event => event.stopPropagation()}
+              style={{ color: '#73bcf7', textDecoration: 'underline' }}
+            >
+              Learn more
+            </a>
+          </>
+        )}
+      </span>
+    );
+  } else if (displayStatus === 'Deprecated') {
+    tooltipContent = 'Deprecated workspace';
+  } else {
+    tooltipContent = displayStatus;
+  }
+
   return (
-    <CheTooltip content={status === 'Deprecated' ? 'Deprecated workspace' : status}>
+    <CheTooltip content={tooltipContent}>
       <Label className={styles.statusLabel} color={statusLabelColor} icon={icon}>
-        {status}
+        {displayStatus}
       </Label>
     </CheTooltip>
   );
 };
+
+const mapStateToProps = (state: RootState) => ({
+  branding: selectBranding(state),
+  currentScc: selectCurrentScc(state),
+});
+
+const connector = connect(mapStateToProps);
+
+type MappedProps = ConnectedProps<typeof connector>;
+export const WorkspaceStatusLabel = connector(WorkspaceStatusLabelComponent);

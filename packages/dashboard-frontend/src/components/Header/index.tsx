@@ -35,6 +35,7 @@ import {
 type Props = {
   hideBreadcrumbs?: boolean;
   status: WorkspaceStatus | DevWorkspaceStatus | DeprecatedWorkspaceStatus;
+  containerScc: string | undefined;
   title: string;
 };
 
@@ -45,7 +46,7 @@ class Header extends React.PureComponent<Props> {
   }
 
   public render(): React.ReactElement {
-    const { title, status, hideBreadcrumbs } = this.props;
+    const { title, status, containerScc, hideBreadcrumbs } = this.props;
 
     return (
       <PageSection>
@@ -68,7 +69,7 @@ class Header extends React.PureComponent<Props> {
                 </Content>
               </FlexItem>
               <FlexItem>
-                <WorkspaceStatusLabel status={status} />
+                <WorkspaceStatusLabel status={status} containerScc={containerScc} />
               </FlexItem>
             </Flex>
           </StackItem>

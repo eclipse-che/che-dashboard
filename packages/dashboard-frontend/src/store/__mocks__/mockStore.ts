@@ -151,6 +151,30 @@ export class MockStoreBuilder {
     return this;
   }
 
+  public withCurrentScc(scc: string | undefined): MockStoreBuilder {
+    const existingConfig = (this.state as RootState)?.dwServerConfig?.config ?? {};
+    this.state = {
+      ...this.state,
+      dwServerConfig: {
+        isLoading: false,
+        config: {
+          ...existingConfig,
+          containerRun: scc
+            ? {
+                disableContainerRunCapabilities: false,
+                containerRunConfiguration: {
+                  openShiftSecurityContextConstraint: scc,
+                },
+              }
+            : {
+                disableContainerRunCapabilities: true,
+              },
+        },
+      },
+    } as RootState;
+    return this;
+  }
+
   public withFactoryResolver(
     options: {
       resolver?: Partial<FactoryResolverStateResolver>;

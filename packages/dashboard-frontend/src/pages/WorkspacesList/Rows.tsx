@@ -26,7 +26,7 @@ import { formatDate, formatRelativeDate } from '@/services/helpers/dates';
 import { buildDetailsLocation, buildIdeLoaderLocation, toHref } from '@/services/helpers/location';
 import { DevWorkspaceStatus } from '@/services/helpers/types';
 import { TabManager } from '@/services/tabManager';
-import { Workspace } from '@/services/workspace-adapter';
+import { Workspace, WorkspaceAdapter } from '@/services/workspace-adapter';
 
 export type SortDirection = 'asc' | 'desc' | 'none';
 
@@ -119,7 +119,10 @@ export function buildRow(
   }
 
   /* workspace status indicator */
-  const statusIndicator = <WorkspaceStatusIndicator status={workspace.status} />;
+  const containerScc = WorkspaceAdapter.getContainerScc(workspace.ref);
+  const statusIndicator = (
+    <WorkspaceStatusIndicator status={workspace.status} containerScc={containerScc} />
+  );
   /* workspace name */
   const details = (
     <span style={{ whiteSpace: 'nowrap' }}>
