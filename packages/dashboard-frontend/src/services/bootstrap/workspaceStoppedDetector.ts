@@ -29,7 +29,7 @@ export class WorkspaceRunningError extends Error {
    *
    * @param workspace the workspace to check
    */
-  public static throwIfNeeded(workspace) {
+  public static throwIfNeeded(workspace: Workspace) {
     if (workspace.isRunning || workspace.isStarting) {
       const state = workspace.isRunning ? 'running' : 'starting';
       throw new WorkspaceRunningError(`The workspace is ${state}.`, workspace);
