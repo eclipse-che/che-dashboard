@@ -14,6 +14,7 @@ import common, { api } from '@eclipse-che/common';
 import { Store } from 'redux';
 
 import { lazyInject } from '@/inversify.config';
+import { updateFavicon } from '@/preload/brandingLoader';
 import { provisionKubernetesNamespace } from '@/services/backend-client/kubernetesNamespaceApi';
 import { WebsocketClient } from '@/services/backend-client/websocketClient';
 import { ChannelListener } from '@/services/backend-client/websocketClient/messageHandler';
@@ -93,6 +94,7 @@ export default class Bootstrap {
       this.fetchBranding(),
       this.fetchInfrastructureNamespaces(),
       this.fetchClusterInfo(),
+      this.fetchClusterConfig().then(() => this.checkFavicon()),
     ]);
 
     const results = await Promise.allSettled([
@@ -110,7 +112,6 @@ export default class Bootstrap {
       this.fetchPods().then(() => {
         this.watchWebSocketPods();
       }),
-      this.fetchClusterConfig().then(() => this.updateFavicon()),
       this.fetchSshKeys(),
       this.fetchWorkspacePreferences(),
     ]);
@@ -133,9 +134,11 @@ export default class Bootstrap {
   private async doBackendsSanityCheck(): Promise<void> {
     try {
       await provisionKubernetesNamespace();
-      backendCheckRequestAction({
-        lastFetched: Date.now(),
-      });
+      this.store.dispatch(
+        backendCheckRequestAction({
+          lastFetched: Date.now(),
+        }),
+      );
     } catch (e) {
       if (isUnauthorized(e) || (isForbidden(e) && hasLoginPage(e))) {
         signIn();
@@ -440,17 +443,9 @@ export default class Bootstrap {
     return -1;
   }
 
-  private updateFavicon() {
+  private checkFavicon() {
     const dashboardFavicon = selectDashboardFavicon(this.store.getState());
-    if (dashboardFavicon?.base64data && dashboardFavicon?.mediatype) {
-      const hrefAttribute = `data:${dashboardFavicon?.mediatype};base64,${dashboardFavicon?.base64data}`;
-      if (window.document) {
-        const faviconHTML = window.document.getElementById('dashboardFavicon');
-        if (faviconHTML) {
-          faviconHTML.setAttribute('href', hrefAttribute);
-        }
-      }
-    }
+    updateFavicon(dashboardFavicon);
   }
 
   private async fetchSshKeys(): Promise<void> {

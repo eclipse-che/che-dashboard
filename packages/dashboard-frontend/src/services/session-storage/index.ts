@@ -15,8 +15,6 @@ export enum SessionStorageKey {
   ORIGINAL_LOCATION_PATH = 'original-location-path',
   EXTERNAL_REGISTRIES = 'external-registries',
   GIT_BRANCHES = 'git-branches',
-  BRANDING_LOGO_PATH = 'branding-logo-path',
-  BRANDING_FAVICON = 'branding-favicon',
 }
 
 export default class SessionStorageService {

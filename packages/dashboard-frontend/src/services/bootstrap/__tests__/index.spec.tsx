@@ -101,6 +101,9 @@ jest.spyOn(bannerAlertActionCreators, 'addBanner').mockImplementation(() => jest
 
 jest.mock('@/services/helpers/login');
 jest.mock('@/services/workspace-client/helpers');
+jest.mock('@/preload/brandingLoader', () => ({
+  updateFavicon: jest.fn(),
+}));
 
 const mockWebsocketClient = {
   connect: jest.fn(),
