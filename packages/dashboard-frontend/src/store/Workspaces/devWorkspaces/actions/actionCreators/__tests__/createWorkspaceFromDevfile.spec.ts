@@ -90,8 +90,10 @@ describe('devWorkspaces, actions', () => {
       (common.helpers.errors.getMessage as jest.Mock).mockImplementation((e: Error) => e.message);
     });
 
-    it('should create workspace with provided editor in params', async () => {
-      const paramsWithEditor = { cheEditor: 'custom-editor' } as Partial<FactoryParams>;
+    it('should create workspace with provided editor ID in params', async () => {
+      const paramsWithEditor = {
+        cheEditor: 'che-incubator/che-code/insiders',
+      } as Partial<FactoryParams>;
 
       await store.dispatch(
         createWorkspaceFromDevfile(mockDevfile, paramsWithEditor, mockOptionalFilesContent),
@@ -102,7 +104,7 @@ describe('devWorkspaces, actions', () => {
       expect(actions[0]).toEqual(devWorkspacesRequestAction());
 
       expect(getEditor).toHaveBeenCalledWith(
-        'custom-editor',
+        'che-incubator/che-code/insiders',
         expect.any(Function),
         expect.any(Function),
       );
@@ -115,7 +117,45 @@ describe('devWorkspaces, actions', () => {
         editorContent: 'updated-editor-content',
       });
       expect(loadResourcesContent).toHaveBeenCalledWith('resources-content');
-      expect(actionCreators.createWorkspaceFromResources).toHaveBeenCalled();
+      // When editor is an ID (not a URL), the ID should be passed as the annotation
+      expect(actionCreators.createWorkspaceFromResources).toHaveBeenCalledWith(
+        expect.anything(),
+        expect.anything(),
+        paramsWithEditor,
+        'che-incubator/che-code/insiders',
+      );
+    });
+
+    it('should create workspace with editor URL and store devfile content in annotation', async () => {
+      const editorUrl =
+        'https://eclipse-che.github.io/che-plugin-registry/main/v3/plugins/che-incubator/che-code/insiders/devfile.yaml';
+      const paramsWithEditorUrl = { cheEditor: editorUrl } as Partial<FactoryParams>;
+
+      await store.dispatch(
+        createWorkspaceFromDevfile(mockDevfile, paramsWithEditorUrl, mockOptionalFilesContent),
+      );
+
+      const actions = store.getActions();
+      expect(actions).toHaveLength(1);
+      expect(actions[0]).toEqual(devWorkspacesRequestAction());
+
+      expect(getEditor).toHaveBeenCalledWith(editorUrl, expect.any(Function), expect.any(Function));
+      expect(getCustomEditor).not.toHaveBeenCalled();
+      expect(verifyAuthorized).toHaveBeenCalled();
+      expect(updateEditorDevfile).toHaveBeenCalledWith('editor-content', undefined);
+      expect(fetchResources).toHaveBeenCalledWith({
+        devfileContent: 'devfile-yaml',
+        editorPath: undefined,
+        editorContent: 'updated-editor-content',
+      });
+      expect(loadResourcesContent).toHaveBeenCalledWith('resources-content');
+      // When editor is a URL, the devfile content should be passed as the annotation (not the URL)
+      expect(actionCreators.createWorkspaceFromResources).toHaveBeenCalledWith(
+        expect.anything(),
+        expect.anything(),
+        paramsWithEditorUrl,
+        'updated-editor-content',
+      );
     });
 
     it('should create workspace with custom editor from optional files', async () => {

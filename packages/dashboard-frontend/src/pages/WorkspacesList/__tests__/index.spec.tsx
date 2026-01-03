@@ -194,6 +194,7 @@ function getComponent(_workspaces = workspaces): React.ReactElement {
     <MemoryRouter>
       <WorkspacesList
         branding={brandingData}
+        editors={[]}
         location={{} as Location}
         navigate={jest.fn()}
         workspaces={_workspaces}

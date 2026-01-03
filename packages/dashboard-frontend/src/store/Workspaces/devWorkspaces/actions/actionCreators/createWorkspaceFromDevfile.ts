@@ -107,12 +107,17 @@ export const createWorkspaceFromDevfile =
       throw e;
     }
 
+    // If editor is an ID (not a URL), store the ID in the annotation
+    // If editor is a URL or undefined, store the devfile content in the annotation
+    const isEditorUrl = editor && /^(https?:\/\/)/.test(editor);
+    const editorAnnotation = editor && !isEditorUrl ? editor : editorContent;
+
     await dispatch(
       actionCreators.createWorkspaceFromResources(
         devWorkspaceResource,
         devWorkspaceTemplateResource,
         params,
-        editor ? editor : editorContent,
+        editorAnnotation,
       ),
     );
   };
