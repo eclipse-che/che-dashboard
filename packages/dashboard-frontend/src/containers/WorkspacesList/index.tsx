@@ -18,6 +18,7 @@ import Fallback from '@/components/Fallback';
 import WorkspacesList from '@/pages/WorkspacesList';
 import { RootState } from '@/store';
 import { selectBranding } from '@/store/Branding/selectors';
+import { selectCmEditors } from '@/store/Plugins/devWorkspacePlugins/selectors';
 import { workspacesActionCreators } from '@/store/Workspaces';
 import { selectAllWorkspaces, selectIsLoading } from '@/store/Workspaces/selectors';
 
@@ -28,7 +29,7 @@ type Props = MappedProps & {
 
 export class WorkspacesListContainer extends React.PureComponent<Props> {
   render() {
-    const { branding, allWorkspaces, isLoading, location, navigate } = this.props;
+    const { branding, allWorkspaces, editors, isLoading, location, navigate } = this.props;
 
     if (isLoading) {
       return Fallback;
@@ -37,6 +38,7 @@ export class WorkspacesListContainer extends React.PureComponent<Props> {
     return (
       <WorkspacesList
         branding={branding}
+        editors={editors}
         location={location}
         navigate={navigate}
         workspaces={allWorkspaces}
@@ -56,6 +58,7 @@ const mapStateToProps = (state: RootState) => {
   return {
     branding: selectBranding(state),
     allWorkspaces: selectAllWorkspaces(state),
+    editors: selectCmEditors(state),
     isLoading: selectIsLoading(state),
   };
 };

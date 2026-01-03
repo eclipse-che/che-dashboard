@@ -42,11 +42,13 @@ import styles from '@/pages/WorkspacesList/index.module.css';
 import { buildRows, RowData } from '@/pages/WorkspacesList/Rows';
 import WorkspacesListToolbar from '@/pages/WorkspacesList/Toolbar';
 import { BrandingData } from '@/services/bootstrap/branding.constant';
+import devfileApi from '@/services/devfileApi';
 import { buildGettingStartedLocation } from '@/services/helpers/location';
 import { Workspace } from '@/services/workspace-adapter';
 
 type Props = {
   branding: BrandingData;
+  editors: devfileApi.Devfile[];
   location: Location;
   navigate: NavigateFunction;
   workspaces: Workspace[];
@@ -72,6 +74,11 @@ export default class WorkspacesList extends React.PureComponent<Props, State> {
       {
         title: <span className={styles.nameColumnTitle}>Name</span>,
         dataLabel: 'Name',
+        transforms: [sortable],
+      },
+      {
+        title: <span className={styles.editorColumnTitle}>Editor</span>,
+        dataLabel: 'Editor',
         transforms: [sortable],
       },
       {
@@ -121,17 +128,17 @@ export default class WorkspacesList extends React.PureComponent<Props, State> {
       isSelectedAll: false,
       rows: [],
       sortBy: {
-        index: 1,
+        index: 3, // Last Modified column
         direction: SortByDirection.asc,
       },
     };
   }
 
   private buildRows(): RowData[] {
-    const { workspaces } = this.props;
+    const { editors, workspaces } = this.props;
     const { filtered, selected, sortBy } = this.state;
 
-    return buildRows(workspaces, [], filtered, selected, sortBy);
+    return buildRows(workspaces, editors, [], filtered, selected, sortBy);
   }
 
   private handleFilter(filtered: Workspace[]): void {

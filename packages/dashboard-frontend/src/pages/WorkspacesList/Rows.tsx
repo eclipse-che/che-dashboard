@@ -16,6 +16,7 @@ import { Location } from 'history';
 import React from 'react';
 import { Link } from 'react-router-dom';
 
+import { EditorIcon, getEditorName } from '@/components/EditorIcon';
 import { WorkspaceStatusIndicator } from '@/components/Workspace/Status/Indicator';
 import { WorkspaceActionsConsumer } from '@/contexts/WorkspaceActions';
 import { WorkspaceActionsDropdown } from '@/contexts/WorkspaceActions/Dropdown';
@@ -35,6 +36,7 @@ export interface RowData extends IRow {
 
 export function buildRows(
   workspaces: Workspace[],
+  editors: devfileApi.Devfile[],
   toDelete: string[],
   filtered: string[],
   selected: string[],
@@ -45,12 +47,20 @@ export function buildRows(
     // skip workspaces that are not match a filter
     .filter(workspace => filtered.includes(workspace.uid))
     .sort((workspaceA, workspaceB) => {
+      // Column 1: Name
       if (sortBy.index === 1) {
         const nameA = workspaceA.name || '';
         const nameB = workspaceB.name || '';
         return sort(nameA, nameB, sortBy.direction);
       }
+      // Column 2: Editor
       if (sortBy.index === 2) {
+        const editorA = getEditorName(workspaceA) || '';
+        const editorB = getEditorName(workspaceB) || '';
+        return sort(editorA, editorB, sortBy.direction);
+      }
+      // Column 3: Last Modified
+      if (sortBy.index === 3) {
         const updatedA = workspaceA.updated || workspaceA.created || 0;
         const updatedB = workspaceB.updated || workspaceB.created || 0;
         return sort(updatedA, updatedB, sortBy.direction);
@@ -67,7 +77,9 @@ export function buildRows(
       const ideLoaderHref = toHref(ideLoaderLocation);
 
       try {
-        rows.push(buildRow(workspace, isSelected, isDeleted, overviewPageLocation, ideLoaderHref));
+        rows.push(
+          buildRow(workspace, editors, isSelected, isDeleted, overviewPageLocation, ideLoaderHref),
+        );
       } catch (e) {
         console.warn('Skip workspace: ', e);
       }
@@ -86,6 +98,7 @@ function sort(a: string | number, b: string | number, direction: SortByDirection
 
 export function buildRow(
   workspace: Workspace,
+  editors: devfileApi.Devfile[],
   isSelected: boolean,
   isDeleted: boolean,
   overviewPageLocation: Location,
@@ -175,11 +188,18 @@ export function buildRow(
     </WorkspaceActionsConsumer>
   );
 
+  /* editor icon */
+  const editorIcon = <EditorIcon editors={editors} workspace={workspace} />;
+
   return {
     cells: [
       {
         title: details,
         key: 'workspace-name',
+      },
+      {
+        title: editorIcon,
+        key: 'editor-icon',
       },
       {
         title: lastModifiedDate,
