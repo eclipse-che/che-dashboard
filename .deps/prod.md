@@ -357,7 +357,7 @@
 | `public-encrypt@4.0.3` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/public-encrypt/4.0.3) |
 | `pump@3.0.0` | MIT | #21946 |
 | `punycode@2.3.1` | MIT | #6373 |
-| `qs@6.14.0` | BSD-3-Clause | #18871 |
+| `qs@6.14.1` | BSD-3-Clause | #18871 |
 | `querystring@0.2.1` | MIT | #1054 |
 | `querystringify@2.2.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/querystringify/2.2.0) |
 | `quick-format-unescaped@4.0.4` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/quick-format-unescaped/4.0.4) |
