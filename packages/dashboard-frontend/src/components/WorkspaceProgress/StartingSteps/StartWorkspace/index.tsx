@@ -36,6 +36,7 @@ import { lazyInject } from '@/inversify.config';
 import { WorkspaceRouteParams } from '@/Routes';
 import { AppAlerts } from '@/services/alerts/appAlerts';
 import { findTargetWorkspace } from '@/services/helpers/factoryFlow/findTargetWorkspace';
+import { SCC_MISMATCH_WARNING_MESSAGE } from '@/services/helpers/sccMismatch';
 import { AlertItem, DevWorkspaceStatus, LoaderTab } from '@/services/helpers/types';
 import { Workspace, WorkspaceAdapter } from '@/services/workspace-adapter';
 import { RootState } from '@/store';
@@ -270,13 +271,15 @@ class StartingStepStartWorkspace extends ProgressStep<Props, State> {
 
   /**
    * Check if there's an SCC mismatch between the workspace and server configuration.
-   * Returns true if there's a mismatch, false otherwise.
+   * Returns true if server has SCC configured but workspace has different or missing SCC.
    */
   private hasSccMismatch(workspace: Workspace): boolean {
     const { currentScc } = this.props;
-    if (!currentScc) {
+    // If server has no SCC requirement, no mismatch
+    if (currentScc === undefined) {
       return false;
     }
+    // Server has SCC requirement - check if workspace matches
     const containerScc = WorkspaceAdapter.getContainerScc(workspace.ref);
     return containerScc !== currentScc;
   }
@@ -298,27 +301,19 @@ class StartingStepStartWorkspace extends ProgressStep<Props, State> {
       );
     }
 
-    // Check for SCC mismatch
+    // Check for SCC mismatch - show warning but allow start
     if (this.hasSccMismatch(workspace)) {
       const documentationUrl = this.props.branding.docs.containerRunCapabilities;
-      const sccError: Error & { detailedMessage?: React.ReactNode } = new Error(
-        'Cannot start: Administrator enabled nested container capabilities. This workspace was created before this change and cannot be started.',
-      );
-      sccError.detailedMessage = (
-        <span>
-          Cannot start: Administrator enabled nested container capabilities. This workspace was
-          created before this change and cannot be started.
-          {documentationUrl && (
-            <>
-              {' '}
-              <a href={documentationUrl} target="_blank" rel="noopener noreferrer">
-                Learn more
-              </a>
-            </>
-          )}
-        </span>
-      );
-      throw sccError;
+      this.appAlerts.showAlert({
+        key: 'scc-mismatch-warning',
+        title: SCC_MISMATCH_WARNING_MESSAGE,
+        variant: AlertVariant.warning,
+        children: documentationUrl ? (
+          <a href={documentationUrl} target="_blank" rel="noopener noreferrer">
+            Learn more
+          </a>
+        ) : undefined,
+      });
     }
 
     if (this.state.warning !== undefined) {

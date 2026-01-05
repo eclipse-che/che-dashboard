@@ -110,12 +110,15 @@ class WorkspaceActionsProvider extends React.Component<Props, State> {
 
   /**
    * Check if there's an SCC mismatch between the workspace and server configuration.
+   * Returns true if server has SCC configured but workspace has different or missing SCC.
    */
   private hasSccMismatch(workspace: Workspace): boolean {
     const { currentScc } = this.props;
-    if (!currentScc) {
+    // If server has no SCC requirement, no mismatch
+    if (currentScc === undefined) {
       return false;
     }
+    // Server has SCC requirement - check if workspace matches
     const containerScc = WorkspaceAdapter.getContainerScc(workspace.ref);
     return containerScc !== currentScc;
   }
@@ -147,8 +150,8 @@ class WorkspaceActionsProvider extends React.Component<Props, State> {
       }
       case WorkspaceAction.START_DEBUG_AND_OPEN_LOGS: {
         if (this.hasSccMismatch(workspace)) {
-          throw new Error(
-            'Cannot start: Administrator enabled nested container capabilities. This workspace was created before this change and cannot be started.',
+          console.warn(
+            `Workspace "${workspace.name}" has SCC mismatch. The workspace was created with a different container SCC than what is currently configured.`,
           );
         }
         await this.props.startWorkspace(workspace, {
@@ -160,8 +163,8 @@ class WorkspaceActionsProvider extends React.Component<Props, State> {
       case WorkspaceAction.START_IN_BACKGROUND:
         {
           if (this.hasSccMismatch(workspace)) {
-            throw new Error(
-              'Cannot start: Administrator enabled nested container capabilities. This workspace was created before this change and cannot be started.',
+            console.warn(
+              `Workspace "${workspace.name}" has SCC mismatch. The workspace was created with a different container SCC than what is currently configured.`,
             );
           }
           await this.props.startWorkspace(workspace);

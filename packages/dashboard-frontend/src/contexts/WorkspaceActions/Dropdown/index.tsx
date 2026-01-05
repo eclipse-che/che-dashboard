@@ -29,9 +29,8 @@ import { lazyInject } from '@/inversify.config';
 import { AppAlerts } from '@/services/alerts/appAlerts';
 import getRandomString from '@/services/helpers/random';
 import { DevWorkspaceStatus, WorkspaceAction, WorkspaceStatus } from '@/services/helpers/types';
-import { Workspace, WorkspaceAdapter } from '@/services/workspace-adapter';
+import { Workspace } from '@/services/workspace-adapter';
 import { RootState } from '@/store';
-import { selectCurrentScc } from '@/store/ServerConfig/selectors';
 
 type OwnProps = {
   context: ActionContextType;
@@ -139,15 +138,6 @@ class WorkspaceActionsDropdownComponent extends React.PureComponent<Props, State
     });
   }
 
-  private hasSccMismatch(): boolean {
-    const { currentScc, workspace } = this.props;
-    if (!currentScc) {
-      return false;
-    }
-    const containerScc = WorkspaceAdapter.getContainerScc(workspace.ref);
-    return containerScc !== currentScc;
-  }
-
   private getDropdownItems(): React.ReactNode[] {
     const { workspace } = this.props;
     const isStopped =
@@ -155,7 +145,6 @@ class WorkspaceActionsDropdownComponent extends React.PureComponent<Props, State
       workspace.status === DevWorkspaceStatus.STOPPED ||
       workspace.status === DevWorkspaceStatus.FAILED;
     const isTerminating = workspace.status === DevWorkspaceStatus.TERMINATING;
-    const hasSccMismatch = this.hasSccMismatch();
 
     const getItem = (action: WorkspaceAction, isDisabled: boolean) => {
       return (
@@ -176,14 +165,12 @@ class WorkspaceActionsDropdownComponent extends React.PureComponent<Props, State
       );
     };
 
+    // Note: SCC mismatch does NOT disable actions - only shows warning when starting
     const items = [
-      getItem(WorkspaceAction.OPEN_IDE, isTerminating || hasSccMismatch),
-      getItem(
-        WorkspaceAction.START_DEBUG_AND_OPEN_LOGS,
-        isTerminating || !isStopped || hasSccMismatch,
-      ),
-      getItem(WorkspaceAction.START_IN_BACKGROUND, isTerminating || !isStopped || hasSccMismatch),
-      getItem(WorkspaceAction.RESTART_WORKSPACE, isTerminating || isStopped || hasSccMismatch),
+      getItem(WorkspaceAction.OPEN_IDE, isTerminating),
+      getItem(WorkspaceAction.START_DEBUG_AND_OPEN_LOGS, isTerminating || !isStopped),
+      getItem(WorkspaceAction.START_IN_BACKGROUND, isTerminating || !isStopped),
+      getItem(WorkspaceAction.RESTART_WORKSPACE, isTerminating || isStopped),
       getItem(WorkspaceAction.STOP_WORKSPACE, isTerminating || isStopped),
       getItem(WorkspaceAction.DELETE_WORKSPACE, isTerminating),
     ];
@@ -217,9 +204,8 @@ class WorkspaceActionsDropdownComponent extends React.PureComponent<Props, State
   }
 }
 
-const mapStateToProps = (state: RootState) => ({
-  currentScc: selectCurrentScc(state),
-});
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const mapStateToProps = (_state: RootState) => ({});
 
 const connector = connect(mapStateToProps);
 
