@@ -614,7 +614,6 @@ function getComponent(
   const component = (
     <WorkspaceActionsDropdownComponent
       context={context}
-      currentScc={undefined}
       dispatch={jest.fn()}
       onAction={mockOnAction}
       workspace={workspace}

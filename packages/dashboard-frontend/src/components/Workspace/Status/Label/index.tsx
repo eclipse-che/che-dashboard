@@ -15,8 +15,9 @@ import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 
 import { CheTooltip } from '@/components/CheTooltip';
-import { useStatusIcon } from '@/components/Workspace/Status/getStatusIcon';
+import { getSccMismatchTooltip, useStatusIcon } from '@/components/Workspace/Status/getStatusIcon';
 import styles from '@/components/Workspace/Status/index.module.css';
+import { hasSccMismatch } from '@/services/helpers/sccMismatch';
 import {
   DeprecatedWorkspaceStatus,
   DevWorkspaceStatus,
@@ -37,11 +38,12 @@ const WorkspaceStatusLabelComponent: React.FC<Props> = ({
   currentScc,
   branding,
 }) => {
-  const hasSccMismatch = currentScc ? containerScc !== currentScc : false;
+  // Only check SCC mismatch for stopped workspaces
+  const isStopped = status === DevWorkspaceStatus.STOPPED;
+  const sccMismatch = isStopped && hasSccMismatch(containerScc, currentScc);
 
-  // Use Failed status if SCC mismatch
-  const displayStatus = hasSccMismatch ? DevWorkspaceStatus.FAILED : status;
-  const icon = useStatusIcon(displayStatus);
+  // Show actual status, add warning icon only if SCC mismatch
+  const displayStatus = status;
 
   let statusLabelColor: LabelProps['color'];
   switch (displayStatus) {
@@ -69,33 +71,18 @@ const WorkspaceStatusLabelComponent: React.FC<Props> = ({
 
   // Build tooltip content
   let tooltipContent: React.ReactNode;
-  if (hasSccMismatch) {
-    const documentationUrl = branding.docs.containerRunCapabilities;
-    tooltipContent = (
-      <span>
-        Cannot start: Administrator enabled nested container capabilities. This workspace was created
-        before this change and cannot be started.
-        {documentationUrl && (
-          <>
-            {' '}
-            <a
-              href={documentationUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              onClick={event => event.stopPropagation()}
-              style={{ color: '#73bcf7', textDecoration: 'underline' }}
-            >
-              Learn more
-            </a>
-          </>
-        )}
-      </span>
-    );
+  if (sccMismatch) {
+    tooltipContent = getSccMismatchTooltip(branding.docs.containerRunCapabilities);
   } else if (displayStatus === 'Deprecated') {
     tooltipContent = 'Deprecated workspace';
   } else {
     tooltipContent = displayStatus;
   }
+
+  // Use warning icon for SCC mismatch, otherwise use regular status icon
+  const statusIcon = useStatusIcon(displayStatus);
+  const warningIcon = useStatusIcon(DevWorkspaceStatus.FAILED);
+  const icon = sccMismatch ? warningIcon : statusIcon;
 
   return (
     <CheTooltip content={tooltipContent}>

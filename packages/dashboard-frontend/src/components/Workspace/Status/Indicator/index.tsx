@@ -14,8 +14,9 @@ import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 
 import { CheTooltip } from '@/components/CheTooltip';
-import { useStatusIcon } from '@/components/Workspace/Status/getStatusIcon';
+import { getSccMismatchTooltip, useStatusIcon } from '@/components/Workspace/Status/getStatusIcon';
 import styles from '@/components/Workspace/Status/index.module.css';
+import { hasSccMismatch } from '@/services/helpers/sccMismatch';
 import {
   DeprecatedWorkspaceStatus,
   DevWorkspaceStatus,
@@ -37,42 +38,24 @@ const WorkspaceStatusIndicatorComponent: React.FC<Props> = ({
   currentScc,
 }) => {
   const icon = useStatusIcon(status);
-  const failedIcon = useStatusIcon(DevWorkspaceStatus.FAILED);
+  const warningIcon = useStatusIcon(DevWorkspaceStatus.FAILED);
 
-  const hasSccMismatch = currentScc ? containerScc !== currentScc : false;
+  // Only check SCC mismatch for stopped workspaces
+  const isStopped = status === DevWorkspaceStatus.STOPPED;
+  const sccMismatch = isStopped && hasSccMismatch(containerScc, currentScc);
 
-  // If SCC mismatch, show Failed status with special tooltip
-  if (hasSccMismatch) {
-    const documentationUrl = branding.docs.containerRunCapabilities;
-    const tooltip = (
-      <span>
-        Cannot start: Administrator enabled nested container capabilities. This workspace was
-        created before this change and cannot be started.
-        {documentationUrl && (
-          <>
-            {' '}
-            <a
-              href={documentationUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              onClick={event => event.stopPropagation()}
-              style={{ color: '#73bcf7', textDecoration: 'underline' }}
-            >
-              Learn more
-            </a>
-          </>
-        )}
-      </span>
-    );
+  // If SCC mismatch, show warning triangle icon with tooltip
+  if (sccMismatch) {
+    const tooltip = getSccMismatchTooltip(branding.docs.containerRunCapabilities);
 
     return (
       <CheTooltip content={tooltip}>
         <span
           className={styles.statusIndicator}
           data-testid="workspace-status-indicator"
-          aria-label="Workspace status is Failed"
+          aria-label="Workspace status has SCC mismatch warning"
         >
-          {failedIcon}
+          {warningIcon}
         </span>
       </CheTooltip>
     );
