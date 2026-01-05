@@ -21,6 +21,7 @@ import React from 'react';
 import styles from '@/components/Workspace/Status/index.module.css';
 import { StoppedIcon } from '@/components/Workspace/Status/StoppedIcon';
 import { useTheme } from '@/contexts/ThemeContext';
+import { SCC_MISMATCH_WARNING_MESSAGE } from '@/services/helpers/sccMismatch';
 import { DevWorkspaceStatus, WorkspaceStatus } from '@/services/helpers/types';
 
 // Theme-aware grey colors using PatternFly 6 tokens
@@ -80,6 +81,32 @@ export function getStatusIcon(status: string, isDarkTheme: boolean) {
       );
   }
   return icon;
+}
+
+/**
+ * Returns the tooltip content for SCC mismatch warning.
+ * @param documentationUrl - Optional URL to the documentation about container run capabilities.
+ */
+export function getSccMismatchTooltip(documentationUrl: string | undefined): React.ReactNode {
+  return (
+    <span>
+      {SCC_MISMATCH_WARNING_MESSAGE}
+      {documentationUrl && (
+        <>
+          {' '}
+          <a
+            href={documentationUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={event => event.stopPropagation()}
+            style={{ color: '#73bcf7', textDecoration: 'underline' }}
+          >
+            Learn more
+          </a>
+        </>
+      )}
+    </span>
+  );
 }
 
 // Hook version that automatically uses theme context
