@@ -545,147 +545,7 @@ exports[`Workspace indicator component DevWorkspaces should render STOPPED statu
 </div>
 `;
 
-exports[`Workspace indicator component SCC Mismatch should render FAILED status with SCC mismatch tooltip when containerScc does not match currentScc 1`] = `
-<div
-  data-testid="patternfly-tooltip"
->
-  <span
-    data-testid="tooltip-props"
-  >
-    {"isContentLeftAligned":true,"className":"tooltip"}
-  </span>
-  <div
-    data-testid="tooltip-content"
-  >
-    <span>
-      Cannot start: Administrator enabled nested container capabilities. This workspace was created before this change and cannot be started.
-       
-      <a
-        href="https://eclipse.dev/che/docs/stable/administration-guide/enabling-container-run-capabilities/"
-        onClick={[Function]}
-        rel="noopener noreferrer"
-        style={
-          {
-            "color": "#73bcf7",
-            "textDecoration": "underline",
-          }
-        }
-        target="_blank"
-      >
-        Learn more
-      </a>
-    </span>
-  </div>
-  <div
-    data-testid="tooltip-placed-to"
-  >
-    <span
-      aria-label="Workspace status is Failed"
-      className="statusIndicator"
-      data-testid="workspace-status-indicator"
-    >
-      <span
-        className="pf-c-icon pf-m-inline"
-      >
-        <span
-          className="pf-c-icon__content pf-m-warning"
-        >
-          <svg
-            aria-hidden={true}
-            aria-labelledby={null}
-            fill="currentColor"
-            height="1em"
-            role="img"
-            style={
-              {
-                "verticalAlign": "-0.125em",
-              }
-            }
-            viewBox="0 0 576 512"
-            width="1em"
-          >
-            <path
-              d="M569.517 440.013C587.975 472.007 564.806 512 527.94 512H48.054c-36.937 0-59.999-40.055-41.577-71.987L246.423 23.985c18.467-32.009 64.72-31.951 83.154 0l239.94 416.028zM288 354c-25.405 0-46 20.595-46 46s20.595 46 46 46 46-20.595 46-46-20.595-46-46-46zm-43.673-165.346l7.418 136c.347 6.364 5.609 11.346 11.982 11.346h48.546c6.373 0 11.635-4.982 11.982-11.346l7.418-136c.375-6.874-5.098-12.654-11.982-12.654h-63.383c-6.884 0-12.356 5.78-11.981 12.654z"
-            />
-          </svg>
-        </span>
-      </span>
-    </span>
-  </div>
-</div>
-`;
-
-exports[`Workspace indicator component SCC Mismatch should render normal status when containerScc is undefined 1`] = `
-<div
-  data-testid="patternfly-tooltip"
->
-  <span
-    data-testid="tooltip-props"
-  >
-    {"isContentLeftAligned":true,"className":"tooltip"}
-  </span>
-  <div
-    data-testid="tooltip-content"
-  >
-    <span>
-      Cannot start: Administrator enabled nested container capabilities. This workspace was created before this change and cannot be started.
-       
-      <a
-        href="https://eclipse.dev/che/docs/stable/administration-guide/enabling-container-run-capabilities/"
-        onClick={[Function]}
-        rel="noopener noreferrer"
-        style={
-          {
-            "color": "#73bcf7",
-            "textDecoration": "underline",
-          }
-        }
-        target="_blank"
-      >
-        Learn more
-      </a>
-    </span>
-  </div>
-  <div
-    data-testid="tooltip-placed-to"
-  >
-    <span
-      aria-label="Workspace status is Failed"
-      className="statusIndicator"
-      data-testid="workspace-status-indicator"
-    >
-      <span
-        className="pf-c-icon pf-m-inline"
-      >
-        <span
-          className="pf-c-icon__content pf-m-warning"
-        >
-          <svg
-            aria-hidden={true}
-            aria-labelledby={null}
-            fill="currentColor"
-            height="1em"
-            role="img"
-            style={
-              {
-                "verticalAlign": "-0.125em",
-              }
-            }
-            viewBox="0 0 576 512"
-            width="1em"
-          >
-            <path
-              d="M569.517 440.013C587.975 472.007 564.806 512 527.94 512H48.054c-36.937 0-59.999-40.055-41.577-71.987L246.423 23.985c18.467-32.009 64.72-31.951 83.154 0l239.94 416.028zM288 354c-25.405 0-46 20.595-46 46s20.595 46 46 46 46-20.595 46-46-20.595-46-46-46zm-43.673-165.346l7.418 136c.347 6.364 5.609 11.346 11.982 11.346h48.546c6.373 0 11.635-4.982 11.982-11.346l7.418-136c.375-6.874-5.098-12.654-11.982-12.654h-63.383c-6.884 0-12.356 5.78-11.981 12.654z"
-            />
-          </svg>
-        </span>
-      </span>
-    </span>
-  </div>
-</div>
-`;
-
-exports[`Workspace indicator component SCC Mismatch should render normal status when containerScc matches currentScc 1`] = `
+exports[`Workspace indicator component SCC Mismatch should render normal status for RUNNING workspace even with SCC mismatch 1`] = `
 <div
   data-testid="patternfly-tooltip"
 >
@@ -729,6 +589,264 @@ exports[`Workspace indicator component SCC Mismatch should render normal status 
           >
             <path
               d="M512.1,0 C229.7,0 0,229.8 0,512 C0,794.3 229.8,1024 512.1,1024 C794.4,1024 1024,794.3 1024,512 C1024,229.7 794.4,0 512.1,0 Z M512,896 C300.2,896 128,723.9 128,512 C128,300.3 300.2,128 512,128 C723.7,128 896,300.2 896,512 C896,723.8 723.7,896 512,896 Z M512,224 C671.1,224 800,352.9 800,512 C800,671.1 671.1,800 512,800 C352.9,800 224,671.1 224,512 C224,352.9 352.9,224 512,224"
+            />
+          </svg>
+        </span>
+      </span>
+    </span>
+  </div>
+</div>
+`;
+
+exports[`Workspace indicator component SCC Mismatch should render normal status when containerScc matches currentScc 1`] = `
+<div
+  data-testid="patternfly-tooltip"
+>
+  <span
+    data-testid="tooltip-props"
+  >
+    {"isContentLeftAligned":true,"className":"tooltip"}
+  </span>
+  <div
+    data-testid="tooltip-content"
+  >
+    STOPPED
+  </div>
+  <div
+    data-testid="tooltip-placed-to"
+  >
+    <span
+      aria-label="Workspace status is Stopped"
+      className="statusIndicator"
+      data-testid="workspace-status-indicator"
+    >
+      <span
+        className="pf-c-icon pf-m-inline"
+      >
+        <span
+          className="pf-c-icon__content pf-m-default"
+        >
+          <svg
+            aria-hidden="true"
+            fill="var(--pf-global--palette--black-500)"
+            height="1em"
+            role="img"
+            style={
+              {
+                "verticalAlign": "-0.125em",
+              }
+            }
+            viewBox="0 0 16 16"
+            width="1em"
+          >
+            <path
+              d="M8.001,0 C3.589,0 0,3.590 0,8 C0,12.410 3.590,16 8.001,16 C12.412,16 16,12.410
+              16,8 C16,3.589 12.4125,0 8.001,0 Z M8,14 C4.690,14 2,11.310 2,8 C2,4.692 4.690,2
+              8,2 C11.307,2 14,4.690 14,8 C14,11.309 11.307,14 8,14 Z"
+            />
+            <path
+              d="M8.001,3.5 C5.519,3.5 3.5,5.520 3.5,8 C3.5,10.481 5.520,12.5 8.000,12.5 C10.482,12.5 12.5,10.481
+              12.5,8 C12.5,5.519 10.482,3.5 8.000,3.5 Z M8,10.75 C6.483,10.75 5.25,9.517 5.25,8 C5.25,6.484
+              6.483,5.25 8,5.25 C9.516,5.25 10.75,6.483 10.75,8 C10.75,9.516 9.516,10.75 8,10.75 Z"
+            />
+          </svg>
+        </span>
+      </span>
+    </span>
+  </div>
+</div>
+`;
+
+exports[`Workspace indicator component SCC Mismatch should render normal status when currentScc is undefined (server has no SCC requirement) 1`] = `
+<div
+  data-testid="patternfly-tooltip"
+>
+  <span
+    data-testid="tooltip-props"
+  >
+    {"isContentLeftAligned":true,"className":"tooltip"}
+  </span>
+  <div
+    data-testid="tooltip-content"
+  >
+    STOPPED
+  </div>
+  <div
+    data-testid="tooltip-placed-to"
+  >
+    <span
+      aria-label="Workspace status is Stopped"
+      className="statusIndicator"
+      data-testid="workspace-status-indicator"
+    >
+      <span
+        className="pf-c-icon pf-m-inline"
+      >
+        <span
+          className="pf-c-icon__content pf-m-default"
+        >
+          <svg
+            aria-hidden="true"
+            fill="var(--pf-global--palette--black-500)"
+            height="1em"
+            role="img"
+            style={
+              {
+                "verticalAlign": "-0.125em",
+              }
+            }
+            viewBox="0 0 16 16"
+            width="1em"
+          >
+            <path
+              d="M8.001,0 C3.589,0 0,3.590 0,8 C0,12.410 3.590,16 8.001,16 C12.412,16 16,12.410
+              16,8 C16,3.589 12.4125,0 8.001,0 Z M8,14 C4.690,14 2,11.310 2,8 C2,4.692 4.690,2
+              8,2 C11.307,2 14,4.690 14,8 C14,11.309 11.307,14 8,14 Z"
+            />
+            <path
+              d="M8.001,3.5 C5.519,3.5 3.5,5.520 3.5,8 C3.5,10.481 5.520,12.5 8.000,12.5 C10.482,12.5 12.5,10.481
+              12.5,8 C12.5,5.519 10.482,3.5 8.000,3.5 Z M8,10.75 C6.483,10.75 5.25,9.517 5.25,8 C5.25,6.484
+              6.483,5.25 8,5.25 C9.516,5.25 10.75,6.483 10.75,8 C10.75,9.516 9.516,10.75 8,10.75 Z"
+            />
+          </svg>
+        </span>
+      </span>
+    </span>
+  </div>
+</div>
+`;
+
+exports[`Workspace indicator component SCC Mismatch should render warning for STOPPED workspace when containerScc is undefined but currentScc is defined 1`] = `
+<div
+  data-testid="patternfly-tooltip"
+>
+  <span
+    data-testid="tooltip-props"
+  >
+    {"isContentLeftAligned":true,"className":"tooltip"}
+  </span>
+  <div
+    data-testid="tooltip-content"
+  >
+    <span>
+      The workspace was created with a different container SCC (Security Context Constraint) than what is currently configured. The workspace may fail to start.
+       
+      <a
+        href="https://eclipse.dev/che/docs/stable/administration-guide/enabling-container-run-capabilities/"
+        onClick={[Function]}
+        rel="noopener noreferrer"
+        style={
+          {
+            "color": "#73bcf7",
+            "textDecoration": "underline",
+          }
+        }
+        target="_blank"
+      >
+        Learn more
+      </a>
+    </span>
+  </div>
+  <div
+    data-testid="tooltip-placed-to"
+  >
+    <span
+      aria-label="Workspace status has SCC mismatch warning"
+      className="statusIndicator"
+      data-testid="workspace-status-indicator"
+    >
+      <span
+        className="pf-c-icon pf-m-inline"
+      >
+        <span
+          className="pf-c-icon__content pf-m-warning"
+        >
+          <svg
+            aria-hidden={true}
+            aria-labelledby={null}
+            fill="currentColor"
+            height="1em"
+            role="img"
+            style={
+              {
+                "verticalAlign": "-0.125em",
+              }
+            }
+            viewBox="0 0 576 512"
+            width="1em"
+          >
+            <path
+              d="M569.517 440.013C587.975 472.007 564.806 512 527.94 512H48.054c-36.937 0-59.999-40.055-41.577-71.987L246.423 23.985c18.467-32.009 64.72-31.951 83.154 0l239.94 416.028zM288 354c-25.405 0-46 20.595-46 46s20.595 46 46 46 46-20.595 46-46-20.595-46-46-46zm-43.673-165.346l7.418 136c.347 6.364 5.609 11.346 11.982 11.346h48.546c6.373 0 11.635-4.982 11.982-11.346l7.418-136c.375-6.874-5.098-12.654-11.982-12.654h-63.383c-6.884 0-12.356 5.78-11.981 12.654z"
+            />
+          </svg>
+        </span>
+      </span>
+    </span>
+  </div>
+</div>
+`;
+
+exports[`Workspace indicator component SCC Mismatch should render warning triangle icon for STOPPED workspace when containerScc does not match currentScc 1`] = `
+<div
+  data-testid="patternfly-tooltip"
+>
+  <span
+    data-testid="tooltip-props"
+  >
+    {"isContentLeftAligned":true,"className":"tooltip"}
+  </span>
+  <div
+    data-testid="tooltip-content"
+  >
+    <span>
+      The workspace was created with a different container SCC (Security Context Constraint) than what is currently configured. The workspace may fail to start.
+       
+      <a
+        href="https://eclipse.dev/che/docs/stable/administration-guide/enabling-container-run-capabilities/"
+        onClick={[Function]}
+        rel="noopener noreferrer"
+        style={
+          {
+            "color": "#73bcf7",
+            "textDecoration": "underline",
+          }
+        }
+        target="_blank"
+      >
+        Learn more
+      </a>
+    </span>
+  </div>
+  <div
+    data-testid="tooltip-placed-to"
+  >
+    <span
+      aria-label="Workspace status has SCC mismatch warning"
+      className="statusIndicator"
+      data-testid="workspace-status-indicator"
+    >
+      <span
+        className="pf-c-icon pf-m-inline"
+      >
+        <span
+          className="pf-c-icon__content pf-m-warning"
+        >
+          <svg
+            aria-hidden={true}
+            aria-labelledby={null}
+            fill="currentColor"
+            height="1em"
+            role="img"
+            style={
+              {
+                "verticalAlign": "-0.125em",
+              }
+            }
+            viewBox="0 0 576 512"
+            width="1em"
+          >
+            <path
+              d="M569.517 440.013C587.975 472.007 564.806 512 527.94 512H48.054c-36.937 0-59.999-40.055-41.577-71.987L246.423 23.985c18.467-32.009 64.72-31.951 83.154 0l239.94 416.028zM288 354c-25.405 0-46 20.595-46 46s20.595 46 46 46 46-20.595 46-46-20.595-46-46-46zm-43.673-165.346l7.418 136c.347 6.364 5.609 11.346 11.982 11.346h48.546c6.373 0 11.635-4.982 11.982-11.346l7.418-136c.375-6.874-5.098-12.654-11.982-12.654h-63.383c-6.884 0-12.356 5.78-11.981 12.654z"
             />
           </svg>
         </span>

@@ -88,18 +88,39 @@ describe('The workspace status label component', () => {
   });
 
   describe('SCC Mismatch', () => {
-    it('should render FAILED status when containerScc does not match currentScc', () => {
+    it('should render warning tooltip for STOPPED workspace when containerScc does not match currentScc', () => {
       const element = (
         <WorkspaceStatusLabel status={DevWorkspaceStatus.STOPPED} containerScc="restricted" />
       );
       expect(getComponentSnapshot(element, 'anyuid')).toMatchSnapshot();
     });
 
-    it('should render normal status when containerScc matches currentScc', () => {
+    it('should render warning for STOPPED workspace when containerScc is undefined but currentScc is defined', () => {
       const element = (
-        <WorkspaceStatusLabel status={DevWorkspaceStatus.RUNNING} containerScc="anyuid" />
+        <WorkspaceStatusLabel status={DevWorkspaceStatus.STOPPED} containerScc={undefined} />
       );
       expect(getComponentSnapshot(element, 'anyuid')).toMatchSnapshot();
+    });
+
+    it('should render normal status for RUNNING workspace even with SCC mismatch', () => {
+      const element = (
+        <WorkspaceStatusLabel status={DevWorkspaceStatus.RUNNING} containerScc="restricted" />
+      );
+      expect(getComponentSnapshot(element, 'anyuid')).toMatchSnapshot();
+    });
+
+    it('should render normal status when containerScc matches currentScc', () => {
+      const element = (
+        <WorkspaceStatusLabel status={DevWorkspaceStatus.STOPPED} containerScc="anyuid" />
+      );
+      expect(getComponentSnapshot(element, 'anyuid')).toMatchSnapshot();
+    });
+
+    it('should render normal status when currentScc is undefined (server has no SCC requirement)', () => {
+      const element = (
+        <WorkspaceStatusLabel status={DevWorkspaceStatus.STOPPED} containerScc={undefined} />
+      );
+      expect(getComponentSnapshot(element, undefined)).toMatchSnapshot();
     });
   });
 });
