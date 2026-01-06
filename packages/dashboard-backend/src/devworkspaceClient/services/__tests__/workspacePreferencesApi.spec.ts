@@ -95,13 +95,16 @@ describe('Workspace Preferences API Service', () => {
 
     expect(spyReadNamespacedConfigMap).toHaveBeenCalled();
     expect(spyPatchNamespacedConfigMap).toHaveBeenCalled();
-    expect(spyPatchNamespacedConfigMap).toHaveBeenCalledWith({
-      name: DEV_WORKSPACE_PREFERENCES_CONFIGMAP,
-      namespace: 'user-che',
-      body: {
-        data: { [SKIP_AUTHORIZATION_KEY]: '[github, bitbucket]' },
+    expect(spyPatchNamespacedConfigMap).toHaveBeenCalledWith(
+      {
+        name: DEV_WORKSPACE_PREFERENCES_CONFIGMAP,
+        namespace: 'user-che',
+        body: {
+          data: { [SKIP_AUTHORIZATION_KEY]: '[github, bitbucket]' },
+        },
       },
-    });
+      expect.anything(),
+    );
   });
 
   test('add a very first trusted source URL to trusted-source workspace preferences', async () => {
@@ -113,16 +116,19 @@ describe('Workspace Preferences API Service', () => {
 
     expect(spyReadNamespacedConfigMap).toHaveBeenCalled();
     expect(spyPatchNamespacedConfigMap).toHaveBeenCalled();
-    expect(spyPatchNamespacedConfigMap).toHaveBeenCalledWith({
-      name: DEV_WORKSPACE_PREFERENCES_CONFIGMAP,
-      namespace,
-      body: {
-        data: {
-          [SKIP_AUTHORIZATION_KEY]: '[]',
-          [TRUSTED_SOURCES_KEY]: '["source-url"]',
+    expect(spyPatchNamespacedConfigMap).toHaveBeenCalledWith(
+      {
+        name: DEV_WORKSPACE_PREFERENCES_CONFIGMAP,
+        namespace,
+        body: {
+          data: {
+            [SKIP_AUTHORIZATION_KEY]: '[]',
+            [TRUSTED_SOURCES_KEY]: '["source-url"]',
+          },
         },
       },
-    });
+      expect.anything(),
+    );
   });
 
   test('add a new trusted source URL to trusted-source workspace preferences', async () => {
@@ -136,16 +142,19 @@ describe('Workspace Preferences API Service', () => {
 
     expect(spyReadNamespacedConfigMap).toHaveBeenCalled();
     expect(spyPatchNamespacedConfigMap).toHaveBeenCalled();
-    expect(spyPatchNamespacedConfigMap).toHaveBeenCalledWith({
-      name: DEV_WORKSPACE_PREFERENCES_CONFIGMAP,
-      namespace,
-      body: {
-        data: {
-          [SKIP_AUTHORIZATION_KEY]: '[]',
-          [TRUSTED_SOURCES_KEY]: '["source1","source2","source3"]',
+    expect(spyPatchNamespacedConfigMap).toHaveBeenCalledWith(
+      {
+        name: DEV_WORKSPACE_PREFERENCES_CONFIGMAP,
+        namespace,
+        body: {
+          data: {
+            [SKIP_AUTHORIZATION_KEY]: '[]',
+            [TRUSTED_SOURCES_KEY]: '["source1","source2","source3"]',
+          },
         },
       },
-    });
+      expect.anything(),
+    );
   });
 
   test('add trust all to trusted-source workspace preferences when there is some trusted URLs', async () => {
@@ -159,16 +168,19 @@ describe('Workspace Preferences API Service', () => {
 
     expect(spyReadNamespacedConfigMap).toHaveBeenCalled();
     expect(spyPatchNamespacedConfigMap).toHaveBeenCalled();
-    expect(spyPatchNamespacedConfigMap).toHaveBeenCalledWith({
-      name: DEV_WORKSPACE_PREFERENCES_CONFIGMAP,
-      namespace,
-      body: {
-        data: {
-          [SKIP_AUTHORIZATION_KEY]: '[]',
-          [TRUSTED_SOURCES_KEY]: '"*"',
+    expect(spyPatchNamespacedConfigMap).toHaveBeenCalledWith(
+      {
+        name: DEV_WORKSPACE_PREFERENCES_CONFIGMAP,
+        namespace,
+        body: {
+          data: {
+            [SKIP_AUTHORIZATION_KEY]: '[]',
+            [TRUSTED_SOURCES_KEY]: '"*"',
+          },
         },
       },
-    });
+      expect.anything(),
+    );
   });
 
   test('delete all trusted sources from trusted-source workspace preferences', async () => {
@@ -182,14 +194,17 @@ describe('Workspace Preferences API Service', () => {
 
     expect(spyReadNamespacedConfigMap).toHaveBeenCalled();
     expect(spyPatchNamespacedConfigMap).toHaveBeenCalled();
-    expect(spyPatchNamespacedConfigMap).toHaveBeenCalledWith({
-      name: DEV_WORKSPACE_PREFERENCES_CONFIGMAP,
-      namespace,
-      body: {
-        data: {
-          [SKIP_AUTHORIZATION_KEY]: '[]',
+    expect(spyPatchNamespacedConfigMap).toHaveBeenCalledWith(
+      {
+        name: DEV_WORKSPACE_PREFERENCES_CONFIGMAP,
+        namespace,
+        body: {
+          data: {
+            [SKIP_AUTHORIZATION_KEY]: '[]',
+          },
         },
       },
-    });
+      expect.anything(),
+    );
   });
 });

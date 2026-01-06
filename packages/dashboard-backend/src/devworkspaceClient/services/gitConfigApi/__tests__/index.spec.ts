@@ -168,18 +168,21 @@ email=""
 
         expect(spyReadNamespacedConfigMap).toHaveBeenCalledTimes(1);
         expect(spyPatchNamespacedConfigMap).toHaveBeenCalledTimes(1);
-        expect(spyPatchNamespacedConfigMap).toHaveBeenCalledWith({
-          name: 'workspace-userdata-gitconfig-configmap',
-          namespace: 'user-che',
-          body: {
-            data: {
-              gitconfig: `[user]
+        expect(spyPatchNamespacedConfigMap).toHaveBeenCalledWith(
+          {
+            name: 'workspace-userdata-gitconfig-configmap',
+            namespace: 'user-che',
+            body: {
+              data: {
+                gitconfig: `[user]
 email="user-2@che"
 name="User Two"
 `,
+              },
             },
           },
-        });
+          expect.anything(),
+        );
       });
 
       it('should throw when can`t read the ConfigMap', async () => {

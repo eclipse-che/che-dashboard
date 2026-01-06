@@ -142,14 +142,17 @@ describe('DevWorkspace API Service', () => {
     const res = await devWorkspaceService.patch(namespace, name, patches);
     expect(res.devWorkspace).toStrictEqual(getDevWorkspace());
     expect(res.headers).toStrictEqual({});
-    expect(spyPatchNamespacedCustomObject).toHaveBeenCalledWith({
-      group: devworkspaceGroup,
-      version: devworkspaceLatestVersion,
-      namespace,
-      plural: devworkspacePlural,
-      name,
-      body: patches,
-    });
+    expect(spyPatchNamespacedCustomObject).toHaveBeenCalledWith(
+      {
+        group: devworkspaceGroup,
+        version: devworkspaceLatestVersion,
+        namespace,
+        plural: devworkspacePlural,
+        name,
+        body: patches,
+      },
+      expect.anything(),
+    );
   });
 
   test('deleting', async () => {

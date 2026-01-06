@@ -12,6 +12,7 @@
 
 import * as k8s from '@kubernetes/client-node';
 
+import { STRATEGIC_MERGE_PATCH_OPTIONS } from '@/devworkspaceClient/services/helpers/patchOptions';
 import { retryableExec } from '@/devworkspaceClient/services/helpers/retryableExec';
 
 export type CoreV1API = Pick<
@@ -46,8 +47,8 @@ export function prepareCoreV1API(kc: k8s.KubeConfig): CoreV1API {
       retryableExec(() => coreV1API.listNamespacedPod(...args)),
     listNamespacedSecret: (...args: Parameters<typeof coreV1API.listNamespacedSecret>) =>
       retryableExec(() => coreV1API.listNamespacedSecret(...args)),
-    patchNamespacedConfigMap: (...args: Parameters<typeof coreV1API.patchNamespacedConfigMap>) =>
-      retryableExec(() => coreV1API.patchNamespacedConfigMap(...args)),
+    patchNamespacedConfigMap: (param: Parameters<typeof coreV1API.patchNamespacedConfigMap>[0]) =>
+      retryableExec(() => coreV1API.patchNamespacedConfigMap(param, STRATEGIC_MERGE_PATCH_OPTIONS)),
     readNamespacedConfigMap: (...args: Parameters<typeof coreV1API.readNamespacedConfigMap>) =>
       retryableExec(() => coreV1API.readNamespacedConfigMap(...args)),
     readNamespacedPod: (...args: Parameters<typeof coreV1API.readNamespacedPod>) =>

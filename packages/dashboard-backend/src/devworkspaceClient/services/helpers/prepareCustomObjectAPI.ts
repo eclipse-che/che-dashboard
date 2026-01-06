@@ -12,6 +12,7 @@
 
 import * as k8s from '@kubernetes/client-node';
 
+import { JSON_PATCH_OPTIONS } from '@/devworkspaceClient/services/helpers/patchOptions';
 import { retryableExec } from '@/devworkspaceClient/services/helpers/retryableExec';
 
 export type CustomObjectAPI = Pick<
@@ -50,7 +51,8 @@ export function prepareCustomObjectAPI(kc: k8s.KubeConfig): CustomObjectAPI {
       ...args: Parameters<typeof customObjectsApi.deleteNamespacedCustomObject>
     ) => retryableExec(() => customObjectsApi.deleteNamespacedCustomObject(...args)),
     patchNamespacedCustomObject: (
-      ...args: Parameters<typeof customObjectsApi.patchNamespacedCustomObject>
-    ) => retryableExec(() => customObjectsApi.patchNamespacedCustomObject(...args)),
+      param: Parameters<typeof customObjectsApi.patchNamespacedCustomObject>[0],
+    ) =>
+      retryableExec(() => customObjectsApi.patchNamespacedCustomObject(param, JSON_PATCH_OPTIONS)),
   };
 }
