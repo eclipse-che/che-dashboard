@@ -391,7 +391,7 @@
 | [`public-encrypt@4.0.3`](https://github.com/crypto-browserify/publicEncrypt.git) | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/public-encrypt/4.0.3) |
 | `pump@3.0.0` | MIT | #21946 |
 | [`punycode@2.3.1`](https://github.com/mathiasbynens/punycode.js.git) | MIT | #6373 |
-| [`qs@6.14.0`](https://github.com/ljharb/qs.git) | BSD-3-Clause | #18871 |
+| [`qs@6.14.1`](https://github.com/ljharb/qs.git) | BSD-3-Clause | #18871 |
 | [`qs@6.5.3`](https://github.com/ljharb/qs.git) | BSD-3-Clause | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/qs/6.5.3) |
 | [`querystring@0.2.1`](git://github.com/Gozala/querystring.git) | MIT | #1054 |
 | [`querystringify@2.2.0`](https://github.com/unshiftio/querystringify) | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/querystringify/2.2.0) |
