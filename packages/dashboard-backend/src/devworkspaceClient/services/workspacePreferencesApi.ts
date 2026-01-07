@@ -86,7 +86,7 @@ export class WorkspacePreferencesApiService implements IWorkspacePreferencesApi 
       });
     } catch (error) {
       const message = `Unable to update workspace preferences in the namespace "${namespace}"`;
-      throw createError(undefined, ERROR_LABEL, message);
+      throw createError(error, ERROR_LABEL, message);
     }
   }
 
