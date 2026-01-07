@@ -275,10 +275,6 @@ class StartingStepStartWorkspace extends ProgressStep<Props, State> {
    */
   private hasSccMismatch(workspace: Workspace): boolean {
     const { currentScc } = this.props;
-    // If server has no SCC requirement, no mismatch
-    if (currentScc === undefined) {
-      return false;
-    }
     // Server has SCC requirement - check if workspace matches
     const containerScc = WorkspaceAdapter.getContainerScc(workspace.ref);
     return containerScc !== currentScc;
