@@ -24,6 +24,7 @@ import {
 import WorkspaceActionsProvider from '@/contexts/WorkspaceActions/Provider';
 import { container } from '@/inversify.config';
 import getComponentRenderer, { screen } from '@/services/__mocks__/getComponentRenderer';
+import { DEVWORKSPACE_CONTAINER_SCC_ATTR } from '@/services/devfileApi/devWorkspace/spec/template';
 import { WorkspaceAction } from '@/services/helpers/types';
 import { TabManager } from '@/services/tabManager';
 import { AppThunk } from '@/store';
@@ -323,6 +324,138 @@ describe('WorkspaceActionsProvider', () => {
       expect(mockRestartWorkspace).toHaveBeenCalledWith(
         expect.objectContaining({ uid: wantDelete[0] }),
       );
+    });
+
+    describe('SCC mismatch warning', () => {
+      let storeWithScc: Store;
+
+      beforeEach(() => {
+        storeWithScc = new MockStoreBuilder()
+          .withDevWorkspaces({
+            workspaces: [
+              new DevWorkspaceBuilder()
+                .withName('wksp-' + wantDelete[0])
+                .withNamespace('user-che')
+                .withUID(wantDelete[0])
+                .withTemplateAttributes({
+                  [DEVWORKSPACE_CONTAINER_SCC_ATTR]: 'restricted', // Workspace has different SCC
+                })
+                .build(),
+              new DevWorkspaceBuilder()
+                .withName('wksp-' + wantDelete[1])
+                .withNamespace('user-che')
+                .withUID(wantDelete[1])
+                .build(),
+            ],
+          })
+          .withDwServerConfig({
+            containerBuild: {},
+            containerRun: {
+              disableContainerRunCapabilities: false,
+              containerRunConfiguration: {
+                openShiftSecurityContextConstraint: 'container-run', // Server has container-run SCC
+              },
+            },
+            defaults: {
+              editor: undefined,
+              components: [],
+              plugins: [],
+              pvcStrategy: '',
+            },
+            pluginRegistry: {
+              openVSXURL: '',
+            },
+            timeouts: {
+              inactivityTimeout: -1,
+              runTimeout: -1,
+              startTimeout: 300,
+              axiosRequestTimeout: 30000,
+            },
+            defaultNamespace: {
+              autoProvision: true,
+            },
+            cheNamespace: '',
+            devfileRegistry: {
+              disableInternalRegistry: false,
+              externalDevfileRegistries: [],
+            },
+            pluginRegistryURL: '',
+            pluginRegistryInternalURL: '',
+            allowedSourceUrls: [],
+          })
+          .build();
+      });
+
+      test('start debug and open logs with SCC mismatch logs warning', async () => {
+        console.warn = jest.fn();
+        mockStartWorkspace.mockResolvedValueOnce(undefined);
+
+        renderComponent(storeWithScc, WorkspaceAction.START_DEBUG_AND_OPEN_LOGS, wantDelete[0]);
+
+        // get and click start button
+        const handleActionBtn = screen.getByTestId('test-component-handle-action');
+
+        await user.click(handleActionBtn);
+
+        // make sure all timers are executed
+        await jest.advanceTimersByTimeAsync(1000);
+
+        // Should log warning about SCC mismatch
+        expect(console.warn).toHaveBeenCalledWith(expect.stringContaining('SCC mismatch'));
+
+        // Should still start the workspace
+        expect(mockStartWorkspace).toHaveBeenCalledTimes(1);
+        expect(mockStartWorkspace).toHaveBeenCalledWith(
+          expect.objectContaining({ uid: wantDelete[0] }),
+          { 'debug-workspace-start': true },
+        );
+      });
+
+      test('start in background with SCC mismatch logs warning', async () => {
+        console.warn = jest.fn();
+        mockStartWorkspace.mockResolvedValueOnce(undefined);
+
+        renderComponent(storeWithScc, WorkspaceAction.START_IN_BACKGROUND, wantDelete[0]);
+
+        // get and click start button
+        const handleActionBtn = screen.getByTestId('test-component-handle-action');
+
+        await user.click(handleActionBtn);
+
+        // make sure all timers are executed
+        await jest.advanceTimersByTimeAsync(1000);
+
+        // Should log warning about SCC mismatch
+        expect(console.warn).toHaveBeenCalledWith(expect.stringContaining('SCC mismatch'));
+
+        // Should still start the workspace
+        expect(mockStartWorkspace).toHaveBeenCalledTimes(1);
+        expect(mockStartWorkspace).toHaveBeenCalledWith(
+          expect.objectContaining({ uid: wantDelete[0] }),
+        );
+      });
+
+      test('start in background without SCC mismatch does not log warning', async () => {
+        console.warn = jest.fn();
+        mockStartWorkspace.mockResolvedValueOnce(undefined);
+
+        // Use store without SCC requirement
+        renderComponent(store, WorkspaceAction.START_IN_BACKGROUND, wantDelete[0]);
+
+        // get and click start button
+        const handleActionBtn = screen.getByTestId('test-component-handle-action');
+
+        await user.click(handleActionBtn);
+
+        // make sure all timers are executed
+        await jest.advanceTimersByTimeAsync(1000);
+
+        // Should NOT log warning about SCC mismatch
+        expect(console.warn).not.toHaveBeenCalledWith(expect.stringContaining('SCC mismatch'));
+
+        // Should start the workspace
+        expect(mockStartWorkspace).toHaveBeenCalledTimes(1);
+      });
     });
   });
 });
