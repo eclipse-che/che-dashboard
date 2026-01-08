@@ -18,19 +18,10 @@
   width: 20px;
   height: 20px;
   vertical-align: middle;
-}
-
-.defaultIcon {
-  width: 20px;
-  height: 20px;
-  color: var(--pf-global--Color--200);
-  vertical-align: middle;
+  margin-right: 5px;
 }
 
 .name {
   white-space: nowrap;
 }
 
-.placeholder {
-  color: var(--pf-global--Color--200);
-}
