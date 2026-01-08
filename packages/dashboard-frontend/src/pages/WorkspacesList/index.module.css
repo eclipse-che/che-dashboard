@@ -22,12 +22,6 @@
   white-space: pre-wrap !important;
 }
 
-.editorColumnTitle {
-  display: block;
-  width: 100%;
-  text-align: center;
-}
-
 .openIdeCell {
   overflow: hidden !important;
 

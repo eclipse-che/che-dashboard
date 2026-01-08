@@ -19,6 +19,7 @@ import {
   getEditorId,
   getEditorName,
   getShortEditorName,
+  isEditorId,
   isEditorUrl,
   isInlineEditorContent,
   parseInlineEditor,
@@ -97,6 +98,32 @@ const mockWorkspaceUrlEditor = {
   },
 } as unknown as Workspace;
 
+const mockWorkspaceInlineEditorWithCopyrightHeader = {
+  ref: {
+    metadata: {
+      annotations: {
+        'che.eclipse.org/che-editor': `#
+# Copyright (c) 2025 Red Hat, Inc.
+# This program and the accompanying materials are made
+# available under the terms of the Eclipse Public License 2.0
+# which is available at https://www.eclipse.org/legal/epl-2.0/
+#
+# SPDX-License-Identifier: EPL-2.0
+#
+# Contributors:
+#   Red Hat, Inc. - initial API and implementation
+#
+
+schemaVersion: 2.3.0
+metadata:
+  name: che-kiro-sshd-next
+  displayName: Kiro SSHD Editor
+  description: Custom Kiro editor with SSHD support`,
+      },
+    },
+  },
+} as unknown as Workspace;
+
 const mockSvgIcon = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"></svg>';
 
 const mockEditor: devfileApi.Devfile = {
@@ -142,12 +169,30 @@ const mockEditorNoIcon: devfileApi.Devfile = {
 
 describe('EditorIcon helper functions', () => {
   describe('isInlineEditorContent', () => {
-    it('should return true for schemaVersion prefix', () => {
-      expect(isInlineEditorContent('schemaVersion: 2.2.2\nmetadata:')).toBe(true);
+    it('should return true for valid devfile content', () => {
+      expect(isInlineEditorContent('schemaVersion: 2.2.2\nmetadata:\n  name: test-editor')).toBe(
+        true,
+      );
     });
 
-    it('should return true for apiVersion prefix', () => {
-      expect(isInlineEditorContent('apiVersion: 2.2.2\nmetadata:')).toBe(true);
+    it('should return true for devfile content with copyright header comments', () => {
+      const editorContent = `#
+# Copyright (c) 2025 Red Hat, Inc.
+# This program and the accompanying materials are made
+# available under the terms of the Eclipse Public License 2.0
+# which is available at https://www.eclipse.org/legal/epl-2.0/
+#
+# SPDX-License-Identifier: EPL-2.0
+#
+# Contributors:
+#   Red Hat, Inc. - initial API and implementation
+#
+
+schemaVersion: 2.3.0
+metadata:
+  name: che-kiro-sshd-next
+  displayName: Kiro SSHD Editor`;
+      expect(isInlineEditorContent(editorContent)).toBe(true);
     });
 
     it('should return false for editor ID', () => {
@@ -156,6 +201,10 @@ describe('EditorIcon helper functions', () => {
 
     it('should return false for URL', () => {
       expect(isInlineEditorContent('https://example.com/editor.yaml')).toBe(false);
+    });
+
+    it('should return false for invalid YAML', () => {
+      expect(isInlineEditorContent('invalid: [')).toBe(false);
     });
   });
 
@@ -175,7 +224,29 @@ describe('EditorIcon helper functions', () => {
     });
 
     it('should return false for inline content', () => {
-      expect(isEditorUrl('schemaVersion: 2.2.2\nmetadata:')).toBe(false);
+      expect(isEditorUrl('schemaVersion: 2.2.2\nmetadata:\n  name: test')).toBe(false);
+    });
+  });
+
+  describe('isEditorId', () => {
+    it('should return true for valid editor ID with 3 parts', () => {
+      expect(isEditorId('che-incubator/che-code/insiders')).toBe(true);
+    });
+
+    it('should return true for valid editor ID with 2 parts', () => {
+      expect(isEditorId('publisher/editor-name')).toBe(true);
+    });
+
+    it('should return false for content without slashes', () => {
+      expect(isEditorId('editor-name')).toBe(false);
+    });
+
+    it('should return false for content with spaces', () => {
+      expect(isEditorId('some content with spaces')).toBe(false);
+    });
+
+    it('should return false for YAML content', () => {
+      expect(isEditorId('schemaVersion: 2.2.2\nmetadata:')).toBe(false);
     });
   });
 
@@ -287,10 +358,10 @@ describe('EditorIcon helper functions', () => {
 });
 
 describe('EditorIcon component', () => {
-  it('should render placeholder when workspace has no editor annotation', () => {
-    render(<EditorIcon editors={[]} workspace={mockWorkspaceNoEditor} />);
+  it('should render nothing when workspace has no editor annotation', () => {
+    const { container } = render(<EditorIcon editors={[]} workspace={mockWorkspaceNoEditor} />);
 
-    expect(screen.getByText('-')).toBeInTheDocument();
+    expect(container).toBeEmptyDOMElement();
   });
 
   it('should render default icon with "custom" name when inline content has displayName', () => {
@@ -319,14 +390,32 @@ describe('EditorIcon component', () => {
     expect(container?.querySelector('svg')).toBeInTheDocument();
   });
 
-  it('should render placeholder when editor annotation contains invalid inline content', () => {
-    render(<EditorIcon editors={[]} workspace={mockWorkspaceInlineEditorInvalid} />);
+  it('should render nothing when editor annotation contains invalid inline content', () => {
+    const { container } = render(
+      <EditorIcon editors={[]} workspace={mockWorkspaceInlineEditorInvalid} />,
+    );
 
-    expect(screen.getByText('-')).toBeInTheDocument();
+    expect(container).toBeEmptyDOMElement();
   });
 
-  it('should render default icon with "custom" name when editor is a URL', () => {
+  it('should render clickable link with "custom" name when editor is a URL', () => {
     render(<EditorIcon editors={[]} workspace={mockWorkspaceUrlEditor} />);
+
+    expect(screen.getByText('custom')).toBeInTheDocument();
+    // Should render a link that opens in new tab
+    const link = screen.getByRole('link');
+    expect(link).toHaveAttribute(
+      'href',
+      'https://eclipse-che.github.io/che-plugin-registry/main/v3/plugins/che-incubator/che-code/insiders/devfile.yaml',
+    );
+    expect(link).toHaveAttribute('target', '_blank');
+    expect(link).toHaveAttribute('rel', 'noopener noreferrer');
+    // RegistryIcon is rendered as SVG
+    expect(link.querySelector('svg')).toBeInTheDocument();
+  });
+
+  it('should render default icon with "custom" name for inline editor with copyright header comments', () => {
+    render(<EditorIcon editors={[]} workspace={mockWorkspaceInlineEditorWithCopyrightHeader} />);
 
     expect(screen.getByText('custom')).toBeInTheDocument();
     // RegistryIcon is rendered as SVG - check the parent container

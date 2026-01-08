@@ -149,12 +149,12 @@ describe('devWorkspaces, actions', () => {
         editorContent: 'updated-editor-content',
       });
       expect(loadResourcesContent).toHaveBeenCalledWith('resources-content');
-      // When editor is a URL, the devfile content should be passed as the annotation (not the URL)
+      // When editor is a URL, the URL should be stored in the annotation
       expect(actionCreators.createWorkspaceFromResources).toHaveBeenCalledWith(
         expect.anything(),
         expect.anything(),
         paramsWithEditorUrl,
-        'updated-editor-content',
+        editorUrl,
       );
     });
 

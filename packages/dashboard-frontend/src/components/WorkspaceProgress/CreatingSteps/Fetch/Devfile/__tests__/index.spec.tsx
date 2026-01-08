@@ -214,6 +214,9 @@ describe('Creating steps, fetching a devfile', () => {
       // resolve deferred to trigger the callback
       deferred.resolve();
 
+      // flush microtasks and timers to ensure callback executes
+      await jest.runAllTimersAsync();
+
       await waitFor(() => expect(mockOnNextStep).toHaveBeenCalled());
       expect(mockOnRestart).not.toHaveBeenCalled();
       expect(mockOnError).not.toHaveBeenCalled();
