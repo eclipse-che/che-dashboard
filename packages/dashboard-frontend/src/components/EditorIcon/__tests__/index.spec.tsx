@@ -233,8 +233,9 @@ metadata:
       expect(isEditorId('che-incubator/che-code/insiders')).toBe(true);
     });
 
-    it('should return true for valid editor ID with 2 parts', () => {
-      expect(isEditorId('publisher/editor-name')).toBe(true);
+    it('should return false for editor ID with 2 parts', () => {
+      // Editor ID must have exactly 3 parts: publisher/name/version
+      expect(isEditorId('publisher/editor-name')).toBe(false);
     });
 
     it('should return false for content without slashes', () => {
@@ -251,31 +252,32 @@ metadata:
   });
 
   describe('parseInlineEditor', () => {
-    it('should parse valid inline editor content with description', () => {
+    it('should parse valid inline editor content and return full devfile', () => {
       const result = parseInlineEditor(
         'schemaVersion: 2.2.2\nmetadata:\n  name: che-code\n  displayName: VS Code\n  description: IDE description',
       );
-      expect(result).toEqual({
-        name: 'che-code',
-        displayName: 'VS Code',
-        description: 'IDE description',
-      });
+      expect(result).toBeDefined();
+      expect(result?.schemaVersion).toBe('2.2.2');
+      expect(result?.metadata?.name).toBe('che-code');
+      expect(result?.metadata?.displayName).toBe('VS Code');
+      expect(result?.metadata?.description).toBe('IDE description');
     });
 
     it('should parse valid inline editor content without description', () => {
       const result = parseInlineEditor(
         'schemaVersion: 2.2.2\nmetadata:\n  name: che-code\n  displayName: VS Code',
       );
-      expect(result).toEqual({
-        name: 'che-code',
-        displayName: 'VS Code',
-        description: undefined,
-      });
+      expect(result).toBeDefined();
+      expect(result?.metadata?.name).toBe('che-code');
+      expect(result?.metadata?.displayName).toBe('VS Code');
+      expect(result?.metadata?.description).toBeUndefined();
     });
 
-    it('should use name as displayName when displayName is not provided', () => {
+    it('should parse content without displayName', () => {
       const result = parseInlineEditor('schemaVersion: 2.2.2\nmetadata:\n  name: che-code');
-      expect(result).toEqual({ name: 'che-code', displayName: 'che-code', description: undefined });
+      expect(result).toBeDefined();
+      expect(result?.metadata?.name).toBe('che-code');
+      expect(result?.metadata?.displayName).toBeUndefined();
     });
 
     it('should return undefined for invalid YAML', () => {
@@ -336,72 +338,89 @@ metadata:
       const result = findEditor([], 'che-incubator/che-code/insiders');
       expect(result).toBeUndefined();
     });
+
+    it('should return undefined when editorId is undefined', () => {
+      const result = findEditor([mockEditor], undefined);
+      expect(result).toBeUndefined();
+    });
   });
 
   describe('getEditorName', () => {
     it('should return undefined when no editor annotation', () => {
-      expect(getEditorName(mockWorkspaceNoEditor)).toBeUndefined();
+      expect(getEditorName({ editors: [], workspace: mockWorkspaceNoEditor })).toBeUndefined();
     });
 
-    it('should return "custom" for inline editor content', () => {
-      expect(getEditorName(mockWorkspaceInlineEditor)).toBe('custom');
+    it('should return displayName for inline editor content', () => {
+      expect(getEditorName({ editors: [], workspace: mockWorkspaceInlineEditor })).toBe(
+        'VS Code - Open Source',
+      );
     });
 
-    it('should return "custom" for URL editor', () => {
-      expect(getEditorName(mockWorkspaceUrlEditor)).toBe('custom');
+    it('should return "Custom" for inline editor without displayName', () => {
+      expect(
+        getEditorName({ editors: [], workspace: mockWorkspaceInlineEditorNoDisplayName }),
+      ).toBe('Custom');
     });
 
-    it('should return short name from editor ID', () => {
-      expect(getEditorName(mockWorkspace)).toBe('che-code');
+    it('should return "Custom" for URL editor', () => {
+      expect(getEditorName({ editors: [], workspace: mockWorkspaceUrlEditor })).toBe('Custom');
+    });
+
+    it('should return displayName from registry when editor found', () => {
+      expect(getEditorName({ editors: [mockEditor], workspace: mockWorkspace })).toBe('VS Code');
+    });
+
+    it('should return short name from editor ID when not in registry', () => {
+      expect(getEditorName({ editors: [], workspace: mockWorkspace })).toBe('che-code');
     });
   });
 });
 
 describe('EditorIcon component', () => {
-  it('should render nothing when workspace has no editor annotation', () => {
-    const { container } = render(<EditorIcon editors={[]} workspace={mockWorkspaceNoEditor} />);
+  it('should render placeholder when workspace has no editor annotation', () => {
+    render(<EditorIcon editors={[]} workspace={mockWorkspaceNoEditor} />);
 
-    expect(container).toBeEmptyDOMElement();
+    expect(screen.getByText('-')).toBeInTheDocument();
   });
 
-  it('should render default icon with "custom" name when inline content has displayName', () => {
+  it('should render displayName when inline content has displayName', () => {
     render(<EditorIcon editors={[]} workspace={mockWorkspaceInlineEditor} />);
 
-    expect(screen.getByText('custom')).toBeInTheDocument();
+    // displayName appears in both tooltip and name span
+    const nameElements = screen.getAllByText('VS Code - Open Source');
+    expect(nameElements.length).toBeGreaterThan(0);
     // RegistryIcon is rendered as SVG - check the parent container
-    const container = screen.getByText('custom').parentElement;
+    const container = nameElements[0].parentElement;
     expect(container).toBeInTheDocument();
     expect(container?.querySelector('svg')).toBeInTheDocument();
   });
 
-  it('should render default icon with "custom" when inline content has description', () => {
+  it('should render displayName when inline content has description', () => {
     render(<EditorIcon editors={[]} workspace={mockWorkspaceInlineEditorWithDescription} />);
 
-    expect(screen.getByText('custom')).toBeInTheDocument();
-    const container = screen.getByText('custom').parentElement;
+    expect(screen.getByText('VS Code')).toBeInTheDocument();
+    const container = screen.getByText('VS Code').parentElement;
     expect(container?.querySelector('svg')).toBeInTheDocument();
   });
 
-  it('should render default icon with "custom" for inline content without displayName', () => {
+  it('should render "Custom" for inline content without displayName', () => {
     render(<EditorIcon editors={[]} workspace={mockWorkspaceInlineEditorNoDisplayName} />);
 
-    expect(screen.getByText('custom')).toBeInTheDocument();
-    const container = screen.getByText('custom').parentElement;
+    expect(screen.getByText('Custom')).toBeInTheDocument();
+    const container = screen.getByText('Custom').parentElement;
     expect(container?.querySelector('svg')).toBeInTheDocument();
   });
 
-  it('should render nothing when editor annotation contains invalid inline content', () => {
-    const { container } = render(
-      <EditorIcon editors={[]} workspace={mockWorkspaceInlineEditorInvalid} />,
-    );
+  it('should render placeholder when editor annotation contains invalid inline content', () => {
+    render(<EditorIcon editors={[]} workspace={mockWorkspaceInlineEditorInvalid} />);
 
-    expect(container).toBeEmptyDOMElement();
+    expect(screen.getByText('-')).toBeInTheDocument();
   });
 
-  it('should render clickable link with "custom" name when editor is a URL', () => {
+  it('should render clickable link with "Custom" name when editor is a URL', () => {
     render(<EditorIcon editors={[]} workspace={mockWorkspaceUrlEditor} />);
 
-    expect(screen.getByText('custom')).toBeInTheDocument();
+    expect(screen.getByText('Custom')).toBeInTheDocument();
     // Should render a link that opens in new tab
     const link = screen.getByRole('link');
     expect(link).toHaveAttribute(
@@ -414,17 +433,17 @@ describe('EditorIcon component', () => {
     expect(link.querySelector('svg')).toBeInTheDocument();
   });
 
-  it('should render default icon with "custom" name for inline editor with copyright header comments', () => {
+  it('should render displayName for inline editor with copyright header comments', () => {
     render(<EditorIcon editors={[]} workspace={mockWorkspaceInlineEditorWithCopyrightHeader} />);
 
-    expect(screen.getByText('custom')).toBeInTheDocument();
+    expect(screen.getByText('Kiro SSHD Editor')).toBeInTheDocument();
     // RegistryIcon is rendered as SVG - check the parent container
-    const container = screen.getByText('custom').parentElement;
+    const container = screen.getByText('Kiro SSHD Editor').parentElement;
     expect(container).toBeInTheDocument();
     expect(container?.querySelector('svg')).toBeInTheDocument();
   });
 
-  it('should render default icon with short name when editor is not found in registry', () => {
+  it('should render short name when editor is not found in registry', () => {
     render(<EditorIcon editors={[]} workspace={mockWorkspace} />);
 
     // Check for short name
@@ -435,15 +454,16 @@ describe('EditorIcon component', () => {
     expect(container?.querySelector('svg')).toBeInTheDocument();
   });
 
-  it('should render editor icon with short name when editor is found and has iconData', () => {
+  it('should render displayName when editor is found in registry', () => {
     render(<EditorIcon editors={[mockEditor]} workspace={mockWorkspace} />);
 
-    // Check for short name
-    expect(screen.getAllByText('che-code').length).toBeGreaterThan(0);
+    // Check for displayName from registry (appears in both tooltip and name span)
+    const nameElements = screen.getAllByText('VS Code');
+    expect(nameElements.length).toBeGreaterThan(0);
     // When editor has iconData, it renders an <img> with the icon
-    const icon = screen.getByAltText('VS Code');
-    expect(icon).toBeInTheDocument();
-    expect(icon).toHaveAttribute(
+    const icons = screen.getAllByRole('img');
+    expect(icons.length).toBeGreaterThan(0);
+    expect(icons[0]).toHaveAttribute(
       'src',
       `data:image/svg+xml;charset=utf-8,${encodeURIComponent(mockSvgIcon)}`,
     );
@@ -452,18 +472,19 @@ describe('EditorIcon component', () => {
   it('should use description in tooltip when editor has description', () => {
     render(<EditorIcon editors={[mockEditorWithDescription]} workspace={mockWorkspace} />);
 
-    // Check for short name
-    expect(screen.getAllByText('che-code').length).toBeGreaterThan(0);
+    // Check for displayName (appears in both tooltip and name span)
+    const nameElements = screen.getAllByText('VS Code');
+    expect(nameElements.length).toBeGreaterThan(0);
     // When editor has iconData, it renders an <img>
-    const icon = screen.getByAltText('VS Code');
-    expect(icon).toBeInTheDocument();
+    const icons = screen.getAllByRole('img');
+    expect(icons.length).toBeGreaterThan(0);
   });
 
-  it('should render default icon with short name when editor is found but has no iconData', () => {
+  it('should render default icon when editor is found but has no iconData', () => {
     render(<EditorIcon editors={[mockEditorNoIcon]} workspace={mockWorkspace} />);
 
-    // Check for short name
-    const nameElements = screen.getAllByText('che-code');
+    // Check for displayName (appears in both tooltip and name span)
+    const nameElements = screen.getAllByText('VS Code');
     expect(nameElements.length).toBeGreaterThan(0);
     // RegistryIcon is rendered as SVG when no iconData - check the parent container
     const container = nameElements[0].parentElement;
