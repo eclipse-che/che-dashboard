@@ -30,7 +30,7 @@ export type Props = {
  * Checks if the string is a valid HTTP/HTTPS URL.
  */
 export function isEditorUrl(cheEditor: string): boolean {
-  return /^(https?:\/\/)/.test(cheEditor);
+  return /^http[s]?:\/\/.*/.test(cheEditor);
 }
 
 /**
@@ -51,23 +51,17 @@ export function isInlineEditorContent(cheEditor: string): boolean {
 export function isEditorId(cheEditor: string): boolean {
   // Editor ID format: publisher/name/version (e.g. che-incubator/che-code/insiders)
   const parts = cheEditor.split('/');
-  return parts.length >= 2 && parts.every(part => part.length > 0 && !part.includes(' '));
+  return parts.length === 3 && parts.every(part => part.length > 0 && !part.includes(' '));
 }
 
 /**
  * Parses inline editor content to extract editor information.
  */
-export function parseInlineEditor(
-  cheEditor: string,
-): { name: string; displayName: string; description?: string } | undefined {
+export function parseInlineEditor(cheEditor: string): devfileApi.Devfile | undefined {
   try {
     const parsed = load(cheEditor);
     if (isDevfileV2(parsed)) {
-      return {
-        name: parsed.metadata.name,
-        displayName: parsed.metadata.displayName || parsed.metadata.name,
-        description: parsed.metadata.description,
-      };
+      return parsed;
     }
   } catch {
     // Failed to parse YAML, return undefined
@@ -84,12 +78,12 @@ export function getEditorId(workspace: Workspace): string | undefined {
   if (!cheEditor) {
     return undefined;
   }
-  // Skip inline devfile content
-  if (isInlineEditorContent(cheEditor)) {
-    return undefined;
-  }
   // Skip URLs (custom editor from URL)
   if (isEditorUrl(cheEditor)) {
+    return undefined;
+  }
+  // Skip inline devfile content
+  if (cheEditor.includes('schemaVersion:')) {
     return undefined;
   }
   // Skip content that failed to parse
@@ -116,8 +110,11 @@ export function getShortEditorName(editorId: string): string {
  */
 export function findEditor(
   editors: devfileApi.Devfile[],
-  editorId: string,
+  editorId?: string,
 ): devfileApi.Devfile | undefined {
+  if (!editorId) {
+    return undefined;
+  }
   return editors.find(editor => {
     const id =
       editor.metadata.attributes?.publisher +
@@ -133,20 +130,21 @@ export function findEditor(
  * Gets the editor name for sorting purposes.
  * Returns the short name from either inline content, URL, or editor ID.
  */
-export function getEditorName(workspace: Workspace): string | undefined {
+export function getEditorName({ editors, workspace }: Props): string | undefined {
   const cheEditor = workspace.ref.metadata.annotations?.[DEVWORKSPACE_CHE_EDITOR];
   if (!cheEditor) {
     return undefined;
   }
 
-  // Handle inline editor content - return "custom" for sorting
-  if (isInlineEditorContent(cheEditor)) {
-    return 'custom';
+  // Handle URL editor - return "Custom" for sorting
+  if (isEditorUrl(cheEditor)) {
+    return 'Custom';
   }
 
-  // Handle URL editor - return "custom" for sorting
-  if (isEditorUrl(cheEditor)) {
-    return 'custom';
+  // Handle inline editor content - return "custom" for sorting
+  if (isInlineEditorContent(cheEditor)) {
+    const inlineEditor = parseInlineEditor(cheEditor);
+    return inlineEditor?.metadata?.displayName || 'Custom';
   }
 
   // Handle editor ID reference
@@ -155,51 +153,79 @@ export function getEditorName(workspace: Workspace): string | undefined {
     return undefined;
   }
 
-  // Return short name from editor ID
-  return getShortEditorName(editorId);
+  const editor = findEditor(editors, editorId);
+  const shortEditorName = getShortEditorName(editorId);
+
+  return editor?.metadata?.displayName || shortEditorName;
+}
+
+function getIcon(editor?: devfileApi.Devfile): React.ReactElement {
+  const iconData = editor?.metadata?.attributes?.iconData;
+  const iconMediatype = editor?.metadata?.attributes?.iconMediatype;
+
+  if (iconData && iconMediatype) {
+    // SVG icons need URL encoding, other formats use the data directly
+    const iconSrc =
+      iconMediatype === 'image/svg+xml'
+        ? `data:image/svg+xml;charset=utf-8,${encodeURIComponent(iconData)}`
+        : iconData;
+    return <img src={iconSrc} alt={'...'} className={styles.icon} />;
+  }
+
+  return <RegistryIcon className={styles.icon} />;
+}
+
+function getTooltipText(editor?: devfileApi.Devfile): string {
+  return (
+    editor?.metadata?.description ||
+    editor?.metadata?.displayName ||
+    editor?.metadata?.name ||
+    'Unknown Editor type'
+  );
 }
 
 /**
  * Displays the editor icon with name, version tag, and a tooltip showing description or name.
  */
-export function EditorIcon({ editors, workspace }: Props): React.ReactElement | null {
+export function EditorIcon(props: Props): React.ReactElement {
+  const { workspace, editors } = props;
   // If getEditorName returns undefined, don't render anything
-  const editorName = getEditorName(workspace);
+  const editorName = getEditorName(props) || '-';
   if (editorName === undefined) {
-    return null;
+    return <span>-</span>;
   }
 
   // Safe to assert - getEditorName already checked for cheEditor presence
   const cheEditor = workspace.ref.metadata.annotations?.[DEVWORKSPACE_CHE_EDITOR] as string;
-
-  // Handle inline editor content
-  if (isInlineEditorContent(cheEditor)) {
-    const inlineEditor = parseInlineEditor(cheEditor);
-    // Use description if available, otherwise use displayName
-    const tooltipText = inlineEditor?.description || inlineEditor?.displayName;
-    return (
-      <Tooltip content={tooltipText}>
-        <span className={styles.container}>
-          <RegistryIcon className={styles.icon} />
-          <span className={styles.name}>custom</span>
-        </span>
-      </Tooltip>
-    );
-  }
 
   // Handle URL editor (custom editor from URL) - clickable link without tooltip
   if (isEditorUrl(cheEditor)) {
     return (
       <a href={cheEditor} target="_blank" rel="noopener noreferrer">
         <RegistryIcon className={styles.icon} />
-        <span className={styles.name}>custom</span>
+        <span className={styles.name}>{editorName}</span>
       </a>
     );
   }
 
+  // Handle inline editor content
+  if (isInlineEditorContent(cheEditor)) {
+    const inlineEditor = parseInlineEditor(cheEditor);
+    const icon = getIcon(inlineEditor);
+    const tooltipText = getTooltipText(inlineEditor);
+
+    return (
+      <Tooltip content={tooltipText}>
+        <span className={styles.container}>
+          {icon}
+          <span className={styles.name}>{editorName}</span>
+        </span>
+      </Tooltip>
+    );
+  }
+
   // Handle editor ID reference
-  const editorId = getEditorId(workspace)!;
-  const shortName = getShortEditorName(editorId);
+  const editorId = getEditorId(workspace);
   const editor = findEditor(editors, editorId);
 
   if (!editor) {
@@ -207,44 +233,19 @@ export function EditorIcon({ editors, workspace }: Props): React.ReactElement | 
     return (
       <span className={styles.container}>
         <RegistryIcon className={styles.icon} />
-        <span className={styles.name}>{shortName}</span>
+        <span className={styles.name}>{editorName}</span>
       </span>
     );
   }
 
-  // Use description if available, otherwise use name
-  const tooltipText =
-    editor.metadata.description ||
-    editor.metadata.displayName ||
-    editor.metadata.name ||
-    'Unknown Editor type';
-  const displayName = editor.metadata.displayName || editor.metadata.name || '-';
-  const iconData = editor.metadata.attributes?.iconData;
-  const iconMediatype = editor.metadata.attributes?.iconMediatype;
+  const tooltipText = getTooltipText(editor);
+  const icon = getIcon(editor);
 
-  // If we have icon data, render the image with name
-  if (iconData && iconMediatype) {
-    // SVG icons need URL encoding, other formats use the data directly
-    const iconSrc =
-      iconMediatype === 'image/svg+xml'
-        ? `data:image/svg+xml;charset=utf-8,${encodeURIComponent(iconData)}`
-        : iconData;
-    return (
-      <Tooltip content={tooltipText}>
-        <span className={styles.container}>
-          <img src={iconSrc} alt={displayName} className={styles.icon} />
-          <span className={styles.name}>{shortName}</span>
-        </span>
-      </Tooltip>
-    );
-  }
-
-  // Fallback: show default icon with name
   return (
     <Tooltip content={tooltipText}>
       <span className={styles.container}>
-        <RegistryIcon className={styles.icon} />
-        <span className={styles.name}>{shortName}</span>
+        {icon}
+        <span className={styles.name}>{editorName}</span>
       </span>
     </Tooltip>
   );

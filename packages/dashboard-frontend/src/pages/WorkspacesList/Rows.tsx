@@ -55,8 +55,8 @@ export function buildRows(
       }
       // Column 2: Editor
       if (sortBy.index === 2) {
-        const editorA = getEditorName(workspaceA) || '';
-        const editorB = getEditorName(workspaceB) || '';
+        const editorA = getEditorName({ editors, workspace: workspaceA }) || '';
+        const editorB = getEditorName({ editors, workspace: workspaceB }) || '';
         return sort(editorA, editorB, sortBy.direction);
       }
       // Column 3: Last Modified
