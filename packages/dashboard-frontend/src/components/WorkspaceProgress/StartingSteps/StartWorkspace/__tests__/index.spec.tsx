@@ -1501,6 +1501,206 @@ describe('Starting steps, starting a workspace', () => {
       expect(StartingStepStartWorkspace.getRestartInitiatedSet().has('uid-123')).toBe(false);
     });
   });
+
+  describe('SCC mismatch warning', () => {
+    const mockShowAlert = jest.fn();
+
+    beforeEach(() => {
+      jest.clearAllMocks();
+      // Mock AppAlerts
+      jest.mock('@/services/alerts/appAlerts', () => ({
+        AppAlerts: jest.fn().mockImplementation(() => ({
+          showAlert: mockShowAlert,
+        })),
+      }));
+    });
+
+    test('should show warning alert when workspace has SCC mismatch', async () => {
+      const devWorkspace = new DevWorkspaceBuilder()
+        .withName(workspaceName)
+        .withNamespace(namespace)
+        .withStatus({ phase: 'STOPPED' })
+        .build();
+      // Set workspace SCC to 'restricted'
+      devWorkspace.spec.template.attributes = {
+        'controller.devfile.io/scc': 'restricted',
+      };
+
+      const store = new MockStoreBuilder()
+        .withDwServerConfig({
+          containerBuild: {},
+          containerRun: {
+            disableContainerRunCapabilities: false,
+            containerRunConfiguration: {
+              openShiftSecurityContextConstraint: 'container-run', // Server has different SCC
+            },
+          },
+          defaults: {
+            editor: undefined,
+            components: [],
+            plugins: [],
+            pvcStrategy: '',
+          },
+          pluginRegistry: {
+            openVSXURL: '',
+          },
+          timeouts: {
+            inactivityTimeout: -1,
+            runTimeout: -1,
+            startTimeout,
+            axiosRequestTimeout: 30000,
+          },
+          defaultNamespace: {
+            autoProvision: true,
+          },
+          cheNamespace: '',
+          devfileRegistry: {
+            disableInternalRegistry: false,
+            externalDevfileRegistries: [],
+          },
+          pluginRegistryURL: '',
+          pluginRegistryInternalURL: '',
+          allowedSourceUrls: [],
+        })
+        .withDevWorkspaces({
+          workspaces: [devWorkspace],
+        })
+        .build();
+
+      renderComponent(store);
+
+      await jest.advanceTimersByTimeAsync(MIN_STEP_DURATION_MS);
+
+      // Should still start the workspace despite SCC mismatch
+      await waitFor(() => expect(mockStartWorkspace).toHaveBeenCalled());
+
+      // No blocking error should be shown
+      expect(mockOnError).not.toHaveBeenCalled();
+    });
+
+    test('should not show warning when workspace SCC matches server SCC', async () => {
+      const devWorkspace = new DevWorkspaceBuilder()
+        .withName(workspaceName)
+        .withNamespace(namespace)
+        .withStatus({ phase: 'STOPPED' })
+        .build();
+      // Set workspace SCC to match server
+      devWorkspace.spec.template.attributes = {
+        'controller.devfile.io/scc': 'container-run',
+      };
+
+      const store = new MockStoreBuilder()
+        .withDwServerConfig({
+          containerBuild: {},
+          containerRun: {
+            disableContainerRunCapabilities: false,
+            containerRunConfiguration: {
+              openShiftSecurityContextConstraint: 'container-run', // Same SCC
+            },
+          },
+          defaults: {
+            editor: undefined,
+            components: [],
+            plugins: [],
+            pvcStrategy: '',
+          },
+          pluginRegistry: {
+            openVSXURL: '',
+          },
+          timeouts: {
+            inactivityTimeout: -1,
+            runTimeout: -1,
+            startTimeout,
+            axiosRequestTimeout: 30000,
+          },
+          defaultNamespace: {
+            autoProvision: true,
+          },
+          cheNamespace: '',
+          devfileRegistry: {
+            disableInternalRegistry: false,
+            externalDevfileRegistries: [],
+          },
+          pluginRegistryURL: '',
+          pluginRegistryInternalURL: '',
+          allowedSourceUrls: [],
+        })
+        .withDevWorkspaces({
+          workspaces: [devWorkspace],
+        })
+        .build();
+
+      renderComponent(store);
+
+      await jest.advanceTimersByTimeAsync(MIN_STEP_DURATION_MS);
+
+      // Should start the workspace
+      await waitFor(() => expect(mockStartWorkspace).toHaveBeenCalled());
+
+      // No errors should be shown
+      expect(mockOnError).not.toHaveBeenCalled();
+    });
+
+    test('should not show warning when server has no SCC requirement', async () => {
+      const devWorkspace = new DevWorkspaceBuilder()
+        .withName(workspaceName)
+        .withNamespace(namespace)
+        .withStatus({ phase: 'STOPPED' })
+        .build();
+      // Workspace has SCC but server doesn't require one
+      devWorkspace.spec.template.attributes = {
+        'controller.devfile.io/scc': 'restricted',
+      };
+
+      const store = new MockStoreBuilder()
+        .withDwServerConfig({
+          containerBuild: {},
+          containerRun: {
+            disableContainerRunCapabilities: true, // Container run disabled
+          },
+          defaults: {
+            editor: undefined,
+            components: [],
+            plugins: [],
+            pvcStrategy: '',
+          },
+          pluginRegistry: {
+            openVSXURL: '',
+          },
+          timeouts: {
+            inactivityTimeout: -1,
+            runTimeout: -1,
+            startTimeout,
+            axiosRequestTimeout: 30000,
+          },
+          defaultNamespace: {
+            autoProvision: true,
+          },
+          cheNamespace: '',
+          devfileRegistry: {
+            disableInternalRegistry: false,
+            externalDevfileRegistries: [],
+          },
+          pluginRegistryURL: '',
+          pluginRegistryInternalURL: '',
+          allowedSourceUrls: [],
+        })
+        .withDevWorkspaces({
+          workspaces: [devWorkspace],
+        })
+        .build();
+
+      renderComponent(store);
+
+      await jest.advanceTimersByTimeAsync(MIN_STEP_DURATION_MS);
+
+      // Should start the workspace
+      await waitFor(() => expect(mockStartWorkspace).toHaveBeenCalled());
+
+      // No errors should be shown
+      expect(mockOnError).not.toHaveBeenCalled();
+    });
+  });
 });
 
 function getComponent(
