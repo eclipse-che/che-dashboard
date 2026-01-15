@@ -21,8 +21,7 @@ import { ExclamationCircleIcon, ExternalLinkAltIcon } from '@patternfly/react-ic
 import React from 'react';
 
 const MAX_LENGTH = 256;
-const PATTERN =
-  '^http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\\(\\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+$';
+const PATTERN = '^http[s]?://((\\w[\\w.-]*)|([[0-9a-fA-F:]+]))(:\\d+)?(/.*)?$';
 const ERROR_REQUIRED_VALUE = 'A value is required.';
 const ERROR_MAX_LENGTH = `The url is too long. The maximum length is ${MAX_LENGTH} characters.`;
 

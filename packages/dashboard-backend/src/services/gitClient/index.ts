@@ -15,7 +15,7 @@ import { api } from '@eclipse-che/common';
 import { run } from '@/devworkspaceClient/services/helpers/exec';
 
 const urlRegexp = new RegExp(
-  '((git|ssh|http(s)?)|(git@[\\w.]+))(:(\\/\\/)?)([\\w.@:/\\-~]+)(\\.git)?(\\/)?',
+  '((git|ssh|http(s)?)|(git@[\\w.]+))(:(\\/\\/)?)([\\w.@:/\\-~\\[\\]]+)(\\.git)?(\\/)?',
 );
 export async function getBranches(url: string): Promise<api.IGitBranches | undefined> {
   if (!urlRegexp.test(url)) {
