@@ -54,7 +54,7 @@ export class FactoryLocationAdapter implements FactoryLocation {
   }
 
   public static isHttpLocation(href: string): boolean {
-    return /^(http(s)?:\/\/)((\w[\w.-]*)|(\[[0-9a-fA-F:]+\]))(:\d+)?([-a-zA-Z0-9@:%._+~#=/[\]?&{}, ]*)$/.test(
+    return /^(http(s)?:\/\/)((\w[\w.-]*)|(\[[0-9a-fA-F:.]+\]))(:\d+)?([-a-zA-Z0-9@:%._+~#=/[\]?&{}, ]*)$/.test(
       href,
     );
   }
