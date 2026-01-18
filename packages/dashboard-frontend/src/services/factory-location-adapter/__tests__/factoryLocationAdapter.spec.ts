@@ -172,6 +172,16 @@ describe('FactoryLocationAdapter Service', () => {
       expect(FactoryLocationAdapter.isHttpLocation(location)).toBeTruthy();
       expect(FactoryLocationAdapter.isSshLocation(location)).toBeFalsy();
     });
+    it('should return true for http IPv4-mapped IPv6 address', () => {
+      const location = 'http://[::ffff:10.217.0.98]:8080/test-repo.git';
+      expect(FactoryLocationAdapter.isHttpLocation(location)).toBeTruthy();
+      expect(FactoryLocationAdapter.isSshLocation(location)).toBeFalsy();
+    });
+    it('should return true for http IPv4-mapped IPv6 address with standard IPv4', () => {
+      const location = 'http://[::ffff:192.168.1.1]:8080/repo.git';
+      expect(FactoryLocationAdapter.isHttpLocation(location)).toBeTruthy();
+      expect(FactoryLocationAdapter.isSshLocation(location)).toBeFalsy();
+    });
   });
 
   it('should return factory reference without oauth params', () => {
