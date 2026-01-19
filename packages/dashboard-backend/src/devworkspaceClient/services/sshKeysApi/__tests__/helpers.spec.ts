@@ -17,11 +17,14 @@ import {
   buildLabelSelector,
   fromSecret,
   isSshKeySecret,
+  SSH_ANNOTATIONS,
   SSH_CONFIG,
-  SSH_SECRET_ANNOTATIONS,
+  SSH_CONFIG_LABELS,
   SSH_SECRET_LABELS,
+  SshConfigConfigmap,
   SshKeySecret,
   toSecret,
+  toSshConfigConfigmap,
 } from '@/devworkspaceClient/services/sshKeysApi/helpers';
 
 describe('Helpers for SSH Keys API', () => {
@@ -37,7 +40,7 @@ describe('Helpers for SSH Keys API', () => {
     test('correct secret', () => {
       secret = {
         metadata: {
-          annotations: SSH_SECRET_ANNOTATIONS,
+          annotations: SSH_ANNOTATIONS,
           labels: SSH_SECRET_LABELS,
           name: 'git-ssh-key',
         },
@@ -50,7 +53,7 @@ describe('Helpers for SSH Keys API', () => {
     test('incorrect secret', () => {
       secret = {
         metadata: {
-          annotations: SSH_SECRET_ANNOTATIONS,
+          annotations: SSH_ANNOTATIONS,
           labels: SSH_SECRET_LABELS,
           name: 'my-key-asdf-1234' as unknown,
         },
@@ -65,7 +68,7 @@ describe('Helpers for SSH Keys API', () => {
     test('SSH key secret', () => {
       const secret: SshKeySecret = {
         metadata: {
-          annotations: SSH_SECRET_ANNOTATIONS,
+          annotations: SSH_ANNOTATIONS,
           labels: SSH_SECRET_LABELS,
           name: 'git-ssh-key',
           resourceVersion: '1',
@@ -73,7 +76,6 @@ describe('Helpers for SSH Keys API', () => {
         data: {
           'dwo_ssh_key.pub': btoa('ssh-key-pub-data'),
           dwo_ssh_key: btoa('ssh-key-data'),
-          ssh_config: btoa('git-config'),
           passphrase: '',
         },
       };
@@ -114,16 +116,36 @@ describe('Helpers for SSH Keys API', () => {
         data: {
           'dwo_ssh_key.pub': token.keyPub,
           dwo_ssh_key: token.key,
-          ssh_config: btoa(SSH_CONFIG),
         },
         kind: 'Secret',
         metadata: {
-          annotations: SSH_SECRET_ANNOTATIONS,
+          annotations: SSH_ANNOTATIONS,
           labels: SSH_SECRET_LABELS,
           name: 'git-ssh-key',
           namespace: 'user-che',
         },
       } as SshKeySecret);
+    });
+  });
+
+  describe('toConfig', () => {
+    test('SSH Config', () => {
+      const namespace = 'user-che';
+
+      const sshConfigConfigmap = toSshConfigConfigmap(namespace);
+      expect(sshConfigConfigmap).toStrictEqual({
+        apiVersion: 'v1',
+        data: {
+          ssh_config: SSH_CONFIG,
+        },
+        kind: 'ConfigMap',
+        metadata: {
+          annotations: SSH_ANNOTATIONS,
+          labels: SSH_CONFIG_LABELS,
+          name: 'git-ssh-config',
+          namespace: 'user-che',
+        },
+      } as SshConfigConfigmap);
     });
   });
   test('SSH key with passphrase', () => {
@@ -141,12 +163,11 @@ describe('Helpers for SSH Keys API', () => {
       data: {
         'dwo_ssh_key.pub': token.keyPub,
         dwo_ssh_key: token.key,
-        ssh_config: btoa(SSH_CONFIG),
         passphrase: btoa('passphrase'),
       },
       kind: 'Secret',
       metadata: {
-        annotations: SSH_SECRET_ANNOTATIONS,
+        annotations: SSH_ANNOTATIONS,
         labels: SSH_SECRET_LABELS,
         name: 'git-ssh-key',
         namespace: 'user-che',

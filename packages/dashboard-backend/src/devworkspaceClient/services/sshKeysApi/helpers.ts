@@ -16,9 +16,11 @@ import * as k8s from '@kubernetes/client-node';
 export const SSH_CONFIG = `host *
   IdentityFile /etc/ssh/dwo_ssh_key
   StrictHostKeyChecking = no
+
+Include /etc/ssh/ssh_config.d/*.conf
 `;
 
-export const SSH_SECRET_ANNOTATIONS = {
+export const SSH_ANNOTATIONS = {
   'controller.devfile.io/mount-as': 'subpath',
   'controller.devfile.io/mount-path': '/etc/ssh/',
 };
@@ -26,19 +28,34 @@ export const SSH_SECRET_LABELS = {
   'controller.devfile.io/mount-to-devworkspace': 'true',
   'controller.devfile.io/watch-secret': 'true',
 };
+export const SSH_CONFIG_LABELS = {
+  'controller.devfile.io/mount-to-devworkspace': 'true',
+  'controller.devfile.io/watch-configmap': 'true',
+};
 
 const SSH_SECRET_NAME = 'git-ssh-key';
+export const SSH_CONFIGMAP_NAME = 'git-ssh-config';
 
 export interface SshKeySecret extends k8s.V1Secret {
   metadata: k8s.V1ObjectMeta & {
     name: typeof SSH_SECRET_NAME;
-    annotations: typeof SSH_SECRET_ANNOTATIONS;
+    annotations: typeof SSH_ANNOTATIONS;
     labels: typeof SSH_SECRET_LABELS;
   };
   data: {
     dwo_ssh_key: string;
     'dwo_ssh_key.pub': string;
     passphrase?: string;
+  };
+}
+
+export interface SshConfigConfigmap extends k8s.V1ConfigMap {
+  metadata: k8s.V1ObjectMeta & {
+    name: typeof SSH_CONFIGMAP_NAME;
+    annotations: typeof SSH_ANNOTATIONS;
+    labels: typeof SSH_CONFIG_LABELS;
+  };
+  data: {
     ssh_config: string;
   };
 }
@@ -83,13 +100,28 @@ export function toSecret(namespace: string, sshKey: api.NewSshKey): SshKeySecret
       name: SSH_SECRET_NAME,
       namespace,
       labels: SSH_SECRET_LABELS,
-      annotations: SSH_SECRET_ANNOTATIONS,
+      annotations: SSH_ANNOTATIONS,
     },
     data: {
       'dwo_ssh_key.pub': sshKey.keyPub,
       dwo_ssh_key: sshKey.key,
-      ssh_config: btoa(SSH_CONFIG),
       ...(sshKey.passphrase && { passphrase: btoa(sshKey.passphrase) }),
+    },
+  };
+}
+
+export function toSshConfigConfigmap(namespace: string): SshConfigConfigmap {
+  return {
+    apiVersion: 'v1',
+    kind: 'ConfigMap',
+    metadata: {
+      name: SSH_CONFIGMAP_NAME,
+      namespace,
+      labels: SSH_CONFIG_LABELS,
+      annotations: SSH_ANNOTATIONS,
+    },
+    data: {
+      ssh_config: SSH_CONFIG,
     },
   };
 }

@@ -22,7 +22,9 @@ import {
   buildLabelSelector,
   fromSecret,
   isSshKeySecret,
+  SSH_CONFIGMAP_NAME,
   toSecret,
+  toSshConfigConfigmap,
 } from '@/devworkspaceClient/services/sshKeysApi/helpers';
 import { IShhKeysApi } from '@/devworkspaceClient/types';
 
@@ -60,7 +62,45 @@ export class SshKeysService implements IShhKeysApi {
     }
   }
 
+  private async listConfigmaps(namespace: string): Promise<k8s.V1ConfigMap[]> {
+    const labelSelector = buildLabelSelector();
+    const resp = await this.coreV1API.listNamespacedConfigMap({
+      namespace,
+      labelSelector,
+    });
+    return resp.items;
+  }
+
+  private async createConfigIfNeeded(namespace: string): Promise<void> {
+    /* check if config is already exists */
+    try {
+      const configs = await this.listConfigmaps(namespace);
+      const existingConfig = configs.find(config => {
+        return config.metadata?.name === SSH_CONFIGMAP_NAME;
+      });
+      if (existingConfig) {
+        return;
+      }
+    } catch (error) {
+      const additionalMessage = `Unable to create config`;
+      throw createError(error, API_ERROR_LABEL, additionalMessage);
+    }
+
+    /* create ssh config */
+    try {
+      await this.coreV1API.createNamespacedConfigMap({
+        namespace,
+        body: toSshConfigConfigmap(namespace),
+      });
+    } catch (error) {
+      const additionalMessage = `Unable to add SSH config`;
+      throw createError(error, API_ERROR_LABEL, additionalMessage);
+    }
+  }
+
   async add(namespace: string, sshKey: api.NewSshKey): Promise<api.SshKey> {
+    await this.createConfigIfNeeded(namespace);
+
     /* check if secret is already exists */
     try {
       const secrets = await this.listSecrets(namespace);

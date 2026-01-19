@@ -14,7 +14,10 @@
 
 import { api } from '@eclipse-che/common';
 import * as mockClient from '@kubernetes/client-node';
-import { CoreV1Api, V1Secret, V1SecretList } from '@kubernetes/client-node';
+import { CoreV1Api, V1ConfigMap, V1Secret, V1SecretList } from '@kubernetes/client-node';
+import { V1ConfigMapList } from '@kubernetes/client-node/dist/gen/models/V1ConfigMapList';
+
+import { SSH_CONFIGMAP_NAME } from '@/devworkspaceClient/services/sshKeysApi/helpers';
 
 import { SshKeysService } from '..';
 
@@ -51,8 +54,14 @@ describe('SSH Keys API', () => {
         },
       });
     },
+    listNamespacedConfigMap: () => {
+      return Promise.resolve({ items: [] } as V1ConfigMapList);
+    },
     createNamespacedSecret: () => {
       return Promise.resolve({} as V1Secret);
+    },
+    createNamespacedConfigMap: () => {
+      return Promise.resolve({} as V1ConfigMap);
     },
     readNamespacedSecret: () => {
       return Promise.resolve({} as V1Secret);
@@ -62,7 +71,9 @@ describe('SSH Keys API', () => {
     },
   } as unknown as CoreV1Api;
   const spyListNamespacedSecret = jest.spyOn(stubCoreV1Api, 'listNamespacedSecret');
+  const spyListNamespacedConfigMap = jest.spyOn(stubCoreV1Api, 'listNamespacedConfigMap');
   const spyCreateNamespacedSecret = jest.spyOn(stubCoreV1Api, 'createNamespacedSecret');
+  const spyCreateNamespacedConfigMap = jest.spyOn(stubCoreV1Api, 'createNamespacedConfigMap');
   const spyReadNamespacedSecret = jest.spyOn(stubCoreV1Api, 'readNamespacedSecret');
   // const spyReplaceNamespacedSecret = jest.spyOn(stubCoreV1Api, 'replaceNamespacedSecret');
   const spyDeleteNamespacedSecret = jest.spyOn(stubCoreV1Api, 'deleteNamespacedSecret');
@@ -114,7 +125,7 @@ describe('SSH Keys API', () => {
   });
 
   describe('adding SSH key secret', () => {
-    it('should create SSH key secret', async () => {
+    it('should create SSH key secret and config', async () => {
       const sshKey: api.NewSshKey = {
         name: 'asdf-1234',
         key: 'ssh-key-data',
@@ -123,6 +134,29 @@ describe('SSH Keys API', () => {
 
       await sshKeysService.add(namespace, sshKey);
 
+      expect(spyCreateNamespacedConfigMap).toHaveBeenCalled();
+      expect(spyCreateNamespacedSecret).toHaveBeenCalled();
+    });
+
+    it('should not create SSH config', async () => {
+      stubCoreV1Api.listNamespacedConfigMap = () => {
+        return Promise.resolve({
+          items: [
+            {
+              metadata: { name: SSH_CONFIGMAP_NAME },
+            } as V1ConfigMap,
+          ],
+        } as V1ConfigMapList);
+      };
+      const sshKey: api.NewSshKey = {
+        name: 'asdf-1234',
+        key: 'ssh-key-data',
+        keyPub: 'ssh-key-pub-data',
+      };
+
+      await sshKeysService.add(namespace, sshKey);
+
+      expect(spyCreateNamespacedConfigMap).not.toHaveBeenCalled();
       expect(spyCreateNamespacedSecret).toHaveBeenCalled();
     });
 
