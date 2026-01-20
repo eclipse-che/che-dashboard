@@ -23,6 +23,7 @@ import {
   isEditorUrl,
   isInlineEditorContent,
   parseInlineEditor,
+  resolveIconUrl,
 } from '@/components/EditorIcon';
 import devfileApi from '@/services/devfileApi';
 import { Workspace } from '@/services/workspace-adapter';
@@ -119,6 +120,42 @@ metadata:
   name: che-kiro-sshd-next
   displayName: Kiro SSHD Editor
   description: Custom Kiro editor with SSHD support`,
+      },
+    },
+  },
+} as unknown as Workspace;
+
+const mockWorkspaceInlineEditorWithAbsoluteIcon = {
+  ref: {
+    metadata: {
+      annotations: {
+        'che.eclipse.org/che-editor': `schemaVersion: 2.2.2
+metadata:
+  name: che-code
+  displayName: VS Code - Open Source
+  description: Microsoft Visual Studio Code - Open Source IDE
+  icon: https://eclipse-che.github.io/che-plugin-registry/main/v3/images/vscode.svg
+  attributes:
+    publisher: che-incubator
+    version: insiders`,
+      },
+    },
+  },
+} as unknown as Workspace;
+
+const mockWorkspaceInlineEditorWithRelativeIcon = {
+  ref: {
+    metadata: {
+      annotations: {
+        'che.eclipse.org/che-editor': `schemaVersion: 2.2.2
+metadata:
+  name: che-code
+  displayName: VS Code - Open Source
+  description: Microsoft Visual Studio Code - Open Source IDE
+  icon: /images/vscode.svg
+  attributes:
+    publisher: che-incubator
+    version: insiders`,
       },
     },
   },
@@ -345,6 +382,130 @@ metadata:
     });
   });
 
+  describe('resolveIconUrl', () => {
+    it('should resolve relative icon path with leading slash from che-plugin-registry URL', () => {
+      const editorUrl =
+        'https://eclipse-che.github.io/che-plugin-registry/main/v3/plugins/che-incubator/che-code/insiders/devfile.yaml';
+      const iconPath = '/images/vscode.svg';
+      const result = resolveIconUrl(editorUrl, iconPath);
+      expect(result).toBe(
+        'https://eclipse-che.github.io/che-plugin-registry/main/v3/images/vscode.svg',
+      );
+    });
+
+    it('should resolve relative icon path without leading slash from che-plugin-registry URL', () => {
+      const editorUrl =
+        'https://eclipse-che.github.io/che-plugin-registry/main/v3/plugins/che-incubator/che-code/latest/devfile.yaml';
+      const iconPath = 'images/idea.svg';
+      const result = resolveIconUrl(editorUrl, iconPath);
+      expect(result).toBe(
+        'https://eclipse-che.github.io/che-plugin-registry/main/v3/images/idea.svg',
+      );
+    });
+
+    it('should return absolute https:// icon URL as-is', () => {
+      const editorUrl =
+        'https://eclipse-che.github.io/che-plugin-registry/main/v3/plugins/che-incubator/che-code/insiders/devfile.yaml';
+      const iconPath = 'https://example.com/custom-icon.svg';
+      const result = resolveIconUrl(editorUrl, iconPath);
+      expect(result).toBe('https://example.com/custom-icon.svg');
+    });
+
+    it('should return absolute http:// icon URL as-is', () => {
+      const editorUrl =
+        'https://eclipse-che.github.io/che-plugin-registry/main/v3/plugins/che-incubator/che-code/insiders/devfile.yaml';
+      const iconPath = 'http://other-server.com/icon.svg';
+      const result = resolveIconUrl(editorUrl, iconPath);
+      expect(result).toBe('http://other-server.com/icon.svg');
+    });
+
+    it('should return undefined when icon path is undefined', () => {
+      const editorUrl =
+        'https://eclipse-che.github.io/che-plugin-registry/main/v3/plugins/che-incubator/che-code/insiders/devfile.yaml';
+      const result = resolveIconUrl(editorUrl, undefined);
+      expect(result).toBeUndefined();
+    });
+
+    it('should return undefined when icon path is empty', () => {
+      const editorUrl =
+        'https://eclipse-che.github.io/che-plugin-registry/main/v3/plugins/che-incubator/che-code/insiders/devfile.yaml';
+      const result = resolveIconUrl(editorUrl, '');
+      expect(result).toBeUndefined();
+    });
+
+    it('should return iconPath as-is when editor URL does not contain /che-plugin-registry/', () => {
+      const editorUrl = 'https://example.com/custom-editor/plugins/my-editor/devfile.yaml';
+      const iconPath = '/images/icon.svg';
+      const result = resolveIconUrl(editorUrl, iconPath);
+      expect(result).toBe('/images/icon.svg');
+    });
+
+    it('should return iconPath as-is when editor URL has /plugins/ but no /che-plugin-registry/', () => {
+      const editorUrl =
+        'https://my-custom-registry.example.com/v3/plugins/my-publisher/my-editor/1.0/devfile.yaml';
+      const iconPath = '/icons/my-icon.png';
+      const result = resolveIconUrl(editorUrl, iconPath);
+      expect(result).toBe('/icons/my-icon.png');
+    });
+
+    it('should return iconPath as-is when che-plugin-registry URL has no /plugins/ path', () => {
+      const editorUrl = 'https://eclipse-che.github.io/che-plugin-registry/main/v3/devfile.yaml';
+      const iconPath = '/images/vscode.svg';
+      const result = resolveIconUrl(editorUrl, iconPath);
+      expect(result).toBe('/images/vscode.svg');
+    });
+
+    it('should handle http:// che-plugin-registry URLs', () => {
+      const editorUrl =
+        'http://localhost:8080/che-plugin-registry/v3/plugins/che-incubator/che-code/next/devfile.yaml';
+      const iconPath = '/images/vscode.svg';
+      const result = resolveIconUrl(editorUrl, iconPath);
+      expect(result).toBe('http://localhost:8080/che-plugin-registry/v3/images/vscode.svg');
+    });
+
+    it('should handle che-plugin-registry in different path positions', () => {
+      const editorUrl =
+        'https://my-host.com/path/to/che-plugin-registry/v3/plugins/publisher/editor/version/devfile.yaml';
+      const iconPath = '/images/editor.svg';
+      const result = resolveIconUrl(editorUrl, iconPath);
+      expect(result).toBe('https://my-host.com/path/to/che-plugin-registry/v3/images/editor.svg');
+    });
+
+    it('should resolve ./ relative path relative to devfile location', () => {
+      const editorUrl =
+        'https://eclipse-che.github.io/che-plugin-registry/main/v3/plugins/che-incubator/che-code/insiders/devfile.yaml';
+      const iconPath = './images/icon.svg';
+      const result = resolveIconUrl(editorUrl, iconPath);
+      expect(result).toBe(
+        'https://eclipse-che.github.io/che-plugin-registry/main/v3/plugins/che-incubator/che-code/insiders/images/icon.svg',
+      );
+    });
+
+    it('should resolve ./ relative path for non-che-plugin-registry URLs', () => {
+      const editorUrl = 'https://example.com/custom-editor/plugins/my-editor/devfile.yaml';
+      const iconPath = './assets/icon.png';
+      const result = resolveIconUrl(editorUrl, iconPath);
+      expect(result).toBe('https://example.com/custom-editor/plugins/my-editor/assets/icon.png');
+    });
+
+    it('should resolve ./ relative path with nested directories', () => {
+      const editorUrl =
+        'https://my-registry.com/che-plugin-registry/v3/plugins/publisher/editor/1.0/devfile.yaml';
+      const iconPath = './icons/logos/editor-icon.svg';
+      const result = resolveIconUrl(editorUrl, iconPath);
+      expect(result).toBe(
+        'https://my-registry.com/che-plugin-registry/v3/plugins/publisher/editor/1.0/icons/logos/editor-icon.svg',
+      );
+    });
+
+    it('should handle ./ relative path when devfile is in root directory', () => {
+      const editorUrl = 'https://example.com/devfile.yaml';
+      const iconPath = './icon.svg';
+      const result = resolveIconUrl(editorUrl, iconPath);
+      expect(result).toBe('https://example.com/icon.svg');
+    });
+  });
+
   describe('getEditorName', () => {
     it('should return undefined when no editor annotation', () => {
       expect(getEditorName({ editors: [], workspace: mockWorkspaceNoEditor })).toBeUndefined();
@@ -488,6 +649,30 @@ describe('EditorIcon component', () => {
     expect(nameElements.length).toBeGreaterThan(0);
     // RegistryIcon is rendered as SVG when no iconData - check the parent container
     const container = nameElements[0].parentElement;
+    expect(container?.querySelector('svg')).toBeInTheDocument();
+  });
+
+  it('should render icon from absolute URL in inline editor metadata', () => {
+    render(<EditorIcon editors={[]} workspace={mockWorkspaceInlineEditorWithAbsoluteIcon} />);
+
+    // Check for displayName
+    expect(screen.getByText('VS Code - Open Source')).toBeInTheDocument();
+    // Should render an <img> with the absolute icon URL
+    const icons = screen.getAllByRole('img');
+    expect(icons.length).toBeGreaterThan(0);
+    expect(icons[0]).toHaveAttribute(
+      'src',
+      'https://eclipse-che.github.io/che-plugin-registry/main/v3/images/vscode.svg',
+    );
+  });
+
+  it('should render default icon for inline editor with relative icon path (no URL context)', () => {
+    render(<EditorIcon editors={[]} workspace={mockWorkspaceInlineEditorWithRelativeIcon} />);
+
+    // Check for displayName
+    expect(screen.getByText('VS Code - Open Source')).toBeInTheDocument();
+    // Should render RegistryIcon (SVG) since relative paths cannot be resolved without URL context
+    const container = screen.getByText('VS Code - Open Source').parentElement;
     expect(container?.querySelector('svg')).toBeInTheDocument();
   });
 });

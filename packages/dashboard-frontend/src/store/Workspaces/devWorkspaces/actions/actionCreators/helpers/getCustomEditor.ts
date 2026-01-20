@@ -13,6 +13,7 @@
 import { ThunkDispatch, UnknownAction } from '@reduxjs/toolkit';
 import { dump, load } from 'js-yaml';
 
+import { resolveIconUrl } from '@/components/EditorIcon';
 import devfileApi, { isDevfileV2 } from '@/services/devfileApi';
 import { ICheEditorYaml } from '@/services/workspace-client/devworkspace/devWorkspaceClient';
 import { CHE_EDITOR_YAML_PATH } from '@/services/workspace-client/helpers';
@@ -88,5 +89,14 @@ export async function getCustomEditor(
       'Failed to analyze the editor devfile, reason: Missing metadata.name attribute in the editor yaml file.',
     );
   }
+
+  // Resolve relative icon path to absolute URL if we have an editor reference
+  if (editorReference && repositoryEditorYaml.metadata?.icon) {
+    const resolvedIconUrl = resolveIconUrl(editorReference, repositoryEditorYaml.metadata.icon);
+    if (resolvedIconUrl) {
+      repositoryEditorYaml.metadata.icon = resolvedIconUrl;
+    }
+  }
+
   return dump(repositoryEditorYaml);
 }

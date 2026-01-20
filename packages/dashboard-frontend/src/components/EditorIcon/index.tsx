@@ -27,6 +27,71 @@ export type Props = {
 };
 
 /**
+ * Resolves a relative icon path to full URL using the editor URL.
+ * - Paths starting with './' are resolved relative to the devfile location
+ * - Paths starting with '/' are resolved relative to the registry base URL (before /plugins/)
+ * - Absolute URLs (http/https) are returned as-is
+ * - For non-Che-plugin-registry URLs, returns the icon path as-is
+ *
+ * @example
+ * editorUrl: "https://eclipse-che.github.io/che-plugin-registry/main/v3/plugins/che-incubator/che-code/insiders/devfile.yaml"
+ * iconPath: "/images/vscode.svg"
+ * result: "https://eclipse-che.github.io/che-plugin-registry/main/v3/images/vscode.svg"
+ *
+ * @example
+ * editorUrl: "https://eclipse-che.github.io/che-plugin-registry/main/v3/plugins/che-incubator/che-code/insiders/devfile.yaml"
+ * iconPath: "./images/icon.svg"
+ * result: "https://eclipse-che.github.io/che-plugin-registry/main/v3/plugins/che-incubator/che-code/insiders/images/icon.svg"
+ */
+export function resolveIconUrl(
+  editorUrl: string,
+  iconPath: string | undefined,
+): string | undefined {
+  if (!iconPath) {
+    return undefined;
+  }
+
+  // If icon is already an absolute URL, return as-is
+  if (/^http[s]?:\/\/.*/.test(iconPath)) {
+    return iconPath;
+  }
+
+  // Handle paths starting with './' - resolve relative to devfile location
+  if (iconPath.startsWith('./')) {
+    // Get the directory of the devfile by removing the filename
+    const lastSlashIndex = editorUrl.lastIndexOf('/');
+    if (lastSlashIndex !== -1) {
+      const devfileDir = editorUrl.substring(0, lastSlashIndex);
+      // Remove './' prefix and append to devfile directory
+      return `${devfileDir}/${iconPath.substring(2)}`;
+    }
+    return iconPath;
+  }
+
+  // Only resolve root-relative paths for Che plugin registry URLs
+  if (!editorUrl.includes('/che-plugin-registry/')) {
+    return iconPath;
+  }
+
+  // Check if the editor URL contains '/plugins/'
+  const pluginsIndex = editorUrl.indexOf('/plugins/');
+  if (pluginsIndex === -1) {
+    return iconPath;
+  }
+
+  // Extract base URL (everything before '/plugins/')
+  const baseUrl = editorUrl.substring(0, pluginsIndex);
+
+  // Handle root-relative paths that start with '/'
+  if (iconPath.startsWith('/')) {
+    return `${baseUrl}${iconPath}`;
+  }
+
+  // Handle other relative paths (no leading '/' or './')
+  return `${baseUrl}/${iconPath}`;
+}
+
+/**
  * Checks if the string is a valid HTTP/HTTPS URL.
  */
 export function isEditorUrl(cheEditor: string): boolean {
@@ -159,10 +224,11 @@ export function getEditorName({ editors, workspace }: Props): string | undefined
   return editor?.metadata?.displayName || shortEditorName;
 }
 
-function getIcon(editor?: devfileApi.Devfile): React.ReactElement {
+function getIcon(editor?: devfileApi.Devfile, editorUrl?: string): React.ReactElement {
   const iconData = editor?.metadata?.attributes?.iconData;
   const iconMediatype = editor?.metadata?.attributes?.iconMediatype;
 
+  // Priority 1: Use embedded icon data (base64 encoded)
   if (iconData && iconMediatype) {
     // SVG icons need URL encoding, other formats use the data directly
     const iconSrc =
@@ -170,6 +236,21 @@ function getIcon(editor?: devfileApi.Devfile): React.ReactElement {
         ? `data:image/svg+xml;charset=utf-8,${encodeURIComponent(iconData)}`
         : iconData;
     return <img src={iconSrc} alt={'...'} className={styles.icon} />;
+  }
+
+  // Priority 2: Use icon from devfile metadata
+  if (editor?.metadata?.icon) {
+    // If icon is already an absolute URL, use it directly
+    if (/^http[s]?:\/\/.*/.test(editor.metadata.icon)) {
+      return <img src={editor.metadata.icon} alt={'...'} className={styles.icon} />;
+    }
+    // For relative paths, resolve using editorUrl if available
+    if (editorUrl) {
+      const resolvedIconUrl = resolveIconUrl(editorUrl, editor.metadata.icon);
+      if (resolvedIconUrl) {
+        return <img src={resolvedIconUrl} alt={'...'} className={styles.icon} />;
+      }
+    }
   }
 
   return <RegistryIcon className={styles.icon} />;
@@ -211,7 +292,7 @@ export function EditorIcon(props: Props): React.ReactElement {
   // Handle inline editor content
   if (isInlineEditorContent(cheEditor)) {
     const inlineEditor = parseInlineEditor(cheEditor);
-    const icon = getIcon(inlineEditor);
+    const icon = getIcon(inlineEditor, undefined);
     const tooltipText = getTooltipText(inlineEditor);
 
     return (
@@ -239,7 +320,7 @@ export function EditorIcon(props: Props): React.ReactElement {
   }
 
   const tooltipText = getTooltipText(editor);
-  const icon = getIcon(editor);
+  const icon = getIcon(editor, undefined);
 
   return (
     <Tooltip content={tooltipText}>
