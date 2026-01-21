@@ -61,7 +61,7 @@
 | `@patternfly/react-table@4.113.7` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@patternfly/react-table/4.113.7) |
 | `@patternfly/react-tokens@4.94.7` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@patternfly/react-tokens/4.94.7) |
 | `@reduxjs/toolkit@2.2.7` | MIT AND (BSD-2-Clause AND ISC AND MIT) AND Apache-2.0 | #14170 |
-| `@remix-run/router@1.19.1` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@remix-run/router/1.19.1) |
+| `@remix-run/router@1.23.2` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@remix-run/router/1.23.2) |
 | `@sideway/address@4.1.5` | BSD-3-Clause AND MIT | #3098 |
 | `@sideway/formula@3.0.1` | BSD-3-Clause | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@sideway/formula/3.0.1) |
 | `@sideway/pinpoint@2.0.0` | BSD-3-Clause | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@sideway/pinpoint/2.0.0) |
@@ -371,8 +371,8 @@
 | `react-is@16.13.1` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/react-is/16.13.1) |
 | `react-pluralize@1.6.3` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/react-pluralize/1.6.3) |
 | `react-redux@9.1.2` | MIT AND (BSD-2-Clause AND ISC AND MIT) AND BSD-3-Clause | #13913 |
-| `react-router-dom@6.26.1` | MIT | #15860 |
-| `react-router@6.26.1` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/react-router/6.26.1) |
+| `react-router-dom@6.30.3` | MIT | #15860 |
+| `react-router@6.30.3` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/react-router/6.30.3) |
 | `react-side-effect@2.1.2` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/react-side-effect/2.1.2) |
 | `react@18.3.1` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/react/18.3.1) |
 | `readable-stream@3.6.2` | MIT | CQ22627 |
