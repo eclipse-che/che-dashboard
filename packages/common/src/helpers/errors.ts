@@ -17,9 +17,9 @@ import * as http from 'http';
  * Custom HttpError interface to replace the removed export from @kubernetes/client-node v1.x
  */
 export interface HttpError extends Error {
-  response: http.IncomingMessage;
+  headers: http.IncomingHttpHeaders;
   body: unknown;
-  statusCode?: number;
+  code?: number;
 }
 
 /**
@@ -32,7 +32,7 @@ export function getMessage(error: unknown): string {
     return 'Error is not specified.';
   }
   if (isKubeClientError(error)) {
-    const statusCode = error.statusCode || error.response.statusCode;
+    const statusCode = error.code;
     if (!statusCode || statusCode === -1) {
       return 'no response available due to network issue.';
     }
@@ -47,14 +47,14 @@ export function getMessage(error: unknown): string {
         return body.message;
       }
     }
-    if ((error.response as any).body) {
+    if ((error as any).body) {
       // for some reason, the error message could be in response body
-      const body = (error.response as any).body;
+      const body = (error as any).body;
       if (body && body.message) {
         return body.message;
       }
     }
-    return `"${statusCode}" returned by "${error.response.url}".`;
+    return statusCode.toString();
   }
 
   if (includesAxiosResponse(error)) {
@@ -129,7 +129,7 @@ export function isAxiosError(object: unknown): object is AxiosError {
 export function isKubeClientError(error: unknown): error is HttpError {
   return (
     isError(error) &&
-    (error as HttpError).response !== undefined &&
+    (error as HttpError).headers !== undefined &&
     'body' in (error as HttpError)
   );
 }

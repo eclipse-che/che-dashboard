@@ -28,7 +28,7 @@ export function createError(
   additionalMessage: string,
 ): DevWorkspaceClientError {
   const statusCode: number =
-    helpers.errors.isKubeClientError(error) && error.statusCode ? error.statusCode : 500;
+    helpers.errors.isKubeClientError(error) && error.code ? error.code : 500;
 
   if (error === undefined) {
     return new DevWorkspaceClientError(`${additionalMessage}.`, name, statusCode);
