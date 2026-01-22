@@ -45,7 +45,7 @@ export class DockerConfigApiService implements IDockerConfigApi {
       });
       return this.getDockerConfig(body);
     } catch (error) {
-      if (helpers.errors.isKubeClientError(error) && error.statusCode === 404) {
+      if (helpers.errors.isKubeClientError(error) && error.code === 404) {
         return EMPTY_DOCKERCONFIG;
       }
       const additionalMessage = `Unable to read dockerConfig in the specified namespace "${namespace}"`;
@@ -63,7 +63,7 @@ export class DockerConfigApiService implements IDockerConfigApi {
       });
       return this.getDockerConfig(body);
     } catch (error) {
-      if (helpers.errors.isKubeClientError(error) && error.statusCode === 404) {
+      if (helpers.errors.isKubeClientError(error) && error.code === 404) {
         return this.createNamespacedSecret(namespace);
       }
       const additionalMessage = `Unable to update dockerConfig in the specified namespace "${namespace}"`;

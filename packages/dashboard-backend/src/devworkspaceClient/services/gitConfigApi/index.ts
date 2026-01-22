@@ -44,7 +44,10 @@ export class GitConfigApiService implements IGitConfigApi {
 
       return this.toGitConfig(response);
     } catch (error) {
-      if (helpers.errors.isKubeClientError(error) && error.statusCode === 404) {
+      if (
+        helpers.errors.isKubeClientError(error) &&
+        ((error.code && error.code === 404) || (error.code && error.code === 404))
+      ) {
         // Create gitconfig configmap if it does not exist
         return this.createGitConfigMap(namespace);
       }

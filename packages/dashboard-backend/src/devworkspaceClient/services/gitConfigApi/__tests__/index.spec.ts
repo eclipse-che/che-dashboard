@@ -35,10 +35,10 @@ describe('Gitconfig API', () => {
       },
       readNamespacedConfigMap: () => {
         return Promise.reject({
-          statusCode: 404,
+          code: 404,
           name: 'HttpError',
           message: 'Not Found',
-          response: { statusCode: 404 },
+          headers: {},
           body: {},
         });
       },

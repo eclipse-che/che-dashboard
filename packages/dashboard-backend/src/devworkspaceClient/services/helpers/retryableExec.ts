@@ -22,13 +22,13 @@ export async function retryableExec<T>(callback: () => Promise<T>, maxAttempt = 
       return await callback();
     } catch (e) {
       error = e;
-      if (helpers.errors.isKubeClientError(e) && e.statusCode === 404) {
+      if (helpers.errors.isKubeClientError(e) && e.code === 404) {
         break;
       }
     }
     await delay(1000);
   }
-  if (!helpers.errors.isKubeClientError(error) || error.statusCode !== 404) {
+  if (!helpers.errors.isKubeClientError(error) || error.code !== 404) {
     logger.error(error);
   }
   throw error;

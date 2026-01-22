@@ -181,16 +181,16 @@ describe('Errors helper', () => {
       const error: HttpError = {
         name: 'HttpError',
         message: 'HttpError message',
-        response: {
-          url: '/location/',
-        } as http.IncomingMessage,
+        headers: {
+          'content-type': 'application/json',
+        } as http.IncomingHttpHeaders,
         body: 'No response available',
-        statusCode: -1,
+        code: -1,
       };
       const expectedMessage = 'no response available due to network issue.';
       expect(getMessage(error)).toEqual(expectedMessage);
 
-      delete error.statusCode;
+      delete error.code;
       expect(getMessage(error)).toEqual(expectedMessage);
     });
 
@@ -199,13 +199,13 @@ describe('Errors helper', () => {
       const error: HttpError = {
         name: 'HttpError',
         message: 'HttpError message',
-        response: {
-          url: '/location/',
-        } as http.IncomingMessage,
+        headers: {
+          'content-type': 'application/json',
+        } as http.IncomingHttpHeaders,
         body: {
           message: expectedMessage,
         },
-        statusCode: 500,
+        code: 500,
       };
       expect(getMessage(error)).toEqual(expectedMessage);
     });
@@ -215,43 +215,39 @@ describe('Errors helper', () => {
       const error: HttpError = {
         name: 'HttpError',
         message: 'HttpError message',
-        response: {
-          url: '/location/',
-        } as http.IncomingMessage,
+        headers: {
+          'content-type': 'application/json',
+        } as http.IncomingHttpHeaders,
         body: expectedMessage,
-        statusCode: 500,
+        code: 500,
       };
       expect(getMessage(error)).toEqual(expectedMessage);
     });
 
     it('should return error message if `statusCode` is present', () => {
-      const expectedMessage = '"500" returned by "/location/".';
+      const expectedMessage = '500';
       const error: HttpError = {
         name: 'HttpError',
         message: expectedMessage,
-        response: {
-          url: '/location/',
-        } as http.IncomingMessage,
+        headers: {
+          'content-type': 'application/json',
+        } as http.IncomingHttpHeaders,
         body: undefined,
-        statusCode: 500,
+        code: 500,
       };
       expect(getMessage(error)).toEqual(expectedMessage);
     });
 
-    it('should return error message if `response.body.message` is present', () => {
-      const expectedMessage =
-        'Secrets "devworkspace-container-registry-dockercfg" already exist.';
+    it('should return error message if `headers` is present', () => {
+      const expectedMessage = '409';
       const error: HttpError = {
         name: 'HttpError',
         message: 'HttpError message',
-        response: {
-          url: '/location/',
-          body: {
-            message: expectedMessage,
-          },
-        } as any,
+        headers: {
+          'content-type': 'application/json',
+        } as http.IncomingHttpHeaders,
         body: undefined,
-        statusCode: 409,
+        code: 409,
       };
       expect(getMessage(error)).toEqual(expectedMessage);
     });
@@ -260,29 +256,13 @@ describe('Errors helper', () => {
       const error: HttpError = {
         name: 'HttpError',
         message: 'HttpError message',
-        response: {
-          url: '/location/',
-        } as any,
+        headers: {
+          'content-type': 'application/json',
+        } as http.IncomingHttpHeaders,
         body: undefined,
-        statusCode: 409,
+        code: 409,
       };
-      expect(getMessage(error)).toEqual('"409" returned by "/location/".');
-    });
-
-    it('should return default error message if `response.body.message` is undefined', () => {
-      const error: HttpError = {
-        name: 'HttpError',
-        message: 'HttpError message',
-        response: {
-          url: '/location/',
-          body: {
-            message: undefined,
-          },
-        } as any,
-        body: undefined,
-        statusCode: 409,
-      };
-      expect(getMessage(error)).toEqual('"409" returned by "/location/".');
+      expect(getMessage(error)).toEqual('409');
     });
 
     it('should return `error.body` as a message if it is a string', () => {
@@ -290,27 +270,27 @@ describe('Errors helper', () => {
       const error = {
         name: 'HttpError',
         message: 'HttpError message',
-        response: {
-          url: '/location/',
-        } as http.IncomingMessage,
+        headers: {
+          'content-type': 'application/json',
+        } as http.IncomingHttpHeaders,
         body: 'Test message.',
-        statusCode: 409,
+        code: 409,
       };
       expect(getMessage(error)).toEqual(expectedMessage);
     });
 
     it('should return default response message if `error.body` is object and `error.body.message` is undefined', () => {
-      const expectedMessage = '"409" returned by "/location/".';
+      const expectedMessage = '409';
       const error = {
         name: 'HttpError',
         message: 'HttpError message',
-        response: {
-          url: '/location/',
-        } as http.IncomingMessage,
+        headers: {
+          'content-type': 'application/json',
+        } as http.IncomingHttpHeaders,
         body: {
           test: 'test',
         },
-        statusCode: 409,
+        code: 409,
       };
       expect(getMessage(error)).toEqual(expectedMessage);
     });
