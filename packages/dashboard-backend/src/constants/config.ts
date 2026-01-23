@@ -14,6 +14,4 @@
  * Common configuration variables
  */
 
-export const routingClass = 'che';
-
 export const baseApiPath = '/dashboard/api';
