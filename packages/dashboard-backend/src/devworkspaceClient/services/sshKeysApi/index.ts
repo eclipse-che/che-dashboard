@@ -82,7 +82,7 @@ export class SshKeysService implements IShhKeysApi {
         return;
       }
     } catch (error) {
-      const additionalMessage = `Unable to create config`;
+      const additionalMessage = `Unable to fetch SSH config`;
       throw createError(error, API_ERROR_LABEL, additionalMessage);
     }
 

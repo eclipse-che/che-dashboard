@@ -190,6 +190,48 @@ describe('SSH Keys API', () => {
       }
     });
 
+    it('should return error if can not fetch config', async () => {
+      const sshKey: api.NewSshKey = {
+        name: 'git-ssh-key',
+        key: 'ssh-key-data',
+        keyPub: 'ssh-key-pub-data',
+      };
+
+      spyListNamespacedConfigMap.mockImplementationOnce(() => {
+        throw new Error('test error');
+      });
+
+      try {
+        await sshKeysService.add(namespace, sshKey);
+      } catch (e) {
+        expect((e as unknown as Error).message).toEqual(`Unable to fetch SSH config: test error`);
+      }
+    });
+
+    it('should return error if can not add config', async () => {
+      const sshKey: api.NewSshKey = {
+        name: 'git-ssh-key',
+        key: 'ssh-key-data',
+        keyPub: 'ssh-key-pub-data',
+      };
+
+      spyListNamespacedConfigMap.mockImplementationOnce(() => {
+        return Promise.resolve({
+          items: [],
+        } as V1ConfigMapList);
+      });
+
+      spyCreateNamespacedConfigMap.mockImplementationOnce(() => {
+        throw new Error('test error');
+      });
+
+      try {
+        await sshKeysService.add(namespace, sshKey);
+      } catch (e) {
+        expect((e as unknown as Error).message).toEqual(`Unable to add SSH config: test error`);
+      }
+    });
+
     it('should return error if SSH key contains the dummy data', async () => {
       const errorMessage = 'Key is not defined';
       mockToSecret.mockImplementationOnce(() => {
