@@ -825,9 +825,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@eclipse-che/che-devworkspace-generator@npm:7.113.0-next-7b6a101":
-  version: 7.113.0-next-7b6a101
-  resolution: "@eclipse-che/che-devworkspace-generator@npm:7.113.0-next-7b6a101"
+"@eclipse-che/che-devworkspace-generator@npm:7.114.0":
+  version: 7.114.0
+  resolution: "@eclipse-che/che-devworkspace-generator@npm:7.114.0"
   dependencies:
     "@devfile/api": "npm:2.3.0-1757407014"
     fs-extra: "npm:^11.2.0"
@@ -841,7 +841,7 @@ __metadata:
     axios: ^1.13.1
   bin:
     che-devworkspace-generator: lib/entrypoint.js
-  checksum: 10/15fb780f2a4c025f8b1eb0253eba94ad273ef40c6b5b682c037af714f7e259df91aee1d10e84f17f10010da6429a73779929ded439099ff70899f1bfc563bc0d
+  checksum: 10/9fabd1d4aadb25d796607dc94d0118d1da5812e74d672d8362afc35e087746295db1004fb4e393e8ed0f004186f296bad4da0a8e768d83e02eda49f1dd910565
   languageName: node
   linkType: hard
 
@@ -873,7 +873,7 @@ __metadata:
   resolution: "@eclipse-che/dashboard-backend@workspace:packages/dashboard-backend"
   dependencies:
     "@devfile/api": "npm:2.3.0-1757407014"
-    "@eclipse-che/che-devworkspace-generator": "npm:7.113.0-next-7b6a101"
+    "@eclipse-che/che-devworkspace-generator": "npm:7.114.0"
     "@fastify/cors": "npm:^9.0.1"
     "@fastify/error": "npm:^3.4.1"
     "@fastify/http-proxy": "npm:^9.5.0"
