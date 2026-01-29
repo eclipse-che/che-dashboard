@@ -980,6 +980,7 @@ __metadata:
     "@types/webpack": "npm:^5.28.5"
     "@typescript-eslint/eslint-plugin": "npm:^6.4.0"
     "@typescript-eslint/parser": "npm:^6.4.0"
+    "@uiw/codemirror-theme-github": "npm:^4.25.4"
     "@uiw/codemirror-themes": "npm:^4.25.4"
     "@uiw/react-codemirror": "npm:4.23.5"
     buffer: "npm:^6.0.3"
@@ -3008,7 +3009,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@uiw/codemirror-themes@npm:^4.25.4":
+"@uiw/codemirror-theme-github@npm:^4.25.4":
+  version: 4.25.4
+  resolution: "@uiw/codemirror-theme-github@npm:4.25.4"
+  dependencies:
+    "@uiw/codemirror-themes": "npm:4.25.4"
+  checksum: 10/bd22066006a80307123c8f206f2e58b7885eef2f8417b43545ee67f0ceec720be3cd142e3ecd45063b43063092e0257b3953a7e157cf32421c01aa824ac8e6bf
+  languageName: node
+  linkType: hard
+
+"@uiw/codemirror-themes@npm:4.25.4, @uiw/codemirror-themes@npm:^4.25.4":
   version: 4.25.4
   resolution: "@uiw/codemirror-themes@npm:4.25.4"
   dependencies:
