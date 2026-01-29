@@ -199,7 +199,7 @@ describe('test redirectToDashboard()', () => {
       spyWindowLocation = createWindowLocationSpy(origin + '/test');
 
       redirectToDashboard();
-      expect(spyWindowLocation).toHaveBeenCalledWith(origin + '/dashboard/v6/');
+      expect(spyWindowLocation).toHaveBeenCalledWith(origin + '/dashboard/');
     });
   });
 
@@ -212,7 +212,7 @@ describe('test redirectToDashboard()', () => {
       redirectToDashboard();
       expect(spyWindowLocation).toHaveBeenCalledWith(
         origin +
-          '/dashboard/v6/f?policies.create=perclick&url=' +
+          '/dashboard/f?policies.create=perclick&url=' +
           encodeURIComponent(encodeURIComponent(repoUrl)),
       );
     });
@@ -225,7 +225,7 @@ describe('test redirectToDashboard()', () => {
       redirectToDashboard();
       expect(spyWindowLocation).toHaveBeenCalledWith(
         origin +
-          '/dashboard/v6/f?override.devfileFilename=my-devfile.yaml&url=' +
+          '/dashboard/f?override.devfileFilename=my-devfile.yaml&url=' +
           encodeURIComponent(encodeURIComponent(repoUrl)),
       );
     });
@@ -238,7 +238,7 @@ describe('test redirectToDashboard()', () => {
 
       redirectToDashboard();
       expect(spyWindowLocation).toHaveBeenCalledWith(
-        origin + '/dashboard/v6/f?remotes=' + encodeURIComponent(remoteUrl),
+        origin + '/dashboard/f?remotes=' + encodeURIComponent(remoteUrl),
       );
     });
   });

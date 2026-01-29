@@ -20,7 +20,7 @@ import {
 import SessionStorageService, { SessionStorageKey } from '@/services/session-storage';
 
 export function redirectToDashboard(): void {
-  if (window.location.pathname.startsWith('/dashboard/v6/')) {
+  if (window.location.pathname.startsWith('/dashboard/')) {
     // known location, do nothing
     return;
   }
@@ -31,7 +31,7 @@ export function redirectToDashboard(): void {
   const hash = window.location.hash.replace(/(\/?)#(\/?)/, '');
   if (FactoryLocationAdapter.isHttpLocation(hash) || FactoryLocationAdapter.isSshLocation(hash)) {
     // project url found, redirect to the workspaces creation page
-    window.location.href = window.location.origin + '/dashboard/v6' + buildFactoryLoaderPath(hash);
+    window.location.href = window.location.origin + '/dashboard' + buildFactoryLoaderPath(hash);
     return;
   }
 
@@ -43,13 +43,13 @@ export function redirectToDashboard(): void {
     // allow starting workspaces when no project url, but remotes are provided
     window.location.href =
       window.location.origin +
-      '/dashboard/v6' +
+      '/dashboard' +
       buildFactoryLoaderPath(window.location.href, false);
     return;
   }
 
   // redirect to the dashboard home page
-  window.location.href = window.location.origin + '/dashboard/v6/';
+  window.location.href = window.location.origin + '/dashboard/';
 }
 
 export function storePathIfNeeded(path: string) {

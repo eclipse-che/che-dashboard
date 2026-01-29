@@ -134,13 +134,13 @@ export class WorkspaceStoppedDetector {
   /**
    * Returns true if the dashboard was reached via redirection from a url path that was not:
    * 1. /
-   * 2. /dashboard/v6/
+   * 2. /dashboard/
    */
   private isRedirectedFromNonDashboardUrl(): boolean {
     const path = SessionStorageService.get(SessionStorageKey.ORIGINAL_LOCATION_PATH);
     if (!path) {
       return false;
     }
-    return path !== '/' && path !== '/dashboard/v6';
+    return path !== '/' && path !== '/dashboard/';
   }
 }

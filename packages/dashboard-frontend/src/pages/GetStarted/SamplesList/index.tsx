@@ -139,7 +139,7 @@ class SamplesList extends React.PureComponent<Props, State> {
       factoryParams[NAME_ATTR] = this.state.customWorkspaceName;
     }
 
-    const factoryLink = `${window.location.origin}/dashboard/v6/#${ROUTE.FACTORY_LOADER}?${new URLSearchParams(factoryParams).toString()}`;
+    const factoryLink = `${window.location.origin}/dashboard/#${ROUTE.FACTORY_LOADER}?${new URLSearchParams(factoryParams).toString()}`;
 
     window.open(factoryLink, '_blank');
   }

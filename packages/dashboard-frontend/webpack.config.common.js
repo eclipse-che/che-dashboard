@@ -22,7 +22,7 @@ const config = {
     'accept-factory-link': path.join(__dirname, 'src/preload/index.ts'),
   },
   output: {
-    path: path.join(__dirname, 'lib', 'public/dashboard/v6'),
+    path: path.join(__dirname, 'lib', 'public/dashboard'),
     publicPath: './',
     filename: (pathData) => {
       if (pathData.chunk.name === 'accept-factory-link') {
@@ -117,7 +117,7 @@ const config = {
       template: path.resolve(__dirname, 'src/preload/index.html'),
       chunks : ['accept-factory-link'],
       filename: '../index.html',
-      publicPath: '/dashboard/v6/',
+      publicPath: '/dashboard/',
     }),
     new CopyPlugin({
       patterns: [
