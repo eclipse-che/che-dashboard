@@ -68,9 +68,9 @@ div.main-page-loader {
 
   font-family: var(--pf-t--global--font--family--body);
   font-size: 24px;
-  color: #fff;
+  color: var(--pf-t--global--color--nonstatus--white--default);
 
-  background-color: #000;
+  background-color: var(--pf-t--global--color--nonstatus--black--default);
 }
 
 div.main-page-loader .ide-page-loader-content img {
@@ -116,7 +116,7 @@ div.main-page-loader .ide-page-loader-content img {
   font-size: 14px;
   font-weight: 400;
   line-height: 36px;
-  color: #fff;
+  color: var(--pf-t--global--color--nonstatus--white--default);
 
   background-color: var(--pf-t--global--color--brand--default);
   border-radius: var(--pf-t--global--border--radius--small);

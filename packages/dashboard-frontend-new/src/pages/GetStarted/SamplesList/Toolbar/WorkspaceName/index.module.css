@@ -19,7 +19,7 @@
   overflow: hidden;
 
   font-size: small;
-  color: #c9190b;
+  color: var(--pf-t--global--color--status--danger--default);
   text-overflow: ellipsis;
   white-space: nowrap;
 }
