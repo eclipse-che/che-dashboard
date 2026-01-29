@@ -11,9 +11,12 @@
  */
 
 import { yaml } from '@codemirror/lang-yaml';
-import { githubDark, githubLight } from '@uiw/codemirror-theme-github';
+import { HighlightStyle, syntaxHighlighting } from '@codemirror/language';
+import { EditorView } from '@codemirror/view';
+import { githubDark } from '@uiw/codemirror-theme-github';
+import { tags as t } from '@lezer/highlight';
 import CodeMirror from '@uiw/react-codemirror';
-import React from 'react';
+import React, { useMemo } from 'react';
 
 import styles from '@/components/DevfileViewer/index.module.css';
 import { useTheme } from '@/contexts/ThemeContext';
@@ -25,8 +28,45 @@ export type Props = {
   id: string;
 };
 
+const createLightTheme = () => {
+  return EditorView.theme(
+    {
+      '&': {
+        color: '#2e3440',
+        backgroundColor: '#fff',
+      },
+      '.cm-activeLine': {
+        backgroundColor: 'inherit',
+      },
+      '.cm-gutters': {
+        backgroundColor: '#f7f7f7',
+        color: '#999',
+      },
+      '.cm-activeLineGutter': {
+        backgroundColor: '#f7f7f7',
+      },
+    },
+    { dark: false },
+  );
+};
+
+const createLightHighlightStyle = () => {
+  return HighlightStyle.define([
+    { tag: t.keyword, color: '#5e81ac' },
+    { tag: [t.string], color: '#5e81ac' },
+    { tag: [t.variableName], color: '#008080' },
+    {
+      tag: [t.name, t.deleted, t.character, t.propertyName, t.macroName],
+      color: '#008080',
+    },
+  ]);
+};
+
 export const DevfileViewer: React.FC<Props> = ({ isActive, isExpanded, value, id }) => {
   const { isDarkTheme } = useTheme();
+
+  const lightTheme = useMemo(() => createLightTheme(), []);
+  const lightHighlightStyle = useMemo(() => createLightHighlightStyle(), []);
 
   return (
     <div className={styles.devfileViewer}>
@@ -35,8 +75,12 @@ export const DevfileViewer: React.FC<Props> = ({ isActive, isExpanded, value, id
         readOnly={true}
         id={id}
         value={value}
-        theme={isDarkTheme ? githubDark : githubLight}
-        extensions={[yaml()]}
+        theme={isDarkTheme ? githubDark : undefined}
+        extensions={
+          isDarkTheme
+            ? [yaml()]
+            : [lightTheme, syntaxHighlighting(lightHighlightStyle), yaml()]
+        }
       />
     </div>
   );
