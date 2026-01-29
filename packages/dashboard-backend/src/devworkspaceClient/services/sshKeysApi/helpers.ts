@@ -16,6 +16,8 @@ import * as k8s from '@kubernetes/client-node';
 export const SSH_CONFIG = `host *
   IdentityFile /etc/ssh/dwo_ssh_key
   StrictHostKeyChecking = no
+
+Include /etc/ssh/ssh_config.d/*.conf
 `;
 
 export const SSH_SECRET_ANNOTATIONS = {
