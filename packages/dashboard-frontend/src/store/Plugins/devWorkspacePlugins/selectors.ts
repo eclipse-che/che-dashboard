@@ -50,5 +50,3 @@ export const selectDwDefaultEditorError = createSelector(
   selectState,
   state => state.defaultEditorError,
 );
-
-export const selectCmEditors = createSelector(selectState, state => state.cmEditors || []);

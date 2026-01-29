@@ -14,6 +14,16 @@ import '@testing-library/jest-dom';
 
 import React from 'react';
 
+// Mock offsetWidth/offsetHeight for PatternFly 6 Table components in JSDOM
+Object.defineProperty(HTMLElement.prototype, 'offsetWidth', {
+  configurable: true,
+  value: 100,
+});
+Object.defineProperty(HTMLElement.prototype, 'offsetHeight', {
+  configurable: true,
+  value: 100,
+});
+
 jest.mock('@patternfly/react-core', () => {
   return {
     ...jest.requireActual('@patternfly/react-core'),

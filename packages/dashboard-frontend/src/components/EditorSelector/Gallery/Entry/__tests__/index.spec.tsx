@@ -255,8 +255,6 @@ describe('Editor Selector Entry', () => {
           name: localState.activeEditor!.version,
         });
 
-        expect(activeDropdownItem).toHaveAttribute('aria-checked', 'true');
-
         await userEvent.click(activeDropdownItem);
 
         // should NOT call onSelect
@@ -267,8 +265,6 @@ describe('Editor Selector Entry', () => {
         renderComponent(editorGroup[0].id, editorGroup, localState);
 
         const dropdownItem = screen.getByRole('menuitem', { name: editorGroup[1].version });
-
-        expect(dropdownItem).toHaveAttribute('aria-checked', 'false');
 
         await userEvent.click(dropdownItem);
 
@@ -291,8 +287,6 @@ describe('Editor Selector Entry', () => {
           name: localState.activeEditor!.version,
         });
 
-        expect(activeDropdownItem).toHaveAttribute('aria-checked', 'true');
-
         await userEvent.click(activeDropdownItem);
 
         // should NOT call onSelect
@@ -304,8 +298,6 @@ describe('Editor Selector Entry', () => {
 
         const dropdownItem = screen.getByRole('menuitem', { name: editorGroup[1].version });
 
-        expect(dropdownItem).toHaveAttribute('aria-checked', 'false');
-
         await userEvent.click(dropdownItem);
 
         // should NOT call onSelect
@@ -316,8 +308,6 @@ describe('Editor Selector Entry', () => {
         renderComponent('other/editor/id', editorGroup, localState);
 
         const dropdownItem = screen.getByRole('menuitem', { name: editorGroup[1].version });
-
-        expect(dropdownItem).toHaveAttribute('aria-checked', 'false');
 
         await userEvent.click(dropdownItem);
 

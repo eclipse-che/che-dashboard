@@ -11,12 +11,11 @@
  */
 
 import {
+  Content,
   Panel,
   PanelHeader,
   PanelMain,
   PanelMainBody,
-  Text,
-  TextContent,
   Title,
 } from '@patternfly/react-core';
 import React from 'react';
@@ -140,7 +139,7 @@ class SamplesList extends React.PureComponent<Props, State> {
       factoryParams[NAME_ATTR] = this.state.customWorkspaceName;
     }
 
-    const factoryLink = `${window.location.origin}/dashboard/#${ROUTE.FACTORY_LOADER}?${new URLSearchParams(factoryParams).toString()}`;
+    const factoryLink = `${window.location.origin}/dashboard/v6/#${ROUTE.FACTORY_LOADER}?${new URLSearchParams(factoryParams).toString()}`;
 
     window.open(factoryLink, '_blank');
   }
@@ -153,9 +152,9 @@ class SamplesList extends React.PureComponent<Props, State> {
       <Panel>
         <PanelHeader>
           <Title headingLevel="h3">Select a Sample</Title>
-          <TextContent>
-            <Text component="small">Select a sample to create your first workspace.</Text>
-          </TextContent>
+          <Content>
+            <Content component="small">Select a sample to create your first workspace.</Content>
+          </Content>
         </PanelHeader>
         <PanelMain>
           <PanelMainBody>

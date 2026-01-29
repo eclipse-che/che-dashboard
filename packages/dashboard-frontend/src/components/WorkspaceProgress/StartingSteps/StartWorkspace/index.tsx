@@ -21,8 +21,6 @@ import {
   ProgressStepProps,
   ProgressStepState,
 } from '@/components/WorkspaceProgress/ProgressStep';
-import { buildPVCErrorMessage } from '@/components/WorkspaceProgress/StartingSteps/StartWorkspace/buildPVCErrorMessage';
-import { hasPVCErrors } from '@/components/WorkspaceProgress/StartingSteps/StartWorkspace/detectPVCErrors';
 import {
   applyRestartDefaultLocation,
   applyRestartInSafeModeLocation,
@@ -40,13 +38,9 @@ import { AlertItem, DevWorkspaceStatus, LoaderTab } from '@/services/helpers/typ
 import { Workspace, WorkspaceAdapter } from '@/services/workspace-adapter';
 import { RootState } from '@/store';
 import { selectApplications } from '@/store/ClusterInfo/selectors';
-import { selectEventsFromResourceVersion } from '@/store/Events';
 import { selectStartTimeout } from '@/store/ServerConfig/selectors';
 import { workspacesActionCreators } from '@/store/Workspaces';
-import {
-  selectDevWorkspaceWarnings,
-  selectStartedWorkspaces,
-} from '@/store/Workspaces/devWorkspaces/selectors';
+import { selectDevWorkspaceWarnings } from '@/store/Workspaces/devWorkspaces/selectors';
 import { selectAllWorkspaces } from '@/store/Workspaces/selectors';
 
 export type Props = MappedProps &
@@ -61,23 +55,6 @@ export type State = ProgressStepState & {
 
 class StartingStepStartWorkspace extends ProgressStep<Props, State> {
   protected readonly name = 'Waiting for workspace to start';
-
-  /**
-   * Static set to track workspace UIDs with pending restart.
-   * Used to skip PVC error detection during restart flow.
-   * This persists across component re-renders unlike React state.
-   */
-  private static restartInitiatedSet: Set<string> = new Set();
-
-  // For testing: clear the static set
-  public static clearRestartInitiatedSet(): void {
-    StartingStepStartWorkspace.restartInitiatedSet.clear();
-  }
-
-  // Getter to access restartInitiatedSet for hasPVCErrors
-  public static getRestartInitiatedSet(): Set<string> {
-    return StartingStepStartWorkspace.restartInitiatedSet;
-  }
 
   @lazyInject(AppAlerts)
   private readonly appAlerts: AppAlerts;
@@ -152,19 +129,7 @@ class StartingStepStartWorkspace extends ProgressStep<Props, State> {
       return true;
     }
 
-    const currentHasPVCErrors = hasPVCErrors(
-      workspace,
-      this.props.startedWorkspaces,
-      this.props.eventsFromResourceVersionFn,
-      StartingStepStartWorkspace.restartInitiatedSet,
-    );
-    const nextHasPVCErrors = hasPVCErrors(
-      nextWorkspace,
-      nextProps.startedWorkspaces,
-      nextProps.eventsFromResourceVersionFn,
-      StartingStepStartWorkspace.restartInitiatedSet,
-    );
-    return currentHasPVCErrors !== nextHasPVCErrors;
+    return false;
   }
 
   public componentWillUnmount(): void {
@@ -177,15 +142,8 @@ class StartingStepStartWorkspace extends ProgressStep<Props, State> {
     }
 
     const workspace = this.findTargetWorkspace(this.props);
-
-    // Reset shouldStart flag once workspace is starting/running
-    // Skip if restart was initiated - allow the restart flow to complete
-    if (
-      workspace &&
-      this.state.shouldStart &&
-      (workspace.isStarting || workspace.isRunning) &&
-      !StartingStepStartWorkspace.restartInitiatedSet.has(workspace.uid)
-    ) {
+    if ((workspace?.isStarting || workspace?.isRunning) && this.state.shouldStart) {
+      // prevent a workspace being repeatedly restarted, once it's starting
       this.setState({
         shouldStart: false,
       });
@@ -198,54 +156,17 @@ class StartingStepStartWorkspace extends ProgressStep<Props, State> {
           warning,
         });
       }
-      const pvcErrors = hasPVCErrors(
-        workspace,
-        this.props.startedWorkspaces,
-        this.props.eventsFromResourceVersionFn,
-        StartingStepStartWorkspace.restartInitiatedSet,
-      );
-      if (pvcErrors) {
-        this.handlePVCError(workspace);
-      }
     }
 
     this.prepareAndRun();
   }
 
-  /**
-   * Handles workspace restart action from error alert.
-   * If workspace is running/starting, stops it first and marks for restart.
-   * Otherwise, triggers immediate restart via onRestart callback.
-   */
-  protected async handleRestart(alertKey: string, tab: LoaderTab): Promise<void> {
+  protected handleRestart(alertKey: string, tab: LoaderTab): void {
     this.props.onHideError(alertKey);
 
-    const workspace = this.findTargetWorkspace(this.props);
-
-    // If workspace is running/starting, stop it first
-    // Add to restartInitiatedSet to skip PVC detection until workspace restarts
-    if (workspace && (workspace.isStarting || workspace.isRunning)) {
-      try {
-        await this.props.stopWorkspace(workspace);
-        StartingStepStartWorkspace.restartInitiatedSet.add(workspace.uid);
-        this.setState({
-          shouldStart: true,
-          lastError: undefined,
-        });
-        return;
-      } catch (e) {
-        const error = new Error(
-          `Failed to stop workspace "${workspace.name}" before restart. ${common.helpers.errors.getMessage(e)}`,
-        );
-        this.handleError(error);
-        return;
-      }
-    }
-
-    // Workspace is already stopped - trigger restart directly
-    this.setState({ shouldStart: true, lastError: undefined }, () => {
-      this.props.onRestart(tab);
-    });
+    this.setState({ shouldStart: true });
+    this.clearStepError();
+    this.props.onRestart(tab);
   }
 
   protected handleTimeout(workspace: Workspace | undefined): void {
@@ -255,16 +176,6 @@ class StartingStepStartWorkspace extends ProgressStep<Props, State> {
         : `The workspace status remains "${workspace.status}" in the last ${this.props.startTimeout} seconds.`;
     const timeoutError = new Error(message);
     this.handleError(timeoutError);
-  }
-
-  protected handlePVCError(workspace: Workspace | undefined): void {
-    const message = buildPVCErrorMessage(workspace, this.props.applications);
-    const pvcError: Error & { detailedMessage?: React.ReactNode } = new Error(
-      typeof message === 'string' ? message : 'PVC is full, workspace will fail to start.',
-    );
-    // Store the React element for display in buildAlertItem
-    pvcError.detailedMessage = message;
-    this.handleError(pvcError);
   }
 
   /**
@@ -299,22 +210,9 @@ class StartingStepStartWorkspace extends ProgressStep<Props, State> {
       return false;
     }
 
-    // Check for PVC errors - restartInitiatedSet skips detection during restart
-    const pvcErrors = hasPVCErrors(
-      workspace,
-      this.props.startedWorkspaces,
-      this.props.eventsFromResourceVersionFn,
-      StartingStepStartWorkspace.restartInitiatedSet,
-    );
-    if (pvcErrors) {
-      this.handlePVCError(workspace);
-      // Don't proceed further if PVC error is detected
-      return false;
-    }
-
     if (
       workspaceStatusIs(workspace, DevWorkspaceStatus.TERMINATING) ||
-      (!this.state.shouldStart && workspaceStatusIs(workspace, DevWorkspaceStatus.FAILED))
+      (this.state.shouldStart === false && workspaceStatusIs(workspace, DevWorkspaceStatus.FAILED))
     ) {
       throw new Error(
         workspace.error || `The workspace status changed unexpectedly to "${workspace.status}".`,
@@ -326,14 +224,12 @@ class StartingStepStartWorkspace extends ProgressStep<Props, State> {
       return true;
     }
 
-    // Start workspace if it's stopped/failed and shouldStart is true
+    // start workspace
     if (
       this.state.shouldStart &&
       workspaceStatusIs(workspace, DevWorkspaceStatus.STOPPED, DevWorkspaceStatus.FAILED)
     ) {
       await this.props.startWorkspace(workspace, getStartParams(this.props.location));
-      // Clear restart flag after workspace starts to re-enable PVC detection
-      StartingStepStartWorkspace.restartInitiatedSet.delete(workspace.uid);
     }
 
     // do not switch to the next step
@@ -376,16 +272,11 @@ class StartingStepStartWorkspace extends ProgressStep<Props, State> {
       });
     }
 
-    // Use detailed message if available (for PVC errors)
-    const errorMessage =
-      (error as Error & { detailedMessage?: React.ReactNode }).detailedMessage ||
-      common.helpers.errors.getMessage(error);
-
     return {
       key,
       title: 'Failed to open the workspace',
       variant: AlertVariant.warning,
-      children: errorMessage,
+      children: common.helpers.errors.getMessage(error),
       actionCallbacks,
     };
   }
@@ -443,8 +334,6 @@ const mapStateToProps = (state: RootState) => ({
   applications: selectApplications(state),
   startTimeout: selectStartTimeout(state),
   devWorkspaceWarnings: selectDevWorkspaceWarnings(state),
-  eventsFromResourceVersionFn: selectEventsFromResourceVersion(state),
-  startedWorkspaces: selectStartedWorkspaces(state),
 });
 
 const connector = connect(mapStateToProps, workspacesActionCreators, null, {

@@ -10,7 +10,7 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import { Dropdown, DropdownItem, DropdownPosition, DropdownToggle } from '@patternfly/react-core';
+import { Dropdown, DropdownItem, DropdownList, MenuToggle } from '@patternfly/react-core';
 import { History } from 'history';
 import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
@@ -44,14 +44,19 @@ export class UserMenu extends React.PureComponent<Props, State> {
 
   private onUsernameSelect(): void {
     this.setState({
-      isOpened: !this.state.isOpened,
+      isOpened: false,
     });
   }
 
-  private onUsernameButtonToggle(isOpen: boolean): void {
-    this.setState({
-      isOpened: isOpen,
-    });
+  private onUsernameButtonToggle(): void {
+    this.setState(prevState => ({
+      isOpened: !prevState.isOpened,
+    }));
+  }
+
+  private handleSwitchToCurrentUI(): void {
+    const hash = window.location.hash;
+    window.location.href = `${window.location.origin}/dashboard/${hash}`;
   }
 
   private buildUserDropdownItems(): Array<React.ReactElement> {
@@ -59,45 +64,48 @@ export class UserMenu extends React.PureComponent<Props, State> {
       // temporary hidden, https://github.com/eclipse/che/issues/21595
       // <DropdownItem
       //   key="user-account"
-      //   component="button"
       //   onClick={() => this.props.history.push(ROUTE.USER_ACCOUNT)}
       // >
       //   Account
       // </DropdownItem>,
       <DropdownItem
         key="user-preferences"
-        component="button"
         onClick={() => this.props.history.push(ROUTE.USER_PREFERENCES)}
       >
         User Preferences
       </DropdownItem>,
-      <DropdownItem key="account_logout" component="button" onClick={() => this.props.logout()}>
+      <DropdownItem key="switch-ui" onClick={() => this.handleSwitchToCurrentUI()}>
+        Switch to Current UI
+      </DropdownItem>,
+      <DropdownItem key="account_logout" onClick={() => this.props.logout()}>
         Logout
       </DropdownItem>,
     ];
   }
 
-  private buildUserToggleButton(): React.ReactElement {
-    const username = this.props.username;
-    return (
-      <DropdownToggle onToggle={isOpen => this.onUsernameButtonToggle(isOpen)}>
-        {username}
-      </DropdownToggle>
-    );
-  }
-
   public render(): React.ReactElement {
     const { isOpened: isUsernameDropdownOpen } = this.state;
+    const username = this.props.username;
 
     return (
       <Dropdown
-        isPlain
-        position={DropdownPosition.right}
         onSelect={() => this.onUsernameSelect()}
         isOpen={isUsernameDropdownOpen}
-        toggle={this.buildUserToggleButton()}
-        dropdownItems={this.buildUserDropdownItems()}
-      />
+        onOpenChange={isOpen => this.setState({ isOpened: isOpen })}
+        toggle={toggleRef => (
+          <MenuToggle
+            ref={toggleRef}
+            variant="plain"
+            onClick={() => this.onUsernameButtonToggle()}
+            isExpanded={isUsernameDropdownOpen}
+          >
+            {username}
+          </MenuToggle>
+        )}
+        popperProps={{ position: 'right' }}
+      >
+        <DropdownList>{this.buildUserDropdownItems()}</DropdownList>
+      </Dropdown>
     );
   }
 }

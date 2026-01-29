@@ -16,21 +16,21 @@ import React from 'react';
 import styles from '@/Layout/Header/UIToggle/index.module.css';
 
 export const UIToggle: React.FC = () => {
-  const handleToggle = (checked: boolean) => {
-    if (checked) {
-      // Navigate to the new UI (PatternFly 6)
+  const handleToggle = (_event: React.FormEvent<HTMLInputElement>, checked: boolean) => {
+    if (!checked) {
+      // Navigate to the current UI (PatternFly 5)
       const hash = window.location.hash;
-      window.location.href = `${window.location.origin}/dashboard/v6/${hash}`;
+      window.location.href = `${window.location.origin}/dashboard/${hash}`;
     }
   };
 
   return (
     <div className={styles.uiToggle}>
-      <Tooltip content="Switch to New UI (PatternFly 6 styling)">
+      <Tooltip content="Switch to Current UI (PatternFly 5 styling)">
         <Switch
           id="ui-theme-toggle"
-          label="Current UI"
-          isChecked={false}
+          label="New UI"
+          isChecked={true}
           onChange={handleToggle}
           aria-label="Toggle UI theme"
           className={styles.switch}

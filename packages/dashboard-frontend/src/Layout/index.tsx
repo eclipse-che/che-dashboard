@@ -37,14 +37,11 @@ import { sanityCheckActionCreators } from '@/store/SanityCheck';
 import { selectSanityCheckError } from '@/store/SanityCheck/selectors';
 import { selectDashboardLogo } from '@/store/ServerConfig/selectors';
 
-const IS_MANAGED_SIDEBAR = false;
-
 type Props = MappedProps & {
   children: React.ReactNode;
   history: History;
 };
 type State = {
-  isSidebarVisible: boolean;
   isHeaderVisible: boolean;
 };
 
@@ -63,27 +60,18 @@ export class Layout extends React.PureComponent<Props, State> {
 
     this.state = {
       isHeaderVisible: true,
-      isSidebarVisible: true,
     };
-  }
-
-  private toggleNav(): void {
-    this.setState({
-      isSidebarVisible: !this.state.isSidebarVisible,
-    });
   }
 
   private hideAllBars(): void {
     this.setState({
       isHeaderVisible: false,
-      isSidebarVisible: false,
     });
   }
 
   private showAllBars(): void {
     this.setState({
       isHeaderVisible: true,
-      isSidebarVisible: true,
     });
   }
 
@@ -135,10 +123,21 @@ export class Layout extends React.PureComponent<Props, State> {
       }
     }
 
-    const { isHeaderVisible, isSidebarVisible } = this.state;
+    const { isHeaderVisible } = this.state;
     const { history, branding, dashboardLogo } = this.props;
 
     const logoSrc = buildLogoSrc(dashboardLogo, branding.logoFile);
+
+    const masthead = (
+      <Header
+        history={history}
+        isVisible={isHeaderVisible}
+        logo={<Brand src={logoSrc} alt="Logo" heights={{ default: '36px' }} />}
+        logout={() => signOut()}
+      />
+    );
+
+    const sidebar = <Sidebar history={history} />;
 
     return (
       <ToggleBarsContext.Provider
@@ -147,25 +146,7 @@ export class Layout extends React.PureComponent<Props, State> {
           showAll: () => this.showAllBars(),
         }}
       >
-        <Page
-          header={
-            <Header
-              history={history}
-              isVisible={isHeaderVisible}
-              logo={<Brand src={logoSrc} alt="Logo" />}
-              logout={() => signOut()}
-              toggleNav={() => this.toggleNav()}
-            />
-          }
-          sidebar={
-            <Sidebar
-              isManaged={IS_MANAGED_SIDEBAR}
-              isNavOpen={isSidebarVisible}
-              history={history}
-            />
-          }
-          isManagedSidebar={IS_MANAGED_SIDEBAR}
-        >
+        <Page masthead={masthead} sidebar={sidebar} isManagedSidebar>
           <ErrorBoundary onError={error => this.testBackends(error)}>
             <StoreErrorsAlert />
             <BannerAlert />

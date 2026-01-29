@@ -14,7 +14,6 @@ import common, { api } from '@eclipse-che/common';
 import { Store } from 'redux';
 
 import { lazyInject } from '@/inversify.config';
-import { updateFavicon } from '@/preload/brandingLoader';
 import { provisionKubernetesNamespace } from '@/services/backend-client/kubernetesNamespaceApi';
 import { WebsocketClient } from '@/services/backend-client/websocketClient';
 import { ChannelListener } from '@/services/backend-client/websocketClient/messageHandler';
@@ -30,10 +29,8 @@ import {
 } from '@/services/bootstrap/workspaceStoppedDetector';
 import { isAvailableEndpoint } from '@/services/helpers/api-ping';
 import { buildDetailsLocation, buildIdeLoaderLocation } from '@/services/helpers/location';
-import { signIn } from '@/services/helpers/login';
 import { ResourceFetcherService } from '@/services/resource-fetcher';
 import { Workspace } from '@/services/workspace-adapter';
-import { hasLoginPage, isForbidden, isUnauthorized } from '@/services/workspace-client/helpers';
 import { RootState } from '@/store';
 import { bannerAlertActionCreators } from '@/store/BannerAlert';
 import { brandingActionCreators } from '@/store/Branding';
@@ -94,7 +91,6 @@ export default class Bootstrap {
       this.fetchBranding(),
       this.fetchInfrastructureNamespaces(),
       this.fetchClusterInfo(),
-      this.fetchClusterConfig().then(() => this.checkFavicon()),
     ]);
 
     const results = await Promise.allSettled([
@@ -112,6 +108,7 @@ export default class Bootstrap {
       this.fetchPods().then(() => {
         this.watchWebSocketPods();
       }),
+      this.fetchClusterConfig().then(() => this.updateFavicon()),
       this.fetchSshKeys(),
       this.fetchWorkspacePreferences(),
     ]);
@@ -134,15 +131,10 @@ export default class Bootstrap {
   private async doBackendsSanityCheck(): Promise<void> {
     try {
       await provisionKubernetesNamespace();
-      this.store.dispatch(
-        backendCheckRequestAction({
-          lastFetched: Date.now(),
-        }),
-      );
+      backendCheckRequestAction({
+        lastFetched: Date.now(),
+      });
     } catch (e) {
-      if (isUnauthorized(e) || (isForbidden(e) && hasLoginPage(e))) {
-        signIn();
-      }
       checkNamespaceProvisionWarnings(this.store.getState);
       const errorMessage = common.helpers.errors.getMessage(e);
       this.issuesReporterService.registerIssue(
@@ -443,9 +435,17 @@ export default class Bootstrap {
     return -1;
   }
 
-  private checkFavicon() {
+  private updateFavicon() {
     const dashboardFavicon = selectDashboardFavicon(this.store.getState());
-    updateFavicon(dashboardFavicon);
+    if (dashboardFavicon?.base64data && dashboardFavicon?.mediatype) {
+      const hrefAttribute = `data:${dashboardFavicon?.mediatype};base64,${dashboardFavicon?.base64data}`;
+      if (window.document) {
+        const faviconHTML = window.document.getElementById('dashboardFavicon');
+        if (faviconHTML) {
+          faviconHTML.setAttribute('href', hrefAttribute);
+        }
+      }
+    }
   }
 
   private async fetchSshKeys(): Promise<void> {

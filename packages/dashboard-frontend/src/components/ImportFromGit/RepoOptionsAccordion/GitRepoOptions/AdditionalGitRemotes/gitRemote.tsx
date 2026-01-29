@@ -17,6 +17,8 @@ import {
   FlexItem,
   FormGroup,
   FormHelperText,
+  HelperText,
+  HelperTextItem,
   TextInput,
   ValidatedOptions,
 } from '@patternfly/react-core';
@@ -140,18 +142,18 @@ class AdditionalGitRemote extends React.PureComponent<Props, State> {
     this.onChange(name, nameValidated, url, urlValidated);
   }
 
-  private getErrorMessage(location: string): string | React.ReactNode {
+  private getErrorMessage(location: string): React.ReactNode {
     const isValidGitSsh = FactoryLocationAdapter.isSshLocation(location);
 
     if (isValidGitSsh && this.props.sshKeys.length === 0) {
       return (
-        <FormHelperText icon={<ExclamationCircleIcon />} isHidden={false} isError={true}>
+        <>
           No SSH keys found. Please add your SSH keys in the{' '}
           <Button variant="link" isInline onClick={() => this.openUserPreferences()}>
             User Preferences
           </Button>{' '}
           and then try again.
-        </FormHelperText>
+        </>
       );
     }
 
@@ -170,44 +172,50 @@ class AdditionalGitRemote extends React.PureComponent<Props, State> {
     return (
       <Flex>
         <FlexItem align={{ default: 'alignRight' }}>
-          <FormGroup
-            label="Remote Name"
-            isRequired
-            className={styles.remoteName}
-            validated={nameValidated}
-            helperTextInvalid="The remote name is not valid."
-          >
+          <FormGroup label="Remote Name" isRequired className={styles.remoteName}>
             <TextInput
               aria-label="Remote Name"
               placeholder="origin"
-              onChange={_name => {
+              onChange={(_event, _name) => {
                 name = _name;
                 this.handleChange(name, undefined);
               }}
               validated={nameValidated}
               value={name}
             />
+            {nameValidated === ValidatedOptions.error && (
+              <FormHelperText>
+                <HelperText>
+                  <HelperTextItem icon={<ExclamationCircleIcon />} variant="error">
+                    The remote name is not valid.
+                  </HelperTextItem>
+                </HelperText>
+              </FormHelperText>
+            )}
           </FormGroup>
         </FlexItem>
         <FlexItem grow={{ default: 'grow' }} align={{ default: 'alignRight' }}>
-          <FormGroup
-            label="Remote URL"
-            isRequired
-            className={styles.remoteURL}
-            validated={urlValidated}
-            helperTextInvalid={errorMessage}
-          >
+          <FormGroup label="Remote URL" isRequired className={styles.remoteURL}>
             <TextInput
               isRequired
               aria-label="Remote URL"
               placeholder="HTTP or SSH URL"
-              onChange={_url => {
+              onChange={(_event, _url) => {
                 url = _url;
                 this.handleChange(undefined, url);
               }}
               validated={urlValidated}
               value={url}
             />
+            {urlValidated === ValidatedOptions.error && (
+              <FormHelperText>
+                <HelperText>
+                  <HelperTextItem icon={<ExclamationCircleIcon />} variant="error">
+                    {errorMessage}
+                  </HelperTextItem>
+                </HelperText>
+              </FormHelperText>
+            )}
           </FormGroup>
         </FlexItem>
         <FlexItem>

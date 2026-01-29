@@ -12,26 +12,9 @@
 
 import 'reflect-metadata';
 
-import {
-  Divider,
-  PageSection,
-  PageSectionVariants,
-  Text,
-  TextContent,
-} from '@patternfly/react-core';
+import { Content, Divider, PageSection, PageSectionVariants } from '@patternfly/react-core';
 import { ExternalLinkAltIcon } from '@patternfly/react-icons';
-import {
-  classNames,
-  ICell,
-  IRowData,
-  sortable,
-  SortByDirection,
-  Table,
-  TableBody,
-  TableHeader,
-  TableVariant,
-  Visibility,
-} from '@patternfly/react-table';
+import { Table, Tbody, Td, Th, Thead, Tr } from '@patternfly/react-table';
 import React from 'react';
 import { Location, NavigateFunction } from 'react-router-dom';
 
@@ -39,16 +22,14 @@ import Head from '@/components/Head';
 import NothingFoundEmptyState from '@/pages/WorkspacesList/EmptyState/NothingFound';
 import NoWorkspacesEmptyState from '@/pages/WorkspacesList/EmptyState/NoWorkspaces';
 import styles from '@/pages/WorkspacesList/index.module.css';
-import { buildRows, RowData } from '@/pages/WorkspacesList/Rows';
+import { buildRows, getSortParams, RowData, SortDirection } from '@/pages/WorkspacesList/Rows';
 import WorkspacesListToolbar from '@/pages/WorkspacesList/Toolbar';
 import { BrandingData } from '@/services/bootstrap/branding.constant';
-import devfileApi from '@/services/devfileApi';
 import { buildGettingStartedLocation } from '@/services/helpers/location';
 import { Workspace } from '@/services/workspace-adapter';
 
 type Props = {
   branding: BrandingData;
-  editors: devfileApi.Devfile[];
   location: Location;
   navigate: NavigateFunction;
   workspaces: Workspace[];
@@ -60,66 +41,13 @@ type State = {
   rows: RowData[];
   sortBy: {
     index: number;
-    direction: SortByDirection;
+    direction: SortDirection;
   };
 };
 
 export default class WorkspacesList extends React.PureComponent<Props, State> {
-  private readonly columns: (ICell | string)[];
-
   constructor(props: Props) {
     super(props);
-
-    this.columns = [
-      {
-        title: <span className={styles.nameColumnTitle}>Name</span>,
-        dataLabel: 'Name',
-        transforms: [sortable],
-      },
-      {
-        title: <span className={styles.editorColumnTitle}>Editor</span>,
-        dataLabel: 'Editor',
-        transforms: [sortable],
-      },
-      {
-        title: 'Last Modified',
-        dataLabel: 'Last Modified',
-        transforms: [sortable, classNames(styles.lastModifiedColumnTitle)],
-      },
-      {
-        title: 'Project(s)',
-        dataLabel: 'Project(s)',
-        cellTransforms: [classNames(styles.projectsCell)],
-      },
-      {
-        // Column is visible only on Sm
-        // content is aligned to the left
-        title: '',
-        dataLabel: ' ',
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        columnTransforms: [classNames(Visibility.visibleOnSm!, Visibility.hiddenOnMd!)],
-      },
-      {
-        // Column is hidden only on Sm
-        // content is aligned to the right
-        title: '',
-        dataLabel: ' ',
-        /* eslint-disable @typescript-eslint/no-non-null-assertion */
-        cellTransforms: [
-          classNames(
-            styles.openIdeCell,
-            Visibility.hidden!,
-            Visibility.hiddenOnSm!,
-            Visibility.visibleOnMd!,
-          ),
-        ],
-      },
-      {
-        title: '',
-        dataLabel: ' ',
-        cellTransforms: [classNames(styles.actionsDropdownCell)],
-      },
-    ];
 
     const filtered = this.props.workspaces.map(workspace => workspace.uid);
     this.state = {
@@ -128,17 +56,17 @@ export default class WorkspacesList extends React.PureComponent<Props, State> {
       isSelectedAll: false,
       rows: [],
       sortBy: {
-        index: 3, // Last Modified column
-        direction: SortByDirection.asc,
+        index: 1,
+        direction: 'asc',
       },
     };
   }
 
   private buildRows(): RowData[] {
-    const { editors, workspaces } = this.props;
+    const { workspaces } = this.props;
     const { filtered, selected, sortBy } = this.state;
 
-    return buildRows(workspaces, editors, [], filtered, selected, sortBy);
+    return buildRows(workspaces, [], filtered, selected, sortBy);
   }
 
   private handleFilter(filtered: Workspace[]): void {
@@ -162,22 +90,11 @@ export default class WorkspacesList extends React.PureComponent<Props, State> {
     });
   }
 
-  private handleSelect(isSelected: boolean, rowIndex: number, rowData?: IRowData): void {
+  private handleSelect(isSelected: boolean, rowData: RowData): void {
     const { workspaces } = this.props;
 
-    if (rowIndex === -1) {
-      /* (un)select all */
-      const isSelectedAll = isSelected;
-      const selected = isSelectedAll === false ? [] : workspaces.map(workspace => workspace.uid);
-      this.setState({
-        selected,
-        isSelectedAll,
-      });
-      return;
-    }
-
     /* (un)select specified row */
-    const uid = (rowData as RowData).props.workspaceUID;
+    const uid = rowData.workspaceUID;
     const selected = [...this.state.selected];
     const idx = selected.indexOf(uid);
     if (idx === -1) {
@@ -201,7 +118,7 @@ export default class WorkspacesList extends React.PureComponent<Props, State> {
     this.props.navigate(location);
   }
 
-  private handleSort(event: React.MouseEvent, index: number, direction: SortByDirection): void {
+  private handleSort(index: number, direction: SortDirection): void {
     this.setState({
       sortBy: {
         index,
@@ -268,41 +185,79 @@ export default class WorkspacesList extends React.PureComponent<Props, State> {
     return (
       <React.Fragment>
         <Head pageName="Workspaces" />
-        <PageSection variant={PageSectionVariants.light}>
-          <TextContent>
-            <Text component={'h1'}>Workspaces</Text>
-            <Text component={'p'}>
+        <PageSection variant={PageSectionVariants.default}>
+          <Content>
+            <Content component="h1">Workspaces</Content>
+            <Content component="p">
               A workspace is where your projects live and run. Create workspaces from stacks that
               define projects, runtimes, and commands.&emsp;
               <a href={workspacesDocsLink} target="_blank" rel="noopener noreferrer">
                 Learn&nbsp;more&nbsp;
                 <ExternalLinkAltIcon />
               </a>
-            </Text>
-          </TextContent>
+            </Content>
+          </Content>
         </PageSection>
         <PageSection
           padding={{ default: 'noPadding' }}
-          variant={PageSectionVariants.light}
+          variant={PageSectionVariants.default}
           isFilled={false}
         >
           <Divider component="div" className="pf-u-mt-xl" />
-          <Table
-            aria-label="Workspaces List Table"
-            canSelectAll={false}
-            cells={this.columns}
-            onSelect={(event, isSelected, rowIndex, rowData) => {
-              event.stopPropagation();
-              this.handleSelect(isSelected, rowIndex, rowData);
-            }}
-            rows={rows}
-            variant={TableVariant.compact}
-            header={toolbar}
-            sortBy={sortBy}
-            onSort={(event, index, direction) => this.handleSort(event, index, direction)}
-          >
-            <TableHeader />
-            <TableBody />
+          {toolbar}
+          <Table aria-label="Workspaces List Table" variant="compact">
+            <Thead>
+              <Tr>
+                <Th
+                  select={{
+                    onSelect: (_event, isSelected) => this.handleSelectAll(isSelected),
+                    isSelected: isSelectedAll,
+                  }}
+                />
+                <Th
+                  sort={getSortParams(0, sortBy.index, sortBy.direction, (index, direction) =>
+                    this.handleSort(index, direction),
+                  )}
+                  className={styles.nameColumnTitle}
+                >
+                  Name
+                </Th>
+                <Th
+                  sort={getSortParams(1, sortBy.index, sortBy.direction, (index, direction) =>
+                    this.handleSort(index, direction),
+                  )}
+                  className={styles.lastModifiedColumnTitle}
+                >
+                  Last Modified
+                </Th>
+                <Th className={styles.projectsCell}>Project(s)</Th>
+                <Th screenReaderText="Open" />
+                <Th screenReaderText="Actions" />
+              </Tr>
+            </Thead>
+            <Tbody>
+              {rows.map((row, rowIndex) => (
+                <Tr key={row.workspaceUID}>
+                  <Td
+                    select={{
+                      rowIndex,
+                      onSelect: (_event, isSelected) => this.handleSelect(isSelected, row),
+                      isSelected: row.isSelected,
+                      isDisabled: row.isDisabled,
+                    }}
+                  />
+                  <Td dataLabel="Name">{row.cells.details}</Td>
+                  <Td dataLabel="Last Modified">{row.cells.lastModifiedDate}</Td>
+                  <Td dataLabel="Project(s)" className={styles.projectsCell}>
+                    {row.cells.projectsList}
+                  </Td>
+                  <Td className={styles.openIdeCell}>{row.cells.action}</Td>
+                  <Td isActionCell className={styles.actionsDropdownCell}>
+                    {row.cells.actionsDropdown}
+                  </Td>
+                </Tr>
+              ))}
+            </Tbody>
           </Table>
         </PageSection>
         {emptyState}

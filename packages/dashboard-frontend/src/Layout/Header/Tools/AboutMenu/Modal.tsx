@@ -12,9 +12,11 @@
 
 import {
   AboutModal as PatternflyAboutModal,
-  TextContent,
-  TextList,
-  TextListItem,
+  Content,
+  DescriptionList,
+  DescriptionListDescription,
+  DescriptionListGroup,
+  DescriptionListTerm,
 } from '@patternfly/react-core';
 import { detect } from 'detect-browser';
 import React from 'react';
@@ -51,70 +53,67 @@ export class AboutModal extends React.PureComponent<Props> {
     const browserName = this.browserName;
 
     return (
-      <TextContent>
-        <TextList component="dl">
+      <Content>
+        <DescriptionList>
           {dashboardVersion && (
-            <>
-              <TextListItem component="dt">Dashboard Version</TextListItem>
-              <TextListItem
-                component="dd"
+            <DescriptionListGroup>
+              <DescriptionListTerm>Dashboard Version</DescriptionListTerm>
+              <DescriptionListDescription
                 className="co-select-to-copy"
                 data-testid="dashboard-version"
               >
                 {dashboardVersion}
-              </TextListItem>
-            </>
+              </DescriptionListDescription>
+            </DescriptionListGroup>
           )}
           {serverVersion && (
-            <>
-              <TextListItem component="dt">Server Version</TextListItem>
-              <TextListItem
-                component="dd"
+            <DescriptionListGroup>
+              <DescriptionListTerm>Server Version</DescriptionListTerm>
+              <DescriptionListDescription
                 className="co-select-to-copy"
                 data-testid="server-version"
               >
                 {serverVersion}
-              </TextListItem>
-            </>
+              </DescriptionListDescription>
+            </DescriptionListGroup>
           )}
           {username && (
-            <>
-              <TextListItem component="dt">Username</TextListItem>
-              <TextListItem component="dd" className="co-select-to-copy" data-testid="username">
+            <DescriptionListGroup>
+              <DescriptionListTerm>Username</DescriptionListTerm>
+              <DescriptionListDescription className="co-select-to-copy" data-testid="username">
                 {username}
-              </TextListItem>
-            </>
+              </DescriptionListDescription>
+            </DescriptionListGroup>
           )}
           {browserName && (
-            <>
-              <TextListItem component="dt">Browser Name</TextListItem>
-              <TextListItem component="dd" className="co-select-to-copy" data-testid="browser-name">
+            <DescriptionListGroup>
+              <DescriptionListTerm>Browser Name</DescriptionListTerm>
+              <DescriptionListDescription className="co-select-to-copy" data-testid="browser-name">
                 {browserName}
-              </TextListItem>
-            </>
+              </DescriptionListDescription>
+            </DescriptionListGroup>
           )}
           {browserVersion && (
-            <>
-              <TextListItem component="dt">Browser Version</TextListItem>
-              <TextListItem
-                component="dd"
+            <DescriptionListGroup>
+              <DescriptionListTerm>Browser Version</DescriptionListTerm>
+              <DescriptionListDescription
                 className="co-select-to-copy"
                 data-testid="browser-version"
               >
                 {browserVersion}
-              </TextListItem>
-            </>
+              </DescriptionListDescription>
+            </DescriptionListGroup>
           )}
           {browserOS && (
-            <>
-              <TextListItem component="dt">Browser OS</TextListItem>
-              <TextListItem component="dd" className="co-select-to-copy" data-testid="browser-os">
+            <DescriptionListGroup>
+              <DescriptionListTerm>Browser OS</DescriptionListTerm>
+              <DescriptionListDescription className="co-select-to-copy" data-testid="browser-os">
                 {browserOS}
-              </TextListItem>
-            </>
+              </DescriptionListDescription>
+            </DescriptionListGroup>
           )}
-        </TextList>
-      </TextContent>
+        </DescriptionList>
+      </Content>
     );
   }
 
@@ -129,7 +128,6 @@ export class AboutModal extends React.PureComponent<Props> {
         onClose={() => this.props.closeModal()}
         brandImageSrc={logo}
         brandImageAlt={`${productName} logo`}
-        noAboutModalBoxContentContainer={true}
       >
         {modalContent}
       </PatternflyAboutModal>

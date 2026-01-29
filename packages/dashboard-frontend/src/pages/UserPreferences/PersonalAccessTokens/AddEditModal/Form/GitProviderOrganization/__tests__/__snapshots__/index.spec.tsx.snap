@@ -2,54 +2,57 @@
 
 exports[`GitProviderOrganization snapshot w/o organization 1`] = `
 <form
-  className="pf-c-form"
+  className="pf-v6-c-form"
   noValidate={true}
 >
   <div
-    className="pf-c-form__group"
+    className="pf-v6-c-form__group"
   >
     <div
-      className="pf-c-form__group-label"
+      className="pf-v6-c-form__group-label"
     >
       <label
-        className="pf-c-form__label"
+        className="pf-v6-c-form__label"
         htmlFor="git-provider-organization-label"
       >
         <span
-          className="pf-c-form__label-text"
+          className="pf-v6-c-form__label-text"
         >
           Git Provider Organization
         </span>
         <span
           aria-hidden="true"
-          className="pf-c-form__label-required"
+          className="pf-v6-c-form__label-required"
         >
            
           *
         </span>
       </label>
-       
+        
     </div>
     <div
-      className="pf-c-form__group-control"
+      className="pf-v6-c-form__group-control"
     >
-      <input
-        aria-describedby="git-provider-organization-label"
-        aria-invalid={false}
-        aria-label="Git Provider Organization"
-        className="pf-c-form-control"
-        data-ouia-component-id="OUIA-Generated-TextInputBase-1"
-        data-ouia-component-type="PF4/TextInput"
-        data-ouia-safe={true}
-        disabled={false}
-        onBlur={[Function]}
-        onChange={[Function]}
-        onFocus={[Function]}
-        placeholder="Enter a Git Provider Organization"
-        required={false}
-        type="text"
-        value=""
-      />
+      <span
+        className="pf-v6-c-form-control"
+      >
+        <input
+          aria-describedby="git-provider-organization-label"
+          aria-invalid={false}
+          aria-label="Git Provider Organization"
+          data-ouia-component-id="OUIA-Generated-TextInputBase-1"
+          data-ouia-component-type="PF6/TextInput"
+          data-ouia-safe={true}
+          disabled={false}
+          onBlur={[Function]}
+          onChange={[Function]}
+          onFocus={[Function]}
+          placeholder="Enter a Git Provider Organization"
+          required={false}
+          type="text"
+          value=""
+        />
+      </span>
     </div>
   </div>
 </form>
@@ -57,54 +60,57 @@ exports[`GitProviderOrganization snapshot w/o organization 1`] = `
 
 exports[`GitProviderOrganization snapshot with organization 1`] = `
 <form
-  className="pf-c-form"
+  className="pf-v6-c-form"
   noValidate={true}
 >
   <div
-    className="pf-c-form__group"
+    className="pf-v6-c-form__group"
   >
     <div
-      className="pf-c-form__group-label"
+      className="pf-v6-c-form__group-label"
     >
       <label
-        className="pf-c-form__label"
+        className="pf-v6-c-form__label"
         htmlFor="git-provider-organization-label"
       >
         <span
-          className="pf-c-form__label-text"
+          className="pf-v6-c-form__label-text"
         >
           Git Provider Organization
         </span>
         <span
           aria-hidden="true"
-          className="pf-c-form__label-required"
+          className="pf-v6-c-form__label-required"
         >
            
           *
         </span>
       </label>
-       
+        
     </div>
     <div
-      className="pf-c-form__group-control"
+      className="pf-v6-c-form__group-control"
     >
-      <input
-        aria-describedby="git-provider-organization-label"
-        aria-invalid={false}
-        aria-label="Git Provider Organization"
-        className="pf-c-form-control"
-        data-ouia-component-id="OUIA-Generated-TextInputBase-2"
-        data-ouia-component-type="PF4/TextInput"
-        data-ouia-safe={true}
-        disabled={false}
-        onBlur={[Function]}
-        onChange={[Function]}
-        onFocus={[Function]}
-        placeholder="Enter a Git Provider Organization"
-        required={false}
-        type="text"
-        value="user-organization"
-      />
+      <span
+        className="pf-v6-c-form-control"
+      >
+        <input
+          aria-describedby="git-provider-organization-label"
+          aria-invalid={false}
+          aria-label="Git Provider Organization"
+          data-ouia-component-id="OUIA-Generated-TextInputBase-2"
+          data-ouia-component-type="PF6/TextInput"
+          data-ouia-safe={true}
+          disabled={false}
+          onBlur={[Function]}
+          onChange={[Function]}
+          onFocus={[Function]}
+          placeholder="Enter a Git Provider Organization"
+          required={false}
+          type="text"
+          value="user-organization"
+        />
+      </span>
     </div>
   </div>
 </form>

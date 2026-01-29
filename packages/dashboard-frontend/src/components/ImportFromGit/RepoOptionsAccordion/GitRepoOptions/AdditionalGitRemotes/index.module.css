@@ -1,8 +1,8 @@
-.remoteName .pf-c-form__group-label {
+.remoteName :global(.pf-v6-c-form__group-label) {
   text-align: end;
 }
 
-.remoteURL .pf-c-form__group-label {
+.remoteURL :global(.pf-v6-c-form__group-label) {
   text-align: end;
 }
 
@@ -15,14 +15,14 @@ button.addRemoteButton {
 }
 
 .gitRemotesTitle {
-  font-size: var(--pf-c-form__label--FontSize);
+  font-size: var(--pf-v6-c-form__label--FontSize, var(--pf-t--global--font--size--body--sm));
 }
 
 .gitRemotesGroup {
   border: 0;
 }
 
-.gitRemotesGroup .pf-c-form__field-group-body {
+.gitRemotesGroup :global(.pf-v6-c-form__field-group-body) {
   padding-top: 0;
   padding-bottom: 0;
 }

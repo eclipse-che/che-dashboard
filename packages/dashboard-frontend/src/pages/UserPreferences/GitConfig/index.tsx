@@ -150,7 +150,7 @@ class GitConfig extends React.PureComponent<Props, State> {
           {isEmpty ? (
             <GitConfigEmptyState />
           ) : (
-            <PageSection variant={PageSectionVariants.light}>
+            <PageSection variant={PageSectionVariants.default}>
               <GitConfigToolbar
                 mode={mode}
                 onAdd={() => {

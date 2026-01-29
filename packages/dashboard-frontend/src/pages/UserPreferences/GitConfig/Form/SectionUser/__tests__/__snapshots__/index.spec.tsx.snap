@@ -2,27 +2,27 @@
 
 exports[`GitConfigSectionUser snapshot 1`] = `
 <div
-  className="pf-c-panel"
+  className="pf-v6-c-panel"
 >
   <div
-    className="pf-c-panel__main"
+    className="pf-v6-c-panel__main"
     style={
       {
-        "--pf-c-panel__main--MaxHeight": undefined,
+        "--pf-v6-c-panel__main--MaxHeight": undefined,
       }
     }
   >
     <div
-      className="pf-c-panel__main-body"
+      className="pf-v6-c-panel__main-body"
     >
       <section
         aria-labelledby="pf-form-section-title0"
-        className="pf-c-form__section"
+        className="pf-v6-c-form__section"
         label="user"
         role="group"
       >
         <div
-          className="pf-c-form__section-title"
+          className="pf-v6-c-form__section-title"
           id="pf-form-section-title0"
         >
           [user]

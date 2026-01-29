@@ -11,9 +11,11 @@
  */
 
 import {
-  ApplicationLauncher,
-  ApplicationLauncherGroup,
-  ApplicationLauncherItem,
+  Dropdown,
+  DropdownItem,
+  DropdownList,
+  MenuToggle,
+  MenuToggleElement,
 } from '@patternfly/react-core';
 import { QuestionCircleIcon } from '@patternfly/react-icons';
 import React from 'react';
@@ -42,34 +44,26 @@ export class AboutMenu extends React.PureComponent<Props, State> {
     };
   }
 
-  private buildLauncherItems(): React.ReactNode[] {
+  private buildDropdownItems(): React.ReactNode[] {
     const branding = this.props.branding;
     const items: React.ReactElement[] = [];
     branding.links?.forEach(link => {
       items.push(
-        <ApplicationLauncherItem
-          key={link.text}
-          isExternal={true}
-          component="button"
-          onClick={() => window.open(link.href, '_blank')}
-        >
+        <DropdownItem key={link.text} onClick={() => window.open(link.href, '_blank')}>
           {link.text}
-        </ApplicationLauncherItem>,
+        </DropdownItem>,
       );
     });
 
-    const group = (
-      <ApplicationLauncherGroup key="info_button">
-        {items}
-        <ApplicationLauncherItem key="about" component="button" onClick={e => this.showModal(e)}>
-          About
-        </ApplicationLauncherItem>
-      </ApplicationLauncherGroup>
+    items.push(
+      <DropdownItem key="about" onClick={e => this.showModal(e)}>
+        About
+      </DropdownItem>,
     );
-    return [group];
+    return items;
   }
 
-  private onLauncherToggle() {
+  private onToggle() {
     this.setState({
       isLauncherOpen: !this.state.isLauncherOpen,
     });
@@ -100,14 +94,25 @@ export class AboutMenu extends React.PureComponent<Props, State> {
 
     return (
       <>
-        <ApplicationLauncher
-          onToggle={() => this.onLauncherToggle()}
+        <Dropdown
+          onSelect={() => this.setState({ isLauncherOpen: false })}
+          onOpenChange={isOpen => this.setState({ isLauncherOpen: isOpen })}
           isOpen={isLauncherOpen}
-          items={this.buildLauncherItems()}
-          aria-label="About Menu"
-          position="right"
-          toggleIcon={<QuestionCircleIcon alt="About Menu Icon" />}
-        />
+          toggle={(toggleRef: React.Ref<MenuToggleElement>) => (
+            <MenuToggle
+              ref={toggleRef}
+              onClick={() => this.onToggle()}
+              isExpanded={isLauncherOpen}
+              variant="plain"
+              aria-label="About Menu"
+            >
+              <QuestionCircleIcon />
+            </MenuToggle>
+          )}
+          popperProps={{ position: 'right' }}
+        >
+          <DropdownList>{this.buildDropdownItems()}</DropdownList>
+        </Dropdown>
         <AboutModal
           isOpen={isModalOpen}
           closeModal={() => this.closeModal()}

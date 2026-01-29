@@ -10,7 +10,7 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import { EmptyState, EmptyStateIcon, EmptyStateVariant, Title } from '@patternfly/react-core';
+import { EmptyState, EmptyStateVariant } from '@patternfly/react-core';
 import { RegistryIcon } from '@patternfly/react-icons';
 import React from 'react';
 
@@ -21,12 +21,12 @@ export type Props = {
 export class GitServicesEmptyState extends React.PureComponent<Props> {
   public render(): React.ReactElement {
     return (
-      <EmptyState isFullHeight={true} variant={EmptyStateVariant.small}>
-        <EmptyStateIcon icon={RegistryIcon} />
-        <Title headingLevel="h4" size="lg">
-          {this.props.text}
-        </Title>
-      </EmptyState>
+      <EmptyState
+        isFullHeight={true}
+        variant={EmptyStateVariant.sm}
+        icon={RegistryIcon}
+        titleText={this.props.text}
+      />
     );
   }
 }

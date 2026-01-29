@@ -10,7 +10,13 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import { FormGroup, TextInput } from '@patternfly/react-core';
+import {
+  FormGroup,
+  FormHelperText,
+  HelperText,
+  HelperTextItem,
+  TextInput,
+} from '@patternfly/react-core';
 import { InfoIcon } from '@patternfly/react-icons';
 import React from 'react';
 
@@ -30,7 +36,7 @@ export class EditorDefinitionField extends React.PureComponent<Props, State> {
     };
   }
 
-  private handleChange(value: string) {
+  private handleChange(_event: React.FormEvent<HTMLInputElement>, value: string) {
     value = value.trim();
     this.setState({ definition: value });
     this.props.onChange(value !== '' ? value : undefined);
@@ -43,13 +49,20 @@ export class EditorDefinitionField extends React.PureComponent<Props, State> {
       definition !== '' ? '' : 'Default editor will be used if no definition is provided.';
 
     return (
-      <FormGroup label="Editor Definition" helperText={helperText} helperTextIcon={<InfoIcon />}>
+      <FormGroup label="Editor Definition">
         <TextInput
           aria-label="Editor Definition"
           placeholder="Enter the link to a container editor definition URL or an editor id"
-          onChange={value => this.handleChange(value)}
+          onChange={(event, value) => this.handleChange(event, value)}
           value={definition}
         />
+        {helperText && (
+          <FormHelperText>
+            <HelperText>
+              <HelperTextItem icon={<InfoIcon />}>{helperText}</HelperTextItem>
+            </HelperText>
+          </FormHelperText>
+        )}
       </FormGroup>
     );
   }

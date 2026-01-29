@@ -97,7 +97,7 @@ export class LoaderPage extends React.PureComponent<Props, State> {
         <Head pageName={pageTitle} />
         <Header title={pageTitle} status={workspaceStatus} />
         <PageSection
-          variant={PageSectionVariants.light}
+          variant={PageSectionVariants.default}
           isFilled={true}
           className={styles.loaderPage}
         >

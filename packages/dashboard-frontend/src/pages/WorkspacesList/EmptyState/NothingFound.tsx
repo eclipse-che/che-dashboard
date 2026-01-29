@@ -10,24 +10,19 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import {
-  EmptyState,
-  EmptyStateBody,
-  EmptyStateIcon,
-  EmptyStateVariant,
-  Title,
-} from '@patternfly/react-core';
+import { EmptyState, EmptyStateBody, EmptyStateVariant } from '@patternfly/react-core';
 import { SearchIcon } from '@patternfly/react-icons';
 import React from 'react';
 
 export default class NothingFoundEmptyState extends React.PureComponent {
   public render(): React.ReactElement {
     return (
-      <EmptyState isFullHeight={true} variant={EmptyStateVariant.small}>
-        <EmptyStateIcon icon={SearchIcon} />
-        <Title headingLevel="h4" size="lg">
-          Nothing Found
-        </Title>
+      <EmptyState
+        isFullHeight={true}
+        variant={EmptyStateVariant.sm}
+        icon={SearchIcon}
+        titleText="Nothing Found"
+      >
         <EmptyStateBody>
           No workspaces match the filter criteria. Clear filter to show results.
         </EmptyStateBody>

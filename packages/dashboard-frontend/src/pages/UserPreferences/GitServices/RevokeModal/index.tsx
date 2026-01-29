@@ -14,10 +14,12 @@ import {
   Button,
   ButtonVariant,
   Checkbox,
+  Content,
   Modal,
+  ModalBody,
+  ModalFooter,
+  ModalHeader,
   ModalVariant,
-  Text,
-  TextContent,
 } from '@patternfly/react-core';
 import React from 'react';
 
@@ -51,34 +53,8 @@ export class GitServicesRevokeModal extends React.PureComponent<Props, State> {
     this.props.onCancel();
   }
 
-  private handleCheckboxChange(): void {
-    this.setState({ warningInfoCheck: !this.state.warningInfoCheck });
-  }
-
-  private getRevokeModalContent(): React.ReactNode {
-    const { selectedItems } = this.props;
-
-    let text = 'Would you like to revoke ';
-
-    if (selectedItems.length === 1) {
-      text += `git service "${GIT_OAUTH_PROVIDERS[selectedItems[0].name]}"`;
-    } else {
-      text += `${selectedItems.length} git services`;
-    }
-    text += '?';
-
-    return (
-      <TextContent data-testid="revoke-modal-content">
-        <Text>{text}</Text>
-        <Checkbox
-          data-testid="warning-info-checkbox"
-          isChecked={this.state.warningInfoCheck}
-          onChange={() => this.handleCheckboxChange()}
-          id="revoke-warning-info-check"
-          label="I understand, this operation cannot be reverted."
-        />
-      </TextContent>
-    );
+  private handleCheckboxChange(_event: React.FormEvent<HTMLInputElement>, checked: boolean): void {
+    this.setState({ warningInfoCheck: checked });
   }
 
   public render(): React.ReactElement {
@@ -87,36 +63,52 @@ export class GitServicesRevokeModal extends React.PureComponent<Props, State> {
 
     const title = `Revoke Git ${selectedItems.length === 1 ? 'Service' : 'Services'}`;
 
+    let text = 'Would you like to revoke ';
+    if (selectedItems.length === 1) {
+      text += `git service "${GIT_OAUTH_PROVIDERS[selectedItems[0].name]}"`;
+    } else {
+      text += `${selectedItems.length} git services`;
+    }
+    text += '?';
+
     return (
       <Modal
-        title={title}
-        titleIconVariant="warning"
         variant={ModalVariant.small}
         isOpen={isOpen}
         /* c8 ignore next 1 */
         onClose={() => this.handleCancel()}
         aria-label="Revoke Git Services Modal"
-        footer={
-          <React.Fragment>
-            <Button
-              variant={ButtonVariant.danger}
-              isDisabled={!warningInfoCheck}
-              data-testid="revoke-button"
-              onClick={() => this.handleRevoke()}
-            >
-              Revoke
-            </Button>
-            <Button
-              variant={ButtonVariant.link}
-              data-testid="cancel-button"
-              onClick={() => this.handleCancel()}
-            >
-              Cancel
-            </Button>
-          </React.Fragment>
-        }
       >
-        {this.getRevokeModalContent()}
+        <ModalHeader title={title} titleIconVariant="warning" />
+        <ModalBody>
+          <Content data-testid="revoke-modal-content">
+            <Content component="p">{text}</Content>
+            <Checkbox
+              data-testid="warning-info-checkbox"
+              isChecked={warningInfoCheck}
+              onChange={(event, checked) => this.handleCheckboxChange(event, checked)}
+              id="revoke-warning-info-check"
+              label="I understand, this operation cannot be reverted."
+            />
+          </Content>
+        </ModalBody>
+        <ModalFooter>
+          <Button
+            variant={ButtonVariant.danger}
+            isDisabled={!warningInfoCheck}
+            data-testid="revoke-button"
+            onClick={() => this.handleRevoke()}
+          >
+            Revoke
+          </Button>
+          <Button
+            variant={ButtonVariant.link}
+            data-testid="cancel-button"
+            onClick={() => this.handleCancel()}
+          >
+            Cancel
+          </Button>
+        </ModalFooter>
       </Modal>
     );
   }

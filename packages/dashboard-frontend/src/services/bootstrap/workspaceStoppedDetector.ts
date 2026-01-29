@@ -29,7 +29,7 @@ export class WorkspaceRunningError extends Error {
    *
    * @param workspace the workspace to check
    */
-  public static throwIfNeeded(workspace: Workspace) {
+  public static throwIfNeeded(workspace) {
     if (workspace.isRunning || workspace.isStarting) {
       const state = workspace.isRunning ? 'running' : 'starting';
       throw new WorkspaceRunningError(`The workspace is ${state}.`, workspace);
@@ -134,13 +134,13 @@ export class WorkspaceStoppedDetector {
   /**
    * Returns true if the dashboard was reached via redirection from a url path that was not:
    * 1. /
-   * 2. /dashboard/
+   * 2. /dashboard/v6/
    */
   private isRedirectedFromNonDashboardUrl(): boolean {
     const path = SessionStorageService.get(SessionStorageKey.ORIGINAL_LOCATION_PATH);
     if (!path) {
       return false;
     }
-    return path !== '/' && path !== '/dashboard';
+    return path !== '/' && path !== '/dashboard/v6';
   }
 }
