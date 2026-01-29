@@ -980,6 +980,7 @@ __metadata:
     "@types/webpack": "npm:^5.28.5"
     "@typescript-eslint/eslint-plugin": "npm:^6.4.0"
     "@typescript-eslint/parser": "npm:^6.4.0"
+    "@uiw/codemirror-themes": "npm:^4.25.4"
     "@uiw/react-codemirror": "npm:4.23.5"
     buffer: "npm:^6.0.3"
     clean-terminal-webpack-plugin: "npm:^3.0.0"
@@ -3004,6 +3005,21 @@ __metadata:
     "@codemirror/state": ">=6.0.0"
     "@codemirror/view": ">=6.0.0"
   checksum: 10/1e786f0e2ed784b886a294ae2261a41876393713669d2aa1b315c0f73cf3bef33669db4cabf4985e5fee8e2a451f56f0a93d5a42c286ea438f9b3d439d3d6b97
+  languageName: node
+  linkType: hard
+
+"@uiw/codemirror-themes@npm:^4.25.4":
+  version: 4.25.4
+  resolution: "@uiw/codemirror-themes@npm:4.25.4"
+  dependencies:
+    "@codemirror/language": "npm:^6.0.0"
+    "@codemirror/state": "npm:^6.0.0"
+    "@codemirror/view": "npm:^6.0.0"
+  peerDependencies:
+    "@codemirror/language": ">=6.0.0"
+    "@codemirror/state": ">=6.0.0"
+    "@codemirror/view": ">=6.0.0"
+  checksum: 10/aab62e2c16a10dbde4592cef704d386c1a9e3caece4ff0eed85e9d9a5acdeaf3fd8717e2cb6a6795e12e890b8600956effb52d453aacbc618934e7ae8c3e59e3
   languageName: node
   linkType: hard
 

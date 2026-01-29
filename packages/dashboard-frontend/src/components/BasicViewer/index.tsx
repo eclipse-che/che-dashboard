@@ -10,9 +10,9 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import { EditorView } from '@codemirror/view';
+import { githubDark, githubLight } from '@uiw/codemirror-themes';
 import CodeMirror from '@uiw/react-codemirror';
-import React, { useMemo } from 'react';
+import React from 'react';
 
 import styles from '@/components/BasicViewer/index.module.css';
 import { useTheme } from '@/contexts/ThemeContext';
@@ -22,32 +22,8 @@ export type Props = {
   id: string;
 };
 
-const createTheme = (isDark: boolean) => {
-  return EditorView.theme(
-    {
-      '&': {
-        color: isDark ? '#e5e9f0' : '#2e3440',
-        backgroundColor: isDark ? '#1e1e1e' : '#fff',
-      },
-      '.cm-activeLine': {
-        backgroundColor: 'inherit',
-      },
-      '.cm-gutters': {
-        backgroundColor: isDark ? '#2b2b2b' : '#f7f7f7',
-        color: isDark ? '#6e7681' : '#999',
-      },
-      '.cm-activeLineGutter': {
-        backgroundColor: isDark ? '#2b2b2b' : '#f7f7f7',
-      },
-    },
-    { dark: isDark },
-  );
-};
-
 export const BasicViewer: React.FC<Props> = ({ value, id }) => {
   const { isDarkTheme } = useTheme();
-
-  const theme = useMemo(() => createTheme(isDarkTheme), [isDarkTheme]);
 
   return (
     <div className={styles.basicViewer}>
@@ -56,7 +32,7 @@ export const BasicViewer: React.FC<Props> = ({ value, id }) => {
         readOnly={true}
         basicSetup={false}
         value={value}
-        extensions={[theme]}
+        theme={isDarkTheme ? githubDark : githubLight}
       />
     </div>
   );
