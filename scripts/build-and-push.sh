@@ -21,25 +21,23 @@ TAG_FILE=".image-tag"
 # Get the next tag version
 get_next_tag() {
   if [ ! -f "$TAG_FILE" ]; then
-    echo "${BASE_TAG}"
-    echo "${BASE_TAG}" > "$TAG_FILE"
+    NEXT_TAG="${BASE_TAG}-01"
+    echo "${NEXT_TAG}" > "$TAG_FILE"
+    echo "${NEXT_TAG}"
     return
   fi
   
   CURRENT_TAG=$(cat "$TAG_FILE")
   
-  # Extract base and counter
-  if [[ $CURRENT_TAG =~ ^([^_]+)_([0-9]+)$ ]]; then
+  # Extract base and counter (format: pr-1452-01)
+  if [[ $CURRENT_TAG =~ ^(.+)-([0-9]{2})$ ]]; then
     TAG_BASE="${BASH_REMATCH[1]}"
     TAG_COUNTER="${BASH_REMATCH[2]}"
-    NEXT_COUNTER=$((TAG_COUNTER + 1))
-    NEXT_TAG="${TAG_BASE}_${NEXT_COUNTER}"
-  elif [[ $CURRENT_TAG =~ ^([^_]+)$ ]]; then
-    TAG_BASE="${BASH_REMATCH[1]}"
-    NEXT_TAG="${TAG_BASE}_1"
+    NEXT_COUNTER=$(printf "%02d" $((10#$TAG_COUNTER + 1)))
+    NEXT_TAG="${TAG_BASE}-${NEXT_COUNTER}"
   else
-    echo "Error: Invalid tag format in $TAG_FILE"
-    exit 1
+    # First time or invalid format, start with -01
+    NEXT_TAG="${BASE_TAG}-01"
   fi
   
   echo "$NEXT_TAG"
