@@ -71,7 +71,6 @@ export CHE_SELF_SIGNED_MOUNT_PATH="${CHE_SELF_SIGNED_MOUNT_PATH:-$(pwd)/run/publ
 
 DASHBOARD_COMMON=packages/common
 DASHBOARD_FRONTEND=packages/dashboard-frontend
-DASHBOARD_FRONTEND_NEW=packages/dashboard-frontend-new
 DASHBOARD_BACKEND=packages/dashboard-backend
 DEVFILE_REGISTRY=packages/devfile-registry
 
@@ -87,18 +86,6 @@ if [ "$FORCE_BUILD" == "true" ] ||
   [ ! -d $DASHBOARD_FRONTEND/lib ] || [ -z "$(ls -A $DASHBOARD_FRONTEND/lib)" ]; then
   echo "[INFO] Compiling frontend package"
   yarn --cwd $DASHBOARD_FRONTEND build:dev
-fi
-
-if [ "$FORCE_BUILD" == "true" ] ||
-  [ ! -d $DASHBOARD_FRONTEND_NEW/lib ] || [ -z "$(ls -A $DASHBOARD_FRONTEND_NEW/lib)" ]; then
-  echo "[INFO] Compiling new frontend package (v6)"
-  yarn --cwd $DASHBOARD_FRONTEND_NEW build:dev
-fi
-
-# Copy new frontend (v6) to main frontend's public folder
-if [ -d $DASHBOARD_FRONTEND_NEW/lib/public/dashboard/v6 ]; then
-  echo "[INFO] Copying new frontend (v6) to main frontend public folder"
-  cp -r $DASHBOARD_FRONTEND_NEW/lib/public/dashboard/v6 $DASHBOARD_FRONTEND/lib/public/dashboard/v6
 fi
 
 if [ "$FORCE_BUILD" == "true" ] ||
