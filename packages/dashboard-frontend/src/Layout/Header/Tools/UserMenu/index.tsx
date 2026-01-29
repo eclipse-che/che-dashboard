@@ -54,11 +54,6 @@ export class UserMenu extends React.PureComponent<Props, State> {
     }));
   }
 
-  private handleSwitchToCurrentUI(): void {
-    const hash = window.location.hash;
-    window.location.href = `${window.location.origin}/dashboard/${hash}`;
-  }
-
   private buildUserDropdownItems(): Array<React.ReactElement> {
     return [
       // temporary hidden, https://github.com/eclipse/che/issues/21595
@@ -73,9 +68,6 @@ export class UserMenu extends React.PureComponent<Props, State> {
         onClick={() => this.props.history.push(ROUTE.USER_PREFERENCES)}
       >
         User Preferences
-      </DropdownItem>,
-      <DropdownItem key="switch-ui" onClick={() => this.handleSwitchToCurrentUI()}>
-        Switch to Current UI
       </DropdownItem>,
       <DropdownItem key="account_logout" onClick={() => this.props.logout()}>
         Logout
