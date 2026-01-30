@@ -18,9 +18,6 @@ import { useTheme } from '@/contexts/ThemeContext';
 const lightGreyCssVariable = 'var(--pf-global--palette--black-500)';
 const darkGreyCssVariable = 'var(--pf-global--palette--black-300)';
 
-// Deprecated: kept for backward compatibility
-export const greyCssVariable = lightGreyCssVariable;
-
 export function StoppedIcon(): React.ReactElement {
   const { isDarkTheme } = useTheme();
   const fillColor = isDarkTheme ? darkGreyCssVariable : lightGreyCssVariable;

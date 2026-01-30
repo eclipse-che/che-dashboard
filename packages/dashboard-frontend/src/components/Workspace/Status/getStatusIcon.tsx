@@ -19,10 +19,17 @@ import {
 import React from 'react';
 
 import styles from '@/components/Workspace/Status/index.module.css';
-import { greyCssVariable, StoppedIcon } from '@/components/Workspace/Status/StoppedIcon';
+import { StoppedIcon } from '@/components/Workspace/Status/StoppedIcon';
+import { useTheme } from '@/contexts/ThemeContext';
 import { DevWorkspaceStatus, WorkspaceStatus } from '@/services/helpers/types';
 
-export function getStatusIcon(status: string) {
+// Theme-aware grey colors
+const lightGreyCssVariable = 'var(--pf-global--palette--black-500)';
+const darkGreyCssVariable = 'var(--pf-global--palette--black-300)';
+
+export function getStatusIcon(status: string, isDarkTheme: boolean) {
+  const greyColor = isDarkTheme ? darkGreyCssVariable : lightGreyCssVariable;
+
   let icon: React.ReactElement;
   switch (status) {
     case DevWorkspaceStatus.STOPPED:
@@ -68,9 +75,15 @@ export function getStatusIcon(status: string) {
     default:
       icon = (
         <Icon isInline>
-          <InProgressIcon className={styles.rotate} color={greyCssVariable} />
+          <InProgressIcon className={styles.rotate} color={greyColor} />
         </Icon>
       );
   }
   return icon;
+}
+
+// Hook version that automatically uses theme context
+export function useStatusIcon(status: string): React.ReactElement {
+  const { isDarkTheme } = useTheme();
+  return getStatusIcon(status, isDarkTheme);
 }
