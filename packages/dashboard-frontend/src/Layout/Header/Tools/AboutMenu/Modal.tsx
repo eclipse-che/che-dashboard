@@ -10,14 +10,7 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import {
-  AboutModal as PatternflyAboutModal,
-  Content,
-  DescriptionList,
-  DescriptionListDescription,
-  DescriptionListGroup,
-  DescriptionListTerm,
-} from '@patternfly/react-core';
+import { AboutModal as PatternflyAboutModal, Content } from '@patternfly/react-core';
 import { detect } from 'detect-browser';
 import React from 'react';
 
@@ -54,65 +47,56 @@ export class AboutModal extends React.PureComponent<Props> {
 
     return (
       <Content>
-        <DescriptionList>
+        <dl>
           {dashboardVersion && (
-            <DescriptionListGroup>
-              <DescriptionListTerm>Dashboard Version</DescriptionListTerm>
-              <DescriptionListDescription
-                className="co-select-to-copy"
-                data-testid="dashboard-version"
-              >
+            <>
+              <dt>Dashboard Version</dt>
+              <dd className="co-select-to-copy" data-testid="dashboard-version">
                 {dashboardVersion}
-              </DescriptionListDescription>
-            </DescriptionListGroup>
+              </dd>
+            </>
           )}
           {serverVersion && (
-            <DescriptionListGroup>
-              <DescriptionListTerm>Server Version</DescriptionListTerm>
-              <DescriptionListDescription
-                className="co-select-to-copy"
-                data-testid="server-version"
-              >
+            <>
+              <dt>Server Version</dt>
+              <dd className="co-select-to-copy" data-testid="server-version">
                 {serverVersion}
-              </DescriptionListDescription>
-            </DescriptionListGroup>
+              </dd>
+            </>
           )}
           {username && (
-            <DescriptionListGroup>
-              <DescriptionListTerm>Username</DescriptionListTerm>
-              <DescriptionListDescription className="co-select-to-copy" data-testid="username">
+            <>
+              <dt>Username</dt>
+              <dd className="co-select-to-copy" data-testid="username">
                 {username}
-              </DescriptionListDescription>
-            </DescriptionListGroup>
+              </dd>
+            </>
           )}
           {browserName && (
-            <DescriptionListGroup>
-              <DescriptionListTerm>Browser Name</DescriptionListTerm>
-              <DescriptionListDescription className="co-select-to-copy" data-testid="browser-name">
+            <>
+              <dt>Browser Name</dt>
+              <dd className="co-select-to-copy" data-testid="browser-name">
                 {browserName}
-              </DescriptionListDescription>
-            </DescriptionListGroup>
+              </dd>
+            </>
           )}
           {browserVersion && (
-            <DescriptionListGroup>
-              <DescriptionListTerm>Browser Version</DescriptionListTerm>
-              <DescriptionListDescription
-                className="co-select-to-copy"
-                data-testid="browser-version"
-              >
+            <>
+              <dt>Browser Version</dt>
+              <dd className="co-select-to-copy" data-testid="browser-version">
                 {browserVersion}
-              </DescriptionListDescription>
-            </DescriptionListGroup>
+              </dd>
+            </>
           )}
           {browserOS && (
-            <DescriptionListGroup>
-              <DescriptionListTerm>Browser OS</DescriptionListTerm>
-              <DescriptionListDescription className="co-select-to-copy" data-testid="browser-os">
+            <>
+              <dt>Browser OS</dt>
+              <dd className="co-select-to-copy" data-testid="browser-os">
                 {browserOS}
-              </DescriptionListDescription>
-            </DescriptionListGroup>
+              </dd>
+            </>
           )}
-        </DescriptionList>
+        </dl>
       </Content>
     );
   }
