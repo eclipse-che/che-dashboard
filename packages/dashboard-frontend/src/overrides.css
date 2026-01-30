@@ -38,6 +38,17 @@ span[class*='label-required'] {
   color: var(--pf-v6-c-helper-text__item-icon--m-error--Color);
 }
 
+/* About modal logo - high quality rendering */
+.pf-v6-c-about-modal-box__brand img {
+  max-width: 100%;
+  height: auto;
+
+  object-fit: contain;
+
+  image-rendering: -webkit-optimize-contrast;
+  image-rendering: crisp-edges;
+}
+
 /* Menu item icon max height */
 .pf-v6-c-menu__item-main .pf-v6-c-menu__item-icon > img {
   max-height: 30px;
@@ -55,4 +66,61 @@ span[class*='label-required'] {
 
 html.pf-v6-theme-dark .pf-v6-c-page__main-section {
   background-color: #414141;
+}
+
+/* Workspace Progress - inherit background for loader tab content */
+/* stylelint-disable-next-line selector-id-pattern */
+#pf-tab-section-Progress-loader-progress-tab .pf-v6-c-page__main-section {
+  background-color: inherit;
+}
+
+/* Workspace Progress Steps - remove margin between wizard nav items */
+[aria-label="Workspace Progress Steps"] .pf-v6-c-wizard__nav-item + .pf-v6-c-wizard__nav-item {
+  margin-block-start: 0;
+}
+
+/* PatternFly 6 form styles */
+.pf-v6-c-form {
+  --pf-v6-c-form--m-horizontal__group-label--md--GridColumnWidth: 11rem;
+}
+
+/* Masthead brand logo sizing and quality */
+.pf-v6-c-masthead__brand .pf-v6-c-brand {
+  width: auto;
+  max-width: 200px;
+  height: 3.17rem;
+
+  object-fit: contain;
+
+  image-rendering: -webkit-optimize-contrast;
+  image-rendering: crisp-edges;
+}
+
+/* Logo color adjustments for light theme */
+.pf-v6-c-masthead__brand .pf-v6-c-brand .outer-fill {
+  fill: #151515;
+}
+
+/* Logo color for dark theme - keep white */
+html.pf-v6-theme-dark .pf-v6-c-masthead__brand .pf-v6-c-brand .outer-fill {
+  fill: #fff;
+}
+
+/* Header buttons styling */
+.header-buttons .pf-v6-c-button {
+  padding: 0 15px;
+
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 36px;
+  color: #fff;
+
+  background-color: var(--pf-t--global--color--brand--default);
+  border-radius: var(--pf-t--global--border--radius--small);
+}
+
+/* Page section after header buttons */
+.header-buttons + section.pf-v6-c-page__main-section {
+  padding-top: 0;
+  border-top: 1px solid var(--pf-t--global--border--color--default);
 }

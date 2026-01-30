@@ -10,6 +10,10 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
+.workspaceDetailsTabs {
+  outline: none;
+}
+
 .workspaceDetailsTabs :global(.pf-v6-c-tab-content) {
   outline: none;
 }
