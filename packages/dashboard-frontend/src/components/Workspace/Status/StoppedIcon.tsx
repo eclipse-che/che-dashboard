@@ -12,12 +12,22 @@
 
 import React from 'react';
 
-export const greyCssVariable = 'var(--pf-global--palette--black-500)';
+import { useTheme } from '@/contexts/ThemeContext';
+
+// Theme-aware grey colors
+const lightGreyCssVariable = 'var(--pf-global--palette--black-500)';
+const darkGreyCssVariable = 'var(--pf-global--palette--black-300)';
+
+// Deprecated: kept for backward compatibility
+export const greyCssVariable = lightGreyCssVariable;
 
 export function StoppedIcon(): React.ReactElement {
+  const { isDarkTheme } = useTheme();
+  const fillColor = isDarkTheme ? darkGreyCssVariable : lightGreyCssVariable;
+
   return (
     <svg
-      fill={greyCssVariable}
+      fill={fillColor}
       height="1em"
       width="1em"
       viewBox="0 0 16 16"
