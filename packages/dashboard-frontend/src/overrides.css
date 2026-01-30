@@ -47,3 +47,12 @@ span[class*='label-required'] {
 .pf-v6-c-page > .pf-v6-c-page__main-container {
   height: 100%;
 }
+
+/* Page main section background - theme-aware */
+.pf-v6-c-page__main-section {
+  background-color: rgb(241 241 241 / 45%);
+}
+
+html.pf-v6-theme-dark .pf-v6-c-page__main-section {
+  background-color: #414141;
+}

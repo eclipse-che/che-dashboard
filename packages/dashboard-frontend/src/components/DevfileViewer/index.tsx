@@ -13,8 +13,8 @@
 import { yaml } from '@codemirror/lang-yaml';
 import { HighlightStyle, syntaxHighlighting } from '@codemirror/language';
 import { EditorView } from '@codemirror/view';
-import { githubDark } from '@uiw/codemirror-theme-github';
 import { tags as t } from '@lezer/highlight';
+import { githubDark } from '@uiw/codemirror-theme-github';
 import CodeMirror from '@uiw/react-codemirror';
 import React, { useMemo } from 'react';
 
@@ -77,9 +77,7 @@ export const DevfileViewer: React.FC<Props> = ({ isActive, isExpanded, value, id
         value={value}
         theme={isDarkTheme ? githubDark : undefined}
         extensions={
-          isDarkTheme
-            ? [yaml()]
-            : [lightTheme, syntaxHighlighting(lightHighlightStyle), yaml()]
+          isDarkTheme ? [yaml()] : [lightTheme, syntaxHighlighting(lightHighlightStyle), yaml()]
         }
       />
     </div>
