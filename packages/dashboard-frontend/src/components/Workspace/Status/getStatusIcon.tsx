@@ -23,9 +23,9 @@ import { StoppedIcon } from '@/components/Workspace/Status/StoppedIcon';
 import { useTheme } from '@/contexts/ThemeContext';
 import { DevWorkspaceStatus, WorkspaceStatus } from '@/services/helpers/types';
 
-// Theme-aware grey colors
-const lightGreyCssVariable = 'var(--pf-global--palette--black-500)';
-const darkGreyCssVariable = 'var(--pf-global--palette--black-300)';
+// Theme-aware grey colors using PatternFly 6 tokens
+const lightGreyCssVariable = 'var(--pf-t--global--text--color--regular)';
+const darkGreyCssVariable = 'var(--pf-t--global--text--color--subtle)';
 
 export function getStatusIcon(status: string, isDarkTheme: boolean) {
   const greyColor = isDarkTheme ? darkGreyCssVariable : lightGreyCssVariable;

@@ -177,7 +177,7 @@ exports[`Workspace indicator component Che Workspaces should render STOPPED stat
         >
           <svg
             aria-hidden="true"
-            fill="var(--pf-global--palette--black-500)"
+            fill="var(--pf-t--global--text--color--regular)"
             height="1em"
             role="img"
             style={
@@ -238,7 +238,7 @@ exports[`Workspace indicator component Che Workspaces should render STOPPING sta
             aria-hidden={true}
             aria-labelledby={null}
             className="pf-v6-svg rotate"
-            color="var(--pf-global--palette--black-500)"
+            color="var(--pf-t--global--text--color--regular)"
             fill="currentColor"
             height="1em"
             role="img"
@@ -482,7 +482,7 @@ exports[`Workspace indicator component DevWorkspaces should render STOPPED statu
         >
           <svg
             aria-hidden="true"
-            fill="var(--pf-global--palette--black-500)"
+            fill="var(--pf-t--global--text--color--regular)"
             height="1em"
             role="img"
             style={
@@ -543,7 +543,7 @@ exports[`Workspace indicator component should render default status correctly 1`
             aria-hidden={true}
             aria-labelledby={null}
             className="pf-v6-svg rotate"
-            color="var(--pf-global--palette--black-500)"
+            color="var(--pf-t--global--text--color--regular)"
             fill="currentColor"
             height="1em"
             role="img"

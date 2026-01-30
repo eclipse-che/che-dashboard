@@ -14,9 +14,9 @@ import React from 'react';
 
 import { useTheme } from '@/contexts/ThemeContext';
 
-// Theme-aware grey colors
-const lightGreyCssVariable = 'var(--pf-global--palette--black-500)';
-const darkGreyCssVariable = 'var(--pf-global--palette--black-300)';
+// Theme-aware grey colors using PatternFly 6 tokens
+const lightGreyCssVariable = 'var(--pf-t--global--text--color--regular)';
+const darkGreyCssVariable = 'var(--pf-t--global--text--color--subtle)';
 
 export function StoppedIcon(): React.ReactElement {
   const { isDarkTheme } = useTheme();

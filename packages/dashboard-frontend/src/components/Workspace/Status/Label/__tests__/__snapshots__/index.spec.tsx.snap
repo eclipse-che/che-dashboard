@@ -154,7 +154,7 @@ exports[`The workspace status label component Che Workspaces should render STOPP
             >
               <svg
                 aria-hidden="true"
-                fill="var(--pf-global--palette--black-500)"
+                fill="var(--pf-t--global--text--color--regular)"
                 height="1em"
                 role="img"
                 style={
@@ -464,7 +464,7 @@ exports[`The workspace status label component DevWorkspaces should render STOPPE
             >
               <svg
                 aria-hidden="true"
-                fill="var(--pf-global--palette--black-500)"
+                fill="var(--pf-t--global--text--color--regular)"
                 height="1em"
                 role="img"
                 style={
@@ -536,7 +536,7 @@ exports[`The workspace status label component should render default status corre
                 aria-hidden={true}
                 aria-labelledby={null}
                 className="pf-v6-svg rotate"
-                color="var(--pf-global--palette--black-500)"
+                color="var(--pf-t--global--text--color--regular)"
                 fill="currentColor"
                 height="1em"
                 role="img"
