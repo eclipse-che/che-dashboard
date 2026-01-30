@@ -42,9 +42,7 @@ export function redirectToDashboard(): void {
   ) {
     // allow starting workspaces when no project url, but remotes are provided
     window.location.href =
-      window.location.origin +
-      '/dashboard' +
-      buildFactoryLoaderPath(window.location.href, false);
+      window.location.origin + '/dashboard' + buildFactoryLoaderPath(window.location.href, false);
     return;
   }
 

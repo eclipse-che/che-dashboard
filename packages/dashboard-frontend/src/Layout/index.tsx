@@ -17,8 +17,8 @@ import { connect, ConnectedProps } from 'react-redux';
 import { matchPath } from 'react-router-dom';
 
 import { BannerAlert } from '@/components/BannerAlert';
-import { ToggleBarsContext } from '@/contexts/ToggleBars';
 import { useTheme } from '@/contexts/ThemeContext';
+import { ToggleBarsContext } from '@/contexts/ToggleBars';
 import { container } from '@/inversify.config';
 import { ErrorBoundary } from '@/Layout/ErrorBoundary';
 import { ErrorReporter } from '@/Layout/ErrorReporter';
@@ -86,10 +86,7 @@ const LayoutComponent: React.FC<Props> = props => {
   );
 
   React.useEffect(() => {
-    const matchFactoryLoaderPath = matchPath(
-      ROUTE.FACTORY_LOADER,
-      props.history.location.pathname,
-    );
+    const matchFactoryLoaderPath = matchPath(ROUTE.FACTORY_LOADER, props.history.location.pathname);
     const matchIdeLoaderPath = matchPath(ROUTE.IDE_LOADER, props.history.location.pathname);
     if (matchFactoryLoaderPath !== null || matchIdeLoaderPath !== null) {
       hideAllBars();

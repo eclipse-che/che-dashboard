@@ -50,9 +50,7 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       }
     };
 
-    const browserPreference = mediaQuery.matches
-      ? ThemePreference.DARK
-      : ThemePreference.LIGHT;
+    const browserPreference = mediaQuery.matches ? ThemePreference.DARK : ThemePreference.LIGHT;
 
     switch (themePreference) {
       case ThemePreference.LIGHT:
@@ -72,7 +70,7 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
           mediaQuery.removeEventListener('change', mediaQueryListener);
         };
     }
-  }, [themePreference]);
+  }, [themePreference, mediaQuery]);
 
   useEffect(() => {
     document.documentElement.classList.toggle('pf-v6-theme-dark', isDarkTheme);

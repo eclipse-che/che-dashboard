@@ -177,7 +177,7 @@ div.main-page-loader .ide-page-loader-content img {
 
 /* Logo color for dark theme - keep white */
 html.pf-v6-theme-dark .pf-v6-c-masthead__brand .pf-v6-c-brand .outer-fill {
-  fill: #ffffff;
+  fill: #fff;
 }
 
 @keyframes hide {

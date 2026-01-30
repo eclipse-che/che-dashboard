@@ -62,7 +62,7 @@ const createLightHighlightStyle = () => {
   ]);
 };
 
-export const DevfileViewer: React.FC<Props> = ({ isActive, isExpanded, value, id }) => {
+export const DevfileViewer: React.FC<Props> = ({ value, id }) => {
   const { isDarkTheme } = useTheme();
 
   const lightTheme = useMemo(() => createLightTheme(), []);

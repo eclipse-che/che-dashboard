@@ -19,8 +19,8 @@
 }
 
 .navItem [class*='nav__link'] {
-  padding-left: 8px;
   width: 100%;
+  padding-left: 8px;
 }
 
 .navItem [class*='nav__link'] > span {

@@ -22,18 +22,14 @@ import {
   ToggleGroupItem,
   Tooltip,
 } from '@patternfly/react-core';
-import {
-  MoonIcon,
-  SunIcon,
-  WindowMaximizeIcon,
-} from '@patternfly/react-icons';
+import { MoonIcon, SunIcon, WindowMaximizeIcon } from '@patternfly/react-icons';
 import { History } from 'history';
 import React, { useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 
+import { ThemePreference, useTheme } from '@/contexts/ThemeContext';
 import { ROUTE } from '@/Routes';
 import { BrandingData } from '@/services/bootstrap/branding.constant';
-import { ThemePreference, useTheme } from '@/contexts/ThemeContext';
 import { infrastructureNamespacesActionCreators } from '@/store/InfrastructureNamespaces';
 
 type Props = MappedProps & {
@@ -159,10 +155,7 @@ const UserMenuComponent: React.FC<Props> = ({ history, username, logout }) => {
       <Divider />
       <DropdownGroup label="Actions">
         <DropdownList>
-          <DropdownItem
-            key="user-preferences"
-            onClick={() => history.push(ROUTE.USER_PREFERENCES)}
-          >
+          <DropdownItem key="user-preferences" onClick={() => history.push(ROUTE.USER_PREFERENCES)}>
             User Preferences
           </DropdownItem>
           <DropdownItem key="account_logout" onClick={() => logout()}>
