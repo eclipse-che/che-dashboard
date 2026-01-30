@@ -16,6 +16,7 @@ import { Location } from 'history';
 import React from 'react';
 import { Link } from 'react-router-dom';
 
+import { EditorIcon, getEditorName } from '@/components/EditorIcon';
 import { WorkspaceStatusIndicator } from '@/components/Workspace/Status/Indicator';
 import { WorkspaceActionsConsumer } from '@/contexts/WorkspaceActions';
 import { WorkspaceActionsDropdown } from '@/contexts/WorkspaceActions/Dropdown';
@@ -33,6 +34,7 @@ export interface RowData {
   workspaceUID: string;
   cells: {
     details: React.ReactNode;
+    editorIcon: React.ReactNode;
     lastModifiedDate: string;
     projectsList: string;
     action: React.ReactNode;
@@ -44,6 +46,7 @@ export interface RowData {
 
 export function buildRows(
   workspaces: Workspace[],
+  editors: devfileApi.Devfile[],
   toDelete: string[],
   filtered: string[],
   selected: string[],
@@ -60,6 +63,11 @@ export function buildRows(
         return sort(nameA, nameB, sortBy.direction);
       }
       if (sortBy.index === 1) {
+        const editorA = getEditorName(workspaceA) || '';
+        const editorB = getEditorName(workspaceB) || '';
+        return sort(editorA, editorB, sortBy.direction);
+      }
+      if (sortBy.index === 2) {
         const updatedA = workspaceA.updated || workspaceA.created || 0;
         const updatedB = workspaceB.updated || workspaceB.created || 0;
         return sort(updatedA, updatedB, sortBy.direction);
@@ -76,7 +84,9 @@ export function buildRows(
       const ideLoaderHref = toHref(ideLoaderLocation);
 
       try {
-        rows.push(buildRow(workspace, isSelected, isDeleted, overviewPageLocation, ideLoaderHref));
+        rows.push(
+          buildRow(workspace, editors, isSelected, isDeleted, overviewPageLocation, ideLoaderHref),
+        );
       } catch (e) {
         console.warn('Skip workspace: ', e);
       }
@@ -95,6 +105,7 @@ function sort(a: string | number, b: string | number, direction: SortDirection):
 
 export function buildRow(
   workspace: Workspace,
+  editors: devfileApi.Devfile[],
   isSelected: boolean,
   isDeleted: boolean,
   overviewPageLocation: Location,
@@ -118,6 +129,9 @@ export function buildRow(
       </Button>
     </span>
   );
+
+  /* editor icon */
+  const editorIcon = <EditorIcon editors={editors} workspace={workspace} />;
 
   /* last modified time */
   const lastModifiedMs = workspace.updated;
@@ -186,6 +200,7 @@ export function buildRow(
     workspaceUID: workspace.uid,
     cells: {
       details,
+      editorIcon,
       lastModifiedDate,
       projectsList,
       action,

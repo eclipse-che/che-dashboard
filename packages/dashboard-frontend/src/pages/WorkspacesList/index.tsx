@@ -25,11 +25,13 @@ import styles from '@/pages/WorkspacesList/index.module.css';
 import { buildRows, getSortParams, RowData, SortDirection } from '@/pages/WorkspacesList/Rows';
 import WorkspacesListToolbar from '@/pages/WorkspacesList/Toolbar';
 import { BrandingData } from '@/services/bootstrap/branding.constant';
+import devfileApi from '@/services/devfileApi';
 import { buildGettingStartedLocation } from '@/services/helpers/location';
 import { Workspace } from '@/services/workspace-adapter';
 
 type Props = {
   branding: BrandingData;
+  editors: devfileApi.Devfile[];
   location: Location;
   navigate: NavigateFunction;
   workspaces: Workspace[];
@@ -63,10 +65,10 @@ export default class WorkspacesList extends React.PureComponent<Props, State> {
   }
 
   private buildRows(): RowData[] {
-    const { workspaces } = this.props;
+    const { editors, workspaces } = this.props;
     const { filtered, selected, sortBy } = this.state;
 
-    return buildRows(workspaces, [], filtered, selected, sortBy);
+    return buildRows(workspaces, editors, [], filtered, selected, sortBy);
   }
 
   private handleFilter(filtered: Workspace[]): void {
@@ -222,6 +224,14 @@ export default class WorkspacesList extends React.PureComponent<Props, State> {
                   sort={getSortParams(1, sortBy.index, sortBy.direction, (index, direction) =>
                     this.handleSort(index, direction),
                   )}
+                  className={styles.editorColumnTitle}
+                >
+                  Editor
+                </Th>
+                <Th
+                  sort={getSortParams(2, sortBy.index, sortBy.direction, (index, direction) =>
+                    this.handleSort(index, direction),
+                  )}
                   className={styles.lastModifiedColumnTitle}
                 >
                   Last Modified
@@ -244,6 +254,7 @@ export default class WorkspacesList extends React.PureComponent<Props, State> {
                     }}
                   />
                   <Td dataLabel="Name">{row.cells.details}</Td>
+                  <Td dataLabel="Editor">{row.cells.editorIcon}</Td>
                   <Td dataLabel="Last Modified">{row.cells.lastModifiedDate}</Td>
                   <Td dataLabel="Project(s)" className={styles.projectsCell}>
                     {row.cells.projectsList}
