@@ -113,9 +113,10 @@ const LayoutComponent: React.FC<Props> = props => {
   const { history, branding, dashboardLogo } = props;
 
   // Use light theme logo for light mode, default logo for dark mode
+  // branding.logoFile is already prefixed with './assets/branding/'
   const logoFile = isDarkTheme
     ? branding.logoFile
-    : `lightTheme/${branding.logoFile}`;
+    : branding.logoFile.replace('./assets/branding/', './assets/branding/lightTheme/');
 
   const logoSrc = buildLogoSrc(dashboardLogo, logoFile);
 
