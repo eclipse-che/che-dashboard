@@ -180,7 +180,7 @@ export default class WorkspacesListToolbar extends React.PureComponent<Props, St
     );
 
     return (
-      <Toolbar id="workspaces-list-table-toolbar">
+      <Toolbar id="workspaces-list-table-toolbar" style={{ paddingBlockStart: '1rem' }}>
         <ToolbarContent>
           {checkboxItem}
           {filterItem}

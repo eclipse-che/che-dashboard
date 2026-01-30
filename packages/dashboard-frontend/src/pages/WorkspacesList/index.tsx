@@ -82,7 +82,7 @@ export default class WorkspacesList extends React.PureComponent<Props, State> {
   }
 
   private handleSelectAll(isSelectedAll: boolean): void {
-    const selected = isSelectedAll === false ? [] : [...this.state.filtered];
+    const selected = !isSelectedAll ? [] : [...this.state.filtered];
 
     this.setState({
       selected,
@@ -198,11 +198,7 @@ export default class WorkspacesList extends React.PureComponent<Props, State> {
             </Content>
           </Content>
         </PageSection>
-        <PageSection
-          padding={{ default: 'noPadding' }}
-          variant={PageSectionVariants.default}
-          isFilled={false}
-        >
+        <PageSection variant={PageSectionVariants.default} isFilled={false}>
           <Divider component="div" className="pf-u-mt-xl" />
           {toolbar}
           <Table aria-label="Workspaces List Table" variant="compact">
@@ -237,8 +233,9 @@ export default class WorkspacesList extends React.PureComponent<Props, State> {
             </Thead>
             <Tbody>
               {rows.map((row, rowIndex) => (
-                <Tr key={row.workspaceUID}>
+                <Tr key={row.workspaceUID} style={{ verticalAlign: 'middle' }}>
                   <Td
+                    style={{ verticalAlign: 'inherit' }}
                     select={{
                       rowIndex,
                       onSelect: (_event, isSelected) => this.handleSelect(isSelected, row),
