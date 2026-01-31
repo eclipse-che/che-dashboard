@@ -6,61 +6,65 @@ exports[`GitServices snapshot 1`] = `
     className="progressLine"
   />,
   <section
-    className="pf-c-page__main-section"
+    className="pf-v6-c-page__main-section"
   >
     <div
-      data-testid="git-services-revoke-modal"
+      className="pf-v6-c-page__main-body"
     >
-      <div>
-        GitServicesRevokeModal
+      <div
+        data-testid="git-services-revoke-modal"
+      >
+        <div>
+          GitServicesRevokeModal
+        </div>
+        <div
+          data-testid="revoke-modal-is-open"
+        >
+          closed
+        </div>
+        <button
+          onClick={[Function]}
+        >
+          Revoke
+        </button>
+        <button
+          onClick={[Function]}
+        >
+          Cancel
+        </button>
       </div>
       <div
-        data-testid="revoke-modal-is-open"
+        data-testid="git-services-list"
       >
-        closed
+        <div>
+          GitServicesList
+        </div>
+        <div
+          data-testid="number-of-git-services"
+        >
+          5
+        </div>
+        <div
+          data-testid="providers-with-token"
+        >
+          github,gitlab
+        </div>
+        <div
+          data-testid="skip-oauth-providers"
+        >
+          azure-devops
+        </div>
+        <div
+          data-testid="list-is-disabled"
+        >
+          false
+        </div>
+        <button
+          onClick={[Function]}
+        >
+          Revoke
+        </button>
       </div>
-      <button
-        onClick={[Function]}
-      >
-        Revoke
-      </button>
-      <button
-        onClick={[Function]}
-      >
-        Cancel
-      </button>
-    </div>
-    <div
-      data-testid="git-services-list"
-    >
-      <div>
-        GitServicesList
-      </div>
-      <div
-        data-testid="number-of-git-services"
-      >
-        5
-      </div>
-      <div
-        data-testid="providers-with-token"
-      >
-        github,gitlab
-      </div>
-      <div
-        data-testid="skip-oauth-providers"
-      >
-        azure-devops
-      </div>
-      <div
-        data-testid="list-is-disabled"
-      >
-        false
-      </div>
-      <button
-        onClick={[Function]}
-      >
-        Revoke
-      </button>
     </div>
   </section>,
 ]

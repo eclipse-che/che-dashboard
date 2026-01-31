@@ -2,68 +2,78 @@
 
 exports[`Page header should correctly render the component 1`] = `
 <header
-  className="pf-c-page__header show-header"
-  style={
-    {
-      "zIndex": "inherit",
-    }
-  }
+  className="pf-v6-c-masthead pf-m-display-inline-on-md show-header"
 >
   <div
-    className="pf-c-page__header-brand"
+    className="pf-v6-c-masthead__main"
   >
-    <div
-      className="pf-c-page__header-brand-toggle"
+    <span
+      className="pf-v6-c-masthead__toggle"
     >
       <button
-        aria-controls={null}
-        aria-disabled={false}
         aria-expanded="true"
         aria-label="Global navigation"
-        className="pf-c-button pf-m-plain"
+        className="pf-v6-c-button pf-m-plain pf-m-hamburger"
         data-ouia-component-id="OUIA-Generated-Button-plain-1"
-        data-ouia-component-type="PF4/Button"
+        data-ouia-component-type="PF6/Button"
         data-ouia-safe={true}
         disabled={false}
         id="nav-toggle"
         onClick={[Function]}
-        role={null}
         type="button"
       >
-        <svg
-          aria-hidden={true}
-          aria-labelledby={null}
-          fill="currentColor"
-          height="1em"
-          role="img"
-          style={
-            {
-              "verticalAlign": "-0.125em",
-            }
-          }
-          viewBox="0 0 448 512"
-          width="1em"
+        <span
+          className="pf-v6-c-button__icon"
         >
-          <path
-            d="M16 132h416c8.837 0 16-7.163 16-16V76c0-8.837-7.163-16-16-16H16C7.163 60 0 67.163 0 76v40c0 8.837 7.163 16 16 16zm0 160h416c8.837 0 16-7.163 16-16v-40c0-8.837-7.163-16-16-16H16c-8.837 0-16 7.163-16 16v40c0 8.837 7.163 16 16 16zm0 160h416c8.837 0 16-7.163 16-16v-40c0-8.837-7.163-16-16-16H16c-8.837 0-16 7.163-16 16v40c0 8.837 7.163 16 16 16z"
-          />
-        </svg>
+          <svg
+            className="pf-v6-c-button--hamburger-icon pf-v6-svg"
+            height="1em"
+            viewBox="0 0 10 10"
+            width="1em"
+          >
+            <path
+              className="pf-v6-c-button--hamburger-icon--top"
+              d="M1,1 L9,1"
+            />
+            <path
+              className="pf-v6-c-button--hamburger-icon--middle"
+              d="M1,5 L9,5"
+            />
+            <path
+              className="pf-v6-c-button--hamburger-icon--arrow"
+              d="M1,5 L1,5 L1,5"
+            />
+            <path
+              className="pf-v6-c-button--hamburger-icon--bottom"
+              d="M9,9 L1,9"
+            />
+          </svg>
+        </span>
       </button>
-    </div>
+    </span>
     <div
-      className="pf-c-page__header-brand-link"
+      className="pf-v6-c-masthead__brand"
     >
-      <img
-        alt="Logo"
-        className="pf-c-brand"
-        src="branding/logo"
-      />
+      <span
+        className="pf-v6-c-masthead__logo"
+      >
+        <img
+          alt="Logo"
+          className="pf-v6-c-brand"
+          src="branding/logo"
+          style={{}}
+        />
+      </span>
     </div>
   </div>
-  <button
-    onClick={[Function]}
+  <div
+    className="pf-v6-c-masthead__content"
   >
-    logout
-  </button>
+    <button
+      onClick={[Function]}
+    >
+      logout
+    </button>
+  </div>
 </header>
 `;

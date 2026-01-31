@@ -137,7 +137,9 @@ describe('Workspaces List Page', () => {
       await userEvent.type(searchbox, workspaces[0].name);
       await userEvent.click(searchButton);
 
-      const selectAllCheckbox = screen.getByRole('checkbox', { name: /select all/i });
+      // Use getAllByRole and get the first one, or use a more specific query
+      const selectAllCheckboxes = screen.getAllByRole('checkbox', { name: /select all/i });
+      const selectAllCheckbox = selectAllCheckboxes[0]; // Get the first matching checkbox
       await userEvent.click(selectAllCheckbox);
 
       const bulkDeleteElem = screen.getByTestId('workspace-actions-bulk-delete');

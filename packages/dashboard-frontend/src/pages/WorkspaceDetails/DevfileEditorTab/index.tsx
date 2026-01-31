@@ -10,13 +10,7 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import {
-  EmptyState,
-  EmptyStateIcon,
-  EmptyStateVariant,
-  TextContent,
-  Title,
-} from '@patternfly/react-core';
+import { Content, EmptyState, EmptyStateVariant } from '@patternfly/react-core';
 import { CogIcon } from '@patternfly/react-icons';
 import React from 'react';
 
@@ -54,7 +48,7 @@ export default class DevfileEditorTab extends React.PureComponent<Props, State> 
     return (
       <React.Fragment>
         <br />
-        <TextContent className={editorTabStyle}>
+        <Content className={editorTabStyle}>
           {devfileStr && (
             <>
               <EditorTools
@@ -73,14 +67,14 @@ export default class DevfileEditorTab extends React.PureComponent<Props, State> 
             </>
           )}
           {!devfileStr && (
-            <EmptyState isFullHeight={true} variant={EmptyStateVariant.small}>
-              <EmptyStateIcon icon={CogIcon} />
-              <Title headingLevel="h4" size="lg">
-                Devfile content is not available
-              </Title>
-            </EmptyState>
+            <EmptyState
+              isFullHeight={true}
+              variant={EmptyStateVariant.sm}
+              icon={CogIcon}
+              titleText="Devfile content is not available"
+            />
           )}
-        </TextContent>
+        </Content>
       </React.Fragment>
     );
   }

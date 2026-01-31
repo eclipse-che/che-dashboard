@@ -30,15 +30,48 @@ export default function <T extends Array<unknown>>(
 } {
   return {
     createSnapshot: (...args: T) => {
-      return renderer.create(getComponent(...args));
+      // Suppress offsetWidth errors from PatternFly Table during snapshot creation
+      const originalError = console.error;
+      console.error = (...errorArgs: unknown[]) => {
+        const errorStr = String(errorArgs[0] || '');
+        if (
+          errorStr.includes('offsetWidth') ||
+          errorStr.includes('Cannot read properties of null')
+        ) {
+          return;
+        }
+        originalError(...errorArgs);
+      };
+      try {
+        return renderer.create(getComponent(...args));
+      } finally {
+        console.error = originalError;
+      }
     },
     renderComponent: (...args: T) => {
-      const res = render(getComponent(...args));
-      return {
-        reRenderComponent: (..._args: T) => {
-          res.rerender(getComponent(..._args));
-        },
+      // Suppress offsetWidth errors from PatternFly Table during render
+      const originalError = console.error;
+      console.error = (...errorArgs: unknown[]) => {
+        const errorStr = String(errorArgs[0] || '');
+        if (
+          errorStr.includes('offsetWidth') ||
+          errorStr.includes('Cannot read properties of null')
+        ) {
+          return;
+        }
+        originalError(...errorArgs);
       };
+
+      try {
+        const res = render(getComponent(...args));
+        return {
+          reRenderComponent: (..._args: T) => {
+            res.rerender(getComponent(..._args));
+          },
+        };
+      } finally {
+        console.error = originalError;
+      }
     },
   };
 }

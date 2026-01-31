@@ -10,19 +10,17 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import {
-  AboutModal as PatternflyAboutModal,
-  TextContent,
-  TextList,
-  TextListItem,
-} from '@patternfly/react-core';
+import { AboutModal as PatternflyAboutModal, Content } from '@patternfly/react-core';
 import { detect } from 'detect-browser';
 import React from 'react';
+
+import { CheLogo } from '@/components/CheLogo';
 
 type Props = {
   productName: string | undefined;
   serverVersion: string | undefined;
   logo: string;
+  isSvgLogo: boolean;
   isOpen: boolean;
   closeModal: () => void;
   username: string | undefined;
@@ -51,86 +49,80 @@ export class AboutModal extends React.PureComponent<Props> {
     const browserName = this.browserName;
 
     return (
-      <TextContent>
-        <TextList component="dl">
+      <Content>
+        <dl>
           {dashboardVersion && (
             <>
-              <TextListItem component="dt">Dashboard Version</TextListItem>
-              <TextListItem
-                component="dd"
-                className="co-select-to-copy"
-                data-testid="dashboard-version"
-              >
+              <dt>Dashboard Version</dt>
+              <dd className="co-select-to-copy" data-testid="dashboard-version">
                 {dashboardVersion}
-              </TextListItem>
+              </dd>
             </>
           )}
           {serverVersion && (
             <>
-              <TextListItem component="dt">Server Version</TextListItem>
-              <TextListItem
-                component="dd"
-                className="co-select-to-copy"
-                data-testid="server-version"
-              >
+              <dt>Server Version</dt>
+              <dd className="co-select-to-copy" data-testid="server-version">
                 {serverVersion}
-              </TextListItem>
+              </dd>
             </>
           )}
           {username && (
             <>
-              <TextListItem component="dt">Username</TextListItem>
-              <TextListItem component="dd" className="co-select-to-copy" data-testid="username">
+              <dt>Username</dt>
+              <dd className="co-select-to-copy" data-testid="username">
                 {username}
-              </TextListItem>
+              </dd>
             </>
           )}
           {browserName && (
             <>
-              <TextListItem component="dt">Browser Name</TextListItem>
-              <TextListItem component="dd" className="co-select-to-copy" data-testid="browser-name">
+              <dt>Browser Name</dt>
+              <dd className="co-select-to-copy" data-testid="browser-name">
                 {browserName}
-              </TextListItem>
+              </dd>
             </>
           )}
           {browserVersion && (
             <>
-              <TextListItem component="dt">Browser Version</TextListItem>
-              <TextListItem
-                component="dd"
-                className="co-select-to-copy"
-                data-testid="browser-version"
-              >
+              <dt>Browser Version</dt>
+              <dd className="co-select-to-copy" data-testid="browser-version">
                 {browserVersion}
-              </TextListItem>
+              </dd>
             </>
           )}
           {browserOS && (
             <>
-              <TextListItem component="dt">Browser OS</TextListItem>
-              <TextListItem component="dd" className="co-select-to-copy" data-testid="browser-os">
+              <dt>Browser OS</dt>
+              <dd className="co-select-to-copy" data-testid="browser-os">
                 {browserOS}
-              </TextListItem>
+              </dd>
             </>
           )}
-        </TextList>
-      </TextContent>
+        </dl>
+      </Content>
     );
   }
 
   public render(): React.ReactElement {
-    const { isOpen, logo, productName } = this.props;
+    const { isOpen, productName, logo, isSvgLogo } = this.props;
 
     const modalContent = this.buildContent();
 
+    // For AboutModal, use img src even for SVG (PatternFly doesn't support custom children)
+    // The CSS theme-aware styling only applies to inline SVG in the masthead
     return (
       <PatternflyAboutModal
         isOpen={isOpen}
         onClose={() => this.props.closeModal()}
         brandImageSrc={logo}
         brandImageAlt={`${productName} logo`}
-        noAboutModalBoxContentContainer={true}
       >
+        {isSvgLogo && (
+          <div style={{ position: 'absolute', top: '1rem', left: '1rem', width: '200px' }}>
+            <CheLogo height="auto" width="100%" alt={`${productName} logo`} />
+          </div>
+        )}
         {modalContent}
       </PatternflyAboutModal>
     );

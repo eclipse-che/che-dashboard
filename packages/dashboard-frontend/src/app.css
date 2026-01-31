@@ -14,8 +14,9 @@ body {
   overflow: hidden;
 }
 
-.pf-c-form {
-  --pf-c-form--m-horizontal__group-label--md--GridColumnWidth: 11rem;
+/* PatternFly 6 form styles */
+.pf-v6-c-form {
+  --pf-v6-c-form--m-horizontal__group-label--md--GridColumnWidth: 11rem;
 }
 
 .page-description {
@@ -23,16 +24,16 @@ body {
   padding: 5px 25px;
 
   font-size: 14px;
-  color: #6e6e6e;
+  color: var(--pf-t--global--text--color--subtle);
 
-  background-color: #ededed;
-  border-top: 1px solid #cbcbcb;
-  border-bottom: 1px solid #cbcbcb;
+  background-color: var(--pf-t--global--background--color--secondary--default);
+  border-top: 1px solid var(--pf-t--global--border--color--default);
+  border-bottom: 1px solid var(--pf-t--global--border--color--default);
 }
 
 .page-description a {
   margin-left: 5px;
-  color: #4a90e2;
+  color: var(--pf-t--global--text--color--link--default);
 }
 
 div.tippy-popper a {
@@ -40,15 +41,15 @@ div.tippy-popper a {
 }
 
 div.tippy-popper a:not(:hover) {
-  --pf-global--link--Color: #73bcf7;
+  --pf-t--global--text--color--link--default: var(--pf-t--global--color--brand--default);
 }
 
 div.tippy-popper a:hover {
-  --pf-global--link--Color: #2b9af3;
+  --pf-t--global--text--color--link--default: var(--pf-t--global--color--brand--hover);
 }
 
 /* Ensure About modal logo renders with high quality */
-.pf-c-about-modal-box__brand img {
+.pf-v6-c-about-modal-box__brand img {
   max-width: 100%;
   height: auto;
 
@@ -65,7 +66,7 @@ div.main-page-loader {
 
   margin: auto;
 
-  font-family: Helvetica, Arial, sans-serif;
+  font-family: var(--pf-t--global--font--family--body), serif;
   font-size: 24px;
   color: #fff;
 
@@ -105,11 +106,11 @@ div.main-page-loader .ide-page-loader-content img {
 
 .page-label {
   font-size: 20px;
-  color: #353e50;
+  color: var(--pf-t--global--text--color--regular);
   text-align: center;
 }
 
-.header-buttons .pf-c-button {
+.header-buttons .pf-v6-c-button {
   padding: 0 15px;
 
   font-size: 14px;
@@ -117,13 +118,13 @@ div.main-page-loader .ide-page-loader-content img {
   line-height: 36px;
   color: #fff;
 
-  background-color: #4a90e2;
-  border-radius: 2px;
+  background-color: var(--pf-t--global--color--brand--default);
+  border-radius: var(--pf-t--global--border--radius--small);
 }
 
-.header-buttons + section.pf-c-page__main-section {
+.header-buttons + section.pf-v6-c-page__main-section {
   padding-top: 0;
-  border-top: 1px solid #e4e4e4;
+  border-top: 1px solid var(--pf-t--global--border--color--default);
 }
 
 .show-header {
@@ -147,17 +148,10 @@ div.main-page-loader .ide-page-loader-content img {
 }
 
 .hide-header {
-  overflow: hidden;
-
-  min-height: 0;
-  max-height: 0;
-
-  animation-name: hide;
-  animation-duration: 0.1s;
-  animation-timing-function: linear;
+  display: none;
 }
 
-.pf-c-page__header-brand-link .pf-c-brand {
+.pf-v6-c-masthead__brand .pf-v6-c-brand {
   width: auto;
   max-width: 200px;
   height: 3.17rem;
@@ -167,6 +161,16 @@ div.main-page-loader .ide-page-loader-content img {
   /* Improve rendering quality for scaled images */
   image-rendering: -webkit-optimize-contrast;
   image-rendering: crisp-edges;
+}
+
+/* Logo color adjustments for light theme */
+.pf-v6-c-masthead__brand .pf-v6-c-brand .outer-fill {
+  fill: #151515;
+}
+
+/* Logo color for dark theme - keep white */
+html.pf-v6-theme-dark .pf-v6-c-masthead__brand .pf-v6-c-brand .outer-fill {
+  fill: #fff;
 }
 
 @keyframes hide {

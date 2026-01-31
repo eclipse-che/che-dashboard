@@ -10,7 +10,6 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import { api } from '@eclipse-che/common';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
 import { Provider } from 'react-redux';
@@ -24,11 +23,7 @@ const { createSnapshot, renderComponent } = getComponentRenderer(getComponent);
 
 jest.mock('@/components/ImportFromGit/RepoOptionsAccordion/AdvancedOptions');
 jest.mock('@/components/ImportFromGit/RepoOptionsAccordion/GitRepoOptions');
-jest.mock('@/services/backend-client/gitBranchesApi', () => ({
-  fetchGitBranches: () => () => {
-    return Promise.resolve({ branches: [] } as api.IGitBranches);
-  },
-}));
+
 const mockOnChange = jest.fn();
 
 describe('RepoOptionsAccordion', () => {

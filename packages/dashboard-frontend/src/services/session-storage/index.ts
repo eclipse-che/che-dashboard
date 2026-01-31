@@ -14,7 +14,6 @@ export enum SessionStorageKey {
   PRIVATE_FACTORY_RELOADS = 'private-factory-reloads-number',
   ORIGINAL_LOCATION_PATH = 'original-location-path',
   EXTERNAL_REGISTRIES = 'external-registries',
-  GIT_BRANCHES = 'git-branches',
 }
 
 export default class SessionStorageService {

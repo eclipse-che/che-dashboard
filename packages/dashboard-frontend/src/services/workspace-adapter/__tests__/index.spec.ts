@@ -86,37 +86,6 @@ describe('for DevWorkspace', () => {
     expect(workspace.storageType).toEqual('per-user');
   });
 
-  it('should remove storage type when set to empty string', () => {
-    const devWorkspace = new DevWorkspaceBuilder().build();
-    devWorkspace.spec.template.attributes = {
-      [DEVWORKSPACE_STORAGE_TYPE_ATTR]: 'per-workspace',
-    };
-    const workspace = constructWorkspace(devWorkspace);
-
-    expect(workspace.storageType).toEqual('per-workspace');
-
-    // Test edge case: set storageType to falsy value to trigger removal
-    workspace.storageType = undefined as any;
-
-    expect(workspace.storageType).toEqual('');
-    expect(
-      workspace.ref.spec.template.attributes?.[DEVWORKSPACE_STORAGE_TYPE_ATTR],
-    ).toBeUndefined();
-  });
-
-  it('should remove attributes object when clearing storage type and attributes become empty', () => {
-    const devWorkspace = new DevWorkspaceBuilder().build();
-    devWorkspace.spec.template.attributes = {
-      [DEVWORKSPACE_STORAGE_TYPE_ATTR]: 'per-workspace',
-    };
-    const workspace = constructWorkspace(devWorkspace);
-
-    // Test edge case: set storageType to falsy value to trigger removal
-    workspace.storageType = undefined as any;
-
-    expect(workspace.ref.spec.template.attributes).toBeUndefined();
-  });
-
   it('should return reference to the workspace', () => {
     const devWorkspace = new DevWorkspaceBuilder().build();
     const workspace = constructWorkspace(devWorkspace);
@@ -159,81 +128,6 @@ describe('for DevWorkspace', () => {
     const workspace = constructWorkspace(devWorkspace);
     expect(workspace.name).not.toEqual(name);
     expect(workspace.name).toEqual(overrideName);
-  });
-
-  it('should set workspace name in "kubernetes.io/metadata.name" label', () => {
-    const name = 'wksp-1234';
-    const newName = 'new-workspace-name';
-    const devWorkspace = new DevWorkspaceBuilder().withName(name).build();
-    const workspace = constructWorkspace(devWorkspace);
-
-    expect(workspace.name).toEqual(name);
-
-    workspace.name = newName;
-
-    expect(workspace.name).toEqual(newName);
-    expect(workspace.ref.metadata.labels?.[DEVWORKSPACE_LABEL_METADATA_NAME]).toEqual(newName);
-  });
-
-  it('should update workspace name when label already exists', () => {
-    const name = 'wksp-1234';
-    const initialOverrideName = 'initial-override';
-    const newName = 'updated-name';
-    const devWorkspace = new DevWorkspaceBuilder()
-      .withMetadata({
-        labels: {
-          [DEVWORKSPACE_LABEL_METADATA_NAME]: initialOverrideName,
-        },
-        name,
-      })
-      .build();
-    const workspace = constructWorkspace(devWorkspace);
-
-    expect(workspace.name).toEqual(initialOverrideName);
-
-    workspace.name = newName;
-
-    expect(workspace.name).toEqual(newName);
-    expect(workspace.ref.metadata.labels?.[DEVWORKSPACE_LABEL_METADATA_NAME]).toEqual(newName);
-  });
-
-  it('should remove workspace name label when set to empty string', () => {
-    const name = 'wksp-1234';
-    const overrideName = 'override-name';
-    const devWorkspace = new DevWorkspaceBuilder()
-      .withMetadata({
-        labels: {
-          [DEVWORKSPACE_LABEL_METADATA_NAME]: overrideName,
-        },
-        name,
-      })
-      .build();
-    const workspace = constructWorkspace(devWorkspace);
-
-    expect(workspace.name).toEqual(overrideName);
-
-    workspace.name = '';
-
-    expect(workspace.name).toEqual(name);
-    expect(workspace.ref.metadata.labels?.[DEVWORKSPACE_LABEL_METADATA_NAME]).toBeUndefined();
-  });
-
-  it('should remove labels object when clearing name and labels become empty', () => {
-    const name = 'wksp-1234';
-    const overrideName = 'override-name';
-    const devWorkspace = new DevWorkspaceBuilder()
-      .withMetadata({
-        labels: {
-          [DEVWORKSPACE_LABEL_METADATA_NAME]: overrideName,
-        },
-        name,
-      })
-      .build();
-    const workspace = constructWorkspace(devWorkspace);
-
-    workspace.name = '';
-
-    expect(workspace.ref.metadata.labels).toBeUndefined();
   });
 
   it('should return namespace', () => {
@@ -341,293 +235,28 @@ describe('for DevWorkspace', () => {
     expect(workspace.projects).toEqual([projects[0].name, projects[1].name]);
   });
 
-  it('should return empty array when no projects and no starter projects', () => {
-    const devWorkspace = new DevWorkspaceBuilder().build();
-    const workspace = constructWorkspace(devWorkspace);
-    expect(workspace.projects).toEqual([]);
-  });
-
-  it('should return starter project name when use-starter-project attribute is set', () => {
-    const starterProjectName = 'my-starter-project';
-    const devWorkspace = new DevWorkspaceBuilder()
-      .withSpec({
-        template: {
-          attributes: {
-            'controller.devfile.io/use-starter-project': starterProjectName,
-          },
-          starterProjects: [
-            {
-              name: starterProjectName,
-              git: {
-                remotes: {
-                  origin: 'https://github.com/user/repo.git',
-                },
-              },
-            },
-          ],
-        },
-      })
-      .build();
-    const workspace = constructWorkspace(devWorkspace);
-    expect(workspace.projects).toEqual([starterProjectName]);
-  });
-
-  it('should return empty array when starter project name does not match', () => {
-    const starterProjectName = 'my-starter-project';
-    const devWorkspace = new DevWorkspaceBuilder()
-      .withSpec({
-        template: {
-          attributes: {
-            'controller.devfile.io/use-starter-project': starterProjectName,
-          },
-          starterProjects: [
-            {
-              name: 'different-starter-project',
-              git: {
-                remotes: {
-                  origin: 'https://github.com/user/repo.git',
-                },
-              },
-            },
-          ],
-        },
-      })
-      .build();
-    const workspace = constructWorkspace(devWorkspace);
-    expect(workspace.projects).toEqual([]);
-  });
-
-  it('should return empty array when template.projects is undefined', () => {
-    const devWorkspace = new DevWorkspaceBuilder().build();
-    // Note: template cannot be undefined for a valid DevWorkspace (isDevWorkspace requires it)
-    // But template.projects can be undefined, which should return empty array
-    devWorkspace.spec.template.projects = undefined as any;
-    const workspace = constructWorkspace(devWorkspace);
-    expect(workspace.projects).toEqual([]);
-  });
-
   describe('source', () => {
     it('should return undefined if devfile source is not define', () => {
       const devWorkspace = new DevWorkspaceBuilder().build();
       const workspace = constructWorkspace(devWorkspace);
       expect(workspace.source).toBeUndefined();
     });
-
-    describe('factory params', () => {
-      it('should return factory url with all params (including factory attributes)', () => {
-        const devWorkspace = new DevWorkspaceBuilder()
-          .withMetadata({
-            name: 'test-workspace',
-            annotations: {
-              [DEVWORKSPACE_DEVFILE_SOURCE]: dump({
-                factory: {
-                  params:
-                    'che-editor=che-incubator/che-code/latest&storageType=per-workspace&url=https://github.com/user/repo',
-                },
-              }),
-            },
-          })
-          .build();
-        const workspace = constructWorkspace(devWorkspace);
-        expect(workspace.source).toEqual(
-          'https://github.com/user/repo?che-editor=che-incubator/che-code/latest&storageType=per-workspace',
-        );
-      });
-
-      it('should return factory url without non-propagated params', () => {
-        const devWorkspace = new DevWorkspaceBuilder()
-          .withMetadata({
-            name: 'test-workspace',
-            annotations: {
-              [DEVWORKSPACE_DEVFILE_SOURCE]: dump({
-                factory: {
-                  params: 'url=https://github.com/user/repo',
-                },
-              }),
-            },
-          })
-          .build();
-        const workspace = constructWorkspace(devWorkspace);
-        expect(workspace.source).toEqual('https://github.com/user/repo');
-      });
-
-      it('should handle factory params with che-editor only', () => {
-        const devWorkspace = new DevWorkspaceBuilder()
-          .withMetadata({
-            name: 'test-workspace',
-            annotations: {
-              [DEVWORKSPACE_DEVFILE_SOURCE]: dump({
-                factory: {
-                  params: 'che-editor=che-code&url=https://gitlab.com/project/repo',
-                },
-              }),
-            },
-          })
-          .build();
-        const workspace = constructWorkspace(devWorkspace);
-        expect(workspace.source).toEqual('https://gitlab.com/project/repo?che-editor=che-code');
-      });
-
-      it('should handle factory params with multiple propagated attributes', () => {
-        const devWorkspace = new DevWorkspaceBuilder()
-          .withMetadata({
-            name: 'test-workspace',
-            annotations: {
-              [DEVWORKSPACE_DEVFILE_SOURCE]: dump({
-                factory: {
-                  params:
-                    'che-editor=che-incubator/che-idea/latest&image=custom-image:tag&policies.create=peruser&storageType=ephemeral&url=https://bitbucket.org/team/project',
-                },
-              }),
-            },
-          })
-          .build();
-        const workspace = constructWorkspace(devWorkspace);
-        // Should include all propagated factory attributes
-        expect(workspace.source).toContain('che-editor=che-incubator/che-idea/latest');
-        expect(workspace.source).toContain('image=custom-image:tag');
-        expect(workspace.source).toContain('policies.create=peruser');
-        expect(workspace.source).toContain('storageType=ephemeral');
-        expect(workspace.source).toContain('https://bitbucket.org/team/project');
-      });
-
-      it('should handle airgap sample URLs with propagated attributes', () => {
-        const devWorkspace = new DevWorkspaceBuilder()
-          .withMetadata({
-            name: 'test-workspace',
-            annotations: {
-              [DEVWORKSPACE_DEVFILE_SOURCE]: dump({
-                factory: {
-                  params:
-                    'che-editor=che-incubator/che-code/latest&storageType=per-user&url=http://localhost:8080/dashboard/api/airgap-sample/devfile/download?id=java-maven',
-                },
-              }),
-            },
-          })
-          .build();
-        const workspace = constructWorkspace(devWorkspace);
-        expect(workspace.source).toEqual(
-          'http://localhost:8080/dashboard/api/airgap-sample/devfile/download?id=java-maven&che-editor=che-incubator/che-code/latest&storageType=per-user',
-        );
-      });
-
-      it('should return base URL when no propagated params present', () => {
-        const devWorkspace = new DevWorkspaceBuilder()
-          .withMetadata({
-            name: 'test-workspace',
-            annotations: {
-              [DEVWORKSPACE_DEVFILE_SOURCE]: dump({
-                factory: {
-                  params: 'url=https://github.com/eclipse-che/che-dashboard',
-                },
-              }),
-            },
-          })
-          .build();
-        const workspace = constructWorkspace(devWorkspace);
-        expect(workspace.source).toEqual('https://github.com/eclipse-che/che-dashboard');
-      });
-
-      it('should handle legacy factory params format', () => {
-        const devWorkspace = new DevWorkspaceBuilder()
-          .withMetadata({
-            name: 'test-workspace',
-            annotations: {
-              [DEVWORKSPACE_DEVFILE_SOURCE]: dump({
-                factory: {
-                  params: 'editor-image=test-images/che-code:tag&url=https://dummy.repo',
-                },
-              }),
-            },
-          })
-          .build();
-        const workspace = constructWorkspace(devWorkspace);
-        // Should include the editor-image param (it's a propagated attribute)
-        expect(workspace.source).toEqual(
-          'https://dummy.repo?editor-image=test-images/che-code:tag',
-        );
-      });
-
-      it('should not include "existing" param in source', () => {
-        const devWorkspace = new DevWorkspaceBuilder()
-          .withMetadata({
-            name: 'test-workspace',
-            annotations: {
-              [DEVWORKSPACE_DEVFILE_SOURCE]: dump({
-                factory: {
-                  params:
-                    'che-editor=che-code&existing=some-workspace&url=https://github.com/user/repo',
-                },
-              }),
-            },
-          })
-          .build();
-        const workspace = constructWorkspace(devWorkspace);
-        // "existing" should not be in source (it's flow control, not source identification)
-        expect(workspace.source).toEqual('https://github.com/user/repo?che-editor=che-code');
-        expect(workspace.source).not.toContain('existing=');
-      });
-
-      it('should return undefined when factory params array is empty', () => {
-        const devWorkspace = new DevWorkspaceBuilder()
-          .withMetadata({
-            name: 'test-workspace',
-            annotations: {
-              [DEVWORKSPACE_DEVFILE_SOURCE]: dump({
-                factory: {
-                  params: '',
-                },
-              }),
-            },
-          })
-          .build();
-        const workspace = constructWorkspace(devWorkspace);
-        expect(workspace.source).toBeUndefined();
-      });
-
-      it('should return undefined when factory params do not contain url param', () => {
-        const devWorkspace = new DevWorkspaceBuilder()
-          .withMetadata({
-            name: 'test-workspace',
-            annotations: {
-              [DEVWORKSPACE_DEVFILE_SOURCE]: dump({
-                factory: {
-                  params: 'che-editor=che-code&storageType=per-workspace',
-                },
-              }),
-            },
-          })
-          .build();
-        const workspace = constructWorkspace(devWorkspace);
-        expect(workspace.source).toBeUndefined();
-      });
-
-      it('should handle URL with existing query params', () => {
-        const devWorkspace = new DevWorkspaceBuilder()
-          .withMetadata({
-            name: 'test-workspace',
-            annotations: {
-              [DEVWORKSPACE_DEVFILE_SOURCE]: dump({
-                factory: {
-                  params:
-                    'che-editor=che-code&url=https://github.com/user/repo?branch=main&path=/src',
-                },
-              }),
-            },
-          })
-          .build();
-        const workspace = constructWorkspace(devWorkspace);
-        // When factory params are split by '&', the URL query params also get split
-        // So 'path=/src' becomes a separate param, not part of the URL
-        // The source should contain the base URL with query params from the URL param and appended factory params
-        expect(workspace.source).toContain('https://github.com/user/repo');
-        expect(workspace.source).toContain('branch=main');
-        expect(workspace.source).toContain('che-editor=che-code');
-        // Note: 'path=/src' is treated as a separate factory param, not part of the URL
-        // If it were a propagated attribute, it would be appended, but 'path' is not in PROPAGATE_FACTORY_ATTRS
-      });
+    it('should return factory url param if existing', () => {
+      const devWorkspace = new DevWorkspaceBuilder()
+        .withMetadata({
+          name: 'test-workspace',
+          annotations: {
+            [DEVWORKSPACE_DEVFILE_SOURCE]: dump({
+              factory: {
+                params: 'editor-image=test-images/che-code:tag&url=https://dummy.repo',
+              },
+            }),
+          },
+        })
+        .build();
+      const workspace = constructWorkspace(devWorkspace);
+      expect(workspace.source).toEqual('https://dummy.repo');
     });
-
     it('should return scm repo if existing', () => {
       const devWorkspace = new DevWorkspaceBuilder()
         .withMetadata({

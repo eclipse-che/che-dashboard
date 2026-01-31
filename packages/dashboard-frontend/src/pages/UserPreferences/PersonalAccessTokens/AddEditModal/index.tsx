@@ -11,7 +11,15 @@
  */
 
 import { api } from '@eclipse-che/common';
-import { Button, ButtonVariant, Modal, ModalVariant } from '@patternfly/react-core';
+import {
+  Button,
+  ButtonVariant,
+  Modal,
+  ModalBody,
+  ModalFooter,
+  ModalHeader,
+  ModalVariant,
+} from '@patternfly/react-core';
 import React from 'react';
 
 import { AddEditModalForm } from '@/pages/UserPreferences/PersonalAccessTokens/AddEditModal/Form';
@@ -69,31 +77,11 @@ export class PersonalAccessTokenAddEditModal extends React.PureComponent<Props, 
     });
   }
 
-  private buildModalFooter(): React.ReactNode {
-    const { isEdit } = this.props;
-    const isDisabled = this.state.isSaveEnabled === false;
-
-    return (
-      <React.Fragment>
-        <Button
-          variant={ButtonVariant.primary}
-          isDisabled={isDisabled}
-          onClick={() => this.handleSaveToken()}
-        >
-          {isEdit ? 'Save' : 'Add'}
-        </Button>
-        <Button variant={ButtonVariant.link} onClick={() => this.handleCloseModal()}>
-          Cancel
-        </Button>
-      </React.Fragment>
-    );
-  }
-
   public render(): React.ReactElement {
     const { cheUserId, isEdit, isOpen } = this.props;
+    const isDisabled = this.state.isSaveEnabled === false;
 
     const modalTitle = isEdit ? 'Edit Personal Access Token' : 'Add Personal Access Token';
-    const modalFooter = this.buildModalFooter();
 
     const editTokenProps: EditTokenProps =
       isEdit === true
@@ -109,17 +97,30 @@ export class PersonalAccessTokenAddEditModal extends React.PureComponent<Props, 
     return (
       <Modal
         aria-label={modalTitle}
-        title={modalTitle}
         variant={ModalVariant.small}
         isOpen={isOpen}
         onClose={() => this.handleCloseModal()}
-        footer={modalFooter}
       >
-        <AddEditModalForm
-          cheUserId={cheUserId}
-          onChange={(...args) => this.handleChangeToken(...args)}
-          {...editTokenProps}
-        />
+        <ModalHeader title={modalTitle} />
+        <ModalBody>
+          <AddEditModalForm
+            cheUserId={cheUserId}
+            onChange={(...args) => this.handleChangeToken(...args)}
+            {...editTokenProps}
+          />
+        </ModalBody>
+        <ModalFooter>
+          <Button
+            variant={ButtonVariant.primary}
+            isDisabled={isDisabled}
+            onClick={() => this.handleSaveToken()}
+          >
+            {isEdit ? 'Save' : 'Add'}
+          </Button>
+          <Button variant={ButtonVariant.link} onClick={() => this.handleCloseModal()}>
+            Cancel
+          </Button>
+        </ModalFooter>
       </Modal>
     );
   }

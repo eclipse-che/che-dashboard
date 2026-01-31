@@ -2,54 +2,79 @@
 
 exports[`AdditionalGitRemote snapshot 1`] = `
 <div
-  className="pf-l-flex"
+  className="pf-v6-l-flex"
 >
   <div
     className="pf-m-align-right"
   >
     <div
-      className="pf-c-form__group remoteName"
+      className="pf-v6-c-form__group remoteName"
     >
       <div
-        className="pf-c-form__group-label"
+        className="pf-v6-c-form__group-label"
       >
         <label
-          className="pf-c-form__label"
+          className="pf-v6-c-form__label"
         >
           <span
-            className="pf-c-form__label-text"
+            className="pf-v6-c-form__label-text"
           >
             Remote Name
           </span>
           <span
             aria-hidden="true"
-            className="pf-c-form__label-required"
+            className="pf-v6-c-form__label-required"
           >
              
             *
           </span>
         </label>
-         
+          
       </div>
       <div
-        className="pf-c-form__group-control"
+        className="pf-v6-c-form__group-control"
       >
-        <input
-          aria-invalid={false}
-          aria-label="Remote Name"
-          className="pf-c-form-control pf-m-success"
-          data-ouia-component-id="OUIA-Generated-TextInputBase-1"
-          data-ouia-component-type="PF4/TextInput"
-          data-ouia-safe={true}
-          disabled={false}
-          onBlur={[Function]}
-          onChange={[Function]}
-          onFocus={[Function]}
-          placeholder="origin"
-          required={false}
-          type="text"
-          value="test-1"
-        />
+        <span
+          className="pf-v6-c-form-control pf-m-success"
+        >
+          <input
+            aria-invalid={false}
+            aria-label="Remote Name"
+            data-ouia-component-id="OUIA-Generated-TextInputBase-1"
+            data-ouia-component-type="PF6/TextInput"
+            data-ouia-safe={true}
+            disabled={false}
+            onBlur={[Function]}
+            onChange={[Function]}
+            onFocus={[Function]}
+            placeholder="origin"
+            required={false}
+            type="text"
+            value="test-1"
+          />
+          <span
+            className="pf-v6-c-form-control__utilities"
+          >
+            <span
+              className="pf-v6-c-form-control__icon pf-m-status"
+            >
+              <svg
+                aria-hidden={true}
+                aria-labelledby={null}
+                className="pf-v6-svg"
+                fill="currentColor"
+                height="1em"
+                role="img"
+                viewBox="0 0 512 512"
+                width="1em"
+              >
+                <path
+                  d="M504 256c0 136.967-111.033 248-248 248S8 392.967 8 256 119.033 8 256 8s248 111.033 248 248zM227.314 387.314l184-184c6.248-6.248 6.248-16.379 0-22.627l-22.627-22.627c-6.248-6.249-16.379-6.249-22.628 0L216 308.118l-70.059-70.059c-6.248-6.248-16.379-6.248-22.628 0l-22.627 22.627c-6.248 6.248-6.248 16.379 0 22.627l104 104c6.249 6.249 16.379 6.249 22.628.001z"
+                />
+              </svg>
+            </span>
+          </span>
+        </span>
       </div>
     </div>
   </div>
@@ -57,48 +82,73 @@ exports[`AdditionalGitRemote snapshot 1`] = `
     className="pf-m-grow pf-m-align-right"
   >
     <div
-      className="pf-c-form__group remoteURL"
+      className="pf-v6-c-form__group remoteURL"
     >
       <div
-        className="pf-c-form__group-label"
+        className="pf-v6-c-form__group-label"
       >
         <label
-          className="pf-c-form__label"
+          className="pf-v6-c-form__label"
         >
           <span
-            className="pf-c-form__label-text"
+            className="pf-v6-c-form__label-text"
           >
             Remote URL
           </span>
           <span
             aria-hidden="true"
-            className="pf-c-form__label-required"
+            className="pf-v6-c-form__label-required"
           >
              
             *
           </span>
         </label>
-         
+          
       </div>
       <div
-        className="pf-c-form__group-control"
+        className="pf-v6-c-form__group-control"
       >
-        <input
-          aria-invalid={false}
-          aria-label="Remote URL"
-          className="pf-c-form-control pf-m-success"
-          data-ouia-component-id="OUIA-Generated-TextInputBase-2"
-          data-ouia-component-type="PF4/TextInput"
-          data-ouia-safe={true}
-          disabled={false}
-          onBlur={[Function]}
-          onChange={[Function]}
-          onFocus={[Function]}
-          placeholder="HTTP or SSH URL"
-          required={true}
-          type="text"
-          value="https://test-1.repo.git"
-        />
+        <span
+          className="pf-v6-c-form-control pf-m-success"
+        >
+          <input
+            aria-invalid={false}
+            aria-label="Remote URL"
+            data-ouia-component-id="OUIA-Generated-TextInputBase-2"
+            data-ouia-component-type="PF6/TextInput"
+            data-ouia-safe={true}
+            disabled={false}
+            onBlur={[Function]}
+            onChange={[Function]}
+            onFocus={[Function]}
+            placeholder="HTTP or SSH URL"
+            required={true}
+            type="text"
+            value="https://test-1.repo.git"
+          />
+          <span
+            className="pf-v6-c-form-control__utilities"
+          >
+            <span
+              className="pf-v6-c-form-control__icon pf-m-status"
+            >
+              <svg
+                aria-hidden={true}
+                aria-labelledby={null}
+                className="pf-v6-svg"
+                fill="currentColor"
+                height="1em"
+                role="img"
+                viewBox="0 0 512 512"
+                width="1em"
+              >
+                <path
+                  d="M504 256c0 136.967-111.033 248-248 248S8 392.967 8 256 119.033 8 256 8s248 111.033 248 248zM227.314 387.314l184-184c6.248-6.248 6.248-16.379 0-22.627l-22.627-22.627c-6.248-6.249-16.379-6.249-22.628 0L216 308.118l-70.059-70.059c-6.248-6.248-16.379-6.248-22.628 0l-22.627 22.627c-6.248 6.248-6.248 16.379 0 22.627l104 104c6.249 6.249 16.379 6.249 22.628.001z"
+                />
+              </svg>
+            </span>
+          </span>
+        </span>
       </div>
     </div>
   </div>
@@ -122,36 +172,34 @@ exports[`AdditionalGitRemote snapshot 1`] = `
         data-testid="tooltip-placed-to"
       >
         <button
-          aria-disabled={false}
           aria-label={null}
-          className="pf-c-button pf-m-plain removeRemoteButton"
+          className="pf-v6-c-button pf-m-plain removeRemoteButton"
           data-ouia-component-id="OUIA-Generated-Button-plain-1"
-          data-ouia-component-type="PF4/Button"
+          data-ouia-component-type="PF6/Button"
           data-ouia-safe={true}
           data-testid="remove-remote"
           disabled={false}
           onClick={[Function]}
-          role={null}
           type="button"
         >
-          <svg
-            aria-hidden={true}
-            aria-labelledby={null}
-            fill="currentColor"
-            height="1em"
-            role="img"
-            style={
-              {
-                "verticalAlign": "-0.125em",
-              }
-            }
-            viewBox="0 0 512 512"
-            width="1em"
+          <span
+            className="pf-v6-c-button__icon"
           >
-            <path
-              d="M256 8C119 8 8 119 8 256s111 248 248 248 248-111 248-248S393 8 256 8zM124 296c-6.6 0-12-5.4-12-12v-56c0-6.6 5.4-12 12-12h264c6.6 0 12 5.4 12 12v56c0 6.6-5.4 12-12 12H124z"
-            />
-          </svg>
+            <svg
+              aria-hidden={true}
+              aria-labelledby={null}
+              className="pf-v6-svg"
+              fill="currentColor"
+              height="1em"
+              role="img"
+              viewBox="0 0 512 512"
+              width="1em"
+            >
+              <path
+                d="M256 8C119 8 8 119 8 256s111 248 248 248 248-111 248-248S393 8 256 8zM124 296c-6.6 0-12-5.4-12-12v-56c0-6.6 5.4-12 12-12h264c6.6 0 12 5.4 12 12v56c0 6.6-5.4 12-12 12H124z"
+              />
+            </svg>
+          </span>
         </button>
       </div>
     </div>

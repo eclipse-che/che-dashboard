@@ -10,7 +10,7 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import { FormSection, Panel, PanelMain, PanelMainBody } from '@patternfly/react-core';
+import { FormSection } from '@patternfly/react-core';
 import * as React from 'react';
 
 import { GitConfigUserEmail } from '@/pages/UserPreferences/GitConfig/Form/SectionUser/Email';
@@ -42,24 +42,18 @@ export class GitConfigSectionUser extends React.PureComponent<Props> {
   public render(): React.ReactElement {
     const { config, isLoading } = this.props;
     return (
-      <Panel>
-        <PanelMain>
-          <PanelMainBody>
-            <FormSection title="[user]" label="user">
-              <GitConfigUserName
-                isLoading={isLoading}
-                value={config.user.name}
-                onChange={(name, isValid) => this.handleChange({ name }, isValid)}
-              />
-              <GitConfigUserEmail
-                isLoading={isLoading}
-                value={config.user.email}
-                onChange={(email, isValid) => this.handleChange({ email }, isValid)}
-              />
-            </FormSection>
-          </PanelMainBody>
-        </PanelMain>
-      </Panel>
+      <FormSection title="[user]" label="user">
+        <GitConfigUserName
+          isLoading={isLoading}
+          value={config.user.name}
+          onChange={(name, isValid) => this.handleChange({ name }, isValid)}
+        />
+        <GitConfigUserEmail
+          isLoading={isLoading}
+          value={config.user.email}
+          onChange={(email, isValid) => this.handleChange({ email }, isValid)}
+        />
+      </FormSection>
     );
   }
 }

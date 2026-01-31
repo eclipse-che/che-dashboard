@@ -4,16 +4,11 @@ exports[`StepTitleIcon error 1`] = `
 <svg
   aria-hidden={true}
   aria-labelledby={null}
-  className="errorIcon stepIcon"
+  className="pf-v6-svg errorIcon stepIcon"
   data-testid="step-failed-icon"
   fill="currentColor"
   height="1em"
   role="img"
-  style={
-    {
-      "verticalAlign": "-0.125em",
-    }
-  }
   viewBox="0 0 512 512"
   width="1em"
 >
@@ -27,16 +22,11 @@ exports[`StepTitleIcon step is done 1`] = `
 <svg
   aria-hidden={true}
   aria-labelledby={null}
-  className="successIcon stepIcon"
+  className="pf-v6-svg successIcon stepIcon"
   data-testid="step-done-icon"
   fill="currentColor"
   height="1em"
   role="img"
-  style={
-    {
-      "verticalAlign": "-0.125em",
-    }
-  }
   viewBox="0 0 512 512"
   width="1em"
 >
@@ -50,16 +40,11 @@ exports[`StepTitleIcon step is in-progress 1`] = `
 <svg
   aria-hidden={true}
   aria-labelledby={null}
-  className="inProgressIcon rotate stepIcon"
+  className="pf-v6-svg inProgressIcon rotate stepIcon"
   data-testid="step-in-progress-icon"
   fill="currentColor"
   height="1em"
   role="img"
-  style={
-    {
-      "verticalAlign": "-0.125em",
-    }
-  }
   viewBox="0 0 1024 1024"
   width="1em"
 >
@@ -75,16 +60,11 @@ exports[`StepTitleIcon warning 1`] = `
 <svg
   aria-hidden={true}
   aria-labelledby={null}
-  className="warningIcon stepIcon"
+  className="pf-v6-svg warningIcon stepIcon"
   data-testid="step-warning-icon"
   fill="currentColor"
   height="1em"
   role="img"
-  style={
-    {
-      "verticalAlign": "-0.125em",
-    }
-  }
   viewBox="0 0 576 512"
   width="1em"
 >
