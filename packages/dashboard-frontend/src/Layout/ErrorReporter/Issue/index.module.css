@@ -44,6 +44,6 @@
 .errorMessage {
   padding: 5px;
   white-space: pre-wrap;
-  background-color: var(--pf-t--global--background--color--status--danger--default);
+  background-color: var(--pf-t--global--color--nonstatus--red--default);
   border-radius: 3px;
 }
