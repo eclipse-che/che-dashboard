@@ -20,7 +20,6 @@ import {
 import { QuestionCircleIcon } from '@patternfly/react-icons';
 import React from 'react';
 
-import { useTheme } from '@/contexts/ThemeContext';
 import { AboutModal } from '@/Layout/Header/Tools/AboutMenu/Modal';
 import { BrandingData } from '@/services/bootstrap/branding.constant';
 import { buildLogoSrc } from '@/services/helpers/brandingLogo';
@@ -34,7 +33,6 @@ type Props = {
 export const AboutMenu: React.FC<Props> = ({ branding, username, dashboardLogo }) => {
   const [isLauncherOpen, setIsLauncherOpen] = React.useState(false);
   const [isModalOpen, setIsModalOpen] = React.useState(false);
-  const { isDarkTheme } = useTheme();
 
   const buildDropdownItems = React.useCallback(() => {
     const items: React.ReactElement[] = [];
@@ -63,20 +61,7 @@ export const AboutMenu: React.FC<Props> = ({ branding, username, dashboardLogo }
 
   const { logoFile, name, productVersion } = branding;
 
-  // Use light theme logo for light mode, default logo for dark mode
-  const themeAwareLogoFile = React.useMemo(() => {
-    if (!logoFile || isDarkTheme) {
-      return logoFile;
-    }
-    // Replace the assets path prefix if present
-    if (logoFile.includes('./assets/branding/')) {
-      return logoFile.replace('./assets/branding/', './assets/branding/lightTheme/');
-    }
-    // Fallback: prepend lightTheme/ if no prefix found
-    return `lightTheme/${logoFile}`;
-  }, [logoFile, isDarkTheme]);
-
-  const logoSrc = buildLogoSrc(dashboardLogo, themeAwareLogoFile);
+  const logoSrc = buildLogoSrc(dashboardLogo, logoFile);
 
   return (
     <>

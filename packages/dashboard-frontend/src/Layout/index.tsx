@@ -17,7 +17,6 @@ import { connect, ConnectedProps } from 'react-redux';
 import { matchPath } from 'react-router-dom';
 
 import { BannerAlert } from '@/components/BannerAlert';
-import { useTheme } from '@/contexts/ThemeContext';
 import { ToggleBarsContext } from '@/contexts/ToggleBars';
 import { container } from '@/inversify.config';
 import { ErrorBoundary } from '@/Layout/ErrorBoundary';
@@ -46,7 +45,6 @@ type Props = MappedProps & {
 const LayoutComponent: React.FC<Props> = props => {
   const [isHeaderVisible, setIsHeaderVisible] = React.useState(true);
   const [isSidebarVisible, setIsSidebarVisible] = React.useState(true);
-  const { isDarkTheme } = useTheme();
 
   const issuesReporterService = container.get(IssuesReporterService);
   const warningsReporterService = container.get(WarningsReporterService);
@@ -112,13 +110,7 @@ const LayoutComponent: React.FC<Props> = props => {
 
   const { history, branding, dashboardLogo } = props;
 
-  // Use light theme logo for light mode, default logo for dark mode
-  // branding.logoFile is already prefixed with './assets/branding/'
-  const logoFile = isDarkTheme
-    ? branding.logoFile
-    : branding.logoFile.replace('./assets/branding/', './assets/branding/lightTheme/');
-
-  const logoSrc = buildLogoSrc(dashboardLogo, logoFile);
+  const logoSrc = buildLogoSrc(dashboardLogo, branding.logoFile);
 
   const masthead = (
     <Header

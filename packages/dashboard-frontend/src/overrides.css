@@ -14,7 +14,20 @@
  * This file is for patternfly css specific overrides
  */
 
+/* Theme-aware logo styling */
+
+/* Light theme: use black fill for logo text */
+:root:not([data-pf-theme='dark']) .outer-fill {
+  fill: #000;
+}
+
+/* Dark theme: use white fill for logo text (default) */
+:root[data-pf-theme='dark'] .outer-fill {
+  fill: #fff;
+}
+
 /* PatternFly 6 uses pf-v6-c-* class names */
+
 .pf-v6-c-menu__item-external-icon {
   color: var(--pf-t--global--icon--color--subtle) !important;
   opacity: 1 !important;
