@@ -2,6 +2,10 @@
   text-transform: capitalize;
 }
 
+.statusLabel .pf-m-success svg {
+  fill: #3c8e01f5;
+}
+
 .statusIndicator {
   margin-right: 10px;
 }
