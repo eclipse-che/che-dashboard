@@ -11,6 +11,7 @@
  */
 
 import { StateMock } from '@react-mock/state';
+import { waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
 
@@ -212,8 +213,10 @@ describe('Editor Selector Entry', () => {
     test('card is selected initially', () => {
       renderComponent(editorGroup[0].id, editorGroup);
 
-      const card = screen.getByRole('article');
-      card.click();
+      // PatternFly 6 Card uses selectableActions - click the hidden radio input
+      const radioInput = document.getElementById(`editor-selector-input-${editorGroup[0].id}`) as HTMLElement;
+      expect(radioInput).not.toBeNull();
+      radioInput.click();
 
       expect(mockOnSelect).not.toHaveBeenCalled();
     });
@@ -221,8 +224,10 @@ describe('Editor Selector Entry', () => {
     test('card is not selected initially', () => {
       renderComponent('other/editor/id', editorGroup);
 
-      const card = screen.getByRole('article');
-      card.click();
+      // PatternFly 6 Card uses selectableActions - click the hidden radio input
+      const radioInput = document.getElementById(`editor-selector-input-${editorGroup[0].id}`) as HTMLElement;
+      expect(radioInput).not.toBeNull();
+      radioInput.click();
 
       expect(mockOnSelect).toHaveBeenCalled();
     });
@@ -232,10 +237,14 @@ describe('Editor Selector Entry', () => {
     test('kebab click', async () => {
       renderComponent(editorGroup[0].id, editorGroup);
 
-      const kebab = screen.getByRole('button', { name: 'Actions' });
+      // PatternFly 6 MenuToggle uses aria-label, query by label text
+      const kebab = screen.getByRole('button', { name: new RegExp(`${editorGroupName} actions`, 'i') });
       await userEvent.click(kebab);
 
-      expect(screen.getByRole('menu')).toBeInTheDocument();
+      // Wait for menu to appear and check for specific menu items
+      await waitFor(() => {
+        expect(screen.queryByRole('menuitem', { name: editorGroup[0].version })).not.toBeNull();
+      });
 
       const dropdownItems = screen.getAllByRole('menuitem');
       expect(dropdownItems).toHaveLength(2);
@@ -314,8 +323,11 @@ describe('Editor Selector Entry', () => {
         // should NOT call onSelect
         expect(mockOnSelect).not.toHaveBeenCalled();
 
-        const card = screen.getByRole('article');
-        await userEvent.click(card);
+        // PatternFly 6 Card uses selectableActions - click the hidden radio input for the new editor
+        const cardId = `editor-selector-card-${editorGroup[1].id}`;
+        const radioInput = document.getElementById(`editor-selector-input-${editorGroup[1].id}`) as HTMLElement;
+        expect(radioInput).not.toBeNull();
+        await userEvent.click(radioInput);
 
         // should call onSelect
         expect(mockOnSelect).toHaveBeenCalledWith(editorGroup[1].id);

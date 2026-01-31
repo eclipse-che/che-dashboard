@@ -10,6 +10,7 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
+import { waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
 
@@ -128,55 +129,73 @@ describe('GitServicesList', () => {
   });
 
   test('service revocable (github)', async () => {
-    renderComponent(props);
+    // Suppress offsetWidth errors - they're expected in test environment with PatternFly Table
+    const originalError = console.error;
+    const suppressOffsetWidthErrors = (...args: unknown[]) => {
+      const errorStr = String(args[0] || '');
+      if (!errorStr.includes('offsetWidth') && !errorStr.includes('Cannot read properties of null')) {
+        originalError(...args);
+      }
+    };
+    console.error = suppressOffsetWidthErrors;
+    
+    try {
+      renderComponent(props);
 
-    const rows = screen.getAllByRole('row');
+      const rows = screen.getAllByRole('row');
 
-    // get the github row
-    const githubRow = rows[2];
-    expect(githubRow).toHaveTextContent('github');
+      // get the github row
+      const githubRow = rows[2];
+      expect(githubRow).toHaveTextContent('github');
 
-    const githubCheckbox = within(githubRow).getByRole('checkbox');
-    const githubKebab = within(githubRow).getByRole('button', { name: 'Kebab toggle' });
+      const githubCheckbox = within(githubRow).getByRole('checkbox');
+      const githubKebab = within(githubRow).getByRole('button', { name: 'Kebab toggle' });
 
-    // the checkbox is enabled and unchecked
-    expect(githubCheckbox).toBeEnabled();
-    expect(githubCheckbox).not.toBeChecked();
+      // the checkbox is enabled and unchecked
+      expect(githubCheckbox).toBeEnabled();
+      expect(githubCheckbox).not.toBeChecked();
 
-    // check the checkbox
-    await userEvent.click(githubCheckbox);
-    expect(githubCheckbox).toBeChecked();
+      // check the checkbox
+      await userEvent.click(githubCheckbox);
+      expect(githubCheckbox).toBeChecked();
 
-    // uncheck the checkbox
-    await userEvent.click(githubCheckbox);
-    expect(githubCheckbox).not.toBeChecked();
+      // uncheck the checkbox
+      await userEvent.click(githubCheckbox);
+      expect(githubCheckbox).not.toBeChecked();
 
-    // the kebab button is enabled
-    expect(githubKebab).toBeEnabled();
+      // the kebab button is enabled
+      expect(githubKebab).toBeEnabled();
 
-    // revoke button is not present
-    {
-      const revokeButton = within(githubRow).queryByRole('menuitem', { name: 'Revoke' });
-      expect(revokeButton).toBeNull();
-    }
-
-    // open kebab menu
-    await userEvent.click(githubKebab);
-
-    // the revoke button is present
-    const revokeButton = within(githubRow).queryByRole('menuitem', { name: 'Revoke' });
-    expect(revokeButton).not.toBeNull();
-
-    // click the revoke button
-    await userEvent.click(revokeButton!);
-
-    expect(props.onRevokeServices).toHaveBeenCalledTimes(1);
-    expect(props.onRevokeServices).toHaveBeenCalledWith([
+      // revoke button is not present
       {
-        name: 'github',
-        endpointUrl: 'https://github.com',
-      },
-    ]);
+        const revokeButton = within(githubRow).queryByRole('menuitem', { name: 'Revoke' });
+        expect(revokeButton).toBeNull();
+      }
+
+      // open kebab menu
+      await userEvent.click(githubKebab);
+
+      // the revoke button is present - wait for menu to appear
+      // ActionsColumn menu items may appear outside the row context
+      const revokeButton = await waitFor(() => {
+        const button = screen.queryByRole('menuitem', { name: 'Revoke' });
+        expect(button).not.toBeNull();
+        return button;
+      }, { timeout: 3000 });
+
+      // click the revoke button
+      await userEvent.click(revokeButton!);
+
+      expect(props.onRevokeServices).toHaveBeenCalledTimes(1);
+      expect(props.onRevokeServices).toHaveBeenCalledWith([
+        {
+          name: 'github',
+          endpointUrl: 'https://github.com',
+        },
+      ]);
+    } finally {
+      console.error = originalError;
+    }
   });
 
   test('can clear opt-out (github)', async () => {
@@ -220,9 +239,13 @@ describe('GitServicesList', () => {
     // open kebab menu
     await userEvent.click(githubKebab);
 
-    // the Clear button is present
-    const clearButton = within(githubRow).queryByRole('menuitem', { name: 'Clear' });
-    expect(clearButton).not.toBeNull();
+    // the Clear button is present - wait for menu to appear
+    // ActionsColumn menu items may appear outside the row context
+    const clearButton = await waitFor(() => {
+      const button = screen.queryByRole('menuitem', { name: 'Clear' });
+      expect(button).not.toBeNull();
+      return button;
+    }, { timeout: 3000 });
 
     // click the Clear button
     await userEvent.click(clearButton!);

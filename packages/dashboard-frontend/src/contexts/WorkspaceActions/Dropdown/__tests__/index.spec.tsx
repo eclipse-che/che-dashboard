@@ -12,6 +12,7 @@
 
 import { StateMock } from '@react-mock/state';
 import userEvent, { UserEvent } from '@testing-library/user-event';
+import { waitFor } from '@testing-library/react';
 import React from 'react';
 
 import { ActionContextType } from '@/contexts/WorkspaceActions';
@@ -66,14 +67,16 @@ describe('WorkspaceActionsDropdown', () => {
       expect(toggle).toHaveAttribute('data-testtype', 'kebab-toggle');
 
       // dropdown menu is not visible
-      expect(screen.queryByRole('menu', { name: 'Actions' })).toBeNull();
+      expect(screen.queryByRole('menuitem', { name: 'Action: ' + WorkspaceAction.OPEN_IDE })).toBeNull();
 
       // toggle dropdown
       const kebabToggle = toggle!;
       await user.click(kebabToggle);
 
-      // now the dropdown menu is visible
-      expect(screen.queryByRole('menu', { name: 'Actions' })).not.toBeNull();
+      // now the dropdown menu is visible - wait for menu items to appear
+      await waitFor(() => {
+        expect(screen.queryByRole('menuitem', { name: 'Action: ' + WorkspaceAction.OPEN_IDE })).not.toBeNull();
+      });
     });
   });
 
@@ -92,14 +95,16 @@ describe('WorkspaceActionsDropdown', () => {
       expect(toggle).toHaveAttribute('data-testtype', 'dropdown-toggle');
 
       // dropdown menu is not visible
-      expect(screen.queryByRole('menu', { name: 'Actions' })).toBeNull();
+      expect(screen.queryByRole('menuitem', { name: 'Action: ' + WorkspaceAction.OPEN_IDE })).toBeNull();
 
       // toggle dropdown
       const dropdownToggle = toggle!;
       await user.click(dropdownToggle);
 
-      // now the dropdown menu is visible
-      expect(screen.queryByRole('menu', { name: 'Actions' })).not.toBeNull();
+      // now the dropdown menu is visible - wait for menu items to appear
+      await waitFor(() => {
+        expect(screen.queryByRole('menuitem', { name: 'Action: ' + WorkspaceAction.OPEN_IDE })).not.toBeNull();
+      });
     });
   });
 
@@ -336,26 +341,26 @@ describe('WorkspaceActionsDropdown', () => {
 
       expect(
         screen.getByRole('menuitem', { name: 'Action: ' + WorkspaceAction.OPEN_IDE }),
-      ).toHaveAttribute('aria-disabled', 'false');
+      ).not.toBeDisabled();
       expect(
         screen.getByRole('menuitem', {
           name: 'Action: ' + WorkspaceAction.START_DEBUG_AND_OPEN_LOGS,
         }),
-      ).toHaveAttribute('aria-disabled', 'false');
+      ).not.toBeDisabled();
       expect(
         screen.getByRole('menuitem', { name: 'Action: ' + WorkspaceAction.START_IN_BACKGROUND }),
-      ).toHaveAttribute('aria-disabled', 'false');
+      ).not.toBeDisabled();
       expect(
         screen.getByRole('menuitem', {
           name: 'Action: ' + WorkspaceAction.RESTART_WORKSPACE,
         }),
-      ).toHaveAttribute('aria-disabled', 'true');
+      ).toBeDisabled();
       expect(
         screen.getByRole('menuitem', { name: 'Action: ' + WorkspaceAction.STOP_WORKSPACE }),
-      ).toHaveAttribute('aria-disabled', 'true');
+      ).toBeDisabled();
       expect(
         screen.getByRole('menuitem', { name: 'Action: ' + WorkspaceAction.DELETE_WORKSPACE }),
-      ).toHaveAttribute('aria-disabled', 'false');
+      ).not.toBeDisabled();
     });
 
     test('workspace FAILING', () => {
@@ -364,26 +369,26 @@ describe('WorkspaceActionsDropdown', () => {
 
       expect(
         screen.getByRole('menuitem', { name: 'Action: ' + WorkspaceAction.OPEN_IDE }),
-      ).toHaveAttribute('aria-disabled', 'false');
+      ).not.toBeDisabled();
       expect(
         screen.getByRole('menuitem', {
           name: 'Action: ' + WorkspaceAction.START_DEBUG_AND_OPEN_LOGS,
         }),
-      ).toHaveAttribute('aria-disabled', 'true');
+      ).toBeDisabled();
       expect(
         screen.getByRole('menuitem', { name: 'Action: ' + WorkspaceAction.START_IN_BACKGROUND }),
-      ).toHaveAttribute('aria-disabled', 'true');
+      ).toBeDisabled();
       expect(
         screen.getByRole('menuitem', {
           name: 'Action: ' + WorkspaceAction.RESTART_WORKSPACE,
         }),
-      ).toHaveAttribute('aria-disabled', 'false');
+      ).not.toBeDisabled();
       expect(
         screen.getByRole('menuitem', { name: 'Action: ' + WorkspaceAction.STOP_WORKSPACE }),
-      ).toHaveAttribute('aria-disabled', 'false');
+      ).not.toBeDisabled();
       expect(
         screen.getByRole('menuitem', { name: 'Action: ' + WorkspaceAction.DELETE_WORKSPACE }),
-      ).toHaveAttribute('aria-disabled', 'false');
+      ).not.toBeDisabled();
     });
 
     test('workspace RUNNING', () => {
@@ -392,26 +397,26 @@ describe('WorkspaceActionsDropdown', () => {
 
       expect(
         screen.getByRole('menuitem', { name: 'Action: ' + WorkspaceAction.OPEN_IDE }),
-      ).toHaveAttribute('aria-disabled', 'false');
+      ).not.toBeDisabled();
       expect(
         screen.getByRole('menuitem', {
           name: 'Action: ' + WorkspaceAction.START_DEBUG_AND_OPEN_LOGS,
         }),
-      ).toHaveAttribute('aria-disabled', 'true');
+      ).toBeDisabled();
       expect(
         screen.getByRole('menuitem', { name: 'Action: ' + WorkspaceAction.START_IN_BACKGROUND }),
-      ).toHaveAttribute('aria-disabled', 'true');
+      ).toBeDisabled();
       expect(
         screen.getByRole('menuitem', {
           name: 'Action: ' + WorkspaceAction.RESTART_WORKSPACE,
         }),
-      ).toHaveAttribute('aria-disabled', 'false');
+      ).not.toBeDisabled();
       expect(
         screen.getByRole('menuitem', { name: 'Action: ' + WorkspaceAction.STOP_WORKSPACE }),
-      ).toHaveAttribute('aria-disabled', 'false');
+      ).not.toBeDisabled();
       expect(
         screen.getByRole('menuitem', { name: 'Action: ' + WorkspaceAction.DELETE_WORKSPACE }),
-      ).toHaveAttribute('aria-disabled', 'false');
+      ).not.toBeDisabled();
     });
 
     test('workspace STARTING', () => {
@@ -420,26 +425,26 @@ describe('WorkspaceActionsDropdown', () => {
 
       expect(
         screen.getByRole('menuitem', { name: 'Action: ' + WorkspaceAction.OPEN_IDE }),
-      ).toHaveAttribute('aria-disabled', 'false');
+      ).not.toBeDisabled();
       expect(
         screen.getByRole('menuitem', {
           name: 'Action: ' + WorkspaceAction.START_DEBUG_AND_OPEN_LOGS,
         }),
-      ).toHaveAttribute('aria-disabled', 'true');
+      ).toBeDisabled();
       expect(
         screen.getByRole('menuitem', { name: 'Action: ' + WorkspaceAction.START_IN_BACKGROUND }),
-      ).toHaveAttribute('aria-disabled', 'true');
+      ).toBeDisabled();
       expect(
         screen.getByRole('menuitem', {
           name: 'Action: ' + WorkspaceAction.RESTART_WORKSPACE,
         }),
-      ).toHaveAttribute('aria-disabled', 'false');
+      ).not.toBeDisabled();
       expect(
         screen.getByRole('menuitem', { name: 'Action: ' + WorkspaceAction.STOP_WORKSPACE }),
-      ).toHaveAttribute('aria-disabled', 'false');
+      ).not.toBeDisabled();
       expect(
         screen.getByRole('menuitem', { name: 'Action: ' + WorkspaceAction.DELETE_WORKSPACE }),
-      ).toHaveAttribute('aria-disabled', 'false');
+      ).not.toBeDisabled();
     });
 
     test('workspace STOPPED', () => {
@@ -448,26 +453,26 @@ describe('WorkspaceActionsDropdown', () => {
 
       expect(
         screen.getByRole('menuitem', { name: 'Action: ' + WorkspaceAction.OPEN_IDE }),
-      ).toHaveAttribute('aria-disabled', 'false');
+      ).not.toBeDisabled();
       expect(
         screen.getByRole('menuitem', {
           name: 'Action: ' + WorkspaceAction.START_DEBUG_AND_OPEN_LOGS,
         }),
-      ).toHaveAttribute('aria-disabled', 'false');
+      ).not.toBeDisabled();
       expect(
         screen.getByRole('menuitem', { name: 'Action: ' + WorkspaceAction.START_IN_BACKGROUND }),
-      ).toHaveAttribute('aria-disabled', 'false');
+      ).not.toBeDisabled();
       expect(
         screen.getByRole('menuitem', {
           name: 'Action: ' + WorkspaceAction.RESTART_WORKSPACE,
         }),
-      ).toHaveAttribute('aria-disabled', 'true');
+      ).toBeDisabled();
       expect(
         screen.getByRole('menuitem', { name: 'Action: ' + WorkspaceAction.STOP_WORKSPACE }),
-      ).toHaveAttribute('aria-disabled', 'true');
+      ).toBeDisabled();
       expect(
         screen.getByRole('menuitem', { name: 'Action: ' + WorkspaceAction.DELETE_WORKSPACE }),
-      ).toHaveAttribute('aria-disabled', 'false');
+      ).not.toBeDisabled();
     });
 
     test('workspace STOPPING', () => {
@@ -476,26 +481,26 @@ describe('WorkspaceActionsDropdown', () => {
 
       expect(
         screen.getByRole('menuitem', { name: 'Action: ' + WorkspaceAction.OPEN_IDE }),
-      ).toHaveAttribute('aria-disabled', 'false');
+      ).not.toBeDisabled();
       expect(
         screen.getByRole('menuitem', {
           name: 'Action: ' + WorkspaceAction.START_DEBUG_AND_OPEN_LOGS,
         }),
-      ).toHaveAttribute('aria-disabled', 'true');
+      ).toBeDisabled();
       expect(
         screen.getByRole('menuitem', { name: 'Action: ' + WorkspaceAction.START_IN_BACKGROUND }),
-      ).toHaveAttribute('aria-disabled', 'true');
+      ).toBeDisabled();
       expect(
         screen.getByRole('menuitem', {
           name: 'Action: ' + WorkspaceAction.RESTART_WORKSPACE,
         }),
-      ).toHaveAttribute('aria-disabled', 'false');
+      ).not.toBeDisabled();
       expect(
         screen.getByRole('menuitem', { name: 'Action: ' + WorkspaceAction.STOP_WORKSPACE }),
-      ).toHaveAttribute('aria-disabled', 'false');
+      ).not.toBeDisabled();
       expect(
         screen.getByRole('menuitem', { name: 'Action: ' + WorkspaceAction.DELETE_WORKSPACE }),
-      ).toHaveAttribute('aria-disabled', 'false');
+      ).not.toBeDisabled();
     });
 
     test('workspace TERMINATING', () => {
@@ -504,26 +509,26 @@ describe('WorkspaceActionsDropdown', () => {
 
       expect(
         screen.getByRole('menuitem', { name: 'Action: ' + WorkspaceAction.OPEN_IDE }),
-      ).toHaveAttribute('aria-disabled', 'true');
+      ).toBeDisabled();
       expect(
         screen.getByRole('menuitem', {
           name: 'Action: ' + WorkspaceAction.START_DEBUG_AND_OPEN_LOGS,
         }),
-      ).toHaveAttribute('aria-disabled', 'true');
+      ).toBeDisabled();
       expect(
         screen.getByRole('menuitem', { name: 'Action: ' + WorkspaceAction.START_IN_BACKGROUND }),
-      ).toHaveAttribute('aria-disabled', 'true');
+      ).toBeDisabled();
       expect(
         screen.getByRole('menuitem', {
           name: 'Action: ' + WorkspaceAction.RESTART_WORKSPACE,
         }),
-      ).toHaveAttribute('aria-disabled', 'true');
+      ).toBeDisabled();
       expect(
         screen.getByRole('menuitem', { name: 'Action: ' + WorkspaceAction.STOP_WORKSPACE }),
-      ).toHaveAttribute('aria-disabled', 'true');
+      ).toBeDisabled();
       expect(
         screen.getByRole('menuitem', { name: 'Action: ' + WorkspaceAction.DELETE_WORKSPACE }),
-      ).toHaveAttribute('aria-disabled', 'true');
+      ).toBeDisabled();
     });
   });
 
