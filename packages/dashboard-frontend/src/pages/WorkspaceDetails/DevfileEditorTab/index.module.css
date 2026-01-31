@@ -34,5 +34,5 @@
   height: calc(100vh - 55px);
   padding: 0 20px;
 
-  background-color: var(--pf-global--BackgroundColor--100);
+  background-color: var(--pf-t--global--background--color--primary--default);
 }

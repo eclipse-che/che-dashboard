@@ -13,5 +13,5 @@
 .sampleCardIcon {
   width: 64px;
   height: 64px;
-  color: var(--pf-global--Color--200);
+  color: var(--pf-t--global--icon--color--subtle);
 }
