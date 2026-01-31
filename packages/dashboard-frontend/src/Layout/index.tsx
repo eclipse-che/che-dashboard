@@ -17,6 +17,7 @@ import { connect, ConnectedProps } from 'react-redux';
 import { matchPath } from 'react-router-dom';
 
 import { BannerAlert } from '@/components/BannerAlert';
+import { CheLogo } from '@/components/CheLogo';
 import { ToggleBarsContext } from '@/contexts/ToggleBars';
 import { container } from '@/inversify.config';
 import { ErrorBoundary } from '@/Layout/ErrorBoundary';
@@ -110,13 +111,23 @@ const LayoutComponent: React.FC<Props> = props => {
 
   const { history, branding, dashboardLogo } = props;
 
-  const logoSrc = buildLogoSrc(dashboardLogo, branding.logoFile);
+  // Use inline SVG for .svg files, otherwise use img tag
+  const isSvgLogo = branding.logoFile?.toLowerCase().endsWith('.svg');
+  const logoElement = isSvgLogo ? (
+    <CheLogo height="36px" width="auto" alt="Logo" />
+  ) : (
+    <Brand
+      src={buildLogoSrc(dashboardLogo, branding.logoFile)}
+      alt="Logo"
+      heights={{ default: '36px' }}
+    />
+  );
 
   const masthead = (
     <Header
       history={history}
       isVisible={isHeaderVisible}
-      logo={<Brand src={logoSrc} alt="Logo" heights={{ default: '36px' }} />}
+      logo={logoElement}
       logout={() => signOut()}
     />
   );

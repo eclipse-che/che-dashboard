@@ -62,6 +62,7 @@ export const AboutMenu: React.FC<Props> = ({ branding, username, dashboardLogo }
   const { logoFile, name, productVersion } = branding;
 
   const logoSrc = buildLogoSrc(dashboardLogo, logoFile);
+  const isSvgLogo = logoFile?.toLowerCase().endsWith('.svg');
 
   return (
     <>
@@ -92,6 +93,7 @@ export const AboutMenu: React.FC<Props> = ({ branding, username, dashboardLogo }
         }}
         username={username}
         logo={logoSrc}
+        isSvgLogo={isSvgLogo}
         productName={name}
         serverVersion={productVersion}
       />

@@ -14,10 +14,13 @@ import { AboutModal as PatternflyAboutModal, Content } from '@patternfly/react-c
 import { detect } from 'detect-browser';
 import React from 'react';
 
+import { CheLogo } from '@/components/CheLogo';
+
 type Props = {
   productName: string | undefined;
   serverVersion: string | undefined;
   logo: string;
+  isSvgLogo: boolean;
   isOpen: boolean;
   closeModal: () => void;
   username: string | undefined;
@@ -102,10 +105,12 @@ export class AboutModal extends React.PureComponent<Props> {
   }
 
   public render(): React.ReactElement {
-    const { isOpen, logo, productName } = this.props;
+    const { isOpen, productName, logo, isSvgLogo } = this.props;
 
     const modalContent = this.buildContent();
 
+    // For AboutModal, use img src even for SVG (PatternFly doesn't support custom children)
+    // The CSS theme-aware styling only applies to inline SVG in the masthead
     return (
       <PatternflyAboutModal
         isOpen={isOpen}
@@ -113,6 +118,11 @@ export class AboutModal extends React.PureComponent<Props> {
         brandImageSrc={logo}
         brandImageAlt={`${productName} logo`}
       >
+        {isSvgLogo && (
+          <div style={{ position: 'absolute', top: '1rem', left: '1rem', width: '200px' }}>
+            <CheLogo height="auto" width="100%" alt={`${productName} logo`} />
+          </div>
+        )}
         {modalContent}
       </PatternflyAboutModal>
     );
