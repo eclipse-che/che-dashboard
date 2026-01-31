@@ -96,31 +96,6 @@ html.pf-v6-theme-dark .pf-v6-c-page__main-section {
   image-rendering: crisp-edges;
 }
 
-/* Logo color adjustments for light theme */
-.pf-v6-c-masthead__brand .pf-v6-c-brand .outer-fill {
-  fill: #151515;
-}
-
-/* Logo color for dark theme - keep white */
-html.pf-v6-theme-dark .pf-v6-c-masthead__brand .pf-v6-c-brand .outer-fill {
-  fill: #fff;
-}
-
-/* Header buttons styling */
-.header-buttons .pf-v6-c-button {
-  padding: 0 15px;
-
-  font-size: 14px;
-  font-weight: 400;
-  line-height: 36px;
-  color: #fff;
-
-  background-color: var(--pf-t--global--color--brand--default);
-  border-radius: var(--pf-t--global--border--radius--small);
-}
-
-/* Page section after header buttons */
-.header-buttons + section.pf-v6-c-page__main-section {
-  padding-top: 0;
-  border-top: 1px solid var(--pf-t--global--border--color--default);
+tbody.pf-v6-c-table__tbody tr.pf-v6-c-table__tr td.pf-v6-c-table__td {
+  vertical-align: middle;
 }

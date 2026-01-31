@@ -11,17 +11,24 @@
  */
 
 .devfileViewer {
-  width: 100%;
-  height: 90%;
-  min-height: 45vh;
+  height: 100%;
 }
 
 .devfileViewer > div {
   overflow: auto;
-  height: 100%;
-  border: 1px solid var(--pf-global--BorderColor--100);
+  min-height: calc(50vh - 40px);
+  border: 1px solid var(--pf-t--global--border--color--default);
 }
 
-.devfileViewer .codeMirror > div {
-  height: 100%;
+.devfileViewer > div > div {
+  min-height: inherit;
+  opacity: 0.8;
+}
+
+.devfileViewer > div > div > div {
+  min-height: inherit;
+}
+
+.devfileViewer > div > div > div > div {
+  min-height: inherit !important;
 }
