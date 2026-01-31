@@ -11,8 +11,8 @@
  */
 
 import { StateMock } from '@react-mock/state';
-import userEvent, { UserEvent } from '@testing-library/user-event';
 import { waitFor } from '@testing-library/react';
+import userEvent, { UserEvent } from '@testing-library/user-event';
 import React from 'react';
 
 import { ActionContextType } from '@/contexts/WorkspaceActions';
@@ -67,7 +67,9 @@ describe('WorkspaceActionsDropdown', () => {
       expect(toggle).toHaveAttribute('data-testtype', 'kebab-toggle');
 
       // dropdown menu is not visible
-      expect(screen.queryByRole('menuitem', { name: 'Action: ' + WorkspaceAction.OPEN_IDE })).toBeNull();
+      expect(
+        screen.queryByRole('menuitem', { name: 'Action: ' + WorkspaceAction.OPEN_IDE }),
+      ).toBeNull();
 
       // toggle dropdown
       const kebabToggle = toggle!;
@@ -75,7 +77,9 @@ describe('WorkspaceActionsDropdown', () => {
 
       // now the dropdown menu is visible - wait for menu items to appear
       await waitFor(() => {
-        expect(screen.queryByRole('menuitem', { name: 'Action: ' + WorkspaceAction.OPEN_IDE })).not.toBeNull();
+        expect(
+          screen.queryByRole('menuitem', { name: 'Action: ' + WorkspaceAction.OPEN_IDE }),
+        ).not.toBeNull();
       });
     });
   });
@@ -95,7 +99,9 @@ describe('WorkspaceActionsDropdown', () => {
       expect(toggle).toHaveAttribute('data-testtype', 'dropdown-toggle');
 
       // dropdown menu is not visible
-      expect(screen.queryByRole('menuitem', { name: 'Action: ' + WorkspaceAction.OPEN_IDE })).toBeNull();
+      expect(
+        screen.queryByRole('menuitem', { name: 'Action: ' + WorkspaceAction.OPEN_IDE }),
+      ).toBeNull();
 
       // toggle dropdown
       const dropdownToggle = toggle!;
@@ -103,7 +109,9 @@ describe('WorkspaceActionsDropdown', () => {
 
       // now the dropdown menu is visible - wait for menu items to appear
       await waitFor(() => {
-        expect(screen.queryByRole('menuitem', { name: 'Action: ' + WorkspaceAction.OPEN_IDE })).not.toBeNull();
+        expect(
+          screen.queryByRole('menuitem', { name: 'Action: ' + WorkspaceAction.OPEN_IDE }),
+        ).not.toBeNull();
       });
     });
   });

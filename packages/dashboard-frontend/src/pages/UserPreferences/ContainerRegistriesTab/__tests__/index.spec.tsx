@@ -91,12 +91,15 @@ describe('ContainerRegistries', () => {
     const originalError = console.error;
     const suppressOffsetWidthErrors = (...args: unknown[]) => {
       const errorStr = String(args[0] || '');
-      if (!errorStr.includes('offsetWidth') && !errorStr.includes('Cannot read properties of null')) {
+      if (
+        !errorStr.includes('offsetWidth') &&
+        !errorStr.includes('Cannot read properties of null')
+      ) {
         originalError(...args);
       }
     };
     console.error = suppressOffsetWidthErrors;
-    
+
     try {
       const component = getComponent(new MockStoreBuilder().build());
       render(component);

@@ -45,6 +45,7 @@ type Props = MappedProps & {
 
 const LayoutComponent: React.FC<Props> = props => {
   const [isHeaderVisible, setIsHeaderVisible] = React.useState(true);
+  const [isSidebarVisible, setIsSidebarVisible] = React.useState(true);
   const { isDarkTheme } = useTheme();
 
   const issuesReporterService = container.get(IssuesReporterService);
@@ -53,10 +54,12 @@ const LayoutComponent: React.FC<Props> = props => {
 
   const hideAllBars = React.useCallback(() => {
     setIsHeaderVisible(false);
+    setIsSidebarVisible(false);
   }, []);
 
   const showAllBars = React.useCallback(() => {
     setIsHeaderVisible(true);
+    setIsSidebarVisible(true);
   }, []);
 
   const showWarnings = React.useCallback(() => {
@@ -126,7 +129,7 @@ const LayoutComponent: React.FC<Props> = props => {
     />
   );
 
-  const sidebar = <Sidebar history={history} />;
+  const sidebar = <Sidebar history={history} isVisible={isSidebarVisible} />;
 
   return (
     <ToggleBarsContext.Provider

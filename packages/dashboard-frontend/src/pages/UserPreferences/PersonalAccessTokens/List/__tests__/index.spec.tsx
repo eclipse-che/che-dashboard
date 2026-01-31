@@ -194,15 +194,17 @@ describe('PersonalAccessTokenList', () => {
       // PatternFly Table may throw offsetWidth errors during render - suppress them
       const originalError = console.error;
       console.error = jest.fn();
-      
-      let renderResult: ReturnType<typeof renderComponent>;
+
       try {
-        renderResult = renderComponent(tokens);
+        renderComponent(tokens);
       } catch (error) {
         // If render fails due to offsetWidth error, try again (error is suppressed in renderComponent)
         const errorStr = String(error);
-        if (errorStr.includes('offsetWidth') || errorStr.includes('Cannot read properties of null')) {
-          renderResult = renderComponent(tokens);
+        if (
+          errorStr.includes('offsetWidth') ||
+          errorStr.includes('Cannot read properties of null')
+        ) {
+          renderComponent(tokens);
         } else {
           throw error;
         }
@@ -226,7 +228,7 @@ describe('PersonalAccessTokenList', () => {
       fireEvent.click(token1EditButton);
 
       expect(mockOnEditToken).toHaveBeenCalledWith(tokens[0]);
-      
+
       console.error = originalError;
     });
 

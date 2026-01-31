@@ -11,7 +11,6 @@
  */
 
 import { api } from '@eclipse-che/common';
-import { PageSection } from '@patternfly/react-core';
 import * as ini from 'multi-ini';
 import React from 'react';
 

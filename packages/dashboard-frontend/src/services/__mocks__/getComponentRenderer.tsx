@@ -34,7 +34,10 @@ export default function <T extends Array<unknown>>(
       const originalError = console.error;
       console.error = (...errorArgs: unknown[]) => {
         const errorStr = String(errorArgs[0] || '');
-        if (errorStr.includes('offsetWidth') || errorStr.includes('Cannot read properties of null')) {
+        if (
+          errorStr.includes('offsetWidth') ||
+          errorStr.includes('Cannot read properties of null')
+        ) {
           return;
         }
         originalError(...errorArgs);
@@ -50,12 +53,15 @@ export default function <T extends Array<unknown>>(
       const originalError = console.error;
       console.error = (...errorArgs: unknown[]) => {
         const errorStr = String(errorArgs[0] || '');
-        if (errorStr.includes('offsetWidth') || errorStr.includes('Cannot read properties of null')) {
+        if (
+          errorStr.includes('offsetWidth') ||
+          errorStr.includes('Cannot read properties of null')
+        ) {
           return;
         }
         originalError(...errorArgs);
       };
-      
+
       try {
         const res = render(getComponent(...args));
         return {

@@ -18,6 +18,6 @@
 }
 
 html.pf-v6-theme-dark .sampleCardIcon {
-  border-radius: calc(var(--pf-v6-c-card--BorderRadius) / 4);
   background-color: var(--pf-t--color--gray--10);
+  border-radius: calc(var(--pf-v6-c-card--BorderRadius) / 4);
 }

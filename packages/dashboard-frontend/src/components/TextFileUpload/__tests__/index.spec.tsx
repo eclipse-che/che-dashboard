@@ -55,7 +55,9 @@ describe('TextFileUpload', () => {
     const fileInput = screen.queryByPlaceholderText(fileNamePlaceholder);
     expect(fileInput).not.toBeNull();
     // PatternFly 6 may use readOnly property instead of readonly attribute
-    expect(fileInput?.hasAttribute('readonly') || (fileInput as HTMLInputElement)?.readOnly).toBeTruthy();
+    expect(
+      fileInput?.hasAttribute('readonly') || (fileInput as HTMLInputElement)?.readOnly,
+    ).toBeTruthy();
 
     // Upload button
     const uploadButton = screen.queryByText('Upload');

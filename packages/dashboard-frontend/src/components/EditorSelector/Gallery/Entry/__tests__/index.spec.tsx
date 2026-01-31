@@ -214,7 +214,9 @@ describe('Editor Selector Entry', () => {
       renderComponent(editorGroup[0].id, editorGroup);
 
       // PatternFly 6 Card uses selectableActions - click the hidden radio input
-      const radioInput = document.getElementById(`editor-selector-input-${editorGroup[0].id}`) as HTMLElement;
+      const radioInput = document.getElementById(
+        `editor-selector-input-${editorGroup[0].id}`,
+      ) as HTMLElement;
       expect(radioInput).not.toBeNull();
       radioInput.click();
 
@@ -225,7 +227,9 @@ describe('Editor Selector Entry', () => {
       renderComponent('other/editor/id', editorGroup);
 
       // PatternFly 6 Card uses selectableActions - click the hidden radio input
-      const radioInput = document.getElementById(`editor-selector-input-${editorGroup[0].id}`) as HTMLElement;
+      const radioInput = document.getElementById(
+        `editor-selector-input-${editorGroup[0].id}`,
+      ) as HTMLElement;
       expect(radioInput).not.toBeNull();
       radioInput.click();
 
@@ -238,7 +242,9 @@ describe('Editor Selector Entry', () => {
       renderComponent(editorGroup[0].id, editorGroup);
 
       // PatternFly 6 MenuToggle uses aria-label, query by label text
-      const kebab = screen.getByRole('button', { name: new RegExp(`${editorGroupName} actions`, 'i') });
+      const kebab = screen.getByRole('button', {
+        name: new RegExp(`${editorGroupName} actions`, 'i'),
+      });
       await userEvent.click(kebab);
 
       // Wait for menu to appear and check for specific menu items
@@ -324,8 +330,9 @@ describe('Editor Selector Entry', () => {
         expect(mockOnSelect).not.toHaveBeenCalled();
 
         // PatternFly 6 Card uses selectableActions - click the hidden radio input for the new editor
-        const cardId = `editor-selector-card-${editorGroup[1].id}`;
-        const radioInput = document.getElementById(`editor-selector-input-${editorGroup[1].id}`) as HTMLElement;
+        const radioInput = document.getElementById(
+          `editor-selector-input-${editorGroup[1].id}`,
+        ) as HTMLElement;
         expect(radioInput).not.toBeNull();
         await userEvent.click(radioInput);
 

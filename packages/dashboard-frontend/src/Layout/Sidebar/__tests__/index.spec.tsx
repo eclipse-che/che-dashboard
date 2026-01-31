@@ -28,5 +28,5 @@ describe('Sidebar', () => {
 
 function getComponent(): React.ReactElement {
   const history = createMemoryHistory();
-  return <Sidebar history={history} />;
+  return <Sidebar history={history} isVisible={true} />;
 }

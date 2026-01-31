@@ -90,7 +90,7 @@ describe('StorageTypeFormGroup', () => {
           { timeout: 3000 },
         );
         expect(modal).not.toBeNull();
-        
+
         const buttonClose = screen.queryByRole('button', { name: 'Close' });
         const documentationLink = screen.queryByRole('link', { name: 'Open documentation page' });
 
@@ -102,7 +102,9 @@ describe('StorageTypeFormGroup', () => {
         renderComponent(store, { readonly }, { isInfoOpen: true });
 
         // modal is opened - check by text content or dialog role
-        const modal = screen.queryByRole('dialog', { name: 'Storage Type Info' }) || screen.queryByText('Storage Type Info');
+        const modal =
+          screen.queryByRole('dialog', { name: 'Storage Type Info' }) ||
+          screen.queryByText('Storage Type Info');
         expect(modal).not.toBeNull();
 
         const buttonClose = screen.getByRole('button', { name: 'Close' });
@@ -138,7 +140,7 @@ describe('StorageTypeFormGroup', () => {
             { timeout: 3000 },
           );
           expect(modal).not.toBeNull();
-          
+
           const buttonSave = screen.queryByRole('button', { name: 'Save' });
           const buttonClose = screen.queryByRole('button', { name: 'Close' });
           const buttonCancel = screen.queryByRole('button', { name: 'Cancel' });
@@ -156,7 +158,9 @@ describe('StorageTypeFormGroup', () => {
           );
 
           // modal is opened - check by text content or dialog role
-          const modal = screen.queryByRole('dialog', { name: 'Change Storage Type' }) || screen.queryByText('Change Storage Type');
+          const modal =
+            screen.queryByRole('dialog', { name: 'Change Storage Type' }) ||
+            screen.queryByText('Change Storage Type');
           expect(modal).not.toBeNull();
 
           const buttonClose = screen.getByRole('button', { name: 'Close' });
@@ -225,7 +229,7 @@ describe('StorageTypeFormGroup', () => {
             { timeout: 3000 },
           );
           expect(modal).not.toBeNull();
-          
+
           const buttonSave = screen.queryByRole('button', { name: 'Save' });
           const buttonClose = screen.queryByRole('button', { name: 'Close' });
           const buttonCancel = screen.queryByRole('button', { name: 'Cancel' });
@@ -239,7 +243,9 @@ describe('StorageTypeFormGroup', () => {
           renderComponent(store, { readonly }, { isSelectorOpen: true });
 
           // modal is opened - check by text content or dialog role
-          const modal = screen.queryByRole('dialog', { name: 'Change Storage Type' }) || screen.queryByText('Change Storage Type');
+          const modal =
+            screen.queryByRole('dialog', { name: 'Change Storage Type' }) ||
+            screen.queryByText('Change Storage Type');
           expect(modal).not.toBeNull();
 
           const buttonClose = screen.getByRole('button', { name: 'Close' });

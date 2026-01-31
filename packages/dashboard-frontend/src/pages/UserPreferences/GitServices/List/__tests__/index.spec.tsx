@@ -133,12 +133,15 @@ describe('GitServicesList', () => {
     const originalError = console.error;
     const suppressOffsetWidthErrors = (...args: unknown[]) => {
       const errorStr = String(args[0] || '');
-      if (!errorStr.includes('offsetWidth') && !errorStr.includes('Cannot read properties of null')) {
+      if (
+        !errorStr.includes('offsetWidth') &&
+        !errorStr.includes('Cannot read properties of null')
+      ) {
         originalError(...args);
       }
     };
     console.error = suppressOffsetWidthErrors;
-    
+
     try {
       renderComponent(props);
 
@@ -177,11 +180,14 @@ describe('GitServicesList', () => {
 
       // the revoke button is present - wait for menu to appear
       // ActionsColumn menu items may appear outside the row context
-      const revokeButton = await waitFor(() => {
-        const button = screen.queryByRole('menuitem', { name: 'Revoke' });
-        expect(button).not.toBeNull();
-        return button;
-      }, { timeout: 3000 });
+      const revokeButton = await waitFor(
+        () => {
+          const button = screen.queryByRole('menuitem', { name: 'Revoke' });
+          expect(button).not.toBeNull();
+          return button;
+        },
+        { timeout: 3000 },
+      );
 
       // click the revoke button
       await userEvent.click(revokeButton!);
@@ -241,11 +247,14 @@ describe('GitServicesList', () => {
 
     // the Clear button is present - wait for menu to appear
     // ActionsColumn menu items may appear outside the row context
-    const clearButton = await waitFor(() => {
-      const button = screen.queryByRole('menuitem', { name: 'Clear' });
-      expect(button).not.toBeNull();
-      return button;
-    }, { timeout: 3000 });
+    const clearButton = await waitFor(
+      () => {
+        const button = screen.queryByRole('menuitem', { name: 'Clear' });
+        expect(button).not.toBeNull();
+        return button;
+      },
+      { timeout: 3000 },
+    );
 
     // click the Clear button
     await userEvent.click(clearButton!);
