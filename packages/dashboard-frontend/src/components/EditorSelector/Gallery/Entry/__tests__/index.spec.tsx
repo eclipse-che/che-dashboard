@@ -186,11 +186,11 @@ describe('Editor Selector Entry', () => {
     test('sibling editor ID provided later', () => {
       const { reRenderComponent } = renderComponent(editorGroup[0].id, editorGroup);
 
-      expect(screen.getByRole('checkbox')).toBeChecked();
+      expect(screen.getByRole('radio')).toBeChecked();
 
       reRenderComponent(editorGroup[1].id, editorGroup);
 
-      expect(screen.getByRole('checkbox')).toBeChecked();
+      expect(screen.getByRole('radio')).toBeChecked();
 
       expect(mockOnSelect).not.toHaveBeenCalled();
     });
@@ -198,11 +198,11 @@ describe('Editor Selector Entry', () => {
     test('other editor ID provided later', () => {
       const { reRenderComponent } = renderComponent(editorGroup[0].id, editorGroup);
 
-      expect(screen.getByRole('checkbox')).toBeChecked();
+      expect(screen.getByRole('radio')).toBeChecked();
 
       reRenderComponent('other/editor/id', editorGroup);
 
-      expect(screen.getByRole('checkbox')).not.toBeChecked();
+      expect(screen.getByRole('radio')).not.toBeChecked();
 
       expect(mockOnSelect).not.toHaveBeenCalled();
     });

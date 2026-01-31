@@ -76,7 +76,7 @@ describe('GitServicesList', () => {
       expect(checkbox).toBeDisabled();
       expect(checkbox).not.toBeChecked();
 
-      const kebab = within(bitbucketRow).getByRole('button', { name: 'Actions' });
+      const kebab = within(bitbucketRow).getByRole('button', { name: 'Kebab toggle' });
       expect(kebab).toBeDisabled();
     }
 
@@ -90,7 +90,7 @@ describe('GitServicesList', () => {
       expect(checkbox).toBeEnabled();
       expect(checkbox).not.toBeChecked();
 
-      const kebab = within(githubRow).getByRole('button', { name: 'Actions' });
+      const kebab = within(githubRow).getByRole('button', { name: 'Kebab toggle' });
       expect(kebab).toBeEnabled();
     }
 
@@ -104,7 +104,7 @@ describe('GitServicesList', () => {
       expect(checkbox).toBeEnabled();
       expect(checkbox).not.toBeChecked();
 
-      const kebab = within(gitlabRow).getByRole('button', { name: 'Actions' });
+      const kebab = within(gitlabRow).getByRole('button', { name: 'Kebab toggle' });
       expect(kebab).toBeEnabled();
     }
   });
@@ -119,7 +119,7 @@ describe('GitServicesList', () => {
     expect(gitlabRow).toHaveTextContent('gitlab');
 
     const gitlabCheckbox = within(gitlabRow).getByRole('checkbox');
-    const gitlabKebab = within(gitlabRow).getByRole('button', { name: 'Actions' });
+    const gitlabKebab = within(gitlabRow).getByRole('button', { name: 'Kebab toggle' });
 
     expect(gitlabCheckbox).toBeEnabled();
     expect(gitlabCheckbox).not.toBeChecked();
@@ -137,7 +137,7 @@ describe('GitServicesList', () => {
     expect(githubRow).toHaveTextContent('github');
 
     const githubCheckbox = within(githubRow).getByRole('checkbox');
-    const githubKebab = within(githubRow).getByRole('button', { name: 'Actions' });
+    const githubKebab = within(githubRow).getByRole('button', { name: 'Kebab toggle' });
 
     // the checkbox is enabled and unchecked
     expect(githubCheckbox).toBeEnabled();
@@ -202,7 +202,7 @@ describe('GitServicesList', () => {
     expect(githubRow).toHaveTextContent('github');
 
     const githubCheckbox = within(githubRow).getByRole('checkbox');
-    const githubKebab = within(githubRow).getByRole('button', { name: 'Actions' });
+    const githubKebab = within(githubRow).getByRole('button', { name: 'Kebab toggle' });
 
     // the checkbox is disabled and unchecked
     expect(githubCheckbox).toBeDisabled();
@@ -274,7 +274,7 @@ describe('GitServicesList', () => {
 
     // get the github row controls
     const githubCheckbox = within(githubRow).getByRole('checkbox');
-    const githubKebab = within(githubRow).getByRole('button', { name: 'Actions' });
+    const githubKebab = within(githubRow).getByRole('button', { name: 'Kebab toggle' });
 
     // they are enabled
     expect(githubCheckbox).toBeEnabled();

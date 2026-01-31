@@ -56,7 +56,7 @@ describe('Temporary Storage Switch', () => {
   it('should be initially switched on', () => {
     renderComponent(store, true);
 
-    const switchInput = screen.getByRole('checkbox') as HTMLInputElement;
+    const switchInput = screen.getByRole('switch') as HTMLInputElement;
     expect(switchInput.checked).toBeTruthy();
     expect(mockOnChange).toHaveBeenCalledTimes(1);
     expect(Navigation.pageState[TEMPORARY_STORAGE_SWITCH_ID]).toEqual({
@@ -74,7 +74,7 @@ describe('Temporary Storage Switch', () => {
 
   it('should be initially switched off', () => {
     renderComponent(store, false);
-    const switchInput = screen.getByRole('checkbox') as HTMLInputElement;
+    const switchInput = screen.getByRole('switch') as HTMLInputElement;
     expect(switchInput.checked).toBeFalsy();
     expect(mockOnChange).toHaveBeenCalledTimes(1);
     expect(Navigation.pageState[TEMPORARY_STORAGE_SWITCH_ID]).toEqual({

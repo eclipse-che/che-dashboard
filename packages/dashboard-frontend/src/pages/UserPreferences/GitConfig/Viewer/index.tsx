@@ -41,10 +41,6 @@ export class GitConfigViewer extends React.PureComponent<Props> {
 
     const gitConfigStr = this.fromGitConfig(config);
 
-    return (
-      <PageSection>
-        <BasicViewer value={gitConfigStr} id="gitconfig-editor-id" />
-      </PageSection>
-    );
+    return <BasicViewer value={gitConfigStr} id="gitconfig-editor-id" />;
   }
 }

@@ -11,7 +11,13 @@
  */
 
 .sampleCardIcon {
-  width: 64px;
-  height: 64px;
+  width: 68px;
+  height: 68px;
   color: var(--pf-t--global--icon--color--subtle);
+}
+
+html.pf-v6-theme-dark .sampleCardIcon {
+  padding: 5px;
+  border-radius: 5px;
+  background-color: var(--pf-t--color--gray--10);
 }
