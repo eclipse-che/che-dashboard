@@ -10,7 +10,15 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import { Button, ButtonVariant, Modal, ModalVariant } from '@patternfly/react-core';
+import {
+  Button,
+  ButtonVariant,
+  Modal,
+  ModalBody,
+  ModalFooter,
+  ModalHeader,
+  ModalVariant,
+} from '@patternfly/react-core';
 import isEqual from 'lodash/isEqual';
 import React from 'react';
 
@@ -63,42 +71,37 @@ export class GitConfigAddModal extends React.PureComponent<Props, State> {
     });
   }
 
-  private buildModalFooter(): React.ReactNode {
-    return (
-      <React.Fragment>
-        <Button
-          variant={ButtonVariant.primary}
-          isDisabled={!this.state.isSaveEnabled}
-          onClick={() => this.handleSaveGitConfig()}
-        >
-          Add
-        </Button>
-        <Button variant={ButtonVariant.link} onClick={() => this.handleCloseModal()}>
-          Cancel
-        </Button>
-      </React.Fragment>
-    );
-  }
-
   public render(): React.ReactElement {
     const { isOpen } = this.props;
 
     const modalTitle = 'Import Git Configuration';
-    const modalFooter = this.buildModalFooter();
 
     return (
       <Modal
         aria-label={modalTitle}
-        title={modalTitle}
         variant={ModalVariant.small}
         isOpen={isOpen}
         onClose={() => this.handleCloseModal()}
-        footer={modalFooter}
       >
-        <GitConfigForm
-          gitConfig={this.props.gitConfig}
-          onChange={(gitConfig, isValid) => this.handleChangeGitConfig(gitConfig, isValid)}
-        />
+        <ModalHeader title={modalTitle} />
+        <ModalBody>
+          <GitConfigForm
+            gitConfig={this.props.gitConfig}
+            onChange={(gitConfig, isValid) => this.handleChangeGitConfig(gitConfig, isValid)}
+          />
+        </ModalBody>
+        <ModalFooter>
+          <Button
+            variant={ButtonVariant.primary}
+            isDisabled={!this.state.isSaveEnabled}
+            onClick={() => this.handleSaveGitConfig()}
+          >
+            Add
+          </Button>
+          <Button variant={ButtonVariant.link} onClick={() => this.handleCloseModal()}>
+            Cancel
+          </Button>
+        </ModalFooter>
       </Modal>
     );
   }

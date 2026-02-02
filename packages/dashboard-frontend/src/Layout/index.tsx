@@ -17,8 +17,9 @@ import { connect, ConnectedProps } from 'react-redux';
 import { matchPath } from 'react-router-dom';
 
 import { BannerAlert } from '@/components/BannerAlert';
+import { CheLogo } from '@/components/CheLogo';
 import { ToggleBarsContext } from '@/contexts/ToggleBars';
-import { lazyInject } from '@/inversify.config';
+import { container } from '@/inversify.config';
 import { ErrorBoundary } from '@/Layout/ErrorBoundary';
 import { ErrorReporter } from '@/Layout/ErrorReporter';
 import { IssueComponent } from '@/Layout/ErrorReporter/Issue';
@@ -37,145 +38,121 @@ import { sanityCheckActionCreators } from '@/store/SanityCheck';
 import { selectSanityCheckError } from '@/store/SanityCheck/selectors';
 import { selectDashboardLogo } from '@/store/ServerConfig/selectors';
 
-const IS_MANAGED_SIDEBAR = false;
-
 type Props = MappedProps & {
   children: React.ReactNode;
   history: History;
 };
-type State = {
-  isSidebarVisible: boolean;
-  isHeaderVisible: boolean;
-};
 
-export class Layout extends React.PureComponent<Props, State> {
-  @lazyInject(IssuesReporterService)
-  private readonly issuesReporterService: IssuesReporterService;
+const LayoutComponent: React.FC<Props> = props => {
+  const [isHeaderVisible, setIsHeaderVisible] = React.useState(true);
+  const [isSidebarVisible, setIsSidebarVisible] = React.useState(true);
 
-  @lazyInject(WarningsReporterService)
-  private readonly warningsReporterService: WarningsReporterService;
+  const issuesReporterService = container.get(IssuesReporterService);
+  const warningsReporterService = container.get(WarningsReporterService);
+  const appAlerts = container.get(AppAlerts);
 
-  @lazyInject(AppAlerts)
-  private readonly appAlerts: AppAlerts;
+  const hideAllBars = React.useCallback(() => {
+    setIsHeaderVisible(false);
+    setIsSidebarVisible(false);
+  }, []);
 
-  constructor(props: Props) {
-    super(props);
+  const showAllBars = React.useCallback(() => {
+    setIsHeaderVisible(true);
+    setIsSidebarVisible(true);
+  }, []);
 
-    this.state = {
-      isHeaderVisible: true,
-      isSidebarVisible: true,
-    };
-  }
-
-  private toggleNav(): void {
-    this.setState({
-      isSidebarVisible: !this.state.isSidebarVisible,
-    });
-  }
-
-  private hideAllBars(): void {
-    this.setState({
-      isHeaderVisible: false,
-      isSidebarVisible: false,
-    });
-  }
-
-  private showAllBars(): void {
-    this.setState({
-      isHeaderVisible: true,
-      isSidebarVisible: true,
-    });
-  }
-
-  public componentDidMount(): void {
-    const matchFactoryLoaderPath = matchPath(
-      ROUTE.FACTORY_LOADER,
-      this.props.history.location.pathname,
-    );
-    const matchIdeLoaderPath = matchPath(ROUTE.IDE_LOADER, this.props.history.location.pathname);
-    if (matchFactoryLoaderPath !== null || matchIdeLoaderPath !== null) {
-      this.hideAllBars();
-    }
-    this.showWarnings();
-  }
-
-  private showWarnings(): void {
-    const warnings = this.warningsReporterService.reportAllWarnings();
+  const showWarnings = React.useCallback(() => {
+    const warnings = warningsReporterService.reportAllWarnings();
     warnings.forEach(warning => {
-      this.appAlerts.showAlert({
+      appAlerts.showAlert({
         key: warning.key,
         title: warning.title,
         variant: AlertVariant.warning,
         timeout: 9999999,
       });
     });
-  }
-  private async testBackends(error?: string): Promise<void> {
-    try {
-      await this.props.testBackends();
-    } catch (e) {
-      if (error) {
-        console.error(error);
+  }, [warningsReporterService, appAlerts]);
+
+  const testBackends = React.useCallback(
+    async (error?: string) => {
+      try {
+        await props.testBackends();
+      } catch (e) {
+        if (error) {
+          console.error(error);
+        }
+        console.error('Error testing backends:', props.sanityCheckError);
       }
-      console.error('Error testing backends:', this.props.sanityCheckError);
+    },
+    [props],
+  );
+
+  React.useEffect(() => {
+    const matchFactoryLoaderPath = matchPath(ROUTE.FACTORY_LOADER, props.history.location.pathname);
+    const matchIdeLoaderPath = matchPath(ROUTE.IDE_LOADER, props.history.location.pathname);
+    if (matchFactoryLoaderPath !== null || matchIdeLoaderPath !== null) {
+      hideAllBars();
+    }
+    showWarnings();
+  }, [props.history.location.pathname, hideAllBars, showWarnings]);
+
+  /* check for startup issues */
+  if (issuesReporterService.hasIssue) {
+    const issue = issuesReporterService.reportIssue();
+    const brandingData = props.branding;
+    if (issue) {
+      return (
+        <ErrorReporter>
+          <IssueComponent branding={brandingData} issue={issue} />
+        </ErrorReporter>
+      );
     }
   }
 
-  public render(): React.ReactElement {
-    /* check for startup issues */
-    if (this.issuesReporterService.hasIssue) {
-      const issue = this.issuesReporterService.reportIssue();
-      const brandingData = this.props.branding;
-      if (issue) {
-        return (
-          <ErrorReporter>
-            <IssueComponent branding={brandingData} issue={issue} />
-          </ErrorReporter>
-        );
-      }
-    }
+  const { history, branding, dashboardLogo } = props;
 
-    const { isHeaderVisible, isSidebarVisible } = this.state;
-    const { history, branding, dashboardLogo } = this.props;
+  // Use inline SVG for .svg files, otherwise use img tag
+  const isSvgLogo = branding.logoFile?.toLowerCase().endsWith('.svg');
+  const logoElement = isSvgLogo ? (
+    <CheLogo height="36px" width="auto" alt="Logo" />
+  ) : (
+    <Brand
+      src={buildLogoSrc(dashboardLogo, branding.logoFile)}
+      alt="Logo"
+      heights={{ default: '36px' }}
+    />
+  );
 
-    const logoSrc = buildLogoSrc(dashboardLogo, branding.logoFile);
+  const masthead = (
+    <Header
+      history={history}
+      isVisible={isHeaderVisible}
+      logo={logoElement}
+      logout={() => signOut()}
+    />
+  );
 
-    return (
-      <ToggleBarsContext.Provider
-        value={{
-          hideAll: () => this.hideAllBars(),
-          showAll: () => this.showAllBars(),
-        }}
-      >
-        <Page
-          header={
-            <Header
-              history={history}
-              isVisible={isHeaderVisible}
-              logo={<Brand src={logoSrc} alt="Logo" />}
-              logout={() => signOut()}
-              toggleNav={() => this.toggleNav()}
-            />
-          }
-          sidebar={
-            <Sidebar
-              isManaged={IS_MANAGED_SIDEBAR}
-              isNavOpen={isSidebarVisible}
-              history={history}
-            />
-          }
-          isManagedSidebar={IS_MANAGED_SIDEBAR}
-        >
-          <ErrorBoundary onError={error => this.testBackends(error)}>
-            <StoreErrorsAlert />
-            <BannerAlert />
-            {this.props.children}
-          </ErrorBoundary>
-        </Page>
-      </ToggleBarsContext.Provider>
-    );
-  }
-}
+  const sidebar = <Sidebar history={history} isVisible={isSidebarVisible} />;
+
+  return (
+    <ToggleBarsContext.Provider
+      value={{
+        hideAll: hideAllBars,
+        showAll: showAllBars,
+      }}
+    >
+      <Page masthead={masthead} sidebar={sidebar} isManagedSidebar>
+        <ErrorBoundary onError={error => testBackends(error)}>
+          <StoreErrorsAlert />
+          <BannerAlert />
+          {props.children}
+        </ErrorBoundary>
+      </Page>
+    </ToggleBarsContext.Provider>
+  );
+};
+
+export const Layout = LayoutComponent;
 
 const mapStateToProps = (state: RootState) => ({
   branding: selectBranding(state),

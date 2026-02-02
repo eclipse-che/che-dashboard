@@ -38,7 +38,7 @@ import { buildDetailsLocation } from '@/services/helpers/location';
 import { WorkspaceDetailsTab } from '@/services/helpers/types';
 import { Workspace } from '@/services/workspace-adapter';
 
-const SECTION_THEME = PageSectionVariants.light;
+export const SECTION_THEME = PageSectionVariants.default;
 
 export type Props = {
   location: Location;

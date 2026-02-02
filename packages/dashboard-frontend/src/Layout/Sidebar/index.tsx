@@ -10,22 +10,31 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import { PageSidebar } from '@patternfly/react-core';
+import { PageSidebar, PageSidebarBody } from '@patternfly/react-core';
 import { History } from 'history';
 import React from 'react';
 
 import Navigation from '@/Layout/Navigation';
 
 export type Props = {
-  isManaged: boolean;
-  isNavOpen: boolean;
   history: History;
+  isVisible: boolean;
 };
 
 export class Sidebar extends React.PureComponent<Props> {
   public render(): React.ReactElement {
-    const { isNavOpen, history } = this.props;
+    const { history, isVisible } = this.props;
 
-    return <PageSidebar isNavOpen={isNavOpen} nav={<Navigation history={history} />} />;
+    if (!isVisible) {
+      return <></>;
+    }
+
+    return (
+      <PageSidebar>
+        <PageSidebarBody>
+          <Navigation history={history} />
+        </PageSidebarBody>
+      </PageSidebar>
+    );
   }
 }

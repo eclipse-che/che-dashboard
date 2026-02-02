@@ -12,7 +12,7 @@
 
 import { BackupInfo, BackupStatus } from '@eclipse-che/common';
 import { Button } from '@patternfly/react-core';
-import { IRow, SortByDirection } from '@patternfly/react-table';
+import { ThProps } from '@patternfly/react-table';
 import { Location } from 'history';
 import React from 'react';
 import { Link } from 'react-router-dom';
@@ -30,10 +30,21 @@ import { DevWorkspaceStatus } from '@/services/helpers/types';
 import { TabManager } from '@/services/tabManager';
 import { Workspace } from '@/services/workspace-adapter';
 
-export interface RowData extends IRow {
-  props: {
-    workspaceUID: string;
+export type SortDirection = 'asc' | 'desc' | 'none';
+
+export interface RowData {
+  workspaceUID: string;
+  cells: {
+    details: React.ReactNode;
+    editorIcon: React.ReactNode;
+    lastModifiedDate: string;
+    backupStatus: React.ReactNode;
+    projectsList: string;
+    action: React.ReactNode;
+    actionsDropdown: React.ReactNode;
   };
+  isSelected: boolean;
+  isDisabled: boolean;
 }
 
 export function buildRows(
@@ -42,7 +53,7 @@ export function buildRows(
   toDelete: string[],
   filtered: string[],
   selected: string[],
-  sortBy: { index: number; direction: SortByDirection },
+  sortBy: { index: number; direction: SortDirection },
   backupsByWorkspace: Record<string, BackupInfo> = {},
 ): RowData[] {
   const rows: RowData[] = [];
@@ -50,20 +61,17 @@ export function buildRows(
     // skip workspaces that are not match a filter
     .filter(workspace => filtered.includes(workspace.uid))
     .sort((workspaceA, workspaceB) => {
-      // Column 1: Name
-      if (sortBy.index === 1) {
+      if (sortBy.index === 0) {
         const nameA = workspaceA.name || '';
         const nameB = workspaceB.name || '';
         return sort(nameA, nameB, sortBy.direction);
       }
-      // Column 2: Editor
-      if (sortBy.index === 2) {
-        const editorA = getEditorName({ editors, workspace: workspaceA }) || '';
-        const editorB = getEditorName({ editors, workspace: workspaceB }) || '';
+      if (sortBy.index === 1) {
+        const editorA = getEditorName(workspaceA) || '';
+        const editorB = getEditorName(workspaceB) || '';
         return sort(editorA, editorB, sortBy.direction);
       }
-      // Column 3: Last Modified
-      if (sortBy.index === 3) {
+      if (sortBy.index === 2) {
         const updatedA = workspaceA.updated || workspaceA.created || 0;
         const updatedB = workspaceB.updated || workspaceB.created || 0;
         return sort(updatedA, updatedB, sortBy.direction);
@@ -99,11 +107,11 @@ export function buildRows(
   return rows;
 }
 
-function sort(a: string | number, b: string | number, direction: SortByDirection): -1 | 0 | 1 {
+function sort(a: string | number, b: string | number, direction: SortDirection): -1 | 0 | 1 {
   if (a > b) {
-    return direction === SortByDirection.asc ? 1 : -1;
+    return direction === 'asc' ? 1 : -1;
   } else if (a < b) {
-    return direction === SortByDirection.asc ? -1 : 1;
+    return direction === 'asc' ? -1 : 1;
   }
   return 0;
 }
@@ -135,6 +143,9 @@ export function buildRow(
       </Button>
     </span>
   );
+
+  /* editor icon */
+  const editorIcon = <EditorIcon editors={editors} workspace={workspace} />;
 
   /* last modified time */
   const lastModifiedMs = workspace.updated;
@@ -170,7 +181,7 @@ export function buildRow(
   } else {
     const tabManager = container.get(TabManager);
     action = (
-      <Button variant="link" isInline isSmall onClick={() => tabManager.open(ideLoaderHref)}>
+      <Button variant="link" isInline size="sm" onClick={() => tabManager.open(ideLoaderHref)}>
         Open
       </Button>
     );
@@ -188,8 +199,6 @@ export function buildRow(
               isDeleted ||
               workspace.status === DevWorkspaceStatus.TERMINATING
             }
-            isPlain
-            position="right"
             toggle="kebab-toggle"
             workspace={workspace}
             onAction={async () => {
@@ -201,56 +210,45 @@ export function buildRow(
     </WorkspaceActionsConsumer>
   );
 
-  /* editor icon */
-  const editorIcon = <EditorIcon editors={editors} workspace={workspace} />;
+  /* backup status */
+  const backupStatus = (
+    <BackupStatusBadge
+      status={backupInfo?.status ?? BackupStatus.NEVER}
+      lastBackupTime={backupInfo?.lastBackupTime}
+      backupImageUrl={backupInfo?.backupImageUrl}
+    />
+  );
 
   return {
-    cells: [
-      {
-        title: details,
-        key: 'workspace-name',
-      },
-      {
-        title: editorIcon,
-        key: 'editor-icon',
-      },
-      {
-        title: lastModifiedDate,
-        key: 'last-modified-time',
-      },
-      {
-        title: (
-          <BackupStatusBadge
-            status={backupInfo?.status ?? BackupStatus.NEVER}
-            lastBackupTime={backupInfo?.lastBackupTime}
-            backupImageUrl={backupInfo?.backupImageUrl}
-          />
-        ),
-        key: 'backup-status',
-      },
-      {
-        title: projectsList,
-        key: 'projects-list',
-      },
-      {
-        // Cell is visible only on Sm
-        title: action,
-        key: 'open-ide-visible-sm',
-      },
-      {
-        // Cell is hidden only on Sm
-        title: action,
-        key: 'open-ide-hidden-sm',
-      },
-      {
-        title: actionsDropdown,
-        key: 'actions-dropdown',
-      },
-    ],
-    props: {
-      workspaceUID: workspace.uid,
+    workspaceUID: workspace.uid,
+    cells: {
+      details,
+      editorIcon,
+      lastModifiedDate,
+      backupStatus,
+      projectsList,
+      action,
+      actionsDropdown,
     },
-    selected: isSelected || isDeleted,
-    disableSelection: isDeleted,
+    isSelected: isSelected || isDeleted,
+    isDisabled: isDeleted,
+  };
+}
+
+export function getSortParams(
+  columnIndex: number,
+  activeSortIndex: number | undefined,
+  activeSortDirection: SortDirection,
+  onSort: (index: number, direction: SortDirection) => void,
+): ThProps['sort'] {
+  return {
+    sortBy: {
+      index: activeSortIndex,
+      direction: activeSortDirection === 'none' ? undefined : activeSortDirection,
+    },
+    onSort: (_event, index, direction) => {
+      onSort(index, direction as SortDirection);
+    },
+    columnIndex,
   };
 }

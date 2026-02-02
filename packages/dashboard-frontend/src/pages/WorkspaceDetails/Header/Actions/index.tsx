@@ -46,7 +46,6 @@ export class WorkspaceDetailsHeaderActions extends React.PureComponent<Props> {
           return (
             <WorkspaceActionsDropdown
               context={context}
-              position="right"
               toggle="dropdown-toggle"
               workspace={this.props.workspace}
               onAction={async () => {

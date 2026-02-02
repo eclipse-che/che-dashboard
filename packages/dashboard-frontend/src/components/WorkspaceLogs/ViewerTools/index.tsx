@@ -10,15 +10,7 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import {
-  Button,
-  Divider,
-  Flex,
-  FlexItem,
-  Text,
-  TextContent,
-  TextVariants,
-} from '@patternfly/react-core';
+import { Button, Content, ContentVariants, Divider, Flex, FlexItem } from '@patternfly/react-core';
 import { CompressIcon, DownloadIcon, ExpandIcon } from '@patternfly/react-icons';
 import React from 'react';
 
@@ -63,33 +55,31 @@ export class WorkspaceLogsViewerTools extends React.PureComponent<Props, State> 
 
   render(): React.ReactElement {
     return (
-      <TextContent>
-        <Text component={TextVariants.small}>
-          <Flex>
-            <FlexItem>
-              <Button
-                isInline
-                variant="link"
-                onClick={() => this.handleDownload()}
-                icon={<DownloadIcon />}
-              >
-                Download
-              </Button>
-            </FlexItem>
-            <Divider isVertical component="div" />
-            <FlexItem>
-              <Button
-                isInline
-                variant="link"
-                onClick={() => this.handleToggle()}
-                icon={this.state.isExpanded ? <CompressIcon /> : <ExpandIcon />}
-              >
-                {this.state.isExpanded ? 'Compress' : 'Expand'}
-              </Button>
-            </FlexItem>
-          </Flex>
-        </Text>
-      </TextContent>
+      <Content component={ContentVariants.small}>
+        <Flex>
+          <FlexItem>
+            <Button
+              isInline
+              variant="link"
+              onClick={() => this.handleDownload()}
+              icon={<DownloadIcon />}
+            >
+              Download
+            </Button>
+          </FlexItem>
+          <Divider orientation={{ default: 'vertical' }} />
+          <FlexItem>
+            <Button
+              isInline
+              variant="link"
+              onClick={() => this.handleToggle()}
+              icon={this.state.isExpanded ? <CompressIcon /> : <ExpandIcon />}
+            >
+              {this.state.isExpanded ? 'Compress' : 'Expand'}
+            </Button>
+          </FlexItem>
+        </Flex>
+      </Content>
     );
   }
 }

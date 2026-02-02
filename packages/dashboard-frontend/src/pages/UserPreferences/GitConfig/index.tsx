@@ -136,34 +136,32 @@ class GitConfig extends React.PureComponent<Props, State> {
 
     return (
       <React.Fragment>
-        <PageSection variant={PageSectionVariants.default}>
-          <ProgressIndicator isLoading={gitConfigIsLoading} />
-          <GitConfigAddModal
-            gitConfig={gitConfig}
-            isOpen={isAddEditOpen}
-            onCloseModal={() => this.handleCloseAddEditModal()}
-            onSave={async gitConfig => {
-              await this.handleSave(gitConfig);
-              this.handleCloseAddEditModal();
-            }}
-          />
-          {isEmpty ? (
-            <GitConfigEmptyState />
-          ) : (
-            <PageSection variant={PageSectionVariants.light}>
-              <GitConfigToolbar
-                mode={mode}
-                onAdd={() => {
-                  this.setState({
-                    isAddEditOpen: true,
-                  });
-                }}
-                onChangeMode={mode => this.handleModeChange(mode)}
-              />
-              {gitConfigViewer}
-            </PageSection>
-          )}
-        </PageSection>
+        <ProgressIndicator isLoading={gitConfigIsLoading} />
+        <GitConfigAddModal
+          gitConfig={gitConfig}
+          isOpen={isAddEditOpen}
+          onCloseModal={() => this.handleCloseAddEditModal()}
+          onSave={async gitConfig => {
+            await this.handleSave(gitConfig);
+            this.handleCloseAddEditModal();
+          }}
+        />
+        {isEmpty ? (
+          <GitConfigEmptyState />
+        ) : (
+          <PageSection variant={PageSectionVariants.default}>
+            <GitConfigToolbar
+              mode={mode}
+              onAdd={() => {
+                this.setState({
+                  isAddEditOpen: true,
+                });
+              }}
+              onChangeMode={mode => this.handleModeChange(mode)}
+            />
+            {gitConfigViewer}
+          </PageSection>
+        )}
       </React.Fragment>
     );
   }

@@ -51,7 +51,7 @@ export class TemporaryStorageField extends React.PureComponent<Props, State> {
           id="adv-temporary-storage-switch"
           aria-label="Temporary Storage"
           isChecked={isTemporary}
-          onChange={value => this.handleChange(value)}
+          onChange={(_event, value) => this.handleChange(value)}
         />
       </FormGroup>
     );

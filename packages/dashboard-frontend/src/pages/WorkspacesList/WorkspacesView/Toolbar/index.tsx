@@ -113,10 +113,10 @@ export default class WorkspacesListToolbar extends React.PureComponent<Props, St
     const isDeleteDisabled = workspacesSelected.length === 0;
 
     const checkboxItem = (
-      <ToolbarItem variant="bulk-select" className={styles.toolbarCheckbox}>
+      <ToolbarItem className={styles.toolbarCheckbox}>
         <Checkbox
           isChecked={selectedAll}
-          onChange={isChecked => this.handleToggleSelectAll(isChecked)}
+          onChange={(_event, isChecked) => this.handleToggleSelectAll(isChecked)}
           aria-label="Toggle: select all workspaces"
           id="toggle-select-all-workspaces"
           name="toggle-select-all-workspaces"
@@ -124,7 +124,7 @@ export default class WorkspacesListToolbar extends React.PureComponent<Props, St
       </ToolbarItem>
     );
     const filterItem = (
-      <ToolbarItem variant="search-filter">
+      <ToolbarItem>
         <InputGroup>
           <TextInput
             name="workspaces-filter-input"
@@ -133,7 +133,7 @@ export default class WorkspacesListToolbar extends React.PureComponent<Props, St
             aria-label="Filter workspaces input"
             placeholder="Search"
             value={filterValue}
-            onChange={value => this.handleFilterChange(value)}
+            onChange={(_event, value) => this.handleFilterChange(value)}
           />
           <Button
             variant="control"
@@ -165,9 +165,7 @@ export default class WorkspacesListToolbar extends React.PureComponent<Props, St
             }}
           </WorkspaceActionsConsumer>
         </ToolbarItem>
-        <ToolbarItem
-          alignment={{ md: 'alignRight', lg: 'alignRight', xl: 'alignRight', '2xl': 'alignRight' }}
-        >
+        <ToolbarItem align={{ default: 'alignEnd' }}>
           <Button
             variant="link"
             aria-label="Add a new workspace"
@@ -182,7 +180,7 @@ export default class WorkspacesListToolbar extends React.PureComponent<Props, St
     );
 
     return (
-      <Toolbar id="workspaces-list-table-toolbar">
+      <Toolbar id="workspaces-list-table-toolbar" style={{ paddingBlockStart: '1rem' }}>
         <ToolbarContent>
           {checkboxItem}
           {filterItem}

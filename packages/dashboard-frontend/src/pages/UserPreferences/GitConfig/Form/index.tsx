@@ -88,7 +88,7 @@ export class GitConfigForm extends React.PureComponent<Props, State> {
       this.isGitConfigEqual(gitConfig, nextGitConfig);
 
     return (
-      <PageSection variant={PageSectionVariants.light}>
+      <PageSection variant={PageSectionVariants.default}>
         <Form isHorizontal onSubmit={e => this.handleSubmit(e)}>
           <GitConfigSectionUser
             isLoading={isLoading}

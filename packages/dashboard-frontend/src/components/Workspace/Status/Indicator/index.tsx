@@ -13,7 +13,7 @@
 import React from 'react';
 
 import { CheTooltip } from '@/components/CheTooltip';
-import { getStatusIcon } from '@/components/Workspace/Status/getStatusIcon';
+import { useStatusIcon } from '@/components/Workspace/Status/getStatusIcon';
 import styles from '@/components/Workspace/Status/index.module.css';
 import {
   DeprecatedWorkspaceStatus,
@@ -25,24 +25,20 @@ export type Props = {
   status: WorkspaceStatus | DevWorkspaceStatus | DeprecatedWorkspaceStatus;
 };
 
-export class WorkspaceStatusIndicator extends React.PureComponent<Props> {
-  public render(): React.ReactElement {
-    const { status } = this.props;
+export const WorkspaceStatusIndicator: React.FC<Props> = ({ status }) => {
+  const icon = useStatusIcon(status);
 
-    const icon = getStatusIcon(status);
+  const tooltip = status === 'Deprecated' ? 'Deprecated workspace' : status.toLocaleUpperCase();
 
-    const tooltip = status === 'Deprecated' ? 'Deprecated workspace' : status.toLocaleUpperCase();
-
-    return (
-      <CheTooltip content={tooltip}>
-        <span
-          className={styles.statusIndicator}
-          data-testid="workspace-status-indicator"
-          aria-label={`Workspace status is ${status}`}
-        >
-          {icon}
-        </span>
-      </CheTooltip>
-    );
-  }
-}
+  return (
+    <CheTooltip content={tooltip}>
+      <span
+        className={styles.statusIndicator}
+        data-testid="workspace-status-indicator"
+        aria-label={`Workspace status is ${status}`}
+      >
+        {icon}
+      </span>
+    </CheTooltip>
+  );
+};
