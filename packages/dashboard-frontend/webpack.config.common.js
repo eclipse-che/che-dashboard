@@ -20,7 +20,6 @@ const config = {
     client: path.join(__dirname, 'src/index.tsx'),
     'service-worker': path.join(__dirname, 'src/service-worker.ts'),
     'accept-factory-link': path.join(__dirname, 'src/preload/index.ts'),
-    'branding-loader': path.join(__dirname, 'src/preload/brandingLoader.ts'),
   },
   output: {
     path: path.join(__dirname, 'lib', 'public/dashboard'),
@@ -32,9 +31,6 @@ const config = {
       if (pathData.chunk.name === 'service-worker') {
         return '[name].js';
       }
-      if (pathData.chunk.name === 'branding-loader') {
-        return 'static/preload/[name].js';
-      }
       return '[name].[fullhash:8].js';
     },
     chunkFilename: '[name].[chunkhash].js',
@@ -44,11 +40,8 @@ const config = {
   optimization: {
     splitChunks: {
       chunks: (chunk) => {
-        // exclude preload chunks from being split (they should be standalone)
-        return (
-          chunk.name !== 'accept-factory-link' &&
-          chunk.name !== 'branding-loader'
-        );
+        // exclude `accept-factory-link` from being split
+        return chunk.name !== 'accept-factory-link';
       },
       maxAsyncRequests: 30,
       maxInitialRequests: 30,
