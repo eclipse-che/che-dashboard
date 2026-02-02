@@ -93,7 +93,7 @@ export class RegistryPasswordFormGroup extends React.PureComponent<Props, State>
 
     return (
       <FormGroup
-        style={{ gridTemplateColumns: '80px', minHeight: '65px' }}
+        style={{ gridTemplateColumns: '85px', minHeight: '65px' }}
         label="Password"
         fieldId="id-password-helper"
         isRequired={true}

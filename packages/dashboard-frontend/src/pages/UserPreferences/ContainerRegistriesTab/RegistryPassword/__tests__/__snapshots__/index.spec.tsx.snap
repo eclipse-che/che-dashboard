@@ -9,7 +9,7 @@ exports[`Registry Password Input should correctly render the component 1`] = `
     className="pf-v6-c-form__group"
     style={
       {
-        "gridTemplateColumns": "80px",
+        "gridTemplateColumns": "85px",
         "minHeight": "65px",
       }
     }
