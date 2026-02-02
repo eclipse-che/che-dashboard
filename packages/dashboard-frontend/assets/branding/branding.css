@@ -1,39 +1,25 @@
 /* Add your branding customizations here. */
 .main-page-loader {
   position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
   z-index: 80;
-  inset: 0;
-
   margin: auto;
-
-  font-family: Helvetica, Arial, sans-serif;
   font-size: 24px;
-  color: #fff;
-
-  background-color: #000;
-}
-
-.main-page-loader .ide-page-loader-content {
-  position: absolute;
-  inset: 0;
-
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-  align-items: center;
-  justify-content: center;
+  font-family: Helvetica, Arial, sans-serif;
 }
 
 .main-page-loader .ide-page-loader-content img {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
   max-width: 140px;
   max-height: 140px;
-
-  object-fit: contain;
-
-  image-rendering: -webkit-optimize-contrast;
-  image-rendering: crisp-edges;
-  image-rendering: high-quality;
-
+  margin: auto;
   animation-name: opacity;
   animation-duration: 2s;
   animation-timing-function: ease-in-out;
