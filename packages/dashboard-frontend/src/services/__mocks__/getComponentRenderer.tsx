@@ -52,7 +52,7 @@ export default function <T extends Array<unknown>>(
       // Suppress offsetWidth errors from PatternFly Table during render
       const originalError = console.error;
       const originalUnhandledRejection = window.onunhandledrejection;
-      
+
       console.error = (...errorArgs: unknown[]) => {
         const errorStr = String(errorArgs[0] || '');
         if (
