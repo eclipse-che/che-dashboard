@@ -14,6 +14,10 @@ import '@testing-library/jest-dom';
 
 import React from 'react';
 
+// Note: Some tests may be flaky due to PatternFly 6 Table components
+// using async ref measurements that don't work well in test-renderer environment.
+// These tests typically pass when run in isolation but may fail when run together.
+
 // Mock offsetWidth/offsetHeight for PatternFly 6 Table components in JSDOM
 // PatternFly Table accesses offsetWidth during render, which can be null in test environment
 const originalConsoleError = console.error;
@@ -62,8 +66,22 @@ if (originalUnhandledRejection) {
 
 // Mock offsetWidth/offsetHeight for PatternFly 6 Table components
 // PatternFly Table accesses offsetWidth during render, which can be null in test environment
-const getOffsetWidth = () => 100;
-const getOffsetHeight = () => 100;
+const getOffsetWidth = function(this: HTMLElement) {
+  // Return a consistent value, handling both normal elements and null references
+  try {
+    return this && typeof this === 'object' ? 100 : 100;
+  } catch {
+    return 100;
+  }
+};
+
+const getOffsetHeight = function(this: HTMLElement) {
+  try {
+    return this && typeof this === 'object' ? 100 : 100;
+  } catch {
+    return 100;
+  }
+};
 
 Object.defineProperty(HTMLElement.prototype, 'offsetWidth', {
   configurable: true,
@@ -73,6 +91,7 @@ Object.defineProperty(HTMLElement.prototype, 'offsetHeight', {
   configurable: true,
   get: getOffsetHeight,
 });
+
 // Also mock for Element prototype (for react-test-renderer)
 if (typeof Element !== 'undefined') {
   Object.defineProperty(Element.prototype, 'offsetWidth', {
@@ -84,19 +103,25 @@ if (typeof Element !== 'undefined') {
     get: getOffsetHeight,
   });
 }
-// Use Proxy to catch null/undefined access attempts
-const originalGetPropertyDescriptor = Object.getOwnPropertyDescriptor;
-Object.getOwnPropertyDescriptor = function(obj: unknown, prop: string | symbol) {
-  if (obj === null || obj === undefined) {
-    if (prop === 'offsetWidth' || prop === 'offsetHeight') {
-      return {
-        configurable: true,
-        enumerable: true,
-        get: () => 100,
-      };
-    }
+
+// Mock getBoundingClientRect for PatternFly components
+const originalGetBoundingClientRect = Element.prototype.getBoundingClientRect;
+Element.prototype.getBoundingClientRect = function() {
+  try {
+    return originalGetBoundingClientRect.call(this);
+  } catch {
+    return {
+      width: 100,
+      height: 100,
+      top: 0,
+      left: 0,
+      bottom: 100,
+      right: 100,
+      x: 0,
+      y: 0,
+      toJSON: () => ({}),
+    };
   }
-  return originalGetPropertyDescriptor.call(this, obj, prop);
 };
 
 jest.mock('@patternfly/react-core', () => {

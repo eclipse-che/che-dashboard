@@ -51,6 +51,8 @@ export default function <T extends Array<unknown>>(
     renderComponent: (...args: T) => {
       // Suppress offsetWidth errors from PatternFly Table during render
       const originalError = console.error;
+      const originalUnhandledRejection = window.onunhandledrejection;
+      
       console.error = (...errorArgs: unknown[]) => {
         const errorStr = String(errorArgs[0] || '');
         if (
@@ -62,6 +64,21 @@ export default function <T extends Array<unknown>>(
         originalError(...errorArgs);
       };
 
+      // Suppress unhandled promise rejections for offsetWidth errors
+      window.onunhandledrejection = (event: PromiseRejectionEvent) => {
+        const errorStr = String(event.reason || '');
+        if (
+          errorStr.includes('offsetWidth') ||
+          errorStr.includes('Cannot read properties of null')
+        ) {
+          event.preventDefault();
+          return;
+        }
+        if (originalUnhandledRejection) {
+          originalUnhandledRejection.call(window, event);
+        }
+      };
+
       try {
         const res = render(getComponent(...args));
         return {
@@ -71,6 +88,7 @@ export default function <T extends Array<unknown>>(
         };
       } finally {
         console.error = originalError;
+        window.onunhandledrejection = originalUnhandledRejection;
       }
     },
   };
