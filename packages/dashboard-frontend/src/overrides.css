@@ -14,15 +14,102 @@
  * This file is for patternfly css specific overrides
  */
 
-.pf-c-app-launcher__menu-item-external-icon {
-  color: var(--pf-global--icon--Color--light) !important;
+/* Theme-aware logo styling */
+
+/* Light theme: use black fill for logo text */
+html:not(.pf-v6-theme-dark) .outer-fill {
+  fill: #000;
+}
+
+/* Dark theme: use white fill for logo text (default) */
+html.pf-v6-theme-dark .outer-fill {
+  fill: #fff;
+}
+
+/* PatternFly 6 uses pf-v6-c-* class names */
+
+.pf-v6-c-menu__item-external-icon {
+  color: var(--pf-t--global--icon--color--subtle) !important;
   opacity: 1 !important;
 }
 
-.pf-c-page-section-no-padding {
+.pf-v6-c-page__main-section.pf-m-no-padding {
   padding: 0 !important;
 }
 
 span[class*='label-required'] {
-  color: var(--pf-global--palette--red-100);
+  color: var(--pf-t--global--color--status--danger--default);
+}
+
+/* Panel border override - only for panels inside page main body */
+.pf-v6-c-page__main-body > .pf-v6-c-panel {
+  border: var(--pf-v6-c-table__tr--BorderBlockEndWidth) solid
+    var(--pf-t--global--border--color--default);
+}
+
+/* Helper text error color */
+.pf-m-error > span.pf-v6-c-helper-text__item-text {
+  color: var(--pf-v6-c-helper-text__item-icon--m-error--Color);
+}
+
+/* About modal logo - high quality rendering */
+.pf-v6-c-about-modal-box__brand img {
+  max-width: 100%;
+  height: auto;
+
+  object-fit: contain;
+
+  image-rendering: -webkit-optimize-contrast;
+  image-rendering: crisp-edges;
+}
+
+/* Menu item icon max height */
+.pf-v6-c-menu__item-main .pf-v6-c-menu__item-icon > img {
+  max-height: 30px;
+}
+
+/* Page main container height */
+.pf-v6-c-page > .pf-v6-c-page__main-container {
+  height: 100%;
+}
+
+/* Page main section background - theme-aware */
+.pf-v6-c-page__main-section {
+  background-color: rgb(241 241 241 / 45%);
+}
+
+html.pf-v6-theme-dark .pf-v6-c-page__main-section {
+  background-color: #414141;
+}
+
+/* Workspace Progress - inherit background for loader tab content */
+/* stylelint-disable-next-line selector-id-pattern */
+#pf-tab-section-Progress-loader-progress-tab .pf-v6-c-page__main-section {
+  background-color: inherit;
+}
+
+/* Workspace Progress Steps - remove margin between wizard nav items */
+[aria-label='Workspace Progress Steps'] .pf-v6-c-wizard__nav-item + .pf-v6-c-wizard__nav-item {
+  margin-block-start: 0;
+}
+
+/* PatternFly 6 form styles */
+.pf-v6-c-form {
+  --pf-v6-c-form--m-horizontal__group-label--md--GridColumnWidth: 11rem;
+}
+
+/* Masthead brand logo sizing and quality */
+.pf-v6-c-masthead__brand .pf-v6-c-brand {
+  width: auto;
+  max-width: 200px;
+  height: 3.17rem;
+
+  object-fit: contain;
+
+  image-rendering: -webkit-optimize-contrast;
+  image-rendering: crisp-edges;
+}
+
+tbody.pf-v6-c-table__tbody tr.pf-v6-c-table__tr td.pf-v6-c-table__td {
+  vertical-align: middle;
 }
