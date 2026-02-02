@@ -33,27 +33,11 @@ exports[`Navigation Item snapshot with RUNNING correctly 1`] = `
             Mock Workspace status indicator, status: 
             Stopped
           </div>
-          <div
-            data-testid="patternfly-tooltip"
+          <span
+            className="titleHover "
           >
-            <span
-              data-testid="tooltip-props"
-            >
-              {"isContentLeftAligned":true,"className":"titleHover ","position":"top-start","distance":-31,"maxWidth":"50rem"}
-            </span>
-            <div
-              data-testid="tooltip-content"
-            >
-              workspace
-            </div>
-            <div
-              data-testid="tooltip-placed-to"
-            >
-              <span>
-                workspace
-              </span>
-            </div>
-          </div>
+            workspace
+          </span>
         </span>
         <div>
           RecentItemWorkspaceActions
@@ -97,27 +81,11 @@ exports[`Navigation Item snapshot with STOPPED status 1`] = `
             Mock Workspace status indicator, status: 
             Stopped
           </div>
-          <div
-            data-testid="patternfly-tooltip"
+          <span
+            className="titleHover "
           >
-            <span
-              data-testid="tooltip-props"
-            >
-              {"isContentLeftAligned":true,"className":"titleHover ","position":"top-start","distance":-31,"maxWidth":"50rem"}
-            </span>
-            <div
-              data-testid="tooltip-content"
-            >
-              workspace
-            </div>
-            <div
-              data-testid="tooltip-placed-to"
-            >
-              <span>
-                workspace
-              </span>
-            </div>
-          </div>
+            workspace
+          </span>
         </span>
         <div>
           RecentItemWorkspaceActions
