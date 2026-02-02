@@ -14,8 +14,6 @@ import { FormGroup, TextInput, TextInputTypes, ValidatedOptions } from '@pattern
 import React from 'react';
 
 const MAX_LENGTH = 255;
-const MAX_LENGTH_ERROR = `The Provider Organization is too long. The maximum length is ${MAX_LENGTH} characters.`;
-const REQUIRED_ERROR = `This field is required.`;
 
 export type Props = {
   providerOrganization: string | undefined;
@@ -57,23 +55,19 @@ export class GitProviderOrganization extends React.PureComponent<Props, State> {
   }
 
   public render(): React.ReactElement {
-    const { providerOrganization = '', validated } = this.state;
-    const errorMessage =
-      providerOrganization.length > MAX_LENGTH ? MAX_LENGTH_ERROR : REQUIRED_ERROR;
+    const { providerOrganization = '' } = this.state;
 
     return (
       <FormGroup
         label="Git Provider Organization"
         fieldId="git-provider-organization-label"
         isRequired
-        helperTextInvalid={errorMessage}
-        validated={validated}
       >
         <TextInput
           aria-describedby="git-provider-organization-label"
           aria-label="Git Provider Organization"
           placeholder="Enter a Git Provider Organization"
-          onChange={providerOrganization => this.onChange(providerOrganization)}
+          onChange={(_event, providerOrganization) => this.onChange(providerOrganization)}
           type={TextInputTypes.text}
           value={providerOrganization}
         />

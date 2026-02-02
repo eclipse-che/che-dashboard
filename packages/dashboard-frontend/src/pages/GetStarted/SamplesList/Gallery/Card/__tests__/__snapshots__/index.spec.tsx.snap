@@ -1,43 +1,74 @@
 // Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
 exports[`Devfile Metadata Card snapshot 1`] = `
-<article
-  className="pf-c-card pf-m-compact pf-m-flat pf-m-selectable sample-card"
+<div
+  className="pf-v6-c-card pf-m-compact pf-m-selectable sample-card"
   data-ouia-component-id="OUIA-Generated-Card-1"
-  data-ouia-component-type="PF4/Card"
+  data-ouia-component-type="PF6/Card"
   data-ouia-safe={true}
   data-testid="sample-card"
-  id=""
-  onClick={[Function]}
-  tabIndex="0"
+  id="sample-card-go"
 >
   <div
-    className="pf-c-card__header"
+    className="pf-v6-c-card__header"
   >
     <div
-      className=""
+      className="pf-v6-c-card__actions pf-m-no-offset"
+    >
+      <div
+        className="pf-v6-c-card__selectable-actions"
+      >
+        <div
+          className="pf-v6-c-radio pf-m-standalone"
+        >
+          <input
+            aria-invalid={false}
+            aria-labelledby="sample-card-go"
+            checked={false}
+            className="pf-v6-c-radio__input pf-v6-screen-reader"
+            data-ouia-component-id="OUIA-Generated-Radio-1"
+            data-ouia-component-type="PF6/Radio"
+            data-ouia-safe={true}
+            disabled={false}
+            id="sample-card-go-input"
+            name="sample-card-selector"
+            onChange={[Function]}
+            type="radio"
+          />
+          <label
+            className="pf-v6-c-radio__label"
+            htmlFor="sample-card-go-input"
+          />
+        </div>
+      </div>
+    </div>
+    <div
+      className="pf-v6-c-card__header-main"
     >
       <img
         alt="Go"
         aria-label="Go"
-        className="pf-c-brand sampleCardIcon"
+        className="pf-v6-c-brand sampleCardIcon"
         data-testid="sample-card-icon"
         src="/images/go.svg"
+        style={{}}
       />
+      <div
+        className="pf-v6-c-card__title"
+      >
+        <div
+          className="pf-v6-c-card__title-text"
+          id="sample-card-go-title"
+        >
+          Go
+        </div>
+      </div>
     </div>
-    <div
-      className="pf-c-card__actions"
-    />
   </div>
   <div
-    className="pf-c-card__header"
-  >
-    Go
-  </div>
-  <div
-    className="pf-c-card__body"
+    className="pf-v6-c-card__body"
   >
     Stack with Go 1.12.10
   </div>
-</article>
+</div>
 `;

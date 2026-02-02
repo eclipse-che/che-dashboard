@@ -10,10 +10,10 @@ exports[`React element that is rendered while waiting for the component to load 
     }
   }
 >
-  <span
+  <svg
     aria-label="Contents"
     aria-valuetext="Loading..."
-    className="pf-c-spinner pf-m-xl"
+    className="pf-v6-c-spinner pf-m-xl"
     data-testid="fallback-spinner"
     role="progressbar"
     style={
@@ -21,16 +21,15 @@ exports[`React element that is rendered while waiting for the component to load 
         "top": "calc(50% - 18px)",
       }
     }
+    viewBox="0 0 100 100"
   >
-    <span
-      className="pf-c-spinner__clipper"
+    <circle
+      className="pf-v6-c-spinner__path"
+      cx="50"
+      cy="50"
+      fill="none"
+      r="45"
     />
-    <span
-      className="pf-c-spinner__lead-ball"
-    />
-    <span
-      className="pf-c-spinner__tail-ball"
-    />
-  </span>
+  </svg>
 </div>
 `;

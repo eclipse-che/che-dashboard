@@ -10,20 +10,20 @@
 *   Red Hat, Inc. - initial API and implementation
 */
 
-.pf-c-wizard__nav {
-  color: var(--pf-global--palette--black-1000);
+:global(.pf-v6-c-wizard__nav) {
+  color: var(--pf-t--global--text--color--regular);
 }
 
-.pf-c-wizard__nav .error {
+:global(.pf-v6-c-wizard__nav) .error {
   font-weight: bold;
-  color: var(--pf-global--palette--black-1000);
+  color: var(--pf-t--global--text--color--regular);
 }
 
-.pf-c-wizard__nav .progress {
+:global(.pf-v6-c-wizard__nav) .progress {
   font-weight: bold;
-  color: var(--pf-global--palette--blue-400);
+  color: var(--pf-t--global--color--brand--default);
 }
 
-.pf-c-wizard__nav .pf-m-current .ready.subStep {
-  color: var(--pf-global--palette--black-1000);
+:global(.pf-v6-c-wizard__nav) :global(.pf-m-current) .ready.subStep {
+  color: var(--pf-t--global--text--color--regular);
 }

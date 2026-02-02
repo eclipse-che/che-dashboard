@@ -121,7 +121,6 @@ export class MemoryLimitField extends React.PureComponent<Props, State> {
           onChange={event => this.handleChange(event)}
           inputName="memory-limit"
           data-testid="memory-limit-input"
-          allowEmptyInput
         />
       </FormGroup>
     );

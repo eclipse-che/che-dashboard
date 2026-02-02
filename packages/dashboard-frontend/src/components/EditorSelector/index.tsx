@@ -15,12 +15,11 @@ import {
   AccordionContent,
   AccordionItem,
   AccordionToggle,
+  Content,
   Panel,
   PanelHeader,
   PanelMain,
   PanelMainBody,
-  Text,
-  TextVariants,
   Title,
 } from '@patternfly/react-core';
 import React from 'react';
@@ -115,29 +114,25 @@ class EditorSelector extends React.PureComponent<Props, State> {
         </PanelHeader>
         <PanelMain>
           <PanelMainBody>
-            <Accordion asDefinitionList={false}>
-              <AccordionItem>
+            <Accordion>
+              <AccordionItem isExpanded={expandedId === 'default'}>
                 <AccordionToggle
                   onClick={() => {
                     this.handleToggle('default');
                   }}
-                  isExpanded={expandedId === 'default'}
                   id="accordion-item-default"
                 >
                   Use a Default Editor
                 </AccordionToggle>
 
-                <AccordionContent
-                  isHidden={expandedId !== 'default'}
-                  data-testid="default-editor-content"
-                >
+                <AccordionContent data-testid="default-editor-content">
                   <Panel>
                     <PanelMain>
                       <PanelMainBody>
-                        <Text component={TextVariants.p}>
+                        <Content component="p">
                           The editor defined as a query parameter, at the repository level or at the
                           Custom Resource level will be used.
-                        </Text>
+                        </Content>
                         <DocsLink />
                       </PanelMainBody>
                     </PanelMain>
@@ -145,21 +140,17 @@ class EditorSelector extends React.PureComponent<Props, State> {
                 </AccordionContent>
               </AccordionItem>
 
-              <AccordionItem>
+              <AccordionItem isExpanded={expandedId === 'selector'}>
                 <AccordionToggle
                   onClick={() => {
                     this.handleToggle('selector');
                   }}
-                  isExpanded={expandedId === 'selector'}
                   id="accordion-item-selector"
                 >
                   Choose an Editor
                 </AccordionToggle>
 
-                <AccordionContent
-                  isHidden={expandedId !== 'selector'}
-                  data-testid="editor-gallery-content"
-                >
+                <AccordionContent data-testid="editor-gallery-content">
                   <Panel>
                     <PanelMain>
                       <PanelMainBody>
@@ -177,21 +168,17 @@ class EditorSelector extends React.PureComponent<Props, State> {
                 </AccordionContent>
               </AccordionItem>
 
-              <AccordionItem>
+              <AccordionItem isExpanded={expandedId === 'definition'}>
                 <AccordionToggle
                   onClick={() => {
                     this.handleToggle('definition');
                   }}
-                  isExpanded={expandedId === 'definition'}
                   id="accordion-item-definition"
                 >
                   Use an Editor Definition
                 </AccordionToggle>
 
-                <AccordionContent
-                  isHidden={expandedId !== 'definition'}
-                  data-testid="editor-definition-content"
-                >
+                <AccordionContent data-testid="editor-definition-content">
                   <Panel>
                     <PanelMain>
                       <PanelMainBody>

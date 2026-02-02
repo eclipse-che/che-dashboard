@@ -13,7 +13,10 @@
 import {
   Button,
   FormGroup,
-  InputGroupText,
+  FormHelperText,
+  HelperText,
+  HelperTextItem,
+  InputGroup,
   TextInput,
   ValidatedOptions,
 } from '@patternfly/react-core';
@@ -86,19 +89,16 @@ export class RegistryPasswordFormGroup extends React.PureComponent<Props, State>
   }
 
   public render(): React.ReactElement {
-    const { password, errorMessage, valid, isHidden } = this.state;
+    const { password, valid, isHidden, errorMessage } = this.state;
 
     return (
       <FormGroup
         style={{ gridTemplateColumns: '80px', minHeight: '65px' }}
         label="Password"
         fieldId="id-password-helper"
-        helperTextInvalid={errorMessage}
         isRequired={true}
-        helperTextInvalidIcon={<ExclamationCircleIcon />}
-        validated={valid}
       >
-        <InputGroupText>
+        <InputGroup>
           <TextInput
             data-testid="registry-password-input"
             aria-label="Password input"
@@ -106,7 +106,7 @@ export class RegistryPasswordFormGroup extends React.PureComponent<Props, State>
             type={isHidden ? 'password' : 'text'}
             value={password}
             validated={valid}
-            onChange={_password => this.onChange(_password)}
+            onChange={(_event, _password) => this.onChange(_password)}
           />
           <Button
             variant="control"
@@ -115,7 +115,16 @@ export class RegistryPasswordFormGroup extends React.PureComponent<Props, State>
           >
             {isHidden ? <EyeSlashIcon /> : <EyeIcon />}
           </Button>
-        </InputGroupText>
+        </InputGroup>
+        {valid === ValidatedOptions.error && errorMessage && (
+          <FormHelperText>
+            <HelperText>
+              <HelperTextItem icon={<ExclamationCircleIcon />} variant="error">
+                {errorMessage}
+              </HelperTextItem>
+            </HelperText>
+          </FormHelperText>
+        )}
       </FormGroup>
     );
   }

@@ -2,20 +2,20 @@
 
 exports[`The LogsTools component snapshot in expanded state 1`] = `
 <div
-  className="pf-l-split"
+  className="pf-v6-l-split"
 >
   <div
-    className="pf-l-split__item"
+    className="pf-v6-l-split__item"
   >
     <div>
       left
     </div>
   </div>
   <div
-    className="pf-l-split__item pf-m-fill"
+    className="pf-v6-l-split__item pf-m-fill"
   />
   <div
-    className="pf-l-split__item alignCenter expandedPadding"
+    className="pf-v6-l-split__item alignCenter expandedPadding"
   >
     <div>
       right
@@ -26,20 +26,20 @@ exports[`The LogsTools component snapshot in expanded state 1`] = `
 
 exports[`The LogsTools component snapshot with both parts present 1`] = `
 <div
-  className="pf-l-split"
+  className="pf-v6-l-split"
 >
   <div
-    className="pf-l-split__item"
+    className="pf-v6-l-split__item"
   >
     <div>
       left
     </div>
   </div>
   <div
-    className="pf-l-split__item pf-m-fill"
+    className="pf-v6-l-split__item pf-m-fill"
   />
   <div
-    className="pf-l-split__item alignCenter "
+    className="pf-v6-l-split__item alignCenter "
   >
     <div>
       right
@@ -50,36 +50,36 @@ exports[`The LogsTools component snapshot with both parts present 1`] = `
 
 exports[`The LogsTools component snapshot with left part only 1`] = `
 <div
-  className="pf-l-split"
+  className="pf-v6-l-split"
 >
   <div
-    className="pf-l-split__item"
+    className="pf-v6-l-split__item"
   >
     <div>
       left
     </div>
   </div>
   <div
-    className="pf-l-split__item pf-m-fill"
+    className="pf-v6-l-split__item pf-m-fill"
   />
   <div
-    className="pf-l-split__item alignCenter "
+    className="pf-v6-l-split__item alignCenter "
   />
 </div>
 `;
 
 exports[`The LogsTools component snapshot with right part only 1`] = `
 <div
-  className="pf-l-split"
+  className="pf-v6-l-split"
 >
   <div
-    className="pf-l-split__item"
+    className="pf-v6-l-split__item"
   />
   <div
-    className="pf-l-split__item pf-m-fill"
+    className="pf-v6-l-split__item pf-m-fill"
   />
   <div
-    className="pf-l-split__item alignCenter "
+    className="pf-v6-l-split__item alignCenter "
   >
     <div>
       right

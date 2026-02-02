@@ -18,13 +18,13 @@
   line-height: 12px;
   vertical-align: top;
 
-  background-color: var(--pf-global--BackgroundColor--100);
+  background-color: var(--pf-t--global--background--color--primary--default);
 }
 
-.tag .pf-c-label__content::before {
-  border-color: var(--pf-global--warning-color--100);
+.tag :global(.pf-v6-c-label__content)::before {
+  border-color: var(--pf-t--global--color--status--warning--default);
 }
 
-.version .pf-c-label__content::before {
-  border-color: var(--pf-global--link--Color);
+.version :global(.pf-v6-c-label__content)::before {
+  border-color: var(--pf-t--global--text--color--link--default);
 }

@@ -36,7 +36,7 @@ class BannerAlertBranding extends React.PureComponent<Props> {
     });
 
     return (
-      <Banner className="pf-u-text-align-center" variant="warning">
+      <Banner className="pf-u-text-align-center" status="warning">
         <div dangerouslySetInnerHTML={{ __html: warningMessageHTML }}></div>
       </Banner>
     );

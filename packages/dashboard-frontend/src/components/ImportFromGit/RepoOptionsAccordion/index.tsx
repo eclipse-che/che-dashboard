@@ -26,7 +26,6 @@ import { connect, ConnectedProps } from 'react-redux';
 import {
   getAdvancedOptionsFromLocation,
   getGitRepoOptionsFromLocation,
-  getRepositoryUrlFromLocation,
   setAdvancedOptionsToLocation,
   setGitRepoOptionsToLocation,
   validateLocation,
@@ -34,7 +33,6 @@ import {
 import { AdvancedOptions } from '@/components/ImportFromGit/RepoOptionsAccordion/AdvancedOptions';
 import { GitRepoOptions } from '@/components/ImportFromGit/RepoOptionsAccordion/GitRepoOptions';
 import { GitRemote } from '@/components/WorkspaceProgress/CreatingSteps/Apply/Devfile/getGitRemotes';
-import { fetchGitBranches } from '@/services/backend-client/gitBranchesApi';
 import { RootState } from '@/store';
 import { selectSshKeys } from '@/store/SshKeys/selectors';
 
@@ -53,7 +51,6 @@ export type State = {
   hasSshKeys: boolean;
   expanded: AccordionId[];
   gitBranch: string | undefined;
-  branchList: string[] | undefined;
   remotes: GitRemote[] | undefined;
   remotesValidated: ValidatedOptions;
   devfilePath: string | undefined;
@@ -77,7 +74,6 @@ class RepoOptionsAccordion extends React.PureComponent<Props, State> {
       hasSshKeys: props.sshKeys.length > 0,
       expanded: [],
       gitBranch: undefined,
-      branchList: undefined,
       remotes: undefined,
       remotesValidated: ValidatedOptions.default,
       devfilePath: undefined,
@@ -89,7 +85,7 @@ class RepoOptionsAccordion extends React.PureComponent<Props, State> {
     };
   }
 
-  private async updateStateFromLocation(): Promise<void> {
+  private updateStateFromLocation(): void {
     const { location } = this.props;
 
     const validated = validateLocation(location, this.state.hasSshKeys);
@@ -104,21 +100,14 @@ class RepoOptionsAccordion extends React.PureComponent<Props, State> {
 
     const state = Object.assign(gitRepoOptions, advancedOptions) as State;
 
-    let branchList: string[] | undefined = undefined;
-    try {
-      const branchRequest = await fetchGitBranches(getRepositoryUrlFromLocation(location));
-      branchList = branchRequest.branches;
-    } finally {
-      state.branchList = branchList;
-      this.setState(state);
-    }
+    this.setState(state);
   }
 
   public componentDidMount() {
     this.updateStateFromLocation();
   }
 
-  public async componentDidUpdate(prevProps: Readonly<Props>) {
+  public componentDidUpdate(prevProps: Readonly<Props>) {
     const location = this.props.location.trim();
     if (location === prevProps.location || location === this.state.location) {
       return;
@@ -190,7 +179,7 @@ class RepoOptionsAccordion extends React.PureComponent<Props, State> {
 
   public render() {
     const { hasSupportedGitService } = this.state;
-    const { expanded, remotes, devfilePath, gitBranch, branchList } = this.state;
+    const { expanded, remotes, devfilePath, gitBranch } = this.state;
     const {
       containerImage,
       temporaryStorage,
@@ -201,29 +190,24 @@ class RepoOptionsAccordion extends React.PureComponent<Props, State> {
     } = this.state;
     return (
       <Accordion asDefinitionList={false}>
-        <AccordionItem>
+        <AccordionItem isExpanded={expanded.includes('git-repo-options')}>
           <AccordionToggle
             onClick={() => {
               this.handleToggle('git-repo-options');
             }}
-            isExpanded={expanded.includes('git-repo-options')}
             id="accordion-item-git-repo-options"
             data-testid="accordion-item-git-repo-options"
           >
             Git Repo Options
           </AccordionToggle>
 
-          <AccordionContent
-            isHidden={!expanded.includes('git-repo-options')}
-            data-testid="options-content"
-          >
+          <AccordionContent data-testid="options-content">
             <Panel>
               <PanelMain>
                 <PanelMainBody>
                   <GitRepoOptions
                     location={location}
                     gitBranch={gitBranch}
-                    branchList={branchList}
                     remotes={remotes}
                     devfilePath={devfilePath}
                     hasSupportedGitService={hasSupportedGitService}
@@ -236,22 +220,18 @@ class RepoOptionsAccordion extends React.PureComponent<Props, State> {
             </Panel>
           </AccordionContent>
         </AccordionItem>
-        <AccordionItem>
+        <AccordionItem isExpanded={expanded.includes('advanced-options')}>
           <AccordionToggle
             onClick={() => {
               this.handleToggle('advanced-options');
             }}
-            isExpanded={expanded.includes('advanced-options')}
             id="accordion-item-advanced-options"
             data-testid="accordion-item-advanced-options"
           >
             Advanced Options
           </AccordionToggle>
 
-          <AccordionContent
-            isHidden={!expanded.includes('advanced-options')}
-            data-testid="options-content"
-          >
+          <AccordionContent data-testid="options-content">
             <Panel>
               <PanelMain>
                 <PanelMainBody>

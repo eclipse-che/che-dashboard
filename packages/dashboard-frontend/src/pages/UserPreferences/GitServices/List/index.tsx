@@ -15,7 +15,7 @@ import { Button, ButtonVariant } from '@patternfly/react-core';
 import {
   ActionsColumn,
   IAction,
-  TableComposable,
+  Table,
   TableVariant,
   Tbody,
   Td,
@@ -144,7 +144,7 @@ export class GitServicesList extends React.PureComponent<Props, State> {
             rowIndex,
             onSelect: (_event, isSelected) => this.handleSelectItem(isSelected, rowIndex),
             isSelected: selectedItems.includes(service),
-            disable: rowDisabled,
+            isDisabled: rowDisabled,
           }}
         />
         <Td dataLabel="Git Service Name">
@@ -241,10 +241,10 @@ export class GitServicesList extends React.PureComponent<Props, State> {
           onRevokeButton={async () => await this.handleRevokeSelectedServices()}
         />
 
-        <TableComposable aria-label="Git Services" variant={TableVariant.compact}>
+        <Table aria-label="Git Services" variant={TableVariant.compact}>
           <Thead>{headRow}</Thead>
           <Tbody>{bodyRows}</Tbody>
-        </TableComposable>
+        </Table>
       </React.Fragment>
     );
   }

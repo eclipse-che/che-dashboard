@@ -1,59 +1,114 @@
 // Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
 exports[`Editor Selector Entry snapshot 1`] = `
-[
-  <input
-    aria-label="Select VS Code - Open Source insiders "
-    checked={false}
-    className="pf-screen-reader"
-    disabled={false}
-    id="editor-selector-card-che-incubator/che-code/insiders-input"
-    onChange={[Function]}
-    tabIndex={-1}
-    type="checkbox"
-  />,
-  <article
-    className="pf-c-card pf-m-compact pf-m-flat pf-m-selectable-raised"
-    data-ouia-component-id="OUIA-Generated-Card-1"
-    data-ouia-component-type="PF4/Card"
-    data-ouia-safe={true}
-    id="editor-selector-card-che-incubator/che-code/insiders"
-    onClick={[Function]}
-    tabIndex="0"
+<div
+  className="pf-v6-c-card pf-m-compact pf-m-selectable"
+  data-ouia-component-id="OUIA-Generated-Card-1"
+  data-ouia-component-type="PF6/Card"
+  data-ouia-safe={true}
+  id="editor-selector-card-che-incubator/che-code/insiders"
+>
+  <div
+    className="pf-v6-c-card__header"
   >
     <div
-      className="pf-c-card__header"
+      className="pf-v6-c-card__actions pf-m-no-offset"
+    >
+      <button
+        aria-expanded={false}
+        aria-label="VS Code - Open Source actions"
+        className="pf-v6-c-menu-toggle pf-m-plain"
+        data-ouia-component-id="OUIA-Generated-MenuToggle-plain-1"
+        data-ouia-component-type="PF6/MenuToggle"
+        data-ouia-safe={true}
+        disabled={false}
+        onClick={[Function]}
+        type="button"
+      >
+        <span
+          className="pf-v6-c-menu-toggle__icon"
+        >
+          <svg
+            aria-hidden={true}
+            aria-labelledby={null}
+            className="pf-v6-svg"
+            fill="currentColor"
+            height="1em"
+            role="img"
+            viewBox="0 0 192 512"
+            width="1em"
+          >
+            <path
+              d="M96 184c39.8 0 72 32.2 72 72s-32.2 72-72 72-72-32.2-72-72 32.2-72 72-72zM24 80c0 39.8 32.2 72 72 72s72-32.2 72-72S135.8 8 96 8 24 40.2 24 80zm0 352c0 39.8 32.2 72 72 72s72-32.2 72-72-32.2-72-72-72-72 32.2-72 72z"
+            />
+          </svg>
+        </span>
+      </button>
+      <div
+        className="pf-v6-c-card__selectable-actions"
+      >
+        <div
+          className="pf-v6-c-radio pf-m-standalone"
+        >
+          <input
+            aria-invalid={false}
+            aria-labelledby="editor-selector-card-che-incubator/che-code/insiders"
+            checked={false}
+            className="pf-v6-c-radio__input pf-v6-screen-reader"
+            data-ouia-component-id="OUIA-Generated-Radio-1"
+            data-ouia-component-type="PF6/Radio"
+            data-ouia-safe={true}
+            disabled={false}
+            id="editor-selector-input-che-incubator/che-code/insiders"
+            name="editor-selector"
+            onChange={[Function]}
+            type="radio"
+          />
+          <label
+            className="pf-v6-c-radio__label"
+            htmlFor="editor-selector-input-che-incubator/che-code/insiders"
+          />
+        </div>
+      </div>
+    </div>
+    <div
+      className="pf-v6-c-card__header-main"
     >
       <img
+        alt="VS Code - Open Source icon"
         className="editorIcon"
         src="data:image/svg+xml;charset=utf-8,data%3Aimage%2Fsvg%2Bxml%3Bcharset%3Dutf-8%2C%252Fv3%252Fimages%252Fvscode.svg"
       />
       <div
-        className="pf-c-label-group pf-m-vertical"
+        className="pf-v6-c-label-group pf-m-vertical"
       >
         <div
-          className="pf-c-label-group__main"
+          className="pf-v6-c-label-group__main"
         >
           <ul
             aria-label="Label group category"
-            className="pf-c-label-group__list"
+            className="pf-v6-c-label-group__list"
             role="list"
           >
             <li
-              className="pf-c-label-group__list-item"
+              className="pf-v6-c-label-group__list-item"
             >
               <span
-                className="pf-c-label pf-m-blue pf-m-outline label version"
+                className="pf-v6-c-label pf-m-blue pf-m-outline label version"
               >
                 <span
-                  className="pf-c-label__content"
+                  className="pf-v6-c-label__content"
                 >
-                  insiders
+                  <span
+                    className="pf-v6-c-label__text"
+                  >
+                    insiders
+                  </span>
                 </span>
               </span>
             </li>
             <li
-              className="pf-c-label-group__list-item"
+              className="pf-v6-c-label-group__list-item"
             >
               <span
                 style={
@@ -71,56 +126,21 @@ exports[`Editor Selector Entry snapshot 1`] = `
         </div>
       </div>
       <div
-        className="pf-c-card__actions"
+        className="pf-v6-c-card__title"
       >
         <div
-          className="pf-c-dropdown"
-          data-ouia-component-id="OUIA-Generated-Dropdown-1"
-          data-ouia-component-type="PF4/Dropdown"
-          data-ouia-safe={true}
+          className="pf-v6-c-card__title-text"
+          id="editor-selector-card-che-incubator/che-code/insiders-title"
         >
-          <button
-            aria-expanded={false}
-            aria-haspopup={true}
-            aria-label="Actions"
-            className="pf-c-dropdown__toggle pf-m-plain"
-            disabled={false}
-            id="pf-dropdown-toggle-id-0"
-            onClick={[Function]}
-            onKeyDown={[Function]}
-            type="button"
-          >
-            <svg
-              aria-hidden={true}
-              aria-labelledby={null}
-              fill="currentColor"
-              height="1em"
-              role="img"
-              style={
-                {
-                  "verticalAlign": "-0.125em",
-                }
-              }
-              viewBox="0 0 192 512"
-              width="1em"
-            >
-              <path
-                d="M96 184c39.8 0 72 32.2 72 72s-32.2 72-72 72-72-32.2-72-72 32.2-72 72-72zM24 80c0 39.8 32.2 72 72 72s72-32.2 72-72S135.8 8 96 8 24 40.2 24 80zm0 352c0 39.8 32.2 72 72 72s72-32.2 72-72-32.2-72-72-72-72 32.2-72 72z"
-              />
-            </svg>
-          </button>
+          VS Code - Open Source
         </div>
       </div>
     </div>
-    <div
-      className="pf-c-card__body"
-    >
-      <span
-        className=""
-      >
-        VS Code - Open Source
-      </span>
-    </div>
-  </article>,
-]
+  </div>
+  <div
+    className="pf-v6-c-card__body"
+  >
+    Microsoft Visual Studio Code - Open Source IDE for Eclipse Che - Insiders build
+  </div>
+</div>
 `;

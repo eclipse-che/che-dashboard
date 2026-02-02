@@ -5,34 +5,34 @@ exports[`Loader Alert snapshot with alert items 1`] = `
   aria-atomic={null}
   aria-label="Loader Alerts Group"
   aria-live={null}
-  className="pf-c-alert-group"
+  className="pf-v6-c-alert-group"
   data-testid="loader-alerts-group"
+  role="list"
 >
-  <li>
+  <li
+    className="pf-v6-c-alert-group__item"
+    onTransitionEnd={[Function]}
+  >
     <div
       aria-label="Loader Alert"
-      className="pf-c-alert pf-m-inline pf-m-danger fixOverflow"
+      className="pf-v6-c-alert pf-m-inline pf-m-danger fixOverflow"
       data-ouia-component-id="OUIA-Generated-Alert-danger-1"
-      data-ouia-component-type="PF4/Alert"
+      data-ouia-component-type="PF6/Alert"
       data-ouia-safe={true}
       data-testid="loader-alert"
       onMouseEnter={[Function]}
       onMouseLeave={[Function]}
     >
       <div
-        className="pf-c-alert__icon"
+        className="pf-v6-c-alert__icon"
       >
         <svg
           aria-hidden={true}
           aria-labelledby={null}
+          className="pf-v6-svg"
           fill="currentColor"
           height="1em"
           role="img"
-          style={
-            {
-              "verticalAlign": "-0.125em",
-            }
-          }
           viewBox="0 0 512 512"
           width="1em"
         >
@@ -42,56 +42,47 @@ exports[`Loader Alert snapshot with alert items 1`] = `
         </svg>
       </div>
       <h4
-        className="pf-c-alert__title"
+        className="pf-v6-c-alert__title"
       >
         <span
-          className="pf-u-screen-reader"
+          className="pf-v6-screen-reader"
         >
           Danger alert:
         </span>
         Alert title 1
       </h4>
       <div
-        className="pf-c-alert__action-group"
+        className="pf-v6-c-alert__action-group"
       >
-        <div
-          className="pf-c-dropdown dropdown"
-          data-ouia-component-id="OUIA-Generated-Dropdown-1"
-          data-ouia-component-type="PF4/Dropdown"
+        <button
+          aria-expanded={false}
+          className="pf-v6-c-menu-toggle"
+          data-ouia-component-id="OUIA-Generated-MenuToggle-1"
+          data-ouia-component-type="PF6/MenuToggle"
           data-ouia-safe={true}
+          disabled={false}
+          id="dropdown-toggle-ce7b0767e0e5d1dc1a9e"
+          onClick={[Function]}
+          type="button"
         >
-          <button
-            aria-expanded={false}
-            aria-haspopup={true}
-            className="pf-c-dropdown__toggle"
-            data-ouia-component-id="OUIA-Generated-DropdownToggle-1"
-            data-ouia-component-type="PF4/DropdownToggle"
-            data-ouia-safe={true}
-            disabled={false}
-            id="dropdown-toggle-ce7b0767e0e5d1dc1a9e"
-            onClick={[Function]}
-            onKeyDown={[Function]}
-            type="button"
+          <span
+            className="pf-v6-c-menu-toggle__text"
+          >
+            Action Group
+          </span>
+          <span
+            className="pf-v6-c-menu-toggle__controls"
           >
             <span
-              className="pf-c-dropdown__toggle-text"
-            >
-              Action Group
-            </span>
-            <span
-              className="pf-c-dropdown__toggle-icon"
+              className="pf-v6-c-menu-toggle__toggle-icon"
             >
               <svg
                 aria-hidden={true}
                 aria-labelledby={null}
+                className="pf-v6-svg"
                 fill="currentColor"
                 height="1em"
                 role="img"
-                style={
-                  {
-                    "verticalAlign": "-0.125em",
-                  }
-                }
                 viewBox="0 0 320 512"
                 width="1em"
               >
@@ -100,50 +91,51 @@ exports[`Loader Alert snapshot with alert items 1`] = `
                 />
               </svg>
             </span>
-          </button>
-        </div>
+          </span>
+        </button>
         <button
-          aria-disabled={false}
           aria-label={null}
-          className="pf-c-button pf-m-link pf-m-inline"
+          className="pf-v6-c-button pf-m-link pf-m-inline"
           data-ouia-component-id="OUIA-Generated-Button-link-1"
-          data-ouia-component-type="PF4/Button"
+          data-ouia-component-type="PF6/Button"
           data-ouia-safe={true}
           disabled={false}
           onClick={[Function]}
-          role={null}
           type="button"
         >
-          Close
+          <span
+            className="pf-v6-c-button__text"
+          >
+            Close
+          </span>
         </button>
       </div>
     </div>
   </li>
-  <li>
+  <li
+    className="pf-v6-c-alert-group__item"
+    onTransitionEnd={[Function]}
+  >
     <div
       aria-label="Loader Alert"
-      className="pf-c-alert pf-m-inline pf-m-warning fixOverflow"
+      className="pf-v6-c-alert pf-m-inline pf-m-warning fixOverflow"
       data-ouia-component-id="OUIA-Generated-Alert-warning-1"
-      data-ouia-component-type="PF4/Alert"
+      data-ouia-component-type="PF6/Alert"
       data-ouia-safe={true}
       data-testid="loader-alert"
       onMouseEnter={[Function]}
       onMouseLeave={[Function]}
     >
       <div
-        className="pf-c-alert__icon"
+        className="pf-v6-c-alert__icon"
       >
         <svg
           aria-hidden={true}
           aria-labelledby={null}
+          className="pf-v6-svg"
           fill="currentColor"
           height="1em"
           role="img"
-          style={
-            {
-              "verticalAlign": "-0.125em",
-            }
-          }
           viewBox="0 0 576 512"
           width="1em"
         >
@@ -153,17 +145,17 @@ exports[`Loader Alert snapshot with alert items 1`] = `
         </svg>
       </div>
       <h4
-        className="pf-c-alert__title"
+        className="pf-v6-c-alert__title"
       >
         <span
-          className="pf-u-screen-reader"
+          className="pf-v6-screen-reader"
         >
           Warning alert:
         </span>
         Alert title 2
       </h4>
       <div
-        className="pf-c-alert__action-group"
+        className="pf-v6-c-alert__action-group"
       />
     </div>
   </li>

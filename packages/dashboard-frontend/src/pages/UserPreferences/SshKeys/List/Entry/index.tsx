@@ -14,19 +14,19 @@ import { api } from '@eclipse-che/common';
 import {
   Button,
   Card,
-  CardActions,
   CardFooter,
   CardHeader,
   CardTitle,
+  Content,
+  ContentVariants,
   Dropdown,
   DropdownItem,
-  KebabToggle,
-  Text,
-  TextContent,
-  TextVariants,
+  DropdownList,
+  MenuToggle,
+  MenuToggleElement,
   Tooltip,
 } from '@patternfly/react-core';
-import { CopyIcon } from '@patternfly/react-icons';
+import { CopyIcon, EllipsisVIcon } from '@patternfly/react-icons';
 import React from 'react';
 import CopyToClipboard from 'react-copy-to-clipboard';
 
@@ -51,8 +51,8 @@ export class SshKeysListEntry extends React.PureComponent<Props, State> {
     };
   }
 
-  private handleOpenDropdown(isOpen: boolean): void {
-    this.setState({ isOpenDropdown: isOpen });
+  private handleToggleDropdown(): void {
+    this.setState(prevState => ({ isOpenDropdown: !prevState.isOpenDropdown }));
   }
 
   private handleDeleteEntry(sskKey: api.SshKey): void {
@@ -79,42 +79,56 @@ export class SshKeysListEntry extends React.PureComponent<Props, State> {
     const publicKey = atob(sshKey.keyPub);
     const addedOn = getFormattedDate(sshKey.creationTimestamp);
 
-    const dropdownItems = [
-      <DropdownItem key="action" component="button" onClick={() => this.handleDeleteEntry(sshKey)}>
-        Delete
-      </DropdownItem>,
-    ];
-
     return (
       <Card key={sshKey.name}>
-        <CardHeader>
+        <CardHeader
+          actions={{
+            actions: (
+              <>
+                <Tooltip content={timerId ? 'Copied!' : 'Copy to clipboard'}>
+                  <CopyToClipboard text={publicKey} onCopy={() => this.handleCopyToClipboard()}>
+                    <Button
+                      variant="plain"
+                      icon={<CopyIcon />}
+                      aria-label="Copy to Clipboard"
+                      data-testid="copy-to-clipboard"
+                    />
+                  </CopyToClipboard>
+                </Tooltip>
+                <Dropdown
+                  toggle={(toggleRef: React.Ref<MenuToggleElement>) => (
+                    <MenuToggle
+                      ref={toggleRef}
+                      variant="plain"
+                      onClick={() => this.handleToggleDropdown()}
+                      isExpanded={isOpenDropdown}
+                      aria-label="Actions"
+                    >
+                      <EllipsisVIcon />
+                    </MenuToggle>
+                  )}
+                  isOpen={isOpenDropdown}
+                  onOpenChange={isOpen => this.setState({ isOpenDropdown: isOpen })}
+                  popperProps={{ position: 'right' }}
+                >
+                  <DropdownList>
+                    <DropdownItem key="action" onClick={() => this.handleDeleteEntry(sshKey)}>
+                      Delete
+                    </DropdownItem>
+                  </DropdownList>
+                </Dropdown>
+              </>
+            ),
+          }}
+        >
           <CardTitle data-testid="title">{sshKey.name}</CardTitle>
-          <CardActions>
-            <Tooltip content={timerId ? 'Copied!' : 'Copy to clipboard'}>
-              <CopyToClipboard text={publicKey} onCopy={() => this.handleCopyToClipboard()}>
-                <Button
-                  variant="link"
-                  icon={<CopyIcon />}
-                  name="Copy to Clipboard"
-                  data-testid="copy-to-clipboard"
-                />
-              </CopyToClipboard>
-            </Tooltip>
-            <Dropdown
-              toggle={<KebabToggle onToggle={isOpen => this.handleOpenDropdown(isOpen)} />}
-              isOpen={isOpenDropdown}
-              isPlain
-              dropdownItems={dropdownItems}
-              position={'right'}
-            />
-          </CardActions>
         </CardHeader>
         <CardFooter>
-          <TextContent>
-            <Text component={TextVariants.small} data-testid="added-on">
+          <Content>
+            <Content component={ContentVariants.small} data-testid="added-on">
               Added: {addedOn}
-            </Text>
-          </TextContent>
+            </Content>
+          </Content>
         </CardFooter>
       </Card>
     );

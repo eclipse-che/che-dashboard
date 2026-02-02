@@ -19,12 +19,13 @@
 }
 
 .navItem [class*='nav__link'] {
-  padding-left: 45px;
+  width: 100%;
+  padding-left: 8px;
 }
 
-.navItem > span {
+.navItem [class*='nav__link'] > span {
   overflow: hidden;
-  width: calc(100% - 12px);
+  width: calc(100% - 30px);
   text-overflow: ellipsis;
 }
 

@@ -10,14 +10,7 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import {
-  Button,
-  EmptyState,
-  EmptyStateBody,
-  EmptyStateIcon,
-  EmptyStateVariant,
-  Title,
-} from '@patternfly/react-core';
+import { Button, EmptyState, EmptyStateBody, EmptyStateVariant } from '@patternfly/react-core';
 import { KeyIcon, PlusCircleIcon } from '@patternfly/react-icons';
 import React from 'react';
 
@@ -29,11 +22,12 @@ export type Props = {
 export class PersonalAccessTokenEmptyState extends React.PureComponent<Props> {
   public render(): React.ReactElement {
     return (
-      <EmptyState isFullHeight={true} variant={EmptyStateVariant.small}>
-        <EmptyStateIcon icon={KeyIcon} />
-        <Title headingLevel="h4" size="lg">
-          No Personal Access Tokens
-        </Title>
+      <EmptyState
+        isFullHeight={true}
+        variant={EmptyStateVariant.sm}
+        icon={KeyIcon}
+        titleText="No Personal Access Tokens"
+      >
         <EmptyStateBody>
           <Button
             icon={<PlusCircleIcon />}

@@ -10,18 +10,25 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-.workspaceDetailsTabs .pf-c-tab-content {
+.workspaceDetailsTabs {
   outline: none;
 }
 
-.workspaceDetailsTabs .pf-c-tab-content .pf-c-form__label-text {
+.workspaceDetailsTabs :global(.pf-v6-c-tab-content) {
+  outline: none;
+}
+
+.workspaceDetailsTabs :global(.pf-v6-c-tab-content) :global(.pf-v6-c-form__label-text) {
   cursor: initial;
 }
 
-.workspaceDetailsTabs .pf-c-tab-content .pf-c-page__main-section .pf-m-spacer-lg {
+.workspaceDetailsTabs
+  :global(.pf-v6-c-tab-content)
+  :global(.pf-v6-c-page__main-section)
+  :global(.pf-m-spacer-lg) {
   padding-bottom: 0;
 }
 
-.workspaceDetailsTabs .pf-c-tabs {
+.workspaceDetailsTabs :global(.pf-v6-c-tabs) {
   padding-bottom: 0;
 }

@@ -2,25 +2,25 @@
 
 exports[`ProjectsFormGroup screenshot with projects 1`] = `
 <div
-  className="pf-c-form__group"
+  className="pf-v6-c-form__group"
 >
   <div
-    className="pf-c-form__group-label"
+    className="pf-v6-c-form__group-label"
   >
     <label
-      className="pf-c-form__label"
+      className="pf-v6-c-form__label"
       htmlFor="projects"
     >
       <span
-        className="pf-c-form__label-text"
+        className="pf-v6-c-form__label-text"
       >
         Projects
       </span>
     </label>
-     
+      
   </div>
   <div
-    className="pf-c-form__group-control"
+    className="pf-v6-c-form__group-control"
   >
     <div
       className="readonly"

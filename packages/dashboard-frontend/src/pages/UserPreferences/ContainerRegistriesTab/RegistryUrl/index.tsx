@@ -13,6 +13,9 @@
 import {
   Button,
   FormGroup,
+  FormHelperText,
+  HelperText,
+  HelperTextItem,
   InputGroupText,
   TextInput,
   ValidatedOptions,
@@ -89,17 +92,14 @@ export class RegistryUrlFormGroup extends React.PureComponent<Props, State> {
   }
 
   public render(): React.ReactElement {
-    const { url, isUrl, errorMessage, valid } = this.state;
+    const { url, isUrl, valid, errorMessage } = this.state;
 
     return (
       <FormGroup
         style={{ gridTemplateColumns: '80px', minHeight: '65px' }}
         label="Registry"
         fieldId="id-registry-helper"
-        helperTextInvalid={errorMessage}
         isRequired={true}
-        helperTextInvalidIcon={<ExclamationCircleIcon />}
-        validated={valid}
       >
         <InputGroupText>
           <TextInput
@@ -108,7 +108,7 @@ export class RegistryUrlFormGroup extends React.PureComponent<Props, State> {
             type="url"
             value={url}
             validated={valid}
-            onChange={_url => this.onChange(_url)}
+            onChange={(_event, _url) => this.onChange(_url)}
           />
           <Button variant="link" isDisabled={!url || !isUrl} aria-label="open registry">
             <a href={url} style={{ color: 'inherit' }} target="_blank" rel="noreferrer">
@@ -116,6 +116,15 @@ export class RegistryUrlFormGroup extends React.PureComponent<Props, State> {
             </a>
           </Button>
         </InputGroupText>
+        {valid === ValidatedOptions.error && errorMessage && (
+          <FormHelperText>
+            <HelperText>
+              <HelperTextItem icon={<ExclamationCircleIcon />} variant="error">
+                {errorMessage}
+              </HelperTextItem>
+            </HelperText>
+          </FormHelperText>
+        )}
       </FormGroup>
     );
   }

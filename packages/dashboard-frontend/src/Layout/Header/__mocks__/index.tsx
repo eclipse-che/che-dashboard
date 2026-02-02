@@ -19,7 +19,6 @@ export class Header extends React.PureComponent<Props> {
     return (
       <div>
         Mock Header component
-        <button onClick={() => this.props.toggleNav()}>toggleNav</button>
         <button onClick={() => this.props.logout()}>logout</button>
       </div>
     );

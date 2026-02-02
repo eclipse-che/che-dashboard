@@ -12,25 +12,26 @@
 
 .progress {
   height: 700px;
+  background-color: var(--pf-t--global--background--color--secondary--default);
 }
 
-.progress .pf-c-wizard__nav {
+.progress :global(.pf-v6-c-wizard__nav) {
   width: 100%;
   border: none;
   box-shadow: none;
 }
 
-.progress .pf-c-wizard__nav-link {
+.progress :global(.pf-v6-c-wizard__nav-link) {
   pointer-events: none;
   margin-left: 8px;
 }
 
-.progress .pf-c-wizard__nav-link:hover,
-.progress .pf-c-wizard__nav-link:focus {
-  --pf-c-wizard__nav-link--Color: var(--pf-c-wizard__nav-link--Color);
-  --pf-c-wizard__nav-link-toggle--Color: var(--pf-c-wizard__nav-link--Color);
+.progress :global(.pf-v6-c-wizard__nav-link:hover),
+.progress :global(.pf-v6-c-wizard__nav-link:focus) {
+  --pf-v6-c-wizard__nav-link--Color: var(--pf-v6-c-wizard__nav-link--Color);
+  --pf-v6-c-wizard__nav-link-toggle--Color: var(--pf-v6-c-wizard__nav-link--Color);
 }
 
-.progress .pf-c-wizard__toggle {
+.progress :global(.pf-v6-c-wizard__toggle) {
   display: none;
 }

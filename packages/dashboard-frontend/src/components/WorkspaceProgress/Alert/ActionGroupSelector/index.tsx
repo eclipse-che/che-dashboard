@@ -10,7 +10,7 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import { Dropdown, DropdownItem, DropdownToggle } from '@patternfly/react-core';
+import { Dropdown, DropdownItem, DropdownList, MenuToggle } from '@patternfly/react-core';
 import { createHash } from 'crypto';
 import React from 'react';
 
@@ -41,8 +41,8 @@ export class ActionGroupSelector extends React.PureComponent<Props, State> {
       .toLowerCase();
   }
 
-  private onToggle(isOpen: boolean): void {
-    this.setState({ isOpen });
+  private onToggle(): void {
+    this.setState(prevState => ({ isOpen: !prevState.isOpen }));
   }
 
   private onSelect(): void {
@@ -71,17 +71,21 @@ export class ActionGroupSelector extends React.PureComponent<Props, State> {
       <Dropdown
         className={styles.dropdown}
         onSelect={() => this.onSelect()}
-        toggle={
-          <DropdownToggle
+        toggle={toggleRef => (
+          <MenuToggle
+            ref={toggleRef}
             id={`dropdown-toggle-${this.key}`}
-            onToggle={isOpen => this.onToggle(isOpen)}
+            onClick={() => this.onToggle()}
+            isExpanded={isOpen}
           >
             {actionGroup.title}
-          </DropdownToggle>
-        }
+          </MenuToggle>
+        )}
         isOpen={isOpen}
-        dropdownItems={dropdownItems}
-      />
+        onOpenChange={isOpen => this.setState({ isOpen })}
+      >
+        <DropdownList>{dropdownItems}</DropdownList>
+      </Dropdown>
     );
   }
 }

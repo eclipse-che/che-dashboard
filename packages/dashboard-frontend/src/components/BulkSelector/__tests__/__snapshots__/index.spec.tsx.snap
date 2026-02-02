@@ -1,47 +1,39 @@
 // Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
 exports[`BulkSelector kebab toggle snapshot with elements 1`] = `
-<div
-  className="pf-c-select selector"
-  data-ouia-component-id="OUIA-Generated-Select-checkbox-1"
-  data-ouia-component-type="PF4/Select"
+<button
+  aria-expanded={false}
+  className="pf-v6-c-menu-toggle"
+  data-ouia-component-id="OUIA-Generated-MenuToggle-1"
+  data-ouia-component-type="PF6/MenuToggle"
   data-ouia-safe={true}
+  disabled={false}
+  onClick={[Function]}
+  style={
+    {
+      "width": "200px",
+    }
+  }
+  type="button"
 >
-  <button
-    aria-expanded={false}
-    aria-haspopup={null}
-    aria-label="Options menu"
-    aria-labelledby=" pf-select-toggle-id-0"
-    className="pf-c-select__toggle"
-    disabled={false}
-    id="pf-select-toggle-id-0"
-    onClick={[Function]}
-    onKeyDown={[Function]}
-    type="button"
+  <span
+    className="pf-v6-c-menu-toggle__text"
   >
-    <div
-      className="pf-c-select__toggle-wrapper"
-    >
-      <span
-        className="pf-c-select__toggle-text"
-      >
-        Bulk Selector
-      </span>
-    </div>
+    Bulk Selector
+  </span>
+  <span
+    className="pf-v6-c-menu-toggle__controls"
+  >
     <span
-      className="pf-c-select__toggle-arrow"
+      className="pf-v6-c-menu-toggle__toggle-icon"
     >
       <svg
         aria-hidden={true}
         aria-labelledby={null}
+        className="pf-v6-svg"
         fill="currentColor"
         height="1em"
         role="img"
-        style={
-          {
-            "verticalAlign": "-0.125em",
-          }
-        }
         viewBox="0 0 320 512"
         width="1em"
       >
@@ -50,8 +42,8 @@ exports[`BulkSelector kebab toggle snapshot with elements 1`] = `
         />
       </svg>
     </span>
-  </button>
-</div>
+  </span>
+</button>
 `;
 
 exports[`BulkSelector kebab toggle snapshot with empty list 1`] = `null`;

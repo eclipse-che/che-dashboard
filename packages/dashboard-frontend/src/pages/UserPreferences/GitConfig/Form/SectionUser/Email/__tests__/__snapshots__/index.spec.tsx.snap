@@ -2,65 +2,66 @@
 
 exports[`GitConfigUserEmail snapshot 1`] = `
 <div
-  className="pf-c-form__group"
+  className="pf-v6-c-form__group"
 >
   <div
-    className="pf-c-form__group-label"
+    className="pf-v6-c-form__group-label"
   >
     <label
-      className="pf-c-form__label"
+      className="pf-v6-c-form__label"
       htmlFor="gitconfig-user-email"
     >
       <span
-        className="pf-c-form__label-text"
+        className="pf-v6-c-form__label-text"
       >
         email
       </span>
       <span
         aria-hidden="true"
-        className="pf-c-form__label-required"
+        className="pf-v6-c-form__label-required"
       >
          
         *
       </span>
     </label>
-     
+      
   </div>
   <div
-    className="pf-c-form__group-control"
+    className="pf-v6-c-form__group-control"
   >
     <div>
-      <input
-        aria-invalid={false}
-        aria-label={null}
-        className="pf-c-form-control"
-        data-ouia-component-id="OUIA-Generated-TextInputBase-2"
-        data-ouia-component-type="PF4/TextInput"
-        data-ouia-safe={true}
-        disabled={true}
-        id="gitconfig-user-email"
-        onBlur={[Function]}
-        onChange={[Function]}
-        onFocus={[Function]}
-        required={false}
-        type="text"
-        value="user@che"
-      />
+      <span
+        className="pf-v6-c-form-control pf-m-disabled"
+      >
+        <input
+          aria-invalid={false}
+          aria-label={null}
+          data-ouia-component-id="OUIA-Generated-TextInputBase-2"
+          data-ouia-component-type="PF6/TextInput"
+          data-ouia-safe={true}
+          disabled={true}
+          id="gitconfig-user-email"
+          onBlur={[Function]}
+          onChange={[Function]}
+          onFocus={[Function]}
+          required={false}
+          type="text"
+          value="user@che"
+        />
+      </span>
       <span
         data-testid="validated"
       >
         default
       </span>
       <button
-        aria-disabled={false}
         aria-label={null}
-        className="pf-c-button pf-m-primary"
+        className="pf-v6-c-button pf-m-primary"
         data-ouia-component-id="OUIA-Generated-Button-primary-2"
-        data-ouia-component-type="PF4/Button"
+        data-ouia-component-type="PF6/Button"
         data-ouia-safe={true}
         data-testid="button-remove"
         disabled={false}
-        role={null}
         type="button"
       />
     </div>
@@ -70,65 +71,66 @@ exports[`GitConfigUserEmail snapshot 1`] = `
 
 exports[`GitConfigUserEmail snapshot, not loading 1`] = `
 <div
-  className="pf-c-form__group"
+  className="pf-v6-c-form__group"
 >
   <div
-    className="pf-c-form__group-label"
+    className="pf-v6-c-form__group-label"
   >
     <label
-      className="pf-c-form__label"
+      className="pf-v6-c-form__label"
       htmlFor="gitconfig-user-email"
     >
       <span
-        className="pf-c-form__label-text"
+        className="pf-v6-c-form__label-text"
       >
         email
       </span>
       <span
         aria-hidden="true"
-        className="pf-c-form__label-required"
+        className="pf-v6-c-form__label-required"
       >
          
         *
       </span>
     </label>
-     
+      
   </div>
   <div
-    className="pf-c-form__group-control"
+    className="pf-v6-c-form__group-control"
   >
     <div>
-      <input
-        aria-invalid={false}
-        aria-label={null}
-        className="pf-c-form-control"
-        data-ouia-component-id="OUIA-Generated-TextInputBase-1"
-        data-ouia-component-type="PF4/TextInput"
-        data-ouia-safe={true}
-        disabled={false}
-        id="gitconfig-user-email"
-        onBlur={[Function]}
-        onChange={[Function]}
-        onFocus={[Function]}
-        required={false}
-        type="text"
-        value="user@che"
-      />
+      <span
+        className="pf-v6-c-form-control"
+      >
+        <input
+          aria-invalid={false}
+          aria-label={null}
+          data-ouia-component-id="OUIA-Generated-TextInputBase-1"
+          data-ouia-component-type="PF6/TextInput"
+          data-ouia-safe={true}
+          disabled={false}
+          id="gitconfig-user-email"
+          onBlur={[Function]}
+          onChange={[Function]}
+          onFocus={[Function]}
+          required={false}
+          type="text"
+          value="user@che"
+        />
+      </span>
       <span
         data-testid="validated"
       >
         default
       </span>
       <button
-        aria-disabled={false}
         aria-label={null}
-        className="pf-c-button pf-m-primary"
+        className="pf-v6-c-button pf-m-primary"
         data-ouia-component-id="OUIA-Generated-Button-primary-1"
-        data-ouia-component-type="PF4/Button"
+        data-ouia-component-type="PF6/Button"
         data-ouia-safe={true}
         data-testid="button-remove"
         disabled={false}
-        role={null}
         type="button"
       />
     </div>

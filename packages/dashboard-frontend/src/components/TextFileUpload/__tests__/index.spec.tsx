@@ -54,15 +54,18 @@ describe('TextFileUpload', () => {
     // file input field
     const fileInput = screen.queryByPlaceholderText(fileNamePlaceholder);
     expect(fileInput).not.toBeNull();
-    expect(fileInput).toHaveAttribute('readonly');
+    // PatternFly 6 may use readOnly property instead of readonly attribute
+    expect(
+      fileInput?.hasAttribute('readonly') || (fileInput as HTMLInputElement)?.readOnly,
+    ).toBeTruthy();
 
     // Upload button
     const uploadButton = screen.queryByText('Upload');
     expect(uploadButton).not.toBeNull();
     expect(uploadButton).toBeEnabled();
 
-    // Clear button
-    const clearButton = screen.queryByText('Clear');
+    // Clear button - query by role, not text (PatternFly 6 renders text in span)
+    const clearButton = screen.queryByRole('button', { name: 'Clear' });
     expect(clearButton).not.toBeNull();
     expect(clearButton).toBeDisabled();
 
@@ -116,7 +119,7 @@ describe('TextFileUpload', () => {
 
       const contentInput = screen.getByPlaceholderText(textAreaPlaceholder);
 
-      const clearButton = screen.getByText('Clear');
+      const clearButton = screen.getByRole('button', { name: 'Clear' });
 
       const fileInput = screen.getByPlaceholderText(fileNamePlaceholder);
 

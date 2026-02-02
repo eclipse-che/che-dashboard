@@ -10,7 +10,7 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import { Switch, Text } from '@patternfly/react-core';
+import { Content, Switch } from '@patternfly/react-core';
 import { OutlinedQuestionCircleIcon } from '@patternfly/react-icons';
 import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
@@ -65,11 +65,11 @@ class TemporaryStorageSwitch extends React.PureComponent<Props, State> {
                 <>
                   Temporary Storage allows for faster I/O but may have limited storage and is not
                   persistent.
-                  <Text>
+                  <Content component="p">
                     <a rel="noreferrer" target="_blank" href={branding.docs.storageTypes}>
                       Open documentation page
                     </a>
-                  </Text>
+                  </Content>
                 </>
               }
             >
@@ -78,7 +78,7 @@ class TemporaryStorageSwitch extends React.PureComponent<Props, State> {
           </div>
         }
         isChecked={isChecked}
-        onChange={isChecked => {
+        onChange={(_event, isChecked) => {
           this.handleChange(isChecked);
           Navigation.pageState[TEMPORARY_STORAGE_SWITCH_ID] = { isChecked };
         }}

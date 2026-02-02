@@ -39,7 +39,7 @@ describe('Create New If Exist Switch', () => {
 
   it('should be initially switched on', () => {
     renderComponent();
-    const switchInput = screen.getByRole('checkbox') as HTMLInputElement;
+    const switchInput = screen.getByRole('switch') as HTMLInputElement;
     expect(switchInput.checked).toBeTruthy();
     expect(mockOnChange).toHaveBeenCalledTimes(1);
     expect(Navigation.pageState[CREATE_NEW_IF_EXIST_SWITCH_ID]).toEqual({

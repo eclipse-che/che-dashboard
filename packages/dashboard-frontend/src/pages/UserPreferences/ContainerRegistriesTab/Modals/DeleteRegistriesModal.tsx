@@ -14,10 +14,12 @@ import {
   Button,
   ButtonVariant,
   Checkbox,
+  Content,
   Modal,
+  ModalBody,
+  ModalFooter,
+  ModalHeader,
   ModalVariant,
-  Text,
-  TextContent,
 } from '@patternfly/react-core';
 import React from 'react';
 
@@ -49,11 +51,11 @@ export default class DeleteRegistriesModal extends React.PureComponent<Props, St
     this.setState({ warningInfoCheck: false });
   }
 
-  private getDeleteModalContent(): React.ReactNode {
-    const { registry, selectedItems } = this.props;
+  public render(): React.ReactElement {
+    const { isOpen, onCancel, onDelete, registry, selectedItems } = this.props;
+    const { warningInfoCheck } = this.state;
 
     let text = 'Would you like to delete ';
-
     if (registry) {
       text += `registry '${registry.url}'`;
     } else {
@@ -65,56 +67,48 @@ export default class DeleteRegistriesModal extends React.PureComponent<Props, St
     }
     text += '?';
 
-    return (
-      <TextContent>
-        <Text>{text}</Text>
-        <Checkbox
-          style={{ margin: '0 0 0 0.4rem' }}
-          data-testid="warning-info-checkbox"
-          isChecked={this.state.warningInfoCheck}
-          onChange={() => {
-            this.setState({ warningInfoCheck: !this.state.warningInfoCheck });
-          }}
-          id="delete-warning-info-check"
-          label="I understand, this operation cannot be reverted."
-        />
-      </TextContent>
-    );
-  }
-
-  public render(): React.ReactElement {
-    const { isOpen, onCancel, onDelete, registry } = this.props;
-    const { warningInfoCheck } = this.state;
+    const title = `Delete Container Registr${registry !== undefined ? 'y' : 'ies'}`;
 
     return (
       <Modal
-        title={`Delete Container Registr${registry !== undefined ? 'y' : 'ies'}`}
-        titleIconVariant="warning"
         variant={ModalVariant.small}
         isOpen={isOpen}
         onClose={onCancel}
         aria-label="warning-info"
-        footer={
-          <React.Fragment>
-            <Button
-              variant={ButtonVariant.danger}
-              isDisabled={!warningInfoCheck}
-              data-testid="delete-button"
-              onClick={() => onDelete(registry)}
-            >
-              Delete
-            </Button>
-            <Button
-              variant={ButtonVariant.link}
-              data-testid="cancel-button"
-              onClick={() => onCancel()}
-            >
-              Cancel
-            </Button>
-          </React.Fragment>
-        }
       >
-        {this.getDeleteModalContent()}
+        <ModalHeader title={title} titleIconVariant="warning" />
+        <ModalBody>
+          <Content>
+            <Content component="p">{text}</Content>
+            <Checkbox
+              style={{ margin: '0 0 0 0.4rem' }}
+              data-testid="warning-info-checkbox"
+              isChecked={warningInfoCheck}
+              onChange={(_event, checked) => {
+                this.setState({ warningInfoCheck: checked });
+              }}
+              id="delete-warning-info-check"
+              label="I understand, this operation cannot be reverted."
+            />
+          </Content>
+        </ModalBody>
+        <ModalFooter>
+          <Button
+            variant={ButtonVariant.danger}
+            isDisabled={!warningInfoCheck}
+            data-testid="delete-button"
+            onClick={() => onDelete(registry)}
+          >
+            Delete
+          </Button>
+          <Button
+            variant={ButtonVariant.link}
+            data-testid="cancel-button"
+            onClick={() => onCancel()}
+          >
+            Cancel
+          </Button>
+        </ModalFooter>
       </Modal>
     );
   }

@@ -15,11 +15,13 @@ import {
   Button,
   ButtonVariant,
   Checkbox,
+  Content,
   Modal,
+  ModalBody,
+  ModalFooter,
+  ModalHeader,
   ModalVariant,
   pluralize,
-  Text,
-  TextContent,
 } from '@patternfly/react-core';
 import React from 'react';
 
@@ -52,63 +54,44 @@ export class PersonalAccessTokenDeleteModal extends React.PureComponent<Props, S
     this.props.onCloseModal();
   }
 
-  private buildModalFooter(): React.ReactElement {
-    const { isChecked } = this.state;
-
-    return (
-      <React.Fragment>
-        <Button
-          variant={ButtonVariant.danger}
-          isDisabled={isChecked === false}
-          onClick={() => this.handleDelete()}
-        >
-          Delete
-        </Button>
-        <Button variant={ButtonVariant.link} onClick={() => this.handleCloseModal()}>
-          Cancel
-        </Button>
-      </React.Fragment>
-    );
-  }
-
-  private buildModalContent(): React.ReactElement {
-    const { deleteItems } = this.props;
-    const { isChecked } = this.state;
-
-    const tokens = pluralize(deleteItems.length, 'token');
-
-    return (
-      <TextContent>
-        <Text>Are you sure you want to delete the selected {tokens}?</Text>
-        <Checkbox
-          id="delete-tokens-warning-checkbox"
-          isChecked={isChecked}
-          label="I understand, this operation cannot be reverted."
-          onChange={isChecked => this.setState({ isChecked })}
-        />
-      </TextContent>
-    );
-  }
-
   public render(): React.ReactElement {
     const { isOpen, deleteItems } = this.props;
+    const { isChecked } = this.state;
 
     const tokens = pluralize(deleteItems.length, 'token');
     const modalTitle = `Delete Personal Access ${tokens}`;
-    const modalFooter = this.buildModalFooter();
-    const modalContent = this.buildModalContent();
 
     return (
       <Modal
         aria-label={modalTitle}
-        title={modalTitle}
-        titleIconVariant="warning"
         variant={ModalVariant.small}
         isOpen={isOpen}
         onClose={() => this.handleCloseModal()}
-        footer={modalFooter}
       >
-        {modalContent}
+        <ModalHeader title={modalTitle} titleIconVariant="warning" />
+        <ModalBody>
+          <Content>
+            <Content component="p">Are you sure you want to delete the selected {tokens}?</Content>
+            <Checkbox
+              id="delete-tokens-warning-checkbox"
+              isChecked={isChecked}
+              label="I understand, this operation cannot be reverted."
+              onChange={(_event, checked) => this.setState({ isChecked: checked })}
+            />
+          </Content>
+        </ModalBody>
+        <ModalFooter>
+          <Button
+            variant={ButtonVariant.danger}
+            isDisabled={isChecked === false}
+            onClick={() => this.handleDelete()}
+          >
+            Delete
+          </Button>
+          <Button variant={ButtonVariant.link} onClick={() => this.handleCloseModal()}>
+            Cancel
+          </Button>
+        </ModalFooter>
       </Modal>
     );
   }

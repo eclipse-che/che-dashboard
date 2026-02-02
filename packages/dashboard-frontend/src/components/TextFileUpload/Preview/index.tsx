@@ -31,7 +31,7 @@ export class TextFileUploadPreview extends React.PureComponent<Props> {
         style={{ marginTop: 'var(--pf-global--spacer--sm)' }}
         data-testid="text-file-upload-preview"
       >
-        <FileUploadIcon size="md" />
+        <FileUploadIcon />
         Uploaded <Pluralize singular="byte" count={file.size} />
       </div>
     );

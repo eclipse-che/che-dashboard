@@ -2,47 +2,50 @@
 
 exports[`TokenData snapshot w/o token data 1`] = `
 <form
-  className="pf-c-form"
+  className="pf-v6-c-form"
   noValidate={true}
 >
   <div
-    className="pf-c-form__group"
+    className="pf-v6-c-form__group"
   >
     <div
-      className="pf-c-form__group-label"
+      className="pf-v6-c-form__group-label"
     >
       <label
-        className="pf-c-form__label"
+        className="pf-v6-c-form__label"
         htmlFor="token-data-label"
       >
         <span
-          className="pf-c-form__label-text"
+          className="pf-v6-c-form__label-text"
         >
           Token
         </span>
       </label>
-       
+        
     </div>
     <div
-      className="pf-c-form__group-control"
+      className="pf-v6-c-form__group-control"
     >
-      <input
-        aria-describedby="token-data-label"
-        aria-invalid={false}
-        aria-label="Token"
-        className="pf-c-form-control"
-        data-ouia-component-id="OUIA-Generated-TextInputBase-1"
-        data-ouia-component-type="PF4/TextInput"
-        data-ouia-safe={true}
-        disabled={false}
-        onBlur={[Function]}
-        onChange={[Function]}
-        onFocus={[Function]}
-        placeholder="Enter a Token"
-        required={false}
-        type="password"
-        value=""
-      />
+      <span
+        className="pf-v6-c-form-control"
+      >
+        <input
+          aria-describedby="token-data-label"
+          aria-invalid={false}
+          aria-label="Token"
+          data-ouia-component-id="OUIA-Generated-TextInputBase-1"
+          data-ouia-component-type="PF6/TextInput"
+          data-ouia-safe={true}
+          disabled={false}
+          onBlur={[Function]}
+          onChange={[Function]}
+          onFocus={[Function]}
+          placeholder="Enter a Token"
+          required={false}
+          type="password"
+          value=""
+        />
+      </span>
     </div>
   </div>
 </form>
@@ -50,47 +53,50 @@ exports[`TokenData snapshot w/o token data 1`] = `
 
 exports[`TokenData snapshot with token data 1`] = `
 <form
-  className="pf-c-form"
+  className="pf-v6-c-form"
   noValidate={true}
 >
   <div
-    className="pf-c-form__group"
+    className="pf-v6-c-form__group"
   >
     <div
-      className="pf-c-form__group-label"
+      className="pf-v6-c-form__group-label"
     >
       <label
-        className="pf-c-form__label"
+        className="pf-v6-c-form__label"
         htmlFor="token-data-label"
       >
         <span
-          className="pf-c-form__label-text"
+          className="pf-v6-c-form__label-text"
         >
           Token
         </span>
       </label>
-       
+        
     </div>
     <div
-      className="pf-c-form__group-control"
+      className="pf-v6-c-form__group-control"
     >
-      <input
-        aria-describedby="token-data-label"
-        aria-invalid={false}
-        aria-label="Token"
-        className="pf-c-form-control"
-        data-ouia-component-id="OUIA-Generated-TextInputBase-2"
-        data-ouia-component-type="PF4/TextInput"
-        data-ouia-safe={true}
-        disabled={false}
-        onBlur={[Function]}
-        onChange={[Function]}
-        onFocus={[Function]}
-        placeholder="Replace Token"
-        required={false}
-        type="password"
-        value=""
-      />
+      <span
+        className="pf-v6-c-form-control"
+      >
+        <input
+          aria-describedby="token-data-label"
+          aria-invalid={false}
+          aria-label="Token"
+          data-ouia-component-id="OUIA-Generated-TextInputBase-2"
+          data-ouia-component-type="PF6/TextInput"
+          data-ouia-safe={true}
+          disabled={false}
+          onBlur={[Function]}
+          onChange={[Function]}
+          onFocus={[Function]}
+          placeholder="Replace Token"
+          required={false}
+          type="password"
+          value=""
+        />
+      </span>
     </div>
   </div>
 </form>

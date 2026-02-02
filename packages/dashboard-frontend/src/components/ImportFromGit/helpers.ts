@@ -21,7 +21,7 @@ import {
 } from '@/components/WorkspaceProgress/CreatingSteps/Apply/Devfile/getGitRemotes';
 import { buildFactoryLoaderPath } from '@/preload/main';
 import { FactoryLocationAdapter } from '@/services/factory-location-adapter';
-import { REVISION_ATTR } from '@/services/helpers/factoryFlow/buildFactoryParams';
+import { REVISION } from '@/services/helpers/factoryFlow/buildFactoryParams';
 
 const BR_NAME_REGEX = /^[0-9A-Za-z-./_]{1,256}$/;
 
@@ -68,42 +68,6 @@ export function isSupportedGitService(location: string): boolean {
   } catch (error) {
     return false;
   }
-}
-
-export function getRepositoryUrlFromLocation(location: string): string {
-  let repo: string = location;
-  let indexOf: number = 0;
-  let service: string = '';
-  try {
-    service = getSupportedGitService(location);
-  } catch (error) {
-    return repo;
-  }
-  switch (service) {
-    case 'github':
-      indexOf = location.indexOf('/tree');
-      if (indexOf > 0) {
-        repo = location.substring(0, indexOf);
-      }
-      break;
-    case 'gitlab':
-      indexOf = location.indexOf('/-/tree');
-      if (indexOf > 0) {
-        repo = location.substring(0, indexOf);
-      }
-      break;
-    case 'bitbucket-server':
-      repo = location.replace('users/', 'scm/~').replace('repos/', '');
-      break;
-    case 'azure-devops':
-      indexOf = location.indexOf('?');
-      if (indexOf > 0) {
-        repo = location.substring(0, indexOf);
-      }
-      break;
-  }
-
-  return repo;
 }
 
 export function getBranchFromLocation(location: string): string | undefined {
@@ -317,7 +281,7 @@ export function getGitRepoOptionsFromLocation(location: string): {
       console.log(`Unable to get branch from '${location}'.${common.helpers.errors.getMessage(e)}`);
     }
   } else if (!FactoryLocationAdapter.isHttpLocation(location)) {
-    gitBranch = searchParams.get(REVISION_ATTR) || undefined;
+    gitBranch = searchParams.get(REVISION) || undefined;
   }
   return { location, gitBranch, remotes, devfilePath, hasSupportedGitService };
 }
@@ -440,7 +404,7 @@ export function setGitRepoOptionsToLocation(
     state.gitBranch = newOptions.gitBranch;
   }
   if (!FactoryLocationAdapter.isHttpLocation(location) && newOptions.gitBranch) {
-    searchParams.set(REVISION_ATTR, newOptions.gitBranch);
+    searchParams.set(REVISION, newOptions.gitBranch);
   }
   // update the location with the new gitBranch value
   let searchParamsStr = decodeURIComponent(searchParamsToString(searchParams));

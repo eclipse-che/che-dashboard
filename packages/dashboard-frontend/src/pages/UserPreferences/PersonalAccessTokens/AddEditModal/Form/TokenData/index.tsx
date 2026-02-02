@@ -13,8 +13,6 @@
 import { FormGroup, TextInput, TextInputTypes, ValidatedOptions } from '@patternfly/react-core';
 import React from 'react';
 
-const REQUIRED_ERROR = 'This field is required.';
-
 export type Props = {
   isEdit: boolean;
   tokenData: string | undefined;
@@ -58,23 +56,14 @@ export class TokenData extends React.PureComponent<Props, State> {
   public render(): React.ReactElement {
     const { isEdit } = this.props;
     const { tokenData = '' } = this.state;
-    const errorMessage = REQUIRED_ERROR;
     const placeholder = isEdit ? 'Replace Token' : 'Enter a Token';
 
-    // ignore the validation if it's an edit
-    const validated = isEdit ? ValidatedOptions.success : this.state.validated;
-
     return (
-      <FormGroup
-        fieldId="token-data-label"
-        helperTextInvalid={errorMessage}
-        label="Token"
-        validated={validated}
-      >
+      <FormGroup fieldId="token-data-label" label="Token">
         <TextInput
           aria-describedby="token-data-label"
           aria-label="Token"
-          onChange={tokenData => this.onChange(tokenData)}
+          onChange={(_event, tokenData) => this.onChange(tokenData)}
           placeholder={placeholder}
           type={TextInputTypes.password}
           value={tokenData}

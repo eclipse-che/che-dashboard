@@ -2,36 +2,36 @@
 
 exports[`SshPublicKey snapshot 1`] = `
 <form
-  className="pf-c-form"
+  className="pf-v6-c-form"
   noValidate={true}
 >
   <div
-    className="pf-c-form__group"
+    className="pf-v6-c-form__group"
   >
     <div
-      className="pf-c-form__group-label"
+      className="pf-v6-c-form__group-label"
     >
       <label
-        className="pf-c-form__label"
+        className="pf-v6-c-form__label"
         htmlFor="ssh-public-key"
       >
         <span
-          className="pf-c-form__label-text"
+          className="pf-v6-c-form__label-text"
         >
           Public Key
         </span>
         <span
           aria-hidden="true"
-          className="pf-c-form__label-required"
+          className="pf-v6-c-form__label-required"
         >
            
           *
         </span>
       </label>
-       
+        
     </div>
     <div
-      className="pf-c-form__group-control"
+      className="pf-v6-c-form__group-control"
     >
       <div>
         <span

@@ -73,7 +73,7 @@ function buildElement(store: Store): React.ReactElement {
   return (
     <Provider store={store}>
       <MemoryRouter>
-        <Nav onSelect={() => jest.fn()} theme="light">
+        <Nav onSelect={() => jest.fn()}>
           <NavigationMainList activePath="" />
         </Nav>
       </MemoryRouter>

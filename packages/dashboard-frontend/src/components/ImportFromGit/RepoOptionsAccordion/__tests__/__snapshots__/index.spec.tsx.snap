@@ -2,165 +2,164 @@
 
 exports[`RepoOptionsAccordion snapshot with default values 1`] = `
 <div
-  aria-label=""
-  className="pf-c-accordion"
+  className="pf-v6-c-accordion"
 >
-  <h3>
-    <button
-      aria-expanded={false}
-      className="pf-c-accordion__toggle"
-      data-testid="accordion-item-git-repo-options"
-      id="accordion-item-git-repo-options"
-      onClick={[Function]}
-      type="button"
-    >
-      <span
-        className="pf-c-accordion__toggle-text"
-      >
-        Git Repo Options
-      </span>
-      <span
-        className="pf-c-accordion__toggle-icon"
-      >
-        <svg
-          aria-hidden={true}
-          aria-labelledby={null}
-          fill="currentColor"
-          height="1em"
-          role="img"
-          style={
-            {
-              "verticalAlign": "-0.125em",
-            }
-          }
-          viewBox="0 0 256 512"
-          width="1em"
-        >
-          <path
-            d="M224.3 273l-136 136c-9.4 9.4-24.6 9.4-33.9 0l-22.6-22.6c-9.4-9.4-9.4-24.6 0-33.9l96.4-96.4-96.4-96.4c-9.4-9.4-9.4-24.6 0-33.9L54.3 103c9.4-9.4 24.6-9.4 33.9 0l136 136c9.5 9.4 9.5 24.6.1 34z"
-          />
-        </svg>
-      </span>
-    </button>
-  </h3>
   <div
-    className="pf-c-accordion__expanded-content"
-    data-testid="options-content"
-    hidden={true}
-    id=""
+    className="pf-v6-c-accordion__item"
   >
+    <h3>
+      <button
+        aria-expanded={false}
+        className="pf-v6-c-accordion__toggle"
+        data-testid="accordion-item-git-repo-options"
+        id="accordion-item-git-repo-options"
+        onClick={[Function]}
+        type="button"
+      >
+        <span
+          className="pf-v6-c-accordion__toggle-text"
+        >
+          Git Repo Options
+        </span>
+        <span
+          className="pf-v6-c-accordion__toggle-icon"
+        >
+          <svg
+            aria-hidden={true}
+            aria-labelledby={null}
+            className="pf-v6-svg"
+            fill="currentColor"
+            height="1em"
+            role="img"
+            viewBox="0 0 256 512"
+            width="1em"
+          >
+            <path
+              d="M224.3 273l-136 136c-9.4 9.4-24.6 9.4-33.9 0l-22.6-22.6c-9.4-9.4-9.4-24.6 0-33.9l96.4-96.4-96.4-96.4c-9.4-9.4-9.4-24.6 0-33.9L54.3 103c9.4-9.4 24.6-9.4 33.9 0l136 136c9.5 9.4 9.5 24.6.1 34z"
+            />
+          </svg>
+        </span>
+      </button>
+    </h3>
     <div
-      className="pf-c-accordion__expanded-content-body"
+      className="pf-v6-c-accordion__expandable-content"
+      data-testid="options-content"
+      hidden={true}
+      id=""
     >
       <div
-        className="pf-c-panel"
+        className="pf-v6-c-accordion__expandable-content-body"
       >
         <div
-          className="pf-c-panel__main"
-          style={
-            {
-              "--pf-c-panel__main--MaxHeight": undefined,
-            }
-          }
+          className="pf-v6-c-panel"
         >
           <div
-            className="pf-c-panel__main-body"
+            className="pf-v6-c-panel__main"
+            style={
+              {
+                "--pf-v6-c-panel__main--MaxHeight": undefined,
+              }
+            }
           >
-            <div>
+            <div
+              className="pf-v6-c-panel__main-body"
+            >
               <div>
-                Git Repo Options
+                <div>
+                  Git Repo Options
+                </div>
+                <div
+                  data-testid="git-repo-options"
+                >
+                  undefined, undefined, undefined, false
+                </div>
+                <button
+                  onClick={[Function]}
+                >
+                  Git Repo Options Change
+                </button>
               </div>
-              <div
-                data-testid="git-repo-options"
-              >
-                undefined, undefined, undefined, false
-              </div>
-              <button
-                onClick={[Function]}
-              >
-                Git Repo Options Change
-              </button>
             </div>
           </div>
         </div>
       </div>
     </div>
   </div>
-  <h3>
-    <button
-      aria-expanded={false}
-      className="pf-c-accordion__toggle"
-      data-testid="accordion-item-advanced-options"
-      id="accordion-item-advanced-options"
-      onClick={[Function]}
-      type="button"
-    >
-      <span
-        className="pf-c-accordion__toggle-text"
-      >
-        Advanced Options
-      </span>
-      <span
-        className="pf-c-accordion__toggle-icon"
-      >
-        <svg
-          aria-hidden={true}
-          aria-labelledby={null}
-          fill="currentColor"
-          height="1em"
-          role="img"
-          style={
-            {
-              "verticalAlign": "-0.125em",
-            }
-          }
-          viewBox="0 0 256 512"
-          width="1em"
-        >
-          <path
-            d="M224.3 273l-136 136c-9.4 9.4-24.6 9.4-33.9 0l-22.6-22.6c-9.4-9.4-9.4-24.6 0-33.9l96.4-96.4-96.4-96.4c-9.4-9.4-9.4-24.6 0-33.9L54.3 103c9.4-9.4 24.6-9.4 33.9 0l136 136c9.5 9.4 9.5 24.6.1 34z"
-          />
-        </svg>
-      </span>
-    </button>
-  </h3>
   <div
-    className="pf-c-accordion__expanded-content"
-    data-testid="options-content"
-    hidden={true}
-    id=""
+    className="pf-v6-c-accordion__item"
   >
+    <h3>
+      <button
+        aria-expanded={false}
+        className="pf-v6-c-accordion__toggle"
+        data-testid="accordion-item-advanced-options"
+        id="accordion-item-advanced-options"
+        onClick={[Function]}
+        type="button"
+      >
+        <span
+          className="pf-v6-c-accordion__toggle-text"
+        >
+          Advanced Options
+        </span>
+        <span
+          className="pf-v6-c-accordion__toggle-icon"
+        >
+          <svg
+            aria-hidden={true}
+            aria-labelledby={null}
+            className="pf-v6-svg"
+            fill="currentColor"
+            height="1em"
+            role="img"
+            viewBox="0 0 256 512"
+            width="1em"
+          >
+            <path
+              d="M224.3 273l-136 136c-9.4 9.4-24.6 9.4-33.9 0l-22.6-22.6c-9.4-9.4-9.4-24.6 0-33.9l96.4-96.4-96.4-96.4c-9.4-9.4-9.4-24.6 0-33.9L54.3 103c9.4-9.4 24.6-9.4 33.9 0l136 136c9.5 9.4 9.5 24.6.1 34z"
+            />
+          </svg>
+        </span>
+      </button>
+    </h3>
     <div
-      className="pf-c-accordion__expanded-content-body"
+      className="pf-v6-c-accordion__expandable-content"
+      data-testid="options-content"
+      hidden={true}
+      id=""
     >
       <div
-        className="pf-c-panel"
+        className="pf-v6-c-accordion__expandable-content-body"
       >
         <div
-          className="pf-c-panel__main"
-          style={
-            {
-              "--pf-c-panel__main--MaxHeight": undefined,
-            }
-          }
+          className="pf-v6-c-panel"
         >
           <div
-            className="pf-c-panel__main-body"
+            className="pf-v6-c-panel__main"
+            style={
+              {
+                "--pf-v6-c-panel__main--MaxHeight": undefined,
+              }
+            }
           >
-            <div>
+            <div
+              className="pf-v6-c-panel__main-body"
+            >
               <div>
-                Advanced Options
+                <div>
+                  Advanced Options
+                </div>
+                <div
+                  data-testid="advanced-options"
+                >
+                  undefined, undefined, undefined, undefined, undefined
+                </div>
+                <button
+                  onClick={[Function]}
+                >
+                  Advanced Options Change
+                </button>
               </div>
-              <div
-                data-testid="advanced-options"
-              >
-                undefined, undefined, undefined, undefined, undefined
-              </div>
-              <button
-                onClick={[Function]}
-              >
-                Advanced Options Change
-              </button>
             </div>
           </div>
         </div>

@@ -10,15 +10,7 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import {
-  Badge,
-  Brand,
-  Card,
-  CardActions,
-  CardBody,
-  CardHeader,
-  CardHeaderMain,
-} from '@patternfly/react-core';
+import { Badge, Brand, Card, CardBody, CardHeader, CardTitle } from '@patternfly/react-core';
 import { CubesIcon } from '@patternfly/react-icons';
 import React from 'react';
 
@@ -34,6 +26,10 @@ export type Props = {
 };
 
 export class SampleCard extends React.PureComponent<Props> {
+  private get cardId(): string {
+    return `sample-card-${this.props.metadata.displayName.replace(/\s+/g, '-').toLowerCase()}`;
+  }
+
   private getTags(): JSX.Element[] {
     const {
       metadata: { tags },
@@ -57,9 +53,9 @@ export class SampleCard extends React.PureComponent<Props> {
       .map((item: string, index: number) => createTag(item, index));
   }
 
-  private handleCardClick(): void {
+  private handleSelectableAction = (): void => {
     this.props.onClick();
-  }
+  };
 
   private buildIcon(metadata: che.DevfileMetaData): React.ReactElement {
     const props = {
@@ -83,19 +79,27 @@ export class SampleCard extends React.PureComponent<Props> {
 
     return (
       <Card
-        isFlat
+        id={this.cardId}
         isCompact
         isSelectable
-        key={metadata.links.v2}
-        onClick={() => this.handleCardClick()}
         className={'sample-card'}
         data-testid="sample-card"
       >
-        <CardHeader>
-          <CardHeaderMain>{devfileIcon}</CardHeaderMain>
-          <CardActions>{tags}</CardActions>
+        <CardHeader
+          selectableActions={{
+            selectableActionId: `${this.cardId}-input`,
+            selectableActionAriaLabelledby: this.cardId,
+            name: 'sample-card-selector',
+            variant: 'single',
+            onChange: this.handleSelectableAction,
+            hasNoOffset: true,
+            isHidden: true,
+          }}
+          actions={{ actions: <>{tags}</> }}
+        >
+          {devfileIcon}
+          <CardTitle>{metadata.displayName}</CardTitle>
         </CardHeader>
-        <CardHeader>{metadata.displayName}</CardHeader>
         <CardBody>{metadata.description}</CardBody>
       </Card>
     );

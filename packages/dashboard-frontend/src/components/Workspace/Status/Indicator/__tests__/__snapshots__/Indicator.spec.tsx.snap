@@ -23,22 +23,18 @@ exports[`Workspace indicator component Che Workspaces should render ERROR status
       data-testid="workspace-status-indicator"
     >
       <span
-        className="pf-c-icon pf-m-inline"
+        className="pf-v6-c-icon pf-m-inline"
       >
         <span
-          className="pf-c-icon__content pf-m-warning"
+          className="pf-v6-c-icon__content pf-m-warning"
         >
           <svg
             aria-hidden={true}
             aria-labelledby={null}
+            className="pf-v6-svg"
             fill="currentColor"
             height="1em"
             role="img"
-            style={
-              {
-                "verticalAlign": "-0.125em",
-              }
-            }
             viewBox="0 0 576 512"
             width="1em"
           >
@@ -76,22 +72,18 @@ exports[`Workspace indicator component Che Workspaces should render RUNNING stat
       data-testid="workspace-status-indicator"
     >
       <span
-        className="pf-c-icon pf-m-inline"
+        className="pf-v6-c-icon pf-m-inline"
       >
         <span
-          className="pf-c-icon__content pf-m-success"
+          className="pf-v6-c-icon__content pf-m-success"
         >
           <svg
             aria-hidden={true}
             aria-labelledby={null}
+            className="pf-v6-svg"
             fill="currentColor"
             height="1em"
             role="img"
-            style={
-              {
-                "verticalAlign": "-0.125em",
-              }
-            }
             viewBox="0 0 1024 1024"
             width="1em"
           >
@@ -129,23 +121,18 @@ exports[`Workspace indicator component Che Workspaces should render STARTING sta
       data-testid="workspace-status-indicator"
     >
       <span
-        className="pf-c-icon pf-m-inline"
+        className="pf-v6-c-icon pf-m-inline"
       >
         <span
-          className="pf-c-icon__content pf-m-info"
+          className="pf-v6-c-icon__content pf-m-info"
         >
           <svg
             aria-hidden={true}
             aria-labelledby={null}
-            className="rotate"
+            className="pf-v6-svg rotate"
             fill="currentColor"
             height="1em"
             role="img"
-            style={
-              {
-                "verticalAlign": "-0.125em",
-              }
-            }
             viewBox="0 0 1024 1024"
             width="1em"
           >
@@ -183,14 +170,14 @@ exports[`Workspace indicator component Che Workspaces should render STOPPED stat
       data-testid="workspace-status-indicator"
     >
       <span
-        className="pf-c-icon pf-m-inline"
+        className="pf-v6-c-icon pf-m-inline"
       >
         <span
-          className="pf-c-icon__content pf-m-default"
+          className="pf-v6-c-icon__content"
         >
           <svg
             aria-hidden="true"
-            fill="var(--pf-global--palette--black-500)"
+            fill="var(--pf-t--global--text--color--regular)"
             height="1em"
             role="img"
             style={
@@ -242,23 +229,19 @@ exports[`Workspace indicator component Che Workspaces should render STOPPING sta
       data-testid="workspace-status-indicator"
     >
       <span
-        className="pf-c-icon pf-m-inline"
+        className="pf-v6-c-icon pf-m-inline"
       >
         <span
-          className="pf-c-icon__content pf-m-default"
+          className="pf-v6-c-icon__content"
         >
           <svg
             aria-hidden={true}
             aria-labelledby={null}
-            className="rotate"
-            fill="var(--pf-global--palette--black-500)"
+            className="pf-v6-svg rotate"
+            color="var(--pf-t--global--text--color--regular)"
+            fill="currentColor"
             height="1em"
             role="img"
-            style={
-              {
-                "verticalAlign": "-0.125em",
-              }
-            }
             viewBox="0 0 1024 1024"
             width="1em"
           >
@@ -296,22 +279,18 @@ exports[`Workspace indicator component Deprecated workspaces should render "Depr
       data-testid="workspace-status-indicator"
     >
       <span
-        className="pf-c-icon pf-m-inline"
+        className="pf-v6-c-icon pf-m-inline"
       >
         <span
-          className="pf-c-icon__content pf-m-warning"
+          className="pf-v6-c-icon__content pf-m-warning"
         >
           <svg
             aria-hidden={true}
             aria-labelledby={null}
+            className="pf-v6-svg"
             fill="currentColor"
             height="1em"
             role="img"
-            style={
-              {
-                "verticalAlign": "-0.125em",
-              }
-            }
             viewBox="0 0 576 512"
             width="1em"
           >
@@ -349,22 +328,18 @@ exports[`Workspace indicator component DevWorkspaces should render FAILED status
       data-testid="workspace-status-indicator"
     >
       <span
-        className="pf-c-icon pf-m-inline"
+        className="pf-v6-c-icon pf-m-inline"
       >
         <span
-          className="pf-c-icon__content pf-m-warning"
+          className="pf-v6-c-icon__content pf-m-warning"
         >
           <svg
             aria-hidden={true}
             aria-labelledby={null}
+            className="pf-v6-svg"
             fill="currentColor"
             height="1em"
             role="img"
-            style={
-              {
-                "verticalAlign": "-0.125em",
-              }
-            }
             viewBox="0 0 576 512"
             width="1em"
           >
@@ -402,23 +377,18 @@ exports[`Workspace indicator component DevWorkspaces should render FAILING statu
       data-testid="workspace-status-indicator"
     >
       <span
-        className="pf-c-icon pf-m-inline"
+        className="pf-v6-c-icon pf-m-inline"
       >
         <span
-          className="pf-c-icon__content pf-m-warning"
+          className="pf-v6-c-icon__content pf-m-warning"
         >
           <svg
             aria-hidden={true}
             aria-labelledby={null}
-            className="rotate"
+            className="pf-v6-svg rotate"
             fill="currentColor"
             height="1em"
             role="img"
-            style={
-              {
-                "verticalAlign": "-0.125em",
-              }
-            }
             viewBox="0 0 1024 1024"
             width="1em"
           >
@@ -456,22 +426,18 @@ exports[`Workspace indicator component DevWorkspaces should render RUNNING statu
       data-testid="workspace-status-indicator"
     >
       <span
-        className="pf-c-icon pf-m-inline"
+        className="pf-v6-c-icon pf-m-inline"
       >
         <span
-          className="pf-c-icon__content pf-m-success"
+          className="pf-v6-c-icon__content pf-m-success"
         >
           <svg
             aria-hidden={true}
             aria-labelledby={null}
+            className="pf-v6-svg"
             fill="currentColor"
             height="1em"
             role="img"
-            style={
-              {
-                "verticalAlign": "-0.125em",
-              }
-            }
             viewBox="0 0 1024 1024"
             width="1em"
           >
@@ -509,14 +475,14 @@ exports[`Workspace indicator component DevWorkspaces should render STOPPED statu
       data-testid="workspace-status-indicator"
     >
       <span
-        className="pf-c-icon pf-m-inline"
+        className="pf-v6-c-icon pf-m-inline"
       >
         <span
-          className="pf-c-icon__content pf-m-default"
+          className="pf-v6-c-icon__content"
         >
           <svg
             aria-hidden="true"
-            fill="var(--pf-global--palette--black-500)"
+            fill="var(--pf-t--global--text--color--regular)"
             height="1em"
             role="img"
             style={
@@ -568,23 +534,19 @@ exports[`Workspace indicator component should render default status correctly 1`
       data-testid="workspace-status-indicator"
     >
       <span
-        className="pf-c-icon pf-m-inline"
+        className="pf-v6-c-icon pf-m-inline"
       >
         <span
-          className="pf-c-icon__content pf-m-default"
+          className="pf-v6-c-icon__content"
         >
           <svg
             aria-hidden={true}
             aria-labelledby={null}
-            className="rotate"
-            fill="var(--pf-global--palette--black-500)"
+            className="pf-v6-svg rotate"
+            color="var(--pf-t--global--text--color--regular)"
+            fill="currentColor"
             height="1em"
             role="img"
-            style={
-              {
-                "verticalAlign": "-0.125em",
-              }
-            }
             viewBox="0 0 1024 1024"
             width="1em"
           >

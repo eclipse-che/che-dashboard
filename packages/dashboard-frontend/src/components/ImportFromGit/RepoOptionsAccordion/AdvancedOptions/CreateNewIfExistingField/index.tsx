@@ -79,7 +79,7 @@ export class CreateNewIfExistingField extends React.PureComponent<Props, State> 
           id="advanced-options-create-new-if-exist-switch"
           aria-label="Create New If Existing"
           isChecked={createNewIfExisting}
-          onChange={value => this.handleChange(value)}
+          onChange={(_event, value) => this.handleChange(value)}
         />
       </FormGroup>
     );

@@ -11,13 +11,7 @@
  */
 
 import { V1Pod } from '@kubernetes/client-node';
-import {
-  EmptyState,
-  EmptyStateBody,
-  EmptyStateIcon,
-  PageSection,
-  Title,
-} from '@patternfly/react-core';
+import { EmptyState, EmptyStateBody, PageSection } from '@patternfly/react-core';
 import { FileIcon } from '@patternfly/react-icons';
 import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
@@ -149,11 +143,7 @@ class WorkspaceLogs extends React.PureComponent<Props, State> {
 
   private showEmptyState() {
     return (
-      <EmptyState>
-        <EmptyStateIcon icon={FileIcon} />
-        <Title headingLevel="h4" size="lg">
-          No Logs to show
-        </Title>
+      <EmptyState icon={FileIcon} titleText="No Logs to show">
         <EmptyStateBody>Logs will be shown for a starting workspace.</EmptyStateBody>
       </EmptyState>
     );

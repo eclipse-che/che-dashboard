@@ -13,15 +13,12 @@
 import {
   Breadcrumb,
   BreadcrumbItem,
+  Content,
   Flex,
   FlexItem,
   PageSection,
-  PageSectionVariants,
   Stack,
   StackItem,
-  Text,
-  TextContent,
-  TextVariants,
 } from '@patternfly/react-core';
 import React from 'react';
 
@@ -33,7 +30,7 @@ import {
   WorkspaceStatus,
 } from '@/services/helpers/types';
 
-const SECTION_THEME = PageSectionVariants.light;
+// Note: PageSectionVariants.default was removed in PF6
 
 type Props = {
   hideBreadcrumbs?: boolean;
@@ -51,7 +48,7 @@ class Header extends React.PureComponent<Props> {
     const { title, status, hideBreadcrumbs } = this.props;
 
     return (
-      <PageSection variant={SECTION_THEME}>
+      <PageSection>
         <Stack hasGutter={true}>
           {!hideBreadcrumbs && (
             <StackItem>
@@ -66,9 +63,9 @@ class Header extends React.PureComponent<Props> {
           <StackItem>
             <Flex>
               <FlexItem alignSelf={{ default: 'alignSelfCenter' }}>
-                <TextContent>
-                  <Text component={TextVariants.h1}>{title}</Text>
-                </TextContent>
+                <Content>
+                  <Content component="h1">{title}</Content>
+                </Content>
               </FlexItem>
               <FlexItem>
                 <WorkspaceStatusLabel status={status} />

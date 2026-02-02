@@ -10,7 +10,14 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import { FormGroup, ValidatedOptions } from '@patternfly/react-core';
+import {
+  FormGroup,
+  FormHelperText,
+  HelperText,
+  HelperTextItem,
+  ValidatedOptions,
+} from '@patternfly/react-core';
+import { ExclamationCircleIcon } from '@patternfly/react-icons';
 import React from 'react';
 
 import { TextFileUpload } from '@/components/TextFileUpload';
@@ -91,13 +98,7 @@ export class SshPublicKey extends React.Component<Props, State> {
     const errorMessage = this.getErrorMessage(publicKey, isUpload);
 
     return (
-      <FormGroup
-        fieldId="ssh-public-key"
-        helperTextInvalid={errorMessage}
-        label="Public Key"
-        validated={validated}
-        isRequired={true}
-      >
+      <FormGroup fieldId="ssh-public-key" label="Public Key" isRequired={true}>
         <TextFileUpload
           fieldId="ssh-public-key"
           fileNamePlaceholder="Upload the PUBLIC key"
@@ -105,6 +106,15 @@ export class SshPublicKey extends React.Component<Props, State> {
           validated={validated}
           onChange={(key, isUpload) => this.onChange(key, isUpload)}
         />
+        {validated === ValidatedOptions.error && (
+          <FormHelperText>
+            <HelperText>
+              <HelperTextItem icon={<ExclamationCircleIcon />} variant="error">
+                {errorMessage}
+              </HelperTextItem>
+            </HelperText>
+          </FormHelperText>
+        )}
       </FormGroup>
     );
   }

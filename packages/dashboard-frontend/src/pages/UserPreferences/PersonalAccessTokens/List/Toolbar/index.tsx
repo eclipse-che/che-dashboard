@@ -54,7 +54,7 @@ export class PersonalAccessTokenListToolbar extends React.PureComponent<Props> {
               Delete
             </Button>
           </ToolbarItem>
-          <ToolbarItem alignment={{ default: 'alignRight' }}>
+          <ToolbarItem align={{ default: 'alignEnd' }}>
             <Button
               variant={ButtonVariant.link}
               icon={<PlusCircleIcon />}

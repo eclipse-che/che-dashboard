@@ -14,11 +14,10 @@ import {
   Alert,
   AlertActionLink,
   AlertVariant,
+  Content,
+  ContentVariants,
   PageSection,
   PageSectionVariants,
-  Text,
-  TextContent,
-  TextVariants,
 } from '@patternfly/react-core';
 import React, { ErrorInfo, PropsWithChildren } from 'react';
 import Pluralize from 'react-pluralize';
@@ -165,9 +164,9 @@ export class ErrorBoundary extends React.PureComponent<Props, State> {
         }
       >
         {expanded && errorInfo && (
-          <TextContent>
-            <Text component={TextVariants.pre}>{errorInfo.componentStack}</Text>
-          </TextContent>
+          <Content>
+            <Content component={ContentVariants.pre}>{errorInfo.componentStack}</Content>
+          </Content>
         )}
       </Alert>
     );
@@ -228,7 +227,7 @@ export class ErrorBoundary extends React.PureComponent<Props, State> {
     const reloadAlert = this.buildReloadAlert();
 
     return (
-      <PageSection variant={PageSectionVariants.light} isFilled={true}>
+      <PageSection variant={PageSectionVariants.default} isFilled={true}>
         {reloadAlert}
         {errorMessageAlert}
       </PageSection>

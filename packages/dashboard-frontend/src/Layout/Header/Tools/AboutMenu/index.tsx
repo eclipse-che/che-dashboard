@@ -11,9 +11,11 @@
  */
 
 import {
-  ApplicationLauncher,
-  ApplicationLauncherGroup,
-  ApplicationLauncherItem,
+  Dropdown,
+  DropdownItem,
+  DropdownList,
+  MenuToggle,
+  MenuToggleElement,
 } from '@patternfly/react-core';
 import { QuestionCircleIcon } from '@patternfly/react-icons';
 import React from 'react';
@@ -27,96 +29,74 @@ type Props = {
   username: string;
   dashboardLogo?: { base64data: string; mediatype: string };
 };
-type State = {
-  isLauncherOpen: boolean;
-  isModalOpen: boolean;
-};
 
-export class AboutMenu extends React.PureComponent<Props, State> {
-  constructor(props: Props) {
-    super(props);
+export const AboutMenu: React.FC<Props> = ({ branding, username, dashboardLogo }) => {
+  const [isLauncherOpen, setIsLauncherOpen] = React.useState(false);
+  const [isModalOpen, setIsModalOpen] = React.useState(false);
 
-    this.state = {
-      isLauncherOpen: false,
-      isModalOpen: false,
-    };
-  }
-
-  private buildLauncherItems(): React.ReactNode[] {
-    const branding = this.props.branding;
+  const buildDropdownItems = React.useCallback(() => {
     const items: React.ReactElement[] = [];
     branding.links?.forEach(link => {
       items.push(
-        <ApplicationLauncherItem
-          key={link.text}
-          isExternal={true}
-          component="button"
-          onClick={() => window.open(link.href, '_blank')}
-        >
+        <DropdownItem key={link.text} onClick={() => window.open(link.href, '_blank')}>
           {link.text}
-        </ApplicationLauncherItem>,
+        </DropdownItem>,
       );
     });
 
-    const group = (
-      <ApplicationLauncherGroup key="info_button">
-        {items}
-        <ApplicationLauncherItem key="about" component="button" onClick={e => this.showModal(e)}>
-          About
-        </ApplicationLauncherItem>
-      </ApplicationLauncherGroup>
+    items.push(
+      <DropdownItem
+        key="about"
+        onClick={e => {
+          e.preventDefault();
+          setIsLauncherOpen(false);
+          setIsModalOpen(true);
+        }}
+      >
+        About
+      </DropdownItem>,
     );
-    return [group];
-  }
+    return items;
+  }, [branding.links]);
 
-  private onLauncherToggle() {
-    this.setState({
-      isLauncherOpen: !this.state.isLauncherOpen,
-    });
-  }
+  const { logoFile, name, productVersion } = branding;
 
-  private showModal(e: MouseEvent | React.MouseEvent | React.KeyboardEvent) {
-    e.preventDefault();
-    this.setState({
-      isLauncherOpen: false,
-      isModalOpen: true,
-    });
-  }
+  const logoSrc = buildLogoSrc(dashboardLogo, logoFile);
+  const isSvgLogo = logoFile?.toLowerCase().endsWith('.svg');
 
-  private closeModal() {
-    this.setState({
-      isLauncherOpen: false,
-      isModalOpen: false,
-    });
-  }
-
-  public render(): React.ReactElement {
-    const { username, dashboardLogo } = this.props;
-    const { isLauncherOpen, isModalOpen } = this.state;
-
-    const { logoFile, name, productVersion } = this.props.branding;
-
-    const logoSrc = buildLogoSrc(dashboardLogo, logoFile);
-
-    return (
-      <>
-        <ApplicationLauncher
-          onToggle={() => this.onLauncherToggle()}
-          isOpen={isLauncherOpen}
-          items={this.buildLauncherItems()}
-          aria-label="About Menu"
-          position="right"
-          toggleIcon={<QuestionCircleIcon alt="About Menu Icon" />}
-        />
-        <AboutModal
-          isOpen={isModalOpen}
-          closeModal={() => this.closeModal()}
-          username={username}
-          logo={logoSrc}
-          productName={name}
-          serverVersion={productVersion}
-        />
-      </>
-    );
-  }
-}
+  return (
+    <>
+      <Dropdown
+        onSelect={() => setIsLauncherOpen(false)}
+        onOpenChange={isOpen => setIsLauncherOpen(isOpen)}
+        isOpen={isLauncherOpen}
+        toggle={(toggleRef: React.Ref<MenuToggleElement>) => (
+          <MenuToggle
+            ref={toggleRef}
+            onClick={() => setIsLauncherOpen(!isLauncherOpen)}
+            isExpanded={isLauncherOpen}
+            variant="plain"
+            aria-label="About Menu"
+          >
+            <QuestionCircleIcon />
+          </MenuToggle>
+        )}
+        popperProps={{ position: 'right' }}
+      >
+        <DropdownList>{buildDropdownItems()}</DropdownList>
+      </Dropdown>
+      <AboutModal
+        isOpen={isModalOpen}
+        closeModal={() => {
+          setIsLauncherOpen(false);
+          setIsModalOpen(false);
+        }}
+        username={username}
+        logo={logoSrc}
+        isSvgLogo={isSvgLogo}
+        productName={name}
+        serverVersion={productVersion}
+      />
+    </>
+  );
+};

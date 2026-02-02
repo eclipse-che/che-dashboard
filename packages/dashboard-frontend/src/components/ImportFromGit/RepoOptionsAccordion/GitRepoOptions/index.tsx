@@ -15,14 +15,13 @@ import isEqual from 'lodash/isEqual';
 import React from 'react';
 
 import { AdditionalGitRemotes } from '@/components/ImportFromGit/RepoOptionsAccordion/GitRepoOptions/AdditionalGitRemotes';
-import { GitBranchSelect } from '@/components/ImportFromGit/RepoOptionsAccordion/GitRepoOptions/GitBranchSelect';
+import { GitBranchField } from '@/components/ImportFromGit/RepoOptionsAccordion/GitRepoOptions/GitBranchField';
 import { PathToDevfileField } from '@/components/ImportFromGit/RepoOptionsAccordion/GitRepoOptions/PathToDevfileField';
 import { GitRemote } from '@/components/WorkspaceProgress/CreatingSteps/Apply/Devfile/getGitRemotes';
 import { FactoryLocationAdapter } from '@/services/factory-location-adapter';
 
 export type Props = {
   gitBranch: string | undefined;
-  branchList: string[] | undefined;
   location: string;
   remotes: GitRemote[] | undefined;
   devfilePath: string | undefined;
@@ -37,7 +36,6 @@ export type Props = {
 
 export type State = {
   gitBranch: string | undefined;
-  branchList: string[] | undefined;
   remotes: GitRemote[] | undefined;
   devfilePath: string | undefined;
   isValid: boolean;
@@ -49,7 +47,6 @@ export class GitRepoOptions extends React.PureComponent<Props, State> {
 
     this.state = {
       gitBranch: props.gitBranch,
-      branchList: props.branchList,
       remotes: props.remotes,
       devfilePath: props.devfilePath,
       isValid: true,
@@ -57,14 +54,10 @@ export class GitRepoOptions extends React.PureComponent<Props, State> {
   }
 
   public componentDidUpdate(prevProps: Readonly<Props>): void {
-    const { gitBranch, branchList, remotes, devfilePath } = this.props;
+    const { gitBranch, remotes, devfilePath } = this.props;
 
     if (gitBranch !== prevProps.gitBranch) {
       this.setState({ gitBranch });
-    }
-
-    if (branchList !== prevProps.branchList) {
-      this.setState({ branchList: branchList });
     }
 
     if (!isEqual(remotes, prevProps.remotes)) {
@@ -97,14 +90,13 @@ export class GitRepoOptions extends React.PureComponent<Props, State> {
   }
   public render() {
     const { hasSupportedGitService, location } = this.props;
-    const { gitBranch, branchList, remotes, devfilePath } = this.state;
+    const { gitBranch, remotes, devfilePath } = this.state;
     return (
       <Form isHorizontal={true} onSubmit={e => e.preventDefault()}>
         {(hasSupportedGitService || FactoryLocationAdapter.isSshLocation(location)) && (
-          <GitBranchSelect
+          <GitBranchField
             onChange={gitBranch => this.handleGitBranch(gitBranch)}
             gitBranch={gitBranch}
-            branchList={branchList}
           />
         )}
         <AdditionalGitRemotes

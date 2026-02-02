@@ -2,9 +2,9 @@
 
 exports[`GitConfigToolbar snapshot, form mode 1`] = `
 <div
-  className="pf-c-toolbar"
+  className="pf-v6-c-toolbar"
   data-ouia-component-id="OUIA-Generated-Toolbar-1"
-  data-ouia-component-type="PF4/Toolbar"
+  data-ouia-component-type="PF6/Toolbar"
   data-ouia-safe={true}
   id="pf-random-id-0"
   style={
@@ -14,40 +14,34 @@ exports[`GitConfigToolbar snapshot, form mode 1`] = `
   }
 >
   <div
-    className="pf-c-toolbar__content"
+    className="pf-v6-c-toolbar__content"
   >
     <div
-      className="pf-c-toolbar__content-section"
+      className="pf-v6-c-toolbar__content-section"
     >
       <div
-        className="pf-c-toolbar__item pf-m-align-right"
+        className="pf-v6-c-toolbar__item pf-m-align-end"
       >
         <button
-          aria-disabled={false}
           aria-label={null}
-          className="pf-c-button pf-m-link"
+          className="pf-v6-c-button pf-m-link"
           data-ouia-component-id="OUIA-Generated-Button-link-1"
-          data-ouia-component-type="PF4/Button"
+          data-ouia-component-type="PF6/Button"
           data-ouia-safe={true}
           disabled={false}
           onClick={[Function]}
-          role={null}
           type="button"
         >
           <span
-            className="pf-c-button__icon pf-m-start"
+            className="pf-v6-c-button__icon pf-m-start"
           >
             <svg
               aria-hidden={true}
               aria-labelledby={null}
+              className="pf-v6-svg"
               fill="currentColor"
               height="1em"
               role="img"
-              style={
-                {
-                  "verticalAlign": "-0.125em",
-                }
-              }
               viewBox="0 0 640 512"
               width="1em"
             >
@@ -56,34 +50,32 @@ exports[`GitConfigToolbar snapshot, form mode 1`] = `
               />
             </svg>
           </span>
-          Switch to Viewer
+          <span
+            className="pf-v6-c-button__text"
+          >
+            Switch to Viewer
+          </span>
         </button>
         <button
-          aria-disabled={false}
           aria-label={null}
-          className="pf-c-button pf-m-link"
+          className="pf-v6-c-button pf-m-link"
           data-ouia-component-id="OUIA-Generated-Button-link-2"
-          data-ouia-component-type="PF4/Button"
+          data-ouia-component-type="PF6/Button"
           data-ouia-safe={true}
           disabled={false}
           onClick={[Function]}
-          role={null}
           type="button"
         >
           <span
-            className="pf-c-button__icon pf-m-start"
+            className="pf-v6-c-button__icon pf-m-start"
           >
             <svg
               aria-hidden={true}
               aria-labelledby={null}
+              className="pf-v6-svg"
               fill="currentColor"
               height="1em"
               role="img"
-              style={
-                {
-                  "verticalAlign": "-0.125em",
-                }
-              }
               viewBox="0 0 512 512"
               width="1em"
             >
@@ -92,25 +84,21 @@ exports[`GitConfigToolbar snapshot, form mode 1`] = `
               />
             </svg>
           </span>
-          Import Git Configuration
+          <span
+            className="pf-v6-c-button__text"
+          >
+            Import Git Configuration
+          </span>
         </button>
       </div>
     </div>
-    <div
-      className="pf-c-toolbar__expandable-content"
-      id="pf-random-id-0-expandable-content-0"
-    >
-      <div
-        className="pf-c-toolbar__group"
-      />
-    </div>
   </div>
   <div
-    className="pf-c-toolbar__content pf-m-hidden"
+    className="pf-v6-c-toolbar__content pf-m-hidden"
     hidden={true}
   >
     <div
-      className="pf-c-toolbar__group"
+      className="pf-v6-c-toolbar__group"
     />
   </div>
 </div>
@@ -118,9 +106,9 @@ exports[`GitConfigToolbar snapshot, form mode 1`] = `
 
 exports[`GitConfigToolbar snapshot, viewer mode 1`] = `
 <div
-  className="pf-c-toolbar"
+  className="pf-v6-c-toolbar"
   data-ouia-component-id="OUIA-Generated-Toolbar-2"
-  data-ouia-component-type="PF4/Toolbar"
+  data-ouia-component-type="PF6/Toolbar"
   data-ouia-safe={true}
   id="pf-random-id-1"
   style={
@@ -130,40 +118,34 @@ exports[`GitConfigToolbar snapshot, viewer mode 1`] = `
   }
 >
   <div
-    className="pf-c-toolbar__content"
+    className="pf-v6-c-toolbar__content"
   >
     <div
-      className="pf-c-toolbar__content-section"
+      className="pf-v6-c-toolbar__content-section"
     >
       <div
-        className="pf-c-toolbar__item pf-m-align-right"
+        className="pf-v6-c-toolbar__item pf-m-align-end"
       >
         <button
-          aria-disabled={false}
           aria-label={null}
-          className="pf-c-button pf-m-link"
+          className="pf-v6-c-button pf-m-link"
           data-ouia-component-id="OUIA-Generated-Button-link-3"
-          data-ouia-component-type="PF4/Button"
+          data-ouia-component-type="PF6/Button"
           data-ouia-safe={true}
           disabled={false}
           onClick={[Function]}
-          role={null}
           type="button"
         >
           <span
-            className="pf-c-button__icon pf-m-start"
+            className="pf-v6-c-button__icon pf-m-start"
           >
             <svg
               aria-hidden={true}
               aria-labelledby={null}
+              className="pf-v6-svg"
               fill="currentColor"
               height="1em"
               role="img"
-              style={
-                {
-                  "verticalAlign": "-0.125em",
-                }
-              }
               viewBox="0 0 640 512"
               width="1em"
             >
@@ -172,34 +154,32 @@ exports[`GitConfigToolbar snapshot, viewer mode 1`] = `
               />
             </svg>
           </span>
-          Switch to Viewer
+          <span
+            className="pf-v6-c-button__text"
+          >
+            Switch to Viewer
+          </span>
         </button>
         <button
-          aria-disabled={false}
           aria-label={null}
-          className="pf-c-button pf-m-link"
+          className="pf-v6-c-button pf-m-link"
           data-ouia-component-id="OUIA-Generated-Button-link-4"
-          data-ouia-component-type="PF4/Button"
+          data-ouia-component-type="PF6/Button"
           data-ouia-safe={true}
           disabled={false}
           onClick={[Function]}
-          role={null}
           type="button"
         >
           <span
-            className="pf-c-button__icon pf-m-start"
+            className="pf-v6-c-button__icon pf-m-start"
           >
             <svg
               aria-hidden={true}
               aria-labelledby={null}
+              className="pf-v6-svg"
               fill="currentColor"
               height="1em"
               role="img"
-              style={
-                {
-                  "verticalAlign": "-0.125em",
-                }
-              }
               viewBox="0 0 512 512"
               width="1em"
             >
@@ -208,25 +188,21 @@ exports[`GitConfigToolbar snapshot, viewer mode 1`] = `
               />
             </svg>
           </span>
-          Import Git Configuration
+          <span
+            className="pf-v6-c-button__text"
+          >
+            Import Git Configuration
+          </span>
         </button>
       </div>
     </div>
-    <div
-      className="pf-c-toolbar__expandable-content"
-      id="pf-random-id-1-expandable-content-1"
-    >
-      <div
-        className="pf-c-toolbar__group"
-      />
-    </div>
   </div>
   <div
-    className="pf-c-toolbar__content pf-m-hidden"
+    className="pf-v6-c-toolbar__content pf-m-hidden"
     hidden={true}
   >
     <div
-      className="pf-c-toolbar__group"
+      className="pf-v6-c-toolbar__group"
     />
   </div>
 </div>

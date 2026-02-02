@@ -39,7 +39,7 @@ class BannerAlertCustomWarning extends React.PureComponent<Props> {
     );
 
     const banners = sanitizedMessages.map(message => (
-      <Banner key={message} className={styles.customBanner} variant="warning">
+      <Banner key={message} className={styles.customBanner} status="warning">
         <div dangerouslySetInnerHTML={{ __html: message }}></div>
       </Banner>
     ));

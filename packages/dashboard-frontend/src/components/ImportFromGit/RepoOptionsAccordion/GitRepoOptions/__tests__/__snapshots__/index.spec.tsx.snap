@@ -2,7 +2,7 @@
 
 exports[`GitRepoOptions snapshot with all values 1`] = `
 <form
-  className="pf-c-form pf-m-horizontal"
+  className="pf-v6-c-form pf-m-horizontal"
   noValidate={true}
   onSubmit={[Function]}
 >
@@ -58,7 +58,7 @@ exports[`GitRepoOptions snapshot with all values 1`] = `
 
 exports[`GitRepoOptions snapshot with default values 1`] = `
 <form
-  className="pf-c-form pf-m-horizontal"
+  className="pf-v6-c-form pf-m-horizontal"
   noValidate={true}
   onSubmit={[Function]}
 >
