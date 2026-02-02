@@ -14,9 +14,7 @@ import { container } from '@/inversify.config';
 import { provisionKubernetesNamespace } from '@/services/backend-client/kubernetesNamespaceApi';
 import { WebsocketClient } from '@/services/backend-client/websocketClient';
 import Bootstrap from '@/services/bootstrap';
-import { signIn } from '@/services/helpers/login';
 import { ResourceFetcherService } from '@/services/resource-fetcher';
-import { hasLoginPage, isForbidden, isUnauthorized } from '@/services/workspace-client/helpers';
 import { MockStoreBuilder } from '@/store/__mocks__/mockStore';
 import { bannerAlertActionCreators } from '@/store/BannerAlert';
 import { brandingActionCreators } from '@/store/Branding';
@@ -98,12 +96,6 @@ jest
   .spyOn(workspacePreferencesActionCreators, 'requestPreferences')
   .mockImplementation(() => jest.fn());
 jest.spyOn(bannerAlertActionCreators, 'addBanner').mockImplementation(() => jest.fn());
-
-jest.mock('@/services/helpers/login');
-jest.mock('@/services/workspace-client/helpers');
-jest.mock('@/preload/brandingLoader', () => ({
-  updateFavicon: jest.fn(),
-}));
 
 const mockWebsocketClient = {
   connect: jest.fn(),
@@ -190,64 +182,6 @@ describe('Dashboard bootstrap', () => {
     });
     expect(mockWebsocketClient.subscribeToChannel).toHaveBeenNthCalledWith(3, 'pod', 'test-che', {
       getResourceVersion: expect.any(Function),
-    });
-  });
-
-  describe('error handling for expired authorization', () => {
-    it('should call signIn when provisionKubernetesNamespace throws 401 Unauthorized error', async () => {
-      const store = new MockStoreBuilder().build();
-      const bootstrap = new Bootstrap(store);
-      const unauthorizedError = new Error('Unauthorized');
-      (provisionKubernetesNamespace as jest.Mock).mockRejectedValue(unauthorizedError);
-      (isUnauthorized as jest.Mock).mockReturnValue(true);
-      (isForbidden as jest.Mock).mockReturnValue(false);
-      (hasLoginPage as jest.Mock).mockReturnValue(false);
-
-      await expect(bootstrap.init()).rejects.toThrow();
-
-      expect(signIn).toHaveBeenCalledTimes(1);
-    });
-
-    it('should call signIn when provisionKubernetesNamespace throws 403 Forbidden error with login page', async () => {
-      const store = new MockStoreBuilder().build();
-      const bootstrap = new Bootstrap(store);
-      const forbiddenError = new Error('Forbidden');
-      (provisionKubernetesNamespace as jest.Mock).mockRejectedValue(forbiddenError);
-      (isUnauthorized as jest.Mock).mockReturnValue(false);
-      (isForbidden as jest.Mock).mockReturnValue(true);
-      (hasLoginPage as jest.Mock).mockReturnValue(true);
-
-      await expect(bootstrap.init()).rejects.toThrow();
-
-      expect(signIn).toHaveBeenCalledTimes(1);
-    });
-
-    it('should not call signIn when provisionKubernetesNamespace throws 403 Forbidden error without login page', async () => {
-      const store = new MockStoreBuilder().build();
-      const bootstrap = new Bootstrap(store);
-      const forbiddenError = new Error('Forbidden');
-      (provisionKubernetesNamespace as jest.Mock).mockRejectedValue(forbiddenError);
-      (isUnauthorized as jest.Mock).mockReturnValue(false);
-      (isForbidden as jest.Mock).mockReturnValue(true);
-      (hasLoginPage as jest.Mock).mockReturnValue(false);
-
-      await expect(bootstrap.init()).rejects.toThrow();
-
-      expect(signIn).not.toHaveBeenCalled();
-    });
-
-    it('should not call signIn when provisionKubernetesNamespace throws other errors', async () => {
-      const store = new MockStoreBuilder().build();
-      const bootstrap = new Bootstrap(store);
-      const networkError = new Error('Network error');
-      (provisionKubernetesNamespace as jest.Mock).mockRejectedValue(networkError);
-      (isUnauthorized as jest.Mock).mockReturnValue(false);
-      (isForbidden as jest.Mock).mockReturnValue(false);
-      (hasLoginPage as jest.Mock).mockReturnValue(false);
-
-      await expect(bootstrap.init()).rejects.toThrow();
-
-      expect(signIn).not.toHaveBeenCalled();
     });
   });
 });

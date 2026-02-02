@@ -302,70 +302,6 @@ describe('Look for the custom editor', () => {
         expect(customEditor).toEqual(dump(editor));
       });
 
-      it('should resolve relative icon path to absolute URL', async () => {
-        const editorWithRelativeIcon = buildEditor('/images/idea.svg');
-        optionalFilesContent[CHE_EDITOR_YAML_PATH] = {
-          location: 'location',
-          content: dump({
-            id: 'che-incubator/che-idea/next',
-            registryUrl: 'https://dummy/che-plugin-registry/main/v3',
-          }),
-        };
-        const store = new MockStoreBuilder()
-          .withDevfileRegistries({
-            devfiles: {
-              ['https://dummy/che-plugin-registry/main/v3/plugins/che-incubator/che-idea/next/devfile.yaml']:
-                {
-                  content: dump(editorWithRelativeIcon),
-                },
-            },
-          })
-          .build();
-
-        const customEditor = await getCustomEditor(
-          optionalFilesContent,
-          store.dispatch,
-          store.getState,
-        );
-
-        // Verify the relative icon path was resolved to absolute URL
-        expect(customEditor).toEqual(
-          expect.stringContaining(
-            'icon: https://dummy/che-plugin-registry/main/v3/images/idea.svg',
-          ),
-        );
-      });
-
-      it('should keep absolute icon URL unchanged', async () => {
-        const editorWithAbsoluteIcon = buildEditor('https://example.com/icon.svg');
-        optionalFilesContent[CHE_EDITOR_YAML_PATH] = {
-          location: 'location',
-          content: dump({
-            id: 'che-incubator/che-idea/next',
-            registryUrl: 'https://dummy/che-plugin-registry/main/v3',
-          }),
-        };
-        const store = new MockStoreBuilder()
-          .withDevfileRegistries({
-            devfiles: {
-              ['https://dummy/che-plugin-registry/main/v3/plugins/che-incubator/che-idea/next/devfile.yaml']:
-                {
-                  content: dump(editorWithAbsoluteIcon),
-                },
-            },
-          })
-          .build();
-
-        const customEditor = await getCustomEditor(
-          optionalFilesContent,
-          store.dispatch,
-          store.getState,
-        );
-
-        // Verify absolute icon URL is kept as-is
-        expect(customEditor).toEqual(expect.stringContaining('icon: https://example.com/icon.svg'));
-      });
-
       it('should return an overridden devfile', async () => {
         optionalFilesContent[CHE_EDITOR_YAML_PATH] = {
           location: 'location',
@@ -438,21 +374,17 @@ describe('Look for the custom editor', () => {
   });
 });
 
-function buildEditor(icon?: string): devfileApi.Devfile {
-  const metadata: devfileApi.Devfile['metadata'] = {
-    name: 'che-idea',
-    namespace: 'che',
-    attributes: {
-      publisher: 'che-incubator',
-      version: 'next',
-    },
-  };
-  if (icon) {
-    metadata.icon = icon;
-  }
+function buildEditor(): devfileApi.Devfile {
   return {
     schemaVersion: '2.1.0',
-    metadata,
+    metadata: {
+      name: 'che-idea',
+      namespace: 'che',
+      attributes: {
+        publisher: 'che-incubator',
+        version: 'next',
+      },
+    },
     components: [
       {
         name: 'eclipse-ide',

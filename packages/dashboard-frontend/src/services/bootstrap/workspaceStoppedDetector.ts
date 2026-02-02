@@ -29,7 +29,7 @@ export class WorkspaceRunningError extends Error {
    *
    * @param workspace the workspace to check
    */
-  public static throwIfNeeded(workspace: Workspace) {
+  public static throwIfNeeded(workspace) {
     if (workspace.isRunning || workspace.isStarting) {
       const state = workspace.isRunning ? 'running' : 'starting';
       throw new WorkspaceRunningError(`The workspace is ${state}.`, workspace);
@@ -141,6 +141,6 @@ export class WorkspaceStoppedDetector {
     if (!path) {
       return false;
     }
-    return path !== '/' && path !== '/dashboard';
+    return path !== '/' && path !== '/dashboard/';
   }
 }

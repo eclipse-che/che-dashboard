@@ -191,9 +191,7 @@ export function normalizeDevfile(
   if (!devfile.metadata) {
     devfile.metadata = { name };
   } else {
-    devfile.metadata.name = factoryParams.name
-      ? factoryParams.name
-      : devfile.metadata?.name || generateWorkspaceName(namePrefix);
+    devfile.metadata.name = devfile.metadata?.name || generateWorkspaceName(namePrefix);
     if (devfile.metadata.generateName) {
       delete devfile.metadata.generateName;
     }
