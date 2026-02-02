@@ -29,7 +29,7 @@ export class RecentItemWorkspaceActions extends React.PureComponent<Props> {
     const { item } = this.props;
 
     return (
-      <span
+      <div
         onClick={e => {
           e.stopPropagation();
         }}
@@ -45,7 +45,7 @@ export class RecentItemWorkspaceActions extends React.PureComponent<Props> {
             );
           }}
         </WorkspaceActionsConsumer>
-      </span>
+      </div>
     );
   }
 }
