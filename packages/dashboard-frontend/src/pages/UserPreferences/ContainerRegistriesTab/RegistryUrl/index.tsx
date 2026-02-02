@@ -16,7 +16,7 @@ import {
   FormHelperText,
   HelperText,
   HelperTextItem,
-  InputGroupText,
+  InputGroup,
   TextInput,
   ValidatedOptions,
 } from '@patternfly/react-core';
@@ -96,12 +96,12 @@ export class RegistryUrlFormGroup extends React.PureComponent<Props, State> {
 
     return (
       <FormGroup
-        style={{ gridTemplateColumns: '80px', minHeight: '65px' }}
+        style={{ gridTemplateColumns: '85px', minHeight: '65px' }}
         label="Registry"
         fieldId="id-registry-helper"
         isRequired={true}
       >
-        <InputGroupText>
+        <InputGroup>
           <TextInput
             aria-label="Url input"
             placeholder="Enter a registry"
@@ -115,7 +115,7 @@ export class RegistryUrlFormGroup extends React.PureComponent<Props, State> {
               <ExternalLinkAltIcon />
             </a>
           </Button>
-        </InputGroupText>
+        </InputGroup>
         {valid === ValidatedOptions.error && errorMessage && (
           <FormHelperText>
             <HelperText>
