@@ -10,18 +10,6 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-// Suppress the findDOMNode deprecation warning from PatternFly
-// This is a known issue in @patternfly/react-core that uses findDOMNode
-// in their Popper/Tooltip components. This workaround filters out the warning
-// until PatternFly releases a fix.
-const originalConsoleError = console.error;
-console.error = (...args: unknown[]) => {
-  if (typeof args[0] === 'string' && args[0].includes('findDOMNode is deprecated')) {
-    return;
-  }
-  originalConsoleError.apply(console, args);
-};
-
 import '@patternfly/react-core/dist/styles/base.css';
 import 'reflect-metadata';
 import '@/overrides.css';
