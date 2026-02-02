@@ -18,7 +18,6 @@ import { lazyInject } from '@/inversify.config';
 import { NavigationRecentItemObject } from '@/Layout/Navigation';
 import styles from '@/Layout/Navigation/index.module.css';
 import getActivity from '@/Layout/Navigation/isActive';
-import { TitleWithHover } from '@/Layout/Navigation/RecentItem/TitleWithHover';
 import { RecentItemWorkspaceActions } from '@/Layout/Navigation/RecentItem/WorkspaceActions';
 import { buildIdeLoaderLocation, toHref } from '@/services/helpers/location';
 import { TabManager } from '@/services/tabManager';
@@ -43,6 +42,7 @@ export class NavigationRecentItem extends React.PureComponent<Props> {
     const { activePath, item } = this.props;
 
     const isActive = getActivity(item.to, activePath);
+    const titleClassName = styles.titleHover + ' ' + (isActive ? styles.active : '');
 
     return (
       <NavItem
@@ -59,7 +59,7 @@ export class NavigationRecentItem extends React.PureComponent<Props> {
             status={item.workspace.status}
             containerScc={WorkspaceAdapter.getContainerScc(item.workspace.ref)}
           />
-          <TitleWithHover text={item.label} isActive={isActive} />
+          <span className={titleClassName}>{item.label}</span>
         </span>
         <RecentItemWorkspaceActions item={item} />
       </NavItem>

@@ -47,3 +47,11 @@
 .navItem:hover > div {
   display: block;
 }
+
+.titleHover {
+  cursor: pointer;
+}
+
+.titleHover.active {
+  /* Active state styling can be added here if needed */
+}
