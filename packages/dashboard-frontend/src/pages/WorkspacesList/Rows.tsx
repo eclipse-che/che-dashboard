@@ -63,8 +63,8 @@ export function buildRows(
         return sort(nameA, nameB, sortBy.direction);
       }
       if (sortBy.index === 1) {
-        const editorA = getEditorName(workspaceA) || '';
-        const editorB = getEditorName(workspaceB) || '';
+        const editorA = getEditorName({ editors, workspace: workspaceA }) || '';
+        const editorB = getEditorName({ editors, workspace: workspaceB }) || '';
         return sort(editorA, editorB, sortBy.direction);
       }
       if (sortBy.index === 2) {
