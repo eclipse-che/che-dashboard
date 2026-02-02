@@ -11,10 +11,11 @@ This file lists dependencies that do not need CQs or auto-detection does not wor
 | `@fastify/swagger-ui@5.2.5` | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@fastify/swagger-ui/5.2.5) |
 | `@fastify/swagger@9.7.0` | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@fastify/swagger/9.7.0) |
 | `@hapi/hoek@10.0.1` | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@hapi/hoek/10.0.1) |
-| `@isaacs/brace-expansion@5.0.1` | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@isaacs/brace-expansion/5.0.1) |
-| `@patternfly/react-core@4.278.1` | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@patternfly/react-core/4.278.1) |
-| `@patternfly/react-icons@4.93.7` | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@patternfly/react-icons/4.93.7) |
-| `@patternfly/react-table@4.113.7` | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@patternfly/react-table/4.113.7) |
+| `@patternfly/react-core@6.4.1` | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@patternfly/react-core/6.4.1) |
+| `@patternfly/react-icons@6.4.0` | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@patternfly/react-icons/6.4.0) |
+| `@patternfly/react-styles@6.4.0` | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@patternfly/react-styles/6.4.0) |
+| `@patternfly/react-table@6.4.1` | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@patternfly/react-table/6.4.1) |
+| `@patternfly/react-tokens@6.4.0` | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@patternfly/react-tokens/6.4.0) |
 | `ajv@6.14.0` | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/ajv/6.14.0) |
 | `ajv@8.18.0` | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/ajv/8.18.0) |
 | `any-signal@4.2.0` | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/any-signal/4.2.0) |
@@ -25,7 +26,11 @@ This file lists dependencies that do not need CQs or auto-detection does not wor
 | `fast-uri@2.4.0` | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/fast-uri/2.4.0) |
 | `fastify-plugin@5.2.1` | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/fastify-plugin/5.2.1) |
 | `fastify@5.7.4` | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/fastify/5.7.4) |
+| `file-selector@2.1.2` | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/file-selector/2.1.2) |
+| `glob@11.1.0` | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/glob/11.1.0) |
 | `jsep@1.3.9` | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/jsep/1.3.9) |
 | `light-my-request@6.6.0` | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/light-my-request/6.6.0) |
 | `pino@10.3.1` | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/pino/10.3.1) |
+| `qs@6.15.0` | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/qs/6.15.0) |
+| `react-dropzone@14.4.0` | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/react-dropzone/14.4.0) |
 | `real-require@0.2.0` | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/real-require/0.2.0) |
