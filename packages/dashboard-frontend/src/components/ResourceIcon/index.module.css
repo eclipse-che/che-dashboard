@@ -20,7 +20,7 @@
 
   font-size: 14px;
   line-height: 16px;
-  color: var(--pf-t--global--color--nonstatus--white--default);
+  color: var(--pf-t--global--color--nonstatus--gray--100);
   text-align: center;
   white-space: nowrap;
 

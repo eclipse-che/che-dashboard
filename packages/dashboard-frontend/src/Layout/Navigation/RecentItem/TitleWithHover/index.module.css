@@ -22,7 +22,7 @@
 }
 
 .titleHover.active :global(.pf-v6-c-tooltip__content) {
-  background-color: var(--pf-t--global--background--color--primary--default);
+  background-color: var(--pf-t--global--background--color--floating--default);
 }
 
 .titleHover :global(.pf-v6-c-tooltip__arrow) {
