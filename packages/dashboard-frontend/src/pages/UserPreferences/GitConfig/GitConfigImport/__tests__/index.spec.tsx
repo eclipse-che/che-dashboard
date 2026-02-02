@@ -71,8 +71,8 @@ describe('GitConfigUpload', () => {
     expect(uploadButton).not.toBeNull();
     expect(uploadButton).toBeEnabled();
 
-    // Clear button
-    const clearButton = screen.queryByText('Clear');
+    // Clear button - query by role, not text (PatternFly 6 renders text in span)
+    const clearButton = screen.queryByRole('button', { name: 'Clear' });
     expect(clearButton).not.toBeNull();
     expect(clearButton).toBeDisabled();
 
@@ -89,7 +89,7 @@ describe('GitConfigUpload', () => {
 
       const fileInput = screen.getByPlaceholderText(fileNamePlaceholder);
 
-      const clearButton = screen.getByText('Clear');
+      const clearButton = screen.getByRole('button', { name: 'Clear' });
 
       /* Upload a file */
 
@@ -122,7 +122,7 @@ describe('GitConfigUpload', () => {
 
       const contentInput = screen.getByPlaceholderText(textAreaPlaceholder);
 
-      const clearButton = screen.getByText('Clear');
+      const clearButton = screen.getByRole('button', { name: 'Clear' });
 
       const fileInput = screen.getByPlaceholderText(fileNamePlaceholder);
 

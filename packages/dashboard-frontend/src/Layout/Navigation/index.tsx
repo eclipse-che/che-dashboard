@@ -121,14 +121,16 @@ export class Navigation extends React.PureComponent<Props, State> {
     });
   }
 
-  private handleNavSelect(selected: {
-    groupId: string | number;
-    itemId: string | number;
-    to: string;
-    event: React.FormEvent<HTMLInputElement>;
-  }): void {
+  private handleNavSelect(
+    _event: React.FormEvent<HTMLInputElement>,
+    selectedItem: {
+      groupId: string | number;
+      itemId: string | number;
+      to: string;
+    },
+  ): void {
     const activeLocation = {
-      pathname: selected.itemId,
+      pathname: selectedItem.itemId,
     } as Location;
     this.setState({
       activeLocation,
@@ -153,7 +155,10 @@ export class Navigation extends React.PureComponent<Props, State> {
     const { activeLocation } = this.state;
 
     return (
-      <Nav aria-label="Navigation" onSelect={selected => this.handleNavSelect(selected)}>
+      <Nav
+        aria-label="Navigation"
+        onSelect={(event, selected) => this.handleNavSelect(event, selected)}
+      >
         <NavigationMainList activePath={activeLocation.pathname} />
         <NavigationRecentList activePath={activeLocation.pathname} workspaces={recentWorkspaces} />
       </Nav>

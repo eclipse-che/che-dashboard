@@ -15,6 +15,9 @@ import {
   ButtonVariant,
   Form,
   Modal,
+  ModalBody,
+  ModalFooter,
+  ModalHeader,
   ModalVariant,
   ValidatedOptions,
 } from '@patternfly/react-core';
@@ -147,62 +150,61 @@ export default class EditRegistryModal extends React.PureComponent<Props, State>
     );
   }
 
-  private getRegistryModalFooter(): React.ReactNode {
-    const { onCancel, isEditMode } = this.props;
+  public render(): React.ReactElement {
+    const { isOpen, onCancel, isEditMode } = this.props;
+    const { editRegistry } = this.state;
     const isDisabled =
       !(this.isUrlChange || this.isUsernameChange || this.isPasswordChange) ||
       !this.isUrlValid ||
       !this.isUsernameValid ||
       !this.isPasswordValid;
-
-    return (
-      <React.Fragment>
-        <Button
-          variant={ButtonVariant.primary}
-          isDisabled={isDisabled}
-          data-testid="edit-button"
-          onClick={() => this.handleRegistryChange()}
-        >
-          {isEditMode ? 'Save' : 'Add'}
-        </Button>
-        <Button variant={ButtonVariant.link} data-testid="cancel-button" onClick={() => onCancel()}>
-          Cancel
-        </Button>
-      </React.Fragment>
-    );
-  }
-
-  public render(): React.ReactElement {
-    const { isOpen, onCancel, isEditMode } = this.props;
-    const { editRegistry } = this.state;
+    const modalTitle = `${isEditMode ? 'Edit' : 'Add'} Container Registry`;
 
     return (
       <Modal
-        title={`${isEditMode ? 'Edit' : 'Add'} Container Registry`}
         variant={ModalVariant.small}
         isOpen={isOpen}
         onClose={onCancel}
         aria-label="edit-registry-info"
-        footer={this.getRegistryModalFooter()}
       >
-        <Form isHorizontal onSubmit={e => e.preventDefault()}>
-          <RegistryUrlFormGroup
-            url={editRegistry.url}
-            onChange={(url: string, valid: ValidatedOptions) => this.handleUrlChange(url, valid)}
-          />
-          <RegistryUsernameFormGroup
-            username={editRegistry.username}
-            onChange={(username: string, valid: ValidatedOptions) =>
-              this.handleUsernameChange(username, valid)
-            }
-          />
-          <RegistryPasswordFormGroup
-            password={editRegistry.password}
-            onChange={(password: string, valid: ValidatedOptions) =>
-              this.handlePasswordChange(password, valid)
-            }
-          />
-        </Form>
+        <ModalHeader title={modalTitle} />
+        <ModalBody>
+          <Form isHorizontal onSubmit={e => e.preventDefault()}>
+            <RegistryUrlFormGroup
+              url={editRegistry.url}
+              onChange={(url: string, valid: ValidatedOptions) => this.handleUrlChange(url, valid)}
+            />
+            <RegistryUsernameFormGroup
+              username={editRegistry.username}
+              onChange={(username: string, valid: ValidatedOptions) =>
+                this.handleUsernameChange(username, valid)
+              }
+            />
+            <RegistryPasswordFormGroup
+              password={editRegistry.password}
+              onChange={(password: string, valid: ValidatedOptions) =>
+                this.handlePasswordChange(password, valid)
+              }
+            />
+          </Form>
+        </ModalBody>
+        <ModalFooter>
+          <Button
+            variant={ButtonVariant.primary}
+            isDisabled={isDisabled}
+            data-testid="edit-button"
+            onClick={() => this.handleRegistryChange()}
+          >
+            {isEditMode ? 'Save' : 'Add'}
+          </Button>
+          <Button
+            variant={ButtonVariant.link}
+            data-testid="cancel-button"
+            onClick={() => onCancel()}
+          >
+            Cancel
+          </Button>
+        </ModalFooter>
       </Modal>
     );
   }

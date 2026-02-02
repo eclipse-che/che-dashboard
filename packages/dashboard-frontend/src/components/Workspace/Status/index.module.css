@@ -10,6 +10,10 @@
   overflow: visible;
 }
 
+.statusLabel .pf-m-success svg {
+  fill: #3c8e01f5;
+}
+
 svg.rotate {
   width: 17px;
 }

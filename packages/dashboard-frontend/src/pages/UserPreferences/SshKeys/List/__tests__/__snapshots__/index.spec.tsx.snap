@@ -2,31 +2,35 @@
 
 exports[`SSH keys list snapshot 1`] = `
 <section
-  className="pf-c-page__main-section"
+  className="pf-v6-c-page__main-section"
 >
   <div
-    data-testid="ssh-keys-list-entry"
+    className="pf-v6-c-page__main-body"
   >
-    <span>
-      key-name-1
-    </span>
-    <button
-      onClick={[Function]}
+    <div
+      data-testid="ssh-keys-list-entry"
     >
-      Delete
-    </button>
-  </div>
-  <div
-    data-testid="ssh-keys-list-entry"
-  >
-    <span>
-      key-name-2
-    </span>
-    <button
-      onClick={[Function]}
+      <span>
+        key-name-1
+      </span>
+      <button
+        onClick={[Function]}
+      >
+        Delete
+      </button>
+    </div>
+    <div
+      data-testid="ssh-keys-list-entry"
     >
-      Delete
-    </button>
+      <span>
+        key-name-2
+      </span>
+      <button
+        onClick={[Function]}
+      >
+        Delete
+      </button>
+    </div>
   </div>
 </section>
 `;

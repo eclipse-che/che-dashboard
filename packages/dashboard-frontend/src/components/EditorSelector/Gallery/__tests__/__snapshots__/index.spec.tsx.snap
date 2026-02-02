@@ -2,11 +2,11 @@
 
 exports[`EditorGallery snapshot 1`] = `
 <div
-  className="pf-l-gallery pf-m-gutter"
+  className="pf-v6-l-gallery pf-m-gutter"
   style={
     {
-      "--pf-l-gallery--GridTemplateColumns--max": "210px",
-      "--pf-l-gallery--GridTemplateColumns--min": "210px",
+      "--pf-v6-l-gallery--GridTemplateColumns--max": "210px",
+      "--pf-v6-l-gallery--GridTemplateColumns--min": "210px",
     }
   }
 >

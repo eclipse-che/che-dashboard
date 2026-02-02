@@ -2,97 +2,105 @@
 
 exports[`WorkspaceEventsItem component snapshot 1`] = `
 <div
-  className="pf-c-content"
+  className="pf-v6-c-content"
+  data-ouia-component-id="OUIA-Generated-Content-1"
+  data-ouia-component-type="PF6/Content"
+  data-ouia-safe={true}
+  data-pf-content={true}
 >
-  <article
-    className="pf-c-card pf-m-compact pf-m-flat"
+  <div
+    className="pf-v6-c-card pf-m-compact"
     data-ouia-component-id="OUIA-Generated-Card-1"
-    data-ouia-component-type="PF4/Card"
+    data-ouia-component-type="PF6/Card"
     data-ouia-safe={true}
     id=""
   >
     <div
-      className="pf-c-card__header header"
+      className="pf-v6-c-card__header header"
     >
       <div
-        className="pf-l-flex"
+        className="pf-v6-c-card__header-main"
       >
         <div
-          className=""
+          className="pf-v6-l-flex"
         >
-          <small
+          <div
             className=""
-            data-ouia-component-id="OUIA-Generated-Text-1"
-            data-ouia-component-type="PF4/Text"
-            data-ouia-safe={true}
-            data-pf-content={true}
           >
-            <span
-              data-testid="event-involved-object"
+            <small
+              className="pf-v6-c-content--small"
+              data-ouia-component-id="OUIA-Generated-Content-2"
+              data-ouia-component-type="PF6/Content"
+              data-ouia-safe={true}
+              data-pf-content={true}
             >
-              <div
-                data-testid="patternfly-tooltip"
+              <span
+                data-testid="event-involved-object"
               >
-                <span
-                  data-testid="tooltip-props"
-                >
-                  {"aria":"none","aria-live":"polite"}
-                </span>
                 <div
-                  data-testid="tooltip-content"
-                >
-                  Pod
-                </div>
-                <div
-                  data-testid="tooltip-placed-to"
+                  data-testid="patternfly-tooltip"
                 >
                   <span
-                    className="icon"
+                    data-testid="tooltip-props"
                   >
-                    P
+                    {"aria":"none","aria-live":"polite"}
                   </span>
+                  <div
+                    data-testid="tooltip-content"
+                  >
+                    Pod
+                  </div>
+                  <div
+                    data-testid="tooltip-placed-to"
+                  >
+                    <span
+                      className="icon"
+                    >
+                      P
+                    </span>
+                  </div>
                 </div>
+                pod-name
+              </span>
+              <div>
+                Generated from 
+                component on 0.0.0.0
               </div>
-              pod-name
-            </span>
-            <div>
-              Generated from 
-              component on 0.0.0.0
-            </div>
-          </small>
-        </div>
-        <div
-          className="pf-m-align-right"
-        >
-          <small
-            className=""
-            data-ouia-component-id="OUIA-Generated-Text-2"
-            data-ouia-component-type="PF4/Text"
-            data-ouia-safe={true}
-            data-pf-content={true}
+            </small>
+          </div>
+          <div
+            className="pf-m-align-right"
           >
-            <span
-              data-testid="event-time"
+            <small
+              className="pf-v6-c-content--small"
+              data-ouia-component-id="OUIA-Generated-Content-3"
+              data-ouia-component-type="PF6/Content"
+              data-ouia-safe={true}
+              data-pf-content={true}
             >
-              14:00:00
-            </span>
-          </small>
+              <span
+                data-testid="event-time"
+              >
+                14:00:00
+              </span>
+            </small>
+          </div>
         </div>
       </div>
     </div>
     <div
-      className="pf-c-card__body"
+      className="pf-v6-c-card__body"
     >
       <p
-        className=""
-        data-ouia-component-id="OUIA-Generated-Text-3"
-        data-ouia-component-type="PF4/Text"
+        className="pf-v6-c-content--p"
+        data-ouia-component-id="OUIA-Generated-Content-4"
+        data-ouia-component-type="PF6/Content"
         data-ouia-safe={true}
         data-pf-content={true}
       >
         Event message
       </p>
     </div>
-  </article>
+  </div>
 </div>
 `;

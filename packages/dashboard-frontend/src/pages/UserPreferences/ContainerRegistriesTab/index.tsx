@@ -15,13 +15,18 @@ import {
   AlertVariant,
   Button,
   ButtonVariant,
+  Dropdown,
+  DropdownItem,
+  DropdownList,
+  MenuToggle,
+  MenuToggleElement,
   PageSection,
   Toolbar,
   ToolbarContent,
   ToolbarItem,
 } from '@patternfly/react-core';
-import { PlusCircleIcon } from '@patternfly/react-icons';
-import { Table, TableBody, TableHeader } from '@patternfly/react-table';
+import { EllipsisVIcon, PlusCircleIcon } from '@patternfly/react-icons';
+import { Table, Tbody, Td, Th, Thead, Tr } from '@patternfly/react-table';
 import { cloneDeep } from 'lodash';
 import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
@@ -46,6 +51,7 @@ type State = {
   currentRegistryIndex: number;
   isDeleteModalOpen: boolean;
   isEditModalOpen: boolean;
+  openActionMenuIndex: number | null;
 };
 
 export class ContainerRegistries extends React.PureComponent<Props, State> {
@@ -64,6 +70,7 @@ export class ContainerRegistries extends React.PureComponent<Props, State> {
       currentRegistryIndex: -1,
       isEditModalOpen: false,
       isDeleteModalOpen: false,
+      openActionMenuIndex: null,
     };
   }
 
@@ -265,29 +272,10 @@ export class ContainerRegistries extends React.PureComponent<Props, State> {
       currentRegistry,
       currentRegistryIndex,
       selectedItems,
+      openActionMenuIndex,
     } = this.state;
-    const columns = ['Host', 'Username'];
-    const rows =
-      this.state.registries.map(registry => ({
-        cells: this.buildRegistryRow(registry),
-        selected: selectedItems.includes(registry.url),
-      })) || [];
-    const actions = [
-      {
-        title: 'Edit registry',
-        onClick: (event, rowIndex) => {
-          event.stopPropagation();
-          this.showOnEditRegistryModal(rowIndex);
-        },
-      },
-      {
-        title: 'Delete registry',
-        onClick: (event, rowIndex) => {
-          event.stopPropagation();
-          this.showOnDeleteRegistryModal(rowIndex);
-        },
-      },
-    ];
+    const { registries } = this.state;
+    const allSelected = registries.length > 0 && selectedItems.length === registries.length;
 
     return (
       <React.Fragment>
@@ -300,7 +288,7 @@ export class ContainerRegistries extends React.PureComponent<Props, State> {
           isOpen={isEditModalOpen}
         />
         <PageSection>
-          {rows.length === 0 ? (
+          {registries.length === 0 ? (
             <NoRegistriesEmptyState onAddRegistry={() => this.showOnAddRegistryModal()} />
           ) : (
             <React.Fragment>
@@ -324,11 +312,11 @@ export class ContainerRegistries extends React.PureComponent<Props, State> {
                     </Button>
                   </ToolbarItem>
                   <ToolbarItem
-                    alignment={{
-                      md: 'alignRight',
-                      lg: 'alignRight',
-                      xl: 'alignRight',
-                      '2xl': 'alignRight',
+                    align={{
+                      md: 'alignEnd',
+                      lg: 'alignEnd',
+                      xl: 'alignEnd',
+                      '2xl': 'alignEnd',
                     }}
                   >
                     <Button
@@ -343,20 +331,90 @@ export class ContainerRegistries extends React.PureComponent<Props, State> {
                   </ToolbarItem>
                 </ToolbarContent>
               </Toolbar>
-              <Table
-                cells={columns}
-                actions={actions}
-                rows={rows}
-                onSelect={(event, isSelected, rowIndex) => {
-                  event.stopPropagation();
-                  this.onChangeRegistrySelection(isSelected, rowIndex);
-                }}
-                canSelectAll={true}
-                aria-label="Container credentials"
-                variant="compact"
-              >
-                <TableHeader />
-                <TableBody />
+              <Table aria-label="Container credentials" variant="compact">
+                <Thead>
+                  <Tr>
+                    <Th
+                      select={{
+                        onSelect: (_event, isSelected) =>
+                          this.onChangeRegistrySelection(isSelected, -1),
+                        isSelected: allSelected,
+                      }}
+                    />
+                    <Th>Host</Th>
+                    <Th>Username</Th>
+                    <Th screenReaderText="Actions" />
+                  </Tr>
+                </Thead>
+                <Tbody>
+                  {registries.map((registry, rowIndex) => (
+                    <Tr key={registry.url}>
+                      <Td
+                        select={{
+                          rowIndex,
+                          onSelect: (_event, isSelected) =>
+                            this.onChangeRegistrySelection(isSelected, rowIndex),
+                          isSelected: selectedItems.includes(registry.url),
+                        }}
+                      />
+                      <Td dataLabel="Host">
+                        {/^http[s]?:\/\/.*/.test(registry.url) ? (
+                          <a href={registry.url} target="_blank" rel="noreferrer">
+                            {registry.url}
+                          </a>
+                        ) : (
+                          registry.url
+                        )}
+                      </Td>
+                      <Td dataLabel="Username">{registry.username}</Td>
+                      <Td isActionCell>
+                        <Dropdown
+                          toggle={(toggleRef: React.Ref<MenuToggleElement>) => (
+                            <MenuToggle
+                              ref={toggleRef}
+                              aria-label="Actions"
+                              variant="plain"
+                              onClick={() =>
+                                this.setState({
+                                  openActionMenuIndex:
+                                    openActionMenuIndex === rowIndex ? null : rowIndex,
+                                })
+                              }
+                              isExpanded={openActionMenuIndex === rowIndex}
+                            >
+                              <EllipsisVIcon />
+                            </MenuToggle>
+                          )}
+                          isOpen={openActionMenuIndex === rowIndex}
+                          onOpenChange={isOpen =>
+                            this.setState({ openActionMenuIndex: isOpen ? rowIndex : null })
+                          }
+                        >
+                          <DropdownList>
+                            <DropdownItem
+                              key="edit"
+                              onClick={() => {
+                                this.setState({ openActionMenuIndex: null });
+                                this.showOnEditRegistryModal(rowIndex);
+                              }}
+                            >
+                              Edit registry
+                            </DropdownItem>
+                            <DropdownItem
+                              key="delete"
+                              onClick={() => {
+                                this.setState({ openActionMenuIndex: null });
+                                this.showOnDeleteRegistryModal(rowIndex);
+                              }}
+                            >
+                              Delete registry
+                            </DropdownItem>
+                          </DropdownList>
+                        </Dropdown>
+                      </Td>
+                    </Tr>
+                  ))}
+                </Tbody>
               </Table>
             </React.Fragment>
           )}

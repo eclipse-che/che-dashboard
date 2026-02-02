@@ -2,26 +2,30 @@
 
 exports[`Samples List preferred storage: ephemeral snapshot 1`] = `
 <div
-  className="pf-c-panel"
+  className="pf-v6-c-panel"
 >
   <div
-    className="pf-c-panel__header"
+    className="pf-v6-c-panel__header"
   >
     <h3
-      className="pf-c-title pf-m-lg"
+      className="pf-v6-c-title pf-m-h3"
       data-ouia-component-id="OUIA-Generated-Title-4"
-      data-ouia-component-type="PF4/Title"
+      data-ouia-component-type="PF6/Title"
       data-ouia-safe={true}
     >
       Select a Sample
     </h3>
     <div
-      className="pf-c-content"
+      className="pf-v6-c-content"
+      data-ouia-component-id="OUIA-Generated-Content-7"
+      data-ouia-component-type="PF6/Content"
+      data-ouia-safe={true}
+      data-pf-content={true}
     >
       <small
-        className=""
-        data-ouia-component-id="OUIA-Generated-Text-4"
-        data-ouia-component-type="PF4/Text"
+        className="pf-v6-c-content--small"
+        data-ouia-component-id="OUIA-Generated-Content-8"
+        data-ouia-component-type="PF6/Content"
         data-ouia-safe={true}
         data-pf-content={true}
       >
@@ -30,15 +34,15 @@ exports[`Samples List preferred storage: ephemeral snapshot 1`] = `
     </div>
   </div>
   <div
-    className="pf-c-panel__main"
+    className="pf-v6-c-panel__main"
     style={
       {
-        "--pf-c-panel__main--MaxHeight": undefined,
+        "--pf-v6-c-panel__main--MaxHeight": undefined,
       }
     }
   >
     <div
-      className="pf-c-panel__main-body"
+      className="pf-v6-c-panel__main-body"
     >
       <div>
         <span>
@@ -57,7 +61,7 @@ exports[`Samples List preferred storage: ephemeral snapshot 1`] = `
       </div>
     </div>
     <div
-      className="pf-c-panel__main-body"
+      className="pf-v6-c-panel__main-body"
     >
       <div
         data-testid="samples-list-gallery"
@@ -83,26 +87,30 @@ exports[`Samples List preferred storage: ephemeral snapshot 1`] = `
 
 exports[`Samples List preferred storage: non-ephemeral snapshot 1`] = `
 <div
-  className="pf-c-panel"
+  className="pf-v6-c-panel"
 >
   <div
-    className="pf-c-panel__header"
+    className="pf-v6-c-panel__header"
   >
     <h3
-      className="pf-c-title pf-m-lg"
+      className="pf-v6-c-title pf-m-h3"
       data-ouia-component-id="OUIA-Generated-Title-1"
-      data-ouia-component-type="PF4/Title"
+      data-ouia-component-type="PF6/Title"
       data-ouia-safe={true}
     >
       Select a Sample
     </h3>
     <div
-      className="pf-c-content"
+      className="pf-v6-c-content"
+      data-ouia-component-id="OUIA-Generated-Content-1"
+      data-ouia-component-type="PF6/Content"
+      data-ouia-safe={true}
+      data-pf-content={true}
     >
       <small
-        className=""
-        data-ouia-component-id="OUIA-Generated-Text-1"
-        data-ouia-component-type="PF4/Text"
+        className="pf-v6-c-content--small"
+        data-ouia-component-id="OUIA-Generated-Content-2"
+        data-ouia-component-type="PF6/Content"
         data-ouia-safe={true}
         data-pf-content={true}
       >
@@ -111,15 +119,15 @@ exports[`Samples List preferred storage: non-ephemeral snapshot 1`] = `
     </div>
   </div>
   <div
-    className="pf-c-panel__main"
+    className="pf-v6-c-panel__main"
     style={
       {
-        "--pf-c-panel__main--MaxHeight": undefined,
+        "--pf-v6-c-panel__main--MaxHeight": undefined,
       }
     }
   >
     <div
-      className="pf-c-panel__main-body"
+      className="pf-v6-c-panel__main-body"
     >
       <div>
         <span>
@@ -138,7 +146,7 @@ exports[`Samples List preferred storage: non-ephemeral snapshot 1`] = `
       </div>
     </div>
     <div
-      className="pf-c-panel__main-body"
+      className="pf-v6-c-panel__main-body"
     >
       <div
         data-testid="samples-list-gallery"

@@ -11,12 +11,11 @@
  */
 
 import {
+  Content,
   Panel,
   PanelHeader,
   PanelMain,
   PanelMainBody,
-  Text,
-  TextContent,
   Title,
 } from '@patternfly/react-core';
 import React from 'react';
@@ -153,9 +152,9 @@ class SamplesList extends React.PureComponent<Props, State> {
       <Panel>
         <PanelHeader>
           <Title headingLevel="h3">Select a Sample</Title>
-          <TextContent>
-            <Text component="small">Select a sample to create your first workspace.</Text>
-          </TextContent>
+          <Content>
+            <Content component="small">Select a sample to create your first workspace.</Content>
+          </Content>
         </PanelHeader>
         <PanelMain>
           <PanelMainBody>

@@ -73,7 +73,7 @@ export class CreateNewIfExistSwitch extends React.PureComponent<Props, State> {
           </div>
         }
         isChecked={isChecked || isDisabled === true}
-        onChange={isChecked => {
+        onChange={(_event, isChecked) => {
           this.handleChange(isChecked);
           if (Navigation.pageState[CREATE_NEW_IF_EXIST_SWITCH_ID].isChecked !== isChecked) {
             Navigation.pageState[CREATE_NEW_IF_EXIST_SWITCH_ID] = { isChecked };

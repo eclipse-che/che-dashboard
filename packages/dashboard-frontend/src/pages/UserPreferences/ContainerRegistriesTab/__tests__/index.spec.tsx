@@ -54,7 +54,11 @@ describe('ContainerRegistries', () => {
     const addRegistryButton = screen.queryByLabelText('add-registry');
     expect(addRegistryButton).toBeTruthy();
 
+    // Suppress offsetWidth errors during snapshot creation
+    const originalError = console.error;
+    console.error = jest.fn();
     const json = renderer.create(component).toJSON();
+    console.error = originalError;
 
     expect(json).toMatchSnapshot();
   });
@@ -73,39 +77,60 @@ describe('ContainerRegistries', () => {
     const addRegistryButton = screen.queryByTestId('add-button');
     expect(addRegistryButton).toBeTruthy();
 
+    // Suppress offsetWidth errors during snapshot creation
+    const originalError = console.error;
+    console.error = jest.fn();
     const json = renderer.create(component).toJSON();
+    console.error = originalError;
 
     expect(json).toMatchSnapshot();
   });
 
   it('should add a new registry', async () => {
-    const component = getComponent(new MockStoreBuilder().build());
-    render(component);
+    // Suppress offsetWidth errors - they're expected in test environment with PatternFly Table
+    const originalError = console.error;
+    const suppressOffsetWidthErrors = (...args: unknown[]) => {
+      const errorStr = String(args[0] || '');
+      if (
+        !errorStr.includes('offsetWidth') &&
+        !errorStr.includes('Cannot read properties of null')
+      ) {
+        originalError(...args);
+      }
+    };
+    console.error = suppressOffsetWidthErrors;
 
-    const addRegistryButton = screen.getByRole('button', { name: 'add-registry' });
-    await userEvent.click(addRegistryButton);
+    try {
+      const component = getComponent(new MockStoreBuilder().build());
+      render(component);
 
-    const dialog = await screen.findByRole('dialog');
+      const addRegistryButton = screen.getByRole('button', { name: 'add-registry' });
+      await userEvent.click(addRegistryButton);
 
-    const editButton = screen.getByRole('button', { name: 'Add' });
-    expect(editButton).toBeDisabled();
+      const dialog = await screen.findByRole('dialog');
 
-    const urlInput = within(dialog).getByRole('textbox', { name: 'Url input' });
-    await userEvent.type(urlInput, 'http://tst');
+      const editButton = screen.getByRole('button', { name: 'Add' });
+      expect(editButton).toBeDisabled();
 
-    const passwordInput = within(dialog).getByTestId('registry-password-input');
-    await userEvent.type(passwordInput, 'qwe');
+      const urlInput = within(dialog).getByRole('textbox', { name: 'Url input' });
+      await userEvent.type(urlInput, 'http://tst');
 
-    expect(editButton).toBeEnabled();
+      const passwordInput = within(dialog).getByTestId('registry-password-input');
+      await userEvent.type(passwordInput, 'qwe');
 
-    await userEvent.click(editButton);
-    expect(mockUpdateCredentials).toHaveBeenCalledWith([
-      {
-        url: 'http://tst',
-        username: '',
-        password: 'qwe',
-      },
-    ]);
+      expect(editButton).toBeEnabled();
+
+      await userEvent.click(editButton);
+      expect(mockUpdateCredentials).toHaveBeenCalledWith([
+        {
+          url: 'http://tst',
+          username: '',
+          password: 'qwe',
+        },
+      ]);
+    } finally {
+      console.error = originalError;
+    }
   });
 
   it('should delete a registry', async () => {

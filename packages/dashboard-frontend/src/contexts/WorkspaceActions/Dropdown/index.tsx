@@ -15,11 +15,11 @@ import {
   AlertVariant,
   Dropdown,
   DropdownItem,
-  DropdownProps,
-  DropdownToggle,
-  KebabToggle,
+  DropdownList,
+  MenuToggle,
+  MenuToggleElement,
 } from '@patternfly/react-core';
-import { CaretDownIcon } from '@patternfly/react-icons';
+import { EllipsisVIcon } from '@patternfly/react-icons';
 import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 
@@ -43,7 +43,7 @@ type OwnProps = {
     // true if the action succeeded, false if it failed, undefined if the action was not performed
     succeeded: boolean | undefined,
   ) => Promise<void>;
-} & Pick<DropdownProps, 'menuAppendTo' | 'position' | 'isPlain'>;
+};
 
 export type Props = OwnProps & MappedProps;
 
@@ -67,33 +67,41 @@ class WorkspaceActionsDropdownComponent extends React.PureComponent<Props, State
     return this.props.toggle === 'kebab-toggle';
   }
 
-  private buildToggle(): React.ReactElement {
+  private buildToggle(): (toggleRef: React.Ref<MenuToggleElement>) => React.ReactElement {
     const { isDisabled = false, workspace } = this.props;
 
     if (this.hasKebabToggle) {
-      return (
-        <KebabToggle
+      // eslint-disable-next-line react/display-name
+      return (toggleRef: React.Ref<MenuToggleElement>) => (
+        <MenuToggle
+          ref={toggleRef}
           aria-label="Actions"
           data-testid={`${workspace.uid}-action-dropdown`}
           data-testtype="kebab-toggle"
           isDisabled={isDisabled}
-          onToggle={isExpanded => this.handleToggle(isExpanded)}
-        />
+          onClick={() => this.handleToggle(!this.state.isExpanded)}
+          isExpanded={this.state.isExpanded}
+          variant="plain"
+        >
+          <EllipsisVIcon />
+        </MenuToggle>
       );
     }
 
-    return (
-      <DropdownToggle
+    // eslint-disable-next-line react/display-name
+    return (toggleRef: React.Ref<MenuToggleElement>) => (
+      <MenuToggle
+        ref={toggleRef}
         aria-label="Actions"
         data-testid={`${workspace.uid}-action-dropdown`}
         data-testtype="dropdown-toggle"
         isDisabled={isDisabled}
-        onToggle={isExpanded => this.handleToggle(isExpanded)}
-        toggleIndicator={CaretDownIcon}
-        toggleVariant="primary"
+        onClick={() => this.handleToggle(!this.state.isExpanded)}
+        isExpanded={this.state.isExpanded}
+        variant="primary"
       >
         Actions
-      </DropdownToggle>
+      </MenuToggle>
     );
   }
 
@@ -150,7 +158,6 @@ class WorkspaceActionsDropdownComponent extends React.PureComponent<Props, State
       return (
         <DropdownItem
           aria-label={`Action: ${action}`}
-          component="button"
           key={`action-${action}`}
           isDisabled={isDisabled}
           onClick={async e => {
@@ -185,7 +192,6 @@ class WorkspaceActionsDropdownComponent extends React.PureComponent<Props, State
 
   render(): React.ReactElement {
     const { isExpanded } = this.state;
-    const { isPlain = false, menuAppendTo = 'inline', position = 'left' } = this.props;
 
     const dropdownToggle = this.buildToggle();
     const dropdownItems = this.getDropdownItems();
@@ -193,13 +199,17 @@ class WorkspaceActionsDropdownComponent extends React.PureComponent<Props, State
     return (
       <Dropdown
         className={styles.workspaceActionSelector}
-        dropdownItems={dropdownItems}
         isOpen={isExpanded}
-        isPlain={isPlain}
-        menuAppendTo={menuAppendTo}
-        position={position}
+        onSelect={() => this.handleToggle(false)}
+        onOpenChange={isOpen => this.handleToggle(isOpen)}
         toggle={dropdownToggle}
-      />
+        popperProps={{
+          appendTo: () => document.body,
+          position: 'right',
+        }}
+      >
+        <DropdownList>{dropdownItems}</DropdownList>
+      </Dropdown>
     );
   }
 }

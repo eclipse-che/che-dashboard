@@ -36,7 +36,7 @@ export default class BannerAlertNotSupportedBrowser extends React.PureComponent<
     }
 
     return (
-      <Banner className="pf-u-text-align-center" variant="warning">
+      <Banner className="pf-u-text-align-center" status="warning">
         The browser you are using is not supported. We recommend using <b>Google Chrome</b> to have
         the best possible experience.
       </Banner>

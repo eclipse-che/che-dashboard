@@ -86,18 +86,10 @@ export class SshPrivateKey extends React.Component<Props, State> {
   }
 
   public render(): React.ReactElement {
-    const { validated, privateKey, isUpload } = this.state;
-
-    const errorMessage = this.getErrorMessage(privateKey, isUpload);
+    const { validated } = this.state;
 
     return (
-      <FormGroup
-        fieldId="ssh-private-key"
-        helperTextInvalid={errorMessage}
-        label="Private Key"
-        validated={validated}
-        isRequired={true}
-      >
+      <FormGroup fieldId="ssh-private-key" label="Private Key" isRequired={true}>
         <TextFileUpload
           fieldId="ssh-private-key"
           fileNamePlaceholder="Upload the PRIVATE key"

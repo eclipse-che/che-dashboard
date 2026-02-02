@@ -10,7 +10,7 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import { Button, ButtonVariant, Text, TextContent, TextVariants } from '@patternfly/react-core';
+import { Button, ButtonVariant, Content, ContentVariants } from '@patternfly/react-core';
 import { InfoIcon, WarningTriangleIcon } from '@patternfly/react-icons';
 import React from 'react';
 
@@ -50,52 +50,52 @@ export class IssueComponent extends React.PureComponent<Props> {
 
   private renderSessionExpired(error: Error): React.ReactNode {
     const errorTextbox = !error ? undefined : (
-      <Text component={TextVariants.pre} className={styles.errorMessage}>
+      <Content component={ContentVariants.pre} className={styles.errorMessage}>
         {error.message}
-      </Text>
+      </Content>
     );
 
     return (
-      <TextContent className={styles.messageContainer}>
-        <Text component={TextVariants.h1}>
+      <Content className={styles.messageContainer}>
+        <Content component="h1">
           <WarningTriangleIcon className={styles.warningIcon} />
           Error
-        </Text>
+        </Content>
         {errorTextbox}
-        <Text component={TextVariants.p}>
+        <Content component="p">
           <Button onClick={() => signIn()} variant={ButtonVariant.link} isInline>
             Sign in
           </Button>
-        </Text>
-      </TextContent>
+        </Content>
+      </Content>
     );
   }
 
   private renderSsoError(error: Error): React.ReactNode {
     const messageTextbox = (
-      <Text component={TextVariants.p}>
+      <Content component="p">
         We are experiencing some technical difficulties from our SSO{error ? ':' : '.'}
-      </Text>
+      </Content>
     );
     const errorTextbox = !error ? undefined : (
-      <Text component={TextVariants.pre} className={styles.errorMessage}>
+      <Content component={ContentVariants.pre} className={styles.errorMessage}>
         {error.message}
-      </Text>
+      </Content>
     );
 
     return (
-      <TextContent className={styles.messageContainer}>
-        <Text component={TextVariants.h1}>
+      <Content className={styles.messageContainer}>
+        <Content component="h1">
           <WarningTriangleIcon className={styles.warningIcon} />
           SSO Error
-        </Text>
+        </Content>
         {messageTextbox}
         {errorTextbox}
-        <Text component={TextVariants.p}>
+        <Content component="p">
           Please try <kbd className={styles.keybinding}>Shift</kbd>+
           <kbd className={styles.keybinding}>Refresh</kbd>
-        </Text>
-      </TextContent>
+        </Content>
+      </Content>
     );
   }
 
@@ -128,26 +128,26 @@ export class IssueComponent extends React.PureComponent<Props> {
     if (workspaceData) {
       ideLoader = this.renderLinkWithHash(workspaceData.ideLoaderPath, 'Restart your workspace');
       workspaceDetails = (
-        <Text component={TextVariants.p}>
+        <Content component="p">
           {this.renderLinkWithHash(workspaceData.workspaceDetailsPath, 'Return to dashboard')}
-        </Text>
+        </Content>
       );
     } else {
       ideLoader = 'Restart your workspace';
     }
 
     return (
-      <TextContent className={styles.messageContainer}>
-        <Text component={TextVariants.h1}>
+      <Content className={styles.messageContainer}>
+        <Content component="h1">
           <WarningTriangleIcon className={styles.warningIcon} />
           Warning
-        </Text>
-        <Text component={TextVariants.p}>
+        </Content>
+        <Content component="p">
           {reasonMessage}
           {ideLoader} to continue using your workspace.
-        </Text>
+        </Content>
         {workspaceDetails}
-      </TextContent>
+      </Content>
     );
   }
 
@@ -167,26 +167,26 @@ export class IssueComponent extends React.PureComponent<Props> {
     if (workspaceData) {
       ideLoader = this.renderLinkWithHash(workspaceData.ideLoaderPath, 'Restart your workspace');
       workspaceDetails = (
-        <Text component={TextVariants.p}>
+        <Content component="p">
           {this.renderLinkWithHash(workspaceData.workspaceDetailsPath, 'Return to dashboard')}
-        </Text>
+        </Content>
       );
     } else {
       ideLoader = 'Restart your workspace';
     }
 
     return (
-      <TextContent className={styles.messageContainer}>
-        <Text component={TextVariants.h1}>
+      <Content className={styles.messageContainer}>
+        <Content component="h1">
           <WarningTriangleIcon className={styles.warningIcon} />
           Warning
-        </Text>
-        <Text component={TextVariants.p}>
+        </Content>
+        <Content component="p">
           {reasonMessage}
           {ideLoader} to continue using your workspace.
-        </Text>
+        </Content>
         {workspaceDetails}
-      </TextContent>
+      </Content>
     );
   }
 
@@ -196,34 +196,34 @@ export class IssueComponent extends React.PureComponent<Props> {
 
     if (workspaceData) {
       ideLoader = (
-        <Text component={TextVariants.p}>
+        <Content component="p">
           {this.renderLinkWithHash(workspaceData.ideLoaderPath, 'Restart your workspace')}
-        </Text>
+        </Content>
       );
 
       workspaceDetails = (
-        <Text component={TextVariants.p}>
+        <Content component="p">
           {this.renderLinkWithHash(workspaceData.workspaceDetailsPath, 'Return to dashboard')}
-        </Text>
+        </Content>
       );
     }
 
     const errorTextbox = !error ? undefined : (
-      <Text component={TextVariants.pre} className={styles.errorMessage}>
+      <Content component={ContentVariants.pre} className={styles.errorMessage}>
         {error.message}
-      </Text>
+      </Content>
     );
 
     return (
-      <TextContent className={styles.messageContainer}>
-        <Text component={TextVariants.h1}>
+      <Content className={styles.messageContainer}>
+        <Content component="h1">
           <WarningTriangleIcon className={styles.warningIcon} />
           Workspace failed
-        </Text>
+        </Content>
         {errorTextbox}
         {ideLoader}
         {workspaceDetails}
-      </TextContent>
+      </Content>
     );
   }
 
@@ -234,65 +234,65 @@ export class IssueComponent extends React.PureComponent<Props> {
     if (workspaceData) {
       ideLoader = this.renderLinkWithHash(workspaceData.ideLoaderPath, 'Start your workspace');
       workspaceDetails = (
-        <Text component={TextVariants.p}>
+        <Content component="p">
           {this.renderLinkWithHash(workspaceData.workspaceDetailsPath, 'Return to dashboard')}
-        </Text>
+        </Content>
       );
     } else {
       ideLoader = 'Start your workspace';
     }
 
     return (
-      <TextContent className={styles.messageContainer}>
-        <Text component={TextVariants.h1}>
+      <Content className={styles.messageContainer}>
+        <Content component="h1">
           <InfoIcon className={styles.infoIcon} />
           Info
-        </Text>
-        <Text component={TextVariants.p}>
+        </Content>
+        <Content component="p">
           Your workspace is not running. {ideLoader} to continue using your workspace.
-        </Text>
+        </Content>
         {workspaceDetails}
-      </TextContent>
+      </Content>
     );
   }
 
   private renderNamespaceProvisionError(error: Error): React.ReactNode {
     const errorTextbox = !error ? undefined : (
-      <Text component={TextVariants.pre} className={styles.errorMessage}>
+      <Content component={ContentVariants.pre} className={styles.errorMessage}>
         {error.message}
-      </Text>
+      </Content>
     );
 
     return (
-      <TextContent className={styles.messageContainer}>
-        <Text component={TextVariants.h1}>
+      <Content className={styles.messageContainer}>
+        <Content component="h1">
           <WarningTriangleIcon className={styles.warningIcon} />
           Error
-        </Text>
+        </Content>
         {errorTextbox}
-      </TextContent>
+      </Content>
     );
   }
 
   private renderUnknownError(error: Error): React.ReactNode {
     const errorTextbox = !error ? undefined : (
-      <Text component={TextVariants.pre} className={styles.errorMessage}>
+      <Content component={ContentVariants.pre} className={styles.errorMessage}>
         {error.message}
-      </Text>
+      </Content>
     );
 
     return (
-      <TextContent className={styles.messageContainer}>
-        <Text component={TextVariants.h1}>
+      <Content className={styles.messageContainer}>
+        <Content component="h1">
           <WarningTriangleIcon className={styles.warningIcon} />
           Error
-        </Text>
+        </Content>
         {errorTextbox}
-        <Text component={TextVariants.p}>
+        <Content component="p">
           Please try <kbd className={styles.keybinding}>Shift</kbd>+
           <kbd className={styles.keybinding}>Refresh</kbd>
-        </Text>
-      </TextContent>
+        </Content>
+      </Content>
     );
   }
 

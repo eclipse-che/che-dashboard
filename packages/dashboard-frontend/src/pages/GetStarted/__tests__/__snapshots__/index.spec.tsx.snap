@@ -3,64 +3,72 @@
 exports[`GetStarted snapshot 1`] = `
 [
   <section
-    className="pf-c-page__main-section pf-m-light"
+    className="pf-v6-c-page__main-section"
   >
-    <h1
-      className="pf-c-title pf-m-2xl"
-      data-ouia-component-id="OUIA-Generated-Title-1"
-      data-ouia-component-type="PF4/Title"
-      data-ouia-safe={true}
+    <div
+      className="pf-v6-c-page__main-body"
     >
-      Create Workspace
-    </h1>
+      <h1
+        className="pf-v6-c-title pf-m-h1"
+        data-ouia-component-id="OUIA-Generated-Title-1"
+        data-ouia-component-type="PF6/Title"
+        data-ouia-safe={true}
+      >
+        Create Workspace
+      </h1>
+    </div>
   </section>,
   <hr
-    className="pf-c-divider"
+    className="pf-v6-c-divider"
   />,
   <section
-    className="pf-c-page__main-section"
+    className="pf-v6-c-page__main-section"
   >
     <div
-      data-testid="editor-selector"
+      className="pf-v6-c-page__main-body"
     >
-      Editor Selector
-      <button
-        onClick={[Function]}
+      <div
+        data-testid="editor-selector"
       >
-        Select Editor
-      </button>
-    </div>
-    <div
-      className="spacer"
-      data-testid="spacer"
-    />
-    <div
-      data-testid="import-from-git"
-    >
-      <div>
-        Import from Git
+        Editor Selector
+        <button
+          onClick={[Function]}
+        >
+          Select Editor
+        </button>
       </div>
       <div
-        data-testid="editor-definition"
+        className="spacer"
+        data-testid="spacer"
       />
       <div
-        data-testid="editor-image"
-      />
-    </div>
-    <div
-      className="spacer"
-      data-testid="spacer"
-    />
-    <div
-      data-testid="samples-list"
-    >
+        data-testid="import-from-git"
+      >
+        <div>
+          Import from Git
+        </div>
+        <div
+          data-testid="editor-definition"
+        />
+        <div
+          data-testid="editor-image"
+        />
+      </div>
       <div
-        data-testid="editor-definition"
+        className="spacer"
+        data-testid="spacer"
       />
       <div
-        data-testid="editor-image"
-      />
-      Samples List
+        data-testid="samples-list"
+      >
+        <div
+          data-testid="editor-definition"
+        />
+        <div
+          data-testid="editor-image"
+        />
+        Samples List
+      </div>
     </div>
   </section>,
 ]
