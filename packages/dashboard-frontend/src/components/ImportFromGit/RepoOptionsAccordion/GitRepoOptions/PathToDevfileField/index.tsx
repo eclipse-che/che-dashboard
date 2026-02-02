@@ -54,7 +54,7 @@ export class PathToDevfileField extends React.PureComponent<Props, State> {
         <TextInput
           aria-label="Path to Devfile"
           placeholder="Enter the relative path to the Devfile in the Git Repository"
-          onChange={value => this.handleChange(value)}
+          onChange={(_event, value) => this.handleChange(value)}
           value={devfilePath}
         />
       </FormGroup>

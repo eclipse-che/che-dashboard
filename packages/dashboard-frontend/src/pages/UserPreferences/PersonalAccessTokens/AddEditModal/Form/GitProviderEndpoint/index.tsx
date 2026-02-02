@@ -13,9 +13,6 @@
 import { FormGroup, TextInput, TextInputTypes, ValidatedOptions } from '@patternfly/react-core';
 import React from 'react';
 
-const INVALID_URL_ERROR = 'The URL is not valid.';
-const REQUIRED_ERROR = 'This field is required.';
-
 export type Props = {
   defaultProviderEndpoint: string;
   providerEndpoint: string | undefined;
@@ -125,21 +122,14 @@ export class GitProviderEndpoint extends React.PureComponent<Props, State> {
   }
 
   public render(): React.ReactElement {
-    const { providerEndpoint = '', validated } = this.state;
-    const errorMessage = providerEndpoint.length === 0 ? REQUIRED_ERROR : INVALID_URL_ERROR;
+    const { providerEndpoint = '' } = this.state;
 
     return (
-      <FormGroup
-        fieldId="git-provider-endpoint-label"
-        helperTextInvalid={errorMessage}
-        label="Git Provider Endpoint"
-        validated={validated}
-        isRequired
-      >
+      <FormGroup fieldId="git-provider-endpoint-label" label="Git Provider Endpoint" isRequired>
         <TextInput
           aria-describedby="git-provider-endpoint-label"
           aria-label="Git Provider Endpoint"
-          onChange={providerEndpoint => this.handleChange(providerEndpoint)}
+          onChange={(_event, providerEndpoint) => this.handleChange(providerEndpoint)}
           onFocus={() => this.handleFocus()}
           placeholder="Enter a Git Provider Endpoint"
           ref={this.textInputRef}

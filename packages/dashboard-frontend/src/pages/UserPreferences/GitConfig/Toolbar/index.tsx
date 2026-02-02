@@ -38,7 +38,7 @@ export class GitConfigToolbar extends React.PureComponent<Props> {
     return (
       <Toolbar style={{ paddingBottom: 0 }}>
         <ToolbarContent>
-          <ToolbarItem alignment={{ default: 'alignRight' }}>
+          <ToolbarItem align={{ default: 'alignEnd' }}>
             {mode === 'form' ? (
               <Button
                 variant={ButtonVariant.link}

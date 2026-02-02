@@ -11,8 +11,8 @@
  */
 
 .error {
-  background-color: var(--pf-global--palette--red-50);
-  border-color: var(--pf-global--palette--red-100);
+  background-color: var(--pf-t--global--color--nonstatus--red--default);
+  border-color: var(--pf-t--global--border--color--status--danger--default);
   border-top: 2px solid;
 }
 

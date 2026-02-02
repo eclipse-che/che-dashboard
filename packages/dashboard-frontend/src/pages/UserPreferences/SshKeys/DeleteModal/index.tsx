@@ -15,11 +15,13 @@ import {
   Button,
   ButtonVariant,
   Checkbox,
+  Content,
   Modal,
+  ModalBody,
+  ModalFooter,
+  ModalHeader,
   ModalVariant,
   pluralize,
-  Text,
-  TextContent,
 } from '@patternfly/react-core';
 import React from 'react';
 
@@ -52,63 +54,45 @@ export class SshKeysDeleteModal extends React.PureComponent<Props, State> {
     this.props.onCloseModal();
   }
 
-  private buildModalFooter(): React.ReactElement {
-    const { isChecked } = this.state;
-
-    return (
-      <React.Fragment>
-        <Button
-          variant={ButtonVariant.danger}
-          isDisabled={isChecked === false}
-          onClick={() => this.handleDelete()}
-        >
-          Delete
-        </Button>
-        <Button variant={ButtonVariant.link} onClick={() => this.handleCloseModal()}>
-          Cancel
-        </Button>
-      </React.Fragment>
-    );
-  }
-
-  private buildModalContent(): React.ReactElement {
-    const { deleteItems } = this.props;
+  public render(): React.ReactElement {
+    const { isOpen, deleteItems } = this.props;
     const { isChecked } = this.state;
 
     const sshKeys = pluralize(deleteItems.length, 'SSH key');
-
-    return (
-      <TextContent>
-        <Text>Are you sure you want to delete the selected {sshKeys}?</Text>
-        <Checkbox
-          id="delete-ssh-keys-warning-checkbox"
-          isChecked={isChecked}
-          label="I understand, this operation cannot be reverted."
-          onChange={isChecked => this.setState({ isChecked })}
-        />
-      </TextContent>
-    );
-  }
-
-  public render(): React.ReactElement {
-    const { isOpen, deleteItems } = this.props;
-
-    const sshKeys = pluralize(deleteItems.length, 'SSH keys');
-    const modalTitle = `Delete ${sshKeys}`;
-    const modalFooter = this.buildModalFooter();
-    const modalContent = this.buildModalContent();
+    const sshKeysTitle = pluralize(deleteItems.length, 'SSH keys');
+    const modalTitle = `Delete ${sshKeysTitle}`;
 
     return (
       <Modal
         aria-label={modalTitle}
-        title={modalTitle}
-        titleIconVariant="warning"
         variant={ModalVariant.small}
         isOpen={isOpen}
         onClose={() => this.handleCloseModal()}
-        footer={modalFooter}
       >
-        {modalContent}
+        <ModalHeader title={modalTitle} titleIconVariant="warning" />
+        <ModalBody>
+          <Content>
+            <Content component="p">Are you sure you want to delete the selected {sshKeys}?</Content>
+            <Checkbox
+              id="delete-ssh-keys-warning-checkbox"
+              isChecked={isChecked}
+              label="I understand, this operation cannot be reverted."
+              onChange={(_event, checked) => this.setState({ isChecked: checked })}
+            />
+          </Content>
+        </ModalBody>
+        <ModalFooter>
+          <Button
+            variant={ButtonVariant.danger}
+            isDisabled={isChecked === false}
+            onClick={() => this.handleDelete()}
+          >
+            Delete
+          </Button>
+          <Button variant={ButtonVariant.link} onClick={() => this.handleCloseModal()}>
+            Cancel
+          </Button>
+        </ModalFooter>
       </Modal>
     );
   }

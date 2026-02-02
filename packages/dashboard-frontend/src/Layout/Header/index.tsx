@@ -10,7 +10,15 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import { PageHeader } from '@patternfly/react-core';
+import {
+  Masthead,
+  MastheadBrand,
+  MastheadContent,
+  MastheadLogo,
+  MastheadMain,
+  MastheadToggle,
+  PageToggleButton,
+} from '@patternfly/react-core';
 import { History } from 'history';
 import React from 'react';
 
@@ -21,7 +29,6 @@ export type Props = {
   isVisible: boolean;
   logo: React.ReactNode;
   logout: () => void;
-  toggleNav: () => void;
 };
 type State = {
   isVisible: boolean;
@@ -36,10 +43,6 @@ export class Header extends React.PureComponent<Props, State> {
     };
   }
 
-  private toggleNav(): void {
-    this.props.toggleNav();
-  }
-
   public componentDidUpdate(prevProps: Props): void {
     if (prevProps.isVisible !== this.props.isVisible) {
       this.setState({
@@ -52,17 +55,19 @@ export class Header extends React.PureComponent<Props, State> {
     const className = this.state.isVisible ? 'show-header' : 'hide-header';
 
     return (
-      <PageHeader
-        style={{ zIndex: 'inherit' }}
-        className={className}
-        logoComponent="div"
-        logo={this.props.logo}
-        showNavToggle={true}
-        onNavToggle={() => this.toggleNav()}
-        headerTools={
+      <Masthead className={className}>
+        <MastheadMain>
+          <MastheadToggle>
+            <PageToggleButton isHamburgerButton aria-label="Global navigation" />
+          </MastheadToggle>
+          <MastheadBrand>
+            <MastheadLogo>{this.props.logo}</MastheadLogo>
+          </MastheadBrand>
+        </MastheadMain>
+        <MastheadContent>
           <HeaderTools history={this.props.history} logout={() => this.props.logout()} />
-        }
-      />
+        </MastheadContent>
+      </Masthead>
     );
   }
 }

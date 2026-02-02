@@ -16,7 +16,7 @@
 }
 
 .activeCard {
-  color: #000;
+  font-weight: 600;
 }
 
 .provider {

@@ -17,6 +17,7 @@ import { Provider } from 'react-redux';
 import renderer from 'react-test-renderer';
 import { Store } from 'redux';
 
+import { ThemeProvider } from '@/contexts/ThemeContext';
 import { AboutMenu } from '@/Layout/Header/Tools/AboutMenu';
 import { BRANDING_DEFAULT, BrandingData } from '@/services/bootstrap/branding.constant';
 import { AppThunk } from '@/store';
@@ -43,6 +44,21 @@ jest.mock('@/store/InfrastructureNamespaces', () => {
 describe('About Menu', () => {
   global.open = jest.fn();
 
+  // Mock matchMedia for ThemeProvider
+  Object.defineProperty(window, 'matchMedia', {
+    writable: true,
+    value: jest.fn().mockImplementation(query => ({
+      matches: false,
+      media: query,
+      onchange: null,
+      addListener: jest.fn(),
+      removeListener: jest.fn(),
+      addEventListener: jest.fn(),
+      removeEventListener: jest.fn(),
+      dispatchEvent: jest.fn(),
+    })),
+  });
+
   const productCli = 'crwctl';
   const email = 'johndoe@example.com';
   const username = 'John Doe';
@@ -51,7 +67,9 @@ describe('About Menu', () => {
 
   const component = (
     <Provider store={store}>
-      <AboutMenu branding={branding} username={username} />
+      <ThemeProvider>
+        <AboutMenu branding={branding} username={username} />
+      </ThemeProvider>
     </Provider>
   );
 

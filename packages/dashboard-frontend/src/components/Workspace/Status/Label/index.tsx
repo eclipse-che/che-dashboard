@@ -14,7 +14,7 @@ import { Label, LabelProps } from '@patternfly/react-core';
 import React from 'react';
 
 import { CheTooltip } from '@/components/CheTooltip';
-import { getStatusIcon } from '@/components/Workspace/Status/getStatusIcon';
+import { useStatusIcon } from '@/components/Workspace/Status/getStatusIcon';
 import styles from '@/components/Workspace/Status/index.module.css';
 import {
   DeprecatedWorkspaceStatus,
@@ -26,40 +26,38 @@ type Props = {
   status: WorkspaceStatus | DevWorkspaceStatus | DeprecatedWorkspaceStatus;
 };
 
-export class WorkspaceStatusLabel extends React.PureComponent<Props> {
-  render(): React.ReactElement {
-    const { status } = this.props;
+export const WorkspaceStatusLabel: React.FC<Props> = ({ status }) => {
+  const icon = useStatusIcon(status);
 
-    let statusLabelColor: LabelProps['color'];
-    switch (status) {
-      case WorkspaceStatus.RUNNING:
-      case DevWorkspaceStatus.RUNNING:
-        statusLabelColor = 'green';
-        break;
-      case WorkspaceStatus.STARTING:
-      case DevWorkspaceStatus.STARTING:
-        statusLabelColor = 'blue';
-        break;
-      case DevWorkspaceStatus.FAILING:
-      case WorkspaceStatus.ERROR:
-      case DevWorkspaceStatus.FAILED:
-      case 'Deprecated':
-        statusLabelColor = 'orange';
-        break;
-      case WorkspaceStatus.STOPPED:
-      case DevWorkspaceStatus.STOPPED:
-      case WorkspaceStatus.STOPPING:
-      case DevWorkspaceStatus.STOPPING:
-      case DevWorkspaceStatus.TERMINATING:
-        statusLabelColor = 'grey';
-    }
-
-    return (
-      <CheTooltip content={status === 'Deprecated' ? 'Deprecated workspace' : status}>
-        <Label className={styles.statusLabel} color={statusLabelColor} icon={getStatusIcon(status)}>
-          {status}
-        </Label>
-      </CheTooltip>
-    );
+  let statusLabelColor: LabelProps['color'];
+  switch (status) {
+    case WorkspaceStatus.RUNNING:
+    case DevWorkspaceStatus.RUNNING:
+      statusLabelColor = 'green';
+      break;
+    case WorkspaceStatus.STARTING:
+    case DevWorkspaceStatus.STARTING:
+      statusLabelColor = 'blue';
+      break;
+    case DevWorkspaceStatus.FAILING:
+    case WorkspaceStatus.ERROR:
+    case DevWorkspaceStatus.FAILED:
+    case 'Deprecated':
+      statusLabelColor = 'orange';
+      break;
+    case WorkspaceStatus.STOPPED:
+    case DevWorkspaceStatus.STOPPED:
+    case WorkspaceStatus.STOPPING:
+    case DevWorkspaceStatus.STOPPING:
+    case DevWorkspaceStatus.TERMINATING:
+      statusLabelColor = 'grey';
   }
-}
+
+  return (
+    <CheTooltip content={status === 'Deprecated' ? 'Deprecated workspace' : status}>
+      <Label className={styles.statusLabel} color={statusLabelColor} icon={icon}>
+        {status}
+      </Label>
+    </CheTooltip>
+  );
+};

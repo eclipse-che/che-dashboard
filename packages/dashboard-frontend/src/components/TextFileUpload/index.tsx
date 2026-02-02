@@ -45,7 +45,7 @@ export class TextFileUpload extends React.PureComponent<Props, State> {
     };
   }
 
-  private handleFileInputChange(_event: React.ChangeEvent | React.DragEvent, file: File): void {
+  private handleFileInputChange(file: File): void {
     this.setState({
       file,
       filename: file.name,
@@ -93,10 +93,10 @@ export class TextFileUpload extends React.PureComponent<Props, State> {
         value={content}
         filename={filename}
         filenamePlaceholder={fileNamePlaceholder}
-        onFileInputChange={(event, file) => this.handleFileInputChange(event, file)}
+        onFileInputChange={(_event, file) => this.handleFileInputChange(file)}
         onClearClick={() => this.handleClearClick()}
-        onDataChange={data => this.handleDataChange(data)}
-        onTextChange={text => this.handleTextChange(text)}
+        onDataChange={(_event, data) => this.handleDataChange(data)}
+        onTextChange={(_event, text) => this.handleTextChange(text)}
         browseButtonText="Upload"
         isLoading={isLoading}
         isRequired={true}

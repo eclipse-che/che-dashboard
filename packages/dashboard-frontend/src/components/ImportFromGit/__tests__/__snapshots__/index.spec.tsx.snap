@@ -2,66 +2,66 @@
 
 exports[`GitRepoLocationInput snapshot 1`] = `
 <div
-  className="pf-c-panel"
+  className="pf-v6-c-panel"
 >
   <div
-    className="pf-c-panel__header"
+    className="pf-v6-c-panel__header"
   >
     <h3
-      className="pf-c-title pf-m-lg"
+      className="pf-v6-c-title pf-m-h3"
       data-ouia-component-id="OUIA-Generated-Title-1"
-      data-ouia-component-type="PF4/Title"
+      data-ouia-component-type="PF6/Title"
       data-ouia-safe={true}
     >
       Import from Git
     </h3>
   </div>
   <div
-    className="pf-c-panel__main"
+    className="pf-v6-c-panel__main"
     style={
       {
-        "--pf-c-panel__main--MaxHeight": undefined,
+        "--pf-v6-c-panel__main--MaxHeight": undefined,
       }
     }
   >
     <div
-      className="pf-c-panel__main-body"
+      className="pf-v6-c-panel__main-body"
     >
       <form
-        className="pf-c-form pf-m-horizontal"
+        className="pf-v6-c-form pf-m-horizontal"
         noValidate={true}
         onSubmit={[Function]}
       >
         <div
-          className="pf-c-form__group"
+          className="pf-v6-c-form__group"
         >
           <div
-            className="pf-c-form__group-label"
+            className="pf-v6-c-form__group-label"
           >
             <label
-              className="pf-c-form__label"
+              className="pf-v6-c-form__label"
               htmlFor="git-repo-url"
             >
               <span
-                className="pf-c-form__label-text"
+                className="pf-v6-c-form__label-text"
               >
                 Git repo URL
               </span>
               <span
                 aria-hidden="true"
-                className="pf-c-form__label-required"
+                className="pf-v6-c-form__label-required"
               >
                  
                 *
               </span>
             </label>
-             
+              
           </div>
           <div
-            className="pf-c-form__group-control"
+            className="pf-v6-c-form__group-control"
           >
             <div
-              className="pf-l-flex"
+              className="pf-v6-l-flex"
             >
               <div
                 className="pf-m-grow"
@@ -72,50 +72,65 @@ exports[`GitRepoLocationInput snapshot 1`] = `
                   }
                 }
               >
-                <input
-                  aria-invalid={false}
-                  aria-label="HTTPS or SSH URL"
-                  className="pf-c-form-control"
-                  data-ouia-component-id="OUIA-Generated-TextInputBase-1"
-                  data-ouia-component-type="PF4/TextInput"
-                  data-ouia-safe={true}
-                  disabled={false}
-                  id="git-repo-url"
-                  onBlur={[Function]}
-                  onChange={[Function]}
-                  onFocus={[Function]}
-                  placeholder="Enter HTTPS or SSH URL"
-                  required={false}
-                  type="text"
-                />
+                <span
+                  className="pf-v6-c-form-control"
+                >
+                  <input
+                    aria-invalid={false}
+                    aria-label="HTTPS or SSH URL"
+                    data-ouia-component-id="OUIA-Generated-TextInputBase-1"
+                    data-ouia-component-type="PF6/TextInput"
+                    data-ouia-safe={true}
+                    disabled={false}
+                    id="git-repo-url"
+                    onBlur={[Function]}
+                    onChange={[Function]}
+                    onFocus={[Function]}
+                    placeholder="Enter HTTPS or SSH URL"
+                    required={false}
+                    type="text"
+                  />
+                </span>
               </div>
               <div
                 className=""
               >
                 <button
-                  aria-disabled={true}
                   aria-label={null}
-                  className="pf-c-button pf-m-secondary pf-m-disabled"
+                  className="pf-v6-c-button pf-m-secondary"
                   data-ouia-component-id="OUIA-Generated-Button-secondary-1"
-                  data-ouia-component-type="PF4/Button"
+                  data-ouia-component-type="PF6/Button"
                   data-ouia-safe={true}
                   disabled={true}
                   id="create-and-open-button"
                   onClick={[Function]}
-                  role={null}
                   tabIndex={null}
                   type="button"
                 >
-                  Create & Open
+                  <span
+                    className="pf-v6-c-button__text"
+                  >
+                    Create & Open
+                  </span>
                 </button>
               </div>
             </div>
             <div
-              aria-live="polite"
-              className="pf-c-form__helper-text"
-              id="git-repo-url-helper"
+              className="pf-v6-c-form__helper-text"
             >
-              Import from a Git repository to launch a Cloud Development Environment.
+              <div
+                className="pf-v6-c-helper-text"
+              >
+                <div
+                  className="pf-v6-c-helper-text__item"
+                >
+                  <span
+                    className="pf-v6-c-helper-text__item-text"
+                  >
+                    Import from a Git repository to launch a Cloud Development Environment.
+                  </span>
+                </div>
+              </div>
             </div>
           </div>
         </div>
