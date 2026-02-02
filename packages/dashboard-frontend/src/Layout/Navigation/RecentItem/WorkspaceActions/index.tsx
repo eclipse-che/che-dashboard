@@ -30,6 +30,7 @@ export class RecentItemWorkspaceActions extends React.PureComponent<Props> {
 
     return (
       <div
+        style={{ position: 'absolute', top: 0, right: 0 }}
         onClick={e => {
           e.stopPropagation();
         }}
