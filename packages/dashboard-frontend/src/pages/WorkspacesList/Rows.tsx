@@ -139,7 +139,7 @@ export function buildRow(
   );
   /* workspace name */
   const details = (
-    <span>
+    <span style={{ whiteSpace: 'nowrap' }}>
       {statusIndicator}
       <Button variant="link" component={props => <Link {...props} to={overviewPageLocation} />}>
         {workspace.name}
