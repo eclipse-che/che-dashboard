@@ -37,7 +37,6 @@ describe('About modal', () => {
       closeModal={closeModal}
       isOpen={true}
       logo="./"
-      isSvgLogo={false}
       username="test-user"
     />
   );
