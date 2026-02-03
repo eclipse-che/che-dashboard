@@ -21,6 +21,8 @@
 .navItem [class*='nav__link'] {
   width: 100%;
   padding-left: 8px;
+  padding-right: 4px;
+  overflow: hidden;
 }
 
 .navItem [class*='nav__link'] > span {
