@@ -148,6 +148,7 @@ exports[`The workspace status label component Che Workspaces should render STOPP
         >
           <span
             className="pf-v6-c-icon pf-m-inline"
+            color="var(--pf-t--global--text--color--regular)"
           >
             <span
               className="pf-v6-c-icon__content"
@@ -458,6 +459,7 @@ exports[`The workspace status label component DevWorkspaces should render STOPPE
         >
           <span
             className="pf-v6-c-icon pf-m-inline"
+            color="var(--pf-t--global--text--color--regular)"
           >
             <span
               className="pf-v6-c-icon__content"

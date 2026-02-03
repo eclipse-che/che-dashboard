@@ -18,6 +18,10 @@
   fill: #5b2eed;
 }
 
+.statusLabel .pf-m-warning svg {
+  fill: #e38c2a;
+}
+
 svg.rotate {
   width: 17px;
 }

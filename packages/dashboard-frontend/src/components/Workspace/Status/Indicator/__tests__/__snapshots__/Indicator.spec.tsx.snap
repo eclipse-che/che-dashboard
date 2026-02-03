@@ -171,6 +171,7 @@ exports[`Workspace indicator component Che Workspaces should render STOPPED stat
     >
       <span
         className="pf-v6-c-icon pf-m-inline"
+        color="var(--pf-t--global--text--color--regular)"
       >
         <span
           className="pf-v6-c-icon__content"
@@ -476,6 +477,7 @@ exports[`Workspace indicator component DevWorkspaces should render STOPPED statu
     >
       <span
         className="pf-v6-c-icon pf-m-inline"
+        color="var(--pf-t--global--text--color--regular)"
       >
         <span
           className="pf-v6-c-icon__content"
