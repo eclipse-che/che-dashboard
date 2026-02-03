@@ -36,7 +36,7 @@ export function getStatusIcon(status: string, isDarkTheme: boolean) {
     case DevWorkspaceStatus.STOPPED:
     case WorkspaceStatus.STOPPED:
       icon = (
-        <Icon isInline>
+        <Icon isInline color={greyColor}>
           <StoppedIcon />
         </Icon>
       );
