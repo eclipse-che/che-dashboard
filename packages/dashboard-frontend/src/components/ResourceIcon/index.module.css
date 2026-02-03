@@ -24,6 +24,6 @@
   text-align: center;
   white-space: nowrap;
 
-  background-color: var(--pf-t--global--color--nonstatus--blue--default);
+  background-color: var(--pf-t--global--color--nonstatus--blue--300);
   border-radius: 20px;
 }

@@ -19,10 +19,10 @@
 }
 
 .navItem [class*='nav__link'] {
-  width: 100%;
-  padding-left: 8px;
-  padding-right: 4px;
   overflow: hidden;
+  width: 100%;
+  padding-right: 4px;
+  padding-left: 8px;
 }
 
 .navItem [class*='nav__link'] > span {

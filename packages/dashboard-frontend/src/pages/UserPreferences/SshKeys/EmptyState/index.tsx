@@ -10,7 +10,13 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import { Button, EmptyState, EmptyStateBody, EmptyStateVariant } from '@patternfly/react-core';
+import {
+  Button,
+  EmptyState,
+  EmptyStateBody,
+  EmptyStateVariant,
+  PageSection,
+} from '@patternfly/react-core';
 import { KeyIcon, PlusCircleIcon } from '@patternfly/react-icons';
 import React from 'react';
 
@@ -22,24 +28,26 @@ export type Props = {
 export class SshKeysEmptyState extends React.PureComponent<Props> {
   public render(): React.ReactElement {
     return (
-      <EmptyState
-        isFullHeight={true}
-        variant={EmptyStateVariant.sm}
-        icon={KeyIcon}
-        titleText="No SSH Keys"
-      >
-        <EmptyStateBody>
-          <Button
-            icon={<PlusCircleIcon />}
-            aria-label="Add SSH Key"
-            variant="link"
-            isDisabled={this.props.isDisabled}
-            onClick={() => this.props.onAddSshKey()}
-          >
-            Add SSH Key
-          </Button>
-        </EmptyStateBody>
-      </EmptyState>
+      <PageSection>
+        <EmptyState
+          isFullHeight={true}
+          variant={EmptyStateVariant.sm}
+          icon={KeyIcon}
+          titleText="No SSH Keys"
+        >
+          <EmptyStateBody>
+            <Button
+              icon={<PlusCircleIcon />}
+              aria-label="Add SSH Key"
+              variant="link"
+              isDisabled={this.props.isDisabled}
+              onClick={() => this.props.onAddSshKey()}
+            >
+              Add SSH Key
+            </Button>
+          </EmptyStateBody>
+        </EmptyState>
+      </PageSection>
     );
   }
 }
