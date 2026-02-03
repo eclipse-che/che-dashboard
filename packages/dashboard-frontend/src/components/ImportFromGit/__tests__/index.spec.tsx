@@ -10,6 +10,7 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
+import { api } from '@eclipse-che/common';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
 import { Provider } from 'react-redux';
@@ -17,11 +18,13 @@ import { Store } from 'redux';
 
 import ImportFromGit from '@/components/ImportFromGit';
 import getComponentRenderer, { screen, waitFor } from '@/services/__mocks__/getComponentRenderer';
+import { fetchGitBranches } from '@/services/backend-client/gitBranchesApi';
 import { MockStoreBuilder } from '@/store/__mocks__/mockStore';
 
 const { createSnapshot, renderComponent } = getComponentRenderer(getComponent);
 
 jest.mock('@/components/UntrustedSourceModal');
+jest.mock('@/services/backend-client/gitBranchesApi');
 
 const mockNavigate = jest.fn();
 
@@ -38,6 +41,8 @@ describe('GitRepoLocationInput', () => {
   let store: Store;
 
   beforeEach(() => {
+    (fetchGitBranches as jest.Mock).mockResolvedValue({ branches: [] } as api.IGitBranches);
+
     store = new MockStoreBuilder()
       .withDwServerConfig({
         defaults: {
