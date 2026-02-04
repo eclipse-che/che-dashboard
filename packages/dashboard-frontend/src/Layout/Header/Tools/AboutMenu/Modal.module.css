@@ -10,9 +10,8 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-.aboutModalContent dt {
-  width: 150px;
-  min-width: 150px;
+.aboutModalContent dl {
+  grid-template: auto / 125px;
 }
 
 .dashboardVersionLabel {
