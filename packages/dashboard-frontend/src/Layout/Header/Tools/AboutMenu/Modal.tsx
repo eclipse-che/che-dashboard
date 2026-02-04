@@ -112,6 +112,8 @@ export class AboutModal extends React.PureComponent<Props> {
         onClose={() => this.props.closeModal()}
         brandImageSrc={logo}
         brandImageAlt={`${productName} logo`}
+        backgroundImageSrc="/dashboard/assets/images/pf-background.svg"
+        productName={productName}
       >
         {modalContent}
       </PatternflyAboutModal>
