@@ -17,6 +17,7 @@ import { connect, ConnectedProps } from 'react-redux';
 import { matchPath } from 'react-router-dom';
 
 import { BannerAlert } from '@/components/BannerAlert';
+import { useTheme } from '@/contexts/ThemeContext';
 import { ToggleBarsContext } from '@/contexts/ToggleBars';
 import { container } from '@/inversify.config';
 import { ErrorBoundary } from '@/Layout/ErrorBoundary';
@@ -45,7 +46,9 @@ type Props = MappedProps & {
 const LayoutComponent: React.FC<Props> = props => {
   const [isHeaderVisible, setIsHeaderVisible] = React.useState(true);
   const [isSidebarVisible, setIsSidebarVisible] = React.useState(true);
+  const [logoSrc, setLogoSrc] = React.useState<string>('');
 
+  const { isDarkTheme } = useTheme();
   const issuesReporterService = container.get(IssuesReporterService);
   const warningsReporterService = container.get(WarningsReporterService);
   const appAlerts = container.get(AppAlerts);
@@ -95,6 +98,16 @@ const LayoutComponent: React.FC<Props> = props => {
     showWarnings();
   }, [props.history.location.pathname, hideAllBars, showWarnings]);
 
+  // Load logo with theme awareness
+  React.useEffect(() => {
+    const result = buildLogoSrc(props.dashboardLogo, props.branding.logoFile, isDarkTheme);
+    if (typeof result === 'string') {
+      setLogoSrc(result || '');
+    } else if (result) {
+      result.then(src => setLogoSrc(src || ''));
+    }
+  }, [props.dashboardLogo, props.branding.logoFile, isDarkTheme]);
+
   /* check for startup issues */
   if (issuesReporterService.hasIssue) {
     const issue = issuesReporterService.reportIssue();
@@ -108,9 +121,8 @@ const LayoutComponent: React.FC<Props> = props => {
     }
   }
 
-  const { history, branding, dashboardLogo } = props;
+  const { history } = props;
 
-  const logoSrc = buildLogoSrc(dashboardLogo, branding.logoFile);
   const logoElement = <Brand src={logoSrc} alt="Logo" heights={{ default: '36px' }} />;
 
   const masthead = (
