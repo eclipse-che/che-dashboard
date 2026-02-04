@@ -81,9 +81,11 @@ export class SampleCard extends React.PureComponent<Props> {
       <Card
         id={this.cardId}
         isCompact
+        isClickable
         isSelectable
         className={'sample-card'}
         data-testid="sample-card"
+        onClick={this.handleSelectableAction}
       >
         <CardHeader
           selectableActions={{
