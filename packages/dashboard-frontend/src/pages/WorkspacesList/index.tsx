@@ -206,7 +206,7 @@ export default class WorkspacesList extends React.PureComponent<Props, State> {
           <Table aria-label="Workspaces List Table" variant="compact">
             <Thead>
               <Tr>
-                <Th />
+                <Th screenReaderText="Select workspace" />
                 <Th
                   sort={getSortParams(0, sortBy.index, sortBy.direction, (index, direction) =>
                     this.handleSort(index, direction),
