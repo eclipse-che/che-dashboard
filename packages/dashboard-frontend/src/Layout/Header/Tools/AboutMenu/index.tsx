@@ -54,7 +54,10 @@ export const AboutMenu: React.FC<Props> = ({ branding, username, dashboardLogo }
         onClick={e => {
           e.preventDefault();
           setIsLauncherOpen(false);
-          setIsModalOpen(true);
+          // Delay modal opening to allow dropdown to close and release focus
+          setTimeout(() => {
+            setIsModalOpen(true);
+          }, 0);
         }}
       >
         About

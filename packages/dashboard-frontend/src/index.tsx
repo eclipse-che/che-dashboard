@@ -24,6 +24,26 @@ import WorkspaceActionsProvider from '@/contexts/WorkspaceActions/Provider';
 import PreloadData from '@/services/bootstrap';
 import { store } from '@/store';
 
+// Make touch event listeners passive by default to improve scroll performance
+// and prevent warnings from PatternFly components
+if (typeof EventTarget !== 'undefined') {
+  const originalAddEventListener = EventTarget.prototype.addEventListener;
+  EventTarget.prototype.addEventListener = function (
+    type: string,
+    listener: EventListenerOrEventListenerObject,
+    options?: boolean | AddEventListenerOptions,
+  ) {
+    if (type === 'touchstart' || type === 'touchmove') {
+      if (typeof options === 'object' && options !== null) {
+        options = { ...options, passive: options.passive !== false };
+      } else if (typeof options === 'undefined') {
+        options = { passive: true };
+      }
+    }
+    return originalAddEventListener.call(this, type, listener, options);
+  };
+}
+
 startApp();
 
 async function startApp(): Promise<void> {
