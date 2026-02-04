@@ -52,17 +52,6 @@ span[class*='label-required'] {
   color: var(--pf-v6-c-helper-text__item-icon--m-error--Color);
 }
 
-/* About modal logo - high quality rendering */
-.pf-v6-c-about-modal-box__brand img {
-  max-width: 100%;
-  height: auto;
-
-  object-fit: contain;
-
-  image-rendering: -webkit-optimize-contrast;
-  image-rendering: crisp-edges;
-}
-
 /* Menu item icon max height */
 .pf-v6-c-menu__item-main .pf-v6-c-menu__item-icon > img {
   max-height: 30px;
