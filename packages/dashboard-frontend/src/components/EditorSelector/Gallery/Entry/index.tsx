@@ -177,7 +177,14 @@ export class EditorSelectorEntry extends React.PureComponent<Props, State> {
     );
 
     return (
-      <Card id={this.id} isCompact isSelectable isSelected={isSelectedGroup}>
+      <Card
+        id={this.id}
+        isCompact
+        isClickable
+        isSelectable
+        isSelected={isSelectedGroup}
+        onClick={this.handleSelectableAction}
+      >
         <CardHeader
           selectableActions={{
             selectableActionId: this.selectableActionId,
