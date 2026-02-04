@@ -20,6 +20,7 @@ import {
 import { QuestionCircleIcon } from '@patternfly/react-icons';
 import React from 'react';
 
+import { useTheme } from '@/contexts/ThemeContext';
 import { AboutModal } from '@/Layout/Header/Tools/AboutMenu/Modal';
 import { BrandingData } from '@/services/bootstrap/branding.constant';
 import { buildLogoSrc } from '@/services/helpers/brandingLogo';
@@ -33,6 +34,9 @@ type Props = {
 export const AboutMenu: React.FC<Props> = ({ branding, username, dashboardLogo }) => {
   const [isLauncherOpen, setIsLauncherOpen] = React.useState(false);
   const [isModalOpen, setIsModalOpen] = React.useState(false);
+  const [logoSrc, setLogoSrc] = React.useState<string>('');
+
+  const { isDarkTheme } = useTheme();
 
   const buildDropdownItems = React.useCallback(() => {
     const items: React.ReactElement[] = [];
@@ -59,9 +63,17 @@ export const AboutMenu: React.FC<Props> = ({ branding, username, dashboardLogo }
     return items;
   }, [branding.links]);
 
-  const { logoFile, name, productVersion } = branding;
+  // Load logo with theme awareness
+  React.useEffect(() => {
+    const result = buildLogoSrc(dashboardLogo, branding.logoFile, isDarkTheme);
+    if (typeof result === 'string') {
+      setLogoSrc(result || '');
+    } else if (result) {
+      result.then(src => setLogoSrc(src || ''));
+    }
+  }, [dashboardLogo, branding.logoFile, isDarkTheme]);
 
-  const logoSrc = buildLogoSrc(dashboardLogo, logoFile);
+  const { name, productVersion } = branding;
 
   return (
     <>
