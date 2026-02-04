@@ -2,11 +2,12 @@
 
 exports[`Editor Selector Entry snapshot 1`] = `
 <div
-  className="pf-v6-c-card pf-m-compact pf-m-selectable"
+  className="pf-v6-c-card pf-m-compact pf-m-selectable pf-m-clickable"
   data-ouia-component-id="OUIA-Generated-Card-1"
   data-ouia-component-type="PF6/Card"
   data-ouia-safe={true}
   id="editor-selector-card-che-incubator/che-code/insiders"
+  onClick={[Function]}
 >
   <div
     className="pf-v6-c-card__header"
