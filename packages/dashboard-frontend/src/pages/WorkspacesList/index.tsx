@@ -206,12 +206,7 @@ export default class WorkspacesList extends React.PureComponent<Props, State> {
           <Table aria-label="Workspaces List Table" variant="compact">
             <Thead>
               <Tr>
-                <Th
-                  select={{
-                    onSelect: (_event, isSelected) => this.handleSelectAll(isSelected),
-                    isSelected: isSelectedAll,
-                  }}
-                />
+                <Th />
                 <Th
                   sort={getSortParams(0, sortBy.index, sortBy.direction, (index, direction) =>
                     this.handleSort(index, direction),
