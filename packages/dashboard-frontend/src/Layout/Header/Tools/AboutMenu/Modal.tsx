@@ -14,6 +14,8 @@ import { AboutModal as PatternflyAboutModal, Content } from '@patternfly/react-c
 import { detect } from 'detect-browser';
 import React from 'react';
 
+import styles from '@/Layout/Header/Tools/AboutMenu/Modal.module.css';
+
 type Props = {
   productName: string | undefined;
   serverVersion: string | undefined;
@@ -46,11 +48,11 @@ export class AboutModal extends React.PureComponent<Props> {
     const browserName = this.browserName;
 
     return (
-      <Content>
+      <Content className={styles.aboutModalContent}>
         <dl>
           {dashboardVersion && (
             <>
-              <dt>Dashboard Version</dt>
+              <dt className={styles.dashboardVersionLabel}>Dashboard Version</dt>
               <dd className="co-select-to-copy" data-testid="dashboard-version">
                 {dashboardVersion}
               </dd>
