@@ -50,7 +50,7 @@ div.tippy-popper a:hover {
 
 /* Ensure About modal logo renders with high quality */
 .pf-v6-c-about-modal-box__brand img {
-  max-width: 100%;
+  max-width: 40%;
   height: auto;
 
   object-fit: contain;
