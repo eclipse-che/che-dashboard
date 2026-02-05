@@ -29,7 +29,7 @@ export class EditorImageField extends React.PureComponent<Props, State> {
     };
   }
 
-  private handleChange(value: string) {
+  private handleChange(_event: React.FormEvent<HTMLInputElement>, value: string) {
     value = value.trim();
     this.setState({ image: value });
     this.props.onChange(value !== '' ? value : undefined);
@@ -43,7 +43,7 @@ export class EditorImageField extends React.PureComponent<Props, State> {
         <TextInput
           aria-label="Editor Image"
           placeholder="Enter an editor container image"
-          onChange={value => this.handleChange(value)}
+          onChange={(event, value) => this.handleChange(event, value)}
           value={image}
         />
       </FormGroup>

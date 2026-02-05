@@ -22,15 +22,12 @@ exports[`ProviderIcon snapshot for rejected provider 1`] = `
     <svg
       aria-hidden={true}
       aria-labelledby={null}
+      className="pf-v6-svg"
+      color="var(--pf-global--warning-color--100)"
       data-testid="icon-declined"
-      fill="var(--pf-global--warning-color--100)"
+      fill="currentColor"
       height="1em"
       role="img"
-      style={
-        {
-          "verticalAlign": "-0.125em",
-        }
-      }
       viewBox="0 0 576 512"
       width="1em"
     >
@@ -64,15 +61,12 @@ exports[`ProviderIcon snapshot for the provider not authorized yet 1`] = `
     <svg
       aria-hidden={true}
       aria-labelledby={null}
+      className="pf-v6-svg"
+      color="var(--pf-global--disabled-color--100)"
       data-testid="icon-unauthorized"
-      fill="var(--pf-global--disabled-color--100)"
+      fill="currentColor"
       height="1em"
       role="img"
-      style={
-        {
-          "verticalAlign": "-0.125em",
-        }
-      }
       viewBox="0 0 1024 1024"
       width="1em"
     >
@@ -106,15 +100,12 @@ exports[`ProviderIcon snapshot for the successfully authorized provider 1`] = `
     <svg
       aria-hidden={true}
       aria-labelledby={null}
+      className="pf-v6-svg"
+      color="var(--pf-global--success-color--100)"
       data-testid="icon-authorized"
-      fill="var(--pf-global--success-color--100)"
+      fill="currentColor"
       height="1em"
       role="img"
-      style={
-        {
-          "verticalAlign": "-0.125em",
-        }
-      }
       viewBox="0 0 512 512"
       width="1em"
     >

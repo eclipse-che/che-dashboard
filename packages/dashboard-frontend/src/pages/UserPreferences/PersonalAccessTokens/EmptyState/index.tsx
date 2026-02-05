@@ -14,9 +14,8 @@ import {
   Button,
   EmptyState,
   EmptyStateBody,
-  EmptyStateIcon,
   EmptyStateVariant,
-  Title,
+  PageSection,
 } from '@patternfly/react-core';
 import { KeyIcon, PlusCircleIcon } from '@patternfly/react-icons';
 import React from 'react';
@@ -29,23 +28,26 @@ export type Props = {
 export class PersonalAccessTokenEmptyState extends React.PureComponent<Props> {
   public render(): React.ReactElement {
     return (
-      <EmptyState isFullHeight={true} variant={EmptyStateVariant.small}>
-        <EmptyStateIcon icon={KeyIcon} />
-        <Title headingLevel="h4" size="lg">
-          No Personal Access Tokens
-        </Title>
-        <EmptyStateBody>
-          <Button
-            icon={<PlusCircleIcon />}
-            aria-label="Add Personal Access Token"
-            variant="link"
-            isDisabled={this.props.isDisabled}
-            onClick={() => this.props.onAddToken()}
-          >
-            Add Personal Access Token
-          </Button>
-        </EmptyStateBody>
-      </EmptyState>
+      <PageSection>
+        <EmptyState
+          isFullHeight={true}
+          variant={EmptyStateVariant.sm}
+          icon={KeyIcon}
+          titleText="No Personal Access Tokens"
+        >
+          <EmptyStateBody>
+            <Button
+              icon={<PlusCircleIcon />}
+              aria-label="Add Personal Access Token"
+              variant="link"
+              isDisabled={this.props.isDisabled}
+              onClick={() => this.props.onAddToken()}
+            >
+              Add Personal Access Token
+            </Button>
+          </EmptyStateBody>
+        </EmptyState>
+      </PageSection>
     );
   }
 }

@@ -35,7 +35,7 @@
     "format:fix": "yarn workspaces foreach -A run format:fix",
     "lint:check": "yarn workspaces foreach -A run lint:check",
     "lint:fix": "yarn workspaces foreach -A run lint:fix",
-    "patch": "$PWD/run/patch.sh"
+    "deploy:patch": "$PWD/run/patch.sh"
   },
   "resolutions": {
     "@babel/helpers": "^7.26.10",

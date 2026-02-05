@@ -2,11 +2,8 @@
 #
 # Build, Push, and Patch Dashboard Image
 #
-# This script builds a single-architecture dashboard image, pushes it to a registry,
+# This script builds a multi-architecture dashboard image, pushes it to a registry,
 # and patches the CheCluster to use the new image.
-#
-# For multi-architecture builds, use ./run/build-multiarch.sh instead.
-# See run/MULTIARCH_BUILD.md for multi-arch documentation.
 #
 # Usage:
 #   export IMAGE_REGISTRY_HOST=quay.io
@@ -18,6 +15,7 @@
 #   IMAGE_REGISTRY_USER_NAME - Registry username/namespace (required)
 #   CHE_NAMESPACE           - Kubernetes namespace (default: eclipse-che)
 #   CHE_DASHBOARD_IMAGE     - Use existing image instead of building (optional)
+#   BUILD_PLATFORMS         - Target platforms for multi-arch build (default: linux/amd64,linux/arm64)
 #
 
 set -e
@@ -39,12 +37,31 @@ else
 
   TAG=$(git branch --show-current)'_'$(date '+%Y_%m_%d_%H_%M_%S')
   CHE_DASHBOARD_IMAGE="${IMAGE_REGISTRY_HOST}/${IMAGE_REGISTRY_USER_NAME}/che-dashboard:${TAG}"
+  BUILD_PLATFORMS="${BUILD_PLATFORMS:-linux/amd64,linux/arm64}"
 
-  echo "[INFO] Building image '${CHE_DASHBOARD_IMAGE}'..."
-  "${PWD}/scripts/container_tool.sh" build . -f build/dockerfiles/skaffold.Dockerfile -t $CHE_DASHBOARD_IMAGE
+  # Detect container engine
+  CONTAINER_ENGINE=$("${PWD}/scripts/container_tool.sh" detect)
 
-  echo "[INFO] Pushing image '${CHE_DASHBOARD_IMAGE}'..."
-  "${PWD}/scripts/container_tool.sh" push $CHE_DASHBOARD_IMAGE
+  echo "[INFO] Building multi-arch image '${CHE_DASHBOARD_IMAGE}' for platforms: ${BUILD_PLATFORMS}..."
+
+  if [[ "$CONTAINER_ENGINE" == "docker" ]]; then
+    # Use docker buildx for multi-arch build
+    docker buildx build \
+      --platform "${BUILD_PLATFORMS}" \
+      --push \
+      -f build/dockerfiles/skaffold.Dockerfile \
+      -t "${CHE_DASHBOARD_IMAGE}" \
+      .
+  else
+    # Fallback to podman build (single arch) with push
+    echo "[WARN] Podman detected. Building for current platform only."
+    podman build \
+      -f build/dockerfiles/skaffold.Dockerfile \
+      -t "${CHE_DASHBOARD_IMAGE}" \
+      .
+    echo "[INFO] Pushing image '${CHE_DASHBOARD_IMAGE}'..."
+    podman push "${CHE_DASHBOARD_IMAGE}"
+  fi
 fi
 
 echo "[INFO] Patching CheCluster with image '${CHE_DASHBOARD_IMAGE}'..."

@@ -10,6 +10,6 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-.fixOverflow .pf-c-alert__description {
+.fixOverflow :global(.pf-v6-c-alert__description) {
   width: 100%;
 }

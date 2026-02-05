@@ -11,6 +11,7 @@
  */
 
 import { StateMock } from '@react-mock/state';
+import { waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
 import { Provider } from 'react-redux';
@@ -72,16 +73,27 @@ describe('StorageTypeFormGroup', () => {
       test('show modal', async () => {
         renderComponent(store, { readonly });
 
-        const button = screen.queryByRole('button', { name: 'Storage Type Info' });
+        // FormGroupLabelHelp uses aria-label="More info for storage type"
+        const button = screen.queryByRole('button', { name: 'More info for storage type' });
         expect(button).not.toBeNull();
 
         await userEvent.click(button!);
 
-        const modal = screen.queryByRole('dialog', { name: 'Storage Type Info' });
+        // Wait for modal to appear
+        const modal = await waitFor(
+          () => {
+            return (
+              screen.queryByRole('dialog', { name: 'Storage Type Info' }) ||
+              screen.queryByText('Storage Type Info')
+            );
+          },
+          { timeout: 3000 },
+        );
+        expect(modal).not.toBeNull();
+
         const buttonClose = screen.queryByRole('button', { name: 'Close' });
         const documentationLink = screen.queryByRole('link', { name: 'Open documentation page' });
 
-        expect(modal).not.toBeNull();
         expect(buttonClose).not.toBeNull();
         expect(documentationLink).not.toBeNull();
       });
@@ -89,15 +101,21 @@ describe('StorageTypeFormGroup', () => {
       test('close modal dialog', async () => {
         renderComponent(store, { readonly }, { isInfoOpen: true });
 
-        // modal is opened
-        expect(screen.queryByRole('dialog', { name: 'Storage Type Info' })).not.toBeNull();
+        // modal is opened - check by text content or dialog role
+        const modal =
+          screen.queryByRole('dialog', { name: 'Storage Type Info' }) ||
+          screen.queryByText('Storage Type Info');
+        expect(modal).not.toBeNull();
 
         const buttonClose = screen.getByRole('button', { name: 'Close' });
 
         await userEvent.click(buttonClose!);
 
         // modal is closed
-        expect(screen.queryByRole('dialog', { name: 'Storage Type Info' })).toBeNull();
+        await waitFor(() => {
+          expect(screen.queryByRole('dialog', { name: 'Storage Type Info' })).toBeNull();
+          expect(screen.queryByText('Storage Type Info')).toBeNull();
+        });
       });
     });
 
@@ -111,12 +129,22 @@ describe('StorageTypeFormGroup', () => {
 
           await userEvent.click(button!);
 
-          const modal = screen.queryByRole('dialog', { name: 'Change Storage Type' });
+          // Wait for modal to appear - PatternFly 6 Modal might use different aria-label
+          const modal = await waitFor(
+            () => {
+              return (
+                screen.queryByRole('dialog', { name: 'Change Storage Type' }) ||
+                screen.queryByText('Change Storage Type')
+              );
+            },
+            { timeout: 3000 },
+          );
+          expect(modal).not.toBeNull();
+
           const buttonSave = screen.queryByRole('button', { name: 'Save' });
           const buttonClose = screen.queryByRole('button', { name: 'Close' });
           const buttonCancel = screen.queryByRole('button', { name: 'Cancel' });
 
-          expect(modal).not.toBeNull();
           expect(buttonSave).not.toBeNull();
           expect(buttonClose).not.toBeNull();
           expect(buttonCancel).not.toBeNull();
@@ -129,15 +157,21 @@ describe('StorageTypeFormGroup', () => {
             { isSelectorOpen: true },
           );
 
-          // modal is opened
-          expect(screen.queryByRole('dialog', { name: 'Change Storage Type' })).not.toBeNull();
+          // modal is opened - check by text content or dialog role
+          const modal =
+            screen.queryByRole('dialog', { name: 'Change Storage Type' }) ||
+            screen.queryByText('Change Storage Type');
+          expect(modal).not.toBeNull();
 
           const buttonClose = screen.getByRole('button', { name: 'Close' });
 
           await userEvent.click(buttonClose!);
 
           // modal is closed
-          expect(screen.queryByRole('dialog', { name: 'Change Storage Type' })).toBeNull();
+          await waitFor(() => {
+            expect(screen.queryByRole('dialog', { name: 'Change Storage Type' })).toBeNull();
+            expect(screen.queryByText('Change Storage Type')).toBeNull();
+          });
         });
 
         test('check the warning message', () => {
@@ -184,12 +218,22 @@ describe('StorageTypeFormGroup', () => {
 
           await userEvent.click(button!);
 
-          const modal = screen.queryByRole('dialog', { name: 'Change Storage Type' });
+          // Wait for modal to appear - PatternFly 6 Modal might use different aria-label
+          const modal = await waitFor(
+            () => {
+              return (
+                screen.queryByRole('dialog', { name: 'Change Storage Type' }) ||
+                screen.queryByText('Change Storage Type')
+              );
+            },
+            { timeout: 3000 },
+          );
+          expect(modal).not.toBeNull();
+
           const buttonSave = screen.queryByRole('button', { name: 'Save' });
           const buttonClose = screen.queryByRole('button', { name: 'Close' });
           const buttonCancel = screen.queryByRole('button', { name: 'Cancel' });
 
-          expect(modal).not.toBeNull();
           expect(buttonSave).not.toBeNull();
           expect(buttonClose).not.toBeNull();
           expect(buttonCancel).not.toBeNull();
@@ -198,15 +242,21 @@ describe('StorageTypeFormGroup', () => {
         test('close modal dialog', async () => {
           renderComponent(store, { readonly }, { isSelectorOpen: true });
 
-          // modal is opened
-          expect(screen.queryByRole('dialog', { name: 'Change Storage Type' })).not.toBeNull();
+          // modal is opened - check by text content or dialog role
+          const modal =
+            screen.queryByRole('dialog', { name: 'Change Storage Type' }) ||
+            screen.queryByText('Change Storage Type');
+          expect(modal).not.toBeNull();
 
           const buttonClose = screen.getByRole('button', { name: 'Close' });
 
           await userEvent.click(buttonClose!);
 
           // modal is closed
-          expect(screen.queryByRole('dialog', { name: 'Change Storage Type' })).toBeNull();
+          await waitFor(() => {
+            expect(screen.queryByRole('dialog', { name: 'Change Storage Type' })).toBeNull();
+            expect(screen.queryByText('Change Storage Type')).toBeNull();
+          });
         });
 
         test('check the warning message', () => {

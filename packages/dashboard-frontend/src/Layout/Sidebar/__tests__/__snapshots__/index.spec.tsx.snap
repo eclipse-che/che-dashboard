@@ -3,11 +3,11 @@
 exports[`Sidebar snapshot 1`] = `
 <div
   aria-hidden={false}
-  className="pf-c-page__sidebar pf-m-expanded"
+  className="pf-v6-c-page__sidebar pf-m-expanded"
   id="page-sidebar"
 >
   <div
-    className="pf-c-page__sidebar-body"
+    className="pf-v6-c-page__sidebar-body"
   >
     <div>
       Mock Navigation component

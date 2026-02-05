@@ -14,10 +14,6 @@ import { FormGroup, TextInput, TextInputTypes, ValidatedOptions } from '@pattern
 import React from 'react';
 
 const MAX_LENGTH = 255;
-const MAX_LENGTH_ERROR = `The Token Name is too long. The maximum length is ${MAX_LENGTH} characters.`;
-const REQUIRED_ERROR = 'This field is required.';
-const WRONG_CHARACTERS_ERROR =
-  'The Token Name must consist of lower case alphanumeric characters, "-" or ".", and must start and end with an alphanumeric character.';
 const ALLOWED_CHARACTERS =
   'Alphanumeric characters, "-" or ".", starting and ending with an alphanumeric character.';
 
@@ -67,35 +63,18 @@ export class TokenName extends React.PureComponent<Props, State> {
 
   public render(): React.ReactElement {
     const { isEdit } = this.props;
-    const { tokenName = '', validated } = this.state;
-    let errorMessage: string;
-    if (tokenName.length === 0) {
-      errorMessage = REQUIRED_ERROR;
-    } else if (tokenName.length > MAX_LENGTH) {
-      errorMessage = MAX_LENGTH_ERROR;
-    } else if (REGEXP.test(tokenName) === false) {
-      errorMessage = WRONG_CHARACTERS_ERROR;
-    } else {
-      errorMessage = '';
-    }
+    const { tokenName = '' } = this.state;
 
     const readOnlyAttr = isEdit ? { isReadOnly: true } : {};
     const helperText = isEdit ? {} : { helperText: ALLOWED_CHARACTERS };
 
     return (
-      <FormGroup
-        fieldId="token-name-label"
-        helperTextInvalid={errorMessage}
-        isRequired
-        label="Token Name"
-        validated={validated}
-        {...helperText}
-      >
+      <FormGroup fieldId="token-name-label" isRequired label="Token Name" {...helperText}>
         <TextInput
           aria-describedby="token-name-label"
           aria-label="Token Name"
           isRequired
-          onChange={tokenName => this.onChange(tokenName)}
+          onChange={(_event, tokenName) => this.onChange(tokenName)}
           placeholder="Enter a Token Name"
           type={TextInputTypes.text}
           value={tokenName}

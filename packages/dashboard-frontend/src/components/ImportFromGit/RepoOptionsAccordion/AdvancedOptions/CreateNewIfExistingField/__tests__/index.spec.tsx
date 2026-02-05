@@ -36,13 +36,13 @@ describe('TemporaryStorageField', () => {
 
   it('should be initially switched off', () => {
     renderComponent(undefined);
-    const switchInput = screen.getByRole('checkbox') as HTMLInputElement;
+    const switchInput = screen.getByRole('switch') as HTMLInputElement;
     expect(switchInput.checked).toBeFalsy();
   });
 
   it('should be switched off', () => {
     renderComponent(false);
-    const switchInput = screen.getByRole('checkbox') as HTMLInputElement;
+    const switchInput = screen.getByRole('switch') as HTMLInputElement;
     expect(switchInput.checked).toBeFalsy();
 
     switchInput.click();
@@ -52,7 +52,7 @@ describe('TemporaryStorageField', () => {
 
   it('should be initially switched on', () => {
     renderComponent(true);
-    const switchInput = screen.getByRole('checkbox') as HTMLInputElement;
+    const switchInput = screen.getByRole('switch') as HTMLInputElement;
     expect(switchInput.checked).toBeTruthy();
 
     switchInput.click();

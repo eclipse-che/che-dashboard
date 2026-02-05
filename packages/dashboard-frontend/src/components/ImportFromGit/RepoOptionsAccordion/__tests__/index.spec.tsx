@@ -29,6 +29,7 @@ jest.mock('@/services/backend-client/gitBranchesApi', () => ({
     return Promise.resolve({ branches: [] } as api.IGitBranches);
   },
 }));
+
 const mockOnChange = jest.fn();
 
 describe('RepoOptionsAccordion', () => {

@@ -4,11 +4,11 @@ exports[`ProviderWarning snapshot (isVisible = false) 1`] = `null`;
 
 exports[`ProviderWarning snapshot (isVisible = true) 1`] = `
 <span
-  className="pf-c-icon pf-m-inline"
+  className="pf-v6-c-icon pf-m-inline"
   data-testid="tooltip-icon"
 >
   <span
-    className="pf-c-icon__content pf-m-warning"
+    className="pf-v6-c-icon__content pf-m-warning"
   >
     <div
       data-testid="patternfly-tooltip"
@@ -26,33 +26,31 @@ exports[`ProviderWarning snapshot (isVisible = true) 1`] = `
         >
           Provided API does not support the automatic token revocation. You can revoke it manually on  
           <a
-            aria-disabled={false}
             aria-label={null}
-            className="pf-c-button pf-m-link pf-m-inline"
+            className="pf-v6-c-button pf-m-link pf-m-inline"
             data-ouia-component-id="OUIA-Generated-Button-link-1"
-            data-ouia-component-type="PF4/Button"
+            data-ouia-component-type="PF6/Button"
             data-ouia-safe={true}
             data-testid="tooltip-link"
             disabled={null}
             onClick={[Function]}
-            role={null}
             type={null}
           >
-            http://dummy.ref
             <span
-              className="pf-c-button__icon pf-m-end"
+              className="pf-v6-c-button__text"
+            >
+              http://dummy.ref
+            </span>
+            <span
+              className="pf-v6-c-button__icon pf-m-end"
             >
               <svg
                 aria-hidden={true}
                 aria-labelledby={null}
+                className="pf-v6-svg"
                 fill="currentColor"
                 height="1em"
                 role="img"
-                style={
-                  {
-                    "verticalAlign": "-0.125em",
-                  }
-                }
                 viewBox="0 0 448 512"
                 width="1em"
               >
@@ -71,14 +69,10 @@ exports[`ProviderWarning snapshot (isVisible = true) 1`] = `
         <svg
           aria-hidden={true}
           aria-labelledby={null}
+          className="pf-v6-svg"
           fill="currentColor"
           height="1em"
           role="img"
-          style={
-            {
-              "verticalAlign": "-0.125em",
-            }
-          }
           viewBox="0 0 1088 1024"
           width="1em"
         >

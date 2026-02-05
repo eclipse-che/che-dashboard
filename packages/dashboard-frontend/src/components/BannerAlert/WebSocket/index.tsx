@@ -79,7 +79,7 @@ class BannerAlertWebSocket extends React.PureComponent<Props, State> {
 
     const webSocketTroubleshootingDocs = this.props.branding.docs.webSocketTroubleshooting;
     return (
-      <Banner className="pf-u-text-align-center" variant="warning">
+      <Banner className="pf-u-text-align-center" status="warning">
         WebSocket connections are failing. Refer to &quot;
         <a href={webSocketTroubleshootingDocs} rel="noreferrer" target="_blank">
           Network Troubleshooting

@@ -2,65 +2,73 @@
 
 exports[`GitConfigForm snapshot 1`] = `
 <section
-  className="pf-c-page__main-section pf-m-light"
+  className="pf-v6-c-page__main-section"
 >
-  <form
-    className="pf-c-form pf-m-horizontal"
-    noValidate={true}
-    onSubmit={[Function]}
+  <div
+    className="pf-v6-c-page__main-body"
   >
-    <div>
-      <div
-        data-testid="user-email"
-      >
-        test@che
-      </div>
-      <div
-        data-testid="user-name"
-      >
-        test
-      </div>
-      <button
-        onClick={[Function]}
-      >
-        Change Email Valid
-      </button>
-    </div>
-    <div
-      className="pf-l-flex"
+    <form
+      className="pf-v6-c-form pf-m-horizontal"
+      noValidate={true}
+      onSubmit={[Function]}
     >
-      <button
-        aria-disabled={true}
-        aria-label={null}
-        className="pf-c-button pf-m-primary pf-m-disabled"
-        data-ouia-component-id="OUIA-Generated-Button-primary-1"
-        data-ouia-component-type="PF4/Button"
-        data-ouia-safe={true}
-        data-testid="button-save"
-        disabled={true}
-        onClick={[Function]}
-        role={null}
-        tabIndex={null}
-        type="button"
+      <div>
+        <div
+          data-testid="user-email"
+        >
+          test@che
+        </div>
+        <div
+          data-testid="user-name"
+        >
+          test
+        </div>
+        <button
+          onClick={[Function]}
+        >
+          Change Email Valid
+        </button>
+      </div>
+      <div
+        className="pf-v6-l-flex"
       >
-        Save
-      </button>
-      <button
-        aria-disabled={false}
-        aria-label={null}
-        className="pf-c-button pf-m-secondary"
-        data-ouia-component-id="OUIA-Generated-Button-secondary-1"
-        data-ouia-component-type="PF4/Button"
-        data-ouia-safe={true}
-        data-testid="button-reload"
-        disabled={false}
-        onClick={[Function]}
-        role={null}
-        type="reset"
-      >
-        Reload
-      </button>
-    </div>
-  </form>
+        <button
+          aria-label={null}
+          className="pf-v6-c-button pf-m-primary"
+          data-ouia-component-id="OUIA-Generated-Button-primary-1"
+          data-ouia-component-type="PF6/Button"
+          data-ouia-safe={true}
+          data-testid="button-save"
+          disabled={true}
+          onClick={[Function]}
+          tabIndex={null}
+          type="button"
+        >
+          <span
+            className="pf-v6-c-button__text"
+          >
+            Save
+          </span>
+        </button>
+        <button
+          aria-label={null}
+          className="pf-v6-c-button pf-m-secondary"
+          data-ouia-component-id="OUIA-Generated-Button-secondary-1"
+          data-ouia-component-type="PF6/Button"
+          data-ouia-safe={true}
+          data-testid="button-reload"
+          disabled={false}
+          onClick={[Function]}
+          type="reset"
+        >
+          <span
+            className="pf-v6-c-button__text"
+          >
+            Reload
+          </span>
+        </button>
+      </div>
+    </form>
+  </div>
 </section>
 `;

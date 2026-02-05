@@ -15,11 +15,10 @@ import {
   Card,
   CardBody,
   CardHeader,
+  Content,
+  ContentVariants,
   Flex,
   FlexItem,
-  Text,
-  TextContent,
-  TextVariants,
 } from '@patternfly/react-core';
 import { format } from 'date-fns';
 import React from 'react';
@@ -81,26 +80,26 @@ export class WorkspaceEventsItem extends React.PureComponent<Props> {
     const { event } = this.props;
 
     return (
-      <TextContent>
-        <Card isCompact isFlat>
+      <Content>
+        <Card isCompact>
           <CardHeader className={styles.header}>
             <Flex>
               <FlexItem>
-                <Text component={TextVariants.small}>
+                <Content component={ContentVariants.small}>
                   {this.getInvolvedObj(event)}
                   {this.getSource(event)}
-                </Text>
+                </Content>
               </FlexItem>
               <FlexItem align={{ default: 'alignRight' }}>
-                <Text component={TextVariants.small}>{this.getTime(event)}</Text>
+                <Content component={ContentVariants.small}>{this.getTime(event)}</Content>
               </FlexItem>
             </Flex>
           </CardHeader>
           <CardBody>
-            <Text>{event.message}</Text>
+            <Content component="p">{event.message}</Content>
           </CardBody>
         </Card>
-      </TextContent>
+      </Content>
     );
   }
 }

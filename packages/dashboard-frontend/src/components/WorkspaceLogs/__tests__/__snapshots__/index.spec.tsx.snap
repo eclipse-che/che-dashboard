@@ -2,40 +2,44 @@
 
 exports[`The WorkspaceLogs component snapshot - empty state 1`] = `
 <div
-  className="pf-c-empty-state"
+  className="pf-v6-c-empty-state"
 >
   <div
-    className="pf-c-empty-state__content"
+    className="pf-v6-c-empty-state__content"
   >
-    <svg
-      aria-hidden="true"
-      aria-labelledby={null}
-      className="pf-c-empty-state__icon"
-      fill="currentColor"
-      height="1em"
-      role="img"
-      style={
-        {
-          "verticalAlign": "-0.125em",
-        }
-      }
-      viewBox="0 0 384 512"
-      width="1em"
-    >
-      <path
-        d="M224 136V0H24C10.7 0 0 10.7 0 24v464c0 13.3 10.7 24 24 24h336c13.3 0 24-10.7 24-24V160H248c-13.2 0-24-10.8-24-24zm160-14.1v6.1H256V0h6.1c6.4 0 12.5 2.5 17 7l97.9 98c4.5 4.5 7 10.6 7 16.9z"
-      />
-    </svg>
-    <h4
-      className="pf-c-title pf-m-lg"
-      data-ouia-component-id="OUIA-Generated-Title-1"
-      data-ouia-component-type="PF4/Title"
-      data-ouia-safe={true}
-    >
-      No Logs to show
-    </h4>
     <div
-      className="pf-c-empty-state__body"
+      className="pf-v6-c-empty-state__header"
+    >
+      <div
+        className="pf-v6-c-empty-state__icon"
+      >
+        <svg
+          aria-hidden={true}
+          aria-labelledby={null}
+          className="pf-v6-svg"
+          fill="currentColor"
+          height="1em"
+          role="img"
+          viewBox="0 0 384 512"
+          width="1em"
+        >
+          <path
+            d="M224 136V0H24C10.7 0 0 10.7 0 24v464c0 13.3 10.7 24 24 24h336c13.3 0 24-10.7 24-24V160H248c-13.2 0-24-10.8-24-24zm160-14.1v6.1H256V0h6.1c6.4 0 12.5 2.5 17 7l97.9 98c4.5 4.5 7 10.6 7 16.9z"
+          />
+        </svg>
+      </div>
+      <div
+        className="pf-v6-c-empty-state__title"
+      >
+        <h1
+          className="pf-v6-c-empty-state__title-text"
+        >
+          No Logs to show
+        </h1>
+      </div>
+    </div>
+    <div
+      className="pf-v6-c-empty-state__body"
     >
       Logs will be shown for a starting workspace.
     </div>
@@ -45,79 +49,87 @@ exports[`The WorkspaceLogs component snapshot - empty state 1`] = `
 
 exports[`The WorkspaceLogs component snapshot - with logs 1`] = `
 <section
-  className="pf-c-page__main-section pf-m-fill"
+  className="pf-v6-c-page__main-section pf-m-fill"
 >
   <div
-    className="pf-l-split"
+    className="pf-v6-c-page__main-body"
   >
     <div
-      className="pf-l-split__item"
+      className="pf-v6-l-split"
     >
-      <div>
-        <button
-          onClick={[Function]}
-        >
-          container-1
-        </button>
-        <button
-          onClick={[Function]}
-        >
-          container-2
-        </button>
+      <div
+        className="pf-v6-l-split__item"
+      >
+        <div>
+          <button
+            onClick={[Function]}
+          >
+            container-1
+          </button>
+          <button
+            onClick={[Function]}
+          >
+            container-2
+          </button>
+        </div>
+      </div>
+      <div
+        className="pf-v6-l-split__item pf-m-fill"
+      />
+      <div
+        className="pf-v6-l-split__item alignCenter "
+      >
+        <div>
+          <button
+            aria-label={null}
+            className="pf-v6-c-button pf-m-primary"
+            data-ouia-component-id="OUIA-Generated-Button-primary-1"
+            data-ouia-component-type="PF6/Button"
+            data-ouia-safe={true}
+            disabled={false}
+            onClick={[Function]}
+            type="button"
+          >
+            <span
+              className="pf-v6-c-button__text"
+            >
+              Download
+            </span>
+          </button>
+          <button
+            aria-label={null}
+            className="pf-v6-c-button pf-m-primary"
+            data-ouia-component-id="OUIA-Generated-Button-primary-2"
+            data-ouia-component-type="PF6/Button"
+            data-ouia-safe={true}
+            disabled={false}
+            onClick={[Function]}
+            type="button"
+          >
+            <span
+              className="pf-v6-c-button__text"
+            >
+              Toggle Expand
+            </span>
+          </button>
+        </div>
       </div>
     </div>
     <div
-      className="pf-l-split__item pf-m-fill"
+      className="panelViewerDivider"
     />
     <div
-      className="pf-l-split__item alignCenter "
+      data-testid="workspace-logs-viewer"
     >
-      <div>
-        <button
-          aria-disabled={false}
-          aria-label={null}
-          className="pf-c-button pf-m-primary"
-          data-ouia-component-id="OUIA-Generated-Button-primary-1"
-          data-ouia-component-type="PF4/Button"
-          data-ouia-safe={true}
-          disabled={false}
-          onClick={[Function]}
-          role={null}
-          type="button"
-        >
-          Download
-        </button>
-        <button
-          aria-disabled={false}
-          aria-label={null}
-          className="pf-c-button pf-m-primary"
-          data-ouia-component-id="OUIA-Generated-Button-primary-2"
-          data-ouia-component-type="PF4/Button"
-          data-ouia-safe={true}
-          disabled={false}
-          onClick={[Function]}
-          role={null}
-          type="button"
-        >
-          Toggle Expand
-        </button>
-      </div>
-    </div>
-  </div>
-  <div
-    className="panelViewerDivider"
-  />
-  <div
-    data-testid="workspace-logs-viewer"
-  >
-    <span>
-      Collapsed view:
-    </span>
-    <span>
-      first line
+      <span>
+        Collapsed view:
+      </span>
+      <span>
+        first line
 second line
 third line
-    </span>
+      </span>
+    </div>
   </div>
 </section>
 `;

@@ -15,10 +15,8 @@ import {
   CodeBlock,
   CodeBlockAction,
   CodeBlockCode,
+  Content,
   ExpandableSectionToggle,
-  Text,
-  TextContent,
-  TextVariants,
 } from '@patternfly/react-core';
 import { CopyIcon } from '@patternfly/react-icons';
 import React from 'react';
@@ -109,7 +107,7 @@ class ExpandableWarning extends React.Component<Props, State> {
     const actions = (
       <CodeBlockAction>
         <CopyToClipboard text={errorMessage} onCopy={() => this.onCopyToClipboard()}>
-          <Button variant="link" isSmall={true}>
+          <Button variant="link" size="sm">
             <CopyIcon />
             &nbsp;{copyIconTitle}
           </Button>
@@ -121,19 +119,19 @@ class ExpandableWarning extends React.Component<Props, State> {
     const messageClassName = isExpanded ? undefined : styles.hideOverflow;
     return (
       <>
-        <TextContent>
-          <Text component={TextVariants.small}>{textBefore}</Text>
-          <Text component={TextVariants.small}>
+        <Content>
+          <Content component="small">{textBefore}</Content>
+          <Content component="small">
             <CodeBlock actions={actions} className={styles.error}>
               <CodeBlockCode>
-                <Text
+                <Content
                   id={ERROR_MESSAGE_ID}
                   data-testid={ERROR_MESSAGE_ID}
                   className={messageClassName}
-                  component={TextVariants.small}
+                  component="small"
                 >
                   {errorMessage}
-                </Text>
+                </Content>
               </CodeBlockCode>
               {hasExpand && (
                 <ExpandableSectionToggle
@@ -145,9 +143,9 @@ class ExpandableWarning extends React.Component<Props, State> {
                 </ExpandableSectionToggle>
               )}
             </CodeBlock>
-          </Text>
-          <Text component={TextVariants.small}>{textAfter}</Text>
-        </TextContent>
+          </Content>
+          <Content component="small">{textAfter}</Content>
+        </Content>
       </>
     );
   }

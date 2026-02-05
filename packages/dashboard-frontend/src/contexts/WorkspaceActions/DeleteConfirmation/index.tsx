@@ -14,11 +14,12 @@ import {
   Button,
   ButtonVariant,
   Checkbox,
+  Content,
   Modal,
+  ModalBody,
+  ModalFooter,
+  ModalHeader,
   ModalVariant,
-  Text,
-  TextContent,
-  TextVariants,
 } from '@patternfly/react-core';
 import React from 'react';
 
@@ -70,51 +71,44 @@ export class WorkspaceActionsDeleteConfirmation extends React.PureComponent<Prop
       confirmationText = `Would you like to delete ${wantDelete.length} workspaces?`;
     }
 
-    const body = (
-      <TextContent>
-        <Text component={TextVariants.p}>{confirmationText}</Text>
-        <Checkbox
-          style={{ margin: '0 0 0 0.4rem' }}
-          data-testid="confirmation-checkbox"
-          isChecked={this.state.isConfirmed}
-          onChange={isChecked => this.handleConfirmationChange(isChecked)}
-          id="confirmation-checkbox"
-          label="I understand, this operation cannot be reverted."
-        />
-      </TextContent>
-    );
-
-    const footer = (
-      <React.Fragment>
-        <Button
-          variant={ButtonVariant.danger}
-          isDisabled={isConfirmed === false}
-          data-testid="delete-workspace-button"
-          onClick={() => this.handleConfirm()}
-        >
-          Delete
-        </Button>
-        <Button
-          variant={ButtonVariant.link}
-          data-testid="close-button"
-          onClick={() => this.handleClose()}
-        >
-          Cancel
-        </Button>
-      </React.Fragment>
-    );
-
     return (
       <Modal
         aria-label="Delete workspaces confirmation window"
-        footer={footer}
         isOpen={isOpen}
-        title="Delete Workspace"
-        titleIconVariant="warning"
         variant={ModalVariant.small}
         onClose={() => this.handleClose()}
       >
-        {body}
+        <ModalHeader title="Delete Workspace" titleIconVariant="warning" />
+        <ModalBody>
+          <Content>
+            <Content component="p">{confirmationText}</Content>
+            <Checkbox
+              style={{ margin: '0 0 0 0.4rem' }}
+              data-testid="confirmation-checkbox"
+              isChecked={isConfirmed}
+              onChange={(_event, checked) => this.handleConfirmationChange(checked)}
+              id="confirmation-checkbox"
+              label="I understand, this operation cannot be reverted."
+            />
+          </Content>
+        </ModalBody>
+        <ModalFooter>
+          <Button
+            variant={ButtonVariant.danger}
+            isDisabled={isConfirmed === false}
+            data-testid="delete-workspace-button"
+            onClick={() => this.handleConfirm()}
+          >
+            Delete
+          </Button>
+          <Button
+            variant={ButtonVariant.link}
+            data-testid="close-button"
+            onClick={() => this.handleClose()}
+          >
+            Cancel
+          </Button>
+        </ModalFooter>
       </Modal>
     );
   }

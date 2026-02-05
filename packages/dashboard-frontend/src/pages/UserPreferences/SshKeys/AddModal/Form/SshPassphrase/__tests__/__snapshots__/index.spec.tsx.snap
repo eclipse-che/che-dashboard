@@ -2,45 +2,48 @@
 
 exports[`SshPassphrase snapshot 1`] = `
 <form
-  className="pf-c-form"
+  className="pf-v6-c-form"
   noValidate={true}
 >
   <div
-    className="pf-c-form__group"
+    className="pf-v6-c-form__group"
   >
     <div
-      className="pf-c-form__group-label"
+      className="pf-v6-c-form__group-label"
     >
       <label
-        className="pf-c-form__label"
+        className="pf-v6-c-form__label"
         htmlFor="ssh-passphrase"
       >
         <span
-          className="pf-c-form__label-text"
+          className="pf-v6-c-form__label-text"
         >
           Passphrase
         </span>
       </label>
-       
+        
     </div>
     <div
-      className="pf-c-form__group-control"
+      className="pf-v6-c-form__group-control"
     >
-      <input
-        aria-invalid={false}
-        aria-label="Passphrase"
-        className="pf-c-form-control"
-        data-ouia-component-id="OUIA-Generated-TextInputBase-1"
-        data-ouia-component-type="PF4/TextInput"
-        data-ouia-safe={true}
-        disabled={false}
-        onBlur={[Function]}
-        onChange={[Function]}
-        onFocus={[Function]}
-        placeholder="Enter passphrase (optional)"
-        required={false}
-        type="password"
-      />
+      <span
+        className="pf-v6-c-form-control"
+      >
+        <input
+          aria-invalid={false}
+          aria-label="Passphrase"
+          data-ouia-component-id="OUIA-Generated-TextInputBase-1"
+          data-ouia-component-type="PF6/TextInput"
+          data-ouia-safe={true}
+          disabled={false}
+          onBlur={[Function]}
+          onChange={[Function]}
+          onFocus={[Function]}
+          placeholder="Enter passphrase (optional)"
+          required={false}
+          type="password"
+        />
+      </span>
     </div>
   </div>
 </form>

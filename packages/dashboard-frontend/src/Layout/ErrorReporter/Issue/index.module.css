@@ -17,17 +17,17 @@
 
 .warningIcon {
   margin-right: 20px;
-  color: var(--pf-global--warning-color--100);
+  color: var(--pf-t--global--icon--color--status--warning--default);
 }
 
 .dangerIcon {
   margin-right: 20px;
-  color: var(--pf-global--danger-color--100);
+  color: var(--pf-t--global--icon--color--status--danger--default);
 }
 
 .infoIcon {
   margin-right: 20px;
-  color: var(--pf-global--info-color--100);
+  color: var(--pf-t--global--icon--color--status--info--default);
 }
 
 .keybinding {
@@ -44,6 +44,6 @@
 .errorMessage {
   padding: 5px;
   white-space: pre-wrap;
-  background-color: var(--pf-global--palette--red-50);
+  background-color: var(--pf-t--global--color--nonstatus--red--default);
   border-radius: 3px;
 }

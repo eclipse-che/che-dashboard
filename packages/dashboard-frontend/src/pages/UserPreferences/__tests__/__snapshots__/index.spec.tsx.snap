@@ -4,127 +4,136 @@ exports[`UserPreferences snapshot 1`] = `
 <body>
   <div>
     <section
-      class="pf-c-page__main-section pf-m-light"
-    >
-      <h1
-        class="pf-c-title pf-m-2xl"
-        data-ouia-component-id="OUIA-Generated-Title-1"
-        data-ouia-component-type="PF4/Title"
-        data-ouia-safe="true"
-      >
-        User Preferences
-      </h1>
-    </section>
-    <section
-      class="pf-c-page__main-tabs"
+      class="pf-v6-c-page__main-section"
     >
       <div
-        class="pf-c-tabs"
-        data-ouia-component-id="OUIA-Generated-Tabs-1"
-        data-ouia-component-type="PF4/Tabs"
-        data-ouia-safe="true"
-        id="user-preferences-tabs"
+        class="pf-v6-c-page__main-body"
       >
-        <ul
-          class="pf-c-tabs__list"
-          role="tablist"
+        <h1
+          class="pf-v6-c-title pf-m-h1"
+          data-ouia-component-id="OUIA-Generated-Title-1"
+          data-ouia-component-type="PF6/Title"
+          data-ouia-safe="true"
         >
-          <li
-            class="pf-c-tabs__item pf-m-current"
-            role="presentation"
-          >
-            <button
-              aria-controls="pf-tab-section-ContainerRegistries-user-preferences-tabs"
-              aria-selected="true"
-              class="pf-c-tabs__link"
-              data-ouia-component-type="PF4/TabButton"
-              data-ouia-safe="true"
-              id="pf-tab-ContainerRegistries-user-preferences-tabs"
-              role="tab"
-              type="button"
-            >
-              Container Registries
-            </button>
-          </li>
-          <li
-            class="pf-c-tabs__item"
-            role="presentation"
-          >
-            <button
-              aria-selected="false"
-              class="pf-c-tabs__link"
-              data-ouia-component-type="PF4/TabButton"
-              data-ouia-safe="true"
-              id="pf-tab-GitServices-user-preferences-tabs"
-              role="tab"
-              type="button"
-            >
-              Git Services
-            </button>
-          </li>
-          <li
-            class="pf-c-tabs__item"
-            role="presentation"
-          >
-            <button
-              aria-selected="false"
-              class="pf-c-tabs__link"
-              data-ouia-component-type="PF4/TabButton"
-              data-ouia-safe="true"
-              id="pf-tab-PersonalAccessTokens-user-preferences-tabs"
-              role="tab"
-              type="button"
-            >
-              Personal Access Tokens
-            </button>
-          </li>
-          <li
-            class="pf-c-tabs__item"
-            role="presentation"
-          >
-            <button
-              aria-selected="false"
-              class="pf-c-tabs__link"
-              data-ouia-component-type="PF4/TabButton"
-              data-ouia-safe="true"
-              id="pf-tab-Gitconfig-user-preferences-tabs"
-              role="tab"
-              type="button"
-            >
-              Gitconfig
-            </button>
-          </li>
-          <li
-            class="pf-c-tabs__item"
-            role="presentation"
-          >
-            <button
-              aria-selected="false"
-              class="pf-c-tabs__link"
-              data-ouia-component-type="PF4/TabButton"
-              data-ouia-safe="true"
-              id="pf-tab-SshKeys-user-preferences-tabs"
-              role="tab"
-              type="button"
-            >
-              SSH Keys
-            </button>
-          </li>
-        </ul>
+          User Preferences
+        </h1>
       </div>
-      <section
-        aria-labelledby="pf-tab-ContainerRegistries-user-preferences-tabs"
-        class="pf-c-tab-content"
-        data-ouia-component-type="PF4/TabContent"
-        data-ouia-safe="true"
-        id="pf-tab-section-ContainerRegistries-user-preferences-tabs"
-        role="tabpanel"
-        tabindex="0"
+    </section>
+    <section
+      class="pf-v6-c-page__main-tabs"
+    >
+      <div
+        class="pf-v6-c-page__main-body"
       >
-        <div>
-          ContainerRegistries
+        <div
+          class="pf-v6-c-tabs pf-m-animate-current pf-m-initializing-accent"
+          data-ouia-component-id="OUIA-Generated-Tabs-1"
+          data-ouia-component-type="PF6/Tabs"
+          data-ouia-safe="true"
+          id="user-preferences-tabs"
+          style="--pf-v6-c-tabs--link-accent--length: 100px; --pf-v6-c-tabs--link-accent--start: 0px;"
+        >
+          <ul
+            class="pf-v6-c-tabs__list"
+            role="tablist"
+          >
+            <li
+              class="pf-v6-c-tabs__item pf-m-current"
+              role="presentation"
+            >
+              <button
+                aria-controls="pf-tab-section-ContainerRegistries-user-preferences-tabs"
+                aria-selected="true"
+                class="pf-v6-c-tabs__link"
+                data-ouia-component-type="PF6/TabButton"
+                data-ouia-safe="true"
+                id="pf-tab-ContainerRegistries-user-preferences-tabs"
+                role="tab"
+                type="button"
+              >
+                Container Registries
+              </button>
+            </li>
+            <li
+              class="pf-v6-c-tabs__item"
+              role="presentation"
+            >
+              <button
+                aria-selected="false"
+                class="pf-v6-c-tabs__link"
+                data-ouia-component-type="PF6/TabButton"
+                data-ouia-safe="true"
+                id="pf-tab-GitServices-user-preferences-tabs"
+                role="tab"
+                type="button"
+              >
+                Git Services
+              </button>
+            </li>
+            <li
+              class="pf-v6-c-tabs__item"
+              role="presentation"
+            >
+              <button
+                aria-selected="false"
+                class="pf-v6-c-tabs__link"
+                data-ouia-component-type="PF6/TabButton"
+                data-ouia-safe="true"
+                id="pf-tab-PersonalAccessTokens-user-preferences-tabs"
+                role="tab"
+                type="button"
+              >
+                Personal Access Tokens
+              </button>
+            </li>
+            <li
+              class="pf-v6-c-tabs__item"
+              role="presentation"
+            >
+              <button
+                aria-selected="false"
+                class="pf-v6-c-tabs__link"
+                data-ouia-component-type="PF6/TabButton"
+                data-ouia-safe="true"
+                id="pf-tab-Gitconfig-user-preferences-tabs"
+                role="tab"
+                type="button"
+              >
+                Gitconfig
+              </button>
+            </li>
+            <li
+              class="pf-v6-c-tabs__item"
+              role="presentation"
+            >
+              <button
+                aria-selected="false"
+                class="pf-v6-c-tabs__link"
+                data-ouia-component-type="PF6/TabButton"
+                data-ouia-safe="true"
+                id="pf-tab-SshKeys-user-preferences-tabs"
+                role="tab"
+                type="button"
+              >
+                SSH Keys
+              </button>
+            </li>
+          </ul>
         </div>
-      </section>
+        <section
+          aria-labelledby="pf-tab-ContainerRegistries-user-preferences-tabs"
+          class="pf-v6-c-tab-content"
+          data-ouia-component-type="PF6/TabContent"
+          data-ouia-safe="true"
+          id="pf-tab-section-ContainerRegistries-user-preferences-tabs"
+          role="tabpanel"
+          tabindex="0"
+        >
+          <div>
+            ContainerRegistries
+          </div>
+        </section>
+      </div>
     </section>
   </div>
 </body>

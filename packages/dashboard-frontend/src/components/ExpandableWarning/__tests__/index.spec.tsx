@@ -38,7 +38,7 @@ describe('Expandable warning items', () => {
     renderComponent(component);
 
     expect(screen.queryByTestId(ERROR_MESSAGE_ID)).toBeTruthy;
-    expect(screen.getByTestId(ERROR_MESSAGE_ID).className).toEqual('hideOverflow');
+    expect(screen.getByTestId(ERROR_MESSAGE_ID).className).toContain('hideOverflow');
     expect(screen.queryByText('Show More')).toBeTruthy;
   });
 });

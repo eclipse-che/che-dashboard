@@ -16,12 +16,6 @@ import { Props } from '@/Layout/Sidebar';
 
 export class Sidebar extends React.PureComponent<Props> {
   public render(): React.ReactElement {
-    return (
-      <div>
-        Mock Sidebar component
-        <span data-testid="isManaged">{this.props.isManaged ? 'true' : 'false'}</span>
-        <span data-testid="isNavOpen">{this.props.isNavOpen ? 'true' : 'false'}</span>
-      </div>
-    );
+    return <div>Mock Sidebar component</div>;
   }
 }

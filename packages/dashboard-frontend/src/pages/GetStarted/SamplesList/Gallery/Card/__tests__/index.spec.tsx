@@ -98,8 +98,11 @@ describe('Devfile Metadata Card', () => {
   it('should handle card click', async () => {
     renderComponent(metadata);
 
-    const card = screen.getByRole('article');
-    await userEvent.click(card);
+    // PatternFly 6 Card uses selectableActions - click the hidden radio input
+    const cardId = `sample-card-${metadata.displayName.replace(/\s+/g, '-').toLowerCase()}`;
+    const radioInput = document.getElementById(`${cardId}-input`) as HTMLElement;
+    expect(radioInput).not.toBeNull();
+    await userEvent.click(radioInput);
 
     expect(onCardClick).toHaveBeenCalledWith();
   });

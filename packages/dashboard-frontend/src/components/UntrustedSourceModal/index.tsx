@@ -15,17 +15,18 @@ import {
   Button,
   ButtonVariant,
   Checkbox,
+  Content,
   Modal,
+  ModalBody,
+  ModalFooter,
+  ModalHeader,
   ModalVariant,
-  Text,
-  TextContent,
 } from '@patternfly/react-core';
 import { inject } from 'inversify';
 import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 
 import { AppAlerts } from '@/services/alerts/appAlerts';
-import { getRepoFromLocation } from '@/services/helpers/factoryFlow/getRepoFromLocation';
 import { RootState } from '@/store';
 import { selectIsAllowedSourcesConfigured } from '@/store/ServerConfig/selectors';
 import { workspacePreferencesActionCreators } from '@/store/Workspaces/Preferences';
@@ -164,74 +165,52 @@ class UntrustedSourceModal extends React.Component<Props, State> {
     } else if (trustAllCheckbox) {
       await this.props.addTrustedSource('*');
     } else {
-      // Extract clean repository URL without branches and factory parameters
-      // This ensures we store only the base repo URL for comparison
-      const repoUrl = getRepoFromLocation(location);
-      await this.props.addTrustedSource(repoUrl);
+      await this.props.addTrustedSource(location);
     }
-  }
-
-  private buildModalFooter(): React.ReactNode {
-    const { continueButtonDisabled } = this.state;
-
-    return (
-      <React.Fragment>
-        <Button
-          key="continue"
-          variant={ButtonVariant.primary}
-          onClick={() => this.handleContinue(true)}
-          isDisabled={continueButtonDisabled}
-        >
-          Continue
-        </Button>
-        <Button key="cancel" variant={ButtonVariant.link} onClick={() => this.handleClose()}>
-          Cancel
-        </Button>
-      </React.Fragment>
-    );
-  }
-
-  private buildModalBody(): React.ReactNode {
-    const { trustAllCheckbox: isChecked } = this.state;
-    return (
-      <TextContent>
-        <Text>
-          Click <b>Continue</b> to proceed creating a new workspace from this source.
-        </Text>
-        <Checkbox
-          id="trust-all-repos-checkbox"
-          isChecked={isChecked}
-          label="Do not ask me again for other repositories"
-          onChange={(checked: boolean) => {
-            this.handleTrustAllToggle(checked);
-          }}
-        />
-      </TextContent>
-    );
   }
 
   render(): React.ReactNode {
     const { isOpen } = this.props;
-    const { isTrusted } = this.state;
+    const { isTrusted, continueButtonDisabled, trustAllCheckbox: isChecked } = this.state;
 
     if (isTrusted) {
       return null;
     }
 
-    const title = 'Do you trust the authors of this repository?';
-    const footer = this.buildModalFooter();
-    const body = this.buildModalBody();
-
     return (
-      <Modal
-        footer={footer}
-        isOpen={isOpen}
-        title={title}
-        titleIconVariant="warning"
-        variant={ModalVariant.medium}
-        onClose={() => this.handleClose()}
-      >
-        {body}
+      <Modal isOpen={isOpen} variant={ModalVariant.medium} onClose={() => this.handleClose()}>
+        <ModalHeader
+          title="Do you trust the authors of this repository?"
+          titleIconVariant="warning"
+        />
+        <ModalBody>
+          <Content>
+            <Content component="p">
+              Click <b>Continue</b> to proceed creating a new workspace from this source.
+            </Content>
+            <Checkbox
+              id="trust-all-repos-checkbox"
+              isChecked={isChecked}
+              label="Do not ask me again for other repositories"
+              onChange={(_event, checked: boolean) => {
+                this.handleTrustAllToggle(checked);
+              }}
+            />
+          </Content>
+        </ModalBody>
+        <ModalFooter>
+          <Button
+            key="continue"
+            variant={ButtonVariant.primary}
+            onClick={() => this.handleContinue(true)}
+            isDisabled={continueButtonDisabled}
+          >
+            Continue
+          </Button>
+          <Button key="cancel" variant={ButtonVariant.link} onClick={() => this.handleClose()}>
+            Cancel
+          </Button>
+        </ModalFooter>
       </Modal>
     );
   }

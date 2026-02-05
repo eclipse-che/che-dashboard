@@ -13,12 +13,11 @@
 import {
   Button,
   EmptyState,
+  EmptyStateActions,
   EmptyStateBody,
-  EmptyStateIcon,
-  EmptyStatePrimary,
+  EmptyStateFooter,
   EmptyStateVariant,
   Gallery,
-  Title,
 } from '@patternfly/react-core';
 import { SearchIcon } from '@patternfly/react-icons';
 import React from 'react';
@@ -105,17 +104,23 @@ export class SamplesListGallery extends React.PureComponent<Props> {
 
     if (cards.length === 0) {
       return (
-        <EmptyState style={{ minHeight: '275px' }} variant={EmptyStateVariant.full}>
-          <EmptyStateIcon icon={SearchIcon} />
-          <Title headingLevel="h1">No results found</Title>
+        <EmptyState
+          style={{ minHeight: '275px' }}
+          variant={EmptyStateVariant.full}
+          headingLevel="h1"
+          icon={SearchIcon}
+          titleText="No results found"
+        >
           <EmptyStateBody>
             No results match the filter criteria. Clear filter to show results.
           </EmptyStateBody>
-          <EmptyStatePrimary>
-            <Button variant="link" onClick={(): void => this.props.clearFilter()}>
-              Clear filter
-            </Button>
-          </EmptyStatePrimary>
+          <EmptyStateFooter>
+            <EmptyStateActions>
+              <Button variant="link" onClick={(): void => this.props.clearFilter()}>
+                Clear filter
+              </Button>
+            </EmptyStateActions>
+          </EmptyStateFooter>
         </EmptyState>
       );
     }

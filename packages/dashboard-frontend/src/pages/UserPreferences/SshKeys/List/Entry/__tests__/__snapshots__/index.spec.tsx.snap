@@ -1,57 +1,44 @@
 // Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
 exports[`SshKeysListEntry snapshot 1`] = `
-<article
-  className="pf-c-card"
+<div
+  className="pf-v6-c-card"
   data-ouia-component-id="OUIA-Generated-Card-1"
-  data-ouia-component-type="PF4/Card"
+  data-ouia-component-type="PF6/Card"
   data-ouia-safe={true}
   id=""
 >
   <div
-    className="pf-c-card__header"
+    className="pf-v6-c-card__header"
   >
     <div
-      className="pf-c-card__title"
-      data-testid="title"
-    >
-      sshKey1
-    </div>
-    <div
-      className="pf-c-card__actions"
+      className="pf-v6-c-card__actions"
     >
       <div>
         <span>
           Copy to clipboard
         </span>
         <button
-          aria-disabled={false}
-          aria-label={null}
-          className="pf-c-button pf-m-link"
-          data-ouia-component-id="OUIA-Generated-Button-link-1"
-          data-ouia-component-type="PF4/Button"
+          aria-label="Copy to Clipboard"
+          className="pf-v6-c-button pf-m-plain"
+          data-ouia-component-id="OUIA-Generated-Button-plain-1"
+          data-ouia-component-type="PF6/Button"
           data-ouia-safe={true}
           data-testid="copy-to-clipboard"
           disabled={false}
-          name="Copy to Clipboard"
           onClick={[Function]}
-          role={null}
           type="button"
         >
           <span
-            className="pf-c-button__icon pf-m-start"
+            className="pf-v6-c-button__icon"
           >
             <svg
               aria-hidden={true}
               aria-labelledby={null}
+              className="pf-v6-svg"
               fill="currentColor"
               height="1em"
               role="img"
-              style={
-                {
-                  "verticalAlign": "-0.125em",
-                }
-              }
               viewBox="0 0 448 512"
               width="1em"
             >
@@ -62,34 +49,27 @@ exports[`SshKeysListEntry snapshot 1`] = `
           </span>
         </button>
       </div>
-      <div
-        className="pf-c-dropdown pf-m-align-right"
-        data-ouia-component-id="OUIA-Generated-Dropdown-1"
-        data-ouia-component-type="PF4/Dropdown"
+      <button
+        aria-expanded={false}
+        aria-label="Actions"
+        className="pf-v6-c-menu-toggle pf-m-plain"
+        data-ouia-component-id="OUIA-Generated-MenuToggle-plain-1"
+        data-ouia-component-type="PF6/MenuToggle"
         data-ouia-safe={true}
+        disabled={false}
+        onClick={[Function]}
+        type="button"
       >
-        <button
-          aria-expanded={false}
-          aria-haspopup={true}
-          aria-label="Actions"
-          className="pf-c-dropdown__toggle pf-m-plain"
-          disabled={false}
-          id="pf-dropdown-toggle-id-0"
-          onClick={[Function]}
-          onKeyDown={[Function]}
-          type="button"
+        <span
+          className="pf-v6-c-menu-toggle__text"
         >
           <svg
             aria-hidden={true}
             aria-labelledby={null}
+            className="pf-v6-svg"
             fill="currentColor"
             height="1em"
             role="img"
-            style={
-              {
-                "verticalAlign": "-0.125em",
-              }
-            }
             viewBox="0 0 192 512"
             width="1em"
           >
@@ -97,20 +77,38 @@ exports[`SshKeysListEntry snapshot 1`] = `
               d="M96 184c39.8 0 72 32.2 72 72s-32.2 72-72 72-72-32.2-72-72 32.2-72 72-72zM24 80c0 39.8 32.2 72 72 72s72-32.2 72-72S135.8 8 96 8 24 40.2 24 80zm0 352c0 39.8 32.2 72 72 72s72-32.2 72-72-32.2-72-72-72-72 32.2-72 72z"
             />
           </svg>
-        </button>
+        </span>
+      </button>
+    </div>
+    <div
+      className="pf-v6-c-card__header-main"
+    >
+      <div
+        className="pf-v6-c-card__title"
+      >
+        <div
+          className="pf-v6-c-card__title-text"
+          data-testid="title"
+        >
+          sshKey1
+        </div>
       </div>
     </div>
   </div>
   <div
-    className="pf-c-card__footer"
+    className="pf-v6-c-card__footer"
   >
     <div
-      className="pf-c-content"
+      className="pf-v6-c-content"
+      data-ouia-component-id="OUIA-Generated-Content-1"
+      data-ouia-component-type="PF6/Content"
+      data-ouia-safe={true}
+      data-pf-content={true}
     >
       <small
-        className=""
-        data-ouia-component-id="OUIA-Generated-Text-1"
-        data-ouia-component-type="PF4/Text"
+        className="pf-v6-c-content--small"
+        data-ouia-component-id="OUIA-Generated-Content-2"
+        data-ouia-component-type="PF6/Content"
         data-ouia-safe={true}
         data-pf-content={true}
         data-testid="added-on"
@@ -120,5 +118,5 @@ exports[`SshKeysListEntry snapshot 1`] = `
       </small>
     </div>
   </div>
-</article>
+</div>
 `;

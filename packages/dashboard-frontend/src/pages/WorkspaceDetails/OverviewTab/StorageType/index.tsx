@@ -14,15 +14,18 @@ import {
   Alert,
   AlertVariant,
   Button,
+  Content,
+  ContentVariants,
   FormGroup,
+  FormGroupLabelHelp,
   Modal,
+  ModalBody,
+  ModalFooter,
+  ModalHeader,
   ModalVariant,
   Radio,
-  Text,
-  TextContent,
-  TextVariants,
 } from '@patternfly/react-core';
-import { OutlinedQuestionCircleIcon, PencilAltIcon } from '@patternfly/react-icons';
+import { PencilAltIcon } from '@patternfly/react-icons';
 import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 
@@ -109,27 +112,27 @@ class StorageTypeFormGroup extends React.PureComponent<Props, State> {
     const { hasEphemeral, hasPerUser, hasPerWorkspace } = this.getExistingTypes();
 
     const ephemeralTypeDescr = hasEphemeral ? (
-      <Text>
+      <Content component="p">
         <b>Ephemeral Storage</b> allows for faster I/O but may have limited storage and is not
         persistent.
-      </Text>
+      </Content>
     ) : (
       ''
     );
     const perUserTypeDescr = hasPerUser ? (
-      <Text>
+      <Content component="p">
         <b>Per-user Storage</b> one PVC is provisioned per namespace. All of the workspace&apos;s
         storage (volume mounts) mounted in it on subpaths according to devworkspace ID.
-      </Text>
+      </Content>
     ) : (
       ''
     );
     const perWorkspaceTypeDescr = hasPerWorkspace ? (
-      <Text>
+      <Content component="p">
         <b>Per-workspace Storage</b> a PVC is provisioned for each workspace within the namespace.
         All of the workspace&apos;s storage (volume mounts) are mounted on subpaths within the
         workspace&apos;s PVC.
-      </Text>
+      </Content>
     ) : (
       ''
     );
@@ -137,16 +140,16 @@ class StorageTypeFormGroup extends React.PureComponent<Props, State> {
     const href = this.props.branding.docs.storageTypes;
 
     return (
-      <TextContent>
+      <Content>
         {perUserTypeDescr}
         {perWorkspaceTypeDescr}
         {ephemeralTypeDescr}
-        <Text>
+        <Content component="p">
           <a rel="noreferrer" target="_blank" href={href}>
             Open documentation page
           </a>
-        </Text>
-      </TextContent>
+        </Content>
+      </Content>
     );
   }
 
@@ -158,7 +161,7 @@ class StorageTypeFormGroup extends React.PureComponent<Props, State> {
     const originSelection = this.getSelection();
 
     const ephemeralTypeDescr = hasEphemeral ? (
-      <Text component={TextVariants.h6}>
+      <Content component={ContentVariants.h6}>
         <Radio
           label="Ephemeral"
           name="ephemeral"
@@ -168,12 +171,12 @@ class StorageTypeFormGroup extends React.PureComponent<Props, State> {
           isDisabled={isDisabled}
           onChange={() => this.setState({ selected: 'ephemeral' })}
         />
-      </Text>
+      </Content>
     ) : (
       ''
     );
     const perUserTypeDescr = hasPerUser ? (
-      <Text component={TextVariants.h6}>
+      <Content component={ContentVariants.h6}>
         <Radio
           label="Per-user"
           name="per-user"
@@ -183,12 +186,12 @@ class StorageTypeFormGroup extends React.PureComponent<Props, State> {
           isDisabled={isDisabled}
           onChange={() => this.setState({ selected: 'per-user' })}
         />
-      </Text>
+      </Content>
     ) : (
       ''
     );
     const perWorkspaceTypeDescr = hasPerWorkspace ? (
-      <Text component={TextVariants.h6}>
+      <Content component={ContentVariants.h6}>
         <Radio
           label="Per-workspace"
           name="per-workspace"
@@ -198,7 +201,7 @@ class StorageTypeFormGroup extends React.PureComponent<Props, State> {
           isDisabled={isDisabled}
           onChange={() => this.setState({ selected: 'per-workspace' })}
         />
-      </Text>
+      </Content>
     ) : (
       ''
     );
@@ -208,9 +211,28 @@ class StorageTypeFormGroup extends React.PureComponent<Props, State> {
         variant={ModalVariant.small}
         isOpen={isSelectorOpen}
         className={styles.modalEditStorageType}
-        title="Change Storage Type"
         onClose={() => this.handleCancelChanges()}
-        actions={[
+      >
+        <ModalHeader title="Change Storage Type" />
+        <ModalBody>
+          <Content>
+            <Alert
+              variant={AlertVariant.warning}
+              className={styles.warningAlert}
+              title={
+                isDisabled
+                  ? 'Storage type is already defined in parent, you cannot change it.'
+                  : 'Note that after changing the storage type you may lose workspace data.'
+              }
+              isInline
+            />
+            <Content component={ContentVariants.h6}>Select the storage type</Content>
+            {perUserTypeDescr}
+            {perWorkspaceTypeDescr}
+            {ephemeralTypeDescr}
+          </Content>
+        </ModalBody>
+        <ModalFooter>
           <Button
             key="confirm"
             variant="primary"
@@ -218,28 +240,11 @@ class StorageTypeFormGroup extends React.PureComponent<Props, State> {
             onClick={() => this.handleConfirmChanges()}
           >
             Save
-          </Button>,
+          </Button>
           <Button key="cancel" variant="secondary" onClick={() => this.handleCancelChanges()}>
             Cancel
-          </Button>,
-        ]}
-      >
-        <TextContent>
-          <Alert
-            variant={AlertVariant.warning}
-            className={styles.warningAlert}
-            title={
-              isDisabled
-                ? 'Storage type is already defined in parent, you cannot change it.'
-                : 'Note that after changing the storage type you may lose workspace data.'
-            }
-            isInline
-          />
-          <Text component={TextVariants.h6}>Select the storage type</Text>
-          {perUserTypeDescr}
-          {perWorkspaceTypeDescr}
-          {ephemeralTypeDescr}
-        </TextContent>
+          </Button>
+        </ModalFooter>
       </Modal>
     );
   }
@@ -277,15 +282,11 @@ class StorageTypeFormGroup extends React.PureComponent<Props, State> {
       <FormGroup
         label="Storage Type"
         fieldId="storage-type"
-        labelIcon={
-          <Button
-            variant="plain"
+        labelHelp={
+          <FormGroupLabelHelp
+            aria-label="More info for storage type"
             onClick={() => this.handleInfoToggle()}
-            className={styles.labelIcon}
-            title="Storage Type Info"
-          >
-            <OutlinedQuestionCircleIcon />
-          </Button>
+          />
         }
       >
         {readonly && <span className={overviewStyles.readonly}>{selected}</span>}
@@ -304,14 +305,14 @@ class StorageTypeFormGroup extends React.PureComponent<Props, State> {
         )}
         {this.getSelectorModal()}
         <Modal
-          title="Storage Type Info"
           variant={ModalVariant.small}
           isOpen={isInfoOpen}
           onClose={() => {
             this.handleInfoToggle();
           }}
         >
-          {this.getInfoModalContent()}
+          <ModalHeader title="Storage Type Info" />
+          <ModalBody>{this.getInfoModalContent()}</ModalBody>
         </Modal>
       </FormGroup>
     );

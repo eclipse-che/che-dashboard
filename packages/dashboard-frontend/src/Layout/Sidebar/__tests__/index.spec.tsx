@@ -22,11 +22,11 @@ const { createSnapshot } = getComponentRenderer(getComponent);
 
 describe('Sidebar', () => {
   test('snapshot', () => {
-    expect(createSnapshot(false, true).toJSON()).toMatchSnapshot();
+    expect(createSnapshot().toJSON()).toMatchSnapshot();
   });
 });
 
-function getComponent(isManaged: boolean, isNavOpen: boolean): React.ReactElement {
+function getComponent(): React.ReactElement {
   const history = createMemoryHistory();
-  return <Sidebar history={history} isManaged={isManaged} isNavOpen={isNavOpen} />;
+  return <Sidebar history={history} isVisible={true} />;
 }

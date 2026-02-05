@@ -2,85 +2,87 @@
 
 exports[`Expandable warning items should correctly render the component 1`] = `
 <div
-  className="pf-c-content"
+  className="pf-v6-c-content"
+  data-ouia-component-id="OUIA-Generated-Content-1"
+  data-ouia-component-type="PF6/Content"
+  data-ouia-safe={true}
+  data-pf-content={true}
 >
   <small
-    className=""
-    data-ouia-component-id="OUIA-Generated-Text-1"
-    data-ouia-component-type="PF4/Text"
+    className="pf-v6-c-content--small"
+    data-ouia-component-id="OUIA-Generated-Content-2"
+    data-ouia-component-type="PF6/Content"
     data-ouia-safe={true}
     data-pf-content={true}
   >
     Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi non sollicitudin lorem, a suscipit massa. Cras egestas ante vel est pulvinar, a elementum orci faucibus. Etiam in risus et augue sollicitudin facilisis. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Vivamus ligula arcu, imperdiet hendrerit nulla varius, molestie volutpat nunc.
   </small>
   <small
-    className=""
-    data-ouia-component-id="OUIA-Generated-Text-2"
-    data-ouia-component-type="PF4/Text"
+    className="pf-v6-c-content--small"
+    data-ouia-component-id="OUIA-Generated-Content-3"
+    data-ouia-component-type="PF6/Content"
     data-ouia-safe={true}
     data-pf-content={true}
   >
     <div
-      className="pf-c-code-block error"
+      className="pf-v6-c-code-block error"
     >
       <div
-        className="pf-c-code-block__header"
+        className="pf-v6-c-code-block__header"
       >
         <div
-          className="pf-c-code-block__actions"
+          className="pf-v6-c-code-block__actions"
         >
           <div
-            className="pf-c-code-block__actions-item"
+            className="pf-v6-c-code-block__actions-item"
           >
             <button
-              aria-disabled={false}
               aria-label={null}
-              className="pf-c-button pf-m-link pf-m-small"
+              className="pf-v6-c-button pf-m-link pf-m-small"
               data-ouia-component-id="OUIA-Generated-Button-link-1"
-              data-ouia-component-type="PF4/Button"
+              data-ouia-component-type="PF6/Button"
               data-ouia-safe={true}
               disabled={false}
               onClick={[Function]}
-              role={null}
               type="button"
             >
-              <svg
-                aria-hidden={true}
-                aria-labelledby={null}
-                fill="currentColor"
-                height="1em"
-                role="img"
-                style={
-                  {
-                    "verticalAlign": "-0.125em",
-                  }
-                }
-                viewBox="0 0 448 512"
-                width="1em"
+              <span
+                className="pf-v6-c-button__text"
               >
-                <path
-                  d="M320 448v40c0 13.255-10.745 24-24 24H24c-13.255 0-24-10.745-24-24V120c0-13.255 10.745-24 24-24h72v296c0 30.879 25.121 56 56 56h168zm0-344V0H152c-13.255 0-24 10.745-24 24v368c0 13.255 10.745 24 24 24h272c13.255 0 24-10.745 24-24V128H344c-13.2 0-24-10.8-24-24zm120.971-31.029L375.029 7.029A24 24 0 0 0 358.059 0H352v96h96v-6.059a24 24 0 0 0-7.029-16.97z"
-                />
-              </svg>
-               
-              Copy to clipboard
+                <svg
+                  aria-hidden={true}
+                  aria-labelledby={null}
+                  className="pf-v6-svg"
+                  fill="currentColor"
+                  height="1em"
+                  role="img"
+                  viewBox="0 0 448 512"
+                  width="1em"
+                >
+                  <path
+                    d="M320 448v40c0 13.255-10.745 24-24 24H24c-13.255 0-24-10.745-24-24V120c0-13.255 10.745-24 24-24h72v296c0 30.879 25.121 56 56 56h168zm0-344V0H152c-13.255 0-24 10.745-24 24v368c0 13.255 10.745 24 24 24h272c13.255 0 24-10.745 24-24V128H344c-13.2 0-24-10.8-24-24zm120.971-31.029L375.029 7.029A24 24 0 0 0 358.059 0H352v96h96v-6.059a24 24 0 0 0-7.029-16.97z"
+                  />
+                </svg>
+                 
+                Copy to clipboard
+              </span>
             </button>
           </div>
         </div>
       </div>
       <div
-        className="pf-c-code-block__content"
+        className="pf-v6-c-code-block__content"
       >
         <pre
-          className="pf-c-code-block__pre"
+          className="pf-v6-c-code-block__pre"
         >
           <code
-            className="pf-c-code-block__code"
+            className="pf-v6-c-code-block__code"
           >
             <small
-              className="hideOverflow"
-              data-ouia-component-id="OUIA-Generated-Text-3"
-              data-ouia-component-type="PF4/Text"
+              className="pf-v6-c-content--small hideOverflow"
+              data-ouia-component-id="OUIA-Generated-Content-4"
+              data-ouia-component-type="PF6/Content"
               data-ouia-safe={true}
               data-pf-content={true}
               data-testid="expandable-warning-error-message"
@@ -94,9 +96,9 @@ exports[`Expandable warning items should correctly render the component 1`] = `
     </div>
   </small>
   <small
-    className=""
-    data-ouia-component-id="OUIA-Generated-Text-4"
-    data-ouia-component-type="PF4/Text"
+    className="pf-v6-c-content--small"
+    data-ouia-component-id="OUIA-Generated-Content-5"
+    data-ouia-component-type="PF6/Content"
     data-ouia-safe={true}
     data-pf-content={true}
   >

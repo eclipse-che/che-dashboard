@@ -3,58 +3,46 @@
 exports[`Navigation Item snapshot with RUNNING correctly 1`] = `
 <nav
   aria-label="Global"
-  className="pf-c-nav"
+  className="pf-v6-c-nav"
   data-ouia-component-id="OUIA-Generated-Nav-2"
-  data-ouia-component-type="PF4/Nav"
+  data-ouia-component-type="PF6/Nav"
   data-ouia-safe={true}
 >
   <li
-    className="pf-c-nav__item navItem"
+    className="pf-v6-c-nav__item navItem"
     data-ouia-component-id="OUIA-Generated-NavItem-2"
-    data-ouia-component-type="PF4/NavItem"
+    data-ouia-component-type="PF6/NavItem"
     data-ouia-safe={true}
     onMouseOver={[Function]}
   >
     <a
       aria-current={null}
-      className="pf-c-nav__link navItem"
+      className="pf-v6-c-nav__link navItem"
       data-testid="/namespace/workspace"
       id="/namespace/workspace"
       onClick={[Function]}
       tabIndex={null}
     >
       <span
-        data-testid="recent-workspace-item"
+        className="pf-v6-c-nav__link-text"
       >
-        <div>
-          Mock Workspace status indicator, status: 
-          Stopped
-        </div>
-        <div
-          data-testid="patternfly-tooltip"
+        <span
+          data-testid="recent-workspace-item"
         >
+          <div>
+            Mock Workspace status indicator, status: 
+            Stopped
+          </div>
           <span
-            data-testid="tooltip-props"
-          >
-            {"isContentLeftAligned":true,"className":"titleHover ","position":"top-start","distance":-31,"maxWidth":"50rem"}
-          </span>
-          <div
-            data-testid="tooltip-content"
+            className="titleHover "
           >
             workspace
-          </div>
-          <div
-            data-testid="tooltip-placed-to"
-          >
-            <span>
-              workspace
-            </span>
-          </div>
+          </span>
+        </span>
+        <div>
+          RecentItemWorkspaceActions
         </div>
       </span>
-      <div>
-        RecentItemWorkspaceActions
-      </div>
     </a>
   </li>
 </nav>
@@ -63,58 +51,46 @@ exports[`Navigation Item snapshot with RUNNING correctly 1`] = `
 exports[`Navigation Item snapshot with STOPPED status 1`] = `
 <nav
   aria-label="Global"
-  className="pf-c-nav"
+  className="pf-v6-c-nav"
   data-ouia-component-id="OUIA-Generated-Nav-1"
-  data-ouia-component-type="PF4/Nav"
+  data-ouia-component-type="PF6/Nav"
   data-ouia-safe={true}
 >
   <li
-    className="pf-c-nav__item navItem"
+    className="pf-v6-c-nav__item navItem"
     data-ouia-component-id="OUIA-Generated-NavItem-1"
-    data-ouia-component-type="PF4/NavItem"
+    data-ouia-component-type="PF6/NavItem"
     data-ouia-safe={true}
     onMouseOver={[Function]}
   >
     <a
       aria-current={null}
-      className="pf-c-nav__link navItem"
+      className="pf-v6-c-nav__link navItem"
       data-testid="/namespace/workspace"
       id="/namespace/workspace"
       onClick={[Function]}
       tabIndex={null}
     >
       <span
-        data-testid="recent-workspace-item"
+        className="pf-v6-c-nav__link-text"
       >
-        <div>
-          Mock Workspace status indicator, status: 
-          Stopped
-        </div>
-        <div
-          data-testid="patternfly-tooltip"
+        <span
+          data-testid="recent-workspace-item"
         >
+          <div>
+            Mock Workspace status indicator, status: 
+            Stopped
+          </div>
           <span
-            data-testid="tooltip-props"
-          >
-            {"isContentLeftAligned":true,"className":"titleHover ","position":"top-start","distance":-31,"maxWidth":"50rem"}
-          </span>
-          <div
-            data-testid="tooltip-content"
+            className="titleHover "
           >
             workspace
-          </div>
-          <div
-            data-testid="tooltip-placed-to"
-          >
-            <span>
-              workspace
-            </span>
-          </div>
+          </span>
+        </span>
+        <div>
+          RecentItemWorkspaceActions
         </div>
       </span>
-      <div>
-        RecentItemWorkspaceActions
-      </div>
     </a>
   </li>
 </nav>

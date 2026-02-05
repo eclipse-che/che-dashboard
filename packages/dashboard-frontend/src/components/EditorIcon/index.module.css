@@ -17,11 +17,21 @@
 .icon {
   width: 20px;
   height: 20px;
-  vertical-align: middle;
   margin-right: 5px;
+  vertical-align: middle;
+}
+
+.defaultIcon {
+  width: 20px;
+  height: 20px;
+  color: var(--pf-t--global--icon--color--subtle);
+  vertical-align: middle;
 }
 
 .name {
   white-space: nowrap;
 }
 
+.placeholder {
+  color: var(--pf-t--global--text--color--subtle);
+}

@@ -10,7 +10,13 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import { Select, SelectOption, SelectOptionObject, SelectVariant } from '@patternfly/react-core';
+import {
+  MenuToggle,
+  MenuToggleElement,
+  Select,
+  SelectList,
+  SelectOption,
+} from '@patternfly/react-core';
 import React from 'react';
 
 import styles from '@/components/BulkSelector/index.module.css';
@@ -24,7 +30,7 @@ export type Props = {
 export type State = {
   isOpen: boolean;
   selected: string[];
-  options: React.ReactElement[];
+  options: string[];
 };
 
 export class BulkSelector extends React.PureComponent<Props, State> {
@@ -39,33 +45,31 @@ export class BulkSelector extends React.PureComponent<Props, State> {
   }
 
   public componentDidMount(): void {
-    const options = this.getOptions(this.props.list);
     this.setState({
-      options,
+      options: this.props.list,
     });
   }
 
   public componentDidUpdate(prevProps: Props): void {
     const { list } = this.props;
     if (prevProps.list !== list) {
-      const options = this.getOptions(list);
       this.setState({
-        options,
+        options: list,
       });
     }
   }
 
-  private getOptions(list: string[]): React.ReactElement[] {
-    return list.map(tag => <SelectOption key={tag} value={tag} />);
-  }
-
-  private onToggle(isOpen: boolean): void {
+  private onToggle(): void {
     this.setState({
-      isOpen,
+      isOpen: !this.state.isOpen,
     });
   }
 
-  private onSelect(selection: string) {
+  private onSelect(_event: React.MouseEvent | undefined, value: string | number | undefined) {
+    if (value === undefined) {
+      return;
+    }
+    const selection = value.toString();
     const selected = [...this.state.selected];
     const index = selected.indexOf(selection);
     if (index > -1) {
@@ -85,21 +89,33 @@ export class BulkSelector extends React.PureComponent<Props, State> {
       return <></>;
     }
 
+    const toggle = (toggleRef: React.Ref<MenuToggleElement>) => (
+      <MenuToggle
+        ref={toggleRef}
+        onClick={() => this.onToggle()}
+        isExpanded={isOpen}
+        style={{ width: '200px' }}
+      >
+        {selected.length > 0 ? `${selected.length} selected` : placeholderText}
+      </MenuToggle>
+    );
+
     return (
       <Select
         className={styles.selector}
-        variant={SelectVariant.checkbox}
-        onToggle={isOpen => this.onToggle(isOpen)}
-        onSelect={(
-          _event: React.MouseEvent | React.ChangeEvent,
-          selection: string | SelectOptionObject,
-        ) => this.onSelect(selection.toString())}
-        selections={selected}
         isOpen={isOpen}
-        placeholderText={placeholderText}
-        isGrouped
+        selected={selected}
+        onSelect={(event, value) => this.onSelect(event, value)}
+        onOpenChange={isOpen => this.setState({ isOpen })}
+        toggle={toggle}
       >
-        {options}
+        <SelectList>
+          {options.map(tag => (
+            <SelectOption key={tag} value={tag} hasCheckbox isSelected={selected.includes(tag)}>
+              {tag}
+            </SelectOption>
+          ))}
+        </SelectList>
       </Select>
     );
   }

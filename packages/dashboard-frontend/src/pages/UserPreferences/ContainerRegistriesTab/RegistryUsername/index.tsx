@@ -10,7 +10,15 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import { FormGroup, TextInput, ValidatedOptions } from '@patternfly/react-core';
+import {
+  FormGroup,
+  FormHelperText,
+  HelperText,
+  HelperTextItem,
+  TextInput,
+  ValidatedOptions,
+} from '@patternfly/react-core';
+import { ExclamationCircleIcon } from '@patternfly/react-icons';
 import React from 'react';
 
 const MAX_LENGTH = 100;
@@ -72,23 +80,30 @@ export class RegistryUsernameFormGroup extends React.PureComponent<Props, State>
   }
 
   public render(): React.ReactElement {
-    const { username, errorMessage, valid } = this.state;
+    const { username, valid, errorMessage } = this.state;
 
     return (
       <FormGroup
         style={{ gridTemplateColumns: '80px', minHeight: '65px' }}
         label="Username"
         fieldId="id-username-helper"
-        helperTextInvalid={errorMessage}
-        validated={valid}
       >
         <TextInput
           aria-label="Username input"
           placeholder="Enter a username"
           value={username}
           validated={valid}
-          onChange={_username => this.onChange(_username)}
+          onChange={(_event, _username) => this.onChange(_username)}
         />
+        {valid === ValidatedOptions.error && errorMessage && (
+          <FormHelperText>
+            <HelperText>
+              <HelperTextItem icon={<ExclamationCircleIcon />} variant="error">
+                {errorMessage}
+              </HelperTextItem>
+            </HelperText>
+          </FormHelperText>
+        )}
       </FormGroup>
     );
   }

@@ -297,7 +297,7 @@ export function EditorIcon(props: Props): React.ReactElement {
 
     return (
       <Tooltip content={tooltipText}>
-        <span className={styles.container}>
+        <span className={styles.container} style={{ whiteSpace: 'nowrap' }}>
           {icon}
           <span className={styles.name}>{editorName}</span>
         </span>

@@ -12,16 +12,18 @@
 
 import {
   Card,
-  CardActions,
   CardBody,
   CardFooter,
   CardHeader,
+  CardTitle,
   Dropdown,
   DropdownItem,
-  KebabToggle,
+  DropdownList,
   LabelGroup,
+  MenuToggle,
+  MenuToggleElement,
 } from '@patternfly/react-core';
-import { CheckIcon } from '@patternfly/react-icons';
+import { CheckIcon, EllipsisVIcon } from '@patternfly/react-icons';
 import React from 'react';
 import sanitizeHtml from 'sanitize-html';
 
@@ -64,6 +66,10 @@ export class EditorSelectorEntry extends React.PureComponent<Props, State> {
     return `editor-selector-card-${this.state.activeEditor.id}`;
   }
 
+  private get selectableActionId(): string {
+    return `editor-selector-input-${this.state.activeEditor.id}`;
+  }
+
   public componentDidUpdate(prevProps: Props): void {
     if (prevProps.selectedId !== this.props.selectedId) {
       const selectedEditor = this.props.editorsGroup.find(
@@ -84,28 +90,21 @@ export class EditorSelectorEntry extends React.PureComponent<Props, State> {
     }
   }
 
-  private handleCardClick(event: React.MouseEvent) {
+  private handleSelectableAction = (): void => {
     const { selectedId, onSelect } = this.props;
     const { activeEditor } = this.state;
-
-    if (!activeEditor.provider) {
-      event.preventDefault();
-    }
 
     if (activeEditor.id === selectedId) {
       return;
     }
 
     onSelect(activeEditor.id);
-  }
+  };
 
-  private handleDropdownToggle(
-    isKebabOpen: boolean,
-    event: MouseEvent | React.KeyboardEvent | React.MouseEvent,
-  ) {
+  private handleDropdownToggle(event: React.MouseEvent) {
     event.stopPropagation();
 
-    this.setState({ isKebabOpen });
+    this.setState({ isKebabOpen: !this.state.isKebabOpen });
   }
 
   private handleDropdownSelect(
@@ -139,7 +138,7 @@ export class EditorSelectorEntry extends React.PureComponent<Props, State> {
           onClick={event => this.handleDropdownSelect(event, editor)}
           data-testid="editor-card-action"
           aria-checked={isChecked}
-          icon={isChecked ? <CheckIcon /> : <></>}
+          icon={isChecked ? <CheckIcon /> : undefined}
         >
           {editor.version}
         </DropdownItem>
@@ -152,7 +151,6 @@ export class EditorSelectorEntry extends React.PureComponent<Props, State> {
     const { isKebabOpen, isSelectedGroup, activeEditor } = this.state;
 
     const dropdownItems = this.buildDropdownItems();
-    const areaLabel = `Select ${groupName} ${activeEditor.version} `;
 
     const titleClassName = isSelectedGroup ? styles.activeCard : '';
 
@@ -180,34 +178,50 @@ export class EditorSelectorEntry extends React.PureComponent<Props, State> {
 
     return (
       <Card
-        hasSelectableInput={true}
         id={this.id}
-        isCompact={true}
-        isFlat={true}
-        isSelectableRaised
+        isCompact
+        isClickable
+        isSelectable
         isSelected={isSelectedGroup}
-        onClick={event => this.handleCardClick(event)}
-        selectableInputAriaLabel={areaLabel}
+        onClick={this.handleSelectableAction}
       >
-        <CardHeader>
-          <img src={icon} className={styles.editorIcon} />
+        <CardHeader
+          selectableActions={{
+            selectableActionId: this.selectableActionId,
+            selectableActionAriaLabelledby: this.id,
+            name: 'editor-selector',
+            variant: 'single',
+            onChange: this.handleSelectableAction,
+            hasNoOffset: true,
+            isHidden: true,
+          }}
+          actions={{
+            actions: (
+              <Dropdown
+                toggle={(toggleRef: React.Ref<MenuToggleElement>) => (
+                  <MenuToggle
+                    ref={toggleRef}
+                    variant="plain"
+                    onClick={event => this.handleDropdownToggle(event)}
+                    isExpanded={isKebabOpen}
+                    aria-label={`${groupName} actions`}
+                    icon={<EllipsisVIcon />}
+                  />
+                )}
+                isOpen={isKebabOpen}
+                onOpenChange={isOpen => this.setState({ isKebabOpen: isOpen })}
+                popperProps={{ position: 'right' }}
+              >
+                <DropdownList>{dropdownItems}</DropdownList>
+              </Dropdown>
+            ),
+          }}
+        >
+          <img src={icon} className={styles.editorIcon} alt={`${groupName} icon`} />
           {tagsGroup}
-          <CardActions>
-            <Dropdown
-              toggle={
-                <KebabToggle
-                  onToggle={(isOpen, event) => this.handleDropdownToggle(isOpen, event)}
-                />
-              }
-              isOpen={isKebabOpen}
-              isPlain
-              dropdownItems={dropdownItems}
-            />
-          </CardActions>
+          <CardTitle className={titleClassName}>{groupName}</CardTitle>
         </CardHeader>
-        <CardBody>
-          <span className={titleClassName}>{groupName}</span>
-        </CardBody>
+        <CardBody>{activeEditor.description}</CardBody>
         {activeEditor.provider && (
           <CardFooter>
             <div data-testid="providerInfo" className={styles.provider}>

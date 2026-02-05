@@ -10,18 +10,6 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-// Suppress the findDOMNode deprecation warning from PatternFly
-// This is a known issue in @patternfly/react-core that uses findDOMNode
-// in their Popper/Tooltip components. This workaround filters out the warning
-// until PatternFly releases a fix.
-const originalConsoleError = console.error;
-console.error = (...args: unknown[]) => {
-  if (typeof args[0] === 'string' && args[0].includes('findDOMNode is deprecated')) {
-    return;
-  }
-  originalConsoleError.apply(console, args);
-};
-
 import '@patternfly/react-core/dist/styles/base.css';
 import 'reflect-metadata';
 import '@/overrides.css';
@@ -35,6 +23,26 @@ import App from '@/App';
 import WorkspaceActionsProvider from '@/contexts/WorkspaceActions/Provider';
 import PreloadData from '@/services/bootstrap';
 import { store } from '@/store';
+
+// Make touch event listeners passive by default to improve scroll performance
+// and prevent warnings from PatternFly components
+if (typeof EventTarget !== 'undefined') {
+  const originalAddEventListener = EventTarget.prototype.addEventListener;
+  EventTarget.prototype.addEventListener = function (
+    type: string,
+    listener: EventListenerOrEventListenerObject,
+    options?: boolean | AddEventListenerOptions,
+  ) {
+    if (type === 'touchstart' || type === 'touchmove') {
+      if (typeof options === 'object' && options !== null) {
+        options = { ...options, passive: options.passive !== false };
+      } else if (typeof options === 'undefined') {
+        options = { passive: true };
+      }
+    }
+    return originalAddEventListener.call(this, type, listener, options);
+  };
+}
 
 startApp();
 

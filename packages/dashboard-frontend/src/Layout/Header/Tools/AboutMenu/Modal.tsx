@@ -10,14 +10,11 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import {
-  AboutModal as PatternflyAboutModal,
-  TextContent,
-  TextList,
-  TextListItem,
-} from '@patternfly/react-core';
+import { AboutModal as PatternflyAboutModal, Content } from '@patternfly/react-core';
 import { detect } from 'detect-browser';
 import React from 'react';
+
+import styles from '@/Layout/Header/Tools/AboutMenu/Modal.module.css';
 
 type Props = {
   productName: string | undefined;
@@ -51,75 +48,63 @@ export class AboutModal extends React.PureComponent<Props> {
     const browserName = this.browserName;
 
     return (
-      <TextContent>
-        <TextList component="dl">
+      <Content className={styles.aboutModalContent}>
+        <dl>
           {dashboardVersion && (
             <>
-              <TextListItem component="dt">Dashboard Version</TextListItem>
-              <TextListItem
-                component="dd"
-                className="co-select-to-copy"
-                data-testid="dashboard-version"
-              >
+              <dt className={styles.dashboardVersionLabel}>Dashboard Version</dt>
+              <dd className="co-select-to-copy" data-testid="dashboard-version">
                 {dashboardVersion}
-              </TextListItem>
+              </dd>
             </>
           )}
           {serverVersion && (
             <>
-              <TextListItem component="dt">Server Version</TextListItem>
-              <TextListItem
-                component="dd"
-                className="co-select-to-copy"
-                data-testid="server-version"
-              >
+              <dt>Server Version</dt>
+              <dd className="co-select-to-copy" data-testid="server-version">
                 {serverVersion}
-              </TextListItem>
+              </dd>
             </>
           )}
           {username && (
             <>
-              <TextListItem component="dt">Username</TextListItem>
-              <TextListItem component="dd" className="co-select-to-copy" data-testid="username">
+              <dt>Username</dt>
+              <dd className="co-select-to-copy" data-testid="username">
                 {username}
-              </TextListItem>
+              </dd>
             </>
           )}
           {browserName && (
             <>
-              <TextListItem component="dt">Browser Name</TextListItem>
-              <TextListItem component="dd" className="co-select-to-copy" data-testid="browser-name">
+              <dt>Browser Name</dt>
+              <dd className="co-select-to-copy" data-testid="browser-name">
                 {browserName}
-              </TextListItem>
+              </dd>
             </>
           )}
           {browserVersion && (
             <>
-              <TextListItem component="dt">Browser Version</TextListItem>
-              <TextListItem
-                component="dd"
-                className="co-select-to-copy"
-                data-testid="browser-version"
-              >
+              <dt>Browser Version</dt>
+              <dd className="co-select-to-copy" data-testid="browser-version">
                 {browserVersion}
-              </TextListItem>
+              </dd>
             </>
           )}
           {browserOS && (
             <>
-              <TextListItem component="dt">Browser OS</TextListItem>
-              <TextListItem component="dd" className="co-select-to-copy" data-testid="browser-os">
+              <dt>Browser OS</dt>
+              <dd className="co-select-to-copy" data-testid="browser-os">
                 {browserOS}
-              </TextListItem>
+              </dd>
             </>
           )}
-        </TextList>
-      </TextContent>
+        </dl>
+      </Content>
     );
   }
 
   public render(): React.ReactElement {
-    const { isOpen, logo, productName } = this.props;
+    const { isOpen, productName, logo } = this.props;
 
     const modalContent = this.buildContent();
 
@@ -129,7 +114,8 @@ export class AboutModal extends React.PureComponent<Props> {
         onClose={() => this.props.closeModal()}
         brandImageSrc={logo}
         brandImageAlt={`${productName} logo`}
-        noAboutModalBoxContentContainer={true}
+        backgroundImageSrc="/dashboard/assets/images/pf-background.svg"
+        productName={productName}
       >
         {modalContent}
       </PatternflyAboutModal>

@@ -11,5 +11,5 @@
 */
 
 .conditionTitle {
-  color: var(--pf-global--palette--black-1000);
+  color: var(--pf-t--global--text--color--regular);
 }

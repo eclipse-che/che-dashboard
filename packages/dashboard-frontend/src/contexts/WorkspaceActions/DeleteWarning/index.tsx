@@ -13,10 +13,12 @@
 import {
   Button,
   ButtonVariant,
+  Content,
   Modal,
+  ModalBody,
+  ModalFooter,
+  ModalHeader,
   ModalVariant,
-  Text,
-  TextContent,
 } from '@patternfly/react-core';
 import { ExternalLinkAltIcon } from '@patternfly/react-icons';
 import React from 'react';
@@ -47,8 +49,8 @@ export class WorkspaceActionsDeleteWarning extends React.PureComponent<Props> {
     if (wantDelete.length === 1) {
       const workspaceName = wantDelete[0];
       warningMessage = (
-        <TextContent>
-          <Text>
+        <Content>
+          <Content component="p">
             <b>{workspaceName}</b> workspace has <b>Per-user</b> storage type. There is a
             possibility that the <b>Per-user</b> storage type e.g. common PVC is used for all
             workspaces and that PVC has the RWO access mode.&emsp;
@@ -60,17 +62,17 @@ export class WorkspaceActionsDeleteWarning extends React.PureComponent<Props> {
             >
               Learn more <ExternalLinkAltIcon />
             </a>
-          </Text>
-          <Text>
+          </Content>
+          <Content component="p">
             To prevent possible problems with removal, you need to stop other workspaces with&nbsp;
             <b>Per-user</b>&nbsp;storage type before deleting.
-          </Text>
-        </TextContent>
+          </Content>
+        </Content>
       );
     } else {
       warningMessage = (
-        <TextContent>
-          <Text>
+        <Content>
+          <Content component="p">
             One of deleting workspaces has <b>Per-user</b> storage type. There is a possibility that
             the <b>Per-user</b> storage type e.g. common PVC is used for all workspaces and that PVC
             has the RWO access mode.&emsp;
@@ -82,51 +84,44 @@ export class WorkspaceActionsDeleteWarning extends React.PureComponent<Props> {
             >
               Learn more <ExternalLinkAltIcon />
             </a>
-          </Text>
-          <Text>
+          </Content>
+          <Content component="p">
             To prevent possible problems with removal, you need to stop other workspaces with&nbsp;
             <b>Per-user</b>&nbsp;storage type before deleting.
-          </Text>
-        </TextContent>
+          </Content>
+        </Content>
       );
     }
-
-    const body = (
-      <TextContent>
-        <Text>{warningMessage}</Text>
-      </TextContent>
-    );
-
-    const footer = (
-      <React.Fragment>
-        <Button
-          variant={ButtonVariant.danger}
-          data-testid="proceed-anyway-button"
-          onClick={() => this.handleProceedAnyway()}
-        >
-          Proceed Anyway
-        </Button>
-        <Button
-          variant={ButtonVariant.link}
-          data-testid="close-button"
-          onClick={() => this.handleClose()}
-        >
-          Cancel
-        </Button>
-      </React.Fragment>
-    );
 
     return (
       <Modal
         aria-label="Delete workspaces warning window"
-        footer={footer}
         isOpen={isOpen}
-        title="Delete Workspace Warning"
-        titleIconVariant="warning"
         variant={ModalVariant.small}
         onClose={() => this.handleClose()}
       >
-        {body}
+        <ModalHeader title="Delete Workspace Warning" titleIconVariant="warning" />
+        <ModalBody>
+          <Content>
+            <Content component="p">{warningMessage}</Content>
+          </Content>
+        </ModalBody>
+        <ModalFooter>
+          <Button
+            variant={ButtonVariant.danger}
+            data-testid="proceed-anyway-button"
+            onClick={() => this.handleProceedAnyway()}
+          >
+            Proceed Anyway
+          </Button>
+          <Button
+            variant={ButtonVariant.link}
+            data-testid="close-button"
+            onClick={() => this.handleClose()}
+          >
+            Cancel
+          </Button>
+        </ModalFooter>
       </Modal>
     );
   }

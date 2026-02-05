@@ -117,20 +117,13 @@ export class GitConfigForm extends React.Component<Props, State> {
   }
 
   public render(): React.ReactElement {
-    const { validated, gitConfigStr, isUpload } = this.state;
-
-    const errorMessage = this.getErrorMessage(gitConfigStr, isUpload);
+    const { validated } = this.state;
 
     const content = this.stringifyGitConfig(this.props.gitConfig);
 
     return (
       <Form onSubmit={e => e.preventDefault()}>
-        <FormGroup
-          fieldId="gitconfig"
-          helperTextInvalid={errorMessage}
-          label="gitconfig"
-          validated={validated}
-        >
+        <FormGroup fieldId="gitconfig" label="gitconfig">
           <GitConfigImport
             content={content}
             validated={validated}

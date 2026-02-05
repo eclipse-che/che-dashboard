@@ -12,12 +12,19 @@
 
 import React from 'react';
 
-export const greyCssVariable = 'var(--pf-global--palette--black-500)';
+import { useTheme } from '@/contexts/ThemeContext';
+
+// Theme-aware grey colors using PatternFly 6 tokens
+const lightGreyCssVariable = 'var(--pf-t--global--text--color--regular)';
+const darkGreyCssVariable = 'var(--pf-t--global--text--color--subtle)';
 
 export function StoppedIcon(): React.ReactElement {
+  const { isDarkTheme } = useTheme();
+  const fillColor = isDarkTheme ? darkGreyCssVariable : lightGreyCssVariable;
+
   return (
     <svg
-      fill={greyCssVariable}
+      fill={fillColor}
       height="1em"
       width="1em"
       viewBox="0 0 16 16"

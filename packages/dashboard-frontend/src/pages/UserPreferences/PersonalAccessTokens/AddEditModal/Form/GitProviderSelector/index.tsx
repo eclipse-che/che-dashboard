@@ -11,7 +11,13 @@
  */
 
 import { api } from '@eclipse-che/common';
-import { Dropdown, DropdownItem, DropdownToggle, FormGroup } from '@patternfly/react-core';
+import {
+  Dropdown,
+  DropdownItem,
+  DropdownList,
+  FormGroup,
+  MenuToggle,
+} from '@patternfly/react-core';
 import React from 'react';
 
 import { DEFAULT_GIT_PROVIDER, GIT_PROVIDERS } from '@/pages/UserPreferences/const';
@@ -44,13 +50,11 @@ export class GitProviderSelector extends React.PureComponent<Props, State> {
     }
   }
 
-  private onToggle(isOpen: boolean): void {
-    this.setState({ isOpen });
+  private onToggle(): void {
+    this.setState(prevState => ({ isOpen: !prevState.isOpen }));
   }
 
-  private onSelect(event: React.SyntheticEvent<HTMLDivElement, Event> | undefined): void {
-    const provider = (event?.currentTarget as HTMLDivElement).id as api.GitProvider;
-
+  private onSelect(provider: api.GitProvider): void {
     this.setState({
       isOpen: false,
       provider,
@@ -73,7 +77,7 @@ export class GitProviderSelector extends React.PureComponent<Props, State> {
       .map(providerEntry => {
         const [provider, providerName] = providerEntry as [api.GitProvider, string];
         return (
-          <DropdownItem key={provider} id={provider} component="button">
+          <DropdownItem key={provider} onClick={() => this.onSelect(provider)}>
             {providerName}
           </DropdownItem>
         );
@@ -89,15 +93,21 @@ export class GitProviderSelector extends React.PureComponent<Props, State> {
     return (
       <FormGroup label="Provider Name" fieldId="provider-name">
         <Dropdown
-          onSelect={(...args) => this.onSelect(...args)}
-          toggle={
-            <DropdownToggle id={this.toggleElementId} onToggle={isOpen => this.onToggle(isOpen)}>
+          onOpenChange={isOpen => this.setState({ isOpen })}
+          toggle={toggleRef => (
+            <MenuToggle
+              ref={toggleRef}
+              id={this.toggleElementId}
+              onClick={() => this.onToggle()}
+              isExpanded={isOpen}
+            >
               {providerName}
-            </DropdownToggle>
-          }
+            </MenuToggle>
+          )}
           isOpen={isOpen}
-          dropdownItems={dropdownItems}
-        />
+        >
+          <DropdownList>{dropdownItems}</DropdownList>
+        </Dropdown>
       </FormGroup>
     );
   }

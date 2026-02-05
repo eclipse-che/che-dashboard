@@ -83,14 +83,14 @@ describe('Samples List Toolbar', () => {
   it('should update balk selectors', async () => {
     // render the component with tags and languages
     const { reRenderComponent } = renderComponent();
-    // check that the tags and languages filters are present
-    expect(screen.queryByLabelText('Filter by tags')).toBeTruthy();
-    expect(screen.queryByLabelText('Filter by languages')).toBeTruthy();
+    // check that the tags and languages filters are present (BulkSelector renders placeholderText as button text)
+    expect(screen.queryByRole('button', { name: 'Filter by tags' })).toBeTruthy();
+    expect(screen.queryByRole('button', { name: 'Filter by languages' })).toBeTruthy();
     // re-render the component without tags and languages
     reRenderComponent(new MockStoreBuilder().build());
     // remove the tags and languages filters
-    expect(screen.queryByLabelText('Filter by tags')).toBeFalsy();
-    expect(screen.queryByLabelText('Filter by languages')).toBeFalsy();
+    expect(screen.queryByRole('button', { name: 'Filter by tags' })).toBeFalsy();
+    expect(screen.queryByRole('button', { name: 'Filter by languages' })).toBeFalsy();
   });
 
   it('should call "setTagsFilter" action', async () => {
@@ -98,7 +98,8 @@ describe('Samples List Toolbar', () => {
 
     renderComponent();
 
-    const balkSelector = screen.getByLabelText('Filter by tags');
+    // BulkSelector renders placeholderText as button text
+    const balkSelector = screen.getByRole('button', { name: 'Filter by tags' });
     expect(balkSelector).toBeTruthy();
     await userEvent.click(balkSelector);
 
@@ -118,7 +119,8 @@ describe('Samples List Toolbar', () => {
 
     renderComponent();
 
-    const balkSelector = screen.getByLabelText('Filter by languages');
+    // BulkSelector renders placeholderText as button text
+    const balkSelector = screen.getByRole('button', { name: 'Filter by languages' });
     expect(balkSelector).toBeTruthy();
     await userEvent.click(balkSelector);
 

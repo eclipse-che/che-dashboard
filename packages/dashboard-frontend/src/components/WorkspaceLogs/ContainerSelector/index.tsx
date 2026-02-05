@@ -11,7 +11,14 @@
  */
 
 import { V1Pod } from '@kubernetes/client-node';
-import { Dropdown, DropdownItem, DropdownSeparator, DropdownToggle } from '@patternfly/react-core';
+import {
+  Divider,
+  Dropdown,
+  DropdownItem,
+  DropdownList,
+  MenuToggle,
+  MenuToggleElement,
+} from '@patternfly/react-core';
 import React from 'react';
 
 import { ResourceIcon } from '@/components/ResourceIcon';
@@ -78,20 +85,19 @@ export class WorkspaceLogsContainerSelector extends React.PureComponent<Props, S
     return (this.props.pod?.spec?.initContainers || []).map(container => container.name);
   }
 
-  private onSelect(event?: React.SyntheticEvent<HTMLDivElement>): void {
+  private onSelect(
+    _event: React.MouseEvent<Element, MouseEvent> | undefined,
+    value: string | number | undefined,
+  ): void {
     this.setState({
       isOpen: false,
     });
 
-    if (event === undefined) {
+    if (value === undefined) {
       return;
     }
 
-    const currentName = event.currentTarget.id;
-    if (currentName === null) {
-      console.error('Container name is null, event:', event);
-      return;
-    }
+    const currentName = value.toString();
 
     const { containers, initContainers } = this.state;
     if (
@@ -125,17 +131,17 @@ export class WorkspaceLogsContainerSelector extends React.PureComponent<Props, S
           Containers
         </DropdownItem>,
       );
-      dropdownItems.push(
-        containers.map(container => (
-          <DropdownItem id={container} key={container} icon={icon}>
+      containers.forEach(container => {
+        dropdownItems.push(
+          <DropdownItem value={container} key={container} icon={icon}>
             {container}
-          </DropdownItem>
-        )),
-      );
+          </DropdownItem>,
+        );
+      });
     }
 
     if (containers.length !== 0 && initContainers.length !== 0) {
-      dropdownItems.push(<DropdownSeparator key="divider" onClick={e => e.stopPropagation()} />);
+      dropdownItems.push(<Divider key="divider" component="li" />);
     }
 
     if (initContainers.length !== 0) {
@@ -144,13 +150,13 @@ export class WorkspaceLogsContainerSelector extends React.PureComponent<Props, S
           Init Containers
         </DropdownItem>,
       );
-      dropdownItems.push(
-        initContainers.map(container => (
-          <DropdownItem id={container} key={container} icon={icon}>
+      initContainers.forEach(container => {
+        dropdownItems.push(
+          <DropdownItem value={container} key={container} icon={icon}>
             {container}
-          </DropdownItem>
-        )),
-      );
+          </DropdownItem>,
+        );
+      });
     }
 
     return dropdownItems;
@@ -161,29 +167,42 @@ export class WorkspaceLogsContainerSelector extends React.PureComponent<Props, S
 
     const dropdownItems = this.buildDropdownItems();
 
+    const toggle = (toggleRef: React.Ref<MenuToggleElement>) => (
+      <MenuToggle
+        ref={toggleRef}
+        onClick={() => this.onToggle()}
+        isExpanded={isOpen}
+        icon={<ResourceIcon kind="Container" />}
+      >
+        {currentName}
+      </MenuToggle>
+    );
+
     if (dropdownItems.length === 0) {
       return (
         <Dropdown
-          toggle={
-            <DropdownToggle isPlain icon={<ResourceIcon kind="Container" />}>
+          toggle={(toggleRef: React.Ref<MenuToggleElement>) => (
+            <MenuToggle ref={toggleRef} isDisabled icon={<ResourceIcon kind="Container" />}>
               {NO_CONTAINERS}
-            </DropdownToggle>
-          }
-        />
+            </MenuToggle>
+          )}
+        >
+          <DropdownList>
+            <DropdownItem isDisabled>{NO_CONTAINERS}</DropdownItem>
+          </DropdownList>
+        </Dropdown>
       );
     }
 
     return (
       <Dropdown
-        onSelect={event => this.onSelect(event)}
-        toggle={
-          <DropdownToggle onToggle={() => this.onToggle()} icon={<ResourceIcon kind="Container" />}>
-            {currentName}
-          </DropdownToggle>
-        }
+        onSelect={(event, value) => this.onSelect(event, value)}
+        toggle={toggle}
         isOpen={isOpen}
-        dropdownItems={dropdownItems}
-      />
+        onOpenChange={isOpen => this.setState({ isOpen })}
+      >
+        <DropdownList>{dropdownItems}</DropdownList>
+      </Dropdown>
     );
   }
 }

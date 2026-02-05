@@ -2,68 +2,59 @@
 
 exports[`Registry Username Input snapshot 1`] = `
 <form
-  className="pf-c-form"
+  className="pf-v6-c-form"
   noValidate={true}
 >
   <div
-    className="pf-c-form__group"
+    className="pf-v6-c-form__group"
   >
     <div
-      className="pf-c-form__group-label"
+      className="pf-v6-c-form__group-label"
     >
       <label
-        className="pf-c-form__label"
+        className="pf-v6-c-form__label"
         htmlFor="provider-name"
       >
         <span
-          className="pf-c-form__label-text"
+          className="pf-v6-c-form__label-text"
         >
           Provider Name
         </span>
       </label>
-       
+        
     </div>
     <div
-      className="pf-c-form__group-control"
+      className="pf-v6-c-form__group-control"
     >
-      <div
-        className="pf-c-dropdown"
-        data-ouia-component-id="OUIA-Generated-Dropdown-1"
-        data-ouia-component-type="PF4/Dropdown"
+      <button
+        aria-expanded={false}
+        className="pf-v6-c-menu-toggle"
+        data-ouia-component-id="OUIA-Generated-MenuToggle-1"
+        data-ouia-component-type="PF6/MenuToggle"
         data-ouia-safe={true}
+        disabled={false}
+        id="toggle-initial-selection"
+        onClick={[Function]}
+        type="button"
       >
-        <button
-          aria-expanded={false}
-          aria-haspopup={true}
-          className="pf-c-dropdown__toggle"
-          data-ouia-component-id="OUIA-Generated-DropdownToggle-1"
-          data-ouia-component-type="PF4/DropdownToggle"
-          data-ouia-safe={true}
-          disabled={false}
-          id="toggle-initial-selection"
-          onClick={[Function]}
-          onKeyDown={[Function]}
-          type="button"
+        <span
+          className="pf-v6-c-menu-toggle__text"
+        >
+          GitHub
+        </span>
+        <span
+          className="pf-v6-c-menu-toggle__controls"
         >
           <span
-            className="pf-c-dropdown__toggle-text"
-          >
-            GitHub
-          </span>
-          <span
-            className="pf-c-dropdown__toggle-icon"
+            className="pf-v6-c-menu-toggle__toggle-icon"
           >
             <svg
               aria-hidden={true}
               aria-labelledby={null}
+              className="pf-v6-svg"
               fill="currentColor"
               height="1em"
               role="img"
-              style={
-                {
-                  "verticalAlign": "-0.125em",
-                }
-              }
               viewBox="0 0 320 512"
               width="1em"
             >
@@ -72,8 +63,8 @@ exports[`Registry Username Input snapshot 1`] = `
               />
             </svg>
           </span>
-        </button>
-      </div>
+        </span>
+      </button>
     </div>
   </div>
 </form>

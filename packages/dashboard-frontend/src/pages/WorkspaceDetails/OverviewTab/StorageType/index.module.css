@@ -12,7 +12,7 @@
 
 .experimentalStorageType {
   font-size: 0.8em;
-  color: var(--pf-global--palette--orange-300);
+  color: var(--pf-t--global--icon--color--status--warning--default);
 }
 
 .labelIcon {
