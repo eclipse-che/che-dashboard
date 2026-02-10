@@ -177,7 +177,12 @@
 | `@typescript-eslint/visitor-keys@6.10.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@typescript-eslint/visitor-keys/6.10.0) |
 | `@ungap/structured-clone@1.2.0` | ISC | #18522 |
 | `@ungap/structured-clone@1.3.0` | ISC | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@ungap/structured-clone/1.3.0) |
+| `@unrs/resolver-binding-darwin-arm64@1.11.1` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@unrs/resolver-binding-darwin-arm64/1.11.1) |
+| `@unrs/resolver-binding-darwin-x64@1.11.1` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@unrs/resolver-binding-darwin-x64/1.11.1) |
 | `@unrs/resolver-binding-linux-arm64-gnu@1.11.1` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@unrs/resolver-binding-linux-arm64-gnu/1.11.1) |
+| `@unrs/resolver-binding-linux-ppc64-gnu@1.11.1` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@unrs/resolver-binding-linux-ppc64-gnu/1.11.1) |
+| `@unrs/resolver-binding-linux-s390x-gnu@1.11.1` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@unrs/resolver-binding-linux-s390x-gnu/1.11.1) |
+| `@unrs/resolver-binding-linux-x64-gnu@1.11.1` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@unrs/resolver-binding-linux-x64-gnu/1.11.1) |
 | `@webassemblyjs/ast@1.12.1` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@webassemblyjs/ast/1.12.1) |
 | `@webassemblyjs/floating-point-hex-parser@1.11.6` | MIT | #7959 |
 | `@webassemblyjs/helper-api-error@1.11.6` | MIT | #7969 |

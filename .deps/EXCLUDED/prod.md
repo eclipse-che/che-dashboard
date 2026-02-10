@@ -12,8 +12,6 @@ This file lists dependencies that do not need CQs or auto-detection does not wor
 | `create-hash@1.1.3` | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/create-hash/1.1.3) |
 | `fast-uri@2.4.0` | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/fast-uri/2.4.0) |
 | `fastify@4.29.1` | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/fastify/4.29.1) |
-| `glob@11.1.0` | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/glob/11.1.0) |
 | `jsep@1.3.9` | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/jsep/1.3.9) |
 | `light-my-request@5.14.0` | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/light-my-request/5.14.0) |
-| `oauth4webapi@3.8.3` | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/oauth4webapi/3.8.3) |
 | `real-require@0.2.0` | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/real-require/0.2.0) |
