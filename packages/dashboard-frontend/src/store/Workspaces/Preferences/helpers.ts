@@ -41,33 +41,9 @@ export const gitProviderPatterns = {
 };
 
 /**
- * Checks if an URL is a GitHub repository.
- */
-export function isGitHubRepo(url: string): boolean {
-  const githubPatterns = gitProviderPatterns.github;
-  return githubPatterns.https.test(url) || githubPatterns.ssh.test(url);
-}
-
-/**
- * Checks if an URL is a GitLab repository.
- */
-export function isGitLabRepo(url: string): boolean {
-  const gitlabPatterns = gitProviderPatterns.gitlab;
-  return gitlabPatterns.https.test(url) || gitlabPatterns.ssh.test(url);
-}
-
-/**
- * Checks if an URL is a Bitbucket repository.
- */
-export function isBitbucketRepo(url: string): boolean {
-  const bitbucketPatterns = gitProviderPatterns.bitbucket;
-  return bitbucketPatterns.https.test(url) || bitbucketPatterns.ssh.test(url);
-}
-
-/**
  * Checks if an URL is an Azure DevOps repository.
  */
-export function isAzureDevOpsRepo(url: string): boolean {
+function isAzureDevOpsRepo(url: string): boolean {
   const azureDevOpsPatterns = gitProviderPatterns.azureDevOps;
   return azureDevOpsPatterns.https.test(url) || azureDevOpsPatterns.ssh.test(url);
 }
