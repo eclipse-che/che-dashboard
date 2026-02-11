@@ -8,7 +8,7 @@
 # Contributors:
 #   Red Hat, Inc. - initial API and implementation
 
-FROM docker.io/node:18.19.1-alpine3.19 as builder
+FROM docker.io/node:24.0.2-alpine3.21 as builder
 
 # hadolint ignore=DL3018
 RUN apk add --no-cache python3 py3-pip make g++ jq curl git zip
@@ -38,7 +38,7 @@ RUN yarn build
 COPY scripts/airgap.sh /dashboard/airgap.sh
 RUN /dashboard/airgap.sh -i /dashboard/packages/devfile-registry/air-gap/index.json
 
-FROM docker.io/node:18.19.1-alpine3.19
+FROM docker.io/node:24.0.2-alpine3.21
 
 RUN apk --no-cache add curl git
 
