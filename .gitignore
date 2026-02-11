@@ -18,3 +18,13 @@ yarn-error.log
 run/.che-dashboard-pod
 run/.custom-resources
 run/public-certs
+
+# Exclude binary/installer files
+*.dmg
+*.msi
+*.pkg
+*.deb
+*.rpm
+*.zip
+*.tar.gz
+*.tgz
