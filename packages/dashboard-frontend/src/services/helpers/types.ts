@@ -126,6 +126,7 @@ export enum WorkspaceAction {
   START_IN_BACKGROUND = 'Start in background',
   STOP_WORKSPACE = 'Stop Workspace',
   WORKSPACE_DETAILS = 'Workspace Details',
+  REFRESH_KUBECONFIG = 'Refresh Kubeconfig',
 }
 
 export enum UserPreferencesTab {

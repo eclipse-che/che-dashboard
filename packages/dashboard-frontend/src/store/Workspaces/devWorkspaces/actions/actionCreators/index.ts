@@ -13,6 +13,7 @@
 import { createWorkspaceFromDevfile } from '@/store/Workspaces/devWorkspaces/actions/actionCreators/createWorkspaceFromDevfile';
 import { createWorkspaceFromResources } from '@/store/Workspaces/devWorkspaces/actions/actionCreators/createWorkspaceFromResources';
 import { handleWebSocketMessage } from '@/store/Workspaces/devWorkspaces/actions/actionCreators/handleWebSocketMessage';
+import { refreshKubeconfigWorkspace } from '@/store/Workspaces/devWorkspaces/actions/actionCreators/refreshKubeconfigWorkspace';
 import { requestWorkspace } from '@/store/Workspaces/devWorkspaces/actions/actionCreators/requestWorkspace';
 import { requestWorkspaces } from '@/store/Workspaces/devWorkspaces/actions/actionCreators/requestWorkspaces';
 import { restartWorkspace } from '@/store/Workspaces/devWorkspaces/actions/actionCreators/restartWorkspace';
@@ -38,4 +39,5 @@ export const actionCreators = {
   updateWorkspace,
   updateWorkspaceAnnotation,
   updateWorkspaceWithDefaultDevfile,
+  refreshKubeconfigWorkspace,
 };
