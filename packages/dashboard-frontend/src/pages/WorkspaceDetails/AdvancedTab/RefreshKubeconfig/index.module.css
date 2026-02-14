@@ -10,17 +10,6 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import React from 'react';
-
-import { Props } from '@/pages/WorkspaceDetails/Header';
-
-export default class Header extends React.PureComponent<Props> {
-  render(): React.ReactNode {
-    return (
-      <div>
-        Header
-        {this.props.children}
-      </div>
-    );
-  }
+.spinner {
+  margin-left: var(--pf-global--spacer--sm);
 }

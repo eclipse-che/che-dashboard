@@ -24,6 +24,7 @@ import { factoryResolverReducer } from '@/store/FactoryResolver';
 import { gitConfigReducer } from '@/store/GitConfig';
 import { gitOauthConfigReducer } from '@/store/GitOauthConfig';
 import { infrastructureNamespacesReducer } from '@/store/InfrastructureNamespaces';
+import { kubeconfigReducer } from '@/store/Kubeconfig';
 import { personalAccessTokenReducer } from '@/store/PersonalAccessTokens';
 import { chePluginsReducer } from '@/store/Plugins/chePlugins';
 import { devWorkspacePluginsReducer } from '@/store/Plugins/devWorkspacePlugins';
@@ -56,6 +57,7 @@ export const rootReducer = {
   gitConfig: gitConfigReducer,
   gitOauthConfig: gitOauthConfigReducer,
   infrastructureNamespaces: infrastructureNamespacesReducer,
+  kubeconfig: kubeconfigReducer,
   logs: podLogsReducer,
   personalAccessToken: personalAccessTokenReducer,
   plugins: chePluginsReducer,

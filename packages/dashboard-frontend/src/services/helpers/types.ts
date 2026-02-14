@@ -110,6 +110,7 @@ export enum WorkspaceDetailsTab {
   BACKUP = 'Backup',
   EVENTS = 'Events',
   LOGS = 'Logs',
+  ADVANCED = 'Advanced',
 }
 
 export enum WorkspaceAction {

@@ -1,3 +1,5 @@
+/* c8 ignore start */
+
 /*
  * Copyright (c) 2018-2025 Red Hat, Inc.
  * This program and the accompanying materials are made
@@ -10,17 +12,10 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import React from 'react';
-
-import { Props } from '@/pages/WorkspaceDetails/Header';
-
-export default class Header extends React.PureComponent<Props> {
-  render(): React.ReactNode {
-    return (
-      <div>
-        Header
-        {this.props.children}
-      </div>
-    );
-  }
-}
+export { actionCreators as kubeconfigActionCreators } from '@/store/Kubeconfig/actions';
+export {
+  reducer as kubeconfigReducer,
+  KubeconfigState,
+  unloadedState as kubeconfigUnloadedState,
+} from '@/store/Kubeconfig/reducer';
+export * from '@/store/Kubeconfig/selectors';
