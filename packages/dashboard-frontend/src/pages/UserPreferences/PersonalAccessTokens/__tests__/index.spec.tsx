@@ -290,6 +290,9 @@ describe('PersonalAccessTokens', () => {
     });
 
     it('should delete 1 of 2 tokens, close modal and show alert notifications', async () => {
+      // Explicitly reset mocks to ensure clean state
+      jest.clearAllMocks();
+
       const store = storeBuilder.build();
       localState = { isDeleteOpen: true, deleteTokens: [token1, token2] };
       renderComponent(store, localState);
