@@ -74,7 +74,7 @@
 | `@types/use-sync-external-store@0.0.3` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@types/use-sync-external-store/0.0.3) |
 | `@uiw/codemirror-extensions-basic-setup@4.23.5` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@uiw/codemirror-extensions-basic-setup/4.23.5) |
 | `@uiw/react-codemirror@4.23.5` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@uiw/react-codemirror/4.23.5) |
-| `abbrev@2.0.0` | ISC | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/abbrev/2.0.0) |
+| `abbrev@2.0.0` | ISC AND MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/abbrev/2.0.0) |
 | `abort-controller@3.0.0` | MIT | #7592 |
 | `abstract-logging@2.0.1` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/abstract-logging/2.0.1) |
 | `agent-base@7.1.1` | MIT | #17896 |
@@ -82,8 +82,7 @@
 | `aggregate-error@3.1.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/aggregate-error/3.1.0) |
 | `ajv-formats@2.1.1` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/ajv-formats/2.1.1) |
 | `ajv-formats@3.0.1` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/ajv-formats/3.0.1) |
-| `ajv@8.12.0` | MIT AND OFL-1.1 AND (EPL-2.0 OR GPL-2.0-only WITH Classpath-exception-2.0) | #6025 |
-| `ajv@8.17.1` | MIT | #24793 |
+| `ajv@8.18.0` |  | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/ajv/8.18.0) |
 | `ansi-regex@5.0.1` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/ansi-regex/5.0.1) |
 | `ansi-regex@6.0.1` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/ansi-regex/6.0.1) |
 | `ansi-styles@3.2.1` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/ansi-styles/3.2.1) |
@@ -100,7 +99,7 @@
 | `attr-accept@1.1.3` | MIT | CQ22348 |
 | `available-typed-arrays@1.0.7` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/available-typed-arrays/1.0.7) |
 | `avvio@8.4.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/avvio/8.4.0) |
-| `axios@1.13.1` | MIT | #25792 |
+| `axios@1.13.5` | MIT | #25792 |
 | `b4a@1.7.3` | Apache-2.0 | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/b4a/1.7.3) |
 | `bare-events@2.8.2` | Apache-2.0 | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/bare-events/2.8.2) |
 | `bare-fs@4.5.2` | Apache-2.0 | #24516 |
@@ -195,7 +194,7 @@
 | `fast-redact@3.3.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/fast-redact/3.3.0) |
 | `fast-safe-stringify@2.1.1` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/fast-safe-stringify/2.1.1) |
 | `fast-uri@2.4.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/fast-uri/2.4.0) |
-| `fast-uri@3.0.2` | BSD-3-Clause AND MIT AND BSD-2-Clause-Views | #15703 |
+| `fast-uri@3.1.0` | BSD-3-Clause AND ISC AND BSD-2-Clause-Views | #22978 |
 | `fastify-plugin@4.5.1` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/fastify-plugin/4.5.1) |
 | `fastify-plugin@5.0.1` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/fastify-plugin/5.0.1) |
 | `fastify@4.29.1` | BSD-2-Clause AND BSD-3-Clause AND MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/fastify/4.29.1) |
@@ -203,7 +202,7 @@
 | `file-selector@0.1.19` | MIT | CQ22350 |
 | `find-my-way@9.0.1` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/find-my-way/9.0.1) |
 | `focus-trap@6.9.2` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/focus-trap/6.9.2) |
-| `follow-redirects@1.15.6` | MIT | #10782 |
+| `follow-redirects@1.15.11` | MIT | #10782 |
 | `for-each@0.3.5` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/for-each/0.3.5) |
 | `foreground-child@3.3.1` | ISC | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/foreground-child/3.3.1) |
 | `form-data@4.0.4` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/form-data/4.0.4) |
@@ -246,7 +245,7 @@
 | `https-proxy-agent@7.0.5` | MIT | #17900 |
 | `https@1.0.0` | ISC | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/https/1.0.0) |
 | `iconv-lite@0.6.3` | MIT | #24823 |
-| `ieee754@1.2.1` | BSD-3-Clause | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/ieee754/1.2.1) |
+| `ieee754@1.2.1` | BSD-3-Clause | #26025 |
 | `immer@10.1.1` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/immer/10.1.1) |
 | `imurmurhash@0.1.4` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/imurmurhash/0.1.4) |
 | `indent-string@4.0.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/indent-string/4.0.0) |
@@ -264,7 +263,7 @@
 | `is-typed-array@1.1.15` | MIT | #4853 |
 | `isarray@2.0.5` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/isarray/2.0.5) |
 | `isexe@2.0.0` | ISC | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/isexe/2.0.0) |
-| `isexe@3.1.1` | ISC | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/isexe/3.1.1) |
+| `isexe@3.1.1` | BlueOak-1.0.0 | #26030 |
 | `isomorphic-ws@5.0.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/isomorphic-ws/5.0.0) |
 | `jackspeak@4.1.1` | BlueOak-1.0.0 | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/jackspeak/4.1.1) |
 | `joi@17.12.3` | BSD-3-Clause | #13097 |
