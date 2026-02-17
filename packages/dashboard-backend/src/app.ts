@@ -13,6 +13,7 @@
 import 'reflect-metadata';
 
 import { helpers } from '@eclipse-che/common';
+import rateLimit from '@fastify/rate-limit';
 import { FastifyInstance } from 'fastify';
 
 import parseArgs from '@/helpers/parseArgs';
@@ -76,7 +77,7 @@ export default async function buildApp(server: FastifyInstance): Promise<unknown
   const devWorkspaceClient = getDevWorkspaceClient(getServiceAccountToken());
   await devWorkspaceClient.devWorkspaceClusterApi.watchInAllNamespaces();
 
-  server.register(import('@fastify/rate-limit'));
+  await server.register(rateLimit);
 
   return Promise.allSettled([
     registerWebSocket(server),
