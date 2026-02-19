@@ -152,6 +152,36 @@ describe('FactoryLocationAdapter Service', () => {
       expect(FactoryLocationAdapter.isHttpLocation(location)).toBeTruthy();
       expect(FactoryLocationAdapter.isSshLocation(location)).toBeFalsy();
     });
+    it('should return true for http IPv6 literal address with port', () => {
+      const location = 'http://[::1]:8080/repo.git';
+      expect(FactoryLocationAdapter.isHttpLocation(location)).toBeTruthy();
+      expect(FactoryLocationAdapter.isSshLocation(location)).toBeFalsy();
+    });
+    it('should return true for https IPv6 literal address', () => {
+      const location = 'https://[2001:db8::1]/repo.git';
+      expect(FactoryLocationAdapter.isHttpLocation(location)).toBeTruthy();
+      expect(FactoryLocationAdapter.isSshLocation(location)).toBeFalsy();
+    });
+    it('should return true for http IPv6 literal address with port and path', () => {
+      const location = 'http://[fe80::1]:8080/repos/project/repo.git';
+      expect(FactoryLocationAdapter.isHttpLocation(location)).toBeTruthy();
+      expect(FactoryLocationAdapter.isSshLocation(location)).toBeFalsy();
+    });
+    it('should return true for https IPv6 literal address with query params', () => {
+      const location = 'https://[2001:db8:85a3::8a2e:370:7334]:443/repo.git?branch=main';
+      expect(FactoryLocationAdapter.isHttpLocation(location)).toBeTruthy();
+      expect(FactoryLocationAdapter.isSshLocation(location)).toBeFalsy();
+    });
+    it('should return true for http IPv4-mapped IPv6 address', () => {
+      const location = 'http://[::ffff:10.217.0.98]:8080/test-repo.git';
+      expect(FactoryLocationAdapter.isHttpLocation(location)).toBeTruthy();
+      expect(FactoryLocationAdapter.isSshLocation(location)).toBeFalsy();
+    });
+    it('should return true for http IPv4-mapped IPv6 address with standard IPv4', () => {
+      const location = 'http://[::ffff:192.168.1.1]:8080/repo.git';
+      expect(FactoryLocationAdapter.isHttpLocation(location)).toBeTruthy();
+      expect(FactoryLocationAdapter.isSshLocation(location)).toBeFalsy();
+    });
   });
 
   it('should return factory reference without oauth params', () => {
