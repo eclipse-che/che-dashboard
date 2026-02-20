@@ -149,7 +149,7 @@ exports[`WorkspaceNameFormGroup snapshots screenshot when cluster console is ava
     >
       <a
         aria-disabled={false}
-        aria-label={null}
+        aria-label="my-project (opens in new tab)"
         className="pf-c-button pf-m-link pf-m-inline"
         data-ouia-component-id="OUIA-Generated-Button-link-1"
         data-ouia-component-type="PF4/Button"

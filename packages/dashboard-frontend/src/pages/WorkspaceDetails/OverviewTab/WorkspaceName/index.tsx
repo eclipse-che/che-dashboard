@@ -185,6 +185,7 @@ class WorkspaceNameFormGroup extends React.PureComponent<Props, State> {
         icon={<ExternalLinkSquareAltIcon />}
         iconPosition="right"
         isInline
+        aria-label={`${workspace.name} (opens in new tab)`}
       >
         {workspace.name}
       </Button>

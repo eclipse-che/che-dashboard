@@ -2,6 +2,7 @@
 
 exports[`Devfile Metadata Card snapshot 1`] = `
 <article
+  aria-label="Create workspace from sample Go"
   className="pf-c-card pf-m-compact pf-m-flat pf-m-selectable sample-card"
   data-ouia-component-id="OUIA-Generated-Card-1"
   data-ouia-component-type="PF4/Card"
@@ -9,7 +10,9 @@ exports[`Devfile Metadata Card snapshot 1`] = `
   data-testid="sample-card"
   id=""
   onClick={[Function]}
-  tabIndex="0"
+  onKeyDown={[Function]}
+  role="button"
+  tabIndex={0}
 >
   <div
     className="pf-c-card__header"

@@ -39,6 +39,13 @@ export class NavigationRecentItem extends React.PureComponent<Props> {
     this.tabManager.open(href);
   }
 
+  private handleKeyDown(event: React.KeyboardEvent, workspace: Workspace): void {
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault();
+      this.handleClick(workspace);
+    }
+  }
+
   render(): React.ReactElement {
     const { activePath, item } = this.props;
 
@@ -52,7 +59,9 @@ export class NavigationRecentItem extends React.PureComponent<Props> {
         isActive={isActive}
         className={styles.navItem}
         preventDefault={true}
+        tabIndex={0}
         onClick={() => this.handleClick(item.workspace)}
+        onKeyDown={(e: React.KeyboardEvent) => this.handleKeyDown(e, item.workspace)}
       >
         <span data-testid="recent-workspace-item">
           <WorkspaceStatusIndicator status={item.workspace.status} />

@@ -69,6 +69,7 @@ export class DevfileViewer extends React.PureComponent<Props> {
             DevfileViewer.theme,
             syntaxHighlighting(DevfileViewer.highlightStyle),
             yaml(),
+            EditorView.contentAttributes.of({ 'aria-label': 'Devfile content' }),
           ]}
         />
       </div>
