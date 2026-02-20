@@ -130,7 +130,7 @@ export default class WorkspacesListToolbar extends React.PureComponent<Props, St
             name="workspaces-filter-input"
             id="workspaces-filter-input"
             type="search"
-            aria-label="Filter workspaces input"
+            aria-label="Search workspaces"
             placeholder="Search"
             value={filterValue}
             onChange={value => this.handleFilterChange(value)}
