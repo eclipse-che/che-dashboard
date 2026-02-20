@@ -79,8 +79,8 @@ describe('Workspaces List Toolbar', () => {
     expect(deleteButton).toBeTruthy();
     expect(deleteButton).toBeDisabled();
 
-    // "Add Workspace" button
-    const addButton = screen.queryByRole('button', { name: /new workspace/i });
+    // "Add Workspace" button (accessible name matches visible label for WCAG Label in Name)
+    const addButton = screen.queryByRole('button', { name: /add workspace/i });
     expect(addButton).toBeTruthy();
     expect(addButton).toBeEnabled();
   });
@@ -121,7 +121,7 @@ describe('Workspaces List Toolbar', () => {
   it('should emit event when adding a new workspace', async () => {
     renderComponent();
 
-    const addButton = screen.getByRole('button', { name: /new workspace/i });
+    const addButton = screen.getByRole('button', { name: /add workspace/i });
 
     await userEvent.click(addButton);
     expect(mockOnAddWorkspace).toHaveBeenCalled();
