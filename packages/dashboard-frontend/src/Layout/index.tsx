@@ -123,7 +123,9 @@ const LayoutComponent: React.FC<Props> = props => {
 
   const { history } = props;
 
-  const logoElement = <Brand src={logoSrc} alt="Logo" heights={{ default: '36px' }} />;
+  const logoElement = (
+    <Brand src={logoSrc} alt={props.branding?.title || 'Logo'} heights={{ default: '36px' }} />
+  );
 
   const masthead = (
     <Header
