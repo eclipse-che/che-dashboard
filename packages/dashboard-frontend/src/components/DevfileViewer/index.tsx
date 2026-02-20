@@ -68,6 +68,14 @@ export const DevfileViewer: React.FC<Props> = ({ value, id }) => {
   const lightTheme = useMemo(() => createLightTheme(), []);
   const lightHighlightStyle = useMemo(() => createLightHighlightStyle(), []);
 
+  const extensions = useMemo(() => {
+    const baseExtensions = [
+      EditorView.contentAttributes.of({ 'aria-label': 'Devfile content' }),
+      yaml(),
+    ];
+    return isDarkTheme ? baseExtensions : [lightTheme, syntaxHighlighting(lightHighlightStyle), ...baseExtensions];
+  }, [isDarkTheme, lightTheme, lightHighlightStyle]);
+
   return (
     <div className={styles.devfileViewer}>
       <CodeMirror
@@ -76,9 +84,7 @@ export const DevfileViewer: React.FC<Props> = ({ value, id }) => {
         id={id}
         value={value}
         theme={isDarkTheme ? githubDark : undefined}
-        extensions={
-          isDarkTheme ? [yaml()] : [lightTheme, syntaxHighlighting(lightHighlightStyle), yaml()]
-        }
+        extensions={extensions}
       />
     </div>
   );
