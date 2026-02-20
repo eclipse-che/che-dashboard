@@ -389,9 +389,10 @@ describe('WorkspaceNameFormGroup', () => {
         .build();
       renderComponent(store, workspace, false, mockOnSave);
 
-      const link = screen.getByRole('link', { name: workspace.name });
+      const link = screen.getByRole('link', { name: new RegExp(workspace.name) });
       expect(link).toBeInTheDocument();
       expect(link).toHaveAttribute('target', '_blank');
+      expect(link).toHaveAttribute('aria-label', `${workspace.name} (opens in new tab)`);
     });
 
     test('should display plain text when cluster console is not available', () => {
@@ -399,7 +400,9 @@ describe('WorkspaceNameFormGroup', () => {
       renderComponent(store, workspace, false, mockOnSave);
 
       // Should not be a link
-      expect(screen.queryByRole('link', { name: workspace.name })).not.toBeInTheDocument();
+      expect(
+        screen.queryByRole('link', { name: new RegExp(workspace.name) }),
+      ).not.toBeInTheDocument();
     });
   });
 

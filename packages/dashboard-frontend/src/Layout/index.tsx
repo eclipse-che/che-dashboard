@@ -154,7 +154,7 @@ export class Layout extends React.PureComponent<Props, State> {
             <Header
               history={history}
               isVisible={isHeaderVisible}
-              logo={<Brand src={logoSrc} alt="Logo" />}
+              logo={<Brand src={logoSrc} alt={branding.title} />}
               logout={() => signOut()}
               toggleNav={() => this.toggleNav()}
             />
