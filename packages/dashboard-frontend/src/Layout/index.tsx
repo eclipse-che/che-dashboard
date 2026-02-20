@@ -10,7 +10,7 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import { AlertVariant, Brand, Page } from '@patternfly/react-core';
+import { AlertVariant, Brand, Page, SkipToContent } from '@patternfly/react-core';
 import { History } from 'history';
 import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
@@ -148,6 +148,8 @@ export class Layout extends React.PureComponent<Props, State> {
         }}
       >
         <Page
+          skipToContent={<SkipToContent href="#main-content">Skip to content</SkipToContent>}
+          mainContainerId="main-content"
           header={
             <Header
               history={history}
