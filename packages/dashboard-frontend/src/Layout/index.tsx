@@ -10,7 +10,7 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import { AlertVariant, Brand, Page } from '@patternfly/react-core';
+import { AlertVariant, Brand, Page, SkipToContent } from '@patternfly/react-core';
 import { History } from 'history';
 import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
@@ -143,7 +143,13 @@ const LayoutComponent: React.FC<Props> = props => {
         showAll: showAllBars,
       }}
     >
-      <Page masthead={masthead} sidebar={sidebar} isManagedSidebar>
+      <Page
+        masthead={masthead}
+        sidebar={sidebar}
+        isManagedSidebar
+        skipToContent={<SkipToContent href="#main-content">Skip to content</SkipToContent>}
+        mainContainerId="main-content"
+      >
         <ErrorBoundary onError={error => testBackends(error)}>
           <StoreErrorsAlert />
           <BannerAlert />
