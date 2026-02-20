@@ -21,7 +21,8 @@ exports[`Navigation Item snapshot with RUNNING correctly 1`] = `
       data-testid="/namespace/workspace"
       id="/namespace/workspace"
       onClick={[Function]}
-      tabIndex={null}
+      onKeyDown={[Function]}
+      tabIndex={0}
     >
       <span
         className="pf-v6-c-nav__link-text"
@@ -69,7 +70,8 @@ exports[`Navigation Item snapshot with STOPPED status 1`] = `
       data-testid="/namespace/workspace"
       id="/namespace/workspace"
       onClick={[Function]}
-      tabIndex={null}
+      onKeyDown={[Function]}
+      tabIndex={0}
     >
       <span
         className="pf-v6-c-nav__link-text"

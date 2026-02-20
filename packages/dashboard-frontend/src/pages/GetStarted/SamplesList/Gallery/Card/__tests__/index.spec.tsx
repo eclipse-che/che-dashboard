@@ -98,16 +98,39 @@ describe('Devfile Metadata Card', () => {
   it('should handle card click', async () => {
     renderComponent(metadata);
 
-    // PatternFly 6 Card uses selectableActions - click the hidden radio input
-    const cardId = `sample-card-${metadata.displayName.replace(/\s+/g, '-').toLowerCase()}`;
-    const radioInput = document.getElementById(`${cardId}-input`) as HTMLElement;
-    expect(radioInput).not.toBeNull();
-    await userEvent.click(radioInput);
+    const card = screen.getByRole('button', {
+      name: new RegExp(`Create workspace from sample ${metadata.displayName}`),
+    });
+    await userEvent.click(card);
+
+    expect(onCardClick).toHaveBeenCalledWith();
+  });
+
+  it('should handle Enter key for accessibility', async () => {
+    renderComponent(metadata);
+
+    const card = screen.getByRole('button', {
+      name: new RegExp(`Create workspace from sample ${metadata.displayName}`),
+    });
+    card.focus();
+    await userEvent.keyboard('{Enter}');
+
+    expect(onCardClick).toHaveBeenCalledWith();
+  });
+
+  it('should handle Space key for accessibility', async () => {
+    renderComponent(metadata);
+
+    const card = screen.getByRole('button', {
+      name: new RegExp(`Create workspace from sample ${metadata.displayName}`),
+    });
+    card.focus();
+    await userEvent.keyboard(' ');
 
     expect(onCardClick).toHaveBeenCalledWith();
   });
 });
 
 function getComponent(metadata: DevfileRegistryMetadata): React.ReactElement {
-  return <SampleCard key={metadata.links.self} metadata={metadata} onClick={onCardClick} />;
+  return <SampleCard key={metadata.links.v2} metadata={metadata} onClick={onCardClick} />;
 }
