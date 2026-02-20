@@ -98,8 +98,28 @@ describe('Devfile Metadata Card', () => {
   it('should handle card click', async () => {
     renderComponent(metadata);
 
-    const card = screen.getByRole('article');
+    const card = screen.getByRole('button', { name: new RegExp(metadata.displayName) });
     await userEvent.click(card);
+
+    expect(onCardClick).toHaveBeenCalledWith();
+  });
+
+  it('should handle Enter key for accessibility', async () => {
+    renderComponent(metadata);
+
+    const card = screen.getByRole('button', { name: new RegExp(metadata.displayName) });
+    card.focus();
+    await userEvent.keyboard('{Enter}');
+
+    expect(onCardClick).toHaveBeenCalledWith();
+  });
+
+  it('should handle Space key for accessibility', async () => {
+    renderComponent(metadata);
+
+    const card = screen.getByRole('button', { name: new RegExp(metadata.displayName) });
+    card.focus();
+    await userEvent.keyboard(' ');
 
     expect(onCardClick).toHaveBeenCalledWith();
   });
