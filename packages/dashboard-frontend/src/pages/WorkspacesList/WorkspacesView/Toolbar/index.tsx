@@ -168,7 +168,7 @@ export default class WorkspacesListToolbar extends React.PureComponent<Props, St
         <ToolbarItem align={{ default: 'alignEnd' }}>
           <Button
             variant="link"
-            aria-label="Add a new workspace"
+            aria-label="Add Workspace"
             icon={<PlusCircleIcon />}
             iconPosition="left"
             onClick={() => this.handleAddWorkspace()}
