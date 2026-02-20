@@ -4,6 +4,26 @@ exports[`Layout component snapshot of the default page 1`] = `
 <div
   className="pf-v6-c-page"
 >
+  <div
+    className="pf-v6-c-skip-to-content"
+  >
+    <a
+      aria-label={null}
+      className="pf-v6-c-button pf-m-primary"
+      data-ouia-component-id="OUIA-Generated-Button-primary-1"
+      data-ouia-component-type="PF6/Button"
+      data-ouia-safe={true}
+      disabled={null}
+      href="#main-content"
+      type={null}
+    >
+      <span
+        className="pf-v6-c-button__text"
+      >
+        Skip to content
+      </span>
+    </a>
+  </div>
   <div>
     Mock Header component
     <button
@@ -20,6 +40,7 @@ exports[`Layout component snapshot of the default page 1`] = `
   >
     <main
       className="pf-v6-c-page__main"
+      id="main-content"
       tabIndex={-1}
     >
       <div>
