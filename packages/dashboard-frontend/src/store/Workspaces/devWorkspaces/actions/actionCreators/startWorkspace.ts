@@ -83,6 +83,8 @@ export const startWorkspace =
       const config = getState().dwServerConfig.config;
       workspace = await getDevWorkspaceClient().managePvcStrategy(workspace, config);
 
+      workspace = await getDevWorkspaceClient().manageHostUsersEnvVar(workspace, config);
+
       workspace = await getDevWorkspaceClient().manageDebugMode(workspace, debugWorkspace);
 
       const editorName = getEditorName(workspace);

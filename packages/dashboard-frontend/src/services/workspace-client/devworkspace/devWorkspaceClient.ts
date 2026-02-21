@@ -87,6 +87,7 @@ export class DevWorkspaceClient {
   private readonly clusterConsoleTitleEnvName: string;
   private readonly openVSXUrlEnvName: string;
   private readonly dashboardUrlEnvName: string;
+  private readonly hostUsersEnvName: string;
   private readonly defaultPluginsHandler: DevWorkspaceDefaultPluginsHandler;
 
   constructor(
@@ -100,6 +101,7 @@ export class DevWorkspaceClient {
     this.dashboardUrlEnvName = 'CHE_DASHBOARD_URL';
     this.clusterConsoleUrlEnvName = 'CLUSTER_CONSOLE_URL';
     this.clusterConsoleTitleEnvName = 'CLUSTER_CONSOLE_TITLE';
+    this.hostUsersEnvName = 'HOST_USERS';
     this.defaultPluginsHandler = defaultPluginsHandler;
   }
 
@@ -545,6 +547,88 @@ export class DevWorkspaceClient {
       patch,
     );
     return devWorkspace;
+  }
+
+  /**
+   * Syncs HOST_USERS env var on workspace components to match server config
+   * (container run -> false, container build -> true). Does not change the
+   * controller.devfile.io/scc attribute; SCC is set at workspace creation.
+   */
+  async manageHostUsersEnvVar(
+    workspace: devfileApi.DevWorkspace,
+    config: api.IServerConfig,
+  ): Promise<devfileApi.DevWorkspace> {
+    let patch: api.IPatch[] = [];
+    if (!config.containerRun?.disableContainerRunCapabilities) {
+      patch = this.setHostUsersEnvVar(workspace, false);
+    } else if (!config.containerBuild?.disableContainerBuildCapabilities) {
+      patch = this.setHostUsersEnvVar(workspace, true);
+    } else {
+      patch = this.removeHostUsersEnvVar(workspace);
+    }
+    if (patch.length === 0) {
+      return workspace;
+    }
+    const { devWorkspace } = await DwApi.patchWorkspace(
+      workspace.metadata.namespace,
+      workspace.metadata.name,
+      patch,
+    );
+    return devWorkspace;
+  }
+
+  setHostUsersEnvVar(workspace: devfileApi.DevWorkspace, hostUsers: boolean): api.IPatch[] {
+    const patch: api.IPatch[] = [];
+    const value = { name: this.hostUsersEnvName, value: hostUsers.toString() };
+    const components = workspace.spec.template.components;
+    if (!components) return patch;
+    for (let cmpIndex = 0; cmpIndex < components.length; cmpIndex++) {
+      const container = components[cmpIndex].container;
+      if (container === undefined) continue;
+      if (!container.env) {
+        patch.push({
+          op: 'add',
+          path: `/spec/template/components/${cmpIndex}/container/env`,
+          value: [value],
+        });
+        continue;
+      }
+      const envIndex = container.env.findIndex(env => env.name === this.hostUsersEnvName);
+      if (envIndex >= 0) {
+        if (container.env[envIndex].value !== hostUsers.toString()) {
+          patch.push({
+            op: 'replace',
+            path: `/spec/template/components/${cmpIndex}/container/env/${envIndex}`,
+            value,
+          });
+        }
+      } else {
+        patch.push({
+          op: 'add',
+          path: `/spec/template/components/${cmpIndex}/container/env/-`,
+          value,
+        });
+      }
+    }
+    return patch;
+  }
+
+  removeHostUsersEnvVar(workspace: devfileApi.DevWorkspace): api.IPatch[] {
+    const patch: api.IPatch[] = [];
+    const components = workspace.spec.template.components;
+    if (!components) return patch;
+    for (let cmpIndex = 0; cmpIndex < components.length; cmpIndex++) {
+      const container = components[cmpIndex].container;
+      if (!container?.env) continue;
+      const envIndex = container.env.findIndex(env => env.name === this.hostUsersEnvName);
+      if (envIndex >= 0) {
+        patch.push({
+          op: 'remove',
+          path: `/spec/template/components/${cmpIndex}/container/env/${envIndex}`,
+        });
+      }
+    }
+    return patch;
   }
 
   async manageDebugMode(
