@@ -211,6 +211,9 @@ export const devworkspacesPostData = {
     routingClass: 'che',
     started: false,
     template: {
+      attributes: {
+        'controller.devfile.io/scc': 'container-run',
+      },
       projects: [
         {
           git: {
@@ -264,6 +267,9 @@ export const devWorkspaceWebSocketData = {
         routingClass: 'che',
         started: true,
         template: {
+          attributes: {
+            'controller.devfile.io/scc': 'container-run',
+          },
           projects: [
             {
               git: {

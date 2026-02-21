@@ -13,7 +13,10 @@
 import { dump } from 'js-yaml';
 
 import { DEVWORKSPACE_UPDATING_TIMESTAMP_ANNOTATION } from '@/services/devfileApi/devWorkspace/metadata';
-import { DEVWORKSPACE_STORAGE_TYPE_ATTR } from '@/services/devfileApi/devWorkspace/spec/template';
+import {
+  DEVWORKSPACE_CONTAINER_SCC_ATTR,
+  DEVWORKSPACE_STORAGE_TYPE_ATTR,
+} from '@/services/devfileApi/devWorkspace/spec/template';
 import { DevWorkspaceStatus } from '@/services/helpers/types';
 import { StorageTypeTitle } from '@/services/storageTypes';
 import {
@@ -41,6 +44,30 @@ describe('for DevWorkspace', () => {
       expect(consoleUrl).toEqual(
         `${clusterUrl}/k8s/ns/${namespace}/workspace.devfile.io~v1alpha2~DevWorkspace/${workspaceName}`,
       );
+    });
+
+    describe('getContainerScc', () => {
+      it('should return SCC attribute value when it exists', () => {
+        const workspace = new DevWorkspaceBuilder().build();
+        workspace.spec.template.attributes = {
+          [DEVWORKSPACE_CONTAINER_SCC_ATTR]: 'container-build',
+        };
+        const result = WorkspaceAdapter.getContainerScc(workspace);
+        expect(result).toBe('container-build');
+      });
+
+      it('should return undefined when SCC attribute does not exist', () => {
+        const workspace = new DevWorkspaceBuilder().build();
+        const result = WorkspaceAdapter.getContainerScc(workspace);
+        expect(result).toBeUndefined();
+      });
+
+      it('should return undefined when attributes object does not exist', () => {
+        const workspace = new DevWorkspaceBuilder().build();
+        workspace.spec.template.attributes = undefined;
+        const result = WorkspaceAdapter.getContainerScc(workspace);
+        expect(result).toBeUndefined();
+      });
     });
   });
 

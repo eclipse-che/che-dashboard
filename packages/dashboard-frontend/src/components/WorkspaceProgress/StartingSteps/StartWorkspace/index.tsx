@@ -36,12 +36,14 @@ import { lazyInject } from '@/inversify.config';
 import { WorkspaceRouteParams } from '@/Routes';
 import { AppAlerts } from '@/services/alerts/appAlerts';
 import { findTargetWorkspace } from '@/services/helpers/factoryFlow/findTargetWorkspace';
+import { SCC_MISMATCH_WARNING_MESSAGE } from '@/services/helpers/sccMismatch';
 import { AlertItem, DevWorkspaceStatus, LoaderTab } from '@/services/helpers/types';
 import { Workspace, WorkspaceAdapter } from '@/services/workspace-adapter';
 import { RootState } from '@/store';
+import { selectBranding } from '@/store/Branding/selectors';
 import { selectApplications } from '@/store/ClusterInfo/selectors';
 import { selectEventsFromResourceVersion } from '@/store/Events';
-import { selectStartTimeout } from '@/store/ServerConfig/selectors';
+import { selectCurrentScc, selectStartTimeout } from '@/store/ServerConfig/selectors';
 import { workspacesActionCreators } from '@/store/Workspaces';
 import {
   selectDevWorkspaceWarnings,
@@ -268,6 +270,17 @@ class StartingStepStartWorkspace extends ProgressStep<Props, State> {
   }
 
   /**
+   * Check if there's an SCC mismatch between the workspace and server configuration.
+   * Returns true if server has SCC configured but workspace has different or missing SCC.
+   */
+  private hasSccMismatch(workspace: Workspace): boolean {
+    const { currentScc } = this.props;
+    // Server has SCC requirement - check if workspace matches
+    const containerScc = WorkspaceAdapter.getContainerScc(workspace.ref);
+    return containerScc !== currentScc;
+  }
+
+  /**
    * The resolved boolean indicates whether to go to the next step or not
    */
   protected async runStep(): Promise<boolean> {
@@ -282,6 +295,21 @@ class StartingStepStartWorkspace extends ProgressStep<Props, State> {
       throw new Error(
         `Workspace "${matchParams.namespace}/${matchParams.workspaceName}" not found.`,
       );
+    }
+
+    // Check for SCC mismatch - show warning but allow start
+    if (this.hasSccMismatch(workspace)) {
+      const documentationUrl = this.props.branding.docs.containerRunCapabilities;
+      this.appAlerts.showAlert({
+        key: 'scc-mismatch-warning',
+        title: SCC_MISMATCH_WARNING_MESSAGE,
+        variant: AlertVariant.warning,
+        children: documentationUrl ? (
+          <a href={documentationUrl} target="_blank" rel="noopener noreferrer">
+            Learn more
+          </a>
+        ) : undefined,
+      });
     }
 
     if (this.state.warning !== undefined) {
@@ -441,6 +469,8 @@ class StartingStepStartWorkspace extends ProgressStep<Props, State> {
 const mapStateToProps = (state: RootState) => ({
   allWorkspaces: selectAllWorkspaces(state),
   applications: selectApplications(state),
+  branding: selectBranding(state),
+  currentScc: selectCurrentScc(state),
   startTimeout: selectStartTimeout(state),
   devWorkspaceWarnings: selectDevWorkspaceWarnings(state),
   eventsFromResourceVersionFn: selectEventsFromResourceVersion(state),

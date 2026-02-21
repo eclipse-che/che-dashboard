@@ -33,6 +33,7 @@ export type BrandingDocs = {
   faq?: string;
   storageTypes: string;
   webSocketTroubleshooting: string;
+  containerRunCapabilities: string;
 };
 
 export type BrandingConfiguration = {
@@ -83,6 +84,8 @@ export const BRANDING_DEFAULT: BrandingData = {
       'https://www.eclipse.org/che/docs/stable/end-user-guide/url-parameter-for-the-workspace-storage/',
     webSocketTroubleshooting:
       'https://www.eclipse.org/che/docs/stable/end-user-guide/troubleshooting-network-problems/',
+    containerRunCapabilities:
+      'https://eclipse.dev/che/docs/stable/administration-guide/enabling-container-run-capabilities/',
   },
   configuration: {},
 };

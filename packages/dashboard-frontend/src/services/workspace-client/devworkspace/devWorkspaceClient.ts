@@ -154,6 +154,7 @@ export class DevWorkspaceClient {
     devWorkspaceResource: devfileApi.DevWorkspace,
     editorId: string | undefined,
     customName?: string,
+    currentScc?: string,
   ): Promise<{ headers: DwApi.Headers; devWorkspace: devfileApi.DevWorkspace }> {
     if (!devWorkspaceResource.spec.routingClass) {
       devWorkspaceResource.spec.routingClass = 'che';
@@ -179,6 +180,17 @@ export class DevWorkspaceClient {
       devWorkspaceResource.metadata.labels[DEVWORKSPACE_LABEL_METADATA_NAME] = customName;
     }
 
+    // Add SCC attribute if currentScc is provided
+    if (currentScc) {
+      if (!devWorkspaceResource.spec.template) {
+        devWorkspaceResource.spec.template = {};
+      }
+      if (!devWorkspaceResource.spec.template.attributes) {
+        devWorkspaceResource.spec.template.attributes = {};
+      }
+      devWorkspaceResource.spec.template.attributes[DEVWORKSPACE_CONTAINER_SCC_ATTR] = currentScc;
+    }
+
     const { headers, devWorkspace } = await DwApi.createWorkspace(devWorkspaceResource);
 
     return { headers, devWorkspace };
@@ -188,9 +200,7 @@ export class DevWorkspaceClient {
     defaultNamespace: string,
     devWorkspace: devfileApi.DevWorkspace,
     devWorkspaceTemplateResource: devfileApi.DevWorkspaceTemplate,
-    pluginRegistryUrl: string | undefined,
-    pluginRegistryInternalUrl: string | undefined,
-    openVSXUrl: string | undefined,
+    config: api.IServerConfig,
     clusterConsole?: {
       url: string;
       title: string;
@@ -207,6 +217,13 @@ export class DevWorkspaceClient {
         uid: devWorkspace.metadata.uid,
       },
     ];
+
+    // Extract URLs from config
+    const pluginRegistryUrl = !config.pluginRegistry?.disableInternalRegistry
+      ? config.pluginRegistryURL
+      : config.pluginRegistry?.externalPluginRegistries?.[0]?.url;
+    const pluginRegistryInternalUrl = config.pluginRegistryInternalURL;
+    const openVSXUrl = config.pluginRegistry?.openVSXURL;
 
     this.addEnvVarsToContainers(
       devWorkspaceTemplateResource.spec?.components,
@@ -532,6 +549,88 @@ export class DevWorkspaceClient {
     return devWorkspace;
   }
 
+  /**
+   * Syncs HOST_USERS env var on workspace components to match server config
+   * (container run -> false, container build -> true). Does not change the
+   * controller.devfile.io/scc attribute; SCC is set at workspace creation.
+   */
+  async manageHostUsersEnvVar(
+    workspace: devfileApi.DevWorkspace,
+    config: api.IServerConfig,
+  ): Promise<devfileApi.DevWorkspace> {
+    let patch: api.IPatch[] = [];
+    if (!config.containerRun?.disableContainerRunCapabilities) {
+      patch = this.setHostUsersEnvVar(workspace, false);
+    } else if (!config.containerBuild?.disableContainerBuildCapabilities) {
+      patch = this.setHostUsersEnvVar(workspace, true);
+    } else {
+      patch = this.removeHostUsersEnvVar(workspace);
+    }
+    if (patch.length === 0) {
+      return workspace;
+    }
+    const { devWorkspace } = await DwApi.patchWorkspace(
+      workspace.metadata.namespace,
+      workspace.metadata.name,
+      patch,
+    );
+    return devWorkspace;
+  }
+
+  setHostUsersEnvVar(workspace: devfileApi.DevWorkspace, hostUsers: boolean): api.IPatch[] {
+    const patch: api.IPatch[] = [];
+    const value = { name: this.hostUsersEnvName, value: hostUsers.toString() };
+    const components = workspace.spec.template.components;
+    if (!components) return patch;
+    for (let cmpIndex = 0; cmpIndex < components.length; cmpIndex++) {
+      const container = components[cmpIndex].container;
+      if (container === undefined) continue;
+      if (!container.env) {
+        patch.push({
+          op: 'add',
+          path: `/spec/template/components/${cmpIndex}/container/env`,
+          value: [value],
+        });
+        continue;
+      }
+      const envIndex = container.env.findIndex(env => env.name === this.hostUsersEnvName);
+      if (envIndex >= 0) {
+        if (container.env[envIndex].value !== hostUsers.toString()) {
+          patch.push({
+            op: 'replace',
+            path: `/spec/template/components/${cmpIndex}/container/env/${envIndex}`,
+            value,
+          });
+        }
+      } else {
+        patch.push({
+          op: 'add',
+          path: `/spec/template/components/${cmpIndex}/container/env/-`,
+          value,
+        });
+      }
+    }
+    return patch;
+  }
+
+  removeHostUsersEnvVar(workspace: devfileApi.DevWorkspace): api.IPatch[] {
+    const patch: api.IPatch[] = [];
+    const components = workspace.spec.template.components;
+    if (!components) return patch;
+    for (let cmpIndex = 0; cmpIndex < components.length; cmpIndex++) {
+      const container = components[cmpIndex].container;
+      if (!container?.env) continue;
+      const envIndex = container.env.findIndex(env => env.name === this.hostUsersEnvName);
+      if (envIndex >= 0) {
+        patch.push({
+          op: 'remove',
+          path: `/spec/template/components/${cmpIndex}/container/env/${envIndex}`,
+        });
+      }
+    }
+    return patch;
+  }
+
   async manageDebugMode(
     workspace: devfileApi.DevWorkspace,
     debugMode: boolean,
@@ -563,185 +662,6 @@ export class DevWorkspaceClient {
       patch,
     );
     return devWorkspace;
-  }
-
-  /**
-   * Injects or removes the container scc attribute depending
-   * on the CR `disableContainerBuildCapabilities` or `disableContainerRunCapabilities`
-   * fields value.
-   */
-  async manageContainerSccAttribute(
-    workspace: devfileApi.DevWorkspace,
-    config: api.IServerConfig,
-  ): Promise<devfileApi.DevWorkspace> {
-    const patch: api.IPatch[] = [];
-
-    if (!config.containerRun?.disableContainerRunCapabilities) {
-      // container run capabilities is enabled.
-      patch.push(
-        ...this.manageContainerSccAttributeForCapability(
-          workspace,
-          config.containerRun.containerRunConfiguration,
-          false,
-        ),
-      );
-    } else if (!config.containerBuild?.disableContainerBuildCapabilities) {
-      // container build capabilities is enabled.
-      patch.push(
-        ...this.manageContainerSccAttributeForCapability(
-          workspace,
-          config.containerBuild.containerBuildConfiguration,
-          true,
-        ),
-      );
-    } else {
-      // container capabilities are disabled.
-      patch.push(...this.deleteSccAttribute(workspace));
-    }
-
-    if (patch.length === 0) {
-      return workspace;
-    }
-
-    const { devWorkspace } = await DwApi.patchWorkspace(
-      workspace.metadata.namespace,
-      workspace.metadata.name,
-      patch,
-    );
-    return devWorkspace;
-  }
-
-  manageContainerSccAttributeForCapability(
-    workspace: devfileApi.DevWorkspace,
-    capabilityConfig: { openShiftSecurityContextConstraint?: string } | undefined,
-    hostUsers: boolean,
-  ): api.IPatch[] {
-    const patch: api.IPatch[] = [];
-
-    const sccName = capabilityConfig?.openShiftSecurityContextConstraint;
-    if (!sccName) {
-      console.warn(
-        'Skip injecting the `controller.devfile.io/scc` attribute: "openShiftSecurityContextConstraint" is undefined',
-      );
-      return patch;
-    }
-
-    if (workspace.spec.template.attributes?.[DEVWORKSPACE_CONTAINER_SCC_ATTR]) {
-      // if `controller.devfile.io/scc` attribute exists, then replace it
-      patch.push(...this.replaceSccAttribute(workspace, sccName));
-    } else {
-      // if `controller.devfile.io/scc` attribute doesn't exist, then add it.
-      patch.push(...this.addSccAttribute(workspace, sccName));
-    }
-    // Ensures, that HOST_USERS set correspondingly to `controller.devfile.io/scc` attribute
-    patch.push(...this.setHostUsersEnvVar(workspace, hostUsers));
-
-    return patch;
-  }
-
-  deleteSccAttribute(workspace: devfileApi.DevWorkspace): api.IPatch[] {
-    const patch: api.IPatch[] = [];
-
-    if (workspace.spec.template.attributes?.[DEVWORKSPACE_CONTAINER_SCC_ATTR]) {
-      const path = `/spec/template/attributes/${this.escape(DEVWORKSPACE_CONTAINER_SCC_ATTR)}`;
-      patch.push({ op: 'remove', path });
-    }
-    patch.push(...this.removeHostUsersEnvVar(workspace));
-
-    return patch;
-  }
-
-  addSccAttribute(workspace: devfileApi.DevWorkspace, scc: string): api.IPatch[] {
-    const patch: api.IPatch[] = [];
-
-    if (!workspace.spec.template.attributes) {
-      const path = '/spec/template/attributes';
-      const value = {
-        [DEVWORKSPACE_CONTAINER_SCC_ATTR]: scc,
-      };
-      patch.push({ op: 'add', path, value });
-    } else {
-      const path = `/spec/template/attributes/${this.escape(DEVWORKSPACE_CONTAINER_SCC_ATTR)}`;
-      const value = scc;
-      patch.push({ op: 'add', path, value });
-    }
-
-    return patch;
-  }
-
-  replaceSccAttribute(workspace: devfileApi.DevWorkspace, scc: string): api.IPatch[] {
-    const patch: api.IPatch[] = [];
-
-    if (workspace.spec.template.attributes?.[DEVWORKSPACE_CONTAINER_SCC_ATTR] !== scc) {
-      const path = `/spec/template/attributes/${this.escape(DEVWORKSPACE_CONTAINER_SCC_ATTR)}`;
-      const value = scc;
-      patch.push({ op: 'replace', path, value });
-    }
-
-    return patch;
-  }
-
-  setHostUsersEnvVar(workspace: devfileApi.DevWorkspace, hostUsers: boolean): api.IPatch[] {
-    const patch: api.IPatch[] = [];
-
-    const value = { name: this.hostUsersEnvName, value: hostUsers.toString() };
-    const components = workspace.spec.template.components;
-    if (!components) {
-      return patch;
-    }
-
-    for (let cmpIndex = 0; cmpIndex < components.length; cmpIndex++) {
-      const container = components[cmpIndex].container;
-      if (container === undefined) {
-        continue;
-      }
-
-      if (!container.env) {
-        const path = `/spec/template/components/${cmpIndex}/container/env`;
-        patch.push({ op: 'add', path, value: [value] });
-        continue;
-      }
-
-      const envIndex = container.env.findIndex(value => value.name === this.hostUsersEnvName);
-      if (envIndex >= 0) {
-        const env = container.env[envIndex];
-        // If value is different, then replace it
-        if (env.value !== hostUsers.toString()) {
-          const path = `/spec/template/components/${cmpIndex}/container/env/${envIndex}`;
-          patch.push({ op: 'replace', path, value });
-        }
-      } else {
-        // If environment variable is absent, then add it
-        const path = `/spec/template/components/${cmpIndex}/container/env/-`;
-        patch.push({ op: 'add', path, value });
-      }
-    }
-
-    return patch;
-  }
-
-  removeHostUsersEnvVar(workspace: devfileApi.DevWorkspace): api.IPatch[] {
-    const patch: api.IPatch[] = [];
-
-    const components = workspace.spec.template.components;
-    if (!components) {
-      return patch;
-    }
-
-    for (let cmpIndex = 0; cmpIndex < components.length; cmpIndex++) {
-      const container = components[cmpIndex].container;
-      if (!container?.env) {
-        continue;
-      }
-
-      const envIndex = container.env.findIndex(value => value.name === this.hostUsersEnvName);
-      if (envIndex >= 0) {
-        const path = `/spec/template/components/${cmpIndex}/container/env/${envIndex}`;
-        patch.push({ op: 'remove', path });
-      }
-    }
-
-    return patch;
   }
 
   async changeWorkspaceStatus(

@@ -21,6 +21,7 @@ import {
 } from '@patternfly/react-core';
 import { CaretDownIcon } from '@patternfly/react-icons';
 import React from 'react';
+import { connect, ConnectedProps } from 'react-redux';
 
 import { ActionContextType } from '@/contexts/WorkspaceActions';
 import styles from '@/contexts/WorkspaceActions/Dropdown/index.module.css';
@@ -29,8 +30,9 @@ import { AppAlerts } from '@/services/alerts/appAlerts';
 import getRandomString from '@/services/helpers/random';
 import { DevWorkspaceStatus, WorkspaceAction, WorkspaceStatus } from '@/services/helpers/types';
 import { Workspace } from '@/services/workspace-adapter';
+import { RootState } from '@/store';
 
-export type Props = {
+type OwnProps = {
   context: ActionContextType;
   isDisabled?: boolean;
   toggle: 'kebab-toggle' | 'dropdown-toggle';
@@ -43,11 +45,13 @@ export type Props = {
   ) => Promise<void>;
 } & Pick<DropdownProps, 'menuAppendTo' | 'position' | 'isPlain'>;
 
+export type Props = OwnProps & MappedProps;
+
 export type State = {
   isExpanded: boolean;
 };
 
-export class WorkspaceActionsDropdown extends React.PureComponent<Props, State> {
+class WorkspaceActionsDropdownComponent extends React.PureComponent<Props, State> {
   @lazyInject(AppAlerts)
   private appAlerts: AppAlerts;
 
@@ -161,6 +165,7 @@ export class WorkspaceActionsDropdown extends React.PureComponent<Props, State> 
       );
     };
 
+    // Note: SCC mismatch does NOT disable actions - only shows warning when starting
     const items = [
       getItem(WorkspaceAction.OPEN_IDE, isTerminating),
       getItem(WorkspaceAction.START_DEBUG_AND_OPEN_LOGS, isTerminating || !isStopped),
@@ -198,3 +203,14 @@ export class WorkspaceActionsDropdown extends React.PureComponent<Props, State> 
     );
   }
 }
+
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const mapStateToProps = (_state: RootState) => ({});
+
+const connector = connect(mapStateToProps);
+
+type MappedProps = ConnectedProps<typeof connector>;
+export const WorkspaceActionsDropdown = connector(WorkspaceActionsDropdownComponent);
+
+// Export unconnected component for testing
+export { WorkspaceActionsDropdownComponent };

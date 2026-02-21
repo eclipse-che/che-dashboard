@@ -14,7 +14,10 @@ import { load } from 'js-yaml';
 
 import devfileApi, { isDevWorkspace } from '@/services/devfileApi';
 import { DEVWORKSPACE_UPDATING_TIMESTAMP_ANNOTATION } from '@/services/devfileApi/devWorkspace/metadata';
-import { DEVWORKSPACE_STORAGE_TYPE_ATTR } from '@/services/devfileApi/devWorkspace/spec/template';
+import {
+  DEVWORKSPACE_CONTAINER_SCC_ATTR,
+  DEVWORKSPACE_STORAGE_TYPE_ATTR,
+} from '@/services/devfileApi/devWorkspace/spec/template';
 import {
   EXISTING_WORKSPACE_NAME,
   FACTORY_URL_ATTR,
@@ -79,6 +82,16 @@ export class WorkspaceAdapter<T extends devfileApi.DevWorkspace> implements Work
     } else {
       return true;
     }
+  }
+
+  /**
+   * Returns the container SCC attribute value from the workspace.
+   *
+   * @param workspace The workspace to get the SCC from
+   * @returns The SCC attribute value or undefined if not set
+   */
+  static getContainerScc(workspace: devfileApi.DevWorkspace): string | undefined {
+    return workspace.spec.template?.attributes?.[DEVWORKSPACE_CONTAINER_SCC_ATTR];
   }
 
   /**
