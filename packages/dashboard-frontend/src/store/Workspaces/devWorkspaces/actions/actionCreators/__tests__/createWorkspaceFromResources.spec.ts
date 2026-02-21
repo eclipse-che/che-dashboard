@@ -83,7 +83,6 @@ describe('devWorkspaces, actions', () => {
         error: undefined,
       } as ReturnType<typeof serverConfigSelectors.selectServerConfigState>);
       jest.spyOn(serverConfigHelpers, 'getDefaultEditor').mockReturnValue('che-editor');
-      jest.spyOn(serverConfigHelpers, 'getCurrentScc').mockReturnValue('container-run');
       jest.spyOn(clusterInfo, 'selectApplications').mockReturnValue([
         {
           id: ApplicationId.CLUSTER_CONSOLE,
@@ -127,7 +126,6 @@ describe('devWorkspaces, actions', () => {
         mockWorkspace,
         'che-editor',
         undefined,
-        'container-run',
       );
 
       expect(mockCreateDevWorkspaceTemplate).toHaveBeenCalled();
@@ -172,7 +170,6 @@ describe('devWorkspaces, actions', () => {
         mockWorkspace,
         'custom-editor',
         undefined,
-        'container-run',
       );
     });
 

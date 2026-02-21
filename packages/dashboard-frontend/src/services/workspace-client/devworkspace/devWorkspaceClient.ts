@@ -532,6 +532,34 @@ export class DevWorkspaceClient {
     return devWorkspace;
   }
 
+  /**
+   * Syncs HOST_USERS env var on workspace components to match server config
+   * (container run -> false, container build -> true). Does not change the
+   * controller.devfile.io/scc attribute; SCC is set at workspace creation.
+   */
+  async manageHostUsersEnvVar(
+    workspace: devfileApi.DevWorkspace,
+    config: api.IServerConfig,
+  ): Promise<devfileApi.DevWorkspace> {
+    let patch: api.IPatch[] = [];
+    if (!config.containerRun?.disableContainerRunCapabilities) {
+      patch = this.setHostUsersEnvVar(workspace, false);
+    } else if (!config.containerBuild?.disableContainerBuildCapabilities) {
+      patch = this.setHostUsersEnvVar(workspace, true);
+    } else {
+      patch = this.removeHostUsersEnvVar(workspace);
+    }
+    if (patch.length === 0) {
+      return workspace;
+    }
+    const { devWorkspace } = await DwApi.patchWorkspace(
+      workspace.metadata.namespace,
+      workspace.metadata.name,
+      patch,
+    );
+    return devWorkspace;
+  }
+
   async manageDebugMode(
     workspace: devfileApi.DevWorkspace,
     debugMode: boolean,

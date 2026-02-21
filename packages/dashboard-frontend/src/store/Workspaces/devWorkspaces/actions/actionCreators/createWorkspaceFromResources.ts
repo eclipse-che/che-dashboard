@@ -18,7 +18,7 @@ import { AppThunk } from '@/store';
 import { selectApplications } from '@/store/ClusterInfo';
 import { selectDefaultNamespace } from '@/store/InfrastructureNamespaces';
 import { verifyAuthorized } from '@/store/SanityCheck';
-import { getCurrentScc, getDefaultEditor } from '@/store/ServerConfig/helpers';
+import { getDefaultEditor } from '@/store/ServerConfig/helpers';
 import { selectServerConfigState } from '@/store/ServerConfig/selectors';
 import { getDevWorkspaceClient } from '@/store/Workspaces/devWorkspaces/actions/actionCreators/helpers';
 import { updateDevWorkspaceTemplate } from '@/store/Workspaces/devWorkspaces/actions/actionCreators/helpers/editorImage';
@@ -41,7 +41,6 @@ export const createWorkspaceFromResources =
     const defaultKubernetesNamespace = selectDefaultNamespace(state);
     const serverConfig = selectServerConfigState(state).config;
     const cheEditor = editor || getDefaultEditor(serverConfig);
-    const currentScc = getCurrentScc(serverConfig);
     const defaultNamespace = defaultKubernetesNamespace.name;
     const customName = params.name;
 
@@ -56,7 +55,6 @@ export const createWorkspaceFromResources =
         devWorkspace,
         cheEditor,
         customName,
-        currentScc,
       );
 
       if (createResp.headers.warning) {
@@ -75,12 +73,17 @@ export const createWorkspaceFromResources =
       devWorkspaceTemplate = updateDevWorkspaceTemplate(devWorkspaceTemplate, params.editorImage);
 
       /* create a new DevWorkspaceTemplate */
+      const pluginRegistryUrl = serverConfig?.pluginRegistryURL;
+      const pluginRegistryInternalUrl = serverConfig?.pluginRegistryInternalURL;
+      const openVSXUrl = serverConfig?.pluginRegistry?.openVSXURL;
 
       await getDevWorkspaceClient().createDevWorkspaceTemplate(
         defaultNamespace,
         createResp.devWorkspace,
         devWorkspaceTemplate,
-        serverConfig,
+        pluginRegistryUrl,
+        pluginRegistryInternalUrl,
+        openVSXUrl,
         clusterConsole,
       );
 

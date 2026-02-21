@@ -103,20 +103,13 @@ describe('DevWorkspace client, create', () => {
       const internalPluginRegistryUrl = 'http://internal.plugin.registry.url';
       const openVSXUrl = 'http://openvsx.url';
 
-      const config = {
-        pluginRegistryURL: pluginRegistryUrl,
-        pluginRegistryInternalURL: internalPluginRegistryUrl,
-        pluginRegistry: {
-          disableInternalRegistry: false,
-          openVSXURL: openVSXUrl,
-        },
-      } as any;
-
       await client.createDevWorkspaceTemplate(
         namespace,
         testDevWorkspace,
         testDevWorkspaceTemplate,
-        config,
+        pluginRegistryUrl,
+        internalPluginRegistryUrl,
+        openVSXUrl,
       );
 
       expect(spyCreateWorkspaceTemplate).toHaveBeenCalledWith(
@@ -155,17 +148,13 @@ describe('DevWorkspace client, create', () => {
         title: clusterConsoleTitle,
       };
 
-      const config = {
-        pluginRegistry: {
-          disableInternalRegistry: true,
-        },
-      } as any;
-
       await client.createDevWorkspaceTemplate(
         namespace,
         testDevWorkspace,
         testDevWorkspaceTemplate,
-        config,
+        undefined,
+        undefined,
+        undefined,
         clusterConsole,
       );
 
@@ -194,20 +183,13 @@ describe('DevWorkspace client, create', () => {
     });
 
     it('should add owner reference to devWorkspace template to allow automatic cleanup', async () => {
-      const config = {
-        pluginRegistryURL: 'http://plugin.registry.url',
-        pluginRegistryInternalURL: 'http://internal.plugin.registry.url',
-        pluginRegistry: {
-          disableInternalRegistry: false,
-          openVSXURL: 'http://openvsx.url',
-        },
-      } as any;
-
       await client.createDevWorkspaceTemplate(
         namespace,
         testDevWorkspace,
         testDevWorkspaceTemplate,
-        config,
+        'http://plugin.registry.url',
+        'http://internal.plugin.registry.url',
+        'http://openvsx.url',
       );
 
       expect(spyCreateWorkspaceTemplate).toHaveBeenCalledWith(
@@ -225,23 +207,13 @@ describe('DevWorkspace client, create', () => {
     });
 
     it('should not add SCC attribute (SCC is no longer injected during creation)', async () => {
-      const config = {
-        pluginRegistry: {
-          disableInternalRegistry: true,
-        },
-        containerRun: {
-          disableContainerRunCapabilities: true,
-        },
-        containerBuild: {
-          disableContainerBuildCapabilities: true,
-        },
-      } as any;
-
       await client.createDevWorkspaceTemplate(
         namespace,
         testDevWorkspace,
         testDevWorkspaceTemplate,
-        config,
+        undefined,
+        undefined,
+        undefined,
       );
 
       expect(spyCreateWorkspaceTemplate).toHaveBeenCalledWith(
