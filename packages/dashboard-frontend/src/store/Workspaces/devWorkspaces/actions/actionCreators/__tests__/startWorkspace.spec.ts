@@ -71,6 +71,7 @@ describe('devWorkspaces, actions', () => {
     let store: ReturnType<typeof createMockStore>;
     const mockChangeWorkspaceStatus = jest.fn().mockResolvedValue(mockWorkspace);
     const mockManagePvcStrategy = jest.fn().mockResolvedValue(mockWorkspace);
+    const mockManageHostUsersEnvVar = jest.fn().mockResolvedValue(mockWorkspace);
     const mockManageDebugMode = jest.fn().mockResolvedValue(mockWorkspace);
     const mockOnStart = jest.fn().mockResolvedValue(undefined);
 
@@ -94,6 +95,7 @@ describe('devWorkspaces, actions', () => {
       (getDevWorkspaceClient as jest.Mock).mockReturnValue({
         changeWorkspaceStatus: mockChangeWorkspaceStatus,
         managePvcStrategy: mockManagePvcStrategy,
+        manageHostUsersEnvVar: mockManageHostUsersEnvVar,
         manageDebugMode: mockManageDebugMode,
         onStart: mockOnStart,
       });
