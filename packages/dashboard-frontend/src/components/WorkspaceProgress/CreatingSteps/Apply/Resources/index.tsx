@@ -216,11 +216,15 @@ class CreatingStepApplyResources extends ProgressStep<Props, State> {
       }
 
       // test the devWorkspace name to decide if we need to append a suffix to is
+      const baseName = _resources[0].metadata.name;
+
+      // Check if a workspace with the exact same name already exists
       const nameConflict = this.props.allWorkspaces.some(
-        w =>
-          _resources[0].metadata.name === w.name ||
-          _resources[0].metadata.name === w.ref.metadata.name,
+        w => baseName === w.name || baseName === w.ref.metadata.name,
       );
+
+      // Always append suffix for perclick policy to ensure unique names
+      // Also append suffix when there's a name conflict
       const appendSuffix = policiesCreate === 'perclick' || nameConflict;
 
       const storageType = getStorageType(factoryParams, _resources[0], preferredStorageType);
