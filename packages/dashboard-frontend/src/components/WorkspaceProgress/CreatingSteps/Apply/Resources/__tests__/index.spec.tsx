@@ -145,10 +145,41 @@ describe('Creating steps, applying resources', () => {
   });
 
   describe('handle name conflicts', () => {
-    test('name conflict', async () => {
+    test('name conflict with workspace.name', async () => {
       const store = getStoreBuilder()
         .withDevWorkspaces({
           workspaces: [new DevWorkspaceBuilder().withName(resourceDevworkspaceName).build()],
+        })
+        .withDevfileRegistries({
+          devWorkspaceResources: {
+            [resourcesUrl]: {
+              resources,
+            },
+          },
+        })
+        .build();
+
+      renderComponent(store, searchParams);
+      await jest.advanceTimersByTimeAsync(MIN_STEP_DURATION_MS);
+
+      await waitFor(() =>
+        expect(prepareResources).toHaveBeenCalledWith(resources, factoryId, undefined, true),
+      );
+    });
+
+    test('name conflict with workspace.ref.metadata.name', async () => {
+      // Create a workspace where the DevWorkspace metadata.name matches but workspace.name is different
+      const existingDevWorkspace = new DevWorkspaceBuilder()
+        .withName('different-workspace-name')
+        .withMetadata({
+          name: resourceDevworkspaceName,
+          namespace: 'user-che',
+        })
+        .build();
+
+      const store = getStoreBuilder()
+        .withDevWorkspaces({
+          workspaces: [existingDevWorkspace],
         })
         .withDevfileRegistries({
           devWorkspaceResources: {
