@@ -217,7 +217,9 @@ class CreatingStepApplyResources extends ProgressStep<Props, State> {
 
       // test the devWorkspace name to decide if we need to append a suffix to is
       const nameConflict = this.props.allWorkspaces.some(
-        w => _resources[0].metadata.name === w.name,
+        w =>
+          _resources[0].metadata.name === w.name ||
+          _resources[0].metadata.name === w.ref.metadata.name,
       );
       const appendSuffix = policiesCreate === 'perclick' || nameConflict;
 
