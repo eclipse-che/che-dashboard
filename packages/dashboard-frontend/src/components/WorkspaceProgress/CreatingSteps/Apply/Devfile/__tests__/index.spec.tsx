@@ -567,7 +567,7 @@ describe('Creating steps, applying a devfile', () => {
       );
     });
 
-    test('with policy "perclick"', async () => {
+    test('with policy "perclick" without name conflict', async () => {
       const store = getStoreBuilder()
         .withDevWorkspaces({
           workspaces: [new DevWorkspaceBuilder().withName('unique-name').build()],
@@ -584,6 +584,36 @@ describe('Creating steps, applying a devfile', () => {
       renderComponent(store, searchParams);
       await jest.advanceTimersByTimeAsync(MIN_STEP_DURATION_MS);
 
+      // Should not append suffix when there's no name conflict, even with perclick policy
+      await waitFor(() =>
+        expect(prepareDevfile).toHaveBeenCalledWith(
+          devfile,
+          factoryId,
+          undefined,
+          false,
+          undefined,
+        ),
+      );
+    });
+
+    test('with policy "perclick" with name conflict', async () => {
+      const store = getStoreBuilder()
+        .withDevWorkspaces({
+          workspaces: [new DevWorkspaceBuilder().withName(devfileName).build()],
+        })
+        .withFactoryResolver({
+          resolver: {
+            devfile,
+          },
+        })
+        .build();
+
+      searchParams.append(POLICIES_CREATE_ATTR, 'perclick');
+
+      renderComponent(store, searchParams);
+      await jest.advanceTimersByTimeAsync(MIN_STEP_DURATION_MS);
+
+      // Should append suffix when there's a name conflict with perclick policy
       await waitFor(() =>
         expect(prepareDevfile).toHaveBeenCalledWith(devfile, factoryId, undefined, true, undefined),
       );

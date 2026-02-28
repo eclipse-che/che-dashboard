@@ -48,10 +48,9 @@ export const createWorkspaceFromResources =
     const pluginRegistryInternalUrl = selectPluginRegistryInternalUrl(state);
     const cheEditor = editor ? editor : selectDefaultEditor(state);
     const defaultNamespace = defaultKubernetesNamespace.name;
-    // Use the actual devWorkspace name (with suffix) as customName to ensure uniqueness
-    // when perclick policy is used, params.name would be the base name without suffix
-    const customName =
-      params.policiesCreate === 'perclick' ? devWorkspace.metadata.name : params.name;
+    // Use params.name if provided, otherwise use the devWorkspace name
+    // The suffix is only added when there's a name conflict, not for perclick policy
+    const customName = params.name || devWorkspace.metadata.name;
 
     try {
       await verifyAuthorized(dispatch, getState);
