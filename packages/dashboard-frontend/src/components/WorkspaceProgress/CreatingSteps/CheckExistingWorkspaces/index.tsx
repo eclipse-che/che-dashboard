@@ -152,7 +152,7 @@ class CreatingStepCheckExistingWorkspaces extends ProgressStep<Props, State> {
     }
     if (factoryParams.policiesCreate === 'perclick') {
       // perclick policy means always create a new workspace
-      // the suffix will be added in ApplyResources step to ensure unique names
+      // a suffix will only be added in ApplyResources step if there's a name conflict
       return true;
     }
 

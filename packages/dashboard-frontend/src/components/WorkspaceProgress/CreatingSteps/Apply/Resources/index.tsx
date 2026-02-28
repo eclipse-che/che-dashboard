@@ -177,7 +177,7 @@ class CreatingStepApplyResources extends ProgressStep<Props, State> {
   protected async runStep(): Promise<boolean> {
     const { devWorkspaceResources, preferredStorageType } = this.props;
     const { factoryParams, shouldCreate, resources, warning } = this.state;
-    const { cheEditor, factoryId, sourceUrl, policiesCreate } = factoryParams;
+    const { cheEditor, factoryId, sourceUrl } = factoryParams;
 
     if (warning) {
       const newName = `Warning: ${warning}`;
@@ -217,15 +217,11 @@ class CreatingStepApplyResources extends ProgressStep<Props, State> {
 
       // test the devWorkspace name to decide if we need to append a suffix to is
       const baseName = _resources[0].metadata.name;
-
       // Check if a workspace with the exact same name already exists
-      const nameConflict = this.props.allWorkspaces.some(
+      // Append suffix only when there's a name conflict
+      const appendSuffix = this.props.allWorkspaces.some(
         w => baseName === w.name || baseName === w.ref.metadata.name,
       );
-
-      // Always append suffix for perclick policy to ensure unique names
-      // Also append suffix when there's a name conflict
-      const appendSuffix = policiesCreate === 'perclick' || nameConflict;
 
       const storageType = getStorageType(factoryParams, _resources[0], preferredStorageType);
       // create a workspace using pre-generated resources
@@ -235,7 +231,6 @@ class CreatingStepApplyResources extends ProgressStep<Props, State> {
         storageType,
         appendSuffix,
       );
-
       this.setState({
         newWorkspaceName: devWorkspace.metadata.name,
         resources: [devWorkspace, devWorkspaceTemplate],
