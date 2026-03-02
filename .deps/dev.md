@@ -230,7 +230,6 @@
 | `ajv-formats@2.1.1` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/ajv-formats/2.1.1) |
 | `ajv-keywords@3.5.2` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/ajv-keywords/3.5.2) |
 | `ajv-keywords@5.1.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/ajv-keywords/5.1.0) |
-| `ajv@6.12.6` | MIT | #15286 |
 | `ansi-escapes@4.3.2` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/ansi-escapes/4.3.2) |
 | `ansi-styles@5.2.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/ansi-styles/5.2.0) |
 | `anymatch@3.1.3` | ISC | #5050 |
@@ -398,7 +397,6 @@
 | `expect@30.2.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/expect/30.2.0) |
 | `fast-diff@1.3.0` | Apache-2.0 | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/fast-diff/1.3.0) |
 | `fast-glob@3.3.3` | MIT | #9307 |
-| `fast-json-stable-stringify@2.1.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/fast-json-stable-stringify/2.1.0) |
 | `fast-levenshtein@2.0.6` | MIT | #15236 |
 | `fastest-levenshtein@1.0.16` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/fastest-levenshtein/1.0.16) |
 | `fastq@1.15.0` | ISC | #6021 |
@@ -553,7 +551,6 @@
 | `json-buffer@3.0.1` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/json-buffer/3.0.1) |
 | `json-parse-better-errors@1.0.2` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/json-parse-better-errors/1.0.2) |
 | `json-parse-even-better-errors@2.3.1` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/json-parse-even-better-errors/2.3.1) |
-| `json-schema-traverse@0.4.1` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/json-schema-traverse/0.4.1) |
 | `json-schema@0.4.0` | AFL-2.1 OR BSD-3-Clause | #2410 |
 | `json-stable-stringify-without-jsonify@1.0.1` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/json-stable-stringify-without-jsonify/1.0.1) |
 | `json5@2.2.3` | MIT | #15226 |
@@ -703,7 +700,6 @@
 | `pretty-format@30.2.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/pretty-format/30.2.0) |
 | `psl@1.9.0` | MIT AND CC0-1.0 | #3080 |
 | `pstree.remy@1.1.8` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/pstree.remy/1.1.8) |
-| `punycode@2.3.1` | MIT | #6373 |
 | `pure-rand@7.0.1` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/pure-rand/7.0.1) |
 | `queue-microtask@1.2.3` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/queue-microtask/1.2.3) |
 | `react-is@17.0.2` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/react-is/17.0.2) |
@@ -825,7 +821,6 @@
 | `update-browserslist-db@1.0.13` | MIT | #8237 |
 | `update-browserslist-db@1.1.1` | MIT | #16405 |
 | `update-browserslist-db@1.2.3` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/update-browserslist-db/1.2.3) |
-| `uri-js@4.4.1` | BSD-2-Clause | #1086 |
 | `utila@0.4.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/utila/0.4.0) |
 | `v8-to-istanbul@9.1.3` | ISC | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/v8-to-istanbul/9.1.3) |
 | `w3c-xmlserializer@4.0.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/w3c-xmlserializer/4.0.0) |
@@ -838,7 +833,7 @@
 | `webpack-merge@5.10.0` | MIT | #12055 |
 | `webpack-sources@1.4.3` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/webpack-sources/1.4.3) |
 | `webpack-sources@3.2.3` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/webpack-sources/3.2.3) |
-| `webpack-sources@3.3.4` |  | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/webpack-sources/3.3.4) |
+| `webpack-sources@3.3.4` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/webpack-sources/3.3.4) |
 | `webpack@5.105.2` | MIT | #26021 |
 | `webpack@5.96.1` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/webpack/5.96.1) |
 | `whatwg-encoding@2.0.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/whatwg-encoding/2.0.0) |

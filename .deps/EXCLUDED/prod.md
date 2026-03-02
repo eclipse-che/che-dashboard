@@ -15,6 +15,7 @@ This file lists dependencies that do not need CQs or auto-detection does not wor
 | `@patternfly/react-core@4.278.1` | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@patternfly/react-core/4.278.1) |
 | `@patternfly/react-icons@4.93.7` | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@patternfly/react-icons/4.93.7) |
 | `@patternfly/react-table@4.113.7` | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@patternfly/react-table/4.113.7) |
+| `ajv@6.14.0` | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/ajv/6.14.0) |
 | `ajv@8.18.0` | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/ajv/8.18.0) |
 | `any-signal@4.2.0` | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/any-signal/4.2.0) |
 | `avvio@9.2.0` | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/avvio/9.2.0) |
