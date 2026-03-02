@@ -73,7 +73,9 @@ export const DevfileViewer: React.FC<Props> = ({ value, id }) => {
       EditorView.contentAttributes.of({ 'aria-label': 'Devfile content' }),
       yaml(),
     ];
-    return isDarkTheme ? baseExtensions : [lightTheme, syntaxHighlighting(lightHighlightStyle), ...baseExtensions];
+    return isDarkTheme
+      ? baseExtensions
+      : [lightTheme, syntaxHighlighting(lightHighlightStyle), ...baseExtensions];
   }, [isDarkTheme, lightTheme, lightHighlightStyle]);
 
   return (
