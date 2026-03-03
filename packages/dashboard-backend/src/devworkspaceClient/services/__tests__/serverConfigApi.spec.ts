@@ -264,6 +264,17 @@ describe('Server Config API Service', () => {
         expect(res).toEqual('x86_64');
       });
 
+      test('getting value and change "aarch64" to "arm64"', async () => {
+        // Mocking the run function to simulate the command execution (AArch64/ARM64 systems)
+        mockRun.mockResolvedValue('aarch64');
+
+        const res = await serverConfigService.getCurrentArchitecture();
+        // Verifying that the run function was called with the correct command and arguments
+        expect(mockRun).toHaveBeenCalledWith('uname', ['-m']);
+        // Checking the result of the getCurrentArchitecture method
+        expect(res).toEqual('arm64');
+      });
+
       test('error on execution command "uname -m"', async () => {
         // Mocking the run function to simulate the command execution error
         mockRun.mockRejectedValueOnce(new Error('Command failed'));
