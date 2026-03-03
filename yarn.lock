@@ -907,6 +907,7 @@ __metadata:
     file-loader: "npm:^6.2.0"
     fs-extra: "npm:^11.1.1"
     https: "npm:^1.0.0"
+    https-proxy-agent: "npm:^7.0.2"
     jest: "npm:^30.2.0"
     js-yaml: "npm:^4.1.1"
     json-schema: "npm:^0.4.0"
@@ -7553,6 +7554,16 @@ __metadata:
     agent-base: "npm:^7.0.2"
     debug: "npm:4"
   checksum: 10/6679d46159ab3f9a5509ee80c3a3fc83fba3a920a5e18d32176c3327852c3c00ad640c0c4210a8fd70ea3c4a6d3a1b375bf01942516e7df80e2646bdc77658ab
+  languageName: node
+  linkType: hard
+
+"https-proxy-agent@npm:^7.0.2":
+  version: 7.0.6
+  resolution: "https-proxy-agent@npm:7.0.6"
+  dependencies:
+    agent-base: "npm:^7.1.2"
+    debug: "npm:4"
+  checksum: 10/784b628cbd55b25542a9d85033bdfd03d4eda630fb8b3c9477959367f3be95dc476ed2ecbb9836c359c7c698027fc7b45723a302324433590f45d6c1706e8c13
   languageName: node
   linkType: hard
 

@@ -13,6 +13,7 @@
 import axios from 'axios';
 import * as fs from 'fs-extra';
 import https from 'https';
+import { HttpsProxyAgent } from 'https-proxy-agent';
 import path from 'path';
 
 const DEFAULT_CHE_SELF_SIGNED_MOUNT_PATH = '/public-certs';
@@ -22,15 +23,49 @@ const certificateAuthority = getCertificateAuthority(
   CHE_SELF_SIGNED_MOUNT_PATH ? CHE_SELF_SIGNED_MOUNT_PATH : DEFAULT_CHE_SELF_SIGNED_MOUNT_PATH,
 );
 
-export const axiosInstanceNoCert = axios.create();
-export const axiosInstance =
-  certificateAuthority !== undefined
-    ? axios.create({
-        httpsAgent: new https.Agent({
-          ca: certificateAuthority,
-        }),
-      })
-    : axios.create();
+// Use HTTP/HTTPS proxy for outbound requests when set (e.g. IPv6-only clusters reaching registry.devfile.io).
+// Without this, axios fails with ENETUNREACH when the pod cannot reach IPv4 addresses directly.
+const proxyUrl = process.env.HTTPS_PROXY || process.env.HTTP_PROXY;
+const proxyAgentNoCert =
+  proxyUrl !== undefined && proxyUrl !== '' ? new HttpsProxyAgent(proxyUrl) : undefined;
+const proxyAgentWithCert =
+  proxyUrl !== undefined && proxyUrl !== ''
+    ? new HttpsProxyAgent(proxyUrl, { ca: certificateAuthority })
+    : undefined;
+
+const noCertAgent =
+  proxyAgentNoCert ??
+  (certificateAuthority ? new https.Agent({ ca: certificateAuthority }) : undefined);
+const certAgent =
+  proxyAgentWithCert ??
+  (certificateAuthority ? new https.Agent({ ca: certificateAuthority }) : undefined);
+
+// No-proxy instances for fallback when proxy is unreachable (e.g. IPv6-only pod, IPv4 proxy)
+const noProxyNoCertAgent = certificateAuthority
+  ? new https.Agent({ ca: certificateAuthority })
+  : undefined;
+const noProxyCertAgent = certificateAuthority
+  ? new https.Agent({ ca: certificateAuthority })
+  : undefined;
+
+export const axiosInstanceNoCert = axios.create({
+  ...(noCertAgent && { httpsAgent: noCertAgent, proxy: false }),
+});
+
+export const axiosInstance = axios.create({
+  ...(certAgent && { httpsAgent: certAgent, proxy: false }),
+});
+
+// Always set proxy: false to bypass env HTTP_PROXY when proxy is unreachable
+export const axiosInstanceNoProxyNoCert = axios.create({
+  proxy: false,
+  ...(noProxyNoCertAgent && { httpsAgent: noProxyNoCertAgent }),
+});
+
+export const axiosInstanceNoProxy = axios.create({
+  proxy: false,
+  ...(noProxyCertAgent && { httpsAgent: noProxyCertAgent }),
+});
 
 function searchCertificate(
   certPath: string,

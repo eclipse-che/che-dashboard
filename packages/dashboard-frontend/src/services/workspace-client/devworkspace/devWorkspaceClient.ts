@@ -87,6 +87,7 @@ export class DevWorkspaceClient {
   private readonly clusterConsoleTitleEnvName: string;
   private readonly openVSXUrlEnvName: string;
   private readonly dashboardUrlEnvName: string;
+  // HOST_USERS environment variable for controlling host user capabilities in DevWorkspace containers
   private readonly hostUsersEnvName: string;
   private readonly defaultPluginsHandler: DevWorkspaceDefaultPluginsHandler;
 
@@ -681,6 +682,13 @@ export class DevWorkspaceClient {
     return patch;
   }
 
+  /**
+   * Sets the HOST_USERS environment variable in all container components.
+   * This controls whether containers run with host user capabilities.
+   * @param workspace The DevWorkspace to update
+   * @param hostUsers Whether to enable host users (true for container-build, false for container-run)
+   * @returns Array of JSON patches to apply
+   */
   setHostUsersEnvVar(workspace: devfileApi.DevWorkspace, hostUsers: boolean): api.IPatch[] {
     const patch: api.IPatch[] = [];
 
@@ -720,6 +728,12 @@ export class DevWorkspaceClient {
     return patch;
   }
 
+  /**
+   * Removes the HOST_USERS environment variable from all container components.
+   * Called when container capabilities are disabled.
+   * @param workspace The DevWorkspace to update
+   * @returns Array of JSON patches to apply
+   */
   removeHostUsersEnvVar(workspace: devfileApi.DevWorkspace): api.IPatch[] {
     const patch: api.IPatch[] = [];
 

@@ -67,7 +67,7 @@ describe('Data Resolver Route', () => {
         const res = await app
           .inject()
           .post(`${baseApiPath}/data/resolver`)
-          .payload({ url: 'https://devfile.yaml' });
+          .payload({ url: 'https://registry.devfile.io/devfiles/nodejs/devfile.yaml' });
 
         expect(defaultAxiosInstanceMock).toHaveBeenCalledTimes(1);
         expect(axiosInstanceMock).toHaveBeenCalledTimes(1);
@@ -89,7 +89,7 @@ describe('Data Resolver Route', () => {
         const res = await app
           .inject()
           .post(`${baseApiPath}/data/resolver`)
-          .payload({ url: 'https://devfile.yaml' });
+          .payload({ url: 'https://registry.devfile.io/devfiles/nodejs/devfile.yaml' });
 
         expect(defaultAxiosInstanceMock).toHaveBeenCalledTimes(1);
         expect(axiosInstanceMock).toHaveBeenCalledTimes(1);
@@ -109,7 +109,7 @@ describe('Data Resolver Route', () => {
         const res = await app
           .inject()
           .post(`${baseApiPath}/data/resolver`)
-          .payload({ url: 'https://devfile.yaml' });
+          .payload({ url: 'https://registry.devfile.io/devfiles/nodejs/devfile.yaml' });
 
         expect(defaultAxiosInstanceMock).toHaveBeenCalledTimes(1);
         expect(axiosInstanceMock).toHaveBeenCalledTimes(0);
@@ -132,7 +132,7 @@ describe('Data Resolver Route', () => {
         const res = await app
           .inject()
           .post(`${baseApiPath}/data/resolver`)
-          .payload({ url: 'https://devfile.yaml' });
+          .payload({ url: 'https://registry.devfile.io/devfiles/nodejs/devfile.yaml' });
 
         expect(defaultAxiosInstanceMock).toHaveBeenCalledTimes(1);
         expect(axiosInstanceMock).toHaveBeenCalledTimes(0);
@@ -140,6 +140,61 @@ describe('Data Resolver Route', () => {
         expect(res.body).toEqual(
           '{"statusCode":404,"code":"ERR_BAD_REQUEST","error":"Not Found","message":"Not Found"}',
         );
+      });
+    });
+
+    describe('SSRF protection', () => {
+      test('rejects non-allowlisted host', async () => {
+        const res = await app
+          .inject()
+          .post(`${baseApiPath}/data/resolver`)
+          .payload({ url: 'https://evil.example.com/devfile.yaml' });
+
+        expect(defaultAxiosInstanceMock).not.toHaveBeenCalled();
+        expect(axiosInstanceMock).not.toHaveBeenCalled();
+        expect(res.statusCode).toEqual(400);
+        expect(JSON.parse(res.body)).toMatchObject({
+          message: expect.stringContaining('allowlist'),
+        });
+      });
+
+      test('rejects localhost', async () => {
+        const res = await app
+          .inject()
+          .post(`${baseApiPath}/data/resolver`)
+          .payload({ url: 'http://localhost:8080/devfile.yaml' });
+
+        expect(res.statusCode).toEqual(400);
+        expect(JSON.parse(res.body)).toMatchObject({
+          message: expect.stringContaining('localhost'),
+        });
+      });
+
+      test('rejects URL with username/password', async () => {
+        const res = await app
+          .inject()
+          .post(`${baseApiPath}/data/resolver`)
+          .payload({ url: 'https://user:pass@registry.devfile.io/devfile.yaml' });
+
+        expect(res.statusCode).toEqual(400);
+        expect(JSON.parse(res.body)).toMatchObject({
+          message: expect.stringContaining('username'),
+        });
+      });
+
+      test('allows in-cluster Kubernetes service', async () => {
+        defaultAxiosInstanceMock.mockResolvedValueOnce({
+          status: 200,
+          data: 'devfile content',
+        });
+
+        const res = await app.inject().post(`${baseApiPath}/data/resolver`).payload({
+          url: 'http://devfile-server.che-test.svc.cluster.local:8080/nodejs/devfile.yaml',
+        });
+
+        expect(defaultAxiosInstanceMock).toHaveBeenCalledTimes(1);
+        expect(res.statusCode).toEqual(200);
+        expect(res.body).toEqual('devfile content');
       });
     });
   });

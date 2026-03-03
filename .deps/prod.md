@@ -191,7 +191,6 @@
 | `fast-decode-uri-component@1.0.1` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/fast-decode-uri-component/1.0.1) |
 | `fast-deep-equal@3.1.3` | MIT | #24805 |
 | `fast-fifo@1.3.2` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/fast-fifo/1.3.2) |
-| `fast-json-stable-stringify@2.1.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/fast-json-stable-stringify/2.1.0) |
 | `fast-json-stringify@6.3.0` |  | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/fast-json-stringify/6.3.0) |
 | `fast-querystring@1.1.2` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/fast-querystring/1.1.2) |
 | `fast-redact@3.3.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/fast-redact/3.3.0) |
@@ -276,7 +275,7 @@
 | `jsep@1.4.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/jsep/1.4.0) |
 | `json-schema-ref-resolver@3.0.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/json-schema-ref-resolver/3.0.0) |
 | `json-schema-resolver@3.0.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/json-schema-resolver/3.0.0) |
-| `json-schema-traverse@0.4.1` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/json-schema-traverse/0.4.1) |
+| `json-schema-traverse@1.0.0` | MIT | #24851 |
 | `jsonc-parser@3.2.0` | MIT | #12891 |
 | `jsonfile@6.1.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/jsonfile/6.1.0) |
 | `jsonpath-plus@10.3.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/jsonpath-plus/10.3.0) |
@@ -355,8 +354,7 @@
 | `proxy-from-env@1.1.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/proxy-from-env/1.1.0) |
 | `public-encrypt@4.0.3` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/public-encrypt/4.0.3) |
 | `pump@3.0.0` | MIT | #21946 |
-| `punycode@2.3.1` | MIT | #6373 |
-| `qs@6.15.0` | BSD-3-Clause | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/qs/6.15.0) |
+| `qs@6.15.0` |  | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/qs/6.15.0) |
 | `querystring@0.2.1` | MIT | #1054 |
 | `querystringify@2.2.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/querystringify/2.2.0) |
 | `quick-format-unescaped@4.0.4` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/quick-format-unescaped/4.0.4) |
@@ -384,6 +382,7 @@
 | `reflect-metadata@0.1.14` | Apache-2.0 AND MIT | #21141 |
 | `reflect-metadata@0.2.2` | Apache-2.0 | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/reflect-metadata/0.2.2) |
 | `regenerator-runtime@0.14.0` | MIT | #9897 |
+| `require-from-string@2.0.2` | MIT | #24815 |
 | `requires-port@1.0.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/requires-port/1.0.0) |
 | `reselect@5.1.1` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/reselect/5.1.1) |
 | `resolve-pathname@3.0.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/resolve-pathname/3.0.0) |
@@ -461,11 +460,10 @@
 | `typed-array-buffer@1.0.3` | MIT | #9658 |
 | `undici-types@5.26.5` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/undici-types/5.26.5) |
 | `undici-types@7.16.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/undici-types/7.16.0) |
-| `undici@7.22.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/undici/7.22.0) |
+| `undici@7.22.0` |  | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/undici/7.22.0) |
 | `unique-filename@3.0.0` | ISC | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/unique-filename/3.0.0) |
 | `unique-slug@4.0.0` | ISC | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/unique-slug/4.0.0) |
 | `universalify@2.0.1` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/universalify/2.0.1) |
-| `uri-js@4.4.1` | BSD-2-Clause | #1086 |
 | `url-parse@1.5.10` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/url-parse/1.5.10) |
 | `use-sync-external-store@1.2.2` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/use-sync-external-store/1.2.2) |
 | `util-deprecate@1.0.2` | MIT | #5885 |

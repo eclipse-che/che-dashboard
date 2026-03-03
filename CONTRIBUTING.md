@@ -23,6 +23,7 @@
     - [Analyzing Bundles](#analyzing-bundles)
     - [Measuring Build Speed](#measuring-build-speed)
     - [Checking Dependencies for Intellectual Property (IP) Compliance](#checking-dependencies-for-intellectual-property-ip-compliance)
+    - [Adding or Updating Dependencies](#adding-or-updating-dependencies)
 
 ---
 
@@ -277,3 +278,13 @@ yarn license:generate
 ```
 
 This command will provide you with details about the dependencies and their compliance with intellectual property standards.
+
+#### Adding or Updating Dependencies
+
+When adding or updating packages in `package.json`, use the `install:update` script to refresh the lockfile:
+
+```sh
+yarn run install:update
+```
+
+This runs `yarn install --no-immutable`, which is required because Yarn's immutable install mode (enabled in CI) prevents lockfile changes. After updating dependencies, always commit both `package.json` and `yarn.lock`. If license files (in `.deps/`) were affected, regenerate them with `yarn license:generate --batch 50` as described in the workspace rules.
