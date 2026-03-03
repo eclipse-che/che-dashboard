@@ -10,12 +10,14 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
+import { BackupInfo, BackupStatus } from '@eclipse-che/common';
 import { Button } from '@patternfly/react-core';
 import { IRow, SortByDirection } from '@patternfly/react-table';
 import { Location } from 'history';
 import React from 'react';
 import { Link } from 'react-router-dom';
 
+import { BackupStatusBadge } from '@/components/BackupStatusBadge';
 import { EditorIcon, getEditorName } from '@/components/EditorIcon';
 import { WorkspaceStatusIndicator } from '@/components/Workspace/Status/Indicator';
 import { WorkspaceActionsConsumer } from '@/contexts/WorkspaceActions';
@@ -41,6 +43,7 @@ export function buildRows(
   filtered: string[],
   selected: string[],
   sortBy: { index: number; direction: SortByDirection },
+  backupsByWorkspace: Record<string, BackupInfo> = {},
 ): RowData[] {
   const rows: RowData[] = [];
   workspaces
@@ -77,8 +80,17 @@ export function buildRows(
       const ideLoaderHref = toHref(ideLoaderLocation);
 
       try {
+        const backupInfo = backupsByWorkspace[workspace.uid];
         rows.push(
-          buildRow(workspace, editors, isSelected, isDeleted, overviewPageLocation, ideLoaderHref),
+          buildRow(
+            workspace,
+            editors,
+            isSelected,
+            isDeleted,
+            overviewPageLocation,
+            ideLoaderHref,
+            backupInfo,
+          ),
         );
       } catch (e) {
         console.warn('Skip workspace: ', e);
@@ -103,6 +115,7 @@ export function buildRow(
   isDeleted: boolean,
   overviewPageLocation: Location,
   ideLoaderHref: string,
+  backupInfo?: BackupInfo,
 ): RowData {
   if (!workspace.name) {
     throw new Error('Empty workspace name.');
@@ -204,6 +217,18 @@ export function buildRow(
       {
         title: lastModifiedDate,
         key: 'last-modified-time',
+      },
+      {
+        title: (
+          <BackupStatusBadge
+            status={backupInfo?.status ?? BackupStatus.NEVER}
+            lastBackupTime={backupInfo?.lastBackupTime}
+            backupImageUrl={backupInfo?.backupImageUrl}
+            size="sm"
+            variant="minimal"
+          />
+        ),
+        key: 'backup-status',
       },
       {
         title: projectsList,
