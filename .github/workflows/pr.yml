@@ -110,9 +110,15 @@ jobs:
       -
         name: "Set up QEMU"
         uses: docker/setup-qemu-action@v3
+        with:
+          platforms: linux/amd64,linux/arm64
       -
         name: "Set up Docker Buildx ${{ matrix.platform }}"
         uses: docker/setup-buildx-action@v3
+        with:
+          driver-opts: |
+            env.BUILDKIT_STEP_LOG_MAX_SIZE=10485760
+            env.BUILDKIT_STEP_LOG_MAX_SPEED=10485760
       -
         name: "Cache Docker layers"
         uses: actions/cache@v4
