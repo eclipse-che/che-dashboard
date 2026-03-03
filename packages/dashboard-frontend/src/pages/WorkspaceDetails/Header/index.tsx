@@ -37,12 +37,13 @@ export type Props = {
   workspacesLink: string;
   status: WorkspaceStatus | DevWorkspaceStatus | DeprecatedWorkspaceStatus;
   workspaceName: string;
+  containerScc: string | undefined;
   children: React.ReactNode;
 };
 
 class Header extends React.PureComponent<Props> {
   public render(): React.ReactElement {
-    const { workspaceName, status, children, workspacesLink } = this.props;
+    const { workspaceName, status, containerScc, children, workspacesLink } = this.props;
 
     return (
       <PageSection variant={PageSectionVariants.light}>
@@ -61,7 +62,7 @@ class Header extends React.PureComponent<Props> {
                 </TextContent>
               </FlexItem>
               <FlexItem>
-                <WorkspaceStatusLabel status={status} />
+                <WorkspaceStatusLabel status={status} containerScc={containerScc} />
               </FlexItem>
               <FlexItem className={styles.actionButtons} align={{ default: 'alignRight' }}>
                 {children}
