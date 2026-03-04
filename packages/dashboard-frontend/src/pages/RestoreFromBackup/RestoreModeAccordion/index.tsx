@@ -29,14 +29,14 @@ import {
 import React from 'react';
 
 import {
-  CrossClusterRestoreData,
-  CrossClusterRestoreForm,
-} from '@/pages/RestoreFromBackup/CrossClusterForm';
-import { RestoreMode } from '@/pages/RestoreFromBackup/helpers';
+  DefaultRegistryRestoreData,
+  DefaultRegistryRestoreForm,
+} from '@/pages/RestoreFromBackup/DefaultRegistryForm';
 import {
-  SameClusterRestoreData,
-  SameClusterRestoreForm,
-} from '@/pages/RestoreFromBackup/SameClusterForm';
+  ExternalRegistryRestoreData,
+  ExternalRegistryRestoreForm,
+} from '@/pages/RestoreFromBackup/ExternalRegistryForm';
+import { RestoreMode } from '@/pages/RestoreFromBackup/helpers';
 
 type Props = {
   restoreMode: RestoreMode;
@@ -44,12 +44,18 @@ type Props = {
 
   // Same-cluster form props
   backups: BackupItem[];
-  onSameClusterValidationChange: (isValid: boolean, data: SameClusterRestoreData | null) => void;
+  onDefaultRegistryValidationChange: (
+    isValid: boolean,
+    data: DefaultRegistryRestoreData | null,
+  ) => void;
 
   // Cross-cluster form props
   initialImageUrl?: string;
   onValidateImage: (imageUrl: string) => Promise<BackupValidationResult>;
-  onCrossClusterValidationChange: (isValid: boolean, data: CrossClusterRestoreData | null) => void;
+  onExternalRegistryValidationChange: (
+    isValid: boolean,
+    data: ExternalRegistryRestoreData | null,
+  ) => void;
 
   // Action button
   actionButton: React.ReactNode;
@@ -59,10 +65,10 @@ export const RestoreModeAccordion: React.FC<Props> = ({
   restoreMode,
   onChange,
   backups,
-  onSameClusterValidationChange,
+  onDefaultRegistryValidationChange,
   initialImageUrl,
   onValidateImage,
-  onCrossClusterValidationChange,
+  onExternalRegistryValidationChange,
   actionButton,
 }) => {
   const [expandedItem, setExpandedItem] = React.useState<string>(restoreMode);
@@ -88,23 +94,24 @@ export const RestoreModeAccordion: React.FC<Props> = ({
           <Accordion asDefinitionList={false}>
             <AccordionItem>
               <AccordionToggle
-                onClick={() => handleToggle('same-cluster')}
-                isExpanded={expandedItem === 'same-cluster'}
-                id="same-cluster"
+                onClick={() => handleToggle('default-registry')}
+                isExpanded={expandedItem === 'default-registry'}
+                id="default-registry"
               >
-                Same cluster
-                {/* <div>Same cluster</div> */}
+                Default registry
               </AccordionToggle>
-              <AccordionContent isHidden={expandedItem !== 'same-cluster'}>
+              <AccordionContent isHidden={expandedItem !== 'default-registry'}>
                 <TextContent>
-                  <Text component="small">Restore a workspace from a backup on this cluster.</Text>
+                  <Text component="small">
+                    Restore a workspace from a backup in the default registry.
+                  </Text>
                 </TextContent>
                 <Panel>
                   <PanelMain>
                     <PanelMainBody>
-                      <SameClusterRestoreForm
+                      <DefaultRegistryRestoreForm
                         backups={backups}
-                        onValidationChange={onSameClusterValidationChange}
+                        onValidationChange={onDefaultRegistryValidationChange}
                         actionButton={actionButton}
                       />
                     </PanelMainBody>
@@ -115,25 +122,25 @@ export const RestoreModeAccordion: React.FC<Props> = ({
 
             <AccordionItem>
               <AccordionToggle
-                onClick={() => handleToggle('cross-cluster')}
-                isExpanded={expandedItem === 'cross-cluster'}
-                id="cross-cluster"
+                onClick={() => handleToggle('external-registry')}
+                isExpanded={expandedItem === 'external-registry'}
+                id="external-registry"
               >
-                Cross cluster
+                External registry
               </AccordionToggle>
-              <AccordionContent isHidden={expandedItem !== 'cross-cluster'}>
+              <AccordionContent isHidden={expandedItem !== 'external-registry'}>
                 <TextContent>
                   <Text component="small">
-                    Restore from a backup image on a different cluster or registry.
+                    Restore from a backup image in an external registry.
                   </Text>
                 </TextContent>
                 <Panel>
                   <PanelMain>
                     <PanelMainBody>
-                      <CrossClusterRestoreForm
+                      <ExternalRegistryRestoreForm
                         initialImageUrl={initialImageUrl}
                         onValidateImage={onValidateImage}
-                        onValidationChange={onCrossClusterValidationChange}
+                        onValidationChange={onExternalRegistryValidationChange}
                         actionButton={actionButton}
                       />
                     </PanelMainBody>

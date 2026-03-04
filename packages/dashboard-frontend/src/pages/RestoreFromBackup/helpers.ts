@@ -14,7 +14,7 @@
 
 import { ValidatedOptions } from '@patternfly/react-core';
 
-export type RestoreMode = 'same-cluster' | 'cross-cluster';
+export type RestoreMode = 'default-registry' | 'external-registry';
 
 export type ValidationState = 'idle' | 'validating' | 'valid' | 'invalid';
 

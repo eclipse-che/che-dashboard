@@ -49,16 +49,16 @@ describe('ConfirmationModal', () => {
     expect(screen.getByTestId('confirm-workspace-name')).toHaveTextContent('my-workspace');
   });
 
-  test('should display restore mode for same-cluster', () => {
+  test('should display restore mode for default-registry', () => {
     renderComponent();
 
-    expect(screen.getByTestId('confirm-restore-mode')).toHaveTextContent('Same cluster');
+    expect(screen.getByTestId('confirm-restore-mode')).toHaveTextContent('Default registry');
   });
 
-  test('should display restore mode for cross-cluster', () => {
-    renderComponent({ restoreMode: 'cross-cluster' });
+  test('should display restore mode for external-registry', () => {
+    renderComponent({ restoreMode: 'external-registry' });
 
-    expect(screen.getByTestId('confirm-restore-mode')).toHaveTextContent('Cross cluster');
+    expect(screen.getByTestId('confirm-restore-mode')).toHaveTextContent('External registry');
   });
 
   test('should display image URL', () => {
@@ -94,13 +94,13 @@ describe('ConfirmationModal', () => {
 function getComponent(
   options: {
     isOpen?: boolean;
-    restoreMode?: 'same-cluster' | 'cross-cluster';
+    restoreMode?: 'default-registry' | 'external-registry';
   } = {},
 ) {
   return (
     <ConfirmationModal
       isOpen={options.isOpen !== false}
-      restoreMode={options.restoreMode || 'same-cluster'}
+      restoreMode={options.restoreMode || 'default-registry'}
       workspaceName="my-workspace"
       imageUrl="image-registry.openshift-image-registry.svc:5000/user-namespace/my-workspace:latest"
       onConfirm={mockOnConfirm}

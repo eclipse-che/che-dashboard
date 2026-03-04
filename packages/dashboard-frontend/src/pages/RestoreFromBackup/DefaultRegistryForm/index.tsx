@@ -16,23 +16,23 @@ import { BackupItem } from '@eclipse-che/common';
 import { Form, ValidatedOptions } from '@patternfly/react-core';
 import React, { useEffect, useState } from 'react';
 
-import { BackupSelectorField } from '@/pages/RestoreFromBackup/SameClusterForm/BackupSelectorField';
-import { ImagePreviewField } from '@/pages/RestoreFromBackup/SameClusterForm/ImagePreviewField';
-import { WorkspaceNameField } from '@/pages/RestoreFromBackup/SameClusterForm/WorkspaceNameField';
+import { BackupSelectorField } from '@/pages/RestoreFromBackup/DefaultRegistryForm/BackupSelectorField';
+import { ImagePreviewField } from '@/pages/RestoreFromBackup/DefaultRegistryForm/ImagePreviewField';
+import { WorkspaceNameField } from '@/pages/RestoreFromBackup/DefaultRegistryForm/WorkspaceNameField';
 import { useRestoreFormValidation } from '@/pages/RestoreFromBackup/useRestoreFormValidation';
 
-export type SameClusterRestoreData = {
+export type DefaultRegistryRestoreData = {
   workspaceName: string;
   imageUrl: string;
 };
 
 type Props = {
   backups: BackupItem[];
-  onValidationChange: (isValid: boolean, data: SameClusterRestoreData | null) => void;
+  onValidationChange: (isValid: boolean, data: DefaultRegistryRestoreData | null) => void;
   actionButton: React.ReactNode;
 };
 
-export const SameClusterRestoreForm: React.FC<Props> = ({
+export const DefaultRegistryRestoreForm: React.FC<Props> = ({
   backups,
   onValidationChange,
   actionButton,

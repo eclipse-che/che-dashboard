@@ -28,6 +28,7 @@ jest.mock('@/components/EditorSelector');
 const mockNavigate = jest.fn();
 const mockValidateBackupImage = jest.fn();
 const mockFetchBackupList = jest.fn();
+const mockFetchBackupConfig = jest.fn();
 const mockRestoreFromBackup = jest.fn();
 
 const defaultNamespace: che.KubernetesNamespace = {
@@ -58,10 +59,17 @@ const mockBackups: BackupItem[] = [
   },
 ];
 
+const mockBackupConfig = {
+  enabled: true,
+  schedule: '0 1 * * *',
+  registry: 'image-registry.openshift-image-registry.svc:5000',
+  nextScheduledBackup: '2026-02-12T01:00:00Z',
+};
+
 const { createSnapshot, renderComponent } = getComponentRenderer(getComponent);
 
-// Helper to get same-cluster workspace name input (first in DOM)
-const getSameClusterWorkspaceNameInput = () => {
+// Helper to get default-registry workspace name input (first in DOM)
+const getDefaultRegistryWorkspaceNameInput = () => {
   return screen.getAllByLabelText('Workspace name')[0];
 };
 
@@ -90,15 +98,15 @@ describe('RestoreFromBackupPage', () => {
     test('should render accordion with both modes', () => {
       renderComponent();
 
-      expect(screen.getByRole('button', { name: /Same cluster/i })).toBeInTheDocument();
-      expect(screen.getByRole('button', { name: /Cross cluster/i })).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: /Default registry/i })).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: /External registry/i })).toBeInTheDocument();
     });
 
-    test('should have same-cluster expanded by default', () => {
+    test('should have default-registry expanded by default', () => {
       renderComponent();
 
-      const sameClusterButton = screen.getByRole('button', { name: /Same cluster/i });
-      expect(sameClusterButton).toHaveAttribute('aria-expanded', 'true');
+      const defaultRegistryButton = screen.getByRole('button', { name: /Default registry/i });
+      expect(defaultRegistryButton).toHaveAttribute('aria-expanded', 'true');
     });
 
     test('should render restore and cancel buttons', () => {
@@ -126,18 +134,18 @@ describe('RestoreFromBackupPage', () => {
     });
   });
 
-  describe('same-cluster mode', () => {
+  describe('default-registry mode', () => {
     test('should display workspace name input', () => {
       renderComponent();
 
-      expect(getSameClusterWorkspaceNameInput()).toBeInTheDocument();
+      expect(getDefaultRegistryWorkspaceNameInput()).toBeInTheDocument();
     });
 
     // TODO: Fix timing issue - test times out waiting for button to enable
     test.skip('should enable restore button when valid workspace name is entered', async () => {
       renderComponent();
 
-      const input = getSameClusterWorkspaceNameInput();
+      const input = getDefaultRegistryWorkspaceNameInput();
       await userEvent.click(input);
       await userEvent.type(input, 'my-workspace');
 
@@ -158,7 +166,7 @@ describe('RestoreFromBackupPage', () => {
       // derives the image URL from cluster registry configuration at restore time.
       renderComponent();
 
-      const input = getSameClusterWorkspaceNameInput();
+      const input = getDefaultRegistryWorkspaceNameInput();
       await userEvent.click(input);
       await userEvent.type(input, 'my-workspace');
 
@@ -227,7 +235,7 @@ describe('RestoreFromBackupPage', () => {
       expect(getRestoreSubmitButton()).toBeDisabled();
 
       // Change the name — conflict resolved
-      const nameInput = getSameClusterWorkspaceNameInput();
+      const nameInput = getDefaultRegistryWorkspaceNameInput();
       await userEvent.clear(nameInput);
       await userEvent.type(nameInput, 'my-workspace-new');
 
@@ -243,7 +251,7 @@ describe('RestoreFromBackupPage', () => {
       // Warning visible with original name
       expect(screen.getByTestId('workspace-exists-warning')).toBeInTheDocument();
 
-      const nameInput = getSameClusterWorkspaceNameInput();
+      const nameInput = getDefaultRegistryWorkspaceNameInput();
       await userEvent.clear(nameInput);
       await userEvent.type(nameInput, 'my-workspace-new');
 
@@ -263,7 +271,7 @@ describe('RestoreFromBackupPage', () => {
       expect(screen.getByTestId('image-preview')).toHaveTextContent('old-workspace:latest');
 
       // Override the name — backup should remain selected, image preview unchanged
-      const nameInput = getSameClusterWorkspaceNameInput();
+      const nameInput = getDefaultRegistryWorkspaceNameInput();
       await userEvent.clear(nameInput);
       await userEvent.type(nameInput, 'my-new-name');
 
@@ -281,7 +289,7 @@ describe('RestoreFromBackupPage', () => {
       await userEvent.click(screen.getByText('old-workspace (Deleted)'));
 
       // Override the name
-      const nameInput = getSameClusterWorkspaceNameInput();
+      const nameInput = getDefaultRegistryWorkspaceNameInput();
       await userEvent.clear(nameInput);
       await userEvent.type(nameInput, 'restored-as-new');
 
@@ -307,7 +315,7 @@ describe('RestoreFromBackupPage', () => {
     test('should sanitize workspace name input', async () => {
       renderComponent();
 
-      const input = getSameClusterWorkspaceNameInput();
+      const input = getDefaultRegistryWorkspaceNameInput();
       await userEvent.click(input);
       await userEvent.type(input, 'My_Workspace');
 
@@ -317,7 +325,7 @@ describe('RestoreFromBackupPage', () => {
     test('should show error for invalid workspace name', async () => {
       renderComponent();
 
-      const input = getSameClusterWorkspaceNameInput();
+      const input = getDefaultRegistryWorkspaceNameInput();
       await userEvent.click(input);
       await userEvent.type(input, '-invalid');
 
@@ -329,12 +337,12 @@ describe('RestoreFromBackupPage', () => {
     });
   });
 
-  describe('cross-cluster mode', () => {
-    test('should display image URL input when cross-cluster selected', async () => {
+  describe('external-registry mode', () => {
+    test('should display image URL input when external-registry selected', async () => {
       renderComponent();
 
-      const crossClusterButton = screen.getByRole('button', { name: /Cross cluster/i });
-      await userEvent.click(crossClusterButton);
+      const externalRegistryButton = screen.getByRole('button', { name: /External registry/i });
+      await userEvent.click(externalRegistryButton);
 
       expect(screen.getByLabelText('Backup image URL')).toBeInTheDocument();
     });
@@ -355,8 +363,8 @@ describe('RestoreFromBackupPage', () => {
 
       renderComponent();
 
-      const crossClusterButton = screen.getByRole('button', { name: /Cross cluster/i });
-      await userEvent.click(crossClusterButton);
+      const externalRegistryButton = screen.getByRole('button', { name: /External registry/i });
+      await userEvent.click(externalRegistryButton);
 
       const input = screen.getByLabelText('Backup image URL');
       await userEvent.click(input);
@@ -389,8 +397,8 @@ describe('RestoreFromBackupPage', () => {
 
       renderComponent();
 
-      const crossClusterButton = screen.getByRole('button', { name: /Cross cluster/i });
-      await userEvent.click(crossClusterButton);
+      const externalRegistryButton = screen.getByRole('button', { name: /External registry/i });
+      await userEvent.click(externalRegistryButton);
 
       const input = screen.getByLabelText('Backup image URL');
       await userEvent.click(input);
@@ -420,7 +428,7 @@ describe('RestoreFromBackupPage', () => {
 
       renderComponent();
 
-      await userEvent.click(screen.getByRole('button', { name: /Cross cluster/i }));
+      await userEvent.click(screen.getByRole('button', { name: /External registry/i }));
       await userEvent.type(
         screen.getByLabelText('Backup image URL'),
         'registry.example.com/ns/workspace:latest',
@@ -429,14 +437,14 @@ describe('RestoreFromBackupPage', () => {
       await waitFor(
         () => {
           // Cross-cluster workspace name field has id="restore-workspace-name-cross"
-          const crossClusterNameInput = document.getElementById('restore-workspace-name-cross');
-          expect(crossClusterNameInput).toHaveValue('test-ws');
+          const externalRegistryNameInput = document.getElementById('restore-workspace-name-cross');
+          expect(externalRegistryNameInput).toHaveValue('test-ws');
         },
         { timeout: 2000 },
       );
     });
 
-    test('should allow editing the auto-populated workspace name in cross-cluster mode', async () => {
+    test('should allow editing the auto-populated workspace name in external-registry mode', async () => {
       mockValidateBackupImage.mockResolvedValue({
         payload: {
           valid: true,
@@ -452,7 +460,7 @@ describe('RestoreFromBackupPage', () => {
 
       renderComponent();
 
-      await userEvent.click(screen.getByRole('button', { name: /Cross cluster/i }));
+      await userEvent.click(screen.getByRole('button', { name: /External registry/i }));
       await userEvent.type(
         screen.getByLabelText('Backup image URL'),
         'registry.example.com/ns/workspace:latest',
@@ -475,11 +483,11 @@ describe('RestoreFromBackupPage', () => {
   });
 
   describe('initial backup image URL', () => {
-    test('should pre-fill cross-cluster mode with initial URL', () => {
+    test('should pre-fill external-registry mode with initial URL', () => {
       renderComponent({ initialBackupImageUrl: 'registry.example.com/ns/ws:latest' });
 
-      const crossClusterButton = screen.getByRole('button', { name: /Cross cluster/i });
-      expect(crossClusterButton).toHaveAttribute('aria-expanded', 'true');
+      const externalRegistryButton = screen.getByRole('button', { name: /External registry/i });
+      expect(externalRegistryButton).toHaveAttribute('aria-expanded', 'true');
 
       const input = screen.getByLabelText('Backup image URL');
       expect(input).toHaveValue('registry.example.com/ns/ws:latest');
@@ -502,7 +510,7 @@ describe('RestoreFromBackupPage', () => {
     test.skip('should open confirmation modal when restore is clicked', async () => {
       renderComponent();
 
-      const input = getSameClusterWorkspaceNameInput();
+      const input = getDefaultRegistryWorkspaceNameInput();
       await userEvent.click(input);
       await userEvent.type(input, 'my-workspace');
 
@@ -519,7 +527,7 @@ describe('RestoreFromBackupPage', () => {
     test.skip('should show workspace name in confirmation modal', async () => {
       renderComponent();
 
-      const input = getSameClusterWorkspaceNameInput();
+      const input = getDefaultRegistryWorkspaceNameInput();
       await userEvent.click(input);
       await userEvent.type(input, 'my-workspace');
 
@@ -535,7 +543,7 @@ describe('RestoreFromBackupPage', () => {
     test.skip('should close confirmation modal when cancel is clicked', async () => {
       renderComponent();
 
-      const input = getSameClusterWorkspaceNameInput();
+      const input = getDefaultRegistryWorkspaceNameInput();
       await userEvent.click(input);
       await userEvent.type(input, 'my-workspace');
 
@@ -555,7 +563,7 @@ describe('RestoreFromBackupPage', () => {
       mockRestoreFromBackup.mockResolvedValue(undefined);
       renderComponent();
 
-      const input = getSameClusterWorkspaceNameInput();
+      const input = getDefaultRegistryWorkspaceNameInput();
       await userEvent.click(input);
       await userEvent.type(input, 'my-workspace');
 
@@ -585,40 +593,40 @@ describe('RestoreFromBackupPage', () => {
   });
 
   describe('mode switching', () => {
-    test('should switch to cross-cluster mode when accordion item clicked', async () => {
+    test('should switch to external-registry mode when accordion item clicked', async () => {
       renderComponent();
 
-      const nameInput = getSameClusterWorkspaceNameInput();
+      const nameInput = getDefaultRegistryWorkspaceNameInput();
       await userEvent.click(nameInput);
       await userEvent.type(nameInput, 'my-workspace');
 
-      const crossClusterButton = screen.getByRole('button', { name: /Cross cluster/i });
-      await userEvent.click(crossClusterButton);
+      const externalRegistryButton = screen.getByRole('button', { name: /External registry/i });
+      await userEvent.click(externalRegistryButton);
 
       // Cross-cluster accordion should be expanded
-      expect(crossClusterButton).toHaveAttribute('aria-expanded', 'true');
+      expect(externalRegistryButton).toHaveAttribute('aria-expanded', 'true');
       // Same-cluster accordion should be collapsed
-      const sameClusterButton = screen.getByRole('button', { name: /Same cluster/i });
-      expect(sameClusterButton).toHaveAttribute('aria-expanded', 'false');
+      const defaultRegistryButton = screen.getByRole('button', { name: /Default registry/i });
+      expect(defaultRegistryButton).toHaveAttribute('aria-expanded', 'false');
     });
 
-    test('should switch to same-cluster mode when accordion item clicked', async () => {
+    test('should switch to default-registry mode when accordion item clicked', async () => {
       renderComponent();
 
-      const crossClusterButton = screen.getByRole('button', { name: /Cross cluster/i });
-      await userEvent.click(crossClusterButton);
+      const externalRegistryButton = screen.getByRole('button', { name: /External registry/i });
+      await userEvent.click(externalRegistryButton);
 
       const urlInput = screen.getByLabelText('Backup image URL');
       await userEvent.click(urlInput);
       await userEvent.type(urlInput, 'registry.example.com/ns/ws:tag');
 
-      const sameClusterButton = screen.getByRole('button', { name: /Same cluster/i });
-      await userEvent.click(sameClusterButton);
+      const defaultRegistryButton = screen.getByRole('button', { name: /Default registry/i });
+      await userEvent.click(defaultRegistryButton);
 
       // Same-cluster accordion should be expanded
-      expect(sameClusterButton).toHaveAttribute('aria-expanded', 'true');
+      expect(defaultRegistryButton).toHaveAttribute('aria-expanded', 'true');
       // Cross-cluster accordion should be collapsed
-      expect(crossClusterButton).toHaveAttribute('aria-expanded', 'false');
+      expect(externalRegistryButton).toHaveAttribute('aria-expanded', 'false');
     });
   });
 });
@@ -637,8 +645,10 @@ function getComponent(
         defaultNamespace={defaultNamespace}
         backups={options.backups || []}
         defaultEditor="che-incubator/che-code/latest"
+        backupConfig={mockBackupConfig}
         validateBackupImage={mockValidateBackupImage}
         fetchBackupList={mockFetchBackupList}
+        fetchBackupConfig={mockFetchBackupConfig}
         restoreFromBackup={mockRestoreFromBackup}
         navigate={mockNavigate}
         initialBackupImageUrl={options.initialBackupImageUrl}

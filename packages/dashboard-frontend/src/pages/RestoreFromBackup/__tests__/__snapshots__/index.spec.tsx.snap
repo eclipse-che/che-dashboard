@@ -71,14 +71,14 @@ exports[`RestoreFromBackupPage initial rendering snapshot - initial state 1`] = 
                 <button
                   aria-expanded={true}
                   className="pf-c-accordion__toggle pf-m-expanded"
-                  id="same-cluster"
+                  id="default-registry"
                   onClick={[Function]}
                   type="button"
                 >
                   <span
                     className="pf-c-accordion__toggle-text"
                   >
-                    Same cluster
+                    Default registry
                   </span>
                   <span
                     className="pf-c-accordion__toggle-icon"
@@ -122,7 +122,7 @@ exports[`RestoreFromBackupPage initial rendering snapshot - initial state 1`] = 
                       data-ouia-safe={true}
                       data-pf-content={true}
                     >
-                      Restore a workspace from a backup on this cluster.
+                      Restore a workspace from a backup in the default registry.
                     </small>
                   </div>
                   <div
@@ -243,14 +243,14 @@ exports[`RestoreFromBackupPage initial rendering snapshot - initial state 1`] = 
                 <button
                   aria-expanded={false}
                   className="pf-c-accordion__toggle"
-                  id="cross-cluster"
+                  id="external-registry"
                   onClick={[Function]}
                   type="button"
                 >
                   <span
                     className="pf-c-accordion__toggle-text"
                   >
-                    Cross cluster
+                    External registry
                   </span>
                   <span
                     className="pf-c-accordion__toggle-icon"
@@ -294,7 +294,7 @@ exports[`RestoreFromBackupPage initial rendering snapshot - initial state 1`] = 
                       data-ouia-safe={true}
                       data-pf-content={true}
                     >
-                      Restore from a backup image on a different cluster or registry.
+                      Restore from a backup image in an external registry.
                     </small>
                   </div>
                   <div

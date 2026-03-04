@@ -78,7 +78,7 @@ export class ConfirmationModal extends React.PureComponent<Props> {
           <DescriptionListGroup>
             <DescriptionListTerm>Restore Mode</DescriptionListTerm>
             <DescriptionListDescription data-testid="confirm-restore-mode">
-              {restoreMode === 'same-cluster' ? 'Same cluster' : 'Cross cluster'}
+              {restoreMode === 'default-registry' ? 'Default registry' : 'External registry'}
             </DescriptionListDescription>
           </DescriptionListGroup>
           <DescriptionListGroup>

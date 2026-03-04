@@ -16,9 +16,9 @@ import { BackupValidationResult } from '@eclipse-che/common';
 import { Form, ValidatedOptions } from '@patternfly/react-core';
 import React, { useEffect, useRef, useState } from 'react';
 
-import { ImageUrlField } from '@/pages/RestoreFromBackup/CrossClusterForm/ImageUrlField';
-import { ValidationStatusDisplay } from '@/pages/RestoreFromBackup/CrossClusterForm/ValidationStatusDisplay';
-import { WorkspaceNameField } from '@/pages/RestoreFromBackup/CrossClusterForm/WorkspaceNameField';
+import { ImageUrlField } from '@/pages/RestoreFromBackup/ExternalRegistryForm/ImageUrlField';
+import { ValidationStatusDisplay } from '@/pages/RestoreFromBackup/ExternalRegistryForm/ValidationStatusDisplay';
+import { WorkspaceNameField } from '@/pages/RestoreFromBackup/ExternalRegistryForm/WorkspaceNameField';
 import {
   sanitizeImageUrl,
   validateImageUrlFormat,
@@ -27,7 +27,7 @@ import {
 import { useRestoreFormValidation } from '@/pages/RestoreFromBackup/useRestoreFormValidation';
 import { Debounce } from '@/services/helpers/debounce';
 
-export type CrossClusterRestoreData = {
+export type ExternalRegistryRestoreData = {
   workspaceName: string;
   imageUrl: string;
 };
@@ -35,11 +35,11 @@ export type CrossClusterRestoreData = {
 type Props = {
   initialImageUrl?: string;
   onValidateImage: (imageUrl: string) => Promise<BackupValidationResult>;
-  onValidationChange: (isValid: boolean, data: CrossClusterRestoreData | null) => void;
+  onValidationChange: (isValid: boolean, data: ExternalRegistryRestoreData | null) => void;
   actionButton: React.ReactNode;
 };
 
-export const CrossClusterRestoreForm: React.FC<Props> = ({
+export const ExternalRegistryRestoreForm: React.FC<Props> = ({
   initialImageUrl,
   onValidateImage,
   onValidationChange,

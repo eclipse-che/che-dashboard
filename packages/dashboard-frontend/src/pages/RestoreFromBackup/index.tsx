@@ -32,14 +32,14 @@ import EditorSelector from '@/components/EditorSelector';
 import Head from '@/components/Head';
 import { Spacer } from '@/components/Spacer';
 import { ConfirmationModal } from '@/pages/RestoreFromBackup/ConfirmationModal';
-import { CrossClusterRestoreData } from '@/pages/RestoreFromBackup/CrossClusterForm';
+import { DefaultRegistryRestoreData } from '@/pages/RestoreFromBackup/DefaultRegistryForm';
+import { ExternalRegistryRestoreData } from '@/pages/RestoreFromBackup/ExternalRegistryForm';
 import { RestoreMode } from '@/pages/RestoreFromBackup/helpers';
 import { RestoreModeAccordion } from '@/pages/RestoreFromBackup/RestoreModeAccordion';
-import { SameClusterRestoreData } from '@/pages/RestoreFromBackup/SameClusterForm';
 import { buildWorkspacesLocation } from '@/services/helpers/location';
 import { AppDispatch, RootState } from '@/store';
-import { fetchBackupList, validateBackupImage } from '@/store/Backups/actions';
-import { selectNamespaceBackups } from '@/store/Backups/selectors';
+import { fetchBackupConfig, fetchBackupList, validateBackupImage } from '@/store/Backups/actions';
+import { selectBackupConfig, selectNamespaceBackups } from '@/store/Backups/selectors';
 import { selectDefaultNamespace } from '@/store/InfrastructureNamespaces/selectors';
 import { selectDefaultEditor } from '@/store/ServerConfig/selectors';
 import { workspacesActionCreators } from '@/store/Workspaces';
@@ -58,7 +58,7 @@ type State = {
   isConfirmModalOpen: boolean;
   isSubmitting: boolean;
   submitError: string;
-  restoreData: SameClusterRestoreData | CrossClusterRestoreData | null;
+  restoreData: DefaultRegistryRestoreData | ExternalRegistryRestoreData | null;
   isFormValid: boolean;
 };
 
@@ -66,12 +66,23 @@ export class RestoreFromBackupPage extends React.PureComponent<Props, State> {
   constructor(props: Props) {
     super(props);
 
-    const hasInitialImage = !!props.initialBackupImageUrl;
+    const { initialBackupImageUrl, backupConfig } = props;
+
+    // Determine if this is a default registry backup
+    const isDefaultRegistry =
+      initialBackupImageUrl &&
+      backupConfig?.registry &&
+      initialBackupImageUrl.startsWith(backupConfig.registry);
 
     this.state = {
       editorDefinition: undefined,
       editorImage: undefined,
-      restoreMode: hasInitialImage ? 'cross-cluster' : 'same-cluster',
+      // Default registry → default-registry mode, external → external-registry mode, none → default-registry (default)
+      restoreMode: isDefaultRegistry
+        ? 'default-registry'
+        : initialBackupImageUrl
+          ? 'external-registry'
+          : 'default-registry',
       isConfirmModalOpen: false,
       isSubmitting: false,
       submitError: '',
@@ -92,6 +103,21 @@ export class RestoreFromBackupPage extends React.PureComponent<Props, State> {
     const namespace = defaultNamespace.name;
     if (namespace) {
       this.props.fetchBackupList({ namespace });
+      this.props.fetchBackupConfig({ namespace });
+    }
+  }
+
+  public componentDidUpdate(prevProps: Props): void {
+    const { backupConfig, initialBackupImageUrl } = this.props;
+
+    // If config just loaded and we have an initial image URL, re-evaluate the mode
+    if (!prevProps.backupConfig && backupConfig && initialBackupImageUrl) {
+      const isDefaultRegistry = initialBackupImageUrl.startsWith(backupConfig.registry);
+      const correctMode = isDefaultRegistry ? 'default-registry' : 'external-registry';
+
+      if (this.state.restoreMode !== correctMode) {
+        this.setState({ restoreMode: correctMode });
+      }
     }
   }
 
@@ -103,16 +129,16 @@ export class RestoreFromBackupPage extends React.PureComponent<Props, State> {
     });
   }
 
-  private handleSameClusterValidationChange(
+  private handleDefaultRegistryValidationChange(
     isValid: boolean,
-    data: SameClusterRestoreData | null,
+    data: DefaultRegistryRestoreData | null,
   ): void {
     this.setState({ isFormValid: isValid, restoreData: data });
   }
 
-  private handleCrossClusterValidationChange(
+  private handleExternalRegistryValidationChange(
     isValid: boolean,
-    data: CrossClusterRestoreData | null,
+    data: ExternalRegistryRestoreData | null,
   ): void {
     this.setState({ isFormValid: isValid, restoreData: data });
   }
@@ -225,13 +251,13 @@ export class RestoreFromBackupPage extends React.PureComponent<Props, State> {
               restoreMode={restoreMode}
               onChange={mode => this.handleModeChange(mode)}
               backups={this.props.backups}
-              onSameClusterValidationChange={(isValid, data) =>
-                this.handleSameClusterValidationChange(isValid, data)
+              onDefaultRegistryValidationChange={(isValid, data) =>
+                this.handleDefaultRegistryValidationChange(isValid, data)
               }
               initialImageUrl={this.props.initialBackupImageUrl}
               onValidateImage={imageUrl => this.handleValidateImage(imageUrl)}
-              onCrossClusterValidationChange={(isValid, data) =>
-                this.handleCrossClusterValidationChange(isValid, data)
+              onExternalRegistryValidationChange={(isValid, data) =>
+                this.handleExternalRegistryValidationChange(isValid, data)
               }
               actionButton={actionButton}
             />
@@ -260,6 +286,7 @@ const mapStateToProps = (state: RootState) => {
     defaultNamespace,
     backups: selectNamespaceBackups(state, namespace),
     defaultEditor: selectDefaultEditor(state),
+    backupConfig: selectBackupConfig(state),
   };
 };
 
@@ -267,6 +294,7 @@ const mapDispatchToProps = (dispatch: AppDispatch) => ({
   validateBackupImage: (params: { namespace: string; imageUrl: string }) =>
     dispatch(validateBackupImage(params)),
   fetchBackupList: (params: { namespace: string }) => dispatch(fetchBackupList(params)),
+  fetchBackupConfig: (params: { namespace: string }) => dispatch(fetchBackupConfig(params)),
   restoreFromBackup: (
     namespace: string,
     workspaceName: string,
