@@ -14,27 +14,19 @@
 
 import { BackupItem, BackupStatus, DEVWORKSPACE_BACKUP_ANNOTATIONS } from '@eclipse-che/common';
 import {
-  Button,
-  ButtonVariant,
   Dropdown,
   DropdownItem,
-  InputGroup,
   KebabToggle,
   Label,
   PageSection,
   PageSectionVariants,
-  TextInput,
-  Toolbar,
-  ToolbarContent,
-  ToolbarItem,
 } from '@patternfly/react-core';
-import { SearchIcon } from '@patternfly/react-icons';
 import { ICell, sortable, SortByDirection } from '@patternfly/react-table';
 import React from 'react';
 
 import { BackupStatusBadge } from '@/components/BackupStatusBadge';
 import { BackupsTable } from '@/pages/WorkspacesList/BackupsView/BackupsTable';
-import styles from '@/pages/WorkspacesList/BackupsView/index.module.css';
+import BackupsListToolbar from '@/pages/WorkspacesList/BackupsView/Toolbar';
 import { formatDate, formatRelativeDate } from '@/services/helpers/dates';
 import { buildRestoreFromBackupLocation } from '@/services/helpers/location';
 
@@ -278,61 +270,22 @@ export class BackupsTableView extends React.PureComponent<Props, State> {
     );
   }
 
-  private renderToolbar(): React.ReactElement {
-    const { filterValue } = this.state;
-    const { nextScheduledBackup } = this.props;
-
-    const nextBackupLabel = nextScheduledBackup
-      ? `Next scheduled: ${formatRelativeDate(new Date(nextScheduledBackup))} (${formatDate(new Date(nextScheduledBackup))})`
-      : 'No backup schedule configured';
-
-    return (
-      <Toolbar id="backups-view-toolbar" data-testid="backups-view-toolbar">
-        <ToolbarContent>
-          <ToolbarItem variant="search-filter">
-            <InputGroup>
-              <TextInput
-                name="backups-filter-input"
-                id="backups-filter-input"
-                type="search"
-                aria-label="Filter backups by workspace name"
-                placeholder="Search by workspace name"
-                value={filterValue}
-                onChange={value => this.handleFilterChange(value)}
-                data-testid="backups-filter-input"
-              />
-              <span className={styles.searchIcon}>
-                <SearchIcon />
-              </span>
-            </InputGroup>
-          </ToolbarItem>
-          <ToolbarItem>
-            <Button
-              variant={ButtonVariant.primary}
-              onClick={() => this.handleRestoreFromBackup()}
-              data-testid="restore-from-backup-button"
-            >
-              Restore Workspace
-            </Button>
-          </ToolbarItem>
-          <ToolbarItem alignment={{ default: 'alignRight' }}>
-            <span aria-label="Next scheduled backup time" data-testid="next-scheduled-backup">
-              {nextBackupLabel}
-            </span>
-          </ToolbarItem>
-        </ToolbarContent>
-      </Toolbar>
-    );
-  }
-
   public render(): React.ReactElement {
-    const { backups } = this.props;
-    const { sortBy } = this.state;
+    const { backups, nextScheduledBackup } = this.props;
+    const { sortBy, filterValue } = this.state;
 
     const filtered = this.getFilteredBackups();
     const sorted = this.getSortedBackups(filtered);
     const rows = this.buildRows(sorted);
-    const toolbar = this.renderToolbar();
+
+    const toolbar = (
+      <BackupsListToolbar
+        filterValue={filterValue}
+        nextScheduledBackup={nextScheduledBackup}
+        onFilterChange={value => this.handleFilterChange(value)}
+        onRestoreClick={() => this.handleRestoreFromBackup()}
+      />
+    );
 
     return (
       <>
