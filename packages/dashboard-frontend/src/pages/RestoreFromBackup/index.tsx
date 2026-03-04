@@ -157,20 +157,35 @@ export class RestoreFromBackupPage extends React.PureComponent<Props, State> {
     }
   }
 
+  private handleCancel(): void {
+    const location = buildWorkspacesLocation();
+    this.props.navigate(location);
+  }
+
   public render(): React.ReactElement {
     const { restoreMode, isConfirmModalOpen, isSubmitting, submitError, isFormValid, restoreData } =
       this.state;
 
     const actionButton = (
-      <Button
-        variant={ButtonVariant.primary}
-        isDisabled={!isFormValid || isSubmitting}
-        isLoading={isSubmitting}
-        onClick={() => this.handleRestoreClick()}
-        data-testid="restore-submit-button"
-      >
-        Restore Workspace
-      </Button>
+      <React.Fragment>
+        <Button
+          variant={ButtonVariant.primary}
+          isDisabled={!isFormValid || isSubmitting}
+          isLoading={isSubmitting}
+          onClick={() => this.handleRestoreClick()}
+          data-testid="restore-submit-button"
+        >
+          Restore Workspace
+        </Button>
+        <Button
+          variant={ButtonVariant.link}
+          isDisabled={isSubmitting}
+          onClick={() => this.handleCancel()}
+          data-testid="restore-cancel-button"
+        >
+          Cancel
+        </Button>
+      </React.Fragment>
     );
 
     return (

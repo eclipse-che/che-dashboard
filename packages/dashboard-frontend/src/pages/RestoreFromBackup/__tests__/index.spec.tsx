@@ -140,7 +140,12 @@ describe('RestoreFromBackupPage', () => {
       await userEvent.click(input);
       await userEvent.type(input, 'my-workspace');
 
-      expect(getRestoreSubmitButton()).not.toBeDisabled();
+      await waitFor(
+        () => {
+          expect(getRestoreSubmitButton()).not.toBeDisabled();
+        },
+        { timeout: 2000 },
+      );
     });
 
     test('should not display image preview when only workspace name is entered', async () => {
@@ -271,7 +276,10 @@ describe('RestoreFromBackupPage', () => {
       await userEvent.clear(nameInput);
       await userEvent.type(nameInput, 'restored-as-new');
 
-      await userEvent.click(getRestoreSubmitButton());
+      // Wait for button to be enabled
+      const restoreButton = getRestoreSubmitButton();
+      await waitFor(() => expect(restoreButton).not.toBeDisabled(), { timeout: 2000 });
+      await userEvent.click(restoreButton);
 
       // Wait for modal to appear
       const confirmButton = await screen.findByTestId('restore-confirm-button');
@@ -488,7 +496,9 @@ describe('RestoreFromBackupPage', () => {
       await userEvent.click(input);
       await userEvent.type(input, 'my-workspace');
 
+      // Wait for button to be enabled
       const restoreButton = getRestoreSubmitButton();
+      await waitFor(() => expect(restoreButton).not.toBeDisabled(), { timeout: 2000 });
       await userEvent.click(restoreButton);
 
       expect(screen.getByTestId('restore-confirmation-modal')).toBeInTheDocument();
@@ -502,7 +512,9 @@ describe('RestoreFromBackupPage', () => {
       await userEvent.click(input);
       await userEvent.type(input, 'my-workspace');
 
+      // Wait for button to be enabled
       const restoreButton = getRestoreSubmitButton();
+      await waitFor(() => expect(restoreButton).not.toBeDisabled(), { timeout: 2000 });
       await userEvent.click(restoreButton);
 
       expect(screen.getByTestId('confirm-workspace-name')).toHaveTextContent('my-workspace');
@@ -515,7 +527,9 @@ describe('RestoreFromBackupPage', () => {
       await userEvent.click(input);
       await userEvent.type(input, 'my-workspace');
 
+      // Wait for button to be enabled
       const restoreButton = getRestoreSubmitButton();
+      await waitFor(() => expect(restoreButton).not.toBeDisabled(), { timeout: 2000 });
       await userEvent.click(restoreButton);
 
       const cancelButton = screen.getByTestId('restore-confirm-cancel-button');
@@ -532,7 +546,9 @@ describe('RestoreFromBackupPage', () => {
       await userEvent.click(input);
       await userEvent.type(input, 'my-workspace');
 
+      // Wait for button to be enabled
       const restoreButton = getRestoreSubmitButton();
+      await waitFor(() => expect(restoreButton).not.toBeDisabled(), { timeout: 2000 });
       await userEvent.click(restoreButton);
 
       // Wait for modal to appear
