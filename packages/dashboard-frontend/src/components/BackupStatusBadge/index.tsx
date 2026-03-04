@@ -25,17 +25,12 @@ import React from 'react';
 
 import styles from '@/components/BackupStatusBadge/index.module.css';
 import { CheTooltip } from '@/components/CheTooltip';
-import { formatDate, formatRelativeDate } from '@/services/helpers/dates';
-
-export type BackupStatusBadgeSize = 'sm' | 'md' | 'lg';
-export type BackupStatusBadgeVariant = 'default' | 'minimal';
+import { formatDate } from '@/services/helpers/dates';
 
 export type Props = {
   status: BackupStatus;
   lastBackupTime?: string;
   backupImageUrl?: string;
-  size?: BackupStatusBadgeSize;
-  variant?: BackupStatusBadgeVariant;
 };
 
 const BACKUP_STATUS_LABELS: Record<BackupStatus, string> = {
@@ -120,41 +115,17 @@ function getTooltipContent(
   );
 }
 
-function getTimeLabel(status: BackupStatus, lastBackupTime?: string): string {
-  if (lastBackupTime && status !== BackupStatus.NEVER && status !== BackupStatus.UNAVAILABLE) {
-    const date = new Date(lastBackupTime);
-    return formatRelativeDate(date);
-  }
-  return '';
-}
-
 export function BackupStatusBadge(props: Props): React.ReactElement {
-  const { status, lastBackupTime, backupImageUrl, size = 'md', variant = 'default' } = props;
+  const { status, lastBackupTime, backupImageUrl } = props;
 
   const color = STATUS_COLORS[status];
   const icon = getStatusIcon(status);
   const tooltipContent = getTooltipContent(status, lastBackupTime, backupImageUrl);
-  const timeLabel = getTimeLabel(status, lastBackupTime);
 
-  const sizeClassName = styles[`size-${size}`] || '';
+  const sizeClassName = styles['size-md'] || '';
   const className = `${styles.backupStatusBadge} ${sizeClassName}`.trim();
 
   const statusLabel = BACKUP_STATUS_LABELS[status];
-  const labelText = timeLabel ? `${statusLabel} ${timeLabel}` : statusLabel;
-
-  if (variant === 'minimal') {
-    return (
-      <CheTooltip content={tooltipContent}>
-        <span
-          className={`${className} ${styles.minimal}`}
-          data-testid="backup-status-badge"
-          aria-label={`Backup status: ${statusLabel}`}
-        >
-          {icon} {labelText}
-        </span>
-      </CheTooltip>
-    );
-  }
 
   return (
     <CheTooltip content={tooltipContent}>
@@ -165,7 +136,7 @@ export function BackupStatusBadge(props: Props): React.ReactElement {
         data-testid="backup-status-badge"
         aria-label={`Backup status: ${statusLabel}`}
       >
-        {labelText}
+        {statusLabel}
       </Label>
     </CheTooltip>
   );

@@ -224,8 +224,6 @@ export function buildRow(
             status={backupInfo?.status ?? BackupStatus.NEVER}
             lastBackupTime={backupInfo?.lastBackupTime}
             backupImageUrl={backupInfo?.backupImageUrl}
-            size="sm"
-            variant="minimal"
           />
         ),
         key: 'backup-status',

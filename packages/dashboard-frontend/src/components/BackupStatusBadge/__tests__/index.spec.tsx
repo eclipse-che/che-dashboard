@@ -15,7 +15,7 @@
 import { BackupStatus } from '@eclipse-che/common';
 import React from 'react';
 
-import { BackupStatusBadge, BackupStatusBadgeSize, Props } from '@/components/BackupStatusBadge';
+import { BackupStatusBadge, Props } from '@/components/BackupStatusBadge';
 import getComponentRenderer, { screen } from '@/services/__mocks__/getComponentRenderer';
 
 jest.mock('@/services/helpers/dates', () => ({
@@ -104,49 +104,6 @@ describe('BackupStatusBadge', () => {
     });
   });
 
-  describe('relative time', () => {
-    test('should display relative time for success status with lastBackupTime', () => {
-      renderComponent({
-        status: BackupStatus.SUCCESS,
-        lastBackupTime: '2025-01-15T14:30:00Z',
-      });
-
-      const badge = screen.getByTestId('backup-status-badge');
-      expect(badge).toHaveTextContent('Success 2 hours ago');
-    });
-
-    test('should display relative time for failed status with lastBackupTime', () => {
-      renderComponent({
-        status: BackupStatus.FAILED,
-        lastBackupTime: '2025-01-15T14:30:00Z',
-      });
-
-      const badge = screen.getByTestId('backup-status-badge');
-      expect(badge).toHaveTextContent('Failed 2 hours ago');
-    });
-
-    test('should not display relative time for never status even with lastBackupTime', () => {
-      renderComponent({
-        status: BackupStatus.NEVER,
-        lastBackupTime: '2025-01-15T14:30:00Z',
-      });
-
-      const badge = screen.getByTestId('backup-status-badge');
-      expect(badge).toHaveTextContent('Never');
-      expect(badge).not.toHaveTextContent('ago');
-    });
-
-    test('should not display relative time when lastBackupTime is absent', () => {
-      renderComponent({
-        status: BackupStatus.SUCCESS,
-      });
-
-      const badge = screen.getByTestId('backup-status-badge');
-      expect(badge).toHaveTextContent('Success');
-      expect(badge).not.toHaveTextContent('ago');
-    });
-  });
-
   describe('tooltip content', () => {
     test('should include status in tooltip', () => {
       renderComponent({
@@ -196,72 +153,6 @@ describe('BackupStatusBadge', () => {
 
       const tooltip = screen.getByTestId('backup-status-tooltip-content');
       expect(tooltip).not.toHaveTextContent('never been backed up');
-    });
-  });
-
-  describe('size variants', () => {
-    const sizes: BackupStatusBadgeSize[] = ['sm', 'md', 'lg'];
-
-    sizes.forEach(size => {
-      test(`should render with size "${size}"`, () => {
-        const snapshot = createSnapshot({
-          status: BackupStatus.SUCCESS,
-          size,
-        });
-        expect(snapshot.toJSON()).toMatchSnapshot();
-      });
-    });
-
-    test('should default to "md" size when not specified', () => {
-      const withDefault = createSnapshot({
-        status: BackupStatus.SUCCESS,
-      });
-      const withMd = createSnapshot({
-        status: BackupStatus.SUCCESS,
-        size: 'md',
-      });
-      expect(withDefault.toJSON()).toEqual(withMd.toJSON());
-    });
-  });
-
-  describe('minimal variant', () => {
-    test('should render without Label wrapper', () => {
-      renderComponent({
-        status: BackupStatus.SUCCESS,
-        variant: 'minimal',
-      });
-
-      const badge = screen.getByTestId('backup-status-badge');
-      expect(badge.tagName).toBe('SPAN');
-      expect(badge).toHaveTextContent('Success');
-    });
-
-    test('should display status text with time for minimal variant', () => {
-      renderComponent({
-        status: BackupStatus.SUCCESS,
-        lastBackupTime: '2025-01-15T14:30:00Z',
-        variant: 'minimal',
-      });
-
-      const badge = screen.getByTestId('backup-status-badge');
-      expect(badge).toHaveTextContent('Success 2 hours ago');
-    });
-
-    test('snapshot: minimal success', () => {
-      const snapshot = createSnapshot({
-        status: BackupStatus.SUCCESS,
-        lastBackupTime: '2025-01-15T14:30:00Z',
-        variant: 'minimal',
-      });
-      expect(snapshot.toJSON()).toMatchSnapshot();
-    });
-
-    test('snapshot: minimal never', () => {
-      const snapshot = createSnapshot({
-        status: BackupStatus.NEVER,
-        variant: 'minimal',
-      });
-      expect(snapshot.toJSON()).toMatchSnapshot();
     });
   });
 

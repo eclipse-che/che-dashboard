@@ -225,7 +225,6 @@ export class BackupsTableView extends React.PureComponent<Props, State> {
                 status={deriveBackupStatus(backup)}
                 lastBackupTime={backup.timestamp || undefined}
                 backupImageUrl={backup.imageUrl || undefined}
-                size="sm"
               />
             </span>
           ),
