@@ -179,6 +179,8 @@ describe('Backup API Integration Tests', () => {
 
   afterEach(() => {
     jest.clearAllMocks();
+    // Clear mock implementations for these specific mocks to prevent test pollution
+    mockCustomObjectAPI.getNamespacedCustomObject.mockReset();
   });
 
   // ========================================================================
@@ -335,7 +337,7 @@ describe('Backup API Integration Tests', () => {
 
     it('should return 500 when operator config API fails', async () => {
       // getClusterBackupConfig calls getNamespacedCustomObject for operator config
-      mockCustomObjectAPI.getNamespacedCustomObject.mockRejectedValue(
+      mockCustomObjectAPI.getNamespacedCustomObject.mockRejectedValueOnce(
         new Error('Unable to connect to API server'),
       );
 
@@ -477,15 +479,18 @@ describe('Backup API Integration Tests', () => {
       ];
 
       mockAdapterListBackupImages.mockResolvedValue(allBackups);
-      mockCustomObjectAPI.listNamespacedCustomObject.mockResolvedValue({ items: [] });
-
-      // Mock chain: 1) operator config, 2) existing-ws exists, 3) deleted-ws returns 404
-      mockCustomObjectAPI.getNamespacedCustomObject
-        .mockResolvedValueOnce(createOperatorConfigResponse()) // operator config
-        .mockResolvedValueOnce({}) // existing-ws exists
-        .mockRejectedValueOnce(
-          Object.assign(new Error('Not found'), { response: { statusCode: 404 } }),
-        ); // deleted-ws doesn't exist
+      // Mock listNamespacedCustomObject to return only existing-ws (deleted-ws is absent)
+      mockCustomObjectAPI.listNamespacedCustomObject.mockResolvedValue({
+        items: [
+          {
+            metadata: {
+              name: 'existing-ws',
+              namespace,
+              annotations: {},
+            },
+          },
+        ],
+      });
 
       const res = await app.inject().get(`${baseApiPath}/namespace/${namespace}/backups`);
 
@@ -767,7 +772,7 @@ describe('Backup API Integration Tests', () => {
         sizeBytes: 1024000,
         labels: { 'backup.timestamp': '2026-02-10T12:00:00.000Z' },
       });
-      mockCustomObjectAPI.getNamespacedCustomObject.mockResolvedValue({});
+      mockCustomObjectAPI.getNamespacedCustomObject.mockResolvedValueOnce({});
 
       const res = await app
         .inject()
@@ -796,7 +801,7 @@ describe('Backup API Integration Tests', () => {
 
       const notFoundError: any = new Error('Not found');
       notFoundError.response = { statusCode: 404 };
-      mockCustomObjectAPI.getNamespacedCustomObject.mockRejectedValue(notFoundError);
+      mockCustomObjectAPI.getNamespacedCustomObject.mockRejectedValueOnce(notFoundError);
 
       const res = await app
         .inject()
@@ -817,7 +822,7 @@ describe('Backup API Integration Tests', () => {
         sizeBytes: 1024000,
         labels: {},
       });
-      mockCustomObjectAPI.getNamespacedCustomObject.mockRejectedValue(
+      mockCustomObjectAPI.getNamespacedCustomObject.mockRejectedValueOnce(
         new Error('API server timeout'),
       );
 
@@ -876,7 +881,7 @@ describe('Backup API Integration Tests', () => {
         sizeBytes: 1024000,
         labels,
       });
-      mockCustomObjectAPI.getNamespacedCustomObject.mockResolvedValue({});
+      mockCustomObjectAPI.getNamespacedCustomObject.mockResolvedValueOnce({});
 
       const res = await app
         .inject()
@@ -906,7 +911,7 @@ describe('Backup API Integration Tests', () => {
   // ========================================================================
   describe('Response Format Consistency', () => {
     it('should return consistent error format for backup-status 500', async () => {
-      mockCustomObjectAPI.getNamespacedCustomObject.mockRejectedValue(
+      mockCustomObjectAPI.getNamespacedCustomObject.mockRejectedValueOnce(
         new Error('Connection refused'),
       );
 

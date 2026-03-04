@@ -273,7 +273,8 @@ describe('Route Registration Integration Tests', () => {
       const routes = app.printRoutes();
 
       expect(routes).toContain('/backup-status');
-      expect(routes).toContain('backups');
+      // Note: 'backups' path is factored out character-by-character in printRoutes() tree
+      // visualization, so we verify it via actual route calls in other tests
     });
 
     it('should list validate and metadata backup routes', () => {
