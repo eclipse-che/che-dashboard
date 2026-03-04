@@ -14,6 +14,7 @@
 
 import { BackupItem, BackupStatus, DEVWORKSPACE_BACKUP_ANNOTATIONS } from '@eclipse-che/common';
 import {
+  Button,
   Dropdown,
   DropdownItem,
   KebabToggle,
@@ -23,12 +24,15 @@ import {
 } from '@patternfly/react-core';
 import { ICell, sortable, SortByDirection } from '@patternfly/react-table';
 import React from 'react';
+import { Link } from 'react-router-dom';
 
 import { BackupStatusBadge } from '@/components/BackupStatusBadge';
+import { CheTooltip } from '@/components/CheTooltip';
 import { BackupsTable } from '@/pages/WorkspacesList/BackupsView/BackupsTable';
 import BackupsListToolbar from '@/pages/WorkspacesList/BackupsView/Toolbar';
 import { formatDate, formatRelativeDate } from '@/services/helpers/dates';
-import { buildRestoreFromBackupLocation } from '@/services/helpers/location';
+import { buildDetailsLocation, buildRestoreFromBackupLocation } from '@/services/helpers/location';
+import { WorkspaceDetailsTab } from '@/services/helpers/types';
 
 const COLUMNS: (ICell | string)[] = [
   {
@@ -62,6 +66,7 @@ type RowData = {
 
 type Props = {
   backups: BackupItem[];
+  namespace: string;
   navigate: (location: ReturnType<typeof buildRestoreFromBackupLocation>) => void;
   nextScheduledBackup: string | undefined;
 };
@@ -180,62 +185,85 @@ export class BackupsTableView extends React.PureComponent<Props, State> {
   }
 
   private buildRows(backups: BackupItem[]): RowData[] {
-    return backups.map(backup => ({
-      cells: [
-        {
-          title: (
-            <span data-testid="backup-workspace-name">
-              {backup.workspaceName}{' '}
-              {backup.workspaceExists ? (
-                <Label color="green" isCompact data-testid="backup-workspace-active">
-                  Active
-                </Label>
-              ) : (
-                <Label color="grey" isCompact data-testid="backup-workspace-deleted">
-                  Deleted
-                </Label>
-              )}
-            </span>
-          ),
-          key: 'workspace-name',
-        },
-        {
-          title: (
-            <span
-              data-testid="backup-time"
-              title={backup.timestamp ? formatDate(new Date(backup.timestamp)) : ''}
-            >
-              {backup.timestamp ? formatRelativeDate(new Date(backup.timestamp)) : '-'}
-            </span>
-          ),
-          key: 'backup-time',
-        },
-        {
-          title: (
-            <span data-testid="backup-size">
-              {backup.sizeBytes === 0 ? '-' : formatBytes(backup.sizeBytes)}
-            </span>
-          ),
-          key: 'size',
-        },
-        {
-          title: (
-            <span data-testid="backup-status">
-              <BackupStatusBadge
-                status={deriveBackupStatus(backup)}
-                lastBackupTime={backup.timestamp || undefined}
-                backupImageUrl={backup.imageUrl || undefined}
-              />
-            </span>
-          ),
-          key: 'status',
-        },
-        {
-          title: this.buildActionsDropdown(backup),
-          key: 'actions',
-        },
-      ],
-    }));
+    const { namespace } = this.props;
+
+    return backups.map(backup => {
+      const workspaceDetailsLocation = buildDetailsLocation(
+        namespace,
+        backup.workspaceName,
+        WorkspaceDetailsTab.BACKUP,
+      );
+
+      return {
+        cells: [
+          {
+            title: (
+              <span data-testid="backup-workspace-name">
+                {backup.workspaceExists ? (
+                  <Button
+                    variant="link"
+                    component={props => <Link {...props} to={workspaceDetailsLocation} />}
+                  >
+                    {backup.workspaceName}
+                  </Button>
+                ) : (
+                  backup.workspaceName
+                )}{' '}
+                {backup.workspaceExists ? (
+                  <CheTooltip content="This workspace currently exists and can be started">
+                    <Label color="green" isCompact data-testid="backup-workspace-active">
+                      Active
+                    </Label>
+                  </CheTooltip>
+                ) : (
+                  <CheTooltip content="This workspace has been deleted, but its backup is still available">
+                    <Label color="grey" isCompact data-testid="backup-workspace-deleted">
+                      Deleted
+                    </Label>
+                  </CheTooltip>
+                )}
+              </span>
+            ),
+            key: 'workspace-name',
+          },
+          {
+            title: (
+              <span
+                data-testid="backup-time"
+                title={backup.timestamp ? formatDate(new Date(backup.timestamp)) : ''}
+              >
+                {backup.timestamp ? formatRelativeDate(new Date(backup.timestamp)) : '-'}
+              </span>
+            ),
+            key: 'backup-time',
+          },
+          {
+            title: (
+              <span data-testid="backup-size">
+                {backup.sizeBytes === 0 ? '-' : formatBytes(backup.sizeBytes)}
+              </span>
+            ),
+            key: 'size',
+          },
+          {
+            title: (
+              <span data-testid="backup-status">
+                <BackupStatusBadge
+                  status={deriveBackupStatus(backup)}
+                  lastBackupTime={backup.timestamp || undefined}
+                  backupImageUrl={backup.imageUrl || undefined}
+                />
+              </span>
+            ),
+            key: 'status',
+          },
+          {
+            title: this.buildActionsDropdown(backup),
+            key: 'actions',
+          },
+        ],
+      };
+    });
   }
 
   private buildActionsDropdown(backup: BackupItem): React.ReactElement {

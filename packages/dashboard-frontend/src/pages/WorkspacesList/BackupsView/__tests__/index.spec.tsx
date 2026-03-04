@@ -16,6 +16,7 @@ import { BackupItem, DEVWORKSPACE_BACKUP_ANNOTATIONS } from '@eclipse-che/common
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
+import { MemoryRouter } from 'react-router-dom';
 
 import { BackupsView } from '@/pages/WorkspacesList/BackupsView';
 
@@ -90,7 +91,11 @@ function getDefaultProps() {
 
 function renderComponent(propsOverrides: Partial<ReturnType<typeof getDefaultProps>> = {}) {
   const props = { ...getDefaultProps(), ...propsOverrides };
-  return render(<BackupsView {...(props as any)} />);
+  return render(
+    <MemoryRouter>
+      <BackupsView {...(props as any)} />
+    </MemoryRouter>,
+  );
 }
 
 describe('BackupsView', () => {
@@ -396,12 +401,14 @@ describe('BackupsView', () => {
       mockFetchBackupList.mockClear();
 
       rerender(
-        <BackupsView
-          {...({
-            ...getDefaultProps(),
-            namespace: 'namespace-2',
-          } as any)}
-        />,
+        <MemoryRouter>
+          <BackupsView
+            {...({
+              ...getDefaultProps(),
+              namespace: 'namespace-2',
+            } as any)}
+          />
+        </MemoryRouter>,
       );
 
       expect(mockFetchBackupList).toHaveBeenCalledWith({ namespace: 'namespace-2' });
@@ -409,24 +416,28 @@ describe('BackupsView', () => {
 
     test('should not re-fetch when namespace stays the same', () => {
       const { rerender } = render(
-        <BackupsView
-          {...({
-            ...getDefaultProps(),
-            namespace: 'test-namespace',
-          } as any)}
-        />,
+        <MemoryRouter>
+          <BackupsView
+            {...({
+              ...getDefaultProps(),
+              namespace: 'test-namespace',
+            } as any)}
+          />
+        </MemoryRouter>,
       );
 
       mockFetchBackupList.mockClear();
 
       rerender(
-        <BackupsView
-          {...({
-            ...getDefaultProps(),
-            namespace: 'test-namespace',
-            backups: mockBackups,
-          } as any)}
-        />,
+        <MemoryRouter>
+          <BackupsView
+            {...({
+              ...getDefaultProps(),
+              namespace: 'test-namespace',
+              backups: mockBackups,
+            } as any)}
+          />
+        </MemoryRouter>,
       );
 
       expect(mockFetchBackupList).not.toHaveBeenCalled();

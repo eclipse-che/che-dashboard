@@ -71,7 +71,7 @@ export class BackupsView extends React.PureComponent<Props> {
   }
 
   public render(): React.ReactElement {
-    const { isLoading, error, backups, navigate, nextScheduledBackup } = this.props;
+    const { isLoading, error, backups, namespace, navigate, nextScheduledBackup } = this.props;
 
     if (isLoading) {
       return this.renderLoading();
@@ -101,6 +101,7 @@ export class BackupsView extends React.PureComponent<Props> {
         )}
         <BackupsTableView
           backups={backups}
+          namespace={namespace}
           navigate={navigate}
           nextScheduledBackup={nextScheduledBackup}
         />
