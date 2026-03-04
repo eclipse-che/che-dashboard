@@ -46,7 +46,7 @@ export class WorkspaceNameField extends React.PureComponent<Props> {
               placeholder="my-workspace"
               value={value}
               validated={validated}
-              onChange={value => onChange(value)}
+              onChange={(_value: string) => onChange(_value)}
             />
 
             {actionButton}
