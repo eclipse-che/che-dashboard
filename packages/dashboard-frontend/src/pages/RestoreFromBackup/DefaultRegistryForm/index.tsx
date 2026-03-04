@@ -28,12 +28,14 @@ export type DefaultRegistryRestoreData = {
 
 type Props = {
   backups: BackupItem[];
+  existingWorkspaceNames: Set<string>;
   onValidationChange: (isValid: boolean, data: DefaultRegistryRestoreData | null) => void;
   actionButton: React.ReactNode;
 };
 
 export const DefaultRegistryRestoreForm: React.FC<Props> = ({
   backups,
+  existingWorkspaceNames,
   onValidationChange,
   actionButton,
 }) => {
@@ -43,16 +45,17 @@ export const DefaultRegistryRestoreForm: React.FC<Props> = ({
     workspaceName,
     workspaceNameValidated,
     workspaceNameError,
+    workspaceNameWarning,
     setWorkspaceName,
     handleWorkspaceNameChange,
-  } = useRestoreFormValidation();
+  } = useRestoreFormValidation(existingWorkspaceNames, selectedBackup?.workspaceName);
 
   // Determine validity and notify parent
   useEffect(() => {
-    const nameConflict =
-      selectedBackup?.workspaceExists && workspaceName === selectedBackup.workspaceName;
-    const isValid = workspaceNameValidated === ValidatedOptions.success && !nameConflict;
-
+    // Allow restore with both success and warning states
+    const isValid =
+      workspaceNameValidated === ValidatedOptions.success ||
+      workspaceNameValidated === ValidatedOptions.warning;
     const imageUrl = selectedBackup ? selectedBackup.imageUrl : '';
 
     if (isValid) {
@@ -70,6 +73,16 @@ export const DefaultRegistryRestoreForm: React.FC<Props> = ({
     }
   };
 
+  // Re-validate when selectedBackup or existingWorkspaceNames changes
+  // (to update warning based on new context)
+  useEffect(() => {
+    if (workspaceName) {
+      // Force re-validation by calling setWorkspaceName again
+      // This ensures the validation logic re-runs with updated selectedBackupWorkspaceName
+      setWorkspaceName(workspaceName);
+    }
+  }, [selectedBackup, existingWorkspaceNames, workspaceName, setWorkspaceName]);
+
   const imageUrl = selectedBackup ? selectedBackup.imageUrl : '';
 
   return (
@@ -77,7 +90,6 @@ export const DefaultRegistryRestoreForm: React.FC<Props> = ({
       <BackupSelectorField
         backups={backups}
         selectedBackup={selectedBackup}
-        workspaceName={workspaceName}
         onChange={backup => handleBackupChange(backup)}
       />
 
@@ -85,6 +97,7 @@ export const DefaultRegistryRestoreForm: React.FC<Props> = ({
         value={workspaceName}
         validated={workspaceNameValidated}
         error={workspaceNameError}
+        warning={workspaceNameWarning}
         onChange={value => handleWorkspaceNameChange(value)}
         actionButton={actionButton}
       />

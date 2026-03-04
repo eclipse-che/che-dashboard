@@ -43,6 +43,7 @@ import { selectBackupConfig, selectNamespaceBackups } from '@/store/Backups/sele
 import { selectDefaultNamespace } from '@/store/InfrastructureNamespaces/selectors';
 import { selectDefaultEditor } from '@/store/ServerConfig/selectors';
 import { workspacesActionCreators } from '@/store/Workspaces';
+import { selectAllWorkspaces } from '@/store/Workspaces/selectors';
 
 type MappedProps = ConnectedProps<typeof connector>;
 
@@ -183,35 +184,20 @@ export class RestoreFromBackupPage extends React.PureComponent<Props, State> {
     }
   }
 
-  private handleCancel(): void {
-    const location = buildWorkspacesLocation();
-    this.props.navigate(location);
-  }
-
   public render(): React.ReactElement {
     const { restoreMode, isConfirmModalOpen, isSubmitting, submitError, isFormValid, restoreData } =
       this.state;
 
     const actionButton = (
-      <React.Fragment>
-        <Button
-          variant={ButtonVariant.primary}
-          isDisabled={!isFormValid || isSubmitting}
-          isLoading={isSubmitting}
-          onClick={() => this.handleRestoreClick()}
-          data-testid="restore-submit-button"
-        >
-          Restore Workspace
-        </Button>
-        <Button
-          variant={ButtonVariant.link}
-          isDisabled={isSubmitting}
-          onClick={() => this.handleCancel()}
-          data-testid="restore-cancel-button"
-        >
-          Cancel
-        </Button>
-      </React.Fragment>
+      <Button
+        variant={ButtonVariant.primary}
+        isDisabled={!isFormValid || isSubmitting}
+        isLoading={isSubmitting}
+        onClick={() => this.handleRestoreClick()}
+        data-testid="restore-submit-button"
+      >
+        Restore Workspace
+      </Button>
     );
 
     return (
@@ -251,6 +237,7 @@ export class RestoreFromBackupPage extends React.PureComponent<Props, State> {
               restoreMode={restoreMode}
               onChange={mode => this.handleModeChange(mode)}
               backups={this.props.backups}
+              existingWorkspaceNames={this.props.existingWorkspaceNames}
               onDefaultRegistryValidationChange={(isValid, data) =>
                 this.handleDefaultRegistryValidationChange(isValid, data)
               }
@@ -282,11 +269,15 @@ export class RestoreFromBackupPage extends React.PureComponent<Props, State> {
 const mapStateToProps = (state: RootState) => {
   const defaultNamespace = selectDefaultNamespace(state);
   const namespace = defaultNamespace.name;
+  const allWorkspaces = selectAllWorkspaces(state);
+  const existingWorkspaceNames = new Set(allWorkspaces.map(ws => ws.name));
+
   return {
     defaultNamespace,
     backups: selectNamespaceBackups(state, namespace),
     defaultEditor: selectDefaultEditor(state),
     backupConfig: selectBackupConfig(state),
+    existingWorkspaceNames,
   };
 };
 

@@ -34,6 +34,7 @@ export type ExternalRegistryRestoreData = {
 
 type Props = {
   initialImageUrl?: string;
+  existingWorkspaceNames: Set<string>;
   onValidateImage: (imageUrl: string) => Promise<BackupValidationResult>;
   onValidationChange: (isValid: boolean, data: ExternalRegistryRestoreData | null) => void;
   actionButton: React.ReactNode;
@@ -41,6 +42,7 @@ type Props = {
 
 export const ExternalRegistryRestoreForm: React.FC<Props> = ({
   initialImageUrl,
+  existingWorkspaceNames,
   onValidateImage,
   onValidationChange,
   actionButton,
@@ -59,9 +61,10 @@ export const ExternalRegistryRestoreForm: React.FC<Props> = ({
     workspaceName,
     workspaceNameValidated,
     workspaceNameError,
+    workspaceNameWarning,
     setWorkspaceName,
     handleWorkspaceNameChange,
-  } = useRestoreFormValidation();
+  } = useRestoreFormValidation(existingWorkspaceNames);
 
   // Debounce for async validation
   const [debounce] = useState(() => new Debounce());
@@ -122,8 +125,11 @@ export const ExternalRegistryRestoreForm: React.FC<Props> = ({
 
   // Notify parent of validation state
   useEffect(() => {
+    // Allow restore with both success and warning states
     const isValid =
-      validationState === 'valid' && workspaceNameValidated === ValidatedOptions.success;
+      validationState === 'valid' &&
+      (workspaceNameValidated === ValidatedOptions.success ||
+        workspaceNameValidated === ValidatedOptions.warning);
 
     if (isValid) {
       onValidationChange(true, { workspaceName, imageUrl });
@@ -167,6 +173,7 @@ export const ExternalRegistryRestoreForm: React.FC<Props> = ({
         value={workspaceName}
         validated={workspaceNameValidated}
         error={workspaceNameError}
+        warning={workspaceNameWarning}
         onChange={handleWorkspaceNameChange}
         actionButton={actionButton}
       />
