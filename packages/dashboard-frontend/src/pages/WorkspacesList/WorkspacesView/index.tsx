@@ -28,7 +28,7 @@ import NothingFoundEmptyState from '@/pages/WorkspacesList/EmptyState/NothingFou
 import NoWorkspacesEmptyState from '@/pages/WorkspacesList/EmptyState/NoWorkspaces';
 import styles from '@/pages/WorkspacesList/index.module.css';
 import { buildRows, RowData } from '@/pages/WorkspacesList/Rows';
-import WorkspacesListToolbar from '@/pages/WorkspacesList/Toolbar';
+import WorkspacesListToolbar from '@/pages/WorkspacesList/WorkspacesView/Toolbar';
 import { WorkspacesTable } from '@/pages/WorkspacesList/WorkspacesView/WorkspacesTable';
 import { BrandingData } from '@/services/bootstrap/branding.constant';
 import devfileApi from '@/services/devfileApi';
