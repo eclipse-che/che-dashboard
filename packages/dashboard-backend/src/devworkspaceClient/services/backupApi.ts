@@ -23,6 +23,7 @@ import * as k8s from '@kubernetes/client-node';
 import { V1JobList } from '@kubernetes/client-node';
 import cron from 'cron-parser';
 
+import { dwoConfigName, dwoNamespace } from '@/constants/config';
 import { createError } from '@/devworkspaceClient/services/helpers/createError';
 import {
   BatchV1API,
@@ -39,8 +40,6 @@ const BACKUP_STATUS_ERROR_LABEL = 'BACKUP_STATUS_ERROR';
 const DEVWORKSPACE_OPERATOR_CONFIG_GROUP = 'controller.devfile.io';
 const DEVWORKSPACE_OPERATOR_CONFIG_VERSION = 'v1alpha1';
 const DEVWORKSPACE_OPERATOR_CONFIG_PLURAL = 'devworkspaceoperatorconfigs';
-const DEVWORKSPACE_OPERATOR_CONFIG_NAME = 'devworkspace-operator-config';
-const DEVWORKSPACE_OPERATOR_CONFIG_NAMESPACE = 'openshift-operators';
 
 const DEVWORKSPACE_GROUP = 'workspace.devfile.io';
 const DEVWORKSPACE_VERSION = 'v1alpha2';
@@ -88,9 +87,9 @@ export class BackupApiService {
       const response = await this.customObjectAPI.getNamespacedCustomObject({
         group: DEVWORKSPACE_OPERATOR_CONFIG_GROUP,
         version: DEVWORKSPACE_OPERATOR_CONFIG_VERSION,
-        namespace: DEVWORKSPACE_OPERATOR_CONFIG_NAMESPACE,
+        namespace: dwoNamespace,
         plural: DEVWORKSPACE_OPERATOR_CONFIG_PLURAL,
-        name: DEVWORKSPACE_OPERATOR_CONFIG_NAME,
+        name: dwoConfigName,
       });
 
       // Response might be wrapped in { body: ... } by retryableExec

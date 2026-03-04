@@ -132,7 +132,7 @@ describe('BackupApiService', () => {
       expect(mockCustomObjectAPI.getNamespacedCustomObject).toHaveBeenCalledWith({
         group: 'controller.devfile.io',
         version: 'v1alpha1',
-        namespace: 'openshift-operators',
+        namespace: 'eclipse-che',
         plural: 'devworkspaceoperatorconfigs',
         name: 'devworkspace-operator-config',
       });

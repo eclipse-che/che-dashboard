@@ -46,27 +46,18 @@ function validateNumericConfig(
 }
 
 /**
- * Validates registry adapter type
- * Returns default if value is invalid
+ * Namespace where CheCluster CR and DevWorkspaceOperatorConfig live.
+ * Reads from the same env var the dashboard pod already receives.
+ * Env: CHECLUSTER_CR_NAMESPACE
  */
-function validateRegistryAdapter(envValue: string | undefined, defaultValue: string): string {
-  const validAdapters = ['openshift', 'docker', 'custom'];
-  if (!envValue || !validAdapters.includes(envValue)) {
-    return defaultValue;
-  }
-  return envValue;
-}
+export const dwoNamespace = process.env.CHECLUSTER_CR_NAMESPACE ?? 'eclipse-che';
 
 /**
- * Backup registry adapter type
- * Valid values: "openshift", "docker", "custom"
- * Default: "openshift"
- * Env: BACKUP_REGISTRY_ADAPTER
+ * Name of the DevWorkspaceOperatorConfig resource.
+ * Default: 'devworkspace-operator-config'. Override when the DWOC uses a different name.
+ * Env: DWO_CONFIG_NAME
  */
-export const backupRegistryAdapter = validateRegistryAdapter(
-  process.env.BACKUP_REGISTRY_ADAPTER,
-  'openshift',
-);
+export const dwoConfigName = process.env.DWO_CONFIG_NAME ?? 'devworkspace-operator-config';
 
 /**
  * Backup list default page size

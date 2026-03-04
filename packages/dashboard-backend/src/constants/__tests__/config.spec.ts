@@ -24,35 +24,31 @@ describe('Backup Configuration Environment Variables', () => {
     process.env = originalEnv;
   });
 
-  describe('backupRegistryAdapter', () => {
-    it('should use default value "openshift" when env var not set', () => {
-      delete process.env.BACKUP_REGISTRY_ADAPTER;
+  describe('dwoNamespace', () => {
+    it('should use default value "eclipse-che" when env var not set', () => {
+      delete process.env.CHECLUSTER_CR_NAMESPACE;
       const config = jest.requireActual<typeof import('../config')>('../config');
-      expect(config.backupRegistryAdapter).toBe('openshift');
+      expect(config.dwoNamespace).toBe('eclipse-che');
     });
 
-    it('should accept valid value "docker"', () => {
-      process.env.BACKUP_REGISTRY_ADAPTER = 'docker';
+    it('should read from CHECLUSTER_CR_NAMESPACE env var', () => {
+      process.env.CHECLUSTER_CR_NAMESPACE = 'openshift-operators';
       const config = jest.requireActual<typeof import('../config')>('../config');
-      expect(config.backupRegistryAdapter).toBe('docker');
+      expect(config.dwoNamespace).toBe('openshift-operators');
+    });
+  });
+
+  describe('dwoConfigName', () => {
+    it('should use default value "devworkspace-operator-config" when env var not set', () => {
+      delete process.env.DWO_CONFIG_NAME;
+      const config = jest.requireActual<typeof import('../config')>('../config');
+      expect(config.dwoConfigName).toBe('devworkspace-operator-config');
     });
 
-    it('should accept valid value "custom"', () => {
-      process.env.BACKUP_REGISTRY_ADAPTER = 'custom';
+    it('should accept custom config name from env var', () => {
+      process.env.DWO_CONFIG_NAME = 'my-custom-config';
       const config = jest.requireActual<typeof import('../config')>('../config');
-      expect(config.backupRegistryAdapter).toBe('custom');
-    });
-
-    it('should fall back to default for invalid value', () => {
-      process.env.BACKUP_REGISTRY_ADAPTER = 'invalid-adapter';
-      const config = jest.requireActual<typeof import('../config')>('../config');
-      expect(config.backupRegistryAdapter).toBe('openshift');
-    });
-
-    it('should fall back to default for empty string', () => {
-      process.env.BACKUP_REGISTRY_ADAPTER = '';
-      const config = jest.requireActual<typeof import('../config')>('../config');
-      expect(config.backupRegistryAdapter).toBe('openshift');
+      expect(config.dwoConfigName).toBe('my-custom-config');
     });
   });
 
@@ -170,34 +166,34 @@ describe('Backup Configuration Environment Variables', () => {
 
   describe('Multiple environment variables', () => {
     it('should handle all valid custom values simultaneously', () => {
-      process.env.BACKUP_REGISTRY_ADAPTER = 'docker';
+      process.env.CHECLUSTER_CR_NAMESPACE = 'custom-ns';
       process.env.BACKUP_LIST_PAGE_SIZE = '75';
       process.env.BACKUP_REGISTRY_TIMEOUT = '120';
 
       const config = jest.requireActual<typeof import('../config')>('../config');
-      expect(config.backupRegistryAdapter).toBe('docker');
+      expect(config.dwoNamespace).toBe('custom-ns');
       expect(config.backupListPageSize).toBe(75);
       expect(config.backupRegistryTimeout).toBe(120);
     });
 
     it('should use defaults for all when none are set', () => {
-      delete process.env.BACKUP_REGISTRY_ADAPTER;
+      delete process.env.CHECLUSTER_CR_NAMESPACE;
       delete process.env.BACKUP_LIST_PAGE_SIZE;
       delete process.env.BACKUP_REGISTRY_TIMEOUT;
 
       const config = jest.requireActual<typeof import('../config')>('../config');
-      expect(config.backupRegistryAdapter).toBe('openshift');
+      expect(config.dwoNamespace).toBe('eclipse-che');
       expect(config.backupListPageSize).toBe(50);
       expect(config.backupRegistryTimeout).toBe(30);
     });
 
     it('should handle mix of valid and invalid values', () => {
-      process.env.BACKUP_REGISTRY_ADAPTER = 'custom';
+      process.env.CHECLUSTER_CR_NAMESPACE = 'my-ns';
       process.env.BACKUP_LIST_PAGE_SIZE = '200'; // invalid - out of range
       process.env.BACKUP_REGISTRY_TIMEOUT = '150'; // valid
 
       const config = jest.requireActual<typeof import('../config')>('../config');
-      expect(config.backupRegistryAdapter).toBe('custom');
+      expect(config.dwoNamespace).toBe('my-ns');
       expect(config.backupListPageSize).toBe(50); // default
       expect(config.backupRegistryTimeout).toBe(150);
     });
