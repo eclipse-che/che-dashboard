@@ -14,21 +14,12 @@
 
 import {
   BACKUP_ERROR_CODES,
-  BackupStatus,
+  BACKUP_IMAGE_DEFAULT_TAG,
   DEVWORKSPACE_BACKUP_ANNOTATIONS,
+  DEVWORKSPACE_BACKUP_LABELS,
 } from '@eclipse-che/common';
 
-import {
-  IBackupImage,
-  IImageMetadata,
-} from '@/devworkspaceClient/services/helpers/registryAdapters/IRegistryAdapter';
 import { RegistryApiService } from '@/devworkspaceClient/services/registryApi';
-
-const mockAdapter = {
-  listBackupImages: jest.fn(),
-  validateImageAccessibility: jest.fn(),
-  getImageMetadata: jest.fn(),
-};
 
 const mockCustomObjectsApi = {
   getNamespacedCustomObject: jest.fn(),
@@ -44,26 +35,42 @@ describe('RegistryApiService', () => {
 
   const namespace = 'user-che';
   const workspaceName = 'my-workspace';
-  const imageUrl = `image-registry.openshift-image-registry.svc:5000/${namespace}/${workspaceName}:backup-20260210-120000`;
+  const registryPath = 'image-registry.openshift-image-registry.svc:5000';
+  const imageUrl = `${registryPath}/${namespace}/${workspaceName}:${BACKUP_IMAGE_DEFAULT_TAG}`;
+
+  // Minimal mock ImageStream shape — only what listImageStreams() uses
+  const mockImageStream = {
+    metadata: {
+      name: workspaceName,
+      labels: { [DEVWORKSPACE_BACKUP_LABELS.WORKSPACE_ID]: 'workspace1234567890' },
+    },
+    status: {
+      dockerImageRepository: `${registryPath}/${namespace}/${workspaceName}`,
+      tags: [{ tag: BACKUP_IMAGE_DEFAULT_TAG, items: [{ created: '2026-02-10T12:00:00.000Z' }] }],
+    },
+  };
 
   beforeEach(() => {
-    service = new RegistryApiService(mockKubeConfig as any, mockAdapter as any);
+    service = new RegistryApiService(mockKubeConfig as any);
     jest.clearAllMocks();
-    // Default: workspace exists (for doesWorkspaceExist checks)
-    // and DWOC config returns a valid registry path (for getBackupRegistryPath)
+    // Default: DWOC returns a valid registry path
     mockCustomObjectsApi.getNamespacedCustomObject.mockResolvedValue({
       config: {
         workspace: {
           backupCronJob: {
             registry: {
-              path: 'image-registry.openshift-image-registry.svc:5000',
+              path: registryPath,
             },
           },
         },
       },
     });
-    // Default: no DevWorkspaces with backup annotations
+    // Default: no imagestreams and no devworkspaces
     mockCustomObjectsApi.listNamespacedCustomObject.mockResolvedValue({ items: [] });
+  });
+
+  afterEach(() => {
+    jest.clearAllMocks();
   });
 
   describe('K8s DNS-1123 Validation', () => {
@@ -90,31 +97,28 @@ describe('RegistryApiService', () => {
     });
 
     it('should accept valid namespace', async () => {
-      mockAdapter.listBackupImages.mockResolvedValue([]);
       await expect(service.listBackupImages('user-che')).resolves.toBeDefined();
     });
   });
 
   describe('listBackupImages', () => {
-    const mockIBackupImages: IBackupImage[] = [
-      {
-        workspaceName: 'my-workspace',
-        imageUrl: `${imageUrl}-1`,
-        timestamp: '2026-02-10T12:00:00.000Z',
-        sizeBytes: 1024000,
-        labels: {},
-      },
-      {
-        workspaceName: 'my-workspace-2',
-        imageUrl: `${imageUrl}-2`,
-        timestamp: '2026-02-09T12:00:00.000Z',
-        sizeBytes: 2048000,
-        labels: {},
-      },
-    ];
-
     it('should list backup images', async () => {
-      mockAdapter.listBackupImages.mockResolvedValue(mockIBackupImages);
+      const mockImageStream2 = {
+        metadata: {
+          name: 'my-workspace-2',
+          labels: { [DEVWORKSPACE_BACKUP_LABELS.WORKSPACE_ID]: 'workspace-id-2' },
+        },
+        status: {
+          dockerImageRepository: `${registryPath}/${namespace}/my-workspace-2`,
+          tags: [
+            { tag: BACKUP_IMAGE_DEFAULT_TAG, items: [{ created: '2026-02-09T12:00:00.000Z' }] },
+          ],
+        },
+      };
+
+      mockCustomObjectsApi.listNamespacedCustomObject
+        .mockResolvedValueOnce({ items: [mockImageStream, mockImageStream2] }) // imagestreams
+        .mockResolvedValueOnce({ items: [] }); // devworkspaces
 
       const result = await service.listBackupImages(namespace);
 
@@ -122,21 +126,28 @@ describe('RegistryApiService', () => {
       expect(result.total).toBe(2);
       expect(result.page).toBe(1);
       expect(result.perPage).toBe(2);
-      expect(mockAdapter.listBackupImages).toHaveBeenCalledWith(namespace);
+      expect(mockCustomObjectsApi.listNamespacedCustomObject).toHaveBeenCalledWith(
+        expect.objectContaining({ plural: 'imagestreams' }),
+      );
     });
 
     it('should filter by workspace name when provided', async () => {
-      const mixedWorkspaces: IBackupImage[] = [
-        ...mockIBackupImages,
-        {
-          workspaceName: 'other-workspace',
-          imageUrl: `${imageUrl}-other`,
-          timestamp: '2026-02-08T12:00:00.000Z',
-          sizeBytes: 1024000,
-          labels: {},
+      const mockImageStreamOther = {
+        metadata: {
+          name: 'other-workspace',
+          labels: { [DEVWORKSPACE_BACKUP_LABELS.WORKSPACE_ID]: 'workspace-other-id' },
         },
-      ];
-      mockAdapter.listBackupImages.mockResolvedValue(mixedWorkspaces);
+        status: {
+          dockerImageRepository: `${registryPath}/${namespace}/other-workspace`,
+          tags: [
+            { tag: BACKUP_IMAGE_DEFAULT_TAG, items: [{ created: '2026-02-08T12:00:00.000Z' }] },
+          ],
+        },
+      };
+
+      mockCustomObjectsApi.listNamespacedCustomObject
+        .mockResolvedValueOnce({ items: [mockImageStream, mockImageStreamOther] }) // imagestreams
+        .mockResolvedValueOnce({ items: [] }); // devworkspaces
 
       const result = await service.listBackupImages(namespace, workspaceName);
 
@@ -145,27 +156,21 @@ describe('RegistryApiService', () => {
     });
 
     it('should enrich results with workspaceExists field', async () => {
-      mockAdapter.listBackupImages.mockResolvedValue(mockIBackupImages);
-
-      // Both workspaces exist in the DW list — Set lookup returns true for each
-      mockCustomObjectsApi.listNamespacedCustomObject.mockResolvedValue({
-        items: [
-          { metadata: { name: 'my-workspace', annotations: {} } },
-          { metadata: { name: 'my-workspace-2', annotations: {} } },
-        ],
-      });
+      mockCustomObjectsApi.listNamespacedCustomObject
+        .mockResolvedValueOnce({ items: [mockImageStream] }) // imagestreams
+        .mockResolvedValueOnce({
+          items: [{ metadata: { name: 'my-workspace', annotations: {} } }],
+        }); // devworkspaces
 
       const result = await service.listBackupImages(namespace);
 
       expect(result.backups[0].workspaceExists).toBe(true);
-      expect(result.backups[1].workspaceExists).toBe(true);
     });
 
     it('should detect when workspace does not exist', async () => {
-      mockAdapter.listBackupImages.mockResolvedValue([mockIBackupImages[0]]);
-
-      // Default empty DW list: workspace absent from Set → workspaceExists = false
-      // (no getNamespacedCustomObject call needed)
+      mockCustomObjectsApi.listNamespacedCustomObject
+        .mockResolvedValueOnce({ items: [mockImageStream] }) // imagestreams
+        .mockResolvedValueOnce({ items: [] }); // devworkspaces — workspace absent from Set
 
       const result = await service.listBackupImages(namespace);
 
@@ -175,30 +180,19 @@ describe('RegistryApiService', () => {
     it('should default LAST_BACKUP_SUCCESSFUL to true when ImageStream exists but DevWorkspace has no backup annotations', async () => {
       // Post-restore scenario: workspace was restored from backup, new DevWorkspace
       // exists but has no backup annotations yet. ImageStream still exists.
-      const postRestoreImage: IBackupImage[] = [
-        {
-          workspaceName: 'restored-workspace',
-          imageUrl: `${imageUrl}-restored`,
-          timestamp: '2026-02-10T12:00:00.000Z',
-          sizeBytes: 1024000,
-          labels: {},
-        },
-      ];
-      mockAdapter.listBackupImages.mockResolvedValue(postRestoreImage);
-
-      // DevWorkspace list returns a DW WITHOUT LAST_BACKUP_FINISHED_AT annotation,
-      // so listDevWorkspacesWithBackups() filters it out
-      mockCustomObjectsApi.listNamespacedCustomObject.mockResolvedValue({
-        items: [
-          {
-            metadata: {
-              name: 'restored-workspace',
-              namespace,
-              annotations: {},
+      mockCustomObjectsApi.listNamespacedCustomObject
+        .mockResolvedValueOnce({ items: [mockImageStream] }) // imagestreams
+        .mockResolvedValueOnce({
+          items: [
+            {
+              metadata: {
+                name: workspaceName,
+                namespace,
+                annotations: {},
+              },
             },
-          },
-        ],
-      });
+          ],
+        }); // devworkspaces — DW WITHOUT LAST_BACKUP_FINISHED_AT
 
       const result = await service.listBackupImages(namespace);
 
@@ -211,34 +205,37 @@ describe('RegistryApiService', () => {
 
     it('should use DevWorkspace annotation over default when annotation is present', async () => {
       // DevWorkspace has LAST_BACKUP_SUCCESSFUL: 'false' — annotation must win over the default 'true'
-      const imageWithLabels: IBackupImage[] = [
-        {
-          workspaceName: 'failed-backup-workspace',
-          imageUrl: `${imageUrl}-failed`,
-          timestamp: '2026-02-10T12:00:00.000Z',
-          sizeBytes: 1024000,
-          labels: {},
+      const failedWorkspaceIS = {
+        metadata: {
+          name: 'failed-backup-workspace',
+          labels: { [DEVWORKSPACE_BACKUP_LABELS.WORKSPACE_ID]: 'ws-failed-id' },
         },
-      ];
-      mockAdapter.listBackupImages.mockResolvedValue(imageWithLabels);
+        status: {
+          dockerImageRepository: `${registryPath}/${namespace}/failed-backup-workspace`,
+          tags: [
+            { tag: BACKUP_IMAGE_DEFAULT_TAG, items: [{ created: '2026-02-10T12:00:00.000Z' }] },
+          ],
+        },
+      };
 
-      // DevWorkspace has both LAST_BACKUP_FINISHED_AT and LAST_BACKUP_SUCCESSFUL: 'false'
-      mockCustomObjectsApi.listNamespacedCustomObject.mockResolvedValue({
-        items: [
-          {
-            metadata: {
-              name: 'failed-backup-workspace',
-              namespace,
-              annotations: {
-                [DEVWORKSPACE_BACKUP_ANNOTATIONS.LAST_BACKUP_FINISHED_AT]:
-                  '2026-02-10T12:00:00.000Z',
-                [DEVWORKSPACE_BACKUP_ANNOTATIONS.LAST_BACKUP_SUCCESSFUL]: 'false',
-                [DEVWORKSPACE_BACKUP_ANNOTATIONS.LAST_BACKUP_ERROR]: 'OOMKilled',
+      mockCustomObjectsApi.listNamespacedCustomObject
+        .mockResolvedValueOnce({ items: [failedWorkspaceIS] }) // imagestreams
+        .mockResolvedValueOnce({
+          items: [
+            {
+              metadata: {
+                name: 'failed-backup-workspace',
+                namespace,
+                annotations: {
+                  [DEVWORKSPACE_BACKUP_ANNOTATIONS.LAST_BACKUP_FINISHED_AT]:
+                    '2026-02-10T12:00:00.000Z',
+                  [DEVWORKSPACE_BACKUP_ANNOTATIONS.LAST_BACKUP_SUCCESSFUL]: 'false',
+                  [DEVWORKSPACE_BACKUP_ANNOTATIONS.LAST_BACKUP_ERROR]: 'OOMKilled',
+                },
               },
             },
-          },
-        ],
-      });
+          ],
+        }); // devworkspaces
 
       const result = await service.listBackupImages(namespace);
 
@@ -253,20 +250,9 @@ describe('RegistryApiService', () => {
 
     it('should default LAST_BACKUP_SUCCESSFUL to true when workspace is deleted', async () => {
       // Deleted workspace: ImageStream exists but DevWorkspace was deleted.
-      // No DevWorkspace in the list, doesWorkspaceExist returns false.
-      const orphanImage: IBackupImage[] = [
-        {
-          workspaceName: 'deleted-workspace',
-          imageUrl: `${imageUrl}-deleted`,
-          timestamp: '2026-02-10T12:00:00.000Z',
-          sizeBytes: 2048000,
-          labels: {},
-        },
-      ];
-      mockAdapter.listBackupImages.mockResolvedValue(orphanImage);
-
-      // No DevWorkspaces at all — workspace absent from Set → workspaceExists = false
-      mockCustomObjectsApi.listNamespacedCustomObject.mockResolvedValue({ items: [] });
+      mockCustomObjectsApi.listNamespacedCustomObject
+        .mockResolvedValueOnce({ items: [mockImageStream] }) // imagestreams
+        .mockResolvedValueOnce({ items: [] }); // devworkspaces — no DWs at all
 
       const result = await service.listBackupImages(namespace);
 
@@ -278,72 +264,62 @@ describe('RegistryApiService', () => {
     });
 
     it('should filter out UNAVAILABLE backups with no timestamp (no backup completed yet)', async () => {
-      // Adapter returns a tagless ImageStream with UNAVAILABLE status and empty timestamp
-      const unavailableImage: IBackupImage[] = [
-        {
-          workspaceName: 'tagless-workspace',
-          imageUrl: '',
-          timestamp: '', // Empty - no backup has completed yet
-          sizeBytes: 0,
-          labels: {
-            [DEVWORKSPACE_BACKUP_ANNOTATIONS.LAST_BACKUP_SUCCESSFUL]: BackupStatus.UNAVAILABLE,
-          },
+      // ImageStream exists but has no :latest tag — UNAVAILABLE with empty timestamp
+      const taglessImageStream = {
+        metadata: {
+          name: 'tagless-workspace',
+          labels: { [DEVWORKSPACE_BACKUP_LABELS.WORKSPACE_ID]: 'ws-tagless-id' },
         },
-      ];
-      mockAdapter.listBackupImages.mockResolvedValue(unavailableImage);
+        status: {
+          tags: [{ tag: 'v1.0.0', items: [{ created: '2026-02-01T10:00:00Z' }] }],
+        },
+      };
 
-      // No DevWorkspaces with backup annotations
-      mockCustomObjectsApi.listNamespacedCustomObject.mockResolvedValue({ items: [] });
+      mockCustomObjectsApi.listNamespacedCustomObject
+        .mockResolvedValueOnce({ items: [taglessImageStream] }) // imagestreams
+        .mockResolvedValueOnce({ items: [] }); // devworkspaces
 
       const result = await service.listBackupImages(namespace);
 
-      // Should be filtered out - no backup has completed (empty timestamp)
+      // Should be filtered out — no backup has completed (empty timestamp)
       expect(result.backups).toHaveLength(0);
     });
 
     it('should use DevWorkspace annotation timestamp instead of ImageStream creation time for UNAVAILABLE backups', async () => {
-      // Bug: When ImageStream has no :latest tag (UNAVAILABLE), the adapter returns
-      // imageStream.metadata.creationTimestamp (when DWO created the empty ImageStream).
-      // But if a backup HAS finished, the DevWorkspace LAST_BACKUP_FINISHED_AT annotation
-      // should override the ImageStream creation time.
-      const imageStreamCreationTime = '2026-03-04T08:00:00Z';
       const actualBackupTime = '2026-02-15T14:30:00Z';
 
-      const unavailableImage: IBackupImage[] = [
-        {
-          workspaceName: 'che-dashboard-1111',
-          imageUrl: '', // UNAVAILABLE - no :latest tag
-          timestamp: imageStreamCreationTime, // ImageStream creation time (WRONG)
-          sizeBytes: 0,
-          labels: {
-            [DEVWORKSPACE_BACKUP_ANNOTATIONS.LAST_BACKUP_SUCCESSFUL]: BackupStatus.UNAVAILABLE,
-          },
+      const unavailableIS = {
+        metadata: {
+          name: 'che-dashboard-1111',
+          labels: { [DEVWORKSPACE_BACKUP_LABELS.WORKSPACE_ID]: 'ws-unavailable-id' },
         },
-      ];
-      mockAdapter.listBackupImages.mockResolvedValue(unavailableImage);
+        status: {
+          tags: [{ tag: 'v1.0.0', items: [{ created: '2026-03-04T08:00:00Z' }] }],
+        },
+      };
 
-      // DevWorkspace has backup annotation with the actual backup completion time
-      mockCustomObjectsApi.listNamespacedCustomObject.mockResolvedValue({
-        items: [
-          {
-            metadata: {
-              name: 'che-dashboard-1111',
-              namespace,
-              annotations: {
-                [DEVWORKSPACE_BACKUP_ANNOTATIONS.LAST_BACKUP_FINISHED_AT]: actualBackupTime,
-                [DEVWORKSPACE_BACKUP_ANNOTATIONS.LAST_BACKUP_SUCCESSFUL]: 'true',
+      mockCustomObjectsApi.listNamespacedCustomObject
+        .mockResolvedValueOnce({ items: [unavailableIS] }) // imagestreams — no :latest
+        .mockResolvedValueOnce({
+          items: [
+            {
+              metadata: {
+                name: 'che-dashboard-1111',
+                namespace,
+                annotations: {
+                  [DEVWORKSPACE_BACKUP_ANNOTATIONS.LAST_BACKUP_FINISHED_AT]: actualBackupTime,
+                  [DEVWORKSPACE_BACKUP_ANNOTATIONS.LAST_BACKUP_SUCCESSFUL]: 'true',
+                },
               },
             },
-          },
-        ],
-      });
+          ],
+        }); // devworkspaces
 
       const result = await service.listBackupImages(namespace);
 
       expect(result.backups).toHaveLength(1);
-      // Timestamp should come from DevWorkspace annotation, NOT ImageStream creation time
+      // Timestamp should come from DevWorkspace annotation
       expect(result.backups[0].timestamp).toBe(actualBackupTime);
-      expect(result.backups[0].timestamp).not.toBe(imageStreamCreationTime);
       // Status should be overridden to 'true' from annotation
       expect(result.backups[0].labels[DEVWORKSPACE_BACKUP_ANNOTATIONS.LAST_BACKUP_SUCCESSFUL]).toBe(
         'true',
@@ -351,33 +327,32 @@ describe('RegistryApiService', () => {
     });
 
     it('should include annotation-only workspace as external registry backup when no ImageStream exists', async () => {
-      // No ImageStreams at all
-      mockAdapter.listBackupImages.mockResolvedValue([]);
+      // No ImageStreams at all — both calls return empty items by default
+      // but devworkspaces has one entry with backup annotations
 
-      // One DW with backup annotations but no corresponding ImageStream
-      mockCustomObjectsApi.listNamespacedCustomObject.mockResolvedValue({
-        items: [
-          {
-            metadata: {
-              name: 'my-workspace',
-              namespace,
-              annotations: {
-                [DEVWORKSPACE_BACKUP_ANNOTATIONS.LAST_BACKUP_FINISHED_AT]:
-                  '2026-02-10T12:00:00.000Z',
-                [DEVWORKSPACE_BACKUP_ANNOTATIONS.LAST_BACKUP_SUCCESSFUL]: 'false',
-                [DEVWORKSPACE_BACKUP_ANNOTATIONS.LAST_BACKUP_ERROR]: 'OOMKilled',
+      mockCustomObjectsApi.listNamespacedCustomObject
+        .mockResolvedValueOnce({ items: [] }) // imagestreams — none
+        .mockResolvedValueOnce({
+          items: [
+            {
+              metadata: {
+                name: 'my-workspace',
+                namespace,
+                annotations: {
+                  [DEVWORKSPACE_BACKUP_ANNOTATIONS.LAST_BACKUP_FINISHED_AT]:
+                    '2026-02-10T12:00:00.000Z',
+                  [DEVWORKSPACE_BACKUP_ANNOTATIONS.LAST_BACKUP_SUCCESSFUL]: 'false',
+                  [DEVWORKSPACE_BACKUP_ANNOTATIONS.LAST_BACKUP_ERROR]: 'OOMKilled',
+                },
               },
             },
-          },
-        ],
-      });
+          ],
+        }); // devworkspaces
 
       const result = await service.listBackupImages(namespace);
 
       expect(result.backups).toHaveLength(1);
-      expect(result.backups[0].imageUrl).toBe(
-        'image-registry.openshift-image-registry.svc:5000/user-che/my-workspace:latest',
-      );
+      expect(result.backups[0].imageUrl).toBe(`${registryPath}/user-che/my-workspace:latest`);
       expect(result.backups[0].sizeBytes).toBe(0);
       expect(result.backups[0].workspaceName).toBe('my-workspace');
       expect(result.backups[0].timestamp).toBe('2026-02-10T12:00:00.000Z');
@@ -390,121 +365,102 @@ describe('RegistryApiService', () => {
     });
 
     it('should prefer ImageStream backup over annotation-only when workspace has both', async () => {
-      // ImageStream exists for this workspace
-      mockAdapter.listBackupImages.mockResolvedValue([
-        {
-          workspaceName: 'my-workspace',
-          imageUrl:
-            'image-registry.openshift-image-registry.svc:5000/user-che/my-workspace:backup-20260210',
-          timestamp: '2026-02-10T12:00:00.000Z',
-          sizeBytes: 1024000,
-          labels: {},
-        },
-      ]);
-
-      // Same DW also has backup annotations
-      mockCustomObjectsApi.listNamespacedCustomObject.mockResolvedValue({
-        items: [
-          {
-            metadata: {
-              name: 'my-workspace',
-              namespace,
-              annotations: {
-                [DEVWORKSPACE_BACKUP_ANNOTATIONS.LAST_BACKUP_FINISHED_AT]:
-                  '2026-02-10T12:00:00.000Z',
-                [DEVWORKSPACE_BACKUP_ANNOTATIONS.LAST_BACKUP_SUCCESSFUL]: 'true',
+      mockCustomObjectsApi.listNamespacedCustomObject
+        .mockResolvedValueOnce({ items: [mockImageStream] }) // imagestreams
+        .mockResolvedValueOnce({
+          items: [
+            {
+              metadata: {
+                name: 'my-workspace',
+                namespace,
+                annotations: {
+                  [DEVWORKSPACE_BACKUP_ANNOTATIONS.LAST_BACKUP_FINISHED_AT]:
+                    '2026-02-10T12:00:00.000Z',
+                  [DEVWORKSPACE_BACKUP_ANNOTATIONS.LAST_BACKUP_SUCCESSFUL]: 'true',
+                },
               },
             },
-          },
-        ],
-      });
+          ],
+        }); // devworkspaces
 
       const result = await service.listBackupImages(namespace);
 
       // No duplicate: ImageStream entry wins
       expect(result.backups).toHaveLength(1);
-      expect(result.backups[0].sizeBytes).toBe(1024000);
+      expect(result.backups[0].sizeBytes).toBe(0);
     });
 
     it('should return mixed internal and external registry backups', async () => {
-      // One ImageStream for internal-workspace
-      mockAdapter.listBackupImages.mockResolvedValue([
-        {
-          workspaceName: 'internal-workspace',
-          imageUrl:
-            'image-registry.openshift-image-registry.svc:5000/user-che/internal-workspace:backup-20260210',
-          timestamp: '2026-02-10T12:00:00.000Z',
-          sizeBytes: 2048000,
-          labels: {},
+      const internalIS = {
+        metadata: {
+          name: 'internal-workspace',
+          labels: { [DEVWORKSPACE_BACKUP_LABELS.WORKSPACE_ID]: 'ws-internal-id' },
         },
-      ]);
+        status: {
+          dockerImageRepository: `${registryPath}/${namespace}/internal-workspace`,
+          tags: [
+            { tag: BACKUP_IMAGE_DEFAULT_TAG, items: [{ created: '2026-02-10T12:00:00.000Z' }] },
+          ],
+        },
+      };
 
-      // Two DWs: one matches the ImageStream, one does not
-      mockCustomObjectsApi.listNamespacedCustomObject.mockResolvedValue({
-        items: [
-          {
-            metadata: {
-              name: 'internal-workspace',
-              namespace,
-              annotations: {
-                [DEVWORKSPACE_BACKUP_ANNOTATIONS.LAST_BACKUP_FINISHED_AT]:
-                  '2026-02-10T12:00:00.000Z',
+      mockCustomObjectsApi.listNamespacedCustomObject
+        .mockResolvedValueOnce({ items: [internalIS] }) // imagestreams
+        .mockResolvedValueOnce({
+          items: [
+            {
+              metadata: {
+                name: 'internal-workspace',
+                namespace,
+                annotations: {
+                  [DEVWORKSPACE_BACKUP_ANNOTATIONS.LAST_BACKUP_FINISHED_AT]:
+                    '2026-02-10T12:00:00.000Z',
+                },
               },
             },
-          },
-          {
-            metadata: {
-              name: 'external-workspace',
-              namespace,
-              annotations: {
-                [DEVWORKSPACE_BACKUP_ANNOTATIONS.LAST_BACKUP_FINISHED_AT]:
-                  '2026-02-10T14:00:00.000Z',
-                [DEVWORKSPACE_BACKUP_ANNOTATIONS.LAST_BACKUP_SUCCESSFUL]: 'true',
+            {
+              metadata: {
+                name: 'external-workspace',
+                namespace,
+                annotations: {
+                  [DEVWORKSPACE_BACKUP_ANNOTATIONS.LAST_BACKUP_FINISHED_AT]:
+                    '2026-02-10T14:00:00.000Z',
+                  [DEVWORKSPACE_BACKUP_ANNOTATIONS.LAST_BACKUP_SUCCESSFUL]: 'true',
+                },
               },
             },
-          },
-        ],
-      });
+          ],
+        }); // devworkspaces
 
       const result = await service.listBackupImages(namespace);
 
       expect(result.backups).toHaveLength(2);
       const internalBackup = result.backups.find(b => b.workspaceName === 'internal-workspace');
       const externalBackup = result.backups.find(b => b.workspaceName === 'external-workspace');
-      expect(internalBackup!.sizeBytes).toBe(2048000);
+      expect(internalBackup!.sizeBytes).toBe(0);
       expect(externalBackup!.sizeBytes).toBe(0);
       expect(externalBackup!.imageUrl).toContain('external-workspace:latest');
     });
 
-    it('should succeed when DWOC would fail but all annotated DWs have corresponding ImageStreams', async () => {
-      // 'my-workspace' has an ImageStream → annotationOnlyDWs is empty → DWOC never called
-      mockAdapter.listBackupImages.mockResolvedValue([
-        {
-          workspaceName: 'my-workspace',
-          imageUrl,
-          timestamp: '2026-02-10T12:00:00.000Z',
-          sizeBytes: 1024000,
-          labels: {},
-        },
-      ]);
-
-      // DW with backup annotations AND a matching ImageStream → not annotation-only
-      mockCustomObjectsApi.listNamespacedCustomObject.mockResolvedValue({
-        items: [
-          {
-            metadata: {
-              name: 'my-workspace',
-              namespace,
-              annotations: {
-                [DEVWORKSPACE_BACKUP_ANNOTATIONS.LAST_BACKUP_FINISHED_AT]:
-                  '2026-02-10T12:00:00.000Z',
+    it('should fall back to ImageStream imageUrl when DWOC registry path is unavailable', async () => {
+      mockCustomObjectsApi.listNamespacedCustomObject
+        .mockResolvedValueOnce({ items: [mockImageStream] }) // imagestreams
+        .mockResolvedValueOnce({
+          items: [
+            {
+              metadata: {
+                name: workspaceName,
+                namespace,
+                annotations: {
+                  [DEVWORKSPACE_BACKUP_ANNOTATIONS.LAST_BACKUP_FINISHED_AT]:
+                    '2026-02-10T12:00:00.000Z',
+                },
               },
             },
-          },
-        ],
-      });
+          ],
+        }); // devworkspaces
 
-      // DWOC config would fail — but it should NOT be called
+      // DWOC fails — should be caught gracefully; imageUrl falls back to ImageStream's value
       mockCustomObjectsApi.getNamespacedCustomObject.mockRejectedValue(
         new Error('DWOC config unavailable'),
       );
@@ -512,171 +468,124 @@ describe('RegistryApiService', () => {
       const result = await service.listBackupImages(namespace);
 
       expect(result.backups).toHaveLength(1);
-      // DWOC must not have been called
-      expect(mockCustomObjectsApi.getNamespacedCustomObject).not.toHaveBeenCalled();
+      // Falls back to ImageStream status.dockerImageRepository + :latest
+      expect(result.backups[0].imageUrl).toBe(imageUrl);
     });
 
-    it('should propagate error when DWOC registry path fetch fails and annotation-only DWs exist', async () => {
-      // No ImageStreams
-      mockAdapter.listBackupImages.mockResolvedValue([]);
-
-      // One DW with backup annotations and no corresponding ImageStream
-      mockCustomObjectsApi.listNamespacedCustomObject.mockResolvedValue({
-        items: [
-          {
-            metadata: {
-              name: 'my-workspace',
-              namespace,
-              annotations: {
-                [DEVWORKSPACE_BACKUP_ANNOTATIONS.LAST_BACKUP_FINISHED_AT]:
-                  '2026-02-10T12:00:00.000Z',
+    it('should silently skip annotation-only DWs when DWOC registry path is unavailable', async () => {
+      mockCustomObjectsApi.listNamespacedCustomObject
+        .mockResolvedValueOnce({ items: [] }) // imagestreams — none
+        .mockResolvedValueOnce({
+          items: [
+            {
+              metadata: {
+                name: 'my-workspace',
+                namespace,
+                annotations: {
+                  [DEVWORKSPACE_BACKUP_ANNOTATIONS.LAST_BACKUP_FINISHED_AT]:
+                    '2026-02-10T12:00:00.000Z',
+                },
               },
             },
-          },
-        ],
-      });
+          ],
+        }); // devworkspaces
 
-      // DWOC config fails
+      // DWOC fails — gracefully caught; annotation-only DWs are silently skipped
       mockCustomObjectsApi.getNamespacedCustomObject.mockRejectedValue(
         new Error('DWOC config unavailable'),
       );
 
-      await expect(service.listBackupImages(namespace)).rejects.toMatchObject({
-        name: BACKUP_ERROR_CODES.REGISTRY_API_ERROR,
-      });
+      const result = await service.listBackupImages(namespace);
+
+      // No error — annotation-only DWs silently skipped because imageUrl cannot be constructed
+      expect(result.backups).toHaveLength(0);
     });
 
     it('should propagate error when DevWorkspace list fetch fails', async () => {
-      mockAdapter.listBackupImages.mockResolvedValue([
-        {
-          workspaceName: 'my-workspace',
-          imageUrl,
-          timestamp: '2026-02-10T12:00:00.000Z',
-          sizeBytes: 1024000,
-          labels: {},
-        },
-      ]);
-
-      // DevWorkspace list API fails
-      mockCustomObjectsApi.listNamespacedCustomObject.mockRejectedValue(
-        new Error('k8s API unavailable'),
-      );
+      mockCustomObjectsApi.listNamespacedCustomObject
+        .mockResolvedValueOnce({ items: [mockImageStream] }) // imagestreams succeeds
+        .mockRejectedValueOnce(new Error('k8s API unavailable')); // devworkspaces fails
 
       await expect(service.listBackupImages(namespace)).rejects.toMatchObject({
         name: BACKUP_ERROR_CODES.REGISTRY_API_ERROR,
       });
     });
 
-    it('should not call getBackupRegistryPath when all annotated DWs have corresponding ImageStreams', async () => {
-      // Adapter returns an ImageStream for 'my-workspace'
-      mockAdapter.listBackupImages.mockResolvedValue([
-        {
-          workspaceName: 'my-workspace',
-          imageUrl: `${imageUrl}-1`,
-          timestamp: '2026-02-10T12:00:00.000Z',
-          sizeBytes: 1024000,
-          labels: {},
-        },
-      ]);
-
-      // DW list: 'my-workspace' has annotation
-      mockCustomObjectsApi.listNamespacedCustomObject.mockResolvedValue({
-        items: [
-          {
-            metadata: {
-              name: 'my-workspace',
-              namespace,
-              annotations: {
-                [DEVWORKSPACE_BACKUP_ANNOTATIONS.LAST_BACKUP_FINISHED_AT]:
-                  '2026-02-10T12:00:00.000Z',
-              },
-            },
-          },
-        ],
-      });
+    it('should always call getBackupRegistryPath in parallel with other fetches', async () => {
+      mockCustomObjectsApi.listNamespacedCustomObject
+        .mockResolvedValueOnce({ items: [mockImageStream] }) // imagestreams
+        .mockResolvedValueOnce({ items: [] }); // devworkspaces
 
       await service.listBackupImages(namespace);
 
-      // DWOC should NOT be called — no annotation-only workspaces
-      expect(mockCustomObjectsApi.getNamespacedCustomObject).not.toHaveBeenCalled();
-    });
-
-    it('should call getBackupRegistryPath only when an annotated DW has no corresponding ImageStream', async () => {
-      // No ImageStreams
-      mockAdapter.listBackupImages.mockResolvedValue([]);
-
-      // One DW with backup annotations and no ImageStream
-      mockCustomObjectsApi.listNamespacedCustomObject.mockResolvedValue({
-        items: [
-          {
-            metadata: {
-              name: 'my-workspace',
-              namespace,
-              annotations: {
-                [DEVWORKSPACE_BACKUP_ANNOTATIONS.LAST_BACKUP_FINISHED_AT]:
-                  '2026-02-10T12:00:00.000Z',
-              },
-            },
-          },
-        ],
-      });
-
-      await service.listBackupImages(namespace);
-
-      // DWOC MUST be called — annotation-only workspace requires registry path
+      // DWOC must always be called — registry path is the authoritative imageUrl source
       expect(mockCustomObjectsApi.getNamespacedCustomObject).toHaveBeenCalledWith(
         expect.objectContaining({ plural: 'devworkspaceoperatorconfigs' }),
       );
     });
 
-    it('should return both UNAVAILABLE items when two ImageStreams have no :latest tag but have annotations', async () => {
-      // Two UNAVAILABLE images (both have imageUrl: '') but with DW annotations providing timestamps
-      mockAdapter.listBackupImages.mockResolvedValue([
-        {
-          workspaceName: 'workspace-a',
-          imageUrl: '',
-          timestamp: '', // Empty from adapter
-          sizeBytes: 0,
-          labels: {
-            [DEVWORKSPACE_BACKUP_ANNOTATIONS.LAST_BACKUP_SUCCESSFUL]: BackupStatus.UNAVAILABLE,
-          },
-        },
-        {
-          workspaceName: 'workspace-b',
-          imageUrl: '',
-          timestamp: '', // Empty from adapter
-          sizeBytes: 0,
-          labels: {
-            [DEVWORKSPACE_BACKUP_ANNOTATIONS.LAST_BACKUP_SUCCESSFUL]: BackupStatus.UNAVAILABLE,
-          },
-        },
-      ]);
+    it('should use DWOC registry path for imageUrl when DWOC is available', async () => {
+      const dwocRegistryPath = 'default-route-openshift-image-registry.apps.crc.testing';
 
-      // DevWorkspaces have backup annotations (backup completed but :latest tag was deleted)
-      mockCustomObjectsApi.listNamespacedCustomObject.mockResolvedValue({
-        items: [
-          {
-            metadata: {
-              name: 'workspace-a',
-              namespace,
-              annotations: {
-                [DEVWORKSPACE_BACKUP_ANNOTATIONS.LAST_BACKUP_FINISHED_AT]: '2026-02-01T10:00:00Z',
-                [DEVWORKSPACE_BACKUP_ANNOTATIONS.LAST_BACKUP_SUCCESSFUL]: 'true',
-              },
-            },
-          },
-          {
-            metadata: {
-              name: 'workspace-b',
-              namespace,
-              annotations: {
-                [DEVWORKSPACE_BACKUP_ANNOTATIONS.LAST_BACKUP_FINISHED_AT]: '2026-02-01T11:00:00Z',
-                [DEVWORKSPACE_BACKUP_ANNOTATIONS.LAST_BACKUP_SUCCESSFUL]: 'true',
-              },
-            },
-          },
-        ],
+      mockCustomObjectsApi.getNamespacedCustomObject.mockResolvedValue({
+        config: { workspace: { backupCronJob: { registry: { path: dwocRegistryPath } } } },
       });
+
+      mockCustomObjectsApi.listNamespacedCustomObject
+        .mockResolvedValueOnce({ items: [mockImageStream] }) // imagestreams
+        .mockResolvedValueOnce({ items: [] }); // devworkspaces
+
+      const result = await service.listBackupImages(namespace);
+
+      expect(result.backups).toHaveLength(1);
+      // imageUrl must use the DWOC registry path, not the ImageStream's URL
+      expect(result.backups[0].imageUrl).toBe(
+        `${dwocRegistryPath}/${namespace}/my-workspace:latest`,
+      );
+    });
+
+    it('should return both UNAVAILABLE items when two ImageStreams have no :latest tag but have annotations', async () => {
+      const taglessA = {
+        metadata: {
+          name: 'workspace-a',
+          labels: { [DEVWORKSPACE_BACKUP_LABELS.WORKSPACE_ID]: 'ws-a-id' },
+        },
+        status: { tags: [{ tag: 'v1.0.0', items: [{ created: '2026-02-01T10:00:00Z' }] }] },
+      };
+      const taglessB = {
+        metadata: {
+          name: 'workspace-b',
+          labels: { [DEVWORKSPACE_BACKUP_LABELS.WORKSPACE_ID]: 'ws-b-id' },
+        },
+        status: { tags: [{ tag: 'v1.0.0', items: [{ created: '2026-02-01T11:00:00Z' }] }] },
+      };
+
+      mockCustomObjectsApi.listNamespacedCustomObject
+        .mockResolvedValueOnce({ items: [taglessA, taglessB] }) // imagestreams
+        .mockResolvedValueOnce({
+          items: [
+            {
+              metadata: {
+                name: 'workspace-a',
+                namespace,
+                annotations: {
+                  [DEVWORKSPACE_BACKUP_ANNOTATIONS.LAST_BACKUP_FINISHED_AT]: '2026-02-01T10:00:00Z',
+                  [DEVWORKSPACE_BACKUP_ANNOTATIONS.LAST_BACKUP_SUCCESSFUL]: 'true',
+                },
+              },
+            },
+            {
+              metadata: {
+                name: 'workspace-b',
+                namespace,
+                annotations: {
+                  [DEVWORKSPACE_BACKUP_ANNOTATIONS.LAST_BACKUP_FINISHED_AT]: '2026-02-01T11:00:00Z',
+                  [DEVWORKSPACE_BACKUP_ANNOTATIONS.LAST_BACKUP_SUCCESSFUL]: 'true',
+                },
+              },
+            },
+          ],
+        }); // devworkspaces
 
       const result = await service.listBackupImages(namespace);
 
@@ -695,54 +604,52 @@ describe('RegistryApiService', () => {
     });
 
     it('should not call getNamespacedCustomObject per-image for workspace existence', async () => {
-      mockAdapter.listBackupImages.mockResolvedValue([
-        {
-          workspaceName: 'my-workspace',
-          imageUrl: `${imageUrl}-1`,
-          timestamp: '2026-02-10T12:00:00.000Z',
-          sizeBytes: 1024000,
-          labels: {},
+      const mockImageStream2 = {
+        metadata: {
+          name: 'my-workspace-2',
+          labels: { [DEVWORKSPACE_BACKUP_LABELS.WORKSPACE_ID]: 'ws-id-2' },
         },
-      ]);
+        status: {
+          dockerImageRepository: `${registryPath}/${namespace}/my-workspace-2`,
+          tags: [
+            { tag: BACKUP_IMAGE_DEFAULT_TAG, items: [{ created: '2026-02-09T12:00:00.000Z' }] },
+          ],
+        },
+      };
+
+      mockCustomObjectsApi.listNamespacedCustomObject
+        .mockResolvedValueOnce({ items: [mockImageStream, mockImageStream2] }) // imagestreams
+        .mockResolvedValueOnce({ items: [] }); // devworkspaces
 
       await service.listBackupImages(namespace);
 
-      // Only one listNamespacedCustomObject call (for DW list) — no per-workspace getNamespacedCustomObject
-      expect(mockCustomObjectsApi.listNamespacedCustomObject).toHaveBeenCalledTimes(1);
-      // getNamespacedCustomObject should NOT be called at all for existence checks
-      expect(mockCustomObjectsApi.getNamespacedCustomObject).not.toHaveBeenCalled();
+      // Exactly two listNamespacedCustomObject calls (imagestreams + devworkspaces)
+      expect(mockCustomObjectsApi.listNamespacedCustomObject).toHaveBeenCalledTimes(2);
+      // getNamespacedCustomObject called exactly once — for DWOC, NOT once per image
+      expect(mockCustomObjectsApi.getNamespacedCustomObject).toHaveBeenCalledTimes(1);
+      expect(mockCustomObjectsApi.getNamespacedCustomObject).toHaveBeenCalledWith(
+        expect.objectContaining({ plural: 'devworkspaceoperatorconfigs' }),
+      );
     });
   });
 
   describe('validateBackupImage', () => {
-    const mockMetadata: IImageMetadata = {
-      workspaceName: 'my-workspace',
-      namespace: 'user-che',
-      timestamp: '2026-02-10T12:00:00.000Z',
-      sizeBytes: 1024000,
-      labels: {},
-    };
-
-    it('should validate accessible image successfully', async () => {
-      mockAdapter.validateImageAccessibility.mockResolvedValue(true);
-      mockAdapter.getImageMetadata.mockResolvedValue(mockMetadata);
-
+    it('should validate valid image URL successfully', async () => {
       const result = await service.validateBackupImage(imageUrl);
 
       expect(result.valid).toBe(true);
       expect(result.accessible).toBe(true);
       expect(result.metadata).toBeDefined();
+      expect(result.metadata?.workspaceName).toBe(workspaceName);
+      expect(result.metadata?.namespace).toBe(namespace);
     });
 
-    it('should handle inaccessible image', async () => {
-      mockAdapter.validateImageAccessibility.mockResolvedValue(false);
-      mockAdapter.getImageMetadata.mockResolvedValue(mockMetadata);
+    it('should return invalid for malformed URL', async () => {
+      const result = await service.validateBackupImage('invalid-url');
 
-      const result = await service.validateBackupImage(imageUrl);
-
-      expect(result.valid).toBe(true);
+      expect(result.valid).toBe(false);
       expect(result.accessible).toBe(false);
-      expect(result.metadata).toBeUndefined();
+      expect(result.error).toContain('Invalid image URL format');
     });
 
     it('should reject empty image URL', async () => {
@@ -751,43 +658,8 @@ describe('RegistryApiService', () => {
       });
     });
 
-    it('should handle timeout gracefully', async () => {
-      mockAdapter.validateImageAccessibility.mockImplementation(
-        () =>
-          new Promise((_, reject) =>
-            setTimeout(() => reject(new Error('Registry query timeout')), 100),
-          ),
-      );
-
-      const result = await service.validateBackupImage(imageUrl);
-
-      expect(result.valid).toBe(false);
-      expect(result.accessible).toBe(false);
-      expect(result.error).toContain('timed out');
-    }, 30000);
-  });
-
-  describe('getImageMetadata', () => {
-    const mockMetadata: IImageMetadata = {
-      workspaceName: 'my-workspace',
-      namespace: 'user-che',
-      timestamp: '2026-02-10T12:00:00.000Z',
-      sizeBytes: 1024000,
-      labels: { 'backup.timestamp': '2026-02-10T12:00:00.000Z' },
-    };
-
-    it('should retrieve metadata successfully', async () => {
-      mockAdapter.getImageMetadata.mockResolvedValue(mockMetadata);
-
-      const result = await service.getImageMetadata(imageUrl);
-
-      expect(result.workspaceName).toBe('my-workspace');
-      expect(result.imageUrl).toBe(imageUrl);
-      expect(result.workspaceExists).toBe(true);
-    });
-
-    it('should reject empty image URL', async () => {
-      await expect(service.getImageMetadata('')).rejects.toMatchObject({
+    it('should reject whitespace-only image URL', async () => {
+      await expect(service.validateBackupImage('   ')).rejects.toMatchObject({
         name: BACKUP_ERROR_CODES.INVALID_IMAGE_URL,
       });
     });
@@ -825,27 +697,24 @@ describe('RegistryApiService', () => {
     });
 
     it('should reject workspace name with special characters', async () => {
-      mockAdapter.listBackupImages.mockResolvedValue([]);
       await expect(service.listBackupImages(namespace, 'ws@injection')).rejects.toMatchObject({
         name: BACKUP_ERROR_CODES.INVALID_NAMESPACE,
       });
     });
 
     it('should accept single character namespace', async () => {
-      mockAdapter.listBackupImages.mockResolvedValue([]);
       await expect(service.listBackupImages('a')).resolves.toBeDefined();
     });
 
     it('should accept exactly 63 character namespace', async () => {
-      mockAdapter.listBackupImages.mockResolvedValue([]);
       const maxNamespace = 'a'.repeat(63);
       await expect(service.listBackupImages(maxNamespace)).resolves.toBeDefined();
     });
   });
 
   describe('Timeout Handling', () => {
-    it('should propagate timeout error when no cache exists for list', async () => {
-      mockAdapter.listBackupImages.mockImplementation(
+    it('should propagate timeout error when ImageStream fetch hangs', async () => {
+      mockCustomObjectsApi.listNamespacedCustomObject.mockImplementation(
         () =>
           new Promise((_, reject) =>
             setTimeout(() => reject(new Error('Registry query timeout')), 50),
@@ -857,74 +726,20 @@ describe('RegistryApiService', () => {
       });
     }, 30000);
 
-    it('should handle adapter error (non-timeout) for getImageMetadata', async () => {
-      mockAdapter.getImageMetadata.mockRejectedValue(new Error('Image not found in registry'));
-
-      await expect(service.getImageMetadata(imageUrl)).rejects.toMatchObject({
-        name: BACKUP_ERROR_CODES.REGISTRY_API_ERROR,
-      });
-    });
-
     it('should reject whitespace-only image URL for validateBackupImage', async () => {
       await expect(service.validateBackupImage('   ')).rejects.toMatchObject({
         name: BACKUP_ERROR_CODES.INVALID_IMAGE_URL,
       });
     });
-
-    it('should reject whitespace-only image URL for getImageMetadata', async () => {
-      await expect(service.getImageMetadata('   ')).rejects.toMatchObject({
-        name: BACKUP_ERROR_CODES.INVALID_IMAGE_URL,
-      });
-    });
-
-    it('should handle generic adapter error for validateBackupImage', async () => {
-      mockAdapter.validateImageAccessibility.mockRejectedValue(new Error('Connection reset'));
-      mockAdapter.getImageMetadata.mockRejectedValue(new Error('Connection reset'));
-
-      const result = await service.validateBackupImage(imageUrl);
-
-      expect(result.valid).toBe(false);
-      expect(result.accessible).toBe(false);
-      expect(result.error).toContain('Connection reset');
-    });
   });
 
   describe('Data Validation', () => {
-    it('should reject non-array response from adapter in listBackupImages', async () => {
-      mockAdapter.listBackupImages.mockResolvedValue('not-an-array');
-
-      await expect(service.listBackupImages(namespace)).rejects.toMatchObject({
-        name: BACKUP_ERROR_CODES.REGISTRY_API_ERROR,
-        message: expect.stringContaining('Expected array'),
-      });
-    });
-
-    it('should reject null response from adapter in getImageMetadata', async () => {
-      mockAdapter.getImageMetadata.mockResolvedValue(null);
-
-      await expect(service.getImageMetadata(imageUrl)).rejects.toMatchObject({
-        name: BACKUP_ERROR_CODES.REGISTRY_API_ERROR,
-        message: expect.stringContaining('Expected image metadata'),
-      });
-    });
-
-    it('should handle workspace existence API error gracefully (fail-safe)', async () => {
-      const mockImages: IBackupImage[] = [
-        {
-          workspaceName: 'my-workspace',
-          imageUrl,
-          timestamp: '2026-02-10T12:00:00.000Z',
-          sizeBytes: 1024000,
-          labels: {},
-        },
-      ];
-
-      mockAdapter.listBackupImages.mockResolvedValue(mockImages);
-
-      // Workspace is present in the DW list → Set lookup returns true
-      mockCustomObjectsApi.listNamespacedCustomObject.mockResolvedValue({
-        items: [{ metadata: { name: 'my-workspace', annotations: {} } }],
-      });
+    it('should handle workspace existence via Set lookup (workspaceExists true)', async () => {
+      mockCustomObjectsApi.listNamespacedCustomObject
+        .mockResolvedValueOnce({ items: [mockImageStream] }) // imagestreams
+        .mockResolvedValueOnce({
+          items: [{ metadata: { name: 'my-workspace', annotations: {} } }],
+        }); // devworkspaces
 
       const result = await service.listBackupImages(namespace);
 

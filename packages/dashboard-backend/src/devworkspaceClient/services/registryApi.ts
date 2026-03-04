@@ -15,17 +15,18 @@
 import {
   BACKUP_ERROR_CODES,
   BACKUP_IMAGE_DEFAULT_TAG,
+  BACKUP_IMAGE_URL_PATTERN,
   BackupItem,
   BackupListResponse,
+  BackupStatus,
   BackupValidationResult,
   DEVWORKSPACE_BACKUP_ANNOTATIONS,
+  DEVWORKSPACE_BACKUP_LABELS,
 } from '@eclipse-che/common';
-import { KubeConfig } from '@kubernetes/client-node';
-import { CustomObjectsApi } from '@kubernetes/client-node';
+import { CustomObjectsApi, KubeConfig } from '@kubernetes/client-node';
 
 import { backupRegistryTimeout } from '@/constants/config';
 import { createError } from '@/devworkspaceClient/services/helpers/createError';
-import { IRegistryAdapter } from '@/devworkspaceClient/services/helpers/registryAdapters';
 
 // DevWorkspaceOperatorConfig constants
 const DWOC_GROUP = 'controller.devfile.io';
@@ -38,6 +39,18 @@ const DWOC_NAMESPACE = 'openshift-operators';
 const DEVWORKSPACE_GROUP = 'workspace.devfile.io';
 const DEVWORKSPACE_VERSION = 'v1alpha2';
 const DEVWORKSPACE_PLURAL = 'devworkspaces';
+
+// ImageStream constants
+const IMAGESTREAM_GROUP = 'image.openshift.io';
+const IMAGESTREAM_VERSION = 'v1';
+
+interface IBackupImage {
+  workspaceName: string;
+  imageUrl: string;
+  timestamp: string;
+  sizeBytes: number;
+  labels: Record<string, string>;
+}
 
 /**
  * Validates Kubernetes DNS-1123 subdomain naming convention
@@ -73,36 +86,62 @@ function validateK8sName(name: string, fieldName: string): void {
 }
 
 export class RegistryApiService {
-  private adapter: IRegistryAdapter;
   private customObjectsApi: CustomObjectsApi;
 
-  constructor(kubeConfig: KubeConfig, adapter: IRegistryAdapter) {
-    this.adapter = adapter;
+  constructor(kubeConfig: KubeConfig) {
     this.customObjectsApi = kubeConfig.makeApiClient(CustomObjectsApi);
   }
 
   /**
-   * Check if a DevWorkspace exists in the namespace
+   * List backup images from OpenShift ImageStream API.
+   * sizeBytes is always 0 — no per-image ImageStreamTag query is made.
    */
-  private async doesWorkspaceExist(namespace: string, workspaceName: string): Promise<boolean> {
-    try {
-      await this.customObjectsApi.getNamespacedCustomObject({
-        group: DEVWORKSPACE_GROUP,
-        version: DEVWORKSPACE_VERSION,
-        namespace,
-        plural: DEVWORKSPACE_PLURAL,
-        name: workspaceName,
-      });
-      return true;
-    } catch (e) {
-      // Handle both old HttpError (response.statusCode) and new ApiException (code) formats
-      const statusCode = (e as any)?.response?.statusCode ?? (e as any)?.code;
-      if (statusCode === 404) {
-        return false;
+  private async listImageStreams(namespace: string): Promise<IBackupImage[]> {
+    const response = await this.customObjectsApi.listNamespacedCustomObject({
+      group: IMAGESTREAM_GROUP,
+      version: IMAGESTREAM_VERSION,
+      namespace,
+      plural: 'imagestreams',
+    });
+
+    const items = (response as unknown as { items: any[] }).items;
+    const results: IBackupImage[] = [];
+
+    for (const is of items) {
+      const workspaceId = is.metadata?.labels?.[DEVWORKSPACE_BACKUP_LABELS.WORKSPACE_ID];
+      if (!workspaceId) continue;
+
+      const workspaceName = is.metadata.name as string;
+      const latestTag = is.status?.tags?.find((t: any) => t.tag === BACKUP_IMAGE_DEFAULT_TAG);
+
+      if (!latestTag?.items?.length) {
+        // ImageStream exists but no :latest — UNAVAILABLE
+        results.push({
+          workspaceName,
+          imageUrl: '',
+          timestamp: '',
+          sizeBytes: 0,
+          labels: {
+            [DEVWORKSPACE_BACKUP_ANNOTATIONS.LAST_BACKUP_SUCCESSFUL]: BackupStatus.UNAVAILABLE,
+          },
+        });
+        continue;
       }
-      // On error, assume workspace exists (fail-safe)
-      return true;
+
+      const imageUrl = is.status?.dockerImageRepository
+        ? `${is.status.dockerImageRepository}:${BACKUP_IMAGE_DEFAULT_TAG}`
+        : '';
+
+      results.push({
+        workspaceName,
+        imageUrl,
+        timestamp: latestTag.items[0].created as string,
+        sizeBytes: 0,
+        labels: {},
+      });
     }
+
+    return results;
   }
 
   /**
@@ -207,22 +246,17 @@ export class RegistryApiService {
         }, backupRegistryTimeout * 1000);
       });
 
-      // Only two concurrent calls now — registry path is fetched lazily
-      const imageStreamPromise = this.adapter.listBackupImages(namespace);
+      // All three fetched concurrently. Registry path is always needed: it is the
+      // authoritative source for imageUrl (matches what DWO actually pushed to).
+      // A failure is caught gracefully so a missing DWOC does not break listing.
+      const imageStreamPromise = this.listImageStreams(namespace);
       const allDevWorkspacesPromise = this.listAllDevWorkspaces(namespace);
+      const registryPathPromise = this.getBackupRegistryPath().catch(() => null);
 
-      const [imageStreamResults, allDevWorkspaces] = await Promise.race([
-        Promise.all([imageStreamPromise, allDevWorkspacesPromise]),
+      const [imageStreamResults, allDevWorkspaces, registryPath] = await Promise.race([
+        Promise.all([imageStreamPromise, allDevWorkspacesPromise, registryPathPromise]),
         timeoutPromise,
       ]);
-
-      if (!Array.isArray(imageStreamResults)) {
-        throw createError(
-          new Error('Invalid response from registry adapter'),
-          BACKUP_ERROR_CODES.REGISTRY_API_ERROR,
-          'Expected array of backup images from ImageStreams',
-        );
-      }
 
       // Derive both structures from the single DW list fetch
       const devworkspacesWithBackups = allDevWorkspaces.filter(
@@ -235,7 +269,6 @@ export class RegistryApiService {
 
       const backupMap = new Map<string, BackupItem>();
 
-      // Bug 4 fix: use Set lookup instead of per-image API call
       for (const image of imageStreamResults) {
         const exists = allWorkspaceNames.has(image.workspaceName);
         const matchingDW = devworkspacesWithBackups.find(
@@ -245,7 +278,7 @@ export class RegistryApiService {
         const mergedLabels: Record<string, string> = { ...image.labels };
         // Precedence for LAST_BACKUP_SUCCESSFUL:
         // 1. DevWorkspace annotation (explicit, most authoritative)
-        // 2. Adapter-set value (e.g., BackupStatus.UNAVAILABLE for tagless ImageStreams)
+        // 2. ImageStream-set value (e.g., BackupStatus.UNAVAILABLE for tagless ImageStreams)
         // 3. 'true' default — :latest tag existing proves a backup completed successfully
         mergedLabels[DEVWORKSPACE_BACKUP_ANNOTATIONS.LAST_BACKUP_SUCCESSFUL] =
           dwAnnotations[DEVWORKSPACE_BACKUP_ANNOTATIONS.LAST_BACKUP_SUCCESSFUL] ??
@@ -257,26 +290,34 @@ export class RegistryApiService {
         }
         // Timestamp precedence:
         // 1. DevWorkspace annotation LAST_BACKUP_FINISHED_AT (authoritative backup completion time)
-        // 2. Image timestamp from adapter (for ImageStreams with :latest tag, this is image creation time)
+        // 2. Image timestamp from ImageStream (image creation time)
         const timestamp =
           dwAnnotations[DEVWORKSPACE_BACKUP_ANNOTATIONS.LAST_BACKUP_FINISHED_AT] ?? image.timestamp;
-        // Bug 2 fix: use composite key for entries with empty imageUrl to avoid collision
-        const mapKey = image.imageUrl || `unavailable:${image.workspaceName}`;
+        // imageUrl precedence:
+        // 1. DWOC registry.path — authoritative; matches the URL DWO pushed to
+        // 2. ImageStream-provided URL (from ImageStream status.dockerImageRepository) — fallback
+        // Keep '' for UNAVAILABLE images (imageUrl === '' means no backup image yet).
+        const resolvedImageUrl =
+          registryPath && image.imageUrl
+            ? `${registryPath}/${namespace}/${image.workspaceName}:${BACKUP_IMAGE_DEFAULT_TAG}`
+            : image.imageUrl;
+        const mapKey = resolvedImageUrl || `unavailable:${image.workspaceName}`;
         backupMap.set(mapKey, {
           ...image,
+          imageUrl: resolvedImageUrl,
           timestamp,
           workspaceExists: exists,
           labels: mergedLabels,
         });
       }
 
-      // Bug 3 fix: only fetch registry path when annotation-only workspaces exist
+      // Annotation-only workspaces: have backup annotations but no corresponding ImageStream.
+      // Only surface them when registryPath is known — it is required to construct imageUrl.
       const imageStreamWorkspaceNames = new Set(imageStreamResults.map(img => img.workspaceName));
       const annotationOnlyDWs = devworkspacesWithBackups.filter(
         (dw: any) => !imageStreamWorkspaceNames.has(dw.metadata.name),
       );
-      if (annotationOnlyDWs.length > 0) {
-        const registryPath = await this.getBackupRegistryPath();
+      if (annotationOnlyDWs.length > 0 && registryPath) {
         for (const dw of annotationOnlyDWs) {
           const backupItem = this.buildBackupItemFromAnnotations(dw, registryPath, namespace);
           backupMap.set(backupItem.imageUrl, backupItem);
@@ -306,7 +347,7 @@ export class RegistryApiService {
   }
 
   /**
-   * Validates if a backup image is accessible.
+   * Validates if a backup image URL is valid and parses its components.
    */
   async validateBackupImage(imageUrl: string): Promise<BackupValidationResult> {
     if (!imageUrl || imageUrl.trim().length === 0) {
@@ -317,101 +358,19 @@ export class RegistryApiService {
       );
     }
 
-    try {
-      const timeoutPromise = new Promise<never>((_, reject) => {
-        setTimeout(() => {
-          reject(new Error('Registry query timeout'));
-        }, backupRegistryTimeout * 1000);
-      });
-
-      const accessibilityPromise = this.adapter.validateImageAccessibility(imageUrl);
-      const metadataPromise = this.adapter.getImageMetadata(imageUrl);
-
-      const [accessible, metadata] = await Promise.race([
-        Promise.all([accessibilityPromise, metadataPromise]),
-        timeoutPromise,
-      ]);
-
-      return {
-        valid: true,
-        accessible,
-        metadata: accessible
-          ? {
-              workspaceName: metadata.workspaceName,
-              namespace: metadata.namespace,
-              timestamp: metadata.timestamp,
-              sizeBytes: metadata.sizeBytes,
-            }
-          : undefined,
-      };
-    } catch (e) {
-      if ((e as Error).message === 'Registry query timeout') {
-        return {
-          valid: false,
-          accessible: false,
-          error: 'Registry query timed out while validating image',
-        };
-      }
-
-      return {
-        valid: false,
-        accessible: false,
-        error: (e as Error).message || 'Unknown error during validation',
-      };
-    }
-  }
-
-  /**
-   * Retrieves metadata for a specific backup image.
-   */
-  async getImageMetadata(imageUrl: string): Promise<BackupItem> {
-    if (!imageUrl || imageUrl.trim().length === 0) {
-      throw createError(
-        new Error('Empty image URL'),
-        BACKUP_ERROR_CODES.INVALID_IMAGE_URL,
-        'Image URL cannot be empty',
-      );
+    if (!BACKUP_IMAGE_URL_PATTERN.test(imageUrl)) {
+      return { valid: false, accessible: false, error: 'Invalid image URL format' };
     }
 
-    try {
-      const timeoutPromise = new Promise<never>((_, reject) => {
-        setTimeout(() => {
-          reject(new Error('Registry query timeout'));
-        }, backupRegistryTimeout * 1000);
-      });
+    // Parse: registry[:port]/namespace/workspaceName:tag
+    const parts = imageUrl.split('/');
+    const workspaceName = parts[parts.length - 1].split(':')[0];
+    const namespace = parts[parts.length - 2];
 
-      const metadata = await Promise.race([
-        this.adapter.getImageMetadata(imageUrl),
-        timeoutPromise,
-      ]);
-
-      if (!metadata || typeof metadata !== 'object') {
-        throw createError(
-          new Error('Invalid metadata response'),
-          BACKUP_ERROR_CODES.REGISTRY_API_ERROR,
-          'Expected image metadata object',
-        );
-      }
-
-      const workspaceExists = await this.doesWorkspaceExist(
-        metadata.namespace,
-        metadata.workspaceName,
-      );
-
-      return {
-        workspaceName: metadata.workspaceName,
-        imageUrl,
-        timestamp: metadata.timestamp,
-        sizeBytes: metadata.sizeBytes,
-        workspaceExists,
-        labels: metadata.labels,
-      };
-    } catch (e) {
-      throw createError(
-        e,
-        BACKUP_ERROR_CODES.REGISTRY_API_ERROR,
-        `Unable to retrieve metadata for backup image: ${imageUrl}`,
-      );
-    }
+    return {
+      valid: true,
+      accessible: true,
+      metadata: { workspaceName, namespace, timestamp: '', sizeBytes: 0 },
+    };
   }
 }

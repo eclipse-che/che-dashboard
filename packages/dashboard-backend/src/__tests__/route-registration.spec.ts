@@ -25,12 +25,10 @@ jest.mock('@/services/kubeclient/kubeConfigProvider');
 // Mock RegistryApiService
 const mockListBackupImages = jest.fn();
 const mockValidateBackupImage = jest.fn();
-const mockGetImageMetadata = jest.fn();
 jest.mock('@/devworkspaceClient/services/registryApi', () => ({
   RegistryApiService: jest.fn().mockImplementation(() => ({
     listBackupImages: mockListBackupImages,
     validateBackupImage: mockValidateBackupImage,
-    getImageMetadata: mockGetImageMetadata,
   })),
 }));
 
@@ -46,11 +44,6 @@ describe('Route Registration Integration Tests', () => {
 
     mockValidateBackupImage.mockResolvedValue({
       valid: true,
-    });
-
-    mockGetImageMetadata.mockResolvedValue({
-      workspaceName: 'test-workspace',
-      timestamp: '2025-01-01T00:00:00Z',
     });
   };
 
@@ -94,16 +87,6 @@ describe('Route Registration Integration Tests', () => {
       expect(res.statusCode).toBeLessThan(500);
       expect(res.statusCode).not.toBe(404);
     });
-
-    it('should register metadata route and be accessible', async () => {
-      const res = await app
-        .inject()
-        .post(`${baseApiPath}/namespace/${namespace}/backups/metadata`)
-        .payload({ imageUrl: 'quay.io/test/backup:latest' });
-
-      expect(res.statusCode).toBeLessThan(500);
-      expect(res.statusCode).not.toBe(404);
-    });
   });
 
   describe('Route Conflicts', () => {
@@ -142,16 +125,6 @@ describe('Route Registration Integration Tests', () => {
         .inject()
         .post(`${baseApiPath}/namespace/${namespace}/backups/validate`)
         .payload({ imageUrl: '' });
-
-      expect(res.statusCode).toEqual(400);
-      expect(res.json()).toHaveProperty('message');
-    });
-
-    it('should handle validation errors in backup metadata route', async () => {
-      const res = await app
-        .inject()
-        .post(`${baseApiPath}/namespace/${namespace}/backups/metadata`)
-        .payload({});
 
       expect(res.statusCode).toEqual(400);
       expect(res.json()).toHaveProperty('message');
@@ -277,11 +250,10 @@ describe('Route Registration Integration Tests', () => {
       // visualization, so we verify it via actual route calls in other tests
     });
 
-    it('should list validate and metadata backup routes', () => {
+    it('should list validate backup route', () => {
       const routes = app.printRoutes();
 
       expect(routes).toContain('validate');
-      expect(routes).toContain('metadata');
     });
   });
 });

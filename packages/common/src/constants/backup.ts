@@ -23,8 +23,6 @@ export const BACKUP_LIST_MIN_PAGE_SIZE = 1;
 /** 1-indexed */
 export const BACKUP_LIST_DEFAULT_PAGE = 1;
 
-export const REGISTRY_QUERY_TIMEOUT_SECONDS = 10;
-
 /**
  * Matches backup image URLs of the form registry[:port]/path/to/image:tag.
  * At least two path segments are required (namespace + workspace name).
@@ -34,17 +32,6 @@ export const REGISTRY_QUERY_TIMEOUT_SECONDS = 10;
  */
 export const BACKUP_IMAGE_URL_PATTERN =
   /^([a-z0-9.-]+(?::[0-9]+)?)(\/[a-z0-9][a-z0-9._-]*){2,}:([a-z0-9._-]+)$/i;
-
-/**
- * OpenShift internal registry default hostname
- */
-export const OPENSHIFT_INTERNAL_REGISTRY_HOSTNAME =
-  'image-registry.openshift-image-registry.svc';
-
-/**
- * OpenShift internal registry default port
- */
-export const OPENSHIFT_INTERNAL_REGISTRY_PORT = 5000;
 
 /** Only :latest is supported in MVP — no versioned backup tags. */
 export const BACKUP_IMAGE_DEFAULT_TAG = 'latest';
