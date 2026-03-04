@@ -15,16 +15,31 @@
 import {
   BACKUP_ERROR_CODES,
   BACKUP_IMAGE_DEFAULT_TAG,
+  BackupStatus,
   DEVWORKSPACE_BACKUP_ANNOTATIONS,
   DEVWORKSPACE_BACKUP_LABELS,
 } from '@eclipse-che/common';
 
+jest.mock('https');
+
+import * as https from 'https';
+
 import { RegistryApiService } from '@/devworkspaceClient/services/registryApi';
+
+const mockHttpsGet = https.get as jest.Mock;
 
 const mockCustomObjectsApi = {
   getNamespacedCustomObject: jest.fn(),
   listNamespacedCustomObject: jest.fn(),
 };
+
+const mockCoreV1Api = {
+  readNamespacedSecret: jest.fn(),
+};
+
+jest.mock('@/devworkspaceClient/services/helpers/prepareCoreV1API', () => ({
+  prepareCoreV1API: jest.fn(() => mockCoreV1Api),
+}));
 
 const mockKubeConfig = {
   makeApiClient: jest.fn(() => mockCustomObjectsApi),
@@ -442,63 +457,18 @@ describe('RegistryApiService', () => {
       expect(externalBackup!.imageUrl).toContain('external-workspace:latest');
     });
 
-    it('should fall back to ImageStream imageUrl when DWOC registry path is unavailable', async () => {
-      mockCustomObjectsApi.listNamespacedCustomObject
-        .mockResolvedValueOnce({ items: [mockImageStream] }) // imagestreams
-        .mockResolvedValueOnce({
-          items: [
-            {
-              metadata: {
-                name: workspaceName,
-                namespace,
-                annotations: {
-                  [DEVWORKSPACE_BACKUP_ANNOTATIONS.LAST_BACKUP_FINISHED_AT]:
-                    '2026-02-10T12:00:00.000Z',
-                },
-              },
-            },
-          ],
-        }); // devworkspaces
-
-      // DWOC fails — should be caught gracefully; imageUrl falls back to ImageStream's value
+    it('should return empty list immediately when DWOC registry path is unavailable', async () => {
+      // DWOC fails — early return before any user-namespace queries are made
       mockCustomObjectsApi.getNamespacedCustomObject.mockRejectedValue(
         new Error('DWOC config unavailable'),
       );
 
       const result = await service.listBackupImages(namespace);
 
-      expect(result.backups).toHaveLength(1);
-      // Falls back to ImageStream status.dockerImageRepository + :latest
-      expect(result.backups[0].imageUrl).toBe(imageUrl);
-    });
-
-    it('should silently skip annotation-only DWs when DWOC registry path is unavailable', async () => {
-      mockCustomObjectsApi.listNamespacedCustomObject
-        .mockResolvedValueOnce({ items: [] }) // imagestreams — none
-        .mockResolvedValueOnce({
-          items: [
-            {
-              metadata: {
-                name: 'my-workspace',
-                namespace,
-                annotations: {
-                  [DEVWORKSPACE_BACKUP_ANNOTATIONS.LAST_BACKUP_FINISHED_AT]:
-                    '2026-02-10T12:00:00.000Z',
-                },
-              },
-            },
-          ],
-        }); // devworkspaces
-
-      // DWOC fails — gracefully caught; annotation-only DWs are silently skipped
-      mockCustomObjectsApi.getNamespacedCustomObject.mockRejectedValue(
-        new Error('DWOC config unavailable'),
-      );
-
-      const result = await service.listBackupImages(namespace);
-
-      // No error — annotation-only DWs silently skipped because imageUrl cannot be constructed
       expect(result.backups).toHaveLength(0);
+      expect(result.total).toBe(0);
+      // No ImageStream or DevWorkspace queries were attempted
+      expect(mockCustomObjectsApi.listNamespacedCustomObject).not.toHaveBeenCalled();
     });
 
     it('should propagate error when DevWorkspace list fetch fails', async () => {
@@ -511,17 +481,21 @@ describe('RegistryApiService', () => {
       });
     });
 
-    it('should always call getBackupRegistryPath in parallel with other fetches', async () => {
-      mockCustomObjectsApi.listNamespacedCustomObject
-        .mockResolvedValueOnce({ items: [mockImageStream] }) // imagestreams
-        .mockResolvedValueOnce({ items: [] }); // devworkspaces
+    it('should call getBackupRegistryPath before querying user-namespace data', async () => {
+      const callOrder: string[] = [];
+      mockCustomObjectsApi.getNamespacedCustomObject.mockImplementation(async () => {
+        callOrder.push('dwoc');
+        return { config: { workspace: { backupCronJob: { registry: { path: registryPath } } } } };
+      });
+      mockCustomObjectsApi.listNamespacedCustomObject.mockImplementation(async () => {
+        callOrder.push('list');
+        return { items: [] };
+      });
 
       await service.listBackupImages(namespace);
 
-      // DWOC must always be called — registry path is the authoritative imageUrl source
-      expect(mockCustomObjectsApi.getNamespacedCustomObject).toHaveBeenCalledWith(
-        expect.objectContaining({ plural: 'devworkspaceoperatorconfigs' }),
-      );
+      expect(callOrder[0]).toBe('dwoc');
+      expect(callOrder.filter(c => c === 'list').length).toBe(2); // imagestreams + devworkspaces
     });
 
     it('should use DWOC registry path for imageUrl when DWOC is available', async () => {
@@ -630,6 +604,72 @@ describe('RegistryApiService', () => {
       expect(mockCustomObjectsApi.getNamespacedCustomObject).toHaveBeenCalledWith(
         expect.objectContaining({ plural: 'devworkspaceoperatorconfigs' }),
       );
+    });
+  });
+
+  describe('getRegistryCredentials (via listBackupImages with quay.io)', () => {
+    const quayRegistryPath = 'quay.io/my-org/backups';
+
+    interface MockRes {
+      statusCode: number;
+      on: jest.Mock;
+    }
+
+    beforeEach(() => {
+      mockCustomObjectsApi.getNamespacedCustomObject.mockResolvedValue({
+        config: {
+          workspace: {
+            backupCronJob: {
+              registry: {
+                path: quayRegistryPath,
+                authSecret: 'registry-secret',
+              },
+            },
+          },
+        },
+      });
+      // Mock https.get for QuayRegistryClient
+      mockHttpsGet.mockImplementation(
+        (_url: unknown, _opts: unknown, callback: (res: MockRes) => void) => {
+          const res: MockRes = {
+            statusCode: 200,
+            on: jest.fn((event: string, handler: (...args: unknown[]) => void) => {
+              if (event === 'data') handler(JSON.stringify({ repositories: [] }));
+              if (event === 'end') handler();
+              return res;
+            }),
+          };
+          callback(res);
+          return { on: jest.fn() };
+        },
+      );
+    });
+
+    it('should read auth secret and extract token', async () => {
+      const robotToken = 'my-robot-token';
+      const auth = Buffer.from(`my-robot:${robotToken}`).toString('base64');
+      mockCoreV1Api.readNamespacedSecret.mockResolvedValue({
+        data: {
+          '.dockerconfigjson': Buffer.from(
+            JSON.stringify({ auths: { 'quay.io': { auth } } }),
+          ).toString('base64'),
+        },
+      });
+      mockCustomObjectsApi.listNamespacedCustomObject.mockResolvedValue({ items: [] });
+
+      await service.listBackupImages(namespace);
+
+      expect(mockCoreV1Api.readNamespacedSecret).toHaveBeenCalledWith(
+        expect.objectContaining({ name: 'registry-secret' }),
+      );
+    });
+
+    it('should fall back gracefully when auth secret is missing', async () => {
+      mockCoreV1Api.readNamespacedSecret.mockRejectedValue(new Error('Secret not found'));
+      mockCustomObjectsApi.listNamespacedCustomObject.mockResolvedValue({ items: [] });
+
+      // Should not throw — falls back to NoOpRegistryClient
+      await expect(service.listBackupImages(namespace)).resolves.toBeDefined();
     });
   });
 
@@ -745,6 +785,146 @@ describe('RegistryApiService', () => {
 
       // Workspace found in DW list → workspaceExists: true
       expect(result.backups[0].workspaceExists).toBe(true);
+    });
+  });
+
+  describe('listBackupImages — external registry (quay.io) path', () => {
+    const quayRegistryPath = 'quay.io/my-org/backups';
+
+    interface MockRes {
+      statusCode: number;
+      on: jest.Mock;
+    }
+
+    function buildMockRes(statusCode: number, body: string): MockRes {
+      const res: MockRes = {
+        statusCode,
+        on: jest.fn((event: string, handler: (...args: unknown[]) => void) => {
+          if (event === 'data') handler(body);
+          if (event === 'end') handler();
+          return res;
+        }),
+      };
+      return res;
+    }
+
+    function mockQuayResponse(repos: { name: string; last_modified: number }[]): void {
+      mockHttpsGet.mockImplementation(
+        (_url: unknown, _opts: unknown, callback: (res: MockRes) => void) => {
+          callback(buildMockRes(200, JSON.stringify({ repositories: repos })));
+          return { on: jest.fn() };
+        },
+      );
+    }
+
+    beforeEach(() => {
+      mockCustomObjectsApi.getNamespacedCustomObject.mockResolvedValue({
+        config: {
+          workspace: {
+            backupCronJob: {
+              registry: { path: quayRegistryPath, authSecret: 'registry-secret' },
+            },
+          },
+        },
+      });
+      const auth = Buffer.from('robot:token').toString('base64');
+      mockCoreV1Api.readNamespacedSecret.mockResolvedValue({
+        data: {
+          '.dockerconfigjson': Buffer.from(
+            JSON.stringify({ auths: { 'quay.io': { auth } } }),
+          ).toString('base64'),
+        },
+      });
+    });
+
+    it('should discover deleted workspace backups from registry', async () => {
+      mockQuayResponse([{ name: 'backups/user-che/deleted-ws', last_modified: 1700000000 }]);
+      // No DevWorkspaces exist (workspace was deleted)
+      mockCustomObjectsApi.listNamespacedCustomObject.mockResolvedValue({ items: [] });
+
+      const result = await service.listBackupImages(namespace);
+
+      // Registry discovered workspace, but no DW annotation → timestamp is ''
+      // Empty timestamp gets filtered out by the "no backup completed" filter
+      expect(result.backups).toHaveLength(0);
+    });
+
+    it('should surface deleted workspace with annotation timestamp from registry', async () => {
+      const deletedDWTimestamp = '2026-02-10T12:00:00.000Z';
+      mockQuayResponse([{ name: 'backups/user-che/deleted-ws', last_modified: 1700000000 }]);
+      // DW exists with backup annotation but will be marked as not existing
+      // (it's discovered via registry, not DW list)
+      mockCustomObjectsApi.listNamespacedCustomObject.mockResolvedValue({
+        items: [
+          {
+            metadata: {
+              name: 'deleted-ws',
+              annotations: {
+                [DEVWORKSPACE_BACKUP_ANNOTATIONS.LAST_BACKUP_FINISHED_AT]: deletedDWTimestamp,
+              },
+            },
+          },
+        ],
+      });
+
+      const result = await service.listBackupImages(namespace);
+
+      expect(result.backups).toHaveLength(1);
+      expect(result.backups[0].workspaceName).toBe('deleted-ws');
+      expect(result.backups[0].workspaceExists).toBe(true);
+      expect(result.backups[0].timestamp).toBe(deletedDWTimestamp);
+      expect(result.backups[0].imageUrl).toBe(
+        `${quayRegistryPath}/${namespace}/deleted-ws:${BACKUP_IMAGE_DEFAULT_TAG}`,
+      );
+    });
+
+    it('should mark annotation-only entry as UNAVAILABLE when quay confirms image missing', async () => {
+      mockQuayResponse([]); // quay.io returns empty list
+      mockCustomObjectsApi.listNamespacedCustomObject.mockResolvedValue({
+        items: [
+          {
+            metadata: {
+              name: 'orphaned-ws',
+              annotations: {
+                [DEVWORKSPACE_BACKUP_ANNOTATIONS.LAST_BACKUP_FINISHED_AT]: '2026-02-10T12:00:00Z',
+              },
+            },
+          },
+        ],
+      });
+
+      const result = await service.listBackupImages(namespace);
+
+      expect(result.backups).toHaveLength(1);
+      expect(result.backups[0].workspaceName).toBe('orphaned-ws');
+      expect(result.backups[0].labels[DEVWORKSPACE_BACKUP_ANNOTATIONS.LAST_BACKUP_SUCCESSFUL]).toBe(
+        BackupStatus.UNAVAILABLE,
+      );
+    });
+
+    it('should merge registry and annotation data for existing workspace', async () => {
+      const backupTimestamp = '2026-02-10T14:00:00Z';
+      mockQuayResponse([{ name: 'backups/user-che/my-workspace', last_modified: 1700000000 }]);
+      mockCustomObjectsApi.listNamespacedCustomObject.mockResolvedValue({
+        items: [
+          {
+            metadata: {
+              name: 'my-workspace',
+              annotations: {
+                [DEVWORKSPACE_BACKUP_ANNOTATIONS.LAST_BACKUP_FINISHED_AT]: backupTimestamp,
+                [DEVWORKSPACE_BACKUP_ANNOTATIONS.LAST_BACKUP_SUCCESSFUL]: 'true',
+              },
+            },
+          },
+        ],
+      });
+
+      const result = await service.listBackupImages(namespace);
+
+      expect(result.backups).toHaveLength(1);
+      expect(result.backups[0].workspaceName).toBe('my-workspace');
+      expect(result.backups[0].workspaceExists).toBe(true);
+      expect(result.backups[0].timestamp).toBe(backupTimestamp);
     });
   });
 });

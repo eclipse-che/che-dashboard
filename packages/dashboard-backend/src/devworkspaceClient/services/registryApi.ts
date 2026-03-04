@@ -25,15 +25,22 @@ import {
 } from '@eclipse-che/common';
 import { CustomObjectsApi, KubeConfig } from '@kubernetes/client-node';
 
-import { backupRegistryTimeout } from '@/constants/config';
+import { backupRegistryTimeout, dwoConfigName, dwoNamespace } from '@/constants/config';
 import { createError } from '@/devworkspaceClient/services/helpers/createError';
+import {
+  createRegistryClient,
+  detectRegistryType,
+  IExternalRegistryClient,
+} from '@/devworkspaceClient/services/helpers/externalRegistry';
+import {
+  CoreV1API,
+  prepareCoreV1API,
+} from '@/devworkspaceClient/services/helpers/prepareCoreV1API';
 
 // DevWorkspaceOperatorConfig constants
 const DWOC_GROUP = 'controller.devfile.io';
 const DWOC_VERSION = 'v1alpha1';
 const DWOC_PLURAL = 'devworkspaceoperatorconfigs';
-const DWOC_NAME = 'devworkspace-operator-config';
-const DWOC_NAMESPACE = 'openshift-operators';
 
 // DevWorkspace constants
 const DEVWORKSPACE_GROUP = 'workspace.devfile.io';
@@ -87,9 +94,11 @@ function validateK8sName(name: string, fieldName: string): void {
 
 export class RegistryApiService {
   private customObjectsApi: CustomObjectsApi;
+  private coreV1Api: CoreV1API;
 
   constructor(kubeConfig: KubeConfig) {
     this.customObjectsApi = kubeConfig.makeApiClient(CustomObjectsApi);
+    this.coreV1Api = prepareCoreV1API(kubeConfig);
   }
 
   /**
@@ -145,32 +154,67 @@ export class RegistryApiService {
   }
 
   /**
-   * Get backup registry path from DevWorkspaceOperatorConfig
+   * Get backup registry path and auth secret name from DevWorkspaceOperatorConfig
    */
-  private async getBackupRegistryPath(): Promise<string> {
+  private async getBackupRegistryPath(): Promise<{ registryPath: string; authSecret?: string }> {
     try {
       const response = await this.customObjectsApi.getNamespacedCustomObject({
         group: DWOC_GROUP,
         version: DWOC_VERSION,
-        namespace: DWOC_NAMESPACE,
+        namespace: dwoNamespace,
         plural: DWOC_PLURAL,
-        name: DWOC_NAME,
+        name: dwoConfigName,
       });
 
       const operatorConfig = (response as any).body || response;
       const registryPath = operatorConfig.config?.workspace?.backupCronJob?.registry?.path;
+      const authSecret = operatorConfig.config?.workspace?.backupCronJob?.registry?.authSecret;
 
       if (!registryPath) {
         throw new Error('Backup registry path not configured');
       }
 
-      return registryPath;
+      return { registryPath, authSecret };
     } catch (e) {
       throw createError(
         e,
         BACKUP_ERROR_CODES.REGISTRY_API_ERROR,
         'Unable to get backup registry configuration',
       );
+    }
+  }
+
+  /**
+   * Reads the registry auth token from the DWOC authSecret.
+   * Returns empty string if the secret is missing or unreadable (NoOp fallback).
+   */
+  private async getRegistryCredentials(secretName: string, registryHost: string): Promise<string> {
+    try {
+      const secret = await this.coreV1Api.readNamespacedSecret({
+        name: secretName,
+        namespace: dwoNamespace,
+      });
+
+      const dockerConfigJson = (secret as any).data?.['.dockerconfigjson'];
+      if (!dockerConfigJson) {
+        return '';
+      }
+
+      const dockerConfig = JSON.parse(Buffer.from(dockerConfigJson, 'base64').toString('utf-8'));
+      const authEntry = dockerConfig?.auths?.[registryHost];
+      if (!authEntry?.auth) {
+        return '';
+      }
+
+      // auth is base64("username:token") — we want just the token part
+      const decoded = Buffer.from(authEntry.auth, 'base64').toString('utf-8');
+      const colonIndex = decoded.indexOf(':');
+      if (colonIndex === -1) {
+        return '';
+      }
+      return decoded.slice(colonIndex + 1);
+    } catch {
+      return '';
     }
   }
 
@@ -240,92 +284,153 @@ export class RegistryApiService {
     }
 
     try {
+      // Step 1: Read DWOC registry config. If backup is not configured (or DWOC is not
+      // accessible), return an empty list immediately — no point querying user-namespace data.
+      let registryPath: string;
+      let authSecret: string | undefined;
+      try {
+        ({ registryPath, authSecret } = await this.getBackupRegistryPath());
+      } catch {
+        return { backups: [], total: 0, page: 1, perPage: 0 };
+      }
+
+      // Step 2: Get registry credentials for external registries
+      const registryType = detectRegistryType(registryPath);
+      let registryClient: IExternalRegistryClient | undefined;
+      if (registryType !== 'openshift-internal') {
+        const registryHost = registryPath.split('/')[0].split(':')[0];
+        const token = authSecret ? await this.getRegistryCredentials(authSecret, registryHost) : '';
+        registryClient = createRegistryClient(registryPath, token);
+      }
+
+      // Step 3: Query exactly one registry source + DevWorkspaces concurrently.
       const timeoutPromise = new Promise<never>((_, reject) => {
         setTimeout(() => {
           reject(new Error('Registry query timeout'));
         }, backupRegistryTimeout * 1000);
       });
 
-      // All three fetched concurrently. Registry path is always needed: it is the
-      // authoritative source for imageUrl (matches what DWO actually pushed to).
-      // A failure is caught gracefully so a missing DWOC does not break listing.
-      const imageStreamPromise = this.listImageStreams(namespace);
-      const allDevWorkspacesPromise = this.listAllDevWorkspaces(namespace);
-      const registryPathPromise = this.getBackupRegistryPath().catch(() => null);
-
-      const [imageStreamResults, allDevWorkspaces, registryPath] = await Promise.race([
-        Promise.all([imageStreamPromise, allDevWorkspacesPromise, registryPathPromise]),
+      type ListResult = [IBackupImage[] | string[], any[]];
+      const [registryResults, allDevWorkspaces] = (await Promise.race([
+        Promise.all([
+          registryType === 'openshift-internal'
+            ? this.listImageStreams(namespace).catch((): IBackupImage[] => [])
+            : registryClient!.listWorkspaceBackups(namespace),
+          this.listAllDevWorkspaces(namespace),
+        ]),
         timeoutPromise,
-      ]);
+      ])) as ListResult;
 
-      // Derive both structures from the single DW list fetch
+      const allWorkspaceNames = new Set<string>(
+        allDevWorkspaces.map((dw: any) => dw.metadata?.name).filter(Boolean),
+      );
       const devworkspacesWithBackups = allDevWorkspaces.filter(
         (dw: any) =>
           dw.metadata?.annotations?.[DEVWORKSPACE_BACKUP_ANNOTATIONS.LAST_BACKUP_FINISHED_AT],
       );
-      const allWorkspaceNames = new Set<string>(
-        allDevWorkspaces.map((dw: any) => dw.metadata?.name).filter(Boolean),
-      );
 
       const backupMap = new Map<string, BackupItem>();
 
-      for (const image of imageStreamResults) {
-        const exists = allWorkspaceNames.has(image.workspaceName);
-        const matchingDW = devworkspacesWithBackups.find(
-          (dw: any) => dw.metadata.name === image.workspaceName,
-        );
-        const dwAnnotations = matchingDW?.metadata?.annotations || {};
-        const mergedLabels: Record<string, string> = { ...image.labels };
-        // Precedence for LAST_BACKUP_SUCCESSFUL:
-        // 1. DevWorkspace annotation (explicit, most authoritative)
-        // 2. ImageStream-set value (e.g., BackupStatus.UNAVAILABLE for tagless ImageStreams)
-        // 3. 'true' default — :latest tag existing proves a backup completed successfully
-        mergedLabels[DEVWORKSPACE_BACKUP_ANNOTATIONS.LAST_BACKUP_SUCCESSFUL] =
-          dwAnnotations[DEVWORKSPACE_BACKUP_ANNOTATIONS.LAST_BACKUP_SUCCESSFUL] ??
-          mergedLabels[DEVWORKSPACE_BACKUP_ANNOTATIONS.LAST_BACKUP_SUCCESSFUL] ??
-          'true';
-        if (dwAnnotations[DEVWORKSPACE_BACKUP_ANNOTATIONS.LAST_BACKUP_ERROR] !== undefined) {
-          mergedLabels[DEVWORKSPACE_BACKUP_ANNOTATIONS.LAST_BACKUP_ERROR] =
-            dwAnnotations[DEVWORKSPACE_BACKUP_ANNOTATIONS.LAST_BACKUP_ERROR];
-        }
-        // Timestamp precedence:
-        // 1. DevWorkspace annotation LAST_BACKUP_FINISHED_AT (authoritative backup completion time)
-        // 2. Image timestamp from ImageStream (image creation time)
-        const timestamp =
-          dwAnnotations[DEVWORKSPACE_BACKUP_ANNOTATIONS.LAST_BACKUP_FINISHED_AT] ?? image.timestamp;
-        // imageUrl precedence:
-        // 1. DWOC registry.path — authoritative; matches the URL DWO pushed to
-        // 2. ImageStream-provided URL (from ImageStream status.dockerImageRepository) — fallback
-        // Keep '' for UNAVAILABLE images (imageUrl === '' means no backup image yet).
-        const resolvedImageUrl =
-          registryPath && image.imageUrl
+      if (registryType === 'openshift-internal') {
+        // --- ImageStream merge logic ---
+        const imageStreamResults = registryResults as IBackupImage[];
+        for (const image of imageStreamResults) {
+          const exists = allWorkspaceNames.has(image.workspaceName);
+          const matchingDW = devworkspacesWithBackups.find(
+            (dw: any) => dw.metadata.name === image.workspaceName,
+          );
+          const dwAnnotations = matchingDW?.metadata?.annotations || {};
+          const mergedLabels: Record<string, string> = { ...image.labels };
+          mergedLabels[DEVWORKSPACE_BACKUP_ANNOTATIONS.LAST_BACKUP_SUCCESSFUL] =
+            dwAnnotations[DEVWORKSPACE_BACKUP_ANNOTATIONS.LAST_BACKUP_SUCCESSFUL] ??
+            mergedLabels[DEVWORKSPACE_BACKUP_ANNOTATIONS.LAST_BACKUP_SUCCESSFUL] ??
+            'true';
+          if (dwAnnotations[DEVWORKSPACE_BACKUP_ANNOTATIONS.LAST_BACKUP_ERROR] !== undefined) {
+            mergedLabels[DEVWORKSPACE_BACKUP_ANNOTATIONS.LAST_BACKUP_ERROR] =
+              dwAnnotations[DEVWORKSPACE_BACKUP_ANNOTATIONS.LAST_BACKUP_ERROR];
+          }
+          const timestamp =
+            dwAnnotations[DEVWORKSPACE_BACKUP_ANNOTATIONS.LAST_BACKUP_FINISHED_AT] ??
+            image.timestamp;
+          const resolvedImageUrl = image.imageUrl
             ? `${registryPath}/${namespace}/${image.workspaceName}:${BACKUP_IMAGE_DEFAULT_TAG}`
             : image.imageUrl;
-        const mapKey = resolvedImageUrl || `unavailable:${image.workspaceName}`;
-        backupMap.set(mapKey, {
-          ...image,
-          imageUrl: resolvedImageUrl,
-          timestamp,
-          workspaceExists: exists,
-          labels: mergedLabels,
-        });
-      }
+          const mapKey = resolvedImageUrl || `unavailable:${image.workspaceName}`;
+          backupMap.set(mapKey, {
+            ...image,
+            imageUrl: resolvedImageUrl,
+            timestamp,
+            workspaceExists: exists,
+            labels: mergedLabels,
+          });
+        }
 
-      // Annotation-only workspaces: have backup annotations but no corresponding ImageStream.
-      // Only surface them when registryPath is known — it is required to construct imageUrl.
-      const imageStreamWorkspaceNames = new Set(imageStreamResults.map(img => img.workspaceName));
-      const annotationOnlyDWs = devworkspacesWithBackups.filter(
-        (dw: any) => !imageStreamWorkspaceNames.has(dw.metadata.name),
-      );
-      if (annotationOnlyDWs.length > 0 && registryPath) {
-        for (const dw of annotationOnlyDWs) {
+        // Annotation-only workspaces not found in ImageStream
+        const imageStreamWorkspaceNames = new Set(imageStreamResults.map(img => img.workspaceName));
+        for (const dw of devworkspacesWithBackups) {
+          if (imageStreamWorkspaceNames.has(dw.metadata.name)) continue;
           const backupItem = this.buildBackupItemFromAnnotations(dw, registryPath, namespace);
           backupMap.set(backupItem.imageUrl, backupItem);
+        }
+      } else {
+        // --- External registry merge logic ---
+        const externalWorkspaceNames = new Set<string>(registryResults as string[]);
+        const isVerifiedRegistry = registryType === 'quay';
+
+        // 1. External registry discovered workspaces (includes deleted ones)
+        for (const wsName of externalWorkspaceNames) {
+          const matchingDW = devworkspacesWithBackups.find(
+            (dw: any) => dw.metadata.name === wsName,
+          );
+          const dwAnnotations = matchingDW?.metadata?.annotations ?? {};
+          const imageUrl = `${registryPath}/${namespace}/${wsName}:${BACKUP_IMAGE_DEFAULT_TAG}`;
+          backupMap.set(imageUrl, {
+            workspaceName: wsName,
+            imageUrl,
+            timestamp: dwAnnotations[DEVWORKSPACE_BACKUP_ANNOTATIONS.LAST_BACKUP_FINISHED_AT] ?? '',
+            sizeBytes: 0,
+            workspaceExists: allWorkspaceNames.has(wsName),
+            labels: {
+              [DEVWORKSPACE_BACKUP_ANNOTATIONS.LAST_BACKUP_SUCCESSFUL]: 'true',
+              ...(dwAnnotations[DEVWORKSPACE_BACKUP_ANNOTATIONS.LAST_BACKUP_ERROR]
+                ? {
+                    [DEVWORKSPACE_BACKUP_ANNOTATIONS.LAST_BACKUP_ERROR]:
+                      dwAnnotations[DEVWORKSPACE_BACKUP_ANNOTATIONS.LAST_BACKUP_ERROR],
+                  }
+                : {}),
+            },
+          });
+        }
+
+        // 2. Annotation-only DevWorkspaces not found in registry
+        for (const dw of devworkspacesWithBackups) {
+          const wsName = dw.metadata.name;
+          const imageUrl = `${registryPath}/${namespace}/${wsName}:${BACKUP_IMAGE_DEFAULT_TAG}`;
+          if (backupMap.has(imageUrl)) continue;
+
+          const dwAnnotations = dw.metadata.annotations ?? {};
+          backupMap.set(imageUrl, {
+            workspaceName: wsName,
+            imageUrl,
+            timestamp: dwAnnotations[DEVWORKSPACE_BACKUP_ANNOTATIONS.LAST_BACKUP_FINISHED_AT],
+            sizeBytes: 0,
+            workspaceExists: true,
+            labels: {
+              [DEVWORKSPACE_BACKUP_ANNOTATIONS.LAST_BACKUP_SUCCESSFUL]: isVerifiedRegistry
+                ? BackupStatus.UNAVAILABLE
+                : dwAnnotations[DEVWORKSPACE_BACKUP_ANNOTATIONS.LAST_BACKUP_SUCCESSFUL] ?? 'true',
+              ...(dwAnnotations[DEVWORKSPACE_BACKUP_ANNOTATIONS.LAST_BACKUP_ERROR]
+                ? {
+                    [DEVWORKSPACE_BACKUP_ANNOTATIONS.LAST_BACKUP_ERROR]:
+                      dwAnnotations[DEVWORKSPACE_BACKUP_ANNOTATIONS.LAST_BACKUP_ERROR],
+                  }
+                : {}),
+            },
+          });
         }
       }
 
       const allBackups = Array.from(backupMap.values());
-      // Filter out entries with no backup (empty timestamp = no backup ever completed)
       const backupsWithData = allBackups.filter(backup => backup.timestamp !== '');
       const filteredBackups = workspaceName
         ? backupsWithData.filter(backup => backup.workspaceName === workspaceName)

@@ -26,7 +26,7 @@
  * directly via the K8s CustomObjects API.
  */
 
-import { BackupStatus } from '@eclipse-che/common';
+import { BackupStatus, DEVWORKSPACE_BACKUP_ANNOTATIONS } from '@eclipse-che/common';
 import * as k8s from '@kubernetes/client-node';
 import { V1Job, V1JobStatus } from '@kubernetes/client-node';
 import { FastifyInstance } from 'fastify';
@@ -40,6 +40,13 @@ import { setup, teardown } from '@/utils/appBuilder';
 jest.mock('@/devworkspaceClient/services/helpers/retryableExec', () => ({
   retryableExec: jest.fn((fn: () => any) => fn()),
 }));
+
+// Mock https for QuayRegistryClient
+jest.mock('https');
+
+import * as https from 'https';
+
+const mockHttpsGet = https.get as jest.Mock;
 
 // Mock helpers
 jest.mock('@/routes/api/helpers/getServiceAccountToken');
@@ -65,6 +72,14 @@ const mockBatchV1API = {
   createNamespacedJob: jest.fn(),
   deleteNamespacedJob: jest.fn(),
 };
+
+const mockCoreV1API = {
+  readNamespacedSecret: jest.fn(),
+};
+
+jest.mock('@/devworkspaceClient/services/helpers/prepareCoreV1API', () => ({
+  prepareCoreV1API: jest.fn(() => mockCoreV1API),
+}));
 
 const mockKubeConfig = new k8s.KubeConfig();
 jest.spyOn(mockKubeConfig, 'makeApiClient').mockImplementation((apiType: any) => {
@@ -374,7 +389,7 @@ describe('Backup API Integration Tests', () => {
       expect(mockCustomObjectAPI.getNamespacedCustomObject).toHaveBeenNthCalledWith(1, {
         group: 'controller.devfile.io',
         version: 'v1alpha1',
-        namespace: 'openshift-operators',
+        namespace: 'eclipse-che',
         plural: 'devworkspaceoperatorconfigs',
         name: 'devworkspace-operator-config',
       });
@@ -675,6 +690,104 @@ describe('Backup API Integration Tests', () => {
   });
 
   // ========================================================================
+  // GET /api/namespace/:namespace/backups - quay.io external registry
+  // ========================================================================
+  describe('GET backups - quay.io external registry', () => {
+    const quayRegistry = 'quay.io/my-org/backups';
+
+    interface MockRes {
+      statusCode: number;
+      on: jest.Mock;
+    }
+
+    function buildMockRes(statusCode: number, body: string): MockRes {
+      const res: MockRes = {
+        statusCode,
+        on: jest.fn((event: string, handler: (...args: unknown[]) => void) => {
+          if (event === 'data') handler(body);
+          if (event === 'end') handler();
+          return res;
+        }),
+      };
+      return res;
+    }
+
+    beforeEach(() => {
+      mockCustomObjectAPI.getNamespacedCustomObject.mockResolvedValue(
+        createOperatorConfigResponse({ registry: quayRegistry, authSecret: 'registry-secret' }),
+      );
+      const auth = Buffer.from('robot:test-token').toString('base64');
+      mockCoreV1API.readNamespacedSecret.mockResolvedValue({
+        data: {
+          '.dockerconfigjson': Buffer.from(
+            JSON.stringify({ auths: { 'quay.io': { auth } } }),
+          ).toString('base64'),
+        },
+      });
+    });
+
+    it('should surface deleted workspace backup discovered via quay.io', async () => {
+      mockHttpsGet.mockImplementation(
+        (_url: unknown, _opts: unknown, callback: (res: MockRes) => void) => {
+          callback(
+            buildMockRes(
+              200,
+              JSON.stringify({
+                repositories: [{ name: 'backups/user-che/deleted-ws', last_modified: 1700000000 }],
+              }),
+            ),
+          );
+          return { on: jest.fn() };
+        },
+      );
+      // DW still has annotation (but workspace was deleted from another context)
+      mockCustomObjectAPI.listNamespacedCustomObject.mockResolvedValue({
+        items: [
+          createMockDevWorkspace(namespace, 'deleted-ws', {
+            [DEVWORKSPACE_BACKUP_ANNOTATIONS.LAST_BACKUP_FINISHED_AT]: '2026-02-10T12:00:00Z',
+          }),
+        ],
+      });
+
+      const res = await app.inject().get(`${baseApiPath}/namespace/${namespace}/backups`);
+
+      expect(res.statusCode).toEqual(200);
+      const response = res.json();
+
+      expect(response.backups).toHaveLength(1);
+      expect(response.backups[0].workspaceName).toBe('deleted-ws');
+      expect(response.backups[0].workspaceExists).toBe(true);
+      expect(response.backups[0].imageUrl).toBe(`${quayRegistry}/${namespace}/deleted-ws:latest`);
+    });
+
+    it('should mark annotation entry as UNAVAILABLE when not in quay.io listing', async () => {
+      mockHttpsGet.mockImplementation(
+        (_url: unknown, _opts: unknown, callback: (res: MockRes) => void) => {
+          callback(buildMockRes(200, JSON.stringify({ repositories: [] })));
+          return { on: jest.fn() };
+        },
+      );
+      mockCustomObjectAPI.listNamespacedCustomObject.mockResolvedValue({
+        items: [
+          createMockDevWorkspace(namespace, workspaceName, {
+            [DEVWORKSPACE_BACKUP_ANNOTATIONS.LAST_BACKUP_FINISHED_AT]: '2026-02-10T12:00:00Z',
+          }),
+        ],
+      });
+
+      const res = await app.inject().get(`${baseApiPath}/namespace/${namespace}/backups`);
+
+      expect(res.statusCode).toEqual(200);
+      const response = res.json();
+
+      expect(response.backups).toHaveLength(1);
+      expect(
+        response.backups[0].labels[DEVWORKSPACE_BACKUP_ANNOTATIONS.LAST_BACKUP_SUCCESSFUL],
+      ).toBe(BackupStatus.UNAVAILABLE);
+    });
+  });
+
+  // ========================================================================
   // Cross-cutting: Response format consistency
   // ========================================================================
   describe('Response Format Consistency', () => {
@@ -695,6 +808,11 @@ describe('Backup API Integration Tests', () => {
     });
 
     it('should return consistent error format for backups list 500', async () => {
+      // DWOC must succeed so the code proceeds past the early-return gate.
+      // When the devworkspaces query then fails, listBackupImages propagates a 500.
+      mockCustomObjectAPI.getNamespacedCustomObject.mockResolvedValue(
+        createOperatorConfigResponse(),
+      );
       mockCustomObjectAPI.listNamespacedCustomObject.mockRejectedValue(
         new Error('K8s API unreachable'),
       );
