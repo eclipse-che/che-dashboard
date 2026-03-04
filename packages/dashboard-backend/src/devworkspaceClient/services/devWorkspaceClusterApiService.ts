@@ -69,10 +69,12 @@ export class DevWorkspaceClusterApiService implements IDevWorkspaceClusterApi {
       },
       (error: unknown) => {
         this.handleWatchError(error, path);
-        abortController.abort();
+        // Note: Do not call abortController.abort() here - the Watch implementation
+        // already aborts internally before invoking this callback.
         this.watcherInProgress = false;
       },
     );
+    void abortController; // Kept for potential cleanup; not used in error callback (would cause TDZ)
   }
 
   private handleWatchMessage(

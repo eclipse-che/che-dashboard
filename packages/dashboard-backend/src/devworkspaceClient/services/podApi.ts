@@ -61,7 +61,10 @@ export class PodApiService implements IPodApi {
         this.handleWatchMessage(eventPhase, apiObj, listener, params),
       (error: unknown) => {
         this.handleWatchError(error, path);
-        abortController.abort();
+        // Note: Do not call abortController.abort() here - the Watch implementation
+        // already aborts internally before invoking this callback. Calling it would
+        // cause "Cannot access before initialization" when the error occurs before
+        // the watch() promise resolves (e.g. 401 Unauthorized).
       },
     );
 

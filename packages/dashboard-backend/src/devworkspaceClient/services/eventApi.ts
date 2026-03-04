@@ -61,7 +61,8 @@ export class EventApiService implements IEventApi {
         this.handleWatchMessage(eventPhase, apiObj, listener, params),
       (error: unknown) => {
         this.handleWatchError(error, path);
-        abortController.abort();
+        // Note: Do not call abortController.abort() here - the Watch implementation
+        // already aborts internally before invoking this callback.
       },
     );
 
