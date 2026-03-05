@@ -22,45 +22,21 @@ import {
   validateBackupImage,
 } from '@/store/Backups/actions';
 
-/**
- * Normalized backup state indexed by workspace UID
- * Allows efficient O(1) lookup of backup status for specific workspaces
- */
-export interface BackupsByWorkspace {
+interface BackupsByWorkspace {
   [workspaceUID: string]: BackupInfo;
 }
 
-/**
- * Backup items indexed by namespace
- * Used for the backup discovery/list view per namespace
- */
-export interface BackupsByNamespace {
+interface BackupsByNamespace {
   [namespace: string]: BackupItem[];
 }
 
-/**
- * Loading state for different backup operations
- * Separated to allow granular UI loading indicators
- */
-export interface LoadingState {
-  /** Count of in-flight fetchWorkspaceBackupStatus requests */
+interface LoadingState {
   loadingCount: number;
-  /** Count of in-flight fetchBackupList requests */
   updatingCount: number;
-  /** Count of in-flight validateBackupImage requests */
   validatingCount: number;
-  /** Count of in-flight fetchBackupConfig requests */
   configLoadingCount: number;
 }
 
-/** Whether any workspace backup status fetch is in-flight */
-export function isLoading(state: LoadingState): boolean {
-  return state.loadingCount > 0;
-}
-
-/**
- * Redux state shape for Backups feature
- */
 export interface State {
   /** Backup status indexed by workspace UID for efficient lookups */
   byWorkspace: BackupsByWorkspace;
