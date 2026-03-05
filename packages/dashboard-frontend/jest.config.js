@@ -15,6 +15,7 @@ const base = require('../../jest.config.base');
 module.exports = {
   ...base,
   displayName: 'Dashboard Frontend',
+  maxWorkers: 1, // Run serially to avoid jest-websocket-mock cross-test interference
   moduleDirectories: ['node_modules', '../../node_modules', 'src'],
   moduleNameMapper: {
     '\\.(css|less|sass|scss|styl)$': 'identity-obj-proxy',
