@@ -14,15 +14,6 @@
  * Backup-related constants shared between frontend and backend
  */
 
-export const BACKUP_CACHE_TTL_SECONDS = 300;
-
-export const BACKUP_LIST_DEFAULT_PAGE_SIZE = 50;
-export const BACKUP_LIST_MAX_PAGE_SIZE = 100;
-export const BACKUP_LIST_MIN_PAGE_SIZE = 1;
-
-/** 1-indexed */
-export const BACKUP_LIST_DEFAULT_PAGE = 1;
-
 /**
  * Matches backup image URLs of the form registry[:port]/path/to/image:tag.
  * At least two path segments are required (namespace + workspace name).
@@ -66,23 +57,11 @@ export const DEVWORKSPACE_BACKUP_LABELS = {
   DEVWORKSPACE_BACKUP: 'controller.devfile.io/backup-job',
 } as const;
 
-/** Polling interval for backup job status — fallback when WebSocket is unavailable. */
-export const BACKUP_JOB_POLLING_INTERVAL_MS = 5000;
-
 /**
- * HTTP status codes for backup-specific errors
+ * Error codes for backup-specific errors
  */
 export const BACKUP_ERROR_CODES = {
-  BACKUP_NOT_CONFIGURED: 'BACKUP_NOT_CONFIGURED',
-  BACKUP_IMAGE_NOT_FOUND: 'BACKUP_IMAGE_NOT_FOUND',
-  REGISTRY_AUTH_FAILED: 'REGISTRY_AUTH_FAILED',
   INVALID_IMAGE_URL: 'INVALID_IMAGE_URL',
   INVALID_NAMESPACE: 'INVALID_NAMESPACE',
-  INVALID_PAGE_NUMBER: 'INVALID_PAGE_NUMBER',
-  INVALID_PAGE_SIZE: 'INVALID_PAGE_SIZE',
-  DEVWORKSPACE_NOT_FOUND: 'DEVWORKSPACE_NOT_FOUND',
-  JOB_API_ERROR: 'JOB_API_ERROR',
-  JOB_NOT_FOUND: 'JOB_NOT_FOUND',
   REGISTRY_API_ERROR: 'REGISTRY_API_ERROR',
-  TIMEOUT: 'TIMEOUT',
 } as const;
