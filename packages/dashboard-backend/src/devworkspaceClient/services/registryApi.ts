@@ -17,7 +17,6 @@ import {
   BACKUP_IMAGE_DEFAULT_TAG,
   BACKUP_IMAGE_URL_PATTERN,
   BackupItem,
-  BackupListResponse,
   BackupStatus,
   BackupValidationResult,
   DEVWORKSPACE_BACKUP_ANNOTATIONS,
@@ -277,7 +276,7 @@ export class RegistryApiService {
   /**
    * Lists backup images for a namespace, optionally filtered by workspace name.
    */
-  async listBackupImages(namespace: string, workspaceName?: string): Promise<BackupListResponse> {
+  async listBackupImages(namespace: string, workspaceName?: string): Promise<BackupItem[]> {
     validateK8sName(namespace, 'namespace');
     if (workspaceName) {
       validateK8sName(workspaceName, 'workspaceName');
@@ -291,7 +290,7 @@ export class RegistryApiService {
       try {
         ({ registryPath, authSecret } = await this.getBackupRegistryPath());
       } catch {
-        return { backups: [], total: 0, page: 1, perPage: 0 };
+        return [];
       }
 
       // Step 2: Get registry credentials for external registries
@@ -436,12 +435,7 @@ export class RegistryApiService {
         ? backupsWithData.filter(backup => backup.workspaceName === workspaceName)
         : backupsWithData;
 
-      return {
-        backups: filteredBackups,
-        total: filteredBackups.length,
-        page: 1,
-        perPage: filteredBackups.length,
-      };
+      return filteredBackups;
     } catch (e) {
       throw createError(
         e,

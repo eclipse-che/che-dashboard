@@ -256,22 +256,12 @@ describe('Backup Actions', () => {
         },
       ];
 
-      mockedBackupApi.listBackups.mockResolvedValueOnce({
-        backups: mockBackupItems,
-        total: 2,
-        page: 1,
-        perPage: 50,
-      });
+      mockedBackupApi.listBackups.mockResolvedValueOnce(mockBackupItems);
 
       const store = createTestStore();
       const result = await store.dispatch(fetchBackupList({ namespace }));
 
-      expect(mockedBackupApi.listBackups).toHaveBeenCalledWith(
-        namespace,
-        undefined,
-        undefined,
-        undefined,
-      );
+      expect(mockedBackupApi.listBackups).toHaveBeenCalledWith(namespace, undefined);
       expect(result.type).toBe('backups/fetchBackupList/fulfilled');
       expect(result.payload).toEqual(mockBackupItems);
     });
@@ -289,49 +279,17 @@ describe('Backup Actions', () => {
         },
       ];
 
-      mockedBackupApi.listBackups.mockResolvedValueOnce({
-        backups: mockBackupItems,
-        total: 1,
-        page: 1,
-        perPage: 50,
-      });
+      mockedBackupApi.listBackups.mockResolvedValueOnce(mockBackupItems);
 
       const store = createTestStore();
       const result = await store.dispatch(fetchBackupList({ namespace, workspaceName }));
 
-      expect(mockedBackupApi.listBackups).toHaveBeenCalledWith(
-        namespace,
-        workspaceName,
-        undefined,
-        undefined,
-      );
+      expect(mockedBackupApi.listBackups).toHaveBeenCalledWith(namespace, workspaceName);
       expect(result.payload).toHaveLength(1);
     });
 
-    it('should fetch backup list with pagination parameters', async () => {
-      const page = 2;
-      const perPage = 10;
-
-      mockedBackupApi.listBackups.mockResolvedValueOnce({
-        backups: [],
-        total: 15,
-        page,
-        perPage,
-      });
-
-      const store = createTestStore();
-      await store.dispatch(fetchBackupList({ namespace, page, perPage }));
-
-      expect(mockedBackupApi.listBackups).toHaveBeenCalledWith(namespace, undefined, page, perPage);
-    });
-
     it('should handle empty backup list', async () => {
-      mockedBackupApi.listBackups.mockResolvedValueOnce({
-        backups: [],
-        total: 0,
-        page: 1,
-        perPage: 50,
-      });
+      mockedBackupApi.listBackups.mockResolvedValueOnce([]);
 
       const store = createTestStore();
       const result = await store.dispatch(fetchBackupList({ namespace }));
@@ -372,12 +330,7 @@ describe('Backup Actions', () => {
         },
       ];
 
-      mockedBackupApi.listBackups.mockResolvedValueOnce({
-        backups: mockBackupItems,
-        total: 1,
-        page: 1,
-        perPage: 50,
-      });
+      mockedBackupApi.listBackups.mockResolvedValueOnce(mockBackupItems);
 
       const store = createTestStore();
       await store.dispatch(fetchBackupList({ namespace }));

@@ -68,21 +68,6 @@ export interface BackupItem {
 }
 
 /**
- * Paginated response for backup discovery
- * Returned by GET /api/namespace/:namespace/backups
- */
-export interface BackupListResponse {
-  /** Array of discovered backup items */
-  backups: BackupItem[];
-  /** Total number of backups (before pagination) */
-  total: number;
-  /** Current page number */
-  page: number;
-  /** Number of items per page */
-  perPage: number;
-}
-
-/**
  * Backup image validation result
  * Returned by POST /api/backup/validate-image
  */

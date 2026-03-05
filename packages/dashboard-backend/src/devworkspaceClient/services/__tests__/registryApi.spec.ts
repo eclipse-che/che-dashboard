@@ -137,10 +137,7 @@ describe('RegistryApiService', () => {
 
       const result = await service.listBackupImages(namespace);
 
-      expect(result.backups).toHaveLength(2);
-      expect(result.total).toBe(2);
-      expect(result.page).toBe(1);
-      expect(result.perPage).toBe(2);
+      expect(result).toHaveLength(2);
       expect(mockCustomObjectsApi.listNamespacedCustomObject).toHaveBeenCalledWith(
         expect.objectContaining({ plural: 'imagestreams' }),
       );
@@ -166,8 +163,8 @@ describe('RegistryApiService', () => {
 
       const result = await service.listBackupImages(namespace, workspaceName);
 
-      expect(result.backups).toHaveLength(1);
-      expect(result.backups.every(b => b.workspaceName === workspaceName)).toBe(true);
+      expect(result).toHaveLength(1);
+      expect(result.every(b => b.workspaceName === workspaceName)).toBe(true);
     });
 
     it('should enrich results with workspaceExists field', async () => {
@@ -179,7 +176,7 @@ describe('RegistryApiService', () => {
 
       const result = await service.listBackupImages(namespace);
 
-      expect(result.backups[0].workspaceExists).toBe(true);
+      expect(result[0].workspaceExists).toBe(true);
     });
 
     it('should detect when workspace does not exist', async () => {
@@ -189,7 +186,7 @@ describe('RegistryApiService', () => {
 
       const result = await service.listBackupImages(namespace);
 
-      expect(result.backups[0].workspaceExists).toBe(false);
+      expect(result[0].workspaceExists).toBe(false);
     });
 
     it('should default LAST_BACKUP_SUCCESSFUL to true when ImageStream exists but DevWorkspace has no backup annotations', async () => {
@@ -211,11 +208,9 @@ describe('RegistryApiService', () => {
 
       const result = await service.listBackupImages(namespace);
 
-      expect(result.backups).toHaveLength(1);
-      expect(result.backups[0].labels[DEVWORKSPACE_BACKUP_ANNOTATIONS.LAST_BACKUP_SUCCESSFUL]).toBe(
-        'true',
-      );
-      expect(result.backups[0].workspaceExists).toBe(true);
+      expect(result).toHaveLength(1);
+      expect(result[0].labels[DEVWORKSPACE_BACKUP_ANNOTATIONS.LAST_BACKUP_SUCCESSFUL]).toBe('true');
+      expect(result[0].workspaceExists).toBe(true);
     });
 
     it('should use DevWorkspace annotation over default when annotation is present', async () => {
@@ -254,13 +249,11 @@ describe('RegistryApiService', () => {
 
       const result = await service.listBackupImages(namespace);
 
-      expect(result.backups).toHaveLength(1);
-      expect(result.backups[0].labels[DEVWORKSPACE_BACKUP_ANNOTATIONS.LAST_BACKUP_SUCCESSFUL]).toBe(
+      expect(result).toHaveLength(1);
+      expect(result[0].labels[DEVWORKSPACE_BACKUP_ANNOTATIONS.LAST_BACKUP_SUCCESSFUL]).toBe(
         'false',
       );
-      expect(result.backups[0].labels[DEVWORKSPACE_BACKUP_ANNOTATIONS.LAST_BACKUP_ERROR]).toBe(
-        'OOMKilled',
-      );
+      expect(result[0].labels[DEVWORKSPACE_BACKUP_ANNOTATIONS.LAST_BACKUP_ERROR]).toBe('OOMKilled');
     });
 
     it('should default LAST_BACKUP_SUCCESSFUL to true when workspace is deleted', async () => {
@@ -271,11 +264,9 @@ describe('RegistryApiService', () => {
 
       const result = await service.listBackupImages(namespace);
 
-      expect(result.backups).toHaveLength(1);
-      expect(result.backups[0].labels[DEVWORKSPACE_BACKUP_ANNOTATIONS.LAST_BACKUP_SUCCESSFUL]).toBe(
-        'true',
-      );
-      expect(result.backups[0].workspaceExists).toBe(false);
+      expect(result).toHaveLength(1);
+      expect(result[0].labels[DEVWORKSPACE_BACKUP_ANNOTATIONS.LAST_BACKUP_SUCCESSFUL]).toBe('true');
+      expect(result[0].workspaceExists).toBe(false);
     });
 
     it('should filter out UNAVAILABLE backups with no timestamp (no backup completed yet)', async () => {
@@ -297,7 +288,7 @@ describe('RegistryApiService', () => {
       const result = await service.listBackupImages(namespace);
 
       // Should be filtered out — no backup has completed (empty timestamp)
-      expect(result.backups).toHaveLength(0);
+      expect(result).toHaveLength(0);
     });
 
     it('should use DevWorkspace annotation timestamp instead of ImageStream creation time for UNAVAILABLE backups', async () => {
@@ -332,13 +323,11 @@ describe('RegistryApiService', () => {
 
       const result = await service.listBackupImages(namespace);
 
-      expect(result.backups).toHaveLength(1);
+      expect(result).toHaveLength(1);
       // Timestamp should come from DevWorkspace annotation
-      expect(result.backups[0].timestamp).toBe(actualBackupTime);
+      expect(result[0].timestamp).toBe(actualBackupTime);
       // Status should be overridden to 'true' from annotation
-      expect(result.backups[0].labels[DEVWORKSPACE_BACKUP_ANNOTATIONS.LAST_BACKUP_SUCCESSFUL]).toBe(
-        'true',
-      );
+      expect(result[0].labels[DEVWORKSPACE_BACKUP_ANNOTATIONS.LAST_BACKUP_SUCCESSFUL]).toBe('true');
     });
 
     it('should include annotation-only workspace as external registry backup when no ImageStream exists', async () => {
@@ -366,17 +355,15 @@ describe('RegistryApiService', () => {
 
       const result = await service.listBackupImages(namespace);
 
-      expect(result.backups).toHaveLength(1);
-      expect(result.backups[0].imageUrl).toBe(`${registryPath}/user-che/my-workspace:latest`);
-      expect(result.backups[0].sizeBytes).toBe(0);
-      expect(result.backups[0].workspaceName).toBe('my-workspace');
-      expect(result.backups[0].timestamp).toBe('2026-02-10T12:00:00.000Z');
-      expect(result.backups[0].labels[DEVWORKSPACE_BACKUP_ANNOTATIONS.LAST_BACKUP_SUCCESSFUL]).toBe(
+      expect(result).toHaveLength(1);
+      expect(result[0].imageUrl).toBe(`${registryPath}/user-che/my-workspace:latest`);
+      expect(result[0].sizeBytes).toBe(0);
+      expect(result[0].workspaceName).toBe('my-workspace');
+      expect(result[0].timestamp).toBe('2026-02-10T12:00:00.000Z');
+      expect(result[0].labels[DEVWORKSPACE_BACKUP_ANNOTATIONS.LAST_BACKUP_SUCCESSFUL]).toBe(
         'false',
       );
-      expect(result.backups[0].labels[DEVWORKSPACE_BACKUP_ANNOTATIONS.LAST_BACKUP_ERROR]).toBe(
-        'OOMKilled',
-      );
+      expect(result[0].labels[DEVWORKSPACE_BACKUP_ANNOTATIONS.LAST_BACKUP_ERROR]).toBe('OOMKilled');
     });
 
     it('should prefer ImageStream backup over annotation-only when workspace has both', async () => {
@@ -401,8 +388,8 @@ describe('RegistryApiService', () => {
       const result = await service.listBackupImages(namespace);
 
       // No duplicate: ImageStream entry wins
-      expect(result.backups).toHaveLength(1);
-      expect(result.backups[0].sizeBytes).toBe(0);
+      expect(result).toHaveLength(1);
+      expect(result[0].sizeBytes).toBe(0);
     });
 
     it('should return mixed internal and external registry backups', async () => {
@@ -449,9 +436,9 @@ describe('RegistryApiService', () => {
 
       const result = await service.listBackupImages(namespace);
 
-      expect(result.backups).toHaveLength(2);
-      const internalBackup = result.backups.find(b => b.workspaceName === 'internal-workspace');
-      const externalBackup = result.backups.find(b => b.workspaceName === 'external-workspace');
+      expect(result).toHaveLength(2);
+      const internalBackup = result.find(b => b.workspaceName === 'internal-workspace');
+      const externalBackup = result.find(b => b.workspaceName === 'external-workspace');
       expect(internalBackup!.sizeBytes).toBe(0);
       expect(externalBackup!.sizeBytes).toBe(0);
       expect(externalBackup!.imageUrl).toContain('external-workspace:latest');
@@ -465,8 +452,7 @@ describe('RegistryApiService', () => {
 
       const result = await service.listBackupImages(namespace);
 
-      expect(result.backups).toHaveLength(0);
-      expect(result.total).toBe(0);
+      expect(result).toHaveLength(0);
       // No ImageStream or DevWorkspace queries were attempted
       expect(mockCustomObjectsApi.listNamespacedCustomObject).not.toHaveBeenCalled();
     });
@@ -511,11 +497,9 @@ describe('RegistryApiService', () => {
 
       const result = await service.listBackupImages(namespace);
 
-      expect(result.backups).toHaveLength(1);
+      expect(result).toHaveLength(1);
       // imageUrl must use the DWOC registry path, not the ImageStream's URL
-      expect(result.backups[0].imageUrl).toBe(
-        `${dwocRegistryPath}/${namespace}/my-workspace:latest`,
-      );
+      expect(result[0].imageUrl).toBe(`${dwocRegistryPath}/${namespace}/my-workspace:latest`);
     });
 
     it('should return both UNAVAILABLE items when two ImageStreams have no :latest tag but have annotations', async () => {
@@ -564,15 +548,15 @@ describe('RegistryApiService', () => {
       const result = await service.listBackupImages(namespace);
 
       // Both must appear — the second must not overwrite the first (composite key prevents collision)
-      expect(result.backups).toHaveLength(2);
-      const workspaceNames = result.backups.map(b => b.workspaceName);
+      expect(result).toHaveLength(2);
+      const workspaceNames = result.map(b => b.workspaceName);
       expect(workspaceNames).toContain('workspace-a');
       expect(workspaceNames).toContain('workspace-b');
       // Timestamps merged from annotations
-      expect(result.backups.find(b => b.workspaceName === 'workspace-a')?.timestamp).toBe(
+      expect(result.find(b => b.workspaceName === 'workspace-a')?.timestamp).toBe(
         '2026-02-01T10:00:00Z',
       );
-      expect(result.backups.find(b => b.workspaceName === 'workspace-b')?.timestamp).toBe(
+      expect(result.find(b => b.workspaceName === 'workspace-b')?.timestamp).toBe(
         '2026-02-01T11:00:00Z',
       );
     });
@@ -784,7 +768,7 @@ describe('RegistryApiService', () => {
       const result = await service.listBackupImages(namespace);
 
       // Workspace found in DW list → workspaceExists: true
-      expect(result.backups[0].workspaceExists).toBe(true);
+      expect(result[0].workspaceExists).toBe(true);
     });
   });
 
@@ -846,7 +830,7 @@ describe('RegistryApiService', () => {
 
       // Registry discovered workspace, but no DW annotation → timestamp is ''
       // Empty timestamp gets filtered out by the "no backup completed" filter
-      expect(result.backups).toHaveLength(0);
+      expect(result).toHaveLength(0);
     });
 
     it('should surface deleted workspace with annotation timestamp from registry', async () => {
@@ -869,11 +853,11 @@ describe('RegistryApiService', () => {
 
       const result = await service.listBackupImages(namespace);
 
-      expect(result.backups).toHaveLength(1);
-      expect(result.backups[0].workspaceName).toBe('deleted-ws');
-      expect(result.backups[0].workspaceExists).toBe(true);
-      expect(result.backups[0].timestamp).toBe(deletedDWTimestamp);
-      expect(result.backups[0].imageUrl).toBe(
+      expect(result).toHaveLength(1);
+      expect(result[0].workspaceName).toBe('deleted-ws');
+      expect(result[0].workspaceExists).toBe(true);
+      expect(result[0].timestamp).toBe(deletedDWTimestamp);
+      expect(result[0].imageUrl).toBe(
         `${quayRegistryPath}/${namespace}/deleted-ws:${BACKUP_IMAGE_DEFAULT_TAG}`,
       );
     });
@@ -895,9 +879,9 @@ describe('RegistryApiService', () => {
 
       const result = await service.listBackupImages(namespace);
 
-      expect(result.backups).toHaveLength(1);
-      expect(result.backups[0].workspaceName).toBe('orphaned-ws');
-      expect(result.backups[0].labels[DEVWORKSPACE_BACKUP_ANNOTATIONS.LAST_BACKUP_SUCCESSFUL]).toBe(
+      expect(result).toHaveLength(1);
+      expect(result[0].workspaceName).toBe('orphaned-ws');
+      expect(result[0].labels[DEVWORKSPACE_BACKUP_ANNOTATIONS.LAST_BACKUP_SUCCESSFUL]).toBe(
         BackupStatus.UNAVAILABLE,
       );
     });
@@ -921,10 +905,10 @@ describe('RegistryApiService', () => {
 
       const result = await service.listBackupImages(namespace);
 
-      expect(result.backups).toHaveLength(1);
-      expect(result.backups[0].workspaceName).toBe('my-workspace');
-      expect(result.backups[0].workspaceExists).toBe(true);
-      expect(result.backups[0].timestamp).toBe(backupTimestamp);
+      expect(result).toHaveLength(1);
+      expect(result[0].workspaceName).toBe('my-workspace');
+      expect(result[0].workspaceExists).toBe(true);
+      expect(result[0].timestamp).toBe(backupTimestamp);
     });
   });
 });

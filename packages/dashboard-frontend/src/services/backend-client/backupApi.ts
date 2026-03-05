@@ -15,7 +15,7 @@
 import {
   BackupConfig,
   BackupInfo,
-  BackupListResponse,
+  BackupItem,
   BackupValidationResult,
   helpers,
 } from '@eclipse-che/common';
@@ -64,32 +64,23 @@ export async function getWorkspaceBackupStatus(
 }
 
 /**
- * List backup images for a namespace with optional filtering and pagination
+ * List all backup images for a namespace with optional workspace name filter
  *
  * @param namespace - Kubernetes namespace
  * @param workspaceName - Optional workspace name filter
- * @param page - Page number (1-indexed)
- * @param perPage - Items per page
- * @returns Paginated list of backup images
+ * @returns List of backup images
  */
 export async function listBackups(
   namespace: string,
   workspaceName?: string,
-  page?: number,
-  perPage?: number,
-): Promise<BackupListResponse> {
+): Promise<BackupItem[]> {
   try {
-    const response =
-      await AxiosWrapper.createToRetryMissedBearerTokenError().get<BackupListResponse>(
-        `${dashboardBackendPrefix}/namespace/${namespace}/backups`,
-        {
-          params: {
-            workspaceName,
-            page,
-            perPage,
-          },
-        },
-      );
+    const response = await AxiosWrapper.createToRetryMissedBearerTokenError().get<BackupItem[]>(
+      `${dashboardBackendPrefix}/namespace/${namespace}/backups`,
+      {
+        params: { workspaceName },
+      },
+    );
     return response.data;
   } catch (e) {
     throw new Error(

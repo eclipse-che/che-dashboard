@@ -113,31 +113,24 @@ describe('Backup API', () => {
 
   describe('listBackups', () => {
     it('should list all backups in namespace without filters', async () => {
-      const mockResponse = {
-        backups: [
-          {
-            workspaceName: 'workspace-1',
-            imageUrl:
-              'image-registry.openshift-image-registry.svc:5000/user-che/workspace-1:latest',
-            timestamp: '2026-02-10T12:00:00.000Z',
-            sizeBytes: 1024000,
-            workspaceExists: true,
-            labels: {},
-          },
-          {
-            workspaceName: 'workspace-2',
-            imageUrl:
-              'image-registry.openshift-image-registry.svc:5000/user-che/workspace-2:latest',
-            timestamp: '2026-02-09T12:00:00.000Z',
-            sizeBytes: 2048000,
-            workspaceExists: false,
-            labels: {},
-          },
-        ],
-        total: 2,
-        page: 1,
-        perPage: 50,
-      };
+      const mockResponse = [
+        {
+          workspaceName: 'workspace-1',
+          imageUrl: 'image-registry.openshift-image-registry.svc:5000/user-che/workspace-1:latest',
+          timestamp: '2026-02-10T12:00:00.000Z',
+          sizeBytes: 1024000,
+          workspaceExists: true,
+          labels: {},
+        },
+        {
+          workspaceName: 'workspace-2',
+          imageUrl: 'image-registry.openshift-image-registry.svc:5000/user-che/workspace-2:latest',
+          timestamp: '2026-02-09T12:00:00.000Z',
+          sizeBytes: 2048000,
+          workspaceExists: false,
+          labels: {},
+        },
+      ];
 
       mockGet.mockResolvedValueOnce({ data: mockResponse });
 
@@ -146,30 +139,23 @@ describe('Backup API', () => {
       expect(mockGet).toHaveBeenCalledWith(`/dashboard/api/namespace/${namespace}/backups`, {
         params: {
           workspaceName: undefined,
-          page: undefined,
-          perPage: undefined,
         },
       });
       expect(result).toEqual(mockResponse);
-      expect(result.backups).toHaveLength(2);
+      expect(result).toHaveLength(2);
     });
 
     it('should list backups with workspace name filter', async () => {
-      const mockResponse = {
-        backups: [
-          {
-            workspaceName,
-            imageUrl,
-            timestamp: '2026-02-10T12:00:00.000Z',
-            sizeBytes: 1024000,
-            workspaceExists: true,
-            labels: {},
-          },
-        ],
-        total: 1,
-        page: 1,
-        perPage: 50,
-      };
+      const mockResponse = [
+        {
+          workspaceName,
+          imageUrl,
+          timestamp: '2026-02-10T12:00:00.000Z',
+          sizeBytes: 1024000,
+          workspaceExists: true,
+          labels: {},
+        },
+      ];
 
       mockGet.mockResolvedValueOnce({ data: mockResponse });
 
@@ -178,86 +164,18 @@ describe('Backup API', () => {
       expect(mockGet).toHaveBeenCalledWith(`/dashboard/api/namespace/${namespace}/backups`, {
         params: {
           workspaceName,
-          page: undefined,
-          perPage: undefined,
         },
       });
-      expect(result.backups).toHaveLength(1);
-      expect(result.backups[0].workspaceName).toBe(workspaceName);
-    });
-
-    it('should list backups with pagination parameters', async () => {
-      const page = 2;
-      const perPage = 10;
-      const mockResponse = {
-        backups: [],
-        total: 15,
-        page,
-        perPage,
-      };
-
-      mockGet.mockResolvedValueOnce({ data: mockResponse });
-
-      const result = await listBackups(namespace, undefined, page, perPage);
-
-      expect(mockGet).toHaveBeenCalledWith(`/dashboard/api/namespace/${namespace}/backups`, {
-        params: {
-          workspaceName: undefined,
-          page,
-          perPage,
-        },
-      });
-      expect(result.page).toBe(page);
-      expect(result.perPage).toBe(perPage);
-    });
-
-    it('should list backups with all parameters', async () => {
-      const page = 1;
-      const perPage = 25;
-      const mockResponse = {
-        backups: [
-          {
-            workspaceName,
-            imageUrl,
-            timestamp: '2026-02-10T12:00:00.000Z',
-            sizeBytes: 1024000,
-            workspaceExists: true,
-            labels: {},
-          },
-        ],
-        total: 1,
-        page,
-        perPage,
-      };
-
-      mockGet.mockResolvedValueOnce({ data: mockResponse });
-
-      const result = await listBackups(namespace, workspaceName, page, perPage);
-
-      expect(mockGet).toHaveBeenCalledWith(`/dashboard/api/namespace/${namespace}/backups`, {
-        params: {
-          workspaceName,
-          page,
-          perPage,
-        },
-      });
-      expect(result.backups).toHaveLength(1);
+      expect(result).toHaveLength(1);
+      expect(result[0].workspaceName).toBe(workspaceName);
     });
 
     it('should return empty list when no backups exist', async () => {
-      const mockResponse = {
-        backups: [],
-        total: 0,
-        page: 1,
-        perPage: 50,
-      };
-
-      mockGet.mockResolvedValueOnce({ data: mockResponse });
+      mockGet.mockResolvedValueOnce({ data: [] });
 
       const result = await listBackups(namespace);
 
-      expect(result.backups).toHaveLength(0);
-      expect(result.total).toBe(0);
+      expect(result).toHaveLength(0);
     });
 
     it('should throw error when API call fails', async () => {

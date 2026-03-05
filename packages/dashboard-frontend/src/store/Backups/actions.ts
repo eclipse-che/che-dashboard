@@ -71,24 +71,18 @@ export const fetchWorkspaceBackupStatus = createAsyncThunk<
  *
  * @param namespace - Kubernetes namespace
  * @param workspaceName - Optional workspace name filter
- * @param page - Page number (1-indexed)
- * @param perPage - Items per page
  */
 export const fetchBackupList = createAsyncThunk<
   BackupItem[],
-  { namespace: string; workspaceName?: string; page?: number; perPage?: number },
+  { namespace: string; workspaceName?: string },
   { state: RootState; rejectValue: string }
->(
-  'backups/fetchBackupList',
-  async ({ namespace, workspaceName, page, perPage }, { rejectWithValue }) => {
-    try {
-      const response = await BackupApi.listBackups(namespace, workspaceName, page, perPage);
-      return response.backups;
-    } catch (error: any) {
-      return rejectWithValue(error.message || 'Failed to fetch backup list');
-    }
-  },
-);
+>('backups/fetchBackupList', async ({ namespace, workspaceName }, { rejectWithValue }) => {
+  try {
+    return await BackupApi.listBackups(namespace, workspaceName);
+  } catch (error: any) {
+    return rejectWithValue(error.message || 'Failed to fetch backup list');
+  }
+});
 
 /**
  * Validates a backup image URL

@@ -251,22 +251,16 @@ describe('Backup Routes', () => {
 
   describe('GET /api/namespace/:namespace/backups', () => {
     it('should list backup images for namespace', async () => {
-      const mockBackupList = {
-        backups: [
-          {
-            workspaceName: 'my-workspace',
-            imageUrl:
-              'image-registry.openshift-image-registry.svc:5000/user-che/my-workspace:latest',
-            timestamp: '2026-02-10T12:00:00.000Z',
-            sizeBytes: 1024000,
-            workspaceExists: true,
-            labels: {},
-          },
-        ],
-        total: 1,
-        page: 1,
-        perPage: 50,
-      };
+      const mockBackupList = [
+        {
+          workspaceName: 'my-workspace',
+          imageUrl: 'image-registry.openshift-image-registry.svc:5000/user-che/my-workspace:latest',
+          timestamp: '2026-02-10T12:00:00.000Z',
+          sizeBytes: 1024000,
+          workspaceExists: true,
+          labels: {},
+        },
+      ];
 
       mockListBackupImages.mockResolvedValue(mockBackupList);
 
@@ -280,22 +274,16 @@ describe('Backup Routes', () => {
     });
 
     it('should list backup images with workspace name filter', async () => {
-      const mockBackupList = {
-        backups: [
-          {
-            workspaceName,
-            imageUrl:
-              'image-registry.openshift-image-registry.svc:5000/user-che/my-workspace:latest',
-            timestamp: '2026-02-10T12:00:00.000Z',
-            sizeBytes: 1024000,
-            workspaceExists: true,
-            labels: {},
-          },
-        ],
-        total: 1,
-        page: 1,
-        perPage: 50,
-      };
+      const mockBackupList = [
+        {
+          workspaceName,
+          imageUrl: 'image-registry.openshift-image-registry.svc:5000/user-che/my-workspace:latest',
+          timestamp: '2026-02-10T12:00:00.000Z',
+          sizeBytes: 1024000,
+          workspaceExists: true,
+          labels: {},
+        },
+      ];
 
       mockListBackupImages.mockResolvedValue(mockBackupList);
 
@@ -308,26 +296,18 @@ describe('Backup Routes', () => {
     });
 
     it('should return empty list when no backups exist', async () => {
-      const mockBackupList = {
-        backups: [],
-        total: 0,
-        page: 1,
-        perPage: 50,
-      };
-
-      mockListBackupImages.mockResolvedValue(mockBackupList);
+      mockListBackupImages.mockResolvedValue([]);
 
       const res = await app.inject().get(`${baseApiPath}/namespace/${namespace}/backups`);
 
       expect(res.statusCode).toEqual(200);
       const response = res.json();
 
-      expect(response.backups).toHaveLength(0);
-      expect(response.total).toBe(0);
+      expect(response).toHaveLength(0);
     });
 
     it('should not crash with empty namespace', async () => {
-      mockListBackupImages.mockResolvedValue({ backups: [], total: 0, page: 1, perPage: 50 });
+      mockListBackupImages.mockResolvedValue([]);
 
       const res = await app.inject().get(`${baseApiPath}/namespace//backups`);
 

@@ -505,11 +505,11 @@ describe('Backup API Integration Tests', () => {
       expect(res.statusCode).toEqual(200);
       const response = res.json();
 
-      expect(response.backups).toHaveLength(1);
-      expect(response.backups[0].workspaceName).toBe(workspaceName);
-      expect(response.backups[0].workspaceExists).toBe(true);
-      expect(response.backups[0].sizeBytes).toBe(0);
-      expect(response.backups[0].imageUrl).toBe(expectedImageUrl);
+      expect(response).toHaveLength(1);
+      expect(response[0].workspaceName).toBe(workspaceName);
+      expect(response[0].workspaceExists).toBe(true);
+      expect(response[0].sizeBytes).toBe(0);
+      expect(response[0].imageUrl).toBe(expectedImageUrl);
     });
 
     it('should set workspaceExists=false for ImageStream with no matching DevWorkspace', async () => {
@@ -523,8 +523,8 @@ describe('Backup API Integration Tests', () => {
       const response = res.json();
 
       // Timestamp comes from ImageStream; backup appears with workspaceExists=false
-      expect(response.backups).toHaveLength(1);
-      expect(response.backups[0].workspaceExists).toBe(false);
+      expect(response).toHaveLength(1);
+      expect(response[0].workspaceExists).toBe(false);
     });
 
     it('should filter by workspace name', async () => {
@@ -550,9 +550,8 @@ describe('Backup API Integration Tests', () => {
       expect(res.statusCode).toEqual(200);
       const response = res.json();
 
-      expect(response.backups).toHaveLength(1);
-      expect(response.backups[0].workspaceName).toBe('ws-alpha');
-      expect(response.total).toBe(1);
+      expect(response).toHaveLength(1);
+      expect(response[0].workspaceName).toBe('ws-alpha');
     });
 
     it('should return empty list when no backup ImageStreams exist', async () => {
@@ -565,8 +564,7 @@ describe('Backup API Integration Tests', () => {
       expect(res.statusCode).toEqual(200);
       const response = res.json();
 
-      expect(response.backups).toHaveLength(0);
-      expect(response.total).toBe(0);
+      expect(response).toHaveLength(0);
     });
 
     it('should return 500 when K8s API fails', async () => {
@@ -754,10 +752,10 @@ describe('Backup API Integration Tests', () => {
       expect(res.statusCode).toEqual(200);
       const response = res.json();
 
-      expect(response.backups).toHaveLength(1);
-      expect(response.backups[0].workspaceName).toBe('deleted-ws');
-      expect(response.backups[0].workspaceExists).toBe(true);
-      expect(response.backups[0].imageUrl).toBe(`${quayRegistry}/${namespace}/deleted-ws:latest`);
+      expect(response).toHaveLength(1);
+      expect(response[0].workspaceName).toBe('deleted-ws');
+      expect(response[0].workspaceExists).toBe(true);
+      expect(response[0].imageUrl).toBe(`${quayRegistry}/${namespace}/deleted-ws:latest`);
     });
 
     it('should mark annotation entry as UNAVAILABLE when not in quay.io listing', async () => {
@@ -780,10 +778,10 @@ describe('Backup API Integration Tests', () => {
       expect(res.statusCode).toEqual(200);
       const response = res.json();
 
-      expect(response.backups).toHaveLength(1);
-      expect(
-        response.backups[0].labels[DEVWORKSPACE_BACKUP_ANNOTATIONS.LAST_BACKUP_SUCCESSFUL],
-      ).toBe(BackupStatus.UNAVAILABLE);
+      expect(response).toHaveLength(1);
+      expect(response[0].labels[DEVWORKSPACE_BACKUP_ANNOTATIONS.LAST_BACKUP_SUCCESSFUL]).toBe(
+        BackupStatus.UNAVAILABLE,
+      );
     });
   });
 
