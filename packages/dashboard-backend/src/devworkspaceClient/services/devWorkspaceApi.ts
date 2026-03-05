@@ -185,7 +185,8 @@ export class DevWorkspaceApiService implements IDevWorkspaceApi {
       },
       (error: unknown) => {
         logger.warn(error, `Stopped watching ${path}.`);
-        abortController.abort();
+        // Note: Do not call abortController.abort() here - the Watch implementation
+        // already aborts internally before invoking this callback.
       },
     );
 

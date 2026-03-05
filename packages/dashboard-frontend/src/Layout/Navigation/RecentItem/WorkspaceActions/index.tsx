@@ -27,10 +27,10 @@ export class RecentItemWorkspaceActions extends React.PureComponent<Props> {
 
   public render(): React.ReactElement {
     const { item } = this.props;
-    const menuAppendTo = document.body;
 
     return (
       <div
+        style={{ position: 'absolute', top: 0, right: 0 }}
         onClick={e => {
           e.stopPropagation();
         }}
@@ -40,9 +40,6 @@ export class RecentItemWorkspaceActions extends React.PureComponent<Props> {
             return (
               <WorkspaceActionsDropdown
                 context={context}
-                isPlain
-                menuAppendTo={menuAppendTo}
-                position="right"
                 toggle="kebab-toggle"
                 workspace={item.workspace}
               />

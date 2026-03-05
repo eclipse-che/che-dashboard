@@ -11,7 +11,6 @@
  */
 
 import { api } from '@eclipse-che/common';
-import { PageSection } from '@patternfly/react-core';
 import * as ini from 'multi-ini';
 import React from 'react';
 
@@ -41,10 +40,6 @@ export class GitConfigViewer extends React.PureComponent<Props> {
 
     const gitConfigStr = this.fromGitConfig(config);
 
-    return (
-      <PageSection>
-        <BasicViewer value={gitConfigStr} id="gitconfig-editor-id" />
-      </PageSection>
-    );
+    return <BasicViewer value={gitConfigStr} id="gitconfig-editor-id" />;
   }
 }

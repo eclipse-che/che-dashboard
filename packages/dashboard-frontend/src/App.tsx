@@ -19,20 +19,26 @@ import { HashRouter } from 'react-router-dom';
 import AppAlertGroup from '@/components/AppAlertGroup';
 import Fallback from '@/components/Fallback';
 import Head from '@/components/Head';
+import { ThemeProvider } from '@/contexts/ThemeContext';
+import { UIThemeProvider } from '@/contexts/UITheme';
 import Layout from '@/Layout';
 import { AppRoutes } from '@/Routes';
 
 function AppComponent(props: { history: History }): React.ReactElement {
   return (
-    <HashRouter>
-      <Head />
-      <AppAlertGroup />
-      <Layout history={props.history}>
-        <Suspense fallback={Fallback}>
-          <AppRoutes />
-        </Suspense>
-      </Layout>
-    </HashRouter>
+    <ThemeProvider>
+      <UIThemeProvider>
+        <HashRouter>
+          <Head />
+          <AppAlertGroup />
+          <Layout history={props.history}>
+            <Suspense fallback={Fallback}>
+              <AppRoutes />
+            </Suspense>
+          </Layout>
+        </HashRouter>
+      </UIThemeProvider>
+    </ThemeProvider>
   );
 }
 AppComponent.displayName = 'AppComponent';

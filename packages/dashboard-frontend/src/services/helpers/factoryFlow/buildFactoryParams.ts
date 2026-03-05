@@ -28,6 +28,7 @@ export const EDITOR_IMAGE_ATTR = 'editor-image';
 export const USE_DEFAULT_DEVFILE = 'useDefaultDevfile';
 export const DEBUG_WORKSPACE_START = 'debugWorkspaceStart';
 export const EXISTING_WORKSPACE_NAME = 'existing';
+export const REVISION = 'revision';
 
 export const PROPAGATE_FACTORY_ATTRS = [
   'workspaceDeploymentAnnotations',
@@ -43,7 +44,7 @@ export const PROPAGATE_FACTORY_ATTRS = [
   MEMORY_LIMIT_ATTR,
   EDITOR_IMAGE_ATTR,
   EXISTING_WORKSPACE_NAME,
-  REVISION_ATTR, // Branch param - also sent to backend via buildOverrideParams
+  REVISION,
   NAME_ATTR,
 ];
 export const OVERRIDE_ATTR_PREFIX = 'override.';
@@ -54,8 +55,7 @@ export type FactoryParams = {
   factoryId: string;
   factoryUrl: string;
   policiesCreate: PoliciesCreate;
-  sourceUrl: string; // Plain URL without factory params (for backend)
-  source: string; // URL with factory params (for workspace matching)
+  sourceUrl: string;
   useDevWorkspaceResources: boolean;
   overrides: Record<string, string> | undefined;
   errorCode: ErrorCode | undefined;
@@ -87,7 +87,6 @@ export function buildFactoryParams(searchParams: URLSearchParams): FactoryParams
     overrides: buildOverrideParams(searchParams),
     policiesCreate: getPoliciesCreate(searchParams),
     sourceUrl: getSourceUrl(searchParams),
-    source: buildSourceWithFactoryParams(searchParams),
     storageType: getStorageType(searchParams),
     remotes: getRemotes(searchParams),
     revision: getRevision(searchParams),
@@ -107,34 +106,6 @@ function getSourceUrl(searchParams: URLSearchParams): string {
   return devworkspaceResourcesUrl !== undefined
     ? devworkspaceResourcesUrl
     : getFactoryUrl(searchParams);
-}
-
-function buildSourceWithFactoryParams(searchParams: URLSearchParams): string {
-  const devworkspaceResourcesUrl = getDevworkspaceResourcesUrl(searchParams);
-  if (devworkspaceResourcesUrl !== undefined) {
-    return devworkspaceResourcesUrl;
-  }
-
-  let source = getFactoryUrl(searchParams);
-  if (!source) {
-    return source;
-  }
-
-  // Get propagated factory attributes (excluding FACTORY_URL_ATTR and EXISTING_WORKSPACE_NAME)
-  const propagatedAttrsToAdd = [...PROPAGATE_FACTORY_ATTRS]
-    .filter(attr => attr !== FACTORY_URL_ATTR && attr !== EXISTING_WORKSPACE_NAME)
-    .sort();
-
-  // Append factory params that are present in searchParams
-  propagatedAttrsToAdd.forEach(attr => {
-    const value = searchParams.get(attr);
-    if (value !== null && value !== undefined) {
-      const separator = source.includes('?') ? '&' : '?';
-      source += `${separator}${attr}=${value}`;
-    }
-  });
-
-  return source;
 }
 
 function getDevworkspaceResourcesUrl(searchParams: URLSearchParams): string | undefined {

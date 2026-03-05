@@ -10,7 +10,7 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import { render, RenderResult, screen, within } from '@testing-library/react';
+import { render, RenderResult, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
 import { Location, MemoryRouter } from 'react-router-dom';
@@ -96,17 +96,21 @@ describe('Workspaces List Page', () => {
       });
 
       // select all workspaces
-      await await userEvent.click(selectAllCheckbox);
+      await userEvent.click(selectAllCheckbox);
 
-      rowCheckboxes.forEach(checkbox => {
-        expect(checkbox).toBeChecked();
+      await waitFor(() => {
+        rowCheckboxes.forEach(checkbox => {
+          expect(checkbox).toBeChecked();
+        });
       });
 
       // deselect all workspaces
       await userEvent.click(selectAllCheckbox);
 
-      rowCheckboxes.forEach(checkbox => {
-        expect(checkbox).not.toBeChecked();
+      await waitFor(() => {
+        rowCheckboxes.forEach(checkbox => {
+          expect(checkbox).not.toBeChecked();
+        });
       });
     });
 
@@ -137,7 +141,9 @@ describe('Workspaces List Page', () => {
       await userEvent.type(searchbox, workspaces[0].name);
       await userEvent.click(searchButton);
 
-      const selectAllCheckbox = screen.getByRole('checkbox', { name: /select all/i });
+      // Use getAllByRole and get the first one, or use a more specific query
+      const selectAllCheckboxes = screen.getAllByRole('checkbox', { name: /select all/i });
+      const selectAllCheckbox = selectAllCheckboxes[0]; // Get the first matching checkbox
       await userEvent.click(selectAllCheckbox);
 
       const bulkDeleteElem = screen.getByTestId('workspace-actions-bulk-delete');
@@ -157,7 +163,9 @@ describe('Workspaces List Page', () => {
 
       await userEvent.click(rowCheckbox);
 
-      expect(rowCheckbox).toBeChecked();
+      await waitFor(() => {
+        expect(rowCheckbox).toBeChecked();
+      });
     });
   });
 

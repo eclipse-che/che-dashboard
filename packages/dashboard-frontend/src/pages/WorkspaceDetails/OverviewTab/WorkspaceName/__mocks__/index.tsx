@@ -11,36 +11,9 @@
  */
 
 import React from 'react';
-import { Provider } from 'react-redux';
 
-import { Workspace } from '@/services/workspace-adapter';
-import { MockStoreBuilder } from '@/store/__mocks__/mockStore';
-
-type Props = {
-  workspace: Workspace;
-  readonly: boolean;
-  onSave: (workspaceName: string) => void;
-};
-
-class _WorkspaceNameFormGroup extends React.PureComponent<Props> {
+export default class WorkspaceNameFormGroups extends React.PureComponent {
   render() {
-    return (
-      <div>
-        Mock Workspace Name Form
-        {!this.props.readonly && (
-          <button onClick={() => this.props.onSave('new-name')}>Edit Workspace Name</button>
-        )}
-        <span>Workspace: {this.props.workspace.name}</span>
-      </div>
-    );
+    return <div>Mock Workspace Name Form</div>;
   }
-}
-
-export default function WorkspaceNameFormGroup(props: Props) {
-  const store = new MockStoreBuilder().build();
-  return (
-    <Provider store={store}>
-      <_WorkspaceNameFormGroup {...props} />
-    </Provider>
-  );
 }

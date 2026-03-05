@@ -19,16 +19,24 @@ import {
 import React from 'react';
 
 import styles from '@/components/Workspace/Status/index.module.css';
-import { greyCssVariable, StoppedIcon } from '@/components/Workspace/Status/StoppedIcon';
+import { StoppedIcon } from '@/components/Workspace/Status/StoppedIcon';
+import { useTheme } from '@/contexts/ThemeContext';
+import { SCC_MISMATCH_WARNING_MESSAGE } from '@/services/helpers/sccMismatch';
 import { DevWorkspaceStatus, WorkspaceStatus } from '@/services/helpers/types';
 
-export function getStatusIcon(status: string) {
+// Theme-aware grey colors using PatternFly 6 tokens
+const lightGreyCssVariable = 'var(--pf-t--global--text--color--regular)';
+const darkGreyCssVariable = 'var(--pf-t--global--text--color--subtle)';
+
+export function getStatusIcon(status: string, isDarkTheme: boolean) {
+  const greyColor = isDarkTheme ? darkGreyCssVariable : lightGreyCssVariable;
+
   let icon: React.ReactElement;
   switch (status) {
     case DevWorkspaceStatus.STOPPED:
     case WorkspaceStatus.STOPPED:
       icon = (
-        <Icon status="default" isInline>
+        <Icon isInline color={greyColor}>
           <StoppedIcon />
         </Icon>
       );
@@ -67,10 +75,42 @@ export function getStatusIcon(status: string) {
       break;
     default:
       icon = (
-        <Icon status="default" isInline>
-          <InProgressIcon className={styles.rotate} color={greyCssVariable} />
+        <Icon isInline>
+          <InProgressIcon className={styles.rotate} color={greyColor} />
         </Icon>
       );
   }
   return icon;
+}
+
+/**
+ * Returns the tooltip content for SCC mismatch warning.
+ * @param documentationUrl - Optional URL to the documentation about container run capabilities.
+ */
+export function getSccMismatchTooltip(documentationUrl: string | undefined): React.ReactNode {
+  return (
+    <span>
+      {SCC_MISMATCH_WARNING_MESSAGE}
+      {documentationUrl && (
+        <>
+          {' '}
+          <a
+            href={documentationUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={event => event.stopPropagation()}
+            style={{ color: '#73bcf7', textDecoration: 'underline' }}
+          >
+            Learn more
+          </a>
+        </>
+      )}
+    </span>
+  );
+}
+
+// Hook version that automatically uses theme context
+export function useStatusIcon(status: string): React.ReactElement {
+  const { isDarkTheme } = useTheme();
+  return getStatusIcon(status, isDarkTheme);
 }

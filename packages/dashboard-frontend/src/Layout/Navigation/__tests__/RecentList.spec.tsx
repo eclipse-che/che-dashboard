@@ -41,7 +41,7 @@ describe('Navigation Recent List', () => {
     return render(
       <Provider store={store}>
         <MemoryRouter>
-          <Nav onSelect={() => jest.fn()} theme="light">
+          <Nav onSelect={() => jest.fn()}>
             <NavigationRecentList workspaces={workspaces} activePath="" />
           </Nav>
         </MemoryRouter>
@@ -77,7 +77,7 @@ describe('Navigation Recent List', () => {
     rerender(
       <Provider store={store}>
         <MemoryRouter>
-          <Nav onSelect={() => jest.fn()} theme="light">
+          <Nav onSelect={() => jest.fn()}>
             <NavigationRecentList workspaces={workspaces} activePath="" />
           </Nav>
         </MemoryRouter>

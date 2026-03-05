@@ -8,7 +8,11 @@
 # Contributors:
 #   Red Hat, Inc. - initial API and implementation
 
-FROM docker.io/node:18.19.1-alpine3.19
+# Multi-architecture build support
+ARG BUILDPLATFORM
+ARG TARGETPLATFORM
+
+FROM --platform=${TARGETPLATFORM:-linux/amd64} docker.io/node:18.19.1-alpine3.19
 
 LABEL quay.expires-after=1w
 

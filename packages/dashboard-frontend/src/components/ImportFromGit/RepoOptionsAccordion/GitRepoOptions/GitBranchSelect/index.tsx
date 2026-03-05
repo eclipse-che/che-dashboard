@@ -10,10 +10,20 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import { FormGroup, Select, SelectOption, SelectVariant, TextInput } from '@patternfly/react-core';
+import {
+  FormGroup,
+  MenuToggle,
+  MenuToggleElement,
+  Select,
+  SelectList,
+  SelectOption,
+  TextInput,
+  TextInputGroup,
+  TextInputGroupMain,
+  TextInputGroupUtilities,
+} from '@patternfly/react-core';
+import { SearchIcon } from '@patternfly/react-icons';
 import React from 'react';
-
-import styles from '@/components/ImportFromGit/RepoOptionsAccordion/GitRepoOptions/GitBranchSelect/index.module.css';
 
 export type Props = {
   onChange: (definition: string | undefined) => void;
@@ -23,6 +33,7 @@ export type Props = {
 export type State = {
   isOpen: boolean;
   gitBranch: string | undefined;
+  filterValue: string;
 };
 
 export class GitBranchSelect extends React.PureComponent<Props, State> {
@@ -32,6 +43,7 @@ export class GitBranchSelect extends React.PureComponent<Props, State> {
     this.state = {
       gitBranch: this.props.gitBranch,
       isOpen: false,
+      filterValue: '',
     };
   }
 
@@ -57,51 +69,90 @@ export class GitBranchSelect extends React.PureComponent<Props, State> {
 
   private onClick(branch: string): void {
     this.handleChange(branch);
-    this.setState({ isOpen: false });
+    this.setState({ isOpen: false, filterValue: '' });
   }
 
   private buildSelectOptions(): React.ReactElement[] | undefined {
-    const branchList = this.props.branchList;
+    const { branchList } = this.props;
+    const { filterValue } = this.state;
+
     if (branchList) {
-      return branchList.map(branch => {
-        return <SelectOption key={branch} id={branch} value={branch} />;
+      const filtered = filterValue
+        ? branchList.filter(branch => branch.toLowerCase().includes(filterValue.toLowerCase()))
+        : branchList;
+
+      return filtered.map(branch => {
+        return (
+          <SelectOption key={branch} value={branch}>
+            {branch}
+          </SelectOption>
+        );
       });
     }
   }
 
   public render() {
-    const { isOpen, gitBranch } = this.state;
+    const { isOpen, gitBranch, filterValue } = this.state;
     const selectOptions = this.buildSelectOptions();
     const isDisabled = selectOptions === undefined || selectOptions.length === 0;
 
-    return (
-      <FormGroup
-        label="Git Branch"
-        helperText={
-          !gitBranch && !isDisabled ? 'Select the branch of the Git Repository' : undefined
-        }
-      >
-        {!isDisabled ? (
-          <Select
-            isDisabled={isDisabled}
-            className={styles.selector}
-            variant={SelectVariant.single}
-            hasInlineFilter={true}
-            onToggle={isOpen => this.setState({ isOpen })}
-            isOpen={isOpen}
-            onSelect={(_, value) => this.onClick(value.toString())}
-            placeholderText={gitBranch ? gitBranch : ' '}
-          >
-            {selectOptions}
-          </Select>
-        ) : (
+    if (isDisabled) {
+      return (
+        <FormGroup label="Git Branch">
           <TextInput
             aria-label="Git Branch"
             placeholder="Enter the branch of the Git Repository"
-            onChange={value => this.handleChange(value)}
-            value={gitBranch}
+            onChange={(_event, value) => this.handleChange(value)}
+            value={gitBranch || ''}
           />
-        )}
+        </FormGroup>
+      );
+    }
+
+    return (
+      <FormGroup label="Git Branch">
+        <Select
+          isOpen={isOpen}
+          selected={gitBranch}
+          onSelect={(_event, value) => this.onClick(value as string)}
+          onOpenChange={isOpen => this.setState({ isOpen })}
+          toggle={(toggleRef: React.Ref<MenuToggleElement>) => (
+            <MenuToggle
+              ref={toggleRef}
+              onClick={() => this.setState({ isOpen: !isOpen })}
+              isExpanded={isOpen}
+            >
+              {gitBranch || 'Select the branch of the Git Repository'}
+            </MenuToggle>
+          )}
+        >
+          <TextInputGroup>
+            <TextInputGroupMain
+              icon={<SearchIcon />}
+              value={filterValue}
+              onChange={(_event, value) => this.setState({ filterValue: value })}
+              placeholder="Filter branches"
+            />
+            {filterValue && (
+              <TextInputGroupUtilities>
+                <button
+                  type="button"
+                  aria-label="Clear filter"
+                  onClick={() => this.setState({ filterValue: '' })}
+                >
+                  ×
+                </button>
+              </TextInputGroupUtilities>
+            )}
+          </TextInputGroup>
+          <SelectList>
+            {selectOptions && selectOptions.length > 0 ? (
+              selectOptions
+            ) : (
+              <SelectOption isDisabled>No branches found</SelectOption>
+            )}
+          </SelectList>
+        </Select>
       </FormGroup>
     );
   }

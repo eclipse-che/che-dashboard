@@ -118,7 +118,7 @@ class RepoOptionsAccordion extends React.PureComponent<Props, State> {
     this.updateStateFromLocation();
   }
 
-  public async componentDidUpdate(prevProps: Readonly<Props>) {
+  public componentDidUpdate(prevProps: Readonly<Props>) {
     const location = this.props.location.trim();
     if (location === prevProps.location || location === this.state.location) {
       return;
@@ -201,22 +201,18 @@ class RepoOptionsAccordion extends React.PureComponent<Props, State> {
     } = this.state;
     return (
       <Accordion asDefinitionList={false}>
-        <AccordionItem>
+        <AccordionItem isExpanded={expanded.includes('git-repo-options')}>
           <AccordionToggle
             onClick={() => {
               this.handleToggle('git-repo-options');
             }}
-            isExpanded={expanded.includes('git-repo-options')}
             id="accordion-item-git-repo-options"
             data-testid="accordion-item-git-repo-options"
           >
             Git Repo Options
           </AccordionToggle>
 
-          <AccordionContent
-            isHidden={!expanded.includes('git-repo-options')}
-            data-testid="options-content"
-          >
+          <AccordionContent data-testid="options-content">
             <Panel>
               <PanelMain>
                 <PanelMainBody>
@@ -236,22 +232,18 @@ class RepoOptionsAccordion extends React.PureComponent<Props, State> {
             </Panel>
           </AccordionContent>
         </AccordionItem>
-        <AccordionItem>
+        <AccordionItem isExpanded={expanded.includes('advanced-options')}>
           <AccordionToggle
             onClick={() => {
               this.handleToggle('advanced-options');
             }}
-            isExpanded={expanded.includes('advanced-options')}
             id="accordion-item-advanced-options"
             data-testid="accordion-item-advanced-options"
           >
             Advanced Options
           </AccordionToggle>
 
-          <AccordionContent
-            isHidden={!expanded.includes('advanced-options')}
-            data-testid="options-content"
-          >
+          <AccordionContent data-testid="options-content">
             <Panel>
               <PanelMain>
                 <PanelMainBody>

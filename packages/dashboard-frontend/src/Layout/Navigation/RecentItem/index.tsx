@@ -18,11 +18,10 @@ import { lazyInject } from '@/inversify.config';
 import { NavigationRecentItemObject } from '@/Layout/Navigation';
 import styles from '@/Layout/Navigation/index.module.css';
 import getActivity from '@/Layout/Navigation/isActive';
-import { TitleWithHover } from '@/Layout/Navigation/RecentItem/TitleWithHover';
 import { RecentItemWorkspaceActions } from '@/Layout/Navigation/RecentItem/WorkspaceActions';
 import { buildIdeLoaderLocation, toHref } from '@/services/helpers/location';
 import { TabManager } from '@/services/tabManager';
-import { Workspace } from '@/services/workspace-adapter';
+import { Workspace, WorkspaceAdapter } from '@/services/workspace-adapter';
 
 export type Props = {
   item: NavigationRecentItemObject;
@@ -39,10 +38,18 @@ export class NavigationRecentItem extends React.PureComponent<Props> {
     this.tabManager.open(href);
   }
 
+  private handleKeyDown(event: React.KeyboardEvent, workspace: Workspace): void {
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault();
+      this.handleClick(workspace);
+    }
+  }
+
   render(): React.ReactElement {
     const { activePath, item } = this.props;
 
     const isActive = getActivity(item.to, activePath);
+    const titleClassName = styles.titleHover + ' ' + (isActive ? styles.active : '');
 
     return (
       <NavItem
@@ -52,11 +59,16 @@ export class NavigationRecentItem extends React.PureComponent<Props> {
         isActive={isActive}
         className={styles.navItem}
         preventDefault={true}
+        tabIndex={0}
         onClick={() => this.handleClick(item.workspace)}
+        onKeyDown={(e: React.KeyboardEvent) => this.handleKeyDown(e, item.workspace)}
       >
         <span data-testid="recent-workspace-item">
-          <WorkspaceStatusIndicator status={item.workspace.status} />
-          <TitleWithHover text={item.label} isActive={isActive} />
+          <WorkspaceStatusIndicator
+            status={item.workspace.status}
+            containerScc={WorkspaceAdapter.getContainerScc(item.workspace.ref)}
+          />
+          <span className={titleClassName}>{item.label}</span>
         </span>
         <RecentItemWorkspaceActions item={item} />
       </NavItem>

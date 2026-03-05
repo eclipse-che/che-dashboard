@@ -1,47 +1,37 @@
 // Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
 exports[`WorkspaceActionsDropdown dropdown toggle snapshot 1`] = `
-<div
-  className="pf-c-dropdown workspaceActionSelector"
-  data-ouia-component-id="OUIA-Generated-Dropdown-3"
-  data-ouia-component-type="PF4/Dropdown"
+<button
+  aria-expanded={false}
+  aria-label="Actions"
+  className="pf-v6-c-menu-toggle pf-m-primary"
+  data-ouia-component-id="OUIA-Generated-MenuToggle-primary-1"
+  data-ouia-component-type="PF6/MenuToggle"
   data-ouia-safe={true}
+  data-testid="1234-action-dropdown"
+  data-testtype="dropdown-toggle"
+  disabled={false}
+  onClick={[Function]}
+  type="button"
 >
-  <button
-    aria-expanded={false}
-    aria-haspopup={true}
-    aria-label="Actions"
-    className="pf-c-dropdown__toggle pf-m-primary"
-    data-ouia-component-id="OUIA-Generated-DropdownToggle-1"
-    data-ouia-component-type="PF4/DropdownToggle"
-    data-ouia-safe={true}
-    data-testid="1234-action-dropdown"
-    data-testtype="dropdown-toggle"
-    disabled={false}
-    id="pf-dropdown-toggle-id-3"
-    onClick={[Function]}
-    onKeyDown={[Function]}
-    type="button"
+  <span
+    className="pf-v6-c-menu-toggle__text"
+  >
+    Actions
+  </span>
+  <span
+    className="pf-v6-c-menu-toggle__controls"
   >
     <span
-      className="pf-c-dropdown__toggle-text"
-    >
-      Actions
-    </span>
-    <span
-      className="pf-c-dropdown__toggle-icon"
+      className="pf-v6-c-menu-toggle__toggle-icon"
     >
       <svg
         aria-hidden={true}
         aria-labelledby={null}
+        className="pf-v6-svg"
         fill="currentColor"
         height="1em"
         role="img"
-        style={
-          {
-            "verticalAlign": "-0.125em",
-          }
-        }
         viewBox="0 0 320 512"
         width="1em"
       >
@@ -50,41 +40,34 @@ exports[`WorkspaceActionsDropdown dropdown toggle snapshot 1`] = `
         />
       </svg>
     </span>
-  </button>
-</div>
+  </span>
+</button>
 `;
 
 exports[`WorkspaceActionsDropdown kebab toggle snapshot 1`] = `
-<div
-  className="pf-c-dropdown workspaceActionSelector"
-  data-ouia-component-id="OUIA-Generated-Dropdown-1"
-  data-ouia-component-type="PF4/Dropdown"
+<button
+  aria-expanded={false}
+  aria-label="Actions"
+  className="pf-v6-c-menu-toggle pf-m-plain"
+  data-ouia-component-id="OUIA-Generated-MenuToggle-plain-1"
+  data-ouia-component-type="PF6/MenuToggle"
   data-ouia-safe={true}
+  data-testid="1234-action-dropdown"
+  data-testtype="kebab-toggle"
+  disabled={false}
+  onClick={[Function]}
+  type="button"
 >
-  <button
-    aria-expanded={false}
-    aria-haspopup={true}
-    aria-label="Actions"
-    className="pf-c-dropdown__toggle"
-    data-testid="1234-action-dropdown"
-    data-testtype="kebab-toggle"
-    disabled={false}
-    id="pf-dropdown-toggle-id-0"
-    onClick={[Function]}
-    onKeyDown={[Function]}
-    type="button"
+  <span
+    className="pf-v6-c-menu-toggle__text"
   >
     <svg
       aria-hidden={true}
       aria-labelledby={null}
+      className="pf-v6-svg"
       fill="currentColor"
       height="1em"
       role="img"
-      style={
-        {
-          "verticalAlign": "-0.125em",
-        }
-      }
       viewBox="0 0 192 512"
       width="1em"
     >
@@ -92,6 +75,6 @@ exports[`WorkspaceActionsDropdown kebab toggle snapshot 1`] = `
         d="M96 184c39.8 0 72 32.2 72 72s-32.2 72-72 72-72-32.2-72-72 32.2-72 72-72zM24 80c0 39.8 32.2 72 72 72s72-32.2 72-72S135.8 8 96 8 24 40.2 24 80zm0 352c0 39.8 32.2 72 72 72s72-32.2 72-72-32.2-72-72-72-72 32.2-72 72z"
       />
     </svg>
-  </button>
-</div>
+  </span>
+</button>
 `;
