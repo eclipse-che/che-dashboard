@@ -49,15 +49,23 @@ fi
 
 echo "[INFO] Patching CheCluster with image '${CHE_DASHBOARD_IMAGE}'..."
 
-CHE_NAMESPACE="${CHE_NAMESPACE:-eclipse-che}"
-DASHBOARD_POD_NAME=$(kubectl get pods -n $CHE_NAMESPACE -o=custom-columns=:metadata.name | grep dashboard)
-CHECLUSTER_CR_NAME=$(kubectl exec $DASHBOARD_POD_NAME -n $CHE_NAMESPACE -- printenv CHECLUSTER_CR_NAME)
-PREVIOUS_CHE_DASHBOARD_IMAGE=$(kubectl get checluster -n $CHE_NAMESPACE $CHECLUSTER_CR_NAME -o=json | jq -r '.spec.components.dashboard.deployment.containers[0].image')
+if [[ -z "$CHE_NAMESPACE" ]]; then
+  # Auto-detect: find the namespace containing a CheCluster CR
+  CHE_NAMESPACE=$(kubectl get checluster --all-namespaces -o jsonpath='{.items[0].metadata.namespace}' 2>/dev/null)
+  if [[ -z "$CHE_NAMESPACE" ]]; then
+    CHE_NAMESPACE="eclipse-che"
+    echo "[WARN] No CheCluster found. Using default namespace: ${CHE_NAMESPACE}"
+  else
+    echo "[INFO] Detected CheCluster namespace: ${CHE_NAMESPACE}"
+  fi
+fi
+CHECLUSTER_CR_NAME=$(kubectl get checluster -n "$CHE_NAMESPACE" -o jsonpath='{.items[0].metadata.name}')
+PREVIOUS_CHE_DASHBOARD_IMAGE=$(kubectl get checluster -n "$CHE_NAMESPACE" "$CHECLUSTER_CR_NAME" -o=json | jq -r '.spec.components.dashboard.deployment.containers[0].image')
 
 if [ "$PREVIOUS_CHE_DASHBOARD_IMAGE" == "null" ]; then
-  kubectl patch -n "$CHE_NAMESPACE" "checluster/$CHECLUSTER_CR_NAME" --type=json -p="[{\"op\": \"replace\", \"path\": \"/spec/components/dashboard\", \"value\": {deployment: {containers: [{image: \"${CHE_DASHBOARD_IMAGE}\", name: che-dasboard}]}}}]"
+  kubectl patch -n "$CHE_NAMESPACE" "checluster/$CHECLUSTER_CR_NAME" --type=json -p="[{\"op\": \"replace\", \"path\": \"/spec/components/dashboard\", \"value\": {\"deployment\": {\"containers\": [{\"image\": \"${CHE_DASHBOARD_IMAGE}\", \"name\": \"che-dashboard\"}]}}}]"
 else
-  kubectl patch -n "$CHE_NAMESPACE" "checluster/$CHECLUSTER_CR_NAME" --type=json -p="[{\"op\": \"replace\", \"path\": \"/spec/components/dashboard/deployment/containers/0/image\", \"value\": ${CHE_DASHBOARD_IMAGE}}]"
+  kubectl patch -n "$CHE_NAMESPACE" "checluster/$CHECLUSTER_CR_NAME" --type=json -p="[{\"op\": \"replace\", \"path\": \"/spec/components/dashboard/deployment/containers/0/image\", \"value\": \"${CHE_DASHBOARD_IMAGE}\"}]"
 fi
 
 echo "[INFO] Done. Dashboard image updated to: ${CHE_DASHBOARD_IMAGE}"
