@@ -8,7 +8,7 @@
 # Contributors:
 #   Red Hat, Inc. - initial API and implementation
 
-FROM docker.io/node:18.19.1-alpine3.19
+FROM docker.io/node:24.0.2-alpine3.21
 
 LABEL quay.expires-after=1w
 

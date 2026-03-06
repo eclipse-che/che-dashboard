@@ -13,6 +13,7 @@
 import * as k8s from '@kubernetes/client-node';
 
 import { AirGapSampleApiService } from '@/devworkspaceClient/services/airGapSampleApi';
+import { BackupApiService } from '@/devworkspaceClient/services/backupApi';
 import { DevWorkspaceApiService } from '@/devworkspaceClient/services/devWorkspaceApi';
 import { DevWorkspaceClusterApiService } from '@/devworkspaceClient/services/devWorkspaceClusterApiService';
 import { DevWorkspaceTemplateApiService } from '@/devworkspaceClient/services/devWorkspaceTemplateApi';
@@ -32,6 +33,7 @@ import { UserProfileApiService } from '@/devworkspaceClient/services/userProfile
 import { WorkspacePreferencesApiService } from '@/devworkspaceClient/services/workspacePreferencesApi';
 import {
   IAirGapSampleApi,
+  IBackupApi,
   IDevWorkspaceApi,
   IDevWorkspaceClient,
   IDevWorkspaceClusterApi,
@@ -131,5 +133,9 @@ export class DevWorkspaceClient implements IDevWorkspaceClient {
 
   get workspacePreferencesApi(): IWorkspacePreferencesApi {
     return new WorkspacePreferencesApiService(this.kubeConfig);
+  }
+
+  get backupApi(): IBackupApi {
+    return new BackupApiService(this.kubeConfig);
   }
 }

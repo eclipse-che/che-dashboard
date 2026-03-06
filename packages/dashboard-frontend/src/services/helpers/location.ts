@@ -98,6 +98,14 @@ export function buildDetailsLocation(
   return _buildLocationObject(pathAndQuery);
 }
 
+export function buildRestoreFromBackupLocation(backupImageUrl?: string): Location {
+  let pathAndQuery: string = ROUTE.RESTORE_FROM_BACKUP;
+  if (backupImageUrl) {
+    pathAndQuery += `?backupImageUrl=${encodeURIComponent(backupImageUrl)}`;
+  }
+  return _buildLocationObject(pathAndQuery);
+}
+
 export function buildFactoryLocation(): Location {
   return _buildLocationObject(ROUTE.FACTORY_LOADER);
 }
