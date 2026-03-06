@@ -105,6 +105,16 @@ kubectl rollout restart deployment/che-operator -n $CHE_NAMESPACE
 
 **Note**: This way to configure dashboard is experimental and may be changed.
 
+#### Backup Feature Configuration
+
+The backup feature reads cluster topology from the DevWorkspace Operator configuration. The defaults work for standard installations; override these when the operator is deployed in a non-default namespace or when a slow container registry requires a longer timeout.
+
+| Env var | Description | Default | Range |
+| ------- | ----------- | ------- | ----- |
+| `CHECLUSTER_CR_NAMESPACE` | Namespace where the CheCluster CR and DevWorkspaceOperatorConfig live | `eclipse-che` | — |
+| `DWO_CONFIG_NAME` | Name of the DevWorkspaceOperatorConfig resource | `devworkspace-operator-config` | — |
+| `BACKUP_REGISTRY_TIMEOUT` | Timeout in seconds for registry queries during backup image listing | `30` | `10`–`300` |
+
 ## che-server API usage
 
 Currently, Dashboard uses the following che-server API:
