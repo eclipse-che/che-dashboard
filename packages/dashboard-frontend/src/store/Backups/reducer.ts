@@ -112,7 +112,8 @@ export const reducer = createReducer(unloadedState, builder =>
     })
     .addCase(fetchBackupList.fulfilled, (state, action) => {
       const { namespace } = action.meta.arg;
-      state.byNamespace[namespace] = action.payload;
+      // Defensive guard: ensure payload is an array regardless of what the API returned
+      state.byNamespace[namespace] = Array.isArray(action.payload) ? action.payload : [];
       state.loading.updatingCount = Math.max(0, state.loading.updatingCount - 1);
     })
     .addCase(fetchBackupList.rejected, (state, action) => {

@@ -33,7 +33,10 @@ export const selectWorkspaceBackupInfo = createSelector(
 
 export const selectNamespaceBackups = createSelector(
   [selectBackupsState, (_state: RootState, namespace: string) => namespace],
-  (backups, namespace) => backups.byNamespace[namespace] || [],
+  (backups, namespace) => {
+    const items = backups.byNamespace[namespace];
+    return Array.isArray(items) ? items : [];
+  },
 );
 
 export const selectBackupConfig = createSelector(selectBackupsState, state => state.backupConfig);

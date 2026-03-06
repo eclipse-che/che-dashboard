@@ -14,23 +14,8 @@
   text-transform: capitalize;
 }
 
-.size-sm {
-  font-size: var(--pf-v5-global--FontSize--xs);
-}
-
 .size-md {
   font-size: var(--pf-v5-global--FontSize--sm);
-}
-
-.size-lg {
-  font-size: var(--pf-v5-global--FontSize--md);
-}
-
-.minimal {
-  display: inline-flex;
-  gap: var(--pf-v5-global--spacer--xs);
-  align-items: center;
-  color: var(--pf-v5-global--Color--100);
 }
 
 .rotate {
