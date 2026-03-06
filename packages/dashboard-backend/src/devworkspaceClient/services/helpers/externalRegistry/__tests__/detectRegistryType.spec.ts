@@ -25,19 +25,23 @@ describe('detectRegistryType', () => {
     ).toBe('openshift-internal');
   });
 
-  it('should detect quay.io', () => {
-    expect(detectRegistryType('quay.io/my-org/backups')).toBe('quay');
+  it('should return oci for quay.io', () => {
+    expect(detectRegistryType('quay.io/my-org/backups')).toBe('oci');
   });
 
-  it('should return unknown for Docker Hub', () => {
-    expect(detectRegistryType('docker.io/myorg/backups')).toBe('unknown');
+  it('should return oci for Docker Hub', () => {
+    expect(detectRegistryType('docker.io/myorg/backups')).toBe('oci');
   });
 
-  it('should return unknown for GHCR', () => {
-    expect(detectRegistryType('ghcr.io/myorg/backups')).toBe('unknown');
+  it('should return oci for GHCR', () => {
+    expect(detectRegistryType('ghcr.io/myorg/backups')).toBe('oci');
   });
 
-  it('should return unknown for empty string', () => {
-    expect(detectRegistryType('')).toBe('unknown');
+  it('should return oci for Harbor', () => {
+    expect(detectRegistryType('harbor.example.com/project')).toBe('oci');
+  });
+
+  it('should return oci for empty string', () => {
+    expect(detectRegistryType('')).toBe('oci');
   });
 });

@@ -724,20 +724,23 @@ describe('Backup API Integration Tests', () => {
       });
     });
 
-    it('should surface deleted workspace backup discovered via quay.io', async () => {
-      mockHttpsGet.mockImplementation(
+    /**
+     * Mock the OCI catalog response (direct auth — registry returns 200).
+     * Docker v2 catalog returns full paths including org:
+     * e.g. "my-org/backups/user-che/my-workspace"
+     */
+    function mockCatalogResponse(fullPathRepos: string[]): void {
+      mockHttpsGet.mockImplementationOnce(
         (_url: unknown, _opts: unknown, callback: (res: MockRes) => void) => {
-          callback(
-            buildMockRes(
-              200,
-              JSON.stringify({
-                repositories: [{ name: 'backups/user-che/deleted-ws', last_modified: 1700000000 }],
-              }),
-            ),
-          );
+          callback(buildMockRes(200, JSON.stringify({ repositories: fullPathRepos })));
           return { on: jest.fn() };
         },
       );
+    }
+
+    it('should surface deleted workspace backup discovered via quay.io', async () => {
+      // Docker v2 catalog format: full paths including org/prefix
+      mockCatalogResponse(['my-org/backups/user-che/deleted-ws']);
       // DW still has annotation (but workspace was deleted from another context)
       mockCustomObjectAPI.listNamespacedCustomObject.mockResolvedValue({
         items: [
@@ -758,13 +761,24 @@ describe('Backup API Integration Tests', () => {
       expect(response[0].imageUrl).toBe(`${quayRegistry}/${namespace}/deleted-ws:latest`);
     });
 
+    it('should surface backup for truly-deleted workspace (no DW in Kubernetes)', async () => {
+      mockCatalogResponse(['my-org/backups/user-che/deleted-ws']);
+      // Workspace is truly deleted — no DevWorkspaces remain in Kubernetes
+      mockCustomObjectAPI.listNamespacedCustomObject.mockResolvedValue({ items: [] });
+
+      const res = await app.inject().get(`${baseApiPath}/namespace/${namespace}/backups`);
+
+      expect(res.statusCode).toEqual(200);
+      const response = res.json();
+
+      expect(response).toHaveLength(1);
+      expect(response[0].workspaceName).toBe('deleted-ws');
+      expect(response[0].workspaceExists).toBe(false);
+      expect(response[0].imageUrl).toBe(`${quayRegistry}/${namespace}/deleted-ws:latest`);
+    });
+
     it('should mark annotation entry as UNAVAILABLE when not in quay.io listing', async () => {
-      mockHttpsGet.mockImplementation(
-        (_url: unknown, _opts: unknown, callback: (res: MockRes) => void) => {
-          callback(buildMockRes(200, JSON.stringify({ repositories: [] })));
-          return { on: jest.fn() };
-        },
-      );
+      mockCatalogResponse([]); // quay.io returns empty catalog
       mockCustomObjectAPI.listNamespacedCustomObject.mockResolvedValue({
         items: [
           createMockDevWorkspace(namespace, workspaceName, {

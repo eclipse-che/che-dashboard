@@ -10,30 +10,19 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import {
-  detectRegistryType,
-  IExternalRegistryClient,
-} from '@/devworkspaceClient/services/helpers/externalRegistry/IExternalRegistryClient';
-import { NoOpRegistryClient } from '@/devworkspaceClient/services/helpers/externalRegistry/NoOpRegistryClient';
-import { QuayRegistryClient } from '@/devworkspaceClient/services/helpers/externalRegistry/QuayRegistryClient';
+import { IExternalRegistryClient } from '@/devworkspaceClient/services/helpers/externalRegistry/IExternalRegistryClient';
+import { OciRegistryClient } from '@/devworkspaceClient/services/helpers/externalRegistry/OciRegistryClient';
 
 export type {
   IExternalRegistryClient,
   RegistryType,
 } from '@/devworkspaceClient/services/helpers/externalRegistry/IExternalRegistryClient';
 export { detectRegistryType } from '@/devworkspaceClient/services/helpers/externalRegistry/IExternalRegistryClient';
-export { NoOpRegistryClient } from '@/devworkspaceClient/services/helpers/externalRegistry/NoOpRegistryClient';
-export { QuayRegistryClient } from '@/devworkspaceClient/services/helpers/externalRegistry/QuayRegistryClient';
+export { OciRegistryClient } from '@/devworkspaceClient/services/helpers/externalRegistry/OciRegistryClient';
 
-export function createRegistryClient(registryPath: string, token: string): IExternalRegistryClient {
-  if (!token) {
-    return new NoOpRegistryClient(registryPath);
-  }
-  const type = detectRegistryType(registryPath);
-  switch (type) {
-    case 'quay':
-      return new QuayRegistryClient(registryPath, token);
-    default:
-      return new NoOpRegistryClient(registryPath);
-  }
+export function createRegistryClient(
+  registryPath: string,
+  authHeader: string,
+): IExternalRegistryClient {
+  return new OciRegistryClient(registryPath, authHeader);
 }

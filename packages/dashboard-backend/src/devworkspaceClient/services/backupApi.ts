@@ -70,6 +70,26 @@ interface DevWorkspaceOperatorConfig {
   };
 }
 
+interface DevWorkspaceResource {
+  metadata?: {
+    annotations?: Record<string, string>;
+  };
+}
+
+function isDevWorkspaceOperatorConfig(obj: unknown): obj is DevWorkspaceOperatorConfig {
+  return (
+    typeof obj === 'object' &&
+    obj !== null &&
+    (obj as DevWorkspaceOperatorConfig).kind === 'DevWorkspaceOperatorConfig'
+  );
+}
+
+function isDevWorkspaceResource(obj: unknown): obj is DevWorkspaceResource {
+  return (
+    typeof obj === 'object' && obj !== null && (obj as { kind?: string }).kind === 'DevWorkspace'
+  );
+}
+
 export class BackupApiService {
   private readonly batchV1API: BatchV1API;
   private readonly customObjectAPI: CustomObjectAPI;
@@ -92,10 +112,10 @@ export class BackupApiService {
         name: dwoConfigName,
       });
 
-      // Response might be wrapped in { body: ... } by retryableExec
-      const operatorConfig =
-        (response as any).body || (response as unknown as DevWorkspaceOperatorConfig);
-      const backupCronJob = operatorConfig.config?.workspace?.backupCronJob;
+      if (!isDevWorkspaceOperatorConfig(response)) {
+        throw new Error('Unexpected response format for DevWorkspaceOperatorConfig');
+      }
+      const backupCronJob = response.config?.workspace?.backupCronJob;
       const schedule = backupCronJob?.schedule ?? '';
 
       return {
@@ -130,9 +150,10 @@ export class BackupApiService {
         name: workspaceName,
       });
 
-      // Response might be wrapped in { body: ... } by retryableExec, handle both cases
-      const devworkspace = (response as any).body || (response as any);
-      const annotations: Record<string, string> = devworkspace.metadata?.annotations || {};
+      if (!isDevWorkspaceResource(response)) {
+        throw new Error('Unexpected response format for DevWorkspace resource');
+      }
+      const annotations: Record<string, string> = response.metadata?.annotations || {};
 
       // Construct backup image URL from config (no annotation for this)
       const backupImageUrl = backupConfig.registry

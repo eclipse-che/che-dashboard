@@ -52,68 +52,6 @@ describe('Backup Configuration Environment Variables', () => {
     });
   });
 
-  describe('backupListPageSize', () => {
-    it('should use default value 50 when env var not set', () => {
-      delete process.env.BACKUP_LIST_PAGE_SIZE;
-      const config = jest.requireActual<typeof import('../config')>('../config');
-      expect(config.backupListPageSize).toBe(50);
-    });
-
-    it('should accept valid value within range (1)', () => {
-      process.env.BACKUP_LIST_PAGE_SIZE = '1';
-      const config = jest.requireActual<typeof import('../config')>('../config');
-      expect(config.backupListPageSize).toBe(1);
-    });
-
-    it('should accept valid value within range (100)', () => {
-      process.env.BACKUP_LIST_PAGE_SIZE = '100';
-      const config = jest.requireActual<typeof import('../config')>('../config');
-      expect(config.backupListPageSize).toBe(100);
-    });
-
-    it('should accept valid value within range (25)', () => {
-      process.env.BACKUP_LIST_PAGE_SIZE = '25';
-      const config = jest.requireActual<typeof import('../config')>('../config');
-      expect(config.backupListPageSize).toBe(25);
-    });
-
-    it('should fall back to default for value below minimum (0)', () => {
-      process.env.BACKUP_LIST_PAGE_SIZE = '0';
-      const config = jest.requireActual<typeof import('../config')>('../config');
-      expect(config.backupListPageSize).toBe(50);
-    });
-
-    it('should fall back to default for value above maximum (101)', () => {
-      process.env.BACKUP_LIST_PAGE_SIZE = '101';
-      const config = jest.requireActual<typeof import('../config')>('../config');
-      expect(config.backupListPageSize).toBe(50);
-    });
-
-    it('should fall back to default for negative value', () => {
-      process.env.BACKUP_LIST_PAGE_SIZE = '-10';
-      const config = jest.requireActual<typeof import('../config')>('../config');
-      expect(config.backupListPageSize).toBe(50);
-    });
-
-    it('should fall back to default for non-numeric value', () => {
-      process.env.BACKUP_LIST_PAGE_SIZE = 'not-a-number';
-      const config = jest.requireActual<typeof import('../config')>('../config');
-      expect(config.backupListPageSize).toBe(50);
-    });
-
-    it('should fall back to default for empty string', () => {
-      process.env.BACKUP_LIST_PAGE_SIZE = '';
-      const config = jest.requireActual<typeof import('../config')>('../config');
-      expect(config.backupListPageSize).toBe(50);
-    });
-
-    it('should fall back to default for floating point value', () => {
-      process.env.BACKUP_LIST_PAGE_SIZE = '50.5';
-      const config = jest.requireActual<typeof import('../config')>('../config');
-      expect(config.backupListPageSize).toBe(50);
-    });
-  });
-
   describe('backupRegistryTimeout', () => {
     it('should use default value 30 when env var not set', () => {
       delete process.env.BACKUP_REGISTRY_TIMEOUT;
@@ -167,34 +105,28 @@ describe('Backup Configuration Environment Variables', () => {
   describe('Multiple environment variables', () => {
     it('should handle all valid custom values simultaneously', () => {
       process.env.CHECLUSTER_CR_NAMESPACE = 'custom-ns';
-      process.env.BACKUP_LIST_PAGE_SIZE = '75';
       process.env.BACKUP_REGISTRY_TIMEOUT = '120';
 
       const config = jest.requireActual<typeof import('../config')>('../config');
       expect(config.dwoNamespace).toBe('custom-ns');
-      expect(config.backupListPageSize).toBe(75);
       expect(config.backupRegistryTimeout).toBe(120);
     });
 
     it('should use defaults for all when none are set', () => {
       delete process.env.CHECLUSTER_CR_NAMESPACE;
-      delete process.env.BACKUP_LIST_PAGE_SIZE;
       delete process.env.BACKUP_REGISTRY_TIMEOUT;
 
       const config = jest.requireActual<typeof import('../config')>('../config');
       expect(config.dwoNamespace).toBe('eclipse-che');
-      expect(config.backupListPageSize).toBe(50);
       expect(config.backupRegistryTimeout).toBe(30);
     });
 
     it('should handle mix of valid and invalid values', () => {
       process.env.CHECLUSTER_CR_NAMESPACE = 'my-ns';
-      process.env.BACKUP_LIST_PAGE_SIZE = '200'; // invalid - out of range
-      process.env.BACKUP_REGISTRY_TIMEOUT = '150'; // valid
+      process.env.BACKUP_REGISTRY_TIMEOUT = '150';
 
       const config = jest.requireActual<typeof import('../config')>('../config');
       expect(config.dwoNamespace).toBe('my-ns');
-      expect(config.backupListPageSize).toBe(50); // default
       expect(config.backupRegistryTimeout).toBe(150);
     });
   });
@@ -202,13 +134,9 @@ describe('Backup Configuration Environment Variables', () => {
   describe('Backward compatibility', () => {
     it('should maintain existing behavior when env vars not set', () => {
       delete process.env.BACKUP_REGISTRY_ADAPTER;
-      delete process.env.BACKUP_LIST_PAGE_SIZE;
       delete process.env.BACKUP_REGISTRY_TIMEOUT;
 
       const config = jest.requireActual<typeof import('../config')>('../config');
-
-      // Defaults match the original hardcoded values from common package
-      expect(config.backupListPageSize).toBe(50);
       expect(config.backupRegistryTimeout).toBe(30);
     });
   });

@@ -70,6 +70,7 @@ describe('RegistryApiService', () => {
     jest.clearAllMocks();
     // Default: DWOC returns a valid registry path
     mockCustomObjectsApi.getNamespacedCustomObject.mockResolvedValue({
+      kind: 'DevWorkspaceOperatorConfig',
       config: {
         workspace: {
           backupCronJob: {
@@ -269,8 +270,9 @@ describe('RegistryApiService', () => {
       expect(result[0].workspaceExists).toBe(false);
     });
 
-    it('should filter out UNAVAILABLE backups with no timestamp (no backup completed yet)', async () => {
-      // ImageStream exists but has no :latest tag — UNAVAILABLE with empty timestamp
+    it('should filter out UNAVAILABLE ImageStream entries with no annotation and no image (no backup ever ran)', async () => {
+      // ImageStream exists but has no :latest tag → imageUrl = '', timestamp = ''
+      // No DW annotations either → no evidence of any backup activity
       const taglessImageStream = {
         metadata: {
           name: 'tagless-workspace',
@@ -287,7 +289,7 @@ describe('RegistryApiService', () => {
 
       const result = await service.listBackupImages(namespace);
 
-      // Should be filtered out — no backup has completed (empty timestamp)
+      // Filtered out: imageUrl === '' AND timestamp === '' → pure initialization artifact
       expect(result).toHaveLength(0);
     });
 
@@ -471,7 +473,10 @@ describe('RegistryApiService', () => {
       const callOrder: string[] = [];
       mockCustomObjectsApi.getNamespacedCustomObject.mockImplementation(async () => {
         callOrder.push('dwoc');
-        return { config: { workspace: { backupCronJob: { registry: { path: registryPath } } } } };
+        return {
+          kind: 'DevWorkspaceOperatorConfig',
+          config: { workspace: { backupCronJob: { registry: { path: registryPath } } } },
+        };
       });
       mockCustomObjectsApi.listNamespacedCustomObject.mockImplementation(async () => {
         callOrder.push('list');
@@ -488,6 +493,7 @@ describe('RegistryApiService', () => {
       const dwocRegistryPath = 'default-route-openshift-image-registry.apps.crc.testing';
 
       mockCustomObjectsApi.getNamespacedCustomObject.mockResolvedValue({
+        kind: 'DevWorkspaceOperatorConfig',
         config: { workspace: { backupCronJob: { registry: { path: dwocRegistryPath } } } },
       });
 
@@ -601,6 +607,7 @@ describe('RegistryApiService', () => {
 
     beforeEach(() => {
       mockCustomObjectsApi.getNamespacedCustomObject.mockResolvedValue({
+        kind: 'DevWorkspaceOperatorConfig',
         config: {
           workspace: {
             backupCronJob: {
@@ -612,13 +619,14 @@ describe('RegistryApiService', () => {
           },
         },
       });
-      // Mock https.get for QuayRegistryClient
+      // Mock https.get for OciRegistryClient: catalog returns 200 directly
+      // (tests only care about what auth header getRegistryCredentials produces)
       mockHttpsGet.mockImplementation(
         (_url: unknown, _opts: unknown, callback: (res: MockRes) => void) => {
           const res: MockRes = {
             statusCode: 200,
             on: jest.fn((event: string, handler: (...args: unknown[]) => void) => {
-              if (event === 'data') handler(JSON.stringify({ repositories: [] }));
+              if (event === 'data') handler(JSON.stringify({ token: '', repositories: [] }));
               if (event === 'end') handler();
               return res;
             }),
@@ -629,7 +637,7 @@ describe('RegistryApiService', () => {
       );
     });
 
-    it('should read auth secret and extract token', async () => {
+    it('should look up the auth secret by its configured name', async () => {
       const robotToken = 'my-robot-token';
       const auth = Buffer.from(`my-robot:${robotToken}`).toString('base64');
       mockCoreV1Api.readNamespacedSecret.mockResolvedValue({
@@ -652,8 +660,74 @@ describe('RegistryApiService', () => {
       mockCoreV1Api.readNamespacedSecret.mockRejectedValue(new Error('Secret not found'));
       mockCustomObjectsApi.listNamespacedCustomObject.mockResolvedValue({ items: [] });
 
-      // Should not throw — falls back to NoOpRegistryClient
+      // Should not throw — proceeds as unauthenticated QuayRegistryClient
       await expect(service.listBackupImages(namespace)).resolves.toBeDefined();
+    });
+
+    it('should use quay-api-token as Bearer when present', async () => {
+      const oauthToken = 'my-oauth-token';
+      mockCoreV1Api.readNamespacedSecret.mockResolvedValue({
+        data: {
+          'quay-api-token': Buffer.from(oauthToken).toString('base64'),
+          '.dockerconfigjson': Buffer.from(
+            JSON.stringify({
+              auths: { 'quay.io': { auth: Buffer.from('user:pass').toString('base64') } },
+            }),
+          ).toString('base64'),
+        },
+      });
+      mockCustomObjectsApi.listNamespacedCustomObject.mockResolvedValue({ items: [] });
+
+      await service.listBackupImages(namespace);
+
+      expect(mockHttpsGet).toHaveBeenCalledWith(
+        expect.any(String),
+        expect.objectContaining({
+          headers: expect.objectContaining({
+            Authorization: `Bearer ${oauthToken}`,
+          }),
+        }),
+        expect.any(Function),
+      );
+    });
+
+    it('should use Basic auth from .dockerconfigjson when quay-api-token is absent', async () => {
+      const rawAuth = Buffer.from('robot:robot-token').toString('base64');
+      mockCoreV1Api.readNamespacedSecret.mockResolvedValue({
+        data: {
+          '.dockerconfigjson': Buffer.from(
+            JSON.stringify({ auths: { 'quay.io': { auth: rawAuth } } }),
+          ).toString('base64'),
+        },
+      });
+      mockCustomObjectsApi.listNamespacedCustomObject.mockResolvedValue({ items: [] });
+
+      await service.listBackupImages(namespace);
+
+      expect(mockHttpsGet).toHaveBeenCalledWith(
+        expect.any(String),
+        expect.objectContaining({
+          headers: expect.objectContaining({
+            Authorization: `Basic ${rawAuth}`,
+          }),
+        }),
+        expect.any(Function),
+      );
+    });
+
+    it('should send no Authorization header when secret has neither quay-api-token nor .dockerconfigjson', async () => {
+      mockCoreV1Api.readNamespacedSecret.mockResolvedValue({ data: {} });
+      mockCustomObjectsApi.listNamespacedCustomObject.mockResolvedValue({ items: [] });
+
+      await service.listBackupImages(namespace);
+
+      expect(mockHttpsGet).toHaveBeenCalledWith(
+        expect.any(String),
+        expect.objectContaining({
+          headers: expect.not.objectContaining({ Authorization: expect.anything() }),
+        }),
+        expect.any(Function),
+      );
     });
   });
 
@@ -777,12 +851,18 @@ describe('RegistryApiService', () => {
 
     interface MockRes {
       statusCode: number;
+      headers?: Record<string, string>;
       on: jest.Mock;
     }
 
-    function buildMockRes(statusCode: number, body: string): MockRes {
+    function buildMockRes(
+      statusCode: number,
+      body: string,
+      headers?: Record<string, string>,
+    ): MockRes {
       const res: MockRes = {
         statusCode,
+        headers,
         on: jest.fn((event: string, handler: (...args: unknown[]) => void) => {
           if (event === 'data') handler(body);
           if (event === 'end') handler();
@@ -792,10 +872,16 @@ describe('RegistryApiService', () => {
       return res;
     }
 
-    function mockQuayResponse(repos: { name: string; last_modified: number }[]): void {
-      mockHttpsGet.mockImplementation(
+    /**
+     * Mock the OCI catalog response (direct auth — registry accepts
+     * the provided auth header on _catalog without challenge).
+     * Docker v2 catalog returns full paths including org:
+     * e.g. "my-org/backups/user-che/my-workspace"
+     */
+    function mockCatalogResponse(fullPathRepos: string[]): void {
+      mockHttpsGet.mockImplementationOnce(
         (_url: unknown, _opts: unknown, callback: (res: MockRes) => void) => {
-          callback(buildMockRes(200, JSON.stringify({ repositories: repos })));
+          callback(buildMockRes(200, JSON.stringify({ repositories: fullPathRepos })));
           return { on: jest.fn() };
         },
       );
@@ -803,6 +889,7 @@ describe('RegistryApiService', () => {
 
     beforeEach(() => {
       mockCustomObjectsApi.getNamespacedCustomObject.mockResolvedValue({
+        kind: 'DevWorkspaceOperatorConfig',
         config: {
           workspace: {
             backupCronJob: {
@@ -822,20 +909,25 @@ describe('RegistryApiService', () => {
     });
 
     it('should discover deleted workspace backups from registry', async () => {
-      mockQuayResponse([{ name: 'backups/user-che/deleted-ws', last_modified: 1700000000 }]);
+      mockCatalogResponse(['my-org/backups/user-che/deleted-ws']);
       // No DevWorkspaces exist (workspace was deleted)
       mockCustomObjectsApi.listNamespacedCustomObject.mockResolvedValue({ items: [] });
 
       const result = await service.listBackupImages(namespace);
 
-      // Registry discovered workspace, but no DW annotation → timestamp is ''
-      // Empty timestamp gets filtered out by the "no backup completed" filter
-      expect(result).toHaveLength(0);
+      // Registry confirmed the image exists → always shown even without DW annotation
+      expect(result).toHaveLength(1);
+      expect(result[0].workspaceName).toBe('deleted-ws');
+      expect(result[0].workspaceExists).toBe(false);
+      expect(result[0].timestamp).toBe('');
+      expect(result[0].imageUrl).toBe(
+        `${quayRegistryPath}/${namespace}/deleted-ws:${BACKUP_IMAGE_DEFAULT_TAG}`,
+      );
     });
 
     it('should surface deleted workspace with annotation timestamp from registry', async () => {
       const deletedDWTimestamp = '2026-02-10T12:00:00.000Z';
-      mockQuayResponse([{ name: 'backups/user-che/deleted-ws', last_modified: 1700000000 }]);
+      mockCatalogResponse(['my-org/backups/user-che/deleted-ws']);
       // DW exists with backup annotation but will be marked as not existing
       // (it's discovered via registry, not DW list)
       mockCustomObjectsApi.listNamespacedCustomObject.mockResolvedValue({
@@ -863,7 +955,7 @@ describe('RegistryApiService', () => {
     });
 
     it('should mark annotation-only entry as UNAVAILABLE when quay confirms image missing', async () => {
-      mockQuayResponse([]); // quay.io returns empty list
+      mockCatalogResponse([]); // quay.io returns empty list
       mockCustomObjectsApi.listNamespacedCustomObject.mockResolvedValue({
         items: [
           {
@@ -888,7 +980,7 @@ describe('RegistryApiService', () => {
 
     it('should merge registry and annotation data for existing workspace', async () => {
       const backupTimestamp = '2026-02-10T14:00:00Z';
-      mockQuayResponse([{ name: 'backups/user-che/my-workspace', last_modified: 1700000000 }]);
+      mockCatalogResponse(['my-org/backups/user-che/my-workspace']);
       mockCustomObjectsApi.listNamespacedCustomObject.mockResolvedValue({
         items: [
           {

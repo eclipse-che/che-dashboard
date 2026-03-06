@@ -19,11 +19,12 @@ export interface IExternalRegistryClient {
   listWorkspaceBackups(namespace: string): Promise<string[]>;
 }
 
-export type RegistryType = 'openshift-internal' | 'quay' | 'unknown';
+export type RegistryType = 'openshift-internal' | 'oci';
 
 /**
  * Determines the registry type from the registry path.
- * Used to route to the correct listing strategy.
+ * OpenShift internal registries use ImageStream API; all other
+ * OCI-compatible registries use Docker v2 _catalog.
  */
 export function detectRegistryType(registryPath: string): RegistryType {
   try {
@@ -31,11 +32,8 @@ export function detectRegistryType(registryPath: string): RegistryType {
     if (hostname.includes('openshift-image-registry')) {
       return 'openshift-internal';
     }
-    if (hostname === 'quay.io') {
-      return 'quay';
-    }
-    return 'unknown';
+    return 'oci';
   } catch {
-    return 'unknown';
+    return 'oci';
   }
 }

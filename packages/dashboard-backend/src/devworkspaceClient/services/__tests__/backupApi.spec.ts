@@ -37,6 +37,7 @@ describe('BackupApiService', () => {
   // Operator config returned directly (no .body wrapper, matching k8s client v1.3.0)
   // Structure matches actual DWO API: enable (not enabled), registry object (not string)
   const mockOperatorConfig = {
+    kind: 'DevWorkspaceOperatorConfig',
     config: {
       workspace: {
         backupCronJob: {
@@ -56,6 +57,7 @@ describe('BackupApiService', () => {
   // DevWorkspace resource returned directly (no .body wrapper)
   function mockDevWorkspace(annotations: Record<string, string> = {}) {
     return {
+      kind: 'DevWorkspace',
       metadata: {
         name: workspaceName,
         namespace,
@@ -140,6 +142,7 @@ describe('BackupApiService', () => {
 
     it('should return default values when backup not configured', async () => {
       mockCustomObjectAPI.getNamespacedCustomObject.mockResolvedValue({
+        kind: 'DevWorkspaceOperatorConfig',
         config: {},
       });
 
@@ -345,6 +348,7 @@ describe('BackupApiService', () => {
 
     it('should return undefined backupImageUrl when registry is not configured', async () => {
       const operatorConfigNoRegistry = {
+        kind: 'DevWorkspaceOperatorConfig',
         config: {
           workspace: {
             backupCronJob: {
@@ -383,6 +387,7 @@ describe('BackupApiService', () => {
 
     it('should handle invalid cron expression gracefully', async () => {
       const operatorConfigBadCron = {
+        kind: 'DevWorkspaceOperatorConfig',
         config: {
           workspace: {
             backupCronJob: {
@@ -404,6 +409,7 @@ describe('BackupApiService', () => {
 
     it('should handle empty schedule string', async () => {
       const operatorConfigNoSchedule = {
+        kind: 'DevWorkspaceOperatorConfig',
         config: {
           workspace: {
             backupCronJob: {

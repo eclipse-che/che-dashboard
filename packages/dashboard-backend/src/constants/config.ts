@@ -60,19 +60,6 @@ export const dwoNamespace = process.env.CHECLUSTER_CR_NAMESPACE ?? 'eclipse-che'
 export const dwoConfigName = process.env.DWO_CONFIG_NAME ?? 'devworkspace-operator-config';
 
 /**
- * Backup list default page size
- * Range: 1-100
- * Default: 50
- * Env: BACKUP_LIST_PAGE_SIZE
- */
-export const backupListPageSize = validateNumericConfig(
-  process.env.BACKUP_LIST_PAGE_SIZE,
-  50,
-  1,
-  100,
-);
-
-/**
  * Registry query timeout in seconds
  * Range: 10-300
  * Default: 30

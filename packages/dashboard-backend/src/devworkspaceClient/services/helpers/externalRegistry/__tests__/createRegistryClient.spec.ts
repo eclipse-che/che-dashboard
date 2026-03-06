@@ -11,27 +11,31 @@
  */
 
 import { createRegistryClient } from '@/devworkspaceClient/services/helpers/externalRegistry';
-import { NoOpRegistryClient } from '@/devworkspaceClient/services/helpers/externalRegistry/NoOpRegistryClient';
-import { QuayRegistryClient } from '@/devworkspaceClient/services/helpers/externalRegistry/QuayRegistryClient';
+import { OciRegistryClient } from '@/devworkspaceClient/services/helpers/externalRegistry/OciRegistryClient';
 
 describe('createRegistryClient', () => {
-  it('should return QuayRegistryClient for quay.io registry path', () => {
+  it('should return OciRegistryClient for quay.io registry path', () => {
     const client = createRegistryClient('quay.io/org/backups', 'token');
-    expect(client).toBeInstanceOf(QuayRegistryClient);
+    expect(client).toBeInstanceOf(OciRegistryClient);
   });
 
-  it('should return NoOpRegistryClient for unknown registry', () => {
+  it('should return OciRegistryClient for GHCR registry path', () => {
     const client = createRegistryClient('ghcr.io/org/backups', 'token');
-    expect(client).toBeInstanceOf(NoOpRegistryClient);
+    expect(client).toBeInstanceOf(OciRegistryClient);
   });
 
-  it('should return NoOpRegistryClient for Docker Hub', () => {
+  it('should return OciRegistryClient for Docker Hub', () => {
     const client = createRegistryClient('docker.io/org/backups', 'token');
-    expect(client).toBeInstanceOf(NoOpRegistryClient);
+    expect(client).toBeInstanceOf(OciRegistryClient);
   });
 
-  it('should return NoOpRegistryClient when token is empty', () => {
+  it('should return OciRegistryClient for Harbor', () => {
+    const client = createRegistryClient('harbor.example.com/project', 'token');
+    expect(client).toBeInstanceOf(OciRegistryClient);
+  });
+
+  it('should return OciRegistryClient when auth is empty (public repos)', () => {
     const client = createRegistryClient('quay.io/org/backups', '');
-    expect(client).toBeInstanceOf(NoOpRegistryClient);
+    expect(client).toBeInstanceOf(OciRegistryClient);
   });
 });

@@ -58,6 +58,28 @@ interface IBackupImage {
   labels: Record<string, string>;
 }
 
+interface DWOCResponse {
+  kind: string;
+  config?: {
+    workspace?: {
+      backupCronJob?: {
+        registry?: {
+          path?: string;
+          authSecret?: string;
+        };
+      };
+    };
+  };
+}
+
+function isDWOCResponse(obj: unknown): obj is DWOCResponse {
+  return (
+    typeof obj === 'object' &&
+    obj !== null &&
+    (obj as DWOCResponse).kind === 'DevWorkspaceOperatorConfig'
+  );
+}
+
 /**
  * Validates Kubernetes DNS-1123 subdomain naming convention
  * Rules: lowercase alphanumeric, hyphens allowed, max 63 chars
@@ -165,15 +187,17 @@ export class RegistryApiService {
         name: dwoConfigName,
       });
 
-      const operatorConfig = (response as any).body || response;
-      const registryPath = operatorConfig.config?.workspace?.backupCronJob?.registry?.path;
-      const authSecret = operatorConfig.config?.workspace?.backupCronJob?.registry?.authSecret;
+      if (!isDWOCResponse(response)) {
+        throw new Error('Unexpected response format for DevWorkspaceOperatorConfig');
+      }
+      const registryPath = response.config?.workspace?.backupCronJob?.registry?.path;
+      const authSecret = response.config?.workspace?.backupCronJob?.registry?.authSecret;
 
       if (!registryPath) {
         throw new Error('Backup registry path not configured');
       }
 
-      return { registryPath, authSecret };
+      return { registryPath: registryPath.replace(/\/+$/, ''), authSecret };
     } catch (e) {
       throw createError(
         e,
@@ -184,8 +208,13 @@ export class RegistryApiService {
   }
 
   /**
-   * Reads the registry auth token from the DWOC authSecret.
-   * Returns empty string if the secret is missing or unreadable (NoOp fallback).
+   * Reads the registry auth credentials from the DWOC authSecret.
+   * Returns a pre-formed Authorization header value, or empty string.
+   *
+   * Lookup order:
+   * 1. quay-api-token key → "Bearer <token>"  (OAuth/robot API token)
+   * 2. .dockerconfigjson auths entry → "Basic <rawBase64>"  (standard docker creds)
+   * 3. Neither present → ""  (public repos, no auth header sent)
    */
   private async getRegistryCredentials(secretName: string, registryHost: string): Promise<string> {
     try {
@@ -194,7 +223,14 @@ export class RegistryApiService {
         namespace: dwoNamespace,
       });
 
-      const dockerConfigJson = (secret as any).data?.['.dockerconfigjson'];
+      // 1. Preferred: dedicated OAuth/robot API token
+      const apiTokenRaw = secret.data?.['quay-api-token'];
+      if (apiTokenRaw) {
+        return `Bearer ${Buffer.from(apiTokenRaw, 'base64').toString('utf-8').trim()}`;
+      }
+
+      // 2. Fallback: .dockerconfigjson
+      const dockerConfigJson = secret.data?.['.dockerconfigjson'];
       if (!dockerConfigJson) {
         return '';
       }
@@ -205,13 +241,7 @@ export class RegistryApiService {
         return '';
       }
 
-      // auth is base64("username:token") — we want just the token part
-      const decoded = Buffer.from(authEntry.auth, 'base64').toString('utf-8');
-      const colonIndex = decoded.indexOf(':');
-      if (colonIndex === -1) {
-        return '';
-      }
-      return decoded.slice(colonIndex + 1);
+      return `Basic ${authEntry.auth.trim()}`;
     } catch {
       return '';
     }
@@ -298,8 +328,10 @@ export class RegistryApiService {
       let registryClient: IExternalRegistryClient | undefined;
       if (registryType !== 'openshift-internal') {
         const registryHost = registryPath.split('/')[0].split(':')[0];
-        const token = authSecret ? await this.getRegistryCredentials(authSecret, registryHost) : '';
-        registryClient = createRegistryClient(registryPath, token);
+        const authHeader = authSecret
+          ? await this.getRegistryCredentials(authSecret, registryHost)
+          : '';
+        registryClient = createRegistryClient(registryPath, authHeader);
       }
 
       // Step 3: Query exactly one registry source + DevWorkspaces concurrently.
@@ -374,7 +406,6 @@ export class RegistryApiService {
       } else {
         // --- External registry merge logic ---
         const externalWorkspaceNames = new Set<string>(registryResults as string[]);
-        const isVerifiedRegistry = registryType === 'quay';
 
         // 1. External registry discovered workspaces (includes deleted ones)
         for (const wsName of externalWorkspaceNames) {
@@ -415,9 +446,7 @@ export class RegistryApiService {
             sizeBytes: 0,
             workspaceExists: true,
             labels: {
-              [DEVWORKSPACE_BACKUP_ANNOTATIONS.LAST_BACKUP_SUCCESSFUL]: isVerifiedRegistry
-                ? BackupStatus.UNAVAILABLE
-                : dwAnnotations[DEVWORKSPACE_BACKUP_ANNOTATIONS.LAST_BACKUP_SUCCESSFUL] ?? 'true',
+              [DEVWORKSPACE_BACKUP_ANNOTATIONS.LAST_BACKUP_SUCCESSFUL]: BackupStatus.UNAVAILABLE,
               ...(dwAnnotations[DEVWORKSPACE_BACKUP_ANNOTATIONS.LAST_BACKUP_ERROR]
                 ? {
                     [DEVWORKSPACE_BACKUP_ANNOTATIONS.LAST_BACKUP_ERROR]:
@@ -429,11 +458,15 @@ export class RegistryApiService {
         }
       }
 
-      const allBackups = Array.from(backupMap.values());
-      const backupsWithData = allBackups.filter(backup => backup.timestamp !== '');
+      // Show entries that have either a confirmed image URL (registry-listed) or a recorded
+      // timestamp (DW annotation). Filters out UNAVAILABLE ImageStream entries where no
+      // backup has ever completed and no annotation exists — pure initialization artifacts.
+      const backupsWithEvidence = Array.from(backupMap.values()).filter(
+        backup => backup.imageUrl !== '' || backup.timestamp !== '',
+      );
       const filteredBackups = workspaceName
-        ? backupsWithData.filter(backup => backup.workspaceName === workspaceName)
-        : backupsWithData;
+        ? backupsWithEvidence.filter(backup => backup.workspaceName === workspaceName)
+        : backupsWithEvidence;
 
       return filteredBackups;
     } catch (e) {
