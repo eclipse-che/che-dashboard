@@ -111,7 +111,7 @@ The backup feature reads cluster topology from the DevWorkspace Operator configu
 
 | Env var | Description | Default | Range |
 | ------- | ----------- | ------- | ----- |
-| `CHECLUSTER_CR_NAMESPACE` | Namespace where the CheCluster CR and DevWorkspaceOperatorConfig live | `eclipse-che` | — |
+| `DWO_NAMESPACE` | Namespace where DevWorkspaceOperatorConfig lives (may differ from the Che namespace) | `openshift-operators` | — |
 | `DWO_CONFIG_NAME` | Name of the DevWorkspaceOperatorConfig resource | `devworkspace-operator-config` | — |
 | `BACKUP_REGISTRY_TIMEOUT` | Timeout in seconds for registry queries during backup image listing | `30` | `10`–`300` |
 

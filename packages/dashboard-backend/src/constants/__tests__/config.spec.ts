@@ -26,13 +26,13 @@ describe('Backup Configuration Environment Variables', () => {
 
   describe('dwoNamespace', () => {
     it('should use default value "eclipse-che" when env var not set', () => {
-      delete process.env.CHECLUSTER_CR_NAMESPACE;
+      delete process.env.DWO_NAMESPACE;
       const config = jest.requireActual<typeof import('../config')>('../config');
-      expect(config.dwoNamespace).toBe('eclipse-che');
+      expect(config.dwoNamespace).toBe('openshift-operators');
     });
 
     it('should read from CHECLUSTER_CR_NAMESPACE env var', () => {
-      process.env.CHECLUSTER_CR_NAMESPACE = 'openshift-operators';
+      process.env.DWO_NAMESPACE = 'openshift-operators';
       const config = jest.requireActual<typeof import('../config')>('../config');
       expect(config.dwoNamespace).toBe('openshift-operators');
     });
@@ -104,7 +104,7 @@ describe('Backup Configuration Environment Variables', () => {
 
   describe('Multiple environment variables', () => {
     it('should handle all valid custom values simultaneously', () => {
-      process.env.CHECLUSTER_CR_NAMESPACE = 'custom-ns';
+      process.env.DWO_NAMESPACE = 'custom-ns';
       process.env.BACKUP_REGISTRY_TIMEOUT = '120';
 
       const config = jest.requireActual<typeof import('../config')>('../config');
@@ -113,16 +113,16 @@ describe('Backup Configuration Environment Variables', () => {
     });
 
     it('should use defaults for all when none are set', () => {
-      delete process.env.CHECLUSTER_CR_NAMESPACE;
+      delete process.env.DWO_NAMESPACE;
       delete process.env.BACKUP_REGISTRY_TIMEOUT;
 
       const config = jest.requireActual<typeof import('../config')>('../config');
-      expect(config.dwoNamespace).toBe('eclipse-che');
+      expect(config.dwoNamespace).toBe('openshift-operators');
       expect(config.backupRegistryTimeout).toBe(30);
     });
 
     it('should handle mix of valid and invalid values', () => {
-      process.env.CHECLUSTER_CR_NAMESPACE = 'my-ns';
+      process.env.DWO_NAMESPACE = 'my-ns';
       process.env.BACKUP_REGISTRY_TIMEOUT = '150';
 
       const config = jest.requireActual<typeof import('../config')>('../config');

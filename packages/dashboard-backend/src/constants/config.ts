@@ -45,12 +45,8 @@ function validateNumericConfig(
   return parsed;
 }
 
-/**
- * Namespace where CheCluster CR and DevWorkspaceOperatorConfig live.
- * Reads from the same env var the dashboard pod already receives.
- * Env: CHECLUSTER_CR_NAMESPACE
- */
-export const dwoNamespace = process.env.CHECLUSTER_CR_NAMESPACE ?? 'eclipse-che';
+/** Namespace where DevWorkspaceOperatorConfig lives. Env: DWO_NAMESPACE */
+export const dwoNamespace = process.env.DWO_NAMESPACE ?? 'openshift-operators';
 
 /**
  * Name of the DevWorkspaceOperatorConfig resource.
