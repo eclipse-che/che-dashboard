@@ -207,7 +207,12 @@ export class BackupsTableView extends React.PureComponent<Props, State> {
                     {backup.workspaceName}
                   </Button>
                 ) : (
-                  backup.workspaceName
+                  <Button
+                    variant="link"
+                    isDisabled
+                  >
+                    {backup.workspaceName}
+                  </Button>
                 )}{' '}
                 {backup.workspaceExists ? (
                   <CheTooltip content="This workspace currently exists and can be started">
