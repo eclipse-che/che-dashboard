@@ -21,7 +21,6 @@ import {
 } from '@eclipse-che/common';
 import * as k8s from '@kubernetes/client-node';
 import { V1JobList } from '@kubernetes/client-node';
-import cron from 'cron-parser';
 
 import { dwoConfigName, dwoNamespace } from '@/constants/config';
 import { createError } from '@/devworkspaceClient/services/helpers/createError';
@@ -123,7 +122,6 @@ export class BackupApiService {
         schedule,
         registry: backupCronJob?.registry?.path ?? '',
         authSecretName: backupCronJob?.registry?.authSecret,
-        nextScheduledBackup: this.calculateNextScheduledBackup(schedule),
       };
     } catch (e) {
       throw createError(e, BACKUP_CONFIG_ERROR_LABEL, 'Unable to get cluster backup configuration');
@@ -137,9 +135,8 @@ export class BackupApiService {
    */
   async getWorkspaceBackupStatus(namespace: string, workspaceName: string): Promise<BackupInfo> {
     try {
-      // Get backup configuration for schedule calculation
       const backupConfig = await this.getClusterBackupConfig();
-      const nextScheduledBackup = this.calculateNextScheduledBackup(backupConfig.schedule);
+      const backupSchedule = backupConfig.schedule || undefined;
 
       // Read DevWorkspace resource to get backup annotations
       const response = await this.customObjectAPI.getNamespacedCustomObject({
@@ -165,18 +162,14 @@ export class BackupApiService {
       if (hasActiveJob) {
         return {
           status: BackupStatus.IN_PROGRESS,
-          nextScheduledBackup,
+          backupSchedule,
           lastBackupTime: annotations[DEVWORKSPACE_BACKUP_ANNOTATIONS.LAST_BACKUP_FINISHED_AT],
           backupImageUrl,
         };
       }
 
       // Derive status from annotations
-      return this.extractBackupInfoFromAnnotations(
-        annotations,
-        nextScheduledBackup,
-        backupImageUrl,
-      );
+      return this.extractBackupInfoFromAnnotations(annotations, backupSchedule, backupImageUrl);
     } catch (e) {
       throw createError(
         e,
@@ -212,7 +205,7 @@ export class BackupApiService {
    */
   private extractBackupInfoFromAnnotations(
     annotations: Record<string, string>,
-    nextScheduledBackup: string | undefined,
+    backupSchedule: string | undefined,
     backupImageUrl: string | undefined,
   ): BackupInfo {
     const lastBackupSuccessful =
@@ -224,7 +217,7 @@ export class BackupApiService {
     if (lastBackupSuccessful === undefined && lastBackupFinishedAt === undefined) {
       return {
         status: BackupStatus.NEVER,
-        nextScheduledBackup,
+        backupSchedule,
       };
     }
 
@@ -232,7 +225,7 @@ export class BackupApiService {
 
     const backupInfo: BackupInfo = {
       status,
-      nextScheduledBackup,
+      backupSchedule,
       lastBackupTime: lastBackupFinishedAt,
       backupImageUrl,
     };
@@ -244,23 +237,5 @@ export class BackupApiService {
     }
 
     return backupInfo;
-  }
-
-  /**
-   * Calculate next scheduled backup time from cron expression
-   */
-  private calculateNextScheduledBackup(schedule: string): string | undefined {
-    if (!schedule) {
-      return undefined;
-    }
-
-    try {
-      const interval = cron.parse(schedule);
-      const nextDate = interval.next().toDate();
-      return nextDate.toISOString();
-    } catch (e) {
-      // Invalid cron expression - return undefined
-      return undefined;
-    }
   }
 }

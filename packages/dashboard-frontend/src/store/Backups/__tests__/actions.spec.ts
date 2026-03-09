@@ -47,7 +47,7 @@ describe('Backup Actions', () => {
         enabled: true,
         schedule: '0 1 * * *',
         registry: 'image-registry.openshift-image-registry.svc:5000',
-        nextScheduledBackup: '2026-02-27T01:00:00.000Z',
+        backupSchedule: '0 1 * * *',
       };
       mockedBackupApi.getBackupConfig.mockResolvedValueOnce(mockConfig);
 
@@ -105,7 +105,7 @@ describe('Backup Actions', () => {
       const mockBackupInfo = {
         status: BackupStatus.SUCCESS,
         lastBackupTime: '2026-02-10T12:00:00.000Z',
-        nextScheduledBackup: '2026-02-11T12:00:00.000Z',
+        backupSchedule: '0 1 * * *',
         backupImageUrl:
           'image-registry.openshift-image-registry.svc:5000/user-che/my-workspace:latest',
         sizeBytes: 1024000,
@@ -129,7 +129,7 @@ describe('Backup Actions', () => {
     it('should handle successful fetch with NEVER status', async () => {
       const mockBackupInfo = {
         status: BackupStatus.NEVER,
-        nextScheduledBackup: '2026-02-11T12:00:00.000Z',
+        backupSchedule: '0 1 * * *',
       };
 
       mockedBackupApi.getWorkspaceBackupStatus.mockResolvedValueOnce(mockBackupInfo);

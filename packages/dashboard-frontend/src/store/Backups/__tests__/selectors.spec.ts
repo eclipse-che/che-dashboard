@@ -19,11 +19,11 @@ import { unloadedState } from '@/store/Backups/reducer';
 import {
   selectAllBackupsByWorkspace,
   selectBackupConfig,
+  selectBackupSchedule,
   selectBackupsError,
   selectIsLoadingBackups,
   selectIsUpdatingBackups,
   selectNamespaceBackups,
-  selectNextScheduledBackup,
   selectWorkspaceBackupInfo,
 } from '@/store/Backups/selectors';
 
@@ -264,7 +264,7 @@ describe('Backups selectors', () => {
           enabled: true,
           schedule: '0 1 * * *',
           registry: 'image-registry.openshift-image-registry.svc:5000',
-          nextScheduledBackup: '2026-02-27T01:00:00.000Z',
+          backupSchedule: '0 1 * * *',
         };
         const mockState = {
           backups: {
@@ -277,13 +277,13 @@ describe('Backups selectors', () => {
       });
     });
 
-    describe('selectNextScheduledBackup', () => {
+    describe('selectBackupSchedule', () => {
       it('should return undefined when config is not loaded', () => {
         const mockState = {
           backups: unloadedState,
         } as Partial<RootState> as RootState;
 
-        expect(selectNextScheduledBackup(mockState)).toBeUndefined();
+        expect(selectBackupSchedule(mockState)).toBeUndefined();
       });
 
       it('should return undefined when backup is disabled', () => {
@@ -294,15 +294,15 @@ describe('Backups selectors', () => {
               enabled: false,
               schedule: '0 1 * * *',
               registry: 'image-registry.svc:5000',
-              nextScheduledBackup: '2026-02-27T01:00:00.000Z',
+              backupSchedule: '0 1 * * *',
             },
           },
         } as Partial<RootState> as RootState;
 
-        expect(selectNextScheduledBackup(mockState)).toBeUndefined();
+        expect(selectBackupSchedule(mockState)).toBeUndefined();
       });
 
-      it('should return nextScheduledBackup when backup is enabled', () => {
+      it('should return schedule when backup is enabled', () => {
         const mockState = {
           backups: {
             ...unloadedState,
@@ -310,15 +310,14 @@ describe('Backups selectors', () => {
               enabled: true,
               schedule: '0 1 * * *',
               registry: 'image-registry.svc:5000',
-              nextScheduledBackup: '2026-02-27T01:00:00.000Z',
             },
           },
         } as Partial<RootState> as RootState;
 
-        expect(selectNextScheduledBackup(mockState)).toBe('2026-02-27T01:00:00.000Z');
+        expect(selectBackupSchedule(mockState)).toBe('0 1 * * *');
       });
 
-      it('should return undefined when enabled but no nextScheduledBackup', () => {
+      it('should return undefined when enabled but schedule is empty', () => {
         const mockState = {
           backups: {
             ...unloadedState,
@@ -330,7 +329,7 @@ describe('Backups selectors', () => {
           },
         } as Partial<RootState> as RootState;
 
-        expect(selectNextScheduledBackup(mockState)).toBeUndefined();
+        expect(selectBackupSchedule(mockState)).toBe('');
       });
     });
   });

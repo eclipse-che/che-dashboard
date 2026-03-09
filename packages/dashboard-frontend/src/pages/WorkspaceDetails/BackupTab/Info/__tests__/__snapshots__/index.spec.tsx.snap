@@ -1,0 +1,618 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`BackupTabInfo failed snapshot - failed status 1`] = `
+<dl
+  className="pf-c-description-list pf-m-horizontal"
+>
+  <div
+    className="pf-c-description-list__group"
+  >
+    <dt
+      className="pf-c-description-list__term"
+    >
+      <span
+        className="pf-c-description-list__text"
+      >
+        Status
+      </span>
+    </dt>
+    <dd
+      className="pf-c-description-list__description"
+    >
+      <div
+        className="pf-c-description-list__text"
+      >
+        <span
+          data-testid="backup-status-badge"
+        >
+          failed
+        </span>
+      </div>
+    </dd>
+  </div>
+  <div
+    className="pf-c-description-list__group"
+  >
+    <dt
+      className="pf-c-description-list__term"
+    >
+      <span
+        className="pf-c-description-list__text"
+      >
+        Error
+      </span>
+    </dt>
+    <dd
+      className="pf-c-description-list__description"
+    >
+      <div
+        className="pf-c-description-list__text"
+      >
+        <div
+          aria-label="Danger Alert"
+          className="pf-c-alert pf-m-inline pf-m-plain pf-m-danger"
+          data-ouia-component-id="OUIA-Generated-Alert-danger-5"
+          data-ouia-component-type="PF4/Alert"
+          data-ouia-safe={true}
+          data-testid="backup-error-message"
+          onMouseEnter={[Function]}
+          onMouseLeave={[Function]}
+        >
+          <div
+            className="pf-c-alert__icon"
+          >
+            <svg
+              aria-hidden={true}
+              aria-labelledby={null}
+              fill="currentColor"
+              height="1em"
+              role="img"
+              style={
+                {
+                  "verticalAlign": "-0.125em",
+                }
+              }
+              viewBox="0 0 512 512"
+              width="1em"
+            >
+              <path
+                d="M504 256c0 136.997-111.043 248-248 248S8 392.997 8 256C8 119.083 119.043 8 256 8s248 111.083 248 248zm-248 50c-25.405 0-46 20.595-46 46s20.595 46 46 46 46-20.595 46-46-20.595-46-46-46zm-43.673-165.346l7.418 136c.347 6.364 5.609 11.346 11.982 11.346h48.546c6.373 0 11.635-4.982 11.982-11.346l7.418-136c.375-6.874-5.098-12.654-11.982-12.654h-63.383c-6.884 0-12.356 5.78-11.981 12.654z"
+              />
+            </svg>
+          </div>
+          <h4
+            className="pf-c-alert__title"
+          >
+            <span
+              className="pf-u-screen-reader"
+            >
+              Danger alert:
+            </span>
+            Backup failed
+          </h4>
+          <div
+            className="pf-c-alert__description"
+          >
+            Registry authentication failed
+          </div>
+        </div>
+      </div>
+    </dd>
+  </div>
+  <div
+    className="pf-c-description-list__group"
+  >
+    <dt
+      className="pf-c-description-list__term"
+    >
+      <span
+        className="pf-c-description-list__text"
+      >
+        Backup Schedule
+      </span>
+    </dt>
+    <dd
+      className="pf-c-description-list__description"
+    >
+      <div
+        className="pf-c-description-list__text"
+      >
+        Every day at 0 1 * * *
+        <div
+          className="pf-c-helper-text"
+        >
+          <div
+            className="pf-c-helper-text__item pf-m-indeterminate"
+          >
+            <span
+              className="pf-c-helper-text__item-text"
+            >
+              Will retry on next scheduled run.
+            </span>
+          </div>
+        </div>
+      </div>
+    </dd>
+  </div>
+  <div
+    className="pf-c-description-list__group"
+  >
+    <dt
+      className="pf-c-description-list__term"
+    >
+      <span
+        className="pf-c-description-list__text"
+      >
+        Last Backup
+      </span>
+    </dt>
+    <dd
+      className="pf-c-description-list__description"
+    >
+      <div
+        className="pf-c-description-list__text"
+      >
+        2 hours ago (Jan 15, 2:30 p.m.)
+      </div>
+    </dd>
+  </div>
+</dl>
+`;
+
+exports[`BackupTabInfo in progress snapshot - in-progress status 1`] = `
+<dl
+  className="pf-c-description-list pf-m-horizontal"
+>
+  <div
+    className="pf-c-description-list__group"
+  >
+    <dt
+      className="pf-c-description-list__term"
+    >
+      <span
+        className="pf-c-description-list__text"
+      >
+        Status
+      </span>
+    </dt>
+    <dd
+      className="pf-c-description-list__description"
+    >
+      <div
+        className="pf-c-description-list__text"
+      >
+        <span
+          data-testid="backup-status-badge"
+        >
+          in-progress
+        </span>
+      </div>
+    </dd>
+  </div>
+  <div
+    className="pf-c-description-list__group"
+  >
+    <dt
+      className="pf-c-description-list__term"
+    >
+      <span
+        className="pf-c-description-list__text"
+      >
+        Backup Schedule
+      </span>
+    </dt>
+    <dd
+      className="pf-c-description-list__description"
+    >
+      <div
+        className="pf-c-description-list__text"
+      >
+        Every day at 0 1 * * *
+        <div
+          className="pf-c-helper-text"
+        >
+          <div
+            className="pf-c-helper-text__item pf-m-indeterminate"
+          >
+            <span
+              className="pf-c-helper-text__item-text"
+            >
+              Backup is in progress.
+            </span>
+          </div>
+        </div>
+      </div>
+    </dd>
+  </div>
+  <div
+    className="pf-c-description-list__group"
+  >
+    <dt
+      className="pf-c-description-list__term"
+    >
+      <span
+        className="pf-c-description-list__text"
+      >
+        Last Backup
+      </span>
+    </dt>
+    <dd
+      className="pf-c-description-list__description"
+    >
+      <div
+        className="pf-c-description-list__text"
+      >
+        2 hours ago (Jan 15, 2:30 p.m.)
+      </div>
+    </dd>
+  </div>
+</dl>
+`;
+
+exports[`BackupTabInfo never backed up snapshot - never status 1`] = `
+<dl
+  className="pf-c-description-list pf-m-horizontal"
+>
+  <div
+    className="pf-c-description-list__group"
+  >
+    <dt
+      className="pf-c-description-list__term"
+    >
+      <span
+        className="pf-c-description-list__text"
+      >
+        Status
+      </span>
+    </dt>
+    <dd
+      className="pf-c-description-list__description"
+    >
+      <div
+        className="pf-c-description-list__text"
+      >
+        <span
+          data-testid="backup-status-badge"
+        >
+          never
+        </span>
+      </div>
+    </dd>
+  </div>
+  <div
+    className="pf-c-description-list__group"
+  >
+    <dt
+      className="pf-c-description-list__term"
+    >
+      <span
+        className="pf-c-description-list__text"
+      >
+        Backup Schedule
+      </span>
+    </dt>
+    <dd
+      className="pf-c-description-list__description"
+    >
+      <div
+        className="pf-c-description-list__text"
+      >
+        Every day at 0 1 * * *
+        <div
+          className="pf-c-helper-text"
+        >
+          <div
+            className="pf-c-helper-text__item pf-m-indeterminate"
+          >
+            <span
+              className="pf-c-helper-text__item-text"
+            >
+              Backups run only when the workspace is stopped.
+            </span>
+          </div>
+        </div>
+      </div>
+    </dd>
+  </div>
+</dl>
+`;
+
+exports[`BackupTabInfo success snapshot - success running 1`] = `
+<dl
+  className="pf-c-description-list pf-m-horizontal"
+>
+  <div
+    className="pf-c-description-list__group"
+  >
+    <dt
+      className="pf-c-description-list__term"
+    >
+      <span
+        className="pf-c-description-list__text"
+      >
+        Status
+      </span>
+    </dt>
+    <dd
+      className="pf-c-description-list__description"
+    >
+      <div
+        className="pf-c-description-list__text"
+      >
+        <span
+          data-testid="backup-status-badge"
+        >
+          success
+        </span>
+      </div>
+    </dd>
+  </div>
+  <div
+    className="pf-c-description-list__group"
+  >
+    <dt
+      className="pf-c-description-list__term"
+    >
+      <span
+        className="pf-c-description-list__text"
+      >
+        Backup Schedule
+      </span>
+    </dt>
+    <dd
+      className="pf-c-description-list__description"
+    >
+      <div
+        className="pf-c-description-list__text"
+      >
+        Every day at 0 1 * * *
+        <div
+          className="pf-c-helper-text"
+        >
+          <div
+            className="pf-c-helper-text__item pf-m-indeterminate"
+          >
+            <span
+              className="pf-c-helper-text__item-text"
+            >
+              Backup will run when the workspace stops.
+            </span>
+          </div>
+        </div>
+      </div>
+    </dd>
+  </div>
+  <div
+    className="pf-c-description-list__group"
+  >
+    <dt
+      className="pf-c-description-list__term"
+    >
+      <span
+        className="pf-c-description-list__text"
+      >
+        Last Backup
+      </span>
+    </dt>
+    <dd
+      className="pf-c-description-list__description"
+    >
+      <div
+        className="pf-c-description-list__text"
+      >
+        2 hours ago (Jan 15, 2:30 p.m.)
+      </div>
+    </dd>
+  </div>
+  <div
+    className="pf-c-description-list__group"
+  >
+    <dt
+      className="pf-c-description-list__term"
+    >
+      <span
+        className="pf-c-description-list__text"
+      >
+        Backup Image
+      </span>
+    </dt>
+    <dd
+      className="pf-c-description-list__description"
+    >
+      <div
+        className="pf-c-description-list__text"
+      >
+        <div
+          data-testid="clipboard-copy"
+        >
+          registry.example.com/backups/my-workspace:latest
+        </div>
+      </div>
+    </dd>
+  </div>
+</dl>
+`;
+
+exports[`BackupTabInfo success snapshot - success stopped 1`] = `
+<dl
+  className="pf-c-description-list pf-m-horizontal"
+>
+  <div
+    className="pf-c-description-list__group"
+  >
+    <dt
+      className="pf-c-description-list__term"
+    >
+      <span
+        className="pf-c-description-list__text"
+      >
+        Status
+      </span>
+    </dt>
+    <dd
+      className="pf-c-description-list__description"
+    >
+      <div
+        className="pf-c-description-list__text"
+      >
+        <span
+          data-testid="backup-status-badge"
+        >
+          success
+        </span>
+      </div>
+    </dd>
+  </div>
+  <div
+    className="pf-c-description-list__group"
+  >
+    <dt
+      className="pf-c-description-list__term"
+    >
+      <span
+        className="pf-c-description-list__text"
+      >
+        Backup Schedule
+      </span>
+    </dt>
+    <dd
+      className="pf-c-description-list__description"
+    >
+      <div
+        className="pf-c-description-list__text"
+      >
+        Every day at 0 1 * * *
+        <div
+          className="pf-c-helper-text"
+        >
+          <div
+            className="pf-c-helper-text__item pf-m-indeterminate"
+          >
+            <span
+              className="pf-c-helper-text__item-text"
+            >
+              Backup is current.
+            </span>
+          </div>
+        </div>
+      </div>
+    </dd>
+  </div>
+  <div
+    className="pf-c-description-list__group"
+  >
+    <dt
+      className="pf-c-description-list__term"
+    >
+      <span
+        className="pf-c-description-list__text"
+      >
+        Last Backup
+      </span>
+    </dt>
+    <dd
+      className="pf-c-description-list__description"
+    >
+      <div
+        className="pf-c-description-list__text"
+      >
+        2 hours ago (Jan 15, 2:30 p.m.)
+      </div>
+    </dd>
+  </div>
+  <div
+    className="pf-c-description-list__group"
+  >
+    <dt
+      className="pf-c-description-list__term"
+    >
+      <span
+        className="pf-c-description-list__text"
+      >
+        Backup Image
+      </span>
+    </dt>
+    <dd
+      className="pf-c-description-list__description"
+    >
+      <div
+        className="pf-c-description-list__text"
+      >
+        <div
+          data-testid="clipboard-copy"
+        >
+          registry.example.com/backups/my-workspace:latest
+        </div>
+      </div>
+    </dd>
+  </div>
+</dl>
+`;
+
+exports[`BackupTabInfo unavailable snapshot - unavailable status 1`] = `
+<dl
+  className="pf-c-description-list pf-m-horizontal"
+>
+  <div
+    className="pf-c-description-list__group"
+  >
+    <dt
+      className="pf-c-description-list__term"
+    >
+      <span
+        className="pf-c-description-list__text"
+      >
+        Status
+      </span>
+    </dt>
+    <dd
+      className="pf-c-description-list__description"
+    >
+      <div
+        className="pf-c-description-list__text"
+      >
+        <span
+          data-testid="backup-status-badge"
+        >
+          unavailable
+        </span>
+      </div>
+    </dd>
+  </div>
+  <div
+    className="pf-c-description-list__group"
+  >
+    <dt
+      className="pf-c-description-list__term"
+    >
+      <span
+        className="pf-c-description-list__text"
+      >
+        Backup Schedule
+      </span>
+    </dt>
+    <dd
+      className="pf-c-description-list__description"
+    >
+      <div
+        className="pf-c-description-list__text"
+      >
+        Every day at 0 1 * * *
+        <div
+          className="pf-c-helper-text"
+        >
+          <div
+            className="pf-c-helper-text__item pf-m-indeterminate"
+          >
+            <span
+              className="pf-c-helper-text__item-text"
+            >
+              Backup image was not found in the registry.
+            </span>
+          </div>
+        </div>
+      </div>
+    </dd>
+  </div>
+</dl>
+`;

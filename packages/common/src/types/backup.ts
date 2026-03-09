@@ -38,8 +38,8 @@ export interface BackupInfo {
   status: BackupStatus;
   /** ISO 8601 timestamp of last successful backup */
   lastBackupTime?: string;
-  /** ISO 8601 timestamp of next scheduled backup */
-  nextScheduledBackup?: string;
+  /** Cron expression for the backup schedule (e.g. "0 1 * * *") */
+  backupSchedule?: string;
   /** Full URL to the backup image in registry */
   backupImageUrl?: string;
   /** Backup image size in bytes */
@@ -104,6 +104,4 @@ export interface BackupConfig {
   registry: string;
   /** Name of the secret containing registry credentials (optional) */
   authSecretName?: string;
-  /** ISO 8601 timestamp of next scheduled backup (computed server-side from schedule) */
-  nextScheduledBackup?: string;
 }

@@ -63,7 +63,7 @@ const mockBackupConfig = {
   enabled: true,
   schedule: '0 1 * * *',
   registry: 'image-registry.openshift-image-registry.svc:5000',
-  nextScheduledBackup: '2026-02-12T01:00:00Z',
+  backupSchedule: '0 1 * * *',
 };
 
 const { createSnapshot, renderComponent } = getComponentRenderer(getComponent);

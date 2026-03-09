@@ -38,7 +38,7 @@ describe('Backup API', () => {
       const mockBackupInfo = {
         status: BackupStatus.SUCCESS,
         lastBackupTime: '2026-02-10T12:00:00.000Z',
-        nextScheduledBackup: '2026-02-11T12:00:00.000Z',
+        backupSchedule: '0 1 * * *',
         backupImageUrl: imageUrl,
         sizeBytes: 1024000,
       };
@@ -58,7 +58,7 @@ describe('Backup API', () => {
     it('should fetch backup status with NEVER state', async () => {
       const mockBackupInfo = {
         status: BackupStatus.NEVER,
-        nextScheduledBackup: '2026-02-11T12:00:00.000Z',
+        backupSchedule: '0 1 * * *',
       };
 
       mockGet.mockResolvedValueOnce({ data: mockBackupInfo });
@@ -74,7 +74,7 @@ describe('Backup API', () => {
       const mockBackupInfo = {
         status: BackupStatus.IN_PROGRESS,
         lastBackupTime: '2026-02-10T12:00:00.000Z',
-        nextScheduledBackup: '2026-02-11T12:00:00.000Z',
+        backupSchedule: '0 1 * * *',
         backupImageUrl: imageUrl,
       };
 
@@ -89,7 +89,7 @@ describe('Backup API', () => {
       const mockBackupInfo = {
         status: BackupStatus.FAILED,
         lastBackupTime: '2026-02-10T12:00:00.000Z',
-        nextScheduledBackup: '2026-02-11T12:00:00.000Z',
+        backupSchedule: '0 1 * * *',
         error: 'Backup job failed: insufficient storage',
       };
 

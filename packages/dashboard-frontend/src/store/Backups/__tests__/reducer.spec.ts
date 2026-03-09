@@ -98,7 +98,7 @@ describe('Backups, reducer', () => {
           'workspace-uid-1': {
             status: BackupStatus.SUCCESS,
             lastBackupTime: '2026-02-10T12:00:00.000Z',
-            nextScheduledBackup: '2026-02-11T12:00:00.000Z',
+            backupSchedule: '0 1 * * *',
             backupImageUrl: 'registry.example.com/namespace/workspace:latest',
             sizeBytes: 1024,
           },

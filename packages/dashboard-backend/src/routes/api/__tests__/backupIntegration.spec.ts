@@ -217,8 +217,7 @@ describe('Backup API Integration Tests', () => {
       expect(response.status).toBe(BackupStatus.SUCCESS);
       expect(response.lastBackupTime).toBe('2026-02-10T01:05:00Z');
       expect(response.backupImageUrl).toBe(expectedImageUrl);
-      expect(response.nextScheduledBackup).toBeDefined();
-      expect(response.nextScheduledBackup).toMatch(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/);
+      expect(response.backupSchedule).toBe('0 1 * * *');
     });
 
     it('should return NEVER when no backup annotations exist', async () => {
@@ -234,7 +233,7 @@ describe('Backup API Integration Tests', () => {
 
       expect(response.status).toBe(BackupStatus.NEVER);
       expect(response.lastBackupTime).toBeUndefined();
-      expect(response.nextScheduledBackup).toBeDefined();
+      expect(response.backupSchedule).toBe('0 2 * * *');
     });
 
     it('should return FAILED with error message from annotation', async () => {
@@ -320,7 +319,7 @@ describe('Backup API Integration Tests', () => {
       const response = res.json();
 
       expect(response.status).toBe(BackupStatus.NEVER);
-      expect(response.nextScheduledBackup).toBeUndefined();
+      expect(response.backupSchedule).toBe('not-a-valid-cron');
     });
 
     it('should handle empty cron schedule', async () => {
@@ -334,7 +333,7 @@ describe('Backup API Integration Tests', () => {
       expect(res.statusCode).toEqual(200);
       const response = res.json();
 
-      expect(response.nextScheduledBackup).toBeUndefined();
+      expect(response.backupSchedule).toBeUndefined();
     });
 
     it('should return 500 when operator config API fails', async () => {
@@ -389,7 +388,7 @@ describe('Backup API Integration Tests', () => {
       expect(mockCustomObjectAPI.getNamespacedCustomObject).toHaveBeenNthCalledWith(1, {
         group: 'controller.devfile.io',
         version: 'v1alpha1',
-        namespace: 'eclipse-che',
+        namespace: 'openshift-operators',
         plural: 'devworkspaceoperatorconfigs',
         name: 'devworkspace-operator-config',
       });
@@ -414,7 +413,7 @@ describe('Backup API Integration Tests', () => {
       const response = res.json();
 
       expect(response.status).toBe(BackupStatus.NEVER);
-      expect(response.nextScheduledBackup).toBeUndefined();
+      expect(response.backupSchedule).toBeUndefined();
     });
 
     it('should not include backupImageUrl when registry is empty', async () => {

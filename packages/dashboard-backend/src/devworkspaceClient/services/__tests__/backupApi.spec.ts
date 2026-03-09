@@ -128,13 +128,11 @@ describe('BackupApiService', () => {
         registry,
         authSecretName: 'registry-credentials',
       });
-      // nextScheduledBackup is computed from the cron schedule — just verify it's an ISO string
-      expect(result.nextScheduledBackup).toMatch(/^\d{4}-\d{2}-\d{2}T/);
 
       expect(mockCustomObjectAPI.getNamespacedCustomObject).toHaveBeenCalledWith({
         group: 'controller.devfile.io',
         version: 'v1alpha1',
-        namespace: 'eclipse-che',
+        namespace: 'openshift-operators',
         plural: 'devworkspaceoperatorconfigs',
         name: 'devworkspace-operator-config',
       });
@@ -153,7 +151,6 @@ describe('BackupApiService', () => {
         schedule: '',
         registry: '',
         authSecretName: undefined,
-        nextScheduledBackup: undefined,
       });
     });
 
@@ -173,7 +170,7 @@ describe('BackupApiService', () => {
       const result = await backupApiService.getWorkspaceBackupStatus(namespace, workspaceName);
 
       expect(result.status).toBe(BackupStatus.NEVER);
-      expect(result.nextScheduledBackup).toBeDefined();
+      expect(result.backupSchedule).toBe('0 1 * * *');
     });
 
     it('should return SUCCESS status from annotations with constructed image URL', async () => {
@@ -188,7 +185,7 @@ describe('BackupApiService', () => {
       expect(result.status).toBe(BackupStatus.SUCCESS);
       expect(result.lastBackupTime).toBe('2025-02-10T01:05:00Z');
       expect(result.backupImageUrl).toBe(expectedImageUrl);
-      expect(result.nextScheduledBackup).toBeDefined();
+      expect(result.backupSchedule).toBe('0 1 * * *');
       expect(result.error).toBeUndefined();
     });
 
@@ -375,17 +372,16 @@ describe('BackupApiService', () => {
     });
   });
 
-  describe('cron schedule calculation', () => {
-    it('should calculate next scheduled backup from cron expression', async () => {
+  describe('backup schedule passthrough', () => {
+    it('should pass the raw cron expression as backupSchedule', async () => {
       mockGetNamespacedForBackupStatus({});
 
       const result = await backupApiService.getWorkspaceBackupStatus(namespace, workspaceName);
 
-      expect(result.nextScheduledBackup).toBeDefined();
-      expect(result.nextScheduledBackup).toMatch(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/);
+      expect(result.backupSchedule).toBe('0 1 * * *');
     });
 
-    it('should handle invalid cron expression gracefully', async () => {
+    it('should pass invalid cron expression as-is', async () => {
       const operatorConfigBadCron = {
         kind: 'DevWorkspaceOperatorConfig',
         config: {
@@ -404,7 +400,7 @@ describe('BackupApiService', () => {
 
       const result = await backupApiService.getWorkspaceBackupStatus(namespace, workspaceName);
 
-      expect(result.nextScheduledBackup).toBeUndefined();
+      expect(result.backupSchedule).toBe('invalid-cron');
     });
 
     it('should handle empty schedule string', async () => {
@@ -426,7 +422,7 @@ describe('BackupApiService', () => {
 
       const result = await backupApiService.getWorkspaceBackupStatus(namespace, workspaceName);
 
-      expect(result.nextScheduledBackup).toBeUndefined();
+      expect(result.backupSchedule).toBeUndefined();
     });
   });
 });

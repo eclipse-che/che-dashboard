@@ -73,7 +73,6 @@ describe('Backup Routes', () => {
         enabled: true,
         schedule: '0 1 * * *',
         registry: 'image-registry.openshift-image-registry.svc:5000',
-        nextScheduledBackup: '2026-02-27T01:00:00.000Z',
       };
       mockGetClusterBackupConfig.mockResolvedValue(mockConfig);
 
@@ -121,7 +120,7 @@ describe('Backup Routes', () => {
       const mockBackupInfo = {
         status: BackupStatus.SUCCESS,
         lastBackupTime: '2026-02-10T12:00:00.000Z',
-        nextScheduledBackup: '2026-02-11T12:00:00.000Z',
+        backupSchedule: '0 1 * * *',
         backupImageUrl:
           'image-registry.openshift-image-registry.svc:5000/user-che/my-workspace:latest',
       };
@@ -142,7 +141,7 @@ describe('Backup Routes', () => {
     it('should return status for workspace that has never been backed up', async () => {
       const mockBackupInfo = {
         status: BackupStatus.NEVER,
-        nextScheduledBackup: '2026-02-11T12:00:00.000Z',
+        backupSchedule: '0 1 * * *',
       };
 
       mockGetWorkspaceBackupStatus.mockResolvedValue(mockBackupInfo);
@@ -164,7 +163,7 @@ describe('Backup Routes', () => {
       const mockBackupInfo = {
         status: BackupStatus.IN_PROGRESS,
         lastBackupTime: '2026-02-10T12:00:00.000Z',
-        nextScheduledBackup: '2026-02-11T12:00:00.000Z',
+        backupSchedule: '0 1 * * *',
         backupImageUrl:
           'image-registry.openshift-image-registry.svc:5000/user-che/my-workspace:latest',
       };
@@ -186,7 +185,7 @@ describe('Backup Routes', () => {
       const mockBackupInfo = {
         status: BackupStatus.FAILED,
         lastBackupTime: '2026-02-10T12:00:00.000Z',
-        nextScheduledBackup: '2026-02-11T12:00:00.000Z',
+        backupSchedule: '0 1 * * *',
         error: 'Backup job failed: insufficient storage',
       };
 
@@ -236,7 +235,7 @@ describe('Backup Routes', () => {
     it('should call BackupApiService with correct parameters', async () => {
       const mockBackupInfo = {
         status: BackupStatus.SUCCESS,
-        nextScheduledBackup: '2026-02-11T12:00:00.000Z',
+        backupSchedule: '0 1 * * *',
       };
 
       mockGetWorkspaceBackupStatus.mockResolvedValue(mockBackupInfo);

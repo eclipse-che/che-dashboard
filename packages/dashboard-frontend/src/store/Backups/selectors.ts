@@ -41,8 +41,8 @@ export const selectNamespaceBackups = createSelector(
 
 export const selectBackupConfig = createSelector(selectBackupsState, state => state.backupConfig);
 
-export const selectNextScheduledBackup = createSelector(selectBackupsState, state =>
-  state.backupConfig?.enabled ? state.backupConfig.nextScheduledBackup : undefined,
+export const selectBackupSchedule = createSelector(selectBackupsState, state =>
+  state.backupConfig?.enabled ? state.backupConfig.schedule : undefined,
 );
 
 export const selectIsLoadingBackups = createSelector(
