@@ -28,10 +28,10 @@ import { buildGettingStartedLocation } from '@/services/helpers/location';
 import { RootState } from '@/store';
 import { fetchBackupConfig, fetchBackupList } from '@/store/Backups/actions';
 import {
+  selectBackupSchedule,
   selectBackupsError,
   selectIsUpdatingBackups,
   selectNamespaceBackups,
-  selectNextScheduledBackup,
 } from '@/store/Backups/selectors';
 import { selectDefaultNamespace } from '@/store/InfrastructureNamespaces/selectors';
 
@@ -71,7 +71,7 @@ export class BackupsView extends React.PureComponent<Props> {
   }
 
   public render(): React.ReactElement {
-    const { isLoading, error, backups, namespace, navigate, nextScheduledBackup } = this.props;
+    const { isLoading, error, backups, namespace, navigate, backupSchedule } = this.props;
 
     if (isLoading) {
       return this.renderLoading();
@@ -103,7 +103,7 @@ export class BackupsView extends React.PureComponent<Props> {
           backups={backups}
           namespace={namespace}
           navigate={navigate}
-          nextScheduledBackup={nextScheduledBackup}
+          backupSchedule={backupSchedule}
         />
       </div>
     );
@@ -118,7 +118,7 @@ const mapStateToProps = (state: RootState) => {
     backups: selectNamespaceBackups(state, namespace),
     isLoading: selectIsUpdatingBackups(state),
     error: selectBackupsError(state),
-    nextScheduledBackup: selectNextScheduledBackup(state),
+    backupSchedule: selectBackupSchedule(state),
   };
 };
 

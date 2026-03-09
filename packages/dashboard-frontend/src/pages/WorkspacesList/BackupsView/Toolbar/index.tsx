@@ -16,7 +16,6 @@ import {
   Button,
   ButtonVariant,
   InputGroup,
-  InputGroupText,
   Text,
   TextContent,
   TextInput,
@@ -27,43 +26,69 @@ import {
   ToolbarToggleGroup,
 } from '@patternfly/react-core';
 import { EllipsisVIcon, RedoIcon, SearchIcon } from '@patternfly/react-icons';
+import cronstrue from 'cronstrue';
 import React from 'react';
-
-import { formatDate, formatRelativeDate } from '@/services/helpers/dates';
 
 type Props = {
   filterValue: string;
-  nextScheduledBackup: string | undefined;
+  backupSchedule: string | undefined;
   onFilterChange: (value: string) => void;
+  onFilterApply: () => void;
+  onFilterClear: () => void;
   onRestoreClick: () => void;
 };
 
 export class BackupsListToolbar extends React.PureComponent<Props> {
-  public render(): React.ReactElement {
-    const { filterValue, nextScheduledBackup, onFilterChange, onRestoreClick } = this.props;
+  private handleKeyDown(event: React.KeyboardEvent): void {
+    switch (event.key) {
+      case 'Enter':
+        this.props.onFilterApply();
+        break;
+      case 'Escape':
+        this.props.onFilterClear();
+        break;
+    }
+  }
 
-    const nextBackupLabel = nextScheduledBackup
-      ? `Next scheduled: ${formatRelativeDate(new Date(nextScheduledBackup))} (${formatDate(new Date(nextScheduledBackup))})`
-      : 'No backup schedule configured';
+  public render(): React.ReactElement {
+    const { filterValue, backupSchedule, onFilterChange, onFilterApply, onRestoreClick } =
+      this.props;
+
+    let scheduleLabel: string;
+    if (backupSchedule) {
+      try {
+        scheduleLabel = `Backup schedule: ${cronstrue.toString(backupSchedule)}`;
+      } catch {
+        scheduleLabel = `Backup schedule: ${backupSchedule}`;
+      }
+    } else {
+      scheduleLabel = 'No backup schedule configured';
+    }
 
     return (
       <Toolbar id="backups-view-toolbar" data-testid="backups-view-toolbar">
         <ToolbarContent>
           <ToolbarItem variant="search-filter">
             <InputGroup>
-              <InputGroupText id="backups-filter-input-icon">
-                <SearchIcon />
-              </InputGroupText>
               <TextInput
                 name="backups-filter-input"
                 id="backups-filter-input"
                 type="search"
-                aria-label="Filter backups by workspace name"
-                placeholder="Search by workspace name"
+                aria-label="Filter backups"
+                placeholder="Search"
                 value={filterValue}
                 onChange={value => onFilterChange(value)}
+                onKeyDown={event => this.handleKeyDown(event)}
                 data-testid="backups-filter-input"
               />
+              <Button
+                variant="control"
+                aria-label="Filter backups"
+                onClick={() => onFilterApply()}
+                data-testid="backups-filter-button"
+              >
+                <SearchIcon />
+              </Button>
             </InputGroup>
           </ToolbarItem>
           <ToolbarToggleGroup
@@ -101,7 +126,7 @@ export class BackupsListToolbar extends React.PureComponent<Props> {
                 aria-label="Next scheduled backup time"
                 data-testid="next-scheduled-backup"
               >
-                {nextBackupLabel}
+                {scheduleLabel}
               </Text>
             </TextContent>
           </ToolbarItem>
