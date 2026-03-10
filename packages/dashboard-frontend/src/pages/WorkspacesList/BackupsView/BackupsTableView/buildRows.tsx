@@ -148,6 +148,20 @@ function renderActions(
   onDropdownToggle: (imageUrl: string, isOpen: boolean) => void,
   onCreateFromBackup: (backup: BackupItem) => void,
 ): React.ReactElement {
+  const hasImage = backup.imageUrl !== '';
+
+  if (!hasImage) {
+    return (
+      <CheTooltip content="No backup image available yet">
+        <KebabToggle
+          aria-label={`No actions for ${backup.workspaceName}`}
+          data-testid={`actions-dropdown-toggle-${backup.workspaceName}`}
+          isDisabled
+        />
+      </CheTooltip>
+    );
+  }
+
   return (
     <Dropdown
       isPlain
@@ -165,8 +179,6 @@ function renderActions(
           key="create-from-backup"
           component="button"
           data-testid={`create-from-backup-${backup.workspaceName}`}
-          isDisabled={backup.imageUrl === ''}
-          tooltip={backup.imageUrl === '' ? 'No backup image available' : undefined}
           onClick={() => onCreateFromBackup(backup)}
         >
           Create from Backup

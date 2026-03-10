@@ -32,12 +32,53 @@ exports[`BackupsView EmptyState snapshot 1`] = `
       data-ouia-component-type="PF4/Title"
       data-ouia-safe={true}
     >
-      No Backups Available
+      No Backups in Default Registry
     </h4>
     <div
       className="pf-c-empty-state__body"
     >
-      Workspace backups are created automatically by the DevWorkspace Operator based on the cluster configuration. Once a backup is available, it will appear here.
+      Backups are created automatically by the DevWorkspace Operator when a workspace is stopped. If you have a backup in an external registry, use the button below to restore it.
+    </div>
+    <div
+      className="pf-c-empty-state__primary"
+    >
+      <button
+        aria-disabled={false}
+        aria-label={null}
+        className="pf-c-button pf-m-link"
+        data-ouia-component-id="OUIA-Generated-Button-link-1"
+        data-ouia-component-type="PF4/Button"
+        data-ouia-safe={true}
+        data-testid="restore-from-backup-button"
+        disabled={false}
+        onClick={[Function]}
+        role={null}
+        type="button"
+      >
+        <span
+          className="pf-c-button__icon pf-m-start"
+        >
+          <svg
+            aria-hidden={true}
+            aria-labelledby={null}
+            fill="currentColor"
+            height="1em"
+            role="img"
+            style={
+              {
+                "verticalAlign": "-0.125em",
+              }
+            }
+            viewBox="0 0 512 512"
+            width="1em"
+          >
+            <path
+              d="M500.33 0h-47.41a12 12 0 0 0-12 12.57l4 82.76A247.42 247.42 0 0 0 256 8C119.34 8 7.9 119.53 8 256.19 8.1 393.07 119.1 504 256 504a247.1 247.1 0 0 0 166.18-63.91 12 12 0 0 0 .48-17.43l-34-34a12 12 0 0 0-16.38-.55A176 176 0 1 1 402.1 157.8l-101.53-4.87a12 12 0 0 0-12.57 12v47.41a12 12 0 0 0 12 12h200.33a12 12 0 0 0 12-12V12a12 12 0 0 0-12-12z"
+            />
+          </svg>
+        </span>
+        Restore Workspace
+      </button>
     </div>
   </div>
 </div>

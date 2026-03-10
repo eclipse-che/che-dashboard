@@ -36,7 +36,8 @@ import { DefaultRegistryRestoreData } from '@/pages/RestoreFromBackup/DefaultReg
 import { ExternalRegistryRestoreData } from '@/pages/RestoreFromBackup/ExternalRegistryForm';
 import { RestoreMode } from '@/pages/RestoreFromBackup/helpers';
 import { RestoreModeAccordion } from '@/pages/RestoreFromBackup/RestoreModeAccordion';
-import { buildWorkspacesLocation } from '@/services/helpers/location';
+import { buildIdeLoaderLocation } from '@/services/helpers/location';
+import { Workspace } from '@/services/workspace-adapter';
 import { AppDispatch, RootState } from '@/store';
 import { fetchBackupConfig, fetchBackupList, validateBackupImage } from '@/store/Backups/actions';
 import { selectBackupConfig, selectNamespaceBackups } from '@/store/Backups/selectors';
@@ -176,7 +177,7 @@ export class RestoreFromBackupPage extends React.PureComponent<Props, State> {
 
       await this.props.restoreFromBackup(namespace, workspaceName, imageUrl, resolvedEditorId);
 
-      const location = buildWorkspacesLocation();
+      const location = buildIdeLoaderLocation({ namespace, name: workspaceName } as Workspace);
       this.props.navigate(location);
     } catch (e: unknown) {
       const errorMessage = e instanceof Error ? e.message : 'Failed to initiate restore.';

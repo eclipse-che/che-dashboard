@@ -119,6 +119,16 @@ export const restoreWorkspaceFromBackup =
         clusterConsole,
       );
 
+      // Tell Che Code to open the restored .code-workspace file so the
+      // project folder is loaded automatically on startup.
+      for (const component of devWorkspaceTemplateResource.spec?.components ?? []) {
+        if (component.container) {
+          const env = component.container.env ?? [];
+          env.push({ name: 'VSCODE_DEFAULT_WORKSPACE', value: '/projects/.code-workspace' });
+          component.container.env = env;
+        }
+      }
+
       if (!devWorkspaceTemplateResource.metadata.annotations) {
         devWorkspaceTemplateResource.metadata.annotations = {};
       }

@@ -25,6 +25,7 @@ import {
   HelperText,
   HelperTextItem,
 } from '@patternfly/react-core';
+import cron from 'cron-parser';
 import cronstrue from 'cronstrue';
 import React from 'react';
 
@@ -67,6 +68,18 @@ export class BackupTabInfo extends React.PureComponent<Props> {
       return cronstrue.toString(schedule);
     } catch {
       return schedule;
+    }
+  }
+
+  private formatNextRun(schedule?: string): string | undefined {
+    if (!schedule) {
+      return undefined;
+    }
+    try {
+      const nextDate = cron.parse(schedule).next().toDate();
+      return `Next run: ${formatRelativeDate(nextDate)} (${formatDate(nextDate)})`;
+    } catch {
+      return undefined;
     }
   }
 
@@ -122,6 +135,13 @@ export class BackupTabInfo extends React.PureComponent<Props> {
             <DescriptionListTerm>Backup Schedule</DescriptionListTerm>
             <DescriptionListDescription>
               {this.formatSchedule(backupSchedule)}
+              {this.formatNextRun(backupSchedule) && (
+                <HelperText>
+                  <HelperTextItem variant="indeterminate">
+                    {this.formatNextRun(backupSchedule)}
+                  </HelperTextItem>
+                </HelperText>
+              )}
               <HelperText>
                 <HelperTextItem variant="indeterminate">
                   {this.getScheduleHelperText()}

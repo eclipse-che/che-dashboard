@@ -24,7 +24,10 @@ import { connect, ConnectedProps } from 'react-redux';
 
 import { BackupsTableView } from '@/pages/WorkspacesList/BackupsView/BackupsTableView';
 import { BackupsEmptyState } from '@/pages/WorkspacesList/BackupsView/EmptyState';
-import { buildGettingStartedLocation } from '@/services/helpers/location';
+import {
+  buildGettingStartedLocation,
+  buildRestoreFromBackupLocation,
+} from '@/services/helpers/location';
 import { RootState } from '@/store';
 import { fetchBackupConfig, fetchBackupList } from '@/store/Backups/actions';
 import {
@@ -80,7 +83,7 @@ export class BackupsView extends React.PureComponent<Props> {
     if (backups.length === 0) {
       return (
         <div data-testid="backups-view">
-          <BackupsEmptyState />
+          <BackupsEmptyState onRestoreClick={() => navigate(buildRestoreFromBackupLocation())} />
         </div>
       );
     }

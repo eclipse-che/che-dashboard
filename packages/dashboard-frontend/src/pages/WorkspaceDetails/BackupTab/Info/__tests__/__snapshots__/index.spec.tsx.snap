@@ -127,6 +127,19 @@ exports[`BackupTabInfo failed snapshot - failed status 1`] = `
             <span
               className="pf-c-helper-text__item-text"
             >
+              Next run: 2 hours ago (Jan 15, 2:30 p.m.)
+            </span>
+          </div>
+        </div>
+        <div
+          className="pf-c-helper-text"
+        >
+          <div
+            className="pf-c-helper-text__item pf-m-indeterminate"
+          >
+            <span
+              className="pf-c-helper-text__item-text"
+            >
               Will retry on next scheduled run.
             </span>
           </div>
@@ -208,6 +221,19 @@ exports[`BackupTabInfo in progress snapshot - in-progress status 1`] = `
         className="pf-c-description-list__text"
       >
         Every day at 0 1 * * *
+        <div
+          className="pf-c-helper-text"
+        >
+          <div
+            className="pf-c-helper-text__item pf-m-indeterminate"
+          >
+            <span
+              className="pf-c-helper-text__item-text"
+            >
+              Next run: 2 hours ago (Jan 15, 2:30 p.m.)
+            </span>
+          </div>
+        </div>
         <div
           className="pf-c-helper-text"
         >
@@ -307,6 +333,19 @@ exports[`BackupTabInfo never backed up snapshot - never status 1`] = `
             <span
               className="pf-c-helper-text__item-text"
             >
+              Next run: 2 hours ago (Jan 15, 2:30 p.m.)
+            </span>
+          </div>
+        </div>
+        <div
+          className="pf-c-helper-text"
+        >
+          <div
+            className="pf-c-helper-text__item pf-m-indeterminate"
+          >
+            <span
+              className="pf-c-helper-text__item-text"
+            >
               Backups run only when the workspace is stopped.
             </span>
           </div>
@@ -366,6 +405,19 @@ exports[`BackupTabInfo success snapshot - success running 1`] = `
         className="pf-c-description-list__text"
       >
         Every day at 0 1 * * *
+        <div
+          className="pf-c-helper-text"
+        >
+          <div
+            className="pf-c-helper-text__item pf-m-indeterminate"
+          >
+            <span
+              className="pf-c-helper-text__item-text"
+            >
+              Next run: 2 hours ago (Jan 15, 2:30 p.m.)
+            </span>
+          </div>
+        </div>
         <div
           className="pf-c-helper-text"
         >
@@ -491,6 +543,19 @@ exports[`BackupTabInfo success snapshot - success stopped 1`] = `
             <span
               className="pf-c-helper-text__item-text"
             >
+              Next run: 2 hours ago (Jan 15, 2:30 p.m.)
+            </span>
+          </div>
+        </div>
+        <div
+          className="pf-c-helper-text"
+        >
+          <div
+            className="pf-c-helper-text__item pf-m-indeterminate"
+          >
+            <span
+              className="pf-c-helper-text__item-text"
+            >
               Backup is current.
             </span>
           </div>
@@ -598,6 +663,19 @@ exports[`BackupTabInfo unavailable snapshot - unavailable status 1`] = `
         className="pf-c-description-list__text"
       >
         Every day at 0 1 * * *
+        <div
+          className="pf-c-helper-text"
+        >
+          <div
+            className="pf-c-helper-text__item pf-m-indeterminate"
+          >
+            <span
+              className="pf-c-helper-text__item-text"
+            >
+              Next run: 2 hours ago (Jan 15, 2:30 p.m.)
+            </span>
+          </div>
+        </div>
         <div
           className="pf-c-helper-text"
         >

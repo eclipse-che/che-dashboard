@@ -22,7 +22,13 @@ jest.mock('@/pages/WorkspacesList/BackupsView/BackupsTableView', () => ({
 }));
 
 jest.mock('@/pages/WorkspacesList/BackupsView/EmptyState', () => ({
-  BackupsEmptyState: () => <div data-testid="backups-empty-state">No Backups Available</div>,
+  BackupsEmptyState: (props: { onRestoreClick: () => void }) => (
+    <div data-testid="backups-empty-state">
+      <button data-testid="restore-from-backup-button" onClick={props.onRestoreClick}>
+        Restore Workspace
+      </button>
+    </div>
+  ),
 }));
 
 const mockNavigate = jest.fn();
