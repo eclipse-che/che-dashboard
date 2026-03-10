@@ -17,7 +17,6 @@ import { Form, ValidatedOptions } from '@patternfly/react-core';
 import React, { useEffect, useRef, useState } from 'react';
 
 import { ImageUrlField } from '@/pages/RestoreFromBackup/ExternalRegistryForm/ImageUrlField';
-import { ValidationStatusDisplay } from '@/pages/RestoreFromBackup/ExternalRegistryForm/ValidationStatusDisplay';
 import { WorkspaceNameField } from '@/pages/RestoreFromBackup/ExternalRegistryForm/WorkspaceNameField';
 import {
   sanitizeImageUrl,
@@ -136,7 +135,8 @@ export const ExternalRegistryRestoreForm: React.FC<Props> = ({
     } else {
       onValidationChange(false, null);
     }
-  }, [validationState, workspaceNameValidated, workspaceName, imageUrl, onValidationChange]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [validationState, workspaceNameValidated, workspaceName, imageUrl]);
 
   const handleImageUrlChange = (value: string) => {
     const sanitized = sanitizeImageUrl(value);
@@ -161,12 +161,9 @@ export const ExternalRegistryRestoreForm: React.FC<Props> = ({
         value={imageUrl}
         validated={imageUrlValidated}
         error={imageUrlError}
-        onChange={handleImageUrlChange}
-      />
-
-      <ValidationStatusDisplay
         validationState={validationState}
         validationResult={validationResult}
+        onChange={handleImageUrlChange}
       />
 
       <WorkspaceNameField

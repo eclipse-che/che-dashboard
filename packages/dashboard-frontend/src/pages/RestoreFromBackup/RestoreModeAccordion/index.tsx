@@ -104,25 +104,28 @@ export const RestoreModeAccordion: React.FC<Props> = ({
               >
                 Default registry
               </AccordionToggle>
-              <AccordionContent isHidden={expandedItem !== 'default-registry'}>
-                <TextContent>
-                  <Text component="small">
-                    Restore a workspace from a backup in the default registry.
-                  </Text>
-                </TextContent>
-                <Panel>
-                  <PanelMain>
-                    <PanelMainBody>
-                      <DefaultRegistryRestoreForm
-                        backups={backups}
-                        existingWorkspaceNames={existingWorkspaceNames}
-                        onValidationChange={onDefaultRegistryValidationChange}
-                        actionButton={actionButton}
-                      />
-                    </PanelMainBody>
-                  </PanelMain>
-                </Panel>
-              </AccordionContent>
+              {expandedItem === 'default-registry' && (
+                <AccordionContent>
+                  <TextContent>
+                    <Text component="small">
+                      Restore a workspace from a backup in the default registry.
+                    </Text>
+                  </TextContent>
+                  <Panel>
+                    <PanelMain>
+                      <PanelMainBody>
+                        <DefaultRegistryRestoreForm
+                          backups={backups}
+                          initialImageUrl={initialImageUrl}
+                          existingWorkspaceNames={existingWorkspaceNames}
+                          onValidationChange={onDefaultRegistryValidationChange}
+                          actionButton={actionButton}
+                        />
+                      </PanelMainBody>
+                    </PanelMain>
+                  </Panel>
+                </AccordionContent>
+              )}
             </AccordionItem>
 
             <AccordionItem>
@@ -133,26 +136,28 @@ export const RestoreModeAccordion: React.FC<Props> = ({
               >
                 External registry
               </AccordionToggle>
-              <AccordionContent isHidden={expandedItem !== 'external-registry'}>
-                <TextContent>
-                  <Text component="small">
-                    Restore from a backup image in an external registry.
-                  </Text>
-                </TextContent>
-                <Panel>
-                  <PanelMain>
-                    <PanelMainBody>
-                      <ExternalRegistryRestoreForm
-                        initialImageUrl={initialImageUrl}
-                        existingWorkspaceNames={existingWorkspaceNames}
-                        onValidateImage={onValidateImage}
-                        onValidationChange={onExternalRegistryValidationChange}
-                        actionButton={actionButton}
-                      />
-                    </PanelMainBody>
-                  </PanelMain>
-                </Panel>
-              </AccordionContent>
+              {expandedItem === 'external-registry' && (
+                <AccordionContent>
+                  <TextContent>
+                    <Text component="small">
+                      Restore from a backup image in an external registry.
+                    </Text>
+                  </TextContent>
+                  <Panel>
+                    <PanelMain>
+                      <PanelMainBody>
+                        <ExternalRegistryRestoreForm
+                          initialImageUrl={initialImageUrl}
+                          existingWorkspaceNames={existingWorkspaceNames}
+                          onValidateImage={onValidateImage}
+                          onValidationChange={onExternalRegistryValidationChange}
+                          actionButton={actionButton}
+                        />
+                      </PanelMainBody>
+                    </PanelMain>
+                  </Panel>
+                </AccordionContent>
+              )}
             </AccordionItem>
           </Accordion>
         </PanelMainBody>

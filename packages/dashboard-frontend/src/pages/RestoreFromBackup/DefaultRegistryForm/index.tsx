@@ -28,6 +28,7 @@ export type DefaultRegistryRestoreData = {
 
 type Props = {
   backups: BackupItem[];
+  initialImageUrl?: string;
   existingWorkspaceNames: Set<string>;
   onValidationChange: (isValid: boolean, data: DefaultRegistryRestoreData | null) => void;
   actionButton: React.ReactNode;
@@ -35,6 +36,7 @@ type Props = {
 
 export const DefaultRegistryRestoreForm: React.FC<Props> = ({
   backups,
+  initialImageUrl,
   existingWorkspaceNames,
   onValidationChange,
   actionButton,
@@ -65,6 +67,18 @@ export const DefaultRegistryRestoreForm: React.FC<Props> = ({
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedBackup, workspaceName, workspaceNameValidated]);
+
+  // Pre-select backup and populate workspace name from initialImageUrl
+  useEffect(() => {
+    if (!initialImageUrl || selectedBackup) {
+      return;
+    }
+    const match = backups.find(b => b.imageUrl === initialImageUrl);
+    if (match) {
+      setSelectedBackup(match);
+      setWorkspaceName(match.workspaceName);
+    }
+  }, [backups, initialImageUrl, selectedBackup, setWorkspaceName]);
 
   const handleBackupChange = (backup: BackupItem | undefined) => {
     setSelectedBackup(backup);

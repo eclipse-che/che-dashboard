@@ -117,7 +117,7 @@ exports[`RestoreFromBackupPage initial rendering snapshot - initial state 1`] = 
                   >
                     <small
                       className=""
-                      data-ouia-component-id="OUIA-Generated-Text-13"
+                      data-ouia-component-id="OUIA-Generated-Text-7"
                       data-ouia-component-type="PF4/Text"
                       data-ouia-safe={true}
                       data-pf-content={true}
@@ -179,7 +179,7 @@ exports[`RestoreFromBackupPage initial rendering snapshot - initial state 1`] = 
                                   aria-invalid={false}
                                   aria-label="Workspace name"
                                   className="pf-c-form-control"
-                                  data-ouia-component-id="OUIA-Generated-TextInputBase-19"
+                                  data-ouia-component-id="OUIA-Generated-TextInputBase-7"
                                   data-ouia-component-type="PF4/TextInput"
                                   data-ouia-safe={true}
                                   disabled={false}
@@ -196,7 +196,7 @@ exports[`RestoreFromBackupPage initial rendering snapshot - initial state 1`] = 
                                   aria-disabled={true}
                                   aria-label={null}
                                   className="pf-c-button pf-m-primary pf-m-disabled pf-m-progress"
-                                  data-ouia-component-id="OUIA-Generated-Button-primary-13"
+                                  data-ouia-component-id="OUIA-Generated-Button-primary-7"
                                   data-ouia-component-type="PF4/Button"
                                   data-ouia-safe={true}
                                   data-testid="restore-submit-button"
@@ -261,180 +261,6 @@ exports[`RestoreFromBackupPage initial rendering snapshot - initial state 1`] = 
                   </span>
                 </button>
               </h3>
-              <div
-                className="pf-c-accordion__expanded-content"
-                hidden={true}
-                id=""
-              >
-                <div
-                  className="pf-c-accordion__expanded-content-body"
-                >
-                  <div
-                    className="pf-c-content"
-                  >
-                    <small
-                      className=""
-                      data-ouia-component-id="OUIA-Generated-Text-14"
-                      data-ouia-component-type="PF4/Text"
-                      data-ouia-safe={true}
-                      data-pf-content={true}
-                    >
-                      Restore from a backup image in an external registry.
-                    </small>
-                  </div>
-                  <div
-                    className="pf-c-panel"
-                  >
-                    <div
-                      className="pf-c-panel__main"
-                      style={
-                        {
-                          "--pf-c-panel__main--MaxHeight": undefined,
-                        }
-                      }
-                    >
-                      <div
-                        className="pf-c-panel__main-body"
-                      >
-                        <form
-                          className="pf-c-form pf-m-horizontal"
-                          noValidate={true}
-                          onSubmit={[Function]}
-                        >
-                          <div
-                            className="pf-c-form__group"
-                          >
-                            <div
-                              className="pf-c-form__group-label"
-                            >
-                              <label
-                                className="pf-c-form__label"
-                                htmlFor="restore-image-url"
-                              >
-                                <span
-                                  className="pf-c-form__label-text"
-                                >
-                                  Backup image URL
-                                </span>
-                                <span
-                                  aria-hidden="true"
-                                  className="pf-c-form__label-required"
-                                >
-                                   
-                                  *
-                                </span>
-                              </label>
-                               
-                            </div>
-                            <div
-                              className="pf-c-form__group-control"
-                            >
-                              <input
-                                aria-invalid={false}
-                                aria-label="Backup image URL"
-                                className="pf-c-form-control"
-                                data-ouia-component-id="OUIA-Generated-TextInputBase-20"
-                                data-ouia-component-type="PF4/TextInput"
-                                data-ouia-safe={true}
-                                disabled={false}
-                                id="restore-image-url"
-                                onBlur={[Function]}
-                                onChange={[Function]}
-                                onFocus={[Function]}
-                                placeholder="registry.example.com/namespace/workspace:latest"
-                                required={false}
-                                type="text"
-                                value=""
-                              />
-                              <div
-                                aria-live="polite"
-                                className="pf-c-form__helper-text"
-                                id="restore-image-url-helper"
-                              >
-                                Enter the full URL of the backup image from the source cluster.
-                              </div>
-                            </div>
-                          </div>
-                          <div
-                            className="pf-c-form__group"
-                          >
-                            <div
-                              className="pf-c-form__group-label"
-                            >
-                              <label
-                                className="pf-c-form__label"
-                                htmlFor="restore-workspace-name-cross"
-                              >
-                                <span
-                                  className="pf-c-form__label-text"
-                                >
-                                  Workspace name
-                                </span>
-                                <span
-                                  aria-hidden="true"
-                                  className="pf-c-form__label-required"
-                                >
-                                   
-                                  *
-                                </span>
-                              </label>
-                               
-                            </div>
-                            <div
-                              className="pf-c-form__group-control"
-                            >
-                              <div
-                                className="pf-c-input-group"
-                              >
-                                <input
-                                  aria-invalid={false}
-                                  aria-label="Workspace name"
-                                  className="pf-c-form-control"
-                                  data-ouia-component-id="OUIA-Generated-TextInputBase-21"
-                                  data-ouia-component-type="PF4/TextInput"
-                                  data-ouia-safe={true}
-                                  disabled={false}
-                                  id="restore-workspace-name-cross"
-                                  onBlur={[Function]}
-                                  onChange={[Function]}
-                                  onFocus={[Function]}
-                                  placeholder="my-workspace"
-                                  required={false}
-                                  type="text"
-                                  value=""
-                                />
-                                <button
-                                  aria-disabled={true}
-                                  aria-label={null}
-                                  className="pf-c-button pf-m-primary pf-m-disabled pf-m-progress"
-                                  data-ouia-component-id="OUIA-Generated-Button-primary-14"
-                                  data-ouia-component-type="PF4/Button"
-                                  data-ouia-safe={true}
-                                  data-testid="restore-submit-button"
-                                  disabled={true}
-                                  onClick={[Function]}
-                                  role={null}
-                                  tabIndex={null}
-                                  type="button"
-                                >
-                                  Restore Workspace
-                                </button>
-                              </div>
-                              <div
-                                aria-live="polite"
-                                className="pf-c-form__helper-text"
-                                id="restore-workspace-name-cross-helper"
-                              >
-                                Name for the restored workspace. Auto-detected from the backup image.
-                              </div>
-                            </div>
-                          </div>
-                        </form>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
             </div>
           </div>
         </div>
