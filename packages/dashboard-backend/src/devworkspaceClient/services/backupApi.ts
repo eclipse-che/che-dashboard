@@ -152,10 +152,13 @@ export class BackupApiService {
       }
       const annotations: Record<string, string> = response.metadata?.annotations || {};
 
-      // Construct backup image URL from config (no annotation for this)
-      const backupImageUrl = backupConfig.registry
-        ? `${backupConfig.registry}/${namespace}/${workspaceName}:latest`
-        : undefined;
+      // Only show the backup image URL if a backup has succeeded at least once
+      const hasSucceededBefore =
+        annotations[DEVWORKSPACE_BACKUP_ANNOTATIONS.LAST_BACKUP_SUCCESSFUL] === 'true';
+      const backupImageUrl =
+        hasSucceededBefore && backupConfig.registry
+          ? `${backupConfig.registry}/${namespace}/${workspaceName}:latest`
+          : undefined;
 
       // Check for in-progress backup Jobs before reading annotations
       const hasActiveJob = await this.hasActiveBackupJob(namespace, workspaceName);

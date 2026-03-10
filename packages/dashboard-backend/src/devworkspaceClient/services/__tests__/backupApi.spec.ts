@@ -201,7 +201,7 @@ describe('BackupApiService', () => {
       expect(result.status).toBe(BackupStatus.FAILED);
       expect(result.error).toBe('Last backup was not successful');
       expect(result.lastBackupTime).toBe('2025-02-10T01:05:00Z');
-      expect(result.backupImageUrl).toBe(expectedImageUrl);
+      expect(result.backupImageUrl).toBeUndefined();
     });
 
     it('should return FAILED status with error message from annotation', async () => {
