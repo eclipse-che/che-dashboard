@@ -21,7 +21,7 @@ Eclipse Che Dashboard is the web-based user interface for Eclipse Che, a Kuberne
 
 ## Project Structure
 
-```
+```text
 packages/
 ├── common/                 # Shared types and utilities
 ├── dashboard-backend/      # Node.js/Fastify backend
@@ -59,6 +59,57 @@ The backend uses `@kubernetes/client-node` to interact with Kubernetes APIs:
 - **ESLint + Prettier**: Follow existing code style
 - **Test coverage**: New features should include tests
 - **Copyright headers**: All source files must have EPL-2.0 headers
+- **Absolute imports**: ALWAYS use absolute imports with `@/` alias (never use relative imports like `./` or `../`)
+
+## Surgical Change Workflow
+
+When making surgical changes to one or few files, **ALWAYS** follow this workflow in order:
+
+### 1. Run Unit Tests for Updated Files
+
+Run tests for the specific files you modified:
+
+**From package directory:**
+
+```bash
+yarn test --testPathPatterns <test-file-name>
+```
+
+**From project root:**
+
+```bash
+yarn workspace @eclipse-che/dashboard-frontend test --testPathPatterns <test-file-name>
+# or
+yarn workspace @eclipse-che/dashboard-backend test --testPathPatterns <test-file-name>
+```
+
+**Fix all test failures before proceeding to step 2.**
+
+### 2. Run Formatter
+
+**From package directory or project root:**
+
+```bash
+yarn format:fix
+```
+
+**Fix all formatting issues before proceeding to step 3.**
+
+### 3. Run Linter
+
+**From package directory or project root:**
+
+```bash
+yarn lint:fix
+```
+
+**Fix all linting issues before completing the change.**
+
+### Important Notes
+
+- **Sequential**: Complete each step and fix all failures before moving to the next
+- **No skipping**: All three steps are mandatory for every surgical change
+- **Fix immediately**: Do not defer fixing test, format, or lint failures
 
 ## Red Hat Compliance and Responsible AI Rules
 

@@ -13,10 +13,8 @@
 import { api } from '@eclipse-che/common';
 
 import { container } from '@/inversify.config';
-import { injectKubeConfig, podmanLogin } from '@/services/backend-client/devWorkspaceApi';
 import { WebsocketClient } from '@/services/backend-client/websocketClient';
 import devfileApi, { isDevWorkspace } from '@/services/devfileApi';
-import { DevWorkspaceStatus } from '@/services/helpers/types';
 import { WorkspaceAdapter } from '@/services/workspace-adapter';
 import { normaliseDevWorkspace } from '@/services/workspace-client/helpers';
 import { AppThunk } from '@/store';
@@ -101,7 +99,6 @@ export const handleWebSocketMessage =
       }
 
       // notify about workspace status changes
-      const devworkspaceId = workspace.status?.devworkspaceId;
       const phase = workspace.status?.phase;
       const prevPhase = prevWorkspace?.status?.phase;
       const workspaceUID = WorkspaceAdapter.getUID(workspace);
@@ -111,21 +108,6 @@ export const handleWebSocketMessage =
 
         if (onStatusChangeListener) {
           onStatusChangeListener(phase);
-        }
-      }
-
-      if (
-        phase === DevWorkspaceStatus.RUNNING &&
-        phase !== prevPhase &&
-        devworkspaceId !== undefined
-      ) {
-        try {
-          // inject the kube config
-          await injectKubeConfig(workspace.metadata.namespace, devworkspaceId);
-          // inject the 'podman login'
-          await podmanLogin(workspace.metadata.namespace, devworkspaceId);
-        } catch (e) {
-          console.error(e);
         }
       }
     }
