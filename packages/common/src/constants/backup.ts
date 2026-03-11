@@ -28,7 +28,8 @@ export const BACKUP_IMAGE_URL_PATTERN =
 export const BACKUP_IMAGE_DEFAULT_TAG = 'latest';
 
 /**
- * DevWorkspace annotation keys for backup/restore
+ * DevWorkspace annotation keys for backup status.
+ * These are written by DWO to DevWorkspace.metadata.annotations after each backup run.
  */
 export const DEVWORKSPACE_BACKUP_ANNOTATIONS = {
   /** Whether the last backup succeeded ("true" or "false"), set by DWO BackupCronJob controller */
@@ -37,7 +38,18 @@ export const DEVWORKSPACE_BACKUP_ANNOTATIONS = {
   LAST_BACKUP_FINISHED_AT: 'controller.devfile.io/last-backup-finished-at',
   /** Error message from last backup failure, set by DWO BackupCronJob controller */
   LAST_BACKUP_ERROR: 'controller.devfile.io/last-backup-error',
-  /** Indicates workspace should be restored from backup */
+} as const;
+
+/**
+ * DevWorkspace spec.template attribute keys for triggering workspace restore.
+ * These are written by the dashboard to DevWorkspace.spec.template.attributes
+ * and read by DWO before the workspace pod starts to inject the restore init container.
+ *
+ * WARNING: These are spec.template ATTRIBUTES, not metadata.annotations.
+ * Do not place these keys in metadata.annotations — DWO will not detect them there.
+ */
+export const DEVWORKSPACE_RESTORE_ATTRIBUTES = {
+  /** Indicates workspace should be restored from backup (value: "true") */
   RESTORE_WORKSPACE: 'controller.devfile.io/restore-workspace',
   /** Specifies the backup image URL to restore from */
   RESTORE_SOURCE_IMAGE: 'controller.devfile.io/restore-source-image',
