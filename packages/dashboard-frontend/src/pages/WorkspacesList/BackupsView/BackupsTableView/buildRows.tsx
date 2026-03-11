@@ -150,30 +150,21 @@ function renderActions(
 ): React.ReactElement {
   const hasImage = backup.imageUrl !== '';
 
-  if (!hasImage) {
-    return (
-      <CheTooltip content="No backup image available yet">
-        <KebabToggle
-          aria-label={`No actions for ${backup.workspaceName}`}
-          data-testid={`actions-dropdown-toggle-${backup.workspaceName}`}
-          isDisabled
-        />
-      </CheTooltip>
-    );
-  }
+  const kebab = (
+    <KebabToggle
+      isDisabled={!hasImage}
+      aria-label={`Actions for ${backup.workspaceName}`}
+      data-testid={`actions-dropdown-toggle-${backup.workspaceName}`}
+      onToggle={isOpen => onDropdownToggle(backup.imageUrl, isOpen)}
+    />
+  );
 
-  return (
+  const dropdown = (
     <Dropdown
       isPlain
       position="right"
       isOpen={isExpanded}
-      toggle={
-        <KebabToggle
-          aria-label={`Actions for ${backup.workspaceName}`}
-          data-testid={`actions-dropdown-toggle-${backup.workspaceName}`}
-          onToggle={isOpen => onDropdownToggle(backup.imageUrl, isOpen)}
-        />
-      }
+      toggle={kebab}
       dropdownItems={[
         <DropdownItem
           key="create-from-backup"
@@ -186,4 +177,10 @@ function renderActions(
       ]}
     />
   );
+
+  if (hasImage) {
+    return dropdown;
+  }
+
+  return <CheTooltip content="No backup image available yet">{dropdown}</CheTooltip>;
 }

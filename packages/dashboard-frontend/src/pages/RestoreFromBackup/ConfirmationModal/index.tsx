@@ -35,63 +35,66 @@ type Props = {
   onCancel: () => void;
 };
 
-export class ConfirmationModal extends React.PureComponent<Props> {
-  public render(): React.ReactElement {
-    const { isOpen, restoreMode, workspaceName, imageUrl, onConfirm, onCancel } = this.props;
-
-    return (
-      <Modal
-        variant={ModalVariant.small}
-        title="Confirm Restore from Backup"
-        isOpen={isOpen}
-        onClose={onCancel}
-        data-testid="restore-confirmation-modal"
-        actions={[
-          <Button
-            key="confirm"
-            variant={ButtonVariant.primary}
-            onClick={onConfirm}
-            data-testid="restore-confirm-button"
-          >
-            Restore
-          </Button>,
-          <Button
-            key="cancel"
-            variant={ButtonVariant.link}
-            onClick={onCancel}
-            data-testid="restore-confirm-cancel-button"
-          >
-            Cancel
-          </Button>,
-        ]}
-      >
-        <p>The following workspace will be created and restored from backup:</p>
-        <DescriptionList isHorizontal isCompact>
-          {workspaceName && (
-            <DescriptionListGroup>
-              <DescriptionListTerm>Workspace Name</DescriptionListTerm>
-              <DescriptionListDescription data-testid="confirm-workspace-name">
-                {workspaceName}
-              </DescriptionListDescription>
-            </DescriptionListGroup>
-          )}
+export const ConfirmationModal: React.FC<Props> = ({
+  isOpen,
+  restoreMode,
+  workspaceName,
+  imageUrl,
+  onConfirm,
+  onCancel,
+}) => {
+  return (
+    <Modal
+      variant={ModalVariant.small}
+      title="Confirm Restore from Backup"
+      isOpen={isOpen}
+      onClose={onCancel}
+      data-testid="restore-confirmation-modal"
+      actions={[
+        <Button
+          key="confirm"
+          variant={ButtonVariant.primary}
+          onClick={onConfirm}
+          data-testid="restore-confirm-button"
+        >
+          Restore
+        </Button>,
+        <Button
+          key="cancel"
+          variant={ButtonVariant.link}
+          onClick={onCancel}
+          data-testid="restore-confirm-cancel-button"
+        >
+          Cancel
+        </Button>,
+      ]}
+    >
+      <p>The following workspace will be created and restored from backup:</p>
+      <DescriptionList isHorizontal isCompact>
+        {workspaceName && (
           <DescriptionListGroup>
-            <DescriptionListTerm>Restore Mode</DescriptionListTerm>
-            <DescriptionListDescription data-testid="confirm-restore-mode">
-              {restoreMode === 'default-registry' ? 'Default registry' : 'External registry'}
+            <DescriptionListTerm>Workspace Name</DescriptionListTerm>
+            <DescriptionListDescription data-testid="confirm-workspace-name">
+              {workspaceName}
             </DescriptionListDescription>
           </DescriptionListGroup>
-          <DescriptionListGroup>
-            <DescriptionListTerm>Backup Image</DescriptionListTerm>
-            <DescriptionListDescription
-              data-testid="confirm-image-url"
-              style={{ wordBreak: 'break-all' }}
-            >
-              {imageUrl}
-            </DescriptionListDescription>
-          </DescriptionListGroup>
-        </DescriptionList>
-      </Modal>
-    );
-  }
-}
+        )}
+        <DescriptionListGroup>
+          <DescriptionListTerm>Restore Mode</DescriptionListTerm>
+          <DescriptionListDescription data-testid="confirm-restore-mode">
+            {restoreMode === 'default-registry' ? 'Default registry' : 'External registry'}
+          </DescriptionListDescription>
+        </DescriptionListGroup>
+        <DescriptionListGroup>
+          <DescriptionListTerm>Backup Image</DescriptionListTerm>
+          <DescriptionListDescription
+            data-testid="confirm-image-url"
+            style={{ wordBreak: 'break-all' }}
+          >
+            {imageUrl}
+          </DescriptionListDescription>
+        </DescriptionListGroup>
+      </DescriptionList>
+    </Modal>
+  );
+};

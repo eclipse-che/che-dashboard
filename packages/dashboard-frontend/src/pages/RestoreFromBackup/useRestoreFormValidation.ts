@@ -22,7 +22,7 @@ export type WorkspaceNameValidation = {
   workspaceNameValidated: ValidatedOptions;
   workspaceNameError: string;
   workspaceNameWarning: string;
-  setWorkspaceName: (name: string) => void;
+  setWorkspaceName: (name: string, backupWorkspaceNameOverride?: string) => void;
   handleWorkspaceNameChange: (value: string) => void;
 };
 
@@ -38,7 +38,8 @@ export function useRestoreFormValidation(
   const [workspaceNameWarning, setWorkspaceNameWarning] = useState('');
 
   const setWorkspaceName = useCallback(
-    (name: string) => {
+    (name: string, backupWorkspaceNameOverride?: string) => {
+      const effectiveBackupName = backupWorkspaceNameOverride ?? selectedBackupWorkspaceName;
       const { validated, error } = validateWorkspaceName(name);
 
       // Check for name conflict if existingWorkspaceNames is provided
@@ -46,7 +47,7 @@ export function useRestoreFormValidation(
         setWorkspaceNameState(name);
 
         // If this is the same workspace we're restoring from, show WARNING
-        if (name === selectedBackupWorkspaceName) {
+        if (name === effectiveBackupName) {
           setWorkspaceNameValidated(ValidatedOptions.warning);
           setWorkspaceNameError('');
           setWorkspaceNameWarning(

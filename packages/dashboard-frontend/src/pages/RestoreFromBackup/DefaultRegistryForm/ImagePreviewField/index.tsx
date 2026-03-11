@@ -19,25 +19,19 @@ export type Props = {
   imageUrl: string;
 };
 
-export class ImagePreviewField extends React.PureComponent<Props> {
-  public render() {
-    const { imageUrl } = this.props;
-
-    if (!imageUrl) {
-      return null;
-    }
-
-    return (
-      <FormGroup fieldId="restore-image-preview" label="Backup image URL">
-        {/* <div className={styles.imagePreview} data-testid="image-preview"> */}
-        {imageUrl}
-        {/* </div> */}
-        <HelperText>
-          <HelperTextItem>
-            This URL will be used to locate the backup image in the cluster registry.
-          </HelperTextItem>
-        </HelperText>
-      </FormGroup>
-    );
+export const ImagePreviewField: React.FC<Props> = ({ imageUrl }) => {
+  if (!imageUrl) {
+    return null;
   }
-}
+
+  return (
+    <FormGroup fieldId="restore-image-preview" label="Backup image URL">
+      {imageUrl}
+      <HelperText>
+        <HelperTextItem>
+          This URL will be used to locate the backup image in the cluster registry.
+        </HelperTextItem>
+      </HelperText>
+    </FormGroup>
+  );
+};

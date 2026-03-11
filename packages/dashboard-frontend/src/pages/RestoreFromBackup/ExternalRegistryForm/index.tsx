@@ -17,13 +17,13 @@ import { Form, ValidatedOptions } from '@patternfly/react-core';
 import React, { useEffect, useRef, useState } from 'react';
 
 import { ImageUrlField } from '@/pages/RestoreFromBackup/ExternalRegistryForm/ImageUrlField';
-import { WorkspaceNameField } from '@/pages/RestoreFromBackup/ExternalRegistryForm/WorkspaceNameField';
 import {
   sanitizeImageUrl,
   validateImageUrlFormat,
   ValidationState,
 } from '@/pages/RestoreFromBackup/helpers';
 import { useRestoreFormValidation } from '@/pages/RestoreFromBackup/useRestoreFormValidation';
+import { WorkspaceNameField } from '@/pages/RestoreFromBackup/WorkspaceNameField';
 import { Debounce } from '@/services/helpers/debounce';
 
 export type ExternalRegistryRestoreData = {
@@ -167,6 +167,8 @@ export const ExternalRegistryRestoreForm: React.FC<Props> = ({
       />
 
       <WorkspaceNameField
+        fieldId="restore-workspace-name-cross"
+        helperText="Name for the restored workspace. Auto-detected from the backup image."
         value={workspaceName}
         validated={workspaceNameValidated}
         error={workspaceNameError}

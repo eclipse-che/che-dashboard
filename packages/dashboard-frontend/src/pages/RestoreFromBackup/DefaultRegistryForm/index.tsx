@@ -18,8 +18,8 @@ import React, { useEffect, useState } from 'react';
 
 import { BackupSelectorField } from '@/pages/RestoreFromBackup/DefaultRegistryForm/BackupSelectorField';
 import { ImagePreviewField } from '@/pages/RestoreFromBackup/DefaultRegistryForm/ImagePreviewField';
-import { WorkspaceNameField } from '@/pages/RestoreFromBackup/DefaultRegistryForm/WorkspaceNameField';
 import { useRestoreFormValidation } from '@/pages/RestoreFromBackup/useRestoreFormValidation';
+import { WorkspaceNameField } from '@/pages/RestoreFromBackup/WorkspaceNameField';
 
 export type DefaultRegistryRestoreData = {
   workspaceName: string;
@@ -54,10 +54,7 @@ export const DefaultRegistryRestoreForm: React.FC<Props> = ({
 
   // Determine validity and notify parent
   useEffect(() => {
-    // Allow restore with both success and warning states
-    const isValid =
-      workspaceNameValidated === ValidatedOptions.success ||
-      workspaceNameValidated === ValidatedOptions.warning;
+    const isValid = workspaceNameValidated === ValidatedOptions.success;
     const imageUrl = selectedBackup ? selectedBackup.imageUrl : '';
 
     if (isValid) {
@@ -76,26 +73,24 @@ export const DefaultRegistryRestoreForm: React.FC<Props> = ({
     const match = backups.find(b => b.imageUrl === initialImageUrl);
     if (match) {
       setSelectedBackup(match);
-      setWorkspaceName(match.workspaceName);
+      setWorkspaceName(match.workspaceName, match.workspaceName);
     }
   }, [backups, initialImageUrl, selectedBackup, setWorkspaceName]);
 
   const handleBackupChange = (backup: BackupItem | undefined) => {
     setSelectedBackup(backup);
     if (backup) {
-      setWorkspaceName(backup.workspaceName);
+      setWorkspaceName(backup.workspaceName, backup.workspaceName);
     }
   };
 
-  // Re-validate when selectedBackup or existingWorkspaceNames changes
-  // (to update warning based on new context)
+  // Re-validate when existingWorkspaceNames changes
+  // (e.g. a workspace is created or deleted while the form is open)
   useEffect(() => {
     if (workspaceName) {
-      // Force re-validation by calling setWorkspaceName again
-      // This ensures the validation logic re-runs with updated selectedBackupWorkspaceName
       setWorkspaceName(workspaceName);
     }
-  }, [selectedBackup, existingWorkspaceNames, workspaceName, setWorkspaceName]);
+  }, [existingWorkspaceNames, workspaceName, setWorkspaceName]);
 
   const imageUrl = selectedBackup ? selectedBackup.imageUrl : '';
 
@@ -108,6 +103,8 @@ export const DefaultRegistryRestoreForm: React.FC<Props> = ({
       />
 
       <WorkspaceNameField
+        fieldId="restore-workspace-name"
+        helperText="Enter the name of the workspace to restore."
         value={workspaceName}
         validated={workspaceNameValidated}
         error={workspaceNameError}

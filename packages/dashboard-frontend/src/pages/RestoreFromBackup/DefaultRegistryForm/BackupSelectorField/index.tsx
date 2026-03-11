@@ -14,7 +14,7 @@
 
 import { BackupItem } from '@eclipse-che/common';
 import { FormGroup, Select, SelectOption, SelectVariant } from '@patternfly/react-core';
-import React from 'react';
+import React, { useState } from 'react';
 
 export type Props = {
   backups: BackupItem[];
@@ -22,59 +22,40 @@ export type Props = {
   onChange: (backup: BackupItem | undefined) => void;
 };
 
-export type State = {
-  isOpen: boolean;
+export const BackupSelectorField: React.FC<Props> = ({ backups, selectedBackup, onChange }) => {
+  const [isOpen, setIsOpen] = useState(false);
+
+  if (backups.length === 0) {
+    return null;
+  }
+
+  const handleSelect = (_event: React.MouseEvent | React.ChangeEvent, selection: string) => {
+    const backup = backups.find(b => b.imageUrl === selection);
+    setIsOpen(false);
+    onChange(backup);
+  };
+
+  return (
+    <FormGroup fieldId="restore-backup-select" label="Select a backup">
+      <Select
+        variant={SelectVariant.single}
+        placeholderText="Select a backup to restore"
+        aria-label="Select a backup"
+        isOpen={isOpen}
+        onToggle={isOpen => setIsOpen(isOpen)}
+        onSelect={(event, selection) =>
+          handleSelect(event as React.MouseEvent, selection as string)
+        }
+        selections={selectedBackup?.imageUrl}
+        data-testid="backup-select"
+      >
+        {backups.map(backup => (
+          <SelectOption key={backup.imageUrl} value={backup.imageUrl}>
+            {backup.workspaceName}
+            {backup.workspaceExists ? ' (Active)' : ' (Deleted)'}
+          </SelectOption>
+        ))}
+      </Select>
+    </FormGroup>
+  );
 };
-
-export class BackupSelectorField extends React.PureComponent<Props, State> {
-  constructor(props: Props) {
-    super(props);
-
-    this.state = {
-      isOpen: false,
-    };
-  }
-
-  private handleSelect(_event: React.MouseEvent | React.ChangeEvent, selection: string) {
-    const backup = this.props.backups.find(b => b.imageUrl === selection);
-    this.setState({ isOpen: false });
-    this.props.onChange(backup);
-  }
-
-  private handleToggle(isOpen: boolean) {
-    this.setState({ isOpen });
-  }
-
-  public render() {
-    const { backups, selectedBackup } = this.props;
-    const { isOpen } = this.state;
-
-    if (backups.length === 0) {
-      return null;
-    }
-
-    return (
-      <FormGroup fieldId="restore-backup-select" label="Select a backup">
-        <Select
-          variant={SelectVariant.single}
-          placeholderText="Select a backup to restore"
-          aria-label="Select a backup"
-          isOpen={isOpen}
-          onToggle={isOpen => this.handleToggle(isOpen)}
-          onSelect={(event, selection) =>
-            this.handleSelect(event as React.MouseEvent, selection as string)
-          }
-          selections={selectedBackup?.imageUrl}
-          data-testid="backup-select"
-        >
-          {backups.map(backup => (
-            <SelectOption key={backup.imageUrl} value={backup.imageUrl}>
-              {backup.workspaceName}
-              {backup.workspaceExists ? ' (Active)' : ' (Deleted)'}
-            </SelectOption>
-          ))}
-        </Select>
-      </FormGroup>
-    );
-  }
-}

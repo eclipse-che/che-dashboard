@@ -28,52 +28,56 @@ export type Props = {
   onChange: (value: string) => void;
 };
 
-export class ImageUrlField extends React.PureComponent<Props> {
-  private renderHelperText(): React.ReactNode {
-    const { validationState, validationResult } = this.props;
-
-    switch (validationState) {
-      case 'validating':
-        return (
-          <span>
-            <Spinner size="sm" aria-label="Validating backup image" /> Validating backup image...
-          </span>
-        );
-      case 'valid':
-        return (
-          <span>
-            <CheckCircleIcon color="var(--pf-global--success-color--100)" /> Backup image is valid
-            and accessible
-            {validationResult?.metadata && <> &mdash; {validationResult.metadata.workspaceName}</>}
-          </span>
-        );
-      default:
-        return 'Enter the full URL of the backup image from the source cluster.';
-    }
-  }
-
-  public render() {
-    const { value, validated, error, onChange } = this.props;
-
-    return (
-      <FormGroup
-        fieldId="restore-image-url"
-        label="Backup image URL"
-        isRequired
-        helperText={this.renderHelperText()}
-        helperTextInvalid={error}
-        helperTextInvalidIcon={<ExclamationCircleIcon />}
-        validated={validated}
-      >
-        <TextInput
-          id="restore-image-url"
-          aria-label="Backup image URL"
-          placeholder="registry.example.com/namespace/workspace:latest"
-          value={value}
-          validated={validated}
-          onChange={value => onChange(value)}
-        />
-      </FormGroup>
-    );
+function renderHelperText(
+  validationState: ValidationState,
+  validationResult: BackupValidationResult | undefined,
+): React.ReactNode {
+  switch (validationState) {
+    case 'validating':
+      return (
+        <span>
+          <Spinner size="sm" aria-label="Validating backup image" /> Validating backup image...
+        </span>
+      );
+    case 'valid':
+      return (
+        <span>
+          <CheckCircleIcon color="var(--pf-global--success-color--100)" /> Backup image is valid and
+          accessible
+          {validationResult?.metadata && <> &mdash; {validationResult.metadata.workspaceName}</>}
+        </span>
+      );
+    default:
+      return 'Enter the full URL of the backup image from the source cluster.';
   }
 }
+
+export const ImageUrlField: React.FC<Props> = ({
+  value,
+  validated,
+  error,
+  validationState,
+  validationResult,
+  onChange,
+}) => {
+  return (
+    <FormGroup
+      fieldId="restore-image-url"
+      label="Backup image URL"
+      isRequired
+      helperText={renderHelperText(validationState, validationResult)}
+      helperTextInvalid={error}
+      helperTextInvalidIcon={<ExclamationCircleIcon />}
+      validated={validated}
+    >
+      <TextInput
+        id="restore-image-url"
+        aria-label="Backup image URL"
+        placeholder="registry.example.com/namespace/workspace:latest"
+        value={value}
+        validated={validated}
+        onChange={value => onChange(value)}
+      />
+    </FormGroup>
+  );
+};
