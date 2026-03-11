@@ -235,6 +235,21 @@ describe('DevWorkspace Cluster API Service', () => {
 
     expect(spyWatch).toHaveBeenCalledTimes(1);
   });
+
+  it('should handle watch rejection without crashing', async () => {
+    const spyWatch = jest
+      .spyOn((devWorkspaceClusterApiService as any).customObjectWatch, 'watch')
+      .mockRejectedValue(Object.assign(new Error('Unauthorized'), { statusCode: 401 }));
+
+    await (devWorkspaceClusterApiService as any).watchInAllNamespaces();
+
+    expect(spyWatch).toHaveBeenCalledTimes(1);
+    expect(logger.warn).toHaveBeenCalledWith(
+      expect.objectContaining({ message: 'Unauthorized' }),
+      expect.stringContaining('Stopped watching'),
+    );
+    expect((devWorkspaceClusterApiService as any).watcherInProgress).toBe(false);
+  });
 });
 
 function buildCheClusterCustomResourceList(

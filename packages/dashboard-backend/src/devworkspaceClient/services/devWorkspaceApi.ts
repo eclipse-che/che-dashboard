@@ -164,32 +164,38 @@ export class DevWorkspaceApiService implements IDevWorkspaceApi {
 
     this.stopWatching();
 
-    const abortController: AbortController = await this.customObjectWatch.watch(
-      path,
-      queryParams,
-      (eventPhase: string, apiObj: V1alpha2DevWorkspace | V1Status) => {
-        switch (eventPhase) {
-          case api.webSocket.EventPhase.ADDED:
-          case api.webSocket.EventPhase.MODIFIED:
-          case api.webSocket.EventPhase.DELETED: {
-            const devWorkspace = apiObj as V1alpha2DevWorkspace;
-            listener({ eventPhase, devWorkspace });
-            break;
+    let abortController: AbortController | undefined;
+    try {
+      abortController = await this.customObjectWatch.watch(
+        path,
+        queryParams,
+        (eventPhase: string, apiObj: V1alpha2DevWorkspace | V1Status) => {
+          switch (eventPhase) {
+            case api.webSocket.EventPhase.ADDED:
+            case api.webSocket.EventPhase.MODIFIED:
+            case api.webSocket.EventPhase.DELETED: {
+              const devWorkspace = apiObj as V1alpha2DevWorkspace;
+              listener({ eventPhase, devWorkspace });
+              break;
+            }
+            case api.webSocket.EventPhase.ERROR: {
+              const status = apiObj as V1Status;
+              listener({ eventPhase, status, params });
+              break;
+            }
           }
-          case api.webSocket.EventPhase.ERROR: {
-            const status = apiObj as V1Status;
-            listener({ eventPhase, status, params });
-            break;
-          }
-        }
-      },
-      (error: unknown) => {
-        logger.warn(error, `Stopped watching ${path}.`);
-        abortController.abort();
-      },
-    );
+        },
+        (error: unknown) => {
+          logger.warn(error, `Stopped watching ${path}.`);
+          abortController?.abort();
+        },
+      );
+    } catch (error) {
+      logger.warn(error, `Failed to start watching ${path}.`);
+      return;
+    }
 
-    this.stopWatch = () => abortController.abort();
+    this.stopWatch = () => abortController?.abort();
   }
 
   /**

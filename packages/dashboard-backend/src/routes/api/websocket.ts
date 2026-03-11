@@ -50,13 +50,21 @@ function webSocketHandler(ws: WebSocket, request: FastifyRequest): void {
       case channel.POD: {
         const watcher = watchers[message.channel];
         watcher.attach(subscriptionManager);
-        await watcher.start(message.params.namespace, message.params);
+        try {
+          await watcher.start(message.params.namespace, message.params);
+        } catch (e) {
+          logger.error(e, `Failed to start watcher for channel ${message.channel}`);
+        }
         break;
       }
       case channel.LOGS: {
         const watcher = watchers[message.channel];
         watcher.attach(subscriptionManager);
-        await watcher.start(message.params.namespace, message.params);
+        try {
+          await watcher.start(message.params.namespace, message.params);
+        } catch (e) {
+          logger.error(e, `Failed to start watcher for channel ${message.channel}`);
+        }
         break;
       }
     }

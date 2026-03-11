@@ -84,6 +84,25 @@ describe('Event API Service', () => {
     );
   });
 
+  it('should handle watch rejection without crashing', async () => {
+    const params: api.webSocket.SubscribeParams = {
+      namespace,
+      resourceVersion: '123',
+    };
+
+    const spyWatch = jest
+      .spyOn((eventApiService as any).customObjectWatch, 'watch')
+      .mockRejectedValue(Object.assign(new Error('Unauthorized'), { statusCode: 401 }));
+
+    await eventApiService.watchInNamespace(jest.fn(), params);
+
+    expect(spyWatch).toHaveBeenCalledTimes(1);
+    expect(logger.warn).toHaveBeenCalledWith(
+      expect.objectContaining({ message: 'Unauthorized' }),
+      expect.stringContaining('Stopped watching'),
+    );
+  });
+
   it('should stop watching events', async () => {
     const params: api.webSocket.SubscribeParams = {
       namespace,

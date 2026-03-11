@@ -54,18 +54,24 @@ export class EventApiService implements IEventApi {
 
     this.stopWatching();
 
-    const abortController: AbortController = await this.customObjectWatch.watch(
-      path,
-      queryParams,
-      (eventPhase: string, apiObj: CoreV1Event | V1Status) =>
-        this.handleWatchMessage(eventPhase, apiObj, listener, params),
-      (error: unknown) => {
-        this.handleWatchError(error, path);
-        abortController.abort();
-      },
-    );
+    let abortController: AbortController | undefined;
+    try {
+      abortController = await this.customObjectWatch.watch(
+        path,
+        queryParams,
+        (eventPhase: string, apiObj: CoreV1Event | V1Status) =>
+          this.handleWatchMessage(eventPhase, apiObj, listener, params),
+        (error: unknown) => {
+          this.handleWatchError(error, path);
+          abortController?.abort();
+        },
+      );
+    } catch (error) {
+      this.handleWatchError(error, path);
+      return;
+    }
 
-    this.stopWatch = () => abortController.abort();
+    this.stopWatch = () => abortController?.abort();
   }
 
   private handleWatchMessage(

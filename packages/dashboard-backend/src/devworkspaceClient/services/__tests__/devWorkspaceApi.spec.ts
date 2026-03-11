@@ -23,6 +23,10 @@ import * as mockClient from '@kubernetes/client-node';
 import { CustomObjectsApi } from '@kubernetes/client-node';
 
 import { DevWorkspaceApiService } from '@/devworkspaceClient/services/devWorkspaceApi';
+import { logger } from '@/utils/logger';
+
+jest.mock('../helpers/prepareCustomObjectWatch');
+jest.mock('../helpers/retryableExec');
 
 const namespace = 'user-che';
 const name = 'wksp-name';
@@ -164,6 +168,25 @@ describe('DevWorkspace API Service', () => {
       plural: devworkspacePlural,
       name,
     });
+  });
+
+  test('should handle watch rejection without crashing', async () => {
+    const params: api.webSocket.SubscribeParams = {
+      namespace,
+      resourceVersion: '123',
+    };
+
+    const spyWatch = jest
+      .spyOn((devWorkspaceService as any).customObjectWatch, 'watch')
+      .mockRejectedValue(Object.assign(new Error('Unauthorized'), { statusCode: 401 }));
+
+    await devWorkspaceService.watchInNamespace(jest.fn(), params);
+
+    expect(spyWatch).toHaveBeenCalledTimes(1);
+    expect(logger.warn).toHaveBeenCalledWith(
+      expect.objectContaining({ message: 'Unauthorized' }),
+      expect.stringContaining('Failed to start watching'),
+    );
   });
 });
 
