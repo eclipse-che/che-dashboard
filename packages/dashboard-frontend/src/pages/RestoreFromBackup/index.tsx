@@ -24,7 +24,7 @@ import {
   Title,
 } from '@patternfly/react-core';
 import { unwrapResult } from '@reduxjs/toolkit';
-import React from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 import { NavigateFunction } from 'react-router-dom';
 
@@ -51,221 +51,173 @@ type MappedProps = ConnectedProps<typeof connector>;
 type Props = MappedProps & {
   navigate: NavigateFunction;
   initialBackupImageUrl?: string;
+  initialExternalImageUrl?: string;
 };
 
-type State = {
-  editorDefinition: string | undefined;
-  editorImage: string | undefined;
-  restoreMode: RestoreMode;
-  isConfirmModalOpen: boolean;
-  isSubmitting: boolean;
-  submitError: string;
-  restoreData: DefaultRegistryRestoreData | ExternalRegistryRestoreData | null;
-  isFormValid: boolean;
-};
+type RestoreData = DefaultRegistryRestoreData | ExternalRegistryRestoreData | null;
 
-export class RestoreFromBackupPage extends React.PureComponent<Props, State> {
-  constructor(props: Props) {
-    super(props);
+export const RestoreFromBackupPage: React.FC<Props> = props => {
+  const {
+    initialBackupImageUrl,
+    initialExternalImageUrl,
+    defaultNamespace,
+    defaultEditor,
+    backups,
+    existingWorkspaceNames,
+    navigate,
+  } = props;
 
-    const { initialBackupImageUrl, backupConfig } = props;
+  const initialMode: RestoreMode = initialBackupImageUrl
+    ? 'default-registry'
+    : initialExternalImageUrl
+      ? 'external-registry'
+      : 'default-registry';
 
-    // Determine if this is a default registry backup
-    const isDefaultRegistry =
-      initialBackupImageUrl &&
-      backupConfig?.registry &&
-      initialBackupImageUrl.startsWith(backupConfig.registry);
+  const [editorDefinition, setEditorDefinition] = useState<string | undefined>(undefined);
+  const [restoreMode, setRestoreMode] = useState<RestoreMode>(initialMode);
+  const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState('');
+  const [restoreData, setRestoreData] = useState<RestoreData>(null);
+  const [isFormValid, setIsFormValid] = useState(false);
 
-    this.state = {
-      editorDefinition: undefined,
-      editorImage: undefined,
-      // Default registry → default-registry mode, external → external-registry mode, none → default-registry (default)
-      restoreMode: isDefaultRegistry
-        ? 'default-registry'
-        : initialBackupImageUrl
-          ? 'external-registry'
-          : 'default-registry',
-      isConfirmModalOpen: false,
-      isSubmitting: false,
-      submitError: '',
-      restoreData: null,
-      isFormValid: false,
-    };
-  }
-
-  private handleEditorSelect(
-    editorDefinition: string | undefined,
-    editorImage: string | undefined,
-  ): void {
-    this.setState({ editorDefinition, editorImage });
-  }
-
-  public componentDidMount(): void {
-    const { defaultNamespace } = this.props;
+  // Fetch backup list and config on mount
+  useEffect(() => {
     const namespace = defaultNamespace.name;
     if (namespace) {
-      this.props.fetchBackupList({ namespace });
-      this.props.fetchBackupConfig({ namespace });
+      props.fetchBackupList({ namespace });
+      props.fetchBackupConfig({ namespace });
     }
-  }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
-  public componentDidUpdate(prevProps: Props): void {
-    const { backupConfig, initialBackupImageUrl } = this.props;
+  const handleEditorSelect = useCallback((editorDef: string | undefined) => {
+    setEditorDefinition(editorDef);
+  }, []);
 
-    // If config just loaded and we have an initial image URL, re-evaluate the mode
-    if (!prevProps.backupConfig && backupConfig && initialBackupImageUrl) {
-      const isDefaultRegistry = initialBackupImageUrl.startsWith(backupConfig.registry);
-      const correctMode = isDefaultRegistry ? 'default-registry' : 'external-registry';
+  const handleModeChange = useCallback((mode: RestoreMode) => {
+    setRestoreMode(mode);
+    setRestoreData(null);
+    setIsFormValid(false);
+  }, []);
 
-      if (this.state.restoreMode !== correctMode) {
-        this.setState({ restoreMode: correctMode });
-      }
-    }
-  }
+  // Item 2: Single handler for both default and external registry validation
+  const handleValidationChange = useCallback((isValid: boolean, data: RestoreData) => {
+    setIsFormValid(isValid);
+    setRestoreData(data);
+  }, []);
 
-  private handleModeChange(mode: RestoreMode): void {
-    this.setState({
-      restoreMode: mode,
-      restoreData: null,
-      isFormValid: false,
-    });
-  }
+  const handleValidateImage = useCallback(
+    async (imageUrl: string): Promise<BackupValidationResult> => {
+      const namespace = defaultNamespace.name || 'default';
+      const result = await props.validateBackupImage({ namespace, imageUrl });
+      return unwrapResult(result);
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [defaultNamespace.name],
+  );
 
-  private handleDefaultRegistryValidationChange(
-    isValid: boolean,
-    data: DefaultRegistryRestoreData | null,
-  ): void {
-    this.setState({ isFormValid: isValid, restoreData: data });
-  }
+  const handleRestoreClick = useCallback(() => {
+    setIsConfirmModalOpen(true);
+  }, []);
 
-  private handleExternalRegistryValidationChange(
-    isValid: boolean,
-    data: ExternalRegistryRestoreData | null,
-  ): void {
-    this.setState({ isFormValid: isValid, restoreData: data });
-  }
+  const handleConfirmCancel = useCallback(() => {
+    setIsConfirmModalOpen(false);
+  }, []);
 
-  private async handleValidateImage(imageUrl: string): Promise<BackupValidationResult> {
-    const { defaultNamespace } = this.props;
-    const namespace = defaultNamespace.name || 'default';
-    const result = await this.props.validateBackupImage({ namespace, imageUrl });
-    return unwrapResult(result);
-  }
-
-  private handleRestoreClick(): void {
-    this.setState({ isConfirmModalOpen: true });
-  }
-
-  private handleConfirmCancel(): void {
-    this.setState({ isConfirmModalOpen: false });
-  }
-
-  private async handleConfirmRestore(): Promise<void> {
-    this.setState({ isConfirmModalOpen: false, isSubmitting: true, submitError: '' });
+  const handleConfirmRestore = useCallback(async () => {
+    setIsConfirmModalOpen(false);
+    setIsSubmitting(true);
+    setSubmitError('');
 
     try {
-      const { restoreData } = this.state;
       if (!restoreData) {
         throw new Error('No restore data available');
       }
 
       const { workspaceName, imageUrl } = restoreData;
-      const { defaultNamespace, defaultEditor } = this.props;
       const namespace = defaultNamespace.name;
-      const { editorDefinition } = this.state;
       const resolvedEditorId = editorDefinition ?? defaultEditor;
 
-      await this.props.restoreFromBackup(namespace, workspaceName, imageUrl, resolvedEditorId);
+      await props.restoreFromBackup(namespace, workspaceName, imageUrl, resolvedEditorId);
 
       const location = buildIdeLoaderLocation({ namespace, name: workspaceName } as Workspace);
-      this.props.navigate(location);
+      navigate(location);
     } catch (e: unknown) {
       const errorMessage = e instanceof Error ? e.message : 'Failed to initiate restore.';
-      this.setState({ isSubmitting: false, submitError: errorMessage });
+      setIsSubmitting(false);
+      setSubmitError(errorMessage);
     }
-  }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [restoreData, defaultNamespace.name, editorDefinition, defaultEditor, navigate]);
 
-  public render(): React.ReactElement {
-    const { restoreMode, isConfirmModalOpen, isSubmitting, submitError, isFormValid, restoreData } =
-      this.state;
+  const actionButton = (
+    <Button
+      variant={ButtonVariant.primary}
+      isDisabled={!isFormValid || isSubmitting}
+      isLoading={isSubmitting}
+      onClick={handleRestoreClick}
+      data-testid="restore-submit-button"
+    >
+      Restore Workspace
+    </Button>
+  );
 
-    const actionButton = (
-      <Button
-        variant={ButtonVariant.primary}
-        isDisabled={!isFormValid || isSubmitting}
-        isLoading={isSubmitting}
-        onClick={() => this.handleRestoreClick()}
-        data-testid="restore-submit-button"
-      >
-        Restore Workspace
-      </Button>
-    );
+  return (
+    <React.Fragment>
+      <Head pageName="Restore from Backup" />
 
-    return (
-      <React.Fragment>
-        <Head pageName="Restore from Backup" />
+      <PageSection variant={PageSectionVariants.light}>
+        <Title headingLevel="h1">Restore from Backup</Title>
+      </PageSection>
 
-        <PageSection variant={PageSectionVariants.light}>
-          <Title headingLevel="h1">Restore from Backup</Title>
-        </PageSection>
+      <Divider />
 
-        <Divider />
+      <PageSection variant={PageSectionVariants.default}>
+        <EditorSelector defaultEditorId={defaultEditor} onSelect={handleEditorSelect} />
 
-        <PageSection variant={PageSectionVariants.default}>
-          <EditorSelector
-            defaultEditorId={this.props.defaultEditor}
-            onSelect={(editorDefinition, editorImage) =>
-              this.handleEditorSelect(editorDefinition, editorImage)
-            }
-          />
+        <Spacer />
 
-          <Spacer />
-
-          {submitError && (
-            <Alert
-              variant={AlertVariant.danger}
-              title="Restore failed"
-              isInline
-              data-testid="restore-error-alert"
-            >
-              {submitError}
-            </Alert>
-          )}
-
-          {/* <div className={styles.restoreForm} data-testid="restore-from-backup-page"> */}
-          <div data-testid="restore-from-backup-page">
-            <RestoreModeAccordion
-              restoreMode={restoreMode}
-              onChange={mode => this.handleModeChange(mode)}
-              backups={this.props.backups}
-              existingWorkspaceNames={this.props.existingWorkspaceNames}
-              onDefaultRegistryValidationChange={(isValid, data) =>
-                this.handleDefaultRegistryValidationChange(isValid, data)
-              }
-              initialImageUrl={this.props.initialBackupImageUrl}
-              onValidateImage={imageUrl => this.handleValidateImage(imageUrl)}
-              onExternalRegistryValidationChange={(isValid, data) =>
-                this.handleExternalRegistryValidationChange(isValid, data)
-              }
-              actionButton={actionButton}
-            />
-          </div>
-        </PageSection>
-
-        {restoreData && (
-          <ConfirmationModal
-            isOpen={isConfirmModalOpen}
-            restoreMode={restoreMode}
-            workspaceName={restoreData.workspaceName}
-            imageUrl={restoreData.imageUrl}
-            onConfirm={() => this.handleConfirmRestore()}
-            onCancel={() => this.handleConfirmCancel()}
-          />
+        {submitError && (
+          <Alert
+            variant={AlertVariant.danger}
+            title="Restore failed"
+            isInline
+            data-testid="restore-error-alert"
+          >
+            {submitError}
+          </Alert>
         )}
-      </React.Fragment>
-    );
-  }
-}
+
+        <div data-testid="restore-from-backup-page">
+          <RestoreModeAccordion
+            restoreMode={restoreMode}
+            onChange={handleModeChange}
+            backups={backups}
+            existingWorkspaceNames={existingWorkspaceNames}
+            onDefaultRegistryValidationChange={handleValidationChange}
+            initialBackupImageUrl={initialBackupImageUrl}
+            initialExternalImageUrl={initialExternalImageUrl}
+            onValidateImage={handleValidateImage}
+            onExternalRegistryValidationChange={handleValidationChange}
+            actionButton={actionButton}
+          />
+        </div>
+      </PageSection>
+
+      {restoreData && (
+        <ConfirmationModal
+          isOpen={isConfirmModalOpen}
+          restoreMode={restoreMode}
+          workspaceName={restoreData.workspaceName}
+          imageUrl={restoreData.imageUrl}
+          onConfirm={handleConfirmRestore}
+          onCancel={handleConfirmCancel}
+        />
+      )}
+    </React.Fragment>
+  );
+};
 
 const mapStateToProps = (state: RootState) => {
   const defaultNamespace = selectDefaultNamespace(state);

@@ -52,8 +52,11 @@ type Props = {
     data: DefaultRegistryRestoreData | null,
   ) => void;
 
+  // Initial image URLs
+  initialBackupImageUrl?: string;
+  initialExternalImageUrl?: string;
+
   // Cross-cluster form props
-  initialImageUrl?: string;
   onValidateImage: (imageUrl: string) => Promise<BackupValidationResult>;
   onExternalRegistryValidationChange: (
     isValid: boolean,
@@ -70,7 +73,8 @@ export const RestoreModeAccordion: React.FC<Props> = ({
   existingWorkspaceNames,
   backups,
   onDefaultRegistryValidationChange,
-  initialImageUrl,
+  initialBackupImageUrl,
+  initialExternalImageUrl,
   onValidateImage,
   onExternalRegistryValidationChange,
   actionButton,
@@ -116,7 +120,7 @@ export const RestoreModeAccordion: React.FC<Props> = ({
                       <PanelMainBody>
                         <DefaultRegistryRestoreForm
                           backups={backups}
-                          initialImageUrl={initialImageUrl}
+                          initialImageUrl={initialBackupImageUrl}
                           existingWorkspaceNames={existingWorkspaceNames}
                           onValidationChange={onDefaultRegistryValidationChange}
                           actionButton={actionButton}
@@ -147,7 +151,7 @@ export const RestoreModeAccordion: React.FC<Props> = ({
                     <PanelMain>
                       <PanelMainBody>
                         <ExternalRegistryRestoreForm
-                          initialImageUrl={initialImageUrl}
+                          initialImageUrl={initialExternalImageUrl}
                           existingWorkspaceNames={existingWorkspaceNames}
                           onValidateImage={onValidateImage}
                           onValidationChange={onExternalRegistryValidationChange}

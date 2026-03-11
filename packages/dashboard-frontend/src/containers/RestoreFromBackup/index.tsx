@@ -23,8 +23,13 @@ export default function RestoreFromBackupContainer(): React.ReactElement {
 
   const searchParams = new URLSearchParams(location.search);
   const initialBackupImageUrl = searchParams.get('backupImageUrl') || undefined;
+  const initialExternalImageUrl = searchParams.get('externalImageUrl') || undefined;
 
   return (
-    <RestoreFromBackupPage navigate={navigate} initialBackupImageUrl={initialBackupImageUrl} />
+    <RestoreFromBackupPage
+      navigate={navigate}
+      initialBackupImageUrl={initialBackupImageUrl}
+      initialExternalImageUrl={initialExternalImageUrl}
+    />
   );
 }
