@@ -186,16 +186,36 @@ export class DevWorkspaceApiService implements IDevWorkspaceApi {
           }
         },
         (error: unknown) => {
+          if (error instanceof Error && error.name === 'AbortError') {
+            return;
+          }
           logger.warn(error, `Stopped watching ${path}.`);
+          this.notifyWatchError(error, listener, params);
           abortController?.abort();
         },
       );
     } catch (error) {
       logger.warn(error, `Failed to start watching ${path}.`);
+      this.notifyWatchError(error, listener, params);
       return;
     }
 
     this.stopWatch = () => abortController?.abort();
+  }
+
+  private notifyWatchError(
+    error: unknown,
+    listener: MessageListener,
+    params: api.webSocket.SubscribeParams,
+  ): void {
+    const status: V1Status = {
+      kind: 'Status',
+      apiVersion: 'v1',
+      status: 'Failure',
+      message: error instanceof Error ? error.message : String(error),
+      code: (error as { statusCode?: number }).statusCode,
+    };
+    listener({ eventPhase: api.webSocket.EventPhase.ERROR, status, params });
   }
 
   /**

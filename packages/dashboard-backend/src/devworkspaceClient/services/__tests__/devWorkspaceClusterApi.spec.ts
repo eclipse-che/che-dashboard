@@ -250,6 +250,25 @@ describe('DevWorkspace Cluster API Service', () => {
     );
     expect((devWorkspaceClusterApiService as any).watcherInProgress).toBe(false);
   });
+
+  it('should ignore AbortError in done callback', async () => {
+    let doneCb: (error: unknown) => void = () => {};
+    jest
+      .spyOn((devWorkspaceClusterApiService as any).customObjectWatch, 'watch')
+      .mockImplementation((...args: unknown[]) => {
+        doneCb = args[3] as (error: unknown) => void;
+        return Promise.resolve({ abort: jest.fn() });
+      });
+
+    await (devWorkspaceClusterApiService as any).watchInAllNamespaces();
+
+    const abortError = new Error('The user aborted a request.');
+    abortError.name = 'AbortError';
+    doneCb(abortError);
+
+    expect(logger.warn).not.toHaveBeenCalled();
+    expect((devWorkspaceClusterApiService as any).watcherInProgress).toBe(true);
+  });
 });
 
 function buildCheClusterCustomResourceList(

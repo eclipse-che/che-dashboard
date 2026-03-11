@@ -62,12 +62,17 @@ export class PodApiService implements IPodApi {
         (eventPhase: string, apiObj: V1Pod | V1Status) =>
           this.handleWatchMessage(eventPhase, apiObj, listener, params),
         (error: unknown) => {
+          if (error instanceof Error && error.name === 'AbortError') {
+            return;
+          }
           this.handleWatchError(error, path);
+          this.notifyWatchError(error, listener, params);
           abortController?.abort();
         },
       );
     } catch (error) {
       this.handleWatchError(error, path);
+      this.notifyWatchError(error, listener, params);
       return;
     }
 
@@ -76,6 +81,21 @@ export class PodApiService implements IPodApi {
 
   private handleWatchError(error: unknown, path: string): void {
     logger.error(error, `Stopped watching ${path}.`);
+  }
+
+  private notifyWatchError(
+    error: unknown,
+    listener: MessageListener,
+    params: api.webSocket.SubscribeParams,
+  ): void {
+    const status: V1Status = {
+      kind: 'Status',
+      apiVersion: 'v1',
+      status: 'Failure',
+      message: error instanceof Error ? error.message : String(error),
+      code: (error as { statusCode?: number }).statusCode,
+    };
+    listener({ eventPhase: api.webSocket.EventPhase.ERROR, status, params });
   }
 
   private handleWatchMessage(

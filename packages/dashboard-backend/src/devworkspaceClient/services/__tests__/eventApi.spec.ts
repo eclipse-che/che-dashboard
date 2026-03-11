@@ -84,23 +84,79 @@ describe('Event API Service', () => {
     );
   });
 
-  it('should handle watch rejection without crashing', async () => {
+  it('should handle watch rejection and notify listener with StatusMessage', async () => {
+    const listener = jest.fn();
     const params: api.webSocket.SubscribeParams = {
       namespace,
       resourceVersion: '123',
     };
 
-    const spyWatch = jest
+    jest
       .spyOn((eventApiService as any).customObjectWatch, 'watch')
       .mockRejectedValue(Object.assign(new Error('Unauthorized'), { statusCode: 401 }));
 
-    await eventApiService.watchInNamespace(jest.fn(), params);
+    await eventApiService.watchInNamespace(listener, params);
 
-    expect(spyWatch).toHaveBeenCalledTimes(1);
     expect(logger.warn).toHaveBeenCalledWith(
       expect.objectContaining({ message: 'Unauthorized' }),
       expect.stringContaining('Stopped watching'),
     );
+    expect(listener).toHaveBeenCalledWith({
+      eventPhase: 'ERROR',
+      status: expect.objectContaining({ message: 'Unauthorized', code: 401 }),
+      params,
+    });
+  });
+
+  it('should invoke done callback and notify listener on watch error', async () => {
+    const listener = jest.fn();
+    const params: api.webSocket.SubscribeParams = {
+      namespace,
+      resourceVersion: '123',
+    };
+
+    let doneCb: (error: unknown) => void = () => {};
+    jest
+      .spyOn((eventApiService as any).customObjectWatch, 'watch')
+      .mockImplementation((...args: unknown[]) => {
+        doneCb = args[3] as (error: unknown) => void;
+        return Promise.resolve({ abort: jest.fn() });
+      });
+
+    await eventApiService.watchInNamespace(listener, params);
+
+    doneCb(Object.assign(new Error('Unauthorized'), { statusCode: 401 }));
+
+    expect(listener).toHaveBeenCalledWith({
+      eventPhase: 'ERROR',
+      status: expect.objectContaining({ message: 'Unauthorized', code: 401 }),
+      params,
+    });
+  });
+
+  it('should ignore AbortError in done callback', async () => {
+    const listener = jest.fn();
+    const params: api.webSocket.SubscribeParams = {
+      namespace,
+      resourceVersion: '123',
+    };
+
+    let doneCb: (error: unknown) => void = () => {};
+    jest
+      .spyOn((eventApiService as any).customObjectWatch, 'watch')
+      .mockImplementation((...args: unknown[]) => {
+        doneCb = args[3] as (error: unknown) => void;
+        return Promise.resolve({ abort: jest.fn() });
+      });
+
+    await eventApiService.watchInNamespace(listener, params);
+
+    const abortError = new Error('The user aborted a request.');
+    abortError.name = 'AbortError';
+    doneCb(abortError);
+
+    expect(logger.warn).not.toHaveBeenCalled();
+    expect(listener).not.toHaveBeenCalled();
   });
 
   it('should stop watching events', async () => {

@@ -75,6 +75,9 @@ export class DevWorkspaceClusterApiService implements IDevWorkspaceClusterApi {
           this.handleWatchMessage(eventPhase, apiObj);
         },
         (error: unknown) => {
+          if (error instanceof Error && error.name === 'AbortError') {
+            return;
+          }
           this.handleWatchError(error, path);
           abortController?.abort();
           this.watcherInProgress = false;

@@ -170,23 +170,116 @@ describe('DevWorkspace API Service', () => {
     });
   });
 
-  test('should handle watch rejection without crashing', async () => {
+  test('should handle watch rejection and notify listener with StatusMessage', async () => {
+    const listener = jest.fn();
     const params: api.webSocket.SubscribeParams = {
       namespace,
       resourceVersion: '123',
     };
 
-    const spyWatch = jest
+    jest
       .spyOn((devWorkspaceService as any).customObjectWatch, 'watch')
       .mockRejectedValue(Object.assign(new Error('Unauthorized'), { statusCode: 401 }));
 
-    await devWorkspaceService.watchInNamespace(jest.fn(), params);
+    await devWorkspaceService.watchInNamespace(listener, params);
 
-    expect(spyWatch).toHaveBeenCalledTimes(1);
     expect(logger.warn).toHaveBeenCalledWith(
       expect.objectContaining({ message: 'Unauthorized' }),
       expect.stringContaining('Failed to start watching'),
     );
+    expect(listener).toHaveBeenCalledWith({
+      eventPhase: 'ERROR',
+      status: expect.objectContaining({ message: 'Unauthorized', code: 401 }),
+      params,
+    });
+  });
+
+  test('should watch devworkspaces', async () => {
+    const spyStopWatching = jest
+      .spyOn(devWorkspaceService, 'stopWatching')
+      .mockReturnValue(undefined);
+    const spyWatch = jest.spyOn((devWorkspaceService as any).customObjectWatch, 'watch');
+    const params: api.webSocket.SubscribeParams = {
+      namespace,
+      resourceVersion: '123',
+    };
+
+    await devWorkspaceService.watchInNamespace(jest.fn(), params);
+
+    expect(spyStopWatching).toHaveBeenCalled();
+    expect(spyWatch).toHaveBeenCalledWith(
+      expect.stringContaining('/watch/namespaces/'),
+      { watch: true, resourceVersion: '123' },
+      expect.any(Function),
+      expect.any(Function),
+    );
+  });
+
+  test('should stop watching devworkspaces', async () => {
+    const mockAbort = jest.fn();
+    jest
+      .spyOn((devWorkspaceService as any).customObjectWatch, 'watch')
+      .mockResolvedValue({ abort: mockAbort } as unknown as AbortController);
+    const params: api.webSocket.SubscribeParams = {
+      namespace,
+      resourceVersion: '123',
+    };
+
+    await devWorkspaceService.watchInNamespace(jest.fn(), params);
+    devWorkspaceService.stopWatching();
+
+    expect(mockAbort).toHaveBeenCalledTimes(1);
+  });
+
+  test('should invoke done callback and notify listener on watch error', async () => {
+    const listener = jest.fn();
+    const params: api.webSocket.SubscribeParams = {
+      namespace,
+      resourceVersion: '123',
+    };
+
+    let doneCb: (error: unknown) => void = () => {};
+    jest
+      .spyOn((devWorkspaceService as any).customObjectWatch, 'watch')
+      .mockImplementation((...args: unknown[]) => {
+        doneCb = args[3] as (error: unknown) => void;
+        return Promise.resolve({ abort: jest.fn() });
+      });
+
+    await devWorkspaceService.watchInNamespace(listener, params);
+
+    doneCb(Object.assign(new Error('Unauthorized'), { statusCode: 401 }));
+
+    expect(listener).toHaveBeenCalledWith({
+      eventPhase: 'ERROR',
+      status: expect.objectContaining({ message: 'Unauthorized', code: 401 }),
+      params,
+    });
+  });
+
+  test('should ignore AbortError in done callback', async () => {
+    const listener = jest.fn();
+    const params: api.webSocket.SubscribeParams = {
+      namespace,
+      resourceVersion: '123',
+    };
+
+    let doneCb: (error: unknown) => void = () => {};
+    jest
+      .spyOn((devWorkspaceService as any).customObjectWatch, 'watch')
+      .mockImplementation((...args: unknown[]) => {
+        doneCb = args[3] as (error: unknown) => void;
+        return Promise.resolve({ abort: jest.fn() });
+      });
+
+    await devWorkspaceService.watchInNamespace(listener, params);
+
+    const abortError = new Error('The user aborted a request.');
+    abortError.name = 'AbortError';
+    doneCb(abortError);
+
+    expect(logger.warn).not.toHaveBeenCalled();
+    expect(listener).not.toHaveBeenCalled();
   });
 });
 
