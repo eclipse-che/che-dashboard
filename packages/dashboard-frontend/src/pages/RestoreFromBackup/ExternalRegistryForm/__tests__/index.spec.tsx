@@ -68,22 +68,11 @@ describe('ExternalRegistryRestoreForm', () => {
     expect(nameInput).toHaveValue('my-workspace');
   });
 
-  test('should set invalid state for invalid URL format', async () => {
+  test('should call onValidationChange(false) for invalid URL format', async () => {
     renderComponent();
 
     const input = screen.getByLabelText('Backup image URL');
     await userEvent.type(input, 'not-a-valid-url');
-
-    expect(mockOnValidationChange).toHaveBeenCalledWith(false, null);
-  });
-
-  test('should call onValidationChange(false) when URL is invalid', async () => {
-    mockOnValidationChange.mockClear();
-
-    renderComponent();
-
-    const input = screen.getByLabelText('Backup image URL');
-    await userEvent.type(input, 'invalid');
 
     expect(mockOnValidationChange).toHaveBeenCalledWith(false, null);
   });
@@ -132,6 +121,7 @@ function getComponent(options: ComponentOptions = {}) {
     <ExternalRegistryRestoreForm
       initialImageUrl={options.initialImageUrl}
       existingWorkspaceNames={options.existingWorkspaceNames ?? new Set()}
+      existingBackupNames={new Set()}
       onValidationChange={mockOnValidationChange}
       actionButton={<button data-testid="test-action-button">Restore</button>}
     />

@@ -44,6 +44,7 @@ type Props = {
 
   // Workspace name validation
   existingWorkspaceNames: Set<string>;
+  existingBackupNames: Set<string>;
 
   // Same-cluster form props
   backups: BackupItem[];
@@ -70,6 +71,7 @@ export const RestoreModeAccordion: React.FC<Props> = ({
   restoreMode,
   onChange,
   existingWorkspaceNames,
+  existingBackupNames,
   backups,
   onDefaultRegistryValidationChange,
   initialBackupImageUrl,
@@ -120,6 +122,7 @@ export const RestoreModeAccordion: React.FC<Props> = ({
                           backups={backups}
                           initialImageUrl={initialBackupImageUrl}
                           existingWorkspaceNames={existingWorkspaceNames}
+                          existingBackupNames={existingBackupNames}
                           onValidationChange={onDefaultRegistryValidationChange}
                           actionButton={actionButton}
                         />
@@ -151,6 +154,7 @@ export const RestoreModeAccordion: React.FC<Props> = ({
                         <ExternalRegistryRestoreForm
                           initialImageUrl={initialExternalImageUrl}
                           existingWorkspaceNames={existingWorkspaceNames}
+                          existingBackupNames={existingBackupNames}
                           onValidationChange={onExternalRegistryValidationChange}
                           actionButton={actionButton}
                         />

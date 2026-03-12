@@ -20,6 +20,7 @@ type Props = {
   restoreMode: RestoreMode;
   onChange: (mode: RestoreMode) => void;
   existingWorkspaceNames: Set<string>;
+  existingBackupNames: Set<string>;
   backups: unknown[];
   onDefaultRegistryValidationChange: (isValid: boolean, data: unknown) => void;
   initialBackupImageUrl?: string;

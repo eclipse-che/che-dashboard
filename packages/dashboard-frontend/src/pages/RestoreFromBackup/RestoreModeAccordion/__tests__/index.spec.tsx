@@ -152,6 +152,7 @@ function getComponent(options: ComponentOptions = {}) {
       restoreMode={options.restoreMode ?? 'default-registry'}
       onChange={mockOnChange}
       existingWorkspaceNames={new Set()}
+      existingBackupNames={new Set()}
       backups={[]}
       onDefaultRegistryValidationChange={mockOnDefaultValidationChange}
       initialBackupImageUrl={options.initialBackupImageUrl}

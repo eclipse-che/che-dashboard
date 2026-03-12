@@ -71,17 +71,17 @@ describe('DefaultRegistryRestoreForm', () => {
     });
   });
 
-  test('should show warning when active backup selected with existing name', async () => {
+  test('should show error when active backup selected with existing workspace name', async () => {
     renderComponent({ existingWorkspaceNames: new Set(['active-ws']) });
 
     await userEvent.click(screen.getByText('Select a backup to restore'));
     await userEvent.click(screen.getByText('active-ws (Active)'));
 
     await waitFor(() => {
-      expect(screen.getByText(/still exists on this cluster/)).toBeInTheDocument();
+      expect(screen.getByText('A workspace with this name already exists.')).toBeInTheDocument();
     });
 
-    // Should be invalid (warning state = not valid for restore)
+    // Error state — user cannot proceed
     expect(mockOnValidationChange).toHaveBeenLastCalledWith(false, null);
   });
 
@@ -114,6 +114,7 @@ function getComponent(
     <DefaultRegistryRestoreForm
       backups={options.backups ?? mockBackups}
       existingWorkspaceNames={options.existingWorkspaceNames ?? new Set()}
+      existingBackupNames={new Set()}
       onValidationChange={mockOnValidationChange}
       actionButton={<button data-testid="test-action-button">Restore</button>}
     />

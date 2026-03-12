@@ -30,6 +30,7 @@ type Props = {
   backups: BackupItem[];
   initialImageUrl?: string;
   existingWorkspaceNames: Set<string>;
+  existingBackupNames: Set<string>;
   onValidationChange: (isValid: boolean, data: DefaultRegistryRestoreData | null) => void;
   actionButton: React.ReactNode;
 };
@@ -38,6 +39,7 @@ export const DefaultRegistryRestoreForm: React.FC<Props> = ({
   backups,
   initialImageUrl,
   existingWorkspaceNames,
+  existingBackupNames,
   onValidationChange,
   actionButton,
 }) => {
@@ -50,11 +52,13 @@ export const DefaultRegistryRestoreForm: React.FC<Props> = ({
     workspaceNameWarning,
     setWorkspaceName,
     handleWorkspaceNameChange,
-  } = useRestoreFormValidation(existingWorkspaceNames, selectedBackup?.workspaceName);
+  } = useRestoreFormValidation(existingWorkspaceNames, existingBackupNames);
 
   // Determine validity and notify parent
   useEffect(() => {
-    const isValid = workspaceNameValidated === ValidatedOptions.success;
+    const isValid =
+      workspaceNameValidated === ValidatedOptions.success ||
+      workspaceNameValidated === ValidatedOptions.warning;
     const imageUrl = selectedBackup ? selectedBackup.imageUrl : '';
 
     if (isValid) {
@@ -73,14 +77,14 @@ export const DefaultRegistryRestoreForm: React.FC<Props> = ({
     const match = backups.find(b => b.imageUrl === initialImageUrl);
     if (match) {
       setSelectedBackup(match);
-      setWorkspaceName(match.workspaceName, match.workspaceName);
+      setWorkspaceName(match.workspaceName);
     }
   }, [backups, initialImageUrl, selectedBackup, setWorkspaceName]);
 
   const handleBackupChange = (backup: BackupItem | undefined) => {
     setSelectedBackup(backup);
     if (backup) {
-      setWorkspaceName(backup.workspaceName, backup.workspaceName);
+      setWorkspaceName(backup.workspaceName);
     }
   };
 

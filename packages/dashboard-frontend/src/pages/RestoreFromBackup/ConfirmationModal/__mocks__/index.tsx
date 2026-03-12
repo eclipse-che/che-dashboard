@@ -21,6 +21,7 @@ type Props = {
   restoreMode: RestoreMode;
   workspaceName: string;
   imageUrl: string;
+  hasBackupConflict?: boolean;
   onConfirm: () => void;
   onCancel: () => void;
 };

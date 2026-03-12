@@ -64,24 +64,9 @@ describe('useRestoreFormValidation', () => {
     );
   });
 
-  test('should return warning when name matches existing workspace AND matches backup name', () => {
+  test('should return error when name matches existing workspace', () => {
     const existingNames = new Set(['my-workspace']);
-    const { result } = renderHook(() => useRestoreFormValidation(existingNames, 'my-workspace'));
-
-    act(() => {
-      result.current.setWorkspaceName('my-workspace');
-    });
-
-    expect(result.current.workspaceNameValidated).toBe(ValidatedOptions.warning);
-    expect(result.current.workspaceNameWarning).toContain('still exists on this cluster');
-    expect(result.current.workspaceNameError).toBe('');
-  });
-
-  test('should return error when name matches existing workspace but NOT backup name', () => {
-    const existingNames = new Set(['my-workspace']);
-    const { result } = renderHook(() =>
-      useRestoreFormValidation(existingNames, 'different-backup'),
-    );
+    const { result } = renderHook(() => useRestoreFormValidation(existingNames));
 
     act(() => {
       result.current.setWorkspaceName('my-workspace');
@@ -100,6 +85,40 @@ describe('useRestoreFormValidation', () => {
     });
 
     expect(result.current.workspaceName).toBe('myworkspace');
+  });
+
+  test('should show warning when workspace name matches an existing backup', () => {
+    const existingWorkspaceNames = new Set<string>();
+    const existingBackupNames = new Set(['old-ws']);
+    const { result } = renderHook(() =>
+      useRestoreFormValidation(existingWorkspaceNames, existingBackupNames),
+    );
+
+    act(() => {
+      result.current.setWorkspaceName('old-ws');
+    });
+
+    expect(result.current.workspaceNameValidated).toBe(ValidatedOptions.warning);
+    expect(result.current.workspaceNameWarning).toBe(
+      'A backup named "old-ws" already exists. The new workspace will be associated with that backup.',
+    );
+    expect(result.current.workspaceNameError).toBe('');
+  });
+
+  test('should show error when name matches active workspace even if backup exists', () => {
+    const existingWorkspaceNames = new Set(['old-ws']);
+    const existingBackupNames = new Set(['old-ws']);
+    const { result } = renderHook(() =>
+      useRestoreFormValidation(existingWorkspaceNames, existingBackupNames),
+    );
+
+    act(() => {
+      result.current.setWorkspaceName('old-ws');
+    });
+
+    // Active workspace conflict takes precedence over backup conflict
+    expect(result.current.workspaceNameValidated).toBe(ValidatedOptions.error);
+    expect(result.current.workspaceNameError).toBe('A workspace with this name already exists.');
   });
 
   test('should return default state for empty name', () => {

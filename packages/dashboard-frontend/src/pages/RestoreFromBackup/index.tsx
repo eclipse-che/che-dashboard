@@ -62,6 +62,7 @@ export const RestoreFromBackupPage: React.FC<Props> = props => {
     defaultEditor,
     backups,
     existingWorkspaceNames,
+    existingBackupNames,
     navigate,
   } = props;
 
@@ -105,10 +106,6 @@ export const RestoreFromBackupPage: React.FC<Props> = props => {
     setRestoreData(data);
   }, []);
 
-  const handleRestoreClick = useCallback(() => {
-    setIsConfirmModalOpen(true);
-  }, []);
-
   const handleConfirmCancel = useCallback(() => {
     setIsConfirmModalOpen(false);
   }, []);
@@ -138,6 +135,14 @@ export const RestoreFromBackupPage: React.FC<Props> = props => {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [restoreData, defaultNamespace.name, editorDefinition, defaultEditor, navigate]);
+
+  const handleRestoreClick = useCallback(() => {
+    if (restoreData && existingBackupNames.has(restoreData.workspaceName)) {
+      setIsConfirmModalOpen(true);
+    } else {
+      handleConfirmRestore();
+    }
+  }, [restoreData, existingBackupNames, handleConfirmRestore]);
 
   const actionButton = (
     <Button
@@ -183,6 +188,7 @@ export const RestoreFromBackupPage: React.FC<Props> = props => {
             onChange={handleModeChange}
             backups={backups}
             existingWorkspaceNames={existingWorkspaceNames}
+            existingBackupNames={existingBackupNames}
             onDefaultRegistryValidationChange={handleValidationChange}
             initialBackupImageUrl={initialBackupImageUrl}
             initialExternalImageUrl={initialExternalImageUrl}
@@ -198,6 +204,7 @@ export const RestoreFromBackupPage: React.FC<Props> = props => {
           restoreMode={restoreMode}
           workspaceName={restoreData.workspaceName}
           imageUrl={restoreData.imageUrl}
+          hasBackupConflict={existingBackupNames.has(restoreData.workspaceName)}
           onConfirm={handleConfirmRestore}
           onCancel={handleConfirmCancel}
         />
@@ -212,12 +219,16 @@ const mapStateToProps = (state: RootState) => {
   const allWorkspaces = selectAllWorkspaces(state);
   const existingWorkspaceNames = new Set(allWorkspaces.map(ws => ws.name));
 
+  const backups = selectNamespaceBackups(state, namespace);
+  const existingBackupNames = new Set(backups.map(b => b.workspaceName));
+
   return {
     defaultNamespace,
-    backups: selectNamespaceBackups(state, namespace),
+    backups,
     defaultEditor: selectDefaultEditor(state),
     backupConfig: selectBackupConfig(state),
     existingWorkspaceNames,
+    existingBackupNames,
   };
 };
 

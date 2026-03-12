@@ -22,13 +22,13 @@ export type WorkspaceNameValidation = {
   workspaceNameValidated: ValidatedOptions;
   workspaceNameError: string;
   workspaceNameWarning: string;
-  setWorkspaceName: (name: string, backupWorkspaceNameOverride?: string) => void;
+  setWorkspaceName: (name: string) => void;
   handleWorkspaceNameChange: (value: string) => void;
 };
 
 export function useRestoreFormValidation(
   existingWorkspaceNames?: Set<string>,
-  selectedBackupWorkspaceName?: string,
+  existingBackupNames?: Set<string>,
 ): WorkspaceNameValidation {
   const [workspaceName, setWorkspaceNameState] = useState('');
   const [workspaceNameValidated, setWorkspaceNameValidated] = useState<ValidatedOptions>(
@@ -38,27 +38,26 @@ export function useRestoreFormValidation(
   const [workspaceNameWarning, setWorkspaceNameWarning] = useState('');
 
   const setWorkspaceName = useCallback(
-    (name: string, backupWorkspaceNameOverride?: string) => {
-      const effectiveBackupName = backupWorkspaceNameOverride ?? selectedBackupWorkspaceName;
+    (name: string) => {
       const { validated, error } = validateWorkspaceName(name);
 
       // Check for name conflict if existingWorkspaceNames is provided
       if (validated === ValidatedOptions.success && existingWorkspaceNames?.has(name)) {
         setWorkspaceNameState(name);
+        setWorkspaceNameValidated(ValidatedOptions.error);
+        setWorkspaceNameError('A workspace with this name already exists.');
+        setWorkspaceNameWarning('');
+        return;
+      }
 
-        // If this is the same workspace we're restoring from, show WARNING
-        if (name === effectiveBackupName) {
-          setWorkspaceNameValidated(ValidatedOptions.warning);
-          setWorkspaceNameError('');
-          setWorkspaceNameWarning(
-            `Workspace "${name}" still exists on this cluster. Provide a different workspace name, or stop and delete it first.`,
-          );
-        } else {
-          // Different workspace - show ERROR
-          setWorkspaceNameValidated(ValidatedOptions.error);
-          setWorkspaceNameError('A workspace with this name already exists.');
-          setWorkspaceNameWarning('');
-        }
+      // Check for backup name conflict (warning, not error — user can proceed)
+      if (validated === ValidatedOptions.success && existingBackupNames?.has(name)) {
+        setWorkspaceNameState(name);
+        setWorkspaceNameValidated(ValidatedOptions.warning);
+        setWorkspaceNameError('');
+        setWorkspaceNameWarning(
+          `A backup named "${name}" already exists. The new workspace will be associated with that backup.`,
+        );
         return;
       }
 
@@ -67,7 +66,7 @@ export function useRestoreFormValidation(
       setWorkspaceNameError(error);
       setWorkspaceNameWarning('');
     },
-    [existingWorkspaceNames, selectedBackupWorkspaceName],
+    [existingWorkspaceNames, existingBackupNames],
   );
 
   const handleWorkspaceNameChange = useCallback(

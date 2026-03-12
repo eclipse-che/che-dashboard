@@ -34,6 +34,7 @@ export type ExternalRegistryRestoreData = {
 type Props = {
   initialImageUrl?: string;
   existingWorkspaceNames: Set<string>;
+  existingBackupNames: Set<string>;
   onValidationChange: (isValid: boolean, data: ExternalRegistryRestoreData | null) => void;
   actionButton: React.ReactNode;
 };
@@ -74,6 +75,7 @@ function computeImageUrlValidation(url: string): {
 export const ExternalRegistryRestoreForm: React.FC<Props> = ({
   initialImageUrl,
   existingWorkspaceNames,
+  existingBackupNames,
   onValidationChange,
   actionButton,
 }) => {
@@ -88,7 +90,7 @@ export const ExternalRegistryRestoreForm: React.FC<Props> = ({
     workspaceNameWarning,
     setWorkspaceName,
     handleWorkspaceNameChange,
-  } = useRestoreFormValidation(existingWorkspaceNames);
+  } = useRestoreFormValidation(existingWorkspaceNames, existingBackupNames);
 
   // Initialize workspace name from initialImageUrl on first render
   React.useEffect(() => {
@@ -127,7 +129,8 @@ export const ExternalRegistryRestoreForm: React.FC<Props> = ({
     handleWorkspaceNameChange(value);
     const sanitized = sanitizeWorkspaceName(value);
     const { validated } = validateWorkspaceName(sanitized);
-    const wsIsValid = validated === ValidatedOptions.success;
+    const wsIsValid =
+      validated === ValidatedOptions.success || validated === ValidatedOptions.warning;
     const isValid = validationState === 'valid' && wsIsValid;
     onValidationChange(isValid, isValid ? { workspaceName: sanitized, imageUrl } : null);
   };

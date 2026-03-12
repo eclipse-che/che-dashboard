@@ -87,6 +87,22 @@ describe('ConfirmationModal', () => {
     expect(mockOnCancel).toHaveBeenCalled();
   });
 
+  test('should not show backup conflict warning by default', () => {
+    renderComponent();
+
+    expect(screen.queryByTestId('backup-conflict-warning')).not.toBeInTheDocument();
+  });
+
+  test('should show backup conflict warning when hasBackupConflict is true', () => {
+    renderComponent({ hasBackupConflict: true });
+
+    const warning = screen.getByTestId('backup-conflict-warning');
+    expect(warning).toBeInTheDocument();
+    expect(warning).toHaveTextContent(
+      'A backup named "my-workspace" already exists. The new workspace will be associated with that backup.',
+    );
+  });
+
   // Note: Snapshot test omitted because PatternFly Modal uses React portals,
   // which are incompatible with react-test-renderer.
 });
@@ -95,6 +111,7 @@ function getComponent(
   options: {
     isOpen?: boolean;
     restoreMode?: 'default-registry' | 'external-registry';
+    hasBackupConflict?: boolean;
   } = {},
 ) {
   return (
@@ -103,6 +120,7 @@ function getComponent(
       restoreMode={options.restoreMode || 'default-registry'}
       workspaceName="my-workspace"
       imageUrl="image-registry.openshift-image-registry.svc:5000/user-namespace/my-workspace:latest"
+      hasBackupConflict={options.hasBackupConflict}
       onConfirm={mockOnConfirm}
       onCancel={mockOnCancel}
     />

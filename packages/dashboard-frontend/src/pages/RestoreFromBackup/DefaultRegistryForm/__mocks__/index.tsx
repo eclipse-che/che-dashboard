@@ -18,6 +18,7 @@ type Props = {
   backups: unknown[];
   initialImageUrl?: string;
   existingWorkspaceNames: Set<string>;
+  existingBackupNames: Set<string>;
   onValidationChange: (isValid: boolean, data: unknown) => void;
   actionButton: React.ReactNode;
 };
