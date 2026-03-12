@@ -343,6 +343,9 @@ export class DevWorkspaceClient {
 
     const patch: api.IPatch[] = [];
 
+    // Ensure /metadata/annotations exists before patching nested paths
+    this.ensureMetadataAnnotations(workspace, patch);
+
     const updatingTimeAnnotationPath =
       '/metadata/annotations/' + this.escape(DEVWORKSPACE_UPDATING_TIMESTAMP_ANNOTATION);
     if (
@@ -392,6 +395,44 @@ export class DevWorkspaceClient {
           op: 'remove',
           path: nextStartAnnotationPath,
         });
+      }
+
+      // Update workspace custom name if it has changed
+      const currentCustomName =
+        onClusterWorkspace.metadata.labels?.[DEVWORKSPACE_LABEL_METADATA_NAME];
+      const newCustomName = workspace.metadata.labels?.[DEVWORKSPACE_LABEL_METADATA_NAME];
+      if (newCustomName !== currentCustomName) {
+        const customNamePath = '/metadata/labels/' + this.escape(DEVWORKSPACE_LABEL_METADATA_NAME);
+        if (newCustomName) {
+          // Ensure labels object exists
+          if (!onClusterWorkspace.metadata.labels) {
+            patch.push({
+              op: 'add',
+              path: '/metadata/labels',
+              value: {},
+            });
+          }
+          // Add or replace the custom name label
+          if (currentCustomName === undefined) {
+            patch.push({
+              op: 'add',
+              path: customNamePath,
+              value: newCustomName,
+            });
+          } else {
+            patch.push({
+              op: 'replace',
+              path: customNamePath,
+              value: newCustomName,
+            });
+          }
+        } else if (currentCustomName !== undefined) {
+          // Remove the custom name label if it was cleared
+          patch.push({
+            op: 'remove',
+            path: customNamePath,
+          });
+        }
       }
     }
 
@@ -491,88 +532,6 @@ export class DevWorkspaceClient {
     return devWorkspace;
   }
 
-  /**
-   * Syncs HOST_USERS env var on workspace components to match server config
-   * (container run -> false, container build -> true). Does not change the
-   * controller.devfile.io/scc attribute; SCC is set at workspace creation.
-   */
-  async manageHostUsersEnvVar(
-    workspace: devfileApi.DevWorkspace,
-    config: api.IServerConfig,
-  ): Promise<devfileApi.DevWorkspace> {
-    let patch: api.IPatch[] = [];
-    if (!config.containerRun?.disableContainerRunCapabilities) {
-      patch = this.setHostUsersEnvVar(workspace, false);
-    } else if (!config.containerBuild?.disableContainerBuildCapabilities) {
-      patch = this.setHostUsersEnvVar(workspace, true);
-    } else {
-      patch = this.removeHostUsersEnvVar(workspace);
-    }
-    if (patch.length === 0) {
-      return workspace;
-    }
-    const { devWorkspace } = await DwApi.patchWorkspace(
-      workspace.metadata.namespace,
-      workspace.metadata.name,
-      patch,
-    );
-    return devWorkspace;
-  }
-
-  setHostUsersEnvVar(workspace: devfileApi.DevWorkspace, hostUsers: boolean): api.IPatch[] {
-    const patch: api.IPatch[] = [];
-    const value = { name: this.hostUsersEnvName, value: hostUsers.toString() };
-    const components = workspace.spec.template.components;
-    if (!components) return patch;
-    for (let cmpIndex = 0; cmpIndex < components.length; cmpIndex++) {
-      const container = components[cmpIndex].container;
-      if (container === undefined) continue;
-      if (!container.env) {
-        patch.push({
-          op: 'add',
-          path: `/spec/template/components/${cmpIndex}/container/env`,
-          value: [value],
-        });
-        continue;
-      }
-      const envIndex = container.env.findIndex(env => env.name === this.hostUsersEnvName);
-      if (envIndex >= 0) {
-        if (container.env[envIndex].value !== hostUsers.toString()) {
-          patch.push({
-            op: 'replace',
-            path: `/spec/template/components/${cmpIndex}/container/env/${envIndex}`,
-            value,
-          });
-        }
-      } else {
-        patch.push({
-          op: 'add',
-          path: `/spec/template/components/${cmpIndex}/container/env/-`,
-          value,
-        });
-      }
-    }
-    return patch;
-  }
-
-  removeHostUsersEnvVar(workspace: devfileApi.DevWorkspace): api.IPatch[] {
-    const patch: api.IPatch[] = [];
-    const components = workspace.spec.template.components;
-    if (!components) return patch;
-    for (let cmpIndex = 0; cmpIndex < components.length; cmpIndex++) {
-      const container = components[cmpIndex].container;
-      if (!container?.env) continue;
-      const envIndex = container.env.findIndex(env => env.name === this.hostUsersEnvName);
-      if (envIndex >= 0) {
-        patch.push({
-          op: 'remove',
-          path: `/spec/template/components/${cmpIndex}/container/env/${envIndex}`,
-        });
-      }
-    }
-    return patch;
-  }
-
   async manageDebugMode(
     workspace: devfileApi.DevWorkspace,
     debugMode: boolean,
@@ -580,6 +539,9 @@ export class DevWorkspaceClient {
     const patch: api.IPatch[] = [];
     const currentDebugMode = this.getDebugMode(workspace);
     if (currentDebugMode !== debugMode) {
+      // Ensure /metadata/annotations exists before patching nested paths
+      this.ensureMetadataAnnotations(workspace, patch);
+
       const path = `/metadata/annotations/${this.escape(DEVWORKSPACE_DEBUG_START_ANNOTATION)}`;
       if (!debugMode) {
         patch.push({ op: 'remove', path });
@@ -796,6 +758,9 @@ export class DevWorkspaceClient {
     ];
 
     if (started) {
+      // Ensure /metadata/annotations exists before patching nested paths
+      this.ensureMetadataAnnotations(workspace, patch);
+
       const updatingTimeAnnotationPath =
         '/metadata/annotations/' + this.escape(DEVWORKSPACE_UPDATING_TIMESTAMP_ANNOTATION);
       if (
@@ -867,6 +832,16 @@ export class DevWorkspaceClient {
         throw new Error(message);
       }
       throw new Error('Unknown error occurred when trying to process the devworkspace');
+    }
+  }
+
+  private ensureMetadataAnnotations(workspace: devfileApi.DevWorkspace, patch: api.IPatch[]): void {
+    if (!workspace.metadata.annotations) {
+      patch.push({
+        op: 'add',
+        path: '/metadata/annotations',
+        value: {},
+      });
     }
   }
 
