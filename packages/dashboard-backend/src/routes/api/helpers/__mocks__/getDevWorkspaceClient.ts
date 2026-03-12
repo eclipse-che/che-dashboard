@@ -23,6 +23,7 @@ import { IncomingHttpHeaders } from 'http';
 
 import {
   DevWorkspaceClient,
+  IBackupApi,
   IDevWorkspaceApi,
   IDevWorkspaceClusterApi,
   IDevWorkspaceTemplateApi,
@@ -275,6 +276,16 @@ export const getDevWorkspaceClient = jest.fn(
         removeProviderFromSkipAuthorizationList: (_namespace, _provider) => Promise.resolve(),
         removeTrustedSources: _namespace => Promise.resolve(),
       } as IWorkspacePreferencesApi,
+      backupApi: {
+        getClusterBackupConfig: () =>
+          Promise.resolve({
+            enabled: true,
+            schedule: '0 1 * * *',
+            registry: 'image-registry.openshift-image-registry.svc:5000',
+            authSecretName: 'registry-credentials',
+          }),
+        getWorkspaceBackupStatus: (_namespace, _workspaceName) => Promise.resolve({} as any),
+      } as IBackupApi,
     } as DevWorkspaceClient;
   },
 );

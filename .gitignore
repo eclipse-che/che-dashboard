@@ -28,3 +28,6 @@ run/public-certs
 *.zip
 *.tar.gz
 *.tgz
+
+.claude/settings.local.json
+.worktrees/

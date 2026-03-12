@@ -65,22 +65,24 @@ describe('Workspace Details page', () => {
       );
     });
 
-    it('should have four tabs visible', () => {
+    it('should have five tabs visible', () => {
       const workspace = constructWorkspace(devWorkspaceBuilder.build());
       renderComponent({
         workspace,
       });
 
       const allTabs = screen.getAllByRole('tab');
-      expect(allTabs.length).toBe(4);
+      expect(allTabs.length).toBe(5);
 
       const overviewTab = screen.queryByRole('tab', { name: 'Overview' });
       const devfileTab = screen.queryByRole('tab', { name: 'Devfile' });
+      const backupTab = screen.queryByRole('tab', { name: 'Backup' });
       const logsTab = screen.queryByRole('tab', { name: 'Logs' });
       const eventsTab = screen.queryByRole('tab', { name: 'Events' });
 
       expect(overviewTab).not.toBeNull();
       expect(devfileTab).not.toBeNull();
+      expect(backupTab).not.toBeNull();
       expect(logsTab).not.toBeNull();
       expect(eventsTab).not.toBeNull();
     });

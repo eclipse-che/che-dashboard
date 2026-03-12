@@ -1,0 +1,271 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`RestoreFromBackupPage initial rendering snapshot - initial state 1`] = `
+[
+  <section
+    className="pf-c-page__main-section pf-m-light"
+  >
+    <h1
+      className="pf-c-title pf-m-2xl"
+      data-ouia-component-id="OUIA-Generated-Title-15"
+      data-ouia-component-type="PF4/Title"
+      data-ouia-safe={true}
+    >
+      Restore from Backup
+    </h1>
+  </section>,
+  <hr
+    className="pf-c-divider"
+  />,
+  <section
+    className="pf-c-page__main-section"
+  >
+    <div
+      data-testid="editor-selector"
+    >
+      Editor Selector
+      <button
+        onClick={[Function]}
+      >
+        Select Editor
+      </button>
+    </div>
+    <div
+      className="spacer"
+      data-testid="spacer"
+    />
+    <div
+      data-testid="restore-from-backup-page"
+    >
+      <div
+        className="pf-c-panel"
+      >
+        <div
+          className="pf-c-panel__header"
+        >
+          <h3
+            className="pf-c-title pf-m-lg"
+            data-ouia-component-id="OUIA-Generated-Title-16"
+            data-ouia-component-type="PF4/Title"
+            data-ouia-safe={true}
+          >
+            Restore Mode
+          </h3>
+        </div>
+        <div
+          className="pf-c-panel__main"
+          style={
+            {
+              "--pf-c-panel__main--MaxHeight": undefined,
+            }
+          }
+        >
+          <div
+            className="pf-c-panel__main-body"
+          >
+            <div
+              aria-label=""
+              className="pf-c-accordion"
+            >
+              <h3>
+                <button
+                  aria-expanded={true}
+                  className="pf-c-accordion__toggle pf-m-expanded"
+                  id="default-registry"
+                  onClick={[Function]}
+                  type="button"
+                >
+                  <span
+                    className="pf-c-accordion__toggle-text"
+                  >
+                    Default registry
+                  </span>
+                  <span
+                    className="pf-c-accordion__toggle-icon"
+                  >
+                    <svg
+                      aria-hidden={true}
+                      aria-labelledby={null}
+                      fill="currentColor"
+                      height="1em"
+                      role="img"
+                      style={
+                        {
+                          "verticalAlign": "-0.125em",
+                        }
+                      }
+                      viewBox="0 0 256 512"
+                      width="1em"
+                    >
+                      <path
+                        d="M224.3 273l-136 136c-9.4 9.4-24.6 9.4-33.9 0l-22.6-22.6c-9.4-9.4-9.4-24.6 0-33.9l96.4-96.4-96.4-96.4c-9.4-9.4-9.4-24.6 0-33.9L54.3 103c9.4-9.4 24.6-9.4 33.9 0l136 136c9.5 9.4 9.5 24.6.1 34z"
+                      />
+                    </svg>
+                  </span>
+                </button>
+              </h3>
+              <div
+                className="pf-c-accordion__expanded-content pf-m-expanded"
+                hidden={false}
+                id=""
+              >
+                <div
+                  className="pf-c-accordion__expanded-content-body"
+                >
+                  <div
+                    className="pf-c-content"
+                  >
+                    <small
+                      className=""
+                      data-ouia-component-id="OUIA-Generated-Text-8"
+                      data-ouia-component-type="PF4/Text"
+                      data-ouia-safe={true}
+                      data-pf-content={true}
+                    >
+                      Restore a workspace from a backup in the default registry.
+                    </small>
+                  </div>
+                  <div
+                    className="pf-c-panel"
+                  >
+                    <div
+                      className="pf-c-panel__main"
+                      style={
+                        {
+                          "--pf-c-panel__main--MaxHeight": undefined,
+                        }
+                      }
+                    >
+                      <div
+                        className="pf-c-panel__main-body"
+                      >
+                        <form
+                          className="pf-c-form pf-m-horizontal"
+                          noValidate={true}
+                          onSubmit={[Function]}
+                        >
+                          <div
+                            className="pf-c-form__group"
+                          >
+                            <div
+                              className="pf-c-form__group-label"
+                            >
+                              <label
+                                className="pf-c-form__label"
+                                htmlFor="restore-workspace-name"
+                              >
+                                <span
+                                  className="pf-c-form__label-text"
+                                >
+                                  Workspace name
+                                </span>
+                                <span
+                                  aria-hidden="true"
+                                  className="pf-c-form__label-required"
+                                >
+                                   
+                                  *
+                                </span>
+                              </label>
+                               
+                            </div>
+                            <div
+                              className="pf-c-form__group-control"
+                            >
+                              <div
+                                className="pf-c-input-group"
+                              >
+                                <input
+                                  aria-invalid={false}
+                                  aria-label="Workspace name"
+                                  className="pf-c-form-control"
+                                  data-ouia-component-id="OUIA-Generated-TextInputBase-8"
+                                  data-ouia-component-type="PF4/TextInput"
+                                  data-ouia-safe={true}
+                                  disabled={false}
+                                  id="restore-workspace-name"
+                                  onBlur={[Function]}
+                                  onChange={[Function]}
+                                  onFocus={[Function]}
+                                  placeholder="my-workspace"
+                                  required={false}
+                                  type="text"
+                                  value=""
+                                />
+                                <button
+                                  aria-disabled={true}
+                                  aria-label={null}
+                                  className="pf-c-button pf-m-primary pf-m-disabled pf-m-progress"
+                                  data-ouia-component-id="OUIA-Generated-Button-primary-8"
+                                  data-ouia-component-type="PF4/Button"
+                                  data-ouia-safe={true}
+                                  data-testid="restore-submit-button"
+                                  disabled={true}
+                                  onClick={[Function]}
+                                  role={null}
+                                  tabIndex={null}
+                                  type="button"
+                                >
+                                  Restore Workspace
+                                </button>
+                              </div>
+                              <div
+                                aria-live="polite"
+                                className="pf-c-form__helper-text"
+                                id="restore-workspace-name-helper"
+                              >
+                                Enter the name of the workspace to restore.
+                              </div>
+                            </div>
+                          </div>
+                        </form>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <h3>
+                <button
+                  aria-expanded={false}
+                  className="pf-c-accordion__toggle"
+                  id="external-registry"
+                  onClick={[Function]}
+                  type="button"
+                >
+                  <span
+                    className="pf-c-accordion__toggle-text"
+                  >
+                    External registry
+                  </span>
+                  <span
+                    className="pf-c-accordion__toggle-icon"
+                  >
+                    <svg
+                      aria-hidden={true}
+                      aria-labelledby={null}
+                      fill="currentColor"
+                      height="1em"
+                      role="img"
+                      style={
+                        {
+                          "verticalAlign": "-0.125em",
+                        }
+                      }
+                      viewBox="0 0 256 512"
+                      width="1em"
+                    >
+                      <path
+                        d="M224.3 273l-136 136c-9.4 9.4-24.6 9.4-33.9 0l-22.6-22.6c-9.4-9.4-9.4-24.6 0-33.9l96.4-96.4-96.4-96.4c-9.4-9.4-9.4-24.6 0-33.9L54.3 103c9.4-9.4 24.6-9.4 33.9 0l136 136c9.5 9.4 9.5 24.6.1 34z"
+                      />
+                    </svg>
+                  </span>
+                </button>
+              </h3>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>,
+]
+`;
