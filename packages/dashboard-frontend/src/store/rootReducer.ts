@@ -10,6 +10,7 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
+import { backupsReducer } from '@/store/Backups';
 import { bannerAlertReducer } from '@/store/BannerAlert';
 import { brandingReducer } from '@/store/Branding';
 import { clusterConfigReducer } from '@/store/ClusterConfig';
@@ -37,6 +38,7 @@ import { devWorkspacesReducer } from '@/store/Workspaces/devWorkspaces';
 import { workspacePreferencesReducer } from '@/store/Workspaces/Preferences';
 
 export const rootReducer = {
+  backups: backupsReducer,
   bannerAlert: bannerAlertReducer,
   branding: brandingReducer,
   clusterConfig: clusterConfigReducer,

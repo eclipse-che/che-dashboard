@@ -25,7 +25,7 @@ import React from 'react';
 
 import { WorkspaceActionsConsumer } from '@/contexts/WorkspaceActions';
 import { WorkspaceActionsBulkDeleteButton } from '@/contexts/WorkspaceActions/BulkDeleteButton';
-import styles from '@/pages/WorkspacesList/Toolbar/index.module.css';
+import styles from '@/pages/WorkspacesList/WorkspacesView/Toolbar/index.module.css';
 import match from '@/services/helpers/filter';
 import { Workspace } from '@/services/workspace-adapter';
 

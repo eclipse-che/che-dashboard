@@ -193,6 +193,7 @@ function getComponent(_workspaces = workspaces): React.ReactElement {
   return (
     <MemoryRouter>
       <WorkspacesList
+        backupsByWorkspace={{}}
         branding={brandingData}
         editors={[]}
         location={{} as Location}
