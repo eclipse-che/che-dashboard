@@ -36,6 +36,8 @@ describe('Backups, reducer', () => {
       },
       error: undefined,
       hasEverFetchedList: false,
+      lastFetchedListAt: 0,
+      lastFetchedConfigAt: 0,
     });
   });
 
@@ -108,6 +110,8 @@ describe('Backups, reducer', () => {
         },
         error: undefined,
         hasEverFetchedList: false,
+        lastFetchedListAt: 0,
+        lastFetchedConfigAt: 0,
       };
 
       expect(testState.byWorkspace['workspace-uid-1'].status).toBe(BackupStatus.SUCCESS);
@@ -136,6 +140,8 @@ describe('Backups, reducer', () => {
         },
         error: undefined,
         hasEverFetchedList: false,
+        lastFetchedListAt: 0,
+        lastFetchedConfigAt: 0,
       };
 
       expect(testState.byNamespace['user-che']).toHaveLength(1);

@@ -121,6 +121,12 @@ describe('RestoreFromBackupPage', () => {
       expect(mockFetchBackupList).toHaveBeenCalledWith({ namespace: 'user-namespace' });
     });
 
+    test('should fetch backup config on mount', () => {
+      renderComponent();
+
+      expect(mockFetchBackupConfig).toHaveBeenCalledWith({ namespace: 'user-namespace' });
+    });
+
     test('snapshot - initial state', () => {
       const snapshot = createSnapshot();
       expect(snapshot.toJSON()).toMatchSnapshot();

@@ -7,7 +7,7 @@ exports[`RestoreFromBackupPage initial rendering snapshot - initial state 1`] = 
   >
     <h1
       className="pf-c-title pf-m-2xl"
-      data-ouia-component-id="OUIA-Generated-Title-13"
+      data-ouia-component-id="OUIA-Generated-Title-15"
       data-ouia-component-type="PF4/Title"
       data-ouia-safe={true}
     >
@@ -45,7 +45,7 @@ exports[`RestoreFromBackupPage initial rendering snapshot - initial state 1`] = 
         >
           <h3
             className="pf-c-title pf-m-lg"
-            data-ouia-component-id="OUIA-Generated-Title-14"
+            data-ouia-component-id="OUIA-Generated-Title-16"
             data-ouia-component-type="PF4/Title"
             data-ouia-safe={true}
           >
@@ -117,7 +117,7 @@ exports[`RestoreFromBackupPage initial rendering snapshot - initial state 1`] = 
                   >
                     <small
                       className=""
-                      data-ouia-component-id="OUIA-Generated-Text-7"
+                      data-ouia-component-id="OUIA-Generated-Text-8"
                       data-ouia-component-type="PF4/Text"
                       data-ouia-safe={true}
                       data-pf-content={true}
@@ -179,7 +179,7 @@ exports[`RestoreFromBackupPage initial rendering snapshot - initial state 1`] = 
                                   aria-invalid={false}
                                   aria-label="Workspace name"
                                   className="pf-c-form-control"
-                                  data-ouia-component-id="OUIA-Generated-TextInputBase-7"
+                                  data-ouia-component-id="OUIA-Generated-TextInputBase-8"
                                   data-ouia-component-type="PF4/TextInput"
                                   data-ouia-safe={true}
                                   disabled={false}
@@ -196,7 +196,7 @@ exports[`RestoreFromBackupPage initial rendering snapshot - initial state 1`] = 
                                   aria-disabled={true}
                                   aria-label={null}
                                   className="pf-c-button pf-m-primary pf-m-disabled pf-m-progress"
-                                  data-ouia-component-id="OUIA-Generated-Button-primary-7"
+                                  data-ouia-component-id="OUIA-Generated-Button-primary-8"
                                   data-ouia-component-type="PF4/Button"
                                   data-ouia-safe={true}
                                   data-testid="restore-submit-button"

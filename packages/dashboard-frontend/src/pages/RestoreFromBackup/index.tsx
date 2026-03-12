@@ -79,7 +79,7 @@ export const RestoreFromBackupPage: React.FC<Props> = props => {
   const [restoreData, setRestoreData] = useState<RestoreData>(null);
   const [isFormValid, setIsFormValid] = useState(false);
 
-  // Fetch backup list and config on mount
+  // Fetch backup list and config on mount — thunk-level TTL caching prevents duplicate requests
   useEffect(() => {
     const namespace = defaultNamespace.name;
     if (namespace) {

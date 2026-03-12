@@ -49,16 +49,16 @@ export class BackupsView extends React.PureComponent<Props> {
   public componentDidMount(): void {
     const { namespace } = this.props;
     if (namespace) {
-      this.props.fetchBackupList({ namespace });
-      this.props.fetchBackupConfig({ namespace });
+      this.props.fetchBackupList({ namespace, force: true });
+      this.props.fetchBackupConfig({ namespace, force: true });
     }
   }
 
   public componentDidUpdate(prevProps: Props): void {
     const { namespace } = this.props;
     if (namespace && namespace !== prevProps.namespace) {
-      this.props.fetchBackupList({ namespace });
-      this.props.fetchBackupConfig({ namespace });
+      this.props.fetchBackupList({ namespace, force: true });
+      this.props.fetchBackupConfig({ namespace, force: true });
     }
   }
 

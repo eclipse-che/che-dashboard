@@ -17,6 +17,10 @@ import { createAsyncThunk } from '@reduxjs/toolkit';
 
 import * as BackupApi from '@/services/backend-client/backupApi';
 import { RootState } from '@/store';
+import { State } from '@/store/Backups/reducer';
+
+/** TTL for cached backup data — thunks skip API calls when data is fresher than this */
+const BACKUP_CACHE_TTL_MS = 30_000; // 30 seconds
 
 /**
  * Fetches cluster-wide backup configuration
@@ -28,15 +32,26 @@ import { RootState } from '@/store';
  */
 export const fetchBackupConfig = createAsyncThunk<
   BackupConfig,
-  { namespace: string },
+  { namespace: string; force?: boolean },
   { state: RootState; rejectValue: string }
->('backups/fetchBackupConfig', async ({ namespace }, { rejectWithValue }) => {
-  try {
-    return await BackupApi.getBackupConfig(namespace);
-  } catch (error: any) {
-    return rejectWithValue(error.message || 'Failed to fetch backup configuration');
-  }
-});
+>(
+  'backups/fetchBackupConfig',
+  async ({ namespace }, { rejectWithValue }) => {
+    try {
+      return await BackupApi.getBackupConfig(namespace);
+    } catch (error: any) {
+      return rejectWithValue(error.message || 'Failed to fetch backup configuration');
+    }
+  },
+  {
+    condition: (arg, { getState }) => {
+      if (arg.force) return true;
+      const state = (getState() as { backups: State }).backups;
+      const age = Date.now() - state.lastFetchedConfigAt;
+      return age > BACKUP_CACHE_TTL_MS;
+    },
+  },
+);
 
 /**
  * Fetches backup status for a specific workspace
@@ -74,12 +89,23 @@ export const fetchWorkspaceBackupStatus = createAsyncThunk<
  */
 export const fetchBackupList = createAsyncThunk<
   BackupItem[],
-  { namespace: string; workspaceName?: string },
+  { namespace: string; workspaceName?: string; force?: boolean },
   { state: RootState; rejectValue: string }
->('backups/fetchBackupList', async ({ namespace, workspaceName }, { rejectWithValue }) => {
-  try {
-    return await BackupApi.listBackups(namespace, workspaceName);
-  } catch (error: any) {
-    return rejectWithValue(error.message || 'Failed to fetch backup list');
-  }
-});
+>(
+  'backups/fetchBackupList',
+  async ({ namespace, workspaceName }, { rejectWithValue }) => {
+    try {
+      return await BackupApi.listBackups(namespace, workspaceName);
+    } catch (error: any) {
+      return rejectWithValue(error.message || 'Failed to fetch backup list');
+    }
+  },
+  {
+    condition: (arg, { getState }) => {
+      if (arg.force) return true;
+      const state = (getState() as { backups: State }).backups;
+      const age = Date.now() - state.lastFetchedListAt;
+      return age > BACKUP_CACHE_TTL_MS;
+    },
+  },
+);

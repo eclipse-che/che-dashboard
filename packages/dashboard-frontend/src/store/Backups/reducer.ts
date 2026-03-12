@@ -48,6 +48,10 @@ export interface State {
   error: string | undefined;
   /** Whether fetchBackupList has ever completed (fulfilled or rejected) */
   hasEverFetchedList: boolean;
+  /** Timestamp (ms) when fetchBackupList last succeeded — used for TTL-based caching */
+  lastFetchedListAt: number;
+  /** Timestamp (ms) when fetchBackupConfig last succeeded — used for TTL-based caching */
+  lastFetchedConfigAt: number;
 }
 
 /**
@@ -64,6 +68,8 @@ export const unloadedState: State = {
   },
   error: undefined,
   hasEverFetchedList: false,
+  lastFetchedListAt: 0,
+  lastFetchedConfigAt: 0,
 };
 
 /**
@@ -83,6 +89,7 @@ export const reducer = createReducer(unloadedState, builder =>
     .addCase(fetchBackupConfig.fulfilled, (state, action) => {
       state.backupConfig = action.payload;
       state.loading.configLoadingCount = Math.max(0, state.loading.configLoadingCount - 1);
+      state.lastFetchedConfigAt = Date.now();
     })
     .addCase(fetchBackupConfig.rejected, (state, action) => {
       state.loading.configLoadingCount = Math.max(0, state.loading.configLoadingCount - 1);
@@ -115,6 +122,7 @@ export const reducer = createReducer(unloadedState, builder =>
       state.byNamespace[namespace] = Array.isArray(action.payload) ? action.payload : [];
       state.loading.updatingCount = Math.max(0, state.loading.updatingCount - 1);
       state.hasEverFetchedList = true;
+      state.lastFetchedListAt = Date.now();
     })
     .addCase(fetchBackupList.rejected, (state, action) => {
       state.loading.updatingCount = Math.max(0, state.loading.updatingCount - 1);
