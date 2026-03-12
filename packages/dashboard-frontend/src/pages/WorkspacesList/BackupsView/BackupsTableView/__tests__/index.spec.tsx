@@ -339,6 +339,39 @@ describe('BackupsTableView', () => {
       const workspaceNames = screen.getAllByTestId('backup-workspace-name');
       expect(workspaceNames[0]).toHaveTextContent('my-workspace');
     });
+
+    test('should sort backups with empty timestamps without crashing (UNAVAILABLE backups)', () => {
+      // Arrange: mix of valid and empty timestamps
+      const backupsWithEmptyTs: BackupItem[] = [
+        {
+          ...mockBackups[0],
+          workspaceName: 'ws-a',
+          timestamp: '2026-02-10T12:00:00Z',
+          imageUrl: 'img-a',
+        },
+        {
+          ...mockBackups[0],
+          workspaceName: 'ws-b',
+          timestamp: '',
+          imageUrl: 'img-b',
+        },
+        {
+          ...mockBackups[0],
+          workspaceName: 'ws-c',
+          timestamp: '2026-02-09T12:00:00Z',
+          imageUrl: 'img-c',
+        },
+      ];
+
+      // Act: render — should not throw; getSortedBackups is called during render
+      expect(() => {
+        renderComponent(backupsWithEmptyTs);
+      }).not.toThrow();
+
+      // Assert: all three rows rendered
+      const workspaceNames = screen.getAllByTestId('backup-workspace-name');
+      expect(workspaceNames).toHaveLength(3);
+    });
   });
 
   describe('formatBytes', () => {
