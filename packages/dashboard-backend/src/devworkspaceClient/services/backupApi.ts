@@ -23,6 +23,14 @@ import * as k8s from '@kubernetes/client-node';
 import { V1JobList } from '@kubernetes/client-node';
 
 import { dwoConfigName, dwoNamespace } from '@/constants/config';
+import {
+  DEVWORKSPACE_GROUP,
+  DEVWORKSPACE_OPERATOR_CONFIG_GROUP,
+  DEVWORKSPACE_OPERATOR_CONFIG_PLURAL,
+  DEVWORKSPACE_OPERATOR_CONFIG_VERSION,
+  DEVWORKSPACE_PLURAL,
+  DEVWORKSPACE_VERSION,
+} from '@/constants/k8s';
 import { createError } from '@/devworkspaceClient/services/helpers/createError';
 import {
   BatchV1API,
@@ -35,14 +43,6 @@ import {
 
 const BACKUP_CONFIG_ERROR_LABEL = 'BACKUP_CONFIG_ERROR';
 const BACKUP_STATUS_ERROR_LABEL = 'BACKUP_STATUS_ERROR';
-
-const DEVWORKSPACE_OPERATOR_CONFIG_GROUP = 'controller.devfile.io';
-const DEVWORKSPACE_OPERATOR_CONFIG_VERSION = 'v1alpha1';
-const DEVWORKSPACE_OPERATOR_CONFIG_PLURAL = 'devworkspaceoperatorconfigs';
-
-const DEVWORKSPACE_GROUP = 'workspace.devfile.io';
-const DEVWORKSPACE_VERSION = 'v1alpha2';
-const DEVWORKSPACE_PLURAL = 'devworkspaces';
 
 interface RegistryConfig {
   path?: string;

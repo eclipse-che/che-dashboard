@@ -23,6 +23,14 @@ import {
 import { CustomObjectsApi, KubeConfig } from '@kubernetes/client-node';
 
 import { backupRegistryTimeout, dwoConfigName, dwoNamespace } from '@/constants/config';
+import {
+  DEVWORKSPACE_GROUP,
+  DEVWORKSPACE_OPERATOR_CONFIG_GROUP,
+  DEVWORKSPACE_OPERATOR_CONFIG_PLURAL,
+  DEVWORKSPACE_OPERATOR_CONFIG_VERSION,
+  DEVWORKSPACE_PLURAL,
+  DEVWORKSPACE_VERSION,
+} from '@/constants/k8s';
 import { createError } from '@/devworkspaceClient/services/helpers/createError';
 import {
   createRegistryClient,
@@ -33,16 +41,6 @@ import {
   CoreV1API,
   prepareCoreV1API,
 } from '@/devworkspaceClient/services/helpers/prepareCoreV1API';
-
-// DevWorkspaceOperatorConfig constants
-const DWOC_GROUP = 'controller.devfile.io';
-const DWOC_VERSION = 'v1alpha1';
-const DWOC_PLURAL = 'devworkspaceoperatorconfigs';
-
-// DevWorkspace constants
-const DEVWORKSPACE_GROUP = 'workspace.devfile.io';
-const DEVWORKSPACE_VERSION = 'v1alpha2';
-const DEVWORKSPACE_PLURAL = 'devworkspaces';
 
 // ImageStream constants
 const IMAGESTREAM_GROUP = 'image.openshift.io';
@@ -178,10 +176,10 @@ export class RegistryApiService {
   private async getBackupRegistryPath(): Promise<{ registryPath: string; authSecret?: string }> {
     try {
       const response = await this.customObjectsApi.getNamespacedCustomObject({
-        group: DWOC_GROUP,
-        version: DWOC_VERSION,
+        group: DEVWORKSPACE_OPERATOR_CONFIG_GROUP,
+        version: DEVWORKSPACE_OPERATOR_CONFIG_VERSION,
         namespace: dwoNamespace,
-        plural: DWOC_PLURAL,
+        plural: DEVWORKSPACE_OPERATOR_CONFIG_PLURAL,
         name: dwoConfigName,
       });
 
