@@ -100,6 +100,21 @@ describe('ExternalRegistryRestoreForm', () => {
     );
   });
 
+  test('should correctly parse workspace name from deeply-nested URL path', async () => {
+    renderComponent();
+
+    const input = screen.getByLabelText('Backup image URL');
+    await userEvent.type(input, 'quay.io/org/sub/ns/my-workspace:latest');
+
+    const nameInput = screen.getByLabelText('Workspace name');
+    expect(nameInput).toHaveValue('my-workspace');
+
+    expect(mockOnValidationChange).toHaveBeenCalledWith(true, {
+      workspaceName: 'my-workspace',
+      imageUrl: 'quay.io/org/sub/ns/my-workspace:latest',
+    });
+  });
+
   test('should call onValidationChange(false) for invalid initialImageUrl', () => {
     renderComponent({ initialImageUrl: 'not-valid' });
 
