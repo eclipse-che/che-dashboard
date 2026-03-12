@@ -325,7 +325,7 @@ export class RegistryApiService {
       const registryType = detectRegistryType(registryPath);
       let registryClient: IExternalRegistryClient | undefined;
       if (registryType !== 'openshift-internal') {
-        const registryHost = registryPath.split('/')[0].split(':')[0];
+        const registryHost = registryPath.split('/')[0];
         const authHeader = authSecret
           ? await this.getRegistryCredentials(authSecret, registryHost)
           : '';

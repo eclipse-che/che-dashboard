@@ -728,6 +728,58 @@ describe('RegistryApiService', () => {
         expect.any(Function),
       );
     });
+
+    it('should use full host:port for auth lookup on non-standard port registry', async () => {
+      const portRegistryPath = 'myregistry.example.com:5000/my-org/backups';
+      const portRegistryHost = 'myregistry.example.com:5000';
+      const rawAuth = Buffer.from('user:pass').toString('base64');
+
+      mockCustomObjectsApi.getNamespacedCustomObject.mockResolvedValue({
+        kind: 'DevWorkspaceOperatorConfig',
+        config: {
+          workspace: {
+            backupCronJob: {
+              registry: { path: portRegistryPath, authSecret: 'registry-secret' },
+            },
+          },
+        },
+      });
+      mockCoreV1Api.readNamespacedSecret.mockResolvedValue({
+        data: {
+          '.dockerconfigjson': Buffer.from(
+            JSON.stringify({ auths: { [portRegistryHost]: { auth: rawAuth } } }),
+          ).toString('base64'),
+        },
+      });
+      mockCustomObjectsApi.listNamespacedCustomObject.mockResolvedValue({ items: [] });
+      mockHttpsGet.mockImplementation(
+        (_url: unknown, _opts: unknown, callback: (res: MockRes) => void) => {
+          const res: MockRes = {
+            statusCode: 200,
+            on: jest.fn((event: string, handler: (...args: unknown[]) => void) => {
+              if (event === 'data') handler(JSON.stringify({ repositories: [] }));
+              if (event === 'end') handler();
+              return res;
+            }),
+          };
+          callback(res);
+          return { on: jest.fn() };
+        },
+      );
+
+      await service.listBackupImages(namespace);
+
+      // Auth header must be Basic (found via host:port lookup), not empty
+      expect(mockHttpsGet).toHaveBeenCalledWith(
+        expect.stringContaining(`${portRegistryHost}/v2/_catalog`),
+        expect.objectContaining({
+          headers: expect.objectContaining({
+            Authorization: `Basic ${rawAuth}`,
+          }),
+        }),
+        expect.any(Function),
+      );
+    });
   });
 
   describe('Security Validations', () => {
