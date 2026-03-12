@@ -53,6 +53,7 @@ function getDefaultProps() {
     namespace: 'test-namespace',
     backups: [] as BackupItem[],
     isLoading: false,
+    hasEverFetched: true,
     error: undefined as string | undefined,
     backupSchedule: undefined as string | undefined,
     navigate: mockNavigate,
@@ -86,6 +87,13 @@ describe('BackupsView', () => {
       renderComponent({ isLoading: true });
 
       expect(screen.queryByTestId('backups-table-view')).toBeNull();
+    });
+
+    test('should show spinner when hasEverFetched is false', () => {
+      renderComponent({ isLoading: false, hasEverFetched: false, backups: [] });
+
+      expect(screen.getByTestId('backups-loading-spinner')).toBeTruthy();
+      expect(screen.queryByTestId('backups-empty-state')).toBeNull();
     });
   });
 

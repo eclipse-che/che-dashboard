@@ -33,6 +33,7 @@ import { fetchBackupConfig, fetchBackupList } from '@/store/Backups/actions';
 import {
   selectBackupSchedule,
   selectBackupsError,
+  selectHasEverFetchedBackupList,
   selectIsUpdatingBackups,
   selectNamespaceBackups,
 } from '@/store/Backups/selectors';
@@ -74,9 +75,10 @@ export class BackupsView extends React.PureComponent<Props> {
   }
 
   public render(): React.ReactElement {
-    const { isLoading, error, backups, namespace, navigate, backupSchedule } = this.props;
+    const { isLoading, hasEverFetched, error, backups, namespace, navigate, backupSchedule } =
+      this.props;
 
-    if (isLoading) {
+    if (isLoading || !hasEverFetched) {
       return this.renderLoading();
     }
 
@@ -120,6 +122,7 @@ const mapStateToProps = (state: RootState) => {
     namespace,
     backups: selectNamespaceBackups(state, namespace),
     isLoading: selectIsUpdatingBackups(state),
+    hasEverFetched: selectHasEverFetchedBackupList(state),
     error: selectBackupsError(state),
     backupSchedule: selectBackupSchedule(state),
   };

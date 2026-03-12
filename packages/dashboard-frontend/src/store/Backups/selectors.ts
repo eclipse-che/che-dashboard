@@ -54,3 +54,8 @@ export const selectIsUpdatingBackups = createSelector(
   selectBackupsState,
   state => state.loading.updatingCount > 0,
 );
+
+export const selectHasEverFetchedBackupList = createSelector(
+  selectBackupsState,
+  state => state.hasEverFetchedList,
+);

@@ -35,6 +35,7 @@ describe('Backups, reducer', () => {
         configLoadingCount: 0,
       },
       error: undefined,
+      hasEverFetchedList: false,
     });
   });
 
@@ -106,6 +107,7 @@ describe('Backups, reducer', () => {
           configLoadingCount: 0,
         },
         error: undefined,
+        hasEverFetchedList: false,
       };
 
       expect(testState.byWorkspace['workspace-uid-1'].status).toBe(BackupStatus.SUCCESS);
@@ -133,6 +135,7 @@ describe('Backups, reducer', () => {
           configLoadingCount: 0,
         },
         error: undefined,
+        hasEverFetchedList: false,
       };
 
       expect(testState.byNamespace['user-che']).toHaveLength(1);

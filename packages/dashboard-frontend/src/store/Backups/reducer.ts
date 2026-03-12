@@ -46,6 +46,8 @@ export interface State {
   loading: LoadingState;
   /** Error message if any operation failed */
   error: string | undefined;
+  /** Whether fetchBackupList has ever completed (fulfilled or rejected) */
+  hasEverFetchedList: boolean;
 }
 
 /**
@@ -61,6 +63,7 @@ export const unloadedState: State = {
     configLoadingCount: 0,
   },
   error: undefined,
+  hasEverFetchedList: false,
 };
 
 /**
@@ -111,9 +114,11 @@ export const reducer = createReducer(unloadedState, builder =>
       // Defensive guard: ensure payload is an array regardless of what the API returned
       state.byNamespace[namespace] = Array.isArray(action.payload) ? action.payload : [];
       state.loading.updatingCount = Math.max(0, state.loading.updatingCount - 1);
+      state.hasEverFetchedList = true;
     })
     .addCase(fetchBackupList.rejected, (state, action) => {
       state.loading.updatingCount = Math.max(0, state.loading.updatingCount - 1);
+      state.hasEverFetchedList = true;
       state.error = action.payload;
     })
 
