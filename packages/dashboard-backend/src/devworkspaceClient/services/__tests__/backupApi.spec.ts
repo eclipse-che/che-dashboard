@@ -343,6 +343,22 @@ describe('BackupApiService', () => {
       expect(result.status).toBe(BackupStatus.SUCCESS);
     });
 
+    it('should cache DWOC config and not re-fetch within TTL', async () => {
+      // Set up two full rounds of mocks: operator config + DevWorkspace for each call
+      mockCustomObjectAPI.getNamespacedCustomObject
+        .mockResolvedValueOnce(mockOperatorConfig) // 1st call: operator config (call 1)
+        .mockResolvedValueOnce(mockDevWorkspace({})) // 2nd call: DevWorkspace (call 1)
+        .mockResolvedValueOnce(mockDevWorkspace({})); // 3rd call: DevWorkspace (call 2) — no operator config fetch
+
+      await backupApiService.getWorkspaceBackupStatus(namespace, workspaceName);
+      await backupApiService.getWorkspaceBackupStatus(namespace, workspaceName);
+
+      // getNamespacedCustomObject should be called 3 times total:
+      // 1st invocation: operator config + DevWorkspace = 2 calls
+      // 2nd invocation: DevWorkspace only = 1 call (operator config cached)
+      expect(mockCustomObjectAPI.getNamespacedCustomObject).toHaveBeenCalledTimes(3);
+    });
+
     it('should return undefined backupImageUrl when registry is not configured', async () => {
       const operatorConfigNoRegistry = {
         kind: 'DevWorkspaceOperatorConfig',
