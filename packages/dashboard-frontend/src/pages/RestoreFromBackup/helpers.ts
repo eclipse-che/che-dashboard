@@ -16,15 +16,9 @@ import { ValidatedOptions } from '@patternfly/react-core';
 
 export type RestoreMode = 'default-registry' | 'external-registry';
 
-export type ValidationState = 'idle' | 'validating' | 'valid' | 'invalid';
+export type ValidationState = 'idle' | 'valid' | 'invalid';
 
 const WORKSPACE_NAME_PATTERN = /^[a-z0-9]([a-z0-9-]*[a-z0-9])?$/;
-
-// UX format validation — intentionally looser than BACKUP_IMAGE_URL_PATTERN in @eclipse-che/common,
-// which enforces strict SSRF-safe patterns for server-side use. This client-side pattern only
-// checks basic URL structure to give the user early feedback before the backend validates fully.
-export const IMAGE_URL_PATTERN =
-  /^[a-zA-Z0-9][a-zA-Z0-9._-]*(?::[0-9]+)?\/[a-zA-Z0-9._/-]+(?::[a-zA-Z0-9._-]+)?$/;
 
 export function sanitizeWorkspaceName(value: string): string {
   return value.toLowerCase().replace(/[^a-z0-9-]/g, '');
@@ -55,20 +49,4 @@ export function validateWorkspaceName(name: string): {
     };
   }
   return { validated: ValidatedOptions.success, error: '' };
-}
-
-export function validateImageUrlFormat(url: string): {
-  validated: ValidatedOptions;
-  error: string;
-} {
-  if (!url) {
-    return { validated: ValidatedOptions.default, error: '' };
-  }
-  if (!IMAGE_URL_PATTERN.test(url)) {
-    return {
-      validated: ValidatedOptions.error,
-      error: 'Invalid image URL format. Expected: registry-host/namespace/workspace-name:tag',
-    };
-  }
-  return { validated: ValidatedOptions.default, error: '' };
 }

@@ -51,7 +51,6 @@ describe('RegistryApiService', () => {
   const namespace = 'user-che';
   const workspaceName = 'my-workspace';
   const registryPath = 'image-registry.openshift-image-registry.svc:5000';
-  const imageUrl = `${registryPath}/${namespace}/${workspaceName}:${BACKUP_IMAGE_DEFAULT_TAG}`;
 
   // Minimal mock ImageStream shape — only what listImageStreams() uses
   const mockImageStream = {
@@ -731,38 +730,6 @@ describe('RegistryApiService', () => {
     });
   });
 
-  describe('validateBackupImage', () => {
-    it('should validate valid image URL successfully', async () => {
-      const result = await service.validateBackupImage(imageUrl);
-
-      expect(result.valid).toBe(true);
-      expect(result.accessible).toBe(true);
-      expect(result.metadata).toBeDefined();
-      expect(result.metadata?.workspaceName).toBe(workspaceName);
-      expect(result.metadata?.namespace).toBe(namespace);
-    });
-
-    it('should return invalid for malformed URL', async () => {
-      const result = await service.validateBackupImage('invalid-url');
-
-      expect(result.valid).toBe(false);
-      expect(result.accessible).toBe(false);
-      expect(result.error).toContain('Invalid image URL format');
-    });
-
-    it('should reject empty image URL', async () => {
-      await expect(service.validateBackupImage('')).rejects.toMatchObject({
-        name: BACKUP_ERROR_CODES.INVALID_IMAGE_URL,
-      });
-    });
-
-    it('should reject whitespace-only image URL', async () => {
-      await expect(service.validateBackupImage('   ')).rejects.toMatchObject({
-        name: BACKUP_ERROR_CODES.INVALID_IMAGE_URL,
-      });
-    });
-  });
-
   describe('Security Validations', () => {
     it('should reject namespace starting with hyphen', async () => {
       await expect(service.listBackupImages('-invalid')).rejects.toMatchObject({
@@ -823,12 +790,6 @@ describe('RegistryApiService', () => {
         name: BACKUP_ERROR_CODES.REGISTRY_API_ERROR,
       });
     }, 30000);
-
-    it('should reject whitespace-only image URL for validateBackupImage', async () => {
-      await expect(service.validateBackupImage('   ')).rejects.toMatchObject({
-        name: BACKUP_ERROR_CODES.INVALID_IMAGE_URL,
-      });
-    });
   });
 
   describe('Data Validation', () => {

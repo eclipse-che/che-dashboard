@@ -19,7 +19,6 @@ import {
   fetchBackupConfig,
   fetchBackupList,
   fetchWorkspaceBackupStatus,
-  validateBackupImage,
 } from '@/store/Backups/actions';
 
 interface BackupsByWorkspace {
@@ -33,7 +32,6 @@ interface BackupsByNamespace {
 interface LoadingState {
   loadingCount: number;
   updatingCount: number;
-  validatingCount: number;
   configLoadingCount: number;
 }
 
@@ -60,7 +58,6 @@ export const unloadedState: State = {
   loading: {
     loadingCount: 0,
     updatingCount: 0,
-    validatingCount: 0,
     configLoadingCount: 0,
   },
   error: undefined,
@@ -73,7 +70,6 @@ export const unloadedState: State = {
  * - fetchBackupConfig: Fetches cluster-wide backup configuration
  * - fetchWorkspaceBackupStatus: Fetches backup status for a specific workspace
  * - fetchBackupList: Lists backup images for a namespace
- * - validateBackupImage: Validates a backup image URL
  */
 export const reducer = createReducer(unloadedState, builder =>
   builder
@@ -118,19 +114,6 @@ export const reducer = createReducer(unloadedState, builder =>
     })
     .addCase(fetchBackupList.rejected, (state, action) => {
       state.loading.updatingCount = Math.max(0, state.loading.updatingCount - 1);
-      state.error = action.payload;
-    })
-
-    // validateBackupImage handlers
-    .addCase(validateBackupImage.pending, state => {
-      state.loading.validatingCount += 1;
-      state.error = undefined;
-    })
-    .addCase(validateBackupImage.fulfilled, state => {
-      state.loading.validatingCount = Math.max(0, state.loading.validatingCount - 1);
-    })
-    .addCase(validateBackupImage.rejected, (state, action) => {
-      state.loading.validatingCount = Math.max(0, state.loading.validatingCount - 1);
       state.error = action.payload;
     })
 

@@ -24,11 +24,9 @@ jest.mock('@/services/kubeclient/kubeConfigProvider');
 
 // Mock RegistryApiService
 const mockListBackupImages = jest.fn();
-const mockValidateBackupImage = jest.fn();
 jest.mock('@/devworkspaceClient/services/registryApi', () => ({
   RegistryApiService: jest.fn().mockImplementation(() => ({
     listBackupImages: mockListBackupImages,
-    validateBackupImage: mockValidateBackupImage,
   })),
 }));
 
@@ -40,10 +38,6 @@ describe('Route Registration Integration Tests', () => {
     mockListBackupImages.mockResolvedValue({
       items: [],
       total: 0,
-    });
-
-    mockValidateBackupImage.mockResolvedValue({
-      valid: true,
     });
   };
 
@@ -77,16 +71,6 @@ describe('Route Registration Integration Tests', () => {
       expect(res.statusCode).toBeLessThan(500);
       expect(res.statusCode).not.toBe(404);
     });
-
-    it('should register validate backup route and be accessible', async () => {
-      const res = await app
-        .inject()
-        .post(`${baseApiPath}/namespace/${namespace}/backups/validate`)
-        .payload({ imageUrl: 'quay.io/test/backup:latest' });
-
-      expect(res.statusCode).toBeLessThan(500);
-      expect(res.statusCode).not.toBe(404);
-    });
   });
 
   describe('Route Conflicts', () => {
@@ -103,47 +87,11 @@ describe('Route Registration Integration Tests', () => {
       expect(res.statusCode).toBeLessThan(500);
       expect(res.statusCode).not.toBe(404);
     });
-
-    it('should properly differentiate between backup routes', async () => {
-      const listRes = await app.inject().get(`${baseApiPath}/namespace/${namespace}/backups`);
-
-      const validateRes = await app
-        .inject()
-        .post(`${baseApiPath}/namespace/${namespace}/backups/validate`)
-        .payload({ imageUrl: 'test-url' });
-
-      expect(listRes.statusCode).toBeLessThan(500);
-      expect(validateRes.statusCode).toBeLessThan(500);
-      expect(listRes.statusCode).not.toBe(404);
-      expect(validateRes.statusCode).not.toBe(404);
-    });
-  });
-
-  describe('Error Handling Middleware', () => {
-    it('should handle validation errors in backup validate route', async () => {
-      const res = await app
-        .inject()
-        .post(`${baseApiPath}/namespace/${namespace}/backups/validate`)
-        .payload({ imageUrl: '' });
-
-      expect(res.statusCode).toEqual(400);
-      expect(res.json()).toHaveProperty('message');
-    });
   });
 
   describe('CORS Headers', () => {
     it('should apply CORS headers to backup list route', async () => {
       const res = await app.inject().get(`${baseApiPath}/namespace/${namespace}/backups`);
-
-      expect(res.headers).toBeDefined();
-      expect(res.statusCode).toBeLessThan(500);
-    });
-
-    it('should apply CORS headers to POST backup routes', async () => {
-      const res = await app
-        .inject()
-        .post(`${baseApiPath}/namespace/${namespace}/backups/validate`)
-        .payload({ imageUrl: 'test-url' });
 
       expect(res.headers).toBeDefined();
       expect(res.statusCode).toBeLessThan(500);
@@ -183,12 +131,6 @@ describe('Route Registration Integration Tests', () => {
         .inject()
         .post(`${baseApiPath}/namespace/${namespace}/backups`)
         .payload({});
-
-      expect([404, 405]).toContain(res.statusCode);
-    });
-
-    it('should reject GET to POST-only backup validate route', async () => {
-      const res = await app.inject().get(`${baseApiPath}/namespace/${namespace}/backups/validate`);
 
       expect([404, 405]).toContain(res.statusCode);
     });
@@ -248,12 +190,6 @@ describe('Route Registration Integration Tests', () => {
       expect(routes).toContain('/backup-status');
       // Note: 'backups' path is factored out character-by-character in printRoutes() tree
       // visualization, so we verify it via actual route calls in other tests
-    });
-
-    it('should list validate backup route', () => {
-      const routes = app.printRoutes();
-
-      expect(routes).toContain('validate');
     });
   });
 });

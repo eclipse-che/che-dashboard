@@ -24,7 +24,6 @@ type Props = {
   onDefaultRegistryValidationChange: (isValid: boolean, data: unknown) => void;
   initialBackupImageUrl?: string;
   initialExternalImageUrl?: string;
-  onValidateImage: (imageUrl: string) => Promise<unknown>;
   onExternalRegistryValidationChange: (isValid: boolean, data: unknown) => void;
   actionButton: React.ReactNode;
 };

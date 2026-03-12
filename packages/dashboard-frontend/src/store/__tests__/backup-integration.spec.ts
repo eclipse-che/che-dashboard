@@ -60,7 +60,6 @@ describe('Backup Store Integration', () => {
       expect(state.backups.loading).toEqual({
         loadingCount: 0,
         updatingCount: 0,
-        validatingCount: 0,
         configLoadingCount: 0,
       });
       expect(state.backups.error).toBeUndefined();

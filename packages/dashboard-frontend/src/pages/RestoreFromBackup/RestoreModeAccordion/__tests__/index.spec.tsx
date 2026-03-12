@@ -40,7 +40,6 @@ jest.mock('@/pages/RestoreFromBackup/ExternalRegistryForm', () => ({
 const mockOnChange = jest.fn();
 const mockOnDefaultValidationChange = jest.fn();
 const mockOnExternalValidationChange = jest.fn();
-const mockOnValidateImage = jest.fn();
 
 const { renderComponent } = getComponentRenderer(getComponent);
 
@@ -157,7 +156,6 @@ function getComponent(options: ComponentOptions = {}) {
       onDefaultRegistryValidationChange={mockOnDefaultValidationChange}
       initialBackupImageUrl={options.initialBackupImageUrl}
       initialExternalImageUrl={options.initialExternalImageUrl}
-      onValidateImage={mockOnValidateImage}
       onExternalRegistryValidationChange={mockOnExternalValidationChange}
       actionButton={<button data-testid="test-action-button">Restore</button>}
     />

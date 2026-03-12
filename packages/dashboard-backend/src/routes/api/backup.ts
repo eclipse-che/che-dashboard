@@ -50,18 +50,6 @@ const backupListQuerySchema = {
   },
 } as const;
 
-interface IImageUrlBody {
-  imageUrl: string;
-}
-
-const imageUrlBodySchema = {
-  type: 'object',
-  required: ['imageUrl'],
-  properties: {
-    imageUrl: { type: 'string', minLength: 1 },
-  },
-} as const;
-
 function createRegistryService(request: FastifyRequest): RegistryApiService {
   const token = getToken(request);
   const kubeConfigProvider = new KubeConfigProvider();
@@ -102,21 +90,6 @@ export function registerBackupRoutes(instance: FastifyInstance) {
         } catch (error) {
           logger.error(error, 'Backup listing failed');
           return reply.code(500).send({ message: 'Unable to list backups' });
-        }
-      },
-    );
-
-    server.post(
-      `${baseApiPath}/namespace/:namespace/backups/validate`,
-      getSchema({ tags, params: namespacedSchema, body: imageUrlBodySchema }),
-      async function (request: FastifyRequest, reply: FastifyReply) {
-        const { imageUrl } = request.body as IImageUrlBody;
-        const service = createRegistryService(request);
-        try {
-          return await service.validateBackupImage(imageUrl);
-        } catch (error) {
-          logger.error(error, 'Backup image validation failed');
-          return reply.code(500).send({ message: 'Unable to validate backup image' });
         }
       },
     );

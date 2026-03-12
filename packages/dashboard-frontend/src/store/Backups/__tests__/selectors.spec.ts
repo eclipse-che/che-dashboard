@@ -214,7 +214,6 @@ describe('Backups selectors', () => {
           loading: {
             loadingCount: 2,
             updatingCount: 0,
-            validatingCount: 0,
             configLoadingCount: 0,
           },
         },
@@ -230,7 +229,6 @@ describe('Backups selectors', () => {
           loading: {
             loadingCount: 0,
             updatingCount: 1,
-            validatingCount: 0,
             configLoadingCount: 0,
           },
         },

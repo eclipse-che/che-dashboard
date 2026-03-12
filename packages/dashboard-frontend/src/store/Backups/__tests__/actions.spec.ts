@@ -20,7 +20,6 @@ import {
   fetchBackupConfig,
   fetchBackupList,
   fetchWorkspaceBackupStatus,
-  validateBackupImage,
 } from '@/store/Backups/actions';
 import { reducer, unloadedState } from '@/store/Backups/reducer';
 
@@ -337,103 +336,6 @@ describe('Backup Actions', () => {
 
       const state = store.getState().backups;
       expect(state.byNamespace[namespace]).toEqual(mockBackupItems);
-    });
-  });
-
-  describe('validateBackupImage', () => {
-    const namespace = 'user-che';
-    const imageUrl =
-      'image-registry.openshift-image-registry.svc:5000/user-che/my-workspace:latest';
-
-    it('should validate accessible backup image successfully', async () => {
-      const mockValidationResult = {
-        valid: true,
-        accessible: true,
-        metadata: {
-          workspaceName: 'my-workspace',
-          namespace: 'user-che',
-          timestamp: '2026-02-10T12:00:00.000Z',
-          sizeBytes: 1024000,
-        },
-      };
-
-      mockedBackupApi.validateBackupImage.mockResolvedValueOnce(mockValidationResult);
-
-      const store = createTestStore();
-      const result = await store.dispatch(validateBackupImage({ namespace, imageUrl }));
-
-      expect(mockedBackupApi.validateBackupImage).toHaveBeenCalledWith(namespace, imageUrl);
-      expect(result.type).toBe('backups/validateBackupImage/fulfilled');
-      expect(result.payload).toEqual(mockValidationResult);
-    });
-
-    it('should validate inaccessible backup image', async () => {
-      const mockValidationResult = {
-        valid: true,
-        accessible: false,
-      };
-
-      mockedBackupApi.validateBackupImage.mockResolvedValueOnce(mockValidationResult);
-
-      const store = createTestStore();
-      const result = await store.dispatch(validateBackupImage({ namespace, imageUrl }));
-
-      expect(result.payload).toEqual(mockValidationResult);
-      expect(result.type).toBe('backups/validateBackupImage/fulfilled');
-    });
-
-    it('should handle invalid backup image format', async () => {
-      const mockValidationResult = {
-        valid: false,
-        accessible: false,
-        error: 'Invalid image URL format',
-      };
-
-      mockedBackupApi.validateBackupImage.mockResolvedValueOnce(mockValidationResult);
-
-      const store = createTestStore();
-      const result = await store.dispatch(validateBackupImage({ namespace, imageUrl }));
-
-      expect(result.payload).toEqual(mockValidationResult);
-      expect(result.type).toBe('backups/validateBackupImage/fulfilled');
-    });
-
-    it('should handle API error', async () => {
-      mockedBackupApi.validateBackupImage.mockRejectedValueOnce(new Error('Image not found'));
-
-      const store = createTestStore();
-      const result = await store.dispatch(validateBackupImage({ namespace, imageUrl }));
-
-      expect(result.type).toBe('backups/validateBackupImage/rejected');
-      expect(result.payload).toBe('Image not found');
-    });
-
-    it('should handle error without message', async () => {
-      mockedBackupApi.validateBackupImage.mockRejectedValueOnce('unknown error');
-
-      const store = createTestStore();
-      const result = await store.dispatch(validateBackupImage({ namespace, imageUrl }));
-
-      expect(result.type).toBe('backups/validateBackupImage/rejected');
-      expect(result.payload).toBe('Failed to validate backup image');
-    });
-
-    it('should handle timeout result', async () => {
-      const mockValidationResult = {
-        valid: false,
-        accessible: false,
-        error: 'Registry query timed out while validating image',
-      };
-
-      mockedBackupApi.validateBackupImage.mockResolvedValueOnce(mockValidationResult);
-
-      const store = createTestStore();
-      const result = await store.dispatch(validateBackupImage({ namespace, imageUrl }));
-
-      expect(result.type).toBe('backups/validateBackupImage/fulfilled');
-      if (typeof result.payload === 'object' && 'error' in result.payload) {
-        expect(result.payload.error).toContain('timed out');
-      }
     });
   });
 });

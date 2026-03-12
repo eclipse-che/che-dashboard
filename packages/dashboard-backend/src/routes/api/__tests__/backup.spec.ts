@@ -32,12 +32,10 @@ const mockGetWorkspaceBackupStatus = jest.fn();
 
 // Mock RegistryApiService
 const mockListBackupImages = jest.fn();
-const mockValidateBackupImage = jest.fn();
 
 jest.mock('@/devworkspaceClient/services/registryApi', () => ({
   RegistryApiService: jest.fn().mockImplementation(() => ({
     listBackupImages: mockListBackupImages,
-    validateBackupImage: mockValidateBackupImage,
   })),
 }));
 
@@ -319,121 +317,6 @@ describe('Backup Routes', () => {
       mockListBackupImages.mockRejectedValue(apiError);
 
       const res = await app.inject().get(`${baseApiPath}/namespace/${namespace}/backups`);
-
-      expect(res.statusCode).toEqual(500);
-      const response = res.json();
-
-      expect(response.message).toBeDefined();
-    });
-  });
-
-  describe('POST /api/namespace/:namespace/backups/validate', () => {
-    const imageUrl =
-      'image-registry.openshift-image-registry.svc:5000/user-che/my-workspace:latest';
-
-    it('should validate accessible backup image', async () => {
-      const mockValidationResult = {
-        valid: true,
-        accessible: true,
-        metadata: {
-          workspaceName: 'my-workspace',
-          namespace: 'user-che',
-          timestamp: '2026-02-10T12:00:00.000Z',
-          sizeBytes: 1024000,
-        },
-      };
-
-      mockValidateBackupImage.mockResolvedValue(mockValidationResult);
-
-      const res = await app
-        .inject()
-        .post(`${baseApiPath}/namespace/${namespace}/backups/validate`)
-        .payload({ imageUrl });
-
-      expect(res.statusCode).toEqual(200);
-      const response = res.json();
-
-      expect(response).toEqual(mockValidationResult);
-      expect(response.valid).toBe(true);
-      expect(response.accessible).toBe(true);
-      expect(mockValidateBackupImage).toHaveBeenCalledWith(imageUrl);
-    });
-
-    it('should validate inaccessible backup image', async () => {
-      const mockValidationResult = {
-        valid: true,
-        accessible: false,
-      };
-
-      mockValidateBackupImage.mockResolvedValue(mockValidationResult);
-
-      const res = await app
-        .inject()
-        .post(`${baseApiPath}/namespace/${namespace}/backups/validate`)
-        .payload({ imageUrl });
-
-      expect(res.statusCode).toEqual(200);
-      const response = res.json();
-
-      expect(response.valid).toBe(true);
-      expect(response.accessible).toBe(false);
-      expect(response.metadata).toBeUndefined();
-    });
-
-    it('should handle invalid image URL format', async () => {
-      const mockValidationResult = {
-        valid: false,
-        accessible: false,
-        error: 'Invalid image URL format',
-      };
-
-      mockValidateBackupImage.mockResolvedValue(mockValidationResult);
-
-      const res = await app
-        .inject()
-        .post(`${baseApiPath}/namespace/${namespace}/backups/validate`)
-        .payload({ imageUrl: 'invalid-url' });
-
-      expect(res.statusCode).toEqual(200);
-      const response = res.json();
-
-      expect(response.valid).toBe(false);
-      expect(response.error).toContain('Invalid image URL format');
-    });
-
-    it('should reject empty imageUrl', async () => {
-      const res = await app
-        .inject()
-        .post(`${baseApiPath}/namespace/${namespace}/backups/validate`)
-        .payload({ imageUrl: '' });
-
-      expect(res.statusCode).toEqual(400);
-      const response = res.json();
-
-      expect(response.message).toContain('imageUrl');
-    });
-
-    it('should reject missing imageUrl', async () => {
-      const res = await app
-        .inject()
-        .post(`${baseApiPath}/namespace/${namespace}/backups/validate`)
-        .payload({});
-
-      expect(res.statusCode).toEqual(400);
-      const response = res.json();
-
-      expect(response.message).toContain('imageUrl');
-    });
-
-    it('should handle API errors gracefully', async () => {
-      const apiError = new Error('Registry query failed');
-
-      mockValidateBackupImage.mockRejectedValue(apiError);
-
-      const res = await app
-        .inject()
-        .post(`${baseApiPath}/namespace/${namespace}/backups/validate`)
-        .payload({ imageUrl });
 
       expect(res.statusCode).toEqual(500);
       const response = res.json();

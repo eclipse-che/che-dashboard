@@ -17,7 +17,6 @@ import React from 'react';
 type Props = {
   initialImageUrl?: string;
   existingWorkspaceNames: Set<string>;
-  onValidateImage: (imageUrl: string) => Promise<unknown>;
   onValidationChange: (isValid: boolean, data: unknown) => void;
   actionButton: React.ReactNode;
 };

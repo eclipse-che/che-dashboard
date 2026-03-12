@@ -15,10 +15,8 @@
 import {
   BACKUP_ERROR_CODES,
   BACKUP_IMAGE_DEFAULT_TAG,
-  BACKUP_IMAGE_URL_PATTERN,
   BackupItem,
   BackupStatus,
-  BackupValidationResult,
   DEVWORKSPACE_BACKUP_ANNOTATIONS,
   DEVWORKSPACE_BACKUP_LABELS,
 } from '@eclipse-che/common';
@@ -476,33 +474,5 @@ export class RegistryApiService {
         `Unable to list backup images in namespace '${namespace}'`,
       );
     }
-  }
-
-  /**
-   * Validates if a backup image URL is valid and parses its components.
-   */
-  async validateBackupImage(imageUrl: string): Promise<BackupValidationResult> {
-    if (!imageUrl || imageUrl.trim().length === 0) {
-      throw createError(
-        new Error('Empty image URL'),
-        BACKUP_ERROR_CODES.INVALID_IMAGE_URL,
-        'Image URL cannot be empty',
-      );
-    }
-
-    if (!BACKUP_IMAGE_URL_PATTERN.test(imageUrl)) {
-      return { valid: false, accessible: false, error: 'Invalid image URL format' };
-    }
-
-    // Parse: registry[:port]/namespace/workspaceName:tag
-    const parts = imageUrl.split('/');
-    const workspaceName = parts[parts.length - 1].split(':')[0];
-    const namespace = parts[parts.length - 2];
-
-    return {
-      valid: true,
-      accessible: true,
-      metadata: { workspaceName, namespace, timestamp: '', sizeBytes: 0 },
-    };
   }
 }

@@ -32,7 +32,6 @@ describe('Backups, reducer', () => {
       loading: {
         loadingCount: 0,
         updatingCount: 0,
-        validatingCount: 0,
         configLoadingCount: 0,
       },
       error: undefined,
@@ -55,10 +54,8 @@ describe('Backups, reducer', () => {
   it('should have properly typed loading state', () => {
     expect(initialState.loading).toHaveProperty('loadingCount');
     expect(initialState.loading).toHaveProperty('updatingCount');
-    expect(initialState.loading).toHaveProperty('validatingCount');
     expect(typeof initialState.loading.loadingCount).toBe('number');
     expect(typeof initialState.loading.updatingCount).toBe('number');
-    expect(typeof initialState.loading.validatingCount).toBe('number');
   });
 
   it('should initialize with empty byWorkspace map', () => {
@@ -78,7 +75,6 @@ describe('Backups, reducer', () => {
   it('should initialize with all loading states at zero', () => {
     expect(initialState.loading.loadingCount).toBe(0);
     expect(initialState.loading.updatingCount).toBe(0);
-    expect(initialState.loading.validatingCount).toBe(0);
   });
 
   describe('State structure validation', () => {
@@ -107,7 +103,6 @@ describe('Backups, reducer', () => {
         loading: {
           loadingCount: 0,
           updatingCount: 0,
-          validatingCount: 0,
           configLoadingCount: 0,
         },
         error: undefined,
@@ -135,7 +130,6 @@ describe('Backups, reducer', () => {
         loading: {
           loadingCount: 0,
           updatingCount: 0,
-          validatingCount: 0,
           configLoadingCount: 0,
         },
         error: undefined,

@@ -68,30 +68,6 @@ export interface BackupItem {
 }
 
 /**
- * Backup image validation result
- * Returned by POST /api/backup/validate-image
- */
-export interface BackupValidationResult {
-  /** Whether the image URL format is valid */
-  valid: boolean;
-  /** Whether the image is accessible from the cluster */
-  accessible: boolean;
-  /** Image metadata (if accessible) */
-  metadata?: {
-    /** Workspace name from image labels */
-    workspaceName: string;
-    /** Namespace from image labels */
-    namespace: string;
-    /** ISO 8601 timestamp from image labels */
-    timestamp: string;
-    /** Image size in bytes */
-    sizeBytes: number;
-  };
-  /** Error message if validation failed */
-  error?: string;
-}
-
-/**
  * Cluster backup configuration
  * Returned by GET /api/namespace/:namespace/backup-config
  */

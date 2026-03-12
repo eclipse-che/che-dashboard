@@ -15,15 +15,10 @@
 import { BackupStatus } from '@eclipse-che/common';
 import mockAxios from 'axios';
 
-import {
-  getWorkspaceBackupStatus,
-  listBackups,
-  validateBackupImage,
-} from '@/services/backend-client/backupApi';
+import { getWorkspaceBackupStatus, listBackups } from '@/services/backend-client/backupApi';
 
 describe('Backup API', () => {
   const mockGet = mockAxios.get as jest.Mock;
-  const mockPost = mockAxios.post as jest.Mock;
 
   const namespace = 'user-che';
   const workspaceName = 'my-workspace';
@@ -184,73 +179,6 @@ describe('Backup API', () => {
 
       await expect(listBackups(namespace)).rejects.toThrow(
         `Failed to list backups for namespace '${namespace}'`,
-      );
-    });
-  });
-
-  describe('validateBackupImage', () => {
-    it('should validate accessible backup image', async () => {
-      const mockValidationResult = {
-        valid: true,
-        accessible: true,
-        metadata: {
-          workspaceName: 'my-workspace',
-          namespace: 'user-che',
-          timestamp: '2026-02-10T12:00:00.000Z',
-          sizeBytes: 1024000,
-        },
-      };
-
-      mockPost.mockResolvedValueOnce({ data: mockValidationResult });
-
-      const result = await validateBackupImage(namespace, imageUrl);
-
-      expect(mockPost).toHaveBeenCalled();
-      expect(mockPost.mock.calls[0][0]).toBe(
-        `/dashboard/api/namespace/${namespace}/backups/validate`,
-      );
-      expect(mockPost.mock.calls[0][1]).toEqual({ imageUrl });
-      expect(result).toEqual(mockValidationResult);
-      expect(result.valid).toBe(true);
-      expect(result.accessible).toBe(true);
-    });
-
-    it('should validate inaccessible backup image', async () => {
-      const mockValidationResult = {
-        valid: true,
-        accessible: false,
-      };
-
-      mockPost.mockResolvedValueOnce({ data: mockValidationResult });
-
-      const result = await validateBackupImage(namespace, imageUrl);
-
-      expect(result.valid).toBe(true);
-      expect(result.accessible).toBe(false);
-      expect(result.metadata).toBeUndefined();
-    });
-
-    it('should handle invalid image URL format', async () => {
-      const mockValidationResult = {
-        valid: false,
-        accessible: false,
-        error: 'Invalid image URL format',
-      };
-
-      mockPost.mockResolvedValueOnce({ data: mockValidationResult });
-
-      const result = await validateBackupImage(namespace, 'invalid-url');
-
-      expect(result.valid).toBe(false);
-      expect(result.error).toContain('Invalid image URL format');
-    });
-
-    it('should throw error when API call fails', async () => {
-      const errorMessage = 'Registry query failed';
-      mockPost.mockRejectedValueOnce(new Error(errorMessage));
-
-      await expect(validateBackupImage(namespace, imageUrl)).rejects.toThrow(
-        'Failed to validate backup image',
       );
     });
   });

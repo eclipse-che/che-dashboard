@@ -620,73 +620,6 @@ describe('Backup API Integration Tests', () => {
   });
 
   // ========================================================================
-  // POST /api/namespace/:namespace/backups/validate
-  // Pure URL validation — no K8s API calls required
-  // ========================================================================
-  describe('POST validate - Integration', () => {
-    const imageUrl =
-      'image-registry.openshift-image-registry.svc:5000/user-che/my-workspace:latest';
-
-    it('should validate a well-formed backup image URL', async () => {
-      const res = await app
-        .inject()
-        .post(`${baseApiPath}/namespace/${namespace}/backups/validate`)
-        .payload({ imageUrl });
-
-      expect(res.statusCode).toEqual(200);
-      const response = res.json();
-
-      expect(response.valid).toBe(true);
-      expect(response.accessible).toBe(true);
-      expect(response.metadata).toBeDefined();
-      expect(response.metadata.workspaceName).toBe('my-workspace');
-      expect(response.metadata.namespace).toBe('user-che');
-    });
-
-    it('should return valid=false for a malformed URL', async () => {
-      const res = await app
-        .inject()
-        .post(`${baseApiPath}/namespace/${namespace}/backups/validate`)
-        .payload({ imageUrl: 'not-a-valid-backup-url' });
-
-      expect(res.statusCode).toEqual(200);
-      const response = res.json();
-
-      expect(response.valid).toBe(false);
-      expect(response.accessible).toBe(false);
-      expect(response.error).toBeDefined();
-    });
-
-    it('should reject request with empty imageUrl', async () => {
-      const res = await app
-        .inject()
-        .post(`${baseApiPath}/namespace/${namespace}/backups/validate`)
-        .payload({ imageUrl: '' });
-
-      expect(res.statusCode).toEqual(400);
-    });
-
-    it('should reject request with missing imageUrl', async () => {
-      const res = await app
-        .inject()
-        .post(`${baseApiPath}/namespace/${namespace}/backups/validate`)
-        .payload({});
-
-      expect(res.statusCode).toEqual(400);
-    });
-
-    it('should return 500 for whitespace-only imageUrl', async () => {
-      // Passes schema validation (minLength: 1) but service rejects the trimmed empty string
-      const res = await app
-        .inject()
-        .post(`${baseApiPath}/namespace/${namespace}/backups/validate`)
-        .payload({ imageUrl: '   ' });
-
-      expect(res.statusCode).toEqual(500);
-    });
-  });
-
-  // ========================================================================
   // GET /api/namespace/:namespace/backups - quay.io external registry
   // ========================================================================
   describe('GET backups - quay.io external registry', () => {
@@ -831,18 +764,6 @@ describe('Backup API Integration Tests', () => {
       const res = await app.inject().get(`${baseApiPath}/namespace/${namespace}/backups`);
 
       expect(res.statusCode).toEqual(500);
-      const response = res.json();
-
-      expect(response).toHaveProperty('message');
-    });
-
-    it('should return consistent error format for validate 400', async () => {
-      const res = await app
-        .inject()
-        .post(`${baseApiPath}/namespace/${namespace}/backups/validate`)
-        .payload({});
-
-      expect(res.statusCode).toEqual(400);
       const response = res.json();
 
       expect(response).toHaveProperty('message');
