@@ -17,7 +17,12 @@ import { Form, ValidatedOptions } from '@patternfly/react-core';
 import React, { useState } from 'react';
 
 import { ImageUrlField } from '@/pages/RestoreFromBackup/ExternalRegistryForm/ImageUrlField';
-import { sanitizeImageUrl, ValidationState } from '@/pages/RestoreFromBackup/helpers';
+import {
+  sanitizeImageUrl,
+  sanitizeWorkspaceName,
+  validateWorkspaceName,
+  ValidationState,
+} from '@/pages/RestoreFromBackup/helpers';
 import { useRestoreFormValidation } from '@/pages/RestoreFromBackup/useRestoreFormValidation';
 import { WorkspaceNameField } from '@/pages/RestoreFromBackup/WorkspaceNameField';
 
@@ -120,8 +125,9 @@ export const ExternalRegistryRestoreForm: React.FC<Props> = ({
 
   const wrappedHandleWorkspaceNameChange = (value: string) => {
     handleWorkspaceNameChange(value);
-    const sanitized = value.toLowerCase().replace(/[^a-z0-9-]/g, '');
-    const wsIsValid = sanitized.length > 0 && /^[a-z0-9]([a-z0-9-]*[a-z0-9])?$/.test(sanitized);
+    const sanitized = sanitizeWorkspaceName(value);
+    const { validated } = validateWorkspaceName(sanitized);
+    const wsIsValid = validated === ValidatedOptions.success;
     const isValid = validationState === 'valid' && wsIsValid;
     onValidationChange(isValid, isValid ? { workspaceName: sanitized, imageUrl } : null);
   };
