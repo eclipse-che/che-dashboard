@@ -361,6 +361,8 @@ describe('RestoreFromBackupPage', () => {
           'restored-as-new',
           'image-registry.openshift-image-registry.svc:5000/user-namespace/old-workspace:latest',
           'che-incubator/che-code/latest',
+          undefined,
+          undefined,
         );
       });
     });
@@ -598,6 +600,8 @@ describe('RestoreFromBackupPage', () => {
           'my-workspace',
           '',
           'che-incubator/che-code/latest',
+          undefined,
+          undefined,
         );
       });
 

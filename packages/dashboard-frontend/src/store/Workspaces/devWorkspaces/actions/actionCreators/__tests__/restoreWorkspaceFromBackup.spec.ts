@@ -50,7 +50,17 @@ const mockTemplate = {
   apiVersion: 'workspace.devfile.io/v1alpha2',
   kind: 'DevWorkspaceTemplate',
   metadata: { name: 'che-code', namespace: '' },
-  spec: { components: [] },
+  spec: {
+    components: [
+      {
+        name: 'che-code-runtime',
+        container: {
+          image: 'quay.io/devspaces/code:latest',
+          env: [],
+        },
+      },
+    ],
+  },
 } as unknown as devfileApi.DevWorkspaceTemplate;
 
 describe('restoreWorkspaceFromBackup', () => {
@@ -185,5 +195,74 @@ describe('restoreWorkspaceFromBackup', () => {
         metadata: expect.objectContaining({ name: 'my-custom-name' }),
       }),
     );
+  });
+
+  test('should apply memoryLimit and cpuLimit to DevWorkspaceTemplate containers', async () => {
+    const memoryLimitBytes = 4 * 1024 * 1024 * 1024; // 4Gi in bytes
+    const cpuLimitCores = 2;
+
+    await store.dispatch(
+      restoreWorkspaceFromBackup(
+        'user-ns',
+        'my-ws',
+        'quay.io/user-ns/my-ws:latest',
+        'che-incubator/che-code/latest',
+        memoryLimitBytes,
+        cpuLimitCores,
+      ),
+    );
+
+    expect(DwtApi.createTemplate).toHaveBeenCalledWith(
+      expect.objectContaining({
+        spec: expect.objectContaining({
+          components: expect.arrayContaining([
+            expect.objectContaining({
+              container: expect.objectContaining({
+                memoryLimit: '4Gi',
+                cpuLimit: '2',
+              }),
+            }),
+          ]),
+        }),
+      }),
+    );
+  });
+
+  test('should not modify container resource limits when memoryLimit and cpuLimit are undefined', async () => {
+    const freshTemplate = {
+      apiVersion: 'workspace.devfile.io/v1alpha2',
+      kind: 'DevWorkspaceTemplate',
+      metadata: { name: 'che-code', namespace: '' },
+      spec: {
+        components: [
+          {
+            name: 'che-code-runtime',
+            container: {
+              image: 'quay.io/devspaces/code:latest',
+              env: [],
+            },
+          },
+        ],
+      },
+    } as unknown as devfileApi.DevWorkspaceTemplate;
+
+    (resourcesLoader.loadResourcesContent as jest.Mock).mockReturnValue([
+      mockDevWorkspace,
+      freshTemplate,
+    ]);
+
+    await store.dispatch(
+      restoreWorkspaceFromBackup(
+        'user-ns',
+        'my-ws',
+        'quay.io/user-ns/my-ws:latest',
+        'che-incubator/che-code/latest',
+      ),
+    );
+
+    const templateArg = (DwtApi.createTemplate as jest.Mock).mock.calls[0][0];
+    const container = templateArg.spec.components[0].container;
+    expect(container.memoryLimit).toBeUndefined();
+    expect(container.cpuLimit).toBeUndefined();
   });
 });

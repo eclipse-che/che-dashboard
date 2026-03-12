@@ -33,6 +33,7 @@ import { ConfirmationModal } from '@/pages/RestoreFromBackup/ConfirmationModal';
 import { DefaultRegistryRestoreData } from '@/pages/RestoreFromBackup/DefaultRegistryForm';
 import { ExternalRegistryRestoreData } from '@/pages/RestoreFromBackup/ExternalRegistryForm';
 import { RestoreMode } from '@/pages/RestoreFromBackup/helpers';
+import { ResourceLimitsPanel } from '@/pages/RestoreFromBackup/ResourceLimitsPanel';
 import { RestoreModeAccordion } from '@/pages/RestoreFromBackup/RestoreModeAccordion';
 import { buildIdeLoaderLocation } from '@/services/helpers/location';
 import { Workspace } from '@/services/workspace-adapter';
@@ -73,6 +74,8 @@ export const RestoreFromBackupPage: React.FC<Props> = props => {
       : 'default-registry';
 
   const [editorDefinition, setEditorDefinition] = useState<string | undefined>(undefined);
+  const [memoryLimit, setMemoryLimit] = useState<number>(0);
+  const [cpuLimit, setCpuLimit] = useState<number>(0);
   const [restoreMode, setRestoreMode] = useState<RestoreMode>(initialMode);
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -124,7 +127,14 @@ export const RestoreFromBackupPage: React.FC<Props> = props => {
       const namespace = defaultNamespace.name;
       const resolvedEditorId = editorDefinition ?? defaultEditor;
 
-      await props.restoreFromBackup(namespace, workspaceName, imageUrl, resolvedEditorId);
+      await props.restoreFromBackup(
+        namespace,
+        workspaceName,
+        imageUrl,
+        resolvedEditorId,
+        memoryLimit > 0 ? memoryLimit : undefined,
+        cpuLimit > 0 ? cpuLimit : undefined,
+      );
 
       const location = buildIdeLoaderLocation({ namespace, name: workspaceName } as Workspace);
       navigate(location);
@@ -134,7 +144,15 @@ export const RestoreFromBackupPage: React.FC<Props> = props => {
       setSubmitError(errorMessage);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [restoreData, defaultNamespace.name, editorDefinition, defaultEditor, navigate]);
+  }, [
+    restoreData,
+    defaultNamespace.name,
+    editorDefinition,
+    defaultEditor,
+    memoryLimit,
+    cpuLimit,
+    navigate,
+  ]);
 
   const handleRestoreClick = useCallback(() => {
     if (restoreData && existingBackupNames.has(restoreData.workspaceName)) {
@@ -167,10 +185,6 @@ export const RestoreFromBackupPage: React.FC<Props> = props => {
       <Divider />
 
       <PageSection variant={PageSectionVariants.default}>
-        <EditorSelector defaultEditorId={defaultEditor} onSelect={handleEditorSelect} />
-
-        <Spacer />
-
         {submitError && (
           <Alert
             variant={AlertVariant.danger}
@@ -182,20 +196,32 @@ export const RestoreFromBackupPage: React.FC<Props> = props => {
           </Alert>
         )}
 
-        <div data-testid="restore-from-backup-page">
-          <RestoreModeAccordion
-            restoreMode={restoreMode}
-            onChange={handleModeChange}
-            backups={backups}
-            existingWorkspaceNames={existingWorkspaceNames}
-            existingBackupNames={existingBackupNames}
-            onDefaultRegistryValidationChange={handleValidationChange}
-            initialBackupImageUrl={initialBackupImageUrl}
-            initialExternalImageUrl={initialExternalImageUrl}
-            onExternalRegistryValidationChange={handleValidationChange}
-            actionButton={actionButton}
-          />
-        </div>
+        <RestoreModeAccordion
+          data-testid="restore-from-backup-page"
+          restoreMode={restoreMode}
+          onChange={handleModeChange}
+          backups={backups}
+          existingWorkspaceNames={existingWorkspaceNames}
+          existingBackupNames={existingBackupNames}
+          onDefaultRegistryValidationChange={handleValidationChange}
+          initialBackupImageUrl={initialBackupImageUrl}
+          initialExternalImageUrl={initialExternalImageUrl}
+          onExternalRegistryValidationChange={handleValidationChange}
+          actionButton={actionButton}
+        />
+
+        <Spacer />
+
+        <ResourceLimitsPanel
+          memoryLimit={memoryLimit}
+          cpuLimit={cpuLimit}
+          onMemoryLimitChange={setMemoryLimit}
+          onCpuLimitChange={setCpuLimit}
+        />
+
+        <Spacer />
+
+        <EditorSelector defaultEditorId={defaultEditor} onSelect={handleEditorSelect} />
       </PageSection>
 
       {restoreData && (
@@ -240,6 +266,8 @@ const mapDispatchToProps = (dispatch: AppDispatch) => ({
     workspaceName: string,
     backupImageUrl: string,
     editorId: string,
+    memoryLimit?: number,
+    cpuLimit?: number,
   ) =>
     dispatch(
       workspacesActionCreators.restoreFromBackup(
@@ -247,6 +275,8 @@ const mapDispatchToProps = (dispatch: AppDispatch) => ({
         workspaceName,
         backupImageUrl,
         editorId,
+        memoryLimit,
+        cpuLimit,
       ),
     ),
 });
