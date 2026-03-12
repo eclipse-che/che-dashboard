@@ -39,8 +39,10 @@ export const fetchBackupConfig = createAsyncThunk<
   async ({ namespace }, { rejectWithValue }) => {
     try {
       return await BackupApi.getBackupConfig(namespace);
-    } catch (error: any) {
-      return rejectWithValue(error.message || 'Failed to fetch backup configuration');
+    } catch (error: unknown) {
+      return rejectWithValue(
+        error instanceof Error ? error.message : 'Failed to fetch backup configuration',
+      );
     }
   },
   {
@@ -72,8 +74,10 @@ export const fetchWorkspaceBackupStatus = createAsyncThunk<
   async ({ namespace, workspaceName }, { rejectWithValue }) => {
     try {
       return await BackupApi.getWorkspaceBackupStatus(namespace, workspaceName);
-    } catch (error: any) {
-      return rejectWithValue(error.message || 'Failed to fetch backup status');
+    } catch (error: unknown) {
+      return rejectWithValue(
+        error instanceof Error ? error.message : 'Failed to fetch backup status',
+      );
     }
   },
 );
@@ -96,8 +100,10 @@ export const fetchBackupList = createAsyncThunk<
   async ({ namespace, workspaceName }, { rejectWithValue }) => {
     try {
       return await BackupApi.listBackups(namespace, workspaceName);
-    } catch (error: any) {
-      return rejectWithValue(error.message || 'Failed to fetch backup list');
+    } catch (error: unknown) {
+      return rejectWithValue(
+        error instanceof Error ? error.message : 'Failed to fetch backup list',
+      );
     }
   },
   {
