@@ -58,7 +58,7 @@ export interface BackupItem {
   /** Full URL to the backup image in registry */
   imageUrl: string;
   /** ISO 8601 timestamp from image labels */
-  timestamp: string;
+  timestamp: string | undefined;
   /** Backup image size in bytes */
   sizeBytes: number;
   /** Whether the workspace still exists (false if deleted) */

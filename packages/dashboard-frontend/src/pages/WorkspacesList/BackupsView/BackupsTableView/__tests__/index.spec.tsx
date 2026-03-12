@@ -352,7 +352,7 @@ describe('BackupsTableView', () => {
         {
           ...mockBackups[0],
           workspaceName: 'ws-b',
-          timestamp: '',
+          timestamp: undefined,
           imageUrl: 'img-b',
         },
         {

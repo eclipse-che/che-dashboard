@@ -51,7 +51,7 @@ const IMAGESTREAM_VERSION = 'v1';
 interface IBackupImage {
   workspaceName: string;
   imageUrl: string;
-  timestamp: string;
+  timestamp: string | undefined;
   sizeBytes: number;
   labels: Record<string, string>;
 }
@@ -147,7 +147,7 @@ export class RegistryApiService {
         results.push({
           workspaceName,
           imageUrl: '',
-          timestamp: '',
+          timestamp: undefined,
           sizeBytes: 0,
           labels: {
             [DEVWORKSPACE_BACKUP_ANNOTATIONS.LAST_BACKUP_SUCCESSFUL]: BackupStatus.UNAVAILABLE,
@@ -415,7 +415,7 @@ export class RegistryApiService {
           backupMap.set(imageUrl, {
             workspaceName: wsName,
             imageUrl,
-            timestamp: dwAnnotations[DEVWORKSPACE_BACKUP_ANNOTATIONS.LAST_BACKUP_FINISHED_AT] ?? '',
+            timestamp: dwAnnotations[DEVWORKSPACE_BACKUP_ANNOTATIONS.LAST_BACKUP_FINISHED_AT],
             sizeBytes: 0,
             workspaceExists: allWorkspaceNames.has(wsName),
             labels: {
@@ -460,7 +460,7 @@ export class RegistryApiService {
       // timestamp (DW annotation). Filters out UNAVAILABLE ImageStream entries where no
       // backup has ever completed and no annotation exists — pure initialization artifacts.
       const backupsWithEvidence = Array.from(backupMap.values()).filter(
-        backup => backup.imageUrl !== '' || backup.timestamp !== '',
+        backup => backup.imageUrl !== '' || backup.timestamp !== undefined,
       );
       const filteredBackups = workspaceName
         ? backupsWithEvidence.filter(backup => backup.workspaceName === workspaceName)

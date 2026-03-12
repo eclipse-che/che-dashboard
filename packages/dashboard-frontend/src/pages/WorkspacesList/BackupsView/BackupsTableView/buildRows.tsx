@@ -135,7 +135,7 @@ function renderStatus(backup: BackupItem): React.ReactElement {
     <span data-testid="backup-status">
       <BackupStatusBadge
         status={deriveBackupStatus(backup)}
-        lastBackupTime={backup.timestamp || undefined}
+        lastBackupTime={backup.timestamp}
         backupImageUrl={backup.imageUrl || undefined}
       />
     </span>

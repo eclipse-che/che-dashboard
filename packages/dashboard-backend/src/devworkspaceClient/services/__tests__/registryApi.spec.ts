@@ -932,7 +932,7 @@ describe('RegistryApiService', () => {
       expect(result).toHaveLength(1);
       expect(result[0].workspaceName).toBe('deleted-ws');
       expect(result[0].workspaceExists).toBe(false);
-      expect(result[0].timestamp).toBe('');
+      expect(result[0].timestamp).toBeUndefined();
       expect(result[0].imageUrl).toBe(
         `${quayRegistryPath}/${namespace}/deleted-ws:${BACKUP_IMAGE_DEFAULT_TAG}`,
       );

@@ -105,7 +105,7 @@ export class BackupsTableView extends React.PureComponent<Props, State> {
           comparison = a.workspaceName.localeCompare(b.workspaceName);
           break;
         case 1: {
-          const getTime = (ts: string): number => {
+          const getTime = (ts: string | undefined): number => {
             if (!ts) return 0;
             const t = new Date(ts).getTime();
             return isNaN(t) ? 0 : t;
