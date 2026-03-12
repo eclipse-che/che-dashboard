@@ -25,7 +25,7 @@ export const ImagePreviewField: React.FC<Props> = ({ imageUrl }) => {
   }
 
   return (
-    <FormGroup fieldId="restore-image-preview" label="Backup image URL">
+    <FormGroup fieldId="restore-image-preview" label="Backup image URL" data-testid="image-preview">
       {imageUrl}
       <HelperText>
         <HelperTextItem>
