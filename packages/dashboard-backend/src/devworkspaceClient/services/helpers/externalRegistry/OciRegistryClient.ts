@@ -98,7 +98,15 @@ export class OciRegistryClient implements IExternalRegistryClient {
     // Try direct request (works when registry accepts Basic/Bearer auth directly)
     const result = await this.httpGetWithStatus(catalogUrl, this.authHeader);
     if (result.statusCode === 200) {
-      return (JSON.parse(result.body) as DockerCatalogResponse).repositories ?? [];
+      try {
+        return (JSON.parse(result.body) as DockerCatalogResponse).repositories ?? [];
+      } catch {
+        throw createError(
+          new Error(`${this.registryHost} returned non-JSON catalog response`),
+          BACKUP_ERROR_CODES.REGISTRY_API_ERROR,
+          `Failed to parse catalog response from ${this.registryHost}: response may be an HTML error page`,
+        );
+      }
     }
 
     // On 401: try Docker v2 token exchange
@@ -117,7 +125,17 @@ export class OciRegistryClient implements IExternalRegistryClient {
         const token = await this.exchangeToken(challenge);
         if (token) {
           const retryBody = await this.httpGet(catalogUrl, `Bearer ${token}`);
-          return (JSON.parse(retryBody) as DockerCatalogResponse).repositories ?? [];
+          try {
+            return (JSON.parse(retryBody) as DockerCatalogResponse).repositories ?? [];
+          } catch {
+            throw createError(
+              new Error(
+                `${this.registryHost} returned non-JSON catalog response after token exchange`,
+              ),
+              BACKUP_ERROR_CODES.REGISTRY_API_ERROR,
+              `Failed to parse catalog response from ${this.registryHost}: response may be an HTML error page`,
+            );
+          }
         }
       }
     }
@@ -147,8 +165,12 @@ export class OciRegistryClient implements IExternalRegistryClient {
 
     try {
       const data = await this.httpGet(tokenUrl, this.authHeader);
-      const body = JSON.parse(data) as DockerTokenResponse;
-      return body.token ?? body.access_token ?? '';
+      try {
+        const body = JSON.parse(data) as DockerTokenResponse;
+        return body.token ?? body.access_token ?? '';
+      } catch {
+        return '';
+      }
     } catch {
       return '';
     }

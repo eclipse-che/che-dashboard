@@ -280,6 +280,20 @@ describe('OciRegistryClient', () => {
       await expect(client.listWorkspaceBackups(namespace)).rejects.toThrow();
     });
 
+    it('should throw a typed error when catalog returns non-JSON (e.g. HTML proxy page)', async () => {
+      mockHttpsGet.mockImplementationOnce(
+        (_url: unknown, _opts: unknown, callback: (res: MockRes) => void) => {
+          callback(buildMockRes(200, '<html><body>Login required</body></html>'));
+          return { on: jest.fn() };
+        },
+      );
+
+      const client = new OciRegistryClient(registryPath, authHeader);
+      await expect(client.listWorkspaceBackups(namespace)).rejects.toThrow(
+        'Failed to parse catalog response',
+      );
+    });
+
     it('should return empty array when no repos match the prefix', async () => {
       mockDirectAuthFlow(['other-org/other-path/ws']);
 
