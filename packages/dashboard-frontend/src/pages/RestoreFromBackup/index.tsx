@@ -35,7 +35,7 @@ import { ExternalRegistryRestoreData } from '@/pages/RestoreFromBackup/ExternalR
 import { RestoreMode } from '@/pages/RestoreFromBackup/helpers';
 import { ResourceLimitsPanel } from '@/pages/RestoreFromBackup/ResourceLimitsPanel';
 import { RestoreModeAccordion } from '@/pages/RestoreFromBackup/RestoreModeAccordion';
-import { buildIdeLoaderLocation } from '@/services/helpers/location';
+import { buildIdeLoaderLocation, toHref } from '@/services/helpers/location';
 import { Workspace } from '@/services/workspace-adapter';
 import { AppDispatch, RootState } from '@/store';
 import { fetchBackupConfig, fetchBackupList } from '@/store/Backups/actions';
@@ -138,7 +138,7 @@ export const RestoreFromBackupPage: React.FC<Props> = props => {
       );
 
       const location = buildIdeLoaderLocation({ namespace, name: workspaceName } as Workspace);
-      navigate(location);
+      window.open(toHref(location), '_blank');
     } catch (e: unknown) {
       const errorMessage = e instanceof Error ? e.message : 'Failed to initiate restore.';
       setIsSubmitting(false);

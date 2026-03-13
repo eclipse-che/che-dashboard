@@ -25,6 +25,9 @@ import { RestoreFromBackupPage } from '..';
 
 jest.mock('@/components/EditorSelector');
 
+const mockWindowOpen = jest.fn();
+Object.defineProperty(window, 'open', { value: mockWindowOpen, writable: true });
+
 const mockNavigate = jest.fn();
 const mockFetchBackupList = jest.fn();
 const mockFetchBackupConfig = jest.fn();
@@ -606,7 +609,10 @@ describe('RestoreFromBackupPage', () => {
       });
 
       await waitFor(() => {
-        expect(mockNavigate).toHaveBeenCalled();
+        expect(mockWindowOpen).toHaveBeenCalledWith(
+          expect.stringContaining('/ide/user-namespace/my-workspace'),
+          '_blank',
+        );
       });
     });
   });
