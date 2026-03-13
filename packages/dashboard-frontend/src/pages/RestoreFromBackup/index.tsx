@@ -67,11 +67,12 @@ export const RestoreFromBackupPage: React.FC<Props> = props => {
     navigate,
   } = props;
 
-  const initialMode: RestoreMode = initialBackupImageUrl
-    ? 'default-registry'
-    : initialExternalImageUrl
-      ? 'external-registry'
-      : 'default-registry';
+  const isBackupConfigured = Boolean(props.backupConfig?.registry);
+
+  const initialMode: RestoreMode =
+    isBackupConfigured && (initialBackupImageUrl || !initialExternalImageUrl)
+      ? 'default-registry'
+      : 'external-registry';
 
   const [editorDefinition, setEditorDefinition] = useState<string | undefined>(undefined);
   const [memoryLimit, setMemoryLimit] = useState<number>(0);
@@ -199,6 +200,7 @@ export const RestoreFromBackupPage: React.FC<Props> = props => {
         <RestoreModeAccordion
           data-testid="restore-from-backup-page"
           restoreMode={restoreMode}
+          isBackupConfigured={isBackupConfigured}
           onChange={handleModeChange}
           backups={backups}
           existingWorkspaceNames={existingWorkspaceNames}
