@@ -67,18 +67,26 @@ export class DevWorkspaceClusterApiService implements IDevWorkspaceClusterApi {
     // assignment completes — using const would cause a TDZ ReferenceError.
     /* eslint-disable prefer-const */
     let abortController: AbortController | undefined;
-    abortController = await this.customObjectWatch.watch(
-      path,
-      queryParams,
-      (eventPhase: string, apiObj: V1alpha2DevWorkspace | V1Status) => {
-        this.handleWatchMessage(eventPhase, apiObj);
-      },
-      (error: unknown) => {
-        this.handleWatchError(error, path);
-        abortController?.abort();
-        this.watcherInProgress = false;
-      },
-    );
+    try {
+      abortController = await this.customObjectWatch.watch(
+        path,
+        queryParams,
+        (eventPhase: string, apiObj: V1alpha2DevWorkspace | V1Status) => {
+          this.handleWatchMessage(eventPhase, apiObj);
+        },
+        (error: unknown) => {
+          if (error instanceof Error && error.name === 'AbortError') {
+            return;
+          }
+          this.handleWatchError(error, path);
+          abortController?.abort();
+          this.watcherInProgress = false;
+        },
+      );
+    } catch (error) {
+      this.handleWatchError(error, path);
+      this.watcherInProgress = false;
+    }
   }
 
   private handleWatchMessage(
