@@ -45,6 +45,7 @@
     "fastify": "^5.7.3",
     "fs-extra": "^11.1.1",
     "https": "^1.0.0",
+    "https-proxy-agent": "^7.0.2",
     "js-yaml": "^4.1.1",
     "multi-ini": "^2.3.2",
     "pino": "^8.15.1",
