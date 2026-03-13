@@ -12,6 +12,7 @@
 
 import {
   IAirGapSampleApi,
+  IBackupApi,
   IDevWorkspaceApi,
   IDevWorkspaceClusterApi,
   IDevWorkspaceSingletonClient,
@@ -83,6 +84,10 @@ export class DevWorkspaceClient implements IDevWorkspaceClient {
   }
 
   get editorsApi(): IEditorsApi {
+    throw new Error('Method not implemented.');
+  }
+
+  get backupApi(): IBackupApi {
     throw new Error('Method not implemented.');
   }
 }
