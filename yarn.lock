@@ -1042,7 +1042,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@eclipse-che/dashboard@workspace:."
   dependencies:
-    license-tool: "https://github.com/che-incubator/dash-licenses.git"
+    license-tool: "https://github.com/che-incubator/dash-licenses.git#c09f697ea6336ce82d365654dfeb7ef6e9c84768"
   languageName: unknown
   linkType: soft
 
@@ -9189,7 +9189,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"license-tool@https://github.com/che-incubator/dash-licenses.git":
+"license-tool@https://github.com/che-incubator/dash-licenses.git#c09f697ea6336ce82d365654dfeb7ef6e9c84768":
   version: 2.0.0
   resolution: "license-tool@https://github.com/che-incubator/dash-licenses.git#commit=c09f697ea6336ce82d365654dfeb7ef6e9c84768"
   dependencies:

@@ -25,7 +25,7 @@
     "start": "$PWD/run/local-run.sh $@",
     "start:prepare": "$PWD/run/prepare-local-run.sh",
     "start:cleanup": "$PWD/run/revert-local-run.sh",
-    "license:check": "license-tool --check --batch 200",
+    "license:check": "license-tool --check",
     "license:generate": "license-tool --harvest",
     "test": "yarn run pretest && yarn workspaces foreach -A run test --no-cache",
     "test:check": "yarn run pretest && yarn workspace @eclipse-che/dashboard-frontend test --config=jest.config.check.js",
@@ -38,7 +38,7 @@
     "deploy:patch": "$PWD/run/patch.sh"
   },
   "devDependencies": {
-    "license-tool": "https://github.com/che-incubator/dash-licenses.git"
+    "license-tool": "https://github.com/che-incubator/dash-licenses.git#c09f697ea6336ce82d365654dfeb7ef6e9c84768"
   },
   "resolutions": {
     "@babel/helpers": "^7.26.10",
