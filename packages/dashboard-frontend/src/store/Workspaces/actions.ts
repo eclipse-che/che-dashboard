@@ -120,6 +120,8 @@ export const actionCreators = {
       workspaceName: string,
       backupImageUrl: string,
       editorId: string,
+      memoryLimit?: number,
+      cpuLimit?: number,
     ): AppThunk =>
     async dispatch => {
       await dispatch(
@@ -128,6 +130,8 @@ export const actionCreators = {
           workspaceName,
           backupImageUrl,
           editorId,
+          memoryLimit,
+          cpuLimit,
         ),
       );
     },

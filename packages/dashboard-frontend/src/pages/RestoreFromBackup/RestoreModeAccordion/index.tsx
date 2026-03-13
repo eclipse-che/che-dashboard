@@ -40,6 +40,7 @@ import { RestoreMode } from '@/pages/RestoreFromBackup/helpers';
 
 type Props = {
   restoreMode: RestoreMode;
+  isBackupConfigured: boolean;
   onChange: (mode: RestoreMode) => void;
 
   // Workspace name validation
@@ -69,6 +70,7 @@ type Props = {
 
 export const RestoreModeAccordion: React.FC<Props> = ({
   restoreMode,
+  isBackupConfigured,
   onChange,
   existingWorkspaceNames,
   existingBackupNames,
@@ -100,38 +102,40 @@ export const RestoreModeAccordion: React.FC<Props> = ({
       <PanelMain>
         <PanelMainBody>
           <Accordion asDefinitionList={false}>
-            <AccordionItem>
-              <AccordionToggle
-                onClick={() => handleToggle('default-registry')}
-                isExpanded={expandedItem === 'default-registry'}
-                id="default-registry"
-              >
-                Default registry
-              </AccordionToggle>
-              {expandedItem === 'default-registry' && (
-                <AccordionContent>
-                  <TextContent>
-                    <Text component="small">
-                      Restore a workspace from a backup in the default registry.
-                    </Text>
-                  </TextContent>
-                  <Panel>
-                    <PanelMain>
-                      <PanelMainBody>
-                        <DefaultRegistryRestoreForm
-                          backups={backups}
-                          initialImageUrl={initialBackupImageUrl}
-                          existingWorkspaceNames={existingWorkspaceNames}
-                          existingBackupNames={existingBackupNames}
-                          onValidationChange={onDefaultRegistryValidationChange}
-                          actionButton={actionButton}
-                        />
-                      </PanelMainBody>
-                    </PanelMain>
-                  </Panel>
-                </AccordionContent>
-              )}
-            </AccordionItem>
+            {isBackupConfigured && (
+              <AccordionItem>
+                <AccordionToggle
+                  onClick={() => handleToggle('default-registry')}
+                  isExpanded={expandedItem === 'default-registry'}
+                  id="default-registry"
+                >
+                  Default registry
+                </AccordionToggle>
+                {expandedItem === 'default-registry' && (
+                  <AccordionContent>
+                    <TextContent>
+                      <Text component="small">
+                        Restore a workspace from a backup in the default registry.
+                      </Text>
+                    </TextContent>
+                    <Panel>
+                      <PanelMain>
+                        <PanelMainBody>
+                          <DefaultRegistryRestoreForm
+                            backups={backups}
+                            initialImageUrl={initialBackupImageUrl}
+                            existingWorkspaceNames={existingWorkspaceNames}
+                            existingBackupNames={existingBackupNames}
+                            onValidationChange={onDefaultRegistryValidationChange}
+                            actionButton={actionButton}
+                          />
+                        </PanelMainBody>
+                      </PanelMain>
+                    </Panel>
+                  </AccordionContent>
+                )}
+              </AccordionItem>
+            )}
 
             <AccordionItem>
               <AccordionToggle

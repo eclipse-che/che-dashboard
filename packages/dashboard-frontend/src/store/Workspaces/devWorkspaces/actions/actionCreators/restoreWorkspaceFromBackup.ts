@@ -43,7 +43,14 @@ import {
 } from '@/store/Workspaces/devWorkspaces/actions/actions';
 
 export const restoreWorkspaceFromBackup =
-  (namespace: string, workspaceName: string, backupImageUrl: string, editorId: string): AppThunk =>
+  (
+    namespace: string,
+    workspaceName: string,
+    backupImageUrl: string,
+    editorId: string,
+    memoryLimit?: number,
+    cpuLimit?: number,
+  ): AppThunk =>
   async (dispatch, getState) => {
     const state = getState();
     const openVSXUrl = selectOpenVSXUrl(state);
@@ -126,6 +133,20 @@ export const restoreWorkspaceFromBackup =
           const env = component.container.env ?? [];
           env.push({ name: 'VSCODE_DEFAULT_WORKSPACE', value: '/projects/.code-workspace' });
           component.container.env = env;
+        }
+      }
+
+      // Apply resource limits to the first container only, matching the workspace
+      // creation flow (FactoryResolver/helpers.ts). Only the dev container should
+      // receive user-specified limits, not editor infrastructure containers.
+      const firstContainer = devWorkspaceTemplateResource.spec?.components?.find(c => c.container);
+      if (firstContainer?.container) {
+        if (memoryLimit !== undefined && memoryLimit > 0) {
+          const memoryLimitGi = Math.round(memoryLimit / (1024 * 1024 * 1024));
+          firstContainer.container.memoryLimit = `${memoryLimitGi}Gi`;
+        }
+        if (cpuLimit !== undefined && cpuLimit > 0) {
+          firstContainer.container.cpuLimit = cpuLimit.toString();
         }
       }
 
