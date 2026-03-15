@@ -18,12 +18,11 @@ import {
   AccordionContent,
   AccordionItem,
   AccordionToggle,
+  Content,
   Panel,
   PanelHeader,
   PanelMain,
   PanelMainBody,
-  Text,
-  TextContent,
   Title,
 } from '@patternfly/react-core';
 import React from 'react';
@@ -103,21 +102,18 @@ export const RestoreModeAccordion: React.FC<Props> = ({
         <PanelMainBody>
           <Accordion asDefinitionList={false}>
             {isBackupConfigured && (
-              <AccordionItem>
+              <AccordionItem isExpanded={expandedItem === 'default-registry'}>
                 <AccordionToggle
                   onClick={() => handleToggle('default-registry')}
-                  isExpanded={expandedItem === 'default-registry'}
                   id="default-registry"
                 >
                   Default registry
                 </AccordionToggle>
                 {expandedItem === 'default-registry' && (
                   <AccordionContent>
-                    <TextContent>
-                      <Text component="small">
-                        Restore a workspace from a backup in the default registry.
-                      </Text>
-                    </TextContent>
+                    <Content component="p">
+                      Restore a workspace from a backup in the default registry.
+                    </Content>
                     <Panel>
                       <PanelMain>
                         <PanelMainBody>
@@ -137,21 +133,18 @@ export const RestoreModeAccordion: React.FC<Props> = ({
               </AccordionItem>
             )}
 
-            <AccordionItem>
+            <AccordionItem isExpanded={expandedItem === 'external-registry'}>
               <AccordionToggle
                 onClick={() => handleToggle('external-registry')}
-                isExpanded={expandedItem === 'external-registry'}
                 id="external-registry"
               >
                 External registry
               </AccordionToggle>
               {expandedItem === 'external-registry' && (
                 <AccordionContent>
-                  <TextContent>
-                    <Text component="small">
-                      Restore from a backup image in an external registry.
-                    </Text>
-                  </TextContent>
+                  <Content component="p">
+                    Restore from a backup image in an external registry.
+                  </Content>
                   <Panel>
                     <PanelMain>
                       <PanelMainBody>

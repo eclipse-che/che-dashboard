@@ -14,7 +14,7 @@
 
 import { BackupItem } from '@eclipse-che/common';
 import { PageSection, PageSectionVariants } from '@patternfly/react-core';
-import { ICell, sortable, SortByDirection } from '@patternfly/react-table';
+import { SortByDirection } from '@patternfly/react-table';
 import React from 'react';
 
 import { BackupsTable } from '@/pages/WorkspacesList/BackupsView/BackupsTable';
@@ -22,10 +22,10 @@ import { buildBackupRows } from '@/pages/WorkspacesList/BackupsView/BackupsTable
 import BackupsListToolbar from '@/pages/WorkspacesList/BackupsView/Toolbar';
 import { buildRestoreFromBackupLocation } from '@/services/helpers/location';
 
-const COLUMNS: (ICell | string)[] = [
-  { title: 'Workspace Name', dataLabel: 'Workspace Name', transforms: [sortable] },
-  { title: 'Backup Time', dataLabel: 'Backup Time', transforms: [sortable] },
-  { title: 'Size', dataLabel: 'Size', transforms: [sortable] },
+const COLUMNS = [
+  { title: 'Workspace Name', dataLabel: 'Workspace Name', sortable: true },
+  { title: 'Backup Time', dataLabel: 'Backup Time', sortable: true },
+  { title: 'Size', dataLabel: 'Size', sortable: true },
   { title: 'Status', dataLabel: 'Status' },
   { title: '', dataLabel: 'Actions' },
 ];
@@ -67,7 +67,7 @@ export class BackupsTableView extends React.PureComponent<Props, State> {
     this.setState({ filterValue: '', appliedFilter: '' });
   }
 
-  private handleSort(_event: React.MouseEvent, index: number, direction: SortByDirection): void {
+  private handleSort(index: number, direction: SortByDirection): void {
     this.setState({ sortBy: { index, direction } });
   }
 
@@ -155,11 +155,11 @@ export class BackupsTableView extends React.PureComponent<Props, State> {
           columns={COLUMNS}
           rows={rows}
           sortBy={sortBy}
-          onSort={(event, index, direction) => this.handleSort(event, index, direction)}
+          onSort={(index, direction) => this.handleSort(index, direction)}
           toolbar={toolbar}
         />
         {rows.length === 0 && backups.length > 0 && (
-          <PageSection variant={PageSectionVariants.light} isFilled={true}>
+          <PageSection variant={PageSectionVariants.default} isFilled={true}>
             <span data-testid="backups-nothing-found">No backups match the filter criteria.</span>
           </PageSection>
         )}

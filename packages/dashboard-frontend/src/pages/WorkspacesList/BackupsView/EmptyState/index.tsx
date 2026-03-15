@@ -16,11 +16,9 @@ import {
   Button,
   ButtonVariant,
   EmptyState,
+  EmptyStateActions,
   EmptyStateBody,
-  EmptyStateIcon,
-  EmptyStatePrimary,
   EmptyStateVariant,
-  Title,
 } from '@patternfly/react-core';
 import { CubesIcon, RedoIcon } from '@patternfly/react-icons';
 import React from 'react';
@@ -32,16 +30,17 @@ type Props = {
 export class BackupsEmptyState extends React.PureComponent<Props> {
   public render(): React.ReactElement {
     return (
-      <EmptyState isFullHeight={true} variant={EmptyStateVariant.small}>
-        <EmptyStateIcon icon={CubesIcon} />
-        <Title headingLevel="h4" size="lg">
-          No Backups in Default Registry
-        </Title>
+      <EmptyState
+        isFullHeight={true}
+        variant={EmptyStateVariant.sm}
+        icon={CubesIcon}
+        titleText="No Backups in Default Registry"
+      >
         <EmptyStateBody>
           Backups are created automatically by the DevWorkspace Operator when a workspace is
           stopped. If you have a backup in an external registry, use the button below to restore it.
         </EmptyStateBody>
-        <EmptyStatePrimary>
+        <EmptyStateActions>
           <Button
             icon={<RedoIcon />}
             iconPosition="left"
@@ -51,7 +50,7 @@ export class BackupsEmptyState extends React.PureComponent<Props> {
           >
             Restore Workspace
           </Button>
-        </EmptyStatePrimary>
+        </EmptyStateActions>
       </EmptyState>
     );
   }
