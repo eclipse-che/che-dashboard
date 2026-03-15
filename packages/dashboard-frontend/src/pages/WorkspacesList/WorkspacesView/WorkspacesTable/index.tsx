@@ -11,15 +11,10 @@
  */
 
 import { Divider, PageSection, PageSectionVariants } from '@patternfly/react-core';
-import { SortByDirection, Table, Tbody, Td, Th, Thead, Tr } from '@patternfly/react-table';
+import { Table, Tbody, Td, Th, Thead, Tr } from '@patternfly/react-table';
 import React from 'react';
 
-type RowData = {
-  cells: { title: React.ReactNode; key: string }[];
-  props: { workspaceUID: string };
-  selected?: boolean;
-  disableSelection?: boolean;
-};
+import { getSortParams, RowData, SortDirection } from '@/pages/WorkspacesList/Rows';
 
 type ColumnDef = {
   title: string;
@@ -33,10 +28,10 @@ type Props = {
   rows: RowData[];
   sortBy: {
     index: number;
-    direction: SortByDirection;
+    direction: SortDirection;
   };
   onSelect: (isSelected: boolean, rowIndex: number) => void;
-  onSort: (index: number, direction: SortByDirection) => void;
+  onSort: (index: number, direction: SortDirection) => void;
   toolbar: React.ReactNode;
 };
 
@@ -64,14 +59,7 @@ export class WorkspacesTable extends React.PureComponent<Props> {
                     key={colIndex}
                     sort={
                       col.sortable
-                        ? {
-                            sortBy: {
-                              index: sortBy.index,
-                              direction: sortBy.direction,
-                            },
-                            onSort: (_event, index, direction) => onSort(index, direction),
-                            columnIndex: colIndex,
-                          }
+                        ? getSortParams(colIndex, sortBy.index, sortBy.direction, onSort)
                         : undefined
                     }
                   >
@@ -83,23 +71,23 @@ export class WorkspacesTable extends React.PureComponent<Props> {
           </Thead>
           <Tbody>
             {rows.map((row, rowIndex) => (
-              <Tr key={row.props.workspaceUID} style={{ verticalAlign: 'middle' }}>
+              <Tr key={row.workspaceUID} style={{ verticalAlign: 'middle' }}>
                 <Td
                   style={{ verticalAlign: 'inherit' }}
                   select={{
                     rowIndex,
                     onSelect: (_event, isSelected) => onSelect(isSelected, rowIndex),
-                    isSelected: row.selected === true,
-                    isDisabled: row.disableSelection === true,
+                    isSelected: row.isSelected,
+                    isDisabled: row.isDisabled,
                   }}
                 />
-                {row.cells.map(
-                  (cell: { title: React.ReactNode; key: string }, cellIndex: number) => (
-                    <Td key={cell.key} dataLabel={columns[cellIndex]?.dataLabel}>
-                      {cell.title}
-                    </Td>
-                  ),
-                )}
+                <Td dataLabel="Name">{row.cells.details}</Td>
+                <Td dataLabel="Editor">{row.cells.editorIcon}</Td>
+                <Td dataLabel="Last Modified">{row.cells.lastModifiedDate}</Td>
+                <Td dataLabel="Backup Status">{row.cells.backupStatus}</Td>
+                <Td dataLabel="Project(s)">{row.cells.projectsList}</Td>
+                <Td>{row.cells.action}</Td>
+                <Td isActionCell>{row.cells.actionsDropdown}</Td>
               </Tr>
             ))}
           </Tbody>
