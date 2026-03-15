@@ -71,13 +71,13 @@ function getStatusIcon(status: BackupStatus): React.ReactElement {
       );
     case BackupStatus.NEVER:
       return (
-        <Icon status="default" isInline>
+        <Icon status="custom" isInline>
           <InfoCircleIcon />
         </Icon>
       );
     case BackupStatus.UNAVAILABLE:
       return (
-        <Icon status="default" isInline>
+        <Icon status="custom" isInline>
           <OutlinedClockIcon />
         </Icon>
       );

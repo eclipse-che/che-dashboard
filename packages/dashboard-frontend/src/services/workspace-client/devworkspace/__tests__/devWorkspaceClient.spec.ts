@@ -13,7 +13,6 @@
 import mockAxios from 'axios';
 
 import { container } from '@/inversify.config';
-import { DEVWORKSPACE_CONTAINER_SCC_ATTR } from '@/services/devfileApi/devWorkspace/spec/template';
 import { DevWorkspaceClient } from '@/services/workspace-client/devworkspace/devWorkspaceClient';
 import { DevWorkspaceBuilder } from '@/store/__mocks__/devWorkspaceBuilder';
 
@@ -128,113 +127,30 @@ describe('DevWorkspace client', () => {
     expect(newWorkspace).toEqual(workspaceReady);
   });
 
-  describe('createDevWorkspace with currentScc', () => {
-    it('should add SCC attribute when currentScc is provided', async () => {
-      const namespace = 'test';
-      const devWorkspaceResource = new DevWorkspaceBuilder()
-        .withName('wksp-test')
-        .withNamespace(namespace)
-        .build();
+  it('should not add SCC attribute during creation', async () => {
+    const namespace = 'test';
+    const devWorkspaceResource = new DevWorkspaceBuilder()
+      .withName('wksp-test')
+      .withNamespace(namespace)
+      .build();
 
-      const createdWorkspace = {
-        ...devWorkspaceResource,
-        metadata: {
-          ...devWorkspaceResource.metadata,
-          uid: 'new-uid',
-        },
-      };
+    const createdWorkspace = {
+      ...devWorkspaceResource,
+      metadata: {
+        ...devWorkspaceResource.metadata,
+        uid: 'new-uid',
+      },
+    };
 
-      (mockAxios.post as jest.Mock).mockResolvedValueOnce({
-        data: createdWorkspace,
-        headers: {},
-      });
-
-      await client.createDevWorkspace(
-        namespace,
-        devWorkspaceResource,
-        undefined,
-        undefined,
-        'container-run',
-      );
-
-      // Verify the request body has SCC attribute
-      const callArgs = (mockAxios.post as jest.Mock).mock.calls[0];
-      const requestBody = callArgs[1];
-      expect(
-        requestBody.devworkspace.spec.template.attributes?.[DEVWORKSPACE_CONTAINER_SCC_ATTR],
-      ).toBe('container-run');
+    (mockAxios.post as jest.Mock).mockResolvedValueOnce({
+      data: createdWorkspace,
+      headers: {},
     });
 
-    it('should not add SCC attribute when currentScc is not provided', async () => {
-      const namespace = 'test';
-      const devWorkspaceResource = new DevWorkspaceBuilder()
-        .withName('wksp-test')
-        .withNamespace(namespace)
-        .build();
+    await client.createDevWorkspace(namespace, devWorkspaceResource, undefined, undefined);
 
-      const createdWorkspace = {
-        ...devWorkspaceResource,
-        metadata: {
-          ...devWorkspaceResource.metadata,
-          uid: 'new-uid',
-        },
-      };
-
-      (mockAxios.post as jest.Mock).mockResolvedValueOnce({
-        data: createdWorkspace,
-        headers: {},
-      });
-
-      await client.createDevWorkspace(namespace, devWorkspaceResource, undefined, undefined);
-
-      // Verify the request body does not have SCC attribute
-      const callArgs = (mockAxios.post as jest.Mock).mock.calls[0];
-      const requestBody = callArgs[1];
-      expect(
-        requestBody.devworkspace.spec.template.attributes?.[DEVWORKSPACE_CONTAINER_SCC_ATTR],
-      ).toBeUndefined();
-    });
-
-    it('should preserve existing template attributes when adding SCC', async () => {
-      const namespace = 'test';
-      const devWorkspaceResource = new DevWorkspaceBuilder()
-        .withName('wksp-test')
-        .withNamespace(namespace)
-        .withTemplateAttributes({
-          'controller.devfile.io/storage-type': 'ephemeral',
-        })
-        .build();
-
-      const createdWorkspace = {
-        ...devWorkspaceResource,
-        metadata: {
-          ...devWorkspaceResource.metadata,
-          uid: 'new-uid',
-        },
-      };
-
-      (mockAxios.post as jest.Mock).mockResolvedValueOnce({
-        data: createdWorkspace,
-        headers: {},
-      });
-
-      await client.createDevWorkspace(
-        namespace,
-        devWorkspaceResource,
-        undefined,
-        undefined,
-        'container-run',
-      );
-
-      // Verify the request body has both attributes
-      const callArgs = (mockAxios.post as jest.Mock).mock.calls[0];
-      const requestBody = callArgs[1];
-      expect(
-        requestBody.devworkspace.spec.template.attributes?.[DEVWORKSPACE_CONTAINER_SCC_ATTR],
-      ).toBe('container-run');
-      expect(
-        requestBody.devworkspace.spec.template.attributes?.['controller.devfile.io/storage-type'],
-      ).toBe('ephemeral');
-    });
+    const callArgs = (mockAxios.post as jest.Mock).mock.calls[0];
+    const requestBody = callArgs[1];
+    expect(requestBody.spec?.template?.attributes?.['controller.devfile.io/scc']).toBeUndefined();
   });
 });

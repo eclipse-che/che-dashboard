@@ -15,11 +15,10 @@
 import {
   Button,
   ButtonVariant,
+  Content,
+  ContentVariants,
   InputGroup,
-  Text,
-  TextContent,
   TextInput,
-  TextVariants,
   Toolbar,
   ToolbarContent,
   ToolbarItem,
@@ -68,7 +67,7 @@ export class BackupsListToolbar extends React.PureComponent<Props> {
     return (
       <Toolbar id="backups-view-toolbar" data-testid="backups-view-toolbar">
         <ToolbarContent>
-          <ToolbarItem variant="search-filter">
+          <ToolbarItem>
             <InputGroup>
               <TextInput
                 name="backups-filter-input"
@@ -77,7 +76,7 @@ export class BackupsListToolbar extends React.PureComponent<Props> {
                 aria-label="Filter backups"
                 placeholder="Search"
                 value={filterValue}
-                onChange={value => onFilterChange(value)}
+                onChange={(_event, value) => onFilterChange(value)}
                 onKeyDown={event => this.handleKeyDown(event)}
                 data-testid="backups-filter-input"
               />
@@ -98,11 +97,11 @@ export class BackupsListToolbar extends React.PureComponent<Props> {
             style={{ flexGrow: 1 }}
           >
             <ToolbarItem
-              alignment={{
-                md: 'alignRight',
-                lg: 'alignRight',
-                xl: 'alignRight',
-                '2xl': 'alignRight',
+              align={{
+                md: 'alignEnd',
+                lg: 'alignEnd',
+                xl: 'alignEnd',
+                '2xl': 'alignEnd',
               }}
             >
               <Button
@@ -119,16 +118,15 @@ export class BackupsListToolbar extends React.PureComponent<Props> {
           </ToolbarToggleGroup>
         </ToolbarContent>
         <ToolbarContent data-testid="next-backup-info">
-          <ToolbarItem alignment={{ default: 'alignRight' }}>
-            <TextContent id="next-scheduled-backup-label">
-              <Text
-                component={TextVariants.small}
-                aria-label="Next scheduled backup time"
-                data-testid="next-scheduled-backup"
-              >
-                {scheduleLabel}
-              </Text>
-            </TextContent>
+          <ToolbarItem align={{ default: 'alignEnd' }}>
+            <Content
+              id="next-scheduled-backup-label"
+              component={ContentVariants.small}
+              aria-label="Next scheduled backup time"
+              data-testid="next-scheduled-backup"
+            >
+              {scheduleLabel}
+            </Content>
           </ToolbarItem>
         </ToolbarContent>
       </Toolbar>

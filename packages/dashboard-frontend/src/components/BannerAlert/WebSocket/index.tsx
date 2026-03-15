@@ -99,7 +99,7 @@ class BannerAlertWebSocket extends React.PureComponent<Props, State> {
 
     if (watchAuthError) {
       return (
-        <Banner className="pf-u-text-align-center" variant="danger">
+        <Banner className="pf-u-text-align-center" status="danger">
           Dashboard backend lost authorization to watch cluster resources: {watchAuthError}. Try
           refreshing the page or re-logging in.
         </Banner>

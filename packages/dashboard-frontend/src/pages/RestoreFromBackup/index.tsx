@@ -160,7 +160,7 @@ export const RestoreFromBackupPage: React.FC<Props> = props => {
     <React.Fragment>
       <Head pageName="Restore from Backup" />
 
-      <PageSection variant={PageSectionVariants.light}>
+      <PageSection variant={PageSectionVariants.default}>
         <Title headingLevel="h1">Restore from Backup</Title>
       </PageSection>
 

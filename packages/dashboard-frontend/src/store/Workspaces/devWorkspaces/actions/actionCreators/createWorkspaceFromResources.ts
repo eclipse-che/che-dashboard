@@ -18,7 +18,7 @@ import { AppThunk } from '@/store';
 import { selectApplications } from '@/store/ClusterInfo';
 import { selectDefaultNamespace } from '@/store/InfrastructureNamespaces';
 import { verifyAuthorized } from '@/store/SanityCheck';
-import { getCurrentScc, getDefaultEditor } from '@/store/ServerConfig/helpers';
+import { getDefaultEditor } from '@/store/ServerConfig/helpers';
 import { selectServerConfigState } from '@/store/ServerConfig/selectors';
 import { getDevWorkspaceClient } from '@/store/Workspaces/devWorkspaces/actions/actionCreators/helpers';
 import { updateDevWorkspaceTemplate } from '@/store/Workspaces/devWorkspaces/actions/actionCreators/helpers/editorImage';
@@ -41,7 +41,6 @@ export const createWorkspaceFromResources =
     const defaultKubernetesNamespace = selectDefaultNamespace(state);
     const serverConfig = selectServerConfigState(state).config;
     const cheEditor = editor || getDefaultEditor(serverConfig);
-    const currentScc = getCurrentScc(serverConfig);
     const defaultNamespace = defaultKubernetesNamespace.name;
     // Use params.name if provided, otherwise use the devWorkspace name
     // The suffix is only added when there's a name conflict, not for perclick policy
@@ -58,7 +57,6 @@ export const createWorkspaceFromResources =
         devWorkspace,
         cheEditor,
         customName,
-        currentScc,
       );
 
       if (createResp.headers.warning) {
@@ -82,7 +80,9 @@ export const createWorkspaceFromResources =
         defaultNamespace,
         createResp.devWorkspace,
         devWorkspaceTemplate,
-        serverConfig,
+        serverConfig.pluginRegistryURL,
+        serverConfig.pluginRegistryInternalURL,
+        serverConfig.pluginRegistry?.openVSXURL,
         clusterConsole,
       );
 

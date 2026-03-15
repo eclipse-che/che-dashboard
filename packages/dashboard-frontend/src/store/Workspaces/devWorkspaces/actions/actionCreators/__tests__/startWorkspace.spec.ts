@@ -95,7 +95,7 @@ describe('devWorkspaces, actions', () => {
       (getDevWorkspaceClient as jest.Mock).mockReturnValue({
         changeWorkspaceStatus: mockChangeWorkspaceStatus,
         managePvcStrategy: mockManagePvcStrategy,
-        manageHostUsersEnvVar: mockManageHostUsersEnvVar,
+        manageContainerSccAttribute: mockManageHostUsersEnvVar,
         manageDebugMode: mockManageDebugMode,
         onStart: mockOnStart,
       });
