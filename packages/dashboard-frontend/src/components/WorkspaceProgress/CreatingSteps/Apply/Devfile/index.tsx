@@ -179,7 +179,7 @@ class CreatingStepApplyDevfile extends ProgressStep<Props, State> {
   private updateCurrentDevfile(devfile: devfileApi.Devfile): void {
     const { factoryResolver, allWorkspaces, defaultDevfile, preferredStorageType } = this.props;
     const { factoryParams } = this.state;
-    const { factoryId, policiesCreate, sourceUrl, remotes, revision } = factoryParams;
+    const { factoryId, sourceUrl, remotes, revision } = factoryParams;
 
     // when using the default devfile instead of a user devfile
     if (factoryResolver === undefined && isEqual(devfile, defaultDevfile)) {
@@ -226,7 +226,8 @@ class CreatingStepApplyDevfile extends ProgressStep<Props, State> {
 
     const storageType = getStorageType(factoryParams, devfile, preferredStorageType);
 
-    const appendSuffix = policiesCreate === 'perclick' || nameConflict;
+    // Append suffix only when there's a name conflict
+    const appendSuffix = nameConflict;
     const parentDevfile = factoryResolver?.parentDevfile;
     const updatedDevfile = prepareDevfile(
       devfile,

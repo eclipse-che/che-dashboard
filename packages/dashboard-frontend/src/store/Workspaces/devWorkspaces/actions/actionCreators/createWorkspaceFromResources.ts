@@ -18,12 +18,8 @@ import { AppThunk } from '@/store';
 import { selectApplications } from '@/store/ClusterInfo';
 import { selectDefaultNamespace } from '@/store/InfrastructureNamespaces';
 import { verifyAuthorized } from '@/store/SanityCheck';
-import {
-  selectDefaultEditor,
-  selectOpenVSXUrl,
-  selectPluginRegistryInternalUrl,
-  selectPluginRegistryUrl,
-} from '@/store/ServerConfig';
+import { getDefaultEditor } from '@/store/ServerConfig/helpers';
+import { selectServerConfigState } from '@/store/ServerConfig/selectors';
 import { getDevWorkspaceClient } from '@/store/Workspaces/devWorkspaces/actions/actionCreators/helpers';
 import { updateDevWorkspaceTemplate } from '@/store/Workspaces/devWorkspaces/actions/actionCreators/helpers/editorImage';
 import {
@@ -43,12 +39,12 @@ export const createWorkspaceFromResources =
   async (dispatch, getState) => {
     const state = getState();
     const defaultKubernetesNamespace = selectDefaultNamespace(state);
-    const openVSXUrl = selectOpenVSXUrl(state);
-    const pluginRegistryUrl = selectPluginRegistryUrl(state);
-    const pluginRegistryInternalUrl = selectPluginRegistryInternalUrl(state);
-    const cheEditor = editor ? editor : selectDefaultEditor(state);
+    const serverConfig = selectServerConfigState(state).config;
+    const cheEditor = editor || getDefaultEditor(serverConfig);
     const defaultNamespace = defaultKubernetesNamespace.name;
-    const customName = params.name;
+    // Use params.name if provided, otherwise use the devWorkspace name
+    // The suffix is only added when there's a name conflict, not for perclick policy
+    const customName = params.name || devWorkspace.metadata.name;
 
     try {
       await verifyAuthorized(dispatch, getState);
@@ -84,9 +80,9 @@ export const createWorkspaceFromResources =
         defaultNamespace,
         createResp.devWorkspace,
         devWorkspaceTemplate,
-        pluginRegistryUrl,
-        pluginRegistryInternalUrl,
-        openVSXUrl,
+        serverConfig.pluginRegistryURL,
+        serverConfig.pluginRegistryInternalURL,
+        serverConfig.pluginRegistry?.openVSXURL,
         clusterConsole,
       );
 

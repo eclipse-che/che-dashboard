@@ -10,7 +10,7 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import { Flex, FlexItem, Text, TextContent, TextInput } from '@patternfly/react-core';
+import { Content, Flex, FlexItem, TextInput } from '@patternfly/react-core';
 import isEqual from 'lodash/isEqual';
 import React from 'react';
 import Pluralize from 'react-pluralize';
@@ -145,7 +145,7 @@ class SamplesListToolbar extends React.PureComponent<Props, State> {
             style={{ minWidth: '200px' }}
             value={filterValue}
             type="search"
-            onChange={value => this.handleFilterInputChange(value)}
+            onChange={(_event, value) => this.handleFilterInputChange(value)}
             aria-label="Filter samples list"
             placeholder="Filter by"
           />
@@ -169,9 +169,9 @@ class SamplesListToolbar extends React.PureComponent<Props, State> {
           />
         </FlexItem>
         <FlexItem>
-          <TextContent>
-            <Text>{this.buildCount(foundCount, allCount)}</Text>
-          </TextContent>
+          <Content>
+            <Content component="p">{this.buildCount(foundCount, allCount)}</Content>
+          </Content>
         </FlexItem>
         <FlexItem align={{ default: 'alignRight' }}>
           <CreateNewIfExistSwitch

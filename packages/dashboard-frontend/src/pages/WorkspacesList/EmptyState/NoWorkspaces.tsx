@@ -10,14 +10,7 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import {
-  Button,
-  EmptyState,
-  EmptyStateBody,
-  EmptyStateIcon,
-  EmptyStateVariant,
-  Title,
-} from '@patternfly/react-core';
+import { Button, EmptyState, EmptyStateBody, EmptyStateVariant } from '@patternfly/react-core';
 import { CubesIcon } from '@patternfly/react-icons';
 import React from 'react';
 
@@ -28,11 +21,12 @@ type Props = {
 export default class NoWorkspacesEmptyState extends React.PureComponent<Props> {
   public render(): React.ReactElement {
     return (
-      <EmptyState isFullHeight={true} variant={EmptyStateVariant.small}>
-        <EmptyStateIcon icon={CubesIcon} />
-        <Title headingLevel="h4" size="lg">
-          No Workspaces
-        </Title>
+      <EmptyState
+        isFullHeight={true}
+        variant={EmptyStateVariant.sm}
+        icon={CubesIcon}
+        titleText="No Workspaces"
+      >
         <EmptyStateBody>
           <Button
             aria-label="Add workspace"

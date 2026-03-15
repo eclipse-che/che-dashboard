@@ -19,12 +19,15 @@
 }
 
 .navItem [class*='nav__link'] {
-  padding-left: 45px;
+  overflow: hidden;
+  width: 100%;
+  padding-right: 4px;
+  padding-left: 8px;
 }
 
-.navItem > span {
+.navItem [class*='nav__link'] > span {
   overflow: hidden;
-  width: calc(100% - 12px);
+  width: calc(100% - 30px);
   text-overflow: ellipsis;
 }
 
@@ -45,4 +48,12 @@
 
 .navItem:hover > div {
   display: block;
+}
+
+.titleHover {
+  cursor: pointer;
+}
+
+.titleHover.active {
+  /* Active state styling can be added here if needed */
 }

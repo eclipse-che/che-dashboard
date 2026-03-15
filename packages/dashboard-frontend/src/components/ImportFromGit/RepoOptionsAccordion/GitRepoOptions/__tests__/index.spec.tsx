@@ -38,7 +38,6 @@ describe('GitRepoOptions', () => {
   test('snapshot with all values', () => {
     const snapshot = createSnapshot(
       'test-git-branch',
-      undefined,
       [{ name: 'test', url: 'http://test' }],
       'test-devfile-path',
     );
@@ -48,7 +47,6 @@ describe('GitRepoOptions', () => {
   it('should remove "Git Branch" component when it is not supported', () => {
     const { reRenderComponent } = renderComponent(
       'test-git-branch',
-      undefined,
       [{ name: 'test', url: 'http://test' }],
       'test-devfile-path',
       false,
@@ -56,7 +54,7 @@ describe('GitRepoOptions', () => {
 
     expect(screen.queryByTestId('git-branch-component')).toBeNull();
 
-    reRenderComponent(undefined, undefined, undefined, undefined, false);
+    reRenderComponent(undefined, undefined, undefined, false);
 
     expect(screen.queryByTestId('git-branch-component')).toBeNull();
   });
@@ -64,7 +62,6 @@ describe('GitRepoOptions', () => {
   it('should not remove "Git Branch" component when URL is SSH', () => {
     const { reRenderComponent } = renderComponent(
       'test-git-branch',
-      undefined,
       [{ name: 'test', url: 'http://test' }],
       'test-devfile-path',
       false,
@@ -73,7 +70,7 @@ describe('GitRepoOptions', () => {
 
     expect(screen.queryByTestId('git-branch-component')).not.toBeNull();
 
-    reRenderComponent(undefined, undefined, undefined, undefined, false);
+    reRenderComponent(undefined, undefined, undefined, false);
 
     expect(screen.queryByTestId('git-branch-component')).toBeNull();
   });
@@ -81,7 +78,6 @@ describe('GitRepoOptions', () => {
   it('should not remove "Git Branch" component when URL is SSH and has ssh protocol', () => {
     const { reRenderComponent } = renderComponent(
       'test-git-branch',
-      undefined,
       [{ name: 'test', url: 'http://test' }],
       'test-devfile-path',
       false,
@@ -90,7 +86,7 @@ describe('GitRepoOptions', () => {
 
     expect(screen.queryByTestId('git-branch-component')).not.toBeNull();
 
-    reRenderComponent(undefined, undefined, undefined, undefined, false);
+    reRenderComponent(undefined, undefined, undefined, false);
 
     expect(screen.queryByTestId('git-branch-component')).toBeNull();
   });
@@ -112,7 +108,7 @@ describe('GitRepoOptions', () => {
   });
 
   test('update Remotes', async () => {
-    renderComponent(undefined, undefined, [{ name: 'test', url: 'http://test' }]);
+    renderComponent(undefined, [{ name: 'test', url: 'http://test' }]);
 
     const gitRemotes = screen.getByTestId('git-remotes');
 
@@ -133,7 +129,7 @@ describe('GitRepoOptions', () => {
   });
 
   test('update PathToDevfile', async () => {
-    renderComponent(undefined, undefined, undefined, 'test-devfile-path');
+    renderComponent(undefined, undefined, 'test-devfile-path');
 
     const pathToDevfile = screen.getByTestId('devfile-path');
 
@@ -151,7 +147,6 @@ describe('GitRepoOptions', () => {
 
 function getComponent(
   gitBranch?: string | undefined,
-  branchList?: string[] | undefined,
   remotes?: GitRemote[] | undefined,
   devfilePath?: string | undefined,
   hasSupportedGitService: boolean = true,
@@ -160,12 +155,12 @@ function getComponent(
   return (
     <GitRepoOptions
       gitBranch={gitBranch}
+      branchList={undefined}
       location={location}
       remotes={remotes}
       devfilePath={devfilePath}
       hasSupportedGitService={hasSupportedGitService}
       onChange={mockOnChange}
-      branchList={branchList}
     />
   );
 }

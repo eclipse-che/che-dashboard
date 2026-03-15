@@ -2,25 +2,25 @@
 
 exports[`BackupTabInfo failed snapshot - failed status 1`] = `
 <dl
-  className="pf-c-description-list pf-m-horizontal"
+  className="pf-v6-c-description-list pf-m-horizontal"
 >
   <div
-    className="pf-c-description-list__group"
+    className="pf-v6-c-description-list__group"
   >
     <dt
-      className="pf-c-description-list__term"
+      className="pf-v6-c-description-list__term"
     >
       <span
-        className="pf-c-description-list__text"
+        className="pf-v6-c-description-list__text"
       >
         Status
       </span>
     </dt>
     <dd
-      className="pf-c-description-list__description"
+      className="pf-v6-c-description-list__description"
     >
       <div
-        className="pf-c-description-list__text"
+        className="pf-v6-c-description-list__text"
       >
         <span
           data-testid="backup-status-badge"
@@ -31,47 +31,42 @@ exports[`BackupTabInfo failed snapshot - failed status 1`] = `
     </dd>
   </div>
   <div
-    className="pf-c-description-list__group"
+    className="pf-v6-c-description-list__group"
   >
     <dt
-      className="pf-c-description-list__term"
+      className="pf-v6-c-description-list__term"
     >
       <span
-        className="pf-c-description-list__text"
+        className="pf-v6-c-description-list__text"
       >
         Error
       </span>
     </dt>
     <dd
-      className="pf-c-description-list__description"
+      className="pf-v6-c-description-list__description"
     >
       <div
-        className="pf-c-description-list__text"
+        className="pf-v6-c-description-list__text"
       >
         <div
-          aria-label="Danger Alert"
-          className="pf-c-alert pf-m-inline pf-m-plain pf-m-danger"
+          className="pf-v6-c-alert pf-m-inline pf-m-plain pf-m-danger"
           data-ouia-component-id="OUIA-Generated-Alert-danger-5"
-          data-ouia-component-type="PF4/Alert"
+          data-ouia-component-type="PF6/Alert"
           data-ouia-safe={true}
           data-testid="backup-error-message"
           onMouseEnter={[Function]}
           onMouseLeave={[Function]}
         >
           <div
-            className="pf-c-alert__icon"
+            className="pf-v6-c-alert__icon"
           >
             <svg
               aria-hidden={true}
               aria-labelledby={null}
+              className="pf-v6-svg"
               fill="currentColor"
               height="1em"
               role="img"
-              style={
-                {
-                  "verticalAlign": "-0.125em",
-                }
-              }
               viewBox="0 0 512 512"
               width="1em"
             >
@@ -81,17 +76,17 @@ exports[`BackupTabInfo failed snapshot - failed status 1`] = `
             </svg>
           </div>
           <h4
-            className="pf-c-alert__title"
+            className="pf-v6-c-alert__title"
           >
             <span
-              className="pf-u-screen-reader"
+              className="pf-v6-screen-reader"
             >
               Danger alert:
             </span>
             Backup failed
           </h4>
           <div
-            className="pf-c-alert__description"
+            className="pf-v6-c-alert__description"
           >
             Registry authentication failed
           </div>
@@ -100,47 +95,97 @@ exports[`BackupTabInfo failed snapshot - failed status 1`] = `
     </dd>
   </div>
   <div
-    className="pf-c-description-list__group"
+    className="pf-v6-c-description-list__group"
   >
     <dt
-      className="pf-c-description-list__term"
+      className="pf-v6-c-description-list__term"
     >
       <span
-        className="pf-c-description-list__text"
+        className="pf-v6-c-description-list__text"
       >
         Backup Schedule
       </span>
     </dt>
     <dd
-      className="pf-c-description-list__description"
+      className="pf-v6-c-description-list__description"
     >
       <div
-        className="pf-c-description-list__text"
+        className="pf-v6-c-description-list__text"
       >
         Every day at 0 1 * * *
         <div
-          className="pf-c-helper-text"
+          className="pf-v6-c-helper-text"
         >
           <div
-            className="pf-c-helper-text__item pf-m-indeterminate"
+            className="pf-v6-c-helper-text__item pf-m-indeterminate"
           >
             <span
-              className="pf-c-helper-text__item-text"
+              className="pf-v6-c-helper-text__item-icon"
+            >
+              <svg
+                aria-hidden={true}
+                aria-labelledby={null}
+                className="pf-v6-svg"
+                fill="currentColor"
+                height="1em"
+                role="img"
+                viewBox="0 0 448 512"
+                width="1em"
+              >
+                <path
+                  d="M416 208H32c-17.67 0-32 14.33-32 32v32c0 17.67 14.33 32 32 32h384c17.67 0 32-14.33 32-32v-32c0-17.67-14.33-32-32-32z"
+                />
+              </svg>
+            </span>
+            <span
+              className="pf-v6-c-helper-text__item-text"
             >
               Next run: 2 hours ago (Jan 15, 2:30 p.m.)
+              <span
+                className="pf-v6-screen-reader"
+              >
+                : 
+                indeterminate status
+                ;
+              </span>
             </span>
           </div>
         </div>
         <div
-          className="pf-c-helper-text"
+          className="pf-v6-c-helper-text"
         >
           <div
-            className="pf-c-helper-text__item pf-m-indeterminate"
+            className="pf-v6-c-helper-text__item pf-m-indeterminate"
           >
             <span
-              className="pf-c-helper-text__item-text"
+              className="pf-v6-c-helper-text__item-icon"
+            >
+              <svg
+                aria-hidden={true}
+                aria-labelledby={null}
+                className="pf-v6-svg"
+                fill="currentColor"
+                height="1em"
+                role="img"
+                viewBox="0 0 448 512"
+                width="1em"
+              >
+                <path
+                  d="M416 208H32c-17.67 0-32 14.33-32 32v32c0 17.67 14.33 32 32 32h384c17.67 0 32-14.33 32-32v-32c0-17.67-14.33-32-32-32z"
+                />
+              </svg>
+            </span>
+            <span
+              className="pf-v6-c-helper-text__item-text"
             >
               Will retry on next scheduled run.
+              <span
+                className="pf-v6-screen-reader"
+              >
+                : 
+                indeterminate status
+                ;
+              </span>
             </span>
           </div>
         </div>
@@ -148,22 +193,22 @@ exports[`BackupTabInfo failed snapshot - failed status 1`] = `
     </dd>
   </div>
   <div
-    className="pf-c-description-list__group"
+    className="pf-v6-c-description-list__group"
   >
     <dt
-      className="pf-c-description-list__term"
+      className="pf-v6-c-description-list__term"
     >
       <span
-        className="pf-c-description-list__text"
+        className="pf-v6-c-description-list__text"
       >
         Last Backup
       </span>
     </dt>
     <dd
-      className="pf-c-description-list__description"
+      className="pf-v6-c-description-list__description"
     >
       <div
-        className="pf-c-description-list__text"
+        className="pf-v6-c-description-list__text"
       >
         2 hours ago (Jan 15, 2:30 p.m.)
       </div>
@@ -174,25 +219,25 @@ exports[`BackupTabInfo failed snapshot - failed status 1`] = `
 
 exports[`BackupTabInfo in progress snapshot - in-progress status 1`] = `
 <dl
-  className="pf-c-description-list pf-m-horizontal"
+  className="pf-v6-c-description-list pf-m-horizontal"
 >
   <div
-    className="pf-c-description-list__group"
+    className="pf-v6-c-description-list__group"
   >
     <dt
-      className="pf-c-description-list__term"
+      className="pf-v6-c-description-list__term"
     >
       <span
-        className="pf-c-description-list__text"
+        className="pf-v6-c-description-list__text"
       >
         Status
       </span>
     </dt>
     <dd
-      className="pf-c-description-list__description"
+      className="pf-v6-c-description-list__description"
     >
       <div
-        className="pf-c-description-list__text"
+        className="pf-v6-c-description-list__text"
       >
         <span
           data-testid="backup-status-badge"
@@ -203,47 +248,97 @@ exports[`BackupTabInfo in progress snapshot - in-progress status 1`] = `
     </dd>
   </div>
   <div
-    className="pf-c-description-list__group"
+    className="pf-v6-c-description-list__group"
   >
     <dt
-      className="pf-c-description-list__term"
+      className="pf-v6-c-description-list__term"
     >
       <span
-        className="pf-c-description-list__text"
+        className="pf-v6-c-description-list__text"
       >
         Backup Schedule
       </span>
     </dt>
     <dd
-      className="pf-c-description-list__description"
+      className="pf-v6-c-description-list__description"
     >
       <div
-        className="pf-c-description-list__text"
+        className="pf-v6-c-description-list__text"
       >
         Every day at 0 1 * * *
         <div
-          className="pf-c-helper-text"
+          className="pf-v6-c-helper-text"
         >
           <div
-            className="pf-c-helper-text__item pf-m-indeterminate"
+            className="pf-v6-c-helper-text__item pf-m-indeterminate"
           >
             <span
-              className="pf-c-helper-text__item-text"
+              className="pf-v6-c-helper-text__item-icon"
+            >
+              <svg
+                aria-hidden={true}
+                aria-labelledby={null}
+                className="pf-v6-svg"
+                fill="currentColor"
+                height="1em"
+                role="img"
+                viewBox="0 0 448 512"
+                width="1em"
+              >
+                <path
+                  d="M416 208H32c-17.67 0-32 14.33-32 32v32c0 17.67 14.33 32 32 32h384c17.67 0 32-14.33 32-32v-32c0-17.67-14.33-32-32-32z"
+                />
+              </svg>
+            </span>
+            <span
+              className="pf-v6-c-helper-text__item-text"
             >
               Next run: 2 hours ago (Jan 15, 2:30 p.m.)
+              <span
+                className="pf-v6-screen-reader"
+              >
+                : 
+                indeterminate status
+                ;
+              </span>
             </span>
           </div>
         </div>
         <div
-          className="pf-c-helper-text"
+          className="pf-v6-c-helper-text"
         >
           <div
-            className="pf-c-helper-text__item pf-m-indeterminate"
+            className="pf-v6-c-helper-text__item pf-m-indeterminate"
           >
             <span
-              className="pf-c-helper-text__item-text"
+              className="pf-v6-c-helper-text__item-icon"
+            >
+              <svg
+                aria-hidden={true}
+                aria-labelledby={null}
+                className="pf-v6-svg"
+                fill="currentColor"
+                height="1em"
+                role="img"
+                viewBox="0 0 448 512"
+                width="1em"
+              >
+                <path
+                  d="M416 208H32c-17.67 0-32 14.33-32 32v32c0 17.67 14.33 32 32 32h384c17.67 0 32-14.33 32-32v-32c0-17.67-14.33-32-32-32z"
+                />
+              </svg>
+            </span>
+            <span
+              className="pf-v6-c-helper-text__item-text"
             >
               Backup is in progress.
+              <span
+                className="pf-v6-screen-reader"
+              >
+                : 
+                indeterminate status
+                ;
+              </span>
             </span>
           </div>
         </div>
@@ -251,22 +346,22 @@ exports[`BackupTabInfo in progress snapshot - in-progress status 1`] = `
     </dd>
   </div>
   <div
-    className="pf-c-description-list__group"
+    className="pf-v6-c-description-list__group"
   >
     <dt
-      className="pf-c-description-list__term"
+      className="pf-v6-c-description-list__term"
     >
       <span
-        className="pf-c-description-list__text"
+        className="pf-v6-c-description-list__text"
       >
         Last Backup
       </span>
     </dt>
     <dd
-      className="pf-c-description-list__description"
+      className="pf-v6-c-description-list__description"
     >
       <div
-        className="pf-c-description-list__text"
+        className="pf-v6-c-description-list__text"
       >
         2 hours ago (Jan 15, 2:30 p.m.)
       </div>
@@ -277,25 +372,25 @@ exports[`BackupTabInfo in progress snapshot - in-progress status 1`] = `
 
 exports[`BackupTabInfo never backed up snapshot - never status 1`] = `
 <dl
-  className="pf-c-description-list pf-m-horizontal"
+  className="pf-v6-c-description-list pf-m-horizontal"
 >
   <div
-    className="pf-c-description-list__group"
+    className="pf-v6-c-description-list__group"
   >
     <dt
-      className="pf-c-description-list__term"
+      className="pf-v6-c-description-list__term"
     >
       <span
-        className="pf-c-description-list__text"
+        className="pf-v6-c-description-list__text"
       >
         Status
       </span>
     </dt>
     <dd
-      className="pf-c-description-list__description"
+      className="pf-v6-c-description-list__description"
     >
       <div
-        className="pf-c-description-list__text"
+        className="pf-v6-c-description-list__text"
       >
         <span
           data-testid="backup-status-badge"
@@ -306,47 +401,97 @@ exports[`BackupTabInfo never backed up snapshot - never status 1`] = `
     </dd>
   </div>
   <div
-    className="pf-c-description-list__group"
+    className="pf-v6-c-description-list__group"
   >
     <dt
-      className="pf-c-description-list__term"
+      className="pf-v6-c-description-list__term"
     >
       <span
-        className="pf-c-description-list__text"
+        className="pf-v6-c-description-list__text"
       >
         Backup Schedule
       </span>
     </dt>
     <dd
-      className="pf-c-description-list__description"
+      className="pf-v6-c-description-list__description"
     >
       <div
-        className="pf-c-description-list__text"
+        className="pf-v6-c-description-list__text"
       >
         Every day at 0 1 * * *
         <div
-          className="pf-c-helper-text"
+          className="pf-v6-c-helper-text"
         >
           <div
-            className="pf-c-helper-text__item pf-m-indeterminate"
+            className="pf-v6-c-helper-text__item pf-m-indeterminate"
           >
             <span
-              className="pf-c-helper-text__item-text"
+              className="pf-v6-c-helper-text__item-icon"
+            >
+              <svg
+                aria-hidden={true}
+                aria-labelledby={null}
+                className="pf-v6-svg"
+                fill="currentColor"
+                height="1em"
+                role="img"
+                viewBox="0 0 448 512"
+                width="1em"
+              >
+                <path
+                  d="M416 208H32c-17.67 0-32 14.33-32 32v32c0 17.67 14.33 32 32 32h384c17.67 0 32-14.33 32-32v-32c0-17.67-14.33-32-32-32z"
+                />
+              </svg>
+            </span>
+            <span
+              className="pf-v6-c-helper-text__item-text"
             >
               Next run: 2 hours ago (Jan 15, 2:30 p.m.)
+              <span
+                className="pf-v6-screen-reader"
+              >
+                : 
+                indeterminate status
+                ;
+              </span>
             </span>
           </div>
         </div>
         <div
-          className="pf-c-helper-text"
+          className="pf-v6-c-helper-text"
         >
           <div
-            className="pf-c-helper-text__item pf-m-indeterminate"
+            className="pf-v6-c-helper-text__item pf-m-indeterminate"
           >
             <span
-              className="pf-c-helper-text__item-text"
+              className="pf-v6-c-helper-text__item-icon"
+            >
+              <svg
+                aria-hidden={true}
+                aria-labelledby={null}
+                className="pf-v6-svg"
+                fill="currentColor"
+                height="1em"
+                role="img"
+                viewBox="0 0 448 512"
+                width="1em"
+              >
+                <path
+                  d="M416 208H32c-17.67 0-32 14.33-32 32v32c0 17.67 14.33 32 32 32h384c17.67 0 32-14.33 32-32v-32c0-17.67-14.33-32-32-32z"
+                />
+              </svg>
+            </span>
+            <span
+              className="pf-v6-c-helper-text__item-text"
             >
               Backups run only when the workspace is stopped.
+              <span
+                className="pf-v6-screen-reader"
+              >
+                : 
+                indeterminate status
+                ;
+              </span>
             </span>
           </div>
         </div>
@@ -358,25 +503,25 @@ exports[`BackupTabInfo never backed up snapshot - never status 1`] = `
 
 exports[`BackupTabInfo success snapshot - success running 1`] = `
 <dl
-  className="pf-c-description-list pf-m-horizontal"
+  className="pf-v6-c-description-list pf-m-horizontal"
 >
   <div
-    className="pf-c-description-list__group"
+    className="pf-v6-c-description-list__group"
   >
     <dt
-      className="pf-c-description-list__term"
+      className="pf-v6-c-description-list__term"
     >
       <span
-        className="pf-c-description-list__text"
+        className="pf-v6-c-description-list__text"
       >
         Status
       </span>
     </dt>
     <dd
-      className="pf-c-description-list__description"
+      className="pf-v6-c-description-list__description"
     >
       <div
-        className="pf-c-description-list__text"
+        className="pf-v6-c-description-list__text"
       >
         <span
           data-testid="backup-status-badge"
@@ -387,47 +532,97 @@ exports[`BackupTabInfo success snapshot - success running 1`] = `
     </dd>
   </div>
   <div
-    className="pf-c-description-list__group"
+    className="pf-v6-c-description-list__group"
   >
     <dt
-      className="pf-c-description-list__term"
+      className="pf-v6-c-description-list__term"
     >
       <span
-        className="pf-c-description-list__text"
+        className="pf-v6-c-description-list__text"
       >
         Backup Schedule
       </span>
     </dt>
     <dd
-      className="pf-c-description-list__description"
+      className="pf-v6-c-description-list__description"
     >
       <div
-        className="pf-c-description-list__text"
+        className="pf-v6-c-description-list__text"
       >
         Every day at 0 1 * * *
         <div
-          className="pf-c-helper-text"
+          className="pf-v6-c-helper-text"
         >
           <div
-            className="pf-c-helper-text__item pf-m-indeterminate"
+            className="pf-v6-c-helper-text__item pf-m-indeterminate"
           >
             <span
-              className="pf-c-helper-text__item-text"
+              className="pf-v6-c-helper-text__item-icon"
+            >
+              <svg
+                aria-hidden={true}
+                aria-labelledby={null}
+                className="pf-v6-svg"
+                fill="currentColor"
+                height="1em"
+                role="img"
+                viewBox="0 0 448 512"
+                width="1em"
+              >
+                <path
+                  d="M416 208H32c-17.67 0-32 14.33-32 32v32c0 17.67 14.33 32 32 32h384c17.67 0 32-14.33 32-32v-32c0-17.67-14.33-32-32-32z"
+                />
+              </svg>
+            </span>
+            <span
+              className="pf-v6-c-helper-text__item-text"
             >
               Next run: 2 hours ago (Jan 15, 2:30 p.m.)
+              <span
+                className="pf-v6-screen-reader"
+              >
+                : 
+                indeterminate status
+                ;
+              </span>
             </span>
           </div>
         </div>
         <div
-          className="pf-c-helper-text"
+          className="pf-v6-c-helper-text"
         >
           <div
-            className="pf-c-helper-text__item pf-m-indeterminate"
+            className="pf-v6-c-helper-text__item pf-m-indeterminate"
           >
             <span
-              className="pf-c-helper-text__item-text"
+              className="pf-v6-c-helper-text__item-icon"
+            >
+              <svg
+                aria-hidden={true}
+                aria-labelledby={null}
+                className="pf-v6-svg"
+                fill="currentColor"
+                height="1em"
+                role="img"
+                viewBox="0 0 448 512"
+                width="1em"
+              >
+                <path
+                  d="M416 208H32c-17.67 0-32 14.33-32 32v32c0 17.67 14.33 32 32 32h384c17.67 0 32-14.33 32-32v-32c0-17.67-14.33-32-32-32z"
+                />
+              </svg>
+            </span>
+            <span
+              className="pf-v6-c-helper-text__item-text"
             >
               Backup will run when the workspace stops.
+              <span
+                className="pf-v6-screen-reader"
+              >
+                : 
+                indeterminate status
+                ;
+              </span>
             </span>
           </div>
         </div>
@@ -435,44 +630,44 @@ exports[`BackupTabInfo success snapshot - success running 1`] = `
     </dd>
   </div>
   <div
-    className="pf-c-description-list__group"
+    className="pf-v6-c-description-list__group"
   >
     <dt
-      className="pf-c-description-list__term"
+      className="pf-v6-c-description-list__term"
     >
       <span
-        className="pf-c-description-list__text"
+        className="pf-v6-c-description-list__text"
       >
         Last Backup
       </span>
     </dt>
     <dd
-      className="pf-c-description-list__description"
+      className="pf-v6-c-description-list__description"
     >
       <div
-        className="pf-c-description-list__text"
+        className="pf-v6-c-description-list__text"
       >
         2 hours ago (Jan 15, 2:30 p.m.)
       </div>
     </dd>
   </div>
   <div
-    className="pf-c-description-list__group"
+    className="pf-v6-c-description-list__group"
   >
     <dt
-      className="pf-c-description-list__term"
+      className="pf-v6-c-description-list__term"
     >
       <span
-        className="pf-c-description-list__text"
+        className="pf-v6-c-description-list__text"
       >
         Backup Image
       </span>
     </dt>
     <dd
-      className="pf-c-description-list__description"
+      className="pf-v6-c-description-list__description"
     >
       <div
-        className="pf-c-description-list__text"
+        className="pf-v6-c-description-list__text"
       >
         <div
           data-testid="clipboard-copy"
@@ -487,25 +682,25 @@ exports[`BackupTabInfo success snapshot - success running 1`] = `
 
 exports[`BackupTabInfo success snapshot - success stopped 1`] = `
 <dl
-  className="pf-c-description-list pf-m-horizontal"
+  className="pf-v6-c-description-list pf-m-horizontal"
 >
   <div
-    className="pf-c-description-list__group"
+    className="pf-v6-c-description-list__group"
   >
     <dt
-      className="pf-c-description-list__term"
+      className="pf-v6-c-description-list__term"
     >
       <span
-        className="pf-c-description-list__text"
+        className="pf-v6-c-description-list__text"
       >
         Status
       </span>
     </dt>
     <dd
-      className="pf-c-description-list__description"
+      className="pf-v6-c-description-list__description"
     >
       <div
-        className="pf-c-description-list__text"
+        className="pf-v6-c-description-list__text"
       >
         <span
           data-testid="backup-status-badge"
@@ -516,47 +711,97 @@ exports[`BackupTabInfo success snapshot - success stopped 1`] = `
     </dd>
   </div>
   <div
-    className="pf-c-description-list__group"
+    className="pf-v6-c-description-list__group"
   >
     <dt
-      className="pf-c-description-list__term"
+      className="pf-v6-c-description-list__term"
     >
       <span
-        className="pf-c-description-list__text"
+        className="pf-v6-c-description-list__text"
       >
         Backup Schedule
       </span>
     </dt>
     <dd
-      className="pf-c-description-list__description"
+      className="pf-v6-c-description-list__description"
     >
       <div
-        className="pf-c-description-list__text"
+        className="pf-v6-c-description-list__text"
       >
         Every day at 0 1 * * *
         <div
-          className="pf-c-helper-text"
+          className="pf-v6-c-helper-text"
         >
           <div
-            className="pf-c-helper-text__item pf-m-indeterminate"
+            className="pf-v6-c-helper-text__item pf-m-indeterminate"
           >
             <span
-              className="pf-c-helper-text__item-text"
+              className="pf-v6-c-helper-text__item-icon"
+            >
+              <svg
+                aria-hidden={true}
+                aria-labelledby={null}
+                className="pf-v6-svg"
+                fill="currentColor"
+                height="1em"
+                role="img"
+                viewBox="0 0 448 512"
+                width="1em"
+              >
+                <path
+                  d="M416 208H32c-17.67 0-32 14.33-32 32v32c0 17.67 14.33 32 32 32h384c17.67 0 32-14.33 32-32v-32c0-17.67-14.33-32-32-32z"
+                />
+              </svg>
+            </span>
+            <span
+              className="pf-v6-c-helper-text__item-text"
             >
               Next run: 2 hours ago (Jan 15, 2:30 p.m.)
+              <span
+                className="pf-v6-screen-reader"
+              >
+                : 
+                indeterminate status
+                ;
+              </span>
             </span>
           </div>
         </div>
         <div
-          className="pf-c-helper-text"
+          className="pf-v6-c-helper-text"
         >
           <div
-            className="pf-c-helper-text__item pf-m-indeterminate"
+            className="pf-v6-c-helper-text__item pf-m-indeterminate"
           >
             <span
-              className="pf-c-helper-text__item-text"
+              className="pf-v6-c-helper-text__item-icon"
+            >
+              <svg
+                aria-hidden={true}
+                aria-labelledby={null}
+                className="pf-v6-svg"
+                fill="currentColor"
+                height="1em"
+                role="img"
+                viewBox="0 0 448 512"
+                width="1em"
+              >
+                <path
+                  d="M416 208H32c-17.67 0-32 14.33-32 32v32c0 17.67 14.33 32 32 32h384c17.67 0 32-14.33 32-32v-32c0-17.67-14.33-32-32-32z"
+                />
+              </svg>
+            </span>
+            <span
+              className="pf-v6-c-helper-text__item-text"
             >
               Backup is current.
+              <span
+                className="pf-v6-screen-reader"
+              >
+                : 
+                indeterminate status
+                ;
+              </span>
             </span>
           </div>
         </div>
@@ -564,44 +809,44 @@ exports[`BackupTabInfo success snapshot - success stopped 1`] = `
     </dd>
   </div>
   <div
-    className="pf-c-description-list__group"
+    className="pf-v6-c-description-list__group"
   >
     <dt
-      className="pf-c-description-list__term"
+      className="pf-v6-c-description-list__term"
     >
       <span
-        className="pf-c-description-list__text"
+        className="pf-v6-c-description-list__text"
       >
         Last Backup
       </span>
     </dt>
     <dd
-      className="pf-c-description-list__description"
+      className="pf-v6-c-description-list__description"
     >
       <div
-        className="pf-c-description-list__text"
+        className="pf-v6-c-description-list__text"
       >
         2 hours ago (Jan 15, 2:30 p.m.)
       </div>
     </dd>
   </div>
   <div
-    className="pf-c-description-list__group"
+    className="pf-v6-c-description-list__group"
   >
     <dt
-      className="pf-c-description-list__term"
+      className="pf-v6-c-description-list__term"
     >
       <span
-        className="pf-c-description-list__text"
+        className="pf-v6-c-description-list__text"
       >
         Backup Image
       </span>
     </dt>
     <dd
-      className="pf-c-description-list__description"
+      className="pf-v6-c-description-list__description"
     >
       <div
-        className="pf-c-description-list__text"
+        className="pf-v6-c-description-list__text"
       >
         <div
           data-testid="clipboard-copy"
@@ -616,25 +861,25 @@ exports[`BackupTabInfo success snapshot - success stopped 1`] = `
 
 exports[`BackupTabInfo unavailable snapshot - unavailable status 1`] = `
 <dl
-  className="pf-c-description-list pf-m-horizontal"
+  className="pf-v6-c-description-list pf-m-horizontal"
 >
   <div
-    className="pf-c-description-list__group"
+    className="pf-v6-c-description-list__group"
   >
     <dt
-      className="pf-c-description-list__term"
+      className="pf-v6-c-description-list__term"
     >
       <span
-        className="pf-c-description-list__text"
+        className="pf-v6-c-description-list__text"
       >
         Status
       </span>
     </dt>
     <dd
-      className="pf-c-description-list__description"
+      className="pf-v6-c-description-list__description"
     >
       <div
-        className="pf-c-description-list__text"
+        className="pf-v6-c-description-list__text"
       >
         <span
           data-testid="backup-status-badge"
@@ -645,47 +890,97 @@ exports[`BackupTabInfo unavailable snapshot - unavailable status 1`] = `
     </dd>
   </div>
   <div
-    className="pf-c-description-list__group"
+    className="pf-v6-c-description-list__group"
   >
     <dt
-      className="pf-c-description-list__term"
+      className="pf-v6-c-description-list__term"
     >
       <span
-        className="pf-c-description-list__text"
+        className="pf-v6-c-description-list__text"
       >
         Backup Schedule
       </span>
     </dt>
     <dd
-      className="pf-c-description-list__description"
+      className="pf-v6-c-description-list__description"
     >
       <div
-        className="pf-c-description-list__text"
+        className="pf-v6-c-description-list__text"
       >
         Every day at 0 1 * * *
         <div
-          className="pf-c-helper-text"
+          className="pf-v6-c-helper-text"
         >
           <div
-            className="pf-c-helper-text__item pf-m-indeterminate"
+            className="pf-v6-c-helper-text__item pf-m-indeterminate"
           >
             <span
-              className="pf-c-helper-text__item-text"
+              className="pf-v6-c-helper-text__item-icon"
+            >
+              <svg
+                aria-hidden={true}
+                aria-labelledby={null}
+                className="pf-v6-svg"
+                fill="currentColor"
+                height="1em"
+                role="img"
+                viewBox="0 0 448 512"
+                width="1em"
+              >
+                <path
+                  d="M416 208H32c-17.67 0-32 14.33-32 32v32c0 17.67 14.33 32 32 32h384c17.67 0 32-14.33 32-32v-32c0-17.67-14.33-32-32-32z"
+                />
+              </svg>
+            </span>
+            <span
+              className="pf-v6-c-helper-text__item-text"
             >
               Next run: 2 hours ago (Jan 15, 2:30 p.m.)
+              <span
+                className="pf-v6-screen-reader"
+              >
+                : 
+                indeterminate status
+                ;
+              </span>
             </span>
           </div>
         </div>
         <div
-          className="pf-c-helper-text"
+          className="pf-v6-c-helper-text"
         >
           <div
-            className="pf-c-helper-text__item pf-m-indeterminate"
+            className="pf-v6-c-helper-text__item pf-m-indeterminate"
           >
             <span
-              className="pf-c-helper-text__item-text"
+              className="pf-v6-c-helper-text__item-icon"
+            >
+              <svg
+                aria-hidden={true}
+                aria-labelledby={null}
+                className="pf-v6-svg"
+                fill="currentColor"
+                height="1em"
+                role="img"
+                viewBox="0 0 448 512"
+                width="1em"
+              >
+                <path
+                  d="M416 208H32c-17.67 0-32 14.33-32 32v32c0 17.67 14.33 32 32 32h384c17.67 0 32-14.33 32-32v-32c0-17.67-14.33-32-32-32z"
+                />
+              </svg>
+            </span>
+            <span
+              className="pf-v6-c-helper-text__item-text"
             >
               Backup image was not found in the registry.
+              <span
+                className="pf-v6-screen-reader"
+              >
+                : 
+                indeterminate status
+                ;
+              </span>
             </span>
           </div>
         </div>

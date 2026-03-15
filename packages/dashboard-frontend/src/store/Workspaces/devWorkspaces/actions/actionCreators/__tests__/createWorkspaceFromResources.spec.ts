@@ -20,7 +20,8 @@ import { createMockStore } from '@/store/__mocks__/mockActionsTestStore';
 import * as clusterInfo from '@/store/ClusterInfo';
 import * as infrastructureNamespaces from '@/store/InfrastructureNamespaces';
 import { verifyAuthorized } from '@/store/SanityCheck';
-import * as serverConfig from '@/store/ServerConfig';
+import * as serverConfigHelpers from '@/store/ServerConfig/helpers';
+import * as serverConfigSelectors from '@/store/ServerConfig/selectors';
 import { createWorkspaceFromResources } from '@/store/Workspaces/devWorkspaces/actions/actionCreators/createWorkspaceFromResources';
 import { getDevWorkspaceClient } from '@/store/Workspaces/devWorkspaces/actions/actionCreators/helpers';
 import { updateDevWorkspaceTemplate } from '@/store/Workspaces/devWorkspaces/actions/actionCreators/helpers/editorImage';
@@ -35,7 +36,8 @@ jest.mock('@eclipse-che/common');
 jest.mock('@/store/SanityCheck');
 jest.mock('@/store/Workspaces/devWorkspaces/actions/actionCreators/helpers');
 jest.mock('@/store/Workspaces/devWorkspaces/actions/actionCreators/helpers/editorImage');
-jest.mock('@/store/ServerConfig');
+jest.mock('@/store/ServerConfig/selectors');
+jest.mock('@/store/ServerConfig/helpers');
 jest.mock('@/store/InfrastructureNamespaces');
 jest.mock('@/store/ClusterInfo');
 
@@ -71,14 +73,16 @@ describe('devWorkspaces, actions', () => {
       jest.spyOn(infrastructureNamespaces, 'selectDefaultNamespace').mockReturnValue({
         name: 'default-namespace',
       } as che.KubernetesNamespace);
-      jest.spyOn(serverConfig, 'selectOpenVSXUrl').mockReturnValue('https://openvsx.org');
-      jest
-        .spyOn(serverConfig, 'selectPluginRegistryUrl')
-        .mockReturnValue('https://plugin-registry.com');
-      jest
-        .spyOn(serverConfig, 'selectPluginRegistryInternalUrl')
-        .mockReturnValue('https://internal-plugin-registry.com');
-      jest.spyOn(serverConfig, 'selectDefaultEditor').mockReturnValue('che-editor');
+      jest.spyOn(serverConfigSelectors, 'selectServerConfigState').mockReturnValue({
+        config: {
+          defaults: {
+            editor: 'che-editor',
+          },
+        },
+        isLoading: false,
+        error: undefined,
+      } as ReturnType<typeof serverConfigSelectors.selectServerConfigState>);
+      jest.spyOn(serverConfigHelpers, 'getDefaultEditor').mockReturnValue('che-editor');
       jest.spyOn(clusterInfo, 'selectApplications').mockReturnValue([
         {
           id: ApplicationId.CLUSTER_CONSOLE,
@@ -121,7 +125,7 @@ describe('devWorkspaces, actions', () => {
         'default-namespace',
         mockWorkspace,
         'che-editor',
-        undefined,
+        'test-workspace',
       );
 
       expect(mockCreateDevWorkspaceTemplate).toHaveBeenCalled();
@@ -165,7 +169,22 @@ describe('devWorkspaces, actions', () => {
         'default-namespace',
         mockWorkspace,
         'custom-editor',
-        undefined,
+        'test-workspace',
+      );
+    });
+
+    it('should use params.name when provided', async () => {
+      const paramsWithName = { name: 'custom-workspace-name' } as Partial<FactoryParams>;
+
+      await store.dispatch(
+        createWorkspaceFromResources(mockWorkspace, mockWorkspaceTemplate, paramsWithName),
+      );
+
+      expect(mockCreateDevWorkspace).toHaveBeenCalledWith(
+        'default-namespace',
+        mockWorkspace,
+        'che-editor',
+        'custom-workspace-name',
       );
     });
 

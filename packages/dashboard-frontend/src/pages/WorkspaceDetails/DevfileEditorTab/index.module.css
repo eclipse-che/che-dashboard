@@ -23,7 +23,6 @@
 
 .editorTab {
   width: calc(100% - 10px);
-  height: 50vh;
 }
 
 .editorTabExpanded {
@@ -32,8 +31,12 @@
   right: 0;
   left: 0;
 
-  height: calc(100vh - 55px);
+  height: 100%;
   padding: 0 20px;
 
-  background-color: var(--pf-global--BackgroundColor--100);
+  background-color: var(--pf-t--global--background--color--primary--default);
+}
+
+.editorTabExpanded div[id='devfile-viewer-id'] {
+  height: calc(100vh - 55px);
 }

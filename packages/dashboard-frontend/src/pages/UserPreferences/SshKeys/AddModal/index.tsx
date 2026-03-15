@@ -11,7 +11,15 @@
  */
 
 import { api } from '@eclipse-che/common';
-import { Button, ButtonVariant, Modal, ModalVariant } from '@patternfly/react-core';
+import {
+  Button,
+  ButtonVariant,
+  Modal,
+  ModalBody,
+  ModalFooter,
+  ModalHeader,
+  ModalVariant,
+} from '@patternfly/react-core';
 import React from 'react';
 
 import { AddModalForm } from '@/pages/UserPreferences/SshKeys/AddModal/Form';
@@ -55,41 +63,34 @@ export class SshKeysAddModal extends React.PureComponent<Props, State> {
     });
   }
 
-  private buildModalFooter(): React.ReactNode {
-    const isDisabled = this.state.isSaveEnabled === false;
-
-    return (
-      <React.Fragment>
-        <Button
-          variant={ButtonVariant.primary}
-          isDisabled={isDisabled}
-          onClick={() => this.handleSaveSshKey()}
-        >
-          Add
-        </Button>
-        <Button variant={ButtonVariant.link} onClick={() => this.handleCloseModal()}>
-          Cancel
-        </Button>
-      </React.Fragment>
-    );
-  }
-
   public render(): React.ReactElement {
     const { isOpen } = this.props;
-
+    const isDisabled = this.state.isSaveEnabled === false;
     const modalTitle = 'Add SSH Keys';
-    const modalFooter = this.buildModalFooter();
 
     return (
       <Modal
         aria-label={modalTitle}
-        title={modalTitle}
         variant={ModalVariant.small}
         isOpen={isOpen}
         onClose={() => this.handleCloseModal()}
-        footer={modalFooter}
       >
-        <AddModalForm onChange={(...args) => this.handleChangeSshKey(...args)} />
+        <ModalHeader title={modalTitle} />
+        <ModalBody>
+          <AddModalForm onChange={(...args) => this.handleChangeSshKey(...args)} />
+        </ModalBody>
+        <ModalFooter>
+          <Button
+            variant={ButtonVariant.primary}
+            isDisabled={isDisabled}
+            onClick={() => this.handleSaveSshKey()}
+          >
+            Add
+          </Button>
+          <Button variant={ButtonVariant.link} onClick={() => this.handleCloseModal()}>
+            Cancel
+          </Button>
+        </ModalFooter>
       </Modal>
     );
   }

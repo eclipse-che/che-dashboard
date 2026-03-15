@@ -22,6 +22,9 @@ import {
   DescriptionListGroup,
   DescriptionListTerm,
   Modal,
+  ModalBody,
+  ModalFooter,
+  ModalHeader,
   ModalVariant,
 } from '@patternfly/react-core';
 import React from 'react';
@@ -50,63 +53,63 @@ export const ConfirmationModal: React.FC<Props> = ({
   return (
     <Modal
       variant={ModalVariant.small}
-      title="Confirm Restore from Backup"
       isOpen={isOpen}
       onClose={onCancel}
       data-testid="restore-confirmation-modal"
-      actions={[
+    >
+      <ModalHeader title="Confirm Restore from Backup" />
+      <ModalBody>
+        {hasBackupConflict && (
+          <Alert
+            variant={AlertVariant.warning}
+            isInline
+            title={`A backup named "${workspaceName}" already exists. The new workspace will be associated with that backup.`}
+            data-testid="backup-conflict-warning"
+          />
+        )}
+        <p>The following workspace will be created and restored from backup:</p>
+        <DescriptionList isHorizontal isCompact>
+          {workspaceName && (
+            <DescriptionListGroup>
+              <DescriptionListTerm>Workspace Name</DescriptionListTerm>
+              <DescriptionListDescription data-testid="confirm-workspace-name">
+                {workspaceName}
+              </DescriptionListDescription>
+            </DescriptionListGroup>
+          )}
+          <DescriptionListGroup>
+            <DescriptionListTerm>Restore Mode</DescriptionListTerm>
+            <DescriptionListDescription data-testid="confirm-restore-mode">
+              {restoreMode === 'default-registry' ? 'Default registry' : 'External registry'}
+            </DescriptionListDescription>
+          </DescriptionListGroup>
+          <DescriptionListGroup>
+            <DescriptionListTerm>Backup Image</DescriptionListTerm>
+            <DescriptionListDescription
+              data-testid="confirm-image-url"
+              style={{ wordBreak: 'break-all' }}
+            >
+              {imageUrl}
+            </DescriptionListDescription>
+          </DescriptionListGroup>
+        </DescriptionList>
+      </ModalBody>
+      <ModalFooter>
         <Button
-          key="confirm"
           variant={ButtonVariant.primary}
           onClick={onConfirm}
           data-testid="restore-confirm-button"
         >
           Restore
-        </Button>,
+        </Button>
         <Button
-          key="cancel"
           variant={ButtonVariant.link}
           onClick={onCancel}
           data-testid="restore-confirm-cancel-button"
         >
           Cancel
-        </Button>,
-      ]}
-    >
-      {hasBackupConflict && (
-        <Alert
-          variant={AlertVariant.warning}
-          isInline
-          title={`A backup named "${workspaceName}" already exists. The new workspace will be associated with that backup.`}
-          data-testid="backup-conflict-warning"
-        />
-      )}
-      <p>The following workspace will be created and restored from backup:</p>
-      <DescriptionList isHorizontal isCompact>
-        {workspaceName && (
-          <DescriptionListGroup>
-            <DescriptionListTerm>Workspace Name</DescriptionListTerm>
-            <DescriptionListDescription data-testid="confirm-workspace-name">
-              {workspaceName}
-            </DescriptionListDescription>
-          </DescriptionListGroup>
-        )}
-        <DescriptionListGroup>
-          <DescriptionListTerm>Restore Mode</DescriptionListTerm>
-          <DescriptionListDescription data-testid="confirm-restore-mode">
-            {restoreMode === 'default-registry' ? 'Default registry' : 'External registry'}
-          </DescriptionListDescription>
-        </DescriptionListGroup>
-        <DescriptionListGroup>
-          <DescriptionListTerm>Backup Image</DescriptionListTerm>
-          <DescriptionListDescription
-            data-testid="confirm-image-url"
-            style={{ wordBreak: 'break-all' }}
-          >
-            {imageUrl}
-          </DescriptionListDescription>
-        </DescriptionListGroup>
-      </DescriptionList>
+        </Button>
+      </ModalFooter>
     </Modal>
   );
 };

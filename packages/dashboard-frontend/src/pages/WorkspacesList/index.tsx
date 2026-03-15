@@ -14,10 +14,9 @@ import 'reflect-metadata';
 
 import { BackupInfo } from '@eclipse-che/common';
 import {
+  Content,
   PageSection,
   PageSectionVariants,
-  Text,
-  TextContent,
   ToggleGroup,
   ToggleGroupItem,
 } from '@patternfly/react-core';
@@ -68,13 +67,11 @@ export default class WorkspacesList extends React.PureComponent<Props, State> {
 
   private handleViewModeChange(viewMode: ViewMode): void {
     this.setState({ viewMode });
-    // Update URL with new view mode
     const newSearch = new URLSearchParams({ view: viewMode }).toString();
     this.props.navigate(`${this.props.location.pathname}?${newSearch}`, { replace: true });
   }
 
   public componentDidUpdate(prevProps: Props): void {
-    // Sync state with URL changes (e.g., browser back/forward)
     if (prevProps.location.search !== this.props.location.search) {
       const viewMode = this.getViewModeFromUrl(this.props.location);
       if (viewMode !== this.state.viewMode) {
@@ -91,20 +88,20 @@ export default class WorkspacesList extends React.PureComponent<Props, State> {
     return (
       <React.Fragment>
         <Head pageName="Workspaces" />
-        <PageSection variant={PageSectionVariants.light}>
-          <TextContent>
-            <Text component={'h1'}>Workspaces</Text>
-            <Text component={'p'}>
+        <PageSection variant={PageSectionVariants.default}>
+          <Content>
+            <Content component="h1">Workspaces</Content>
+            <Content component="p">
               A workspace is where your projects live and run. Create workspaces from stacks that
               define projects, runtimes, and commands.&emsp;
               <a href={workspacesDocsLink} target="_blank" rel="noopener noreferrer">
                 Learn&nbsp;more&nbsp;
                 <ExternalLinkAltIcon />
               </a>
-            </Text>
-          </TextContent>
+            </Content>
+          </Content>
         </PageSection>
-        <PageSection variant={PageSectionVariants.light}>
+        <PageSection variant={PageSectionVariants.default}>
           <ToggleGroup aria-label="View toggle">
             <ToggleGroupItem
               text="Active Workspaces"

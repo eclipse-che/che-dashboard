@@ -294,13 +294,16 @@ describe('BackupsTableView', () => {
     });
 
     test('should navigate to create workspace when "Create from Backup" is clicked', async () => {
+      const user = userEvent.setup();
       renderComponent();
 
       const toggle = screen.getByTestId('actions-dropdown-toggle-my-workspace');
-      await userEvent.click(toggle);
+      await user.click(toggle);
 
-      const createAction = screen.getByTestId('create-from-backup-my-workspace');
-      await userEvent.click(createAction);
+      const menuItems = screen.getAllByRole('menuitem');
+      const createAction = menuItems.find(el => el.textContent?.includes('Create from Backup'));
+      expect(createAction).toBeTruthy();
+      await user.click(createAction!);
 
       expect(mockNavigate).toHaveBeenCalledTimes(1);
       const navigateArg = mockNavigate.mock.calls[0][0];

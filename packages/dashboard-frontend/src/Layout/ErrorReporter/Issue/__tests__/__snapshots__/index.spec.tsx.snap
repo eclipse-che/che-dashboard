@@ -2,27 +2,26 @@
 
 exports[`Issue component should render an unknown error 1`] = `
 <div
-  className="pf-c-content messageContainer"
+  className="pf-v6-c-content messageContainer"
+  data-ouia-component-id="OUIA-Generated-Content-54"
+  data-ouia-component-type="PF6/Content"
+  data-ouia-safe={true}
+  data-pf-content={true}
 >
   <h1
-    className=""
-    data-ouia-component-id="OUIA-Generated-Text-41"
-    data-ouia-component-type="PF4/Text"
+    className="pf-v6-c-content--h1"
+    data-ouia-component-id="OUIA-Generated-Content-55"
+    data-ouia-component-type="PF6/Content"
     data-ouia-safe={true}
     data-pf-content={true}
   >
     <svg
       aria-hidden={true}
       aria-labelledby={null}
-      className="warningIcon"
+      className="pf-v6-svg warningIcon"
       fill="currentColor"
       height="1em"
       role="img"
-      style={
-        {
-          "verticalAlign": "-0.125em",
-        }
-      }
       viewBox="0 0 1088 1024"
       width="1em"
     >
@@ -33,18 +32,18 @@ exports[`Issue component should render an unknown error 1`] = `
     Error
   </h1>
   <pre
-    className="errorMessage"
-    data-ouia-component-id="OUIA-Generated-Text-42"
-    data-ouia-component-type="PF4/Text"
+    className="pf-v6-c-content--pre errorMessage"
+    data-ouia-component-id="OUIA-Generated-Content-56"
+    data-ouia-component-type="PF6/Content"
     data-ouia-safe={true}
     data-pf-content={true}
   >
     Unknown Error Message
   </pre>
   <p
-    className=""
-    data-ouia-component-id="OUIA-Generated-Text-43"
-    data-ouia-component-type="PF4/Text"
+    className="pf-v6-c-content--p"
+    data-ouia-component-id="OUIA-Generated-Content-57"
+    data-ouia-component-type="PF6/Content"
     data-ouia-safe={true}
     data-pf-content={true}
   >
@@ -66,27 +65,26 @@ exports[`Issue component should render an unknown error 1`] = `
 
 exports[`Issue component should render namespace provision error 1`] = `
 <div
-  className="pf-c-content messageContainer"
+  className="pf-v6-c-content messageContainer"
+  data-ouia-component-id="OUIA-Generated-Content-51"
+  data-ouia-component-type="PF6/Content"
+  data-ouia-safe={true}
+  data-pf-content={true}
 >
   <h1
-    className=""
-    data-ouia-component-id="OUIA-Generated-Text-39"
-    data-ouia-component-type="PF4/Text"
+    className="pf-v6-c-content--h1"
+    data-ouia-component-id="OUIA-Generated-Content-52"
+    data-ouia-component-type="PF6/Content"
     data-ouia-safe={true}
     data-pf-content={true}
   >
     <svg
       aria-hidden={true}
       aria-labelledby={null}
-      className="warningIcon"
+      className="pf-v6-svg warningIcon"
       fill="currentColor"
       height="1em"
       role="img"
-      style={
-        {
-          "verticalAlign": "-0.125em",
-        }
-      }
       viewBox="0 0 1088 1024"
       width="1em"
     >
@@ -97,9 +95,9 @@ exports[`Issue component should render namespace provision error 1`] = `
     Error
   </h1>
   <pre
-    className="errorMessage"
-    data-ouia-component-id="OUIA-Generated-Text-40"
-    data-ouia-component-type="PF4/Text"
+    className="pf-v6-c-content--pre errorMessage"
+    data-ouia-component-id="OUIA-Generated-Content-53"
+    data-ouia-component-type="PF6/Content"
     data-ouia-safe={true}
     data-pf-content={true}
   >
@@ -110,27 +108,26 @@ exports[`Issue component should render namespace provision error 1`] = `
 
 exports[`Issue component should render the SSO error 1`] = `
 <div
-  className="pf-c-content messageContainer"
+  className="pf-v6-c-content messageContainer"
+  data-ouia-component-id="OUIA-Generated-Content-5"
+  data-ouia-component-type="PF6/Content"
+  data-ouia-safe={true}
+  data-pf-content={true}
 >
   <h1
-    className=""
-    data-ouia-component-id="OUIA-Generated-Text-4"
-    data-ouia-component-type="PF4/Text"
+    className="pf-v6-c-content--h1"
+    data-ouia-component-id="OUIA-Generated-Content-6"
+    data-ouia-component-type="PF6/Content"
     data-ouia-safe={true}
     data-pf-content={true}
   >
     <svg
       aria-hidden={true}
       aria-labelledby={null}
-      className="warningIcon"
+      className="pf-v6-svg warningIcon"
       fill="currentColor"
       height="1em"
       role="img"
-      style={
-        {
-          "verticalAlign": "-0.125em",
-        }
-      }
       viewBox="0 0 1088 1024"
       width="1em"
     >
@@ -141,9 +138,9 @@ exports[`Issue component should render the SSO error 1`] = `
     SSO Error
   </h1>
   <p
-    className=""
-    data-ouia-component-id="OUIA-Generated-Text-5"
-    data-ouia-component-type="PF4/Text"
+    className="pf-v6-c-content--p"
+    data-ouia-component-id="OUIA-Generated-Content-7"
+    data-ouia-component-type="PF6/Content"
     data-ouia-safe={true}
     data-pf-content={true}
   >
@@ -151,18 +148,18 @@ exports[`Issue component should render the SSO error 1`] = `
     :
   </p>
   <pre
-    className="errorMessage"
-    data-ouia-component-id="OUIA-Generated-Text-6"
-    data-ouia-component-type="PF4/Text"
+    className="pf-v6-c-content--pre errorMessage"
+    data-ouia-component-id="OUIA-Generated-Content-8"
+    data-ouia-component-type="PF6/Content"
     data-ouia-safe={true}
     data-pf-content={true}
   >
     SSO Error Message
   </pre>
   <p
-    className=""
-    data-ouia-component-id="OUIA-Generated-Text-7"
-    data-ouia-component-type="PF4/Text"
+    className="pf-v6-c-content--p"
+    data-ouia-component-id="OUIA-Generated-Content-9"
+    data-ouia-component-type="PF6/Content"
     data-ouia-safe={true}
     data-pf-content={true}
   >
@@ -184,27 +181,26 @@ exports[`Issue component should render the SSO error 1`] = `
 
 exports[`Issue component should render the sessionExpired error 1`] = `
 <div
-  className="pf-c-content messageContainer"
+  className="pf-v6-c-content messageContainer"
+  data-ouia-component-id="OUIA-Generated-Content-1"
+  data-ouia-component-type="PF6/Content"
+  data-ouia-safe={true}
+  data-pf-content={true}
 >
   <h1
-    className=""
-    data-ouia-component-id="OUIA-Generated-Text-1"
-    data-ouia-component-type="PF4/Text"
+    className="pf-v6-c-content--h1"
+    data-ouia-component-id="OUIA-Generated-Content-2"
+    data-ouia-component-type="PF6/Content"
     data-ouia-safe={true}
     data-pf-content={true}
   >
     <svg
       aria-hidden={true}
       aria-labelledby={null}
-      className="warningIcon"
+      className="pf-v6-svg warningIcon"
       fill="currentColor"
       height="1em"
       role="img"
-      style={
-        {
-          "verticalAlign": "-0.125em",
-        }
-      }
       viewBox="0 0 1088 1024"
       width="1em"
     >
@@ -215,34 +211,36 @@ exports[`Issue component should render the sessionExpired error 1`] = `
     Error
   </h1>
   <pre
-    className="errorMessage"
-    data-ouia-component-id="OUIA-Generated-Text-2"
-    data-ouia-component-type="PF4/Text"
+    className="pf-v6-c-content--pre errorMessage"
+    data-ouia-component-id="OUIA-Generated-Content-3"
+    data-ouia-component-type="PF6/Content"
     data-ouia-safe={true}
     data-pf-content={true}
   >
     401 Unauthorized
   </pre>
   <p
-    className=""
-    data-ouia-component-id="OUIA-Generated-Text-3"
-    data-ouia-component-type="PF4/Text"
+    className="pf-v6-c-content--p"
+    data-ouia-component-id="OUIA-Generated-Content-4"
+    data-ouia-component-type="PF6/Content"
     data-ouia-safe={true}
     data-pf-content={true}
   >
     <button
-      aria-disabled={false}
       aria-label={null}
-      className="pf-c-button pf-m-link pf-m-inline"
+      className="pf-v6-c-button pf-m-link pf-m-inline"
       data-ouia-component-id="OUIA-Generated-Button-link-1"
-      data-ouia-component-type="PF4/Button"
+      data-ouia-component-type="PF6/Button"
       data-ouia-safe={true}
       disabled={false}
       onClick={[Function]}
-      role={null}
       type="button"
     >
-      Sign in
+      <span
+        className="pf-v6-c-button__text"
+      >
+        Sign in
+      </span>
     </button>
   </p>
 </div>
@@ -250,27 +248,26 @@ exports[`Issue component should render the sessionExpired error 1`] = `
 
 exports[`Issue component should render the workspaceInactive error 1`] = `
 <div
-  className="pf-c-content messageContainer"
+  className="pf-v6-c-content messageContainer"
+  data-ouia-component-id="OUIA-Generated-Content-10"
+  data-ouia-component-type="PF6/Content"
+  data-ouia-safe={true}
+  data-pf-content={true}
 >
   <h1
-    className=""
-    data-ouia-component-id="OUIA-Generated-Text-8"
-    data-ouia-component-type="PF4/Text"
+    className="pf-v6-c-content--h1"
+    data-ouia-component-id="OUIA-Generated-Content-11"
+    data-ouia-component-type="PF6/Content"
     data-ouia-safe={true}
     data-pf-content={true}
   >
     <svg
       aria-hidden={true}
       aria-labelledby={null}
-      className="warningIcon"
+      className="pf-v6-svg warningIcon"
       fill="currentColor"
       height="1em"
       role="img"
-      style={
-        {
-          "verticalAlign": "-0.125em",
-        }
-      }
       viewBox="0 0 1088 1024"
       width="1em"
     >
@@ -281,9 +278,9 @@ exports[`Issue component should render the workspaceInactive error 1`] = `
     Warning
   </h1>
   <p
-    className=""
-    data-ouia-component-id="OUIA-Generated-Text-9"
-    data-ouia-component-type="PF4/Text"
+    className="pf-v6-c-content--p"
+    data-ouia-component-id="OUIA-Generated-Content-12"
+    data-ouia-component-type="PF6/Content"
     data-ouia-safe={true}
     data-pf-content={true}
   >
@@ -296,9 +293,9 @@ exports[`Issue component should render the workspaceInactive error 1`] = `
      to continue using your workspace.
   </p>
   <p
-    className=""
-    data-ouia-component-id="OUIA-Generated-Text-10"
-    data-ouia-component-type="PF4/Text"
+    className="pf-v6-c-content--p"
+    data-ouia-component-id="OUIA-Generated-Content-13"
+    data-ouia-component-type="PF6/Content"
     data-ouia-safe={true}
     data-pf-content={true}
   >
@@ -313,27 +310,26 @@ exports[`Issue component should render the workspaceInactive error 1`] = `
 
 exports[`Issue component should render the workspaceInactive error with timeout with minutes 1`] = `
 <div
-  className="pf-c-content messageContainer"
+  className="pf-v6-c-content messageContainer"
+  data-ouia-component-id="OUIA-Generated-Content-18"
+  data-ouia-component-type="PF6/Content"
+  data-ouia-safe={true}
+  data-pf-content={true}
 >
   <h1
-    className=""
-    data-ouia-component-id="OUIA-Generated-Text-14"
-    data-ouia-component-type="PF4/Text"
+    className="pf-v6-c-content--h1"
+    data-ouia-component-id="OUIA-Generated-Content-19"
+    data-ouia-component-type="PF6/Content"
     data-ouia-safe={true}
     data-pf-content={true}
   >
     <svg
       aria-hidden={true}
       aria-labelledby={null}
-      className="warningIcon"
+      className="pf-v6-svg warningIcon"
       fill="currentColor"
       height="1em"
       role="img"
-      style={
-        {
-          "verticalAlign": "-0.125em",
-        }
-      }
       viewBox="0 0 1088 1024"
       width="1em"
     >
@@ -344,9 +340,9 @@ exports[`Issue component should render the workspaceInactive error with timeout 
     Warning
   </h1>
   <p
-    className=""
-    data-ouia-component-id="OUIA-Generated-Text-15"
-    data-ouia-component-type="PF4/Text"
+    className="pf-v6-c-content--p"
+    data-ouia-component-id="OUIA-Generated-Content-20"
+    data-ouia-component-type="PF6/Content"
     data-ouia-safe={true}
     data-pf-content={true}
   >
@@ -359,9 +355,9 @@ exports[`Issue component should render the workspaceInactive error with timeout 
      to continue using your workspace.
   </p>
   <p
-    className=""
-    data-ouia-component-id="OUIA-Generated-Text-16"
-    data-ouia-component-type="PF4/Text"
+    className="pf-v6-c-content--p"
+    data-ouia-component-id="OUIA-Generated-Content-21"
+    data-ouia-component-type="PF6/Content"
     data-ouia-safe={true}
     data-pf-content={true}
   >
@@ -376,27 +372,26 @@ exports[`Issue component should render the workspaceInactive error with timeout 
 
 exports[`Issue component should render the workspaceInactive error with timeout with minutes and seconds 1`] = `
 <div
-  className="pf-c-content messageContainer"
+  className="pf-v6-c-content messageContainer"
+  data-ouia-component-id="OUIA-Generated-Content-22"
+  data-ouia-component-type="PF6/Content"
+  data-ouia-safe={true}
+  data-pf-content={true}
 >
   <h1
-    className=""
-    data-ouia-component-id="OUIA-Generated-Text-17"
-    data-ouia-component-type="PF4/Text"
+    className="pf-v6-c-content--h1"
+    data-ouia-component-id="OUIA-Generated-Content-23"
+    data-ouia-component-type="PF6/Content"
     data-ouia-safe={true}
     data-pf-content={true}
   >
     <svg
       aria-hidden={true}
       aria-labelledby={null}
-      className="warningIcon"
+      className="pf-v6-svg warningIcon"
       fill="currentColor"
       height="1em"
       role="img"
-      style={
-        {
-          "verticalAlign": "-0.125em",
-        }
-      }
       viewBox="0 0 1088 1024"
       width="1em"
     >
@@ -407,9 +402,9 @@ exports[`Issue component should render the workspaceInactive error with timeout 
     Warning
   </h1>
   <p
-    className=""
-    data-ouia-component-id="OUIA-Generated-Text-18"
-    data-ouia-component-type="PF4/Text"
+    className="pf-v6-c-content--p"
+    data-ouia-component-id="OUIA-Generated-Content-24"
+    data-ouia-component-type="PF6/Content"
     data-ouia-safe={true}
     data-pf-content={true}
   >
@@ -422,9 +417,9 @@ exports[`Issue component should render the workspaceInactive error with timeout 
      to continue using your workspace.
   </p>
   <p
-    className=""
-    data-ouia-component-id="OUIA-Generated-Text-19"
-    data-ouia-component-type="PF4/Text"
+    className="pf-v6-c-content--p"
+    data-ouia-component-id="OUIA-Generated-Content-25"
+    data-ouia-component-type="PF6/Content"
     data-ouia-safe={true}
     data-pf-content={true}
   >
@@ -439,27 +434,26 @@ exports[`Issue component should render the workspaceInactive error with timeout 
 
 exports[`Issue component should render the workspaceInactive error with timeout with seconds 1`] = `
 <div
-  className="pf-c-content messageContainer"
+  className="pf-v6-c-content messageContainer"
+  data-ouia-component-id="OUIA-Generated-Content-14"
+  data-ouia-component-type="PF6/Content"
+  data-ouia-safe={true}
+  data-pf-content={true}
 >
   <h1
-    className=""
-    data-ouia-component-id="OUIA-Generated-Text-11"
-    data-ouia-component-type="PF4/Text"
+    className="pf-v6-c-content--h1"
+    data-ouia-component-id="OUIA-Generated-Content-15"
+    data-ouia-component-type="PF6/Content"
     data-ouia-safe={true}
     data-pf-content={true}
   >
     <svg
       aria-hidden={true}
       aria-labelledby={null}
-      className="warningIcon"
+      className="pf-v6-svg warningIcon"
       fill="currentColor"
       height="1em"
       role="img"
-      style={
-        {
-          "verticalAlign": "-0.125em",
-        }
-      }
       viewBox="0 0 1088 1024"
       width="1em"
     >
@@ -470,9 +464,9 @@ exports[`Issue component should render the workspaceInactive error with timeout 
     Warning
   </h1>
   <p
-    className=""
-    data-ouia-component-id="OUIA-Generated-Text-12"
-    data-ouia-component-type="PF4/Text"
+    className="pf-v6-c-content--p"
+    data-ouia-component-id="OUIA-Generated-Content-16"
+    data-ouia-component-type="PF6/Content"
     data-ouia-safe={true}
     data-pf-content={true}
   >
@@ -485,9 +479,9 @@ exports[`Issue component should render the workspaceInactive error with timeout 
      to continue using your workspace.
   </p>
   <p
-    className=""
-    data-ouia-component-id="OUIA-Generated-Text-13"
-    data-ouia-component-type="PF4/Text"
+    className="pf-v6-c-content--p"
+    data-ouia-component-id="OUIA-Generated-Content-17"
+    data-ouia-component-type="PF6/Content"
     data-ouia-safe={true}
     data-pf-content={true}
   >
@@ -502,27 +496,26 @@ exports[`Issue component should render the workspaceInactive error with timeout 
 
 exports[`Issue component should render the workspaceRunTimeout error 1`] = `
 <div
-  className="pf-c-content messageContainer"
+  className="pf-v6-c-content messageContainer"
+  data-ouia-component-id="OUIA-Generated-Content-26"
+  data-ouia-component-type="PF6/Content"
+  data-ouia-safe={true}
+  data-pf-content={true}
 >
   <h1
-    className=""
-    data-ouia-component-id="OUIA-Generated-Text-20"
-    data-ouia-component-type="PF4/Text"
+    className="pf-v6-c-content--h1"
+    data-ouia-component-id="OUIA-Generated-Content-27"
+    data-ouia-component-type="PF6/Content"
     data-ouia-safe={true}
     data-pf-content={true}
   >
     <svg
       aria-hidden={true}
       aria-labelledby={null}
-      className="warningIcon"
+      className="pf-v6-svg warningIcon"
       fill="currentColor"
       height="1em"
       role="img"
-      style={
-        {
-          "verticalAlign": "-0.125em",
-        }
-      }
       viewBox="0 0 1088 1024"
       width="1em"
     >
@@ -533,9 +526,9 @@ exports[`Issue component should render the workspaceRunTimeout error 1`] = `
     Warning
   </h1>
   <p
-    className=""
-    data-ouia-component-id="OUIA-Generated-Text-21"
-    data-ouia-component-type="PF4/Text"
+    className="pf-v6-c-content--p"
+    data-ouia-component-id="OUIA-Generated-Content-28"
+    data-ouia-component-type="PF6/Content"
     data-ouia-safe={true}
     data-pf-content={true}
   >
@@ -548,9 +541,9 @@ exports[`Issue component should render the workspaceRunTimeout error 1`] = `
      to continue using your workspace.
   </p>
   <p
-    className=""
-    data-ouia-component-id="OUIA-Generated-Text-22"
-    data-ouia-component-type="PF4/Text"
+    className="pf-v6-c-content--p"
+    data-ouia-component-id="OUIA-Generated-Content-29"
+    data-ouia-component-type="PF6/Content"
     data-ouia-safe={true}
     data-pf-content={true}
   >
@@ -565,27 +558,26 @@ exports[`Issue component should render the workspaceRunTimeout error 1`] = `
 
 exports[`Issue component should render the workspaceRunTimeout error with timeout with minutes 1`] = `
 <div
-  className="pf-c-content messageContainer"
+  className="pf-v6-c-content messageContainer"
+  data-ouia-component-id="OUIA-Generated-Content-34"
+  data-ouia-component-type="PF6/Content"
+  data-ouia-safe={true}
+  data-pf-content={true}
 >
   <h1
-    className=""
-    data-ouia-component-id="OUIA-Generated-Text-26"
-    data-ouia-component-type="PF4/Text"
+    className="pf-v6-c-content--h1"
+    data-ouia-component-id="OUIA-Generated-Content-35"
+    data-ouia-component-type="PF6/Content"
     data-ouia-safe={true}
     data-pf-content={true}
   >
     <svg
       aria-hidden={true}
       aria-labelledby={null}
-      className="warningIcon"
+      className="pf-v6-svg warningIcon"
       fill="currentColor"
       height="1em"
       role="img"
-      style={
-        {
-          "verticalAlign": "-0.125em",
-        }
-      }
       viewBox="0 0 1088 1024"
       width="1em"
     >
@@ -596,9 +588,9 @@ exports[`Issue component should render the workspaceRunTimeout error with timeou
     Warning
   </h1>
   <p
-    className=""
-    data-ouia-component-id="OUIA-Generated-Text-27"
-    data-ouia-component-type="PF4/Text"
+    className="pf-v6-c-content--p"
+    data-ouia-component-id="OUIA-Generated-Content-36"
+    data-ouia-component-type="PF6/Content"
     data-ouia-safe={true}
     data-pf-content={true}
   >
@@ -611,9 +603,9 @@ exports[`Issue component should render the workspaceRunTimeout error with timeou
      to continue using your workspace.
   </p>
   <p
-    className=""
-    data-ouia-component-id="OUIA-Generated-Text-28"
-    data-ouia-component-type="PF4/Text"
+    className="pf-v6-c-content--p"
+    data-ouia-component-id="OUIA-Generated-Content-37"
+    data-ouia-component-type="PF6/Content"
     data-ouia-safe={true}
     data-pf-content={true}
   >
@@ -628,27 +620,26 @@ exports[`Issue component should render the workspaceRunTimeout error with timeou
 
 exports[`Issue component should render the workspaceRunTimeout error with timeout with minutes and seconds 1`] = `
 <div
-  className="pf-c-content messageContainer"
+  className="pf-v6-c-content messageContainer"
+  data-ouia-component-id="OUIA-Generated-Content-38"
+  data-ouia-component-type="PF6/Content"
+  data-ouia-safe={true}
+  data-pf-content={true}
 >
   <h1
-    className=""
-    data-ouia-component-id="OUIA-Generated-Text-29"
-    data-ouia-component-type="PF4/Text"
+    className="pf-v6-c-content--h1"
+    data-ouia-component-id="OUIA-Generated-Content-39"
+    data-ouia-component-type="PF6/Content"
     data-ouia-safe={true}
     data-pf-content={true}
   >
     <svg
       aria-hidden={true}
       aria-labelledby={null}
-      className="warningIcon"
+      className="pf-v6-svg warningIcon"
       fill="currentColor"
       height="1em"
       role="img"
-      style={
-        {
-          "verticalAlign": "-0.125em",
-        }
-      }
       viewBox="0 0 1088 1024"
       width="1em"
     >
@@ -659,9 +650,9 @@ exports[`Issue component should render the workspaceRunTimeout error with timeou
     Warning
   </h1>
   <p
-    className=""
-    data-ouia-component-id="OUIA-Generated-Text-30"
-    data-ouia-component-type="PF4/Text"
+    className="pf-v6-c-content--p"
+    data-ouia-component-id="OUIA-Generated-Content-40"
+    data-ouia-component-type="PF6/Content"
     data-ouia-safe={true}
     data-pf-content={true}
   >
@@ -674,9 +665,9 @@ exports[`Issue component should render the workspaceRunTimeout error with timeou
      to continue using your workspace.
   </p>
   <p
-    className=""
-    data-ouia-component-id="OUIA-Generated-Text-31"
-    data-ouia-component-type="PF4/Text"
+    className="pf-v6-c-content--p"
+    data-ouia-component-id="OUIA-Generated-Content-41"
+    data-ouia-component-type="PF6/Content"
     data-ouia-safe={true}
     data-pf-content={true}
   >
@@ -691,27 +682,26 @@ exports[`Issue component should render the workspaceRunTimeout error with timeou
 
 exports[`Issue component should render the workspaceRunTimeout error with timeout with seconds 1`] = `
 <div
-  className="pf-c-content messageContainer"
+  className="pf-v6-c-content messageContainer"
+  data-ouia-component-id="OUIA-Generated-Content-30"
+  data-ouia-component-type="PF6/Content"
+  data-ouia-safe={true}
+  data-pf-content={true}
 >
   <h1
-    className=""
-    data-ouia-component-id="OUIA-Generated-Text-23"
-    data-ouia-component-type="PF4/Text"
+    className="pf-v6-c-content--h1"
+    data-ouia-component-id="OUIA-Generated-Content-31"
+    data-ouia-component-type="PF6/Content"
     data-ouia-safe={true}
     data-pf-content={true}
   >
     <svg
       aria-hidden={true}
       aria-labelledby={null}
-      className="warningIcon"
+      className="pf-v6-svg warningIcon"
       fill="currentColor"
       height="1em"
       role="img"
-      style={
-        {
-          "verticalAlign": "-0.125em",
-        }
-      }
       viewBox="0 0 1088 1024"
       width="1em"
     >
@@ -722,9 +712,9 @@ exports[`Issue component should render the workspaceRunTimeout error with timeou
     Warning
   </h1>
   <p
-    className=""
-    data-ouia-component-id="OUIA-Generated-Text-24"
-    data-ouia-component-type="PF4/Text"
+    className="pf-v6-c-content--p"
+    data-ouia-component-id="OUIA-Generated-Content-32"
+    data-ouia-component-type="PF6/Content"
     data-ouia-safe={true}
     data-pf-content={true}
   >
@@ -737,9 +727,9 @@ exports[`Issue component should render the workspaceRunTimeout error with timeou
      to continue using your workspace.
   </p>
   <p
-    className=""
-    data-ouia-component-id="OUIA-Generated-Text-25"
-    data-ouia-component-type="PF4/Text"
+    className="pf-v6-c-content--p"
+    data-ouia-component-id="OUIA-Generated-Content-33"
+    data-ouia-component-type="PF6/Content"
     data-ouia-safe={true}
     data-pf-content={true}
   >
@@ -754,27 +744,26 @@ exports[`Issue component should render the workspaceRunTimeout error with timeou
 
 exports[`Issue component should render the workspaceStopped error 1`] = `
 <div
-  className="pf-c-content messageContainer"
+  className="pf-v6-c-content messageContainer"
+  data-ouia-component-id="OUIA-Generated-Content-47"
+  data-ouia-component-type="PF6/Content"
+  data-ouia-safe={true}
+  data-pf-content={true}
 >
   <h1
-    className=""
-    data-ouia-component-id="OUIA-Generated-Text-36"
-    data-ouia-component-type="PF4/Text"
+    className="pf-v6-c-content--h1"
+    data-ouia-component-id="OUIA-Generated-Content-48"
+    data-ouia-component-type="PF6/Content"
     data-ouia-safe={true}
     data-pf-content={true}
   >
     <svg
       aria-hidden={true}
       aria-labelledby={null}
-      className="infoIcon"
+      className="pf-v6-svg infoIcon"
       fill="currentColor"
       height="1em"
       role="img"
-      style={
-        {
-          "verticalAlign": "-0.125em",
-        }
-      }
       viewBox="0 0 192 512"
       width="1em"
     >
@@ -785,9 +774,9 @@ exports[`Issue component should render the workspaceStopped error 1`] = `
     Info
   </h1>
   <p
-    className=""
-    data-ouia-component-id="OUIA-Generated-Text-37"
-    data-ouia-component-type="PF4/Text"
+    className="pf-v6-c-content--p"
+    data-ouia-component-id="OUIA-Generated-Content-49"
+    data-ouia-component-type="PF6/Content"
     data-ouia-safe={true}
     data-pf-content={true}
   >
@@ -800,9 +789,9 @@ exports[`Issue component should render the workspaceStopped error 1`] = `
      to continue using your workspace.
   </p>
   <p
-    className=""
-    data-ouia-component-id="OUIA-Generated-Text-38"
-    data-ouia-component-type="PF4/Text"
+    className="pf-v6-c-content--p"
+    data-ouia-component-id="OUIA-Generated-Content-50"
+    data-ouia-component-type="PF6/Content"
     data-ouia-safe={true}
     data-pf-content={true}
   >
@@ -817,27 +806,26 @@ exports[`Issue component should render the workspaceStopped error 1`] = `
 
 exports[`Issue component should render the workspaceStoppedError error 1`] = `
 <div
-  className="pf-c-content messageContainer"
+  className="pf-v6-c-content messageContainer"
+  data-ouia-component-id="OUIA-Generated-Content-42"
+  data-ouia-component-type="PF6/Content"
+  data-ouia-safe={true}
+  data-pf-content={true}
 >
   <h1
-    className=""
-    data-ouia-component-id="OUIA-Generated-Text-32"
-    data-ouia-component-type="PF4/Text"
+    className="pf-v6-c-content--h1"
+    data-ouia-component-id="OUIA-Generated-Content-43"
+    data-ouia-component-type="PF6/Content"
     data-ouia-safe={true}
     data-pf-content={true}
   >
     <svg
       aria-hidden={true}
       aria-labelledby={null}
-      className="warningIcon"
+      className="pf-v6-svg warningIcon"
       fill="currentColor"
       height="1em"
       role="img"
-      style={
-        {
-          "verticalAlign": "-0.125em",
-        }
-      }
       viewBox="0 0 1088 1024"
       width="1em"
     >
@@ -848,18 +836,18 @@ exports[`Issue component should render the workspaceStoppedError error 1`] = `
     Workspace failed
   </h1>
   <pre
-    className="errorMessage"
-    data-ouia-component-id="OUIA-Generated-Text-33"
-    data-ouia-component-type="PF4/Text"
+    className="pf-v6-c-content--pre errorMessage"
+    data-ouia-component-id="OUIA-Generated-Content-44"
+    data-ouia-component-type="PF6/Content"
     data-ouia-safe={true}
     data-pf-content={true}
   >
     workspaceStoppedError error message
   </pre>
   <p
-    className=""
-    data-ouia-component-id="OUIA-Generated-Text-34"
-    data-ouia-component-type="PF4/Text"
+    className="pf-v6-c-content--p"
+    data-ouia-component-id="OUIA-Generated-Content-45"
+    data-ouia-component-type="PF6/Content"
     data-ouia-safe={true}
     data-pf-content={true}
   >
@@ -870,9 +858,9 @@ exports[`Issue component should render the workspaceStoppedError error 1`] = `
     </a>
   </p>
   <p
-    className=""
-    data-ouia-component-id="OUIA-Generated-Text-35"
-    data-ouia-component-type="PF4/Text"
+    className="pf-v6-c-content--p"
+    data-ouia-component-id="OUIA-Generated-Content-46"
+    data-ouia-component-type="PF6/Content"
     data-ouia-safe={true}
     data-pf-content={true}
   >

@@ -47,13 +47,6 @@ export function getMessage(error: unknown): string {
         return body.message;
       }
     }
-    if ((error as any).body) {
-      // for some reason, the error message could be in response body
-      const body = (error as any).body;
-      if (body && body.message) {
-        return body.message;
-      }
-    }
     return statusCode.toString();
   }
 

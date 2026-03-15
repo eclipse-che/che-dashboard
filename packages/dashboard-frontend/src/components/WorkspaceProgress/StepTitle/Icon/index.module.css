@@ -10,28 +10,28 @@
 *   Red Hat, Inc. - initial API and implementation
 */
 
-.pf-c-wizard__nav-item .stepIcon {
+:global(.pf-v6-c-wizard__nav-item) .stepIcon {
   position: absolute;
-  top: 3px;
-  left: -56px;
+  top: 11px;
+  left: -48px;
 }
 
-.pf-c-wizard__nav-item .pf-c-wizard__nav-item .stepIcon {
+:global(.pf-v6-c-wizard__nav-item) :global(.pf-v6-c-wizard__nav-item) .stepIcon {
   left: -23px;
 }
 
 .errorIcon {
-  fill: var(--pf-global--danger-color--100);
+  fill: var(--pf-t--global--color--status--danger--default);
 }
 
 .warningIcon {
-  fill: var(--pf-global--warning-color--100);
+  fill: var(--pf-t--global--color--status--warning--default);
 }
 
 .inProgressIcon {
-  fill: var(--pf-global--primary-color--100);
+  fill: var(--pf-t--global--color--brand--default);
 }
 
 .successIcon {
-  fill: var(--pf-global--success-color--100);
+  fill: var(--pf-t--global--color--status--success--default);
 }

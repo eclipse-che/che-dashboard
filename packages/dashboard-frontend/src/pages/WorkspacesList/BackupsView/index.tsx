@@ -65,7 +65,7 @@ export class BackupsView extends React.PureComponent<Props> {
   private renderLoading(): React.ReactElement {
     return (
       <PageSection
-        variant={PageSectionVariants.light}
+        variant={PageSectionVariants.default}
         isFilled={true}
         style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}
       >
@@ -93,7 +93,7 @@ export class BackupsView extends React.PureComponent<Props> {
     return (
       <div data-testid="backups-view">
         {error && (
-          <PageSection variant={PageSectionVariants.light}>
+          <PageSection variant={PageSectionVariants.default}>
             <Alert
               variant={AlertVariant.danger}
               title="Failed to load backups"

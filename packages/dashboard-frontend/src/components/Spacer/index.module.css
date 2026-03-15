@@ -11,5 +11,5 @@
  */
 
 .spacer {
-  margin-top: var(--pf-c-page__main-section--PaddingTop);
+  margin-top: var(--pf-v6-c-page__main-section--PaddingBlockStart, var(--pf-t--global--spacer--lg));
 }

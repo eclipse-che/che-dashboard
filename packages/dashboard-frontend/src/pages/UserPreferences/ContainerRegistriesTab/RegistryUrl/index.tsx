@@ -13,7 +13,10 @@
 import {
   Button,
   FormGroup,
-  InputGroupText,
+  FormHelperText,
+  HelperText,
+  HelperTextItem,
+  InputGroup,
   TextInput,
   ValidatedOptions,
 } from '@patternfly/react-core';
@@ -89,33 +92,39 @@ export class RegistryUrlFormGroup extends React.PureComponent<Props, State> {
   }
 
   public render(): React.ReactElement {
-    const { url, isUrl, errorMessage, valid } = this.state;
+    const { url, isUrl, valid, errorMessage } = this.state;
 
     return (
       <FormGroup
-        style={{ gridTemplateColumns: '80px', minHeight: '65px' }}
+        style={{ gridTemplateColumns: '85px', minHeight: '65px' }}
         label="Registry"
         fieldId="id-registry-helper"
-        helperTextInvalid={errorMessage}
         isRequired={true}
-        helperTextInvalidIcon={<ExclamationCircleIcon />}
-        validated={valid}
       >
-        <InputGroupText>
+        <InputGroup>
           <TextInput
             aria-label="Url input"
             placeholder="Enter a registry"
             type="url"
             value={url}
             validated={valid}
-            onChange={_url => this.onChange(_url)}
+            onChange={(_event, _url) => this.onChange(_url)}
           />
           <Button variant="link" isDisabled={!url || !isUrl} aria-label="open registry">
             <a href={url} style={{ color: 'inherit' }} target="_blank" rel="noreferrer">
               <ExternalLinkAltIcon />
             </a>
           </Button>
-        </InputGroupText>
+        </InputGroup>
+        {valid === ValidatedOptions.error && errorMessage && (
+          <FormHelperText>
+            <HelperText>
+              <HelperTextItem icon={<ExclamationCircleIcon />} variant="error">
+                {errorMessage}
+              </HelperTextItem>
+            </HelperText>
+          </FormHelperText>
+        )}
       </FormGroup>
     );
   }

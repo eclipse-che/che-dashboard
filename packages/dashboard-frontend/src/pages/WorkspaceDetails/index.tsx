@@ -36,9 +36,9 @@ import { OverviewTab } from '@/pages/WorkspaceDetails/OverviewTab';
 import { AppAlerts } from '@/services/alerts/appAlerts';
 import { buildDetailsLocation } from '@/services/helpers/location';
 import { WorkspaceDetailsTab } from '@/services/helpers/types';
-import { Workspace } from '@/services/workspace-adapter';
+import { Workspace, WorkspaceAdapter } from '@/services/workspace-adapter';
 
-const SECTION_THEME = PageSectionVariants.light;
+export const SECTION_THEME = PageSectionVariants.default;
 
 export type Props = {
   location: Location;
@@ -130,6 +130,7 @@ export class WorkspaceDetails extends React.PureComponent<Props, State> {
     }
 
     const workspaceName = workspace.name;
+    const containerScc = WorkspaceAdapter.getContainerScc(workspace.ref);
 
     return (
       <React.Fragment>
@@ -138,6 +139,7 @@ export class WorkspaceDetails extends React.PureComponent<Props, State> {
           workspacesLink={workspacesLink}
           workspaceName={workspaceName}
           status={workspace.status}
+          containerScc={containerScc}
         >
           {oldWorkspaceLocation && (
             <Button

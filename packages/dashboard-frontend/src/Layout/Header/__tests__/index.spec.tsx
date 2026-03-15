@@ -30,20 +30,13 @@ jest.mock('../Tools', () => {
 
 describe('Page header', () => {
   const mockLogout = jest.fn();
-  const mockToggleNav = jest.fn();
 
   const logo = <Brand src="branding/logo" alt="Logo" />;
   const isHeaderVisible = true;
   const history = createHashHistory();
 
   const component = (
-    <Header
-      history={history}
-      isVisible={isHeaderVisible}
-      logo={logo}
-      logout={mockLogout}
-      toggleNav={mockToggleNav}
-    />
+    <Header history={history} isVisible={isHeaderVisible} logo={logo} logout={mockLogout} />
   );
 
   beforeEach(() => {

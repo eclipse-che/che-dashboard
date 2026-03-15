@@ -10,7 +10,7 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import * as PF from '@patternfly/react-core';
+import { WizardNav, WizardNavItem } from '@patternfly/react-core';
 import wizardStyles from '@patternfly/react-styles/css/components/Wizard/wizard';
 import React from 'react';
 
@@ -18,8 +18,12 @@ import styles from '@/components/WorkspaceProgress/Wizard/index.module.css';
 
 import { StepId } from '..';
 
-export interface WorkspaceProgressWizardStep extends PF.WizardStep {
+export interface WorkspaceProgressWizardStep {
   id: StepId;
+  name: React.ReactNode;
+  canJumpTo?: boolean;
+  isFinishedStep?: boolean;
+  component?: React.ReactNode;
   steps?: WorkspaceProgressWizardStep[];
 }
 
@@ -32,21 +36,6 @@ export type Props = {
 class WorkspaceProgressWizard extends React.Component<Props> {
   private handleGoToStepById() {
     console.warn('Not implemented: handleGoToStepById');
-    return false;
-  }
-
-  private handleGoToStepByName() {
-    console.warn('Not implemented: handleGoToStepByName');
-    return false;
-  }
-
-  private handleBack() {
-    console.warn('Not implemented: handleBack');
-    return false;
-  }
-
-  private handleClose() {
-    console.warn('Not implemented: handleClose');
     return false;
   }
 
@@ -68,11 +57,6 @@ class WorkspaceProgressWizard extends React.Component<Props> {
 
     const nextStep = flattenedSteps[activeStepNumber];
     this.props.onNext(nextStep.id, this.props.activeStepId);
-  }
-
-  private handleNavToggle() {
-    console.warn('Not implemented: handleNavToggle');
-    return false;
   }
 
   private setDefaultValues(steps: WorkspaceProgressWizardStep[]): WorkspaceProgressWizardStep[] {
@@ -115,7 +99,7 @@ class WorkspaceProgressWizard extends React.Component<Props> {
     const flattenedSteps = this.flattenSteps(stepsWithDefaults);
 
     return (
-      <PF.WizardNav aria-label="Workspace Progress Steps" isOpen={true}>
+      <WizardNav aria-label="Workspace Progress Steps">
         {stepsWithDefaults.map(step => {
           const { canJumpTo, name, steps = [], id } = step;
           const flattenedStepNumber = this.getFlattenedStepsNumber(flattenedSteps, id);
@@ -127,70 +111,46 @@ class WorkspaceProgressWizard extends React.Component<Props> {
           const hasActiveChild = steps.some(subStep => subStep.id === activeStepId);
 
           return (
-            <PF.WizardNavItem
+            <WizardNavItem
               key={id}
               content={name}
-              step={flattenedStepNumber}
+              stepIndex={flattenedStepNumber}
               isCurrent={activeStepId === id || hasActiveChild}
               isDisabled={!canJumpTo}
-              onNavItemClick={() => this.handleGoToStepById()}
+              onClick={() => this.handleGoToStepById()}
             >
               {showChildren && (
-                <PF.WizardNav returnList>
+                <WizardNav isInnerList>
                   {steps.map(subStep => {
                     const { canJumpTo, name, id } = subStep;
                     const flattenedStepNumber = this.getFlattenedStepsNumber(flattenedSteps, id);
                     return (
-                      <PF.WizardNavItem
+                      <WizardNavItem
                         key={id}
                         content={name}
-                        step={flattenedStepNumber}
+                        stepIndex={flattenedStepNumber}
                         isCurrent={activeStepId === id}
                         isDisabled={!canJumpTo}
-                        onNavItemClick={() => this.handleGoToStepById()}
+                        onClick={() => this.handleGoToStepById()}
                       />
                     );
                   })}
-                </PF.WizardNav>
+                </WizardNav>
               )}
-            </PF.WizardNavItem>
+            </WizardNavItem>
           );
         })}
-      </PF.WizardNav>
+      </WizardNav>
     );
   }
 
   render() {
     const { activeStepId, steps } = this.props;
 
-    const hasNoBodyPadding = false;
-
-    const activeStep = steps[0];
-
     return (
-      <PF.WizardContextProvider
-        value={{
-          activeStep: activeStep,
-          goToStepById: () => this.handleGoToStepById(),
-          goToStepByName: () => this.handleGoToStepByName(),
-          onBack: () => this.handleBack(),
-          onClose: () => this.handleClose(),
-          onNext: () => this.goToNext(),
-        }}
-      >
-        <div className={`${styles.progress} ${wizardStyles.wizard}`}>
-          <PF.WizardToggle
-            activeStep={activeStep}
-            hasNoBodyPadding={hasNoBodyPadding}
-            isNavOpen={true}
-            nav={() => this.buildWizardNav(activeStepId, steps)}
-            onNavToggle={() => this.handleNavToggle()}
-            steps={[]}
-          >
-            <React.Fragment />
-          </PF.WizardToggle>
-        </div>
-      </PF.WizardContextProvider>
+      <div className={`${styles.progress} ${wizardStyles.wizard}`}>
+        {this.buildWizardNav(activeStepId, steps)}
+      </div>
     );
   }
 }

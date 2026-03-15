@@ -183,17 +183,13 @@ describe('DevWorkspace client, create', () => {
     });
 
     it('should add owner reference to devWorkspace template to allow automatic cleanup', async () => {
-      const pluginRegistryUrl = 'http://plugin.registry.url';
-      const internalPluginRegistryUrl = 'http://internal.plugin.registry.url';
-      const openVSXUrl = 'http://openvsx.url';
-
       await client.createDevWorkspaceTemplate(
         namespace,
         testDevWorkspace,
         testDevWorkspaceTemplate,
-        pluginRegistryUrl,
-        internalPluginRegistryUrl,
-        openVSXUrl,
+        'http://plugin.registry.url',
+        'http://internal.plugin.registry.url',
+        'http://openvsx.url',
       );
 
       expect(spyCreateWorkspaceTemplate).toHaveBeenCalledWith(
@@ -205,6 +201,27 @@ describe('DevWorkspace client, create', () => {
                 uid: testDevWorkspace.metadata.uid,
               }),
             ]),
+          }),
+        }),
+      );
+    });
+
+    it('should not add SCC attribute (SCC is no longer injected during creation)', async () => {
+      await client.createDevWorkspaceTemplate(
+        namespace,
+        testDevWorkspace,
+        testDevWorkspaceTemplate,
+        undefined,
+        undefined,
+        undefined,
+      );
+
+      expect(spyCreateWorkspaceTemplate).toHaveBeenCalledWith(
+        expect.objectContaining({
+          spec: expect.not.objectContaining({
+            attributes: expect.objectContaining({
+              'controller.devfile.io/scc': expect.anything(),
+            }),
           }),
         }),
       );

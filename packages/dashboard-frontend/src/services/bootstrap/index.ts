@@ -443,7 +443,7 @@ export default class Bootstrap {
     return -1;
   }
 
-  private checkFavicon() {
+  private checkFavicon(): void {
     const dashboardFavicon = selectDashboardFavicon(this.store.getState());
     updateFavicon(dashboardFavicon);
   }

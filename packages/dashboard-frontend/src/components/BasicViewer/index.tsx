@@ -10,27 +10,30 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
+import { githubDark, githubLight } from '@uiw/codemirror-theme-github';
 import CodeMirror from '@uiw/react-codemirror';
 import React from 'react';
 
 import styles from '@/components/BasicViewer/index.module.css';
+import { useTheme } from '@/contexts/ThemeContext';
 
 export type Props = {
   value: string;
   id: string;
 };
 
-export class BasicViewer extends React.PureComponent<Props> {
-  public render(): React.ReactElement {
-    return (
-      <div className={styles.basicViewer}>
-        <CodeMirror
-          id={this.props.id}
-          readOnly={true}
-          basicSetup={false}
-          value={this.props.value}
-        />
-      </div>
-    );
-  }
-}
+export const BasicViewer: React.FC<Props> = ({ value, id }) => {
+  const { isDarkTheme } = useTheme();
+
+  return (
+    <div className={styles.basicViewer}>
+      <CodeMirror
+        id={id}
+        readOnly={true}
+        basicSetup={false}
+        value={value}
+        theme={isDarkTheme ? githubDark : githubLight}
+      />
+    </div>
+  );
+};

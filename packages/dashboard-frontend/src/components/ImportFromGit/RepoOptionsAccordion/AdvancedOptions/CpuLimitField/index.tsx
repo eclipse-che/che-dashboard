@@ -110,7 +110,6 @@ export class CpuLimitField extends React.PureComponent<Props, State> {
           }}
           inputName="cpu-limit"
           data-testid="cpu-limit-input"
-          allowEmptyInput
         />
       </FormGroup>
     );

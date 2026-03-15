@@ -21,6 +21,7 @@ describe('DevWorkspace client', () => {
 
   beforeEach(() => {
     mockAxios.get = jest.fn();
+    mockAxios.post = jest.fn();
     client = container.get(DevWorkspaceClient);
   });
 
@@ -124,5 +125,32 @@ describe('DevWorkspace client', () => {
     );
     const newWorkspace = await client.getWorkspaceByName(namespace, name);
     expect(newWorkspace).toEqual(workspaceReady);
+  });
+
+  it('should not add SCC attribute during creation', async () => {
+    const namespace = 'test';
+    const devWorkspaceResource = new DevWorkspaceBuilder()
+      .withName('wksp-test')
+      .withNamespace(namespace)
+      .build();
+
+    const createdWorkspace = {
+      ...devWorkspaceResource,
+      metadata: {
+        ...devWorkspaceResource.metadata,
+        uid: 'new-uid',
+      },
+    };
+
+    (mockAxios.post as jest.Mock).mockResolvedValueOnce({
+      data: createdWorkspace,
+      headers: {},
+    });
+
+    await client.createDevWorkspace(namespace, devWorkspaceResource, undefined, undefined);
+
+    const callArgs = (mockAxios.post as jest.Mock).mock.calls[0];
+    const requestBody = callArgs[1];
+    expect(requestBody.spec?.template?.attributes?.['controller.devfile.io/scc']).toBeUndefined();
   });
 });

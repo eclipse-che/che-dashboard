@@ -151,7 +151,8 @@ class CreatingStepCheckExistingWorkspaces extends ProgressStep<Props, State> {
       return true;
     }
     if (factoryParams.policiesCreate === 'perclick') {
-      // continue creating new workspace in accordance to the policy
+      // perclick policy means always create a new workspace
+      // a suffix will only be added in ApplyResources step if there's a name conflict
       return true;
     }
 
@@ -232,7 +233,19 @@ class CreatingStepCheckExistingWorkspaces extends ProgressStep<Props, State> {
     workspaces: Workspace[],
     factoryParams: FactoryParams,
   ): Workspace[] {
-    return workspaces.filter(workspace => workspace.source === factoryParams.source);
+    return workspaces.filter(workspace => {
+      let revision: string | undefined;
+      const projects = workspace.ref.spec.template.projects;
+      if (projects && projects.length > 0) {
+        const git = projects[0].git;
+        if (git && git.checkoutFrom && git.checkoutFrom.revision) {
+          if (git.checkoutFrom.revision) {
+            revision = git.checkoutFrom.revision;
+          }
+        }
+      }
+      return workspace.source === factoryParams.sourceUrl && revision === factoryParams.revision;
+    });
   }
 
   protected buildAlertItem(error: Error): AlertItem {
