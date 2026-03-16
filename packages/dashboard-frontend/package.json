@@ -73,7 +73,6 @@
   },
   "devDependencies": {
     "@devfile/api": "2.3.0-1747843475",
-    "@eclipse-che/api": "^7.86.0",
     "@kubernetes/client-node": "^0.22.1",
     "@react-mock/state": "^0.1.8",
     "@testing-library/dom": "^10.4.0",

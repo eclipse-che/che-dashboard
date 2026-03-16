@@ -832,13 +832,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@eclipse-che/api@npm:^7.86.0":
-  version: 7.86.0
-  resolution: "@eclipse-che/api@npm:7.86.0"
-  checksum: 10/8567bc35547592071d363d35df6ccb59a81f50e90c3a442c614e089dad106df988ab64c51f37c7b34891e859500385720bfa695ef2408831b78a6538e7bdb644
-  languageName: node
-  linkType: hard
-
 "@eclipse-che/che-devworkspace-generator@npm:7.113.0-next-7b6a101":
   version: 7.113.0-next-7b6a101
   resolution: "@eclipse-che/che-devworkspace-generator@npm:7.113.0-next-7b6a101"
@@ -953,7 +946,6 @@ __metadata:
     "@codemirror/language": "npm:^6.10.8"
     "@codemirror/view": "npm:^6.36.2"
     "@devfile/api": "npm:2.3.0-1747843475"
-    "@eclipse-che/api": "npm:^7.86.0"
     "@kubernetes/client-node": "npm:^0.22.1"
     "@lezer/highlight": "npm:^1.2.1"
     "@patternfly/react-core": "npm:^6.4.0"

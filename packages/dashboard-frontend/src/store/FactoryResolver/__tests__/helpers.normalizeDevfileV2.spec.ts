@@ -13,11 +13,11 @@
 import { V230Devfile, V230DevfileComponents } from '@devfile/api';
 
 import { FactoryResolver } from '@/services/helpers/types';
-import { che } from '@/services/models';
+import { CheDevfileV1 } from '@/services/models/che';
 import { buildDevfileV2, normalizeDevfile } from '@/store/FactoryResolver/helpers';
 
 describe('buildDevfileV2', () => {
-  let devfileV1: che.api.workspace.devfile.Devfile;
+  let devfileV1: CheDevfileV1;
 
   beforeEach(() => {
     devfileV1 = {
