@@ -18,6 +18,7 @@ import { RestoreMode } from '@/pages/RestoreFromBackup/helpers';
 
 type Props = {
   restoreMode: RestoreMode;
+  isBackupConfigured: boolean;
   onChange: (mode: RestoreMode) => void;
   existingWorkspaceNames: Set<string>;
   existingBackupNames: Set<string>;

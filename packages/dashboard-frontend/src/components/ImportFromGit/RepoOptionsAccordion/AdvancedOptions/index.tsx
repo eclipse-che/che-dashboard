@@ -13,11 +13,11 @@
 import { Form } from '@patternfly/react-core';
 import React from 'react';
 
+import { CpuLimitField } from '@/components/CpuLimitField';
 import { ContainerImageField } from '@/components/ImportFromGit/RepoOptionsAccordion/AdvancedOptions/ContainerImageField';
-import { CpuLimitField } from '@/components/ImportFromGit/RepoOptionsAccordion/AdvancedOptions/CpuLimitField';
 import { CreateNewIfExistingField } from '@/components/ImportFromGit/RepoOptionsAccordion/AdvancedOptions/CreateNewIfExistingField';
-import { MemoryLimitField } from '@/components/ImportFromGit/RepoOptionsAccordion/AdvancedOptions/MemoryLimitField';
 import { TemporaryStorageField } from '@/components/ImportFromGit/RepoOptionsAccordion/AdvancedOptions/TemporaryStorageField';
+import { MemoryLimitField } from '@/components/MemoryLimitField';
 import { CREATE_NEW_IF_EXIST_SWITCH_ID } from '@/pages/GetStarted/SamplesList/Toolbar/CreateNewIfExistSwitch';
 
 export type Props = {

@@ -12,17 +12,17 @@
 
 import React from 'react';
 
-import { Props } from '@/components/ImportFromGit/RepoOptionsAccordion/AdvancedOptions/CpuLimitField';
+import { Props } from '@/components/MemoryLimitField';
 
-export class CpuLimitField extends React.PureComponent<Props> {
+export class MemoryLimitField extends React.PureComponent<Props> {
   public render() {
-    const { cpuLimit, onChange } = this.props;
+    const { memoryLimit, onChange } = this.props;
 
     return (
       <div>
-        <div>Cpu Limit</div>
-        <div data-testid="cpu-limit">{cpuLimit.toString()}</div>
-        <button onClick={() => onChange(1)}>Cpu Limit Change</button>
+        <div>Memory Limit</div>
+        <div data-testid="memory-limit">{memoryLimit.toString()}</div>
+        <button onClick={() => onChange(1073741824)}>Memory Limit Change</button>
       </div>
     );
   }
