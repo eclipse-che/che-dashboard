@@ -576,7 +576,7 @@ export class DevWorkspaceClient {
   ): Promise<devfileApi.DevWorkspace> {
     const patch: api.IPatch[] = [];
 
-    if (!config.containerRun?.disableContainerRunCapabilities) {
+    if (config.containerRun && !config.containerRun.disableContainerRunCapabilities) {
       // container run capabilities is enabled.
       patch.push(
         ...this.manageContainerSccAttributeForCapability(
@@ -585,7 +585,7 @@ export class DevWorkspaceClient {
           false,
         ),
       );
-    } else if (!config.containerBuild?.disableContainerBuildCapabilities) {
+    } else if (config.containerBuild && !config.containerBuild.disableContainerBuildCapabilities) {
       // container build capabilities is enabled.
       patch.push(
         ...this.manageContainerSccAttributeForCapability(

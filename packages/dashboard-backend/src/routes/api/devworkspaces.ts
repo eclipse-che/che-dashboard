@@ -53,8 +53,10 @@ export function registerDevworkspacesRoutes(instance: FastifyInstance) {
           devworkspace.metadata.annotations = {};
         }
         devworkspace.metadata.namespace = namespace;
+
         const token = getToken(request);
         const { devworkspaceApi } = getDevWorkspaceClient(token);
+
         const { headers, devWorkspace } = await devworkspaceApi.create(devworkspace, namespace);
 
         reply.headers(headers).send(devWorkspace);
