@@ -14,10 +14,7 @@ import { NumberInputProps } from '@patternfly/react-core';
 import { fireEvent, screen } from '@testing-library/react';
 import React from 'react';
 
-import {
-  CpuLimitField,
-  MAX_CPU_LIMIT,
-} from '@/components/ImportFromGit/RepoOptionsAccordion/AdvancedOptions/CpuLimitField';
+import { CpuLimitField, MAX_CPU_LIMIT } from '@/components/CpuLimitField';
 import getComponentRenderer from '@/services/__mocks__/getComponentRenderer';
 
 const { createSnapshot, renderComponent } = getComponentRenderer(getComponent);

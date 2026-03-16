@@ -25,6 +25,9 @@ import { RestoreFromBackupPage } from '..';
 
 jest.mock('@/components/EditorSelector');
 
+const mockWindowOpen = jest.fn();
+Object.defineProperty(window, 'open', { value: mockWindowOpen, writable: true });
+
 const mockNavigate = jest.fn();
 const mockFetchBackupList = jest.fn();
 const mockFetchBackupConfig = jest.fn();
@@ -361,6 +364,8 @@ describe('RestoreFromBackupPage', () => {
           'restored-as-new',
           'image-registry.openshift-image-registry.svc:5000/user-namespace/old-workspace:latest',
           'che-incubator/che-code/latest',
+          undefined,
+          undefined,
         );
       });
     });
@@ -598,11 +603,16 @@ describe('RestoreFromBackupPage', () => {
           'my-workspace',
           '',
           'che-incubator/che-code/latest',
+          undefined,
+          undefined,
         );
       });
 
       await waitFor(() => {
-        expect(mockNavigate).toHaveBeenCalled();
+        expect(mockWindowOpen).toHaveBeenCalledWith(
+          expect.stringContaining('/ide/user-namespace/my-workspace'),
+          '_blank',
+        );
       });
     });
   });
