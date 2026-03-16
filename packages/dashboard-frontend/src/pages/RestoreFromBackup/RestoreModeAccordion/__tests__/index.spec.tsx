@@ -138,10 +138,18 @@ describe('RestoreModeAccordion', () => {
 
     expect(screen.getByTestId('test-action-button')).toBeInTheDocument();
   });
+
+  test('should hide default registry when backup is not configured', () => {
+    renderComponent({ isBackupConfigured: false, restoreMode: 'external-registry' });
+
+    expect(screen.queryByRole('button', { name: /Default registry/i })).not.toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /External registry/i })).toBeInTheDocument();
+  });
 });
 
 type ComponentOptions = {
   restoreMode?: RestoreMode;
+  isBackupConfigured?: boolean;
   initialBackupImageUrl?: string;
   initialExternalImageUrl?: string;
 };
@@ -150,6 +158,7 @@ function getComponent(options: ComponentOptions = {}) {
   return (
     <RestoreModeAccordion
       restoreMode={options.restoreMode ?? 'default-registry'}
+      isBackupConfigured={options.isBackupConfigured ?? true}
       onChange={mockOnChange}
       existingWorkspaceNames={new Set()}
       existingBackupNames={new Set()}

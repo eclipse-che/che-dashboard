@@ -50,7 +50,27 @@ const mockTemplate = {
   apiVersion: 'workspace.devfile.io/v1alpha2',
   kind: 'DevWorkspaceTemplate',
   metadata: { name: 'che-code', namespace: '' },
-  spec: { components: [] },
+  spec: {
+    components: [
+      {
+        name: 'che-code-injector',
+        container: {
+          image: 'quay.io/devspaces/code:latest',
+          command: ['/entrypoint.sh'],
+          env: [],
+          memoryLimit: '256Mi',
+        },
+      },
+      {
+        name: 'che-code-runtime-description',
+        container: {
+          image: 'quay.io/devspaces/code:latest',
+          env: [],
+          memoryLimit: '1024Mi',
+        },
+      },
+    ],
+  },
 } as unknown as devfileApi.DevWorkspaceTemplate;
 
 describe('restoreWorkspaceFromBackup', () => {
@@ -70,6 +90,14 @@ describe('restoreWorkspaceFromBackup', () => {
     jest
       .spyOn(serverConfig, 'selectPluginRegistryInternalUrl')
       .mockReturnValue('https://internal-plugin-registry');
+    jest.spyOn(serverConfig, 'selectDefaultComponents').mockReturnValue([
+      {
+        name: 'universal-developer-image',
+        container: {
+          image: 'quay.io/devfile/universal-developer-image:ubi9-latest',
+        },
+      },
+    ]);
     jest.spyOn(clusterInfo, 'selectApplications').mockReturnValue([]);
 
     (verifyAuthorized as jest.Mock).mockResolvedValue(undefined);
@@ -86,8 +114,8 @@ describe('restoreWorkspaceFromBackup', () => {
     (devworkspaceResourcesApi.fetchResources as jest.Mock).mockResolvedValue('resources-yaml');
 
     (resourcesLoader.loadResourcesContent as jest.Mock).mockReturnValue([
-      mockDevWorkspace,
-      mockTemplate,
+      JSON.parse(JSON.stringify(mockDevWorkspace)),
+      JSON.parse(JSON.stringify(mockTemplate)),
     ]);
 
     (DwtApi.createTemplate as jest.Mock).mockResolvedValue(mockTemplate);
@@ -185,5 +213,43 @@ describe('restoreWorkspaceFromBackup', () => {
         metadata: expect.objectContaining({ name: 'my-custom-name' }),
       }),
     );
+  });
+
+  test('should include default components with resource limits in devfile', async () => {
+    const memoryLimitBytes = 4 * 1024 * 1024 * 1024; // 4Gi in bytes
+    const cpuLimitCores = 2;
+
+    await store.dispatch(
+      restoreWorkspaceFromBackup(
+        'user-ns',
+        'my-ws',
+        'quay.io/user-ns/my-ws:latest',
+        'che-incubator/che-code/latest',
+        memoryLimitBytes,
+        cpuLimitCores,
+      ),
+    );
+
+    // Limits are applied to the devfile components passed to fetchResources
+    const fetchCall = (devworkspaceResourcesApi.fetchResources as jest.Mock).mock.calls[0][0];
+    expect(fetchCall.devfileContent).toContain('memoryLimit: 4Gi');
+    expect(fetchCall.devfileContent).toContain("cpuLimit: '2'");
+    expect(fetchCall.devfileContent).toContain('universal-developer-image');
+  });
+
+  test('should include default components without resource limits when not specified', async () => {
+    await store.dispatch(
+      restoreWorkspaceFromBackup(
+        'user-ns',
+        'my-ws',
+        'quay.io/user-ns/my-ws:latest',
+        'che-incubator/che-code/latest',
+      ),
+    );
+
+    const fetchCall = (devworkspaceResourcesApi.fetchResources as jest.Mock).mock.calls[0][0];
+    expect(fetchCall.devfileContent).toContain('universal-developer-image');
+    expect(fetchCall.devfileContent).not.toContain('memoryLimit');
+    expect(fetchCall.devfileContent).not.toContain('cpuLimit');
   });
 });

@@ -14,11 +14,7 @@ import { NumberInputProps } from '@patternfly/react-core';
 import { fireEvent, screen } from '@testing-library/react';
 import React from 'react';
 
-import {
-  MAX_MEMORY_LIMIT_GI,
-  MemoryLimitField,
-  STEP,
-} from '@/components/ImportFromGit/RepoOptionsAccordion/AdvancedOptions/MemoryLimitField';
+import { MAX_MEMORY_LIMIT_GI, MemoryLimitField, STEP } from '@/components/MemoryLimitField';
 import getComponentRenderer from '@/services/__mocks__/getComponentRenderer';
 
 const { createSnapshot, renderComponent } = getComponentRenderer(getComponent);
