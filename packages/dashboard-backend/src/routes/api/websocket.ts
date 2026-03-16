@@ -10,7 +10,8 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import { api } from '@eclipse-che/common';
+import { api, helpers } from '@eclipse-che/common';
+import { V1Status } from '@kubernetes/client-node';
 import { FastifyInstance, FastifyRequest } from 'fastify';
 import WebSocket from 'ws';
 
@@ -27,7 +28,7 @@ export function registerWebsocket(instance: FastifyInstance) {
   });
 }
 
-function webSocketHandler(ws: WebSocket, request: FastifyRequest): void {
+export function webSocketHandler(ws: WebSocket, request: FastifyRequest): void {
   const subscriptionManager = new SubscriptionManager(ws);
 
   const token = getToken(request);
@@ -41,6 +42,25 @@ function webSocketHandler(ws: WebSocket, request: FastifyRequest): void {
     [channel.POD]: new ObjectsWatcher(podApi, channel.POD),
   };
 
+  function notifyWatchStartError(
+    error: unknown,
+    watchChannel: api.webSocket.Channel,
+    params: api.webSocket.SubscribeParams | api.webSocket.SubscribeLogsParams,
+  ): void {
+    logger.error(error, `Failed to start watcher for channel ${watchChannel}`);
+    const status: V1Status = {
+      kind: 'Status',
+      apiVersion: 'v1',
+      status: 'Failure',
+      message: helpers.errors.getMessage(error),
+      code: (error as { statusCode?: number }).statusCode,
+    };
+    subscriptionManager.sendMessage({
+      channel: watchChannel,
+      message: { eventPhase: api.webSocket.EventPhase.ERROR, status, params },
+    });
+  }
+
   async function handleChannelSubscribe(message: api.webSocket.SubscribeMessage): Promise<void> {
     subscriptionManager.subscribe(message.channel);
 
@@ -50,13 +70,21 @@ function webSocketHandler(ws: WebSocket, request: FastifyRequest): void {
       case channel.POD: {
         const watcher = watchers[message.channel];
         watcher.attach(subscriptionManager);
-        await watcher.start(message.params.namespace, message.params);
+        try {
+          await watcher.start(message.params.namespace, message.params);
+        } catch (e) {
+          notifyWatchStartError(e, message.channel, message.params);
+        }
         break;
       }
       case channel.LOGS: {
         const watcher = watchers[message.channel];
         watcher.attach(subscriptionManager);
-        await watcher.start(message.params.namespace, message.params);
+        try {
+          await watcher.start(message.params.namespace, message.params);
+        } catch (e) {
+          notifyWatchStartError(e, message.channel, message.params);
+        }
         break;
       }
     }
