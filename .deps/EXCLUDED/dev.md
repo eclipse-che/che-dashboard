@@ -2,6 +2,11 @@ This file contains a manual contribution to .deps/dev.md and it's needed because
 
 | Packages | Resolved CQs |
 | --- | --- |
-| `meow@13.2.0` | transitive dependency |
+| `@eclipse-che/api@7.86.0` | ecd.che |
+| `@humanwhocodes/config-array@0.13.0` | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@humanwhocodes/config-array/0.13.0) |
+| `@humanwhocodes/module-importer@1.0.1` | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@humanwhocodes/module-importer/1.0.1) |
+| `@humanwhocodes/object-schema@2.0.3` | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/@humanwhocodes/object-schema/2.0.3) |
+| `@types/stream-buffers@3.0.8` | #24674 |
+| `qs@6.5.5` | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/qs/6.5.5) |
+| `tar@7.5.11` | #25796 |
 | `tar@7.5.7` | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/tar/7.5.7) |
-| `webpack-sources@3.3.4` | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/webpack-sources/3.3.4) |
