@@ -31,6 +31,7 @@ import { selectApplications } from '@/store/ClusterInfo';
 import { getEditor } from '@/store/DevfileRegistries/getEditor';
 import { verifyAuthorized } from '@/store/SanityCheck';
 import {
+  selectDefaultComponents,
   selectOpenVSXUrl,
   selectPluginRegistryInternalUrl,
   selectPluginRegistryUrl,
@@ -56,6 +57,7 @@ export const restoreWorkspaceFromBackup =
     const openVSXUrl = selectOpenVSXUrl(state);
     const pluginRegistryUrl = selectPluginRegistryUrl(state);
     const pluginRegistryInternalUrl = selectPluginRegistryInternalUrl(state);
+    const defaultComponents = selectDefaultComponents(state);
     const clusterConsole = selectApplications(state).find(
       app => app.id === ApplicationId.CLUSTER_CONSOLE,
     );
@@ -72,10 +74,26 @@ export const restoreWorkspaceFromBackup =
       }
       const { content: editorContent, editorYamlUrl } = editorResponse;
 
-      // Build a minimal restore devfile. The devworkspace-generator merges this
-      // with the editor content to produce a DevWorkspace + DevWorkspaceTemplate pair
-      // with proper spec.contributions linking the two.
-      const restoreDevfile = {
+      // Build the restore devfile with default components. The devworkspace-generator
+      // merges this with the editor content to produce a DevWorkspace + DevWorkspaceTemplate
+      // pair with proper spec.contributions linking the two.
+      //
+      // Including default components (from CHE_DEFAULT_SPEC_DEVENVIRONMENTS_DEFAULTCOMPONENTS)
+      // ensures the restored workspace has a dev container, matching the workspace creation
+      // flow. Resource limits are applied to this container's devfile definition, so the
+      // generator places them correctly — no post-generation heuristics needed.
+      const components = JSON.parse(JSON.stringify(defaultComponents));
+      if (components.length > 0 && components[0].container) {
+        if (memoryLimit !== undefined && memoryLimit > 0) {
+          const memoryLimitGi = Math.round(memoryLimit / (1024 * 1024 * 1024));
+          components[0].container.memoryLimit = `${memoryLimitGi}Gi`;
+        }
+        if (cpuLimit !== undefined && cpuLimit > 0) {
+          components[0].container.cpuLimit = cpuLimit.toString();
+        }
+      }
+
+      const restoreDevfile: Record<string, unknown> = {
         schemaVersion: '2.2.0',
         metadata: {
           name: workspaceName,
@@ -85,6 +103,9 @@ export const restoreWorkspaceFromBackup =
           [DEVWORKSPACE_RESTORE_ATTRIBUTES.RESTORE_SOURCE_IMAGE]: backupImageUrl,
         },
       };
+      if (components.length > 0) {
+        restoreDevfile.components = components;
+      }
 
       const resourcesContent = await fetchResources({
         devfileContent: dump(restoreDevfile),
@@ -133,20 +154,6 @@ export const restoreWorkspaceFromBackup =
           const env = component.container.env ?? [];
           env.push({ name: 'VSCODE_DEFAULT_WORKSPACE', value: '/projects/.code-workspace' });
           component.container.env = env;
-        }
-      }
-
-      // Apply resource limits to the first container only, matching the workspace
-      // creation flow (FactoryResolver/helpers.ts). Only the dev container should
-      // receive user-specified limits, not editor infrastructure containers.
-      const firstContainer = devWorkspaceTemplateResource.spec?.components?.find(c => c.container);
-      if (firstContainer?.container) {
-        if (memoryLimit !== undefined && memoryLimit > 0) {
-          const memoryLimitGi = Math.round(memoryLimit / (1024 * 1024 * 1024));
-          firstContainer.container.memoryLimit = `${memoryLimitGi}Gi`;
-        }
-        if (cpuLimit !== undefined && cpuLimit > 0) {
-          firstContainer.container.cpuLimit = cpuLimit.toString();
         }
       }
 
