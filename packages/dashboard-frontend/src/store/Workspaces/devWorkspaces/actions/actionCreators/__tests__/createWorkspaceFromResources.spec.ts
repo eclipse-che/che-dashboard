@@ -50,6 +50,7 @@ describe('devWorkspaces, actions', () => {
     let store: ReturnType<typeof createMockStore>;
     const mockCreateDevWorkspace = jest.fn();
     const mockCreateDevWorkspaceTemplate = jest.fn();
+    const mockManageContainerSccAttribute = jest.fn();
     const mockVerifyAuthorized = verifyAuthorized as jest.MockedFunction<typeof verifyAuthorized>;
     const mockUpdateDevWorkspaceTemplate = updateDevWorkspaceTemplate as jest.MockedFunction<
       typeof updateDevWorkspaceTemplate
@@ -95,12 +96,15 @@ describe('devWorkspaces, actions', () => {
       (getDevWorkspaceClient as jest.Mock).mockReturnValue({
         createDevWorkspace: mockCreateDevWorkspace,
         createDevWorkspaceTemplate: mockCreateDevWorkspaceTemplate,
+        manageContainerSccAttribute: mockManageContainerSccAttribute,
       });
 
       mockCreateDevWorkspace.mockResolvedValue({
         devWorkspace: mockWorkspace,
         headers: {},
       });
+
+      mockManageContainerSccAttribute.mockResolvedValue(mockWorkspace);
 
       mockUpdateDevWorkspaceTemplate.mockReturnValue(mockWorkspaceTemplate);
 

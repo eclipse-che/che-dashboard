@@ -87,7 +87,15 @@ export const createWorkspaceFromResources =
         clusterConsole,
       );
 
-      dispatch(devWorkspacesAddAction(createResp.devWorkspace));
+      // Set the SCC attribute once at creation time so the DevWorkspace operator
+      // can grant the workspace SA the required SCC (e.g. container-build).
+      // On subsequent starts only HOST_USERS is synced (see startWorkspace.ts).
+      const createdWorkspace = await getDevWorkspaceClient().manageContainerSccAttribute(
+        createResp.devWorkspace,
+        serverConfig,
+      );
+
+      dispatch(devWorkspacesAddAction(createdWorkspace));
     } catch (e) {
       const errorMessage =
         'Failed to create a new workspace, reason: ' + common.helpers.errors.getMessage(e);
