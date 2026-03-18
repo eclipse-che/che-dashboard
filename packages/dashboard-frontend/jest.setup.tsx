@@ -14,9 +14,37 @@ import '@testing-library/jest-dom';
 
 import React from 'react';
 
-// Note: Some tests may be flaky due to PatternFly 6 Table components
-// using async ref measurements that don't work well in test-renderer environment.
-// These tests typically pass when run in isolation but may fail when run together.
+// Patch global.setTimeout so that the React scheduler (which captures this reference
+// before any test code runs) uses our safe wrapper. This prevents PF6 Table's
+// Th.tsx useEffect — which reads ref.current.offsetWidth — from crashing tests when
+// the effect fires inside react-test-renderer (where refs have no real DOM node).
+// The patch must live here (setupFilesAfterEnv) so it is applied BEFORE test modules
+// import the scheduler and it captures the global.setTimeout reference.
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const _origSetTimeout = global.setTimeout as (...a: any[]) => any;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+(global as any).setTimeout = function patchedSetTimeout(
+  callback: unknown,
+  delay?: number,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  ...args: any[]
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+): any {
+  if (typeof callback !== 'function') {
+    return _origSetTimeout(callback, delay);
+  }
+  const safe = (...cbArgs: unknown[]) => {
+    try {
+      return (callback as (...a: unknown[]) => unknown)(...cbArgs);
+    } catch (e) {
+      if (e instanceof TypeError && String((e as Error).message).includes('offsetWidth')) {
+        return; // swallow react-test-renderer null-ref from PF6 Table's Th.tsx
+      }
+      throw e;
+    }
+  };
+  return _origSetTimeout(safe, delay, ...args);
+};
 
 // Mock offsetWidth/offsetHeight for PatternFly 6 Table components in JSDOM
 // PatternFly Table accesses offsetWidth during render, which can be null in test environment

@@ -190,26 +190,8 @@ describe('PersonalAccessTokenList', () => {
       expect(actionsButton).toBeDisabled();
     });
 
-    // TODO: Re-enable when PatternFly 6 Table + test-renderer offsetWidth issues are resolved
-    test.skip('edit token', async () => {
-      // PatternFly Table may throw offsetWidth errors during render - suppress them
-      const originalError = console.error;
-      console.error = jest.fn();
-
-      try {
-        renderComponent(tokens);
-      } catch (error) {
-        // If render fails due to offsetWidth error, try again (error is suppressed in renderComponent)
-        const errorStr = String(error);
-        if (
-          errorStr.includes('offsetWidth') ||
-          errorStr.includes('Cannot read properties of null')
-        ) {
-          renderComponent(tokens);
-        } else {
-          throw error;
-        }
-      }
+    test('edit token', async () => {
+      renderComponent(tokens);
 
       expect(mockOnEditToken).not.toHaveBeenCalled();
 
@@ -229,12 +211,9 @@ describe('PersonalAccessTokenList', () => {
       fireEvent.click(token1EditButton);
 
       expect(mockOnEditToken).toHaveBeenCalledWith(tokens[0]);
-
-      console.error = originalError;
     });
 
-    // TODO: Re-enable when PatternFly 6 Table + test-renderer offsetWidth issues are resolved
-    test.skip('delete token', async () => {
+    test('delete token', async () => {
       renderComponent(tokens);
 
       expect(mockOnDeleteToken).not.toHaveBeenCalled();

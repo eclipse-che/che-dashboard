@@ -14,7 +14,6 @@ import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
 import { Provider } from 'react-redux';
-import renderer from 'react-test-renderer';
 import { Store } from 'redux';
 
 import { FakeRegistryBuilder } from '@/pages/UserPreferences/ContainerRegistriesTab/__tests__/__mocks__/registryRowBuilder';
@@ -48,94 +47,63 @@ describe('ContainerRegistries', () => {
   });
 
   it('should correctly render the component without registries', () => {
-    const component = getComponent(new MockStoreBuilder().build());
-    render(component);
+    const { asFragment } = render(getComponent(new MockStoreBuilder().build()));
 
     const addRegistryButton = screen.queryByLabelText('add-registry');
     expect(addRegistryButton).toBeTruthy();
 
-    // Suppress offsetWidth errors during snapshot creation
-    const originalError = console.error;
-    console.error = jest.fn();
-    const json = renderer.create(component).toJSON();
-    console.error = originalError;
-
-    expect(json).toMatchSnapshot();
+    expect(asFragment()).toMatchSnapshot();
   });
 
   it('should correctly render the component which contains two registries', () => {
-    const component = getComponent(
-      new MockStoreBuilder()
-        .withDockerConfig([
-          new FakeRegistryBuilder().withUrl('http://test.reg').withPassword('qwerty').build(),
-          new FakeRegistryBuilder().withUrl('https://tstreg.com').withPassword('123').build(),
-        ])
-        .build(),
+    const { asFragment } = render(
+      getComponent(
+        new MockStoreBuilder()
+          .withDockerConfig([
+            new FakeRegistryBuilder().withUrl('http://test.reg').withPassword('qwerty').build(),
+            new FakeRegistryBuilder().withUrl('https://tstreg.com').withPassword('123').build(),
+          ])
+          .build(),
+      ),
     );
-    render(component);
 
     const addRegistryButton = screen.queryByTestId('add-button');
     expect(addRegistryButton).toBeTruthy();
 
-    // Suppress offsetWidth errors during snapshot creation
-    const originalError = console.error;
-    console.error = jest.fn();
-    const json = renderer.create(component).toJSON();
-    console.error = originalError;
-
-    expect(json).toMatchSnapshot();
+    expect(asFragment()).toMatchSnapshot();
   });
 
-  // TODO: Re-enable when PatternFly 6 Table + test-renderer offsetWidth issues are resolved
-  it.skip('should add a new registry', async () => {
-    // Suppress offsetWidth errors - they're expected in test environment with PatternFly Table
-    const originalError = console.error;
-    const suppressOffsetWidthErrors = (...args: unknown[]) => {
-      const errorStr = String(args[0] || '');
-      if (
-        !errorStr.includes('offsetWidth') &&
-        !errorStr.includes('Cannot read properties of null')
-      ) {
-        originalError(...args);
-      }
-    };
-    console.error = suppressOffsetWidthErrors;
+  it('should add a new registry', async () => {
+    const component = getComponent(new MockStoreBuilder().build());
+    render(component);
 
-    try {
-      const component = getComponent(new MockStoreBuilder().build());
-      render(component);
+    const addRegistryButton = screen.getByRole('button', { name: 'add-registry' });
+    await userEvent.click(addRegistryButton);
 
-      const addRegistryButton = screen.getByRole('button', { name: 'add-registry' });
-      await userEvent.click(addRegistryButton);
+    const dialog = await screen.findByRole('dialog');
 
-      const dialog = await screen.findByRole('dialog');
+    const editButton = screen.getByRole('button', { name: 'Add' });
+    expect(editButton).toBeDisabled();
 
-      const editButton = screen.getByRole('button', { name: 'Add' });
-      expect(editButton).toBeDisabled();
+    const urlInput = within(dialog).getByRole('textbox', { name: 'Url input' });
+    await userEvent.type(urlInput, 'http://tst');
 
-      const urlInput = within(dialog).getByRole('textbox', { name: 'Url input' });
-      await userEvent.type(urlInput, 'http://tst');
+    const passwordInput = within(dialog).getByTestId('registry-password-input');
+    await userEvent.type(passwordInput, 'qwe');
 
-      const passwordInput = within(dialog).getByTestId('registry-password-input');
-      await userEvent.type(passwordInput, 'qwe');
+    expect(editButton).toBeEnabled();
 
-      expect(editButton).toBeEnabled();
-
-      await userEvent.click(editButton);
-      expect(mockUpdateCredentials).toHaveBeenCalledWith([
-        {
-          url: 'http://tst',
-          username: '',
-          password: 'qwe',
-        },
-      ]);
-    } finally {
-      console.error = originalError;
-    }
+    await userEvent.click(editButton);
+    expect(mockUpdateCredentials).toHaveBeenCalledWith([
+      {
+        url: 'http://tst',
+        username: '',
+        password: 'qwe',
+      },
+    ]);
   });
 
-  // TODO: Re-enable when PatternFly 6 Table + test-renderer offsetWidth issues are resolved
-  it.skip('should delete a registry', async () => {
+  it('should delete a registry', async () => {
     const component = getComponent(
       new MockStoreBuilder()
         .withDockerConfig([
