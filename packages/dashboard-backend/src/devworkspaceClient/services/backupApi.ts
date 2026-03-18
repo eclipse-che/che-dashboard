@@ -94,12 +94,14 @@ const BACKUP_CONFIG_CACHE_TTL_MS = 60_000;
 export class BackupApiService {
   private readonly batchV1API: BatchV1API;
   private readonly customObjectAPI: CustomObjectAPI;
+  private readonly saCustomObjectAPI: CustomObjectAPI;
   private cachedBackupConfig: BackupConfig | undefined;
   private cachedBackupConfigExpiry: number = 0;
 
-  constructor(kubeConfig: k8s.KubeConfig) {
+  constructor(kubeConfig: k8s.KubeConfig, saKubeConfig: k8s.KubeConfig) {
     this.batchV1API = prepareBatchV1API(kubeConfig);
     this.customObjectAPI = prepareCustomObjectAPI(kubeConfig);
+    this.saCustomObjectAPI = prepareCustomObjectAPI(saKubeConfig);
   }
 
   /**
@@ -122,7 +124,7 @@ export class BackupApiService {
    */
   async getClusterBackupConfig(): Promise<BackupConfig> {
     try {
-      const response = await this.customObjectAPI.getNamespacedCustomObject({
+      const response = await this.saCustomObjectAPI.getNamespacedCustomObject({
         group: DEVWORKSPACE_OPERATOR_CONFIG_GROUP,
         version: DEVWORKSPACE_OPERATOR_CONFIG_VERSION,
         namespace: dwoNamespace,

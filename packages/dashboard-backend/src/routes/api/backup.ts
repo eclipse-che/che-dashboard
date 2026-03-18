@@ -16,9 +16,10 @@ import { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify';
 
 import { baseApiPath } from '@/constants/config';
 import { namespacedSchema } from '@/constants/schemas';
+import { BackupApiService } from '@/devworkspaceClient/services/backupApi';
 import { RegistryApiService } from '@/devworkspaceClient/services/registryApi';
 import { restParams } from '@/models';
-import { getDevWorkspaceClient } from '@/routes/api/helpers/getDevWorkspaceClient';
+import { getServiceAccountToken } from '@/routes/api/helpers/getServiceAccountToken';
 import { getToken } from '@/routes/api/helpers/getToken';
 import { getSchema } from '@/services/helpers';
 import { KubeConfigProvider } from '@/services/kubeclient/kubeConfigProvider';
@@ -51,10 +52,17 @@ const backupListQuerySchema = {
 } as const;
 
 function createRegistryService(request: FastifyRequest): RegistryApiService {
-  const token = getToken(request);
   const kubeConfigProvider = new KubeConfigProvider();
-  const kubeConfig = kubeConfigProvider.getKubeConfig(token);
-  return new RegistryApiService(kubeConfig);
+  const userKubeConfig = kubeConfigProvider.getKubeConfig(getToken(request));
+  const saKubeConfig = kubeConfigProvider.getKubeConfig(getServiceAccountToken());
+  return new RegistryApiService(userKubeConfig, saKubeConfig);
+}
+
+function createBackupApiService(request: FastifyRequest): BackupApiService {
+  const kubeConfigProvider = new KubeConfigProvider();
+  const userKubeConfig = kubeConfigProvider.getKubeConfig(getToken(request));
+  const saKubeConfig = kubeConfigProvider.getKubeConfig(getServiceAccountToken());
+  return new BackupApiService(userKubeConfig, saKubeConfig);
 }
 
 export function registerBackupRoutes(instance: FastifyInstance) {
@@ -63,7 +71,7 @@ export function registerBackupRoutes(instance: FastifyInstance) {
       `${baseApiPath}/namespace/:namespace/backup-config`,
       getSchema({ tags, params: namespacedSchema }),
       async function (request: FastifyRequest) {
-        const { backupApi } = getDevWorkspaceClient(getToken(request));
+        const backupApi = createBackupApiService(request);
         return await backupApi.getClusterBackupConfig();
       },
     );
@@ -73,7 +81,7 @@ export function registerBackupRoutes(instance: FastifyInstance) {
       getSchema({ tags, params: backupStatusParamsSchema }),
       async function (request: FastifyRequest) {
         const { namespace, workspaceName } = request.params as IBackupStatusParams;
-        const { backupApi } = getDevWorkspaceClient(getToken(request));
+        const backupApi = createBackupApiService(request);
         return await backupApi.getWorkspaceBackupStatus(namespace, workspaceName);
       },
     );

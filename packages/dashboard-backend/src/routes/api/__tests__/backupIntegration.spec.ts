@@ -32,8 +32,6 @@ import { V1Job, V1JobStatus } from '@kubernetes/client-node';
 import { FastifyInstance } from 'fastify';
 
 import { baseApiPath } from '@/constants/config';
-import { BackupApiService } from '@/devworkspaceClient/services/backupApi';
-import { getDevWorkspaceClient } from '@/routes/api/helpers/getDevWorkspaceClient';
 import { setup, teardown } from '@/utils/appBuilder';
 
 // Mock retryableExec to pass through immediately
@@ -51,7 +49,6 @@ const mockHttpsGet = https.get as jest.Mock;
 // Mock helpers
 jest.mock('@/routes/api/helpers/getServiceAccountToken');
 jest.mock('@/routes/api/helpers/getToken');
-jest.mock('@/routes/api/helpers/getDevWorkspaceClient');
 
 // Mock K8s API clients
 const mockCustomObjectAPI = {
@@ -191,12 +188,6 @@ describe('Backup API Integration Tests', () => {
   // Now reads DevWorkspace annotations for status
   // ========================================================================
   describe('GET backup-status - Deep Integration', () => {
-    beforeEach(() => {
-      (getDevWorkspaceClient as jest.Mock).mockImplementation(() => ({
-        backupApi: new BackupApiService(mockKubeConfig),
-      }));
-    });
-
     it('should return SUCCESS with full integration through annotations', async () => {
       mockBackupStatusAPIs(
         {

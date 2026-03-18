@@ -33,16 +33,34 @@ const mockCustomObjectsApi = {
   listNamespacedCustomObject: jest.fn(),
 };
 
+const mockSaCustomObjectsApi = {
+  getNamespacedCustomObject: jest.fn(),
+  listNamespacedCustomObject: jest.fn(),
+};
+
 const mockCoreV1Api = {
   readNamespacedSecret: jest.fn(),
 };
 
+const mockSaCoreV1Api = {
+  readNamespacedSecret: jest.fn(),
+};
+
+let prepareCoreV1APICallCount = 0;
 jest.mock('@/devworkspaceClient/services/helpers/prepareCoreV1API', () => ({
-  prepareCoreV1API: jest.fn(() => mockCoreV1Api),
+  prepareCoreV1API: jest.fn(() => {
+    prepareCoreV1APICallCount++;
+    // First call is user KubeConfig, second call is SA KubeConfig
+    return prepareCoreV1APICallCount % 2 === 1 ? mockCoreV1Api : mockSaCoreV1Api;
+  }),
 }));
 
 const mockKubeConfig = {
   makeApiClient: jest.fn(() => mockCustomObjectsApi),
+};
+
+const mockSaKubeConfig = {
+  makeApiClient: jest.fn(() => mockSaCustomObjectsApi),
 };
 
 describe('RegistryApiService', () => {
@@ -65,10 +83,11 @@ describe('RegistryApiService', () => {
   };
 
   beforeEach(() => {
-    service = new RegistryApiService(mockKubeConfig as any);
+    prepareCoreV1APICallCount = 0;
+    service = new RegistryApiService(mockKubeConfig as any, mockSaKubeConfig as any);
     jest.clearAllMocks();
-    // Default: DWOC returns a valid registry path
-    mockCustomObjectsApi.getNamespacedCustomObject.mockResolvedValue({
+    // Default: DWOC returns a valid registry path (via SA token)
+    mockSaCustomObjectsApi.getNamespacedCustomObject.mockResolvedValue({
       kind: 'DevWorkspaceOperatorConfig',
       config: {
         workspace: {
@@ -447,7 +466,7 @@ describe('RegistryApiService', () => {
 
     it('should return empty list immediately when DWOC registry path is unavailable', async () => {
       // DWOC fails — early return before any user-namespace queries are made
-      mockCustomObjectsApi.getNamespacedCustomObject.mockRejectedValue(
+      mockSaCustomObjectsApi.getNamespacedCustomObject.mockRejectedValue(
         new Error('DWOC config unavailable'),
       );
 
@@ -470,7 +489,7 @@ describe('RegistryApiService', () => {
 
     it('should call getBackupRegistryPath before querying user-namespace data', async () => {
       const callOrder: string[] = [];
-      mockCustomObjectsApi.getNamespacedCustomObject.mockImplementation(async () => {
+      mockSaCustomObjectsApi.getNamespacedCustomObject.mockImplementation(async () => {
         callOrder.push('dwoc');
         return {
           kind: 'DevWorkspaceOperatorConfig',
@@ -491,7 +510,7 @@ describe('RegistryApiService', () => {
     it('should use DWOC registry path for imageUrl when DWOC is available', async () => {
       const dwocRegistryPath = 'default-route-openshift-image-registry.apps.crc.testing';
 
-      mockCustomObjectsApi.getNamespacedCustomObject.mockResolvedValue({
+      mockSaCustomObjectsApi.getNamespacedCustomObject.mockResolvedValue({
         kind: 'DevWorkspaceOperatorConfig',
         config: { workspace: { backupCronJob: { registry: { path: dwocRegistryPath } } } },
       });
@@ -589,8 +608,8 @@ describe('RegistryApiService', () => {
       // Exactly two listNamespacedCustomObject calls (imagestreams + devworkspaces)
       expect(mockCustomObjectsApi.listNamespacedCustomObject).toHaveBeenCalledTimes(2);
       // getNamespacedCustomObject called exactly once — for DWOC, NOT once per image
-      expect(mockCustomObjectsApi.getNamespacedCustomObject).toHaveBeenCalledTimes(1);
-      expect(mockCustomObjectsApi.getNamespacedCustomObject).toHaveBeenCalledWith(
+      expect(mockSaCustomObjectsApi.getNamespacedCustomObject).toHaveBeenCalledTimes(1);
+      expect(mockSaCustomObjectsApi.getNamespacedCustomObject).toHaveBeenCalledWith(
         expect.objectContaining({ plural: 'devworkspaceoperatorconfigs' }),
       );
     });
@@ -605,7 +624,7 @@ describe('RegistryApiService', () => {
     }
 
     beforeEach(() => {
-      mockCustomObjectsApi.getNamespacedCustomObject.mockResolvedValue({
+      mockSaCustomObjectsApi.getNamespacedCustomObject.mockResolvedValue({
         kind: 'DevWorkspaceOperatorConfig',
         config: {
           workspace: {
@@ -639,7 +658,7 @@ describe('RegistryApiService', () => {
     it('should look up the auth secret by its configured name', async () => {
       const robotToken = 'my-robot-token';
       const auth = Buffer.from(`my-robot:${robotToken}`).toString('base64');
-      mockCoreV1Api.readNamespacedSecret.mockResolvedValue({
+      mockSaCoreV1Api.readNamespacedSecret.mockResolvedValue({
         data: {
           '.dockerconfigjson': Buffer.from(
             JSON.stringify({ auths: { 'quay.io': { auth } } }),
@@ -650,13 +669,13 @@ describe('RegistryApiService', () => {
 
       await service.listBackupImages(namespace);
 
-      expect(mockCoreV1Api.readNamespacedSecret).toHaveBeenCalledWith(
+      expect(mockSaCoreV1Api.readNamespacedSecret).toHaveBeenCalledWith(
         expect.objectContaining({ name: 'registry-secret' }),
       );
     });
 
     it('should fall back gracefully when auth secret is missing', async () => {
-      mockCoreV1Api.readNamespacedSecret.mockRejectedValue(new Error('Secret not found'));
+      mockSaCoreV1Api.readNamespacedSecret.mockRejectedValue(new Error('Secret not found'));
       mockCustomObjectsApi.listNamespacedCustomObject.mockResolvedValue({ items: [] });
 
       // Should not throw — proceeds as unauthenticated QuayRegistryClient
@@ -665,7 +684,7 @@ describe('RegistryApiService', () => {
 
     it('should use quay-api-token as Bearer when present', async () => {
       const oauthToken = 'my-oauth-token';
-      mockCoreV1Api.readNamespacedSecret.mockResolvedValue({
+      mockSaCoreV1Api.readNamespacedSecret.mockResolvedValue({
         data: {
           'quay-api-token': Buffer.from(oauthToken).toString('base64'),
           '.dockerconfigjson': Buffer.from(
@@ -692,7 +711,7 @@ describe('RegistryApiService', () => {
 
     it('should use Basic auth from .dockerconfigjson when quay-api-token is absent', async () => {
       const rawAuth = Buffer.from('robot:robot-token').toString('base64');
-      mockCoreV1Api.readNamespacedSecret.mockResolvedValue({
+      mockSaCoreV1Api.readNamespacedSecret.mockResolvedValue({
         data: {
           '.dockerconfigjson': Buffer.from(
             JSON.stringify({ auths: { 'quay.io': { auth: rawAuth } } }),
@@ -715,7 +734,7 @@ describe('RegistryApiService', () => {
     });
 
     it('should send no Authorization header when secret has neither quay-api-token nor .dockerconfigjson', async () => {
-      mockCoreV1Api.readNamespacedSecret.mockResolvedValue({ data: {} });
+      mockSaCoreV1Api.readNamespacedSecret.mockResolvedValue({ data: {} });
       mockCustomObjectsApi.listNamespacedCustomObject.mockResolvedValue({ items: [] });
 
       await service.listBackupImages(namespace);
@@ -734,7 +753,7 @@ describe('RegistryApiService', () => {
       const portRegistryHost = 'myregistry.example.com:5000';
       const rawAuth = Buffer.from('user:pass').toString('base64');
 
-      mockCustomObjectsApi.getNamespacedCustomObject.mockResolvedValue({
+      mockSaCustomObjectsApi.getNamespacedCustomObject.mockResolvedValue({
         kind: 'DevWorkspaceOperatorConfig',
         config: {
           workspace: {
@@ -744,7 +763,7 @@ describe('RegistryApiService', () => {
           },
         },
       });
-      mockCoreV1Api.readNamespacedSecret.mockResolvedValue({
+      mockSaCoreV1Api.readNamespacedSecret.mockResolvedValue({
         data: {
           '.dockerconfigjson': Buffer.from(
             JSON.stringify({ auths: { [portRegistryHost]: { auth: rawAuth } } }),
@@ -901,7 +920,7 @@ describe('RegistryApiService', () => {
     }
 
     beforeEach(() => {
-      mockCustomObjectsApi.getNamespacedCustomObject.mockResolvedValue({
+      mockSaCustomObjectsApi.getNamespacedCustomObject.mockResolvedValue({
         kind: 'DevWorkspaceOperatorConfig',
         config: {
           workspace: {
@@ -912,7 +931,7 @@ describe('RegistryApiService', () => {
         },
       });
       const auth = Buffer.from('robot:token').toString('base64');
-      mockCoreV1Api.readNamespacedSecret.mockResolvedValue({
+      mockSaCoreV1Api.readNamespacedSecret.mockResolvedValue({
         data: {
           '.dockerconfigjson': Buffer.from(
             JSON.stringify({ auths: { 'quay.io': { auth } } }),
