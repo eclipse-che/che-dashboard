@@ -12,26 +12,39 @@
 
 import { Label, LabelProps } from '@patternfly/react-core';
 import React from 'react';
+import { connect, ConnectedProps } from 'react-redux';
 
 import { CheTooltip } from '@/components/CheTooltip';
-import { getStatusIcon } from '@/components/Workspace/Status/getStatusIcon';
+import { getSccMismatchTooltip, getStatusIcon } from '@/components/Workspace/Status/getStatusIcon';
 import styles from '@/components/Workspace/Status/index.module.css';
+import { hasSccMismatch } from '@/services/helpers/sccMismatch';
 import {
   DeprecatedWorkspaceStatus,
   DevWorkspaceStatus,
   WorkspaceStatus,
 } from '@/services/helpers/types';
+import { RootState } from '@/store';
+import { selectBranding } from '@/store/Branding/selectors';
+import { selectCurrentScc } from '@/store/ServerConfig/selectors';
 
-type Props = {
+export type Props = MappedProps & {
   status: WorkspaceStatus | DevWorkspaceStatus | DeprecatedWorkspaceStatus;
+  containerScc: string | undefined;
 };
 
-export class WorkspaceStatusLabel extends React.PureComponent<Props> {
+class WorkspaceStatusLabelComponent extends React.PureComponent<Props> {
   render(): React.ReactElement {
-    const { status } = this.props;
+    const { status, containerScc, currentScc, branding } = this.props;
+
+    // Only check SCC mismatch for stopped workspaces
+    const isStopped = status === DevWorkspaceStatus.STOPPED;
+    const sccMismatch = isStopped && hasSccMismatch(containerScc, currentScc);
+
+    // Show actual status, add warning icon only if SCC mismatch
+    const displayStatus = status;
 
     let statusLabelColor: LabelProps['color'];
-    switch (status) {
+    switch (displayStatus) {
       case WorkspaceStatus.RUNNING:
       case DevWorkspaceStatus.RUNNING:
         statusLabelColor = 'green';
@@ -54,12 +67,37 @@ export class WorkspaceStatusLabel extends React.PureComponent<Props> {
         statusLabelColor = 'grey';
     }
 
+    // Build tooltip content
+    let tooltipContent: React.ReactNode;
+    if (sccMismatch) {
+      tooltipContent = getSccMismatchTooltip(branding.docs.containerRunCapabilities);
+    } else if (displayStatus === 'Deprecated') {
+      tooltipContent = 'Deprecated workspace';
+    } else {
+      tooltipContent = displayStatus;
+    }
+
+    // Use warning icon for SCC mismatch, otherwise use regular status icon
+    const icon = sccMismatch
+      ? getStatusIcon(DevWorkspaceStatus.FAILED)
+      : getStatusIcon(displayStatus);
+
     return (
-      <CheTooltip content={status === 'Deprecated' ? 'Deprecated workspace' : status}>
-        <Label className={styles.statusLabel} color={statusLabelColor} icon={getStatusIcon(status)}>
-          {status}
+      <CheTooltip content={tooltipContent}>
+        <Label className={styles.statusLabel} color={statusLabelColor} icon={icon}>
+          {displayStatus}
         </Label>
       </CheTooltip>
     );
   }
 }
+
+const mapStateToProps = (state: RootState) => ({
+  branding: selectBranding(state),
+  currentScc: selectCurrentScc(state),
+});
+
+const connector = connect(mapStateToProps);
+
+type MappedProps = ConnectedProps<typeof connector>;
+export const WorkspaceStatusLabel = connector(WorkspaceStatusLabelComponent);

@@ -18,12 +18,8 @@ import { AppThunk } from '@/store';
 import { selectApplications } from '@/store/ClusterInfo';
 import { selectDefaultNamespace } from '@/store/InfrastructureNamespaces';
 import { verifyAuthorized } from '@/store/SanityCheck';
-import {
-  selectDefaultEditor,
-  selectOpenVSXUrl,
-  selectPluginRegistryInternalUrl,
-  selectPluginRegistryUrl,
-} from '@/store/ServerConfig';
+import { getDefaultEditor } from '@/store/ServerConfig/helpers';
+import { selectServerConfigState } from '@/store/ServerConfig/selectors';
 import { getDevWorkspaceClient } from '@/store/Workspaces/devWorkspaces/actions/actionCreators/helpers';
 import { updateDevWorkspaceTemplate } from '@/store/Workspaces/devWorkspaces/actions/actionCreators/helpers/editorImage';
 import {
@@ -43,10 +39,8 @@ export const createWorkspaceFromResources =
   async (dispatch, getState) => {
     const state = getState();
     const defaultKubernetesNamespace = selectDefaultNamespace(state);
-    const openVSXUrl = selectOpenVSXUrl(state);
-    const pluginRegistryUrl = selectPluginRegistryUrl(state);
-    const pluginRegistryInternalUrl = selectPluginRegistryInternalUrl(state);
-    const cheEditor = editor ? editor : selectDefaultEditor(state);
+    const serverConfig = selectServerConfigState(state).config;
+    const cheEditor = editor || getDefaultEditor(serverConfig);
     const defaultNamespace = defaultKubernetesNamespace.name;
     const customName = params.name;
 
@@ -79,6 +73,9 @@ export const createWorkspaceFromResources =
       devWorkspaceTemplate = updateDevWorkspaceTemplate(devWorkspaceTemplate, params.editorImage);
 
       /* create a new DevWorkspaceTemplate */
+      const pluginRegistryUrl = serverConfig?.pluginRegistryURL;
+      const pluginRegistryInternalUrl = serverConfig?.pluginRegistryInternalURL;
+      const openVSXUrl = serverConfig?.pluginRegistry?.openVSXURL;
 
       await getDevWorkspaceClient().createDevWorkspaceTemplate(
         defaultNamespace,
@@ -90,7 +87,15 @@ export const createWorkspaceFromResources =
         clusterConsole,
       );
 
-      dispatch(devWorkspacesAddAction(createResp.devWorkspace));
+      // Set the SCC attribute once at creation time so the DevWorkspace operator
+      // can grant the workspace SA the required SCC (e.g. container-build).
+      // On subsequent starts only HOST_USERS is synced (see startWorkspace.ts).
+      const createdWorkspace = await getDevWorkspaceClient().manageContainerSccAttribute(
+        createResp.devWorkspace,
+        serverConfig,
+      );
+
+      dispatch(devWorkspacesAddAction(createdWorkspace));
     } catch (e) {
       const errorMessage =
         'Failed to create a new workspace, reason: ' + common.helpers.errors.getMessage(e);
