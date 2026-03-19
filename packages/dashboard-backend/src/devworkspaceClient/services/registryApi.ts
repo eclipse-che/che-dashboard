@@ -111,11 +111,15 @@ function validateK8sName(name: string, fieldName: string): void {
 
 export class RegistryApiService {
   private customObjectsApi: CustomObjectsApi;
+  private saCustomObjectsApi: CustomObjectsApi;
   private coreV1Api: CoreV1API;
+  private saCoreV1Api: CoreV1API;
 
-  constructor(kubeConfig: KubeConfig) {
+  constructor(kubeConfig: KubeConfig, saKubeConfig: KubeConfig) {
     this.customObjectsApi = kubeConfig.makeApiClient(CustomObjectsApi);
+    this.saCustomObjectsApi = saKubeConfig.makeApiClient(CustomObjectsApi);
     this.coreV1Api = prepareCoreV1API(kubeConfig);
+    this.saCoreV1Api = prepareCoreV1API(saKubeConfig);
   }
 
   /**
@@ -175,7 +179,7 @@ export class RegistryApiService {
    */
   private async getBackupRegistryPath(): Promise<{ registryPath: string; authSecret?: string }> {
     try {
-      const response = await this.customObjectsApi.getNamespacedCustomObject({
+      const response = await this.saCustomObjectsApi.getNamespacedCustomObject({
         group: DEVWORKSPACE_OPERATOR_CONFIG_GROUP,
         version: DEVWORKSPACE_OPERATOR_CONFIG_VERSION,
         namespace: dwoNamespace,
@@ -214,7 +218,7 @@ export class RegistryApiService {
    */
   private async getRegistryCredentials(secretName: string, registryHost: string): Promise<string> {
     try {
-      const secret = await this.coreV1Api.readNamespacedSecret({
+      const secret = await this.saCoreV1Api.readNamespacedSecret({
         name: secretName,
         namespace: dwoNamespace,
       });

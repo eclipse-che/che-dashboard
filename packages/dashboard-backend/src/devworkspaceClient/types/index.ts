@@ -514,7 +514,6 @@ export interface IDevWorkspaceClient {
   sshKeysApi: IShhKeysApi;
   workspacePreferencesApi: IWorkspacePreferencesApi;
   editorsApi: IEditorsApi;
-  backupApi: IBackupApi;
 }
 
 export interface IDevWorkspaceSingletonClient {
