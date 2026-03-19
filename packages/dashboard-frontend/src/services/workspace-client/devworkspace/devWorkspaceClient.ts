@@ -560,7 +560,6 @@ export class DevWorkspaceClient {
     return devWorkspace;
   }
 
-
   async manageDebugMode(
     workspace: devfileApi.DevWorkspace,
     debugMode: boolean,

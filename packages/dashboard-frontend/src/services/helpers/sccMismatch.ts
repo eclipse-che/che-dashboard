@@ -31,6 +31,11 @@ export function hasSccMismatch(
   if (currentScc === undefined) {
     return false;
   }
+  // If workspace has no SCC attribute, it was created before the SCC feature was added
+  // and should not be flagged as a mismatch
+  if (containerScc === undefined) {
+    return false;
+  }
   // Server has SCC requirement - check if workspace matches
   return containerScc !== currentScc;
 }

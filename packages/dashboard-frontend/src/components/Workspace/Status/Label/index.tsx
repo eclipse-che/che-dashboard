@@ -15,10 +15,7 @@ import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 
 import { CheTooltip } from '@/components/CheTooltip';
-import {
-  getSccMismatchTooltip,
-  useStatusIcon,
-} from '@/components/Workspace/Status/getStatusIcon';
+import { getSccMismatchTooltip, useStatusIcon } from '@/components/Workspace/Status/getStatusIcon';
 import styles from '@/components/Workspace/Status/index.module.css';
 import { hasSccMismatch } from '@/services/helpers/sccMismatch';
 import {
