@@ -16,7 +16,6 @@ import { BackupStatus } from '@eclipse-che/common';
 import { FastifyInstance } from 'fastify';
 
 import { baseApiPath } from '@/constants/config';
-import { getDevWorkspaceClient } from '@/routes/api/helpers/getDevWorkspaceClient';
 import { setup, teardown } from '@/utils/appBuilder';
 
 // Mock helpers
@@ -29,6 +28,14 @@ jest.mock('@/services/kubeclient/kubeConfigProvider');
 
 const mockGetClusterBackupConfig = jest.fn();
 const mockGetWorkspaceBackupStatus = jest.fn();
+
+// Mock BackupApiService
+jest.mock('@/devworkspaceClient/services/backupApi', () => ({
+  BackupApiService: jest.fn().mockImplementation(() => ({
+    getClusterBackupConfig: mockGetClusterBackupConfig,
+    getWorkspaceBackupStatus: mockGetWorkspaceBackupStatus,
+  })),
+}));
 
 // Mock RegistryApiService
 const mockListBackupImages = jest.fn();
@@ -50,15 +57,6 @@ describe('Backup Routes', () => {
 
   afterAll(() => {
     teardown(app);
-  });
-
-  beforeEach(() => {
-    (getDevWorkspaceClient as jest.Mock).mockImplementation(() => ({
-      backupApi: {
-        getClusterBackupConfig: mockGetClusterBackupConfig,
-        getWorkspaceBackupStatus: mockGetWorkspaceBackupStatus,
-      },
-    }));
   });
 
   afterEach(() => {
