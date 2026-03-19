@@ -26,7 +26,9 @@ jest.mock('@/devworkspaceClient/services/helpers/retryableExec', () => ({
 describe('BackupApiService', () => {
   let backupApiService: BackupApiService;
   let mockKubeConfig: k8s.KubeConfig;
+  let mockSaKubeConfig: k8s.KubeConfig;
   let mockCustomObjectAPI: any;
+  let mockSaCustomObjectAPI: any;
   let mockBatchV1API: any;
 
   const namespace = 'user-che';
@@ -70,23 +72,31 @@ describe('BackupApiService', () => {
   }
 
   /**
-   * Set up getNamespacedCustomObject to return operator config first,
-   * then DevWorkspace on the second call. This matches the call order in
-   * getWorkspaceBackupStatus: getClusterBackupConfig() → getNamespacedCustomObject for DevWorkspace.
+   * Set up mocks for backup status tests.
+   * DWOC is fetched via saCustomObjectAPI, DevWorkspace via user's customObjectAPI.
    */
   function mockGetNamespacedForBackupStatus(
     annotations: Record<string, string> = {},
     operatorConfigOverride?: any,
   ) {
-    mockCustomObjectAPI.getNamespacedCustomObject
-      .mockResolvedValueOnce(operatorConfigOverride ?? mockOperatorConfig) // 1st call: operator config
-      .mockResolvedValueOnce(mockDevWorkspace(annotations)); // 2nd call: DevWorkspace
+    mockSaCustomObjectAPI.getNamespacedCustomObject.mockResolvedValueOnce(
+      operatorConfigOverride ?? mockOperatorConfig,
+    ); // SA: operator config
+    mockCustomObjectAPI.getNamespacedCustomObject.mockResolvedValueOnce(
+      mockDevWorkspace(annotations),
+    ); // User: DevWorkspace
   }
 
   beforeEach(() => {
     mockKubeConfig = new k8s.KubeConfig();
+    mockSaKubeConfig = new k8s.KubeConfig();
 
     mockCustomObjectAPI = {
+      getClusterCustomObject: jest.fn(),
+      getNamespacedCustomObject: jest.fn(),
+    };
+
+    mockSaCustomObjectAPI = {
       getClusterCustomObject: jest.fn(),
       getNamespacedCustomObject: jest.fn(),
     };
@@ -105,7 +115,14 @@ describe('BackupApiService', () => {
       return {};
     });
 
-    backupApiService = new BackupApiService(mockKubeConfig);
+    jest.spyOn(mockSaKubeConfig, 'makeApiClient').mockImplementation((apiType: any) => {
+      if (apiType === k8s.CustomObjectsApi) {
+        return mockSaCustomObjectAPI;
+      }
+      return {};
+    });
+
+    backupApiService = new BackupApiService(mockKubeConfig, mockSaKubeConfig);
 
     // Default: no active backup Jobs
     mockBatchV1API.listNamespacedJob.mockResolvedValue({ items: [] });
@@ -117,8 +134,8 @@ describe('BackupApiService', () => {
 
   describe('getClusterBackupConfig', () => {
     it('should return backup configuration when enabled', async () => {
-      // getClusterBackupConfig calls getNamespacedCustomObject (not getClusterCustomObject)
-      mockCustomObjectAPI.getNamespacedCustomObject.mockResolvedValue(mockOperatorConfig);
+      // getClusterBackupConfig uses SA token for DWOC reads
+      mockSaCustomObjectAPI.getNamespacedCustomObject.mockResolvedValue(mockOperatorConfig);
 
       const result = await backupApiService.getClusterBackupConfig();
 
@@ -129,7 +146,7 @@ describe('BackupApiService', () => {
         authSecretName: 'registry-credentials',
       });
 
-      expect(mockCustomObjectAPI.getNamespacedCustomObject).toHaveBeenCalledWith({
+      expect(mockSaCustomObjectAPI.getNamespacedCustomObject).toHaveBeenCalledWith({
         group: 'controller.devfile.io',
         version: 'v1alpha1',
         namespace: 'openshift-operators',
@@ -139,7 +156,7 @@ describe('BackupApiService', () => {
     });
 
     it('should return default values when backup not configured', async () => {
-      mockCustomObjectAPI.getNamespacedCustomObject.mockResolvedValue({
+      mockSaCustomObjectAPI.getNamespacedCustomObject.mockResolvedValue({
         kind: 'DevWorkspaceOperatorConfig',
         config: {},
       });
@@ -155,11 +172,22 @@ describe('BackupApiService', () => {
     });
 
     it('should throw error when API call fails', async () => {
-      mockCustomObjectAPI.getNamespacedCustomObject.mockRejectedValue(new Error('API Error'));
+      mockSaCustomObjectAPI.getNamespacedCustomObject.mockRejectedValue(new Error('API Error'));
 
       await expect(backupApiService.getClusterBackupConfig()).rejects.toThrow(
         'Unable to get cluster backup configuration',
       );
+    });
+
+    it('should use SA token for DWOC reads, not user token', async () => {
+      mockSaCustomObjectAPI.getNamespacedCustomObject.mockResolvedValue(mockOperatorConfig);
+
+      await backupApiService.getClusterBackupConfig();
+
+      // SA API should be called for DWOC
+      expect(mockSaCustomObjectAPI.getNamespacedCustomObject).toHaveBeenCalledTimes(1);
+      // User API should NOT be called for DWOC
+      expect(mockCustomObjectAPI.getNamespacedCustomObject).not.toHaveBeenCalled();
     });
   });
 
@@ -283,8 +311,8 @@ describe('BackupApiService', () => {
 
       await backupApiService.getWorkspaceBackupStatus(namespace, workspaceName);
 
-      // Second call is the DevWorkspace read
-      expect(mockCustomObjectAPI.getNamespacedCustomObject).toHaveBeenNthCalledWith(2, {
+      // DevWorkspace read uses user token
+      expect(mockCustomObjectAPI.getNamespacedCustomObject).toHaveBeenCalledWith({
         group: 'workspace.devfile.io',
         version: 'v1alpha2',
         namespace,
@@ -305,10 +333,9 @@ describe('BackupApiService', () => {
     });
 
     it('should throw error when DevWorkspace API call fails', async () => {
-      // First call (operator config) succeeds, second (DevWorkspace) fails
-      mockCustomObjectAPI.getNamespacedCustomObject
-        .mockResolvedValueOnce(mockOperatorConfig)
-        .mockRejectedValueOnce(new Error('Not Found'));
+      // SA call (operator config) succeeds, user call (DevWorkspace) fails
+      mockSaCustomObjectAPI.getNamespacedCustomObject.mockResolvedValueOnce(mockOperatorConfig);
+      mockCustomObjectAPI.getNamespacedCustomObject.mockRejectedValueOnce(new Error('Not Found'));
 
       await expect(
         backupApiService.getWorkspaceBackupStatus(namespace, workspaceName),
@@ -344,19 +371,20 @@ describe('BackupApiService', () => {
     });
 
     it('should cache DWOC config and not re-fetch within TTL', async () => {
-      // Set up two full rounds of mocks: operator config + DevWorkspace for each call
+      // SA: operator config fetched once (then cached)
+      mockSaCustomObjectAPI.getNamespacedCustomObject.mockResolvedValueOnce(mockOperatorConfig);
+      // User: DevWorkspace fetched twice (once per call)
       mockCustomObjectAPI.getNamespacedCustomObject
-        .mockResolvedValueOnce(mockOperatorConfig) // 1st call: operator config (call 1)
-        .mockResolvedValueOnce(mockDevWorkspace({})) // 2nd call: DevWorkspace (call 1)
-        .mockResolvedValueOnce(mockDevWorkspace({})); // 3rd call: DevWorkspace (call 2) — no operator config fetch
+        .mockResolvedValueOnce(mockDevWorkspace({}))
+        .mockResolvedValueOnce(mockDevWorkspace({}));
 
       await backupApiService.getWorkspaceBackupStatus(namespace, workspaceName);
       await backupApiService.getWorkspaceBackupStatus(namespace, workspaceName);
 
-      // getNamespacedCustomObject should be called 3 times total:
-      // 1st invocation: operator config + DevWorkspace = 2 calls
-      // 2nd invocation: DevWorkspace only = 1 call (operator config cached)
-      expect(mockCustomObjectAPI.getNamespacedCustomObject).toHaveBeenCalledTimes(3);
+      // SA API called once for DWOC (then cached)
+      expect(mockSaCustomObjectAPI.getNamespacedCustomObject).toHaveBeenCalledTimes(1);
+      // User API called twice for DevWorkspace reads
+      expect(mockCustomObjectAPI.getNamespacedCustomObject).toHaveBeenCalledTimes(2);
     });
 
     it('should return undefined backupImageUrl when registry is not configured', async () => {

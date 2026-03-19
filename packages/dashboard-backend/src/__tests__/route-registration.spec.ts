@@ -22,6 +22,18 @@ jest.mock('@/routes/api/helpers/getToken');
 jest.mock('@/routes/api/helpers/getDevWorkspaceClient');
 jest.mock('@/services/kubeclient/kubeConfigProvider');
 
+// Mock BackupApiService
+jest.mock('@/devworkspaceClient/services/backupApi', () => ({
+  BackupApiService: jest.fn().mockImplementation(() => ({
+    getClusterBackupConfig: jest.fn().mockResolvedValue({
+      enabled: true,
+      schedule: '0 1 * * *',
+      registry: 'image-registry.openshift-image-registry.svc:5000',
+    }),
+    getWorkspaceBackupStatus: jest.fn().mockResolvedValue({}),
+  })),
+}));
+
 // Mock RegistryApiService
 const mockListBackupImages = jest.fn();
 jest.mock('@/devworkspaceClient/services/registryApi', () => ({
