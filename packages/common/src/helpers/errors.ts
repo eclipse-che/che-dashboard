@@ -57,10 +57,8 @@ export function getMessage(error: unknown): string {
         // Non-HTML string body — return it directly as the error message
         return response.data;
       }
-      // HTML response body — extract status info instead of returning raw HTML
-      return response.config?.url
-        ? `"${response.status} ${response.statusText}" returned by "${response.config.url}".`
-        : `"${response.status} ${response.statusText}".`;
+      // HTML response body — fall through so isErrorLike can return error.message,
+      // which typically carries more context (e.g. the originating URL).
     } else if (response.data?.message) {
       return response.data.message;
     } else if (response.config?.url) {
