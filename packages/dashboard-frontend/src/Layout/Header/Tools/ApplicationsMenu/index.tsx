@@ -38,12 +38,6 @@ export class ApplicationsMenu extends React.PureComponent<Props, State> {
     };
   }
 
-  private onToggle(): void {
-    this.setState({
-      isOpen: !this.state.isOpen,
-    });
-  }
-
   private buildMenuItems(): React.ReactElement[] {
     const apps = this.props.applications;
     const defaultAppsGroup = 'Applications';
@@ -98,7 +92,7 @@ export class ApplicationsMenu extends React.PureComponent<Props, State> {
         toggle={(toggleRef: React.Ref<MenuToggleElement>) => (
           <MenuToggle
             ref={toggleRef}
-            onClick={() => this.onToggle()}
+            onClick={() => this.setState(prev => ({ isOpen: !prev.isOpen }))}
             isExpanded={this.state.isOpen}
             variant="plain"
             aria-label="External Applications"

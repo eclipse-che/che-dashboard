@@ -14,12 +14,30 @@ import '@testing-library/jest-dom';
 
 import React from 'react';
 
-// Patch global.setTimeout so that the React scheduler (which captures this reference
-// before any test code runs) uses our safe wrapper. This prevents PF6 Table's
-// Th.tsx useEffect — which reads ref.current.offsetWidth — from crashing tests when
-// the effect fires inside react-test-renderer (where refs have no real DOM node).
-// The patch must live here (setupFilesAfterEnv) so it is applied BEFORE test modules
-// import the scheduler and it captures the global.setTimeout reference.
+// PatternFly 6 Table's Th.tsx reads ref.current.offsetWidth inside a useEffect.
+// In JSDOM all layout properties are 0 and in react-test-renderer ref.current is
+// null, so the access throws a TypeError deep inside the React scheduler's
+// setTimeout callback — making the test process crash with an unhandled error.
+//
+// Two-layer fix:
+//   1. Mock offsetWidth/Height on HTMLElement so JSDOM-rendered elements are safe.
+//   2. Wrap scheduled callbacks to swallow the one specific TypeError that PF6
+//      Table emits from react-test-renderer paths where there is no real DOM node.
+//      Only that exact TypeError variant is silenced; all other exceptions propagate.
+
+Object.defineProperty(HTMLElement.prototype, 'offsetWidth', {
+  configurable: true,
+  get() {
+    return 100;
+  },
+});
+Object.defineProperty(HTMLElement.prototype, 'offsetHeight', {
+  configurable: true,
+  get() {
+    return 100;
+  },
+});
+
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const _origSetTimeout = global.setTimeout as (...a: any[]) => any;
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -37,119 +55,14 @@ const _origSetTimeout = global.setTimeout as (...a: any[]) => any;
     try {
       return (callback as (...a: unknown[]) => unknown)(...cbArgs);
     } catch (e) {
+      // Only swallow the specific PF6 Table / react-test-renderer null-ref error.
       if (e instanceof TypeError && String((e as Error).message).includes('offsetWidth')) {
-        return; // swallow react-test-renderer null-ref from PF6 Table's Th.tsx
+        return;
       }
       throw e;
     }
   };
   return _origSetTimeout(safe, delay, ...args);
-};
-
-// Mock offsetWidth/offsetHeight for PatternFly 6 Table components in JSDOM
-// PatternFly Table accesses offsetWidth during render, which can be null in test environment
-const originalConsoleError = console.error;
-console.error = (...args: unknown[]) => {
-  // Suppress offsetWidth errors from PatternFly Table during tests
-  const errorStr = String(args[0] || '');
-  if (errorStr.includes('offsetWidth') || errorStr.includes('Cannot read properties of null')) {
-    return;
-  }
-  originalConsoleError(...args);
-};
-
-// Suppress uncaught exceptions for offsetWidth errors in PatternFly Table
-const originalErrorHandler = window.onerror;
-window.onerror = (message, source, lineno, colno, error) => {
-  const errorStr = String(message || '');
-  if (errorStr.includes('offsetWidth') || errorStr.includes('Cannot read properties of null')) {
-    return true; // Suppress the error
-  }
-  if (originalErrorHandler) {
-    return originalErrorHandler(message, source, lineno, colno, error);
-  }
-  return false;
-};
-
-// Suppress unhandled promise rejections for offsetWidth errors
-const originalUnhandledRejection = window.onunhandledrejection;
-if (originalUnhandledRejection) {
-  window.onunhandledrejection = (event: PromiseRejectionEvent) => {
-    const errorStr = String(event.reason || '');
-    if (errorStr.includes('offsetWidth') || errorStr.includes('Cannot read properties of null')) {
-      event.preventDefault();
-      return;
-    }
-    return originalUnhandledRejection.call(window, event);
-  };
-} else {
-  window.onunhandledrejection = (event: PromiseRejectionEvent) => {
-    const errorStr = String(event.reason || '');
-    if (errorStr.includes('offsetWidth') || errorStr.includes('Cannot read properties of null')) {
-      event.preventDefault();
-    }
-  };
-}
-
-
-// Mock offsetWidth/offsetHeight for PatternFly 6 Table components
-// PatternFly Table accesses offsetWidth during render, which can be null in test environment
-const getOffsetWidth = function(this: HTMLElement) {
-  // Return a consistent value, handling both normal elements and null references
-  try {
-    return this && typeof this === 'object' ? 100 : 100;
-  } catch {
-    return 100;
-  }
-};
-
-const getOffsetHeight = function(this: HTMLElement) {
-  try {
-    return this && typeof this === 'object' ? 100 : 100;
-  } catch {
-    return 100;
-  }
-};
-
-Object.defineProperty(HTMLElement.prototype, 'offsetWidth', {
-  configurable: true,
-  get: getOffsetWidth,
-});
-Object.defineProperty(HTMLElement.prototype, 'offsetHeight', {
-  configurable: true,
-  get: getOffsetHeight,
-});
-
-// Also mock for Element prototype (for react-test-renderer)
-if (typeof Element !== 'undefined') {
-  Object.defineProperty(Element.prototype, 'offsetWidth', {
-    configurable: true,
-    get: getOffsetWidth,
-  });
-  Object.defineProperty(Element.prototype, 'offsetHeight', {
-    configurable: true,
-    get: getOffsetHeight,
-  });
-}
-
-// Mock getBoundingClientRect for PatternFly components
-const originalGetBoundingClientRect = Element.prototype.getBoundingClientRect;
-Element.prototype.getBoundingClientRect = function() {
-  try {
-    return originalGetBoundingClientRect.call(this);
-  } catch {
-    return {
-      width: 100,
-      height: 100,
-      top: 0,
-      left: 0,
-      bottom: 100,
-      right: 100,
-      x: 0,
-      y: 0,
-      toJSON: () => ({}),
-    };
-  }
 };
 
 jest.mock('@patternfly/react-core', () => {
