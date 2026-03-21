@@ -148,7 +148,6 @@ const LayoutComponent: React.FC<Props> = props => {
       <Page
         masthead={masthead}
         sidebar={sidebar}
-        isManagedSidebar
         skipToContent={<SkipToContent href="#main-content">Skip to content</SkipToContent>}
         mainContainerId="main-content"
       >
