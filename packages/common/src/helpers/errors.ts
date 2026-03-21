@@ -59,9 +59,9 @@ export function getMessage(error: unknown): string {
       }
       // HTML response body — fall through so isErrorLike can return error.message,
       // which typically carries more context (e.g. the originating URL).
-    } else if (response.data?.message) {
+    } else if (response.data.message) {
       return response.data.message;
-    } else if (response.config?.url) {
+    } else if (response.config.url) {
       return `"${response.status} ${response.statusText}" returned by "${response.config.url}".`;
     } else {
       return `"${response.status} ${response.statusText}".`;
