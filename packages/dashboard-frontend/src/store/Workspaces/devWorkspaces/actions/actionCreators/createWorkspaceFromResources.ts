@@ -42,7 +42,11 @@ export const createWorkspaceFromResources =
     const serverConfig = selectServerConfigState(state).config;
     const cheEditor = editor || getDefaultEditor(serverConfig);
     const defaultNamespace = defaultKubernetesNamespace.name;
-    const customName = params.name;
+    // Always use the actual devWorkspace name as the display label.
+    // For the devfile path the name already incorporates params.name (with a suffix
+    // when a conflict occurred), so using devWorkspace.metadata.name keeps the
+    // display label in sync with the real K8s name and avoids duplicate display names.
+    const customName = devWorkspace.metadata.name;
 
     try {
       await verifyAuthorized(dispatch, getState);

@@ -521,7 +521,9 @@ describe('Creating steps, applying a devfile', () => {
     test('with name conflict from the "metadata.name"', async () => {
       const store = getStoreBuilder()
         .withDevWorkspaces({
-          workspaces: [new DevWorkspaceBuilder().withName(devfileName).build()],
+          workspaces: [
+            new DevWorkspaceBuilder().withName(devfileName).withNamespace('user-che').build(),
+          ],
         })
         .withFactoryResolver({
           resolver: {
@@ -549,6 +551,7 @@ describe('Creating steps, applying a devfile', () => {
                 },
                 name: 'unique-name',
               })
+              .withNamespace('user-che')
               .build(),
           ],
         })
@@ -567,10 +570,12 @@ describe('Creating steps, applying a devfile', () => {
       );
     });
 
-    test('with policy "perclick"', async () => {
+    test('with policy "perclick" without name conflict', async () => {
       const store = getStoreBuilder()
         .withDevWorkspaces({
-          workspaces: [new DevWorkspaceBuilder().withName('unique-name').build()],
+          workspaces: [
+            new DevWorkspaceBuilder().withName('unique-name').withNamespace('user-che').build(),
+          ],
         })
         .withFactoryResolver({
           resolver: {
@@ -584,15 +589,81 @@ describe('Creating steps, applying a devfile', () => {
       renderComponent(store, searchParams);
       await jest.advanceTimersByTimeAsync(MIN_STEP_DURATION_MS);
 
+      // Should not append suffix when there's no name conflict, even with perclick policy
+      await waitFor(() =>
+        expect(prepareDevfile).toHaveBeenCalledWith(
+          devfile,
+          factoryId,
+          undefined,
+          false,
+          undefined,
+        ),
+      );
+    });
+
+    test('with policy "perclick" with name conflict', async () => {
+      const store = getStoreBuilder()
+        .withDevWorkspaces({
+          workspaces: [
+            new DevWorkspaceBuilder().withName(devfileName).withNamespace('user-che').build(),
+          ],
+        })
+        .withFactoryResolver({
+          resolver: {
+            devfile,
+          },
+        })
+        .build();
+
+      searchParams.append(POLICIES_CREATE_ATTR, 'perclick');
+
+      renderComponent(store, searchParams);
+      await jest.advanceTimersByTimeAsync(MIN_STEP_DURATION_MS);
+
+      // Should append suffix when there's a name conflict with perclick policy
       await waitFor(() =>
         expect(prepareDevfile).toHaveBeenCalledWith(devfile, factoryId, undefined, true, undefined),
+      );
+    });
+
+    test('no name conflict when same name exists in different namespace', async () => {
+      const store = getStoreBuilder()
+        .withDevWorkspaces({
+          workspaces: [
+            new DevWorkspaceBuilder()
+              .withName(devfileName)
+              .withNamespace('other-namespace')
+              .build(),
+          ],
+        })
+        .withFactoryResolver({
+          resolver: {
+            devfile,
+          },
+        })
+        .build();
+
+      renderComponent(store, searchParams);
+      await jest.advanceTimersByTimeAsync(MIN_STEP_DURATION_MS);
+
+      // Should not append suffix - K8s names are unique per namespace, not globally
+      await waitFor(() =>
+        expect(prepareDevfile).toHaveBeenCalledWith(
+          devfile,
+          factoryId,
+          undefined,
+          false,
+          undefined,
+        ),
       );
     });
 
     test('with unique name', async () => {
       const store = getStoreBuilder()
         .withDevWorkspaces({
-          workspaces: [new DevWorkspaceBuilder().withName('unique-name').build()],
+          workspaces: [
+            new DevWorkspaceBuilder().withName('unique-name').withNamespace('user-che').build(),
+          ],
         })
         .withFactoryResolver({
           resolver: {
