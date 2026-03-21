@@ -77,10 +77,11 @@ export class WorkspaceActionsDeleteConfirmation extends React.PureComponent<Prop
         isOpen={isOpen}
         variant={ModalVariant.small}
         onClose={() => this.handleClose()}
+        elementToFocus="[data-pf-initial-focus]"
       >
         <ModalHeader title="Delete Workspace" titleIconVariant="warning" />
         <ModalBody>
-          <Content>
+          <Content data-pf-initial-focus tabIndex={-1} style={{ outline: 'none' }}>
             <Content component="p">{confirmationText}</Content>
             <Checkbox
               style={{ margin: '0 0 0 0.4rem' }}

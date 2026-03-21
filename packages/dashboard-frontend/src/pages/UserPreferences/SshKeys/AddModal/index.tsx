@@ -74,10 +74,13 @@ export class SshKeysAddModal extends React.PureComponent<Props, State> {
         variant={ModalVariant.small}
         isOpen={isOpen}
         onClose={() => this.handleCloseModal()}
+        elementToFocus="[data-pf-initial-focus]"
       >
         <ModalHeader title={modalTitle} />
         <ModalBody>
-          <AddModalForm onChange={(...args) => this.handleChangeSshKey(...args)} />
+          <div data-pf-initial-focus tabIndex={-1} style={{ outline: 'none' }}>
+            <AddModalForm onChange={(...args) => this.handleChangeSshKey(...args)} />
+          </div>
         </ModalBody>
         <ModalFooter>
           <Button

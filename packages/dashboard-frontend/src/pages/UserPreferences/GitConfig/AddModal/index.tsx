@@ -82,13 +82,16 @@ export class GitConfigAddModal extends React.PureComponent<Props, State> {
         variant={ModalVariant.small}
         isOpen={isOpen}
         onClose={() => this.handleCloseModal()}
+        elementToFocus="[data-pf-initial-focus]"
       >
         <ModalHeader title={modalTitle} />
         <ModalBody>
-          <GitConfigForm
-            gitConfig={this.props.gitConfig}
-            onChange={(gitConfig, isValid) => this.handleChangeGitConfig(gitConfig, isValid)}
-          />
+          <div data-pf-initial-focus tabIndex={-1} style={{ outline: 'none' }}>
+            <GitConfigForm
+              gitConfig={this.props.gitConfig}
+              onChange={(gitConfig, isValid) => this.handleChangeGitConfig(gitConfig, isValid)}
+            />
+          </div>
         </ModalBody>
         <ModalFooter>
           <Button

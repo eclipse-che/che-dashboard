@@ -100,14 +100,17 @@ export class PersonalAccessTokenAddEditModal extends React.PureComponent<Props, 
         variant={ModalVariant.small}
         isOpen={isOpen}
         onClose={() => this.handleCloseModal()}
+        elementToFocus="[data-pf-initial-focus]"
       >
         <ModalHeader title={modalTitle} />
         <ModalBody>
-          <AddEditModalForm
-            cheUserId={cheUserId}
-            onChange={(...args) => this.handleChangeToken(...args)}
-            {...editTokenProps}
-          />
+          <div data-pf-initial-focus tabIndex={-1} style={{ outline: 'none' }}>
+            <AddEditModalForm
+              cheUserId={cheUserId}
+              onChange={(...args) => this.handleChangeToken(...args)}
+              {...editTokenProps}
+            />
+          </div>
         </ModalBody>
         <ModalFooter>
           <Button

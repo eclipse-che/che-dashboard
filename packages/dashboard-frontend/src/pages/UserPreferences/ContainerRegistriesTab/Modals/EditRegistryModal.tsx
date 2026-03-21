@@ -166,27 +166,32 @@ export default class EditRegistryModal extends React.PureComponent<Props, State>
         isOpen={isOpen}
         onClose={onCancel}
         aria-label="edit-registry-info"
+        elementToFocus="[data-pf-initial-focus]"
       >
         <ModalHeader title={modalTitle} />
         <ModalBody>
-          <Form isHorizontal onSubmit={e => e.preventDefault()}>
-            <RegistryUrlFormGroup
-              url={editRegistry.url}
-              onChange={(url: string, valid: ValidatedOptions) => this.handleUrlChange(url, valid)}
-            />
-            <RegistryUsernameFormGroup
-              username={editRegistry.username}
-              onChange={(username: string, valid: ValidatedOptions) =>
-                this.handleUsernameChange(username, valid)
-              }
-            />
-            <RegistryPasswordFormGroup
-              password={editRegistry.password}
-              onChange={(password: string, valid: ValidatedOptions) =>
-                this.handlePasswordChange(password, valid)
-              }
-            />
-          </Form>
+          <div data-pf-initial-focus tabIndex={-1} style={{ outline: 'none' }}>
+            <Form isHorizontal onSubmit={e => e.preventDefault()}>
+              <RegistryUrlFormGroup
+                url={editRegistry.url}
+                onChange={(url: string, valid: ValidatedOptions) =>
+                  this.handleUrlChange(url, valid)
+                }
+              />
+              <RegistryUsernameFormGroup
+                username={editRegistry.username}
+                onChange={(username: string, valid: ValidatedOptions) =>
+                  this.handleUsernameChange(username, valid)
+                }
+              />
+              <RegistryPasswordFormGroup
+                password={editRegistry.password}
+                onChange={(password: string, valid: ValidatedOptions) =>
+                  this.handlePasswordChange(password, valid)
+                }
+              />
+            </Form>
+          </div>
         </ModalBody>
         <ModalFooter>
           <Button

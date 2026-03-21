@@ -78,10 +78,16 @@ export class GitServicesRevokeModal extends React.PureComponent<Props, State> {
         /* c8 ignore next 1 */
         onClose={() => this.handleCancel()}
         aria-label="Revoke Git Services Modal"
+        elementToFocus="[data-pf-initial-focus]"
       >
         <ModalHeader title={title} titleIconVariant="warning" />
         <ModalBody>
-          <Content data-testid="revoke-modal-content">
+          <Content
+            data-testid="revoke-modal-content"
+            data-pf-initial-focus
+            tabIndex={-1}
+            style={{ outline: 'none' }}
+          >
             <Content component="p">{text}</Content>
             <Checkbox
               data-testid="warning-info-checkbox"

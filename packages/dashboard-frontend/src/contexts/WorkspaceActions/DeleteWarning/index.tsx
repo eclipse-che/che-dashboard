@@ -99,10 +99,11 @@ export class WorkspaceActionsDeleteWarning extends React.PureComponent<Props> {
         isOpen={isOpen}
         variant={ModalVariant.small}
         onClose={() => this.handleClose()}
+        elementToFocus="[data-pf-initial-focus]"
       >
         <ModalHeader title="Delete Workspace Warning" titleIconVariant="warning" />
         <ModalBody>
-          <Content>
+          <Content data-pf-initial-focus tabIndex={-1} style={{ outline: 'none' }}>
             <Content component="p">{warningMessage}</Content>
           </Content>
         </ModalBody>

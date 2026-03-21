@@ -75,10 +75,11 @@ export default class DeleteRegistriesModal extends React.PureComponent<Props, St
         isOpen={isOpen}
         onClose={onCancel}
         aria-label="warning-info"
+        elementToFocus="[data-pf-initial-focus]"
       >
         <ModalHeader title={title} titleIconVariant="warning" />
         <ModalBody>
-          <Content>
+          <Content data-pf-initial-focus tabIndex={-1} style={{ outline: 'none' }}>
             <Content component="p">{text}</Content>
             <Checkbox
               style={{ margin: '0 0 0 0.4rem' }}

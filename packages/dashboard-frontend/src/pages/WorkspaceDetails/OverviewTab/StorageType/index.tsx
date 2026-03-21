@@ -212,10 +212,11 @@ class StorageTypeFormGroup extends React.PureComponent<Props, State> {
         isOpen={isSelectorOpen}
         className={styles.modalEditStorageType}
         onClose={() => this.handleCancelChanges()}
+        elementToFocus="[data-pf-initial-focus]"
       >
         <ModalHeader title="Change Storage Type" />
         <ModalBody>
-          <Content>
+          <Content data-pf-initial-focus tabIndex={-1} style={{ outline: 'none' }}>
             <Alert
               variant={AlertVariant.warning}
               className={styles.warningAlert}
@@ -310,9 +311,14 @@ class StorageTypeFormGroup extends React.PureComponent<Props, State> {
           onClose={() => {
             this.handleInfoToggle();
           }}
+          elementToFocus="[data-pf-initial-focus]"
         >
           <ModalHeader title="Storage Type Info" />
-          <ModalBody>{this.getInfoModalContent()}</ModalBody>
+          <ModalBody>
+            <div data-pf-initial-focus tabIndex={-1} style={{ outline: 'none' }}>
+              {this.getInfoModalContent()}
+            </div>
+          </ModalBody>
         </Modal>
       </FormGroup>
     );

@@ -67,10 +67,11 @@ export class PersonalAccessTokenDeleteModal extends React.PureComponent<Props, S
         variant={ModalVariant.small}
         isOpen={isOpen}
         onClose={() => this.handleCloseModal()}
+        elementToFocus="[data-pf-initial-focus]"
       >
         <ModalHeader title={modalTitle} titleIconVariant="warning" />
         <ModalBody>
-          <Content>
+          <Content data-pf-initial-focus tabIndex={-1} style={{ outline: 'none' }}>
             <Content component="p">Are you sure you want to delete the selected {tokens}?</Content>
             <Checkbox
               id="delete-tokens-warning-checkbox"

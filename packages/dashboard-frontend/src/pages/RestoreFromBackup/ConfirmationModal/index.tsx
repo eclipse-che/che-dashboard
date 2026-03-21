@@ -56,43 +56,46 @@ export const ConfirmationModal: React.FC<Props> = ({
       isOpen={isOpen}
       onClose={onCancel}
       data-testid="restore-confirmation-modal"
+      elementToFocus="[data-pf-initial-focus]"
     >
       <ModalHeader title="Confirm Restore from Backup" />
       <ModalBody>
-        {hasBackupConflict && (
-          <Alert
-            variant={AlertVariant.warning}
-            isInline
-            title={`A backup named "${workspaceName}" already exists. The new workspace will be associated with that backup.`}
-            data-testid="backup-conflict-warning"
-          />
-        )}
-        <p>The following workspace will be created and restored from backup:</p>
-        <DescriptionList isHorizontal isCompact>
-          {workspaceName && (
+        <div data-pf-initial-focus tabIndex={-1} style={{ outline: 'none' }}>
+          {hasBackupConflict && (
+            <Alert
+              variant={AlertVariant.warning}
+              isInline
+              title={`A backup named "${workspaceName}" already exists. The new workspace will be associated with that backup.`}
+              data-testid="backup-conflict-warning"
+            />
+          )}
+          <p>The following workspace will be created and restored from backup:</p>
+          <DescriptionList isHorizontal isCompact>
+            {workspaceName && (
+              <DescriptionListGroup>
+                <DescriptionListTerm>Workspace Name</DescriptionListTerm>
+                <DescriptionListDescription data-testid="confirm-workspace-name">
+                  {workspaceName}
+                </DescriptionListDescription>
+              </DescriptionListGroup>
+            )}
             <DescriptionListGroup>
-              <DescriptionListTerm>Workspace Name</DescriptionListTerm>
-              <DescriptionListDescription data-testid="confirm-workspace-name">
-                {workspaceName}
+              <DescriptionListTerm>Restore Mode</DescriptionListTerm>
+              <DescriptionListDescription data-testid="confirm-restore-mode">
+                {restoreMode === 'default-registry' ? 'Default registry' : 'External registry'}
               </DescriptionListDescription>
             </DescriptionListGroup>
-          )}
-          <DescriptionListGroup>
-            <DescriptionListTerm>Restore Mode</DescriptionListTerm>
-            <DescriptionListDescription data-testid="confirm-restore-mode">
-              {restoreMode === 'default-registry' ? 'Default registry' : 'External registry'}
-            </DescriptionListDescription>
-          </DescriptionListGroup>
-          <DescriptionListGroup>
-            <DescriptionListTerm>Backup Image</DescriptionListTerm>
-            <DescriptionListDescription
-              data-testid="confirm-image-url"
-              style={{ wordBreak: 'break-all' }}
-            >
-              {imageUrl}
-            </DescriptionListDescription>
-          </DescriptionListGroup>
-        </DescriptionList>
+            <DescriptionListGroup>
+              <DescriptionListTerm>Backup Image</DescriptionListTerm>
+              <DescriptionListDescription
+                data-testid="confirm-image-url"
+                style={{ wordBreak: 'break-all' }}
+              >
+                {imageUrl}
+              </DescriptionListDescription>
+            </DescriptionListGroup>
+          </DescriptionList>
+        </div>
       </ModalBody>
       <ModalFooter>
         <Button

@@ -67,10 +67,15 @@ function UnsavedChangesModal(props: Props): React.ReactElement {
   });
 
   return (
-    <Modal variant={ModalVariant.small} isOpen={isOpen} onClose={() => setIsOpen(false)}>
+    <Modal
+      variant={ModalVariant.small}
+      isOpen={isOpen}
+      onClose={() => setIsOpen(false)}
+      elementToFocus="[data-pf-initial-focus]"
+    >
       <ModalHeader title="Unsaved Changes" />
       <ModalBody>
-        <Content>
+        <Content data-pf-initial-focus tabIndex={-1} style={{ outline: 'none' }}>
           You have unsaved changes. You may go ahead and discard all changes, or close this window
           and save them.
         </Content>

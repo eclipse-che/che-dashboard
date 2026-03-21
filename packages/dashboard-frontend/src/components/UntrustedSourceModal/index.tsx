@@ -178,13 +178,18 @@ class UntrustedSourceModal extends React.Component<Props, State> {
     }
 
     return (
-      <Modal isOpen={isOpen} variant={ModalVariant.medium} onClose={() => this.handleClose()}>
+      <Modal
+        isOpen={isOpen}
+        variant={ModalVariant.medium}
+        onClose={() => this.handleClose()}
+        elementToFocus="[data-pf-initial-focus]"
+      >
         <ModalHeader
           title="Do you trust the authors of this repository?"
           titleIconVariant="warning"
         />
         <ModalBody>
-          <Content>
+          <Content data-pf-initial-focus tabIndex={-1} style={{ outline: 'none' }}>
             <Content component="p">
               Click <b>Continue</b> to proceed creating a new workspace from this source.
             </Content>
