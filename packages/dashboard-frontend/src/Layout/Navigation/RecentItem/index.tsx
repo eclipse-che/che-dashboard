@@ -28,9 +28,18 @@ export type Props = {
   activePath: string;
 };
 
-export class NavigationRecentItem extends React.PureComponent<Props> {
+type State = {
+  isHovered: boolean;
+};
+
+export class NavigationRecentItem extends React.PureComponent<Props, State> {
   @lazyInject(TabManager)
   private readonly tabManager: TabManager;
+
+  constructor(props: Props) {
+    super(props);
+    this.state = { isHovered: false };
+  }
 
   private handleClick(workspace: Workspace) {
     const location = buildIdeLoaderLocation(workspace);
@@ -47,6 +56,7 @@ export class NavigationRecentItem extends React.PureComponent<Props> {
 
   render(): React.ReactElement {
     const { activePath, item } = this.props;
+    const { isHovered } = this.state;
 
     const isActive = getActivity(item.to, activePath);
     const titleClassName = styles.titleHover + ' ' + (isActive ? styles.active : '');
@@ -62,6 +72,8 @@ export class NavigationRecentItem extends React.PureComponent<Props> {
         tabIndex={0}
         onClick={() => this.handleClick(item.workspace)}
         onKeyDown={(e: React.KeyboardEvent) => this.handleKeyDown(e, item.workspace)}
+        onMouseEnter={() => this.setState({ isHovered: true })}
+        onMouseLeave={() => this.setState({ isHovered: false })}
       >
         <span data-testid="recent-workspace-item">
           <WorkspaceStatusIndicator
@@ -70,7 +82,7 @@ export class NavigationRecentItem extends React.PureComponent<Props> {
           />
           <span className={titleClassName}>{item.label}</span>
         </span>
-        <RecentItemWorkspaceActions item={item} />
+        <RecentItemWorkspaceActions item={item} isParentHovered={isHovered} />
       </NavItem>
     );
   }

@@ -35,6 +35,10 @@ import { RootState } from '@/store';
 type OwnProps = {
   context: ActionContextType;
   isDisabled?: boolean;
+  /** Controlled open state. When provided the component does not manage its own state. */
+  isExpanded?: boolean;
+  /** Called whenever the dropdown requests an open/close transition. */
+  onToggle?: (isOpen: boolean) => void;
   toggle: 'kebab-toggle' | 'dropdown-toggle';
   workspace: Workspace;
   onAction?: (
@@ -106,7 +110,11 @@ class WorkspaceActionsDropdownComponent extends React.PureComponent<Props, State
   }
 
   private handleToggle(isExpanded: boolean): void {
-    this.setState({ isExpanded });
+    if (this.props.onToggle !== undefined) {
+      this.props.onToggle(isExpanded);
+    } else {
+      this.setState({ isExpanded });
+    }
   }
 
   private async handleSelect(action: WorkspaceAction): Promise<void> {
@@ -191,7 +199,9 @@ class WorkspaceActionsDropdownComponent extends React.PureComponent<Props, State
   }
 
   render(): React.ReactElement {
-    const { isExpanded } = this.state;
+    // Use controlled isExpanded when provided, otherwise fall back to internal state.
+    const isExpanded =
+      this.props.isExpanded !== undefined ? this.props.isExpanded : this.state.isExpanded;
 
     const dropdownToggle = this.buildToggle();
     const dropdownItems = this.getDropdownItems();

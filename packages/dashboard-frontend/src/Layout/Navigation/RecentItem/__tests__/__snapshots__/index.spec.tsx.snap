@@ -22,6 +22,8 @@ exports[`Navigation Item snapshot with RUNNING correctly 1`] = `
       id="/namespace/workspace"
       onClick={[Function]}
       onKeyDown={[Function]}
+      onMouseEnter={[Function]}
+      onMouseLeave={[Function]}
       tabIndex={0}
     >
       <span
@@ -71,6 +73,8 @@ exports[`Navigation Item snapshot with STOPPED status 1`] = `
       id="/namespace/workspace"
       onClick={[Function]}
       onKeyDown={[Function]}
+      onMouseEnter={[Function]}
+      onMouseLeave={[Function]}
       tabIndex={0}
     >
       <span
