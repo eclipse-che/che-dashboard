@@ -68,7 +68,7 @@ div.main-page-loader {
 
   font-family: var(--pf-t--global--font--family--body), serif;
   font-size: 24px;
-  color: #fff;
+  color: var(--pf-t--global--text--color--on-status-and-brand--default);
 
   background-color: #000;
 }
@@ -116,7 +116,7 @@ div.main-page-loader .ide-page-loader-content img {
   font-size: 14px;
   font-weight: 400;
   line-height: 36px;
-  color: #fff;
+  color: var(--pf-t--global--text--color--on-status-and-brand--default);
 
   background-color: var(--pf-t--global--color--brand--default);
   border-radius: var(--pf-t--global--border--radius--small);
@@ -165,12 +165,12 @@ div.main-page-loader .ide-page-loader-content img {
 
 /* Logo color adjustments for light theme */
 .pf-v6-c-masthead__brand .pf-v6-c-brand .outer-fill {
-  fill: #151515;
+  fill: var(--pf-t--global--text--color--regular);
 }
 
-/* Logo color for dark theme - keep white */
+/* Logo color for dark theme */
 html.pf-v6-theme-dark .pf-v6-c-masthead__brand .pf-v6-c-brand .outer-fill {
-  fill: #fff;
+  fill: var(--pf-t--global--text--color--on-status-and-brand--default);
 }
 
 @keyframes hide {

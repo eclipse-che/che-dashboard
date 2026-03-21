@@ -11,15 +11,15 @@
 }
 
 .statusLabel .pf-m-success svg {
-  fill: #3c8e01f5;
+  fill: var(--pf-t--global--icon--color--status--success--default);
 }
 
 .statusLabel .pf-m-info svg {
-  fill: #5b2eed;
+  fill: var(--pf-t--global--icon--color--status--info--default);
 }
 
 .statusLabel .pf-m-warning svg {
-  fill: #d27a18;
+  fill: var(--pf-t--global--icon--color--status--warning--default);
 }
 
 svg.rotate {
