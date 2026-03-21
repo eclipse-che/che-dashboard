@@ -11,15 +11,23 @@
  */
 
 .editorTools {
-  height: 20px;
-  margin: 10px 0 5px;
+  height: 30px;
+  margin: 5px 0;
 }
 
 .editorTools > * {
   user-select: none;
+
   float: right;
+
   height: inherit;
+  margin: 0;
+
   font-size: small;
+}
+
+.editorTools hr {
+  margin: 0 5px;
 }
 
 .editorTools a {
@@ -27,7 +35,7 @@
 }
 
 .editorTools .button {
-  padding: 0;
+  padding: 6px;
   font-size: inherit;
   outline: none;
 }

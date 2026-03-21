@@ -129,14 +129,16 @@ class EditorTools extends React.PureComponent<Props, State> {
           </FlexItem>
           <Divider orientation={{ default: 'vertical' }} />
           <FlexItem>
-            <a
+            <Button
+              variant="link"
+              component="a"
               className={styles.button}
               download={`${workspaceName}.devfile.yaml`}
               href={contentBlobUrl}
             >
               <DownloadIcon />
               Download
-            </a>
+            </Button>
           </FlexItem>
           <Divider orientation={{ default: 'vertical' }} />
           <FlexItem>
