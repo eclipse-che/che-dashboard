@@ -66,15 +66,54 @@ async function fetchSvgContent(url: string): Promise<string | null> {
     if (!response.ok) {
       return null;
     }
-    const svgContent = await response.text();
+    const rawContent = await response.text();
+    // Sanitize before caching to strip scripts/event-handlers
+    const svgContent = sanitizeSvg(rawContent);
 
-    // Cache the original SVG content
+    // Cache the sanitized SVG content
     cache[url] = { original: svgContent };
     setSvgCache(cache);
 
     return svgContent;
   } catch {
     return null;
+  }
+}
+
+/**
+ * Sanitizes SVG content by removing script elements and dangerous attributes.
+ * Prevents XSS from externally-fetched SVG content.
+ */
+function sanitizeSvg(svgContent: string): string {
+  try {
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(svgContent, 'image/svg+xml');
+
+    // Remove all <script> elements
+    doc.querySelectorAll('script').forEach(el => el.remove());
+
+    // Remove all elements with xlink:href or href pointing to javascript:
+    doc.querySelectorAll('[href],[xlink\\:href]').forEach(el => {
+      const href =
+        el.getAttribute('href') || el.getAttributeNS('http://www.w3.org/1999/xlink', 'href');
+      if (href && /^\s*javascript:/i.test(href)) {
+        el.remove();
+      }
+    });
+
+    // Remove all on* event handler attributes from every element
+    doc.querySelectorAll('*').forEach(el => {
+      Array.from(el.attributes).forEach(attr => {
+        if (/^on/i.test(attr.name)) {
+          el.removeAttribute(attr.name);
+        }
+      });
+    });
+
+    return new XMLSerializer().serializeToString(doc);
+  } catch {
+    // If sanitization fails, return empty SVG rather than potentially unsafe content
+    return '<svg xmlns="http://www.w3.org/2000/svg"/>';
   }
 }
 
@@ -182,8 +221,9 @@ export function buildLogoSrc(
   if (dashboardLogo.mediatype === 'image/svg+xml') {
     try {
       const decodedSvg = atob(dashboardLogo.base64data);
-      // Apply theme transformation to custom SVG logos as well
-      const themedSvg = applyThemeToSvg(decodedSvg, isDarkTheme);
+      // Sanitize and apply theme transformation to custom SVG logos
+      const sanitizedSvg = sanitizeSvg(decodedSvg);
+      const themedSvg = applyThemeToSvg(sanitizedSvg, isDarkTheme);
       return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(themedSvg)}`;
     } catch (e) {
       console.error('Failed to decode SVG logo, falling back to base64:', e);
