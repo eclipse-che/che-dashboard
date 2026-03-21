@@ -21,9 +21,10 @@ import {
   namespacedWorkspaceSchema,
 } from '@/constants/schemas';
 import { restParams } from '@/models';
-import { getDevWorkspaceClient } from '@/routes/api/helpers/getDevWorkspaceClient';
+import { getDevWorkspaceClient, getKubeConfig } from '@/routes/api/helpers/getDevWorkspaceClient';
 import { getToken } from '@/routes/api/helpers/getToken';
 import { getSchema } from '@/services/helpers';
+import { PostStartInjector } from '@/services/PostStartInjector';
 
 const tags = ['Devworkspace'];
 
@@ -83,12 +84,24 @@ export function registerDevworkspacesRoutes(instance: FastifyInstance) {
           request.params as restParams.INamespacedWorkspaceParams;
         const patch = request.body as api.IPatch[];
         const token = getToken(request);
-        const { devworkspaceApi } = getDevWorkspaceClient(token);
-        const { headers, devWorkspace } = await devworkspaceApi.patch(
+        const dwClient = getDevWorkspaceClient(token);
+        const { headers, devWorkspace } = await dwClient.devworkspaceApi.patch(
           namespace,
           workspaceName,
           patch,
         );
+
+        const isStarting = patch.some(p => p.path === '/spec/started' && p.value === true);
+        if (isStarting) {
+          const kc = getKubeConfig(token);
+          PostStartInjector.watchAndInject(
+            kc,
+            namespace,
+            workspaceName,
+            dwClient.kubeConfigApi,
+            dwClient.podmanApi,
+          );
+        }
 
         reply.headers(headers).send(devWorkspace);
       },

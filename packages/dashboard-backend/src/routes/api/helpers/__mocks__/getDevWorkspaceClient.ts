@@ -19,6 +19,7 @@ import {
   V230DevfileComponents,
 } from '@devfile/api';
 import { api } from '@eclipse-che/common';
+import * as k8s from '@kubernetes/client-node';
 import { IncomingHttpHeaders } from 'http';
 
 import {
@@ -34,6 +35,7 @@ import {
   ILogsApi,
   IPersonalAccessTokenApi,
   IPodApi,
+  IPodmanApi,
   IServerConfigApi,
   IShhKeysApi,
   IUserProfileApi,
@@ -219,6 +221,9 @@ export const getDevWorkspaceClient = jest.fn(
       kubeConfigApi: {
         injectKubeConfig: (_namespace, _devworkspaceId) => Promise.resolve(undefined),
       } as IKubeConfigApi,
+      podmanApi: {
+        podmanLogin: (_namespace, _devworkspaceId) => Promise.resolve(undefined),
+      } as IPodmanApi,
       devWorkspaceTemplateApi: {
         create: _template => Promise.resolve(stubDevWorkspaceTemplate),
         listInNamespace: _namespace => Promise.resolve(stubDevWorkspaceTemplatesList),
@@ -278,3 +283,7 @@ export const getDevWorkspaceClient = jest.fn(
     } as DevWorkspaceClient;
   },
 );
+
+export const getKubeConfig = jest.fn((_token: string): k8s.KubeConfig => {
+  return new k8s.KubeConfig();
+});
