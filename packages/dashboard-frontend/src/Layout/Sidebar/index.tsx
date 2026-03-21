@@ -18,16 +18,11 @@ import Navigation from '@/Layout/Navigation';
 
 export type Props = {
   history: History;
-  isVisible: boolean;
 };
 
 export class Sidebar extends React.PureComponent<Props> {
   public render(): React.ReactElement {
-    const { history, isVisible } = this.props;
-
-    if (!isVisible) {
-      return <></>;
-    }
+    const { history } = this.props;
 
     return (
       <PageSidebar>

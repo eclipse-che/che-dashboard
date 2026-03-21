@@ -136,7 +136,10 @@ const LayoutComponent: React.FC<Props> = props => {
     />
   );
 
-  const sidebar = <Sidebar history={history} isVisible={isSidebarVisible} />;
+  // Pass sidebar={undefined} when hidden so Page has a single source of truth.
+  // isManagedSidebar is only set when the sidebar is present — that is the only
+  // time PF6 needs to manage the hamburger-button toggle state.
+  const sidebar = isSidebarVisible ? <Sidebar history={history} /> : undefined;
 
   return (
     <ToggleBarsContext.Provider
@@ -148,6 +151,7 @@ const LayoutComponent: React.FC<Props> = props => {
       <Page
         masthead={masthead}
         sidebar={sidebar}
+        isManagedSidebar={isSidebarVisible}
         skipToContent={<SkipToContent href="#main-content">Skip to content</SkipToContent>}
         mainContainerId="main-content"
       >
