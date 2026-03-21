@@ -54,11 +54,16 @@ export function getMessage(error: unknown): string {
     const response = error.response;
     if (typeof response.data === 'string') {
       if (response.data.toLowerCase().trim().indexOf('<!doctype') !== 0) {
+        // Non-HTML string body — return it directly as the error message
         return response.data;
       }
-    } else if (response.data.message) {
+      // HTML response body — extract status info instead of returning raw HTML
+      return response.config?.url
+        ? `"${response.status} ${response.statusText}" returned by "${response.config.url}".`
+        : `"${response.status} ${response.statusText}".`;
+    } else if (response.data?.message) {
       return response.data.message;
-    } else if (response.config.url) {
+    } else if (response.config?.url) {
       return `"${response.status} ${response.statusText}" returned by "${response.config.url}".`;
     } else {
       return `"${response.status} ${response.statusText}".`;
