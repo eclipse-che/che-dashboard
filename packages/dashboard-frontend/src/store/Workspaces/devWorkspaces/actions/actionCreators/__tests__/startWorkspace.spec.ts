@@ -22,6 +22,7 @@ import {
 } from '@/store/DevWorkspacesCluster';
 import { verifyAuthorized } from '@/store/SanityCheck';
 import {
+  checkDevWorkspaceNextStartAnnotation,
   checkRunningWorkspacesLimit,
   getDevWorkspaceClient,
   getWarningFromResponse,
@@ -94,7 +95,7 @@ describe('devWorkspaces, actions', () => {
       (getDevWorkspaceClient as jest.Mock).mockReturnValue({
         changeWorkspaceStatus: mockChangeWorkspaceStatus,
         managePvcStrategy: mockManagePvcStrategy,
-        manageHostUsersEnvVar: mockManageHostUsersEnvVar,
+        manageContainerSccAttribute: mockManageHostUsersEnvVar,
         manageDebugMode: mockManageDebugMode,
         onStart: mockOnStart,
       });
@@ -107,6 +108,7 @@ describe('devWorkspaces, actions', () => {
       ).mockImplementation(() => async () => {});
       (checkRunningDevWorkspacesClusterLimitExceeded as jest.Mock).mockReturnValue(undefined);
       (checkRunningWorkspacesLimit as jest.Mock).mockReturnValue(undefined);
+      (checkDevWorkspaceNextStartAnnotation as jest.Mock).mockResolvedValue(undefined);
       (updateEditor as jest.Mock).mockResolvedValue(undefined);
       (getEditorName as jest.Mock).mockReturnValue('custom-editor');
       (getLifeTimeMs as jest.Mock).mockReturnValue(30001);

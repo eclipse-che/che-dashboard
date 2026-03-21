@@ -2,4 +2,6 @@ This file contains a manual contribution to .deps/dev.md and it's needed because
 
 | Packages | Resolved CQs |
 | --- | --- |
-| `meow@13.2.0` | transitive dependency |
+| `meow@13.2.0` | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/meow/13.2.0) |
+| `qs@6.5.5` | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/qs/6.5.5) |
+| `tar@7.5.7` | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/tar/7.5.7) |

@@ -20,10 +20,10 @@
 
   font-size: 14px;
   line-height: 16px;
-  color: var(--pf-global--palette--white);
+  color: var(--pf-t--global--color--nonstatus--gray--100);
   text-align: center;
   white-space: nowrap;
 
-  background-color: var(--pf-global--palette--cyan-300);
+  background-color: var(--pf-t--global--color--nonstatus--blue--300);
   border-radius: 20px;
 }

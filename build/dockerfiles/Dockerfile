@@ -8,11 +8,10 @@
 # Contributors:
 #   Red Hat, Inc. - initial API and implementation
 
-FROM docker.io/node:24.0.2-alpine3.21 AS builder
-
-# Platform detection for multi-arch builds
-ARG TARGETARCH
-ARG TARGETPLATFORM
+# Run the build stage on the host platform so that yarn install and yarn build
+# always execute natively (no QEMU).  The build output is pure JavaScript, so
+# copying it into the target-platform final image works for any architecture.
+FROM --platform=$BUILDPLATFORM docker.io/node:24.0.2-alpine3.21 AS builder
 
 # hadolint ignore=DL3018
 RUN apk add --no-cache python3 py3-pip make g++ jq curl git zip
@@ -35,14 +34,9 @@ COPY ${BACKEND}/package.json /dashboard/${BACKEND}/
 
 WORKDIR /dashboard
 
-# Set environment variables for better ARM64 compatibility
-# Reduce memory usage and disable problematic V8 optimizations
-ENV NODE_OPTIONS="--max-old-space-size=3072"
 ENV DISABLE_OPENCOLLECTIVE=true
 ENV ADBLOCK=true
 
-# Install dependencies with increased timeout and frozen lockfile
-# Use --ignore-scripts initially to avoid native module compilation issues
 RUN yarn install --network-timeout 3600000 --frozen-lockfile --mode=skip-build || \
     yarn install --network-timeout 3600000 --frozen-lockfile
 COPY packages/ /dashboard/packages

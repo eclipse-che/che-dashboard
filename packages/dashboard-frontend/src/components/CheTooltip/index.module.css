@@ -10,15 +10,15 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-.tooltip .pf-c-tooltip__content {
-  border-radius: 3px;
+.tooltip :global(.pf-v6-c-tooltip__content) {
+  border-radius: var(--pf-t--global--border--radius--small);
 }
 
-.tooltip .pf-c-tooltip__content a,
-.tooltip .pf-c-tooltip__content a:visited {
-  color: #73bcf7ff;
+.tooltip :global(.pf-v6-c-tooltip__content) a,
+.tooltip :global(.pf-v6-c-tooltip__content) a:visited {
+  color: var(--pf-t--global--text--color--link--default);
 }
 
-.tooltip .pf-c-tooltip__content a:hover {
-  color: #1fa7f8ff;
+.tooltip :global(.pf-v6-c-tooltip__content) a:hover {
+  color: var(--pf-t--global--text--color--link--hover);
 }

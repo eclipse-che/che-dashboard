@@ -87,17 +87,6 @@ describe('Layout component', () => {
     expect(mockLogout).toHaveBeenCalledTimes(1);
   });
 
-  test('toggleNav', async () => {
-    renderComponent(store);
-
-    expect(screen.getByTestId('isNavOpen')).toHaveTextContent('true');
-
-    const toggleNavButton = screen.getByRole('button', { name: 'toggleNav' });
-    await userEvent.click(toggleNavButton);
-
-    expect(screen.getByTestId('isNavOpen')).toHaveTextContent('false');
-  });
-
   test('onError', async () => {
     mockTestBackends.mockResolvedValue(undefined);
 

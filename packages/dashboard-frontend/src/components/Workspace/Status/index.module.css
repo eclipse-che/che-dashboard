@@ -10,6 +10,18 @@
   overflow: visible;
 }
 
+.statusLabel .pf-m-success svg {
+  fill: var(--pf-t--global--icon--color--status--success--default);
+}
+
+.statusLabel .pf-m-info svg {
+  fill: var(--pf-t--global--icon--color--status--info--default);
+}
+
+.statusLabel .pf-m-warning svg {
+  fill: var(--pf-t--global--icon--color--status--warning--default);
+}
+
 svg.rotate {
   width: 17px;
 }

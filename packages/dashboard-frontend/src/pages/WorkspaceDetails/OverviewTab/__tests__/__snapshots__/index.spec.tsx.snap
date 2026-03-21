@@ -2,90 +2,80 @@
 
 exports[`OverviewTab With parent screenshot 1`] = `
 <section
-  className="pf-c-page__main-section pf-m-light"
+  className="pf-v6-c-page__main-section"
 >
-  <form
-    className="pf-c-form pf-m-horizontal"
-    noValidate={true}
-    onSubmit={[Function]}
+  <div
+    className="pf-v6-c-page__main-body"
   >
-    <div>
-      Mock Workspace Name Form
-      <button
-        onClick={[Function]}
-      >
-        Edit Workspace Name
-      </button>
-      <span>
-        Workspace: 
-        my-project
-      </span>
-    </div>
-    <div>
-      Mock Infrastructure Namespace Form
-    </div>
-    <div>
-      Mock Storage Type Form
-      <button
-        onClick={[Function]}
-      >
-        Change storage type
-      </button>
-      <span>
-        StorageType: 
-      </span>
-    </div>
-    <div>
-      Mock Projects Form
-    </div>
-    <div>
-      Mock Git Repo Form
-    </div>
-  </form>
+    <form
+      className="pf-v6-c-form pf-m-horizontal"
+      noValidate={true}
+      onSubmit={[Function]}
+    >
+      <div>
+        Mock Workspace Name Form
+      </div>
+      <div>
+        Mock Infrastructure Namespace Form
+      </div>
+      <div>
+        Mock Storage Type Form
+        <button
+          onClick={[Function]}
+        >
+          Change storage type
+        </button>
+        <span>
+          StorageType: 
+        </span>
+      </div>
+      <div>
+        Mock Projects Form
+      </div>
+      <div>
+        Mock Git Repo Form
+      </div>
+    </form>
+  </div>
 </section>
 `;
 
 exports[`OverviewTab Without parent screenshot 1`] = `
 <section
-  className="pf-c-page__main-section pf-m-light"
+  className="pf-v6-c-page__main-section"
 >
-  <form
-    className="pf-c-form pf-m-horizontal"
-    noValidate={true}
-    onSubmit={[Function]}
+  <div
+    className="pf-v6-c-page__main-body"
   >
-    <div>
-      Mock Workspace Name Form
-      <button
-        onClick={[Function]}
-      >
-        Edit Workspace Name
-      </button>
-      <span>
-        Workspace: 
-        my-project
-      </span>
-    </div>
-    <div>
-      Mock Infrastructure Namespace Form
-    </div>
-    <div>
-      Mock Storage Type Form
-      <button
-        onClick={[Function]}
-      >
-        Change storage type
-      </button>
-      <span>
-        StorageType: 
-      </span>
-    </div>
-    <div>
-      Mock Projects Form
-    </div>
-    <div>
-      Mock Git Repo Form
-    </div>
-  </form>
+    <form
+      className="pf-v6-c-form pf-m-horizontal"
+      noValidate={true}
+      onSubmit={[Function]}
+    >
+      <div>
+        Mock Workspace Name Form
+      </div>
+      <div>
+        Mock Infrastructure Namespace Form
+      </div>
+      <div>
+        Mock Storage Type Form
+        <button
+          onClick={[Function]}
+        >
+          Change storage type
+        </button>
+        <span>
+          StorageType: 
+        </span>
+      </div>
+      <div>
+        Mock Projects Form
+      </div>
+      <div>
+        Mock Git Repo Form
+      </div>
+    </form>
+  </div>
 </section>
 `;

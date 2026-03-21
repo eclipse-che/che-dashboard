@@ -10,12 +10,7 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import {
-  Avatar,
-  PageHeaderTools,
-  PageHeaderToolsGroup,
-  PageHeaderToolsItem,
-} from '@patternfly/react-core';
+import { Avatar, Toolbar, ToolbarContent, ToolbarGroup, ToolbarItem } from '@patternfly/react-core';
 import gravatarUrl from 'gravatar-url';
 import { History } from 'history';
 import React from 'react';
@@ -47,31 +42,39 @@ export class HeaderTools extends React.PureComponent<Props> {
     const isUserAuthenticated = !!email;
 
     return (
-      <>
-        <PageHeaderTools>
-          <PageHeaderToolsGroup>
+      <Toolbar id="header-tools" isStatic>
+        <ToolbarContent>
+          <ToolbarGroup
+            variant="action-group-plain"
+            align={{ default: 'alignEnd' }}
+            gap={{ default: 'gapNone', md: 'gapMd' }}
+          >
             {applications.length !== 0 && <ApplicationsMenu applications={applications} />}
-            <PageHeaderToolsItem>
+            <ToolbarItem>
               <AboutMenu
                 branding={this.props.branding}
                 dashboardLogo={this.props.dashboardLogo}
                 username={username}
               />
-            </PageHeaderToolsItem>
+            </ToolbarItem>
             {isUserAuthenticated && (
-              <PageHeaderToolsItem>
+              <ToolbarItem>
                 <UserMenu
                   branding={this.props.branding}
                   history={this.props.history}
                   username={username}
                   logout={() => this.props.logout()}
                 />
-              </PageHeaderToolsItem>
+              </ToolbarItem>
             )}
-          </PageHeaderToolsGroup>
-          {isUserAuthenticated && <Avatar src={imageUrl} alt="Avatar image" />}
-        </PageHeaderTools>
-      </>
+          </ToolbarGroup>
+          {isUserAuthenticated && (
+            <ToolbarItem>
+              <Avatar src={imageUrl} alt="Avatar image" size="md" />
+            </ToolbarItem>
+          )}
+        </ToolbarContent>
+      </Toolbar>
     );
   }
 }

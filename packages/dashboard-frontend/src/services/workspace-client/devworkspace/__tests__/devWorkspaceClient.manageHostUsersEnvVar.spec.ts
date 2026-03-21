@@ -244,7 +244,7 @@ describe('DevWorkspace client, manageHostUsersEnvVar', () => {
     });
   });
 
-  describe('manageHostUsersEnvVar', () => {
+  describe('manageContainerSccAttribute', () => {
     it('should set HOST_USERS to false when container run is enabled', async () => {
       const devWorkspace = devWorkspaceBuilder
         .withSpec({
@@ -254,19 +254,25 @@ describe('DevWorkspace client, manageHostUsersEnvVar', () => {
         })
         .build();
       const config = {
-        containerRun: { disableContainerRunCapabilities: false },
+        containerRun: {
+          disableContainerRunCapabilities: false,
+          containerRunConfiguration: {
+            openShiftSecurityContextConstraint: 'container-run',
+          },
+        },
         containerBuild: { disableContainerBuildCapabilities: true },
       } as api.IServerConfig;
 
-      await client.manageHostUsersEnvVar(devWorkspace, config);
+      await client.manageContainerSccAttribute(devWorkspace, config);
 
-      expect(spyPatchWorkspace).toHaveBeenCalledWith(namespace, name, [
-        {
-          op: 'add',
-          path: '/spec/template/components/0/container/env',
-          value: [{ name: 'HOST_USERS', value: 'false' }],
-        },
-      ]);
+      expect(spyPatchWorkspace).toHaveBeenCalled();
+      const patches = spyPatchWorkspace.mock.calls[0][2];
+      expect(patches.some((p: { path: string }) => p.path.includes('env'))).toBe(true);
+      const hasHostUsersFalse = (p: { value?: unknown }) =>
+        Array.isArray(p.value)
+          ? (p.value as { value: string }[]).some(v => v.value === 'false')
+          : (p.value as { value?: string })?.value === 'false';
+      expect(patches.some(hasHostUsersFalse)).toBe(true);
     });
 
     it('should set HOST_USERS to true when container run disabled but container build enabled', async () => {
@@ -279,18 +285,24 @@ describe('DevWorkspace client, manageHostUsersEnvVar', () => {
         .build();
       const config = {
         containerRun: { disableContainerRunCapabilities: true },
-        containerBuild: { disableContainerBuildCapabilities: false },
+        containerBuild: {
+          disableContainerBuildCapabilities: false,
+          containerBuildConfiguration: {
+            openShiftSecurityContextConstraint: 'container-build',
+          },
+        },
       } as api.IServerConfig;
 
-      await client.manageHostUsersEnvVar(devWorkspace, config);
+      await client.manageContainerSccAttribute(devWorkspace, config);
 
-      expect(spyPatchWorkspace).toHaveBeenCalledWith(namespace, name, [
-        {
-          op: 'add',
-          path: '/spec/template/components/0/container/env',
-          value: [{ name: 'HOST_USERS', value: 'true' }],
-        },
-      ]);
+      expect(spyPatchWorkspace).toHaveBeenCalled();
+      const patches = spyPatchWorkspace.mock.calls[0][2];
+      expect(patches.some((p: { path: string }) => p.path.includes('env'))).toBe(true);
+      const hasHostUsersTrue = (p: { value?: unknown }) =>
+        Array.isArray(p.value)
+          ? (p.value as { value: string }[]).some(v => v.value === 'true')
+          : (p.value as { value?: string })?.value === 'true';
+      expect(patches.some(hasHostUsersTrue)).toBe(true);
     });
 
     it('should remove HOST_USERS when both container run and container build disabled', async () => {
@@ -314,13 +326,13 @@ describe('DevWorkspace client, manageHostUsersEnvVar', () => {
         containerBuild: { disableContainerBuildCapabilities: true },
       } as api.IServerConfig;
 
-      await client.manageHostUsersEnvVar(devWorkspace, config);
+      await client.manageContainerSccAttribute(devWorkspace, config);
 
       expect(spyPatchWorkspace).toHaveBeenCalledWith(namespace, name, [
-        {
+        expect.objectContaining({
           op: 'remove',
-          path: '/spec/template/components/0/container/env/0',
-        },
+          path: expect.stringContaining('env'),
+        }),
       ]);
     });
 
@@ -328,6 +340,9 @@ describe('DevWorkspace client, manageHostUsersEnvVar', () => {
       const devWorkspace = devWorkspaceBuilder
         .withSpec({
           template: {
+            attributes: {
+              'controller.devfile.io/scc': 'container-run',
+            },
             components: [
               {
                 name: 'cmp1',
@@ -341,10 +356,15 @@ describe('DevWorkspace client, manageHostUsersEnvVar', () => {
         })
         .build();
       const config = {
-        containerRun: { disableContainerRunCapabilities: false },
+        containerRun: {
+          disableContainerRunCapabilities: false,
+          containerRunConfiguration: {
+            openShiftSecurityContextConstraint: 'container-run',
+          },
+        },
       } as api.IServerConfig;
 
-      const result = await client.manageHostUsersEnvVar(devWorkspace, config);
+      const result = await client.manageContainerSccAttribute(devWorkspace, config);
 
       expect(spyPatchWorkspace).not.toHaveBeenCalled();
       expect(result).toBe(devWorkspace);

@@ -11,7 +11,6 @@
  */
 
 import { FormGroup, TextInput, ValidatedOptions } from '@patternfly/react-core';
-import { ExclamationCircleIcon } from '@patternfly/react-icons';
 import isEqual from 'lodash/isEqual';
 import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
@@ -171,15 +170,9 @@ class WorkspaceNameFormGroup extends React.PureComponent<Props, State> {
 
   public render(): React.ReactNode {
     const { workspaceName, validated } = this.state;
-    const helperTextInvalid = this.getHelperTextInvalid();
 
     return (
-      <FormGroup
-        validated={validated}
-        className={styles.inputFormGroup}
-        helperTextInvalid={helperTextInvalid}
-        helperTextInvalidIcon={<ExclamationCircleIcon />}
-      >
+      <FormGroup className={styles.inputFormGroup}>
         <TextInput
           type="text"
           id="wrks-name-input"
@@ -187,7 +180,7 @@ class WorkspaceNameFormGroup extends React.PureComponent<Props, State> {
           validated={validated}
           maxLength={MAX_LENGTH + 1}
           placeholder="Enter a name for the sample workspace (Optional)"
-          onChange={name => this.handleWorkspaceNameChange(name)}
+          onChange={(_event, name) => this.handleWorkspaceNameChange(name)}
         />
       </FormGroup>
     );

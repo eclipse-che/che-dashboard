@@ -25,32 +25,28 @@ exports[`BackupStatusBadge icon rendering should render CheckCircleIcon for succ
   >
     <span
       aria-label="Backup status: Success"
-      className="pf-c-label pf-m-green backupStatusBadge size-md"
+      className="pf-v6-c-label pf-m-green pf-m-filled backupStatusBadge size-md"
       data-testid="backup-status-badge"
     >
       <span
-        className="pf-c-label__content"
+        className="pf-v6-c-label__content"
       >
         <span
-          className="pf-c-label__icon"
+          className="pf-v6-c-label__icon"
         >
           <span
-            className="pf-c-icon pf-m-inline"
+            className="pf-v6-c-icon pf-m-inline"
           >
             <span
-              className="pf-c-icon__content pf-m-success"
+              className="pf-v6-c-icon__content pf-m-success"
             >
               <svg
                 aria-hidden={true}
                 aria-labelledby={null}
+                className="pf-v6-svg"
                 fill="currentColor"
                 height="1em"
                 role="img"
-                style={
-                  {
-                    "verticalAlign": "-0.125em",
-                  }
-                }
                 viewBox="0 0 512 512"
                 width="1em"
               >
@@ -61,7 +57,11 @@ exports[`BackupStatusBadge icon rendering should render CheckCircleIcon for succ
             </span>
           </span>
         </span>
-        Success
+        <span
+          className="pf-v6-c-label__text"
+        >
+          Success
+        </span>
       </span>
     </span>
   </div>
@@ -93,32 +93,28 @@ exports[`BackupStatusBadge icon rendering should render ExclamationTriangleIcon 
   >
     <span
       aria-label="Backup status: Failed"
-      className="pf-c-label pf-m-orange backupStatusBadge size-md"
+      className="pf-v6-c-label pf-m-orange pf-m-filled backupStatusBadge size-md"
       data-testid="backup-status-badge"
     >
       <span
-        className="pf-c-label__content"
+        className="pf-v6-c-label__content"
       >
         <span
-          className="pf-c-label__icon"
+          className="pf-v6-c-label__icon"
         >
           <span
-            className="pf-c-icon pf-m-inline"
+            className="pf-v6-c-icon pf-m-inline"
           >
             <span
-              className="pf-c-icon__content pf-m-warning"
+              className="pf-v6-c-icon__content pf-m-warning"
             >
               <svg
                 aria-hidden={true}
                 aria-labelledby={null}
+                className="pf-v6-svg"
                 fill="currentColor"
                 height="1em"
                 role="img"
-                style={
-                  {
-                    "verticalAlign": "-0.125em",
-                  }
-                }
                 viewBox="0 0 576 512"
                 width="1em"
               >
@@ -129,7 +125,11 @@ exports[`BackupStatusBadge icon rendering should render ExclamationTriangleIcon 
             </span>
           </span>
         </span>
-        Failed
+        <span
+          className="pf-v6-c-label__text"
+        >
+          Failed
+        </span>
       </span>
     </span>
   </div>
@@ -164,32 +164,28 @@ exports[`BackupStatusBadge icon rendering should render InfoCircleIcon for never
   >
     <span
       aria-label="Backup status: Never"
-      className="pf-c-label backupStatusBadge size-md"
+      className="pf-v6-c-label pf-m-filled backupStatusBadge size-md"
       data-testid="backup-status-badge"
     >
       <span
-        className="pf-c-label__content"
+        className="pf-v6-c-label__content"
       >
         <span
-          className="pf-c-label__icon"
+          className="pf-v6-c-label__icon"
         >
           <span
-            className="pf-c-icon pf-m-inline"
+            className="pf-v6-c-icon pf-m-inline"
           >
             <span
-              className="pf-c-icon__content pf-m-default"
+              className="pf-v6-c-icon__content pf-m-custom"
             >
               <svg
                 aria-hidden={true}
                 aria-labelledby={null}
+                className="pf-v6-svg"
                 fill="currentColor"
                 height="1em"
                 role="img"
-                style={
-                  {
-                    "verticalAlign": "-0.125em",
-                  }
-                }
                 viewBox="0 0 512 512"
                 width="1em"
               >
@@ -200,7 +196,11 @@ exports[`BackupStatusBadge icon rendering should render InfoCircleIcon for never
             </span>
           </span>
         </span>
-        Never
+        <span
+          className="pf-v6-c-label__text"
+        >
+          Never
+        </span>
       </span>
     </span>
   </div>
@@ -232,34 +232,29 @@ exports[`BackupStatusBadge icon rendering should render animated InProgressIcon 
   >
     <span
       aria-label="Backup status: In Progress"
-      className="pf-c-label pf-m-blue backupStatusBadge size-md"
+      className="pf-v6-c-label pf-m-blue pf-m-filled backupStatusBadge size-md"
       data-testid="backup-status-badge"
     >
       <span
-        className="pf-c-label__content"
+        className="pf-v6-c-label__content"
       >
         <span
-          className="pf-c-label__icon"
+          className="pf-v6-c-label__icon"
         >
           <span
-            className="pf-c-icon pf-m-inline"
+            className="pf-v6-c-icon pf-m-inline"
           >
             <span
-              className="pf-c-icon__content pf-m-info"
+              className="pf-v6-c-icon__content pf-m-info"
             >
               <svg
                 aria-hidden={true}
                 aria-label="Backup in progress"
                 aria-labelledby={null}
-                className="rotate"
+                className="pf-v6-svg rotate"
                 fill="currentColor"
                 height="1em"
                 role="img"
-                style={
-                  {
-                    "verticalAlign": "-0.125em",
-                  }
-                }
                 viewBox="0 0 1024 1024"
                 width="1em"
               >
@@ -270,7 +265,11 @@ exports[`BackupStatusBadge icon rendering should render animated InProgressIcon 
             </span>
           </span>
         </span>
-        In Progress
+        <span
+          className="pf-v6-c-label__text"
+        >
+          In Progress
+        </span>
       </span>
     </span>
   </div>
@@ -305,32 +304,28 @@ exports[`BackupStatusBadge snapshots failed status 1`] = `
   >
     <span
       aria-label="Backup status: Failed"
-      className="pf-c-label pf-m-orange backupStatusBadge size-md"
+      className="pf-v6-c-label pf-m-orange pf-m-filled backupStatusBadge size-md"
       data-testid="backup-status-badge"
     >
       <span
-        className="pf-c-label__content"
+        className="pf-v6-c-label__content"
       >
         <span
-          className="pf-c-label__icon"
+          className="pf-v6-c-label__icon"
         >
           <span
-            className="pf-c-icon pf-m-inline"
+            className="pf-v6-c-icon pf-m-inline"
           >
             <span
-              className="pf-c-icon__content pf-m-warning"
+              className="pf-v6-c-icon__content pf-m-warning"
             >
               <svg
                 aria-hidden={true}
                 aria-labelledby={null}
+                className="pf-v6-svg"
                 fill="currentColor"
                 height="1em"
                 role="img"
-                style={
-                  {
-                    "verticalAlign": "-0.125em",
-                  }
-                }
                 viewBox="0 0 576 512"
                 width="1em"
               >
@@ -341,7 +336,11 @@ exports[`BackupStatusBadge snapshots failed status 1`] = `
             </span>
           </span>
         </span>
-        Failed
+        <span
+          className="pf-v6-c-label__text"
+        >
+          Failed
+        </span>
       </span>
     </span>
   </div>
@@ -373,34 +372,29 @@ exports[`BackupStatusBadge snapshots in-progress status 1`] = `
   >
     <span
       aria-label="Backup status: In Progress"
-      className="pf-c-label pf-m-blue backupStatusBadge size-md"
+      className="pf-v6-c-label pf-m-blue pf-m-filled backupStatusBadge size-md"
       data-testid="backup-status-badge"
     >
       <span
-        className="pf-c-label__content"
+        className="pf-v6-c-label__content"
       >
         <span
-          className="pf-c-label__icon"
+          className="pf-v6-c-label__icon"
         >
           <span
-            className="pf-c-icon pf-m-inline"
+            className="pf-v6-c-icon pf-m-inline"
           >
             <span
-              className="pf-c-icon__content pf-m-info"
+              className="pf-v6-c-icon__content pf-m-info"
             >
               <svg
                 aria-hidden={true}
                 aria-label="Backup in progress"
                 aria-labelledby={null}
-                className="rotate"
+                className="pf-v6-svg rotate"
                 fill="currentColor"
                 height="1em"
                 role="img"
-                style={
-                  {
-                    "verticalAlign": "-0.125em",
-                  }
-                }
                 viewBox="0 0 1024 1024"
                 width="1em"
               >
@@ -411,7 +405,11 @@ exports[`BackupStatusBadge snapshots in-progress status 1`] = `
             </span>
           </span>
         </span>
-        In Progress
+        <span
+          className="pf-v6-c-label__text"
+        >
+          In Progress
+        </span>
       </span>
     </span>
   </div>
@@ -446,32 +444,28 @@ exports[`BackupStatusBadge snapshots never status 1`] = `
   >
     <span
       aria-label="Backup status: Never"
-      className="pf-c-label backupStatusBadge size-md"
+      className="pf-v6-c-label pf-m-filled backupStatusBadge size-md"
       data-testid="backup-status-badge"
     >
       <span
-        className="pf-c-label__content"
+        className="pf-v6-c-label__content"
       >
         <span
-          className="pf-c-label__icon"
+          className="pf-v6-c-label__icon"
         >
           <span
-            className="pf-c-icon pf-m-inline"
+            className="pf-v6-c-icon pf-m-inline"
           >
             <span
-              className="pf-c-icon__content pf-m-default"
+              className="pf-v6-c-icon__content pf-m-custom"
             >
               <svg
                 aria-hidden={true}
                 aria-labelledby={null}
+                className="pf-v6-svg"
                 fill="currentColor"
                 height="1em"
                 role="img"
-                style={
-                  {
-                    "verticalAlign": "-0.125em",
-                  }
-                }
                 viewBox="0 0 512 512"
                 width="1em"
               >
@@ -482,7 +476,11 @@ exports[`BackupStatusBadge snapshots never status 1`] = `
             </span>
           </span>
         </span>
-        Never
+        <span
+          className="pf-v6-c-label__text"
+        >
+          Never
+        </span>
       </span>
     </span>
   </div>
@@ -517,32 +515,28 @@ exports[`BackupStatusBadge snapshots success status 1`] = `
   >
     <span
       aria-label="Backup status: Success"
-      className="pf-c-label pf-m-green backupStatusBadge size-md"
+      className="pf-v6-c-label pf-m-green pf-m-filled backupStatusBadge size-md"
       data-testid="backup-status-badge"
     >
       <span
-        className="pf-c-label__content"
+        className="pf-v6-c-label__content"
       >
         <span
-          className="pf-c-label__icon"
+          className="pf-v6-c-label__icon"
         >
           <span
-            className="pf-c-icon pf-m-inline"
+            className="pf-v6-c-icon pf-m-inline"
           >
             <span
-              className="pf-c-icon__content pf-m-success"
+              className="pf-v6-c-icon__content pf-m-success"
             >
               <svg
                 aria-hidden={true}
                 aria-labelledby={null}
+                className="pf-v6-svg"
                 fill="currentColor"
                 height="1em"
                 role="img"
-                style={
-                  {
-                    "verticalAlign": "-0.125em",
-                  }
-                }
                 viewBox="0 0 512 512"
                 width="1em"
               >
@@ -553,7 +547,11 @@ exports[`BackupStatusBadge snapshots success status 1`] = `
             </span>
           </span>
         </span>
-        Success
+        <span
+          className="pf-v6-c-label__text"
+        >
+          Success
+        </span>
       </span>
     </span>
   </div>

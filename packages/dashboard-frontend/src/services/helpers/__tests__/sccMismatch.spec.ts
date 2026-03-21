@@ -26,8 +26,8 @@ describe('sccMismatch', () => {
       expect(hasSccMismatch('anyuid', 'anyuid')).toBe(false);
     });
 
-    test('returns true when workspace SCC is missing but server SCC is defined', () => {
-      expect(hasSccMismatch(undefined, 'container-run')).toBe(true);
+    test('returns false when workspace SCC is missing (created before SCC attribute was added)', () => {
+      expect(hasSccMismatch(undefined, 'container-run')).toBe(false);
     });
 
     test('returns true when workspace SCC differs from server SCC', () => {

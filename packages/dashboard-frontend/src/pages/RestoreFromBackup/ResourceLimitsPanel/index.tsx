@@ -52,20 +52,21 @@ export const ResourceLimitsPanel: React.FC<Props> = ({
       <PanelMain>
         <PanelMainBody>
           <Accordion asDefinitionList={false}>
-            <AccordionItem>
+            <AccordionItem isExpanded={isExpanded}>
               <AccordionToggle
                 onClick={() => setIsExpanded(prev => !prev)}
-                isExpanded={isExpanded}
                 id="resource-limits-toggle"
               >
                 Resource Limits
               </AccordionToggle>
-              <AccordionContent isHidden={!isExpanded}>
-                <Form isHorizontal onSubmit={e => e.preventDefault()}>
-                  <MemoryLimitField memoryLimit={memoryLimit} onChange={onMemoryLimitChange} />
-                  <CpuLimitField cpuLimit={cpuLimit} onChange={onCpuLimitChange} />
-                </Form>
-              </AccordionContent>
+              {isExpanded && (
+                <AccordionContent>
+                  <Form isHorizontal onSubmit={e => e.preventDefault()}>
+                    <MemoryLimitField memoryLimit={memoryLimit} onChange={onMemoryLimitChange} />
+                    <CpuLimitField cpuLimit={cpuLimit} onChange={onCpuLimitChange} />
+                  </Form>
+                </AccordionContent>
+              )}
             </AccordionItem>
           </Accordion>
         </PanelMainBody>

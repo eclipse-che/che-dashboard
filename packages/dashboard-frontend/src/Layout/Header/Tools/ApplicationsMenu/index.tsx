@@ -12,10 +12,14 @@
 
 import { ApplicationInfo } from '@eclipse-che/common';
 import {
-  ApplicationLauncher,
-  ApplicationLauncherGroup,
-  ApplicationLauncherItem,
+  Dropdown,
+  DropdownGroup,
+  DropdownItem,
+  DropdownList,
+  MenuToggle,
+  MenuToggleElement,
 } from '@patternfly/react-core';
+import { ThIcon } from '@patternfly/react-icons';
 import React from 'react';
 
 type Props = {
@@ -32,12 +36,6 @@ export class ApplicationsMenu extends React.PureComponent<Props, State> {
     this.state = {
       isOpen: false,
     };
-  }
-
-  private onToggle(isOpen: boolean): void {
-    this.setState({
-      isOpen: isOpen,
-    });
   }
 
   private buildMenuItems(): React.ReactElement[] {
@@ -57,15 +55,9 @@ export class ApplicationsMenu extends React.PureComponent<Props, State> {
       }
 
       const item = (
-        <ApplicationLauncherItem
-          key={app.url}
-          isExternal={true}
-          icon={<img src={app.icon} />}
-          href={app.url}
-          target="_blank"
-        >
+        <DropdownItem key={app.url} icon={<img src={app.icon} />} to={app.url} target="_blank">
           {app.title}
-        </ApplicationLauncherItem>
+        </DropdownItem>
       );
 
       itemsByGroup[group].push(item);
@@ -78,9 +70,9 @@ export class ApplicationsMenu extends React.PureComponent<Props, State> {
         return;
       }
       const groupItem = (
-        <ApplicationLauncherGroup key={group} label={group}>
+        <DropdownGroup key={group} label={group}>
           {items}
-        </ApplicationLauncherGroup>
+        </DropdownGroup>
       );
       groupedItems.push(groupItem);
     });
@@ -92,12 +84,25 @@ export class ApplicationsMenu extends React.PureComponent<Props, State> {
     const groupedItems = this.buildMenuItems();
 
     return (
-      <ApplicationLauncher
+      <Dropdown
         aria-label="External Applications"
         isOpen={this.state.isOpen}
-        onToggle={isOpen => this.onToggle(isOpen)}
-        items={groupedItems}
-      />
+        onSelect={() => this.setState({ isOpen: false })}
+        onOpenChange={isOpen => this.setState({ isOpen })}
+        toggle={(toggleRef: React.Ref<MenuToggleElement>) => (
+          <MenuToggle
+            ref={toggleRef}
+            onClick={() => this.setState(prev => ({ isOpen: !prev.isOpen }))}
+            isExpanded={this.state.isOpen}
+            variant="plain"
+            aria-label="External Applications"
+          >
+            <ThIcon />
+          </MenuToggle>
+        )}
+      >
+        <DropdownList>{groupedItems}</DropdownList>
+      </Dropdown>
     );
   }
 }

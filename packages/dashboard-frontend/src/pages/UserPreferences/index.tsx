@@ -86,7 +86,7 @@ class UserPreferences extends React.PureComponent<Props, State> {
     return (
       <React.Fragment>
         <Head pageName="User Preferences" />
-        <PageSection variant={PageSectionVariants.light}>
+        <PageSection variant={PageSectionVariants.default}>
           <Title headingLevel={'h1'}>User Preferences</Title>
         </PageSection>
         <PageSection type={'tabs'}>

@@ -13,15 +13,14 @@
 import {
   Breadcrumb,
   BreadcrumbItem,
+  Content,
+  ContentVariants,
   Flex,
   FlexItem,
   PageSection,
   PageSectionVariants,
   Stack,
   StackItem,
-  Text,
-  TextContent,
-  TextVariants,
 } from '@patternfly/react-core';
 import React from 'react';
 
@@ -46,7 +45,7 @@ class Header extends React.PureComponent<Props> {
     const { workspaceName, status, containerScc, children, workspacesLink } = this.props;
 
     return (
-      <PageSection variant={PageSectionVariants.light}>
+      <PageSection variant={PageSectionVariants.default}>
         <Stack hasGutter={true}>
           <StackItem>
             <Breadcrumb className={styles.breadcrumb}>
@@ -57,9 +56,9 @@ class Header extends React.PureComponent<Props> {
           <StackItem>
             <Flex>
               <FlexItem alignSelf={{ default: 'alignSelfCenter' }}>
-                <TextContent>
-                  <Text component={TextVariants.h1}>{workspaceName}</Text>
-                </TextContent>
+                <Content>
+                  <Content component={ContentVariants.h1}>{workspaceName}</Content>
+                </Content>
               </FlexItem>
               <FlexItem>
                 <WorkspaceStatusLabel status={status} containerScc={containerScc} />

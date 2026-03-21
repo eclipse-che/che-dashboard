@@ -14,7 +14,7 @@ import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 
 import { CheTooltip } from '@/components/CheTooltip';
-import { getSccMismatchTooltip, getStatusIcon } from '@/components/Workspace/Status/getStatusIcon';
+import { getSccMismatchTooltip, useStatusIcon } from '@/components/Workspace/Status/getStatusIcon';
 import styles from '@/components/Workspace/Status/index.module.css';
 import { hasSccMismatch } from '@/services/helpers/sccMismatch';
 import {
@@ -31,48 +31,42 @@ export type Props = MappedProps & {
   containerScc: string | undefined;
 };
 
-class WorkspaceStatusIndicatorComponent extends React.PureComponent<Props> {
-  public render(): React.ReactElement {
-    const { status, containerScc, branding, currentScc } = this.props;
+const WorkspaceStatusIndicatorComponent: React.FC<Props> = ({
+  status,
+  containerScc,
+  branding,
+  currentScc,
+}) => {
+  // Only check SCC mismatch for stopped workspaces
+  const isStopped = status === DevWorkspaceStatus.STOPPED;
+  const sccMismatch = isStopped && hasSccMismatch(containerScc, currentScc);
 
-    // Only check SCC mismatch for stopped workspaces
-    const isStopped = status === DevWorkspaceStatus.STOPPED;
-    const sccMismatch = isStopped && hasSccMismatch(containerScc, currentScc);
+  const statusIcon = useStatusIcon(status);
+  const warningIcon = useStatusIcon(DevWorkspaceStatus.FAILED);
+  const icon = sccMismatch ? warningIcon : statusIcon;
 
-    // If SCC mismatch, show warning triangle icon with tooltip
-    if (sccMismatch) {
-      const icon = getStatusIcon(DevWorkspaceStatus.FAILED);
-      const tooltip = getSccMismatchTooltip(branding.docs.containerRunCapabilities);
+  const tooltip: React.ReactNode = sccMismatch
+    ? getSccMismatchTooltip(branding.docs.containerRunCapabilities)
+    : status === 'Deprecated'
+      ? 'Deprecated workspace'
+      : status.toLocaleUpperCase();
 
-      return (
-        <CheTooltip content={tooltip}>
-          <span
-            className={styles.statusIndicator}
-            data-testid="workspace-status-indicator"
-            aria-label="Workspace status has SCC mismatch warning"
-          >
-            {icon}
-          </span>
-        </CheTooltip>
-      );
-    }
-
-    const icon = getStatusIcon(status);
-    const tooltip = status === 'Deprecated' ? 'Deprecated workspace' : status.toLocaleUpperCase();
-
-    return (
-      <CheTooltip content={tooltip}>
-        <span
-          className={styles.statusIndicator}
-          data-testid="workspace-status-indicator"
-          aria-label={`Workspace status is ${status}`}
-        >
-          {icon}
-        </span>
-      </CheTooltip>
-    );
-  }
-}
+  return (
+    <CheTooltip content={tooltip}>
+      <span
+        className={styles.statusIndicator}
+        data-testid="workspace-status-indicator"
+        aria-label={
+          sccMismatch
+            ? 'Workspace status has SCC mismatch warning'
+            : `Workspace status is ${status}`
+        }
+      >
+        {icon}
+      </span>
+    </CheTooltip>
+  );
+};
 
 const mapStateToProps = (state: RootState) => ({
   branding: selectBranding(state),

@@ -54,7 +54,7 @@ export class ContainerImageField extends React.PureComponent<Props, State> {
         <TextInput
           aria-label="Container Image"
           placeholder="Enter the container image"
-          onChange={value => this.handleChange(value)}
+          onChange={(_event, value) => this.handleChange(value)}
           value={containerImage}
         />
       </FormGroup>

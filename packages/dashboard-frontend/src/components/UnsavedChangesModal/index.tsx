@@ -10,7 +10,15 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import { Button, Modal, ModalVariant, Text, TextContent } from '@patternfly/react-core';
+import {
+  Button,
+  Content,
+  Modal,
+  ModalBody,
+  ModalFooter,
+  ModalHeader,
+  ModalVariant,
+} from '@patternfly/react-core';
 import { History, UnregisterCallback } from 'history';
 import React, { useEffect, useState } from 'react';
 
@@ -62,9 +70,17 @@ function UnsavedChangesModal(props: Props): React.ReactElement {
     <Modal
       variant={ModalVariant.small}
       isOpen={isOpen}
-      title="Unsaved Changes"
       onClose={() => setIsOpen(false)}
-      actions={[
+      elementToFocus="[data-pf-initial-focus]"
+    >
+      <ModalHeader title="Unsaved Changes" />
+      <ModalBody>
+        <Content data-pf-initial-focus tabIndex={-1} style={{ outline: 'none' }}>
+          You have unsaved changes. You may go ahead and discard all changes, or close this window
+          and save them.
+        </Content>
+      </ModalBody>
+      <ModalFooter>
         <Button
           key="confirm"
           variant="primary"
@@ -76,18 +92,11 @@ function UnsavedChangesModal(props: Props): React.ReactElement {
           }}
         >
           Discard Changes
-        </Button>,
+        </Button>
         <Button key="cancel" variant="secondary" onClick={() => setIsOpen(false)}>
           Cancel
-        </Button>,
-      ]}
-    >
-      <TextContent>
-        <Text>
-          You have unsaved changes. You may go ahead and discard all changes, or close this window
-          and save them.
-        </Text>
-      </TextContent>
+        </Button>
+      </ModalFooter>
     </Modal>
   );
 }
