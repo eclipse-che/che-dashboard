@@ -11,7 +11,7 @@
  */
 
 .editorTools {
-  height: 30px;
+  height: 33px;
   margin: 5px 0;
 }
 
@@ -26,12 +26,12 @@
   font-size: small;
 }
 
-.editorTools hr {
-  margin: 0 5px;
+.editorTools > * > div {
+  margin: inherit;
 }
 
-.editorTools a {
-  text-decoration: none;
+.editorTools > * > hr {
+  margin: 0 5px;
 }
 
 .editorTools .button {
@@ -40,6 +40,10 @@
   outline: none;
 }
 
-.editorTools svg {
+.editorTools .button a {
+  text-decoration: none;
+}
+
+.editorTools .button svg {
   margin-right: 8px;
 }
