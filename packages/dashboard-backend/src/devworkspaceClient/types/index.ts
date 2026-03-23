@@ -17,6 +17,7 @@ import {
   V230DevfileComponents,
 } from '@devfile/api';
 import { api, Architecture } from '@eclipse-che/common';
+import { BackupConfig, BackupInfo } from '@eclipse-che/common/src/types';
 import * as k8s from '@kubernetes/client-node';
 import { IncomingHttpHeaders } from 'http';
 
@@ -575,4 +576,16 @@ export interface IShhKeysApi {
   list(namespace: string): Promise<Array<api.SshKey>>;
   add(namespace: string, sshKey: api.SshKey): Promise<api.SshKey>;
   delete(namespace: string, name: string): Promise<void>;
+}
+
+export interface IBackupApi {
+  /**
+   * Get cluster-wide backup configuration
+   */
+  getClusterBackupConfig(): Promise<BackupConfig>;
+
+  /**
+   * Get backup status for a specific workspace
+   */
+  getWorkspaceBackupStatus(namespace: string, workspaceName: string): Promise<BackupInfo>;
 }

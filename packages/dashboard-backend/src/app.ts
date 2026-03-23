@@ -13,6 +13,7 @@
 import 'reflect-metadata';
 
 import { helpers } from '@eclipse-che/common';
+import rateLimit from '@fastify/rate-limit';
 import { FastifyInstance } from 'fastify';
 
 import parseArgs from '@/helpers/parseArgs';
@@ -22,6 +23,7 @@ import { registerStaticServer } from '@/plugins/staticServer';
 import { registerSwagger } from '@/plugins/swagger';
 import { registerWebSocket } from '@/plugins/webSocket';
 import { registerAirGapSampleRoute } from '@/routes/api/airGapSample';
+import { registerBackupRoutes } from '@/routes/api/backup';
 import { registerClusterConfigRoute } from '@/routes/api/clusterConfig';
 import { registerClusterInfoRoute } from '@/routes/api/clusterInfo';
 import { registerDataResolverRoute } from '@/routes/api/dataResolver';
@@ -76,7 +78,7 @@ export default async function buildApp(server: FastifyInstance): Promise<unknown
   const devWorkspaceClient = getDevWorkspaceClient(getServiceAccountToken());
   await devWorkspaceClient.devWorkspaceClusterApi.watchInAllNamespaces();
 
-  server.register(import('@fastify/rate-limit'));
+  await server.register(rateLimit);
 
   return Promise.allSettled([
     registerWebSocket(server),
@@ -139,5 +141,7 @@ export default async function buildApp(server: FastifyInstance): Promise<unknown
     registerWorkspacePreferencesRoute(server),
 
     registerAirGapSampleRoute(server),
+
+    registerBackupRoutes(server),
   ]);
 }

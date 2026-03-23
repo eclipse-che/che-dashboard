@@ -17,6 +17,8 @@ import { Location, NavigateFunction, useLocation, useNavigate } from 'react-rout
 import Fallback from '@/components/Fallback';
 import WorkspacesList from '@/pages/WorkspacesList';
 import { RootState } from '@/store';
+import { fetchWorkspaceBackupStatus } from '@/store/Backups/actions';
+import { selectAllBackupsByWorkspace } from '@/store/Backups/selectors';
 import { selectBranding } from '@/store/Branding/selectors';
 import { selectCmEditors } from '@/store/Plugins/devWorkspacePlugins/selectors';
 import { workspacesActionCreators } from '@/store/Workspaces';
@@ -28,8 +30,40 @@ type Props = MappedProps & {
 };
 
 export class WorkspacesListContainer extends React.PureComponent<Props> {
+  componentDidMount() {
+    this.fetchBackupStatuses();
+  }
+
+  componentDidUpdate(prevProps: Props) {
+    const prevUIDs = prevProps.allWorkspaces
+      .map(w => w.uid)
+      .sort()
+      .join(',');
+    const currUIDs = this.props.allWorkspaces
+      .map(w => w.uid)
+      .sort()
+      .join(',');
+    if (prevUIDs !== currUIDs) {
+      this.fetchBackupStatuses();
+    }
+  }
+
+  private fetchBackupStatuses() {
+    const { allWorkspaces, backupsByWorkspace } = this.props;
+    allWorkspaces.forEach(workspace => {
+      if (!backupsByWorkspace[workspace.uid]) {
+        this.props.fetchWorkspaceBackupStatus({
+          namespace: workspace.namespace,
+          workspaceUID: workspace.uid,
+          workspaceName: workspace.name,
+        });
+      }
+    });
+  }
+
   render() {
-    const { branding, allWorkspaces, editors, isLoading, location, navigate } = this.props;
+    const { branding, allWorkspaces, backupsByWorkspace, editors, isLoading, location, navigate } =
+      this.props;
 
     if (isLoading) {
       return Fallback;
@@ -42,6 +76,7 @@ export class WorkspacesListContainer extends React.PureComponent<Props> {
         location={location}
         navigate={navigate}
         workspaces={allWorkspaces}
+        backupsByWorkspace={backupsByWorkspace}
       />
     );
   }
@@ -58,12 +93,18 @@ const mapStateToProps = (state: RootState) => {
   return {
     branding: selectBranding(state),
     allWorkspaces: selectAllWorkspaces(state),
+    backupsByWorkspace: selectAllBackupsByWorkspace(state),
     editors: selectCmEditors(state),
     isLoading: selectIsLoading(state),
   };
 };
 
-const connector = connect(mapStateToProps, workspacesActionCreators);
+const mapDispatchToProps = {
+  ...workspacesActionCreators,
+  fetchWorkspaceBackupStatus,
+};
+
+const connector = connect(mapStateToProps, mapDispatchToProps);
 
 type MappedProps = ConnectedProps<typeof connector>;
 export default connector(ContainerWrapper);

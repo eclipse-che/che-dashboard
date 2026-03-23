@@ -15,7 +15,7 @@ import userEvent, { UserEvent } from '@testing-library/user-event';
 import React from 'react';
 
 import { ActionContextType } from '@/contexts/WorkspaceActions';
-import { State, WorkspaceActionsDropdown } from '@/contexts/WorkspaceActions/Dropdown';
+import { State, WorkspaceActionsDropdownComponent } from '@/contexts/WorkspaceActions/Dropdown';
 import { container } from '@/inversify.config';
 import getComponentRenderer, { screen } from '@/services/__mocks__/getComponentRenderer';
 import { AppAlerts } from '@/services/alerts/appAlerts';
@@ -599,8 +599,9 @@ function getComponent(
   };
 
   const component = (
-    <WorkspaceActionsDropdown
+    <WorkspaceActionsDropdownComponent
       context={context}
+      dispatch={jest.fn()}
       onAction={mockOnAction}
       workspace={workspace}
       toggle={toggle}

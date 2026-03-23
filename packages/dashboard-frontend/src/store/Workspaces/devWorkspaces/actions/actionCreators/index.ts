@@ -17,6 +17,7 @@ import { refreshKubeconfigWorkspace } from '@/store/Workspaces/devWorkspaces/act
 import { requestWorkspace } from '@/store/Workspaces/devWorkspaces/actions/actionCreators/requestWorkspace';
 import { requestWorkspaces } from '@/store/Workspaces/devWorkspaces/actions/actionCreators/requestWorkspaces';
 import { restartWorkspace } from '@/store/Workspaces/devWorkspaces/actions/actionCreators/restartWorkspace';
+import { restoreWorkspaceFromBackup } from '@/store/Workspaces/devWorkspaces/actions/actionCreators/restoreWorkspaceFromBackup';
 import { startWorkspace } from '@/store/Workspaces/devWorkspaces/actions/actionCreators/startWorkspace';
 import { stopWorkspace } from '@/store/Workspaces/devWorkspaces/actions/actionCreators/stopWorkspace';
 import { terminateWorkspace } from '@/store/Workspaces/devWorkspaces/actions/actionCreators/terminateWorkspace';
@@ -29,6 +30,7 @@ export const onStatusChangeCallbacks = new Map<string, (status: string) => void>
 export const actionCreators = {
   createWorkspaceFromDevfile: createWorkspaceFromDevfile,
   createWorkspaceFromResources,
+  restoreWorkspaceFromBackup,
   handleWebSocketMessage,
   requestWorkspace,
   requestWorkspaces,

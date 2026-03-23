@@ -10,7 +10,8 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import { render, RenderResult } from '@testing-library/react';
+import { api } from '@eclipse-che/common';
+import { act, render, RenderResult } from '@testing-library/react';
 import React from 'react';
 import { Provider } from 'react-redux';
 
@@ -22,6 +23,7 @@ import { MockStoreBuilder } from '@/store/__mocks__/mockStore';
 import BannerAlertWebSocket from '..';
 
 const failingMessage = 'WebSocket connections are failing';
+const authErrorMessage = 'Dashboard backend lost authorization';
 
 const store = new MockStoreBuilder()
   .withBranding({
@@ -92,6 +94,64 @@ describe('BannerAlertWebSocket component', () => {
         exact: false,
       }),
     ).toEqual([]);
+  });
+
+  it('should show auth error banner when a 401 StatusMessage is received', () => {
+    const comp = (
+      <Provider store={store}>
+        <BannerAlertWebSocket />
+      </Provider>
+    );
+    const component = renderComponent(comp);
+    expect(component.queryByText(authErrorMessage, { exact: false })).toBeFalsy();
+
+    const websocketClient = container.get(WebsocketClient);
+    const statusMessage: api.webSocket.StatusMessage = {
+      eventPhase: api.webSocket.EventPhase.ERROR,
+      status: { code: 401, message: 'Unauthorized' },
+      params: { namespace: 'test', resourceVersion: '1' },
+    };
+
+    act(() => {
+      (websocketClient as any).messageHandler.notifyListeners({
+        data: JSON.stringify({
+          channel: api.webSocket.Channel.DEV_WORKSPACE,
+          message: statusMessage,
+        }),
+      } as MessageEvent);
+    });
+
+    expect(component.queryByText(authErrorMessage, { exact: false })).toBeTruthy();
+  });
+
+  it('should clear auth error banner when websocket reconnects', () => {
+    const comp = (
+      <Provider store={store}>
+        <BannerAlertWebSocket />
+      </Provider>
+    );
+    const component = renderComponent(comp);
+
+    const websocketClient = container.get(WebsocketClient);
+    const statusMessage: api.webSocket.StatusMessage = {
+      eventPhase: api.webSocket.EventPhase.ERROR,
+      status: { code: 401, message: 'Unauthorized' },
+      params: { namespace: 'test', resourceVersion: '1' },
+    };
+
+    act(() => {
+      (websocketClient as any).messageHandler.notifyListeners({
+        data: JSON.stringify({ channel: api.webSocket.Channel.POD, message: statusMessage }),
+      } as MessageEvent);
+    });
+
+    expect(component.queryByText(authErrorMessage, { exact: false })).toBeTruthy();
+
+    act(() => {
+      (websocketClient as any).notifyConnectionEventListeners(ConnectionEvent.OPEN);
+    });
+
+    expect(component.queryByText(authErrorMessage, { exact: false })).toBeFalsy();
   });
 });
 

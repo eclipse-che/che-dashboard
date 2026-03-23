@@ -55,10 +55,20 @@ export class ServerConfigApiService implements IServerConfigApi {
   async getCurrentArchitecture(): Promise<Architecture | undefined> {
     if (!ServerConfigApiService.currentArchitecture) {
       try {
-        const currentArchitecture = await run('uname', ['-m']);
-        // 'amd64' is an alias for 'x86_64'
-        ServerConfigApiService.currentArchitecture =
-          currentArchitecture === 'amd64' ? 'x86_64' : (currentArchitecture as Architecture);
+        const rawArchitecture: string = await run('uname', ['-m']);
+        // Normalize architecture aliases
+        switch (rawArchitecture) {
+          case 'amd64':
+            // 'amd64' is an alias for 'x86_64'
+            ServerConfigApiService.currentArchitecture = 'x86_64';
+            break;
+          case 'aarch64':
+            // 'aarch64' is an alias for 'arm64'
+            ServerConfigApiService.currentArchitecture = 'arm64';
+            break;
+          default:
+            ServerConfigApiService.currentArchitecture = rawArchitecture as Architecture;
+        }
       } catch (error) {
         throw createError(
           error,

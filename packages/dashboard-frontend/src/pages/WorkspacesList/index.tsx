@@ -12,258 +12,81 @@
 
 import 'reflect-metadata';
 
+import { BackupInfo } from '@eclipse-che/common';
 import {
-  Divider,
   PageSection,
   PageSectionVariants,
   Text,
   TextContent,
+  ToggleGroup,
+  ToggleGroupItem,
 } from '@patternfly/react-core';
 import { ExternalLinkAltIcon } from '@patternfly/react-icons';
-import {
-  classNames,
-  ICell,
-  IRowData,
-  sortable,
-  SortByDirection,
-  Table,
-  TableBody,
-  TableHeader,
-  TableVariant,
-  Visibility,
-} from '@patternfly/react-table';
 import React from 'react';
 import { Location, NavigateFunction } from 'react-router-dom';
 
 import Head from '@/components/Head';
-import NothingFoundEmptyState from '@/pages/WorkspacesList/EmptyState/NothingFound';
-import NoWorkspacesEmptyState from '@/pages/WorkspacesList/EmptyState/NoWorkspaces';
-import styles from '@/pages/WorkspacesList/index.module.css';
-import { buildRows, RowData } from '@/pages/WorkspacesList/Rows';
-import WorkspacesListToolbar from '@/pages/WorkspacesList/Toolbar';
+import BackupsView from '@/pages/WorkspacesList/BackupsView';
+import WorkspacesView from '@/pages/WorkspacesList/WorkspacesView';
 import { BrandingData } from '@/services/bootstrap/branding.constant';
 import devfileApi from '@/services/devfileApi';
-import { buildGettingStartedLocation } from '@/services/helpers/location';
 import { Workspace } from '@/services/workspace-adapter';
 
 type Props = {
+  backupsByWorkspace: Record<string, BackupInfo>;
   branding: BrandingData;
   editors: devfileApi.Devfile[];
   location: Location;
   navigate: NavigateFunction;
   workspaces: Workspace[];
 };
+
+type ViewMode = 'workspaces' | 'backups';
+
 type State = {
-  filtered: string[]; // UIDs of filtered workspaces
-  selected: string[]; // UIDs of selected workspaces
-  isSelectedAll: boolean;
-  rows: RowData[];
-  sortBy: {
-    index: number;
-    direction: SortByDirection;
-  };
+  viewMode: ViewMode;
 };
 
 export default class WorkspacesList extends React.PureComponent<Props, State> {
-  private readonly columns: (ICell | string)[];
-
   constructor(props: Props) {
     super(props);
 
-    this.columns = [
-      {
-        title: <span className={styles.nameColumnTitle}>Name</span>,
-        dataLabel: 'Name',
-        transforms: [sortable],
-      },
-      {
-        title: <span className={styles.editorColumnTitle}>Editor</span>,
-        dataLabel: 'Editor',
-        transforms: [sortable],
-      },
-      {
-        title: 'Last Modified',
-        dataLabel: 'Last Modified',
-        transforms: [sortable, classNames(styles.lastModifiedColumnTitle)],
-      },
-      {
-        title: 'Project(s)',
-        dataLabel: 'Project(s)',
-        cellTransforms: [classNames(styles.projectsCell)],
-      },
-      {
-        // Column is visible only on Sm
-        // content is aligned to the left
-        title: '',
-        dataLabel: ' ',
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        columnTransforms: [classNames(Visibility.visibleOnSm!, Visibility.hiddenOnMd!)],
-      },
-      {
-        // Column is hidden only on Sm
-        // content is aligned to the right
-        title: '',
-        dataLabel: ' ',
-        /* eslint-disable @typescript-eslint/no-non-null-assertion */
-        cellTransforms: [
-          classNames(
-            styles.openIdeCell,
-            Visibility.hidden!,
-            Visibility.hiddenOnSm!,
-            Visibility.visibleOnMd!,
-          ),
-        ],
-      },
-      {
-        title: '',
-        dataLabel: ' ',
-        cellTransforms: [classNames(styles.actionsDropdownCell)],
-      },
-    ];
-
-    const filtered = this.props.workspaces.map(workspace => workspace.uid);
+    const viewMode = this.getViewModeFromUrl(props.location);
     this.state = {
-      filtered,
-      selected: [],
-      isSelectedAll: false,
-      rows: [],
-      sortBy: {
-        index: 3, // Last Modified column
-        direction: SortByDirection.asc,
-      },
+      viewMode,
     };
   }
 
-  private buildRows(): RowData[] {
-    const { editors, workspaces } = this.props;
-    const { filtered, selected, sortBy } = this.state;
-
-    return buildRows(workspaces, editors, [], filtered, selected, sortBy);
-  }
-
-  private handleFilter(filtered: Workspace[]): void {
-    const selected = filtered
-      .map(workspace => workspace.uid)
-      .filter(uid => this.state.selected.includes(uid));
-    const isSelectedAll = selected.length !== 0 && selected.length === filtered.length;
-    this.setState({
-      filtered: filtered.map(workspace => workspace.uid),
-      selected,
-      isSelectedAll,
-    });
-  }
-
-  private handleSelectAll(isSelectedAll: boolean): void {
-    const selected = isSelectedAll === false ? [] : [...this.state.filtered];
-
-    this.setState({
-      selected,
-      isSelectedAll,
-    });
-  }
-
-  private handleSelect(isSelected: boolean, rowIndex: number, rowData?: IRowData): void {
-    const { workspaces } = this.props;
-
-    if (rowIndex === -1) {
-      /* (un)select all */
-      const isSelectedAll = isSelected;
-      const selected = isSelectedAll === false ? [] : workspaces.map(workspace => workspace.uid);
-      this.setState({
-        selected,
-        isSelectedAll,
-      });
-      return;
+  private getViewModeFromUrl(location: Location): ViewMode {
+    const params = new URLSearchParams(location.search);
+    const view = params.get('view');
+    if (view === 'backups') {
+      return 'backups';
     }
-
-    /* (un)select specified row */
-    const uid = (rowData as RowData).props.workspaceUID;
-    const selected = [...this.state.selected];
-    const idx = selected.indexOf(uid);
-    if (idx === -1) {
-      if (isSelected) {
-        selected.push(uid);
-      }
-    } else {
-      if (!isSelected) {
-        selected.splice(idx, 1);
-      }
-    }
-    const isSelectedAll = selected.length !== 0 && selected.length === workspaces.length;
-    this.setState({
-      selected,
-      isSelectedAll,
-    });
+    return 'workspaces';
   }
 
-  private handleAddWorkspace(): void {
-    const location = buildGettingStartedLocation();
-    this.props.navigate(location);
-  }
-
-  private handleSort(event: React.MouseEvent, index: number, direction: SortByDirection): void {
-    this.setState({
-      sortBy: {
-        index,
-        direction,
-      },
-    });
+  private handleViewModeChange(viewMode: ViewMode): void {
+    this.setState({ viewMode });
+    // Update URL with new view mode
+    const newSearch = new URLSearchParams({ view: viewMode }).toString();
+    this.props.navigate(`${this.props.location.pathname}?${newSearch}`, { replace: true });
   }
 
   public componentDidUpdate(prevProps: Props): void {
-    const prevUIDs = prevProps.workspaces
-      .map(w => w.uid)
-      .sort()
-      .join(',');
-    const UIDs = this.props.workspaces
-      .map(w => w.uid)
-      .sort()
-      .join(',');
-    if (prevUIDs !== UIDs) {
-      const selected: string[] = [];
-      const filtered: string[] = [];
-      this.props.workspaces.forEach(workspace => {
-        if (this.state.selected.indexOf(workspace.uid) !== -1) {
-          selected.push(workspace.uid);
-        }
-        filtered.push(workspace.uid);
-      });
-      const isSelectedAll =
-        selected.length !== 0 && selected.length === this.props.workspaces.length;
-      this.setState({
-        filtered,
-        isSelectedAll,
-        selected,
-      });
+    // Sync state with URL changes (e.g., browser back/forward)
+    if (prevProps.location.search !== this.props.location.search) {
+      const viewMode = this.getViewModeFromUrl(this.props.location);
+      if (viewMode !== this.state.viewMode) {
+        this.setState({ viewMode });
+      }
     }
   }
 
   public render(): React.ReactElement {
-    const { workspaces } = this.props;
-    const { workspace: workspacesDocsLink } = this.props.branding.docs;
-    const { selected, isSelectedAll, sortBy } = this.state;
-    const rows = this.buildRows();
-
-    const toolbar = (
-      <WorkspacesListToolbar
-        selected={selected}
-        workspaces={workspaces}
-        selectedAll={isSelectedAll}
-        onAddWorkspace={() => this.handleAddWorkspace()}
-        onBulkDelete={async () => {
-          // no-op
-        }}
-        onFilter={filtered => this.handleFilter(filtered)}
-        onToggleSelectAll={isSelectedAll => this.handleSelectAll(isSelectedAll)}
-      />
-    );
-
-    let emptyState: React.ReactElement = <></>;
-    if (workspaces.length === 0) {
-      emptyState = <NoWorkspacesEmptyState onAddWorkspace={() => this.handleAddWorkspace()} />;
-    } else if (rows.length === 0) {
-      emptyState = <NothingFoundEmptyState />;
-    }
+    const { backupsByWorkspace, branding, editors, navigate, workspaces } = this.props;
+    const { workspace: workspacesDocsLink } = branding.docs;
+    const { viewMode } = this.state;
 
     return (
       <React.Fragment>
@@ -281,31 +104,33 @@ export default class WorkspacesList extends React.PureComponent<Props, State> {
             </Text>
           </TextContent>
         </PageSection>
-        <PageSection
-          padding={{ default: 'noPadding' }}
-          variant={PageSectionVariants.light}
-          isFilled={false}
-        >
-          <Divider component="div" className="pf-u-mt-xl" />
-          <Table
-            aria-label="Workspaces List Table"
-            canSelectAll={false}
-            cells={this.columns}
-            onSelect={(event, isSelected, rowIndex, rowData) => {
-              event.stopPropagation();
-              this.handleSelect(isSelected, rowIndex, rowData);
-            }}
-            rows={rows}
-            variant={TableVariant.compact}
-            header={toolbar}
-            sortBy={sortBy}
-            onSort={(event, index, direction) => this.handleSort(event, index, direction)}
-          >
-            <TableHeader />
-            <TableBody />
-          </Table>
+        <PageSection variant={PageSectionVariants.light}>
+          <ToggleGroup aria-label="View toggle">
+            <ToggleGroupItem
+              text="Active Workspaces"
+              buttonId="view-workspaces"
+              isSelected={viewMode === 'workspaces'}
+              onChange={() => this.handleViewModeChange('workspaces')}
+            />
+            <ToggleGroupItem
+              text="Backups"
+              buttonId="view-backups"
+              isSelected={viewMode === 'backups'}
+              onChange={() => this.handleViewModeChange('backups')}
+            />
+          </ToggleGroup>
         </PageSection>
-        {emptyState}
+        {viewMode === 'backups' ? (
+          <BackupsView navigate={navigate} />
+        ) : (
+          <WorkspacesView
+            workspaces={workspaces}
+            editors={editors}
+            backupsByWorkspace={backupsByWorkspace}
+            branding={branding}
+            navigate={navigate}
+          />
+        )}
       </React.Fragment>
     );
   }

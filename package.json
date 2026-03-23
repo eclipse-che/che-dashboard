@@ -1,6 +1,6 @@
 {
   "name": "@eclipse-che/dashboard",
-  "version": "7.115.0-next",
+  "version": "7.116.0-next",
   "description": "Dashboard for Eclipse Che",
   "private": true,
   "workspaces": {
@@ -42,6 +42,8 @@
     "@babel/runtime": "^7.26.10",
     "@adobe/css-tools": "^4.3.2",
     "@hapi/hoek": "^10.0.1",
+    "ajv@^6.0.0": "6.14.0",
+    "axios": "^1.13.5",
     "bn.js": "^5.2.0",
     "braces": "^3.0.3",
     "cipher-base": "^1.0.6",

@@ -10,7 +10,7 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import { render, RenderResult, screen, within } from '@testing-library/react';
+import { render, RenderResult, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
 import { Location, MemoryRouter } from 'react-router-dom';
@@ -96,17 +96,21 @@ describe('Workspaces List Page', () => {
       });
 
       // select all workspaces
-      await await userEvent.click(selectAllCheckbox);
+      await userEvent.click(selectAllCheckbox);
 
-      rowCheckboxes.forEach(checkbox => {
-        expect(checkbox).toBeChecked();
+      await waitFor(() => {
+        rowCheckboxes.forEach(checkbox => {
+          expect(checkbox).toBeChecked();
+        });
       });
 
       // deselect all workspaces
       await userEvent.click(selectAllCheckbox);
 
-      rowCheckboxes.forEach(checkbox => {
-        expect(checkbox).not.toBeChecked();
+      await waitFor(() => {
+        rowCheckboxes.forEach(checkbox => {
+          expect(checkbox).not.toBeChecked();
+        });
       });
     });
 
@@ -157,7 +161,9 @@ describe('Workspaces List Page', () => {
 
       await userEvent.click(rowCheckbox);
 
-      expect(rowCheckbox).toBeChecked();
+      await waitFor(() => {
+        expect(rowCheckbox).toBeChecked();
+      });
     });
   });
 
@@ -193,6 +199,7 @@ function getComponent(_workspaces = workspaces): React.ReactElement {
   return (
     <MemoryRouter>
       <WorkspacesList
+        backupsByWorkspace={{}}
         branding={brandingData}
         editors={[]}
         location={{} as Location}
