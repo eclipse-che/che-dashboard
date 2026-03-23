@@ -8,6 +8,11 @@
   padding: 0;
 }
 
+.viewerExpanded > * {
+  background-color: var(--pf-t--global--background--color--primary--default);
+}
+
+
 .panelViewerDivider {
   display: block;
   height: 1.5em;
