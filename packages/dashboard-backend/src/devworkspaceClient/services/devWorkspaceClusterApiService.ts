@@ -83,7 +83,10 @@ export class DevWorkspaceClusterApiService implements IDevWorkspaceClusterApi {
             abortController?.abort();
             this.watcherInProgress = false;
           } catch (callbackError) {
-            logger.error(callbackError, `Error in DevWorkspace cluster watch done callback for ${path}.`);
+            logger.error(
+              callbackError,
+              `Error in DevWorkspace cluster watch done callback for ${path}.`,
+            );
             this.watcherInProgress = false;
           }
         },
