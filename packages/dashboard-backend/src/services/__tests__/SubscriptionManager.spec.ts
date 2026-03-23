@@ -21,6 +21,7 @@ describe('SubscriptionManager', () => {
   const channel = api.webSocket.Channel.DEV_WORKSPACE;
 
   const ws = new MockWebSocket('ws://localhost') as unknown as WS;
+  Object.defineProperty(ws, 'readyState', { value: WS.OPEN, writable: true });
   const spyWsSend = jest.spyOn(ws, 'send');
 
   let subscriptionManager: SubscriptionManager;

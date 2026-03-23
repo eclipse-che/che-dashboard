@@ -30,6 +30,7 @@ describe('WebSocket handler', () => {
     jest.clearAllMocks();
     mockWs = Object.assign(new EventEmitter(), {
       send: jest.fn(),
+      readyState: 1, // WebSocket.OPEN
     });
     mockRequest = {
       headers: { authorization: 'Bearer test-token' },
