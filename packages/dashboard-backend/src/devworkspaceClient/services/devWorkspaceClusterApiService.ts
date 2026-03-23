@@ -78,9 +78,17 @@ export class DevWorkspaceClusterApiService implements IDevWorkspaceClusterApi {
           if (error instanceof Error && error.name === 'AbortError') {
             return;
           }
-          this.handleWatchError(error, path);
-          abortController?.abort();
-          this.watcherInProgress = false;
+          try {
+            this.handleWatchError(error, path);
+            abortController?.abort();
+            this.watcherInProgress = false;
+          } catch (callbackError) {
+            logger.error(
+              callbackError,
+              `Error in DevWorkspace cluster watch done callback for ${path}.`,
+            );
+            this.watcherInProgress = false;
+          }
         },
       );
     } catch (error) {

@@ -67,7 +67,11 @@ export async function watchCR(kubeConfig: k8s.KubeConfig, server: FastifyInstanc
       }
     },
     err => {
-      logger.error(err, 'Log level watcher: Watch failed.');
+      try {
+        logger.error(err, 'Log level watcher: Watch failed.');
+      } catch (callbackError) {
+        console.error('Error in log level watcher done callback:', callbackError);
+      }
     },
   );
 }
