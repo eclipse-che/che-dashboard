@@ -65,6 +65,7 @@ const UserMenuComponent: React.FC<Props> = ({ history, username, logout }) => {
 
   return (
     <Dropdown
+      style={{ overflow: 'visible' }}
       onSelect={onUsernameSelect}
       isOpen={isOpened}
       onOpenChange={setIsOpened}
@@ -150,7 +151,6 @@ const UserMenuComponent: React.FC<Props> = ({ history, username, logout }) => {
               />
               <CheTooltip
                 content="Device-based theme"
-                position="left"
                 triggerRef={autoThemeRef}
                 appendTo={() => tooltipContainerRef.current ?? document.body}
               />

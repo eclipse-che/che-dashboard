@@ -10,7 +10,7 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-.selector :global(.pf-v6-c-menu) {
+.selector {
   overflow-y: auto;
   min-width: 200px;
   max-height: 310px;
