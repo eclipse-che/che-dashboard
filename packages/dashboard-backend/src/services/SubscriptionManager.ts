@@ -14,6 +14,7 @@ import { api } from '@eclipse-che/common';
 import WebSocket from 'ws';
 
 import { NotificationMessage, Observer } from '@/services/types/Observer';
+import { logger } from '@/utils/logger';
 
 /**
  * This class implements the Observer pattern. It reacts to the changes in the subject and sends messages to subscribers over WebSocket.
@@ -32,6 +33,12 @@ export class SubscriptionManager implements Observer {
 
   sendMessage(dataMessage: api.webSocket.EventData): void {
     if (this.channels.includes(dataMessage.channel)) {
+      if (this.websocket.readyState !== WebSocket.OPEN) {
+        logger.warn(
+          `WebSocket is not open (readyState=${this.websocket.readyState}), skipping send for channel ${dataMessage.channel}.`,
+        );
+        return;
+      }
       this.websocket.send(JSON.stringify(dataMessage));
     }
   }

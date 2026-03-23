@@ -65,9 +65,13 @@ export class EventApiService implements IEventApi {
           if (error instanceof Error && error.name === 'AbortError') {
             return;
           }
-          this.handleWatchError(error, path);
-          this.notifyWatchError(error, listener, params);
-          abortController?.abort();
+          try {
+            this.handleWatchError(error, path);
+            this.notifyWatchError(error, listener, params);
+            abortController?.abort();
+          } catch (callbackError) {
+            logger.error(callbackError, `Error in events watch done callback for ${path}.`);
+          }
         },
       );
     } catch (error) {
