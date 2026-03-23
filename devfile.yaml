@@ -8,6 +8,8 @@ components:
       image: quay.io/devfile/universal-developer-image:ubi9-latest
       memoryLimit: 10G
       memoryRequest: 512Mi
+      cpuRequest: 1000m
+      cpuLimit: 5000m
       mountSources: true
       endpoints:
         - exposure: public
