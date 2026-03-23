@@ -20,13 +20,13 @@ import {
   MenuToggle,
   ToggleGroup,
   ToggleGroupItem,
-  Tooltip,
 } from '@patternfly/react-core';
 import { MoonIcon, SunIcon, WindowMaximizeIcon } from '@patternfly/react-icons';
 import { History } from 'history';
 import React, { useState } from 'react';
 import { connect, ConnectedProps } from 'react-redux';
 
+import { CheTooltip } from '@/components/CheTooltip';
 import { ThemePreference, useTheme } from '@/contexts/ThemeContext';
 import { ROUTE } from '@/Routes';
 import { BrandingData } from '@/services/bootstrap/branding.constant';
@@ -43,9 +43,10 @@ const UserMenuComponent: React.FC<Props> = ({ history, username, logout }) => {
   const [isOpened, setIsOpened] = useState(false);
   const { themePreference, setThemePreference } = useTheme();
 
-  const lightThemeRef = React.useRef<HTMLDivElement>(null);
-  const darkThemeRef = React.useRef<HTMLDivElement>(null);
-  const autoThemeRef = React.useRef<HTMLDivElement>(null);
+  const lightThemeRef = React.useRef<HTMLSpanElement>(null);
+  const darkThemeRef = React.useRef<HTMLSpanElement>(null);
+  const autoThemeRef = React.useRef<HTMLSpanElement>(null);
+  const tooltipContainerRef = React.useRef<HTMLDivElement>(null);
 
   const onUsernameSelect = (
     _event?: React.MouseEvent<Element, MouseEvent>,
@@ -82,62 +83,78 @@ const UserMenuComponent: React.FC<Props> = ({ history, username, logout }) => {
       <DropdownGroup label="Appearance">
         <DropdownList>
           <DropdownItem itemId="theme-selector" key="theme-selector" component="div">
-            <ToggleGroup id="theme-toggle" aria-label="Theme toggle group">
-              <div ref={lightThemeRef} style={{ display: 'contents' }}>
-                <ToggleGroupItem
-                  icon={
-                    <Icon size="sm">
-                      <SunIcon />
-                    </Icon>
-                  }
-                  aria-label="light theme"
-                  buttonId="toggle-group-light-theme"
-                  onChange={() => {
-                    if (themePreference !== ThemePreference.LIGHT) {
-                      setThemePreference(ThemePreference.LIGHT);
+            <div ref={tooltipContainerRef}>
+              <ToggleGroup id="theme-toggle" aria-label="Theme toggle group">
+                {/* Span wrappers give triggerRef a real bounding rect (display:contents has none) */}
+                <span ref={lightThemeRef}>
+                  <ToggleGroupItem
+                    icon={
+                      <Icon size="sm">
+                        <SunIcon />
+                      </Icon>
                     }
-                  }}
-                  isSelected={themePreference === ThemePreference.LIGHT}
-                />
-              </div>
-              <div ref={darkThemeRef} style={{ display: 'contents' }}>
-                <ToggleGroupItem
-                  icon={
-                    <Icon size="sm">
-                      <MoonIcon />
-                    </Icon>
-                  }
-                  aria-label="dark theme"
-                  buttonId="toggle-group-dark-theme"
-                  onChange={() => {
-                    if (themePreference !== ThemePreference.DARK) {
-                      setThemePreference(ThemePreference.DARK);
+                    aria-label="light theme"
+                    buttonId="toggle-group-light-theme"
+                    onChange={() => {
+                      if (themePreference !== ThemePreference.LIGHT) {
+                        setThemePreference(ThemePreference.LIGHT);
+                      }
+                    }}
+                    isSelected={themePreference === ThemePreference.LIGHT}
+                  />
+                </span>
+                <span ref={darkThemeRef}>
+                  <ToggleGroupItem
+                    icon={
+                      <Icon size="sm">
+                        <MoonIcon />
+                      </Icon>
                     }
-                  }}
-                  isSelected={themePreference === ThemePreference.DARK}
-                />
-              </div>
-              <div ref={autoThemeRef} style={{ display: 'contents' }}>
-                <ToggleGroupItem
-                  icon={
-                    <Icon size="sm">
-                      <WindowMaximizeIcon />
-                    </Icon>
-                  }
-                  aria-label="auto theme"
-                  buttonId="toggle-group-auto-theme"
-                  onChange={() => {
-                    if (themePreference !== ThemePreference.AUTO) {
-                      setThemePreference(ThemePreference.AUTO);
+                    aria-label="dark theme"
+                    buttonId="toggle-group-dark-theme"
+                    onChange={() => {
+                      if (themePreference !== ThemePreference.DARK) {
+                        setThemePreference(ThemePreference.DARK);
+                      }
+                    }}
+                    isSelected={themePreference === ThemePreference.DARK}
+                  />
+                </span>
+                <span ref={autoThemeRef}>
+                  <ToggleGroupItem
+                    icon={
+                      <Icon size="sm">
+                        <WindowMaximizeIcon />
+                      </Icon>
                     }
-                  }}
-                  isSelected={themePreference === ThemePreference.AUTO}
-                />
-              </div>
-            </ToggleGroup>
-            <Tooltip content="Light theme" position="bottom" triggerRef={lightThemeRef} />
-            <Tooltip content="Dark theme" position="bottom" triggerRef={darkThemeRef} />
-            <Tooltip content="Device-based theme" position="bottom" triggerRef={autoThemeRef} />
+                    aria-label="auto theme"
+                    buttonId="toggle-group-auto-theme"
+                    onChange={() => {
+                      if (themePreference !== ThemePreference.AUTO) {
+                        setThemePreference(ThemePreference.AUTO);
+                      }
+                    }}
+                    isSelected={themePreference === ThemePreference.AUTO}
+                  />
+                </span>
+              </ToggleGroup>
+              <CheTooltip
+                content="Light theme"
+                triggerRef={lightThemeRef}
+                appendTo={() => tooltipContainerRef.current ?? document.body}
+              />
+              <CheTooltip
+                content="Dark theme"
+                triggerRef={darkThemeRef}
+                appendTo={() => tooltipContainerRef.current ?? document.body}
+              />
+              <CheTooltip
+                content="Device-based theme"
+                position="left"
+                triggerRef={autoThemeRef}
+                appendTo={() => tooltipContainerRef.current ?? document.body}
+              />
+            </div>
           </DropdownItem>
         </DropdownList>
       </DropdownGroup>
