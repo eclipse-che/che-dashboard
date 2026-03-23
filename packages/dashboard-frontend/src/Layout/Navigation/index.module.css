@@ -35,6 +35,10 @@
   color: inherit !important;
 }
 
+:global(html:not(.pf-v6-theme-dark)) .navItem [class*='nav__link'] button:hover {
+  background-color: var(--pf-t--global--background--color--secondary--hover);
+}
+
 .titleHover {
   cursor: pointer;
 }
