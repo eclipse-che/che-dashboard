@@ -189,9 +189,13 @@ export class DevWorkspaceApiService implements IDevWorkspaceApi {
           if (error instanceof Error && error.name === 'AbortError') {
             return;
           }
-          logger.warn(error, `Stopped watching ${path}.`);
-          this.notifyWatchError(error, listener, params);
-          abortController?.abort();
+          try {
+            logger.warn(error, `Stopped watching ${path}.`);
+            this.notifyWatchError(error, listener, params);
+            abortController?.abort();
+          } catch (callbackError) {
+            logger.error(callbackError, `Error in DevWorkspace watch done callback for ${path}.`);
+          }
         },
       );
     } catch (error) {

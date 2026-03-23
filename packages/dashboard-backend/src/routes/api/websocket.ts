@@ -122,7 +122,7 @@ export function webSocketHandler(ws: WebSocket, request: FastifyRequest): void {
       }
     } catch (e) {
       logger.warn(`Can't parse the WS message payload: %s`, messageStr.toString());
-      throw e;
+      return;
     }
 
     logger.info(`WS message: %s`, message);
