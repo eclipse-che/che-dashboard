@@ -95,7 +95,9 @@ describe('brandingLogo helper', () => {
       const encodedPart = result.replace('data:image/svg+xml;charset=utf-8,', '');
       const decoded = decodeURIComponent(encodedPart);
 
-      expect(decoded).toContain('fill="#ffffff"'); // Dark theme color
+      // Theme color is applied via an injected <style> block (CSS-based approach)
+      expect(decoded).toContain('data-che-theme');
+      expect(decoded).toContain('.outer-fill { fill: #ffffff; }'); // Dark theme fallback
       expect(decoded).toContain('class="outer-fill"');
     });
 
@@ -111,7 +113,9 @@ describe('brandingLogo helper', () => {
       const encodedPart = result.replace('data:image/svg+xml;charset=utf-8,', '');
       const decoded = decodeURIComponent(encodedPart);
 
-      expect(decoded).toContain('fill="#151515"'); // Light theme color
+      // Theme color is applied via an injected <style> block (CSS-based approach)
+      expect(decoded).toContain('data-che-theme');
+      expect(decoded).toContain('.outer-fill { fill: #151515; }'); // Light theme fallback
       expect(decoded).toContain('class="outer-fill"');
     });
 
@@ -124,13 +128,13 @@ describe('brandingLogo helper', () => {
 
       // Fetch dark theme version
       const darkResult = await buildLogoSrc(undefined, fallbackSvgLogo, true);
-      expect(darkResult).toContain(encodeURIComponent('fill="#ffffff"'));
+      expect(darkResult).toContain(encodeURIComponent('.outer-fill { fill: #ffffff; }'));
 
       // Fetch light theme version - should use cached original but generate new themed version
       jest.clearAllMocks();
       const lightResult = await buildLogoSrc(undefined, fallbackSvgLogo, false);
       expect(fetch).not.toHaveBeenCalled(); // Should use cached original
-      expect(lightResult).toContain(encodeURIComponent('fill="#151515"'));
+      expect(lightResult).toContain(encodeURIComponent('.outer-fill { fill: #151515; }'));
     });
   });
 
@@ -162,7 +166,9 @@ describe('brandingLogo helper', () => {
       const encodedPart = result.replace('data:image/svg+xml;charset=utf-8,', '');
       const decoded = decodeURIComponent(encodedPart);
 
-      expect(decoded).toContain('fill="#ffffff"'); // Dark theme color
+      // Theme color is applied via an injected <style> block (CSS-based approach)
+      expect(decoded).toContain('data-che-theme');
+      expect(decoded).toContain('.outer-fill { fill: #ffffff; }'); // Dark theme fallback
     });
 
     it('should fallback to base64 if decoding fails', () => {

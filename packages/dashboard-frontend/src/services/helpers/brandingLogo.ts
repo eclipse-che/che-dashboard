@@ -118,35 +118,60 @@ function sanitizeSvg(svgContent: string): string {
 }
 
 /**
- * Modifies SVG content to apply theme-specific fill colors.
- * Finds elements with class="outer-fill" and overrides the fill attribute.
+ * Resolves the fill color for .outer-fill elements from the active PF6 theme token.
+ * Falls back to hardcoded PF6 defaults when CSS variables are unavailable (e.g. tests, SSR).
+ *
+ * Token used: --pf-t--global--text--color--regular
+ *   Light theme → dark text  (~#151515)
+ *   Dark theme  → light text (~#ffffff)
+ */
+function resolveOuterFillColor(isDarkTheme: boolean): string {
+  try {
+    const color = getComputedStyle(document.documentElement)
+      .getPropertyValue('--pf-t--global--text--color--regular')
+      .trim();
+    if (color) {
+      return color;
+    }
+  } catch {
+    // Unavailable in SSR or test environments — fall through to defaults
+  }
+  return isDarkTheme ? '#ffffff' : '#151515';
+}
+
+/**
+ * Applies theme-aware color to .outer-fill SVG elements via an injected CSS rule.
+ *
+ * Uses a <style> block inside the SVG rather than mutating fill attributes directly.
+ * This CSS-based approach works correctly when the SVG is loaded via an <img> src
+ * (data URL), because the style is embedded within the SVG document itself.
  *
  * @param svgContent - Original SVG content as string
  * @param isDarkTheme - Whether dark theme is active
- * @returns Modified SVG content with theme-specific colors
+ * @returns Modified SVG content with an injected <style> for .outer-fill
  */
 function applyThemeToSvg(svgContent: string, isDarkTheme: boolean): string {
   try {
     const parser = new DOMParser();
     const svgDoc = parser.parseFromString(svgContent, 'image/svg+xml');
 
-    // Find all elements with class="outer-fill"
-    const outerFillElements = svgDoc.querySelectorAll('.outer-fill');
-
-    if (outerFillElements.length > 0) {
-      const fillColor = isDarkTheme ? '#ffffff' : '#151515';
-
-      outerFillElements.forEach(element => {
-        element.setAttribute('fill', fillColor);
-      });
-
-      // Serialize back to string
-      const serializer = new XMLSerializer();
-      return serializer.serializeToString(svgDoc);
+    if (svgDoc.querySelectorAll('.outer-fill').length === 0) {
+      return svgContent;
     }
 
-    // No outer-fill elements found, return original
-    return svgContent;
+    const fillColor = resolveOuterFillColor(isDarkTheme);
+
+    // Inject (or replace) a <style> block with the resolved color.
+    // Using a CSS rule keeps theming declarative and avoids per-element attribute mutation.
+    let styleEl = svgDoc.querySelector('style[data-che-theme]');
+    if (!styleEl) {
+      styleEl = svgDoc.createElementNS('http://www.w3.org/2000/svg', 'style');
+      styleEl.setAttribute('data-che-theme', 'true');
+      svgDoc.documentElement.insertBefore(styleEl, svgDoc.documentElement.firstChild);
+    }
+    styleEl.textContent = `.outer-fill { fill: ${fillColor}; }`;
+
+    return new XMLSerializer().serializeToString(svgDoc);
   } catch (e) {
     console.error('Failed to apply theme to SVG:', e);
     return svgContent;
