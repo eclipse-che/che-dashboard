@@ -1042,7 +1042,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@eclipse-che/dashboard@workspace:."
   dependencies:
-    license-tool: "https://github.com/che-incubator/dash-licenses.git#c09f697ea6336ce82d365654dfeb7ef6e9c84768"
+    "@eclipse-che/license-tool": "npm:^2.0.0"
   languageName: unknown
   linkType: soft
 
@@ -9189,9 +9189,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"license-tool@https://github.com/che-incubator/dash-licenses.git#c09f697ea6336ce82d365654dfeb7ef6e9c84768":
+"@eclipse-che/license-tool@npm:^2.0.0":
   version: 2.0.0
-  resolution: "license-tool@https://github.com/che-incubator/dash-licenses.git#commit=c09f697ea6336ce82d365654dfeb7ef6e9c84768"
+  resolution: "@eclipse-che/license-tool@npm:2.0.0"
   dependencies:
     "@eslint/eslintrc": "npm:3.3.4"
     "@yarnpkg/parsers": "npm:^3.0.3"
@@ -9200,7 +9200,6 @@ __metadata:
     loglevel: "npm:^1.9.2"
   bin:
     license-tool: dist/cli.js
-  checksum: 10/dd0b2dc7836df3b15e1827a1c2d2977d6a415660adb02b23e200a8430cead5be69b2f4b735be18c46a812465165ea0c2bc477ac54cb4c371f26364989ffc7c1f
   languageName: node
   linkType: hard
 

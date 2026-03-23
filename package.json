@@ -38,7 +38,7 @@
     "deploy:patch": "$PWD/run/patch.sh"
   },
   "devDependencies": {
-    "license-tool": "https://github.com/che-incubator/dash-licenses.git#c09f697ea6336ce82d365654dfeb7ef6e9c84768"
+    "@eclipse-che/license-tool": "^2.0.0"
   },
   "resolutions": {
     "@babel/helpers": "^7.26.10",
