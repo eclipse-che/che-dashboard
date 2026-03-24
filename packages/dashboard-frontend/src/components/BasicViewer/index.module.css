@@ -19,5 +19,9 @@
 .basicViewer > div {
   overflow: auto;
   height: 100%;
-  border: 1px solid var(--pf-global--BorderColor--100);
+  border: 1px solid var(--pf-t--global--border--color--default);
+}
+
+.basicViewer > div > div > div > div {
+  opacity: 0.8;
 }

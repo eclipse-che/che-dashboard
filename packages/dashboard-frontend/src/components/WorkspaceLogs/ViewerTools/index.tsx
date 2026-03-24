@@ -10,18 +10,11 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import {
-  Button,
-  Divider,
-  Flex,
-  FlexItem,
-  Text,
-  TextContent,
-  TextVariants,
-} from '@patternfly/react-core';
+import { Button, Divider, Flex, FlexItem } from '@patternfly/react-core';
 import { CompressIcon, DownloadIcon, ExpandIcon } from '@patternfly/react-icons';
 import React from 'react';
 
+import styles from '@/components/WorkspaceLogs/ViewerTools/index.module.css';
 import { ToggleBarsContext } from '@/contexts/ToggleBars';
 
 export type Props = {
@@ -62,34 +55,35 @@ export class WorkspaceLogsViewerTools extends React.PureComponent<Props, State> 
   }
 
   render(): React.ReactElement {
+    const { isExpanded } = this.state;
+
     return (
-      <TextContent>
-        <Text component={TextVariants.small}>
-          <Flex>
-            <FlexItem>
-              <Button
-                isInline
-                variant="link"
-                onClick={() => this.handleDownload()}
-                icon={<DownloadIcon />}
-              >
-                Download
-              </Button>
-            </FlexItem>
-            <Divider isVertical component="div" />
-            <FlexItem>
-              <Button
-                isInline
-                variant="link"
-                onClick={() => this.handleToggle()}
-                icon={this.state.isExpanded ? <CompressIcon /> : <ExpandIcon />}
-              >
-                {this.state.isExpanded ? 'Compress' : 'Expand'}
-              </Button>
-            </FlexItem>
-          </Flex>
-        </Text>
-      </TextContent>
+      <div className={styles.viewerTools}>
+        <Flex>
+          <FlexItem>
+            <Button variant="link" className={styles.button} onClick={() => this.handleDownload()}>
+              <DownloadIcon />
+              Download
+            </Button>
+          </FlexItem>
+          <Divider orientation={{ default: 'vertical' }} />
+          <FlexItem>
+            <Button variant="link" className={styles.button} onClick={() => this.handleToggle()}>
+              {isExpanded ? (
+                <React.Fragment>
+                  <CompressIcon />
+                  Compress
+                </React.Fragment>
+              ) : (
+                <React.Fragment>
+                  <ExpandIcon />
+                  Expand
+                </React.Fragment>
+              )}
+            </Button>
+          </FlexItem>
+        </Flex>
+      </div>
     );
   }
 }

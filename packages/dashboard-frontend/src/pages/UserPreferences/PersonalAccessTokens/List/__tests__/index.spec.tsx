@@ -11,6 +11,7 @@
  */
 
 import { api } from '@eclipse-che/common';
+import { waitFor } from '@testing-library/react';
 import React from 'react';
 
 import getComponentRenderer, {
@@ -183,23 +184,28 @@ describe('PersonalAccessTokenList', () => {
       renderComponent(tokens, true);
 
       const token1Row = screen.getByRole('row', { name: new RegExp(tokens[0].tokenName) });
-      const actionsButton = within(token1Row).getByRole('button', { name: 'Actions' });
+      // PatternFly 6 ActionsColumn uses "Kebab toggle" as aria-label
+      const actionsButton = within(token1Row).getByRole('button', { name: 'Kebab toggle' });
 
       expect(actionsButton).toBeDisabled();
     });
 
-    test('edit token', () => {
+    test('edit token', async () => {
       renderComponent(tokens);
 
       expect(mockOnEditToken).not.toHaveBeenCalled();
 
       const token1Row = screen.getByRole('row', { name: new RegExp(tokens[0].tokenName) });
-      const actionsButton = within(token1Row).getByRole('button', { name: 'Actions' });
+      // PatternFly 6 ActionsColumn uses "Kebab toggle" as aria-label
+      const actionsButton = within(token1Row).getByRole('button', { name: 'Kebab toggle' });
 
       // open actions menu
       fireEvent.click(actionsButton);
 
-      const token1EditButton = screen.getByRole('menuitem', { name: 'Edit Token' });
+      // wait for menu to appear
+      const token1EditButton = await waitFor(() => {
+        return screen.getByRole('menuitem', { name: 'Edit Token' });
+      });
 
       // edit token 1
       fireEvent.click(token1EditButton);
@@ -213,12 +219,16 @@ describe('PersonalAccessTokenList', () => {
       expect(mockOnDeleteToken).not.toHaveBeenCalled();
 
       const token1Row = screen.getByRole('row', { name: new RegExp(tokens[0].tokenName) });
-      const actionsButton = within(token1Row).getByRole('button', { name: 'Actions' });
+      // PatternFly 6 ActionsColumn uses "Kebab toggle" as aria-label
+      const actionsButton = within(token1Row).getByRole('button', { name: 'Kebab toggle' });
 
       // open actions menu
       fireEvent.click(actionsButton);
 
-      const token1DeleteButton = screen.getByRole('menuitem', { name: 'Delete Token' });
+      // wait for menu to appear
+      const token1DeleteButton = await waitFor(() => {
+        return screen.getByRole('menuitem', { name: 'Delete Token' });
+      });
 
       // delete token 1
       fireEvent.click(token1DeleteButton);

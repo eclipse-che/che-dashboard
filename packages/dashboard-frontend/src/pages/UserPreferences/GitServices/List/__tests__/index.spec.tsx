@@ -10,6 +10,7 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
+import { waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
 
@@ -76,7 +77,7 @@ describe('GitServicesList', () => {
       expect(checkbox).toBeDisabled();
       expect(checkbox).not.toBeChecked();
 
-      const kebab = within(bitbucketRow).getByRole('button', { name: 'Actions' });
+      const kebab = within(bitbucketRow).getByRole('button', { name: 'Kebab toggle' });
       expect(kebab).toBeDisabled();
     }
 
@@ -90,7 +91,7 @@ describe('GitServicesList', () => {
       expect(checkbox).toBeEnabled();
       expect(checkbox).not.toBeChecked();
 
-      const kebab = within(githubRow).getByRole('button', { name: 'Actions' });
+      const kebab = within(githubRow).getByRole('button', { name: 'Kebab toggle' });
       expect(kebab).toBeEnabled();
     }
 
@@ -104,7 +105,7 @@ describe('GitServicesList', () => {
       expect(checkbox).toBeEnabled();
       expect(checkbox).not.toBeChecked();
 
-      const kebab = within(gitlabRow).getByRole('button', { name: 'Actions' });
+      const kebab = within(gitlabRow).getByRole('button', { name: 'Kebab toggle' });
       expect(kebab).toBeEnabled();
     }
   });
@@ -119,7 +120,7 @@ describe('GitServicesList', () => {
     expect(gitlabRow).toHaveTextContent('gitlab');
 
     const gitlabCheckbox = within(gitlabRow).getByRole('checkbox');
-    const gitlabKebab = within(gitlabRow).getByRole('button', { name: 'Actions' });
+    const gitlabKebab = within(gitlabRow).getByRole('button', { name: 'Kebab toggle' });
 
     expect(gitlabCheckbox).toBeEnabled();
     expect(gitlabCheckbox).not.toBeChecked();
@@ -137,7 +138,7 @@ describe('GitServicesList', () => {
     expect(githubRow).toHaveTextContent('github');
 
     const githubCheckbox = within(githubRow).getByRole('checkbox');
-    const githubKebab = within(githubRow).getByRole('button', { name: 'Actions' });
+    const githubKebab = within(githubRow).getByRole('button', { name: 'Kebab toggle' });
 
     // the checkbox is enabled and unchecked
     expect(githubCheckbox).toBeEnabled();
@@ -163,9 +164,16 @@ describe('GitServicesList', () => {
     // open kebab menu
     await userEvent.click(githubKebab);
 
-    // the revoke button is present
-    const revokeButton = within(githubRow).queryByRole('menuitem', { name: 'Revoke' });
-    expect(revokeButton).not.toBeNull();
+    // the revoke button is present - wait for menu to appear
+    // ActionsColumn menu items may appear outside the row context
+    const revokeButton = await waitFor(
+      () => {
+        const button = screen.queryByRole('menuitem', { name: 'Revoke' });
+        expect(button).not.toBeNull();
+        return button;
+      },
+      { timeout: 3000 },
+    );
 
     // click the revoke button
     await userEvent.click(revokeButton!);
@@ -202,7 +210,7 @@ describe('GitServicesList', () => {
     expect(githubRow).toHaveTextContent('github');
 
     const githubCheckbox = within(githubRow).getByRole('checkbox');
-    const githubKebab = within(githubRow).getByRole('button', { name: 'Actions' });
+    const githubKebab = within(githubRow).getByRole('button', { name: 'Kebab toggle' });
 
     // the checkbox is disabled and unchecked
     expect(githubCheckbox).toBeDisabled();
@@ -220,9 +228,16 @@ describe('GitServicesList', () => {
     // open kebab menu
     await userEvent.click(githubKebab);
 
-    // the Clear button is present
-    const clearButton = within(githubRow).queryByRole('menuitem', { name: 'Clear' });
-    expect(clearButton).not.toBeNull();
+    // the Clear button is present - wait for menu to appear
+    // ActionsColumn menu items may appear outside the row context
+    const clearButton = await waitFor(
+      () => {
+        const button = screen.queryByRole('menuitem', { name: 'Clear' });
+        expect(button).not.toBeNull();
+        return button;
+      },
+      { timeout: 3000 },
+    );
 
     // click the Clear button
     await userEvent.click(clearButton!);
@@ -274,7 +289,7 @@ describe('GitServicesList', () => {
 
     // get the github row controls
     const githubCheckbox = within(githubRow).getByRole('checkbox');
-    const githubKebab = within(githubRow).getByRole('button', { name: 'Actions' });
+    const githubKebab = within(githubRow).getByRole('button', { name: 'Kebab toggle' });
 
     // they are enabled
     expect(githubCheckbox).toBeEnabled();

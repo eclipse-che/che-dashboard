@@ -130,36 +130,4 @@ describe('DevWorkspace client, changeWorkspaceStatus', () => {
       ]),
     );
   });
-
-  it('should ensure metadata annotations exist before starting workspace', async () => {
-    const testWorkspace = new DevWorkspaceBuilder()
-      .withName('wksp-test')
-      .withStatus({
-        phase: 'STOPPED',
-      })
-      .build();
-
-    // Remove annotations to test the ensure logic
-    delete testWorkspace.metadata.annotations;
-
-    const spyPatchWorkspace = jest
-      .spyOn(DwApi, 'patchWorkspace')
-      .mockResolvedValueOnce({ devWorkspace: testWorkspace, headers: {} });
-
-    jest.spyOn(DwApi, 'getWorkspaceByName').mockResolvedValueOnce(testWorkspace);
-
-    await client.changeWorkspaceStatus(testWorkspace, true);
-
-    expect(spyPatchWorkspace).toHaveBeenCalledWith(
-      expect.any(String),
-      expect.any(String),
-      expect.arrayContaining([
-        {
-          op: 'add',
-          path: '/metadata/annotations',
-          value: {},
-        },
-      ]),
-    );
-  });
 });

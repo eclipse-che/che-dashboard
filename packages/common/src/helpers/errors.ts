@@ -47,13 +47,6 @@ export function getMessage(error: unknown): string {
         return body.message;
       }
     }
-    if ((error as any).body) {
-      // for some reason, the error message could be in response body
-      const body = (error as any).body;
-      if (body && body.message) {
-        return body.message;
-      }
-    }
     return statusCode.toString();
   }
 
@@ -61,8 +54,11 @@ export function getMessage(error: unknown): string {
     const response = error.response;
     if (typeof response.data === 'string') {
       if (response.data.toLowerCase().trim().indexOf('<!doctype') !== 0) {
+        // Non-HTML string body — return it directly as the error message
         return response.data;
       }
+      // HTML response body — fall through so isErrorLike can return error.message,
+      // which typically carries more context (e.g. the originating URL).
     } else if (response.data.message) {
       return response.data.message;
     } else if (response.config.url) {

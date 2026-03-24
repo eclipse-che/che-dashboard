@@ -8,7 +8,10 @@
 # Contributors:
 #   Red Hat, Inc. - initial API and implementation
 
-FROM docker.io/node:24.0.2-alpine3.21
+ARG BUILDPLATFORM
+ARG TARGETPLATFORM
+
+FROM --platform=${TARGETPLATFORM:-linux/amd64} docker.io/node:24.0.2-alpine3.21
 
 LABEL quay.expires-after=1w
 

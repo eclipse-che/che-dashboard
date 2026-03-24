@@ -14,7 +14,6 @@ import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
 import { Provider } from 'react-redux';
-import renderer from 'react-test-renderer';
 import { Store } from 'redux';
 
 import { FakeRegistryBuilder } from '@/pages/UserPreferences/ContainerRegistriesTab/__tests__/__mocks__/registryRowBuilder';
@@ -48,34 +47,30 @@ describe('ContainerRegistries', () => {
   });
 
   it('should correctly render the component without registries', () => {
-    const component = getComponent(new MockStoreBuilder().build());
-    render(component);
+    const { asFragment } = render(getComponent(new MockStoreBuilder().build()));
 
     const addRegistryButton = screen.queryByLabelText('add-registry');
     expect(addRegistryButton).toBeTruthy();
 
-    const json = renderer.create(component).toJSON();
-
-    expect(json).toMatchSnapshot();
+    expect(asFragment()).toMatchSnapshot();
   });
 
   it('should correctly render the component which contains two registries', () => {
-    const component = getComponent(
-      new MockStoreBuilder()
-        .withDockerConfig([
-          new FakeRegistryBuilder().withUrl('http://test.reg').withPassword('qwerty').build(),
-          new FakeRegistryBuilder().withUrl('https://tstreg.com').withPassword('123').build(),
-        ])
-        .build(),
+    const { asFragment } = render(
+      getComponent(
+        new MockStoreBuilder()
+          .withDockerConfig([
+            new FakeRegistryBuilder().withUrl('http://test.reg').withPassword('qwerty').build(),
+            new FakeRegistryBuilder().withUrl('https://tstreg.com').withPassword('123').build(),
+          ])
+          .build(),
+      ),
     );
-    render(component);
 
     const addRegistryButton = screen.queryByTestId('add-button');
     expect(addRegistryButton).toBeTruthy();
 
-    const json = renderer.create(component).toJSON();
-
-    expect(json).toMatchSnapshot();
+    expect(asFragment()).toMatchSnapshot();
   });
 
   it('should add a new registry', async () => {

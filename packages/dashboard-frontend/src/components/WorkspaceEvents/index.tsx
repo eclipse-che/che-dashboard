@@ -12,19 +12,16 @@
 
 import { CoreV1Event } from '@kubernetes/client-node';
 import {
+  Content,
+  ContentVariants,
   EmptyState,
   EmptyStateBody,
-  EmptyStateIcon,
   Flex,
   FlexItem,
   PageSection,
   PageSectionVariants,
   Stack,
   StackItem,
-  Text,
-  TextContent,
-  TextVariants,
-  Title,
 } from '@patternfly/react-core';
 import { FileIcon } from '@patternfly/react-icons';
 import React from 'react';
@@ -82,11 +79,7 @@ class WorkspaceEvents extends React.PureComponent<Props> {
       workspace.status === DevWorkspaceStatus.STOPPED
     ) {
       return (
-        <EmptyState>
-          <EmptyStateIcon icon={FileIcon} />
-          <Title headingLevel="h4" size="lg">
-            No events to show.
-          </Title>
+        <EmptyState icon={FileIcon} titleText="No events to show.">
           <EmptyStateBody>Events will be streamed for a starting workspace.</EmptyStateBody>
         </EmptyState>
       );
@@ -101,30 +94,24 @@ class WorkspaceEvents extends React.PureComponent<Props> {
       <StackItem>
         <Flex>
           <FlexItem>
-            <TextContent>
-              <Text component={TextVariants.small}>Streaming events...</Text>
-            </TextContent>
+            <Content component={ContentVariants.small}>Streaming events...</Content>
           </FlexItem>
           <FlexItem align={{ default: 'alignRight' }}>
-            <TextContent>
-              <Text component={TextVariants.small}>
-                Showing <Pluralize singular={'event'} count={eventItems.length} />
-              </Text>
-            </TextContent>
+            <Content component={ContentVariants.small}>
+              Showing <Pluralize singular={'event'} count={eventItems.length} />
+            </Content>
           </FlexItem>
         </Flex>
       </StackItem>
     );
     const headStackItem = (
       <StackItem>
-        <TextContent>
-          <Text component={TextVariants.small}>Older events are not stored.</Text>
-        </TextContent>
+        <Content component={ContentVariants.small}>Older events are not stored.</Content>
       </StackItem>
     );
 
     return (
-      <PageSection variant={PageSectionVariants.light}>
+      <PageSection variant={PageSectionVariants.default}>
         <Stack hasGutter>
           {tailStackItem}
           {eventItems}

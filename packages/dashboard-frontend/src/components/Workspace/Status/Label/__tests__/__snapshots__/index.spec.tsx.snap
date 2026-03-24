@@ -18,31 +18,27 @@ exports[`The workspace status label component Che Workspaces should render ERROR
     data-testid="tooltip-placed-to"
   >
     <span
-      className="pf-c-label pf-m-orange statusLabel"
+      className="pf-v6-c-label pf-m-orange pf-m-filled statusLabel"
     >
       <span
-        className="pf-c-label__content"
+        className="pf-v6-c-label__content"
       >
         <span
-          className="pf-c-label__icon"
+          className="pf-v6-c-label__icon"
         >
           <span
-            className="pf-c-icon pf-m-inline"
+            className="pf-v6-c-icon pf-m-inline"
           >
             <span
-              className="pf-c-icon__content pf-m-warning"
+              className="pf-v6-c-icon__content pf-m-warning"
             >
               <svg
                 aria-hidden={true}
                 aria-labelledby={null}
+                className="pf-v6-svg"
                 fill="currentColor"
                 height="1em"
                 role="img"
-                style={
-                  {
-                    "verticalAlign": "-0.125em",
-                  }
-                }
                 viewBox="0 0 576 512"
                 width="1em"
               >
@@ -53,7 +49,11 @@ exports[`The workspace status label component Che Workspaces should render ERROR
             </span>
           </span>
         </span>
-        ERROR
+        <span
+          className="pf-v6-c-label__text"
+        >
+          ERROR
+        </span>
       </span>
     </span>
   </div>
@@ -78,31 +78,27 @@ exports[`The workspace status label component Che Workspaces should render RUNNI
     data-testid="tooltip-placed-to"
   >
     <span
-      className="pf-c-label pf-m-green statusLabel"
+      className="pf-v6-c-label pf-m-green pf-m-filled statusLabel"
     >
       <span
-        className="pf-c-label__content"
+        className="pf-v6-c-label__content"
       >
         <span
-          className="pf-c-label__icon"
+          className="pf-v6-c-label__icon"
         >
           <span
-            className="pf-c-icon pf-m-inline"
+            className="pf-v6-c-icon pf-m-inline"
           >
             <span
-              className="pf-c-icon__content pf-m-success"
+              className="pf-v6-c-icon__content pf-m-success"
             >
               <svg
                 aria-hidden={true}
                 aria-labelledby={null}
+                className="pf-v6-svg"
                 fill="currentColor"
                 height="1em"
                 role="img"
-                style={
-                  {
-                    "verticalAlign": "-0.125em",
-                  }
-                }
                 viewBox="0 0 1024 1024"
                 width="1em"
               >
@@ -113,7 +109,11 @@ exports[`The workspace status label component Che Workspaces should render RUNNI
             </span>
           </span>
         </span>
-        RUNNING
+        <span
+          className="pf-v6-c-label__text"
+        >
+          RUNNING
+        </span>
       </span>
     </span>
   </div>
@@ -138,23 +138,24 @@ exports[`The workspace status label component Che Workspaces should render STOPP
     data-testid="tooltip-placed-to"
   >
     <span
-      className="pf-c-label statusLabel"
+      className="pf-v6-c-label pf-m-filled statusLabel"
     >
       <span
-        className="pf-c-label__content"
+        className="pf-v6-c-label__content"
       >
         <span
-          className="pf-c-label__icon"
+          className="pf-v6-c-label__icon"
         >
           <span
-            className="pf-c-icon pf-m-inline"
+            className="pf-v6-c-icon pf-m-inline"
+            color="var(--pf-t--global--text--color--regular)"
           >
             <span
-              className="pf-c-icon__content pf-m-default"
+              className="pf-v6-c-icon__content"
             >
               <svg
                 aria-hidden="true"
-                fill="var(--pf-global--palette--black-500)"
+                fill="var(--pf-t--global--text--color--regular)"
                 height="1em"
                 role="img"
                 style={
@@ -179,7 +180,11 @@ exports[`The workspace status label component Che Workspaces should render STOPP
             </span>
           </span>
         </span>
-        STOPPED
+        <span
+          className="pf-v6-c-label__text"
+        >
+          STOPPED
+        </span>
       </span>
     </span>
   </div>
@@ -204,31 +209,27 @@ exports[`The workspace status label component Deprecated workspaces should rende
     data-testid="tooltip-placed-to"
   >
     <span
-      className="pf-c-label pf-m-orange statusLabel"
+      className="pf-v6-c-label pf-m-orange pf-m-filled statusLabel"
     >
       <span
-        className="pf-c-label__content"
+        className="pf-v6-c-label__content"
       >
         <span
-          className="pf-c-label__icon"
+          className="pf-v6-c-label__icon"
         >
           <span
-            className="pf-c-icon pf-m-inline"
+            className="pf-v6-c-icon pf-m-inline"
           >
             <span
-              className="pf-c-icon__content pf-m-warning"
+              className="pf-v6-c-icon__content pf-m-warning"
             >
               <svg
                 aria-hidden={true}
                 aria-labelledby={null}
+                className="pf-v6-svg"
                 fill="currentColor"
                 height="1em"
                 role="img"
-                style={
-                  {
-                    "verticalAlign": "-0.125em",
-                  }
-                }
                 viewBox="0 0 576 512"
                 width="1em"
               >
@@ -239,7 +240,11 @@ exports[`The workspace status label component Deprecated workspaces should rende
             </span>
           </span>
         </span>
-        Deprecated
+        <span
+          className="pf-v6-c-label__text"
+        >
+          Deprecated
+        </span>
       </span>
     </span>
   </div>
@@ -264,31 +269,27 @@ exports[`The workspace status label component DevWorkspaces should render FAILED
     data-testid="tooltip-placed-to"
   >
     <span
-      className="pf-c-label pf-m-orange statusLabel"
+      className="pf-v6-c-label pf-m-orange pf-m-filled statusLabel"
     >
       <span
-        className="pf-c-label__content"
+        className="pf-v6-c-label__content"
       >
         <span
-          className="pf-c-label__icon"
+          className="pf-v6-c-label__icon"
         >
           <span
-            className="pf-c-icon pf-m-inline"
+            className="pf-v6-c-icon pf-m-inline"
           >
             <span
-              className="pf-c-icon__content pf-m-warning"
+              className="pf-v6-c-icon__content pf-m-warning"
             >
               <svg
                 aria-hidden={true}
                 aria-labelledby={null}
+                className="pf-v6-svg"
                 fill="currentColor"
                 height="1em"
                 role="img"
-                style={
-                  {
-                    "verticalAlign": "-0.125em",
-                  }
-                }
                 viewBox="0 0 576 512"
                 width="1em"
               >
@@ -299,7 +300,11 @@ exports[`The workspace status label component DevWorkspaces should render FAILED
             </span>
           </span>
         </span>
-        Failed
+        <span
+          className="pf-v6-c-label__text"
+        >
+          Failed
+        </span>
       </span>
     </span>
   </div>
@@ -324,32 +329,27 @@ exports[`The workspace status label component DevWorkspaces should render FAILIN
     data-testid="tooltip-placed-to"
   >
     <span
-      className="pf-c-label pf-m-orange statusLabel"
+      className="pf-v6-c-label pf-m-orange pf-m-filled statusLabel"
     >
       <span
-        className="pf-c-label__content"
+        className="pf-v6-c-label__content"
       >
         <span
-          className="pf-c-label__icon"
+          className="pf-v6-c-label__icon"
         >
           <span
-            className="pf-c-icon pf-m-inline"
+            className="pf-v6-c-icon pf-m-inline"
           >
             <span
-              className="pf-c-icon__content pf-m-warning"
+              className="pf-v6-c-icon__content pf-m-warning"
             >
               <svg
                 aria-hidden={true}
                 aria-labelledby={null}
-                className="rotate"
+                className="pf-v6-svg rotate"
                 fill="currentColor"
                 height="1em"
                 role="img"
-                style={
-                  {
-                    "verticalAlign": "-0.125em",
-                  }
-                }
                 viewBox="0 0 1024 1024"
                 width="1em"
               >
@@ -360,7 +360,11 @@ exports[`The workspace status label component DevWorkspaces should render FAILIN
             </span>
           </span>
         </span>
-        Failing
+        <span
+          className="pf-v6-c-label__text"
+        >
+          Failing
+        </span>
       </span>
     </span>
   </div>
@@ -385,31 +389,27 @@ exports[`The workspace status label component DevWorkspaces should render RUNNIN
     data-testid="tooltip-placed-to"
   >
     <span
-      className="pf-c-label pf-m-green statusLabel"
+      className="pf-v6-c-label pf-m-green pf-m-filled statusLabel"
     >
       <span
-        className="pf-c-label__content"
+        className="pf-v6-c-label__content"
       >
         <span
-          className="pf-c-label__icon"
+          className="pf-v6-c-label__icon"
         >
           <span
-            className="pf-c-icon pf-m-inline"
+            className="pf-v6-c-icon pf-m-inline"
           >
             <span
-              className="pf-c-icon__content pf-m-success"
+              className="pf-v6-c-icon__content pf-m-success"
             >
               <svg
                 aria-hidden={true}
                 aria-labelledby={null}
+                className="pf-v6-svg"
                 fill="currentColor"
                 height="1em"
                 role="img"
-                style={
-                  {
-                    "verticalAlign": "-0.125em",
-                  }
-                }
                 viewBox="0 0 1024 1024"
                 width="1em"
               >
@@ -420,7 +420,11 @@ exports[`The workspace status label component DevWorkspaces should render RUNNIN
             </span>
           </span>
         </span>
-        Running
+        <span
+          className="pf-v6-c-label__text"
+        >
+          Running
+        </span>
       </span>
     </span>
   </div>
@@ -445,23 +449,24 @@ exports[`The workspace status label component DevWorkspaces should render STOPPE
     data-testid="tooltip-placed-to"
   >
     <span
-      className="pf-c-label statusLabel"
+      className="pf-v6-c-label pf-m-filled statusLabel"
     >
       <span
-        className="pf-c-label__content"
+        className="pf-v6-c-label__content"
       >
         <span
-          className="pf-c-label__icon"
+          className="pf-v6-c-label__icon"
         >
           <span
-            className="pf-c-icon pf-m-inline"
+            className="pf-v6-c-icon pf-m-inline"
+            color="var(--pf-t--global--text--color--regular)"
           >
             <span
-              className="pf-c-icon__content pf-m-default"
+              className="pf-v6-c-icon__content"
             >
               <svg
                 aria-hidden="true"
-                fill="var(--pf-global--palette--black-500)"
+                fill="var(--pf-t--global--text--color--regular)"
                 height="1em"
                 role="img"
                 style={
@@ -486,7 +491,11 @@ exports[`The workspace status label component DevWorkspaces should render STOPPE
             </span>
           </span>
         </span>
-        Stopped
+        <span
+          className="pf-v6-c-label__text"
+        >
+          Stopped
+        </span>
       </span>
     </span>
   </div>
@@ -511,31 +520,27 @@ exports[`The workspace status label component SCC Mismatch should render normal 
     data-testid="tooltip-placed-to"
   >
     <span
-      className="pf-c-label pf-m-green statusLabel"
+      className="pf-v6-c-label pf-m-green pf-m-filled statusLabel"
     >
       <span
-        className="pf-c-label__content"
+        className="pf-v6-c-label__content"
       >
         <span
-          className="pf-c-label__icon"
+          className="pf-v6-c-label__icon"
         >
           <span
-            className="pf-c-icon pf-m-inline"
+            className="pf-v6-c-icon pf-m-inline"
           >
             <span
-              className="pf-c-icon__content pf-m-success"
+              className="pf-v6-c-icon__content pf-m-success"
             >
               <svg
                 aria-hidden={true}
                 aria-labelledby={null}
+                className="pf-v6-svg"
                 fill="currentColor"
                 height="1em"
                 role="img"
-                style={
-                  {
-                    "verticalAlign": "-0.125em",
-                  }
-                }
                 viewBox="0 0 1024 1024"
                 width="1em"
               >
@@ -546,7 +551,11 @@ exports[`The workspace status label component SCC Mismatch should render normal 
             </span>
           </span>
         </span>
-        Running
+        <span
+          className="pf-v6-c-label__text"
+        >
+          Running
+        </span>
       </span>
     </span>
   </div>
@@ -571,23 +580,24 @@ exports[`The workspace status label component SCC Mismatch should render normal 
     data-testid="tooltip-placed-to"
   >
     <span
-      className="pf-c-label statusLabel"
+      className="pf-v6-c-label pf-m-filled statusLabel"
     >
       <span
-        className="pf-c-label__content"
+        className="pf-v6-c-label__content"
       >
         <span
-          className="pf-c-label__icon"
+          className="pf-v6-c-label__icon"
         >
           <span
-            className="pf-c-icon pf-m-inline"
+            className="pf-v6-c-icon pf-m-inline"
+            color="var(--pf-t--global--text--color--regular)"
           >
             <span
-              className="pf-c-icon__content pf-m-default"
+              className="pf-v6-c-icon__content"
             >
               <svg
                 aria-hidden="true"
-                fill="var(--pf-global--palette--black-500)"
+                fill="var(--pf-t--global--text--color--regular)"
                 height="1em"
                 role="img"
                 style={
@@ -612,7 +622,11 @@ exports[`The workspace status label component SCC Mismatch should render normal 
             </span>
           </span>
         </span>
-        Stopped
+        <span
+          className="pf-v6-c-label__text"
+        >
+          Stopped
+        </span>
       </span>
     </span>
   </div>
@@ -637,23 +651,24 @@ exports[`The workspace status label component SCC Mismatch should render normal 
     data-testid="tooltip-placed-to"
   >
     <span
-      className="pf-c-label statusLabel"
+      className="pf-v6-c-label pf-m-filled statusLabel"
     >
       <span
-        className="pf-c-label__content"
+        className="pf-v6-c-label__content"
       >
         <span
-          className="pf-c-label__icon"
+          className="pf-v6-c-label__icon"
         >
           <span
-            className="pf-c-icon pf-m-inline"
+            className="pf-v6-c-icon pf-m-inline"
+            color="var(--pf-t--global--text--color--regular)"
           >
             <span
-              className="pf-c-icon__content pf-m-default"
+              className="pf-v6-c-icon__content"
             >
               <svg
                 aria-hidden="true"
-                fill="var(--pf-global--palette--black-500)"
+                fill="var(--pf-t--global--text--color--regular)"
                 height="1em"
                 role="img"
                 style={
@@ -678,7 +693,11 @@ exports[`The workspace status label component SCC Mismatch should render normal 
             </span>
           </span>
         </span>
-        Stopped
+        <span
+          className="pf-v6-c-label__text"
+        >
+          Stopped
+        </span>
       </span>
     </span>
   </div>
@@ -697,47 +716,30 @@ exports[`The workspace status label component SCC Mismatch should render warning
   <div
     data-testid="tooltip-content"
   >
-    <span>
-      The workspace was created with a different container SCC (Security Context Constraint) than what is currently configured. The workspace may fail to start.
-       
-      <a
-        href="https://eclipse.dev/che/docs/stable/administration-guide/enabling-container-run-capabilities/"
-        onClick={[Function]}
-        rel="noopener noreferrer"
-        style={
-          {
-            "color": "#73bcf7",
-            "textDecoration": "underline",
-          }
-        }
-        target="_blank"
-      >
-        Learn more
-      </a>
-    </span>
+    Stopped
   </div>
   <div
     data-testid="tooltip-placed-to"
   >
     <span
-      className="pf-c-label statusLabel"
+      className="pf-v6-c-label pf-m-filled statusLabel"
     >
       <span
-        className="pf-c-label__content"
+        className="pf-v6-c-label__content"
       >
         <span
-          className="pf-c-label__icon"
+          className="pf-v6-c-label__icon"
         >
           <span
-            className="pf-c-icon pf-m-inline"
+            className="pf-v6-c-icon pf-m-inline"
+            color="var(--pf-t--global--text--color--regular)"
           >
             <span
-              className="pf-c-icon__content pf-m-warning"
+              className="pf-v6-c-icon__content"
             >
               <svg
-                aria-hidden={true}
-                aria-labelledby={null}
-                fill="currentColor"
+                aria-hidden="true"
+                fill="var(--pf-t--global--text--color--regular)"
                 height="1em"
                 role="img"
                 style={
@@ -745,17 +747,28 @@ exports[`The workspace status label component SCC Mismatch should render warning
                     "verticalAlign": "-0.125em",
                   }
                 }
-                viewBox="0 0 576 512"
+                viewBox="0 0 16 16"
                 width="1em"
               >
                 <path
-                  d="M569.517 440.013C587.975 472.007 564.806 512 527.94 512H48.054c-36.937 0-59.999-40.055-41.577-71.987L246.423 23.985c18.467-32.009 64.72-31.951 83.154 0l239.94 416.028zM288 354c-25.405 0-46 20.595-46 46s20.595 46 46 46 46-20.595 46-46-20.595-46-46-46zm-43.673-165.346l7.418 136c.347 6.364 5.609 11.346 11.982 11.346h48.546c6.373 0 11.635-4.982 11.982-11.346l7.418-136c.375-6.874-5.098-12.654-11.982-12.654h-63.383c-6.884 0-12.356 5.78-11.981 12.654z"
+                  d="M8.001,0 C3.589,0 0,3.590 0,8 C0,12.410 3.590,16 8.001,16 C12.412,16 16,12.410
+              16,8 C16,3.589 12.4125,0 8.001,0 Z M8,14 C4.690,14 2,11.310 2,8 C2,4.692 4.690,2
+              8,2 C11.307,2 14,4.690 14,8 C14,11.309 11.307,14 8,14 Z"
+                />
+                <path
+                  d="M8.001,3.5 C5.519,3.5 3.5,5.520 3.5,8 C3.5,10.481 5.520,12.5 8.000,12.5 C10.482,12.5 12.5,10.481
+              12.5,8 C12.5,5.519 10.482,3.5 8.000,3.5 Z M8,10.75 C6.483,10.75 5.25,9.517 5.25,8 C5.25,6.484
+              6.483,5.25 8,5.25 C9.516,5.25 10.75,6.483 10.75,8 C10.75,9.516 9.516,10.75 8,10.75 Z"
                 />
               </svg>
             </span>
           </span>
         </span>
-        Stopped
+        <span
+          className="pf-v6-c-label__text"
+        >
+          Stopped
+        </span>
       </span>
     </span>
   </div>
@@ -797,31 +810,27 @@ exports[`The workspace status label component SCC Mismatch should render warning
     data-testid="tooltip-placed-to"
   >
     <span
-      className="pf-c-label statusLabel"
+      className="pf-v6-c-label pf-m-filled statusLabel"
     >
       <span
-        className="pf-c-label__content"
+        className="pf-v6-c-label__content"
       >
         <span
-          className="pf-c-label__icon"
+          className="pf-v6-c-label__icon"
         >
           <span
-            className="pf-c-icon pf-m-inline"
+            className="pf-v6-c-icon pf-m-inline"
           >
             <span
-              className="pf-c-icon__content pf-m-warning"
+              className="pf-v6-c-icon__content pf-m-warning"
             >
               <svg
                 aria-hidden={true}
                 aria-labelledby={null}
+                className="pf-v6-svg"
                 fill="currentColor"
                 height="1em"
                 role="img"
-                style={
-                  {
-                    "verticalAlign": "-0.125em",
-                  }
-                }
                 viewBox="0 0 576 512"
                 width="1em"
               >
@@ -832,7 +841,11 @@ exports[`The workspace status label component SCC Mismatch should render warning
             </span>
           </span>
         </span>
-        Stopped
+        <span
+          className="pf-v6-c-label__text"
+        >
+          Stopped
+        </span>
       </span>
     </span>
   </div>
@@ -857,32 +870,28 @@ exports[`The workspace status label component should render default status corre
     data-testid="tooltip-placed-to"
   >
     <span
-      className="pf-c-label statusLabel"
+      className="pf-v6-c-label pf-m-filled statusLabel"
     >
       <span
-        className="pf-c-label__content"
+        className="pf-v6-c-label__content"
       >
         <span
-          className="pf-c-label__icon"
+          className="pf-v6-c-label__icon"
         >
           <span
-            className="pf-c-icon pf-m-inline"
+            className="pf-v6-c-icon pf-m-inline"
           >
             <span
-              className="pf-c-icon__content pf-m-default"
+              className="pf-v6-c-icon__content"
             >
               <svg
                 aria-hidden={true}
                 aria-labelledby={null}
-                className="rotate"
-                fill="var(--pf-global--palette--black-500)"
+                className="pf-v6-svg rotate"
+                color="var(--pf-t--global--text--color--regular)"
+                fill="currentColor"
                 height="1em"
                 role="img"
-                style={
-                  {
-                    "verticalAlign": "-0.125em",
-                  }
-                }
                 viewBox="0 0 1024 1024"
                 width="1em"
               >
@@ -893,7 +902,11 @@ exports[`The workspace status label component should render default status corre
             </span>
           </span>
         </span>
-        STOPPING
+        <span
+          className="pf-v6-c-label__text"
+        >
+          STOPPING
+        </span>
       </span>
     </span>
   </div>

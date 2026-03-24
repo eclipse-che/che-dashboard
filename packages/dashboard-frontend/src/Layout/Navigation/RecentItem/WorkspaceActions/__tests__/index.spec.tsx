@@ -47,7 +47,7 @@ function getComponent(item: NavigationRecentItemObject): React.ReactElement {
   const store = new MockStoreBuilder().build();
   return (
     <Provider store={store}>
-      <RecentItemWorkspaceActions item={item} />
+      <RecentItemWorkspaceActions item={item} isParentHovered={false} />
     </Provider>
   );
 }

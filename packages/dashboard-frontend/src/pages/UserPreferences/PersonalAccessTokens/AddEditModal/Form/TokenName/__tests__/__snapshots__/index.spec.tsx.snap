@@ -2,61 +2,58 @@
 
 exports[`TokenName snapshot w/o token name 1`] = `
 <form
-  className="pf-c-form"
+  className="pf-v6-c-form"
   noValidate={true}
 >
   <div
-    className="pf-c-form__group"
+    className="pf-v6-c-form__group"
+    helperText="Alphanumeric characters, "-" or ".", starting and ending with an alphanumeric character."
   >
     <div
-      className="pf-c-form__group-label"
+      className="pf-v6-c-form__group-label"
     >
       <label
-        className="pf-c-form__label"
+        className="pf-v6-c-form__label"
         htmlFor="token-name-label"
       >
         <span
-          className="pf-c-form__label-text"
+          className="pf-v6-c-form__label-text"
         >
           Token Name
         </span>
         <span
           aria-hidden="true"
-          className="pf-c-form__label-required"
+          className="pf-v6-c-form__label-required"
         >
            
           *
         </span>
       </label>
-       
+        
     </div>
     <div
-      className="pf-c-form__group-control"
+      className="pf-v6-c-form__group-control"
     >
-      <input
-        aria-describedby="token-name-label"
-        aria-invalid={false}
-        aria-label="Token Name"
-        className="pf-c-form-control"
-        data-ouia-component-id="OUIA-Generated-TextInputBase-1"
-        data-ouia-component-type="PF4/TextInput"
-        data-ouia-safe={true}
-        disabled={false}
-        onBlur={[Function]}
-        onChange={[Function]}
-        onFocus={[Function]}
-        placeholder="Enter a Token Name"
-        required={true}
-        type="text"
-        value=""
-      />
-      <div
-        aria-live="polite"
-        className="pf-c-form__helper-text"
-        id="token-name-label-helper"
+      <span
+        className="pf-v6-c-form-control"
       >
-        Alphanumeric characters, "-" or ".", starting and ending with an alphanumeric character.
-      </div>
+        <input
+          aria-describedby="token-name-label"
+          aria-invalid={false}
+          aria-label="Token Name"
+          data-ouia-component-id="OUIA-Generated-TextInputBase-1"
+          data-ouia-component-type="PF6/TextInput"
+          data-ouia-safe={true}
+          disabled={false}
+          onBlur={[Function]}
+          onChange={[Function]}
+          onFocus={[Function]}
+          placeholder="Enter a Token Name"
+          required={true}
+          type="text"
+          value=""
+        />
+      </span>
     </div>
   </div>
 </form>
@@ -64,55 +61,58 @@ exports[`TokenName snapshot w/o token name 1`] = `
 
 exports[`TokenName snapshot with token name 1`] = `
 <form
-  className="pf-c-form"
+  className="pf-v6-c-form"
   noValidate={true}
 >
   <div
-    className="pf-c-form__group"
+    className="pf-v6-c-form__group"
   >
     <div
-      className="pf-c-form__group-label"
+      className="pf-v6-c-form__group-label"
     >
       <label
-        className="pf-c-form__label"
+        className="pf-v6-c-form__label"
         htmlFor="token-name-label"
       >
         <span
-          className="pf-c-form__label-text"
+          className="pf-v6-c-form__label-text"
         >
           Token Name
         </span>
         <span
           aria-hidden="true"
-          className="pf-c-form__label-required"
+          className="pf-v6-c-form__label-required"
         >
            
           *
         </span>
       </label>
-       
+        
     </div>
     <div
-      className="pf-c-form__group-control"
+      className="pf-v6-c-form__group-control"
     >
-      <input
-        aria-describedby="token-name-label"
-        aria-invalid={false}
-        aria-label="Token Name"
-        className="pf-c-form-control"
-        data-ouia-component-id="OUIA-Generated-TextInputBase-2"
-        data-ouia-component-type="PF4/TextInput"
-        data-ouia-safe={true}
-        disabled={false}
-        onBlur={[Function]}
-        onChange={[Function]}
-        onFocus={[Function]}
-        placeholder="Enter a Token Name"
-        readOnly={true}
-        required={true}
-        type="text"
-        value="github-token"
-      />
+      <span
+        className="pf-v6-c-form-control"
+      >
+        <input
+          aria-describedby="token-name-label"
+          aria-invalid={false}
+          aria-label="Token Name"
+          data-ouia-component-id="OUIA-Generated-TextInputBase-2"
+          data-ouia-component-type="PF6/TextInput"
+          data-ouia-safe={true}
+          disabled={false}
+          isReadOnly={true}
+          onBlur={[Function]}
+          onChange={[Function]}
+          onFocus={[Function]}
+          placeholder="Enter a Token Name"
+          required={true}
+          type="text"
+          value="github-token"
+        />
+      </span>
     </div>
   </div>
 </form>

@@ -16,12 +16,11 @@ import { BackupInfo } from '@eclipse-che/common';
 import {
   Alert,
   AlertVariant,
+  Content,
+  ContentVariants,
   PageSection,
   PageSectionVariants,
   Spinner,
-  Text,
-  TextContent,
-  TextVariants,
 } from '@patternfly/react-core';
 import React from 'react';
 import { connect, ConnectedProps } from 'react-redux';
@@ -68,7 +67,7 @@ export class BackupTab extends React.PureComponent<Props> {
 
     if (isLoading && !backupInfo) {
       return (
-        <PageSection variant={PageSectionVariants.light}>
+        <PageSection variant={PageSectionVariants.default}>
           <div className={styles.loading}>
             <Spinner size="lg" aria-label="Loading backup information" />
           </div>
@@ -77,13 +76,11 @@ export class BackupTab extends React.PureComponent<Props> {
     }
 
     return (
-      <PageSection variant={PageSectionVariants.light}>
-        <TextContent className={styles.header}>
-          <Text component={TextVariants.small}>
-            Backup information for this workspace. Backups are created automatically by the
-            DevWorkspace Operator based on the cluster configuration.
-          </Text>
-        </TextContent>
+      <PageSection variant={PageSectionVariants.default}>
+        <Content className={styles.header} component={ContentVariants.small}>
+          Backup information for this workspace. Backups are created automatically by the
+          DevWorkspace Operator based on the cluster configuration.
+        </Content>
 
         <div aria-live="polite" aria-atomic="true">
           {error && (

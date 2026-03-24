@@ -3,6 +3,14 @@
 exports[`RecentItemWorkspaceActions snapshot 1`] = `
 <div
   onClick={[Function]}
+  style={
+    {
+      "position": "absolute",
+      "right": 0,
+      "top": 0,
+      "visibility": "hidden",
+    }
+  }
 >
   <div
     data-testid="workspace-actions-dropdown"

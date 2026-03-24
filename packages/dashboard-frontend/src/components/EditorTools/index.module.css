@@ -11,27 +11,39 @@
  */
 
 .editorTools {
-  height: 20px;
-  margin: 10px 0 5px;
+  height: 33px;
+  margin: 5px 0;
 }
 
 .editorTools > * {
   user-select: none;
+
   float: right;
+
   height: inherit;
+  margin: 0;
+
   font-size: small;
 }
 
-.editorTools a {
-  text-decoration: none;
+.editorTools > * > div {
+  margin: inherit;
+}
+
+.editorTools > * > hr {
+  margin: 0 5px;
 }
 
 .editorTools .button {
-  padding: 0;
+  padding: 6px;
   font-size: inherit;
   outline: none;
 }
 
-.editorTools svg {
+.editorTools .button a {
+  text-decoration: none;
+}
+
+.editorTools .button svg {
   margin-right: 8px;
 }

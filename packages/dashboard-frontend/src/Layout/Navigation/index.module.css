@@ -19,30 +19,30 @@
 }
 
 .navItem [class*='nav__link'] {
-  padding-left: 45px;
+  overflow: hidden;
+  width: 100%;
+  padding-right: 4px;
+  padding-left: 8px;
 }
 
-.navItem > span {
+.navItem [class*='nav__link'] > span {
   overflow: hidden;
-  width: calc(100% - 12px);
+  width: calc(100% - 30px);
   text-overflow: ellipsis;
 }
 
-.navItem > div {
-  position: absolute;
-  top: 2px;
-  right: 2px;
-  color: inherit;
-}
-
-.navItem > div button {
+.navItem [class*='nav__link'] button {
   color: inherit !important;
 }
 
-.navItem > div:not([class*='expanded']) {
-  display: none;
+:global(html:not(.pf-v6-theme-dark)) .navItem [class*='nav__link'] button:hover {
+  background-color: var(--pf-t--global--background--color--secondary--hover);
 }
 
-.navItem:hover > div {
-  display: block;
+.titleHover {
+  cursor: pointer;
+}
+
+.titleHover.active {
+  /* Active state styling can be added here if needed */
 }

@@ -23,7 +23,7 @@ import { FactoryParams } from '@/services/helpers/factoryFlow/buildFactoryParams
 import { generateWorkspaceName } from '@/services/helpers/generateName';
 import { getProjectName } from '@/services/helpers/getProjectName';
 import { DevfileV2ProjectSource, FactoryResolver } from '@/services/helpers/types';
-import { che } from '@/services/models';
+import { CheApiLink, CheDevfileV1 } from '@/services/models/che';
 import {
   DEVWORKSPACE_DEVFILE,
   DEVWORKSPACE_DEVFILE_SOURCE,
@@ -35,7 +35,7 @@ import { DEFAULT_REGISTRY } from '@/store/DevfileRegistries';
  * Grabs an editor devfile from the provided links.
  */
 export async function grabLink(
-  links: che.api.core.rest.Link[] = [],
+  links: CheApiLink[] = [],
   filename: string,
 ): Promise<{ location: string; content: string } | undefined> {
   // handle servers not yet providing links
@@ -107,9 +107,7 @@ export function isDevfileFoundInRepo(data: FactoryResolver): boolean {
 /**
  * Builds a Devfile V2 from a default Devfile V1 returned by che-server.
  */
-export function buildDevfileV2(
-  devfileV1: che.api.workspace.devfile.Devfile | undefined,
-): devfileApi.DevfileLike {
+export function buildDevfileV2(devfileV1: CheDevfileV1 | undefined): devfileApi.DevfileLike {
   const devfile = {
     schemaVersion: '2.2.2',
   } as devfileApi.DevfileLike;
@@ -191,9 +189,7 @@ export function normalizeDevfile(
   if (!devfile.metadata) {
     devfile.metadata = { name };
   } else {
-    devfile.metadata.name = factoryParams.name
-      ? factoryParams.name
-      : devfile.metadata?.name || generateWorkspaceName(namePrefix);
+    devfile.metadata.name = devfile.metadata?.name || generateWorkspaceName(namePrefix);
     if (devfile.metadata.generateName) {
       delete devfile.metadata.generateName;
     }

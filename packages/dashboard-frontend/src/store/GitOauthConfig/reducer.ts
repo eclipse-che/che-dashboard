@@ -13,7 +13,7 @@
 import { api } from '@eclipse-che/common';
 import { createReducer } from '@reduxjs/toolkit';
 
-import { che } from '@/services/models';
+import { CheApiLink } from '@/services/models/che';
 import {
   gitOauthDeleteAction,
   gitOauthErrorAction,
@@ -25,7 +25,7 @@ import {
 export interface IGitOauth {
   name: api.GitOauthProvider;
   endpointUrl: string;
-  links?: che.api.core.rest.Link[];
+  links?: CheApiLink[];
 }
 
 export interface State {

@@ -19,5 +19,11 @@ module.exports = {
     'selector-class-pattern': null,
     'custom-property-pattern': null,
     'keyframes-name-pattern': null,
+    'selector-pseudo-class-no-unknown': [
+      true,
+      {
+        ignorePseudoClasses: ['global'],
+      },
+    ],
   }
 }

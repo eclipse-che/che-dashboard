@@ -10,15 +10,10 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-.inputFormGroup {
-  min-height: 55px;
+.aboutModalContent dl {
+  grid-template: auto / 125px;
 }
 
-.helperTextInvalid {
-  overflow: hidden;
-
-  font-size: small;
-  color: #c9190b;
-  text-overflow: ellipsis;
+.dashboardVersionLabel {
   white-space: nowrap;
 }

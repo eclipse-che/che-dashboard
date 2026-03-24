@@ -11,14 +11,11 @@
  */
 
 import { FormGroup, TextInput, ValidatedOptions } from '@patternfly/react-core';
-import { ExclamationCircleIcon } from '@patternfly/react-icons';
 import React from 'react';
 
 import { InputGroupExtended } from '@/components/InputGroupExtended';
 
-const ERROR_REQUIRED_VALUE = 'A value is required.';
 const MAX_LENGTH = 128;
-const ERROR_MAX_LENGTH = `The value is too long. The maximum length is ${MAX_LENGTH} characters.`;
 
 export type Props = {
   isLoading: boolean;
@@ -76,26 +73,10 @@ export class GitConfigUserName extends React.PureComponent<Props, State> {
     const { isLoading } = this.props;
     const { value = '', validated } = this.state;
 
-    let errorMessage: string;
-    if (value.length === 0) {
-      errorMessage = ERROR_REQUIRED_VALUE;
-    } else if (value.length > MAX_LENGTH) {
-      errorMessage = ERROR_MAX_LENGTH;
-    } else {
-      errorMessage = '';
-    }
-
     const fieldId = 'gitconfig-user-name';
 
     return (
-      <FormGroup
-        label="name"
-        fieldId={fieldId}
-        isRequired
-        helperTextInvalid={errorMessage}
-        helperTextIcon={<ExclamationCircleIcon />}
-        validated={validated}
-      >
+      <FormGroup label="name" fieldId={fieldId} isRequired>
         <InputGroupExtended
           isLoading={isLoading}
           readonly={false}
@@ -109,7 +90,7 @@ export class GitConfigUserName extends React.PureComponent<Props, State> {
             isDisabled={isLoading}
             validated={validated}
             value={value}
-            onChange={value => this.handleChange(value)}
+            onChange={(_event, value) => this.handleChange(value)}
           />
         </InputGroupExtended>
       </FormGroup>

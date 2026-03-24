@@ -14,7 +14,7 @@ import { AlertVariant } from '@patternfly/react-core';
 import * as React from 'react';
 
 import devfileApi from '@/services/devfileApi';
-import { che } from '@/services/models';
+import { CheDevfileV1, CheFactory } from '@/services/models/che';
 
 export type ActionCallback = {
   title: string;
@@ -60,8 +60,8 @@ export interface AlertItem {
 //  - no source: the url to raw content is used
 //  - "repo": means no devfile is found and default is generated
 //  - any other - devfile is found in repository as filename from the value
-export interface FactoryResolver extends Omit<che.api.factory.Factory, 'devfile'> {
-  devfile?: che.api.workspace.devfile.Devfile | devfileApi.Devfile;
+export interface FactoryResolver extends Omit<CheFactory, 'devfile'> {
+  devfile?: CheDevfileV1 | devfileApi.Devfile;
   parentDevfile?: devfileApi.Devfile;
   location?: string;
   scm_info?: FactoryResolverScmInfo;

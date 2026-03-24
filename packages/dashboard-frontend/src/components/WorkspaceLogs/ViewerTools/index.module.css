@@ -10,21 +10,17 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-.titleHover .pf-c-tooltip__content {
-  cursor: pointer;
-
-  padding-left: 0;
-
-  font-size: 1rem;
-
-  background-color: var(--pf-global--BackgroundColor--dark-300);
-  border-radius: 3px;
+.viewerTools {
+  user-select: none;
+  font-size: small;
 }
 
-.titleHover.active .pf-c-tooltip__content {
-  background-color: var(--pf-global--BackgroundColor--dark-400);
+.viewerTools .button {
+  padding: 6px;
+  font-size: inherit;
+  outline: none;
 }
 
-.titleHover .pf-c-tooltip__arrow {
-  display: none;
+.viewerTools .button svg {
+  margin-right: 8px;
 }

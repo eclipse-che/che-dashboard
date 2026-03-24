@@ -15,7 +15,7 @@ import { PageSection } from '@patternfly/react-core';
 import {
   ActionsColumn,
   IAction,
-  TableComposable,
+  Table,
   TableVariant,
   Tbody,
   Td,
@@ -150,7 +150,7 @@ export class PersonalAccessTokenList extends React.PureComponent<Props, State> {
               rowIndex,
               onSelect: (...args) => this.handleSelectToken(...args),
               isSelected: selectedTokens.includes(token),
-              disable: isDisabled,
+              isDisabled: isDisabled,
             }}
           />
           <Td dataLabel={COLUMN_NAMES.tokenName}>{token.tokenName}</Td>
@@ -178,10 +178,10 @@ export class PersonalAccessTokenList extends React.PureComponent<Props, State> {
           onAdd={() => this.handleAddToken()}
           onDelete={() => this.handleDeleteSelectedTokens()}
         />
-        <TableComposable aria-label="Personal Access Tokens List" variant={TableVariant.compact}>
+        <Table aria-label="Personal Access Tokens List" variant={TableVariant.compact}>
           <Thead>{headRow}</Thead>
           <Tbody>{bodyRows}</Tbody>
-        </TableComposable>
+        </Table>
       </PageSection>
     );
   }

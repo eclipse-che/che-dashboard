@@ -18,6 +18,8 @@ import {
   Form,
   FormGroup,
   FormHelperText,
+  HelperText,
+  HelperTextItem,
   Panel,
   PanelHeader,
   PanelMain,
@@ -36,7 +38,6 @@ import RepoOptionsAccordion from '@/components/ImportFromGit/RepoOptionsAccordio
 import UntrustedSourceModal from '@/components/UntrustedSourceModal';
 import { buildFactoryLoaderPath } from '@/preload/main';
 import { FactoryLocationAdapter } from '@/services/factory-location-adapter';
-import { Debounce } from '@/services/helpers/debounce';
 import {
   EDITOR_ATTR,
   EDITOR_IMAGE_ATTR,
@@ -66,15 +67,9 @@ export type State = {
 };
 
 class ImportFromGit extends React.PureComponent<Props, State> {
-  debounce: Debounce;
-  validated: ValidatedOptions;
-  location: string;
   constructor(props: Props) {
     super(props);
-    this.debounce = new Debounce();
-    this.debounce.subscribe(() => {
-      this.setState({ locationValidated: this.validated, location: this.location });
-    });
+
     this.state = {
       hasSshKeys: this.props.sshKeys.length > 0,
       locationValidated: ValidatedOptions.default,
@@ -141,23 +136,22 @@ class ImportFromGit extends React.PureComponent<Props, State> {
     if (this.state.location === location) {
       return;
     }
-    this.validated = validateLocation(location, this.state.hasSshKeys);
-    this.location = location;
-    this.debounce.execute();
+    const validated = validateLocation(location, this.state.hasSshKeys);
+    this.setState({ locationValidated: validated, location });
   }
 
-  private getErrorMessage(location: string): string | React.ReactNode {
+  private getErrorMessage(location: string): React.ReactNode {
     const isValidGitSsh = FactoryLocationAdapter.isSshLocation(location);
 
     if (isValidGitSsh && !this.state.hasSshKeys) {
       return (
-        <FormHelperText icon={<ExclamationCircleIcon />} isHidden={false} isError={true}>
+        <>
           No SSH keys found. Please add your SSH keys in the{' '}
           <Button variant="link" isInline onClick={() => this.openUserPreferences()}>
             User Preferences
           </Button>{' '}
           and then try again.
-        </FormHelperText>
+        </>
       );
     }
 
@@ -192,15 +186,7 @@ class ImportFromGit extends React.PureComponent<Props, State> {
           this.handleCreate();
         }}
       >
-        <FormGroup
-          fieldId={FIELD_ID}
-          label="Git repo URL"
-          isRequired={true}
-          validated={validated}
-          helperTextInvalid={errorMessage}
-          helperTextInvalidIcon={<ExclamationCircleIcon />}
-          helperText="Import from a Git repository to launch a Cloud Development Environment."
-        >
+        <FormGroup fieldId={FIELD_ID} label="Git repo URL" isRequired={true}>
           <Flex>
             <FlexItem grow={{ default: 'grow' }} style={{ maxWidth: '500px', minWidth: '70%' }}>
               <TextInput
@@ -210,7 +196,7 @@ class ImportFromGit extends React.PureComponent<Props, State> {
                 validated={validated}
                 onFocus={() => this.setState({ isFocused: true })}
                 onBlur={() => this.setState({ isFocused: false })}
-                onChange={value => this.handleChange(value)}
+                onChange={(_event, value) => this.handleChange(value)}
               />
             </FlexItem>
             <FlexItem>
@@ -224,6 +210,19 @@ class ImportFromGit extends React.PureComponent<Props, State> {
               </Button>
             </FlexItem>
           </Flex>
+          <FormHelperText>
+            <HelperText>
+              {validated === ValidatedOptions.error ? (
+                <HelperTextItem icon={<ExclamationCircleIcon />} variant="error">
+                  {errorMessage}
+                </HelperTextItem>
+              ) : (
+                <HelperTextItem>
+                  Import from a Git repository to launch a Cloud Development Environment.
+                </HelperTextItem>
+              )}
+            </HelperText>
+          </FormHelperText>
         </FormGroup>
       </Form>
     );

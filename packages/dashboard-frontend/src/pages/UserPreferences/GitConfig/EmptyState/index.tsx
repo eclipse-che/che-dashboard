@@ -10,19 +10,19 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import { EmptyState, EmptyStateIcon, EmptyStateVariant, Title } from '@patternfly/react-core';
+import { EmptyState, EmptyStateVariant } from '@patternfly/react-core';
 import { CogIcon } from '@patternfly/react-icons';
 import React from 'react';
 
 export class GitConfigEmptyState extends React.PureComponent {
   public render(): React.ReactElement {
     return (
-      <EmptyState isFullHeight={true} variant={EmptyStateVariant.small}>
-        <EmptyStateIcon icon={CogIcon} />
-        <Title headingLevel="h4" size="lg">
-          No gitconfig found
-        </Title>
-      </EmptyState>
+      <EmptyState
+        isFullHeight={true}
+        variant={EmptyStateVariant.sm}
+        icon={CogIcon}
+        titleText="No gitconfig found"
+      />
     );
   }
 }

@@ -12,7 +12,53 @@
 
 import { Architecture } from '@eclipse-che/common';
 
-export { che as api } from '@eclipse-che/api';
+export interface CheApiLink {
+  method?: string;
+  rel?: string;
+  produces?: string;
+  href?: string;
+  consumes?: string;
+}
+
+export interface CheDevfileV1Source {
+  startPoint?: string;
+  location?: string;
+  tag?: string;
+  commitId?: string;
+  type?: string;
+  branch?: string;
+  sparseCheckoutDir?: string;
+}
+
+export interface CheDevfileV1Metadata {
+  name?: string;
+  generateName?: string;
+}
+
+export interface CheDevfileV1Project {
+  clonePath?: string;
+  name?: string;
+  source?: CheDevfileV1Source;
+}
+
+export interface CheDevfileV1 {
+  components?: unknown[];
+  metadata?: CheDevfileV1Metadata;
+  projects?: CheDevfileV1Project[];
+  apiVersion?: string;
+  name?: string;
+  attributes?: { [key: string]: string };
+  commands?: unknown[];
+}
+
+export interface CheFactory {
+  devfile?: CheDevfileV1;
+  v?: string;
+  name?: string;
+  links?: CheApiLink[];
+  source?: string;
+  id?: string;
+}
 
 export type WorkspaceStorageType = 'ephemeral' | 'per-workspace' | 'per-user' | '';
 
