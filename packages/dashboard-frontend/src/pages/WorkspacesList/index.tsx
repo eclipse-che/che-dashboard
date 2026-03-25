@@ -12,7 +12,7 @@
 
 import 'reflect-metadata';
 
-import { BackupInfo } from '@eclipse-che/common';
+import { BackupConfig, BackupInfo } from '@eclipse-che/common';
 import {
   Content,
   PageSection,
@@ -32,6 +32,7 @@ import devfileApi from '@/services/devfileApi';
 import { Workspace } from '@/services/workspace-adapter';
 
 type Props = {
+  backupConfig?: BackupConfig;
   backupsByWorkspace: Record<string, BackupInfo>;
   branding: BrandingData;
   editors: devfileApi.Devfile[];
@@ -81,7 +82,8 @@ export default class WorkspacesList extends React.PureComponent<Props, State> {
   }
 
   public render(): React.ReactElement {
-    const { backupsByWorkspace, branding, editors, navigate, workspaces } = this.props;
+    const { backupConfig, backupsByWorkspace, branding, editors, navigate, workspaces } =
+      this.props;
     const { workspace: workspacesDocsLink } = branding.docs;
     const { viewMode } = this.state;
 
@@ -121,6 +123,7 @@ export default class WorkspacesList extends React.PureComponent<Props, State> {
           <BackupsView navigate={navigate} />
         ) : (
           <WorkspacesView
+            backupConfig={backupConfig}
             workspaces={workspaces}
             editors={editors}
             backupsByWorkspace={backupsByWorkspace}

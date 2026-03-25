@@ -10,7 +10,7 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import { BackupInfo } from '@eclipse-che/common';
+import { BackupConfig, BackupInfo } from '@eclipse-che/common';
 import React from 'react';
 import { NavigateFunction } from 'react-router-dom';
 
@@ -25,6 +25,7 @@ import { buildGettingStartedLocation } from '@/services/helpers/location';
 import { Workspace } from '@/services/workspace-adapter';
 
 type Props = {
+  backupConfig?: BackupConfig;
   workspaces: Workspace[];
   editors: devfileApi.Devfile[];
   backupsByWorkspace: Record<string, BackupInfo>;
@@ -44,16 +45,20 @@ type State = {
 };
 
 export class WorkspacesView extends React.PureComponent<Props, State> {
-  private readonly columns = [
-    { title: 'Name', dataLabel: 'Name', sortable: true },
-    { title: 'Editor', dataLabel: 'Editor', sortable: true },
-    { title: 'Last Modified', dataLabel: 'Last Modified', sortable: true },
-    { title: 'Backup Status', dataLabel: 'Backup Status' },
-    { title: 'Project(s)', dataLabel: 'Project(s)' },
-    { title: '', dataLabel: ' ', screenReaderText: 'Open' },
-    { title: '', dataLabel: ' ', screenReaderText: 'Open' },
-    { title: '', dataLabel: ' ', screenReaderText: 'Actions' },
-  ];
+  private getColumns() {
+    const showBackupStatus = !!this.props.backupConfig?.registry;
+    const columns = [
+      { title: 'Name', dataLabel: 'Name', sortable: true },
+      { title: 'Editor', dataLabel: 'Editor', sortable: true },
+      { title: 'Last Modified', dataLabel: 'Last Modified', sortable: true },
+      ...(showBackupStatus ? [{ title: 'Backup Status', dataLabel: 'Backup Status' }] : []),
+      { title: 'Project(s)', dataLabel: 'Project(s)' },
+      { title: '', dataLabel: ' ', screenReaderText: 'Open' },
+      { title: '', dataLabel: ' ', screenReaderText: 'Open' },
+      { title: '', dataLabel: ' ', screenReaderText: 'Actions' },
+    ];
+    return columns;
+  }
 
   constructor(props: Props) {
     super(props);
@@ -72,10 +77,20 @@ export class WorkspacesView extends React.PureComponent<Props, State> {
   }
 
   private buildRows(): RowData[] {
-    const { backupsByWorkspace, editors, workspaces } = this.props;
+    const { backupConfig, backupsByWorkspace, editors, workspaces } = this.props;
     const { filtered, selected, sortBy } = this.state;
+    const showBackupStatus = !!backupConfig?.registry;
 
-    return buildRows(workspaces, editors, [], filtered, selected, sortBy, backupsByWorkspace);
+    return buildRows(
+      workspaces,
+      editors,
+      [],
+      filtered,
+      selected,
+      sortBy,
+      backupsByWorkspace,
+      showBackupStatus,
+    );
   }
 
   private handleFilter(filtered: Workspace[]): void {
@@ -194,7 +209,7 @@ export class WorkspacesView extends React.PureComponent<Props, State> {
     return (
       <>
         <WorkspacesTable
-          columns={this.columns}
+          columns={this.getColumns()}
           rows={rows}
           sortBy={sortBy}
           onSelect={(isSelected, rowIndex) => this.handleSelect(isSelected, rowIndex)}

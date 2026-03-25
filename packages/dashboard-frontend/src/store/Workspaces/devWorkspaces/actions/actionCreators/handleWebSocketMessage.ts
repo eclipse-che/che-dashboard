@@ -10,7 +10,7 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import { api } from '@eclipse-che/common';
+import { api, DEVWORKSPACE_BACKUP_ANNOTATIONS } from '@eclipse-che/common';
 
 import { container } from '@/inversify.config';
 import { injectKubeConfig, podmanLogin } from '@/services/backend-client/devWorkspaceApi';
@@ -20,6 +20,7 @@ import { DevWorkspaceStatus } from '@/services/helpers/types';
 import { WorkspaceAdapter } from '@/services/workspace-adapter';
 import { normaliseDevWorkspace } from '@/services/workspace-client/helpers';
 import { AppThunk } from '@/store';
+import { fetchWorkspaceBackupStatus } from '@/store/Backups/actions';
 import { selectDefaultNamespace } from '@/store/InfrastructureNamespaces';
 import {
   actionCreators,
@@ -87,6 +88,25 @@ export const handleWebSocketMessage =
           // update workspace only if it has newer resource version
           if (shouldUpdateDevWorkspace(prevWorkspace, workspace)) {
             dispatch(devWorkspacesUpdateAction(workspace));
+
+            // Refresh backup status when backup annotations change
+            const prevBackupTime =
+              prevWorkspace?.metadata?.annotations?.[
+                DEVWORKSPACE_BACKUP_ANNOTATIONS.LAST_BACKUP_FINISHED_AT
+              ];
+            const newBackupTime =
+              workspace.metadata?.annotations?.[
+                DEVWORKSPACE_BACKUP_ANNOTATIONS.LAST_BACKUP_FINISHED_AT
+              ];
+            if (prevBackupTime !== newBackupTime) {
+              dispatch(
+                fetchWorkspaceBackupStatus({
+                  namespace: workspace.metadata.namespace,
+                  workspaceUID: WorkspaceAdapter.getUID(workspace),
+                  workspaceName: workspace.metadata.name,
+                }),
+              );
+            }
           }
           break;
         case api.webSocket.EventPhase.DELETED:

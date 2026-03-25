@@ -144,12 +144,11 @@ describe('BackupsView', () => {
       });
     });
 
-    test('should fetch backup config on mount with force', () => {
+    test('should fetch backup config on mount (uses TTL cache)', () => {
       renderComponent({ namespace: 'test-namespace' });
 
       expect(mockFetchBackupConfig).toHaveBeenCalledWith({
         namespace: 'test-namespace',
-        force: true,
       });
     });
 

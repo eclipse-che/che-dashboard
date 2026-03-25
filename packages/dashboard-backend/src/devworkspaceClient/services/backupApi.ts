@@ -18,6 +18,7 @@ import {
   BackupStatus,
   DEVWORKSPACE_BACKUP_ANNOTATIONS,
   DEVWORKSPACE_BACKUP_LABELS,
+  helpers,
 } from '@eclipse-che/common';
 import * as k8s from '@kubernetes/client-node';
 import { V1JobList } from '@kubernetes/client-node';
@@ -32,6 +33,7 @@ import {
   DEVWORKSPACE_VERSION,
 } from '@/constants/k8s';
 import { createError } from '@/devworkspaceClient/services/helpers/createError';
+import { logger } from '@/utils/logger';
 import {
   BatchV1API,
   prepareBatchV1API,
@@ -145,6 +147,27 @@ export class BackupApiService {
         authSecretName: backupCronJob?.registry?.authSecret,
       };
     } catch (e) {
+      if (helpers.errors.isKubeClientError(e) && e.code === 404) {
+        // DWOC does not exist — backup is not configured
+        return {
+          enabled: false,
+          schedule: '',
+          registry: '',
+          authSecretName: undefined,
+        };
+      }
+      if (helpers.errors.isKubeClientError(e) && e.code === 403) {
+        // SA lacks RBAC — log a warning so admins can diagnose
+        logger.warn(
+          "Dashboard SA cannot read DevWorkspaceOperatorConfig (403 Forbidden). Backup features will be disabled. Grant 'get' permission on 'devworkspaceoperatorconfigs' in API group 'controller.devfile.io' to the dashboard service account.",
+        );
+        return {
+          enabled: false,
+          schedule: '',
+          registry: '',
+          authSecretName: undefined,
+        };
+      }
       throw createError(e, BACKUP_CONFIG_ERROR_LABEL, 'Unable to get cluster backup configuration');
     }
   }
@@ -158,6 +181,11 @@ export class BackupApiService {
     try {
       const backupConfig = await this.getCachedBackupConfig();
       const backupSchedule = backupConfig.schedule || undefined;
+
+      // No registry configured — backup was never set up
+      if (!backupConfig.registry) {
+        return { status: BackupStatus.NEVER };
+      }
 
       // Read DevWorkspace resource to get backup annotations
       const response = await this.customObjectAPI.getNamespacedCustomObject({

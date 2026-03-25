@@ -17,8 +17,8 @@ import { Location, NavigateFunction, useLocation, useNavigate } from 'react-rout
 import Fallback from '@/components/Fallback';
 import WorkspacesList from '@/pages/WorkspacesList';
 import { RootState } from '@/store';
-import { fetchWorkspaceBackupStatus } from '@/store/Backups/actions';
-import { selectAllBackupsByWorkspace } from '@/store/Backups/selectors';
+import { fetchBackupConfig, fetchWorkspaceBackupStatus } from '@/store/Backups/actions';
+import { selectAllBackupsByWorkspace, selectBackupConfig } from '@/store/Backups/selectors';
 import { selectBranding } from '@/store/Branding/selectors';
 import { selectCmEditors } from '@/store/Plugins/devWorkspacePlugins/selectors';
 import { workspacesActionCreators } from '@/store/Workspaces';
@@ -31,6 +31,10 @@ type Props = MappedProps & {
 
 export class WorkspacesListContainer extends React.PureComponent<Props> {
   componentDidMount() {
+    const namespace = this.props.allWorkspaces[0]?.namespace;
+    if (namespace) {
+      this.props.fetchBackupConfig({ namespace });
+    }
     this.fetchBackupStatuses();
   }
 
@@ -43,13 +47,19 @@ export class WorkspacesListContainer extends React.PureComponent<Props> {
       .map(w => w.uid)
       .sort()
       .join(',');
-    if (prevUIDs !== currUIDs) {
+    if (
+      prevUIDs !== currUIDs ||
+      prevProps.backupConfig?.registry !== this.props.backupConfig?.registry
+    ) {
       this.fetchBackupStatuses();
     }
   }
 
   private fetchBackupStatuses() {
-    const { allWorkspaces, backupsByWorkspace } = this.props;
+    const { allWorkspaces, backupConfig, backupsByWorkspace } = this.props;
+    if (!backupConfig?.registry) {
+      return;
+    }
     allWorkspaces.forEach(workspace => {
       if (!backupsByWorkspace[workspace.uid]) {
         this.props.fetchWorkspaceBackupStatus({
@@ -62,8 +72,16 @@ export class WorkspacesListContainer extends React.PureComponent<Props> {
   }
 
   render() {
-    const { branding, allWorkspaces, backupsByWorkspace, editors, isLoading, location, navigate } =
-      this.props;
+    const {
+      backupConfig,
+      branding,
+      allWorkspaces,
+      backupsByWorkspace,
+      editors,
+      isLoading,
+      location,
+      navigate,
+    } = this.props;
 
     if (isLoading) {
       return Fallback;
@@ -71,6 +89,7 @@ export class WorkspacesListContainer extends React.PureComponent<Props> {
 
     return (
       <WorkspacesList
+        backupConfig={backupConfig}
         branding={branding}
         editors={editors}
         location={location}
@@ -91,6 +110,7 @@ function ContainerWrapper(props: MappedProps) {
 
 const mapStateToProps = (state: RootState) => {
   return {
+    backupConfig: selectBackupConfig(state),
     branding: selectBranding(state),
     allWorkspaces: selectAllWorkspaces(state),
     backupsByWorkspace: selectAllBackupsByWorkspace(state),
@@ -101,6 +121,7 @@ const mapStateToProps = (state: RootState) => {
 
 const mapDispatchToProps = {
   ...workspacesActionCreators,
+  fetchBackupConfig,
   fetchWorkspaceBackupStatus,
 };
 
