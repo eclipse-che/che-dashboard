@@ -60,6 +60,7 @@ The backend uses `@kubernetes/client-node` to interact with Kubernetes APIs:
 - **Test coverage**: New features should include tests
 - **Copyright headers**: All source files must have EPL-2.0 headers
 - **Absolute imports**: ALWAYS use absolute imports with `@/` alias (never use relative imports like `./` or `../`)
+- **No `any` type**: NEVER use `any` or cast to `any`. Use proper types, type guards, `unknown`, or specific interfaces instead. If an external API returns an untyped value, define an interface or use an existing type guard (e.g., `isKubeClientError()` from `@eclipse-che/common`).
 
 ## Surgical Change Workflow
 
