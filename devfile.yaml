@@ -115,3 +115,17 @@ commands:
       commandLine: "yarn --cwd  packages/dashboard-backend build --env bundleAnalyzer=true"
       group:
         kind: build
+  - id: install-gemini-cli
+    exec:
+      label: "[UD] install Gemini CLI"
+      component: tools
+      workingDir: ${PROJECT_SOURCE}
+      commandLine: "npm install -g @google/gemini-cli"
+  - id: run-gemini
+    exec:
+      label: "[UD] run Gemini"
+      component: tools
+      workingDir: ${PROJECT_SOURCE}
+      commandLine: "npx @google/gemini-cli"
+      group:
+        kind: run
