@@ -33,7 +33,6 @@ import {
   DEVWORKSPACE_VERSION,
 } from '@/constants/k8s';
 import { createError } from '@/devworkspaceClient/services/helpers/createError';
-import { logger } from '@/utils/logger';
 import {
   BatchV1API,
   prepareBatchV1API,
@@ -42,6 +41,7 @@ import {
   CustomObjectAPI,
   prepareCustomObjectAPI,
 } from '@/devworkspaceClient/services/helpers/prepareCustomObjectAPI';
+import { logger } from '@/utils/logger';
 
 const BACKUP_CONFIG_ERROR_LABEL = 'BACKUP_CONFIG_ERROR';
 const BACKUP_STATUS_ERROR_LABEL = 'BACKUP_STATUS_ERROR';
