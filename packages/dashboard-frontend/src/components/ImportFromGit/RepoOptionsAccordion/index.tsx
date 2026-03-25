@@ -35,6 +35,7 @@ import { AdvancedOptions } from '@/components/ImportFromGit/RepoOptionsAccordion
 import { GitRepoOptions } from '@/components/ImportFromGit/RepoOptionsAccordion/GitRepoOptions';
 import { GitRemote } from '@/components/WorkspaceProgress/CreatingSteps/Apply/Devfile/getGitRemotes';
 import { fetchGitBranches } from '@/services/backend-client/gitBranchesApi';
+import { Debounce } from '@/services/helpers/debounce';
 import { RootState } from '@/store';
 import { selectSshKeys } from '@/store/SshKeys/selectors';
 
@@ -66,6 +67,9 @@ export type State = {
 };
 
 class RepoOptionsAccordion extends React.PureComponent<Props, State> {
+  private readonly debounce = new Debounce();
+  private readonly handleDebouncedUpdate = () => this.updateStateFromLocation();
+
   constructor(props: Props) {
     super(props);
 
@@ -87,6 +91,10 @@ class RepoOptionsAccordion extends React.PureComponent<Props, State> {
       memoryLimit: undefined,
       cpuLimit: undefined,
     };
+  }
+
+  public componentWillUnmount(): void {
+    this.debounce.unsubscribe(this.handleDebouncedUpdate);
   }
 
   private async updateStateFromLocation(): Promise<void> {
@@ -115,6 +123,7 @@ class RepoOptionsAccordion extends React.PureComponent<Props, State> {
   }
 
   public componentDidMount() {
+    this.debounce.subscribe(this.handleDebouncedUpdate);
     this.updateStateFromLocation();
   }
 
@@ -123,7 +132,7 @@ class RepoOptionsAccordion extends React.PureComponent<Props, State> {
     if (location === prevProps.location || location === this.state.location) {
       return;
     }
-    this.updateStateFromLocation();
+    this.debounce.execute();
   }
 
   private handleToggle(id: AccordionId): void {

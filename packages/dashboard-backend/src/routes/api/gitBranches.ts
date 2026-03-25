@@ -10,7 +10,8 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import { FastifyInstance, FastifyRequest } from 'fastify';
+import { helpers } from '@eclipse-che/common';
+import { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify';
 
 import { baseApiPath } from '@/constants/config';
 import { gitBranchSchema } from '@/constants/schemas';
@@ -25,9 +26,15 @@ export function registerGitBranchesRoute(instance: FastifyInstance) {
     server.post(
       `${baseApiPath}/gitbranches`,
       getSchema({ tags, body: gitBranchSchema }),
-      async function (request: FastifyRequest) {
+      async function (request: FastifyRequest, reply: FastifyReply) {
         const { url } = request.body as restParams.IYamlResolverParams;
-        return getBranches(url);
+        try {
+          return await getBranches(url);
+        } catch (e) {
+          const message = helpers.errors.getMessage(e);
+          const isValidationError = message.includes('Invalid repository url');
+          reply.status(isValidationError ? 400 : 500).send(message);
+        }
       },
     );
   });

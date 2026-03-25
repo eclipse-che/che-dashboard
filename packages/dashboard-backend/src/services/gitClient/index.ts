@@ -17,10 +17,18 @@ import { run } from '@/devworkspaceClient/services/helpers/exec';
 const urlRegexp = new RegExp(
   '((git|ssh|http(s)?)|(git@[\\w.]+))(:(\\/\\/)?)([\\w.@:/\\-~]+)(\\.git)?(\\/)?',
 );
+const GIT_LS_REMOTE_TIMEOUT_MS = 15_000;
+
 export async function getBranches(url: string): Promise<api.IGitBranches | undefined> {
   if (!urlRegexp.test(url)) {
     throw new Error('Invalid repository url');
   }
+
+  // Strip query parameters — they are Che-specific (e.g. ?df=devfile.yaml) and
+  // are not understood by git ls-remote. Passing them causes git to construct a
+  // malformed smart-HTTP URL which can hang indefinitely and trigger a 502 from
+  // the ingress gateway.
+  const cleanUrl = url.split('?')[0];
 
   /**
    * -c credential.helper=: This is the most critical defense against modern Credential Smuggling (e.g., CVE-2024-50338).
@@ -51,17 +59,21 @@ export async function getBranches(url: string): Promise<api.IGitBranches | undef
       'ls-remote',
       '--refs',
       '--',
-      url,
+      cleanUrl,
     ],
-    { env: { GIT_TERMINAL_PROMPT: '0' } },
+    { env: { GIT_TERMINAL_PROMPT: '0' }, timeout: GIT_LS_REMOTE_TIMEOUT_MS },
   );
-  if (result) {
-    return {
-      branches: result
-        .split(' ')
-        .filter(b => b.indexOf('refs/heads/') > 0 || b.indexOf('refs/tags/') > 0)
-        .map(b => b.replace(new RegExp('.*\\trefs/((heads)|(tags))/'), '')),
-    };
+
+  if (!result) {
+    throw new Error(
+      `Failed to fetch git branches: git ls-remote returned no output (timeout after ${GIT_LS_REMOTE_TIMEOUT_MS / 1000}s or unreachable repository)`,
+    );
   }
-  return undefined;
+
+  return {
+    branches: result
+      .split(' ')
+      .filter(b => b.indexOf('refs/heads/') > 0 || b.indexOf('refs/tags/') > 0)
+      .map(b => b.replace(new RegExp('.*\\trefs/((heads)|(tags))/'), '')),
+  };
 }

@@ -103,6 +103,15 @@ export function getRepositoryUrlFromLocation(location: string): string {
       break;
   }
 
+  // Strip query parameters for all providers except azure-devops:
+  // params like ?df=... are Che-specific and must not be forwarded to git ls-remote.
+  if (service !== 'azure-devops') {
+    indexOf = repo.indexOf('?');
+    if (indexOf > 0) {
+      repo = repo.substring(0, indexOf);
+    }
+  }
+
   return repo;
 }
 
