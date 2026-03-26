@@ -105,7 +105,7 @@ export class KubeConfigApiService implements IKubeConfigApi {
           kubeConfig = this.mergeKubeConfig(stdOut, kubeConfig);
         }
 
-        await exec(
+        const writeResult = await exec(
           podName,
           namespace,
           containerName,
@@ -113,8 +113,15 @@ export class KubeConfigApiService implements IKubeConfigApi {
           this.getServerConfig(),
         );
 
-        if (!resolved) {
-          resolved = true;
+        // Only mark as resolved if the write actually succeeded (no error output).
+        if (writeResult.stdOut === '' && writeResult.stdError === '') {
+          if (!resolved) {
+            resolved = true;
+          }
+        } else {
+          logger.warn(
+            `Failed to write kubeconfig in ${namespace}/${podName}/${containerName}: ${writeResult.stdOut}${writeResult.stdError}`,
+          );
         }
       } catch (e) {
         logger.warn(e);

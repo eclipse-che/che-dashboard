@@ -8,8 +8,8 @@
 # Contributors:
 #   Red Hat, Inc. - initial API and implementation
 
-# https://registry.access.redhat.com/ubi8/nodejs-18
-FROM registry.access.redhat.com/ubi8/nodejs-18:1-136 as builder
+# https://registry.access.redhat.com/ubi9/nodejs-20
+FROM registry.access.redhat.com/ubi9/nodejs-20 as builder
 # hadolint ignore=DL3002
 USER 0
 RUN dnf -y -q update --exclude=unbound-libs 
@@ -19,14 +19,14 @@ WORKDIR /dashboard/
 RUN npm i -g yarn; yarn install
 RUN yarn build
 
-# https://registry.access.redhat.com/ubi8/nodejs-18
-FROM registry.access.redhat.com/ubi8/nodejs-18:1-136
+# https://registry.access.redhat.com/ubi9/nodejs-20
+FROM registry.access.redhat.com/ubi9/nodejs-20
 # hadolint ignore=DL3002
 USER 0
 # hadolint ignore=DL4006
 RUN \
-    yum -y -q update && \
-    yum -y -q clean all && rm -rf /var/cache/yum && \
+    dnf -y -q update && \
+    dnf -y -q clean all && rm -rf /var/cache/dnf && \
     echo "Installed Packages" && rpm -qa | sort -V && echo "End Of Installed Packages"
 
 ENV FRONTEND_LIB=/dashboard/packages/dashboard-frontend/lib/public

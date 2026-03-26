@@ -23,6 +23,11 @@ import { setup, teardown } from '@/utils/appBuilder';
 jest.mock('../helpers/getDevWorkspaceClient.ts');
 jest.mock('../helpers/getToken.ts');
 jest.mock('../helpers/getServiceAccountToken.ts');
+jest.mock('@/services/PostStartInjector', () => ({
+  PostStartInjector: {
+    watchAndInject: jest.fn(),
+  },
+}));
 
 describe('DevWorkspaces Routes', () => {
   let app: FastifyInstance;
@@ -52,13 +57,35 @@ describe('DevWorkspaces Routes', () => {
     expect(res.json()).toEqual(stubDevWorkspacesList);
   });
 
-  test('POST ${baseApiPath}/namespace/:namespace/devworkspaces', async () => {
+  test('POST ${baseApiPath}/namespace/:namespace/devworkspaces - no started flag', async () => {
     const res = await app
       .inject()
       .post(`${baseApiPath}/namespace/${namespace}/devworkspaces`)
       .payload({ devworkspace: {} });
     expect(res.statusCode).toEqual(200);
     expect(res.json()).toEqual(stubDevWorkspace);
+
+    const { PostStartInjector } = jest.requireMock('@/services/PostStartInjector');
+    expect(PostStartInjector.watchAndInject).not.toHaveBeenCalled();
+  });
+
+  test('POST ${baseApiPath}/namespace/:namespace/devworkspaces - started=true triggers PostStartInjector', async () => {
+    // stubDevWorkspace has metadata.name='wksp'; the route checks devworkspace (request body)
+    // for spec.started===true to trigger the injector
+    const res = await app
+      .inject()
+      .post(`${baseApiPath}/namespace/${namespace}/devworkspaces`)
+      .payload({ devworkspace: { spec: { started: true, template: {} } } });
+    expect(res.statusCode).toEqual(200);
+
+    const { PostStartInjector } = jest.requireMock('@/services/PostStartInjector');
+    expect(PostStartInjector.watchAndInject).toHaveBeenCalledWith(
+      expect.any(Object),
+      namespace,
+      workspaceName,
+      expect.objectContaining({ injectKubeConfig: expect.any(Function) }),
+      expect.objectContaining({ podmanLogin: expect.any(Function) }),
+    );
   });
 
   test('GET ${baseApiPath}/namespace/:namespace/devworkspaces/:workspaceName', async () => {
@@ -83,6 +110,34 @@ describe('DevWorkspaces Routes', () => {
       .payload(patches);
     expect(res.statusCode).toEqual(200);
     expect(res.json()).toEqual(stubDevWorkspace);
+
+    const { PostStartInjector } = jest.requireMock('@/services/PostStartInjector');
+    expect(PostStartInjector.watchAndInject).not.toHaveBeenCalled();
+  });
+
+  test('PATCH start workspace triggers PostStartInjector', async () => {
+    const patches: api.IPatch[] = [
+      {
+        op: 'replace',
+        path: '/spec/started',
+        value: true,
+      },
+    ];
+    const res = await app
+      .inject()
+      .patch(`${baseApiPath}/namespace/${namespace}/devworkspaces/${workspaceName}`)
+      .payload(patches);
+    expect(res.statusCode).toEqual(200);
+    expect(res.json()).toEqual(stubDevWorkspace);
+
+    const { PostStartInjector } = jest.requireMock('@/services/PostStartInjector');
+    expect(PostStartInjector.watchAndInject).toHaveBeenCalledWith(
+      expect.any(Object),
+      namespace,
+      workspaceName,
+      expect.objectContaining({ injectKubeConfig: expect.any(Function) }),
+      expect.objectContaining({ podmanLogin: expect.any(Function) }),
+    );
   });
 
   test('DELETE ${baseApiPath}/namespace/:namespace/devworkspaces/:workspaceName', async () => {
