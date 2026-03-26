@@ -16,7 +16,7 @@ import { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify';
 import { baseApiPath } from '@/constants/config';
 import { gitBranchSchema } from '@/constants/schemas';
 import { restParams } from '@/models';
-import { getBranches } from '@/services/gitClient';
+import { getBranches, GitClientError } from '@/services/gitClient';
 import { getSchema } from '@/services/helpers';
 
 const tags = ['GitBranches'];
@@ -31,9 +31,8 @@ export function registerGitBranchesRoute(instance: FastifyInstance) {
         try {
           return await getBranches(url);
         } catch (e) {
-          const message = helpers.errors.getMessage(e);
-          const isValidationError = message.includes('Invalid repository url');
-          reply.status(isValidationError ? 400 : 500).send(message);
+          const statusCode = e instanceof GitClientError ? e.statusCode : 500;
+          reply.status(statusCode).send(helpers.errors.getMessage(e));
         }
       },
     );

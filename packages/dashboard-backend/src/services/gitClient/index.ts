@@ -19,9 +19,19 @@ const urlRegexp = new RegExp(
 );
 const GIT_LS_REMOTE_TIMEOUT_MS = 15_000;
 
+export class GitClientError extends Error {
+  constructor(
+    public readonly statusCode: number,
+    message: string,
+  ) {
+    super(message);
+    this.name = 'GitClientError';
+  }
+}
+
 export async function getBranches(url: string): Promise<api.IGitBranches | undefined> {
   if (!urlRegexp.test(url)) {
-    throw new Error('Invalid repository url');
+    throw new GitClientError(400, 'Invalid repository url');
   }
 
   // Strip query parameters — they are Che-specific (e.g. ?df=devfile.yaml) and
