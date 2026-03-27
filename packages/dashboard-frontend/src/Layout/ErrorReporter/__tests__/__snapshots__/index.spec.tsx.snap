@@ -64,6 +64,30 @@ exports[`ErrorReporter component should correctly render the reported issue 1`] 
         Refresh
       </kbd>
     </p>
+    <p
+      className="pf-v6-c-content--p"
+      data-ouia-component-id="OUIA-Generated-Content-5"
+      data-ouia-component-type="PF6/Content"
+      data-ouia-safe={true}
+      data-pf-content={true}
+    >
+      <button
+        aria-label={null}
+        className="pf-v6-c-button pf-m-link pf-m-inline"
+        data-ouia-component-id="OUIA-Generated-Button-link-1"
+        data-ouia-component-type="PF6/Button"
+        data-ouia-safe={true}
+        disabled={false}
+        onClick={[Function]}
+        type="button"
+      >
+        <span
+          className="pf-v6-c-button__text"
+        >
+          Sign out
+        </span>
+      </button>
+    </p>
   </div>
 </div>
 `;

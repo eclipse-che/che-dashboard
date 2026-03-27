@@ -17,7 +17,7 @@ import React from 'react';
 import styles from '@/Layout/ErrorReporter/Issue/index.module.css';
 import { BrandingData } from '@/services/bootstrap/branding.constant';
 import { Issue, WorkspaceData } from '@/services/bootstrap/issuesReporter';
-import { signIn } from '@/services/helpers/login';
+import { signIn, signOut } from '@/services/helpers/login';
 
 type Props = {
   branding: BrandingData;
@@ -48,6 +48,16 @@ export class IssueComponent extends React.PureComponent<Props> {
     }
   }
 
+  private renderSignOutButton(): React.ReactNode {
+    return (
+      <Content component="p">
+        <Button onClick={() => signOut()} variant={ButtonVariant.link} isInline>
+          Sign out
+        </Button>
+      </Content>
+    );
+  }
+
   private renderSessionExpired(error: Error): React.ReactNode {
     const errorTextbox = !error ? undefined : (
       <Content component={ContentVariants.pre} className={styles.errorMessage}>
@@ -67,6 +77,7 @@ export class IssueComponent extends React.PureComponent<Props> {
             Sign in
           </Button>
         </Content>
+        {this.renderSignOutButton()}
       </Content>
     );
   }
@@ -95,6 +106,7 @@ export class IssueComponent extends React.PureComponent<Props> {
           Please try <kbd className={styles.keybinding}>Shift</kbd>+
           <kbd className={styles.keybinding}>Refresh</kbd>
         </Content>
+        {this.renderSignOutButton()}
       </Content>
     );
   }
@@ -147,6 +159,7 @@ export class IssueComponent extends React.PureComponent<Props> {
           {ideLoader} to continue using your workspace.
         </Content>
         {workspaceDetails}
+        {this.renderSignOutButton()}
       </Content>
     );
   }
@@ -186,6 +199,7 @@ export class IssueComponent extends React.PureComponent<Props> {
           {ideLoader} to continue using your workspace.
         </Content>
         {workspaceDetails}
+        {this.renderSignOutButton()}
       </Content>
     );
   }
@@ -223,6 +237,7 @@ export class IssueComponent extends React.PureComponent<Props> {
         {errorTextbox}
         {ideLoader}
         {workspaceDetails}
+        {this.renderSignOutButton()}
       </Content>
     );
   }
@@ -252,6 +267,7 @@ export class IssueComponent extends React.PureComponent<Props> {
           Your workspace is not running. {ideLoader} to continue using your workspace.
         </Content>
         {workspaceDetails}
+        {this.renderSignOutButton()}
       </Content>
     );
   }
@@ -270,6 +286,7 @@ export class IssueComponent extends React.PureComponent<Props> {
           Error
         </Content>
         {errorTextbox}
+        {this.renderSignOutButton()}
       </Content>
     );
   }
@@ -292,6 +309,7 @@ export class IssueComponent extends React.PureComponent<Props> {
           Please try <kbd className={styles.keybinding}>Shift</kbd>+
           <kbd className={styles.keybinding}>Refresh</kbd>
         </Content>
+        {this.renderSignOutButton()}
       </Content>
     );
   }
