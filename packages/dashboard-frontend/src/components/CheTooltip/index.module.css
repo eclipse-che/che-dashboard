@@ -14,11 +14,26 @@
   border-radius: var(--pf-t--global--border--radius--small);
 }
 
+/*
+ * Tooltips use an inverse background (dark in light theme, light in dark theme).
+ * Regular link tokens are designed for the normal background, so we swap them:
+ *   light theme tooltip (dark bg) → use dark-context link colors (lighter blue)
+ *   dark theme tooltip (light bg)  → use light-context link colors (darker blue)
+ */
 .tooltip :global(.pf-v6-c-tooltip__content) a,
 .tooltip :global(.pf-v6-c-tooltip__content) a:visited {
-  color: var(--pf-t--global--text--color--link--default);
+  color: var(--pf-t--global--dark--text--color--link--100);
 }
 
 .tooltip :global(.pf-v6-c-tooltip__content) a:hover {
-  color: var(--pf-t--global--text--color--link--hover);
+  color: var(--pf-t--global--dark--text--color--link--200);
+}
+
+:global(.pf-v6-theme-dark) .tooltip :global(.pf-v6-c-tooltip__content) a,
+:global(.pf-v6-theme-dark) .tooltip :global(.pf-v6-c-tooltip__content) a:visited {
+  color: var(--pf-t--global--text--color--link--100);
+}
+
+:global(.pf-v6-theme-dark) .tooltip :global(.pf-v6-c-tooltip__content) a:hover {
+  color: var(--pf-t--global--text--color--link--200);
 }
