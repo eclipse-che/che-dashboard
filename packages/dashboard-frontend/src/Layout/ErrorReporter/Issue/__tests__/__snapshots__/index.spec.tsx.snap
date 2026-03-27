@@ -3,14 +3,14 @@
 exports[`Issue component should not render the cluster console button when no applications are provided 1`] = `
 <div
   className="pf-v6-c-content messageContainer"
-  data-ouia-component-id="OUIA-Generated-Content-77"
+  data-ouia-component-id="OUIA-Generated-Content-76"
   data-ouia-component-type="PF6/Content"
   data-ouia-safe={true}
   data-pf-content={true}
 >
   <h1
     className="pf-v6-c-content--h1"
-    data-ouia-component-id="OUIA-Generated-Content-78"
+    data-ouia-component-id="OUIA-Generated-Content-77"
     data-ouia-component-type="PF6/Content"
     data-ouia-safe={true}
     data-pf-content={true}
@@ -33,7 +33,7 @@ exports[`Issue component should not render the cluster console button when no ap
   </h1>
   <pre
     className="pf-v6-c-content--pre errorMessage"
-    data-ouia-component-id="OUIA-Generated-Content-79"
+    data-ouia-component-id="OUIA-Generated-Content-78"
     data-ouia-component-type="PF6/Content"
     data-ouia-safe={true}
     data-pf-content={true}
@@ -42,7 +42,7 @@ exports[`Issue component should not render the cluster console button when no ap
   </pre>
   <p
     className="pf-v6-c-content--p"
-    data-ouia-component-id="OUIA-Generated-Content-80"
+    data-ouia-component-id="OUIA-Generated-Content-79"
     data-ouia-component-type="PF6/Content"
     data-ouia-safe={true}
     data-pf-content={true}
@@ -50,7 +50,7 @@ exports[`Issue component should not render the cluster console button when no ap
     <button
       aria-label={null}
       className="pf-v6-c-button pf-m-link pf-m-inline"
-      data-ouia-component-id="OUIA-Generated-Button-link-17"
+      data-ouia-component-id="OUIA-Generated-Button-link-18"
       data-ouia-component-type="PF6/Button"
       data-ouia-safe={true}
       disabled={false}
@@ -60,7 +60,7 @@ exports[`Issue component should not render the cluster console button when no ap
       <span
         className="pf-v6-c-button__text"
       >
-        Sign out
+        Logout
       </span>
     </button>
   </p>
@@ -147,7 +147,7 @@ exports[`Issue component should render an unknown error 1`] = `
       <span
         className="pf-v6-c-button__text"
       >
-        Sign out
+        Logout
       </span>
     </button>
   </p>
@@ -214,7 +214,7 @@ exports[`Issue component should render namespace provision error 1`] = `
       <span
         className="pf-v6-c-button__text"
       >
-        Sign out
+        Logout
       </span>
     </button>
   </p>
@@ -311,7 +311,7 @@ exports[`Issue component should render the SSO error 1`] = `
       <span
         className="pf-v6-c-button__text"
       >
-        Sign out
+        Logout
       </span>
     </button>
   </p>
@@ -365,21 +365,6 @@ exports[`Issue component should render the cluster console button when the clust
     data-ouia-safe={true}
     data-pf-content={true}
   >
-    <a
-      href="https://console-openshift-console.apps.example.com"
-      rel="noopener noreferrer"
-      target="_blank"
-    >
-      OpenShift console
-    </a>
-  </p>
-  <p
-    className="pf-v6-c-content--p"
-    data-ouia-component-id="OUIA-Generated-Content-76"
-    data-ouia-component-type="PF6/Content"
-    data-ouia-safe={true}
-    data-pf-content={true}
-  >
     <button
       aria-label={null}
       className="pf-v6-c-button pf-m-link pf-m-inline"
@@ -393,7 +378,24 @@ exports[`Issue component should render the cluster console button when the clust
       <span
         className="pf-v6-c-button__text"
       >
-        Sign out
+        OpenShift console
+      </span>
+    </button>
+     | 
+    <button
+      aria-label={null}
+      className="pf-v6-c-button pf-m-link pf-m-inline"
+      data-ouia-component-id="OUIA-Generated-Button-link-17"
+      data-ouia-component-type="PF6/Button"
+      data-ouia-safe={true}
+      disabled={false}
+      onClick={[Function]}
+      type="button"
+    >
+      <span
+        className="pf-v6-c-button__text"
+      >
+        Logout
       </span>
     </button>
   </p>
@@ -484,7 +486,7 @@ exports[`Issue component should render the sessionExpired error 1`] = `
       <span
         className="pf-v6-c-button__text"
       >
-        Sign out
+        Logout
       </span>
     </button>
   </p>
@@ -570,7 +572,7 @@ exports[`Issue component should render the workspaceInactive error 1`] = `
       <span
         className="pf-v6-c-button__text"
       >
-        Sign out
+        Logout
       </span>
     </button>
   </p>
@@ -656,7 +658,7 @@ exports[`Issue component should render the workspaceInactive error with timeout 
       <span
         className="pf-v6-c-button__text"
       >
-        Sign out
+        Logout
       </span>
     </button>
   </p>
@@ -742,7 +744,7 @@ exports[`Issue component should render the workspaceInactive error with timeout 
       <span
         className="pf-v6-c-button__text"
       >
-        Sign out
+        Logout
       </span>
     </button>
   </p>
@@ -828,7 +830,7 @@ exports[`Issue component should render the workspaceInactive error with timeout 
       <span
         className="pf-v6-c-button__text"
       >
-        Sign out
+        Logout
       </span>
     </button>
   </p>
@@ -914,7 +916,7 @@ exports[`Issue component should render the workspaceRunTimeout error 1`] = `
       <span
         className="pf-v6-c-button__text"
       >
-        Sign out
+        Logout
       </span>
     </button>
   </p>
@@ -1000,7 +1002,7 @@ exports[`Issue component should render the workspaceRunTimeout error with timeou
       <span
         className="pf-v6-c-button__text"
       >
-        Sign out
+        Logout
       </span>
     </button>
   </p>
@@ -1086,7 +1088,7 @@ exports[`Issue component should render the workspaceRunTimeout error with timeou
       <span
         className="pf-v6-c-button__text"
       >
-        Sign out
+        Logout
       </span>
     </button>
   </p>
@@ -1172,7 +1174,7 @@ exports[`Issue component should render the workspaceRunTimeout error with timeou
       <span
         className="pf-v6-c-button__text"
       >
-        Sign out
+        Logout
       </span>
     </button>
   </p>
@@ -1258,7 +1260,7 @@ exports[`Issue component should render the workspaceStopped error 1`] = `
       <span
         className="pf-v6-c-button__text"
       >
-        Sign out
+        Logout
       </span>
     </button>
   </p>
@@ -1351,7 +1353,7 @@ exports[`Issue component should render the workspaceStoppedError error 1`] = `
       <span
         className="pf-v6-c-button__text"
       >
-        Sign out
+        Logout
       </span>
     </button>
   </p>

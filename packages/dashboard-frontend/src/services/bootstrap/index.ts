@@ -87,7 +87,12 @@ export default class Bootstrap {
   }
 
   async init(): Promise<void> {
-    await this.fetchServerConfig().then(() => this.doBackendsSanityCheck());
+    await this.fetchServerConfig()
+      .then(() => this.doBackendsSanityCheck())
+      .catch(async err => {
+        await this.fetchClusterInfo();
+        return Promise.reject(err);
+      });
     this.prefetchResources();
 
     await Promise.all([

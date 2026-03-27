@@ -15,7 +15,6 @@ import { createAction } from '@reduxjs/toolkit';
 
 import { fetchClusterInfo } from '@/services/backend-client/clusterInfoApi';
 import { AppThunk } from '@/store';
-import { verifyAuthorized } from '@/store/SanityCheck';
 
 export const clusterInfoRequestAction = createAction('clusterInfo/request');
 export const clusterInfoReceiveAction = createAction<ClusterInfo>('clusterInfo/receive');
@@ -24,10 +23,8 @@ export const clusterInfoErrorAction = createAction<string>('clusterInfo/receiveE
 export const actionCreators = {
   requestClusterInfo:
     (): AppThunk =>
-    async (dispatch, getState): Promise<void> => {
+    async (dispatch): Promise<void> => {
       try {
-        await verifyAuthorized(dispatch, getState);
-
         dispatch(clusterInfoRequestAction());
 
         const clusterInfo = await fetchClusterInfo();

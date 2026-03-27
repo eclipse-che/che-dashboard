@@ -50,26 +50,25 @@ export class IssueComponent extends React.PureComponent<Props> {
     }
   }
 
-  private renderClusterConsoleButton(): React.ReactNode {
+  private renderActions(): React.ReactNode {
     const { applications = [] } = this.props;
     const clusterConsole = applications.find(app => app.id === ApplicationId.CLUSTER_CONSOLE);
-    if (!clusterConsole) {
-      return null;
-    }
     return (
       <Content component="p">
-        <a href={clusterConsole.url} target="_blank" rel="noopener noreferrer">
-          {clusterConsole.title}
-        </a>
-      </Content>
-    );
-  }
-
-  private renderSignOutButton(): React.ReactNode {
-    return (
-      <Content component="p">
+        {clusterConsole && (
+          <>
+            <Button
+              variant={ButtonVariant.link}
+              isInline
+              onClick={() => window.open(clusterConsole.url, '_blank', 'noopener,noreferrer')}
+            >
+              {clusterConsole.title}
+            </Button>
+            {' | '}
+          </>
+        )}
         <Button onClick={() => signOut()} variant={ButtonVariant.link} isInline>
-          Sign out
+          Logout
         </Button>
       </Content>
     );
@@ -94,8 +93,7 @@ export class IssueComponent extends React.PureComponent<Props> {
             Sign in
           </Button>
         </Content>
-        {this.renderClusterConsoleButton()}
-        {this.renderSignOutButton()}
+        {this.renderActions()}
       </Content>
     );
   }
@@ -124,8 +122,7 @@ export class IssueComponent extends React.PureComponent<Props> {
           Please try <kbd className={styles.keybinding}>Shift</kbd>+
           <kbd className={styles.keybinding}>Refresh</kbd>
         </Content>
-        {this.renderClusterConsoleButton()}
-        {this.renderSignOutButton()}
+        {this.renderActions()}
       </Content>
     );
   }
@@ -178,8 +175,7 @@ export class IssueComponent extends React.PureComponent<Props> {
           {ideLoader} to continue using your workspace.
         </Content>
         {workspaceDetails}
-        {this.renderClusterConsoleButton()}
-        {this.renderSignOutButton()}
+        {this.renderActions()}
       </Content>
     );
   }
@@ -219,8 +215,7 @@ export class IssueComponent extends React.PureComponent<Props> {
           {ideLoader} to continue using your workspace.
         </Content>
         {workspaceDetails}
-        {this.renderClusterConsoleButton()}
-        {this.renderSignOutButton()}
+        {this.renderActions()}
       </Content>
     );
   }
@@ -258,8 +253,7 @@ export class IssueComponent extends React.PureComponent<Props> {
         {errorTextbox}
         {ideLoader}
         {workspaceDetails}
-        {this.renderClusterConsoleButton()}
-        {this.renderSignOutButton()}
+        {this.renderActions()}
       </Content>
     );
   }
@@ -289,8 +283,7 @@ export class IssueComponent extends React.PureComponent<Props> {
           Your workspace is not running. {ideLoader} to continue using your workspace.
         </Content>
         {workspaceDetails}
-        {this.renderClusterConsoleButton()}
-        {this.renderSignOutButton()}
+        {this.renderActions()}
       </Content>
     );
   }
@@ -309,8 +302,7 @@ export class IssueComponent extends React.PureComponent<Props> {
           Error
         </Content>
         {errorTextbox}
-        {this.renderClusterConsoleButton()}
-        {this.renderSignOutButton()}
+        {this.renderActions()}
       </Content>
     );
   }
@@ -333,8 +325,7 @@ export class IssueComponent extends React.PureComponent<Props> {
           Please try <kbd className={styles.keybinding}>Shift</kbd>+
           <kbd className={styles.keybinding}>Refresh</kbd>
         </Content>
-        {this.renderClusterConsoleButton()}
-        {this.renderSignOutButton()}
+        {this.renderActions()}
       </Content>
     );
   }
