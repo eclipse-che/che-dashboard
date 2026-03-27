@@ -58,13 +58,13 @@ export class IssueComponent extends React.PureComponent<Props> {
         {clusterConsole && (
           <>
             <Button
+              style={{ marginRight: '15px' }}
               variant={ButtonVariant.link}
               isInline
               onClick={() => window.open(clusterConsole.url, '_blank', 'noopener,noreferrer')}
             >
               {clusterConsole.title}
             </Button>
-            {' | '}
           </>
         )}
         <Button onClick={() => signOut()} variant={ButtonVariant.link} isInline>
