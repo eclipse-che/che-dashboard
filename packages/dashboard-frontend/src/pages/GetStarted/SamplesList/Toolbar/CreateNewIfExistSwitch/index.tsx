@@ -16,6 +16,7 @@ import React from 'react';
 
 import { CheTooltip } from '@/components/CheTooltip';
 import { Navigation } from '@/Layout/Navigation';
+import styles from '@/pages/GetStarted/SamplesList/Toolbar/CreateNewIfExistSwitch/index.module.css';
 
 export const CREATE_NEW_IF_EXIST_SWITCH_ID = 'create-new-if-exist-switch';
 
@@ -61,25 +62,38 @@ export class CreateNewIfExistSwitch extends React.PureComponent<Props, State> {
     const { isChecked } = this.state;
 
     return (
-      <Switch
-        isDisabled={isDisabled === true}
-        id={CREATE_NEW_IF_EXIST_SWITCH_ID}
-        label={
-          <div style={{ minWidth: '125px' }}>
-            Create New
-            <CheTooltip content="Create a new workspace each time when ON; reuse an existing one when OFF.">
-              <OutlinedQuestionCircleIcon style={{ margin: '0 5px' }} />
-            </CheTooltip>
-          </div>
-        }
-        isChecked={isChecked || isDisabled === true}
-        onChange={(_event, isChecked) => {
-          this.handleChange(isChecked);
-          if (Navigation.pageState[CREATE_NEW_IF_EXIST_SWITCH_ID].isChecked !== isChecked) {
-            Navigation.pageState[CREATE_NEW_IF_EXIST_SWITCH_ID] = { isChecked };
+      <div
+        onKeyDown={(e: React.KeyboardEvent) => {
+          if (e.key === 'Enter' && !isDisabled) {
+            e.preventDefault();
+            const newIsChecked = !isChecked;
+            this.handleChange(newIsChecked);
+            if (Navigation.pageState[CREATE_NEW_IF_EXIST_SWITCH_ID].isChecked !== newIsChecked) {
+              Navigation.pageState[CREATE_NEW_IF_EXIST_SWITCH_ID] = { isChecked: newIsChecked };
+            }
           }
         }}
-      />
+      >
+        <Switch
+          isDisabled={isDisabled === true}
+          id={CREATE_NEW_IF_EXIST_SWITCH_ID}
+          label={
+            <div style={{ minWidth: '125px' }}>
+              Create New
+              <CheTooltip content="Create a new workspace each time when ON; reuse an existing one when OFF.">
+                <OutlinedQuestionCircleIcon className={styles.questionIcon} />
+              </CheTooltip>
+            </div>
+          }
+          isChecked={isChecked || isDisabled === true}
+          onChange={(_event, isChecked) => {
+            this.handleChange(isChecked);
+            if (Navigation.pageState[CREATE_NEW_IF_EXIST_SWITCH_ID].isChecked !== isChecked) {
+              Navigation.pageState[CREATE_NEW_IF_EXIST_SWITCH_ID] = { isChecked };
+            }
+          }}
+        />
+      </div>
     );
   }
 }

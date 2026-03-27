@@ -65,7 +65,10 @@ export class BulkSelector extends React.PureComponent<Props, State> {
     });
   }
 
-  private onSelect(_event: React.MouseEvent | undefined, value: string | number | undefined) {
+  private onSelect(
+    _event: React.MouseEvent | React.KeyboardEvent | undefined,
+    value: string | number | undefined,
+  ) {
     if (value === undefined) {
       return;
     }
