@@ -12,7 +12,8 @@
 
 .messageContainer {
   width: 33vw;
-  min-width: 300px;
+  min-width: 450px;
+  max-width: 90vw;
 }
 
 .warningIcon {
@@ -42,8 +43,10 @@
 }
 
 .errorMessage {
+  overflow: auto;
   padding: 5px;
   white-space: pre-wrap;
+  word-break: break-word;
   background-color: var(--pf-t--global--color--nonstatus--red--default);
   border-radius: 3px;
 }
