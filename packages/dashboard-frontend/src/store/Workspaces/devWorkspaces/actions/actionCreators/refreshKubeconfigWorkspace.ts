@@ -10,38 +10,24 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import { injectKubeConfig } from '@/services/backend-client/devWorkspaceApi';
+import { injectKubeConfig, podmanLogin } from '@/services/backend-client/devWorkspaceApi';
 import devfileApi from '@/services/devfileApi';
-import { getDefer, IDeferred } from '@/services/helpers/deferred';
 import { DevWorkspaceStatus } from '@/services/helpers/types';
 import { AppThunk } from '@/store';
 
 export const refreshKubeconfigWorkspace =
   (workspace: devfileApi.DevWorkspace): AppThunk =>
   async () => {
-    const defer: IDeferred<void> = getDefer();
-
-    if (workspace.status?.phase === DevWorkspaceStatus.RUNNING) {
-      const devworkspaceID = workspace.status?.devworkspaceId;
-      const namespace = workspace.metadata.namespace;
-      if (!devworkspaceID || !namespace) {
-        defer.reject(
-          new Error(
-            `Failed to refresh the kubeconfig for the workspace ${workspace.metadata.name} because of missing devworkspaceId or namespace.`,
-          ),
-        );
-        return defer.promise;
-      }
-      try {
-        await injectKubeConfig(namespace, devworkspaceID);
-      } catch (e) {
-        defer.reject(
-          new Error(
-            `Failed to refresh the kubeconfig for the workspace ${workspace.metadata.name}. ${e}`,
-          ),
-        );
-      }
+    if (workspace.status?.phase !== DevWorkspaceStatus.RUNNING) {
+      return;
     }
-
-    return defer.promise;
+    const devworkspaceId = workspace.status?.devworkspaceId;
+    const namespace = workspace.metadata.namespace;
+    if (!devworkspaceId || !namespace) {
+      throw new Error(
+        `Failed to refresh kubeconfig for "${workspace.metadata.name}": missing devworkspaceId or namespace.`,
+      );
+    }
+    await injectKubeConfig(namespace, devworkspaceId);
+    await podmanLogin(namespace, devworkspaceId);
   };
