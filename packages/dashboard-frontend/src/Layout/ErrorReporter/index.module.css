@@ -10,8 +10,14 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-.pageSection {
+.container {
+  position: fixed;
+  z-index: 9999;
+  inset: 0;
+
   display: flex;
   align-items: center;
   justify-content: center;
+
+  background-color: var(--pf-t--global--background--color--primary--default);
 }
