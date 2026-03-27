@@ -10,7 +10,7 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import { Bullseye, Page, PageSection, Stack, StackItem } from '@patternfly/react-core';
+import { Page, PageSection } from '@patternfly/react-core';
 import React from 'react';
 
 import styles from '@/Layout/ErrorReporter/index.module.css';
@@ -23,18 +23,8 @@ export class ErrorReporter extends React.PureComponent<Props> {
   public render(): React.ReactElement {
     return (
       <Page>
-        <PageSection
-          isFilled={true}
-          padding={{ default: 'noPadding' }}
-          className={styles.backdropBackground}
-        >
-          <Stack>
-            <StackItem isFilled></StackItem>
-            <StackItem className={styles.errorMessageContainer}>
-              <Bullseye>{this.props.children}</Bullseye>
-            </StackItem>
-            <StackItem isFilled></StackItem>
-          </Stack>
+        <PageSection isFilled={true} className={styles.pageSection}>
+          {this.props.children}
         </PageSection>
       </Page>
     );

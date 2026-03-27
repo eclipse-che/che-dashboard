@@ -10,11 +10,8 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-.backdropBackground {
-  background-color: black;
-}
-
-.errorMessageContainer {
-  padding: 50px;
-  background-color: white;
+.pageSection {
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
