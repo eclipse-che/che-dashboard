@@ -11,7 +11,7 @@
 */
 
 .progress {
-  height: 700px;
+  min-height: 642px;
   background-color: var(--pf-t--global--background--color--secondary--default);
 }
 
