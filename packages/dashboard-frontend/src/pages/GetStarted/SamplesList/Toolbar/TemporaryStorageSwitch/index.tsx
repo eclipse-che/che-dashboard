@@ -57,6 +57,7 @@ class TemporaryStorageSwitch extends React.PureComponent<Props, State> {
 
     return (
       <div
+        style={{ display: 'contents' }}
         onKeyDown={(e: React.KeyboardEvent) => {
           if (e.key === 'Enter') {
             e.preventDefault();
@@ -72,12 +73,18 @@ class TemporaryStorageSwitch extends React.PureComponent<Props, State> {
             <div style={{ minWidth: '170px' }}>
               Temporary Storage
               <CheTooltip
+                exitDelay={1500}
                 content={
                   <>
                     Temporary Storage allows for faster I/O but may have limited storage and is not
                     persistent.
                     <Content component="p">
-                      <a rel="noreferrer" target="_blank" href={branding.docs.storageTypes}>
+                      <a
+                        style={{ fontSize: 'var(--pf-v6-c-tooltip__content--FontSize)' }}
+                        rel="noreferrer"
+                        target="_blank"
+                        href={branding.docs.storageTypes}
+                      >
                         Open documentation page
                       </a>
                     </Content>

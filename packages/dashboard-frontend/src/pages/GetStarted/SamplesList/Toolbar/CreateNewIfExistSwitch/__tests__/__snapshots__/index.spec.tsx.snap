@@ -3,6 +3,11 @@
 exports[`Create New If Exist Switch snapshot 1`] = `
 <div
   onKeyDown={[Function]}
+  style={
+    {
+      "display": "contents",
+    }
+  }
 >
   <label
     className="pf-v6-c-switch"

@@ -3,6 +3,11 @@
 exports[`Temporary Storage Switch snapshot 1`] = `
 <div
   onKeyDown={[Function]}
+  style={
+    {
+      "display": "contents",
+    }
+  }
 >
   <label
     className="pf-v6-c-switch"
@@ -43,7 +48,7 @@ exports[`Temporary Storage Switch snapshot 1`] = `
           <span
             data-testid="tooltip-props"
           >
-            {"isContentLeftAligned":true,"className":"tooltip"}
+            {"isContentLeftAligned":true,"className":"tooltip","exitDelay":1500}
           </span>
           <div
             data-testid="tooltip-content"
@@ -59,6 +64,11 @@ exports[`Temporary Storage Switch snapshot 1`] = `
               <a
                 href="https://docs.location"
                 rel="noreferrer"
+                style={
+                  {
+                    "fontSize": "var(--pf-v6-c-tooltip__content--FontSize)",
+                  }
+                }
                 target="_blank"
               >
                 Open documentation page

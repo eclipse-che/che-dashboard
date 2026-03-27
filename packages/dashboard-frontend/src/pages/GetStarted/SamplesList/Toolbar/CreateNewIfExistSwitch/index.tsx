@@ -63,6 +63,7 @@ export class CreateNewIfExistSwitch extends React.PureComponent<Props, State> {
 
     return (
       <div
+        style={{ display: 'contents' }}
         onKeyDown={(e: React.KeyboardEvent) => {
           if (e.key === 'Enter' && !isDisabled) {
             e.preventDefault();
