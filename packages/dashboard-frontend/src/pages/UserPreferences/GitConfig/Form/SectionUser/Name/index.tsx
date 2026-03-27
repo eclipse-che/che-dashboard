@@ -87,6 +87,7 @@ export class GitConfigUserName extends React.PureComponent<Props, State> {
         >
           <TextInput
             id={fieldId}
+            autoComplete="name"
             isDisabled={isLoading}
             validated={validated}
             value={value}

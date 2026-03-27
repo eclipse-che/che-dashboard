@@ -90,6 +90,7 @@ export class GitConfigUserEmail extends React.PureComponent<Props, State> {
         >
           <TextInput
             id={fieldId}
+            autoComplete="email"
             isDisabled={isLoading}
             validated={validated}
             value={value}
