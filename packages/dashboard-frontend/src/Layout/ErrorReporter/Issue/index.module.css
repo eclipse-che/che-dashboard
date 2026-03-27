@@ -11,6 +11,7 @@
  */
 
 .messageContainer {
+  overflow: hidden;
   width: 33vw;
   min-width: 450px;
   max-width: 90vw;
@@ -43,10 +44,14 @@
 }
 
 .errorMessage {
-  overflow: auto;
+  overflow-x: auto;
+
+  max-width: 100%;
   padding: 5px;
-  white-space: pre-wrap;
+
   word-break: break-word;
+  white-space: pre-wrap;
+
   background-color: var(--pf-t--global--color--nonstatus--red--default);
   border-radius: 3px;
 }
