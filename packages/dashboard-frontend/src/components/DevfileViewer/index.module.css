@@ -24,6 +24,6 @@
   border: 1px solid var(--pf-t--global--border--color--default);
 }
 
-.devfileViewer > div > div > div > div {
+html:not(.pf-v6-theme-dark) .devfileViewer > div > div > div > div {
   opacity: 0.8;
 }
