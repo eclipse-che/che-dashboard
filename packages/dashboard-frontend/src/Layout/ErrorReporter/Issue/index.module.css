@@ -13,7 +13,6 @@
 .messageContainer {
   overflow: hidden;
   width: 33vw;
-  min-width: 350px;
   max-width: 90vw;
 }
 
