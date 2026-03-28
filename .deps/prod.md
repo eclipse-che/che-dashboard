@@ -202,7 +202,7 @@
 | `fast-uri@3.1.0` | BSD-3-Clause AND ISC AND BSD-2-Clause-Views | #22978 |
 | `fastify-plugin@5.0.1` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/fastify-plugin/5.0.1) |
 | `fastify-plugin@5.1.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/fastify-plugin/5.1.0) |
-| `fastify@5.8.4` |  | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/fastify/5.8.4) |
+| `fastify@5.8.4` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/fastify/5.8.4) |
 | `fastq@1.17.1` | ISC | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/fastq/1.17.1) |
 | `file-selector@2.1.2` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/file-selector/2.1.2) |
 | `find-my-way@9.0.1` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/find-my-way/9.0.1) |

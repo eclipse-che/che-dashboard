@@ -76,6 +76,7 @@ exports[`Samples List Toolbar snapshot 1`] = `
       data-ouia-safe={true}
       disabled={false}
       onClick={[Function]}
+      onKeyDown={[Function]}
       style={
         {
           "width": "200px",
@@ -123,6 +124,7 @@ exports[`Samples List Toolbar snapshot 1`] = `
       data-ouia-safe={true}
       disabled={false}
       onClick={[Function]}
+      onKeyDown={[Function]}
       style={
         {
           "width": "200px",

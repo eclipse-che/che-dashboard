@@ -68,7 +68,7 @@ export class IssueComponent extends React.PureComponent<Props> {
           </>
         )}
         <Button onClick={() => signOut()} variant={ButtonVariant.link} isInline>
-          Logout
+          Sign out
         </Button>
       </Content>
     );
