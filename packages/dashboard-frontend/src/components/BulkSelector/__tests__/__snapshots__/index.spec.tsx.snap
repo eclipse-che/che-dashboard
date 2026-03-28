@@ -9,6 +9,7 @@ exports[`BulkSelector kebab toggle snapshot with elements 1`] = `
   data-ouia-safe={true}
   disabled={false}
   onClick={[Function]}
+  onKeyDown={[Function]}
   style={
     {
       "width": "200px",

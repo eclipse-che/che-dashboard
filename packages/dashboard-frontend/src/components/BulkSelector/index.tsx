@@ -96,6 +96,12 @@ export class BulkSelector extends React.PureComponent<Props, State> {
       <MenuToggle
         ref={toggleRef}
         onClick={() => this.onToggle()}
+        onKeyDown={(e: React.KeyboardEvent) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            this.onToggle();
+          }
+        }}
         isExpanded={isOpen}
         style={{ width: '200px' }}
       >
