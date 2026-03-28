@@ -1,4 +1,4 @@
-# Copyright (c) 2018-2025 Red Hat, Inc.
+# Copyright (c) 2018-2026 Red Hat, Inc.
 # This program and the accompanying materials are made
 # available under the terms of the Eclipse Public License 2.0
 # which is available at https://www.eclipse.org/legal/epl-2.0/
@@ -14,6 +14,8 @@ ARG TARGETPLATFORM
 FROM --platform=${TARGETPLATFORM:-linux/amd64} docker.io/node:24.0.2-alpine3.21
 
 LABEL quay.expires-after=1w
+
+RUN apk add --no-cache git
 
 ENV FRONTEND_LIB=../../packages/dashboard-frontend/lib/public
 ENV BACKEND_LIB=../../packages/dashboard-backend/lib
