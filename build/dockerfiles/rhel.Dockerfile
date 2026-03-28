@@ -26,6 +26,7 @@ USER 0
 # hadolint ignore=DL4006
 RUN \
     dnf -y -q update && \
+    dnf -y -q install git && \
     dnf -y -q clean all && rm -rf /var/cache/dnf && \
     echo "Installed Packages" && rpm -qa | sort -V && echo "End Of Installed Packages"
 
