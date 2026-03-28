@@ -46,13 +46,13 @@ const spyExec = jest
       // file empty
       return mockExecCatKubeConfig();
     } else if (command.some(c => c.startsWith('mkdir -p'))) {
-      // crete the directory
-      return Promise.resolve();
+      // create the directory
+      return Promise.resolve({ stdOut: '', stdError: '' });
     } else if (
       command.some(c => c.startsWith(`echo '`) && c.endsWith(`' > ${kubeConfigDir}/config`))
     ) {
       // sync config
-      return Promise.resolve();
+      return Promise.resolve({ stdOut: '', stdError: '' });
     }
     return Promise.reject({
       stdOut: '',

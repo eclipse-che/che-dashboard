@@ -10,8 +10,11 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
+import * as k8s from '@kubernetes/client-node';
+
 import { DevWorkspaceClient } from '@/devworkspaceClient';
 import { DwClientProvider } from '@/services/kubeclient/dwClientProvider';
+import { KubeConfigProvider } from '@/services/kubeclient/kubeConfigProvider';
 
 /**
  * Creates DevWorkspace Client depending on the context for the specified request.
@@ -19,4 +22,12 @@ import { DwClientProvider } from '@/services/kubeclient/dwClientProvider';
 export function getDevWorkspaceClient(token: string): DevWorkspaceClient {
   const dwClientProvider = new DwClientProvider();
   return dwClientProvider.getDWClient(token);
+}
+
+/**
+ * Returns a KubeConfig configured with the user's token.
+ */
+export function getKubeConfig(token: string): k8s.KubeConfig {
+  const provider = new KubeConfigProvider();
+  return provider.getKubeConfig(token);
 }

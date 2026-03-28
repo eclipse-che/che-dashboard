@@ -13,7 +13,6 @@
 import { api } from '@eclipse-che/common';
 
 import { container } from '@/inversify.config';
-import { injectKubeConfig, podmanLogin } from '@/services/backend-client/devWorkspaceApi';
 import { WebsocketClient } from '@/services/backend-client/websocketClient';
 import devfileApi, * as devfileApiService from '@/services/devfileApi';
 import { DevWorkspaceStatus } from '@/services/helpers/types';
@@ -225,42 +224,6 @@ describe('devWorkspaces, actions', () => {
       expect(actions).toHaveLength(0);
     });
 
-    it('should call injectKubeConfig and podmanLogin when workspace status changes to RUNNING', async () => {
-      const prevWorkspace = {
-        metadata: { uid: 'workspace-uid' },
-        status: { phase: DevWorkspaceStatus.STARTING },
-      };
-      const workspace = {
-        metadata: { uid: 'workspace-uid', namespace: 'test-namespace' },
-        status: { phase: DevWorkspaceStatus.RUNNING, devworkspaceId: 'devworkspace-id' },
-      };
-
-      (shouldUpdateDevWorkspace as jest.Mock).mockReturnValue(true);
-
-      jest.spyOn(devfileApiService, 'isDevWorkspace').mockReturnValueOnce(true);
-      (api.webSocket.isDevWorkspaceMessage as unknown as jest.Mock).mockReturnValueOnce(true);
-
-      const storeWithWorkspace = createMockStore({
-        devWorkspaces: {
-          isLoading: false,
-          resourceVersion: '1',
-          startedWorkspaces: {},
-          warnings: {},
-          workspaces: [prevWorkspace],
-        },
-      } as Partial<RootState> as RootState);
-
-      const message: api.webSocket.DevWorkspaceMessage = {
-        eventPhase: api.webSocket.EventPhase.MODIFIED,
-        devWorkspace: workspace,
-      };
-
-      await storeWithWorkspace.dispatch(handleWebSocketMessage(message));
-
-      expect(injectKubeConfig).toHaveBeenCalledWith('test-namespace', 'devworkspace-id');
-      expect(podmanLogin).toHaveBeenCalledWith('test-namespace', 'devworkspace-id');
-    });
-
     it('should call status change listeners when workspace status changes', async () => {
       const prevWorkspace = {
         metadata: { uid: 'workspace-uid' },
@@ -297,42 +260,6 @@ describe('devWorkspaces, actions', () => {
       await storeWithWorkspace.dispatch(handleWebSocketMessage(message));
 
       expect(statusChangeCallback).toHaveBeenCalledWith(DevWorkspaceStatus.RUNNING);
-    });
-
-    it('should not call injectKubeConfig and podmanLogin if devworkspaceId is undefined', async () => {
-      const prevWorkspace = {
-        metadata: { uid: 'workspace-uid' },
-        status: { phase: DevWorkspaceStatus.STARTING },
-      } as devfileApi.DevWorkspace;
-      const workspace = {
-        metadata: { uid: 'workspace-uid', namespace: 'test-namespace' },
-        status: { phase: DevWorkspaceStatus.RUNNING },
-      } as devfileApi.DevWorkspace;
-
-      (shouldUpdateDevWorkspace as jest.Mock).mockReturnValue(true);
-
-      jest.spyOn(devfileApiService, 'isDevWorkspace').mockReturnValueOnce(true);
-      (api.webSocket.isDevWorkspaceMessage as unknown as jest.Mock).mockReturnValueOnce(true);
-
-      const storeWithWorkspace = createMockStore({
-        devWorkspaces: {
-          isLoading: false,
-          resourceVersion: '1',
-          startedWorkspaces: {},
-          warnings: {},
-          workspaces: [prevWorkspace],
-        },
-      } as Partial<RootState> as RootState);
-
-      const message: api.webSocket.DevWorkspaceMessage = {
-        eventPhase: api.webSocket.EventPhase.MODIFIED,
-        devWorkspace: workspace,
-      };
-
-      await storeWithWorkspace.dispatch(handleWebSocketMessage(message));
-
-      expect(injectKubeConfig).not.toHaveBeenCalled();
-      expect(podmanLogin).not.toHaveBeenCalled();
     });
   });
 });
