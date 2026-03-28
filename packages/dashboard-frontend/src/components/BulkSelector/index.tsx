@@ -120,18 +120,7 @@ export class BulkSelector extends React.PureComponent<Props, State> {
       >
         <SelectList>
           {options.map(tag => (
-            <SelectOption
-              key={tag}
-              value={tag}
-              hasCheckbox
-              isSelected={selected.includes(tag)}
-              onKeyDown={(e: React.KeyboardEvent) => {
-                if (e.key === 'Enter' || e.key === ' ') {
-                  e.preventDefault();
-                  this.onSelect(e, tag);
-                }
-              }}
-            >
+            <SelectOption key={tag} value={tag} hasCheckbox isSelected={selected.includes(tag)}>
               {tag}
             </SelectOption>
           ))}
