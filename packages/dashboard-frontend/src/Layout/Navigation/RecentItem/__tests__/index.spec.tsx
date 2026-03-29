@@ -145,6 +145,31 @@ describe('Navigation Item', () => {
       expect(actions).toHaveAttribute('data-is-parent-focused', 'true');
     });
   });
+
+  describe('keyboard navigation', () => {
+    test('Enter on nav link opens workspace', () => {
+      const mockWindowOpen = jest.fn();
+      window.open = mockWindowOpen;
+      renderComponent(item);
+
+      const link = screen.getByTestId(item.to);
+      fireEvent.keyDown(link, { key: 'Enter', target: link, currentTarget: link });
+
+      expect(mockWindowOpen).toHaveBeenCalled();
+    });
+
+    test('Enter bubbled from child element does not open workspace', () => {
+      const mockWindowOpen = jest.fn();
+      window.open = mockWindowOpen;
+      renderComponent(item);
+
+      const link = screen.getByTestId(item.to);
+      const child = screen.getByTestId('mock-recent-item-workspace-actions');
+      fireEvent.keyDown(link, { key: 'Enter', target: child, currentTarget: link });
+
+      expect(mockWindowOpen).not.toHaveBeenCalled();
+    });
+  });
 });
 
 function getComponent(item: NavigationRecentItemObject, activeItem = ''): React.ReactElement {

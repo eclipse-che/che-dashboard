@@ -50,6 +50,10 @@ export class NavigationRecentItem extends React.PureComponent<Props, State> {
 
   private handleKeyDown(event: React.KeyboardEvent, workspace: Workspace): void {
     if (event.key === 'Enter' || event.key === ' ') {
+      // Ignore events bubbled up from child elements (e.g. the kebab button inside WorkspaceActions)
+      if (event.target !== event.currentTarget) {
+        return;
+      }
       event.preventDefault();
       this.handleClick(workspace);
     }
