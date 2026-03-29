@@ -147,7 +147,7 @@
 | `create-hash@1.2.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/create-hash/1.2.0) |
 | `create-hmac@1.1.7` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/create-hmac/1.1.7) |
 | `crelt@1.0.6` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/crelt/1.0.6) |
-| `cron-parser@5.5.0` |  | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/cron-parser/5.5.0) |
+| `cron-parser@5.5.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/cron-parser/5.5.0) |
 | `cronstrue@3.13.0` |  | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/cronstrue/3.13.0) |
 | `cross-spawn@7.0.6` | MIT | #17146 |
 | `crypto-browserify@3.12.0` | MIT | #1033 |

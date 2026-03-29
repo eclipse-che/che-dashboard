@@ -429,7 +429,7 @@
 | `flat-cache@3.2.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/flat-cache/3.2.0) |
 | `flat-cache@6.1.7` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/flat-cache/6.1.7) |
 | `flat@5.0.2` | BSD-3-Clause | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/flat/5.0.2) |
-| `flatted@3.4.2` | Artistic-2.0 AND ISC | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/flatted/3.4.2) |
+| `flatted@3.4.2` | ISC | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/flatted/3.4.2) |
 | `for-each@0.3.3` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/for-each/0.3.3) |
 | `forever-agent@0.6.1` | Apache-2.0 | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/forever-agent/0.6.1) |
 | `function.prototype.name@1.1.6` | MIT | #10255 |
