@@ -25,12 +25,14 @@ const EVENT_DROPDOWN_OPENED = 'recent-item-workspace-actions:opened';
 
 type Props = {
   item: NavigationRecentItemObject;
-  /** True while the parent nav-item is hovered; controls whether the actions are visible. */
+  /** True while the parent nav-item is hovered or focused; controls whether the actions are visible. */
   isParentHovered: boolean;
+  /** True while the parent nav-item or any of its descendants has keyboard focus. */
+  isParentFocused: boolean;
 };
 
 export function RecentItemWorkspaceActions(props: Props): React.ReactElement {
-  const { item, isParentHovered } = props;
+  const { item, isParentHovered, isParentFocused } = props;
   const [isOpen, setIsOpen] = React.useState(false);
 
   // When this dropdown opens, broadcast so siblings can close themselves.
@@ -62,7 +64,7 @@ export function RecentItemWorkspaceActions(props: Props): React.ReactElement {
     };
   }, [item.workspace.uid]);
 
-  const isVisible = isParentHovered || isOpen;
+  const isVisible = isParentHovered || isParentFocused || isOpen;
 
   return (
     <div

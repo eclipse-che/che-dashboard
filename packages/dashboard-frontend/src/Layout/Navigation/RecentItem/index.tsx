@@ -30,6 +30,7 @@ export type Props = {
 
 type State = {
   isHovered: boolean;
+  isFocused: boolean;
 };
 
 export class NavigationRecentItem extends React.PureComponent<Props, State> {
@@ -38,7 +39,7 @@ export class NavigationRecentItem extends React.PureComponent<Props, State> {
 
   constructor(props: Props) {
     super(props);
-    this.state = { isHovered: false };
+    this.state = { isHovered: false, isFocused: false };
   }
 
   private handleClick(workspace: Workspace) {
@@ -54,9 +55,19 @@ export class NavigationRecentItem extends React.PureComponent<Props, State> {
     }
   }
 
+  private handleFocus(): void {
+    this.setState({ isFocused: true });
+  }
+
+  private handleBlur(e: React.FocusEvent): void {
+    if (!e.currentTarget.contains(e.relatedTarget as Node)) {
+      this.setState({ isFocused: false });
+    }
+  }
+
   render(): React.ReactElement {
     const { activePath, item } = this.props;
-    const { isHovered } = this.state;
+    const { isHovered, isFocused } = this.state;
 
     const isActive = getActivity(item.to, activePath);
     const titleClassName = styles.titleHover + ' ' + (isActive ? styles.active : '');
@@ -74,6 +85,8 @@ export class NavigationRecentItem extends React.PureComponent<Props, State> {
         onKeyDown={(e: React.KeyboardEvent) => this.handleKeyDown(e, item.workspace)}
         onMouseEnter={() => this.setState({ isHovered: true })}
         onMouseLeave={() => this.setState({ isHovered: false })}
+        onFocus={() => this.handleFocus()}
+        onBlur={(e: React.FocusEvent) => this.handleBlur(e)}
       >
         <span data-testid="recent-workspace-item">
           <WorkspaceStatusIndicator
@@ -82,7 +95,11 @@ export class NavigationRecentItem extends React.PureComponent<Props, State> {
           />
           <span className={titleClassName}>{item.label}</span>
         </span>
-        <RecentItemWorkspaceActions item={item} isParentHovered={isHovered} />
+        <RecentItemWorkspaceActions
+          item={item}
+          isParentHovered={isHovered}
+          isParentFocused={isFocused}
+        />
       </NavItem>
     );
   }
