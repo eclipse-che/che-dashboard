@@ -34,6 +34,7 @@ const { renderComponent } = getComponentRenderer(getComponent);
 const mockOnNextStep = jest.fn();
 const mockOnRestart = jest.fn();
 const mockOnError = jest.fn();
+const mockOnWarning = jest.fn();
 const mockOnHideError = jest.fn();
 
 jest.mock('@/services/helpers/location', () => ({
@@ -464,6 +465,7 @@ function getComponent(store: Store, searchParams: URLSearchParams): React.ReactE
         onNextStep={mockOnNextStep}
         onRestart={mockOnRestart}
         onError={mockOnError}
+        onWarning={mockOnWarning}
         onHideError={mockOnHideError}
       />
     </Provider>

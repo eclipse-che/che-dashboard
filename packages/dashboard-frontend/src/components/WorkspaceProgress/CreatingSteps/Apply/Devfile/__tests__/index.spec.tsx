@@ -71,6 +71,7 @@ let location: Location;
 const mockOnNextStep = jest.fn();
 const mockOnRestart = jest.fn();
 const mockOnError = jest.fn();
+const mockOnWarning = jest.fn();
 const mockOnHideError = jest.fn();
 
 const factoryUrl = 'https://factory-url';
@@ -995,6 +996,7 @@ function getComponent(
       onNextStep={mockOnNextStep}
       onRestart={mockOnRestart}
       onError={mockOnError}
+      onWarning={mockOnWarning}
       onHideError={mockOnHideError}
     />
   );

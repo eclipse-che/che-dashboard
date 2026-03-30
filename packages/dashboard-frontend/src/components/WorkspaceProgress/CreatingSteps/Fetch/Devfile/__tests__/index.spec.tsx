@@ -13,6 +13,7 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 
 import { FACTORY_LINK_ATTR } from '@eclipse-che/common';
+import { AlertVariant } from '@patternfly/react-core';
 import { cleanup, screen, waitFor } from '@testing-library/react';
 import userEvent, { UserEvent } from '@testing-library/user-event';
 import React from 'react';
@@ -71,6 +72,7 @@ const { renderComponent } = getComponentRenderer(getComponent);
 const mockOnNextStep = jest.fn();
 const mockOnRestart = jest.fn();
 const mockOnError = jest.fn();
+const mockOnWarning = jest.fn();
 const mockOnHideError = jest.fn();
 
 const factoryUrl = 'https://factory-url';
@@ -348,6 +350,11 @@ describe('Creating steps, fetching a devfile', () => {
   describe('unsupported git provider', () => {
     let emptyStore: Store;
     const rejectReason = 'Failed to fetch devfile';
+    const alertItem = {
+      key: 'Inspecting repo',
+      title: 'Failed to fetch devfile. Workspace will start from the default devfile.',
+      variant: AlertVariant.warning,
+    };
 
     beforeEach(() => {
       emptyStore = new MockStoreBuilder().build();
@@ -360,6 +367,7 @@ describe('Creating steps, fetching a devfile', () => {
       await jest.advanceTimersByTimeAsync(MIN_STEP_DURATION_MS);
 
       await waitFor(() => expect(mockOnError).not.toHaveBeenCalled());
+      expect(mockOnWarning).toHaveBeenCalledWith(alertItem);
       expect(mockOnNextStep).toHaveBeenCalled();
     });
   });
@@ -710,6 +718,7 @@ function getComponent(
         onNextStep={mockOnNextStep}
         onRestart={mockOnRestart}
         onError={mockOnError}
+        onWarning={mockOnWarning}
         onHideError={mockOnHideError}
       />
     </Provider>

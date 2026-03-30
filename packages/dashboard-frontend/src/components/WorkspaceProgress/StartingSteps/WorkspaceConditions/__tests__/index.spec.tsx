@@ -37,6 +37,7 @@ jest.mock('@/components/WorkspaceProgress/StepTitle');
 const mockOnNextStep = jest.fn();
 const mockOnRestart = jest.fn();
 const mockOnError = jest.fn();
+const mockOnWarning = jest.fn();
 const mockOnHideError = jest.fn();
 
 const { renderComponent, createSnapshot } = getComponentRenderer(getComponent);
@@ -186,6 +187,7 @@ function getComponent(condition: ConditionType, _matchParams = matchParams): Rea
           onNextStep={mockOnNextStep}
           onRestart={mockOnRestart}
           onError={mockOnError}
+          onWarning={mockOnWarning}
           onHideError={mockOnHideError}
         />
       </React.Fragment>
