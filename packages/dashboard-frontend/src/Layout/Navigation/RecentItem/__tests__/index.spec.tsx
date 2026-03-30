@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018-2026 Red Hat, Inc.
+ * Copyright (c) 2018-2025 Red Hat, Inc.
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
  * which is available at https://www.eclipse.org/legal/epl-2.0/
@@ -158,16 +158,49 @@ describe('Navigation Item', () => {
       expect(mockWindowOpen).toHaveBeenCalled();
     });
 
-    test('Enter bubbled from child element does not open workspace', () => {
+    test('Space on nav link opens workspace', () => {
       const mockWindowOpen = jest.fn();
       window.open = mockWindowOpen;
       renderComponent(item);
 
       const link = screen.getByTestId(item.to);
+      fireEvent.keyDown(link, { key: ' ', target: link, currentTarget: link });
+
+      expect(mockWindowOpen).toHaveBeenCalled();
+    });
+
+    test('Enter bubbled from child element does not open workspace', () => {
+      const mockWindowOpen = jest.fn();
+      window.open = mockWindowOpen;
+      renderComponent(item);
+
       const child = screen.getByTestId('mock-recent-item-workspace-actions');
-      fireEvent.keyDown(link, { key: 'Enter', target: child, currentTarget: link });
+      fireEvent.keyDown(child, { key: 'Enter' });
 
       expect(mockWindowOpen).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('mouse hover', () => {
+    test('workspace actions become hovered when nav item is mouse-entered', () => {
+      renderComponent(item);
+
+      const link = screen.getByTestId(item.to);
+      fireEvent.mouseEnter(link);
+
+      const actions = screen.getByTestId('mock-recent-item-workspace-actions');
+      expect(actions).toHaveAttribute('data-is-parent-hovered', 'true');
+    });
+
+    test('workspace actions lose hover when nav item is mouse-left', () => {
+      renderComponent(item);
+
+      const link = screen.getByTestId(item.to);
+      fireEvent.mouseEnter(link);
+      fireEvent.mouseLeave(link);
+
+      const actions = screen.getByTestId('mock-recent-item-workspace-actions');
+      expect(actions).toHaveAttribute('data-is-parent-hovered', 'false');
     });
   });
 });
