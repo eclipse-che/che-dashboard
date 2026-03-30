@@ -90,7 +90,11 @@ export default class Bootstrap {
     await this.fetchServerConfig()
       .then(() => this.doBackendsSanityCheck())
       .catch(async err => {
-        await this.fetchClusterInfo();
+        try {
+          await this.fetchClusterInfo();
+        } catch (error) {
+          console.error(error);
+        }
         return Promise.reject(err);
       });
     this.prefetchResources();

@@ -126,7 +126,7 @@ export class BulkSelector extends React.PureComponent<Props, State> {
               hasCheckbox
               isSelected={selected.includes(tag)}
               onKeyDown={(e: React.KeyboardEvent) => {
-                if (e.key === 'Enter') {
+                if (e.key === 'Enter' || e.key === ' ') {
                   e.preventDefault();
                   this.onSelect(e, tag);
                 }

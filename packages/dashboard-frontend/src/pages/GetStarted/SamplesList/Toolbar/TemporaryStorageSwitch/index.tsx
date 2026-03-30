@@ -24,6 +24,7 @@ import { selectBranding } from '@/store/Branding/selectors';
 export const TEMPORARY_STORAGE_SWITCH_ID = 'temporary-storage-switch';
 
 export type Props = MappedProps & {
+  isDisabled?: boolean;
   isTemporary: boolean;
   onChange: (isTemporary: boolean) => void;
 };
@@ -52,14 +53,14 @@ class TemporaryStorageSwitch extends React.PureComponent<Props, State> {
   }
 
   render(): React.ReactElement {
-    const { branding } = this.props;
+    const { branding, isDisabled } = this.props;
     const { isChecked } = this.state;
 
     return (
       <div
         style={{ display: 'contents' }}
         onKeyDown={(e: React.KeyboardEvent) => {
-          if (e.key === 'Enter') {
+          if ((e.key === 'Enter' || e.key === ' ') && !isDisabled) {
             e.preventDefault();
             const newIsChecked = !isChecked;
             this.handleChange(newIsChecked);
@@ -68,6 +69,7 @@ class TemporaryStorageSwitch extends React.PureComponent<Props, State> {
         }}
       >
         <Switch
+          isDisabled={isDisabled === true}
           id={TEMPORARY_STORAGE_SWITCH_ID}
           label={
             <div style={{ minWidth: '170px' }}>
