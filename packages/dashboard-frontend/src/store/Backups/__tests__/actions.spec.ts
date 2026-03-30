@@ -379,6 +379,21 @@ describe('Backup Actions', () => {
     });
 
     describe('fetchBackupConfig', () => {
+      it('should skip fetch when a request is already in-flight', async () => {
+        mockedBackupApi.getBackupConfig.mockResolvedValueOnce({
+          enabled: true,
+          schedule: '',
+          registry: '',
+        });
+
+        const store = createStoreWithState({
+          loading: { loadingCount: 0, updatingCount: 0, configLoadingCount: 1 },
+        });
+        await store.dispatch(fetchBackupConfig({ namespace }));
+
+        expect(mockedBackupApi.getBackupConfig).not.toHaveBeenCalled();
+      });
+
       it('should skip fetch when config was fetched within TTL', async () => {
         mockedBackupApi.getBackupConfig.mockResolvedValueOnce({
           enabled: true,

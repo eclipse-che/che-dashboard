@@ -10,7 +10,7 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-import { api } from '@eclipse-che/common';
+import { api, DEVWORKSPACE_BACKUP_ANNOTATIONS } from '@eclipse-che/common';
 
 import { container } from '@/inversify.config';
 import { injectKubeConfig, podmanLogin } from '@/services/backend-client/devWorkspaceApi';
@@ -21,6 +21,7 @@ import { che } from '@/services/models';
 import { WorkspaceAdapter } from '@/services/workspace-adapter';
 import { RootState } from '@/store';
 import { createMockStore } from '@/store/__mocks__/mockActionsTestStore';
+import { fetchWorkspaceBackupStatus } from '@/store/Backups/actions';
 import * as infrastructureNamespaces from '@/store/InfrastructureNamespaces';
 import {
   actionCreators,
@@ -44,6 +45,9 @@ jest.mock('@/services/workspace-adapter');
 jest.mock('@/store/Workspaces/devWorkspaces/actions/actionCreators');
 jest.mock('@/store/Workspaces/devWorkspaces/actions/actionCreators/helpers');
 jest.mock('@/store/InfrastructureNamespaces');
+jest.mock('@/store/Backups/actions', () => ({
+  fetchWorkspaceBackupStatus: jest.fn().mockReturnValue(() => Promise.resolve()),
+}));
 
 describe('devWorkspaces, actions', () => {
   afterEach(() => {
@@ -166,6 +170,117 @@ describe('devWorkspaces, actions', () => {
           spec: { started: false, template: {} },
         }),
       );
+    });
+
+    it('should dispatch fetchWorkspaceBackupStatus when backup annotation changes', async () => {
+      const prevWorkspace = {
+        metadata: {
+          uid: 'workspace-uid',
+          name: 'my-workspace',
+          namespace: 'user-che',
+          resourceVersion: '1',
+          annotations: {
+            [DEVWORKSPACE_BACKUP_ANNOTATIONS.LAST_BACKUP_FINISHED_AT]: '2026-03-01T10:00:00.000Z',
+          },
+        },
+        status: { phase: 'Stopped', devworkspaceId: 'devworkspace-123' },
+      } as unknown as devfileApi.DevWorkspace;
+      const workspace = {
+        metadata: {
+          uid: 'workspace-uid',
+          name: 'my-workspace',
+          namespace: 'user-che',
+          resourceVersion: '2',
+          annotations: {
+            [DEVWORKSPACE_BACKUP_ANNOTATIONS.LAST_BACKUP_FINISHED_AT]: '2026-03-02T10:00:00.000Z',
+          },
+        },
+        status: { phase: 'Stopped', devworkspaceId: 'devworkspace-123' },
+      } as unknown as devfileApi.DevWorkspace;
+
+      const storeWithWorkspace = createMockStore({
+        devWorkspaces: {
+          isLoading: false,
+          resourceVersion: '1',
+          startedWorkspaces: {},
+          warnings: {},
+          workspaces: [prevWorkspace],
+        },
+      } as Partial<RootState> as RootState);
+
+      (shouldUpdateDevWorkspace as jest.Mock)
+        .mockReturnValueOnce(true)
+        .mockReturnValueOnce(true)
+        .mockReturnValueOnce(true);
+      jest.spyOn(devfileApiService, 'isDevWorkspace').mockReturnValueOnce(true);
+      (api.webSocket.isDevWorkspaceMessage as unknown as jest.Mock).mockReturnValueOnce(true);
+
+      const message: api.webSocket.DevWorkspaceMessage = {
+        eventPhase: api.webSocket.EventPhase.MODIFIED,
+        devWorkspace: workspace,
+      };
+
+      await storeWithWorkspace.dispatch(handleWebSocketMessage(message));
+
+      expect(fetchWorkspaceBackupStatus).toHaveBeenCalledWith({
+        namespace: 'user-che',
+        workspaceUID: 'workspace-uid',
+        workspaceName: 'my-workspace',
+      });
+    });
+
+    it('should not dispatch fetchWorkspaceBackupStatus when backup annotation is unchanged', async () => {
+      const backupTime = '2026-03-01T10:00:00.000Z';
+      const prevWorkspace = {
+        metadata: {
+          uid: 'workspace-uid',
+          name: 'my-workspace',
+          namespace: 'user-che',
+          resourceVersion: '1',
+          annotations: {
+            [DEVWORKSPACE_BACKUP_ANNOTATIONS.LAST_BACKUP_FINISHED_AT]: backupTime,
+          },
+        },
+        status: { phase: 'Stopped', devworkspaceId: 'devworkspace-123' },
+      } as unknown as devfileApi.DevWorkspace;
+      const workspace = {
+        metadata: {
+          uid: 'workspace-uid',
+          name: 'my-workspace',
+          namespace: 'user-che',
+          resourceVersion: '2',
+          annotations: {
+            [DEVWORKSPACE_BACKUP_ANNOTATIONS.LAST_BACKUP_FINISHED_AT]: backupTime,
+          },
+        },
+        status: { phase: 'Stopped', devworkspaceId: 'devworkspace-123' },
+      } as unknown as devfileApi.DevWorkspace;
+
+      const storeWithWorkspace = createMockStore({
+        devWorkspaces: {
+          isLoading: false,
+          resourceVersion: '1',
+          startedWorkspaces: {},
+          warnings: {},
+          workspaces: [prevWorkspace],
+        },
+      } as Partial<RootState> as RootState);
+
+      (shouldUpdateDevWorkspace as jest.Mock)
+        .mockReturnValueOnce(true)
+        .mockReturnValueOnce(true)
+        .mockReturnValueOnce(true);
+      jest.spyOn(devfileApiService, 'isDevWorkspace').mockReturnValueOnce(true);
+      (api.webSocket.isDevWorkspaceMessage as unknown as jest.Mock).mockReturnValueOnce(true);
+
+      const message: api.webSocket.DevWorkspaceMessage = {
+        eventPhase: api.webSocket.EventPhase.MODIFIED,
+        devWorkspace: workspace,
+      };
+
+      await storeWithWorkspace.dispatch(handleWebSocketMessage(message));
+
+      expect(fetchWorkspaceBackupStatus).not.toHaveBeenCalled();
     });
 
     it('should handle dev workspace deleted event', async () => {
