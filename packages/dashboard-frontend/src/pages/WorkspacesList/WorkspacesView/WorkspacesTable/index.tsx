@@ -84,7 +84,9 @@ export class WorkspacesTable extends React.PureComponent<Props> {
                 <Td dataLabel="Name">{row.cells.details}</Td>
                 <Td dataLabel="Editor">{row.cells.editorIcon}</Td>
                 <Td dataLabel="Last Modified">{row.cells.lastModifiedDate}</Td>
-                <Td dataLabel="Backup Status">{row.cells.backupStatus}</Td>
+                {row.cells.backupStatus !== undefined && (
+                  <Td dataLabel="Backup Status">{row.cells.backupStatus}</Td>
+                )}
                 <Td dataLabel="Project(s)">{row.cells.projectsList}</Td>
                 <Td>{row.cells.action}</Td>
                 <Td isActionCell>{row.cells.actionsDropdown}</Td>

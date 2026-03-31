@@ -49,6 +49,8 @@ export const fetchBackupConfig = createAsyncThunk<
     condition: (arg, { getState }) => {
       if (arg.force) return true;
       const state = (getState() as { backups: State }).backups;
+      // Skip if a request is already in-flight
+      if (state.loading.configLoadingCount > 0) return false;
       const age = Date.now() - state.lastFetchedConfigAt;
       return age > BACKUP_CACHE_TTL_MS;
     },

@@ -179,6 +179,55 @@ describe('BackupApiService', () => {
       );
     });
 
+    it('should return disabled config when DWOC is not found (404)', async () => {
+      const notFoundError = Object.assign(new Error('Not Found'), {
+        code: 404,
+        headers: {},
+        body: { kind: 'Status', code: 404, reason: 'NotFound' },
+      });
+      mockSaCustomObjectAPI.getNamespacedCustomObject.mockRejectedValue(notFoundError);
+
+      const result = await backupApiService.getClusterBackupConfig();
+
+      expect(result).toEqual({
+        enabled: false,
+        schedule: '',
+        registry: '',
+        authSecretName: undefined,
+      });
+    });
+
+    it('should return disabled config when SA lacks RBAC to read DWOC (403)', async () => {
+      const forbiddenError = Object.assign(new Error('Forbidden'), {
+        code: 403,
+        headers: {},
+        body: { kind: 'Status', code: 403, reason: 'Forbidden' },
+      });
+      mockSaCustomObjectAPI.getNamespacedCustomObject.mockRejectedValue(forbiddenError);
+
+      const result = await backupApiService.getClusterBackupConfig();
+
+      expect(result).toEqual({
+        enabled: false,
+        schedule: '',
+        registry: '',
+        authSecretName: undefined,
+      });
+    });
+
+    it('should still throw on non-404 errors (e.g. 500)', async () => {
+      const serverError = Object.assign(new Error('Internal Server Error'), {
+        code: 500,
+        headers: {},
+        body: { kind: 'Status', code: 500, reason: 'InternalError' },
+      });
+      mockSaCustomObjectAPI.getNamespacedCustomObject.mockRejectedValue(serverError);
+
+      await expect(backupApiService.getClusterBackupConfig()).rejects.toThrow(
+        'Unable to get cluster backup configuration',
+      );
+    });
+
     it('should use SA token for DWOC reads, not user token', async () => {
       mockSaCustomObjectAPI.getNamespacedCustomObject.mockResolvedValue(mockOperatorConfig);
 
@@ -192,6 +241,21 @@ describe('BackupApiService', () => {
   });
 
   describe('getWorkspaceBackupStatus', () => {
+    it('should return NEVER without querying DevWorkspace when registry is empty', async () => {
+      // DWOC with no backupCronJob section → registry will be ''
+      mockSaCustomObjectAPI.getNamespacedCustomObject.mockResolvedValueOnce({
+        kind: 'DevWorkspaceOperatorConfig',
+        config: { workspace: {} },
+      });
+
+      const result = await backupApiService.getWorkspaceBackupStatus(namespace, workspaceName);
+
+      expect(result.status).toBe(BackupStatus.NEVER);
+      // Should NOT have called DevWorkspace or Job APIs
+      expect(mockCustomObjectAPI.getNamespacedCustomObject).not.toHaveBeenCalled();
+      expect(mockBatchV1API.listNamespacedJob).not.toHaveBeenCalled();
+    });
+
     it('should return NEVER status when no backup annotations exist', async () => {
       mockGetNamespacedForBackupStatus({});
 
@@ -387,7 +451,7 @@ describe('BackupApiService', () => {
       expect(mockCustomObjectAPI.getNamespacedCustomObject).toHaveBeenCalledTimes(2);
     });
 
-    it('should return undefined backupImageUrl when registry is not configured', async () => {
+    it('should return NEVER early when registry is not configured', async () => {
       const operatorConfigNoRegistry = {
         kind: 'DevWorkspaceOperatorConfig',
         config: {
@@ -403,16 +467,16 @@ describe('BackupApiService', () => {
         },
       };
 
-      const annotations = {
-        'controller.devfile.io/last-backup-successful': 'true',
-        'controller.devfile.io/last-backup-finished-at': '2025-02-10T01:05:00Z',
-      };
-      mockGetNamespacedForBackupStatus(annotations, operatorConfigNoRegistry);
+      mockSaCustomObjectAPI.getNamespacedCustomObject.mockResolvedValueOnce(
+        operatorConfigNoRegistry,
+      );
 
       const result = await backupApiService.getWorkspaceBackupStatus(namespace, workspaceName);
 
-      expect(result.status).toBe(BackupStatus.SUCCESS);
-      expect(result.backupImageUrl).toBeUndefined();
+      expect(result.status).toBe(BackupStatus.NEVER);
+      // Should NOT have called DevWorkspace or Job APIs
+      expect(mockCustomObjectAPI.getNamespacedCustomObject).not.toHaveBeenCalled();
+      expect(mockBatchV1API.listNamespacedJob).not.toHaveBeenCalled();
     });
   });
 

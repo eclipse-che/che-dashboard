@@ -407,7 +407,7 @@ describe('Backup API Integration Tests', () => {
       expect(response.backupSchedule).toBeUndefined();
     });
 
-    it('should not include backupImageUrl when registry is empty', async () => {
+    it('should return NEVER early when registry is empty (backup not configured)', async () => {
       mockBackupStatusAPIs(
         {
           'controller.devfile.io/last-backup-successful': 'true',
@@ -415,7 +415,6 @@ describe('Backup API Integration Tests', () => {
         },
         { registry: '' },
       );
-      mockBatchV1API.listNamespacedJob.mockResolvedValue({ items: [] });
 
       const res = await app
         .inject()
@@ -424,7 +423,8 @@ describe('Backup API Integration Tests', () => {
       expect(res.statusCode).toEqual(200);
       const response = res.json();
 
-      expect(response.status).toBe(BackupStatus.SUCCESS);
+      // Empty registry means backup was never configured — early return with NEVER
+      expect(response.status).toBe(BackupStatus.NEVER);
       expect(response.backupImageUrl).toBeUndefined();
     });
 

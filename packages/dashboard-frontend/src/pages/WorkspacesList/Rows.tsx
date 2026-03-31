@@ -38,7 +38,7 @@ export interface RowData {
     details: React.ReactNode;
     editorIcon: React.ReactNode;
     lastModifiedDate: string;
-    backupStatus: React.ReactNode;
+    backupStatus?: React.ReactNode;
     projectsList: string;
     action: React.ReactNode;
     actionsDropdown: React.ReactNode;
@@ -55,6 +55,7 @@ export function buildRows(
   selected: string[],
   sortBy: { index: number; direction: SortDirection },
   backupsByWorkspace: Record<string, BackupInfo> = {},
+  showBackupStatus = true,
 ): RowData[] {
   const rows: RowData[] = [];
   workspaces
@@ -98,6 +99,7 @@ export function buildRows(
             overviewPageLocation,
             ideLoaderHref,
             backupInfo,
+            showBackupStatus,
           ),
         );
       } catch (e) {
@@ -124,6 +126,7 @@ export function buildRow(
   overviewPageLocation: Location,
   ideLoaderHref: string,
   backupInfo?: BackupInfo,
+  showBackupStatus = true,
 ): RowData {
   if (!workspace.name) {
     throw new Error('Empty workspace name.');
@@ -214,13 +217,13 @@ export function buildRow(
   );
 
   /* backup status */
-  const backupStatus = (
+  const backupStatus = showBackupStatus ? (
     <BackupStatusBadge
       status={backupInfo?.status ?? BackupStatus.NEVER}
       lastBackupTime={backupInfo?.lastBackupTime}
       backupImageUrl={backupInfo?.backupImageUrl}
     />
-  );
+  ) : undefined;
 
   return {
     workspaceUID: workspace.uid,
