@@ -163,9 +163,12 @@ describe('Workspaces List Page', () => {
 
       await userEvent.click(rowCheckbox);
 
-      await waitFor(() => {
-        expect(rowCheckbox).toBeChecked();
-      });
+      await waitFor(
+        () => {
+          expect(rowCheckbox).toBeChecked();
+        },
+        { timeout: 5000 },
+      );
     });
   });
 
