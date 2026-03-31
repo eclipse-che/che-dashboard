@@ -16,6 +16,7 @@ import { Provider } from 'react-redux';
 
 import { OverviewTab } from '@/pages/WorkspaceDetails/OverviewTab';
 import getComponentRenderer, { screen } from '@/services/__mocks__/getComponentRenderer';
+import { DevWorkspaceStatus } from '@/services/helpers/types';
 import { constructWorkspace, Workspace } from '@/services/workspace-adapter';
 import { DevWorkspaceBuilder } from '@/store/__mocks__/devWorkspaceBuilder';
 import { MockStoreBuilder } from '@/store/__mocks__/mockStore';
@@ -109,6 +110,79 @@ describe('OverviewTab', () => {
       expect(mockOnSave).toHaveBeenCalledWith(
         expect.objectContaining({ storageType: 'per-workspace' }),
       );
+    });
+  });
+
+  /**
+   * Regression guard: ensures workspace rename stays wired in OverviewTab.
+   * This test will fail if readonly/onSave props are removed from WorkspaceNameFormGroup
+   * (as happened in the PF6 redesign regression — eclipse-che/che-dashboard#1452).
+   */
+  describe('Workspace rename', () => {
+    test('rename button is shown when workspace is STOPPED', async () => {
+      const devWorkspace = new DevWorkspaceBuilder()
+        .withName('my-project')
+        .withStatus({ phase: 'STOPPED' })
+        .build();
+      workspace = constructWorkspace(devWorkspace);
+      renderComponent(workspace);
+
+      expect(screen.getByTestId('workspace-name-readonly')).toHaveTextContent('false');
+      expect(screen.getByTestId('mock-rename-button')).toBeInTheDocument();
+    });
+
+    test('rename button is shown when workspace is FAILED', async () => {
+      const devWorkspace = new DevWorkspaceBuilder()
+        .withName('my-project')
+        .withStatus({ phase: 'FAILED' })
+        .build();
+      workspace = constructWorkspace(devWorkspace);
+      renderComponent(workspace);
+
+      expect(screen.getByTestId('workspace-name-readonly')).toHaveTextContent('false');
+      expect(screen.getByTestId('mock-rename-button')).toBeInTheDocument();
+    });
+
+    test('rename button is NOT shown when workspace is RUNNING', () => {
+      const devWorkspace = new DevWorkspaceBuilder()
+        .withName('my-project')
+        .withStatus({ phase: 'RUNNING' })
+        .build();
+      workspace = constructWorkspace(devWorkspace);
+      renderComponent(workspace);
+
+      expect(screen.getByTestId('workspace-name-readonly')).toHaveTextContent('true');
+      expect(screen.queryByTestId('mock-rename-button')).toBeNull();
+    });
+
+    test('rename button is NOT shown when workspace is TERMINATING', () => {
+      const devWorkspace = new DevWorkspaceBuilder()
+        .withName('my-project')
+        .withStatus({ phase: DevWorkspaceStatus.TERMINATING })
+        .build();
+      workspace = constructWorkspace(devWorkspace);
+      renderComponent(workspace);
+
+      expect(screen.getByTestId('workspace-name-readonly')).toHaveTextContent('true');
+      expect(screen.queryByTestId('mock-rename-button')).toBeNull();
+    });
+
+    test('clicking rename calls onSave — rename handler is wired from OverviewTab', async () => {
+      // Regression guard: verifies that WorkspaceNameFormGroup.onSave is connected
+      // to OverviewTab.handleWorkspaceNameSave, which in turn calls props.onSave.
+      // This test will fail if the onSave wiring is removed (as happened in #1452).
+      const devWorkspace = new DevWorkspaceBuilder()
+        .withName('my-project')
+        .withStatus({ phase: 'STOPPED' })
+        .build();
+      workspace = constructWorkspace(devWorkspace);
+      renderComponent(workspace);
+
+      await userEvent.click(screen.getByTestId('mock-rename-button'));
+
+      // mockOnSave (OverviewTab's onSave prop) must have been called once,
+      // proving the rename path is fully wired.
+      expect(mockOnSave).toHaveBeenCalledTimes(1);
     });
   });
 });

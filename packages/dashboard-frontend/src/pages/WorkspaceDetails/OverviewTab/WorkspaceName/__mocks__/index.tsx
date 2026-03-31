@@ -12,8 +12,27 @@
 
 import React from 'react';
 
-export default class WorkspaceNameFormGroups extends React.PureComponent {
+import { Workspace } from '@/services/workspace-adapter';
+
+export type Props = {
+  workspace: Workspace;
+  readonly: boolean;
+  onSave: (workspaceName: string) => void;
+};
+
+export default class WorkspaceNameFormGroup extends React.PureComponent<Props> {
   render() {
-    return <div>Mock Workspace Name Form</div>;
+    const { workspace, readonly, onSave } = this.props;
+    return (
+      <div data-testid="mock-workspace-name">
+        <span data-testid="workspace-name-value">{workspace.name}</span>
+        <span data-testid="workspace-name-readonly">{String(readonly)}</span>
+        {!readonly && (
+          <button data-testid="mock-rename-button" onClick={() => onSave('renamed-workspace')}>
+            Change workspace name
+          </button>
+        )}
+      </div>
+    );
   }
 }

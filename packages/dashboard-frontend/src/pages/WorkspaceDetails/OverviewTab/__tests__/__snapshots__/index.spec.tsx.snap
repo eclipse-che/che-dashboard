@@ -12,8 +12,25 @@ exports[`OverviewTab With parent screenshot 1`] = `
       noValidate={true}
       onSubmit={[Function]}
     >
-      <div>
-        Mock Workspace Name Form
+      <div
+        data-testid="mock-workspace-name"
+      >
+        <span
+          data-testid="workspace-name-value"
+        >
+          my-project
+        </span>
+        <span
+          data-testid="workspace-name-readonly"
+        >
+          false
+        </span>
+        <button
+          data-testid="mock-rename-button"
+          onClick={[Function]}
+        >
+          Change workspace name
+        </button>
       </div>
       <div>
         Mock Infrastructure Namespace Form
@@ -52,8 +69,25 @@ exports[`OverviewTab Without parent screenshot 1`] = `
       noValidate={true}
       onSubmit={[Function]}
     >
-      <div>
-        Mock Workspace Name Form
+      <div
+        data-testid="mock-workspace-name"
+      >
+        <span
+          data-testid="workspace-name-value"
+        >
+          my-project
+        </span>
+        <span
+          data-testid="workspace-name-readonly"
+        >
+          false
+        </span>
+        <button
+          data-testid="mock-rename-button"
+          onClick={[Function]}
+        >
+          Change workspace name
+        </button>
       </div>
       <div>
         Mock Infrastructure Namespace Form
