@@ -18,7 +18,6 @@ This file lists dependencies that do not need CQs or auto-detection does not wor
 | `any-signal@4.2.0` | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/any-signal/4.2.0) |
 | `blueimp-md5@2.19.0` | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/blueimp-md5/2.19.0) |
 | `create-hash@1.1.3` | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/create-hash/1.1.3) |
-| `cron-parser@5.5.0` | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/cron-parser/5.5.0) |
 | `cronstrue@3.13.0` | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/cronstrue/3.13.0) |
 | `fast-json-stringify@6.3.0` | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/fast-json-stringify/6.3.0) |
 | `fast-uri@2.4.0` | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/fast-uri/2.4.0) |
