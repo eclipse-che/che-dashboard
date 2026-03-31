@@ -23,11 +23,12 @@ export const refreshKubeconfigWorkspace =
     }
     const devworkspaceId = workspace.status?.devworkspaceId;
     const namespace = workspace.metadata.namespace;
-    if (!devworkspaceId || !namespace) {
-      throw new Error(
-        `Failed to refresh kubeconfig for "${workspace.metadata.name}": missing devworkspaceId or namespace.`,
-      );
+    if (devworkspaceId !== undefined && namespace !== '') {
+      try {
+        await injectKubeConfig(namespace, devworkspaceId);
+        await podmanLogin(namespace, devworkspaceId);
+      } catch (error) {
+        console.error(`Failed to refresh kubeconfig for "${workspace.metadata.name}": ${error}`);
+      }
     }
-    await injectKubeConfig(namespace, devworkspaceId);
-    await podmanLogin(namespace, devworkspaceId);
   };
