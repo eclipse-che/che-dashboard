@@ -225,7 +225,7 @@ class CreatingStepFetchDevfile extends ProgressStep<Props, State> {
           title: 'Failed to fetch devfile. Workspace will start from the default devfile.',
           variant: AlertVariant.warning,
         };
-        this.props.onWarning(alertItem);
+        this.handleWarning(alertItem);
         return true;
       }
       throw e;
