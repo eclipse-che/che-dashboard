@@ -202,7 +202,7 @@
 | `fast-uri@3.1.0` | BSD-3-Clause AND ISC AND BSD-2-Clause-Views | #22978 |
 | `fastify-plugin@5.0.1` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/fastify-plugin/5.0.1) |
 | `fastify-plugin@5.1.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/fastify-plugin/5.1.0) |
-| `fastify@5.7.4` |  | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/fastify/5.7.4) |
+| `fastify@5.8.4` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/fastify/5.8.4) |
 | `fastq@1.17.1` | ISC | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/fastq/1.17.1) |
 | `file-selector@2.1.2` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/file-selector/2.1.2) |
 | `find-my-way@9.0.1` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/find-my-way/9.0.1) |
@@ -460,7 +460,7 @@
 | `typed-array-buffer@1.0.3` | MIT | #9658 |
 | `undici-types@5.26.5` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/undici-types/5.26.5) |
 | `undici-types@7.16.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/undici-types/7.16.0) |
-| `undici@7.22.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/undici/7.22.0) |
+| `undici@7.24.6` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/undici/7.24.6) |
 | `unique-filename@3.0.0` | ISC | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/unique-filename/3.0.0) |
 | `unique-slug@4.0.0` | ISC | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/unique-slug/4.0.0) |
 | `universalify@2.0.1` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/universalify/2.0.1) |
@@ -479,4 +479,4 @@
 | `wrappy@1.0.2` | ISC | #24884 |
 | `yallist@4.0.0` | ISC | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/yallist/4.0.0) |
 | `yallist@5.0.0` | BlueOak-1.0.0 | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/yallist/5.0.0) |
-| `yaml@2.8.2` | ISC | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/yaml/2.8.2) |
+| `yaml@2.8.3` | ISC | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/yaml/2.8.3) |

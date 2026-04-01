@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
-exports[`RecentItemWorkspaceActions snapshot 1`] = `
+exports[`RecentItemWorkspaceActions snapshot when not hovered or focused 1`] = `
 <div
   onClick={[Function]}
   style={

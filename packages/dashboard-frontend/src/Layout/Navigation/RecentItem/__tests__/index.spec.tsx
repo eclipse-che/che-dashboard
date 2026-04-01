@@ -11,6 +11,7 @@
  */
 
 import { Nav } from '@patternfly/react-core';
+import { fireEvent } from '@testing-library/react';
 import React from 'react';
 import { Provider } from 'react-redux';
 import { MemoryRouter } from 'react-router-dom';
@@ -106,6 +107,100 @@ describe('Navigation Item', () => {
 
       const link = screen.getByTestId(item.to);
       expect(link).toHaveAttribute('aria-current');
+    });
+  });
+
+  describe('keyboard focus', () => {
+    test('workspace actions become focused when nav item gains focus', () => {
+      renderComponent(item);
+
+      const link = screen.getByTestId(item.to);
+      fireEvent.focus(link);
+
+      const actions = screen.getByTestId('mock-recent-item-workspace-actions');
+      expect(actions).toHaveAttribute('data-is-parent-focused', 'true');
+    });
+
+    test('workspace actions lose focus when nav item loses focus to an external element', () => {
+      renderComponent(item);
+
+      const link = screen.getByTestId(item.to);
+      fireEvent.focus(link);
+      fireEvent.blur(link, { relatedTarget: document.body });
+
+      const actions = screen.getByTestId('mock-recent-item-workspace-actions');
+      expect(actions).toHaveAttribute('data-is-parent-focused', 'false');
+    });
+
+    test('workspace actions stay focused when focus moves within the nav item', () => {
+      renderComponent(item);
+
+      const link = screen.getByTestId(item.to);
+      fireEvent.focus(link);
+
+      const actions = screen.getByTestId('mock-recent-item-workspace-actions');
+      // Simulate focus moving to a child (relatedTarget inside currentTarget)
+      fireEvent.blur(link, { relatedTarget: actions });
+
+      expect(actions).toHaveAttribute('data-is-parent-focused', 'true');
+    });
+  });
+
+  describe('keyboard navigation', () => {
+    test('Enter on nav link opens workspace', () => {
+      const mockWindowOpen = jest.fn();
+      window.open = mockWindowOpen;
+      renderComponent(item);
+
+      const link = screen.getByTestId(item.to);
+      fireEvent.keyDown(link, { key: 'Enter', target: link, currentTarget: link });
+
+      expect(mockWindowOpen).toHaveBeenCalled();
+    });
+
+    test('Space on nav link opens workspace', () => {
+      const mockWindowOpen = jest.fn();
+      window.open = mockWindowOpen;
+      renderComponent(item);
+
+      const link = screen.getByTestId(item.to);
+      fireEvent.keyDown(link, { key: ' ', target: link, currentTarget: link });
+
+      expect(mockWindowOpen).toHaveBeenCalled();
+    });
+
+    test('Enter bubbled from child element does not open workspace', () => {
+      const mockWindowOpen = jest.fn();
+      window.open = mockWindowOpen;
+      renderComponent(item);
+
+      const child = screen.getByTestId('mock-recent-item-workspace-actions');
+      fireEvent.keyDown(child, { key: 'Enter' });
+
+      expect(mockWindowOpen).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('mouse hover', () => {
+    test('workspace actions become hovered when nav item is mouse-entered', () => {
+      renderComponent(item);
+
+      const link = screen.getByTestId(item.to);
+      fireEvent.mouseEnter(link);
+
+      const actions = screen.getByTestId('mock-recent-item-workspace-actions');
+      expect(actions).toHaveAttribute('data-is-parent-hovered', 'true');
+    });
+
+    test('workspace actions lose hover when nav item is mouse-left', () => {
+      renderComponent(item);
+
+      const link = screen.getByTestId(item.to);
+      fireEvent.mouseEnter(link);
+      fireEvent.mouseLeave(link);
+
+      const actions = screen.getByTestId('mock-recent-item-workspace-actions');
+      expect(actions).toHaveAttribute('data-is-parent-hovered', 'false');
     });
   });
 });

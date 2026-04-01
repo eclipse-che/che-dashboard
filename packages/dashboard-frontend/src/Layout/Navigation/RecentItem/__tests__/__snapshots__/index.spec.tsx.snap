@@ -20,7 +20,9 @@ exports[`Navigation Item snapshot with RUNNING correctly 1`] = `
       className="pf-v6-c-nav__link navItem"
       data-testid="/namespace/workspace"
       id="/namespace/workspace"
+      onBlur={[Function]}
       onClick={[Function]}
+      onFocus={[Function]}
       onKeyDown={[Function]}
       onMouseEnter={[Function]}
       onMouseLeave={[Function]}
@@ -42,7 +44,11 @@ exports[`Navigation Item snapshot with RUNNING correctly 1`] = `
             workspace
           </span>
         </span>
-        <div>
+        <div
+          data-is-parent-focused={false}
+          data-is-parent-hovered={false}
+          data-testid="mock-recent-item-workspace-actions"
+        >
           RecentItemWorkspaceActions
         </div>
       </span>
@@ -71,7 +77,9 @@ exports[`Navigation Item snapshot with STOPPED status 1`] = `
       className="pf-v6-c-nav__link navItem"
       data-testid="/namespace/workspace"
       id="/namespace/workspace"
+      onBlur={[Function]}
       onClick={[Function]}
+      onFocus={[Function]}
       onKeyDown={[Function]}
       onMouseEnter={[Function]}
       onMouseLeave={[Function]}
@@ -93,7 +101,11 @@ exports[`Navigation Item snapshot with STOPPED status 1`] = `
             workspace
           </span>
         </span>
-        <div>
+        <div
+          data-is-parent-focused={false}
+          data-is-parent-hovered={false}
+          data-testid="mock-recent-item-workspace-actions"
+        >
           RecentItemWorkspaceActions
         </div>
       </span>

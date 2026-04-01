@@ -10,14 +10,12 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
-.container {
-  position: fixed;
-  z-index: 9999;
-  inset: 0;
+.questionIcon {
+  cursor: pointer;
+  margin: 0 5px;
+  vertical-align: middle;
+}
 
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  background-color: var(--pf-t--global--background--color--primary--default);
+.questionIcon:hover {
+  color: var(--pf-t--global--icon--color--subtle);
 }

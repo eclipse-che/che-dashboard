@@ -34,6 +34,7 @@ import { buildLogoSrc } from '@/services/helpers/brandingLogo';
 import { signOut } from '@/services/helpers/login';
 import { RootState } from '@/store';
 import { selectBranding } from '@/store/Branding/selectors';
+import { selectApplications } from '@/store/ClusterInfo/selectors';
 import { sanityCheckActionCreators } from '@/store/SanityCheck';
 import { selectSanityCheckError } from '@/store/SanityCheck/selectors';
 import { selectDashboardLogo } from '@/store/ServerConfig/selectors';
@@ -115,7 +116,7 @@ const LayoutComponent: React.FC<Props> = props => {
     if (issue) {
       return (
         <ErrorReporter>
-          <IssueComponent branding={brandingData} issue={issue} />
+          <IssueComponent branding={brandingData} issue={issue} applications={props.applications} />
         </ErrorReporter>
       );
     }
@@ -168,6 +169,7 @@ const LayoutComponent: React.FC<Props> = props => {
 export const Layout = LayoutComponent;
 
 const mapStateToProps = (state: RootState) => ({
+  applications: selectApplications(state),
   branding: selectBranding(state),
   dashboardLogo: selectDashboardLogo(state),
   sanityCheckError: selectSanityCheckError(state),

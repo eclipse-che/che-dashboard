@@ -10,6 +10,7 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
+import { ApplicationId, ApplicationInfo } from '@eclipse-che/common';
 import { Button, ButtonVariant, Content, ContentVariants } from '@patternfly/react-core';
 import { InfoIcon, WarningTriangleIcon } from '@patternfly/react-icons';
 import React from 'react';
@@ -17,9 +18,10 @@ import React from 'react';
 import styles from '@/Layout/ErrorReporter/Issue/index.module.css';
 import { BrandingData } from '@/services/bootstrap/branding.constant';
 import { Issue, WorkspaceData } from '@/services/bootstrap/issuesReporter';
-import { signIn } from '@/services/helpers/login';
+import { signIn, signOut } from '@/services/helpers/login';
 
 type Props = {
+  applications?: ApplicationInfo[];
   branding: BrandingData;
   issue: Issue;
 };
@@ -48,6 +50,30 @@ export class IssueComponent extends React.PureComponent<Props> {
     }
   }
 
+  private renderActions(): React.ReactNode {
+    const { applications = [] } = this.props;
+    const clusterConsole = applications.find(app => app.id === ApplicationId.CLUSTER_CONSOLE);
+    return (
+      <Content component="p">
+        {clusterConsole && (
+          <>
+            <Button
+              style={{ marginRight: '15px' }}
+              variant={ButtonVariant.link}
+              isInline
+              onClick={() => window.open(clusterConsole.url, '_blank', 'noopener,noreferrer')}
+            >
+              {clusterConsole.title}
+            </Button>
+          </>
+        )}
+        <Button onClick={() => signOut()} variant={ButtonVariant.link} isInline>
+          Sign out
+        </Button>
+      </Content>
+    );
+  }
+
   private renderSessionExpired(error: Error): React.ReactNode {
     const errorTextbox = !error ? undefined : (
       <Content component={ContentVariants.pre} className={styles.errorMessage}>
@@ -67,6 +93,7 @@ export class IssueComponent extends React.PureComponent<Props> {
             Sign in
           </Button>
         </Content>
+        {this.renderActions()}
       </Content>
     );
   }
@@ -95,6 +122,7 @@ export class IssueComponent extends React.PureComponent<Props> {
           Please try <kbd className={styles.keybinding}>Shift</kbd>+
           <kbd className={styles.keybinding}>Refresh</kbd>
         </Content>
+        {this.renderActions()}
       </Content>
     );
   }
@@ -147,6 +175,7 @@ export class IssueComponent extends React.PureComponent<Props> {
           {ideLoader} to continue using your workspace.
         </Content>
         {workspaceDetails}
+        {this.renderActions()}
       </Content>
     );
   }
@@ -186,6 +215,7 @@ export class IssueComponent extends React.PureComponent<Props> {
           {ideLoader} to continue using your workspace.
         </Content>
         {workspaceDetails}
+        {this.renderActions()}
       </Content>
     );
   }
@@ -223,6 +253,7 @@ export class IssueComponent extends React.PureComponent<Props> {
         {errorTextbox}
         {ideLoader}
         {workspaceDetails}
+        {this.renderActions()}
       </Content>
     );
   }
@@ -252,6 +283,7 @@ export class IssueComponent extends React.PureComponent<Props> {
           Your workspace is not running. {ideLoader} to continue using your workspace.
         </Content>
         {workspaceDetails}
+        {this.renderActions()}
       </Content>
     );
   }
@@ -270,6 +302,7 @@ export class IssueComponent extends React.PureComponent<Props> {
           Error
         </Content>
         {errorTextbox}
+        {this.renderActions()}
       </Content>
     );
   }
@@ -292,6 +325,7 @@ export class IssueComponent extends React.PureComponent<Props> {
           Please try <kbd className={styles.keybinding}>Shift</kbd>+
           <kbd className={styles.keybinding}>Refresh</kbd>
         </Content>
+        {this.renderActions()}
       </Content>
     );
   }

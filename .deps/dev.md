@@ -452,7 +452,7 @@
 | `globjoin@0.1.4` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/globjoin/0.1.4) |
 | `graphemer@1.4.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/graphemer/1.4.0) |
 | `gzip-size@6.0.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/gzip-size/6.0.0) |
-| `handlebars@4.7.8` | MIT | #9933 |
+| `handlebars@4.7.9` | MIT | #9933 |
 | `har-schema@2.0.0` | ISC | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/har-schema/2.0.0) |
 | `har-validator@5.1.5` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/har-validator/5.1.5) |
 | `hard-source-webpack-plugin@0.13.1` | ISC | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/hard-source-webpack-plugin/0.13.1) |
@@ -675,8 +675,7 @@
 | `path-type@4.0.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/path-type/4.0.0) |
 | `performance-now@2.1.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/performance-now/2.1.0) |
 | `picocolors@1.0.0` | ISC | #14718 |
-| `picomatch@2.3.1` | MIT | #24822 |
-| `picomatch@4.0.3` | MIT | #13338 |
+| `picomatch@2.3.2` | MIT | #24822 |
 | `pify@3.0.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/pify/3.0.0) |
 | `pify@4.0.1` | MIT | #24845 |
 | `pirates@4.0.7` | MIT | #680 |
@@ -811,7 +810,7 @@
 | `supports-hyperlinks@3.2.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/supports-hyperlinks/3.2.0) |
 | `supports-preserve-symlinks-flag@1.0.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/supports-preserve-symlinks-flag/1.0.0) |
 | `svg-tags@1.0.0` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/svg-tags/1.0.0) |
-| `svgo@3.0.2` | MIT AND (BSD-2-Clause AND MIT) AND Apache-2.0 | #8410 |
+| `svgo@3.3.3` | MIT AND (BSD-2-Clause AND MIT) AND Apache-2.0 | #8410 |
 | `symbol-tree@3.2.4` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/symbol-tree/3.2.4) |
 | `synckit@0.11.11` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/synckit/0.11.11) |
 | `synckit@0.8.5` | MIT | [clearlydefined](https://clearlydefined.io/definitions/npm/npmjs/-/synckit/0.8.5) |

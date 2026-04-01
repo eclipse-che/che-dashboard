@@ -17,12 +17,14 @@ import { connect, ConnectedProps } from 'react-redux';
 
 import { CheTooltip } from '@/components/CheTooltip';
 import { Navigation } from '@/Layout/Navigation';
+import styles from '@/pages/GetStarted/SamplesList/Toolbar/TemporaryStorageSwitch/index.module.css';
 import { RootState } from '@/store';
 import { selectBranding } from '@/store/Branding/selectors';
 
 export const TEMPORARY_STORAGE_SWITCH_ID = 'temporary-storage-switch';
 
 export type Props = MappedProps & {
+  isDisabled?: boolean;
   isTemporary: boolean;
   onChange: (isTemporary: boolean) => void;
 };
@@ -51,38 +53,57 @@ class TemporaryStorageSwitch extends React.PureComponent<Props, State> {
   }
 
   render(): React.ReactElement {
-    const { branding } = this.props;
+    const { branding, isDisabled } = this.props;
     const { isChecked } = this.state;
 
     return (
-      <Switch
-        id={TEMPORARY_STORAGE_SWITCH_ID}
-        label={
-          <div style={{ minWidth: '170px' }}>
-            Temporary Storage
-            <CheTooltip
-              content={
-                <>
-                  Temporary Storage allows for faster I/O but may have limited storage and is not
-                  persistent.
-                  <Content component="p">
-                    <a rel="noreferrer" target="_blank" href={branding.docs.storageTypes}>
-                      Open documentation page
-                    </a>
-                  </Content>
-                </>
-              }
-            >
-              <OutlinedQuestionCircleIcon style={{ margin: '0 5px' }} />
-            </CheTooltip>
-          </div>
-        }
-        isChecked={isChecked}
-        onChange={(_event, isChecked) => {
-          this.handleChange(isChecked);
-          Navigation.pageState[TEMPORARY_STORAGE_SWITCH_ID] = { isChecked };
+      <div
+        style={{ display: 'contents' }}
+        onKeyDown={(e: React.KeyboardEvent) => {
+          if ((e.key === 'Enter' || e.key === ' ') && !isDisabled) {
+            e.preventDefault();
+            const newIsChecked = !isChecked;
+            this.handleChange(newIsChecked);
+            Navigation.pageState[TEMPORARY_STORAGE_SWITCH_ID] = { isChecked: newIsChecked };
+          }
         }}
-      />
+      >
+        <Switch
+          isDisabled={isDisabled === true}
+          id={TEMPORARY_STORAGE_SWITCH_ID}
+          label={
+            <div style={{ minWidth: '170px' }}>
+              Temporary Storage
+              <CheTooltip
+                exitDelay={1500}
+                content={
+                  <>
+                    Temporary Storage allows for faster I/O but may have limited storage and is not
+                    persistent.
+                    <Content component="p">
+                      <a
+                        style={{ fontSize: 'var(--pf-v6-c-tooltip__content--FontSize)' }}
+                        rel="noreferrer"
+                        target="_blank"
+                        href={branding.docs.storageTypes}
+                      >
+                        Open documentation page
+                      </a>
+                    </Content>
+                  </>
+                }
+              >
+                <OutlinedQuestionCircleIcon className={styles.questionIcon} />
+              </CheTooltip>
+            </div>
+          }
+          isChecked={isChecked}
+          onChange={(_event, isChecked) => {
+            this.handleChange(isChecked);
+            Navigation.pageState[TEMPORARY_STORAGE_SWITCH_ID] = { isChecked };
+          }}
+        />
+      </div>
     );
   }
 }

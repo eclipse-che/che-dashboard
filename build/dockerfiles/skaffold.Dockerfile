@@ -15,6 +15,8 @@ FROM --platform=${TARGETPLATFORM:-linux/amd64} docker.io/node:24.0.2-alpine3.21
 
 LABEL quay.expires-after=1w
 
+RUN apk add --no-cache git
+
 ENV FRONTEND_LIB=../../packages/dashboard-frontend/lib/public
 ENV BACKEND_LIB=../../packages/dashboard-backend/lib
 ENV DEVFILE_REGISTRY=../../packages/devfile-registry

@@ -65,7 +65,10 @@ export class BulkSelector extends React.PureComponent<Props, State> {
     });
   }
 
-  private onSelect(_event: React.MouseEvent | undefined, value: string | number | undefined) {
+  private onSelect(
+    _event: React.MouseEvent | React.KeyboardEvent | undefined,
+    value: string | number | undefined,
+  ) {
     if (value === undefined) {
       return;
     }
@@ -93,6 +96,12 @@ export class BulkSelector extends React.PureComponent<Props, State> {
       <MenuToggle
         ref={toggleRef}
         onClick={() => this.onToggle()}
+        onKeyDown={(e: React.KeyboardEvent) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            this.onToggle();
+          }
+        }}
         isExpanded={isOpen}
         style={{ width: '200px' }}
       >
@@ -111,7 +120,18 @@ export class BulkSelector extends React.PureComponent<Props, State> {
       >
         <SelectList>
           {options.map(tag => (
-            <SelectOption key={tag} value={tag} hasCheckbox isSelected={selected.includes(tag)}>
+            <SelectOption
+              key={tag}
+              value={tag}
+              hasCheckbox
+              isSelected={selected.includes(tag)}
+              onKeyDown={(e: React.KeyboardEvent) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault();
+                  this.onSelect(e, tag);
+                }
+              }}
+            >
               {tag}
             </SelectOption>
           ))}

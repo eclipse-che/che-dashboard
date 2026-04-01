@@ -12,8 +12,17 @@
 
 import React from 'react';
 
-export class RecentItemWorkspaceActions extends React.PureComponent {
-  render(): React.ReactNode {
-    return <div>RecentItemWorkspaceActions</div>;
-  }
+export function RecentItemWorkspaceActions(props: {
+  isParentHovered: boolean;
+  isParentFocused: boolean;
+}): React.ReactElement {
+  return (
+    <div
+      data-testid="mock-recent-item-workspace-actions"
+      data-is-parent-hovered={props.isParentHovered}
+      data-is-parent-focused={props.isParentFocused}
+    >
+      RecentItemWorkspaceActions
+    </div>
+  );
 }

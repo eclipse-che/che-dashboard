@@ -10,6 +10,7 @@
  *   Red Hat, Inc. - initial API and implementation
  */
 
+import { ApplicationId, ApplicationInfo } from '@eclipse-che/common';
 import React from 'react';
 import renderer from 'react-test-renderer';
 
@@ -169,6 +170,36 @@ describe('Issue component', () => {
       error: new Error('Unknown Error Message'),
     } as Issue;
     const component = <IssueComponent branding={brandingData} issue={issue} />;
+
+    expect(renderer.create(component).toJSON()).toMatchSnapshot();
+  });
+
+  it('should render the cluster console button when the cluster-console application is provided', () => {
+    const issue = {
+      type: 'namespaceProvisioningError',
+      error: new Error('500 Internal Server Error'),
+    } as Issue;
+    const applications: ApplicationInfo[] = [
+      {
+        id: ApplicationId.CLUSTER_CONSOLE,
+        title: 'OpenShift console',
+        url: 'https://console-openshift-console.apps.example.com',
+        icon: 'https://console-openshift-console.apps.example.com/static/assets/public/imgs/openshift-favicon.png',
+      },
+    ];
+    const component = (
+      <IssueComponent branding={brandingData} issue={issue} applications={applications} />
+    );
+
+    expect(renderer.create(component).toJSON()).toMatchSnapshot();
+  });
+
+  it('should not render the cluster console button when no applications are provided', () => {
+    const issue = {
+      type: 'namespaceProvisioningError',
+      error: new Error('500 Internal Server Error'),
+    } as Issue;
+    const component = <IssueComponent branding={brandingData} issue={issue} applications={[]} />;
 
     expect(renderer.create(component).toJSON()).toMatchSnapshot();
   });
