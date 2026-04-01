@@ -340,6 +340,67 @@ describe('WorkspaceActionsDropdown', () => {
         );
       });
     });
+    describe('action: refresh kubeconfig', () => {
+      test('refresh kubeconfig', async () => {
+        mockHandleAction.mockResolvedValueOnce(undefined);
+
+        workspace.status = DevWorkspaceStatus.RUNNING;
+        renderComponent(workspace, 'kebab-toggle', { isExpanded: true });
+
+        const actionRefreshKubeconfig = screen.queryByRole('menuitem', {
+          name: 'Action: Refresh Kubeconfig',
+        });
+
+        expect(actionRefreshKubeconfig).not.toBeNull();
+
+        await user.click(actionRefreshKubeconfig!);
+
+        await jest.advanceTimersByTimeAsync(1000);
+
+        expect(mockShowConfirmation).not.toHaveBeenCalled();
+        expect(mockHandleAction).toHaveBeenCalledWith(
+          WorkspaceAction.REFRESH_KUBECONFIG,
+          workspace.uid,
+        );
+        expect(mockOnAction).toHaveBeenCalledWith(
+          WorkspaceAction.REFRESH_KUBECONFIG,
+          workspace.uid,
+          true, // succeeded
+        );
+      });
+      test('dont render refresh kubeconfig action for non-running workspace', async () => {
+        workspace.status = DevWorkspaceStatus.STOPPED;
+        renderComponent(workspace, 'kebab-toggle', { isExpanded: true });
+
+        const actionRefreshKubeconfig = screen.queryByRole('menuitem', {
+          name: 'Action: Refresh Kubeconfig',
+        });
+
+        expect(actionRefreshKubeconfig).not.toBeNull();
+
+        await user.click(actionRefreshKubeconfig!);
+
+        await jest.advanceTimersByTimeAsync(1000);
+
+        expect(mockShowConfirmation).not.toHaveBeenCalled();
+        expect(mockHandleAction).not.toHaveBeenCalled();
+      });
+      test('dont render refresh kubeconfig action if workspace is in Terminating status', async () => {
+        workspace.status = DevWorkspaceStatus.TERMINATING;
+        renderComponent(workspace, 'kebab-toggle', { isExpanded: true });
+
+        const actionRefreshKubeconfig = screen.queryByRole('menuitem', {
+          name: 'Action: Refresh Kubeconfig',
+        });
+
+        await user.click(actionRefreshKubeconfig!);
+
+        await jest.advanceTimersByTimeAsync(1000);
+
+        expect(mockShowConfirmation).not.toHaveBeenCalled();
+        expect(mockHandleAction).not.toHaveBeenCalled();
+      });
+    });
   });
 
   describe('actions status', () => {
