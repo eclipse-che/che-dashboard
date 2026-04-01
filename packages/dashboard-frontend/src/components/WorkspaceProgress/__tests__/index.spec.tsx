@@ -144,7 +144,7 @@ describe('LoaderProgress', () => {
 
       async function triggerStepEvent(
         step: HTMLElement,
-        event: 'onError' | 'onNextStep' | 'onRestart',
+        event: 'onError' | 'onWarning' | 'onNextStep' | 'onRestart',
       ) {
         const errorButton = within(step).getByRole('button', { name: event });
         await user.click(errorButton);
@@ -186,6 +186,76 @@ describe('LoaderProgress', () => {
 
           /* still no alert notifications in the document */
           expect(getAlertGroup()).toBeNull();
+        });
+      });
+
+      describe('onWarning', () => {
+        test('alert notification for the active step', async () => {
+          renderComponent(location, store, searchParams, false);
+
+          /* no alert notification */
+          expect(getAlertGroup()).toBeNull();
+
+          const steps = getSteps();
+
+          // trigger a warning in the first (active) step
+          await triggerStepEvent(steps[0], 'onWarning');
+
+          /* alert notification in document */
+
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+          const alertGroup = getAlertGroup()!;
+          expect(getAlertGroup).not.toBeNull();
+
+          expect(
+            within(alertGroup).queryByText('Warning in step Creating step: Initialize'),
+          ).not.toBeNull();
+        });
+
+        test('handle warning for an non-active step', async () => {
+          renderComponent(location, store, searchParams, false);
+
+          /* no alert notification */
+          expect(getAlertGroup()).toBeNull();
+
+          const steps = getSteps();
+
+          /* trigger a warning in the second (non-active) step */
+          await triggerStepEvent(steps[1], 'onWarning');
+
+          /* still no alert notifications in the document */
+          expect(getAlertGroup()).toBeNull();
+        });
+
+        test('does not add duplicate warnings', async () => {
+          renderComponent(location, store, searchParams, false);
+
+          /* no alert notification */
+          expect(getAlertGroup()).toBeNull();
+
+          const steps = getSteps();
+
+          // trigger a warning in the first (active) step
+          await triggerStepEvent(steps[0], 'onWarning');
+
+          /* alert notification in document */
+
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+          let alertGroup = getAlertGroup()!;
+          expect(getAlertGroup).not.toBeNull();
+
+          const alerts = within(alertGroup).getAllByRole('listitem');
+          expect(alerts).toHaveLength(1);
+
+          // trigger the same warning again
+          await triggerStepEvent(steps[0], 'onWarning');
+
+          /* still only one alert notification in the document */
+
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+          alertGroup = getAlertGroup()!;
+          const alertsAfterDuplicate = within(alertGroup).getAllByRole('listitem');
+          expect(alertsAfterDuplicate).toHaveLength(1);
         });
       });
 
