@@ -11,6 +11,7 @@
  */
 
 import {
+  AI_PROVIDER_ATTR,
   buildFactoryParams,
   EDITOR_ATTR,
   EXISTING_WORKSPACE_NAME,
@@ -20,6 +21,41 @@ import {
 } from '@/services/helpers/factoryFlow/buildFactoryParams';
 
 describe('buildFactoryParams', () => {
+  describe('aiProviders', () => {
+    it('should return empty array when ai-provider is absent', () => {
+      const searchParams = new URLSearchParams({});
+      expect(buildFactoryParams(searchParams).aiProviders).toEqual([]);
+    });
+
+    it('should return single-element array when one provider is present', () => {
+      const searchParams = new URLSearchParams({
+        [AI_PROVIDER_ATTR]: 'google/gemini',
+      });
+      expect(buildFactoryParams(searchParams).aiProviders).toEqual(['google/gemini']);
+    });
+
+    it('should return multiple providers from comma-separated value', () => {
+      const searchParams = new URLSearchParams({
+        [AI_PROVIDER_ATTR]: 'google/gemini,anthropic/claude',
+      });
+      expect(buildFactoryParams(searchParams).aiProviders).toEqual([
+        'google/gemini',
+        'anthropic/claude',
+      ]);
+    });
+
+    it('should return empty array when ai-provider is an empty string', () => {
+      const searchParams = new URLSearchParams({
+        [AI_PROVIDER_ATTR]: '',
+      });
+      expect(buildFactoryParams(searchParams).aiProviders).toEqual([]);
+    });
+
+    it('should have AI_PROVIDER_ATTR constant equal to "ai-provider"', () => {
+      expect(AI_PROVIDER_ATTR).toBe('ai-provider');
+    });
+  });
+
   describe('getStorageType', () => {
     it('should return undefined', () => {
       const searchParams = new URLSearchParams({

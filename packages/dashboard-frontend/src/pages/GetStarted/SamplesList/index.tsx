@@ -26,6 +26,7 @@ import SamplesListToolbar from '@/pages/GetStarted/SamplesList/Toolbar';
 import { ROUTE } from '@/Routes';
 import { FactoryLocationAdapter } from '@/services/factory-location-adapter';
 import {
+  AI_PROVIDER_ATTR,
   DEV_WORKSPACE_ATTR,
   EDITOR_ATTR,
   EDITOR_IMAGE_ATTR,
@@ -46,6 +47,7 @@ import { selectPvcStrategy } from '@/store/ServerConfig/selectors';
 export type Props = {
   editorDefinition: string | undefined;
   editorImage: string | undefined;
+  aiProviders?: string[];
   presetFilter: string | undefined;
 } & MappedProps;
 
@@ -96,7 +98,7 @@ class SamplesList extends React.PureComponent<Props, State> {
   }
 
   private async handleSampleCardClick(metadata: DevfileRegistryMetadata): Promise<void> {
-    const { editorDefinition, editorImage } = this.props;
+    const { editorDefinition, editorImage, aiProviders } = this.props;
 
     // Handle SSH URLs (git@...) and HTTP(S) URLs differently
     let factoryUrl: string;
@@ -125,6 +127,10 @@ class SamplesList extends React.PureComponent<Props, State> {
 
     if (editorImage !== undefined) {
       factoryParams[EDITOR_IMAGE_ATTR] = editorImage;
+    }
+
+    if (aiProviders !== undefined && aiProviders.length > 0) {
+      factoryParams[AI_PROVIDER_ATTR] = aiProviders.join(',');
     }
 
     const isEmptyWorkspace = metadata.tags?.some(tag => tag.toLowerCase() === 'empty') === true;

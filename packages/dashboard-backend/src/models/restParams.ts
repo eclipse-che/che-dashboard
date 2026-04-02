@@ -70,3 +70,13 @@ export interface PersonalAccessTokenNamespacedParams extends INamespacedParams {
 export interface ShhKeyNamespacedParams extends INamespacedParams {
   name: string;
 }
+
+export interface AiProviderKeyNamespacedParams extends INamespacedParams {
+  toolId: string;
+}
+
+export interface AiProviderKeyBody {
+  toolId: string;
+  envVarName: string;
+  apiKey: string;
+}

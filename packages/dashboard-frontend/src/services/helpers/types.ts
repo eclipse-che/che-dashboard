@@ -130,6 +130,7 @@ export enum WorkspaceAction {
 }
 
 export enum UserPreferencesTab {
+  AI_PROVIDER_KEYS = 'AiProviderKeys',
   CONTAINER_REGISTRIES = 'ContainerRegistries',
   GIT_SERVICES = 'GitServices',
   GITCONFIG = 'Gitconfig',
